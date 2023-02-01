@@ -104,9 +104,7 @@ describe('VideosPage', () => {
           <VideosPage />
         </MockedProvider>
       )
-      const textbox = getAllByRole('combobox')[1]
-      console.log(textbox.nodeName)
-      console.log(textbox.innerHTML)
+      const textbox = getAllByRole('combobox')[0]
 
       await act(async () => {
         await waitFor(() => fireEvent.focus(textbox))
@@ -171,7 +169,7 @@ describe('VideosPage', () => {
         </MockedProvider>
       )
 
-      const textbox = getAllByRole('combobox')[2]
+      const textbox = getAllByRole('combobox')[1]
       console.log(textbox.nodeName)
       console.log(textbox.innerHTML)
 
@@ -240,7 +238,11 @@ describe('VideosPage', () => {
       const textbox = getAllByRole('combobox')[0]
       await act(async () => {
         await waitFor(() => fireEvent.focus(textbox))
-        await waitFor(() => fireEvent.keyDown(textbox, { key: 'ArrowDown' }))
+        await waitFor(() => fireEvent.keyDown(textbox, { key: 'J' }))
+        await waitFor(() => fireEvent.keyDown(textbox, { key: 'E' }))
+        await waitFor(() => fireEvent.keyDown(textbox, { key: 'S' }))
+        await waitFor(() => fireEvent.keyDown(textbox, { key: 'U' }))
+        await waitFor(() => fireEvent.keyDown(textbox, { key: 'S' }))
         await waitFor(() => fireEvent.keyDown(textbox, { key: 'Enter' }))
       })
       expect(getByText(videos[0].title[0].value)).toBeInTheDocument()

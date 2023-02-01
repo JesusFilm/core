@@ -1,14 +1,14 @@
 import { gql, useQuery } from '@apollo/client'
-import { ReactElement, useEffect, useState } from 'react'
+import { ReactElement, useEffect, useMemo, useState } from 'react'
 import Box from '@mui/material/Box'
 import Container from '@mui/material/Container'
 import Divider from '@mui/material/Divider'
 import Stack from '@mui/material/Stack'
 import { LanguageOption } from '@core/shared/ui/LanguageAutocomplete'
-import { Title } from '@core/shared/ui/TitleAutocomplete'
 import Typography from '@mui/material/Typography'
+import TextField from '@mui/material/TextField'
+import { debounce } from 'lodash'
 import { GetLanguages } from '../../../__generated__/GetLanguages'
-import { GetTitles } from '../../../__generated__/GetTitles'
 import { useLanguage } from '../../libs/languageContext/LanguageContext'
 import { GetVideos } from '../../../__generated__/GetVideos'
 import { VideosFilter } from '../../../__generated__/globalTypes'
@@ -18,7 +18,6 @@ import { VideoGrid } from '../VideoGrid/VideoGrid'
 import { VideosHero } from './Hero'
 import { VideosSubHero } from './SubHero'
 import { LanguagesFilter } from './LanguagesFilter'
-import { TitlesFilter } from './TitlesFilter'
 
 export const GET_VIDEOS = gql`
   ${VIDEO_CHILD_FIELDS}
@@ -41,17 +40,6 @@ export const GET_LANGUAGES = gql`
       name(languageId: $languageId, primary: true) {
         value
         primary
-      }
-    }
-  }
-`
-
-export const GET_TITLES = gql`
-  query GetTitles {
-    videos(limit: 1000) {
-      label
-      title(primary: true) {
-        value
       }
     }
   }
@@ -99,9 +87,6 @@ export function VideosPage(): ReactElement {
       variables: { languageId: '529' }
     })
 
-  const { data: titlesData, loading: titlesLoading } =
-    useQuery<GetTitles>(GET_TITLES)
-
   useEffect(() => {
     setIsEnd(isAtEnd(data?.videos.length ?? 0, limit, previousCount))
   }, [data?.videos.length, setIsEnd, previousCount])
@@ -146,14 +131,25 @@ export function VideosPage(): ReactElement {
     })
   }
 
-  function handleTitleChange(selectedTitle: string | undefined): void {
-    setTitleFilter(selectedTitle)
-    setSubtitleLanguageFilter(undefined)
-    setLanguageFilter(undefined)
-    setFilter({
-      title: selectedTitle
-    })
-  }
+  const debouncedSubmit = useMemo(
+    () =>
+      debounce(
+        (selectedTitle): void => {
+          setTitleFilter(selectedTitle)
+          setSubtitleLanguageFilter(undefined)
+          setLanguageFilter(undefined)
+          setFilter({
+            title: selectedTitle
+          })
+        },
+        500,
+        { maxWait: 1500 }
+      ),
+    []
+  )
+
+  const handleTitleChange = (selectedTitle: string | undefined): void =>
+    debouncedSubmit(selectedTitle)
 
   return (
     <PageWrapper hero={<VideosHero />}>
@@ -183,12 +179,13 @@ export function VideosPage(): ReactElement {
               }}
             />
             <Typography>Titles</Typography>
-            <TitlesFilter
-              onChange={(title: Title) =>
-                handleTitleChange(title.title[0].value)
-              }
-              titles={titlesData?.videos}
-              loading={titlesLoading}
+            <TextField
+              onChange={(e) => {
+                handleTitleChange(e.currentTarget.value)
+              }}
+              label="Search Titles"
+              variant="outlined"
+              helperText="+724 titles"
             />
             <Divider
               sx={{
