@@ -547,6 +547,14 @@ input JourneyCreateInput
   slug: String
 }
 
+type JourneyProfile
+  @join__type(graph: JOURNEYS, key: "id")
+{
+  id: ID!
+  userId: ID!
+  acceptedTermsAt: DateTime
+}
+
 input JourneysFilter
   @join__type(graph: JOURNEYS)
 {
@@ -903,6 +911,7 @@ type Query
   adminJourney(id: ID!, idType: IdType): Journey @join__field(graph: JOURNEYS)
   journeys(where: JourneysFilter): [Journey!]! @join__field(graph: JOURNEYS)
   journey(id: ID!, idType: IdType): Journey @join__field(graph: JOURNEYS)
+  getJourneyProfile: JourneyProfile @join__field(graph: JOURNEYS)
   getUserRole: UserRole @join__field(graph: JOURNEYS)
 
   """A list of visitors that are connected with a specific team."""

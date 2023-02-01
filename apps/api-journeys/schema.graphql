@@ -1512,6 +1512,7 @@ extend type Query {
   adminJourney(id: ID!, idType: IdType): Journey
   journeys(where: JourneysFilter): [Journey!]!
   journey(id: ID!, idType: IdType): Journey
+  getJourneyProfile: JourneyProfile
   getUserRole: UserRole
 
   """A list of visitors that are connected with a specific team."""
@@ -1577,6 +1578,14 @@ type UserJourney
 
 input JourneyTemplateInput {
   template: Boolean
+}
+
+type JourneyProfile
+  @key(fields: "id")
+{
+  id: ID!
+  userId: ID!
+  acceptedTermsAt: DateTime
 }
 
 enum UserJourneyRole {
@@ -1802,4 +1811,4 @@ type _Service {
   sdl: String
 }
 
-union _Entity = Journey | Language | User | UserJourney | UserRole | Video | Visitor
+union _Entity = Journey | JourneyProfile | Language | User | UserJourney | UserRole | Video | Visitor

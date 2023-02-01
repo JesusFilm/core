@@ -12,6 +12,7 @@ import { BlockModule } from './modules/block/block.module'
 import { JourneyModule } from './modules/journey/journey.module'
 import { EventModule } from './modules/event/event.module'
 import { UserJourneyModule } from './modules/userJourney/userJourney.module'
+import { JourneyProfileModule } from './modules/journeyProfile/journeyProfile.module'
 import { UserRoleModule } from './modules/userRole/userRole.module'
 import { VisitorModule } from './modules/visitor/visitor.module'
 import { MemberModule } from './modules/member/member.module'
@@ -27,6 +28,7 @@ import { TeamModule } from './modules/team/team.module'
     TeamModule,
     UserJourneyModule,
     UserRoleModule,
+    JourneyProfileModule,
     VisitorModule,
     GraphQLModule.forRoot<ApolloFederationDriverConfig>({
       driver: ApolloFederationDriver,

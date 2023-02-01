@@ -1,0 +1,9 @@
+type JourneyProfile @key(fields: "id") {
+  id: ID!
+  userId: ID!
+  acceptedTermsAt: DateTime
+}
+
+extend type Query {
+  getJourneyProfile: JourneyProfile
+}
