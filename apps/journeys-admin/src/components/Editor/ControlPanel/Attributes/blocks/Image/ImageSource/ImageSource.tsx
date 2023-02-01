@@ -10,15 +10,13 @@ import { ImageBlockThumbnail } from '../../../../../ImageBlockThumbnail'
 import { GetJourney_journey_blocks_ImageBlock as ImageBlock } from '../../../../../../../../__generated__/GetJourney'
 
 export interface ImageSourceProps {
-  name?: string
-  image: ImageBlock
-  hasImage?: boolean
+  image?: ImageBlock
+  onClick?: () => void
 }
 
 export function ImageSource({
-  name,
   image,
-  hasImage = false
+  onClick
 }: ImageSourceProps): ReactElement {
   return (
     <Card
@@ -30,6 +28,8 @@ export function ImageSource({
       }}
     >
       <CardActionArea
+        data-testid="card click area"
+        onClick={onClick}
         sx={{
           height: '100%',
           flexDirection: 'row',
@@ -47,20 +47,22 @@ export function ImageSource({
               mr: 4
             }}
           >
-            <ImageBlockThumbnail selectedBlock={hasImage ? image : undefined} />
+            <ImageBlockThumbnail
+              selectedBlock={image !== undefined ? image : undefined}
+            />
           </Box>
           <Stack>
             <Typography variant="subtitle2">
-              {hasImage ? name : 'Select Image'}
+              {image !== undefined ? image.id : 'Select Image'}
             </Typography>
             <Typography variant="caption">
-              {hasImage
+              {image !== undefined
                 ? `${image.width} x ${image.height} pixels`
                 : 'Upload your image'}
             </Typography>
           </Stack>
         </Stack>
-        {hasImage ? (
+        {image !== undefined ? (
           <DeleteOutlineIcon color="primary" sx={{ mr: 2 }} />
         ) : (
           <AddIcon color="primary" sx={{ mr: 2 }} />

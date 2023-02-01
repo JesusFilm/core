@@ -15,7 +15,7 @@ const ImageSourceStory = {
 }
 
 const image: ImageBlock = {
-  id: 'image1.id',
+  id: 'Image Title',
   __typename: 'ImageBlock',
   parentBlockId: 'card.id',
   parentOrder: 0,
@@ -27,17 +27,13 @@ const image: ImageBlock = {
 }
 
 const Template: Story = (args) => {
-  return <ImageSource {...args} image={image} />
+  return <ImageSource {...args} />
 }
 
 export const Default = Template.bind({})
 Default.args = {}
 
 export const LoadedImage = Template.bind({})
-LoadedImage.args = {
-  name: 'Image Name',
-  dimensions: '1920 x 1080 pixels',
-  hasImage: true
-}
+LoadedImage.args = { image }
 
 export default ImageSourceStory as Meta
