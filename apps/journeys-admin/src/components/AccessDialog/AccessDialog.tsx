@@ -8,6 +8,10 @@ import MuiListItem from '@mui/material/ListItem'
 import ListItemAvatar from '@mui/material/ListItemAvatar'
 import ListItemText from '@mui/material/ListItemText'
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown'
+import DraftsIcon from '@mui/icons-material/Drafts'
+import LinkIcon from '@mui/icons-material/Link'
+import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
+import GroupAddIcon from '@mui/icons-material/GroupAdd'
 import { gql, useLazyQuery, useQuery } from '@apollo/client'
 import { compact } from 'lodash'
 import Skeleton from '@mui/material/Skeleton'
@@ -16,6 +20,8 @@ import { Theme } from '@mui/material/styles'
 import { CopyTextField } from '@core/shared/ui/CopyTextField'
 import { Dialog } from '@core/shared/ui/Dialog'
 import MenuItem from '@mui/material/MenuItem'
+import Typography from '@mui/material/Typography'
+import Box from '@mui/material/Box'
 import {
   GetJourneyWithUserJourneys,
   GetJourneyWithUserJourneys_journey_userJourneys as UserJourney
@@ -127,7 +133,54 @@ export function AccessDialog({
             )}
             disable={disable}
           />
-          <Button onClick={handleClick}>{selectedInviteMethod}</Button>
+          <Box
+            display="flex"
+            flexDirection="row"
+            alignItems="center"
+            sx={{
+              mb: '16px',
+              mt: '20px'
+            }}
+          >
+            <GroupAddIcon />
+            <Typography
+              sx={{
+                fontFamily: 'Montserrat',
+                fontWeight: '600',
+                fontSize: '18px',
+                marginLeft: '12px'
+              }}
+            >
+              Add new using
+            </Typography>
+            <Button
+              variant="outlined"
+              size="small"
+              startIcon={
+                selectedInviteMethod === 'Link' ? <LinkIcon /> : <DraftsIcon />
+              }
+              endIcon={<KeyboardArrowDownIcon />}
+              sx={{
+                borderRadius: '16px',
+                width: '124px',
+                height: '32px',
+                color: '#26262E',
+                border: '1px solid #DEDFE0',
+                fontWeight: '400',
+                fontFamily: 'Open Sans',
+                fontSize: '16px',
+                padding: '4px',
+                marginLeft: '12px',
+                '&:hover': {
+                  borderColor: 'gray'
+                }
+              }}
+              onClick={handleClick}
+            >
+              {selectedInviteMethod}
+            </Button>
+          </Box>
+
           <Menu anchorEl={anchorEl} open={menuOpen}>
             <MenuItem onClick={handleMenuItemClick}>Link</MenuItem>
             <MenuItem onClick={handleMenuItemClick}>Email</MenuItem>
