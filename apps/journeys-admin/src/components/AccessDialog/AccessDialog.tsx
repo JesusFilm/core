@@ -76,6 +76,9 @@ export function AccessDialog({
     setAnchorEl(null)
     setSelectedInviteMethod(name)
   }
+  const handleClose = (event: MouseEvent<HTMLElement>): void => {
+    setAnchorEl(null)
+  }
 
   const [loadJourney, { loading, data }] =
     useLazyQuery<GetJourneyWithUserJourneys>(GET_JOURNEY_WITH_USER_JOURNEYS, {
@@ -124,7 +127,6 @@ export function AccessDialog({
           userJourneys={requestsList}
           disable={disable}
         />
-
         <UserJourneyList
           title="Users With Access"
           loading={loading}
@@ -158,6 +160,7 @@ export function AccessDialog({
               selectedInviteMethod === 'Email' ? <DraftsIcon /> : <LinkIcon />
             }
             endIcon={<KeyboardArrowDownIcon />}
+            aria-controls={menuOpen ? 'menu' : undefined}
             sx={{
               borderRadius: '16px',
               width: '124px',
@@ -177,16 +180,21 @@ export function AccessDialog({
           >
             {selectedInviteMethod}
           </Button>
+          <Menu
+            id="menu"
+            anchorEl={anchorEl}
+            open={menuOpen}
+            onClose={handleClose}
+          >
+            <MenuItem onClick={(e) => handleMenuItemClick(e, 'Email')}>
+              Email
+            </MenuItem>
+            <MenuItem onClick={(e) => handleMenuItemClick(e, 'Link')}>
+              Link
+            </MenuItem>
+          </Menu>
         </Box>
 
-        <Menu anchorEl={anchorEl} open={menuOpen}>
-          <MenuItem onClick={(e) => handleMenuItemClick(e, 'Email')}>
-            Email
-          </MenuItem>
-          <MenuItem onClick={(e) => handleMenuItemClick(e, 'Link')}>
-            Link
-          </MenuItem>
-        </Menu>
         {selectedInviteMethod === 'Email' ? (
           <EmailInviteInput />
         ) : (
