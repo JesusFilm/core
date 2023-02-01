@@ -1,4 +1,3 @@
-import { URLSearchParams } from 'url'
 import { Test, TestingModule } from '@nestjs/testing'
 import { Database } from 'arangojs'
 import { mockDeep } from 'jest-mock-extended'
@@ -55,11 +54,8 @@ describe('ImageResolver', () => {
       expect(request).toHaveBeenCalledWith(
         `https://api.cloudflare.com/client/v4/accounts/${
           process.env.CLOUDFLARE_ACCOUNT_ID ?? ''
-        }/images/v2/direct_upload`,
+        }/images/v2/direct_upload?requireSignedURL=true&metadata={"key":"value"}`,
         {
-          body: new URLSearchParams(
-            'requireSignedURL=true&metadata={"key":"value"}'
-          ),
           headers: {
             Authorization: `Bearer ${process.env.CLOUDFLARE_IMAGES_TOKEN ?? ''}`
           },
