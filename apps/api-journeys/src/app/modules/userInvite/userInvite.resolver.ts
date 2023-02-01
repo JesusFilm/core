@@ -37,10 +37,10 @@ export class UserInviteResolver {
   }
 
   @Mutation()
-  // @UseGuards(
-  //   GqlAuthGuard,
-  //   RoleGuard('journeyId', [UserJourneyRole.owner, UserJourneyRole.editor])
-  // )
+  @UseGuards(
+    GqlAuthGuard,
+    RoleGuard('journeyId', [UserJourneyRole.owner, UserJourneyRole.editor])
+  )
   async userInviteCreate(
     @Args('journeyId') journeyId: string,
     @Args('senderId') senderId: string,
@@ -65,10 +65,10 @@ export class UserInviteResolver {
   }
 
   @Mutation()
-  // @UseGuards(
-  //   GqlAuthGuard,
-  //   RoleGuard('journeyId', [UserJourneyRole.owner, UserJourneyRole.editor])
-  // )
+  @UseGuards(
+    GqlAuthGuard,
+    RoleGuard('journeyId', [UserJourneyRole.owner, UserJourneyRole.editor])
+  )
   async userInviteRemove(
     @Args('id') id: string,
     @Args('journeyId') journeyId: string
@@ -99,7 +99,6 @@ export class UserInviteResolver {
           accepted: true
         }
       )
-      // console.log('UPDATE', updatedInvite, userInvite)
 
       return updatedInvite
     }

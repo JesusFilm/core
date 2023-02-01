@@ -46,7 +46,6 @@ describe('UserInviteResolver', () => {
     useFactory: () => ({
       save: jest.fn((input) => input),
       update: jest.fn((id, input) => {
-        // console.log('MOCK IS CALLED')
         return { ...userInvite, ...input }
       }),
       remove: jest.fn((id) => userInvite),
@@ -175,7 +174,7 @@ describe('UserInviteResolver', () => {
 
   describe('userInviteAcceptAll', () => {
     it('should accept unredeemed valid user invites', async () => {
-      await resolver.userInviteAcceptAll('userId', {
+      const invites = await resolver.userInviteAcceptAll('userId', {
         email: 'test@email.com'
       })
 
@@ -191,18 +190,13 @@ describe('UserInviteResolver', () => {
         'senderId'
       )
 
-      // expect(service.update).toBeCalledTimes(1)
-      // expect(service.update).toHaveBeenCalledWith(userInvite.key, {
-      //   accepted: true
-      // })
-
-      // Ignored accepted and expired invites
-      // expect(invites[0]).toEqual([
-      //   {
-      //     ...userInvite,
-      //     accepted: true
-      //   }
-      // ])
+      expect(await invites[0]).toEqual({
+        ...userInvite,
+        accepted: true
+      })
+      // Accepted and expired invites unchanged
+      expect(await invites[1]).toEqual(acceptedInvite)
+      expect(await invites[2]).toEqual(expiredInvite)
     })
 
     it('should show no invites if email does not match', async () => {
