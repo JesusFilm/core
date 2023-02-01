@@ -4,7 +4,7 @@ type UserInvite @key(fields: "id") {
   senderId: ID!
   email: String!
   accepted: Boolean!
-  expireAt: String!
+  expireAt: DateTime!
 }
 
 extend type Query {

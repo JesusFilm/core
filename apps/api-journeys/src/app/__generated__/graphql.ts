@@ -1014,7 +1014,7 @@ export class UserInvite {
     senderId: string;
     email: string;
     accepted: boolean;
-    expireAt: string;
+    expireAt: DateTime;
 }
 
 export class UserRole {
