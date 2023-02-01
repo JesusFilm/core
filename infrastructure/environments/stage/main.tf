@@ -107,3 +107,10 @@ module "api-videos" {
   env           = "stage"
   doppler_token = data.aws_ssm_parameter.doppler_api_videos_stage_token.value
 }
+
+module "api-media" {
+  source        = "../../../apps/api-media/infrastructure"
+  ecs_config    = local.internal_ecs_config
+  env           = "stage"
+  doppler_token = data.aws_ssm_parameter.doppler_api_media_stage_token.value
+}
