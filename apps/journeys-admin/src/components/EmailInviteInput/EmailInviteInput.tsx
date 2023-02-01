@@ -1,9 +1,11 @@
 import { ReactElement } from 'react'
 import TextField from '@mui/material/TextField'
-import Button from '@mui/material/Button'
 import { Form, Formik } from 'formik'
 import { object, string } from 'yup'
 import { useTranslation } from 'react-i18next'
+import IconButton from '@mui/material/IconButton'
+import InputAdornment from '@mui/material/InputAdornment'
+import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline'
 
 export function EmailInviteInput(): ReactElement {
   const handleAddUser = (): void => {
@@ -13,10 +15,6 @@ export function EmailInviteInput(): ReactElement {
   const { t } = useTranslation('libs-journeys-ui')
 
   const validationSchema = object().shape({
-    name: string()
-      .min(2, t('Name must be 2 characters or more'))
-      .max(50, t('Name must be 50 characters or less'))
-      .required(t('Required')),
     email: string()
       .email(t('Please enter a valid email address'))
       .required(t('Required'))
@@ -32,7 +30,6 @@ export function EmailInviteInput(): ReactElement {
         <Form>
           <TextField
             autoFocus
-            margin="normal"
             id="email"
             label="Email Address"
             name="email"
@@ -44,8 +41,16 @@ export function EmailInviteInput(): ReactElement {
             onBlur={handleBlur}
             error={errors.email != null && touched.email}
             helperText={touched?.email != null ? errors.email : ' '}
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position="end">
+                  <IconButton type="submit">
+                    <AddCircleOutlineIcon />
+                  </IconButton>
+                </InputAdornment>
+              )
+            }}
           />
-          <Button type="submit">Submit</Button>
         </Form>
       )}
     </Formik>
