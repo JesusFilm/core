@@ -1,6 +1,7 @@
-import { Resolver, Query } from '@nestjs/graphql'
+import { Resolver, Query, Mutation } from '@nestjs/graphql'
+import { ForbiddenError, UserInputError } from 'apollo-server-errors'
 import { CurrentUserId } from '@core/nest/decorators/CurrentUserId'
-import { CloudflareDirectCreatorUploadResponse } from '../../../__generated__/graphql'
+import { CloudflareImage } from '../../../__generated__/graphql'
 import { ImageService } from './image.service'
 
 @Resolver('Image')
@@ -8,21 +9,51 @@ export class ImageResolver {
   constructor(private readonly imageService: ImageService) {}
 
   @Query()
-  async getCloudflareImageUploadInfo(
+  async createCloudflareImage(
     @CurrentUserId() userId: string
-  ): Promise<CloudflareDirectCreatorUploadResponse> {
+  ): Promise<CloudflareImage> {
     const result = await this.imageService.getImageInfoFromCloudflare()
     if (!result.success) {
       throw new Error(result.errors[0])
     }
     await this.imageService.save({
+      _key: result.result.id,
+      uploadUrl: result.result.uploadURL,
       userId,
-      imageId: result.result.id,
       createdAt: new Date().toISOString()
     })
     return {
-      imageId: result.result.id,
-      uploadUrl: result.result.uploadURL
+      id: result.result.id,
+      uploadUrl: result.result.uploadURL,
+      userId,
+      createdAt: new Date().toISOString()
     }
+  }
+
+  @Query()
+  async getMyCloudflareImages(
+    @CurrentUserId() userId: string
+  ): Promise<CloudflareImage[]> {
+    return await this.imageService.getCloudflareImagesForUserId(userId)
+  }
+
+  @Mutation()
+  async deleteCloudflareImage(
+    id: string,
+    @CurrentUserId() userId: string
+  ): Promise<boolean> {
+    const image = await this.imageService.get<CloudflareImage>(id)
+    if (image == null) {
+      throw new UserInputError('Image not found')
+    }
+    if (image.userId !== userId) {
+      throw new ForbiddenError('This image does not belong to you')
+    }
+    const result = await this.imageService.deleteImageFromCloudflare(id)
+    if (!result.success) {
+      throw new Error(result.errors[0])
+    }
+    await this.imageService.remove(id)
+    return true
   }
 }
