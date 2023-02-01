@@ -26,12 +26,18 @@ const image: ImageBlock = {
   blurhash: ''
 }
 
-export const Default: Story = () => (
-  <ImageSource
-    name="Image Name"
-    dimensions="1920 x 1080 pixels"
-    image={image}
-  />
-)
+const Template: Story = (args) => {
+  return <ImageSource {...args} image={image} />
+}
+
+export const Default = Template.bind({})
+Default.args = {}
+
+export const LoadedImage = Template.bind({})
+LoadedImage.args = {
+  name: 'Image Name',
+  dimensions: '1920 x 1080 pixels',
+  hasImage: true
+}
 
 export default ImageSourceStory as Meta
