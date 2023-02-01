@@ -20,7 +20,7 @@ export class ImageService extends BaseService {
     const response = await fetch(
       `https://api.cloudflare.com/client/v4/accounts/${
         process.env.CLOUDFLARE_ACCOUNT_ID ?? ''
-      }/images/v2/direct_upload?requireSignedURL=true&metadata={"key":"value"}`,
+      }/images/v2/direct_upload?requireSignedURLs=true&metadata={"key":"value"}`,
       {
         method: 'POST',
         headers: {

@@ -54,7 +54,7 @@ describe('ImageService', () => {
       expect(request).toHaveBeenCalledWith(
         `https://api.cloudflare.com/client/v4/accounts/${
           process.env.CLOUDFLARE_ACCOUNT_ID ?? ''
-        }/images/v2/direct_upload?requireSignedURL=true&metadata={"key":"value"}`,
+        }/images/v2/direct_upload?requireSignedURLs=true&metadata={"key":"value"}`,
         {
           headers: {
             Authorization: `Bearer ${process.env.CLOUDFLARE_IMAGES_TOKEN ?? ''}`
