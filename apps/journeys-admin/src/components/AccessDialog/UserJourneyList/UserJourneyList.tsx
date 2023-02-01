@@ -27,6 +27,7 @@ export function UserJourneyList({
     <>
       {loading === true ? (
         <Box>
+          <Divider />
           <Typography sx={{ pt: 4 }} variant="body1">
             {title}
           </Typography>
@@ -49,12 +50,12 @@ export function UserJourneyList({
               </ListItem>
             ))}
           </List>
-          <Divider />
         </Box>
       ) : (
         <>
           {userJourneys != null && userJourneys.length > 0 && (
             <Box>
+              <Divider />
               <Typography sx={{ pt: 4 }} variant="body1">
                 {title}
               </Typography>
@@ -68,7 +69,6 @@ export function UserJourneyList({
                   />
                 ))}
               </List>
-              <Divider />
             </Box>
           )}
         </>
