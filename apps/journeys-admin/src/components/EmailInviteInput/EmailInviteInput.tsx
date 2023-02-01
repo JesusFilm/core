@@ -29,18 +29,21 @@ export function EmailInviteInput(): ReactElement {
       {({ values, handleChange, handleBlur, errors, touched }) => (
         <Form>
           <TextField
-            autoFocus
             id="email"
             label="Email Address"
             name="email"
             type="email"
             fullWidth
-            variant="outlined"
+            variant="filled"
             value={values.email}
             onChange={handleChange}
             onBlur={handleBlur}
             error={errors.email != null && touched.email}
-            helperText={touched?.email != null ? errors.email : ' '}
+            helperText={
+              touched?.email != null
+                ? errors.email
+                : "Users invited by email don't require approval"
+            }
             InputProps={{
               endAdornment: (
                 <InputAdornment position="end">
