@@ -98,7 +98,7 @@ export function UnsplashGallery(): ReactElement {
                   width={item.width}
                   height={item.height}
                   style={{
-                    borderRadius: 2
+                    borderRadius: 8
                   }}
                 />
                 <Link

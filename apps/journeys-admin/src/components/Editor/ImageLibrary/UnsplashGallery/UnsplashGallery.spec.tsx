@@ -39,8 +39,6 @@ describe('UnsplashGallery', () => {
     }
   )
 
-  // TODO: move unsplash accessKey to doppler then tests would pass
-
   it('should return a collection of images from unsplash', async () => {
     mswServer.use(getCollection)
     const { getByRole, getByText } = render(<UnsplashGallery />)

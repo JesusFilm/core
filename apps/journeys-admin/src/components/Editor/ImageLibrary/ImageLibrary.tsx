@@ -11,6 +11,7 @@ import { TabPanel, tabA11yProps } from '@core/shared/ui/TabPanel'
 import { Theme } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import useMediaQuery from '@mui/material/useMediaQuery'
+import { useFlags } from '@core/shared/ui/FlagsProvider'
 import { UnsplashGallery } from './UnsplashGallery'
 
 export const DRAWER_WIDTH = 328
@@ -26,6 +27,8 @@ export function ImageLibrary({
 }: ImageLibraryProps): ReactElement {
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
   const [tabValue, setTabValue] = useState(0)
+
+  const { unsplashGallery } = useFlags()
 
   const handleTabChange = (
     _event: SyntheticEvent<Element, Event>,
@@ -79,18 +82,20 @@ export function ImageLibrary({
           aria-label="image selection tabs"
           variant="fullWidth"
         >
-          <Tab
+          {unsplashGallery && (<Tab
             label={<Typography variant="subtitle2">Unsplash</Typography>}
             {...tabA11yProps('unsplash', 0)}
-          />
+          />)}
           <Tab
             label={<Typography variant="subtitle2">Custom</Typography>}
             {...tabA11yProps('custom', 1)}
           />
         </Tabs>
-        <TabPanel name="unsplash" value={tabValue} index={0}>
-          <UnsplashGallery />
-        </TabPanel>
+        {unsplashGallery && (
+          <TabPanel name="unsplash" value={tabValue} index={0}>
+            <UnsplashGallery />
+          </TabPanel>
+        )}
         <TabPanel name="custom" value={tabValue} index={1}>
           {/* insert custom component */}
         </TabPanel>
