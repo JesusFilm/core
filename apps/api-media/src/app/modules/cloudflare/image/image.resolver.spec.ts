@@ -2,7 +2,14 @@ import { Test, TestingModule } from '@nestjs/testing'
 
 import { ImageResolver } from './image.resolver'
 import { ImageService } from './image.service'
-import { cfResult } from './image.service.spec'
+
+const cfResult = {
+  result: {
+    id: '1',
+    uploadURL: 'https://upload.com'
+  },
+  success: true
+}
 
 describe('ImageResolver', () => {
   let resolver: ImageResolver

@@ -17,15 +17,15 @@ jest.mock('node-fetch', () => {
 })
 const mockFetch = fetch as jest.MockedFunction<typeof fetch>
 
-export const cfResult = {
+const cfResult = {
   result: {
     id: '1',
-    uploadURL: 'https://upload.com',
-    success: true
-  }
+    uploadURL: 'https://upload.com'
+  },
+  success: true
 }
 
-describe('ImageResolver', () => {
+describe('ImageService', () => {
   let service: ImageService
 
   beforeEach(async () => {
