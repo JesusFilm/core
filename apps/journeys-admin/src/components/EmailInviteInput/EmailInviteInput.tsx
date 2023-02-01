@@ -30,7 +30,7 @@ export function EmailInviteInput(): ReactElement {
         <Form>
           <TextField
             id="email"
-            label="Email Address"
+            label="Add Editor By Email"
             name="email"
             type="email"
             fullWidth
