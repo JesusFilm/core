@@ -16,7 +16,7 @@ describe('JourneyProfileResolver', () => {
     const journeyProfileService = {
       provide: JourneyProfileService,
       useFactory: () => ({
-        getJourneyProfileById: jest.fn(() => user)
+        getJourneyProfileByUserId: jest.fn(() => user)
       })
     }
 
