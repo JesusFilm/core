@@ -8,7 +8,7 @@ type UserInvite @key(fields: "id") {
 }
 
 extend type Query {
-  userInvites(journeyId: ID!): [UserInvite]
+  userInvites(journeyId: ID!): [UserInvite!]
 }
 
 input UserInviteAcceptInput {
@@ -20,7 +20,7 @@ input UserInviteCreateInput {
 }
 
 extend type Mutation {
-  userInviteCreate(journeyId: ID!, input: UserInviteCreateInput): UserInvite
-  userInviteRemove(id: ID!, journeyId: ID!): UserInvite
-  userInviteAcceptAll(input: UserInviteAcceptInput): [UserInvite]
+  userInviteCreate(journeyId: ID!, input: UserInviteCreateInput): UserInvite!
+  userInviteRemove(id: ID!, journeyId: ID!): UserInvite!
+  userInviteAcceptAll(input: UserInviteAcceptInput): [UserInvite!]!
 }
