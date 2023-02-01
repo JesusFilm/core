@@ -803,6 +803,7 @@ type Mutation
   """Removes all userJourneys associated with a journeyId"""
   userJourneyRemoveAll(id: ID!): [UserJourney!]!
   userJourneyRequest(journeyId: ID!, idType: IdType): UserJourney!
+  userJourneyOpen(id: ID!): UserJourney!
 
   """Update a visitor"""
   visitorUpdate(id: ID!, input: VisitorUpdateInput!): Visitor!
@@ -1409,6 +1410,9 @@ type UserJourney
   journeyId: ID!
   role: UserJourneyRole!
   user: User
+
+  """Date time of when the journey was first opened"""
+  openedAt: DateTime
 }
 
 enum UserJourneyRole
