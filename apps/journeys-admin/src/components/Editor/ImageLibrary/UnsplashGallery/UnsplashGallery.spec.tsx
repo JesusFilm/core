@@ -1,6 +1,6 @@
 import { render, waitFor } from '@testing-library/react'
 import { rest } from 'msw'
-import { mswServer } from '../../../../test/mswServer'
+import { mswServer } from '../../../../../test/mswServer'
 import { UnsplashGallery } from '.'
 
 describe('UnsplashGallery', () => {
