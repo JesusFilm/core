@@ -5,14 +5,14 @@ import { EmailInviteInput } from './EmailInviteInput'
 
 describe('EmailInviteInput', () => {
   it('should validate when fields are empty', async () => {
-    const { getByRole, getAllByText } = render(
+    const { getByTestId, getAllByText } = render(
       <SnackbarProvider>
         <MockedProvider>
           <EmailInviteInput />
         </MockedProvider>
       </SnackbarProvider>
     )
-    fireEvent.click(getByRole('button', { name: 'Submit' }))
+    fireEvent.click(getByTestId('AddCircleOutlineIcon'))
     await waitFor(() => {
       const inlineErrors = getAllByText('Required')
       expect(inlineErrors[0]).toHaveProperty('id', 'email-helper-text')
@@ -20,19 +20,19 @@ describe('EmailInviteInput', () => {
   })
 
   it('should validate when email is invalid', async () => {
-    const { getByLabelText, getByRole, getByText } = render(
+    const { getByLabelText, getByTestId, getByText } = render(
       <SnackbarProvider>
         <MockedProvider>
           <EmailInviteInput />
         </MockedProvider>
       </SnackbarProvider>
     )
-    const email = getByLabelText('Email Address')
+    const email = getByLabelText('Add Editor By Email')
 
     fireEvent.change(email, {
       target: { value: '123abc@' }
     })
-    fireEvent.click(getByRole('button', { name: 'Submit' }))
+    fireEvent.click(getByTestId('AddCircleOutlineIcon'))
 
     await waitFor(() => {
       const inlineError = getByText('Please enter a valid email address')
