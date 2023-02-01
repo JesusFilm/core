@@ -82,10 +82,12 @@ export function ImageLibrary({
           aria-label="image selection tabs"
           variant="fullWidth"
         >
-          {unsplashGallery && (<Tab
-            label={<Typography variant="subtitle2">Unsplash</Typography>}
-            {...tabA11yProps('unsplash', 0)}
-          />)}
+          {unsplashGallery && (
+            <Tab
+              label={<Typography variant="subtitle2">Unsplash</Typography>}
+              {...tabA11yProps('unsplash', 0)}
+            />
+          )}
           <Tab
             label={<Typography variant="subtitle2">Custom</Typography>}
             {...tabA11yProps('custom', 1)}

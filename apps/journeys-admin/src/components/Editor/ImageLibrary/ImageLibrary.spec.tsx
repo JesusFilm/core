@@ -24,12 +24,12 @@ describe('ImageLibrary', () => {
     })
 
     it('should render the Image Library on the right', () => {
-      const { getByText, getByTestId } = render(
+      const { getAllByText, getByTestId } = render(
         <FlagsProvider flags={{ unsplashGallery: true }}>
           <ImageLibrary open />
         </FlagsProvider>
       )
-      expect(getByText('Unsplash')).toBeInTheDocument()
+      expect(getAllByText('Unsplash')[0]).toBeInTheDocument()
       expect(getByTestId('ImageLibrary').parentElement).toHaveClass(
         'MuiDrawer-paperAnchorRight'
       )
@@ -66,19 +66,15 @@ describe('ImageLibrary', () => {
     )
 
     it('should render the Image Library from the bottom', () => {
-      const { getByText, getByTestId } = render(
+      const { getAllByText, getByTestId } = render(
         <FlagsProvider flags={{ unsplashGallery: true }}>
           <ImageLibrary open />
         </FlagsProvider>
       )
-      expect(getByText('Unsplash')).toBeInTheDocument()
+      expect(getAllByText('Unsplash')[0]).toBeInTheDocument()
       expect(getByTestId('ImageLibrary').parentElement).toHaveClass(
         'MuiDrawer-paperAnchorBottom'
       )
     })
   })
-
-  // TODO:
-  // Unsplash Test
-  // Custom Test
 })

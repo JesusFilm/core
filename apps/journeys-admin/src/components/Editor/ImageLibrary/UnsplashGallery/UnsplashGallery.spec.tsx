@@ -5,9 +5,9 @@ import { UnsplashGallery } from '.'
 
 describe('UnsplashGallery', () => {
   const unsplashImage = {
-    id: 'dLAN46E5wVw',
-    width: '6240',
-    height: '4160',
+    id: 1,
+    width: 6240,
+    height: 4160,
     alt_description: 'white dome building during daytime',
     urls: {
       small:
