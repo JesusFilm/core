@@ -6,8 +6,10 @@ import { GetJourney_journey as Journey } from '../../../__generated__/GetJourney
 import {
   JourneyStatus,
   ThemeName,
-  ThemeMode
+  ThemeMode,
+  UserJourneyRole
 } from '../../../__generated__/globalTypes'
+import { USER_JOURNEY_OPEN, GET_USER_ROLE } from './JourneyView'
 import { JourneyView } from '.'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
@@ -54,7 +56,21 @@ describe('JourneyView', () => {
     seoDescription: null,
     primaryImageBlock: null,
     template: null,
-    userJourneys: []
+    userJourneys: [
+      {
+        __typename: 'UserJourney',
+        id: 'userJourney1.id',
+        role: UserJourneyRole.owner,
+        openedAt: null,
+        user: {
+          __typename: 'User',
+          id: 'user.id',
+          firstName: 'firstName',
+          lastName: 'lastName',
+          imageUrl: null
+        }
+      }
+    ]
   }
 
   it.skip('should have edit button', () => {
@@ -85,5 +101,52 @@ describe('JourneyView', () => {
     await waitFor(() =>
       expect(getByTestId('power-bi-report')).toBeInTheDocument()
     )
+  })
+
+  it('should update userJourney openedAt', async () => {
+    const result = jest.fn(() => ({
+      data: {
+        userJourneyOpen: {
+          id: 'UserJourney1.id'
+        }
+      }
+    }))
+    render(
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: GET_USER_ROLE
+            },
+            result: {
+              data: {
+                getUserRole: {
+                  __typename: 'UserRole',
+                  id: '1',
+                  roles: ['owner'],
+                  userId: 'user.id'
+                }
+              }
+            }
+          },
+          {
+            request: {
+              query: USER_JOURNEY_OPEN,
+              variables: {
+                id: journey.id
+              }
+            },
+            result
+          }
+        ]}
+      >
+        <SnackbarProvider>
+          <JourneyProvider value={{ journey, admin: true }}>
+            <JourneyView journeyType="Journey" />
+          </JourneyProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+    await waitFor(() => expect(result).toHaveBeenCalled())
   })
 })
