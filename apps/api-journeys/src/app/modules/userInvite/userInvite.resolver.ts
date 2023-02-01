@@ -81,7 +81,10 @@ export class UserInviteResolver {
     userId: string
   ): Promise<UserInvite> {
     // TODO: Get email from user in db when we can call api-users
-    if (!userInvite.accepted && new Date() < new Date(userInvite.expireAt)) {
+    if (
+      !userInvite.accepted &&
+      new Date() < new Date(userInvite.expireAt as string)
+    ) {
       const userJourney = await this.userJourneyResolver.userJourneyRequest(
         userInvite.journeyId,
         IdType.databaseId,
