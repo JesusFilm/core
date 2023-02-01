@@ -69,9 +69,12 @@ export function AccessDialog({
   const handleClick = (event: MouseEvent<HTMLElement>): void => {
     setAnchorEl(event.currentTarget)
   }
-  const handleMenuItemClick = (event: MouseEvent<HTMLElement>): void => {
+  const handleMenuItemClick = (
+    event: MouseEvent<HTMLElement>,
+    name: string
+  ): void => {
     setAnchorEl(null)
-    setSelectedInviteMethod(event.currentTarget.innerText)
+    setSelectedInviteMethod(name)
   }
 
   const [loadJourney, { loading, data }] =
@@ -177,8 +180,12 @@ export function AccessDialog({
         </Box>
 
         <Menu anchorEl={anchorEl} open={menuOpen}>
-          <MenuItem onClick={handleMenuItemClick}>Link</MenuItem>
-          <MenuItem onClick={handleMenuItemClick}>Email</MenuItem>
+          <MenuItem onClick={(e) => handleMenuItemClick(e, 'Link')}>
+            Link
+          </MenuItem>
+          <MenuItem onClick={(e) => handleMenuItemClick(e, 'Email')}>
+            Email
+          </MenuItem>
         </Menu>
         {selectedInviteMethod === 'Link' ? (
           <CopyTextField

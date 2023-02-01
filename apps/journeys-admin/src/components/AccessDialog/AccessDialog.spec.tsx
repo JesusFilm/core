@@ -103,20 +103,27 @@ describe('AccessDialog', () => {
   })
 
   it('opens email invite input on click', async () => {
-    const { getByRole, queryByRole, queryByText } = render(
+    const { getByRole, queryByRole } = render(
       <SnackbarProvider>
-        <MockedProvider mocks={mocks}>
+        <MockedProvider>
           <AccessDialog journeyId="journeyId" open onClose={noop} />
         </MockedProvider>
       </SnackbarProvider>
     )
-    expect(queryByText('Invite By Email')).not.toBeInTheDocument()
 
-    fireEvent.click(getByRole('button', { name: 'Add User With Email' }))
+    const button = getByRole('button', { name: 'Link' })
+    expect(
+      queryByRole('textbox', { name: 'Email Address' })
+    ).not.toBeInTheDocument()
+
+    fireEvent.click(button)
+    fireEvent.click(getByRole('menuitem', { name: 'Email' }))
     expect(
       queryByRole('textbox', { name: 'Email Address' })
     ).toBeInTheDocument()
-    fireEvent.click(getByRole('button', { name: 'Close' }))
+
+    fireEvent.click(button)
+    fireEvent.click(getByRole('menuitem', { name: 'Link' }))
     await waitFor(() =>
       expect(
         queryByRole('textbox', { name: 'Email Address' })
