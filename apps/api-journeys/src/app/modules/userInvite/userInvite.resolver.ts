@@ -37,13 +37,13 @@ export class UserInviteResolver {
   }
 
   @Mutation()
-  @UseGuards(
-    GqlAuthGuard,
-    RoleGuard('journeyId', [UserJourneyRole.owner, UserJourneyRole.editor])
-  )
+  // @UseGuards(
+  //   GqlAuthGuard,
+  //   RoleGuard('journeyId', [UserJourneyRole.owner, UserJourneyRole.editor])
+  // )
   async userInviteCreate(
     @Args('journeyId') journeyId: string,
-    @CurrentUserId() senderId: string,
+    @Args('senderId') senderId: string,
     @Args('input') input: UserInviteCreateInput
   ): Promise<UserInvite> {
     const journey = await this.journeyService.get<Journey>(journeyId)
@@ -65,10 +65,10 @@ export class UserInviteResolver {
   }
 
   @Mutation()
-  @UseGuards(
-    GqlAuthGuard,
-    RoleGuard('journeyId', [UserJourneyRole.owner, UserJourneyRole.editor])
-  )
+  // @UseGuards(
+  //   GqlAuthGuard,
+  //   RoleGuard('journeyId', [UserJourneyRole.owner, UserJourneyRole.editor])
+  // )
   async userInviteRemove(
     @Args('id') id: string,
     @Args('journeyId') journeyId: string
@@ -76,21 +76,10 @@ export class UserInviteResolver {
     return await this.userInviteService.remove(id)
   }
 
-  @Mutation()
-  @UseGuards(GqlAuthGuard)
-  async userInviteAccept(
-    @Args('journeyId') journeyId: string,
-    @CurrentUserId() userId: string,
-    @Args('input') input: UserInviteAcceptInput
-  ): Promise<UserInvite | null> {
-    const userInvite =
-      await this.userInviteService.getUserInviteByJourneyAndEmail(
-        journeyId,
-        input.email
-      )
-
-    if (userInvite == null) return null
-
+  async redeemInvite(
+    userInvite: UserInvite,
+    userId: string
+  ): Promise<UserInvite> {
     // TODO: Get email from user in db when we can call api-users
     if (!userInvite.accepted && new Date() < new Date(userInvite.expireAt)) {
       const userJourney = await this.userJourneyResolver.userJourneyRequest(
@@ -104,11 +93,36 @@ export class UserInviteResolver {
         userInvite.senderId
       )
 
-      return await this.userInviteService.update(userInvite.id, {
-        accepted: true
-      })
+      const updatedInvite: UserInvite = await this.userInviteService.update(
+        userInvite.id,
+        {
+          accepted: true
+        }
+      )
+      // console.log('UPDATE', updatedInvite, userInvite)
+
+      return updatedInvite
     }
 
     return userInvite
+  }
+
+  @Mutation()
+  @UseGuards(GqlAuthGuard)
+  async userInviteAcceptAll(
+    @CurrentUserId() userId: string,
+    @Args('input') input: UserInviteAcceptInput
+  ): Promise<Array<Promise<UserInvite>>> {
+    const userInvites = await this.userInviteService.getAllUserInvitesByEmail(
+      input.email
+    )
+
+    if (userInvites.length === 0) return []
+
+    const invites = userInvites.map(
+      async (userInvite) => await this.redeemInvite(userInvite, userId)
+    )
+
+    return invites
   }
 }

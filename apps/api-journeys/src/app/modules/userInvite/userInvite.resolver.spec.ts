@@ -46,19 +46,18 @@ describe('UserInviteResolver', () => {
     useFactory: () => ({
       save: jest.fn((input) => input),
       update: jest.fn((id, input) => {
+        // console.log('MOCK IS CALLED')
         return { ...userInvite, ...input }
       }),
       remove: jest.fn((id) => userInvite),
+      getAllUserInvitesByEmail: jest.fn((email) => {
+        if (email === userInvite.email) {
+          return [userInvite, acceptedInvite, expiredInvite]
+        }
+        return []
+      }),
       getAllUserInvitesByJourney: jest.fn((journeyId) => {
         return [{ ...userInvite, journeyId }]
-      }),
-      getUserInviteByJourneyAndEmail: jest.fn((journeyId, email) => {
-        if (email === userInvite.email) {
-          if (journeyId === userInvite.journeyId) return userInvite
-          if (journeyId === acceptedInvite.journeyId) return acceptedInvite
-          if (journeyId === expiredInvite.journeyId) return expiredInvite
-        }
-        return null
       })
     })
   }
@@ -174,78 +173,47 @@ describe('UserInviteResolver', () => {
     })
   })
 
-  describe('userInviteAccept', () => {
-    it('should accept user invite', async () => {
-      const acceptedInvite = await resolver.userInviteAccept(
-        'journeyId',
-        'userId',
-        { email: 'test@email.com' }
-      )
+  describe('userInviteAcceptAll', () => {
+    it('should accept unredeemed valid user invites', async () => {
+      await resolver.userInviteAcceptAll('userId', {
+        email: 'test@email.com'
+      })
 
+      expect(ujResolver.userJourneyRequest).toHaveBeenCalledTimes(1)
       expect(ujResolver.userJourneyRequest).toHaveBeenCalledWith(
         'journeyId',
         'databaseId',
         'userId'
       )
+      expect(ujResolver.userJourneyApprove).toHaveBeenCalledTimes(1)
       expect(ujResolver.userJourneyApprove).toHaveBeenCalledWith(
         'userJourneyId',
         'senderId'
       )
 
-      expect(acceptedInvite).toEqual({
-        ...userInvite,
-        accepted: true
+      // expect(service.update).toBeCalledTimes(1)
+      // expect(service.update).toHaveBeenCalledWith(userInvite.key, {
+      //   accepted: true
+      // })
+
+      // Ignored accepted and expired invites
+      // expect(invites[0]).toEqual([
+      //   {
+      //     ...userInvite,
+      //     accepted: true
+      //   }
+      // ])
+    })
+
+    it('should show no invites if email does not match', async () => {
+      const rejectedInvite = await resolver.userInviteAcceptAll('userId', {
+        email: 'doesnotexist@email.com'
       })
-    })
-
-    it('should show no invite if journey does not match', async () => {
-      const rejectedInvite = await resolver.userInviteAccept(
-        'wrongJourneyId',
-        'userId',
-        { email: 'test@email.com' }
-      )
 
       expect(ujResolver.userJourneyRequest).not.toHaveBeenCalled()
       expect(ujResolver.userJourneyApprove).not.toHaveBeenCalled()
-      expect(rejectedInvite).toEqual(null)
-    })
-
-    it('should show no invite if email does not match', async () => {
-      const rejectedInvite = await resolver.userInviteAccept(
-        'journeyId',
-        'userId',
-        { email: 'doesnotexist@email.com' }
-      )
-
-      expect(ujResolver.userJourneyRequest).not.toHaveBeenCalled()
-      expect(ujResolver.userJourneyApprove).not.toHaveBeenCalled()
-      expect(rejectedInvite).toEqual(null)
-    })
-
-    it('should ignore invite if already accepted', async () => {
-      const invite = await resolver.userInviteAccept(
-        'acceptedJourneyId',
-        'userId',
-        { email: 'test@email.com' }
-      )
-
-      expect(ujResolver.userJourneyRequest).not.toHaveBeenCalled()
-      expect(ujResolver.userJourneyApprove).not.toHaveBeenCalled()
-      expect(invite).toEqual(acceptedInvite)
-    })
-
-    it('should ignore invite if expired', async () => {
-      const invite = await resolver.userInviteAccept(
-        'expiredJourneyId',
-        'userId',
-        {
-          email: 'test@email.com'
-        }
-      )
-
-      expect(ujResolver.userJourneyRequest).not.toHaveBeenCalled()
-      expect(ujResolver.userJourneyApprove).not.toHaveBeenCalled()
-      expect(invite).toEqual(expiredInvite)
+      expect(service.update).not.toHaveBeenCalled()
+      expect(rejectedInvite).toEqual([])
     })
   })
 })

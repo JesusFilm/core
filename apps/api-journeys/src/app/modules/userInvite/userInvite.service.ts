@@ -10,18 +10,14 @@ export class UserInviteService extends BaseService {
   collection: DocumentCollection = this.db.collection('userInvites')
 
   @KeyAsId()
-  async getUserInviteByJourneyAndEmail(
-    journeyId: string,
-    email: string
-  ): Promise<UserInvite> {
+  async getAllUserInvitesByEmail(email: string): Promise<UserInvite[]> {
     const res = await this.db.query(aql`
       FOR userInvite in ${this.collection}
-        FILTER userInvite.journeyId == ${journeyId} && userInvite.email == ${email}
-        LIMIT 1
+        FILTER userInvite.email == ${email}
         RETURN userInvite
     `)
 
-    return await res.next()
+    return await res.all()
   }
 
   @KeyAsId()
