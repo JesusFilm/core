@@ -42,8 +42,8 @@ export class UserInviteResolver {
     RoleGuard('journeyId', [UserJourneyRole.owner, UserJourneyRole.editor])
   )
   async userInviteCreate(
-    @Args('journeyId') journeyId: string,
     @CurrentUserId() senderId: string,
+    @Args('journeyId') journeyId: string,
     @Args('input') input: UserInviteCreateInput
   ): Promise<UserInvite> {
     const journey = await this.journeyService.get<Journey>(journeyId)

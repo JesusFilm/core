@@ -1194,11 +1194,11 @@ export abstract class IMutation {
 
     abstract journeyTemplate(id: string, input: JourneyTemplateInput): Journey | Promise<Journey>;
 
-    abstract userInviteCreate(journeyId: string, senderId: string, input?: Nullable<UserInviteCreateInput>): Nullable<UserInvite> | Promise<Nullable<UserInvite>>;
+    abstract userInviteCreate(journeyId: string, input?: Nullable<UserInviteCreateInput>): Nullable<UserInvite> | Promise<Nullable<UserInvite>>;
 
     abstract userInviteRemove(id: string, journeyId: string): Nullable<UserInvite> | Promise<Nullable<UserInvite>>;
 
-    abstract userInviteAccept(journeyId: string, userId: string, input?: Nullable<UserInviteAcceptInput>): Nullable<UserInvite> | Promise<Nullable<UserInvite>>;
+    abstract userInviteAcceptAll(input?: Nullable<UserInviteAcceptInput>): Nullable<Nullable<UserInvite>[]> | Promise<Nullable<Nullable<UserInvite>[]>>;
 
     abstract userJourneyApprove(id: string): UserJourney | Promise<UserJourney>;
 

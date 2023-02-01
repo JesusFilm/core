@@ -151,7 +151,7 @@ describe('UserInviteResolver', () => {
         currentDate.setDate(currentDate.getDate() + 30)
       ).toISOString()
 
-      await resolver.userInviteCreate('journeyId', 'senderId', createInput)
+      await resolver.userInviteCreate('senderId', 'journeyId', createInput)
 
       expect(service.save).toHaveBeenCalledWith({
         journeyId: 'journeyId',

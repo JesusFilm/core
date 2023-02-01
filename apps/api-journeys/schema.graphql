@@ -156,9 +156,9 @@ extend type Mutation {
 
   """Updates template"""
   journeyTemplate(id: ID!, input: JourneyTemplateInput!): Journey!
-  userInviteCreate(journeyId: ID!, senderId: ID!, input: UserInviteCreateInput): UserInvite
+  userInviteCreate(journeyId: ID!, input: UserInviteCreateInput): UserInvite
   userInviteRemove(id: ID!, journeyId: ID!): UserInvite
-  userInviteAcceptAll(userId: ID!, input: UserInviteAcceptInput): [UserInvite]
+  userInviteAcceptAll(input: UserInviteAcceptInput): [UserInvite]
   userJourneyApprove(id: ID!): UserJourney!
   userJourneyPromote(id: ID!): UserJourney!
   userJourneyRemove(id: ID!): UserJourney!
