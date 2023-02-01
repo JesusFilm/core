@@ -87,8 +87,14 @@ describe('UserJourneyResolver', () => {
       save: jest.fn((input) => input),
       update: jest.fn((input) => input),
       forJourneyUser: jest.fn((key, userId) => {
-        if (userId === actorUserJourney.userId) return actorUserJourney
-        return userJourney
+        switch (userId) {
+          case userJourney.userId:
+            return userJourney
+          case actorUserJourney.userId:
+            return actorUserJourney
+          default:
+            return null
+        }
       }),
       forJourney: jest.fn(() => [userJourney, userJourney])
     })
@@ -107,6 +113,15 @@ describe('UserJourneyResolver', () => {
       save: jest.fn((member) => member)
     })
   }
+
+  beforeAll(() => {
+    jest.useFakeTimers('modern')
+    jest.setSystemTime(new Date('2021-02-18'))
+  })
+
+  afterAll(() => {
+    jest.useRealTimers()
+  })
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -216,6 +231,21 @@ describe('UserJourneyResolver', () => {
         userJourney.id,
         userJourney.id
       ])
+    })
+  })
+
+  describe('UserJourneyView', () => {
+    it('should update viewAt for userJourney', async () => {
+      await resolver.userJourneyOpen(userJourney.id, userJourney.userId)
+      expect(service.update).toHaveBeenCalledWith(userJourney.id, {
+        openedAt: new Date().toISOString()
+      })
+    })
+
+    it('should throw error if current user is not userJourney user', async () => {
+      await expect(
+        resolver.userJourneyOpen(userJourney.id, 'another.id')
+      ).rejects.toThrow('Invalid User')
     })
   })
 })

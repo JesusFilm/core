@@ -1,0 +1,8 @@
+type CloudflareDirectCreatorUploadResponse {
+  imageId: String
+  uploadUrl: String
+}
+
+extend type Query {
+  getCloudflareImageUploadInfo: CloudflareDirectCreatorUploadResponse
+}
