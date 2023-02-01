@@ -111,23 +111,18 @@ describe('AccessDialog', () => {
       </SnackbarProvider>
     )
 
-    const button = getByRole('button', { name: 'Link' })
-    expect(
-      queryByRole('textbox', { name: 'Email Address' })
-    ).not.toBeInTheDocument()
-
-    fireEvent.click(button)
-    fireEvent.click(getByRole('menuitem', { name: 'Email' }))
-    expect(
-      queryByRole('textbox', { name: 'Email Address' })
-    ).toBeInTheDocument()
+    const button = getByRole('button', { name: 'Email' })
+    expect(queryByRole('button', { name: 'Copy' })).not.toBeInTheDocument()
 
     fireEvent.click(button)
     fireEvent.click(getByRole('menuitem', { name: 'Link' }))
+
+    expect(queryByRole('button', { name: 'Copy' })).toBeInTheDocument()
+
+    fireEvent.click(button)
+    fireEvent.click(getByRole('menuitem', { name: 'Email' }))
     await waitFor(() =>
-      expect(
-        queryByRole('textbox', { name: 'Email Address' })
-      ).not.toBeInTheDocument()
+      expect(queryByRole('button', { name: 'Copy' })).not.toBeInTheDocument()
     )
   })
 

@@ -62,7 +62,7 @@ export function AccessDialog({
   open,
   onClose
 }: AccessDialogProps): ReactElement {
-  const [selectedInviteMethod, setSelectedInviteMethod] = useState('Link')
+  const [selectedInviteMethod, setSelectedInviteMethod] = useState('Email')
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
   const menuOpen = Boolean(anchorEl)
 
@@ -155,7 +155,7 @@ export function AccessDialog({
             variant="outlined"
             size="small"
             startIcon={
-              selectedInviteMethod === 'Link' ? <LinkIcon /> : <DraftsIcon />
+              selectedInviteMethod === 'Email' ? <DraftsIcon /> : <LinkIcon />
             }
             endIcon={<KeyboardArrowDownIcon />}
             sx={{
@@ -180,14 +180,16 @@ export function AccessDialog({
         </Box>
 
         <Menu anchorEl={anchorEl} open={menuOpen}>
-          <MenuItem onClick={(e) => handleMenuItemClick(e, 'Link')}>
-            Link
-          </MenuItem>
           <MenuItem onClick={(e) => handleMenuItemClick(e, 'Email')}>
             Email
           </MenuItem>
+          <MenuItem onClick={(e) => handleMenuItemClick(e, 'Link')}>
+            Link
+          </MenuItem>
         </Menu>
-        {selectedInviteMethod === 'Link' ? (
+        {selectedInviteMethod === 'Email' ? (
+          <EmailInviteInput />
+        ) : (
           <CopyTextField
             value={
               typeof window !== 'undefined'
@@ -201,8 +203,6 @@ export function AccessDialog({
             messageText="Editor invite link copied"
             helperText="Approval required for every user who clicks on the link."
           />
-        ) : (
-          <EmailInviteInput />
         )}
       </Stack>
     </Dialog>
