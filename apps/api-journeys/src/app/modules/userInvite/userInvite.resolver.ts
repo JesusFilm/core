@@ -43,7 +43,7 @@ export class UserInviteResolver {
   )
   async userInviteCreate(
     @Args('journeyId') journeyId: string,
-    @Args('senderId') senderId: string,
+    @CurrentUserId() senderId: string,
     @Args('input') input: UserInviteCreateInput
   ): Promise<UserInvite> {
     const journey = await this.journeyService.get<Journey>(journeyId)
