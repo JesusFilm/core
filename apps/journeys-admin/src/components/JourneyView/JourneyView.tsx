@@ -1,5 +1,5 @@
-import { ReactElement, useEffect, useState } from 'react'
-import { gql, useMutation, useQuery } from '@apollo/client'
+import { ReactElement, useState } from 'react'
+import { gql, useQuery } from '@apollo/client'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { transformer } from '@core/journeys/ui/transformer'
@@ -7,7 +7,6 @@ import Box from '@mui/material/Box'
 import Divider from '@mui/material/Divider'
 import Stack from '@mui/material/Stack'
 import { useTheme } from '@mui/material/styles'
-import { UserJourneyOpen } from '../../../__generated__/UserJourneyOpen'
 import { JourneysReportType, Role } from '../../../__generated__/globalTypes'
 import { BlockFields_StepBlock as StepBlock } from '../../../__generated__/BlockFields'
 import { GetUserRole } from '../../../__generated__/GetUserRole'
@@ -32,14 +31,6 @@ export const GET_USER_ROLE = gql`
   }
 `
 
-export const USER_JOURNEY_OPEN = gql`
-  mutation UserJourneyOpen($id: ID!) {
-    userJourneyOpen(id: $id) {
-      id
-    }
-  }
-`
-
 export type JourneyType = 'Journey' | 'Template'
 
 interface JourneyViewProps {
@@ -47,8 +38,6 @@ interface JourneyViewProps {
 }
 
 export function JourneyView({ journeyType }: JourneyViewProps): ReactElement {
-  const [userJourneyOpen] = useMutation<UserJourneyOpen>(USER_JOURNEY_OPEN)
-
   const { journey } = useJourney()
   const theme = useTheme()
   const blocks =
@@ -60,17 +49,6 @@ export function JourneyView({ journeyType }: JourneyViewProps): ReactElement {
 
   const [showSlugDialog, setShowSlugDialog] = useState(false)
   const [showEmbedDialog, setShowEmbedDialog] = useState(false)
-
-  useEffect(() => {
-    if (journey == null || data == null) return
-    const user = journey.userJourneys?.find(
-      (uj) => uj.user?.id === data.getUserRole?.userId
-    )
-
-    if (user != null && (user.openedAt == null || user.openedAt === false)) {
-      void userJourneyOpen({ variables: { id: journey.id } })
-    }
-  }, [journey, data, userJourneyOpen])
 
   return (
     <Box sx={{ mr: { sm: '328px' }, mb: '80px' }}>

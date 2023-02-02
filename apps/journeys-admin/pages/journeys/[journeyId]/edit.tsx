@@ -20,14 +20,19 @@ import { EditToolbar } from '../../../src/components/Editor/EditToolbar'
 import { JourneyInvite } from '../../../src/components/JourneyInvite/JourneyInvite'
 import { createApolloClient } from '../../../src/libs/apolloClient'
 import i18nConfig from '../../../next-i18next.config'
+import { useUserJourneyOpen } from '../../../src/libs/useUserJourneyOpen'
+import { useJourney } from '../../../../../libs/journeys/ui/src/libs/JourneyProvider'
 
 function JourneyEditPage(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const router = useRouter()
   const AuthUser = useAuthUser()
+  const { journey } = useJourney()
   const { data, error } = useQuery<GetJourney>(GET_JOURNEY, {
     variables: { id: router.query.journeyId }
   })
+
+  useUserJourneyOpen(AuthUser.id, journey?.id, journey?.userJourneys)
 
   return (
     <>
