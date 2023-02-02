@@ -2,13 +2,14 @@ import LinkIcon from '@mui/icons-material/Link'
 import InputAdornment from '@mui/material/InputAdornment'
 import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
-import { ReactElement, ClipboardEvent } from 'react'
+import { ReactElement, ClipboardEvent, useState } from 'react'
 import { object, string } from 'yup'
 import { useFormik } from 'formik'
 import { noop } from 'lodash'
 
 import { GetJourney_journey_blocks_ImageBlock as ImageBlock } from '../../../../__generated__/GetJourney'
-import { ImageBlockHeader } from '../ImageBlockHeader'
+import { ImageSource } from '../ControlPanel/Attributes/blocks/Image/ImageSource/ImageSource'
+import { ImageLibrary } from '../ImageLibrary'
 
 interface ImageBlockEditorProps {
   selectedBlock: ImageBlock | null
@@ -25,6 +26,8 @@ export function ImageBlockEditor({
   onDelete,
   loading
 }: ImageBlockEditorProps): ReactElement {
+  const [open, setOpen] = useState(false)
+
   const srcSchema = object().shape({
     src: string().url('Please enter a valid url').required('Required')
   })
@@ -41,12 +44,12 @@ export function ImageBlockEditor({
     await onChange(block as ImageBlock)
   }
 
-  const handleImageDelete = async (): Promise<void> => {
-    if (onDelete != null) {
-      await onDelete()
-      formik.resetForm({ values: { src: '' } })
-    }
-  }
+  // const handleImageDelete = async (): Promise<void> => {
+  //   if (onDelete != null) {
+  //     await onDelete()
+  //     formik.resetForm({ values: { src: '' } })
+  //   }
+  // }
 
   const handlePaste = async (
     e: ClipboardEvent<HTMLDivElement>
@@ -64,18 +67,7 @@ export function ImageBlockEditor({
 
   return (
     <>
-      <ImageBlockHeader
-        selectedBlock={selectedBlock}
-        header={selectedBlock == null ? 'Select Image File' : selectedBlock.alt}
-        caption={
-          selectedBlock == null
-            ? 'Min width 1024px'
-            : `${selectedBlock.width} x ${selectedBlock.height}px`
-        }
-        showDelete={showDelete && selectedBlock != null}
-        onDelete={handleImageDelete}
-        loading={loading}
-      />
+      <ImageSource onClick={() => setOpen(true)} />
       <Stack direction="column" sx={{ pt: 3 }}>
         <form>
           <TextField
@@ -109,6 +101,7 @@ export function ImageBlockEditor({
           />
         </form>
       </Stack>
+      <ImageLibrary open={open} onClose={() => setOpen(false)} />
     </>
   )
 }
