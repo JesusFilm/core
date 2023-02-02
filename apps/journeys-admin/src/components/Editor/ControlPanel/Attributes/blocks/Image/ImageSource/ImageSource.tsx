@@ -32,7 +32,7 @@ export function ImageSource({
           display: 'flex'
         }}
       >
-        <ImageSelection image={image} />
+        <ImageSelection image={image} isSource />
       </CardActionArea>
     </Card>
   )

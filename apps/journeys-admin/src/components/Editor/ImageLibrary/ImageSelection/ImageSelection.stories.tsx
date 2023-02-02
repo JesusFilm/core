@@ -31,9 +31,6 @@ const Template: Story = (args) => {
 }
 
 export const Default = Template.bind({})
-Default.args = {}
-
-export const LoadedImage = Template.bind({})
-LoadedImage.args = { image }
+Default.args = { image }
 
 export default ImageSelectionStory as Meta
