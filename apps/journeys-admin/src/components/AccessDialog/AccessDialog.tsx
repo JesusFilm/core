@@ -20,7 +20,7 @@ import {
 } from '../../../__generated__/GetJourneyWithUserJourneys'
 import { UserJourneyRole } from '../../../__generated__/globalTypes'
 import { GetCurrentUser } from '../../../__generated__/GetCurrentUser'
-import { EmailInviteInput } from '../EmailInviteInput'
+import { EmailInviteForm } from '../EmailInviteForm'
 import { UserJourneyList } from './UserJourneyList'
 
 export const GET_JOURNEY_WITH_USER_JOURNEYS = gql`
@@ -196,7 +196,7 @@ export function AccessDialog({
         </Box>
 
         {selectedInviteMethod === 'Email' ? (
-          <EmailInviteInput />
+          <EmailInviteForm />
         ) : (
           <CopyTextField
             value={

@@ -3,7 +3,7 @@ import { SnackbarProvider } from 'notistack'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { EmailInviteForm } from './EmailInviteForm'
 
-describe('EmailInviteInput', () => {
+describe('EmailInviteForm', () => {
   it('should validate when fields are empty', async () => {
     const { getByTestId, getAllByText } = render(
       <SnackbarProvider>

@@ -102,7 +102,7 @@ describe('AccessDialog', () => {
     )
   })
 
-  it('opens email invite input on click', async () => {
+  it('opens email invite form on click', async () => {
     const { getByRole, queryByRole } = render(
       <SnackbarProvider>
         <MockedProvider>
