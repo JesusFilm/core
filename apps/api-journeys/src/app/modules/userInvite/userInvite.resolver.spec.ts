@@ -109,6 +109,12 @@ describe('UserInviteResolver', () => {
     })
   }
 
+  const user = {
+    id: 'userId',
+    email: 'test@email.com',
+    firstName: 'Test'
+  }
+
   beforeAll(() => {
     jest.useFakeTimers('modern')
     jest.setSystemTime(new Date('2021-02-18'))
@@ -174,9 +180,7 @@ describe('UserInviteResolver', () => {
 
   describe('userInviteAcceptAll', () => {
     it('should accept unredeemed valid user invites', async () => {
-      const invites = await resolver.userInviteAcceptAll('userId', {
-        email: 'test@email.com'
-      })
+      const invites = await resolver.userInviteAcceptAll(user)
 
       expect(ujResolver.userJourneyRequest).toHaveBeenCalledTimes(1)
       expect(ujResolver.userJourneyRequest).toHaveBeenCalledWith(
@@ -200,9 +204,7 @@ describe('UserInviteResolver', () => {
     })
 
     it('should show no invites if email does not match', async () => {
-      const rejectedInvite = await resolver.userInviteAcceptAll('userId', {
-        email: 'doesnotexist@email.com'
-      })
+      const rejectedInvite = await resolver.userInviteAcceptAll(user)
 
       expect(ujResolver.userJourneyRequest).not.toHaveBeenCalled()
       expect(ujResolver.userJourneyApprove).not.toHaveBeenCalled()

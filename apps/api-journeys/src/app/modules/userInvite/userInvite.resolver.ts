@@ -1,15 +1,16 @@
 import { Resolver, Query, Mutation, Args } from '@nestjs/graphql'
 import { UseGuards } from '@nestjs/common'
 import { CurrentUserId } from '@core/nest/decorators/CurrentUserId'
+import { CurrentUser } from '@core/nest/decorators/CurrentUser'
 import { GqlAuthGuard } from '@core/nest/gqlAuthGuard/GqlAuthGuard'
 import { UserInputError } from 'apollo-server-errors'
+import { User } from '@core/nest/common/firebaseClient'
 
 import {
   IdType,
   Journey,
   UserInvite,
   UserInviteCreateInput,
-  UserInviteAcceptInput,
   UserJourneyRole
 } from '../../__generated__/graphql'
 import { UserJourneyResolver } from '../userJourney/userJourney.resolver'
@@ -112,17 +113,16 @@ export class UserInviteResolver {
   @Mutation()
   @UseGuards(GqlAuthGuard)
   async userInviteAcceptAll(
-    @CurrentUserId() userId: string,
-    @Args('input') input: UserInviteAcceptInput
+    @CurrentUser() user: User
   ): Promise<Array<Promise<UserInvite>>> {
     const userInvites = await this.userInviteService.getAllUserInvitesByEmail(
-      input.email
+      user.email
     )
 
     if (userInvites.length === 0) return []
 
     const invites = userInvites.map(
-      async (userInvite) => await this.redeemInvite(userInvite, userId)
+      async (userInvite) => await this.redeemInvite(userInvite, user.id)
     )
 
     return invites

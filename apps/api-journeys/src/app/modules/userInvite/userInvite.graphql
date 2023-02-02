@@ -11,10 +11,6 @@ extend type Query {
   userInvites(journeyId: ID!): [UserInvite!]
 }
 
-input UserInviteAcceptInput {
-  email: String!
-}
-
 input UserInviteCreateInput {
   email: String!
 }
@@ -22,5 +18,5 @@ input UserInviteCreateInput {
 extend type Mutation {
   userInviteCreate(journeyId: ID!, input: UserInviteCreateInput): UserInvite!
   userInviteRemove(id: ID!, journeyId: ID!): UserInvite!
-  userInviteAcceptAll(input: UserInviteAcceptInput): [UserInvite!]!
+  userInviteAcceptAll(): [UserInvite!]!
 }

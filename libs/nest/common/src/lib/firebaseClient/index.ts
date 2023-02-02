@@ -1,5 +1,6 @@
 export {
   firebaseClient,
   contextToUserId,
-  contextToEmail
+  contextToUser,
+  User
 } from './firebaseClient'
