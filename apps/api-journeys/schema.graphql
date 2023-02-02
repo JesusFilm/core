@@ -158,7 +158,7 @@ extend type Mutation {
   journeyTemplate(id: ID!, input: JourneyTemplateInput!): Journey!
   userInviteCreate(journeyId: ID!, input: UserInviteCreateInput): UserInvite!
   userInviteRemove(id: ID!, journeyId: ID!): UserInvite!
-  userInviteAcceptAll(input: UserInviteAcceptInput): [UserInvite!]!
+  userInviteAcceptAll: [UserInvite!]!
   userJourneyApprove(id: ID!): UserJourney!
   userJourneyPromote(id: ID!): UserJourney!
   userJourneyRemove(id: ID!): UserJourney!
@@ -1596,10 +1596,6 @@ type UserInvite
   email: String!
   accepted: Boolean!
   expireAt: DateTime!
-}
-
-input UserInviteAcceptInput {
-  email: String!
 }
 
 input UserInviteCreateInput {
