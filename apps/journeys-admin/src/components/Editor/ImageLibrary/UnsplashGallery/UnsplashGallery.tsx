@@ -1,6 +1,7 @@
 import { ReactElement, useEffect, useState } from 'react'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
+import LoadingButton from '@mui/lab/LoadingButton'
 
 import fetch from 'node-fetch'
 import { UnsplashSearch } from './UnsplashSearch'
@@ -23,45 +24,64 @@ export interface UnsplashImage {
 }
 
 export function UnsplashGallery(): ReactElement {
-  const [results, setResults] = useState<UnsplashImage[]>()
+  const [gallery, setGallery] = useState<UnsplashImage[]>()
+  const [query, setQuery] = useState<string>()
+  const [page, setPage] = useState(1)
   const accessKey = '7MUdE7NO3RSHYD3gefyyPD3nSBOK4vziireH3tnj9L0'
 
   // TODO:
   // Move accessKey to doppler
   // On Image Click - Sets the unsplash image to be in the image block
 
-  const getCollection = async (): Promise<void> => {
+  const fetchCollection = async (): Promise<void> => {
     const collectionData = await (
       await fetch(
         `https://api.unsplash.com/collections/4924556/photos?page=1&per_page=20&client_id=${accessKey}`
       )
     ).json()
-    setResults(collectionData)
+    setGallery(collectionData)
   }
 
-  const fetchSearchRequest = async (image: string): Promise<void> => {
+  const handleSubmit = async (image: string): Promise<void> => {
     const searchData = await (
       await fetch(
         `https://api.unsplash.com/search/photos?query=${image}&page=1&per_page=20&client_id=${accessKey}`
       )
     ).json()
-    setResults(searchData.results)
+    setQuery(image)
+    setGallery(searchData.results)
+  }
+
+  const fetchMore = async (): Promise<void> => {
+    setPage(page + 1)
+    if (query == null) return
+    // todo: load more on collection
+    const loadData = await (
+      await fetch(
+        `https://api.unsplash.com/search/photos?query=${query}&page=${page + 1
+        }&per_page=20&client_id=${accessKey}`
+      )
+    ).json()
+    setGallery((prevGallery) => [...prevGallery, ...loadData.results])
   }
 
   useEffect(() => {
-    void getCollection()
+    void fetchCollection()
   }, [])
 
   return (
     <Stack sx={{ pt: 3 }}>
-      <UnsplashSearch handleSubmit={fetchSearchRequest} />
+      <UnsplashSearch handleSubmit={handleSubmit} />
       <Stack spacing={2} sx={{ py: 6 }}>
         <Typography variant="overline" color="primary">
           Unsplash
         </Typography>
         <Typography variant="h6">Featured Images</Typography>
       </Stack>
-      {results != null && <UnsplashList results={results} />}
+      {gallery != null && <UnsplashList gallery={gallery} />}
+      <LoadingButton variant="outlined" onClick={fetchMore} size="medium">
+        Load More
+      </LoadingButton>
     </Stack>
   )
 }

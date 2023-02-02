@@ -21,7 +21,7 @@ describe('UnsplashList', () => {
 
   it('should return a list of unsplash images', () => {
     const { getByRole, getByText } = render(
-      <UnsplashList results={[unsplashImage]} />
+      <UnsplashList gallery={[unsplashImage]} />
     )
     expect(getByRole('list')).toBeInTheDocument()
     expect(getByText('Levi Meir Clancy')).toBeInTheDocument()

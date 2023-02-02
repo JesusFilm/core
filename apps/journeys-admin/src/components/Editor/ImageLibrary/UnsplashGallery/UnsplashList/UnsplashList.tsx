@@ -8,13 +8,13 @@ import Image from 'next/image'
 import type { UnsplashImage } from '../UnsplashGallery'
 
 interface UnsplashListProps {
-  results: UnsplashImage[]
+  gallery: UnsplashImage[]
 }
 
-export function UnsplashList({ results }: UnsplashListProps): ReactElement {
+export function UnsplashList({ gallery }: UnsplashListProps): ReactElement {
   return (
     <ImageList variant="masonry">
-      {results?.map((item) => (
+      {gallery?.map((item) => (
         <ImageListItem key={item?.id} sx={{ pb: 1 }}>
           <Stack spacing={1}>
             <Image
