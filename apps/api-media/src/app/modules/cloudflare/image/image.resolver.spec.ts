@@ -35,13 +35,13 @@ describe('ImageResolver', () => {
     const imageService = {
       provide: ImageService,
       useFactory: () => ({
-        get: jest.fn(() => user),
-        getByUserId: jest.fn(() => user),
-        getAll: jest.fn(() => [user, user]),
+        get: jest.fn(() => cfImage),
+        getAll: jest.fn(() => [cfImage, cfImage]),
         save: jest.fn((input) => input),
         getImageInfoFromCloudflare: jest.fn(() => cfResult),
-        deleteCloudflareImage: jest.fn(() => true),
-        getCloudflareImagesForUserId: jest.fn(() => [cfImage])
+        deleteImageFromCloudflare: jest.fn(() => cfResult),
+        getCloudflareImagesForUserId: jest.fn(() => [cfImage]),
+        remove: jest.fn(() => cfImage)
       })
     }
     const module: TestingModule = await Test.createTestingModule({
@@ -62,14 +62,23 @@ describe('ImageResolver', () => {
     })
   })
   describe('deleteCloudflareImage', () => {
+    it('throws an error if wrong user', async () => {
+      await resolver.deleteCloudflareImage('1', 'user_2').catch((e) => {
+        expect(e.message).toEqual('This image does not belong to you')
+      })
+    })
     it('calls service.deleteCloudflareImage', async () => {
-      expect(await resolver.deleteCloudflareImage('1')).toEqual(true)
+      expect(await resolver.deleteCloudflareImage('1', user.id)).toEqual(true)
       expect(service.deleteImageFromCloudflare).toHaveBeenCalledWith('1')
+    })
+    it('calls service.remove', async () => {
+      expect(await resolver.deleteCloudflareImage('1', user.id)).toEqual(true)
+      expect(service.remove).toHaveBeenCalledWith('1')
     })
   })
   describe('getMyCloudflareImages', () => {
     it('returns cloudflare response information', async () => {
-      expect(await resolver.deleteCloudflareImage('1')).toEqual(true)
+      expect(await resolver.getMyCloudflareImages('1')).toEqual([cfImage])
     })
   })
 })
