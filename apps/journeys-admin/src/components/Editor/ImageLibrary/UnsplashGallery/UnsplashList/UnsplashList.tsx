@@ -5,7 +5,7 @@ import Link from '@mui/material/Link'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import Image from 'next/image'
-import { UnsplashImage } from '../UnsplashGallery'
+import type { UnsplashImage } from '../UnsplashGallery'
 
 interface UnsplashListProps {
   results: UnsplashImage[]
