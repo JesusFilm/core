@@ -35,9 +35,7 @@ describe('EmailInviteInput', () => {
     fireEvent.click(getByTestId('AddCircleOutlineIcon'))
 
     await waitFor(() => {
-      const inlineError = getByText(
-        'You entered an invalid or incorrect email address'
-      )
+      const inlineError = getByText('Please enter a valid email address')
       expect(inlineError).toHaveProperty('id', 'email-helper-text')
     })
   })

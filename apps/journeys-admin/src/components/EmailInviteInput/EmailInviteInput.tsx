@@ -16,7 +16,7 @@ export function EmailInviteInput(): ReactElement {
 
   const validationSchema = object().shape({
     email: string()
-      .email(t('You entered an invalid or incorrect email address'))
+      .email(t('Please enter a valid email address'))
       .required(t('Required'))
   })
 
