@@ -243,6 +243,13 @@ input ChatOpenEventCreateInput
   value: MessagePlatform
 }
 
+type CloudflareDirectCreatorUploadResponse
+  @join__type(graph: MEDIA)
+{
+  imageId: String
+  uploadUrl: String
+}
+
 type Country
   @join__type(graph: LANGUAGES, key: "id")
 {
@@ -261,7 +268,6 @@ type Country
   image: String
 }
 
-"""DateTime custom scalar"""
 scalar DateTime
   @join__type(graph: JOURNEYS)
 
@@ -487,6 +493,7 @@ scalar join__FieldSet
 enum join__Graph {
   JOURNEYS @join__graph(name: "journeys", url: "http://127.0.0.1:4001/graphql")
   LANGUAGES @join__graph(name: "languages", url: "http://127.0.0.1:4003/graphql")
+  MEDIA @join__graph(name: "media", url: "http://127.0.0.1:4005/graphql")
   USERS @join__graph(name: "users", url: "http://127.0.0.1:4002/graphql")
   VIDEOS @join__graph(name: "videos", url: "http://127.0.0.1:4004/graphql")
 }
@@ -788,6 +795,7 @@ type Mutation
   """Removes all userJourneys associated with a journeyId"""
   userJourneyRemoveAll(id: ID!): [UserJourney!]!
   userJourneyRequest(journeyId: ID!, idType: IdType): UserJourney!
+  userJourneyOpen(id: ID!): UserJourney!
 
   """Update a visitor"""
   visitorUpdate(id: ID!, input: VisitorUpdateInput!): Visitor!
@@ -887,6 +895,7 @@ type PowerBiEmbed
 type Query
   @join__type(graph: JOURNEYS)
   @join__type(graph: LANGUAGES)
+  @join__type(graph: MEDIA)
   @join__type(graph: USERS)
   @join__type(graph: VIDEOS)
 {
@@ -915,6 +924,7 @@ type Query
   country(id: ID!, idType: IdType): Country! @join__field(graph: LANGUAGES)
   languages(offset: Int, limit: Int): [Language!]! @join__field(graph: LANGUAGES)
   language(id: ID!, idType: LanguageIdType): Language @join__field(graph: LANGUAGES)
+  getCloudflareImageUploadInfo: CloudflareDirectCreatorUploadResponse @join__field(graph: MEDIA)
   me: User @join__field(graph: USERS)
   videos(where: VideosFilter, offset: Int, limit: Int): [Video!]! @join__field(graph: VIDEOS)
   video(id: ID!, idType: IdType): Video @join__field(graph: VIDEOS)
@@ -1391,6 +1401,9 @@ type UserJourney
   journeyId: ID!
   role: UserJourneyRole!
   user: User
+
+  """Date time of when the journey was first opened"""
+  openedAt: DateTime
 }
 
 enum UserJourneyRole
