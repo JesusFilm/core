@@ -455,6 +455,12 @@ type ImageBlock implements Block
   alt: String!
 
   """
+  previewUrl refers to a feature that allows a user to view a preview
+  or a sample representation of an image before actually utilizing it.
+  """
+  previewUrl: String
+
+  """
   blurhash is a compact representation of a placeholder for an image.
   Find a frontend implementation at https://github.com/woltapp/blurhash
   """

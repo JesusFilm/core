@@ -703,6 +703,7 @@ export class ImageBlock implements Block {
     width: number;
     height: number;
     alt: string;
+    previewUrl?: Nullable<string>;
     blurhash: string;
 }
 
