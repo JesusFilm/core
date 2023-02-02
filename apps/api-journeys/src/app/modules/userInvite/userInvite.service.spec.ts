@@ -39,6 +39,20 @@ describe('userInviteService', () => {
 
   const userInviteWithId = keyAsId(userInvite)
 
+  describe('getUserInviteByJourneyAndEmail', () => {
+    it('should return a userInvite if exists', async () => {
+      ;(service.db as DeepMockProxy<Database>).query.mockReturnValue(
+        mockDbQueryResult(service.db, [userInvite])
+      )
+      expect(
+        await service.getUserInviteByJourneyAndEmail(
+          'journeyId',
+          'email@test.com'
+        )
+      ).toEqual(userInviteWithId)
+    })
+  })
+
   describe('getAllUserInvitesByEmail', () => {
     it('should return a userInvite array', async () => {
       ;(service.db as DeepMockProxy<Database>).query.mockReturnValue(

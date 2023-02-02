@@ -47,22 +47,33 @@ export class UserInviteResolver {
     @Args('journeyId') journeyId: string,
     @Args('input') input: UserInviteCreateInput
   ): Promise<UserInvite> {
-    const journey = await this.journeyService.get<Journey>(journeyId)
+    const userInvite: UserInvite =
+      await this.userInviteService.getUserInviteByJourneyAndEmail(
+        journeyId,
+        input.email
+      )
 
-    if (journey == null) throw new UserInputError('journey does not exist')
+    // Create invite if doesn't exist else re-activate removed invite
+    if (userInvite == null) {
+      const journey = await this.journeyService.get<Journey>(journeyId)
 
-    const currentDate = new Date()
-    const expireAt = new Date(
-      currentDate.setDate(currentDate.getDate() + 30)
-    ).toISOString()
+      if (journey == null) throw new UserInputError('journey does not exist')
 
-    return await this.userInviteService.save({
-      journeyId: journey.id,
-      senderId,
-      email: input.email,
-      accepted: false,
-      expireAt
-    })
+      return await this.userInviteService.save({
+        journeyId: journey.id,
+        senderId,
+        email: input.email
+      })
+    }
+
+    if (userInvite.acceptedAt == null) {
+      return await this.userInviteService.update(userInvite.id, {
+        senderId,
+        removedAt: null
+      })
+    }
+
+    return userInvite
   }
 
   @Mutation()
@@ -83,11 +94,7 @@ export class UserInviteResolver {
     userInvite: UserInvite,
     userId: string
   ): Promise<UserInvite> {
-    if (
-      !userInvite.accepted &&
-      new Date() < new Date(userInvite.expireAt as string) &&
-      userInvite.removedAt == null
-    ) {
+    if (userInvite.acceptedAt == null && userInvite.removedAt == null) {
       const userJourney = await this.userJourneyResolver.userJourneyRequest(
         userInvite.journeyId,
         IdType.databaseId,
@@ -102,7 +109,7 @@ export class UserInviteResolver {
       const updatedInvite: UserInvite = await this.userInviteService.update(
         userInvite.id,
         {
-          accepted: true
+          acceptedAt: new Date().toISOString()
         }
       )
 

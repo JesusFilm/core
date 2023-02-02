@@ -14,37 +14,28 @@ describe('UserInviteResolver', () => {
     ujResolver: UserJourneyResolver
 
   const createInput = {
-    email: 'test@email.com',
-    expireAt: null
+    email: 'test@email.com'
   }
 
   const userInvite = {
-    key: '1',
+    id: '1',
     journeyId: 'journeyId',
     senderId: 'senderId',
     email: 'test@email.com',
-    accepted: false,
-    expireAt: '2021-03-20T00:00:00.000Z',
+    acceptedAt: null,
     removedAt: null
   }
 
   const acceptedInvite = {
     ...userInvite,
-    key: '2',
+    id: '2',
     journeyId: 'acceptedJourneyId',
-    accepted: true
-  }
-
-  const expiredInvite = {
-    ...userInvite,
-    key: '3',
-    journeyId: 'expiredJourneyId',
-    expireAt: '2021-01-18T00:00:00.000Z'
+    acceptedAt: '2021-02-18T00:00:00.000Z'
   }
 
   const removedInvite = {
     ...userInvite,
-    key: '4',
+    id: '3',
     journeyId: 'removedJourneyId',
     removedAt: '2021-02-18T00:00:00.000Z'
   }
@@ -52,19 +43,35 @@ describe('UserInviteResolver', () => {
   const userInviteService = {
     provide: UserInviteService,
     useFactory: () => ({
-      save: jest.fn((input) => input),
+      save: jest.fn((input) => {
+        return { ...input, acceptedAt: null, removedAt: null }
+      }),
       update: jest.fn((id, input) => {
         return { ...userInvite, ...input }
       }),
       remove: jest.fn((id) => userInvite),
       getAllUserInvitesByEmail: jest.fn((email) => {
         if (email === userInvite.email) {
-          return [userInvite, acceptedInvite, expiredInvite, removedInvite]
+          return [userInvite, acceptedInvite, removedInvite]
         }
         return []
       }),
       getAllUserInvitesByJourney: jest.fn((journeyId) => {
         return [{ ...userInvite, journeyId }]
+      }),
+      getUserInviteByJourneyAndEmail: jest.fn((journeyId, email) => {
+        if (
+          journeyId === removedInvite.journeyId &&
+          email === removedInvite.email
+        ) {
+          return removedInvite
+        } else if (
+          journeyId === acceptedInvite.journeyId &&
+          email === acceptedInvite.email
+        ) {
+          return acceptedInvite
+        }
+        return null
       })
     })
   }
@@ -106,14 +113,10 @@ describe('UserInviteResolver', () => {
     })
   }
 
-  const journey = {
-    id: 'journeyId'
-  }
-
   const journeyService = {
     provide: JourneyService,
     useFactory: () => ({
-      get: jest.fn((id) => (id === journey.id ? journey : undefined))
+      get: jest.fn((id) => ({ id }))
     })
   }
 
@@ -159,21 +162,52 @@ describe('UserInviteResolver', () => {
   })
 
   describe('userInviteCreate', () => {
-    it('should create user invite', async () => {
-      const currentDate = new Date()
-      const expireAt = new Date(
-        currentDate.setDate(currentDate.getDate() + 30)
-      ).toISOString()
-
-      await resolver.userInviteCreate('senderId', 'journeyId', createInput)
+    it('should create user invite if does not exist', async () => {
+      const invite = await resolver.userInviteCreate(
+        'senderId',
+        'newJourneyId',
+        createInput
+      )
 
       expect(service.save).toHaveBeenCalledWith({
-        journeyId: 'journeyId',
+        journeyId: 'newJourneyId',
+        senderId: 'senderId',
+        email: createInput.email
+      })
+      expect(service.update).not.toHaveBeenCalled()
+      expect(invite).toEqual({
+        journeyId: 'newJourneyId',
         senderId: 'senderId',
         email: createInput.email,
-        accepted: false,
-        expireAt
+        acceptedAt: null,
+        removedAt: null
       })
+    })
+
+    it('should re-activate existing user invite if not accepted', async () => {
+      await resolver.userInviteCreate(
+        'senderId',
+        'removedJourneyId',
+        createInput
+      )
+
+      expect(service.save).not.toHaveBeenCalled()
+      expect(service.update).toHaveBeenCalledWith(removedInvite.id, {
+        senderId: removedInvite.senderId,
+        removedAt: null
+      })
+    })
+
+    it('should ignore accepted user invite', async () => {
+      const invite = await resolver.userInviteCreate(
+        'senderId',
+        'acceptedJourneyId',
+        createInput
+      )
+
+      expect(service.save).not.toHaveBeenCalled()
+      expect(service.update).not.toHaveBeenCalled()
+      expect(invite).toEqual(acceptedInvite)
     })
   })
 
@@ -209,12 +243,11 @@ describe('UserInviteResolver', () => {
 
       expect(await invites[0]).toEqual({
         ...userInvite,
-        accepted: true
+        acceptedAt: '2021-02-18T00:00:00.000Z'
       })
       // Accepted and expired invites unchanged
       expect(await invites[1]).toEqual(acceptedInvite)
-      expect(await invites[2]).toEqual(expiredInvite)
-      expect(await invites[3]).toEqual(removedInvite)
+      expect(await invites[2]).toEqual(removedInvite)
     })
 
     it('should show no invites if email does not match', async () => {

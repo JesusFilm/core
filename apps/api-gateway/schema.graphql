@@ -1403,8 +1403,7 @@ type UserInvite
   journeyId: ID!
   senderId: ID!
   email: String!
-  accepted: Boolean!
-  expireAt: DateTime!
+  acceptedAt: DateTime
   removedAt: DateTime
 }
 

@@ -1010,8 +1010,7 @@ export class UserInvite {
     journeyId: string;
     senderId: string;
     email: string;
-    accepted: boolean;
-    expireAt: DateTime;
+    acceptedAt?: Nullable<DateTime>;
     removedAt?: Nullable<DateTime>;
 }
 
