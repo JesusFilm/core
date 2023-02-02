@@ -7,3 +7,7 @@ type JourneyProfile @key(fields: "id") {
 extend type Query {
   getJourneyProfile: JourneyProfile
 }
+
+extend type Mutation {
+  journeyProfileCreate: JourneyProfile!
+}

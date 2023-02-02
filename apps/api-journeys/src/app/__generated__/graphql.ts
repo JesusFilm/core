@@ -1184,6 +1184,8 @@ export abstract class IMutation {
 
     abstract journeyTemplate(id: string, input: JourneyTemplateInput): Journey | Promise<Journey>;
 
+    abstract journeyProfileCreate(): JourneyProfile | Promise<JourneyProfile>;
+
     abstract userJourneyApprove(id: string): UserJourney | Promise<UserJourney>;
 
     abstract userJourneyPromote(id: string): UserJourney | Promise<UserJourney>;

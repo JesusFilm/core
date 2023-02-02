@@ -156,6 +156,7 @@ extend type Mutation {
 
   """Updates template"""
   journeyTemplate(id: ID!, input: JourneyTemplateInput!): Journey!
+  journeyProfileCreate: JourneyProfile!
   userJourneyApprove(id: ID!): UserJourney!
   userJourneyPromote(id: ID!): UserJourney!
   userJourneyRemove(id: ID!): UserJourney!
