@@ -30,7 +30,7 @@ export function EmailInviteInput(): ReactElement {
         <Form>
           <TextField
             id="email"
-            label="Add Editor By Email"
+            label={t('Add Editor By Email')}
             name="email"
             type="email"
             fullWidth
@@ -40,9 +40,9 @@ export function EmailInviteInput(): ReactElement {
             onBlur={handleBlur}
             error={errors.email != null && touched.email}
             helperText={
-              touched?.email != null
-                ? errors.email
-                : "Users invited by email don't require approval"
+              touched?.email != null && errors.email != null
+                ? t(errors.email)
+                : t("Users invited by email don't require approval")
             }
             InputProps={{
               endAdornment: (
