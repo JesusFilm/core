@@ -23,3 +23,13 @@ export async function contextToUserId(
   const { uid } = await firebaseClient.auth().verifyIdToken(token)
   return uid
 }
+
+export async function contextToEmail(
+  context: ExecutionContext
+): Promise<string | null> {
+  const ctx = GqlExecutionContext.create(context).getContext()
+  const token = get(ctx.headers, 'authorization')
+  if (token == null || token === '') return null
+  const { email } = await firebaseClient.auth().verifyIdToken(token)
+  return email ?? null
+}
