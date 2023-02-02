@@ -204,7 +204,10 @@ describe('UserInviteResolver', () => {
     })
 
     it('should show no invites if email does not match', async () => {
-      const rejectedInvite = await resolver.userInviteAcceptAll(user)
+      const rejectedInvite = await resolver.userInviteAcceptAll({
+        ...user,
+        email: 'doesnotexist@email.com'
+      })
 
       expect(ujResolver.userJourneyRequest).not.toHaveBeenCalled()
       expect(ujResolver.userJourneyApprove).not.toHaveBeenCalled()
