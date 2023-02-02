@@ -2,10 +2,8 @@ import { ReactElement } from 'react'
 import Card from '@mui/material/Card'
 import CardActionArea from '@mui/material/CardActionArea'
 import { ImageSelection } from '../../../../../ImageLibrary/ImageSelection/ImageSelection'
-import { GetJourney_journey_blocks_ImageBlock as ImageBlock } from '../../../../../../../../__generated__/GetJourney'
 
 export interface ImageSourceProps {
-  image?: ImageBlock
   onClick?: () => void
 }
 

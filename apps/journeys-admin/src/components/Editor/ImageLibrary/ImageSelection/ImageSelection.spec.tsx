@@ -57,10 +57,6 @@ describe('ImageSelection', () => {
     const { getByText, getByTestId } = render(<ImageSelection />)
 
     expect(getByTestId('imageBlockThumbnailPlaceholder')).toBeInTheDocument()
-    expect(getByText('Select image')).toBeInTheDocument()
-
-    const button = getByTestId('AddIcon')
-    fireEvent.click(button)
     expect(getByText('No image selected')).toBeInTheDocument()
   })
 })

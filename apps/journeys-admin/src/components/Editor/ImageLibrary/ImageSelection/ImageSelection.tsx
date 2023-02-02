@@ -80,7 +80,7 @@ export function ImageSelection({
           />
           {panel.name !== 'source' && (
             <IconButton
-              onClick={() => handlePanel('source')}
+              onClick={() => handlePanel('applied')}
               sx={{
                 position: 'absolute',
                 top: -16,

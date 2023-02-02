@@ -30,13 +30,24 @@ const Template: Story = (args) => {
   return <ImageSelection {...args} />
 }
 
-export const Default = Template.bind({})
-Default.args = { image }
+export const Select = Template.bind({})
+Select.args = {}
 
 export const Applying = Template.bind({})
 Applying.args = {
   image,
   startPanel: { name: 'apply', heading: 'Apply this image?', hasImage: true }
+}
+
+export const Applied = Template.bind({})
+Applied.args = {
+  image,
+  startPanel: { name: 'applied', heading: 'Selected image', hasImage: true }
+}
+
+export const Source = Template.bind({})
+Source.args = {
+  startPanel: { name: 'source', heading: 'Select image', hasImage: false }
 }
 
 export default ImageSelectionStory as Meta
