@@ -1,14 +1,14 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { SnackbarProvider } from 'notistack'
 import { fireEvent, render, waitFor } from '@testing-library/react'
-import { EmailInviteInput } from './EmailInviteInput'
+import { EmailInviteForm } from './EmailInviteForm'
 
 describe('EmailInviteInput', () => {
   it('should validate when fields are empty', async () => {
     const { getByTestId, getAllByText } = render(
       <SnackbarProvider>
         <MockedProvider>
-          <EmailInviteInput />
+          <EmailInviteForm />
         </MockedProvider>
       </SnackbarProvider>
     )
@@ -23,7 +23,7 @@ describe('EmailInviteInput', () => {
     const { getByLabelText, getByTestId, getByText } = render(
       <SnackbarProvider>
         <MockedProvider>
-          <EmailInviteInput />
+          <EmailInviteForm />
         </MockedProvider>
       </SnackbarProvider>
     )

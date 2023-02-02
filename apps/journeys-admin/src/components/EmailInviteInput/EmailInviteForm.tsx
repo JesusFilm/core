@@ -7,7 +7,7 @@ import IconButton from '@mui/material/IconButton'
 import InputAdornment from '@mui/material/InputAdornment'
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline'
 
-export function EmailInviteInput(): ReactElement {
+export function EmailInviteForm(): ReactElement {
   const handleAddUser = (): void => {
     console.log('Blank... for now')
   }

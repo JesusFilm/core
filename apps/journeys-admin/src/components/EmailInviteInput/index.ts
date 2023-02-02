@@ -1,1 +1,1 @@
-export { EmailInviteInput } from './EmailInviteInput'
+export { EmailInviteForm as EmailInviteInput } from './EmailInviteForm'

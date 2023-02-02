@@ -1,15 +1,15 @@
 import { Story, Meta } from '@storybook/react'
 import { journeysAdminConfig } from '../../libs/storybook'
-import { EmailInviteInput } from './EmailInviteInput'
+import { EmailInviteForm } from './EmailInviteForm'
 
 const EmailInviteInputStory = {
   ...journeysAdminConfig,
-  component: EmailInviteInput,
+  component: EmailInviteForm,
   title: 'Journeys-Admin/EmailInviteInput'
 }
 
 export const Default: Story = () => {
-  return <EmailInviteInput />
+  return <EmailInviteForm />
 }
 
 export default EmailInviteInputStory as Meta
