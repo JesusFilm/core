@@ -48,7 +48,14 @@ export function EmailInviteInput(): ReactElement {
               endAdornment: (
                 <InputAdornment position="end">
                   <IconButton type="submit">
-                    <AddCircleOutlineIcon />
+                    <AddCircleOutlineIcon
+                      sx={{
+                        color:
+                          values.email !== '' && errors.email == null
+                            ? '#C52D3A'
+                            : null
+                      }}
+                    />
                   </IconButton>
                 </InputAdornment>
               )
