@@ -32,7 +32,14 @@ export function ImageSource({
           display: 'flex'
         }}
       >
-        <ImageSelection image={image} isSource />
+        <ImageSelection
+          image={image}
+          startPanel={{
+            name: 'source',
+            heading: 'Select image',
+            hasImage: false
+          }}
+        />
       </CardActionArea>
     </Card>
   )

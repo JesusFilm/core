@@ -1,6 +1,5 @@
 import { Story, Meta } from '@storybook/react'
 import { journeysAdminConfig } from '../../../../../../../libs/storybook'
-import { GetJourney_journey_blocks_ImageBlock as ImageBlock } from '../../../../../../../../__generated__/GetJourney'
 
 import { ImageSource } from './ImageSource'
 

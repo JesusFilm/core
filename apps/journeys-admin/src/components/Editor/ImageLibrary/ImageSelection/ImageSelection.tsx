@@ -17,19 +17,16 @@ export interface ImageSelectionProps {
     heading: string
     hasImage: boolean
   }
-  isSource?: boolean
 }
 
 export function ImageSelection({
   image,
-  startPanel = { name: 'source', heading: 'Select image', hasImage: false },
-  isSource = false
+  startPanel = { name: 'select', heading: 'No image selected', hasImage: false }
 }: ImageSelectionProps): ReactElement {
   const [panel, setPanel] = useState(startPanel)
 
   function handlePanel(newPanel): void {
     switch (newPanel) {
-      case 'source':
       case 'applied':
         setPanel({
           name: 'select',
@@ -81,7 +78,7 @@ export function ImageSelection({
           <ImageBlockThumbnail
             selectedBlock={panel.hasImage ? image : undefined}
           />
-          {!isSource && (
+          {panel.name !== 'source' && (
             <IconButton
               onClick={() => handlePanel('source')}
               sx={{
@@ -120,7 +117,7 @@ export function ImageSelection({
         onClick={() => {
           handlePanel(panel.name)
         }}
-        disabled={isSource}
+        disabled={panel.name === 'source'}
         sx={{ mr: 2, display: panel.name === 'select' ? 'none' : 'flex' }}
       >
         {panel.name === 'source' ? (
