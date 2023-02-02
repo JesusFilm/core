@@ -60,6 +60,14 @@ export function EmailInviteInput(): ReactElement {
                 </InputAdornment>
               )
             }}
+            sx={{
+              input: {
+                color:
+                  touched?.email != null && errors.email != null
+                    ? '#B62D1C'
+                    : null
+              }
+            }}
           />
         </Form>
       )}
