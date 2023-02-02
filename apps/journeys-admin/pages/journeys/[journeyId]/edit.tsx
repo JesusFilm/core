@@ -11,6 +11,7 @@ import { NextSeo } from 'next-seo'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import { useTranslation } from 'react-i18next'
 import { getLaunchDarklyClient } from '@core/shared/ui/getLaunchDarklyClient'
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { GetJourney } from '../../../__generated__/GetJourney'
 import { Editor } from '../../../src/components/Editor'
 import { PageWrapper } from '../../../src/components/PageWrapper'
@@ -21,7 +22,6 @@ import { JourneyInvite } from '../../../src/components/JourneyInvite/JourneyInvi
 import { createApolloClient } from '../../../src/libs/apolloClient'
 import i18nConfig from '../../../next-i18next.config'
 import { useUserJourneyOpen } from '../../../src/libs/useUserJourneyOpen'
-import { useJourney } from '../../../../../libs/journeys/ui/src/libs/JourneyProvider'
 
 function JourneyEditPage(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
