@@ -22,13 +22,10 @@ export interface ImageSelectionProps {
 
 export function ImageSelection({
   image,
+  startPanel = { name: 'source', heading: 'Select image', hasImage: false },
   isSource = false
 }: ImageSelectionProps): ReactElement {
-  const [panel, setPanel] = useState({
-    name: 'source',
-    heading: 'Select image',
-    hasImage: false
-  })
+  const [panel, setPanel] = useState(startPanel)
 
   function handlePanel(newPanel): void {
     switch (newPanel) {
@@ -121,10 +118,9 @@ export function ImageSelection({
       </Stack>
       <IconButton
         onClick={() => {
-          if (!isSource) {
-            handlePanel(panel.name)
-          }
+          handlePanel(panel.name)
         }}
+        disabled={isSource}
         sx={{ mr: 2, display: panel.name === 'select' ? 'none' : 'flex' }}
       >
         {panel.name === 'source' ? (

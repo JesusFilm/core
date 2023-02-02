@@ -33,4 +33,10 @@ const Template: Story = (args) => {
 export const Default = Template.bind({})
 Default.args = { image }
 
+export const Applying = Template.bind({})
+Applying.args = {
+  image,
+  startPanel: { name: 'apply', heading: 'Apply this image?', hasImage: true }
+}
+
 export default ImageSelectionStory as Meta

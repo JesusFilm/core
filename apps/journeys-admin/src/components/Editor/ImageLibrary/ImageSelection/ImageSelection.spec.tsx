@@ -1,4 +1,4 @@
-import { render } from '@testing-library/react'
+import { fireEvent, render } from '@testing-library/react'
 import { GetJourney_journey_blocks_ImageBlock as ImageBlock } from '../../../../../__generated__/GetJourney'
 import { ImageSelection } from './ImageSelection'
 
@@ -15,20 +15,52 @@ describe('ImageSelection', () => {
     blurhash: ''
   }
 
-  it('should display Image Selection', () => {
-    const { getByText, getByTestId } = render(<ImageSelection image={image} />)
+  it('should display states correctly when clicking apply', () => {
+    const { getByText, getByTestId } = render(
+      <ImageSelection
+        image={image}
+        startPanel={{
+          name: 'apply',
+          heading: 'Apply this image?',
+          hasImage: true
+        }}
+      />
+    )
 
-    expect(getByText('Image Title')).toBeInTheDocument()
+    expect(getByText('Apply this image?')).toBeInTheDocument()
+    fireEvent.click(getByTestId('CheckIcon'))
+
+    expect(getByText('Selected image')).toBeInTheDocument()
     expect(getByText('1920 x 1080 pixels')).toBeInTheDocument()
     expect(getByTestId('DeleteOutlineIcon')).toBeInTheDocument()
   })
 
-  it('should display default text and icon on no image uploaded', () => {
+  it('should display states correctly when clicking decline', () => {
+    const { getByText, getByTestId } = render(
+      <ImageSelection
+        image={image}
+        startPanel={{
+          name: 'apply',
+          heading: 'Apply this image?',
+          hasImage: true
+        }}
+      />
+    )
+
+    expect(getByText('Apply this image?')).toBeInTheDocument()
+    fireEvent.click(getByTestId('CancelIcon'))
+
+    expect(getByText('No image selected')).toBeInTheDocument()
+  })
+
+  it('should display default text for no image selected', () => {
     const { getByText, getByTestId } = render(<ImageSelection />)
 
     expect(getByTestId('imageBlockThumbnailPlaceholder')).toBeInTheDocument()
-    expect(getByTestId('AddIcon')).toBeInTheDocument()
-    expect(getByText('Select Image')).toBeInTheDocument()
-    expect(getByText('Upload your image')).toBeInTheDocument()
+    expect(getByText('Select image')).toBeInTheDocument()
+
+    const button = getByTestId('AddIcon')
+    fireEvent.click(button)
+    expect(getByText('No image selected')).toBeInTheDocument()
   })
 })
