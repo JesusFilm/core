@@ -179,10 +179,15 @@ describe('UserInviteResolver', () => {
 
   describe('userInviteRemove', () => {
     it('should remove user invite', async () => {
-      const removedInvite = await resolver.userInviteRemove('1', 'journeyId')
+      const invite = await resolver.userInviteRemove('1', 'journeyId')
 
-      expect(service.remove).toHaveBeenCalledWith('1')
-      expect(removedInvite).toEqual(userInvite)
+      expect(service.update).toHaveBeenCalledWith('1', {
+        removedAt: '2021-02-18T00:00:00.000Z'
+      })
+      expect(invite).toEqual({
+        ...userInvite,
+        removedAt: '2021-02-18T00:00:00.000Z'
+      })
     })
   })
 
