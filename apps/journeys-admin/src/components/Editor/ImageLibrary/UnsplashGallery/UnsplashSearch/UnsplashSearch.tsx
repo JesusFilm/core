@@ -5,18 +5,20 @@ import LinkIcon from '@mui/icons-material/Link'
 import { Formik, Form } from 'formik'
 
 interface UnsplashSearchProps {
-  handleSubmit: (value: string) => Promise<void>
+  handleSubmit: (value?: string | null) => void
+  value?: string | null
 }
 
 export function UnsplashSearch({
-  handleSubmit
+  handleSubmit,
+  value
 }: UnsplashSearchProps): ReactElement {
   return (
     <Formik
       initialValues={{
-        src: ''
+        src: value
       }}
-      onSubmit={async (e) => await handleSubmit(e.src)}
+      onSubmit={async (e) => handleSubmit(e.src)}
     >
       {({ values, handleChange }) => (
         <Form>

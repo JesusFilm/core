@@ -1,4 +1,4 @@
-import { ReactElement, useEffect, useState } from 'react'
+import { ReactElement, useCallback, useEffect, useState } from 'react'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import LoadingButton from '@mui/lab/LoadingButton'
@@ -24,61 +24,67 @@ export interface UnsplashImage {
 }
 
 export function UnsplashGallery(): ReactElement {
-  const [gallery, setGallery] = useState<UnsplashImage[]>()
-  const [query, setQuery] = useState<string>()
+  const [collections, setCollections] = useState<UnsplashImage[]>()
+  const [searchResults, setSearchResults] = useState<UnsplashImage[]>()
+  const [query, setQuery] = useState<string | null>()
   const [page, setPage] = useState(1)
   const accessKey = '7MUdE7NO3RSHYD3gefyyPD3nSBOK4vziireH3tnj9L0'
+  // todo: key is just here temporarily, needs to be moved to doppler
 
-  // TODO:
-  // Move accessKey to doppler
-  // On Image Click - Sets the unsplash image to be in the image block
-
-  const fetchCollection = async (): Promise<void> => {
+  const fetchCollection = useCallback(async (): Promise<void> => {
     const collectionData = await (
       await fetch(
-        `https://api.unsplash.com/collections/4924556/photos?page=1&per_page=20&client_id=${accessKey}`
+        `https://api.unsplash.com/collections/4924556/photos?page=${page}&per_page=20&client_id=${accessKey}`
       )
     ).json()
-    setGallery(collectionData)
-  }
+    setCollections((prevValue) => [...(prevValue ?? []), ...collectionData])
+  }, [page])
 
-  const handleSubmit = async (image: string): Promise<void> => {
+  const fetchSearchResults = useCallback(async (): Promise<void> => {
+    if (query == null) return
     const searchData = await (
       await fetch(
-        `https://api.unsplash.com/search/photos?query=${image}&page=1&per_page=20&client_id=${accessKey}`
+        `https://api.unsplash.com/search/photos?query=${query}&page=${page}&per_page=20&client_id=${accessKey}`
       )
     ).json()
-    setQuery(image)
-    setGallery(searchData.results)
-  }
-
-  const fetchMore = async (): Promise<void> => {
-    setPage(page + 1)
-    if (query == null) return
-    // todo: load more on collection
-    const loadData = await (
-      await fetch(
-        `https://api.unsplash.com/search/photos?query=${query}&page=${page + 1
-        }&per_page=20&client_id=${accessKey}`
-      )
-    ).json()
-    setGallery((prevGallery) => [...prevGallery, ...loadData.results])
-  }
+    setSearchResults((prevValue) => [
+      ...(prevValue ?? []),
+      ...searchData.results
+    ])
+  }, [page, query])
 
   useEffect(() => {
-    void fetchCollection()
-  }, [])
+    if (query == null) {
+      void fetchCollection()
+    } else {
+      void fetchSearchResults()
+    }
+  }, [query, page, fetchCollection, fetchSearchResults])
+
+  const handleSubmit = (value: string): void => {
+    if (query !== value) {
+      setSearchResults(undefined)
+    }
+    setQuery(value)
+    setPage(1)
+  }
+
+  const fetchMore = (): void => {
+    setPage(page + 1)
+  }
 
   return (
     <Stack sx={{ pt: 3 }}>
-      <UnsplashSearch handleSubmit={handleSubmit} />
+      <UnsplashSearch value={query} handleSubmit={handleSubmit} />
       <Stack spacing={2} sx={{ py: 6 }}>
         <Typography variant="overline" color="primary">
           Unsplash
         </Typography>
         <Typography variant="h6">Featured Images</Typography>
       </Stack>
-      {gallery != null && <UnsplashList gallery={gallery} />}
+      {query == null
+        ? collections != null && <UnsplashList gallery={collections} />
+        : searchResults != null && <UnsplashList gallery={searchResults} />}
       <LoadingButton variant="outlined" onClick={fetchMore} size="medium">
         Load More
       </LoadingButton>
