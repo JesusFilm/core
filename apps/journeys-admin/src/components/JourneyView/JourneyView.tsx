@@ -25,7 +25,6 @@ export const GET_USER_ROLE = gql`
   query GetUserRole {
     getUserRole {
       id
-      userId
       roles
     }
   }
