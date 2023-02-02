@@ -44,13 +44,6 @@ export function ImageBlockEditor({
     await onChange(block as ImageBlock)
   }
 
-  // const handleImageDelete = async (): Promise<void> => {
-  //   if (onDelete != null) {
-  //     await onDelete()
-  //     formik.resetForm({ values: { src: '' } })
-  //   }
-  // }
-
   const handlePaste = async (
     e: ClipboardEvent<HTMLDivElement>
   ): Promise<void> => {
