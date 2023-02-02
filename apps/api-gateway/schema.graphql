@@ -1405,6 +1405,7 @@ type UserInvite
   email: String!
   accepted: Boolean!
   expireAt: DateTime!
+  removedAt: DateTime
 }
 
 input UserInviteCreateInput

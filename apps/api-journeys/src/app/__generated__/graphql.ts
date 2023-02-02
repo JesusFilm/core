@@ -549,10 +549,6 @@ export class JourneyTemplateInput {
     template?: Nullable<boolean>;
 }
 
-export class UserInviteAcceptInput {
-    email: string;
-}
-
 export class UserInviteCreateInput {
     email: string;
 }
@@ -1016,6 +1012,7 @@ export class UserInvite {
     email: string;
     accepted: boolean;
     expireAt: DateTime;
+    removedAt?: Nullable<DateTime>;
 }
 
 export class UserRole {
@@ -1199,7 +1196,7 @@ export abstract class IMutation {
 
     abstract userInviteRemove(id: string, journeyId: string): UserInvite | Promise<UserInvite>;
 
-    abstract userInviteAcceptAll(input?: Nullable<UserInviteAcceptInput>): UserInvite[] | Promise<UserInvite[]>;
+    abstract userInviteAcceptAll(): UserInvite[] | Promise<UserInvite[]>;
 
     abstract userJourneyApprove(id: string): UserJourney | Promise<UserJourney>;
 

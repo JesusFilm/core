@@ -24,7 +24,8 @@ describe('UserInviteResolver', () => {
     senderId: 'senderId',
     email: 'test@email.com',
     accepted: false,
-    expireAt: '2021-03-20T00:00:00.000Z'
+    expireAt: '2021-03-20T00:00:00.000Z',
+    removedAt: null
   }
 
   const acceptedInvite = {
@@ -41,6 +42,13 @@ describe('UserInviteResolver', () => {
     expireAt: '2021-01-18T00:00:00.000Z'
   }
 
+  const removedInvite = {
+    ...userInvite,
+    key: '4',
+    journeyId: 'removedJourneyId',
+    removedAt: '2021-02-18T00:00:00.000Z'
+  }
+
   const userInviteService = {
     provide: UserInviteService,
     useFactory: () => ({
@@ -51,7 +59,7 @@ describe('UserInviteResolver', () => {
       remove: jest.fn((id) => userInvite),
       getAllUserInvitesByEmail: jest.fn((email) => {
         if (email === userInvite.email) {
-          return [userInvite, acceptedInvite, expiredInvite]
+          return [userInvite, acceptedInvite, expiredInvite, removedInvite]
         }
         return []
       }),
@@ -201,6 +209,7 @@ describe('UserInviteResolver', () => {
       // Accepted and expired invites unchanged
       expect(await invites[1]).toEqual(acceptedInvite)
       expect(await invites[2]).toEqual(expiredInvite)
+      expect(await invites[3]).toEqual(removedInvite)
     })
 
     it('should show no invites if email does not match', async () => {

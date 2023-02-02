@@ -5,6 +5,7 @@ type UserInvite @key(fields: "id") {
   email: String!
   accepted: Boolean!
   expireAt: DateTime!
+  removedAt: DateTime
 }
 
 extend type Query {

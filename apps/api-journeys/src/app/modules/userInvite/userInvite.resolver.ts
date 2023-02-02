@@ -74,17 +74,19 @@ export class UserInviteResolver {
     @Args('id') id: string,
     @Args('journeyId') journeyId: string
   ): Promise<UserInvite> {
-    return await this.userInviteService.remove(id)
+    return await this.userInviteService.update(id, {
+      removedAt: new Date().toISOString()
+    })
   }
 
   async redeemInvite(
     userInvite: UserInvite,
     userId: string
   ): Promise<UserInvite> {
-    // TODO: Get email from user in db when we can call api-users
     if (
       !userInvite.accepted &&
-      new Date() < new Date(userInvite.expireAt as string)
+      new Date() < new Date(userInvite.expireAt as string) &&
+      userInvite.removedAt == null
     ) {
       const userJourney = await this.userJourneyResolver.userJourneyRequest(
         userInvite.journeyId,
