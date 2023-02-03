@@ -8,6 +8,7 @@ import { ReactElement, useState } from 'react'
 
 import { GetJourney_journey_blocks_ImageBlock as ImageBlock } from '../../../../../../__generated__/GetJourney'
 import { ImageBlockThumbnail } from '../../../ImageBlockThumbnail'
+import { ImageLibrary } from '../../../ImageLibrary'
 import { VideoBlockEditorSettingsPosterDialog } from './Dialog'
 
 interface BackgroundMediaCoverImageProps {
@@ -75,13 +76,17 @@ export function VideoBlockEditorSettingsPoster({
                 }}
               />
             </IconButton>
-            <VideoBlockEditorSettingsPosterDialog
+            {/* <VideoBlockEditorSettingsPosterDialog
               selectedBlock={selectedBlock}
               parentBlockId={parentBlockId}
               onClose={handleClose}
               open={open}
               onLoading={handleLoading}
               onLoad={handleLoad}
+            /> */}
+            <ImageLibrary
+              open={open}
+              onClose={handleClose}
             />
           </Stack>
         </Stack>
