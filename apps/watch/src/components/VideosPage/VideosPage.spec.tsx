@@ -170,8 +170,6 @@ describe('VideosPage', () => {
       )
 
       const textbox = getAllByRole('combobox')[1]
-      console.log(textbox.nodeName)
-      console.log(textbox.innerHTML)
 
       await act(async () => {
         await waitFor(() => fireEvent.focus(textbox))
