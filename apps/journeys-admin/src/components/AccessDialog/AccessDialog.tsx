@@ -163,9 +163,6 @@ export function AccessDialog({
               height: '32px',
               color: '#26262E',
               border: '1px solid #DEDFE0',
-              fontWeight: '400',
-              fontFamily: 'Open Sans',
-              fontSize: '12px',
               padding: 1,
               marginLeft: 3,
               '&:hover': {
@@ -174,7 +171,7 @@ export function AccessDialog({
             }}
             onClick={handleClick}
           >
-            {selectedInviteMethod}
+            <Typography variant="body2">{selectedInviteMethod}</Typography>
           </Button>
           <Menu
             id="menu"
