@@ -142,10 +142,8 @@ export function AccessDialog({
         >
           <GroupAddIcon />
           <Typography
+            variant="subtitle1"
             sx={{
-              fontFamily: 'Montserrat',
-              fontWeight: '600',
-              fontSize: '18px',
               marginLeft: 3
             }}
           >
