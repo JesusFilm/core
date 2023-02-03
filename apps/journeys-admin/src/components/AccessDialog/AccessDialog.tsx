@@ -161,12 +161,13 @@ export function AccessDialog({
               borderRadius: '16px',
               width: '124px',
               height: '32px',
-              color: '#26262E',
-              border: '1px solid #DEDFE0',
+              color: 'secondary.dark',
+              borderWidth: '1px',
+              borderColor: 'divider',
               padding: 1,
               marginLeft: 3,
               '&:hover': {
-                borderColor: 'gray'
+                borderColor: 'divider'
               }
             }}
             onClick={handleClick}

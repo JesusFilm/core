@@ -52,7 +52,7 @@ export function EmailInviteForm(): ReactElement {
                       sx={{
                         color:
                           values.email !== '' && errors.email == null
-                            ? '#C52D3A'
+                            ? 'primary.main'
                             : null
                       }}
                     />
@@ -64,7 +64,7 @@ export function EmailInviteForm(): ReactElement {
               input: {
                 color:
                   touched?.email != null && errors.email != null
-                    ? '#B62D1C'
+                    ? 'error.main'
                     : null
               }
             }}
