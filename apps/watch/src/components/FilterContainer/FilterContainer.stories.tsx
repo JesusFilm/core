@@ -12,16 +12,11 @@ const FilterContainerStory = {
   }
 }
 
-
-const Template: Story<
-  ComponentProps<typeof FilterContainer>> = () => {
-  return (
-    <FilterContainer  />
-  )
+const Template: Story<ComponentProps<typeof FilterContainer>> = () => {
+  return <FilterContainer />
 }
 
 export const Default = Template.bind({})
-Default.args = {
-}
+Default.args = {}
 
 export default FilterContainerStory as Meta
