@@ -136,8 +136,8 @@ export function AccessDialog({
           direction="row"
           alignItems="center"
           sx={{
-            mb: '16px',
-            mt: '20px'
+            mb: 4,
+            mt: 5
           }}
         >
           <GroupAddIcon />
@@ -146,7 +146,7 @@ export function AccessDialog({
               fontFamily: 'Montserrat',
               fontWeight: '600',
               fontSize: '18px',
-              marginLeft: '12px'
+              marginLeft: 3
             }}
           >
             Add new using
@@ -167,9 +167,9 @@ export function AccessDialog({
               border: '1px solid #DEDFE0',
               fontWeight: '400',
               fontFamily: 'Open Sans',
-              fontSize: '16px',
-              padding: '4px',
-              marginLeft: '12px',
+              fontSize: '12px',
+              padding: 1,
+              marginLeft: 3,
               '&:hover': {
                 borderColor: 'gray'
               }
