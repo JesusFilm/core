@@ -65,9 +65,9 @@ export function ImageEdit(): ReactElement {
   const [blockDeletePrimaryImage] = useMutation<BlockDeletePrimaryImage>(
     BLOCK_DELETE_PRIMARY_IMAGE
   )
-  const [primaryImageBlockCreate, { loading: createLoading }] =
+  const [primaryImageBlockCreate] =
     useMutation<PrimaryImageBlockCreate>(PRIMARY_IMAGE_BLOCK_CREATE)
-  const [primaryImageBlockUpdate, { loading: updateLoading }] =
+  const [primaryImageBlockUpdate] =
     useMutation<PrimaryImageBlockUpdate>(PRIMARY_IMAGE_BLOCK_UPDATE)
   const [journeyPrimaryImageUpdate] = useMutation<JourneyPrimaryImageUpdate>(
     JOURNEY_PRIMARY_IMAGE_UPDATE
@@ -264,7 +264,12 @@ export function ImageEdit(): ReactElement {
           </Button>
         </Box>
       )}
-      <ImageLibrary open={open} onClose={() => setOpen(false)} />
+      <ImageLibrary
+        open={open}
+        onClose={handleClose}
+        onChange={handleChange}
+        onDelete={handleDelete}
+      />
     </>
   )
 }

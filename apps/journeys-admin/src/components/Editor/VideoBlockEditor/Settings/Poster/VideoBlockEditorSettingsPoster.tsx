@@ -84,10 +84,7 @@ export function VideoBlockEditorSettingsPoster({
               onLoading={handleLoading}
               onLoad={handleLoad}
             /> */}
-            <ImageLibrary
-              open={open}
-              onClose={handleClose}
-            />
+            <ImageLibrary open={open} onClose={handleClose} />
           </Stack>
         </Stack>
       </Box>

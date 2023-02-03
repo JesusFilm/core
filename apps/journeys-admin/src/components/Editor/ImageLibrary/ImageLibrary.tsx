@@ -11,12 +11,15 @@ import { TabPanel, tabA11yProps } from '@core/shared/ui/TabPanel'
 import { Theme } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import useMediaQuery from '@mui/material/useMediaQuery'
+import { GetJourney_journey_blocks_ImageBlock as ImageBlock } from '../../../../__generated__/GetJourney'
 
 export const DRAWER_WIDTH = 328
 
 interface ImageLibraryProps {
   open: boolean
   onClose?: () => void
+  onChange: (block: ImageBlock) => Promise<void>
+  onDelete?: () => Promise<void>
 }
 
 export function ImageLibrary({
