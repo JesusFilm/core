@@ -14,7 +14,6 @@ import Stack from '@mui/material/Stack'
 
 export function FilterContainer(): ReactElement {
   const [openRow, setOpenRow] = useState<number>(0)
-
   return (
     <TableContainer>
       <Table>
