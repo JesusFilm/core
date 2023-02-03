@@ -12,7 +12,6 @@ import { CopyTextField } from '@core/shared/ui/CopyTextField'
 import { Dialog } from '@core/shared/ui/Dialog'
 import MenuItem from '@mui/material/MenuItem'
 import Typography from '@mui/material/Typography'
-import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
 import {
   GetJourneyWithUserJourneys,
@@ -133,9 +132,8 @@ export function AccessDialog({
           userJourneys={usersList}
           disable={disable}
         />
-        <Box
-          display="flex"
-          flexDirection="row"
+        <Stack
+          direction="row"
           alignItems="center"
           sx={{
             mb: '16px',
@@ -193,7 +191,7 @@ export function AccessDialog({
               Link
             </MenuItem>
           </Menu>
-        </Box>
+        </Stack>
 
         {selectedInviteMethod === 'Email' ? (
           <EmailInviteForm />
