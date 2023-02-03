@@ -20,10 +20,10 @@ export function FilterContainer(): ReactElement {
         <TableBody>
           <TableRow key={1}>
             <TableCell align="center" onClick={() => setOpenRow(1)}>
-              <Stack direction="row" justifyContent="center" spacing={2}>
+              <Stack direction="row" spacing={2}>
                 <VolumeUp />
                 <Typography>Languages</Typography>
-                {openRow === 1 ? <KeyboardArrowUp /> : <KeyboardArrowDown />}
+                {openRow === 1 ? <KeyboardArrowUp style={{marginLeft: "auto"}}/> : <KeyboardArrowDown style={{marginLeft: "auto"}}/>}
               </Stack>
             </TableCell>
           </TableRow>
@@ -38,10 +38,10 @@ export function FilterContainer(): ReactElement {
           )}
           <TableRow key={2}>
             <TableCell align="center" onClick={() => setOpenRow(2)}>
-              <Stack direction="row" justifyContent="center" spacing={2}>
+              <Stack direction="row" spacing={2}>
                 <Subtitles />
                 <Typography>Subtitles</Typography>
-                {openRow === 2 ? <KeyboardArrowUp /> : <KeyboardArrowDown />}
+                {openRow === 2 ? <KeyboardArrowUp style={{marginLeft: "auto"}}/> : <KeyboardArrowDown style={{marginLeft: "auto"}}/>}
               </Stack>
             </TableCell>
           </TableRow>
@@ -56,10 +56,10 @@ export function FilterContainer(): ReactElement {
           )}
           <TableRow key={3}>
             <TableCell align="center" onClick={() => setOpenRow(3)}>
-              <Stack direction="row" justifyContent="center" spacing={2}>
+              <Stack direction="row" spacing={2}>
                 <Title />
                 <Typography>Title</Typography>
-                {openRow === 3 ? <KeyboardArrowUp /> : <KeyboardArrowDown />}
+                {openRow === 3 ? <KeyboardArrowUp style={{marginLeft: "auto"}}/> : <KeyboardArrowDown style={{marginLeft: "auto"}}/>}
               </Stack>
             </TableCell>
           </TableRow>
