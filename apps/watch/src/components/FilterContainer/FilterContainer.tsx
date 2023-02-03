@@ -20,7 +20,7 @@ export function FilterContainer(): ReactElement {
       <Table>
         <TableBody>
           <TableRow key={1}>
-            <TableCell align={'center'} onClick={() => setOpenRow(1)}>
+            <TableCell align="center" onClick={() => setOpenRow(1)}>
               <Stack direction="row" justifyContent="center" spacing={2}>
                 <VolumeUp />
                 <Typography>Languages</Typography>
@@ -30,7 +30,7 @@ export function FilterContainer(): ReactElement {
           </TableRow>
           {openRow === 1 ? (
             <TableRow key={1.5}>
-              <TableCell align={'center'} onClick={() => setOpenRow(0)}>
+              <TableCell align="center" onClick={() => setOpenRow(0)}>
                 <Typography>Languages Component Here</Typography>
               </TableCell>
             </TableRow>
@@ -38,7 +38,7 @@ export function FilterContainer(): ReactElement {
             <></>
           )}
           <TableRow key={2}>
-            <TableCell align={'center'} onClick={() => setOpenRow(2)}>
+            <TableCell align="center" onClick={() => setOpenRow(2)}>
               <Stack direction="row" justifyContent="center" spacing={2}>
                 <Subtitles />
                 <Typography>Subtitles</Typography>
@@ -48,7 +48,7 @@ export function FilterContainer(): ReactElement {
           </TableRow>
           {openRow === 2 ? (
             <TableRow key={1.5}>
-              <TableCell align={'center'} onClick={() => setOpenRow(0)}>
+              <TableCell align="center" onClick={() => setOpenRow(0)}>
                 <Typography>Subtitles Component Here</Typography>
               </TableCell>
             </TableRow>
@@ -56,7 +56,7 @@ export function FilterContainer(): ReactElement {
             <></>
           )}
           <TableRow key={3}>
-            <TableCell align={'center'} onClick={() => setOpenRow(3)}>
+            <TableCell align="center" onClick={() => setOpenRow(3)}>
               <Stack direction="row" justifyContent="center" spacing={2}>
                 <Title />
                 <Typography>Title</Typography>
@@ -66,7 +66,7 @@ export function FilterContainer(): ReactElement {
           </TableRow>
           {openRow === 3 ? (
             <TableRow key={1.5}>
-              <TableCell align={'center'} onClick={() => setOpenRow(0)}>
+              <TableCell align="center" onClick={() => setOpenRow(0)}>
                 <Typography>Title Component Here</Typography>
               </TableCell>
             </TableRow>
