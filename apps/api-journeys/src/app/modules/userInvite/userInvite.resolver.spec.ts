@@ -209,6 +209,14 @@ describe('UserInviteResolver', () => {
       expect(service.update).not.toHaveBeenCalled()
       expect(invite).toEqual(acceptedInvite)
     })
+
+    it('throws UserInputError when journey does not exist', async () => {
+      await resolver
+        .userInviteCreate('senderId', 'randomJourneyId', createInput)
+        .catch((error) => {
+          expect(error.message).toEqual('journey does not exist')
+        })
+    })
   })
 
   describe('userInviteRemove', () => {
