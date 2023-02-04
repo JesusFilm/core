@@ -1,5 +1,4 @@
 version: '3'
-
 services:
   app:
     build:
@@ -9,7 +8,6 @@ services:
         VARIANT: 16
         USER_UID: 1000
         USER_GID: 1000
-
     volumes:
       - ..:/workspaces:delegated
       - core-node-doppler:/home/node/.doppler
@@ -27,11 +25,12 @@ services:
       PGUSER: postgres
       PGDATABASE: postgres
   arangodb:
-    image: arangodb/arangodb:3.8.6
+    image: arangodb/arangodb:3.8.8
     volumes:
       - arango-data:/var/lib/arangodb3
     environment:
       ARANGO_NO_AUTH: 1
+      ARANGODB_OVERRIDE_DETECTED_TOTAL_MEMORY: 4GB
     ports:
       - 8529:8529
   db:
