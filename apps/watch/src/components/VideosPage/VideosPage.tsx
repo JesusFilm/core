@@ -87,6 +87,65 @@ export function VideosPage(): ReactElement {
       variables: { languageId: '529' }
     })
 
+  const subtitleLanguageIds = [
+    '411',
+    '448',
+    '483',
+    '494',
+    '496',
+    '529',
+    '531',
+    '584',
+    '1106',
+    '1109',
+    '1112',
+    '1269',
+    '1341',
+    '1942',
+    '1964',
+    '3804',
+    '3887',
+    '3934',
+    '3964',
+    '3974',
+    '4415',
+    '4432',
+    '4601',
+    '4820',
+    '4823',
+    '5541',
+    '5545',
+    '5546',
+    '5563',
+    '6464',
+    '6788',
+    '7083',
+    '7698',
+    '16639',
+    '20601',
+    '20770',
+    '21028',
+    '21046',
+    '21064',
+    '21753',
+    '21754',
+    '22500',
+    '22658',
+    '23178',
+    '53299',
+    '53424',
+    '139081',
+    '139089',
+    '140126',
+    '184497',
+    '184498',
+    '184506',
+    '184528'
+  ]
+  const subtitleLanguages = languagesData?.languages.filter((language) =>
+    subtitleLanguageIds.includes(language.id)
+  )
+
   useEffect(() => {
     setIsEnd(isAtEnd(data?.videos.length ?? 0, limit, previousCount))
   }, [data?.videos.length, setIsEnd, previousCount])
@@ -185,7 +244,7 @@ export function VideosPage(): ReactElement {
               }}
               label="Search Titles"
               variant="outlined"
-              helperText="+724 titles"
+              helperText="724+ titles"
             />
             <Divider
               sx={{
@@ -214,8 +273,9 @@ export function VideosPage(): ReactElement {
               onChange={(language: LanguageOption) =>
                 handleSubtitleLanguageChange(language.id)
               }
-              languages={languagesData?.languages}
+              languages={subtitleLanguages}
               loading={languagesLoading}
+              helperText="54 languages"
             />
             <Divider
               sx={{
