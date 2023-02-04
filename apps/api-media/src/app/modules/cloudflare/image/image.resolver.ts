@@ -1,4 +1,4 @@
-import { Resolver, Query, Mutation } from '@nestjs/graphql'
+import { Resolver, Query, Mutation, Args } from '@nestjs/graphql'
 import { ForbiddenError, UserInputError } from 'apollo-server-errors'
 import { CurrentUserId } from '@core/nest/decorators/CurrentUserId'
 import { CloudflareImage } from '../../../__generated__/graphql'
@@ -39,7 +39,7 @@ export class ImageResolver {
 
   @Mutation()
   async deleteCloudflareImage(
-    id: string,
+    @Args('id') id: string,
     @CurrentUserId() userId: string
   ): Promise<boolean> {
     const image = await this.imageService.get<CloudflareImage>(id)
