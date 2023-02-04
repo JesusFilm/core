@@ -1,3 +1,9 @@
+type UnsplashQueryResponse {
+  total: Int
+  total_pages: Int
+  results: [UnsplashPhoto]
+}
+
 type UnsplashUserImage {
   small: String
   medium: String
@@ -68,6 +74,7 @@ type UnsplashPhoto {
   id: String
   created_at: String
   updated_at: String
+  blur_hash: String
   width: Int
   height: Int
   color: String
@@ -102,7 +109,13 @@ extend type Query {
     page: Int
     perPage: Int
     orderBy: UnsplashOrderBy
-  ): [UnsplashPhoto]
+  ): UnsplashQueryResponse!
+  listUnsplashCollectionPhotos(
+    collectionId: String!
+    page: Int
+    perPage: Int
+    orientation: UnsplashPhotoOrientation
+  ): [UnsplashPhoto]!
   searchUnsplashPhotos(
     query: String!
     page: Int
@@ -112,5 +125,5 @@ extend type Query {
     contentFilter: UnsplashContentFilter
     color: UnsplashColor
     orientation: UnsplashPhotoOrientation
-  ): [UnsplashPhoto]
+  ): UnsplashQueryResponse!
 }

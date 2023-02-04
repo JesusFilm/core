@@ -49,9 +49,18 @@ export abstract class IQuery {
 
     abstract getCloudflareImageUploadInfo(): Nullable<CloudflareDirectCreatorUploadResponse> | Promise<Nullable<CloudflareDirectCreatorUploadResponse>>;
 
-    abstract listUnsplashPhotos(page?: Nullable<number>, perPage?: Nullable<number>, orderBy?: Nullable<UnsplashOrderBy>): Nullable<Nullable<UnsplashPhoto>[]> | Promise<Nullable<Nullable<UnsplashPhoto>[]>>;
+    abstract listUnsplashPhotos(page?: Nullable<number>, perPage?: Nullable<number>, orderBy?: Nullable<UnsplashOrderBy>): UnsplashQueryResponse | Promise<UnsplashQueryResponse>;
 
-    abstract searchUnsplashPhotos(query: string, page?: Nullable<number>, perPage?: Nullable<number>, orderBy?: Nullable<UnsplashOrderBy>, collections?: Nullable<Nullable<string>[]>, contentFilter?: Nullable<UnsplashContentFilter>, color?: Nullable<UnsplashColor>, orientation?: Nullable<UnsplashPhotoOrientation>): Nullable<Nullable<UnsplashPhoto>[]> | Promise<Nullable<Nullable<UnsplashPhoto>[]>>;
+    abstract listUnsplashCollectionPhotos(collectionId: string, page?: Nullable<number>, perPage?: Nullable<number>, orientation?: Nullable<UnsplashPhotoOrientation>): UnsplashQueryResponse | Promise<UnsplashQueryResponse>;
+
+    abstract searchUnsplashPhotos(query: string, page?: Nullable<number>, perPage?: Nullable<number>, orderBy?: Nullable<UnsplashOrderBy>, collections?: Nullable<Nullable<string>[]>, contentFilter?: Nullable<UnsplashContentFilter>, color?: Nullable<UnsplashColor>, orientation?: Nullable<UnsplashPhotoOrientation>): UnsplashQueryResponse | Promise<UnsplashQueryResponse>;
+}
+
+export class UnsplashQueryResponse {
+    __typename?: 'UnsplashQueryResponse';
+    total?: Nullable<number>;
+    total_pages?: Nullable<number>;
+    results?: Nullable<Nullable<UnsplashPhoto>[]>;
 }
 
 export class UnsplashUserImage {
@@ -98,6 +107,7 @@ export class UnsplashPhoto {
     id?: Nullable<string>;
     created_at?: Nullable<string>;
     updated_at?: Nullable<string>;
+    blur_hash?: Nullable<string>;
     width?: Nullable<number>;
     height?: Nullable<number>;
     color?: Nullable<string>;

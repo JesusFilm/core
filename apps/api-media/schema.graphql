@@ -21,8 +21,15 @@ type Query {
 
 extend type Query {
   getCloudflareImageUploadInfo: CloudflareDirectCreatorUploadResponse
-  listUnsplashPhotos(page: Int, perPage: Int, orderBy: UnsplashOrderBy): [UnsplashPhoto]
-  searchUnsplashPhotos(query: String!, offset: Int, limit: Int, orderBy: UnsplashOrderBy, collections: [String], contentFilter: UnsplashContentFilter, color: UnsplashColor, orientation: UnsplashPhotoOrientation): [UnsplashPhoto]
+  listUnsplashPhotos(page: Int, perPage: Int, orderBy: UnsplashOrderBy): UnsplashQueryResponse!
+  listUnsplashCollectionPhotos(collectionId: String!, page: Int, perPage: Int, orientation: UnsplashPhotoOrientation): [UnsplashPhoto]!
+  searchUnsplashPhotos(query: String!, page: Int, perPage: Int, orderBy: UnsplashOrderBy, collections: [String], contentFilter: UnsplashContentFilter, color: UnsplashColor, orientation: UnsplashPhotoOrientation): UnsplashQueryResponse!
+}
+
+type UnsplashQueryResponse {
+  total: Int
+  total_pages: Int
+  results: [UnsplashPhoto]
 }
 
 type UnsplashUserImage {
@@ -95,6 +102,7 @@ type UnsplashPhoto {
   id: String
   created_at: String
   updated_at: String
+  blur_hash: String
   width: Int
   height: Int
   color: String

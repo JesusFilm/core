@@ -6,12 +6,39 @@ import {
   UnsplashContentFilter,
   UnsplashOrderBy,
   UnsplashPhoto,
-  UnsplashPhotoOrientation
+  UnsplashPhotoOrientation,
+  UnsplashQueryResponse
 } from '../../../__generated__/graphql'
 
 @Injectable()
 export class UnsplashImageService {
-  async searchUnsplashImages(
+  async listUnsplashCollectionPhotos(
+    collectionId: string,
+    page?: number,
+    perPage?: number,
+    orientation?: UnsplashPhotoOrientation
+  ): Promise<UnsplashPhoto[]> {
+    const querystring = [`client_id=${process.env.UNSPLASH_ACCESS_KEY ?? ''}`]
+    // must typecheck these because apollo may send empty object instead of undefined
+    if (isNumber(page)) {
+      querystring.push(`page=${page}`)
+    }
+    if (isNumber(perPage)) {
+      querystring.push(`per_page=${perPage}`)
+    }
+    if (isString(orientation)) {
+      querystring.push(`orientation=${orientation}`)
+    }
+    const url = `https://api.unsplash.com/collections/${collectionId}/photos?${querystring.join(
+      '&'
+    )}`
+    const response = await fetch(url)
+    const result = await response.json()
+    console.log('result', result)
+    return result
+  }
+
+  async searchUnsplashPhotos(
     query: string,
     page?: number,
     perPage?: number,
@@ -20,12 +47,12 @@ export class UnsplashImageService {
     contentFilter?: UnsplashContentFilter,
     color?: UnsplashColor,
     orientation?: UnsplashPhotoOrientation
-  ): Promise<UnsplashPhoto[]> {
+  ): Promise<UnsplashQueryResponse> {
     const querystring = [
       `client_id=${process.env.UNSPLASH_ACCESS_KEY ?? ''}`,
       `query=${query}`
     ]
-    // must typecheck these because apollo will send empty object instead of undefined
+    // must typecheck these because apollo may send empty object instead of undefined
     if (isNumber(page)) {
       querystring.push(`page=${page}`)
     }
@@ -51,7 +78,6 @@ export class UnsplashImageService {
       '&'
     )}`
     const response = await fetch(url)
-    const result = await response.json()
-    return result.results
+    return await response.json()
   }
 }
