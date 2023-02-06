@@ -8,10 +8,12 @@ import {
 import { LoggerModule } from 'nestjs-pino'
 import { DatadogTraceModule } from 'nestjs-ddtrace'
 import { CloudflareImageModule } from './modules/cloudflare/image/image.module'
+import { UnsplashImageModule } from './modules/unsplash/image/image.module'
 
 @Module({
   imports: [
     CloudflareImageModule,
+    UnsplashImageModule,
     GraphQLModule.forRoot<ApolloFederationDriverConfig>({
       driver: ApolloFederationDriver,
       typePaths: [
