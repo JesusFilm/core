@@ -15,41 +15,23 @@ describe('ImageSelection', () => {
     blurhash: ''
   }
 
-  it('should display states correctly when clicking apply', () => {
+  it('should display applied state correctly', () => {
     const { getByText, getByTestId } = render(
       <ImageSelection
         image={image}
         startPanel={{
-          name: 'apply',
-          heading: 'Apply this image?',
-          hasImage: true
+          name: 'applied',
+          heading: 'Selected image',
+          hasImage: false
         }}
       />
     )
-
-    expect(getByText('Apply this image?')).toBeInTheDocument()
-    fireEvent.click(getByTestId('CheckIcon'))
 
     expect(getByText('Selected image')).toBeInTheDocument()
-    expect(getByText('1920 x 1080 pixels')).toBeInTheDocument()
-    expect(getByTestId('DeleteOutlineIcon')).toBeInTheDocument()
-  })
-
-  it('should display states correctly when clicking decline', () => {
-    const { getByText, getByTestId } = render(
-      <ImageSelection
-        image={image}
-        startPanel={{
-          name: 'apply',
-          heading: 'Apply this image?',
-          hasImage: true
-        }}
-      />
-    )
-
-    expect(getByText('Apply this image?')).toBeInTheDocument()
-    fireEvent.click(getByTestId('CancelIcon'))
-
+    expect(
+      getByText(`${image.width} x ${image.height} pixels`)
+    ).toBeInTheDocument()
+    fireEvent.click(getByTestId('DeleteOutlineIcon'))
     expect(getByText('No image selected')).toBeInTheDocument()
   })
 
@@ -58,5 +40,21 @@ describe('ImageSelection', () => {
 
     expect(getByTestId('imageBlockThumbnailPlaceholder')).toBeInTheDocument()
     expect(getByText('No image selected')).toBeInTheDocument()
+  })
+
+  it('should display source state correctly', () => {
+    const { getByText, getByTestId } = render(
+      <ImageSelection
+        startPanel={{
+          name: 'source',
+          heading: 'Select image',
+          hasImage: false
+        }}
+      />
+    )
+
+    expect(getByTestId('imageBlockThumbnailPlaceholder')).toBeInTheDocument()
+    expect(getByTestId('AddIcon')).toBeInTheDocument()
+    expect(getByText('Select image')).toBeInTheDocument()
   })
 })
