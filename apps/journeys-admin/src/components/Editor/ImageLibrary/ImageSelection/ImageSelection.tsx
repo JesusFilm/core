@@ -42,23 +42,16 @@ export function ImageSelection({
     }
   }
   return (
-    <Box
+    <Stack
+      flexDirection="row"
+      justifyContent="space-between"
+      alignItems="center"
       sx={{
         height: 78,
-        width: 285,
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        display: 'flex',
-        alignItems: 'center'
+        width: 285
       }}
     >
-      <Stack
-        direction="row"
-        sx={{
-          justifyContent: 'flex-start',
-          alignItems: 'center'
-        }}
-      >
+      <Stack direction="row" alignItems="center">
         <Box
           sx={{
             ml: 2,
@@ -97,6 +90,6 @@ export function ImageSelection({
           <></>
         )}
       </IconButton>
-    </Box>
+    </Stack>
   )
 }
