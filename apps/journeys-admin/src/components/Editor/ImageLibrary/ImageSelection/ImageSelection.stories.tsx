@@ -33,12 +33,6 @@ const Template: Story = (args) => {
 export const Select = Template.bind({})
 Select.args = {}
 
-export const Applying = Template.bind({})
-Applying.args = {
-  image,
-  startPanel: { name: 'apply', heading: 'Apply this image?', hasImage: true }
-}
-
 export const Applied = Template.bind({})
 Applied.args = {
   image,

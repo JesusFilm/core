@@ -4,9 +4,7 @@ import { ReactElement, useState } from 'react'
 import AddIcon from '@mui/icons-material/Add'
 import Box from '@mui/material/Box'
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline'
-import CheckIcon from '@mui/icons-material/Check'
 import IconButton from '@mui/material/IconButton'
-import CancelIcon from '@mui/icons-material/Cancel'
 import { ImageBlockThumbnail } from '../../ImageBlockThumbnail'
 import { GetJourney_journey_blocks_ImageBlock as ImageBlock } from '../../../../../__generated__/GetJourney'
 
@@ -35,13 +33,6 @@ export function ImageSelection({
         })
         break
       case 'select':
-        setPanel({
-          name: 'apply',
-          heading: 'Apply this image?',
-          hasImage: true
-        })
-        break
-      case 'apply':
         setPanel({
           name: 'applied',
           heading: 'Selected image',
@@ -78,28 +69,6 @@ export function ImageSelection({
           <ImageBlockThumbnail
             selectedBlock={panel.hasImage ? image : undefined}
           />
-          {panel.name !== 'source' && (
-            <IconButton
-              onClick={() => handlePanel('applied')}
-              sx={{
-                position: 'absolute',
-                top: -16,
-                left: 32,
-                display: panel.name === 'apply' ? 'block' : 'none',
-                '&:hover': {
-                  backgroundColor: 'transparent'
-                }
-              }}
-            >
-              <CancelIcon
-                sx={{
-                  color: 'secondary.light',
-                  backgroundColor: 'background.paper',
-                  borderRadius: '12px'
-                }}
-              />
-            </IconButton>
-          )}
         </Box>
         <Stack>
           <Typography variant="subtitle2">{panel.heading}</Typography>
@@ -122,8 +91,6 @@ export function ImageSelection({
       >
         {panel.name === 'source' ? (
           <AddIcon color="primary" />
-        ) : panel.name === 'apply' ? (
-          <CheckIcon color="primary" />
         ) : panel.name === 'applied' ? (
           <DeleteOutlineIcon color="primary" />
         ) : (
