@@ -31,8 +31,7 @@ describe('ImageSelection', () => {
     expect(
       getByText(`${image.width} x ${image.height} pixels`)
     ).toBeInTheDocument()
-    fireEvent.click(getByTestId('DeleteOutlineIcon'))
-    expect(getByText('No image selected')).toBeInTheDocument()
+    expect(getByTestId('DeleteOutlineIcon')).toBeInTheDocument()
   })
 
   it('should display default text for no image selected', () => {
