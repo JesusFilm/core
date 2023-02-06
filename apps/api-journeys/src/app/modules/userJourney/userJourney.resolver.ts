@@ -152,6 +152,23 @@ export class UserJourneyResolver {
     return await this.userJourneyService.removeAll(userJourneyIds)
   }
 
+  @Mutation()
+  @UseGuards(GqlAuthGuard)
+  async userJourneyOpen(
+    @Args('id') id: string,
+    @CurrentUserId() userId: string
+  ): Promise<UserJourney> {
+    const userJourney: UserJourney =
+      await this.userJourneyService.forJourneyUser(id, userId)
+
+    if (userJourney != null) {
+      const input = { openedAt: new Date().toISOString() }
+      return await this.userJourneyService.update(userJourney.id, input)
+    } else {
+      throw new Error('Invalid User')
+    }
+  }
+
   @ResolveField()
   async journey(@Parent() userJourney: UserJourney): Promise<Journey> {
     return await this.journeyService.get(userJourney.journeyId)

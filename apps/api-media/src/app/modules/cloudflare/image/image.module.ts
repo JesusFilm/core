@@ -1,11 +1,11 @@
 import { Module } from '@nestjs/common'
 import { DatabaseModule } from '@core/nest/database/DatabaseModule'
-import { ImageResolver } from './image.resolver'
-import { ImageService } from './image.service'
+import { ImageResolver as CloudflareImageResolver } from './image.resolver'
+import { ImageService as CloudflareImageService } from './image.service'
 
 @Module({
   imports: [DatabaseModule],
-  providers: [ImageResolver, ImageService],
-  exports: [ImageService]
+  providers: [CloudflareImageResolver, CloudflareImageService],
+  exports: [CloudflareImageService]
 })
-export class ImageModule {}
+export class CloudflareImageModule {}
