@@ -7,10 +7,7 @@ export interface ImageSourceProps {
   onClick?: () => void
 }
 
-export function ImageSource({
-  image,
-  onClick
-}: ImageSourceProps): ReactElement {
+export function ImageSource({ onClick }: ImageSourceProps): ReactElement {
   return (
     <Card
       variant="outlined"
@@ -31,7 +28,6 @@ export function ImageSource({
         }}
       >
         <ImageSelection
-          image={image}
           startPanel={{
             name: 'source',
             heading: 'Select image',
