@@ -105,11 +105,6 @@ type UnsplashPhotoLinks {
 }
 
 extend type Query {
-  listUnsplashPhotos(
-    page: Int
-    perPage: Int
-    orderBy: UnsplashOrderBy
-  ): UnsplashQueryResponse!
   listUnsplashCollectionPhotos(
     collectionId: String!
     page: Int

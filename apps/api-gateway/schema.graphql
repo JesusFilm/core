@@ -925,7 +925,6 @@ type Query
   languages(offset: Int, limit: Int): [Language!]! @join__field(graph: LANGUAGES)
   language(id: ID!, idType: LanguageIdType): Language @join__field(graph: LANGUAGES)
   getCloudflareImageUploadInfo: CloudflareDirectCreatorUploadResponse @join__field(graph: MEDIA)
-  listUnsplashPhotos(page: Int, perPage: Int, orderBy: UnsplashOrderBy): UnsplashQueryResponse! @join__field(graph: MEDIA)
   listUnsplashCollectionPhotos(collectionId: String!, page: Int, perPage: Int, orientation: UnsplashPhotoOrientation): [UnsplashPhoto]! @join__field(graph: MEDIA)
   searchUnsplashPhotos(query: String!, page: Int, perPage: Int, orderBy: UnsplashOrderBy, collections: [String], contentFilter: UnsplashContentFilter, color: UnsplashColor, orientation: UnsplashPhotoOrientation): UnsplashQueryResponse! @join__field(graph: MEDIA)
   me: User @join__field(graph: USERS)
