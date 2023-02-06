@@ -18,34 +18,31 @@ const image: ImageBlock = {
 const onChange = jest.fn()
 const onDelete = jest.fn()
 
-jest.mock('@mui/material/useMediaQuery', () => ({
-  __esModule: true,
-  default: jest.fn()
-}))
-
 describe('ImageBlockEditor', () => {
   describe('No existing ImageBlock', () => {
     it('shows placeholders on null', async () => {
-      const { getByRole } = render(
+      const { getByTestId, getByRole } = render(
         <ImageBlockEditor
           selectedBlock={null}
           onChange={onChange}
           onDelete={onDelete}
         />
       )
+      expect(await getByTestId('imageSrcStack')).toBeInTheDocument()
       const textBox = await getByRole('textbox')
       expect(textBox).toHaveValue('')
     })
   })
   describe('Existing ImageBlock', () => {
     it('shows placeholders', async () => {
-      const { getByRole } = render(
+      const { getByTestId, getByRole } = render(
         <ImageBlockEditor
           selectedBlock={image}
           onChange={onChange}
           onDelete={onDelete}
         />
       )
+      expect(await getByTestId('imageSrcStack')).toBeInTheDocument()
       const textBox = await getByRole('textbox')
       expect(textBox).toHaveValue(image.src)
     })
@@ -72,6 +69,18 @@ describe('ImageBlockEditor', () => {
       )
     })
   })
+  it('triggers onDelete', async () => {
+    const { getByRole } = render(
+      <ImageBlockEditor
+        selectedBlock={image}
+        onChange={onChange}
+        onDelete={onDelete}
+      />
+    )
+    const deleteButton = await getByRole('button')
+    fireEvent.click(deleteButton)
+    await waitFor(() => expect(onDelete).toHaveBeenCalled())
+  })
   it('triggers onChange', async () => {
     const { getByRole } = render(
       <ImageBlockEditor
@@ -87,7 +96,6 @@ describe('ImageBlockEditor', () => {
     fireEvent.blur(textBox)
     await waitFor(() => expect(onChange).toHaveBeenCalled())
   })
-
   it('triggers onChange onPaste', async () => {
     const { getByRole } = render(
       <ImageBlockEditor
