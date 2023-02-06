@@ -69,18 +69,6 @@ describe('ImageBlockEditor', () => {
       )
     })
   })
-  it('triggers onDelete', async () => {
-    const { getByRole } = render(
-      <ImageBlockEditor
-        selectedBlock={image}
-        onChange={onChange}
-        onDelete={onDelete}
-      />
-    )
-    const deleteButton = await getByRole('button')
-    fireEvent.click(deleteButton)
-    await waitFor(() => expect(onDelete).toHaveBeenCalled())
-  })
   it('triggers onChange', async () => {
     const { getByRole } = render(
       <ImageBlockEditor
@@ -95,6 +83,18 @@ describe('ImageBlockEditor', () => {
     })
     fireEvent.blur(textBox)
     await waitFor(() => expect(onChange).toHaveBeenCalled())
+  })
+  it('triggers onDelete', async () => {
+    const { getByRole } = render(
+      <ImageBlockEditor
+        selectedBlock={image}
+        onChange={onChange}
+        onDelete={onDelete}
+      />
+    )
+    const deleteButton = await getByRole('button')
+    fireEvent.click(deleteButton)
+    await waitFor(() => expect(onDelete).toHaveBeenCalled())
   })
   it('triggers onChange onPaste', async () => {
     const { getByRole } = render(
