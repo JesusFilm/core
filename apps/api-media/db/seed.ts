@@ -8,12 +8,6 @@ async function main(): Promise<void> {
       keyOptions: { type: 'uuid' }
     })
   }
-  await db.collection('cloudflareImages').ensureIndex({
-    type: 'persistent',
-    fields: ['userId', 'imageId'],
-    name: 'userId_imageId',
-    unique: true
-  })
 }
 main().catch((e) => {
   console.error(e)
