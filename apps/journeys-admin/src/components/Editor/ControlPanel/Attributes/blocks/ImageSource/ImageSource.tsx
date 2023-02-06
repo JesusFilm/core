@@ -1,7 +1,7 @@
 import { ReactElement } from 'react'
 import Card from '@mui/material/Card'
 import CardActionArea from '@mui/material/CardActionArea'
-import { ImageSelection } from '../../../../../ImageLibrary/ImageSelection/ImageSelection'
+import { ImageSelection } from '../../../../ImageLibrary/ImageSelection/ImageSelection'
 
 export interface ImageSourceProps {
   onClick?: () => void
