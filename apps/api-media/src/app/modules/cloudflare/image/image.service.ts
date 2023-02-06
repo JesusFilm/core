@@ -3,7 +3,7 @@ import { Injectable } from '@nestjs/common'
 import { aql } from 'arangojs'
 import { DocumentCollection } from 'arangojs/collection'
 import fetch from 'node-fetch'
-import { KeyAsId } from '../../../../../../../libs/nest/decorators/src/lib/KeyAsId'
+import { KeyAsId } from '@core/nest/decorators/KeyAsId'
 import { CloudflareImage } from '../../../__generated__/graphql'
 
 interface CloudflareDirectCreatorUploadResponse {
