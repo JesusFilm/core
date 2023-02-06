@@ -1,7 +1,7 @@
 // Note: some Carousel tests are missing currently due to an inability to mock the Carousel component.
 
 import { MockedProvider } from '@apollo/client/testing'
-import { fireEvent, render, waitFor } from '@testing-library/react'
+import { act, fireEvent, render, waitFor } from '@testing-library/react'
 
 import { videos } from '../Videos/__generated__/testData'
 import { languages } from './testData'
@@ -51,7 +51,7 @@ describe('VideosPage', () => {
 
   describe('filters', () => {
     it('should handle audio language filter', async () => {
-      const { getAllByRole, getByText, getAllByTestId } = render(
+      const { getAllByRole, getByText } = render(
         <MockedProvider
           mocks={[
             {
@@ -104,20 +104,18 @@ describe('VideosPage', () => {
           <VideosPage />
         </MockedProvider>
       )
-
       const textbox = getAllByRole('combobox')[0]
-      await waitFor(() => fireEvent.focus(textbox))
-      await waitFor(() => fireEvent.keyDown(textbox, { key: 'ArrowDown' }))
-      const option = getAllByRole('option')[2]
-      fireEvent.click(option)
-      const chip = getByText('audio: English')
-      expect(chip).toBeInTheDocument()
-      fireEvent.click(getAllByTestId('CloseRoundedIcon')[0])
-      expect(chip).not.toBeInTheDocument()
+
+      await act(async () => {
+        await waitFor(() => fireEvent.focus(textbox))
+        await waitFor(() => fireEvent.keyDown(textbox, { key: 'ArrowDown' }))
+        await waitFor(() => fireEvent.keyDown(textbox, { key: 'Enter' }))
+      })
+      expect(getByText(videos[0].title[0].value)).toBeInTheDocument()
     })
 
     it('should handle subtitle language filter', async () => {
-      const { getAllByRole, getByText, getAllByTestId } = render(
+      const { getAllByRole, getByText } = render(
         <MockedProvider
           mocks={[
             {
@@ -172,14 +170,80 @@ describe('VideosPage', () => {
       )
 
       const textbox = getAllByRole('combobox')[1]
-      await waitFor(() => fireEvent.focus(textbox))
-      await waitFor(() => fireEvent.keyDown(textbox, { key: 'ArrowDown' }))
-      const option = getAllByRole('option')[2]
-      fireEvent.click(option)
-      const chip = getByText('sub: English')
-      expect(chip).toBeInTheDocument()
-      fireEvent.click(getAllByTestId('CloseRoundedIcon')[0])
-      expect(chip).not.toBeInTheDocument()
+
+      await act(async () => {
+        await waitFor(() => fireEvent.focus(textbox))
+        await waitFor(() => fireEvent.keyDown(textbox, { key: 'ArrowDown' }))
+        await waitFor(() => fireEvent.keyDown(textbox, { key: 'Enter' }))
+      })
+      expect(getByText(videos[0].title[0].value)).toBeInTheDocument()
+    })
+
+    it('should handle title filter', async () => {
+      const { getAllByRole, getByText } = render(
+        <MockedProvider
+          mocks={[
+            {
+              request: {
+                query: GET_VIDEOS,
+                variables: {
+                  where: {},
+                  offset: 0,
+                  limit,
+                  languageId: '529'
+                }
+              },
+              result: {
+                data: {
+                  videos
+                }
+              }
+            },
+            {
+              request: {
+                query: GET_LANGUAGES,
+                variables: {
+                  languageId: '529'
+                }
+              },
+              result: {
+                data: {
+                  languages
+                }
+              }
+            },
+            {
+              request: {
+                query: GET_VIDEOS,
+                variables: {
+                  where: { sutitleLanguageIds: ['529'] },
+                  offset: 0,
+                  limit,
+                  languageId: '529'
+                }
+              },
+              result: {
+                data: {
+                  videos
+                }
+              }
+            }
+          ]}
+        >
+          <VideosPage />
+        </MockedProvider>
+      )
+      const textbox = getAllByRole('combobox')[0]
+      await act(async () => {
+        await waitFor(() => fireEvent.focus(textbox))
+        await waitFor(() => fireEvent.keyDown(textbox, { key: 'J' }))
+        await waitFor(() => fireEvent.keyDown(textbox, { key: 'E' }))
+        await waitFor(() => fireEvent.keyDown(textbox, { key: 'S' }))
+        await waitFor(() => fireEvent.keyDown(textbox, { key: 'U' }))
+        await waitFor(() => fireEvent.keyDown(textbox, { key: 'S' }))
+        await waitFor(() => fireEvent.keyDown(textbox, { key: 'Enter' }))
+      })
+      expect(getByText(videos[0].title[0].value)).toBeInTheDocument()
     })
   })
 })
