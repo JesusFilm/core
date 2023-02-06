@@ -10,9 +10,11 @@ directive @tag(name: String!) repeatable on FIELD_DEFINITION | OBJECT | INTERFAC
 
 directive @extends on OBJECT | INTERFACE
 
-type CloudflareDirectCreatorUploadResponse {
-  imageId: String
-  uploadUrl: String
+type CloudflareImage {
+  id: ID!
+  uploadUrl: String!
+  userId: ID!
+  createdAt: String!
 }
 
 type Query {
@@ -20,9 +22,14 @@ type Query {
 }
 
 extend type Query {
-  getCloudflareImageUploadInfo: CloudflareDirectCreatorUploadResponse
+  createCloudflareImage: CloudflareImage
+  getMyCloudflareImages: [CloudflareImage]
   listUnsplashCollectionPhotos(collectionId: String!, page: Int, perPage: Int, orientation: UnsplashPhotoOrientation): [UnsplashPhoto]!
   searchUnsplashPhotos(query: String!, page: Int, perPage: Int, orderBy: UnsplashOrderBy, collections: [String], contentFilter: UnsplashContentFilter, color: UnsplashColor, orientation: UnsplashPhotoOrientation): UnsplashQueryResponse!
+}
+
+extend type Mutation {
+  deleteCloudflareImage(id: ID!): Boolean
 }
 
 type UnsplashQueryResponse {

@@ -38,16 +38,20 @@ export enum UnsplashColor {
     blue = "blue"
 }
 
-export class CloudflareDirectCreatorUploadResponse {
-    __typename?: 'CloudflareDirectCreatorUploadResponse';
-    imageId?: Nullable<string>;
-    uploadUrl?: Nullable<string>;
+export class CloudflareImage {
+    __typename?: 'CloudflareImage';
+    id: string;
+    uploadUrl: string;
+    userId: string;
+    createdAt: string;
 }
 
 export abstract class IQuery {
     __typename?: 'IQuery';
 
-    abstract getCloudflareImageUploadInfo(): Nullable<CloudflareDirectCreatorUploadResponse> | Promise<Nullable<CloudflareDirectCreatorUploadResponse>>;
+    abstract createCloudflareImage(): Nullable<CloudflareImage> | Promise<Nullable<CloudflareImage>>;
+
+    abstract getMyCloudflareImages(): Nullable<Nullable<CloudflareImage>[]> | Promise<Nullable<Nullable<CloudflareImage>[]>>;
 
     abstract listUnsplashCollectionPhotos(collectionId: string, page?: Nullable<number>, perPage?: Nullable<number>, orientation?: Nullable<UnsplashPhotoOrientation>): Nullable<UnsplashPhoto>[] | Promise<Nullable<UnsplashPhoto>[]>;
 
@@ -135,6 +139,10 @@ export class UnsplashPhotoLinks {
     html?: Nullable<string>;
     download?: Nullable<string>;
     download_location?: Nullable<string>;
+}
+
+export abstract class IMutation {
+    abstract deleteCloudflareImage(id: string): Nullable<boolean> | Promise<Nullable<boolean>>;
 }
 
 type Nullable<T> = T | null;
