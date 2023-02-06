@@ -33,6 +33,7 @@ export const getStaticProps: GetStaticProps<VideosPageProps> = async () => {
       languageId: '529'
     }
   })
+
   return {
     revalidate: 3600,
     props: {
