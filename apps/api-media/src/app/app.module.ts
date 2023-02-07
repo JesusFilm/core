@@ -7,11 +7,11 @@ import {
 } from '@nestjs/apollo'
 import { LoggerModule } from 'nestjs-pino'
 import { DatadogTraceModule } from 'nestjs-ddtrace'
-import { ImageModule } from './modules/cloudflare/image/image.module'
+import { CloudflareImageModule } from './modules/cloudflare/image/image.module'
 
 @Module({
   imports: [
-    ImageModule,
+    CloudflareImageModule,
     GraphQLModule.forRoot<ApolloFederationDriverConfig>({
       driver: ApolloFederationDriver,
       typePaths: [

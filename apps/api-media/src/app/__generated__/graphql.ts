@@ -8,16 +8,24 @@
 /* tslint:disable */
 /* eslint-disable */
 
-export class CloudflareDirectCreatorUploadResponse {
-    __typename?: 'CloudflareDirectCreatorUploadResponse';
-    imageId?: Nullable<string>;
-    uploadUrl?: Nullable<string>;
+export class CloudflareImage {
+    __typename?: 'CloudflareImage';
+    id: string;
+    uploadUrl: string;
+    userId: string;
+    createdAt: string;
 }
 
 export abstract class IQuery {
     __typename?: 'IQuery';
 
-    abstract getCloudflareImageUploadInfo(): Nullable<CloudflareDirectCreatorUploadResponse> | Promise<Nullable<CloudflareDirectCreatorUploadResponse>>;
+    abstract createCloudflareImage(): Nullable<CloudflareImage> | Promise<Nullable<CloudflareImage>>;
+
+    abstract getMyCloudflareImages(): Nullable<Nullable<CloudflareImage>[]> | Promise<Nullable<Nullable<CloudflareImage>[]>>;
+}
+
+export abstract class IMutation {
+    abstract deleteCloudflareImage(id: string): Nullable<boolean> | Promise<Nullable<boolean>>;
 }
 
 type Nullable<T> = T | null;
