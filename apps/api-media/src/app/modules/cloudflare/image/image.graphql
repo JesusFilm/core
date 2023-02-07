@@ -1,8 +1,15 @@
-type CloudflareDirectCreatorUploadResponse {
-  imageId: String
-  uploadUrl: String
+type CloudflareImage {
+  id: ID!
+  uploadUrl: String!
+  userId: ID!
+  createdAt: String!
 }
 
 extend type Query {
-  getCloudflareImageUploadInfo: CloudflareDirectCreatorUploadResponse
+  createCloudflareImage: CloudflareImage
+  getMyCloudflareImages: [CloudflareImage]
+}
+
+extend type Mutation {
+  deleteCloudflareImage(id: ID!): Boolean
 }

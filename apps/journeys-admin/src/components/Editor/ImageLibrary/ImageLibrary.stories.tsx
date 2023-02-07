@@ -7,7 +7,6 @@ const ImageLibraryStory = {
   ...simpleComponentConfig,
   component: ImageLibrary,
   title: 'Journeys-Admin/Editor/ImageLibrary'
-}
 
 const Template: Story = () => {
   const [open, setOpen] = useState(true)

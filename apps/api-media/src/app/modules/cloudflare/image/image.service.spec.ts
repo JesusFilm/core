@@ -25,6 +25,14 @@ const cfResult = {
   success: true
 }
 
+const cfDeleteResult = {
+  result: {},
+  result_info: null,
+  success: true,
+  errors: [],
+  messages: []
+}
+
 describe('ImageService', () => {
   let service: ImageService
 
@@ -60,6 +68,28 @@ describe('ImageService', () => {
             Authorization: `Bearer ${process.env.CLOUDFLARE_IMAGES_TOKEN ?? ''}`
           },
           method: 'POST'
+        }
+      )
+    })
+  })
+  describe('deleteImageFromCloudflare', () => {
+    it('returns cloudflare response information', async () => {
+      const request = mockFetch.mockResolvedValueOnce({
+        ok: true,
+        json: async () => await Promise.resolve(cfDeleteResult)
+      } as unknown as Response)
+      expect(await service.deleteImageFromCloudflare('1')).toEqual(
+        cfDeleteResult
+      )
+      expect(request).toHaveBeenCalledWith(
+        `https://api.cloudflare.com/client/v4/accounts/${
+          process.env.CLOUDFLARE_ACCOUNT_ID ?? ''
+        }/images/v1/1`,
+        {
+          headers: {
+            Authorization: `Bearer ${process.env.CLOUDFLARE_IMAGES_TOKEN ?? ''}`
+          },
+          method: 'DELETE'
         }
       )
     })
