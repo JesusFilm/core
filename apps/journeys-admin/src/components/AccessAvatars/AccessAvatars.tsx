@@ -3,6 +3,7 @@ import MuiAvatar from '@mui/material/Avatar'
 import AvatarGroup from '@mui/material/AvatarGroup'
 import Box from '@mui/material/Box'
 import { noop } from 'lodash'
+import Badge from '@mui/material/Badge'
 import { AccessDialog } from '../AccessDialog'
 import { GetJourneys_journeys_userJourneys as UserJourney } from '../../../__generated__/GetJourneys'
 import { Avatar } from '../Avatar'
@@ -79,18 +80,30 @@ const withRenderLogic = ({
   }
 
   return function withAvatarGroup(values?: UserJourney[]): ReactElement {
-    const users = values?.map(
-      ({ role, user }) =>
-        user != null && (
-          <Avatar
-            user={user}
-            notification={role === UserJourneyRole.inviteRequested}
-            key={user.id}
-          />
-        )
-    )
+    const loading = values == null
+    let invisible = true
+    const maxIndex = max <= 2 ? 0 : max - 2
 
-    const children = users ?? [0, 1, 2].map((i) => <MuiAvatar key={i} />)
+    const children = loading
+      ? [0, 1, 2].map((i) => <MuiAvatar key={i} />)
+      : values?.map(({ role, user }, index) => {
+          if (
+            index > maxIndex &&
+            role === UserJourneyRole.inviteRequested &&
+            invisible
+          ) {
+            invisible = false
+          }
+          return (
+            user != null && (
+              <Avatar
+                user={user}
+                notification={role === UserJourneyRole.inviteRequested}
+                key={user.id}
+              />
+            )
+          )
+        })
 
     return (
       <Box
@@ -101,23 +114,25 @@ const withRenderLogic = ({
         }}
         role="button"
       >
-        <AvatarGroup
-          max={max}
-          sx={{
-            '> .MuiAvatar-root': {
-              width: diameter,
-              height: diameter,
-              fontSize,
-              borderWidth,
-              borderColor: '#FFF'
-            },
-            '> .MuiAvatarGroup-avatar': {
-              backgroundColor: users != null ? 'primary.main' : 'default'
-            }
-          }}
-        >
-          {children}
-        </AvatarGroup>
+        <Badge color="warning" variant="dot" invisible={invisible}>
+          <AvatarGroup
+            max={max}
+            sx={{
+              '> .MuiAvatar-root': {
+                width: diameter,
+                height: diameter,
+                fontSize,
+                borderWidth,
+                borderColor: '#FFF'
+              },
+              '> .MuiAvatarGroup-avatar': {
+                backgroundColor: loading ? 'default' : 'primary.main'
+              }
+            }}
+          >
+            {children}
+          </AvatarGroup>
+        </Badge>
       </Box>
     )
   }
