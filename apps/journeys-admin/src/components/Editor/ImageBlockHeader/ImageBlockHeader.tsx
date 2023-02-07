@@ -2,7 +2,7 @@ import Box from '@mui/material/Box'
 import IconButton from '@mui/material/IconButton'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
-import { ReactElement, useState } from 'react'
+import { ReactElement } from 'react'
 import AddIcon from '@mui/icons-material/Add'
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline'
 import { ImageBlockThumbnail } from '../ImageBlockThumbnail'
@@ -21,16 +21,6 @@ export function ImageBlockHeader({
   loading = false,
   selectedBlock
 }: ImageBlockHeaderProps): ReactElement {
-  const [hasImage, setHasImage] = useState(false)
-
-  if (selectedBlock != null && !hasImage) {
-    setHasImage(true)
-  }
-
-  if (selectedBlock == null && hasImage) {
-    setHasImage(false)
-  }
-
   return (
     <Stack
       data-testid="imageSrcStack"
@@ -51,15 +41,18 @@ export function ImageBlockHeader({
           }}
         >
           <ImageBlockThumbnail
-            selectedBlock={hasImage ? selectedBlock : undefined}
+            selectedBlock={selectedBlock != null ? selectedBlock : undefined}
             loading={loading}
           />
         </Box>
         <Stack>
           <Typography variant="subtitle2">
-            {hasImage ? 'Selected image' : 'Select image'}
+            {selectedBlock != null ? 'Selected image' : 'Select image'}
           </Typography>
-          <Typography variant="caption" display={hasImage ? 'flex' : 'none'}>
+          <Typography
+            variant="caption"
+            display={selectedBlock != null ? 'flex' : 'none'}
+          >
             {selectedBlock != null
               ? `${selectedBlock.width} x ${selectedBlock.height} pixels`
               : ''}
@@ -71,12 +64,12 @@ export function ImageBlockHeader({
         disabled={showAdd}
         sx={{
           mr: 2,
-          display: !hasImage && !showAdd ? 'none' : 'flex'
+          display: selectedBlock == null && !showAdd ? 'none' : 'flex'
         }}
       >
         {showAdd ? (
           <AddIcon color="primary" />
-        ) : hasImage ? (
+        ) : selectedBlock != null ? (
           <DeleteOutlineIcon
             color="primary"
             data-testid="imageBlockHeaderDelete"

@@ -15,7 +15,7 @@ describe('ImageBlockHeader', () => {
     blurhash: ''
   }
 
-  it('should display applied state correctly', () => {
+  it('should render selected image block', () => {
     const { getByText, getByTestId } = render(
       <ImageBlockHeader selectedBlock={image} />
     )
@@ -27,7 +27,7 @@ describe('ImageBlockHeader', () => {
     expect(getByTestId('imageBlockHeaderDelete')).toBeInTheDocument()
   })
 
-  it('should display default text for no image selected', () => {
+  it('should render default text for no image selected', () => {
     const { getByText, getByTestId } = render(
       <ImageBlockHeader selectedBlock={null} />
     )
@@ -36,7 +36,7 @@ describe('ImageBlockHeader', () => {
     expect(getByText('Select image')).toBeInTheDocument()
   })
 
-  it('should display source state correctly', () => {
+  it('should render source state correctly', () => {
     const { getByText, getByTestId } = render(
       <ImageBlockHeader selectedBlock={null} showAdd />
     )
