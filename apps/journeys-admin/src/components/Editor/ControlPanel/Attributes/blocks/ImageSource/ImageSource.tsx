@@ -27,7 +27,7 @@ export function ImageSource({ onClick }: ImageSourceProps): ReactElement {
           display: 'flex'
         }}
       >
-        <ImageBlockHeader />
+        <ImageBlockHeader selectedBlock={null} />
       </CardActionArea>
     </Card>
   )

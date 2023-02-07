@@ -5,7 +5,6 @@ import Typography from '@mui/material/Typography'
 import { ReactElement, useState } from 'react'
 import AddIcon from '@mui/icons-material/Add'
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline'
-import { TreeBlock } from '@core/journeys/ui/block'
 import { ImageBlockThumbnail } from '../ImageBlockThumbnail'
 import { GetJourney_journey_blocks_ImageBlock as ImageBlock } from '../../../../__generated__/GetJourney'
 
@@ -24,10 +23,12 @@ export function ImageBlockHeader({
 }: ImageBlockHeaderProps): ReactElement {
   const [hasImage, setHasImage] = useState(false)
 
-  const imageBlock = selectedBlock as TreeBlock<ImageBlock>
-
-  if (imageBlock != null && !hasImage) {
+  if (selectedBlock != null && !hasImage) {
     setHasImage(true)
+  }
+
+  if (selectedBlock == null && hasImage) {
+    setHasImage(false)
   }
 
   return (
@@ -50,7 +51,7 @@ export function ImageBlockHeader({
           }}
         >
           <ImageBlockThumbnail
-            selectedBlock={hasImage ? imageBlock : undefined}
+            selectedBlock={hasImage ? selectedBlock : undefined}
             loading={loading}
           />
         </Box>
@@ -59,8 +60,8 @@ export function ImageBlockHeader({
             {hasImage ? 'Selected image' : 'Select image'}
           </Typography>
           <Typography variant="caption" display={hasImage ? 'flex' : 'none'}>
-            {hasImage
-              ? `${imageBlock.width} x ${imageBlock.height} pixels`
+            {selectedBlock != null
+              ? `${selectedBlock.width} x ${selectedBlock.height} pixels`
               : ''}
           </Typography>
         </Stack>

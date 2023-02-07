@@ -73,7 +73,7 @@ export function ImageLibrary({
         </Toolbar>
       </AppBar>
       <Box sx={{ width: '100%', justifyContent: 'center', display: 'flex' }}>
-        <ImageBlockHeader />
+        <ImageBlockHeader selectedBlock={null} />
       </Box>
       <Box sx={{ px: 6 }} data-testid="ImageLibrary">
         <Tabs
