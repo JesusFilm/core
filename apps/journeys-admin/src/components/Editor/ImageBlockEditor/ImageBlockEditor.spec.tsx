@@ -1,10 +1,9 @@
-import { TreeBlock } from '@core/journeys/ui/block'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 
 import { GetJourney_journey_blocks_ImageBlock as ImageBlock } from '../../../../__generated__/GetJourney'
 import { ImageBlockEditor } from './ImageBlockEditor'
 
-const image: TreeBlock<ImageBlock> = {
+const image: ImageBlock = {
   id: 'image1.id',
   __typename: 'ImageBlock',
   parentBlockId: 'card.id',
@@ -13,8 +12,7 @@ const image: TreeBlock<ImageBlock> = {
   alt: 'image.jpg',
   width: 1920,
   height: 1080,
-  blurhash: '',
-  children: []
+  blurhash: ''
 }
 
 const onChange = jest.fn()
