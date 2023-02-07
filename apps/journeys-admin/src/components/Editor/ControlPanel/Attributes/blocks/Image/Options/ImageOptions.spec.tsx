@@ -4,6 +4,7 @@ import type { TreeBlock } from '@core/journeys/ui/block'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
 import { SnackbarProvider } from 'notistack'
+import useMediaQuery from '@mui/material/useMediaQuery'
 import {
   GetJourney_journey as Journey,
   GetJourney_journey_blocks_ImageBlock as ImageBlock
@@ -14,6 +15,11 @@ import {
   ThemeName
 } from '../../../../../../../../__generated__/globalTypes'
 import { ImageOptions, IMAGE_BLOCK_UPDATE } from './ImageOptions'
+
+jest.mock('@mui/material/useMediaQuery', () => ({
+  __esModule: true,
+  default: jest.fn()
+}))
 
 const journey: Journey = {
   __typename: 'Journey',
@@ -61,6 +67,7 @@ const image: TreeBlock<ImageBlock> = {
 }
 
 describe('ImageOptions', () => {
+  beforeEach(() => (useMediaQuery as jest.Mock).mockImplementation(() => true))
   it('updates image block', async () => {
     const imageBlockResult = jest.fn(() => ({
       data: {

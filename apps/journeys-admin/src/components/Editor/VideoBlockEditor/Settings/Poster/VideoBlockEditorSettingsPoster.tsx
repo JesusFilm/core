@@ -9,7 +9,6 @@ import { ReactElement, useState } from 'react'
 import { GetJourney_journey_blocks_ImageBlock as ImageBlock } from '../../../../../../__generated__/GetJourney'
 import { ImageBlockThumbnail } from '../../../ImageBlockThumbnail'
 import { ImageLibrary } from '../../../ImageLibrary'
-import { VideoBlockEditorSettingsPosterDialog } from './Dialog'
 
 interface BackgroundMediaCoverImageProps {
   selectedBlock: ImageBlock | null
@@ -26,10 +25,6 @@ export function VideoBlockEditorSettingsPoster({
   const [open, setOpen] = useState(false)
   const handleOpen = (): void => setOpen(true)
   const handleClose = (): void => setOpen(false)
-
-  const [loading, setLoading] = useState(false)
-  const handleLoading = (): void => setLoading(true)
-  const handleLoad = (): void => setLoading(false)
 
   return (
     <Stack direction="row" justifyContent="space-between">
@@ -54,10 +49,7 @@ export function VideoBlockEditorSettingsPoster({
         borderRadius={2}
       >
         <Stack direction="row" justifyContent="space-around">
-          <ImageBlockThumbnail
-            selectedBlock={selectedBlock}
-            loading={loading}
-          />
+          <ImageBlockThumbnail selectedBlock={selectedBlock} />
           <Stack
             direction="column"
             justifyContent="center"
@@ -76,14 +68,6 @@ export function VideoBlockEditorSettingsPoster({
                 }}
               />
             </IconButton>
-            {/* <VideoBlockEditorSettingsPosterDialog
-              selectedBlock={selectedBlock}
-              parentBlockId={parentBlockId}
-              onClose={handleClose}
-              open={open}
-              onLoading={handleLoading}
-              onLoad={handleLoad}
-            /> */}
             <ImageLibrary open={open} onClose={handleClose} />
           </Stack>
         </Stack>

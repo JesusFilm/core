@@ -4,6 +4,7 @@ import { fireEvent, render, waitFor } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
 import { InMemoryCache } from '@apollo/client'
 import { SnackbarProvider } from 'notistack'
+import useMediaQuery from '@mui/material/useMediaQuery'
 import {
   GetJourney_journey as Journey,
   GetJourney_journey_blocks_CardBlock as CardBlock,
@@ -22,6 +23,11 @@ import {
   CARD_BLOCK_COVER_IMAGE_BLOCK_UPDATE,
   BLOCK_DELETE_FOR_BACKGROUND_IMAGE
 } from './BackgroundMediaImage'
+
+jest.mock('@mui/material/useMediaQuery', () => ({
+  __esModule: true,
+  default: jest.fn()
+}))
 
 const journey: Journey = {
   __typename: 'Journey',
@@ -121,6 +127,8 @@ const video: TreeBlock<VideoBlock> = {
 }
 
 describe('BackgroundMediaImage', () => {
+  beforeEach(() => (useMediaQuery as jest.Mock).mockImplementation(() => true))
+
   it('creates a new image cover block', async () => {
     const cache = new InMemoryCache()
     cache.restore({

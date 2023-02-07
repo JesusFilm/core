@@ -18,7 +18,7 @@ export const DRAWER_WIDTH = 328
 interface ImageLibraryProps {
   open: boolean
   onClose?: () => void
-  onChange: (block: ImageBlock) => Promise<void>
+  onChange?: (block: ImageBlock) => Promise<void>
   onDelete?: () => Promise<void>
 }
 

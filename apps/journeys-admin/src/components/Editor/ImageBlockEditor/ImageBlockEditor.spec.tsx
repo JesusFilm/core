@@ -1,7 +1,13 @@
 import { fireEvent, render, waitFor } from '@testing-library/react'
+import useMediaQuery from '@mui/material/useMediaQuery'
 
 import { GetJourney_journey_blocks_ImageBlock as ImageBlock } from '../../../../__generated__/GetJourney'
 import { ImageBlockEditor } from './ImageBlockEditor'
+
+jest.mock('@mui/material/useMediaQuery', () => ({
+  __esModule: true,
+  default: jest.fn()
+}))
 
 const image: ImageBlock = {
   id: 'image1.id',
@@ -19,6 +25,7 @@ const onChange = jest.fn()
 const onDelete = jest.fn()
 
 describe('ImageBlockEditor', () => {
+  beforeEach(() => (useMediaQuery as jest.Mock).mockImplementation(() => true))
   describe('No existing ImageBlock', () => {
     it('shows placeholders on null', async () => {
       const { getByTestId, getByRole } = render(
@@ -85,14 +92,14 @@ describe('ImageBlockEditor', () => {
     await waitFor(() => expect(onChange).toHaveBeenCalled())
   })
   it('triggers onDelete', async () => {
-    const { getByRole } = render(
+    const { getAllByRole } = render(
       <ImageBlockEditor
         selectedBlock={image}
         onChange={onChange}
         onDelete={onDelete}
       />
     )
-    const deleteButton = await getByRole('button')
+    const deleteButton = await getAllByRole('button')[0]
     fireEvent.click(deleteButton)
     await waitFor(() => expect(onDelete).toHaveBeenCalled())
   })

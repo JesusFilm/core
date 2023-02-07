@@ -2,13 +2,15 @@ import LinkIcon from '@mui/icons-material/Link'
 import InputAdornment from '@mui/material/InputAdornment'
 import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
-import { ReactElement, ClipboardEvent } from 'react'
+import Button from '@mui/material/Button'
+import { ReactElement, ClipboardEvent, useState } from 'react'
 import { object, string } from 'yup'
 import { useFormik } from 'formik'
 import { noop } from 'lodash'
 
 import { GetJourney_journey_blocks_ImageBlock as ImageBlock } from '../../../../__generated__/GetJourney'
 import { ImageBlockHeader } from '../ImageBlockHeader'
+import { ImageLibrary } from '../ImageLibrary'
 
 interface ImageBlockEditorProps {
   selectedBlock: ImageBlock | null
@@ -25,6 +27,8 @@ export function ImageBlockEditor({
   onDelete,
   loading
 }: ImageBlockEditorProps): ReactElement {
+  const [open, setOpen] = useState(false)
+
   const srcSchema = object().shape({
     src: string().url('Please enter a valid url').required('Required')
   })
@@ -76,6 +80,7 @@ export function ImageBlockEditor({
         onDelete={handleImageDelete}
         loading={loading}
       />
+      <Button onClick={() => setOpen(true)}>Temporary button</Button>
       <Stack direction="column" sx={{ pt: 3 }}>
         <form>
           <TextField
@@ -108,6 +113,7 @@ export function ImageBlockEditor({
             }}
           />
         </form>
+        <ImageLibrary open={open} onClose={() => setOpen(false)} />
       </Stack>
     </>
   )

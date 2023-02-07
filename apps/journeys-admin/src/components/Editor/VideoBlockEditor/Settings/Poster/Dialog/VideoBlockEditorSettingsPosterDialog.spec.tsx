@@ -3,6 +3,7 @@ import { MockedProvider } from '@apollo/client/testing'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { fireEvent, render, waitFor } from '@testing-library/react'
+import useMediaQuery from '@mui/material/useMediaQuery'
 import {
   JourneyStatus,
   ThemeMode,
@@ -23,6 +24,11 @@ import {
   POSTER_IMAGE_BLOCK_UPDATE,
   BLOCK_DELETE_FOR_POSTER_IMAGE
 } from './VideoBlockEditorSettingsPosterDialog'
+
+jest.mock('@mui/material/useMediaQuery', () => ({
+  __esModule: true,
+  default: jest.fn()
+}))
 
 const journey: Journey = {
   __typename: 'Journey',
@@ -111,6 +117,7 @@ const image: ImageBlock = {
 const onClose = jest.fn()
 
 describe('VideoBlockEditorSettingsPosterDialog', () => {
+  beforeEach(() => (useMediaQuery as jest.Mock).mockImplementation(() => true))
   describe('No existing Image', () => {
     it('creates a new image poster block', async () => {
       const cache = new InMemoryCache()

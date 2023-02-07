@@ -1,12 +1,8 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { render } from '@testing-library/react'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
-import {
-  GetJourney_journey as Journey,
-} from '../../../../../../__generated__/GetJourney'
-import {
-  ImageEdit
-} from './ImageEdit'
+import { GetJourney_journey as Journey } from '../../../../../../__generated__/GetJourney'
+import { ImageEdit } from './ImageEdit'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
