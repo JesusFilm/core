@@ -6,7 +6,7 @@ import { ImageLibrary } from '.'
 const ImageLibraryStory = {
   ...simpleComponentConfig,
   component: ImageLibrary,
-  title: 'Journeys-Admin/ImageLibrary'
+  title: 'Journeys-Admin/Editor/ImageLibrary'
 }
 
 const Template: Story = () => {
