@@ -73,9 +73,7 @@ describe('VideoBlockEditorSettingsPoster', () => {
     const { getByTestId } = render(
       <MockedProvider>
         <ThemeProvider>
-          <VideoBlockEditorSettingsPoster
-            selectedBlock={image}
-          />
+          <VideoBlockEditorSettingsPoster selectedBlock={image} />
         </ThemeProvider>
       </MockedProvider>
     )
@@ -86,10 +84,7 @@ describe('VideoBlockEditorSettingsPoster', () => {
     const { getByRole } = render(
       <MockedProvider>
         <ThemeProvider>
-          <VideoBlockEditorSettingsPoster
-            selectedBlock={image}
-            disabled
-          />
+          <VideoBlockEditorSettingsPoster selectedBlock={image} disabled />
         </ThemeProvider>
       </MockedProvider>
     )

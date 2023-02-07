@@ -16,7 +16,7 @@ interface VideoBlockEditorProps {
 
 export function VideoBlockEditor({
   selectedBlock,
-  onChange
+  onChange,
 }: VideoBlockEditorProps): ReactElement {
   const posterBlock = selectedBlock?.children.find(
     (child) => child.id === (selectedBlock as VideoBlock).posterBlockId
