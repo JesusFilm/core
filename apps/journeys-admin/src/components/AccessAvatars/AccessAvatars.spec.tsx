@@ -2,6 +2,7 @@ import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 import { ThemeProvider } from '../ThemeProvider'
+import { UserJourneyRole } from '../../../__generated__/globalTypes'
 import {
   userJourney1,
   userJourney2,
@@ -110,5 +111,32 @@ describe('AccessAvatars', () => {
     await waitFor(() =>
       expect(queryByText('Invite Other Editors')).not.toBeInTheDocument()
     )
+  })
+
+  it('should show notification badge', () => {
+    const inviteRequestedUserJourney = {
+      ...userJourney6,
+      role: UserJourneyRole.inviteRequested
+    }
+    const { getAllByLabelText } = render(
+      <SnackbarProvider>
+        <MockedProvider>
+          <ThemeProvider>
+            <AccessAvatars
+              journeyId="journeyId"
+              userJourneys={[
+                userJourney1,
+                userJourney2,
+                userJourney3,
+                userJourney4,
+                userJourney5,
+                inviteRequestedUserJourney
+              ]}
+            />
+          </ThemeProvider>
+        </MockedProvider>
+      </SnackbarProvider>
+    )
+    expect(getAllByLabelText('overflow-notification-badge')).toHaveLength(2)
   })
 })

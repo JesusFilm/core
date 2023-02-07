@@ -114,7 +114,12 @@ const withRenderLogic = ({
         }}
         role="button"
       >
-        <Badge color="warning" variant="dot" invisible={invisible}>
+        <Badge
+          color="warning"
+          variant="dot"
+          invisible={invisible}
+          aria-label="overflow-notification-badge"
+        >
           <AvatarGroup
             max={max}
             sx={{

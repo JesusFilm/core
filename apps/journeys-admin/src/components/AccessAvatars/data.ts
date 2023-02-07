@@ -75,3 +75,16 @@ export const userJourney6: UserJourney = {
     imageUrl: 'https://bit.ly/33wxMaI'
   }
 }
+
+export const userJourney7: UserJourney = {
+  __typename: 'UserJourney',
+  id: 'userJourney6.id',
+  role: UserJourneyRole.inviteRequested,
+  user: {
+    __typename: 'User',
+    id: '6',
+    firstName: 'Drake',
+    lastName: 'Six',
+    imageUrl: 'https://bit.ly/33wxMaI'
+  }
+}
