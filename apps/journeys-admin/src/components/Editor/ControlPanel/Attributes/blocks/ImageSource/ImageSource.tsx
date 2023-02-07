@@ -1,7 +1,7 @@
 import { ReactElement } from 'react'
 import Card from '@mui/material/Card'
 import CardActionArea from '@mui/material/CardActionArea'
-import { ImageSelection } from '../../../../ImageLibrary/ImageSelection/ImageSelection'
+import { ImageBlockHeader } from '../../../../ImageBlockHeader'
 
 export interface ImageSourceProps {
   onClick?: () => void
@@ -27,13 +27,7 @@ export function ImageSource({ onClick }: ImageSourceProps): ReactElement {
           display: 'flex'
         }}
       >
-        <ImageSelection
-          startPanel={{
-            name: 'source',
-            heading: 'Select image',
-            hasImage: false
-          }}
-        />
+        <ImageBlockHeader />
       </CardActionArea>
     </Card>
   )

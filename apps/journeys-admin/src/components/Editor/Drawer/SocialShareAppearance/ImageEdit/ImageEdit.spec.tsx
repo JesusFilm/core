@@ -314,7 +314,7 @@ describe('ImageEdit', () => {
       </MockedProvider>
     )
     fireEvent.click(getByRole('button'))
-    fireEvent.click(getByTestId('DeleteOutlineIcon'))
+    fireEvent.click(getByTestId('imageBlockHeaderDelete'))
     await waitFor(() => expect(imageDeleteResult).toHaveBeenCalled())
     await waitFor(() => expect(journeyUpdateResult).toHaveBeenCalled())
     expect(cache.extract()['Journey:journey.id']?.blocks).toEqual([])

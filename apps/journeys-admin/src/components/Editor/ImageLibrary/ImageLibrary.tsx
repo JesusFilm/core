@@ -11,7 +11,7 @@ import { TabPanel, tabA11yProps } from '@core/shared/ui/TabPanel'
 import { Theme } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import useMediaQuery from '@mui/material/useMediaQuery'
-import { ImageSelection } from './ImageSelection/ImageSelection'
+import { ImageBlockHeader } from '../ImageBlockHeader/ImageBlockHeader'
 
 export const DRAWER_WIDTH = 328
 
@@ -73,7 +73,7 @@ export function ImageLibrary({
         </Toolbar>
       </AppBar>
       <Box sx={{ width: '100%', justifyContent: 'center', display: 'flex' }}>
-        <ImageSelection />
+        <ImageBlockHeader />
       </Box>
       <Box sx={{ px: 6 }} data-testid="ImageLibrary">
         <Tabs

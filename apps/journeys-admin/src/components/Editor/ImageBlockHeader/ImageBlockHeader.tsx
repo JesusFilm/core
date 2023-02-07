@@ -1,80 +1,89 @@
-import DeleteOutline from '@mui/icons-material/DeleteOutline'
 import Box from '@mui/material/Box'
 import IconButton from '@mui/material/IconButton'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
-import { ReactElement } from 'react'
+import { ReactElement, useState } from 'react'
+import AddIcon from '@mui/icons-material/Add'
+import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline'
+import { TreeBlock } from '@core/journeys/ui/block'
 import { ImageBlockThumbnail } from '../ImageBlockThumbnail'
+import { GetJourney_journey_blocks_ImageBlock as ImageBlock } from '../../../../__generated__/GetJourney'
 
 interface ImageBlockHeaderProps {
-  selectedBlock: { src: string | null; alt: string } | null
-  caption?: string
-  header: string
-  showDelete: boolean
-  onDelete: () => Promise<void>
+  selectedBlock: ImageBlock | null
+  showAdd?: boolean
+  onDelete?: () => Promise<void>
   loading?: boolean
 }
 
 export function ImageBlockHeader({
-  selectedBlock,
-  caption = '',
-  header,
-  showDelete,
+  showAdd = false,
   onDelete,
-  loading
+  loading = false,
+  selectedBlock
 }: ImageBlockHeaderProps): ReactElement {
+  const [hasImage, setHasImage] = useState(false)
+
+  const imageBlock = selectedBlock as TreeBlock<ImageBlock>
+
+  if (imageBlock != null && !hasImage) {
+    setHasImage(true)
+  }
+
   return (
-    <Box sx={{ mb: 4 }}>
-      <Stack
-        direction="row"
-        spacing={4}
-        data-testid="imageSrcStack"
-        justifyContent="space-between"
-      >
-        <Box>
+    <Stack
+      data-testid="imageSrcStack"
+      flexDirection="row"
+      justifyContent="space-between"
+      alignItems="center"
+      sx={{
+        height: 78,
+        width: 285
+      }}
+    >
+      <Stack direction="row" alignItems="center">
+        <Box
+          sx={{
+            ml: 2,
+            mr: 4,
+            position: 'relative'
+          }}
+        >
           <ImageBlockThumbnail
-            selectedBlock={selectedBlock}
+            selectedBlock={hasImage ? imageBlock : undefined}
             loading={loading}
           />
         </Box>
-        <Stack
-          direction="column"
-          justifyContent="center"
-          sx={{ minWidth: 0, width: '100%' }}
-        >
-          {!showDelete && <Typography variant="subtitle2">{header}</Typography>}
-          {showDelete && (
-            <Typography
-              variant="subtitle2"
-              sx={{
-                textOverflow: 'ellipsis',
-                whiteSpace: 'nowrap',
-                overflow: 'hidden'
-              }}
-            >
-              {header}
-            </Typography>
-          )}
-          <Typography
-            variant="caption"
-            sx={{
-              textOverflow: 'ellipsis',
-              whiteSpace: 'nowrap',
-              overflow: 'hidden'
-            }}
-          >
-            {caption}
-            &nbsp;
+        <Stack>
+          <Typography variant="subtitle2">
+            {hasImage ? 'Selected image' : 'Select image'}
+          </Typography>
+          <Typography variant="caption" display={hasImage ? 'flex' : 'none'}>
+            {hasImage
+              ? `${imageBlock.width} x ${imageBlock.height} pixels`
+              : ''}
           </Typography>
         </Stack>
-        {showDelete && (
-          <Stack direction="column" justifyContent="center">
-            <IconButton onClick={onDelete} data-testid="imageBlockHeaderDelete">
-              <DeleteOutline color="primary" />
-            </IconButton>
-          </Stack>
-        )}
       </Stack>
-    </Box>
+      <IconButton
+        onClick={onDelete}
+        disabled={showAdd}
+        sx={{
+          mr: 2,
+          display: !hasImage && !showAdd ? 'none' : 'flex'
+        }}
+      >
+        {showAdd ? (
+          <AddIcon color="primary" />
+        ) : hasImage ? (
+          <DeleteOutlineIcon
+            color="primary"
+            data-testid="imageBlockHeaderDelete"
+          />
+        ) : (
+          <></>
+        )}
+      </IconButton>
+    </Stack>
   )
 }
