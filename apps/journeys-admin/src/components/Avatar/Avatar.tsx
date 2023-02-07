@@ -8,13 +8,16 @@ import { GetJourneys_journeys_userJourneys_user as User } from '../../../__gener
 
 export interface AvatarProps {
   user: User
-  notification: boolean
+  notification?: boolean
 }
 const StyledBadge = styled(Badge)(({ theme }) => ({
   '& .MuiBadge-badge': {}
 }))
 
-export function Avatar({ user, notification }: AvatarProps): ReactElement {
+export function Avatar({
+  user,
+  notification = false
+}: AvatarProps): ReactElement {
   const displayName = compact([user.firstName, user.lastName]).join(' ')
 
   return (
@@ -25,6 +28,7 @@ export function Avatar({ user, notification }: AvatarProps): ReactElement {
           color="warning"
           overlap="circular"
           variant="dot"
+          aria-label="notification-badge"
           sx={{
             '& .MuiBadge-badge': {
               boxShadow: (theme) =>

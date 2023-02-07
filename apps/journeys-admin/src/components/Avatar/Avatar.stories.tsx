@@ -17,11 +17,11 @@ const Template: Story<AvatarProps> = ({ ...args }) => (
       <Avatar
         {...args}
         user={{
+          __typename: 'User',
           id: '2',
           firstName: 'Person',
           lastName: 'Two',
-          imageUrl: null,
-          email: 'another@email.com'
+          imageUrl: null
         }}
       />
     </Stack>
@@ -31,22 +31,22 @@ const Template: Story<AvatarProps> = ({ ...args }) => (
 export const Default = Template.bind({})
 Default.args = {
   user: {
+    __typename: 'User',
     id: '1',
     firstName: 'Person',
     lastName: 'One',
-    imageUrl: 'https://bit.ly/3Gth4Yf',
-    email: 'test@email.com'
+    imageUrl: 'https://bit.ly/3Gth4Yf'
   }
 }
 
 export const Notifications = Template.bind({})
 Notifications.args = {
   user: {
+    __typename: 'User',
     id: '3',
     firstName: 'Person',
     lastName: 'Three',
-    imageUrl: 'https://bit.ly/3Gth4Yf',
-    email: 'test@email.com'
+    imageUrl: 'https://bit.ly/3Gth4Yf'
   },
   notification: true
 }
