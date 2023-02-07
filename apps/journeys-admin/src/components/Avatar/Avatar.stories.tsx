@@ -13,16 +13,7 @@ const AvatarDemo = {
 const Template: Story<AvatarProps> = ({ ...args }) => (
   <Paper elevation={0} sx={{ p: 2 }}>
     <Stack direction="row" gap={2}>
-      <Avatar
-        {...args}
-        user={{
-          id: '1',
-          firstName: 'Person',
-          lastName: 'One',
-          imageUrl: 'https://bit.ly/3Gth4Yf',
-          email: 'test@email.com'
-        }}
-      />
+      <Avatar {...args} />
       <Avatar
         {...args}
         user={{
@@ -39,13 +30,25 @@ const Template: Story<AvatarProps> = ({ ...args }) => (
 
 export const Default = Template.bind({})
 Default.args = {
-  // add properties here
+  user: {
+    id: '1',
+    firstName: 'Person',
+    lastName: 'One',
+    imageUrl: 'https://bit.ly/3Gth4Yf',
+    email: 'test@email.com'
+  }
 }
 
 export const Notifications = Template.bind({})
 Notifications.args = {
-  ...Default.args
-  // set properties unique to other stories
+  user: {
+    id: '3',
+    firstName: 'Person',
+    lastName: 'Three',
+    imageUrl: 'https://bit.ly/3Gth4Yf',
+    email: 'test@email.com'
+  },
+  notification: true
 }
 
 export default AvatarDemo as Meta
