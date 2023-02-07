@@ -79,19 +79,18 @@ const withRenderLogic = ({
   }
 
   return function withAvatarGroup(values?: UserJourney[]): ReactElement {
-    const children =
-      values != null
-        ? values.map(
-            ({ role, user }) =>
-              user != null && (
-                <Avatar
-                  user={user}
-                  notification={role === UserJourneyRole.inviteRequested}
-                  key={user.id}
-                />
-              )
-          )
-        : [0, 1, 2].map((i) => <MuiAvatar key={i} />)
+    const users = values?.map(
+      ({ role, user }) =>
+        user != null && (
+          <Avatar
+            user={user}
+            notification={role === UserJourneyRole.inviteRequested}
+            key={user.id}
+          />
+        )
+    )
+
+    const children = users ?? [0, 1, 2].map((i) => <MuiAvatar key={i} />)
 
     return (
       <Box
@@ -113,7 +112,7 @@ const withRenderLogic = ({
               borderColor: '#FFF'
             },
             '> .MuiAvatarGroup-avatar': {
-              backgroundColor: 'primary.main'
+              backgroundColor: users != null ? 'primary.main' : 'default'
             }
           }}
         >
