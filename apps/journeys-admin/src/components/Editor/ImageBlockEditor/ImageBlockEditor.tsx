@@ -70,13 +70,6 @@ export function ImageBlockEditor({
     <>
       <ImageBlockHeader
         selectedBlock={selectedBlock}
-        header={selectedBlock == null ? 'Select Image File' : selectedBlock.alt}
-        caption={
-          selectedBlock == null
-            ? 'Min width 1024px'
-            : `${selectedBlock.width} x ${selectedBlock.height}px`
-        }
-        showDelete={showDelete && selectedBlock != null}
         onDelete={handleImageDelete}
         loading={loading}
       />

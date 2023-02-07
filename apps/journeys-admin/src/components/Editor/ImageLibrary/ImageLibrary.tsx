@@ -12,6 +12,7 @@ import { Theme } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { GetJourney_journey_blocks_ImageBlock as ImageBlock } from '../../../../__generated__/GetJourney'
+import { ImageBlockHeader } from '../ImageBlockHeader'
 
 export const DRAWER_WIDTH = 328
 
@@ -74,6 +75,9 @@ export function ImageLibrary({
           </IconButton>
         </Toolbar>
       </AppBar>
+      <Box sx={{ width: '100%', justifyContent: 'center', display: 'flex' }}>
+        <ImageBlockHeader selectedBlock={null} />
+      </Box>
       <Box sx={{ px: 6 }} data-testid="ImageLibrary">
         <Tabs
           value={tabValue}

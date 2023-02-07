@@ -7,7 +7,8 @@ locals {
     "DATABASE_USER",
     "CLOUDFLARE_IMAGES_TOKEN",
     "CLOUDFLARE_ACCOUNT_ID",
-    "GOOGLE_APPLICATION_JSON"
+    "GOOGLE_APPLICATION_JSON",
+    "UNSPLASH_ACCESS_KEY"
   ]
   service_config = {
     name           = "api-media"
