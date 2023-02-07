@@ -1,8 +1,8 @@
 import { ReactElement } from 'react'
 import { useMutation, gql } from '@apollo/client'
 import NewReleasesRoundedIcon from '@mui/icons-material/NewReleasesRounded'
-import { MenuItem } from '../../MenuItem'
-import { UserJourneyPromote } from '../../../../__generated__/UserJourneyPromote'
+import { MenuItem } from '../../../../MenuItem'
+import { UserJourneyPromote } from '../../../../../../__generated__/UserJourneyPromote'
 
 interface PromoteUserProps {
   id: string
