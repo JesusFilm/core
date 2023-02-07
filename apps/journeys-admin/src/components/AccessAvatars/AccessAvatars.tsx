@@ -1,37 +1,12 @@
 import { ReactElement, useState } from 'react'
-import Avatar from '@mui/material/Avatar'
+import MuiAvatar from '@mui/material/Avatar'
 import AvatarGroup from '@mui/material/AvatarGroup'
 import Box from '@mui/material/Box'
-import Tooltip from '@mui/material/Tooltip'
-import { compact } from 'lodash'
+import { noop } from 'lodash'
 import { AccessDialog } from '../AccessDialog'
-
-interface User {
-  id: string
-  firstName: string | null
-  lastName: string | null
-  imageUrl: string | null
-}
-
-interface AccessAvatarProps {
-  user: User
-}
-
-function AccessAvatar({ user }: AccessAvatarProps): ReactElement {
-  const displayName = compact([user.firstName, user.lastName]).join(' ')
-
-  return (
-    <Tooltip title={displayName}>
-      <Avatar alt={displayName} src={user.imageUrl ?? undefined}>
-        {displayName.charAt(0)?.toUpperCase()}
-      </Avatar>
-    </Tooltip>
-  )
-}
-
-interface UserJourney {
-  user: User | null
-}
+import { GetJourneys_journeys_userJourneys as UserJourney } from '../../../__generated__/GetJourneys'
+import { Avatar } from '../Avatar'
+import { UserJourneyRole } from '../../../__generated__/globalTypes'
 
 export interface AccessAvatarsProps {
   journeyId?: string
@@ -49,9 +24,41 @@ export function AccessAvatars({
   smMax = 5
 }: AccessAvatarsProps): ReactElement {
   const [open, setOpen] = useState(false)
-  const children = userJourneys?.map(
-    ({ user }) => user != null && <AccessAvatar user={user} key={user.id} />
+  const min = withRenderLogic({ size, max: xsMax, setOpen })
+  const max = withRenderLogic({ size, max: smMax, setOpen })
+
+  return (
+    <>
+      <Box sx={{ display: { xs: 'block', sm: 'none' } }}>
+        {min(userJourneys)}
+      </Box>
+
+      <Box sx={{ display: { xs: 'none', sm: 'block' } }}>
+        {max(userJourneys)}
+      </Box>
+
+      {journeyId != null && (
+        <AccessDialog
+          journeyId={journeyId}
+          open={open}
+          onClose={() => setOpen(false)}
+        />
+      )}
+    </>
   )
+}
+
+interface Props {
+  size: 'small' | 'medium' | 'large'
+  max: number
+  setOpen: (open: boolean) => void
+}
+
+const withRenderLogic = ({
+  size,
+  max,
+  setOpen
+}: Props): ((values?: UserJourney[]) => ReactElement) => {
   // small default sizes
   let diameter: number
   let fontSize: number | undefined
@@ -71,81 +78,48 @@ export function AccessAvatars({
       break
   }
 
-  return (
-    <>
-      {journeyId != null ? (
-        <>
-          <Box
-            onClick={() => setOpen(true)}
-            sx={{
-              cursor: 'pointer',
-              height: diameter
-            }}
-            role="button"
-          >
-            <AvatarGroup
-              max={xsMax}
-              sx={{
-                display: { xs: 'inline-flex', sm: 'none' },
-                '> .MuiAvatar-root': {
-                  width: diameter,
-                  height: diameter,
-                  fontSize,
-                  borderWidth,
-                  borderColor: '#FFF'
-                },
-                '> .MuiAvatarGroup-avatar': {
-                  backgroundColor: 'primary.main'
-                }
-              }}
-            >
-              {children}
-            </AvatarGroup>
-            <AvatarGroup
-              max={smMax}
-              sx={{
-                display: { xs: 'none', sm: 'inline-flex' },
-                '> .MuiAvatar-root': {
-                  width: diameter,
-                  height: diameter,
-                  fontSize,
-                  borderWidth,
-                  borderColor: '#FFF'
-                },
-                '> .MuiAvatarGroup-avatar': {
-                  backgroundColor: 'primary.main'
-                }
-              }}
-            >
-              {children}
-            </AvatarGroup>
-          </Box>
-          <AccessDialog
-            journeyId={journeyId}
-            open={open}
-            onClose={() => setOpen(false)}
-          />
-        </>
-      ) : (
-        <Box>
-          <AvatarGroup
-            sx={{
-              display: 'inline-flex',
-              '> .MuiAvatar-root': {
-                width: diameter,
-                height: diameter,
-                fontSize,
-                borderWidth,
-                borderColor: '#FFF'
-              }
-            }}
-          >
-            <Avatar />
-            <Avatar />
-            <Avatar />
-          </AvatarGroup>
-        </Box>
-      )}
-    </>
-  )
+  return function withAvatarGroup(values?: UserJourney[]): ReactElement {
+    const children =
+      values != null
+        ? values.map(
+            ({ role, user }) =>
+              user != null && (
+                <Avatar
+                  user={user}
+                  notification={role === UserJourneyRole.inviteRequested}
+                  key={user.id}
+                />
+              )
+          )
+        : [0, 1, 2].map((i) => <MuiAvatar key={i} />)
+
+    return (
+      <Box
+        onClick={values != null ? () => setOpen(true) : noop}
+        sx={{
+          cursor: 'pointer',
+          height: diameter
+        }}
+        role="button"
+      >
+        <AvatarGroup
+          max={max}
+          sx={{
+            '> .MuiAvatar-root': {
+              width: diameter,
+              height: diameter,
+              fontSize,
+              borderWidth,
+              borderColor: '#FFF'
+            },
+            '> .MuiAvatarGroup-avatar': {
+              backgroundColor: 'primary.main'
+            }
+          }}
+        >
+          {children}
+        </AvatarGroup>
+      </Box>
+    )
+  }
 }

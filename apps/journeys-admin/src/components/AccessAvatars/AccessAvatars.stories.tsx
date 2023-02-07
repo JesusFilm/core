@@ -132,9 +132,36 @@ export const NoImage: Story<AccessAvatarsProps> = Template.bind({})
 NoImage.args = {
   journeyId: 'journeyId',
   userJourneys: [
-    { ...userJourney1, user: { ...userJourney1.user, imageUrl: null } },
-    { ...userJourney2, user: { ...userJourney2.user, imageUrl: null } },
-    { ...userJourney3, user: { ...userJourney3.user, imageUrl: null } }
+    {
+      ...userJourney1,
+      user: {
+        __typename: 'User',
+        id: '1',
+        firstName: 'Amin',
+        lastName: 'One',
+        imageUrl: null
+      }
+    },
+    {
+      ...userJourney2,
+      user: {
+        __typename: 'User',
+        id: '2',
+        firstName: 'Horace',
+        lastName: 'Two',
+        imageUrl: null
+      }
+    },
+    {
+      ...userJourney3,
+      user: {
+        __typename: 'User',
+        id: '3',
+        firstName: 'Coral',
+        lastName: 'Three',
+        imageUrl: null
+      }
+    }
   ]
 }
 

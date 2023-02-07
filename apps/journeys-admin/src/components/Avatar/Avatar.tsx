@@ -4,10 +4,10 @@ import Badge from '@mui/material/Badge'
 import Tooltip from '@mui/material/Tooltip'
 import { styled } from '@mui/material/styles'
 import { compact } from 'lodash'
-import { GetMe_me as User } from '../../../__generated__/GetMe'
+import { GetJourneys_journeys_userJourneys_user as User } from '../../../__generated__/GetJourneys'
 
 export interface AvatarProps {
-  user: Omit<User, '__typename'>
+  user: User
   notification: boolean
 }
 const StyledBadge = styled(Badge)(({ theme }) => ({
