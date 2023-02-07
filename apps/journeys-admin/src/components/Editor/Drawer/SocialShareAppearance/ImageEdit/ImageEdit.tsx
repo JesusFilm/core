@@ -267,6 +267,7 @@ export function ImageEdit(): ReactElement {
         </Box>
       )}
       <ImageLibrary
+        selectedBlock={journey?.primaryImageBlock ?? null}
         open={open}
         onClose={handleClose}
         onChange={handleChange}

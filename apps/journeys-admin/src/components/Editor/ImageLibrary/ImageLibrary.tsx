@@ -19,13 +19,19 @@ export const DRAWER_WIDTH = 328
 interface ImageLibraryProps {
   open: boolean
   onClose?: () => void
-  onChange?: (block: ImageBlock) => Promise<void>
+  onChange?: (image: ImageBlock) => Promise<void>
   onDelete?: () => Promise<void>
+  selectedBlock: ImageBlock | null
+  loading?: boolean
 }
 
 export function ImageLibrary({
   open,
-  onClose
+  onClose,
+  onChange,
+  onDelete,
+  selectedBlock,
+  loading
 }: ImageLibraryProps): ReactElement {
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
   const [tabValue, setTabValue] = useState(0)
@@ -76,7 +82,11 @@ export function ImageLibrary({
         </Toolbar>
       </AppBar>
       <Box sx={{ width: '100%', justifyContent: 'center', display: 'flex' }}>
-        <ImageBlockHeader selectedBlock={null} />
+        <ImageBlockHeader
+          selectedBlock={selectedBlock}
+          onDelete={onDelete}
+          loading={loading}
+        />
       </Box>
       <Box sx={{ px: 6 }} data-testid="ImageLibrary">
         <Tabs

@@ -47,7 +47,7 @@ export function ImageBlockHeader({
         </Box>
         <Stack>
           <Typography variant="subtitle2">
-            {selectedBlock != null ? 'Selected image' : 'Select image'}
+            {selectedBlock != null ? 'Selected Image' : 'Select Image'}
           </Typography>
           <Typography
             variant="caption"

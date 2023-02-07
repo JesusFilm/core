@@ -268,7 +268,6 @@ export function VideoBlockEditorSettings({
         <Divider />
         <VideoBlockEditorSettingsPoster
           selectedBlock={posterBlock}
-          parentBlockId={selectedBlock?.id}
           disabled={selectedBlock == null}
         />
       </Stack>

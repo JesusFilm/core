@@ -12,13 +12,11 @@ import { ImageLibrary } from '../../../ImageLibrary'
 
 interface BackgroundMediaCoverImageProps {
   selectedBlock: ImageBlock | null
-  parentBlockId: string | undefined
   disabled?: boolean
 }
 
 export function VideoBlockEditorSettingsPoster({
   selectedBlock,
-  parentBlockId,
   disabled = false
 }: BackgroundMediaCoverImageProps): ReactElement {
   const theme = useTheme()
@@ -68,7 +66,11 @@ export function VideoBlockEditorSettingsPoster({
                 }}
               />
             </IconButton>
-            <ImageLibrary open={open} onClose={handleClose} />
+            <ImageLibrary
+              open={open}
+              onClose={handleClose}
+              selectedBlock={selectedBlock}
+            />
           </Stack>
         </Stack>
       </Box>
