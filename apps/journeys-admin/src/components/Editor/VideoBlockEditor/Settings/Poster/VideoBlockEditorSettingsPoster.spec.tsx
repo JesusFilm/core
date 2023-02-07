@@ -75,7 +75,6 @@ describe('VideoBlockEditorSettingsPoster', () => {
         <ThemeProvider>
           <VideoBlockEditorSettingsPoster
             selectedBlock={image}
-            parentBlockId={video.id}
           />
         </ThemeProvider>
       </MockedProvider>
@@ -89,7 +88,6 @@ describe('VideoBlockEditorSettingsPoster', () => {
         <ThemeProvider>
           <VideoBlockEditorSettingsPoster
             selectedBlock={image}
-            parentBlockId={video.id}
             disabled
           />
         </ThemeProvider>
