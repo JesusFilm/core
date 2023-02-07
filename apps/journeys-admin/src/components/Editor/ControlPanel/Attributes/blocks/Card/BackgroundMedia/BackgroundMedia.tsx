@@ -10,6 +10,7 @@ import { useEditor } from '@core/journeys/ui/EditorProvider'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { GetJourney_journey_blocks_CardBlock as CardBlock } from '../../../../../../../../__generated__/GetJourney'
 import { palette } from '../../../../../../ThemeProvider/admin/tokens/colors'
+import { ImageUpload } from '../../Image/Upload'
 import { BackgroundMediaImage } from './Image/BackgroundMediaImage'
 import { BackgroundMediaVideo } from './Video/BackgroundMediaVideo'
 
@@ -90,6 +91,7 @@ export function BackgroundMedia(): ReactElement {
       {blockType === 'ImageBlock' && (
         <Box sx={{ pt: 4, pb: 3, px: 6 }}>
           <BackgroundMediaImage cardBlock={cardBlock} />
+          <ImageUpload />
         </Box>
       )}
       {blockType === 'VideoBlock' && (
