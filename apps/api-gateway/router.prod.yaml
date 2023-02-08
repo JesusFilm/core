@@ -17,6 +17,7 @@ cors:
   match_origins:
     # any project deployed on the jesusfilm vercel account
     - '^https://([a-z0-9-]+)-jesusfilm[.]vercel[.]app$'
+  max_age: 24h
 headers:
   all:
     request:
@@ -26,7 +27,7 @@ headers:
           named: 'user-agent'
       - propagate:
           named: 'x-forwarded-for'
-health-check:
+health_check:
   listen: 0.0.0.0:8088
   enabled: true
 include_subgraph_errors:
