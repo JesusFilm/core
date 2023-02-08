@@ -8,11 +8,13 @@ import {
   Role,
   ThemeMode,
   ThemeName,
-  UserJourney,
   UserJourneyRole,
   UserRole
 } from '../../__generated__/graphql'
-import { UserJourneyService } from '../../modules/userJourney/userJourney.service'
+import {
+  UserJourneyRecord,
+  UserJourneyService
+} from '../../modules/userJourney/userJourney.service'
 import { UserRoleService } from '../../modules/userRole/userRole.service'
 import { JourneyService } from '../../modules/journey/journey.service'
 import { RoleGuard } from './roleGuard'
@@ -27,7 +29,7 @@ const mockContextToUserId = contextToUserId as jest.MockedFunction<
 >
 
 describe('RoleGuard', () => {
-  const userJourney: UserJourney = {
+  const userJourney: UserJourneyRecord = {
     id: '1',
     userId: '1',
     journeyId: '2',
@@ -84,7 +86,7 @@ describe('RoleGuard', () => {
     _userJourneyService: UserJourneyService,
     _journeyId: string,
     _userId: string
-  ): Promise<UserJourney> => {
+  ): Promise<UserJourneyRecord | undefined> => {
     return userJourney
   }
 

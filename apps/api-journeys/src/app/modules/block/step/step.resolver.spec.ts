@@ -74,9 +74,7 @@ describe('StepBlockResolver', () => {
   describe('stepBlockCreate', () => {
     it('creates a StepBlock', async () => {
       expect(
-        await resolver
-          .stepBlockCreate(omit(block, ['id', 'parentOrder']))
-          .catch((err) => console.log(err))
+        await resolver.stepBlockCreate(omit(block, ['id', 'parentOrder']))
       ).toEqual(blockCreateResponse)
       expect(service.getSiblings).toHaveBeenCalledWith(block.journeyId)
       expect(service.save).toHaveBeenCalledWith({
@@ -88,9 +86,7 @@ describe('StepBlockResolver', () => {
 
   describe('stepBlockUpdate', () => {
     it('updates a StepBlock', async () => {
-      resolver
-        .stepBlockUpdate(block.id, block.journeyId, blockUpdate)
-        .catch((err) => console.log(err))
+      await resolver.stepBlockUpdate(block.id, block.journeyId, blockUpdate)
       expect(service.update).toHaveBeenCalledWith(block.id, blockUpdate)
     })
   })
