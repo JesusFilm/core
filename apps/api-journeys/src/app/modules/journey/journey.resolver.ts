@@ -190,6 +190,7 @@ export class JourneyResolver {
           ...input
         })
         await this.userJourneyService.save({
+          id: uuidv4(),
           userId,
           journeyId: journey.id,
           role: UserJourneyRole.owner
@@ -314,6 +315,7 @@ export class JourneyResolver {
         const journey: Journey = await this.journeyService.save(input)
         await this.blockService.saveAll(duplicateBlocks)
         await this.userJourneyService.save({
+          id: uuidv4(),
           userId,
           journeyId: journey.id,
           role: UserJourneyRole.owner

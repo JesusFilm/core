@@ -2,29 +2,32 @@ import { Test, TestingModule } from '@nestjs/testing'
 import { Database } from 'arangojs'
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 import { mockDbQueryResult } from '@core/nest/database/mock'
-import { DocumentCollection } from 'arangojs/collection'
+import { DocumentCollection, EdgeCollection } from 'arangojs/collection'
 import { keyAsId } from '@core/nest/decorators/KeyAsId'
 
 import { AqlQuery } from 'arangojs/aql'
 import { MemberService } from './member.service'
 
 describe('memberService', () => {
-  let service: MemberService, db: DeepMockProxy<Database>
+  let service: MemberService,
+    db: DeepMockProxy<Database>,
+    collectionMock: DeepMockProxy<DocumentCollection & EdgeCollection>
 
   beforeEach(async () => {
+    db = mockDeep()
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         MemberService,
         {
           provide: 'DATABASE',
-          useFactory: () => mockDeep<Database>()
+          useFactory: () => db
         }
       ]
     }).compile()
 
     service = module.get<MemberService>(MemberService)
-    db = service.db as DeepMockProxy<Database>
-    service.collection = mockDeep<DocumentCollection>()
+    collectionMock = mockDeep()
+    service.collection = collectionMock
   })
   afterAll(() => {
     jest.resetAllMocks()

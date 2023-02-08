@@ -156,7 +156,7 @@ export class VideoBlockResolver {
     @Args('journeyId') journeyId: string,
     @Args('input') input: VideoBlockUpdateInput
   ): Promise<VideoBlock> {
-    const block = await this.blockService.get<VideoBlock>(id)
+    const block = await this.blockService.get(id)
     switch (input.source ?? block.source) {
       case VideoBlockSource.youTube:
         await videoBlockYouTubeSchema.validate({ ...block, ...input })

@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing'
-import { omit } from 'lodash'
+import { v4 as uuidv4 } from 'uuid'
 import {
   IdType,
   JourneyStatus,
@@ -13,6 +13,13 @@ import { JourneyService } from '../journey/journey.service'
 import { UserRoleService } from '../userRole/userRole.service'
 import { MemberService } from '../member/member.service'
 import { UserJourneyResolver } from './userJourney.resolver'
+
+jest.mock('uuid', () => ({
+  __esModule: true,
+  v4: jest.fn()
+}))
+
+const mockUuidv4 = uuidv4 as jest.MockedFunction<typeof uuidv4>
 
 describe('UserJourneyResolver', () => {
   let resolver: UserJourneyResolver,
@@ -87,8 +94,14 @@ describe('UserJourneyResolver', () => {
       save: jest.fn((input) => input),
       update: jest.fn((input) => input),
       forJourneyUser: jest.fn((key, userId) => {
-        if (userId === actorUserJourney.userId) return actorUserJourney
-        return userJourney
+        switch (userId) {
+          case userJourney.userId:
+            return userJourney
+          case actorUserJourney.userId:
+            return actorUserJourney
+          default:
+            return null
+        }
       }),
       forJourney: jest.fn(() => [userJourney, userJourney])
     })
@@ -108,6 +121,15 @@ describe('UserJourneyResolver', () => {
     })
   }
 
+  beforeAll(() => {
+    jest.useFakeTimers('modern')
+    jest.setSystemTime(new Date('2021-02-18'))
+  })
+
+  afterAll(() => {
+    jest.useRealTimers()
+  })
+
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
@@ -125,16 +147,14 @@ describe('UserJourneyResolver', () => {
 
   describe('userJourneyRequest', () => {
     it('creates a UserJourney when journeyId is databaseId', async () => {
+      mockUuidv4.mockReturnValueOnce(userJourneyInvited.id)
       await resolver.userJourneyRequest(journey.id, IdType.databaseId, '1')
-      expect(service.save).toHaveBeenCalledWith(
-        omit(userJourneyInvited, ['id'])
-      )
+      expect(service.save).toHaveBeenCalledWith(userJourneyInvited)
     })
     it('creates a UserJourney when journeyId is slug', async () => {
+      mockUuidv4.mockReturnValueOnce(userJourneyInvited.id)
       await resolver.userJourneyRequest(journey.slug, IdType.slug, '1')
-      expect(service.save).toHaveBeenCalledWith(
-        omit(userJourneyInvited, ['id'])
-      )
+      expect(service.save).toHaveBeenCalledWith(userJourneyInvited)
     })
 
     it('throws UserInputError when journey does not exist', async () => {
@@ -167,18 +187,19 @@ describe('UserJourneyResolver', () => {
     })
 
     it('should not update a UserJourney to editor status', async () => {
-      await resolver
-        .userJourneyApprove(userJourney.id, userJourney.userId)
-        .catch((err) => console.log(err))
+      await expect(
+        async () =>
+          await resolver.userJourneyApprove(userJourney.id, userJourney.userId)
+      ).rejects.toThrow(
+        'You do not own this journey, so you cannot make changes to it'
+      )
       expect(service.update).not.toHaveBeenCalled()
     })
   })
 
   describe('userJourneyPromote', () => {
     it('updates a UserJourney to owner status', async () => {
-      await resolver
-        .userJourneyPromote(userJourney.id, actorUserJourney.userId)
-        .catch((err) => console.log(err))
+      await resolver.userJourneyPromote(userJourney.id, actorUserJourney.userId)
       expect(service.update).toHaveBeenCalledWith('1', {
         role: UserJourneyRole.owner
       })
@@ -187,24 +208,29 @@ describe('UserJourneyResolver', () => {
       })
     })
     it('should not update a UserJourney', async () => {
-      await resolver
-        .userJourneyPromote(userJourney.id, userJourney.userId)
-        .catch((err) => console.log(err))
+      await expect(
+        async () =>
+          await resolver.userJourneyPromote(userJourney.id, userJourney.userId)
+      ).rejects.toThrow(
+        'You do not own this journey, so you cannot make changes to it'
+      )
       expect(service.update).not.toHaveBeenCalled()
     })
     it('should not update a UserJourney scenario 2', async () => {
-      await resolver
-        .userJourneyPromote(actorUserJourney.id, actorUserJourney.userId)
-        .catch((err) => console.log(err))
+      await resolver.userJourneyPromote(
+        actorUserJourney.id,
+        actorUserJourney.userId
+      )
       expect(service.update).not.toHaveBeenCalled()
     })
   })
 
   describe('userJourneyRemove', () => {
     it('removes a UserJourney', async () => {
-      await resolver
-        .userJourneyRemove(actorUserJourney.id, actorUserJourney.userId)
-        .catch((err) => console.log(err))
+      await resolver.userJourneyRemove(
+        actorUserJourney.id,
+        actorUserJourney.userId
+      )
       expect(service.remove).toHaveBeenCalledWith(actorUserJourney.id)
     })
   })
@@ -216,6 +242,21 @@ describe('UserJourneyResolver', () => {
         userJourney.id,
         userJourney.id
       ])
+    })
+  })
+
+  describe('UserJourneyView', () => {
+    it('should update viewAt for userJourney', async () => {
+      await resolver.userJourneyOpen(userJourney.id, userJourney.userId)
+      expect(service.update).toHaveBeenCalledWith(userJourney.id, {
+        openedAt: new Date().toISOString()
+      })
+    })
+
+    it('should throw error if current user is not userJourney user', async () => {
+      await expect(
+        resolver.userJourneyOpen(userJourney.id, 'another.id')
+      ).rejects.toThrow('Invalid User')
     })
   })
 })
