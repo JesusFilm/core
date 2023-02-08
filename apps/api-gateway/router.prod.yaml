@@ -6,17 +6,14 @@ cors:
     # apollo studio
     - https://studio.apollographql.com
     # journeys-admin
-    - https://journeys-admin.vercel.app
     - https://admin.nextstep.is
     - https://admin-stage.nextstep.is
     # journeys
-    - https://journeys-phi.vercel.app
     - https://your.nextstep.is
     - https://your-stage.nextstep.is
     # watch
-    - https://watch-jesusfilm.vercel.app
-    - https://watch-one.vercel.app
     - https://watch.jesusfilm.org
+    - https://watch-stage.jesusfilm.org
   match_origins:
     # any project deployed on the jesusfilm vercel account
     - '^https://([a-z0-9-]+)-jesusfilm[.]vercel[.]app$'
