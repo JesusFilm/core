@@ -1,75 +1,102 @@
-import { ReactElement, useCallback, useEffect, useState } from 'react'
+import { ReactElement, useState } from 'react'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import LoadingButton from '@mui/lab/LoadingButton'
+import { gql, useQuery } from '@apollo/client'
 
-import fetch from 'node-fetch'
+import { ListUnsplashCollectionPhotos } from '../../../../../__generated__/ListUnsplashCollectionPhotos'
+import { SearchUnsplashPhotos } from '../../../../../__generated__/SearchUnsplashPhotos'
 import { UnsplashSearch } from './UnsplashSearch'
 import { UnsplashList } from './UnsplashList'
 
-export interface UnsplashImage {
-  id: number
-  width: number
-  height: number
-  alt_description: string
-  urls: {
-    small: string
+export const LIST_UNSPLASH_COLLECTION_PHOTOS = gql`
+  query ListUnsplashCollectionPhotos(
+    $collectionId: String!
+    $page: Int
+    $perPage: Int
+  ) {
+    listUnsplashCollectionPhotos(
+      collectionId: $collectionId
+      page: $page
+      perPage: $perPage
+    ) {
+      id
+      alt_description
+      width
+      height
+      urls {
+        small
+      }
+      user {
+        first_name
+        last_name
+        username
+      }
+    }
   }
-  user: {
-    first_name: string
-    last_name: string
-    username: string
+`
+
+export const SEARCH_UNSPLASH_PHOTOS = gql`
+  query SearchUnsplashPhotos($query: String!, $page: Int, $perPage: Int) {
+    searchUnsplashPhotos(query: $query, page: $page, perPage: $perPage) {
+      results {
+        id
+        alt_description
+        width
+        height
+        urls {
+          small
+        }
+        user {
+          first_name
+          last_name
+          username
+        }
+      }
+    }
   }
-  color: string | null
-}
+`
 
 export function UnsplashGallery(): ReactElement {
-  const [collections, setCollections] = useState<UnsplashImage[]>()
-  const [searchResults, setSearchResults] = useState<UnsplashImage[]>()
-  const [query, setQuery] = useState<string | null>()
+  const [query, setQuery] = useState<string | null>(null)
   const [page, setPage] = useState(1)
-  const accessKey = '7MUdE7NO3RSHYD3gefyyPD3nSBOK4vziireH3tnj9L0'
-  // todo: key is just here temporarily, needs to be moved to doppler
-
-  const fetchCollection = useCallback(async (): Promise<void> => {
-    const collectionData = await (
-      await fetch(
-        `https://api.unsplash.com/collections/4924556/photos?page=${page}&per_page=20&client_id=${accessKey}`
-      )
-    ).json()
-    setCollections((prevValue) => [...(prevValue ?? []), ...collectionData])
-  }, [page])
-
-  const fetchSearchResults = useCallback(async (): Promise<void> => {
-    if (query == null) return
-    const searchData = await (
-      await fetch(
-        `https://api.unsplash.com/search/photos?query=${query}&page=${page}&per_page=20&client_id=${accessKey}`
-      )
-    ).json()
-    setSearchResults((prevValue) => [
-      ...(prevValue ?? []),
-      ...searchData.results
-    ])
-  }, [page, query])
-
-  useEffect(() => {
-    if (query == null) {
-      void fetchCollection()
-    } else {
-      void fetchSearchResults()
-    }
-  }, [query, page, fetchCollection, fetchSearchResults])
+  const {
+    data: listData,
+    refetch: refetchList,
+    fetchMore: fetchMoreList
+  } = useQuery<ListUnsplashCollectionPhotos>(LIST_UNSPLASH_COLLECTION_PHOTOS, {
+    variables: { collectionId: '4924556', page, perPage: 20 },
+    skip: query != null
+  })
+  const {
+    data: searchData,
+    refetch: refetchSearch,
+    fetchMore: fetchMoreSearch
+  } = useQuery<SearchUnsplashPhotos>(SEARCH_UNSPLASH_PHOTOS, {
+    variables: { query, page, perPage: 20 },
+    skip: query == null
+  })
 
   const handleSubmit = (value: string): void => {
-    if (query !== value) {
-      setSearchResults(undefined)
+    if (value == null) {
+      void refetchList({ collectionId: '4924556', page: 1, perPage: 20 })
+    } else {
+      void refetchSearch({ query: value, page: 1, perPage: 20 })
     }
     setQuery(value)
     setPage(1)
   }
 
-  const fetchMore = (): void => {
+  const nextPage = (): void => {
+    if (query == null) {
+      void fetchMoreList({
+        variables: { collectionId: '4924556', page: page + 1, perPage: 20 }
+      })
+    } else {
+      void fetchMoreSearch({
+        variables: { query, page: page + 1, perPage: 20 }
+      })
+    }
     setPage(page + 1)
   }
 
@@ -82,10 +109,13 @@ export function UnsplashGallery(): ReactElement {
         </Typography>
         <Typography variant="h6">Featured Images</Typography>
       </Stack>
-      {query == null
-        ? collections != null && <UnsplashList gallery={collections} />
-        : searchResults != null && <UnsplashList gallery={searchResults} />}
-      <LoadingButton variant="outlined" onClick={fetchMore} size="medium">
+      {query == null && listData != null && (
+        <UnsplashList gallery={listData.listUnsplashCollectionPhotos} />
+      )}
+      {query != null && searchData != null && (
+        <UnsplashList gallery={searchData.searchUnsplashPhotos.results} />
+      )}
+      <LoadingButton variant="outlined" onClick={nextPage} size="medium">
         Load More
       </LoadingButton>
     </Stack>
