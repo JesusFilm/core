@@ -1,12 +1,11 @@
 import { Injectable, Inject } from '@nestjs/common'
 import { BaseService } from '@core/nest/database/BaseService'
-import { DocumentCollection } from 'arangojs/collection'
 import { UserInputError } from 'apollo-server-errors'
 import { aql } from 'arangojs'
 import { KeyAsId } from '@core/nest/decorators/KeyAsId'
 import { BlockService } from '../block/block.service'
-import { VisitorService } from '../visitor/visitor.service'
-import { Visitor, Event } from '../../__generated__/graphql'
+import { VisitorRecord, VisitorService } from '../visitor/visitor.service'
+import { Event } from '../../__generated__/graphql'
 
 @Injectable()
 export class EventService extends BaseService {
@@ -16,14 +15,14 @@ export class EventService extends BaseService {
   @Inject(VisitorService)
   private readonly visitorService: VisitorService
 
-  collection: DocumentCollection = this.db.collection('events')
+  collection = this.db.collection('events')
 
   async validateBlockEvent(
     userId: string,
     blockId: string,
     stepId: string | null = null
   ): Promise<{
-    visitor: Visitor
+    visitor: VisitorRecord
     journeyId: string
   }> {
     const block: { journeyId: string; _key: string } | undefined =

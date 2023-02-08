@@ -1,12 +1,14 @@
 import { BaseService } from '@core/nest/database/BaseService'
 import { Injectable } from '@nestjs/common'
 import { aql } from 'arangojs'
-import { DocumentCollection } from 'arangojs/collection'
 import { KeyAsId } from '@core/nest/decorators/KeyAsId'
 import { GeneratedAqlQuery } from 'arangojs/aql'
 import { forEach } from 'lodash'
 import { v4 as uuidv4 } from 'uuid'
-import { VisitorsConnection, Visitor } from '../../__generated__/graphql'
+import {
+  VisitorsConnection,
+  MessagePlatform
+} from '../../__generated__/graphql'
 
 interface ListParams {
   after?: string | null
@@ -17,9 +19,20 @@ interface ListParams {
   sortOrder?: 'ASC' | 'DESC'
 }
 
+export interface VisitorRecord {
+  id: string
+  teamId: string
+  userId: string
+  createdAt: string
+  userAgent?: string
+  messagePlatform?: MessagePlatform
+  name?: string
+  email?: string
+}
+
 @Injectable()
-export class VisitorService extends BaseService {
-  collection: DocumentCollection = this.db.collection('visitors')
+export class VisitorService extends BaseService<VisitorRecord> {
+  collection = this.db.collection<VisitorRecord>('visitors')
 
   @KeyAsId()
   async getList({
@@ -59,7 +72,7 @@ export class VisitorService extends BaseService {
   async getByUserIdAndJourneyId(
     userId: string,
     journeyId: string
-  ): Promise<Visitor> {
+  ): Promise<VisitorRecord> {
     let visitor = await (
       await this.db.query(aql`
     FOR v in visitors
