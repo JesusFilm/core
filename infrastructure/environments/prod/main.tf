@@ -16,7 +16,10 @@ locals {
     cluster                 = module.prod.ecs.ecs_cluster
     alb_dns_name            = module.prod.public_alb.dns_name
     zone_id                 = data.aws_route53_zone.route53_central_jesusfilm_org.zone_id
-    alb_target_group        = local.alb_target_group
+    alb_target_group = merge(local.alb_target_group, {
+      health_check_path = "/health"
+      health_check_port = "8088"
+    })
     alb_listener = {
       alb_arn         = module.prod.public_alb.arn
       port            = 443
@@ -70,6 +73,12 @@ module "api-videos" {
   source        = "../../../apps/api-videos/infrastructure"
   ecs_config    = local.internal_ecs_config
   doppler_token = data.aws_ssm_parameter.doppler_api_videos_prod_token.value
+}
+
+module "api-media" {
+  source        = "../../../apps/api-media/infrastructure"
+  ecs_config    = local.internal_ecs_config
+  doppler_token = data.aws_ssm_parameter.doppler_api_media_prod_token.value
 }
 
 module "arango-bigquery-etl" {

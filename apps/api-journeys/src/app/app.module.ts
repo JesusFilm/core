@@ -7,13 +7,13 @@ import {
 } from '@nestjs/apollo'
 import { LoggerModule } from 'nestjs-pino'
 import { DatadogTraceModule } from 'nestjs-ddtrace'
-import { ApolloServerPluginInlineTraceDisabled } from 'apollo-server-core'
 import { ActionModule } from './modules/action/action.module'
 import { BlockModule } from './modules/block/block.module'
 import { JourneyModule } from './modules/journey/journey.module'
 import { EventModule } from './modules/event/event.module'
 import { UserJourneyModule } from './modules/userJourney/userJourney.module'
 import { UserRoleModule } from './modules/userRole/userRole.module'
+import { UserInviteModule } from './modules/userInvite/userInvite.module'
 import { VisitorModule } from './modules/visitor/visitor.module'
 import { MemberModule } from './modules/member/member.module'
 import { TeamModule } from './modules/team/team.module'
@@ -27,6 +27,7 @@ import { TeamModule } from './modules/team/team.module'
     MemberModule,
     TeamModule,
     UserJourneyModule,
+    UserInviteModule,
     UserRoleModule,
     VisitorModule,
     GraphQLModule.forRoot<ApolloFederationDriverConfig>({
@@ -36,11 +37,7 @@ import { TeamModule } from './modules/team/team.module'
         join(process.cwd(), 'assets/**/*.graphql')
       ],
       cors: true,
-      context: ({ req }) => ({ headers: req.headers }),
-      plugins:
-        process.env.NODE_ENV !== 'production'
-          ? [ApolloServerPluginInlineTraceDisabled]
-          : undefined
+      context: ({ req }) => ({ headers: req.headers })
     }),
     LoggerModule.forRoot({
       pinoHttp: {

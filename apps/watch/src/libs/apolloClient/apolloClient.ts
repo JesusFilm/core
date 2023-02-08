@@ -48,7 +48,9 @@ export function createApolloClient({
     ssrMode: typeof window === 'undefined',
     link: from([retryLink, authLink, httpLink]),
     cache: cache().restore(initialState ?? {}),
-    connectToDevTools: true
+    connectToDevTools: true,
+    name: 'watch',
+    version: process.env.NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA
   })
 }
 

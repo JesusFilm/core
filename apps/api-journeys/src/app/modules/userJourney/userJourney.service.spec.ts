@@ -6,7 +6,7 @@ import {
   mockCollectionSaveResult,
   mockDbQueryResult
 } from '@core/nest/database/mock'
-import { DocumentCollection } from 'arangojs/collection'
+import { DocumentCollection, EdgeCollection } from 'arangojs/collection'
 import { keyAsId } from '@core/nest/decorators/KeyAsId'
 
 import {
@@ -16,31 +16,35 @@ import {
   ThemeName,
   UserJourneyRole
 } from '../../__generated__/graphql'
-import { UserJourneyService } from './userJourney.service'
+import { UserJourneyRecord, UserJourneyService } from './userJourney.service'
 
 describe('UserJourneyService', () => {
-  let service: UserJourneyService
+  let service: UserJourneyService,
+    db: DeepMockProxy<Database>,
+    collectionMock: DeepMockProxy<DocumentCollection & EdgeCollection>
 
   beforeEach(async () => {
+    db = mockDeep()
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         UserJourneyService,
         {
           provide: 'DATABASE',
-          useFactory: () => mockDeep<Database>()
+          useFactory: () => db
         }
       ]
     }).compile()
 
     service = module.get<UserJourneyService>(UserJourneyService)
-    service.collection = mockDeep<DocumentCollection>()
+    collectionMock = mockDeep()
+    service.collection = collectionMock
   })
   afterAll(() => {
     jest.resetAllMocks()
   })
 
-  const userJourney = {
-    _key: '1',
+  const userJourney: UserJourneyRecord = {
+    id: '1',
     userId: '1',
     journeyId: '2',
     role: UserJourneyRole.editor
@@ -63,7 +67,7 @@ describe('UserJourneyService', () => {
 
   describe('forJourney', () => {
     beforeEach(() => {
-      ;(service.db as DeepMockProxy<Database>).query.mockReturnValue(
+      db.query.mockReturnValue(
         mockDbQueryResult(service.db, [userJourney, userJourney])
       )
     })
@@ -78,9 +82,7 @@ describe('UserJourneyService', () => {
 
   describe('forUserJourney', () => {
     beforeEach(() => {
-      ;(service.db as DeepMockProxy<Database>).query.mockReturnValue(
-        mockDbQueryResult(service.db, [userJourney])
-      )
+      db.query.mockReturnValue(mockDbQueryResult(service.db, [userJourney]))
     })
 
     it('should return a userjourney', async () => {
@@ -90,10 +92,11 @@ describe('UserJourneyService', () => {
 
   describe('remove', () => {
     beforeEach(() => {
-      ;(
-        service.collection as DeepMockProxy<DocumentCollection>
-      ).remove.mockReturnValue(
-        mockCollectionRemoveResult(service.collection, userJourney)
+      collectionMock.remove.mockReturnValue(
+        mockCollectionRemoveResult(service.collection, {
+          ...userJourney,
+          _key: userJourney.id
+        })
       )
     })
 
@@ -104,10 +107,11 @@ describe('UserJourneyService', () => {
 
   describe('save', () => {
     beforeEach(() => {
-      ;(
-        service.collection as DeepMockProxy<DocumentCollection>
-      ).save.mockReturnValue(
-        mockCollectionSaveResult(service.collection, userJourney)
+      collectionMock.save.mockReturnValue(
+        mockCollectionSaveResult(service.collection, {
+          ...userJourney,
+          _key: userJourney.id
+        })
       )
     })
 
@@ -118,10 +122,11 @@ describe('UserJourneyService', () => {
 
   describe('update', () => {
     beforeEach(() => {
-      ;(
-        service.collection as DeepMockProxy<DocumentCollection>
-      ).update.mockReturnValue(
-        mockCollectionSaveResult(service.collection, userJourney)
+      collectionMock.update.mockReturnValue(
+        mockCollectionSaveResult(service.collection, {
+          ...userJourney,
+          _key: userJourney.id
+        })
       )
     })
 

@@ -1,0 +1,34 @@
+supergraph:
+  listen: 0.0.0.0:4000
+  introspection: true
+cors:
+  origins:
+    # apollo studio
+    - https://studio.apollographql.com
+    # journeys-admin
+    - https://admin.nextstep.is
+    - https://admin-stage.nextstep.is
+    # journeys
+    - https://your.nextstep.is
+    - https://your-stage.nextstep.is
+    # watch
+    - https://watch.jesusfilm.org
+    - https://watch-stage.jesusfilm.org
+  match_origins:
+    # any project deployed on the jesusfilm vercel account
+    - '^https://([a-z0-9-]+)-jesusfilm[.]vercel[.]app$'
+  max_age: 24h
+headers:
+  all:
+    request:
+      - propagate:
+          named: authorization
+      - propagate:
+          named: 'user-agent'
+      - propagate:
+          named: 'x-forwarded-for'
+health_check:
+  listen: 0.0.0.0:8088
+  enabled: true
+include_subgraph_errors:
+  all: true

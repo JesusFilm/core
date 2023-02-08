@@ -1,0 +1,15 @@
+type CloudflareImage {
+  id: ID!
+  uploadUrl: String!
+  userId: ID!
+  createdAt: String!
+}
+
+extend type Query {
+  createCloudflareImage: CloudflareImage
+  getMyCloudflareImages: [CloudflareImage]
+}
+
+extend type Mutation {
+  deleteCloudflareImage(id: ID!): Boolean
+}

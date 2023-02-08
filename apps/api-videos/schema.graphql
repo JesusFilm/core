@@ -1,3 +1,21 @@
+directive @key(fields: _FieldSet!, resolvable: Boolean = true) repeatable on OBJECT | INTERFACE
+
+directive @requires(fields: _FieldSet!) on FIELD_DEFINITION
+
+directive @provides(fields: _FieldSet!) on FIELD_DEFINITION
+
+directive @external(reason: String) on OBJECT | FIELD_DEFINITION
+
+directive @tag(name: String!) repeatable on FIELD_DEFINITION | OBJECT | INTERFACE | UNION | ARGUMENT_DEFINITION | SCALAR | ENUM | ENUM_VALUE | INPUT_OBJECT | INPUT_FIELD_DEFINITION
+
+directive @extends on OBJECT | INTERFACE
+
+extend type Language
+  @key(fields: "id")
+{
+  id: ID! @external
+}
+
 type Translation {
   value: String!
   language: Language!
@@ -23,7 +41,9 @@ type LanguageWithSlug {
   slug: String
 }
 
-type Video @key(fields: "id primaryLanguageId") {
+type Video
+  @key(fields: "id primaryLanguageId")
+{
   id: ID!
   label: VideoLabel!
   primaryLanguageId: ID!
@@ -56,6 +76,16 @@ input VideosFilter {
   subtitleLanguageIds: [ID!]
 }
 
+type Query {
+  _entities(representations: [_Any!]!): [_Entity]!
+  _service: _Service!
+}
+
+extend type Query {
+  videos(where: VideosFilter, offset: Int, limit: Int): [Video!]!
+  video(id: ID!, idType: IdType): Video
+}
+
 enum VideoVariantDownloadQuality {
   low
   high
@@ -80,11 +110,12 @@ type VideoVariant {
   slug: String!
 }
 
-extend type Language @key(fields: "id") {
-  id: ID! @external
+scalar _FieldSet
+
+scalar _Any
+
+type _Service {
+  sdl: String
 }
 
-extend type Query {
-  videos(where: VideosFilter, offset: Int, limit: Int): [Video!]!
-  video(id: ID!, idType: IdType): Video
-}
+union _Entity = Language | Video
