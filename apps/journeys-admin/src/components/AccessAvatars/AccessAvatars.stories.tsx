@@ -7,7 +7,7 @@ import {
   GET_CURRENT_USER,
   GET_JOURNEY_WITH_USER_JOURNEYS
 } from '../AccessDialog/AccessDialog'
-import { UserJourneyRole } from '../../../__generated__/globalTypes'
+import { GetJourneys_journeys_userJourneys as UserJourney } from '../../../__generated__/GetJourneys'
 import { AccessAvatarsProps } from './AccessAvatars'
 import {
   userJourney1,
@@ -27,20 +27,7 @@ const AccessAvatarsDemo = {
 }
 
 const defaultUserJourneys = [userJourney1, userJourney2, userJourney3]
-const noImageUserJourneys = [
-  // userJourney1
-  // {
-  //   __typename: 'UserJourney',
-  //   id: 'userJourney1.id',
-  //   role: UserJourneyRole.owner,
-  //   user: {
-  //     __typename: 'User',
-  //     id: '1',
-  //     firstName: 'Amin',
-  //     lastName: 'One',
-  //     imageUrl: 'https://bit.ly/3Gth4Yf'
-  //   }
-  // }
+const noImageUserJourneys: UserJourney[] = [
   {
     ...userJourney1,
     user: {
