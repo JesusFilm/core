@@ -3,7 +3,7 @@ import { Database } from 'arangojs'
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 import { mockDbQueryResult } from '@core/nest/database/mock'
 import { v4 as uuidv4 } from 'uuid'
-import { DocumentCollection } from 'arangojs/collection'
+import { DocumentCollection, EdgeCollection } from 'arangojs/collection'
 import { AqlQuery } from 'arangojs/aql'
 import { keyAsId } from '@core/nest/decorators/KeyAsId'
 import { VisitorService } from './visitor.service'
@@ -16,7 +16,9 @@ jest.mock('uuid', () => ({
 const mockUuidv4 = uuidv4 as jest.MockedFunction<typeof uuidv4>
 
 describe('VisitorService', () => {
-  let service: VisitorService, db: DeepMockProxy<Database>
+  let service: VisitorService,
+    db: DeepMockProxy<Database>,
+    collectionMock: DeepMockProxy<DocumentCollection & EdgeCollection>
 
   beforeAll(() => {
     jest.useFakeTimers('modern')
@@ -24,19 +26,20 @@ describe('VisitorService', () => {
   })
 
   beforeEach(async () => {
+    db = mockDeep()
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         VisitorService,
         {
           provide: 'DATABASE',
-          useFactory: () => mockDeep<Database>()
+          useFactory: () => db
         }
       ]
     }).compile()
 
     service = module.get<VisitorService>(VisitorService)
-    db = service.db as DeepMockProxy<Database>
-    service.collection = mockDeep<DocumentCollection>()
+    collectionMock = mockDeep()
+    service.collection = collectionMock
   })
 
   afterAll(() => {

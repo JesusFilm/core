@@ -14,6 +14,7 @@
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
     "strictNullChecks": true,
+    "esModuleInterop": true,
     "baseUrl": ".",
     "paths": {
       "@core/journeys/ui/*": [
