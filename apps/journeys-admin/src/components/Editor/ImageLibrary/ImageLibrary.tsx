@@ -13,6 +13,8 @@ import Typography from '@mui/material/Typography'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { GetJourney_journey_blocks_ImageBlock as ImageBlock } from '../../../../__generated__/GetJourney'
 import { ImageBlockHeader } from '../ImageBlockHeader'
+import { ImageUpload } from './CustomImage/ImageUpload'
+import { CustomImage } from './CustomImage'
 
 export const DRAWER_WIDTH = 328
 
@@ -108,7 +110,7 @@ export function ImageLibrary({
           {/* insert unsplash component */}
         </TabPanel>
         <TabPanel name="custom" value={tabValue} index={1}>
-          {/* insert custom component */}
+          <CustomImage />
         </TabPanel>
       </Box>
     </Drawer>

@@ -1,13 +1,14 @@
 import { Story, Meta } from '@storybook/react'
 import Box from '@mui/material/Box'
-import { journeysAdminConfig } from '../../../../../../../libs/storybook'
+import { MockedProvider } from '@apollo/client/testing'
+import { journeysAdminConfig } from '../../../../../libs/storybook'
 
 import { ImageUpload } from '.'
 
 const ImageUploadStory = {
   ...journeysAdminConfig,
   component: ImageUpload,
-  title: 'Journeys-Admin/Editor/ControlPanel/Attributes/Image/ImageUpload',
+  title: 'Journeys-Admin/Editor/ImageLibrary/CustomImage/ImageUpload',
   parameters: {
     ...journeysAdminConfig.parameters,
     layout: 'fullscreen'
@@ -15,9 +16,11 @@ const ImageUploadStory = {
 }
 
 export const Default: Story = () => (
-  <Box sx={{ maxWidth: 280, maxHeight: 172 }}>
-    <ImageUpload />
-  </Box>
+  <MockedProvider mocks={[]}>
+    <Box sx={{ maxWidth: 280, maxHeight: 172 }}>
+      <ImageUpload />
+    </Box>
+  </MockedProvider>
 )
 
 export default ImageUploadStory as Meta

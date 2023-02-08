@@ -1,4 +1,4 @@
-import { ReactElement, useCallback, useMemo } from 'react'
+import { ReactElement, useCallback, useMemo, useState } from 'react'
 import { useDropzone } from 'react-dropzone'
 import Typography from '@mui/material/Typography'
 import BackupOutlinedIcon from '@mui/icons-material/BackupOutlined'
@@ -7,7 +7,7 @@ import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
 import { gql, useQuery } from '@apollo/client'
 import fetch from 'node-fetch'
-import { CloudflareUploadUrl } from '../../../../../../../../__generated__/CloudflareUploadUrl'
+import { CloudflareUploadUrl } from '../../../../../../__generated__/CloudflareUploadUrl'
 
 export const CLOUDFLARE_UPLOAD_URL = gql`
   query CloudflareUploadUrl {
@@ -18,7 +18,7 @@ export const CLOUDFLARE_UPLOAD_URL = gql`
   }
 `
 
-export interface ImageUploadProps {
+interface ImageUploadProps {
   maxFileSize?: number
   onChange?: (id: string) => void
 }
@@ -125,6 +125,7 @@ export function ImageUpload({
         size="small"
         variant="outlined"
         onClick={open}
+        color="secondary"
         sx={{
           mt: 6,
           height: '32px',
@@ -136,7 +137,7 @@ export function ImageUpload({
       >
         <Typography
           variant="subtitle2"
-          fontSize="16px"
+          fontSize="14px"
           sx={{ color: 'secondary.main' }}
         >
           Upload file
