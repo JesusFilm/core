@@ -32,8 +32,7 @@ export function ImageBlockEditor({
       <Card
         variant="outlined"
         sx={{
-          width: 285,
-          height: 78,
+          height: 73,
           borderRadius: 2
         }}
       >
