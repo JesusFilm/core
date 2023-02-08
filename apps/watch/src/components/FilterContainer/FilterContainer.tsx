@@ -29,7 +29,7 @@ export function FilterContainer(): ReactElement {
           </TableRow>
           {openRow === 1 ? (
             <TableRow key={1.5}>
-              <TableCell align="center" onClick={() => setOpenRow(0)}>
+              <TableCell align="center" sx={{backgroundColor: 'secondary.light'}} onClick={() => setOpenRow(0)}>
                 <Typography>Languages Component Here</Typography>
               </TableCell>
             </TableRow>
@@ -47,7 +47,7 @@ export function FilterContainer(): ReactElement {
           </TableRow>
           {openRow === 2 ? (
             <TableRow key={1.5}>
-              <TableCell align="center" onClick={() => setOpenRow(0)}>
+              <TableCell align="center" sx={{backgroundColor: 'secondary.light'}} onClick={() => setOpenRow(0)}>
                 <Typography>Subtitles Component Here</Typography>
               </TableCell>
             </TableRow>
@@ -64,9 +64,9 @@ export function FilterContainer(): ReactElement {
             </TableCell>
           </TableRow>
           {openRow === 3 ? (
-            <TableRow key={1.5}>
-              <TableCell align="center" onClick={() => setOpenRow(0)}>
-                <Typography>Title Component Here</Typography>
+            <TableRow key={1.5} >
+              <TableCell align="center" sx={{backgroundColor: 'secondary.light'}} onClick={() => setOpenRow(0)}>
+                <Typography >Title Component Here</Typography>
               </TableCell>
             </TableRow>
           ) : (
