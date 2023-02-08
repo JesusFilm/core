@@ -20,7 +20,7 @@ export const CLOUDFLARE_UPLOAD_URL = gql`
 
 interface ImageUploadProps {
   maxFileSize?: number
-  onChange?: (id: string) => void
+  onChange: (src: string) => void
 }
 
 export function ImageUpload({
@@ -48,7 +48,8 @@ export function ImageUpload({
 
       setMessage(acceptedFiles[0].name)
       console.log(response)
-      onChange?.(response.id)
+      const src = `https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/${response.result.id}/format=webp`
+      onChange(src)
     },
     [data, onChange]
   )

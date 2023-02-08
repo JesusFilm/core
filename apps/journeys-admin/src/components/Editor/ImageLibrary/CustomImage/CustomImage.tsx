@@ -3,7 +3,7 @@ import { ReactElement } from 'react'
 import { ImageUpload } from './ImageUpload'
 
 interface CustomImageProps {
-  onChange?: (id: string) => void
+  onChange: (src: string) => void
 }
 
 export function CustomImage({ onChange }: CustomImageProps): ReactElement {
