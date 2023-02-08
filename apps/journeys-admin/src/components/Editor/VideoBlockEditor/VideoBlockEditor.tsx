@@ -12,8 +12,6 @@ import { VideoBlockEditorSettings } from './Settings'
 interface VideoBlockEditorProps {
   selectedBlock: TreeBlock<VideoBlock> | null
   onChange: (input: VideoBlockUpdateInput) => Promise<void>
-  showDelete?: boolean
-  onDelete?: () => Promise<void>
 }
 
 export function VideoBlockEditor({

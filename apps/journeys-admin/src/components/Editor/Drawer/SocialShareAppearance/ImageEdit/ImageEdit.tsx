@@ -7,14 +7,13 @@ import Box from '@mui/material/Box'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { IMAGE_FIELDS } from '@core/journeys/ui/Image/imageFields'
 import Skeleton from '@mui/material/Skeleton'
-import { Dialog } from '@core/shared/ui/Dialog'
-import { ImageBlockEditor } from '../../../ImageBlockEditor'
 import { GetJourney_journey_blocks_ImageBlock as ImageBlock } from '../../../../../../__generated__/GetJourney'
 import { blockDeleteUpdate } from '../../../../../libs/blockDeleteUpdate/blockDeleteUpdate'
 import { BlockDeletePrimaryImage } from '../../../../../../__generated__/BlockDeletePrimaryImage'
 import { PrimaryImageBlockCreate } from '../../../../../../__generated__/PrimaryImageBlockCreate'
 import { PrimaryImageBlockUpdate } from '../../../../../../__generated__/PrimaryImageBlockUpdate'
 import { JourneyPrimaryImageUpdate } from '../../../../../../__generated__/JourneyPrimaryImageUpdate'
+import { ImageLibrary } from '../../../ImageLibrary'
 
 export const BLOCK_DELETE_PRIMARY_IMAGE = gql`
   mutation BlockDeletePrimaryImage(
@@ -66,10 +65,12 @@ export function ImageEdit(): ReactElement {
   const [blockDeletePrimaryImage] = useMutation<BlockDeletePrimaryImage>(
     BLOCK_DELETE_PRIMARY_IMAGE
   )
-  const [primaryImageBlockCreate, { loading: createLoading }] =
-    useMutation<PrimaryImageBlockCreate>(PRIMARY_IMAGE_BLOCK_CREATE)
-  const [primaryImageBlockUpdate, { loading: updateLoading }] =
-    useMutation<PrimaryImageBlockUpdate>(PRIMARY_IMAGE_BLOCK_UPDATE)
+  const [primaryImageBlockCreate] = useMutation<PrimaryImageBlockCreate>(
+    PRIMARY_IMAGE_BLOCK_CREATE
+  )
+  const [primaryImageBlockUpdate] = useMutation<PrimaryImageBlockUpdate>(
+    PRIMARY_IMAGE_BLOCK_UPDATE
+  )
   const [journeyPrimaryImageUpdate] = useMutation<JourneyPrimaryImageUpdate>(
     JOURNEY_PRIMARY_IMAGE_UPDATE
   )
@@ -265,19 +266,13 @@ export function ImageEdit(): ReactElement {
           </Button>
         </Box>
       )}
-
-      <Dialog
+      <ImageLibrary
+        selectedBlock={journey?.primaryImageBlock ?? null}
         open={open}
         onClose={handleClose}
-        dialogTitle={{ title: 'Social media image', closeButton: true }}
-      >
-        <ImageBlockEditor
-          selectedBlock={journey?.primaryImageBlock ?? null}
-          onChange={handleChange}
-          onDelete={handleDelete}
-          loading={createLoading || updateLoading}
-        />
-      </Dialog>
+        onChange={handleChange}
+        onDelete={handleDelete}
+      />
     </>
   )
 }

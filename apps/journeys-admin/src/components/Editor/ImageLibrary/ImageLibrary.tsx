@@ -11,17 +11,27 @@ import { TabPanel, tabA11yProps } from '@core/shared/ui/TabPanel'
 import { Theme } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import useMediaQuery from '@mui/material/useMediaQuery'
+import { GetJourney_journey_blocks_ImageBlock as ImageBlock } from '../../../../__generated__/GetJourney'
+import { ImageBlockHeader } from '../ImageBlockHeader'
 
 export const DRAWER_WIDTH = 328
 
 interface ImageLibraryProps {
   open: boolean
   onClose?: () => void
+  onChange?: (image: ImageBlock) => Promise<void>
+  onDelete?: () => Promise<void>
+  selectedBlock: ImageBlock | null
+  loading?: boolean
 }
 
 export function ImageLibrary({
   open,
-  onClose
+  onClose,
+  onChange,
+  onDelete,
+  selectedBlock,
+  loading
 }: ImageLibraryProps): ReactElement {
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
   const [tabValue, setTabValue] = useState(0)
@@ -71,6 +81,13 @@ export function ImageLibrary({
           </IconButton>
         </Toolbar>
       </AppBar>
+      <Box sx={{ width: '100%', justifyContent: 'center', display: 'flex' }}>
+        <ImageBlockHeader
+          selectedBlock={selectedBlock}
+          onDelete={onDelete}
+          loading={loading}
+        />
+      </Box>
       <Box sx={{ px: 6 }} data-testid="ImageLibrary">
         <Tabs
           value={tabValue}
