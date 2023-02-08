@@ -11,6 +11,7 @@ import { TabPanel, tabA11yProps } from '@core/shared/ui/TabPanel'
 import { Theme } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import useMediaQuery from '@mui/material/useMediaQuery'
+// import { object, string } from 'yup'
 import { GetJourney_journey_blocks_ImageBlock as ImageBlock } from '../../../../__generated__/GetJourney'
 import { ImageBlockHeader } from '../ImageBlockHeader'
 
@@ -19,7 +20,7 @@ export const DRAWER_WIDTH = 328
 interface ImageLibraryProps {
   open: boolean
   onClose?: () => void
-  onChange?: (image: ImageBlock) => Promise<void>
+  onChange: (image: ImageBlock) => Promise<void>
   onDelete?: () => Promise<void>
   selectedBlock: ImageBlock | null
   loading?: boolean
@@ -35,6 +36,23 @@ export function ImageLibrary({
 }: ImageLibraryProps): ReactElement {
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
   const [tabValue, setTabValue] = useState(0)
+
+  // uncomment once unsplash and custom components are in
+  // const srcSchema = object().shape({
+  //   src: string().url('Please enter a valid url').required('Required')
+  // })
+
+  // const handleSrcChange = async (src: string): Promise<void> => {
+  //   if (!(await srcSchema.isValid({ src })) || src === selectedBlock?.src)
+  //     return
+
+  //   const block = {
+  //     ...selectedBlock,
+  //     src,
+  //     alt: src.replace(/(.*\/)*/, '').replace(/\?.*/, '') // per Vlad 26/1/22, we are hardcoding the image alt for now
+  //   }
+  //   await onChange(block as ImageBlock)
+  // }
 
   const handleTabChange = (
     _event: SyntheticEvent<Element, Event>,

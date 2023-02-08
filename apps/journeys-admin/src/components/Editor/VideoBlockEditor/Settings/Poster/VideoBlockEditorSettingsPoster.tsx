@@ -8,21 +8,27 @@ import { ReactElement, useState } from 'react'
 
 import { GetJourney_journey_blocks_ImageBlock as ImageBlock } from '../../../../../../__generated__/GetJourney'
 import { ImageBlockThumbnail } from '../../../ImageBlockThumbnail'
-import { ImageLibrary } from '../../../ImageLibrary'
+import { VideoBlockEditorSettingsPosterLibrary } from './Library'
 
 interface BackgroundMediaCoverImageProps {
   selectedBlock: ImageBlock | null
+  parentBlockId: string | undefined
   disabled?: boolean
 }
 
 export function VideoBlockEditorSettingsPoster({
   selectedBlock,
+  parentBlockId,
   disabled = false
 }: BackgroundMediaCoverImageProps): ReactElement {
   const theme = useTheme()
   const [open, setOpen] = useState(false)
   const handleOpen = (): void => setOpen(true)
   const handleClose = (): void => setOpen(false)
+
+  const [loading, setLoading] = useState(false)
+  const handleLoading = (): void => setLoading(true)
+  const handleLoad = (): void => setLoading(false)
 
   return (
     <Stack direction="row" justifyContent="space-between">
@@ -47,7 +53,10 @@ export function VideoBlockEditorSettingsPoster({
         borderRadius={2}
       >
         <Stack direction="row" justifyContent="space-around">
-          <ImageBlockThumbnail selectedBlock={selectedBlock} />
+          <ImageBlockThumbnail
+            selectedBlock={selectedBlock}
+            loading={loading}
+          />
           <Stack
             direction="column"
             justifyContent="center"
@@ -66,10 +75,13 @@ export function VideoBlockEditorSettingsPoster({
                 }}
               />
             </IconButton>
-            <ImageLibrary
-              open={open}
-              onClose={handleClose}
+            <VideoBlockEditorSettingsPosterLibrary
               selectedBlock={selectedBlock}
+              parentBlockId={parentBlockId}
+              onClose={handleClose}
+              open={open}
+              onLoading={handleLoading}
+              onLoad={handleLoad}
             />
           </Stack>
         </Stack>
