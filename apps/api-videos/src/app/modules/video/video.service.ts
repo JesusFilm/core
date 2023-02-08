@@ -1,7 +1,6 @@
 import { BaseService } from '@core/nest/database/BaseService'
 import { Injectable } from '@nestjs/common'
 import { aql } from 'arangojs'
-import { DocumentCollection } from 'arangojs/collection'
 import { KeyAsId } from '@core/nest/decorators/KeyAsId'
 import { AqlQuery, GeneratedAqlQuery } from 'arangojs/aql'
 import { compact } from 'lodash'
@@ -15,7 +14,7 @@ interface ExtendedVideosFilter extends VideosFilter {
 
 @Injectable()
 export class VideoService extends BaseService {
-  collection: DocumentCollection = this.db.collection('videos')
+  collection = this.db.collection('videos')
   baseVideo: GeneratedAqlQuery[] = [
     aql`_key: item._key,
         label: item.label,

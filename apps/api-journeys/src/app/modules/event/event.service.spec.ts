@@ -2,14 +2,16 @@ import { Test, TestingModule } from '@nestjs/testing'
 import { Database } from 'arangojs'
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 import { mockDbQueryResult } from '@core/nest/database/mock'
-import { DocumentCollection } from 'arangojs/collection'
+import { DocumentCollection, EdgeCollection } from 'arangojs/collection'
 import { AqlQuery } from 'arangojs/aql'
 import { BlockService } from '../block/block.service'
 import { VisitorService } from '../visitor/visitor.service'
 import { EventService } from './event.service'
 
 describe('EventService', () => {
-  let service: EventService, db: DeepMockProxy<Database>
+  let service: EventService,
+    db: DeepMockProxy<Database>,
+    collectionMock: DeepMockProxy<DocumentCollection & EdgeCollection>
 
   const blockService = {
     provide: BlockService,
@@ -59,7 +61,7 @@ describe('EventService', () => {
   }
 
   beforeEach(async () => {
-    db = mockDeep<Database>()
+    db = mockDeep()
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         EventService,
@@ -73,7 +75,8 @@ describe('EventService', () => {
     }).compile()
 
     service = module.get<EventService>(EventService)
-    service.collection = mockDeep<DocumentCollection>()
+    collectionMock = mockDeep()
+    service.collection = collectionMock
   })
   afterAll(() => {
     jest.resetAllMocks()
