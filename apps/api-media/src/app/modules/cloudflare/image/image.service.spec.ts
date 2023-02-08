@@ -1,8 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { Database } from 'arangojs'
-import { mockDeep } from 'jest-mock-extended'
+import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 
-import { DocumentCollection } from 'arangojs/collection'
+import { DocumentCollection, EdgeCollection } from 'arangojs/collection'
 import fetch, { Response } from 'node-fetch'
 
 import { ImageService } from './image.service'
@@ -25,23 +25,38 @@ const cfResult = {
   success: true
 }
 
+const cfDeleteResult = {
+  result: {},
+  result_info: null,
+  success: true,
+  errors: [],
+  messages: []
+}
+
 describe('ImageService', () => {
-  let service: ImageService
+  let service: ImageService,
+    db: DeepMockProxy<Database>,
+    collectionMock: DeepMockProxy<DocumentCollection & EdgeCollection>
 
   beforeEach(async () => {
+    db = mockDeep()
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         ImageService,
         {
           provide: 'DATABASE',
-          useFactory: () => mockDeep<Database>()
+          useFactory: () => db
         }
       ]
     }).compile()
 
     service = module.get<ImageService>(ImageService)
-    service.collection = mockDeep<DocumentCollection>()
+    collectionMock = mockDeep()
+    service.collection = collectionMock
     mockFetch.mockClear()
+  })
+  afterAll(() => {
+    jest.resetAllMocks()
   })
 
   describe('getCloudflareImageUploadInfo', () => {
@@ -60,6 +75,28 @@ describe('ImageService', () => {
             Authorization: `Bearer ${process.env.CLOUDFLARE_IMAGES_TOKEN ?? ''}`
           },
           method: 'POST'
+        }
+      )
+    })
+  })
+  describe('deleteImageFromCloudflare', () => {
+    it('returns cloudflare response information', async () => {
+      const request = mockFetch.mockResolvedValueOnce({
+        ok: true,
+        json: async () => await Promise.resolve(cfDeleteResult)
+      } as unknown as Response)
+      expect(await service.deleteImageFromCloudflare('1')).toEqual(
+        cfDeleteResult
+      )
+      expect(request).toHaveBeenCalledWith(
+        `https://api.cloudflare.com/client/v4/accounts/${
+          process.env.CLOUDFLARE_ACCOUNT_ID ?? ''
+        }/images/v1/1`,
+        {
+          headers: {
+            Authorization: `Bearer ${process.env.CLOUDFLARE_IMAGES_TOKEN ?? ''}`
+          },
+          method: 'DELETE'
         }
       )
     })

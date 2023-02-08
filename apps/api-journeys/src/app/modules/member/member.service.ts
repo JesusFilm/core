@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common'
 import { BaseService } from '@core/nest/database/BaseService'
-import { DocumentCollection } from 'arangojs/collection'
 import { aql } from 'arangojs'
 import { ArrayCursor } from 'arangojs/cursor'
 import { KeyAsId } from '@core/nest/decorators/KeyAsId'
@@ -12,7 +11,7 @@ interface Member {
 }
 @Injectable()
 export class MemberService extends BaseService {
-  collection: DocumentCollection = this.db.collection('members')
+  collection = this.db.collection('members')
 
   @KeyAsId()
   async getMemberByTeamId(

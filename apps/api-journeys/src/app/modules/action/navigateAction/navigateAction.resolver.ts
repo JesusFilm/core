@@ -30,11 +30,9 @@ export class NavigateActionResolver {
     @Args('journeyId') journeyId: string,
     @Args('input') input: NavigateActionInput
   ): Promise<Action> {
-    const block = await this.blockService.get<
-      Block & {
-        __typename: string
-      }
-    >(id)
+    const block = (await this.blockService.get(id)) as Block & {
+      __typename: string
+    }
 
     if (
       !includes(
