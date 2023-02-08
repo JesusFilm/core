@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common'
 import { aql } from 'arangojs'
 import { BaseService } from '@core/nest/database/BaseService'
-import { DocumentCollection } from 'arangojs/collection'
 import { KeyAsId } from '@core/nest/decorators/KeyAsId'
 import { includes } from 'lodash'
 import { AqlQuery } from 'arangojs/aql'
@@ -110,5 +109,5 @@ export class JourneyService extends BaseService {
     return await result.all()
   }
 
-  collection: DocumentCollection = this.db.collection('journeys')
+  collection = this.db.collection('journeys')
 }

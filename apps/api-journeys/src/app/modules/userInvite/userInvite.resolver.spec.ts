@@ -269,5 +269,16 @@ describe('UserInviteResolver', () => {
       expect(service.update).not.toHaveBeenCalled()
       expect(rejectedInvite).toEqual([])
     })
+
+    it('should throw an error when no user journey', async () => {
+      const mockUserJourneyRequest =
+        ujResolver.userJourneyRequest as jest.MockedFunction<
+          typeof ujResolver.userJourneyRequest
+        >
+      mockUserJourneyRequest.mockResolvedValueOnce(undefined)
+      await expect(
+        async () => await resolver.redeemInvite(userInvite, user.id)
+      ).rejects.toThrow('userJourney does not exist')
+    })
   })
 })

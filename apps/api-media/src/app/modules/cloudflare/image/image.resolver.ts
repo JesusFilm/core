@@ -42,7 +42,7 @@ export class ImageResolver {
     @Args('id') id: string,
     @CurrentUserId() userId: string
   ): Promise<boolean> {
-    const image = await this.imageService.get<CloudflareImage>(id)
+    const image = (await this.imageService.get(id)) as CloudflareImage
     if (image == null) {
       throw new UserInputError('Image not found')
     }

@@ -24,7 +24,7 @@ describe('LangaugeResolver', () => {
     const countryService = {
       provide: CountryService,
       useFactory: () => ({
-        get: jest.fn(() => country),
+        load: jest.fn(() => country),
         getCountryBySlug: jest.fn(() => country),
         getAll: jest.fn(() => [country, country])
       })
@@ -51,7 +51,7 @@ describe('LangaugeResolver', () => {
   describe('country', () => {
     it('should return country', async () => {
       expect(await resolver.country(country.id)).toEqual(country)
-      expect(service.get).toHaveBeenCalledWith(country.id)
+      expect(service.load).toHaveBeenCalledWith(country.id)
     })
 
     it('should return country by slug', async () => {

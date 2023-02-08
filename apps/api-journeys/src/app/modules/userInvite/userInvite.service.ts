@@ -2,12 +2,11 @@ import { BaseService } from '@core/nest/database/BaseService'
 import { KeyAsId } from '@core/nest/decorators/KeyAsId'
 import { Injectable } from '@nestjs/common'
 import { aql } from 'arangojs'
-import { DocumentCollection } from 'arangojs/collection'
 import { UserInvite } from '../../__generated__/graphql'
 
 @Injectable()
 export class UserInviteService extends BaseService {
-  collection: DocumentCollection = this.db.collection('userInvites')
+  collection = this.db.collection('userInvites')
 
   @KeyAsId()
   async getUserInviteByJourneyAndEmail(
