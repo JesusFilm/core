@@ -5,42 +5,69 @@ import BackupOutlinedIcon from '@mui/icons-material/BackupOutlined'
 import Button from '@mui/material/Button'
 import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
-// import { gql, useQuery } from '@apollo/client'
-// import { CloudflareUploadUrl } from '../../../../../../../../__generated__/CloudflareUploadUrl'
+import { gql, useQuery } from '@apollo/client'
+import fetch from 'node-fetch'
+import { CloudflareUploadUrl } from '../../../../../../../../__generated__/CloudflareUploadUrl'
 
-// export const CLOUDFLARE_UPLOAD_URL = gql`
-//   query CloudflareUploadUrl {
-//     createCloudflareImage {
-//       uploadUrl
-//       id
-//     }
-//   }
-// `
+export const CLOUDFLARE_UPLOAD_URL = gql`
+  query CloudflareUploadUrl {
+    createCloudflareImage {
+      uploadUrl
+      id
+    }
+  }
+`
 
 export interface ImageUploadProps {
   maxFileSize?: number
+  onChange?: (id: string) => void
 }
 
 export function ImageUpload({
-  maxFileSize = 10
+  maxFileSize = 10,
+  onChange
 }: ImageUploadProps): ReactElement {
-  const onDrop = useCallback((acceptedFiles) => {
-    console.log(acceptedFiles[0].name)
-  }, [])
+  const { data } = useQuery<CloudflareUploadUrl>(CLOUDFLARE_UPLOAD_URL)
 
-  // const { data } = useQuery<CloudflareUploadUrl>(CLOUDFLARE_UPLOAD_URL)
+  const onDrop = useCallback(
+    async (acceptedFiles) => {
+      if (data?.createCloudflareImage == null) return
+      const file = acceptedFiles[0]
 
-  const { getRootProps, open, isDragActive, isDragAccept, isDragReject } =
-    useDropzone({
-      onDrop,
-      noClick: true,
-      maxFiles: 1,
-      accept: {
-        'image/jpeg': [],
-        'image/png': [],
-        'image/jpg': []
-      }
-    })
+      const formData = new FormData()
+      formData.set('file', file)
+
+      console.log(acceptedFiles[0])
+
+      const response = await (
+        await fetch(data?.createCloudflareImage?.uploadUrl, {
+          method: 'POST',
+          body: formData
+        })
+      ).json()
+
+      setMessage(acceptedFiles[0].name)
+      console.log(response)
+      onChange?.(response.id)
+    },
+    [data, onChange]
+  )
+
+  const {
+    getRootProps,
+    open,
+    getInputProps,
+    isDragActive,
+    isDragAccept,
+    isDragReject
+  } = useDropzone({
+    onDrop,
+    noClick: true,
+    maxFiles: 1,
+    accept: 'image/*'
+  })
+
+  const [message, setMessage] = useState('Drop an image here')
 
   const style = useMemo(() => {
     const activeStyle = {
@@ -63,9 +90,9 @@ export function ImageUpload({
   }, [isDragActive, isDragAccept, isDragReject])
 
   return (
-    <Stack alignItems="center">
+    <Stack {...getRootProps()} alignItems="center">
+      <input {...getInputProps()} />
       <Box
-        {...getRootProps({ style })}
         data-testid="drop zone"
         sx={{
           mt: 3,
