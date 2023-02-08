@@ -17,7 +17,7 @@
             "jwt": {
               "description": "The JWT configuration",
               "type": "object",
-              "required": ["jwks_url"],
+              "required": ["jwks_urls"],
               "properties": {
                 "cooldown": {
                   "description": "JWKS retrieval cooldown",
@@ -34,9 +34,12 @@
                   "default": "Bearer",
                   "type": "string"
                 },
-                "jwks_url": {
-                  "description": "Retrieve our JWK Set from here",
-                  "type": "string"
+                "jwks_urls": {
+                  "description": "Retrieve our JWK Sets from these locations",
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
                 }
               }
             }
@@ -53,7 +56,8 @@
         "expose_headers": null,
         "origins": ["https://studio.apollographql.com"],
         "match_origins": null,
-        "methods": ["GET", "POST", "OPTIONS"]
+        "methods": ["GET", "POST", "OPTIONS"],
+        "max_age": null
       },
       "type": "object",
       "properties": {
@@ -92,6 +96,11 @@
             "type": "string"
           },
           "nullable": true
+        },
+        "max_age": {
+          "description": "The `Access-Control-Max-Age` header value in time units",
+          "default": null,
+          "type": "string"
         },
         "methods": {
           "description": "Allowed request methods. Defaults to GET, POST, OPTIONS.",
@@ -473,7 +482,7 @@
       },
       "additionalProperties": false
     },
-    "health-check": {
+    "health_check": {
       "description": "Health check configuration",
       "default": {
         "listen": "127.0.0.1:8088",
@@ -2123,11 +2132,13 @@
                   "properties": {
                     "ca": {
                       "description": "The optional certificate authority (CA) certificate to be used in TLS configuration.",
+                      "default": null,
                       "type": "string",
                       "nullable": true
                     },
                     "cert": {
                       "description": "The optional cert for tls config",
+                      "default": null,
                       "type": "string",
                       "nullable": true
                     },
@@ -2139,6 +2150,7 @@
                     },
                     "key": {
                       "description": "The optional private key file for TLS configuration.",
+                      "default": null,
                       "type": "string",
                       "nullable": true
                     },
@@ -2552,11 +2564,13 @@
                   "properties": {
                     "ca": {
                       "description": "The optional certificate authority (CA) certificate to be used in TLS configuration.",
+                      "default": null,
                       "type": "string",
                       "nullable": true
                     },
                     "cert": {
                       "description": "The optional cert for tls config",
+                      "default": null,
                       "type": "string",
                       "nullable": true
                     },
@@ -2568,6 +2582,7 @@
                     },
                     "key": {
                       "description": "The optional private key file for TLS configuration.",
+                      "default": null,
                       "type": "string",
                       "nullable": true
                     },
@@ -3028,7 +3043,8 @@
           "nullable": true
         },
         "deduplicate_variables": {
-          "description": "Enable variable deduplication optimization when sending requests to subgraphs (https://github.com/apollographql/router/issues/87)",
+          "description": "DEPRECATED, now always enabled: Enable variable deduplication optimization when sending requests to subgraphs (https://github.com/apollographql/router/issues/87)",
+          "default": null,
           "type": "boolean",
           "nullable": true
         },
