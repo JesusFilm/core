@@ -1,21 +1,21 @@
-import { ReactElement, useCallback, useMemo, useState } from 'react'
+import { ReactElement, useCallback, useMemo } from 'react'
 import { useDropzone } from 'react-dropzone'
 import Typography from '@mui/material/Typography'
 import BackupOutlinedIcon from '@mui/icons-material/BackupOutlined'
 import Button from '@mui/material/Button'
 import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
-import { gql, useQuery } from '@apollo/client'
-import { CloudflareUploadUrl } from '../../../../../../../../__generated__/CloudflareUploadUrl'
+// import { gql, useQuery } from '@apollo/client'
+// import { CloudflareUploadUrl } from '../../../../../../../../__generated__/CloudflareUploadUrl'
 
-export const CLOUDFLARE_UPLOAD_URL = gql`
-  query CloudflareUploadUrl {
-    createCloudflareImage {
-      uploadUrl
-      id
-    }
-  }
-`
+// export const CLOUDFLARE_UPLOAD_URL = gql`
+//   query CloudflareUploadUrl {
+//     createCloudflareImage {
+//       uploadUrl
+//       id
+//     }
+//   }
+// `
 
 export interface ImageUploadProps {
   maxFileSize?: number
@@ -25,10 +25,10 @@ export function ImageUpload({
   maxFileSize = 10
 }: ImageUploadProps): ReactElement {
   const onDrop = useCallback((acceptedFiles) => {
-    handleMessage(acceptedFiles[0].name)
+    console.log(acceptedFiles[0].name)
   }, [])
 
-  const { data } = useQuery<CloudflareUploadUrl>(CLOUDFLARE_UPLOAD_URL)
+  // const { data } = useQuery<CloudflareUploadUrl>(CLOUDFLARE_UPLOAD_URL)
 
   const { getRootProps, open, isDragActive, isDragAccept, isDragReject } =
     useDropzone({
@@ -41,12 +41,6 @@ export function ImageUpload({
         'image/jpg': []
       }
     })
-
-  function handleMessage(fileName: string): void {
-    setMessage(fileName)
-  }
-
-  const [message, setMessage] = useState('Drop an image here')
 
   const style = useMemo(() => {
     const activeStyle = {
@@ -75,7 +69,8 @@ export function ImageUpload({
         data-testid="drop zone"
         sx={{
           mt: 3,
-          minHeight: '217px',
+          width: '100%',
+          height: '162px',
           borderWidth: '2px',
           backgroundColor: 'background.default',
           borderColor: 'divider',
@@ -85,16 +80,14 @@ export function ImageUpload({
           flexDirection: 'column',
           textAlign: 'center',
           alignItems: 'center',
-          display: 'flex',
-          width: '100%'
+          display: 'flex'
         }}
       >
         <BackupOutlinedIcon
-          fontSize="large"
-          sx={{ color: 'secondary.light' }}
+          sx={{ fontSize: '48px', color: 'secondary.light', mb: 1 }}
         />
         <Typography variant="body1" sx={{ pb: 4 }}>
-          {message}
+          Drop an image here
         </Typography>
       </Box>
       <Typography
@@ -105,15 +98,22 @@ export function ImageUpload({
         size="small"
         variant="outlined"
         onClick={open}
-        color="secondary"
         sx={{
+          mt: 6,
+          height: '32px',
           width: '100%',
           borderColor: 'secondary.light',
           borderWidth: '1px',
           borderRadius: '8px'
         }}
       >
-        Upload file
+        <Typography
+          variant="subtitle2"
+          fontSize="16px"
+          sx={{ color: 'secondary.main' }}
+        >
+          Upload file
+        </Typography>
       </Button>
     </Stack>
   )
