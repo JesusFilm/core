@@ -1,6 +1,4 @@
 import { render, waitFor } from '@testing-library/react'
-import { rest } from 'msw'
-import { mswServer } from '../../../../../test/mswServer'
 import { UnsplashGallery } from '.'
 
 describe('UnsplashGallery', () => {
@@ -21,33 +19,13 @@ describe('UnsplashGallery', () => {
     color: '#262626'
   }
 
-  const getCollection = rest.get(
-    'https://api.unsplash.com/collections/4924556/photos?page=1&per_page=1&client_id=',
-    (_req, res, ctx) => {
-      return res(ctx.json([unsplashImage]))
-    }
-  )
-
-  const fetchSearchRequest = rest.get(
-    'https://api.unsplash.com/search/photos?query=cat&page=1&per_page=1&client_id=',
-    (_req, res, ctx) => {
-      return res(
-        ctx.json({
-          results: [unsplashImage]
-        })
-      )
-    }
-  )
-
   it('should return a collection of images from unsplash', async () => {
-    mswServer.use(getCollection)
     const { getByRole, getByText } = render(<UnsplashGallery />)
     await waitFor(() => expect(getByRole('list')).toBeInTheDocument())
     expect(getByText('Levi Meir Clancy')).toBeInTheDocument()
   })
 
   it('should search images from unsplash', async () => {
-    mswServer.use(fetchSearchRequest)
     const { getByRole, getAllByText } = render(<UnsplashGallery />)
     await waitFor(() => expect(getByRole('list')).toBeInTheDocument())
     expect(getAllByText('Levi Meir Clancy')[0]).toBeInTheDocument()
