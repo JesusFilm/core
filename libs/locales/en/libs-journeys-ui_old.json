@@ -1,0 +1,10 @@
+{
+  "You entered an invalid or incorrect email address": "You entered an invalid or incorrect email address",
+  "Name must be 2 characters or more": "Name must be 2 characters or more",
+  "Name must be 50 characters or less": "Name must be 50 characters or less",
+  "Name": "Name",
+  "Email": "Email",
+  "Submit": "Submit",
+  "Untitled": "Untitled",
+  "Step {{number}}": "Step {{number}}"
+}
