@@ -23,13 +23,21 @@ export function FilterContainer(): ReactElement {
               <Stack direction="row" spacing={2}>
                 <VolumeUp />
                 <Typography>Languages</Typography>
-                {openRow === 1 ? <KeyboardArrowUp style={{marginLeft: "auto"}}/> : <KeyboardArrowDown style={{marginLeft: "auto"}}/>}
+                {openRow === 1 ? (
+                  <KeyboardArrowUp style={{ marginLeft: 'auto' }} />
+                ) : (
+                  <KeyboardArrowDown style={{ marginLeft: 'auto' }} />
+                )}
               </Stack>
             </TableCell>
           </TableRow>
           {openRow === 1 ? (
             <TableRow key={1.5}>
-              <TableCell align="center" sx={{backgroundColor: 'secondary.light'}} onClick={() => setOpenRow(0)}>
+              <TableCell
+                align="center"
+                sx={{ backgroundColor: 'secondary.light' }}
+                onClick={() => setOpenRow(0)}
+              >
                 <Typography>Languages Component Here</Typography>
               </TableCell>
             </TableRow>
@@ -41,13 +49,21 @@ export function FilterContainer(): ReactElement {
               <Stack direction="row" spacing={2}>
                 <Subtitles />
                 <Typography>Subtitles</Typography>
-                {openRow === 2 ? <KeyboardArrowUp style={{marginLeft: "auto"}}/> : <KeyboardArrowDown style={{marginLeft: "auto"}}/>}
+                {openRow === 2 ? (
+                  <KeyboardArrowUp style={{ marginLeft: 'auto' }} />
+                ) : (
+                  <KeyboardArrowDown style={{ marginLeft: 'auto' }} />
+                )}
               </Stack>
             </TableCell>
           </TableRow>
           {openRow === 2 ? (
             <TableRow key={1.5}>
-              <TableCell align="center" sx={{backgroundColor: 'secondary.light'}} onClick={() => setOpenRow(0)}>
+              <TableCell
+                align="center"
+                sx={{ backgroundColor: 'secondary.light' }}
+                onClick={() => setOpenRow(0)}
+              >
                 <Typography>Subtitles Component Here</Typography>
               </TableCell>
             </TableRow>
@@ -59,14 +75,22 @@ export function FilterContainer(): ReactElement {
               <Stack direction="row" spacing={2}>
                 <Title />
                 <Typography>Title</Typography>
-                {openRow === 3 ? <KeyboardArrowUp style={{marginLeft: "auto"}}/> : <KeyboardArrowDown style={{marginLeft: "auto"}}/>}
+                {openRow === 3 ? (
+                  <KeyboardArrowUp style={{ marginLeft: 'auto' }} />
+                ) : (
+                  <KeyboardArrowDown style={{ marginLeft: 'auto' }} />
+                )}
               </Stack>
             </TableCell>
           </TableRow>
           {openRow === 3 ? (
-            <TableRow key={1.5} >
-              <TableCell align="center" sx={{backgroundColor: 'secondary.light'}} onClick={() => setOpenRow(0)}>
-                <Typography >Title Component Here</Typography>
+            <TableRow key={1.5}>
+              <TableCell
+                align="center"
+                sx={{ backgroundColor: 'secondary.light' }}
+                onClick={() => setOpenRow(0)}
+              >
+                <Typography>Title Component Here</Typography>
               </TableCell>
             </TableRow>
           ) : (
