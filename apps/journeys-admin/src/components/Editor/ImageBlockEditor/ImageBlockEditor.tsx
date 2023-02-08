@@ -1,9 +1,6 @@
 import Card from '@mui/material/Card'
 import CardActionArea from '@mui/material/CardActionArea'
 import { ReactElement, useState } from 'react'
-import { object, string } from 'yup'
-import { useFormik } from 'formik'
-import { noop } from 'lodash'
 
 import { GetJourney_journey_blocks_ImageBlock as ImageBlock } from '../../../../__generated__/GetJourney'
 import { ImageBlockHeader } from '../ImageBlockHeader'
@@ -24,24 +21,11 @@ export function ImageBlockEditor({
 }: ImageBlockEditorProps): ReactElement {
   const [open, setOpen] = useState(false)
 
-  const srcSchema = object().shape({
-    src: string().url('Please enter a valid url').required('Required')
-  })
-
   const handleImageDelete = async (): Promise<void> => {
     if (onDelete != null) {
       await onDelete()
-      formik.resetForm({ values: { src: '' } })
     }
   }
-
-  const formik = useFormik({
-    initialValues: {
-      src: selectedBlock?.src ?? ''
-    },
-    validationSchema: srcSchema,
-    onSubmit: noop
-  })
 
   return (
     <>
