@@ -51,7 +51,7 @@ describe('VideosPage', () => {
 
   describe('filters', () => {
     it('should handle audio language filter', async () => {
-      const { getAllByRole, getByText } = render(
+      const { getAllByRole, getByText, getByRole } = render(
         <MockedProvider
           mocks={[
             {
@@ -66,7 +66,7 @@ describe('VideosPage', () => {
               },
               result: {
                 data: {
-                  videos
+                  videos: [videos[0]]
                 }
               }
             },
@@ -79,7 +79,17 @@ describe('VideosPage', () => {
               },
               result: {
                 data: {
-                  languages
+                  languages: [
+                    {
+                      id: '529',
+                      name: [
+                        {
+                          value: 'English',
+                          primary: true
+                        }
+                      ]
+                    }
+                  ]
                 }
               }
             },
@@ -95,7 +105,7 @@ describe('VideosPage', () => {
               },
               result: {
                 data: {
-                  videos
+                  videos: [videos[1]]
                 }
               }
             }
@@ -104,14 +114,22 @@ describe('VideosPage', () => {
           <VideosPage />
         </MockedProvider>
       )
-      const textbox = getAllByRole('combobox')[0]
-
-      await act(async () => {
-        await waitFor(() => fireEvent.focus(textbox))
-        await waitFor(() => fireEvent.keyDown(textbox, { key: 'ArrowDown' }))
-        await waitFor(() => fireEvent.keyDown(textbox, { key: 'Enter' }))
-      })
-      expect(getByText(videos[0].title[0].value)).toBeInTheDocument()
+      await waitFor(() =>
+        expect(
+          getAllByRole('combobox', { name: 'Search Languages' })[0]
+        ).toBeInTheDocument()
+      )
+      const comboboxEl = getAllByRole('combobox', {
+        name: 'Search Languages'
+      })[0]
+      fireEvent.focus(comboboxEl)
+      fireEvent.keyDown(comboboxEl, { key: 'ArrowDown' })
+      await waitFor(() => getByRole('option', { name: 'English' }))
+      fireEvent.click(getByRole('option', { name: 'English' }))
+      expect(comboboxEl).toHaveValue('English')
+      await waitFor(() =>
+        expect(getByText(videos[1].title[0].value)).toBeInTheDocument()
+      )
     })
 
     it('should handle subtitle language filter', async () => {

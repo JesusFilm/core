@@ -20,7 +20,7 @@ describe('CountryService', () => {
   let db: DeepMockProxy<Database>
 
   beforeEach(async () => {
-    db = mockDeep<Database>()
+    db = mockDeep()
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         CountryService,
@@ -45,16 +45,7 @@ describe('CountryService', () => {
     FOR item IN 
       FILTER @value0 IN item.slug[*].value
       LIMIT 1
-      RETURN {
-        _key: item._key,
-        name: item.name,
-        population: item.population,
-        continent: item.continent,
-        slug: item.slug,
-        languageIds: item.languageIds,
-        latitude: item.latitude,
-        longitude: item.longitude
-      }
+      RETURN item
     `)
       expect(bindVars).toEqual({
         value0: 'United-States'
