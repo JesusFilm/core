@@ -1,4 +1,9 @@
-import { render, waitFor } from '@testing-library/react'
+import { MockedProvider } from '@apollo/client/testing'
+import { fireEvent, render, waitFor } from '@testing-library/react'
+import {
+  LIST_UNSPLASH_COLLECTION_PHOTOS,
+  SEARCH_UNSPLASH_PHOTOS
+} from './UnsplashGallery'
 import { UnsplashGallery } from '.'
 
 describe('UnsplashGallery', () => {
@@ -20,14 +25,81 @@ describe('UnsplashGallery', () => {
   }
 
   it('should return a collection of images from unsplash', async () => {
-    const { getByRole, getByText } = render(<UnsplashGallery />)
+    const { getByRole, getByText } = render(
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: LIST_UNSPLASH_COLLECTION_PHOTOS,
+              variables: {
+                collectionId: '4924556',
+                page: 1,
+                perPage: 20
+              }
+            },
+            result: {
+              data: {
+                listUnsplashCollectionPhotos: [unsplashImage]
+              }
+            }
+          }
+        ]}
+      >
+        <UnsplashGallery />
+      </MockedProvider>
+    )
     await waitFor(() => expect(getByRole('list')).toBeInTheDocument())
     expect(getByText('Levi Meir Clancy')).toBeInTheDocument()
   })
 
   it('should search images from unsplash', async () => {
-    const { getByRole, getAllByText } = render(<UnsplashGallery />)
+    const { getByRole, getAllByText } = render(
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: LIST_UNSPLASH_COLLECTION_PHOTOS,
+              variables: {
+                collectionId: '4924556',
+                page: 1,
+                perPage: 20
+              }
+            },
+            result: {
+              data: {
+                listUnsplashCollectionPhotos: [unsplashImage]
+              }
+            }
+          },
+          {
+            request: {
+              query: SEARCH_UNSPLASH_PHOTOS,
+              variables: {
+                query: 'Jesus',
+                page: 1,
+                perPage: 20
+              }
+            },
+            result: {
+              data: {
+                searchUnsplashPhotos: {
+                  results: [unsplashImage, unsplashImage]
+                }
+              }
+            }
+          }
+        ]}
+      >
+        <UnsplashGallery />
+      </MockedProvider>
+    )
     await waitFor(() => expect(getByRole('list')).toBeInTheDocument())
-    expect(getAllByText('Levi Meir Clancy')[0]).toBeInTheDocument()
+    const textbox = getByRole('textbox', { name: 'UnsplashSearch' })
+    fireEvent.change(textbox, { target: { value: 'Jesus' } })
+    fireEvent.submit(textbox, { target: { value: 'Jesus' } })
+    await waitFor(() => expect(getByRole('list')).toBeInTheDocument())
+    await waitFor(() =>
+      expect(getAllByText('Levi Meir Clancy')[1]).toBeInTheDocument()
+    )
   })
 })

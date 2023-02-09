@@ -12,7 +12,6 @@ interface UnsplashListProps {
   gallery: Array<
     | ListUnsplashCollectionPhotos_listUnsplashCollectionPhotos
     | SearchUnsplashPhotos_searchUnsplashPhotos_results
-    | null
   >
 }
 
@@ -23,22 +22,22 @@ export function UnsplashList({ gallery }: UnsplashListProps): ReactElement {
         <ImageListItem key={item?.id} sx={{ pb: 1 }}>
           <Stack spacing={1}>
             <Image
-              src={item?.urls?.small ?? ''}
-              alt={item?.alt_description ?? ''}
-              width={item?.width ?? ''}
-              height={item?.height ?? ''}
+              src={item.urls.small}
+              alt={item.alt_description}
+              width={item.width}
+              height={item.height}
               style={{
                 borderRadius: 8
               }}
             />
             <Link
               href={`https://unsplash.com/@${
-                item?.user?.username ?? ''
+                item.user.username ?? ''
               }?utm_source=your_app_name&utm_medium=referral`}
               color="secondary.light"
             >
               <Typography variant="caption">
-                {item?.user?.first_name} {item?.user?.last_name}
+                {item.user.first_name} {item.user.last_name}
               </Typography>
             </Link>
           </Stack>

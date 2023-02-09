@@ -1,6 +1,7 @@
 import { fireEvent, render } from '@testing-library/react'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
+import { MockedProvider } from '@apollo/client/testing'
 import { ImageLibrary } from '.'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
@@ -17,7 +18,9 @@ describe('ImageLibrary', () => {
     it('should switch tabs', () => {
       const { getByText } = render(
         <FlagsProvider>
-          <ImageLibrary open onClose={jest.fn()} />
+          <MockedProvider>
+            <ImageLibrary open onClose={jest.fn()} />
+          </MockedProvider>
         </FlagsProvider>
       )
       expect(getByText('Custom')).toBeInTheDocument()
@@ -26,7 +29,9 @@ describe('ImageLibrary', () => {
     it('should render the Image Library on the right', () => {
       const { getAllByText, getByTestId } = render(
         <FlagsProvider flags={{ unsplashGallery: true }}>
-          <ImageLibrary open />
+          <MockedProvider>
+            <ImageLibrary open />
+          </MockedProvider>
         </FlagsProvider>
       )
       expect(getAllByText('Unsplash')[0]).toBeInTheDocument()
@@ -39,7 +44,9 @@ describe('ImageLibrary', () => {
       const onClose = jest.fn()
       const { getAllByRole, getByTestId } = render(
         <FlagsProvider>
-          <ImageLibrary open onClose={onClose} />
+          <MockedProvider>
+            <ImageLibrary open onClose={onClose} />
+          </MockedProvider>
         </FlagsProvider>
       )
       expect(getAllByRole('button')[0]).toContainElement(
@@ -52,7 +59,9 @@ describe('ImageLibrary', () => {
     it('does not render unsplash as an option', () => {
       const { queryByText, getByText } = render(
         <FlagsProvider>
-          <ImageLibrary open />
+          <MockedProvider>
+            <ImageLibrary open />
+          </MockedProvider>
         </FlagsProvider>
       )
       expect(queryByText('Unplash')).not.toBeInTheDocument()
@@ -68,7 +77,9 @@ describe('ImageLibrary', () => {
     it('should render the Image Library from the bottom', () => {
       const { getAllByText, getByTestId } = render(
         <FlagsProvider flags={{ unsplashGallery: true }}>
-          <ImageLibrary open />
+          <MockedProvider>
+            <ImageLibrary open />
+          </MockedProvider>
         </FlagsProvider>
       )
       expect(getAllByText('Unsplash')[0]).toBeInTheDocument()

@@ -9,28 +9,28 @@
 
 export interface ListUnsplashCollectionPhotos_listUnsplashCollectionPhotos_urls {
   __typename: "UnsplashPhotoUrls";
-  small: string | null;
+  small: string;
 }
 
 export interface ListUnsplashCollectionPhotos_listUnsplashCollectionPhotos_user {
   __typename: "UnsplashUser";
-  first_name: string | null;
-  last_name: string | null;
-  username: string | null;
+  first_name: string;
+  last_name: string;
+  username: string;
 }
 
 export interface ListUnsplashCollectionPhotos_listUnsplashCollectionPhotos {
   __typename: "UnsplashPhoto";
-  id: string | null;
-  alt_description: string | null;
-  width: number | null;
-  height: number | null;
-  urls: ListUnsplashCollectionPhotos_listUnsplashCollectionPhotos_urls | null;
-  user: ListUnsplashCollectionPhotos_listUnsplashCollectionPhotos_user | null;
+  id: string;
+  alt_description: string;
+  width: number;
+  height: number;
+  urls: ListUnsplashCollectionPhotos_listUnsplashCollectionPhotos_urls;
+  user: ListUnsplashCollectionPhotos_listUnsplashCollectionPhotos_user;
 }
 
 export interface ListUnsplashCollectionPhotos {
-  listUnsplashCollectionPhotos: (ListUnsplashCollectionPhotos_listUnsplashCollectionPhotos | null)[];
+  listUnsplashCollectionPhotos: ListUnsplashCollectionPhotos_listUnsplashCollectionPhotos[];
 }
 
 export interface ListUnsplashCollectionPhotosVariables {

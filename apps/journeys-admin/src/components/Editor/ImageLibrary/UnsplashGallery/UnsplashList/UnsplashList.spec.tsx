@@ -1,8 +1,10 @@
 import { render } from '@testing-library/react'
+import { SearchUnsplashPhotos_searchUnsplashPhotos_results } from '../../../../../../__generated__/SearchUnsplashPhotos'
 import { UnsplashList } from './UnsplashList'
 
 describe('UnsplashList', () => {
   const unsplashImage = {
+    __typename: 'UnsplashPhoto',
     id: 1,
     width: 6240,
     height: 4160,
@@ -21,7 +23,11 @@ describe('UnsplashList', () => {
 
   it('should return a list of unsplash images', () => {
     const { getByRole, getByText } = render(
-      <UnsplashList gallery={[unsplashImage]} />
+      <UnsplashList
+        gallery={[
+          unsplashImage as unknown as SearchUnsplashPhotos_searchUnsplashPhotos_results
+        ]}
+      />
     )
     expect(getByRole('list')).toBeInTheDocument()
     expect(getByText('Levi Meir Clancy')).toBeInTheDocument()
