@@ -12,7 +12,7 @@ export const USER_JOURNEY_OPEN = gql`
 `
 
 export function useUserJourneyOpen(
-  userId?: string | null,
+  userId: string | null,
   journeyId?: string | null,
   userJourneys?: UserJourney[] | null
 ): void {
@@ -20,8 +20,8 @@ export function useUserJourneyOpen(
 
   useEffect(() => {
     if (userJourneys == null || journeyId == null || userId == null) return
-    const user = userJourneys.find((uj) => uj?.user?.id === userId)
-    if (user == null || user.openedAt != null) return
+    const userJourney = userJourneys.find((uj) => uj?.user?.id === userId)
+    if (userJourney == null || userJourney.openedAt != null) return
 
     void userJourneyOpen({ variables: { id: journeyId } })
   }, [journeyId, userJourneys, userId, userJourneyOpen])
