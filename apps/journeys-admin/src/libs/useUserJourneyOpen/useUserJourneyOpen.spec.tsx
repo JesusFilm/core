@@ -1,6 +1,6 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { waitFor } from '@testing-library/react'
-import { renderHook } from '@testing-library/react-hooks'
+import { renderHook, act } from '@testing-library/react-hooks'
 import { GetJourney_journey_userJourneys as UserJourney } from '../../../__generated__/GetJourney'
 import { UserJourneyRole } from '../../../__generated__/globalTypes'
 import { useUserJourneyOpen, USER_JOURNEY_OPEN } from './useUserJourneyOpen'
@@ -24,7 +24,7 @@ describe('useUserJourneyOpen', () => {
       __typename: 'UserJourney',
       id: 'userJourney2.id',
       role: UserJourneyRole.editor,
-      openedAt: null,
+      openedAt: '2021-11-19T12:34:56.647Z',
       user: {
         __typename: 'User',
         id: 'user2.id',
@@ -66,34 +66,9 @@ describe('useUserJourneyOpen', () => {
         )
       }
     )
-
-    await waitFor(() => expect(result).toHaveBeenCalled())
-  })
-
-  it('should not update openedAt if user is not in userJourneys', async () => {
-    const result = jest.fn()
-
-    renderHook(() => useUserJourneyOpen(), {
-      wrapper: ({ children }) => (
-        <MockedProvider
-          mocks={[
-            {
-              request: {
-                query: USER_JOURNEY_OPEN,
-                variables: {
-                  id: 'journey.id'
-                }
-              },
-              result
-            }
-          ]}
-        >
-          {children}
-        </MockedProvider>
-      )
-    })
-
-    await waitFor(() => expect(result).not.toHaveBeenCalled())
+    await act(
+      async () => await waitFor(() => expect(result).toHaveBeenCalled())
+    )
   })
 
   it('should not update openedAt if user is not in userJourneys', async () => {
@@ -121,6 +96,123 @@ describe('useUserJourneyOpen', () => {
         )
       }
     )
+
+    await waitFor(() => expect(result).not.toHaveBeenCalled())
+  })
+
+  it('should not update openedAt if userJourney is already opened', async () => {
+    const result = jest.fn()
+
+    renderHook(
+      () => useUserJourneyOpen('user2.id', 'journey.id', userJourneys),
+      {
+        wrapper: ({ children }) => <MockedProvider>{children}</MockedProvider>
+      }
+    )
+
+    await waitFor(() => expect(result).not.toHaveBeenCalled())
+  })
+
+  it('should not update openedAt if userId is not given', async () => {
+    const result = jest.fn()
+
+    renderHook(() => useUserJourneyOpen(undefined, 'journeyId', userJourneys), {
+      wrapper: ({ children }) => (
+        <MockedProvider
+          mocks={[
+            {
+              request: {
+                query: USER_JOURNEY_OPEN,
+                variables: {
+                  id: 'journey.id'
+                }
+              },
+              result
+            }
+          ]}
+        >
+          {children}
+        </MockedProvider>
+      )
+    })
+
+    await waitFor(() => expect(result).not.toHaveBeenCalled())
+  })
+
+  it('should not update openedAt if journeyId is not given', async () => {
+    const result = jest.fn()
+
+    renderHook(() => useUserJourneyOpen('user.id', undefined, userJourneys), {
+      wrapper: ({ children }) => (
+        <MockedProvider
+          mocks={[
+            {
+              request: {
+                query: USER_JOURNEY_OPEN,
+                variables: {
+                  id: 'journey.id'
+                }
+              },
+              result
+            }
+          ]}
+        >
+          {children}
+        </MockedProvider>
+      )
+    })
+
+    await waitFor(() => expect(result).not.toHaveBeenCalled())
+  })
+
+  it('should not update openedAt if userJourneys is not given', async () => {
+    const result = jest.fn()
+
+    renderHook(() => useUserJourneyOpen('user.id', 'journey.id', undefined), {
+      wrapper: ({ children }) => (
+        <MockedProvider
+          mocks={[
+            {
+              request: {
+                query: USER_JOURNEY_OPEN,
+                variables: {
+                  id: 'journey.id'
+                }
+              },
+              result
+            }
+          ]}
+        >
+          {children}
+        </MockedProvider>
+      )
+    })
+
+    await waitFor(() => expect(result).not.toHaveBeenCalled())
+  })
+
+  it('should not update openedAt if userJourneys is empty', async () => {
+    const result = jest.fn()
+
+    renderHook(() => useUserJourneyOpen('user.id', 'journey.id', []), {
+      wrapper: ({ children }) => (
+        <MockedProvider
+          mocks={[
+            {
+              request: {
+                query: USER_JOURNEY_OPEN,
+                variables: {
+                  id: 'journey.id'
+                }
+              },
+              result
+            }
+          ]}
+        >
+          {children}
+        </MockedProvider>
+      )
+    })
 
     await waitFor(() => expect(result).not.toHaveBeenCalled())
   })
