@@ -49,6 +49,6 @@ describe('LanguagesFilter', () => {
     expect(
       getByRole('combobox', { name: 'Search Languages' })
     ).toBeInTheDocument()
-    expect(getByText('+2000 languages')).toBeInTheDocument()
+    expect(getByText('2000+ languages')).toBeInTheDocument()
   })
 })

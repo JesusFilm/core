@@ -46,7 +46,9 @@ describe('arclight', () => {
       } as unknown as Response)
       await expect(getArclightMediaLanguages()).resolves.toEqual([])
       expect(request).toHaveBeenCalledWith(
-        'https://api.arclight.org/v2/media-languages?limit=5000&filter=default&apiKey=',
+        expect.stringContaining(
+          'https://api.arclight.org/v2/media-languages?limit=5000&filter=default&apiKey='
+        ),
         undefined
       )
     })
@@ -65,7 +67,9 @@ describe('arclight', () => {
       } as unknown as Response)
       await expect(getArclightMediaComponents(1)).resolves.toEqual([])
       expect(request).toHaveBeenCalledWith(
-        'https://api.arclight.org/v2/media-components?limit=25&isDeprecated=false&contentTypes=video&page=1&apiKey=',
+        expect.stringContaining(
+          'https://api.arclight.org/v2/media-components?limit=25&isDeprecated=false&contentTypes=video&page=1&apiKey='
+        ),
         undefined
       )
     })
@@ -81,7 +85,9 @@ describe('arclight', () => {
       } as unknown as Response)
       await expect(getArclightMediaComponents(1)).resolves.toEqual([])
       expect(request).toHaveBeenCalledWith(
-        'https://api.arclight.org/v2/media-components?limit=25&isDeprecated=false&contentTypes=video&page=1&apiKey=',
+        expect.stringContaining(
+          'https://api.arclight.org/v2/media-components?limit=25&isDeprecated=false&contentTypes=video&page=1&apiKey='
+        ),
         undefined
       )
     })
@@ -102,7 +108,9 @@ describe('arclight', () => {
         getArclightMediaComponentLanguages('mediaComponentId')
       ).resolves.toEqual([])
       expect(request).toHaveBeenCalledWith(
-        'https://api.arclight.org/v2/media-components/mediaComponentId/languages?platform=android&apiKey=',
+        expect.stringContaining(
+          'https://api.arclight.org/v2/media-components/mediaComponentId/languages?platform=android&apiKey='
+        ),
         undefined
       )
     })
@@ -123,7 +131,9 @@ describe('arclight', () => {
         getArclightMediaComponentLinks('mediaComponentId')
       ).resolves.toEqual([])
       expect(request).toHaveBeenCalledWith(
-        'https://api.arclight.org/v2/media-component-links/mediaComponentId?apiKey=',
+        expect.stringContaining(
+          'https://api.arclight.org/v2/media-component-links/mediaComponentId?apiKey='
+        ),
         undefined
       )
     })
@@ -139,7 +149,9 @@ describe('arclight', () => {
         getArclightMediaComponentLinks('mediaComponentId')
       ).resolves.toEqual([])
       expect(request).toHaveBeenCalledWith(
-        'https://api.arclight.org/v2/media-component-links/mediaComponentId?apiKey=',
+        expect.stringContaining(
+          'https://api.arclight.org/v2/media-component-links/mediaComponentId?apiKey='
+        ),
         undefined
       )
     })

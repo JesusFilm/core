@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common'
 import { v4 as uuidv4 } from 'uuid'
 import { aql } from 'arangojs'
 import { BaseService } from '@core/nest/database/BaseService'
-import { DocumentCollection } from 'arangojs/collection'
 import { KeyAsId, keyAsId } from '@core/nest/decorators/KeyAsId'
 import { idAsKey } from '@core/nest/decorators/IdAsKey'
 import {
@@ -302,5 +301,5 @@ export class BlockService extends BaseService {
     return block != null ? block[type] === value : false
   }
 
-  collection: DocumentCollection = this.db.collection('blocks')
+  collection = this.db.collection('blocks')
 }
