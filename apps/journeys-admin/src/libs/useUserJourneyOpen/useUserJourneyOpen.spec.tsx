@@ -116,7 +116,7 @@ describe('useUserJourneyOpen', () => {
   it('should not update openedAt if userId is not given', async () => {
     const result = jest.fn()
 
-    renderHook(() => useUserJourneyOpen(undefined, 'journeyId', userJourneys), {
+    renderHook(() => useUserJourneyOpen(null, 'journeyId', userJourneys), {
       wrapper: ({ children }) => (
         <MockedProvider
           mocks={[
