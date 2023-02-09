@@ -243,11 +243,13 @@ input ChatOpenEventCreateInput
   value: MessagePlatform
 }
 
-type CloudflareDirectCreatorUploadResponse
+type CloudflareImage
   @join__type(graph: MEDIA)
 {
-  imageId: String
-  uploadUrl: String
+  id: ID!
+  uploadUrl: String!
+  userId: ID!
+  createdAt: String!
 }
 
 type Country
@@ -707,15 +709,16 @@ enum MessagePlatform
 
 type Mutation
   @join__type(graph: JOURNEYS)
+  @join__type(graph: MEDIA)
 {
-  blockDeleteAction(id: ID!, journeyId: ID!): Block!
-  blockUpdateNavigateAction(id: ID!, journeyId: ID!, input: NavigateActionInput!): NavigateAction!
-  blockUpdateNavigateToBlockAction(id: ID!, journeyId: ID!, input: NavigateToBlockActionInput!): NavigateToBlockAction!
-  blockUpdateNavigateToJourneyAction(id: ID!, journeyId: ID!, input: NavigateToJourneyActionInput!): NavigateToJourneyAction!
-  blockUpdateLinkAction(id: ID!, journeyId: ID!, input: LinkActionInput!): LinkAction!
+  blockDeleteAction(id: ID!, journeyId: ID!): Block! @join__field(graph: JOURNEYS)
+  blockUpdateNavigateAction(id: ID!, journeyId: ID!, input: NavigateActionInput!): NavigateAction! @join__field(graph: JOURNEYS)
+  blockUpdateNavigateToBlockAction(id: ID!, journeyId: ID!, input: NavigateToBlockActionInput!): NavigateToBlockAction! @join__field(graph: JOURNEYS)
+  blockUpdateNavigateToJourneyAction(id: ID!, journeyId: ID!, input: NavigateToJourneyActionInput!): NavigateToJourneyAction! @join__field(graph: JOURNEYS)
+  blockUpdateLinkAction(id: ID!, journeyId: ID!, input: LinkActionInput!): LinkAction! @join__field(graph: JOURNEYS)
 
   """blockDelete returns the updated sibling blocks on successful delete"""
-  blockDelete(id: ID!, journeyId: ID!, parentBlockId: ID): [Block!]!
+  blockDelete(id: ID!, journeyId: ID!, parentBlockId: ID): [Block!]! @join__field(graph: JOURNEYS)
 
   """
   blockDuplicate returns the updated block, it's children and sibling blocks on successful duplicate
@@ -728,77 +731,81 @@ type Mutation
     parentOrder defines the position to add the duplicated block. Negative values defines the position from the end of the array. Positions greater than the length of the array or null parentOrder will add duplicate at end of the array.
     """
     parentOrder: Int
-  ): [Block!]!
-  blockOrderUpdate(id: ID!, journeyId: ID!, parentOrder: Int!): [Block!]!
-  buttonBlockCreate(input: ButtonBlockCreateInput!): ButtonBlock!
-  buttonBlockUpdate(id: ID!, journeyId: ID!, input: ButtonBlockUpdateInput!): ButtonBlock
-  cardBlockCreate(input: CardBlockCreateInput!): CardBlock!
-  cardBlockUpdate(id: ID!, journeyId: ID!, input: CardBlockUpdateInput!): CardBlock!
-  iconBlockCreate(input: IconBlockCreateInput!): IconBlock!
-  iconBlockUpdate(id: ID!, journeyId: ID!, input: IconBlockUpdateInput!): IconBlock!
-  imageBlockCreate(input: ImageBlockCreateInput!): ImageBlock!
-  imageBlockUpdate(id: ID!, journeyId: ID!, input: ImageBlockUpdateInput!): ImageBlock!
-  radioOptionBlockCreate(input: RadioOptionBlockCreateInput!): RadioOptionBlock!
-  radioQuestionBlockCreate(input: RadioQuestionBlockCreateInput!): RadioQuestionBlock!
-  radioOptionBlockUpdate(id: ID!, journeyId: ID!, input: RadioOptionBlockUpdateInput!): RadioOptionBlock!
-  radioQuestionBlockUpdate(id: ID!, journeyId: ID!, parentBlockId: ID!): RadioQuestionBlock!
-  signUpBlockCreate(input: SignUpBlockCreateInput!): SignUpBlock!
-  signUpBlockUpdate(id: ID!, journeyId: ID!, input: SignUpBlockUpdateInput!): SignUpBlock
-  stepBlockCreate(input: StepBlockCreateInput!): StepBlock!
-  stepBlockUpdate(id: ID!, journeyId: ID!, input: StepBlockUpdateInput!): StepBlock!
-  textResponseBlockCreate(input: TextResponseBlockCreateInput!): TextResponseBlock!
-  textResponseBlockUpdate(id: ID!, journeyId: ID!, input: TextResponseBlockUpdateInput!): TextResponseBlock
-  typographyBlockCreate(input: TypographyBlockCreateInput!): TypographyBlock!
-  typographyBlockUpdate(id: ID!, journeyId: ID!, input: TypographyBlockUpdateInput!): TypographyBlock!
-  videoBlockCreate(input: VideoBlockCreateInput!): VideoBlock!
-  videoBlockUpdate(id: ID!, journeyId: ID!, input: VideoBlockUpdateInput!): VideoBlock!
-  buttonClickEventCreate(input: ButtonClickEventCreateInput!): ButtonClickEvent!
-  chatOpenEventCreate(input: ChatOpenEventCreateInput!): ChatOpenEvent!
-  journeyViewEventCreate(input: JourneyViewEventCreateInput!): JourneyViewEvent!
-  radioQuestionSubmissionEventCreate(input: RadioQuestionSubmissionEventCreateInput!): RadioQuestionSubmissionEvent!
-  signUpSubmissionEventCreate(input: SignUpSubmissionEventCreateInput!): SignUpSubmissionEvent!
-  stepViewEventCreate(input: StepViewEventCreateInput!): StepViewEvent!
-  stepNextEventCreate(input: StepNextEventCreateInput!): StepNextEvent!
-  textResponseSubmissionEventCreate(input: TextResponseSubmissionEventCreateInput!): TextResponseSubmissionEvent!
-  videoStartEventCreate(input: VideoStartEventCreateInput!): VideoStartEvent!
-  videoPlayEventCreate(input: VideoPlayEventCreateInput!): VideoPlayEvent!
-  videoPauseEventCreate(input: VideoPauseEventCreateInput!): VideoPauseEvent!
-  videoCompleteEventCreate(input: VideoCompleteEventCreateInput!): VideoCompleteEvent!
-  videoExpandEventCreate(input: VideoExpandEventCreateInput!): VideoExpandEvent!
-  videoCollapseEventCreate(input: VideoCollapseEventCreateInput!): VideoCollapseEvent!
-  videoProgressEventCreate(input: VideoProgressEventCreateInput!): VideoProgressEvent!
-  journeyCreate(input: JourneyCreateInput!): Journey!
-  journeyDuplicate(id: ID!): Journey!
-  journeyUpdate(id: ID!, input: JourneyUpdateInput!): Journey!
+  ): [Block!]! @join__field(graph: JOURNEYS)
+  blockOrderUpdate(id: ID!, journeyId: ID!, parentOrder: Int!): [Block!]! @join__field(graph: JOURNEYS)
+  buttonBlockCreate(input: ButtonBlockCreateInput!): ButtonBlock! @join__field(graph: JOURNEYS)
+  buttonBlockUpdate(id: ID!, journeyId: ID!, input: ButtonBlockUpdateInput!): ButtonBlock @join__field(graph: JOURNEYS)
+  cardBlockCreate(input: CardBlockCreateInput!): CardBlock! @join__field(graph: JOURNEYS)
+  cardBlockUpdate(id: ID!, journeyId: ID!, input: CardBlockUpdateInput!): CardBlock! @join__field(graph: JOURNEYS)
+  iconBlockCreate(input: IconBlockCreateInput!): IconBlock! @join__field(graph: JOURNEYS)
+  iconBlockUpdate(id: ID!, journeyId: ID!, input: IconBlockUpdateInput!): IconBlock! @join__field(graph: JOURNEYS)
+  imageBlockCreate(input: ImageBlockCreateInput!): ImageBlock! @join__field(graph: JOURNEYS)
+  imageBlockUpdate(id: ID!, journeyId: ID!, input: ImageBlockUpdateInput!): ImageBlock! @join__field(graph: JOURNEYS)
+  radioOptionBlockCreate(input: RadioOptionBlockCreateInput!): RadioOptionBlock! @join__field(graph: JOURNEYS)
+  radioQuestionBlockCreate(input: RadioQuestionBlockCreateInput!): RadioQuestionBlock! @join__field(graph: JOURNEYS)
+  radioOptionBlockUpdate(id: ID!, journeyId: ID!, input: RadioOptionBlockUpdateInput!): RadioOptionBlock! @join__field(graph: JOURNEYS)
+  radioQuestionBlockUpdate(id: ID!, journeyId: ID!, parentBlockId: ID!): RadioQuestionBlock! @join__field(graph: JOURNEYS)
+  signUpBlockCreate(input: SignUpBlockCreateInput!): SignUpBlock! @join__field(graph: JOURNEYS)
+  signUpBlockUpdate(id: ID!, journeyId: ID!, input: SignUpBlockUpdateInput!): SignUpBlock @join__field(graph: JOURNEYS)
+  stepBlockCreate(input: StepBlockCreateInput!): StepBlock! @join__field(graph: JOURNEYS)
+  stepBlockUpdate(id: ID!, journeyId: ID!, input: StepBlockUpdateInput!): StepBlock! @join__field(graph: JOURNEYS)
+  textResponseBlockCreate(input: TextResponseBlockCreateInput!): TextResponseBlock! @join__field(graph: JOURNEYS)
+  textResponseBlockUpdate(id: ID!, journeyId: ID!, input: TextResponseBlockUpdateInput!): TextResponseBlock @join__field(graph: JOURNEYS)
+  typographyBlockCreate(input: TypographyBlockCreateInput!): TypographyBlock! @join__field(graph: JOURNEYS)
+  typographyBlockUpdate(id: ID!, journeyId: ID!, input: TypographyBlockUpdateInput!): TypographyBlock! @join__field(graph: JOURNEYS)
+  videoBlockCreate(input: VideoBlockCreateInput!): VideoBlock! @join__field(graph: JOURNEYS)
+  videoBlockUpdate(id: ID!, journeyId: ID!, input: VideoBlockUpdateInput!): VideoBlock! @join__field(graph: JOURNEYS)
+  buttonClickEventCreate(input: ButtonClickEventCreateInput!): ButtonClickEvent! @join__field(graph: JOURNEYS)
+  chatOpenEventCreate(input: ChatOpenEventCreateInput!): ChatOpenEvent! @join__field(graph: JOURNEYS)
+  journeyViewEventCreate(input: JourneyViewEventCreateInput!): JourneyViewEvent! @join__field(graph: JOURNEYS)
+  radioQuestionSubmissionEventCreate(input: RadioQuestionSubmissionEventCreateInput!): RadioQuestionSubmissionEvent! @join__field(graph: JOURNEYS)
+  signUpSubmissionEventCreate(input: SignUpSubmissionEventCreateInput!): SignUpSubmissionEvent! @join__field(graph: JOURNEYS)
+  stepViewEventCreate(input: StepViewEventCreateInput!): StepViewEvent! @join__field(graph: JOURNEYS)
+  stepNextEventCreate(input: StepNextEventCreateInput!): StepNextEvent! @join__field(graph: JOURNEYS)
+  textResponseSubmissionEventCreate(input: TextResponseSubmissionEventCreateInput!): TextResponseSubmissionEvent! @join__field(graph: JOURNEYS)
+  videoStartEventCreate(input: VideoStartEventCreateInput!): VideoStartEvent! @join__field(graph: JOURNEYS)
+  videoPlayEventCreate(input: VideoPlayEventCreateInput!): VideoPlayEvent! @join__field(graph: JOURNEYS)
+  videoPauseEventCreate(input: VideoPauseEventCreateInput!): VideoPauseEvent! @join__field(graph: JOURNEYS)
+  videoCompleteEventCreate(input: VideoCompleteEventCreateInput!): VideoCompleteEvent! @join__field(graph: JOURNEYS)
+  videoExpandEventCreate(input: VideoExpandEventCreateInput!): VideoExpandEvent! @join__field(graph: JOURNEYS)
+  videoCollapseEventCreate(input: VideoCollapseEventCreateInput!): VideoCollapseEvent! @join__field(graph: JOURNEYS)
+  videoProgressEventCreate(input: VideoProgressEventCreateInput!): VideoProgressEvent! @join__field(graph: JOURNEYS)
+  journeyCreate(input: JourneyCreateInput!): Journey! @join__field(graph: JOURNEYS)
+  journeyDuplicate(id: ID!): Journey! @join__field(graph: JOURNEYS)
+  journeyUpdate(id: ID!, input: JourneyUpdateInput!): Journey! @join__field(graph: JOURNEYS)
 
   """Sets journey status to published"""
-  journeyPublish(id: ID!): Journey
+  journeyPublish(id: ID!): Journey @join__field(graph: JOURNEYS)
 
   """Sets journeys statuses to archived"""
-  journeysArchive(ids: [ID!]!): [Journey]
+  journeysArchive(ids: [ID!]!): [Journey] @join__field(graph: JOURNEYS)
 
   """Sets journeys statuses to deleted"""
-  journeysDelete(ids: [ID!]!): [Journey]
+  journeysDelete(ids: [ID!]!): [Journey] @join__field(graph: JOURNEYS)
 
   """Sets journeys statuses to trashed"""
-  journeysTrash(ids: [ID!]!): [Journey]
+  journeysTrash(ids: [ID!]!): [Journey] @join__field(graph: JOURNEYS)
 
   """Sets journeys statuses to last active status"""
-  journeysRestore(ids: [ID!]!): [Journey]
+  journeysRestore(ids: [ID!]!): [Journey] @join__field(graph: JOURNEYS)
 
   """Updates template"""
-  journeyTemplate(id: ID!, input: JourneyTemplateInput!): Journey!
-  userJourneyApprove(id: ID!): UserJourney!
-  userJourneyPromote(id: ID!): UserJourney!
-  userJourneyRemove(id: ID!): UserJourney!
+  journeyTemplate(id: ID!, input: JourneyTemplateInput!): Journey! @join__field(graph: JOURNEYS)
+  userInviteCreate(journeyId: ID!, input: UserInviteCreateInput): UserInvite! @join__field(graph: JOURNEYS)
+  userInviteRemove(id: ID!, journeyId: ID!): UserInvite! @join__field(graph: JOURNEYS)
+  userInviteAcceptAll: [UserInvite!]! @join__field(graph: JOURNEYS)
+  userJourneyApprove(id: ID!): UserJourney! @join__field(graph: JOURNEYS)
+  userJourneyPromote(id: ID!): UserJourney! @join__field(graph: JOURNEYS)
+  userJourneyRemove(id: ID!): UserJourney! @join__field(graph: JOURNEYS)
 
   """Removes all userJourneys associated with a journeyId"""
-  userJourneyRemoveAll(id: ID!): [UserJourney!]!
-  userJourneyRequest(journeyId: ID!, idType: IdType): UserJourney!
-  userJourneyOpen(id: ID!): UserJourney!
+  userJourneyRemoveAll(id: ID!): [UserJourney!]! @join__field(graph: JOURNEYS)
+  userJourneyRequest(journeyId: ID!, idType: IdType): UserJourney! @join__field(graph: JOURNEYS)
+  userJourneyOpen(id: ID!): UserJourney! @join__field(graph: JOURNEYS)
 
   """Update a visitor"""
-  visitorUpdate(id: ID!, input: VisitorUpdateInput!): Visitor!
+  visitorUpdate(id: ID!, input: VisitorUpdateInput!): Visitor! @join__field(graph: JOURNEYS)
+  deleteCloudflareImage(id: ID!): Boolean @join__field(graph: MEDIA)
 }
 
 """
@@ -904,6 +911,7 @@ type Query
   adminJourney(id: ID!, idType: IdType): Journey @join__field(graph: JOURNEYS)
   journeys(where: JourneysFilter): [Journey!]! @join__field(graph: JOURNEYS)
   journey(id: ID!, idType: IdType): Journey @join__field(graph: JOURNEYS)
+  userInvites(journeyId: ID!): [UserInvite!] @join__field(graph: JOURNEYS)
   getUserRole: UserRole @join__field(graph: JOURNEYS)
 
   """A list of visitors that are connected with a specific team."""
@@ -924,7 +932,10 @@ type Query
   country(id: ID!, idType: IdType): Country! @join__field(graph: LANGUAGES)
   languages(offset: Int, limit: Int): [Language!]! @join__field(graph: LANGUAGES)
   language(id: ID!, idType: LanguageIdType): Language @join__field(graph: LANGUAGES)
-  getCloudflareImageUploadInfo: CloudflareDirectCreatorUploadResponse @join__field(graph: MEDIA)
+  createCloudflareImage: CloudflareImage @join__field(graph: MEDIA)
+  getMyCloudflareImages: [CloudflareImage] @join__field(graph: MEDIA)
+  listUnsplashCollectionPhotos(collectionId: String!, page: Int, perPage: Int, orientation: UnsplashPhotoOrientation): [UnsplashPhoto!]! @join__field(graph: MEDIA)
+  searchUnsplashPhotos(query: String!, page: Int, perPage: Int, orderBy: UnsplashOrderBy, collections: [String], contentFilter: UnsplashContentFilter, color: UnsplashColor, orientation: UnsplashPhotoOrientation): UnsplashQueryResponse! @join__field(graph: MEDIA)
   me: User @join__field(graph: USERS)
   videos(where: VideosFilter, offset: Int, limit: Int): [Video!]! @join__field(graph: VIDEOS)
   video(id: ID!, idType: IdType): Video @join__field(graph: VIDEOS)
@@ -1372,6 +1383,134 @@ enum TypographyVariant
   overline
 }
 
+enum UnsplashColor
+  @join__type(graph: MEDIA)
+{
+  black_and_white
+  black
+  white
+  yellow
+  orange
+  red
+  purple
+  magenta
+  green
+  teal
+  blue
+}
+
+enum UnsplashContentFilter
+  @join__type(graph: MEDIA)
+{
+  low
+  high
+}
+
+enum UnsplashOrderBy
+  @join__type(graph: MEDIA)
+{
+  latest
+  relevant
+}
+
+type UnsplashPhoto
+  @join__type(graph: MEDIA)
+{
+  id: String!
+  created_at: String!
+  updated_at: String!
+  blur_hash: String!
+  width: Int!
+  height: Int!
+  color: String!
+  description: String!
+  alt_description: String!
+  urls: UnsplashPhotoUrls!
+  links: UnsplashPhotoLinks!
+  categories: [String!]!
+  likes: Int!
+  liked_by_user: Boolean!
+  current_user_collections: [String!]!
+  user: UnsplashUser!
+}
+
+type UnsplashPhotoLinks
+  @join__type(graph: MEDIA)
+{
+  self: String!
+  html: String!
+  download: String!
+  download_location: String!
+}
+
+enum UnsplashPhotoOrientation
+  @join__type(graph: MEDIA)
+{
+  landscape
+  portrait
+  squarish
+}
+
+type UnsplashPhotoUrls
+  @join__type(graph: MEDIA)
+{
+  raw: String!
+  full: String!
+  regular: String!
+  small: String!
+  thumb: String!
+}
+
+type UnsplashQueryResponse
+  @join__type(graph: MEDIA)
+{
+  total: Int!
+  total_pages: Int!
+  results: [UnsplashPhoto!]!
+}
+
+type UnsplashUser
+  @join__type(graph: MEDIA)
+{
+  id: String!
+  updated_at: String!
+  username: String!
+  name: String!
+  first_name: String!
+  last_name: String!
+  twitter_username: String!
+  portfolio_url: String!
+  bio: String!
+  location: String!
+  links: UnsplashUserLinks!
+  profile_image: UnsplashUserImage!
+  instagram_username: String!
+  total_collections: Int!
+  total_likes: Int!
+  total_photos: Int!
+  accepted_tos: Boolean!
+}
+
+type UnsplashUserImage
+  @join__type(graph: MEDIA)
+{
+  small: String!
+  medium: String!
+  large: String!
+}
+
+type UnsplashUserLinks
+  @join__type(graph: MEDIA)
+{
+  self: String!
+  html: String!
+  photos: String!
+  likes: String!
+  portfolio: String!
+  following: String!
+  followers: String!
+}
+
 type User
   @join__type(graph: JOURNEYS, key: "id")
   @join__type(graph: USERS, key: "id")
@@ -1390,6 +1529,23 @@ type UserAgent
   browser: Browser!
   device: Device!
   os: OperatingSystem!
+}
+
+type UserInvite
+  @join__type(graph: JOURNEYS, key: "id")
+{
+  id: ID!
+  journeyId: ID!
+  senderId: ID!
+  email: String!
+  acceptedAt: DateTime
+  removedAt: DateTime
+}
+
+input UserInviteCreateInput
+  @join__type(graph: JOURNEYS)
+{
+  email: String!
 }
 
 type UserJourney

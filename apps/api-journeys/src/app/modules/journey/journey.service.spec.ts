@@ -5,7 +5,7 @@ import {
   mockCollectionSaveResult,
   mockDbQueryResult
 } from '@core/nest/database/mock'
-import { DocumentCollection } from 'arangojs/collection'
+import { DocumentCollection, EdgeCollection } from 'arangojs/collection'
 import { keyAsId } from '@core/nest/decorators/KeyAsId'
 import { AqlQuery } from 'arangojs/aql'
 import {
@@ -18,10 +18,12 @@ import {
 import { JourneyService } from './journey.service'
 
 describe('JourneyService', () => {
-  let service: JourneyService, db: DeepMockProxy<Database>
+  let service: JourneyService,
+    db: DeepMockProxy<Database>,
+    collectionMock: DeepMockProxy<DocumentCollection & EdgeCollection>
 
   beforeEach(async () => {
-    db = mockDeep<Database>()
+    db = mockDeep()
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         JourneyService,
@@ -33,7 +35,8 @@ describe('JourneyService', () => {
     }).compile()
 
     service = module.get<JourneyService>(JourneyService)
-    service.collection = mockDeep<DocumentCollection>()
+    collectionMock = mockDeep()
+    service.collection = collectionMock
   })
   afterAll(() => {
     jest.resetAllMocks()
@@ -208,9 +211,7 @@ describe('JourneyService', () => {
 
   describe('save', () => {
     beforeEach(() => {
-      ;(
-        service.collection as DeepMockProxy<DocumentCollection>
-      ).save.mockReturnValue(
+      collectionMock.save.mockReturnValue(
         mockCollectionSaveResult(service.collection, journey)
       )
     })
@@ -222,9 +223,7 @@ describe('JourneyService', () => {
 
   describe('update', () => {
     beforeEach(() => {
-      ;(
-        service.collection as DeepMockProxy<DocumentCollection>
-      ).update.mockReturnValue(
+      collectionMock.update.mockReturnValue(
         mockCollectionSaveResult(service.collection, journey)
       )
     })
