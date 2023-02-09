@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing'
 import { mockDbQueryResult } from '@core/nest/database/mock'
 import { Database, aql } from 'arangojs'
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
-import { DocumentCollection } from 'arangojs/collection'
+import { DocumentCollection, EdgeCollection } from 'arangojs/collection'
 import { ArrayCursor } from 'arangojs/cursor'
 import { AqlQuery, GeneratedAqlQuery } from 'arangojs/aql'
 import { VideoLabel } from '../../__generated__/graphql'
@@ -63,11 +63,12 @@ const GET_VIDEO_BY_SLUG_QUERY = aql`
     `.query
 
 describe('VideoService', () => {
-  let service: VideoService
-  let db: DeepMockProxy<Database>
+  let service: VideoService,
+    db: DeepMockProxy<Database>,
+    collectionMock: DeepMockProxy<DocumentCollection & EdgeCollection>
 
   beforeEach(async () => {
-    db = mockDeep<Database>()
+    db = mockDeep()
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         VideoService,
@@ -79,7 +80,8 @@ describe('VideoService', () => {
     }).compile()
 
     service = module.get<VideoService>(VideoService)
-    service.collection = mockDeep<DocumentCollection>()
+    collectionMock = mockDeep()
+    service.collection = collectionMock
   })
 
   describe('videoFilter', () => {

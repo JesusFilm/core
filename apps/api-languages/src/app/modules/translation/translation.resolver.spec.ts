@@ -17,7 +17,7 @@ describe('Translation Resolver', () => {
     const languageService = {
       provide: LanguageService,
       useFactory: () => ({
-        get: jest.fn(() => translation)
+        load: jest.fn(() => translation)
       })
     }
     const module: TestingModule = await Test.createTestingModule({
