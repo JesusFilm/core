@@ -10,6 +10,8 @@ import Tab from '@mui/material/Tab'
 import { TabPanel, tabA11yProps } from '@core/shared/ui/TabPanel'
 import { Theme } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
+import BrushRounded from '@mui/icons-material/BrushRounded'
+import DashboardRounded from '@mui/icons-material/DashboardRounded'
 import useMediaQuery from '@mui/material/useMediaQuery'
 // import { object, string } from 'yup'
 import { GetJourney_journey_blocks_ImageBlock as ImageBlock } from '../../../../__generated__/GetJourney'
@@ -99,14 +101,16 @@ export function ImageLibrary({
           </IconButton>
         </Toolbar>
       </AppBar>
-      <Box sx={{ width: '100%', justifyContent: 'center', display: 'flex' }}>
+      <Box
+        sx={{ width: '100%', justifyContent: 'center', display: 'flex', py: 4 }}
+      >
         <ImageBlockHeader
           selectedBlock={selectedBlock}
           onDelete={onDelete}
           loading={loading}
         />
       </Box>
-      <Box sx={{ px: 6 }} data-testid="ImageLibrary">
+      <Box data-testid="ImageLibrary">
         <Tabs
           value={tabValue}
           onChange={handleTabChange}
@@ -114,10 +118,12 @@ export function ImageLibrary({
           variant="fullWidth"
         >
           <Tab
+            icon={<DashboardRounded />}
             label={<Typography variant="subtitle2">Unsplash</Typography>}
             {...tabA11yProps('unsplash', 0)}
           />
           <Tab
+            icon={<BrushRounded />}
             label={<Typography variant="subtitle2">Custom</Typography>}
             {...tabA11yProps('custom', 1)}
           />
