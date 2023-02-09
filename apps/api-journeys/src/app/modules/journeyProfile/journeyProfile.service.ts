@@ -17,8 +17,6 @@ export class JourneyProfileService extends BaseService {
         RETURN user
     `)
 
-    return response.hasNext
-      ? await response.next()
-      : await this.save({ userId, acceptedTermsAt: null })
+    return response.hasNext ? await response.next() : null
   }
 }

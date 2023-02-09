@@ -1,10 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { Database } from 'arangojs'
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
-import {
-  mockCollectionSaveResult,
-  mockDbQueryResult
-} from '@core/nest/database/mock'
+import { mockDbQueryResult } from '@core/nest/database/mock'
 import { DocumentCollection, EdgeCollection } from 'arangojs/collection'
 import { keyAsId } from '@core/nest/decorators/KeyAsId'
 
@@ -51,23 +48,12 @@ describe('journeyProfileService', () => {
       expect(await service.getJourneyProfileByUserId('1')).toEqual(userWithId)
     })
 
-    it('should return a newly created user role', async () => {
-      const user2 = {
-        _key: '2',
-        userId: 'userId2',
-        acceptedTermsAt: null
-      }
-
+    it('should return null if user role does not exist', async () => {
       ;(service.db as DeepMockProxy<Database>).query.mockReturnValue(
         mockDbQueryResult(service.db, [])
       )
-      collectionMock.save.mockReturnValue(
-        mockCollectionSaveResult(service.collection, user2)
-      )
 
-      expect(await service.getJourneyProfileByUserId('2')).toEqual(
-        keyAsId(user2)
-      )
+      expect(await service.getJourneyProfileByUserId('2')).toEqual(null)
     })
   })
 })
