@@ -1,22 +1,29 @@
 import { BaseService } from '@core/nest/database/BaseService'
 import { Injectable } from '@nestjs/common'
 import { aql } from 'arangojs'
-import { DocumentCollection } from 'arangojs/collection'
 import { KeyAsId } from '@core/nest/decorators/KeyAsId'
+import { ArrayCursor } from 'arangojs/cursor'
+import { Journey, UserJourneyRole } from '../../__generated__/graphql'
 
-import { Journey, UserJourney } from '../../__generated__/graphql'
+export interface UserJourneyRecord {
+  id: string
+  role: UserJourneyRole
+  userId: string
+  journeyId: string
+  openedAt?: string
+}
 
 @Injectable()
-export class UserJourneyService extends BaseService {
-  collection: DocumentCollection = this.db.collection('userJourneys')
+export class UserJourneyService extends BaseService<UserJourneyRecord> {
+  collection = this.db.collection<UserJourneyRecord>('userJourneys')
 
   @KeyAsId()
-  async forJourney(journey: Journey): Promise<UserJourney[]> {
-    const res = await this.db.query(aql`
-      FOR j in ${this.collection}
-        FILTER j.journeyId == ${journey.id}
-        RETURN j
-    `)
+  async forJourney(journey: Journey): Promise<UserJourneyRecord[]> {
+    const res = (await this.db.query(aql`
+      FOR item in ${this.collection}
+        FILTER item.journeyId == ${journey.id}
+        RETURN item
+    `)) as ArrayCursor<UserJourneyRecord>
     return await res.all()
   }
 
@@ -24,13 +31,13 @@ export class UserJourneyService extends BaseService {
   async forJourneyUser(
     journeyId: string,
     userId: string
-  ): Promise<UserJourney> {
-    const res = await this.db.query(aql`
-      FOR j in ${this.collection}
-        FILTER j.journeyId == ${journeyId} && j.userId == ${userId}
+  ): Promise<UserJourneyRecord | undefined> {
+    const res = (await this.db.query(aql`
+      FOR item in ${this.collection}
+        FILTER item.journeyId == ${journeyId} && item.userId == ${userId}
         LIMIT 1
-        RETURN j
-    `)
+        RETURN item
+    `)) as ArrayCursor<UserJourneyRecord>
     return await res.next()
   }
 }

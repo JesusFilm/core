@@ -549,6 +549,10 @@ export class JourneyTemplateInput {
     template?: Nullable<boolean>;
 }
 
+export class UserInviteCreateInput {
+    email: string;
+}
+
 export class VisitorUpdateInput {
     email?: Nullable<string>;
     messagePlatformId?: Nullable<string>;
@@ -982,6 +986,8 @@ export abstract class IQuery {
 
     abstract getJourneyProfile(): Nullable<JourneyProfile> | Promise<Nullable<JourneyProfile>>;
 
+    abstract userInvites(journeyId: string): Nullable<UserInvite[]> | Promise<Nullable<UserInvite[]>>;
+
     abstract getUserRole(): Nullable<UserRole> | Promise<Nullable<UserRole>>;
 
     abstract visitorsConnection(teamId: string, first?: Nullable<number>, after?: Nullable<string>): VisitorsConnection | Promise<VisitorsConnection>;
@@ -1005,6 +1011,16 @@ export class JourneyProfile {
     id: string;
     userId: string;
     acceptedTermsAt?: Nullable<DateTime>;
+}
+
+export class UserInvite {
+    __typename?: 'UserInvite';
+    id: string;
+    journeyId: string;
+    senderId: string;
+    email: string;
+    acceptedAt?: Nullable<DateTime>;
+    removedAt?: Nullable<DateTime>;
 }
 
 export class UserRole {
@@ -1185,6 +1201,12 @@ export abstract class IMutation {
     abstract journeyTemplate(id: string, input: JourneyTemplateInput): Journey | Promise<Journey>;
 
     abstract journeyProfileCreate(): JourneyProfile | Promise<JourneyProfile>;
+
+    abstract userInviteCreate(journeyId: string, input?: Nullable<UserInviteCreateInput>): UserInvite | Promise<UserInvite>;
+
+    abstract userInviteRemove(id: string, journeyId: string): UserInvite | Promise<UserInvite>;
+
+    abstract userInviteAcceptAll(): UserInvite[] | Promise<UserInvite[]>;
 
     abstract userJourneyApprove(id: string): UserJourney | Promise<UserJourney>;
 

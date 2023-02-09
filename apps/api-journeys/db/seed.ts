@@ -41,6 +41,18 @@ async function main(): Promise<void> {
     unique: true
   })
 
+  if (!(await db.collection('userInvites').exists()))
+    await db.createCollection('userInvites', {
+      keyOptions: { type: 'uuid' }
+    })
+
+  await db.collection('userInvites').ensureIndex({
+    type: 'persistent',
+    fields: ['journeyId', 'email'],
+    name: 'journeyIdAndEmail',
+    unique: true
+  })
+
   if (!(await db.collection('teams').exists()))
     await db.createCollection('teams', {
       keyOptions: { type: 'uuid' }

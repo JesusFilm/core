@@ -1,1 +1,6 @@
-export { firebaseClient, contextToUserId } from './firebaseClient'
+export {
+  firebaseClient,
+  contextToUserId,
+  contextToUser,
+  User
+} from './firebaseClient'

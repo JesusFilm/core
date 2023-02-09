@@ -9,7 +9,7 @@ import {
   mockCollectionUpdateAllResult,
   mockDbQueryResult
 } from '@core/nest/database/mock'
-import { DocumentCollection } from 'arangojs/collection'
+import { DocumentCollection, EdgeCollection } from 'arangojs/collection'
 import { keyAsId } from '@core/nest/decorators/KeyAsId'
 
 import {
@@ -29,21 +29,25 @@ jest.mock('uuid', () => ({
 const mockUuidv4 = uuidv4 as jest.MockedFunction<typeof uuidv4>
 
 describe('BlockService', () => {
-  let service: BlockService
+  let service: BlockService,
+    db: DeepMockProxy<Database>,
+    collectionMock: DeepMockProxy<DocumentCollection & EdgeCollection>
 
   beforeEach(async () => {
+    db = mockDeep()
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         BlockService,
         {
           provide: 'DATABASE',
-          useFactory: () => mockDeep<Database>()
+          useFactory: () => db
         }
       ]
     }).compile()
 
     service = module.get<BlockService>(BlockService)
-    service.collection = mockDeep<DocumentCollection>()
+    collectionMock = mockDeep()
+    service.collection = collectionMock
   })
   afterAll(() => {
     jest.resetAllMocks()
@@ -129,9 +133,7 @@ describe('BlockService', () => {
 
   describe('getAll', () => {
     beforeEach(() => {
-      ;(service.db as DeepMockProxy<Database>).query.mockReturnValue(
-        mockDbQueryResult(service.db, [block, block])
-      )
+      db.query.mockReturnValue(mockDbQueryResult(service.db, [block, block]))
     })
 
     it('should return an array of all blocks', async () => {
@@ -141,9 +143,7 @@ describe('BlockService', () => {
 
   describe('forJourney', () => {
     beforeEach(() => {
-      ;(service.db as DeepMockProxy<Database>).query.mockReturnValue(
-        mockDbQueryResult(service.db, [block, block])
-      )
+      db.query.mockReturnValue(mockDbQueryResult(service.db, [block, block]))
     })
 
     it('should return all blocks in a journey', async () => {
@@ -156,9 +156,7 @@ describe('BlockService', () => {
 
   describe('getSiblings', () => {
     beforeEach(() => {
-      ;(service.db as DeepMockProxy<Database>).query.mockReturnValue(
-        mockDbQueryResult(service.db, [block, block])
-      )
+      db.query.mockReturnValue(mockDbQueryResult(service.db, [block, block]))
     })
 
     it('should return all siblings of a block', async () => {
@@ -170,9 +168,7 @@ describe('BlockService', () => {
 
   describe('get', () => {
     beforeEach(() => {
-      ;(service.db as DeepMockProxy<Database>).query.mockReturnValue(
-        mockDbQueryResult(service.db, [block])
-      )
+      db.query.mockReturnValue(mockDbQueryResult(service.db, [block]))
     })
 
     it('should return a block', async () => {
@@ -182,9 +178,7 @@ describe('BlockService', () => {
 
   describe('save', () => {
     beforeEach(() => {
-      ;(
-        service.collection as DeepMockProxy<DocumentCollection>
-      ).save.mockReturnValue(
+      collectionMock.save.mockReturnValue(
         mockCollectionSaveResult(service.collection, block)
       )
     })
@@ -196,9 +190,7 @@ describe('BlockService', () => {
 
   describe('saveAll', () => {
     beforeEach(() => {
-      ;(
-        service.collection as DeepMockProxy<DocumentCollection>
-      ).saveAll.mockReturnValue(
+      collectionMock.saveAll.mockReturnValue(
         mockCollectionSaveAllResult(service.collection, [block, block])
       )
     })
@@ -213,9 +205,7 @@ describe('BlockService', () => {
 
   describe('update', () => {
     beforeEach(() => {
-      ;(
-        service.collection as DeepMockProxy<DocumentCollection>
-      ).update.mockReturnValue(
+      collectionMock.update.mockReturnValue(
         mockCollectionSaveResult(service.collection, block)
       )
     })
@@ -249,9 +239,7 @@ describe('BlockService', () => {
 
   describe('reorderBlock', () => {
     beforeEach(() => {
-      ;(service.db as DeepMockProxy<Database>).query.mockReturnValue(
-        mockDbQueryResult(service.db, [block, block])
-      )
+      db.query.mockReturnValue(mockDbQueryResult(service.db, [block, block]))
       service.reorderSiblings = jest.fn(
         async () =>
           await Promise.resolve([
@@ -301,20 +289,14 @@ describe('BlockService', () => {
     const blockChildWithId = keyAsId(blockChild) as Block
 
     beforeEach(() => {
-      ;(service.db as DeepMockProxy<Database>).query.mockReturnValue(
-        mockDbQueryResult(service.db, [block, block2])
-      )
-      ;(
-        service.collection as DeepMockProxy<DocumentCollection>
-      ).saveAll.mockReturnValue(
+      db.query.mockReturnValue(mockDbQueryResult(service.db, [block, block2]))
+      collectionMock.saveAll.mockReturnValue(
         mockCollectionSaveAllResult(service.collection, [
           duplicatedBlock,
           blockChild
         ])
       )
-      ;(
-        service.collection as DeepMockProxy<DocumentCollection>
-      ).updateAll.mockReturnValue(
+      collectionMock.updateAll.mockReturnValue(
         mockCollectionUpdateAllResult(service.collection, [])
       )
       service.getSiblingsInternal = jest.fn().mockReturnValue([
@@ -398,9 +380,7 @@ describe('BlockService', () => {
     })
 
     it('should return block with randomised id', async () => {
-      ;(service.db as DeepMockProxy<Database>).query.mockReturnValue(
-        mockDbQueryResult(service.db, [{ id: 'block' }])
-      )
+      db.query.mockReturnValue(mockDbQueryResult(service.db, [{ id: 'block' }]))
       mockUuidv4.mockReturnValueOnce(`${typographyBlock.id}Copy`)
 
       expect(
@@ -420,7 +400,7 @@ describe('BlockService', () => {
     })
 
     it('should return block with specific id', async () => {
-      ;(service.db as DeepMockProxy<Database>).query
+      db.query
         .mockReturnValueOnce(mockDbQueryResult(service.db, [stepBlock]))
         .mockReturnValueOnce(mockDbQueryResult(service.db, [cardBlock]))
         .mockReturnValueOnce(mockDbQueryResult(service.db, [videoBlock]))
@@ -497,9 +477,7 @@ describe('BlockService', () => {
     })
 
     it('should return block with updated journeyId & nextBlockId', async () => {
-      ;(service.db as DeepMockProxy<Database>).query.mockReturnValueOnce(
-        mockDbQueryResult(service.db, [stepBlock])
-      )
+      db.query.mockReturnValueOnce(mockDbQueryResult(service.db, [stepBlock]))
       const duplicateStepIds = new Map()
       duplicateStepIds.set(stepBlock.nextBlockId, 'duplicateStepId')
       mockUuidv4.mockReturnValueOnce(`${stepBlock.id}Copy`)
@@ -530,7 +508,7 @@ describe('BlockService', () => {
 
   describe('getDuplicateChildren', () => {
     it('should return an array of duplicate blocks from array', async () => {
-      ;(service.db as DeepMockProxy<Database>).query
+      db.query
         .mockReturnValueOnce(mockDbQueryResult(service.db, [stepBlock]))
         .mockReturnValueOnce(mockDbQueryResult(service.db, [cardBlock]))
 
@@ -569,12 +547,8 @@ describe('BlockService', () => {
 
   describe('removeBlockAndChildren', () => {
     beforeEach(() => {
-      ;(service.db as DeepMockProxy<Database>).query.mockReturnValue(
-        mockDbQueryResult(service.db, [block, block])
-      )
-      ;(
-        service.collection as DeepMockProxy<DocumentCollection>
-      ).remove.mockReturnValue(
+      db.query.mockReturnValue(mockDbQueryResult(service.db, [block, block]))
+      collectionMock.remove.mockReturnValue(
         mockCollectionRemoveResult(service.collection, block)
       )
       service.reorderSiblings = jest.fn(
@@ -613,9 +587,7 @@ describe('BlockService', () => {
     })
 
     it('should update parent order', async () => {
-      ;(
-        service.collection as DeepMockProxy<DocumentCollection>
-      ).updateAll.mockReturnValue(
+      collectionMock.updateAll.mockReturnValue(
         mockCollectionUpdateAllResult(service.collection, [
           { _key: block._key, new: block },
           { _key: block._key, new: block }
@@ -637,9 +609,7 @@ describe('BlockService', () => {
 
     describe('validateBlock', () => {
       beforeEach(() => {
-        ;(service.db as DeepMockProxy<Database>).query.mockReturnValue(
-          mockDbQueryResult(service.db, [block])
-        )
+        db.query.mockReturnValue(mockDbQueryResult(service.db, [block]))
       })
       it('should return false with non-existent id', async () => {
         expect(await service.validateBlock(null, '1')).toEqual(false)

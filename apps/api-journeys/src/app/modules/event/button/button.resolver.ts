@@ -61,7 +61,7 @@ export class ChatOpenEventResolver {
 
     if (visitor.messagePlatform == null) {
       void this.visitorService.update(visitor.id, {
-        messagePlatform: input.value
+        messagePlatform: input.value ?? undefined
       })
     }
 

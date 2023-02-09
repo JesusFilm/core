@@ -9,10 +9,10 @@ import {
 } from '@nestjs/graphql'
 import { ForbiddenError, UserInputError } from 'apollo-server-errors'
 import { IResult, UAParser } from 'ua-parser-js'
-import { Event, Visitor, VisitorsConnection } from '../../__generated__/graphql'
+import { Event, VisitorsConnection } from '../../__generated__/graphql'
 import { EventService } from '../event/event.service'
 import { MemberService } from '../member/member.service'
-import { VisitorService } from './visitor.service'
+import { VisitorService, VisitorRecord } from './visitor.service'
 
 @Resolver('Visitor')
 export class VisitorResolver {
@@ -48,10 +48,8 @@ export class VisitorResolver {
   async visitor(
     @CurrentUserId() userId: string,
     @Args('id') id: string
-  ): Promise<Visitor> {
-    const visitor = await this.visitorService.get<
-      ({ teamId: string } & Visitor) | undefined
-    >(id)
+  ): Promise<VisitorRecord> {
+    const visitor = await this.visitorService.get(id)
 
     if (visitor == null)
       throw new UserInputError(`Visitor with ID "${id}" does not exist`)
@@ -74,10 +72,8 @@ export class VisitorResolver {
     @CurrentUserId() userId: string,
     @Args('id') id: string,
     @Args('input') input
-  ): Promise<Visitor> {
-    const visitor = await this.visitorService.get<
-      ({ teamId: string } & Visitor) | undefined
-    >(id)
+  ): Promise<VisitorRecord | undefined> {
+    const visitor = await this.visitorService.get(id)
 
     if (visitor == null)
       throw new UserInputError(`Visitor with ID "${id}" does not exist`)
@@ -102,7 +98,6 @@ export class VisitorResolver {
 
   @ResolveField()
   userAgent(@Parent() visitor): IResult | undefined {
-    console.log(visitor)
     if (visitor.userAgent != null)
       return new UAParser(visitor.userAgent).getResult()
   }

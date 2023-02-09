@@ -157,6 +157,9 @@ extend type Mutation {
   """Updates template"""
   journeyTemplate(id: ID!, input: JourneyTemplateInput!): Journey!
   journeyProfileCreate: JourneyProfile!
+  userInviteCreate(journeyId: ID!, input: UserInviteCreateInput): UserInvite!
+  userInviteRemove(id: ID!, journeyId: ID!): UserInvite!
+  userInviteAcceptAll: [UserInvite!]!
   userJourneyApprove(id: ID!): UserJourney!
   userJourneyPromote(id: ID!): UserJourney!
   userJourneyRemove(id: ID!): UserJourney!
@@ -1515,6 +1518,7 @@ extend type Query {
   journeys(where: JourneysFilter): [Journey!]!
   journey(id: ID!, idType: IdType): Journey
   getJourneyProfile: JourneyProfile
+  userInvites(journeyId: ID!): [UserInvite!]
   getUserRole: UserRole
 
   """A list of visitors that are connected with a specific team."""
@@ -1591,6 +1595,21 @@ type JourneyProfile
   id: ID!
   userId: ID!
   acceptedTermsAt: DateTime
+}
+
+type UserInvite
+  @key(fields: "id")
+{
+  id: ID!
+  journeyId: ID!
+  senderId: ID!
+  email: String!
+  acceptedAt: DateTime
+  removedAt: DateTime
+}
+
+input UserInviteCreateInput {
+  email: String!
 }
 
 enum UserJourneyRole {
@@ -1816,4 +1835,4 @@ type _Service {
   sdl: String
 }
 
-union _Entity = Journey | JourneyProfile | Language | User | UserJourney | UserRole | Video | Visitor
+union _Entity = Journey | JourneyProfile | Language | User | UserInvite | UserJourney | UserRole | Video | Visitor
