@@ -75,6 +75,7 @@ export function JourneyCard({
                 py: 4
               }}
             >
+              {/* TODO: add badge */}
               <Typography
                 variant="subtitle1"
                 component="div"
@@ -88,6 +89,7 @@ export function JourneyCard({
                   <Skeleton variant="text" width={200} />
                 )}
               </Typography>
+              {/* TODO: End */}
               <Typography
                 variant="caption"
                 noWrap
@@ -119,10 +121,13 @@ export function JourneyCard({
           }}
         >
           <Stack direction="row" alignItems="center" spacing={4} flexGrow={1}>
+            {/* TODO: show inviter avatar/ avatars requiring action */}
             <AccessAvatars
               journeyId={journey?.id}
               userJourneys={journey?.userJourneys ?? undefined}
             />
+            {/* TODO: End */}
+            {/* TODO: Update text */}
             {journey != null ? (
               <StatusChip status={journey.status} />
             ) : (
@@ -143,6 +148,7 @@ export function JourneyCard({
                 )}
               </Typography>
             </Stack>
+            {/* TODO: End */}
           </Stack>
           {journey != null ? (
             <JourneyCardMenu
