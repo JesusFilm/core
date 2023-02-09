@@ -14,8 +14,8 @@ import { JourneyCard } from '../JourneyCard'
 import { AddJourneyButton } from '../AddJourneyButton'
 import { SortOrder } from '../JourneySort'
 import { sortJourneys } from '../JourneySort/utils/sortJourneys'
-import { UserJourneyRole } from '../../../../__generated__/globalTypes'
 import { getDuplicatedJourney } from './utils/getDuplicatedJourney'
+import { ActivePriorityList } from './ActivePriorityList'
 
 export const GET_ACTIVE_JOURNEYS = gql`
   query GetActiveJourneys {
@@ -194,67 +194,18 @@ export function ActiveJourneyList({
     }
   }, [event, refetch])
 
-  const newJourneys: Journeys[] = []
-  const actionRequiredJourneys: Journeys[] = []
-  const activeJourneys: Journeys[] = []
-
-  if (journeys != null) {
-    journeys.forEach((journey) => {
-      const currentUserJourney = journey.userJourneys?.find(
-        (uj) => uj.user?.id === 'dpD9gTxo1hYhE93Bp8ahK8o6XDF3'
-      )
-      if (currentUserJourney != null && currentUserJourney.openedAt == null) {
-        newJourneys.push(journey)
-      } else if (
-        currentUserJourney?.role === UserJourneyRole.owner &&
-        journey.userJourneys?.find(
-          (uj) => uj.role === UserJourneyRole.inviteRequested
-        ) != null
-      ) {
-        actionRequiredJourneys.push(journey)
-      } else {
-        activeJourneys.push(journey)
-      }
-    })
-  }
-
-  // const sortedJourneys =
-  //   journeys != null ? sortJourneys(journeys, sortOrder) : undefined
-  const sortedJourneys = sortJourneys(activeJourneys, sortOrder)
-
-  // console.log('ALL: ', journeys)
-  // console.log('NEW: ', newJourneys)
-  // console.log('ACTION: ', actionRequiredJourneys)
-  // console.log('SORTED: ', sortedJourneys)
-
   return (
     <>
-      {journeys != null && sortedJourneys != null ? (
+      {journeys != null ? (
         <>
-          {newJourneys.map((journey) => (
-            <JourneyCard
-              key={journey.id}
-              journey={journey}
-              refetch={refetch}
-              duplicatedJourneyId={duplicatedJourneyId}
-            />
-          ))}
-          {actionRequiredJourneys.map((journey) => (
-            <JourneyCard
-              key={journey.id}
-              journey={journey}
-              refetch={refetch}
-              duplicatedJourneyId={duplicatedJourneyId}
-            />
-          ))}
-          {sortedJourneys.map((journey) => (
-            <JourneyCard
-              key={journey.id}
-              journey={journey}
-              refetch={refetch}
-              duplicatedJourneyId={duplicatedJourneyId}
-            />
-          ))}
+          <ActivePriorityList
+            journeys={journeys}
+            sortJourneys={sortJourneys}
+            sortOrder={sortOrder}
+            refetch={refetch}
+            duplicatedJourneyId={duplicatedJourneyId}
+            authUser={authUser}
+          />
           {journeys.length === 0 && (
             <Card
               variant="outlined"
