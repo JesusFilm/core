@@ -1,0 +1,1 @@
+export { JourneyCardText } from './JourneyCardText'
