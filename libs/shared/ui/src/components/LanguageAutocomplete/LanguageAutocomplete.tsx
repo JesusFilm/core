@@ -28,6 +28,7 @@ export interface LanguageAutocompleteProps {
   value?: LanguageOption
   languages?: Language[]
   loading: boolean
+  helperText?: string
   renderInput?: (params: AutocompleteRenderInputParams) => ReactNode
   renderOption?: (params: HTMLAttributes<HTMLLIElement>) => ReactNode
 }

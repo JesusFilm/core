@@ -1,8 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { Database } from 'arangojs'
-import { mockDeep } from 'jest-mock-extended'
+import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 
-import { DocumentCollection } from 'arangojs/collection'
+import { DocumentCollection, EdgeCollection } from 'arangojs/collection'
 import fetch, { Response } from 'node-fetch'
 
 import { ImageService } from './image.service'
@@ -34,22 +34,29 @@ const cfDeleteResult = {
 }
 
 describe('ImageService', () => {
-  let service: ImageService
+  let service: ImageService,
+    db: DeepMockProxy<Database>,
+    collectionMock: DeepMockProxy<DocumentCollection & EdgeCollection>
 
   beforeEach(async () => {
+    db = mockDeep()
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         ImageService,
         {
           provide: 'DATABASE',
-          useFactory: () => mockDeep<Database>()
+          useFactory: () => db
         }
       ]
     }).compile()
 
     service = module.get<ImageService>(ImageService)
-    service.collection = mockDeep<DocumentCollection>()
+    collectionMock = mockDeep()
+    service.collection = collectionMock
     mockFetch.mockClear()
+  })
+  afterAll(() => {
+    jest.resetAllMocks()
   })
 
   describe('getCloudflareImageUploadInfo', () => {
