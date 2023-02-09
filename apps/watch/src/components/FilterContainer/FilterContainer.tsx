@@ -15,12 +15,14 @@ import Stack from '@mui/material/Stack'
 export function FilterContainer(): ReactElement {
   const [openRow, setOpenRow] = useState<number>(0)
   return (
-    <TableContainer>
+    <TableContainer
+      sx={{ border: 1, borderColor: '#AAACBB', borderRadius: '8px' }}
+    >
       <Table>
         <TableBody>
           <TableRow key={1}>
             <TableCell
-              sx={{ border: 1 }}
+              sx={{ borderBottom: 1, borderColor: '#AAACBB' }}
               align="center"
               onClick={() => setOpenRow(1)}
             >
@@ -39,7 +41,11 @@ export function FilterContainer(): ReactElement {
             <TableRow key={1.5}>
               <TableCell
                 align="center"
-                sx={{ backgroundColor: '#DCDDE5', border: 1 }}
+                sx={{
+                  backgroundColor: '#DCDDE5',
+                  borderBottom: 1,
+                  borderColor: '#AAACBB'
+                }}
                 onClick={() => setOpenRow(0)}
               >
                 <Typography>Languages Component Here</Typography>
@@ -51,7 +57,7 @@ export function FilterContainer(): ReactElement {
           <TableRow key={2}>
             <TableCell
               align="center"
-              sx={{ border: 1 }}
+              sx={{ borderBottom: 1, borderColor: '#AAACBB' }}
               onClick={() => setOpenRow(2)}
             >
               <Stack direction="row" spacing={2}>
@@ -71,7 +77,8 @@ export function FilterContainer(): ReactElement {
                 align="center"
                 sx={{
                   backgroundColor: '#DCDDE5',
-                  border: 1
+                  borderBottom: 1,
+                  borderColor: '#AAACBB'
                 }}
                 onClick={() => setOpenRow(0)}
               >
@@ -84,7 +91,10 @@ export function FilterContainer(): ReactElement {
           <TableRow key={3}>
             <TableCell
               align="center"
-              sx={{ border: 1 }}
+              sx={{
+                borderBottom: openRow === 3 ? 1 : 0,
+                borderColor: '#AAACBB'
+              }}
               onClick={() => setOpenRow(3)}
             >
               <Stack direction="row" spacing={2}>
@@ -102,7 +112,7 @@ export function FilterContainer(): ReactElement {
             <TableRow key={1.5}>
               <TableCell
                 align="center"
-                sx={{ backgroundColor: '#DCDDE5', border: 1 }}
+                sx={{ backgroundColor: '#DCDDE5' }}
                 onClick={() => setOpenRow(0)}
               >
                 <Typography>Title Component Here</Typography>
