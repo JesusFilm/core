@@ -69,7 +69,6 @@ export function ImageOptions(): ReactElement {
       <ImageBlockEditor
         selectedBlock={imageBlock}
         onChange={updateImageBlock}
-        showDelete={false}
         loading={loading}
       />
     </Box>

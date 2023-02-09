@@ -1,16 +1,19 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { fireEvent, render, waitFor } from '@testing-library/react'
+import { fireEvent, render } from '@testing-library/react'
+import useMediaQuery from '@mui/material/useMediaQuery'
 
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import {
-  GetJourney_journey as Journey,
   GetJourney_journey_blocks_VideoBlock as VideoBlock,
   GetJourney_journey_blocks_ImageBlock as ImageBlock
 } from '../../../../../../__generated__/GetJourney'
 import { VideoBlockSource } from '../../../../../../__generated__/globalTypes'
 import { ThemeProvider } from '../../../../ThemeProvider'
 import { VideoBlockEditorSettingsPoster } from './VideoBlockEditorSettingsPoster'
-import { POSTER_IMAGE_BLOCK_UPDATE } from './Dialog/VideoBlockEditorSettingsPosterDialog'
+
+jest.mock('@mui/material/useMediaQuery', () => ({
+  __esModule: true,
+  default: jest.fn()
+}))
 
 const video: VideoBlock = {
   id: 'video1.id',
@@ -64,8 +67,10 @@ const image: ImageBlock = {
 }
 
 describe('VideoBlockEditorSettingsPoster', () => {
+  beforeEach(() => (useMediaQuery as jest.Mock).mockImplementation(() => true))
+
   it('shows edit poster image dialog', () => {
-    const { getByRole, getByTestId } = render(
+    const { getByTestId } = render(
       <MockedProvider>
         <ThemeProvider>
           <VideoBlockEditorSettingsPoster
@@ -76,7 +81,7 @@ describe('VideoBlockEditorSettingsPoster', () => {
       </MockedProvider>
     )
     fireEvent.click(getByTestId('posterCreateButton'))
-    expect(getByRole('dialog')).toBeInTheDocument()
+    expect(getByTestId('ImageLibrary')).toBeInTheDocument()
   })
   it('disables edit poster image button', () => {
     const { getByRole } = render(
@@ -84,71 +89,12 @@ describe('VideoBlockEditorSettingsPoster', () => {
         <ThemeProvider>
           <VideoBlockEditorSettingsPoster
             selectedBlock={image}
-            parentBlockId={video.id}
             disabled
+            parentBlockId={video.id}
           />
         </ThemeProvider>
       </MockedProvider>
     )
     expect(getByRole('button')).toBeDisabled()
-  })
-
-  it('shows loading circle for coverImage update', async () => {
-    const { getByRole, getByTestId } = render(
-      <MockedProvider
-        mocks={[
-          {
-            request: {
-              query: POSTER_IMAGE_BLOCK_UPDATE,
-              variables: {
-                id: image.id,
-                journeyId: 'journeyId',
-                input: {
-                  src: 'http://example.com/test.jpg',
-                  alt: 'test.jpg'
-                }
-              }
-            },
-            result: {
-              data: {
-                imageBlockUpdate: {
-                  id: image.id,
-                  src: 'http://example.com/test.jpg',
-                  alt: 'test.jpg',
-                  __typename: 'ImageBlock',
-                  parentBlockId: video.id,
-                  width: image.width,
-                  height: image.height,
-                  parentOrder: image.parentOrder,
-                  blurhash: image.blurhash
-                }
-              }
-            }
-          }
-        ]}
-      >
-        <JourneyProvider
-          value={{
-            journey: { id: 'journeyId' } as unknown as Journey,
-            admin: true
-          }}
-        >
-          <ThemeProvider>
-            <VideoBlockEditorSettingsPoster
-              selectedBlock={image}
-              parentBlockId={video.id}
-            />
-          </ThemeProvider>
-        </JourneyProvider>
-      </MockedProvider>
-    )
-
-    fireEvent.click(getByTestId('posterCreateButton'))
-    const textbox = getByRole('textbox')
-    fireEvent.change(textbox, {
-      target: { value: 'http://example.com/test.jpg' }
-    })
-    fireEvent.blur(textbox)
-    await waitFor(() => expect(getByRole('progressbar')).toBeInTheDocument())
   })
 })

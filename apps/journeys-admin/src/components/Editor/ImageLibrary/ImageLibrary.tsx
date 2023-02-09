@@ -10,22 +10,51 @@ import Tab from '@mui/material/Tab'
 import { TabPanel, tabA11yProps } from '@core/shared/ui/TabPanel'
 import { Theme } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
+import BrushRounded from '@mui/icons-material/BrushRounded'
+import DashboardRounded from '@mui/icons-material/DashboardRounded'
 import useMediaQuery from '@mui/material/useMediaQuery'
-import { ImageBlockHeader } from '../ImageBlockHeader/ImageBlockHeader'
+// import { object, string } from 'yup'
+import { GetJourney_journey_blocks_ImageBlock as ImageBlock } from '../../../../__generated__/GetJourney'
+import { ImageBlockHeader } from '../ImageBlockHeader'
 
 export const DRAWER_WIDTH = 328
 
 interface ImageLibraryProps {
   open: boolean
   onClose?: () => void
+  onChange: (image: ImageBlock) => Promise<void>
+  onDelete?: () => Promise<void>
+  selectedBlock: ImageBlock | null
+  loading?: boolean
 }
 
 export function ImageLibrary({
   open,
-  onClose
+  onClose,
+  onChange,
+  onDelete,
+  selectedBlock,
+  loading
 }: ImageLibraryProps): ReactElement {
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
   const [tabValue, setTabValue] = useState(0)
+
+  // uncomment once unsplash and custom components are in
+  // const srcSchema = object().shape({
+  //   src: string().url('Please enter a valid url').required('Required')
+  // })
+
+  // const handleSrcChange = async (src: string): Promise<void> => {
+  //   if (!(await srcSchema.isValid({ src })) || src === selectedBlock?.src)
+  //     return
+
+  //   const block = {
+  //     ...selectedBlock,
+  //     src,
+  //     alt: src.replace(/(.*\/)*/, '').replace(/\?.*/, '') // per Vlad 26/1/22, we are hardcoding the image alt for now
+  //   }
+  //   await onChange(block as ImageBlock)
+  // }
 
   const handleTabChange = (
     _event: SyntheticEvent<Element, Event>,
@@ -72,10 +101,16 @@ export function ImageLibrary({
           </IconButton>
         </Toolbar>
       </AppBar>
-      <Box sx={{ width: '100%', justifyContent: 'center', display: 'flex' }}>
-        <ImageBlockHeader selectedBlock={null} />
+      <Box
+        sx={{ width: '100%', justifyContent: 'center', display: 'flex', py: 4 }}
+      >
+        <ImageBlockHeader
+          selectedBlock={selectedBlock}
+          onDelete={onDelete}
+          loading={loading}
+        />
       </Box>
-      <Box sx={{ px: 6 }} data-testid="ImageLibrary">
+      <Box data-testid="ImageLibrary">
         <Tabs
           value={tabValue}
           onChange={handleTabChange}
@@ -83,10 +118,12 @@ export function ImageLibrary({
           variant="fullWidth"
         >
           <Tab
+            icon={<DashboardRounded />}
             label={<Typography variant="subtitle2">Unsplash</Typography>}
             {...tabA11yProps('unsplash', 0)}
           />
           <Tab
+            icon={<BrushRounded />}
             label={<Typography variant="subtitle2">Custom</Typography>}
             {...tabA11yProps('custom', 1)}
           />

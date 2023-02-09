@@ -20,7 +20,7 @@ describe('ImageBlockHeader', () => {
       <ImageBlockHeader selectedBlock={image} />
     )
 
-    expect(getByText('Selected image')).toBeInTheDocument()
+    expect(getByText('Selected Image')).toBeInTheDocument()
     expect(
       getByText(`${image.width} x ${image.height} pixels`)
     ).toBeInTheDocument()
@@ -33,16 +33,16 @@ describe('ImageBlockHeader', () => {
     )
 
     expect(getByTestId('imageBlockThumbnailPlaceholder')).toBeInTheDocument()
-    expect(getByText('Select image')).toBeInTheDocument()
+    expect(getByText('Select Image')).toBeInTheDocument()
   })
 
-  it('should render source state correctly', () => {
+  it('should render placeholder', () => {
     const { getByText, getByTestId } = render(
       <ImageBlockHeader selectedBlock={null} showAdd />
     )
 
     expect(getByTestId('imageBlockThumbnailPlaceholder')).toBeInTheDocument()
     expect(getByTestId('AddIcon')).toBeInTheDocument()
-    expect(getByText('Select image')).toBeInTheDocument()
+    expect(getByText('Select Image')).toBeInTheDocument()
   })
 })
