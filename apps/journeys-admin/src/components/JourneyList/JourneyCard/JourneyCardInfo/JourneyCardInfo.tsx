@@ -4,48 +4,93 @@ import Skeleton from '@mui/material/Skeleton'
 import EditIcon from '@mui/icons-material/Edit'
 import TranslateIcon from '@mui/icons-material/Translate'
 import Stack from '@mui/material/Stack'
+import { useTranslation } from 'react-i18next'
 import { AccessAvatars } from '../../../AccessAvatars'
 import { StatusChip } from '../StatusChip'
-
-import { GetJourneys_journeys as Journey } from '../../../../../__generated__/GetJourneys'
+import {
+  GetJourneys_journeys as Journey,
+  GetJourneys_journeys_userJourneys as UserJourney
+} from '../../../../../__generated__/GetJourneys'
 import { JourneyCardVariant } from '../JourneyCard'
+import { UserJourneyRole } from '../../../../../__generated__/globalTypes'
 
 interface Props {
   journey?: Journey
   variant: JourneyCardVariant
 }
 
-export function JourneyCardInfo({ journey }: Props): ReactElement {
+export function JourneyCardInfo({ journey, variant }: Props): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
+
+  let inviteRequested: UserJourney[] | undefined
+  if (
+    variant === JourneyCardVariant.actionRequired &&
+    journey?.userJourneys != null
+  ) {
+    inviteRequested = journey.userJourneys.filter(
+      (uj) => uj.role === UserJourneyRole.inviteRequested
+    )
+  }
+  const usersRequestingAccess =
+    inviteRequested != null
+      ? inviteRequested.length === 1
+        ? `${inviteRequested.length} ${t('user')}`
+        : `${inviteRequested.length} ${t('users')}`
+      : ''
+
   return (
     <Stack direction="row" alignItems="center" spacing={4} flexGrow={1}>
-      {/* TODO: show inviter avatar/ avatars requiring action */}
       <AccessAvatars
         journeyId={journey?.id}
-        userJourneys={journey?.userJourneys ?? undefined}
+        userJourneys={inviteRequested ?? journey?.userJourneys ?? undefined}
       />
-      {/* TODO: End */}
-      {/* TODO: Update text */}
-      {journey != null ? (
-        <StatusChip status={journey.status} />
-      ) : (
-        <Stack direction="row" alignItems="center" spacing={1.5}>
-          <EditIcon sx={{ fontSize: 13 }} />
-          <Typography variant="caption">
-            <Skeleton variant="text" width={30} />
-          </Typography>
-        </Stack>
-      )}
-      <Stack direction="row" alignItems="center" spacing={1.5}>
-        <TranslateIcon sx={{ fontSize: 13 }} />
-        <Typography variant="caption">
-          {journey != null ? (
-            journey.language.name.find(({ primary }) => primary)?.value
+      {variant === JourneyCardVariant.actionRequired ? (
+        <>
+          {inviteRequested != null ? (
+            <Stack direction="row">
+              <Typography
+                variant="body2"
+                sx={{
+                  color: '#F0720C',
+                  fontWeight: 700
+                }}
+              >
+                {usersRequestingAccess}
+              </Typography>
+              <Typography variant="body2">
+                {t(`\u00A0requested editing rights for your journey`)}
+              </Typography>
+            </Stack>
           ) : (
-            <Skeleton variant="text" width={40} />
+            <>
+              <Skeleton variant="text" width={60} />
+            </>
           )}
-        </Typography>
-      </Stack>
-      {/* TODO: End */}
+        </>
+      ) : (
+        <>
+          {journey != null ? (
+            <StatusChip status={journey.status} />
+          ) : (
+            <Stack direction="row" alignItems="center" spacing={1.5}>
+              <EditIcon sx={{ fontSize: 13 }} />
+              <Typography variant="caption">
+                <Skeleton variant="text" width={30} />
+              </Typography>
+            </Stack>
+          )}
+          <Stack direction="row" alignItems="center" spacing={1.5}>
+            <TranslateIcon sx={{ fontSize: 13 }} />
+            <Typography variant="caption">
+              {journey != null ? (
+                journey.language.name.find(({ primary }) => primary)?.value
+              ) : (
+                <Skeleton variant="text" width={40} />
+              )}
+            </Typography>
+          </Stack>
+        </>
+      )}
     </Stack>
   )
 }
