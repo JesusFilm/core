@@ -15,7 +15,9 @@ export function LanguagesFilter(
       {...params}
       label="Search Languages"
       variant="outlined"
-      helperText="+2000 languages"
+      helperText={
+        props.helperText !== undefined ? props.helperText : '2000+ languages'
+      }
       InputProps={{
         ...params.InputProps,
         sx: { paddingBottom: 2 },

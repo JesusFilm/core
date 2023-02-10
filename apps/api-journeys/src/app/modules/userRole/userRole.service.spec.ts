@@ -5,28 +5,32 @@ import {
   mockCollectionSaveResult,
   mockDbQueryResult
 } from '@core/nest/database/mock'
-import { DocumentCollection } from 'arangojs/collection'
+import { DocumentCollection, EdgeCollection } from 'arangojs/collection'
 import { keyAsId } from '@core/nest/decorators/KeyAsId'
 
 import { Role } from '../../__generated__/graphql'
 import { UserRoleService } from './userRole.service'
 
 describe('userRoleService', () => {
-  let service: UserRoleService
+  let service: UserRoleService,
+    db: DeepMockProxy<Database>,
+    collectionMock: DeepMockProxy<DocumentCollection & EdgeCollection>
 
   beforeEach(async () => {
+    db = mockDeep()
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         UserRoleService,
         {
           provide: 'DATABASE',
-          useFactory: () => mockDeep<Database>()
+          useFactory: () => db
         }
       ]
     }).compile()
 
     service = module.get<UserRoleService>(UserRoleService)
-    service.collection = mockDeep<DocumentCollection>()
+    collectionMock = mockDeep()
+    service.collection = collectionMock
   })
   afterAll(() => {
     jest.resetAllMocks()
@@ -42,9 +46,7 @@ describe('userRoleService', () => {
 
   describe('getUserRoleById', () => {
     it('should return a user role if exists', async () => {
-      ;(service.db as DeepMockProxy<Database>).query.mockReturnValue(
-        mockDbQueryResult(service.db, [user])
-      )
+      db.query.mockReturnValue(mockDbQueryResult(service.db, [user]))
       expect(await service.getUserRoleById('1')).toEqual(userWithId)
     })
 
@@ -55,12 +57,8 @@ describe('userRoleService', () => {
         roles: []
       }
 
-      ;(service.db as DeepMockProxy<Database>).query.mockReturnValue(
-        mockDbQueryResult(service.db, [])
-      )
-      ;(
-        service.collection as DeepMockProxy<DocumentCollection>
-      ).save.mockReturnValue(
+      db.query.mockReturnValue(mockDbQueryResult(service.db, []))
+      collectionMock.save.mockReturnValue(
         mockCollectionSaveResult(service.collection, user2)
       )
 

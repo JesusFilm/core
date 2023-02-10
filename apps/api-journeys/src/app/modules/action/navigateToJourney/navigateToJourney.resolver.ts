@@ -41,11 +41,9 @@ export class NavigateToJourneyActionResolver {
     @Args('journeyId') journeyId: string,
     @Args('input') input: NavigateToJourneyActionInput
   ): Promise<Action> {
-    const block = await this.blockService.get<
-      Block & {
-        __typename: string
-      }
-    >(id)
+    const block = (await this.blockService.get(id)) as Block & {
+      __typename: string
+    }
 
     if (
       !includes(
