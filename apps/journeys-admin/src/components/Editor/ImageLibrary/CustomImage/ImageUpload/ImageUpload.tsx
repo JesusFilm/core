@@ -48,7 +48,7 @@ export function ImageUpload({
 
       setMessage(acceptedFiles[0].name)
       console.log(response)
-      const src = `https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/${response.result.id}/format=png`
+      const src = `https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/${response.result.id}/format=webp`
       onChange(src)
     },
     [data, onChange]
