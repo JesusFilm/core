@@ -1,41 +1,61 @@
-import { ReactElement, ClipboardEvent } from 'react'
+import { ReactElement, ClipboardEvent, useState } from 'react'
 import LinkIcon from '@mui/icons-material/Link'
 import InputAdornment from '@mui/material/InputAdornment'
 import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
+import Collapse from '@mui/material/Collapse'
+import Fade from '@mui/material/Fade'
+import Typography from '@mui/material/Typography'
+import Button from '@mui/material/ListItemButton'
+import ExpandLess from '@mui/icons-material/ExpandLess'
+import ExpandMore from '@mui/icons-material/ExpandMore'
+import { gql, useQuery } from '@apollo/client'
 import { useFormik } from 'formik'
 import { noop } from 'lodash'
 import fetch from 'node-fetch'
-
+import { CloudflareUploadUrl } from '../../../../../../__generated__/CloudflareUploadUrl'
 import { GetJourney_journey_blocks_ImageBlock as ImageBlock } from '../../../../../../__generated__/GetJourney'
+
+export const CLOUDFLARE_UPLOAD_URL = gql`
+  query CloudflareUploadUrl {
+    createCloudflareImage {
+      uploadUrl
+      id
+    }
+  }
+`
 
 interface CustomUrlProps {
   selectedBlock: ImageBlock | null
   onChange: (src: string) => void
-  cloudflareUploadUrl?: string
 }
 
 export function CustomUrl({
   selectedBlock,
-  onChange,
-  cloudflareUploadUrl
+  onChange
 }: CustomUrlProps): ReactElement {
-  // TODO: manage delete state
-  // Add tests
+  const [open, setOpen] = useState(false)
 
-  const handleChange = async (src: string): Promise<void> => {
-    if (cloudflareUploadUrl == null) return
+  const { data } = useQuery<CloudflareUploadUrl>(CLOUDFLARE_UPLOAD_URL)
 
-    await (
-      await fetch(cloudflareUploadUrl, {
+  const handleChange = async (url: string): Promise<void> => {
+    if (data?.createCloudflareImage == null) return
+    const fetchBlobResponse = await (await fetch(url)).blob()
+    const formData = new FormData()
+    formData.append('file', fetchBlobResponse)
+
+    const response = await (
+      await fetch(data.createCloudflareImage?.uploadUrl, {
         method: 'POST',
-        body: JSON.stringify({
-          src
-        })
+        body: formData
       })
     ).json()
-
+    console.log(response)
+    const src = `https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/${
+      response.result.id as string
+    }/public`
     onChange(src)
+    formik.resetForm({ values: { src: '' } })
   }
 
   const handlePaste = async (
@@ -52,38 +72,69 @@ export function CustomUrl({
   })
 
   return (
-    <Stack direction="column" sx={{ pt: 3, px: 6 }}>
-      <form>
-        <TextField
-          id="src"
-          name="src"
-          variant="filled"
-          label="Paste URL of image..."
-          fullWidth
-          value={formik.values.src}
-          onChange={formik.handleChange}
-          onPaste={async (e) => {
-            await handlePaste(e)
-          }}
-          onBlur={async (e) => {
-            formik.handleBlur(e)
-            await handleChange(e.target.value)
-          }}
-          helperText={
-            formik.errors.src != null
-              ? formik.errors.src
-              : 'Make sure image address is permanent'
+    <>
+      <Button
+        onClick={() => setOpen(!open)}
+        sx={{
+          mt: 5,
+          px: 6,
+          display: 'flex',
+          alignItem: 'center',
+          width: 'inherit',
+          '&:hover': {
+            backgroundColor: 'transparent'
           }
-          error={formik.touched.src === true && Boolean(formik.errors.src)}
-          InputProps={{
-            startAdornment: (
-              <InputAdornment position="start">
-                <LinkIcon />
-              </InputAdornment>
-            )
-          }}
-        />
-      </form>
-    </Stack>
+        }}
+      >
+        <LinkIcon />
+        <Typography variant="subtitle2" sx={{ pl: 2, pr: 1 }}>
+          Add image by URL
+        </Typography>
+        {open ? (
+          <ExpandLess sx={{ ml: 'auto' }} />
+        ) : (
+          <ExpandMore sx={{ ml: 'auto' }} />
+        )}
+      </Button>
+      <Collapse in={open}>
+        <Fade in={open}>
+          <Stack sx={{ pt: 3, px: 6 }}>
+            <form>
+              <TextField
+                id="src"
+                name="src"
+                variant="filled"
+                label="Paste URL of image..."
+                fullWidth
+                value={formik.values.src}
+                onChange={formik.handleChange}
+                onPaste={async (e) => {
+                  await handlePaste(e)
+                }}
+                onBlur={async (e) => {
+                  formik.handleBlur(e)
+                  await handleChange(e.target.value)
+                }}
+                helperText={
+                  formik.errors.src != null
+                    ? formik.errors.src
+                    : 'Make sure image address is permanent'
+                }
+                error={
+                  formik.touched.src === true && Boolean(formik.errors.src)
+                }
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <LinkIcon />
+                    </InputAdornment>
+                  )
+                }}
+              />
+            </form>
+          </Stack>
+        </Fade>
+      </Collapse>
+    </>
   )
 }
