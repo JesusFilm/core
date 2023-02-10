@@ -19,6 +19,7 @@ import { JourneyView } from '../../src/components/JourneyView'
 import { PageWrapper } from '../../src/components/PageWrapper'
 import { Menu } from '../../src/components/JourneyView/Menu'
 import i18nConfig from '../../next-i18next.config'
+import { useUserJourneyOpen } from '../../src/libs/useUserJourneyOpen'
 
 export const GET_JOURNEY = gql`
   ${JOURNEY_FIELDS}
@@ -36,6 +37,12 @@ function JourneyIdPage(): ReactElement {
   const { data, error } = useQuery<GetJourney>(GET_JOURNEY, {
     variables: { id: router.query.journeyId }
   })
+
+  useUserJourneyOpen(
+    AuthUser.id,
+    data?.journey?.id,
+    data?.journey?.userJourneys
+  )
 
   return (
     <>

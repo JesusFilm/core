@@ -62,7 +62,6 @@
     "apollo-server-express": "^3.11.1",
     "arangojs": "^7.6.1",
     "aws-sdk": "^2.1062.0",
-    "axios": "^0.26.1",
     "blurhash": "^1.1.4",
     "canvas": "^2.8.0",
     "clsx": "^1.2.1",
