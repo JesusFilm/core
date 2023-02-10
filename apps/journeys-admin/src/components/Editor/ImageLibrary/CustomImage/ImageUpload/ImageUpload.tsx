@@ -56,7 +56,7 @@ export function ImageUpload({
     if (response.success === true) {
       setText('success')
     }
-    const src = `https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/${response.result.id}/public`
+    const src = `https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/${response.result.id}/format=webp`
     onChange(src)
   }
 

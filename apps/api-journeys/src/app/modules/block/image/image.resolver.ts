@@ -2,7 +2,7 @@ import { UseGuards } from '@nestjs/common'
 import { Args, Mutation, Resolver } from '@nestjs/graphql'
 import { UserInputError } from 'apollo-server-errors'
 import { encode } from 'blurhash'
-import axios from 'axios'
+import fetch from 'node-fetch'
 import sharp from 'sharp'
 
 import { BlockService } from '../block.service'
@@ -27,9 +27,12 @@ async function handleImage(
   }
   if (input.src == null) return defaultBlock
 
+  // get original image to generate blurhash
+  const src = input.src.replace('format=webp', 'public')
   try {
-    const response = await axios.get(input.src, { responseType: 'arraybuffer' })
-    const { data: pixels, info: metadata } = await sharp(response.data)
+    const response = await fetch(src)
+    const buffer = await response.buffer()
+    const { data: pixels, info: metadata } = await sharp(buffer)
       .raw()
       .ensureAlpha()
       .toBuffer({ resolveWithObject: true })
