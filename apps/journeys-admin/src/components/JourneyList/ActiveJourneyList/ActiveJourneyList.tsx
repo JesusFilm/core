@@ -14,6 +14,7 @@ import { JourneyCard } from '../JourneyCard'
 import { AddJourneyButton } from '../AddJourneyButton'
 import { SortOrder } from '../JourneySort'
 import { sortJourneys } from '../JourneySort/utils/sortJourneys'
+import { JourneyCardVariant } from '../JourneyCard/JourneyCard'
 import { getDuplicatedJourney } from './utils/getDuplicatedJourney'
 
 export const GET_ACTIVE_JOURNEYS = gql`

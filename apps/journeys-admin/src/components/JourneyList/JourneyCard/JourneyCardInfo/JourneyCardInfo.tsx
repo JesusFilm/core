@@ -8,9 +8,11 @@ import { AccessAvatars } from '../../../AccessAvatars'
 import { StatusChip } from '../StatusChip'
 
 import { GetJourneys_journeys as Journey } from '../../../../../__generated__/GetJourneys'
+import { JourneyCardVariant } from '../JourneyCard'
 
 interface Props {
   journey?: Journey
+  variant: JourneyCardVariant
 }
 
 export function JourneyCardInfo({ journey }: Props): ReactElement {

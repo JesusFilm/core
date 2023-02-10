@@ -15,9 +15,16 @@ import { JourneyCardMenu } from './JourneyCardMenu'
 import { JourneyCardText } from './JourneyCardText'
 import { JourneyCardInfo } from './JourneyCardInfo'
 
+export enum JourneyCardVariant {
+  'standard',
+  'new',
+  'actionRequired'
+}
+
 interface JourneyCardProps {
   journey?: Journey
   duplicatedJourneyId?: string
+  variant?: JourneyCardVariant
   refetch?: () => Promise<
     ApolloQueryResult<
       GetActiveJourneys | GetArchivedJourneys | GetTrashedJourneys
@@ -28,6 +35,7 @@ interface JourneyCardProps {
 export function JourneyCard({
   journey,
   duplicatedJourneyId,
+  variant = JourneyCardVariant.standard,
   refetch
 }: JourneyCardProps): ReactElement {
   const duplicatedJourneyRef = useRef<HTMLDivElement>(null)
@@ -69,7 +77,7 @@ export function JourneyCard({
                 py: 4
               }}
             >
-              <JourneyCardText journey={journey} />
+              <JourneyCardText journey={journey} variant={variant} />
             </CardContent>
           </CardActionArea>
         </Link>
@@ -79,7 +87,7 @@ export function JourneyCard({
             pb: 4
           }}
         >
-          <JourneyCardInfo journey={journey} />
+          <JourneyCardInfo journey={journey} variant={variant} />
           {journey != null ? (
             <JourneyCardMenu
               id={journey.id}
