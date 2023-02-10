@@ -7,7 +7,7 @@ import { JourneyCard } from './JourneyCard'
 
 describe('JourneyCard', () => {
   it('should have correct link on title', () => {
-    const { getByText } = render(
+    const { getByRole } = render(
       <SnackbarProvider>
         <MockedProvider>
           <ThemeProvider>
@@ -18,7 +18,7 @@ describe('JourneyCard', () => {
     )
 
     expect(
-      getByText('Default Journey Heading').parentElement?.parentElement
+      getByRole('link', { name: 'Default Journey Heading January 1' })
     ).toHaveAttribute('href', '/journeys/journey-id')
   })
 })
