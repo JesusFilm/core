@@ -1,4 +1,4 @@
-import { ReactElement, useCallback, useMemo, useState } from 'react'
+import { ReactElement, useEffect, useState } from 'react'
 import { useDropzone } from 'react-dropzone'
 import Typography from '@mui/material/Typography'
 import BackupOutlinedIcon from '@mui/icons-material/BackupOutlined'
@@ -19,76 +19,53 @@ export const CLOUDFLARE_UPLOAD_URL = gql`
 `
 
 interface ImageUploadProps {
-  maxFileSize?: number
   onChange: (src: string) => void
+  loading?: boolean
 }
 
 export function ImageUpload({
-  maxFileSize = 10,
-  onChange
+  onChange,
+  loading = false
 }: ImageUploadProps): ReactElement {
+  const [text, setText] = useState('upload') // upload | loading | success | failure
+
+  useEffect(() => {
+    if (loading) {
+      setText('loading')
+      console.log('hehe')
+    }
+  }, [loading, text])
+
   const { data } = useQuery<CloudflareUploadUrl>(CLOUDFLARE_UPLOAD_URL)
 
-  const onDrop = useCallback(
-    async (acceptedFiles) => {
-      if (data?.createCloudflareImage == null) return
-      const file = acceptedFiles[0]
+  const onDrop = async (acceptedFiles): Promise<void> => {
+    if (data?.createCloudflareImage == null) return
+    const file = acceptedFiles[0]
 
-      const formData = new FormData()
-      formData.set('file', file)
+    const formData = new FormData()
+    formData.set('file', file)
 
-      console.log(acceptedFiles[0])
+    console.log(acceptedFiles[0])
 
-      const response = await (
-        await fetch(data?.createCloudflareImage?.uploadUrl, {
-          method: 'POST',
-          body: formData
-        })
-      ).json()
+    const response = await (
+      await fetch(data?.createCloudflareImage?.uploadUrl, {
+        method: 'POST',
+        body: formData
+      })
+    ).json()
+    if (response.success === true) {
+      setText('success')
+    }
+    const src = `https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/${response.result.id}/public`
+    onChange(src)
+  }
 
-      setMessage(acceptedFiles[0].name)
-      console.log(response)
-      const src = `https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/${response.result.id}/format=png`
-      onChange(src)
-    },
-    [data, onChange]
-  )
-
-  const {
-    getRootProps,
-    open,
-    getInputProps,
-    isDragActive,
-    isDragAccept,
-    isDragReject
-  } = useDropzone({
+  const { getRootProps, open, getInputProps } = useDropzone({
     onDrop,
     noClick: true,
-    maxFiles: 1,
+    maxSize: 10485760,
     accept: 'image/*'
   })
-
-  const [message, setMessage] = useState('Drop an image here')
-
-  const style = useMemo(() => {
-    const activeStyle = {
-      borderColor: '#ffffff'
-    }
-
-    const acceptStyle = {
-      borderColor: '#005a9c'
-    }
-
-    const rejectStyle = {
-      borderColor: '#ff1744'
-    }
-
-    return {
-      ...(isDragActive ? activeStyle : {}),
-      ...(isDragAccept ? acceptStyle : {}),
-      ...(isDragReject ? rejectStyle : {})
-    }
-  }, [isDragActive, isDragAccept, isDragReject])
 
   return (
     <Stack {...getRootProps()} alignItems="center">
@@ -115,13 +92,19 @@ export function ImageUpload({
           sx={{ fontSize: '48px', color: 'secondary.light', mb: 1 }}
         />
         <Typography variant="body1" sx={{ pb: 4 }}>
-          Drop an image here
+          {/* {text === 'upload'
+            ? 'Drop an image here'
+            : text === 'loading'
+            ? 'Uploading...'
+            : text === 'success'
+            ? 'Upload successful!'
+            : 'Upload failed!'} */}
+          {text}
         </Typography>
       </Box>
-      <Typography
-        variant="caption"
-        color="secondary.light"
-      >{`The maximum size per file is ${maxFileSize} MB`}</Typography>
+      <Typography variant="caption" color="secondary.light">
+        The maximum size per file is 10 MB
+      </Typography>
       <Button
         size="small"
         variant="outlined"

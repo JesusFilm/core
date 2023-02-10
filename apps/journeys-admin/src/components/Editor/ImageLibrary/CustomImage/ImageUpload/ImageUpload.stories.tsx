@@ -15,10 +15,12 @@ const ImageUploadStory = {
   }
 }
 
+const onChange = jest.fn()
+
 export const Default: Story = () => (
   <MockedProvider mocks={[]}>
     <Box sx={{ maxWidth: 280, maxHeight: 172 }}>
-      <ImageUpload />
+      <ImageUpload onChange={onChange} />
     </Box>
   </MockedProvider>
 )
