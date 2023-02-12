@@ -18,7 +18,7 @@ const StyledBadge = styled(Badge)(() => ({
     top: '13px',
     width: '10px',
     height: '10px',
-    'border-radius': '50%'
+    borderRadius: '50%'
   }
 }))
 

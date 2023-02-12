@@ -12,7 +12,7 @@ describe('JourneyCardText', () => {
     const { getByText } = render(
       <JourneyCardText
         journey={publishedJourney}
-        variant={JourneyCardVariant.standard}
+        variant={JourneyCardVariant.default}
       />
     )
     expect(getByText('Published Journey Heading')).toBeInTheDocument()
@@ -22,7 +22,7 @@ describe('JourneyCardText', () => {
     const { getByText } = render(
       <JourneyCardText
         journey={publishedJourney}
-        variant={JourneyCardVariant.standard}
+        variant={JourneyCardVariant.default}
       />
     )
     expect(getByText('January 1 - a published journey')).toBeInTheDocument()
@@ -32,7 +32,7 @@ describe('JourneyCardText', () => {
     const { getByText } = render(
       <JourneyCardText
         journey={defaultJourney}
-        variant={JourneyCardVariant.standard}
+        variant={JourneyCardVariant.default}
       />
     )
     expect(getByText('January 1')).toBeInTheDocument()
@@ -42,7 +42,7 @@ describe('JourneyCardText', () => {
     const { getByText } = render(
       <JourneyCardText
         journey={oldJourney}
-        variant={JourneyCardVariant.standard}
+        variant={JourneyCardVariant.default}
       />
     )
     expect(

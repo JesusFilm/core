@@ -16,7 +16,7 @@ import { JourneyCardText } from './JourneyCardText'
 import { JourneyCardInfo } from './JourneyCardInfo'
 
 export enum JourneyCardVariant {
-  'standard',
+  'default',
   'new',
   'actionRequired'
 }
@@ -35,7 +35,7 @@ interface JourneyCardProps {
 export function JourneyCard({
   journey,
   duplicatedJourneyId,
-  variant = JourneyCardVariant.standard,
+  variant = JourneyCardVariant.default,
   refetch
 }: JourneyCardProps): ReactElement {
   const duplicatedJourneyRef = useRef<HTMLDivElement>(null)

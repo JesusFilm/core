@@ -10,6 +10,15 @@ import { JourneyCardVariant } from '../JourneyCard'
 import { UserJourneyRole } from '../../../../../__generated__/globalTypes'
 import { JourneyCardInfo } from '.'
 
+jest.mock('react-i18next', () => ({
+  __esModule: true,
+  useTranslation: () => {
+    return {
+      t: (str: string) => str
+    }
+  }
+}))
+
 describe('JourneyCardInfo', () => {
   it('should show the langauge name', () => {
     const { getByText } = render(
@@ -46,7 +55,7 @@ describe('JourneyCardInfo', () => {
       ]
     } as unknown as Journey
 
-    const { getByLabelText, getByText } = render(
+    const { getAllByLabelText, getByText } = render(
       <MockedProvider>
         <ThemeProvider>
           <JourneyCardInfo
@@ -56,7 +65,8 @@ describe('JourneyCardInfo', () => {
         </ThemeProvider>
       </MockedProvider>
     )
-    expect(getByLabelText('avatar')).toBeInTheDocument()
+    // avatar length is double of expected because avatar group is rendered twice and displayed based of screen size
+    expect(getAllByLabelText('avatar')).toHaveLength(2)
     expect(getByText('1 user')).toBeInTheDocument()
     expect(
       getByText('requested editing rights for your journey')
@@ -106,7 +116,7 @@ describe('JourneyCardInfo', () => {
         </ThemeProvider>
       </MockedProvider>
     )
-    expect(getAllByLabelText('avatar')).toHaveLength(2)
+    expect(getAllByLabelText('avatar')).toHaveLength(4)
     expect(getByText('2 users')).toBeInTheDocument()
   })
 })
