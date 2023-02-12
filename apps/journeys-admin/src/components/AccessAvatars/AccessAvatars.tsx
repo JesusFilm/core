@@ -22,7 +22,11 @@ function AccessAvatar({ user }: AccessAvatarProps): ReactElement {
 
   return (
     <Tooltip title={displayName}>
-      <Avatar alt={displayName} src={user.imageUrl ?? undefined}>
+      <Avatar
+        alt={displayName}
+        src={user.imageUrl ?? undefined}
+        aria-label="avatar"
+      >
         {displayName.charAt(0)?.toUpperCase()}
       </Avatar>
     </Tooltip>

@@ -30,6 +30,7 @@ export function JourneyCardText({ journey, variant }: Props): ReactElement {
         variant="dot"
         invisible={variant !== JourneyCardVariant.new}
         anchorOrigin={{ horizontal: 'left', vertical: 'top' }}
+        data-testid="new-journey-badge"
       >
         <Typography
           variant="subtitle1"
