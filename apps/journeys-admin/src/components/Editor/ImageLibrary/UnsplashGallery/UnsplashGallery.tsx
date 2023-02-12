@@ -21,15 +21,14 @@ export const LIST_UNSPLASH_COLLECTION_PHOTOS = gql`
       perPage: $perPage
     ) {
       id
-      alt_description
       width
       height
       urls {
         small
+        regular
       }
       user {
         first_name
-        last_name
         username
       }
     }
@@ -41,15 +40,14 @@ export const SEARCH_UNSPLASH_PHOTOS = gql`
     searchUnsplashPhotos(query: $query, page: $page, perPage: $perPage) {
       results {
         id
-        alt_description
         width
         height
         urls {
           small
+          regular
         }
         user {
           first_name
-          last_name
           username
         }
       }
@@ -57,7 +55,13 @@ export const SEARCH_UNSPLASH_PHOTOS = gql`
   }
 `
 
-export function UnsplashGallery(): ReactElement {
+interface UnsplashGalleryProps {
+  onChange: (src: string) => void
+}
+
+export function UnsplashGallery({
+  onChange
+}: UnsplashGalleryProps): ReactElement {
   const [query, setQuery] = useState<string | null>(null)
   const [page, setPage] = useState(1)
   const {
@@ -101,7 +105,7 @@ export function UnsplashGallery(): ReactElement {
   }
 
   return (
-    <Stack sx={{ pt: 3 }}>
+    <Stack sx={{ pt: 6, px: 6 }}>
       <UnsplashSearch value={query} handleSubmit={handleSubmit} />
       <Stack spacing={2} sx={{ py: 6 }}>
         <Typography variant="overline" color="primary">
@@ -110,10 +114,16 @@ export function UnsplashGallery(): ReactElement {
         <Typography variant="h6">Featured Images</Typography>
       </Stack>
       {query == null && listData != null && (
-        <UnsplashList gallery={listData.listUnsplashCollectionPhotos} />
+        <UnsplashList
+          gallery={listData.listUnsplashCollectionPhotos}
+          onChange={onChange}
+        />
       )}
       {query != null && searchData != null && (
-        <UnsplashList gallery={searchData.searchUnsplashPhotos.results} />
+        <UnsplashList
+          gallery={searchData.searchUnsplashPhotos.results}
+          onChange={onChange}
+        />
       )}
       <LoadingButton variant="outlined" onClick={nextPage} size="medium">
         Load More

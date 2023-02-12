@@ -10,19 +10,18 @@
 export interface SearchUnsplashPhotos_searchUnsplashPhotos_results_urls {
   __typename: "UnsplashPhotoUrls";
   small: string;
+  regular: string;
 }
 
 export interface SearchUnsplashPhotos_searchUnsplashPhotos_results_user {
   __typename: "UnsplashUser";
   first_name: string;
-  last_name: string;
   username: string;
 }
 
 export interface SearchUnsplashPhotos_searchUnsplashPhotos_results {
   __typename: "UnsplashPhoto";
   id: string;
-  alt_description: string;
   width: number;
   height: number;
   urls: SearchUnsplashPhotos_searchUnsplashPhotos_results_urls;

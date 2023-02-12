@@ -1,4 +1,4 @@
-import { render } from '@testing-library/react'
+import { render, fireEvent } from '@testing-library/react'
 import { SearchUnsplashPhotos_searchUnsplashPhotos_results } from '../../../../../../__generated__/SearchUnsplashPhotos'
 import { UnsplashList } from './UnsplashList'
 
@@ -21,15 +21,19 @@ describe('UnsplashList', () => {
     color: '#262626'
   }
 
-  it('should return a list of unsplash images', () => {
+  it('should call onChange on image click', () => {
+    const onChange = jest.fn()
     const { getByRole, getByText } = render(
       <UnsplashList
         gallery={[
           unsplashImage as unknown as SearchUnsplashPhotos_searchUnsplashPhotos_results
         ]}
+        onChange={onChange}
       />
     )
     expect(getByRole('list')).toBeInTheDocument()
-    expect(getByText('Levi Meir Clancy')).toBeInTheDocument()
+    expect(getByText('Levi Meir')).toBeInTheDocument()
+    fireEvent.click(getByRole('button'))
+    expect(onChange).toHaveBeenCalled()
   })
 })

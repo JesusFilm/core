@@ -14,7 +14,7 @@ import BrushRounded from '@mui/icons-material/BrushRounded'
 import DashboardRounded from '@mui/icons-material/DashboardRounded'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { useFlags } from '@core/shared/ui/FlagsProvider'
-// import { object, string } from 'yup'
+import { object, string } from 'yup'
 import { GetJourney_journey_blocks_ImageBlock as ImageBlock } from '../../../../__generated__/GetJourney'
 import { ImageBlockHeader } from '../ImageBlockHeader'
 import { UnsplashGallery } from './UnsplashGallery'
@@ -40,24 +40,25 @@ export function ImageLibrary({
 }: ImageLibraryProps): ReactElement {
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
   const [tabValue, setTabValue] = useState(0)
+  const { unplashGallery } = useFlags()
 
-  const { unsplashGallery } = useFlags()
-  // uncomment once unsplash and custom components are in
-  // const srcSchema = object().shape({
-  //   src: string().url('Please enter a valid url').required('Required')
-  // })
+  // TODO: Add back last_name and alt_description props. And make sure flags is spelled correctly on ldcs
 
-  // const handleSrcChange = async (src: string): Promise<void> => {
-  //   if (!(await srcSchema.isValid({ src })) || src === selectedBlock?.src)
-  //     return
+  const srcSchema = object().shape({
+    src: string().url('Please enter a valid url').required('Required')
+  })
 
-  //   const block = {
-  //     ...selectedBlock,
-  //     src,
-  //     alt: src.replace(/(.*\/)*/, '').replace(/\?.*/, '') // per Vlad 26/1/22, we are hardcoding the image alt for now
-  //   }
-  //   await onChange(block as ImageBlock)
-  // }
+  const handleSrcChange = async (src: string): Promise<void> => {
+    if (!(await srcSchema.isValid({ src })) || src === selectedBlock?.src)
+      return
+
+    const block = {
+      ...selectedBlock,
+      src,
+      alt: src.replace(/(.*\/)*/, '').replace(/\?.*/, '') // per Vlad 26/1/22, we are hardcoding the image alt for now
+    }
+    await onChange(block as ImageBlock)
+  }
 
   const handleTabChange = (
     _event: SyntheticEvent<Element, Event>,
@@ -120,7 +121,7 @@ export function ImageLibrary({
           aria-label="image selection tabs"
           variant="fullWidth"
         >
-          {unsplashGallery && (
+          {unplashGallery && (
             <Tab
               icon={<DashboardRounded />}
               label={<Typography variant="subtitle2">Gallery</Typography>}
@@ -133,9 +134,9 @@ export function ImageLibrary({
             {...tabA11yProps('custom', 1)}
           />
         </Tabs>
-        {unsplashGallery && (
+        {unplashGallery && (
           <TabPanel name="gallery" value={tabValue} index={0}>
-            <UnsplashGallery />
+            <UnsplashGallery onChange={handleSrcChange} />
           </TabPanel>
         )}
         <TabPanel name="custom" value={tabValue} index={1}>

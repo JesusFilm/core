@@ -10,19 +10,18 @@
 export interface ListUnsplashCollectionPhotos_listUnsplashCollectionPhotos_urls {
   __typename: "UnsplashPhotoUrls";
   small: string;
+  regular: string;
 }
 
 export interface ListUnsplashCollectionPhotos_listUnsplashCollectionPhotos_user {
   __typename: "UnsplashUser";
   first_name: string;
-  last_name: string;
   username: string;
 }
 
 export interface ListUnsplashCollectionPhotos_listUnsplashCollectionPhotos {
   __typename: "UnsplashPhoto";
   id: string;
-  alt_description: string;
   width: number;
   height: number;
   urls: ListUnsplashCollectionPhotos_listUnsplashCollectionPhotos_urls;

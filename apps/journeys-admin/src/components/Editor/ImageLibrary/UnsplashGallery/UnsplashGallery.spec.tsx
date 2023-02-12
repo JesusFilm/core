@@ -45,11 +45,11 @@ describe('UnsplashGallery', () => {
           }
         ]}
       >
-        <UnsplashGallery />
+        <UnsplashGallery onChange={jest.fn()} />
       </MockedProvider>
     )
     await waitFor(() => expect(getByRole('list')).toBeInTheDocument())
-    expect(getByText('Levi Meir Clancy')).toBeInTheDocument()
+    expect(getByText('Levi Meir')).toBeInTheDocument()
   })
 
   it('should search images from unsplash', async () => {
@@ -90,7 +90,7 @@ describe('UnsplashGallery', () => {
           }
         ]}
       >
-        <UnsplashGallery />
+        <UnsplashGallery onChange={jest.fn()} />
       </MockedProvider>
     )
     await waitFor(() => expect(getByRole('list')).toBeInTheDocument())
@@ -99,7 +99,7 @@ describe('UnsplashGallery', () => {
     fireEvent.submit(textbox, { target: { value: 'Jesus' } })
     await waitFor(() => expect(getByRole('list')).toBeInTheDocument())
     await waitFor(() =>
-      expect(getAllByText('Levi Meir Clancy')[1]).toBeInTheDocument()
+      expect(getAllByText('Levi Meir')[1]).toBeInTheDocument()
     )
   })
 })
