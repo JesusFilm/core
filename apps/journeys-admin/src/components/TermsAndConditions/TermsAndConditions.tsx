@@ -14,6 +14,7 @@ import NextLink from 'next/link'
 import ListItem from '@mui/material/ListItem'
 import Divider from '@mui/material/Divider'
 import { gql, useMutation } from '@apollo/client'
+import Link from '@mui/material/Link'
 import taskbarIcon from '../../../public/taskbar-icon.svg'
 import { JourneyProfileCreate } from '../../../__generated__/JourneyProfileCreate'
 import { TermsListItem } from './TermsListItem'
@@ -130,20 +131,18 @@ export function TermsAndConditions(): ReactElement {
           </Fab>
         </NextLink>
       </Stack>
-
-      <Typography
+      <Link
         variant="body2"
+        underline="none"
         sx={{
           mt: 17,
           color: 'primary.main',
-          cursor: 'pointer',
-          textDecoration: 'none'
+          cursor: 'pointer'
         }}
-        component="a"
         href="mailto:support@nextstep.is?Subject=Support%2FFeedback%20Request"
       >
         Feedback & Support
-      </Typography>
+      </Link>
     </Stack>
   )
 }
