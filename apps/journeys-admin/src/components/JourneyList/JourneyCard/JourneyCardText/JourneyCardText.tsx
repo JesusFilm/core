@@ -14,7 +14,7 @@ interface Props {
 
 const StyledBadge = styled(Badge)(() => ({
   '& .MuiBadge-badge': {
-    left: '-11x',
+    left: '-11px',
     top: '13px',
     width: '10px',
     height: '10px',
