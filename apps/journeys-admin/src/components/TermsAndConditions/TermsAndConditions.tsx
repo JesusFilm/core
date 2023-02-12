@@ -1,5 +1,4 @@
 import { ReactElement, useState } from 'react'
-import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
 import FormControlLabel from '@mui/material/FormControlLabel'
 import Checkbox from '@mui/material/Checkbox'
@@ -36,12 +35,10 @@ export function TermsAndConditions(): ReactElement {
   )
 
   return (
-    <Box
+    <Stack
+      justifyContent="flex-start"
+      alignItems="center"
       sx={{
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'flex-start',
-        alignItems: 'center',
         pt: 30,
         ml: 20
       }}
@@ -143,6 +140,6 @@ export function TermsAndConditions(): ReactElement {
       >
         Feedback & Support
       </Typography>
-    </Box>
+    </Stack>
   )
 }
