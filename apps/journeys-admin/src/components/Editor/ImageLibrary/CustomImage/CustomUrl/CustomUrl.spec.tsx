@@ -25,8 +25,10 @@ describe('CustomUrl', () => {
     },
     result: {
       data: {
-        uploadUrl: `uploadUrl`,
-        id: 'id'
+        createCloudflareImage: {
+          uploadUrl: 'uploadUrl',
+          id: 'id'
+        }
       }
     }
   }
@@ -68,6 +70,8 @@ describe('CustomUrl', () => {
       target: { value: 'https://example.com/123' }
     })
     fireEvent.blur(textBox)
-    await waitFor(() => expect(onChange).toHaveBeenCalled())
+    await waitFor(() => expect(onChange).toHaveBeenCalledWith(
+      'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/uploadId/public'
+    ))
   })
 })
