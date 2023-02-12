@@ -549,6 +549,14 @@ input JourneyCreateInput
   slug: String
 }
 
+type JourneyProfile
+  @join__type(graph: JOURNEYS, key: "id")
+{
+  id: ID!
+  userId: ID!
+  acceptedTermsAt: DateTime
+}
+
 input JourneysFilter
   @join__type(graph: JOURNEYS)
 {
@@ -791,6 +799,7 @@ type Mutation
 
   """Updates template"""
   journeyTemplate(id: ID!, input: JourneyTemplateInput!): Journey! @join__field(graph: JOURNEYS)
+  journeyProfileCreate: JourneyProfile! @join__field(graph: JOURNEYS)
   userInviteCreate(journeyId: ID!, input: UserInviteCreateInput): UserInvite! @join__field(graph: JOURNEYS)
   userInviteRemove(id: ID!, journeyId: ID!): UserInvite! @join__field(graph: JOURNEYS)
   userInviteAcceptAll: [UserInvite!]! @join__field(graph: JOURNEYS)
@@ -911,6 +920,7 @@ type Query
   adminJourney(id: ID!, idType: IdType): Journey @join__field(graph: JOURNEYS)
   journeys(where: JourneysFilter): [Journey!]! @join__field(graph: JOURNEYS)
   journey(id: ID!, idType: IdType): Journey @join__field(graph: JOURNEYS)
+  getJourneyProfile: JourneyProfile @join__field(graph: JOURNEYS)
   userInvites(journeyId: ID!): [UserInvite!] @join__field(graph: JOURNEYS)
   getUserRole: UserRole @join__field(graph: JOURNEYS)
 
