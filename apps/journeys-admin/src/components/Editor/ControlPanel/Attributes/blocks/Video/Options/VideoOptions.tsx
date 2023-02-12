@@ -106,11 +106,7 @@ export function VideoOptions(): ReactElement {
   }
 
   return selectedBlock != null && selectedBlock.__typename === 'VideoBlock' ? (
-    <VideoBlockEditor
-      selectedBlock={selectedBlock}
-      onChange={handleChange}
-      showDelete={false}
-    />
+    <VideoBlockEditor selectedBlock={selectedBlock} onChange={handleChange} />
   ) : (
     <></>
   )
