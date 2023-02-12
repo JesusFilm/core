@@ -34,6 +34,10 @@ export function TermsAndConditions(): ReactElement {
     JOURNEY_PROFILE_CREATE
   )
 
+  const handleJourneyProfileCreate = async (): Promise<void> => {
+    await journeyProfileCreate()
+  }
+
   return (
     <Stack
       justifyContent="flex-start"
@@ -109,7 +113,7 @@ export function TermsAndConditions(): ReactElement {
             variant="extended"
             size="large"
             disabled={!accepted}
-            onClick={async () => await journeyProfileCreate()}
+            onClick={handleJourneyProfileCreate}
             sx={{
               mt: 6,
               width: '100%',
