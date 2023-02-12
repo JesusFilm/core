@@ -10,11 +10,11 @@ import SupervisorAccountRoundedIcon from '@mui/icons-material/SupervisorAccountR
 import BeenhereRoundedIcon from '@mui/icons-material/BeenhereRounded'
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward'
 import Image from 'next/image'
-import NextLink from 'next/link'
 import ListItem from '@mui/material/ListItem'
 import Divider from '@mui/material/Divider'
 import { gql, useMutation } from '@apollo/client'
 import Link from '@mui/material/Link'
+import { useRouter } from 'next/router'
 import taskbarIcon from '../../../public/taskbar-icon.svg'
 import { JourneyProfileCreate } from '../../../__generated__/JourneyProfileCreate'
 import { TermsListItem } from './TermsListItem'
@@ -34,9 +34,11 @@ export function TermsAndConditions(): ReactElement {
   const [journeyProfileCreate] = useMutation<JourneyProfileCreate>(
     JOURNEY_PROFILE_CREATE
   )
+  const router = useRouter()
 
   const handleJourneyProfileCreate = async (): Promise<void> => {
     await journeyProfileCreate()
+    await router.push('/')
   }
 
   return (
@@ -109,27 +111,25 @@ export function TermsAndConditions(): ReactElement {
             />
           </ListItem>
         </List>
-        <NextLink href="/" passHref>
-          <Fab
-            variant="extended"
-            size="large"
-            disabled={!accepted}
-            onClick={handleJourneyProfileCreate}
-            sx={{
-              mt: 6,
-              width: '100%',
-              borderRadius: '12px',
-              bgcolor: 'secondary.dark',
-              color: 'secondary.contrastText',
-              '&:hover': {
-                bgcolor: 'secondary.dark'
-              }
-            }}
-          >
-            <ArrowForwardIcon />
-            Next
-          </Fab>
-        </NextLink>
+        <Fab
+          variant="extended"
+          size="large"
+          disabled={!accepted}
+          onClick={handleJourneyProfileCreate}
+          sx={{
+            mt: 6,
+            width: '100%',
+            borderRadius: '12px',
+            bgcolor: 'secondary.dark',
+            color: 'secondary.contrastText',
+            '&:hover': {
+              bgcolor: 'secondary.dark'
+            }
+          }}
+        >
+          <ArrowForwardIcon />
+          Next
+        </Fab>
       </Stack>
       <Link
         variant="body2"
