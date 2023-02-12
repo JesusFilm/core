@@ -120,31 +120,28 @@ export function ImageLibrary({
           aria-label="image selection tabs"
           variant="fullWidth"
         >
-          {
-            unsplashGallery && (
-              <Tab
-                icon={<DashboardRounded />}
-                label={<Typography variant="subtitle2">Gallery</Typography>}
-                {...tabA11yProps('gallery', 0)}
-              />
-            )
-          }
+          {unsplashGallery && (
+            <Tab
+              icon={<DashboardRounded />}
+              label={<Typography variant="subtitle2">Gallery</Typography>}
+              {...tabA11yProps('gallery', 0)}
+            />
+          )}
           <Tab
             icon={<BrushRounded />}
             label={<Typography variant="subtitle2">Custom</Typography>}
             {...tabA11yProps('custom', 1)}
           />
-        </Tabs >
+        </Tabs>
         {unsplashGallery && (
           <TabPanel name="gallery" value={tabValue} index={0}>
             <UnsplashGallery />
           </TabPanel>
-        )
-        }
+        )}
         <TabPanel name="custom" value={tabValue} index={1}>
           {/* insert custom component */}
         </TabPanel>
-      </Box >
-    </Drawer >
+      </Box>
+    </Drawer>
   )
 }

@@ -2,6 +2,7 @@ import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render } from '@testing-library/react'
 import useMediaQuery from '@mui/material/useMediaQuery'
 
+import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 import {
   GetJourney_journey_blocks_VideoBlock as VideoBlock,
   GetJourney_journey_blocks_ImageBlock as ImageBlock
@@ -73,10 +74,12 @@ describe('VideoBlockEditorSettingsPoster', () => {
     const { getByTestId } = render(
       <MockedProvider>
         <ThemeProvider>
-          <VideoBlockEditorSettingsPoster
-            selectedBlock={image}
-            parentBlockId={video.id}
-          />
+          <FlagsProvider>
+            <VideoBlockEditorSettingsPoster
+              selectedBlock={image}
+              parentBlockId={video.id}
+            />
+          </FlagsProvider>
         </ThemeProvider>
       </MockedProvider>
     )
@@ -87,11 +90,13 @@ describe('VideoBlockEditorSettingsPoster', () => {
     const { getByRole } = render(
       <MockedProvider>
         <ThemeProvider>
-          <VideoBlockEditorSettingsPoster
-            selectedBlock={image}
-            disabled
-            parentBlockId={video.id}
-          />
+          <FlagsProvider>
+            <VideoBlockEditorSettingsPoster
+              selectedBlock={image}
+              disabled
+              parentBlockId={video.id}
+            />
+          </FlagsProvider>
         </ThemeProvider>
       </MockedProvider>
     )

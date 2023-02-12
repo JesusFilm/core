@@ -5,6 +5,7 @@ import { render } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
 import { SnackbarProvider } from 'notistack'
 
+import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 import {
   GetJourney_journey as Journey,
   GetJourney_journey_blocks_CardBlock as CardBlock,
@@ -72,9 +73,11 @@ describe('BackgroundMedia', () => {
         <ThemeProvider>
           <JourneyProvider value={{ journey, admin: true }}>
             <EditorProvider initialState={{ selectedBlock: card }}>
-              <SnackbarProvider>
-                <BackgroundMedia />
-              </SnackbarProvider>
+              <FlagsProvider>
+                <SnackbarProvider>
+                  <BackgroundMedia />
+                </SnackbarProvider>
+              </FlagsProvider>
             </EditorProvider>
           </JourneyProvider>
         </ThemeProvider>
@@ -142,9 +145,11 @@ describe('BackgroundMedia', () => {
         <ThemeProvider>
           <JourneyProvider value={{ journey, admin: true }}>
             <EditorProvider initialState={{ selectedBlock: card }}>
-              <SnackbarProvider>
-                <BackgroundMedia />
-              </SnackbarProvider>
+              <FlagsProvider>
+                <SnackbarProvider>
+                  <BackgroundMedia />
+                </SnackbarProvider>
+              </FlagsProvider>
             </EditorProvider>
           </JourneyProvider>
         </ThemeProvider>
@@ -194,9 +199,11 @@ describe('BackgroundMedia', () => {
         <ThemeProvider>
           <JourneyProvider value={{ journey, admin: true }}>
             <EditorProvider initialState={{ selectedBlock: step }}>
-              <SnackbarProvider>
-                <BackgroundMedia />
-              </SnackbarProvider>
+              <FlagsProvider>
+                <SnackbarProvider>
+                  <BackgroundMedia />
+                </SnackbarProvider>
+              </FlagsProvider>
             </EditorProvider>
           </JourneyProvider>
         </ThemeProvider>

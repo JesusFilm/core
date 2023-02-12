@@ -3,6 +3,7 @@ import { fireEvent, render } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
 import { SnackbarProvider } from 'notistack'
 import useMediaQuery from '@mui/material/useMediaQuery'
+import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 import { GetJourney_journey_blocks_CardBlock as CardBlock } from '../../../../../../../../../__generated__/GetJourney'
 import { BackgroundMediaImage } from './BackgroundMediaImage'
 
@@ -30,9 +31,11 @@ describe('BackgroundMediaImage', () => {
   it('opens the image library', () => {
     const { getByRole, getByTestId } = render(
       <MockedProvider>
-        <SnackbarProvider>
-          <BackgroundMediaImage cardBlock={card} />
-        </SnackbarProvider>
+        <FlagsProvider>
+          <SnackbarProvider>
+            <BackgroundMediaImage cardBlock={card} />
+          </SnackbarProvider>
+        </FlagsProvider>
       </MockedProvider>
     )
     fireEvent.click(getByRole('button', { name: 'Select Image' }))

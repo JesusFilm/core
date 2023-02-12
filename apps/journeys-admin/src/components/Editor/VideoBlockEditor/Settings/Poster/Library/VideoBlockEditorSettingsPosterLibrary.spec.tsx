@@ -2,6 +2,7 @@ import { MockedProvider } from '@apollo/client/testing'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { render } from '@testing-library/react'
 import useMediaQuery from '@mui/material/useMediaQuery'
+import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 import { VideoBlockSource } from '../../../../../../../__generated__/globalTypes'
 
 import {
@@ -76,12 +77,14 @@ describe('VideoBlockEditorSettingsPosterLibrary', () => {
   it('opens the image library', () => {
     const { getByTestId } = render(
       <MockedProvider>
-        <VideoBlockEditorSettingsPosterLibrary
-          selectedBlock={image}
-          parentBlockId={video.id}
-          onClose={onClose}
-          open
-        />
+        <FlagsProvider>
+          <VideoBlockEditorSettingsPosterLibrary
+            selectedBlock={image}
+            parentBlockId={video.id}
+            onClose={onClose}
+            open
+          />
+        </FlagsProvider>
       </MockedProvider>
     )
     expect(getByTestId('ImageLibrary')).toBeInTheDocument()
