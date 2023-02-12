@@ -83,6 +83,7 @@ export function Properties({
               journeyId={journey?.id}
               userJourneys={journey?.userJourneys ?? undefined}
               size="medium"
+              showManageButton
             />
           </Divider>
         )}

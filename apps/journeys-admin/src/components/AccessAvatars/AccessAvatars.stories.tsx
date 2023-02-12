@@ -144,4 +144,25 @@ Loading.args = {
   userJourneys: undefined
 }
 
+export const ManageButton: Story<AccessAvatarsProps> = Template.bind({})
+ManageButton.args = {
+  journeyId: 'journeyId',
+  userJourneys: [userJourney1, userJourney2, userJourney3],
+  showManageButton: true
+}
+
+export const ManageButtonOverflow: Story<AccessAvatarsProps> = Template.bind({})
+ManageButtonOverflow.args = {
+  journeyId: 'journeyId',
+  userJourneys: [
+    userJourney1,
+    userJourney2,
+    userJourney3,
+    userJourney4,
+    userJourney5,
+    userJourney6
+  ],
+  showManageButton: true
+}
+
 export default AccessAvatarsDemo as Meta
