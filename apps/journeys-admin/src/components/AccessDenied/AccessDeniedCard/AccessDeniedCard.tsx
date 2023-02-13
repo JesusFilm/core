@@ -9,7 +9,7 @@ interface AccessDeniedCardProps {
   heading: string
   description: string
   requestAccess?: boolean
-  onClick?: () => void
+  handleRequestAccess?: () => void
 }
 
 export function AccessDeniedCard({
@@ -17,7 +17,7 @@ export function AccessDeniedCard({
   heading,
   description,
   requestAccess = false,
-  onClick
+  handleRequestAccess
 }: AccessDeniedCardProps): ReactElement {
   return (
     <Card>
