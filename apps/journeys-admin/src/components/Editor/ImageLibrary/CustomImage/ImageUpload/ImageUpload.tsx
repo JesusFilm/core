@@ -109,7 +109,7 @@ export function ImageUpload({
         </Typography>
       </Box>
       <Typography variant="caption" color="secondary.light">
-        The maximum size per file is 10 MB
+        Max file size: 10 MB
       </Typography>
       <Button
         size="small"
