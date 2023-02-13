@@ -147,12 +147,12 @@ export function ImageLibrary({
         {unsplashGallery && (
           <TabPanel name="gallery" value={tabValue} index={0}>
             <UnsplashGallery onChange={handleUnsplashChange} />
-          </TabPanel >
+          </TabPanel>
         )}
         <TabPanel name="custom" value={tabValue} index={1}>
           {/* insert custom component */}
         </TabPanel>
-      </Box >
-    </Drawer >
+      </Box>
+    </Drawer>
   )
 }
