@@ -18,7 +18,7 @@ interface ListItemProps {
   disabled: boolean
 }
 
-export function UserJourneyItem({
+export function UserListItem({
   userJourney,
   disabled
 }: ListItemProps): ReactElement {

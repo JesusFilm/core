@@ -1,9 +1,9 @@
 import { render } from '@testing-library/react'
 import { UserJourneyRole } from '../../../../__generated__/globalTypes'
 import { GetJourneyWithUserJourneys_journey_userJourneys as UserJourney } from '../../../../__generated__/GetJourneyWithUserJourneys'
-import { UserJourneyList } from '.'
+import { UserList } from '.'
 
-describe('UserJourneyList', () => {
+describe('UserList', () => {
   it('should display title and list of users', () => {
     const userJourneys: UserJourney[] = [
       {
@@ -34,7 +34,7 @@ describe('UserJourneyList', () => {
       }
     ]
     const { getAllByRole, getByText } = render(
-      <UserJourneyList
+      <UserList
         title="Users With Access"
         userJourneys={userJourneys}
         disable={false}
