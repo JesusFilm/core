@@ -143,6 +143,8 @@ export class UnsplashPhotoLinks {
 
 export abstract class IMutation {
     abstract deleteCloudflareImage(id: string): Nullable<boolean> | Promise<Nullable<boolean>>;
+
+    abstract cloudflareUploadComplete(id: string): Nullable<boolean> | Promise<Nullable<boolean>>;
 }
 
 type Nullable<T> = T | null;
