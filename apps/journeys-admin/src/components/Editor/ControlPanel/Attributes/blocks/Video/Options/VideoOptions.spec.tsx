@@ -5,6 +5,7 @@ import type { TreeBlock } from '@core/journeys/ui/block'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 import { InMemoryCache } from '@apollo/client'
+import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 import { GET_VIDEOS } from '../../../../../VideoLibrary/VideoFromLocal/VideoFromLocal'
 import { GET_VIDEO } from '../../../../../VideoLibrary/VideoFromLocal/LocalDetails/LocalDetails'
 import { videos } from '../../../../../VideoLibrary/VideoFromLocal/data'
@@ -165,9 +166,11 @@ describe('VideoOptions', () => {
                 selectedBlock: { ...video, videoId: null }
               }}
             >
-              <SnackbarProvider>
-                <VideoOptions />
-              </SnackbarProvider>
+              <FlagsProvider>
+                <SnackbarProvider>
+                  <VideoOptions />
+                </SnackbarProvider>
+              </FlagsProvider>
             </EditorProvider>
           </ThemeProvider>
         </JourneyProvider>
@@ -287,9 +290,11 @@ describe('VideoOptions', () => {
                 selectedBlock: { ...video, videoId: null }
               }}
             >
-              <SnackbarProvider>
-                <VideoOptions />
-              </SnackbarProvider>
+              <FlagsProvider>
+                <SnackbarProvider>
+                  <VideoOptions />
+                </SnackbarProvider>
+              </FlagsProvider>
             </EditorProvider>
           </ThemeProvider>
         </JourneyProvider>

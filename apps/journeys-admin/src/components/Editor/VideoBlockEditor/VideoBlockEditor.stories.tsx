@@ -3,6 +3,7 @@ import { screen, userEvent } from '@storybook/testing-library'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import MuiDrawer from '@mui/material/Drawer'
 import { MockedProvider } from '@apollo/client/testing'
+import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 
 import {
   GetJourney_journey_blocks_CardBlock as CardBlock,
@@ -191,41 +192,43 @@ const Template: Story = ({ ...args }) => (
       }
     ]}
   >
-    <ThemeProvider>
-      <MuiDrawer
-        anchor="right"
-        variant="permanent"
-        sx={{
-          display: { xs: 'none', sm: 'block' },
-          '& .MuiDrawer-paper': {
-            boxSizing: 'border-box',
-            width: 328
-          }
-        }}
-        ModalProps={{
-          keepMounted: true
-        }}
-        open
-      >
-        <VideoBlockEditor
-          selectedBlock={args.selectedBlock}
-          onChange={onChange}
-        />
-      </MuiDrawer>
-      <MuiDrawer
-        anchor="bottom"
-        variant="temporary"
-        open
-        sx={{
-          display: { xs: 'block', sm: 'none' }
-        }}
-      >
-        <VideoBlockEditor
-          selectedBlock={args.selectedBlock}
-          onChange={onChange}
-        />
-      </MuiDrawer>
-    </ThemeProvider>
+    <FlagsProvider>
+      <ThemeProvider>
+        <MuiDrawer
+          anchor="right"
+          variant="permanent"
+          sx={{
+            display: { xs: 'none', sm: 'block' },
+            '& .MuiDrawer-paper': {
+              boxSizing: 'border-box',
+              width: 328
+            }
+          }}
+          ModalProps={{
+            keepMounted: true
+          }}
+          open
+        >
+          <VideoBlockEditor
+            selectedBlock={args.selectedBlock}
+            onChange={onChange}
+          />
+        </MuiDrawer>
+        <MuiDrawer
+          anchor="bottom"
+          variant="temporary"
+          open
+          sx={{
+            display: { xs: 'block', sm: 'none' }
+          }}
+        >
+          <VideoBlockEditor
+            selectedBlock={args.selectedBlock}
+            onChange={onChange}
+          />
+        </MuiDrawer>
+      </ThemeProvider>
+    </FlagsProvider>
   </MockedProvider>
 )
 

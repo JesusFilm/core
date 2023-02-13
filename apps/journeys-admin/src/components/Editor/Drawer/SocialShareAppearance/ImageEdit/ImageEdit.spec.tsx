@@ -1,6 +1,7 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { render } from '@testing-library/react'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 import { GetJourney_journey as Journey } from '../../../../../../__generated__/GetJourney'
 import { ImageEdit } from './ImageEdit'
 
@@ -19,7 +20,9 @@ describe('ImageEdit', () => {
             admin: true
           }}
         >
-          <ImageEdit />
+          <FlagsProvider>
+            <ImageEdit />
+          </FlagsProvider>
         </JourneyProvider>
       </MockedProvider>
     )
@@ -40,7 +43,9 @@ describe('ImageEdit', () => {
             admin: true
           }}
         >
-          <ImageEdit />
+          <FlagsProvider>
+            <ImageEdit />
+          </FlagsProvider>
         </JourneyProvider>
       </MockedProvider>
     )

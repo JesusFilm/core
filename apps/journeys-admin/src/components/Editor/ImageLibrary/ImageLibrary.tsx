@@ -13,6 +13,7 @@ import Typography from '@mui/material/Typography'
 import BrushRounded from '@mui/icons-material/BrushRounded'
 import DashboardRounded from '@mui/icons-material/DashboardRounded'
 import useMediaQuery from '@mui/material/useMediaQuery'
+import { useFlags } from '@core/shared/ui/FlagsProvider'
 // import { object, string } from 'yup'
 import { GetJourney_journey_blocks_ImageBlock as ImageBlock } from '../../../../__generated__/GetJourney'
 import { ImageBlockHeader } from '../ImageBlockHeader'
@@ -38,8 +39,9 @@ export function ImageLibrary({
 }: ImageLibraryProps): ReactElement {
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
   const [tabValue, setTabValue] = useState(0)
+  const { unsplashGallery } = useFlags()
 
-  // uncomment once unsplash and custom components are in
+  // todo: undo comment once custom and unsplash component are in
   // const srcSchema = object().shape({
   //   src: string().url('Please enter a valid url').required('Required')
   // })
@@ -117,20 +119,24 @@ export function ImageLibrary({
           aria-label="image selection tabs"
           variant="fullWidth"
         >
-          <Tab
-            icon={<DashboardRounded />}
-            label={<Typography variant="subtitle2">Unsplash</Typography>}
-            {...tabA11yProps('unsplash', 0)}
-          />
+          {unsplashGallery && (
+            <Tab
+              icon={<DashboardRounded />}
+              label={<Typography variant="subtitle2">Gallery</Typography>}
+              {...tabA11yProps('gallery', 0)}
+            />
+          )}
           <Tab
             icon={<BrushRounded />}
             label={<Typography variant="subtitle2">Custom</Typography>}
             {...tabA11yProps('custom', 1)}
           />
         </Tabs>
-        <TabPanel name="unsplash" value={tabValue} index={0}>
-          {/* insert unsplash component */}
-        </TabPanel>
+        {unsplashGallery && (
+          <TabPanel name="gallery" value={tabValue} index={0}>
+            {/* insert unsplash component */}
+          </TabPanel>
+        )}
         <TabPanel name="custom" value={tabValue} index={1}>
           {/* insert custom component */}
         </TabPanel>

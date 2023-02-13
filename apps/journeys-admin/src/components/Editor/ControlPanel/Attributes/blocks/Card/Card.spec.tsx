@@ -4,6 +4,7 @@ import type { TreeBlock } from '@core/journeys/ui/block'
 import { render, fireEvent } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
 import { SnackbarProvider } from 'notistack'
+import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 import {
   JourneyStatus,
   ThemeMode,
@@ -303,10 +304,12 @@ describe('Card', () => {
         <MockedProvider>
           <ThemeProvider>
             <EditorProvider initialState={{ selectedBlock: card }}>
-              <SnackbarProvider>
-                <Drawer />
-                <Card {...card} />
-              </SnackbarProvider>
+              <FlagsProvider>
+                <SnackbarProvider>
+                  <Drawer />
+                  <Card {...card} />
+                </SnackbarProvider>
+              </FlagsProvider>
             </EditorProvider>
           </ThemeProvider>
         </MockedProvider>

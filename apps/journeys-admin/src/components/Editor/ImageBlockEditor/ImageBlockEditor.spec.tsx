@@ -2,6 +2,7 @@ import { fireEvent, render } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
 import { SnackbarProvider } from 'notistack'
 import useMediaQuery from '@mui/material/useMediaQuery'
+import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 import { GetJourney_journey_blocks_ImageBlock as ImageBlock } from '../../../../__generated__/GetJourney'
 import { ImageBlockEditor } from './ImageBlockEditor'
 
@@ -31,13 +32,15 @@ describe('ImageBlockEditor', () => {
   it('opens the image library', () => {
     const { getByRole, getByTestId } = render(
       <MockedProvider>
-        <SnackbarProvider>
-          <ImageBlockEditor
-            selectedBlock={image}
-            onChange={onChange}
-            onDelete={onDelete}
-          />
-        </SnackbarProvider>
+        <FlagsProvider>
+          <SnackbarProvider>
+            <ImageBlockEditor
+              selectedBlock={image}
+              onChange={onChange}
+              onDelete={onDelete}
+            />
+          </SnackbarProvider>
+        </FlagsProvider>
       </MockedProvider>
     )
     fireEvent.click(getByRole('button', { name: 'Select Image' }))
