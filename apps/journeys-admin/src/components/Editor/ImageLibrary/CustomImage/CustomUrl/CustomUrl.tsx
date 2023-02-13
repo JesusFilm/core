@@ -51,9 +51,8 @@ export function CustomUrl({
       })
     ).json()
     console.log(response)
-    const src = `https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/${
-      response.result.id as string
-    }/public`
+    const src = `https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/${response.result.id as string
+      }/public`
     onChange(src)
     formik.resetForm({ values: { src: '' } })
   }
@@ -66,7 +65,7 @@ export function CustomUrl({
 
   const formik = useFormik({
     initialValues: {
-      src: selectedBlock?.src ?? ''
+      src: ''
     },
     onSubmit: noop
   })
