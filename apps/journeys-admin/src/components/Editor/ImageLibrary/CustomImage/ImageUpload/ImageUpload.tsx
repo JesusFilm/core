@@ -1,4 +1,4 @@
-import { ReactElement } from 'react'
+import { ReactElement, useState } from 'react'
 import { useDropzone } from 'react-dropzone'
 import Typography from '@mui/material/Typography'
 import BackupOutlinedIcon from '@mui/icons-material/BackupOutlined'
@@ -29,12 +29,11 @@ interface ImageUploadProps {
 
 export function ImageUpload({
   onChange,
-  loading = false,
+  loading,
   selectedBlock
 }: ImageUploadProps): ReactElement {
   const { data } = useQuery<CloudflareUploadUrl>(CLOUDFLARE_UPLOAD_URL)
-
-  const success: boolean | null = null
+  const [success, setSuccess] = useState<boolean>()
 
   const onDrop = async (acceptedFiles): Promise<void> => {
     if (data?.createCloudflareImage == null) return
@@ -52,7 +51,12 @@ export function ImageUpload({
       })
     ).json()
 
-    const src = `https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/${response.result.id}/public`
+    response.success === true ? setSuccess(true) : setSuccess(false)
+    console.log(response)
+
+    const src = `https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/${
+      response.result.id as string
+    }/public`
     onChange(src)
   }
 
@@ -62,6 +66,8 @@ export function ImageUpload({
     maxSize: 10485760,
     accept: 'image/*'
   })
+
+  console.log('success', success)
 
   return (
     <Stack {...getRootProps()} alignItems="center">
@@ -84,11 +90,11 @@ export function ImageUpload({
           display: 'flex'
         }}
       >
-        {success == null ? (
+        {loading === false && success === true ? (
           <CloudDoneOutlinedIcon
             sx={{ fontSize: '48px', color: 'secondary.light', mb: 1 }}
           />
-        ) : success ? (
+        ) : success === false ? (
           <CloudOffOutlinedIcon
             sx={{ fontSize: '48px', color: 'secondary.light', mb: 1 }}
           />
@@ -98,14 +104,13 @@ export function ImageUpload({
           />
         )}
         <Typography variant="body1" sx={{ pb: 4 }}>
-          Upload image here
-          {/* {text === 'upload'
-            ? 'Drop an image here'
-            : text === 'loading'
-            ? 'Uploading...'
-            : text === 'success'
+          {loading === false && success === true
             ? 'Upload successful!'
-            : 'Upload failed!'} */}
+            : loading === true
+            ? 'Uploading...'
+            : success === false
+            ? 'Upload Failed!'
+            : 'Drop an image here'}
         </Typography>
       </Box>
       <Typography variant="caption" color="secondary.light">
