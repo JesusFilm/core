@@ -1,1 +1,0 @@
-export { UnsplashSearch } from './UnsplashSearch'
