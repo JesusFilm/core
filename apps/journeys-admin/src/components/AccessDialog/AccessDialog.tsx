@@ -5,7 +5,7 @@ import DraftsIcon from '@mui/icons-material/Drafts'
 import LinkIcon from '@mui/icons-material/Link'
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
 import GroupAddIcon from '@mui/icons-material/GroupAdd'
-import { gql, useLazyQuery, useQuery } from '@apollo/client'
+import { gql, useLazyQuery } from '@apollo/client'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { Theme } from '@mui/material/styles'
 import { CopyTextField } from '@core/shared/ui/CopyTextField'
@@ -18,7 +18,7 @@ import {
   GetJourneyWithUserJourneys_journey_userJourneys as UserJourney
 } from '../../../__generated__/GetJourneyWithUserJourneys'
 import { UserJourneyRole } from '../../../__generated__/globalTypes'
-import { GetCurrentUser } from '../../../__generated__/GetCurrentUser'
+import { useCurrentUser } from '../../libs/useCurrentUser'
 import { EmailInviteForm } from './AddUserSection/EmailInviteForm'
 import { UserJourneyList } from './UserJourneyList'
 
@@ -40,16 +40,6 @@ export const GET_JOURNEY_WITH_USER_JOURNEYS = gql`
     }
   }
 `
-
-export const GET_CURRENT_USER = gql`
-  query GetCurrentUser {
-    me {
-      id
-      email
-    }
-  }
-`
-
 interface AccessDialogProps {
   journeyId: string
   open?: boolean
@@ -83,13 +73,12 @@ export function AccessDialog({
     useLazyQuery<GetJourneyWithUserJourneys>(GET_JOURNEY_WITH_USER_JOURNEYS, {
       variables: { id: journeyId }
     })
-
-  const { data: currentUserData } = useQuery<GetCurrentUser>(GET_CURRENT_USER)
+  const { loadUser, data: currentUserData } = useCurrentUser()
 
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
   const disable =
     data?.journey?.userJourneys?.find(
-      (userJourney) => userJourney.user?.email === currentUserData?.me?.email
+      (userJourney) => userJourney.user?.email === currentUserData.email
     )?.role !== UserJourneyRole.owner
 
   const usersList: UserJourney[] = []
@@ -106,8 +95,9 @@ export function AccessDialog({
   useEffect(() => {
     if (open === true) {
       void loadJourney()
+      void loadUser()
     }
-  }, [open, loadJourney])
+  }, [open, loadJourney, loadUser])
 
   return (
     <Dialog

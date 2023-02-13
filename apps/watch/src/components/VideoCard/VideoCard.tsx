@@ -7,7 +7,7 @@ import Stack from '@mui/material/Stack'
 import Link from '@mui/material/Link'
 import { styled, SxProps } from '@mui/material/styles'
 import ButtonBase from '@mui/material/ButtonBase'
-import NextImage from 'next/image'
+import Image from 'next/image'
 import Box from '@mui/material/Box'
 import Skeleton from '@mui/material/Skeleton'
 import { VideoLabel } from '../../../__generated__/globalTypes'
@@ -102,7 +102,7 @@ export function VideoCard({
               }}
             >
               {video?.image != null ? (
-                <NextImage
+                <Image
                   src={video.image}
                   layout="fill"
                   objectFit="cover"
