@@ -2,6 +2,7 @@ import { Story, Meta } from '@storybook/react'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import Box from '@mui/material/Box'
 
+import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 import {
   GetJourney_journey_blocks_CardBlock as CardBlock,
   GetJourney_journey_blocks_ImageBlock as ImageBlock
@@ -51,14 +52,16 @@ const onDelete = async (): Promise<void> => await Promise.resolve()
 
 const Template: Story = ({ ...args }) => (
   <ThemeProvider>
-    <Box width={328} bgcolor="white">
-      <ImageBlockEditor
-        selectedBlock={args.selectedBlock}
-        onChange={onChange}
-        onDelete={onDelete}
-        loading={args.loading}
-      />
-    </Box>
+    <FlagsProvider>
+      <Box width={328} bgcolor="white">
+        <ImageBlockEditor
+          selectedBlock={args.selectedBlock}
+          onChange={onChange}
+          onDelete={onDelete}
+          loading={args.loading}
+        />
+      </Box>
+    </FlagsProvider>
   </ThemeProvider>
 )
 

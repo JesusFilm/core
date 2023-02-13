@@ -4,6 +4,7 @@ import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { screen, userEvent } from '@storybook/testing-library'
 import { MockedProvider } from '@apollo/client/testing'
+import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 import { journeysAdminConfig } from '../../../../libs/storybook'
 import { Drawer } from '../Drawer'
 import {
@@ -71,15 +72,17 @@ const Template: Story = ({ ...args }) => {
   return (
     <MockedProvider>
       <JourneyProvider value={{ journey: args.journey, admin: true }}>
-        <EditorProvider
-          initialState={{
-            drawerTitle: 'Social Share Appearance',
-            drawerChildren: <SocialShareAppearance />,
-            drawerMobileOpen: true
-          }}
-        >
-          <Drawer />
-        </EditorProvider>
+        <FlagsProvider>
+          <EditorProvider
+            initialState={{
+              drawerTitle: 'Social Share Appearance',
+              drawerChildren: <SocialShareAppearance />,
+              drawerMobileOpen: true
+            }}
+          >
+            <Drawer />
+          </EditorProvider>
+        </FlagsProvider>
       </JourneyProvider>
     </MockedProvider>
   )

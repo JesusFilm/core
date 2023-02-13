@@ -3,6 +3,7 @@ import type { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import MuiDrawer from '@mui/material/Drawer'
 import { MockedProvider } from '@apollo/client/testing'
+import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 
 import { GetJourney_journey_blocks_ImageBlock as ImageBlock } from '../../../../../../../../__generated__/GetJourney'
 import { journeysAdminConfig } from '../../../../../../../libs/storybook'
@@ -35,39 +36,41 @@ const image: TreeBlock<ImageBlock> = {
 export const Default: Story = ({ ...args }) => (
   <MockedProvider>
     <ThemeProvider>
-      <EditorProvider
-        initialState={{
-          selectedBlock: image
-        }}
-      >
-        <MuiDrawer
-          anchor="right"
-          variant="permanent"
-          sx={{
-            display: { xs: 'none', sm: 'block' },
-            '& .MuiDrawer-paper': {
-              boxSizing: 'border-box',
-              width: 328
-            }
-          }}
-          ModalProps={{
-            keepMounted: true
-          }}
-          open
-        >
-          <ImageOptions />
-        </MuiDrawer>
-        <MuiDrawer
-          anchor="bottom"
-          variant="temporary"
-          open
-          sx={{
-            display: { xs: 'block', sm: 'none' }
+      <FlagsProvider>
+        <EditorProvider
+          initialState={{
+            selectedBlock: image
           }}
         >
-          <ImageOptions />
-        </MuiDrawer>
-      </EditorProvider>
+          <MuiDrawer
+            anchor="right"
+            variant="permanent"
+            sx={{
+              display: { xs: 'none', sm: 'block' },
+              '& .MuiDrawer-paper': {
+                boxSizing: 'border-box',
+                width: 328
+              }
+            }}
+            ModalProps={{
+              keepMounted: true
+            }}
+            open
+          >
+            <ImageOptions />
+          </MuiDrawer>
+          <MuiDrawer
+            anchor="bottom"
+            variant="temporary"
+            open
+            sx={{
+              display: { xs: 'block', sm: 'none' }
+            }}
+          >
+            <ImageOptions />
+          </MuiDrawer>
+        </EditorProvider>
+      </FlagsProvider>
     </ThemeProvider>
   </MockedProvider>
 )
