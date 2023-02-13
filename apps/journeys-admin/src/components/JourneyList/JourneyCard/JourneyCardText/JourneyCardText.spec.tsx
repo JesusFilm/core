@@ -4,7 +4,7 @@ import {
   publishedJourney,
   oldJourney
 } from '../../journeyListData'
-import { JourneyCardVariant } from '../JourneyCard'
+import { JourneyCardVariant } from '..'
 import { JourneyCardText } from '.'
 
 describe('JourneyCardText', () => {
@@ -52,7 +52,7 @@ describe('JourneyCardText', () => {
     ).toBeInTheDocument()
   })
 
-  it('should show badge fFor new journey card variant', () => {
+  it('should show badge for new journey card variant', () => {
     const { getByTestId } = render(
       <JourneyCardText
         journey={defaultJourney}

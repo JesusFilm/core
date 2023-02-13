@@ -14,12 +14,7 @@ import { GetJourneys_journeys as Journey } from '../../../../__generated__/GetJo
 import { JourneyCardMenu } from './JourneyCardMenu'
 import { JourneyCardText } from './JourneyCardText'
 import { JourneyCardInfo } from './JourneyCardInfo'
-
-export enum JourneyCardVariant {
-  'default',
-  'new',
-  'actionRequired'
-}
+import { JourneyCardVariant } from '.'
 
 interface JourneyCardProps {
   journey?: Journey

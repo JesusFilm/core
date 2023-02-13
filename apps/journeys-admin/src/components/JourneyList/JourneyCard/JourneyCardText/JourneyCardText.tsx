@@ -5,7 +5,7 @@ import Skeleton from '@mui/material/Skeleton'
 import Badge from '@mui/material/Badge'
 import { styled } from '@mui/material/styles'
 import { GetJourneys_journeys as Journey } from '../../../../../__generated__/GetJourneys'
-import { JourneyCardVariant } from '../JourneyCard'
+import { JourneyCardVariant } from '..'
 
 interface Props {
   journey?: Journey

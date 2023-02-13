@@ -14,7 +14,8 @@ import {
   archiveddJourney,
   trashedJourney
 } from '../journeyListData'
-import { JourneyCard, JourneyCardVariant } from './JourneyCard'
+import { JourneyCard } from './JourneyCard'
+import { JourneyCardVariant } from '.'
 
 const TestStory = {
   ...journeysAdminConfig,

@@ -11,7 +11,7 @@ import {
   GetJourneys_journeys as Journey,
   GetJourneys_journeys_userJourneys as UserJourney
 } from '../../../../../__generated__/GetJourneys'
-import { JourneyCardVariant } from '../JourneyCard'
+import { JourneyCardVariant } from '..'
 import { UserJourneyRole } from '../../../../../__generated__/globalTypes'
 
 interface Props {
@@ -57,7 +57,7 @@ export function JourneyCardInfo({ journey, variant }: Props): ReactElement {
               <Typography
                 variant="body2"
                 sx={{
-                  color: '#F0720C',
+                  color: (theme) => theme.palette.warning.main,
                   fontWeight: 700,
                   minWidth: '48px'
                 }}
