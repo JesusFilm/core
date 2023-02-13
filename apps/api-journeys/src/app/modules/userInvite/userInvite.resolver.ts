@@ -55,7 +55,7 @@ export class UserInviteResolver {
 
     // Create invite if doesn't exist else re-activate removed invite
     if (userInvite == null) {
-      const journey = await this.journeyService.get<Journey>(journeyId)
+      const journey: Journey = await this.journeyService.get(journeyId)
 
       if (journey == null) throw new UserInputError('journey does not exist')
 
@@ -100,6 +100,9 @@ export class UserInviteResolver {
         IdType.databaseId,
         userId
       )
+
+      if (userJourney == null)
+        throw new UserInputError('userJourney does not exist')
 
       await this.userJourneyResolver.userJourneyApprove(
         userJourney.id,

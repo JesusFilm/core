@@ -92,9 +92,7 @@ describe('CardBlockResolver', () => {
 
   describe('cardBlockCreate', () => {
     it('creates a CardBlock', async () => {
-      await resolver
-        .cardBlockCreate(blockUpdate)
-        .catch((err) => console.log(err))
+      await resolver.cardBlockCreate(blockUpdate)
       expect(service.getSiblings).toHaveBeenCalledWith(
         blockUpdate.journeyId,
         blockUpdate.parentBlockId
@@ -105,9 +103,7 @@ describe('CardBlockResolver', () => {
 
   describe('cardBlockUpdate', () => {
     it('updates a CardBlock', async () => {
-      resolver
-        .cardBlockUpdate(block.id, block.journeyId, blockUpdate)
-        .catch((err) => console.log(err))
+      await resolver.cardBlockUpdate(block.id, block.journeyId, blockUpdate)
       expect(service.update).toHaveBeenCalledWith(block.id, blockUpdate)
     })
   })
