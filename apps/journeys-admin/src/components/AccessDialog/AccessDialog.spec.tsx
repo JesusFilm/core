@@ -3,15 +3,23 @@ import { fireEvent, render, waitFor } from '@testing-library/react'
 import { noop } from 'lodash'
 import { SnackbarProvider } from 'notistack'
 import { UserJourneyRole } from '../../../__generated__/globalTypes'
-import {
-  AccessDialog,
-  GET_CURRENT_USER,
-  GET_JOURNEY_WITH_USER_JOURNEYS
-} from './AccessDialog'
+import { AccessDialog, GET_JOURNEY_WITH_USER_JOURNEYS } from './AccessDialog'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
   default: () => true
+}))
+
+jest.mock('../../libs/useCurrentUser', () => ({
+  __esModule: true,
+  useCurrentUser: jest.fn().mockReturnValue({
+    loadUser: jest.fn(),
+    data: {
+      id: 'userId1',
+      __typename: 'User',
+      email: 'amin@email.com'
+    }
+  })
 }))
 
 describe('AccessDialog', () => {
@@ -76,20 +84,6 @@ describe('AccessDialog', () => {
                   }
                 }
               }
-            },
-            {
-              request: {
-                query: GET_CURRENT_USER
-              },
-              result: {
-                data: {
-                  me: {
-                    id: 'userId1',
-                    __typename: 'User',
-                    email: 'amin@email.com'
-                  }
-                }
-              }
             }
           ]}
         >
@@ -99,6 +93,30 @@ describe('AccessDialog', () => {
     )
     await waitFor(() =>
       expect(getByRole('button', { name: 'Editor' })).not.toBeDisabled()
+    )
+  })
+
+  it('opens email invite form on click', async () => {
+    const { getByRole, queryByRole } = render(
+      <SnackbarProvider>
+        <MockedProvider>
+          <AccessDialog journeyId="journeyId" open onClose={noop} />
+        </MockedProvider>
+      </SnackbarProvider>
+    )
+
+    const button = getByRole('button', { name: 'Email' })
+    expect(queryByRole('button', { name: 'Copy' })).not.toBeInTheDocument()
+
+    fireEvent.click(button)
+    fireEvent.click(getByRole('menuitem', { name: 'Link' }))
+
+    expect(queryByRole('button', { name: 'Copy' })).toBeInTheDocument()
+
+    fireEvent.click(button)
+    fireEvent.click(getByRole('menuitem', { name: 'Email' }))
+    await waitFor(() =>
+      expect(queryByRole('button', { name: 'Copy' })).not.toBeInTheDocument()
     )
   })
 
@@ -126,6 +144,9 @@ describe('AccessDialog', () => {
           </MockedProvider>
         </SnackbarProvider>
       )
+      const button = getByRole('button', { name: 'Email' })
+      fireEvent.click(button)
+      fireEvent.click(getByRole('menuitem', { name: 'Link' }))
       const link = 'http://localhost/journeys/journeyId'
       expect(getByRole('textbox')).toHaveValue(link)
       fireEvent.click(getByRole('button', { name: 'Copy' }))
