@@ -1,10 +1,8 @@
-import { ReactElement, useState } from 'react'
-import Box from '@mui/material/Box'
+import { ReactElement } from 'react'
 import ButtonBase from '@mui/material/ButtonBase'
 import ImageList from '@mui/material/ImageList'
 import ImageListItem from '@mui/material/ImageListItem'
 import Image from 'next/image'
-import Typography from '@mui/material/Typography'
 import { ListUnsplashCollectionPhotos_listUnsplashCollectionPhotos } from '../../../../../../__generated__/ListUnsplashCollectionPhotos'
 import { SearchUnsplashPhotos_searchUnsplashPhotos_results } from '../../../../../../__generated__/SearchUnsplashPhotos'
 
@@ -20,7 +18,6 @@ export function UnsplashList({
   gallery,
   onChange
 }: UnsplashListProps): ReactElement {
-  const [currentIndex, setCurrentIndex] = useState<number | null>()
   return (
     <ImageList variant="masonry" gap={10}>
       {gallery?.map((item, index) => (
@@ -29,8 +26,6 @@ export function UnsplashList({
             onClick={() =>
               onChange(item.urls.regular, `${item.user.first_name} last name`)
             }
-            onMouseEnter={() => setCurrentIndex(index)}
-            onMouseLeave={() => setCurrentIndex(null)}
             sx={{ position: 'relative' }}
           >
             <Image
@@ -43,23 +38,6 @@ export function UnsplashList({
               }}
             />
           </ButtonBase>
-          {currentIndex === index && (
-            <Box
-              sx={{
-                position: 'absolute',
-                bottom: 0,
-                left: 0,
-                right: 0,
-                backgroundColor: 'rgba(0, 0, 0, 0.15)',
-                padding: 1,
-                borderRadius: '0 0 8px 8px'
-              }}
-            >
-              <Typography variant="caption" color="background.default">
-                {item.user.first_name} last name
-              </Typography>
-            </Box>
-          )}
         </ImageListItem>
       ))}
     </ImageList>

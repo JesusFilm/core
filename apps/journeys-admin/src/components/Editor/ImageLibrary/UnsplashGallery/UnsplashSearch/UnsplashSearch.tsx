@@ -1,7 +1,7 @@
 import { ReactElement } from 'react'
 import TextField from '@mui/material/TextField'
 import InputAdornment from '@mui/material/InputAdornment'
-import LinkIcon from '@mui/icons-material/Link'
+import SearchIcon from '@mui/icons-material/Search'
 import { Formik, Form } from 'formik'
 
 interface UnsplashSearchProps {
@@ -34,9 +34,9 @@ export function UnsplashSearch({
               'aria-label': 'UnsplashSearch'
             }}
             InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <LinkIcon />
+              endAdornment: (
+                <InputAdornment position="end">
+                  <SearchIcon />
                 </InputAdornment>
               )
             }}
