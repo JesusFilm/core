@@ -73,7 +73,6 @@ export function initAuth(): void {
         ]
         const allowed = allowedHosts.includes(new URL(redirectUrl).host)
         if (allowed) {
-          // TODO add logic for redirecting the user to redirectUrl if user has previously accepted the terms and conditions (once backend support for this is implemented)
           return '/users/terms-and-conditions'
         }
       }
