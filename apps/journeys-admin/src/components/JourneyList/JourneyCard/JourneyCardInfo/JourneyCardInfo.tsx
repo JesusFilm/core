@@ -39,7 +39,13 @@ export function JourneyCardInfo({ journey, variant }: Props): ReactElement {
       : ''
 
   return (
-    <Stack direction="row" alignItems="center" spacing={4} flexGrow={1}>
+    <Stack
+      direction="row"
+      alignItems="center"
+      spacing={4}
+      flexGrow={1}
+      sx={{ width: '95%' }}
+    >
       <AccessAvatars
         journeyId={journey?.id}
         userJourneys={inviteRequested ?? journey?.userJourneys ?? undefined}
@@ -47,17 +53,18 @@ export function JourneyCardInfo({ journey, variant }: Props): ReactElement {
       {variant === JourneyCardVariant.actionRequired ? (
         <>
           {inviteRequested != null ? (
-            <Stack direction="row">
+            <Stack direction="row" sx={{ width: '70%' }}>
               <Typography
                 variant="body2"
                 sx={{
                   color: '#F0720C',
-                  fontWeight: 700
+                  fontWeight: 700,
+                  minWidth: '48px'
                 }}
               >
                 {usersRequestingAccess}
               </Typography>
-              <Typography variant="body2">
+              <Typography variant="body2" noWrap>
                 {t(`\u00A0requested editing rights for your journey`)}
               </Typography>
             </Stack>
