@@ -26,7 +26,7 @@ describe('JourneyCardInfo', () => {
         <ThemeProvider>
           <JourneyCardInfo
             journey={publishedJourney}
-            variant={JourneyCardVariant.standard}
+            variant={JourneyCardVariant.default}
           />
         </ThemeProvider>
       </MockedProvider>
