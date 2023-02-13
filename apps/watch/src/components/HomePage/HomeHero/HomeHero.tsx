@@ -4,8 +4,8 @@ import Container from '@mui/material/Container'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import Image from 'next/image'
-import JesusHeader from '../../../../public/images/jesus-header.jpg'
 import { HeroOverlay } from '../../HeroOverlay'
+import JesusHeader from './assets/jesus.jpg'
 
 export function HomeHero(): ReactElement {
   return (
