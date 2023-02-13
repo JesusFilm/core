@@ -1,6 +1,5 @@
 import { ReactElement, useState } from 'react'
 import Typography from '@mui/material/Typography'
-import FormControlLabel from '@mui/material/FormControlLabel'
 import Checkbox from '@mui/material/Checkbox'
 import Fab from '@mui/material/Fab'
 import Stack from '@mui/material/Stack'
@@ -15,6 +14,8 @@ import Divider from '@mui/material/Divider'
 import { gql, useMutation } from '@apollo/client'
 import Link from '@mui/material/Link'
 import { useRouter } from 'next/router'
+import ListItemIcon from '@mui/material/ListItemIcon'
+import ListItemText from '@mui/material/ListItemText'
 import taskbarIcon from '../../../public/taskbar-icon.svg'
 import { JourneyProfileCreate } from '../../../__generated__/JourneyProfileCreate'
 import { TermsListItem } from './TermsListItem'
@@ -71,43 +72,34 @@ export function TermsAndConditions(): ReactElement {
         >
           <TermsListItem
             link="https://your.nextstep.is/terms-of-use"
-            icon={
-              <NewReleasesRoundedIcon
-                sx={{ color: 'secondary.light', ml: 3 }}
-              />
-            }
+            icon={<NewReleasesRoundedIcon sx={{ color: 'secondary.light' }} />}
             text="Terms of Use"
           />
           <Divider />
           <TermsListItem
             link="https://your.nextstep.is/end-user-license-agreement"
             icon={
-              <SupervisorAccountRoundedIcon
-                sx={{ color: 'secondary.light', ml: 3 }}
-              />
+              <SupervisorAccountRoundedIcon sx={{ color: 'secondary.light' }} />
             }
             text="End User License Agreement"
           />
           <Divider />
           <TermsListItem
             link="https://your.nextstep.is/community-guidelines"
-            icon={
-              <BeenhereRoundedIcon sx={{ color: 'secondary.light', ml: 3 }} />
-            }
+            icon={<BeenhereRoundedIcon sx={{ color: 'secondary.light' }} />}
             text="Community Guidelines"
           />
           <Divider />
-          <ListItem disablePadding>
-            <FormControlLabel
-              control={<Checkbox onChange={() => setAccepted(!accepted)} />}
-              label="I agree with listed above conditions and requirements"
-              sx={{
-                pl: 4,
-                pt: 6,
-                pb: 4,
-                display: 'flex',
-                justifyContent: 'flex-start'
-              }}
+          <ListItem sx={{ pt: 6, pl: 2 }}>
+            <ListItemIcon sx={{ minWidth: '52px' }}>
+              <Checkbox onChange={() => setAccepted(!accepted)} />
+            </ListItemIcon>
+            <ListItemText
+              primary={
+                <Typography variant="body1" color="secondary.dark">
+                  I agree with listed above conditions and requirements
+                </Typography>
+              }
             />
           </ListItem>
         </List>

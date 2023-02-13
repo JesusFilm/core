@@ -1,8 +1,10 @@
 import NextLink from 'next/link'
 import ListItem from '@mui/material/ListItem'
 import Typography from '@mui/material/Typography'
-import Button from '@mui/material/Button'
+import ListItemButton from '@mui/material/ListItemButton'
+import ListItemIcon from '@mui/material/ListItemIcon'
 import { ReactElement } from 'react'
+import ListItemText from '@mui/material/ListItemText'
 
 export interface TermsListItemProps {
   link: string
@@ -18,20 +20,16 @@ export function TermsListItem({
   return (
     <ListItem disablePadding>
       <NextLink href={link} passHref>
-        <Button
-          startIcon={icon}
-          sx={{
-            width: '100%',
-            height: '100%',
-            display: 'flex',
-            justifyContent: 'flex-start',
-            borderRadius: 0
-          }}
-        >
-          <Typography variant="body1" sx={{ ml: 4.5, pt: 3, pb: 3 }}>
-            {text}
-          </Typography>
-        </Button>
+        <ListItemButton sx={{ pt: 3, pb: 3 }}>
+          <ListItemIcon sx={{ minWidth: '44px' }}>{icon}</ListItemIcon>
+          <ListItemText
+            primary={
+              <Typography variant="body1" color="primary.main">
+                {text}
+              </Typography>
+            }
+          />
+        </ListItemButton>
       </NextLink>
     </ListItem>
   )
