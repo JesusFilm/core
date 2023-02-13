@@ -1,4 +1,4 @@
-import { ReactElement, useEffect, useState } from 'react'
+import { ReactElement } from 'react'
 import { useDropzone } from 'react-dropzone'
 import Typography from '@mui/material/Typography'
 import BackupOutlinedIcon from '@mui/icons-material/BackupOutlined'
@@ -10,6 +10,7 @@ import fetch from 'node-fetch'
 import CloudDoneOutlinedIcon from '@mui/icons-material/CloudDoneOutlined'
 import CloudOffOutlinedIcon from '@mui/icons-material/CloudOffOutlined'
 import { CloudflareUploadUrl } from '../../../../../../__generated__/CloudflareUploadUrl'
+import { GetJourney_journey_blocks_ImageBlock as ImageBlock } from '../../../../../../__generated__/GetJourney'
 
 export const CLOUDFLARE_UPLOAD_URL = gql`
   query CloudflareUploadUrl {
@@ -23,19 +24,17 @@ export const CLOUDFLARE_UPLOAD_URL = gql`
 interface ImageUploadProps {
   onChange: (src: string) => void
   loading?: boolean
+  selectedBlock: ImageBlock | null
 }
 
 export function ImageUpload({
   onChange,
-  loading = false
+  loading = false,
+  selectedBlock
 }: ImageUploadProps): ReactElement {
-  const [text, setText] = useState('upload')
-
-  useEffect(() => {
-    if (loading) setText('loading')
-  }, [loading])
-
   const { data } = useQuery<CloudflareUploadUrl>(CLOUDFLARE_UPLOAD_URL)
+
+  const success: boolean | null = null
 
   const onDrop = async (acceptedFiles): Promise<void> => {
     if (data?.createCloudflareImage == null) return
@@ -52,8 +51,6 @@ export function ImageUpload({
         body: formData
       })
     ).json()
-
-    setText(response.success === true ? 'success' : 'failure')
 
     const src = `https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/${response.result.id}/public`
     onChange(src)
@@ -87,27 +84,28 @@ export function ImageUpload({
           display: 'flex'
         }}
       >
-        {text === 'loading' || text === 'upload' ? (
-          <BackupOutlinedIcon
-            sx={{ fontSize: '48px', color: 'secondary.light', mb: 1 }}
-          />
-        ) : text === 'success' ? (
+        {success == null ? (
           <CloudDoneOutlinedIcon
             sx={{ fontSize: '48px', color: 'secondary.light', mb: 1 }}
           />
-        ) : (
+        ) : success ? (
           <CloudOffOutlinedIcon
+            sx={{ fontSize: '48px', color: 'secondary.light', mb: 1 }}
+          />
+        ) : (
+          <BackupOutlinedIcon
             sx={{ fontSize: '48px', color: 'secondary.light', mb: 1 }}
           />
         )}
         <Typography variant="body1" sx={{ pb: 4 }}>
-          {text === 'upload'
+          Upload image here
+          {/* {text === 'upload'
             ? 'Drop an image here'
             : text === 'loading'
             ? 'Uploading...'
             : text === 'success'
             ? 'Upload successful!'
-            : 'Upload failed!'}
+            : 'Upload failed!'} */}
         </Typography>
       </Box>
       <Typography variant="caption" color="secondary.light">
