@@ -36,22 +36,7 @@ export const cache = (): InMemoryCache =>
     typePolicies: {
       Query: {
         fields: {
-          videos: offsetLimitPagination(['where']),
-          searchUnsplashPhotos: {
-            keyArgs: ['query'],
-            merge(existing, incoming) {
-              return {
-                ...incoming,
-                results: [...(existing?.results ?? []), ...incoming.results]
-              }
-            }
-          },
-          listUnsplashCollectionPhotos: {
-            keyArgs: ['collectionId'],
-            merge(existing, incoming) {
-              return [...(existing ?? []), ...incoming]
-            }
-          }
+          videos: offsetLimitPagination(['where'])
         }
       }
     }
