@@ -3,7 +3,7 @@ import { waitFor } from '@testing-library/react'
 import { renderHook, act } from '@testing-library/react-hooks'
 import { GetJourney_journey_userJourneys as UserJourney } from '../../../__generated__/GetJourney'
 import { UserJourneyRole } from '../../../__generated__/globalTypes'
-import { useUserJourneyOpen, USER_JOURNEY_OPEN } from './useUserJourneyOpen.ts'
+import { useUserJourneyOpen, USER_JOURNEY_OPEN } from './useUserJourneyOpen'
 
 describe('useUserJourneyOpen', () => {
   const userJourneys: UserJourney[] = [

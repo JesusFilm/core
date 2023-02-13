@@ -31,6 +31,7 @@ interface DialogTitle {
   title: string
   closeButton?: boolean
 }
+
 const StyledDialog = styled(MuiDialog)({
   '& .MuiDialogTitle-root': {
     display: 'flex',
@@ -63,6 +64,7 @@ const StyledDialog = styled(MuiDialog)({
     color: 'secondary.light'
   }
 })
+
 export function Dialog({
   open,
   onClose,

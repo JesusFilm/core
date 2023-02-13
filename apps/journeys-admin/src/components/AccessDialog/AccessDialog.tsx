@@ -1,9 +1,10 @@
 import { ReactElement, useEffect } from 'react'
+import Stack from '@mui/material/Stack'
 import { gql, useLazyQuery, useQuery } from '@apollo/client'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { Theme } from '@mui/material/styles'
+import { CopyTextField } from '@core/shared/ui/CopyTextField'
 import { Dialog } from '@core/shared/ui/Dialog'
-import Stack from '@mui/material/Stack'
 import {
   GetJourneyWithUserJourneys,
   GetJourneyWithUserJourneys_journey_userJourneys as UserJourney
@@ -93,11 +94,27 @@ export function AccessDialog({
       fullscreen={!smUp}
     >
       <Stack spacing={4}>
+        <CopyTextField
+          value={
+            typeof window !== 'undefined'
+              ? `${
+                  window.location.host.endsWith('.chromatic.com')
+                    ? 'https://admin.nextstep.is'
+                    : window.location.origin
+                }/journeys/${journeyId}`
+              : undefined
+          }
+          messageText="Editor invite link copied"
+          helperText="Anyone with this link can see journey and ask for editing rights.
+            You can accept or reject every request."
+        />
+
         <UserJourneyList
           title="Requested Editing Rights"
           userJourneys={requestsList}
           disable={disable}
         />
+
         <UserJourneyList
           title="Users With Access"
           loading={loading}

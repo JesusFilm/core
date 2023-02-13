@@ -126,7 +126,6 @@ describe('AccessDialog', () => {
           </MockedProvider>
         </SnackbarProvider>
       )
-      fireEvent.click(getByRole('menuitem', { name: 'Link' }))
       const link = 'http://localhost/journeys/journeyId'
       expect(getByRole('textbox')).toHaveValue(link)
       fireEvent.click(getByRole('button', { name: 'Copy' }))

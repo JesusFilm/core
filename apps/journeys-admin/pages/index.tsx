@@ -106,7 +106,6 @@ export const getServerSideProps = withAuthUserTokenSSR({
   const flags = (await launchDarklyClient.allFlagsState(ldUser)).toJSON() as {
     [key: string]: boolean | undefined
   }
-
   return {
     props: {
       flags,

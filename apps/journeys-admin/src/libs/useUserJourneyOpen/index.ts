@@ -1,1 +1,1 @@
-export { useUserJourneyOpen } from './useUserJourneyOpen.ts'
+export { useUserJourneyOpen } from './useUserJourneyOpen'

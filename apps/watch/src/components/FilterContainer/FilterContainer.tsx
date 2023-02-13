@@ -125,3 +125,4 @@ export function FilterContainer(): ReactElement {
       </Table>
     </TableContainer>
   )
+}
