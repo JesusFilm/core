@@ -27,10 +27,8 @@ async function handleImage(
   }
   if (input.src == null) return defaultBlock
 
-  // get original image to generate blurhash
-  const src = input.src.replace('format=webp', 'public')
   try {
-    const response = await fetch(src)
+    const response = await fetch(input.src)
     const buffer = await response.buffer()
     const { data: pixels, info: metadata } = await sharp(buffer)
       .raw()
