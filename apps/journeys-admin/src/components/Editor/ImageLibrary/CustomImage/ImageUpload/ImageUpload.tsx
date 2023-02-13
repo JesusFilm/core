@@ -32,7 +32,7 @@ export function ImageUpload({
   loading,
   selectedBlock
 }: ImageUploadProps): ReactElement {
-  const { data } = useQuery<CloudflareUploadUrl>(CLOUDFLARE_UPLOAD_URL)
+  const { data, refetch } = useQuery<CloudflareUploadUrl>(CLOUDFLARE_UPLOAD_URL)
   const [success, setSuccess] = useState<boolean>()
 
   const onDrop = async (acceptedFiles): Promise<void> => {
@@ -41,8 +41,6 @@ export function ImageUpload({
 
     const formData = new FormData()
     formData.set('file', file)
-
-    console.log(acceptedFiles[0])
 
     const response = await (
       await fetch(data?.createCloudflareImage?.uploadUrl, {
@@ -58,6 +56,8 @@ export function ImageUpload({
       response.result.id as string
     }/public`
     onChange(src)
+
+    await refetch()
   }
 
   const { getRootProps, open, getInputProps } = useDropzone({
@@ -94,7 +94,7 @@ export function ImageUpload({
           <CloudDoneOutlinedIcon
             sx={{ fontSize: '48px', color: 'secondary.light', mb: 1 }}
           />
-        ) : success === false ? (
+        ) : loading === false && success === false ? (
           <CloudOffOutlinedIcon
             sx={{ fontSize: '48px', color: 'secondary.light', mb: 1 }}
           />
