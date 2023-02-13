@@ -13,10 +13,13 @@ import Box from '@mui/material/Box'
 import { useRouter } from 'next/router'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { PageWrapper } from '../../../src/components/PageWrapper'
+import { UserInviteAcceptAll } from '../../../__generated__/UserInviteAcceptAll'
 import i18nConfig from '../../../next-i18next.config'
 import { MemoizedDynamicReport } from '../../../src/components/DynamicPowerBiReport'
+import { createApolloClient } from '../../../src/libs/apolloClient'
 import { JourneysReportType } from '../../../__generated__/globalTypes'
 import { useUserJourneyOpen } from '../../../src/libs/useUserJourneyOpen'
+import { ACCEPT_USER_INVITE } from '../..'
 
 function JourneyReportsPage(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
@@ -60,6 +63,14 @@ export const getServerSideProps = withAuthUserTokenSSR({
   const flags = (await launchDarklyClient.allFlagsState(ldUser)).toJSON() as {
     [key: string]: boolean | undefined
   }
+
+  const token = await AuthUser.getIdToken()
+  const apolloClient = createApolloClient(token != null ? token : '')
+
+  await apolloClient.mutate<UserInviteAcceptAll>({
+    mutation: ACCEPT_USER_INVITE
+  })
+
   return {
     props: {
       flags,
