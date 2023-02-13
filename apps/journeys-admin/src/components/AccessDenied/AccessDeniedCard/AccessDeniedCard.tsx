@@ -36,11 +36,10 @@ export function AccessDeniedCard({
             mr: 3,
             width: '40px',
             height: '52px',
-            alignItems: 'center',
             justifyContent: 'center'
           }}
         >
-          <Typography variant="h1" color="secondary.light">
+          <Typography variant="h1" color="secondary.light" align="center">
             {stepNumber}
           </Typography>
         </Stack>

@@ -5,6 +5,8 @@ import List from '@mui/material/List'
 import Stack from '@mui/material/Stack'
 import LockRoundedIcon from '@mui/icons-material/LockRounded'
 import Divider from '@mui/material/Divider'
+import Link from '@mui/material/Link'
+import ChevronLeftRoundedIcon from '@mui/icons-material/ChevronLeftRounded'
 import { AccessDeniedCard } from './AccessDeniedCard'
 
 interface AccessDeniedProps {
@@ -20,11 +22,23 @@ export function AccessDenied({
 
   return (
     <>
-      <Stack direction="row">
-        <LockRoundedIcon />
-        <Typography variant="h3">{t(`You can't edit this journey`)}</Typography>
+      <Stack direction="row" alignItems="center">
+        <Stack
+          sx={{
+            ml: 5,
+            mr: 3,
+            width: '40px',
+            alignItems: 'center',
+            justifyContent: 'center'
+          }}
+        >
+          <LockRoundedIcon sx={{ color: 'secondary.light' }} />
+        </Stack>
+        <Typography variant="h3" color="text.primary">
+          {t(`You can't edit this journey`)}
+        </Typography>
       </Stack>
-      <List>
+      <List sx={{ mt: 8 }}>
         <AccessDeniedCard
           stepNumber={1}
           heading={t('Request Access')}
@@ -47,6 +61,12 @@ export function AccessDenied({
           )}
         />
       </List>
+      <Link href="/" color="primary.main" underline="none">
+        <Stack direction="row" alignItems="center" sx={{ mt: 9 }}>
+          <ChevronLeftRoundedIcon />
+          <Typography variant="body2">{t('Back to my journeys')}</Typography>
+        </Stack>
+      </Link>
     </>
   )
 }
