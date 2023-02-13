@@ -45,14 +45,17 @@ enum UnsplashPhotoOrientation {
   portrait
   squarish
 }
+
 enum UnsplashContentFilter {
   low
   high
 }
+
 enum UnsplashOrderBy {
   latest
   relevant
 }
+
 enum UnsplashColor {
   black_and_white
   black

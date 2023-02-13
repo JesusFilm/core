@@ -1006,7 +1006,6 @@ export class UserJourney {
     openedAt?: Nullable<DateTime>;
 }
 
-
 export class JourneyProfile {
     __typename?: 'JourneyProfile';
     id: string;
@@ -1202,7 +1201,7 @@ export abstract class IMutation {
     abstract journeyTemplate(id: string, input: JourneyTemplateInput): Journey | Promise<Journey>;
 
     abstract journeyProfileCreate(): JourneyProfile | Promise<JourneyProfile>;
-    
+
     abstract userInviteCreate(journeyId: string, input?: Nullable<UserInviteCreateInput>): UserInvite | Promise<UserInvite>;
 
     abstract userInviteRemove(id: string, journeyId: string): UserInvite | Promise<UserInvite>;
