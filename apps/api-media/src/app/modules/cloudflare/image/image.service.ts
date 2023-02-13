@@ -57,7 +57,7 @@ export class ImageService extends BaseService {
   ): Promise<CloudflareImage[]> {
     const res = await this.db.query(aql`
       FOR item in ${this.collection}
-        FILTER item.userId == ${userId}
+        FILTER item.userId == ${userId} && item.uploaded == true        
         RETURN item
     `)
     return await res.all()

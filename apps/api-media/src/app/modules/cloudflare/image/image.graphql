@@ -12,4 +12,5 @@ extend type Query {
 
 extend type Mutation {
   deleteCloudflareImage(id: ID!): Boolean
+  cloudflareUploadComplete(id: ID!): Boolean
 }

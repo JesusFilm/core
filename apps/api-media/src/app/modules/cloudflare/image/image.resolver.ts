@@ -56,4 +56,22 @@ export class ImageResolver {
     await this.imageService.remove(id)
     return true
   }
+
+  @Mutation()
+  async cloudflareUploadComplete(
+    @Args('id') id: string,
+    @CurrentUserId() userId: string
+  ): Promise<boolean> {
+    const image = (await this.imageService.get(id)) as CloudflareImage
+    if (image == null) {
+      throw new UserInputError('Image not found')
+    }
+    if (image.userId !== userId) {
+      throw new ForbiddenError('This image does not belong to you')
+    }
+    await this.imageService.update(id, {
+      uploaded: true
+    })
+    return true
+  }
 }
