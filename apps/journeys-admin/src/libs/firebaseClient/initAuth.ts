@@ -73,10 +73,10 @@ export function initAuth(): void {
         ]
         const allowed = allowedHosts.includes(new URL(redirectUrl).host)
         if (allowed) {
-          return '/users/terms-and-conditions'
+          return redirectUrl
         }
       }
-      return '/users/terms-and-conditions'
+      return '/'
     }
   })
 }

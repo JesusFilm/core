@@ -12,6 +12,7 @@ import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import { useTranslation } from 'react-i18next'
 import { getLaunchDarklyClient } from '@core/shared/ui/getLaunchDarklyClient'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import { TermsRedirectWrapper } from '../../../src/components/TermsRedirectWrapper'
 import { GetJourney } from '../../../__generated__/GetJourney'
 import { Editor } from '../../../src/components/Editor'
 import { PageWrapper } from '../../../src/components/PageWrapper'
@@ -36,49 +37,51 @@ function JourneyEditPage(): ReactElement {
 
   return (
     <>
-      {error == null && (
-        <>
-          <NextSeo
-            title={
-              data?.journey?.title != null
-                ? t('Edit {{title}}', { title: data.journey.title })
-                : t('Edit Journey')
-            }
-            description={data?.journey?.description ?? undefined}
-          />
-          <Editor
-            journey={data?.journey ?? undefined}
-            selectedStepId={router.query.stepId as string | undefined}
-          >
-            <PageWrapper
-              title={data?.journey?.title ?? t('Edit Journey')}
-              showDrawer
-              backHref={`/journeys/${router.query.journeyId as string}`}
-              menu={<EditToolbar />}
-              authUser={AuthUser}
-              router={router}
+      <TermsRedirectWrapper router={router}>
+        {error == null && (
+          <>
+            <NextSeo
+              title={
+                data?.journey?.title != null
+                  ? t('Edit {{title}}', { title: data.journey.title })
+                  : t('Edit Journey')
+              }
+              description={data?.journey?.description ?? undefined}
+            />
+            <Editor
+              journey={data?.journey ?? undefined}
+              selectedStepId={router.query.stepId as string | undefined}
             >
-              <JourneyEdit />
-            </PageWrapper>
-          </Editor>
-        </>
-      )}
-      {error?.graphQLErrors[0].message ===
-        'User has not received an invitation to edit this journey.' && (
-        <>
-          <NextSeo title={t('Access Denied')} />
-          <JourneyInvite journeyId={router.query.journeyId as string} />
-        </>
-      )}
-      {error?.graphQLErrors[0].message === 'User invitation pending.' && (
-        <>
-          <NextSeo title={t('Access Denied')} />
-          <JourneyInvite
-            journeyId={router.query.journeyId as string}
-            requestReceived
-          />
-        </>
-      )}
+              <PageWrapper
+                title={data?.journey?.title ?? t('Edit Journey')}
+                showDrawer
+                backHref={`/journeys/${router.query.journeyId as string}`}
+                menu={<EditToolbar />}
+                authUser={AuthUser}
+                router={router}
+              >
+                <JourneyEdit />
+              </PageWrapper>
+            </Editor>
+          </>
+        )}
+        {error?.graphQLErrors[0].message ===
+          'User has not received an invitation to edit this journey.' && (
+          <>
+            <NextSeo title={t('Access Denied')} />
+            <JourneyInvite journeyId={router.query.journeyId as string} />
+          </>
+        )}
+        {error?.graphQLErrors[0].message === 'User invitation pending.' && (
+          <>
+            <NextSeo title={t('Access Denied')} />
+            <JourneyInvite
+              journeyId={router.query.journeyId as string}
+              requestReceived
+            />
+          </>
+        )}
+      </TermsRedirectWrapper>
     </>
   )
 }

@@ -16,6 +16,7 @@ import { JourneyList } from '../src/components/JourneyList'
 import { PageWrapper } from '../src/components/PageWrapper'
 import i18nConfig from '../next-i18next.config'
 import JourneyListMenu from '../src/components/JourneyList/JourneyListMenu/JourneyListMenu'
+import { TermsRedirectWrapper } from '../src/components/TermsRedirectWrapper/TermsRedirectWrapper'
 
 export const GET_JOURNEYS = gql`
   query GetJourneys {
@@ -77,19 +78,21 @@ function IndexPage(): ReactElement {
 
   return (
     <>
-      <NextSeo title={t('Journeys')} />
-      <PageWrapper
-        title={pageTitle}
-        authUser={AuthUser}
-        menu={<JourneyListMenu router={router} onClick={handleClick} />}
-      >
-        <JourneyList
-          journeys={data?.journeys}
-          router={router}
-          event={listEvent}
+      <TermsRedirectWrapper router={router}>
+        <NextSeo title={t('Journeys')} />
+        <PageWrapper
+          title={pageTitle}
           authUser={AuthUser}
-        />
-      </PageWrapper>
+          menu={<JourneyListMenu router={router} onClick={handleClick} />}
+        >
+          <JourneyList
+            journeys={data?.journeys}
+            router={router}
+            event={listEvent}
+            authUser={AuthUser}
+          />
+        </PageWrapper>
+      </TermsRedirectWrapper>
     </>
   )
 }

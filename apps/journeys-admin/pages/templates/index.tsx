@@ -20,6 +20,7 @@ import { GetUserRole } from '../../__generated__/GetUserRole'
 import { Role } from '../../__generated__/globalTypes'
 import { GET_USER_ROLE } from '../../src/components/JourneyView/JourneyView'
 import { GET_JOURNEYS } from '..'
+import { TermsRedirectWrapper } from '../../src/components/TermsRedirectWrapper/TermsRedirectWrapper'
 
 const GET_PUBLISHED_TEMPLATES = gql`
   query GetPublishedTemplates {
@@ -79,18 +80,20 @@ function LibraryIndex(): ReactElement {
 
   return (
     <>
-      <NextSeo title={t('Journey Templates')} />
-      <PageWrapper
-        title={t('Journey Templates')}
-        authUser={AuthUser}
-        router={router}
-      >
-        <TemplateLibrary
-          isPublisher={isPublisher}
-          journeys={journeyData?.journeys}
-          templates={data?.journeys}
-        />
-      </PageWrapper>
+      <TermsRedirectWrapper router={router}>
+        <NextSeo title={t('Journey Templates')} />
+        <PageWrapper
+          title={t('Journey Templates')}
+          authUser={AuthUser}
+          router={router}
+        >
+          <TemplateLibrary
+            isPublisher={isPublisher}
+            journeys={journeyData?.journeys}
+            templates={data?.journeys}
+          />
+        </PageWrapper>
+      </TermsRedirectWrapper>
     </>
   )
 }

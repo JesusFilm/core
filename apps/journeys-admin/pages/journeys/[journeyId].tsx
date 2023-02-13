@@ -13,6 +13,7 @@ import { NextSeo } from 'next-seo'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import { useTranslation } from 'react-i18next'
 import { getLaunchDarklyClient } from '@core/shared/ui/getLaunchDarklyClient'
+import { TermsRedirectWrapper } from '../../src/components/TermsRedirectWrapper'
 import { JourneyInvite } from '../../src/components/JourneyInvite/JourneyInvite'
 import { GetJourney } from '../../__generated__/GetJourney'
 import { JourneyView } from '../../src/components/JourneyView'
@@ -46,44 +47,46 @@ function JourneyIdPage(): ReactElement {
 
   return (
     <>
-      {error == null && (
-        <>
-          <NextSeo
-            title={data?.journey?.title ?? t('Journey')}
-            description={data?.journey?.description ?? undefined}
-          />
-          <JourneyProvider
-            value={{ journey: data?.journey ?? undefined, admin: true }}
-          >
-            <PageWrapper
-              title={t('Journey Details')}
-              showDrawer
-              backHref="/"
-              menu={<Menu />}
-              authUser={AuthUser}
-              router={router}
+      <TermsRedirectWrapper router={router}>
+        {error == null && (
+          <>
+            <NextSeo
+              title={data?.journey?.title ?? t('Journey')}
+              description={data?.journey?.description ?? undefined}
+            />
+            <JourneyProvider
+              value={{ journey: data?.journey ?? undefined, admin: true }}
             >
-              <JourneyView journeyType="Journey" />
-            </PageWrapper>
-          </JourneyProvider>
-        </>
-      )}
-      {error?.graphQLErrors[0].message ===
-        'User has not received an invitation to edit this journey.' && (
-        <>
-          <NextSeo title={t('Access Denied')} />
-          <JourneyInvite journeyId={router.query.journeyId as string} />
-        </>
-      )}
-      {error?.graphQLErrors[0].message === 'User invitation pending.' && (
-        <>
-          <NextSeo title={t('Access Denied')} />
-          <JourneyInvite
-            journeyId={router.query.journeyId as string}
-            requestReceived
-          />
-        </>
-      )}
+              <PageWrapper
+                title={t('Journey Details')}
+                showDrawer
+                backHref="/"
+                menu={<Menu />}
+                authUser={AuthUser}
+                router={router}
+              >
+                <JourneyView journeyType="Journey" />
+              </PageWrapper>
+            </JourneyProvider>
+          </>
+        )}
+        {error?.graphQLErrors[0].message ===
+          'User has not received an invitation to edit this journey.' && (
+          <>
+            <NextSeo title={t('Access Denied')} />
+            <JourneyInvite journeyId={router.query.journeyId as string} />
+          </>
+        )}
+        {error?.graphQLErrors[0].message === 'User invitation pending.' && (
+          <>
+            <NextSeo title={t('Access Denied')} />
+            <JourneyInvite
+              journeyId={router.query.journeyId as string}
+              requestReceived
+            />
+          </>
+        )}
+      </TermsRedirectWrapper>
     </>
   )
 }

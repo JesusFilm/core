@@ -13,6 +13,7 @@ import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { useTranslation } from 'react-i18next'
 import { useRouter } from 'next/router'
 import { JOURNEY_FIELDS } from '@core/journeys/ui/JourneyProvider/journeyFields'
+import { TermsRedirectWrapper } from '../../src/components/TermsRedirectWrapper'
 import { JourneyView } from '../../src/components/JourneyView'
 import { GetTemplate } from '../../__generated__/GetTemplate'
 import { PageWrapper } from '../../src/components/PageWrapper'
@@ -37,24 +38,26 @@ function TemplateDetails(): ReactElement {
   })
   return (
     <>
-      <NextSeo
-        title={data?.template?.title ?? t('Journey Template')}
-        description={data?.template?.description ?? undefined}
-      />
-      <JourneyProvider
-        value={{ journey: data?.template ?? undefined, admin: true }}
-      >
-        <PageWrapper
-          title={t('Journey Template')}
-          authUser={AuthUser}
-          showDrawer
-          backHref="/templates"
-          menu={<Menu />}
-          router={router}
+      <TermsRedirectWrapper router={router}>
+        <NextSeo
+          title={data?.template?.title ?? t('Journey Template')}
+          description={data?.template?.description ?? undefined}
+        />
+        <JourneyProvider
+          value={{ journey: data?.template ?? undefined, admin: true }}
         >
-          <JourneyView journeyType="Template" />
-        </PageWrapper>
-      </JourneyProvider>
+          <PageWrapper
+            title={t('Journey Template')}
+            authUser={AuthUser}
+            showDrawer
+            backHref="/templates"
+            menu={<Menu />}
+            router={router}
+          >
+            <JourneyView journeyType="Template" />
+          </PageWrapper>
+        </JourneyProvider>
+      </TermsRedirectWrapper>
     </>
   )
 }

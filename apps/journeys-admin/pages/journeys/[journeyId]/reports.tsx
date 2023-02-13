@@ -12,6 +12,7 @@ import { getLaunchDarklyClient } from '@core/shared/ui/getLaunchDarklyClient'
 import Box from '@mui/material/Box'
 import { useRouter } from 'next/router'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import { TermsRedirectWrapper } from '../../../src/components/TermsRedirectWrapper'
 import { PageWrapper } from '../../../src/components/PageWrapper'
 import i18nConfig from '../../../next-i18next.config'
 import { MemoizedDynamicReport } from '../../../src/components/DynamicPowerBiReport'
@@ -30,20 +31,22 @@ function JourneyReportsPage(): ReactElement {
 
   return (
     <>
-      <NextSeo title={t('Journey Report')} />
-      <PageWrapper
-        title={t('Journey Report')}
-        authUser={AuthUser}
-        backHref={`/journeys/${journeyId}`}
-        router={router}
-      >
-        <Box sx={{ height: 'calc(100vh - 48px)' }}>
-          <MemoizedDynamicReport
-            reportType={JourneysReportType.singleFull}
-            journeyId={journeyId}
-          />
-        </Box>
-      </PageWrapper>
+      <TermsRedirectWrapper router={router}>
+        <NextSeo title={t('Journey Report')} />
+        <PageWrapper
+          title={t('Journey Report')}
+          authUser={AuthUser}
+          backHref={`/journeys/${journeyId}`}
+          router={router}
+        >
+          <Box sx={{ height: 'calc(100vh - 48px)' }}>
+            <MemoizedDynamicReport
+              reportType={JourneysReportType.singleFull}
+              journeyId={journeyId}
+            />
+          </Box>
+        </PageWrapper>
+      </TermsRedirectWrapper>
     </>
   )
 }

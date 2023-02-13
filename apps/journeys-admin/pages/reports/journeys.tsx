@@ -11,6 +11,7 @@ import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import { useTranslation } from 'react-i18next'
 import { getLaunchDarklyClient } from '@core/shared/ui/getLaunchDarklyClient'
 import Box from '@mui/material/Box'
+import { TermsRedirectWrapper } from '../../src/components/TermsRedirectWrapper'
 import { PageWrapper } from '../../src/components/PageWrapper'
 import i18nConfig from '../../next-i18next.config'
 import { MemoizedDynamicReport } from '../../src/components/DynamicPowerBiReport'
@@ -23,16 +24,20 @@ function ReportsJourneysPage(): ReactElement {
 
   return (
     <>
-      <NextSeo title={t('Journeys Report')} />
-      <PageWrapper
-        title={t('Journeys Report')}
-        authUser={AuthUser}
-        router={router}
-      >
-        <Box sx={{ height: 'calc(100vh - 48px)' }}>
-          <MemoizedDynamicReport reportType={JourneysReportType.multipleFull} />
-        </Box>
-      </PageWrapper>
+      <TermsRedirectWrapper router={router}>
+        <NextSeo title={t('Journeys Report')} />
+        <PageWrapper
+          title={t('Journeys Report')}
+          authUser={AuthUser}
+          router={router}
+        >
+          <Box sx={{ height: 'calc(100vh - 48px)' }}>
+            <MemoizedDynamicReport
+              reportType={JourneysReportType.multipleFull}
+            />
+          </Box>
+        </PageWrapper>
+      </TermsRedirectWrapper>
     </>
   )
 }

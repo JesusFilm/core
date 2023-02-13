@@ -1,0 +1,1 @@
+export { TermsRedirectWrapper } from './TermsRedirectWrapper'
