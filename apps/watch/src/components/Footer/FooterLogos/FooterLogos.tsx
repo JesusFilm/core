@@ -1,8 +1,8 @@
 import { ReactElement } from 'react'
 import Stack from '@mui/material/Stack'
-import JFLogo from '../../../../public/images/jf-logo.svg'
-import CruLogo from '../../../../public/images/cru-logo.svg'
 import { FooterLink } from '../FooterLink'
+import JFLogo from './assets/jesus-film.svg'
+import CruLogo from './assets/cru.svg'
 
 export function FooterLogos(): ReactElement {
   return (
