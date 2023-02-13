@@ -5,6 +5,8 @@ import Typography from '@mui/material/Typography'
 import Stack from '@mui/material/Stack'
 import CardActions from '@mui/material/CardActions'
 import Button from '@mui/material/Button'
+import SupervisorAccountRoundedIcon from '@mui/icons-material/SupervisorAccountRounded'
+import CheckCircleRoundedIcon from '@mui/icons-material/CheckCircleRounded'
 
 interface AccessDeniedCardProps {
   stepNumber: number
@@ -54,11 +56,23 @@ export function AccessDeniedCard({
           </Typography>
         </Stack>
       </CardContent>
-      {handleRequestAccess != null && (
-        <CardActions>
-          <Button onClick={handleRequestAccess}>Request Access</Button>
-        </CardActions>
-      )}
+      {handleRequestAccess != null &&
+        (requestAccess ? (
+          <Stack direction="row" sx={{ color: 'success.main' }}>
+            <CheckCircleRoundedIcon />
+            <Typography>Request Sent</Typography>
+          </Stack>
+        ) : (
+          <CardActions>
+            <Button
+              variant="contained"
+              onClick={handleRequestAccess}
+              startIcon={<SupervisorAccountRoundedIcon />}
+            >
+              Request Now
+            </Button>
+          </CardActions>
+        ))}
     </Card>
   )
 }

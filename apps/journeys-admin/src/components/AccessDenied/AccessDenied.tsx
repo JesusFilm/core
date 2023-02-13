@@ -45,6 +45,7 @@ export function AccessDenied({
           description={t(
             'Send an access request to the creator of this journey'
           )}
+          requestAccess={requestAccess}
           handleRequestAccess={handleClick}
         />
         <Divider />
