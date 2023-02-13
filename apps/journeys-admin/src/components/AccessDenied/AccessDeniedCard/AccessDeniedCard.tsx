@@ -22,7 +22,7 @@ export function AccessDeniedCard({
   handleRequestAccess
 }: AccessDeniedCardProps): ReactElement {
   return (
-    <Card>
+    <Card sx={{ display: 'flex', flexDirection: 'row' }}>
       <CardContent
         sx={{
           display: 'flex',
