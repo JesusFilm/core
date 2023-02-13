@@ -56,7 +56,7 @@ export const SEARCH_UNSPLASH_PHOTOS = gql`
 `
 
 interface UnsplashGalleryProps {
-  onChange: (src: string) => void
+  onChange: (src: string, author: string) => void
 }
 
 export function UnsplashGallery({

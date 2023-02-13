@@ -23,7 +23,7 @@ describe('UnsplashList', () => {
 
   it('should call onChange on image click', () => {
     const onChange = jest.fn()
-    const { getByRole, getByText } = render(
+    const { getByRole } = render(
       <UnsplashList
         gallery={[
           unsplashImage as unknown as SearchUnsplashPhotos_searchUnsplashPhotos_results
@@ -32,7 +32,6 @@ describe('UnsplashList', () => {
       />
     )
     expect(getByRole('list')).toBeInTheDocument()
-    expect(getByText('Levi Meir')).toBeInTheDocument()
     fireEvent.click(getByRole('button'))
     expect(onChange).toHaveBeenCalled()
   })

@@ -1,11 +1,10 @@
-import { ReactElement } from 'react'
+import { ReactElement, useState } from 'react'
+import Box from '@mui/material/Box'
+import ButtonBase from '@mui/material/ButtonBase'
 import ImageList from '@mui/material/ImageList'
 import ImageListItem from '@mui/material/ImageListItem'
-import Link from '@mui/material/Link'
-import Stack from '@mui/material/Stack'
-import Typography from '@mui/material/Typography'
 import Image from 'next/image'
-import ButtonBase from '@mui/material/ButtonBase'
+import Typography from '@mui/material/Typography'
 import { ListUnsplashCollectionPhotos_listUnsplashCollectionPhotos } from '../../../../../../__generated__/ListUnsplashCollectionPhotos'
 import { SearchUnsplashPhotos_searchUnsplashPhotos_results } from '../../../../../../__generated__/SearchUnsplashPhotos'
 
@@ -14,40 +13,55 @@ interface UnsplashListProps {
     | ListUnsplashCollectionPhotos_listUnsplashCollectionPhotos
     | SearchUnsplashPhotos_searchUnsplashPhotos_results
   >
-  onChange: (src: string) => void
+  onChange: (src: string, author: string) => void
 }
 
 export function UnsplashList({
   gallery,
   onChange
 }: UnsplashListProps): ReactElement {
+  const [currentIndex, setCurrentIndex] = useState<number | null>()
   return (
-    <ImageList variant="masonry">
-      {gallery?.map((item) => (
-        <ImageListItem key={item?.id} sx={{ pb: 1 }}>
-          <Stack spacing={1}>
-            <ButtonBase onClick={() => onChange(item.urls.regular)}>
-              <Image
-                src={item.urls.small}
-                alt="tests"
-                width={item.width}
-                height={item.height}
-                style={{
-                  borderRadius: 8
-                }}
-              />
-            </ButtonBase>
-            <Link
-              href={`https://unsplash.com/@${item.user.username ?? ''
-                }?utm_source=your_app_name&utm_medium=referral`}
-              color="secondary.light"
+    <ImageList variant="masonry" gap={10}>
+      {gallery?.map((item, index) => (
+        <ImageListItem key={item?.id}>
+          <ButtonBase
+            onClick={() =>
+              onChange(item.urls.regular, `${item.user.first_name} last name`)
+            }
+            onMouseEnter={() => setCurrentIndex(index)}
+            onMouseLeave={() => setCurrentIndex(null)}
+            sx={{ position: 'relative' }}
+          >
+            <Image
+              src={item.urls.small}
+              alt="tests"
+              width={item.width}
+              height={item.height}
+              style={{
+                borderRadius: 8
+              }}
+            />
+          </ButtonBase>
+          {currentIndex === index && (
+            <Box
+              sx={{
+                position: 'absolute',
+                bottom: 0,
+                left: 0,
+                right: 0,
+                backgroundColor: 'rgba(0, 0, 0, 0.15)',
+                padding: 1,
+                borderRadius: '0 0 8px 8px'
+              }}
             >
-              <Typography variant="caption">{item.user.first_name}</Typography>
-            </Link>
-          </Stack>
+              <Typography variant="caption" color="background.default">
+                {item.user.first_name} last name
+              </Typography>
+            </Box>
+          )}
         </ImageListItem>
-      ))
-      }
-    </ImageList >
+      ))}
+    </ImageList>
   )
 }
