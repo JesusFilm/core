@@ -12,10 +12,8 @@ import { useTranslation } from 'react-i18next'
 import { useRouter } from 'next/router'
 import { getLaunchDarklyClient } from '@core/shared/ui/getLaunchDarklyClient'
 import { GetJourneys } from '../__generated__/GetJourneys'
-import { UserInviteAcceptAll } from '../__generated__/UserInviteAcceptAll'
 import { JourneyList } from '../src/components/JourneyList'
 import { PageWrapper } from '../src/components/PageWrapper'
-import { createApolloClient } from '../src/libs/apolloClient'
 import i18nConfig from '../next-i18next.config'
 import JourneyListMenu from '../src/components/JourneyList/JourneyListMenu/JourneyListMenu'
 
@@ -50,15 +48,6 @@ export const GET_JOURNEYS = gql`
           imageUrl
         }
       }
-    }
-  }
-`
-
-export const ACCEPT_USER_INVITE = gql`
-  mutation UserInviteAcceptAll {
-    userInviteAcceptAll {
-      id
-      acceptedAt
     }
   }
 `
@@ -117,13 +106,6 @@ export const getServerSideProps = withAuthUserTokenSSR({
   const flags = (await launchDarklyClient.allFlagsState(ldUser)).toJSON() as {
     [key: string]: boolean | undefined
   }
-
-  const token = await AuthUser.getIdToken()
-  const apolloClient = createApolloClient(token != null ? token : '')
-
-  await apolloClient.mutate<UserInviteAcceptAll>({
-    mutation: ACCEPT_USER_INVITE
-  })
 
   return {
     props: {

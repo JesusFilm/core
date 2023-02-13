@@ -102,30 +102,6 @@ describe('AccessDialog', () => {
     )
   })
 
-  it('opens email invite form on click', async () => {
-    const { getByRole, queryByRole } = render(
-      <SnackbarProvider>
-        <MockedProvider>
-          <AccessDialog journeyId="journeyId" open onClose={noop} />
-        </MockedProvider>
-      </SnackbarProvider>
-    )
-
-    const button = getByRole('button', { name: 'Email' })
-    expect(queryByRole('button', { name: 'Copy' })).not.toBeInTheDocument()
-
-    fireEvent.click(button)
-    fireEvent.click(getByRole('menuitem', { name: 'Link' }))
-
-    expect(queryByRole('button', { name: 'Copy' })).toBeInTheDocument()
-
-    fireEvent.click(button)
-    fireEvent.click(getByRole('menuitem', { name: 'Email' }))
-    await waitFor(() =>
-      expect(queryByRole('button', { name: 'Copy' })).not.toBeInTheDocument()
-    )
-  })
-
   describe('copy to clipboard', () => {
     const originalNavigator = { ...global.navigator }
 
@@ -150,8 +126,6 @@ describe('AccessDialog', () => {
           </MockedProvider>
         </SnackbarProvider>
       )
-      const button = getByRole('button', { name: 'Email' })
-      fireEvent.click(button)
       fireEvent.click(getByRole('menuitem', { name: 'Link' }))
       const link = 'http://localhost/journeys/journeyId'
       expect(getByRole('textbox')).toHaveValue(link)
