@@ -34,7 +34,9 @@ export function JourneyInvite({
   }
   return (
     <>
-      {!requestReceived && <AccessDenied onClick={handleClick} requestAccess />}
+      {!requestReceived && (
+        <AccessDenied handleClick={handleClick} requestAccess />
+      )}
       {requestReceived && <AccessDenied />}
     </>
   )

@@ -10,12 +10,12 @@ import ChevronLeftRoundedIcon from '@mui/icons-material/ChevronLeftRounded'
 import { AccessDeniedCard } from './AccessDeniedCard'
 
 interface AccessDeniedProps {
-  onClick?: () => void
+  handleClick?: () => void
   requestAccess?: boolean
 }
 
 export function AccessDenied({
-  onClick,
+  handleClick,
   requestAccess = false
 }: AccessDeniedProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
@@ -45,6 +45,7 @@ export function AccessDenied({
           description={t(
             'Send an access request to the creator of this journey'
           )}
+          handleRequestAccess={handleClick}
         />
         <Divider />
         <AccessDeniedCard

@@ -3,6 +3,8 @@ import Card from '@mui/material/Card'
 import CardContent from '@mui/material/CardContent'
 import Typography from '@mui/material/Typography'
 import Stack from '@mui/material/Stack'
+import CardActions from '@mui/material/CardActions'
+import Button from '@mui/material/Button'
 
 interface AccessDeniedCardProps {
   stepNumber: number
@@ -52,6 +54,11 @@ export function AccessDeniedCard({
           </Typography>
         </Stack>
       </CardContent>
+      {handleRequestAccess != null && (
+        <CardActions>
+          <Button onClick={handleRequestAccess}>Request Access</Button>
+        </CardActions>
+      )}
     </Card>
   )
 }
