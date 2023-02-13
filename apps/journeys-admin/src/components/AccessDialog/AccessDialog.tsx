@@ -1,24 +1,24 @@
 import { ReactElement, MouseEvent, useEffect, useState } from 'react'
 import Button from '@mui/material/Button'
 import Menu from '@mui/material/Menu'
+import Stack from '@mui/material/Stack'
 import DraftsIcon from '@mui/icons-material/Drafts'
 import LinkIcon from '@mui/icons-material/Link'
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
 import GroupAddIcon from '@mui/icons-material/GroupAdd'
-import { gql, useLazyQuery, useQuery } from '@apollo/client'
+import { gql, useLazyQuery } from '@apollo/client'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { Theme } from '@mui/material/styles'
 import { CopyTextField } from '@core/shared/ui/CopyTextField'
 import { Dialog } from '@core/shared/ui/Dialog'
 import MenuItem from '@mui/material/MenuItem'
 import Typography from '@mui/material/Typography'
-import Stack from '@mui/material/Stack'
 import {
   GetJourneyWithUserJourneys,
   GetJourneyWithUserJourneys_journey_userJourneys as UserJourney
 } from '../../../__generated__/GetJourneyWithUserJourneys'
 import { UserJourneyRole } from '../../../__generated__/globalTypes'
-import { GetCurrentUser } from '../../../__generated__/GetCurrentUser'
+import { useCurrentUser } from '../../libs/useCurrentUser'
 import { EmailInviteForm } from '../EmailInviteForm'
 import { UserJourneyList } from './UserJourneyList'
 
@@ -40,16 +40,6 @@ export const GET_JOURNEY_WITH_USER_JOURNEYS = gql`
     }
   }
 `
-
-export const GET_CURRENT_USER = gql`
-  query GetCurrentUser {
-    me {
-      id
-      email
-    }
-  }
-`
-
 interface AccessDialogProps {
   journeyId: string
   open?: boolean
@@ -84,12 +74,12 @@ export function AccessDialog({
       variables: { id: journeyId }
     })
 
-  const { data: currentUserData } = useQuery<GetCurrentUser>(GET_CURRENT_USER)
+  const currentUserData = useCurrentUser()
 
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
   const disable =
     data?.journey?.userJourneys?.find(
-      (userJourney) => userJourney.user?.email === currentUserData?.me?.email
+      (userJourney) => userJourney.user?.email === currentUserData.email
     )?.role !== UserJourneyRole.owner
 
   const usersList: UserJourney[] = []

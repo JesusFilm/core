@@ -3,15 +3,20 @@ import { fireEvent, render, waitFor } from '@testing-library/react'
 import { noop } from 'lodash'
 import { SnackbarProvider } from 'notistack'
 import { UserJourneyRole } from '../../../__generated__/globalTypes'
-import {
-  AccessDialog,
-  GET_CURRENT_USER,
-  GET_JOURNEY_WITH_USER_JOURNEYS
-} from './AccessDialog'
+import { AccessDialog, GET_JOURNEY_WITH_USER_JOURNEYS } from './AccessDialog'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
   default: () => true
+}))
+
+jest.mock('../../libs/useCurrentUser', () => ({
+  __esModule: true,
+  useCurrentUser: jest.fn().mockReturnValue({
+    id: 'userId1',
+    __typename: 'User',
+    email: 'amin@email.com'
+  })
 }))
 
 describe('AccessDialog', () => {
@@ -73,20 +78,6 @@ describe('AccessDialog', () => {
                         }
                       }
                     ]
-                  }
-                }
-              }
-            },
-            {
-              request: {
-                query: GET_CURRENT_USER
-              },
-              result: {
-                data: {
-                  me: {
-                    id: 'userId1',
-                    __typename: 'User',
-                    email: 'amin@email.com'
                   }
                 }
               }
