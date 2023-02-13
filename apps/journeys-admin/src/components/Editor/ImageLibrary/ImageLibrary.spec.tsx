@@ -59,7 +59,7 @@ describe('ImageLibrary', () => {
           </MockedProvider>
         </FlagsProvider>
       )
-      expect(getAllByText('Unsplash')[0]).toBeInTheDocument()
+      expect(getAllByText('Gallery')[0]).toBeInTheDocument()
       expect(getByTestId('ImageLibrary').parentElement).toHaveClass(
         'MuiDrawer-paperAnchorRight'
       )
@@ -125,7 +125,7 @@ describe('ImageLibrary', () => {
           </MockedProvider>
         </FlagsProvider>
       )
-      expect(getAllByText('Unsplash')[0]).toBeInTheDocument()
+      expect(getAllByText('Gallery')[0]).toBeInTheDocument()
       expect(getByTestId('ImageLibrary').parentElement).toHaveClass(
         'MuiDrawer-paperAnchorBottom'
       )

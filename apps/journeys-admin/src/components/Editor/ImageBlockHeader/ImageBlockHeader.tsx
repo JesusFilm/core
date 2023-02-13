@@ -13,15 +13,13 @@ interface ImageBlockHeaderProps {
   showAdd?: boolean
   onDelete?: () => Promise<void>
   loading?: boolean
-  unsplashAuthor?: string | null
 }
 
 export function ImageBlockHeader({
   showAdd = false,
   onDelete,
   loading = false,
-  selectedBlock,
-  unsplashAuthor
+  selectedBlock
 }: ImageBlockHeaderProps): ReactElement {
   return (
     <Stack
@@ -55,9 +53,7 @@ export function ImageBlockHeader({
             variant="caption"
             display={selectedBlock != null ? 'flex' : 'none'}
           >
-            {unsplashAuthor != null
-              ? unsplashAuthor
-              : selectedBlock != null
+            {selectedBlock != null
               ? `${selectedBlock.width} x ${selectedBlock.height} pixels`
               : ''}
           </Typography>
