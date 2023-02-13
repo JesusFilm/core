@@ -1,73 +1,49 @@
 import { ReactElement } from 'react'
-import CardActions from '@mui/material/CardActions'
+import { useTranslation } from 'react-i18next'
 import Typography from '@mui/material/Typography'
-import Button from '@mui/material/Button'
-import Container from '@mui/material/Container'
-import Card from '@mui/material/Card'
-import CardContent from '@mui/material/CardContent'
-import Box from '@mui/material/Box'
-import Image from 'next/image'
-import Link from 'next/link'
-import logo from '../../../public/logo.svg'
+import List from '@mui/material/List'
+import Stack from '@mui/material/Stack'
+import LockRoundedIcon from '@mui/icons-material/LockRounded'
+import { AccessDeniedCard } from './AccessDeniedCard'
 
 interface AccessDeniedProps {
-  title: string
-  description: string
   onClick?: () => void
+  requestAccess?: boolean
 }
 
 export function AccessDenied({
-  title,
-  description,
-  onClick
+  onClick,
+  requestAccess = false
 }: AccessDeniedProps): ReactElement {
-  const requestAccess = onClick != null
+  const { t } = useTranslation('apps-journeys-admin')
 
   return (
-    <Container maxWidth="xs" sx={{ py: 10 }}>
-      <Box
-        sx={{
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'center',
-          pb: 10
-        }}
-      >
-        <Link href="/" passHref>
-          <a>
-            <Image src={logo} alt="Next Steps" height={68} width={152} />
-          </a>
-        </Link>
-      </Box>
-      <Card
-        variant="outlined"
-        sx={{
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'center',
-          textAlign: 'center'
-        }}
-      >
-        <CardContent>
-          <Typography variant="h3" component="h1" gutterBottom>
-            {title}
-          </Typography>
-          <Typography>{description}</Typography>
-        </CardContent>
-        <CardActions>
-          {requestAccess ? (
-            <Button variant="contained" onClick={onClick}>
-              Request Access
-            </Button>
-          ) : (
-            <Link href="/" passHref>
-              <Button variant="contained">Back to the Admin Panel</Button>
-            </Link>
+    <>
+      <Stack direction="row">
+        <LockRoundedIcon />
+        <Typography>{t(`You can't edit this journey`)}</Typography>
+      </Stack>
+      <List>
+        <AccessDeniedCard
+          stepNumber={1}
+          heading={t('Request Access')}
+          description={t(
+            'Send an access request to the creator of this journey'
           )}
-        </CardActions>
-      </Card>
-    </Container>
+        />
+        <AccessDeniedCard
+          stepNumber={2}
+          heading={t('Wait for Approval')}
+          description={t('The owner needs to approve you as an editor')}
+        />
+        <AccessDeniedCard
+          stepNumber={3}
+          heading={t('Edit this journey')}
+          description={t(
+            'Once approved you can open this journey in your admin'
+          )}
+        />
+      </List>
+    </>
   )
 }
