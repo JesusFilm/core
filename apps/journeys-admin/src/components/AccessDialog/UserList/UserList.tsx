@@ -8,21 +8,21 @@ import ListItemAvatar from '@mui/material/ListItemAvatar'
 import ListItemText from '@mui/material/ListItemText'
 import Typography from '@mui/material/Typography'
 import { GetJourneyWithUserJourneys_journey_userJourneys as UserJourney } from '../../../../__generated__/GetJourneyWithUserJourneys'
-import { UserJourneyItem } from './UserJourneyItem'
+import { UserListItem } from './UserListItem'
 
-interface UserJourneyListProps {
+interface UserListProps {
   title: string
   loading?: boolean
   userJourneys?: UserJourney[] | null
   disable: boolean
 }
 
-export function UserJourneyList({
+export function UserList({
   title,
   loading,
   userJourneys,
   disable
-}: UserJourneyListProps): ReactElement {
+}: UserListProps): ReactElement {
   return (
     <>
       {loading === true ? (
@@ -62,7 +62,7 @@ export function UserJourneyList({
 
               <List sx={{ py: 0 }}>
                 {userJourneys.map((userJourney) => (
-                  <UserJourneyItem
+                  <UserListItem
                     key={userJourney.id}
                     userJourney={userJourney}
                     disabled={disable}

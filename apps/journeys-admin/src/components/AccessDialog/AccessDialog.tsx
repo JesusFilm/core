@@ -20,7 +20,7 @@ import {
 import { UserJourneyRole } from '../../../__generated__/globalTypes'
 import { useCurrentUser } from '../../libs/useCurrentUser'
 import { EmailInviteForm } from './AddUserSection/EmailInviteForm'
-import { UserJourneyList } from './UserJourneyList'
+import { UserList } from './UserList'
 
 export const GET_JOURNEY_WITH_USER_JOURNEYS = gql`
   query GetJourneyWithUserJourneys($id: ID!) {
@@ -111,12 +111,12 @@ export function AccessDialog({
       fullscreen={!smUp}
     >
       <Stack spacing={4}>
-        <UserJourneyList
+        <UserList
           title="Requested Editing Rights"
           userJourneys={requestsList}
           disable={disable}
         />
-        <UserJourneyList
+        <UserList
           title="Users With Access"
           loading={loading}
           userJourneys={usersList}

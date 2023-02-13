@@ -5,7 +5,7 @@ import { UserJourneyRole } from '../../../../../__generated__/globalTypes'
 import { USER_JOURNEY_APPROVE } from './ApproveUser/ApproveUser'
 import { USER_JOURNEY_REMOVE } from './RemoveUser/RemoveUser'
 import { USER_JOURNEY_PROMOTE } from './PromoteUser/PromoteUser'
-import { UserJourneyItem } from '.'
+import { UserListItem } from '.'
 
 const owner: UserJourney = {
   __typename: 'UserJourney',
@@ -49,7 +49,7 @@ const invitee: UserJourney = {
   }
 }
 
-describe('UserJourneyItem', () => {
+describe('UserListItem', () => {
   it('should approve invitee as editor', async () => {
     const result = jest.fn(() => ({
       data: {
@@ -73,7 +73,7 @@ describe('UserJourneyItem', () => {
           }
         ]}
       >
-        <UserJourneyItem userJourney={invitee} disabled={false} />
+        <UserListItem userJourney={invitee} disabled={false} />
       </MockedProvider>
     )
     fireEvent.click(getByRole('button', { name: 'Manage Access' }))
@@ -110,7 +110,7 @@ describe('UserJourneyItem', () => {
           }
         ]}
       >
-        <UserJourneyItem userJourney={editor} disabled={false} />
+        <UserListItem userJourney={editor} disabled={false} />
       </MockedProvider>
     )
 
@@ -155,7 +155,7 @@ describe('UserJourneyItem', () => {
           }
         ]}
       >
-        <UserJourneyItem userJourney={editor} disabled={false} />
+        <UserListItem userJourney={editor} disabled={false} />
       </MockedProvider>
     )
 
@@ -166,15 +166,13 @@ describe('UserJourneyItem', () => {
 
   it('should not allow owners to edit their own access', async () => {
     const { getByRole } = render(
-      <UserJourneyItem userJourney={owner} disabled={false} />
+      <UserListItem userJourney={owner} disabled={false} />
     )
     expect(getByRole('button', { name: 'Owner' })).toBeDisabled()
   })
 
   it('should disable edit', async () => {
-    const { getByRole } = render(
-      <UserJourneyItem userJourney={editor} disabled />
-    )
+    const { getByRole } = render(<UserListItem userJourney={editor} disabled />)
     expect(getByRole('button', { name: 'Editor' })).toBeDisabled()
   })
 })
