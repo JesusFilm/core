@@ -50,6 +50,9 @@ export function ImageUpload({
     ).json()
 
     response.success === true ? setSuccess(true) : setSuccess(false)
+    if (response.errors.length !== 0) {
+      setSuccess(false)
+    }
     console.log(response)
 
     const src = `https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/${
@@ -64,7 +67,9 @@ export function ImageUpload({
     onDrop,
     noClick: true,
     maxSize: 10485760,
-    accept: 'image/*'
+    accept: {
+      'image/*': []
+    }
   })
 
   console.log('success', success)
