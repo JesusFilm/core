@@ -5,8 +5,10 @@ import List from '@mui/material/List'
 import Stack from '@mui/material/Stack'
 import LockRoundedIcon from '@mui/icons-material/LockRounded'
 import Divider from '@mui/material/Divider'
-import Link from '@mui/material/Link'
 import ChevronLeftRoundedIcon from '@mui/icons-material/ChevronLeftRounded'
+import ContactSupportIcon from '@mui/icons-material/ContactSupport'
+import NextLink from 'next/link'
+import Button from '@mui/material/Button'
 import { AccessDeniedCard } from './AccessDeniedCard'
 
 interface AccessDeniedProps {
@@ -63,12 +65,36 @@ export function AccessDenied({
           )}
         />
       </List>
-      <Link href="/" color="primary.main" underline="none">
-        <Stack direction="row" alignItems="center" sx={{ mt: 9 }}>
-          <ChevronLeftRoundedIcon />
-          <Typography variant="body2">{t('Back to my journeys')}</Typography>
-        </Stack>
-      </Link>
+      <Stack direction="row" justifyContent="space-between">
+        <NextLink href="/" passHref>
+          <Button
+            sx={{ color: 'primary.main' }}
+            startIcon={<ChevronLeftRoundedIcon />}
+            size="small"
+          >
+            {t('Back to my journeys')}
+          </Button>
+        </NextLink>
+        <NextLink
+          href="mailto:support@nextstep.is?subject=Need%20help%20with%20requesting%20editing%20access%20to%20the%20journey"
+          passHref
+        >
+          <Button
+            sx={{
+              color: 'secondary.main',
+              borderColor: 'secondary.main',
+              '&:hover': {
+                borderColor: 'secondary.main'
+              }
+            }}
+            startIcon={<ContactSupportIcon sx={{ color: 'secondary.dark' }} />}
+            size="small"
+            variant="outlined"
+          >
+            {t('Get Help')}
+          </Button>
+        </NextLink>
+      </Stack>
     </>
   )
 }
