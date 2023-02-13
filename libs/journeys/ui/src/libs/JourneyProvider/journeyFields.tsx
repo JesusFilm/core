@@ -36,7 +36,6 @@ export const JOURNEY_FIELDS = gql`
     userJourneys {
       id
       role
-      openedAt
       user {
         id
         firstName

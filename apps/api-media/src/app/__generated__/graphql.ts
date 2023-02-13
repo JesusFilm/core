@@ -53,92 +53,92 @@ export abstract class IQuery {
 
     abstract getMyCloudflareImages(): Nullable<Nullable<CloudflareImage>[]> | Promise<Nullable<Nullable<CloudflareImage>[]>>;
 
-    abstract listUnsplashCollectionPhotos(collectionId: string, page?: Nullable<number>, perPage?: Nullable<number>, orientation?: Nullable<UnsplashPhotoOrientation>): UnsplashPhoto[] | Promise<UnsplashPhoto[]>;
+    abstract listUnsplashCollectionPhotos(collectionId: string, page?: Nullable<number>, perPage?: Nullable<number>, orientation?: Nullable<UnsplashPhotoOrientation>): Nullable<UnsplashPhoto>[] | Promise<Nullable<UnsplashPhoto>[]>;
 
     abstract searchUnsplashPhotos(query: string, page?: Nullable<number>, perPage?: Nullable<number>, orderBy?: Nullable<UnsplashOrderBy>, collections?: Nullable<Nullable<string>[]>, contentFilter?: Nullable<UnsplashContentFilter>, color?: Nullable<UnsplashColor>, orientation?: Nullable<UnsplashPhotoOrientation>): UnsplashQueryResponse | Promise<UnsplashQueryResponse>;
 }
 
 export class UnsplashQueryResponse {
     __typename?: 'UnsplashQueryResponse';
-    total: number;
-    total_pages: number;
-    results: UnsplashPhoto[];
+    total?: Nullable<number>;
+    total_pages?: Nullable<number>;
+    results?: Nullable<Nullable<UnsplashPhoto>[]>;
 }
 
 export class UnsplashUserImage {
     __typename?: 'UnsplashUserImage';
-    small: string;
-    medium: string;
-    large: string;
+    small?: Nullable<string>;
+    medium?: Nullable<string>;
+    large?: Nullable<string>;
 }
 
 export class UnsplashUserLinks {
     __typename?: 'UnsplashUserLinks';
-    self: string;
-    html: string;
-    photos: string;
-    likes: string;
-    portfolio: string;
-    following: string;
-    followers: string;
+    self?: Nullable<string>;
+    html?: Nullable<string>;
+    photos?: Nullable<string>;
+    likes?: Nullable<string>;
+    portfolio?: Nullable<string>;
+    following?: Nullable<string>;
+    followers?: Nullable<string>;
 }
 
 export class UnsplashUser {
     __typename?: 'UnsplashUser';
-    id: string;
-    updated_at: string;
-    username: string;
-    name: string;
-    first_name: string;
-    last_name: string;
-    twitter_username: string;
-    portfolio_url: string;
-    bio: string;
-    location: string;
-    links: UnsplashUserLinks;
-    profile_image: UnsplashUserImage;
-    instagram_username: string;
-    total_collections: number;
-    total_likes: number;
-    total_photos: number;
-    accepted_tos: boolean;
+    id?: Nullable<string>;
+    updated_at?: Nullable<string>;
+    username?: Nullable<string>;
+    name?: Nullable<string>;
+    first_name?: Nullable<string>;
+    last_name?: Nullable<string>;
+    twitter_username?: Nullable<string>;
+    portfolio_url?: Nullable<string>;
+    bio?: Nullable<string>;
+    location?: Nullable<string>;
+    links?: Nullable<UnsplashUserLinks>;
+    profile_image?: Nullable<UnsplashUserImage>;
+    instagram_username?: Nullable<string>;
+    total_collections?: Nullable<number>;
+    total_likes?: Nullable<number>;
+    total_photos?: Nullable<number>;
+    accepted_tos?: Nullable<boolean>;
 }
 
 export class UnsplashPhoto {
     __typename?: 'UnsplashPhoto';
-    id: string;
-    created_at: string;
-    updated_at: string;
-    blur_hash: string;
-    width: number;
-    height: number;
-    color: string;
-    description: string;
-    alt_description: string;
-    urls: UnsplashPhotoUrls;
-    links: UnsplashPhotoLinks;
-    categories: string[];
-    likes: number;
-    liked_by_user: boolean;
-    current_user_collections: string[];
-    user: UnsplashUser;
+    id?: Nullable<string>;
+    created_at?: Nullable<string>;
+    updated_at?: Nullable<string>;
+    blur_hash?: Nullable<string>;
+    width?: Nullable<number>;
+    height?: Nullable<number>;
+    color?: Nullable<string>;
+    description?: Nullable<string>;
+    alt_description?: Nullable<string>;
+    urls?: Nullable<UnsplashPhotoUrls>;
+    links?: Nullable<UnsplashPhotoLinks>;
+    categories?: Nullable<Nullable<string>[]>;
+    likes?: Nullable<number>;
+    liked_by_user?: Nullable<boolean>;
+    current_user_collections?: Nullable<Nullable<string>[]>;
+    user?: Nullable<UnsplashUser>;
 }
 
 export class UnsplashPhotoUrls {
     __typename?: 'UnsplashPhotoUrls';
-    raw: string;
-    full: string;
-    regular: string;
-    small: string;
-    thumb: string;
+    raw?: Nullable<string>;
+    full?: Nullable<string>;
+    regular?: Nullable<string>;
+    small?: Nullable<string>;
+    thumb?: Nullable<string>;
 }
 
 export class UnsplashPhotoLinks {
     __typename?: 'UnsplashPhotoLinks';
-    self: string;
-    html: string;
-    download: string;
-    download_location: string;
+    self?: Nullable<string>;
+    html?: Nullable<string>;
+    download?: Nullable<string>;
+    download_location?: Nullable<string>;
 }
 
 export abstract class IMutation {

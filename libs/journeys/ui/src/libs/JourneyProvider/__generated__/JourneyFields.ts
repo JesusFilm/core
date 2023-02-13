@@ -573,10 +573,6 @@ export interface JourneyFields_userJourneys {
   __typename: "UserJourney";
   id: string;
   role: UserJourneyRole;
-  /**
-   * Date time of when the journey was first opened
-   */
-  openedAt: any | null;
   user: JourneyFields_userJourneys_user | null;
 }
 

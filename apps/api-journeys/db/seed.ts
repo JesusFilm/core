@@ -77,18 +77,6 @@ async function main(): Promise<void> {
     unique: true
   })
 
-  if (!(await db.collection('journeyProfiles').exists()))
-    await db.createCollection('journeyProfiles', {
-      keyOptions: { type: 'uuid' }
-    })
-
-  await db.collection('journeyProfiles').ensureIndex({
-    type: 'persistent',
-    fields: ['userId'],
-    name: 'userId',
-    unique: true
-  })
-
   if (!(await db.collection('userRoles').exists()))
     await db.createCollection('userRoles', {
       keyOptions: { type: 'uuid' }

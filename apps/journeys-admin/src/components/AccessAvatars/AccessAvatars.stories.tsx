@@ -3,8 +3,10 @@ import { MockedProvider } from '@apollo/client/testing'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { simpleComponentConfig } from '../../libs/storybook'
-import { GET_JOURNEY_WITH_USER_JOURNEYS } from '../AccessDialog/AccessDialog'
-import { GET_CURRENT_USER } from '../../libs/useCurrentUser/useCurrentUser'
+import {
+  GET_CURRENT_USER,
+  GET_JOURNEY_WITH_USER_JOURNEYS
+} from '../AccessDialog/AccessDialog'
 import { GetJourneys_journeys_userJourneys as UserJourney } from '../../../__generated__/GetJourneys'
 import { AccessAvatarsProps } from './AccessAvatars'
 import {

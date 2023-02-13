@@ -46,7 +46,6 @@ export const defaultJourney: Journey = {
       id: 'userJourneyId1',
       __typename: 'UserJourney',
       role: UserJourneyRole.owner,
-      openedAt: null,
       user: {
         id: '1',
         __typename: 'User',
@@ -59,7 +58,6 @@ export const defaultJourney: Journey = {
       id: 'userJourneyId2',
       __typename: 'UserJourney',
       role: UserJourneyRole.editor,
-      openedAt: null,
       user: {
         id: '2',
         __typename: 'User',
@@ -72,7 +70,6 @@ export const defaultJourney: Journey = {
       id: 'userJourneyId3',
       __typename: 'UserJourney',
       role: UserJourneyRole.editor,
-      openedAt: null,
       user: {
         id: '3',
         __typename: 'User',

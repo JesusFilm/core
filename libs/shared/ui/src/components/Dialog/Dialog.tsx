@@ -1,4 +1,4 @@
-import { ReactElement, ReactChild } from 'react'
+import { ReactElement, ReactNode } from 'react'
 import { styled } from '@mui/material/styles'
 import MuiDialog from '@mui/material/Dialog'
 import DialogActions from '@mui/material/DialogActions'
@@ -13,11 +13,9 @@ interface DialogProps {
   onClose: () => void
   dialogTitle?: DialogTitle
   dialogAction?: DialogAction
-  /** Prefer `dialogAction` when child elements are buttons */
-  dialogActionChildren?: ReactChild
   divider?: boolean
   fullscreen?: boolean
-  children?: ReactChild
+  children?: ReactElement
 }
 
 interface DialogAction {
@@ -27,7 +25,7 @@ interface DialogAction {
 }
 
 interface DialogTitle {
-  icon?: ReactElement
+  icon?: ReactNode
   title: string
   closeButton?: boolean
 }
@@ -70,7 +68,6 @@ export function Dialog({
   onClose,
   dialogTitle,
   dialogAction,
-  dialogActionChildren,
   divider,
   fullscreen,
   children
@@ -98,11 +95,9 @@ export function Dialog({
           )}
         </MuiDialogTitle>
       )}
-      <DialogContent dividers={divider ?? dialogActionChildren != null}>
-        {children}
-      </DialogContent>
-      {dialogAction != null ? (
-        <DialogActions data-testid="dialog-action">
+      <DialogContent dividers={divider}>{children}</DialogContent>
+      {dialogAction != null && (
+        <DialogActions>
           {dialogAction.closeLabel != null && (
             <Button onClick={onClose}>{dialogAction.closeLabel}</Button>
           )}
@@ -110,11 +105,7 @@ export function Dialog({
             {dialogAction.submitLabel ?? 'Save'}
           </Button>
         </DialogActions>
-      ) : dialogActionChildren != null ? (
-        <DialogActions data-testid="dialog-action">
-          {dialogActionChildren}
-        </DialogActions>
-      ) : null}
+      )}
     </StyledDialog>
   )
 }

@@ -20,10 +20,6 @@
     "editor.formatOnSave": true,
     "editor.formatOnSaveMode": "file"
   },
-  "editor.codeActionsOnSave": {
-    "source.fixAll.eslint": true
-  },
-  "eslint.validate": ["javascript", "typescript"],
   "yaml.schemas": {
     "./apps/api-gateway/routerSchema.json": [
       "apps/api-gateway/router.yaml",

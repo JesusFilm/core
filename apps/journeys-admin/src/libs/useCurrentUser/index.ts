@@ -1,1 +1,0 @@
-export { useCurrentUser } from './useCurrentUser'

@@ -11,25 +11,20 @@ import { useTranslation } from 'react-i18next'
 import { getLaunchDarklyClient } from '@core/shared/ui/getLaunchDarklyClient'
 import Box from '@mui/material/Box'
 import { useRouter } from 'next/router'
-import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { PageWrapper } from '../../../src/components/PageWrapper'
 import { UserInviteAcceptAll } from '../../../__generated__/UserInviteAcceptAll'
 import i18nConfig from '../../../next-i18next.config'
 import { MemoizedDynamicReport } from '../../../src/components/DynamicPowerBiReport'
 import { createApolloClient } from '../../../src/libs/apolloClient'
 import { JourneysReportType } from '../../../__generated__/globalTypes'
-import { useUserJourneyOpen } from '../../../src/libs/useUserJourneyOpen'
 import { ACCEPT_USER_INVITE } from '../..'
 
 function JourneyReportsPage(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const AuthUser = useAuthUser()
   const router = useRouter()
-  const { journey } = useJourney()
 
   const journeyId = router.query.journeyId as string
-
-  useUserJourneyOpen(AuthUser.id, journey?.id, journey?.userJourneys)
 
   return (
     <>

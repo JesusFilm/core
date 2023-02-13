@@ -1,7 +1,6 @@
 import { ComponentProps } from 'react'
 import { Story, Meta } from '@storybook/react'
 import { noop } from 'lodash'
-import Button from '@mui/material/Button'
 import Typography from '@mui/material/Typography'
 import TextField from '@mui/material/TextField'
 import MuiListItem from '@mui/material/ListItem'
@@ -69,29 +68,6 @@ MinHeight.args = {
     title: 'Minimum Height Dialog',
     closeButton: true
   },
-  children: <Typography>This is the content</Typography>
-}
-
-export const ActionComponent = Template.bind({})
-ActionComponent.args = {
-  open: true,
-  onClose: noop,
-  dialogTitle: {
-    title: 'Custom Action Component Dialog',
-    closeButton: true
-  },
-  dialogActionChildren: (
-    <>
-      <TextField
-        fullWidth
-        label="Dialog Action Field"
-        value="Value"
-        sx={{ ml: 4 }}
-        margin="dense"
-      />
-      <Button sx={{ mx: 2 }}>Add</Button>
-    </>
-  ),
   children: <Typography>This is the content</Typography>
 }
 

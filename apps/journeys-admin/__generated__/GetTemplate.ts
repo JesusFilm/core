@@ -573,10 +573,6 @@ export interface GetTemplate_template_userJourneys {
   __typename: "UserJourney";
   id: string;
   role: UserJourneyRole;
-  /**
-   * Date time of when the journey was first opened
-   */
-  openedAt: any | null;
   user: GetTemplate_template_userJourneys_user | null;
 }
 

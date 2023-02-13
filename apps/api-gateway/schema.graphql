@@ -549,14 +549,6 @@ input JourneyCreateInput
   slug: String
 }
 
-type JourneyProfile
-  @join__type(graph: JOURNEYS, key: "id")
-{
-  id: ID!
-  userId: ID!
-  acceptedTermsAt: DateTime
-}
-
 input JourneysFilter
   @join__type(graph: JOURNEYS)
 {
@@ -799,7 +791,6 @@ type Mutation
 
   """Updates template"""
   journeyTemplate(id: ID!, input: JourneyTemplateInput!): Journey! @join__field(graph: JOURNEYS)
-  journeyProfileCreate: JourneyProfile! @join__field(graph: JOURNEYS)
   userInviteCreate(journeyId: ID!, input: UserInviteCreateInput): UserInvite! @join__field(graph: JOURNEYS)
   userInviteRemove(id: ID!, journeyId: ID!): UserInvite! @join__field(graph: JOURNEYS)
   userInviteAcceptAll: [UserInvite!]! @join__field(graph: JOURNEYS)
@@ -920,7 +911,6 @@ type Query
   adminJourney(id: ID!, idType: IdType): Journey @join__field(graph: JOURNEYS)
   journeys(where: JourneysFilter): [Journey!]! @join__field(graph: JOURNEYS)
   journey(id: ID!, idType: IdType): Journey @join__field(graph: JOURNEYS)
-  getJourneyProfile: JourneyProfile @join__field(graph: JOURNEYS)
   userInvites(journeyId: ID!): [UserInvite!] @join__field(graph: JOURNEYS)
   getUserRole: UserRole @join__field(graph: JOURNEYS)
 
@@ -944,7 +934,7 @@ type Query
   language(id: ID!, idType: LanguageIdType): Language @join__field(graph: LANGUAGES)
   createCloudflareImage: CloudflareImage @join__field(graph: MEDIA)
   getMyCloudflareImages: [CloudflareImage] @join__field(graph: MEDIA)
-  listUnsplashCollectionPhotos(collectionId: String!, page: Int, perPage: Int, orientation: UnsplashPhotoOrientation): [UnsplashPhoto!]! @join__field(graph: MEDIA)
+  listUnsplashCollectionPhotos(collectionId: String!, page: Int, perPage: Int, orientation: UnsplashPhotoOrientation): [UnsplashPhoto]! @join__field(graph: MEDIA)
   searchUnsplashPhotos(query: String!, page: Int, perPage: Int, orderBy: UnsplashOrderBy, collections: [String], contentFilter: UnsplashContentFilter, color: UnsplashColor, orientation: UnsplashPhotoOrientation): UnsplashQueryResponse! @join__field(graph: MEDIA)
   me: User @join__field(graph: USERS)
   videos(where: VideosFilter, offset: Int, limit: Int): [Video!]! @join__field(graph: VIDEOS)
@@ -1426,31 +1416,31 @@ enum UnsplashOrderBy
 type UnsplashPhoto
   @join__type(graph: MEDIA)
 {
-  id: String!
-  created_at: String!
-  updated_at: String!
-  blur_hash: String!
-  width: Int!
-  height: Int!
-  color: String!
-  description: String!
-  alt_description: String!
-  urls: UnsplashPhotoUrls!
-  links: UnsplashPhotoLinks!
-  categories: [String!]!
-  likes: Int!
-  liked_by_user: Boolean!
-  current_user_collections: [String!]!
-  user: UnsplashUser!
+  id: String
+  created_at: String
+  updated_at: String
+  blur_hash: String
+  width: Int
+  height: Int
+  color: String
+  description: String
+  alt_description: String
+  urls: UnsplashPhotoUrls
+  links: UnsplashPhotoLinks
+  categories: [String]
+  likes: Int
+  liked_by_user: Boolean
+  current_user_collections: [String]
+  user: UnsplashUser
 }
 
 type UnsplashPhotoLinks
   @join__type(graph: MEDIA)
 {
-  self: String!
-  html: String!
-  download: String!
-  download_location: String!
+  self: String
+  html: String
+  download: String
+  download_location: String
 }
 
 enum UnsplashPhotoOrientation
@@ -1464,61 +1454,61 @@ enum UnsplashPhotoOrientation
 type UnsplashPhotoUrls
   @join__type(graph: MEDIA)
 {
-  raw: String!
-  full: String!
-  regular: String!
-  small: String!
-  thumb: String!
+  raw: String
+  full: String
+  regular: String
+  small: String
+  thumb: String
 }
 
 type UnsplashQueryResponse
   @join__type(graph: MEDIA)
 {
-  total: Int!
-  total_pages: Int!
-  results: [UnsplashPhoto!]!
+  total: Int
+  total_pages: Int
+  results: [UnsplashPhoto]
 }
 
 type UnsplashUser
   @join__type(graph: MEDIA)
 {
-  id: String!
-  updated_at: String!
-  username: String!
-  name: String!
-  first_name: String!
-  last_name: String!
-  twitter_username: String!
-  portfolio_url: String!
-  bio: String!
-  location: String!
-  links: UnsplashUserLinks!
-  profile_image: UnsplashUserImage!
-  instagram_username: String!
-  total_collections: Int!
-  total_likes: Int!
-  total_photos: Int!
-  accepted_tos: Boolean!
+  id: String
+  updated_at: String
+  username: String
+  name: String
+  first_name: String
+  last_name: String
+  twitter_username: String
+  portfolio_url: String
+  bio: String
+  location: String
+  links: UnsplashUserLinks
+  profile_image: UnsplashUserImage
+  instagram_username: String
+  total_collections: Int
+  total_likes: Int
+  total_photos: Int
+  accepted_tos: Boolean
 }
 
 type UnsplashUserImage
   @join__type(graph: MEDIA)
 {
-  small: String!
-  medium: String!
-  large: String!
+  small: String
+  medium: String
+  large: String
 }
 
 type UnsplashUserLinks
   @join__type(graph: MEDIA)
 {
-  self: String!
-  html: String!
-  photos: String!
-  likes: String!
-  portfolio: String!
-  following: String!
-  followers: String!
+  self: String
+  html: String
+  photos: String
+  likes: String
+  portfolio: String
+  following: String
+  followers: String
 }
 
 type User

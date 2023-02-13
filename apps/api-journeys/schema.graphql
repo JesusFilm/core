@@ -156,7 +156,6 @@ extend type Mutation {
 
   """Updates template"""
   journeyTemplate(id: ID!, input: JourneyTemplateInput!): Journey!
-  journeyProfileCreate: JourneyProfile!
   userInviteCreate(journeyId: ID!, input: UserInviteCreateInput): UserInvite!
   userInviteRemove(id: ID!, journeyId: ID!): UserInvite!
   userInviteAcceptAll: [UserInvite!]!
@@ -1517,7 +1516,6 @@ extend type Query {
   adminJourney(id: ID!, idType: IdType): Journey
   journeys(where: JourneysFilter): [Journey!]!
   journey(id: ID!, idType: IdType): Journey
-  getJourneyProfile: JourneyProfile
   userInvites(journeyId: ID!): [UserInvite!]
   getUserRole: UserRole
 
@@ -1587,14 +1585,6 @@ type UserJourney
 
 input JourneyTemplateInput {
   template: Boolean
-}
-
-type JourneyProfile
-  @key(fields: "id")
-{
-  id: ID!
-  userId: ID!
-  acceptedTermsAt: DateTime
 }
 
 type UserInvite
@@ -1835,4 +1825,4 @@ type _Service {
   sdl: String
 }
 
-union _Entity = Journey | JourneyProfile | Language | User | UserInvite | UserJourney | UserRole | Video | Visitor
+union _Entity = Journey | Language | User | UserInvite | UserJourney | UserRole | Video | Visitor
