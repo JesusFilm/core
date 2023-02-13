@@ -7,6 +7,8 @@ import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
 import { gql, useQuery } from '@apollo/client'
 import fetch from 'node-fetch'
+import CloudDoneOutlinedIcon from '@mui/icons-material/CloudDoneOutlined'
+import CloudOffOutlinedIcon from '@mui/icons-material/CloudOffOutlined'
 import { CloudflareUploadUrl } from '../../../../../../__generated__/CloudflareUploadUrl'
 
 export const CLOUDFLARE_UPLOAD_URL = gql`
@@ -27,14 +29,11 @@ export function ImageUpload({
   onChange,
   loading = false
 }: ImageUploadProps): ReactElement {
-  const [text, setText] = useState('upload') // upload | loading | success | failure
+  const [text, setText] = useState('upload')
 
   useEffect(() => {
-    if (loading) {
-      setText('loading')
-      console.log('hehe')
-    }
-  }, [loading, text])
+    if (loading) setText('loading')
+  }, [loading])
 
   const { data } = useQuery<CloudflareUploadUrl>(CLOUDFLARE_UPLOAD_URL)
 
@@ -53,10 +52,10 @@ export function ImageUpload({
         body: formData
       })
     ).json()
-    if (response.success === true) {
-      setText('success')
-    }
-    const src = `https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/${response.result.id}/format=webp`
+
+    setText(response.success === true ? 'success' : 'failure')
+
+    const src = `https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/${response.result.id}/public`
     onChange(src)
   }
 
@@ -88,18 +87,27 @@ export function ImageUpload({
           display: 'flex'
         }}
       >
-        <BackupOutlinedIcon
-          sx={{ fontSize: '48px', color: 'secondary.light', mb: 1 }}
-        />
+        {text === 'loading' || text === 'upload' ? (
+          <BackupOutlinedIcon
+            sx={{ fontSize: '48px', color: 'secondary.light', mb: 1 }}
+          />
+        ) : text === 'success' ? (
+          <CloudDoneOutlinedIcon
+            sx={{ fontSize: '48px', color: 'secondary.light', mb: 1 }}
+          />
+        ) : (
+          <CloudOffOutlinedIcon
+            sx={{ fontSize: '48px', color: 'secondary.light', mb: 1 }}
+          />
+        )}
         <Typography variant="body1" sx={{ pb: 4 }}>
-          {/* {text === 'upload'
+          {text === 'upload'
             ? 'Drop an image here'
             : text === 'loading'
             ? 'Uploading...'
             : text === 'success'
             ? 'Upload successful!'
-            : 'Upload failed!'} */}
-          {text}
+            : 'Upload failed!'}
         </Typography>
       </Box>
       <Typography variant="caption" color="secondary.light">
