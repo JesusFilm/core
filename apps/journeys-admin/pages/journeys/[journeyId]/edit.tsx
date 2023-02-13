@@ -11,6 +11,7 @@ import { NextSeo } from 'next-seo'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import { useTranslation } from 'react-i18next'
 import { getLaunchDarklyClient } from '@core/shared/ui/getLaunchDarklyClient'
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { GetJourney } from '../../../__generated__/GetJourney'
 import { UserInviteAcceptAll } from '../../../__generated__/UserInviteAcceptAll'
 import { Editor } from '../../../src/components/Editor'
@@ -21,15 +22,19 @@ import { EditToolbar } from '../../../src/components/Editor/EditToolbar'
 import { JourneyInvite } from '../../../src/components/JourneyInvite/JourneyInvite'
 import { createApolloClient } from '../../../src/libs/apolloClient'
 import i18nConfig from '../../../next-i18next.config'
+import { useUserJourneyOpen } from '../../../src/libs/useUserJourneyOpen'
 import { ACCEPT_USER_INVITE } from '../..'
 
 function JourneyEditPage(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const router = useRouter()
   const AuthUser = useAuthUser()
+  const { journey } = useJourney()
   const { data, error } = useQuery<GetJourney>(GET_JOURNEY, {
     variables: { id: router.query.journeyId }
   })
+
+  useUserJourneyOpen(AuthUser.id, journey?.id, journey?.userJourneys)
 
   return (
     <>

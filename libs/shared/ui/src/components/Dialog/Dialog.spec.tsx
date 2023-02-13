@@ -14,19 +14,16 @@ describe('Dialog', () => {
       title: 'Title',
       closeButton: true
     },
-    dialogAction: {
-      onSubmit: jest.fn()
-    },
     children: <Typography>Children</Typography>
   }
   it('should display the content', () => {
-    const { getByText, getByRole, getByTestId } = render(
+    const { getByText, getByTestId, queryByTestId } = render(
       <Dialog {...dialogProps} />
     )
     expect(getByTestId('LanguageIcon')).toBeInTheDocument()
     expect(getByText('Title')).toBeInTheDocument()
     expect(getByText('Children')).toBeInTheDocument()
-    expect(getByRole('button', { name: 'Save' })).toBeInTheDocument()
+    expect(queryByTestId('dialog-action')).not.toBeInTheDocument()
   })
 
   it('should close the dialog when the close button is clicked', () => {
@@ -35,36 +32,66 @@ describe('Dialog', () => {
     expect(dialogProps.onClose).toHaveBeenCalled()
   })
 
-  it('should show the custom labels for buttons', () => {
+  describe('dialogAction', () => {
     const input: ComponentProps<typeof Dialog> = {
       ...dialogProps,
       dialogAction: {
         onSubmit: jest.fn(),
         submitLabel: 'Accept',
         closeLabel: 'Cancel'
-      }
+      },
+      dialogActionChildren: <Typography>Custom Action Component</Typography>
     }
-    const { getByRole } = render(<Dialog {...input} />)
-    expect(getByRole('button', { name: 'Accept' })).toBeInTheDocument()
-    expect(getByRole('button', { name: 'Cancel' })).toBeInTheDocument()
+
+    it('should show Save button by default', () => {
+      const { getByTestId, getByRole } = render(
+        <Dialog {...input} dialogAction={{ onSubmit: jest.fn() }} />
+      )
+      expect(getByTestId('dialog-action').children).toHaveLength(1)
+      expect(getByTestId('dialog-action').children[0]).toEqual(
+        getByRole('button', { name: 'Save' })
+      )
+    })
+
+    it('should show the custom labels for buttons', () => {
+      const { getByTestId, getByRole } = render(<Dialog {...input} />)
+      expect(getByTestId('dialog-action').children).toHaveLength(2)
+      expect(getByTestId('dialog-action').children[0]).toEqual(
+        getByRole('button', { name: 'Cancel' })
+      )
+      expect(getByTestId('dialog-action').children[1]).toEqual(
+        getByRole('button', { name: 'Accept' })
+      )
+    })
+
+    it('should close the dialog when cancel is clicked', () => {
+      const { getByRole } = render(<Dialog {...input} />)
+      fireEvent.click(getByRole('button', { name: 'Cancel' }))
+      expect(dialogProps.onClose).toHaveBeenCalled()
+    })
+
+    it('should call the submit function', () => {
+      const { getByRole } = render(<Dialog {...input} />)
+      fireEvent.click(getByRole('button', { name: 'Accept' }))
+      expect(input.dialogAction?.onSubmit).toHaveBeenCalled()
+    })
   })
 
-  it('should close the dialog when cancel is clicked', () => {
-    const input: ComponentProps<typeof Dialog> = {
-      ...dialogProps,
-      dialogAction: {
-        onSubmit: jest.fn(),
-        closeLabel: 'Cancel'
-      }
-    }
-    const { getByRole } = render(<Dialog {...input} />)
-    fireEvent.click(getByRole('button', { name: 'Cancel' }))
-    expect(dialogProps.onClose).toHaveBeenCalled()
-  })
-
-  it('should call the submit function', () => {
-    const { getByRole } = render(<Dialog {...dialogProps} />)
-    fireEvent.click(getByRole('button', { name: 'Save' }))
-    expect(dialogProps.dialogAction?.onSubmit).toHaveBeenCalled()
+  describe('dialogActionChildren', () => {
+    it('should display the dialog action component if no dialog action buttons', () => {
+      const { getByText, getByTestId } = render(
+        <Dialog
+          {...dialogProps}
+          dialogAction={undefined}
+          dialogActionChildren={
+            <Typography>Custom Action Component</Typography>
+          }
+        />
+      )
+      expect(getByTestId('dialog-action').children).toHaveLength(1)
+      expect(getByTestId('dialog-action').children[0]).toEqual(
+        getByText('Custom Action Component')
+      )
+    })
   })
 })
