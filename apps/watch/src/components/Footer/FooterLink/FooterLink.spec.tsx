@@ -1,5 +1,5 @@
 import { render } from '@testing-library/react'
-import Facebook from '../../../../public/watch/icons/facebook.svg'
+import Facebook from '../FooterSocials/assets/facebook.svg'
 import { FooterLink } from './FooterLink'
 
 describe('FooterLink', () => {
