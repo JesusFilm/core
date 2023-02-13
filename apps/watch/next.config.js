@@ -29,7 +29,7 @@ const nextConfig = {
     defaultLocale: 'en',
     localeDetection: false
   },
-  trailingSlash: true,
+  basePath: '/watch',
   productionBrowserSourceMaps: true
 }
 module.exports = (_phase, { defaultConfig }) => {
