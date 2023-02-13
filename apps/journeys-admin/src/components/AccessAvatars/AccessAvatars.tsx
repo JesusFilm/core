@@ -2,8 +2,8 @@ import { ReactElement, useState } from 'react'
 import MuiAvatar from '@mui/material/Avatar'
 import AvatarGroup from '@mui/material/AvatarGroup'
 import Box from '@mui/material/Box'
-import { noop } from 'lodash'
 import Badge from '@mui/material/Badge'
+import { noop } from 'lodash'
 import { AccessDialog } from '../AccessDialog'
 import { GetJourneys_journeys_userJourneys as UserJourney } from '../../../__generated__/GetJourneys'
 import { Avatar } from '../Avatar'
@@ -119,7 +119,16 @@ const withRenderLogic = ({
           variant="dot"
           invisible={invisible}
           aria-label="overflow-notification-badge"
+          sx={{
+            '& .MuiBadge-badge': {
+              top: '15%',
+              right: '5%',
+              boxShadow: (theme) =>
+                `0 0 0 2px ${theme.palette.background.paper}`
+            }
+          }}
         >
+          ,
           <AvatarGroup
             max={max}
             sx={{
