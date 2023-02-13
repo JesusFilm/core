@@ -1,11 +1,10 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { waitFor } from '@testing-library/react'
 import { renderHook, act } from '@testing-library/react-hooks'
-import { noop } from 'lodash'
 import { GET_CURRENT_USER, useCurrentUser } from './useCurrentUser'
 
 describe('useCurrentUser', () => {
-  it('should return current user', async () => {
+  it('should return current user when called', async () => {
     const { result } = renderHook(() => useCurrentUser(), {
       wrapper: ({ children }) => (
         <MockedProvider
@@ -30,48 +29,19 @@ describe('useCurrentUser', () => {
       )
     })
 
-    await act(
-      async () =>
-        await waitFor(() =>
-          expect(result.current).toEqual({
-            id: 'user.id',
-            email: 'test@email.com'
-          })
-        )
-    )
-  })
+    await act(async () => {
+      await result.current.loadUser()
 
-  it('should throw error if user not found', async () => {
-    renderHook(() => useCurrentUser(), {
-      wrapper: ({ children }) => (
-        <MockedProvider
-          mocks={[
-            {
-              request: {
-                query: GET_CURRENT_USER
-              },
-              result: {
-                data: {
-                  me: null
-                }
-              }
-            }
-          ]}
-        >
-          {children}
-        </MockedProvider>
-      )
-    })
-
-    await act(
-      async () =>
-        await waitFor(() => noop()).catch((error) => {
-          expect(error.message).toEqual('Current user cannot be found')
+      await waitFor(() =>
+        expect(result.current.data).toEqual({
+          id: 'user.id',
+          email: 'test@email.com'
         })
-    )
+      )
+    })
   })
 
-  it('should return placeholder user if loading', async () => {
+  it('should return placeholder user by default', async () => {
     const { result } = renderHook(() => useCurrentUser(), {
       wrapper: ({ children }) => (
         <MockedProvider
@@ -96,7 +66,8 @@ describe('useCurrentUser', () => {
       )
     })
 
-    expect(result.current).toEqual({
+    expect(result.current.data).toEqual({
+      __typename: 'User',
       id: '',
       email: ''
     })

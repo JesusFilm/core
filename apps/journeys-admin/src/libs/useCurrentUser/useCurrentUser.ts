@@ -1,4 +1,9 @@
-import { gql, useQuery } from '@apollo/client'
+import {
+  gql,
+  LazyQueryExecFunction,
+  OperationVariables,
+  useLazyQuery
+} from '@apollo/client'
 import {
   GetCurrentUser,
   GetCurrentUser_me as User
@@ -13,15 +18,15 @@ export const GET_CURRENT_USER = gql`
   }
 `
 
-export function useCurrentUser(): User {
-  const { data, loading } = useQuery<GetCurrentUser>(GET_CURRENT_USER)
+export function useCurrentUser(): {
+  loadUser: LazyQueryExecFunction<GetCurrentUser, OperationVariables>
+  data: User
+} {
+  const [loadUser, { data }] = useLazyQuery<GetCurrentUser>(GET_CURRENT_USER)
 
-  if (!loading) {
-    if (data?.me == null) {
-      throw new Error('Current user cannot be found')
-    }
-    return data.me
+  if (data?.me != null) {
+    return { loadUser, data: data.me }
   }
 
-  return { __typename: 'User', id: '', email: '' }
+  return { loadUser, data: { __typename: 'User', id: '', email: '' } }
 }

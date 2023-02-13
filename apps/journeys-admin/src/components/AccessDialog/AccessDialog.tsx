@@ -46,8 +46,7 @@ export function AccessDialog({
     useLazyQuery<GetJourneyWithUserJourneys>(GET_JOURNEY_WITH_USER_JOURNEYS, {
       variables: { id: journeyId }
     })
-
-  const currentUserData = useCurrentUser()
+  const { loadUser, data: currentUserData } = useCurrentUser()
 
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
   const disable =
@@ -69,8 +68,9 @@ export function AccessDialog({
   useEffect(() => {
     if (open === true) {
       void loadJourney()
+      void loadUser()
     }
-  }, [open, loadJourney])
+  }, [open, loadJourney, loadUser])
 
   return (
     <Dialog

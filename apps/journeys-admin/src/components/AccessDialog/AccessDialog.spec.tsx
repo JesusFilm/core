@@ -13,9 +13,12 @@ jest.mock('@mui/material/useMediaQuery', () => ({
 jest.mock('../../libs/useCurrentUser', () => ({
   __esModule: true,
   useCurrentUser: jest.fn().mockReturnValue({
-    id: 'userId1',
-    __typename: 'User',
-    email: 'amin@email.com'
+    loadUser: jest.fn(),
+    data: {
+      id: 'userId1',
+      __typename: 'User',
+      email: 'amin@email.com'
+    }
   })
 }))
 
