@@ -1,6 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { Database } from 'arangojs'
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
+import { mockCollectionSaveResult } from '@core/nest/database/mock'
 
 import { DocumentCollection, EdgeCollection } from 'arangojs/collection'
 import fetch, { Response } from 'node-fetch'
@@ -99,6 +100,29 @@ describe('ImageService', () => {
           method: 'DELETE'
         }
       )
+    })
+  })
+  describe('getCloudflareImagesForUserId', () => {
+    const input = {
+      _key: cfResult.result.id,
+      uploadUrl: cfResult.result.uploadURL,
+      uploaded: true
+    }
+    const result = {
+      id: input._key,
+      uploadUrl: input.uploadUrl,
+      uploaded: input.uploaded
+    }
+    beforeEach(() => {
+      collectionMock.update.mockReturnValue(
+        mockCollectionSaveResult(service.collection, input)
+      )
+    })
+
+    it('should return an updated result', async () => {
+      expect(
+        await service.update(cfResult.result.id, { uploaded: true })
+      ).toEqual(result)
     })
   })
 })

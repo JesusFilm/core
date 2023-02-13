@@ -38,6 +38,7 @@ describe('ImageResolver', () => {
         get: jest.fn(() => cfImage),
         getAll: jest.fn(() => [cfImage, cfImage]),
         save: jest.fn((input) => input),
+        update: jest.fn((input) => input),
         getImageInfoFromCloudflare: jest.fn(() => cfResult),
         deleteImageFromCloudflare: jest.fn(() => cfResult),
         getCloudflareImagesForUserId: jest.fn(() => [cfImage]),
@@ -79,6 +80,21 @@ describe('ImageResolver', () => {
   describe('getMyCloudflareImages', () => {
     it('returns cloudflare response information', async () => {
       expect(await resolver.getMyCloudflareImages('1')).toEqual([cfImage])
+    })
+  })
+  describe('cloudflareUploadComplete', () => {
+    it('throws an error if wrong user', async () => {
+      await resolver.cloudflareUploadComplete('1', 'user_2').catch((e) => {
+        expect(e.message).toEqual('This image does not belong to you')
+      })
+    })
+    it('calls service.save', async () => {
+      expect(
+        await resolver.cloudflareUploadComplete(cfImage.id, user.id)
+      ).toEqual(true)
+      expect(service.update).toHaveBeenCalledWith(cfImage.id, {
+        uploaded: true
+      })
     })
   })
 })
