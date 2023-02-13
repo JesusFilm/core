@@ -1,4 +1,5 @@
 import { ReactElement } from 'react'
+import { useTranslation } from 'react-i18next'
 import Card from '@mui/material/Card'
 import CardContent from '@mui/material/CardContent'
 import Typography from '@mui/material/Typography'
@@ -23,6 +24,8 @@ export function AccessDeniedCard({
   requestAccess = false,
   handleRequestAccess
 }: AccessDeniedCardProps): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
+
   return (
     <Card sx={{ display: 'flex', flexDirection: 'row' }}>
       <CardContent
@@ -60,7 +63,7 @@ export function AccessDeniedCard({
         (requestAccess ? (
           <Stack direction="row" sx={{ color: 'success.main' }}>
             <CheckCircleRoundedIcon />
-            <Typography>Request Sent</Typography>
+            <Typography>{t('Request Sent')}</Typography>
           </Stack>
         ) : (
           <CardActions>
@@ -69,7 +72,7 @@ export function AccessDeniedCard({
               onClick={handleRequestAccess}
               startIcon={<SupervisorAccountRoundedIcon />}
             >
-              Request Now
+              {t('Request Now')}
             </Button>
           </CardActions>
         ))}
