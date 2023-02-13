@@ -12,7 +12,7 @@ export function EmailInviteForm(): ReactElement {
     console.log('Blank... for now')
   }
 
-  const { t } = useTranslation('libs-journeys-ui')
+  const { t } = useTranslation('apps-journeys-admin')
 
   const validationSchema = object().shape({
     email: string()
