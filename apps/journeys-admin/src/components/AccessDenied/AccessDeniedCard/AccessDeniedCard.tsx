@@ -21,24 +21,34 @@ export function AccessDeniedCard({
 }: AccessDeniedCardProps): ReactElement {
   return (
     <Card>
-      <CardContent sx={{ display: 'flex', flexDirection: 'row' }}>
-        <Typography
+      <CardContent
+        sx={{
+          display: 'flex',
+          flexDirection: 'row',
+          padding: 5,
+          '&:last-child': {
+            pb: 5
+          }
+        }}
+      >
+        <Stack
           sx={{
-            fontFamily: 'Montserrat',
-            fontStyle: 'normal',
-            fontWeight: 400,
-            fontSize: '36px',
-            lineHeight: '40px'
+            mr: 3,
+            width: '40px',
+            height: '52px',
+            alignItems: 'center',
+            justifyContent: 'center'
           }}
-          color="secondary.light"
         >
-          {stepNumber}
-        </Typography>
+          <Typography variant="h1" color="secondary.light">
+            {stepNumber}
+          </Typography>
+        </Stack>
         <Stack>
           <Typography variant="h6" color="secondary.dark">
             {heading}
           </Typography>
-          <Typography variant="body2" color="secondary.light">
+          <Typography variant="body2" color="secondary.light" sx={{ mt: 1.5 }}>
             {description}
           </Typography>
         </Stack>

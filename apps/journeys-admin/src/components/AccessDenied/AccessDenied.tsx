@@ -21,7 +21,7 @@ export function AccessDenied({
     <>
       <Stack direction="row">
         <LockRoundedIcon />
-        <Typography>{t(`You can't edit this journey`)}</Typography>
+        <Typography variant="h3">{t(`You can't edit this journey`)}</Typography>
       </Stack>
       <List>
         <AccessDeniedCard
