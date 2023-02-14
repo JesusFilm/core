@@ -102,7 +102,7 @@ describe('Base Service', () => {
         expect(bindVars).toEqual({
           value0: [block._key, block2._key]
         })
-        return { all: () => [block, block2] } as unknown as ArrayCursor
+        return { all: () => [block2, block] } as unknown as ArrayCursor
       })
       expect(await service.loadMany([block._key, block2._key])).toEqual([
         blockResponse,
