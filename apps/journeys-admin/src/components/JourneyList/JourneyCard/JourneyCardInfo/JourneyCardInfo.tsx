@@ -59,13 +59,13 @@ export function JourneyCardInfo({ journey, variant }: Props): ReactElement {
                 sx={{
                   color: (theme) => theme.palette.warning.main,
                   fontWeight: 700,
-                  minWidth: '48px'
+                  minWidth: '52px'
                 }}
               >
                 {usersRequestingAccess}
               </Typography>
               <Typography variant="body2" noWrap>
-                {t(`\u00A0requested editing rights for your journey`)}
+                {t(`requested editing rights for your journey`)}
               </Typography>
             </Stack>
           ) : (
