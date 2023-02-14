@@ -128,7 +128,6 @@ const withRenderLogic = ({
             }
           }}
         >
-          ,
           <AvatarGroup
             max={max}
             sx={{
