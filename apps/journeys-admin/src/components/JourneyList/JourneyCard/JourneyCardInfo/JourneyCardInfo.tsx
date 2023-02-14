@@ -1,7 +1,6 @@
 import { ReactElement } from 'react'
 import Typography from '@mui/material/Typography'
 import Skeleton from '@mui/material/Skeleton'
-import EditIcon from '@mui/icons-material/Edit'
 import TranslateIcon from '@mui/icons-material/Translate'
 import Stack from '@mui/material/Stack'
 import { useTranslation } from 'react-i18next'
@@ -69,33 +68,27 @@ export function JourneyCardInfo({ journey, variant }: Props): ReactElement {
               </Typography>
             </Stack>
           ) : (
-            <>
-              <Skeleton variant="text" width={60} />
-            </>
+            <Skeleton variant="text" width={60} />
           )}
         </>
       ) : (
         <>
           {journey != null ? (
-            <StatusChip status={journey.status} />
+            <>
+              <StatusChip status={journey.status} />
+              <Stack direction="row" alignItems="center" spacing={1.5}>
+                <TranslateIcon sx={{ fontSize: 13 }} />
+                <Typography variant="caption">
+                  {journey.language.name.find(({ primary }) => primary)?.value}
+                </Typography>
+              </Stack>
+            </>
           ) : (
-            <Stack direction="row" alignItems="center" spacing={1.5}>
-              <EditIcon sx={{ fontSize: 13 }} />
-              <Typography variant="caption">
-                <Skeleton variant="text" width={30} />
-              </Typography>
-            </Stack>
+            <>
+              <Skeleton variant="text" width={40} />
+              <Skeleton variant="text" width={40} />
+            </>
           )}
-          <Stack direction="row" alignItems="center" spacing={1.5}>
-            <TranslateIcon sx={{ fontSize: 13 }} />
-            <Typography variant="caption">
-              {journey != null ? (
-                journey.language.name.find(({ primary }) => primary)?.value
-              ) : (
-                <Skeleton variant="text" width={40} />
-              )}
-            </Typography>
-          </Stack>
         </>
       )}
     </Stack>

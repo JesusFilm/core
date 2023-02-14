@@ -3,9 +3,7 @@ import Card from '@mui/material/Card'
 import CardActionArea from '@mui/material/CardActionArea'
 import CardContent from '@mui/material/CardContent'
 import CardActions from '@mui/material/CardActions'
-import IconButton from '@mui/material/IconButton'
 import Link from 'next/link'
-import MoreVertIcon from '@mui/icons-material/MoreVert'
 import { ApolloQueryResult } from '@apollo/client'
 import { GetActiveJourneys } from '../../../../__generated__/GetActiveJourneys'
 import { GetArchivedJourneys } from '../../../../__generated__/GetArchivedJourneys'
@@ -83,7 +81,7 @@ export function JourneyCard({
           }}
         >
           <JourneyCardInfo journey={journey} variant={variant} />
-          {journey != null ? (
+          {journey != null && (
             <JourneyCardMenu
               id={journey.id}
               status={journey.status}
@@ -91,10 +89,6 @@ export function JourneyCard({
               published={journey.publishedAt != null}
               refetch={refetch}
             />
-          ) : (
-            <IconButton disabled>
-              <MoreVertIcon />
-            </IconButton>
           )}
         </CardActions>
       </>

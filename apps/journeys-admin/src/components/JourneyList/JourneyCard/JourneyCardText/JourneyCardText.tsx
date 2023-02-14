@@ -43,7 +43,7 @@ export function JourneyCardText({ journey, variant }: Props): ReactElement {
           {journey != null ? (
             journey.title
           ) : (
-            <Skeleton variant="text" width={200} />
+            <Skeleton variant="text" width={400} />
           )}
         </Typography>
       </StyledBadge>
