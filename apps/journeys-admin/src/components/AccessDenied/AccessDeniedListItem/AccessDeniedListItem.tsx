@@ -7,6 +7,7 @@ import ListItem from '@mui/material/ListItem'
 import ListItemButton from '@mui/material/ListItemButton'
 import ListItemText from '@mui/material/ListItemText'
 import ListItemIcon from '@mui/material/ListItemIcon'
+import Typography from '@mui/material/Typography'
 
 interface AccessDeniedListItemProps {
   stepNumber: number
@@ -34,19 +35,31 @@ export function AccessDeniedListItem({
       }}
     >
       <ListItemText
-        primary={stepNumber}
-        primaryTypographyProps={{
-          fontFamily: [
-            '"Montserrat", "Open Sans", "Tahoma", "Verdana", sans-serif'
-          ].join(','),
-          fontWeight: 400,
-          fontSize: '36px',
-          lineHeight: '40px',
-          textAlign: 'center'
-        }}
+        disableTypography
+        primary={
+          <Typography
+            sx={{
+              fontFamily: 'Montserrat',
+              fontWeight: 400,
+              fontSize: '36px',
+              lineHeight: '40px',
+              textAlign: 'center',
+              color: 'secondary.light',
+              fontStyle: 'normal'
+            }}
+          >
+            {stepNumber}
+          </Typography>
+        }
+        primaryTypographyProps={{}}
         sx={{ width: '40px' }}
       />
-      <ListItemText primary={heading} secondary={description} sx={{ ml: 3 }} />
+      <ListItemText
+        disableTypography
+        primary={<Typography variant="h6">{heading}</Typography>}
+        secondary={<Typography variant="body2">{description}</Typography>}
+        sx={{ ml: 3 }}
+      />
       {handleRequestAccess != null &&
         (requestAccess ? (
           <ListItemButton>
