@@ -815,6 +815,7 @@ type Mutation
   """Update a visitor"""
   visitorUpdate(id: ID!, input: VisitorUpdateInput!): Visitor! @join__field(graph: JOURNEYS)
   deleteCloudflareImage(id: ID!): Boolean @join__field(graph: MEDIA)
+  cloudflareUploadComplete(id: ID!): Boolean @join__field(graph: MEDIA)
 }
 
 """
