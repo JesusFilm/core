@@ -80,6 +80,28 @@ describe('ImageService', () => {
       )
     })
   })
+  describe('uploadToCloudlareByUrl', () => {
+    it('returns cloudflare response information', async () => {
+      const request = mockFetch.mockResolvedValueOnce({
+        ok: true,
+        json: async () => await Promise.resolve(cfResult)
+      } as unknown as Response)
+      expect(
+        await service.uploadToCloudlareByUrl('https://upload.com')
+      ).toEqual(cfResult)
+      expect(request).toHaveBeenCalledWith(
+        `https://api.cloudflare.com/client/v4/accounts/${
+          process.env.CLOUDFLARE_ACCOUNT_ID ?? ''
+        }/images/v1?requireSignedURLs=false&metadata={"key":"value"}&url=https://upload.com`,
+        {
+          headers: {
+            Authorization: `Bearer ${process.env.CLOUDFLARE_IMAGES_TOKEN ?? ''}`
+          },
+          method: 'POST'
+        }
+      )
+    })
+  })
   describe('deleteImageFromCloudflare', () => {
     it('returns cloudflare response information', async () => {
       const request = mockFetch.mockResolvedValueOnce({

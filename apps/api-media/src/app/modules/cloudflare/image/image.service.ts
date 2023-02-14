@@ -16,6 +16,15 @@ interface CloudflareDirectCreatorUploadResponse {
   messages: string[]
 }
 
+interface CloudflarUrlUploadResponse {
+  result: {
+    id: string
+  }
+  success: boolean
+  errors: string[]
+  messages: string[]
+}
+
 @Injectable()
 export class ImageService extends BaseService {
   collection = this.db.collection('cloudflareImages')
@@ -43,6 +52,23 @@ export class ImageService extends BaseService {
       }/images/v1/${imageId}`,
       {
         method: 'DELETE',
+        headers: {
+          Authorization: `Bearer ${process.env.CLOUDFLARE_IMAGES_TOKEN ?? ''}`
+        }
+      }
+    )
+    return await response.json()
+  }
+
+  async uploadToCloudlareByUrl(
+    url: string
+  ): Promise<CloudflarUrlUploadResponse> {
+    const response = await fetch(
+      `https://api.cloudflare.com/client/v4/accounts/${
+        process.env.CLOUDFLARE_ACCOUNT_ID ?? ''
+      }/images/v1?requireSignedURLs=false&metadata={"key":"value"}&url=${url}`,
+      {
+        method: 'POST',
         headers: {
           Authorization: `Bearer ${process.env.CLOUDFLARE_IMAGES_TOKEN ?? ''}`
         }
