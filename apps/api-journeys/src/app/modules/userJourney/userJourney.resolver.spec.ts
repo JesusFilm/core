@@ -1,5 +1,4 @@
 import { Test, TestingModule } from '@nestjs/testing'
-import { v4 as uuidv4 } from 'uuid'
 import {
   IdType,
   JourneyStatus,
@@ -11,20 +10,10 @@ import {
 import { UserJourneyService } from '../userJourney/userJourney.service'
 import { JourneyService } from '../journey/journey.service'
 import { UserRoleService } from '../userRole/userRole.service'
-import { MemberService } from '../member/member.service'
 import { UserJourneyResolver } from './userJourney.resolver'
 
-jest.mock('uuid', () => ({
-  __esModule: true,
-  v4: jest.fn()
-}))
-
-const mockUuidv4 = uuidv4 as jest.MockedFunction<typeof uuidv4>
-
 describe('UserJourneyResolver', () => {
-  let resolver: UserJourneyResolver,
-    service: UserJourneyService,
-    mService: MemberService
+  let resolver: UserJourneyResolver, service: UserJourneyService
 
   const userJourney = {
     id: '1',
@@ -38,13 +27,6 @@ describe('UserJourneyResolver', () => {
     userId: '2',
     journeyId: '2',
     role: UserJourneyRole.owner
-  }
-
-  const userJourneyInvited = {
-    id: '1',
-    userId: '1',
-    journeyId: '1',
-    role: UserJourneyRole.inviteRequested
   }
 
   const publishedAt = new Date('2021-11-19T12:34:56.647Z').toISOString()
@@ -103,7 +85,9 @@ describe('UserJourneyResolver', () => {
             return null
         }
       }),
-      forJourney: jest.fn(() => [userJourney, userJourney])
+      forJourney: jest.fn(() => [userJourney, userJourney]),
+      requestAccess: jest.fn(),
+      approveAccess: jest.fn()
     })
   }
 
@@ -111,13 +95,6 @@ describe('UserJourneyResolver', () => {
     provide: UserRoleService,
     useFactory: () => ({
       getUserRoleById: jest.fn(() => userRole)
-    })
-  }
-
-  const memberService = {
-    provide: MemberService,
-    useFactory: () => ({
-      save: jest.fn((member) => member)
     })
   }
 
@@ -136,64 +113,32 @@ describe('UserJourneyResolver', () => {
         UserJourneyResolver,
         userJourneyService,
         journeyService,
-        userRoleService,
-        memberService
+        userRoleService
       ]
     }).compile()
     resolver = module.get<UserJourneyResolver>(UserJourneyResolver)
     service = await module.resolve(UserJourneyService)
-    mService = module.get<MemberService>(MemberService)
   })
 
   describe('userJourneyRequest', () => {
-    it('creates a UserJourney when journeyId is databaseId', async () => {
-      mockUuidv4.mockReturnValueOnce(userJourneyInvited.id)
+    it('creates a UserJourney', async () => {
       await resolver.userJourneyRequest(journey.id, IdType.databaseId, '1')
-      expect(service.save).toHaveBeenCalledWith(userJourneyInvited)
-    })
-    it('creates a UserJourney when journeyId is slug', async () => {
-      mockUuidv4.mockReturnValueOnce(userJourneyInvited.id)
-      await resolver.userJourneyRequest(journey.slug, IdType.slug, '1')
-      expect(service.save).toHaveBeenCalledWith(userJourneyInvited)
-    })
 
-    it('throws UserInputError when journey does not exist', async () => {
-      await resolver
-        .userJourneyRequest('randomJourneyId', IdType.databaseId, '1')
-        .catch((error) => {
-          expect(error.message).toEqual('journey does not exist')
-        })
+      expect(service.requestAccess).toHaveBeenCalledWith(
+        journey.id,
+        IdType.databaseId,
+        '1'
+      )
     })
   })
 
   describe('userJourneyApprove', () => {
     it('updates a UserJourney to editor status', async () => {
       await resolver.userJourneyApprove(userJourney.id, actorUserJourney.userId)
-      expect(service.update).toHaveBeenCalledWith('1', {
-        role: UserJourneyRole.editor
-      })
-    })
-
-    it('adds user to team', async () => {
-      await resolver.userJourneyApprove(userJourney.id, actorUserJourney.userId)
-      expect(mService.save).toHaveBeenCalledWith(
-        {
-          id: '2:jfp-team',
-          userId: '2',
-          teamId: 'jfp-team'
-        },
-        { overwriteMode: 'ignore' }
+      expect(service.approveAccess).toHaveBeenCalledWith(
+        userJourney.id,
+        actorUserJourney.userId
       )
-    })
-
-    it('should not update a UserJourney to editor status', async () => {
-      await expect(
-        async () =>
-          await resolver.userJourneyApprove(userJourney.id, userJourney.userId)
-      ).rejects.toThrow(
-        'You do not own this journey, so you cannot make changes to it'
-      )
-      expect(service.update).not.toHaveBeenCalled()
     })
   })
 

@@ -10,7 +10,6 @@ import { CurrentUserId } from '@core/nest/decorators/CurrentUserId'
 import { UseGuards } from '@nestjs/common'
 import { GqlAuthGuard } from '@core/nest/gqlAuthGuard/GqlAuthGuard'
 import { AuthenticationError, UserInputError } from 'apollo-server-errors'
-import { v4 as uuidv4 } from 'uuid'
 import {
   IdType,
   Journey,
@@ -19,15 +18,13 @@ import {
 } from '../../__generated__/graphql'
 import { JourneyService } from '../journey/journey.service'
 import { RoleGuard } from '../../lib/roleGuard/roleGuard'
-import { MemberService } from '../member/member.service'
 import { UserJourneyRecord, UserJourneyService } from './userJourney.service'
 
 @Resolver('UserJourney')
 export class UserJourneyResolver {
   constructor(
     private readonly userJourneyService: UserJourneyService,
-    private readonly journeyService: JourneyService,
-    private readonly memberService: MemberService
+    private readonly journeyService: JourneyService
   ) {}
 
   @Query()
@@ -42,19 +39,11 @@ export class UserJourneyResolver {
     @Args('idType') idType: IdType = IdType.slug,
     @CurrentUserId() userId: string
   ): Promise<UserJourneyRecord | undefined> {
-    const journey: Journey =
-      idType === IdType.slug
-        ? await this.journeyService.getBySlug(journeyId)
-        : await this.journeyService.get(journeyId)
-
-    if (journey == null) throw new UserInputError('journey does not exist')
-
-    return await this.userJourneyService.save({
-      id: uuidv4(),
-      userId,
-      journeyId: journey.id,
-      role: UserJourneyRole.inviteRequested
-    })
+    return await this.userJourneyService.requestAccess(
+      journeyId,
+      idType,
+      userId
+    )
   }
 
   async checkOwnership(id: string, userId: string): Promise<UserJourneyRecord> {
@@ -81,27 +70,7 @@ export class UserJourneyResolver {
     @Args('id') id: string,
     @CurrentUserId() userId: string
   ): Promise<UserJourneyRecord | undefined> {
-    const userJourney = await this.getUserJourney(id)
-
-    if (userJourney == null)
-      throw new UserInputError('userJourney does not exist')
-
-    await this.checkOwnership(userJourney.journeyId, userId)
-
-    const journey = await this.journeyService.get(userJourney.journeyId)
-
-    await this.memberService.save(
-      {
-        id: `${userId}:${(journey as { teamId: string }).teamId}`,
-        userId,
-        teamId: journey.teamId
-      },
-      { overwriteMode: 'ignore' }
-    )
-
-    return await this.userJourneyService.update(id, {
-      role: UserJourneyRole.editor
-    })
+    return await this.userJourneyService.approveAccess(id, userId)
   }
 
   @Mutation()
@@ -140,7 +109,13 @@ export class UserJourneyResolver {
     if (userJourney == null)
       throw new UserInputError('userJourney does not exist')
 
-    await this.checkOwnership(userJourney.journeyId, userId)
+    if (
+      userJourney.role !== UserJourneyRole.inviteRequested ||
+      userJourney.userId !== userId
+    ) {
+      await this.checkOwnership(userJourney.journeyId, userId)
+    }
+
     return await this.userJourneyService.remove(id)
   }
 
