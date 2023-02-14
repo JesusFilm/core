@@ -15,9 +15,6 @@ export const VIDEO_CHILD_FIELDS = gql`
       value
     }
     slug
-    children {
-      id
-    }
     variant {
       id
       duration
