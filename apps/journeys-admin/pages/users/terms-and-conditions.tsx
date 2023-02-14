@@ -1,4 +1,4 @@
-import { ReactElement, useEffect, useState } from 'react'
+import { ReactElement } from 'react'
 import {
   withAuthUser,
   withAuthUserTokenSSR,
@@ -7,45 +7,16 @@ import {
 import { NextSeo } from 'next-seo'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import { useTranslation } from 'react-i18next'
-import { useRouter } from 'next/router'
-import { gql, useQuery } from '@apollo/client'
-import { GetJourneyProfile } from '../../__generated__/GetJourneyProfile'
 
 import { TermsAndConditions } from '../../src/components/TermsAndConditions'
 import i18nConfig from '../../next-i18next.config'
 
-export const GET_JOURNEY_PROFILE = gql`
-  query GetJourneyProfile {
-    getJourneyProfile {
-      id
-      userId
-      acceptedTermsAt
-    }
-  }
-`
-
 function TermsAndConditionsPage(): ReactElement {
-  const [termsAccepted, setTermsAccepted] = useState(false)
-  const { data, loading } = useQuery<GetJourneyProfile>(GET_JOURNEY_PROFILE)
-
-  const router = useRouter()
-
-  useEffect(() => {
-    termsAccepted && router.push('/')
-  })
-
   const { t } = useTranslation('apps-journeys-admin')
   return (
     <>
-      {!loading &&
-        (data?.getJourneyProfile === null ? (
-          <>
-            <NextSeo title={t('Terms and Conditions')} />
-            <TermsAndConditions />
-          </>
-        ) : (
-          <>{!termsAccepted && setTermsAccepted(true)}</>
-        ))}
+      <NextSeo title={t('Terms and Conditions')} />
+      <TermsAndConditions />
     </>
   )
 }
