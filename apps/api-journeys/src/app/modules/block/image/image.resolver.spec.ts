@@ -13,6 +13,7 @@ import { BlockResolver } from '../block.resolver'
 import { BlockService } from '../block.service'
 import { UserRoleService } from '../../userRole/userRole.service'
 import { JourneyService } from '../../journey/journey.service'
+import { MemberService } from '../../member/member.service'
 import { ImageBlockResolver } from './image.resolver'
 
 jest.mock('node-fetch', () => {
@@ -145,6 +146,7 @@ describe('ImageBlockResolver', () => {
         UserJourneyService,
         UserRoleService,
         JourneyService,
+        MemberService,
         {
           provide: 'DATABASE',
           useFactory: () => mockDeep<Database>()
