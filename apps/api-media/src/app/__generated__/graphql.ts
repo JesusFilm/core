@@ -86,18 +86,18 @@ export class UnsplashUserLinks {
 export class UnsplashUser {
     __typename?: 'UnsplashUser';
     id: string;
-    updated_at: string;
+    updated_at?: Nullable<string>;
     username: string;
-    name: string;
-    first_name: string;
-    last_name: string;
-    twitter_username: string;
-    portfolio_url: string;
-    bio: string;
-    location: string;
+    name?: Nullable<string>;
+    first_name?: Nullable<string>;
+    last_name?: Nullable<string>;
+    twitter_username?: Nullable<string>;
+    portfolio_url?: Nullable<string>;
+    bio?: Nullable<string>;
+    location?: Nullable<string>;
     links: UnsplashUserLinks;
-    profile_image: UnsplashUserImage;
-    instagram_username: string;
+    profile_image?: Nullable<UnsplashUserImage>;
+    instagram_username?: Nullable<string>;
     total_collections: number;
     total_likes: number;
     total_photos: number;
@@ -108,16 +108,16 @@ export class UnsplashPhoto {
     __typename?: 'UnsplashPhoto';
     id: string;
     created_at: string;
-    updated_at: string;
+    updated_at?: Nullable<string>;
     blur_hash: string;
     width: number;
     height: number;
-    color: string;
-    description: string;
-    alt_description: string;
+    color?: Nullable<string>;
+    description?: Nullable<string>;
+    alt_description?: Nullable<string>;
     urls: UnsplashPhotoUrls;
     links: UnsplashPhotoLinks;
-    categories: string[];
+    categories?: Nullable<string[]>;
     likes: number;
     liked_by_user: boolean;
     current_user_collections: string[];
@@ -143,6 +143,8 @@ export class UnsplashPhotoLinks {
 
 export abstract class IMutation {
     abstract deleteCloudflareImage(id: string): Nullable<boolean> | Promise<Nullable<boolean>>;
+
+    abstract cloudflareUploadComplete(id: string): Nullable<boolean> | Promise<Nullable<boolean>>;
 }
 
 type Nullable<T> = T | null;
