@@ -12,7 +12,7 @@ export function CustomImage({
   loading = false
 }: CustomImageProps): ReactElement {
   return (
-    <Box sx={{ bgcolor: 'background.paper' }}>
+    <Box>
       <ImageUpload onChange={onChange} loading={loading} />
     </Box>
   )

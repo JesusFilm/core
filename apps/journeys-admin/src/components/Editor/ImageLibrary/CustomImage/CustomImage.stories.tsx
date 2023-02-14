@@ -1,26 +1,27 @@
 import { Story, Meta } from '@storybook/react'
 import Box from '@mui/material/Box'
 import { MockedProvider } from '@apollo/client/testing'
-import { journeysAdminConfig } from '../../../../libs/storybook'
+import { ComponentProps } from 'react'
+import { noop } from 'lodash'
+import { simpleComponentConfig } from '../../../../libs/storybook'
 
 import { CustomImage } from '.'
 
 const CustomImageStory = {
-  ...journeysAdminConfig,
+  ...simpleComponentConfig,
   component: CustomImage,
-  title: 'Journeys-Admin/Editor/ImageLibrary/CustomImage',
-  parameters: {
-    ...journeysAdminConfig.parameters,
-    layout: 'fullscreen'
-  }
+  title: 'Journeys-Admin/Editor/ImageLibrary/CustomImage'
 }
 
-export const Default: Story = () => (
+const Template: Story<ComponentProps<typeof CustomImage>> = ({ ...args }) => (
   <MockedProvider mocks={[]}>
     <Box sx={{ maxWidth: 280, maxHeight: 172 }}>
-      <CustomImage />
+      <CustomImage {...args} onChange={noop} />
     </Box>
   </MockedProvider>
 )
+
+export const Default = Template.bind({})
+Default.args = {}
 
 export default CustomImageStory as Meta

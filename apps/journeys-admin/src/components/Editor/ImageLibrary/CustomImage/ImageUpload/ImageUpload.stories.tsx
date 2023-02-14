@@ -1,28 +1,26 @@
 import { Story, Meta } from '@storybook/react'
 import Box from '@mui/material/Box'
 import { MockedProvider } from '@apollo/client/testing'
-import { journeysAdminConfig } from '../../../../../libs/storybook'
+import { noop } from 'lodash'
+import { simpleComponentConfig } from '../../../../../libs/storybook'
 
 import { ImageUpload } from '.'
 
 const ImageUploadStory = {
-  ...journeysAdminConfig,
+  ...simpleComponentConfig,
   component: ImageUpload,
-  title: 'Journeys-Admin/Editor/ImageLibrary/CustomImage/ImageUpload',
-  parameters: {
-    ...journeysAdminConfig.parameters,
-    layout: 'fullscreen'
-  }
+  title: 'Journeys-Admin/Editor/ImageLibrary/CustomImage/ImageUpload'
 }
 
-const onChange = jest.fn()
-
-export const Default: Story = () => (
+export const Template: Story = ({ ...args }) => (
   <MockedProvider mocks={[]}>
-    <Box sx={{ maxWidth: 280, maxHeight: 172 }}>
-      <ImageUpload onChange={onChange} />
+    <Box sx={{ maxWidth: 280, maxHeight: 180 }}>
+      <ImageUpload {...args} onChange={noop} />
     </Box>
   </MockedProvider>
 )
+
+export const Default = Template.bind({})
+Default.args = {}
 
 export default ImageUploadStory as Meta
