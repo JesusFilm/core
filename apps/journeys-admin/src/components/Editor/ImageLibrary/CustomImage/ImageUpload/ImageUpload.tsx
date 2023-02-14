@@ -78,7 +78,7 @@ export function ImageUpload({
           mt: 3,
           width: '100%',
           height: '162px',
-          borderWidth: success == null || loading === true ? '2px' : '0px',
+          borderWidth: success == null ? '2px' : '0px',
           backgroundColor:
             success === false && loading === false
               ? 'rgba(195,44,57,0.08)'

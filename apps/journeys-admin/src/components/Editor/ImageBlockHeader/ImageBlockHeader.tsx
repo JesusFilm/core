@@ -47,11 +47,15 @@ export function ImageBlockHeader({
         </Box>
         <Stack>
           <Typography variant="subtitle2">
-            {selectedBlock != null ? 'Selected Image' : 'Select Image'}
+            {loading
+              ? 'Image is uploading'
+              : selectedBlock != null
+              ? 'Selected Image'
+              : 'Select Image'}
           </Typography>
           <Typography
             variant="caption"
-            display={selectedBlock != null ? 'flex' : 'none'}
+            display={selectedBlock != null && !loading ? 'flex' : 'none'}
           >
             {selectedBlock != null
               ? `${selectedBlock.width} x ${selectedBlock.height} pixels`
@@ -64,7 +68,8 @@ export function ImageBlockHeader({
         disabled={showAdd}
         sx={{
           mr: 2,
-          display: selectedBlock == null && !showAdd ? 'none' : 'flex'
+          display:
+            (selectedBlock == null && !showAdd) || loading ? 'none' : 'flex'
         }}
       >
         {showAdd ? (
