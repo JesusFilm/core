@@ -57,18 +57,18 @@ type UnsplashUserLinks {
 
 type UnsplashUser {
   id: String!
-  updated_at: String!
+  updated_at: String
   username: String!
-  name: String!
-  first_name: String!
-  last_name: String!
-  twitter_username: String!
-  portfolio_url: String!
-  bio: String!
-  location: String!
+  name: String
+  first_name: String
+  last_name: String
+  twitter_username: String
+  portfolio_url: String
+  bio: String
+  location: String
   links: UnsplashUserLinks!
-  profile_image: UnsplashUserImage!
-  instagram_username: String!
+  profile_image: UnsplashUserImage
+  instagram_username: String
   total_collections: Int!
   total_likes: Int!
   total_photos: Int!
@@ -108,16 +108,16 @@ enum UnsplashColor {
 type UnsplashPhoto {
   id: String!
   created_at: String!
-  updated_at: String!
+  updated_at: String
   blur_hash: String!
   width: Int!
   height: Int!
-  color: String!
-  description: String!
-  alt_description: String!
+  color: String
+  description: String
+  alt_description: String
   urls: UnsplashPhotoUrls!
   links: UnsplashPhotoLinks!
-  categories: [String!]!
+  categories: [String!]
   likes: Int!
   liked_by_user: Boolean!
   current_user_collections: [String!]!
