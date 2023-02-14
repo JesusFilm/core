@@ -17,8 +17,15 @@ export abstract class BaseService<T extends Record<string, any> = any> {
   constructor(
     @Inject('DATABASE') public readonly db: Database | DeepMockProxy<Database>
   ) {
-    this.getByIdsDataLoader = new DataLoader(
-      async (ids: readonly string[]) => await this.getByIds(ids)
+    this.getByIdsDataLoader = new DataLoader<string, T>(
+      async (ids: readonly string[]) => {
+        const items: T[] = []
+        const data = await this.getByIds(ids)
+        data.forEach((item) => {
+          items[ids.indexOf(item.id)] = item
+        })
+        return items
+      }
     )
   }
 
