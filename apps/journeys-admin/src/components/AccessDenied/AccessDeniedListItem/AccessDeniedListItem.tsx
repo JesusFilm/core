@@ -64,10 +64,11 @@ export function AccessDeniedListItem({
         (requestedAccess ? (
           <Stack
             direction="row"
+            alignItems="center"
             sx={{ ml: 'auto', color: 'success.main', mr: 3 }}
           >
             <CheckCircleRoundedIcon fontSize="small" sx={{ mr: 2 }} />
-            <Typography variant="body2">{t('Request Sent')}</Typography>
+            <Typography variant="subtitle2">{t('Request Sent')}</Typography>
           </Stack>
         ) : (
           <Button
