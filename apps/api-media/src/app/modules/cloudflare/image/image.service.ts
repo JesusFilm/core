@@ -2,6 +2,7 @@ import { BaseService } from '@core/nest/database/BaseService'
 import { Injectable } from '@nestjs/common'
 import { aql } from 'arangojs'
 import fetch from 'node-fetch'
+import FormData from 'form-data'
 import { KeyAsId } from '@core/nest/decorators/KeyAsId'
 import { CloudflareImage } from '../../../__generated__/graphql'
 
@@ -63,15 +64,18 @@ export class ImageService extends BaseService {
   async uploadToCloudlareByUrl(
     url: string
   ): Promise<CloudflarUrlUploadResponse> {
+    const formData = new FormData()
+    formData.append('url', url)
     const response = await fetch(
       `https://api.cloudflare.com/client/v4/accounts/${
         process.env.CLOUDFLARE_ACCOUNT_ID ?? ''
-      }/images/v1?requireSignedURLs=false&metadata={"key":"value"}&url=${url}`,
+      }/images/v1?requireSignedURLs=false&metadata={"key":"value"}`,
       {
         method: 'POST',
         headers: {
           Authorization: `Bearer ${process.env.CLOUDFLARE_IMAGES_TOKEN ?? ''}`
-        }
+        },
+        body: formData
       }
     )
     return await response.json()
