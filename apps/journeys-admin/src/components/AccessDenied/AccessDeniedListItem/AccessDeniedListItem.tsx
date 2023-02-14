@@ -3,12 +3,10 @@ import { useTranslation } from 'react-i18next'
 import Button from '@mui/material/Button'
 import SupervisorAccountRoundedIcon from '@mui/icons-material/SupervisorAccountRounded'
 import CheckCircleRoundedIcon from '@mui/icons-material/CheckCircleRounded'
-import {
-  ListItem,
-  ListItemButton,
-  ListItemIcon,
-  ListItemText
-} from '@mui/material'
+import ListItem from '@mui/material/ListItem'
+import ListItemButton from '@mui/material/ListItemButton'
+import ListItemText from '@mui/material/ListItemText'
+import ListItemIcon from '@mui/material/ListItemIcon'
 
 interface AccessDeniedListItemProps {
   stepNumber: number
