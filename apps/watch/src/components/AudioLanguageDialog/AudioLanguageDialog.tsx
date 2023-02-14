@@ -34,7 +34,7 @@ export function AudioLanguageDialog({
   open,
   onClose
 }: AudioLanguageDialogProps): ReactElement {
-  const { id, variant, variantLanguagesCount } = useVideo()
+  const { id, variant, variantLanguagesCount, container } = useVideo()
   const router = useRouter()
 
   const { data } = useQuery<GetLanguagesSlug>(GET_LANGUAGES_SLUG, {
@@ -52,7 +52,11 @@ export function AudioLanguageDialog({
       (languages) => languages.language?.id === value.id
     )?.slug
     if (selectedLanguageSlug != null) {
-      void router.push(`/${selectedLanguageSlug}`)
+      void router.push(
+        `${
+          container?.slug != null ? `/${container.slug}/` : '/'
+        }${selectedLanguageSlug}`
+      )
     }
     onClose()
   }
