@@ -35,9 +35,9 @@ export function UnsplashList({
           data-testid={`image-${item.id}`}
           key={item?.id}
           sx={{
-            border: selectedItem === item ? '3px solid #C52D3A' : 'none',
+            border: selectedItem === item ? '2px solid #C52D3A' : 'none',
             borderRadius: 2,
-            padding: 1
+            padding: 0.5
           }}
         >
           <ButtonBase
