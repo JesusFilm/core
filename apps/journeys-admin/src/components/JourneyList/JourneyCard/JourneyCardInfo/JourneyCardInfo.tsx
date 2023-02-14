@@ -58,7 +58,7 @@ export function JourneyCardInfo({ journey, variant }: Props): ReactElement {
                 sx={{
                   color: (theme) => theme.palette.warning.main,
                   fontWeight: 700,
-                  minWidth: '52px'
+                  minWidth: '56px'
                 }}
               >
                 {usersRequestingAccess}
