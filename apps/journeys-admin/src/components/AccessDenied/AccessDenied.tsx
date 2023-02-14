@@ -65,7 +65,7 @@ export function AccessDenied({
           )}
         />
       </List>
-      <Stack direction="row" justifyContent="space-between">
+      <Stack direction="row" justifyContent="space-between" sx={{ mt: 7 }}>
         <NextLink href="/" passHref>
           <Button
             sx={{ color: 'primary.main' }}
