@@ -4,9 +4,7 @@ import Button from '@mui/material/Button'
 import SupervisorAccountRoundedIcon from '@mui/icons-material/SupervisorAccountRounded'
 import CheckCircleRoundedIcon from '@mui/icons-material/CheckCircleRounded'
 import ListItem from '@mui/material/ListItem'
-import ListItemButton from '@mui/material/ListItemButton'
 import ListItemText from '@mui/material/ListItemText'
-import ListItemIcon from '@mui/material/ListItemIcon'
 import Typography from '@mui/material/Typography'
 
 interface AccessDeniedListItemProps {
@@ -30,8 +28,8 @@ export function AccessDeniedListItem({
     <ListItem
       sx={{
         bgcolor: 'background.paper',
-        justifyContent: 'flex-start',
-        padding: 5
+        padding: 5,
+        display: 'flex'
       }}
     >
       <ListItemText
@@ -58,21 +56,22 @@ export function AccessDeniedListItem({
         disableTypography
         primary={<Typography variant="h6">{heading}</Typography>}
         secondary={<Typography variant="body2">{description}</Typography>}
-        sx={{ ml: 3 }}
+        sx={{ ml: 3, justifySelf: 'stretch' }}
       />
       {handleRequestAccess != null &&
         (requestAccess ? (
-          <ListItemButton>
-            <ListItemIcon>
-              <CheckCircleRoundedIcon />
-            </ListItemIcon>
-            <ListItemText primary={t('Request Sent')} />
-          </ListItemButton>
+          <Button
+            startIcon={<CheckCircleRoundedIcon />}
+            sx={{ ml: 'auto', color: 'success.main' }}
+          >
+            {t('Request Sent')}
+          </Button>
         ) : (
           <Button
             variant="contained"
             onClick={handleRequestAccess}
             startIcon={<SupervisorAccountRoundedIcon />}
+            sx={{ ml: 'auto' }}
           >
             {t('Request Now')}
           </Button>

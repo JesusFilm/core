@@ -44,7 +44,7 @@ export function AccessDenied({
         sx={{
           mt: 8,
           '& .MuiListItemText-root': {
-            flex: 'initial'
+            flex: '0 1 auto'
           }
         }}
       >
