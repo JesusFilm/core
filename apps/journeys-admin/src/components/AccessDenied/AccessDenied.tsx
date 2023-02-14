@@ -58,14 +58,24 @@ export function AccessDenied({
           requestedAccess={requestedAccess}
           handleRequestAccess={handleClick}
         />
-        <Divider />
+        <Divider
+          sx={{
+            height: '2px',
+            bgcolor: requestedAccess ? 'divider' : 'primary.main'
+          }}
+        />
         <AccessDeniedListItem
           stepNumber={2}
           heading={t('Wait for Approval')}
           description={t('The owner needs to approve you as an editor')}
           stepActive={requestedAccess}
         />
-        <Divider />
+        <Divider
+          sx={{
+            height: '2px',
+            bgcolor: requestedAccess ? 'primary.main' : 'divider'
+          }}
+        />
         <AccessDeniedListItem
           stepNumber={3}
           heading={t('Edit this journey')}
