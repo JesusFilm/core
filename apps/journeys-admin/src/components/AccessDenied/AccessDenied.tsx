@@ -9,7 +9,7 @@ import ChevronLeftRoundedIcon from '@mui/icons-material/ChevronLeftRounded'
 import ContactSupportIcon from '@mui/icons-material/ContactSupport'
 import NextLink from 'next/link'
 import Button from '@mui/material/Button'
-import { AccessDeniedListItem } from './AccessDeniedListItem'
+import { AccessDeniedCard } from './AccessDeniedCard'
 
 interface AccessDeniedProps {
   handleClick?: () => void
@@ -40,15 +40,8 @@ export function AccessDenied({
           {t(`You can't edit this journey`)}
         </Typography>
       </Stack>
-      <List
-        sx={{
-          mt: 8,
-          '& .MuiListItemText-root': {
-            flex: 'initial'
-          }
-        }}
-      >
-        <AccessDeniedListItem
+      <List sx={{ mt: 8 }}>
+        <AccessDeniedCard
           stepNumber={1}
           heading={t('Request Access')}
           description={t(
@@ -58,13 +51,13 @@ export function AccessDenied({
           handleRequestAccess={handleClick}
         />
         <Divider />
-        <AccessDeniedListItem
+        <AccessDeniedCard
           stepNumber={2}
           heading={t('Wait for Approval')}
           description={t('The owner needs to approve you as an editor')}
         />
         <Divider />
-        <AccessDeniedListItem
+        <AccessDeniedCard
           stepNumber={3}
           heading={t('Edit this journey')}
           description={t(
