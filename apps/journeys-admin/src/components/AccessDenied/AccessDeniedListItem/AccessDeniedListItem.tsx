@@ -28,8 +28,7 @@ export function AccessDeniedListItem({
     <ListItem
       sx={{
         bgcolor: 'background.paper',
-        padding: 5,
-        display: 'flex'
+        padding: 5
       }}
     >
       <ListItemText
