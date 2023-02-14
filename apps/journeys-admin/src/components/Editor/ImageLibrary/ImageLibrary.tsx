@@ -43,8 +43,6 @@ export function ImageLibrary({
   const [unsplashAuthor, setUnsplashAuthor] = useState<string | null>()
   const { unsplashGallery } = useFlags()
 
-  // TODO: Add back last_name and alt_description props. And make sure flags is spelled correctly on ldcs
-
   const srcSchema = object().shape({
     src: string().url('Please enter a valid url').required('Required')
   })
