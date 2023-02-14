@@ -6,6 +6,7 @@ import CheckCircleRoundedIcon from '@mui/icons-material/CheckCircleRounded'
 import ListItem from '@mui/material/ListItem'
 import ListItemText from '@mui/material/ListItemText'
 import Typography from '@mui/material/Typography'
+import Stack from '@mui/material/Stack'
 
 interface AccessDeniedListItemProps {
   stepNumber: number
@@ -50,23 +51,23 @@ export function AccessDeniedListItem({
             {stepNumber}
           </Typography>
         }
-        primaryTypographyProps={{}}
         sx={{ width: '40px' }}
       />
       <ListItemText
         disableTypography
         primary={<Typography variant="h6">{heading}</Typography>}
         secondary={<Typography variant="body2">{description}</Typography>}
-        sx={{ ml: 3, justifySelf: 'stretch' }}
+        sx={{ ml: 3 }}
       />
       {handleRequestAccess != null &&
         (requestedAccess ? (
-          <Button
-            startIcon={<CheckCircleRoundedIcon />}
-            sx={{ ml: 'auto', color: 'success.main' }}
+          <Stack
+            direction="row"
+            sx={{ ml: 'auto', color: 'success.main', mr: 3 }}
           >
-            {t('Request Sent')}
-          </Button>
+            <CheckCircleRoundedIcon fontSize="small" sx={{ mr: 2 }} />
+            <Typography variant="body2">{t('Request Sent')}</Typography>
+          </Stack>
         ) : (
           <Button
             variant="contained"
