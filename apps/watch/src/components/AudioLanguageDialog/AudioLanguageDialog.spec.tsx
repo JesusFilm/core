@@ -59,4 +59,27 @@ describe('AudioLanguageDialog', () => {
     await waitFor(() => expect(push).toHaveBeenCalled())
     expect(push).toHaveBeenCalledWith('/jesus/a-hmao')
   })
+
+  it('should redirect to the selected language with container', async () => {
+    const push = jest.fn()
+    mockUseRouter.mockReturnValue({ push } as unknown as NextRouter)
+    const { getByRole, queryAllByRole } = render(
+      <MockedProvider mocks={[getLanguagesSlugMock]}>
+        <VideoProvider
+          value={{
+            content: videos[0],
+            container: videos.find(({ id }) => id === 'LUMOCollection')
+          }}
+        >
+          <AudioLanguageDialog open onClose={jest.fn()} />
+        </VideoProvider>
+      </MockedProvider>
+    )
+    await waitFor(() => fireEvent.focus(getByRole('combobox')))
+    fireEvent.keyDown(getByRole('combobox'), { key: 'ArrowDown' })
+    expect(queryAllByRole('option')[1]).toHaveTextContent('A-HmaoA-Hmao')
+    fireEvent.click(queryAllByRole('option')[1])
+    await waitFor(() => expect(push).toHaveBeenCalled())
+    expect(push).toHaveBeenCalledWith('/lumo/jesus/a-hmao')
+  })
 })

@@ -1,18 +1,22 @@
 schema
   @link(url: "https://specs.apollo.dev/link/v1.0")
-  @link(url: "https://specs.apollo.dev/join/v0.2", for: EXECUTION)
+  @link(url: "https://specs.apollo.dev/join/v0.3", for: EXECUTION)
 {
   query: Query
   mutation: Mutation
 }
 
-directive @join__field(graph: join__Graph!, requires: join__FieldSet, provides: join__FieldSet, type: String, external: Boolean, override: String, usedOverridden: Boolean) repeatable on FIELD_DEFINITION | INPUT_FIELD_DEFINITION
+directive @join__enumValue(graph: join__Graph!) repeatable on ENUM_VALUE
+
+directive @join__field(graph: join__Graph, requires: join__FieldSet, provides: join__FieldSet, type: String, external: Boolean, override: String, usedOverridden: Boolean) repeatable on FIELD_DEFINITION | INPUT_FIELD_DEFINITION
 
 directive @join__graph(name: String!, url: String!) on ENUM_VALUE
 
 directive @join__implements(graph: join__Graph!, interface: String!) repeatable on OBJECT | INTERFACE
 
-directive @join__type(graph: join__Graph!, key: join__FieldSet, extension: Boolean! = false, resolvable: Boolean! = true) repeatable on OBJECT | INTERFACE | UNION | ENUM | INPUT_OBJECT | SCALAR
+directive @join__type(graph: join__Graph!, key: join__FieldSet, extension: Boolean! = false, resolvable: Boolean! = true, isInterfaceObject: Boolean! = false) repeatable on OBJECT | INTERFACE | UNION | ENUM | INPUT_OBJECT | SCALAR
+
+directive @join__unionMember(graph: join__Graph!, member: String!) repeatable on UNION
 
 directive @link(url: String, as: String, for: link__Purpose, import: [link__Import]) repeatable on SCHEMA
 
@@ -121,25 +125,25 @@ input ButtonClickEventCreateInput
 enum ButtonColor
   @join__type(graph: JOURNEYS)
 {
-  primary
-  secondary
-  error
-  inherit
+  primary @join__enumValue(graph: JOURNEYS)
+  secondary @join__enumValue(graph: JOURNEYS)
+  error @join__enumValue(graph: JOURNEYS)
+  inherit @join__enumValue(graph: JOURNEYS)
 }
 
 enum ButtonSize
   @join__type(graph: JOURNEYS)
 {
-  small
-  medium
-  large
+  small @join__enumValue(graph: JOURNEYS)
+  medium @join__enumValue(graph: JOURNEYS)
+  large @join__enumValue(graph: JOURNEYS)
 }
 
 enum ButtonVariant
   @join__type(graph: JOURNEYS)
 {
-  text
-  contained
+  text @join__enumValue(graph: JOURNEYS)
+  contained @join__enumValue(graph: JOURNEYS)
 }
 
 type CardBlock implements Block
@@ -284,12 +288,12 @@ type Device
 enum DeviceType
   @join__type(graph: JOURNEYS)
 {
-  console
-  mobile
-  tablet
-  smarttv
-  wearable
-  embedded
+  console @join__enumValue(graph: JOURNEYS)
+  mobile @join__enumValue(graph: JOURNEYS)
+  tablet @join__enumValue(graph: JOURNEYS)
+  smarttv @join__enumValue(graph: JOURNEYS)
+  wearable @join__enumValue(graph: JOURNEYS)
+  embedded @join__enumValue(graph: JOURNEYS)
 }
 
 interface Event
@@ -305,10 +309,10 @@ interface Event
 enum GridAlignItems
   @join__type(graph: JOURNEYS)
 {
-  baseline
-  flexStart
-  flexEnd
-  center
+  baseline @join__enumValue(graph: JOURNEYS)
+  flexStart @join__enumValue(graph: JOURNEYS)
+  flexEnd @join__enumValue(graph: JOURNEYS)
+  center @join__enumValue(graph: JOURNEYS)
 }
 
 type GridContainerBlock implements Block
@@ -328,10 +332,10 @@ type GridContainerBlock implements Block
 enum GridDirection
   @join__type(graph: JOURNEYS)
 {
-  columnReverse
-  column
-  row
-  rowReverse
+  columnReverse @join__enumValue(graph: JOURNEYS)
+  column @join__enumValue(graph: JOURNEYS)
+  row @join__enumValue(graph: JOURNEYS)
+  rowReverse @join__enumValue(graph: JOURNEYS)
 }
 
 type GridItemBlock implements Block
@@ -350,9 +354,9 @@ type GridItemBlock implements Block
 enum GridJustifyContent
   @join__type(graph: JOURNEYS)
 {
-  flexStart
-  flexEnd
-  center
+  flexStart @join__enumValue(graph: JOURNEYS)
+  flexEnd @join__enumValue(graph: JOURNEYS)
+  center @join__enumValue(graph: JOURNEYS)
 }
 
 type IconBlock implements Block
@@ -393,45 +397,45 @@ input IconBlockUpdateInput
 enum IconColor
   @join__type(graph: JOURNEYS)
 {
-  primary
-  secondary
-  action
-  error
-  disabled
-  inherit
+  primary @join__enumValue(graph: JOURNEYS)
+  secondary @join__enumValue(graph: JOURNEYS)
+  action @join__enumValue(graph: JOURNEYS)
+  error @join__enumValue(graph: JOURNEYS)
+  disabled @join__enumValue(graph: JOURNEYS)
+  inherit @join__enumValue(graph: JOURNEYS)
 }
 
 """IconName is equivalent to the icons found in @mui/icons-material"""
 enum IconName
   @join__type(graph: JOURNEYS)
 {
-  PlayArrowRounded
-  TranslateRounded
-  CheckCircleRounded
-  RadioButtonUncheckedRounded
-  FormatQuoteRounded
-  LockOpenRounded
-  ArrowForwardRounded
-  ArrowBackRounded
-  ChatBubbleOutlineRounded
-  LiveTvRounded
-  MenuBookRounded
-  ChevronRightRounded
-  ChevronLeftRounded
-  BeenhereRounded
-  SendRounded
-  SubscriptionsRounded
-  ContactSupportRounded
+  PlayArrowRounded @join__enumValue(graph: JOURNEYS)
+  TranslateRounded @join__enumValue(graph: JOURNEYS)
+  CheckCircleRounded @join__enumValue(graph: JOURNEYS)
+  RadioButtonUncheckedRounded @join__enumValue(graph: JOURNEYS)
+  FormatQuoteRounded @join__enumValue(graph: JOURNEYS)
+  LockOpenRounded @join__enumValue(graph: JOURNEYS)
+  ArrowForwardRounded @join__enumValue(graph: JOURNEYS)
+  ArrowBackRounded @join__enumValue(graph: JOURNEYS)
+  ChatBubbleOutlineRounded @join__enumValue(graph: JOURNEYS)
+  LiveTvRounded @join__enumValue(graph: JOURNEYS)
+  MenuBookRounded @join__enumValue(graph: JOURNEYS)
+  ChevronRightRounded @join__enumValue(graph: JOURNEYS)
+  ChevronLeftRounded @join__enumValue(graph: JOURNEYS)
+  BeenhereRounded @join__enumValue(graph: JOURNEYS)
+  SendRounded @join__enumValue(graph: JOURNEYS)
+  SubscriptionsRounded @join__enumValue(graph: JOURNEYS)
+  ContactSupportRounded @join__enumValue(graph: JOURNEYS)
 }
 
 enum IconSize
   @join__type(graph: JOURNEYS)
 {
-  sm
-  md
-  lg
-  xl
-  inherit
+  sm @join__enumValue(graph: JOURNEYS)
+  md @join__enumValue(graph: JOURNEYS)
+  lg @join__enumValue(graph: JOURNEYS)
+  xl @join__enumValue(graph: JOURNEYS)
+  inherit @join__enumValue(graph: JOURNEYS)
 }
 
 enum IdType
@@ -439,8 +443,8 @@ enum IdType
   @join__type(graph: LANGUAGES)
   @join__type(graph: VIDEOS)
 {
-  databaseId
-  slug
+  databaseId @join__enumValue(graph: JOURNEYS) @join__enumValue(graph: LANGUAGES) @join__enumValue(graph: VIDEOS)
+  slug @join__enumValue(graph: JOURNEYS) @join__enumValue(graph: LANGUAGES) @join__enumValue(graph: VIDEOS)
 }
 
 type ImageBlock implements Block
@@ -567,20 +571,20 @@ input JourneysFilter
 enum JourneysReportType
   @join__type(graph: JOURNEYS)
 {
-  multipleFull
-  multipleSummary
-  singleFull
-  singleSummary
+  multipleFull @join__enumValue(graph: JOURNEYS)
+  multipleSummary @join__enumValue(graph: JOURNEYS)
+  singleFull @join__enumValue(graph: JOURNEYS)
+  singleSummary @join__enumValue(graph: JOURNEYS)
 }
 
 enum JourneyStatus
   @join__type(graph: JOURNEYS)
 {
-  archived
-  deleted
-  draft
-  published
-  trashed
+  archived @join__enumValue(graph: JOURNEYS)
+  deleted @join__enumValue(graph: JOURNEYS)
+  draft @join__enumValue(graph: JOURNEYS)
+  published @join__enumValue(graph: JOURNEYS)
+  trashed @join__enumValue(graph: JOURNEYS)
 }
 
 input JourneyTemplateInput
@@ -657,8 +661,8 @@ type Language
 enum LanguageIdType
   @join__type(graph: LANGUAGES)
 {
-  databaseId
-  bcp47
+  databaseId @join__enumValue(graph: LANGUAGES)
+  bcp47 @join__enumValue(graph: LANGUAGES)
 }
 
 type LanguageWithSlug
@@ -703,16 +707,16 @@ input LinkActionInput
 enum MessagePlatform
   @join__type(graph: JOURNEYS)
 {
-  facebook
-  telegram
-  whatsApp
-  instagram
-  viber
-  vk
-  snapchat
-  skype
-  line
-  tikTok
+  facebook @join__enumValue(graph: JOURNEYS)
+  telegram @join__enumValue(graph: JOURNEYS)
+  whatsApp @join__enumValue(graph: JOURNEYS)
+  instagram @join__enumValue(graph: JOURNEYS)
+  viber @join__enumValue(graph: JOURNEYS)
+  vk @join__enumValue(graph: JOURNEYS)
+  snapchat @join__enumValue(graph: JOURNEYS)
+  skype @join__enumValue(graph: JOURNEYS)
+  line @join__enumValue(graph: JOURNEYS)
+  tikTok @join__enumValue(graph: JOURNEYS)
 }
 
 type Mutation
@@ -815,6 +819,7 @@ type Mutation
   """Update a visitor"""
   visitorUpdate(id: ID!, input: VisitorUpdateInput!): Visitor! @join__field(graph: JOURNEYS)
   deleteCloudflareImage(id: ID!): Boolean @join__field(graph: MEDIA)
+  cloudflareUploadComplete(id: ID!): Boolean @join__field(graph: MEDIA)
 }
 
 """
@@ -1043,7 +1048,7 @@ enum Role
   User can create templates and
   add them to template library
   """
-  publisher
+  publisher @join__enumValue(graph: JOURNEYS)
 }
 
 type SignUpBlock implements Block
@@ -1305,14 +1310,14 @@ input TextResponseSubmissionEventCreateInput
 enum ThemeMode
   @join__type(graph: JOURNEYS)
 {
-  dark
-  light
+  dark @join__enumValue(graph: JOURNEYS)
+  light @join__enumValue(graph: JOURNEYS)
 }
 
 enum ThemeName
   @join__type(graph: JOURNEYS)
 {
-  base
+  base @join__enumValue(graph: JOURNEYS)
 }
 
 type Translation
@@ -1327,9 +1332,9 @@ type Translation
 enum TypographyAlign
   @join__type(graph: JOURNEYS)
 {
-  left
-  center
-  right
+  left @join__enumValue(graph: JOURNEYS)
+  center @join__enumValue(graph: JOURNEYS)
+  right @join__enumValue(graph: JOURNEYS)
 }
 
 type TypographyBlock implements Block
@@ -1371,56 +1376,56 @@ input TypographyBlockUpdateInput
 enum TypographyColor
   @join__type(graph: JOURNEYS)
 {
-  primary
-  secondary
-  error
+  primary @join__enumValue(graph: JOURNEYS)
+  secondary @join__enumValue(graph: JOURNEYS)
+  error @join__enumValue(graph: JOURNEYS)
 }
 
 enum TypographyVariant
   @join__type(graph: JOURNEYS)
 {
-  h1
-  h2
-  h3
-  h4
-  h5
-  h6
-  subtitle1
-  subtitle2
-  body1
-  body2
-  caption
-  overline
+  h1 @join__enumValue(graph: JOURNEYS)
+  h2 @join__enumValue(graph: JOURNEYS)
+  h3 @join__enumValue(graph: JOURNEYS)
+  h4 @join__enumValue(graph: JOURNEYS)
+  h5 @join__enumValue(graph: JOURNEYS)
+  h6 @join__enumValue(graph: JOURNEYS)
+  subtitle1 @join__enumValue(graph: JOURNEYS)
+  subtitle2 @join__enumValue(graph: JOURNEYS)
+  body1 @join__enumValue(graph: JOURNEYS)
+  body2 @join__enumValue(graph: JOURNEYS)
+  caption @join__enumValue(graph: JOURNEYS)
+  overline @join__enumValue(graph: JOURNEYS)
 }
 
 enum UnsplashColor
   @join__type(graph: MEDIA)
 {
-  black_and_white
-  black
-  white
-  yellow
-  orange
-  red
-  purple
-  magenta
-  green
-  teal
-  blue
+  black_and_white @join__enumValue(graph: MEDIA)
+  black @join__enumValue(graph: MEDIA)
+  white @join__enumValue(graph: MEDIA)
+  yellow @join__enumValue(graph: MEDIA)
+  orange @join__enumValue(graph: MEDIA)
+  red @join__enumValue(graph: MEDIA)
+  purple @join__enumValue(graph: MEDIA)
+  magenta @join__enumValue(graph: MEDIA)
+  green @join__enumValue(graph: MEDIA)
+  teal @join__enumValue(graph: MEDIA)
+  blue @join__enumValue(graph: MEDIA)
 }
 
 enum UnsplashContentFilter
   @join__type(graph: MEDIA)
 {
-  low
-  high
+  low @join__enumValue(graph: MEDIA)
+  high @join__enumValue(graph: MEDIA)
 }
 
 enum UnsplashOrderBy
   @join__type(graph: MEDIA)
 {
-  latest
-  relevant
+  latest @join__enumValue(graph: MEDIA)
+  relevant @join__enumValue(graph: MEDIA)
 }
 
 type UnsplashPhoto
@@ -1428,16 +1433,16 @@ type UnsplashPhoto
 {
   id: String!
   created_at: String!
-  updated_at: String!
+  updated_at: String
   blur_hash: String!
   width: Int!
   height: Int!
-  color: String!
-  description: String!
-  alt_description: String!
+  color: String
+  description: String
+  alt_description: String
   urls: UnsplashPhotoUrls!
   links: UnsplashPhotoLinks!
-  categories: [String!]!
+  categories: [String!]
   likes: Int!
   liked_by_user: Boolean!
   current_user_collections: [String!]!
@@ -1456,9 +1461,9 @@ type UnsplashPhotoLinks
 enum UnsplashPhotoOrientation
   @join__type(graph: MEDIA)
 {
-  landscape
-  portrait
-  squarish
+  landscape @join__enumValue(graph: MEDIA)
+  portrait @join__enumValue(graph: MEDIA)
+  squarish @join__enumValue(graph: MEDIA)
 }
 
 type UnsplashPhotoUrls
@@ -1483,18 +1488,18 @@ type UnsplashUser
   @join__type(graph: MEDIA)
 {
   id: String!
-  updated_at: String!
+  updated_at: String
   username: String!
-  name: String!
-  first_name: String!
-  last_name: String!
-  twitter_username: String!
-  portfolio_url: String!
-  bio: String!
-  location: String!
+  name: String
+  first_name: String
+  last_name: String
+  twitter_username: String
+  portfolio_url: String
+  bio: String
+  location: String
   links: UnsplashUserLinks!
-  profile_image: UnsplashUserImage!
-  instagram_username: String!
+  profile_image: UnsplashUserImage
+  instagram_username: String
   total_collections: Int!
   total_likes: Int!
   total_photos: Int!
@@ -1575,9 +1580,9 @@ type UserJourney
 enum UserJourneyRole
   @join__type(graph: JOURNEYS)
 {
-  inviteRequested
-  editor
-  owner
+  inviteRequested @join__enumValue(graph: JOURNEYS)
+  editor @join__enumValue(graph: JOURNEYS)
+  owner @join__enumValue(graph: JOURNEYS)
 }
 
 type UserRole
@@ -1764,7 +1769,7 @@ enum VideoBlockObjectFit
    entire VideoBlock. If the video's aspect ratio does not match the
    aspect ratio of the VideoBlock, then the video will be clipped to fit.
   """
-  fill
+  fill @join__enumValue(graph: JOURNEYS)
 
   """
   The video is scaled to maintain its aspect ratio while fitting within the
@@ -1772,7 +1777,7 @@ enum VideoBlockObjectFit
    preserving its aspect ratio, so the video will be "letterboxed" if its
    aspect ratio does not match the aspect ratio of the VideoBlock.
   """
-  fit
+  fit @join__enumValue(graph: JOURNEYS)
 
   """
   12.5% of either side of the video is discarded (this has the effect of
@@ -1782,14 +1787,14 @@ enum VideoBlockObjectFit
    aspect ratio, so the video will be "letterboxed" if its new aspect ratio
    does not match the aspect ratio of the VideoBlock.
   """
-  zoomed
+  zoomed @join__enumValue(graph: JOURNEYS)
 }
 
 enum VideoBlockSource
   @join__type(graph: JOURNEYS)
 {
-  internal
-  youTube
+  internal @join__enumValue(graph: JOURNEYS)
+  youTube @join__enumValue(graph: JOURNEYS)
 }
 
 input VideoBlockUpdateInput
@@ -1979,12 +1984,12 @@ input VideoExpandEventCreateInput
 enum VideoLabel
   @join__type(graph: VIDEOS)
 {
-  collection
-  episode
-  featureFilm
-  segment
-  series
-  shortFilm
+  collection @join__enumValue(graph: VIDEOS)
+  episode @join__enumValue(graph: VIDEOS)
+  featureFilm @join__enumValue(graph: VIDEOS)
+  segment @join__enumValue(graph: VIDEOS)
+  series @join__enumValue(graph: VIDEOS)
+  shortFilm @join__enumValue(graph: VIDEOS)
 }
 
 type VideoPauseEvent implements Event
@@ -2242,8 +2247,8 @@ type VideoVariantDownload
 enum VideoVariantDownloadQuality
   @join__type(graph: VIDEOS)
 {
-  low
-  high
+  low @join__enumValue(graph: VIDEOS)
+  high @join__enumValue(graph: VIDEOS)
 }
 
 """A visitor with attributes connected to a team."""
@@ -2344,16 +2349,16 @@ visitor admin interface. This enum should map to an emoji when displayed
 enum VisitorStatus
   @join__type(graph: JOURNEYS)
 {
-  star
-  prohibited
-  checkMarkSymbol
-  thumbsUp
-  thumbsDown
-  partyPopper
-  warning
-  robotFace
-  redExclamationMark
-  redQuestionMark
+  star @join__enumValue(graph: JOURNEYS)
+  prohibited @join__enumValue(graph: JOURNEYS)
+  checkMarkSymbol @join__enumValue(graph: JOURNEYS)
+  thumbsUp @join__enumValue(graph: JOURNEYS)
+  thumbsDown @join__enumValue(graph: JOURNEYS)
+  partyPopper @join__enumValue(graph: JOURNEYS)
+  warning @join__enumValue(graph: JOURNEYS)
+  robotFace @join__enumValue(graph: JOURNEYS)
+  redExclamationMark @join__enumValue(graph: JOURNEYS)
+  redQuestionMark @join__enumValue(graph: JOURNEYS)
 }
 
 """
