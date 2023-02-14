@@ -9,6 +9,7 @@ import { gql, useQuery } from '@apollo/client'
 import fetch from 'node-fetch'
 import CloudDoneOutlinedIcon from '@mui/icons-material/CloudDoneOutlined'
 import CloudOffOutlinedIcon from '@mui/icons-material/CloudOffOutlined'
+import WarningAmberOutlinedIcon from '@mui/icons-material/WarningAmberOutlined'
 import { CloudflareUploadUrl } from '../../../../../../__generated__/CloudflareUploadUrl'
 
 export const CLOUDFLARE_UPLOAD_URL = gql`
@@ -77,8 +78,11 @@ export function ImageUpload({
           mt: 3,
           width: '100%',
           height: '162px',
-          borderWidth: '2px',
-          backgroundColor: 'background.default',
+          borderWidth: success == null || loading === true ? '2px' : '0px',
+          backgroundColor:
+            success === false && loading === false
+              ? 'rgba(195,44,57,0.08)'
+              : 'background.default',
           borderColor: 'divider',
           borderStyle: 'dashed',
           borderRadius: '0.5rem',
@@ -91,18 +95,28 @@ export function ImageUpload({
       >
         {loading === false && success === true ? (
           <CloudDoneOutlinedIcon
-            sx={{ fontSize: '48px', color: 'secondary.light', mb: 1 }}
+            sx={{ fontSize: '48px', color: 'success.main', mb: 1 }}
           />
         ) : loading === false && success === false ? (
           <CloudOffOutlinedIcon
-            sx={{ fontSize: '48px', color: 'secondary.light', mb: 1 }}
+            sx={{ fontSize: '48px', color: '#C52D3A', mb: 1 }}
           />
         ) : (
           <BackupOutlinedIcon
             sx={{ fontSize: '48px', color: 'secondary.light', mb: 1 }}
           />
         )}
-        <Typography variant="body1" sx={{ pb: 4 }}>
+        <Typography
+          variant="body1"
+          color={
+            success === true && loading === false
+              ? 'success.main'
+              : success === false && loading === false
+              ? 'error.main'
+              : 'secondary.main'
+          }
+          sx={{ pb: 4 }}
+        >
           {loading === false && success === true
             ? 'Upload successful!'
             : loading === true
@@ -112,9 +126,27 @@ export function ImageUpload({
             : 'Drop an image here'}
         </Typography>
       </Box>
-      <Typography variant="caption" color="secondary.light">
-        Max file size: 10 MB
-      </Typography>
+      <Stack
+        direction="row"
+        color={
+          success === false && loading === false
+            ? 'error.main'
+            : 'secondary.light'
+        }
+        alignItems="center"
+      >
+        <WarningAmberOutlinedIcon
+          fontSize="small"
+          sx={{
+            display: success === false && loading === false ? 'flex' : 'none'
+          }}
+        />
+        <Typography variant="caption">
+          {success === false && loading === false
+            ? 'Something went wrong, try again'
+            : 'Max file size: 10 MB'}
+        </Typography>
+      </Stack>
       <Button
         size="small"
         variant="outlined"
