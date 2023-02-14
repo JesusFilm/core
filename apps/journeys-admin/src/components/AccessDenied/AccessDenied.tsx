@@ -41,8 +41,10 @@ export function AccessDenied({
         </Typography>
       </Stack>
       <List
+        disablePadding
         sx={{
           mt: 8,
+          borderRadius: '6px',
           '& .MuiListItemText-root': {
             flex: '0 1 auto'
           }
