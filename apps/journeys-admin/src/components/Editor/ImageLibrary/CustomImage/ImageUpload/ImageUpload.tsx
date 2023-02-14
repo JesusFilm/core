@@ -10,7 +10,6 @@ import fetch from 'node-fetch'
 import CloudDoneOutlinedIcon from '@mui/icons-material/CloudDoneOutlined'
 import CloudOffOutlinedIcon from '@mui/icons-material/CloudOffOutlined'
 import { CloudflareUploadUrl } from '../../../../../../__generated__/CloudflareUploadUrl'
-import { GetJourney_journey_blocks_ImageBlock as ImageBlock } from '../../../../../../__generated__/GetJourney'
 
 export const CLOUDFLARE_UPLOAD_URL = gql`
   query CloudflareUploadUrl {
@@ -24,13 +23,11 @@ export const CLOUDFLARE_UPLOAD_URL = gql`
 interface ImageUploadProps {
   onChange: (src: string) => void
   loading?: boolean
-  selectedBlock: ImageBlock | null
 }
 
 export function ImageUpload({
   onChange,
-  loading,
-  selectedBlock
+  loading
 }: ImageUploadProps): ReactElement {
   const { data, refetch } = useQuery<CloudflareUploadUrl>(CLOUDFLARE_UPLOAD_URL)
   const [success, setSuccess] = useState<boolean>()
@@ -53,7 +50,6 @@ export function ImageUpload({
     if (response.errors.length !== 0) {
       setSuccess(false)
     }
-    console.log(response)
 
     const src = `https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/${
       response.result.id as string
@@ -71,8 +67,6 @@ export function ImageUpload({
       'image/*': []
     }
   })
-
-  console.log('success', success)
 
   return (
     <Stack {...getRootProps()} alignItems="center">
