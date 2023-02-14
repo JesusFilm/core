@@ -11,7 +11,8 @@ interface AccessDeniedListItemProps {
   stepNumber: number
   heading: string
   description: string
-  requestAccess?: boolean
+  stepActive?: boolean
+  requestedAccess?: boolean
   handleRequestAccess?: () => void
 }
 
@@ -19,7 +20,8 @@ export function AccessDeniedListItem({
   stepNumber,
   heading,
   description,
-  requestAccess = false,
+  stepActive = false,
+  requestedAccess = false,
   handleRequestAccess
 }: AccessDeniedListItemProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
@@ -27,7 +29,7 @@ export function AccessDeniedListItem({
   return (
     <ListItem
       sx={{
-        bgcolor: 'background.paper',
+        bgcolor: stepActive ? 'background.paper' : '#F5F5F5',
         padding: 5
       }}
     >
@@ -58,7 +60,7 @@ export function AccessDeniedListItem({
         sx={{ ml: 3, justifySelf: 'stretch' }}
       />
       {handleRequestAccess != null &&
-        (requestAccess ? (
+        (requestedAccess ? (
           <Button
             startIcon={<CheckCircleRoundedIcon />}
             sx={{ ml: 'auto', color: 'success.main' }}

@@ -13,12 +13,12 @@ import { AccessDeniedListItem } from './AccessDeniedListItem'
 
 interface AccessDeniedProps {
   handleClick?: () => void
-  requestAccess?: boolean
+  requestedAccess?: boolean
 }
 
 export function AccessDenied({
   handleClick,
-  requestAccess = false
+  requestedAccess = false
 }: AccessDeniedProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
 
@@ -54,7 +54,8 @@ export function AccessDenied({
           description={t(
             'Send an access request to the creator of this journey'
           )}
-          requestAccess={requestAccess}
+          stepActive
+          requestedAccess={requestedAccess}
           handleRequestAccess={handleClick}
         />
         <Divider />
@@ -62,6 +63,7 @@ export function AccessDenied({
           stepNumber={2}
           heading={t('Wait for Approval')}
           description={t('The owner needs to approve you as an editor')}
+          stepActive={requestedAccess}
         />
         <Divider />
         <AccessDeniedListItem
