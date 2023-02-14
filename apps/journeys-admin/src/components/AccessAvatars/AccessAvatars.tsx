@@ -29,7 +29,7 @@ export function AccessAvatars({
   const max = withRenderLogic({ size, max: smMax, setOpen })
 
   return (
-    <>
+    <Box>
       <Box sx={{ display: { xs: 'block', sm: 'none' } }}>
         {min(userJourneys)}
       </Box>
@@ -45,7 +45,7 @@ export function AccessAvatars({
           onClose={() => setOpen(false)}
         />
       )}
-    </>
+    </Box>
   )
 }
 
