@@ -1,7 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { Role, UserJourneyRole } from '../../__generated__/graphql'
 import { JourneyService } from '../journey/journey.service'
-import { UserJourneyResolver } from '../userJourney/userJourney.resolver'
 import { UserJourneyService } from '../userJourney/userJourney.service'
 import { UserRoleService } from '../userRole/userRole.service'
 
@@ -11,7 +10,7 @@ import { UserInviteService } from './userInvite.service'
 describe('UserInviteResolver', () => {
   let resolver: UserInviteResolver,
     service: UserInviteService,
-    ujResolver: UserJourneyResolver
+    ujService: UserJourneyService
 
   const createInput = {
     email: 'test@email.com'
@@ -30,7 +29,7 @@ describe('UserInviteResolver', () => {
     ...userInvite,
     id: '2',
     journeyId: 'acceptedJourneyId',
-    acceptedAt: '2021-02-18T00:00:00.000Z'
+    acceptedAt: '2021-02-10T00:00:00.000Z'
   }
 
   const removedInvite = {
@@ -40,6 +39,14 @@ describe('UserInviteResolver', () => {
     removedAt: '2021-02-18T00:00:00.000Z'
   }
 
+  const outdatedAcceptedInvite = {
+    ...userInvite,
+    id: '4',
+    journeyId: 'outdatedAcceptedJourneyId',
+    email: 'existing@email.com',
+    acceptedAt: '2021-02-10T00:00:00.000Z'
+  }
+
   const userInviteService = {
     provide: UserInviteService,
     useFactory: () => ({
@@ -47,12 +54,23 @@ describe('UserInviteResolver', () => {
         return { ...input, acceptedAt: null, removedAt: null }
       }),
       update: jest.fn((id, input) => {
+        if (id === removedInvite.id) {
+          return { ...removedInvite, ...input }
+        } else if (id === acceptedInvite.id) {
+          return { ...acceptedInvite, ...input }
+        } else if (id === outdatedAcceptedInvite.id) {
+          return { ...outdatedAcceptedInvite, ...input }
+        }
         return { ...userInvite, ...input }
       }),
-      remove: jest.fn((id) => userInvite),
+      remove: jest.fn((id, journeyId) =>
+        id === userInvite.id ? userInvite : outdatedAcceptedInvite
+      ),
       getAllUserInvitesByEmail: jest.fn((email) => {
         if (email === userInvite.email) {
           return [userInvite, acceptedInvite, removedInvite]
+        } else if (email === outdatedAcceptedInvite.email) {
+          return [outdatedAcceptedInvite]
         }
         return []
       }),
@@ -83,21 +101,19 @@ describe('UserInviteResolver', () => {
     role: UserJourneyRole.editor
   }
 
-  const userJourneyResolver = {
-    provide: UserJourneyResolver,
+  const userJourneyService = {
+    provide: UserJourneyService,
     useFactory: () => ({
-      userJourneyRequest: jest.fn((journeyId, idType, userId) => {
-        return { ...userJourney, journeyId, userId, role: 'inviteRequested' }
+      get: jest.fn((key) => userJourney),
+      requestAccess: jest.fn((journeyId, idType, userId) => {
+        return userId === 'existingUserId'
+          ? undefined
+          : { ...userJourney, journeyId, userId, role: 'inviteRequested' }
       }),
-      userJourneyApprove: jest.fn((id, userId) => {
+      approveAccess: jest.fn((id, userId) => {
         return userJourney
       })
     })
-  }
-
-  const userJourneyService = {
-    provide: UserJourneyService,
-    useFactory: () => ({ get: jest.fn((key) => userJourney) })
   }
 
   const userRole = {
@@ -106,10 +122,18 @@ describe('UserInviteResolver', () => {
     roles: [Role.publisher]
   }
 
+  const userRole2 = {
+    id: 'userRoleId2',
+    userId: 'existingUserId',
+    roles: []
+  }
+
   const userRoleService = {
     provide: UserRoleService,
     useFactory: () => ({
-      getUserRoleById: jest.fn(() => userRole)
+      getUserRoleById: jest.fn((id) =>
+        id === userRole.id ? userRole : userRole2
+      )
     })
   }
 
@@ -123,6 +147,12 @@ describe('UserInviteResolver', () => {
   const user = {
     id: 'userId',
     email: 'test@email.com',
+    firstName: 'Test'
+  }
+
+  const user2 = {
+    id: 'existingUserId',
+    email: 'existing@email.com',
     firstName: 'Test'
   }
 
@@ -140,7 +170,6 @@ describe('UserInviteResolver', () => {
       providers: [
         UserInviteResolver,
         userInviteService,
-        userJourneyResolver,
         userJourneyService,
         userRoleService,
         journeyService
@@ -148,7 +177,7 @@ describe('UserInviteResolver', () => {
     }).compile()
     resolver = module.get(UserInviteResolver)
     service = await module.resolve(UserInviteService)
-    ujResolver = await module.resolve(UserJourneyResolver)
+    ujService = await module.resolve(UserJourneyService)
   })
 
   describe('userInvites', () => {
@@ -172,7 +201,9 @@ describe('UserInviteResolver', () => {
       expect(service.save).toHaveBeenCalledWith({
         journeyId: 'newJourneyId',
         senderId: 'senderId',
-        email: createInput.email
+        email: createInput.email,
+        acceptedAt: null,
+        removedAt: null
       })
       expect(service.update).not.toHaveBeenCalled()
       expect(invite).toEqual({
@@ -194,6 +225,7 @@ describe('UserInviteResolver', () => {
       expect(service.save).not.toHaveBeenCalled()
       expect(service.update).toHaveBeenCalledWith(removedInvite.id, {
         senderId: removedInvite.senderId,
+        acceptedAt: null,
         removedAt: null
       })
     })
@@ -207,7 +239,7 @@ describe('UserInviteResolver', () => {
 
       expect(service.save).not.toHaveBeenCalled()
       expect(service.update).not.toHaveBeenCalled()
-      expect(invite).toEqual(acceptedInvite)
+      expect(invite).toEqual(null)
     })
 
     it('throws UserInputError when journey does not exist', async () => {
@@ -224,10 +256,12 @@ describe('UserInviteResolver', () => {
       const invite = await resolver.userInviteRemove('1', 'journeyId')
 
       expect(service.update).toHaveBeenCalledWith('1', {
+        acceptedAt: null,
         removedAt: '2021-02-18T00:00:00.000Z'
       })
       expect(invite).toEqual({
         ...userInvite,
+        acceptedAt: null,
         removedAt: '2021-02-18T00:00:00.000Z'
       })
     })
@@ -237,14 +271,14 @@ describe('UserInviteResolver', () => {
     it('should accept unredeemed valid user invites', async () => {
       const invites = await resolver.userInviteAcceptAll(user)
 
-      expect(ujResolver.userJourneyRequest).toHaveBeenCalledTimes(1)
-      expect(ujResolver.userJourneyRequest).toHaveBeenCalledWith(
+      expect(ujService.requestAccess).toHaveBeenCalledTimes(2)
+      expect(ujService.requestAccess).toHaveBeenCalledWith(
         'journeyId',
         'databaseId',
         'userId'
       )
-      expect(ujResolver.userJourneyApprove).toHaveBeenCalledTimes(1)
-      expect(ujResolver.userJourneyApprove).toHaveBeenCalledWith(
+      expect(ujService.approveAccess).toHaveBeenCalledTimes(2)
+      expect(ujService.approveAccess).toHaveBeenCalledWith(
         'userJourneyId',
         'senderId'
       )
@@ -253,9 +287,29 @@ describe('UserInviteResolver', () => {
         ...userInvite,
         acceptedAt: '2021-02-18T00:00:00.000Z'
       })
-      // Accepted and expired invites unchanged
-      expect(await invites[1]).toEqual(acceptedInvite)
+      // accepted invites with no userJourney, updated to todays date
+      expect(await invites[1]).toEqual({
+        ...acceptedInvite,
+        acceptedAt: '2021-02-18T00:00:00.000Z'
+      })
+      // Expired invites unchanged
       expect(await invites[2]).toEqual(removedInvite)
+    })
+
+    it('should remove userInvites which already have userJourneys', async () => {
+      const invites = await resolver.userInviteAcceptAll(user2)
+
+      expect(ujService.requestAccess).toHaveBeenCalledTimes(1)
+      expect(ujService.requestAccess).toHaveBeenCalledWith(
+        outdatedAcceptedInvite.journeyId,
+        'databaseId',
+        user2.id
+      )
+
+      expect(await invites[0]).toEqual({
+        ...outdatedAcceptedInvite,
+        removedAt: '2021-02-18T00:00:00.000Z'
+      })
     })
 
     it('should show no invites if email does not match', async () => {
@@ -264,21 +318,10 @@ describe('UserInviteResolver', () => {
         email: 'doesnotexist@email.com'
       })
 
-      expect(ujResolver.userJourneyRequest).not.toHaveBeenCalled()
-      expect(ujResolver.userJourneyApprove).not.toHaveBeenCalled()
+      expect(ujService.requestAccess).not.toHaveBeenCalled()
+      expect(ujService.approveAccess).not.toHaveBeenCalled()
       expect(service.update).not.toHaveBeenCalled()
       expect(rejectedInvite).toEqual([])
-    })
-
-    it('should throw an error when no user journey', async () => {
-      const mockUserJourneyRequest =
-        ujResolver.userJourneyRequest as jest.MockedFunction<
-          typeof ujResolver.userJourneyRequest
-        >
-      mockUserJourneyRequest.mockResolvedValueOnce(undefined)
-      await expect(
-        async () => await resolver.redeemInvite(userInvite, user.id)
-      ).rejects.toThrow('userJourney does not exist')
     })
   })
 })

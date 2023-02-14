@@ -13,16 +13,16 @@ import {
   UserInviteCreateInput,
   UserJourneyRole
 } from '../../__generated__/graphql'
-import { UserJourneyResolver } from '../userJourney/userJourney.resolver'
 import { RoleGuard } from '../../lib/roleGuard/roleGuard'
 import { JourneyService } from '../journey/journey.service'
+import { UserJourneyService } from '../userJourney/userJourney.service'
 import { UserInviteService } from './userInvite.service'
 
 @Resolver('UserInvite')
 export class UserInviteResolver {
   constructor(
     private readonly userInviteService: UserInviteService,
-    private readonly userJourneyResolver: UserJourneyResolver,
+    private readonly userJourneyService: UserJourneyService,
     private readonly journeyService: JourneyService
   ) {}
 
@@ -46,14 +46,14 @@ export class UserInviteResolver {
     @CurrentUserId() senderId: string,
     @Args('journeyId') journeyId: string,
     @Args('input') input: UserInviteCreateInput
-  ): Promise<UserInvite> {
+  ): Promise<UserInvite | null> {
     const userInvite: UserInvite =
       await this.userInviteService.getUserInviteByJourneyAndEmail(
         journeyId,
         input.email
       )
 
-    // Create invite if doesn't exist else re-activate removed invite
+    // Create invite if doesn't exist.
     if (userInvite == null) {
       const journey: Journey = await this.journeyService.get(journeyId)
 
@@ -62,18 +62,22 @@ export class UserInviteResolver {
       return await this.userInviteService.save({
         journeyId: journey.id,
         senderId,
-        email: input.email
-      })
-    }
-
-    if (userInvite.acceptedAt == null) {
-      return await this.userInviteService.update(userInvite.id, {
-        senderId,
+        email: input.email,
+        acceptedAt: null,
         removedAt: null
       })
     }
 
-    return userInvite
+    // Else re-activate removed invite
+    if (userInvite.removedAt != null) {
+      return await this.userInviteService.update(userInvite.id, {
+        senderId,
+        acceptedAt: null,
+        removedAt: null
+      })
+    }
+
+    return null
   }
 
   @Mutation()
@@ -83,9 +87,12 @@ export class UserInviteResolver {
   )
   async userInviteRemove(
     @Args('id') id: string,
+    // journeyId needed for RoleGuard
     @Args('journeyId') journeyId: string
   ): Promise<UserInvite> {
     return await this.userInviteService.update(id, {
+      // Remove called on pending invites and on deleting userJourneys. Both need to reset acceptedAt.
+      acceptedAt: null,
       removedAt: new Date().toISOString()
     })
   }
@@ -94,29 +101,29 @@ export class UserInviteResolver {
     userInvite: UserInvite,
     userId: string
   ): Promise<UserInvite> {
-    if (userInvite.acceptedAt == null && userInvite.removedAt == null) {
-      const userJourney = await this.userJourneyResolver.userJourneyRequest(
+    // Create userJourney for new invites
+    if (userInvite.removedAt == null) {
+      const userJourney = await this.userJourneyService.requestAccess(
         userInvite.journeyId,
         IdType.databaseId,
         userId
       )
 
-      if (userJourney == null)
-        throw new UserInputError('userJourney does not exist')
+      // User already has access to journey, remove invalid invite
+      if (userJourney == null) {
+        return await this.userInviteService.update(userInvite.id, {
+          removedAt: new Date().toISOString()
+        })
+      }
 
-      await this.userJourneyResolver.userJourneyApprove(
+      await this.userJourneyService.approveAccess(
         userJourney.id,
         userInvite.senderId
       )
 
-      const updatedInvite: UserInvite = await this.userInviteService.update(
-        userInvite.id,
-        {
-          acceptedAt: new Date().toISOString()
-        }
-      )
-
-      return updatedInvite
+      return await this.userInviteService.update(userInvite.id, {
+        acceptedAt: new Date().toISOString()
+      })
     }
 
     return userInvite
