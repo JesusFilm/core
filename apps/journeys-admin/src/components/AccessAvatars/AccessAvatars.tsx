@@ -4,6 +4,7 @@ import AvatarGroup from '@mui/material/AvatarGroup'
 import Box from '@mui/material/Box'
 import Badge from '@mui/material/Badge'
 import { noop } from 'lodash'
+import Skeleton from '@mui/material/Skeleton'
 import { AccessDialog } from '../AccessDialog'
 import { GetJourneys_journeys_userJourneys as UserJourney } from '../../../__generated__/GetJourneys'
 import { Avatar } from '../Avatar'
@@ -85,7 +86,19 @@ const withRenderLogic = ({
     const maxIndex = max <= 2 ? 0 : max - 2
 
     const children = loading
-      ? [0, 1, 2].map((i) => <MuiAvatar key={i} />)
+      ? [0, 1, 2].map((i) => {
+          return (
+            <MuiAvatar key={i}>
+              <Skeleton
+                variant="circular"
+                height={diameter}
+                width={diameter}
+                animation={false}
+                sx={{ bgcolor: 'divider' }}
+              />
+            </MuiAvatar>
+          )
+        })
       : values?.map(({ role, user }, index) => {
           if (
             index > maxIndex &&
