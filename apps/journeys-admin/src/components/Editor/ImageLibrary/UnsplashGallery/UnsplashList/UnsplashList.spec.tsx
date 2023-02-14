@@ -37,6 +37,6 @@ describe('UnsplashList', () => {
     expect(
       getByAltText('white dome building during daytime')
     ).toBeInTheDocument()
-    expect(getByTestId('image-1')).toHaveStyle('border: 3px solid #C52D3A')
+    expect(getByTestId('image-1')).toHaveStyle('border: 2px solid #C52D3A')
   })
 })
