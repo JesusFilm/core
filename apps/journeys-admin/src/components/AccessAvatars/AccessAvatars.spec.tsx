@@ -36,8 +36,8 @@ describe('AccessAvatars', () => {
     expect(getByAltText('Janelle Five')).toBeInTheDocument()
   })
 
-  it('should use first name and last as tooltip', () => {
-    const { getByLabelText } = render(
+  it('should use first name and last as tooltip', async () => {
+    const { getByRole } = render(
       <SnackbarProvider>
         <MockedProvider>
           <ThemeProvider>
@@ -55,7 +55,10 @@ describe('AccessAvatars', () => {
         </MockedProvider>
       </SnackbarProvider>
     )
-    expect(getByLabelText('Janelle Five')).toBeInTheDocument()
+    fireEvent.focusIn(getByRole('img', { name: 'Janelle Five' }))
+    await waitFor(() =>
+      expect(getByRole('tooltip', { name: 'Janelle Five' })).toBeInTheDocument()
+    )
   })
 
   it('should display 2 mobile and 4 desktop avatars max', () => {

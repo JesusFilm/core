@@ -22,33 +22,32 @@ export function Avatar({
 
   return (
     <Tooltip title={displayName}>
-      {notification ? (
-        <StyledBadge
-          anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
-          color="warning"
-          overlap="circular"
-          variant="dot"
-          aria-label="notification-badge"
+      <StyledBadge
+        anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+        invisible={!notification}
+        color="warning"
+        variant="dot"
+        aria-label="notification-badge"
+        sx={{
+          '& .MuiBadge-badge': {
+            top: '15%',
+            right: '12%',
+            boxShadow: (theme) => `0 0 0 2px ${theme.palette.background.paper}`
+          }
+        }}
+      >
+        <MuiAvatar
+          alt={displayName}
+          src={user.imageUrl ?? undefined}
           sx={{
-            '& .MuiBadge-badge': {
-              boxShadow: (theme) =>
-                `0 0 0 2px ${theme.palette.background.paper}`
-            }
+            filter: notification
+              ? 'grayscale(80%) brightness(1.2) sepia(0.3)'
+              : ''
           }}
         >
-          <MuiAvatar
-            alt={displayName}
-            src={user.imageUrl ?? undefined}
-            sx={{ opacity: 0.6, background: 'secondary.light' }}
-          >
-            {displayName.charAt(0)?.toUpperCase()}
-          </MuiAvatar>
-        </StyledBadge>
-      ) : (
-        <MuiAvatar alt={displayName} src={user.imageUrl ?? undefined}>
           {displayName.charAt(0)?.toUpperCase()}
         </MuiAvatar>
-      )}
+      </StyledBadge>
     </Tooltip>
   )
 }

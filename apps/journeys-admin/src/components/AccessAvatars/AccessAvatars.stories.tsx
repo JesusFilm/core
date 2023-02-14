@@ -4,8 +4,12 @@ import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { simpleComponentConfig } from '../../libs/storybook'
 import { GET_JOURNEY_WITH_USER_JOURNEYS } from '../AccessDialog/AccessDialog'
-import { GetJourneys_journeys_userJourneys as UserJourney } from '../../../__generated__/GetJourneys'
+import {
+  GetJourneys_journeys_userJourneys as UserJourney,
+  GetJourneys_journeys_userJourneys_user as User
+} from '../../../__generated__/GetJourneys'
 import { GET_CURRENT_USER } from '../../libs/useCurrentUser'
+import { UserJourneyRole } from '../../../__generated__/globalTypes'
 import { AccessAvatarsProps } from './AccessAvatars'
 import {
   userJourney1,
@@ -57,6 +61,19 @@ const noImageUserJourneys: UserJourney[] = [
     }
   }
 ]
+const notificationJourneys = [
+  { ...userJourney1, role: UserJourneyRole.inviteRequested },
+  userJourney2,
+  { ...userJourney3, role: UserJourneyRole.inviteRequested },
+  {
+    ...userJourney4,
+    role: UserJourneyRole.inviteRequested,
+    user: { ...userJourney4.user, imageUrl: null } as unknown as User
+  },
+  userJourney5,
+  { ...userJourney6, role: UserJourneyRole.inviteRequested }
+]
+
 const overflowUserJourneys = [
   ...defaultUserJourneys,
   userJourney4,
@@ -157,6 +174,13 @@ const Template: Story = ({ ...args }) => (
       <AccessAvatars
         journeyId="journeyId"
         userJourneys={overflowUserJourneys}
+        size={args.size}
+      />
+
+      <Typography>Notification</Typography>
+      <AccessAvatars
+        journeyId="journeyId"
+        userJourneys={notificationJourneys}
         size={args.size}
       />
 

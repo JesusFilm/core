@@ -70,7 +70,7 @@ const withRenderLogic = ({
     case 'small':
       diameter = 31
       fontSize = 12
-      borderWidth = 1
+      borderWidth = 2
       break
     case 'medium':
       diameter = 48
@@ -144,7 +144,7 @@ const withRenderLogic = ({
           <AvatarGroup
             max={max}
             sx={{
-              '> .MuiAvatar-root': {
+              '& .MuiAvatar-root': {
                 width: diameter,
                 height: diameter,
                 fontSize,
