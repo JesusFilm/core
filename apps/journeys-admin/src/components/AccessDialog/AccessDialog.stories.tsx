@@ -3,10 +3,8 @@ import { MockedProvider } from '@apollo/client/testing'
 import { useState } from 'react'
 import { ApolloLoadingProvider } from '../../../test/ApolloLoadingProvider'
 import { journeysAdminConfig } from '../../libs/storybook'
-import {
-  GET_CURRENT_USER,
-  GET_JOURNEY_WITH_USER_JOURNEYS
-} from './AccessDialog'
+import { GET_CURRENT_USER } from '../../libs/useCurrentUser/useCurrentUser'
+import { GET_JOURNEY_WITH_USER_JOURNEYS } from './AccessDialog'
 import { AccessDialog } from '.'
 
 const Demo = {
