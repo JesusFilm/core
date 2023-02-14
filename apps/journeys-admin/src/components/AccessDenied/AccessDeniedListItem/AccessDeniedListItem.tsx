@@ -1,10 +1,5 @@
 import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
-import Card from '@mui/material/Card'
-import CardContent from '@mui/material/CardContent'
-import Typography from '@mui/material/Typography'
-import Stack from '@mui/material/Stack'
-import CardActions from '@mui/material/CardActions'
 import Button from '@mui/material/Button'
 import SupervisorAccountRoundedIcon from '@mui/icons-material/SupervisorAccountRounded'
 import CheckCircleRoundedIcon from '@mui/icons-material/CheckCircleRounded'
@@ -51,7 +46,7 @@ export function AccessDeniedListItem({
           lineHeight: '40px',
           textAlign: 'center'
         }}
-        sx={{ justifyContent: 'center', width: '40px' }}
+        sx={{ width: '40px' }}
       />
       <ListItemText primary={heading} secondary={description} sx={{ ml: 3 }} />
       {handleRequestAccess != null &&
