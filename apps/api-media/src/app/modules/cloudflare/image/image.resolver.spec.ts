@@ -61,6 +61,12 @@ describe('ImageResolver', () => {
         createdAt: expect.any(String),
         userId: user.id
       })
+      expect(service.save).toHaveBeenCalledWith({
+        _key: '1',
+        uploadUrl: 'https://upload.com',
+        createdAt: expect.any(String),
+        userId: user.id
+      })
     })
   })
   describe('createCloudflareUploadByFile ', () => {
@@ -74,6 +80,12 @@ describe('ImageResolver', () => {
         id: '1',
         createdAt: expect.any(String),
         userId: user.id
+      })
+      expect(service.save).toHaveBeenCalledWith({
+        _key: '1',
+        createdAt: expect.any(String),
+        userId: user.id,
+        uploaded: true
       })
     })
   })

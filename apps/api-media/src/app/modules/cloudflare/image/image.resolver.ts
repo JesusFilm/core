@@ -44,7 +44,8 @@ export class ImageResolver {
     await this.imageService.save({
       _key: result.result.id,
       userId,
-      createdAt
+      createdAt,
+      uploaded: true
     })
     return {
       id: result.result.id,
