@@ -36,13 +36,14 @@ export function CustomUrl({
 }: CustomUrlProps): ReactElement {
   const [open, setOpen] = useState(false)
 
-  const { data } = useQuery<CloudflareUploadUrl>(CLOUDFLARE_UPLOAD_URL)
+  const { data, refetch } = useQuery<CloudflareUploadUrl>(CLOUDFLARE_UPLOAD_URL)
 
   const handleChange = async (url: string): Promise<void> => {
     if (data?.createCloudflareImage == null) return
     const fetchBlobResponse = await (await fetch(url)).blob()
     const formData = new FormData()
-    formData.append('file', fetchBlobResponse)
+    formData.append('file', fetchBlobResponse as Blob)
+    console.log(formData)
 
     const response = await (
       await fetch(data.createCloudflareImage?.uploadUrl, {
@@ -50,10 +51,15 @@ export function CustomUrl({
         body: formData
       })
     ).json()
+
     console.log(response)
+
     const src = `https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/${response.result.id as string
       }/public`
+
     onChange(src)
+
+    await refetch()
     formik.resetForm({ values: { src: '' } })
   }
 

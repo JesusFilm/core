@@ -27,21 +27,20 @@ describe('CustomUrl', () => {
       data: {
         createCloudflareImage: {
           uploadUrl: 'uploadUrl',
-          id: 'id'
+          id: 'uploadId'
         }
       }
     }
   }
 
   const fetchCloudflareUploadResponse = rest.get(
-    'https://upload.imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/uploadId',
+    'https://upload.imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/uploadUrl',
     (_req, res, ctx) => {
       return res(
         ctx.json({
           errors: [],
           messages: [],
-          results: {
-            filename: 'blob',
+          result: {
             id: 'uploadId',
             requiredSignedURLs: false,
             variants: [
@@ -58,11 +57,13 @@ describe('CustomUrl', () => {
   it('should upload image to cloudlfare', async () => {
     mswServer.use(fetchCloudflareUploadResponse)
     const onChange = jest.fn()
+
     const { getByRole, getByText } = render(
       <MockedProvider mocks={[createCloudflareImageMock]}>
         <CustomUrl selectedBlock={imageBlock} onChange={onChange} />
       </MockedProvider>
     )
+
     fireEvent.click(getByRole('button', { name: 'Add image by URL' }))
     expect(getByText('Paste URL of image...'))
     const textBox = await getByRole('textbox')
@@ -70,8 +71,6 @@ describe('CustomUrl', () => {
       target: { value: 'https://example.com/123' }
     })
     fireEvent.blur(textBox)
-    await waitFor(() => expect(onChange).toHaveBeenCalledWith(
-      'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/uploadId/public'
-    ))
+    await waitFor(() => expect(onChange).toHaveBeenCalledWith('https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/123456/public'))
   })
 })
