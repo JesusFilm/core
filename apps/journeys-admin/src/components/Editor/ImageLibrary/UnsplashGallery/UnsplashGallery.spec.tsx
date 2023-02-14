@@ -25,7 +25,7 @@ describe('UnsplashGallery', () => {
   }
 
   it('should return a collection of images from unsplash', async () => {
-    const { getByRole } = render(
+    const { getByRole, getByAltText } = render(
       <MockedProvider
         mocks={[
           {
@@ -49,11 +49,13 @@ describe('UnsplashGallery', () => {
       </MockedProvider>
     )
     await waitFor(() => expect(getByRole('list')).toBeInTheDocument())
-    // add check when backend types are fixed
+    expect(
+      getByAltText('white dome building during daytime')
+    ).toBeInTheDocument()
   })
 
   it('should search images from unsplash', async () => {
-    const { getByRole } = render(
+    const { getByRole, getAllByAltText } = render(
       <MockedProvider
         mocks={[
           {
@@ -98,6 +100,8 @@ describe('UnsplashGallery', () => {
     fireEvent.change(textbox, { target: { value: 'Jesus' } })
     fireEvent.submit(textbox, { target: { value: 'Jesus' } })
     await waitFor(() => expect(getByRole('list')).toBeInTheDocument())
-    // add check when backend types are fixed
+    expect(
+      getAllByAltText('white dome building during daytime')[0]
+    ).toBeInTheDocument()
   })
 })

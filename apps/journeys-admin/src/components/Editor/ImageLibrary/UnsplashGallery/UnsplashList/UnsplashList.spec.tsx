@@ -23,7 +23,7 @@ describe('UnsplashList', () => {
 
   it('should call onChange on image click', () => {
     const onChange = jest.fn()
-    const { getByRole } = render(
+    const { getByAltText, getByRole, getByTestId } = render(
       <UnsplashList
         gallery={[
           unsplashImage as unknown as SearchUnsplashPhotos_searchUnsplashPhotos_results
@@ -34,5 +34,9 @@ describe('UnsplashList', () => {
     expect(getByRole('list')).toBeInTheDocument()
     fireEvent.click(getByRole('button'))
     expect(onChange).toHaveBeenCalled()
+    expect(
+      getByAltText('white dome building during daytime')
+    ).toBeInTheDocument()
+    expect(getByTestId('image-1')).toHaveStyle('border: 3px solid #C52D3A')
   })
 })

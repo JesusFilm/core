@@ -21,6 +21,7 @@ export const LIST_UNSPLASH_COLLECTION_PHOTOS = gql`
       perPage: $perPage
     ) {
       id
+      alt_description
       width
       height
       urls {
@@ -29,6 +30,7 @@ export const LIST_UNSPLASH_COLLECTION_PHOTOS = gql`
       }
       user {
         first_name
+        last_name
         username
       }
     }
@@ -40,6 +42,7 @@ export const SEARCH_UNSPLASH_PHOTOS = gql`
     searchUnsplashPhotos(query: $query, page: $page, perPage: $perPage) {
       results {
         id
+        alt_description
         width
         height
         urls {
@@ -48,6 +51,7 @@ export const SEARCH_UNSPLASH_PHOTOS = gql`
         }
         user {
           first_name
+          last_name
           username
         }
       }
