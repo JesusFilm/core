@@ -66,7 +66,7 @@ interface UnsplashGalleryProps {
 export function UnsplashGallery({
   onChange
 }: UnsplashGalleryProps): ReactElement {
-  const [query, setQuery] = useState<string | null>(null)
+  const [query, setQuery] = useState<string>()
   const [page, setPage] = useState(1)
   const {
     data: listData,

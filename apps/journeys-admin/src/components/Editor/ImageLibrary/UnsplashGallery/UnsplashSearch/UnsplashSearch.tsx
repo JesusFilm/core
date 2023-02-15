@@ -6,7 +6,7 @@ import { Formik, Form } from 'formik'
 
 interface UnsplashSearchProps {
   handleSubmit: (value?: string | null) => void
-  value?: string | null
+  value?: string
 }
 
 export function UnsplashSearch({

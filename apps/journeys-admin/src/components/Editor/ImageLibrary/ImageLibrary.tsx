@@ -40,7 +40,7 @@ export function ImageLibrary({
 }: ImageLibraryProps): ReactElement {
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
   const [tabValue, setTabValue] = useState(0)
-  const [unsplashAuthor, setUnsplashAuthor] = useState<string | null>()
+  const [unsplashAuthor, setUnsplashAuthor] = useState<string>()
   const { unsplashGallery } = useFlags()
 
   const srcSchema = object().shape({

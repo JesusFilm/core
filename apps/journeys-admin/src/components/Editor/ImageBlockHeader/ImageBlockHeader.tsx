@@ -13,7 +13,7 @@ interface ImageBlockHeaderProps {
   showAdd?: boolean
   onDelete?: () => Promise<void>
   loading?: boolean
-  unsplashAuthor?: string | null
+  unsplashAuthor?: string
 }
 
 export function ImageBlockHeader({
