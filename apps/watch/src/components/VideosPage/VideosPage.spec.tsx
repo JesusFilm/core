@@ -132,7 +132,7 @@ describe('VideosPage', () => {
     })
 
     it('should handle subtitle language filter', async () => {
-      const { getAllByRole, getByText } = render(
+      const { getAllByRole, getByText, getByTestId } = render(
         <MockedProvider
           mocks={[
             {
@@ -186,9 +186,13 @@ describe('VideosPage', () => {
         </MockedProvider>
       )
 
-      const textbox = getAllByRole('combobox')[1]
+      const filterContainer = getByTestId('subtitleContainer')
 
       await act(async () => {
+        await waitFor(() => fireEvent.click(filterContainer))
+
+        const textbox = getAllByRole('combobox')[0]
+
         await waitFor(() => fireEvent.focus(textbox))
         await waitFor(() => fireEvent.keyDown(textbox, { key: 'ArrowDown' }))
         await waitFor(() => fireEvent.keyDown(textbox, { key: 'Enter' }))

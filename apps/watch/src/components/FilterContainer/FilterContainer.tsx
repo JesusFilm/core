@@ -11,9 +11,21 @@ import Subtitles from '@mui/icons-material/Subtitles'
 import Title from '@mui/icons-material/Title'
 import Typography from '@mui/material/Typography'
 import Stack from '@mui/material/Stack'
+import { LanguageAutocompleteProps } from '@core/shared/ui/LanguageAutocomplete'
+import { OutlinedTextFieldProps } from '@mui/material/TextField'
 
-export function FilterContainer(): ReactElement {
-  const [openRow, setOpenRow] = useState<number>(0)
+interface FilterContainerProps {
+  subtitleSwitcher: ReactElement<LanguageAutocompleteProps>
+  audioSwitcher: ReactElement<LanguageAutocompleteProps>
+  titleSearch: ReactElement<OutlinedTextFieldProps>
+}
+
+export function FilterContainer({
+  subtitleSwitcher,
+  audioSwitcher,
+  titleSearch
+}: FilterContainerProps): ReactElement {
+  const [openRow, setOpenRow] = useState<number>(1)
   return (
     <TableContainer
       sx={{ border: 1, borderColor: '#AAACBB', borderRadius: '8px' }}
@@ -46,9 +58,8 @@ export function FilterContainer(): ReactElement {
                   borderBottom: 1,
                   borderColor: '#AAACBB'
                 }}
-                onClick={() => setOpenRow(0)}
               >
-                <Typography>Languages Component Here</Typography>
+                {audioSwitcher}
               </TableCell>
             </TableRow>
           ) : (
@@ -56,6 +67,7 @@ export function FilterContainer(): ReactElement {
           )}
           <TableRow key={2}>
             <TableCell
+              data-testid="subtitleContainer"
               align="center"
               sx={{ borderBottom: 1, borderColor: '#AAACBB' }}
               onClick={() => setOpenRow(2)}
@@ -72,7 +84,7 @@ export function FilterContainer(): ReactElement {
             </TableCell>
           </TableRow>
           {openRow === 2 ? (
-            <TableRow key={1.5}>
+            <TableRow key={2.5}>
               <TableCell
                 align="center"
                 sx={{
@@ -80,9 +92,8 @@ export function FilterContainer(): ReactElement {
                   borderBottom: 1,
                   borderColor: '#AAACBB'
                 }}
-                onClick={() => setOpenRow(0)}
               >
-                <Typography>Subtitles Component Here</Typography>
+                {subtitleSwitcher}
               </TableCell>
             </TableRow>
           ) : (
@@ -109,13 +120,9 @@ export function FilterContainer(): ReactElement {
             </TableCell>
           </TableRow>
           {openRow === 3 ? (
-            <TableRow key={1.5}>
-              <TableCell
-                align="center"
-                sx={{ backgroundColor: '#DCDDE5' }}
-                onClick={() => setOpenRow(0)}
-              >
-                <Typography>Title Component Here</Typography>
+            <TableRow key={3.5}>
+              <TableCell align="center" sx={{ backgroundColor: '#DCDDE5' }}>
+                {titleSearch}
               </TableCell>
             </TableRow>
           ) : (
