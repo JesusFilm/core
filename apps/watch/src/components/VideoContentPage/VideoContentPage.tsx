@@ -15,7 +15,7 @@ import { VideoHero } from './VideoHero'
 import { VideoContent } from './VideoContent/VideoContent'
 
 import 'video.js/dist/video-js.css'
-import { VideoHeading } from './VIdeoHeading'
+import { VideoHeading } from './VideoHeading'
 
 // Usually FeatureFilm, ShortFilm, Episode or Segment Videos
 export function VideoContentPage(): ReactElement {
