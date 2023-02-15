@@ -13,10 +13,10 @@ import Typography from '@mui/material/Typography'
 import BrushRounded from '@mui/icons-material/BrushRounded'
 import DashboardRounded from '@mui/icons-material/DashboardRounded'
 import useMediaQuery from '@mui/material/useMediaQuery'
+import { object, string } from 'yup'
 import { GetJourney_journey_blocks_ImageBlock as ImageBlock } from '../../../../__generated__/GetJourney'
 import { ImageBlockHeader } from '../ImageBlockHeader'
 import { CustomImage } from './CustomImage'
-// import { object, string } from 'yup'
 
 export const DRAWER_WIDTH = 328
 
@@ -41,21 +41,21 @@ export function ImageLibrary({
   const [tabValue, setTabValue] = useState(0)
 
   // uncomment once unsplash and custom components are in
-  // const srcSchema = object().shape({
-  //   src: string().url('Please enter a valid url').required('Required')
-  // })
+  const srcSchema = object().shape({
+    src: string().url('Please enter a valid url').required('Required')
+  })
 
-  // const handleSrcChange = async (src: string): Promise<void> => {
-  //   if (!(await srcSchema.isValid({ src })) || src === selectedBlock?.src)
-  //     return
+  const handleSrcChange = async (src: string): Promise<void> => {
+    if (!(await srcSchema.isValid({ src })) || src === selectedBlock?.src)
+      return
 
-  //   const block = {
-  //     ...selectedBlock,
-  //     src,
-  //     alt: src.replace(/(.*\/)*/, '').replace(/\?.*/, '') // per Vlad 26/1/22, we are hardcoding the image alt for now
-  //   }
-  //   await onChange(block as ImageBlock)
-  // }
+    const block = {
+      ...selectedBlock,
+      src,
+      alt: src.replace(/(.*\/)*/, '').replace(/\?.*/, '') // per Vlad 26/1/22, we are hardcoding the image alt for now
+    }
+    await onChange(block as ImageBlock)
+  }
 
   const handleTabChange = (
     _event: SyntheticEvent<Element, Event>,

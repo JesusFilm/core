@@ -5,16 +5,16 @@ import BackupOutlinedIcon from '@mui/icons-material/BackupOutlined'
 import Button from '@mui/material/Button'
 import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
-import { gql, useQuery } from '@apollo/client'
+import { gql, useMutation } from '@apollo/client'
 import fetch from 'node-fetch'
 import CloudDoneOutlinedIcon from '@mui/icons-material/CloudDoneOutlined'
 import CloudOffOutlinedIcon from '@mui/icons-material/CloudOffOutlined'
 import WarningAmberOutlinedIcon from '@mui/icons-material/WarningAmberOutlined'
-import { CloudflareUploadUrl } from '../../../../../../__generated__/CloudflareUploadUrl'
+import { CreateCloudflareUploadByFile } from '../../../../../../__generated__/CreateCloudflareUploadByFile'
 
-export const CLOUDFLARE_UPLOAD_URL = gql`
-  query CloudflareUploadUrl {
-    createCloudflareImage {
+export const CREATE_CLOUDFLARE_UPLOAD_BY_FILE = gql`
+  mutation CreateCloudflareUploadByFile {
+    createCloudflareUploadByFile {
       uploadUrl
       id
     }
@@ -30,34 +30,31 @@ export function ImageUpload({
   onChange,
   loading
 }: ImageUploadProps): ReactElement {
-  const { data, refetch } = useQuery<CloudflareUploadUrl>(CLOUDFLARE_UPLOAD_URL)
+  const [createCloudflareUploadByFile] =
+    useMutation<CreateCloudflareUploadByFile>(CREATE_CLOUDFLARE_UPLOAD_BY_FILE)
   const [success, setSuccess] = useState<boolean>()
 
   const onDrop = async (acceptedFiles): Promise<void> => {
-    if (data?.createCloudflareImage == null) return
-    const file = acceptedFiles[0]
-
-    const formData = new FormData()
-    formData.set('file', file)
-
-    const response = await (
-      await fetch(data?.createCloudflareImage?.uploadUrl, {
-        method: 'POST',
-        body: formData
-      })
-    ).json()
-
-    response.success === true ? setSuccess(true) : setSuccess(false)
-    if (response.errors.length !== 0) {
-      setSuccess(false)
+    const { data } = await createCloudflareUploadByFile({})
+    if (data?.createCloudflareUploadByFile?.uploadUrl != null) {
+      const file = acceptedFiles[0]
+      const formData = new FormData()
+      formData.set('file', file)
+      const response = await (
+        await fetch(data?.createCloudflareUploadByFile?.uploadUrl, {
+          method: 'POST',
+          body: formData
+        })
+      ).json()
+      response.success === true ? setSuccess(true) : setSuccess(false)
+      if (response.errors.length !== 0) {
+        setSuccess(false)
+      }
+      const src = `https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/${
+        response.result.id as string
+      }/public`
+      onChange(src)
     }
-
-    const src = `https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/${
-      response.result.id as string
-    }/public`
-    onChange(src)
-
-    await refetch()
   }
 
   const { getRootProps, open, getInputProps } = useDropzone({
@@ -70,7 +67,7 @@ export function ImageUpload({
   })
 
   return (
-    <Stack {...getRootProps()} alignItems="center">
+    <Stack {...getRootProps()} alignItems="center" sx={{ px: 6, pt: 3 }}>
       <input {...getInputProps()} />
       <Box
         data-testid="drop zone"
