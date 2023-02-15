@@ -4,6 +4,15 @@ import { journeysAdminConfig } from '../../../../libs/storybook'
 import { NavigationListItemProps } from './NavigationListItem'
 import { NavigationListItem } from '.'
 
+// jest.mock('react-i18next', () => ({
+//   __esModule: true,
+//   useTranslation: () => {
+//     return {
+//       t: (str: string) => str
+//     }
+//   }
+// }))
+
 const NavigationListItemStory = {
   ...journeysAdminConfig,
   component: NavigationListItem,

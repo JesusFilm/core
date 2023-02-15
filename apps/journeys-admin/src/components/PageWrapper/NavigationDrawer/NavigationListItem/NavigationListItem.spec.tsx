@@ -2,6 +2,15 @@ import { fireEvent, render } from '@testing-library/react'
 import AbcRoundedIcon from '@mui/icons-material/AbcRounded'
 import { NavigationListItem } from './NavigationListItem'
 
+jest.mock('react-i18next', () => ({
+  __esModule: true,
+  useTranslation: () => {
+    return {
+      t: (str: string) => str
+    }
+  }
+}))
+
 describe('NavigationListItem', () => {
   it('renders menu item', () => {
     const { getByRole } = render(
@@ -38,7 +47,6 @@ describe('NavigationListItem', () => {
         icon={<AbcRoundedIcon />}
         label="menu item"
         selected
-        notification
         tooltipText="item label"
       />
     )
@@ -53,7 +61,6 @@ describe('NavigationListItem', () => {
         label="menu item"
         selected
         link="/"
-        notification
         tooltipText="item label"
       />
     )

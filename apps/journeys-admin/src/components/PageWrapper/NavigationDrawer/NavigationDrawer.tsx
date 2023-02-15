@@ -22,6 +22,7 @@ import { gql, useQuery } from '@apollo/client'
 import { useFlags } from '@core/shared/ui/FlagsProvider'
 import ViewCarouselRoundedIcon from '@mui/icons-material/ViewCarouselRounded'
 import LeaderboardRoundedIcon from '@mui/icons-material/LeaderboardRounded'
+import { useTranslation } from 'next-i18next'
 import { Role } from '../../../../__generated__/globalTypes'
 import taskbarIcon from '../../../../public/taskbar-icon.svg'
 import nextstepsTitle from '../../../../public/nextsteps-title.svg'
@@ -106,6 +107,7 @@ export function NavigationDrawer({
   router
 }: NavigationDrawerProps): ReactElement {
   const journeys = useJourneys()
+  const { t } = useTranslation('apps-journeys-admin')
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
   const [profileAnchorEl, setProfileAnchorEl] = useState(null)
 
@@ -129,7 +131,7 @@ export function NavigationDrawer({
   const { data } = useQuery<GetMe>(GET_ME)
   const { data: userRoleData } = useQuery<GetUserRole>(GET_USER_ROLE)
 
-  const journeyTooltip = getJourneyTooltip(journeys, authUser?.id)
+  const journeyTooltip = getJourneyTooltip(t, journeys, authUser?.id)
 
   return (
     <StyledNavigationDrawer
