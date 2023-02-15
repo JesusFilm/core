@@ -47,10 +47,7 @@ export function AccessDenied({
             disablePadding
             sx={{
               mt: 8,
-              borderRadius: '6px',
-              '& .MuiListItemText-root': {
-                flex: '0 1 auto'
-              }
+              borderRadius: '6px'
             }}
           >
             <AccessDeniedListItem

@@ -4,7 +4,6 @@ import Button from '@mui/material/Button'
 import SupervisorAccountRoundedIcon from '@mui/icons-material/SupervisorAccountRounded'
 import CheckCircleRoundedIcon from '@mui/icons-material/CheckCircleRounded'
 import ListItem from '@mui/material/ListItem'
-import ListItemText from '@mui/material/ListItemText'
 import Typography from '@mui/material/Typography'
 import Stack from '@mui/material/Stack'
 
@@ -35,31 +34,24 @@ export function AccessDeniedListItem({
         borderRadius: 'inherit'
       }}
     >
-      <ListItemText
-        disableTypography
-        primary={
-          <Typography
-            sx={{
-              fontFamily: 'Montserrat',
-              fontWeight: 400,
-              fontSize: '36px',
-              lineHeight: '40px',
-              textAlign: 'center',
-              color: 'secondary.light',
-              fontStyle: 'normal'
-            }}
-          >
-            {stepNumber}
-          </Typography>
-        }
-        sx={{ width: '40px' }}
-      />
-      <ListItemText
-        disableTypography
-        primary={<Typography variant="h6">{heading}</Typography>}
-        secondary={<Typography variant="body2">{description}</Typography>}
-        sx={{ ml: 3 }}
-      />
+      <Typography
+        sx={{
+          fontFamily: 'Montserrat',
+          fontWeight: 400,
+          fontSize: '36px',
+          lineHeight: '40px',
+          textAlign: 'center',
+          color: 'secondary.light',
+          fontStyle: 'normal',
+          width: '40px'
+        }}
+      >
+        {stepNumber}
+      </Typography>
+      <Stack sx={{ ml: 3 }}>
+        <Typography variant="h6">{heading}</Typography>
+        <Typography variant="body2">{description}</Typography>
+      </Stack>
       {handleRequestAccess != null &&
         (requestedAccess ? (
           <Stack
