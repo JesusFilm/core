@@ -16,9 +16,17 @@ import {
 } from '../../../__generated__/graphql'
 import { RoleGuard } from '../../../lib/roleGuard/roleGuard'
 
-async function handleImage(
+export async function handleImage(
   input
 ): Promise<ImageBlockCreateInput | ImageBlockUpdateInput> {
+  if (
+    (input.width ?? 0) > 0 &&
+    (input.height ?? 0) > 0 &&
+    (input.blurhash ?? '').length > 0
+  ) {
+    return input
+  }
+
   const defaultBlock = {
     ...input,
     width: 0,
@@ -59,6 +67,7 @@ async function handleImage(
 
   return block
 }
+
 @Resolver('ImageBlock')
 export class ImageBlockResolver {
   constructor(private readonly blockService: BlockService) {}
