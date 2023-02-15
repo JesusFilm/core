@@ -36,23 +36,26 @@ export function ImageUpload({
 
   const onDrop = async (acceptedFiles): Promise<void> => {
     const { data } = await createCloudflareUploadByFile({})
+
     if (data?.createCloudflareUploadByFile?.uploadUrl != null) {
       const file = acceptedFiles[0]
       const formData = new FormData()
       formData.set('file', file)
+
       const response = await (
         await fetch(data?.createCloudflareUploadByFile?.uploadUrl, {
           method: 'POST',
           body: formData
         })
       ).json()
+
       response.success === true ? setSuccess(true) : setSuccess(false)
       if (response.errors.length !== 0) {
         setSuccess(false)
       }
-      const src = `https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/${
-        response.result.id as string
-      }/public`
+
+      const src = `https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/${response.result.id as string
+        }/public`
       onChange(src)
     }
   }
@@ -109,18 +112,18 @@ export function ImageUpload({
             success === true && loading === false
               ? 'success.main'
               : success === false && loading === false
-              ? 'error.main'
-              : 'secondary.main'
+                ? 'error.main'
+                : 'secondary.main'
           }
           sx={{ pb: 4 }}
         >
           {loading === false && success === true
             ? 'Upload successful!'
             : loading === true
-            ? 'Uploading...'
-            : success === false
-            ? 'Upload Failed!'
-            : 'Drop an image here'}
+              ? 'Uploading...'
+              : success === false
+                ? 'Upload Failed!'
+                : 'Drop an image here'}
         </Typography>
       </Box>
       <Stack
