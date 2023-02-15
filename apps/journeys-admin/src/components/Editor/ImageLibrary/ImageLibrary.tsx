@@ -132,10 +132,7 @@ export function ImageLibrary({
           {/* insert unsplash component */}
         </TabPanel>
         <TabPanel name="custom" value={tabValue} index={1}>
-          <CustomImage
-            selectedBlock={selectedBlock}
-            onChange={handleSrcChange}
-          />
+          <CustomImage onChange={handleSrcChange} />
         </TabPanel>
       </Box>
     </Drawer>
