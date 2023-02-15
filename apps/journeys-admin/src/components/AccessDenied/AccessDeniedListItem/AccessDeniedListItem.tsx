@@ -84,7 +84,12 @@ export function RequestAccess({
           <Stack
             direction="row"
             alignItems="center"
-            sx={{ color: 'success.main', mr: 3, px: '12px', py: '6px' }}
+            sx={{
+              color: 'success.main',
+              mr: 3,
+              px: { xs: 0, sm: '12px' },
+              py: '6px'
+            }}
             flexShrink={0}
           >
             <CheckCircleRoundedIcon fontSize="small" sx={{ mr: 2 }} />
