@@ -1,4 +1,3 @@
-import NextLink from 'next/link'
 import ListItem from '@mui/material/ListItem'
 import Typography from '@mui/material/Typography'
 import ListItemButton from '@mui/material/ListItemButton'
@@ -19,20 +18,23 @@ export function TermsListItem({
 }: TermsListItemProps): ReactElement {
   return (
     <ListItem disablePadding>
-      <NextLink href={link} passHref>
-        <ListItemButton sx={{ pt: 3, pb: 3 }}>
-          <ListItemIcon sx={{ minWidth: '44px', color: 'secondary.light' }}>
-            {icon}
-          </ListItemIcon>
-          <ListItemText
-            primary={
-              <Typography variant="body1" color="primary.main">
-                {text}
-              </Typography>
-            }
-          />
-        </ListItemButton>
-      </NextLink>
+      <ListItemButton
+        href={link}
+        sx={{ pt: 3, pb: 3 }}
+        target="_blank"
+        rel="noopener"
+      >
+        <ListItemIcon sx={{ minWidth: '44px', color: 'secondary.light' }}>
+          {icon}
+        </ListItemIcon>
+        <ListItemText
+          primary={
+            <Typography variant="body1" color="primary.main">
+              {text}
+            </Typography>
+          }
+        />
+      </ListItemButton>
     </ListItem>
   )
 }
