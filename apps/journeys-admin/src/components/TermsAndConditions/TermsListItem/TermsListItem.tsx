@@ -21,7 +21,9 @@ export function TermsListItem({
     <ListItem disablePadding>
       <NextLink href={link} passHref>
         <ListItemButton sx={{ pt: 3, pb: 3 }}>
-          <ListItemIcon sx={{ minWidth: '44px' }}>{icon}</ListItemIcon>
+          <ListItemIcon sx={{ minWidth: '44px', color: 'secondary.light' }}>
+            {icon}
+          </ListItemIcon>
           <ListItemText
             primary={
               <Typography variant="body1" color="primary.main">
