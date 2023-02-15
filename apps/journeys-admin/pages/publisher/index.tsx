@@ -11,7 +11,6 @@ import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import { useTranslation } from 'react-i18next'
 import { getLaunchDarklyClient } from '@core/shared/ui/getLaunchDarklyClient'
 import { useRouter } from 'next/router'
-import { TermsRedirectWrapper } from '../../src/components/TermsRedirectWrapper'
 import { Role } from '../../__generated__/globalTypes'
 import { GetUserRole } from '../../__generated__/GetUserRole'
 import { PageWrapper } from '../../src/components/PageWrapper'
@@ -19,6 +18,7 @@ import { TemplateList } from '../../src/components/TemplateList'
 import i18nConfig from '../../next-i18next.config'
 import JourneyListMenu from '../../src/components/JourneyList/JourneyListMenu/JourneyListMenu'
 import { GET_USER_ROLE } from '../../src/components/JourneyView/JourneyView'
+import { useTermsRedirect } from '../../src/libs/useTermsRedirect/useTermsRedirect'
 
 function TemplateIndex(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
@@ -44,19 +44,27 @@ function TemplateIndex(): ReactElement {
     }
   }, [data, router])
 
+  const termsAccepted = useTermsRedirect()
+
   return (
     <>
-      <TermsRedirectWrapper router={router}>
-        <NextSeo title={t('Templates Admin')} />
-        <PageWrapper
-          title={t('Templates Admin')}
-          authUser={AuthUser}
-          menu={<JourneyListMenu router={router} onClick={handleClick} />}
-          router={router}
-        >
-          <TemplateList router={router} event={listEvent} authUser={AuthUser} />
-        </PageWrapper>
-      </TermsRedirectWrapper>
+      {termsAccepted && (
+        <>
+          <NextSeo title={t('Templates Admin')} />
+          <PageWrapper
+            title={t('Templates Admin')}
+            authUser={AuthUser}
+            menu={<JourneyListMenu router={router} onClick={handleClick} />}
+            router={router}
+          >
+            <TemplateList
+              router={router}
+              event={listEvent}
+              authUser={AuthUser}
+            />
+          </PageWrapper>
+        </>
+      )}
     </>
   )
 }

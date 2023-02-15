@@ -13,12 +13,12 @@ import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { useTranslation } from 'react-i18next'
 import { useRouter } from 'next/router'
 import { JOURNEY_FIELDS } from '@core/journeys/ui/JourneyProvider/journeyFields'
-import { TermsRedirectWrapper } from '../../src/components/TermsRedirectWrapper'
 import { JourneyView } from '../../src/components/JourneyView'
 import { GetTemplate } from '../../__generated__/GetTemplate'
 import { PageWrapper } from '../../src/components/PageWrapper'
 import i18nConfig from '../../next-i18next.config'
 import { Menu } from '../../src/components/JourneyView/Menu'
+import { useTermsRedirect } from '../../src/libs/useTermsRedirect/useTermsRedirect'
 
 export const GET_TEMPLATE = gql`
   ${JOURNEY_FIELDS}
@@ -36,28 +36,32 @@ function TemplateDetails(): ReactElement {
   const { data } = useQuery<GetTemplate>(GET_TEMPLATE, {
     variables: { id: router.query.journeyId }
   })
+  const termsAccepted = useTermsRedirect()
+
   return (
     <>
-      <TermsRedirectWrapper router={router}>
-        <NextSeo
-          title={data?.template?.title ?? t('Journey Template')}
-          description={data?.template?.description ?? undefined}
-        />
-        <JourneyProvider
-          value={{ journey: data?.template ?? undefined, admin: true }}
-        >
-          <PageWrapper
-            title={t('Journey Template')}
-            authUser={AuthUser}
-            showDrawer
-            backHref="/templates"
-            menu={<Menu />}
-            router={router}
+      {termsAccepted && (
+        <>
+          <NextSeo
+            title={data?.template?.title ?? t('Journey Template')}
+            description={data?.template?.description ?? undefined}
+          />
+          <JourneyProvider
+            value={{ journey: data?.template ?? undefined, admin: true }}
           >
-            <JourneyView journeyType="Template" />
-          </PageWrapper>
-        </JourneyProvider>
-      </TermsRedirectWrapper>
+            <PageWrapper
+              title={t('Journey Template')}
+              authUser={AuthUser}
+              showDrawer
+              backHref="/templates"
+              menu={<Menu />}
+              router={router}
+            >
+              <JourneyView journeyType="Template" />
+            </PageWrapper>
+          </JourneyProvider>
+        </>
+      )}
     </>
   )
 }

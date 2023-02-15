@@ -13,7 +13,6 @@ import { gql, useQuery } from '@apollo/client'
 import { useTranslation } from 'react-i18next'
 import { useRouter } from 'next/router'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
-import { TermsRedirectWrapper } from '../../src/components/TermsRedirectWrapper'
 import { PageWrapper } from '../../src/components/PageWrapper'
 import { GetPublisherTemplate } from '../../__generated__/GetPublisherTemplate'
 import { GetPublisher } from '../../__generated__/GetPublisher'
@@ -22,6 +21,7 @@ import { JourneyView } from '../../src/components/JourneyView'
 import { Role } from '../../__generated__/globalTypes'
 import { PublisherInvite } from '../../src/components/PublisherInvite'
 import { Menu } from '../../src/components/JourneyView/Menu'
+import { useTermsRedirect } from '../../src/libs/useTermsRedirect/useTermsRedirect'
 
 export const GET_PUBLISHER_TEMPLATE = gql`
   ${JOURNEY_FIELDS}
@@ -53,39 +53,43 @@ function TemplateDetailsAdmin(): ReactElement {
     Role.publisher
   )
 
+  const termsAccepted = useTermsRedirect()
+
   return (
     <>
-      {isPublisher === true && (
+      {termsAccepted && (
         <>
-          <TermsRedirectWrapper router={router}>
-            <NextSeo
-              title={data?.publisherTemplate?.title ?? t('Template Details')}
-              description={data?.publisherTemplate?.description ?? undefined}
-            />
-            <JourneyProvider
-              value={{
-                journey: data?.publisherTemplate ?? undefined,
-                admin: true
-              }}
-            >
-              <PageWrapper
-                title={t('Template Details')}
-                authUser={AuthUser}
-                showDrawer
-                backHref="/publisher"
-                menu={<Menu />}
-                router={router}
+          {isPublisher === true && (
+            <>
+              <NextSeo
+                title={data?.publisherTemplate?.title ?? t('Template Details')}
+                description={data?.publisherTemplate?.description ?? undefined}
+              />
+              <JourneyProvider
+                value={{
+                  journey: data?.publisherTemplate ?? undefined,
+                  admin: true
+                }}
               >
-                <JourneyView journeyType="Template" />
-              </PageWrapper>
-            </JourneyProvider>
-          </TermsRedirectWrapper>
-        </>
-      )}
-      {data?.publisherTemplate != null && isPublisher !== true && (
-        <>
-          <NextSeo title={t('Access Denied')} />
-          <PublisherInvite />
+                <PageWrapper
+                  title={t('Template Details')}
+                  authUser={AuthUser}
+                  showDrawer
+                  backHref="/publisher"
+                  menu={<Menu />}
+                  router={router}
+                >
+                  <JourneyView journeyType="Template" />
+                </PageWrapper>
+              </JourneyProvider>
+            </>
+          )}
+          {data?.publisherTemplate != null && isPublisher !== true && (
+            <>
+              <NextSeo title={t('Access Denied')} />
+              <PublisherInvite />
+            </>
+          )}
         </>
       )}
     </>

@@ -11,7 +11,6 @@ import { getLaunchDarklyClient } from '@core/shared/ui/getLaunchDarklyClient'
 import { useTranslation } from 'react-i18next'
 import { useRouter } from 'next/router'
 import { useQuery } from '@apollo/client'
-import { TermsRedirectWrapper } from '../../../src/components/TermsRedirectWrapper'
 import { PageWrapper } from '../../../src/components/PageWrapper'
 import i18nConfig from '../../../next-i18next.config'
 import { GetPublisherTemplate } from '../../../__generated__/GetPublisherTemplate'
@@ -22,6 +21,7 @@ import { GetPublisher } from '../../../__generated__/GetPublisher'
 import { PublisherInvite } from '../../../src/components/PublisherInvite'
 import { Role } from '../../../__generated__/globalTypes'
 import { GET_PUBLISHER, GET_PUBLISHER_TEMPLATE } from '../[journeyId]'
+import { useTermsRedirect } from '../../../src/libs/useTermsRedirect/useTermsRedirect'
 
 function TemplateEditPage(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
@@ -35,45 +35,49 @@ function TemplateEditPage(): ReactElement {
     Role.publisher
   )
 
+  const termsAccepted = useTermsRedirect()
+
   return (
     <>
-      <TermsRedirectWrapper router={router}>
-        {isPublisher === true && (
-          <>
-            <NextSeo
-              title={
-                data?.publisherTemplate?.title != null
-                  ? t('Edit {{title}}', {
-                      title: data.publisherTemplate.title
-                    })
-                  : t('Edit Template')
-              }
-              description={data?.publisherTemplate?.description ?? undefined}
-            />
-            <Editor
-              journey={data?.publisherTemplate ?? undefined}
-              selectedStepId={router.query.stepId as string | undefined}
-            >
-              <PageWrapper
-                title={data?.publisherTemplate?.title ?? t('Edit Template')}
-                showDrawer
-                backHref={`/publisher/${router.query.journeyId as string}`}
-                authUser={AuthUser}
-                menu={<EditToolbar />}
-                router={router}
+      {termsAccepted && (
+        <>
+          {isPublisher === true && (
+            <>
+              <NextSeo
+                title={
+                  data?.publisherTemplate?.title != null
+                    ? t('Edit {{title}}', {
+                        title: data.publisherTemplate.title
+                      })
+                    : t('Edit Template')
+                }
+                description={data?.publisherTemplate?.description ?? undefined}
+              />
+              <Editor
+                journey={data?.publisherTemplate ?? undefined}
+                selectedStepId={router.query.stepId as string | undefined}
               >
-                <JourneyEdit />
-              </PageWrapper>
-            </Editor>
-          </>
-        )}
-        {data?.publisherTemplate != null && isPublisher !== true && (
-          <>
-            <NextSeo title={t('Access Denied')} />
-            <PublisherInvite />
-          </>
-        )}
-      </TermsRedirectWrapper>
+                <PageWrapper
+                  title={data?.publisherTemplate?.title ?? t('Edit Template')}
+                  showDrawer
+                  backHref={`/publisher/${router.query.journeyId as string}`}
+                  authUser={AuthUser}
+                  menu={<EditToolbar />}
+                  router={router}
+                >
+                  <JourneyEdit />
+                </PageWrapper>
+              </Editor>
+            </>
+          )}
+          {data?.publisherTemplate != null && isPublisher !== true && (
+            <>
+              <NextSeo title={t('Access Denied')} />
+              <PublisherInvite />
+            </>
+          )}
+        </>
+      )}
     </>
   )
 }
