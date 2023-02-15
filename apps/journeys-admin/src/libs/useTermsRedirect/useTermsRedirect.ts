@@ -19,7 +19,7 @@ export function useTermsRedirect(): boolean {
 
   useEffect(() => {
     !loading &&
-      data?.getJourneyProfile === null &&
+      (data?.getJourneyProfile === null || data?.getJourneyProfile.acceptedTermsAt === null) &&
       router.push('/users/terms-and-conditions')
   }, [router, loading, data])
 
