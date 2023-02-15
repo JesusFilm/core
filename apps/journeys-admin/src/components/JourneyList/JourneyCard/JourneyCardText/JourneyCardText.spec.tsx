@@ -4,7 +4,7 @@ import {
   publishedJourney,
   oldJourney
 } from '../../journeyListData'
-import { JourneyCardVariant } from '..'
+import { JourneyCardVariant } from '../journeyCardVariant'
 import { JourneyCardText } from '.'
 
 describe('JourneyCardText', () => {

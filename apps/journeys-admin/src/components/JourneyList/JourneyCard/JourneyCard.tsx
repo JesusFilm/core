@@ -12,7 +12,7 @@ import { GetJourneys_journeys as Journey } from '../../../../__generated__/GetJo
 import { JourneyCardMenu } from './JourneyCardMenu'
 import { JourneyCardText } from './JourneyCardText'
 import { JourneyCardInfo } from './JourneyCardInfo'
-import { JourneyCardVariant } from '.'
+import { JourneyCardVariant } from './journeyCardVariant'
 
 interface JourneyCardProps {
   journey?: Journey

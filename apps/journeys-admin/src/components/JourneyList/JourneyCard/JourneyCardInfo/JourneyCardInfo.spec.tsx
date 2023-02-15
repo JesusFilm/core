@@ -6,7 +6,7 @@ import {
   GetJourneys_journeys_userJourneys as UserJourney
 } from '../../../../../__generated__/GetJourneys'
 import { ThemeProvider } from '../../../ThemeProvider'
-import { JourneyCardVariant } from '..'
+import { JourneyCardVariant } from '../journeyCardVariant'
 import { UserJourneyRole } from '../../../../../__generated__/globalTypes'
 import { JourneyCardInfo } from '.'
 
