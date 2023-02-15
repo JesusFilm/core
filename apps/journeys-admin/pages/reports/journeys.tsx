@@ -22,26 +22,20 @@ function ReportsJourneysPage(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const AuthUser = useAuthUser()
 
-  const termsAccepted = useTermsRedirect()
+  useTermsRedirect()
 
   return (
     <>
-      {termsAccepted && (
-        <>
-          <NextSeo title={t('Journeys Report')} />
-          <PageWrapper
-            title={t('Journeys Report')}
-            authUser={AuthUser}
-            router={router}
-          >
-            <Box sx={{ height: 'calc(100vh - 48px)' }}>
-              <MemoizedDynamicReport
-                reportType={JourneysReportType.multipleFull}
-              />
-            </Box>
-          </PageWrapper>
-        </>
-      )}
+      <NextSeo title={t('Journeys Report')} />
+      <PageWrapper
+        title={t('Journeys Report')}
+        authUser={AuthUser}
+        router={router}
+      >
+        <Box sx={{ height: 'calc(100vh - 48px)' }}>
+          <MemoizedDynamicReport reportType={JourneysReportType.multipleFull} />
+        </Box>
+      </PageWrapper>
     </>
   )
 }

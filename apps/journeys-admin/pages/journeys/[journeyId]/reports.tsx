@@ -28,29 +28,24 @@ function JourneyReportsPage(): ReactElement {
   const journeyId = router.query.journeyId as string
 
   useUserJourneyOpen(AuthUser.id, journey?.id, journey?.userJourneys)
-
-  const termsAccepted = useTermsRedirect()
+  useTermsRedirect()
 
   return (
     <>
-      {termsAccepted && (
-        <>
-          <NextSeo title={t('Journey Report')} />
-          <PageWrapper
-            title={t('Journey Report')}
-            authUser={AuthUser}
-            backHref={`/journeys/${journeyId}`}
-            router={router}
-          >
-            <Box sx={{ height: 'calc(100vh - 48px)' }}>
-              <MemoizedDynamicReport
-                reportType={JourneysReportType.singleFull}
-                journeyId={journeyId}
-              />
-            </Box>
-          </PageWrapper>
-        </>
-      )}
+      <NextSeo title={t('Journey Report')} />
+      <PageWrapper
+        title={t('Journey Report')}
+        authUser={AuthUser}
+        backHref={`/journeys/${journeyId}`}
+        router={router}
+      >
+        <Box sx={{ height: 'calc(100vh - 48px)' }}>
+          <MemoizedDynamicReport
+            reportType={JourneysReportType.singleFull}
+            journeyId={journeyId}
+          />
+        </Box>
+      </PageWrapper>
     </>
   )
 }

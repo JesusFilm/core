@@ -20,22 +20,18 @@ function SingleVisitorReportsPage(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const AuthUser = useAuthUser()
 
-  const termsAccepted = useTermsRedirect()
+  useTermsRedirect()
 
   return (
     <>
-      {termsAccepted && (
-        <>
-          <NextSeo title={t('Visitor Info')} />
-          <PageWrapper
-            title={t('Visitor Info')}
-            authUser={AuthUser}
-            router={router}
-          >
-            <VisitorInfo id={router.query.visitorId as string} />
-          </PageWrapper>
-        </>
-      )}
+      <NextSeo title={t('Visitor Info')} />
+      <PageWrapper
+        title={t('Visitor Info')}
+        authUser={AuthUser}
+        router={router}
+      >
+        <VisitorInfo id={router.query.visitorId as string} />
+      </PageWrapper>
     </>
   )
 }

@@ -44,27 +44,19 @@ function TemplateIndex(): ReactElement {
     }
   }, [data, router])
 
-  const termsAccepted = useTermsRedirect()
+  useTermsRedirect()
 
   return (
     <>
-      {termsAccepted && (
-        <>
-          <NextSeo title={t('Templates Admin')} />
-          <PageWrapper
-            title={t('Templates Admin')}
-            authUser={AuthUser}
-            menu={<JourneyListMenu router={router} onClick={handleClick} />}
-            router={router}
-          >
-            <TemplateList
-              router={router}
-              event={listEvent}
-              authUser={AuthUser}
-            />
-          </PageWrapper>
-        </>
-      )}
+      <NextSeo title={t('Templates Admin')} />
+      <PageWrapper
+        title={t('Templates Admin')}
+        authUser={AuthUser}
+        menu={<JourneyListMenu router={router} onClick={handleClick} />}
+        router={router}
+      >
+        <TemplateList router={router} event={listEvent} authUser={AuthUser} />
+      </PageWrapper>
     </>
   )
 }

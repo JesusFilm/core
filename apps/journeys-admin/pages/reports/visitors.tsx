@@ -19,22 +19,18 @@ function ReportsVisitorsPage(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const AuthUser = useAuthUser()
 
-  const termsAccepted = useTermsRedirect()
+  useTermsRedirect()
 
   return (
     <>
-      {termsAccepted && (
-        <>
-          <NextSeo title={t('Visitors Report')} />
-          <PageWrapper
-            title={t('Visitors Report')}
-            authUser={AuthUser}
-            router={router}
-          >
-            Visitors report list
-          </PageWrapper>
-        </>
-      )}
+      <NextSeo title={t('Visitors Report')} />
+      <PageWrapper
+        title={t('Visitors Report')}
+        authUser={AuthUser}
+        router={router}
+      >
+        Visitors report list
+      </PageWrapper>
     </>
   )
 }

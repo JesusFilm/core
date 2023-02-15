@@ -53,43 +53,39 @@ function TemplateDetailsAdmin(): ReactElement {
     Role.publisher
   )
 
-  const termsAccepted = useTermsRedirect()
+  useTermsRedirect()
 
   return (
     <>
-      {termsAccepted && (
+      {isPublisher === true && (
         <>
-          {isPublisher === true && (
-            <>
-              <NextSeo
-                title={data?.publisherTemplate?.title ?? t('Template Details')}
-                description={data?.publisherTemplate?.description ?? undefined}
-              />
-              <JourneyProvider
-                value={{
-                  journey: data?.publisherTemplate ?? undefined,
-                  admin: true
-                }}
-              >
-                <PageWrapper
-                  title={t('Template Details')}
-                  authUser={AuthUser}
-                  showDrawer
-                  backHref="/publisher"
-                  menu={<Menu />}
-                  router={router}
-                >
-                  <JourneyView journeyType="Template" />
-                </PageWrapper>
-              </JourneyProvider>
-            </>
-          )}
-          {data?.publisherTemplate != null && isPublisher !== true && (
-            <>
-              <NextSeo title={t('Access Denied')} />
-              <PublisherInvite />
-            </>
-          )}
+          <NextSeo
+            title={data?.publisherTemplate?.title ?? t('Template Details')}
+            description={data?.publisherTemplate?.description ?? undefined}
+          />
+          <JourneyProvider
+            value={{
+              journey: data?.publisherTemplate ?? undefined,
+              admin: true
+            }}
+          >
+            <PageWrapper
+              title={t('Template Details')}
+              authUser={AuthUser}
+              showDrawer
+              backHref="/publisher"
+              menu={<Menu />}
+              router={router}
+            >
+              <JourneyView journeyType="Template" />
+            </PageWrapper>
+          </JourneyProvider>
+        </>
+      )}
+      {data?.publisherTemplate != null && isPublisher !== true && (
+        <>
+          <NextSeo title={t('Access Denied')} />
+          <PublisherInvite />
         </>
       )}
     </>

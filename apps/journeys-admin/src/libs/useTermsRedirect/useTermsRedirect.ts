@@ -13,15 +13,14 @@ export const GET_JOURNEY_PROFILE = gql`
   }
 `
 
-export function useTermsRedirect(): boolean {
+export function useTermsRedirect(): void {
   const router = useRouter()
   const { data, loading } = useQuery<GetJourneyProfile>(GET_JOURNEY_PROFILE)
 
   useEffect(() => {
     !loading &&
-      (data?.getJourneyProfile === null || data?.getJourneyProfile.acceptedTermsAt === null) &&
+      (data?.getJourneyProfile === null ||
+        data?.getJourneyProfile.acceptedTermsAt === null) &&
       router.push('/users/terms-and-conditions')
   }, [router, loading, data])
-
-  return !loading && data?.getJourneyProfile !== null
 }

@@ -78,26 +78,22 @@ function LibraryIndex(): ReactElement {
 
   const isPublisher = userData?.getUserRole?.roles?.includes(Role.publisher)
 
-  const termsAccepted = useTermsRedirect()
+  useTermsRedirect()
 
   return (
     <>
-      {termsAccepted && (
-        <>
-          <NextSeo title={t('Journey Templates')} />
-          <PageWrapper
-            title={t('Journey Templates')}
-            authUser={AuthUser}
-            router={router}
-          >
-            <TemplateLibrary
-              isPublisher={isPublisher}
-              journeys={journeyData?.journeys}
-              templates={data?.journeys}
-            />
-          </PageWrapper>
-        </>
-      )}
+      <NextSeo title={t('Journey Templates')} />
+      <PageWrapper
+        title={t('Journey Templates')}
+        authUser={AuthUser}
+        router={router}
+      >
+        <TemplateLibrary
+          isPublisher={isPublisher}
+          journeys={journeyData?.journeys}
+          templates={data?.journeys}
+        />
+      </PageWrapper>
     </>
   )
 }

@@ -36,32 +36,28 @@ function TemplateDetails(): ReactElement {
   const { data } = useQuery<GetTemplate>(GET_TEMPLATE, {
     variables: { id: router.query.journeyId }
   })
-  const termsAccepted = useTermsRedirect()
+  useTermsRedirect()
 
   return (
     <>
-      {termsAccepted && (
-        <>
-          <NextSeo
-            title={data?.template?.title ?? t('Journey Template')}
-            description={data?.template?.description ?? undefined}
-          />
-          <JourneyProvider
-            value={{ journey: data?.template ?? undefined, admin: true }}
-          >
-            <PageWrapper
-              title={t('Journey Template')}
-              authUser={AuthUser}
-              showDrawer
-              backHref="/templates"
-              menu={<Menu />}
-              router={router}
-            >
-              <JourneyView journeyType="Template" />
-            </PageWrapper>
-          </JourneyProvider>
-        </>
-      )}
+      <NextSeo
+        title={data?.template?.title ?? t('Journey Template')}
+        description={data?.template?.description ?? undefined}
+      />
+      <JourneyProvider
+        value={{ journey: data?.template ?? undefined, admin: true }}
+      >
+        <PageWrapper
+          title={t('Journey Template')}
+          authUser={AuthUser}
+          showDrawer
+          backHref="/templates"
+          menu={<Menu />}
+          router={router}
+        >
+          <JourneyView journeyType="Template" />
+        </PageWrapper>
+      </JourneyProvider>
     </>
   )
 }
