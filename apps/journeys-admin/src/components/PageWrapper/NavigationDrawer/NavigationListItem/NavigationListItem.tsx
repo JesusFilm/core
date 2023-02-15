@@ -1,8 +1,10 @@
 import { ReactElement } from 'react'
 import NextLink from 'next/link'
+import Tooltip from '@mui/material/Tooltip'
 import ListItemButton from '@mui/material/ListItemButton'
 import ListItemIcon from '@mui/material/ListItemIcon'
 import ListItemText from '@mui/material/ListItemText'
+import Badge from '@mui/material/Badge'
 
 export interface NavigationListItemProps {
   icon: ReactElement
@@ -10,6 +12,8 @@ export interface NavigationListItemProps {
   selected: boolean
   link?: string
   handleClick?: (e?) => void
+  notification?: boolean
+  tooltipText?: string
 }
 
 export function NavigationListItem({
@@ -17,39 +21,97 @@ export function NavigationListItem({
   label,
   selected,
   link,
-  handleClick
+  handleClick,
+  notification = false,
+  tooltipText
 }: NavigationListItemProps): ReactElement {
   const color = selected ? 'background.paper' : 'secondary.light'
-  return (
-    <LinkWrapper
-      wrapper={(children) => (
-        <NextLink href={link as string} passHref>
-          {children}
-        </NextLink>
-      )}
-      condition={link}
-    >
+
+  const wrappedNavListItem = linkWrapper({ link })({
+    tooltipText,
+    notification,
+    children: (
       <ListItemButton
         onClick={handleClick}
         aria-selected={selected}
         data-testid={`${label}-list-item`}
       >
-        <ListItemIcon sx={{ color }}>{icon}</ListItemIcon>
+        <Badge
+          variant="dot"
+          color="warning"
+          overlap="circular"
+          invisible={!notification}
+          data-testid="nav-notification-badge"
+          sx={{
+            '& .MuiBadge-badge': {
+              right: '32%',
+              top: '10%'
+            }
+          }}
+        >
+          <ListItemIcon sx={{ color }}>{icon}</ListItemIcon>
+        </Badge>
         <ListItemText primary={label} sx={{ color }} />
       </ListItemButton>
-    </LinkWrapper>
-  )
+    )
+  })
+  return <>{wrappedNavListItem}</>
 }
 
 interface LinkWrapperProps {
-  wrapper: (children: ReactElement) => ReactElement
-  children: ReactElement
-  condition?: string
+  link?: string
 }
 
-const LinkWrapper = ({
-  wrapper,
-  children,
-  condition
-}: LinkWrapperProps): ReactElement =>
-  condition != null ? wrapper(children) : children
+interface TooltipTextWrapperProps {
+  tooltipText?: string
+  notification: boolean
+  children: ReactElement
+}
+
+const linkWrapper = ({
+  link
+}: LinkWrapperProps): (({
+  tooltipText,
+  notification,
+  children
+}: TooltipTextWrapperProps) => ReactElement) => {
+  if (link != null) {
+    return function tooltipTextWrapper({
+      tooltipText,
+      notification,
+      children
+    }): ReactElement {
+      if (tooltipText != null && notification) {
+        return (
+          <NextLink href={link} passHref>
+            <Tooltip title={tooltipText ?? ''} placement="right" arrow>
+              {children}
+            </Tooltip>
+          </NextLink>
+        )
+      } else {
+        return (
+          <NextLink href={link} passHref>
+            {children}
+          </NextLink>
+        )
+      }
+    }
+  } else {
+    return function tooltipTextWrapper({
+      tooltipText,
+      notification,
+      children
+    }): ReactElement {
+      if (tooltipText != null && notification) {
+        return (
+          <Tooltip title={tooltipText ?? ''} placement="right" arrow>
+            {children}
+          </Tooltip>
+        )
+      } else {
+        return <>{children}</>
+      }
+    }
+  }
+}

@@ -18,7 +18,7 @@ describe('NavigationListItem', () => {
   })
 
   it('renders menuitem with link', () => {
-    const { getByTestId } = render(
+    const { getByRole } = render(
       <NavigationListItem
         icon={<AbcRoundedIcon />}
         label="menu item"
@@ -26,9 +26,40 @@ describe('NavigationListItem', () => {
         link="/"
       />
     )
-    expect(
-      getByTestId('AbcRoundedIcon').parentElement?.parentElement
-    ).toHaveAttribute('href', '/')
+    expect(getByRole('link', { name: 'menu item' })).toHaveAttribute(
+      'href',
+      '/'
+    )
+  })
+
+  it('should render menu item with tool tip and badge', () => {
+    const { getByTestId, getByLabelText } = render(
+      <NavigationListItem
+        icon={<AbcRoundedIcon />}
+        label="menu item"
+        selected
+        notification
+        tooltipText="item label"
+      />
+    )
+    expect(getByTestId('nav-notification-badge')).toBeInTheDocument()
+    expect(getByLabelText('item label')).toBeInTheDocument()
+  })
+
+  it('should render menu item with link, tool tip and badge', () => {
+    const { getByRole, getByTestId, getByLabelText } = render(
+      <NavigationListItem
+        icon={<AbcRoundedIcon />}
+        label="menu item"
+        selected
+        link="/"
+        notification
+        tooltipText="item label"
+      />
+    )
+    expect(getByRole('link')).toHaveAttribute('href', '/')
+    expect(getByTestId('nav-notification-badge')).toBeInTheDocument()
+    expect(getByLabelText('item label')).toBeInTheDocument()
   })
 
   it('calls onClick', () => {
