@@ -75,28 +75,23 @@ function IndexPage(): ReactElement {
       setListEvent('')
     }, 1000)
   }
-
-  const termsAccepted = useTermsRedirect()
+  useTermsRedirect()
 
   return (
     <>
-      {termsAccepted && (
-        <>
-          <NextSeo title={t('Journeys')} />
-          <PageWrapper
-            title={pageTitle}
-            authUser={AuthUser}
-            menu={<JourneyListMenu router={router} onClick={handleClick} />}
-          >
-            <JourneyList
-              journeys={data?.journeys}
-              router={router}
-              event={listEvent}
-              authUser={AuthUser}
-            />
-          </PageWrapper>
-        </>
-      )}
+      <NextSeo title={t('Journeys')} />
+      <PageWrapper
+        title={pageTitle}
+        authUser={AuthUser}
+        menu={<JourneyListMenu router={router} onClick={handleClick} />}
+      >
+        <JourneyList
+          journeys={data?.journeys}
+          router={router}
+          event={listEvent}
+          authUser={AuthUser}
+        />
+      </PageWrapper>
     </>
   )
 }
