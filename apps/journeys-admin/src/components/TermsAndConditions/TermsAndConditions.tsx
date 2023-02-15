@@ -47,7 +47,7 @@ export function TermsAndConditions(): ReactElement {
       justifyContent="flex-start"
       alignItems="center"
       sx={{
-        pt: 30
+        pt: 20
       }}
     >
       <Image src={taskbarIcon} alt="Next Steps" height={68} width={152} />
