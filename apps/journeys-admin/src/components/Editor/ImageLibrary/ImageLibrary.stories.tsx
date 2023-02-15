@@ -14,7 +14,7 @@ const Template: Story<ComponentProps<typeof ImageLibrary>> = ({ ...args }) => {
   const [open, setOpen] = useState(true)
 
   return (
-    <MockedProvider mocks={[]}>
+    <MockedProvider>
       <ImageLibrary {...args} open={open} onClose={() => setOpen(false)} />
     </MockedProvider>
   )

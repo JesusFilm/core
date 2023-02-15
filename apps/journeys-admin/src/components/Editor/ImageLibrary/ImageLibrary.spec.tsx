@@ -1,5 +1,6 @@
 import { fireEvent, render } from '@testing-library/react'
 import useMediaQuery from '@mui/material/useMediaQuery'
+import { MockedProvider } from '@apollo/client/testing'
 import { GetJourney_journey_blocks_ImageBlock as ImageBlock } from '../../../../__generated__/GetJourney'
 import { ImageLibrary } from '.'
 
@@ -28,26 +29,30 @@ describe('ImageLibrary', () => {
 
     it('should switch tabs', () => {
       const { getByText } = render(
-        <ImageLibrary
-          open
-          onClose={jest.fn()}
-          onChange={jest.fn()}
-          onDelete={jest.fn()}
-          selectedBlock={imageBlock}
-        />
+        <MockedProvider>
+          <ImageLibrary
+            open
+            onClose={jest.fn()}
+            onChange={jest.fn()}
+            onDelete={jest.fn()}
+            selectedBlock={imageBlock}
+          />
+        </MockedProvider>
       )
       expect(getByText('Custom')).toBeInTheDocument()
     })
 
     it('should render the Image Library on the right', () => {
       const { getByText, getByTestId } = render(
-        <ImageLibrary
-          open
-          onClose={jest.fn()}
-          onChange={jest.fn()}
-          onDelete={jest.fn()}
-          selectedBlock={imageBlock}
-        />
+        <MockedProvider>
+          <ImageLibrary
+            open
+            onClose={jest.fn()}
+            onChange={jest.fn()}
+            onDelete={jest.fn()}
+            selectedBlock={imageBlock}
+          />
+        </MockedProvider>
       )
       expect(getByText('Unsplash')).toBeInTheDocument()
       expect(getByTestId('ImageLibrary').parentElement).toHaveClass(
@@ -58,13 +63,15 @@ describe('ImageLibrary', () => {
     it('should close ImageLibrary on close Icon click', () => {
       const onClose = jest.fn()
       const { getAllByRole, getByTestId } = render(
-        <ImageLibrary
-          open
-          onClose={onClose}
-          onChange={jest.fn()}
-          onDelete={jest.fn()}
-          selectedBlock={imageBlock}
-        />
+        <MockedProvider>
+          <ImageLibrary
+            open
+            onClose={onClose}
+            onChange={jest.fn()}
+            onDelete={jest.fn()}
+            selectedBlock={imageBlock}
+          />
+        </MockedProvider>
       )
       expect(getAllByRole('button')[0]).toContainElement(
         getByTestId('CloseIcon')
@@ -81,13 +88,15 @@ describe('ImageLibrary', () => {
 
     it('should render the Image Library from the bottom', () => {
       const { getByText, getByTestId } = render(
-        <ImageLibrary
-          open
-          onClose={jest.fn()}
-          onChange={jest.fn()}
-          onDelete={jest.fn()}
-          selectedBlock={imageBlock}
-        />
+        <MockedProvider>
+          <ImageLibrary
+            open
+            onClose={jest.fn()}
+            onChange={jest.fn()}
+            onDelete={jest.fn()}
+            selectedBlock={imageBlock}
+          />
+        </MockedProvider>
       )
       expect(getByText('Unsplash')).toBeInTheDocument()
       expect(getByTestId('ImageLibrary').parentElement).toHaveClass(

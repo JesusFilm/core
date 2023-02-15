@@ -40,7 +40,6 @@ export function ImageLibrary({
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
   const [tabValue, setTabValue] = useState(0)
 
-  // uncomment once unsplash and custom components are in
   const srcSchema = object().shape({
     src: string().url('Please enter a valid url').required('Required')
   })

@@ -1,19 +1,15 @@
-import Box from '@mui/material/Box'
 import { ReactElement } from 'react'
-import { ImageUpload } from './ImageUpload'
+import Stack from '@mui/material/Box'
+import { CustomUrl } from './CustomUrl'
 
 interface CustomImageProps {
   onChange: (src: string) => void
-  loading?: boolean
 }
 
-export function CustomImage({
-  onChange,
-  loading = false
-}: CustomImageProps): ReactElement {
+export function CustomImage({ onChange }: CustomImageProps): ReactElement {
   return (
-    <Box>
-      <ImageUpload onChange={onChange} loading={loading} />
-    </Box>
+    <Stack sx={{ bgcolor: 'background.paper' }}>
+      <CustomUrl onChange={onChange} />
+    </Stack>
   )
 }
