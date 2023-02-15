@@ -1,5 +1,6 @@
 import { ComponentProps, useState } from 'react'
 import { Story, Meta } from '@storybook/react'
+import { MockedProvider } from '@apollo/client/testing'
 import { simpleComponentConfig } from '../../../libs/storybook'
 import { ImageLibrary } from '.'
 
@@ -12,7 +13,11 @@ const ImageLibraryStory = {
 const Template: Story<ComponentProps<typeof ImageLibrary>> = ({ ...args }) => {
   const [open, setOpen] = useState(true)
 
-  return <ImageLibrary {...args} open={open} onClose={() => setOpen(false)} />
+  return (
+    <MockedProvider>
+      <ImageLibrary {...args} open={open} onClose={() => setOpen(false)} />
+    </MockedProvider>
+  )
 }
 
 export const Default = Template.bind({})
