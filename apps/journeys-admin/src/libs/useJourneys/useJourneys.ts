@@ -1,4 +1,5 @@
-import { gql, useQuery } from '@apollo/client'
+import { gql, useLazyQuery } from '@apollo/client'
+import { useEffect, useState } from 'react'
 import {
   GetJourneys,
   GetJourneys_journeys as Journeys
@@ -40,6 +41,13 @@ export const GET_JOURNEYS = gql`
 `
 
 export function useJourneys(): Journeys[] | undefined {
-  const { data } = useQuery<GetJourneys>(GET_JOURNEYS)
-  return data?.journeys
+  const [journeys, setJourneys] = useState<Journeys[] | undefined>(undefined)
+  const [loadJourneys, { data }] = useLazyQuery<GetJourneys>(GET_JOURNEYS)
+
+  useEffect(() => {
+    void loadJourneys()
+    setJourneys(data?.journeys)
+  }, [loadJourneys, data, setJourneys])
+
+  return journeys
 }
