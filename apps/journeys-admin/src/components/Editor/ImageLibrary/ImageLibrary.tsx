@@ -14,9 +14,10 @@ import BrushRounded from '@mui/icons-material/BrushRounded'
 import DashboardRounded from '@mui/icons-material/DashboardRounded'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { useFlags } from '@core/shared/ui/FlagsProvider'
-// import { object, string } from 'yup'
+import { object, string } from 'yup'
 import { GetJourney_journey_blocks_ImageBlock as ImageBlock } from '../../../../__generated__/GetJourney'
 import { ImageBlockHeader } from '../ImageBlockHeader'
+import { UnsplashGallery } from './UnsplashGallery'
 
 export const DRAWER_WIDTH = 328
 
@@ -39,24 +40,32 @@ export function ImageLibrary({
 }: ImageLibraryProps): ReactElement {
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
   const [tabValue, setTabValue] = useState(0)
+  const [unsplashAuthor, setUnsplashAuthor] = useState<string>()
   const { unsplashGallery } = useFlags()
 
-  // todo: undo comment once custom and unsplash component are in
-  // const srcSchema = object().shape({
-  //   src: string().url('Please enter a valid url').required('Required')
-  // })
+  const srcSchema = object().shape({
+    src: string().url('Please enter a valid url').required('Required')
+  })
 
-  // const handleSrcChange = async (src: string): Promise<void> => {
-  //   if (!(await srcSchema.isValid({ src })) || src === selectedBlock?.src)
-  //     return
+  const handleSrcChange = async (src: string): Promise<void> => {
+    if (!(await srcSchema.isValid({ src })) || src === selectedBlock?.src)
+      return
 
-  //   const block = {
-  //     ...selectedBlock,
-  //     src,
-  //     alt: src.replace(/(.*\/)*/, '').replace(/\?.*/, '') // per Vlad 26/1/22, we are hardcoding the image alt for now
-  //   }
-  //   await onChange(block as ImageBlock)
-  // }
+    const block = {
+      ...selectedBlock,
+      src,
+      alt: src.replace(/(.*\/)*/, '').replace(/\?.*/, '') // per Vlad 26/1/22, we are hardcoding the image alt for now
+    }
+    await onChange(block as ImageBlock)
+  }
+
+  const handleUnsplashChange = async (
+    src: string,
+    author: string
+  ): Promise<void> => {
+    await handleSrcChange(src)
+    setUnsplashAuthor(author)
+  }
 
   const handleTabChange = (
     _event: SyntheticEvent<Element, Event>,
@@ -110,6 +119,7 @@ export function ImageLibrary({
           selectedBlock={selectedBlock}
           onDelete={onDelete}
           loading={loading}
+          unsplashAuthor={unsplashAuthor}
         />
       </Box>
       <Box data-testid="ImageLibrary">
@@ -134,7 +144,7 @@ export function ImageLibrary({
         </Tabs>
         {unsplashGallery && (
           <TabPanel name="gallery" value={tabValue} index={0}>
-            {/* insert unsplash component */}
+            <UnsplashGallery onChange={handleUnsplashChange} />
           </TabPanel>
         )}
         <TabPanel name="custom" value={tabValue} index={1}>
