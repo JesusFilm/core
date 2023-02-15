@@ -54,8 +54,9 @@ export function ImageUpload({
         setSuccess(false)
       }
 
-      const src = `https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/${response.result.id as string
-        }/public`
+      const src = `https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/${
+        response.result.id as string
+      }/public`
       onChange(src)
     }
   }
@@ -112,18 +113,18 @@ export function ImageUpload({
             success === true && loading === false
               ? 'success.main'
               : success === false && loading === false
-                ? 'error.main'
-                : 'secondary.main'
+              ? 'error.main'
+              : 'secondary.main'
           }
           sx={{ pb: 4 }}
         >
           {loading === false && success === true
             ? 'Upload successful!'
             : loading === true
-              ? 'Uploading...'
-              : success === false
-                ? 'Upload Failed!'
-                : 'Drop an image here'}
+            ? 'Uploading...'
+            : success === false
+            ? 'Upload Failed!'
+            : 'Drop an image here'}
         </Typography>
       </Box>
       <Stack
