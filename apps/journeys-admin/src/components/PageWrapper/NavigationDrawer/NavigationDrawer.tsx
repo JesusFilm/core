@@ -28,6 +28,8 @@ import nextstepsTitle from '../../../../public/nextsteps-title.svg'
 import { GetMe } from '../../../../__generated__/GetMe'
 import { GetUserRole } from '../../../../__generated__/GetUserRole'
 import { GET_USER_ROLE } from '../../JourneyView/JourneyView'
+import { useJourneys } from '../../../libs/useJourneys'
+import { getJourneyTooltip } from '../utils/getJourneyTooltip'
 import { UserMenu } from './UserMenu'
 import { NavigationListItem } from './NavigationListItem'
 
@@ -103,6 +105,7 @@ export function NavigationDrawer({
   title,
   router
 }: NavigationDrawerProps): ReactElement {
+  const journeys = useJourneys()
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
   const [profileAnchorEl, setProfileAnchorEl] = useState(null)
 
@@ -125,6 +128,8 @@ export function NavigationDrawer({
 
   const { data } = useQuery<GetMe>(GET_ME)
   const { data: userRoleData } = useQuery<GetUserRole>(GET_USER_ROLE)
+
+  const journeyTooltip = getJourneyTooltip(journeys, authUser?.id)
 
   return (
     <StyledNavigationDrawer
@@ -154,6 +159,7 @@ export function NavigationDrawer({
           label="Discover"
           selected={selectedPage === 'journeys' || selectedPage == null} // null for when page is index. UPDATE when we add the actual index page
           link="/"
+          tooltipText={journeyTooltip}
         />
 
         {templates && (
