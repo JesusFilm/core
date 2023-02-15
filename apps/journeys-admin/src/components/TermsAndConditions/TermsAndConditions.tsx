@@ -59,7 +59,7 @@ export function TermsAndConditions(): ReactElement {
           Before You Start
         </Typography>
         <Typography variant="body1" sx={{ mt: 3 }}>
-          Please review the next documents:
+          Please review these documents:
         </Typography>
         <List
           sx={{
