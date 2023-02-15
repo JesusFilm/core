@@ -21,7 +21,7 @@ export function useTermsRedirect(): boolean {
     !loading &&
       data?.getJourneyProfile === null &&
       router.push('/users/terms-and-conditions')
-  })
+  }, [router, loading, data])
 
   return !loading && data?.getJourneyProfile !== null
 }
