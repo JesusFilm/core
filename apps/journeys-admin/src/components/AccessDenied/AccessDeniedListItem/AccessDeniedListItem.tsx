@@ -84,7 +84,8 @@ export function RequestAccess({
           <Stack
             direction="row"
             alignItems="center"
-            sx={{ color: 'success.main', mr: 3 }}
+            sx={{ color: 'success.main', mr: 3, px: '12px', py: '6px' }}
+            flexShrink={0}
           >
             <CheckCircleRoundedIcon fontSize="small" sx={{ mr: 2 }} />
             <Typography variant="subtitle2">{t('Request Sent')}</Typography>
@@ -94,7 +95,7 @@ export function RequestAccess({
             variant="contained"
             onClick={handleRequestAccess}
             startIcon={<SupervisorAccountRoundedIcon />}
-            sx={{ flex: 'none', borderRadius: '12px' }}
+            sx={{ flexShrink: 0, borderRadius: '12px' }}
           >
             {t('Request Now')}
           </Button>
