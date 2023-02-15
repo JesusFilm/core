@@ -1,10 +1,13 @@
 import { ReactElement, useState } from 'react'
 import Avatar from '@mui/material/Avatar'
-import AvatarGroup from '@mui/material/AvatarGroup'
+import AvatarGroup, { AvatarGroupProps } from '@mui/material/AvatarGroup'
 import Box from '@mui/material/Box'
 import Tooltip from '@mui/material/Tooltip'
+import Stack from '@mui/material/Stack'
+import { styled } from '@mui/material/styles'
 import { compact } from 'lodash'
 import { AccessDialog } from '../AccessDialog'
+import { ManageAccessAvatar } from './ManageAccessAvatar/ManageAccessAvatar'
 
 interface User {
   id: string
@@ -37,12 +40,24 @@ interface UserJourney {
   user: User | null
 }
 
+const StyledAvatarGroup = styled(AvatarGroup)<AvatarGroupProps>({
+  zIndex: 1,
+  display: 'inline-flex',
+  '> .MuiAvatar-root': {
+    borderColor: 'primary.contrastText'
+  },
+  '> .MuiAvatarGroup-avatar': {
+    backgroundColor: 'primary.main'
+  }
+})
+
 export interface AccessAvatarsProps {
   journeyId?: string
   userJourneys?: UserJourney[]
   size?: 'small' | 'medium' | 'large'
   xsMax?: number
   smMax?: number
+  showManageButton?: boolean
 }
 
 export function AccessAvatars({
@@ -50,12 +65,14 @@ export function AccessAvatars({
   userJourneys,
   size = 'small',
   xsMax = 3,
-  smMax = 5
+  smMax = 5,
+  showManageButton = false
 }: AccessAvatarsProps): ReactElement {
   const [open, setOpen] = useState(false)
   const children = userJourneys?.map(
     ({ user }) => user != null && <AccessAvatar user={user} key={user.id} />
   )
+
   // small default sizes
   let diameter: number
   let fontSize: number | undefined
@@ -79,7 +96,8 @@ export function AccessAvatars({
     <>
       {journeyId != null ? (
         <>
-          <Box
+          <Stack
+            direction="row"
             onClick={() => setOpen(true)}
             sx={{
               cursor: 'pointer',
@@ -87,7 +105,7 @@ export function AccessAvatars({
             }}
             role="button"
           >
-            <AvatarGroup
+            <StyledAvatarGroup
               max={xsMax}
               sx={{
                 display: { xs: 'inline-flex', sm: 'none' },
@@ -95,17 +113,13 @@ export function AccessAvatars({
                   width: diameter,
                   height: diameter,
                   fontSize,
-                  borderWidth,
-                  borderColor: '#FFF'
-                },
-                '> .MuiAvatarGroup-avatar': {
-                  backgroundColor: 'primary.main'
+                  borderWidth
                 }
               }}
             >
               {children}
-            </AvatarGroup>
-            <AvatarGroup
+            </StyledAvatarGroup>
+            <StyledAvatarGroup
               max={smMax}
               sx={{
                 display: { xs: 'none', sm: 'inline-flex' },
@@ -113,17 +127,16 @@ export function AccessAvatars({
                   width: diameter,
                   height: diameter,
                   fontSize,
-                  borderWidth,
-                  borderColor: '#FFF'
-                },
-                '> .MuiAvatarGroup-avatar': {
-                  backgroundColor: 'primary.main'
+                  borderWidth
                 }
               }}
             >
               {children}
-            </AvatarGroup>
-          </Box>
+            </StyledAvatarGroup>
+            {showManageButton && (
+              <ManageAccessAvatar diameter={diameter} fontSize={size} />
+            )}
+          </Stack>
           <AccessDialog
             journeyId={journeyId}
             open={open}
@@ -140,7 +153,7 @@ export function AccessAvatars({
                 height: diameter,
                 fontSize,
                 borderWidth,
-                borderColor: '#FFF'
+                borderColor: 'primary.contrastText'
               }
             }}
           >

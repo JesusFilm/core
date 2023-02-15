@@ -2,6 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing'
 import { Database } from 'arangojs'
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 import { mockCollectionSaveResult } from '@core/nest/database/mock'
+import FormData from 'form-data'
 
 import { DocumentCollection, EdgeCollection } from 'arangojs/collection'
 import fetch, { Response } from 'node-fetch'
@@ -76,6 +77,34 @@ describe('ImageService', () => {
             Authorization: `Bearer ${process.env.CLOUDFLARE_IMAGES_TOKEN ?? ''}`
           },
           method: 'POST'
+        }
+      )
+    })
+  })
+  describe('uploadToCloudlareByUrl', () => {
+    it('returns cloudflare response information', async () => {
+      const url = 'https://upload.com'
+      const formData = new FormData()
+      formData.append('url', url)
+      const request = mockFetch.mockResolvedValueOnce({
+        ok: true,
+        json: async () => await Promise.resolve(cfResult)
+      } as unknown as Response)
+      expect(await service.uploadToCloudlareByUrl(url)).toEqual(cfResult)
+      expect(request).toHaveBeenCalledWith(
+        `https://api.cloudflare.com/client/v4/accounts/${
+          process.env.CLOUDFLARE_ACCOUNT_ID ?? ''
+        }/images/v1?requireSignedURLs=false&metadata={"key":"value"}`,
+        {
+          headers: {
+            Authorization: `Bearer ${process.env.CLOUDFLARE_IMAGES_TOKEN ?? ''}`
+          },
+          method: 'POST',
+          body: {
+            ...formData,
+            _boundary: expect.any(String),
+            _streams: expect.any(Array)
+          }
         }
       )
     })
