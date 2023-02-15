@@ -32,17 +32,9 @@ export function AccessDenied({
       >
         <Box sx={{ width: { xs: '296px', sm: '587px', md: '759px' } }}>
           <Stack direction="row" alignItems="center">
-            <Stack
-              sx={{
-                ml: 5,
-                mr: 3,
-                width: '40px',
-                alignItems: 'center',
-                justifyContent: 'center'
-              }}
-            >
-              <LockRoundedIcon sx={{ color: 'secondary.light' }} />
-            </Stack>
+            <LockRoundedIcon
+              sx={{ width: '40px', ml: 5, mr: 3, color: 'secondary.light' }}
+            />
             <Typography variant="h3" color="text.primary">
               {t(`You can't edit this journey`)}
             </Typography>
