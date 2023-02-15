@@ -11,12 +11,12 @@ describe('ImageUpload', () => {
       return res(
         ctx.json({
           result: {
-            id: "uploadId",
-            uploaded: "2022-01-31T16:39:28.458Z",
+            id: 'uploadId',
+            uploaded: '2022-01-31T16:39:28.458Z',
             requireSignedURLs: true,
             variants: [
-              "https://imagedelivery.net/Vi7wi5KSItxGFsWRG2Us6Q/uploadId/public",
-              "https://imagedelivery.net/Vi7wi5KSItxGFsWRG2Us6Q/uploadId/thumbnail"
+              'https://imagedelivery.net/Vi7wi5KSItxGFsWRG2Us6Q/uploadId/public',
+              'https://imagedelivery.net/Vi7wi5KSItxGFsWRG2Us6Q/uploadId/thumbnail'
             ],
             draft: true
           },
@@ -77,9 +77,10 @@ describe('ImageUpload', () => {
             },
             result: {
               data: {
-                createCloudflareUploadByUrl: {
+                createCloudflareUploadByFile: {
                   id: 'uploadId',
-                  upload: 'https://upload.imagedelivery.net/uploadId',
+                  uploadUrl: 'https://upload.imagedelivery.net/uploadId',
+                  userId: 'userId',
                   __typename: 'CloudflareImage'
                 }
               }
