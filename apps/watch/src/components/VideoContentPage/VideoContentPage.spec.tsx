@@ -6,11 +6,6 @@ import { VideoProvider } from '../../libs/videoContext'
 import { getVideoChildrenMock } from '../../libs/useVideoChildren/getVideoChildrenMock'
 import { VideoContentPage } from '.'
 
-jest.mock('@mui/material/useMediaQuery', () => ({
-  __esModule: true,
-  default: () => true
-}))
-
 describe('VideoContentPage', () => {
   it('should render VideoHero', () => {
     const { getAllByRole } = render(
@@ -51,7 +46,9 @@ describe('VideoContentPage', () => {
     )
 
     await waitFor(() =>
-      expect(getByRole('heading', { name: 'Magdalena' })).toBeInTheDocument()
+      expect(
+        getByRole('heading', { name: videos[1].title[0].value })
+      ).toBeInTheDocument()
     )
   })
 
