@@ -1,5 +1,4 @@
 import { ReactElement, useState } from 'react'
-import { gql, useQuery } from '@apollo/client'
 import {
   AuthAction,
   useAuthUser,
@@ -11,50 +10,15 @@ import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import { useTranslation } from 'react-i18next'
 import { useRouter } from 'next/router'
 import { getLaunchDarklyClient } from '@core/shared/ui/getLaunchDarklyClient'
-import { GetJourneys } from '../__generated__/GetJourneys'
+import { useJourneys } from '../src/libs/useJourneys'
 import { JourneyList } from '../src/components/JourneyList'
 import { PageWrapper } from '../src/components/PageWrapper'
 import i18nConfig from '../next-i18next.config'
 import JourneyListMenu from '../src/components/JourneyList/JourneyListMenu/JourneyListMenu'
 
-export const GET_JOURNEYS = gql`
-  query GetJourneys {
-    journeys: adminJourneys {
-      id
-      title
-      createdAt
-      publishedAt
-      description
-      slug
-      themeName
-      themeMode
-      language {
-        id
-        name(primary: true) {
-          value
-          primary
-        }
-      }
-      status
-      seoTitle
-      seoDescription
-      userJourneys {
-        id
-        role
-        user {
-          id
-          firstName
-          lastName
-          imageUrl
-        }
-      }
-    }
-  }
-`
-
 function IndexPage(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-  const { data } = useQuery<GetJourneys>(GET_JOURNEYS)
+  const journeys = useJourneys()
   const AuthUser = useAuthUser()
   const router = useRouter()
   const [listEvent, setListEvent] = useState('')
@@ -84,7 +48,7 @@ function IndexPage(): ReactElement {
         menu={<JourneyListMenu router={router} onClick={handleClick} />}
       >
         <JourneyList
-          journeys={data?.journeys}
+          journeys={journeys}
           router={router}
           event={listEvent}
           authUser={AuthUser}

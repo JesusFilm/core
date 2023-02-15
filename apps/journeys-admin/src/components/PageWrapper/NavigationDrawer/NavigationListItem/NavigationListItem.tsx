@@ -37,7 +37,7 @@ export function NavigationListItem({
           variant="dot"
           color="warning"
           overlap="circular"
-          invisible={tooltipText != null}
+          invisible={tooltipText == null}
           data-testid="nav-notification-badge"
           sx={{
             '& .MuiBadge-badge': {
