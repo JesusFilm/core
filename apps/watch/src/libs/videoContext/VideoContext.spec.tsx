@@ -61,7 +61,6 @@ const chapter1: VideoContentFields = {
   },
   variantLanguagesCount: 1,
   slug: 'the-beginning',
-  children: [],
   childrenCount: 0
 }
 

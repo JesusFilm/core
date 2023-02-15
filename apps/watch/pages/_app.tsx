@@ -13,7 +13,6 @@ import { createEmotionCache } from '@core/shared/ui/createEmotionCache'
 
 import 'swiper/swiper.min.css'
 import '../public/fonts/fonts.css'
-import '../public/styles/swiper-js.css'
 import { useApolloClient } from '../src/libs/apolloClient'
 
 const clientSideEmotionCache = createEmotionCache({ prepend: false })
