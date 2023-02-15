@@ -25,7 +25,11 @@ export function AccessDenied({
 
   return (
     <>
-      <Stack alignItems="center" sx={{ width: '100%' }}>
+      <Stack
+        alignItems="center"
+        justifyContent="center"
+        sx={{ width: '100%', height: '100vh' }}
+      >
         <Box sx={{ width: { xs: '296px', sm: '587px', md: '759px' } }}>
           <Stack direction="row" alignItems="center">
             <Stack
