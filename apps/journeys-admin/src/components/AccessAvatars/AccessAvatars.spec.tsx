@@ -111,4 +111,22 @@ describe('AccessAvatars', () => {
       expect(queryByText('Invite Other Editors')).not.toBeInTheDocument()
     )
   })
+
+  it('should show manage button', async () => {
+    const { queryByLabelText } = render(
+      <SnackbarProvider>
+        <MockedProvider>
+          <ThemeProvider>
+            <AccessAvatars
+              journeyId="journeyId"
+              userJourneys={[userJourney1]}
+              showManageButton
+            />
+          </ThemeProvider>
+        </MockedProvider>
+      </SnackbarProvider>
+    )
+
+    expect(queryByLabelText('Manage Access')).toBeInTheDocument()
+  })
 })
