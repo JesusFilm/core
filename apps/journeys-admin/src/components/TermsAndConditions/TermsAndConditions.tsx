@@ -130,7 +130,7 @@ export function TermsAndConditions(): ReactElement {
           color: 'primary.main',
           cursor: 'pointer'
         }}
-        href="mailto:support@nextstep.is?Subject=Support%2FFeedback%20Request"
+        href="mailto:support@nextstep.is?subject=A question about the terms and conditions form"
       >
         Feedback & Support
       </Link>
