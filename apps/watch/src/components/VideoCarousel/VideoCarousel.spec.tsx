@@ -1,5 +1,4 @@
-import { fireEvent, render, waitFor } from '@testing-library/react'
-
+import { render, waitFor } from '@testing-library/react'
 import { videos } from '../Videos/__generated__/testData'
 import { VideoCarousel } from './VideoCarousel'
 
