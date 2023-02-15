@@ -9,58 +9,40 @@ import Typography from '@mui/material/Typography'
 import Button from '@mui/material/ListItemButton'
 import ExpandLess from '@mui/icons-material/ExpandLess'
 import ExpandMore from '@mui/icons-material/ExpandMore'
-import { gql, useQuery } from '@apollo/client'
+import { gql, useMutation } from '@apollo/client'
 import { useFormik } from 'formik'
 import { noop } from 'lodash'
-import fetch from 'node-fetch'
-import { CloudflareUploadUrl } from '../../../../../../__generated__/CloudflareUploadUrl'
-import { GetJourney_journey_blocks_ImageBlock as ImageBlock } from '../../../../../../__generated__/GetJourney'
+import { CreateCloudflareUploadByUrl } from '../../../../../../__generated__/CreateCloudflareUploadByUrl'
 
-export const CLOUDFLARE_UPLOAD_URL = gql`
-  query CloudflareUploadUrl {
-    createCloudflareImage {
-      uploadUrl
+export const CREATE_CLOUDFLARE_UPLOAD_BY_URL = gql`
+  mutation CreateCloudflareUploadByUrl($url: String!) {
+    createCloudflareUploadByUrl(url: $url) {
       id
     }
   }
 `
 
 interface CustomUrlProps {
-  selectedBlock: ImageBlock | null
   onChange: (src: string) => void
 }
 
-export function CustomUrl({
-  selectedBlock,
-  onChange
-}: CustomUrlProps): ReactElement {
+export function CustomUrl({ onChange }: CustomUrlProps): ReactElement {
   const [open, setOpen] = useState(false)
-
-  const { data, refetch } = useQuery<CloudflareUploadUrl>(CLOUDFLARE_UPLOAD_URL)
+  const [createCloudflareUploadByUrl] =
+    useMutation<CreateCloudflareUploadByUrl>(CREATE_CLOUDFLARE_UPLOAD_BY_URL)
 
   const handleChange = async (url: string): Promise<void> => {
-    if (data?.createCloudflareImage == null) return
-    const fetchBlobResponse = await (await fetch(url)).blob()
-    const formData = new FormData()
-    formData.append('file', fetchBlobResponse as Blob)
-    console.log(formData)
+    const { data } = await createCloudflareUploadByUrl({
+      variables: {
+        url
+      }
+    })
 
-    const response = await (
-      await fetch(data.createCloudflareImage?.uploadUrl, {
-        method: 'POST',
-        body: formData
-      })
-    ).json()
-
-    console.log(response)
-
-    const src = `https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/${response.result.id as string
-      }/public`
-
-    onChange(src)
-
-    await refetch()
-    formik.resetForm({ values: { src: '' } })
+    if (data?.createCloudflareUploadByUrl != null) {
+      const src = `https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/${data?.createCloudflareUploadByUrl.id}/public`
+      onChange(src)
+      formik.resetForm({ values: { src: '' } })
+    }
   }
 
   const handlePaste = async (
