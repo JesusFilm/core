@@ -1,10 +1,8 @@
 import { Meta, Story } from '@storybook/react'
 import { MockedProvider } from '@apollo/client/testing'
 import { simpleComponentConfig } from '../../libs/storybook'
-import {
-  GET_CURRENT_USER,
-  GET_JOURNEY_WITH_USER_JOURNEYS
-} from '../AccessDialog/AccessDialog'
+import { GET_CURRENT_USER } from '../../libs/useCurrentUser'
+import { GET_JOURNEY_WITH_USER_JOURNEYS } from '../AccessDialog/AccessDialog'
 import { AccessAvatarsProps } from './AccessAvatars'
 import {
   userJourney1,
@@ -142,6 +140,27 @@ export const Loading: Story<AccessAvatarsProps> = Template.bind({})
 Loading.args = {
   journeyId: undefined,
   userJourneys: undefined
+}
+
+export const ManageButton: Story<AccessAvatarsProps> = Template.bind({})
+ManageButton.args = {
+  journeyId: 'journeyId',
+  userJourneys: [userJourney1, userJourney2, userJourney3],
+  showManageButton: true
+}
+
+export const ManageButtonOverflow: Story<AccessAvatarsProps> = Template.bind({})
+ManageButtonOverflow.args = {
+  journeyId: 'journeyId',
+  userJourneys: [
+    userJourney1,
+    userJourney2,
+    userJourney3,
+    userJourney4,
+    userJourney5,
+    userJourney6
+  ],
+  showManageButton: true
 }
 
 export default AccessAvatarsDemo as Meta

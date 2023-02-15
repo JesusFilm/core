@@ -1,8 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { Database } from 'arangojs'
 import { mockDeep } from 'jest-mock-extended'
-
-import axios from 'axios'
+import fetch, { Response } from 'node-fetch'
 import {
   CardBlock,
   ImageBlock,
@@ -14,10 +13,17 @@ import { BlockResolver } from '../block.resolver'
 import { BlockService } from '../block.service'
 import { UserRoleService } from '../../userRole/userRole.service'
 import { JourneyService } from '../../journey/journey.service'
-import { ImageBlockResolver } from './image.resolver'
+import { handleImage, ImageBlockResolver } from './image.resolver'
 
-jest.mock('axios')
-const mockedAxios = axios as jest.Mocked<typeof axios>
+jest.mock('node-fetch', () => {
+  const originalModule = jest.requireActual('node-fetch')
+  return {
+    __esModule: true,
+    ...originalModule,
+    default: jest.fn()
+  }
+})
+const mockFetch = fetch as jest.MockedFunction<typeof fetch>
 
 jest.mock('sharp', () => () => ({
   raw: () => ({
@@ -149,11 +155,14 @@ describe('ImageBlockResolver', () => {
     resolver = module.get<ImageBlockResolver>(ImageBlockResolver)
     service = await module.resolve(BlockService)
 
-    mockedAxios.get.mockResolvedValue({
-      data: {
-        mockData: 'mockData' // this kinda doesnt matter since sharp returns the data we need, but still need to mock so it doesnt run the API
-      }
-    })
+    // this kinda doesnt matter since sharp returns the data we need, but still need to mock so it doesnt run the API
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      buffer: async () =>
+        await Promise.resolve({
+          items: []
+        })
+    } as unknown as Response)
   })
 
   describe('ImageBlock', () => {
@@ -218,6 +227,20 @@ describe('ImageBlockResolver', () => {
       expect(await resolver.imageBlockUpdate('1', '2', blockUpdate)).toEqual(
         updatedBlock
       )
+    })
+  })
+
+  describe('handleImage', () => {
+    it('should skip processing of image block if blurhash, width and height are defined', async () => {
+      const imageBlock = {
+        id: '1',
+        journeyId: '2',
+        width: 640,
+        height: 425,
+        blurhash: 'UHFO~6Yk^6#M@-5b,1J5@[or[k6o};Fxi^OZ',
+        src: 'bad url that would cause exception in sharp'
+      }
+      expect(await handleImage(imageBlock)).toEqual(imageBlock)
     })
   })
 })

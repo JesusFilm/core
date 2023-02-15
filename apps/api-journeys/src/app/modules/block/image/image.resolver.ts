@@ -2,7 +2,7 @@ import { UseGuards } from '@nestjs/common'
 import { Args, Mutation, Resolver } from '@nestjs/graphql'
 import { UserInputError } from 'apollo-server-errors'
 import { encode } from 'blurhash'
-import axios from 'axios'
+import fetch from 'node-fetch'
 import sharp from 'sharp'
 
 import { BlockService } from '../block.service'
@@ -16,9 +16,17 @@ import {
 } from '../../../__generated__/graphql'
 import { RoleGuard } from '../../../lib/roleGuard/roleGuard'
 
-async function handleImage(
+export async function handleImage(
   input
 ): Promise<ImageBlockCreateInput | ImageBlockUpdateInput> {
+  if (
+    (input.width ?? 0) > 0 &&
+    (input.height ?? 0) > 0 &&
+    (input.blurhash ?? '').length > 0
+  ) {
+    return input
+  }
+
   const defaultBlock = {
     ...input,
     width: 0,
@@ -28,8 +36,9 @@ async function handleImage(
   if (input.src == null) return defaultBlock
 
   try {
-    const response = await axios.get(input.src, { responseType: 'arraybuffer' })
-    const { data: pixels, info: metadata } = await sharp(response.data)
+    const response = await fetch(input.src)
+    const buffer = await response.buffer()
+    const { data: pixels, info: metadata } = await sharp(buffer)
       .raw()
       .ensureAlpha()
       .toBuffer({ resolveWithObject: true })
@@ -58,6 +67,7 @@ async function handleImage(
 
   return block
 }
+
 @Resolver('ImageBlock')
 export class ImageBlockResolver {
   constructor(private readonly blockService: BlockService) {}
