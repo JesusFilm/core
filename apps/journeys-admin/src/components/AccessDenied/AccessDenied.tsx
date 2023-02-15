@@ -47,7 +47,8 @@ export function AccessDenied({
             disablePadding
             sx={{
               mt: 8,
-              borderRadius: '6px'
+              borderRadius: '6px',
+              overflow: 'hidden'
             }}
           >
             <AccessDeniedListItem

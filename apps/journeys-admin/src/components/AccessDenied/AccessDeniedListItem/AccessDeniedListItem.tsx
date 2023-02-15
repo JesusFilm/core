@@ -29,8 +29,7 @@ export function AccessDeniedListItem({
     <ListItem
       sx={{
         bgcolor: stepActive ? 'background.paper' : '#F5F5F5',
-        padding: 5,
-        borderRadius: 'inherit'
+        padding: 5
       }}
     >
       <Typography
