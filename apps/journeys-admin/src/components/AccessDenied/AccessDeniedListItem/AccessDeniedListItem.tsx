@@ -48,7 +48,9 @@ export function AccessDeniedListItem({
       </Typography>
       <Stack sx={{ ml: 3 }}>
         <Typography variant="h6">{heading}</Typography>
-        <Typography variant="body2">{description}</Typography>
+        <Typography variant="body2" sx={{ mt: 1.5 }}>
+          {description}
+        </Typography>
         <Box display={{ xs: 'flex', sm: 'none' }} sx={{ mt: 1.5 }}>
           <RequestAccess
             handleRequestAccess={handleRequestAccess}
