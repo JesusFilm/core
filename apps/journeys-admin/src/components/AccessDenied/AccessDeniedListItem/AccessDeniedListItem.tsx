@@ -6,6 +6,7 @@ import CheckCircleRoundedIcon from '@mui/icons-material/CheckCircleRounded'
 import ListItem from '@mui/material/ListItem'
 import Typography from '@mui/material/Typography'
 import Stack from '@mui/material/Stack'
+import Box from '@mui/material/Box'
 
 interface AccessDeniedListItemProps {
   stepNumber: number
@@ -24,8 +25,6 @@ export function AccessDeniedListItem({
   requestedAccess = false,
   handleRequestAccess
 }: AccessDeniedListItemProps): ReactElement {
-  const { t } = useTranslation('apps-journeys-admin')
-
   return (
     <ListItem
       sx={{
@@ -51,13 +50,42 @@ export function AccessDeniedListItem({
       <Stack sx={{ ml: 3 }}>
         <Typography variant="h6">{heading}</Typography>
         <Typography variant="body2">{description}</Typography>
+        <Box display={{ xs: 'flex', sm: 'none' }} sx={{ mt: 1.5 }}>
+          <RequestAccess
+            handleRequestAccess={handleRequestAccess}
+            requestedAccess={requestedAccess}
+          />
+        </Box>
       </Stack>
+      <Box display={{ xs: 'none', sm: 'flex' }} sx={{ ml: 'auto' }}>
+        <RequestAccess
+          handleRequestAccess={handleRequestAccess}
+          requestedAccess={requestedAccess}
+        />
+      </Box>
+    </ListItem>
+  )
+}
+
+export interface RequestAccessProps {
+  handleRequestAccess?: () => void
+  requestedAccess: boolean
+}
+
+export function RequestAccess({
+  handleRequestAccess,
+  requestedAccess
+}: RequestAccessProps): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
+
+  return (
+    <>
       {handleRequestAccess != null &&
         (requestedAccess ? (
           <Stack
             direction="row"
             alignItems="center"
-            sx={{ ml: 'auto', color: 'success.main', mr: 3 }}
+            sx={{ color: 'success.main', mr: 3 }}
           >
             <CheckCircleRoundedIcon fontSize="small" sx={{ mr: 2 }} />
             <Typography variant="subtitle2">{t('Request Sent')}</Typography>
@@ -67,11 +95,11 @@ export function AccessDeniedListItem({
             variant="contained"
             onClick={handleRequestAccess}
             startIcon={<SupervisorAccountRoundedIcon />}
-            sx={{ ml: 'auto', flex: 'none' }}
+            sx={{ flex: 'none', borderRadius: '12px' }}
           >
             {t('Request Now')}
           </Button>
         ))}
-    </ListItem>
+    </>
   )
 }
