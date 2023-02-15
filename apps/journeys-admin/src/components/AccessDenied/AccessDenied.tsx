@@ -31,7 +31,12 @@ export function AccessDenied({
         sx={{ width: '100%', height: '100vh' }}
       >
         <Box sx={{ width: { xs: '296px', sm: '587px', md: '759px' } }}>
-          <Stack direction="row" alignItems="center">
+          <Stack
+            direction="row"
+            alignItems="center"
+            display={{ xs: 'none', sm: 'flex' }}
+            sx={{ mb: 8 }}
+          >
             <LockRoundedIcon
               sx={{ width: '40px', ml: 5, mr: 3, color: 'secondary.light' }}
             />
@@ -39,10 +44,27 @@ export function AccessDenied({
               {t(`You can't edit this journey`)}
             </Typography>
           </Stack>
+          <Stack
+            alignItems="center"
+            display={{ xs: 'flex', sm: 'none' }}
+            sx={{ mb: 7 }}
+          >
+            <LockRoundedIcon
+              sx={{
+                width: '40px',
+                ml: 5,
+                mr: 3,
+                color: '#AAACBB',
+                mb: 4.5
+              }}
+            />
+            <Typography variant="h4" color="text.primary" align="center">
+              {t(`You can't edit this journey`)}
+            </Typography>
+          </Stack>
           <List
             disablePadding
             sx={{
-              mt: 8,
               borderRadius: '6px',
               overflow: 'hidden'
             }}
