@@ -110,4 +110,32 @@ describe('ImageUpload', () => {
     await waitFor(() => expect(onChange).toHaveBeenCalled())
     expect(getByText('Upload successful!')).toBeInTheDocument()
   })
+
+  it('should check if window opens on upload button click', async () => {
+    const result = jest.fn(() => ({
+      data: {
+        createCloudflareUploadByUrl: {
+          id: 'uploadId',
+          upload: 'uploadUrl',
+          __typename: 'CloudflareImage'
+        }
+      }
+    }))
+    const onChange = jest.fn()
+    const { getByText } = render(
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: CREATE_CLOUDFLARE_UPLOAD_BY_FILE
+            },
+            result
+          }
+        ]}
+      >
+        <ImageUpload onChange={onChange} loading={false} />
+      </MockedProvider>
+    )
+    fireEvent.click(getByText('Upload file'))
+  })
 })
