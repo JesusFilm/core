@@ -89,7 +89,7 @@ export function TermsAndConditions(): ReactElement {
             text="Community Guidelines"
           />
           <Divider />
-          <ListItem sx={{ pt: 6, pl: 2 }}>
+          <ListItem sx={{ pl: 2 }}>
             <ListItemIcon sx={{ minWidth: '52px' }}>
               <Checkbox onChange={() => setAccepted(!accepted)} />
             </ListItemIcon>
