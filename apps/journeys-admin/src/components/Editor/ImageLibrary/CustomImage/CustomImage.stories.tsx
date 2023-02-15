@@ -5,6 +5,7 @@ import { ComponentProps } from 'react'
 import { noop } from 'lodash'
 import { simpleComponentConfig } from '../../../../libs/storybook'
 
+import { ImageUpload } from './ImageUpload'
 import { CustomImage } from '.'
 
 const CustomImageStory = {
@@ -15,7 +16,8 @@ const CustomImageStory = {
 
 const Template: Story<ComponentProps<typeof CustomImage>> = ({ ...args }) => (
   <MockedProvider mocks={[]}>
-    <Box sx={{ maxWidth: 280, maxHeight: 172 }}>
+    <Box sx={{ bgcolor: 'background.paper' }}>
+      <ImageUpload {...args} onChange={noop} loading={false} />
       <CustomImage {...args} onChange={noop} />
     </Box>
   </MockedProvider>

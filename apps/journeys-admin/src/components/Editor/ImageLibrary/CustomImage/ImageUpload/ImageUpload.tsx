@@ -29,7 +29,7 @@ interface ImageUploadProps {
 
 export function ImageUpload({
   onChange,
-  loading
+  loading = false
 }: ImageUploadProps): ReactElement {
   const [createCloudflareUploadByFile] =
     useMutation<CreateCloudflareUploadByFile>(CREATE_CLOUDFLARE_UPLOAD_BY_FILE)
@@ -82,7 +82,7 @@ export function ImageUpload({
           height: '162px',
           borderWidth: success == null ? '2px' : '0px',
           backgroundColor:
-            success === false && loading === false
+            success === false && !loading
               ? 'rgba(195,44,57,0.08)'
               : 'background.default',
           borderColor: 'divider',
@@ -95,11 +95,11 @@ export function ImageUpload({
           display: 'flex'
         }}
       >
-        {loading === false && success === true ? (
+        {!loading && success === true ? (
           <CloudDoneOutlinedIcon
             sx={{ fontSize: '48px', color: 'success.main', mb: 1 }}
           />
-        ) : loading === false && success === false ? (
+        ) : !loading && success === false ? (
           <CloudOffOutlinedIcon
             sx={{ fontSize: '48px', color: '#C52D3A', mb: 1 }}
           />
@@ -111,17 +111,17 @@ export function ImageUpload({
         <Typography
           variant="body1"
           color={
-            success === true && loading === false
+            success === true && !loading
               ? 'success.main'
-              : success === false && loading === false
+              : success === false && !loading
               ? 'error.main'
               : 'secondary.main'
           }
           sx={{ pb: 4 }}
         >
-          {loading === false && success === true
+          {!loading && success === true
             ? 'Upload successful!'
-            : loading === true
+            : loading
             ? 'Uploading...'
             : success === false
             ? 'Upload Failed!'
@@ -130,21 +130,17 @@ export function ImageUpload({
       </Box>
       <Stack
         direction="row"
-        color={
-          success === false && loading === false
-            ? 'error.main'
-            : 'secondary.light'
-        }
+        color={success === false && !loading ? 'error.main' : 'secondary.light'}
         alignItems="center"
       >
         <WarningAmberOutlinedIcon
           fontSize="small"
           sx={{
-            display: success === false && loading === false ? 'flex' : 'none'
+            display: success === false && !loading ? 'flex' : 'none'
           }}
         />
         <Typography variant="caption">
-          {success === false && loading === false
+          {success === false && !loading
             ? 'Something went wrong, try again'
             : 'Max file size: 10 MB'}
         </Typography>

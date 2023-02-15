@@ -12,7 +12,7 @@ const ImageUploadStory = {
   title: 'Journeys-Admin/Editor/ImageLibrary/CustomImage/ImageUpload'
 }
 
-export const Template: Story = ({ ...args }) => (
+const Template: Story = ({ ...args }) => (
   <MockedProvider mocks={[]}>
     <Box sx={{ maxWidth: 280, maxHeight: 180 }}>
       <ImageUpload {...args} onChange={noop} />
@@ -22,5 +22,8 @@ export const Template: Story = ({ ...args }) => (
 
 export const Default = Template.bind({})
 Default.args = {}
+
+export const Loading = Template.bind({})
+Loading.args = { loading: true }
 
 export default ImageUploadStory as Meta
