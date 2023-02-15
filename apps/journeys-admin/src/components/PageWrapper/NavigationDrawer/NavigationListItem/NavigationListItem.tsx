@@ -12,7 +12,6 @@ export interface NavigationListItemProps {
   selected: boolean
   link?: string
   handleClick?: (e?) => void
-  notification?: boolean
   tooltipText?: string
 }
 
@@ -22,14 +21,12 @@ export function NavigationListItem({
   selected,
   link,
   handleClick,
-  notification = false,
   tooltipText
 }: NavigationListItemProps): ReactElement {
   const color = selected ? 'background.paper' : 'secondary.light'
 
   const wrappedNavListItem = linkWrapper({ link })({
     tooltipText,
-    notification,
     children: (
       <ListItemButton
         onClick={handleClick}
@@ -40,7 +37,7 @@ export function NavigationListItem({
           variant="dot"
           color="warning"
           overlap="circular"
-          invisible={!notification}
+          invisible={tooltipText != null}
           data-testid="nav-notification-badge"
           sx={{
             '& .MuiBadge-badge': {
@@ -64,7 +61,6 @@ interface LinkWrapperProps {
 
 interface TooltipTextWrapperProps {
   tooltipText?: string
-  notification: boolean
   children: ReactElement
 }
 
@@ -72,16 +68,14 @@ const linkWrapper = ({
   link
 }: LinkWrapperProps): (({
   tooltipText,
-  notification,
   children
 }: TooltipTextWrapperProps) => ReactElement) => {
   if (link != null) {
     return function tooltipTextWrapper({
       tooltipText,
-      notification,
       children
     }): ReactElement {
-      if (tooltipText != null && notification) {
+      if (tooltipText != null) {
         return (
           <NextLink href={link} passHref>
             <Tooltip title={tooltipText ?? ''} placement="right" arrow>
@@ -100,10 +94,9 @@ const linkWrapper = ({
   } else {
     return function tooltipTextWrapper({
       tooltipText,
-      notification,
       children
     }): ReactElement {
-      if (tooltipText != null && notification) {
+      if (tooltipText != null) {
         return (
           <Tooltip title={tooltipText ?? ''} placement="right" arrow>
             {children}
