@@ -13,7 +13,7 @@ import Typography from '@mui/material/Typography'
 import Image from 'next/image'
 import NextLink from 'next/link'
 
-import logo from '../../../../public/header-logo.svg'
+import logo from '../assets/logo.svg'
 
 interface HeaderMenuPanelProps {
   onClose: () => void

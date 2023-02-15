@@ -13,7 +13,7 @@ import NextLink from 'next/link'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import { ThemeMode, ThemeName } from '@core/shared/ui/themes'
 import useScrollTrigger from '@mui/material/useScrollTrigger'
-import logo from '../../../public/header-logo.svg'
+import logo from './assets/logo.svg'
 import { HeaderMenuPanel } from './HeaderMenuPanel'
 
 interface LocalAppBarProps extends AppBarProps {
