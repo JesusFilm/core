@@ -7,6 +7,7 @@ import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
 import { gql, useMutation } from '@apollo/client'
 import fetch from 'node-fetch'
+import FormData from 'form-data'
 import CloudDoneOutlinedIcon from '@mui/icons-material/CloudDoneOutlined'
 import CloudOffOutlinedIcon from '@mui/icons-material/CloudOffOutlined'
 import WarningAmberOutlinedIcon from '@mui/icons-material/WarningAmberOutlined'
@@ -40,7 +41,7 @@ export function ImageUpload({
     if (data?.createCloudflareUploadByFile?.uploadUrl != null) {
       const file = acceptedFiles[0]
       const formData = new FormData()
-      formData.set('file', file)
+      formData.append('file', file)
 
       const response = await (
         await fetch(data?.createCloudflareUploadByFile?.uploadUrl, {
