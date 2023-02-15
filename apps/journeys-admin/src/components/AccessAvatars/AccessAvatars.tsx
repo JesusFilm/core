@@ -9,6 +9,7 @@ import { AccessDialog } from '../AccessDialog'
 import { GetJourneys_journeys_userJourneys as UserJourney } from '../../../__generated__/GetJourneys'
 import { Avatar } from '../Avatar'
 import { UserJourneyRole } from '../../../__generated__/globalTypes'
+import { ManageAccessAvatar } from './ManageAccessAvatar/ManageAccessAvatar'
 
 export interface AccessAvatarsProps {
   journeyId?: string
@@ -16,6 +17,7 @@ export interface AccessAvatarsProps {
   size?: 'small' | 'medium' | 'large'
   xsMax?: number
   smMax?: number
+  showManageButton?: boolean
 }
 
 export function AccessAvatars({
@@ -23,11 +25,12 @@ export function AccessAvatars({
   userJourneys,
   size = 'small',
   xsMax = 3,
-  smMax = 5
+  smMax = 5,
+  showManageButton = false
 }: AccessAvatarsProps): ReactElement {
   const [open, setOpen] = useState(false)
-  const min = withRenderLogic({ size, max: xsMax, setOpen })
-  const max = withRenderLogic({ size, max: smMax, setOpen })
+  const min = withRenderLogic({ size, max: xsMax, setOpen, showManageButton })
+  const max = withRenderLogic({ size, max: smMax, setOpen, showManageButton })
 
   return (
     <Box>
@@ -54,12 +57,14 @@ interface Props {
   size: 'small' | 'medium' | 'large'
   max: number
   setOpen: (open: boolean) => void
+  showManageButton: boolean
 }
 
 const withRenderLogic = ({
   size,
   max,
-  setOpen
+  setOpen,
+  showManageButton
 }: Props): ((values?: UserJourney[]) => ReactElement) => {
   // small default sizes
   let diameter: number
@@ -144,20 +149,25 @@ const withRenderLogic = ({
           <AvatarGroup
             max={max}
             sx={{
+              zIndex: 1,
               '& .MuiAvatar-root': {
                 width: diameter,
                 height: diameter,
                 fontSize,
                 borderWidth,
-                borderColor: '#FFF'
+                borderColor: 'primary.contrastText'
               },
               '> .MuiAvatarGroup-avatar': {
-                backgroundColor: loading ? 'default' : 'primary.main'
+                backgroundColor: 'primary.main'
               }
             }}
           >
             {children}
           </AvatarGroup>
+
+          {showManageButton && (
+            <ManageAccessAvatar diameter={diameter} fontSize={size} />
+          )}
         </Badge>
       </Box>
     )

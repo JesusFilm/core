@@ -170,11 +170,27 @@ const Template: Story = ({ ...args }) => (
         size={args.size}
       />
 
+      <Typography>ManageButton</Typography>
+      <AccessAvatars
+        journeyId="journeyId"
+        userJourneys={defaultUserJourneys}
+        size={args.size}
+        showManageButton
+      />
+
       <Typography>Overflow</Typography>
       <AccessAvatars
         journeyId="journeyId"
         userJourneys={overflowUserJourneys}
         size={args.size}
+      />
+
+      <Typography>ManageButtonOverflow</Typography>
+      <AccessAvatars
+        journeyId="journeyId"
+        userJourneys={overflowUserJourneys}
+        size={args.size}
+        showManageButton
       />
 
       <Typography>Notification</Typography>
@@ -212,5 +228,4 @@ export const Large: Story<AccessAvatarsProps> = Template.bind({})
 Large.args = {
   size: 'large'
 }
-
 export default AccessAvatarsDemo as Meta

@@ -142,4 +142,22 @@ describe('AccessAvatars', () => {
     )
     expect(getAllByLabelText('overflow-notification-badge')).toHaveLength(2)
   })
+
+  it('should show manage button', async () => {
+    const { queryAllByLabelText } = render(
+      <SnackbarProvider>
+        <MockedProvider>
+          <ThemeProvider>
+            <AccessAvatars
+              journeyId="journeyId"
+              userJourneys={[userJourney1]}
+              showManageButton
+            />
+          </ThemeProvider>
+        </MockedProvider>
+      </SnackbarProvider>
+    )
+
+    expect(queryAllByLabelText('Manage Access')).toHaveLength(2)
+  })
 })
