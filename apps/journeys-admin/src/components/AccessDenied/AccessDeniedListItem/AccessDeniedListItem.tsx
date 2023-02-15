@@ -67,7 +67,7 @@ export function AccessDeniedListItem({
             variant="contained"
             onClick={handleRequestAccess}
             startIcon={<SupervisorAccountRoundedIcon />}
-            sx={{ ml: 'auto' }}
+            sx={{ ml: 'auto', flex: 'none' }}
           >
             {t('Request Now')}
           </Button>
