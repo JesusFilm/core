@@ -3,7 +3,7 @@ import { MockedProvider } from '@apollo/client/testing'
 import { watchConfig } from '../../libs/storybook'
 import { VideoProvider } from '../../libs/videoContext'
 import { videos } from '../Videos/__generated__/testData'
-import { GET_VIDEO_CHILDREN } from './VideoContainerPage'
+import { getVideoChildrenMock } from '../../libs/useVideoChildren/getVideoChildrenMock'
 import { VideoContainerPage } from '.'
 
 const VideoContainerPageStory: ComponentMeta<typeof VideoContainerPage> = {
@@ -17,25 +17,7 @@ const VideoContainerPageStory: ComponentMeta<typeof VideoContainerPage> = {
 }
 
 const Template: ComponentStory<typeof VideoContainerPage> = () => (
-  <MockedProvider
-    mocks={[
-      {
-        request: {
-          query: GET_VIDEO_CHILDREN,
-          variables: {
-            id: videos[0].id
-          }
-        },
-        result: {
-          data: {
-            video: {
-              children: [...videos[0].children]
-            }
-          }
-        }
-      }
-    ]}
-  >
+  <MockedProvider mocks={[getVideoChildrenMock]}>
     <VideoProvider value={{ content: videos[0] }}>
       <VideoContainerPage />
     </VideoProvider>

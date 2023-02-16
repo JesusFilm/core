@@ -67,57 +67,6 @@ export interface GetVideosForTestData_videos_variant {
   subtitleCount: number;
 }
 
-export interface GetVideosForTestData_videos_children_title {
-  __typename: "Translation";
-  value: string;
-}
-
-export interface GetVideosForTestData_videos_children_imageAlt {
-  __typename: "Translation";
-  value: string;
-}
-
-export interface GetVideosForTestData_videos_children_snippet {
-  __typename: "Translation";
-  value: string;
-}
-
-export interface GetVideosForTestData_videos_children_children {
-  __typename: "Video";
-  id: string;
-}
-
-export interface GetVideosForTestData_videos_children_variant {
-  __typename: "VideoVariant";
-  id: string;
-  duration: number;
-  hls: string | null;
-  /**
-   * slug is a permanent link to the video variant.
-   */
-  slug: string;
-}
-
-export interface GetVideosForTestData_videos_children {
-  __typename: "Video";
-  id: string;
-  label: VideoLabel;
-  title: GetVideosForTestData_videos_children_title[];
-  image: string | null;
-  imageAlt: GetVideosForTestData_videos_children_imageAlt[];
-  snippet: GetVideosForTestData_videos_children_snippet[];
-  /**
-   * slug is a permanent link to the video.
-   */
-  slug: string;
-  children: GetVideosForTestData_videos_children_children[];
-  variant: GetVideosForTestData_videos_children_variant | null;
-  /**
-   * the number value of the amount of children on a video
-   */
-  childrenCount: number;
-}
-
 export interface GetVideosForTestData_videos {
   __typename: "Video";
   id: string;
@@ -134,7 +83,6 @@ export interface GetVideosForTestData_videos {
    * slug is a permanent link to the video.
    */
   slug: string;
-  children: GetVideosForTestData_videos_children[];
   /**
    * the number value of the amount of children on a video
    */

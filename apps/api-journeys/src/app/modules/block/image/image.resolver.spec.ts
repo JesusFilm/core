@@ -14,7 +14,7 @@ import { BlockService } from '../block.service'
 import { UserRoleService } from '../../userRole/userRole.service'
 import { JourneyService } from '../../journey/journey.service'
 import { MemberService } from '../../member/member.service'
-import { ImageBlockResolver } from './image.resolver'
+import { handleImage, ImageBlockResolver } from './image.resolver'
 
 jest.mock('node-fetch', () => {
   const originalModule = jest.requireActual('node-fetch')
@@ -229,6 +229,20 @@ describe('ImageBlockResolver', () => {
       expect(await resolver.imageBlockUpdate('1', '2', blockUpdate)).toEqual(
         updatedBlock
       )
+    })
+  })
+
+  describe('handleImage', () => {
+    it('should skip processing of image block if blurhash, width and height are defined', async () => {
+      const imageBlock = {
+        id: '1',
+        journeyId: '2',
+        width: 640,
+        height: 425,
+        blurhash: 'UHFO~6Yk^6#M@-5b,1J5@[or[k6o};Fxi^OZ',
+        src: 'bad url that would cause exception in sharp'
+      }
+      expect(await handleImage(imageBlock)).toEqual(imageBlock)
     })
   })
 })

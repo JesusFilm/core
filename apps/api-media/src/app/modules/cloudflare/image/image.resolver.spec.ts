@@ -42,6 +42,7 @@ describe('ImageResolver', () => {
         getImageInfoFromCloudflare: jest.fn(() => cfResult),
         deleteImageFromCloudflare: jest.fn(() => cfResult),
         getCloudflareImagesForUserId: jest.fn(() => [cfImage]),
+        uploadToCloudlareByUrl: jest.fn(() => cfResult),
         remove: jest.fn(() => cfImage)
       })
     }
@@ -52,13 +53,39 @@ describe('ImageResolver', () => {
     service = await module.resolve(ImageService)
   })
 
-  describe('getCloudflareImageUploadInfo', () => {
+  describe('createCloudflareUploadByFile ', () => {
     it('returns cloudflare response information', async () => {
-      expect(await resolver.createCloudflareImage(user.id)).toEqual({
+      expect(await resolver.createCloudflareUploadByFile(user.id)).toEqual({
         id: '1',
         uploadUrl: 'https://upload.com',
         createdAt: expect.any(String),
         userId: user.id
+      })
+      expect(service.save).toHaveBeenCalledWith({
+        _key: '1',
+        uploadUrl: 'https://upload.com',
+        createdAt: expect.any(String),
+        userId: user.id
+      })
+    })
+  })
+  describe('createCloudflareUploadByFile ', () => {
+    it('returns cloudflare response information', async () => {
+      expect(
+        await resolver.createCloudflareUploadByUrl(
+          'https://upload.com',
+          user.id
+        )
+      ).toEqual({
+        id: '1',
+        createdAt: expect.any(String),
+        userId: user.id
+      })
+      expect(service.save).toHaveBeenCalledWith({
+        _key: '1',
+        createdAt: expect.any(String),
+        userId: user.id,
+        uploaded: true
       })
     })
   })

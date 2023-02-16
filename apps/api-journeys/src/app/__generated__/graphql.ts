@@ -275,6 +275,8 @@ export class ImageBlockCreateInput {
     src?: Nullable<string>;
     alt: string;
     blurhash?: Nullable<string>;
+    width?: Nullable<number>;
+    height?: Nullable<number>;
     isCover?: Nullable<boolean>;
 }
 
