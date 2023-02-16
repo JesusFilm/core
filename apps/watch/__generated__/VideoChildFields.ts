@@ -24,11 +24,6 @@ export interface VideoChildFields_snippet {
   value: string;
 }
 
-export interface VideoChildFields_children {
-  __typename: "Video";
-  id: string;
-}
-
 export interface VideoChildFields_variant {
   __typename: "VideoVariant";
   id: string;
@@ -52,7 +47,6 @@ export interface VideoChildFields {
    * slug is a permanent link to the video.
    */
   slug: string;
-  children: VideoChildFields_children[];
   variant: VideoChildFields_variant | null;
   /**
    * the number value of the amount of children on a video

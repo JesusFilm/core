@@ -6,22 +6,24 @@
   "dockerComposeFile": "docker-compose.yml",
   "service": "app",
   "workspaceFolder": "/workspaces",
-
-  // Set *default* container specific settings.json values on container create.
-  "settings": {},
-
-  // Add the IDs of extensions you want installed when the container is created.
-  "extensions": [
-    "dbaeumer.vscode-eslint",
-    "nrwl.angular-console",
-    "monotykamary.vscode-aql",
-    "eamodio.gitlens",
-    "graphql.vscode-graphql",
-    "esbenp.prettier-vscode",
-    "mtxr.sqltools",
-    "mtxr.sqltools-driver-pg",
-    "prisma.prisma"
-  ],
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "dbaeumer.vscode-eslint",
+        "nrwl.angular-console",
+        "monotykamary.vscode-aql",
+        "eamodio.gitlens",
+        "graphql.vscode-graphql",
+        "esbenp.prettier-vscode",
+        "mtxr.sqltools",
+        "mtxr.sqltools-driver-pg",
+        "prisma.prisma",
+        "firsttris.vscode-jest-runner",
+        "dbaeumer.vscode-eslint",
+        "redhat.vscode-yaml"
+      ]
+    }
+  },
 
   // Use 'forwardPorts' to make a list of ports inside the container available locally.
   // 8529 is Arangodb

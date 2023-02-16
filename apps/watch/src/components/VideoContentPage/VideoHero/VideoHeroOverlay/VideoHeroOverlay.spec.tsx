@@ -17,7 +17,6 @@ describe('VideoHeroOverlay', () => {
     description: [],
     studyQuestions: [],
     snippet: [],
-    children: [],
     image:
       'https://d1wl257kev7hsz.cloudfront.net/cinematics/1_cl-0-0.mobileCinematicHigh.jpg',
     imageAlt: [
