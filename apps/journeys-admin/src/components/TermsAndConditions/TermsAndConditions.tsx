@@ -49,13 +49,13 @@ export function TermsAndConditions(): ReactElement {
       alignItems="center"
       sx={{ height: '100vh', minHeight: '600px' }}
     >
-      <Box sx={{ flexShrink: 0 }}>
-        <Image src={taskbarIcon} alt="Next Steps" height={43} width={43} />
-      </Box>
       <Stack
         alignItems="center"
         sx={{ maxWidth: { xs: '311px', sm: '311px', md: '397px' } }}
       >
+        <Box sx={{ mb: 17, flexShrink: 0 }}>
+          <Image src={taskbarIcon} alt="Next Steps" height={43} width={43} />
+        </Box>
         <Typography variant="h4">Before You Start</Typography>
         <Typography variant="body1" sx={{ mt: 3 }}>
           Please review these documents:
