@@ -70,7 +70,7 @@ describe('VideoHeroOverlay', () => {
   }
 
   it('should render the Video Hero Overlay', () => {
-    const { getByRole, getByText, getByTestId } = render(
+    const { getByRole, getByText } = render(
       <MockedProvider>
         <SnackbarProvider>
           <VideoProvider value={{ content: video }}>
