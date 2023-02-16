@@ -33,6 +33,7 @@ export function Avatar({
         <MuiAvatar
           alt={displayName}
           src={user.imageUrl ?? undefined}
+          data-testid="avatar"
           sx={{
             filter: notification
               ? 'grayscale(80%) brightness(1.2) sepia(0.1)'
