@@ -49,7 +49,7 @@ export function ImageBlockEditor({
               display: 'flex'
             }}
           >
-            <ImageBlockHeader selectedBlock={null} isSource />
+            <ImageBlockHeader selectedBlock={null} isBackground />
           </CardActionArea>
         </Card>
       )}

@@ -48,7 +48,7 @@ Applied.args = {
 }
 
 export const Source = Template.bind({})
-Source.args = { isSource: true }
+Source.args = { isBackground: true }
 
 export const Loading = Template.bind({})
 Loading.args = { loading: true }
