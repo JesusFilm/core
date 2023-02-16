@@ -16,6 +16,7 @@ import { useRouter } from 'next/router'
 import ListItemIcon from '@mui/material/ListItemIcon'
 import ListItemText from '@mui/material/ListItemText'
 import Button from '@mui/material/Button'
+import Box from '@mui/system/Box'
 import taskbarIcon from '../../../public/taskbar-icon.svg'
 import { JourneyProfileCreate } from '../../../__generated__/JourneyProfileCreate'
 import { TermsListItem } from './TermsListItem'
@@ -46,9 +47,11 @@ export function TermsAndConditions(): ReactElement {
     <Stack
       justifyContent="space-evenly"
       alignItems="center"
-      sx={{ height: '100vh' }}
+      sx={{ height: '100vh', minHeight: '600px' }}
     >
-      <Image src={taskbarIcon} alt="Next Steps" height={68} width={152} />
+      <Box sx={{ flexShrink: 0 }}>
+        <Image src={taskbarIcon} alt="Next Steps" height={68} width={152} />
+      </Box>
       <Stack
         alignItems="center"
         sx={{ maxWidth: { xs: '311px', sm: '311px', md: '397px' } }}
