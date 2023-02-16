@@ -93,14 +93,16 @@ export class UserJourneyService extends BaseService<UserJourneyRecord> {
 
     const journey = await this.journeyService.get(userJourney.journeyId)
 
-    await this.memberService.save(
-      {
-        id: `${userId}:${(journey as { teamId: string }).teamId}`,
-        userId,
-        teamId: journey.teamId
-      },
-      { overwriteMode: 'ignore' }
-    )
+    if (journey.teamId != null) {
+      await this.memberService.save(
+        {
+          id: `${userId}:${(journey as { teamId: string }).teamId}`,
+          userId,
+          teamId: journey.teamId
+        },
+        { overwriteMode: 'ignore' }
+      )
+    }
 
     return await this.update(id, {
       role: UserJourneyRole.editor
