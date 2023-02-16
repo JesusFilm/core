@@ -24,11 +24,6 @@ export interface GetHomeVideos_videos_snippet {
   value: string;
 }
 
-export interface GetHomeVideos_videos_children {
-  __typename: "Video";
-  id: string;
-}
-
 export interface GetHomeVideos_videos_variant {
   __typename: "VideoVariant";
   id: string;
@@ -52,7 +47,6 @@ export interface GetHomeVideos_videos {
    * slug is a permanent link to the video.
    */
   slug: string;
-  children: GetHomeVideos_videos_children[];
   variant: GetHomeVideos_videos_variant | null;
   /**
    * the number value of the amount of children on a video

@@ -1,8 +1,9 @@
-import { fireEvent, render } from '@testing-library/react'
+import { fireEvent, render, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 import { MockedProvider } from '@apollo/client/testing'
 import { videos } from '../Videos/__generated__/testData'
 import { VideoProvider } from '../../libs/videoContext'
+import { getVideoChildrenMock } from '../../libs/useVideoChildren/getVideoChildrenMock'
 import { VideoContentPage } from '.'
 
 describe('VideoContentPage', () => {
@@ -33,23 +34,9 @@ describe('VideoContentPage', () => {
     expect(getByRole('tab', { name: 'Description' })).toBeInTheDocument()
   })
 
-  it('should render related videos', () => {
-    const { getByTestId } = render(
-      <MockedProvider>
-        <SnackbarProvider>
-          <VideoProvider value={{ content: videos[2], container: videos[0] }}>
-            <VideoContentPage />
-          </VideoProvider>
-        </SnackbarProvider>
-      </MockedProvider>
-    )
-
-    expect(getByTestId('videos-carousel')).toBeInTheDocument()
-  })
-
-  it('should render title on feature films', () => {
+  it('should render children', async () => {
     const { getByRole } = render(
-      <MockedProvider>
+      <MockedProvider mocks={[getVideoChildrenMock]}>
         <SnackbarProvider>
           <VideoProvider value={{ content: videos[0] }}>
             <VideoContentPage />
@@ -58,7 +45,11 @@ describe('VideoContentPage', () => {
       </MockedProvider>
     )
 
-    expect(getByRole('heading', { name: 'JESUS Scenes' })).toBeInTheDocument()
+    await waitFor(() =>
+      expect(
+        getByRole('heading', { name: videos[1].title[0].value })
+      ).toBeInTheDocument()
+    )
   })
 
   it('should render share button', () => {

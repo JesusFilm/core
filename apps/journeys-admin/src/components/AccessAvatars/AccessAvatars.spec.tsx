@@ -2,6 +2,7 @@ import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 import { ThemeProvider } from '../ThemeProvider'
+import { UserJourneyRole } from '../../../__generated__/globalTypes'
 import {
   userJourney1,
   userJourney2,
@@ -35,8 +36,8 @@ describe('AccessAvatars', () => {
     expect(getByAltText('Janelle Five')).toBeInTheDocument()
   })
 
-  it('should use first name and last as tooltip', () => {
-    const { getByLabelText } = render(
+  it('should use first name and last as tooltip', async () => {
+    const { getByRole } = render(
       <SnackbarProvider>
         <MockedProvider>
           <ThemeProvider>
@@ -54,7 +55,10 @@ describe('AccessAvatars', () => {
         </MockedProvider>
       </SnackbarProvider>
     )
-    expect(getByLabelText('Janelle Five')).toBeInTheDocument()
+    fireEvent.focusIn(getByRole('img', { name: 'Janelle Five' }))
+    await waitFor(() =>
+      expect(getByRole('tooltip', { name: 'Janelle Five' })).toBeInTheDocument()
+    )
   })
 
   it('should display 2 mobile and 4 desktop avatars max', () => {
@@ -92,7 +96,7 @@ describe('AccessAvatars', () => {
   })
 
   it('should show access dialog on click', async () => {
-    const { getByRole, queryByText, getByTestId } = render(
+    const { getAllByRole, queryByText, getByTestId } = render(
       <SnackbarProvider>
         <MockedProvider>
           <ThemeProvider>
@@ -104,11 +108,56 @@ describe('AccessAvatars', () => {
         </MockedProvider>
       </SnackbarProvider>
     )
-    fireEvent.click(getByRole('button'))
+    fireEvent.click(getAllByRole('button')[0])
     expect(queryByText('Invite Other Editors')).toBeInTheDocument()
     fireEvent.click(getByTestId('dialog-close-button'))
     await waitFor(() =>
       expect(queryByText('Invite Other Editors')).not.toBeInTheDocument()
     )
+  })
+
+  it('should show notification badge', () => {
+    const inviteRequestedUserJourney = {
+      ...userJourney6,
+      role: UserJourneyRole.inviteRequested
+    }
+    const { getAllByLabelText } = render(
+      <SnackbarProvider>
+        <MockedProvider>
+          <ThemeProvider>
+            <AccessAvatars
+              journeyId="journeyId"
+              userJourneys={[
+                userJourney1,
+                userJourney2,
+                userJourney3,
+                userJourney4,
+                userJourney5,
+                inviteRequestedUserJourney
+              ]}
+            />
+          </ThemeProvider>
+        </MockedProvider>
+      </SnackbarProvider>
+    )
+    expect(getAllByLabelText('overflow-notification-badge')).toHaveLength(2)
+  })
+
+  it('should show manage button', async () => {
+    const { queryAllByLabelText } = render(
+      <SnackbarProvider>
+        <MockedProvider>
+          <ThemeProvider>
+            <AccessAvatars
+              journeyId="journeyId"
+              userJourneys={[userJourney1]}
+              showManageButton
+            />
+          </ThemeProvider>
+        </MockedProvider>
+      </SnackbarProvider>
+    )
+
+    expect(queryAllByLabelText('Manage Access')).toHaveLength(2)
   })
 })

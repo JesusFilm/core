@@ -69,7 +69,8 @@ export function VideoHero({ onPlay, hasPlayed }: VideoHeroProps): ReactElement {
             height: '100%',
             width: '100%',
             '.vjs-hidden': { display: 'none' },
-            '.vjs-loading-spinner': { display: 'none' },
+            '.vjs-loading-spinner, .vjs-seeking .vjs-loading-spinner, .vjs-waiting .vjs-loading-spinner':
+              { display: 'none' },
             '.vjs, .vjs-tech': {
               height: '100%',
               width: '100%'
