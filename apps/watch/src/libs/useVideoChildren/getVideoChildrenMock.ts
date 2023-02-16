@@ -5,7 +5,7 @@ export const getVideoChildrenMock = {
   request: {
     query: GET_VIDEO_CHILDREN,
     variables: {
-      id: videos[0].id
+      id: videos[0].variant?.slug
     }
   },
   result: {
