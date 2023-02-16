@@ -111,7 +111,7 @@ export function UnsplashGallery({
   return (
     <Stack sx={{ pt: 6, px: 6 }}>
       <UnsplashSearch value={query} handleSubmit={handleSubmit} />
-      <Stack spacing={2} sx={{ pt: 6, pb: 1 }}>
+      <Stack sx={{ pt: 6, pb: 1 }}>
         <Typography variant="overline" color="primary">
           Unsplash
         </Typography>
@@ -129,7 +129,12 @@ export function UnsplashGallery({
           onChange={onChange}
         />
       )}
-      <LoadingButton variant="outlined" onClick={nextPage} size="medium">
+      <LoadingButton
+        variant="outlined"
+        onClick={nextPage}
+        size="medium"
+        sx={{ mb: 9 }}
+      >
         Load More
       </LoadingButton>
     </Stack>
