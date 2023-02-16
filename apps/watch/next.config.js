@@ -33,6 +33,13 @@ const nextConfig = {
         destination: '/watch',
         basePath: false,
         permanent: false
+      },
+
+      {
+        source: '/:path((?!watch).*)',
+        destination: '/watch/:path',
+        basePath: false,
+        permanent: false
       }
     ]
   }
