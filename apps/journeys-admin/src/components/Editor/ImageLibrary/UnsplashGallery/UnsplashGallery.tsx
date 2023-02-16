@@ -111,7 +111,7 @@ export function UnsplashGallery({
   return (
     <Stack sx={{ pt: 6, px: 6 }}>
       <UnsplashSearch value={query} handleSubmit={handleSubmit} />
-      <Stack spacing={2} sx={{ py: 6 }}>
+      <Stack spacing={2} sx={{ pt: 6, pb: 1 }}>
         <Typography variant="overline" color="primary">
           Unsplash
         </Typography>

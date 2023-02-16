@@ -26,16 +26,16 @@ export function UnsplashSearch({
             id="src"
             name="src"
             variant="filled"
-            label="Search free images"
-            value={values.src}
+            hiddenLabel
+            value={values.src ?? 'Search by keyword'}
             onChange={handleChange}
             fullWidth
             inputProps={{
               'aria-label': 'UnsplashSearch'
             }}
             InputProps={{
-              endAdornment: (
-                <InputAdornment position="end">
+              startAdornment: (
+                <InputAdornment position='start'>
                   <SearchIcon />
                 </InputAdornment>
               )
