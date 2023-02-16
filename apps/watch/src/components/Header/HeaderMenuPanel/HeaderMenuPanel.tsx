@@ -34,7 +34,6 @@ export function HeaderMenuPanel({
     <MuiLink
       href={url}
       underline="none"
-      target="_blank"
       rel="noopener"
       color="text.primary"
       variant="overline2"
@@ -90,19 +89,22 @@ export function HeaderMenuPanel({
             spacing={{ xs: 3, sm: 3, md: 8 }}
             direction={{ xs: 'column', sm: 'row' }}
           >
-            <HeaderLink url="https://www.jesusfilm.org/about" label="About" />
-            <HeaderLink url="https://www.jesusfilm.org/give" label="Give" />
+            <HeaderLink url="https://www.jesusfilm.org/give/" label="Give" />
+            <HeaderLink url="https://www.jesusfilm.org/about/" label="About" />
             <HeaderLink
-              url="https://www.jesusfilm.org/partners"
-              label="Partner"
+              url="https://www.jesusfilm.org/partners/"
+              label="Partners"
             />
-            <HeaderLink url="https://www.jesusfilm.org/tools" label="Tools" />
-            <HeaderLink url="https://www.jesusfilm.org/blog" label="Blog" />
+            <HeaderLink url="https://www.jesusfilm.org/blog/" label="Blog" />
+            <HeaderLink url="https://www.jesusfilm.org/tools/" label="Tools" />
+            <HeaderLink
+              url="https://www.jesusfilm.org/contact/"
+              label="Contact"
+            />
           </Stack>
           <Button
             startIcon={<FavoriteIcon />}
             href="https://www.jesusfilm.org/how-to-help/ways-to-donate/give-now-2/?amount=&frequency=single&campaign-code=NXWJPO&designation-number=2592320&thankYouRedirect=https%3A%2F%2Fwww.jesusfilm.org%2Fcontent%2Fjf%2Fus%2Fdevelopment%2Fspecial%2Fthank-you-refer%2Fsocial-share.html"
-            target="_blank"
             rel="noopener"
           >
             <Typography variant="overline2">Give Now</Typography>
