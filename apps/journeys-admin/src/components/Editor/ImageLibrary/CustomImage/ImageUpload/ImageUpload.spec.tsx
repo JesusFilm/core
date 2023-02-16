@@ -98,44 +98,16 @@ describe('ImageUpload', () => {
         <ImageUpload onChange={onChange} loading={false} />
       </MockedProvider>
     )
-    window.URL.createObjectURL = jest.fn().mockImplementation(() => 'url')
-    const input = getByTestId('drop zone')
-    const file = new File(['file'], 'testFile.png', {
-      type: 'image/png'
+    const inputEl = getByTestId('drop zone')
+    Object.defineProperty(inputEl, 'files', {
+      value: [
+        new File([new Blob(['file'])], 'testFile.png', {
+          type: 'image/png'
+        })
+      ]
     })
-    Object.defineProperty(input, 'files', {
-      value: [file]
-    })
-    fireEvent.drop(input)
+    fireEvent.drop(inputEl)
     await waitFor(() => expect(onChange).toHaveBeenCalled())
     expect(getByText('Upload successful!')).toBeInTheDocument()
-  })
-
-  it('should check if window opens on upload button click', async () => {
-    const result = jest.fn(() => ({
-      data: {
-        createCloudflareUploadByUrl: {
-          id: 'uploadId',
-          upload: 'uploadUrl',
-          __typename: 'CloudflareImage'
-        }
-      }
-    }))
-    const onChange = jest.fn()
-    const { getByText } = render(
-      <MockedProvider
-        mocks={[
-          {
-            request: {
-              query: CREATE_CLOUDFLARE_UPLOAD_BY_FILE
-            },
-            result
-          }
-        ]}
-      >
-        <ImageUpload onChange={onChange} loading={false} />
-      </MockedProvider>
-    )
-    fireEvent.click(getByText('Upload file'))
   })
 })

@@ -7,7 +7,7 @@ import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
 import { gql, useMutation } from '@apollo/client'
 import fetch from 'node-fetch'
-import FormData from 'form-data'
+import type FormDataType from 'form-data'
 import CloudDoneOutlinedIcon from '@mui/icons-material/CloudDoneOutlined'
 import CloudOffOutlinedIcon from '@mui/icons-material/CloudOffOutlined'
 import WarningAmberOutlinedIcon from '@mui/icons-material/WarningAmberOutlined'
@@ -35,7 +35,7 @@ export function ImageUpload({
     useMutation<CreateCloudflareUploadByFile>(CREATE_CLOUDFLARE_UPLOAD_BY_FILE)
   const [success, setSuccess] = useState<boolean>()
 
-  const onDrop = async (acceptedFiles): Promise<void> => {
+  const onDrop = async (acceptedFiles: File[]): Promise<void> => {
     const { data } = await createCloudflareUploadByFile({})
 
     if (data?.createCloudflareUploadByFile?.uploadUrl != null) {
@@ -46,7 +46,7 @@ export function ImageUpload({
       const response = await (
         await fetch(data?.createCloudflareUploadByFile?.uploadUrl, {
           method: 'POST',
-          body: formData
+          body: formData as unknown as FormDataType
         })
       ).json()
 
