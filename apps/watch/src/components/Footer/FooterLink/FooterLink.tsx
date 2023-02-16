@@ -1,4 +1,4 @@
-import { ReactElement } from 'react'
+import { HTMLAttributeAnchorTarget, ReactElement } from 'react'
 import MuiLink, { LinkProps } from '@mui/material/Link'
 import Typography from '@mui/material/Typography'
 import Image from 'next/image'
@@ -13,6 +13,7 @@ interface FooterLinkProps {
   src?: string
   width?: string
   height?: string
+  target?: HTMLAttributeAnchorTarget
   noFollow?: boolean
 }
 
@@ -24,13 +25,14 @@ export function FooterLink({
   src,
   width,
   height,
+  target,
   noFollow = false
 }: FooterLinkProps): ReactElement {
   return (
     <MuiLink
       href={url}
       underline={underline}
-      target="_blank"
+      target={target}
       rel={noFollow ? 'nofollow noopener' : 'noopener'}
       color="text.primary"
     >

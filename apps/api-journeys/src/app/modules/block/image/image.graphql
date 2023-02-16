@@ -23,7 +23,13 @@ input ImageBlockCreateInput {
   journeyId: ID!
   src: String
   alt: String!
+  """
+  If blurhash, width, & height are provided, the image will skip blurhash processing. Otherwise these values will be calculated.
+  """
   blurhash: String
+  width: Int
+  height: Int
+
   """
   True if the coverBlockId in a parent block should be set to this block's id.
   """

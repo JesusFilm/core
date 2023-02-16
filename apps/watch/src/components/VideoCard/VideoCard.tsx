@@ -75,11 +75,7 @@ export function VideoCard({
             disabled={video == null}
             sx={{
               overflow: 'hidden',
-              height: {
-                xs: 166,
-                md: 136,
-                xl: 146
-              },
+              aspectRatio: '16 / 9',
               '&:hover, &.Mui-focusVisible': {
                 '& .MuiImageBackground-root': {
                   transform: 'scale(1.02)'
@@ -110,18 +106,18 @@ export function VideoCard({
                   alt={video.title[0].value}
                 />
               ) : (
-                <Skeleton
+                <Box
                   sx={{
-                    height: {
-                      xs: 166,
-                      md: 136,
-                      xl: 146
-                    }
+                    aspectRatio: '16 / 9'
                   }}
-                  variant="rectangular"
-                  animation={false}
-                  data-testid="VideoImageSkeleton"
-                />
+                >
+                  <Skeleton
+                    sx={{ width: '100%', height: '100%' }}
+                    variant="rectangular"
+                    animation={false}
+                    data-testid="VideoImageSkeleton"
+                  />
+                </Box>
               )}
             </Layer>
             {variant === 'contained' && (
@@ -268,7 +264,7 @@ export function VideoCard({
                   )}
                 </Typography>
               )}
-              <Typography variant="h6" component="h3">
+              <Typography color="textPrimary" variant="h6" component="h3">
                 {video != null ? (
                   video?.title[0].value
                 ) : (
