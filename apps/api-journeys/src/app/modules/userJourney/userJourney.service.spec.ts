@@ -46,7 +46,10 @@ describe('UserJourneyService', () => {
   const memberService = {
     provide: MemberService,
     useFactory: () => ({
-      save: jest.fn((member) => member)
+      save: jest.fn((member) => member),
+      getMemberByTeamId: jest.fn((userId, teamId) => {
+        'memberId'
+      })
     })
   }
 
