@@ -67,57 +67,6 @@ export interface GetVideoContainerAndVideoContent_container_variant {
   subtitleCount: number;
 }
 
-export interface GetVideoContainerAndVideoContent_container_children_title {
-  __typename: "Translation";
-  value: string;
-}
-
-export interface GetVideoContainerAndVideoContent_container_children_imageAlt {
-  __typename: "Translation";
-  value: string;
-}
-
-export interface GetVideoContainerAndVideoContent_container_children_snippet {
-  __typename: "Translation";
-  value: string;
-}
-
-export interface GetVideoContainerAndVideoContent_container_children_children {
-  __typename: "Video";
-  id: string;
-}
-
-export interface GetVideoContainerAndVideoContent_container_children_variant {
-  __typename: "VideoVariant";
-  id: string;
-  duration: number;
-  hls: string | null;
-  /**
-   * slug is a permanent link to the video variant.
-   */
-  slug: string;
-}
-
-export interface GetVideoContainerAndVideoContent_container_children {
-  __typename: "Video";
-  id: string;
-  label: VideoLabel;
-  title: GetVideoContainerAndVideoContent_container_children_title[];
-  image: string | null;
-  imageAlt: GetVideoContainerAndVideoContent_container_children_imageAlt[];
-  snippet: GetVideoContainerAndVideoContent_container_children_snippet[];
-  /**
-   * slug is a permanent link to the video.
-   */
-  slug: string;
-  children: GetVideoContainerAndVideoContent_container_children_children[];
-  variant: GetVideoContainerAndVideoContent_container_children_variant | null;
-  /**
-   * the number value of the amount of children on a video
-   */
-  childrenCount: number;
-}
-
 export interface GetVideoContainerAndVideoContent_container {
   __typename: "Video";
   id: string;
@@ -134,7 +83,6 @@ export interface GetVideoContainerAndVideoContent_container {
    * slug is a permanent link to the video.
    */
   slug: string;
-  children: GetVideoContainerAndVideoContent_container_children[];
   /**
    * the number value of the amount of children on a video
    */
@@ -199,57 +147,6 @@ export interface GetVideoContainerAndVideoContent_content_variant {
   subtitleCount: number;
 }
 
-export interface GetVideoContainerAndVideoContent_content_children_title {
-  __typename: "Translation";
-  value: string;
-}
-
-export interface GetVideoContainerAndVideoContent_content_children_imageAlt {
-  __typename: "Translation";
-  value: string;
-}
-
-export interface GetVideoContainerAndVideoContent_content_children_snippet {
-  __typename: "Translation";
-  value: string;
-}
-
-export interface GetVideoContainerAndVideoContent_content_children_children {
-  __typename: "Video";
-  id: string;
-}
-
-export interface GetVideoContainerAndVideoContent_content_children_variant {
-  __typename: "VideoVariant";
-  id: string;
-  duration: number;
-  hls: string | null;
-  /**
-   * slug is a permanent link to the video variant.
-   */
-  slug: string;
-}
-
-export interface GetVideoContainerAndVideoContent_content_children {
-  __typename: "Video";
-  id: string;
-  label: VideoLabel;
-  title: GetVideoContainerAndVideoContent_content_children_title[];
-  image: string | null;
-  imageAlt: GetVideoContainerAndVideoContent_content_children_imageAlt[];
-  snippet: GetVideoContainerAndVideoContent_content_children_snippet[];
-  /**
-   * slug is a permanent link to the video.
-   */
-  slug: string;
-  children: GetVideoContainerAndVideoContent_content_children_children[];
-  variant: GetVideoContainerAndVideoContent_content_children_variant | null;
-  /**
-   * the number value of the amount of children on a video
-   */
-  childrenCount: number;
-}
-
 export interface GetVideoContainerAndVideoContent_content {
   __typename: "Video";
   id: string;
@@ -266,7 +163,6 @@ export interface GetVideoContainerAndVideoContent_content {
    * slug is a permanent link to the video.
    */
   slug: string;
-  children: GetVideoContainerAndVideoContent_content_children[];
   /**
    * the number value of the amount of children on a video
    */
