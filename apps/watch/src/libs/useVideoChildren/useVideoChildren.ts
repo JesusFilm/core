@@ -9,7 +9,7 @@ import { VIDEO_CHILD_FIELDS } from '../videoChildFields'
 export const GET_VIDEO_CHILDREN = gql`
   ${VIDEO_CHILD_FIELDS}
   query GetVideoChildren($id: ID!, $languageId: ID) {
-    video(id: $id) {
+    video(id: $id, idType: slug) {
       id
       children {
         ...VideoChildFields
@@ -18,7 +18,7 @@ export const GET_VIDEO_CHILDREN = gql`
   }
 `
 
-export function useVideoChildren(id?: string): {
+export function useVideoChildren(slug?: string): {
   loading: boolean
   children: GetVideoChildren_video_children[]
 } {
@@ -26,16 +26,15 @@ export function useVideoChildren(id?: string): {
     useLazyQuery<GetVideoChildren>(GET_VIDEO_CHILDREN)
 
   useEffect(() => {
-    if (id != null) {
+    if (slug != null) {
       void getVideoChildren({
-        variables: { id }
+        variables: { id: slug }
       })
     }
-  }, [getVideoChildren, id])
+  }, [getVideoChildren, slug])
 
   return {
     loading,
-    children:
-      data?.video != null && data.video.id === id ? data.video.children : []
+    children: data?.video?.children != null ? data.video.children : []
   }
 }
