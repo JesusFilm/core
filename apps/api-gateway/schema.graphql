@@ -251,7 +251,7 @@ type CloudflareImage
   @join__type(graph: MEDIA)
 {
   id: ID!
-  uploadUrl: String!
+  uploadUrl: String
   userId: ID!
   createdAt: String!
 }
@@ -818,6 +818,8 @@ type Mutation
 
   """Update a visitor"""
   visitorUpdate(id: ID!, input: VisitorUpdateInput!): Visitor! @join__field(graph: JOURNEYS)
+  createCloudflareUploadByFile: CloudflareImage @join__field(graph: MEDIA)
+  createCloudflareUploadByUrl(url: String!): CloudflareImage @join__field(graph: MEDIA)
   deleteCloudflareImage(id: ID!): Boolean @join__field(graph: MEDIA)
   cloudflareUploadComplete(id: ID!): Boolean @join__field(graph: MEDIA)
 }
@@ -947,7 +949,6 @@ type Query
   country(id: ID!, idType: IdType): Country! @join__field(graph: LANGUAGES)
   languages(offset: Int, limit: Int): [Language!]! @join__field(graph: LANGUAGES)
   language(id: ID!, idType: LanguageIdType): Language @join__field(graph: LANGUAGES)
-  createCloudflareImage: CloudflareImage @join__field(graph: MEDIA)
   getMyCloudflareImages: [CloudflareImage] @join__field(graph: MEDIA)
   listUnsplashCollectionPhotos(collectionId: String!, page: Int, perPage: Int, orientation: UnsplashPhotoOrientation): [UnsplashPhoto!]! @join__field(graph: MEDIA)
   searchUnsplashPhotos(query: String!, page: Int, perPage: Int, orderBy: UnsplashOrderBy, collections: [String], contentFilter: UnsplashContentFilter, color: UnsplashColor, orientation: UnsplashPhotoOrientation): UnsplashQueryResponse! @join__field(graph: MEDIA)
@@ -1433,16 +1434,16 @@ type UnsplashPhoto
 {
   id: String!
   created_at: String!
-  updated_at: String!
+  updated_at: String
   blur_hash: String!
   width: Int!
   height: Int!
-  color: String!
-  description: String!
-  alt_description: String!
+  color: String
+  description: String
+  alt_description: String
   urls: UnsplashPhotoUrls!
   links: UnsplashPhotoLinks!
-  categories: [String!]!
+  categories: [String!]
   likes: Int!
   liked_by_user: Boolean!
   current_user_collections: [String!]!
@@ -1488,18 +1489,18 @@ type UnsplashUser
   @join__type(graph: MEDIA)
 {
   id: String!
-  updated_at: String!
+  updated_at: String
   username: String!
-  name: String!
-  first_name: String!
-  last_name: String!
-  twitter_username: String!
-  portfolio_url: String!
-  bio: String!
-  location: String!
+  name: String
+  first_name: String
+  last_name: String
+  twitter_username: String
+  portfolio_url: String
+  bio: String
+  location: String
   links: UnsplashUserLinks!
-  profile_image: UnsplashUserImage!
-  instagram_username: String!
+  profile_image: UnsplashUserImage
+  instagram_username: String
   total_collections: Int!
   total_likes: Int!
   total_photos: Int!
