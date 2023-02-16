@@ -53,7 +53,7 @@ export function TermsAndConditions(): ReactElement {
         alignItems="center"
         sx={{ maxWidth: { xs: '311px', sm: '311px', md: '397px' } }}
       >
-        <Box sx={{ mb: 17, flexShrink: 0 }}>
+        <Box sx={{ mb: 10, flexShrink: 0 }}>
           <Image src={taskbarIcon} alt="Next Steps" height={43} width={43} />
         </Box>
         <Typography variant="h4">Before You Start</Typography>
