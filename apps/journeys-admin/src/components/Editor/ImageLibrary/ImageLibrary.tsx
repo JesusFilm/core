@@ -106,13 +106,7 @@ export function ImageLibrary({
         sx={{ width: '100%', justifyContent: 'center', display: 'flex', py: 4 }}
       >
         <ImageBlockHeader
-          selectedBlock={
-            selectedBlock != null &&
-            selectedBlock.height < 0 &&
-            selectedBlock.width < 0
-              ? selectedBlock
-              : null
-          }
+          selectedBlock={selectedBlock != null ? selectedBlock : null}
           onDelete={onDelete}
           loading={loading}
         />
