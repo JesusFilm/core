@@ -44,20 +44,16 @@ export function TermsAndConditions(): ReactElement {
 
   return (
     <Stack
-      justifyContent="flex-start"
+      justifyContent="space-evenly"
       alignItems="center"
-      sx={{
-        pt: 20
-      }}
+      sx={{ height: '100vh' }}
     >
       <Image src={taskbarIcon} alt="Next Steps" height={68} width={152} />
       <Stack
         alignItems="center"
         sx={{ maxWidth: { xs: '311px', sm: '311px', md: '397px' } }}
       >
-        <Typography variant="h4" sx={{ mt: 20 }}>
-          Before You Start
-        </Typography>
+        <Typography variant="h4">Before You Start</Typography>
         <Typography variant="body1" sx={{ mt: 3 }}>
           Please review these documents:
         </Typography>
@@ -126,7 +122,6 @@ export function TermsAndConditions(): ReactElement {
         variant="body2"
         underline="none"
         sx={{
-          mt: 17,
           color: 'primary.main',
           cursor: 'pointer'
         }}
