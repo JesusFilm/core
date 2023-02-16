@@ -1,8 +1,6 @@
 import { gql } from '@apollo/client'
-import { VIDEO_CHILD_FIELDS } from './videoChildFields'
 
 export const VIDEO_CONTENT_FIELDS = gql`
-  ${VIDEO_CHILD_FIELDS}
   fragment VideoContentFields on Video {
     id
     label
@@ -43,9 +41,6 @@ export const VIDEO_CONTENT_FIELDS = gql`
     }
     variantLanguagesCount
     slug
-    children {
-      ...VideoChildFields
-    }
     childrenCount
   }
 `

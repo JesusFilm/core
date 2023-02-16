@@ -35,8 +35,8 @@ describe('AccessAvatars', () => {
     expect(getByAltText('Janelle Five')).toBeInTheDocument()
   })
 
-  it('should use first name and last as tooltip', () => {
-    const { getByLabelText } = render(
+  it('should use first name and last as tooltip', async () => {
+    const { getByRole, getAllByLabelText } = render(
       <SnackbarProvider>
         <MockedProvider>
           <ThemeProvider>
@@ -54,7 +54,11 @@ describe('AccessAvatars', () => {
         </MockedProvider>
       </SnackbarProvider>
     )
-    expect(getByLabelText('Janelle Five')).toBeInTheDocument()
+    const avatar = getAllByLabelText('avatar')[2]
+    fireEvent.mouseEnter(avatar)
+    await waitFor(() =>
+      expect(getByRole('tooltip', { name: 'Janelle Five' })).toBeInTheDocument()
+    )
   })
 
   it('should display 2 mobile and 4 desktop avatars max', () => {
@@ -110,5 +114,23 @@ describe('AccessAvatars', () => {
     await waitFor(() =>
       expect(queryByText('Invite Other Editors')).not.toBeInTheDocument()
     )
+  })
+
+  it('should show manage button', async () => {
+    const { queryByLabelText } = render(
+      <SnackbarProvider>
+        <MockedProvider>
+          <ThemeProvider>
+            <AccessAvatars
+              journeyId="journeyId"
+              userJourneys={[userJourney1]}
+              showManageButton
+            />
+          </ThemeProvider>
+        </MockedProvider>
+      </SnackbarProvider>
+    )
+
+    expect(queryByLabelText('Manage Access')).toBeInTheDocument()
   })
 })

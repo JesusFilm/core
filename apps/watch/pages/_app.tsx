@@ -13,7 +13,6 @@ import { createEmotionCache } from '@core/shared/ui/createEmotionCache'
 
 import 'swiper/swiper.min.css'
 import '../public/fonts/fonts.css'
-import '../public/styles/swiper-js.css'
 import { useApolloClient } from '../src/libs/apolloClient'
 
 const clientSideEmotionCache = createEmotionCache({ prepend: false })
@@ -72,6 +71,8 @@ export default function WatchApp({
           titleTemplate="%s | Jesus Film Project"
           defaultTitle="Watch | Jesus Film Project"
           description="Free Gospel Video Streaming Library. Watch, learn and share the gospel in over 2000 languages."
+          dangerouslySetAllPagesToNoFollow
+          dangerouslySetAllPagesToNoIndex
         />
         <Head>
           <meta
