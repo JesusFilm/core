@@ -178,6 +178,33 @@ describe('VideoResolver', () => {
     })
   })
 
+  describe('children', () => {
+    it('returns null when no childIds', async () => {
+      expect(await resolver.children({ childIds: undefined })).toEqual(null)
+    })
+
+    it('returns videos by childIds without languageId', async () => {
+      expect(await resolver.children({ childIds: ['abc', 'def'] })).toEqual([
+        video,
+        video
+      ])
+      expect(service.getVideosByIds).toHaveBeenCalledWith(
+        ['abc', 'def'],
+        undefined
+      )
+    })
+
+    it('returns videos by childIds with languageId', async () => {
+      expect(
+        await resolver.children({
+          childIds: ['abc', 'def'],
+          variant: { languageId: '529' }
+        })
+      ).toEqual([video, video])
+      expect(service.getVideosByIds).toHaveBeenCalledWith(['abc', 'def'], '529')
+    })
+  })
+
   describe('variantLanguagesCount', () => {
     it('returns variant languages count', async () => {
       expect(
