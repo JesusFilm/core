@@ -81,7 +81,7 @@ const StyledNavigationDrawer = styled(Drawer)(({ theme, open }) => ({
   }
 }))
 
-const StyledList = styled(List)({
+export const StyledList = styled(List)({
   display: 'flex',
   flexDirection: 'column',
   '& .MuiListItemButton-root, & .MuiListItem-root': {
