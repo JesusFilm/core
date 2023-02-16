@@ -109,10 +109,10 @@ describe('AccessAvatars', () => {
       </SnackbarProvider>
     )
     fireEvent.click(getByRole('button'))
-    expect(queryByText('Invite Other Editors')).toBeInTheDocument()
+    expect(queryByText('Manage Editors')).toBeInTheDocument()
     fireEvent.click(getByTestId('dialog-close-button'))
     await waitFor(() =>
-      expect(queryByText('Invite Other Editors')).not.toBeInTheDocument()
+      expect(queryByText('Manage Editors')).not.toBeInTheDocument()
     )
   })
 
