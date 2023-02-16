@@ -9,6 +9,7 @@ import { UserJourneyRole } from '../../../../../__generated__/globalTypes'
 import { JourneyCard } from '../../JourneyCard'
 import { SortOrder } from '../../JourneySort'
 import { sortJourneys } from '../../JourneySort/utils/sortJourneys'
+import { JourneyCardVariant } from '../../JourneyCard/journeyCardVariant'
 
 interface Props {
   journeys: Journey[]
@@ -63,6 +64,7 @@ export function ActivePriorityList({
           journey={journey}
           refetch={refetch}
           duplicatedJourneyId={duplicatedJourneyId}
+          variant={JourneyCardVariant.actionRequired}
         />
       ))}
       {newJourneys.map((journey) => (
@@ -71,6 +73,7 @@ export function ActivePriorityList({
           journey={journey}
           refetch={refetch}
           duplicatedJourneyId={duplicatedJourneyId}
+          variant={JourneyCardVariant.new}
         />
       ))}
       {sortedJourneys.map((journey) => (
