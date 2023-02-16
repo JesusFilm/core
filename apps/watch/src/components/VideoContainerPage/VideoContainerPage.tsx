@@ -13,8 +13,8 @@ import { ContainerHero } from './ContainerHero'
 
 // Usually Series or Collection Videos
 export function VideoContainerPage(): ReactElement {
-  const { snippet, id, slug } = useVideo()
-  const { loading, children } = useVideoChildren(id)
+  const { snippet, slug, variant } = useVideo()
+  const { loading, children } = useVideoChildren(variant?.slug)
   const router = useRouter()
   const [shareDialog, setShareDialog] = useState<boolean>(false)
   const routeArray: string[] = []
