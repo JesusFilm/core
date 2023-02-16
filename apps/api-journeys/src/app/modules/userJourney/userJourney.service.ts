@@ -2,7 +2,7 @@ import { BaseService } from '@core/nest/database/BaseService'
 import { Inject, Injectable } from '@nestjs/common'
 import { aql } from 'arangojs'
 import { KeyAsId } from '@core/nest/decorators/KeyAsId'
-import { UserInputError } from 'apollo-server-errors'
+import { AuthenticationError, UserInputError } from 'apollo-server-errors'
 import { ArrayCursor } from 'arangojs/cursor'
 import { v4 as uuidv4 } from 'uuid'
 import { IdType, Journey, UserJourneyRole } from '../../__generated__/graphql'
@@ -91,17 +91,31 @@ export class UserJourneyService extends BaseService<UserJourneyRecord> {
     if (userJourney == null)
       throw new UserInputError('userJourney does not exist')
 
+    const actor = await this.forJourneyUser(id, userId)
+
+    if (actor?.role === UserJourneyRole.inviteRequested)
+      throw new AuthenticationError(
+        'You do not have permission to approve access'
+      )
+
     const journey = await this.journeyService.get(userJourney.journeyId)
 
     if (journey.teamId != null) {
-      await this.memberService.save(
-        {
-          id: `${userId}:${(journey as { teamId: string }).teamId}`,
-          userId,
-          teamId: journey.teamId
-        },
-        { overwriteMode: 'ignore' }
+      const existingMember = this.memberService.getMemberByTeamId(
+        userId,
+        journey.teamId
       )
+
+      if (existingMember == null) {
+        await this.memberService.save(
+          {
+            id: `${userId}:${(journey as { teamId: string }).teamId}`,
+            userId,
+            teamId: journey.teamId
+          },
+          { overwriteMode: 'ignore' }
+        )
+      }
     }
 
     return await this.update(id, {

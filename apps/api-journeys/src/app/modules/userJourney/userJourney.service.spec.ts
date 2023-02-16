@@ -46,7 +46,10 @@ describe('UserJourneyService', () => {
   const memberService = {
     provide: MemberService,
     useFactory: () => ({
-      save: jest.fn((member) => member)
+      save: jest.fn((member) => member),
+      getMemberByTeamId: jest.fn((userId, teamId) => {
+        'memberId'
+      })
     })
   }
 
@@ -244,9 +247,29 @@ describe('UserJourneyService', () => {
       })
     })
 
+    it('should throw Auth error if approver an invitee', async () => {
+      db.query.mockReturnValueOnce(
+        mockDbQueryResult(service.db, [userJourneyInvited])
+      )
+      db.query.mockReturnValueOnce(
+        mockDbQueryResult(service.db, [userJourneyInvited])
+      )
+
+      await service
+        .approveAccess(userJourneyInvited.id, userJourneyInvited.userId)
+        .catch((error) => {
+          expect(error.message).toEqual(
+            'You do not have permission to approve access'
+          )
+        })
+    })
+
     it('updates a UserJourney to editor status', async () => {
       db.query.mockReturnValueOnce(
         mockDbQueryResult(service.db, [userJourneyInvited])
+      )
+      db.query.mockReturnValueOnce(
+        mockDbQueryResult(service.db, [userJourneyOwner])
       )
       collectionMock.update.mockReturnValue(
         mockCollectionSaveResult(service.collection, {
@@ -270,6 +293,9 @@ describe('UserJourneyService', () => {
     it('adds user to team', async () => {
       db.query.mockReturnValueOnce(
         mockDbQueryResult(service.db, [userJourneyInvited])
+      )
+      db.query.mockReturnValueOnce(
+        mockDbQueryResult(service.db, [userJourneyOwner])
       )
       collectionMock.update.mockReturnValue(
         mockCollectionSaveResult(service.collection, {
