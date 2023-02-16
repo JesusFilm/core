@@ -6,6 +6,7 @@ import { VideoProvider } from '../../libs/videoContext'
 import { videos } from '../Videos/__generated__/testData'
 import { getSubtitleMock } from '../SubtitleDialog/testData'
 import { getLanguagesSlugMock } from '../AudioLanguageDialog/testData'
+import { getVideoChildrenMock } from '../../libs/useVideoChildren/getVideoChildrenMock'
 import { VideoContentPage } from '.'
 
 const VideoContentPageStory = {
@@ -18,12 +19,12 @@ const VideoContentPageStory = {
   }
 }
 
-const Template: Story<ComponentProps<typeof VideoContentPage>> = ({
-  ...args
-}) => (
-  <MockedProvider mocks={[getLanguagesSlugMock, getSubtitleMock]}>
+const Template: Story<ComponentProps<typeof VideoContentPage>> = () => (
+  <MockedProvider
+    mocks={[getLanguagesSlugMock, getSubtitleMock, getVideoChildrenMock]}
+  >
     <VideoProvider value={{ content: videos[0] }}>
-      <VideoContentPage {...args} />
+      <VideoContentPage />
     </VideoProvider>
   </MockedProvider>
 )

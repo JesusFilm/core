@@ -73,10 +73,17 @@ export class VideoResolver {
 
   @ResolveField()
   async children(
-    @Parent() video: Video & { childIds: string[] }
+    @Parent()
+    video: {
+      childIds?: string[]
+      variant?: { languageId: string }
+    }
   ): Promise<Video[] | null> {
     return video.childIds != null
-      ? await this.videoService.getVideosByIds(video.childIds)
+      ? await this.videoService.getVideosByIds(
+          video.childIds,
+          video.variant?.languageId
+        )
       : null
   }
 

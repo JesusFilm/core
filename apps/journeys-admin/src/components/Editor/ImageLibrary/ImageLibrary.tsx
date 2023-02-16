@@ -17,6 +17,7 @@ import { object, string } from 'yup'
 import { GetJourney_journey_blocks_ImageBlock as ImageBlock } from '../../../../__generated__/GetJourney'
 import { ImageBlockHeader } from '../ImageBlockHeader'
 import { CustomImage } from './CustomImage'
+import { ImageUpload } from './CustomImage/ImageUpload'
 
 export const DRAWER_WIDTH = 328
 
@@ -134,6 +135,7 @@ export function ImageLibrary({
           {/* insert unsplash component */}
         </TabPanel>
         <TabPanel name="custom" value={tabValue} index={1}>
+          <ImageUpload onChange={handleSrcChange} loading={loading} />
           <CustomImage onChange={handleSrcChange} />
         </TabPanel>
       </Box>

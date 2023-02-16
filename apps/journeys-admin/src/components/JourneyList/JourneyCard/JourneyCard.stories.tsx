@@ -1,6 +1,11 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { Story, Meta } from '@storybook/react'
+import { UserJourneyRole } from '../../../../__generated__/globalTypes'
 import { journeysAdminConfig } from '../../../libs/storybook'
+import {
+  GetJourneys_journeys as Journey,
+  GetJourneys_journeys_userJourneys as UserJourney
+} from '../../../../__generated__/GetJourneys'
 import {
   defaultJourney,
   descriptiveJourney,
@@ -10,6 +15,7 @@ import {
   trashedJourney
 } from '../journeyListData'
 import { JourneyCard } from './JourneyCard'
+import { JourneyCardVariant } from './journeyCardVariant'
 
 const TestStory = {
   ...journeysAdminConfig,
@@ -19,7 +25,7 @@ const TestStory = {
 
 const Template: Story = ({ ...args }) => (
   <MockedProvider>
-    <JourneyCard journey={defaultJourney} {...args} />
+    <JourneyCard {...args} />
   </MockedProvider>
 )
 
@@ -56,6 +62,49 @@ PreYear.args = {
 export const Loading = Template.bind({})
 Loading.args = {
   journey: undefined
+}
+
+export const New = Template.bind({})
+New.args = {
+  journey: defaultJourney,
+  variant: JourneyCardVariant.new
+}
+
+export const ActionRequired = Template.bind({})
+const uj = defaultJourney.userJourneys as unknown as UserJourney[]
+const actionRequiredJourney = {
+  ...defaultJourney,
+  userJourneys: [
+    ...uj,
+    {
+      __typename: 'UserJourney',
+      id: 'userJourney4.id',
+      role: UserJourneyRole.inviteRequested,
+      user: {
+        __typename: 'User',
+        id: 'user4.id',
+        firstName: 'Four',
+        lastName: 'LastName',
+        imageUrl: null
+      }
+    },
+    {
+      __typename: 'UserJourney',
+      id: 'userJourney5.id',
+      role: UserJourneyRole.inviteRequested,
+      user: {
+        __typename: 'User',
+        id: 'user5.id',
+        firstName: 'Five',
+        lastName: 'LastName',
+        imageUrl: null
+      }
+    }
+  ]
+} as unknown as Journey
+ActionRequired.args = {
+  journey: actionRequiredJourney,
+  variant: JourneyCardVariant.actionRequired
 }
 
 export default TestStory as Meta
