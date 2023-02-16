@@ -39,15 +39,18 @@ export function ActivePriorityList({
       (uj) => uj.user?.id === authUser?.id
     )
 
-    if (currentUserJourney != null && currentUserJourney.openedAt == null) {
-      newJourneys.push(journey)
-    } else if (
+    if (
       currentUserJourney?.role === UserJourneyRole.owner &&
       journey.userJourneys?.find(
         (uj) => uj.role === UserJourneyRole.inviteRequested
       ) != null
     ) {
       actionRequiredJourneys.push(journey)
+    } else if (
+      currentUserJourney != null &&
+      currentUserJourney.openedAt == null
+    ) {
+      newJourneys.push(journey)
     } else {
       activeJourneys.push(journey)
     }
