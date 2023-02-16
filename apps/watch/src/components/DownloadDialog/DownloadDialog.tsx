@@ -7,6 +7,7 @@ import LoadingButton from '@mui/lab/LoadingButton'
 import Checkbox from '@mui/material/Checkbox'
 import FormGroup from '@mui/material/FormGroup'
 import FormControlLabel from '@mui/material/FormControlLabel'
+import Link from '@mui/material/Link'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 import Stack from '@mui/material/Stack'
@@ -16,12 +17,10 @@ import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward'
 import PlayArrowRoundedIcon from '@mui/icons-material/PlayArrowRounded'
 import LanguageIcon from '@mui/icons-material/Language'
 import { useTheme } from '@mui/material/styles'
-
 import { secondsToTimeFormat } from '@core/shared/ui/timeFormat'
 import { Dialog } from '@core/shared/ui/Dialog'
-
 import { useVideo } from '../../libs/videoContext'
-import { TermsOfUseModal } from './TermsOfUseModal/TermsOfUseModal'
+import { TermsOfUseDialog } from './TermsOfUseDialog'
 
 interface DownloadDialogProps
   extends Pick<ComponentProps<typeof Dialog>, 'open' | 'onClose'> {}
@@ -138,7 +137,7 @@ export function DownloadDialog({
             void download(values.file, `${title[0].value}.mp4`)
           }}
         >
-          {({ values, errors, handleChange, handleBlur }) => (
+          {({ values, errors, handleChange, handleBlur, setFieldValue }) => (
             <Form>
               <TextField
                 name="file"
@@ -164,7 +163,7 @@ export function DownloadDialog({
                 gap={3}
                 sx={{ mt: 6 }}
               >
-                <FormGroup sx={{ flexDirection: 'row' }}>
+                <FormGroup sx={{ flexDirection: 'row', alignItems: 'center' }}>
                   <FormControlLabel
                     sx={{ marginRight: '4px' }}
                     control={
@@ -177,16 +176,13 @@ export function DownloadDialog({
                     }
                     label="I agree to the"
                   />
-                  <Typography
-                    display="flex"
-                    justifyContent="center"
-                    alignItems="center"
-                    color="primary.main"
+                  <Link
+                    underline="none"
                     sx={{ cursor: 'pointer' }}
                     onClick={() => setOpenTerms(true)}
                   >
                     Terms of Use
-                  </Typography>
+                  </Link>
                 </FormGroup>
                 <LoadingButton
                   type="submit"
@@ -209,11 +205,15 @@ export function DownloadDialog({
                   Download
                 </LoadingButton>
               </Stack>
-              <TermsOfUseModal
+              <TermsOfUseDialog
                 open={openTerms}
-                onClose={() => setOpenTerms(false)}
+                onClose={() => {
+                  setFieldValue('terms', false)
+                  setOpenTerms(false)
+                }}
                 onSubmit={() => {
-                  handleChange('terms')('true')
+                  setFieldValue('terms', true)
+                  setOpenTerms(false)
                 }}
               />
             </Form>

@@ -94,32 +94,19 @@ describe('DownloadDialog', () => {
     })
   })
 
-  it('opens terms of service dialog', async () => {
-    const { getByText } = render(
+  it('changes checkbox when submit or close', async () => {
+    const { getByText, getByLabelText, queryByText } = render(
       <VideoProvider value={{ content: video }}>
         <DownloadDialog open onClose={onClose} />
       </VideoProvider>
     )
-
-    fireEvent.click(getByText('Terms of Use'))
-
-    await waitFor(() => {
-      expect(getByText('Accept')).toBeInTheDocument()
-    })
-  })
-
-  it('agrees to terms of use on accept', async () => {
-    const { getByText, getByLabelText } = render(
-      <VideoProvider value={{ content: video }}>
-        <DownloadDialog open onClose={onClose} />
-      </VideoProvider>
-    )
-
     fireEvent.click(getByText('Terms of Use'))
     fireEvent.click(getByText('Accept'))
-
-    await waitFor(() => {
-      expect(getByLabelText('I agree to the')).toBeChecked()
-    })
+    await waitFor(() => expect(queryByText('Accept')).not.toBeInTheDocument())
+    expect(getByLabelText('I agree to the')).toBeChecked()
+    fireEvent.click(getByText('Terms of Use'))
+    fireEvent.click(getByText('Cancel'))
+    await waitFor(() => expect(queryByText('Cancel')).not.toBeInTheDocument())
+    expect(getByLabelText('I agree to the')).not.toBeChecked()
   })
 })
