@@ -48,7 +48,7 @@ Applied.args = {
 }
 
 export const Source = Template.bind({})
-Source.args = { showAdd: true }
+Source.args = { isSource: true }
 
 export const Loading = Template.bind({})
 Loading.args = { loading: true }

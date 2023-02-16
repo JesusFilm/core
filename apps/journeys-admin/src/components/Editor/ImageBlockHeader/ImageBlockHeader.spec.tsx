@@ -38,7 +38,7 @@ describe('ImageBlockHeader', () => {
 
   it('should render placeholder', () => {
     const { getByText, getByTestId } = render(
-      <ImageBlockHeader selectedBlock={null} showAdd />
+      <ImageBlockHeader selectedBlock={null} isSource />
     )
 
     expect(getByTestId('imageBlockThumbnailPlaceholder')).toBeInTheDocument()
