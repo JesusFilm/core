@@ -45,10 +45,12 @@ export function useJourneys(): Journeys[] | undefined {
   const [journeys, setJourneys] = useState<Journeys[] | undefined>(undefined)
   const [loadJourneys, { data }] = useLazyQuery<GetJourneys>(GET_JOURNEYS)
 
+  // const res = data?.journeys
+
   useEffect(() => {
     void loadJourneys()
     setJourneys(data?.journeys)
-  }, [loadJourneys, data, setJourneys])
+  }, [loadJourneys, setJourneys])
 
   return journeys
 }

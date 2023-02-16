@@ -38,6 +38,7 @@ const GET_PUBLISHED_TEMPLATES = gql`
       userJourneys {
         id
         role
+        openedAt
         user {
           id
           firstName
@@ -72,7 +73,6 @@ function LibraryIndex(): ReactElement {
   const { data } = useQuery<GetPublishedTemplates>(GET_PUBLISHED_TEMPLATES)
   const router = useRouter()
   const journeys = useJourneys()
-  // const { data: journeyData } = useQuery<GetJourneys>(GET_JOURNEYS)
   const { data: userData } = useQuery<GetUserRole>(GET_USER_ROLE)
 
   const isPublisher = userData?.getUserRole?.roles?.includes(Role.publisher)
