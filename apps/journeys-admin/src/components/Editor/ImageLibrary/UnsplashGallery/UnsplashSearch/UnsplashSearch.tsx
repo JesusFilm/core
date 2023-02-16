@@ -35,7 +35,7 @@ export function UnsplashSearch({
             }}
             InputProps={{
               startAdornment: (
-                <InputAdornment position='start'>
+                <InputAdornment position="start">
                   <SearchIcon />
                 </InputAdornment>
               )
