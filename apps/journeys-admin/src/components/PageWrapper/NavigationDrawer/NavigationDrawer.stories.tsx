@@ -6,19 +6,11 @@ import { AuthUser } from 'next-firebase-auth'
 import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 import { NextRouter } from 'next/router'
 import { journeysAdminConfig } from '../../../libs/storybook'
-import { Role } from '../../../../__generated__/globalTypes'
+import { Role, UserJourneyRole } from '../../../../__generated__/globalTypes'
 import { GET_USER_ROLE } from '../../JourneyView/JourneyView'
+import { GET_JOURNEYS } from '../../../libs/useJourneys/useJourneys'
 import { GET_ME } from './NavigationDrawer'
 import { NavigationDrawer } from '.'
-
-// jest.mock('react-i18next', () => ({
-//   __esModule: true,
-//   useTranslation: () => {
-//     return {
-//       t: (str: string) => str
-//     }
-//   }
-// }))
 
 const NavigationDrawerStory = {
   ...journeysAdminConfig,
@@ -39,7 +31,7 @@ const Template: Story = ({ ...args }) => {
           result: {
             data: {
               me: {
-                id: 'userId',
+                id: 'user.id',
                 firstName: 'Amin',
                 lastName: 'One',
                 imageUrl: 'https://bit.ly/3Gth4Yf',
@@ -60,6 +52,12 @@ const Template: Story = ({ ...args }) => {
               }
             }
           }
+        },
+        {
+          request: {
+            query: GET_JOURNEYS
+          },
+          result: args.result
         }
       ]}
     >
@@ -69,6 +67,7 @@ const Template: Story = ({ ...args }) => {
           onClose={() => setOpen(!open)}
           authUser={
             {
+              id: 'user.id',
               displayName: 'Amin One',
               photoURL: 'https://bit.ly/3Gth4Yf',
               email: 'amin@email.com',
@@ -93,6 +92,30 @@ export const Complete = Template.bind({})
 Complete.args = {
   templates: true,
   title: 'Journeys'
+}
+
+export const WithBadge = Template.bind({})
+WithBadge.args = {
+  templates: false,
+  title: 'Active Journeys',
+  result: {
+    data: {
+      journeys: [
+        {
+          id: 'journey.id',
+          userJourneys: [
+            {
+              id: 'journey.userJourney1.id',
+              role: UserJourneyRole.editor,
+              user: {
+                id: 'user.id'
+              }
+            }
+          ]
+        }
+      ]
+    }
+  }
 }
 
 export default NavigationDrawerStory as Meta

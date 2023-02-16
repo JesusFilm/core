@@ -4,15 +4,6 @@ import { journeysAdminConfig } from '../../../../libs/storybook'
 import { NavigationListItemProps } from './NavigationListItem'
 import { NavigationListItem } from '.'
 
-// jest.mock('react-i18next', () => ({
-//   __esModule: true,
-//   useTranslation: () => {
-//     return {
-//       t: (str: string) => str
-//     }
-//   }
-// }))
-
 const NavigationListItemStory = {
   ...journeysAdminConfig,
   component: NavigationListItem,
@@ -35,6 +26,13 @@ Selected.args = {
   icon: <ExploreRoundedIcon />,
   label: 'Discover',
   selected: true
+}
+
+export const WithBadge = Template.bind({})
+WithBadge.args = {
+  icon: <ExploreRoundedIcon />,
+  label: 'Discover',
+  tooltipText: 'tool tip text'
 }
 
 export default NavigationListItemStory as Meta
