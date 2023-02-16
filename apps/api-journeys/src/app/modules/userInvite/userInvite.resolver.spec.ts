@@ -150,12 +150,6 @@ describe('UserInviteResolver', () => {
     firstName: 'Test'
   }
 
-  const user2 = {
-    id: 'existingUserId',
-    email: 'existing@email.com',
-    firstName: 'Test'
-  }
-
   beforeAll(() => {
     jest.useFakeTimers('modern')
     jest.setSystemTime(new Date('2021-02-18'))
