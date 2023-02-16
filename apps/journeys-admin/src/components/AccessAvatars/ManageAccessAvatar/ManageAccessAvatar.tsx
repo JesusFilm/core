@@ -23,7 +23,10 @@ export function ManageAccessAvatar({
           ml: -2,
           width: diameter,
           height: diameter,
-          boxSizing: 'content-box'
+          boxSizing: 'content-box',
+          '&:hover': {
+            backgroundColor: 'divider'
+          }
         }}
       >
         <GroupAddRoundedIcon
