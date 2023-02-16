@@ -5,6 +5,7 @@ import Box from '@mui/material/Box'
 import Badge from '@mui/material/Badge'
 import { noop } from 'lodash'
 import Skeleton from '@mui/material/Skeleton'
+import { styled } from '@mui/material/styles'
 import { AccessDialog } from '../AccessDialog'
 import { GetJourneys_journeys_userJourneys as UserJourney } from '../../../__generated__/GetJourneys'
 import { Avatar } from '../Avatar'
@@ -19,6 +20,14 @@ export interface AccessAvatarsProps {
   smMax?: number
   showManageButton?: boolean
 }
+
+const StyledBadge = styled(Badge)(({ theme }) => ({
+  '> .MuiBadge-badge': {
+    top: '14%',
+    right: '3%',
+    boxShadow: `0 0 0 2px ${theme.palette.background.paper}`
+  }
+}))
 
 export function AccessAvatars({
   journeyId,
@@ -132,19 +141,11 @@ const withRenderLogic = ({
         }}
         role="button"
       >
-        <Badge
+        <StyledBadge
           color="warning"
           variant="dot"
           invisible={invisible}
           aria-label="overflow-notification-badge"
-          sx={{
-            '& .MuiBadge-badge': {
-              top: '15%',
-              right: '5%',
-              boxShadow: (theme) =>
-                `0 0 0 2px ${theme.palette.background.paper}`
-            }
-          }}
         >
           <AvatarGroup
             max={max}
@@ -168,7 +169,7 @@ const withRenderLogic = ({
           {showManageButton && (
             <ManageAccessAvatar diameter={diameter} fontSize={size} />
           )}
-        </Badge>
+        </StyledBadge>
       </Box>
     )
   }

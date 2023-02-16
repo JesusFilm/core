@@ -2,7 +2,6 @@ import { ReactElement } from 'react'
 import MuiAvatar from '@mui/material/Avatar'
 import Badge from '@mui/material/Badge'
 import Tooltip from '@mui/material/Tooltip'
-import { styled } from '@mui/material/styles'
 import { compact } from 'lodash'
 import { GetJourneys_journeys_userJourneys_user as User } from '../../../__generated__/GetJourneys'
 
@@ -10,9 +9,6 @@ export interface AvatarProps {
   user: User
   notification?: boolean
 }
-const StyledBadge = styled(Badge)(({ theme }) => ({
-  '& .MuiBadge-badge': {}
-}))
 
 export function Avatar({
   user,
@@ -22,16 +18,14 @@ export function Avatar({
 
   return (
     <Tooltip title={displayName}>
-      <StyledBadge
-        anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+      <Badge
         invisible={!notification}
         color="warning"
         variant="dot"
+        overlap="circular"
         aria-label="notification-badge"
         sx={{
-          '& .MuiBadge-badge': {
-            top: '15%',
-            right: '12%',
+          '> .MuiBadge-badge': {
             boxShadow: (theme) => `0 0 0 2px ${theme.palette.background.paper}`
           }
         }}
@@ -47,7 +41,7 @@ export function Avatar({
         >
           {displayName.charAt(0)?.toUpperCase()}
         </MuiAvatar>
-      </StyledBadge>
+      </Badge>
     </Tooltip>
   )
 }
