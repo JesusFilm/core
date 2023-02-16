@@ -27,6 +27,7 @@ interface ImageLibraryProps {
   onDelete?: () => Promise<void>
   selectedBlock: ImageBlock | null
   loading?: boolean
+  noSource?: boolean
 }
 
 export function ImageLibrary({
@@ -35,7 +36,8 @@ export function ImageLibrary({
   onChange,
   onDelete,
   selectedBlock,
-  loading
+  loading,
+  noSource = false
 }: ImageLibraryProps): ReactElement {
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
   const [tabValue, setTabValue] = useState(0)
@@ -97,7 +99,7 @@ export function ImageLibrary({
             sx={{ display: 'inline-flex' }}
             edge="end"
           >
-            <Close />
+            <Close sx={{ display: noSource ? 'none' : 'block' }} />
           </IconButton>
         </Toolbar>
       </AppBar>

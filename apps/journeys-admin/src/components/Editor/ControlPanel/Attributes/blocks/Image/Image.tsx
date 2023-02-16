@@ -15,7 +15,7 @@ export function Image(block: TreeBlock<ImageBlock>): ReactElement {
     dispatch({
       type: 'SetDrawerPropsAction',
       title: 'Image',
-      children: <ImageOptions />
+      children: <ImageOptions noSource />
     })
 
   useEffect(() => {
@@ -26,7 +26,7 @@ export function Image(block: TreeBlock<ImageBlock>): ReactElement {
     dispatch({
       type: 'SetDrawerPropsAction',
       title: 'Image',
-      children: <ImageOptions />
+      children: <ImageOptions noSource />
     })
   }, [dispatch, id])
 

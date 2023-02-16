@@ -11,15 +11,17 @@ interface ImageBlockEditorProps {
   onChange: (block: ImageBlock) => Promise<void>
   onDelete?: () => Promise<void>
   loading?: boolean
+  noSource?: boolean
 }
 
 export function ImageBlockEditor({
   selectedBlock,
   onChange,
   onDelete,
-  loading
+  loading,
+  noSource = false
 }: ImageBlockEditorProps): ReactElement {
-  const [open, setOpen] = useState(false)
+  const [open, setOpen] = useState(noSource)
 
   const handleImageDelete = async (): Promise<void> => {
     if (onDelete != null) {
@@ -29,27 +31,29 @@ export function ImageBlockEditor({
 
   return (
     <>
-      <Card
-        variant="outlined"
-        sx={{
-          width: 285,
-          height: 78,
-          borderRadius: 2
-        }}
-      >
-        <CardActionArea
-          data-testid="card click area"
-          onClick={() => setOpen(true)}
+      {!noSource && (
+        <Card
+          variant="outlined"
           sx={{
-            height: '100%',
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-            display: 'flex'
+            width: 285,
+            height: 78,
+            borderRadius: 2
           }}
         >
-          <ImageBlockHeader selectedBlock={null} showAdd />
-        </CardActionArea>
-      </Card>
+          <CardActionArea
+            data-testid="card click area"
+            onClick={() => setOpen(true)}
+            sx={{
+              height: '100%',
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+              display: 'flex'
+            }}
+          >
+            <ImageBlockHeader selectedBlock={null} showAdd />
+          </CardActionArea>
+        </Card>
+      )}
       <ImageLibrary
         open={open}
         onClose={() => setOpen(false)}
@@ -57,6 +61,7 @@ export function ImageBlockEditor({
         onDelete={handleImageDelete}
         selectedBlock={selectedBlock}
         loading={loading}
+        noSource={noSource}
       />
     </>
   )

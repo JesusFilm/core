@@ -27,7 +27,13 @@ export const IMAGE_BLOCK_UPDATE = gql`
   }
 `
 
-export function ImageOptions(): ReactElement {
+interface ImageOptionsProps {
+  noSource?: boolean
+}
+
+export function ImageOptions({
+  noSource = false
+}: ImageOptionsProps): ReactElement {
   const {
     state: { selectedBlock }
   } = useEditor()
@@ -70,6 +76,7 @@ export function ImageOptions(): ReactElement {
         selectedBlock={imageBlock}
         onChange={updateImageBlock}
         loading={loading}
+        noSource={noSource}
       />
     </Box>
   )
