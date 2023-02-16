@@ -109,10 +109,7 @@ export class UserJourneyResolver {
     if (userJourney == null)
       throw new UserInputError('userJourney does not exist')
 
-    if (
-      userJourney.role !== UserJourneyRole.inviteRequested ||
-      userJourney.userId !== userId
-    ) {
+    if (userJourney.role !== UserJourneyRole.inviteRequested) {
       await this.checkOwnership(userJourney.journeyId, userId)
     }
 

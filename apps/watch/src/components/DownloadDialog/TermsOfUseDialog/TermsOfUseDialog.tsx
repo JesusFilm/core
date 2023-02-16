@@ -2,31 +2,26 @@ import { ComponentProps, ReactElement } from 'react'
 import Typography from '@mui/material/Typography'
 import { Dialog } from '@core/shared/ui/Dialog'
 
-interface TermsOfUseModalProps
+interface TermsOfUseDialogProps
   extends Pick<ComponentProps<typeof Dialog>, 'open' | 'onClose'> {
   onSubmit: () => void
 }
 
-export function TermsOfUseModal({
+export function TermsOfUseDialog({
   open,
   onClose,
   onSubmit
-}: TermsOfUseModalProps): ReactElement {
+}: TermsOfUseDialogProps): ReactElement {
   return (
     <Dialog
       open={open}
-      onClose={() => {
-        onClose()
-      }}
+      onClose={onClose}
       dialogTitle={{
         title: 'Terms of Use',
         closeButton: true
       }}
       dialogAction={{
-        onSubmit: () => {
-          onSubmit()
-          onClose()
-        },
+        onSubmit,
         submitLabel: 'Accept',
         closeLabel: 'Cancel'
       }}

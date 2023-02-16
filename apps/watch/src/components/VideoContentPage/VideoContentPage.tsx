@@ -30,7 +30,9 @@ export function VideoContentPage(): ReactElement {
     container,
     childrenCount
   } = useVideo()
-  const { loading, children } = useVideoChildren(container?.id ?? id)
+  const { loading, children } = useVideoChildren(
+    container?.variant?.slug ?? variant?.slug
+  )
   const [hasPlayed, setHasPlayed] = useState(false)
   const [openShare, setOpenShare] = useState(false)
   const [openDownload, setOpenDownload] = useState(false)

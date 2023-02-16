@@ -2,18 +2,16 @@ import { render } from '@testing-library/react'
 import { FooterLogos } from './FooterLogos'
 
 describe('FooterLogos', () => {
-  it('should have the terms and conditions link', () => {
+  it('should have the jesus film logo link', () => {
     const { getByAltText } = render(<FooterLogos />)
-    expect(getByAltText('Jesus Film logo').closest('a')).toHaveAttribute(
-      'href',
-      'https://www.jesusfilm.org'
-    )
+    const el = getByAltText('Jesus Film logo').closest('a')
+    expect(el).toHaveAttribute('href', 'https://www.jesusfilm.org')
+    expect(el).not.toHaveAttribute('target')
   })
-  it('should have the privacy policy link', () => {
+  it('should have the cru logo link', () => {
     const { getByAltText } = render(<FooterLogos />)
-    expect(getByAltText('Cru logo').closest('a')).toHaveAttribute(
-      'href',
-      'https://www.cru.org/'
-    )
+    const el = getByAltText('Cru logo').closest('a')
+    expect(el).toHaveAttribute('href', 'https://www.cru.org')
+    expect(el).toHaveAttribute('target', '_blank')
   })
 })
