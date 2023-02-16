@@ -81,7 +81,7 @@ export function AccessDenied({
             />
             <Divider
               sx={{
-                height: '2px',
+                height: requestedAccess ? '1px' : '2px',
                 bgcolor: requestedAccess ? 'divider' : 'primary.main'
               }}
             />
@@ -93,7 +93,7 @@ export function AccessDenied({
             />
             <Divider
               sx={{
-                height: '2px',
+                height: requestedAccess ? '2px' : '1px',
                 bgcolor: requestedAccess ? 'primary.main' : 'divider'
               }}
             />
