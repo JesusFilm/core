@@ -4,6 +4,7 @@ import { Dialog } from '@core/shared/ui/Dialog'
 import { LanguageAutocomplete } from '@core/shared/ui/LanguageAutocomplete'
 import { Formik, Form, FormikValues } from 'formik'
 import TextField from '@mui/material/TextField'
+import CircularProgress from '@mui/material/CircularProgress'
 import LanguageIcon from '@mui/icons-material/Language'
 import { useRouter } from 'next/router'
 import { compact } from 'lodash'
@@ -37,7 +38,7 @@ export function AudioLanguageDialog({
   const { id, variant, variantLanguagesCount, container } = useVideo()
   const router = useRouter()
 
-  const { data } = useQuery<GetLanguagesSlug>(GET_LANGUAGES_SLUG, {
+  const { loading, data } = useQuery<GetLanguagesSlug>(GET_LANGUAGES_SLUG, {
     variables: {
       id
     }
@@ -114,7 +115,8 @@ export function AudioLanguageDialog({
               onClose={handleClose(resetForm)}
               dialogTitle={{
                 icon: <LanguageIcon sx={{ mr: 3 }} />,
-                title: 'Language'
+                title: 'Language',
+                closeButton: true
               }}
               divider
             >
@@ -126,7 +128,7 @@ export function AudioLanguageDialog({
                   }}
                   value={values.language}
                   languages={languages}
-                  loading={languages == null}
+                  loading={loading}
                   renderInput={(params) => (
                     <TextField
                       {...params}
@@ -140,6 +142,17 @@ export function AudioLanguageDialog({
                         '> .MuiOutlinedInput-root': {
                           borderRadius: 2
                         }
+                      }}
+                      InputProps={{
+                        ...params.InputProps,
+                        endAdornment: (
+                          <>
+                            {loading ? (
+                              <CircularProgress color="inherit" size={20} />
+                            ) : null}
+                            {params.InputProps.endAdornment}
+                          </>
+                        )
                       }}
                     />
                   )}

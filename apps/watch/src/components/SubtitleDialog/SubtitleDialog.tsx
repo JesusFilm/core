@@ -1,6 +1,7 @@
 import { ReactElement, ComponentProps, useState } from 'react'
 import { Dialog } from '@core/shared/ui/Dialog'
 import TextField from '@mui/material/TextField'
+import CircularProgress from '@mui/material/CircularProgress'
 import SubtitlesOutlined from '@mui/icons-material/SubtitlesOutlined'
 import {
   Language,
@@ -46,7 +47,7 @@ export function SubtitleDialog({
   const { variant } = useVideo()
   const [selected, setSelected] = useState<Language | undefined>(undefined)
 
-  const { data } = useQuery<GetSubtitles>(GET_SUBTITLES, {
+  const { loading, data } = useQuery<GetSubtitles>(GET_SUBTITLES, {
     variables: {
       id: variant?.slug
     }
@@ -129,6 +130,17 @@ export function SubtitleDialog({
                 '> .MuiOutlinedInput-root': {
                   borderRadius: 2
                 }
+              }}
+              InputProps={{
+                ...params.InputProps,
+                endAdornment: (
+                  <>
+                    {loading ? (
+                      <CircularProgress color="inherit" size={20} />
+                    ) : null}
+                    {params.InputProps.endAdornment}
+                  </>
+                )
               }}
             />
           )}
