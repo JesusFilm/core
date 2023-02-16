@@ -82,9 +82,6 @@ describe('VideoHeroOverlay', () => {
     expect(getByText('The Story of Jesus for Children')).toBeInTheDocument()
     expect(getByText('61 min')).toBeInTheDocument()
     expect(getByRole('button', { name: 'Play Video' })).toBeInTheDocument()
-    expect(getByTestId('VolumeOffOutlinedIcon').parentElement).toHaveClass(
-      'MuiIconButton-root'
-    )
   })
 
   it('should play video on the Play Video button click', () => {
@@ -99,21 +96,6 @@ describe('VideoHeroOverlay', () => {
       </MockedProvider>
     )
     fireEvent.click(getByRole('button', { name: 'Play Video' }))
-    expect(handlePlay).toHaveBeenCalled()
-  })
-
-  it('should play video on the Mute Icon click', () => {
-    const handlePlay = jest.fn()
-    const { getByTestId } = render(
-      <MockedProvider>
-        <SnackbarProvider>
-          <VideoProvider value={{ content: video }}>
-            <VideoHeroOverlay handlePlay={handlePlay} />
-          </VideoProvider>
-        </SnackbarProvider>
-      </MockedProvider>
-    )
-    fireEvent.click(getByTestId('VolumeOffOutlinedIcon'))
     expect(handlePlay).toHaveBeenCalled()
   })
 })
