@@ -1,7 +1,6 @@
 import { ReactElement, useState } from 'react'
 import Typography from '@mui/material/Typography'
 import Checkbox from '@mui/material/Checkbox'
-import Fab from '@mui/material/Fab'
 import Stack from '@mui/material/Stack'
 import List from '@mui/material/List'
 import NewReleasesRoundedIcon from '@mui/icons-material/NewReleasesRounded'
@@ -16,6 +15,7 @@ import Link from '@mui/material/Link'
 import { useRouter } from 'next/router'
 import ListItemIcon from '@mui/material/ListItemIcon'
 import ListItemText from '@mui/material/ListItemText'
+import Button from '@mui/material/Button'
 import taskbarIcon from '../../../public/taskbar-icon.svg'
 import { JourneyProfileCreate } from '../../../__generated__/JourneyProfileCreate'
 import { TermsListItem } from './TermsListItem'
@@ -102,9 +102,8 @@ export function TermsAndConditions(): ReactElement {
             />
           </ListItem>
         </List>
-        <Fab
-          variant="extended"
-          size="large"
+        <Button
+          variant="contained"
           disabled={!accepted}
           onClick={handleJourneyProfileCreate}
           sx={{
@@ -112,15 +111,16 @@ export function TermsAndConditions(): ReactElement {
             width: '100%',
             borderRadius: '12px',
             bgcolor: 'secondary.dark',
+            py: 3.25,
             color: 'secondary.contrastText',
             '&:hover': {
               bgcolor: 'secondary.dark'
             }
           }}
+          endIcon={<ArrowForwardIcon />}
         >
-          <ArrowForwardIcon />
           Next
-        </Fab>
+        </Button>
       </Stack>
       <Link
         variant="body2"
