@@ -271,13 +271,13 @@ describe('UserInviteResolver', () => {
     it('should accept unredeemed valid user invites', async () => {
       const invites = await resolver.userInviteAcceptAll(user)
 
-      expect(ujService.requestAccess).toHaveBeenCalledTimes(2)
+      expect(ujService.requestAccess).toHaveBeenCalledTimes(1)
       expect(ujService.requestAccess).toHaveBeenCalledWith(
         'journeyId',
         'databaseId',
         'userId'
       )
-      expect(ujService.approveAccess).toHaveBeenCalledTimes(2)
+      expect(ujService.approveAccess).toHaveBeenCalledTimes(1)
       expect(ujService.approveAccess).toHaveBeenCalledWith(
         'userJourneyId',
         'senderId'
@@ -287,29 +287,10 @@ describe('UserInviteResolver', () => {
         ...userInvite,
         acceptedAt: '2021-02-18T00:00:00.000Z'
       })
-      // accepted invites with no userJourney, updated to todays date
-      expect(await invites[1]).toEqual({
-        ...acceptedInvite,
-        acceptedAt: '2021-02-18T00:00:00.000Z'
-      })
+      // accepted invites unchanged
+      expect(await invites[1]).toEqual(acceptedInvite)
       // Expired invites unchanged
       expect(await invites[2]).toEqual(removedInvite)
-    })
-
-    it('should remove userInvites which already have userJourneys', async () => {
-      const invites = await resolver.userInviteAcceptAll(user2)
-
-      expect(ujService.requestAccess).toHaveBeenCalledTimes(1)
-      expect(ujService.requestAccess).toHaveBeenCalledWith(
-        outdatedAcceptedInvite.journeyId,
-        'databaseId',
-        user2.id
-      )
-
-      expect(await invites[0]).toEqual({
-        ...outdatedAcceptedInvite,
-        removedAt: '2021-02-18T00:00:00.000Z'
-      })
     })
 
     it('should show no invites if email does not match', async () => {
