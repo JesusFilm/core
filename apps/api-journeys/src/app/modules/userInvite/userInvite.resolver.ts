@@ -102,7 +102,7 @@ export class UserInviteResolver {
     userId: string
   ): Promise<UserInvite> {
     // Create userJourney for new invites
-    if ((userInvite.acceptedAt == null && userInvite.removedAt) == null) {
+    if (userInvite.acceptedAt == null && userInvite.removedAt == null) {
       const userJourney = await this.userJourneyService.requestAccess(
         userInvite.journeyId,
         IdType.databaseId,
