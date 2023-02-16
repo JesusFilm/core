@@ -43,6 +43,7 @@ describe('useJourneys', () => {
                 __typename: 'UserJourney',
                 id: 'user-journey-id',
                 role: UserJourneyRole.owner,
+                openedAt: null,
                 user: {
                   __typename: 'User',
                   id: 'user-id1',
