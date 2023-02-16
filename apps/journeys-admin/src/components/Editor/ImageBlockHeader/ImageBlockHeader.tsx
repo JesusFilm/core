@@ -29,7 +29,7 @@ export function ImageBlockHeader({
       alignItems="center"
       sx={{
         height: 78,
-        width: 285
+        width: '100%'
       }}
     >
       <Stack direction="row" alignItems="center">
