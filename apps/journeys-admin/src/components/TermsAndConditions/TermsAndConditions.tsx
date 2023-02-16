@@ -50,7 +50,7 @@ export function TermsAndConditions(): ReactElement {
       sx={{ height: '100vh', minHeight: '600px' }}
     >
       <Box sx={{ flexShrink: 0 }}>
-        <Image src={taskbarIcon} alt="Next Steps" height={68} width={152} />
+        <Image src={taskbarIcon} alt="Next Steps" height={43} width={43} />
       </Box>
       <Stack
         alignItems="center"
