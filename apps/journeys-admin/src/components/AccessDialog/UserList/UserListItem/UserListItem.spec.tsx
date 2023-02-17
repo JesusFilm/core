@@ -98,9 +98,7 @@ describe('UserListItem', () => {
   })
 
   // TODO: Update avatar display tests once StatusIndicators PR merged
-  it('should display invited user avatar', () => {
-    // expect(getByRole('img').getAttribute('alt')).toBe(userInvite.email)
-  })
+  // it('should display invited user avatar', () => {})
 
   describe('owner permissions', () => {
     it('should not allow owners to edit their own access', () => {
