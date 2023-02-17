@@ -5,11 +5,12 @@ import type { TreeBlock } from '@core/journeys/ui/block'
 import { gql, useMutation } from '@apollo/client'
 import Box from '@mui/material/Box'
 import { useSnackbar } from 'notistack'
+import { object, string } from 'yup'
 import { GetJourney_journey_blocks_ImageBlock as ImageBlock } from '../../../../../../../../__generated__/GetJourney'
-import { ImageSource } from '../../../../../ImageSource'
 import { ImageBlockUpdate } from '../../../../../../../../__generated__/ImageBlockUpdate'
 import { blockDeleteUpdate } from '../../../../../../../libs/blockDeleteUpdate/blockDeleteUpdate'
 import { ImageBlockDelete } from '../../../../../../../../__generated__/ImageBlockDelete'
+import { ImageBlockEditor } from '../../../../../ImageBlockEditor'
 
 export const IMAGE_BLOCK_UPDATE = gql`
   mutation ImageBlockUpdate(
@@ -57,6 +58,10 @@ export function ImageOptions({
 
   const [blockDelete] = useMutation<ImageBlockDelete>(IMAGE_BLOCK_DELETE)
 
+  const srcSchema = object().shape({
+    src: string().url('Please enter a valid url').required('Required')
+  })
+
   const handleImageDelete = async (): Promise<void> => {
     try {
       await deleteCoverBlock()
@@ -87,8 +92,16 @@ export function ImageOptions({
     })
   }
 
-  const updateImageBlock = async (block: ImageBlock): Promise<void> => {
+  const updateImageBlock = async (src: string): Promise<void> => {
     if (journey == null) return
+
+    if (!(await srcSchema.isValid({ src }))) return
+
+    const block = {
+      ...selectedBlock,
+      src,
+      alt: src.replace(/(.*\/)*/, '').replace(/\?.*/, '') // per Vlad 26/1/22, we are hardcoding the image alt for now
+    }
 
     try {
       await imageBlockUpdate({
@@ -115,10 +128,9 @@ export function ImageOptions({
 
   return (
     <Box sx={{ pt: 4, pb: 3, px: 6 }}>
-      <ImageSource
-        selectedBlock={imageBlock}
+      <ImageBlockEditor
         onChange={updateImageBlock}
-        onDelete={handleImageDelete}
+        selectedBlock={selectedBlock}
         loading={loading}
         noSource={noSource}
       />
