@@ -3,7 +3,6 @@ import { AuthUser } from 'next-firebase-auth'
 import { MockedProvider } from '@apollo/client/testing'
 import { SnackbarProvider } from 'notistack'
 import { SortOrder } from '../../JourneySort'
-import { sortJourneys } from '../../JourneySort/utils/sortJourneys'
 import { ThemeProvider } from '../../../ThemeProvider'
 import {
   defaultJourney,
