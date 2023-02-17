@@ -90,7 +90,10 @@ export function ImageEdit(): ReactElement {
           journeyId: journey?.id,
           parentBlockId: journey?.id,
           src: imageBlock.src,
-          alt: imageBlock.alt
+          alt: imageBlock.alt,
+          blurhash: imageBlock.blurhash,
+          width: imageBlock.width,
+          height: imageBlock.height
         }
       },
       update(cache, { data }) {
@@ -134,7 +137,10 @@ export function ImageEdit(): ReactElement {
         journeyId: journey?.id,
         input: {
           src: imageBlock.src,
-          alt: imageBlock.alt
+          alt: imageBlock.alt,
+          blurhash: imageBlock.blurhash,
+          width: imageBlock.width,
+          height: imageBlock.height
         }
       }
     })
