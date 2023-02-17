@@ -1,26 +1,18 @@
-import { ReactElement, MouseEvent, useEffect, useState } from 'react'
-import Button from '@mui/material/Button'
-import Menu from '@mui/material/Menu'
-import DraftsIcon from '@mui/icons-material/Drafts'
-import LinkIcon from '@mui/icons-material/Link'
-import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
-import GroupAddIcon from '@mui/icons-material/GroupAdd'
+import { ReactElement, useEffect, useMemo } from 'react'
 import { gql, useLazyQuery } from '@apollo/client'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { Theme } from '@mui/material/styles'
-import { CopyTextField } from '@core/shared/ui/CopyTextField'
 import { Dialog } from '@core/shared/ui/Dialog'
-import MenuItem from '@mui/material/MenuItem'
-import Typography from '@mui/material/Typography'
 import Stack from '@mui/material/Stack'
 import {
   GetJourneyWithUserJourneys,
   GetJourneyWithUserJourneys_journey_userJourneys as UserJourney
 } from '../../../__generated__/GetJourneyWithUserJourneys'
 import { UserJourneyRole } from '../../../__generated__/globalTypes'
+import { GetUserInvites } from '../../../__generated__/GetUserInvites'
 import { useCurrentUser } from '../../libs/useCurrentUser'
-import { EmailInviteForm } from './AddUserSection/EmailInviteForm'
 import { UserList } from './UserList'
+import { AddUserSection } from './AddUserSection'
 
 export const GET_JOURNEY_WITH_USER_JOURNEYS = gql`
   query GetJourneyWithUserJourneys($id: ID!) {
@@ -40,6 +32,19 @@ export const GET_JOURNEY_WITH_USER_JOURNEYS = gql`
     }
   }
 `
+
+export const GET_USER_INVITES = gql`
+  query GetUserInvites($journeyId: ID!) {
+    userInvites(journeyId: $journeyId) {
+      id
+      journeyId
+      email
+      acceptedAt
+      removedAt
+    }
+  }
+`
+
 interface AccessDialogProps {
   journeyId: string
   open?: boolean
@@ -51,151 +56,84 @@ export function AccessDialog({
   open,
   onClose
 }: AccessDialogProps): ReactElement {
-  const [selectedInviteMethod, setSelectedInviteMethod] = useState('Email')
-  const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
-  const menuOpen = Boolean(anchorEl)
-
-  const handleClick = (event: MouseEvent<HTMLElement>): void => {
-    setAnchorEl(event.currentTarget)
-  }
-  const handleMenuItemClick = (
-    event: MouseEvent<HTMLElement>,
-    name: string
-  ): void => {
-    setAnchorEl(null)
-    setSelectedInviteMethod(name)
-  }
-  const handleClose = (event: MouseEvent<HTMLElement>): void => {
-    setAnchorEl(null)
-  }
-
-  const [loadJourney, { loading, data }] =
+  const [, { loading, data, refetch }] =
     useLazyQuery<GetJourneyWithUserJourneys>(GET_JOURNEY_WITH_USER_JOURNEYS, {
       variables: { id: journeyId }
     })
-  const { loadUser, data: currentUserData } = useCurrentUser()
+
+  const [, { data: userInviteData, refetch: refetchInvites }] =
+    useLazyQuery<GetUserInvites>(GET_USER_INVITES, {
+      variables: { journeyId }
+    })
+
+  const { loadUser, data: authUser } = useCurrentUser()
 
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
-  const disable =
-    data?.journey?.userJourneys?.find(
-      (userJourney) => userJourney.user?.email === currentUserData.email
-    )?.role !== UserJourneyRole.owner
 
-  const usersList: UserJourney[] = []
-  const requestsList: UserJourney[] = []
+  const currentUser = useMemo(() => {
+    return data?.journey?.userJourneys?.find(
+      (userJourney) => userJourney.user?.email === authUser.email
+    )
+  }, [data?.journey?.userJourneys, authUser])
 
-  data?.journey?.userJourneys?.forEach((userJourney) => {
-    if (userJourney.role === UserJourneyRole.inviteRequested) {
-      requestsList.push(userJourney)
-    } else {
-      usersList.push(userJourney)
-    }
-  })
+  const { users, requests, invites, emails } = useMemo(() => {
+    const users: UserJourney[] = []
+    const requests: UserJourney[] = []
+    const emails: string[] = []
+
+    data?.journey?.userJourneys?.forEach((userJourney) => {
+      if (userJourney.role === UserJourneyRole.inviteRequested) {
+        requests.push(userJourney)
+      } else {
+        users.push(userJourney)
+      }
+      if (userJourney.user != null) emails.push(userJourney.user.email)
+    })
+
+    const invites =
+      userInviteData?.userInvites != null ? userInviteData.userInvites : []
+
+    invites.forEach((invite) => {
+      if (invite.removedAt == null && invite.acceptedAt == null) {
+        emails.push(invite.email)
+      }
+    })
+
+    return { users, requests, invites, emails }
+  }, [data, userInviteData])
 
   useEffect(() => {
     if (open === true) {
-      void loadJourney()
+      void refetch()
+      void refetchInvites()
       void loadUser()
     }
-  }, [open, loadJourney, loadUser])
+  }, [open, refetch, refetchInvites, loadUser])
 
   return (
     <Dialog
       open={open ?? false}
       onClose={onClose}
       dialogTitle={{
-        title: 'Invite Other Editors',
+        title: 'Manage Editors',
         closeButton: true
       }}
-      divider
+      dialogActionChildren={<AddUserSection users={emails} />}
       fullscreen={!smUp}
     >
       <Stack spacing={4}>
         <UserList
-          title="Requested Editing Rights"
-          userJourneys={requestsList}
-          disable={disable}
+          title="Requested Access"
+          users={requests}
+          currentUser={currentUser}
         />
         <UserList
-          title="Users With Access"
+          title="Editors"
           loading={loading}
-          userJourneys={usersList}
-          disable={disable}
+          users={users}
+          invites={invites}
+          currentUser={currentUser}
         />
-        <Stack
-          direction="row"
-          alignItems="center"
-          sx={{
-            mb: 4,
-            mt: 5
-          }}
-        >
-          <GroupAddIcon />
-          <Typography
-            variant="subtitle1"
-            sx={{
-              marginLeft: 3
-            }}
-          >
-            Add new using
-          </Typography>
-          <Button
-            variant="outlined"
-            size="small"
-            startIcon={
-              selectedInviteMethod === 'Email' ? <DraftsIcon /> : <LinkIcon />
-            }
-            endIcon={<KeyboardArrowDownIcon />}
-            aria-controls={menuOpen ? 'menu' : undefined}
-            sx={{
-              borderRadius: '16px',
-              width: '124px',
-              height: '32px',
-              color: 'secondary.dark',
-              borderWidth: '1px',
-              borderColor: 'divider',
-              padding: 1,
-              marginLeft: 3,
-              '&:hover': {
-                borderColor: 'divider'
-              }
-            }}
-            onClick={handleClick}
-          >
-            <Typography variant="body2">{selectedInviteMethod}</Typography>
-          </Button>
-          <Menu
-            id="menu"
-            anchorEl={anchorEl}
-            open={menuOpen}
-            onClose={handleClose}
-          >
-            <MenuItem onClick={(e) => handleMenuItemClick(e, 'Email')}>
-              Email
-            </MenuItem>
-            <MenuItem onClick={(e) => handleMenuItemClick(e, 'Link')}>
-              Link
-            </MenuItem>
-          </Menu>
-        </Stack>
-
-        {selectedInviteMethod === 'Email' ? (
-          <EmailInviteForm />
-        ) : (
-          <CopyTextField
-            value={
-              typeof window !== 'undefined'
-                ? `${
-                    window.location.host.endsWith('.chromatic.com')
-                      ? 'https://admin.nextstep.is'
-                      : window.location.origin
-                  }/journeys/${journeyId}`
-                : undefined
-            }
-            messageText="Editor invite link copied"
-            helperText="Approval required for every user who clicks on the link."
-          />
-        )}
       </Stack>
     </Dialog>
   )

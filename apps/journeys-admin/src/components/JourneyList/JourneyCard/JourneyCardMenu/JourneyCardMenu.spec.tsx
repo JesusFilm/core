@@ -91,10 +91,10 @@ describe('JourneyCardMenu', () => {
     fireEvent.click(getByRole('button'))
     fireEvent.click(getByRole('menuitem', { name: 'Access' }))
 
-    expect(queryByText('Invite Other Editors')).toBeInTheDocument()
+    expect(queryByText('Manage Editors')).toBeInTheDocument()
     fireEvent.click(getByTestId('dialog-close-button'))
     await waitFor(() =>
-      expect(queryByText('Invite Other Editors')).not.toBeInTheDocument()
+      expect(queryByText('Manage Editors')).not.toBeInTheDocument()
     )
   })
 

@@ -1,16 +1,28 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import { InMemoryCache } from '@apollo/client'
 import { UserJourneyRole } from '../../../../../../__generated__/globalTypes'
-import { USER_JOURNEY_REMOVE } from './RemoveUser'
+import { GetJourney_journey as Journey } from '../../../../../../__generated__/GetJourney'
+import { GET_USER_INVITES } from '../../../AccessDialog'
+import { USER_INVITE_REMOVE, USER_JOURNEY_REMOVE } from './RemoveUser'
 import { RemoveUser } from '.'
 
 describe('RemoveUser', () => {
   it('should remove user journey', async () => {
     const handleClick = jest.fn()
+    const cache = new InMemoryCache()
+    cache.restore({
+      ROOT_QUERY: {
+        __typename: 'Query',
+        userInvites: [{ __ref: `UserInvite:userInviteId` }]
+      }
+    })
+
     const result = jest.fn(() => ({
       data: {
         userJourneyRemove: {
-          id: 'userId',
+          id: 'userJourneyId',
           role: UserJourneyRole.editor,
           journey: {
             id: 'journeyId'
@@ -18,25 +30,141 @@ describe('RemoveUser', () => {
         }
       }
     }))
+    const inviteResult = jest.fn(() => ({
+      data: {
+        userInviteRemove: {
+          __typename: 'UserInvite',
+          id: 'userInviteId',
+          journeyId: 'journeyId',
+          acceptedAt: null,
+          removedAt: 'dateTime'
+        }
+      }
+    }))
     const { getByRole } = render(
-      <MockedProvider
-        mocks={[
-          {
-            request: {
-              query: USER_JOURNEY_REMOVE,
-              variables: {
-                id: 'userId'
-              }
-            },
-            result
-          }
-        ]}
+      <JourneyProvider
+        value={{
+          journey: { id: 'journeyId' } as unknown as Journey,
+          admin: true
+        }}
       >
-        <RemoveUser id="userId" onClick={handleClick} />
-      </MockedProvider>
+        <MockedProvider
+          cache={cache}
+          mocks={[
+            {
+              request: {
+                query: USER_JOURNEY_REMOVE,
+                variables: {
+                  id: 'userJourneyId'
+                }
+              },
+              result
+            },
+            {
+              request: {
+                query: USER_INVITE_REMOVE,
+                variables: {
+                  id: 'userInviteId',
+                  journeyId: 'journeyId'
+                }
+              },
+              result: inviteResult
+            },
+            {
+              request: {
+                query: GET_USER_INVITES,
+                variables: {
+                  journeyId: 'journeyId'
+                }
+              },
+              result: {
+                data: {
+                  userInvites: [
+                    {
+                      __typename: 'UserInvite',
+                      id: 'userInviteId',
+                      journeyId: 'journeyId',
+                      email: 'invite@email.com',
+                      acceptedAt: null,
+                      removedAt: null
+                    }
+                  ]
+                }
+              }
+            }
+          ]}
+        >
+          <RemoveUser
+            id="userJourneyId"
+            email="invite@email.com"
+            onClick={handleClick}
+          />
+        </MockedProvider>
+      </JourneyProvider>
     )
+
+    fireEvent.click(getByRole('menuitem'))
+    await waitFor(() => expect(result).toHaveBeenCalled())
+    await waitFor(() => expect(inviteResult).toHaveBeenCalled())
+    expect(handleClick).toHaveBeenCalled()
+    await waitFor(() => {
+      expect(cache.extract()?.ROOT_QUERY?.userInvites).toEqual([])
+    })
+  })
+
+  it('should remove user invite', async () => {
+    const handleClick = jest.fn()
+    const cache = new InMemoryCache()
+    cache.restore({
+      ROOT_QUERY: {
+        __typename: 'Query',
+        userInvites: [{ __ref: `UserInvite:userInviteId` }]
+      }
+    })
+
+    const result = jest.fn(() => ({
+      data: {
+        userInviteRemove: {
+          __typename: 'UserInvite',
+          id: 'userInviteId',
+          journeyId: 'journeyId',
+          acceptedAt: null,
+          removedAt: 'dateTime'
+        }
+      }
+    }))
+    const { getByRole } = render(
+      <JourneyProvider
+        value={{
+          journey: { id: 'journeyId' } as unknown as Journey,
+          admin: true
+        }}
+      >
+        <MockedProvider
+          cache={cache}
+          mocks={[
+            {
+              request: {
+                query: USER_INVITE_REMOVE,
+                variables: {
+                  id: 'userInviteId',
+                  journeyId: 'journeyId'
+                }
+              },
+              result
+            }
+          ]}
+        >
+          <RemoveUser id="userInviteId" onClick={handleClick} />
+        </MockedProvider>
+      </JourneyProvider>
+    )
+
     fireEvent.click(getByRole('menuitem'))
     await waitFor(() => expect(result).toHaveBeenCalled())
     expect(handleClick).toHaveBeenCalled()
+    await waitFor(() => {
+      expect(cache.extract()?.ROOT_QUERY?.userInvites).toEqual([])
+    })
   })
 })

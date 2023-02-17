@@ -33,7 +33,7 @@ export function PromoteUser({ id, onClick }: PromoteUserProps): ReactElement {
 
   const handleClick = async (): Promise<void> => {
     await userJourneyPromote()
-    onClick?.()
+    if (onClick != null) onClick()
   }
 
   return (

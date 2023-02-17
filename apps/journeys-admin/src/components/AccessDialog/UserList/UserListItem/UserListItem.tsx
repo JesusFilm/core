@@ -1,36 +1,91 @@
-import { ReactElement, MouseEvent, useState, useEffect } from 'react'
+import { ReactElement, MouseEvent, useState, useEffect, useMemo } from 'react'
+import { compact } from 'lodash'
 import Button from '@mui/material/Button'
 import Avatar from '@mui/material/Avatar'
 import Divider from '@mui/material/Divider'
 import Menu from '@mui/material/Menu'
+import Stack from '@mui/material/Stack'
 import ListItem from '@mui/material/ListItem'
-import { compact } from 'lodash'
 import ListItemAvatar from '@mui/material/ListItemAvatar'
 import ListItemText from '@mui/material/ListItemText'
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown'
+import { UserJourneyRole } from '../../../../../__generated__/globalTypes'
 import { GetJourneyWithUserJourneys_journey_userJourneys as UserJourney } from '../../../../../__generated__/GetJourneyWithUserJourneys'
+import { GetUserInvites_userInvites as UserInvite } from '../../../../../__generated__/GetUserInvites'
 import { RemoveUser } from './RemoveUser'
 import { ApproveUser } from './ApproveUser'
 import { PromoteUser } from './PromoteUser'
 
-interface ListItemProps {
-  userJourney: UserJourney
-  disabled: boolean
+interface UserItem {
+  id: string
+  journeyId?: string
+  role: UserJourneyRole
+  displayName?: string
+  email: string
+  imageUrl?: string
+  removedAt?: string
+  acceptedAt?: string
+}
+
+interface UserListItemProps {
+  listItem: UserJourney | UserInvite
+  currentUser: UserJourney
 }
 
 export function UserListItem({
-  userJourney,
-  disabled
-}: ListItemProps): ReactElement {
+  listItem,
+  currentUser
+}: UserListItemProps): ReactElement {
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
   const open = Boolean(anchorEl)
-  const { id, role, user } = userJourney
+  const { id, role, displayName, email, imageUrl, journeyId } =
+    useMemo((): UserItem => {
+      if (listItem.__typename === 'UserInvite') {
+        return {
+          ...listItem,
+          role: UserJourneyRole.inviteRequested
+        }
+      }
+      return {
+        id: listItem.id,
+        role: listItem.role,
+        displayName: compact([
+          listItem.user?.firstName,
+          listItem.user?.lastName
+        ]).join(' '),
+        email: listItem.user?.email ?? '',
+        imageUrl: listItem.user?.imageUrl ?? ''
+      }
+    }, [listItem])
 
-  useEffect(() => {
-    return () => {
-      setAnchorEl(null)
+  const isInvite = journeyId != null
+
+  const menuLabel = useMemo((): string => {
+    switch (role) {
+      case UserJourneyRole.inviteRequested:
+        return 'Manage'
+      case UserJourneyRole.owner:
+        return 'Owner'
+      default:
+        return 'Editor'
     }
-  }, [])
+  }, [role])
+
+  const { role: userRole } = currentUser
+
+  const disableAction = useMemo((): boolean => {
+    switch (userRole) {
+      case UserJourneyRole.owner: {
+        return role === UserJourneyRole.owner
+      }
+      case UserJourneyRole.editor: {
+        return role !== UserJourneyRole.inviteRequested
+      }
+      default: {
+        return true
+      }
+    }
+  }, [userRole, role])
 
   const handleClick = (event: MouseEvent<HTMLElement>): void => {
     setAnchorEl(event.currentTarget)
@@ -39,7 +94,11 @@ export function UserListItem({
     setAnchorEl(null)
   }
 
-  const displayName = compact([user?.firstName, user?.lastName]).join(' ')
+  useEffect(() => {
+    return () => {
+      setAnchorEl(null)
+    }
+  }, [])
 
   return (
     <>
@@ -56,26 +115,26 @@ export function UserListItem({
             aria-haspopup="true"
             aria-expanded={open ? 'true' : undefined}
             onClick={handleClick}
-            disabled={disabled || role === 'owner'}
+            disabled={disableAction}
             endIcon={<ArrowDropDownIcon />}
             sx={{
               color: 'text.primary',
               typography: 'body2'
             }}
           >
-            {role === 'inviteRequested' && 'Manage Access'}
-            {role === 'owner' && 'Owner'}
-            {role === 'editor' && 'Editor'}
+            {isInvite ? 'Pending' : menuLabel}
           </Button>
         }
       >
         <ListItemAvatar>
-          <Avatar src={user?.imageUrl ?? undefined} alt={displayName}>
-            {displayName.charAt(0)?.toUpperCase()}
+          <Avatar src={imageUrl ?? undefined} alt={displayName ?? email}>
+            {displayName != null
+              ? displayName.charAt(0)?.toUpperCase()
+              : email.charAt(0).toUpperCase()}
           </Avatar>
         </ListItemAvatar>
 
-        <ListItemText primary={displayName} secondary={user?.email} />
+        <ListItemText primary={displayName} secondary={email} />
       </ListItem>
 
       <Menu
@@ -91,13 +150,21 @@ export function UserListItem({
           horizontal: 'right'
         }}
       >
-        {role === 'inviteRequested' ? (
-          <ApproveUser id={id} onClick={handleClose} />
-        ) : (
-          <PromoteUser id={id} onClick={handleClose} />
-        )}
-        <Divider />
-        <RemoveUser id={id} onClick={handleClose} />
+        <Stack divider={<Divider />}>
+          {role === 'inviteRequested' && !isInvite && (
+            <ApproveUser id={id} email={email} onClick={handleClose} />
+          )}
+          {role === 'editor' && userRole === 'owner' && (
+            <PromoteUser id={id} onClick={handleClose} />
+          )}
+          {!disableAction && (
+            <RemoveUser
+              id={id}
+              email={isInvite ? undefined : email}
+              onClick={handleClose}
+            />
+          )}
+        </Stack>
       </Menu>
     </>
   )

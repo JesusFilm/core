@@ -1,5 +1,4 @@
-import { ReactElement } from 'react'
-import Divider from '@mui/material/Divider'
+import { ReactElement, useMemo } from 'react'
 import Box from '@mui/material/Box'
 import Skeleton from '@mui/material/Skeleton'
 import List from '@mui/material/List'
@@ -7,30 +6,45 @@ import ListItem from '@mui/material/ListItem'
 import ListItemAvatar from '@mui/material/ListItemAvatar'
 import ListItemText from '@mui/material/ListItemText'
 import Typography from '@mui/material/Typography'
+
 import { GetJourneyWithUserJourneys_journey_userJourneys as UserJourney } from '../../../../__generated__/GetJourneyWithUserJourneys'
+import { GetUserInvites_userInvites as UserInvite } from '../../../../__generated__/GetUserInvites'
+import { UserJourneyRole } from '../../../../__generated__/globalTypes'
 import { UserListItem } from './UserListItem'
 
 interface UserListProps {
   title: string
+  users: UserJourney[]
+  invites?: UserInvite[]
   loading?: boolean
-  userJourneys?: UserJourney[] | null
-  disable: boolean
+  currentUser?: UserJourney
 }
 
 export function UserList({
   title,
+  users,
+  invites = [],
   loading,
-  userJourneys,
-  disable
+  currentUser
 }: UserListProps): ReactElement {
+  const sortedUsers: UserJourney[] = useMemo(() => {
+    const ownerIndex = users.findIndex(
+      (user) => user.role === UserJourneyRole.owner
+    )
+
+    if (ownerIndex > 0) {
+      const owner = users.splice(ownerIndex, 1)
+      return [...owner, ...users]
+    }
+
+    return users
+  }, [users])
+
   return (
     <>
       {loading === true ? (
         <Box>
-          <Divider />
-          <Typography sx={{ pt: 4 }} variant="body1">
-            {title}
-          </Typography>
+          <Typography variant="subtitle1">{title}</Typography>
           <List>
             {[0, 1, 2].map((i) => (
               <ListItem key={i} sx={{ px: 0 }}>
@@ -53,21 +67,29 @@ export function UserList({
         </Box>
       ) : (
         <>
-          {userJourneys != null && userJourneys.length > 0 && (
+          {users.length > 0 && currentUser != null && (
             <Box>
-              <Divider />
-              <Typography sx={{ pt: 4 }} variant="body1">
-                {title}
-              </Typography>
+              <Typography variant="subtitle1">{title}</Typography>
 
               <List sx={{ py: 0 }}>
-                {userJourneys.map((userJourney) => (
+                {sortedUsers.map((user) => (
                   <UserListItem
-                    key={userJourney.id}
-                    userJourney={userJourney}
-                    disabled={disable}
+                    key={user.id}
+                    listItem={user}
+                    currentUser={currentUser}
                   />
                 ))}
+                {invites.map(
+                  (invite) =>
+                    invite.removedAt == null &&
+                    invite.acceptedAt == null && (
+                      <UserListItem
+                        key={invite.id}
+                        listItem={invite}
+                        currentUser={currentUser}
+                      />
+                    )
+                )}
               </List>
             </Box>
           )}
