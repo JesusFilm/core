@@ -19,6 +19,7 @@ import { TemplateLibrary } from '../../src/components/TemplateLibrary'
 import { GetUserRole } from '../../__generated__/GetUserRole'
 import { Role } from '../../__generated__/globalTypes'
 import { GET_USER_ROLE } from '../../src/components/JourneyView/JourneyView'
+import { useTermsRedirect } from '../../src/libs/useTermsRedirect/useTermsRedirect'
 
 const GET_PUBLISHED_TEMPLATES = gql`
   query GetPublishedTemplates {
@@ -76,6 +77,8 @@ function LibraryIndex(): ReactElement {
   const { data: userData } = useQuery<GetUserRole>(GET_USER_ROLE)
 
   const isPublisher = userData?.getUserRole?.roles?.includes(Role.publisher)
+
+  useTermsRedirect()
 
   return (
     <>

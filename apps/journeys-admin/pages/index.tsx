@@ -15,6 +15,7 @@ import { JourneyList } from '../src/components/JourneyList'
 import { PageWrapper } from '../src/components/PageWrapper'
 import i18nConfig from '../next-i18next.config'
 import JourneyListMenu from '../src/components/JourneyList/JourneyListMenu/JourneyListMenu'
+import { useTermsRedirect } from '../src/libs/useTermsRedirect/useTermsRedirect'
 
 function IndexPage(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
@@ -38,6 +39,7 @@ function IndexPage(): ReactElement {
       setListEvent('')
     }, 1000)
   }
+  useTermsRedirect()
 
   return (
     <>
