@@ -1,5 +1,5 @@
 import { ApolloQueryResult, OperationVariables } from '@apollo/client'
-import { ReactElement } from 'react'
+import { ReactElement, useMemo } from 'react'
 import { AuthUser } from 'next-firebase-auth'
 import {
   GetActiveJourneys,
@@ -13,7 +13,6 @@ import { JourneyCardVariant } from '../../JourneyCard/journeyCardVariant'
 
 interface Props {
   journeys: Journey[]
-  sortJourneys: typeof sortJourneys
   sortOrder?: SortOrder
   refetch: (
     variables?: Partial<OperationVariables> | undefined
@@ -24,39 +23,45 @@ interface Props {
 
 export function ActivePriorityList({
   journeys,
-  sortJourneys,
   sortOrder,
   refetch,
   duplicatedJourneyId,
   authUser
 }: Props): ReactElement {
-  const newJourneys: Journey[] = []
-  const actionRequiredJourneys: Journey[] = []
-  const activeJourneys: Journey[] = []
+  const { newJourneys, actionRequiredJourneys, activeJourneys } =
+    useMemo(() => {
+      const newJourneys: Journey[] = []
+      const actionRequiredJourneys: Journey[] = []
+      const activeJourneys: Journey[] = []
 
-  journeys.forEach((journey) => {
-    const currentUserJourney = journey.userJourneys?.find(
-      (uj) => uj.user?.id === authUser?.id
-    )
+      journeys.forEach((journey) => {
+        const currentUserJourney = journey.userJourneys?.find(
+          (uj) => uj.user?.id === authUser?.id
+        )
 
-    if (
-      currentUserJourney?.role === UserJourneyRole.owner &&
-      journey.userJourneys?.find(
-        (uj) => uj.role === UserJourneyRole.inviteRequested
-      ) != null
-    ) {
-      actionRequiredJourneys.push(journey)
-    } else if (
-      currentUserJourney != null &&
-      currentUserJourney.openedAt == null
-    ) {
-      newJourneys.push(journey)
-    } else {
-      activeJourneys.push(journey)
-    }
-  })
+        if (
+          currentUserJourney?.role === UserJourneyRole.owner &&
+          journey.userJourneys?.find(
+            (uj) => uj.role === UserJourneyRole.inviteRequested
+          ) != null
+        ) {
+          actionRequiredJourneys.push(journey)
+        } else if (
+          currentUserJourney != null &&
+          currentUserJourney.openedAt == null
+        ) {
+          newJourneys.push(journey)
+        } else {
+          activeJourneys.push(journey)
+        }
+      })
 
-  const sortedJourneys = sortJourneys(activeJourneys, sortOrder)
+      return { newJourneys, actionRequiredJourneys, activeJourneys }
+    }, [journeys, authUser])
+
+  const sortedJourneys = useMemo(() => {
+    return sortJourneys(activeJourneys, sortOrder)
+  }, [activeJourneys, sortOrder])
 
   return (
     <>

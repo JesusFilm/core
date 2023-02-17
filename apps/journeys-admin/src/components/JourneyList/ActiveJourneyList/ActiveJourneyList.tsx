@@ -13,7 +13,6 @@ import {
 import { JourneyCard } from '../JourneyCard'
 import { AddJourneyButton } from '../AddJourneyButton'
 import { SortOrder } from '../JourneySort'
-import { sortJourneys } from '../JourneySort/utils/sortJourneys'
 import { getDuplicatedJourney } from './utils/getDuplicatedJourney'
 import { ActivePriorityList } from './ActivePriorityList'
 
@@ -200,7 +199,6 @@ export function ActiveJourneyList({
         <>
           <ActivePriorityList
             journeys={journeys}
-            sortJourneys={sortJourneys}
             sortOrder={sortOrder}
             refetch={refetch}
             duplicatedJourneyId={duplicatedJourneyId}
