@@ -6,12 +6,21 @@ import { AuthUser } from 'next-firebase-auth'
 import { defaultJourney, oldJourney } from '../journeyListData'
 import { ThemeProvider } from '../../ThemeProvider'
 import { SortOrder } from '../JourneySort'
+import { GET_ACTIVE_JOURNEYS } from '../../../libs/useActiveJourneys/useActiveJourneys'
 import {
   ActiveJourneyList,
   ARCHIVE_ACTIVE_JOURNEYS,
-  GET_ACTIVE_JOURNEYS,
   TRASH_ACTIVE_JOURNEYS
 } from './ActiveJourneyList'
+
+jest.mock('react-i18next', () => ({
+  __esModule: true,
+  useTranslation: () => {
+    return {
+      t: (str: string) => str
+    }
+  }
+}))
 
 const activeJourneysMock = {
   request: {
@@ -166,7 +175,7 @@ describe('ActiveJourneyList', () => {
     })
 
     const result = jest.fn(() => ({
-      data: [{ id: defaultJourney.id, status: 'archived' }]
+      data: { journeysArchive: [{ id: defaultJourney.id, status: 'archived' }] }
     }))
     const archiveJourneysMock = {
       request: {
@@ -229,7 +238,7 @@ describe('ActiveJourneyList', () => {
 
   describe('Trash All', () => {
     const result = jest.fn(() => ({
-      data: [{ id: defaultJourney.id, status: 'archived' }]
+      data: { journeysTrash: [{ id: defaultJourney.id, status: 'archived' }] }
     }))
     const trashJourneysMock = {
       request: {
