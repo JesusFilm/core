@@ -2,7 +2,6 @@ import { ReactElement, useRef } from 'react'
 import IconButton from '@mui/material/IconButton'
 import InputAdornment from '@mui/material/InputAdornment'
 import TextField from '@mui/material/TextField'
-import LinkRoundedIcon from '@mui/icons-material/LinkRounded'
 import ContentCopyRoundedIcon from '@mui/icons-material/ContentCopyRounded'
 import { useSnackbar } from 'notistack'
 import { SxProps } from '@mui/system/styleFunctionSx'
@@ -38,26 +37,13 @@ export function CopyTextField({
   return (
     <TextField
       fullWidth
-      sx={{
-        '.MuiInputLabel-root': {
-          marginLeft: '32px'
-        },
-        '.MuiInputAdornment-root.MuiInputAdornment-positionStart': {
-          marginTop: '0 !important'
-        },
-        ...sx
-      }}
+      sx={{ ...sx }}
       hiddenLabel={label == null}
       label={label}
       inputRef={inputRef}
       disabled={value == null}
       inputProps={{ onFocus: handleFocus, value }}
       InputProps={{
-        startAdornment: (
-          <InputAdornment position="start">
-            <LinkRoundedIcon />
-          </InputAdornment>
-        ),
         endAdornment: (
           <InputAdornment position="end">
             <IconButton
