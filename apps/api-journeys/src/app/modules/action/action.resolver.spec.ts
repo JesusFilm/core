@@ -6,6 +6,7 @@ import { Action, RadioOptionBlock } from '../../__generated__/graphql'
 import { BlockResolver } from '../block/block.resolver'
 import { BlockService } from '../block/block.service'
 import { JourneyService } from '../journey/journey.service'
+import { MemberService } from '../member/member.service'
 import { UserJourneyService } from '../userJourney/userJourney.service'
 import { UserRoleService } from '../userRole/userRole.service'
 import { ActionResolver } from './action.resolver'
@@ -72,6 +73,7 @@ describe('ActionResolver', () => {
           UserJourneyService,
           UserRoleService,
           JourneyService,
+          MemberService,
           {
             provide: 'DATABASE',
             useFactory: () => mockDeep<Database>()
@@ -137,6 +139,7 @@ describe('ActionResolver', () => {
           UserJourneyService,
           UserRoleService,
           JourneyService,
+          MemberService,
           {
             provide: 'DATABASE',
             useFactory: () => mockDeep<Database>()
@@ -168,6 +171,7 @@ describe('ActionResolver', () => {
           UserJourneyService,
           UserRoleService,
           JourneyService,
+          MemberService,
           {
             provide: 'DATABASE',
             useFactory: () => mockDeep<Database>()
@@ -199,6 +203,7 @@ describe('ActionResolver', () => {
           UserJourneyService,
           UserRoleService,
           JourneyService,
+          MemberService,
           {
             provide: 'DATABASE',
             useFactory: () => mockDeep<Database>()
@@ -230,6 +235,7 @@ describe('ActionResolver', () => {
           UserJourneyService,
           UserRoleService,
           JourneyService,
+          MemberService,
           {
             provide: 'DATABASE',
             useFactory: () => mockDeep<Database>()
@@ -260,6 +266,7 @@ describe('ActionResolver', () => {
           UserJourneyService,
           UserRoleService,
           JourneyService,
+          MemberService,
           {
             provide: 'DATABASE',
             useFactory: () => mockDeep<Database>()
