@@ -76,9 +76,10 @@ export function AccessDialog({
     )
   }, [data?.journey?.userJourneys, authUser])
 
-  const { users, requests, invites } = useMemo(() => {
+  const { users, requests, invites, emails } = useMemo(() => {
     const users: UserJourney[] = []
     const requests: UserJourney[] = []
+    const emails: string[] = []
 
     data?.journey?.userJourneys?.forEach((userJourney) => {
       if (userJourney.role === UserJourneyRole.inviteRequested) {
@@ -86,26 +87,20 @@ export function AccessDialog({
       } else {
         users.push(userJourney)
       }
+      if (userJourney.user != null) emails.push(userJourney.user.email)
     })
 
     const invites =
       userInviteData?.userInvites != null ? userInviteData.userInvites : []
 
-    return { users, requests, invites }
-  }, [data, userInviteData])
+    invites.forEach((invite) => {
+      if (invite.removedAt == null && invite.acceptedAt == null) {
+        emails.push(invite.email)
+      }
+    })
 
-  const existingUsers = useMemo(() => {
-    return users
-      .concat(requests)
-      .map((user) => user.user?.email ?? '')
-      .concat(
-        invites.map((invite) =>
-          invite.removedAt == null && invite.acceptedAt == null
-            ? invite.email
-            : ''
-        )
-      )
-  }, [users, requests, invites])
+    return { users, requests, invites, emails }
+  }, [data, userInviteData])
 
   useEffect(() => {
     if (open === true) {
@@ -123,7 +118,7 @@ export function AccessDialog({
         title: 'Manage Editors',
         closeButton: true
       }}
-      dialogActionChildren={<AddUserSection users={existingUsers} />}
+      dialogActionChildren={<AddUserSection users={emails} />}
       fullscreen={!smUp}
     >
       <Stack spacing={4}>

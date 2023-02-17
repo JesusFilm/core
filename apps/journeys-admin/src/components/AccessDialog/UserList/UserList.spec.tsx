@@ -8,7 +8,7 @@ describe('UserList', () => {
   const userJourney1: UserJourney = {
     id: 'userJourney1.id',
     __typename: 'UserJourney',
-    role: UserJourneyRole.owner,
+    role: UserJourneyRole.editor,
     user: {
       __typename: 'User',
       id: 'user1.id',
@@ -22,7 +22,7 @@ describe('UserList', () => {
   const userJourney2: UserJourney = {
     id: 'userJourney2.id',
     __typename: 'UserJourney',
-    role: UserJourneyRole.editor,
+    role: UserJourneyRole.owner,
     user: {
       __typename: 'User',
       id: 'user2.id',
@@ -56,10 +56,10 @@ describe('UserList', () => {
     ).toBeInTheDocument()
     expect(getAllByRole('listitem')).toHaveLength(3)
     expect(getAllByRole('listitem')[0]).toHaveTextContent(
-      'firstName1 lastName1'
+      'firstName2 lastName2'
     )
     expect(getAllByRole('listitem')[1]).toHaveTextContent(
-      'firstName2 lastName2'
+      'firstName1 lastName1'
     )
     expect(getAllByRole('listitem')[2]).toHaveTextContent('invite@email.com')
   })

@@ -1,4 +1,4 @@
-import { ReactElement } from 'react'
+import { ReactElement, useMemo } from 'react'
 import Box from '@mui/material/Box'
 import Skeleton from '@mui/material/Skeleton'
 import List from '@mui/material/List'
@@ -9,6 +9,7 @@ import Typography from '@mui/material/Typography'
 
 import { GetJourneyWithUserJourneys_journey_userJourneys as UserJourney } from '../../../../__generated__/GetJourneyWithUserJourneys'
 import { GetUserInvites_userInvites as UserInvite } from '../../../../__generated__/GetUserInvites'
+import { UserJourneyRole } from '../../../../__generated__/globalTypes'
 import { UserListItem } from './UserListItem'
 
 interface UserListProps {
@@ -26,6 +27,19 @@ export function UserList({
   loading,
   currentUser
 }: UserListProps): ReactElement {
+  const sortedUsers: UserJourney[] = useMemo(() => {
+    const ownerIndex = users.findIndex(
+      (user) => user.role === UserJourneyRole.owner
+    )
+
+    if (ownerIndex > 0) {
+      const owner = users.splice(ownerIndex, 1)
+      return [...owner, ...users]
+    }
+
+    return users
+  }, [users])
+
   return (
     <>
       {loading === true ? (
@@ -58,7 +72,7 @@ export function UserList({
               <Typography variant="subtitle1">{title}</Typography>
 
               <List sx={{ py: 0 }}>
-                {users.map((user) => (
+                {sortedUsers.map((user) => (
                   <UserListItem
                     key={user.id}
                     listItem={user}
