@@ -27,7 +27,12 @@ export function HomeHero(): ReactElement {
         placeholder="blur"
         priority
       />
-      <HeroOverlay />
+      <HeroOverlay
+        sx={{
+          background:
+            'linear-gradient(0deg, rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)), linear-gradient(180.21deg, rgba(50, 50, 51, 0) 63.7%, rgba(38, 38, 38, 0.249497) 75.85%, rgba(27, 27, 28, 0.459525) 85.7%, #000000 99.82%), linear-gradient(89.75deg, #141414 16.19%, rgba(10, 10, 10, 0.495636) 24.01%, rgba(4, 4, 4, 0.195896) 30.68%, rgba(0, 0, 0, 0) 39.07%)'
+        }}
+      />
       <Container
         maxWidth="xxl"
         sx={{ display: 'flex', justifyContent: 'center', pt: 30 }}
