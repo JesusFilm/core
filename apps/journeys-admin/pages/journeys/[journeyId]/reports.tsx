@@ -17,6 +17,7 @@ import i18nConfig from '../../../next-i18next.config'
 import { MemoizedDynamicReport } from '../../../src/components/DynamicPowerBiReport'
 import { JourneysReportType } from '../../../__generated__/globalTypes'
 import { useUserJourneyOpen } from '../../../src/libs/useUserJourneyOpen'
+import { useTermsRedirect } from '../../../src/libs/useTermsRedirect/useTermsRedirect'
 
 function JourneyReportsPage(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
@@ -27,6 +28,7 @@ function JourneyReportsPage(): ReactElement {
   const journeyId = router.query.journeyId as string
 
   useUserJourneyOpen(AuthUser.id, journey?.id, journey?.userJourneys)
+  useTermsRedirect()
 
   return (
     <>
