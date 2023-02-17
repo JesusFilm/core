@@ -47,7 +47,12 @@ export function ImageLibrary({
     src: string().url('Please enter a valid url').required('Required')
   })
 
-  const handleSrcChange = async (src: string): Promise<void> => {
+  const handleSrcChange = async (
+    src: string,
+    blurhash?: string,
+    width = 0,
+    height = 0
+  ): Promise<void> => {
     if (!(await srcSchema.isValid({ src })) || src === selectedBlock?.src)
       return
 
@@ -56,14 +61,23 @@ export function ImageLibrary({
       src,
       alt: src.replace(/(.*\/)*/, '').replace(/\?.*/, '') // per Vlad 26/1/22, we are hardcoding the image alt for now
     }
+    if ((blurhash?.length ?? 0) > 0) {
+      block.blurhash = blurhash
+      block.width = width
+      block.height = height
+    }
+
     await onChange(block as ImageBlock)
   }
 
   const handleUnsplashChange = async (
     src: string,
-    author: string
+    author: string,
+    blurHash?: string,
+    width?: number,
+    height?: number
   ): Promise<void> => {
-    await handleSrcChange(src)
+    await handleSrcChange(src, blurHash, width, height)
     setUnsplashAuthor(author)
   }
 

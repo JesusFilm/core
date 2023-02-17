@@ -22,6 +22,7 @@ export const LIST_UNSPLASH_COLLECTION_PHOTOS = gql`
     ) {
       id
       alt_description
+      blur_hash
       width
       height
       urls {
@@ -43,6 +44,7 @@ export const SEARCH_UNSPLASH_PHOTOS = gql`
       results {
         id
         alt_description
+        blur_hash
         width
         height
         urls {
@@ -60,7 +62,13 @@ export const SEARCH_UNSPLASH_PHOTOS = gql`
 `
 
 interface UnsplashGalleryProps {
-  onChange: (src: string, author: string) => void
+  onChange: (
+    src: string,
+    author: string,
+    blurhash?: string,
+    width?: number,
+    height?: number
+  ) => void
 }
 
 export function UnsplashGallery({
