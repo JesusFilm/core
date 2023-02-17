@@ -21,7 +21,7 @@ describe('CustomUrl', () => {
             request: {
               query: CREATE_CLOUDFLARE_UPLOAD_BY_URL,
               variables: {
-                url: 'example.com/123'
+                url: 'https://example.com/image.jpg'
               }
             },
             result
@@ -36,7 +36,7 @@ describe('CustomUrl', () => {
     expect(getByText('Paste URL of image...'))
     const textBox = await getByRole('textbox')
     fireEvent.change(textBox, {
-      target: { value: 'example.com/123' }
+      target: { value: 'https://example.com/image.jpg' }
     })
     fireEvent.blur(textBox)
     await waitFor(() => expect(result).toHaveBeenCalled())
