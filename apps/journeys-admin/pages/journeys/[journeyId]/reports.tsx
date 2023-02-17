@@ -21,6 +21,7 @@ import { createApolloClient } from '../../../src/libs/apolloClient'
 import { JourneysReportType } from '../../../__generated__/globalTypes'
 import { useUserJourneyOpen } from '../../../src/libs/useUserJourneyOpen'
 import { ACCEPT_USER_INVITE } from '../..'
+import { useTermsRedirect } from '../../../src/libs/useTermsRedirect/useTermsRedirect'
 
 function JourneyReportsPage(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
@@ -31,6 +32,7 @@ function JourneyReportsPage(): ReactElement {
   const journeyId = router.query.journeyId as string
 
   useUserJourneyOpen(AuthUser.id, journey?.id, journey?.userJourneys)
+  useTermsRedirect()
 
   return (
     <>

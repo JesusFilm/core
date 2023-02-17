@@ -23,6 +23,7 @@ import { Menu } from '../../src/components/JourneyView/Menu'
 import i18nConfig from '../../next-i18next.config'
 import { useUserJourneyOpen } from '../../src/libs/useUserJourneyOpen'
 import { ACCEPT_USER_INVITE } from '..'
+import { useTermsRedirect } from '../../src/libs/useTermsRedirect/useTermsRedirect'
 
 export const GET_JOURNEY = gql`
   ${JOURNEY_FIELDS}
@@ -40,6 +41,8 @@ function JourneyIdPage(): ReactElement {
   const { data, error } = useQuery<GetJourney>(GET_JOURNEY, {
     variables: { id: router.query.journeyId }
   })
+
+  useTermsRedirect()
 
   useUserJourneyOpen(
     AuthUser.id,

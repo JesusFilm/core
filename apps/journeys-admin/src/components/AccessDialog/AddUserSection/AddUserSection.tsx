@@ -1,6 +1,6 @@
 import { ReactElement, MouseEvent, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import Stack from '@mui/material/Stack'
-
 import Button from '@mui/material/Button'
 import Menu from '@mui/material/Menu'
 import DraftsIcon from '@mui/icons-material/Drafts'
@@ -19,6 +19,7 @@ interface AddUserSectionProps {
 
 export function AddUserSection({ users }: AddUserSectionProps): ReactElement {
   const { journey } = useJourney()
+  const { t } = useTranslation('apps-journeys-admin')
   const [selectedInviteMethod, setSelectedInviteMethod] = useState('Email')
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
   const menuOpen = Boolean(anchorEl)
@@ -39,7 +40,7 @@ export function AddUserSection({ users }: AddUserSectionProps): ReactElement {
       <Stack direction="row" alignItems="center" sx={{ mb: 4 }}>
         <GroupAddIcon />
         <Typography variant="subtitle1" sx={{ marginLeft: 3 }}>
-          Invite Editor by
+          {t('Invite Editor by')}
         </Typography>
         <Button
           variant="outlined"
@@ -97,8 +98,8 @@ export function AddUserSection({ users }: AddUserSectionProps): ReactElement {
                 }/journeys/${journey != null ? journey.id : ''}`
               : undefined
           }
-          messageText="Editor invite link copied"
-          helperText="Users invited by link will request approval."
+          messageText={t('Editor invite link copied')}
+          helperText={t('Users invited by link will request approval.')}
         />
       )}
     </Stack>

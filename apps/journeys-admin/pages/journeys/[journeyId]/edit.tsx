@@ -24,6 +24,7 @@ import { createApolloClient } from '../../../src/libs/apolloClient'
 import i18nConfig from '../../../next-i18next.config'
 import { useUserJourneyOpen } from '../../../src/libs/useUserJourneyOpen'
 import { ACCEPT_USER_INVITE } from '../..'
+import { useTermsRedirect } from '../../../src/libs/useTermsRedirect/useTermsRedirect'
 
 function JourneyEditPage(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
@@ -35,6 +36,7 @@ function JourneyEditPage(): ReactElement {
   })
 
   useUserJourneyOpen(AuthUser.id, journey?.id, journey?.userJourneys)
+  useTermsRedirect()
 
   return (
     <>
