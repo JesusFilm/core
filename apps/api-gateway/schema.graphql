@@ -817,7 +817,7 @@ type Mutation
   """Updates template"""
   journeyTemplate(id: ID!, input: JourneyTemplateInput!): Journey! @join__field(graph: JOURNEYS)
   journeyProfileCreate: JourneyProfile! @join__field(graph: JOURNEYS)
-  userInviteCreate(journeyId: ID!, input: UserInviteCreateInput): UserInvite! @join__field(graph: JOURNEYS)
+  userInviteCreate(journeyId: ID!, input: UserInviteCreateInput): UserInvite @join__field(graph: JOURNEYS)
   userInviteRemove(id: ID!, journeyId: ID!): UserInvite! @join__field(graph: JOURNEYS)
   userInviteAcceptAll: [UserInvite!]! @join__field(graph: JOURNEYS)
   userJourneyApprove(id: ID!): UserJourney! @join__field(graph: JOURNEYS)
