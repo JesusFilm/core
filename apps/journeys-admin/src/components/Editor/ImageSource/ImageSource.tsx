@@ -6,7 +6,7 @@ import { GetJourney_journey_blocks_ImageBlock as ImageBlock } from '../../../../
 import { ImageBlockHeader } from '../ImageBlockHeader'
 import { ImageLibrary } from '../ImageLibrary'
 
-interface ImageBlockEditorProps {
+interface ImageSourceProps {
   selectedBlock: ImageBlock | null
   onChange: (block: ImageBlock) => Promise<void>
   onDelete?: () => Promise<void>
@@ -14,13 +14,13 @@ interface ImageBlockEditorProps {
   noSource?: boolean
 }
 
-export function ImageBlockEditor({
+export function ImageSource({
   selectedBlock,
   onChange,
   onDelete,
   loading,
   noSource = false
-}: ImageBlockEditorProps): ReactElement {
+}: ImageSourceProps): ReactElement {
   const [open, setOpen] = useState(noSource)
 
   const handleImageDelete = async (): Promise<void> => {

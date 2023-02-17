@@ -3,7 +3,7 @@ import { MockedProvider } from '@apollo/client/testing'
 import { SnackbarProvider } from 'notistack'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { GetJourney_journey_blocks_ImageBlock as ImageBlock } from '../../../../__generated__/GetJourney'
-import { ImageBlockEditor } from './ImageBlockEditor'
+import { ImageSource } from './ImageSource'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
@@ -25,14 +25,14 @@ const image: ImageBlock = {
 const onChange = jest.fn()
 const onDelete = jest.fn()
 
-describe('ImageBlockEditor', () => {
+describe('ImageSource', () => {
   beforeEach(() => (useMediaQuery as jest.Mock).mockImplementation(() => true))
 
   it('opens the image library', () => {
     const { getByRole, getByTestId } = render(
       <MockedProvider>
         <SnackbarProvider>
-          <ImageBlockEditor
+          <ImageSource
             selectedBlock={image}
             onChange={onChange}
             onDelete={onDelete}
@@ -49,7 +49,7 @@ describe('ImageBlockEditor', () => {
   // describe('No existing ImageBlock', () => {
   //   it('shows placeholders on null', async () => {
   //     const { getByTestId, getByRole } = render(
-  //       <ImageBlockEditor
+  //       <ImageSource
   //         selectedBlock={null}
   //         onChange={onChange}
   //         onDelete={onDelete}
@@ -63,7 +63,7 @@ describe('ImageBlockEditor', () => {
   // describe('Existing ImageBlock', () => {
   //   it('shows placeholders', async () => {
   //     const { getByTestId, getByRole } = render(
-  //       <ImageBlockEditor
+  //       <ImageSource
   //         selectedBlock={image}
   //         onChange={onChange}
   //         onDelete={onDelete}
@@ -75,7 +75,7 @@ describe('ImageBlockEditor', () => {
   //   })
   //   it('displays validation messages ', async () => {
   //     const { getByRole, getByText } = render(
-  //       <ImageBlockEditor
+  //       <ImageSource
   //         selectedBlock={image}
   //         onChange={onChange}
   //         onDelete={onDelete}
@@ -98,7 +98,7 @@ describe('ImageBlockEditor', () => {
   // })
   // it('triggers onChange', async () => {
   //   const { getByRole } = render(
-  //     <ImageBlockEditor
+  //     <ImageSource
   //       selectedBlock={image}
   //       onChange={onChange}
   //       onDelete={onDelete}
@@ -113,7 +113,7 @@ describe('ImageBlockEditor', () => {
   // })
   // it('triggers onDelete', async () => {
   //   const { getAllByRole } = render(
-  //     <ImageBlockEditor
+  //     <ImageSource
   //       selectedBlock={image}
   //       onChange={onChange}
   //       onDelete={onDelete}
@@ -125,7 +125,7 @@ describe('ImageBlockEditor', () => {
   // })
   // it('triggers onChange onPaste', async () => {
   //   const { getByRole } = render(
-  //     <ImageBlockEditor
+  //     <ImageSource
   //       selectedBlock={image}
   //       onChange={onChange}
   //       onDelete={onDelete}

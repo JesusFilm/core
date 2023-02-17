@@ -6,7 +6,7 @@ import { gql, useMutation } from '@apollo/client'
 import Box from '@mui/material/Box'
 import { useSnackbar } from 'notistack'
 import { GetJourney_journey_blocks_ImageBlock as ImageBlock } from '../../../../../../../../__generated__/GetJourney'
-import { ImageBlockEditor } from '../../../../../ImageBlockEditor'
+import { ImageSource } from '../../../../../ImageSource'
 import { ImageBlockUpdate } from '../../../../../../../../__generated__/ImageBlockUpdate'
 import { blockDeleteUpdate } from '../../../../../../../libs/blockDeleteUpdate/blockDeleteUpdate'
 import { ImageBlockDelete } from '../../../../../../../../__generated__/ImageBlockDelete'
@@ -115,7 +115,7 @@ export function ImageOptions({
 
   return (
     <Box sx={{ pt: 4, pb: 3, px: 6 }}>
-      <ImageBlockEditor
+      <ImageSource
         selectedBlock={imageBlock}
         onChange={updateImageBlock}
         onDelete={handleImageDelete}
