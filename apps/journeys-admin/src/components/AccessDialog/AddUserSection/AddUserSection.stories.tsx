@@ -9,7 +9,11 @@ import { AddUserSection } from '.'
 const AddUsersSectionStory = {
   ...journeysAdminConfig,
   component: AddUserSection,
-  title: 'Journeys-Admin/AccessDialog/AddUserSection'
+  title: 'Journeys-Admin/AccessDialog/AddUserSection',
+  parameters: {
+    ...journeysAdminConfig.parameters,
+    layout: 'fullscreen'
+  }
 }
 
 const Template: Story = () => {
