@@ -22,7 +22,6 @@ describe('ActivePriorityList', () => {
           <SnackbarProvider>
             <ActivePriorityList
               journeys={[defaultJourney, newJourney, pendingActionJourney]}
-              sortJourneys={sortJourneys}
               refetch={jest.fn()}
               authUser={authUser}
             />
@@ -55,7 +54,6 @@ describe('ActivePriorityList', () => {
                 newJourney,
                 pendingActionJourney
               ]}
-              sortJourneys={sortJourneys}
               sortOrder={SortOrder.TITLE}
               refetch={jest.fn()}
               authUser={authUser}
