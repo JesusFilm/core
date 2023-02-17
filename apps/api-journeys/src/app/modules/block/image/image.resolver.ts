@@ -19,13 +19,11 @@ import { RoleGuard } from '../../../lib/roleGuard/roleGuard'
 export async function handleImage(
   input
 ): Promise<ImageBlockCreateInput | ImageBlockUpdateInput> {
-  console.log(input)
   if (
     (input.width ?? 0) > 0 &&
     (input.height ?? 0) > 0 &&
     (input.blurhash ?? '').length > 0
   ) {
-    console.log('blurhash skipped')
     return input
   }
 
