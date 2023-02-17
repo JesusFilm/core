@@ -1,8 +1,9 @@
-import { fireEvent, render } from '@testing-library/react'
+import { fireEvent, render, waitFor } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
 import { SnackbarProvider } from 'notistack'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { GetJourney_journey_blocks_ImageBlock as ImageBlock } from '../../../../__generated__/GetJourney'
+import { createCloudflareUploadByUrlMock } from '../ImageLibrary/CustomImage/CustomUrl/data'
 import { ImageBlockEditor } from './ImageBlockEditor'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
@@ -44,98 +45,83 @@ describe('ImageBlockEditor', () => {
     expect(getByTestId('ImageLibrary')).toBeInTheDocument()
   })
 
-  // TODO: Add relevant tests back in once unplash and cloudflare functionality is in
-
-  // describe('No existing ImageBlock', () => {
-  //   it('shows placeholders on null', async () => {
-  //     const { getByTestId, getByRole } = render(
-  //       <ImageBlockEditor
-  //         selectedBlock={null}
-  //         onChange={onChange}
-  //         onDelete={onDelete}
-  //       />
-  //     )
-  //     expect(await getByTestId('imageSrcStack')).toBeInTheDocument()
-  //     const textBox = await getByRole('textbox')
-  //     expect(textBox).toHaveValue('')
-  //   })
-  // })
-  // describe('Existing ImageBlock', () => {
-  //   it('shows placeholders', async () => {
-  //     const { getByTestId, getByRole } = render(
-  //       <ImageBlockEditor
-  //         selectedBlock={image}
-  //         onChange={onChange}
-  //         onDelete={onDelete}
-  //       />
-  //     )
-  //     expect(await getByTestId('imageSrcStack')).toBeInTheDocument()
-  //     const textBox = await getByRole('textbox')
-  //     expect(textBox).toHaveValue(image.src)
-  //   })
-  //   it('displays validation messages ', async () => {
-  //     const { getByRole, getByText } = render(
-  //       <ImageBlockEditor
-  //         selectedBlock={image}
-  //         onChange={onChange}
-  //         onDelete={onDelete}
-  //       />
-  //     )
-  //     const textBox = await getByRole('textbox')
-  //     fireEvent.change(textBox, {
-  //       target: { value: '' }
-  //     })
-  //     fireEvent.blur(textBox)
-  //     await waitFor(() => expect(getByText('Required')).toBeInTheDocument())
-  //     fireEvent.change(textBox, {
-  //       target: { value: 'example.com/123' }
-  //     })
-  //     fireEvent.blur(textBox)
-  //     await waitFor(() =>
-  //       expect(getByText('Please enter a valid url')).toBeInTheDocument()
-  //     )
-  //   })
-  // })
-  // it('triggers onChange', async () => {
-  //   const { getByRole } = render(
-  //     <ImageBlockEditor
-  //       selectedBlock={image}
-  //       onChange={onChange}
-  //       onDelete={onDelete}
-  //     />
-  //   )
-  //   const textBox = await getByRole('textbox')
-  //   fireEvent.change(textBox, {
-  //     target: { value: 'https://example.com/123' }
-  //   })
-  //   fireEvent.blur(textBox)
-  //   await waitFor(() => expect(onChange).toHaveBeenCalled())
-  // })
-  // it('triggers onDelete', async () => {
-  //   const { getAllByRole } = render(
-  //     <ImageBlockEditor
-  //       selectedBlock={image}
-  //       onChange={onChange}
-  //       onDelete={onDelete}
-  //     />
-  //   )
-  //   const deleteButton = await getAllByRole('button')[0]
-  //   fireEvent.click(deleteButton)
-  //   await waitFor(() => expect(onDelete).toHaveBeenCalled())
-  // })
-  // it('triggers onChange onPaste', async () => {
-  //   const { getByRole } = render(
-  //     <ImageBlockEditor
-  //       selectedBlock={image}
-  //       onChange={onChange}
-  //       onDelete={onDelete}
-  //     />
-  //   )
-  //   const textBox = await getByRole('textbox')
-  //   await fireEvent.paste(textBox, {
-  //     clipboardData: { getData: () => 'https://example.com/123' }
-  //   })
-
-  //   await waitFor(() => expect(onChange).toHaveBeenCalled())
-  // })
+  describe('No existing ImageBlock', () => {
+    it('shows placeholders on null', async () => {
+      const { getByTestId, getByRole } = render(
+        <MockedProvider>
+          <ImageBlockEditor
+            selectedBlock={null}
+            onChange={onChange}
+            onDelete={onDelete}
+          />
+        </MockedProvider>
+      )
+      fireEvent.click(getByRole('button', { name: 'Select Image' }))
+      expect(getByTestId('ImageLibrary')).toBeInTheDocument()
+      fireEvent.click(getByRole('tab', { name: 'Custom' }))
+      fireEvent.click(getByRole('button', { name: 'Add image by URL' }))
+      const textBox = await getByRole('textbox')
+      expect(textBox).toHaveValue('')
+    })
+  })
+  describe('Existing ImageBlock', () => {
+    it('shows placeholders', async () => {
+      const { getByTestId, getByRole } = render(
+        <MockedProvider>
+          <ImageBlockEditor
+            selectedBlock={image}
+            onChange={onChange}
+            onDelete={onDelete}
+          />
+        </MockedProvider>
+      )
+      fireEvent.click(getByRole('button', { name: 'Select Image' }))
+      expect(getByTestId('ImageLibrary')).toBeInTheDocument()
+      fireEvent.click(getByRole('tab', { name: 'Custom' }))
+      fireEvent.click(getByRole('button', { name: 'Add image by URL' }))
+      const textBox = await getByRole('textbox')
+      expect(textBox).toHaveValue('')
+    })
+  })
+  it('triggers onChange', async () => {
+    const { getByRole, getByTestId } = render(
+      <MockedProvider mocks={[createCloudflareUploadByUrlMock]}>
+        <ImageBlockEditor
+          selectedBlock={image}
+          onChange={onChange}
+          onDelete={onDelete}
+        />
+      </MockedProvider>
+    )
+    fireEvent.click(getByRole('button', { name: 'Select Image' }))
+    expect(getByTestId('ImageLibrary')).toBeInTheDocument()
+    fireEvent.click(getByRole('tab', { name: 'Custom' }))
+    fireEvent.click(getByRole('button', { name: 'Add image by URL' }))
+    const textBox = await getByRole('textbox')
+    fireEvent.change(textBox, {
+      target: { value: 'https://example.com/image.jpg' }
+    })
+    fireEvent.blur(textBox)
+    await waitFor(() => expect(onChange).toHaveBeenCalled())
+  })
+  it('triggers onChange onPaste', async () => {
+    const { getByRole, getByTestId } = render(
+      <MockedProvider mocks={[createCloudflareUploadByUrlMock]}>
+        <ImageBlockEditor
+          selectedBlock={image}
+          onChange={onChange}
+          onDelete={onDelete}
+        />
+      </MockedProvider>
+    )
+    fireEvent.click(getByRole('button', { name: 'Select Image' }))
+    expect(getByTestId('ImageLibrary')).toBeInTheDocument()
+    fireEvent.click(getByRole('tab', { name: 'Custom' }))
+    fireEvent.click(getByRole('button', { name: 'Add image by URL' }))
+    const textBox = await getByRole('textbox')
+    await fireEvent.paste(textBox, {
+      clipboardData: { getData: () => 'https://example.com/image.jpg' }
+    })
+    await waitFor(() => expect(onChange).toHaveBeenCalled())
+  })
 })
