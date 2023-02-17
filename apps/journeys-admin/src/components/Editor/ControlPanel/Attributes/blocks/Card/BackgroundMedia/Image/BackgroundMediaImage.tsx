@@ -123,6 +123,9 @@ export function BackgroundMediaImage({
           parentBlockId: cardBlock.id,
           src: block.src,
           alt: block.alt,
+          blurhash: block.blurhash,
+          width: block.width,
+          height: block.height,
           isCover: true
         }
       },
@@ -166,7 +169,10 @@ export function BackgroundMediaImage({
         journeyId: journey.id,
         input: {
           src: block.src,
-          alt: block.alt
+          alt: block.alt,
+          blurhash: block.blurhash,
+          width: block.width,
+          height: block.height
         }
       }
     })

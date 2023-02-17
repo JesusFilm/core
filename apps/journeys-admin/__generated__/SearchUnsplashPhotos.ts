@@ -24,6 +24,7 @@ export interface SearchUnsplashPhotos_searchUnsplashPhotos_results {
   __typename: "UnsplashPhoto";
   id: string;
   alt_description: string | null;
+  blur_hash: string;
   width: number;
   height: number;
   urls: SearchUnsplashPhotos_searchUnsplashPhotos_results_urls;

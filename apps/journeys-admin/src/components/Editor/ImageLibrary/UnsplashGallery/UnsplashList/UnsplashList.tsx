@@ -8,7 +8,13 @@ import { SearchUnsplashPhotos_searchUnsplashPhotos_results as UnsplashSearchPhot
 
 interface UnsplashListProps {
   gallery: Array<UnsplashCollectionPhotos | UnsplashSearchPhotos>
-  onChange: (src: string, author: string) => void
+  onChange: (
+    src: string,
+    author: string,
+    blurhash?: string,
+    width?: number,
+    height?: number
+  ) => void
 }
 
 export function UnsplashList({
@@ -24,7 +30,7 @@ export function UnsplashList({
     url: string,
     author: string
   ): void => {
-    onChange(url, author)
+    onChange(url, author, item.blur_hash, item.width, item.height)
     setSelectedItem(item)
   }
 

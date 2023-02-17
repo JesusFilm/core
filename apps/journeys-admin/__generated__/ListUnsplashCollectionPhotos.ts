@@ -24,6 +24,7 @@ export interface ListUnsplashCollectionPhotos_listUnsplashCollectionPhotos {
   __typename: "UnsplashPhoto";
   id: string;
   alt_description: string | null;
+  blur_hash: string;
   width: number;
   height: number;
   urls: ListUnsplashCollectionPhotos_listUnsplashCollectionPhotos_urls;
