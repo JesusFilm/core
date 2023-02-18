@@ -26,7 +26,7 @@ export function HeroOverlay({ sx }: HeroOverlayProps): ReactElement {
           position: 'absolute',
           height: '100%',
           width: '100%',
-          backgroundImage: `url(${GrainTexture.src})`,
+          backgroundImage: `url(${GrainTexture.src as string})`,
           backgroundRepeat: 'repeat'
         }}
       />
