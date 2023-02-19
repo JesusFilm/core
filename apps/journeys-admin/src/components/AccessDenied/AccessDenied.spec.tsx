@@ -4,23 +4,18 @@ import { AccessDenied } from './AccessDenied'
 describe('AccessDenied', () => {
   it('should handle onClick', () => {
     const onClick = jest.fn()
-    const { getByText, getByRole } = render(
-      <AccessDenied title="title" description="description" onClick={onClick} />
-    )
+    const { getAllByRole } = render(<AccessDenied handleClick={onClick} />)
 
-    expect(getByText('title')).toBeInTheDocument()
-    expect(getByText('description')).toBeInTheDocument()
-    fireEvent.click(getByRole('button', { name: 'Request Access' }))
+    fireEvent.click(getAllByRole('button', { name: 'Request Now' })[0])
     expect(onClick).toHaveBeenCalled()
   })
 
   it('should show back button', () => {
-    const { getByRole } = render(
-      <AccessDenied title="title" description="description" />
-    )
+    const { getByRole } = render(<AccessDenied />)
 
-    expect(
-      getByRole('link', { name: 'Back to the Admin Panel' })
-    ).toHaveAttribute('href', '/')
+    expect(getByRole('link', { name: 'Back to my journeys' })).toHaveAttribute(
+      'href',
+      '/'
+    )
   })
 })
