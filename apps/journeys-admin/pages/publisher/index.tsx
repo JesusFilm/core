@@ -18,6 +18,7 @@ import { TemplateList } from '../../src/components/TemplateList'
 import i18nConfig from '../../next-i18next.config'
 import JourneyListMenu from '../../src/components/JourneyList/JourneyListMenu/JourneyListMenu'
 import { GET_USER_ROLE } from '../../src/components/JourneyView/JourneyView'
+import { useTermsRedirect } from '../../src/libs/useTermsRedirect/useTermsRedirect'
 
 function TemplateIndex(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
@@ -42,6 +43,8 @@ function TemplateIndex(): ReactElement {
       void router.push('/templates')
     }
   }, [data, router])
+
+  useTermsRedirect()
 
   return (
     <>

@@ -4,6 +4,7 @@ import { mockDeep } from 'jest-mock-extended'
 
 import { CardBlock, ThemeMode, ThemeName } from '../../../__generated__/graphql'
 import { JourneyService } from '../../journey/journey.service'
+import { MemberService } from '../../member/member.service'
 import { UserJourneyService } from '../../userJourney/userJourney.service'
 import { UserRoleService } from '../../userRole/userRole.service'
 import { BlockResolver } from '../block.resolver'
@@ -72,6 +73,7 @@ describe('CardBlockResolver', () => {
         UserJourneyService,
         UserRoleService,
         JourneyService,
+        MemberService,
         {
           provide: 'DATABASE',
           useFactory: () => mockDeep<Database>()

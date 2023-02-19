@@ -16,7 +16,7 @@ input UserInviteCreateInput {
 }
 
 extend type Mutation {
-  userInviteCreate(journeyId: ID!, input: UserInviteCreateInput): UserInvite!
+  userInviteCreate(journeyId: ID!, input: UserInviteCreateInput): UserInvite
   userInviteRemove(id: ID!, journeyId: ID!): UserInvite!
   userInviteAcceptAll: [UserInvite!]!
 }
