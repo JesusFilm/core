@@ -1,6 +1,7 @@
 import { ApolloQueryResult, OperationVariables } from '@apollo/client'
 import { ReactElement, useMemo } from 'react'
 import { AuthUser } from 'next-firebase-auth'
+import Box from '@mui/material/Box'
 import {
   GetActiveJourneys,
   GetActiveJourneys_journeys as Journey
@@ -83,6 +84,18 @@ export function ActivePriorityList({
           variant={JourneyCardVariant.new}
         />
       ))}
+      {(actionRequiredJourneys.length > 0 || newJourneys.length > 0) && (
+        <Box
+          sx={{
+            height: 8,
+            width: '100%',
+            borderTop: '1px solid',
+            borderLeft: '1px solid',
+            borderRight: '1px solid',
+            borderColor: 'divider'
+          }}
+        />
+      )}
       {sortedJourneys.map((journey) => (
         <JourneyCard
           key={journey.id}
