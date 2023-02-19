@@ -33,6 +33,14 @@ describe('ImageBlockHeader', () => {
     )
 
     expect(getByTestId('imageBlockThumbnailPlaceholder')).toBeInTheDocument()
+    expect(getByText('No Image Selected')).toBeInTheDocument()
+  })
+
+  it('should render text for background image', () => {
+    const { getByText, getByTestId } = render(
+      <ImageBlockHeader showAdd selectedBlock={null} />
+    )
+    expect(getByTestId('AddIcon')).toBeInTheDocument()
     expect(getByText('Select Image')).toBeInTheDocument()
   })
 

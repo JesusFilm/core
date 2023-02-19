@@ -48,12 +48,19 @@ export function ImageBlockHeader({
           />
         </Box>
         <Stack>
-          <Typography variant="subtitle2">
-            {selectedBlock != null ? 'Selected Image' : 'Select Image'}
+          <Typography variant="subtitle2" color="text.secondary">
+            {loading
+              ? 'Image is uploading...'
+              : selectedBlock != null
+              ? 'Selected Image'
+              : showAdd
+              ? 'Select Image'
+              : 'No Image Selected'}
           </Typography>
           <Typography
             variant="caption"
             display={selectedBlock != null ? 'flex' : 'none'}
+            color="text.secondary"
           >
             {unsplashAuthor != null
               ? unsplashAuthor
