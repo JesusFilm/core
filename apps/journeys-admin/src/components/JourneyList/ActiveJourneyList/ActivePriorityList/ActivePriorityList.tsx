@@ -60,13 +60,21 @@ export function ActivePriorityList({
       return { newJourneys, actionRequiredJourneys, activeJourneys }
     }, [journeys, authUser])
 
+  const sortedActionRequiredJourneys = useMemo(() => {
+    return sortJourneys(actionRequiredJourneys, sortOrder)
+  }, [actionRequiredJourneys, sortOrder])
+
+  const sortedNewJourneys = useMemo(() => {
+    return sortJourneys(newJourneys, sortOrder)
+  }, [newJourneys, sortOrder])
+
   const sortedJourneys = useMemo(() => {
     return sortJourneys(activeJourneys, sortOrder)
   }, [activeJourneys, sortOrder])
 
   return (
     <>
-      {actionRequiredJourneys.map((journey) => (
+      {sortedActionRequiredJourneys.map((journey) => (
         <JourneyCard
           key={journey.id}
           journey={journey}
@@ -75,7 +83,7 @@ export function ActivePriorityList({
           variant={JourneyCardVariant.actionRequired}
         />
       ))}
-      {newJourneys.map((journey) => (
+      {sortedNewJourneys.map((journey) => (
         <JourneyCard
           key={journey.id}
           journey={journey}
@@ -84,7 +92,8 @@ export function ActivePriorityList({
           variant={JourneyCardVariant.new}
         />
       ))}
-      {(actionRequiredJourneys.length > 0 || newJourneys.length > 0) && (
+      {(sortedActionRequiredJourneys.length > 0 ||
+        sortedNewJourneys.length > 0) && (
         <Box
           sx={{
             height: 8,
