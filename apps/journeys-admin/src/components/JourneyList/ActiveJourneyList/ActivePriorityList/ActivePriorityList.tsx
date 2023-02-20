@@ -2,6 +2,7 @@ import { ApolloQueryResult, OperationVariables } from '@apollo/client'
 import { ReactElement, useMemo } from 'react'
 import { AuthUser } from 'next-firebase-auth'
 import Box from '@mui/material/Box'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import {
   GetActiveJourneys,
   GetActiveJourneys_journeys as Journey
@@ -11,6 +12,7 @@ import { JourneyCard } from '../../JourneyCard'
 import { SortOrder } from '../../JourneySort'
 import { sortJourneys } from '../../JourneySort/utils/sortJourneys'
 import { JourneyCardVariant } from '../../JourneyCard/journeyCardVariant'
+import { JourneyFields } from '../../../../../__generated__/JourneyFields'
 
 interface Props {
   journeys: Journey[]
@@ -75,23 +77,35 @@ export function ActivePriorityList({
   return (
     <>
       {sortedActionRequiredJourneys.map((journey) => (
-        <JourneyCard
+        <JourneyProvider
           key={journey.id}
-          journey={journey}
-          refetch={refetch}
-          duplicatedJourneyId={duplicatedJourneyId}
-          variant={JourneyCardVariant.actionRequired}
-        />
+          value={{ journey: journey as JourneyFields, admin: true }}
+        >
+          <JourneyCard
+            key={journey.id}
+            journey={journey}
+            refetch={refetch}
+            duplicatedJourneyId={duplicatedJourneyId}
+            variant={JourneyCardVariant.actionRequired}
+          />
+        </JourneyProvider>
       ))}
+
       {sortedNewJourneys.map((journey) => (
-        <JourneyCard
+        <JourneyProvider
           key={journey.id}
-          journey={journey}
-          refetch={refetch}
-          duplicatedJourneyId={duplicatedJourneyId}
-          variant={JourneyCardVariant.new}
-        />
+          value={{ journey: journey as JourneyFields, admin: true }}
+        >
+          <JourneyCard
+            key={journey.id}
+            journey={journey}
+            refetch={refetch}
+            duplicatedJourneyId={duplicatedJourneyId}
+            variant={JourneyCardVariant.new}
+          />
+        </JourneyProvider>
       ))}
+
       {(sortedActionRequiredJourneys.length > 0 ||
         sortedNewJourneys.length > 0) && (
         <Box
@@ -105,13 +119,19 @@ export function ActivePriorityList({
           }}
         />
       )}
+
       {sortedJourneys.map((journey) => (
-        <JourneyCard
+        <JourneyProvider
           key={journey.id}
-          journey={journey}
-          refetch={refetch}
-          duplicatedJourneyId={duplicatedJourneyId}
-        />
+          value={{ journey: journey as JourneyFields, admin: true }}
+        >
+          <JourneyCard
+            key={journey.id}
+            journey={journey}
+            refetch={refetch}
+            duplicatedJourneyId={duplicatedJourneyId}
+          />
+        </JourneyProvider>
       ))}
     </>
   )
