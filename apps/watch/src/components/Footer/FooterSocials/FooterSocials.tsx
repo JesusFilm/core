@@ -9,7 +9,7 @@ import Instagram from './assets/instagram.svg'
 
 export function FooterSocials(): ReactElement {
   return (
-    <Stack direction="row" pt={3} spacing={7}>
+    <Stack direction="row" spacing={6}>
       <FooterLink
         url="https://www.facebook.com/jesusfilm"
         label="Facebook"

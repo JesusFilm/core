@@ -50,7 +50,11 @@ export function VideoHeading({
               <Typography variant="h5" color="text.primary">
                 {title[0].value}
               </Typography>
-              <Stack direction="row" sx={{ display: { md: 'none' } }}>
+              <Stack
+                direction="row"
+                sx={{ display: { md: 'none' } }}
+                spacing={2}
+              >
                 <ShareButton variant="icon" onClick={onShareClick} />
                 <DownloadButton variant="icon" onClick={onDownloadClick} />
               </Stack>
