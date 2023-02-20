@@ -68,6 +68,7 @@ describe('Image', () => {
     })
     expect(dispatch).toHaveBeenCalledWith({
       type: 'SetDrawerPropsAction',
+      mobileOpen: true,
       title: 'Image',
       children: <ImageOptions />
     })

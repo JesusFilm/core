@@ -5,7 +5,7 @@ import { JourneyInvite } from '.'
 
 describe('JourneyInvite', () => {
   it('should render request invite an allow user to request invite', async () => {
-    const { getByRole, getByText } = render(
+    const { getAllByRole, getAllByText } = render(
       <MockedProvider
         mocks={[
           {
@@ -29,20 +29,18 @@ describe('JourneyInvite', () => {
         <JourneyInvite journeyId="journeyId" />
       </MockedProvider>
     )
-    expect(getByText('You need access')).toBeInTheDocument()
-    fireEvent.click(getByRole('button', { name: 'Request Access' }))
-    await waitFor(() => expect(getByText('Request sent')).toBeInTheDocument())
+    expect(getAllByText("You can't edit this journey")).toHaveLength(2)
+    fireEvent.click(getAllByRole('button', { name: 'Request Now' })[0])
+    await waitFor(() => expect(getAllByText('Request Sent')).toHaveLength(2))
   })
 
   it('should render invite request received', () => {
-    const { getByText, queryByRole } = render(
+    const { getAllByText, queryAllByRole } = render(
       <MockedProvider mocks={[]}>
         <JourneyInvite journeyId="journeyId" requestReceived />
       </MockedProvider>
     )
-    expect(
-      queryByRole('button', { name: 'Request Access' })
-    ).not.toBeInTheDocument()
-    expect(getByText('Request sent')).toBeInTheDocument()
+    expect(queryAllByRole('button', { name: 'Request Access' })).toHaveLength(0)
+    expect(getAllByText('Request Sent')).toHaveLength(2)
   })
 })

@@ -63,7 +63,7 @@ export function ImageBlockEditor({
           showAdd={showAdd}
         />
       </Box>
-      <Box data-testid="ImageBlockHeader">
+      <Box data-testid="ImageBlockEditor">
         <Tabs
           value={tabValue}
           onChange={handleTabChange}

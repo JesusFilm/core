@@ -81,7 +81,7 @@ describe('VideoBlockEditorSettingsPoster', () => {
       </MockedProvider>
     )
     fireEvent.click(getByTestId('posterCreateButton'))
-    expect(getByTestId('ImageLibrary')).toBeInTheDocument()
+    expect(getByTestId('ImageBlockEditor')).toBeInTheDocument()
   })
   it('disables edit poster image button', () => {
     const { getByRole } = render(

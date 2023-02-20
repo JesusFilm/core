@@ -55,7 +55,7 @@ describe('JourneyCardInfo', () => {
       ]
     } as unknown as Journey
 
-    const { getAllByLabelText, getByText } = render(
+    const { getAllByTestId, getByText, getAllByRole } = render(
       <MockedProvider>
         <ThemeProvider>
           <JourneyCardInfo
@@ -65,8 +65,8 @@ describe('JourneyCardInfo', () => {
         </ThemeProvider>
       </MockedProvider>
     )
-    // avatar length is double of expected because avatar group is rendered twice and displayed based of screen size
-    expect(getAllByLabelText('avatar')).toHaveLength(2)
+    expect(getAllByTestId('avatar')).toHaveLength(2)
+    expect(getAllByRole('button')).toHaveLength(2)
     expect(getByText('1 user')).toBeInTheDocument()
     expect(
       getByText('requested editing rights for your journey')
@@ -106,7 +106,7 @@ describe('JourneyCardInfo', () => {
       ]
     } as unknown as Journey
 
-    const { getAllByLabelText, getByText } = render(
+    const { getAllByTestId, getByText } = render(
       <MockedProvider>
         <ThemeProvider>
           <JourneyCardInfo
@@ -116,7 +116,7 @@ describe('JourneyCardInfo', () => {
         </ThemeProvider>
       </MockedProvider>
     )
-    expect(getAllByLabelText('avatar')).toHaveLength(4)
+    expect(getAllByTestId('avatar')).toHaveLength(4)
     expect(getByText('2 users')).toBeInTheDocument()
   })
 })

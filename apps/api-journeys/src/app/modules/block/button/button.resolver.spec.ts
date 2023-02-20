@@ -14,6 +14,7 @@ import {
 import { UserJourneyService } from '../../userJourney/userJourney.service'
 import { UserRoleService } from '../../userRole/userRole.service'
 import { JourneyService } from '../../journey/journey.service'
+import { MemberService } from '../../member/member.service'
 import { ButtonBlockResolver } from './button.resolver'
 
 describe('Button', () => {
@@ -107,6 +108,7 @@ describe('Button', () => {
         UserJourneyService,
         UserRoleService,
         JourneyService,
+        MemberService,
         {
           provide: 'DATABASE',
           useFactory: () => mockDeep<Database>()
