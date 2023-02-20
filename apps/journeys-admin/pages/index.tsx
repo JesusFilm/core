@@ -12,7 +12,6 @@ import { useRouter } from 'next/router'
 import { getLaunchDarklyClient } from '@core/shared/ui/getLaunchDarklyClient'
 import { gql } from '@apollo/client'
 import { useJourneys } from '../src/libs/useJourneys'
-// import { GetJourneys } from '../__generated__/GetJourneys'
 import { UserInviteAcceptAll } from '../__generated__/UserInviteAcceptAll'
 import { JourneyList } from '../src/components/JourneyList'
 import { PageWrapper } from '../src/components/PageWrapper'
@@ -20,41 +19,6 @@ import { createApolloClient } from '../src/libs/apolloClient'
 import i18nConfig from '../next-i18next.config'
 import JourneyListMenu from '../src/components/JourneyList/JourneyListMenu/JourneyListMenu'
 import { useTermsRedirect } from '../src/libs/useTermsRedirect/useTermsRedirect'
-
-// export const GET_JOURNEYS = gql`
-//   query GetJourneys {
-//     journeys: adminJourneys {
-//       id
-//       title
-//       createdAt
-//       publishedAt
-//       description
-//       slug
-//       themeName
-//       themeMode
-//       language {
-//         id
-//         name(primary: true) {
-//           value
-//           primary
-//         }
-//       }
-//       status
-//       seoTitle
-//       seoDescription
-//       userJourneys {
-//         id
-//         role
-//         user {
-//           id
-//           firstName
-//           lastName
-//           imageUrl
-//         }
-//       }
-//     }
-//   }
-// `
 
 export const ACCEPT_USER_INVITE = gql`
   mutation UserInviteAcceptAll {
