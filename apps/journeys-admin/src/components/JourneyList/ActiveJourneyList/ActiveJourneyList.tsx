@@ -6,17 +6,15 @@ import { Dialog } from '@core/shared/ui/Dialog'
 import { useTranslation } from 'react-i18next'
 import { AuthUser } from 'next-firebase-auth'
 import { useSnackbar } from 'notistack'
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import {
   GetActiveJourneys,
   GetActiveJourneys_journeys as Journeys
 } from '../../../../__generated__/GetActiveJourneys'
-import { JourneyFields } from '../../../../__generated__/JourneyFields'
 import { JourneyCard } from '../JourneyCard'
 import { AddJourneyButton } from '../AddJourneyButton'
 import { SortOrder } from '../JourneySort'
-import { sortJourneys } from '../JourneySort/utils/sortJourneys'
 import { getDuplicatedJourney } from './utils/getDuplicatedJourney'
+import { ActivePriorityList } from './ActivePriorityList'
 
 export const GET_ACTIVE_JOURNEYS = gql`
   query GetActiveJourneys {
@@ -42,6 +40,7 @@ export const GET_ACTIVE_JOURNEYS = gql`
       userJourneys {
         id
         role
+        openedAt
         user {
           id
           firstName
@@ -194,25 +193,17 @@ export function ActiveJourneyList({
     }
   }, [event, refetch])
 
-  const sortedJourneys =
-    journeys != null ? sortJourneys(journeys, sortOrder) : undefined
-
   return (
     <>
-      {journeys != null && sortedJourneys != null ? (
+      {journeys != null ? (
         <>
-          {sortedJourneys.map((journey) => (
-            <JourneyProvider
-              key={journey.id}
-              value={{ journey: journey as JourneyFields, admin: true }}
-            >
-              <JourneyCard
-                journey={journey}
-                refetch={refetch}
-                duplicatedJourneyId={duplicatedJourneyId}
-              />
-            </JourneyProvider>
-          ))}
+          <ActivePriorityList
+            journeys={journeys}
+            sortOrder={sortOrder}
+            refetch={refetch}
+            duplicatedJourneyId={duplicatedJourneyId}
+            authUser={authUser}
+          />
           {journeys.length === 0 && (
             <Card
               variant="outlined"

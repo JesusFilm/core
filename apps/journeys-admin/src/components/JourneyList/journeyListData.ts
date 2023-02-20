@@ -16,6 +16,7 @@ const userJourneys: User[] = [
     __typename: 'UserJourney',
     id: 'user-journey-id',
     role: UserJourneyRole.owner,
+    openedAt: null,
     user: {
       __typename: 'User',
       id: 'user-id1',
@@ -28,6 +29,7 @@ const userJourneys: User[] = [
     __typename: 'UserJourney',
     id: 'user-journey-id2',
     role: UserJourneyRole.editor,
+    openedAt: null,
     user: {
       __typename: 'User',
       id: 'user-id2',
@@ -40,6 +42,7 @@ const userJourneys: User[] = [
     __typename: 'UserJourney',
     id: 'user-journey-id3',
     role: UserJourneyRole.editor,
+    openedAt: null,
     user: {
       __typename: 'User',
       id: 'user-id3',
@@ -126,6 +129,7 @@ export const descriptiveJourney: Journey = {
       __typename: 'UserJourney',
       id: 'user-journey-id4',
       role: UserJourneyRole.editor,
+      openedAt: null,
       user: {
         __typename: 'User',
         id: 'user-id4',
@@ -138,6 +142,7 @@ export const descriptiveJourney: Journey = {
       __typename: 'UserJourney',
       id: 'user-journey-id5',
       role: UserJourneyRole.editor,
+      openedAt: null,
       user: {
         __typename: 'User',
         id: 'user-id5',
@@ -150,6 +155,7 @@ export const descriptiveJourney: Journey = {
       __typename: 'UserJourney',
       id: 'user-journey-id6',
       role: UserJourneyRole.editor,
+      openedAt: null,
       user: {
         __typename: 'User',
         id: 'user-id6',
@@ -162,6 +168,7 @@ export const descriptiveJourney: Journey = {
       __typename: 'UserJourney',
       id: 'user-journey-id7',
       role: UserJourneyRole.editor,
+      openedAt: null,
       user: {
         __typename: 'User',
         id: 'user-id7',

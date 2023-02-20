@@ -40,6 +40,7 @@ const GET_PUBLISHED_TEMPLATES = gql`
       userJourneys {
         id
         role
+        openedAt
         user {
           id
           firstName
