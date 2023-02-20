@@ -13,6 +13,7 @@ import { useTranslation } from 'react-i18next'
 import { getLaunchDarklyClient } from '@core/shared/ui/getLaunchDarklyClient'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { GetJourney } from '../../../__generated__/GetJourney'
+import { UserInviteAcceptAll } from '../../../__generated__/UserInviteAcceptAll'
 import { Editor } from '../../../src/components/Editor'
 import { PageWrapper } from '../../../src/components/PageWrapper'
 import { GET_JOURNEY } from '../[journeyId]'
@@ -22,6 +23,7 @@ import { JourneyInvite } from '../../../src/components/JourneyInvite/JourneyInvi
 import { createApolloClient } from '../../../src/libs/apolloClient'
 import i18nConfig from '../../../next-i18next.config'
 import { useUserJourneyOpen } from '../../../src/libs/useUserJourneyOpen'
+import { ACCEPT_USER_INVITE } from '../..'
 import { useTermsRedirect } from '../../../src/libs/useTermsRedirect/useTermsRedirect'
 
 function JourneyEditPage(): ReactElement {
@@ -100,6 +102,10 @@ export const getServerSideProps = withAuthUserTokenSSR({
 
   const token = await AuthUser.getIdToken()
   const apolloClient = createApolloClient(token != null ? token : '')
+
+  await apolloClient.mutate<UserInviteAcceptAll>({
+    mutation: ACCEPT_USER_INVITE
+  })
 
   const { data } = await apolloClient.query<GetJourney>({
     query: GET_JOURNEY,
