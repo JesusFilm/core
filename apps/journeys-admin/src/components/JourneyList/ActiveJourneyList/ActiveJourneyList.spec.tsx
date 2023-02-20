@@ -12,6 +12,15 @@ import {
   TRASH_ACTIVE_JOURNEYS
 } from './ActiveJourneyList'
 
+jest.mock('react-i18next', () => ({
+  __esModule: true,
+  useTranslation: () => {
+    return {
+      t: (str: string) => str
+    }
+  }
+}))
+
 const activeJourneysMock = {
   request: {
     query: GET_ACTIVE_JOURNEYS
@@ -101,7 +110,7 @@ describe('ActiveJourneyList', () => {
     })
 
     const result = jest.fn(() => ({
-      data: [{ id: defaultJourney.id, status: 'archived' }]
+      data: { journeysArchive: [{ id: defaultJourney.id, status: 'archived' }] }
     }))
     const archiveJourneysMock = {
       request: {
@@ -164,7 +173,7 @@ describe('ActiveJourneyList', () => {
 
   describe('Trash All', () => {
     const result = jest.fn(() => ({
-      data: [{ id: defaultJourney.id, status: 'archived' }]
+      data: { journeysTrash: [{ id: defaultJourney.id, status: 'archived' }] }
     }))
     const trashJourneysMock = {
       request: {

@@ -44,6 +44,7 @@ export const GET_JOURNEYS = gql`
       userJourneys {
         id
         role
+        openedAt
         user {
           id
           firstName

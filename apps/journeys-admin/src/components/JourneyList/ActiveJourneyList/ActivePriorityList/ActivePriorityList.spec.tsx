@@ -12,6 +12,15 @@ import {
 } from './ActiveJourneyListData'
 import { ActivePriorityList } from './ActivePriorityList'
 
+jest.mock('react-i18next', () => ({
+  __esModule: true,
+  useTranslation: () => {
+    return {
+      t: (str: string) => str
+    }
+  }
+}))
+
 describe('ActivePriorityList', () => {
   it('should show journeyCard in default priority for owners', () => {
     const authUser = { id: 'user1.id' } as unknown as AuthUser
