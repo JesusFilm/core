@@ -6,7 +6,9 @@ import { Dialog } from '@core/shared/ui/Dialog'
 import { useTranslation } from 'react-i18next'
 import { AuthUser } from 'next-firebase-auth'
 import { useSnackbar } from 'notistack'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { GetActiveJourneys_journeys as Journeys } from '../../../../__generated__/GetActiveJourneys'
+import { JourneyFields } from '../../../../__generated__/JourneyFields'
 import { JourneyCard } from '../JourneyCard'
 import { AddJourneyButton } from '../AddJourneyButton'
 import { SortOrder } from '../JourneySort'
@@ -165,12 +167,16 @@ export function ActiveJourneyList({
       {journeys != null && sortedJourneys != null ? (
         <>
           {sortedJourneys.map((journey) => (
-            <JourneyCard
+            <JourneyProvider
               key={journey.id}
-              journey={journey}
-              refetch={activeJourneys?.refetch}
-              duplicatedJourneyId={duplicatedJourneyId}
-            />
+              value={{ journey: journey as JourneyFields, admin: true }}
+            >
+              <JourneyCard
+                journey={journey}
+                refetch={activeJourneys?.refetch}
+                duplicatedJourneyId={duplicatedJourneyId}
+              />
+            </JourneyProvider>
           ))}
           {journeys.length === 0 && (
             <Card

@@ -7,6 +7,8 @@ import { Dialog } from '@core/shared/ui/Dialog'
 import { useTranslation } from 'react-i18next'
 import { useSnackbar } from 'notistack'
 import { AuthUser } from 'next-firebase-auth'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import { JourneyFields } from '../../../../__generated__/JourneyFields'
 import {
   GetTrashedJourneys,
   GetTrashedJourneys_journeys as TrashedJourney
@@ -204,7 +206,19 @@ export function TrashedJourneyList({
       {journeys != null && sortedJourneys != null ? (
         <>
           {sortedJourneys.map((journey) => (
-            <JourneyCard key={journey.id} journey={journey} refetch={refetch} />
+            <JourneyProvider
+              key={journey.id}
+              value={{
+                journey: journey as unknown as JourneyFields,
+                admin: true
+              }}
+            >
+              <JourneyCard
+                key={journey.id}
+                journey={journey}
+                refetch={refetch}
+              />
+            </JourneyProvider>
           ))}
           {sortedJourneys.length === 0 && (
             <>

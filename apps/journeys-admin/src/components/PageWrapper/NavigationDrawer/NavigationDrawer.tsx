@@ -30,7 +30,6 @@ import { GetMe } from '../../../../__generated__/GetMe'
 import { GetUserRole } from '../../../../__generated__/GetUserRole'
 import { GET_USER_ROLE } from '../../JourneyView/JourneyView'
 import { useActiveJourneys } from '../../../libs/useActiveJourneys'
-// import { useJourneys } from '../../../libs/useJourneys'
 import { getJourneyTooltip } from '../utils/getJourneyTooltip'
 import { UserMenu } from './UserMenu'
 import { NavigationListItem } from './NavigationListItem'
@@ -109,7 +108,6 @@ export function NavigationDrawer({
 }: NavigationDrawerProps): ReactElement {
   const activeJourneys = useActiveJourneys()
   const journeys = activeJourneys?.data?.journeys
-  // const journeys = useJourneys()
   const { t } = useTranslation('apps-journeys-admin')
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
   const [profileAnchorEl, setProfileAnchorEl] = useState(null)
