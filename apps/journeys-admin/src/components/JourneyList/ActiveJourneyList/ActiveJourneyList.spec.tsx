@@ -5,7 +5,6 @@ import { SnackbarProvider } from 'notistack'
 import { AuthUser } from 'next-firebase-auth'
 import { defaultJourney, oldJourney } from '../journeyListData'
 import { ThemeProvider } from '../../ThemeProvider'
-import { SortOrder } from '../JourneySort'
 import { GET_ACTIVE_JOURNEYS } from '../../../libs/useActiveJourneys/useActiveJourneys'
 import {
   ActiveJourneyList,
@@ -47,70 +46,6 @@ const noJourneysMock = {
 const authUser = { id: 'user-id1' } as unknown as AuthUser
 
 describe('ActiveJourneyList', () => {
-  it('should render journeys in descending createdAt date by default', async () => {
-    const { getAllByLabelText } = render(
-      <MockedProvider mocks={[activeJourneysMock]}>
-        <ThemeProvider>
-          <SnackbarProvider>
-            <ActiveJourneyList onLoad={noop} event="" />
-          </SnackbarProvider>
-        </ThemeProvider>
-      </MockedProvider>
-    )
-
-    await waitFor(() =>
-      expect(getAllByLabelText('journey-card')[0].textContent).toContain(
-        'January 1'
-      )
-    )
-    expect(getAllByLabelText('journey-card')[1].textContent).toContain(
-      'November 19, 2020'
-    )
-  })
-
-  it('should order journeys in alphabetical order', async () => {
-    const lowerCaseJourneyTitle = {
-      ...defaultJourney,
-      title: 'a lower case title'
-    }
-
-    const { getAllByLabelText } = render(
-      <MockedProvider
-        mocks={[
-          {
-            request: {
-              query: GET_ACTIVE_JOURNEYS
-            },
-            result: {
-              data: {
-                journeys: [lowerCaseJourneyTitle, oldJourney]
-              }
-            }
-          }
-        ]}
-      >
-        <ThemeProvider>
-          <SnackbarProvider>
-            <ActiveJourneyList
-              onLoad={noop}
-              sortOrder={SortOrder.TITLE}
-              event=""
-            />
-          </SnackbarProvider>
-        </ThemeProvider>
-      </MockedProvider>
-    )
-
-    await waitFor(() =>
-      expect(getAllByLabelText('journey-card')[0].textContent).toContain(
-        'An Old Journey Heading'
-      )
-    )
-    expect(getAllByLabelText('journey-card')[1].textContent).toContain(
-      'a lower case title'
-    )
-  })
-
   it('should ask users to add a new journey', async () => {
     const { getByRole, getByText } = render(
       <MockedProvider mocks={[noJourneysMock]}>

@@ -6,15 +6,13 @@ import { Dialog } from '@core/shared/ui/Dialog'
 import { useTranslation } from 'react-i18next'
 import { AuthUser } from 'next-firebase-auth'
 import { useSnackbar } from 'notistack'
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { GetActiveJourneys_journeys as Journeys } from '../../../../__generated__/GetActiveJourneys'
-import { JourneyFields } from '../../../../__generated__/JourneyFields'
-import { JourneyCard } from '../JourneyCard'
-import { AddJourneyButton } from '../AddJourneyButton'
-import { SortOrder } from '../JourneySort'
-import { sortJourneys } from '../JourneySort/utils/sortJourneys'
 import { useActiveJourneys } from '../../../libs/useActiveJourneys'
+import { SortOrder } from '../JourneySort'
+import { AddJourneyButton } from '../AddJourneyButton'
+import { JourneyCard } from '../JourneyCard'
 import { getDuplicatedJourney } from './utils/getDuplicatedJourney'
+import { ActivePriorityList } from './ActivePriorityList'
 
 export const ARCHIVE_ACTIVE_JOURNEYS = gql`
   mutation ArchiveActiveJourneys($ids: [ID!]!) {
@@ -159,25 +157,17 @@ export function ActiveJourneyList({
     }
   }, [event, activeJourneys])
 
-  const sortedJourneys =
-    journeys != null ? sortJourneys(journeys, sortOrder) : undefined
-
   return (
     <>
-      {journeys != null && sortedJourneys != null ? (
+      {journeys != null ? (
         <>
-          {sortedJourneys.map((journey) => (
-            <JourneyProvider
-              key={journey.id}
-              value={{ journey: journey as JourneyFields, admin: true }}
-            >
-              <JourneyCard
-                journey={journey}
-                refetch={activeJourneys?.refetch}
-                duplicatedJourneyId={duplicatedJourneyId}
-              />
-            </JourneyProvider>
-          ))}
+          <ActivePriorityList
+            journeys={journeys}
+            sortOrder={sortOrder}
+            refetch={activeJourneys?.refetch}
+            duplicatedJourneyId={duplicatedJourneyId}
+            authUser={authUser}
+          />
           {journeys.length === 0 && (
             <Card
               variant="outlined"
