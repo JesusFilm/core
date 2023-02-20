@@ -10,13 +10,13 @@ import { GetJourney_journey_blocks_ImageBlock as ImageBlock } from '../../../../
 
 interface ImageBlockHeaderProps {
   selectedBlock: ImageBlock | null
-  isBackground?: boolean
+  showAdd?: boolean
   onDelete?: () => Promise<void>
   loading?: boolean
 }
 
 export function ImageBlockHeader({
-  isBackground = false,
+  showAdd = false,
   onDelete,
   loading = false,
   selectedBlock
@@ -29,7 +29,7 @@ export function ImageBlockHeader({
       alignItems="center"
       sx={{
         height: 78,
-        width: isBackground ? '100%' : 285
+        width: showAdd ? '100%' : 285
       }}
     >
       <Stack direction="row" alignItems="center">
@@ -50,8 +50,8 @@ export function ImageBlockHeader({
             {loading
               ? 'Image is uploading'
               : selectedBlock != null
-              ? 'Selected Image'
-              : 'Select Image'}
+                ? 'Selected Image'
+                : 'Select Image'}
           </Typography>
           <Typography
             variant="caption"
@@ -65,26 +65,22 @@ export function ImageBlockHeader({
       </Stack>
       <IconButton
         onClick={onDelete}
-        disabled={isBackground}
+        disabled={showAdd}
         sx={{
           mr: 2,
           display:
-            (selectedBlock == null && !isBackground) || loading
-              ? 'none'
-              : 'flex'
+            (selectedBlock == null && !showAdd) || loading ? 'none' : 'flex'
         }}
       >
-        {isBackground ? (
+        {showAdd ? (
           <AddIcon color="primary" />
-        ) : selectedBlock != null ? (
+        ) : selectedBlock?.src != null ? (
           <DeleteOutlineIcon
             color="primary"
             data-testid="imageBlockHeaderDelete"
           />
-        ) : (
-          <></>
-        )}
+        ) : <></>}
       </IconButton>
-    </Stack>
+    </Stack >
   )
 }

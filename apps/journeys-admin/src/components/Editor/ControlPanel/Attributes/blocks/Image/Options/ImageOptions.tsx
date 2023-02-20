@@ -3,9 +3,7 @@ import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { gql, useMutation } from '@apollo/client'
-import Box from '@mui/material/Box'
 import { useSnackbar } from 'notistack'
-import { object, string } from 'yup'
 import { GetJourney_journey_blocks_ImageBlock as ImageBlock } from '../../../../../../../../__generated__/GetJourney'
 import { ImageBlockUpdate } from '../../../../../../../../__generated__/ImageBlockUpdate'
 import { blockDeleteUpdate } from '../../../../../../../libs/blockDeleteUpdate/blockDeleteUpdate'
@@ -39,13 +37,7 @@ export const IMAGE_BLOCK_DELETE = gql`
   }
 `
 
-interface ImageOptionsProps {
-  noSource?: boolean
-}
-
-export function ImageOptions({
-  noSource = false
-}: ImageOptionsProps): ReactElement {
+export function ImageOptions(): ReactElement {
   const {
     state: { selectedBlock }
   } = useEditor()
@@ -57,25 +49,6 @@ export function ImageOptions({
   const imageBlock = selectedBlock as TreeBlock<ImageBlock>
 
   const [blockDelete] = useMutation<ImageBlockDelete>(IMAGE_BLOCK_DELETE)
-
-  const srcSchema = object().shape({
-    src: string().url('Please enter a valid url').required('Required')
-  })
-
-  const handleImageDelete = async (): Promise<void> => {
-    try {
-      await deleteCoverBlock()
-      enqueueSnackbar('Image Deleted', {
-        variant: 'success',
-        preventDuplicate: true
-      })
-    } catch (e) {
-      enqueueSnackbar(e.message, {
-        variant: 'error',
-        preventDuplicate: true
-      })
-    }
-  }
 
   const deleteCoverBlock = async (): Promise<void> => {
     if (journey == null) return
@@ -92,16 +65,23 @@ export function ImageOptions({
     })
   }
 
-  const updateImageBlock = async (src: string): Promise<void> => {
-    if (journey == null) return
-
-    if (!(await srcSchema.isValid({ src }))) return
-
-    const block = {
-      ...selectedBlock,
-      src,
-      alt: src.replace(/(.*\/)*/, '').replace(/\?.*/, '') // per Vlad 26/1/22, we are hardcoding the image alt for now
+  const handleImageDelete = async (): Promise<void> => {
+    try {
+      await deleteCoverBlock()
+      enqueueSnackbar('Image Deleted', {
+        variant: 'success',
+        preventDuplicate: true
+      })
+    } catch (e) {
+      enqueueSnackbar(e.message, {
+        variant: 'error',
+        preventDuplicate: true
+      })
     }
+  }
+
+  const updateImageBlock = async (block: ImageBlock): Promise<void> => {
+    if (journey == null) return
 
     try {
       await imageBlockUpdate({
@@ -127,13 +107,10 @@ export function ImageOptions({
   }
 
   return (
-    <Box sx={{ pt: 4, pb: 3, px: 6 }}>
-      <ImageBlockEditor
-        onChange={updateImageBlock}
-        selectedBlock={selectedBlock}
-        loading={loading}
-        noSource={noSource}
-      />
-    </Box>
+    <ImageBlockEditor
+      onChange={updateImageBlock}
+      selectedBlock={imageBlock}
+      loading={loading}
+    />
   )
 }

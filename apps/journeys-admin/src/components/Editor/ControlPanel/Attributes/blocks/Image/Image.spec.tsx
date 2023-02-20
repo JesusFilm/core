@@ -69,7 +69,7 @@ describe('Image', () => {
     expect(dispatch).toHaveBeenCalledWith({
       type: 'SetDrawerPropsAction',
       title: 'Image',
-      children: <ImageOptions noSource />
+      children: <ImageOptions />
     })
   })
 })

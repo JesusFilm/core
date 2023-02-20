@@ -11,17 +11,15 @@ interface ImageSourceProps {
   onChange: (block: ImageBlock) => Promise<void>
   onDelete?: () => Promise<void>
   loading?: boolean
-  noSource?: boolean
 }
 
 export function ImageSource({
   selectedBlock,
   onChange,
   onDelete,
-  loading,
-  noSource = false
+  loading
 }: ImageSourceProps): ReactElement {
-  const [open, setOpen] = useState(noSource)
+  const [open, setOpen] = useState(false)
 
   const handleImageDelete = async (): Promise<void> => {
     if (onDelete != null) {
@@ -31,28 +29,26 @@ export function ImageSource({
 
   return (
     <>
-      {!noSource && (
-        <Card
-          variant="outlined"
+      <Card
+        variant="outlined"
+        sx={{
+          height: 73,
+          borderRadius: 2
+        }}
+      >
+        <CardActionArea
+          data-testid="card click area"
+          onClick={() => setOpen(true)}
           sx={{
-            height: 73,
-            borderRadius: 2
+            height: '100%',
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            display: 'flex'
           }}
         >
-          <CardActionArea
-            data-testid="card click area"
-            onClick={() => setOpen(true)}
-            sx={{
-              height: '100%',
-              flexDirection: 'row',
-              justifyContent: 'space-between',
-              display: 'flex'
-            }}
-          >
-            <ImageBlockHeader selectedBlock={null} isBackground />
-          </CardActionArea>
-        </Card>
-      )}
+          <ImageBlockHeader selectedBlock={selectedBlock} showAdd />
+        </CardActionArea>
+      </Card>
       <ImageLibrary
         open={open}
         onClose={() => setOpen(false)}
@@ -60,7 +56,6 @@ export function ImageSource({
         onDelete={handleImageDelete}
         selectedBlock={selectedBlock}
         loading={loading}
-        noSource={noSource}
       />
     </>
   )

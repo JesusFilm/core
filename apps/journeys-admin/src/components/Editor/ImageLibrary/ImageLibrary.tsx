@@ -7,7 +7,6 @@ import Drawer from '@mui/material/Drawer'
 import { Theme } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import useMediaQuery from '@mui/material/useMediaQuery'
-import { object, string } from 'yup'
 import { GetJourney_journey_blocks_ImageBlock as ImageBlock } from '../../../../__generated__/GetJourney'
 import { ImageBlockEditor } from '../ImageBlockEditor'
 
@@ -20,7 +19,7 @@ interface ImageLibraryProps {
   onDelete?: () => Promise<void>
   selectedBlock: ImageBlock | null
   loading?: boolean
-  noSource?: boolean
+  showAdd?: boolean
 }
 
 export function ImageLibrary({
@@ -30,25 +29,9 @@ export function ImageLibrary({
   onDelete,
   selectedBlock,
   loading,
-  noSource = false
+  showAdd
 }: ImageLibraryProps): ReactElement {
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
-
-  const srcSchema = object().shape({
-    src: string().url('Please enter a valid url').required('Required')
-  })
-
-  const handleSrcChange = async (src: string): Promise<void> => {
-    if (!(await srcSchema.isValid({ src })) || src === selectedBlock?.src)
-      return
-
-    const block = {
-      ...selectedBlock,
-      src,
-      alt: src.replace(/(.*\/)*/, '').replace(/\?.*/, '') // per Vlad 26/1/22, we are hardcoding the image alt for now
-    }
-    await onChange(block as ImageBlock)
-  }
 
   return (
     <Drawer
@@ -84,16 +67,16 @@ export function ImageLibrary({
             sx={{ display: 'inline-flex' }}
             edge="end"
           >
-            <Close sx={{ display: { xs: 'block', sm: 'none' } }} />
+            <Close />
           </IconButton>
         </Toolbar>
       </AppBar>
       <ImageBlockEditor
-        onChange={handleSrcChange}
+        onChange={onChange}
         onDelete={onDelete}
         selectedBlock={selectedBlock}
         loading={loading}
-        noSource={noSource}
+        showAdd={showAdd}
       />
     </Drawer>
   )

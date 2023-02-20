@@ -13,11 +13,11 @@ import { CustomImage } from '../ImageLibrary/CustomImage'
 import { ImageUpload } from '../ImageLibrary/CustomImage/ImageUpload'
 
 interface ImageBlockEditorProps {
-  onChange: (src: string) => Promise<void>
+  onChange: (imageBlock: ImageBlock) => Promise<void>
   onDelete?: () => Promise<void>
   selectedBlock: ImageBlock | null
   loading?: boolean
-  noSource?: boolean
+  showAdd?: boolean
 }
 
 export function ImageBlockEditor({
@@ -25,7 +25,7 @@ export function ImageBlockEditor({
   onDelete,
   selectedBlock,
   loading,
-  noSource
+  showAdd
 }: ImageBlockEditorProps): ReactElement {
   const [tabValue, setTabValue] = useState(0)
 
@@ -34,6 +34,22 @@ export function ImageBlockEditor({
     newValue: number
   ): void => {
     setTabValue(newValue)
+  }
+
+  const srcSchema = object().shape({
+    src: string().url('Please enter a valid url').required('Required')
+  })
+
+  const handleSrcChange = async (src: string): Promise<void> => {
+    if (!(await srcSchema.isValid({ src })) || src === selectedBlock?.src)
+      return
+
+    const block = {
+      ...selectedBlock,
+      src,
+      alt: src.replace(/(.*\/)*/, '').replace(/\?.*/, '') // per Vlad 26/1/22, we are hardcoding the image alt for now
+    }
+    await onChange(block as ImageBlock)
   }
 
   return (
@@ -45,6 +61,7 @@ export function ImageBlockEditor({
           selectedBlock={selectedBlock}
           onDelete={onDelete}
           loading={loading}
+          showAdd={showAdd}
         />
       </Box>
       <Box data-testid="ImageLibrary">
@@ -69,8 +86,8 @@ export function ImageBlockEditor({
           {/* insert unsplash component */}
         </TabPanel>
         <TabPanel name="custom" value={tabValue} index={1}>
-          <ImageUpload onChange={onChange} loading={loading} />
-          <CustomImage onChange={onChange} />
+          <ImageUpload onChange={handleSrcChange} loading={loading} />
+          <CustomImage onChange={handleSrcChange} />
         </TabPanel>
       </Box>
     </>
