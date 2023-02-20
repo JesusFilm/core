@@ -13,8 +13,8 @@ import {
 import { JourneyCard } from '../JourneyCard'
 import { AddJourneyButton } from '../AddJourneyButton'
 import { SortOrder } from '../JourneySort'
-import { sortJourneys } from '../JourneySort/utils/sortJourneys'
 import { getDuplicatedJourney } from './utils/getDuplicatedJourney'
+import { ActivePriorityList } from './ActivePriorityList'
 
 export const GET_ACTIVE_JOURNEYS = gql`
   query GetActiveJourneys {
@@ -40,6 +40,7 @@ export const GET_ACTIVE_JOURNEYS = gql`
       userJourneys {
         id
         role
+        openedAt
         user {
           id
           firstName
@@ -192,21 +193,17 @@ export function ActiveJourneyList({
     }
   }, [event, refetch])
 
-  const sortedJourneys =
-    journeys != null ? sortJourneys(journeys, sortOrder) : undefined
-
   return (
     <>
-      {journeys != null && sortedJourneys != null ? (
+      {journeys != null ? (
         <>
-          {sortedJourneys.map((journey) => (
-            <JourneyCard
-              key={journey.id}
-              journey={journey}
-              refetch={refetch}
-              duplicatedJourneyId={duplicatedJourneyId}
-            />
-          ))}
+          <ActivePriorityList
+            journeys={journeys}
+            sortOrder={sortOrder}
+            refetch={refetch}
+            duplicatedJourneyId={duplicatedJourneyId}
+            authUser={authUser}
+          />
           {journeys.length === 0 && (
             <Card
               variant="outlined"
