@@ -1,10 +1,11 @@
-import { ReactElement } from 'react'
+import { FunctionComponent, ReactElement } from 'react'
 import NextLink from 'next/link'
 import Tooltip from '@mui/material/Tooltip'
 import ListItemButton from '@mui/material/ListItemButton'
 import ListItemIcon from '@mui/material/ListItemIcon'
 import ListItemText from '@mui/material/ListItemText'
 import Badge from '@mui/material/Badge'
+import flowRight from 'lodash/flowRight'
 
 export interface NavigationListItemProps {
   icon: ReactElement
@@ -19,92 +20,76 @@ export function NavigationListItem({
   icon,
   label,
   selected,
-  link,
+  link = '',
   handleClick,
-  tooltipText
+  tooltipText = ''
 }: NavigationListItemProps): ReactElement {
   const color = selected ? 'background.paper' : 'secondary.light'
-
-  const wrappedNavListItem = linkWrapper({ link })({
-    tooltipText,
-    children: (
-      <ListItemButton
-        onClick={handleClick}
-        aria-selected={selected}
-        data-testid={`${label}-list-item`}
+  const children: ReactElement = (
+    <ListItemButton
+      onClick={handleClick}
+      aria-selected={selected}
+      data-testid={`${label}-list-item`}
+    >
+      <Badge
+        variant="dot"
+        color="warning"
+        overlap="circular"
+        invisible={tooltipText == null}
+        data-testid="nav-notification-badge"
+        sx={{
+          '& .MuiBadge-badge': {
+            right: '32%',
+            top: '10%'
+          }
+        }}
       >
-        <Badge
-          variant="dot"
-          color="warning"
-          overlap="circular"
-          invisible={tooltipText == null}
-          data-testid="nav-notification-badge"
-          sx={{
-            '& .MuiBadge-badge': {
-              right: '32%',
-              top: '10%'
-            }
-          }}
-        >
-          <ListItemIcon sx={{ color }}>{icon}</ListItemIcon>
-        </Badge>
-        <ListItemText primary={label} sx={{ color }} />
-      </ListItemButton>
-    )
-  })
-  return <>{wrappedNavListItem}</>
+        <ListItemIcon sx={{ color }}>{icon}</ListItemIcon>
+      </Badge>
+      <ListItemText primary={label} sx={{ color }} />
+    </ListItemButton>
+  )
+
+  // const enhance = flowRight([
+  //   () => withLink(link),
+  //   () => withTooltip(tooltipText)
+  // ])
+  const enhance = compose(withLink(link), withTooltip(tooltipText))
+
+  const WrappedNavListItem = enhance(children)
+
+  return <WrappedNavListItem />
 }
 
-interface LinkWrapperProps {
-  link?: string
-}
+const compose =
+  (...hocs) =>
+  (BaseComponent: ReactElement) =>
+    hocs.reduceRight((acc, hoc) => hoc(acc), BaseComponent)
 
-interface TooltipTextWrapperProps {
-  tooltipText?: string
-  children: ReactElement
-}
-
-const linkWrapper = ({
-  link
-}: LinkWrapperProps): (({
-  tooltipText,
-  children
-}: TooltipTextWrapperProps) => ReactElement) => {
-  if (link != null) {
-    return function tooltipTextWrapper({
-      tooltipText,
-      children
-    }): ReactElement {
-      if (tooltipText != null) {
-        return (
-          <NextLink href={link} passHref>
-            <Tooltip title={tooltipText ?? ''} placement="right" arrow>
-              {children}
-            </Tooltip>
-          </NextLink>
-        )
-      } else {
-        return (
-          <NextLink href={link} passHref>
-            {children}
-          </NextLink>
-        )
-      }
-    }
-  } else {
-    return function tooltipTextWrapper({
-      tooltipText,
-      children
-    }): ReactElement {
-      if (tooltipText != null) {
-        return (
-          <Tooltip title={tooltipText ?? ''} placement="right" arrow>
-            {children}
-          </Tooltip>
-        )
-      } else {
-        return <>{children}</>
-      }
+const withLink = (link: string | undefined) =>
+  function component(baseComponent: ReactElement) {
+    console.log('link:', link)
+    console.log('baseComponent: ', baseComponent)
+    if (link != null) {
+      return (
+        <NextLink href={link} passHref>
+          {baseComponent}
+        </NextLink>
+      )
+    } else {
+      return <>{baseComponent}</>
     }
   }
-}
+
+const withTooltip = (tooltip: string | undefined) =>
+  function component(baseComponent: ReactElement) {
+    if (tooltip != null) {
+      return (
+        <Tooltip title={tooltip} placement="right" arrow>
+          {baseComponent}
+        </Tooltip>
+      )
+    } else {
+      return <>{baseComponent}</>
+    }
+  }
