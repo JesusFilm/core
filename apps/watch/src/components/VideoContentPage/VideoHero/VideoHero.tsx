@@ -59,7 +59,8 @@ export function VideoHero({ onPlay, hasPlayed }: VideoHeroProps): ReactElement {
       <Div100vh
         css={{
           marginBottom: isFullscreen ? 0 : -VIDEO_HERO_BOTTOM_SPACING,
-          paddingBottom: isFullscreen ? 0 : VIDEO_HERO_BOTTOM_SPACING
+          paddingBottom: isFullscreen ? 0 : VIDEO_HERO_BOTTOM_SPACING,
+          minHeight: 560
         }}
       >
         <Box
