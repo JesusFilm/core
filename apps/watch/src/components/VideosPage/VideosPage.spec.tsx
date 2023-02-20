@@ -11,7 +11,7 @@ describe('VideosPage', () => {
     it('should render a grid', () => {
       const { getByTestId } = render(
         <MockedProvider>
-          <VideosPage />
+          <VideosPage videos={videos} />
         </MockedProvider>
       )
       expect(getByTestId('videos-grid')).toBeInTheDocument()
@@ -38,7 +38,7 @@ describe('VideosPage', () => {
             }
           ]}
         >
-          <VideosPage />
+          <VideosPage videos={videos} />
         </MockedProvider>
       )
       await waitFor(() => {
@@ -110,7 +110,7 @@ describe('VideosPage', () => {
             }
           ]}
         >
-          <VideosPage />
+          <VideosPage videos={videos} />
         </MockedProvider>
       )
       await waitFor(() =>
@@ -182,7 +182,7 @@ describe('VideosPage', () => {
             }
           ]}
         >
-          <VideosPage />
+          <VideosPage videos={videos} />
         </MockedProvider>
       )
 
@@ -247,7 +247,7 @@ describe('VideosPage', () => {
             }
           ]}
         >
-          <VideosPage />
+          <VideosPage videos={videos} />
         </MockedProvider>
       )
       const textbox = getAllByRole('combobox')[0]

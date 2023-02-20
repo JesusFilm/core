@@ -1,5 +1,5 @@
 import { gql, useQuery } from '@apollo/client'
-import { ReactElement, useEffect, useMemo, useState } from 'react'
+import { ReactElement, useMemo, useState, useEffect } from 'react'
 import Box from '@mui/material/Box'
 import Container from '@mui/material/Container'
 import Divider from '@mui/material/Divider'
@@ -52,7 +52,7 @@ function isAtEnd(count: number, limit: number, previousCount: number): boolean {
   return count % limit !== 0
 }
 
-export function VideosPage(): ReactElement {
+export function VideosPage({ videos }): ReactElement {
   const languageContext = useLanguage()
   const [isEnd, setIsEnd] = useState(false)
   const [previousCount, setPreviousCount] = useState(0)
@@ -287,7 +287,15 @@ export function VideosPage(): ReactElement {
           </Stack>
           <Box sx={{ width: '100%' }}>
             <VideoGrid
-              videos={data?.videos ?? []}
+              videos={
+                (filter.availableVariantLanguageIds == null ||
+                  filter.availableVariantLanguageIds.length === 0) &&
+                (filter.subtitleLanguageIds == null ||
+                  filter.subtitleLanguageIds.length === 0) &&
+                (filter.title == null || filter.title === '')
+                  ? videos
+                  : data?.videos ?? []
+              }
               onLoadMore={handleLoadMore}
               loading={loading}
               hasNextPage={!isEnd}
