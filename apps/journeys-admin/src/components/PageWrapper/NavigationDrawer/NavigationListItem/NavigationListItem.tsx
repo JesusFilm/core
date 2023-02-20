@@ -1,4 +1,4 @@
-import { FunctionComponent, ReactElement } from 'react'
+import { ReactElement } from 'react'
 import NextLink from 'next/link'
 import Tooltip from '@mui/material/Tooltip'
 import ListItemButton from '@mui/material/ListItemButton'
@@ -20,12 +20,12 @@ export function NavigationListItem({
   icon,
   label,
   selected,
-  link = '',
+  link,
   handleClick,
-  tooltipText = ''
+  tooltipText
 }: NavigationListItemProps): ReactElement {
   const color = selected ? 'background.paper' : 'secondary.light'
-  const children: ReactElement = (
+  const ListItem: ReactElement = (
     <ListItemButton
       onClick={handleClick}
       aria-selected={selected}
@@ -49,27 +49,14 @@ export function NavigationListItem({
       <ListItemText primary={label} sx={{ color }} />
     </ListItemButton>
   )
+  const enhance = flowRight(withLink(link), withTooltip(tooltipText))
+  const WrappedNavListItem = enhance(ListItem)
 
-  // const enhance = flowRight([
-  //   () => withLink(link),
-  //   () => withTooltip(tooltipText)
-  // ])
-  const enhance = compose(withLink(link), withTooltip(tooltipText))
-
-  const WrappedNavListItem = enhance(children)
-
-  return <WrappedNavListItem />
+  return WrappedNavListItem
 }
-
-const compose =
-  (...hocs) =>
-  (BaseComponent: ReactElement) =>
-    hocs.reduceRight((acc, hoc) => hoc(acc), BaseComponent)
 
 const withLink = (link: string | undefined) =>
   function component(baseComponent: ReactElement) {
-    console.log('link:', link)
-    console.log('baseComponent: ', baseComponent)
     if (link != null) {
       return (
         <NextLink href={link} passHref>
@@ -77,7 +64,7 @@ const withLink = (link: string | undefined) =>
         </NextLink>
       )
     } else {
-      return <>{baseComponent}</>
+      return baseComponent
     }
   }
 
@@ -90,6 +77,6 @@ const withTooltip = (tooltip: string | undefined) =>
         </Tooltip>
       )
     } else {
-      return <>{baseComponent}</>
+      return baseComponent
     }
   }
