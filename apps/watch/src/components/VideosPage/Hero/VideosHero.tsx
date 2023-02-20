@@ -19,7 +19,7 @@ export function VideosHero(): ReactElement {
           position: 'relative',
           display: 'flex',
           alignItems: 'flex-end',
-          height: 340,
+          height: { xs: 240, md: 340 },
           backgroundColor: '#771E3E'
         }}
       >
@@ -29,7 +29,7 @@ export function VideosHero(): ReactElement {
           objectFit="cover"
           alt="hero background"
         />
-        <Container maxWidth="xxl" sx={{ pb: 11, zIndex: 1 }}>
+        <Container maxWidth="xxl" sx={{ pb: { xs: 10, md: 15 }, zIndex: 1 }}>
           <Typography
             variant="h2"
             color="text.primary"
