@@ -1,1 +1,0 @@
-export { UserJourneyList } from './UserJourneyList'

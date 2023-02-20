@@ -409,6 +409,10 @@ export interface TypographyBlockUpdateInput {
   align?: TypographyAlign | null;
 }
 
+export interface UserInviteCreateInput {
+  email: string;
+}
+
 export interface VideoBlockCreateInput {
   id?: string | null;
   journeyId: string;
