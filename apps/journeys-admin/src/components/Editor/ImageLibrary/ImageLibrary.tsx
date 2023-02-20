@@ -18,6 +18,7 @@ import { object, string } from 'yup'
 import { GetJourney_journey_blocks_ImageBlock as ImageBlock } from '../../../../__generated__/GetJourney'
 import { ImageBlockHeader } from '../ImageBlockHeader'
 import { UnsplashGallery } from './UnsplashGallery'
+import type { UnsplashAuthor } from './UnsplashGallery'
 
 export const DRAWER_WIDTH = 328
 
@@ -40,7 +41,7 @@ export function ImageLibrary({
 }: ImageLibraryProps): ReactElement {
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
   const [tabValue, setTabValue] = useState(0)
-  const [unsplashAuthor, setUnsplashAuthor] = useState<string>()
+  const [unsplashAuthor, setUnsplashAuthor] = useState<UnsplashAuthor>()
   const { unsplashGallery } = useFlags()
 
   const srcSchema = object().shape({
@@ -72,13 +73,13 @@ export function ImageLibrary({
 
   const handleUnsplashChange = async (
     src: string,
-    author: string,
+    unsplashAuthor: { fullname: string; username: string },
     blurHash?: string,
     width?: number,
     height?: number
   ): Promise<void> => {
     await handleSrcChange(src, blurHash, width, height)
-    setUnsplashAuthor(author)
+    setUnsplashAuthor(unsplashAuthor)
   }
 
   const handleTabChange = (
