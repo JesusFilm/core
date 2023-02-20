@@ -2,7 +2,7 @@ import { Scalar, CustomScalar } from '@nestjs/graphql'
 import { Kind, ValueNode } from 'graphql'
 
 @Scalar('DateTime')
-export class DateTimeScalar implements CustomScalar<string, Date> {
+export class DateTimeScalar implements CustomScalar<string, Date | null> {
   description = 'DateTime custom scalar'
 
   parseValue(value: number): Date {

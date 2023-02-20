@@ -3,33 +3,18 @@ import { useRouter } from 'next/router'
 import { ReactElement, useState } from 'react'
 import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
-import { gql, useQuery } from '@apollo/client'
-import { GetVideoChildren } from '../../../__generated__/GetVideoChildren'
 import { PageWrapper } from '../PageWrapper'
 import { ShareDialog } from '../ShareDialog'
 import { VideoGrid } from '../VideoGrid/VideoGrid'
 import { useVideo } from '../../libs/videoContext'
-import { VIDEO_CHILD_FIELDS } from '../../libs/videoChildFields'
+import { useVideoChildren } from '../../libs/useVideoChildren'
 import { ContainerDescription } from './ContainerDescription'
 import { ContainerHero } from './ContainerHero'
 
-export const GET_VIDEO_CHILDREN = gql`
-  ${VIDEO_CHILD_FIELDS}
-  query GetVideoChildren($id: ID!, $languageId: ID) {
-    video(id: $id) {
-      children {
-        ...VideoChildFields
-      }
-    }
-  }
-`
-
 // Usually Series or Collection Videos
 export function VideoContainerPage(): ReactElement {
-  const { snippet, id, slug } = useVideo()
-  const { data } = useQuery<GetVideoChildren>(GET_VIDEO_CHILDREN, {
-    variables: { id }
-  })
+  const { snippet, slug, variant } = useVideo()
+  const { loading, children } = useVideoChildren(variant?.slug)
   const router = useRouter()
   const [shareDialog, setShareDialog] = useState<boolean>(false)
   const routeArray: string[] = []
@@ -64,10 +49,12 @@ export function VideoContainerPage(): ReactElement {
           />
           <ShareDialog open={shareDialog} onClose={handleCloseDialog} />
           <Box>
-            {data?.video?.children != null && (
+            {loading ? (
+              <VideoGrid loading variant="expanded" />
+            ) : (
               <VideoGrid
                 containerSlug={slug}
-                videos={data.video.children}
+                videos={children}
                 variant="expanded"
               />
             )}

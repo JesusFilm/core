@@ -1,8 +1,6 @@
-FROM node:16-alpine
-WORKDIR /app
-COPY ./dist/apps/api-gateway .
-EXPOSE 4000
-# dependencies that apollo federation needs
-RUN npm install --production
-RUN npm install apollo-server-express @firebase/app-compat@0.1.12 pino-pretty@9.1.1
-CMD node ./main.js
+# when updating router version you'll need to:
+# - update .devcontainer/post-create-command.sh apollo router version (...nix/vX.X.X)
+# - update app/api-gateway/Dockerfile image version (...router/vX.X.X)
+# - inform all developers to rebuild their containers
+FROM ghcr.io/apollographql/router:v1.10.1
+COPY ./apps/api-gateway/router.prod.yaml /dist/config/router.yaml

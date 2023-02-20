@@ -1,46 +1,83 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { Database } from 'arangojs'
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
+import { v4 as uuidv4 } from 'uuid'
 import {
   mockCollectionRemoveResult,
   mockCollectionSaveResult,
   mockDbQueryResult
 } from '@core/nest/database/mock'
-import { DocumentCollection } from 'arangojs/collection'
+import { DocumentCollection, EdgeCollection } from 'arangojs/collection'
 import { keyAsId } from '@core/nest/decorators/KeyAsId'
 
 import {
+  IdType,
   Journey,
   JourneyStatus,
   ThemeMode,
   ThemeName,
   UserJourneyRole
 } from '../../__generated__/graphql'
-import { UserJourneyService } from './userJourney.service'
+import { JourneyService } from '../journey/journey.service'
+import { MemberService } from '../member/member.service'
+import { UserJourneyRecord, UserJourneyService } from './userJourney.service'
+
+jest.mock('uuid', () => ({
+  __esModule: true,
+  v4: jest.fn()
+}))
+
+const mockUuidv4 = uuidv4 as jest.MockedFunction<typeof uuidv4>
 
 describe('UserJourneyService', () => {
-  let service: UserJourneyService
+  let service: UserJourneyService,
+    mService: MemberService,
+    db: DeepMockProxy<Database>,
+    collectionMock: DeepMockProxy<DocumentCollection & EdgeCollection>
+
+  const journeyService = {
+    provide: JourneyService,
+    useFactory: () => ({
+      get: jest.fn((id) => (id === journey.id ? journey : null)),
+      getBySlug: jest.fn((slug) => (slug === journey.slug ? journey : null))
+    })
+  }
+
+  const memberService = {
+    provide: MemberService,
+    useFactory: () => ({
+      save: jest.fn((member) => member),
+      getMemberByTeamId: jest.fn((userId, teamId) => {
+        'memberId'
+      })
+    })
+  }
 
   beforeEach(async () => {
+    db = mockDeep()
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         UserJourneyService,
+        journeyService,
+        memberService,
         {
           provide: 'DATABASE',
-          useFactory: () => mockDeep<Database>()
+          useFactory: () => db
         }
       ]
     }).compile()
 
     service = module.get<UserJourneyService>(UserJourneyService)
-    service.collection = mockDeep<DocumentCollection>()
+    collectionMock = mockDeep()
+    service.collection = collectionMock
+    mService = module.get<MemberService>(MemberService)
   })
   afterAll(() => {
     jest.resetAllMocks()
   })
 
-  const userJourney = {
-    _key: '1',
+  const userJourney: UserJourneyRecord = {
+    id: '1',
     userId: '1',
     journeyId: '2',
     role: UserJourneyRole.editor
@@ -48,7 +85,14 @@ describe('UserJourneyService', () => {
 
   const userJourneyWithId = keyAsId(userJourney)
 
-  const journey: Journey = {
+  const userJourneyInvited = {
+    id: '2',
+    userId: '2',
+    journeyId: '1',
+    role: UserJourneyRole.inviteRequested
+  }
+
+  const journey: Journey & { teamId: string } = {
     id: '1',
     title: 'published',
     language: { id: '529' },
@@ -58,12 +102,13 @@ describe('UserJourneyService', () => {
     primaryImageBlock: null,
     slug: 'published-slug',
     createdAt: '',
-    status: JourneyStatus.published
+    status: JourneyStatus.published,
+    teamId: 'teamId'
   }
 
   describe('forJourney', () => {
     beforeEach(() => {
-      ;(service.db as DeepMockProxy<Database>).query.mockReturnValue(
+      db.query.mockReturnValue(
         mockDbQueryResult(service.db, [userJourney, userJourney])
       )
     })
@@ -78,9 +123,7 @@ describe('UserJourneyService', () => {
 
   describe('forUserJourney', () => {
     beforeEach(() => {
-      ;(service.db as DeepMockProxy<Database>).query.mockReturnValue(
-        mockDbQueryResult(service.db, [userJourney])
-      )
+      db.query.mockReturnValue(mockDbQueryResult(service.db, [userJourney]))
     })
 
     it('should return a userjourney', async () => {
@@ -90,10 +133,11 @@ describe('UserJourneyService', () => {
 
   describe('remove', () => {
     beforeEach(() => {
-      ;(
-        service.collection as DeepMockProxy<DocumentCollection>
-      ).remove.mockReturnValue(
-        mockCollectionRemoveResult(service.collection, userJourney)
+      collectionMock.remove.mockReturnValue(
+        mockCollectionRemoveResult(service.collection, {
+          ...userJourney,
+          _key: userJourney.id
+        })
       )
     })
 
@@ -104,10 +148,11 @@ describe('UserJourneyService', () => {
 
   describe('save', () => {
     beforeEach(() => {
-      ;(
-        service.collection as DeepMockProxy<DocumentCollection>
-      ).save.mockReturnValue(
-        mockCollectionSaveResult(service.collection, userJourney)
+      collectionMock.save.mockReturnValue(
+        mockCollectionSaveResult(service.collection, {
+          ...userJourney,
+          _key: userJourney.id
+        })
       )
     })
 
@@ -118,15 +163,157 @@ describe('UserJourneyService', () => {
 
   describe('update', () => {
     beforeEach(() => {
-      ;(
-        service.collection as DeepMockProxy<DocumentCollection>
-      ).update.mockReturnValue(
-        mockCollectionSaveResult(service.collection, userJourney)
+      collectionMock.update.mockReturnValue(
+        mockCollectionSaveResult(service.collection, {
+          ...userJourney,
+          _key: userJourney.id
+        })
       )
     })
 
     it('should return an updated userJourney', async () => {
       expect(await service.update('1', userJourney)).toEqual(userJourneyWithId)
+    })
+  })
+
+  describe('requestAccess', () => {
+    it('throws UserInputError when journey does not exist', async () => {
+      await service
+        .requestAccess('randomJourneyId', IdType.databaseId, '1')
+        .catch((error) => {
+          expect(error.message).toEqual('journey does not exist')
+        })
+    })
+
+    it('creates a UserJourney when journeyId is databaseId', async () => {
+      db.query.mockReturnValueOnce(mockDbQueryResult(service.db, []))
+      mockUuidv4.mockReturnValueOnce(userJourneyInvited.id)
+      collectionMock.save.mockReturnValue(
+        mockCollectionSaveResult(service.collection, {
+          ...userJourneyInvited,
+          _key: userJourneyInvited.id
+        })
+      )
+
+      expect(
+        await service.requestAccess(journey.id, IdType.databaseId, '1')
+      ).toEqual(userJourneyInvited)
+    })
+    it('creates a UserJourney when journeyId is slug', async () => {
+      db.query.mockReturnValueOnce(mockDbQueryResult(service.db, []))
+      mockUuidv4.mockReturnValueOnce(userJourneyInvited.id)
+      collectionMock.save.mockReturnValue(
+        mockCollectionSaveResult(service.collection, {
+          ...userJourneyInvited,
+          _key: userJourneyInvited.id
+        })
+      )
+
+      expect(
+        await service.requestAccess(journey.slug, IdType.slug, '1')
+      ).toEqual(userJourneyInvited)
+    })
+
+    it('returns an existing a UserJourney access request ', async () => {
+      db.query.mockReturnValueOnce(
+        mockDbQueryResult(service.db, [userJourneyInvited])
+      )
+
+      expect(
+        await service.requestAccess(journey.id, IdType.databaseId, '1')
+      ).toEqual(userJourneyInvited)
+    })
+
+    it('returns undefined if UserJourney role access already granted', async () => {
+      db.query.mockReturnValueOnce(mockDbQueryResult(service.db, [userJourney]))
+
+      expect(
+        await service.requestAccess(journey.id, IdType.databaseId, '1')
+      ).toEqual(undefined)
+    })
+  })
+
+  describe('approveAccess', () => {
+    const userJourneyOwner = {
+      ...userJourney,
+      role: UserJourneyRole.owner
+    }
+
+    it('should throw UserInputError if userJourney does not exist', async () => {
+      db.query.mockReturnValueOnce(mockDbQueryResult(service.db, []))
+
+      await service.approveAccess('wrongId', '1').catch((error) => {
+        expect(error.message).toEqual('userJourney does not exist')
+      })
+    })
+
+    it('should throw Auth error if approver an invitee', async () => {
+      db.query.mockReturnValueOnce(
+        mockDbQueryResult(service.db, [userJourneyInvited])
+      )
+      db.query.mockReturnValueOnce(
+        mockDbQueryResult(service.db, [userJourneyInvited])
+      )
+
+      await service
+        .approveAccess(userJourneyInvited.id, userJourneyInvited.userId)
+        .catch((error) => {
+          expect(error.message).toEqual(
+            'You do not have permission to approve access'
+          )
+        })
+    })
+
+    it('updates a UserJourney to editor status', async () => {
+      db.query.mockReturnValueOnce(
+        mockDbQueryResult(service.db, [userJourneyInvited])
+      )
+      db.query.mockReturnValueOnce(
+        mockDbQueryResult(service.db, [userJourneyOwner])
+      )
+      collectionMock.update.mockReturnValue(
+        mockCollectionSaveResult(service.collection, {
+          ...userJourneyInvited,
+          role: UserJourneyRole.editor,
+          _key: userJourneyInvited.id
+        })
+      )
+
+      expect(
+        await service.approveAccess(
+          userJourneyInvited.id,
+          userJourneyOwner.userId
+        )
+      ).toEqual({
+        ...userJourneyInvited,
+        role: UserJourneyRole.editor
+      })
+    })
+
+    it('adds user to team', async () => {
+      db.query.mockReturnValueOnce(
+        mockDbQueryResult(service.db, [userJourneyInvited])
+      )
+      db.query.mockReturnValueOnce(
+        mockDbQueryResult(service.db, [userJourneyOwner])
+      )
+      collectionMock.update.mockReturnValue(
+        mockCollectionSaveResult(service.collection, {
+          ...userJourneyInvited,
+          role: UserJourneyRole.editor,
+          _key: userJourneyInvited.id
+        })
+      )
+
+      await service.approveAccess(userJourney.id, userJourney.userId)
+      expect(mService.save).toHaveBeenCalledWith(
+        {
+          id: '1:teamId',
+          teamId: 'teamId',
+          userId: '1'
+        },
+        { overwriteMode: 'ignore' }
+      )
     })
   })
 })

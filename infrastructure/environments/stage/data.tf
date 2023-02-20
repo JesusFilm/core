@@ -30,6 +30,10 @@ data "aws_ssm_parameter" "doppler_api_videos_stage_token" {
   name = "/terraform/prd/DOPPLER_API_VIDEOS_STAGE_TOKEN"
 }
 
+data "aws_ssm_parameter" "doppler_api_media_stage_token" {
+  name = "/terraform/prd/DOPPLER_API_MEDIA_STAGE_TOKEN"
+}
+
 data "aws_ssm_parameter" "doppler_faktory_stage_token" {
   name = "/terraform/prd/DOPPLER_FAKTORY_STAGE_TOKEN"
 }

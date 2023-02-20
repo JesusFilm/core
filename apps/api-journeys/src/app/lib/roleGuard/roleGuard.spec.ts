@@ -1,51 +1,53 @@
 import { ExecutionContext } from '@nestjs/common'
 import { createMock, DeepMocked } from '@golevelup/ts-jest'
 import { AuthenticationError } from 'apollo-server-errors'
+import { contextToUserId } from '@core/nest/common/firebaseClient'
 import {
   Journey,
   JourneyStatus,
   Role,
   ThemeMode,
   ThemeName,
-  UserJourney,
   UserJourneyRole,
   UserRole
 } from '../../__generated__/graphql'
-import { UserJourneyService } from '../../modules/userJourney/userJourney.service'
+import {
+  UserJourneyRecord,
+  UserJourneyService
+} from '../../modules/userJourney/userJourney.service'
 import { UserRoleService } from '../../modules/userRole/userRole.service'
 import { JourneyService } from '../../modules/journey/journey.service'
 import { RoleGuard } from './roleGuard'
 
+jest.mock('@core/nest/common/firebaseClient', () => ({
+  __esModule: true,
+  contextToUserId: jest.fn()
+}))
+
+const mockContextToUserId = contextToUserId as jest.MockedFunction<
+  typeof contextToUserId
+>
+
 describe('RoleGuard', () => {
-  const userJourney = {
+  const userJourney: UserJourneyRecord = {
     id: '1',
     userId: '1',
     journeyId: '2',
     role: UserJourneyRole.owner
   }
 
-  const userRole = {
+  const userRole: UserRole = {
     id: '1',
     userId: '1',
     roles: [Role.publisher]
   }
 
-  const journey = {
+  const journey: Journey = {
     id: 'journey-id',
     title: 'Journey Heading',
     description: 'Description',
     slug: 'default',
-    language: {
-      __typename: 'Language',
-      id: '529',
-      name: [
-        {
-          __typename: 'Translation',
-          value: 'English',
-          primary: true
-        }
-      ]
-    },
+    language: { id: '529' },
     status: JourneyStatus.published,
     createdAt: '2021-11-19T12:34:56.647Z',
     publishedAt: null,
@@ -65,7 +67,7 @@ describe('RoleGuard', () => {
 
   const gqlMockFactory = (
     args: { id: string | string[] },
-    context: { headers: { 'user-id'?: string }; req: Request }
+    context: { headers: { authorization?: string }; req: Request }
   ): DeepMocked<ExecutionContext> =>
     createMock<ExecutionContext>({
       getArgByIndex: () => args,
@@ -77,37 +79,41 @@ describe('RoleGuard', () => {
 
   const gqlContextMockFactory = (
     args: { id: string | string[] },
-    contextMock: { headers: { 'user-id'?: string }; req: Request }
+    contextMock: { headers: { authorization?: string }; req: Request }
   ): DeepMocked<ExecutionContext> => gqlMockFactory(args, contextMock)
 
   const fetchUserJourney = async (
-    userJourneyService: UserJourneyService,
-    journeyId: string,
-    userId: string
-  ): Promise<UserJourney> => {
+    _userJourneyService: UserJourneyService,
+    _journeyId: string,
+    _userId: string
+  ): Promise<UserJourneyRecord | undefined> => {
     return userJourney
   }
 
   const fetchUserRole = async (
-    userRoleService: UserRoleService,
-    userId: string
+    _userRoleService: UserRoleService,
+    _userId: string
   ): Promise<UserRole> => {
     return userRole
   }
 
   const fetchJourney = async (
-    journeyService: JourneyService,
-    journeyId: string
+    _journeyService: JourneyService,
+    _journeyId: string
   ): Promise<Journey> => {
     return journey
   }
 
   describe('1 Role', () => {
+    beforeEach(() => {
+      mockContextToUserId.mockResolvedValueOnce('1')
+    })
+
     it('should return true', async () => {
       const gqlContext = gqlContextMockFactory(
         { id: '2' },
         {
-          headers: { 'user-id': '1' },
+          headers: { authorization: 'firebaseAccessToken' },
           req: createMock<Request>()
         }
       )
@@ -121,11 +127,12 @@ describe('RoleGuard', () => {
       const roleGuard = new RoleGuardClass(gqlContext)
       expect(await roleGuard.canActivate(gqlContext)).toEqual(true)
     })
+
     it('should return true on array of ids', async () => {
       const gqlContext = gqlContextMockFactory(
         { id: ['2', '3'] },
         {
-          headers: { 'user-id': '1' },
+          headers: { authorization: 'firebaseAccessToken' },
           req: createMock<Request>()
         }
       )
@@ -139,11 +146,12 @@ describe('RoleGuard', () => {
       const roleGuard = new RoleGuardClass(gqlContext)
       expect(await roleGuard.canActivate(gqlContext)).toEqual(true)
     })
+
     it('should throw error', async () => {
       const gqlContext = gqlContextMockFactory(
         { id: '2' },
         {
-          headers: { 'user-id': '1' },
+          headers: { authorization: 'firebaseAccessToken' },
           req: createMock<Request>()
         }
       )
@@ -164,11 +172,15 @@ describe('RoleGuard', () => {
   })
 
   describe('multiple Roles', () => {
+    beforeEach(() => {
+      mockContextToUserId.mockResolvedValueOnce('1')
+    })
+
     it('should return true', async () => {
       const gqlContext = gqlContextMockFactory(
         { id: '2' },
         {
-          headers: { 'user-id': '1' },
+          headers: { authorization: 'firebaseAccessToken' },
           req: createMock<Request>()
         }
       )
@@ -187,7 +199,7 @@ describe('RoleGuard', () => {
       const gqlContext = gqlContextMockFactory(
         { id: ['2', '3'] },
         {
-          headers: { 'user-id': '1' },
+          headers: { authorization: 'firebaseAccessToken' },
           req: createMock<Request>()
         }
       )
@@ -206,7 +218,7 @@ describe('RoleGuard', () => {
       const gqlContext = gqlContextMockFactory(
         { id: '2' },
         {
-          headers: { 'user-id': '1' },
+          headers: { authorization: 'firebaseAccessToken' },
           req: createMock<Request>()
         }
       )
@@ -225,7 +237,7 @@ describe('RoleGuard', () => {
       const gqlContext = gqlContextMockFactory(
         { id: '2' },
         {
-          headers: { 'user-id': '1' },
+          headers: { authorization: 'firebaseAccessToken' },
           req: createMock<Request>()
         }
       )
@@ -248,7 +260,7 @@ describe('RoleGuard', () => {
       const gqlContext = gqlContextMockFactory(
         { id: '2' },
         {
-          headers: { 'user-id': '1' },
+          headers: { authorization: 'firebaseAccessToken' },
           req: createMock<Request>()
         }
       )
@@ -268,7 +280,12 @@ describe('RoleGuard', () => {
       )
     })
   })
+
   describe('no userId', () => {
+    beforeEach(() => {
+      mockContextToUserId.mockResolvedValueOnce(null)
+    })
+
     it('should return false', async () => {
       const gqlContext = gqlContextMockFactory(
         { id: '2' },
@@ -290,11 +307,15 @@ describe('RoleGuard', () => {
   })
 
   describe('user Role', () => {
+    beforeEach(() => {
+      mockContextToUserId.mockResolvedValueOnce('1')
+    })
+
     it('should return true for single user role', async () => {
       const gqlContext = gqlContextMockFactory(
         { id: '2' },
         {
-          headers: { 'user-id': '1' },
+          headers: { authorization: 'firebaseAccessToken' },
           req: createMock<Request>()
         }
       )
@@ -313,7 +334,7 @@ describe('RoleGuard', () => {
       const gqlContext = gqlContextMockFactory(
         { id: '2' },
         {
-          headers: { 'user-id': '1' },
+          headers: { authorization: 'firebaseAccessToken' },
           req: createMock<Request>()
         }
       )
@@ -330,11 +351,14 @@ describe('RoleGuard', () => {
   })
 
   describe('custom Roles', () => {
+    beforeEach(() => {
+      mockContextToUserId.mockResolvedValueOnce('1')
+    })
     it('should return true for 1 role', async () => {
       const gqlContext = gqlContextMockFactory(
         { id: '2' },
         {
-          headers: { 'user-id': '1' },
+          headers: { authorization: 'firebaseAccessToken' },
           req: createMock<Request>()
         }
       )
@@ -358,7 +382,7 @@ describe('RoleGuard', () => {
       const gqlContext = gqlContextMockFactory(
         { id: '2' },
         {
-          headers: { 'user-id': '1' },
+          headers: { authorization: 'firebaseAccessToken' },
           req: createMock<Request>()
         }
       )
@@ -381,7 +405,7 @@ describe('RoleGuard', () => {
       const gqlContext = gqlContextMockFactory(
         { id: '2' },
         {
-          headers: { 'user-id': '1' },
+          headers: { authorization: 'firebaseAccessToken' },
           req: createMock<Request>()
         }
       )

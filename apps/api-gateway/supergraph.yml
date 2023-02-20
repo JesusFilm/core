@@ -1,3 +1,4 @@
+federation_version: 2
 subgraphs:
   journeys:
     routing_url: http://127.0.0.1:4001/graphql
@@ -15,3 +16,7 @@ subgraphs:
     routing_url: http://127.0.0.1:4004/graphql
     schema:
       file: ../api-videos/schema.graphql
+  media:
+    routing_url: http://127.0.0.1:4005/graphql
+    schema:
+      file: ../api-media/schema.graphql
