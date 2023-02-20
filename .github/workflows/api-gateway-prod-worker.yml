@@ -35,23 +35,12 @@ jobs:
           key: node-modules-${{ hashFiles('package-lock.json') }}
           restore-keys: node-modules-
 
-      - name: NPM Install
-        run: npm install --silent
-
       - name: nx Install
         run: npm install -g nx --silent
 
       - name: Get affected apps
         run: echo "apps=$(nx affected:apps --plain --base=HEAD~1 --head=HEAD)" >> $GITHUB_OUTPUT
         id: affected-apps
-
-      - name: Build api-gateway
-        if: contains(steps.affected-apps.outputs.apps, 'api-gateway')
-        uses: mansagroup/nrwl-nx-action@v3
-        with:
-          targets: build
-          projects: api-gateway
-          args: --configuration="production"
 
       #ECS Deployment
       - name: Configure ECS AWS credentials

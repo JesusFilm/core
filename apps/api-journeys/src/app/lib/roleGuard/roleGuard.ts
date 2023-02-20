@@ -6,14 +6,16 @@ import {
   Type,
   Inject
 } from '@nestjs/common'
-import { GqlExecutionContext } from '@nestjs/graphql'
 import { get, includes, reduce } from 'lodash'
 import { AuthenticationError } from 'apollo-server-errors'
-import { UserJourneyService } from '../../modules/userJourney/userJourney.service'
+import { contextToUserId } from '@core/nest/common/firebaseClient'
+import {
+  UserJourneyRecord,
+  UserJourneyService
+} from '../../modules/userJourney/userJourney.service'
 import {
   Journey,
   Role,
-  UserJourney,
   UserJourneyRole,
   UserRole
 } from '../../__generated__/graphql'
@@ -25,7 +27,7 @@ export const fetchUserJourney = async (
   userJourneyService: UserJourneyService,
   journeyId: string,
   userId: string
-): Promise<UserJourney> => {
+): Promise<UserJourneyRecord | undefined> => {
   return await userJourneyService.forJourneyUser(journeyId, userId)
 }
 
@@ -73,7 +75,8 @@ export const RoleGuard = (
     ) {}
 
     checkAttributes(journey: Journey, attributes?: Partial<Journey>): boolean {
-      if (attributes == null || attributes === {}) return true
+      if (attributes == null || Object.keys(attributes).length === 0)
+        return true
       return Object.keys(attributes).every(
         (key: string) => attributes[key] === journey[key]
       )
@@ -83,7 +86,10 @@ export const RoleGuard = (
       return permission === 'public'
     }
 
-    userJourneyRole(permission: Permission, userJourney: UserJourney): boolean {
+    userJourneyRole(
+      permission: Permission,
+      userJourney: UserJourneyRecord
+    ): boolean {
       return (
         permission !== UserJourneyRole.inviteRequested &&
         permission === userJourney.role
@@ -97,7 +103,7 @@ export const RoleGuard = (
     checkAllowedAccess(
       permissions: Permission[],
       journey: Journey,
-      userJourney: UserJourney,
+      userJourney: UserJourneyRecord | undefined,
       userRole: UserRole,
       attributes?: Partial<Journey>
     ): boolean {
@@ -144,8 +150,7 @@ export const RoleGuard = (
     }
 
     async canActivate(context: ExecutionContext): Promise<boolean> {
-      const ctx = GqlExecutionContext.create(context).getContext()
-      const userId = get(ctx.headers, 'user-id')
+      const userId = await contextToUserId(context)
 
       if (userId == null) return false
 

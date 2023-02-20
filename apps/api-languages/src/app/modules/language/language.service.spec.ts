@@ -6,31 +6,37 @@ import {
   mockCollectionRemoveResult,
   mockDbQueryResult
 } from '@core/nest/database/mock'
-import { DocumentCollection } from 'arangojs/collection'
+import { DocumentCollection, EdgeCollection } from 'arangojs/collection'
 import { keyAsId } from '@core/nest/decorators/KeyAsId'
 
-import { LanguageService } from './language.service'
+import { LanguageRecord, LanguageService } from './language.service'
 
 describe('LanguageService', () => {
-  let service: LanguageService
+  let service: LanguageService,
+    db: DeepMockProxy<Database>,
+    collectionMock: DeepMockProxy<
+      DocumentCollection<LanguageRecord> & EdgeCollection<LanguageRecord>
+    >
 
   beforeEach(async () => {
+    db = mockDeep()
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         LanguageService,
         {
           provide: 'DATABASE',
-          useFactory: () => mockDeep<Database>()
+          useFactory: () => db
         }
       ]
     }).compile()
 
     service = module.get<LanguageService>(LanguageService)
-    service.collection = mockDeep<DocumentCollection>()
+    collectionMock = mockDeep()
+    service.collection = collectionMock
   })
 
   const language = {
-    _key: '1',
+    id: '1',
     bscp47: 'TEC',
     iso3: 'TEC',
     nameNative: 'Teke, Central',
@@ -47,7 +53,7 @@ describe('LanguageService', () => {
 
   describe('getAll', () => {
     beforeEach(() => {
-      ;(service.db as DeepMockProxy<Database>).query.mockReturnValue(
+      db.query.mockReturnValue(
         mockDbQueryResult(service.db, [language, language])
       )
     })
@@ -62,10 +68,11 @@ describe('LanguageService', () => {
 
   describe('save', () => {
     beforeEach(() => {
-      ;(
-        service.collection as DeepMockProxy<DocumentCollection>
-      ).save.mockReturnValue(
-        mockCollectionSaveResult(service.collection, language)
+      collectionMock.save.mockReturnValue(
+        mockCollectionSaveResult(service.collection, {
+          ...language,
+          _key: language.id
+        })
       )
     })
 
@@ -76,10 +83,11 @@ describe('LanguageService', () => {
 
   describe('remove', () => {
     beforeEach(() => {
-      ;(
-        service.collection as DeepMockProxy<DocumentCollection>
-      ).remove.mockReturnValue(
-        mockCollectionRemoveResult(service.collection, language)
+      collectionMock.remove.mockReturnValue(
+        mockCollectionRemoveResult(service.collection, {
+          ...language,
+          _key: language.id
+        })
       )
     })
 
@@ -90,9 +98,7 @@ describe('LanguageService', () => {
 
   describe('getByBcp47', () => {
     beforeEach(() => {
-      ;(service.db as DeepMockProxy<Database>).query.mockReturnValue(
-        mockDbQueryResult(service.db, [language])
-      )
+      db.query.mockReturnValue(mockDbQueryResult(service.db, [language]))
     })
 
     it('should return a language', async () => {

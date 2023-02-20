@@ -2,7 +2,7 @@ import { Args, Mutation, Parent, ResolveField, Resolver } from '@nestjs/graphql'
 import { UseGuards } from '@nestjs/common'
 import { object, string } from 'yup'
 import fetch from 'node-fetch'
-import { UserInputError } from 'apollo-server'
+import { UserInputError } from 'apollo-server-errors'
 import { BlockService } from '../block.service'
 import {
   Action,
@@ -156,7 +156,7 @@ export class VideoBlockResolver {
     @Args('journeyId') journeyId: string,
     @Args('input') input: VideoBlockUpdateInput
   ): Promise<VideoBlock> {
-    const block = await this.blockService.get<VideoBlock>(id)
+    const block = await this.blockService.get(id)
     switch (input.source ?? block.source) {
       case VideoBlockSource.youTube:
         await videoBlockYouTubeSchema.validate({ ...block, ...input })

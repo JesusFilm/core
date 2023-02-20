@@ -24,13 +24,25 @@ const nextConfig = {
     // See: https://github.com/gregberge/svgr
     svgr: false
   },
-  i18n: {
-    locales: ['en'],
-    defaultLocale: 'en',
-    localeDetection: false
-  },
-  trailingSlash: true,
-  productionBrowserSourceMaps: true
+  basePath: '/watch',
+  productionBrowserSourceMaps: true,
+  async redirects() {
+    return [
+      {
+        source: '/',
+        destination: '/watch',
+        basePath: false,
+        permanent: false
+      },
+
+      {
+        source: '/:path((?!watch).*)',
+        destination: '/watch/:path',
+        basePath: false,
+        permanent: false
+      }
+    ]
+  }
 }
 module.exports = (_phase, { defaultConfig }) => {
   const plugins = [withBundleAnalyzer, withNx]

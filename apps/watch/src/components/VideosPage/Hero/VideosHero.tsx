@@ -5,7 +5,7 @@ import Typography from '@mui/material/Typography'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import { ThemeMode, ThemeName } from '@core/shared/ui/themes'
 import Image from 'next/image'
-import background from '../../../../public/images/videos-hero.png'
+import background from './assets/background.png'
 
 export function VideosHero(): ReactElement {
   return (
@@ -19,7 +19,8 @@ export function VideosHero(): ReactElement {
           position: 'relative',
           display: 'flex',
           alignItems: 'flex-end',
-          height: 340
+          height: { xs: 240, md: 340 },
+          backgroundColor: '#771E3E'
         }}
       >
         <Image
@@ -28,7 +29,7 @@ export function VideosHero(): ReactElement {
           objectFit="cover"
           alt="hero background"
         />
-        <Container maxWidth="xxl" sx={{ pb: 11, zIndex: 1 }}>
+        <Container maxWidth="xxl" sx={{ pb: { xs: 10, md: 15 }, zIndex: 1 }}>
           <Typography
             variant="h2"
             color="text.primary"

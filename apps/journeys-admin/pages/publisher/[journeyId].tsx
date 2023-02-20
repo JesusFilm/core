@@ -21,6 +21,7 @@ import { JourneyView } from '../../src/components/JourneyView'
 import { Role } from '../../__generated__/globalTypes'
 import { PublisherInvite } from '../../src/components/PublisherInvite'
 import { Menu } from '../../src/components/JourneyView/Menu'
+import { useTermsRedirect } from '../../src/libs/useTermsRedirect/useTermsRedirect'
 
 export const GET_PUBLISHER_TEMPLATE = gql`
   ${JOURNEY_FIELDS}
@@ -51,6 +52,8 @@ function TemplateDetailsAdmin(): ReactElement {
   const isPublisher = publisherData?.getUserRole?.roles?.includes(
     Role.publisher
   )
+
+  useTermsRedirect()
 
   return (
     <>
