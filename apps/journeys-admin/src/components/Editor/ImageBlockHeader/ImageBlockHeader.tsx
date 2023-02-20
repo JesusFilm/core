@@ -50,8 +50,8 @@ export function ImageBlockHeader({
             {loading
               ? 'Image is uploading'
               : selectedBlock != null
-                ? 'Selected Image'
-                : 'Select Image'}
+              ? 'Selected Image'
+              : 'Select Image'}
           </Typography>
           <Typography
             variant="caption"
@@ -79,8 +79,10 @@ export function ImageBlockHeader({
             color="primary"
             data-testid="imageBlockHeaderDelete"
           />
-        ) : <></>}
+        ) : (
+          <></>
+        )}
       </IconButton>
-    </Stack >
+    </Stack>
   )
 }

@@ -9,8 +9,7 @@ import Typography from '@mui/material/Typography'
 import { object, string } from 'yup'
 import { GetJourney_journey_blocks_ImageBlock as ImageBlock } from '../../../../__generated__/GetJourney'
 import { ImageBlockHeader } from '../ImageBlockHeader'
-import { CustomImage } from '../ImageLibrary/CustomImage'
-import { ImageUpload } from '../ImageLibrary/CustomImage/ImageUpload'
+import { CustomImage } from './CustomImage'
 
 interface ImageBlockEditorProps {
   onChange: (imageBlock: ImageBlock) => Promise<void>
@@ -64,7 +63,7 @@ export function ImageBlockEditor({
           showAdd={showAdd}
         />
       </Box>
-      <Box data-testid="ImageLibrary">
+      <Box data-testid="ImageBlockHeader">
         <Tabs
           value={tabValue}
           onChange={handleTabChange}
@@ -86,7 +85,6 @@ export function ImageBlockEditor({
           {/* insert unsplash component */}
         </TabPanel>
         <TabPanel name="custom" value={tabValue} index={1}>
-          <ImageUpload onChange={handleSrcChange} loading={loading} />
           <CustomImage onChange={handleSrcChange} />
         </TabPanel>
       </Box>
