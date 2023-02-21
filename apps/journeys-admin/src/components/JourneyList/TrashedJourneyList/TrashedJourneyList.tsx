@@ -42,6 +42,7 @@ export const GET_TRASHED_JOURNEYS = gql`
       userJourneys {
         id
         role
+        openedAt
         user {
           id
           firstName
