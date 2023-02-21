@@ -275,6 +275,8 @@ export class ImageBlockCreateInput {
     src?: Nullable<string>;
     alt: string;
     blurhash?: Nullable<string>;
+    width?: Nullable<number>;
+    height?: Nullable<number>;
     isCover?: Nullable<boolean>;
 }
 
@@ -1202,7 +1204,7 @@ export abstract class IMutation {
 
     abstract journeyProfileCreate(): JourneyProfile | Promise<JourneyProfile>;
 
-    abstract userInviteCreate(journeyId: string, input?: Nullable<UserInviteCreateInput>): UserInvite | Promise<UserInvite>;
+    abstract userInviteCreate(journeyId: string, input?: Nullable<UserInviteCreateInput>): Nullable<UserInvite> | Promise<Nullable<UserInvite>>;
 
     abstract userInviteRemove(id: string, journeyId: string): UserInvite | Promise<UserInvite>;
 

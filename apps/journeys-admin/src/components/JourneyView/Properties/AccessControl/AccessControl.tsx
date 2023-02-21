@@ -18,6 +18,7 @@ export function AccessControl(): ReactElement {
         userJourneys={journey?.userJourneys ?? undefined}
         size="medium"
         xsMax={5}
+        showManageButton
       />
     </>
   )

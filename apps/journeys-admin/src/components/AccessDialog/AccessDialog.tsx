@@ -1,17 +1,18 @@
-import { ReactElement, useEffect } from 'react'
-import Stack from '@mui/material/Stack'
+import { ReactElement, useEffect, useMemo } from 'react'
 import { gql, useLazyQuery } from '@apollo/client'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { Theme } from '@mui/material/styles'
-import { CopyTextField } from '@core/shared/ui/CopyTextField'
 import { Dialog } from '@core/shared/ui/Dialog'
+import Stack from '@mui/material/Stack'
 import {
   GetJourneyWithUserJourneys,
   GetJourneyWithUserJourneys_journey_userJourneys as UserJourney
 } from '../../../__generated__/GetJourneyWithUserJourneys'
 import { UserJourneyRole } from '../../../__generated__/globalTypes'
+import { GetUserInvites } from '../../../__generated__/GetUserInvites'
 import { useCurrentUser } from '../../libs/useCurrentUser'
-import { UserJourneyList } from './UserJourneyList'
+import { UserList } from './UserList'
+import { AddUserSection } from './AddUserSection'
 
 export const GET_JOURNEY_WITH_USER_JOURNEYS = gql`
   query GetJourneyWithUserJourneys($id: ID!) {
@@ -31,6 +32,19 @@ export const GET_JOURNEY_WITH_USER_JOURNEYS = gql`
     }
   }
 `
+
+export const GET_USER_INVITES = gql`
+  query GetUserInvites($journeyId: ID!) {
+    userInvites(journeyId: $journeyId) {
+      id
+      journeyId
+      email
+      acceptedAt
+      removedAt
+    }
+  }
+`
+
 interface AccessDialogProps {
   journeyId: string
   open?: boolean
@@ -42,74 +56,83 @@ export function AccessDialog({
   open,
   onClose
 }: AccessDialogProps): ReactElement {
-  const [loadJourney, { loading, data }] =
+  const [, { loading, data, refetch }] =
     useLazyQuery<GetJourneyWithUserJourneys>(GET_JOURNEY_WITH_USER_JOURNEYS, {
       variables: { id: journeyId }
     })
-  const { loadUser, data: currentUserData } = useCurrentUser()
+
+  const [, { data: userInviteData, refetch: refetchInvites }] =
+    useLazyQuery<GetUserInvites>(GET_USER_INVITES, {
+      variables: { journeyId }
+    })
+
+  const { loadUser, data: authUser } = useCurrentUser()
 
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
-  const disable =
-    data?.journey?.userJourneys?.find(
-      (userJourney) => userJourney.user?.email === currentUserData.email
-    )?.role !== UserJourneyRole.owner
 
-  const usersList: UserJourney[] = []
-  const requestsList: UserJourney[] = []
+  const currentUser = useMemo(() => {
+    return data?.journey?.userJourneys?.find(
+      (userJourney) => userJourney.user?.email === authUser.email
+    )
+  }, [data?.journey?.userJourneys, authUser])
 
-  data?.journey?.userJourneys?.forEach((userJourney) => {
-    if (userJourney.role === UserJourneyRole.inviteRequested) {
-      requestsList.push(userJourney)
-    } else {
-      usersList.push(userJourney)
-    }
-  })
+  const { users, requests, invites, emails } = useMemo(() => {
+    const users: UserJourney[] = []
+    const requests: UserJourney[] = []
+    const emails: string[] = []
+
+    data?.journey?.userJourneys?.forEach((userJourney) => {
+      if (userJourney.role === UserJourneyRole.inviteRequested) {
+        requests.push(userJourney)
+      } else {
+        users.push(userJourney)
+      }
+      if (userJourney.user != null) emails.push(userJourney.user.email)
+    })
+
+    const invites =
+      userInviteData?.userInvites != null ? userInviteData.userInvites : []
+
+    invites.forEach((invite) => {
+      if (invite.removedAt == null && invite.acceptedAt == null) {
+        emails.push(invite.email)
+      }
+    })
+
+    return { users, requests, invites, emails }
+  }, [data, userInviteData])
 
   useEffect(() => {
     if (open === true) {
-      void loadJourney()
+      void refetch()
+      void refetchInvites()
       void loadUser()
     }
-  }, [open, loadJourney, loadUser])
+  }, [open, refetch, refetchInvites, loadUser])
 
   return (
     <Dialog
       open={open ?? false}
       onClose={onClose}
       dialogTitle={{
-        title: 'Invite Other Editors',
+        title: 'Manage Editors',
         closeButton: true
       }}
-      divider
+      dialogActionChildren={<AddUserSection users={emails} />}
       fullscreen={!smUp}
     >
       <Stack spacing={4}>
-        <CopyTextField
-          value={
-            typeof window !== 'undefined'
-              ? `${
-                  window.location.host.endsWith('.chromatic.com')
-                    ? 'https://admin.nextstep.is'
-                    : window.location.origin
-                }/journeys/${journeyId}`
-              : undefined
-          }
-          messageText="Editor invite link copied"
-          helperText="Anyone with this link can see journey and ask for editing rights.
-            You can accept or reject every request."
+        <UserList
+          title="Requested Access"
+          users={requests}
+          currentUser={currentUser}
         />
-
-        <UserJourneyList
-          title="Requested Editing Rights"
-          userJourneys={requestsList}
-          disable={disable}
-        />
-
-        <UserJourneyList
-          title="Users With Access"
+        <UserList
+          title="Editors"
           loading={loading}
-          userJourneys={usersList}
-          disable={disable}
+          users={users}
+          invites={invites}
+          currentUser={currentUser}
         />
       </Stack>
     </Dialog>

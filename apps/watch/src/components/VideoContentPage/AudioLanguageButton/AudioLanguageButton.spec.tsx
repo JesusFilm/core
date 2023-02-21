@@ -15,7 +15,7 @@ describe('AudioLanguageButton', () => {
     )
     await waitFor(() => fireEvent.click(getByRole('button')))
 
-    expect(getByText('2026 Languages Available')).toBeInTheDocument()
+    expect(getByText('2039 Languages Available')).toBeInTheDocument()
   })
   it('renders audio language as an icon', async () => {
     const { getByTestId, getByText } = render(
@@ -26,6 +26,6 @@ describe('AudioLanguageButton', () => {
       </MockedProvider>
     )
     await waitFor(() => fireEvent.click(getByTestId('LanguageOutlinedIcon')))
-    expect(getByText('2026 Languages Available')).toBeInTheDocument()
+    expect(getByText('2039 Languages Available')).toBeInTheDocument()
   })
 })
