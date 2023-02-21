@@ -21,6 +21,10 @@ export interface GetTrashedPublisherTemplates_journeys_userJourneys {
   __typename: "UserJourney";
   id: string;
   role: UserJourneyRole;
+  /**
+   * Date time of when the journey was first opened
+   */
+  openedAt: any | null;
   user: GetTrashedPublisherTemplates_journeys_userJourneys_user | null;
 }
 

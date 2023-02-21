@@ -1,57 +1,18 @@
 import { ReactElement, useEffect, useState } from 'react'
 import Card from '@mui/material/Card'
-import { gql, useMutation, useQuery } from '@apollo/client'
+import { gql, useMutation } from '@apollo/client'
 import Typography from '@mui/material/Typography'
 import { Dialog } from '@core/shared/ui/Dialog'
 import { useTranslation } from 'react-i18next'
 import { AuthUser } from 'next-firebase-auth'
 import { useSnackbar } from 'notistack'
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
-import {
-  GetActiveJourneys,
-  GetActiveJourneys_journeys as Journeys
-} from '../../../../__generated__/GetActiveJourneys'
-import { JourneyFields } from '../../../../__generated__/JourneyFields'
-import { JourneyCard } from '../JourneyCard'
-import { AddJourneyButton } from '../AddJourneyButton'
+import { GetActiveJourneys_journeys as Journeys } from '../../../../__generated__/GetActiveJourneys'
+import { useActiveJourneys } from '../../../libs/useActiveJourneys'
 import { SortOrder } from '../JourneySort'
-import { sortJourneys } from '../JourneySort/utils/sortJourneys'
+import { AddJourneyButton } from '../AddJourneyButton'
+import { JourneyCard } from '../JourneyCard'
 import { getDuplicatedJourney } from './utils/getDuplicatedJourney'
-
-export const GET_ACTIVE_JOURNEYS = gql`
-  query GetActiveJourneys {
-    journeys: adminJourneys(status: [draft, published]) {
-      id
-      title
-      createdAt
-      publishedAt
-      description
-      slug
-      themeName
-      themeMode
-      language {
-        id
-        name(primary: true) {
-          value
-          primary
-        }
-      }
-      status
-      seoTitle
-      seoDescription
-      userJourneys {
-        id
-        role
-        user {
-          id
-          firstName
-          lastName
-          imageUrl
-        }
-      }
-    }
-  }
-`
+import { ActivePriorityList } from './ActivePriorityList'
 
 export const ARCHIVE_ACTIVE_JOURNEYS = gql`
   mutation ArchiveActiveJourneys($ids: [ID!]!) {
@@ -86,16 +47,15 @@ export function ActiveJourneyList({
 }: ActiveJourneyListProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { enqueueSnackbar } = useSnackbar()
-  const { data, loading, error, refetch } =
-    useQuery<GetActiveJourneys>(GET_ACTIVE_JOURNEYS)
+  const activeJourneys = useActiveJourneys()
 
   const [oldJourneys, setOldJourneys] = useState<Journeys[]>()
   const [journeys, setJourneys] = useState<Journeys[]>()
 
   useEffect(() => {
     setOldJourneys(journeys)
-    setJourneys(data?.journeys)
-  }, [data, journeys, oldJourneys])
+    setJourneys(activeJourneys?.data?.journeys)
+  }, [activeJourneys?.data?.journeys, journeys, oldJourneys])
 
   const duplicatedJourneyId = getDuplicatedJourney(oldJourneys, journeys)
 
@@ -115,7 +75,7 @@ export function ActiveJourneyList({
         enqueueSnackbar(t('Journeys Archived'), {
           variant: 'success'
         })
-        void refetch()
+        void activeJourneys?.refetch()
       }
     }
   })
@@ -136,7 +96,7 @@ export function ActiveJourneyList({
         enqueueSnackbar(t('Journeys Trashed'), {
           variant: 'success'
         })
-        void refetch()
+        void activeJourneys?.refetch()
       }
     }
   })
@@ -175,10 +135,13 @@ export function ActiveJourneyList({
   }
 
   useEffect(() => {
-    if (!loading && error == null) {
-      onLoad()
+    if (activeJourneys != null) {
+      const { loading, error } = activeJourneys
+      if (!loading && error == null) {
+        onLoad()
+      }
     }
-  }, [onLoad, loading, error])
+  }, [onLoad, activeJourneys])
 
   useEffect(() => {
     switch (event) {
@@ -189,30 +152,22 @@ export function ActiveJourneyList({
         setOpenTrashAll(true)
         break
       case 'refetchActive':
-        void refetch()
+        void activeJourneys?.refetch()
         break
     }
-  }, [event, refetch])
-
-  const sortedJourneys =
-    journeys != null ? sortJourneys(journeys, sortOrder) : undefined
+  }, [event, activeJourneys])
 
   return (
     <>
-      {journeys != null && sortedJourneys != null ? (
+      {journeys != null ? (
         <>
-          {sortedJourneys.map((journey) => (
-            <JourneyProvider
-              key={journey.id}
-              value={{ journey: journey as JourneyFields, admin: true }}
-            >
-              <JourneyCard
-                journey={journey}
-                refetch={refetch}
-                duplicatedJourneyId={duplicatedJourneyId}
-              />
-            </JourneyProvider>
-          ))}
+          <ActivePriorityList
+            journeys={journeys}
+            sortOrder={sortOrder}
+            refetch={activeJourneys?.refetch}
+            duplicatedJourneyId={duplicatedJourneyId}
+            authUser={authUser}
+          />
           {journeys.length === 0 && (
             <Card
               variant="outlined"
