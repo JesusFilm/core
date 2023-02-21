@@ -5,7 +5,6 @@ import Container from '@mui/material/Container'
 import Divider from '@mui/material/Divider'
 import Stack from '@mui/material/Stack'
 import { LanguageOption } from '@core/shared/ui/LanguageAutocomplete'
-import Typography from '@mui/material/Typography'
 import TextField from '@mui/material/TextField'
 import { debounce } from 'lodash'
 import { GetLanguages } from '../../../__generated__/GetLanguages'
@@ -15,6 +14,7 @@ import { VideosFilter } from '../../../__generated__/globalTypes'
 import { VIDEO_CHILD_FIELDS } from '../../libs/videoChildFields'
 import { PageWrapper } from '../PageWrapper'
 import { VideoGrid } from '../VideoGrid/VideoGrid'
+import { FilterContainer } from '../FilterContainer/FilterContainer'
 import { VideosHero } from './Hero'
 import { VideosSubHero } from './SubHero'
 import { LanguagesFilter } from './LanguagesFilter'
@@ -230,59 +230,36 @@ export function VideosPage(): ReactElement {
             spacing={{ xs: 0, xl: 5 }}
             sx={{ minWidth: '278px', maxWidth: '335px' }}
           >
-            <Divider
-              sx={{
-                display: { sm: 'none', xl: 'flex' },
-                height: 2,
-                background: 'rgba(33, 33, 33, 0.08)'
-              }}
-            />
-            <Typography>Titles</Typography>
-            <TextField
-              onChange={(e) => {
-                handleTitleChange(e.currentTarget.value)
-              }}
-              label="Search Titles"
-              variant="outlined"
-              helperText="724+ titles"
-            />
-            <Divider
-              sx={{
-                display: { sm: 'none', xl: 'flex' },
-                height: 2,
-                background: 'rgba(33, 33, 33, 0.08)'
-              }}
-            />
-            <Typography>Audio Languages</Typography>
-            <LanguagesFilter
-              onChange={(language: LanguageOption) =>
-                handleLanguageChange(language.id)
+            <FilterContainer
+              audioSwitcher={
+                <LanguagesFilter
+                  onChange={(language: LanguageOption) =>
+                    handleLanguageChange(language.id)
+                  }
+                  languages={languagesData?.languages}
+                  loading={languagesLoading}
+                />
               }
-              languages={languagesData?.languages}
-              loading={languagesLoading}
-            />
-            <Divider
-              sx={{
-                display: { sm: 'none', xl: 'flex' },
-                height: 2,
-                background: 'rgba(33, 33, 33, 0.08)'
-              }}
-            />
-            <Typography>Subtitle Languages</Typography>
-            <LanguagesFilter
-              onChange={(language: LanguageOption) =>
-                handleSubtitleLanguageChange(language.id)
+              subtitleSwitcher={
+                <LanguagesFilter
+                  onChange={(language: LanguageOption) =>
+                    handleSubtitleLanguageChange(language.id)
+                  }
+                  languages={subtitleLanguages}
+                  loading={languagesLoading}
+                  helperText="54 languages"
+                />
               }
-              languages={subtitleLanguages}
-              loading={languagesLoading}
-              helperText="54 languages"
-            />
-            <Divider
-              sx={{
-                display: { sm: 'none', xl: 'flex' },
-                height: 2,
-                background: 'rgba(33, 33, 33, 0.08)'
-              }}
+              titleSearch={
+                <TextField
+                  onChange={(e) => {
+                    handleTitleChange(e.currentTarget.value)
+                  }}
+                  label="Search Titles"
+                  variant="outlined"
+                  helperText="724+ titles"
+                />
+              }
             />
           </Stack>
           <Box sx={{ width: '100%' }}>
