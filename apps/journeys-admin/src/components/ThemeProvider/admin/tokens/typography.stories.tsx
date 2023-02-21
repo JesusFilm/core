@@ -39,8 +39,7 @@ Typography.args = {
     'subtitle2',
     'body1',
     'body2',
-    'overline1',
-    'overline2'
+    'overline'
   ]
 }
 
