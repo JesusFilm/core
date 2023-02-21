@@ -5,10 +5,10 @@ import { SnackbarProvider } from 'notistack'
 import { AuthUser } from 'next-firebase-auth'
 import { defaultJourney, oldJourney } from '../journeyListData'
 import { ThemeProvider } from '../../ThemeProvider'
+import { GET_ACTIVE_JOURNEYS } from '../../../libs/useActiveJourneys/useActiveJourneys'
 import {
   ActiveJourneyList,
   ARCHIVE_ACTIVE_JOURNEYS,
-  GET_ACTIVE_JOURNEYS,
   TRASH_ACTIVE_JOURNEYS
 } from './ActiveJourneyList'
 
