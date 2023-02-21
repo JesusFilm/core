@@ -61,10 +61,15 @@ export const SEARCH_UNSPLASH_PHOTOS = gql`
   }
 `
 
+export interface UnsplashAuthor {
+  fullname: string
+  username: string
+}
+
 interface UnsplashGalleryProps {
   onChange: (
     src: string,
-    author: string,
+    unsplashAuthor: UnsplashAuthor,
     blurhash?: string,
     width?: number,
     height?: number

@@ -5,12 +5,13 @@ import ImageListItem from '@mui/material/ImageListItem'
 import Image from 'next/image'
 import { ListUnsplashCollectionPhotos_listUnsplashCollectionPhotos as UnsplashCollectionPhotos } from '../../../../../../__generated__/ListUnsplashCollectionPhotos'
 import { SearchUnsplashPhotos_searchUnsplashPhotos_results as UnsplashSearchPhotos } from '../../../../../../__generated__/SearchUnsplashPhotos'
+import type { UnsplashAuthor } from '../UnsplashGallery'
 
 interface UnsplashListProps {
   gallery: Array<UnsplashCollectionPhotos | UnsplashSearchPhotos>
   onChange: (
     src: string,
-    author: string,
+    unsplashAuthor: UnsplashAuthor,
     blurhash?: string,
     width?: number,
     height?: number
@@ -28,9 +29,9 @@ export function UnsplashList({
   const handleClick = (
     item: UnsplashCollectionPhotos | UnsplashSearchPhotos,
     url: string,
-    author: string
+    unsplashAuthor: UnsplashAuthor
   ): void => {
-    onChange(url, author, item.blur_hash, item.width, item.height)
+    onChange(url, unsplashAuthor, item.blur_hash, item.width, item.height)
     setSelectedItem(item)
   }
 
@@ -48,13 +49,12 @@ export function UnsplashList({
         >
           <ButtonBase
             onClick={() =>
-              handleClick(
-                item,
-                item.urls.regular,
-                `${(item.user.first_name as string) ?? ''} ${
+              handleClick(item, item.urls.regular, {
+                fullname: `${(item.user.first_name as string) ?? ''} ${
                   (item.user.last_name as string) ?? ''
-                }`
-              )
+                }`,
+                username: `${item.user.username}`
+              })
             }
             sx={{ position: 'relative' }}
           >

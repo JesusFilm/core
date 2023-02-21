@@ -53,4 +53,13 @@ Source.args = { showAdd: true }
 export const Loading = Template.bind({})
 Loading.args = { loading: true }
 
+export const UnsplashAuthor = Template.bind({})
+UnsplashAuthor.args = {
+  ...Applied.args,
+  unsplashAuthor: {
+    fullname: 'Levi Meir Clancy',
+    username: 'levimeirclancy'
+  }
+}
+
 export default ImageEditorStory as Meta
