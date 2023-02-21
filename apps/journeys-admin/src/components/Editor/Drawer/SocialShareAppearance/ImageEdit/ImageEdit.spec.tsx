@@ -6,7 +6,7 @@ import {
   GetJourney_journey as Journey,
   GetJourney_journey_blocks_ImageBlock as ImageBlock
 } from '../../../../../../__generated__/GetJourney'
-import { createCloudflareUploadByUrlMock } from '../../../ImageLibrary/CustomImage/CustomUrl/data'
+import { createCloudflareUploadByUrlMock } from '../../../ImageBlockEditor/CustomImage/CustomUrl/data'
 import {
   ImageEdit,
   BLOCK_DELETE_PRIMARY_IMAGE,
@@ -106,7 +106,7 @@ describe('ImageEdit', () => {
       }
     }))
 
-    const { getByRole, getByTestId } = render(
+    const { getByRole } = render(
       <MockedProvider
         cache={cache}
         mocks={[
@@ -150,7 +150,6 @@ describe('ImageEdit', () => {
       </MockedProvider>
     )
     fireEvent.click(getByRole('button'))
-    expect(getByTestId('ImageLibrary')).toBeInTheDocument()
     fireEvent.click(getByRole('tab', { name: 'Custom' }))
     fireEvent.click(getByRole('button', { name: 'Add image by URL' }))
     const textBox = getByRole('textbox')
@@ -244,7 +243,6 @@ describe('ImageEdit', () => {
       </MockedProvider>
     )
     fireEvent.click(getByRole('button'))
-    expect(getByTestId('ImageLibrary')).toBeInTheDocument()
     fireEvent.click(getByTestId('imageBlockHeaderDelete'))
     await waitFor(() => expect(imageDeleteResult).toHaveBeenCalled())
     await waitFor(() => expect(journeyUpdateResult).toHaveBeenCalled())

@@ -55,7 +55,7 @@ describe('Image', () => {
     expect(getByText(block.alt)).toBeInTheDocument()
   })
 
-  it('should open property drawr for variant', () => {
+  it('should open property drawer for variant', () => {
     const dispatch = jest.fn()
     mockUseEditor.mockReturnValue({
       state,
@@ -68,6 +68,7 @@ describe('Image', () => {
     })
     expect(dispatch).toHaveBeenCalledWith({
       type: 'SetDrawerPropsAction',
+      mobileOpen: true,
       title: 'Image',
       children: <ImageOptions />
     })

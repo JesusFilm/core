@@ -29,7 +29,7 @@ export function ImageBlockHeader({
       alignItems="center"
       sx={{
         height: 78,
-        width: 285
+        width: showAdd ? '100%' : 285
       }}
     >
       <Stack direction="row" alignItems="center">
@@ -74,7 +74,7 @@ export function ImageBlockHeader({
       >
         {showAdd ? (
           <AddIcon color="primary" />
-        ) : selectedBlock != null ? (
+        ) : selectedBlock?.src != null ? (
           <DeleteOutlineIcon
             color="primary"
             data-testid="imageBlockHeaderDelete"

@@ -63,7 +63,6 @@ export function CustomUrl({ onChange }: CustomUrlProps): ReactElement {
       <Button
         onClick={() => setOpen(!open)}
         sx={{
-          mt: 5,
           px: 6,
           display: 'flex',
           alignItem: 'center',

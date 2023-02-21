@@ -17,7 +17,7 @@ import {
   ThemeName,
   VideoBlockSource
 } from '../../../../../../../../../__generated__/globalTypes'
-import { createCloudflareUploadByUrlMock } from '../../../../../../ImageLibrary/CustomImage/CustomUrl/data'
+import { createCloudflareUploadByUrlMock } from '../../../../../../ImageBlockEditor/CustomImage/CustomUrl/data'
 import {
   BackgroundMediaImage,
   CARD_BLOCK_COVER_IMAGE_BLOCK_CREATE,
@@ -145,7 +145,7 @@ describe('BackgroundMediaImage', () => {
         imageBlockCreate: image
       }
     }))
-    const { getByRole, getByTestId } = render(
+    const { getByRole } = render(
       <MockedProvider
         cache={cache}
         mocks={[
@@ -175,7 +175,6 @@ describe('BackgroundMediaImage', () => {
       </MockedProvider>
     )
     fireEvent.click(getByRole('button', { name: 'Select Image' }))
-    expect(getByTestId('ImageLibrary')).toBeInTheDocument()
     fireEvent.click(getByRole('tab', { name: 'Custom' }))
     fireEvent.click(getByRole('button', { name: 'Add image by URL' }))
     const textBox = await getByRole('textbox')
@@ -226,7 +225,7 @@ describe('BackgroundMediaImage', () => {
         }
       }
     }))
-    const { getByRole, getByTestId } = render(
+    const { getByRole } = render(
       <MockedProvider
         cache={cache}
         mocks={[
@@ -256,7 +255,6 @@ describe('BackgroundMediaImage', () => {
       </MockedProvider>
     )
     fireEvent.click(getByRole('button', { name: 'Select Image' }))
-    expect(getByTestId('ImageLibrary')).toBeInTheDocument()
     fireEvent.click(getByRole('tab', { name: 'Custom' }))
     fireEvent.click(getByRole('button', { name: 'Add image by URL' }))
     const textBox = await getByRole('textbox')
@@ -315,7 +313,7 @@ describe('BackgroundMediaImage', () => {
           }
         }
       }))
-      const { getByRole, getByTestId } = render(
+      const { getByRole } = render(
         <MockedProvider
           cache={cache}
           mocks={[
@@ -343,8 +341,11 @@ describe('BackgroundMediaImage', () => {
           </JourneyProvider>
         </MockedProvider>
       )
-      fireEvent.click(getByRole('button', { name: 'Select Image' }))
-      expect(getByTestId('ImageLibrary')).toBeInTheDocument()
+      fireEvent.click(
+        getByRole('button', {
+          name: 'https://example.com/image2.jpg Selected Image 1920 x 1080 pixels'
+        })
+      )
       fireEvent.click(getByRole('tab', { name: 'Custom' }))
       fireEvent.click(getByRole('button', { name: 'Add image by URL' }))
       const textBox = await getByRole('textbox')
@@ -360,7 +361,7 @@ describe('BackgroundMediaImage', () => {
     })
 
     it('shows loading icon', async () => {
-      const { getByRole, getByTestId } = render(
+      const { getByRole } = render(
         <MockedProvider mocks={[createCloudflareUploadByUrlMock]}>
           <JourneyProvider value={{ journey, admin: true }}>
             <SnackbarProvider>
@@ -369,8 +370,11 @@ describe('BackgroundMediaImage', () => {
           </JourneyProvider>
         </MockedProvider>
       )
-      fireEvent.click(getByRole('button', { name: 'Select Image' }))
-      expect(getByTestId('ImageLibrary')).toBeInTheDocument()
+      fireEvent.click(
+        getByRole('button', {
+          name: 'https://example.com/image2.jpg Selected Image 1920 x 1080 pixels'
+        })
+      )
       fireEvent.click(getByRole('tab', { name: 'Custom' }))
       fireEvent.click(getByRole('button', { name: 'Add image by URL' }))
       const textbox = getByRole('textbox')
@@ -423,8 +427,11 @@ describe('BackgroundMediaImage', () => {
           </JourneyProvider>
         </MockedProvider>
       )
-      fireEvent.click(getByRole('button', { name: 'Select Image' }))
-      expect(getByTestId('ImageLibrary')).toBeInTheDocument()
+      fireEvent.click(
+        getByRole('button', {
+          name: 'https://example.com/image2.jpg Selected Image 1920 x 1080 pixels'
+        })
+      )
       const button = await getByTestId('imageBlockHeaderDelete')
       fireEvent.click(button)
       await waitFor(() => expect(blockDeleteResult).toHaveBeenCalled())

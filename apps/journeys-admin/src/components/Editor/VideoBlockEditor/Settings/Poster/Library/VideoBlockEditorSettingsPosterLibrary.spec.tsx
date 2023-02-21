@@ -17,7 +17,7 @@ import {
   GetJourney_journey_blocks_ImageBlock as ImageBlock
 } from '../../../../../../../__generated__/GetJourney'
 
-import { createCloudflareUploadByUrlMock } from '../../../../ImageLibrary/CustomImage/CustomUrl/data'
+import { createCloudflareUploadByUrlMock } from '../../../../ImageBlockEditor/CustomImage/CustomUrl/data'
 import {
   POSTER_IMAGE_BLOCK_CREATE,
   POSTER_IMAGE_BLOCK_UPDATE,
@@ -153,7 +153,7 @@ describe('VideoBlockEditorSettingsPosterLibrary', () => {
           }
         }
       }))
-      const { getByRole, getByTestId } = render(
+      const { getByRole } = render(
         <MockedProvider
           cache={cache}
           mocks={[
@@ -197,8 +197,6 @@ describe('VideoBlockEditorSettingsPosterLibrary', () => {
           </JourneyProvider>
         </MockedProvider>
       )
-      fireEvent.click(getByRole('button'))
-      expect(getByTestId('ImageLibrary')).toBeInTheDocument()
       fireEvent.click(getByRole('tab', { name: 'Custom' }))
       fireEvent.click(getByRole('button', { name: 'Add image by URL' }))
       const textBox = getByRole('textbox')
@@ -250,7 +248,7 @@ describe('VideoBlockEditorSettingsPosterLibrary', () => {
           }
         }
       }))
-      const { getByRole, getByTestId } = render(
+      const { getByRole } = render(
         <MockedProvider
           cache={cache}
           mocks={[
@@ -281,7 +279,6 @@ describe('VideoBlockEditorSettingsPosterLibrary', () => {
           </JourneyProvider>
         </MockedProvider>
       )
-      expect(getByTestId('ImageLibrary')).toBeInTheDocument()
       fireEvent.click(getByRole('tab', { name: 'Custom' }))
       fireEvent.click(getByRole('button', { name: 'Add image by URL' }))
       const textBox = getByRole('textbox')

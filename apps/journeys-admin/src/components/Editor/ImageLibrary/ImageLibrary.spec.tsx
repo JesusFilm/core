@@ -54,8 +54,8 @@ describe('ImageLibrary', () => {
           />
         </MockedProvider>
       )
-      expect(getByText('Unsplash')).toBeInTheDocument()
-      expect(getByTestId('ImageLibrary').parentElement).toHaveClass(
+      expect(getByText('Custom')).toBeInTheDocument()
+      expect(getByTestId('ImageBlockEditor').parentElement).toHaveClass(
         'MuiDrawer-paperAnchorRight'
       )
     })
@@ -98,14 +98,10 @@ describe('ImageLibrary', () => {
           />
         </MockedProvider>
       )
-      expect(getByText('Unsplash')).toBeInTheDocument()
-      expect(getByTestId('ImageLibrary').parentElement).toHaveClass(
+      expect(getByText('Custom')).toBeInTheDocument()
+      expect(getByTestId('ImageBlockEditor').parentElement).toHaveClass(
         'MuiDrawer-paperAnchorBottom'
       )
     })
   })
-
-  // TODO:
-  // Unsplash Test
-  // Custom Test
 })
