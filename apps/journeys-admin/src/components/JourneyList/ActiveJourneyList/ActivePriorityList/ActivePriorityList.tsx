@@ -17,7 +17,7 @@ import { JourneyFields } from '../../../../../__generated__/JourneyFields'
 interface Props {
   journeys: Journey[]
   sortOrder?: SortOrder
-  refetch: (
+  refetch?: (
     variables?: Partial<OperationVariables> | undefined
   ) => Promise<ApolloQueryResult<GetActiveJourneys>>
   duplicatedJourneyId?: string

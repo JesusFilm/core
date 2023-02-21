@@ -1,8 +1,11 @@
 import { ReactElement } from 'react'
 import NextLink from 'next/link'
+import Tooltip from '@mui/material/Tooltip'
 import ListItemButton from '@mui/material/ListItemButton'
 import ListItemIcon from '@mui/material/ListItemIcon'
 import ListItemText from '@mui/material/ListItemText'
+import Badge from '@mui/material/Badge'
+import flowRight from 'lodash/flowRight'
 
 export interface NavigationListItemProps {
   icon: ReactElement
@@ -10,6 +13,7 @@ export interface NavigationListItemProps {
   selected: boolean
   link?: string
   handleClick?: (e?) => void
+  tooltipText?: string
 }
 
 export function NavigationListItem({
@@ -17,39 +21,62 @@ export function NavigationListItem({
   label,
   selected,
   link,
-  handleClick
+  handleClick,
+  tooltipText
 }: NavigationListItemProps): ReactElement {
   const color = selected ? 'background.paper' : 'secondary.light'
-  return (
-    <LinkWrapper
-      wrapper={(children) => (
-        <NextLink href={link as string} passHref>
-          {children}
-        </NextLink>
-      )}
-      condition={link}
+  const ListItem: ReactElement = (
+    <ListItemButton
+      onClick={handleClick}
+      aria-selected={selected}
+      data-testid={`${label}-list-item`}
     >
-      <ListItemButton
-        onClick={handleClick}
-        aria-selected={selected}
-        data-testid={`${label}-list-item`}
+      <Badge
+        variant="dot"
+        color="warning"
+        overlap="circular"
+        invisible={tooltipText == null}
+        data-testid="nav-notification-badge"
+        sx={{
+          '& .MuiBadge-badge': {
+            right: '32%',
+            top: '10%'
+          }
+        }}
       >
         <ListItemIcon sx={{ color }}>{icon}</ListItemIcon>
-        <ListItemText primary={label} sx={{ color }} />
-      </ListItemButton>
-    </LinkWrapper>
+      </Badge>
+      <ListItemText primary={label} sx={{ color }} />
+    </ListItemButton>
   )
+  const enhance = flowRight(withLink(link), withTooltip(tooltipText))
+  const WrappedNavListItem = enhance(ListItem)
+
+  return WrappedNavListItem
 }
 
-interface LinkWrapperProps {
-  wrapper: (children: ReactElement) => ReactElement
-  children: ReactElement
-  condition?: string
-}
+const withLink = (link: string | undefined) =>
+  function component(baseComponent: ReactElement) {
+    if (link != null) {
+      return (
+        <NextLink href={link} passHref>
+          {baseComponent}
+        </NextLink>
+      )
+    } else {
+      return baseComponent
+    }
+  }
 
-const LinkWrapper = ({
-  wrapper,
-  children,
-  condition
-}: LinkWrapperProps): ReactElement =>
-  condition != null ? wrapper(children) : children
+const withTooltip = (tooltip: string | undefined) =>
+  function component(baseComponent: ReactElement) {
+    if (tooltip != null) {
+      return (
+        <Tooltip title={tooltip} placement="right" arrow>
+          {baseComponent}
+        </Tooltip>
+      )
+    } else {
+      return baseComponent
+    }
+  }
