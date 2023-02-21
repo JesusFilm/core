@@ -1,3 +1,8 @@
+
+resource "aws_cloudwatch_log_group" "ecs_cw_log_group" {
+  name = "${var.task_name}-logs"
+}
+
 resource "aws_ecr_repository" "ecr_repository" {
   name = var.task_name
 }
@@ -22,11 +27,6 @@ resource "aws_ecr_lifecycle_policy" "ecr_policy" {
     ]
   })
 }
-
-resource "aws_cloudwatch_log_group" "ecs_cw_log_group" {
-  name = "${var.task_name}-logs"
-}
-
 resource "aws_ssm_parameter" "parameters" {
   for_each = toset(var.environment_variables)
 
@@ -39,39 +39,56 @@ resource "aws_ssm_parameter" "parameters" {
   }
 }
 
+# Create task definitions for scheduled tasks
 resource "aws_ecs_task_definition" "default" {
-  family = var.task_name
-  container_definitions = jsonencode([{
-    name      = "${var.task_name}-app"
-    image     = "${aws_ecr_repository.ecr_repository.repository_url}:latest"
-    cpu       = var.task_cpu
-    memory    = var.task_memory
-    essential = true
-    secrets = [
-      for param in aws_ssm_parameter.parameters : {
-        name      = param.tags.name
-        valueFrom = param.arn
-      }
-    ]
-    logConfiguration = {
-      logDriver = "awsfirelens"
-      options = {
-        Name        = "datadog"
-        Host        = "http-intake.logs.datadoghq.com"
-        TLS         = "on"
-        dd_service  = "ecs"
-        dd_source   = "aws"
-        dd_tags     = "env:${var.env},app:${var.task_name},host:${var.task_name}-app"
-        provider    = "ecs"
-        retry_limit = "2"
-      }
-      secretOptions = [
+  family                   = var.task_name
+  execution_role_arn       = var.task_execution_role_arn
+  requires_compatibilities = ["FARGATE"]
+  network_mode             = "awsvpc"
+  cpu                      = tostring(var.task_cpu)
+  memory                   = tostring(var.task_memory)
+
+  container_definitions = jsonencode([
+    # app container
+    {
+      name      = "${var.task_name}-app"
+      image     = "${aws_ecr_repository.ecr_repository.repository_url}:latest"
+      essential = true
+      cpu       = var.task_cpu
+      memory    = var.task_memory
+      secrets = concat([
+        for param in aws_ssm_parameter.parameters : {
+          name      = param.tags.name
+          valueFrom = param.arn
+        }
+        ], [
         {
-          name      = "apikey"
+          name      = "DD_API_KEY"
           valueFrom = "arn:aws:ssm:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:parameter/terraform/prd/DATADOG_API_KEY"
         }
-      ]
-    }
+      ])
+      logConfiguration = {
+        logDriver = "awsfirelens"
+        options = {
+          Name        = "datadog"
+          Host        = "http-intake.logs.datadoghq.com"
+          TLS         = "on"
+          dd_service  = "ecs"
+          dd_source   = "aws"
+          dd_tags     = "env:${var.env},app:${var.task_name},host:${var.task_name}-app"
+          provider    = "ecs"
+          retry_limit = "2"
+        }
+        secretOptions = [
+          {
+            name      = "apikey"
+            valueFrom = "arn:aws:ssm:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:parameter/terraform/prd/DATADOG_API_KEY"
+          }
+        ]
+      }
+      environment = []
+      mountPoints = []
+      volumesFrom = []
     },
     # datadog agent container
     {
@@ -182,12 +199,9 @@ resource "aws_ecs_task_definition" "default" {
           awslogs-stream-prefix = "core"
         }
       }
-  }])
-  execution_role_arn       = var.task_execution_role_arn
-  requires_compatibilities = ["FARGATE"]
-  network_mode             = "awsvpc"
-  cpu                      = tostring(var.task_cpu)
-  memory                   = tostring(var.task_memory)
+    }
+  ])
+  tags = {}
 }
 
 resource "aws_cloudwatch_event_rule" "default" {

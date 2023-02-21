@@ -6,6 +6,7 @@ module "ecs-task" {
   task_name                      = "jfp-arangodb-bigquery-etl"
   doppler_token                  = var.doppler_token
   cluster_arn                    = var.cluster_arn
+  env                            = "prod"
   environment_variables = [
     "DATABASE_DB",
     "DATABASE_PASS",
