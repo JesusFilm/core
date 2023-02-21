@@ -2,6 +2,15 @@ import { fireEvent, render } from '@testing-library/react'
 import AbcRoundedIcon from '@mui/icons-material/AbcRounded'
 import { NavigationListItem } from './NavigationListItem'
 
+jest.mock('react-i18next', () => ({
+  __esModule: true,
+  useTranslation: () => {
+    return {
+      t: (str: string) => str
+    }
+  }
+}))
+
 describe('NavigationListItem', () => {
   it('renders menu item', () => {
     const { getByRole } = render(
@@ -18,7 +27,7 @@ describe('NavigationListItem', () => {
   })
 
   it('renders menuitem with link', () => {
-    const { getByTestId } = render(
+    const { getByRole } = render(
       <NavigationListItem
         icon={<AbcRoundedIcon />}
         label="menu item"
@@ -26,9 +35,38 @@ describe('NavigationListItem', () => {
         link="/"
       />
     )
-    expect(
-      getByTestId('AbcRoundedIcon').parentElement?.parentElement
-    ).toHaveAttribute('href', '/')
+    expect(getByRole('link', { name: 'menu item' })).toHaveAttribute(
+      'href',
+      '/'
+    )
+  })
+
+  it('should render menu item with tool tip and badge', () => {
+    const { getByTestId, getByLabelText } = render(
+      <NavigationListItem
+        icon={<AbcRoundedIcon />}
+        label="menu item"
+        selected
+        tooltipText="item label"
+      />
+    )
+    expect(getByTestId('nav-notification-badge')).toBeInTheDocument()
+    expect(getByLabelText('item label')).toBeInTheDocument()
+  })
+
+  it('should render menu item with link, tool tip and badge', () => {
+    const { getByRole, getByTestId, getByLabelText } = render(
+      <NavigationListItem
+        icon={<AbcRoundedIcon />}
+        label="menu item"
+        selected
+        link="/"
+        tooltipText="item label"
+      />
+    )
+    expect(getByRole('link')).toHaveAttribute('href', '/')
+    expect(getByTestId('nav-notification-badge')).toBeInTheDocument()
+    expect(getByLabelText('item label')).toBeInTheDocument()
   })
 
   it('calls onClick', () => {
