@@ -8,7 +8,7 @@ import AddIcon from '@mui/icons-material/Add'
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline'
 import { ImageBlockThumbnail } from '../ImageBlockThumbnail'
 import { GetJourney_journey_blocks_ImageBlock as ImageBlock } from '../../../../__generated__/GetJourney'
-import type { UnsplashAuthor } from '../ImageLibrary/UnsplashGallery'
+import type { UnsplashAuthor } from '../ImageBlockEditor/UnsplashGallery'
 
 interface ImageBlockHeaderProps {
   selectedBlock: ImageBlock | null
@@ -33,7 +33,7 @@ export function ImageBlockHeader({
       alignItems="center"
       sx={{
         height: 78,
-        width: 285
+        width: showAdd ? '100%' : 285
       }}
     >
       <Stack direction="row" alignItems="center">
@@ -88,12 +88,13 @@ export function ImageBlockHeader({
         disabled={showAdd}
         sx={{
           mr: 2,
-          display: selectedBlock == null && !showAdd ? 'none' : 'flex'
+          display:
+            (selectedBlock == null && !showAdd) || loading ? 'none' : 'flex'
         }}
       >
         {showAdd ? (
           <AddIcon color="primary" />
-        ) : selectedBlock != null ? (
+        ) : selectedBlock?.src != null ? (
           <DeleteOutlineIcon
             color="primary"
             data-testid="imageBlockHeaderDelete"

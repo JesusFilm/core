@@ -1,144 +1,46 @@
-import { fireEvent, render } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
-import { SnackbarProvider } from 'notistack'
-import useMediaQuery from '@mui/material/useMediaQuery'
+import { fireEvent, render } from '@testing-library/react'
 import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 import { GetJourney_journey_blocks_ImageBlock as ImageBlock } from '../../../../__generated__/GetJourney'
-import { ImageBlockEditor } from './ImageBlockEditor'
-
-jest.mock('@mui/material/useMediaQuery', () => ({
-  __esModule: true,
-  default: jest.fn()
-}))
-
-const image: ImageBlock = {
-  id: 'image1.id',
-  __typename: 'ImageBlock',
-  parentBlockId: 'card.id',
-  parentOrder: 0,
-  src: 'https://example.com/image.jpg',
-  alt: 'image.jpg',
-  width: 1920,
-  height: 1080,
-  blurhash: ''
-}
-
-const onChange = jest.fn()
-const onDelete = jest.fn()
+import { ImageBlockEditor } from '.'
 
 describe('ImageBlockEditor', () => {
-  beforeEach(() => (useMediaQuery as jest.Mock).mockImplementation(() => true))
+  const imageBlock: ImageBlock = {
+    id: 'imageBlockId',
+    __typename: 'ImageBlock',
+    src: 'https://images.unsplash.com/photo-1508363778367-af363f107cbb?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&dl=chester-wade-hLP7lVm4KUE-unsplash.jpg&w=1920',
+    alt: 'random image from unsplash',
+    width: 1600,
+    height: 1067,
+    blurhash: 'L9AS}j^-0dVC4Tq[=~PATeXSV?aL',
+    parentBlockId: 'card',
+    parentOrder: 0
+  }
 
-  it('opens the image library', () => {
-    const { getByRole, getByTestId } = render(
-      <MockedProvider>
-        <FlagsProvider>
-          <SnackbarProvider>
-            <ImageBlockEditor
-              selectedBlock={image}
-              onChange={onChange}
-              onDelete={onDelete}
-            />
-          </SnackbarProvider>
-        </FlagsProvider>
-      </MockedProvider>
+  it('should render the ImageBlockEditor', () => {
+    const { getByText, getByRole } = render(
+      <FlagsProvider flags={{ unsplashGallery: true }}>
+        <MockedProvider>
+          <ImageBlockEditor onChange={jest.fn()} selectedBlock={imageBlock} />
+        </MockedProvider>
+      </FlagsProvider>
     )
-    fireEvent.click(getByRole('button', { name: 'Select Image' }))
-    expect(getByTestId('ImageLibrary')).toBeInTheDocument()
+    expect(getByText('Selected Image')).toBeInTheDocument()
+    expect(getByRole('tab', { name: 'Gallery' })).toBeInTheDocument()
+    expect(getByRole('tab', { name: 'Custom' })).toBeInTheDocument()
   })
 
-  // TODO: Add relevant tests back in once unplash and cloudflare functionality is in
-
-  // describe('No existing ImageBlock', () => {
-  //   it('shows placeholders on null', async () => {
-  //     const { getByTestId, getByRole } = render(
-  //       <ImageBlockEditor
-  //         selectedBlock={null}
-  //         onChange={onChange}
-  //         onDelete={onDelete}
-  //       />
-  //     )
-  //     expect(await getByTestId('imageSrcStack')).toBeInTheDocument()
-  //     const textBox = await getByRole('textbox')
-  //     expect(textBox).toHaveValue('')
-  //   })
-  // })
-  // describe('Existing ImageBlock', () => {
-  //   it('shows placeholders', async () => {
-  //     const { getByTestId, getByRole } = render(
-  //       <ImageBlockEditor
-  //         selectedBlock={image}
-  //         onChange={onChange}
-  //         onDelete={onDelete}
-  //       />
-  //     )
-  //     expect(await getByTestId('imageSrcStack')).toBeInTheDocument()
-  //     const textBox = await getByRole('textbox')
-  //     expect(textBox).toHaveValue(image.src)
-  //   })
-  //   it('displays validation messages ', async () => {
-  //     const { getByRole, getByText } = render(
-  //       <ImageBlockEditor
-  //         selectedBlock={image}
-  //         onChange={onChange}
-  //         onDelete={onDelete}
-  //       />
-  //     )
-  //     const textBox = await getByRole('textbox')
-  //     fireEvent.change(textBox, {
-  //       target: { value: '' }
-  //     })
-  //     fireEvent.blur(textBox)
-  //     await waitFor(() => expect(getByText('Required')).toBeInTheDocument())
-  //     fireEvent.change(textBox, {
-  //       target: { value: 'example.com/123' }
-  //     })
-  //     fireEvent.blur(textBox)
-  //     await waitFor(() =>
-  //       expect(getByText('Please enter a valid url')).toBeInTheDocument()
-  //     )
-  //   })
-  // })
-  // it('triggers onChange', async () => {
-  //   const { getByRole } = render(
-  //     <ImageBlockEditor
-  //       selectedBlock={image}
-  //       onChange={onChange}
-  //       onDelete={onDelete}
-  //     />
-  //   )
-  //   const textBox = await getByRole('textbox')
-  //   fireEvent.change(textBox, {
-  //     target: { value: 'https://example.com/123' }
-  //   })
-  //   fireEvent.blur(textBox)
-  //   await waitFor(() => expect(onChange).toHaveBeenCalled())
-  // })
-  // it('triggers onDelete', async () => {
-  //   const { getAllByRole } = render(
-  //     <ImageBlockEditor
-  //       selectedBlock={image}
-  //       onChange={onChange}
-  //       onDelete={onDelete}
-  //     />
-  //   )
-  //   const deleteButton = await getAllByRole('button')[0]
-  //   fireEvent.click(deleteButton)
-  //   await waitFor(() => expect(onDelete).toHaveBeenCalled())
-  // })
-  // it('triggers onChange onPaste', async () => {
-  //   const { getByRole } = render(
-  //     <ImageBlockEditor
-  //       selectedBlock={image}
-  //       onChange={onChange}
-  //       onDelete={onDelete}
-  //     />
-  //   )
-  //   const textBox = await getByRole('textbox')
-  //   await fireEvent.paste(textBox, {
-  //     clipboardData: { getData: () => 'https://example.com/123' }
-  //   })
-
-  //   await waitFor(() => expect(onChange).toHaveBeenCalled())
-  // })
+  it('should switch tabs', () => {
+    const { getByText, getByRole } = render(
+      <FlagsProvider flags={{ unsplashGallery: true }}>
+        <MockedProvider>
+          <ImageBlockEditor onChange={jest.fn()} selectedBlock={imageBlock} />
+        </MockedProvider>
+      </FlagsProvider>
+    )
+    expect(getByRole('tab', { name: 'Gallery' })).toBeInTheDocument()
+    expect(getByText('Unsplash')).toBeInTheDocument()
+    fireEvent.click(getByRole('tab', { name: 'Custom' }))
+    expect(getByText('Add image by URL')).toBeInTheDocument()
+  })
 })

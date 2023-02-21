@@ -1,4 +1,4 @@
-import { render, fireEvent } from '@testing-library/react'
+import { render } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
 import { SnackbarProvider } from 'notistack'
 import useMediaQuery from '@mui/material/useMediaQuery'
@@ -13,7 +13,7 @@ jest.mock('@mui/material/useMediaQuery', () => ({
 describe('ImageOptions', () => {
   beforeEach(() => (useMediaQuery as jest.Mock).mockImplementation(() => true))
   it('opens the image library', () => {
-    const { getByRole, getByTestId } = render(
+    const { getByTestId } = render(
       <MockedProvider>
         <FlagsProvider>
           <SnackbarProvider>
@@ -22,7 +22,6 @@ describe('ImageOptions', () => {
         </FlagsProvider>
       </MockedProvider>
     )
-    fireEvent.click(getByRole('button', { name: 'Select Image' }))
-    expect(getByTestId('ImageLibrary')).toBeInTheDocument()
+    expect(getByTestId('ImageBlockEditor')).toBeInTheDocument()
   })
 })

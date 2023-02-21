@@ -3,7 +3,7 @@ import { Story, Meta } from '@storybook/react'
 import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 import { MockedProvider } from '@apollo/client/testing'
 import { simpleComponentConfig } from '../../../libs/storybook'
-import { listUnsplashCollectionMock } from './UnsplashGallery/data'
+import { listUnsplashCollectionMock } from '../ImageBlockEditor/UnsplashGallery/data'
 import { ImageLibrary } from '.'
 
 const ImageLibraryStory = {

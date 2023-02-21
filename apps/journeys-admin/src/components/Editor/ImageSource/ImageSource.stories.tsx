@@ -10,12 +10,12 @@ import {
 import { simpleComponentConfig } from '../../../libs/storybook'
 import { ThemeMode } from '../../../../__generated__/globalTypes'
 import { ThemeProvider } from '../../ThemeProvider'
-import { ImageBlockEditor } from './ImageBlockEditor'
+import { ImageSource } from './ImageSource'
 
 const ImageEditorStory = {
   ...simpleComponentConfig,
-  component: ImageBlockEditor,
-  title: 'Journeys-Admin/Editor/ImageBlockEditor',
+  component: ImageSource,
+  title: 'Journeys-Admin/Editor/ImageSource',
   parameters: {
     ...simpleComponentConfig.parameters,
     layout: 'fullscreen'
@@ -54,7 +54,7 @@ const Template: Story = ({ ...args }) => (
   <ThemeProvider>
     <FlagsProvider>
       <Box width={328} bgcolor="white">
-        <ImageBlockEditor
+        <ImageSource
           selectedBlock={args.selectedBlock}
           onChange={onChange}
           onDelete={onDelete}

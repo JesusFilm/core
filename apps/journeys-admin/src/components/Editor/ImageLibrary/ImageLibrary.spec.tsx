@@ -1,7 +1,7 @@
 import { fireEvent, render } from '@testing-library/react'
 import useMediaQuery from '@mui/material/useMediaQuery'
-import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 import { MockedProvider } from '@apollo/client/testing'
+import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 import { GetJourney_journey_blocks_ImageBlock as ImageBlock } from '../../../../__generated__/GetJourney'
 import { ImageLibrary } from '.'
 
@@ -30,8 +30,8 @@ describe('ImageLibrary', () => {
 
     it('should switch tabs', () => {
       const { getByText } = render(
-        <FlagsProvider>
-          <MockedProvider>
+        <MockedProvider>
+          <FlagsProvider>
             <ImageLibrary
               open
               onClose={jest.fn()}
@@ -39,16 +39,16 @@ describe('ImageLibrary', () => {
               onDelete={jest.fn()}
               selectedBlock={imageBlock}
             />
-          </MockedProvider>
-        </FlagsProvider>
+          </FlagsProvider>
+        </MockedProvider>
       )
       expect(getByText('Custom')).toBeInTheDocument()
     })
 
     it('should render the Image Library on the right', () => {
-      const { getAllByText, getByTestId } = render(
-        <FlagsProvider flags={{ unsplashGallery: true }}>
-          <MockedProvider>
+      const { getByText, getByTestId } = render(
+        <MockedProvider>
+          <FlagsProvider>
             <ImageLibrary
               open
               onClose={jest.fn()}
@@ -56,11 +56,11 @@ describe('ImageLibrary', () => {
               onDelete={jest.fn()}
               selectedBlock={imageBlock}
             />
-          </MockedProvider>
-        </FlagsProvider>
+          </FlagsProvider>
+        </MockedProvider>
       )
-      expect(getAllByText('Gallery')[0]).toBeInTheDocument()
-      expect(getByTestId('ImageLibrary').parentElement).toHaveClass(
+      expect(getByText('Custom')).toBeInTheDocument()
+      expect(getByTestId('ImageBlockEditor').parentElement).toHaveClass(
         'MuiDrawer-paperAnchorRight'
       )
     })
@@ -68,8 +68,8 @@ describe('ImageLibrary', () => {
     it('should close ImageLibrary on close Icon click', () => {
       const onClose = jest.fn()
       const { getAllByRole, getByTestId } = render(
-        <FlagsProvider>
-          <MockedProvider>
+        <MockedProvider>
+          <FlagsProvider>
             <ImageLibrary
               open
               onClose={onClose}
@@ -77,32 +77,14 @@ describe('ImageLibrary', () => {
               onDelete={jest.fn()}
               selectedBlock={imageBlock}
             />
-          </MockedProvider>
-        </FlagsProvider>
+          </FlagsProvider>
+        </MockedProvider>
       )
       expect(getAllByRole('button')[0]).toContainElement(
         getByTestId('CloseIcon')
       )
       fireEvent.click(getAllByRole('button')[0])
       expect(onClose).toHaveBeenCalled()
-    })
-
-    it('does not render unsplash as an option', () => {
-      const { queryByText, getByText } = render(
-        <FlagsProvider>
-          <MockedProvider>
-            <ImageLibrary
-              open
-              onClose={jest.fn()}
-              onChange={jest.fn()}
-              onDelete={jest.fn()}
-              selectedBlock={imageBlock}
-            />
-          </MockedProvider>
-        </FlagsProvider>
-      )
-      expect(queryByText('Unplash')).not.toBeInTheDocument()
-      expect(getByText('Custom')).toBeInTheDocument()
     })
   })
 
@@ -112,9 +94,9 @@ describe('ImageLibrary', () => {
     )
 
     it('should render the Image Library from the bottom', () => {
-      const { getAllByText, getByTestId } = render(
-        <FlagsProvider flags={{ unsplashGallery: true }}>
-          <MockedProvider>
+      const { getByText, getByTestId } = render(
+        <MockedProvider>
+          <FlagsProvider>
             <ImageLibrary
               open
               onClose={jest.fn()}
@@ -122,11 +104,11 @@ describe('ImageLibrary', () => {
               onDelete={jest.fn()}
               selectedBlock={imageBlock}
             />
-          </MockedProvider>
-        </FlagsProvider>
+          </FlagsProvider>
+        </MockedProvider>
       )
-      expect(getAllByText('Gallery')[0]).toBeInTheDocument()
-      expect(getByTestId('ImageLibrary').parentElement).toHaveClass(
+      expect(getByText('Custom')).toBeInTheDocument()
+      expect(getByTestId('ImageBlockEditor').parentElement).toHaveClass(
         'MuiDrawer-paperAnchorBottom'
       )
     })
