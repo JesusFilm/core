@@ -22,12 +22,15 @@ import { gql, useQuery } from '@apollo/client'
 import { useFlags } from '@core/shared/ui/FlagsProvider'
 import ViewCarouselRoundedIcon from '@mui/icons-material/ViewCarouselRounded'
 import LeaderboardRoundedIcon from '@mui/icons-material/LeaderboardRounded'
+import { useTranslation } from 'react-i18next'
 import { Role } from '../../../../__generated__/globalTypes'
 import taskbarIcon from '../../../../public/taskbar-icon.svg'
 import nextstepsTitle from '../../../../public/nextsteps-title.svg'
 import { GetMe } from '../../../../__generated__/GetMe'
 import { GetUserRole } from '../../../../__generated__/GetUserRole'
 import { GET_USER_ROLE } from '../../JourneyView/JourneyView'
+import { useActiveJourneys } from '../../../libs/useActiveJourneys'
+import { getJourneyTooltip } from '../utils/getJourneyTooltip'
 import { UserMenu } from './UserMenu'
 import { NavigationListItem } from './NavigationListItem'
 
@@ -78,7 +81,7 @@ const StyledNavigationDrawer = styled(Drawer)(({ theme, open }) => ({
   }
 }))
 
-const StyledList = styled(List)({
+export const StyledList = styled(List)({
   display: 'flex',
   flexDirection: 'column',
   '& .MuiListItemButton-root, & .MuiListItem-root': {
@@ -103,6 +106,9 @@ export function NavigationDrawer({
   title,
   router
 }: NavigationDrawerProps): ReactElement {
+  const activeJourneys = useActiveJourneys()
+  const journeys = activeJourneys?.data?.journeys
+  const { t } = useTranslation('apps-journeys-admin')
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
   const [profileAnchorEl, setProfileAnchorEl] = useState(null)
 
@@ -125,6 +131,8 @@ export function NavigationDrawer({
 
   const { data } = useQuery<GetMe>(GET_ME)
   const { data: userRoleData } = useQuery<GetUserRole>(GET_USER_ROLE)
+
+  const journeyTooltip = getJourneyTooltip(t, journeys, authUser?.id)
 
   return (
     <StyledNavigationDrawer
@@ -154,6 +162,7 @@ export function NavigationDrawer({
           label="Discover"
           selected={selectedPage === 'journeys' || selectedPage == null} // null for when page is index. UPDATE when we add the actual index page
           link="/"
+          tooltipText={journeyTooltip}
         />
 
         {templates && (

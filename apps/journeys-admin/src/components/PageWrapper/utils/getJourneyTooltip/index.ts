@@ -1,0 +1,1 @@
+export { getJourneyTooltip } from './getJourneyTooltip'
