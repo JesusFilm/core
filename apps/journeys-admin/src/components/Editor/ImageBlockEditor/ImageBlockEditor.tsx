@@ -1,7 +1,6 @@
 import { ReactElement, SyntheticEvent, useState } from 'react'
 import { tabA11yProps, TabPanel } from '@core/shared/ui/TabPanel'
 import BrushRounded from '@mui/icons-material/BrushRounded'
-import DashboardRounded from '@mui/icons-material/DashboardRounded'
 import Box from '@mui/material/Box'
 import Tab from '@mui/material/Tab'
 import Tabs from '@mui/material/Tabs'
@@ -71,20 +70,12 @@ export function ImageBlockEditor({
           variant="fullWidth"
         >
           <Tab
-            icon={<DashboardRounded />}
-            label={<Typography variant="subtitle2">Unsplash</Typography>}
-            {...tabA11yProps('unsplash', 0)}
-          />
-          <Tab
             icon={<BrushRounded />}
             label={<Typography variant="subtitle2">Custom</Typography>}
-            {...tabA11yProps('custom', 1)}
+            {...tabA11yProps('custom', 0)}
           />
         </Tabs>
-        <TabPanel name="unsplash" value={tabValue} index={0}>
-          {/* insert unsplash component */}
-        </TabPanel>
-        <TabPanel name="custom" value={tabValue} index={1}>
+        <TabPanel name="custom" value={tabValue} index={0}>
           <CustomImage onChange={handleSrcChange} />
         </TabPanel>
       </Box>
