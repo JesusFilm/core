@@ -1,80 +1,88 @@
-import DeleteOutline from '@mui/icons-material/DeleteOutline'
 import Box from '@mui/material/Box'
 import IconButton from '@mui/material/IconButton'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { ReactElement } from 'react'
+import AddIcon from '@mui/icons-material/Add'
+import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline'
 import { ImageBlockThumbnail } from '../ImageBlockThumbnail'
+import { GetJourney_journey_blocks_ImageBlock as ImageBlock } from '../../../../__generated__/GetJourney'
 
 interface ImageBlockHeaderProps {
-  selectedBlock: { src: string | null; alt: string } | null
-  caption?: string
-  header: string
-  showDelete: boolean
-  onDelete: () => Promise<void>
+  selectedBlock: ImageBlock | null
+  showAdd?: boolean
+  onDelete?: () => Promise<void>
   loading?: boolean
 }
 
 export function ImageBlockHeader({
-  selectedBlock,
-  caption = '',
-  header,
-  showDelete,
+  showAdd = false,
   onDelete,
-  loading
+  loading = false,
+  selectedBlock
 }: ImageBlockHeaderProps): ReactElement {
   return (
-    <Box sx={{ mb: 4 }}>
-      <Stack
-        direction="row"
-        spacing={4}
-        data-testid="imageSrcStack"
-        justifyContent="space-between"
-      >
-        <Box>
+    <Stack
+      data-testid="imageSrcStack"
+      flexDirection="row"
+      justifyContent="space-between"
+      alignItems="center"
+      sx={{
+        height: 78,
+        width: showAdd ? '100%' : 285
+      }}
+    >
+      <Stack direction="row" alignItems="center">
+        <Box
+          sx={{
+            ml: 2,
+            mr: 4,
+            position: 'relative'
+          }}
+        >
           <ImageBlockThumbnail
-            selectedBlock={selectedBlock}
+            selectedBlock={selectedBlock != null ? selectedBlock : undefined}
             loading={loading}
           />
         </Box>
-        <Stack
-          direction="column"
-          justifyContent="center"
-          sx={{ minWidth: 0, width: '100%' }}
-        >
-          {!showDelete && <Typography variant="subtitle2">{header}</Typography>}
-          {showDelete && (
-            <Typography
-              variant="subtitle2"
-              sx={{
-                textOverflow: 'ellipsis',
-                whiteSpace: 'nowrap',
-                overflow: 'hidden'
-              }}
-            >
-              {header}
-            </Typography>
-          )}
+        <Stack>
+          <Typography variant="subtitle2">
+            {loading
+              ? 'Image is uploading'
+              : selectedBlock != null
+              ? 'Selected Image'
+              : 'Select Image'}
+          </Typography>
           <Typography
             variant="caption"
-            sx={{
-              textOverflow: 'ellipsis',
-              whiteSpace: 'nowrap',
-              overflow: 'hidden'
-            }}
+            display={selectedBlock != null && !loading ? 'flex' : 'none'}
           >
-            {caption}
-            &nbsp;
+            {selectedBlock != null
+              ? `${selectedBlock.width} x ${selectedBlock.height} pixels`
+              : ''}
           </Typography>
         </Stack>
-        {showDelete && (
-          <Stack direction="column" justifyContent="center">
-            <IconButton onClick={onDelete} data-testid="imageBlockHeaderDelete">
-              <DeleteOutline color="primary" />
-            </IconButton>
-          </Stack>
-        )}
       </Stack>
-    </Box>
+      <IconButton
+        onClick={onDelete}
+        disabled={showAdd}
+        sx={{
+          mr: 2,
+          display:
+            (selectedBlock == null && !showAdd) || loading ? 'none' : 'flex'
+        }}
+      >
+        {showAdd ? (
+          <AddIcon color="primary" />
+        ) : selectedBlock?.src != null ? (
+          <DeleteOutlineIcon
+            color="primary"
+            data-testid="imageBlockHeaderDelete"
+          />
+        ) : (
+          <></>
+        )}
+      </IconButton>
+    </Stack>
   )
 }

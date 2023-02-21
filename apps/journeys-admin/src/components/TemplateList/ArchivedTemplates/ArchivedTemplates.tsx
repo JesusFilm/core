@@ -37,6 +37,7 @@ export const GET_ARCHIVED_PUBLISHER_TEMPLATES = gql`
       userJourneys {
         id
         role
+        openedAt
         user {
           id
           firstName

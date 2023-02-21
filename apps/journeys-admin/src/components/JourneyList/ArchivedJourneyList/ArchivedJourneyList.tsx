@@ -38,6 +38,7 @@ export const GET_ARCHIVED_JOURNEYS = gql`
       userJourneys {
         id
         role
+        openedAt
         user {
           id
           firstName
