@@ -13,6 +13,10 @@ describe('UnsplashList', () => {
       small:
         'https://images.unsplash.com/photo-1618777618311-92f986a6519d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=Mnw0MDIyMzR8MHwxfGNvbGxlY3Rpb258MXw0OTI0NTU2fHx8fHwyfHwxNjc0Nzc0Mjk4&ixlib=rb-4.0.3&q=80&w=400'
     },
+    links: {
+      download_location:
+        'https://api.unsplash.com/collections/4924556/photos?client_id=fpXMSrVxk3ByFvwCqpoQgcIa6P5hX4xqdkSbmfjBBHY'
+    },
     user: {
       first_name: 'Levi Meir',
       last_name: 'Clancy',

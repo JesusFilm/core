@@ -2,10 +2,11 @@ import { ReactElement, useState } from 'react'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import LoadingButton from '@mui/lab/LoadingButton'
-import { gql, useQuery } from '@apollo/client'
+import { gql, useMutation, useQuery } from '@apollo/client'
 
 import { ListUnsplashCollectionPhotos } from '../../../../../__generated__/ListUnsplashCollectionPhotos'
 import { SearchUnsplashPhotos } from '../../../../../__generated__/SearchUnsplashPhotos'
+import { TriggerUnsplashDownload } from '../../../../../__generated__/TriggerUnsplashDownload'
 import { UnsplashSearch } from './UnsplashSearch'
 import { UnsplashList } from './UnsplashList'
 
@@ -29,6 +30,9 @@ export const LIST_UNSPLASH_COLLECTION_PHOTOS = gql`
         small
         regular
       }
+      links {
+        download_location
+      }
       user {
         first_name
         last_name
@@ -51,6 +55,9 @@ export const SEARCH_UNSPLASH_PHOTOS = gql`
           small
           regular
         }
+        links {
+          download_location
+        }
         user {
           first_name
           last_name
@@ -58,6 +65,12 @@ export const SEARCH_UNSPLASH_PHOTOS = gql`
         }
       }
     }
+  }
+`
+
+export const TRIGGER_UNSPLASH_DOWNLOAD = gql`
+  mutation TriggerUnsplashDownload($url: String!) {
+    triggerUnsplashDownload(url: $url)
   }
 `
 
@@ -89,6 +102,9 @@ export function UnsplashGallery({
     variables: { collectionId: '4924556', page, perPage: 20 },
     skip: query != null
   })
+  const [triggerUnsplashDownload] = useMutation<TriggerUnsplashDownload>(
+    TRIGGER_UNSPLASH_DOWNLOAD
+  )
   const {
     data: searchData,
     refetch: refetchSearch,
@@ -97,6 +113,17 @@ export function UnsplashGallery({
     variables: { query, page, perPage: 20 },
     skip: query == null
   })
+  const handleChange = (
+    src: string,
+    unsplashAuthor: UnsplashAuthor,
+    downloadLocation: string,
+    blurhash?: string,
+    width?: number,
+    height?: number
+  ): void => {
+    onChange(src, unsplashAuthor, blurhash, width, height)
+    void triggerUnsplashDownload({ variables: { url: downloadLocation } })
+  }
 
   const handleSubmit = (value: string): void => {
     if (value == null) {
@@ -133,13 +160,13 @@ export function UnsplashGallery({
       {query == null && listData != null && (
         <UnsplashList
           gallery={listData.listUnsplashCollectionPhotos}
-          onChange={onChange}
+          onChange={handleChange}
         />
       )}
       {query != null && searchData != null && (
         <UnsplashList
           gallery={searchData.searchUnsplashPhotos.results}
-          onChange={onChange}
+          onChange={handleChange}
         />
       )}
       <LoadingButton

@@ -13,6 +13,11 @@ export interface SearchUnsplashPhotos_searchUnsplashPhotos_results_urls {
   regular: string;
 }
 
+export interface SearchUnsplashPhotos_searchUnsplashPhotos_results_links {
+  __typename: "UnsplashPhotoLinks";
+  download_location: string;
+}
+
 export interface SearchUnsplashPhotos_searchUnsplashPhotos_results_user {
   __typename: "UnsplashUser";
   first_name: string | null;
@@ -28,6 +33,7 @@ export interface SearchUnsplashPhotos_searchUnsplashPhotos_results {
   width: number;
   height: number;
   urls: SearchUnsplashPhotos_searchUnsplashPhotos_results_urls;
+  links: SearchUnsplashPhotos_searchUnsplashPhotos_results_links;
   user: SearchUnsplashPhotos_searchUnsplashPhotos_results_user;
 }
 

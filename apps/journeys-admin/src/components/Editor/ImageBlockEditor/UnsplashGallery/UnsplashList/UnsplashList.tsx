@@ -12,6 +12,7 @@ interface UnsplashListProps {
   onChange: (
     src: string,
     unsplashAuthor: UnsplashAuthor,
+    download_location: string,
     blurhash?: string,
     width?: number,
     height?: number
@@ -31,7 +32,14 @@ export function UnsplashList({
     url: string,
     unsplashAuthor: UnsplashAuthor
   ): void => {
-    onChange(url, unsplashAuthor, item.blur_hash, item.width, item.height)
+    onChange(
+      url,
+      unsplashAuthor,
+      item.links.download_location,
+      item.blur_hash,
+      item.width,
+      item.height
+    )
     setSelectedItem(item)
   }
 
