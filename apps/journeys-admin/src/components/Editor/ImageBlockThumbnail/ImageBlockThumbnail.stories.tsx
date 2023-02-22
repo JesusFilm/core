@@ -50,6 +50,7 @@ const Template: Story = ({ ...args }) => (
     <ImageBlockThumbnail
       selectedBlock={args.selectedBlock}
       loading={args.loading}
+      error={args.error}
     />
   </Box>
 )
@@ -74,7 +75,7 @@ Loading.args = {
 
 export const Error = Template.bind({})
 Error.args = {
-  selectedBlock: image,
+  selectedBlock: null,
   error: true
 }
 

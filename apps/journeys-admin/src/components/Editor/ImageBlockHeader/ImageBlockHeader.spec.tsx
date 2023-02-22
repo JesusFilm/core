@@ -45,4 +45,12 @@ describe('ImageBlockHeader', () => {
     expect(getByTestId('AddIcon')).toBeInTheDocument()
     expect(getByText('Select Image')).toBeInTheDocument()
   })
+
+  it('should render error state', () => {
+    const { getByText, getByTestId } = render(
+      <ImageBlockHeader selectedBlock={null} error />
+    )
+    expect(getByText('Upload failed')).toBeInTheDocument()
+    expect(getByTestId('BrokenImageOutlinedIcon')).toBeInTheDocument()
+  })
 })

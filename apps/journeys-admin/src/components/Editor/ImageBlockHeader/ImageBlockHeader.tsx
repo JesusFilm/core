@@ -49,10 +49,13 @@ export function ImageBlockHeader({
           />
         </Box>
         <Stack>
-          <Typography variant="subtitle2">
+          <Typography
+            variant="subtitle2"
+            color={error === true ? 'error.main' : 'text.primary'}
+          >
             {loading
               ? 'Image is uploading'
-              : error != null
+              : error === true
               ? 'Upload failed'
               : selectedBlock != null
               ? 'Selected Image'

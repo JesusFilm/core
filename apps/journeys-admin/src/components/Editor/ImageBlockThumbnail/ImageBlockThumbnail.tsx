@@ -35,7 +35,7 @@ export function ImageBlockThumbnail({
       {loading === true ? (
         <CircularProgress size={20} />
       ) : error === true ? (
-        <BrokenImageOutlined />
+        <BrokenImageOutlined sx={{ color: 'error.main' }} />
       ) : selectedBlock?.src != null ? (
         <Box
           component="img"
