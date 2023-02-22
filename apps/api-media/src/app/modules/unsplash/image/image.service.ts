@@ -78,4 +78,9 @@ export class UnsplashImageService {
     const response = await fetch(url)
     return await response.json()
   }
+
+  async triggerUnsplashDownload(url: string): Promise<boolean> {
+    await fetch(`${url}&client_id=${process.env.UNSPLASH_ACCESS_KEY ?? ''}`)
+    return true
+  }
 }

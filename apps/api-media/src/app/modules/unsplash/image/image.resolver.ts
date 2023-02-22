@@ -1,4 +1,4 @@
-import { Resolver, Query, Args } from '@nestjs/graphql'
+import { Resolver, Query, Args, Mutation } from '@nestjs/graphql'
 import {
   UnsplashColor,
   UnsplashContentFilter,
@@ -50,5 +50,10 @@ export class UnsplashImageResolver {
       color,
       orientation
     )
+  }
+
+  @Mutation()
+  async triggerUnsplashDownload(@Args('url') url: string): Promise<boolean> {
+    return await this.unsplashImageService.triggerUnsplashDownload(url)
   }
 }
