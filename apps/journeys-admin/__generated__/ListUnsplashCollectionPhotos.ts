@@ -13,6 +13,11 @@ export interface ListUnsplashCollectionPhotos_listUnsplashCollectionPhotos_urls 
   regular: string;
 }
 
+export interface ListUnsplashCollectionPhotos_listUnsplashCollectionPhotos_links {
+  __typename: "UnsplashPhotoLinks";
+  download_location: string;
+}
+
 export interface ListUnsplashCollectionPhotos_listUnsplashCollectionPhotos_user {
   __typename: "UnsplashUser";
   first_name: string | null;
@@ -28,6 +33,7 @@ export interface ListUnsplashCollectionPhotos_listUnsplashCollectionPhotos {
   width: number;
   height: number;
   urls: ListUnsplashCollectionPhotos_listUnsplashCollectionPhotos_urls;
+  links: ListUnsplashCollectionPhotos_listUnsplashCollectionPhotos_links;
   user: ListUnsplashCollectionPhotos_listUnsplashCollectionPhotos_user;
 }
 
