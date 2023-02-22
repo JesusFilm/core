@@ -22,7 +22,6 @@ import { PageWrapper } from '../../src/components/PageWrapper'
 import { Menu } from '../../src/components/JourneyView/Menu'
 import i18nConfig from '../../next-i18next.config'
 import { ACCEPT_USER_INVITE } from '..'
-import { USER_JOURNEY_OPEN } from '../../src/libs/useUserJourneyOpen/useUserJourneyOpen'
 import { UserJourneyOpen } from '../../__generated__/UserJourneyOpen'
 import { useTermsRedirect } from '../../src/libs/useTermsRedirect/useTermsRedirect'
 
@@ -31,6 +30,14 @@ export const GET_JOURNEY = gql`
   query GetJourney($id: ID!) {
     journey: adminJourney(id: $id, idType: databaseId) {
       ...JourneyFields
+    }
+  }
+`
+
+export const USER_JOURNEY_OPEN = gql`
+  mutation UserJourneyOpen($id: ID!) {
+    userJourneyOpen(id: $id) {
+      id
     }
   }
 `

@@ -19,7 +19,7 @@ import { createApolloClient } from '../../../src/libs/apolloClient'
 import { JourneysReportType } from '../../../__generated__/globalTypes'
 import { ACCEPT_USER_INVITE } from '../..'
 import { useTermsRedirect } from '../../../src/libs/useTermsRedirect/useTermsRedirect'
-import { USER_JOURNEY_OPEN } from '../../../src/libs/useUserJourneyOpen/useUserJourneyOpen'
+import { USER_JOURNEY_OPEN } from '../[journeyId]'
 import { UserJourneyOpen } from '../../../__generated__/UserJourneyOpen'
 
 function JourneyReportsPage(): ReactElement {
