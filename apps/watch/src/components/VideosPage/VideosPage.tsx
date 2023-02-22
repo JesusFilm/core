@@ -1,11 +1,10 @@
 import { gql, useQuery } from '@apollo/client'
-import { ReactElement, useEffect, useMemo, useState } from 'react'
+import { ReactElement, useMemo, useState, useEffect } from 'react'
 import Box from '@mui/material/Box'
 import Container from '@mui/material/Container'
 import Divider from '@mui/material/Divider'
 import Stack from '@mui/material/Stack'
 import { LanguageOption } from '@core/shared/ui/LanguageAutocomplete'
-import Typography from '@mui/material/Typography'
 import TextField from '@mui/material/TextField'
 import { debounce } from 'lodash'
 import { GetLanguages } from '../../../__generated__/GetLanguages'
@@ -15,6 +14,7 @@ import { VideosFilter } from '../../../__generated__/globalTypes'
 import { VIDEO_CHILD_FIELDS } from '../../libs/videoChildFields'
 import { PageWrapper } from '../PageWrapper'
 import { VideoGrid } from '../VideoGrid/VideoGrid'
+import { FilterContainer } from '../FilterContainer/FilterContainer'
 import { VideosHero } from './Hero'
 import { VideosSubHero } from './SubHero'
 import { LanguagesFilter } from './LanguagesFilter'
@@ -52,7 +52,7 @@ function isAtEnd(count: number, limit: number, previousCount: number): boolean {
   return count % limit !== 0
 }
 
-export function VideosPage(): ReactElement {
+export function VideosPage({ videos }): ReactElement {
   const languageContext = useLanguage()
   const [isEnd, setIsEnd] = useState(false)
   const [previousCount, setPreviousCount] = useState(0)
@@ -230,64 +230,49 @@ export function VideosPage(): ReactElement {
             spacing={{ xs: 0, xl: 5 }}
             sx={{ minWidth: '278px', maxWidth: '335px' }}
           >
-            <Divider
-              sx={{
-                display: { sm: 'none', xl: 'flex' },
-                height: 2,
-                background: 'rgba(33, 33, 33, 0.08)'
-              }}
-            />
-            <Typography>Titles</Typography>
-            <TextField
-              onChange={(e) => {
-                handleTitleChange(e.currentTarget.value)
-              }}
-              label="Search Titles"
-              variant="outlined"
-              helperText="724+ titles"
-            />
-            <Divider
-              sx={{
-                display: { sm: 'none', xl: 'flex' },
-                height: 2,
-                background: 'rgba(33, 33, 33, 0.08)'
-              }}
-            />
-            <Typography>Audio Languages</Typography>
-            <LanguagesFilter
-              onChange={(language: LanguageOption) =>
-                handleLanguageChange(language.id)
+            <FilterContainer
+              audioSwitcher={
+                <LanguagesFilter
+                  onChange={(language: LanguageOption) =>
+                    handleLanguageChange(language.id)
+                  }
+                  languages={languagesData?.languages}
+                  loading={languagesLoading}
+                />
               }
-              languages={languagesData?.languages}
-              loading={languagesLoading}
-            />
-            <Divider
-              sx={{
-                display: { sm: 'none', xl: 'flex' },
-                height: 2,
-                background: 'rgba(33, 33, 33, 0.08)'
-              }}
-            />
-            <Typography>Subtitle Languages</Typography>
-            <LanguagesFilter
-              onChange={(language: LanguageOption) =>
-                handleSubtitleLanguageChange(language.id)
+              subtitleSwitcher={
+                <LanguagesFilter
+                  onChange={(language: LanguageOption) =>
+                    handleSubtitleLanguageChange(language.id)
+                  }
+                  languages={subtitleLanguages}
+                  loading={languagesLoading}
+                  helperText="54 languages"
+                />
               }
-              languages={subtitleLanguages}
-              loading={languagesLoading}
-              helperText="54 languages"
-            />
-            <Divider
-              sx={{
-                display: { sm: 'none', xl: 'flex' },
-                height: 2,
-                background: 'rgba(33, 33, 33, 0.08)'
-              }}
+              titleSearch={
+                <TextField
+                  onChange={(e) => {
+                    handleTitleChange(e.currentTarget.value)
+                  }}
+                  label="Search Titles"
+                  variant="outlined"
+                  helperText="724+ titles"
+                />
+              }
             />
           </Stack>
           <Box sx={{ width: '100%' }}>
             <VideoGrid
-              videos={data?.videos ?? []}
+              videos={
+                (filter.availableVariantLanguageIds == null ||
+                  filter.availableVariantLanguageIds.length === 0) &&
+                (filter.subtitleLanguageIds == null ||
+                  filter.subtitleLanguageIds.length === 0) &&
+                (filter.title == null || filter.title === '')
+                  ? videos
+                  : data?.videos ?? []
+              }
               onLoadMore={handleLoadMore}
               loading={loading}
               hasNextPage={!isEnd}
