@@ -47,6 +47,7 @@ export class ImageResolver {
       createdAt,
       uploaded: true
     })
+    console.log('image by url created')
     return {
       id: result.result.id,
       userId,
