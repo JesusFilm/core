@@ -106,4 +106,18 @@ describe('UnsplashImageService', () => {
       )
     })
   })
+  describe('triggerUnsplashDownload', () => {
+    it('triggers an unsplash download', async () => {
+      const request = mockFetch.mockResolvedValueOnce({
+        ok: true,
+        json: async () => await Promise.resolve(unsplashListResponse)
+      } as unknown as Response)
+      await service.triggerUnsplashDownload('https://upload.com?url=a')
+      expect(request).toHaveBeenCalledWith(
+        `https://upload.com?url=a&client_id=${
+          process.env.CLOUDFLARE_ACCOUNT_ID ?? ''
+        }`
+      )
+    })
+  })
 })
