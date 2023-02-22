@@ -181,7 +181,7 @@ describe('ControlPanel', () => {
                 input: {
                   journeyId: 'journeyId',
                   parentBlockId: 'cardId',
-                  content: 'Add your text here...',
+                  content: '',
                   variant: 'h1'
                 }
               }
@@ -229,12 +229,13 @@ describe('ControlPanel', () => {
     fireEvent.click(getByRole('button', { name: 'Add' }))
     expect(getByRole('tabpanel', { name: 'Blocks' })).toBeInTheDocument()
     fireEvent.click(getByRole('button', { name: 'Text' }))
-    await waitFor(() =>
+    await waitFor(() => {
+      expect(getByRole('button', { name: 'Done' })).toBeInTheDocument()
       expect(getByRole('tab', { name: 'Properties' })).toHaveAttribute(
         'aria-selected',
         'true'
       )
-    )
+    })
   })
 
   it('should change to properties tab on subscribe button click', async () => {

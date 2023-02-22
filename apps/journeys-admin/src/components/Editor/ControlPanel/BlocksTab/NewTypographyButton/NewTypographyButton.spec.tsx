@@ -56,7 +56,7 @@ describe('NewTypographyButton', () => {
                 input: {
                   journeyId: 'journeyId',
                   parentBlockId: 'cardId',
-                  content: 'Add your text here...',
+                  content: '',
                   variant: 'h1'
                 }
               }
@@ -116,7 +116,7 @@ describe('NewTypographyButton', () => {
                 input: {
                   journeyId: 'journeyId',
                   parentBlockId: 'cardId',
-                  content: 'Add your text here...',
+                  content: '',
                   variant: 'h1'
                 }
               }

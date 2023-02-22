@@ -30,6 +30,7 @@ describe('TypographyEdit', () => {
     const input = getByRole('textbox')
     fireEvent.click(input)
     expect(input).toHaveFocus()
+    expect(input).toHaveAttribute('placeholder', 'Add your text here...')
   })
 
   it('saves the text content on outside click', async () => {

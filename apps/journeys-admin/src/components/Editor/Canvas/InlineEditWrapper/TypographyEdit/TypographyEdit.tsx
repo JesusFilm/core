@@ -3,6 +3,7 @@ import { gql, useMutation } from '@apollo/client'
 import { Typography } from '@core/journeys/ui/Typography'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import { useTranslation } from 'react-i18next'
 import { TypographyBlockUpdateContent } from '../../../../../../__generated__/TypographyBlockUpdateContent'
 import { TypographyFields } from '../../../../../../__generated__/TypographyFields'
 import { InlineEditInput } from '../InlineEditInput'
@@ -33,6 +34,8 @@ export function TypographyEdit({
   deleteSelf,
   ...props
 }: TypographyEditProps): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
+
   const [typographyBlockUpdate] = useMutation<TypographyBlockUpdateContent>(
     TYPOGRAPHY_BLOCK_UPDATE_CONTENT
   )
@@ -42,26 +45,27 @@ export function TypographyEdit({
 
   async function handleSaveBlock(): Promise<void> {
     const currentContent = value.trimStart().trimEnd()
-    if (journey == null || content === currentContent) return
 
     if (currentContent === '') {
       deleteSelf()
-    } else {
-      await typographyBlockUpdate({
-        variables: {
-          id,
-          journeyId: journey.id,
-          input: { content: currentContent }
-        },
-        optimisticResponse: {
-          typographyBlockUpdate: {
-            id,
-            __typename: 'TypographyBlock',
-            content: currentContent
-          }
-        }
-      })
     }
+
+    if (journey == null || content === currentContent) return
+
+    await typographyBlockUpdate({
+      variables: {
+        id,
+        journeyId: journey.id,
+        input: { content: currentContent }
+      },
+      optimisticResponse: {
+        typographyBlockUpdate: {
+          id,
+          __typename: 'TypographyBlock',
+          content: currentContent
+        }
+      }
+    })
   }
   const inputRef = useOnClickOutside(async () => {
     await handleSaveBlock()
@@ -75,11 +79,20 @@ export function TypographyEdit({
       fullWidth
       autoFocus
       value={value}
+      placeholder={t('Add your text here...')}
+      onFocus={(e) => {
+        ;(e.currentTarget as HTMLInputElement).setSelectionRange(
+          value.length,
+          value.length
+        )
+      }}
       onBlur={handleSaveBlock}
       onChange={(e) => {
         setValue(e.currentTarget.value)
       }}
-      onClick={(e) => e.stopPropagation()}
+      onClick={(e) => {
+        e.stopPropagation()
+      }}
     />
   )
 
