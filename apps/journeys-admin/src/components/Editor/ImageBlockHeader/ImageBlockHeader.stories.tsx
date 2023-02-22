@@ -53,4 +53,7 @@ Source.args = { isBackground: true }
 export const Loading = Template.bind({})
 Loading.args = { loading: true }
 
+export const Error = Template.bind({})
+Error.args = { error: true }
+
 export default ImageEditorStory as Meta

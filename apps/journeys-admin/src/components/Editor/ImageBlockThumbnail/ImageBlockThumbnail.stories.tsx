@@ -72,4 +72,10 @@ Loading.args = {
   loading: true
 }
 
+export const Error = Template.bind({})
+Error.args = {
+  selectedBlock: image,
+  error: true
+}
+
 export default ImageEditorStory as Meta
