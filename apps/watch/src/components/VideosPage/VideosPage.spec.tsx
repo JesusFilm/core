@@ -11,7 +11,7 @@ describe('VideosPage', () => {
     it('should render a grid', () => {
       const { getByTestId } = render(
         <MockedProvider>
-          <VideosPage />
+          <VideosPage videos={videos} />
         </MockedProvider>
       )
       expect(getByTestId('videos-grid')).toBeInTheDocument()
@@ -38,7 +38,7 @@ describe('VideosPage', () => {
             }
           ]}
         >
-          <VideosPage />
+          <VideosPage videos={videos} />
         </MockedProvider>
       )
       await waitFor(() => {
@@ -110,7 +110,7 @@ describe('VideosPage', () => {
             }
           ]}
         >
-          <VideosPage />
+          <VideosPage videos={videos} />
         </MockedProvider>
       )
       await waitFor(() =>
@@ -132,7 +132,7 @@ describe('VideosPage', () => {
     })
 
     it('should handle subtitle language filter', async () => {
-      const { getAllByRole, getByText } = render(
+      const { getAllByRole, getByText, getByTestId } = render(
         <MockedProvider
           mocks={[
             {
@@ -182,13 +182,17 @@ describe('VideosPage', () => {
             }
           ]}
         >
-          <VideosPage />
+          <VideosPage videos={videos} />
         </MockedProvider>
       )
 
-      const textbox = getAllByRole('combobox')[1]
+      const filterContainer = getByTestId('subtitleContainer')
 
       await act(async () => {
+        await waitFor(() => fireEvent.click(filterContainer))
+
+        const textbox = getAllByRole('combobox')[0]
+
         await waitFor(() => fireEvent.focus(textbox))
         await waitFor(() => fireEvent.keyDown(textbox, { key: 'ArrowDown' }))
         await waitFor(() => fireEvent.keyDown(textbox, { key: 'Enter' }))
@@ -247,7 +251,7 @@ describe('VideosPage', () => {
             }
           ]}
         >
-          <VideosPage />
+          <VideosPage videos={videos} />
         </MockedProvider>
       )
       const textbox = getAllByRole('combobox')[0]

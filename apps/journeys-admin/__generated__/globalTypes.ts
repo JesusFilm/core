@@ -262,6 +262,8 @@ export interface ImageBlockCreateInput {
   src?: string | null;
   alt: string;
   blurhash?: string | null;
+  width?: number | null;
+  height?: number | null;
   isCover?: boolean | null;
 }
 
