@@ -21,9 +21,10 @@ import { EditToolbar } from '../../../src/components/Editor/EditToolbar'
 import { JourneyInvite } from '../../../src/components/JourneyInvite/JourneyInvite'
 import { createApolloClient } from '../../../src/libs/apolloClient'
 import i18nConfig from '../../../next-i18next.config'
-import { useUserJourneyOpen } from '../../../src/libs/useUserJourneyOpen'
 import { ACCEPT_USER_INVITE } from '../..'
 import { useTermsRedirect } from '../../../src/libs/useTermsRedirect/useTermsRedirect'
+import { USER_JOURNEY_OPEN } from '../../../src/libs/useUserJourneyOpen/useUserJourneyOpen'
+import { UserJourneyOpen } from '../../../__generated__/UserJourneyOpen'
 
 function JourneyEditPage(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
@@ -33,7 +34,6 @@ function JourneyEditPage(): ReactElement {
     variables: { id: router.query.journeyId }
   })
 
-  useUserJourneyOpen(data?.journey?.id)
   useTermsRedirect()
 
   return (
@@ -87,7 +87,7 @@ function JourneyEditPage(): ReactElement {
 
 export const getServerSideProps = withAuthUserTokenSSR({
   whenUnauthed: AuthAction.REDIRECT_TO_LOGIN
-})(async ({ AuthUser, locale, query }) => {
+})(async ({ AuthUser, locale, query, params }) => {
   const ldUser = {
     key: AuthUser.id as string,
     firstName: AuthUser.displayName ?? undefined,
@@ -120,6 +120,11 @@ export const getServerSideProps = withAuthUserTokenSSR({
       }
     }
   }
+
+  void apolloClient.mutate<UserJourneyOpen>({
+    mutation: USER_JOURNEY_OPEN,
+    variables: { id: params?.journeyId }
+  })
 
   return {
     props: {
