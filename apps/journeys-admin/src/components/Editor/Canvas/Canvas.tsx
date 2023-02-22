@@ -88,7 +88,6 @@ export function Canvas(): ReactElement {
           type: 'SetActiveTabAction',
           activeTab: ActiveTab.Cards
         })
-        dispatch({ type: 'SetSelectedAttributeIdAction', id: undefined })
       }}
     >
       <Swiper
@@ -109,6 +108,7 @@ export function Canvas(): ReactElement {
         {steps != null ? (
           steps.map((step) => (
             <SwiperSlide key={step.id} style={{ width: 362 }}>
+              {console.log(step.id === selectedStep?.id)}
               <Box
                 data-testid={`step-${step.id}`}
                 sx={{
@@ -141,7 +141,6 @@ export function Canvas(): ReactElement {
                       step.id === selectedStep?.id ? 'none' : 'auto'
                   }}
                 />
-
                 <FramePortal width={356} height={536} dir={rtl ? 'rtl' : 'ltr'}>
                   <ThemeProvider
                     themeName={journey?.themeName ?? ThemeName.base}

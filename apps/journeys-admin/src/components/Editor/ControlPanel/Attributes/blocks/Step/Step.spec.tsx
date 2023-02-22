@@ -43,7 +43,7 @@ describe('Step', () => {
   beforeEach(() => {
     mockUseEditor.mockReturnValue({
       state,
-      dispatch: jest.fn()
+      dispatch
     })
   })
   it('shows default messages', () => {
@@ -59,6 +59,27 @@ describe('Step', () => {
     const { getByText } = render(<Step {...step} />)
     expect(getByText('None')).toBeInTheDocument()
     expect(getByText('Unlocked Card')).toBeInTheDocument()
+  })
+
+  it('should open cards drawer by default', () => {
+    const step: TreeBlock<StepBlock> = {
+      id: 'step1.id',
+      __typename: 'StepBlock',
+      parentBlockId: 'step1.id',
+      parentOrder: 0,
+      locked: true,
+      nextBlockId: null,
+      children: []
+    }
+    mockUseEditor.mockReturnValue({
+      state,
+      dispatch
+    })
+    render(<Step {...step} />)
+    expect(dispatch).toHaveBeenCalledWith({
+      type: 'SetActiveTabAction',
+      activeTab: ActiveTab.Cards
+    })
   })
 
   describe('nextCard', () => {
@@ -284,27 +305,6 @@ describe('Step', () => {
         </EditorProvider>
       )
       expect(getByText('None')).toBeInTheDocument()
-    })
-  })
-  it('should open cards drawer for variant', () => {
-    const step: TreeBlock<StepBlock> = {
-      id: 'step1.id',
-      __typename: 'StepBlock',
-      parentBlockId: 'step1.id',
-      parentOrder: 0,
-      locked: true,
-      nextBlockId: null,
-      children: []
-    }
-    const dispatch = jest.fn()
-    mockUseEditor.mockReturnValue({
-      state,
-      dispatch
-    })
-    render(<Step {...step} />)
-    expect(dispatch).toHaveBeenCalledWith({
-      type: 'SetActiveTabAction',
-      activeTab: ActiveTab.Cards
     })
   })
 })
