@@ -6,7 +6,6 @@ import Tab from '@mui/material/Tab'
 import Tabs from '@mui/material/Tabs'
 import Typography from '@mui/material/Typography'
 import { object, string } from 'yup'
-import { ApolloError } from '@apollo/client'
 import { GetJourney_journey_blocks_ImageBlock as ImageBlock } from '../../../../__generated__/GetJourney'
 import { ImageBlockHeader } from '../ImageBlockHeader'
 import { CustomImage } from './CustomImage'
@@ -17,7 +16,7 @@ interface ImageBlockEditorProps {
   selectedBlock: ImageBlock | null
   loading?: boolean
   showAdd?: boolean
-  error?: ApolloError
+  error?: boolean
 }
 
 export function ImageBlockEditor({

@@ -7,7 +7,6 @@ import Drawer from '@mui/material/Drawer'
 import { Theme } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import useMediaQuery from '@mui/material/useMediaQuery'
-import { ApolloError } from '@apollo/client'
 import { GetJourney_journey_blocks_ImageBlock as ImageBlock } from '../../../../__generated__/GetJourney'
 import { ImageBlockEditor } from '../ImageBlockEditor'
 
@@ -21,7 +20,7 @@ interface ImageLibraryProps {
   selectedBlock: ImageBlock | null
   loading?: boolean
   showAdd?: boolean
-  error?: ApolloError
+  error?: boolean
 }
 
 export function ImageLibrary({

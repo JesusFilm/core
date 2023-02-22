@@ -94,7 +94,7 @@ export function ImageOptions(): ReactElement {
       onDelete={handleImageDelete}
       selectedBlock={imageBlock}
       loading={loading}
-      error={error}
+      error={error != null}
     />
   )
 }

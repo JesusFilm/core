@@ -199,7 +199,7 @@ export function BackgroundMediaImage({
       onChange={handleChange}
       onDelete={handleImageDelete}
       loading={createLoading || updateLoading}
-      error={createError ?? updateError}
+      error={createError != null ?? updateError != null}
     />
   )
 }

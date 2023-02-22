@@ -5,7 +5,6 @@ import Typography from '@mui/material/Typography'
 import { ReactElement } from 'react'
 import AddIcon from '@mui/icons-material/Add'
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline'
-import { ApolloError } from '@apollo/client'
 import { ImageBlockThumbnail } from '../ImageBlockThumbnail'
 import { GetJourney_journey_blocks_ImageBlock as ImageBlock } from '../../../../__generated__/GetJourney'
 
@@ -14,7 +13,7 @@ interface ImageBlockHeaderProps {
   showAdd?: boolean
   onDelete?: () => Promise<void>
   loading?: boolean
-  error?: ApolloError
+  error?: boolean
 }
 
 export function ImageBlockHeader({

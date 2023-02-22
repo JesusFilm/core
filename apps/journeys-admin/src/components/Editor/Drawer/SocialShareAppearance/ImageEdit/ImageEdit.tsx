@@ -275,7 +275,7 @@ export function ImageEdit(): ReactElement {
         onChange={handleChange}
         onDelete={handleDelete}
         loading={createLoading || updateLoading}
-        error={createError ?? updateError}
+        error={createError != null ?? updateError != null}
       />
     </>
   )

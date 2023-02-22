@@ -231,7 +231,7 @@ export function VideoBlockEditorSettingsPosterLibrary({
       onChange={handleChange}
       onDelete={deleteCoverBlock}
       selectedBlock={selectedBlock}
-      error={createError ?? updateError}
+      error={createError != null ?? updateError != null}
     />
   )
 }
