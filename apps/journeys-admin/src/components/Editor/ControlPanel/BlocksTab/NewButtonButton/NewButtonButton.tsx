@@ -4,7 +4,11 @@ import TouchAppRounded from '@mui/icons-material/TouchAppRounded'
 import { BUTTON_FIELDS } from '@core/journeys/ui/Button/buttonFields'
 import { ICON_FIELDS } from '@core/journeys/ui/Icon/iconFields'
 import type { TreeBlock } from '@core/journeys/ui/block'
-import { useEditor, ActiveTab } from '@core/journeys/ui/EditorProvider'
+import {
+  useEditor,
+  ActiveTab,
+  ActiveFab
+} from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { gql, useMutation } from '@apollo/client'
 import { Button } from '../../Button'
@@ -65,7 +69,7 @@ export function NewButtonButton(): ReactElement {
             id,
             journeyId: journey.id,
             parentBlockId: card.id,
-            label: 'Edit Text...',
+            label: '',
             variant: ButtonVariant.contained,
             color: ButtonColor.primary,
             size: ButtonSize.medium
@@ -139,6 +143,10 @@ export function NewButtonButton(): ReactElement {
         dispatch({
           type: 'SetActiveTabAction',
           activeTab: ActiveTab.Properties
+        })
+        dispatch({
+          type: 'SetActiveFabAction',
+          activeFab: ActiveFab.Save
         })
       }
     }

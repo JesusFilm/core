@@ -32,6 +32,7 @@ describe('ButtonEdit', () => {
     const input = getByRole('textbox')
     fireEvent.click(input)
     expect(input).toHaveFocus()
+    expect(input).toHaveAttribute('placeholder', 'Edit text...')
   })
 
   it('saves the button label on onBlur', async () => {
