@@ -7,6 +7,7 @@ import Drawer from '@mui/material/Drawer'
 import { Theme } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import useMediaQuery from '@mui/material/useMediaQuery'
+import { ApolloError } from '@apollo/client'
 import { GetJourney_journey_blocks_ImageBlock as ImageBlock } from '../../../../__generated__/GetJourney'
 import { ImageBlockEditor } from '../ImageBlockEditor'
 
@@ -20,6 +21,7 @@ interface ImageLibraryProps {
   selectedBlock: ImageBlock | null
   loading?: boolean
   showAdd?: boolean
+  error?: ApolloError
 }
 
 export function ImageLibrary({
@@ -29,7 +31,8 @@ export function ImageLibrary({
   onDelete,
   selectedBlock,
   loading,
-  showAdd
+  showAdd,
+  error
 }: ImageLibraryProps): ReactElement {
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
 
@@ -77,6 +80,7 @@ export function ImageLibrary({
         selectedBlock={selectedBlock}
         loading={loading}
         showAdd={showAdd}
+        error={error}
       />
     </Drawer>
   )

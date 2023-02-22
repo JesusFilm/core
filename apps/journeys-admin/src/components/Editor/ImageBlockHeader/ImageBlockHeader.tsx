@@ -5,6 +5,7 @@ import Typography from '@mui/material/Typography'
 import { ReactElement } from 'react'
 import AddIcon from '@mui/icons-material/Add'
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline'
+import { ApolloError } from '@apollo/client'
 import { ImageBlockThumbnail } from '../ImageBlockThumbnail'
 import { GetJourney_journey_blocks_ImageBlock as ImageBlock } from '../../../../__generated__/GetJourney'
 
@@ -13,13 +14,15 @@ interface ImageBlockHeaderProps {
   showAdd?: boolean
   onDelete?: () => Promise<void>
   loading?: boolean
+  error?: ApolloError
 }
 
 export function ImageBlockHeader({
   showAdd = false,
   onDelete,
   loading = false,
-  selectedBlock
+  selectedBlock,
+  error
 }: ImageBlockHeaderProps): ReactElement {
   return (
     <Stack
@@ -43,12 +46,15 @@ export function ImageBlockHeader({
           <ImageBlockThumbnail
             selectedBlock={selectedBlock != null ? selectedBlock : undefined}
             loading={loading}
+            error={error}
           />
         </Box>
         <Stack>
           <Typography variant="subtitle2">
             {loading
               ? 'Image is uploading'
+              : error != null
+              ? 'Upload failed'
               : selectedBlock != null
               ? 'Selected Image'
               : 'Select Image'}

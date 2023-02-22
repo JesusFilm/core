@@ -2,18 +2,22 @@ import { ReactElement } from 'react'
 import CircularProgress from '@mui/material/CircularProgress'
 import ImageIcon from '@mui/icons-material/Image'
 import SvgIcon from '@mui/material/SvgIcon'
+import BrokenImageOutlined from '@mui/icons-material/BrokenImageOutlined'
 import Box from '@mui/material/Box'
+import { ApolloError } from '@apollo/client'
 
 interface ImageBlockThumbnailProps {
   selectedBlock?: { src: string | null; alt: string } | null
   loading?: boolean
   Icon?: typeof SvgIcon
+  error?: ApolloError
 }
 
 export function ImageBlockThumbnail({
   selectedBlock,
   loading,
-  Icon = ImageIcon
+  Icon = ImageIcon,
+  error
 }: ImageBlockThumbnailProps): ReactElement {
   return (
     <Box
@@ -31,6 +35,8 @@ export function ImageBlockThumbnail({
     >
       {loading === true ? (
         <CircularProgress size={20} />
+      ) : error != null ? (
+        <BrokenImageOutlined />
       ) : selectedBlock?.src != null ? (
         <Box
           component="img"

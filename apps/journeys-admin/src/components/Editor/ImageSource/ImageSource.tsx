@@ -1,3 +1,4 @@
+import { ApolloError } from '@apollo/client'
 import Card from '@mui/material/Card'
 import CardActionArea from '@mui/material/CardActionArea'
 import { ReactElement, useState } from 'react'
@@ -11,13 +12,15 @@ interface ImageSourceProps {
   onChange: (block: ImageBlock) => Promise<void>
   onDelete?: () => Promise<void>
   loading?: boolean
+  error?: ApolloError
 }
 
 export function ImageSource({
   selectedBlock,
   onChange,
   onDelete,
-  loading
+  loading,
+  error
 }: ImageSourceProps): ReactElement {
   const [open, setOpen] = useState(false)
 
@@ -56,6 +59,7 @@ export function ImageSource({
         onDelete={handleImageDelete}
         selectedBlock={selectedBlock}
         loading={loading}
+        error={error}
       />
     </>
   )

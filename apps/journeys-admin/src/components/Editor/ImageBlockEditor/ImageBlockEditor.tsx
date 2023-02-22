@@ -6,6 +6,7 @@ import Tab from '@mui/material/Tab'
 import Tabs from '@mui/material/Tabs'
 import Typography from '@mui/material/Typography'
 import { object, string } from 'yup'
+import { ApolloError } from '@apollo/client'
 import { GetJourney_journey_blocks_ImageBlock as ImageBlock } from '../../../../__generated__/GetJourney'
 import { ImageBlockHeader } from '../ImageBlockHeader'
 import { CustomImage } from './CustomImage'
@@ -16,6 +17,7 @@ interface ImageBlockEditorProps {
   selectedBlock: ImageBlock | null
   loading?: boolean
   showAdd?: boolean
+  error?: ApolloError
 }
 
 export function ImageBlockEditor({
@@ -23,7 +25,8 @@ export function ImageBlockEditor({
   onDelete,
   selectedBlock,
   loading,
-  showAdd
+  showAdd,
+  error
 }: ImageBlockEditorProps): ReactElement {
   const [tabValue, setTabValue] = useState(0)
 
@@ -60,6 +63,7 @@ export function ImageBlockEditor({
           onDelete={onDelete}
           loading={loading}
           showAdd={showAdd}
+          error={error}
         />
       </Box>
       <Box data-testid="ImageBlockEditor">
