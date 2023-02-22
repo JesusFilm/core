@@ -44,11 +44,7 @@ function JourneyIdPage(): ReactElement {
 
   useTermsRedirect()
 
-  useUserJourneyOpen(
-    AuthUser.id,
-    data?.journey?.id,
-    data?.journey?.userJourneys
-  )
+  useUserJourneyOpen(data?.journey?.id)
 
   return (
     <>
