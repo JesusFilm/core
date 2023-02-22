@@ -122,3 +122,7 @@ extend type Query {
     orientation: UnsplashPhotoOrientation
   ): UnsplashQueryResponse!
 }
+
+extend type Mutation {
+  triggerUnsplashDownload(url: String!): Boolean
+}
