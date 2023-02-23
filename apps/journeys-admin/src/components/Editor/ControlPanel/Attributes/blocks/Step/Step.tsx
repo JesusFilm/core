@@ -1,7 +1,7 @@
-import { ActiveTab, useEditor } from '@core/journeys/ui/EditorProvider'
+import { useEditor } from '@core/journeys/ui/EditorProvider'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { getStepHeading } from '@core/journeys/ui/getStepHeading'
-import { ReactElement, useEffect } from 'react'
+import { ReactElement } from 'react'
 import LockIcon from '@mui/icons-material/Lock'
 import LockOpenIcon from '@mui/icons-material/LockOpen'
 import { useTranslation } from 'react-i18next'
@@ -32,13 +32,6 @@ export function Step({
     nextStep != null && steps != null
       ? getStepHeading(nextStep.id, nextStep.children, steps, t)
       : 'None'
-
-  useEffect(() => {
-    dispatch({
-      type: 'SetActiveTabAction',
-      activeTab: ActiveTab.Cards
-    })
-  }, [dispatch, id])
 
   return (
     <Attribute
