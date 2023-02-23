@@ -15,6 +15,7 @@ import { FramePortal } from '../../FramePortal'
 import { DRAWER_WIDTH } from '../Drawer'
 import 'swiper/swiper.min.css'
 import { ThemeName, ThemeMode } from '../../../../__generated__/globalTypes'
+import { NextCard } from '../ControlPanel/Attributes/blocks/Step/NextCard'
 import { InlineEditWrapper } from './InlineEditWrapper'
 import { SelectableWrapper } from './SelectableWrapper'
 import { VideoWrapper } from './VideoWrapper'
@@ -80,6 +81,12 @@ export function Canvas(): ReactElement {
           block: selectedStep
         })
         dispatch({ type: 'SetActiveFabAction', activeFab: ActiveFab.Add })
+        dispatch({
+          type: 'SetDrawerPropsAction',
+          title: 'Next Card Properties',
+          mobileOpen: true,
+          children: <NextCard />
+        })
       }}
     >
       <Swiper

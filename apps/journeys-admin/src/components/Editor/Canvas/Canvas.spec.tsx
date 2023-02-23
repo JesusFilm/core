@@ -14,6 +14,7 @@ import {
 } from '../../../../__generated__/GetJourney'
 import { ThemeProvider } from '../../ThemeProvider'
 import { ThemeMode, ThemeName } from '../../../../__generated__/globalTypes'
+import { NextCard } from '../ControlPanel/Attributes/blocks/Step/NextCard'
 import { Canvas } from '.'
 
 jest.mock('@core/journeys/ui/EditorProvider', () => {
@@ -129,6 +130,12 @@ describe('Canvas', () => {
     expect(dispatch).toHaveBeenCalledWith({
       type: 'SetActiveFabAction',
       activeFab: ActiveFab.Add
+    })
+    expect(dispatch).toHaveBeenCalledWith({
+      type: 'SetDrawerPropsAction',
+      title: 'Next Card Properties',
+      mobileOpen: true,
+      children: <NextCard />
     })
   })
 })
