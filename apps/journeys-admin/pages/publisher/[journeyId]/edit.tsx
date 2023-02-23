@@ -21,6 +21,7 @@ import { GetPublisher } from '../../../__generated__/GetPublisher'
 import { PublisherInvite } from '../../../src/components/PublisherInvite'
 import { Role } from '../../../__generated__/globalTypes'
 import { GET_PUBLISHER, GET_PUBLISHER_TEMPLATE } from '../[journeyId]'
+import { useTermsRedirect } from '../../../src/libs/useTermsRedirect/useTermsRedirect'
 
 function TemplateEditPage(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
@@ -33,6 +34,8 @@ function TemplateEditPage(): ReactElement {
   const isPublisher = publisherData?.getUserRole?.roles?.includes(
     Role.publisher
   )
+
+  useTermsRedirect()
 
   return (
     <>

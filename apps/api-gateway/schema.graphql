@@ -478,7 +478,13 @@ input ImageBlockCreateInput
   journeyId: ID!
   src: String
   alt: String!
+
+  """
+  If blurhash, width, & height are provided, the image will skip blurhash processing. Otherwise these values will be calculated.
+  """
   blurhash: String
+  width: Int
+  height: Int
 
   """
   True if the coverBlockId in a parent block should be set to this block's id.
@@ -804,7 +810,7 @@ type Mutation
   """Updates template"""
   journeyTemplate(id: ID!, input: JourneyTemplateInput!): Journey! @join__field(graph: JOURNEYS)
   journeyProfileCreate: JourneyProfile! @join__field(graph: JOURNEYS)
-  userInviteCreate(journeyId: ID!, input: UserInviteCreateInput): UserInvite! @join__field(graph: JOURNEYS)
+  userInviteCreate(journeyId: ID!, input: UserInviteCreateInput): UserInvite @join__field(graph: JOURNEYS)
   userInviteRemove(id: ID!, journeyId: ID!): UserInvite! @join__field(graph: JOURNEYS)
   userInviteAcceptAll: [UserInvite!]! @join__field(graph: JOURNEYS)
   userJourneyApprove(id: ID!): UserJourney! @join__field(graph: JOURNEYS)
@@ -822,6 +828,7 @@ type Mutation
   createCloudflareUploadByUrl(url: String!): CloudflareImage @join__field(graph: MEDIA)
   deleteCloudflareImage(id: ID!): Boolean @join__field(graph: MEDIA)
   cloudflareUploadComplete(id: ID!): Boolean @join__field(graph: MEDIA)
+  triggerUnsplashDownload(url: String!): Boolean @join__field(graph: MEDIA)
 }
 
 """

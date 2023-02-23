@@ -13,11 +13,14 @@ import { getLaunchDarklyClient } from '@core/shared/ui/getLaunchDarklyClient'
 import { VisitorInfo } from '../../../src/components/VisitorInfo'
 import { PageWrapper } from '../../../src/components/PageWrapper'
 import i18nConfig from '../../../next-i18next.config'
+import { useTermsRedirect } from '../../../src/libs/useTermsRedirect/useTermsRedirect'
 
 function SingleVisitorReportsPage(): ReactElement {
   const router = useRouter()
   const { t } = useTranslation('apps-journeys-admin')
   const AuthUser = useAuthUser()
+
+  useTermsRedirect()
 
   return (
     <>

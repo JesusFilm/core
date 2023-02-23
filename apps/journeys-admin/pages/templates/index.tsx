@@ -14,12 +14,12 @@ import { getLaunchDarklyClient } from '@core/shared/ui/getLaunchDarklyClient'
 import { PageWrapper } from '../../src/components/PageWrapper'
 import i18nConfig from '../../next-i18next.config'
 import { GetPublishedTemplates } from '../../__generated__/GetPublishedTemplates'
+import { useJourneys } from '../../src/libs/useJourneys'
 import { TemplateLibrary } from '../../src/components/TemplateLibrary'
-import { GetJourneys } from '../../__generated__/GetJourneys'
 import { GetUserRole } from '../../__generated__/GetUserRole'
 import { Role } from '../../__generated__/globalTypes'
 import { GET_USER_ROLE } from '../../src/components/JourneyView/JourneyView'
-import { GET_JOURNEYS } from '..'
+import { useTermsRedirect } from '../../src/libs/useTermsRedirect/useTermsRedirect'
 
 const GET_PUBLISHED_TEMPLATES = gql`
   query GetPublishedTemplates {
@@ -39,6 +39,7 @@ const GET_PUBLISHED_TEMPLATES = gql`
       userJourneys {
         id
         role
+        openedAt
         user {
           id
           firstName
@@ -72,10 +73,12 @@ function LibraryIndex(): ReactElement {
   const AuthUser = useAuthUser()
   const { data } = useQuery<GetPublishedTemplates>(GET_PUBLISHED_TEMPLATES)
   const router = useRouter()
-  const { data: journeyData } = useQuery<GetJourneys>(GET_JOURNEYS)
+  const journeys = useJourneys()
   const { data: userData } = useQuery<GetUserRole>(GET_USER_ROLE)
 
   const isPublisher = userData?.getUserRole?.roles?.includes(Role.publisher)
+
+  useTermsRedirect()
 
   return (
     <>
@@ -87,7 +90,7 @@ function LibraryIndex(): ReactElement {
       >
         <TemplateLibrary
           isPublisher={isPublisher}
-          journeys={journeyData?.journeys}
+          journeys={journeys}
           templates={data?.journeys}
         />
       </PageWrapper>
