@@ -6,7 +6,11 @@ import Fade from '@mui/material/Fade'
 import { ReactElement, useEffect, useState } from 'react'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { BlockRenderer } from '@core/journeys/ui/BlockRenderer'
-import { useEditor, ActiveFab } from '@core/journeys/ui/EditorProvider'
+import {
+  useEditor,
+  ActiveFab,
+  ActiveTab
+} from '@core/journeys/ui/EditorProvider'
 import { getJourneyRTL } from '@core/journeys/ui/rtl'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import SwiperCore from 'swiper'
@@ -81,6 +85,10 @@ export function Canvas(): ReactElement {
           block: selectedStep
         })
         dispatch({ type: 'SetActiveFabAction', activeFab: ActiveFab.Add })
+        dispatch({
+          type: 'SetActiveTabAction',
+          activeTab: ActiveTab.Properties
+        })
         dispatch({
           type: 'SetDrawerPropsAction',
           title: 'Next Card Properties',

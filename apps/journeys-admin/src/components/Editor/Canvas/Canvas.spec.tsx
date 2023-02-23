@@ -132,6 +132,10 @@ describe('Canvas', () => {
       activeFab: ActiveFab.Add
     })
     expect(dispatch).toHaveBeenCalledWith({
+      type: 'SetActiveTabAction',
+      activeTab: ActiveTab.Properties
+    })
+    expect(dispatch).toHaveBeenCalledWith({
       type: 'SetDrawerPropsAction',
       title: 'Next Card Properties',
       mobileOpen: true,
