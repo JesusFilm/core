@@ -1,4 +1,4 @@
-import { ReactElement, useEffect, useState } from 'react'
+import { ReactElement, useState } from 'react'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import Card from '@mui/material/Card'
 import CardActionArea from '@mui/material/CardActionArea'
@@ -20,12 +20,6 @@ interface SourceProps {
 
 export function Source({ selectedBlock, onChange }: SourceProps): ReactElement {
   const [open, setOpen] = useState(false)
-
-  useEffect(() => {
-    if (selectedBlock?.videoId == null) {
-      setOpen(true)
-    }
-  }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   let SourceContent
 
