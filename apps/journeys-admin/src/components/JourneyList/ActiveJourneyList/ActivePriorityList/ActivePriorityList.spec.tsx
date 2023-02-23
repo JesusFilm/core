@@ -84,4 +84,42 @@ describe('ActivePriorityList', () => {
       'Default Journey'
     )
   })
+
+  it('should show big divider if there is a new journey and normal journeys', () => {
+    const authUser = { id: 'user1.id' } as unknown as AuthUser
+    const { getByLabelText } = render(
+      <MockedProvider>
+        <ThemeProvider>
+          <SnackbarProvider>
+            <ActivePriorityList
+              journeys={[journey, newJourney]}
+              sortOrder={SortOrder.TITLE}
+              refetch={jest.fn()}
+              authUser={authUser}
+            />
+          </SnackbarProvider>
+        </ThemeProvider>
+      </MockedProvider>
+    )
+    expect(getByLabelText('big-divider')).toBeInTheDocument()
+  })
+
+  it('should show big divider if there is a journey with access requested and normal journeys', () => {
+    const authUser = { id: 'user1.id' } as unknown as AuthUser
+    const { getByLabelText } = render(
+      <MockedProvider>
+        <ThemeProvider>
+          <SnackbarProvider>
+            <ActivePriorityList
+              journeys={[journey, pendingActionJourney]}
+              sortOrder={SortOrder.TITLE}
+              refetch={jest.fn()}
+              authUser={authUser}
+            />
+          </SnackbarProvider>
+        </ThemeProvider>
+      </MockedProvider>
+    )
+    expect(getByLabelText('big-divider')).toBeInTheDocument()
+  })
 })
