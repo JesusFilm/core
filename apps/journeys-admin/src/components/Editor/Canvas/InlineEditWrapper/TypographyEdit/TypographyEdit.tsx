@@ -21,9 +21,7 @@ export const TYPOGRAPHY_BLOCK_UPDATE_CONTENT = gql`
     }
   }
 `
-interface TypographyEditProps extends TreeBlock<TypographyFields> {
-  deleteSelf: () => void
-}
+interface TypographyEditProps extends TreeBlock<TypographyFields> {}
 
 export function TypographyEdit({
   id,
@@ -31,7 +29,6 @@ export function TypographyEdit({
   align,
   color,
   content,
-  deleteSelf,
   ...props
 }: TypographyEditProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
@@ -44,11 +41,10 @@ export function TypographyEdit({
   const [value, setValue] = useState(content)
 
   async function handleSaveBlock(): Promise<void> {
-    const currentContent = value.trimStart().trimEnd()
-
-    if (currentContent === '') {
-      deleteSelf()
-    }
+    const currentContent =
+      value.trimStart().trimEnd() === ''
+        ? t('Add your text here...')
+        : value.trimStart().trimEnd()
 
     if (journey == null || content === currentContent) return
 

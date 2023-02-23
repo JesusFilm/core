@@ -8,7 +8,6 @@ import { GetJourney_journey as Journey } from '../../../../../../__generated__/G
 import { TypographyEdit, TYPOGRAPHY_BLOCK_UPDATE_CONTENT } from '.'
 
 describe('TypographyEdit', () => {
-  const onDelete = jest.fn()
   const props: ComponentProps<typeof TypographyEdit> = {
     __typename: 'TypographyBlock',
     parentBlockId: 'card.id',
@@ -18,8 +17,7 @@ describe('TypographyEdit', () => {
     content: 'test content',
     align: null,
     color: null,
-    children: [],
-    deleteSelf: onDelete
+    children: []
   }
   it('selects the input on click', () => {
     const { getByRole } = render(
@@ -189,28 +187,5 @@ describe('TypographyEdit', () => {
     })
     fireEvent.blur(getByText('test content'))
     await waitFor(() => expect(result).not.toHaveBeenCalled())
-  })
-
-  it('calls onDelete when text content deleted', async () => {
-    const { getByRole } = render(
-      <MockedProvider>
-        <JourneyProvider
-          value={{
-            journey: { id: 'journeyId' } as unknown as Journey,
-            admin: true
-          }}
-        >
-          <h1>Other content</h1>
-          <TypographyEdit {...props} />
-        </JourneyProvider>
-      </MockedProvider>
-    )
-    const input = getByRole('textbox')
-
-    fireEvent.click(input)
-    fireEvent.change(input, { target: { value: '' } })
-    fireEvent.click(getByRole('heading', { level: 1 }))
-
-    expect(onDelete).toHaveBeenCalled()
   })
 })
