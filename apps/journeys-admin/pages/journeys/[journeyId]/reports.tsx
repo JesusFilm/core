@@ -12,7 +12,9 @@ import { getLaunchDarklyClient } from '@core/shared/ui/getLaunchDarklyClient'
 import Box from '@mui/material/Box'
 import { useRouter } from 'next/router'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import { GetJourney } from '../../../__generated__/GetJourney'
 import { PageWrapper } from '../../../src/components/PageWrapper'
+import { GET_JOURNEY } from '../[journeyId]'
 import { UserInviteAcceptAll } from '../../../__generated__/UserInviteAcceptAll'
 import i18nConfig from '../../../next-i18next.config'
 import { MemoizedDynamicReport } from '../../../src/components/DynamicPowerBiReport'
@@ -56,7 +58,7 @@ function JourneyReportsPage(): ReactElement {
 
 export const getServerSideProps = withAuthUserTokenSSR({
   whenUnauthed: AuthAction.REDIRECT_TO_LOGIN
-})(async ({ AuthUser, locale }) => {
+})(async ({ AuthUser, locale, params }) => {
   const ldUser = {
     key: AuthUser.id as string,
     firstName: AuthUser.displayName ?? undefined,
@@ -73,6 +75,23 @@ export const getServerSideProps = withAuthUserTokenSSR({
   await apolloClient.mutate<UserInviteAcceptAll>({
     mutation: ACCEPT_USER_INVITE
   })
+
+  try{
+    await apolloClient.query<GetJourney>({
+      query: GET_JOURNEY,
+      variables: {
+        id: params?.journeyId
+      }
+    })  
+  }
+  catch(error){
+    return {
+      redirect: {
+        permanent: false,
+        destination: `/journeys/${params?.journeyId as string}`
+      }
+    }
+  }
 
   return {
     props: {
