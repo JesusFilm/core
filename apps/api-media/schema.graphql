@@ -32,6 +32,7 @@ extend type Mutation {
   createCloudflareUploadByUrl(url: String!): CloudflareImage
   deleteCloudflareImage(id: ID!): Boolean
   cloudflareUploadComplete(id: ID!): Boolean
+  triggerUnsplashDownload(url: String!): Boolean
 }
 
 type UnsplashQueryResponse {
