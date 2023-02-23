@@ -1,4 +1,4 @@
-import { ReactElement, useState } from 'react'
+import { ReactElement, useEffect, useState } from 'react'
 import Table from '@mui/material/Table'
 import TableBody from '@mui/material/TableBody'
 import TableCell from '@mui/material/TableCell'
@@ -18,14 +18,20 @@ interface FilterContainerProps {
   subtitleSwitcher: ReactElement<LanguageAutocompleteProps>
   audioSwitcher: ReactElement<LanguageAutocompleteProps>
   titleSearch: ReactElement<OutlinedTextFieldProps>
+  rowFromParent: number
 }
 
 export function FilterContainer({
   subtitleSwitcher,
   audioSwitcher,
-  titleSearch
+  titleSearch,
+  rowFromParent
 }: FilterContainerProps): ReactElement {
   const [openRow, setOpenRow] = useState<number>(1)
+
+  useEffect(() => {
+    setOpenRow(rowFromParent)
+  }, [rowFromParent])
   return (
     <TableContainer
       sx={{ border: 1, borderColor: '#AAACBB', borderRadius: '8px' }}

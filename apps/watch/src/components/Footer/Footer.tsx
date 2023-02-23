@@ -60,7 +60,7 @@ export function Footer(): ReactElement {
             alignItems="center"
           >
             <Stack>
-              <Typography variant="body2">Copyright © 1995-2022</Typography>
+              <Typography variant="body2">Copyright © 1995-2023</Typography>
               <Typography variant="body2">Jesus Film Project®</Typography>
             </Stack>
             <FooterLogos />
