@@ -869,10 +869,6 @@ describe('JourneyResolver', () => {
       await resolver.journeyUpdate('1', journeyUpdate)
       expect(service.update).toHaveBeenCalledWith('1', journeyUpdate)
     })
-    it('updates a Journey 2', async () => {
-      await resolver.journeyUpdate('1', journeyUpdate)
-      expect(service.update).toHaveBeenCalledWith('1', journeyUpdate)
-    })
 
     it('throws UserInputErrror', async () => {
       const mockUpdate = service.update as jest.MockedFunction<
