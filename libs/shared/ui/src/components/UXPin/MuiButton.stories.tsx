@@ -17,24 +17,22 @@ const MuiInputComponentsDemo = {
     layout: 'fullscreen',
     chromatic: {
       disableSnapshot: true
-    }
+    },
+    controls: { expanded: true }
   },
   argTypes: {
     color: {
       control: { type: 'select' },
-      options: [
-        'inherit',
-        'primary',
-        'secondary',
-        'error',
-        'info',
-        'success',
-        'warning'
-      ]
+      options: ['primary', 'secondary', 'error', 'info', 'success', 'warning'],
+      defaultValue: 'primary'
     },
     size: {
       control: { type: 'select' },
       options: ['small', 'medium', 'large']
+    },
+    themeMode: {
+      control: { type: 'select' },
+      options: ['light', 'dark']
     }
   }
 }
@@ -51,7 +49,7 @@ const ButtonTemplate: Story<
 
 export const MuiButton = ButtonTemplate.bind({})
 MuiButton.args = {
-  children: 'Button',
+  children: 'Button Label',
   color: 'primary',
   disabled: false,
   disableElevation: false,
@@ -70,22 +68,22 @@ MuiButton.argTypes = {
   variant: {
     control: { type: 'select' },
     options: ['text', 'outlined', 'contained']
+  },
+  children: {
+    name: 'label',
+    control: { type: 'object' },
+    description: 'Button label'
   }
 }
 
 const IconButtonTemplate: Story<
   ComponentProps<typeof IconButton> & { themeMode: ThemeMode }
 > = (args) => {
-  return (
-    <ThemeProvider themeName={ThemeName.base} themeMode={args.themeMode}>
-      <IconButton {...args}>{args.children}</IconButton>
-    </ThemeProvider>
-  )
+  return <IconButton {...args}>{args.children}</IconButton>
 }
 
 export const MuiIconButton = IconButtonTemplate.bind({})
 MuiIconButton.args = {
-  children: 'Button',
   color: 'primary',
   disabled: false,
   edge: 'start',
@@ -94,8 +92,13 @@ MuiIconButton.args = {
   disableRipple: false,
   disableTouchRipple: false,
   focusRipple: false,
-  sx: { ariaLabel: 'Button' },
-  themeMode: ThemeMode.light
+  sx: { ariaLabel: 'Button' }
+}
+MuiIconButton.argTypes = {
+  edge: {
+    control: { type: 'select' },
+    options: ['start', 'end', undefined]
+  }
 }
 
 export default MuiInputComponentsDemo as Meta
