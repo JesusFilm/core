@@ -24,7 +24,7 @@ export default class MyDocument extends Document<{
             />
           ) : (
             <link
-              href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;800&family=Open+Sans&display=swap"
+              href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500,600;800&family=Open+Sans&display=swap"
               rel="stylesheet"
             />
           )}
