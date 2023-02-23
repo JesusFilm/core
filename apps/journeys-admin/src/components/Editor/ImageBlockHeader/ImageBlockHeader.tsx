@@ -31,7 +31,8 @@ export function ImageBlockHeader({
       alignItems="center"
       sx={{
         height: 78,
-        width: showAdd ? '100%' : 285
+        width: '100%',
+        mx: 4
       }}
     >
       <Stack direction="row" alignItems="center">
@@ -54,7 +55,7 @@ export function ImageBlockHeader({
             color={error === true ? 'error.main' : 'text.primary'}
           >
             {loading
-              ? 'Image is uploading'
+              ? 'Image is uploading...'
               : error === true
               ? 'Upload failed'
               : selectedBlock != null

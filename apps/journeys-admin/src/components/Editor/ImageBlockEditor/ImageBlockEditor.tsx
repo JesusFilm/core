@@ -79,7 +79,12 @@ export function ImageBlockEditor({
           />
         </Tabs>
         <TabPanel name="custom" value={tabValue} index={0}>
-          <CustomImage onChange={handleSrcChange} />
+          <CustomImage
+            onChange={handleSrcChange}
+            selectedBlock={selectedBlock}
+            loading={loading}
+            error={error}
+          />
         </TabPanel>
       </Box>
     </>
