@@ -6,11 +6,7 @@ import Fade from '@mui/material/Fade'
 import { ReactElement, useEffect, useState } from 'react'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { BlockRenderer } from '@core/journeys/ui/BlockRenderer'
-import {
-  useEditor,
-  ActiveTab,
-  ActiveFab
-} from '@core/journeys/ui/EditorProvider'
+import { useEditor, ActiveFab } from '@core/journeys/ui/EditorProvider'
 import { getJourneyRTL } from '@core/journeys/ui/rtl'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import SwiperCore from 'swiper'
@@ -84,10 +80,6 @@ export function Canvas(): ReactElement {
           block: selectedStep
         })
         dispatch({ type: 'SetActiveFabAction', activeFab: ActiveFab.Add })
-        dispatch({
-          type: 'SetActiveTabAction',
-          activeTab: ActiveTab.Cards
-        })
       }}
     >
       <Swiper
@@ -108,7 +100,6 @@ export function Canvas(): ReactElement {
         {steps != null ? (
           steps.map((step) => (
             <SwiperSlide key={step.id} style={{ width: 362 }}>
-              {console.log(step.id === selectedStep?.id)}
               <Box
                 data-testid={`step-${step.id}`}
                 sx={{

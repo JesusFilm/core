@@ -130,9 +130,5 @@ describe('Canvas', () => {
       type: 'SetActiveFabAction',
       activeFab: ActiveFab.Add
     })
-    expect(dispatch).toHaveBeenCalledWith({
-      type: 'SetActiveTabAction',
-      activeTab: ActiveTab.Cards
-    })
   })
 })
