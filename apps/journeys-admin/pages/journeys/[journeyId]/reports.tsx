@@ -53,7 +53,7 @@ function JourneyReportsPage(): ReactElement {
 
 export const getServerSideProps = withAuthUserTokenSSR({
   whenUnauthed: AuthAction.REDIRECT_TO_LOGIN
-})(async ({ AuthUser, locale, params }) => {
+})(async ({ AuthUser, locale, query }) => {
   const ldUser = {
     key: AuthUser.id as string,
     firstName: AuthUser.displayName ?? undefined,
@@ -73,7 +73,7 @@ export const getServerSideProps = withAuthUserTokenSSR({
 
   void apolloClient.mutate<UserJourneyOpen>({
     mutation: USER_JOURNEY_OPEN,
-    variables: { id: params?.journeyId }
+    variables: { id: query?.journeyId }
   })
 
   return {
