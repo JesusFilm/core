@@ -84,6 +84,7 @@ const IconButtonTemplate: Story<
 
 export const MuiIconButton = IconButtonTemplate.bind({})
 MuiIconButton.args = {
+  children: 'Button',
   color: 'primary',
   disabled: false,
   edge: 'start',
