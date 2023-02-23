@@ -27,6 +27,15 @@ jest.mock('uuid', () => ({
   v4: () => 'uuid'
 }))
 
+jest.mock('react-i18next', () => ({
+  __esModule: true,
+  useTranslation: () => {
+    return {
+      t: (str: string) => str
+    }
+  }
+}))
+
 describe('ControlPanel', () => {
   const step1: TreeBlock<StepBlock> = {
     id: 'step1.id',

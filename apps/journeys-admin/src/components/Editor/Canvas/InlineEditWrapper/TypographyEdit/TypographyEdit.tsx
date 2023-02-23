@@ -76,19 +76,15 @@ export function TypographyEdit({
       autoFocus
       value={value}
       placeholder={t('Add your text here...')}
-      onFocus={(e) => {
-        ;(e.currentTarget as HTMLInputElement).setSelectionRange(
+      onFocus={(e) =>
+        (e.currentTarget as HTMLInputElement).setSelectionRange(
           value.length,
           value.length
         )
-      }}
+      }
       onBlur={handleSaveBlock}
-      onChange={(e) => {
-        setValue(e.currentTarget.value)
-      }}
-      onClick={(e) => {
-        e.stopPropagation()
-      }}
+      onChange={(e) => setValue(e.currentTarget.value)}
+      onClick={(e) => e.stopPropagation()}
     />
   )
 

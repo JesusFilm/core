@@ -7,6 +7,15 @@ import { TypographyVariant } from '../../../../../../__generated__/globalTypes'
 import { GetJourney_journey as Journey } from '../../../../../../__generated__/GetJourney'
 import { TypographyEdit, TYPOGRAPHY_BLOCK_UPDATE_CONTENT } from '.'
 
+jest.mock('react-i18next', () => ({
+  __esModule: true,
+  useTranslation: () => {
+    return {
+      t: (str: string) => str
+    }
+  }
+}))
+
 describe('TypographyEdit', () => {
   const props: ComponentProps<typeof TypographyEdit> = {
     __typename: 'TypographyBlock',

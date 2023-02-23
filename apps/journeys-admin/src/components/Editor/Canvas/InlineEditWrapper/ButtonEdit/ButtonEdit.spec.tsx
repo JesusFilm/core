@@ -8,6 +8,15 @@ import { ButtonFields } from '../../../../../../__generated__/ButtonFields'
 import { GetJourney_journey as Journey } from '../../../../../../__generated__/GetJourney'
 import { ButtonEdit, BUTTON_BLOCK_UPDATE_CONTENT } from '.'
 
+jest.mock('react-i18next', () => ({
+  __esModule: true,
+  useTranslation: () => {
+    return {
+      t: (str: string) => str
+    }
+  }
+}))
+
 describe('ButtonEdit', () => {
   const props: TreeBlock<ButtonFields> = {
     __typename: 'ButtonBlock',
