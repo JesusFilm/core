@@ -12,7 +12,8 @@ describe('ImageResolver', () => {
       provide: UnsplashImageService,
       useFactory: () => ({
         searchUnsplashPhotos: jest.fn(() => unsplashListResponse),
-        listUnsplashCollectionPhotos: jest.fn(() => [unsplashImageReponse])
+        listUnsplashCollectionPhotos: jest.fn(() => [unsplashImageReponse]),
+        triggerUnsplashDownload: jest.fn(() => true)
       })
     }
     const module: TestingModule = await Test.createTestingModule({
@@ -33,6 +34,13 @@ describe('ImageResolver', () => {
       expect(await resolver.searchUnsplashPhotos('a')).toEqual(
         unsplashListResponse
       )
+    })
+  })
+  describe('triggerUnsplashDownload', () => {
+    it('triggers an unsplash download', async () => {
+      expect(
+        await resolver.triggerUnsplashDownload('https://upload.com')
+      ).toBeTruthy()
     })
   })
 })
