@@ -90,8 +90,6 @@ MuiIconButton.args = {
   disabled: false,
   edge: 'start',
   size: 'medium',
-  variant: 'contained',
-  href: '',
   centerRipple: false,
   disableRipple: false,
   disableTouchRipple: false,
