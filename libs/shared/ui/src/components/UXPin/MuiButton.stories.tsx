@@ -17,8 +17,7 @@ const MuiInputComponentsDemo = {
     layout: 'fullscreen',
     chromatic: {
       disableSnapshot: true
-    },
-    controls: { expanded: true }
+    }
   },
   argTypes: {
     color: {
@@ -41,15 +40,15 @@ const ButtonTemplate: Story<
   ComponentProps<typeof Button> & { themeMode: ThemeMode }
 > = (args) => {
   return (
-    <ThemeProvider themeName={ThemeName.base} themeMode={args.themeMode}>
-      <Button {...args}>{args.children}</Button>
-    </ThemeProvider>
+    // <ThemeProvider themeName={ThemeName.base} themeMode={args.themeMode}>
+    <Button {...args}>{args.children}</Button>
+    // </ThemeProvider>
   )
 }
 
 export const MuiButton = ButtonTemplate.bind({})
 MuiButton.args = {
-  children: 'Button Label',
+  children: 'Button',
   color: 'primary',
   disabled: false,
   disableElevation: false,
@@ -57,8 +56,10 @@ MuiButton.args = {
   size: 'medium',
   variant: 'contained',
   href: '',
+  // MuiButtonBase
   centerRipple: false,
   disableRipple: false,
+  disableFocusRipple: false,
   disableTouchRipple: false,
   focusRipple: false,
   sx: { ariaLabel: 'Button' },
@@ -70,9 +71,7 @@ MuiButton.argTypes = {
     options: ['text', 'outlined', 'contained']
   },
   children: {
-    name: 'label',
-    control: { type: 'object' },
-    description: 'Button label'
+    name: 'label'
   }
 }
 
@@ -87,10 +86,11 @@ MuiIconButton.args = {
   children: 'Button',
   color: 'primary',
   disabled: false,
-  edge: 'start',
+  edge: false,
   size: 'medium',
   centerRipple: false,
   disableRipple: false,
+  disableFocusRipple: false,
   disableTouchRipple: false,
   focusRipple: false,
   sx: { ariaLabel: 'Button' }
@@ -98,7 +98,7 @@ MuiIconButton.args = {
 MuiIconButton.argTypes = {
   edge: {
     control: { type: 'select' },
-    options: ['start', 'end', undefined]
+    options: ['start', 'end', false]
   }
 }
 
