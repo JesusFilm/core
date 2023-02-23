@@ -14,3 +14,4 @@ ENV ARANGO_NO_AUTH=1
 COPY apps/arangodb-bigquery-etl/bqexport.sh .
 RUN chmod 775 /bqexport.sh
 RUN chmod u+x /bqexport.sh
+CMD /bqexport.sh

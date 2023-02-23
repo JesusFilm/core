@@ -99,15 +99,7 @@ resource "aws_ecs_task_definition" "default" {
       memoryReservation = 128
       environment = [
         {
-          name  = "DD_APM_ENABLED",
-          value = "true"
-        },
-        {
           name  = "DD_DOGSTATSD_NON_LOCAL_TRAFFIC",
-          value = "true"
-        },
-        {
-          name  = "DD_APM_NON_LOCAL_TRAFFIC",
           value = "true"
         },
         {
@@ -117,30 +109,6 @@ resource "aws_ecs_task_definition" "default" {
         {
           name  = "DD_TAGS",
           value = "env:${var.env} app:${var.task_name}"
-        },
-        {
-          name  = "DD_TRACE_ANALYTICS_ENABLED",
-          value = "true"
-        },
-        {
-          name  = "DD_RUNTIME_METRICS_ENABLED",
-          value = "true"
-        },
-        {
-          name  = "DD_PROFILING_ENABLED",
-          value = "true"
-        },
-        {
-          name  = "DD_LOGS_INJECTION",
-          value = "true"
-        },
-        {
-          name  = "DD_OTLP_CONFIG_RECEIVER_PROTOCOLS_GRPC_ENDPOINT",
-          value = "0.0.0.0:4317"
-        },
-        {
-          name  = "DD_OTLP_CONFIG_RECEIVER_PROTOCOLS_HTTP_ENDPOINT",
-          value = "0.0.0.0:4318"
         },
         {
           name  = "ECS_FARGATE",

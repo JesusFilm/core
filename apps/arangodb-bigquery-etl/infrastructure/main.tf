@@ -7,6 +7,7 @@ module "ecs-task" {
   doppler_token                  = var.doppler_token
   cluster_arn                    = var.cluster_arn
   env                            = "prod"
+  task_memory                    = 2048
   environment_variables = [
     "DATABASE_DB",
     "DATABASE_PASS",
