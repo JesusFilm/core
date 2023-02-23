@@ -41,7 +41,7 @@ describe('JourneyList', () => {
   it('should show access denied message to new user', () => {
     const { getByText, getByRole, queryByText } = render(
       <SnackbarProvider>
-        <FlagsProvider>
+        <FlagsProvider flags={{ inviteRequirement: true }}>
           <MockedProvider>
             <ThemeProvider>
               <JourneyList journeys={[]} event="" />
