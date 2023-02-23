@@ -15,6 +15,7 @@ export function Image(block: TreeBlock<ImageBlock>): ReactElement {
     dispatch({
       type: 'SetDrawerPropsAction',
       title: 'Image',
+      mobileOpen: true,
       children: <ImageOptions />
     })
 
@@ -26,6 +27,7 @@ export function Image(block: TreeBlock<ImageBlock>): ReactElement {
     dispatch({
       type: 'SetDrawerPropsAction',
       title: 'Image',
+      mobileOpen: true,
       children: <ImageOptions />
     })
   }, [dispatch, id])

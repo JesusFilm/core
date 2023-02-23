@@ -262,6 +262,8 @@ export interface ImageBlockCreateInput {
   src?: string | null;
   alt: string;
   blurhash?: string | null;
+  width?: number | null;
+  height?: number | null;
   isCover?: boolean | null;
 }
 
@@ -407,6 +409,10 @@ export interface TypographyBlockUpdateInput {
   variant?: TypographyVariant | null;
   color?: TypographyColor | null;
   align?: TypographyAlign | null;
+}
+
+export interface UserInviteCreateInput {
+  email: string;
 }
 
 export interface VideoBlockCreateInput {

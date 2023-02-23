@@ -1,21 +1,37 @@
-import { InMemoryCache } from '@apollo/client'
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
-import { noop } from 'lodash'
 import { SnackbarProvider } from 'notistack'
-import { UserJourneyRole } from '../../../__generated__/globalTypes'
 import {
-  AccessDialog,
-  GET_CURRENT_USER,
-  GET_JOURNEY_WITH_USER_JOURNEYS
+  GET_JOURNEY_WITH_USER_JOURNEYS,
+  GET_USER_INVITES,
+  AccessDialog
 } from './AccessDialog'
-import { USER_JOURNEY_APPROVE } from './ApproveUser/ApproveUser'
-import { USER_JOURNEY_PROMOTE } from './PromoteUser/PromoteUser'
-import { USER_JOURNEY_REMOVE } from './RemoveUser/RemoveUser'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
   default: () => true
+}))
+
+const user1 = { id: 'userId1', email: 'admin@email.com' }
+
+jest.mock('../../libs/useCurrentUser', () => ({
+  __esModule: true,
+  useCurrentUser: jest.fn().mockReturnValue({
+    loadUser: jest.fn(),
+    data: {
+      __typename: 'User',
+      ...user1
+    }
+  })
+}))
+
+jest.mock('react-i18next', () => ({
+  __esModule: true,
+  useTranslation: () => {
+    return {
+      t: (str: string) => str
+    }
+  }
 }))
 
 const mocks = [
@@ -30,28 +46,24 @@ const mocks = [
       data: {
         journey: {
           id: 'journeyId',
-          __typename: 'Journey',
           userJourneys: [
             {
-              id: 'userJourneyId1',
               __typename: 'UserJourney',
-              role: UserJourneyRole.owner,
+              id: 'userJourneyId1',
+              role: 'owner',
               user: {
-                id: 'userId1',
-                __typename: 'User',
+                ...user1,
                 firstName: 'Amin',
                 lastName: 'One',
-                imageUrl: 'https://bit.ly/3Gth4Yf',
-                email: 'amin@email.com'
+                imageUrl: 'https://bit.ly/3Gth4Yf'
               }
             },
             {
-              id: 'userJourneyId2',
               __typename: 'UserJourney',
-              role: UserJourneyRole.editor,
+              id: 'userJourneyId2',
+              role: 'editor',
               user: {
                 id: 'userId2',
-                __typename: 'User',
                 firstName: 'Horace',
                 lastName: 'Two',
                 imageUrl: 'https://bit.ly/3rgHd6a',
@@ -59,12 +71,11 @@ const mocks = [
               }
             },
             {
-              id: 'userJourneyId3',
               __typename: 'UserJourney',
-              role: UserJourneyRole.inviteRequested,
+              id: 'userJourneyId3',
+              role: 'inviteRequested',
               user: {
                 id: 'userId3',
-                __typename: 'User',
                 firstName: 'Coral',
                 lastName: 'Three',
                 imageUrl: 'https://bit.ly/3nlwUwJ',
@@ -78,310 +89,60 @@ const mocks = [
   },
   {
     request: {
-      query: USER_JOURNEY_APPROVE,
+      query: GET_USER_INVITES,
       variables: {
-        id: 'userJourneyId3'
+        journeyId: 'journeyId'
       }
     },
     result: {
       data: {
-        userJourneyApprove: {
-          id: 'userJourneyId3',
-          __typename: 'UserJourney',
-          role: UserJourneyRole.editor
-        }
-      }
-    }
-  },
-  {
-    request: {
-      query: USER_JOURNEY_PROMOTE,
-      variables: {
-        id: 'userJourneyId2'
-      }
-    },
-    result: {
-      data: {
-        userJourneyPromote: {
-          id: 'userJourneyId2',
-          __typename: 'UserJourney',
-          role: UserJourneyRole.owner,
-          journey: {
-            id: 'journeyId',
-            __typename: 'Journey',
-            userJourneys: [
-              {
-                id: 'userJourneyId1',
-                __typename: 'UserJourney',
-                role: UserJourneyRole.editor
-              },
-              {
-                id: 'userJourneyId2',
-                __typename: 'UserJourney',
-                role: UserJourneyRole.owner
-              },
-              {
-                id: 'userJourneyId3',
-                __typename: 'UserJourney',
-                role: UserJourneyRole.inviteRequested
-              }
-            ]
+        userInvites: [
+          {
+            __typename: 'UserInvite',
+            id: 'invite.id',
+            journeyId: 'journey.id',
+            email: 'invite@email.com',
+            acceptedAt: null,
+            removedAt: null
           }
-        }
-      }
-    }
-  },
-  {
-    request: {
-      query: USER_JOURNEY_REMOVE,
-      variables: {
-        id: 'userJourneyId2'
-      }
-    },
-    result: {
-      data: {
-        userJourneyRemove: {
-          id: 'userJourneyId2',
-          __typename: 'UserJourney',
-          role: UserJourneyRole.editor,
-          journey: {
-            id: 'journeyId',
-            __typename: 'Journey'
-          }
-        }
-      }
-    }
-  },
-  {
-    request: {
-      query: GET_CURRENT_USER
-    },
-    result: {
-      data: {
-        me: {
-          id: 'userId1',
-          __typename: 'User',
-          email: 'amin@email.com'
-        }
+        ]
       }
     }
   }
 ]
 
 describe('AccessDialog', () => {
-  it('allows invitee to be approved as editor', async () => {
-    const cache = new InMemoryCache()
+  it('should display users and requested users', async () => {
+    const handleClose = jest.fn()
     const { getByRole } = render(
       <SnackbarProvider>
-        <MockedProvider mocks={mocks} cache={cache}>
-          <AccessDialog journeyId="journeyId" open onClose={noop} />
+        <MockedProvider addTypename mocks={mocks}>
+          <AccessDialog journeyId="journeyId" open onClose={handleClose} />
         </MockedProvider>
       </SnackbarProvider>
     )
-    await waitFor(() =>
-      expect(getByRole('button', { name: 'Manage Access' })).toBeInTheDocument()
-    )
-    fireEvent.click(getByRole('button', { name: 'Manage Access' }))
-    fireEvent.click(getByRole('menuitem', { name: 'Approve' }))
-    await waitFor(() =>
-      expect(cache.extract()['UserJourney:userJourneyId3']?.role).toEqual(
-        'editor'
-      )
-    )
-  })
 
-  it('allows editor to be removed', async () => {
-    const cache = new InMemoryCache()
-    const { getByRole } = render(
-      <SnackbarProvider>
-        <MockedProvider mocks={mocks} cache={cache}>
-          <AccessDialog journeyId="journeyId" open onClose={noop} />
-        </MockedProvider>
-      </SnackbarProvider>
-    )
-    await waitFor(() =>
-      expect(getByRole('button', { name: 'Editor' })).toBeInTheDocument()
-    )
-    fireEvent.click(getByRole('button', { name: 'Editor' }))
-    fireEvent.click(getByRole('menuitem', { name: 'Remove' }))
-    await waitFor(() =>
-      expect(cache.extract()['Journey:journeyId']?.userJourneys).toEqual([
-        { __ref: 'UserJourney:userJourneyId1' },
-        { __ref: 'UserJourney:userJourneyId3' }
-      ])
-    )
-  })
-
-  it('allows editor to be promoted to owner', async () => {
-    const cache = new InMemoryCache()
-    const { getByRole } = render(
-      <SnackbarProvider>
-        <MockedProvider mocks={mocks} cache={cache}>
-          <AccessDialog journeyId="journeyId" open onClose={noop} />
-        </MockedProvider>
-      </SnackbarProvider>
-    )
-    await waitFor(() =>
-      expect(getByRole('button', { name: 'Editor' })).toBeInTheDocument()
-    )
-    fireEvent.click(getByRole('button', { name: 'Editor' }))
-    fireEvent.click(getByRole('menuitem', { name: 'Promote' }))
-    await waitFor(() =>
-      expect(cache.extract()['UserJourney:userJourneyId2']?.role).toEqual(
-        'owner'
-      )
-    )
-    expect(cache.extract()['UserJourney:userJourneyId1']?.role).toEqual(
-      'editor'
-    )
-  })
-
-  it('does not allow owners to edit their own access', async () => {
-    const { getByRole } = render(
-      <SnackbarProvider>
-        <MockedProvider mocks={mocks}>
-          <AccessDialog journeyId="journeyId" open onClose={noop} />
-        </MockedProvider>
-      </SnackbarProvider>
-    )
-    await waitFor(() =>
-      expect(getByRole('button', { name: 'Owner' })).toBeDisabled()
-    )
-  })
-
-  it('does not allow editors to edit access', async () => {
-    const { getByRole } = render(
-      <SnackbarProvider>
-        <MockedProvider
-          mocks={[
-            {
-              request: {
-                query: GET_JOURNEY_WITH_USER_JOURNEYS,
-                variables: {
-                  id: 'journeyId'
-                }
-              },
-              result: {
-                data: {
-                  journey: {
-                    id: 'journeyId',
-                    __typename: 'Journey',
-                    userJourneys: [
-                      {
-                        id: 'userJourneyId1',
-                        __typename: 'UserJourney',
-                        role: UserJourneyRole.owner,
-                        user: {
-                          id: 'userId1',
-                          __typename: 'User',
-                          firstName: 'Amin',
-                          lastName: 'One',
-                          imageUrl: 'https://bit.ly/3Gth4Yf',
-                          email: 'amin@email.com'
-                        }
-                      },
-                      {
-                        id: 'userJourneyId2',
-                        __typename: 'UserJourney',
-                        role: UserJourneyRole.editor,
-                        user: {
-                          id: 'userId2',
-                          __typename: 'User',
-                          firstName: 'Horace',
-                          lastName: 'Two',
-                          imageUrl: 'https://bit.ly/3rgHd6a',
-                          email: 'horace@email.com'
-                        }
-                      },
-                      {
-                        id: 'userJourneyId3',
-                        __typename: 'UserJourney',
-                        role: UserJourneyRole.inviteRequested,
-                        user: {
-                          id: 'userId3',
-                          __typename: 'User',
-                          firstName: 'Coral',
-                          lastName: 'Three',
-                          imageUrl: 'https://bit.ly/3nlwUwJ',
-                          email: 'coral@email.com'
-                        }
-                      }
-                    ]
-                  }
-                }
-              }
-            },
-            {
-              request: {
-                query: GET_CURRENT_USER
-              },
-              result: {
-                data: {
-                  me: {
-                    id: 'userId2',
-                    __typename: 'User',
-                    email: 'horace@email.com'
-                  }
-                }
-              }
-            }
-          ]}
-        >
-          <AccessDialog journeyId="journeyId" open onClose={noop} />
-        </MockedProvider>
-      </SnackbarProvider>
-    )
-    await waitFor(() =>
-      expect(getByRole('button', { name: 'Manage Access' })).toBeDisabled()
-    )
-    expect(getByRole('button', { name: 'Editor' })).toBeDisabled()
-    expect(getByRole('button', { name: 'Owner' })).toBeDisabled()
+    await waitFor(() => {
+      expect(getByRole('heading', { name: 'Editors' })).toBeInTheDocument()
+      expect(
+        getByRole('heading', { name: 'Requested Access' })
+      ).toBeInTheDocument()
+    })
+    expect(
+      getByRole('heading', { name: 'Invite Editor by' })
+    ).toBeInTheDocument()
   })
 
   it('calls on close', () => {
     const handleClose = jest.fn()
     const { getByTestId } = render(
       <SnackbarProvider>
-        <MockedProvider mocks={mocks}>
+        <MockedProvider>
           <AccessDialog journeyId="journeyId" open onClose={handleClose} />
         </MockedProvider>
       </SnackbarProvider>
     )
     fireEvent.click(getByTestId('dialog-close-button'))
     expect(handleClose).toHaveBeenCalled()
-  })
-
-  describe('copy to clipboard', () => {
-    const originalNavigator = { ...global.navigator }
-
-    beforeEach(() => {
-      Object.assign(navigator, {
-        clipboard: {
-          writeText: jest.fn()
-        }
-      })
-    })
-
-    afterEach(() => {
-      jest.resetAllMocks()
-      Object.assign(navigator, originalNavigator)
-    })
-
-    it('copies link to clipboard', async () => {
-      const { getByRole, getByText } = render(
-        <SnackbarProvider>
-          <MockedProvider mocks={mocks}>
-            <AccessDialog journeyId="journeyId" open onClose={noop} />
-          </MockedProvider>
-        </SnackbarProvider>
-      )
-      const link = 'http://localhost/journeys/journeyId'
-      expect(getByRole('textbox')).toHaveValue(link)
-      fireEvent.click(getByRole('button', { name: 'Copy' }))
-      expect(navigator.clipboard.writeText).toHaveBeenCalledWith(link)
-      await waitFor(() =>
-        expect(getByText('Editor invite link copied')).toBeInTheDocument()
-      )
-    })
   })
 })

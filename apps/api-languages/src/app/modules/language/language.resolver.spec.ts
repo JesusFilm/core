@@ -26,7 +26,7 @@ describe('LangaugeResolver', () => {
     const languageService = {
       provide: LanguageService,
       useFactory: () => ({
-        get: jest.fn(() => language),
+        load: jest.fn(() => language),
         getAll: jest.fn(() => [language, language])
       })
     }

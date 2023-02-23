@@ -1,0 +1,128 @@
+type UnsplashQueryResponse {
+  total: Int!
+  total_pages: Int!
+  results: [UnsplashPhoto!]!
+}
+
+type UnsplashUserImage {
+  small: String!
+  medium: String!
+  large: String!
+}
+
+type UnsplashUserLinks {
+  self: String!
+  html: String!
+  photos: String!
+  likes: String!
+  portfolio: String!
+  following: String!
+  followers: String!
+}
+
+type UnsplashUser {
+  id: String!
+  updated_at: String
+  username: String!
+  name: String
+  first_name: String
+  last_name: String
+  twitter_username: String
+  portfolio_url: String
+  bio: String
+  location: String
+  links: UnsplashUserLinks!
+  profile_image: UnsplashUserImage
+  instagram_username: String
+  total_collections: Int!
+  total_likes: Int!
+  total_photos: Int!
+  accepted_tos: Boolean!
+}
+
+enum UnsplashPhotoOrientation {
+  landscape
+  portrait
+  squarish
+}
+
+enum UnsplashContentFilter {
+  low
+  high
+}
+
+enum UnsplashOrderBy {
+  latest
+  relevant
+}
+
+enum UnsplashColor {
+  black_and_white
+  black
+  white
+  yellow
+  orange
+  red
+  purple
+  magenta
+  green
+  teal
+  blue
+}
+
+type UnsplashPhoto {
+  id: String!
+  created_at: String!
+  updated_at: String
+  blur_hash: String!
+  width: Int!
+  height: Int!
+  color: String
+  description: String
+  alt_description: String
+  urls: UnsplashPhotoUrls!
+  links: UnsplashPhotoLinks!
+  categories: [String!]
+  likes: Int!
+  liked_by_user: Boolean!
+  current_user_collections: [String!]!
+  user: UnsplashUser!
+}
+
+type UnsplashPhotoUrls {
+  raw: String!
+  full: String!
+  regular: String!
+  small: String!
+  thumb: String!
+}
+
+type UnsplashPhotoLinks {
+  self: String!
+  html: String!
+  download: String!
+  download_location: String!
+}
+
+extend type Query {
+  listUnsplashCollectionPhotos(
+    collectionId: String!
+    page: Int
+    perPage: Int
+    orientation: UnsplashPhotoOrientation
+  ): [UnsplashPhoto!]!
+  searchUnsplashPhotos(
+    query: String!
+    page: Int
+    perPage: Int
+    orderBy: UnsplashOrderBy
+    collections: [String]
+    contentFilter: UnsplashContentFilter
+    color: UnsplashColor
+    orientation: UnsplashPhotoOrientation
+  ): UnsplashQueryResponse!
+}
+
+extend type Mutation {
+  triggerUnsplashDownload(url: String!): Boolean
+}

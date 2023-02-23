@@ -9,6 +9,7 @@ import { BlockService } from '../block.service'
 import { StepBlock } from '../../../__generated__/graphql'
 import { UserRoleService } from '../../userRole/userRole.service'
 import { JourneyService } from '../../journey/journey.service'
+import { MemberService } from '../../member/member.service'
 import { StepBlockResolver } from './step.resolver'
 
 describe('StepBlockResolver', () => {
@@ -53,6 +54,7 @@ describe('StepBlockResolver', () => {
         UserJourneyService,
         UserRoleService,
         JourneyService,
+        MemberService,
         {
           provide: 'DATABASE',
           useFactory: () => mockDeep<Database>()
@@ -74,9 +76,7 @@ describe('StepBlockResolver', () => {
   describe('stepBlockCreate', () => {
     it('creates a StepBlock', async () => {
       expect(
-        await resolver
-          .stepBlockCreate(omit(block, ['id', 'parentOrder']))
-          .catch((err) => console.log(err))
+        await resolver.stepBlockCreate(omit(block, ['id', 'parentOrder']))
       ).toEqual(blockCreateResponse)
       expect(service.getSiblings).toHaveBeenCalledWith(block.journeyId)
       expect(service.save).toHaveBeenCalledWith({
@@ -88,9 +88,7 @@ describe('StepBlockResolver', () => {
 
   describe('stepBlockUpdate', () => {
     it('updates a StepBlock', async () => {
-      resolver
-        .stepBlockUpdate(block.id, block.journeyId, blockUpdate)
-        .catch((err) => console.log(err))
+      await resolver.stepBlockUpdate(block.id, block.journeyId, blockUpdate)
       expect(service.update).toHaveBeenCalledWith(block.id, blockUpdate)
     })
   })

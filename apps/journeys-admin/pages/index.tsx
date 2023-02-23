@@ -1,5 +1,4 @@
 import { ReactElement, useState } from 'react'
-import { gql, useQuery } from '@apollo/client'
 import {
   AuthAction,
   useAuthUser,
@@ -11,50 +10,28 @@ import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import { useTranslation } from 'react-i18next'
 import { useRouter } from 'next/router'
 import { getLaunchDarklyClient } from '@core/shared/ui/getLaunchDarklyClient'
-import { GetJourneys } from '../__generated__/GetJourneys'
+import { gql } from '@apollo/client'
+import { useJourneys } from '../src/libs/useJourneys'
+import { UserInviteAcceptAll } from '../__generated__/UserInviteAcceptAll'
 import { JourneyList } from '../src/components/JourneyList'
 import { PageWrapper } from '../src/components/PageWrapper'
+import { createApolloClient } from '../src/libs/apolloClient'
 import i18nConfig from '../next-i18next.config'
 import JourneyListMenu from '../src/components/JourneyList/JourneyListMenu/JourneyListMenu'
+import { useTermsRedirect } from '../src/libs/useTermsRedirect/useTermsRedirect'
 
-export const GET_JOURNEYS = gql`
-  query GetJourneys {
-    journeys: adminJourneys {
+export const ACCEPT_USER_INVITE = gql`
+  mutation UserInviteAcceptAll {
+    userInviteAcceptAll {
       id
-      title
-      createdAt
-      publishedAt
-      description
-      slug
-      themeName
-      themeMode
-      language {
-        id
-        name(primary: true) {
-          value
-          primary
-        }
-      }
-      status
-      seoTitle
-      seoDescription
-      userJourneys {
-        id
-        role
-        user {
-          id
-          firstName
-          lastName
-          imageUrl
-        }
-      }
+      acceptedAt
     }
   }
 `
 
 function IndexPage(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-  const { data } = useQuery<GetJourneys>(GET_JOURNEYS)
+  const journeys = useJourneys()
   const AuthUser = useAuthUser()
   const router = useRouter()
   const [listEvent, setListEvent] = useState('')
@@ -74,6 +51,7 @@ function IndexPage(): ReactElement {
       setListEvent('')
     }, 1000)
   }
+  useTermsRedirect()
 
   return (
     <>
@@ -84,7 +62,7 @@ function IndexPage(): ReactElement {
         menu={<JourneyListMenu router={router} onClick={handleClick} />}
       >
         <JourneyList
-          journeys={data?.journeys}
+          journeys={journeys}
           router={router}
           event={listEvent}
           authUser={AuthUser}
@@ -106,6 +84,14 @@ export const getServerSideProps = withAuthUserTokenSSR({
   const flags = (await launchDarklyClient.allFlagsState(ldUser)).toJSON() as {
     [key: string]: boolean | undefined
   }
+
+  const token = await AuthUser.getIdToken()
+  const apolloClient = createApolloClient(token != null ? token : '')
+
+  await apolloClient.mutate<UserInviteAcceptAll>({
+    mutation: ACCEPT_USER_INVITE
+  })
+
   return {
     props: {
       flags,

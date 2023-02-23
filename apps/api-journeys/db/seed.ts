@@ -41,6 +41,18 @@ async function main(): Promise<void> {
     unique: true
   })
 
+  if (!(await db.collection('userInvites').exists()))
+    await db.createCollection('userInvites', {
+      keyOptions: { type: 'uuid' }
+    })
+
+  await db.collection('userInvites').ensureIndex({
+    type: 'persistent',
+    fields: ['journeyId', 'email'],
+    name: 'journeyIdAndEmail',
+    unique: true
+  })
+
   if (!(await db.collection('teams').exists()))
     await db.createCollection('teams', {
       keyOptions: { type: 'uuid' }
@@ -62,6 +74,18 @@ async function main(): Promise<void> {
     type: 'persistent',
     fields: ['teamId', 'userId'],
     name: 'teamIdAndUserId',
+    unique: true
+  })
+
+  if (!(await db.collection('journeyProfiles').exists()))
+    await db.createCollection('journeyProfiles', {
+      keyOptions: { type: 'uuid' }
+    })
+
+  await db.collection('journeyProfiles').ensureIndex({
+    type: 'persistent',
+    fields: ['userId'],
+    name: 'userId',
     unique: true
   })
 

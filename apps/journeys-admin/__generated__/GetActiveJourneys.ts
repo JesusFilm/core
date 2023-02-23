@@ -33,6 +33,10 @@ export interface GetActiveJourneys_journeys_userJourneys {
   __typename: "UserJourney";
   id: string;
   role: UserJourneyRole;
+  /**
+   * Date time of when the journey was first opened
+   */
+  openedAt: any | null;
   user: GetActiveJourneys_journeys_userJourneys_user | null;
 }
 

@@ -5,6 +5,7 @@ cors:
   match_origins:
     # any localhost
     - '^http://localhost:\d+$'
+  max_age: 24h
 headers:
   all:
     request:
@@ -14,7 +15,7 @@ headers:
           named: 'user-agent'
       - propagate:
           named: 'x-forwarded-for'
-health-check:
+health_check:
   listen: 0.0.0.0:8088
   enabled: true
 include_subgraph_errors:
