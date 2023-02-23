@@ -17,6 +17,7 @@ const FilterContainerStory = {
 const Template: Story<ComponentProps<typeof FilterContainer>> = () => {
   return (
     <FilterContainer
+      rowFromParent={1}
       audioSwitcher={
         <LanguagesFilter onChange={() => null} languages={[]} loading={false} />
       }
