@@ -1,105 +1,105 @@
-import React, { ComponentProps } from 'react'
+import { ComponentProps } from 'react'
 
 import { Meta, Story } from '@storybook/react'
 
-import Button from '@mui/material/Button'
-import IconButton from '@mui/material/IconButton'
+import MuiButton from '@mui/material/Button'
+import MuiIconButton from '@mui/material/IconButton'
 import { sharedUiConfig } from '../../libs/sharedUiConfig'
 import { ThemeProvider } from '../ThemeProvider'
 import { ThemeMode, ThemeName } from '../../libs/themes'
+import UniversalIcon, { IconNames } from '../Icons'
 
-const MuiInputComponentsDemo = {
+const MuiButtonComponentsDemo = {
   ...sharedUiConfig,
-  title: 'Mui Components/Inputs',
-  component: Button,
+  title: 'Mui Components/Inputs/Button',
+  component: MuiButton,
+  subcomponent: { MuiIconButton },
   parameters: {
     theme: 'light',
-    // layout: 'fullscreen',
     chromatic: {
       disableSnapshot: true
     }
   },
-  argTypes: {
-    color: {
-      control: { type: 'select' },
-      options: ['primary', 'secondary', 'error', 'info', 'success', 'warning'],
-      defaultValue: 'primary'
-    },
-    size: {
-      control: { type: 'select' },
-      options: ['small', 'medium', 'large']
-    },
-    themeMode: {
-      control: { type: 'select' },
-      options: ['light', 'dark']
-    }
-  }
+  controls: { sort: 'requiredFirst' }
 }
 
 const ButtonTemplate: Story<
-  ComponentProps<typeof Button> & { themeMode: ThemeMode }
+  ComponentProps<typeof MuiButton> & { themeMode: ThemeMode }
 > = (args) => {
   return (
     <ThemeProvider themeName={ThemeName.base} themeMode={args.themeMode}>
-      <Button {...args}>{args.children}</Button>
+      <MuiButton
+        {...args}
+        startIcon={
+          typeof args.startIcon === 'string' ? (
+            <UniversalIcon name={args.startIcon} />
+          ) : undefined
+        }
+        endIcon={
+          typeof args.endIcon === 'string' ? (
+            <UniversalIcon name={args.endIcon} />
+          ) : undefined
+        }
+      >
+        {args.children}
+      </MuiButton>
     </ThemeProvider>
   )
 }
 
-export const MuiButton = ButtonTemplate.bind({})
-MuiButton.args = {
+export const Button = ButtonTemplate.bind({})
+Button.args = {
   children: 'Button',
+  variant: 'contained',
   color: 'primary',
+  size: 'medium',
   disabled: false,
   disableElevation: false,
   fullWidth: false,
-  size: 'medium',
-  variant: 'contained',
   href: '',
-  // MuiButtonBase
-  centerRipple: false,
-  disableRipple: false,
-  disableFocusRipple: false,
-  disableTouchRipple: false,
-  focusRipple: false,
+  startIcon: '',
+  endIcon: '',
+  // centerRipple: false,
+  // disableRipple: false,
+  // disableFocusRipple: false,
+  // disableTouchRipple: false,
+  // focusRipple: false,
   sx: { ariaLabel: 'Button' },
   themeMode: ThemeMode.light
 }
-MuiButton.argTypes = {
-  variant: {
-    control: { type: 'select' },
-    options: ['text', 'outlined', 'contained']
-  },
+Button.argTypes = {
   children: {
     name: 'label'
-  }
-}
-
-const IconButtonTemplate: Story<
-  ComponentProps<typeof IconButton> & { themeMode: ThemeMode }
-> = (args) => {
-  return <IconButton {...args}>{args.children}</IconButton>
-}
-
-export const MuiIconButton = IconButtonTemplate.bind({})
-MuiIconButton.args = {
-  children: 'Button',
-  color: 'primary',
-  disabled: false,
-  edge: false,
-  size: 'medium',
-  centerRipple: false,
-  disableRipple: false,
-  disableFocusRipple: false,
-  disableTouchRipple: false,
-  focusRipple: false,
-  sx: { ariaLabel: 'Button' }
-}
-MuiIconButton.argTypes = {
-  edge: {
+  },
+  color: {
     control: { type: 'select' },
-    options: ['start', 'end', false]
-  }
+    options: ['primary', 'secondary', 'error', 'info', 'success', 'warning'],
+    defaultValue: 'primary'
+  },
+  size: {
+    control: { type: 'inline-radio' },
+    options: ['small', 'medium', 'large']
+  },
+  variant: {
+    control: { type: 'inline-radio' },
+    options: ['text', 'outlined', 'contained']
+  },
+  startIcon: {
+    control: { type: 'select' },
+    options: IconNames
+  },
+  endIcon: {
+    control: { type: 'select' },
+    options: IconNames
+  },
+  themeMode: { control: false }
 }
 
-export default MuiInputComponentsDemo as Meta
+export const ButtonOnDark = ButtonTemplate.bind({})
+ButtonOnDark.args = {
+  ...Button.args,
+  themeMode: ThemeMode.dark
+}
+ButtonOnDark.argTypes = Button.argTypes
+
+export default MuiButtonComponentsDemo as Meta
