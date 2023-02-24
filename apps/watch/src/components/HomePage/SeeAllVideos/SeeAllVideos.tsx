@@ -11,7 +11,7 @@ export function SeeAllVideos(): ReactElement {
               size="small"
               color="secondary"
               variant="outlined"
-              aria-label="all-videos-button-small"
+              aria-label="all-videos-button"
               sx={{
                 width: '15%',
                 whiteSpace: 'nowrap'

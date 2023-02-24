@@ -10,11 +10,7 @@ describe('SeeAllVideos', () => {
 
   it('button should have correct link', () => {
     const { getByLabelText } = render(<SeeAllVideos />)
-    expect(getByLabelText('all-videos-button-large')).toHaveAttribute(
-      'href',
-      '/videos'
-    )
-    expect(getByLabelText('all-videos-button-small')).toHaveAttribute(
+    expect(getByLabelText('all-videos-button')).toHaveAttribute(
       'href',
       '/videos'
     )
