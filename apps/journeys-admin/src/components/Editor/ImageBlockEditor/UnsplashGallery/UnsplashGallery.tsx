@@ -1,4 +1,4 @@
-import { ReactElement, useState } from 'react'
+import { ReactElement, useState, useEffect } from 'react'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import LoadingButton from '@mui/lab/LoadingButton'
@@ -9,6 +9,7 @@ import { SearchUnsplashPhotos } from '../../../../../__generated__/SearchUnsplas
 import { TriggerUnsplashDownload } from '../../../../../__generated__/TriggerUnsplashDownload'
 import { UnsplashSearch } from './UnsplashSearch'
 import { UnsplashList } from './UnsplashList'
+import { UnsplashCollections } from './UnsplashCollections'
 
 export const LIST_UNSPLASH_COLLECTION_PHOTOS = gql`
   query ListUnsplashCollectionPhotos(
@@ -94,12 +95,18 @@ export function UnsplashGallery({
 }: UnsplashGalleryProps): ReactElement {
   const [query, setQuery] = useState<string>()
   const [page, setPage] = useState(1)
+  const [collectionId, setCollectionId] = useState('4924556')
+
+  useEffect(() => {
+    setPage(1)
+  }, [collectionId])
+
   const {
     data: listData,
     refetch: refetchList,
     fetchMore: fetchMoreList
   } = useQuery<ListUnsplashCollectionPhotos>(LIST_UNSPLASH_COLLECTION_PHOTOS, {
-    variables: { collectionId: '4924556', page, perPage: 20 },
+    variables: { collectionId, page, perPage: 20 },
     skip: query != null
   })
   const [triggerUnsplashDownload] = useMutation<TriggerUnsplashDownload>(
@@ -127,7 +134,7 @@ export function UnsplashGallery({
 
   const handleSubmit = (value: string): void => {
     if (value == null) {
-      void refetchList({ collectionId: '4924556', page: 1, perPage: 20 })
+      void refetchList({ collectionId, page: 1, perPage: 20 })
     } else {
       void refetchSearch({ query: value, page: 1, perPage: 20 })
     }
@@ -138,7 +145,7 @@ export function UnsplashGallery({
   const nextPage = (): void => {
     if (query == null) {
       void fetchMoreList({
-        variables: { collectionId: '4924556', page: page + 1, perPage: 20 }
+        variables: { collectionId, page: page + 1, perPage: 20 }
       })
     } else {
       void fetchMoreSearch({
@@ -151,6 +158,7 @@ export function UnsplashGallery({
   return (
     <Stack sx={{ pt: 6, px: 6 }}>
       <UnsplashSearch value={query} handleSubmit={handleSubmit} />
+      <UnsplashCollections onClick={(id) => setCollectionId(id)} />
       <Stack sx={{ pt: 6, pb: 1 }}>
         <Typography variant="overline" color="primary">
           Unsplash

@@ -28,6 +28,37 @@ describe('UnsplashGallery', () => {
     color: '#262626'
   }
 
+  it('should return a collection of images on unplash collection chip click', async () => {
+    const { getByRole, getByAltText } = render(
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: LIST_UNSPLASH_COLLECTION_PHOTOS,
+              variables: {
+                collectionId: 'uOF0tIcPnUA',
+                page: 1,
+                perPage: 20
+              }
+            },
+            result: {
+              data: {
+                listUnsplashCollectionPhotos: [unsplashImage]
+              }
+            }
+          }
+        ]}
+      >
+        <UnsplashGallery onChange={jest.fn()} />
+      </MockedProvider>
+    )
+    fireEvent.click(getByRole('button', { name: 'Church' }))
+    await waitFor(() => expect(getByRole('list')).toBeInTheDocument())
+    expect(
+      getByAltText('white dome building during daytime')
+    ).toBeInTheDocument()
+  })
+
   it('should return a collection of images from unsplash', async () => {
     const { getByRole, getByAltText } = render(
       <MockedProvider
