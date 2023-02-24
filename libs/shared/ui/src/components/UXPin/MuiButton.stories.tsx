@@ -14,7 +14,7 @@ const MuiInputComponentsDemo = {
   component: Button,
   parameters: {
     theme: 'light',
-    layout: 'fullscreen',
+    // layout: 'fullscreen',
     chromatic: {
       disableSnapshot: true
     }
@@ -40,9 +40,9 @@ const ButtonTemplate: Story<
   ComponentProps<typeof Button> & { themeMode: ThemeMode }
 > = (args) => {
   return (
-    // <ThemeProvider themeName={ThemeName.base} themeMode={args.themeMode}>
-    <Button {...args}>{args.children}</Button>
-    // </ThemeProvider>
+    <ThemeProvider themeName={ThemeName.base} themeMode={args.themeMode}>
+      <Button {...args}>{args.children}</Button>
+    </ThemeProvider>
   )
 }
 
