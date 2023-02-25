@@ -10,7 +10,7 @@ const Bar1Down = lazy(
     )
 )
 
-export const IconNames = ['', 'Bar1Down'] as const
+export const IconNames = ['none', 'Bar1Down'] as const
 
 // type IconName = (typeof IconNames)[number]
 
@@ -26,7 +26,13 @@ export default function UniversalIcon({
 }: UniversalIconProps): ReactElement {
   return (
     <Suspense fallback={<CircularProgress size="sm" />}>
-      {{ '': null, Bar1Down: <Bar1Down {...iconProps} />, default: null }[name]}
+      {
+        {
+          none: null,
+          Bar1Down: <Bar1Down {...iconProps} />,
+          default: name
+        }[name]
+      }
     </Suspense>
   )
 }

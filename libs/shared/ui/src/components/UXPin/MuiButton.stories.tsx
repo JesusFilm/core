@@ -11,7 +11,7 @@ import UniversalIcon, { IconNames } from '../Icons'
 
 const MuiButtonComponentsDemo = {
   ...sharedUiConfig,
-  title: 'Mui Components/Inputs/Button',
+  title: 'Mui Components/Inputs',
   component: MuiButton,
   subcomponent: { MuiIconButton },
   parameters: {
@@ -57,8 +57,8 @@ Button.args = {
   disableElevation: false,
   fullWidth: false,
   href: '',
-  startIcon: '',
-  endIcon: '',
+  startIcon: 'none',
+  endIcon: 'none',
   // centerRipple: false,
   // disableRipple: false,
   // disableFocusRipple: false,
@@ -71,18 +71,18 @@ Button.argTypes = {
   children: {
     name: 'label'
   },
+  variant: {
+    control: { type: 'select' },
+    options: ['text', 'outlined', 'contained']
+  },
   color: {
     control: { type: 'select' },
     options: ['primary', 'secondary', 'error', 'info', 'success', 'warning'],
     defaultValue: 'primary'
   },
   size: {
-    control: { type: 'inline-radio' },
+    control: { type: 'select' },
     options: ['small', 'medium', 'large']
-  },
-  variant: {
-    control: { type: 'inline-radio' },
-    options: ['text', 'outlined', 'contained']
   },
   startIcon: {
     control: { type: 'select' },

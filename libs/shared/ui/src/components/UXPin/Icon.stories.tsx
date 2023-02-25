@@ -9,7 +9,7 @@ import UniversalIcon, { IconNames } from '../Icons'
 
 const MuiIconComponentsDemo = {
   ...sharedUiConfig,
-  title: 'Mui Components/Inputs/Icon',
+  title: 'Mui Components/Data Display',
   component: UniversalIcon,
   subcomponent: {},
   parameters: {
@@ -52,17 +52,10 @@ Icon.argTypes = {
     defaultValue: 'primary'
   },
   fontSize: {
-    control: { type: 'inline-radio' },
+    control: { type: 'select' },
     options: ['small', 'medium', 'large']
   },
   themeMode: { control: false }
 }
-
-export const IconOnDark = IconTemplate.bind({})
-IconOnDark.args = {
-  ...Icon.args,
-  themeMode: ThemeMode.dark
-}
-IconOnDark.argTypes = Icon.argTypes
 
 export default MuiIconComponentsDemo as Meta

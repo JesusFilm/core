@@ -11,7 +11,7 @@ import UniversalIcon, { IconNames } from '../Icons'
 
 const MuiIconButtonComponentsDemo = {
   ...sharedUiConfig,
-  title: 'Mui Components/Inputs/IconButton',
+  title: 'Mui Components/Inputs',
   component: MuiIconButton,
   subcomponent: { MuiIcon },
   parameters: {
@@ -70,12 +70,5 @@ IconButton.argTypes = {
   },
   themeMode: { control: false }
 }
-
-export const IconButtonOnDark = IconButtonTemplate.bind({})
-IconButtonOnDark.args = {
-  ...IconButton.args,
-  themeMode: ThemeMode.dark
-}
-IconButtonOnDark.argTypes = IconButton.argTypes
 
 export default MuiIconButtonComponentsDemo as Meta
