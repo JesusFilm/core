@@ -1,114 +1,28 @@
-import { fireEvent, render, waitFor } from '@testing-library/react'
-
+import { MockedProvider } from '@apollo/client/testing'
+import { render } from '@testing-library/react'
 import { GetJourney_journey_blocks_ImageBlock as ImageBlock } from '../../../../__generated__/GetJourney'
-import { ImageBlockEditor } from './ImageBlockEditor'
-
-const image: ImageBlock = {
-  id: 'image1.id',
-  __typename: 'ImageBlock',
-  parentBlockId: 'card.id',
-  parentOrder: 0,
-  src: 'https://example.com/image.jpg',
-  alt: 'image.jpg',
-  width: 1920,
-  height: 1080,
-  blurhash: ''
-}
-
-const onChange = jest.fn()
-const onDelete = jest.fn()
+import { ImageBlockEditor } from '.'
 
 describe('ImageBlockEditor', () => {
-  describe('No existing ImageBlock', () => {
-    it('shows placeholders on null', async () => {
-      const { getByTestId, getByRole } = render(
-        <ImageBlockEditor
-          selectedBlock={null}
-          onChange={onChange}
-          onDelete={onDelete}
-        />
-      )
-      expect(await getByTestId('imageSrcStack')).toBeInTheDocument()
-      const textBox = await getByRole('textbox')
-      expect(textBox).toHaveValue('')
-    })
-  })
-  describe('Existing ImageBlock', () => {
-    it('shows placeholders', async () => {
-      const { getByTestId, getByRole } = render(
-        <ImageBlockEditor
-          selectedBlock={image}
-          onChange={onChange}
-          onDelete={onDelete}
-        />
-      )
-      expect(await getByTestId('imageSrcStack')).toBeInTheDocument()
-      const textBox = await getByRole('textbox')
-      expect(textBox).toHaveValue(image.src)
-    })
-    it('displays validation messages ', async () => {
-      const { getByRole, getByText } = render(
-        <ImageBlockEditor
-          selectedBlock={image}
-          onChange={onChange}
-          onDelete={onDelete}
-        />
-      )
-      const textBox = await getByRole('textbox')
-      fireEvent.change(textBox, {
-        target: { value: '' }
-      })
-      fireEvent.blur(textBox)
-      await waitFor(() => expect(getByText('Required')).toBeInTheDocument())
-      fireEvent.change(textBox, {
-        target: { value: 'example.com/123' }
-      })
-      fireEvent.blur(textBox)
-      await waitFor(() =>
-        expect(getByText('Please enter a valid url')).toBeInTheDocument()
-      )
-    })
-  })
-  it('triggers onChange', async () => {
-    const { getByRole } = render(
-      <ImageBlockEditor
-        selectedBlock={image}
-        onChange={onChange}
-        onDelete={onDelete}
-      />
-    )
-    const textBox = await getByRole('textbox')
-    fireEvent.change(textBox, {
-      target: { value: 'https://example.com/123' }
-    })
-    fireEvent.blur(textBox)
-    await waitFor(() => expect(onChange).toHaveBeenCalled())
-  })
-  it('triggers onDelete', async () => {
-    const { getByRole } = render(
-      <ImageBlockEditor
-        selectedBlock={image}
-        onChange={onChange}
-        onDelete={onDelete}
-      />
-    )
-    const deleteButton = await getByRole('button')
-    fireEvent.click(deleteButton)
-    await waitFor(() => expect(onDelete).toHaveBeenCalled())
-  })
-  it('triggers onChange onPaste', async () => {
-    const { getByRole } = render(
-      <ImageBlockEditor
-        selectedBlock={image}
-        onChange={onChange}
-        onDelete={onDelete}
-      />
-    )
-    const textBox = await getByRole('textbox')
-    await fireEvent.paste(textBox, {
-      clipboardData: { getData: () => 'https://example.com/123' }
-    })
+  const imageBlock: ImageBlock = {
+    id: 'imageBlockId',
+    __typename: 'ImageBlock',
+    src: 'https://images.unsplash.com/photo-1508363778367-af363f107cbb?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&dl=chester-wade-hLP7lVm4KUE-unsplash.jpg&w=1920',
+    alt: 'random image from unsplash',
+    width: 1600,
+    height: 1067,
+    blurhash: 'L9AS}j^-0dVC4Tq[=~PATeXSV?aL',
+    parentBlockId: 'card',
+    parentOrder: 0
+  }
 
-    await waitFor(() => expect(onChange).toHaveBeenCalled())
+  it('should render the ImageBlockEditor', () => {
+    const { getByText, getByRole } = render(
+      <MockedProvider>
+        <ImageBlockEditor onChange={jest.fn()} selectedBlock={imageBlock} />
+      </MockedProvider>
+    )
+    expect(getByText('Selected Image')).toBeInTheDocument()
+    expect(getByRole('tab', { name: 'Custom' })).toBeInTheDocument()
   })
 })

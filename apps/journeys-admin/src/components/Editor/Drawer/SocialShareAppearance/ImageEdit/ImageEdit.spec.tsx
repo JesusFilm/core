@@ -1,18 +1,23 @@
-import { MockedProvider } from '@apollo/client/testing'
 import { render, fireEvent, waitFor } from '@testing-library/react'
 import { InMemoryCache } from '@apollo/client'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import { MockedProvider } from '@apollo/client/testing'
 import {
   GetJourney_journey as Journey,
   GetJourney_journey_blocks_ImageBlock as ImageBlock
 } from '../../../../../../__generated__/GetJourney'
+import { createCloudflareUploadByUrlMock } from '../../../ImageBlockEditor/CustomImage/CustomUrl/data'
 import {
   ImageEdit,
   BLOCK_DELETE_PRIMARY_IMAGE,
   PRIMARY_IMAGE_BLOCK_CREATE,
-  PRIMARY_IMAGE_BLOCK_UPDATE,
   JOURNEY_PRIMARY_IMAGE_UPDATE
 } from './ImageEdit'
+
+jest.mock('@mui/material/useMediaQuery', () => ({
+  __esModule: true,
+  default: jest.fn()
+}))
 
 describe('ImageEdit', () => {
   const image: ImageBlock = {
@@ -20,8 +25,8 @@ describe('ImageEdit', () => {
     __typename: 'ImageBlock',
     parentBlockId: null,
     parentOrder: 0,
-    src: 'https://example.com/image.jpg',
-    alt: 'image.jpg',
+    src: 'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/uploadId/public',
+    alt: 'public',
     width: 1920,
     height: 1080,
     blurhash: ''
@@ -105,6 +110,7 @@ describe('ImageEdit', () => {
       <MockedProvider
         cache={cache}
         mocks={[
+          createCloudflareUploadByUrlMock,
           {
             request: {
               query: PRIMARY_IMAGE_BLOCK_CREATE,
@@ -144,9 +150,11 @@ describe('ImageEdit', () => {
       </MockedProvider>
     )
     fireEvent.click(getByRole('button'))
+    fireEvent.click(getByRole('tab', { name: 'Custom' }))
+    fireEvent.click(getByRole('button', { name: 'Add image by URL' }))
     const textBox = getByRole('textbox')
     fireEvent.change(textBox, {
-      target: { value: image.src }
+      target: { value: 'https://example.com/image.jpg' }
     })
     fireEvent.blur(textBox)
 
@@ -156,85 +164,6 @@ describe('ImageEdit', () => {
     expect(cache.extract()['Journey:journey.id']?.blocks).toEqual([
       { __ref: 'ImageBlock:image1.id' }
     ])
-  })
-
-  it('update the primaryImage', async () => {
-    const cache = new InMemoryCache()
-    cache.restore({
-      ['Journey:' + 'journey.id']: {
-        blocks: [{ __ref: `ImageBlock:${image.id}` }],
-        id: 'journey.id',
-        __typename: 'Journey'
-      },
-      'ImageBlock:image1.id': {
-        ...image
-      }
-    })
-
-    const result = jest.fn(() => ({
-      data: {
-        imageBlockUpdate: {
-          id: image.id,
-          src: 'https://example.com/new-src.jpg',
-          alt: 'new-src.jpg',
-          __typename: 'ImageBlock',
-          parentBlockId: null,
-          width: image.width,
-          height: image.height,
-          parentOrder: image.parentOrder,
-          blurhash: image.blurhash
-        }
-      }
-    }))
-
-    const { getByRole } = render(
-      <MockedProvider
-        cache={cache}
-        mocks={[
-          {
-            request: {
-              query: PRIMARY_IMAGE_BLOCK_UPDATE,
-              variables: {
-                id: image.id,
-                journeyId: 'journey.id',
-                input: {
-                  src: 'https://example.com/new-src.jpg',
-                  alt: 'new-src.jpg'
-                }
-              }
-            },
-            result
-          }
-        ]}
-      >
-        <JourneyProvider
-          value={{
-            journey: {
-              id: 'journey.id',
-              primaryImageBlock: { ...image }
-            } as unknown as Journey,
-            admin: true
-          }}
-        >
-          <ImageEdit />
-        </JourneyProvider>
-      </MockedProvider>
-    )
-
-    fireEvent.click(getByRole('button'))
-    const textBox = getByRole('textbox')
-    fireEvent.change(textBox, {
-      target: { value: 'https://example.com/new-src.jpg' }
-    })
-    fireEvent.blur(textBox)
-
-    await waitFor(() => expect(getByRole('progressbar')).toBeInTheDocument())
-    await waitFor(() => expect(result).toHaveBeenCalled())
-    expect(cache.extract()['ImageBlock:image1.id']).toEqual({
-      ...image,
-      src: 'https://example.com/new-src.jpg',
-      alt: 'new-src.jpg'
-    })
   })
 
   it('delete the primaryImage', async () => {
@@ -314,7 +243,7 @@ describe('ImageEdit', () => {
       </MockedProvider>
     )
     fireEvent.click(getByRole('button'))
-    fireEvent.click(getByTestId('DeleteOutlineIcon'))
+    fireEvent.click(getByTestId('imageBlockHeaderDelete'))
     await waitFor(() => expect(imageDeleteResult).toHaveBeenCalled())
     await waitFor(() => expect(journeyUpdateResult).toHaveBeenCalled())
     expect(cache.extract()['Journey:journey.id']?.blocks).toEqual([])

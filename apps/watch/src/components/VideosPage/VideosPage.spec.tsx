@@ -2,16 +2,24 @@
 
 import { MockedProvider } from '@apollo/client/testing'
 import { act, fireEvent, render, waitFor } from '@testing-library/react'
+import { NextRouter, useRouter } from 'next/router'
 import { videos } from '../Videos/__generated__/testData'
 import { languages } from './testData'
 import { VideosPage, GET_VIDEOS, limit, GET_LANGUAGES } from './VideosPage'
+
+jest.mock('next/router', () => ({
+  __esModule: true,
+  useRouter: jest.fn()
+}))
+
+const mockUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
 
 describe('VideosPage', () => {
   describe('grid', () => {
     it('should render a grid', () => {
       const { getByTestId } = render(
         <MockedProvider>
-          <VideosPage />
+          <VideosPage videos={videos} />
         </MockedProvider>
       )
       expect(getByTestId('videos-grid')).toBeInTheDocument()
@@ -38,7 +46,7 @@ describe('VideosPage', () => {
             }
           ]}
         >
-          <VideosPage />
+          <VideosPage videos={videos} />
         </MockedProvider>
       )
       await waitFor(() => {
@@ -49,6 +57,9 @@ describe('VideosPage', () => {
   })
 
   describe('filters', () => {
+    const push = jest.fn()
+    mockUseRouter.mockReturnValue({ push } as unknown as NextRouter)
+
     it('should handle audio language filter', async () => {
       const { getAllByRole, getByText, getByRole } = render(
         <MockedProvider
@@ -110,7 +121,7 @@ describe('VideosPage', () => {
             }
           ]}
         >
-          <VideosPage />
+          <VideosPage videos={videos} />
         </MockedProvider>
       )
       await waitFor(() =>
@@ -132,7 +143,7 @@ describe('VideosPage', () => {
     })
 
     it('should handle subtitle language filter', async () => {
-      const { getAllByRole, getByText } = render(
+      const { getAllByRole, getByText, getByTestId } = render(
         <MockedProvider
           mocks={[
             {
@@ -182,13 +193,17 @@ describe('VideosPage', () => {
             }
           ]}
         >
-          <VideosPage />
+          <VideosPage videos={videos} />
         </MockedProvider>
       )
 
-      const textbox = getAllByRole('combobox')[1]
+      const filterContainer = getByTestId('subtitleContainer')
 
       await act(async () => {
+        await waitFor(() => fireEvent.click(filterContainer))
+
+        const textbox = getAllByRole('combobox')[0]
+
         await waitFor(() => fireEvent.focus(textbox))
         await waitFor(() => fireEvent.keyDown(textbox, { key: 'ArrowDown' }))
         await waitFor(() => fireEvent.keyDown(textbox, { key: 'Enter' }))
@@ -247,7 +262,7 @@ describe('VideosPage', () => {
             }
           ]}
         >
-          <VideosPage />
+          <VideosPage videos={videos} />
         </MockedProvider>
       )
       const textbox = getAllByRole('combobox')[0]

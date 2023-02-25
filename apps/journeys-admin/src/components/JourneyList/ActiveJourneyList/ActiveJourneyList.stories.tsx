@@ -8,7 +8,7 @@ import {
   descriptiveJourney,
   publishedJourney
 } from '../journeyListData'
-import { GET_ACTIVE_JOURNEYS } from './ActiveJourneyList'
+import { GET_ACTIVE_JOURNEYS } from '../../../libs/useActiveJourneys/useActiveJourneys'
 import { ActiveJourneyList } from '.'
 
 const ActiveJourneyListStory = {

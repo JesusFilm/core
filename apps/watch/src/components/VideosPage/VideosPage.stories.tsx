@@ -33,7 +33,7 @@ const Template: Story = ({ ...args }) => {
         }
       ]}
     >
-      <VideosPage />
+      <VideosPage videos={videos} />
     </MockedProvider>
   )
 }
