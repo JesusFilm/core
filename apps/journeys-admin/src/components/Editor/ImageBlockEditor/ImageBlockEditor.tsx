@@ -87,7 +87,14 @@ export function ImageBlockEditor({
           unsplashAuthor={unsplashAuthor}
         />
       </Box>
-      <Box data-testid="ImageBlockEditor">
+      <Box
+        data-testid="ImageBlockEditor"
+        sx={{
+          borderBottom: 1,
+          borderColor: 'divider',
+          backgroundColor: (theme) => theme.palette.background.paper
+        }}
+      >
         <Tabs
           value={tabValue}
           onChange={handleTabChange}
@@ -105,13 +112,13 @@ export function ImageBlockEditor({
             {...tabA11yProps('custom', 1)}
           />
         </Tabs>
-        <TabPanel name="gallery" value={tabValue} index={0}>
-          <UnsplashGallery onChange={handleUnsplashChange} />
-        </TabPanel>
-        <TabPanel name="custom" value={tabValue} index={1}>
-          <CustomImage onChange={handleSrcChange} />
-        </TabPanel>
       </Box>
+      <TabPanel name="gallery" value={tabValue} index={0}>
+        <UnsplashGallery onChange={handleUnsplashChange} />
+      </TabPanel>
+      <TabPanel name="custom" value={tabValue} index={1}>
+        <CustomImage onChange={handleSrcChange} />
+      </TabPanel>
     </>
   )
 }
