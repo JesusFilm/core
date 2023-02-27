@@ -1,4 +1,4 @@
-import { render } from '@testing-library/react'
+import { fireEvent, render, waitFor } from '@testing-library/react'
 import {
   defaultJourney,
   publishedJourney,
@@ -60,5 +60,18 @@ describe('JourneyCardText', () => {
       />
     )
     expect(getByTestId('new-journey-badge')).toBeInTheDocument()
+  })
+
+  it('should have tool tip for new journey badge', async () => {
+    const { getByTestId, getByRole } = render(
+      <JourneyCardText
+        journey={defaultJourney}
+        variant={JourneyCardVariant.new}
+      />
+    )
+    fireEvent.focusIn(getByTestId('CircleRoundedIcon'))
+    await waitFor(async () =>
+      expect(getByRole('tooltip', { name: 'New' })).toBeInTheDocument()
+    )
   })
 })
