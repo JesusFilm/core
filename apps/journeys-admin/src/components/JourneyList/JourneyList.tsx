@@ -3,15 +3,16 @@ import Container from '@mui/material/Container'
 import { NextRouter } from 'next/router'
 import { AuthUser } from 'next-firebase-auth'
 import { useFlags } from '@core/shared/ui/FlagsProvider'
+import { useTranslation } from 'react-i18next'
 import { GetJourneys_journeys as Journey } from '../../../__generated__/GetJourneys'
 import { MultipleSummaryReport } from '../MultipleSummaryReport'
 import { StatusTabPanel } from '../StatusTabPanel'
+import { ContactSupport } from '../ContactSupport'
 import { AddJourneyButton } from './AddJourneyButton'
 import { ActiveJourneyList } from './ActiveJourneyList'
 import { ArchivedJourneyList } from './ArchivedJourneyList'
 import { TrashedJourneyList } from './TrashedJourneyList'
 import { SortOrder } from './JourneySort'
-import { InviteRequirementMessage } from './InviteRequirementMessage'
 
 export interface JourneysListProps {
   journeys?: Journey[]
@@ -29,6 +30,7 @@ export function JourneyList({
   const [sortOrder, setSortOrder] = useState<SortOrder>()
   const [activeTabLoaded, setActiveTabLoaded] = useState(false)
   const [activeEvent, setActiveEvent] = useState(event)
+  const { t } = useTranslation()
   const { journeysSummaryReport, inviteRequirement } = useFlags()
 
   useEffect(() => {
@@ -49,7 +51,12 @@ export function JourneyList({
   return (
     <>
       {journeys != null && journeys.length === 0 && inviteRequirement ? (
-        <InviteRequirementMessage />
+        <ContactSupport
+          title={t('You need to be invited to use your first journey')}
+          description={t(
+            'Someone with a full account should add you to their journey as an editor, after that you will have full access'
+          )}
+        />
       ) : (
         <>
           {journeysSummaryReport && <MultipleSummaryReport />}

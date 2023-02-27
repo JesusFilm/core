@@ -1,1 +1,0 @@
-export { InviteRequirementMessage } from './InviteRequirementMessage'
