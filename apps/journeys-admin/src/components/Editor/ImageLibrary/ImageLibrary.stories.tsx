@@ -1,6 +1,5 @@
 import { ComponentProps, useState } from 'react'
 import { Story, Meta } from '@storybook/react'
-import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 import { MockedProvider } from '@apollo/client/testing'
 import { simpleComponentConfig } from '../../../libs/storybook'
 import { listUnsplashCollectionMock } from '../ImageBlockEditor/UnsplashGallery/data'
@@ -17,9 +16,7 @@ const Template: Story<ComponentProps<typeof ImageLibrary>> = ({ ...args }) => {
 
   return (
     <MockedProvider mocks={[listUnsplashCollectionMock]}>
-      <FlagsProvider flags={{ unsplashGallery: true }}>
-        <ImageLibrary {...args} open={open} onClose={() => setOpen(false)} />
-      </FlagsProvider>
+      <ImageLibrary {...args} open={open} onClose={() => setOpen(false)} />
     </MockedProvider>
   )
 }

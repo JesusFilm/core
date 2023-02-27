@@ -1,7 +1,6 @@
 import { fireEvent, render } from '@testing-library/react'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { MockedProvider } from '@apollo/client/testing'
-import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 import { GetJourney_journey_blocks_ImageBlock as ImageBlock } from '../../../../__generated__/GetJourney'
 import { ImageLibrary } from '.'
 
@@ -31,15 +30,13 @@ describe('ImageLibrary', () => {
     it('should switch tabs', () => {
       const { getByText } = render(
         <MockedProvider>
-          <FlagsProvider>
-            <ImageLibrary
-              open
-              onClose={jest.fn()}
-              onChange={jest.fn()}
-              onDelete={jest.fn()}
-              selectedBlock={imageBlock}
-            />
-          </FlagsProvider>
+          <ImageLibrary
+            open
+            onClose={jest.fn()}
+            onChange={jest.fn()}
+            onDelete={jest.fn()}
+            selectedBlock={imageBlock}
+          />
         </MockedProvider>
       )
       expect(getByText('Custom')).toBeInTheDocument()
@@ -48,15 +45,13 @@ describe('ImageLibrary', () => {
     it('should render the Image Library on the right', () => {
       const { getByText, getByTestId } = render(
         <MockedProvider>
-          <FlagsProvider>
-            <ImageLibrary
-              open
-              onClose={jest.fn()}
-              onChange={jest.fn()}
-              onDelete={jest.fn()}
-              selectedBlock={imageBlock}
-            />
-          </FlagsProvider>
+          <ImageLibrary
+            open
+            onClose={jest.fn()}
+            onChange={jest.fn()}
+            onDelete={jest.fn()}
+            selectedBlock={imageBlock}
+          />
         </MockedProvider>
       )
       expect(getByText('Custom')).toBeInTheDocument()
@@ -69,15 +64,13 @@ describe('ImageLibrary', () => {
       const onClose = jest.fn()
       const { getAllByRole, getByTestId } = render(
         <MockedProvider>
-          <FlagsProvider>
-            <ImageLibrary
-              open
-              onClose={onClose}
-              onChange={jest.fn()}
-              onDelete={jest.fn()}
-              selectedBlock={imageBlock}
-            />
-          </FlagsProvider>
+          <ImageLibrary
+            open
+            onClose={onClose}
+            onChange={jest.fn()}
+            onDelete={jest.fn()}
+            selectedBlock={imageBlock}
+          />
         </MockedProvider>
       )
       expect(getAllByRole('button')[0]).toContainElement(
@@ -96,15 +89,13 @@ describe('ImageLibrary', () => {
     it('should render the Image Library from the bottom', () => {
       const { getByText, getByTestId } = render(
         <MockedProvider>
-          <FlagsProvider>
-            <ImageLibrary
-              open
-              onClose={jest.fn()}
-              onChange={jest.fn()}
-              onDelete={jest.fn()}
-              selectedBlock={imageBlock}
-            />
-          </FlagsProvider>
+          <ImageLibrary
+            open
+            onClose={jest.fn()}
+            onChange={jest.fn()}
+            onDelete={jest.fn()}
+            selectedBlock={imageBlock}
+          />
         </MockedProvider>
       )
       expect(getByText('Custom')).toBeInTheDocument()

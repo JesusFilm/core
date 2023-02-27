@@ -4,7 +4,6 @@ import { InMemoryCache } from '@apollo/client'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import useMediaQuery from '@mui/material/useMediaQuery'
-import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 import {
   JourneyStatus,
   ThemeMode,
@@ -188,16 +187,14 @@ describe('VideoBlockEditorSettingsPosterLibrary', () => {
             }
           ]}
         >
-          <FlagsProvider flags={{ unsplashGallery: true }}>
-            <JourneyProvider value={{ journey, admin: true }}>
-              <VideoBlockEditorSettingsPosterLibrary
-                selectedBlock={null}
-                parentBlockId={video.id}
-                onClose={onClose}
-                open
-              />
-            </JourneyProvider>
-          </FlagsProvider>
+          <JourneyProvider value={{ journey, admin: true }}>
+            <VideoBlockEditorSettingsPosterLibrary
+              selectedBlock={null}
+              parentBlockId={video.id}
+              onClose={onClose}
+              open
+            />
+          </JourneyProvider>
         </MockedProvider>
       )
       fireEvent.click(getByRole('tab', { name: 'Custom' }))
@@ -272,17 +269,15 @@ describe('VideoBlockEditorSettingsPosterLibrary', () => {
             }
           ]}
         >
-          <FlagsProvider flags={{ unsplashGallery: true }}>
-            <JourneyProvider value={{ journey, admin: true }}>
-              <VideoBlockEditorSettingsPosterLibrary
-                selectedBlock={existingImageBlock}
-                parentBlockId={video.id}
-                onClose={onClose}
-                open
-              />
-            </JourneyProvider>
-          </FlagsProvider>
-        </MockedProvider>
+          <JourneyProvider value={{ journey, admin: true }}>
+            <VideoBlockEditorSettingsPosterLibrary
+              selectedBlock={existingImageBlock}
+              parentBlockId={video.id}
+              onClose={onClose}
+              open
+            />
+          </JourneyProvider>
+        </MockedProvider >
       )
       fireEvent.click(getByRole('tab', { name: 'Custom' }))
       fireEvent.click(getByRole('button', { name: 'Add image by URL' }))
@@ -353,17 +348,15 @@ describe('VideoBlockEditorSettingsPosterLibrary', () => {
             }
           ]}
         >
-          <FlagsProvider flags={{ unsplashGallery: true }}>
-            <JourneyProvider value={{ journey, admin: true }}>
-              <VideoBlockEditorSettingsPosterLibrary
-                selectedBlock={image}
-                parentBlockId={video.id}
-                onClose={onClose}
-                open
-              />
-            </JourneyProvider>
-          </FlagsProvider>
-        </MockedProvider>
+          <JourneyProvider value={{ journey, admin: true }}>
+            <VideoBlockEditorSettingsPosterLibrary
+              selectedBlock={image}
+              parentBlockId={video.id}
+              onClose={onClose}
+              open
+            />
+          </JourneyProvider>
+        </MockedProvider >
       )
       const button = getByTestId('imageBlockHeaderDelete')
       fireEvent.click(button)

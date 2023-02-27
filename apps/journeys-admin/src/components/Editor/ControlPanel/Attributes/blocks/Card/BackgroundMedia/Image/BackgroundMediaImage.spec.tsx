@@ -3,7 +3,6 @@ import { fireEvent, render, waitFor } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
 import { SnackbarProvider } from 'notistack'
 import useMediaQuery from '@mui/material/useMediaQuery'
-import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { InMemoryCache } from '@apollo/client'
 import {
@@ -169,13 +168,11 @@ describe('BackgroundMediaImage', () => {
           }
         ]}
       >
-        <FlagsProvider flags={{ unsplashGallery: true }}>
-          <JourneyProvider value={{ journey, admin: true }}>
-            <SnackbarProvider>
-              <BackgroundMediaImage cardBlock={card} />
-            </SnackbarProvider>
-          </JourneyProvider>
-        </FlagsProvider>
+        <JourneyProvider value={{ journey, admin: true }}>
+          <SnackbarProvider>
+            <BackgroundMediaImage cardBlock={card} />
+          </SnackbarProvider>
+        </JourneyProvider>
       </MockedProvider>
     )
     fireEvent.click(getByRole('button', { name: 'Select Image' }))
@@ -251,13 +248,11 @@ describe('BackgroundMediaImage', () => {
           }
         ]}
       >
-        <FlagsProvider flags={{ unsplashGallery: true }}>
-          <JourneyProvider value={{ journey, admin: true }}>
-            <SnackbarProvider>
-              <BackgroundMediaImage cardBlock={videoCard} />
-            </SnackbarProvider>
-          </JourneyProvider>
-        </FlagsProvider>
+        <JourneyProvider value={{ journey, admin: true }}>
+          <SnackbarProvider>
+            <BackgroundMediaImage cardBlock={videoCard} />
+          </SnackbarProvider>
+        </JourneyProvider>
       </MockedProvider>
     )
     fireEvent.click(getByRole('button', { name: 'Select Image' }))
@@ -342,13 +337,11 @@ describe('BackgroundMediaImage', () => {
             }
           ]}
         >
-          <FlagsProvider flags={{ unsplashGallery: true }}>
-            <JourneyProvider value={{ journey, admin: true }}>
-              <SnackbarProvider>
-                <BackgroundMediaImage cardBlock={existingCoverBlock} />
-              </SnackbarProvider>
-            </JourneyProvider>
-          </FlagsProvider>
+          <JourneyProvider value={{ journey, admin: true }}>
+            <SnackbarProvider>
+              <BackgroundMediaImage cardBlock={existingCoverBlock} />
+            </SnackbarProvider>
+          </JourneyProvider>
         </MockedProvider>
       )
       fireEvent.click(
@@ -373,13 +366,11 @@ describe('BackgroundMediaImage', () => {
     it('shows loading icon', async () => {
       const { getByRole } = render(
         <MockedProvider mocks={[createCloudflareUploadByUrlMock]}>
-          <FlagsProvider flags={{ unsplashGallery: true }}>
-            <JourneyProvider value={{ journey, admin: true }}>
-              <SnackbarProvider>
-                <BackgroundMediaImage cardBlock={existingCoverBlock} />
-              </SnackbarProvider>
-            </JourneyProvider>
-          </FlagsProvider>
+          <JourneyProvider value={{ journey, admin: true }}>
+            <SnackbarProvider>
+              <BackgroundMediaImage cardBlock={existingCoverBlock} />
+            </SnackbarProvider>
+          </JourneyProvider>
         </MockedProvider>
       )
       fireEvent.click(
@@ -432,13 +423,11 @@ describe('BackgroundMediaImage', () => {
             }
           ]}
         >
-          <FlagsProvider flags={{ unsplashGallery: true }}>
-            <JourneyProvider value={{ journey, admin: true }}>
-              <SnackbarProvider>
-                <BackgroundMediaImage cardBlock={existingCoverBlock} />
-              </SnackbarProvider>
-            </JourneyProvider>
-          </FlagsProvider>
+          <JourneyProvider value={{ journey, admin: true }}>
+            <SnackbarProvider>
+              <BackgroundMediaImage cardBlock={existingCoverBlock} />
+            </SnackbarProvider>
+          </JourneyProvider>
         </MockedProvider>
       )
       fireEvent.click(

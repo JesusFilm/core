@@ -1,7 +1,6 @@
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { MockedProvider } from '@apollo/client/testing'
-import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 import {
   VideoBlockSource,
   VideoBlockObjectFit as ObjectFit
@@ -54,13 +53,11 @@ describe('VideoBlockEditorSettings', () => {
     const { getByRole } = render(
       <ThemeProvider>
         <MockedProvider>
-          <FlagsProvider>
-            <VideoBlockEditorSettings
-              selectedBlock={null}
-              posterBlock={null}
-              onChange={jest.fn()}
-            />
-          </FlagsProvider>
+          <VideoBlockEditorSettings
+            selectedBlock={null}
+            posterBlock={null}
+            onChange={jest.fn()}
+          />
         </MockedProvider>
       </ThemeProvider>
     )
@@ -74,13 +71,11 @@ describe('VideoBlockEditorSettings', () => {
     const { getByRole } = render(
       <ThemeProvider>
         <MockedProvider>
-          <FlagsProvider>
-            <VideoBlockEditorSettings
-              selectedBlock={{ ...video, parentOrder: null }}
-              posterBlock={null}
-              onChange={jest.fn()}
-            />
-          </FlagsProvider>
+          <VideoBlockEditorSettings
+            selectedBlock={{ ...video, parentOrder: null }}
+            posterBlock={null}
+            onChange={jest.fn()}
+          />
         </MockedProvider>
       </ThemeProvider>
     )
@@ -95,13 +90,11 @@ describe('VideoBlockEditorSettings', () => {
     const { getByRole } = render(
       <ThemeProvider>
         <MockedProvider>
-          <FlagsProvider>
-            <VideoBlockEditorSettings
-              selectedBlock={video}
-              posterBlock={null}
-              onChange={onChange}
-            />
-          </FlagsProvider>
+          <VideoBlockEditorSettings
+            selectedBlock={video}
+            posterBlock={null}
+            onChange={onChange}
+          />
         </MockedProvider>
       </ThemeProvider>
     )
@@ -121,13 +114,11 @@ describe('VideoBlockEditorSettings', () => {
     const { getByRole } = render(
       <ThemeProvider>
         <MockedProvider>
-          <FlagsProvider>
-            <VideoBlockEditorSettings
-              selectedBlock={video}
-              posterBlock={null}
-              onChange={onChange}
-            />
-          </FlagsProvider>
+          <VideoBlockEditorSettings
+            selectedBlock={video}
+            posterBlock={null}
+            onChange={onChange}
+          />
         </MockedProvider>
       </ThemeProvider>
     )
@@ -147,15 +138,13 @@ describe('VideoBlockEditorSettings', () => {
     const { getByRole } = render(
       <ThemeProvider>
         <MockedProvider>
-          <FlagsProvider>
-            <VideoBlockEditorSettings
-              selectedBlock={video}
-              posterBlock={null}
-              onChange={onChange}
-            />
-          </FlagsProvider>
+          <VideoBlockEditorSettings
+            selectedBlock={video}
+            posterBlock={null}
+            onChange={onChange}
+          />
         </MockedProvider>
-      </ThemeProvider>
+      </ThemeProvider >
     )
     const textbox = getByRole('textbox', { name: 'Starts At' })
     fireEvent.change(textbox, { target: { value: '00:00:11' } })
@@ -175,13 +164,11 @@ describe('VideoBlockEditorSettings', () => {
     const { getByRole } = render(
       <ThemeProvider>
         <MockedProvider>
-          <FlagsProvider>
-            <VideoBlockEditorSettings
-              selectedBlock={video}
-              posterBlock={null}
-              onChange={onChange}
-            />
-          </FlagsProvider>
+          <VideoBlockEditorSettings
+            selectedBlock={video}
+            posterBlock={null}
+            onChange={onChange}
+          />
         </MockedProvider>
       </ThemeProvider>
     )
@@ -203,13 +190,11 @@ describe('VideoBlockEditorSettings', () => {
     const { getByRole } = render(
       <ThemeProvider>
         <MockedProvider>
-          <FlagsProvider>
-            <VideoBlockEditorSettings
-              selectedBlock={video}
-              posterBlock={null}
-              onChange={onChange}
-            />
-          </FlagsProvider>
+          <VideoBlockEditorSettings
+            selectedBlock={video}
+            posterBlock={null}
+            onChange={onChange}
+          />
         </MockedProvider>
       </ThemeProvider>
     )
@@ -230,19 +215,17 @@ describe('VideoBlockEditorSettings', () => {
     const { getByRole } = render(
       <ThemeProvider>
         <MockedProvider>
-          <FlagsProvider>
-            <VideoBlockEditorSettings
-              selectedBlock={{
-                ...video,
-                source: VideoBlockSource.youTube,
-                objectFit: ObjectFit.fill
-              }}
-              posterBlock={null}
-              onChange={onChange}
-            />
-          </FlagsProvider>
+          <VideoBlockEditorSettings
+            selectedBlock={{
+              ...video,
+              source: VideoBlockSource.youTube,
+              objectFit: ObjectFit.fill
+            }}
+            posterBlock={null}
+            onChange={onChange}
+          />
         </MockedProvider>
-      </ThemeProvider>
+      </ThemeProvider >
     )
     expect(getByRole('button', { name: 'Fill' })).toBeDisabled()
     expect(getByRole('button', { name: 'Fit' })).toBeDisabled()

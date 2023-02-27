@@ -2,7 +2,6 @@ import { render, fireEvent, waitFor } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import useMediaQuery from '@mui/material/useMediaQuery'
-import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 import { JourneyStatus } from '../../../../../__generated__/globalTypes'
 import { GetJourney_journey as Journey } from '../../../../../__generated__/GetJourney'
 import { SocialShareAppearance } from '.'
@@ -27,9 +26,7 @@ describe('SocialShareAppearance', () => {
             admin: true
           }}
         >
-          <FlagsProvider>
-            <SocialShareAppearance />
-          </FlagsProvider>
+          <SocialShareAppearance />
         </JourneyProvider>
       </MockedProvider>
     )
@@ -48,18 +45,15 @@ describe('SocialShareAppearance', () => {
       NEXT_PUBLIC_JOURNEYS_URL: 'http://localhost:4100'
     }
 
-    const facebookUrl = `https://www.facebook.com/sharer/sharer.php?u=${
-      process.env.NEXT_PUBLIC_JOURNEYS_URL as string
-    }/${slug}`
+    const facebookUrl = `https://www.facebook.com/sharer/sharer.php?u=${process.env.NEXT_PUBLIC_JOURNEYS_URL as string
+      }/${slug}`
 
     const { getByRole } = render(
       <MockedProvider>
         <JourneyProvider
           value={{ journey: { slug } as unknown as Journey, admin: true }}
         >
-          <FlagsProvider>
-            <SocialShareAppearance />
-          </FlagsProvider>
+          <SocialShareAppearance />
         </JourneyProvider>
       </MockedProvider>
     )
@@ -90,9 +84,7 @@ describe('SocialShareAppearance', () => {
         <JourneyProvider
           value={{ journey: { slug } as unknown as Journey, admin: true }}
         >
-          <FlagsProvider>
-            <SocialShareAppearance />
-          </FlagsProvider>
+          <SocialShareAppearance />
         </JourneyProvider>
       </MockedProvider>
     )
@@ -116,18 +108,15 @@ describe('SocialShareAppearance', () => {
       NEXT_PUBLIC_JOURNEYS_URL: 'http://localhost:4100'
     }
 
-    const twitterUrl = `https://twitter.com/intent/tweet?url=${
-      process.env.NEXT_PUBLIC_JOURNEYS_URL as string
-    }/${slug}`
+    const twitterUrl = `https://twitter.com/intent/tweet?url=${process.env.NEXT_PUBLIC_JOURNEYS_URL as string
+      }/${slug}`
 
     const { getByRole } = render(
       <MockedProvider>
         <JourneyProvider
           value={{ journey: { slug } as unknown as Journey, admin: true }}
         >
-          <FlagsProvider>
-            <SocialShareAppearance />
-          </FlagsProvider>
+          <SocialShareAppearance />
         </JourneyProvider>
       </MockedProvider>
     )
@@ -158,9 +147,7 @@ describe('SocialShareAppearance', () => {
         <JourneyProvider
           value={{ journey: { slug } as unknown as Journey, admin: true }}
         >
-          <FlagsProvider>
-            <SocialShareAppearance />
-          </FlagsProvider>
+          <SocialShareAppearance />
         </JourneyProvider>
       </MockedProvider>
     )
@@ -186,9 +173,7 @@ describe('SocialShareAppearance', () => {
             admin: true
           }}
         >
-          <FlagsProvider>
-            <SocialShareAppearance />
-          </FlagsProvider>
+          <SocialShareAppearance />
         </JourneyProvider>
       </MockedProvider>
     )

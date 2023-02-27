@@ -4,7 +4,6 @@ import Box from '@mui/material/Box'
 import Tab from '@mui/material/Tab'
 import Tabs from '@mui/material/Tabs'
 import Typography from '@mui/material/Typography'
-import { useFlags } from '@core/shared/ui/FlagsProvider'
 import BrushRounded from '@mui/icons-material/BrushRounded'
 import DashboardRounded from '@mui/icons-material/DashboardRounded'
 import { object, string } from 'yup'
@@ -30,7 +29,6 @@ export function ImageBlockEditor({
 }: ImageBlockEditorProps): ReactElement {
   const [tabValue, setTabValue] = useState(0)
   const [unsplashAuthor, setUnsplashAuthor] = useState<UnsplashAuthor>()
-  const { unsplashGallery } = useFlags()
 
   const handleTabChange = (
     _event: SyntheticEvent<Element, Event>,
@@ -96,24 +94,20 @@ export function ImageBlockEditor({
           aria-label="image selection tabs"
           variant="fullWidth"
         >
-          {unsplashGallery && (
-            <Tab
-              icon={<DashboardRounded />}
-              label={<Typography variant="subtitle2">Gallery</Typography>}
-              {...tabA11yProps('gallery', 0)}
-            />
-          )}
+          <Tab
+            icon={<DashboardRounded />}
+            label={<Typography variant="subtitle2">Gallery</Typography>}
+            {...tabA11yProps('gallery', 0)}
+          />
           <Tab
             icon={<BrushRounded />}
             label={<Typography variant="subtitle2">Custom</Typography>}
             {...tabA11yProps('custom', 1)}
           />
         </Tabs>
-        {unsplashGallery && (
-          <TabPanel name="gallery" value={tabValue} index={0}>
-            <UnsplashGallery onChange={handleUnsplashChange} />
-          </TabPanel>
-        )}
+        <TabPanel name="gallery" value={tabValue} index={0}>
+          <UnsplashGallery onChange={handleUnsplashChange} />
+        </TabPanel>
         <TabPanel name="custom" value={tabValue} index={1}>
           <CustomImage onChange={handleSrcChange} />
         </TabPanel>

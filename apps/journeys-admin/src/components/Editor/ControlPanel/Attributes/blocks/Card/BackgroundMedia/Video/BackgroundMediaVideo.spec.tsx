@@ -5,7 +5,6 @@ import { MockedProvider } from '@apollo/client/testing'
 import { InMemoryCache } from '@apollo/client'
 import { SnackbarProvider } from 'notistack'
 
-import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 import {
   GetJourney_journey as Journey,
   GetJourney_journey_blocks_CardBlock as CardBlock,
@@ -208,11 +207,9 @@ describe('BackgroundMediaVideo', () => {
           }}
         >
           <ThemeProvider>
-            <FlagsProvider>
-              <SnackbarProvider>
-                <BackgroundMediaVideo cardBlock={card} />
-              </SnackbarProvider>
-            </FlagsProvider>
+            <SnackbarProvider>
+              <BackgroundMediaVideo cardBlock={card} />
+            </SnackbarProvider>
           </ThemeProvider>
         </JourneyProvider>
       </MockedProvider>
@@ -288,11 +285,9 @@ describe('BackgroundMediaVideo', () => {
           }}
         >
           <ThemeProvider>
-            <FlagsProvider>
-              <SnackbarProvider>
-                <BackgroundMediaVideo cardBlock={imageCard} />
-              </SnackbarProvider>
-            </FlagsProvider>
+            <SnackbarProvider>
+              <BackgroundMediaVideo cardBlock={imageCard} />
+            </SnackbarProvider>
           </ThemeProvider>
         </JourneyProvider>
       </MockedProvider>
@@ -368,11 +363,9 @@ describe('BackgroundMediaVideo', () => {
             }}
           >
             <ThemeProvider>
-              <FlagsProvider>
-                <SnackbarProvider>
-                  <BackgroundMediaVideo cardBlock={existingCoverBlock} />
-                </SnackbarProvider>
-              </FlagsProvider>
+              <SnackbarProvider>
+                <BackgroundMediaVideo cardBlock={existingCoverBlock} />
+              </SnackbarProvider>
             </ThemeProvider>
           </JourneyProvider>
         </MockedProvider>
@@ -403,11 +396,9 @@ describe('BackgroundMediaVideo', () => {
               }}
             >
               <ThemeProvider>
-                <FlagsProvider>
-                  <SnackbarProvider>
-                    <BackgroundMediaVideo cardBlock={existingCoverBlock} />
-                  </SnackbarProvider>
-                </FlagsProvider>
+                <SnackbarProvider>
+                  <BackgroundMediaVideo cardBlock={existingCoverBlock} />
+                </SnackbarProvider>
               </ThemeProvider>
             </JourneyProvider>
           </MockedProvider>
@@ -475,11 +466,9 @@ describe('BackgroundMediaVideo', () => {
               }}
             >
               <ThemeProvider>
-                <FlagsProvider>
-                  <SnackbarProvider>
-                    <BackgroundMediaVideo cardBlock={existingCoverBlock} />
-                  </SnackbarProvider>
-                </FlagsProvider>
+                <SnackbarProvider>
+                  <BackgroundMediaVideo cardBlock={existingCoverBlock} />
+                </SnackbarProvider>
               </ThemeProvider>
             </JourneyProvider>
           </MockedProvider>
@@ -540,11 +529,9 @@ describe('BackgroundMediaVideo', () => {
             }}
           >
             <ThemeProvider>
-              <FlagsProvider>
-                <SnackbarProvider>
-                  <BackgroundMediaVideo cardBlock={existingCoverBlock} />
-                </SnackbarProvider>
-              </FlagsProvider>
+              <SnackbarProvider>
+                <BackgroundMediaVideo cardBlock={existingCoverBlock} />
+              </SnackbarProvider>
             </ThemeProvider>
           </JourneyProvider>
         </MockedProvider>
@@ -604,11 +591,9 @@ describe('BackgroundMediaVideo', () => {
             }}
           >
             <ThemeProvider>
-              <FlagsProvider>
-                <SnackbarProvider>
-                  <BackgroundMediaVideo cardBlock={existingCoverBlock} />
-                </SnackbarProvider>
-              </FlagsProvider>
+              <SnackbarProvider>
+                <BackgroundMediaVideo cardBlock={existingCoverBlock} />
+              </SnackbarProvider>
             </ThemeProvider>
           </JourneyProvider>
         </MockedProvider>
@@ -669,11 +654,9 @@ describe('BackgroundMediaVideo', () => {
                 admin: true
               }}
             >
-              <FlagsProvider>
-                <SnackbarProvider>
-                  <BackgroundMediaVideo cardBlock={existingCoverBlock} />
-                </SnackbarProvider>
-              </FlagsProvider>
+              <SnackbarProvider>
+                <BackgroundMediaVideo cardBlock={existingCoverBlock} />
+              </SnackbarProvider>
             </JourneyProvider>
           </ThemeProvider>
         </MockedProvider>
