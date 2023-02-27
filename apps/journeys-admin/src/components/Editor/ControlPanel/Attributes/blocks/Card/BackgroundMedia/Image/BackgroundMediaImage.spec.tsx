@@ -306,10 +306,7 @@ describe('BackgroundMediaImage', () => {
             alt: image.alt,
             __typename: 'ImageBlock',
             parentBlockId: card.id,
-            // width: image.width,
-            // height: image.height,
             parentOrder: image.parentOrder
-            // blurhash: image.blurhash
           }
         }
       }))
