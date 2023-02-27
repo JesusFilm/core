@@ -1,6 +1,6 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { Story, Meta } from '@storybook/react'
-import { screen, userEvent, waitFor } from '@storybook/testing-library'
+import { userEvent, waitFor, within } from '@storybook/testing-library'
 import { UserJourneyRole } from '../../../../__generated__/globalTypes'
 import { journeysAdminConfig } from '../../../libs/storybook'
 import {
@@ -70,10 +70,10 @@ New.args = {
   journey: defaultJourney,
   variant: JourneyCardVariant.new
 }
-New.play = async () => {
+New.play = async ({ canvasElement }) => {
+  const canvas = within(canvasElement)
   await waitFor(async () => {
-    const badge = screen.getByTestId('new-journey-badge')
-    await userEvent.hover(badge)
+    await userEvent.hover(canvas.getByTestId('new-journey-badge'))
   })
 }
 
