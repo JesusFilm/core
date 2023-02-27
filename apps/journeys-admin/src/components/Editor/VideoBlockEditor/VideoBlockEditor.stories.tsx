@@ -226,7 +226,7 @@ const Template: Story = ({ ...args }) => (
         />
       </MuiDrawer>
     </ThemeProvider>
-  </MockedProvider >
+  </MockedProvider>
 )
 
 export const Default = Template.bind({})

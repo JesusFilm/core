@@ -190,7 +190,7 @@ export const Default: Story = () => (
         </MuiDrawer>
       </EditorProvider>
     </ThemeProvider>
-  </MockedProvider >
+  </MockedProvider>
 )
 
 export default VideoOptionsStory as Meta

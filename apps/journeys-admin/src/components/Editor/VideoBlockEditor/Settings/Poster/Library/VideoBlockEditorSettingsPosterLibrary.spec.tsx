@@ -277,7 +277,7 @@ describe('VideoBlockEditorSettingsPosterLibrary', () => {
               open
             />
           </JourneyProvider>
-        </MockedProvider >
+        </MockedProvider>
       )
       fireEvent.click(getByRole('tab', { name: 'Custom' }))
       fireEvent.click(getByRole('button', { name: 'Add image by URL' }))
@@ -356,7 +356,7 @@ describe('VideoBlockEditorSettingsPosterLibrary', () => {
               open
             />
           </JourneyProvider>
-        </MockedProvider >
+        </MockedProvider>
       )
       const button = getByTestId('imageBlockHeaderDelete')
       fireEvent.click(button)

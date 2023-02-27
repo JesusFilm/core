@@ -144,7 +144,7 @@ describe('VideoBlockEditorSettings', () => {
             onChange={onChange}
           />
         </MockedProvider>
-      </ThemeProvider >
+      </ThemeProvider>
     )
     const textbox = getByRole('textbox', { name: 'Starts At' })
     fireEvent.change(textbox, { target: { value: '00:00:11' } })
@@ -225,7 +225,7 @@ describe('VideoBlockEditorSettings', () => {
             onChange={onChange}
           />
         </MockedProvider>
-      </ThemeProvider >
+      </ThemeProvider>
     )
     expect(getByRole('button', { name: 'Fill' })).toBeDisabled()
     expect(getByRole('button', { name: 'Fit' })).toBeDisabled()

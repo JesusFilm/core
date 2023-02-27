@@ -259,7 +259,7 @@ describe('VideoBlockEditor', () => {
               onChange={jest.fn()}
             />
           </MockedProvider>
-        </ThemeProvider >
+        </ThemeProvider>
       )
       expect(getByText('FallingPlates')).toBeInTheDocument()
       await waitFor(() => expect(getByText('English')).toBeInTheDocument())

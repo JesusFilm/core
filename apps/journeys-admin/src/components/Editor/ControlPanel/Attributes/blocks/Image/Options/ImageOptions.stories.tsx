@@ -69,7 +69,7 @@ export const Default: Story = ({ ...args }) => (
         </MuiDrawer>
       </EditorProvider>
     </ThemeProvider>
-  </MockedProvider >
+  </MockedProvider>
 )
 
 export default ImageOptionsStory as Meta
