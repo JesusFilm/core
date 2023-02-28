@@ -10,8 +10,6 @@ import { v4 as uuidv4 } from 'uuid'
 import { Button } from '../../Button'
 import { GetJourney_journey_blocks_CardBlock as CardBlock } from '../../../../../../__generated__/GetJourney'
 import { RadioQuestionBlockCreate } from '../../../../../../__generated__/RadioQuestionBlockCreate'
-import { TypographyBlockCreate } from '../../../../../../__generated__/TypographyBlockCreate'
-import { TYPOGRAPHY_BLOCK_CREATE } from '../NewTypographyButton'
 
 export const RADIO_QUESTION_BLOCK_CREATE = gql`
   ${RADIO_QUESTION_FIELDS}
@@ -46,9 +44,6 @@ export function NewRadioQuestionButton(): ReactElement {
   const [radioQuestionBlockCreate] = useMutation<RadioQuestionBlockCreate>(
     RADIO_QUESTION_BLOCK_CREATE
   )
-  const [typographyBlockCreate] = useMutation<TypographyBlockCreate>(
-    TYPOGRAPHY_BLOCK_CREATE
-  )
   const { journey } = useJourney()
   const {
     state: { selectedStep },
@@ -62,68 +57,7 @@ export function NewRadioQuestionButton(): ReactElement {
     ) as TreeBlock<CardBlock> | undefined
 
     if (card != null && journey != null) {
-      const { data } = await typographyBlockCreate({
-        variables: {
-          input: {
-            journeyId: journey.id,
-            parentBlockId: card.id,
-            content: 'Your Question Here?',
-            variant: 'h3'
-          }
-        },
-        update(cache, { data }) {
-          if (data?.typographyBlockCreate != null) {
-            cache.modify({
-              id: cache.identify({ __typename: 'Journey', id: journey.id }),
-              fields: {
-                blocks(existingBlockRefs = []) {
-                  const newBlockRef = cache.writeFragment({
-                    data: data.typographyBlockCreate,
-                    fragment: gql`
-                      fragment NewBlock on Block {
-                        id
-                      }
-                    `
-                  })
-                  return [...existingBlockRefs, newBlockRef]
-                }
-              }
-            })
-          }
-        }
-      })
-      await typographyBlockCreate({
-        variables: {
-          input: {
-            journeyId: journey.id,
-            parentBlockId: card.id,
-            content: 'Your Description Here',
-            variant: 'body2'
-          }
-        },
-        update(cache, { data }) {
-          if (data?.typographyBlockCreate != null) {
-            cache.modify({
-              id: cache.identify({ __typename: 'Journey', id: journey.id }),
-              fields: {
-                blocks(existingBlockRefs = []) {
-                  const newBlockRef = cache.writeFragment({
-                    data: data.typographyBlockCreate,
-                    fragment: gql`
-                      fragment NewBlock on Block {
-                        id
-                      }
-                    `
-                  })
-                  return [...existingBlockRefs, newBlockRef]
-                }
-              }
-            })
-          }
-        }
-      })
-
-      await radioQuestionBlockCreate({
+      const { data } = await radioQuestionBlockCreate({
         variables: {
           input: {
             journeyId: journey.id,
@@ -183,10 +117,10 @@ export function NewRadioQuestionButton(): ReactElement {
           }
         }
       })
-      if (data?.typographyBlockCreate != null) {
+      if (data?.radioQuestionBlockCreate != null) {
         dispatch({
           type: 'SetSelectedBlockByIdAction',
-          id: data.typographyBlockCreate.id
+          id: data.radioOption1.id
         })
         dispatch({
           type: 'SetActiveTabAction',

@@ -5,7 +5,6 @@ import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { GetJourney_journey as Journey } from '../../../../../../__generated__/GetJourney'
-import { TYPOGRAPHY_BLOCK_CREATE } from '../NewTypographyButton'
 import { RADIO_QUESTION_BLOCK_CREATE } from './NewRadioQuestionButton'
 
 import { NewRadioQuestionButton } from '.'
@@ -40,34 +39,6 @@ describe('NewRadioQuestionButton', () => {
   }
 
   it('should check if the mutation gets called', async () => {
-    const titleCreateResult = jest.fn(() => ({
-      data: {
-        typographyBlockCreate: {
-          id: 'typographyId.1',
-          parentBlockId: 'cardId',
-          parentOrder: 0,
-          content: 'Your Question Here?',
-          align: null,
-          color: null,
-          variant: 'h3'
-        }
-      }
-    }))
-
-    const descriptionCreateResult = jest.fn(() => ({
-      data: {
-        typographyBlockCreate: {
-          id: 'typographyId.2',
-          parentBlockId: 'cardId',
-          parentOrder: 1,
-          content: 'Your Description Here',
-          align: null,
-          color: null,
-          variant: 'body2'
-        }
-      }
-    }))
-
     const radioCreateResult = jest.fn(() => ({
       data: {
         radioQuestionBlockCreate: {
@@ -111,34 +82,6 @@ describe('NewRadioQuestionButton', () => {
         mocks={[
           {
             request: {
-              query: TYPOGRAPHY_BLOCK_CREATE,
-              variables: {
-                input: {
-                  journeyId: 'journeyId',
-                  parentBlockId: 'cardId',
-                  content: 'Your Question Here?',
-                  variant: 'h3'
-                }
-              }
-            },
-            result: titleCreateResult
-          },
-          {
-            request: {
-              query: TYPOGRAPHY_BLOCK_CREATE,
-              variables: {
-                input: {
-                  journeyId: 'journeyId',
-                  parentBlockId: 'cardId',
-                  content: 'Your Description Here',
-                  variant: 'body2'
-                }
-              }
-            },
-            result: descriptionCreateResult
-          },
-          {
-            request: {
               query: RADIO_QUESTION_BLOCK_CREATE,
               variables: {
                 input: {
@@ -175,8 +118,6 @@ describe('NewRadioQuestionButton', () => {
       </MockedProvider>
     )
     fireEvent.click(getByRole('button'))
-    await waitFor(() => expect(titleCreateResult).toHaveBeenCalled())
-    await waitFor(() => expect(descriptionCreateResult).toHaveBeenCalled())
     await waitFor(() => expect(radioCreateResult).toHaveBeenCalled())
   })
 
@@ -189,36 +130,6 @@ describe('NewRadioQuestionButton', () => {
         __typename: 'Journey'
       }
     })
-
-    const titleCreateResult = jest.fn(() => ({
-      data: {
-        typographyBlockCreate: {
-          id: 'typographyId.1',
-          parentBlockId: 'cardId',
-          parentOrder: 0,
-          content: 'Your Question Here?',
-          align: null,
-          color: null,
-          variant: 'h3',
-          __typename: 'TypographyBlock'
-        }
-      }
-    }))
-
-    const descriptionCreateResult = jest.fn(() => ({
-      data: {
-        typographyBlockCreate: {
-          id: 'typographyId.2',
-          parentBlockId: 'cardId',
-          parentOrder: 1,
-          content: 'Your Description Here',
-          align: null,
-          color: null,
-          variant: 'body2',
-          __typename: 'TypographyBlock'
-        }
-      }
-    }))
 
     const radioCreateResult = jest.fn(() => ({
       data: {
@@ -263,34 +174,6 @@ describe('NewRadioQuestionButton', () => {
         mocks={[
           {
             request: {
-              query: TYPOGRAPHY_BLOCK_CREATE,
-              variables: {
-                input: {
-                  journeyId: 'journeyId',
-                  parentBlockId: 'cardId',
-                  content: 'Your Question Here?',
-                  variant: 'h3'
-                }
-              }
-            },
-            result: titleCreateResult
-          },
-          {
-            request: {
-              query: TYPOGRAPHY_BLOCK_CREATE,
-              variables: {
-                input: {
-                  journeyId: 'journeyId',
-                  parentBlockId: 'cardId',
-                  content: 'Your Description Here',
-                  variant: 'body2'
-                }
-              }
-            },
-            result: descriptionCreateResult
-          },
-          {
-            request: {
               query: RADIO_QUESTION_BLOCK_CREATE,
               variables: {
                 input: {
@@ -327,14 +210,10 @@ describe('NewRadioQuestionButton', () => {
       </MockedProvider>
     )
     fireEvent.click(getByRole('button'))
-    await waitFor(() => expect(titleCreateResult).toHaveBeenCalled())
-    await waitFor(() => expect(descriptionCreateResult).toHaveBeenCalled())
     await waitFor(() => expect(radioCreateResult).toHaveBeenCalled())
 
     expect(cache.extract()['Journey:journeyId']?.blocks).toEqual([
       { __ref: 'VideoBlock:videoBlockId' },
-      { __ref: 'TypographyBlock:typographyId.1' },
-      { __ref: 'TypographyBlock:typographyId.2' },
       { __ref: 'RadioQuestionBlock:uuid' },
       { __ref: 'RadioOptionBlock:radioOptionBlockId1' },
       { __ref: 'RadioOptionBlock:radioOptionBlockId2' }
