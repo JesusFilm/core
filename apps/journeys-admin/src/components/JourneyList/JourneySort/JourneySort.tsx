@@ -90,7 +90,7 @@ export function JourneySort({
             flexDirection: 'row',
             justifyContent: 'flex-end'
           }}
-         />
+        />
       </FormControl>
     </Box>
   )
