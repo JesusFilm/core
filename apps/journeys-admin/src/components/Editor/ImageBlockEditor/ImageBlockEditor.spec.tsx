@@ -1,6 +1,5 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render } from '@testing-library/react'
-import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 import { GetJourney_journey_blocks_ImageBlock as ImageBlock } from '../../../../__generated__/GetJourney'
 import { ImageBlockEditor } from '.'
 
@@ -19,11 +18,9 @@ describe('ImageBlockEditor', () => {
 
   it('should render the ImageBlockEditor', () => {
     const { getByText, getByRole } = render(
-      <FlagsProvider flags={{ unsplashGallery: true }}>
-        <MockedProvider>
-          <ImageBlockEditor onChange={jest.fn()} selectedBlock={imageBlock} />
-        </MockedProvider>
-      </FlagsProvider>
+      <MockedProvider>
+        <ImageBlockEditor onChange={jest.fn()} selectedBlock={imageBlock} />
+      </MockedProvider>
     )
     expect(getByText('Selected Image')).toBeInTheDocument()
     expect(getByRole('tab', { name: 'Gallery' })).toBeInTheDocument()
@@ -32,11 +29,9 @@ describe('ImageBlockEditor', () => {
 
   it('should switch tabs', () => {
     const { getByText, getByRole } = render(
-      <FlagsProvider flags={{ unsplashGallery: true }}>
-        <MockedProvider>
-          <ImageBlockEditor onChange={jest.fn()} selectedBlock={imageBlock} />
-        </MockedProvider>
-      </FlagsProvider>
+      <MockedProvider>
+        <ImageBlockEditor onChange={jest.fn()} selectedBlock={imageBlock} />
+      </MockedProvider>
     )
     expect(getByRole('tab', { name: 'Gallery' })).toBeInTheDocument()
     expect(getByText('Unsplash')).toBeInTheDocument()

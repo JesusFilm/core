@@ -2,7 +2,6 @@ import { render, fireEvent, waitFor } from '@testing-library/react'
 import { InMemoryCache } from '@apollo/client'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { MockedProvider } from '@apollo/client/testing'
-import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 import {
   GetJourney_journey as Journey,
   GetJourney_journey_blocks_ImageBlock as ImageBlock
@@ -140,21 +139,21 @@ describe('ImageEdit', () => {
           }
         ]}
       >
-        <FlagsProvider flags={{ unsplashGallery: true }}>
-          <JourneyProvider
-            value={{
-              journey: { id: 'journey.id' } as unknown as Journey,
-              admin: true
-            }}
-          >
-            <ImageEdit />
-          </JourneyProvider>
-        </FlagsProvider>
+        <JourneyProvider
+          value={{
+            journey: { id: 'journey.id' } as unknown as Journey,
+            admin: true
+          }}
+        >
+          <ImageEdit />
+        </JourneyProvider>
       </MockedProvider>
     )
     fireEvent.click(getByRole('button'))
     fireEvent.click(getByRole('tab', { name: 'Custom' }))
-    fireEvent.click(getByRole('button', { name: 'Add image by URL' }))
+    await waitFor(() =>
+      fireEvent.click(getByRole('button', { name: 'Add image by URL' }))
+    )
     const textBox = getByRole('textbox')
     fireEvent.change(textBox, {
       target: { value: 'https://example.com/image.jpg' }
@@ -232,19 +231,17 @@ describe('ImageEdit', () => {
           }
         ]}
       >
-        <FlagsProvider>
-          <JourneyProvider
-            value={{
-              journey: {
-                id: 'journey.id',
-                primaryImageBlock: { ...image }
-              } as unknown as Journey,
-              admin: true
-            }}
-          >
-            <ImageEdit />
-          </JourneyProvider>
-        </FlagsProvider>
+        <JourneyProvider
+          value={{
+            journey: {
+              id: 'journey.id',
+              primaryImageBlock: { ...image }
+            } as unknown as Journey,
+            admin: true
+          }}
+        >
+          <ImageEdit />
+        </JourneyProvider>
       </MockedProvider>
     )
     fireEvent.click(getByRole('button'))

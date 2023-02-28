@@ -156,10 +156,12 @@ export function UnsplashGallery({
   }
 
   return (
-    <Stack sx={{ pt: 6, px: 6 }}>
+    <Stack
+      sx={{ pt: 6, px: 6, height: 'calc(100vh - 231px)', overflowY: 'auto' }}
+    >
       <UnsplashSearch value={query} handleSubmit={handleSubmit} />
       <UnsplashCollections onClick={(id) => setCollectionId(id)} />
-      <Stack sx={{ pt: 6, pb: 1 }}>
+      <Stack sx={{ pt: 4, pb: 1 }}>
         <Typography variant="overline" color="primary">
           Unsplash
         </Typography>

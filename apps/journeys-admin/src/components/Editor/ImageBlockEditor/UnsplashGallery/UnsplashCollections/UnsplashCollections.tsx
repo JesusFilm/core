@@ -37,7 +37,8 @@ export function UnsplashCollections({
         display: 'flex',
         flexDirection: 'column',
         overflowX: 'scroll',
-        pt: 5
+        pt: 5,
+        pb: 9
       }}
     >
       <Box sx={{ display: 'flex', flexDirection: 'row' }}>

@@ -31,18 +31,13 @@ const Template: Story = ({ ...args }) => (
         },
         result: {
           data: {
-            journeys: [
-              defaultJourney,
-              oldJourney,
-              descriptiveJourney,
-              publishedJourney
-            ]
+            journeys: [...args.props.journeys]
           }
         }
       }
     ]}
   >
-    <FlagsProvider>
+    <FlagsProvider flags={args.flags}>
       <PageWrapper title="Active Journeys">
         <JourneyList {...args.props} />
       </PageWrapper>
@@ -60,6 +55,25 @@ Default.args = {
       descriptiveJourney
     ],
     event: ''
+  }
+}
+
+export const NoJourneys = Template.bind({})
+NoJourneys.args = {
+  props: {
+    journeys: [],
+    event: ''
+  }
+}
+
+export const InviteRequirement = Template.bind({})
+InviteRequirement.args = {
+  props: {
+    journeys: [],
+    event: ''
+  },
+  flags: {
+    inviteRequirement: true
   }
 }
 
