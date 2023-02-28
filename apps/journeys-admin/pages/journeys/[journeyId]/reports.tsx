@@ -76,15 +76,14 @@ export const getServerSideProps = withAuthUserTokenSSR({
     mutation: ACCEPT_USER_INVITE
   })
 
-  try{
+  try {
     await apolloClient.query<GetJourney>({
       query: GET_JOURNEY,
       variables: {
         id: query?.journeyId
       }
-    })  
-  }
-  catch(error){
+    })
+  } catch (error) {
     return {
       redirect: {
         permanent: false,

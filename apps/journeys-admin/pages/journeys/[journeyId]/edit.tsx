@@ -12,7 +12,10 @@ import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import { useTranslation } from 'react-i18next'
 import { getLaunchDarklyClient } from '@core/shared/ui/getLaunchDarklyClient'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
-import { GetJourney, GetJourney_journey as Journey } from '../../../__generated__/GetJourney'
+import {
+  GetJourney,
+  GetJourney_journey as Journey
+} from '../../../__generated__/GetJourney'
 import { UserInviteAcceptAll } from '../../../__generated__/UserInviteAcceptAll'
 import { Editor } from '../../../src/components/Editor'
 import { PageWrapper } from '../../../src/components/PageWrapper'
@@ -40,25 +43,25 @@ function JourneyEditPage(): ReactElement {
   return (
     <>
       <NextSeo
-          title={
-            data?.journey?.title != null
-              ? t('Edit {{title}}', { title: data.journey.title })
-              : t('Edit Journey')
-          }
-          description={data?.journey?.description ?? undefined}
-        />
+        title={
+          data?.journey?.title != null
+            ? t('Edit {{title}}', { title: data.journey.title })
+            : t('Edit Journey')
+        }
+        description={data?.journey?.description ?? undefined}
+      />
       <Editor
-          journey={data?.journey ?? undefined}
-          selectedStepId={router.query.stepId as string | undefined}
-        >
+        journey={data?.journey ?? undefined}
+        selectedStepId={router.query.stepId as string | undefined}
+      >
         <PageWrapper
-            title={data?.journey?.title ?? t('Edit Journey')}
-            showDrawer
-            backHref={`/journeys/${router.query.journeyId as string}`}
-            menu={<EditToolbar />}
-            authUser={AuthUser}
-            router={router}
-          >
+          title={data?.journey?.title ?? t('Edit Journey')}
+          showDrawer
+          backHref={`/journeys/${router.query.journeyId as string}`}
+          menu={<EditToolbar />}
+          authUser={AuthUser}
+          router={router}
+        >
           <JourneyEdit />
         </PageWrapper>
       </Editor>
@@ -87,17 +90,16 @@ export const getServerSideProps = withAuthUserTokenSSR({
   })
 
   let journey: Journey | null
-  try{
+  try {
     const { data } = await apolloClient.query<GetJourney>({
       query: GET_JOURNEY,
       variables: {
         id: query?.journeyId
       }
-    })  
+    })
 
     journey = data?.journey
-  }
-  catch(error){
+  } catch (error) {
     return {
       redirect: {
         permanent: false,
@@ -113,7 +115,7 @@ export const getServerSideProps = withAuthUserTokenSSR({
         destination: `/publisher/${journey?.id}/edit`
       }
     }
-  }  
+  }
 
   return {
     props: {
