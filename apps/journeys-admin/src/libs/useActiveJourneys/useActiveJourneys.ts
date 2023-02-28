@@ -1,5 +1,5 @@
 import { gql, OperationVariables, QueryResult, useQuery } from '@apollo/client'
-import { useEffect, useState } from 'react'
+// import { useEffect, useState } from 'react'
 import { GetActiveJourneys } from '../../../__generated__/GetActiveJourneys'
 
 export const GET_ACTIVE_JOURNEYS = gql`
@@ -41,16 +41,16 @@ export const GET_ACTIVE_JOURNEYS = gql`
 export function useActiveJourneys():
   | QueryResult<GetActiveJourneys, OperationVariables>
   | undefined {
-  const [activeJourneys, setActiveJourneys] = useState<
-    QueryResult<GetActiveJourneys, OperationVariables> | undefined
-  >(undefined)
+  // const [activeJourneys, setActiveJourneys] = useState<
+  //   QueryResult<GetActiveJourneys, OperationVariables> | undefined
+  // >(undefined)
   const res = useQuery<GetActiveJourneys>(GET_ACTIVE_JOURNEYS)
 
-  useEffect(() => {
-    if (res != null) {
-      setActiveJourneys(res)
-    }
-  }, [setActiveJourneys, res])
+  // useEffect(() => {
+  //   if (res != null) {
+  //     setActiveJourneys(res)
+  //   }
+  // }, [setActiveJourneys, res])
 
-  return activeJourneys
+  return res
 }
