@@ -2,9 +2,17 @@
 
 import { MockedProvider } from '@apollo/client/testing'
 import { act, fireEvent, render, waitFor } from '@testing-library/react'
+import { NextRouter, useRouter } from 'next/router'
 import { videos } from '../Videos/__generated__/testData'
 import { languages } from './testData'
 import { VideosPage, GET_VIDEOS, limit, GET_LANGUAGES } from './VideosPage'
+
+jest.mock('next/router', () => ({
+  __esModule: true,
+  useRouter: jest.fn()
+}))
+
+const mockUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
 
 describe('VideosPage', () => {
   describe('grid', () => {
@@ -49,6 +57,9 @@ describe('VideosPage', () => {
   })
 
   describe('filters', () => {
+    const push = jest.fn()
+    mockUseRouter.mockReturnValue({ push } as unknown as NextRouter)
+
     it('should handle audio language filter', async () => {
       const { getAllByRole, getByText, getByRole } = render(
         <MockedProvider
