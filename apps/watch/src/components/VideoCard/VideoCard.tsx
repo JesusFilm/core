@@ -51,18 +51,21 @@ export function VideoCard({
     video?.label,
     video?.childrenCount ?? 0
   )
+  let href = ''
+
+  if (
+    containerSlug != null &&
+    video?.label != null &&
+    ![VideoLabel.collection, VideoLabel.series].includes(video.label)
+  ) {
+    href += `/${containerSlug}.html/${video?.variant?.slug ?? ''}.html`
+  } else {
+    const [videoId, languageId] = (video?.variant?.slug ?? '').split('/')
+    href = `/${videoId}.html/${languageId}.html`
+  }
 
   return (
-    <NextLink
-      href={`/${
-        containerSlug != null &&
-        video?.label != null &&
-        ![VideoLabel.collection, VideoLabel.series].includes(video.label)
-          ? `${containerSlug}/`
-          : ''
-      }${video?.variant?.slug ?? ''}`}
-      passHref
-    >
+    <NextLink href={href} passHref>
       <Link
         display="block"
         underline="none"
