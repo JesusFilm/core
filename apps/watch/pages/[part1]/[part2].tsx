@@ -58,13 +58,27 @@ export default function Part2Page({ content }: Part2PageProps): ReactElement {
 export const getStaticProps: GetStaticProps<Part2PageProps> = async (
   context
 ) => {
+  const [contentId, contentIdExtension] = (
+    context.params?.part1 as string
+  ).split('.')
+  const [languageId, languageIdExtension] = (
+    context.params?.part2 as string
+  ).split('.')
+
+  if (contentIdExtension !== 'html' || languageIdExtension !== 'html') {
+    return {
+      redirect: {
+        permanent: false,
+        destination: `/${contentId}.html/${languageId}.html`
+      }
+    }
+  }
+
   const client = createApolloClient()
   const { data } = await client.query<GetVideoContent>({
     query: GET_VIDEO_CONTENT,
     variables: {
-      id: `${(context.params?.part1 as string).split('.')[0]}/${
-        (context.params?.part2 as string).split('.')[0]
-      }`
+      id: `${contentId}/${languageId}`
     }
   })
   if (data.content == null) {
