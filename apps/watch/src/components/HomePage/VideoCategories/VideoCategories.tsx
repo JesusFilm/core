@@ -1,29 +1,33 @@
 import { ReactElement } from 'react'
 import Grid from '@mui/material/Grid'
-import { VideoChildFields } from '../../../../__generated__/VideoChildFields'
+import Typography from '@mui/material/Typography'
+import Stack from '@mui/material/Stack'
 import { VideoCard } from '../../VideoCard'
 
 interface VideoCategoriesProps {
-  videos?: VideoChildFields[]
+  videos?: any[]
 }
 
 export function VideoCategories({
-  videos,
+  videos
 }: VideoCategoriesProps): ReactElement {
   return (
-    <Grid
-      container
-      spacing={4}
-      rowSpacing={4}
-      data-testid="videos-categories"
-    >
+    <Grid container data-testid="videos-categories">
       {(videos?.length ?? 0) > 0 &&
-        videos?.map((video, index) => (
-          <Grid item key={index} xs={12} md={4} xl={3}>
-            <VideoCard
-              video={video}
-            />
-          </Grid>
+        videos?.map((category, index) => (
+          <Stack key={`stack-${index}`} padding={4} spacing={4}>
+            <Typography color="textPrimary" variant="h6" component="h3">
+              {' '}
+              {category.category}{' '}
+            </Typography>
+            <Stack direction="row" spacing={4}>
+              {category.videos.map((video, vIndex) => (
+                <Grid item key={index} xs={12} md={4} xl={3}>
+                  <VideoCard key={vIndex} video={video} />
+                </Grid>
+              ))}
+            </Stack>
+          </Stack>
         ))}
     </Grid>
   )

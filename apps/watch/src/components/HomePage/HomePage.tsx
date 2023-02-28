@@ -10,6 +10,7 @@ import { PageWrapper } from '../PageWrapper'
 import { VideoGrid } from '../VideoGrid'
 import { HomeHero } from './HomeHero'
 import { SeeAllVideos } from './SeeAllVideos'
+import { VideoCategories } from './VideoCategories/VideoCategories'
 
 interface HomePageProps {
   videos: VideoChildFields[]
@@ -27,6 +28,7 @@ export function HomePage({ videos }: HomePageProps): ReactElement {
           <Container maxWidth="xxl" sx={{ paddingY: '4rem' }}>
             <VideoGrid videos={videos} variant="contained" />
             <SeeAllVideos />
+            <VideoCategories videos={[]} />
             <Box
               sx={{
                 display: 'flex',

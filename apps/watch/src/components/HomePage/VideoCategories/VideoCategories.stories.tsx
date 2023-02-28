@@ -2,7 +2,7 @@ import Stack from '@mui/material/Stack'
 import Box from '@mui/material/Box'
 import { ComponentStory, ComponentMeta } from '@storybook/react'
 import { watchConfig } from '../../../libs/storybook/config'
-import { videos } from '../../Videos/__generated__/testData'
+import { videos } from './testData'
 import { VideoCategories } from './VideoCategories'
 
 const VideoCategoriesStory: ComponentMeta<typeof VideoCategories> = {
