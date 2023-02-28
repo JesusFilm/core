@@ -1,6 +1,7 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import fetch, { Response } from 'node-fetch'
+import { GetJourney_journey_blocks_ImageBlock as ImageBlock } from '../../../../../../__generated__/GetJourney'
 import { CREATE_CLOUDFLARE_UPLOAD_BY_FILE, ImageUpload } from './ImageUpload'
 
 jest.mock('node-fetch', () => {
@@ -15,6 +16,18 @@ jest.mock('node-fetch', () => {
 const mockFetch = fetch as jest.MockedFunction<typeof fetch>
 
 describe('ImageUpload', () => {
+  const imageBlock: ImageBlock = {
+    id: 'imageBlockId',
+    __typename: 'ImageBlock',
+    src: 'https://images.unsplash.com/photo-1508363778367-af363f107cbb?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&dl=chester-wade-hLP7lVm4KUE-unsplash.jpg&w=1920',
+    alt: 'random image from unsplash',
+    width: 1600,
+    height: 1067,
+    blurhash: 'L9AS}j^-0dVC4Tq[=~PATeXSV?aL',
+    parentBlockId: 'card',
+    parentOrder: 0
+  }
+
   const cfResponse = {
     result: {
       id: 'uploadId',
@@ -53,7 +66,11 @@ describe('ImageUpload', () => {
           }
         ]}
       >
-        <ImageUpload onChange={onChange} loading={false} />
+        <ImageUpload
+          onChange={onChange}
+          loading={false}
+          selectedBlock={imageBlock}
+        />
       </MockedProvider>
     )
     window.URL.createObjectURL = jest.fn().mockImplementation(() => 'url')
@@ -95,7 +112,11 @@ describe('ImageUpload', () => {
           }
         ]}
       >
-        <ImageUpload onChange={onChange} loading={false} />
+        <ImageUpload
+          onChange={onChange}
+          loading={false}
+          selectedBlock={imageBlock}
+        />
       </MockedProvider>
     )
     const inputEl = getByTestId('drop zone')
@@ -109,5 +130,30 @@ describe('ImageUpload', () => {
     fireEvent.drop(inputEl)
     await waitFor(() => expect(onChange).toHaveBeenCalled())
     expect(getByText('Upload successful!')).toBeInTheDocument()
+  })
+
+  it('should render loading state', () => {
+    const { getByTestId, getByText } = render(
+      <MockedProvider>
+        <ImageUpload onChange={jest.fn()} loading selectedBlock={imageBlock} />
+      </MockedProvider>
+    )
+    expect(getByTestId('BackupOutlinedIcon')).toBeInTheDocument()
+    expect(getByText('Uploading...')).toBeInTheDocument()
+  })
+
+  it('should render error state', () => {
+    const { getByTestId, getByText } = render(
+      <MockedProvider>
+        <ImageUpload
+          onChange={jest.fn()}
+          loading={false}
+          selectedBlock={imageBlock}
+          error
+        />
+      </MockedProvider>
+    )
+    expect(getByTestId('CloudOffRoundedIcon')).toBeInTheDocument()
+    expect(getByText('Upload Failed!'))
   })
 })
