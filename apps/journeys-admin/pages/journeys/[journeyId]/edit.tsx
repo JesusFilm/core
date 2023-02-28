@@ -30,7 +30,7 @@ function JourneyEditPage(): ReactElement {
   const router = useRouter()
   const AuthUser = useAuthUser()
   const { journey } = useJourney()
-  const { data, error } = useQuery<GetJourney>(GET_JOURNEY, {
+  const { data } = useQuery<GetJourney>(GET_JOURNEY, {
     variables: { id: router.query.journeyId }
   })
 
@@ -39,40 +39,36 @@ function JourneyEditPage(): ReactElement {
 
   return (
     <>
-      {error == null && (
-        <>
-          <NextSeo
-            title={
-              data?.journey?.title != null
-                ? t('Edit {{title}}', { title: data.journey.title })
-                : t('Edit Journey')
-            }
-            description={data?.journey?.description ?? undefined}
-          />
-          <Editor
-            journey={data?.journey ?? undefined}
-            selectedStepId={router.query.stepId as string | undefined}
+      <NextSeo
+          title={
+            data?.journey?.title != null
+              ? t('Edit {{title}}', { title: data.journey.title })
+              : t('Edit Journey')
+          }
+          description={data?.journey?.description ?? undefined}
+        />
+      <Editor
+          journey={data?.journey ?? undefined}
+          selectedStepId={router.query.stepId as string | undefined}
+        >
+        <PageWrapper
+            title={data?.journey?.title ?? t('Edit Journey')}
+            showDrawer
+            backHref={`/journeys/${router.query.journeyId as string}`}
+            menu={<EditToolbar />}
+            authUser={AuthUser}
+            router={router}
           >
-            <PageWrapper
-              title={data?.journey?.title ?? t('Edit Journey')}
-              showDrawer
-              backHref={`/journeys/${router.query.journeyId as string}`}
-              menu={<EditToolbar />}
-              authUser={AuthUser}
-              router={router}
-            >
-              <JourneyEdit />
-            </PageWrapper>
-          </Editor>
-        </>
-      )}
+          <JourneyEdit />
+        </PageWrapper>
+      </Editor>
     </>
   )
 }
 
 export const getServerSideProps = withAuthUserTokenSSR({
   whenUnauthed: AuthAction.REDIRECT_TO_LOGIN
-})(async ({ AuthUser, locale, query}) => {
+})(async ({ AuthUser, locale, query }) => {
   const ldUser = {
     key: AuthUser.id as string,
     firstName: AuthUser.displayName ?? undefined,
