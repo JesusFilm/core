@@ -2,7 +2,6 @@ import { render, fireEvent, waitFor } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import useMediaQuery from '@mui/material/useMediaQuery'
-import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 import { JourneyStatus } from '../../../../../__generated__/globalTypes'
 import { GetJourney_journey as Journey } from '../../../../../__generated__/GetJourney'
 import { SocialShareAppearance } from '.'
@@ -27,9 +26,7 @@ describe('SocialShareAppearance', () => {
             admin: true
           }}
         >
-          <FlagsProvider>
-            <SocialShareAppearance />
-          </FlagsProvider>
+          <SocialShareAppearance />
         </JourneyProvider>
       </MockedProvider>
     )
@@ -57,9 +54,7 @@ describe('SocialShareAppearance', () => {
         <JourneyProvider
           value={{ journey: { slug } as unknown as Journey, admin: true }}
         >
-          <FlagsProvider>
-            <SocialShareAppearance />
-          </FlagsProvider>
+          <SocialShareAppearance />
         </JourneyProvider>
       </MockedProvider>
     )
@@ -90,9 +85,7 @@ describe('SocialShareAppearance', () => {
         <JourneyProvider
           value={{ journey: { slug } as unknown as Journey, admin: true }}
         >
-          <FlagsProvider>
-            <SocialShareAppearance />
-          </FlagsProvider>
+          <SocialShareAppearance />
         </JourneyProvider>
       </MockedProvider>
     )
@@ -125,9 +118,7 @@ describe('SocialShareAppearance', () => {
         <JourneyProvider
           value={{ journey: { slug } as unknown as Journey, admin: true }}
         >
-          <FlagsProvider>
-            <SocialShareAppearance />
-          </FlagsProvider>
+          <SocialShareAppearance />
         </JourneyProvider>
       </MockedProvider>
     )
@@ -158,9 +149,7 @@ describe('SocialShareAppearance', () => {
         <JourneyProvider
           value={{ journey: { slug } as unknown as Journey, admin: true }}
         >
-          <FlagsProvider>
-            <SocialShareAppearance />
-          </FlagsProvider>
+          <SocialShareAppearance />
         </JourneyProvider>
       </MockedProvider>
     )
@@ -186,9 +175,7 @@ describe('SocialShareAppearance', () => {
             admin: true
           }}
         >
-          <FlagsProvider>
-            <SocialShareAppearance />
-          </FlagsProvider>
+          <SocialShareAppearance />
         </JourneyProvider>
       </MockedProvider>
     )

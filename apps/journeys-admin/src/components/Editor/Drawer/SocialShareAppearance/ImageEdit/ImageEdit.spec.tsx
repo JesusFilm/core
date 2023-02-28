@@ -151,9 +151,7 @@ describe('ImageEdit', () => {
     )
     fireEvent.click(getByRole('button'))
     fireEvent.click(getByRole('tab', { name: 'Custom' }))
-    await waitFor(() =>
-      fireEvent.click(getByRole('button', { name: 'Add image by URL' }))
-    )
+    fireEvent.click(getByRole('button', { name: 'Add image by URL' }))
     const textBox = getByRole('textbox')
     fireEvent.change(textBox, {
       target: { value: 'https://example.com/image.jpg' }

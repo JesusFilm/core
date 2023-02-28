@@ -3,7 +3,6 @@ import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { MockedProvider } from '@apollo/client/testing'
-import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 
 import { GET_VIDEO_VARIANT_LANGUAGES } from '../../../../../VideoBlockEditor/Source/SourceFromLocal/SourceFromLocal'
 import {
@@ -183,18 +182,16 @@ const Template: Story = ({ ...args }) => (
   >
     <ThemeProvider>
       <JourneyProvider value={{ journey, admin: true }}>
-        <FlagsProvider>
-          <EditorProvider
-            initialState={{
-              ...args,
-              drawerChildren: <BackgroundMedia />,
-              drawerTitle: 'Background Media',
-              drawerMobileOpen: true
-            }}
-          >
-            <Drawer />
-          </EditorProvider>
-        </FlagsProvider>
+        <EditorProvider
+          initialState={{
+            ...args,
+            drawerChildren: <BackgroundMedia />,
+            drawerTitle: 'Background Media',
+            drawerMobileOpen: true
+          }}
+        >
+          <Drawer />
+        </EditorProvider>
       </JourneyProvider>
     </ThemeProvider>
   </MockedProvider>

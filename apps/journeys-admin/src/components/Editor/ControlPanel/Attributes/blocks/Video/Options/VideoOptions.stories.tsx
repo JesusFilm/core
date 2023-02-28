@@ -3,7 +3,6 @@ import type { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import MuiDrawer from '@mui/material/Drawer'
 import { MockedProvider } from '@apollo/client/testing'
-import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 
 import { GetJourney_journey_blocks_VideoBlock as VideoBlock } from '../../../../../../../../__generated__/GetJourney'
 import { VideoBlockSource } from '../../../../../../../../__generated__/globalTypes'
@@ -157,41 +156,39 @@ export const Default: Story = () => (
     ]}
   >
     <ThemeProvider>
-      <FlagsProvider>
-        <EditorProvider
-          initialState={{
-            selectedBlock: video
+      <EditorProvider
+        initialState={{
+          selectedBlock: video
+        }}
+      >
+        <MuiDrawer
+          anchor="right"
+          variant="permanent"
+          sx={{
+            display: { xs: 'none', sm: 'block' },
+            '& .MuiDrawer-paper': {
+              boxSizing: 'border-box',
+              width: 328
+            }
+          }}
+          ModalProps={{
+            keepMounted: true
+          }}
+          open
+        >
+          <VideoOptions />
+        </MuiDrawer>
+        <MuiDrawer
+          anchor="bottom"
+          variant="temporary"
+          open
+          sx={{
+            display: { xs: 'block', sm: 'none' }
           }}
         >
-          <MuiDrawer
-            anchor="right"
-            variant="permanent"
-            sx={{
-              display: { xs: 'none', sm: 'block' },
-              '& .MuiDrawer-paper': {
-                boxSizing: 'border-box',
-                width: 328
-              }
-            }}
-            ModalProps={{
-              keepMounted: true
-            }}
-            open
-          >
-            <VideoOptions />
-          </MuiDrawer>
-          <MuiDrawer
-            anchor="bottom"
-            variant="temporary"
-            open
-            sx={{
-              display: { xs: 'block', sm: 'none' }
-            }}
-          >
-            <VideoOptions />
-          </MuiDrawer>
-        </EditorProvider>
-      </FlagsProvider>
+          <VideoOptions />
+        </MuiDrawer>
+      </EditorProvider>
     </ThemeProvider>
   </MockedProvider>
 )

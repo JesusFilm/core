@@ -2,7 +2,6 @@ import { render, waitFor } from '@testing-library/react'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { MockedProvider } from '@apollo/client/testing'
 
-import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 import { GetJourney_journey_blocks_VideoBlock as VideoBlock } from '../../../../__generated__/GetJourney'
 import { GetVideoVariantLanguages_video } from '../../../../__generated__/GetVideoVariantLanguages'
 import { VideoBlockSource } from '../../../../__generated__/globalTypes'
@@ -114,11 +113,9 @@ describe('VideoBlockEditor', () => {
     it('shows placeholders on null', () => {
       const { getByText } = render(
         <ThemeProvider>
-          <FlagsProvider>
-            <MockedProvider mocks={mocks}>
-              <VideoBlockEditor selectedBlock={null} onChange={jest.fn()} />
-            </MockedProvider>
-          </FlagsProvider>
+          <MockedProvider mocks={mocks}>
+            <VideoBlockEditor selectedBlock={null} onChange={jest.fn()} />
+          </MockedProvider>
         </ThemeProvider>
       )
       expect(getByText('Select Video')).toBeInTheDocument()
@@ -130,12 +127,10 @@ describe('VideoBlockEditor', () => {
       const { getByText } = render(
         <ThemeProvider>
           <MockedProvider mocks={mocks}>
-            <FlagsProvider>
-              <VideoBlockEditor
-                selectedBlock={videoInternal}
-                onChange={jest.fn()}
-              />
-            </FlagsProvider>
+            <VideoBlockEditor
+              selectedBlock={videoInternal}
+              onChange={jest.fn()}
+            />
           </MockedProvider>
         </ThemeProvider>
       )
@@ -147,30 +142,28 @@ describe('VideoBlockEditor', () => {
       const { getByText } = render(
         <ThemeProvider>
           <MockedProvider mocks={mocks}>
-            <FlagsProvider>
-              <VideoBlockEditor
-                selectedBlock={{
-                  ...videoInternal,
-                  video: {
-                    ...videoInternal.video,
-                    variantLanguages: [
-                      {
-                        __typename: 'Language',
-                        id: '529',
-                        name: [
-                          {
-                            __typename: 'Translation',
-                            value: 'English',
-                            primary: false
-                          }
-                        ]
-                      }
-                    ]
-                  } as unknown as VideoBlock['video']
-                }}
-                onChange={jest.fn()}
-              />
-            </FlagsProvider>
+            <VideoBlockEditor
+              selectedBlock={{
+                ...videoInternal,
+                video: {
+                  ...videoInternal.video,
+                  variantLanguages: [
+                    {
+                      __typename: 'Language',
+                      id: '529',
+                      name: [
+                        {
+                          __typename: 'Translation',
+                          value: 'English',
+                          primary: false
+                        }
+                      ]
+                    }
+                  ]
+                } as unknown as VideoBlock['video']
+              }}
+              onChange={jest.fn()}
+            />
           </MockedProvider>
         </ThemeProvider>
       )
@@ -216,17 +209,15 @@ describe('VideoBlockEditor', () => {
       const { getByText } = render(
         <ThemeProvider>
           <MockedProvider mocks={mocks}>
-            <FlagsProvider>
-              <VideoBlockEditor
-                selectedBlock={{
-                  ...videoInternal,
-                  video: {
-                    ...videoInternal.video
-                  } as unknown as VideoBlock['video']
-                }}
-                onChange={jest.fn()}
-              />
-            </FlagsProvider>
+            <VideoBlockEditor
+              selectedBlock={{
+                ...videoInternal,
+                video: {
+                  ...videoInternal.video
+                } as unknown as VideoBlock['video']
+              }}
+              onChange={jest.fn()}
+            />
           </MockedProvider>
         </ThemeProvider>
       )
@@ -240,35 +231,33 @@ describe('VideoBlockEditor', () => {
       const { getByText } = render(
         <ThemeProvider>
           <MockedProvider mocks={mocks}>
-            <FlagsProvider>
-              <VideoBlockEditor
-                selectedBlock={{
-                  ...videoInternal,
-                  video: {
-                    ...videoInternal.video,
-                    variantLanguages: [
-                      {
-                        __typename: 'Language',
-                        id: '529',
-                        name: [
-                          {
-                            __typename: 'Translation',
-                            value: 'English',
-                            primary: true
-                          },
-                          {
-                            __typename: 'Translation',
-                            value: 'English',
-                            primary: false
-                          }
-                        ]
-                      }
-                    ]
-                  } as unknown as VideoBlock['video']
-                }}
-                onChange={jest.fn()}
-              />
-            </FlagsProvider>
+            <VideoBlockEditor
+              selectedBlock={{
+                ...videoInternal,
+                video: {
+                  ...videoInternal.video,
+                  variantLanguages: [
+                    {
+                      __typename: 'Language',
+                      id: '529',
+                      name: [
+                        {
+                          __typename: 'Translation',
+                          value: 'English',
+                          primary: true
+                        },
+                        {
+                          __typename: 'Translation',
+                          value: 'English',
+                          primary: false
+                        }
+                      ]
+                    }
+                  ]
+                } as unknown as VideoBlock['video']
+              }}
+              onChange={jest.fn()}
+            />
           </MockedProvider>
         </ThemeProvider>
       )
@@ -282,12 +271,10 @@ describe('VideoBlockEditor', () => {
       const { getByText } = render(
         <ThemeProvider>
           <MockedProvider mocks={mocks}>
-            <FlagsProvider>
-              <VideoBlockEditor
-                selectedBlock={videoYouTube}
-                onChange={jest.fn()}
-              />
-            </FlagsProvider>
+            <VideoBlockEditor
+              selectedBlock={videoYouTube}
+              onChange={jest.fn()}
+            />
           </MockedProvider>
         </ThemeProvider>
       )
@@ -299,12 +286,10 @@ describe('VideoBlockEditor', () => {
     const { getByRole } = render(
       <ThemeProvider>
         <MockedProvider mocks={mocks}>
-          <FlagsProvider>
-            <VideoBlockEditor
-              selectedBlock={videoInternal}
-              onChange={jest.fn()}
-            />
-          </FlagsProvider>
+          <VideoBlockEditor
+            selectedBlock={videoInternal}
+            onChange={jest.fn()}
+          />
         </MockedProvider>
       </ThemeProvider>
     )
