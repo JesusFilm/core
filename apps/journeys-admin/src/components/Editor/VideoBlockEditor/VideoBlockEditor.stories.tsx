@@ -136,7 +136,6 @@ const posterYouTube: TreeBlock<ImageBlock> = {
 }
 
 const onChange = async (): Promise<void> => await Promise.resolve()
-const onDelete = async (): Promise<void> => await Promise.resolve()
 
 const videoLanguages: GetVideoVariantLanguages_video = {
   __typename: 'Video',
@@ -211,7 +210,6 @@ const Template: Story = ({ ...args }) => (
         <VideoBlockEditor
           selectedBlock={args.selectedBlock}
           onChange={onChange}
-          onDelete={onDelete}
         />
       </MuiDrawer>
       <MuiDrawer
@@ -225,7 +223,6 @@ const Template: Story = ({ ...args }) => (
         <VideoBlockEditor
           selectedBlock={args.selectedBlock}
           onChange={onChange}
-          onDelete={onDelete}
         />
       </MuiDrawer>
     </ThemeProvider>

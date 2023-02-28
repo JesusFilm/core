@@ -1,8 +1,9 @@
-import { InMemoryCache } from '@apollo/client'
+import { fireEvent, render, waitFor } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
+import { InMemoryCache } from '@apollo/client'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
-import { fireEvent, render, waitFor } from '@testing-library/react'
+import useMediaQuery from '@mui/material/useMediaQuery'
 import {
   JourneyStatus,
   ThemeMode,
@@ -16,13 +17,19 @@ import {
   GetJourney_journey_blocks_ImageBlock as ImageBlock
 } from '../../../../../../../__generated__/GetJourney'
 
+import { createCloudflareUploadByUrlMock } from '../../../../ImageBlockEditor/CustomImage/CustomUrl/data'
 import {
-  VideoBlockEditorSettingsPosterDialog,
   POSTER_IMAGE_BLOCK_CREATE,
-  VIDEO_BLOCK_POSTER_IMAGE_UPDATE,
   POSTER_IMAGE_BLOCK_UPDATE,
-  BLOCK_DELETE_FOR_POSTER_IMAGE
-} from './VideoBlockEditorSettingsPosterDialog'
+  BLOCK_DELETE_FOR_POSTER_IMAGE,
+  VideoBlockEditorSettingsPosterLibrary,
+  VIDEO_BLOCK_POSTER_IMAGE_UPDATE
+} from './VideoBlockEditorSettingsPosterLibrary'
+
+jest.mock('@mui/material/useMediaQuery', () => ({
+  __esModule: true,
+  default: jest.fn()
+}))
 
 const journey: Journey = {
   __typename: 'Journey',
@@ -101,8 +108,8 @@ const image: ImageBlock = {
   __typename: 'ImageBlock',
   parentBlockId: video.id,
   parentOrder: 0,
-  src: 'https://example.com/image.jpg',
-  alt: 'image.jpg',
+  src: 'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/uploadId/public',
+  alt: 'public',
   width: 1920,
   height: 1080,
   blurhash: ''
@@ -110,7 +117,8 @@ const image: ImageBlock = {
 
 const onClose = jest.fn()
 
-describe('VideoBlockEditorSettingsPosterDialog', () => {
+describe('VideoBlockEditorSettingsPosterLibrary', () => {
+  beforeEach(() => (useMediaQuery as jest.Mock).mockImplementation(() => true))
   describe('No existing Image', () => {
     it('creates a new image poster block', async () => {
       const cache = new InMemoryCache()
@@ -149,6 +157,7 @@ describe('VideoBlockEditorSettingsPosterDialog', () => {
         <MockedProvider
           cache={cache}
           mocks={[
+            createCloudflareUploadByUrlMock,
             {
               request: {
                 query: POSTER_IMAGE_BLOCK_CREATE,
@@ -179,7 +188,7 @@ describe('VideoBlockEditorSettingsPosterDialog', () => {
           ]}
         >
           <JourneyProvider value={{ journey, admin: true }}>
-            <VideoBlockEditorSettingsPosterDialog
+            <VideoBlockEditorSettingsPosterLibrary
               selectedBlock={null}
               parentBlockId={video.id}
               onClose={onClose}
@@ -188,12 +197,15 @@ describe('VideoBlockEditorSettingsPosterDialog', () => {
           </JourneyProvider>
         </MockedProvider>
       )
+      fireEvent.click(getByRole('tab', { name: 'Custom' }))
+      fireEvent.click(getByRole('button', { name: 'Add image by URL' }))
       const textBox = getByRole('textbox')
       fireEvent.change(textBox, {
-        target: { value: image.src }
+        target: {
+          value: 'https://example.com/image.jpg'
+        }
       })
       fireEvent.blur(textBox)
-      await waitFor(() => expect(getByRole('progressbar')).toBeInTheDocument())
       await waitFor(() => expect(imageBlockResult).toHaveBeenCalled())
       await waitFor(() => expect(videoBlockResult).toHaveBeenCalled())
       expect(cache.extract()[`Journey:${journey.id}`]?.blocks).toEqual([
@@ -240,6 +252,7 @@ describe('VideoBlockEditorSettingsPosterDialog', () => {
         <MockedProvider
           cache={cache}
           mocks={[
+            createCloudflareUploadByUrlMock,
             {
               request: {
                 query: POSTER_IMAGE_BLOCK_UPDATE,
@@ -257,7 +270,7 @@ describe('VideoBlockEditorSettingsPosterDialog', () => {
           ]}
         >
           <JourneyProvider value={{ journey, admin: true }}>
-            <VideoBlockEditorSettingsPosterDialog
+            <VideoBlockEditorSettingsPosterLibrary
               selectedBlock={existingImageBlock}
               parentBlockId={video.id}
               onClose={onClose}
@@ -266,14 +279,14 @@ describe('VideoBlockEditorSettingsPosterDialog', () => {
           </JourneyProvider>
         </MockedProvider>
       )
+      fireEvent.click(getByRole('tab', { name: 'Custom' }))
+      fireEvent.click(getByRole('button', { name: 'Add image by URL' }))
       const textBox = getByRole('textbox')
       fireEvent.change(textBox, {
-        target: { value: image.src }
+        target: { value: 'https://example.com/image.jpg' }
       })
       fireEvent.blur(textBox)
-      await waitFor(() => expect(getByRole('progressbar')).toBeInTheDocument())
       await waitFor(() => expect(imageBlockResult).toHaveBeenCalled())
-      await waitFor(() => expect(textBox).toHaveValue(image.src))
       expect(cache.extract()[`Journey:${journey.id}`]?.blocks).toEqual([
         { __ref: `VideoBlock:${video.id}` },
         { __ref: `ImageBlock:${image.id}` }
@@ -336,7 +349,7 @@ describe('VideoBlockEditorSettingsPosterDialog', () => {
           ]}
         >
           <JourneyProvider value={{ journey, admin: true }}>
-            <VideoBlockEditorSettingsPosterDialog
+            <VideoBlockEditorSettingsPosterLibrary
               selectedBlock={image}
               parentBlockId={video.id}
               onClose={onClose}

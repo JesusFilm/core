@@ -1,6 +1,7 @@
 import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
 import Container from '@mui/material/Container'
+import { useFlags } from '@core/shared/ui/FlagsProvider'
 import { GetJourneys_journeys as Journey } from '../../../__generated__/GetJourneys'
 import { GetPublishedTemplates_journeys as Template } from '../../../__generated__/GetPublishedTemplates'
 import { TemplateCard } from '../TemplateCard'
@@ -17,10 +18,13 @@ export function TemplateLibrary({
   journeys,
   templates
 }: TemplateLibraryProps): ReactElement {
+  const { inviteRequirement } = useFlags()
   const { t } = useTranslation('apps-journeys-admin')
 
   // journey == null is journey loading
-  const showLibrary = journeys == null || journeys?.length > 0 || isPublisher
+  const showLibrary =
+    !(journeys != null && journeys.length === 0 && inviteRequirement) ||
+    isPublisher
 
   return (
     <>

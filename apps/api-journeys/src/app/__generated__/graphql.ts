@@ -284,6 +284,9 @@ export class ImageBlockUpdateInput {
     parentBlockId?: Nullable<string>;
     src?: Nullable<string>;
     alt?: Nullable<string>;
+    blurhash?: Nullable<string>;
+    width?: Nullable<number>;
+    height?: Nullable<number>;
 }
 
 export class RadioOptionBlockCreateInput {

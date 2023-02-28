@@ -12,8 +12,6 @@ import { VideoBlockEditorSettings } from './Settings'
 interface VideoBlockEditorProps {
   selectedBlock: TreeBlock<VideoBlock> | null
   onChange: (input: VideoBlockUpdateInput) => Promise<void>
-  showDelete?: boolean
-  onDelete?: () => Promise<void>
 }
 
 export function VideoBlockEditor({
@@ -24,18 +22,22 @@ export function VideoBlockEditor({
     (child) => child.id === (selectedBlock as VideoBlock).posterBlockId
   ) as ImageBlock | null
 
+  const videoBlock = selectedBlock as VideoBlock
+
   return (
     <>
       <Box sx={{ px: 6, py: 4 }}>
         <Source selectedBlock={selectedBlock} onChange={onChange} />
       </Box>
-      <Box>
-        <VideoBlockEditorSettings
-          selectedBlock={selectedBlock}
-          posterBlock={posterBlock}
-          onChange={onChange}
-        />
-      </Box>
+      {videoBlock?.videoId != null && (
+        <Box>
+          <VideoBlockEditorSettings
+            selectedBlock={selectedBlock}
+            posterBlock={posterBlock}
+            onChange={onChange}
+          />
+        </Box>
+      )}
     </>
   )
 }
