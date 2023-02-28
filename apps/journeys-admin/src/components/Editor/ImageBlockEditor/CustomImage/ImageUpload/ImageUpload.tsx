@@ -9,9 +9,10 @@ import { gql, useMutation } from '@apollo/client'
 import fetch from 'node-fetch'
 import type FormDataType from 'form-data'
 import CloudDoneOutlinedIcon from '@mui/icons-material/CloudDoneOutlined'
-import CloudOffOutlinedIcon from '@mui/icons-material/CloudOffOutlined'
-import WarningAmberOutlinedIcon from '@mui/icons-material/WarningAmberOutlined'
+import CloudOffRoundedIcon from '@mui/icons-material/CloudOffRounded'
+import WarningAmberRounded from '@mui/icons-material/WarningAmberRounded'
 import { CreateCloudflareUploadByFile } from '../../../../../../__generated__/CreateCloudflareUploadByFile'
+import { GetJourney_journey_blocks_ImageBlock as ImageBlock } from '../../../../../../__generated__/GetJourney'
 
 export const CREATE_CLOUDFLARE_UPLOAD_BY_FILE = gql`
   mutation CreateCloudflareUploadByFile {
@@ -24,12 +25,16 @@ export const CREATE_CLOUDFLARE_UPLOAD_BY_FILE = gql`
 
 interface ImageUploadProps {
   onChange: (src: string) => void
+  selectedBlock: ImageBlock | null
   loading?: boolean
+  error?: boolean
 }
 
 export function ImageUpload({
   onChange,
-  loading = false
+  selectedBlock,
+  loading,
+  error
 }: ImageUploadProps): ReactElement {
   const [createCloudflareUploadByFile] =
     useMutation<CreateCloudflareUploadByFile>(CREATE_CLOUDFLARE_UPLOAD_BY_FILE)
@@ -43,26 +48,30 @@ export function ImageUpload({
       const formData = new FormData()
       formData.append('file', file)
 
-      const response = await (
-        await fetch(data?.createCloudflareUploadByFile?.uploadUrl, {
-          method: 'POST',
-          body: formData as unknown as FormDataType
-        })
-      ).json()
+      try {
+        const response = await (
+          await fetch(data?.createCloudflareUploadByFile?.uploadUrl, {
+            method: 'POST',
+            body: formData as unknown as FormDataType
+          })
+        ).json()
 
-      response.success === true ? setSuccess(true) : setSuccess(false)
-      if (response.errors.length !== 0) {
+        response.success === true ? setSuccess(true) : setSuccess(false)
+        if (response.errors.length !== 0) {
+          setSuccess(false)
+        }
+
+        const src = `https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/${
+          response.result.id as string
+        }/public`
+        onChange(src)
+      } catch (e) {
         setSuccess(false)
       }
-
-      const src = `https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/${
-        response.result.id as string
-      }/public`
-      onChange(src)
     }
   }
 
-  const { getRootProps, open, getInputProps } = useDropzone({
+  const { getRootProps, open, getInputProps, isDragAccept } = useDropzone({
     onDrop,
     noClick: true,
     maxSize: 10485760,
@@ -71,97 +80,107 @@ export function ImageUpload({
     }
   })
 
+  const uploadSuccess =
+    success === true && selectedBlock?.src != null && loading === false
+  const uploadError = error === true || success === false
+  const noBorder = uploadSuccess || uploadError || loading === true
+
   return (
-    <Stack {...getRootProps()} alignItems="center" sx={{ px: 6, pt: 3 }}>
+    <Stack
+      {...getRootProps({ isDragAccept })}
+      alignItems="center"
+      gap={1}
+      sx={{ px: 6, py: 3 }}
+    >
       <input {...getInputProps()} />
       <Box
         data-testid="drop zone"
         sx={{
           mt: 3,
+          display: 'flex',
           width: '100%',
-          height: '162px',
-          borderWidth: success == null ? '2px' : '0px',
+          height: 162,
+          borderWidth: noBorder ? undefined : 2,
           backgroundColor:
-            success === false && !loading
-              ? 'rgba(195,44,57,0.08)'
-              : 'background.default',
+            isDragAccept || loading === true
+              ? 'rgba(239, 239, 239, 0.9)'
+              : uploadError
+              ? 'rgba(197, 45, 58, 0.08)'
+              : 'rgba(239, 239, 239, 0.35)',
           borderColor: 'divider',
-          borderStyle: 'dashed',
-          borderRadius: '0.5rem',
+          borderStyle: noBorder ? undefined : 'dashed',
+          borderRadius: 2,
           justifyContent: 'center',
           flexDirection: 'column',
-          textAlign: 'center',
-          alignItems: 'center',
-          display: 'flex'
+          alignItems: 'center'
         }}
       >
-        {!loading && success === true ? (
+        {uploadSuccess ? (
           <CloudDoneOutlinedIcon
-            sx={{ fontSize: '48px', color: 'success.main', mb: 1 }}
+            sx={{ fontSize: 48, color: 'success.main', mb: 1 }}
           />
-        ) : !loading && success === false ? (
-          <CloudOffOutlinedIcon
-            sx={{ fontSize: '48px', color: '#C52D3A', mb: 1 }}
+        ) : uploadError ? (
+          <CloudOffRoundedIcon
+            sx={{ fontSize: 48, color: 'primary.main', mb: 1 }}
           />
         ) : (
           <BackupOutlinedIcon
-            sx={{ fontSize: '48px', color: 'secondary.light', mb: 1 }}
+            sx={{ fontSize: 48, color: 'secondary.light', mb: 1 }}
           />
         )}
         <Typography
           variant="body1"
           color={
-            success === true && !loading
+            uploadSuccess
               ? 'success.main'
-              : success === false && !loading
+              : uploadError
               ? 'error.main'
               : 'secondary.main'
           }
           sx={{ pb: 4 }}
         >
-          {!loading && success === true
-            ? 'Upload successful!'
-            : loading
+          {loading === true
             ? 'Uploading...'
-            : success === false
+            : uploadSuccess
+            ? 'Upload successful!'
+            : uploadError
             ? 'Upload Failed!'
             : 'Drop an image here'}
         </Typography>
       </Box>
       <Stack
         direction="row"
-        color={success === false && !loading ? 'error.main' : 'secondary.light'}
-        alignItems="center"
+        spacing={1}
+        color={uploadError ? 'error.main' : 'secondary.light'}
       >
-        <WarningAmberOutlinedIcon
+        <WarningAmberRounded
           fontSize="small"
           sx={{
-            display: success === false && !loading ? 'flex' : 'none'
+            display: uploadError ? 'flex' : 'none'
           }}
         />
         <Typography variant="caption">
-          {success === false && !loading
+          {uploadError
             ? 'Something went wrong, try again'
             : 'Max file size: 10 MB'}
         </Typography>
       </Stack>
       <Button
         size="small"
-        variant="outlined"
-        onClick={open}
         color="secondary"
+        variant="outlined"
+        disabled={loading === true}
+        onClick={open}
         sx={{
-          mt: 6,
-          height: '32px',
+          mt: 4,
+          height: 32,
           width: '100%',
-          borderColor: 'secondary.light',
-          borderWidth: '1px',
-          borderRadius: '8px'
+          borderRadius: 2
         }}
       >
         <Typography
           variant="subtitle2"
-          fontSize="14px"
+          fontSize={14}
           sx={{ color: 'secondary.main' }}
         >
           Upload file

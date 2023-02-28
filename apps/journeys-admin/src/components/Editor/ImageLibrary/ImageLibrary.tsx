@@ -20,6 +20,7 @@ interface ImageLibraryProps {
   selectedBlock: ImageBlock | null
   loading?: boolean
   showAdd?: boolean
+  error?: boolean
 }
 
 export function ImageLibrary({
@@ -29,7 +30,8 @@ export function ImageLibrary({
   onDelete,
   selectedBlock,
   loading,
-  showAdd
+  showAdd,
+  error
 }: ImageLibraryProps): ReactElement {
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
 
@@ -77,6 +79,7 @@ export function ImageLibrary({
         selectedBlock={selectedBlock}
         loading={loading}
         showAdd={showAdd}
+        error={error}
       />
     </Drawer>
   )
