@@ -82,7 +82,7 @@ function TemplateDetailsAdmin(): ReactElement {
           </JourneyProvider>
         </>
       )}
-      {data?.publisherTemplate == null && isPublisher !== true && (
+      {isPublisher !== true && (
         <>
           <NextSeo title={t('Access Denied')} />
           <PublisherInvite />
