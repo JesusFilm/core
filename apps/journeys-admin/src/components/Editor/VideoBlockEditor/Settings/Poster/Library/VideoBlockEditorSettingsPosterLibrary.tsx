@@ -1,14 +1,13 @@
 import { gql, useMutation } from '@apollo/client'
 import { ReactElement, useEffect } from 'react'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
-import { Dialog } from '@core/shared/ui/Dialog'
 import { GetJourney_journey_blocks_ImageBlock as ImageBlock } from '../../../../../../../__generated__/GetJourney'
 import { BlockDeleteForPosterImage } from '../../../../../../../__generated__/BlockDeleteForPosterImage'
 import { PosterImageBlockCreate } from '../../../../../../../__generated__/PosterImageBlockCreate'
 import { PosterImageBlockUpdate } from '../../../../../../../__generated__/PosterImageBlockUpdate'
 import { VideoBlockPosterImageUpdate } from '../../../../../../../__generated__/VideoBlockPosterImageUpdate'
-import { ImageBlockEditor } from '../../../../ImageBlockEditor'
 import { blockDeleteUpdate } from '../../../../../../libs/blockDeleteUpdate/blockDeleteUpdate'
+import { ImageLibrary } from '../../../../ImageLibrary'
 
 export const BLOCK_DELETE_FOR_POSTER_IMAGE = gql`
   mutation BlockDeleteForPosterImage(
@@ -69,7 +68,7 @@ export const POSTER_IMAGE_BLOCK_UPDATE = gql`
   }
 `
 
-interface VideoBlockEditorSettingsPosterDialogProps {
+interface VideoBlockEditorSettingsPosterLibraryProps {
   selectedBlock: ImageBlock | null
   parentBlockId: string | undefined
   open: boolean
@@ -78,14 +77,14 @@ interface VideoBlockEditorSettingsPosterDialogProps {
   onLoad?: () => void
 }
 
-export function VideoBlockEditorSettingsPosterDialog({
+export function VideoBlockEditorSettingsPosterLibrary({
   selectedBlock,
   parentBlockId,
   open,
   onClose,
   onLoading,
   onLoad
-}: VideoBlockEditorSettingsPosterDialogProps): ReactElement {
+}: VideoBlockEditorSettingsPosterLibraryProps): ReactElement {
   const { journey } = useJourney()
 
   const [blockDelete, { error: blockDeleteError }] =
@@ -226,20 +225,12 @@ export function VideoBlockEditorSettingsPosterDialog({
   }
 
   return (
-    <Dialog
+    <ImageLibrary
       open={open}
       onClose={onClose}
-      dialogTitle={{
-        title: 'Cover Image',
-        closeButton: true
-      }}
-    >
-      <ImageBlockEditor
-        selectedBlock={selectedBlock}
-        onChange={handleChange}
-        onDelete={deleteCoverBlock}
-        loading={createLoading || updateLoading}
-      />
-    </Dialog>
+      onChange={handleChange}
+      onDelete={deleteCoverBlock}
+      selectedBlock={selectedBlock}
+    />
   )
 }

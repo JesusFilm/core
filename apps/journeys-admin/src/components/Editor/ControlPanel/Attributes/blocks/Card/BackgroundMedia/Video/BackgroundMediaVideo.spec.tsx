@@ -214,6 +214,7 @@ describe('BackgroundMediaVideo', () => {
         </JourneyProvider>
       </MockedProvider>
     )
+    fireEvent.click(getByRole('button', { name: 'Select Video' }))
     await waitFor(() => expect(getByText('Brand Video')).toBeInTheDocument())
     fireEvent.click(getByText('Brand Video'))
     await waitFor(() =>
@@ -292,6 +293,7 @@ describe('BackgroundMediaVideo', () => {
         </JourneyProvider>
       </MockedProvider>
     )
+    fireEvent.click(getByRole('button', { name: 'Select Video' }))
     await waitFor(() => expect(getByText('Brand Video')).toBeInTheDocument())
     fireEvent.click(getByText('Brand Video'))
     await waitFor(() =>
@@ -370,6 +372,7 @@ describe('BackgroundMediaVideo', () => {
           </JourneyProvider>
         </MockedProvider>
       )
+      fireEvent.click(getByRole('button', { name: 'Select Video' }))
       await waitFor(() => expect(getByText('Brand_Video')).toBeInTheDocument())
       fireEvent.click(getByText('Brand Video'))
       await waitFor(() =>
@@ -386,8 +389,13 @@ describe('BackgroundMediaVideo', () => {
     // TODO: add delete video back once it's working
 
     describe('Video Settings', () => {
+      const existingCoverBlockWithId: TreeBlock<CardBlock> = {
+        ...card,
+        coverBlockId: video.id,
+        children: [{ ...video, videoId: 'id' }]
+      }
       it('shows settings', async () => {
-        const { getAllByRole, getByTestId } = render(
+        const { getAllByRole } = render(
           <MockedProvider>
             <JourneyProvider
               value={{
@@ -397,15 +405,12 @@ describe('BackgroundMediaVideo', () => {
             >
               <ThemeProvider>
                 <SnackbarProvider>
-                  <BackgroundMediaVideo cardBlock={existingCoverBlock} />
+                  <BackgroundMediaVideo cardBlock={existingCoverBlockWithId} />
                 </SnackbarProvider>
               </ThemeProvider>
             </JourneyProvider>
           </MockedProvider>
         )
-        const closeButton = getAllByRole('button')[0]
-        expect(closeButton).toContainElement(getByTestId('CloseIcon'))
-        fireEvent.click(closeButton)
         expect(getAllByRole('checkbox', { name: 'Muted' })[0]).toBeChecked()
         expect(getAllByRole('checkbox', { name: 'Autoplay' })[0]).toBeChecked()
         expect(getAllByRole('textbox', { name: 'Starts At' })[0]).toHaveValue(
@@ -436,7 +441,7 @@ describe('BackgroundMediaVideo', () => {
             }
           }
         }))
-        const { getAllByRole, getByTestId } = render(
+        const { getAllByRole } = render(
           <MockedProvider
             cache={cache}
             mocks={[
@@ -467,207 +472,195 @@ describe('BackgroundMediaVideo', () => {
             >
               <ThemeProvider>
                 <SnackbarProvider>
-                  <BackgroundMediaVideo cardBlock={existingCoverBlock} />
+                  <BackgroundMediaVideo cardBlock={existingCoverBlockWithId} />
                 </SnackbarProvider>
               </ThemeProvider>
             </JourneyProvider>
           </MockedProvider>
         )
-        const closeButton = getAllByRole('button')[0]
-        expect(closeButton).toContainElement(getByTestId('CloseIcon'))
-        fireEvent.click(closeButton)
         const checkbox = await getAllByRole('checkbox', { name: 'Autoplay' })[0]
         fireEvent.click(checkbox)
         await waitFor(() => expect(videoBlockResult).toHaveBeenCalled())
       })
-    })
 
-    it('updates muted', async () => {
-      const cache = new InMemoryCache()
-      cache.restore({
-        'Journey:journeyId': {
-          blocks: [
-            { __ref: 'CardBlock:cardId' },
-            { __ref: 'VideoBlock:videoId' }
-          ],
-          id: 'journeyId',
-          __typename: 'Journey'
-        }
-      })
-      const videoBlockResult = jest.fn(() => ({
-        data: {
-          videoBlockUpdate: video
-        }
-      }))
-      const { getAllByRole, getByTestId } = render(
-        <MockedProvider
-          cache={cache}
-          mocks={[
-            {
-              request: {
-                query: CARD_BLOCK_COVER_VIDEO_BLOCK_UPDATE,
-                variables: {
-                  id: video.id,
-                  journeyId: 'journeyId',
-                  input: {
-                    startAt: 0,
-                    endAt: 144,
-                    muted: false,
-                    autoplay: true,
-                    objectFit: 'fill'
+      it('updates muted', async () => {
+        const cache = new InMemoryCache()
+        cache.restore({
+          'Journey:journeyId': {
+            blocks: [
+              { __ref: 'CardBlock:cardId' },
+              { __ref: 'VideoBlock:videoId' }
+            ],
+            id: 'journeyId',
+            __typename: 'Journey'
+          }
+        })
+        const videoBlockResult = jest.fn(() => ({
+          data: {
+            videoBlockUpdate: video
+          }
+        }))
+        const { getAllByRole } = render(
+          <MockedProvider
+            cache={cache}
+            mocks={[
+              {
+                request: {
+                  query: CARD_BLOCK_COVER_VIDEO_BLOCK_UPDATE,
+                  variables: {
+                    id: video.id,
+                    journeyId: 'journeyId',
+                    input: {
+                      startAt: 0,
+                      endAt: 144,
+                      muted: false,
+                      autoplay: true,
+                      objectFit: 'fill'
+                    }
                   }
-                }
-              },
-              result: videoBlockResult
-            }
-          ]}
-        >
-          <JourneyProvider
-            value={{
-              journey: { id: 'journeyId' } as unknown as Journey,
-              admin: true
-            }}
+                },
+                result: videoBlockResult
+              }
+            ]}
           >
-            <ThemeProvider>
-              <SnackbarProvider>
-                <BackgroundMediaVideo cardBlock={existingCoverBlock} />
-              </SnackbarProvider>
-            </ThemeProvider>
-          </JourneyProvider>
-        </MockedProvider>
-      )
-      const closeButton = getAllByRole('button')[0]
-      expect(closeButton).toContainElement(getByTestId('CloseIcon'))
-      fireEvent.click(closeButton)
-      const checkbox = await getAllByRole('checkbox', { name: 'Muted' })[0]
-      fireEvent.click(checkbox)
-      await waitFor(() => expect(videoBlockResult).toHaveBeenCalled())
-    })
-
-    it('updates startAt', async () => {
-      const cache = new InMemoryCache()
-      cache.restore({
-        'Journey:journeyId': {
-          blocks: [
-            { __ref: 'CardBlock:cardId' },
-            { __ref: 'VideoBlock:videoId' }
-          ],
-          id: 'journeyId',
-          __typename: 'Journey'
-        }
-      })
-      const videoBlockResult = jest.fn(() => ({
-        data: {
-          videoBlockUpdate: video
-        }
-      }))
-      const { getAllByRole, getByTestId } = render(
-        <MockedProvider
-          cache={cache}
-          mocks={[
-            {
-              request: {
-                query: CARD_BLOCK_COVER_VIDEO_BLOCK_UPDATE,
-                variables: {
-                  id: video.id,
-                  journeyId: 'journeyId',
-                  input: {
-                    startAt: 11,
-                    endAt: 144,
-                    autoplay: true,
-                    muted: true,
-                    objectFit: 'fill'
-                  }
-                }
-              },
-              result: videoBlockResult
-            }
-          ]}
-        >
-          <JourneyProvider
-            value={{
-              journey: { id: 'journeyId' } as unknown as Journey,
-              admin: true
-            }}
-          >
-            <ThemeProvider>
-              <SnackbarProvider>
-                <BackgroundMediaVideo cardBlock={existingCoverBlock} />
-              </SnackbarProvider>
-            </ThemeProvider>
-          </JourneyProvider>
-        </MockedProvider>
-      )
-      const closeButton = getAllByRole('button')[0]
-      expect(closeButton).toContainElement(getByTestId('CloseIcon'))
-      fireEvent.click(closeButton)
-      const textbox = await getAllByRole('textbox', { name: 'Starts At' })[0]
-      fireEvent.change(textbox, { target: { value: '00:00:11' } })
-      fireEvent.blur(textbox)
-      await waitFor(() => expect(videoBlockResult).toHaveBeenCalled())
-    })
-
-    it('updates endAt', async () => {
-      const cache = new InMemoryCache()
-      cache.restore({
-        'Journey:journeyId': {
-          blocks: [
-            { __ref: 'CardBlock:cardId' },
-            { __ref: 'VideoBlock:videoId' }
-          ],
-          id: 'journeyId',
-          __typename: 'Journey'
-        }
-      })
-      const videoBlockResult = jest.fn(() => ({
-        data: {
-          videoBlockUpdate: video
-        }
-      }))
-      const { getAllByRole, getByTestId } = render(
-        <MockedProvider
-          cache={cache}
-          mocks={[
-            {
-              request: {
-                query: CARD_BLOCK_COVER_VIDEO_BLOCK_UPDATE,
-                variables: {
-                  id: video.id,
-                  journeyId: 'journeyId',
-                  input: {
-                    autoplay: true,
-                    muted: true,
-                    startAt: 0,
-                    endAt: 31,
-                    objectFit: 'fill'
-                  }
-                }
-              },
-              result: videoBlockResult
-            }
-          ]}
-        >
-          <ThemeProvider>
             <JourneyProvider
               value={{
                 journey: { id: 'journeyId' } as unknown as Journey,
                 admin: true
               }}
             >
-              <SnackbarProvider>
-                <BackgroundMediaVideo cardBlock={existingCoverBlock} />
-              </SnackbarProvider>
+              <ThemeProvider>
+                <SnackbarProvider>
+                  <BackgroundMediaVideo cardBlock={existingCoverBlockWithId} />
+                </SnackbarProvider>
+              </ThemeProvider>
             </JourneyProvider>
-          </ThemeProvider>
-        </MockedProvider>
-      )
-      const closeButton = getAllByRole('button')[0]
-      expect(closeButton).toContainElement(getByTestId('CloseIcon'))
-      fireEvent.click(closeButton)
-      const textbox = await getAllByRole('textbox', { name: 'Ends At' })[0]
-      fireEvent.change(textbox, { target: { value: '00:00:31' } })
-      fireEvent.blur(textbox)
-      await waitFor(() => expect(videoBlockResult).toHaveBeenCalled())
+          </MockedProvider>
+        )
+        const checkbox = await getAllByRole('checkbox', { name: 'Muted' })[0]
+        fireEvent.click(checkbox)
+        await waitFor(() => expect(videoBlockResult).toHaveBeenCalled())
+      })
+
+      it('updates startAt', async () => {
+        const cache = new InMemoryCache()
+        cache.restore({
+          'Journey:journeyId': {
+            blocks: [
+              { __ref: 'CardBlock:cardId' },
+              { __ref: 'VideoBlock:videoId' }
+            ],
+            id: 'journeyId',
+            __typename: 'Journey'
+          }
+        })
+        const videoBlockResult = jest.fn(() => ({
+          data: {
+            videoBlockUpdate: video
+          }
+        }))
+        const { getAllByRole } = render(
+          <MockedProvider
+            cache={cache}
+            mocks={[
+              {
+                request: {
+                  query: CARD_BLOCK_COVER_VIDEO_BLOCK_UPDATE,
+                  variables: {
+                    id: video.id,
+                    journeyId: 'journeyId',
+                    input: {
+                      startAt: 11,
+                      endAt: 144,
+                      autoplay: true,
+                      muted: true,
+                      objectFit: 'fill'
+                    }
+                  }
+                },
+                result: videoBlockResult
+              }
+            ]}
+          >
+            <JourneyProvider
+              value={{
+                journey: { id: 'journeyId' } as unknown as Journey,
+                admin: true
+              }}
+            >
+              <ThemeProvider>
+                <SnackbarProvider>
+                  <BackgroundMediaVideo cardBlock={existingCoverBlockWithId} />
+                </SnackbarProvider>
+              </ThemeProvider>
+            </JourneyProvider>
+          </MockedProvider>
+        )
+        const textbox = await getAllByRole('textbox', { name: 'Starts At' })[0]
+        fireEvent.change(textbox, { target: { value: '00:00:11' } })
+        fireEvent.blur(textbox)
+        await waitFor(() => expect(videoBlockResult).toHaveBeenCalled())
+      })
+
+      it('updates endAt', async () => {
+        const cache = new InMemoryCache()
+        cache.restore({
+          'Journey:journeyId': {
+            blocks: [
+              { __ref: 'CardBlock:cardId' },
+              { __ref: 'VideoBlock:videoId' }
+            ],
+            id: 'journeyId',
+            __typename: 'Journey'
+          }
+        })
+        const videoBlockResult = jest.fn(() => ({
+          data: {
+            videoBlockUpdate: video
+          }
+        }))
+        const { getAllByRole } = render(
+          <MockedProvider
+            cache={cache}
+            mocks={[
+              {
+                request: {
+                  query: CARD_BLOCK_COVER_VIDEO_BLOCK_UPDATE,
+                  variables: {
+                    id: video.id,
+                    journeyId: 'journeyId',
+                    input: {
+                      autoplay: true,
+                      muted: true,
+                      startAt: 0,
+                      endAt: 31,
+                      objectFit: 'fill'
+                    }
+                  }
+                },
+                result: videoBlockResult
+              }
+            ]}
+          >
+            <ThemeProvider>
+              <JourneyProvider
+                value={{
+                  journey: { id: 'journeyId' } as unknown as Journey,
+                  admin: true
+                }}
+              >
+                <SnackbarProvider>
+                  <BackgroundMediaVideo cardBlock={existingCoverBlockWithId} />
+                </SnackbarProvider>
+              </JourneyProvider>
+            </ThemeProvider>
+          </MockedProvider>
+        )
+        const textbox = await getAllByRole('textbox', { name: 'Ends At' })[0]
+        fireEvent.change(textbox, { target: { value: '00:00:31' } })
+        fireEvent.blur(textbox)
+        await waitFor(() => expect(videoBlockResult).toHaveBeenCalled())
+      })
     })
   })
 })

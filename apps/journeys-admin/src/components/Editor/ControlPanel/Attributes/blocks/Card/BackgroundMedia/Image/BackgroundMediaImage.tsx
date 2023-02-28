@@ -11,7 +11,7 @@ import {
 import { CardBlockImageBlockCreate } from '../../../../../../../../../__generated__/CardBlockImageBlockCreate'
 import { CardBlockImageBlockUpdate } from '../../../../../../../../../__generated__/CardBlockImageBlockUpdate'
 import { BlockDeleteForBackgroundImage } from '../../../../../../../../../__generated__/BlockDeleteForBackgroundImage'
-import { ImageBlockEditor } from '../../../../../../ImageBlockEditor'
+import { ImageSource } from '../../../../../../ImageSource'
 import { blockDeleteUpdate } from '../../../../../../../../libs/blockDeleteUpdate/blockDeleteUpdate'
 
 export const BLOCK_DELETE_FOR_BACKGROUND_IMAGE = gql`
@@ -123,6 +123,9 @@ export function BackgroundMediaImage({
           parentBlockId: cardBlock.id,
           src: block.src,
           alt: block.alt,
+          blurhash: block.blurhash,
+          width: block.width,
+          height: block.height,
           isCover: true
         }
       },
@@ -166,7 +169,10 @@ export function BackgroundMediaImage({
         journeyId: journey.id,
         input: {
           src: block.src,
-          alt: block.alt
+          alt: block.alt,
+          blurhash: block.blurhash,
+          width: block.width,
+          height: block.height
         }
       }
     })
@@ -194,7 +200,7 @@ export function BackgroundMediaImage({
   }
 
   return (
-    <ImageBlockEditor
+    <ImageSource
       selectedBlock={imageCover}
       onChange={handleChange}
       onDelete={handleImageDelete}

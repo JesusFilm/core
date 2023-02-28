@@ -114,11 +114,7 @@ describe('VideoBlockEditor', () => {
       const { getByText } = render(
         <ThemeProvider>
           <MockedProvider mocks={mocks}>
-            <VideoBlockEditor
-              selectedBlock={null}
-              onChange={jest.fn()}
-              onDelete={jest.fn()}
-            />
+            <VideoBlockEditor selectedBlock={null} onChange={jest.fn()} />
           </MockedProvider>
         </ThemeProvider>
       )
@@ -134,7 +130,6 @@ describe('VideoBlockEditor', () => {
             <VideoBlockEditor
               selectedBlock={videoInternal}
               onChange={jest.fn()}
-              onDelete={jest.fn()}
             />
           </MockedProvider>
         </ThemeProvider>
@@ -168,7 +163,6 @@ describe('VideoBlockEditor', () => {
                 } as unknown as VideoBlock['video']
               }}
               onChange={jest.fn()}
-              onDelete={jest.fn()}
             />
           </MockedProvider>
         </ThemeProvider>
@@ -223,7 +217,6 @@ describe('VideoBlockEditor', () => {
                 } as unknown as VideoBlock['video']
               }}
               onChange={jest.fn()}
-              onDelete={jest.fn()}
             />
           </MockedProvider>
         </ThemeProvider>
@@ -264,7 +257,6 @@ describe('VideoBlockEditor', () => {
                 } as unknown as VideoBlock['video']
               }}
               onChange={jest.fn()}
-              onDelete={jest.fn()}
             />
           </MockedProvider>
         </ThemeProvider>
@@ -282,7 +274,6 @@ describe('VideoBlockEditor', () => {
             <VideoBlockEditor
               selectedBlock={videoYouTube}
               onChange={jest.fn()}
-              onDelete={jest.fn()}
             />
           </MockedProvider>
         </ThemeProvider>
@@ -298,7 +289,6 @@ describe('VideoBlockEditor', () => {
           <VideoBlockEditor
             selectedBlock={videoInternal}
             onChange={jest.fn()}
-            onDelete={jest.fn()}
           />
         </MockedProvider>
       </ThemeProvider>

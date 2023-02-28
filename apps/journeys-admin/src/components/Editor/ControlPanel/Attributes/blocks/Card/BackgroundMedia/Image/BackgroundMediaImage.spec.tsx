@@ -1,9 +1,10 @@
 import type { TreeBlock } from '@core/journeys/ui/block'
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
-import { InMemoryCache } from '@apollo/client'
 import { SnackbarProvider } from 'notistack'
+import useMediaQuery from '@mui/material/useMediaQuery'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import { InMemoryCache } from '@apollo/client'
 import {
   GetJourney_journey as Journey,
   GetJourney_journey_blocks_CardBlock as CardBlock,
@@ -16,12 +17,18 @@ import {
   ThemeName,
   VideoBlockSource
 } from '../../../../../../../../../__generated__/globalTypes'
+import { createCloudflareUploadByUrlMock } from '../../../../../../ImageBlockEditor/CustomImage/CustomUrl/data'
 import {
   BackgroundMediaImage,
   CARD_BLOCK_COVER_IMAGE_BLOCK_CREATE,
   CARD_BLOCK_COVER_IMAGE_BLOCK_UPDATE,
   BLOCK_DELETE_FOR_BACKGROUND_IMAGE
 } from './BackgroundMediaImage'
+
+jest.mock('@mui/material/useMediaQuery', () => ({
+  __esModule: true,
+  default: jest.fn()
+}))
 
 const journey: Journey = {
   __typename: 'Journey',
@@ -67,13 +74,14 @@ const card: TreeBlock<CardBlock> = {
   fullscreen: false,
   children: []
 }
+
 const image: TreeBlock<ImageBlock> = {
   id: 'image1.id',
   __typename: 'ImageBlock',
   parentBlockId: card.id,
   parentOrder: 0,
-  src: 'https://example.com/image.jpg',
-  alt: 'image.jpg',
+  src: 'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/uploadId/public',
+  alt: 'public',
   width: 1920,
   height: 1080,
   blurhash: '',
@@ -121,6 +129,8 @@ const video: TreeBlock<VideoBlock> = {
 }
 
 describe('BackgroundMediaImage', () => {
+  beforeEach(() => (useMediaQuery as jest.Mock).mockImplementation(() => true))
+
   it('creates a new image cover block', async () => {
     const cache = new InMemoryCache()
     cache.restore({
@@ -140,6 +150,7 @@ describe('BackgroundMediaImage', () => {
       <MockedProvider
         cache={cache}
         mocks={[
+          createCloudflareUploadByUrlMock,
           {
             request: {
               query: CARD_BLOCK_COVER_IMAGE_BLOCK_CREATE,
@@ -164,9 +175,12 @@ describe('BackgroundMediaImage', () => {
         </JourneyProvider>
       </MockedProvider>
     )
+    fireEvent.click(getByRole('button', { name: 'Select Image' }))
+    fireEvent.click(getByRole('tab', { name: 'Custom' }))
+    fireEvent.click(getByRole('button', { name: 'Add image by URL' }))
     const textBox = await getByRole('textbox')
     fireEvent.change(textBox, {
-      target: { value: image.src }
+      target: { value: 'https://example.com/image.jpg' }
     })
     fireEvent.blur(textBox)
     await waitFor(() => expect(imageBlockResult).toHaveBeenCalled())
@@ -216,6 +230,7 @@ describe('BackgroundMediaImage', () => {
       <MockedProvider
         cache={cache}
         mocks={[
+          createCloudflareUploadByUrlMock,
           {
             request: {
               query: CARD_BLOCK_COVER_IMAGE_BLOCK_CREATE,
@@ -240,9 +255,12 @@ describe('BackgroundMediaImage', () => {
         </JourneyProvider>
       </MockedProvider>
     )
+    fireEvent.click(getByRole('button', { name: 'Select Image' }))
+    fireEvent.click(getByRole('tab', { name: 'Custom' }))
+    fireEvent.click(getByRole('button', { name: 'Add image by URL' }))
     const textBox = await getByRole('textbox')
     fireEvent.change(textBox, {
-      target: { value: image.src }
+      target: { value: 'https://example.com/image.jpg' }
     })
     fireEvent.blur(textBox)
     await waitFor(() => expect(imageBlockResult).toHaveBeenCalled())
@@ -268,7 +286,6 @@ describe('BackgroundMediaImage', () => {
         }
       ]
     }
-
     it('updates image cover block', async () => {
       const cache = new InMemoryCache()
       cache.restore({
@@ -289,10 +306,7 @@ describe('BackgroundMediaImage', () => {
             alt: image.alt,
             __typename: 'ImageBlock',
             parentBlockId: card.id,
-            width: image.width,
-            height: image.height,
-            parentOrder: image.parentOrder,
-            blurhash: image.blurhash
+            parentOrder: image.parentOrder
           }
         }
       }))
@@ -300,6 +314,7 @@ describe('BackgroundMediaImage', () => {
         <MockedProvider
           cache={cache}
           mocks={[
+            createCloudflareUploadByUrlMock,
             {
               request: {
                 query: CARD_BLOCK_COVER_IMAGE_BLOCK_UPDATE,
@@ -308,7 +323,10 @@ describe('BackgroundMediaImage', () => {
                   journeyId: journey.id,
                   input: {
                     src: image.src,
-                    alt: image.alt
+                    alt: image.alt,
+                    blurhash: '',
+                    width: 1920,
+                    height: 1080
                   }
                 }
               },
@@ -323,13 +341,19 @@ describe('BackgroundMediaImage', () => {
           </JourneyProvider>
         </MockedProvider>
       )
+      fireEvent.click(
+        getByRole('button', {
+          name: 'https://example.com/image2.jpg Selected Image 1920 x 1080 pixels'
+        })
+      )
+      fireEvent.click(getByRole('tab', { name: 'Custom' }))
+      fireEvent.click(getByRole('button', { name: 'Add image by URL' }))
       const textBox = await getByRole('textbox')
       fireEvent.change(textBox, {
-        target: { value: image.src }
+        target: { value: 'https://example.com/image.jpg' }
       })
       fireEvent.blur(textBox)
       await waitFor(() => expect(imageBlockResult).toHaveBeenCalled())
-      await waitFor(() => expect(textBox).toHaveValue(image.src))
       expect(cache.extract()[`Journey:${journey.id}`]?.blocks).toEqual([
         { __ref: `CardBlock:${card.id}` },
         { __ref: `ImageBlock:${image.id}` }
@@ -338,7 +362,7 @@ describe('BackgroundMediaImage', () => {
 
     it('shows loading icon', async () => {
       const { getByRole } = render(
-        <MockedProvider mocks={[]}>
+        <MockedProvider mocks={[createCloudflareUploadByUrlMock]}>
           <JourneyProvider value={{ journey, admin: true }}>
             <SnackbarProvider>
               <BackgroundMediaImage cardBlock={existingCoverBlock} />
@@ -346,9 +370,16 @@ describe('BackgroundMediaImage', () => {
           </JourneyProvider>
         </MockedProvider>
       )
+      fireEvent.click(
+        getByRole('button', {
+          name: 'https://example.com/image2.jpg Selected Image 1920 x 1080 pixels'
+        })
+      )
+      fireEvent.click(getByRole('tab', { name: 'Custom' }))
+      fireEvent.click(getByRole('button', { name: 'Add image by URL' }))
       const textbox = getByRole('textbox')
       fireEvent.change(textbox, {
-        target: { value: image.src }
+        target: { value: 'https://example.com/image.jpg' }
       })
       fireEvent.blur(textbox)
       await waitFor(() => expect(getByRole('progressbar')).toBeInTheDocument())
@@ -372,7 +403,7 @@ describe('BackgroundMediaImage', () => {
           blockDelete: []
         }
       }))
-      const { getByTestId } = render(
+      const { getByRole, getByTestId } = render(
         <MockedProvider
           cache={cache}
           mocks={[
@@ -395,6 +426,11 @@ describe('BackgroundMediaImage', () => {
             </SnackbarProvider>
           </JourneyProvider>
         </MockedProvider>
+      )
+      fireEvent.click(
+        getByRole('button', {
+          name: 'https://example.com/image2.jpg Selected Image 1920 x 1080 pixels'
+        })
       )
       const button = await getByTestId('imageBlockHeaderDelete')
       fireEvent.click(button)

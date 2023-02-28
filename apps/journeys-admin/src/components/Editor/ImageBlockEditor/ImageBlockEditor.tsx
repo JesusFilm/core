@@ -1,35 +1,52 @@
-import LinkIcon from '@mui/icons-material/Link'
-import InputAdornment from '@mui/material/InputAdornment'
-import Stack from '@mui/material/Stack'
-import TextField from '@mui/material/TextField'
-import { ReactElement, ClipboardEvent } from 'react'
+import { ReactElement, SyntheticEvent, useState } from 'react'
+import { tabA11yProps, TabPanel } from '@core/shared/ui/TabPanel'
+import Box from '@mui/material/Box'
+import Tab from '@mui/material/Tab'
+import Tabs from '@mui/material/Tabs'
+import Typography from '@mui/material/Typography'
+import BrushRounded from '@mui/icons-material/BrushRounded'
+import DashboardRounded from '@mui/icons-material/DashboardRounded'
 import { object, string } from 'yup'
-import { useFormik } from 'formik'
-import { noop } from 'lodash'
-
 import { GetJourney_journey_blocks_ImageBlock as ImageBlock } from '../../../../__generated__/GetJourney'
 import { ImageBlockHeader } from '../ImageBlockHeader'
+import { UnsplashAuthor, UnsplashGallery } from './UnsplashGallery'
+import { CustomImage } from './CustomImage'
 
 interface ImageBlockEditorProps {
-  selectedBlock: ImageBlock | null
-  showDelete?: boolean
-  onChange: (block: ImageBlock) => Promise<void>
+  onChange: (imageBlock: ImageBlock) => Promise<void>
   onDelete?: () => Promise<void>
+  selectedBlock: ImageBlock | null
   loading?: boolean
+  showAdd?: boolean
 }
 
 export function ImageBlockEditor({
-  selectedBlock,
-  showDelete = true,
   onChange,
   onDelete,
-  loading
+  selectedBlock,
+  loading,
+  showAdd
 }: ImageBlockEditorProps): ReactElement {
+  const [tabValue, setTabValue] = useState(0)
+  const [unsplashAuthor, setUnsplashAuthor] = useState<UnsplashAuthor>()
+
+  const handleTabChange = (
+    _event: SyntheticEvent<Element, Event>,
+    newValue: number
+  ): void => {
+    setTabValue(newValue)
+  }
+
   const srcSchema = object().shape({
     src: string().url('Please enter a valid url').required('Required')
   })
 
-  const handleSrcChange = async (src: string): Promise<void> => {
+  const handleSrcChange = async (
+    src: string,
+    blurhash?: string,
+    width = 0,
+    height = 0
+  ): Promise<void> => {
     if (!(await srcSchema.isValid({ src })) || src === selectedBlock?.src)
       return
 
@@ -38,77 +55,70 @@ export function ImageBlockEditor({
       src,
       alt: src.replace(/(.*\/)*/, '').replace(/\?.*/, '') // per Vlad 26/1/22, we are hardcoding the image alt for now
     }
+    if ((blurhash?.length ?? 0) > 0) {
+      block.blurhash = blurhash
+      block.width = width
+      block.height = height
+    }
+
     await onChange(block as ImageBlock)
   }
 
-  const handleImageDelete = async (): Promise<void> => {
-    if (onDelete != null) {
-      await onDelete()
-      formik.resetForm({ values: { src: '' } })
-    }
-  }
-
-  const handlePaste = async (
-    e: ClipboardEvent<HTMLDivElement>
+  const handleUnsplashChange = async (
+    src: string,
+    unsplashAuthor: { fullname: string; username: string },
+    blurHash?: string,
+    width?: number,
+    height?: number
   ): Promise<void> => {
-    await handleSrcChange(e.clipboardData.getData('text'))
+    await handleSrcChange(src, blurHash, width, height)
+    setUnsplashAuthor(unsplashAuthor)
   }
-
-  const formik = useFormik({
-    initialValues: {
-      src: selectedBlock?.src ?? ''
-    },
-    validationSchema: srcSchema,
-    onSubmit: noop
-  })
 
   return (
     <>
-      <ImageBlockHeader
-        selectedBlock={selectedBlock}
-        header={selectedBlock == null ? 'Select Image File' : selectedBlock.alt}
-        caption={
-          selectedBlock == null
-            ? 'Min width 1024px'
-            : `${selectedBlock.width} x ${selectedBlock.height}px`
-        }
-        showDelete={showDelete && selectedBlock != null}
-        onDelete={handleImageDelete}
-        loading={loading}
-      />
-      <Stack direction="column" sx={{ pt: 3 }}>
-        <form>
-          <TextField
-            id="src"
-            name="src"
-            variant="filled"
-            label="Paste URL of image..."
-            fullWidth
-            value={formik.values.src}
-            onChange={formik.handleChange}
-            onPaste={async (e) => {
-              await handlePaste(e)
-            }}
-            onBlur={async (e) => {
-              formik.handleBlur(e)
-              await handleSrcChange(e.target.value)
-            }}
-            helperText={
-              formik.errors.src != null
-                ? formik.errors.src
-                : 'Make sure image address is permanent'
-            }
-            error={formik.touched.src === true && Boolean(formik.errors.src)}
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <LinkIcon />
-                </InputAdornment>
-              )
-            }}
+      <Box
+        sx={{ width: '100%', justifyContent: 'center', display: 'flex', py: 4 }}
+      >
+        <ImageBlockHeader
+          selectedBlock={selectedBlock}
+          onDelete={onDelete}
+          loading={loading}
+          unsplashAuthor={unsplashAuthor}
+        />
+      </Box>
+      <Box
+        data-testid="ImageBlockEditor"
+        sx={{
+          borderBottom: 1,
+          borderColor: 'divider',
+          backgroundColor: (theme) => theme.palette.background.paper
+        }}
+      >
+        <Tabs
+          value={tabValue}
+          onChange={handleTabChange}
+          aria-label="image selection tabs"
+          variant="fullWidth"
+        >
+          <Tab
+            icon={<DashboardRounded />}
+            label={<Typography variant="subtitle2">Gallery</Typography>}
+            {...tabA11yProps('gallery', 0)}
           />
-        </form>
-      </Stack>
+          <Tab
+            icon={<BrushRounded />}
+            label={<Typography variant="subtitle2">Custom</Typography>}
+            {...tabA11yProps('custom', 1)}
+          />
+        </Tabs>
+      </Box>
+      <TabPanel name="gallery" value={tabValue} index={0}>
+        <UnsplashGallery onChange={handleUnsplashChange} />
+      </TabPanel>
+      <TabPanel name="custom" value={tabValue} index={1}>
+        <CustomImage onChange={handleSrcChange} />
+      </TabPanel>
     </>
   )
 }

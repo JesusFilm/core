@@ -107,18 +107,20 @@ export function ActivePriorityList({
       ))}
 
       {(sortedActionRequiredJourneys.length > 0 ||
-        sortedNewJourneys.length > 0) && (
-        <Box
-          sx={{
-            height: 8,
-            width: '100%',
-            borderTop: '1px solid',
-            borderLeft: '1px solid',
-            borderRight: '1px solid',
-            borderColor: 'divider'
-          }}
-        />
-      )}
+        sortedNewJourneys.length > 0) &&
+        sortedJourneys.length > 0 && (
+          <Box
+            aria-label="big-divider"
+            sx={{
+              height: 8,
+              width: '100%',
+              borderTop: '1px solid',
+              borderLeft: '1px solid',
+              borderRight: '1px solid',
+              borderColor: 'divider'
+            }}
+          />
+        )}
 
       {sortedJourneys.map((journey) => (
         <JourneyProvider

@@ -8,7 +8,7 @@ function VideosSubHeroStats(): ReactElement {
     <Stack
       direction="row"
       spacing={10}
-      sx={{ justifyContent: { md: 'space-between' } }}
+      sx={{ justifyContent: { md: 'flex-end' } }}
     >
       <Box>
         <Typography variant="h3">724</Typography>
@@ -17,10 +17,6 @@ function VideosSubHeroStats(): ReactElement {
       <Box>
         <Typography variant="h3">2,042</Typography>
         <Typography variant="overline">Languages</Typography>
-      </Box>
-      <Box>
-        <Typography variant="h3">3500</Typography>
-        <Typography variant="overline">Medias</Typography>
       </Box>
     </Stack>
   )
