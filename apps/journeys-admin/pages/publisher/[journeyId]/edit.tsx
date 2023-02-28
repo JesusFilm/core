@@ -68,7 +68,7 @@ function TemplateEditPage(): ReactElement {
           </Editor>
         </>
       )}
-      {data?.publisherTemplate != null && isPublisher !== true && (
+      {isPublisher !== true && (
         <>
           <NextSeo title={t('Access Denied')} />
           <PublisherInvite />
