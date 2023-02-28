@@ -34,11 +34,7 @@ function JourneyEditPage(): ReactElement {
     variables: { id: router.query.journeyId }
   })
 
-  useUserJourneyOpen(
-    AuthUser.id,
-    data?.journey?.id,
-    data?.journey?.userJourneys
-  )
+  useUserJourneyOpen(AuthUser.id, journey?.id, journey?.userJourneys)
   useTermsRedirect()
 
   return (
