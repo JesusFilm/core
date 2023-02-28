@@ -29,7 +29,7 @@ bq --project_id jfp-data-warehouse load --replace --source_format NEWLINE_DELIMI
 
 # blocks
 echo "Exporting blocks from ArangoDB"
-arangoexport --type jsonl --compress-output true --overwrite true --server.authentication true --server.database $DATABASE_DB --server.username $DATABASE_USER --server.password $DATABASE_PASS --server.endpoint $DATABASE_URL --custom-query "FOR b IN blocks RETURN { _key: b.key, parentOrder: b.parentOrder, journeyId: b.journeyId, __typename: b.__typename, nextBlockId: b.nextBlockId }"
+arangoexport --type jsonl --compress-output true --overwrite true --server.authentication true --server.database $DATABASE_DB --server.username $DATABASE_USER --server.password $DATABASE_PASS --server.endpoint $DATABASE_URL --custom-query "FOR b IN blocks RETURN { _key: b.key, parentOrder: b.parentOrder, journeyId: b.journeyId, __typename: b.__typename, nextBlockId: b.nextBlockId, videoId: b.videoId }"
 echo "Importing blocks to BigQuery"
 bq --project_id jfp-data-warehouse load --replace --source_format NEWLINE_DELIMITED_JSON --autodetect nextsteps.blocks export/query.jsonl.gz
 
