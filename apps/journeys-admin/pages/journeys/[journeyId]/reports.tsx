@@ -18,8 +18,7 @@ import { GET_JOURNEY } from '../[journeyId]'
 import { UserInviteAcceptAll } from '../../../__generated__/UserInviteAcceptAll'
 import i18nConfig from '../../../next-i18next.config'
 import { MemoizedDynamicReport } from '../../../src/components/DynamicPowerBiReport'
-import { GetJourney } from '../../../__generated__/GetJourney'
-import { GET_JOURNEY } from '../[journeyId]'
+
 import { createApolloClient } from '../../../src/libs/apolloClient'
 import { JourneysReportType } from '../../../__generated__/globalTypes'
 import { useUserJourneyOpen } from '../../../src/libs/useUserJourneyOpen'
@@ -30,17 +29,11 @@ function JourneyReportsPage(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const AuthUser = useAuthUser()
   const router = useRouter()
+  const { journey } = useJourney()
 
   const journeyId = router.query.journeyId as string
-  const { data } = useQuery<GetJourney>(GET_JOURNEY, {
-    variables: { id: journeyId }
-  })
 
-  useUserJourneyOpen(
-    AuthUser.id,
-    data?.journey?.id,
-    data?.journey?.userJourneys
-  )
+  useUserJourneyOpen(AuthUser.id, journey?.id, journey?.userJourneys)
   useTermsRedirect()
 
   return (
