@@ -36,7 +36,7 @@ export function ImageBlockHeader({
       sx={{
         height: 78,
         width: '100%',
-        mx: 4
+        mx: showAdd ? 0 : 4
       }}
     >
       <Stack direction="row" alignItems="center">
@@ -61,6 +61,8 @@ export function ImageBlockHeader({
               ? 'Selected Image'
               : showAdd
               ? 'Select Image'
+              : error === true
+              ? 'Upload failed'
               : 'No Image Selected'}
           </Typography>
           {unsplashAuthor != null ? (
