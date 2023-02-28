@@ -15,6 +15,7 @@ interface ImageBlockHeaderProps {
   showAdd?: boolean
   onDelete?: () => Promise<void>
   loading?: boolean
+  error?: boolean
   unsplashAuthor?: UnsplashAuthor
 }
 
@@ -23,6 +24,7 @@ export function ImageBlockHeader({
   onDelete,
   loading = false,
   selectedBlock,
+  error,
   unsplashAuthor
 }: ImageBlockHeaderProps): ReactElement {
   return (
@@ -33,7 +35,8 @@ export function ImageBlockHeader({
       alignItems="center"
       sx={{
         height: 78,
-        width: showAdd ? '100%' : 285
+        width: '100%',
+        mx: showAdd ? 0 : 4
       }}
     >
       <Stack direction="row" alignItems="center">
@@ -47,6 +50,7 @@ export function ImageBlockHeader({
           <ImageBlockThumbnail
             selectedBlock={selectedBlock != null ? selectedBlock : undefined}
             loading={loading}
+            error={error}
           />
         </Box>
         <Stack>
@@ -57,6 +61,8 @@ export function ImageBlockHeader({
               ? 'Selected Image'
               : showAdd
               ? 'Select Image'
+              : error === true
+              ? 'Upload failed'
               : 'No Image Selected'}
           </Typography>
           {unsplashAuthor != null ? (

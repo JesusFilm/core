@@ -54,6 +54,14 @@ describe('ImageBlockHeader', () => {
     expect(getByText('Select Image')).toBeInTheDocument()
   })
 
+  it('should render error state', () => {
+    const { getByText, getByTestId } = render(
+      <ImageBlockHeader selectedBlock={null} error />
+    )
+    expect(getByText('Upload failed')).toBeInTheDocument()
+    expect(getByTestId('BrokenImageOutlinedIcon')).toBeInTheDocument()
+  })
+
   it('should render the unsplash author', () => {
     const { getByText, queryByText } = render(
       <ImageBlockHeader
