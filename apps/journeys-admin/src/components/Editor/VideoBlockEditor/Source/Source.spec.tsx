@@ -76,6 +76,7 @@ describe('Source', () => {
         <Source selectedBlock={null} onChange={onChange} />
       </MockedProvider>
     )
+    fireEvent.click(getByRole('button', { name: 'Select Video' }))
     await waitFor(() => expect(getByText('Brand Video')).toBeInTheDocument())
     fireEvent.click(getByText('Brand Video'))
     await waitFor(() =>
