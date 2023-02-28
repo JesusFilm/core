@@ -1,7 +1,6 @@
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
 import useMediaQuery from '@mui/material/useMediaQuery'
-import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 import { createCloudflareUploadByUrlMock } from '../ImageBlockEditor/CustomImage/CustomUrl/data'
 import { ImageSource } from './ImageSource'
 
@@ -20,13 +19,11 @@ describe('ImageSource', () => {
     it('shows placeholders on null', async () => {
       const { getByRole } = render(
         <MockedProvider>
-          <FlagsProvider flags={{ unsplashGallery: true }}>
-            <ImageSource
-              selectedBlock={null}
-              onChange={onChange}
-              onDelete={onDelete}
-            />
-          </FlagsProvider>
+          <ImageSource
+            selectedBlock={null}
+            onChange={onChange}
+            onDelete={onDelete}
+          />
         </MockedProvider>
       )
       fireEvent.click(getByRole('button', { name: 'Select Image' }))
@@ -40,13 +37,11 @@ describe('ImageSource', () => {
     it('shows placeholders', async () => {
       const { getByRole } = render(
         <MockedProvider>
-          <FlagsProvider flags={{ unsplashGallery: true }}>
-            <ImageSource
-              selectedBlock={null}
-              onChange={onChange}
-              onDelete={onDelete}
-            />
-          </FlagsProvider>
+          <ImageSource
+            selectedBlock={null}
+            onChange={onChange}
+            onDelete={onDelete}
+          />
         </MockedProvider>
       )
       fireEvent.click(getByRole('button', { name: 'Select Image' }))
@@ -59,13 +54,11 @@ describe('ImageSource', () => {
   it('triggers onChange', async () => {
     const { getByRole } = render(
       <MockedProvider mocks={[createCloudflareUploadByUrlMock]}>
-        <FlagsProvider flags={{ unsplashGallery: true }}>
-          <ImageSource
-            selectedBlock={null}
-            onChange={onChange}
-            onDelete={onDelete}
-          />
-        </FlagsProvider>
+        <ImageSource
+          selectedBlock={null}
+          onChange={onChange}
+          onDelete={onDelete}
+        />
       </MockedProvider>
     )
     fireEvent.click(getByRole('button', { name: 'Select Image' }))
@@ -81,13 +74,11 @@ describe('ImageSource', () => {
   it('triggers onChange onPaste', async () => {
     const { getByRole } = render(
       <MockedProvider mocks={[createCloudflareUploadByUrlMock]}>
-        <FlagsProvider flags={{ unsplashGallery: true }}>
-          <ImageSource
-            selectedBlock={null}
-            onChange={onChange}
-            onDelete={onDelete}
-          />
-        </FlagsProvider>
+        <ImageSource
+          selectedBlock={null}
+          onChange={onChange}
+          onDelete={onDelete}
+        />
       </MockedProvider>
     )
     fireEvent.click(getByRole('button', { name: 'Select Image' }))
