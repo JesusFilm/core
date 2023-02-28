@@ -498,6 +498,13 @@ input ImageBlockUpdateInput
   parentBlockId: ID
   src: String
   alt: String
+
+  """
+  If blurhash, width, & height are provided, the image will skip blurhash processing. Otherwise these values will be calculated.
+  """
+  blurhash: String
+  width: Int
+  height: Int
 }
 
 scalar join__FieldSet
@@ -828,6 +835,7 @@ type Mutation
   createCloudflareUploadByUrl(url: String!): CloudflareImage @join__field(graph: MEDIA)
   deleteCloudflareImage(id: ID!): Boolean @join__field(graph: MEDIA)
   cloudflareUploadComplete(id: ID!): Boolean @join__field(graph: MEDIA)
+  triggerUnsplashDownload(url: String!): Boolean @join__field(graph: MEDIA)
 }
 
 """
