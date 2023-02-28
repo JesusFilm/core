@@ -1,12 +1,14 @@
+import { ReactElement } from 'react'
 import Box from '@mui/material/Box'
 import IconButton from '@mui/material/IconButton'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
-import { ReactElement } from 'react'
+import Link from '@mui/material/Link'
 import AddIcon from '@mui/icons-material/Add'
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline'
 import { ImageBlockThumbnail } from '../ImageBlockThumbnail'
 import { GetJourney_journey_blocks_ImageBlock as ImageBlock } from '../../../../__generated__/GetJourney'
+import type { UnsplashAuthor } from '../ImageBlockEditor/UnsplashGallery'
 
 interface ImageBlockHeaderProps {
   selectedBlock: ImageBlock | null
@@ -14,6 +16,7 @@ interface ImageBlockHeaderProps {
   onDelete?: () => Promise<void>
   loading?: boolean
   error?: boolean
+  unsplashAuthor?: UnsplashAuthor
 }
 
 export function ImageBlockHeader({
@@ -21,7 +24,8 @@ export function ImageBlockHeader({
   onDelete,
   loading = false,
   selectedBlock,
-  error
+  error,
+  unsplashAuthor
 }: ImageBlockHeaderProps): ReactElement {
   return (
     <Stack
@@ -50,26 +54,37 @@ export function ImageBlockHeader({
           />
         </Box>
         <Stack>
-          <Typography
-            variant="subtitle2"
-            color={error === true ? 'error.main' : 'text.primary'}
-          >
+          <Typography variant="subtitle2" color="text.secondary">
             {loading
               ? 'Image is uploading...'
-              : error === true
-              ? 'Upload failed'
               : selectedBlock != null
               ? 'Selected Image'
-              : 'Select Image'}
+              : showAdd
+              ? 'Select Image'
+              : 'No Image Selected'}
           </Typography>
-          <Typography
-            variant="caption"
-            display={selectedBlock != null && !loading ? 'flex' : 'none'}
-          >
-            {selectedBlock != null
-              ? `${selectedBlock.width} x ${selectedBlock.height} pixels`
-              : ''}
-          </Typography>
+          {unsplashAuthor != null ? (
+            <Link
+              href={`https://unsplash.com/@${
+                unsplashAuthor.username ?? ''
+              }?utm_source=NextSteps&utm_medium=referral`}
+              color="secondary.light"
+            >
+              <Typography variant="caption">
+                {unsplashAuthor.fullname}
+              </Typography>
+            </Link>
+          ) : (
+            <Typography
+              variant="caption"
+              display={selectedBlock != null ? 'flex' : 'none'}
+              color="text.secondary"
+            >
+              {selectedBlock != null
+                ? `${selectedBlock.width} x ${selectedBlock.height} pixels`
+                : ''}
+            </Typography>
+          )}
         </Stack>
       </Stack>
       <IconButton

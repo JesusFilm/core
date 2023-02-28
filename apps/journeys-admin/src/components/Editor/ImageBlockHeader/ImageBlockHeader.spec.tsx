@@ -33,6 +33,14 @@ describe('ImageBlockHeader', () => {
     )
 
     expect(getByTestId('imageBlockThumbnailPlaceholder')).toBeInTheDocument()
+    expect(getByText('No Image Selected')).toBeInTheDocument()
+  })
+
+  it('should render text for background image', () => {
+    const { getByText, getByTestId } = render(
+      <ImageBlockHeader showAdd selectedBlock={null} />
+    )
+    expect(getByTestId('AddIcon')).toBeInTheDocument()
     expect(getByText('Select Image')).toBeInTheDocument()
   })
 
@@ -52,5 +60,25 @@ describe('ImageBlockHeader', () => {
     )
     expect(getByText('Upload failed')).toBeInTheDocument()
     expect(getByTestId('BrokenImageOutlinedIcon')).toBeInTheDocument()
+  })
+
+  it('should render the unsplash author', () => {
+    const { getByText, queryByText } = render(
+      <ImageBlockHeader
+        selectedBlock={image}
+        unsplashAuthor={{
+          fullname: 'Levi Meir Clancy',
+          username: 'levimeirclancy'
+        }}
+      />
+    )
+    expect(getByText('Selected Image')).toBeInTheDocument()
+    expect(
+      queryByText(`${image.width} x ${image.height} pixels`)
+    ).not.toBeInTheDocument()
+    expect(getByText('Levi Meir Clancy').closest('a')).toHaveAttribute(
+      'href',
+      'https://unsplash.com/@levimeirclancy?utm_source=NextSteps&utm_medium=referral'
+    )
   })
 })
