@@ -17,6 +17,8 @@ cors:
   match_origins:
     # any project deployed on the jesusfilm vercel account
     - '^https://([a-z0-9-]+)-jesusfilm[.]vercel[.]app$'
+    # any project deployed on the jesusfilm.org domain
+    - '^https://([a-z0-9-]+)[.]jesusfilm[.]org$'
   max_age: 24h
 headers:
   all:
