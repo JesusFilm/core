@@ -61,10 +61,112 @@ resource "aws_ecs_task_definition" "ecs_task_definition" {
           name      = param.tags.name
           valueFrom = param.arn
         }
+        ], [
+        {
+          name      = "DD_API_KEY"
+          valueFrom = "arn:aws:ssm:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:parameter/terraform/prd/DATADOG_API_KEY"
+        }
       ])
+      logConfiguration = {
+        logDriver = "awsfirelens"
+        options = {
+          Name        = "datadog"
+          Host        = "http-intake.logs.datadoghq.com"
+          TLS         = "on"
+          dd_service  = "ecs"
+          dd_source   = "aws"
+          dd_tags     = "env:${var.env},app:${local.ecs_task_definition_family},host:${local.ecs_task_definition_family}-app"
+          provider    = "ecs"
+          retry_limit = "2"
+        }
+        secretOptions = [
+          {
+            name      = "apikey"
+            valueFrom = "arn:aws:ssm:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:parameter/terraform/prd/DATADOG_API_KEY"
+          }
+        ]
+      }
       environment = []
       mountPoints = []
       volumesFrom = []
+    },
+    # datadog agent container
+    {
+      name              = "${local.ecs_task_definition_family}-datadog-agent"
+      image             = "public.ecr.aws/datadog/agent:latest"
+      essential         = true
+      cpu               = 0
+      memoryReservation = 128
+      environment = [
+        {
+          name  = "DD_DOGSTATSD_NON_LOCAL_TRAFFIC",
+          value = "true"
+        },
+        {
+          name  = "DD_PROCESS_AGENT_ENABLED",
+          value = "true"
+        },
+        {
+          name  = "DD_TAGS",
+          value = "env:${var.env} app:${local.ecs_task_definition_family}"
+        },
+        {
+          name  = "ECS_FARGATE",
+          value = "true"
+        }
+      ]
+      secrets = [
+        {
+          name      = "DD_API_KEY"
+          valueFrom = "arn:aws:ssm:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:parameter/terraform/prd/DATADOG_API_KEY"
+        }
+      ]
+      mountPoints = []
+      portMappings = [
+        {
+          protocol      = "udp"
+          hostPort      = 8125
+          containerPort = 8125
+        }
+      ]
+      logConfiguration = {
+        logDriver = "awslogs"
+        options = {
+          awslogs-group         = resource.aws_cloudwatch_log_group.ecs_cw_log_group.name
+          awslogs-region        = data.aws_region.current.name
+          awslogs-stream-prefix = "core"
+        }
+      }
+      volumesFrom = []
+    },
+    # log router container
+    {
+      name              = "${local.ecs_task_definition_family}-log-router"
+      image             = "amazon/aws-for-fluent-bit:stable"
+      essential         = true
+      cpu               = 0
+      memoryReservation = 100
+      environment       = []
+      mountPoints       = []
+      portMappings      = []
+      user              = "0"
+      volumesFrom       = []
+      firelensConfiguration = {
+        type = "fluentbit"
+        options = {
+          enable-ecs-log-metadata = "true"
+          config-file-type        = "file"
+          config-file-value       = "/fluent-bit/configs/parse-json.conf"
+        }
+      }
+      logConfiguration = {
+        logDriver = "awslogs"
+        options = {
+          awslogs-group         = resource.aws_cloudwatch_log_group.ecs_cw_log_group.name
+          awslogs-region        = data.aws_region.current.name
+          awslogs-stream-prefix = "core"
+        }
+      }
     }
   ])
   tags = {}
