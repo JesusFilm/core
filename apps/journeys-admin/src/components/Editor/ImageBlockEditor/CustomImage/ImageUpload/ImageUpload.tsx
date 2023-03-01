@@ -61,10 +61,10 @@ export function ImageUpload({
           setSuccess(false)
         }
 
-        const src = `https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/${
-          response.result.id as string
-        }/public`
+        const src = `https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/${response.result.id as string
+          }/public`
         onChange(src)
+        setTimeout(() => setSuccess(undefined), 4000)
       } catch (e) {
         setSuccess(false)
       }
@@ -105,8 +105,8 @@ export function ImageUpload({
             isDragAccept || loading === true
               ? 'rgba(239, 239, 239, 0.9)'
               : uploadError
-              ? 'rgba(197, 45, 58, 0.08)'
-              : 'rgba(239, 239, 239, 0.35)',
+                ? 'rgba(197, 45, 58, 0.08)'
+                : 'rgba(239, 239, 239, 0.35)',
           borderColor: 'divider',
           borderStyle: noBorder ? undefined : 'dashed',
           borderRadius: 2,
@@ -134,18 +134,18 @@ export function ImageUpload({
             uploadSuccess
               ? 'success.main'
               : uploadError
-              ? 'error.main'
-              : 'secondary.main'
+                ? 'error.main'
+                : 'secondary.main'
           }
           sx={{ pb: 4 }}
         >
           {loading === true
             ? 'Uploading...'
             : uploadSuccess
-            ? 'Upload successful!'
-            : uploadError
-            ? 'Upload Failed!'
-            : 'Drop an image here'}
+              ? 'Upload successful!'
+              : uploadError
+                ? 'Upload Failed!'
+                : 'Drop an image here'}
         </Typography>
       </Box>
       <Stack
