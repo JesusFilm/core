@@ -11,13 +11,15 @@ interface ImageSourceProps {
   onChange: (block: ImageBlock) => Promise<void>
   onDelete?: () => Promise<void>
   loading?: boolean
+  error?: boolean
 }
 
 export function ImageSource({
   selectedBlock,
   onChange,
   onDelete,
-  loading
+  loading,
+  error
 }: ImageSourceProps): ReactElement {
   const [open, setOpen] = useState(false)
 
@@ -56,6 +58,7 @@ export function ImageSource({
         onDelete={handleImageDelete}
         selectedBlock={selectedBlock}
         loading={loading}
+        error={error}
       />
     </>
   )
