@@ -9,6 +9,15 @@ import { GetJourney_journey as Journey } from '../../../../../../__generated__/G
 import { RADIO_OPTION_BLOCK_CREATE } from './RadioQuestionEdit'
 import { RadioQuestionEdit } from '.'
 
+jest.mock('react-i18next', () => ({
+  __esModule: true,
+  useTranslation: () => {
+    return {
+      t: (str: string) => str
+    }
+  }
+}))
+
 describe('RadioQuestionEdit', () => {
   const props = (
     children?: Array<TreeBlock<RadioOptionFields>>
@@ -40,7 +49,7 @@ describe('RadioQuestionEdit', () => {
           parentBlockId: 'radioQuestion.id',
           parentOrder: 0,
           journeyId: 'journeyId',
-          label: 'Option 12'
+          label: ''
         }
       }
     }))
@@ -55,7 +64,7 @@ describe('RadioQuestionEdit', () => {
                 input: {
                   journeyId: 'journeyId',
                   parentBlockId: 'radioQuestion.id',
-                  label: 'Option 12'
+                  label: ''
                 }
               }
             },
