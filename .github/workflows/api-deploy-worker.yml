@@ -30,15 +30,7 @@ on:
     secrets:
       APOLLO_KEY:
         required: true
-      ARANGODB_URL:
-        required: true
-      ARANGODB_USER:
-        required: true
-      ARANGODB_PASS:
-        required: true
       AWS_DEFAULT_REGION:
-        required: true
-      ARCLIGHT_API_KEY:
         required: true
       JFP_AWS_ACCESS_KEY_ID:
         required: true
@@ -55,9 +47,6 @@ jobs:
       ENV_SUFFIX: ${{ inputs.branch }}
       ECR_REPOSITORY: ${{ inputs.repository }}
       IMAGE_TAG: ${{ github.sha }}
-      DATABASE_URL: ${{ secrets.ARANGODB_URL }}
-      DATABASE_USER: ${{ secrets.ARANGODB_USER }}
-      DATABASE_PASS: ${{ secrets.ARANGODB_PASS }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout current branch

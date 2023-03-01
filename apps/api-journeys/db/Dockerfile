@@ -1,9 +1,7 @@
 FROM node:16-alpine
 WORKDIR /app
-# COPY ./package.json .
-# COPY ./package-lock.json .
-COPY ./apps/api-journeys/db .
+COPY ./tsconfig.base.json /app/tsconfig.base.json
+COPY ./apps/api-journeys /app/apps/api-journeys
 
-RUN npm install -g npm@latest
-RUN npm install arangojs
-CMD npx ts-node ./seed.ts
+RUN npm install arangojs@^7.6.1 ts-node@^10.9.1 tslib@^2.3.1
+CMD npx ts-node /app/apps/api-journeys/db/seed.ts

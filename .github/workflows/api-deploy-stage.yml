@@ -17,11 +17,7 @@ jobs:
       endpoint_url: http://api-journeys.stage.internal:4001/graphql
     secrets:
       APOLLO_KEY: ${{ secrets.APOLLO_KEY }}
-      ARANGODB_URL: ${{ secrets.ARANGODB_URL }}
-      ARANGODB_USER: ${{ secrets.ARANGODB_USER }}
-      ARANGODB_PASS: ${{ secrets.ARANGODB_PASS }}
       AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
-      ARCLIGHT_API_KEY: ${{ secrets.ARCLIGHT_API_KEY }}
       JFP_AWS_ACCESS_KEY_ID: ${{ secrets.JFP_AWS_ACCESS_KEY_ID }}
       JFP_AWS_SECRET_ACCESS_KEY: ${{ secrets.JFP_AWS_SECRET_ACCESS_KEY }}
       AWS_NETWORK_CONFIG: ${{ secrets.AWS_NETWORK_CONFIG }}
@@ -38,11 +34,7 @@ jobs:
       endpoint_url: http://api-users.stage.internal:4002/graphql
     secrets:
       APOLLO_KEY: ${{ secrets.APOLLO_KEY }}
-      ARANGODB_URL: ${{ secrets.ARANGODB_URL }}
-      ARANGODB_USER: ${{ secrets.ARANGODB_USER }}
-      ARANGODB_PASS: ${{ secrets.ARANGODB_PASS }}
       AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
-      ARCLIGHT_API_KEY: ${{ secrets.ARCLIGHT_API_KEY }}
       JFP_AWS_ACCESS_KEY_ID: ${{ secrets.JFP_AWS_ACCESS_KEY_ID }}
       JFP_AWS_SECRET_ACCESS_KEY: ${{ secrets.JFP_AWS_SECRET_ACCESS_KEY }}
       AWS_NETWORK_CONFIG: ${{ secrets.AWS_NETWORK_CONFIG }}
@@ -59,11 +51,7 @@ jobs:
       endpoint_url: http://api-languages.stage.internal:4003/graphql
     secrets:
       APOLLO_KEY: ${{ secrets.APOLLO_KEY }}
-      ARANGODB_URL: ${{ secrets.ARANGODB_URL }}
-      ARANGODB_USER: ${{ secrets.ARANGODB_USER }}
-      ARANGODB_PASS: ${{ secrets.ARANGODB_PASS }}
       AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
-      ARCLIGHT_API_KEY: ${{ secrets.ARCLIGHT_API_KEY }}
       JFP_AWS_ACCESS_KEY_ID: ${{ secrets.JFP_AWS_ACCESS_KEY_ID }}
       JFP_AWS_SECRET_ACCESS_KEY: ${{ secrets.JFP_AWS_SECRET_ACCESS_KEY }}
       AWS_NETWORK_CONFIG: ${{ secrets.AWS_NETWORK_CONFIG }}
@@ -80,11 +68,7 @@ jobs:
       endpoint_url: http://api-videos.stage.internal:4004/graphql
     secrets:
       APOLLO_KEY: ${{ secrets.APOLLO_KEY }}
-      ARANGODB_URL: ${{ secrets.ARANGODB_URL }}
-      ARANGODB_USER: ${{ secrets.ARANGODB_USER }}
-      ARANGODB_PASS: ${{ secrets.ARANGODB_PASS }}
       AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
-      ARCLIGHT_API_KEY: ${{ secrets.ARCLIGHT_API_KEY }}
       JFP_AWS_ACCESS_KEY_ID: ${{ secrets.JFP_AWS_ACCESS_KEY_ID }}
       JFP_AWS_SECRET_ACCESS_KEY: ${{ secrets.JFP_AWS_SECRET_ACCESS_KEY }}
       AWS_NETWORK_CONFIG: ${{ secrets.AWS_NETWORK_CONFIG }}
@@ -93,17 +77,15 @@ jobs:
     with:
       name: api-media
       repository: jfp-api-media-stage
+      seed_repository: jfp-api-media-seed-stage
       branch: ${{ github.ref_name }}
       ecs_cluster: jfp-ecs-cluster-stage
       ecs_service: api-media-stage-service
+      seed_task_name: api-media-seed-stage
       endpoint_url: http://api-media.stage.internal:4005/graphql
     secrets:
       APOLLO_KEY: ${{ secrets.APOLLO_KEY }}
-      ARANGODB_URL: ${{ secrets.ARANGODB_URL }}
-      ARANGODB_USER: ${{ secrets.ARANGODB_USER }}
-      ARANGODB_PASS: ${{ secrets.ARANGODB_PASS }}
       AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
-      ARCLIGHT_API_KEY: ${{ secrets.ARCLIGHT_API_KEY }}
       JFP_AWS_ACCESS_KEY_ID: ${{ secrets.JFP_AWS_ACCESS_KEY_ID }}
       JFP_AWS_SECRET_ACCESS_KEY: ${{ secrets.JFP_AWS_SECRET_ACCESS_KEY }}
       AWS_NETWORK_CONFIG: ${{ secrets.AWS_NETWORK_CONFIG }}

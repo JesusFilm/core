@@ -12,6 +12,7 @@ module "seed" {
   name          = "${local.service_config.name}-seed"
   doppler_token = var.doppler_token
   environment_variables = [
+    "ARCLIGHT_API_KEY",
     "DATABASE_DB",
     "DATABASE_PASS",
     "DATABASE_URL",
