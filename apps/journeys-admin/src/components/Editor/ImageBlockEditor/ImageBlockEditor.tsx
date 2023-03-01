@@ -18,6 +18,7 @@ interface ImageBlockEditorProps {
   selectedBlock: ImageBlock | null
   loading?: boolean
   showAdd?: boolean
+  error?: boolean
 }
 
 export function ImageBlockEditor({
@@ -25,7 +26,8 @@ export function ImageBlockEditor({
   onDelete,
   selectedBlock,
   loading,
-  showAdd
+  showAdd,
+  error
 }: ImageBlockEditorProps): ReactElement {
   const [tabValue, setTabValue] = useState(0)
   const [unsplashAuthor, setUnsplashAuthor] = useState<UnsplashAuthor>()
@@ -84,6 +86,8 @@ export function ImageBlockEditor({
           selectedBlock={selectedBlock}
           onDelete={onDelete}
           loading={loading}
+          showAdd={showAdd}
+          error={error}
           unsplashAuthor={unsplashAuthor}
         />
       </Box>
@@ -117,7 +121,12 @@ export function ImageBlockEditor({
         <UnsplashGallery onChange={handleUnsplashChange} />
       </TabPanel>
       <TabPanel name="custom" value={tabValue} index={1}>
-        <CustomImage onChange={handleSrcChange} />
+        <CustomImage
+          onChange={handleSrcChange}
+          selectedBlock={selectedBlock}
+          loading={loading}
+          error={error}
+        />
       </TabPanel>
     </>
   )

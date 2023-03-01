@@ -11,14 +11,16 @@ import { NextSeo } from 'next-seo'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import { useTranslation } from 'react-i18next'
 import { getLaunchDarklyClient } from '@core/shared/ui/getLaunchDarklyClient'
-import { GetJourney } from '../../../__generated__/GetJourney'
+import {
+  GetJourney,
+  GetJourney_journey as Journey
+} from '../../../__generated__/GetJourney'
 import { UserInviteAcceptAll } from '../../../__generated__/UserInviteAcceptAll'
 import { Editor } from '../../../src/components/Editor'
 import { PageWrapper } from '../../../src/components/PageWrapper'
 import { GET_JOURNEY, USER_JOURNEY_OPEN } from '../[journeyId]'
 import { JourneyEdit } from '../../../src/components/Editor/JourneyEdit'
 import { EditToolbar } from '../../../src/components/Editor/EditToolbar'
-import { JourneyInvite } from '../../../src/components/JourneyInvite/JourneyInvite'
 import { createApolloClient } from '../../../src/libs/apolloClient'
 import i18nConfig from '../../../next-i18next.config'
 import { ACCEPT_USER_INVITE } from '../..'
@@ -29,57 +31,36 @@ function JourneyEditPage(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const router = useRouter()
   const AuthUser = useAuthUser()
-  const { data, error } = useQuery<GetJourney>(GET_JOURNEY, {
+  const { data } = useQuery<GetJourney>(GET_JOURNEY, {
     variables: { id: router.query.journeyId }
   })
-
   useTermsRedirect()
 
   return (
     <>
-      {error == null && (
-        <>
-          <NextSeo
-            title={
-              data?.journey?.title != null
-                ? t('Edit {{title}}', { title: data.journey.title })
-                : t('Edit Journey')
-            }
-            description={data?.journey?.description ?? undefined}
-          />
-          <Editor
-            journey={data?.journey ?? undefined}
-            selectedStepId={router.query.stepId as string | undefined}
-          >
-            <PageWrapper
-              title={data?.journey?.title ?? t('Edit Journey')}
-              showDrawer
-              backHref={`/journeys/${router.query.journeyId as string}`}
-              menu={<EditToolbar />}
-              authUser={AuthUser}
-              router={router}
-            >
-              <JourneyEdit />
-            </PageWrapper>
-          </Editor>
-        </>
-      )}
-      {error?.graphQLErrors[0].message ===
-        'User has not received an invitation to edit this journey.' && (
-        <>
-          <NextSeo title={t('Access Denied')} />
-          <JourneyInvite journeyId={router.query.journeyId as string} />
-        </>
-      )}
-      {error?.graphQLErrors[0].message === 'User invitation pending.' && (
-        <>
-          <NextSeo title={t('Access Denied')} />
-          <JourneyInvite
-            journeyId={router.query.journeyId as string}
-            requestReceived
-          />
-        </>
-      )}
+      <NextSeo
+        title={
+          data?.journey?.title != null
+            ? t('Edit {{title}}', { title: data.journey.title })
+            : t('Edit Journey')
+        }
+        description={data?.journey?.description ?? undefined}
+      />
+      <Editor
+        journey={data?.journey ?? undefined}
+        selectedStepId={router.query.stepId as string | undefined}
+      >
+        <PageWrapper
+          title={data?.journey?.title ?? t('Edit Journey')}
+          showDrawer
+          backHref={`/journeys/${router.query.journeyId as string}`}
+          menu={<EditToolbar />}
+          authUser={AuthUser}
+          router={router}
+        >
+          <JourneyEdit />
+        </PageWrapper>
+      </Editor>
     </>
   )
 }
@@ -104,18 +85,30 @@ export const getServerSideProps = withAuthUserTokenSSR({
     mutation: ACCEPT_USER_INVITE
   })
 
-  const { data } = await apolloClient.query<GetJourney>({
-    query: GET_JOURNEY,
-    variables: {
-      id: query?.journeyId
-    }
-  })
+  let journey: Journey | null
+  try {
+    const { data } = await apolloClient.query<GetJourney>({
+      query: GET_JOURNEY,
+      variables: {
+        id: query?.journeyId
+      }
+    })
 
-  if (data?.journey?.template === true) {
+    journey = data?.journey
+  } catch (error) {
     return {
       redirect: {
         permanent: false,
-        destination: `/publisher/${data?.journey?.id}/edit`
+        destination: `/journeys/${query?.journeyId as string}`
+      }
+    }
+  }
+
+  if (journey?.template === true) {
+    return {
+      redirect: {
+        permanent: false,
+        destination: `/publisher/${journey?.id}/edit`
       }
     }
   }
