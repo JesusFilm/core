@@ -49,16 +49,35 @@ export default function Part3Page({
 export const getStaticProps: GetStaticProps<Part3PageProps> = async (
   context
 ) => {
+  const [containerId, containerIdExtension] = (
+    context.params?.part1 as string
+  ).split('.')
+  const [contentId, contentIdExtension] = (
+    context.params?.part2 as string
+  ).split('.')
+  const [languageId, languageIdExtension] = (
+    context.params?.part3 as string
+  ).split('.')
+
+  if (
+    containerIdExtension !== 'html' ||
+    contentIdExtension !== undefined ||
+    languageIdExtension !== 'html'
+  ) {
+    return {
+      redirect: {
+        permanent: false,
+        destination: `/${containerId}.html/${contentId}/${languageId}.html`
+      }
+    }
+  }
+
   const client = createApolloClient()
   const { data } = await client.query<GetVideoContainerAndVideoContent>({
     query: GET_VIDEO_CONTAINER_AND_VIDEO_CONTENT,
     variables: {
-      containerId: `${(context.params?.part1 as string).split('.')[0]}/${
-        (context.params?.part3 as string).split('.')[0]
-      }`,
-      contentId: `${(context.params?.part2 as string).split('.')[0]}/${
-        (context.params?.part3 as string).split('.')[0]
-      }`
+      containerId: `${containerId}/${languageId}`,
+      contentId: `${contentId}/${languageId}`
     }
   })
   if (data.container == null || data.content == null) {
