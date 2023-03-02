@@ -29,9 +29,11 @@ bq --project_id jfp-data-warehouse load --replace --source_format NEWLINE_DELIMI
 
 # blocks
 echo "Exporting blocks from ArangoDB"
-arangoexport --type jsonl --compress-output true --overwrite true --server.authentication true --server.database $DATABASE_DB --server.username $DATABASE_USER --server.password $DATABASE_PASS --server.endpoint $DATABASE_URL --custom-query "FOR b IN blocks RETURN { _key: b.key, parentOrder: b.parentOrder, journeyId: b.journeyId, __typename: b.__typename, nextBlockId: b.nextBlockId, videoId: b.videoId }"
+arangoexport --type jsonl --compress-output true --overwrite true --server.authentication true --server.database $DATABASE_DB --server.username $DATABASE_USER --server.password $DATABASE_PASS --server.endpoint $DATABASE_URL \
+  --custom-query="FOR b IN blocks RETURN { _key: b._key, parentOrder: b.parentOrder, journeyId: b.journeyId, __typename: b.__typename, nextBlockId: b.nextBlockId, videoId: b.videoId, endAt: b.endAt, backgroundColor: b.backgroundColor, fullscreen: b.fullscreen, themeName: b.themeName, endIconId: b.endIconId, startIconId: b.startIconId, label: b.label, action: b.action, size: b.size, name: b.name, submitIconId: b.submitIconId, align: b.align, variant: b.variant, color: b.color, title: b.title, posterBlockId: b.posterBlockId, startAt: b.startAt, muted: b.muted, submitLabel: b.submitLabel, coverBlockId: b.coverBlockId, videoVariantLanguageId: b.videoVariantLanguageId, height: b.height, width: b.width, autoplay: b.autoplay }"  
+
 echo "Importing blocks to BigQuery"
-bq --project_id jfp-data-warehouse load --replace --source_format NEWLINE_DELIMITED_JSON --autodetect nextsteps.blocks export/query.jsonl.gz
+bq --project_id jfp-data-warehouse load --replace --source_format NEWLINE_DELIMITED_JSON --autodetect nextsteps.blocks export/query.jsonl.gz ./blocks
 
 # videos
 echo "Exporting videos from ArangoDB"

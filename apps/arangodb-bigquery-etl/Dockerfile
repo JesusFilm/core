@@ -13,6 +13,7 @@ RUN apt update
 RUN apt install arangodb3-client=3.10.3-1 google-cloud-cli -y
 
 COPY apps/arangodb-bigquery-etl/bqexport.sh .
+COPY apps/arangodb-bigquery-etl/blocks .
 RUN chmod 775 /bqexport.sh
 RUN chmod u+x /bqexport.sh
 CMD /bqexport.sh
