@@ -48,6 +48,7 @@ export function TypographyEdit({
 
     if (currentContent === '') {
       deleteSelf()
+      return
     }
 
     if (journey == null || content === currentContent) return
@@ -67,6 +68,7 @@ export function TypographyEdit({
       }
     })
   }
+
   const inputRef = useOnClickOutside(async () => {
     await handleSaveBlock()
   })
@@ -81,14 +83,10 @@ export function TypographyEdit({
       value={value}
       placeholder={t('Add your text here...')}
       onFocus={(e) =>
-        (e.currentTarget as HTMLInputElement).setSelectionRange(
-          value.length,
-          value.length
-        )
+        (e.currentTarget as HTMLInputElement).setSelectionRange(0, value.length)
       }
       onBlur={handleSaveBlock}
       onChange={(e) => setValue(e.currentTarget.value)}
-      onClick={(e) => e.stopPropagation()}
     />
   )
 

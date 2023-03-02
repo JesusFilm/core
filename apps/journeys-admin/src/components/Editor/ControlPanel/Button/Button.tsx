@@ -33,6 +33,7 @@ export function Button({
       sx={{
         maxWidth: 150
       }}
+      onMouseDown={(e) => e.preventDefault()}
     >
       <MuiCard
         variant="outlined"
