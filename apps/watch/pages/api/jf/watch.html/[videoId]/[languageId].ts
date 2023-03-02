@@ -29,8 +29,9 @@ export default async function Handler(
     }
   })
   if (data.video?.variant?.slug != null) {
-    res.redirect(302, `/${data.video.variant.slug}`)
+    const [videoId, languageId] = data.video.variant.slug.split('/')
+    res.redirect(`/watch/${videoId}.html/${languageId}.html`)
   } else {
-    res.redirect(302, '/404')
+    res.status(404).send({ error: 'video could not be found' })
   }
 }
