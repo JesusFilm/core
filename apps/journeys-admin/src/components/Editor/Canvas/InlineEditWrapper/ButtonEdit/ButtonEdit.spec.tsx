@@ -184,7 +184,7 @@ describe('ButtonEdit', () => {
           }}
         >
           <EditorProvider>
-            <h1>Other content</h1>
+            <h1 className="swiper-container">Other content</h1>
             <iframe>
               <ButtonEdit {...props} />
             </iframe>

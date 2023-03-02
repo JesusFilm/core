@@ -209,7 +209,7 @@ describe('TypographyEdit', () => {
             admin: true
           }}
         >
-          <h1>Other content</h1>
+          <h1 className="swiper-container">Other content</h1>
           <TypographyEdit {...props} />
         </JourneyProvider>
       </MockedProvider>
