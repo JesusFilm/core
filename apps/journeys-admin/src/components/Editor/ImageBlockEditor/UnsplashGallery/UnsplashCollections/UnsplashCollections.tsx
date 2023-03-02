@@ -4,6 +4,7 @@ import ChevronRightRounded from '@mui/icons-material/ChevronRightRounded'
 import Box from '@mui/material/Box'
 import Chip from '@mui/material/Chip'
 import IconButton from '@mui/material/IconButton'
+import Typography from '@mui/material/Typography'
 
 interface UnsplashCollectionsProps {
   onClick: (collectionId: string) => void
@@ -35,6 +36,7 @@ export function UnsplashCollections({
   const scrollRef = useRef<HTMLDivElement>(null)
   const [showLeftButton, setShowLeftButton] = useState(false)
   const [showRightButton, setShowRightButton] = useState(false)
+  const [isHovering, setIsHovering] = useState(false)
 
   useEffect(() => {
     const node = scrollRef.current
@@ -78,26 +80,49 @@ export function UnsplashCollections({
     variant: 'Left' | 'Right'
   }): ReactElement => {
     return (
-      <IconButton
-        aria-label={`Scroll ${variant}`}
-        size="small"
-        onClick={variant === 'Left' ? scrollLeft : scrollRight}
-        sx={{
-          position: 'absolute',
-          top: '30%',
-          left: variant === 'Left' ? 0 : undefined,
-          right: variant === 'Right' ? 0 : undefined,
-          bgcolor: 'background.paper',
-          borderRadius: '50%',
-          boxShadow: (theme) => theme.shadows[2],
-          zIndex: 2,
-          '&:hover': {
-            bgcolor: 'background.paper'
-          }
-        }}
-      >
-        {variant === 'Left' ? <ChevronLeftRounded /> : <ChevronRightRounded />}
-      </IconButton>
+      <>
+        <Box
+          sx={{
+            position: 'absolute',
+            left: variant === 'Left' ? 0 : undefined,
+            right: variant === 'Right' ? 0 : undefined,
+            top: 0,
+            bottom: 0,
+            width: '30px',
+            zIndex: 1,
+            background:
+              variant === 'Left'
+                ? 'linear-gradient(to left, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 1) 100%)'
+                : variant === 'Right'
+                ? 'linear-gradient(to right, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 1) 100%)'
+                : 'transparent'
+          }}
+        />
+        <IconButton
+          aria-label={`Scroll ${variant}`}
+          size="small"
+          onClick={variant === 'Left' ? scrollLeft : scrollRight}
+          sx={{
+            position: 'absolute',
+            top: '30%',
+            left: variant === 'Left' ? 0 : undefined,
+            right: variant === 'Right' ? 0 : undefined,
+            bgcolor: 'background.paper',
+            borderRadius: '50%',
+            boxShadow: (theme) => theme.shadows[2],
+            zIndex: 2,
+            '&:hover': {
+              bgcolor: 'background.paper'
+            }
+          }}
+        >
+          {variant === 'Left' ? (
+            <ChevronLeftRounded />
+          ) : (
+            <ChevronRightRounded />
+          )}
+        </IconButton>
+      </>
     )
   }
 
@@ -120,20 +145,28 @@ export function UnsplashCollections({
           overflow: 'hidden',
           scrollBehavior: 'smooth'
         }}
+        onMouseEnter={() => setIsHovering(true)}
+        onMouseLeave={() => setIsHovering(false)}
       >
-        {showLeftButton && <Navigation variant="Left" />}
+        {showLeftButton && isHovering && <Navigation variant="Left" />}
 
         {collections.map((collection) => (
           <Chip
             key={collection.collectionId}
-            label={collection.label}
             onClick={() => onClick(collection.collectionId)}
-            color="default"
-            sx={{ mr: 2 }}
+            label={<Typography variant="body2">{collection.label}</Typography>}
+            sx={{
+              mr: 2,
+              bgcolor: 'background.paper',
+              border: (theme) => `1px solid ${theme.palette.divider}`,
+              '&:hover': {
+                bgcolor: 'background.paper'
+              }
+            }}
           />
         ))}
 
-        {showRightButton && <Navigation variant="Right" />}
+        {showRightButton && isHovering && <Navigation variant="Right" />}
       </Box>
     </Box>
   )
