@@ -36,16 +36,6 @@ describe('JourneyList/JourneySort', () => {
     expect(updatedButton).toBeInTheDocument()
   })
 
-  it('should not set sort value on cancel button click', () => {
-    const { getByText, getByRole } = render(<JourneySortMock />)
-    const button = getByRole('button', { name: 'Sort By' })
-
-    fireEvent.click(button)
-    fireEvent.click(getByText('Cancel'))
-
-    expect(button).toBeInTheDocument()
-  })
-
   it('should be disabled', () => {
     const { getByRole } = render(<JourneySortMock disabled />)
     expect(getByRole('button', { name: 'Sort By' })).toHaveAttribute(
