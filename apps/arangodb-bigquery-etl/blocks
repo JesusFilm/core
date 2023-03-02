@@ -185,5 +185,55 @@
     "name": "autoplay",
     "type": "BOOL",
     "mode": "NULLABLE"
+  },
+  {
+    "name": "blurhash",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "alt",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "src",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "triggerStart",
+    "type": "INT64",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "locked",
+    "type": "BOOL",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "description",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "isCover",
+    "type": "BOOL",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "fullsize",
+    "type": "BOOL",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "content",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "parentBlockId",
+    "type": "STRING",
+    "mode": "NULLABLE"
   }
 ]
