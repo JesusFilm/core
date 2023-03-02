@@ -8,7 +8,7 @@ import { UnsplashGallery } from './UnsplashGallery'
 const UnsplashGalleryStory = {
   ...simpleComponentConfig,
   component: UnsplashGallery,
-  title: 'Journeys-Admin/Editor/ImageLibrary/UnsplashGallery'
+  title: 'Journeys-Admin/Editor/ImageBlockEditor/UnsplashGallery'
 }
 
 const Template: Story = () => (
