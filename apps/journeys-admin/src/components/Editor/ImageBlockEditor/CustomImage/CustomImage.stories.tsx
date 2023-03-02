@@ -8,7 +8,7 @@ import { CustomImage } from '.'
 const CustomImageStory = {
   ...simpleComponentConfig,
   component: CustomImage,
-  title: 'Journeys-Admin/ImageBlockEditor/CustomImage'
+  title: 'Journeys-Admin/Editor/ImageBlockEditor/CustomImage'
 }
 
 const Template: Story = () => (
