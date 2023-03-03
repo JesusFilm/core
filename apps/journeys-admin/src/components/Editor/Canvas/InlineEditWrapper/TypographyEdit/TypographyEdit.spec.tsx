@@ -41,9 +41,6 @@ describe('TypographyEdit', () => {
     fireEvent.click(input)
     expect(input).toHaveFocus()
     expect(input).toHaveAttribute('placeholder', 'Add your text here...')
-    expect(input).toHaveValue(props.content)
-    userEvent.type(input, '{del}')
-    expect(input).toHaveValue('')
   })
 
   it('saves the text content on outside click', async () => {
@@ -225,5 +222,34 @@ describe('TypographyEdit', () => {
     fireEvent.click(getByRole('heading', { level: 1 }))
 
     expect(onDelete).toHaveBeenCalled()
+  })
+
+  it('persists selection state on outside click', async () => {
+    render(
+      <MockedProvider>
+        <JourneyProvider
+          value={{
+            journey: { id: 'journeyId' } as unknown as Journey,
+            admin: true
+          }}
+        >
+          <h1>Other content</h1>
+          <TypographyEdit {...props} />
+        </JourneyProvider>
+      </MockedProvider>
+    )
+    const input = screen.getByRole('textbox')
+
+    userEvent.click(input)
+    // All text selected on first focus
+    expect(input).toHaveValue(props.content)
+    userEvent.type(input, '{backspace}')
+    expect(input).toHaveValue('')
+
+    // Cursor remains at end of input after outside click
+    userEvent.type(input, 'new')
+    userEvent.click(screen.getByRole('heading', { level: 1 }))
+    userEvent.type(input, '{backspace}')
+    expect(input).toHaveValue('ne')
   })
 })
