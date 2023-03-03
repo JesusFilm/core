@@ -10,7 +10,7 @@ import { ImageUpload } from '.'
 const ImageUploadStory = {
   ...simpleComponentConfig,
   component: ImageUpload,
-  title: 'Journeys-Admin/Editor/ImageLibrary/CustomImage/ImageUpload'
+  title: 'Journeys-Admin/Editor/ImageBlockEditor/CustomImage/ImageUpload'
 }
 
 const Template: Story<ComponentProps<typeof ImageUpload>> = ({ ...args }) => (
