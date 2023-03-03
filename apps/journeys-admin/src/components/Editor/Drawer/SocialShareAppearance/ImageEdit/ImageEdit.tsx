@@ -65,10 +65,14 @@ export function ImageEdit(): ReactElement {
   const [blockDeletePrimaryImage] = useMutation<BlockDeletePrimaryImage>(
     BLOCK_DELETE_PRIMARY_IMAGE
   )
-  const [primaryImageBlockCreate, { loading: createLoading }] =
-    useMutation<PrimaryImageBlockCreate>(PRIMARY_IMAGE_BLOCK_CREATE)
-  const [primaryImageBlockUpdate, { loading: updateLoading }] =
-    useMutation<PrimaryImageBlockUpdate>(PRIMARY_IMAGE_BLOCK_UPDATE)
+  const [
+    primaryImageBlockCreate,
+    { loading: createLoading, error: createError }
+  ] = useMutation<PrimaryImageBlockCreate>(PRIMARY_IMAGE_BLOCK_CREATE)
+  const [
+    primaryImageBlockUpdate,
+    { loading: updateLoading, error: updateError }
+  ] = useMutation<PrimaryImageBlockUpdate>(PRIMARY_IMAGE_BLOCK_UPDATE)
   const [journeyPrimaryImageUpdate] = useMutation<JourneyPrimaryImageUpdate>(
     JOURNEY_PRIMARY_IMAGE_UPDATE
   )
@@ -90,7 +94,10 @@ export function ImageEdit(): ReactElement {
           journeyId: journey?.id,
           parentBlockId: journey?.id,
           src: imageBlock.src,
-          alt: imageBlock.alt
+          alt: imageBlock.alt,
+          blurhash: imageBlock.blurhash,
+          width: imageBlock.width,
+          height: imageBlock.height
         }
       },
       update(cache, { data }) {
@@ -134,7 +141,10 @@ export function ImageEdit(): ReactElement {
         journeyId: journey?.id,
         input: {
           src: imageBlock.src,
-          alt: imageBlock.alt
+          alt: imageBlock.alt,
+          blurhash: imageBlock.blurhash,
+          width: imageBlock.width,
+          height: imageBlock.height
         }
       }
     })
@@ -271,6 +281,7 @@ export function ImageEdit(): ReactElement {
         onChange={handleChange}
         onDelete={handleDelete}
         loading={createLoading || updateLoading}
+        error={createError != null ?? updateError != null}
       />
     </>
   )

@@ -1,5 +1,6 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { Story, Meta } from '@storybook/react'
+import { userEvent, waitFor, within } from '@storybook/testing-library'
 import { UserJourneyRole } from '../../../../__generated__/globalTypes'
 import { journeysAdminConfig } from '../../../libs/storybook'
 import {
@@ -68,6 +69,12 @@ export const New = Template.bind({})
 New.args = {
   journey: defaultJourney,
   variant: JourneyCardVariant.new
+}
+New.play = async ({ canvasElement }) => {
+  const canvas = within(canvasElement)
+  await waitFor(async () => {
+    await userEvent.hover(canvas.getByTestId('CircleRoundedIcon'))
+  })
 }
 
 export const ActionRequired = Template.bind({})

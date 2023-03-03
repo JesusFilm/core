@@ -19,6 +19,15 @@ jest.mock('next/router', () => ({
   }
 }))
 
+jest.mock('react-i18next', () => ({
+  __esModule: true,
+  useTranslation: () => {
+    return {
+      t: (str: string) => str
+    }
+  }
+}))
+
 describe('JourneyList', () => {
   it('should render tab panel', () => {
     const { getByRole } = render(
@@ -41,7 +50,7 @@ describe('JourneyList', () => {
   it('should show access denied message to new user', () => {
     const { getByText, getByRole, queryByText } = render(
       <SnackbarProvider>
-        <FlagsProvider>
+        <FlagsProvider flags={{ inviteRequirement: true }}>
           <MockedProvider>
             <ThemeProvider>
               <JourneyList journeys={[]} event="" />
@@ -52,14 +61,14 @@ describe('JourneyList', () => {
     )
     expect(queryByText('All Journeys')).not.toBeInTheDocument()
     expect(
-      getByText('You need to be invited to create the first journey')
+      getByText('You need to be invited to use your first journey')
     ).toBeInTheDocument()
     expect(
       getByText(
         'Someone with a full account should add you to their journey as an editor, after that you will have full access'
       )
     ).toBeInTheDocument()
-    expect(getByRole('button', { name: 'Contact Support' })).toBeInTheDocument()
+    expect(getByRole('link', { name: 'Contact Support' })).toBeInTheDocument()
   })
 
   it('should render report', async () => {
