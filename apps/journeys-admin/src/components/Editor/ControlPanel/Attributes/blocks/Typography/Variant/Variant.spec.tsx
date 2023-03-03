@@ -85,7 +85,10 @@ describe('Typography variant selector', () => {
       >
         <JourneyProvider
           value={{
-            journey: { id: 'journeyId' } as unknown as Journey,
+            journey: {
+              id: 'journeyId',
+              language: { bcp47: 'en' }
+            } as unknown as Journey,
             admin: true
           }}
         >

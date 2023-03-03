@@ -34,11 +34,15 @@ const nextConfig = {
         basePath: false,
         permanent: false
       },
-
       {
         source: '/:path((?!watch).*)',
         destination: '/watch/:path',
         basePath: false,
+        permanent: false
+      },
+      {
+        source: '/bin/jf/watch.html/:videoId/:languageId',
+        destination: '/api/jf/watch.html/:videoId/:languageId',
         permanent: false
       }
     ]

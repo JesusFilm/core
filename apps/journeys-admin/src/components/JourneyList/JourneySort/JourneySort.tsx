@@ -7,11 +7,9 @@ import {
   ChangeEvent
 } from 'react'
 import Box from '@mui/material/Box'
-import Button from '@mui/material/Button'
 import Chip from '@mui/material/Chip'
 import Drawer from '@mui/material/Drawer'
 import FormControl from '@mui/material/FormControl'
-import FormLabel from '@mui/material/FormLabel'
 import FormControlLabel from '@mui/material/FormControlLabel'
 import Popover from '@mui/material/Popover'
 import RadioGroup from '@mui/material/RadioGroup'
@@ -69,7 +67,6 @@ export function JourneySort({
   const Form = (): ReactElement => (
     <Box sx={{ p: 4 }}>
       <FormControl component="fieldset" fullWidth>
-        <FormLabel component="legend">Sort By</FormLabel>
         <RadioGroup
           aria-label="sort-by-options"
           defaultValue={sortOrder ?? SortOrder.CREATED_AT}
@@ -93,15 +90,7 @@ export function JourneySort({
             flexDirection: 'row',
             justifyContent: 'flex-end'
           }}
-        >
-          <Button
-            sx={{ mt: 1, mr: 1 }}
-            onClick={() => setShowSortOrder(false)}
-            variant="text"
-          >
-            Cancel
-          </Button>
-        </Box>
+        />
       </FormControl>
     </Box>
   )

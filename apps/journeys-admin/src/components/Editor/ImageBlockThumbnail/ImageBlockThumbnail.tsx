@@ -2,18 +2,21 @@ import { ReactElement } from 'react'
 import CircularProgress from '@mui/material/CircularProgress'
 import ImageIcon from '@mui/icons-material/Image'
 import SvgIcon from '@mui/material/SvgIcon'
+import BrokenImageOutlined from '@mui/icons-material/BrokenImageOutlined'
 import Box from '@mui/material/Box'
 
 interface ImageBlockThumbnailProps {
   selectedBlock?: { src: string | null; alt: string } | null
   loading?: boolean
   Icon?: typeof SvgIcon
+  error?: boolean
 }
 
 export function ImageBlockThumbnail({
   selectedBlock,
   loading,
-  Icon = ImageIcon
+  Icon = ImageIcon,
+  error
 }: ImageBlockThumbnailProps): ReactElement {
   return (
     <Box
@@ -31,6 +34,8 @@ export function ImageBlockThumbnail({
     >
       {loading === true ? (
         <CircularProgress size={20} />
+      ) : error === true ? (
+        <BrokenImageOutlined sx={{ color: 'error.main' }} />
       ) : selectedBlock?.src != null ? (
         <Box
           component="img"
@@ -43,7 +48,10 @@ export function ImageBlockThumbnail({
           }}
         />
       ) : (
-        <Icon data-testid="imageBlockThumbnailPlaceholder" />
+        <Icon
+          data-testid="imageBlockThumbnailPlaceholder"
+          sx={{ color: 'secondary.light' }}
+        />
       )}
     </Box>
   )

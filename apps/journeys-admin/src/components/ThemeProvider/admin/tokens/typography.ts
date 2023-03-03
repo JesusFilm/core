@@ -13,71 +13,70 @@ export const adminTypography: Pick<ThemeOptions, 'typography'> = {
       '"Montserrat", "Open Sans", "Tahoma", "Verdana", sans-serif'
     ].join(','),
     h1: {
-      fontWeight: 600,
-      fontSize: 36,
-      lineHeight: '40px'
+      fontWeight: 500,
+      fontSize: 32,
+      lineHeight: '36px'
     },
     h2: {
-      fontWeight: 800,
-      fontSize: 28,
+      fontWeight: 500,
+      fontSize: 30,
       lineHeight: '33px'
     },
     h3: {
-      fontWeight: 800,
-      fontSize: 24,
-      lineHeight: '28px'
+      fontWeight: 600,
+      fontSize: 27,
+      lineHeight: '32px'
     },
     h4: {
-      fontWeight: 800,
+      fontWeight: 600,
+      fontSize: 24,
+      lineHeight: '30px'
+    },
+    h5: {
+      fontWeight: 600,
       fontSize: 22,
       lineHeight: '27px'
     },
-    h5: {
-      fontSize: 18,
-      fontWeight: 800,
-      lineHeight: '23px',
-      textTransform: 'none'
-    },
     h6: {
+      fontWeight: 600,
       fontSize: 20,
-      fontWeight: 700,
-      lineHeight: '23px',
-      letterSpacing: 0,
-      textTransform: 'none'
+      lineHeight: '24px',
+      letterSpacing: 0
     },
     subtitle1: {
-      fontSize: 18,
       fontWeight: 600,
+      fontSize: 18,
       lineHeight: '24px'
     },
     subtitle2: {
-      fontSize: 16,
       fontWeight: 600,
-      lineHeight: '24px'
+      fontSize: 16,
+      lineHeight: '21px'
     },
     body1: {
       fontFamily: '"Open Sans", "Tahoma", "Verdana", sans-serif',
-      fontSize: 16,
       fontWeight: 400,
+      fontSize: 16,
       lineHeight: '24px'
     },
     body2: {
       fontFamily: '"Open Sans", "Tahoma", "Verdana", sans-serif',
-      fontSize: 14,
       fontWeight: 400,
-      lineHeight: '20px'
+      fontSize: 14,
+      lineHeight: '22px'
     },
     overline: {
-      fontSize: 11,
       fontWeight: 600,
+      fontSize: 11,
       lineHeight: '16px',
-      letterSpacing: 3
+      letterSpacing: 3,
+      textTransform: 'uppercase'
     },
     caption: {
       fontFamily: '"Open Sans", "Tahoma", "Verdana", sans-serif',
-      fontSize: 12,
       fontWeight: 400,
-      lineHeight: '20px'
+      fontSize: 12,
+      lineHeight: '18px'
     }
   }
 }
