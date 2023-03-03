@@ -1,5 +1,6 @@
 import { ComponentProps } from 'react'
-import { render, fireEvent, waitFor } from '@testing-library/react'
+import { render, fireEvent, waitFor, screen } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import { MockedProvider } from '@apollo/client/testing'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
@@ -31,15 +32,18 @@ describe('TypographyEdit', () => {
     deleteSelf: onDelete
   }
   it('selects the input on click', () => {
-    const { getByRole } = render(
+    render(
       <MockedProvider>
         <TypographyEdit {...props} />
       </MockedProvider>
     )
-    const input = getByRole('textbox')
+    const input = screen.getByRole('textbox')
     fireEvent.click(input)
     expect(input).toHaveFocus()
     expect(input).toHaveAttribute('placeholder', 'Add your text here...')
+    expect(input).toHaveValue(props.content)
+    userEvent.type(input, '{del}')
+    expect(input).toHaveValue('')
   })
 
   it('saves the text content on outside click', async () => {

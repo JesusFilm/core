@@ -42,6 +42,7 @@ export function TypographyEdit({
 
   const { journey } = useJourney()
   const [value, setValue] = useState(content)
+  const [selection, setSelection] = useState({ start: 0, end: value.length })
 
   async function handleSaveBlock(): Promise<void> {
     const currentContent = value.trimStart().trimEnd()
@@ -82,8 +83,18 @@ export function TypographyEdit({
       autoFocus
       value={value}
       placeholder={t('Add your text here...')}
+      onSelect={(e) => {
+        const input = e.target as HTMLInputElement
+        setSelection({
+          start: input.selectionStart ?? 0,
+          end: input.selectionEnd ?? value.length
+        })
+      }}
       onFocus={(e) =>
-        (e.currentTarget as HTMLInputElement).setSelectionRange(0, value.length)
+        (e.currentTarget as HTMLInputElement).setSelectionRange(
+          selection.start,
+          selection.end
+        )
       }
       onBlur={handleSaveBlock}
       onChange={(e) => setValue(e.currentTarget.value)}
