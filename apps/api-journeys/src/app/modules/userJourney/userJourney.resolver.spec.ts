@@ -29,6 +29,14 @@ describe('UserJourneyResolver', () => {
     role: UserJourneyRole.owner
   }
 
+  const openedUserJourney = {
+    id: '3',
+    userId: '3',
+    journeyId: '3',
+    role: UserJourneyRole.editor,
+    openedAt: '2021-02-18T00:00:00.000Z'
+  }
+
   const publishedAt = new Date('2021-11-19T12:34:56.647Z').toISOString()
   const createdAt = new Date('2021-11-19T12:34:56.647Z').toISOString()
 
@@ -81,6 +89,8 @@ describe('UserJourneyResolver', () => {
             return userJourney
           case actorUserJourney.userId:
             return actorUserJourney
+          case openedUserJourney.userId:
+            return openedUserJourney
           default:
             return null
         }
@@ -190,18 +200,25 @@ describe('UserJourneyResolver', () => {
     })
   })
 
-  describe('UserJourneyView', () => {
-    it('should update viewAt for userJourney', async () => {
+  describe('UserJourneyOpen', () => {
+    it('should update openedAt for userJourney', async () => {
       await resolver.userJourneyOpen(userJourney.id, userJourney.userId)
       expect(service.update).toHaveBeenCalledWith(userJourney.id, {
         openedAt: new Date().toISOString()
       })
     })
 
-    it('should throw error if current user is not userJourney user', async () => {
-      await expect(
-        resolver.userJourneyOpen(userJourney.id, 'another.id')
-      ).rejects.toThrow('Invalid User')
+    it('should note update openedAt if current user is not userJourney user', async () => {
+      await resolver.userJourneyOpen(userJourney.id, 'another.id')
+      expect(service.update).not.toHaveBeenCalled()
+    })
+
+    it('should note update openedAt if current user has already opened the userJourney', async () => {
+      await resolver.userJourneyOpen(
+        openedUserJourney.id,
+        openedUserJourney.userId
+      )
+      expect(service.update).not.toHaveBeenCalled()
     })
   })
 })
