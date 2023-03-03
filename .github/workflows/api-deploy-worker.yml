@@ -21,9 +21,6 @@ on:
       ecs_service:
         required: true
         type: string
-      seed_task_name:
-        required: true
-        type: string
       endpoint_url:
         required: true
         type: string
@@ -147,4 +144,4 @@ jobs:
       - name: Seed Database
         if: contains(steps.affected-dbs.outputs.dbs, inputs.name)
         run: |
-          aws ecs run-task --task-definition ${{ inputs.seed_task_name }} --cluster ${{ inputs.ecs_cluster }} --launch-type FARGATE --network-configuration "${{ secrets.AWS_NETWORK_CONFIG }}"
+          aws ecs run-task --task-definition ${{ inputs.seed_repository }} --cluster ${{ inputs.ecs_cluster }} --launch-type FARGATE --network-configuration "${{ secrets.AWS_NETWORK_CONFIG }}"
