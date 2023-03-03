@@ -120,7 +120,7 @@ export function NewRadioQuestionButton(): ReactElement {
       if (data?.radioQuestionBlockCreate != null) {
         dispatch({
           type: 'SetSelectedBlockByIdAction',
-          id: data.radioOption1.id
+          id: data.radioQuestionBlockCreate.id
         })
         dispatch({
           type: 'SetActiveTabAction',
