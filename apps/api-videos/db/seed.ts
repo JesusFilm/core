@@ -1,3 +1,6 @@
+// version 1
+// increment to trigger re-seed (ie: files other than seed.ts are changed)
+
 import { aql } from 'arangojs'
 import { ArangoSearchViewPropertiesOptions } from 'arangojs/view'
 import { fetchMediaComponentsAndTransformToVideos } from '../src/libs/arclight'

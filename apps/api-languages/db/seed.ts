@@ -1,3 +1,6 @@
+// version 1
+// increment to trigger re-seed (ie: files other than seed.ts are changed)
+
 import { aql } from 'arangojs'
 import { float } from 'aws-sdk/clients/lightsail'
 import { isEmpty } from 'lodash'

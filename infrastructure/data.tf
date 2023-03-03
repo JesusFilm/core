@@ -17,11 +17,3 @@ data "aws_ssm_parameter" "doppler_api_users_prod_token" {
 data "aws_ssm_parameter" "doppler_api_videos_prod_token" {
   name = "/terraform/prd/DOPPLER_API_VIDEOS_PROD_TOKEN"
 }
-
-data "aws_ssm_parameter" "doppler_faktory_stage_token" {
-  name = "/terraform/prd/DOPPLER_FAKTORY_STAGE_TOKEN"
-}
-
-data "aws_ssm_parameter" "doppler_faktory_prod_token" {
-  name = "/terraform/prd/DOPPLER_FAKTORY_PROD_TOKEN"
-}
