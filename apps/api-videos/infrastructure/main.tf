@@ -18,6 +18,8 @@ module "seed" {
     "DATABASE_URL",
     "DATABASE_USER"
   ]
+  cpu                     = 1024
+  memory                  = 2048
   task_execution_role_arn = var.ecs_config.task_execution_role_arn
   env                     = var.env
 }
