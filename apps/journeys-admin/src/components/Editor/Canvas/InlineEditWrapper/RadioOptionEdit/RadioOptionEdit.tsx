@@ -31,7 +31,9 @@ export function RadioOptionEdit({
     RADIO_OPTION_BLOCK_UPDATE_CONTENT
   )
   const { journey } = useJourney()
-  const [value, setValue] = useState(label)
+  const [value, setValue] = useState(
+    label === 'Option 1' || label === 'Option 2' ? '' : label
+  )
 
   async function handleSaveBlock(): Promise<void> {
     const currentLabel = value.trim().replace(/\n/g, '')
