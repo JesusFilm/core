@@ -16,7 +16,7 @@ export function UnsplashSearch({
   return (
     <Formik
       initialValues={{
-        src: value
+        src: undefined
       }}
       onSubmit={async (e) => handleSubmit(e.src)}
     >
@@ -27,7 +27,7 @@ export function UnsplashSearch({
             name="src"
             variant="filled"
             hiddenLabel
-            value={values.src ?? 'Search by keyword'}
+            value={value ?? 'Search by keyword'}
             onChange={handleChange}
             fullWidth
             inputProps={{
