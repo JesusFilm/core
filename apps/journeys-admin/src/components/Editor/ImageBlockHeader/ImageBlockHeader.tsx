@@ -6,6 +6,7 @@ import Typography from '@mui/material/Typography'
 import Link from '@mui/material/Link'
 import AddIcon from '@mui/icons-material/Add'
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline'
+import EditRounded from '@mui/icons-material/EditRounded'
 import { ImageBlockThumbnail } from '../ImageBlockThumbnail'
 import { GetJourney_journey_blocks_ImageBlock as ImageBlock } from '../../../../__generated__/GetJourney'
 import type { UnsplashAuthor } from '../ImageBlockEditor/UnsplashGallery'
@@ -71,6 +72,8 @@ export function ImageBlockHeader({
                 unsplashAuthor.username ?? ''
               }?utm_source=NextSteps&utm_medium=referral`}
               color="secondary.light"
+              target="_blank"
+              rel="noopener"
             >
               <Typography variant="caption">
                 {unsplashAuthor.fullname}
@@ -98,7 +101,9 @@ export function ImageBlockHeader({
             (selectedBlock == null && !showAdd) || loading ? 'none' : 'flex'
         }}
       >
-        {showAdd ? (
+        {showAdd && selectedBlock?.src != null ? (
+          <EditRounded color="primary" />
+        ) : showAdd ? (
           <AddIcon color="primary" />
         ) : selectedBlock?.src != null ? (
           <DeleteOutlineIcon

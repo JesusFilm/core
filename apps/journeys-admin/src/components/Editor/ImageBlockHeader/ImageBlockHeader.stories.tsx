@@ -65,4 +65,20 @@ UnsplashAuthor.args = {
   }
 }
 
+export const Edit = Template.bind({})
+Edit.args = {
+  selectedBlock: {
+    id: 'Image Title',
+    __typename: 'ImageBlock',
+    parentBlockId: 'card.id',
+    parentOrder: 0,
+    src: 'https://images.unsplash.com/photo-1558704164-ab7a0016c1f3',
+    alt: 'image.jpg',
+    width: 1920,
+    height: 1080,
+    blurhash: ''
+  },
+  showAdd: true
+}
+
 export default ImageEditorStory as Meta
