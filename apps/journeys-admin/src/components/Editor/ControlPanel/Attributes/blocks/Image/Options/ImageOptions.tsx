@@ -76,10 +76,6 @@ export function ImageOptions(): ReactElement {
           }
         }
       })
-      enqueueSnackbar('Image Updated', {
-        variant: 'success',
-        preventDuplicate: true
-      })
     } catch (e) {
       enqueueSnackbar(e.message, {
         variant: 'error',
