@@ -44,6 +44,7 @@ export function ToggleButtonGroup({
           <ToggleButton
             key={value as string}
             value={value}
+            onMouseDown={(e) => e.preventDefault()}
             sx={{
               textTransform: 'none',
               backgroundColor: 'background.paper',

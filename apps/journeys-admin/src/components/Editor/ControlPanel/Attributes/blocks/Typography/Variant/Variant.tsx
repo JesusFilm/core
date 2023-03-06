@@ -139,6 +139,7 @@ export function Variant(): ReactElement {
       themeMode={ThemeMode.light}
       rtl={rtl}
       locale={locale}
+      nested
     >
       <ToggleButtonGroup
         value={selectedBlock?.variant ?? TypographyVariant.body2}
