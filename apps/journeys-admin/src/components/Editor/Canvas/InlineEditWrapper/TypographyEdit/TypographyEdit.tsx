@@ -84,7 +84,7 @@ export function TypographyEdit({
       value={value}
       placeholder={t('Add your text here...')}
       onSelect={(e) => {
-        const input = e.target as HTMLInputElement
+        const input = e.currentTarget as HTMLInputElement
         setSelection({
           start: input.selectionStart ?? 0,
           end: input.selectionEnd ?? value.length
@@ -97,7 +97,9 @@ export function TypographyEdit({
         )
       }
       onBlur={handleSaveBlock}
-      onChange={(e) => setValue(e.currentTarget.value)}
+      onChange={(e) => {
+        setValue(e.currentTarget.value)
+      }}
     />
   )
 
