@@ -24,6 +24,10 @@ export enum ActiveFab {
   Save = 2
 }
 
+export enum ActiveJourneyEditContent {
+  Canvas
+}
+
 export interface EditorState {
   steps?: Array<TreeBlock<StepBlock>>
   selectedStep?: TreeBlock<StepBlock>
@@ -34,6 +38,7 @@ export interface EditorState {
   drawerMobileOpen: boolean
   activeTab: ActiveTab
   activeFab: ActiveFab
+  journeyEditContentComponent: ActiveJourneyEditContent
 }
 
 export interface SetSelectedStepAction {
@@ -78,6 +83,11 @@ interface SetActiveFabAction {
   activeFab: ActiveFab
 }
 
+interface SetActiveJourneyEditContentAction {
+  type: 'SetJourneyEditContentAction'
+  constent: ActiveJourneyEditContent
+}
+
 interface SetStepsAction {
   type: 'SetStepsAction'
   steps: Array<TreeBlock<StepBlock>>
@@ -93,6 +103,7 @@ type EditorAction =
   | SetActiveTabAction
   | SetActiveFabAction
   | SetStepsAction
+  | SetActiveJourneyEditContentAction
 
 export const reducer = (
   state: EditorState,
@@ -100,16 +111,26 @@ export const reducer = (
 ): EditorState => {
   switch (action.type) {
     case 'SetSelectedStepAction':
-      return { ...state, selectedStep: action.step, selectedBlock: action.step }
+      return {
+        ...state,
+        selectedStep: action.step,
+        selectedBlock: action.step,
+        journeyEditContentComponent: ActiveJourneyEditContent.Canvas
+      }
     case 'SetSelectedBlockAction':
-      return { ...state, selectedBlock: action.block }
+      return {
+        ...state,
+        selectedBlock: action.block,
+        journeyEditContentComponent: ActiveJourneyEditContent.Canvas
+      }
     case 'SetSelectedBlockByIdAction':
       return {
         ...state,
         selectedBlock:
           action.id != null
             ? searchBlocks(state.steps ?? [], action.id)
-            : undefined
+            : undefined,
+        journeyEditContentComponent: ActiveJourneyEditContent.Canvas
       }
     case 'SetSelectedAttributeIdAction':
       return { ...state, selectedAttributeId: action.id }
@@ -159,7 +180,8 @@ export const EditorContext = createContext<{
     steps: [],
     drawerMobileOpen: false,
     activeTab: ActiveTab.Cards,
-    activeFab: ActiveFab.Add
+    activeFab: ActiveFab.Add,
+    journeyEditContentComponent: ActiveJourneyEditContent.Canvas
   },
   dispatch: () => null
 })
@@ -180,6 +202,7 @@ export function EditorProvider({
     drawerMobileOpen: false,
     activeTab: ActiveTab.Cards,
     activeFab: ActiveFab.Add,
+    journeyEditContentComponent: ActiveJourneyEditContent.Canvas,
     ...initialState
   })
 
