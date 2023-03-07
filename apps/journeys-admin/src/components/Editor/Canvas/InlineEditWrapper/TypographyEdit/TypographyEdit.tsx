@@ -41,7 +41,7 @@ export function TypographyEdit({
   )
 
   const { journey } = useJourney()
-  const [value, setValue] = useState(content ?? '')
+  const [value, setValue] = useState(content)
   const [selection, setSelection] = useState({ start: 0, end: value.length })
   async function handleSaveBlock(): Promise<void> {
     // Production not saving value correctly
