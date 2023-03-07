@@ -1,8 +1,10 @@
-import { ReactElement, useReducer, useState } from 'react'
+import { ReactElement, useReducer } from 'react'
 import Box from '@mui/material/Box'
+import { Button } from '@core/journeys/ui/Button'
 import { Canvas } from '../Canvas'
 import { ControlPanel } from '../ControlPanel'
 import { Drawer, DRAWER_WIDTH } from '../Drawer'
+import { SocialPreview } from '../SocialPreview/SocialPreview'
 
 interface JourneyEditContentState {
   component: string
@@ -17,6 +19,11 @@ export const reducer = (
   action: JourneyEditContentAction
 ): JourneyEditContentState => {
   switch (action.type) {
+    case 'JourneyEditSocialPreview':
+      return {
+        ...state,
+        component: 'socialPreview'
+      }
     default:
       return {
         ...state,
@@ -49,9 +56,16 @@ export function JourneyEdit(): ReactElement {
           }}
         >
           <Box sx={{ my: 'auto' }}>
+            <button
+              onClick={() => dispatch({ type: 'JourneyEditSocialPreview' })}
+            >
+              <span>test</span>
+            </button>
+
             {
               {
-                canvas: <Canvas />
+                canvas: <Canvas />,
+                socialPreview: <SocialPreview />
               }[state.component]
             }
           </Box>
