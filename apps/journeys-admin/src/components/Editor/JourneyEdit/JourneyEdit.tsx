@@ -1,40 +1,20 @@
-import { ReactElement, useReducer } from 'react'
+import { ReactElement } from 'react'
 import Box from '@mui/material/Box'
-import { Button } from '@core/journeys/ui/Button'
+import {
+  useEditor,
+  ActiveJourneyEditContent
+} from '@core/journeys/ui/EditorProvider'
 import { Canvas } from '../Canvas'
 import { ControlPanel } from '../ControlPanel'
 import { Drawer, DRAWER_WIDTH } from '../Drawer'
 import { SocialPreview } from '../SocialPreview/SocialPreview'
 
-interface JourneyEditContentState {
-  component: string
-}
-
-interface JourneyEditContentAction {
-  type: string
-}
-
-export const reducer = (
-  state: JourneyEditContentState,
-  action: JourneyEditContentAction
-): JourneyEditContentState => {
-  switch (action.type) {
-    case 'JourneyEditSocialPreview':
-      return {
-        ...state,
-        component: 'socialPreview'
-      }
-    default:
-      return {
-        ...state,
-        component: 'canvas'
-      }
-  }
-}
-
 // This component is tested in Editor
 export function JourneyEdit(): ReactElement {
-  const [state, dispatch] = useReducer(reducer, { component: 'canvas' })
+  const {
+    state: { journeyEditContentComponent },
+    dispatch
+  } = useEditor()
   return (
     <>
       <Box
@@ -57,16 +37,21 @@ export function JourneyEdit(): ReactElement {
         >
           <Box sx={{ my: 'auto' }}>
             <button
-              onClick={() => dispatch({ type: 'JourneyEditSocialPreview' })}
+              onClick={() =>
+                dispatch({
+                  type: 'SetJourneyEditContentAction',
+                  component: ActiveJourneyEditContent.SocialPreview
+                })
+              }
             >
               <span>test</span>
             </button>
 
             {
               {
-                canvas: <Canvas />,
-                socialPreview: <SocialPreview />
-              }[state.component]
+                [ActiveJourneyEditContent.Canvas]: <Canvas />,
+                [ActiveJourneyEditContent.SocialPreview]: <SocialPreview />
+              }[journeyEditContentComponent]
             }
           </Box>
         </Box>
