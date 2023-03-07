@@ -3,6 +3,7 @@ import Box from '@mui/material/Box'
 import { Canvas } from '../Canvas'
 import { ControlPanel } from '../ControlPanel'
 import { Drawer, DRAWER_WIDTH } from '../Drawer'
+import { ActionsTable } from '../ActionsTable'
 
 // This component is tested in Editor
 export function JourneyEdit(): ReactElement {
@@ -30,6 +31,7 @@ export function JourneyEdit(): ReactElement {
             <Canvas />
           </Box>
         </Box>
+        <ActionsTable />
         <ControlPanel />
       </Box>
       <Drawer />
