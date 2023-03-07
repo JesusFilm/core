@@ -1,4 +1,4 @@
-import { ReactElement } from 'react'
+import { ReactElement, useState } from 'react'
 import Box from '@mui/material/Box'
 import { Canvas } from '../Canvas'
 import { ControlPanel } from '../ControlPanel'
@@ -6,6 +6,7 @@ import { Drawer, DRAWER_WIDTH } from '../Drawer'
 
 // This component is tested in Editor
 export function JourneyEdit(): ReactElement {
+  const [contentSelector, setContentSelector] = useState('canvas')
   return (
     <>
       <Box
@@ -27,7 +28,10 @@ export function JourneyEdit(): ReactElement {
           }}
         >
           <Box sx={{ my: 'auto' }}>
-            <Canvas />
+            {{
+              canvas: <Canvas />
+            }}
+            [contentSelector]
           </Box>
         </Box>
         <ControlPanel />
