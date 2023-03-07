@@ -41,11 +41,14 @@ export function TypographyEdit({
   )
 
   const { journey } = useJourney()
-  const [value, setValue] = useState(content)
+  const [value, setValue] = useState(content ?? '')
   const [selection, setSelection] = useState({ start: 0, end: value.length })
-
   async function handleSaveBlock(): Promise<void> {
-    const currentContent = value.trimStart().trimEnd()
+    // Production not saving value correctly
+    const inputRefValue = inputRef.current?.children[0].innerHTML
+    const currentContent = (value !== '' ? value : inputRefValue ?? '')
+      .trimStart()
+      .trimEnd()
 
     if (currentContent === '') {
       deleteSelf()
