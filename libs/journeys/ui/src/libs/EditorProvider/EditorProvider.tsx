@@ -85,7 +85,7 @@ interface SetActiveFabAction {
 
 interface SetActiveJourneyEditContentAction {
   type: 'SetJourneyEditContentAction'
-  constent: ActiveJourneyEditContent
+  component: ActiveJourneyEditContent
 }
 
 interface SetStepsAction {
@@ -168,6 +168,11 @@ export const reducer = (
           state.selectedBlock != null
             ? searchBlocks(action.steps, state.selectedBlock.id)
             : action.steps[0]
+      }
+    case 'SetJourneyEditContentAction':
+      return {
+        ...state,
+        journeyEditContentComponent: action.component
       }
   }
 }
