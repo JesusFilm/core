@@ -84,22 +84,18 @@ export function TypographyEdit({
       value={value}
       placeholder={t('Add your text here...')}
       onSelect={(e) => {
-        const input = e.currentTarget as HTMLInputElement
+        const input = e.target as HTMLTextAreaElement
         setSelection({
           start: input.selectionStart ?? 0,
           end: input.selectionEnd ?? value.length
         })
       }}
-      onFocus={(e) =>
-        (e.currentTarget as HTMLInputElement).setSelectionRange(
-          selection.start,
-          selection.end
-        )
-      }
-      onBlur={handleSaveBlock}
-      onChange={(e) => {
-        setValue(e.currentTarget.value)
+      onFocus={(e) => {
+        const input = e.target as HTMLTextAreaElement
+        input.setSelectionRange(selection.start, selection.end)
       }}
+      onBlur={handleSaveBlock}
+      onChange={(e) => setValue(e.target.value)}
     />
   )
 
