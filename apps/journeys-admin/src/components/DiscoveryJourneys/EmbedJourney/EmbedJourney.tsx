@@ -7,16 +7,13 @@ interface Props {
 
 export function EmbedJourney({ slug }: Props): ReactElement {
   return (
-    <Box
-      sx={{
-        transform: 'scale(0.25)',
-        transformOrigin: 'top left'
-      }}
-    >
+    <Box sx={{ position: 'relative', width: 95, height: 140 }}>
       <Box
         sx={{
           height: '100%',
-          width: '250px'
+          width: '380px',
+          transform: 'scale(0.25)',
+          transformOrigin: 'top left'
         }}
       >
         <div
