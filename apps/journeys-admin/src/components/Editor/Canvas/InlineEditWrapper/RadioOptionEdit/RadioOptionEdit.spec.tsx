@@ -170,7 +170,7 @@ describe('RadioOptionEdit', () => {
           }}
         >
           <EditorProvider>
-            <h1>Other content</h1>
+            <h1 className="swiper-container" />
             <iframe>
               <RadioOptionEdit {...props} />
             </iframe>
@@ -184,5 +184,18 @@ describe('RadioOptionEdit', () => {
     fireEvent.change(input, { target: { value: '    updated label    ' } })
     fireEvent.click(getByRole('heading', { level: 1 }))
     await waitFor(() => expect(result).toHaveBeenCalled())
+  })
+
+  it('should clear label if Option 1 or Option 2', () => {
+    const args = {
+      ...props,
+      label: 'Option 1'
+    }
+    const { getByRole } = render(
+      <MockedProvider>
+        <RadioOptionEdit {...args} />
+      </MockedProvider>
+    )
+    expect(getByRole('button', { name: '' }))
   })
 })

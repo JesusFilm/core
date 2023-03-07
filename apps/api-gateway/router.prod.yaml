@@ -11,12 +11,11 @@ cors:
     # journeys
     - https://your.nextstep.is
     - https://your-stage.nextstep.is
-    # watch
-    - https://watch.jesusfilm.org
-    - https://watch-stage.jesusfilm.org
   match_origins:
     # any project deployed on the jesusfilm vercel account
     - '^https://([a-z0-9-]+)-jesusfilm[.]vercel[.]app$'
+    # any project deployed on the jesusfilm.org domain (used primarily for watch)
+    - '^https://([a-z0-9-]+)[.]jesusfilm[.]org$'
   max_age: 24h
 headers:
   all:

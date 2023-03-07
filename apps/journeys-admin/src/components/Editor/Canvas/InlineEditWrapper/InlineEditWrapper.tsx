@@ -12,6 +12,7 @@ import { TextResponseFields } from '../../../../../__generated__/TextResponseFie
 import { blockDeleteUpdate } from '../../../../libs/blockDeleteUpdate/blockDeleteUpdate'
 import { BlockDelete } from '../../../../../__generated__/BlockDelete'
 import { BLOCK_DELETE } from '../../EditToolbar/DeleteBlock/DeleteBlock'
+import getSelected from '../../EditToolbar/DeleteBlock/utils/getSelected'
 import { TypographyEdit } from './TypographyEdit'
 import { ButtonEdit } from './ButtonEdit'
 import { RadioOptionEdit } from './RadioOptionEdit'
@@ -36,7 +37,7 @@ export function InlineEditWrapper({
   const [blockDelete] = useMutation<BlockDelete>(BLOCK_DELETE)
 
   const {
-    state: { selectedBlock, activeFab, selectedStep },
+    state: { selectedBlock, activeFab, selectedStep, steps },
     dispatch
   } = useEditor()
   const { journey } = useJourney()
@@ -46,26 +47,35 @@ export function InlineEditWrapper({
     (block.__typename === 'RadioQuestionBlock' &&
       selectedBlock?.parentBlockId === block.id)
 
+  // TODO: Refactor out delete block logic
   const handleDeleteBlock = async (): Promise<void> => {
-    if (journey == null) return
+    if (selectedBlock == null || journey == null || steps == null) return
+
+    const deletedBlockParentOrder = selectedBlock.parentOrder
+    const deletedBlockType = selectedBlock.__typename
+    const stepsBeforeDelete = steps
+    const stepBeforeDelete = selectedStep
 
     await blockDelete({
       variables: {
-        id: block.id,
+        id: selectedBlock.id,
         journeyId: journey.id,
-        parentBlockId: block.parentBlockId
+        parentBlockId: selectedBlock.parentBlockId
       },
       update(cache, { data }) {
+        if (data?.blockDelete != null && deletedBlockParentOrder != null) {
+          const selected = getSelected({
+            parentOrder: deletedBlockParentOrder,
+            siblings: data.blockDelete,
+            type: deletedBlockType,
+            steps: stepsBeforeDelete,
+            selectedStep: stepBeforeDelete
+          })
+          selected != null && dispatch(selected)
+        }
         blockDeleteUpdate(block, data?.blockDelete, cache, journey.id)
       }
     })
-
-    if (selectedStep !== undefined) {
-      dispatch({
-        type: 'SetSelectedBlockByIdAction',
-        id: selectedStep.id
-      })
-    }
   }
 
   const EditComponent =

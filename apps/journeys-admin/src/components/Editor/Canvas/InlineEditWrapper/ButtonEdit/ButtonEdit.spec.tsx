@@ -8,6 +8,15 @@ import { ButtonFields } from '../../../../../../__generated__/ButtonFields'
 import { GetJourney_journey as Journey } from '../../../../../../__generated__/GetJourney'
 import { ButtonEdit, BUTTON_BLOCK_UPDATE_CONTENT } from '.'
 
+jest.mock('react-i18next', () => ({
+  __esModule: true,
+  useTranslation: () => {
+    return {
+      t: (str: string) => str
+    }
+  }
+}))
+
 describe('ButtonEdit', () => {
   const props: TreeBlock<ButtonFields> = {
     __typename: 'ButtonBlock',
@@ -32,6 +41,7 @@ describe('ButtonEdit', () => {
     const input = getByRole('textbox')
     fireEvent.click(input)
     expect(input).toHaveFocus()
+    expect(input).toHaveAttribute('placeholder', 'Edit text...')
   })
 
   it('saves the button label on onBlur', async () => {
@@ -174,7 +184,7 @@ describe('ButtonEdit', () => {
           }}
         >
           <EditorProvider>
-            <h1>Other content</h1>
+            <h1 className="swiper-container">Other content</h1>
             <iframe>
               <ButtonEdit {...props} />
             </iframe>

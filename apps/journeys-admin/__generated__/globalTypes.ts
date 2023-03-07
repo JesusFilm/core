@@ -271,6 +271,9 @@ export interface ImageBlockUpdateInput {
   parentBlockId?: string | null;
   src?: string | null;
   alt?: string | null;
+  blurhash?: string | null;
+  width?: number | null;
+  height?: number | null;
 }
 
 export interface JourneyTemplateInput {

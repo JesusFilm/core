@@ -1,5 +1,5 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { render } from '@testing-library/react'
+import { fireEvent, render } from '@testing-library/react'
 import { GetJourney_journey_blocks_ImageBlock as ImageBlock } from '../../../../__generated__/GetJourney'
 import { ImageBlockEditor } from '.'
 
@@ -23,6 +23,19 @@ describe('ImageBlockEditor', () => {
       </MockedProvider>
     )
     expect(getByText('Selected Image')).toBeInTheDocument()
+    expect(getByRole('tab', { name: 'Gallery' })).toBeInTheDocument()
     expect(getByRole('tab', { name: 'Custom' })).toBeInTheDocument()
+  })
+
+  it('should switch tabs', () => {
+    const { getByText, getByRole } = render(
+      <MockedProvider>
+        <ImageBlockEditor onChange={jest.fn()} selectedBlock={imageBlock} />
+      </MockedProvider>
+    )
+    expect(getByRole('tab', { name: 'Gallery' })).toBeInTheDocument()
+    expect(getByText('Unsplash')).toBeInTheDocument()
+    fireEvent.click(getByRole('tab', { name: 'Custom' }))
+    expect(getByText('Add image by URL')).toBeInTheDocument()
   })
 })

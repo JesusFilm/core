@@ -93,11 +93,11 @@ export function VideoBlockEditorSettingsPosterLibrary({
     useMutation<VideoBlockPosterImageUpdate>(VIDEO_BLOCK_POSTER_IMAGE_UPDATE)
   const [
     imageBlockCreate,
-    { error: imageBlockCreateError, loading: createLoading }
+    { error: imageBlockCreateError, loading: createLoading, error: createError }
   ] = useMutation<PosterImageBlockCreate>(POSTER_IMAGE_BLOCK_CREATE)
   const [
     imageBlockUpdate,
-    { error: imageBlockUpdateError, loading: updateLoading }
+    { error: imageBlockUpdateError, loading: updateLoading, error: updateError }
   ] = useMutation<PosterImageBlockUpdate>(POSTER_IMAGE_BLOCK_UPDATE)
 
   useEffect(() => {
@@ -231,6 +231,7 @@ export function VideoBlockEditorSettingsPosterLibrary({
       onChange={handleChange}
       onDelete={deleteCoverBlock}
       selectedBlock={selectedBlock}
+      error={createError != null ?? updateError != null}
     />
   )
 }

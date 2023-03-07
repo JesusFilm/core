@@ -32,7 +32,7 @@ export function ImageOptions(): ReactElement {
   } = useEditor()
   const { journey } = useJourney()
   const { enqueueSnackbar } = useSnackbar()
-  const [imageBlockUpdate, { loading }] =
+  const [imageBlockUpdate, { loading, error }] =
     useMutation<ImageBlockUpdate>(IMAGE_BLOCK_UPDATE)
 
   const imageBlock = selectedBlock as TreeBlock<ImageBlock>
@@ -76,10 +76,6 @@ export function ImageOptions(): ReactElement {
           }
         }
       })
-      enqueueSnackbar('Image Updated', {
-        variant: 'success',
-        preventDuplicate: true
-      })
     } catch (e) {
       enqueueSnackbar(e.message, {
         variant: 'error',
@@ -94,6 +90,7 @@ export function ImageOptions(): ReactElement {
       onDelete={handleImageDelete}
       selectedBlock={imageBlock}
       loading={loading}
+      error={error != null}
     />
   )
 }

@@ -50,6 +50,7 @@ const Template: Story = ({ ...args }) => (
     <ImageBlockThumbnail
       selectedBlock={args.selectedBlock}
       loading={args.loading}
+      error={args.error}
     />
   </Box>
 )
@@ -70,6 +71,12 @@ export const Loading = Template.bind({})
 Loading.args = {
   selectedBlock: image,
   loading: true
+}
+
+export const Error = Template.bind({})
+Error.args = {
+  selectedBlock: null,
+  error: true
 }
 
 export default ImageEditorStory as Meta

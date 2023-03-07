@@ -1,16 +1,19 @@
-FROM arangodb/arangodb:3.9.0
+FROM debian:stable-slim
 
-RUN apk add --update \
-python2 \
-curl \
-which \
-jq \
-bash
-RUN curl -sSL https://sdk.cloud.google.com | bash
-ENV PATH $PATH:/root/google-cloud-sdk/bin
+RUN apt update
+RUN apt install apt-transport-https ca-certificates curl gnupg -y
+RUN curl -OL https://download.arangodb.com/arangodb310/DEBIAN/Release.key
+RUN apt-key add - < Release.key
+RUN echo 'deb https://download.arangodb.com/arangodb310/DEBIAN/ /' | tee /etc/apt/sources.list.d/arangodb.list
+RUN echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] https://packages.cloud.google.com/apt cloud-sdk main" | tee -a /etc/apt/sources.list.d/google-cloud-sdk.list
+RUN curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key --keyring /usr/share/keyrings/cloud.google.gpg add -
 
-ENV ARANGO_NO_AUTH=1
+
+RUN apt update
+RUN apt install arangodb3-client=3.10.3-1 google-cloud-cli -y
 
 COPY apps/arangodb-bigquery-etl/bqexport.sh .
+COPY apps/arangodb-bigquery-etl/blocks .
 RUN chmod 775 /bqexport.sh
 RUN chmod u+x /bqexport.sh
+CMD /bqexport.sh

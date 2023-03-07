@@ -5,8 +5,14 @@ import HorizontalRuleRoundedIcon from '@mui/icons-material/HorizontalRuleRounded
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import type { TreeBlock } from '@core/journeys/ui/block'
+import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
+import { getJourneyRTL } from '@core/journeys/ui/rtl'
 import { TypographyBlockUpdateVariant } from '../../../../../../../../__generated__/TypographyBlockUpdateVariant'
-import { TypographyVariant } from '../../../../../../../../__generated__/globalTypes'
+import {
+  TypographyVariant,
+  ThemeName,
+  ThemeMode
+} from '../../../../../../../../__generated__/globalTypes'
 import { GetJourney_journey_blocks_TypographyBlock as TypographyBlock } from '../../../../../../../../__generated__/GetJourney'
 import { ToggleButtonGroup } from '../../../ToggleButtonGroup'
 
@@ -28,6 +34,7 @@ export function Variant(): ReactElement {
     TYPOGRAPHY_BLOCK_UPDATE_VARIANT
   )
   const { journey } = useJourney()
+  const { rtl, locale } = getJourneyRTL(journey)
   const { state } = useEditor()
   const selectedBlock = state.selectedBlock as
     | TreeBlock<TypographyBlock>
@@ -127,10 +134,18 @@ export function Variant(): ReactElement {
   }
 
   return (
-    <ToggleButtonGroup
-      value={selectedBlock?.variant ?? TypographyVariant.body2}
-      onChange={handleChange}
-      options={options}
-    />
+    <ThemeProvider
+      themeName={ThemeName.base}
+      themeMode={ThemeMode.light}
+      rtl={rtl}
+      locale={locale}
+      nested
+    >
+      <ToggleButtonGroup
+        value={selectedBlock?.variant ?? TypographyVariant.body2}
+        onChange={handleChange}
+        options={options}
+      />
+    </ThemeProvider>
   )
 }

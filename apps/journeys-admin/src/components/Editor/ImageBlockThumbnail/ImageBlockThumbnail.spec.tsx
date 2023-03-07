@@ -40,4 +40,11 @@ describe('ImageBlockThumbnail', () => {
     )
     expect(getByRole('progressbar')).toBeInTheDocument()
   })
+
+  it('should render error state', () => {
+    const { getByTestId } = render(
+      <ImageBlockThumbnail selectedBlock={image} error />
+    )
+    expect(getByTestId('BrokenImageOutlinedIcon')).toBeInTheDocument()
+  })
 })
