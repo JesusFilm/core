@@ -180,7 +180,7 @@ describe('TextResponseEdit', () => {
             }}
           >
             <EditorProvider>
-              <h1>Other Content</h1>
+              <h1 className="swiper-container">Other Content</h1>
               <iframe>
                 <TextResponseEdit {...props} />
               </iframe>

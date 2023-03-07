@@ -80,6 +80,13 @@ export function Canvas(): ReactElement {
         }
       }}
       onClick={() => {
+        // Prevent losing focus on empty input
+        if (
+          selectedBlock?.__typename === 'TypographyBlock' &&
+          selectedBlock.content === ''
+        ) {
+          return
+        }
         dispatch({
           type: 'SetSelectedBlockAction',
           block: selectedStep
@@ -123,7 +130,8 @@ export function Canvas(): ReactElement {
                   position: 'relative',
                   overflow: 'hidden',
                   border: (theme) =>
-                    step.id === selectedBlock?.id
+                    step.id === selectedBlock?.id &&
+                    selectedBlock?.__typename === 'StepBlock'
                       ? `2px solid ${theme.palette.primary.main}`
                       : `2px solid ${theme.palette.background.default}`,
                   transform:

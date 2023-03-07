@@ -1,11 +1,21 @@
 import { ComponentProps } from 'react'
-import { render, fireEvent, waitFor } from '@testing-library/react'
+import { render, fireEvent, waitFor, screen } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import { MockedProvider } from '@apollo/client/testing'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { TypographyVariant } from '../../../../../../__generated__/globalTypes'
 import { GetJourney_journey as Journey } from '../../../../../../__generated__/GetJourney'
 import { TypographyEdit, TYPOGRAPHY_BLOCK_UPDATE_CONTENT } from '.'
+
+jest.mock('react-i18next', () => ({
+  __esModule: true,
+  useTranslation: () => {
+    return {
+      t: (str: string) => str
+    }
+  }
+}))
 
 describe('TypographyEdit', () => {
   const onDelete = jest.fn()
@@ -22,14 +32,15 @@ describe('TypographyEdit', () => {
     deleteSelf: onDelete
   }
   it('selects the input on click', () => {
-    const { getByRole } = render(
+    render(
       <MockedProvider>
         <TypographyEdit {...props} />
       </MockedProvider>
     )
-    const input = getByRole('textbox')
+    const input = screen.getByRole('textbox')
     fireEvent.click(input)
     expect(input).toHaveFocus()
+    expect(input).toHaveAttribute('placeholder', 'Add your text here...')
   })
 
   it('saves the text content on outside click', async () => {
@@ -70,7 +81,7 @@ describe('TypographyEdit', () => {
           }}
         >
           <EditorProvider>
-            <h1>Other content</h1>
+            <h1 className="swiper-container">Other content</h1>
             <iframe>
               <TypographyEdit {...props} />
             </iframe>
@@ -199,7 +210,7 @@ describe('TypographyEdit', () => {
             admin: true
           }}
         >
-          <h1>Other content</h1>
+          <h1 className="swiper-container">Other content</h1>
           <TypographyEdit {...props} />
         </JourneyProvider>
       </MockedProvider>
@@ -211,5 +222,34 @@ describe('TypographyEdit', () => {
     fireEvent.click(getByRole('heading', { level: 1 }))
 
     expect(onDelete).toHaveBeenCalled()
+  })
+
+  it('persists selection state on outside click', async () => {
+    render(
+      <MockedProvider>
+        <JourneyProvider
+          value={{
+            journey: { id: 'journeyId' } as unknown as Journey,
+            admin: true
+          }}
+        >
+          <h1>Other content</h1>
+          <TypographyEdit {...props} />
+        </JourneyProvider>
+      </MockedProvider>
+    )
+    const input = screen.getByRole('textbox')
+
+    userEvent.click(input)
+    // All text selected on first focus
+    expect(input).toHaveValue(props.content)
+    userEvent.type(input, '{backspace}')
+    expect(input).toHaveValue('')
+
+    // Cursor remains at end of input after outside click
+    userEvent.type(input, 'new')
+    userEvent.click(screen.getByRole('heading', { level: 1 }))
+    userEvent.type(input, '{backspace}')
+    expect(input).toHaveValue('ne')
   })
 })
