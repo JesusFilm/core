@@ -1,5 +1,5 @@
 import type { TreeBlock } from '../block'
-import { reducer } from './EditorProvider'
+import { ActiveJourneyEditContent, reducer } from './EditorProvider'
 import { ActiveTab, ActiveFab } from '.'
 
 describe('EditorContext', () => {
@@ -19,7 +19,8 @@ describe('EditorContext', () => {
           steps: [step],
           drawerMobileOpen: false,
           activeFab: ActiveFab.Add,
-          activeTab: ActiveTab.Cards
+          activeTab: ActiveTab.Cards,
+          journeyEditContentComponent: ActiveJourneyEditContent.Canvas
         }
         expect(
           reducer(state, {
@@ -49,7 +50,8 @@ describe('EditorContext', () => {
           steps: [block],
           drawerMobileOpen: false,
           activeFab: ActiveFab.Edit,
-          activeTab: ActiveTab.Cards
+          activeTab: ActiveTab.Cards,
+          journeyEditContentComponent: ActiveJourneyEditContent.Canvas
         }
         expect(
           reducer(state, {
@@ -90,7 +92,8 @@ describe('EditorContext', () => {
           steps: [step],
           drawerMobileOpen: false,
           activeFab: ActiveFab.Edit,
-          activeTab: ActiveTab.Cards
+          activeTab: ActiveTab.Cards,
+          journeyEditContentComponent: ActiveJourneyEditContent.Canvas
         }
         expect(
           reducer(state, {
@@ -129,7 +132,8 @@ describe('EditorContext', () => {
           steps: [step],
           drawerMobileOpen: false,
           activeFab: ActiveFab.Add,
-          activeTab: ActiveTab.Cards
+          activeTab: ActiveTab.Cards,
+          journeyEditContentComponent: ActiveJourneyEditContent.Canvas
         }
         expect(
           reducer(state, {
@@ -147,7 +151,8 @@ describe('EditorContext', () => {
           steps: [],
           drawerMobileOpen: false,
           activeFab: ActiveFab.Add,
-          activeTab: ActiveTab.Cards
+          activeTab: ActiveTab.Cards,
+          journeyEditContentComponent: ActiveJourneyEditContent.Canvas
         }
         expect(
           reducer(state, {
@@ -166,7 +171,8 @@ describe('EditorContext', () => {
           steps: [],
           drawerMobileOpen: false,
           activeFab: ActiveFab.Add,
-          activeTab: ActiveTab.Cards
+          activeTab: ActiveTab.Cards,
+          journeyEditContentComponent: ActiveJourneyEditContent.Canvas
         }
         expect(
           reducer(state, {
@@ -186,7 +192,8 @@ describe('EditorContext', () => {
           steps: [],
           drawerMobileOpen: false,
           activeFab: ActiveFab.Add,
-          activeTab: ActiveTab.Cards
+          activeTab: ActiveTab.Cards,
+          journeyEditContentComponent: ActiveJourneyEditContent.Canvas
         }
         expect(
           reducer(state, {
@@ -210,7 +217,8 @@ describe('EditorContext', () => {
           drawerChildren: <></>,
           drawerMobileOpen: false,
           activeFab: ActiveFab.Add,
-          activeTab: ActiveTab.Cards
+          activeTab: ActiveTab.Cards,
+          journeyEditContentComponent: ActiveJourneyEditContent.Canvas
         }
         expect(
           reducer(state, {
@@ -231,7 +239,8 @@ describe('EditorContext', () => {
           steps: [],
           drawerMobileOpen: false,
           activeFab: ActiveFab.Add,
-          activeTab: ActiveTab.Cards
+          activeTab: ActiveTab.Cards,
+          journeyEditContentComponent: ActiveJourneyEditContent.Canvas
         }
         expect(
           reducer(state, {
@@ -251,7 +260,8 @@ describe('EditorContext', () => {
           steps: [],
           drawerMobileOpen: false,
           activeFab: ActiveFab.Add,
-          activeTab: ActiveTab.Cards
+          activeTab: ActiveTab.Cards,
+          journeyEditContentComponent: ActiveJourneyEditContent.Canvas
         }
         expect(
           reducer(state, {
@@ -271,7 +281,8 @@ describe('EditorContext', () => {
           steps: [],
           drawerMobileOpen: false,
           activeFab: ActiveFab.Add,
-          activeTab: ActiveTab.Cards
+          activeTab: ActiveTab.Cards,
+          journeyEditContentComponent: ActiveJourneyEditContent.Canvas
         }
         expect(
           reducer(state, {
@@ -300,7 +311,8 @@ describe('EditorContext', () => {
           steps: [],
           drawerMobileOpen: false,
           activeFab: ActiveFab.Add,
-          activeTab: ActiveTab.Cards
+          activeTab: ActiveTab.Cards,
+          journeyEditContentComponent: ActiveJourneyEditContent.Canvas
         }
         expect(
           reducer(state, {
@@ -351,7 +363,8 @@ describe('EditorContext', () => {
           activeFab: ActiveFab.Add,
           activeTab: ActiveTab.Cards,
           selectedBlock: block,
-          selectedStep: step
+          selectedStep: step,
+          journeyEditContentComponent: ActiveJourneyEditContent.Canvas
         }
         expect(
           reducer(state, {
@@ -363,6 +376,26 @@ describe('EditorContext', () => {
           steps: [updatedStep],
           selectedBlock: updatedBlock,
           selectedStep: updatedStep
+        })
+      })
+    })
+    describe('SetJourneyEditContentComponentAction', () => {
+      it('should set journey edit content component', () => {
+        const state = {
+          steps: [],
+          drawerMobileOpen: false,
+          activeFab: ActiveFab.Add,
+          activeTab: ActiveTab.Cards,
+          journeyEditContentComponent: ActiveJourneyEditContent.Canvas
+        }
+        expect(
+          reducer(state, {
+            type: 'SetJourneyEditContentAction',
+            component: ActiveJourneyEditContent.Canvas
+          })
+        ).toEqual({
+          ...state,
+          journeyEditContentComponent: ActiveJourneyEditContent.Canvas
         })
       })
     })
