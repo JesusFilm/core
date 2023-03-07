@@ -3,7 +3,8 @@ import {
   ActiveTab,
   useEditor,
   EditorProvider,
-  EditorState
+  EditorState,
+  ActiveJourneyEditContent
 } from '@core/journeys/ui/EditorProvider'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { render } from '@testing-library/react'
@@ -37,7 +38,8 @@ describe('Step', () => {
     steps: [],
     drawerMobileOpen: false,
     activeTab: ActiveTab.Cards,
-    activeFab: ActiveFab.Add
+    activeFab: ActiveFab.Add,
+    journeyEditContentComponent: ActiveJourneyEditContent.Canvas
   }
 
   beforeEach(() => {
@@ -100,7 +102,8 @@ describe('Step', () => {
           steps: [step1, step2],
           drawerMobileOpen: false,
           activeTab: ActiveTab.Cards,
-          activeFab: ActiveFab.Add
+          activeFab: ActiveFab.Add,
+          journeyEditContentComponent: ActiveJourneyEditContent.Canvas
         },
         dispatch
       })
@@ -174,7 +177,8 @@ describe('Step', () => {
           steps: [step1, step2, step5],
           drawerMobileOpen: false,
           activeTab: ActiveTab.Cards,
-          activeFab: ActiveFab.Add
+          activeFab: ActiveFab.Add,
+          journeyEditContentComponent: ActiveJourneyEditContent.Canvas
         },
         dispatch
       })
@@ -239,7 +243,8 @@ describe('Step', () => {
           steps: [step1, step2],
           drawerMobileOpen: false,
           activeTab: ActiveTab.Cards,
-          activeFab: ActiveFab.Add
+          activeFab: ActiveFab.Add,
+          journeyEditContentComponent: ActiveJourneyEditContent.Canvas
         },
         dispatch
       })
