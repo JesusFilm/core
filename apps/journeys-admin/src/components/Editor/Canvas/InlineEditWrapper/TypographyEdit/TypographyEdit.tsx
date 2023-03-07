@@ -44,8 +44,7 @@ export function TypographyEdit({
   const [selection, setSelection] = useState({ start: 0, end: value.length })
 
   async function handleSaveBlock(): Promise<void> {
-    const inputRefValue = inputRef.current?.children[0].innerHTML ?? ''
-    const currentContent = inputRefValue.trimStart().trimEnd()
+    const currentContent = value.trimStart().trimEnd()
 
     if (currentContent === '') {
       deleteSelf()

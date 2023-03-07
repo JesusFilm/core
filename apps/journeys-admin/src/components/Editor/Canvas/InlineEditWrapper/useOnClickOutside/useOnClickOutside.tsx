@@ -25,7 +25,7 @@ export function useOnClickOutside<T extends HTMLElement = HTMLElement>(
     window.addEventListener('click', handleClick, { capture: true })
     return () =>
       window.removeEventListener('click', handleClick, { capture: true })
-  }, [])
+  }, [callback])
 
   return elementRef
 }
