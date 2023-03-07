@@ -35,7 +35,6 @@ export function TypographyEdit({
   ...props
 }: TypographyEditProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-
   const [typographyBlockUpdate] = useMutation<TypographyBlockUpdateContent>(
     TYPOGRAPHY_BLOCK_UPDATE_CONTENT
   )
@@ -43,12 +42,10 @@ export function TypographyEdit({
   const { journey } = useJourney()
   const [value, setValue] = useState(content)
   const [selection, setSelection] = useState({ start: 0, end: value.length })
+
   async function handleSaveBlock(): Promise<void> {
-    // Production not saving value correctly
-    const inputRefValue = inputRef.current?.children[0].innerHTML
-    const currentContent = (value !== '' ? value : inputRefValue ?? '')
-      .trimStart()
-      .trimEnd()
+    const inputRefValue = inputRef.current?.children[0].innerHTML ?? ''
+    const currentContent = inputRefValue.trimStart().trimEnd()
 
     if (currentContent === '') {
       deleteSelf()
