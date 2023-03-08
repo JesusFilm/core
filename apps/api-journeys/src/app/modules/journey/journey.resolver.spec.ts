@@ -683,6 +683,23 @@ describe('JourneyResolver', () => {
       )
     })
 
+    it('doesnt create an existing Member', async () => {
+      mockUuidv4.mockReturnValueOnce('journeyId')
+      const member = {
+        id: 'existingId',
+        userId: 'userId',
+        teamId: 'jfp-team'
+      }
+      mService.getMemberByTeamId = jest.fn(
+        async () => await Promise.resolve(member)
+      )
+      await resolver.journeyCreate(
+        { title: 'Untitled Journey', languageId: '529' },
+        'userId'
+      )
+      expect(mService.save).not.toHaveBeenCalled()
+    })
+
     it('adds uuid if slug already taken', async () => {
       const mockSave = service.save as jest.MockedFunction<typeof service.save>
       mockSave.mockRejectedValueOnce({ errorNum: 1210 })
