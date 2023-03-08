@@ -8,12 +8,12 @@ import {
 
 const db = ArangoDB()
 
-export async function onboarding(reset?: boolean): Promise<void> {
+export async function onboarding(action?: 'reset'): Promise<void> {
   // reset should only be used for dev and stage, using it on production will overwrite the existing onboarding journey
 
   const slug = 'onboarding' // TODO: update this to what prod is using
 
-  if (reset === true) {
+  if (action === 'reset') {
     await db.query(aql`
     FOR journey in journeys
       FILTER journey.slug == ${slug}
@@ -29,12 +29,14 @@ export async function onboarding(reset?: boolean): Promise<void> {
   `)
   }
 
-  const existingJourney = await db.query(aql`
+  const existingJourney = await (
+    await db.query(aql`
       FOR journey in journeys
         FILTER journey.slug == ${slug}
           LIMIT 1
           return journey
     `)
+  ).next()
   if (existingJourney != null) return
 
   const journey = await db.collection('journeys').save({
