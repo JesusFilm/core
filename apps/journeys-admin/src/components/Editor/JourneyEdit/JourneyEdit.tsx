@@ -37,12 +37,12 @@ export function JourneyEdit(): ReactElement {
           <Box sx={{ my: 'auto' }}>
             {
               {
-                [ActiveJourneyEditContent.Canvas]: <Canvas />
+                [ActiveJourneyEditContent.Canvas]: <Canvas />,
+                [ActiveJourneyEditContent.Action]: <ActionsTable />
               }[journeyEditContentComponent]
             }
           </Box>
         </Box>
-        <ActionsTable />
         <ControlPanel />
       </Box>
       <Drawer />
