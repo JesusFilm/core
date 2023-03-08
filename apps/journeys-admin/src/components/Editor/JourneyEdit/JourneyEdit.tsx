@@ -12,8 +12,7 @@ import { SocialPreview } from '../SocialPreview/SocialPreview'
 // This component is tested in Editor
 export function JourneyEdit(): ReactElement {
   const {
-    state: { journeyEditContentComponent },
-    dispatch
+    state: { journeyEditContentComponent }
   } = useEditor()
   return (
     <>
@@ -36,17 +35,6 @@ export function JourneyEdit(): ReactElement {
           }}
         >
           <Box sx={{ my: 'auto' }}>
-            <button
-              onClick={() =>
-                dispatch({
-                  type: 'SetJourneyEditContentAction',
-                  component: ActiveJourneyEditContent.SocialPreview
-                })
-              }
-            >
-              <span>test</span>
-            </button>
-
             {
               {
                 [ActiveJourneyEditContent.Canvas]: <Canvas />,
