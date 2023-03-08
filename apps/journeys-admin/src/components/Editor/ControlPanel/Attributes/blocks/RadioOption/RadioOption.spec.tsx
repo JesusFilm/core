@@ -5,7 +5,8 @@ import {
   ActiveTab,
   useEditor,
   EditorProvider,
-  EditorState
+  EditorState,
+  ActiveJourneyEditContent
 } from '@core/journeys/ui/EditorProvider'
 import { MockedProvider } from '@apollo/client/testing'
 import { ThemeProvider } from '../../../../../ThemeProvider'
@@ -39,7 +40,8 @@ describe('RadioOption Attribute', () => {
     steps: [],
     drawerMobileOpen: false,
     activeTab: ActiveTab.Properties,
-    activeFab: ActiveFab.Add
+    activeFab: ActiveFab.Add,
+    journeyEditContentComponent: ActiveJourneyEditContent.Canvas
   }
 
   beforeEach(() => {

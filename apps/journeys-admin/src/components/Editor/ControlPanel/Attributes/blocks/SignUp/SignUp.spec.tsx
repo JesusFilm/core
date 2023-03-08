@@ -6,7 +6,8 @@ import {
   ActiveTab,
   useEditor,
   EditorProvider,
-  EditorState
+  EditorState,
+  ActiveJourneyEditContent
 } from '@core/journeys/ui/EditorProvider'
 import { ThemeProvider } from '../../../../../ThemeProvider'
 import { Drawer } from '../../../../Drawer'
@@ -61,7 +62,8 @@ describe('SignUp Attributes', () => {
     steps: [],
     drawerMobileOpen: false,
     activeTab: ActiveTab.Cards,
-    activeFab: ActiveFab.Add
+    activeFab: ActiveFab.Add,
+    journeyEditContentComponent: ActiveJourneyEditContent.Canvas
   }
 
   beforeEach(() => {
