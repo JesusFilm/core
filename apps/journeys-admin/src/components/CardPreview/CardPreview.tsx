@@ -10,6 +10,10 @@ import Stack from '@mui/material/Stack'
 import { v4 as uuidv4 } from 'uuid'
 import { useMutation, gql } from '@apollo/client'
 import { DragDropContext, Droppable } from 'react-beautiful-dnd'
+import {
+  ActiveJourneyEditContent,
+  useEditor
+} from '@core/journeys/ui/EditorProvider'
 import { StepsOrderUpdate } from '../../../__generated__/StepsOrderUpdate'
 import { StepAndCardBlockCreate } from '../../../__generated__/StepAndCardBlockCreate'
 import { GetJourney_journey_blocks_StepBlock as StepBlock } from '../../../__generated__/GetJourney'
@@ -58,6 +62,7 @@ export function CardPreview({
   showAddButton,
   isDraggable
 }: CardPreviewProps): ReactElement {
+  const { dispatch } = useEditor()
   const [isDragging, setIsDragging] = useState(false)
   const [stepAndCardBlockCreate] = useMutation<StepAndCardBlockCreate>(
     STEP_AND_CARD_BLOCK_CREATE
@@ -169,7 +174,19 @@ export function CardPreview({
   )
 
   return (
-    <>
+    <Stack direction="row">
+      <Box>
+        <button
+          onClick={() =>
+            dispatch({
+              type: 'SetJourneyEditContentAction',
+              component: ActiveJourneyEditContent.Action
+            })
+          }
+        >
+          <span>Action</span>
+        </button>
+      </Box>
       {steps != null ? (
         isDraggable === true ? (
           <DragDropContext
@@ -251,6 +268,6 @@ export function CardPreview({
           </Box>
         </Stack>
       )}
-    </>
+    </Stack>
   )
 }

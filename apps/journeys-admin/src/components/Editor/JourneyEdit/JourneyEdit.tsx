@@ -7,6 +7,7 @@ import {
 import { Canvas } from '../Canvas'
 import { ControlPanel } from '../ControlPanel'
 import { Drawer, DRAWER_WIDTH } from '../Drawer'
+import { ActionsTable } from '../ActionsTable'
 
 // This component is tested in Editor
 export function JourneyEdit(): ReactElement {
@@ -36,7 +37,8 @@ export function JourneyEdit(): ReactElement {
           <Box sx={{ my: 'auto' }}>
             {
               {
-                [ActiveJourneyEditContent.Canvas]: <Canvas />
+                [ActiveJourneyEditContent.Canvas]: <Canvas />,
+                [ActiveJourneyEditContent.Action]: <ActionsTable />
               }[journeyEditContentComponent]
             }
           </Box>
