@@ -71,25 +71,55 @@ function JourneysAdminApp({
 
   return (
     <FlagsProvider flags={pageProps.flags}>
-      <Script
-        id="home-scout"
-        strategy="afterInteractive"
-      >{`!function(e,t,n){function a(){var e=t.getElementsByTagName("script")[0],n=t.createElement("script");n.type="text/javascript",n.async=!0,n.src="https://beacon-v2.helpscout.net",e.parentNode.insertBefore(n,e)}if(e.Beacon=n=function(t,n,a){e.Beacon.readyQueue.push({method:t,options:n,data:a})},n.readyQueue=[],"complete"===t.readyState)return a();e.attachEvent?e.attachEvent("onload",a):e.addEventListener("load",a,!1)}(window,document,window.Beacon||function(){});`}</Script>
-      <Script id="home-scout-init" strategy="afterInteractive">{`
-window.Beacon('init', '4f0abc47-b29c-454a-b618-39b34fd116b8')`}</Script>
       <CacheProvider value={emotionCache}>
-        <DefaultSeo
-          titleTemplate={t('%s | Next Steps')}
-          defaultTitle={t('Admin | Next Steps')}
-        />
-        <Head>
-          <style>{`#beacon-container { z-index: 1300; position: sticky;}`}</style>
-          <meta
-            name="viewport"
-            content="minimum-scale=1, initial-scale=1, width=device-width"
-          />
-        </Head>
         <ThemeProvider>
+          <DefaultSeo
+            titleTemplate={t('%s | Next Steps')}
+            defaultTitle={t('Admin | Next Steps')}
+          />
+          <Script
+            id="home-scout"
+            strategy="afterInteractive"
+          >{`!function(e,t,n){function a(){var e=t.getElementsByTagName("script")[0],n=t.createElement("script");n.type="text/javascript",n.async=!0,n.src="https://beacon-v2.helpscout.net",e.parentNode.insertBefore(n,e)}if(e.Beacon=n=function(t,n,a){e.Beacon.readyQueue.push({method:t,options:n,data:a})},n.readyQueue=[],"complete"===t.readyState)return a();e.attachEvent?e.attachEvent("onload",a):e.addEventListener("load",a,!1)}(window,document,window.Beacon||function(){});`}</Script>
+          <Script id="home-scout-init" strategy="afterInteractive">{`
+window.Beacon('init', '4f0abc47-b29c-454a-b618-39b34fd116b8')`}</Script>
+          <Head>
+            <style>{`
+              #beacon-container {
+                z-index: 1500;
+                position: sticky;
+              }
+              .BeaconFabButtonFrame {
+                left: 6px !important;
+                bottom: 10px !important;
+                transform: scale(0.9) !important;
+              }
+              .BeaconContainer {
+                left: 6px !important;
+                bottom: 80px !important;
+              }
+
+              @media (max-width: 450px) and (min-height: 740px) {
+                .BeaconContainer {
+                  height: calc(100% - 75px) !important;
+                }
+              }
+
+              @media screen and (min-width: 600px) {
+                .BeaconFabButtonFrame {
+                  bottom: 70px !important;
+                }
+                .BeaconContainer {
+                  bottom: 140px !important;
+                }
+              }
+            `}</style>
+            <meta
+              name="viewport"
+              content="minimum-scale=1, initial-scale=1, width=device-width"
+            />
+          </Head>
+
           <ApolloProvider client={apolloClient}>
             <SnackbarProvider
               anchorOrigin={{
