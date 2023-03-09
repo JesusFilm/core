@@ -69,6 +69,13 @@ describe('JourneyResolver', () => {
     createdAt
   }
 
+  const template: Journey = {
+    ...journey,
+    title: 'template',
+    id: 'templateJourneyId',
+    template: true
+  }
+
   const draftJourney = {
     ...journey,
     id: 'draftJourney',
@@ -176,6 +183,8 @@ describe('JourneyResolver', () => {
         switch (id) {
           case journey.id:
             return journey
+          case template.id:
+            return template
           case draftJourney.id:
             return draftJourney
           case archivedJourney.id:
@@ -209,7 +218,9 @@ describe('JourneyResolver', () => {
         }
       }),
       getAllByRole: jest.fn(() => [journey, journey]),
-      getAllByTitle: jest.fn(() => [journey]),
+      getAllByTitle: jest.fn((title) =>
+        title === journey.title ? [journey] : []
+      ),
       save: jest.fn((input) => input),
       update: jest.fn(() => journey),
       updateAll: jest.fn(() => [journey, draftJourney])
@@ -811,7 +822,7 @@ describe('JourneyResolver', () => {
   })
 
   describe('journeyDuplicate', () => {
-    it('duplicates a Journey', async () => {
+    it('duplicates your journey', async () => {
       mockUuidv4.mockReturnValueOnce('duplicateJourneyId')
       expect(await resolver.journeyDuplicate('journeyId', 'userId')).toEqual({
         ...journey,
@@ -821,6 +832,21 @@ describe('JourneyResolver', () => {
         publishedAt: undefined,
         slug: `${journey.title}-copy`,
         title: `${journey.title} copy`,
+        template: false
+      })
+    })
+
+    it('duplicates a template journey', async () => {
+      mockUuidv4.mockReturnValueOnce('templateJourneyId')
+      expect(
+        await resolver.journeyDuplicate('templateJourneyId', 'userId')
+      ).toEqual({
+        ...template,
+        title: 'template',
+        slug: 'template',
+        createdAt: new Date().toISOString(),
+        status: JourneyStatus.draft,
+        publishedAt: undefined,
         template: false
       })
     })
