@@ -17,10 +17,13 @@ import ListItemIcon from '@mui/material/ListItemIcon'
 import ListItemText from '@mui/material/ListItemText'
 import Button from '@mui/material/Button'
 import Box from '@mui/system/Box'
+import { useFlags } from '@core/shared/ui/FlagsProvider'
 import taskbarIcon from '../../../public/taskbar-icon.svg'
 import { JourneyProfileCreate } from '../../../__generated__/JourneyProfileCreate'
 import { useJourneyDuplicate } from '../../libs/useJourneyDuplicate'
 import { TermsListItem } from './TermsListItem'
+
+export const ONBOARDING_TEMPLATE_ID = '9d9ca229-9fb5-4d06-a18c-2d1a4ceba457'
 
 export const JOURNEY_PROFILE_CREATE = gql`
   mutation JourneyProfileCreate {
@@ -39,13 +42,12 @@ export function TermsAndConditions(): ReactElement {
   )
   const { duplicateJourney } = useJourneyDuplicate()
   const router = useRouter()
+  const { inviteRequirement } = useFlags()
 
   const handleJourneyProfileCreate = async (): Promise<void> => {
     await journeyProfileCreate()
-    // Add onboarding journey from template
-    // await duplicateJourney({ id: '9d9ca229-9fb5-4d06-a18c-2d1a4ceba457' })
-    await duplicateJourney({ id: '6b6d5307-ff4f-4437-affb-513a02b1f3fa' })
-
+    if (!inviteRequirement)
+      await duplicateJourney({ id: ONBOARDING_TEMPLATE_ID })
     await router.push('/')
   }
 
