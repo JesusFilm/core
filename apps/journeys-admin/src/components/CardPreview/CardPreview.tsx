@@ -178,10 +178,7 @@ export function CardPreview({
       <Box>
         <button
           onClick={() =>
-            dispatch({
-              type: 'SetJourneyEditContentAction',
-              component: ActiveJourneyEditContent.SocialPreview
-            })
+            onSelect?.({ view: ActiveJourneyEditContent.SocialPreview })
           }
         >
           <span>social</span>

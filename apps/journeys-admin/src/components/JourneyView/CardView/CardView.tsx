@@ -8,6 +8,7 @@ import { useRouter } from 'next/router'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { BlockFields_StepBlock as StepBlock } from '../../../../__generated__/BlockFields'
 import { CardPreview } from '../../CardPreview'
+import { ActiveJourneyEditContent } from '@core/journeys/ui/EditorProvider'
 
 export interface CardViewProps {
   id?: string
@@ -24,17 +25,29 @@ export function CardView({
   const breakpoints = useBreakpoints()
   const router = useRouter()
 
-  const handleSelect = (step: { id: string }): void => {
+  const handleSelect = (
+    step?: { id: string },
+    view?: ActiveJourneyEditContent
+  ): void => {
     if (id == null) return
 
+    let location = `/journeys/${id}/edit`
+    if (step != null) {
+      location += `?stepId=${step.id}`
+    }
     if (journey?.template !== true) {
-      void router.push(`/journeys/${id}/edit?stepId=${step.id}`, undefined, {
+      void router.push(`/journeys/${location}`, undefined, {
+        shallow: true
+      })
+    }
+    if (view != null) {
+      void router.push(`/journeys/${location}&view=${view}`, undefined, {
         shallow: true
       })
     }
 
     if (journey?.template === true && isPublisher === true) {
-      void router.push(`/publisher/${id}/edit?stepId=${step.id}`, undefined, {
+      void router.push(`/publisher/${location}`, undefined, {
         shallow: true
       })
     }
