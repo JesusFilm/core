@@ -28,29 +28,33 @@ export function useJourneyDuplicate(): {
     duplicateJourney: async ({
       id
     }: duplicateJourneyProps): Promise<Journey | undefined> => {
-      const { data } = await duplicateJourney({
-        variables: { id },
-        update(cache, { data }) {
-          if (data?.journeyDuplicate != null) {
-            cache.modify({
-              fields: {
-                adminJourneys(existingAdminJourneyRefs = []) {
-                  const duplicatedJourneyRef = cache.writeFragment({
-                    data: data.journeyDuplicate,
-                    fragment: gql`
-                      fragment DuplicatedJourney on Journey {
-                        id
-                      }
-                    `
-                  })
-                  return [...existingAdminJourneyRefs, duplicatedJourneyRef]
+      try {
+        const { data } = await duplicateJourney({
+          variables: { id },
+          update(cache, { data }) {
+            if (data?.journeyDuplicate != null) {
+              cache.modify({
+                fields: {
+                  adminJourneys(existingAdminJourneyRefs = []) {
+                    const duplicatedJourneyRef = cache.writeFragment({
+                      data: data.journeyDuplicate,
+                      fragment: gql`
+                        fragment DuplicatedJourney on Journey {
+                          id
+                        }
+                      `
+                    })
+                    return [...existingAdminJourneyRefs, duplicatedJourneyRef]
+                  }
                 }
-              }
-            })
+              })
+            }
           }
-        }
-      })
-      return data?.journeyDuplicate
+        })
+        return data?.journeyDuplicate
+      } catch (e) {
+        return undefined
+      }
     }
   }
 }

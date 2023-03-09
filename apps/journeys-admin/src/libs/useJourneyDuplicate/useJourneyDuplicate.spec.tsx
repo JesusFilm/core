@@ -59,4 +59,37 @@ describe('useJourneyDuplicate', () => {
       })
     })
   })
+
+  it('returns a function which returns undefined if error', async () => {
+    const { result } = renderHook(() => useJourneyDuplicate(), {
+      wrapper: ({ children }) => (
+        <MockedProvider
+          addTypename={false}
+          mocks={[
+            {
+              request: {
+                query: DUPLICATE_JOURNEY,
+                variables: {
+                  id: 'journeyId'
+                }
+              },
+              result: {
+                data: {}
+              }
+            }
+          ]}
+        >
+          {children}
+        </MockedProvider>
+      )
+    })
+
+    await act(async () => {
+      await waitFor(async () => {
+        expect(await result.current.duplicateJourney({ id: 'errored' })).toBe(
+          undefined
+        )
+      })
+    })
+  })
 })
