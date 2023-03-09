@@ -254,7 +254,8 @@ describe('JourneyResolver', () => {
   const memberService = {
     provide: MemberService,
     useFactory: () => ({
-      save: jest.fn((member) => member)
+      save: jest.fn((member) => member),
+      getMemberByTeamId: jest.fn(() => null)
     })
   }
 
@@ -656,11 +657,14 @@ describe('JourneyResolver', () => {
         { title: 'Untitled Journey', languageId: '529' },
         'userId'
       )
-      expect(ujService.save).toHaveBeenCalledWith({
-        userId: 'userId',
-        journeyId: 'journeyId',
-        role: UserJourneyRole.owner
-      })
+      expect(ujService.save).toHaveBeenCalledWith(
+        {
+          userId: 'userId',
+          journeyId: 'journeyId',
+          role: UserJourneyRole.owner
+        },
+        { returnNew: false }
+      )
     })
 
     it('creates a Member', async () => {
@@ -675,8 +679,25 @@ describe('JourneyResolver', () => {
           userId: 'userId',
           teamId: 'jfp-team'
         },
-        { overwriteMode: 'ignore' }
+        { overwriteMode: 'ignore', returnNew: false }
       )
+    })
+
+    it('doesnt create an existing Member', async () => {
+      mockUuidv4.mockReturnValueOnce('journeyId')
+      const member = {
+        id: 'existingId',
+        userId: 'userId',
+        teamId: 'jfp-team'
+      }
+      mService.getMemberByTeamId = jest.fn(
+        async () => await Promise.resolve(member)
+      )
+      await resolver.journeyCreate(
+        { title: 'Untitled Journey', languageId: '529' },
+        'userId'
+      )
+      expect(mService.save).not.toHaveBeenCalled()
     })
 
     it('adds uuid if slug already taken', async () => {
