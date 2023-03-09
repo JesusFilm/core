@@ -11,12 +11,17 @@ const db = ArangoDB()
 export async function onboarding(action?: 'reset'): Promise<void> {
   // reset should only be used for dev and stage, using it on production will overwrite the existing onboarding journey
 
-  const slug = 'onboarding' // TODO: update this to what prod is using
+  // id and slug should be the same as the real onboarding journey in production
+  // duplicating the onboarding journey for new users relies on these values to be kept in sync
+  const onboardingJourney = {
+    id: '9d9ca229-9fb5-4d06-a18c-2d1a4ceba457',
+    slug: 'onboarding-journey'
+  }
 
   if (action === 'reset') {
     await db.query(aql`
     FOR journey in journeys
-      FILTER journey.slug == ${slug}
+      FILTER journey.slug == ${onboardingJourney.slug}
       FOR block in blocks
         FILTER block.journeyId == journey._key
         REMOVE block IN blocks
@@ -24,7 +29,7 @@ export async function onboarding(action?: 'reset'): Promise<void> {
 
     await db.query(aql`
     FOR journey in journeys
-      FILTER journey.slug == ${slug}
+      FILTER journey.slug == ${onboardingJourney.slug}
       REMOVE journey in journeys
   `)
   }
@@ -32,7 +37,7 @@ export async function onboarding(action?: 'reset'): Promise<void> {
   const existingJourney = await (
     await db.query(aql`
       FOR journey in journeys
-        FILTER journey.slug == ${slug}
+        FILTER journey.slug == ${onboardingJourney.slug}
           LIMIT 1
           return journey
     `)
@@ -40,14 +45,14 @@ export async function onboarding(action?: 'reset'): Promise<void> {
   if (existingJourney != null) return
 
   const journey = await db.collection('journeys').save({
-    _key: '5',
+    _key: onboardingJourney.id,
     title: 'Dev Onboarding Journey',
     description:
-      'Only used for development and staging. Production should use actual onboarding journey. \n\nImportant: This slug should match the production onboarding journey slug',
+      'Only used for development and staging. Production should use actual onboarding journey.',
     languageId: 529,
     themeMode: ThemeMode.dark,
     themeName: ThemeName.base,
-    slug,
+    slug: onboardingJourney.slug,
     status: JourneyStatus.published,
     template: true,
     createdAt: new Date(),
