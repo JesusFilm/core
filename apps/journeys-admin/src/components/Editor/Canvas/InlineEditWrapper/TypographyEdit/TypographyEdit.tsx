@@ -35,7 +35,6 @@ export function TypographyEdit({
   ...props
 }: TypographyEditProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-
   const [typographyBlockUpdate] = useMutation<TypographyBlockUpdateContent>(
     TYPOGRAPHY_BLOCK_UPDATE_CONTENT
   )
