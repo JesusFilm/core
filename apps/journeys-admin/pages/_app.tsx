@@ -16,6 +16,7 @@ import { useApollo } from '../src/libs/apolloClient'
 import { ThemeProvider } from '../src/components/ThemeProvider'
 import { initAuth } from '../src/libs/firebaseClient/initAuth'
 import i18nConfig from '../next-i18next.config'
+import { HelpScoutBeacon } from '../src/components/HelpScoutBeacon'
 
 // your _app component
 initAuth()
@@ -71,17 +72,19 @@ function JourneysAdminApp({
   return (
     <FlagsProvider flags={pageProps.flags}>
       <CacheProvider value={emotionCache}>
-        <DefaultSeo
-          titleTemplate={t('%s | Next Steps')}
-          defaultTitle={t('Admin | Next Steps')}
-        />
-        <Head>
-          <meta
-            name="viewport"
-            content="minimum-scale=1, initial-scale=1, width=device-width"
-          />
-        </Head>
         <ThemeProvider>
+          <DefaultSeo
+            titleTemplate={t('%s | Next Steps')}
+            defaultTitle={t('Admin | Next Steps')}
+          />
+          <HelpScoutBeacon />
+          <Head>
+            <meta
+              name="viewport"
+              content="minimum-scale=1, initial-scale=1, width=device-width"
+            />
+          </Head>
+
           <ApolloProvider client={apolloClient}>
             <SnackbarProvider
               anchorOrigin={{
