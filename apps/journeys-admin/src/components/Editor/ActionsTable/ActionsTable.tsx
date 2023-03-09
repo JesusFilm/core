@@ -11,8 +11,6 @@ import { ActionsList } from './ActionsList'
 import { ActionsBanner } from './ActionsBanner'
 
 // TODO:
-// create a custom component for action list?
-
 // onClick - dispatch that opens the drawer, calls ActionDetails which accepts the currently selected action
 
 // Fix actions array type - make a union type of all the blocks that includes action in it
