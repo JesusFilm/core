@@ -13,23 +13,23 @@ export function DiscoveryJourneys(): ReactElement {
         backgroundColor: 'white',
         border: '1px solid',
         borderColor: 'divider',
-        borderRadius: 3,
-        mt: 16,
+        borderRadius: { xs: 0, sm: 3 },
+        mt: 8,
         p: 4
       }}
     >
       <Stack sx={{ alignItems: 'center' }}>
-        <EmbedJourney slug="fact-or-fiction" />
+        <EmbedJourney slug="onboarding-vision" />
         <Typography>Vision</Typography>
       </Stack>
 
       <Stack sx={{ alignItems: 'center' }}>
-        <EmbedJourney slug="what-about-the-resurrection" />
+        <EmbedJourney slug="onboarding-how-to" />
         <Typography>How To</Typography>
       </Stack>
 
       <Stack sx={{ alignItems: 'center' }}>
-        <EmbedJourney slug="whats-jesus-got-to-do-with-me" />
+        <EmbedJourney slug="onboarding-feedback" />
         <Typography>Feedback</Typography>
       </Stack>
     </Stack>

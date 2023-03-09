@@ -4,6 +4,7 @@ import { NextRouter } from 'next/router'
 import { AuthUser } from 'next-firebase-auth'
 import { useFlags } from '@core/shared/ui/FlagsProvider'
 import { useTranslation } from 'react-i18next'
+import Box from '@mui/material/Box'
 import { GetJourneys_journeys as Journey } from '../../../__generated__/GetJourneys'
 import { MultipleSummaryReport } from '../MultipleSummaryReport'
 import { StatusTabPanel } from '../StatusTabPanel'
@@ -76,6 +77,7 @@ export function JourneyList({
             {!['archived', 'trashed'].includes(
               (router?.query?.tab as string) ?? ''
             ) && <AddJourneyButton variant="fab" />}
+            <Box sx={{ p: 8 }} />
           </Container>
         </>
       )}
