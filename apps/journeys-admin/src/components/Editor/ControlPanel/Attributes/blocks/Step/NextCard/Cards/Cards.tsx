@@ -4,7 +4,10 @@ import { gql, useMutation } from '@apollo/client'
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
-import { useEditor } from '@core/journeys/ui/EditorProvider'
+import {
+  ActiveJourneyEditContent,
+  useEditor
+} from '@core/journeys/ui/EditorProvider'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { StepFields } from '../../../../../../../../../__generated__/StepFields'
 import { StepBlockNextBlockUpdate } from '../../../../../../../../../__generated__/StepBlockNextBlockUpdate'
@@ -43,25 +46,33 @@ export function Cards(): ReactElement {
     nextStep = steps?.find(({ id }) => nextBlockId === id)
   }
 
-  async function handleSelectStep(step: TreeBlock<StepFields>): Promise<void> {
+  async function handleSelectStep({
+    step,
+    view
+  }: {
+    step?: TreeBlock<StepFields>
+    view?: ActiveJourneyEditContent
+  }): Promise<void> {
     if (journey == null) return
 
-    await stepBlockNextBlockUpdate({
-      variables: {
-        id,
-        journeyId: journey.id,
-        input: {
-          nextBlockId: step.id
-        }
-      },
-      optimisticResponse: {
-        stepBlockUpdate: {
+    if (step != null) {
+      await stepBlockNextBlockUpdate({
+        variables: {
           id,
-          __typename: 'StepBlock',
-          nextBlockId: step.id
+          journeyId: journey.id,
+          input: {
+            nextBlockId: step.id
+          }
+        },
+        optimisticResponse: {
+          stepBlockUpdate: {
+            id,
+            __typename: 'StepBlock',
+            nextBlockId: step.id
+          }
         }
-      }
-    })
+      })
+    }
   }
 
   return (

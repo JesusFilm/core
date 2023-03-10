@@ -25,13 +25,16 @@ export function CardView({
   const breakpoints = useBreakpoints()
   const router = useRouter()
 
-  const handleSelect = (
-    step?: { id: string },
-    view?: ActiveJourneyEditContent
-  ): void => {
+  const handleSelect = ({
+    step,
+    view
+  }: {
+    step?: { id: string }
+    view: ActiveJourneyEditContent
+  }): void => {
     if (id == null) return
 
-    let location = `/journeys/${id}/edit`
+    let location = `${id}/edit`
     if (step != null) {
       location += `?stepId=${step.id}`
     }
@@ -41,7 +44,7 @@ export function CardView({
       })
     }
     if (view != null) {
-      void router.push(`/journeys/${location}&view=${view}`, undefined, {
+      void router.push(`/journeys/${location}?view=${view}`, undefined, {
         shallow: true
       })
     }
