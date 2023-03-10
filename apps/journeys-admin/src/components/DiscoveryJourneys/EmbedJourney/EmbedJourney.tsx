@@ -7,39 +7,58 @@ interface Props {
 
 export function EmbedJourney({ slug }: Props): ReactElement {
   return (
-    <Box sx={{ position: 'relative', width: 95, height: 140 }}>
+    <Box
+      sx={{
+        position: 'relative',
+        width: '33%',
+        height: 0
+      }}
+    >
       <Box
         sx={{
-          height: '100%',
-          width: '380px',
-          transform: 'scale(0.25)',
+          transform: {
+            xs: 'scale(0.4)',
+            sm: 'scale(0.6)',
+            md: 'scale(0.8)'
+          },
           transformOrigin: 'top left'
         }}
       >
-        <div
-          style={{
-            position: 'relative',
-            width: '100%',
-            overflow: 'hidden',
-            paddingTop: '150%'
+        <Box
+          sx={{
+            width: {
+              xs: '252%',
+              sm: '168%',
+              md: '125%'
+            }
           }}
         >
-          <iframe
-            id="jfm-iframe"
-            src={`https://your.nextstep.is/embed/${slug}`}
+          <div
             style={{
-              position: 'absolute',
-              top: 0,
-              left: 0,
-              bottom: 0,
-              right: 0,
+              position: 'relative',
               width: '100%',
-              height: '100%',
-              border: 'none'
+              overflow: 'hidden',
+              paddingTop: '150%',
+              paddingLeft: '94%'
             }}
-            allow="fullscreen"
-          />
-        </div>
+          >
+            <iframe
+              id="jfm-iframe"
+              src={`https://your.nextstep.is/embed/${slug}`}
+              style={{
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                bottom: 0,
+                right: 0,
+                width: '100%',
+                height: '100%',
+                border: 'none'
+              }}
+              allow="fullscreen"
+            />
+          </div>
+        </Box>
       </Box>
     </Box>
   )
