@@ -46,12 +46,13 @@ function isMobile(): boolean {
   return /windows phone/i.test(userAgent) || /iPad|iPhone|iPod/.test(userAgent)
 }
 
-function eventToDataLayer(eventType, currentTime, duration): void {
+function eventToDataLayer(eventType, title, language, percent): void {
   TagManager.dataLayer({
     dataLayer: {
       event: eventType,
-      currentTime,
-      duration
+      title,
+      language,
+      percent
     }
   })
 }
@@ -75,7 +76,7 @@ export function VideoControls({
 
   const duration = secondsToTimeFormat(player.duration(), { trimZeroes: true })
   const durationSeconds = Math.round(player.duration())
-  const { variant } = useVideo()
+  const { title, variant } = useVideo()
   const visible = !play || active || loading
 
   useEffect(() => {
@@ -83,25 +84,36 @@ export function VideoControls({
   }, [play, active, loading, onVisibleChanged])
 
   useEffect(() => {
-    if (progress > progressPercentNotYetEmitted[0]) {
+    if ((progress / durationSeconds) * 100 > progressPercentNotYetEmitted[0]) {
       eventToDataLayer(
         `video_time_update_${progressPercentNotYetEmitted[0]}`,
-        player.currentTime(),
-        player.duration()
+        title[0].value,
+        variant?.language.name[0].value,
+        Math.round((progress / durationSeconds) * 100)
       )
       const [, ...rest] = progressPercentNotYetEmitted
       setProgressPercentNotYetEmitted(rest)
     }
-  }, [progress, progressPercentNotYetEmitted, player])
+  }, [progress, durationSeconds, progressPercentNotYetEmitted, title, variant])
 
   useEffect(() => {
     setVolume(player.volume() * 100)
     player.on('play', () => {
-      eventToDataLayer('video_play', player.currentTime(), player.duration())
+      eventToDataLayer(
+        'video_play',
+        title[0].value,
+        variant?.language.name[0].value,
+        Math.round((player.currentTime() / player.duration()) * 100)
+      )
       setPlay(true)
     })
     player.on('pause', () => {
-      eventToDataLayer('video_pause', player.currentTime(), player.duration())
+      eventToDataLayer(
+        'video_pause',
+        title[0].value,
+        variant?.language.name[0].value,
+        Math.round((player.currentTime() / player.duration()) * 100)
+      )
       setPlay(false)
     })
     player.on('timeupdate', () => {
@@ -115,19 +127,6 @@ export function VideoControls({
       setVolume(player.volume() * 100)
     })
     player.on('fullscreenchange', () => {
-      if (player.isFullscreen()) {
-        eventToDataLayer(
-          'video_enter_full_screen',
-          player.currentTime(),
-          player.duration
-        )
-      } else {
-        eventToDataLayer(
-          'video_exit_full_screen',
-          player.currentTime(),
-          player.duration
-        )
-      }
       setFullscreen(player.isFullscreen())
     })
     player.on('useractive', () => setActive(true))
@@ -136,14 +135,34 @@ export function VideoControls({
     player.on('playing', () => setLoading(false))
     player.on('ended', () => {
       setLoading(false)
-      eventToDataLayer('video_ended', player.currentTime(), player.duration())
+      eventToDataLayer(
+        'video_ended',
+        title[0].value,
+        variant?.language.name[0].value,
+        Math.round((player.currentTime() / player.duration()) * 100)
+      )
     })
     player.on('canplay', () => setLoading(false))
     player.on('canplaythrough', () => setLoading(false))
-    fscreen.addEventListener('fullscreenchange', () =>
+    fscreen.addEventListener('fullscreenchange', () => {
+      if (fscreen.fullscreenElement != null) {
+        eventToDataLayer(
+          'video_enter_full_screen',
+          title[0].value,
+          variant?.language.name[0].value,
+          Math.round((player.currentTime() / player.duration()) * 100)
+        )
+      } else {
+        eventToDataLayer(
+          'video_exit_full_screen',
+          title[0].value,
+          variant?.language.name[0].value,
+          Math.round((player.currentTime() / player.duration()) * 100)
+        )
+      }
       setFullscreen(fscreen.fullscreenElement != null)
-    )
-  }, [player, setFullscreen, loading])
+    })
+  }, [player, setFullscreen, loading, title, variant])
 
   function handlePlay(): void {
     if (!play) {
