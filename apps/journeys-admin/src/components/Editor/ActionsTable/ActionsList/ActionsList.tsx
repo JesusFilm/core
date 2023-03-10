@@ -7,9 +7,10 @@ import TableContainer from '@mui/material/TableContainer'
 import TableHead from '@mui/material/TableHead'
 import TableRow from '@mui/material/TableRow'
 import Paper from '@mui/material/Paper'
+import { ActionFields_LinkAction as LinkAction } from '../../../../../__generated__/ActionFields'
 
 interface ActionsListProps {
-  actions: any[]
+  actions: LinkAction[]
 }
 
 export function ActionsList({ actions }: ActionsListProps): ReactElement {
