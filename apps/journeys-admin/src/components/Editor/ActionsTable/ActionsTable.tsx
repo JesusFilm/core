@@ -6,15 +6,25 @@ import {
   useEditor
 } from '@core/journeys/ui/EditorProvider'
 import { ActionFields_LinkAction as LinkAction } from '../../../../__generated__/ActionFields'
+import { JourneyFields as Journey } from '../../../../__generated__/JourneyFields'
+import { BlockFields_ButtonBlock as ButtonBlock } from '../../../../__generated__/BlockFields'
 import { SocialShareAppearance } from '../Drawer/SocialShareAppearance'
 import { ActionsList } from './ActionsList'
 import { ActionsBanner } from './ActionsBanner'
 
 interface ActionsTableProps {
-  actions: LinkAction[]
+  journey?: Journey
 }
 
-export function ActionsTable({ actions }: ActionsTableProps): ReactElement {
+export function ActionsTable({ journey }: ActionsTableProps): ReactElement {
+  const actions = (journey?.blocks ?? [])
+    .filter((block) => ((block as ButtonBlock).action as LinkAction) != null)
+    .map((block) => (block as ButtonBlock).action as LinkAction)
+    .filter(
+      (action, i, arr) =>
+        ['LinkAction'].includes(action.__typename) &&
+        arr.findIndex((x) => x.url === action.url) === i
+    )
   const {
     state: { steps },
     dispatch

@@ -11,17 +11,12 @@ import {
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { TabPanel, tabA11yProps } from '@core/shared/ui/TabPanel'
 import { GetJourney_journey_blocks_StepBlock as StepBlock } from '../../../../__generated__/GetJourney'
-import { ActionFields_LinkAction as LinkAction } from '../../../../__generated__/ActionFields'
 import { CardPreview } from '../../CardPreview'
 import { Attributes } from './Attributes'
 import { BlocksTab } from './BlocksTab'
 import { Fab } from './Fab'
 
-interface ControlPanelProps {
-  action: LinkAction
-}
-
-export function ControlPanel({ action }: ControlPanelProps): ReactElement {
+export function ControlPanel(): ReactElement {
   const {
     state: {
       steps,
@@ -96,7 +91,6 @@ export function ControlPanel({ action }: ControlPanelProps): ReactElement {
         <CardPreview
           selected={selectedStep}
           onSelect={handleSelectStepPreview}
-          action={action}
           steps={steps}
           showAddButton
           isDraggable
