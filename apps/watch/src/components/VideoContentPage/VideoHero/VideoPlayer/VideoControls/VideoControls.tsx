@@ -20,6 +20,7 @@ import CircularProgress from '@mui/material/CircularProgress'
 import { secondsToTimeFormat } from '@core/shared/ui/timeFormat'
 import fscreen from 'fscreen'
 import dynamic from 'next/dynamic'
+import TagManager from 'react-gtm-module'
 import { useVideo } from '../../../../../libs/videoContext'
 import { AudioLanguageButton } from '../../../AudioLanguageButton'
 
@@ -45,6 +46,16 @@ function isMobile(): boolean {
   return /windows phone/i.test(userAgent) || /iPad|iPhone|iPod/.test(userAgent)
 }
 
+function eventToDataLayer(eventType, currentTime, duration): void {
+  TagManager.dataLayer({
+    dataLayer: {
+      event: eventType,
+      currentTime,
+      duration
+    }
+  })
+}
+
 export function VideoControls({
   player,
   onVisibleChanged
@@ -53,6 +64,8 @@ export function VideoControls({
   const [active, setActive] = useState(true)
   const [currentTime, setCurrentTime] = useState<string>()
   const [progress, setProgress] = useState(0)
+  const [progressPercentNotYetEmitted, setProgressPercentNotYetEmitted] =
+    useState([10, 25, 50, 75, 95])
   const [volume, setVolume] = useState(0)
   const [mute, setMute] = useState(false)
   const [fullscreen, setFullscreen] = useState(false)
@@ -70,11 +83,25 @@ export function VideoControls({
   }, [play, active, loading, onVisibleChanged])
 
   useEffect(() => {
+    if (progress > progressPercentNotYetEmitted[0]) {
+      eventToDataLayer(
+        `video_time_update_${progressPercentNotYetEmitted[0]}`,
+        player.currentTime(),
+        player.duration()
+      )
+      const [, ...rest] = progressPercentNotYetEmitted
+      setProgressPercentNotYetEmitted(rest)
+    }
+  }, [progress, progressPercentNotYetEmitted, player])
+
+  useEffect(() => {
     setVolume(player.volume() * 100)
     player.on('play', () => {
+      eventToDataLayer('video_play', player.currentTime(), player.duration())
       setPlay(true)
     })
     player.on('pause', () => {
+      eventToDataLayer('video_pause', player.currentTime(), player.duration())
       setPlay(false)
     })
     player.on('timeupdate', () => {
@@ -88,13 +115,29 @@ export function VideoControls({
       setVolume(player.volume() * 100)
     })
     player.on('fullscreenchange', () => {
+      if (player.isFullscreen()) {
+        eventToDataLayer(
+          'video_enter_full_screen',
+          player.currentTime(),
+          player.duration
+        )
+      } else {
+        eventToDataLayer(
+          'video_exit_full_screen',
+          player.currentTime(),
+          player.duration
+        )
+      }
       setFullscreen(player.isFullscreen())
     })
     player.on('useractive', () => setActive(true))
     player.on('userinactive', () => setActive(false))
     player.on('waiting', () => setLoading(true))
     player.on('playing', () => setLoading(false))
-    player.on('ended', () => setLoading(false))
+    player.on('ended', () => {
+      setLoading(false)
+      eventToDataLayer('video_ended', player.currentTime(), player.duration())
+    })
     player.on('canplay', () => setLoading(false))
     player.on('canplaythrough', () => setLoading(false))
     fscreen.addEventListener('fullscreenchange', () =>
