@@ -11,6 +11,10 @@ import { transformer } from '@core/journeys/ui/transformer'
 import Typography from '@mui/material/Typography'
 import { FramePortal } from '../../../FramePortal'
 import { ThemeMode, ThemeName } from '../../../../../__generated__/globalTypes'
+import {
+  BlockFields_ButtonBlock,
+  BlockFields_ButtonBlock_action_LinkAction
+} from '../../../../../__generated__/BlockFields'
 
 interface ActionCardsProps {
   url: string
@@ -23,7 +27,19 @@ export function ActionCards({
 }: ActionCardsProps): ReactElement {
   const { journey } = useJourney()
   const { rtl } = getJourneyRTL(journey)
-  const blocks = transformer(journey?.blocks as TreeBlock[])
+  const hasAction = (block: TreeBlock): boolean => {
+    if (
+      (
+        (block as BlockFields_ButtonBlock)
+          .action as BlockFields_ButtonBlock_action_LinkAction
+      )?.url === url
+    )
+      return true
+    if (block.children.length === 0) return false
+    return block.children?.some(hasAction)
+  }
+  const blocks = transformer(journey?.blocks as TreeBlock[]).filter(hasAction)
+
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
 
   // TODO:
