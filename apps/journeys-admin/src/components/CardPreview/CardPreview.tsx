@@ -17,6 +17,7 @@ import {
 import { StepsOrderUpdate } from '../../../__generated__/StepsOrderUpdate'
 import { StepAndCardBlockCreate } from '../../../__generated__/StepAndCardBlockCreate'
 import { GetJourney_journey_blocks_StepBlock as StepBlock } from '../../../__generated__/GetJourney'
+import { ActionFields_LinkAction as LinkAction } from '../../../__generated__/ActionFields'
 import { ActionDetails } from '../Editor/ActionDetails'
 import { CardList } from './CardList'
 
@@ -26,6 +27,7 @@ export interface CardPreviewProps {
   steps?: Array<TreeBlock<StepBlock>>
   showAddButton?: boolean
   isDraggable?: boolean
+  action: LinkAction
 }
 
 export const STEP_AND_CARD_BLOCK_CREATE = gql`
@@ -61,7 +63,8 @@ export function CardPreview({
   selected,
   onSelect,
   showAddButton,
-  isDraggable
+  isDraggable,
+  action
 }: CardPreviewProps): ReactElement {
   const { dispatch } = useEditor()
   const [isDragging, setIsDragging] = useState(false)
@@ -186,7 +189,7 @@ export function CardPreview({
             dispatch({
               type: 'SetDrawerPropsAction',
               mobileOpen: true,
-              children: <ActionDetails />
+              children: <ActionDetails url={action.url} />
             })
           }}
         >

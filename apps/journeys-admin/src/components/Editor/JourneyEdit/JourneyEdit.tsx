@@ -4,6 +4,11 @@ import {
   useEditor,
   ActiveJourneyEditContent
 } from '@core/journeys/ui/EditorProvider'
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import {
+  BlockFields_ButtonBlock as ButtonBlock,
+  BlockFields_ButtonBlock_action_LinkAction as LinkAction
+} from '../../../../__generated__/BlockFields'
 import { Canvas } from '../Canvas'
 import { ControlPanel } from '../ControlPanel'
 import { Drawer, DRAWER_WIDTH } from '../Drawer'
@@ -14,6 +19,17 @@ export function JourneyEdit(): ReactElement {
   const {
     state: { journeyEditContentComponent }
   } = useEditor()
+  const { journey } = useJourney()
+
+  const actions = (journey?.blocks ?? [])
+    .filter((block) => ((block as ButtonBlock).action as LinkAction) != null)
+    .map((block) => (block as ButtonBlock).action as LinkAction)
+    .filter(
+      (action, i, arr) =>
+        ['LinkAction'].includes(action.__typename) &&
+        arr.findIndex((x) => x.url === action.url) === i
+    )
+
   return (
     <>
       <Box
@@ -38,12 +54,14 @@ export function JourneyEdit(): ReactElement {
             {
               {
                 [ActiveJourneyEditContent.Canvas]: <Canvas />,
-                [ActiveJourneyEditContent.Action]: <ActionsTable />
+                [ActiveJourneyEditContent.Action]: (
+                  <ActionsTable actions={actions} />
+                )
               }[journeyEditContentComponent]
             }
           </Box>
         </Box>
-        <ControlPanel />
+        <ControlPanel action={actions[0]} />
       </Box>
       <Drawer />
     </>

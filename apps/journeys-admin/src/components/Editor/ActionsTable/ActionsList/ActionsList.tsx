@@ -7,13 +7,19 @@ import TableContainer from '@mui/material/TableContainer'
 import TableHead from '@mui/material/TableHead'
 import TableRow from '@mui/material/TableRow'
 import Paper from '@mui/material/Paper'
+import IconButton from '@mui/material/IconButton'
+import EditRounded from '@mui/icons-material/EditRounded'
+import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { ActionFields_LinkAction as LinkAction } from '../../../../../__generated__/ActionFields'
+import { ActionDetails } from '../../ActionDetails'
 
 interface ActionsListProps {
   actions: LinkAction[]
 }
 
 export function ActionsList({ actions }: ActionsListProps): ReactElement {
+  const { dispatch } = useEditor()
+
   return (
     <TableContainer component={Paper}>
       <Table>
@@ -31,6 +37,19 @@ export function ActionsList({ actions }: ActionsListProps): ReactElement {
               </TableCell>
               <TableCell>
                 <Typography>goal</Typography>
+              </TableCell>
+              <TableCell>
+                <IconButton
+                  onClick={() => {
+                    dispatch({
+                      type: 'SetDrawerPropsAction',
+                      mobileOpen: true,
+                      children: <ActionDetails url={action.url} />
+                    })
+                  }}
+                >
+                  <EditRounded />
+                </IconButton>
               </TableCell>
             </TableRow>
           ))}

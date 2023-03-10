@@ -1,5 +1,9 @@
 import { ReactElement } from 'react'
 
-export function ActionDetails(): ReactElement {
-  return <div>ActionsDetails</div>
+interface ActionDetailsProps {
+  url?: string
+}
+
+export function ActionDetails({ url }: ActionDetailsProps): ReactElement {
+  return <div>{url}</div>
 }

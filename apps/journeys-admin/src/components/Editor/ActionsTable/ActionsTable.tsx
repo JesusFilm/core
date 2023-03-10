@@ -1,32 +1,24 @@
 import { ReactElement } from 'react'
-import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import Stack from '@mui/material/Stack'
 import Button from '@mui/material/Button'
 import {
   ActiveJourneyEditContent,
   useEditor
 } from '@core/journeys/ui/EditorProvider'
+import { ActionFields_LinkAction as LinkAction } from '../../../../__generated__/ActionFields'
 import { SocialShareAppearance } from '../Drawer/SocialShareAppearance'
 import { ActionsList } from './ActionsList'
 import { ActionsBanner } from './ActionsBanner'
 
-// TODO:
-// onClick - dispatch that opens the drawer, calls ActionDetails which accepts the currently selected action
+interface ActionsTableProps {
+  actions: LinkAction[]
+}
 
-// Fix actions array type - make a union type of all the blocks that includes action in it
-
-export function ActionsTable(): ReactElement {
-  const { journey } = useJourney()
+export function ActionsTable({ actions }: ActionsTableProps): ReactElement {
   const {
     state: { steps },
     dispatch
   } = useEditor()
-  // selectedAction state
-
-  const actions = (journey?.blocks ?? [])
-    .filter((b) => b.action != null)
-    .map((b) => b.action)
-    .filter((a) => ['LinkAction'].includes(a.__typename))
 
   const onStartClick = (): void => {
     if (steps == null) return
@@ -45,7 +37,7 @@ export function ActionsTable(): ReactElement {
   return (
     <Stack gap={2} justifyContent="center" alignItems="center">
       <ActionsBanner hasActions={actions.length > 0} />
-      {actions.length > 0 ? (
+      {actions != null && actions.length > 0 ? (
         <ActionsList actions={actions} />
       ) : (
         <Button variant="contained" onClick={onStartClick}>
