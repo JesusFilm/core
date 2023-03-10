@@ -1,10 +1,10 @@
 import { ReactElement } from 'react'
-import Typography from '@mui/material/Typography'
+import { LinkAction } from '../../ControlPanel/Attributes/Action/LinkAction'
 
 interface ActionEditorProps {
   url: string
 }
 
 export function ActionEditor({ url }: ActionEditorProps): ReactElement {
-  return <Typography variant="body1">{url}</Typography>
+  return <LinkAction />
 }

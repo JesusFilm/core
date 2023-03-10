@@ -2,8 +2,6 @@ import { ReactElement } from 'react'
 import Box from '@mui/material/Box'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import { BlockRenderer } from '@core/journeys/ui/BlockRenderer'
-import { Theme } from '@mui/material/styles'
-import useMediaQuery from '@mui/material/useMediaQuery'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { getJourneyRTL } from '@core/journeys/ui/rtl'
 import type { TreeBlock } from '@core/journeys/ui/block'
@@ -12,26 +10,26 @@ import Typography from '@mui/material/Typography'
 import { FramePortal } from '../../../FramePortal'
 import { ThemeMode, ThemeName } from '../../../../../__generated__/globalTypes'
 import {
-  BlockFields_ButtonBlock,
-  BlockFields_ButtonBlock_action_LinkAction
+  BlockFields_ButtonBlock as ButtonBlock,
+  BlockFields_ButtonBlock_action_LinkAction as LinkAction
 } from '../../../../../__generated__/BlockFields'
 
 interface ActionCardsProps {
   url: string
-  parentBlockId: string
 }
 
+
 export function ActionCards({
-  url,
-  parentBlockId
+  url
 }: ActionCardsProps): ReactElement {
   const { journey } = useJourney()
   const { rtl } = getJourneyRTL(journey)
+
   const hasAction = (block: TreeBlock): boolean => {
     if (
       (
-        (block as BlockFields_ButtonBlock)
-          .action as BlockFields_ButtonBlock_action_LinkAction
+        (block as ButtonBlock)
+          .action as LinkAction
       )?.url === url
     )
       return true
@@ -39,8 +37,6 @@ export function ActionCards({
     return block.children?.some(hasAction)
   }
   const blocks = transformer(journey?.blocks as TreeBlock[]).filter(hasAction)
-
-  const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
 
   // TODO:
   // Write a function that gets the cards that are related to the url
