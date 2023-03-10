@@ -76,7 +76,7 @@ describe('ShareDialog', () => {
           value={{
             content: {
               ...video,
-              childrenCount: 1
+              variant: null
             }
           }}
         >
