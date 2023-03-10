@@ -8,6 +8,7 @@ interface Props {
 export function EmbedJourney({ slug }: Props): ReactElement {
   return (
     <Box
+      aria-label={`${slug}-embedded`}
       sx={{
         position: 'relative',
         width: '33%',
