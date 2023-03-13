@@ -25,8 +25,8 @@ export enum ActiveFab {
 }
 
 export enum ActiveJourneyEditContent {
-  Canvas,
-  SocialPreview
+  Canvas = 'canvas',
+  SocialPreview = 'social'
 }
 
 export interface EditorState {
@@ -195,11 +195,13 @@ export const EditorContext = createContext<{
 interface EditorProviderProps {
   children: ReactNode
   initialState?: Partial<EditorState>
+  view?: ActiveJourneyEditContent
 }
 
 export function EditorProvider({
   children,
-  initialState
+  initialState,
+  view
 }: EditorProviderProps): ReactElement {
   const [state, dispatch] = useReducer(reducer, {
     steps: [],
@@ -208,7 +210,7 @@ export function EditorProvider({
     drawerMobileOpen: false,
     activeTab: ActiveTab.Cards,
     activeFab: ActiveFab.Add,
-    journeyEditContentComponent: ActiveJourneyEditContent.Canvas,
+    journeyEditContentComponent: view ?? ActiveJourneyEditContent.Canvas,
     ...initialState
   })
 

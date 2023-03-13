@@ -9,10 +9,7 @@ import Skeleton from '@mui/material/Skeleton'
 import Stack from '@mui/material/Stack'
 import { v4 as uuidv4 } from 'uuid'
 import { useMutation, gql } from '@apollo/client'
-import {
-  ActiveJourneyEditContent,
-  useEditor
-} from '@core/journeys/ui/EditorProvider'
+import { ActiveJourneyEditContent } from '@core/journeys/ui/EditorProvider'
 import { DragDropContext, Droppable } from 'react-beautiful-dnd'
 import { StepsOrderUpdate } from '../../../__generated__/StepsOrderUpdate'
 import { StepAndCardBlockCreate } from '../../../__generated__/StepAndCardBlockCreate'
@@ -66,7 +63,6 @@ export function CardPreview({
   showAddButton,
   isDraggable
 }: CardPreviewProps): ReactElement {
-  const { dispatch } = useEditor()
   const [isDragging, setIsDragging] = useState(false)
   const [stepAndCardBlockCreate] = useMutation<StepAndCardBlockCreate>(
     STEP_AND_CARD_BLOCK_CREATE

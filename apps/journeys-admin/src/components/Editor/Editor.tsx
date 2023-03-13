@@ -20,7 +20,8 @@ interface EditorProps {
 export function Editor({
   journey,
   selectedStepId,
-  children
+  children,
+  view
 }: EditorProps): ReactElement {
   const steps =
     journey != null
@@ -38,7 +39,8 @@ export function Editor({
           steps,
           selectedStep,
           drawerTitle: 'Social Share Appearance',
-          drawerChildren: <SocialShareAppearance />
+          drawerChildren: <SocialShareAppearance />,
+          journeyEditContentComponent: view ?? ActiveJourneyEditContent.Canvas
         }}
       >
         {children}
