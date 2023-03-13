@@ -286,6 +286,10 @@ describe('NavigationDrawer', () => {
   })
 
   it('should select the journeys drawer', () => {
+    mockUseRouter.mockReturnValue({
+      pathname: '/'
+    } as unknown as NextRouter)
+
     const { getByTestId } = render(
       <MockedProvider>
         <FlagsProvider>
