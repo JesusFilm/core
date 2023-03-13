@@ -4,7 +4,6 @@ import {
   useEditor,
   ActiveJourneyEditContent
 } from '@core/journeys/ui/EditorProvider'
-import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { Canvas } from '../Canvas'
 import { ControlPanel } from '../ControlPanel'
 import { Drawer, DRAWER_WIDTH } from '../Drawer'
@@ -15,7 +14,6 @@ export function JourneyEdit(): ReactElement {
   const {
     state: { journeyEditContentComponent }
   } = useEditor()
-  const { journey } = useJourney()
 
   return (
     <>
@@ -41,9 +39,7 @@ export function JourneyEdit(): ReactElement {
             {
               {
                 [ActiveJourneyEditContent.Canvas]: <Canvas />,
-                [ActiveJourneyEditContent.Action]: (
-                  <ActionsTable journey={journey} />
-                )
+                [ActiveJourneyEditContent.Action]: <ActionsTable />
               }[journeyEditContentComponent]
             }
           </Box>
