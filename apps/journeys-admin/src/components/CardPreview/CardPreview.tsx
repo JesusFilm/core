@@ -186,7 +186,9 @@ export function CardPreview({
             dispatch({
               type: 'SetDrawerPropsAction',
               mobileOpen: true,
-              children: <ActionDetails />
+              // remove url once merge with action details
+              // update url to see editor and cards function
+              children: <ActionDetails url="https://www.google.com/" />
             })
           }}
         >

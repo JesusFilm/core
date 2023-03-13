@@ -10,10 +10,8 @@ interface ActionDetailsProps {
 export function ActionDetails({ url }: ActionDetailsProps): ReactElement {
   return (
     <Stack gap={2} sx={{ p: 6 }}>
-      <ActionEditor url="https://www.google.com/" />
-      <ActionCards
-        url="https://www.google.com/"
-      />
+      <ActionEditor url={url} />
+      <ActionCards url={url} />
     </Stack>
   )
 }

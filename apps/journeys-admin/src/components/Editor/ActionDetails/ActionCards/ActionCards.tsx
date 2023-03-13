@@ -18,30 +18,16 @@ interface ActionCardsProps {
   url: string
 }
 
-
-export function ActionCards({
-  url
-}: ActionCardsProps): ReactElement {
+export function ActionCards({ url }: ActionCardsProps): ReactElement {
   const { journey } = useJourney()
   const { rtl } = getJourneyRTL(journey)
 
   const hasAction = (block: TreeBlock): boolean => {
-    if (
-      (
-        (block as ButtonBlock)
-          .action as LinkAction
-      )?.url === url
-    )
-      return true
+    if (((block as ButtonBlock).action as LinkAction)?.url === url) return true
     if (block.children.length === 0) return false
     return block.children?.some(hasAction)
   }
   const blocks = transformer(journey?.blocks as TreeBlock[]).filter(hasAction)
-
-  // TODO:
-  // Write a function that gets the cards that are related to the url
-  // render the name of the component that the URL is being used
-  // render the label of the compomnent that the URL is being used
 
   return (
     <>
