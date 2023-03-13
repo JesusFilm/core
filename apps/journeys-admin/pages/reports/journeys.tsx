@@ -6,7 +6,6 @@ import {
   withAuthUserTokenSSR
 } from 'next-firebase-auth'
 import { NextSeo } from 'next-seo'
-import { useRouter } from 'next/router'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import { useTranslation } from 'react-i18next'
 import { getLaunchDarklyClient } from '@core/shared/ui/getLaunchDarklyClient'
@@ -18,7 +17,6 @@ import { JourneysReportType } from '../../__generated__/globalTypes'
 import { useTermsRedirect } from '../../src/libs/useTermsRedirect/useTermsRedirect'
 
 function ReportsJourneysPage(): ReactElement {
-  const router = useRouter()
   const { t } = useTranslation('apps-journeys-admin')
   const AuthUser = useAuthUser()
 
@@ -27,11 +25,7 @@ function ReportsJourneysPage(): ReactElement {
   return (
     <>
       <NextSeo title={t('Journeys Report')} />
-      <PageWrapper
-        title={t('Journeys Report')}
-        authUser={AuthUser}
-        router={router}
-      >
+      <PageWrapper title={t('Journeys Report')} authUser={AuthUser}>
         <Box sx={{ height: 'calc(100vh - 48px)' }}>
           <MemoizedDynamicReport reportType={JourneysReportType.multipleFull} />
         </Box>

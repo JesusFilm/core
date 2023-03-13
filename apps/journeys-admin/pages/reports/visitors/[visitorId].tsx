@@ -25,11 +25,7 @@ function SingleVisitorReportsPage(): ReactElement {
   return (
     <>
       <NextSeo title={t('Visitor Info')} />
-      <PageWrapper
-        title={t('Visitor Info')}
-        authUser={AuthUser}
-        router={router}
-      >
+      <PageWrapper title={t('Visitor Info')} authUser={AuthUser}>
         <VisitorInfo id={router.query.visitorId as string} />
       </PageWrapper>
     </>
