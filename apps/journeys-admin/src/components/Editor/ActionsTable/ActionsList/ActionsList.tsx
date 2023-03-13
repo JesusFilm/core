@@ -1,4 +1,4 @@
-import { ReactElement } from 'react'
+import { ReactElement, useEffect } from 'react'
 import Typography from '@mui/material/Typography'
 import Table from '@mui/material/Table'
 import TableBody from '@mui/material/TableBody'
@@ -19,6 +19,15 @@ interface ActionsListProps {
 
 export function ActionsList({ actions }: ActionsListProps): ReactElement {
   const { dispatch } = useEditor()
+
+  useEffect(() => {
+    dispatch({
+      type: 'SetDrawerPropsAction',
+      mobileOpen: true,
+      children: <ActionDetails url={actions[0]?.url} />
+    })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   return (
     <TableContainer component={Paper}>
