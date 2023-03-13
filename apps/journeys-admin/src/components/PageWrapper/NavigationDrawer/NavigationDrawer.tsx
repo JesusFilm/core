@@ -157,7 +157,9 @@ export function NavigationDrawer({
         <NavigationListItem
           icon={<ViewCarouselRoundedIcon />}
           label="Discover"
-          selected={selectedPage === 'journeys' || selectedPage === ''}
+          selected={
+            selectedPage === 'journeys' || selectedPage === '' || router == null
+          }
           link="/"
           tooltipText={journeyTooltip}
         />
