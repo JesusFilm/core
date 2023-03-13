@@ -14,14 +14,18 @@ const httpLink = createHttpLink({
 })
 
 const authLink = setContext(async (_, { headers }) => {
+  const isSsrMode = typeof window === 'undefined'
   const auth = getAuth(firebaseClient)
   const userCredential = await signInAnonymously(auth)
   const token = await userCredential.user.getIdToken()
 
+  // If this is SSR, DO NOT PASS THE REQUEST HEADERS.
+  // Just send along the authorization headers.
+  // The **correct** headers will be supplied by the `getServerSideProps` invocation of the query
   return {
     headers: {
-      ...headers,
-      Authorization: token
+      ...(!isSsrMode ? headers : []),
+      Authorization: token ?? ''
     }
   }
 })
