@@ -11,9 +11,12 @@ async function bootstrap(): Promise<void> {
   app.useLogger(app.get(PinoLogger))
   await app.use(json({ limit: '50mb' }))
   const port = '4005'
-  await app.listen(port, () => {
+  const server = await app.listen(port, () => {
     new Logger('main').log(`Listening on port: ${port}`)
   })
+  // avoid 502 on ALB
+  server.keepAliveTimeout = 61000
+  server.headersTimeout = 62000
 }
 
 bootstrap().catch((err) => console.log(err))

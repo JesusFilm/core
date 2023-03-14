@@ -116,7 +116,7 @@ export const getServerSideProps = withAuthUserTokenSSR({
     }
   }
 
-  void apolloClient.mutate<UserJourneyOpen>({
+  await apolloClient.mutate<UserJourneyOpen>({
     mutation: USER_JOURNEY_OPEN,
     variables: { id: query?.journeyId }
   })
