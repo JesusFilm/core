@@ -1,5 +1,4 @@
 import { ReactElement, useState, useEffect } from 'react'
-import Container from '@mui/material/Container'
 import { NextRouter } from 'next/router'
 import { AuthUser } from 'next-firebase-auth'
 import { useFlags } from '@core/shared/ui/FlagsProvider'
@@ -60,21 +59,19 @@ export function JourneyList({
       ) : (
         <>
           {journeysSummaryReport && <MultipleSummaryReport />}
-          <Container sx={{ px: { xs: 0, sm: 8 } }}>
-            <StatusTabPanel
-              activeList={<ActiveJourneyList {...journeyListProps} />}
-              archivedList={<ArchivedJourneyList {...journeyListProps} />}
-              trashedList={<TrashedJourneyList {...journeyListProps} />}
-              activeTabLoaded={activeTabLoaded}
-              setActiveEvent={setActiveEvent}
-              setSortOrder={setSortOrder}
-              sortOrder={sortOrder}
-              router={router}
-            />
-            {!['archived', 'trashed'].includes(
-              (router?.query?.tab as string) ?? ''
-            ) && <AddJourneyButton variant="fab" />}
-          </Container>
+          <StatusTabPanel
+            activeList={<ActiveJourneyList {...journeyListProps} />}
+            archivedList={<ArchivedJourneyList {...journeyListProps} />}
+            trashedList={<TrashedJourneyList {...journeyListProps} />}
+            activeTabLoaded={activeTabLoaded}
+            setActiveEvent={setActiveEvent}
+            setSortOrder={setSortOrder}
+            sortOrder={sortOrder}
+            router={router}
+          />
+          {!['archived', 'trashed'].includes(
+            (router?.query?.tab as string) ?? ''
+          ) && <AddJourneyButton variant="fab" />}
         </>
       )}
     </>
