@@ -98,7 +98,7 @@ describe('CardPreview', () => {
     mockUuidv4.mockReturnValueOnce('cardId')
     const onSelect = jest.fn()
 
-    const { getByRole } = render(
+    const { getByTestId } = render(
       <MockedProvider mocks={mocks}>
         <JourneyProvider
           value={{
@@ -114,7 +114,7 @@ describe('CardPreview', () => {
         </JourneyProvider>
       </MockedProvider>
     )
-    fireEvent.click(getByRole('button'))
+    fireEvent.click(getByTestId('AddIcon'))
     await waitFor(() =>
       expect(onSelect).toHaveBeenCalledWith({
         __typename: 'StepBlock',
@@ -155,7 +155,7 @@ describe('CardPreview', () => {
       }
     })
 
-    const { getByRole } = render(
+    const { getByTestId } = render(
       <MockedProvider cache={cache} mocks={mocks}>
         <JourneyProvider
           value={{
@@ -171,7 +171,7 @@ describe('CardPreview', () => {
         </JourneyProvider>
       </MockedProvider>
     )
-    fireEvent.click(getByRole('button'))
+    fireEvent.click(getByTestId('AddIcon'))
     await waitFor(() => {
       expect(cache.extract()['Journey:journeyId']?.blocks).toEqual([
         { __ref: 'StepBlock:stepId' },
