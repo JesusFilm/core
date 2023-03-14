@@ -66,6 +66,11 @@ export function VisitorsList(): ReactElement {
         //   }
         // }}
         // pageSizeOptions={[5]}
+        sx={{
+          '& .MuiDataGrid-cell:focus': {
+            outline: 'none'
+          }
+        }}
       />
     </Box>
   )
