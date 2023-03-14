@@ -9,20 +9,38 @@ import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { ActionFields_LinkAction as LinkAction } from '../../../../__generated__/ActionFields'
 import { BlockFields_ButtonBlock as ButtonBlock } from '../../../../__generated__/BlockFields'
 import { SocialShareAppearance } from '../Drawer/SocialShareAppearance'
+import { GetJourney_journey as Journey } from '../../../../__generated__/GetJourney'
 import { ActionsList } from './ActionsList'
 import { ActionsBanner } from './ActionsBanner'
+
+export interface Actions {
+  url: string
+  count: number
+}
 
 export function ActionsTable(): ReactElement {
   const { journey } = useJourney()
 
-  const actions = (journey?.blocks ?? [])
-    .filter((block) => ((block as ButtonBlock).action as LinkAction) != null)
-    .map((block) => (block as ButtonBlock).action as LinkAction)
-    .filter(
-      (action, i, arr) =>
-        ['LinkAction'].includes(action.__typename) &&
-        arr.findIndex((x) => x.url === action.url) === i
-    )
+  function countUrls(journey: Journey | undefined): Actions[] {
+    const actions = (journey?.blocks ?? [])
+      .filter(
+        (block) =>
+          ((block as ButtonBlock).action as LinkAction)?.__typename ===
+          'LinkAction'
+      )
+      .map((block) => (block as ButtonBlock).action as LinkAction)
+      .reduce((counts, { url }) => {
+        counts[url] = ((counts[url] ?? 0) as number) + 1
+        return counts
+      }, {})
+
+    return Object.entries(actions).map(([url, count]) => ({
+      url,
+      count
+    })) as Actions[]
+  }
+
+  const actions = countUrls(journey)
 
   const {
     state: { steps },

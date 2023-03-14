@@ -17,8 +17,6 @@ import {
 import { StepsOrderUpdate } from '../../../__generated__/StepsOrderUpdate'
 import { StepAndCardBlockCreate } from '../../../__generated__/StepAndCardBlockCreate'
 import { GetJourney_journey_blocks_StepBlock as StepBlock } from '../../../__generated__/GetJourney'
-import { ActionFields_LinkAction as LinkAction } from '../../../__generated__/ActionFields'
-import { ActionDetails } from '../Editor/ActionDetails'
 import { CardList } from './CardList'
 
 export interface CardPreviewProps {
@@ -183,11 +181,6 @@ export function CardPreview({
             dispatch({
               type: 'SetJourneyEditContentAction',
               component: ActiveJourneyEditContent.Action
-            })
-            dispatch({
-              type: 'SetDrawerPropsAction',
-              mobileOpen: true,
-              children: <ActionDetails />
             })
           }}
         >

@@ -58,6 +58,7 @@ describe('ActionsList', () => {
     expect(dispatch).toHaveBeenCalledWith({
       type: 'SetDrawerPropsAction',
       mobileOpen: true,
+      title: 'Goal Details',
       children: <ActionDetails url={actions[0].url} />
     })
   })
