@@ -1,10 +1,12 @@
 import { ReactElement } from 'react'
 import { DataGrid } from '@mui/x-data-grid'
 import Box from '@mui/material/Box'
+import { useRouter } from 'next/router'
 import { useVisitors } from '../../libs/useVisitors'
 
 export function VisitorsList(): ReactElement {
   const visitors = useVisitors()
+  const router = useRouter()
   const columns = [
     {
       field: 'id',
@@ -45,8 +47,8 @@ export function VisitorsList(): ReactElement {
         })
       : []
 
-  function handleRowClick(params): void {
-    console.log(params.row.id) // redirect to /reports/visitors/[visitorId]
+  async function handleRowClick(params): Promise<void> {
+    await router.push(`/reports/visitors/${params.row.id as string}`)
   }
 
   return (
@@ -55,6 +57,7 @@ export function VisitorsList(): ReactElement {
         columns={columns}
         rows={rows}
         onRowClick={handleRowClick}
+        disableRowSelectionOnClick
         // initialState={{
         //   pagination: {
         //     paginationModel: {
@@ -63,7 +66,6 @@ export function VisitorsList(): ReactElement {
         //   }
         // }}
         // pageSizeOptions={[5]}
-        disableRowSelectionOnClick
       />
     </Box>
   )
