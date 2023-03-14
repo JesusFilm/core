@@ -104,7 +104,8 @@ Default.args = {
       </Typography>
 
       <Typography sx={{ backgroundColor: 'background.default' }}>
-        The main body content background is white by default
+        The main body content background sometimes is grey, other times is
+        white.
       </Typography>
     </>
   )

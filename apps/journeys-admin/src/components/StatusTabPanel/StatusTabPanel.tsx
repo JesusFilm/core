@@ -112,7 +112,7 @@ export function StatusTabPanel({
 
   return (
     <>
-      <Box sx={{ mb: 4, display: { xs: 'block', sm: 'none' } }}>
+      <Box sx={{ ml: 6, mb: 4, display: { xs: 'block', sm: 'none' } }}>
         <JourneySort
           sortOrder={sortOrder}
           onChange={setSortOrder}
@@ -123,7 +123,7 @@ export function StatusTabPanel({
       <Paper
         variant="outlined"
         sx={{
-          mx: { xs: -6, sm: 0 },
+          width: 'inherit',
           borderColor: 'divider',
           borderBottom: 'none',
           borderTopLeftRadius: { xs: 0, sm: 12 },
@@ -186,7 +186,7 @@ export function StatusTabPanel({
           name="active-status-panel"
           value={activeTab}
           index={journeyStatusTabs[0].tabIndex}
-          sx={{ mx: { xs: -6, sm: 0 } }}
+          sx={{ width: 'inherit' }}
         >
           {activeList}
         </TabPanel>
@@ -196,7 +196,7 @@ export function StatusTabPanel({
           name="archived-status-panel"
           value={activeTab}
           index={journeyStatusTabs[1].tabIndex}
-          sx={{ mx: { xs: -6, sm: 0 } }}
+          sx={{ width: 'inherit' }}
         >
           {archivedList}
         </TabPanel>
@@ -206,7 +206,7 @@ export function StatusTabPanel({
           name="trashed-status-panel"
           value={activeTab}
           index={journeyStatusTabs[2].tabIndex}
-          sx={{ mx: { xs: -6, sm: 0 } }}
+          sx={{ width: 'inherit' }}
         >
           {trashedList}
         </TabPanel>

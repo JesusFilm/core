@@ -62,7 +62,6 @@ export function PageWrapper({
           sx={{
             backgroundColor: 'background.default',
             width: { xs: '100vw', sm: 'calc(100vw - 72px)' },
-            // flexGrow: 1,
             pt: { xs: `${toolbarStyle.height}px`, sm: 0 },
             pb: { xs: bottomPanelChildren != null ? '300px' : 0, sm: 0 }
           }}
