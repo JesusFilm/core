@@ -827,7 +827,7 @@ type Mutation
   """Removes all userJourneys associated with a journeyId"""
   userJourneyRemoveAll(id: ID!): [UserJourney!]! @join__field(graph: JOURNEYS)
   userJourneyRequest(journeyId: ID!, idType: IdType): UserJourney! @join__field(graph: JOURNEYS)
-  userJourneyOpen(id: ID!): UserJourney! @join__field(graph: JOURNEYS)
+  userJourneyOpen(id: ID!): UserJourney @join__field(graph: JOURNEYS)
 
   """Update a visitor"""
   visitorUpdate(id: ID!, input: VisitorUpdateInput!): Visitor! @join__field(graph: JOURNEYS)
