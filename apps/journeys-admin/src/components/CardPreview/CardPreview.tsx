@@ -9,8 +9,13 @@ import Skeleton from '@mui/material/Skeleton'
 import Stack from '@mui/material/Stack'
 import { v4 as uuidv4 } from 'uuid'
 import { useMutation, gql } from '@apollo/client'
-import { ActiveJourneyEditContent } from '@core/journeys/ui/EditorProvider'
+import {
+  ActiveJourneyEditContent,
+  useEditor
+} from '@core/journeys/ui/EditorProvider'
 import { DragDropContext, Droppable } from 'react-beautiful-dnd'
+import Card from '@mui/material/Card'
+import CardActionArea from '@mui/material/CardActionArea'
 import { StepsOrderUpdate } from '../../../__generated__/StepsOrderUpdate'
 import { StepAndCardBlockCreate } from '../../../__generated__/StepAndCardBlockCreate'
 import { GetJourney_journey_blocks_StepBlock as StepBlock } from '../../../__generated__/GetJourney'
@@ -69,6 +74,7 @@ export function CardPreview({
   )
   const [stepsOrderUpdate] = useMutation<StepsOrderUpdate>(STEPS_ORDER_UPDATE)
   const { journey } = useJourney()
+  const { state } = useEditor()
 
   const handleChange = (selectedId: string): void => {
     if (steps == null) return
@@ -175,15 +181,38 @@ export function CardPreview({
 
   return (
     <Stack direction="row">
-      <Box>
-        <button
+      <Card
+        id="CardPreviewAddButton"
+        variant="outlined"
+        sx={{
+          display: 'flex',
+          width: 87,
+          height: 132,
+          m: 1,
+          mt: '24px',
+          border: '3px solid transparent',
+          borderRadius: 2,
+          outline: (theme) =>
+            state.journeyEditContentComponent ===
+            ActiveJourneyEditContent.SocialPreview
+              ? `2px solid ${theme.palette.primary.main} `
+              : '2px solid transparent'
+        }}
+      >
+        <CardActionArea
+          sx={{
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center'
+          }}
           onClick={() =>
             onSelect?.({ view: ActiveJourneyEditContent.SocialPreview })
           }
         >
-          <span>social</span>
-        </button>
-      </Box>
+          Social
+        </CardActionArea>
+      </Card>
+
       {steps != null ? (
         isDraggable === true ? (
           <DragDropContext

@@ -31,8 +31,7 @@ export function Cards(): ReactElement {
     STEP_BLOCK_NEXT_BLOCK_UPDATE
   )
   const {
-    state: { steps, selectedBlock },
-    dispatch
+    state: { steps, selectedBlock }
   } = useEditor()
   const { journey } = useJourney()
   const theme = useTheme()
@@ -48,13 +47,11 @@ export function Cards(): ReactElement {
   }
 
   async function handleSelectStep({
-    step,
-    view
+    step
   }: {
     step?: TreeBlock<StepFields>
     view?: ActiveJourneyEditContent
   }): Promise<void> {
-    console.log('oh hi')
     if (journey == null) return
 
     if (step != null) {
@@ -74,9 +71,6 @@ export function Cards(): ReactElement {
           }
         }
       })
-    }
-    if (view != null) {
-      dispatch({ type: 'SetJourneyEditContentAction', component: view })
     }
   }
 

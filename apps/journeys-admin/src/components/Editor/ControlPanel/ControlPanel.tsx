@@ -39,6 +39,11 @@ export function ControlPanel(): ReactElement {
     if (step != null) {
       dispatch({ type: 'SetSelectedStepAction', step })
       dispatch({ type: 'SetActiveFabAction', activeFab: ActiveFab.Add })
+    } else if (view != null) {
+      dispatch({
+        type: 'SetJourneyEditContentAction',
+        component: ActiveJourneyEditContent.SocialPreview
+      })
     }
   }
 
