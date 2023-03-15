@@ -37,5 +37,5 @@ extend type Mutation {
   """
   userJourneyRemoveAll(id: ID!): [UserJourney!]!
   userJourneyRequest(journeyId: ID!, idType: IdType): UserJourney!
-  userJourneyOpen(id: ID!): UserJourney!
+  userJourneyOpen(id: ID!): UserJourney
 }
