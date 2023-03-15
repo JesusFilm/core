@@ -5,11 +5,11 @@ import { gql, useMutation } from '@apollo/client'
 import { ReactElement } from 'react'
 import { CardPreview } from '../../../../../CardPreview'
 import {
-  GetJourney_journey_blocks_StepBlock as StepBlock,
   GetJourney_journey_blocks_ButtonBlock as ButtonBlock,
   GetJourney_journey_blocks_VideoBlock as VideoBlock
 } from '../../../../../../../__generated__/GetJourney'
 import { NavigateToBlockActionUpdate } from '../../../../../../../__generated__/NavigateToBlockActionUpdate'
+import { OnSelectProps } from '../../../../../CardPreview/CardPreview'
 
 export const NAVIGATE_TO_BLOCK_ACTION_UPDATE = gql`
   mutation NavigateToBlockActionUpdate(
@@ -48,12 +48,8 @@ export function NavigateToBlockAction(): ReactElement {
         id === currentBlock?.action?.blockId
     ) ?? undefined
 
-  async function handleSelectStep({
-    step
-  }: {
-    step: TreeBlock<StepBlock>
-  }): Promise<void> {
-    if (currentBlock != null && journey != null) {
+  async function handleSelectStep({ step }: OnSelectProps): Promise<void> {
+    if (currentBlock != null && journey != null && step != null) {
       const { id, __typename: typeName } = currentBlock
       await navigateToBlockActionUpdate({
         variables: {

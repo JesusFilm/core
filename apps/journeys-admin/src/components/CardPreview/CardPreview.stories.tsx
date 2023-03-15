@@ -664,9 +664,7 @@ const steps: Array<TreeBlock<StepBlock>> = [
 ]
 
 const Template: Story = ({ ...args }) => {
-  const [selected, setSelectedStep] = useState<TreeBlock<StepBlock>>(
-    args.steps?.[0]
-  )
+  const [selected] = useState<TreeBlock<StepBlock>>(args.steps?.[0])
 
   return (
     <MockedProvider>
@@ -686,7 +684,7 @@ const Template: Story = ({ ...args }) => {
       >
         <DragDropContext>
           <CardPreview
-            onSelect={(step) => setSelectedStep(step)}
+            onSelect={(step) => ({ step })}
             selected={selected}
             steps={args.steps}
             showAddButton={args.showAddButton}

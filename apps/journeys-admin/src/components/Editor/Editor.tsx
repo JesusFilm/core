@@ -15,6 +15,7 @@ interface EditorProps {
   selectedStepId?: string
   view?: ActiveJourneyEditContent
   children: ReactNode
+  view?: ActiveJourneyEditContent
 }
 
 export function Editor({

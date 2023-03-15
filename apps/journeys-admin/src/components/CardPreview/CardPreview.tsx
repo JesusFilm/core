@@ -21,10 +21,11 @@ import { StepAndCardBlockCreate } from '../../../__generated__/StepAndCardBlockC
 import { GetJourney_journey_blocks_StepBlock as StepBlock } from '../../../__generated__/GetJourney'
 import { CardList } from './CardList'
 
-interface OnSelectProps {
+export interface OnSelectProps {
   step?: TreeBlock<StepBlock>
   view?: ActiveJourneyEditContent
 }
+
 export interface CardPreviewProps {
   onSelect?: ({ step, view }: OnSelectProps) => void
   selected?: TreeBlock<StepBlock>

@@ -9,6 +9,7 @@ import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { ActiveJourneyEditContent } from '@core/journeys/ui/EditorProvider'
 import { BlockFields_StepBlock as StepBlock } from '../../../../__generated__/BlockFields'
 import { CardPreview } from '../../CardPreview'
+import { OnSelectProps } from '../../CardPreview/CardPreview'
 
 export interface CardViewProps {
   id?: string
@@ -25,13 +26,7 @@ export function CardView({
   const breakpoints = useBreakpoints()
   const router = useRouter()
 
-  const handleSelect = ({
-    step,
-    view
-  }: {
-    step?: { id: string }
-    view?: ActiveJourneyEditContent
-  }): void => {
+  const handleSelect = ({ step, view }: OnSelectProps): void => {
     if (id == null) return
 
     let location = `${id}/edit`
