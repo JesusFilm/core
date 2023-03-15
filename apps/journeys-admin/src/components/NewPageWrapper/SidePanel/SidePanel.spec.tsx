@@ -6,7 +6,7 @@ describe('SidePanel', () => {
   it('should render title', () => {
     const { getByTestId } = render(
       <SidePanel
-        title="S{ide Panel Title"
+        title="Side Panel Title"
         styles={{
           toolbar: { variant: 'dense', height: 12 },
           bottomPanel: { height: 300 }
