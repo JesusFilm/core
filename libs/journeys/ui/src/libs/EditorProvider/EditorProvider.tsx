@@ -195,13 +195,11 @@ export const EditorContext = createContext<{
 interface EditorProviderProps {
   children: ReactNode
   initialState?: Partial<EditorState>
-  view?: ActiveJourneyEditContent
 }
 
 export function EditorProvider({
   children,
-  initialState,
-  view
+  initialState
 }: EditorProviderProps): ReactElement {
   const [state, dispatch] = useReducer(reducer, {
     steps: [],
@@ -210,7 +208,7 @@ export function EditorProvider({
     drawerMobileOpen: false,
     activeTab: ActiveTab.Cards,
     activeFab: ActiveFab.Add,
-    journeyEditContentComponent: view ?? ActiveJourneyEditContent.Canvas,
+    journeyEditContentComponent: ActiveJourneyEditContent.Canvas,
     ...initialState
   })
 
