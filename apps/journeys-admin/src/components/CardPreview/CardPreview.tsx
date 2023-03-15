@@ -183,11 +183,11 @@ export function CardPreview({
               type: 'SetJourneyEditContentAction',
               component: ActiveJourneyEditContent.Action
             })
+            // remove this dispatch once merge with actions table
             dispatch({
               type: 'SetDrawerPropsAction',
               mobileOpen: true,
-              // remove url once merge with action details
-              // update url to see editor and cards function
+              title: 'Goal Details',
               children: <ActionDetails url="https://www.google.com/" />
             })
           }}

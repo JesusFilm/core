@@ -7,6 +7,7 @@ import { getJourneyRTL } from '@core/journeys/ui/rtl'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { transformer } from '@core/journeys/ui/transformer'
 import Typography from '@mui/material/Typography'
+import Stack from '@mui/material/Stack'
 import { FramePortal } from '../../../FramePortal'
 import { ThemeMode, ThemeName } from '../../../../../__generated__/globalTypes'
 import {
@@ -22,9 +23,7 @@ export function ActionCards({ url }: ActionCardsProps): ReactElement {
   const { journey } = useJourney()
   const { rtl } = getJourneyRTL(journey)
 
-  console.log(journey?.blocks)
-
-  const hasAction = (block: TreeBlock): boolean => {
+  function hasAction(block: TreeBlock): boolean {
     if (((block as ButtonBlock).action as LinkAction)?.url === url) return true
     if (block.children.length === 0) return false
     return block.children?.some(hasAction)
@@ -35,52 +34,98 @@ export function ActionCards({ url }: ActionCardsProps): ReactElement {
     <>
       <Typography>It appears on following cards and elements: </Typography>
       {blocks?.map((block) => (
-        <Box
-          key={block.id}
-          sx={{
-            width: 104,
-            position: 'relative',
-            height: 154,
-            mb: 2,
-            overflow: 'hidden',
-            borderRadius: 3,
-            outline: '1px solid #DEDFE0',
-            outlineOffset: '-4px'
-          }}
-        >
-          {block != null && (
-            <Box
-              sx={{
-                transform: 'scale(0.25)',
-                transformOrigin: '12% 3%'
-              }}
-            >
-              <FramePortal width={340} height={520} dir={rtl ? 'rtl' : 'ltr'}>
-                <ThemeProvider
-                  themeName={journey?.themeName ?? ThemeName.base}
-                  themeMode={journey?.themeMode ?? ThemeMode.light}
-                >
-                  <Box sx={{ height: '100%' }}>
-                    <BlockRenderer
-                      block={block}
-                      wrappers={{
-                        ImageWrapper: NullWrapper,
-                        VideoWrapper: NullWrapper
-                      }}
-                    />
-                  </Box>
-                </ThemeProvider>
-              </FramePortal>
-            </Box>
-          )}
-        </Box>
+        <Stack key={block.id} gap={4} direction="row">
+          <Box
+            sx={{
+              width: 102,
+              position: 'relative',
+              height: 154,
+              mb: 2,
+              overflow: 'hidden',
+              borderRadius: 2
+            }}
+          >
+            {block != null && (
+              <Box
+                sx={{
+                  transform: 'scale(0.3)',
+                  transformOrigin: 'left top'
+                }}
+              >
+                <FramePortal width={340} height={520} dir={rtl ? 'rtl' : 'ltr'}>
+                  <ThemeProvider
+                    themeName={journey?.themeName ?? ThemeName.base}
+                    themeMode={journey?.themeMode ?? ThemeMode.light}
+                  >
+                    <Box sx={{ height: '100%' }}>
+                      <BlockRenderer
+                        block={block}
+                        wrappers={{
+                          ImageWrapper: NullWrapper,
+                          VideoWrapper: NullWrapper
+                        }}
+                      />
+                    </Box>
+                  </ThemeProvider>
+                </FramePortal>
+              </Box>
+            )}
+          </Box>
+          <ActionCardsDetail block={block} url={url} />
+        </Stack>
       ))}
     </>
+  )
+}
+
+interface ActionCardsDetailProps {
+  block: TreeBlock
+  url: string
+}
+
+function ActionCardsDetail({
+  block,
+  url
+}: ActionCardsDetailProps): ReactElement {
+  function findBlockWithAction(block): TreeBlock | null {
+    if (((block as ButtonBlock).action as LinkAction)?.url === url) return block
+    if (block.children != null) {
+      for (const childBlock of block.children) {
+        const result = findBlockWithAction(childBlock)
+        if (result != null) return result
+      }
+    }
+    return null
+  }
+
+  const actionBlock = findBlockWithAction(block)
+
+  let blockType: string | undefined
+
+  switch (actionBlock?.__typename) {
+    case 'TextResponseBlock':
+      blockType = 'Text'
+      break
+    case 'RadioOptionBlock':
+      blockType = 'Poll'
+      break
+    default:
+      blockType = actionBlock?.__typename.replace('Block', '')
+      break
+  }
+
+  return (
+    <Stack justifyContent="center" gap={2} width={160}>
+      <Typography variant="subtitle2" color="text.secondary">
+        {blockType}
+      </Typography>
+      <Typography variant="subtitle1">
+        {(actionBlock as ButtonBlock)?.label}
+      </Typography>
+    </Stack>
   )
 }
 
 function NullWrapper({ children }): ReactElement {
   return <fieldset disabled>{children}</fieldset>
 }
-
-// can you write a chain array function that returns the object in an array that contains this parent block id
