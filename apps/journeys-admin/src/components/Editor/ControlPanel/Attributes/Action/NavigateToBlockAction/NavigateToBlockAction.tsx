@@ -5,7 +5,6 @@ import { gql, useMutation } from '@apollo/client'
 import { ReactElement } from 'react'
 import { CardPreview } from '../../../../../CardPreview'
 import {
-  GetJourney_journey_blocks_StepBlock as StepBlock,
   GetJourney_journey_blocks_ButtonBlock as ButtonBlock,
   GetJourney_journey_blocks_VideoBlock as VideoBlock
 } from '../../../../../../../__generated__/GetJourney'
