@@ -19,6 +19,7 @@ export function SidePanelContainer({
     }
     return {}
   }, [border])
+
   return (
     <Stack
       sx={{
