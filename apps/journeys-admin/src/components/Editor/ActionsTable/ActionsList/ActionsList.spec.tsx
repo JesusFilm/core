@@ -6,8 +6,8 @@ import {
   ActiveFab,
   ActiveJourneyEditContent
 } from '@core/journeys/ui/EditorProvider'
-import { ActionFields_LinkAction as LinkAction } from '../../../../../__generated__/ActionFields'
 import { ActionDetails } from '../../ActionDetails'
+import { Actions } from '../ActionsTable'
 import { ActionsList } from './ActionsList'
 
 jest.mock('@core/journeys/ui/EditorProvider', () => {
@@ -22,12 +22,10 @@ jest.mock('@core/journeys/ui/EditorProvider', () => {
 const mockUseEditor = useEditor as jest.MockedFunction<typeof useEditor>
 
 describe('ActionsList', () => {
-  const actions: LinkAction[] = [
+  const actions: Actions[] = [
     {
-      __typename: 'LinkAction',
-      parentBlockId: '84d742c8-9905-4b77-8987-99c08c04cde3',
-      gtmEventName: null,
-      url: 'https://www.google.com/'
+      url: 'https://www.google.com/',
+      count: 2
     }
   ]
 
@@ -50,6 +48,8 @@ describe('ActionsList', () => {
   it('should render a list of actions', () => {
     const { getByText } = render(<ActionsList actions={actions} />)
     expect(getByText('https://www.google.com/')).toBeInTheDocument()
+    expect(getByText('Visit a website')).toBeInTheDocument()
+    expect(getByText(2)).toBeInTheDocument()
   })
 
   it('should dispatch on click', () => {
