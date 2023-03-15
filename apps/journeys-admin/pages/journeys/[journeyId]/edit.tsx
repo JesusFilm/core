@@ -11,6 +11,7 @@ import { NextSeo } from 'next-seo'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import { useTranslation } from 'react-i18next'
 import { getLaunchDarklyClient } from '@core/shared/ui/getLaunchDarklyClient'
+import { ActiveJourneyEditContent } from '@core/journeys/ui/EditorProvider'
 import {
   GetJourney,
   GetJourney_journey as Journey
@@ -49,6 +50,7 @@ function JourneyEditPage(): ReactElement {
       <Editor
         journey={data?.journey ?? undefined}
         selectedStepId={router.query.stepId as string | undefined}
+        view={router.query.view as ActiveJourneyEditContent | undefined}
       >
         <PageWrapper
           title={data?.journey?.title ?? t('Edit Journey')}

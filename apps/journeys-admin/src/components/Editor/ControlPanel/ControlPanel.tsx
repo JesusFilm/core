@@ -7,10 +7,9 @@ import {
   ActiveTab,
   ActiveFab
 } from '@core/journeys/ui/EditorProvider'
-import type { TreeBlock } from '@core/journeys/ui/block'
 import { TabPanel, tabA11yProps } from '@core/shared/ui/TabPanel'
-import { GetJourney_journey_blocks_StepBlock as StepBlock } from '../../../../__generated__/GetJourney'
 import { CardPreview } from '../../CardPreview'
+import { OnSelectProps } from '../../CardPreview/CardPreview'
 import { Attributes } from './Attributes'
 import { BlocksTab } from './BlocksTab'
 import { Fab } from './Fab'
@@ -28,9 +27,11 @@ export function ControlPanel(): ReactElement {
     dispatch({ type: 'SetActiveTabAction', activeTab: newValue })
   }
 
-  const handleSelectStepPreview = (step: TreeBlock<StepBlock>): void => {
-    dispatch({ type: 'SetSelectedStepAction', step })
-    dispatch({ type: 'SetActiveFabAction', activeFab: ActiveFab.Add })
+  const handleSelectStepPreview = ({ step }: OnSelectProps): void => {
+    if (step != null) {
+      dispatch({ type: 'SetSelectedStepAction', step })
+      dispatch({ type: 'SetActiveFabAction', activeFab: ActiveFab.Add })
+    }
   }
 
   const handleAddFabClick = (): void => {
