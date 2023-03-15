@@ -167,7 +167,7 @@ extend type Mutation {
   """Removes all userJourneys associated with a journeyId"""
   userJourneyRemoveAll(id: ID!): [UserJourney!]!
   userJourneyRequest(journeyId: ID!, idType: IdType): UserJourney!
-  userJourneyOpen(id: ID!): UserJourney!
+  userJourneyOpen(id: ID!): UserJourney
 
   """Update a visitor"""
   visitorUpdate(id: ID!, input: VisitorUpdateInput!): Visitor!
