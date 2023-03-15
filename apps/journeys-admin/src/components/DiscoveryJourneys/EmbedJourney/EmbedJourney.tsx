@@ -1,3 +1,4 @@
+import { styled } from '@mui/material/styles'
 import Box from '@mui/material/Box'
 import { ReactElement } from 'react'
 
@@ -6,10 +7,17 @@ interface Props {
 }
 
 export function EmbedJourney({ slug }: Props): ReactElement {
+  const StyledIframe = styled('iframe')(({ theme }) => ({}))
   return (
     <Box
       aria-label={`${slug}-embedded`}
       sx={{
+        transform: {
+          xs: 'scale(0.4)',
+          sm: 'scale(0.6)',
+          md: 'scale(0.8)'
+        },
+        transformOrigin: 'top left',
         position: 'relative',
         width: '33%',
         height: 0
@@ -17,48 +25,41 @@ export function EmbedJourney({ slug }: Props): ReactElement {
     >
       <Box
         sx={{
-          transform: {
-            xs: 'scale(0.4)',
-            sm: 'scale(0.6)',
-            md: 'scale(0.8)'
-          },
-          transformOrigin: 'top left'
+          width: {
+            xs: '252%',
+            sm: '168%',
+            md: '125%'
+          }
         }}
       >
         <Box
           sx={{
-            width: {
-              xs: '252%',
-              sm: '168%',
-              md: '125%'
-            }
+            position: 'relative',
+            width: '100%',
+            overflow: 'hidden',
+            pt: '150%',
+            pl: '94%'
           }}
         >
-          <div
-            style={{
-              position: 'relative',
+          <StyledIframe
+            id="jfm-iframe"
+            src={`https://your.nextstep.is/embed/${slug}`}
+            sx={{
+              position: 'absolute',
+              top: 0,
+              left: {
+                xs: 0,
+                sm:
+                  slug === 'admin-left' ? -32 : slug === 'admin-right' ? 32 : 0
+              },
+              bottom: 0,
+              right: 0,
               width: '100%',
-              overflow: 'hidden',
-              paddingTop: '150%',
-              paddingLeft: '94%'
+              height: '100%',
+              border: 'none'
             }}
-          >
-            <iframe
-              id="jfm-iframe"
-              src={`https://your.nextstep.is/embed/${slug}`}
-              style={{
-                position: 'absolute',
-                top: 0,
-                left: 0,
-                bottom: 0,
-                right: 0,
-                width: '100%',
-                height: '100%',
-                border: 'none'
-              }}
-              allow="fullscreen"
-            />
-          </div>
+            allow="fullscreen"
+          />
         </Box>
       </Box>
     </Box>
