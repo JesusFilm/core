@@ -37,9 +37,9 @@ export function SocialPreviewPost({
             <div>
               <Typography variant="body1">{journey.seoTitle}</Typography>
             </div>
-            {/* <div>
+            <div>
               <Typography variant="body2">{journey.seoDescription}</Typography>
-            </div> */}
+            </div>
           </CardContent>
         </Card>
       )}
