@@ -13,7 +13,6 @@ import { SocialShareAppearance } from './Drawer/SocialShareAppearance'
 interface EditorProps {
   journey?: Journey
   selectedStepId?: string
-  view?: ActiveJourneyEditContent
   children: ReactNode
   view?: ActiveJourneyEditContent
 }

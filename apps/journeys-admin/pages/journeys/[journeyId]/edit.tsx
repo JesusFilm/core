@@ -12,7 +12,6 @@ import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import { useTranslation } from 'react-i18next'
 import { getLaunchDarklyClient } from '@core/shared/ui/getLaunchDarklyClient'
 import { ActiveJourneyEditContent } from '@core/journeys/ui/EditorProvider'
-
 import {
   GetJourney,
   GetJourney_journey as Journey
