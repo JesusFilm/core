@@ -6,9 +6,9 @@ import type { TreeBlock } from '@core/journeys/ui/block'
 import { useBreakpoints } from '@core/shared/ui/useBreakpoints'
 import { useRouter } from 'next/router'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import { ActiveJourneyEditContent } from '@core/journeys/ui/EditorProvider'
 import { BlockFields_StepBlock as StepBlock } from '../../../../__generated__/BlockFields'
 import { CardPreview } from '../../CardPreview'
-import { ActiveJourneyEditContent } from '@core/journeys/ui/EditorProvider'
 
 export interface CardViewProps {
   id?: string
