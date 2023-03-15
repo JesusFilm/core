@@ -1,4 +1,4 @@
-import { ReactElement } from 'react'
+import { ComponentProps, ReactElement } from 'react'
 import { Meta, Story } from '@storybook/react'
 import IconButton from '@mui/material/IconButton'
 import MenuRounded from '@mui/icons-material/MenuRounded'
@@ -11,7 +11,7 @@ import { Role } from '../../../__generated__/globalTypes'
 import { GET_USER_ROLE } from '../JourneyView/JourneyView'
 import { GET_ME } from '../PageWrapper/NavigationDrawer/NavigationDrawer'
 import { SidePanelContainer } from './SidePanelContainer'
-import { PageWrapper, PageWrapperProps } from '.'
+import { PageWrapper } from '.'
 
 const PageWrapperStory = {
   ...journeysAdminConfig,
@@ -43,10 +43,9 @@ const SidePanelContainers = (): ReactElement => (
   </>
 )
 
-const Template: Story = ({
-  templates = false,
-  ...args
-}: PageWrapperProps & { templates?: boolean }) => (
+const Template: Story<
+  ComponentProps<typeof PageWrapper> & { templates?: boolean }
+> = ({ templates = false, ...args }) => (
   <MockedProvider
     mocks={[
       {
