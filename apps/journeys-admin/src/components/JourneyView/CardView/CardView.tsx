@@ -30,7 +30,7 @@ export function CardView({
     view
   }: {
     step?: { id: string }
-    view: ActiveJourneyEditContent
+    view?: ActiveJourneyEditContent
   }): void => {
     if (id == null) return
 
