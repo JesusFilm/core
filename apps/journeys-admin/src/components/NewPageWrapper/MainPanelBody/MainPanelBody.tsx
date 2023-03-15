@@ -1,13 +1,16 @@
 import { ReactElement, ReactNode } from 'react'
 import Stack from '@mui/material/Stack'
+import { PageWrapperStyles } from '../PageWrapper'
 
 export interface MainPanelBodyProps {
   children: ReactNode
+  styles: PageWrapperStyles
   bottomPanelChildren?: ReactNode
 }
 
 export function MainPanelBody({
   children,
+  styles,
   bottomPanelChildren
 }: MainPanelBodyProps): ReactElement {
   return (
@@ -38,7 +41,7 @@ export function MainPanelBody({
         <Stack
           data-testid="bottom-panel"
           sx={{
-            height: '300px',
+            height: `${styles.bottomPanel.height}px`,
             position: { xs: 'fixed', sm: 'unset' },
             bottom: 0,
             right: 0,

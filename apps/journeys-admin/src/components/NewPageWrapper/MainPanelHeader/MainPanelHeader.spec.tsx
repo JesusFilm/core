@@ -7,7 +7,10 @@ describe('MainPanelHeader', () => {
       <MainPanelHeader
         title="Page title"
         backHref="/"
-        toolbarStyle={{ variant: 'dense', height: 12 }}
+        styles={{
+          toolbar: { variant: 'dense', height: 12 },
+          bottomPanel: { height: 300 }
+        }}
       />
     )
     expect(getByRole('link')).toHaveAttribute('href', '/')

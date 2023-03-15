@@ -6,17 +6,18 @@ import IconButton from '@mui/material/IconButton'
 import Stack from '@mui/material/Stack'
 import Toolbar from '@mui/material/Toolbar'
 import Typography from '@mui/material/Typography'
+import { PageWrapperStyles } from '../PageWrapper'
 
 export interface MainBodyContainerProps {
   title: string
-  toolbarStyle: { variant: 'dense' | 'regular'; height: number }
+  styles: PageWrapperStyles
   backHref?: string
   menu?: ReactNode
 }
 
 export function MainPanelHeader({
   title,
-  toolbarStyle,
+  styles,
   backHref,
   menu
 }: MainBodyContainerProps): ReactElement {
@@ -26,10 +27,10 @@ export function MainPanelHeader({
         color="default"
         sx={{
           position: { xs: 'fixed', sm: 'sticky' },
-          top: { xs: toolbarStyle.height, sm: 0 }
+          top: { xs: styles.toolbar.height, sm: 0 }
         }}
       >
-        <Toolbar variant={toolbarStyle.variant}>
+        <Toolbar variant={styles.toolbar.variant}>
           <Stack direction="row" flexGrow={1} alignItems="center">
             {backHref != null && (
               <Link href={backHref} passHref>
@@ -57,7 +58,7 @@ export function MainPanelHeader({
       </AppBar>
       {/* Reserves space beneath MainHeader on mobile - allows us to export MainPanel */}
       <Toolbar
-        variant={toolbarStyle.variant}
+        variant={styles.toolbar.variant}
         sx={{ display: { sm: 'none' } }}
       />
     </>

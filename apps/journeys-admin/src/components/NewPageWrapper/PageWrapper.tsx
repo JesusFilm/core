@@ -25,6 +25,11 @@ interface PageWrapperProps {
   authUser?: AuthUser
 }
 
+export interface PageWrapperStyles {
+  toolbar: { variant: 'dense' | 'regular'; height: number }
+  bottomPanel: { height: number }
+}
+
 export function PageWrapper({
   backHref,
   showAppHeader = true,
@@ -39,9 +44,9 @@ export function PageWrapper({
   const [open, setOpen] = useState<boolean>(false)
   const theme = useTheme()
   const viewportHeight = use100vh()
-  const toolbarStyle: { variant: 'dense' | 'regular'; height: number } =
-    useMemo(() => {
-      return {
+  const styles: PageWrapperStyles = useMemo(() => {
+    return {
+      toolbar: {
         variant: 'dense',
         // Height of the dense toolbar variant
         height:
@@ -49,8 +54,10 @@ export function PageWrapper({
             ? ((theme.components.MuiToolbar.styleOverrides?.dense as CSSObject)
                 .maxHeight as number)
             : 12
-      }
-    }, [theme])
+      },
+      bottomPanel: { height: 300 }
+    }
+  }, [theme])
 
   return (
     <Box
@@ -68,30 +75,30 @@ export function PageWrapper({
           sx={{
             backgroundColor: 'background.default',
             width: { xs: '100vw', sm: 'calc(100vw - 72px)' },
-            pt: { xs: `${toolbarStyle.height}px`, sm: 0 },
+            pt: { xs: `${styles.toolbar.height}px`, sm: 0 },
             pb: { xs: bottomPanelChildren != null ? '300px' : 0, sm: 0 }
           }}
         >
           {showAppHeader && (
-            <AppHeader
-              toolbarStyle={toolbarStyle}
-              onClick={() => setOpen(!open)}
-            />
+            <AppHeader styles={styles} onClick={() => setOpen(!open)} />
           )}
 
           <Stack component="main" sx={{ width: 'inherit' }}>
             <MainPanelHeader
               title={title}
-              toolbarStyle={toolbarStyle}
+              styles={styles}
               backHref={backHref}
               menu={customMenu}
             />
-            <MainPanelBody bottomPanelChildren={bottomPanelChildren}>
+            <MainPanelBody
+              bottomPanelChildren={bottomPanelChildren}
+              styles={styles}
+            >
               {children}
             </MainPanelBody>
           </Stack>
           {sidePanelChildren != null && (
-            <SidePanel title={sidePanelTitle} toolbarStyle={toolbarStyle}>
+            <SidePanel title={sidePanelTitle} styles={styles}>
               {sidePanelChildren}
             </SidePanel>
           )}

@@ -3,16 +3,17 @@ import AppBar from '@mui/material/AppBar'
 import Stack from '@mui/material/Stack'
 import Toolbar from '@mui/material/Toolbar'
 import Typography from '@mui/material/Typography'
+import { PageWrapperStyles } from '../PageWrapper'
 
 interface SidePanelProps {
   children: ReactNode
-  toolbarStyle: { variant: 'dense' | 'regular'; height: number }
+  styles: PageWrapperStyles
   title?: string
 }
 
 export function SidePanel({
   children,
-  toolbarStyle,
+  styles,
   title
 }: SidePanelProps): ReactElement {
   return (
@@ -35,7 +36,7 @@ export function SidePanel({
           display: { xs: 'none', sm: 'flex' }
         }}
       >
-        <Toolbar variant={toolbarStyle.variant}>
+        <Toolbar variant={styles.toolbar.variant}>
           {title != null && (
             <Typography variant="subtitle1" component="div" noWrap>
               {title}
@@ -48,7 +49,11 @@ export function SidePanel({
       <Stack
         data-testid="side-body"
         border="hidden"
-        sx={{ overflow: 'none', overflowY: { sm: 'auto' } }}
+        sx={{
+          overflow: 'none',
+          overflowY: { sm: 'auto' },
+          pb: { xs: `${styles.bottomPanel.height - 5}px`, sm: 0 }
+        }}
       >
         {children}
       </Stack>
