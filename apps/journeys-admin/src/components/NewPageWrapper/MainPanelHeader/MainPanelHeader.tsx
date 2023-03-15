@@ -29,7 +29,7 @@ export function MainPanelHeader({
           top: { xs: toolbarStyle.height, sm: 0 }
         }}
       >
-        <Toolbar variant="dense">
+        <Toolbar variant={toolbarStyle.variant}>
           <Stack direction="row" flexGrow={1} alignItems="center">
             {backHref != null && (
               <Link href={backHref} passHref>
@@ -56,7 +56,10 @@ export function MainPanelHeader({
         </Toolbar>
       </AppBar>
       {/* Reserves space beneath MainHeader on mobile - allows us to export MainPanel */}
-      <Toolbar variant="dense" sx={{ display: { sm: 'none' } }} />
+      <Toolbar
+        variant={toolbarStyle.variant}
+        sx={{ display: { sm: 'none' } }}
+      />
     </>
   )
 }

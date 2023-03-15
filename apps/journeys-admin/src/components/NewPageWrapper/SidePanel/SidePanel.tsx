@@ -6,10 +6,15 @@ import Typography from '@mui/material/Typography'
 
 interface SidePanelProps {
   children: ReactNode
+  toolbarStyle: { variant: 'dense' | 'regular'; height: number }
   title?: string
 }
 
-export function SidePanel({ children, title }: SidePanelProps): ReactElement {
+export function SidePanel({
+  children,
+  toolbarStyle,
+  title
+}: SidePanelProps): ReactElement {
   return (
     <Stack
       component="section"
@@ -30,10 +35,12 @@ export function SidePanel({ children, title }: SidePanelProps): ReactElement {
           display: { xs: 'none', sm: 'flex' }
         }}
       >
-        <Toolbar variant="dense">
-          <Typography variant="subtitle1" component="div" noWrap>
-            {title}
-          </Typography>
+        <Toolbar variant={toolbarStyle.variant}>
+          {title != null && (
+            <Typography variant="subtitle1" component="div" noWrap>
+              {title}
+            </Typography>
+          )}
         </Toolbar>
       </AppBar>
 

@@ -1,4 +1,4 @@
-import { ReactElement, ReactNode, useState } from 'react'
+import { ReactElement, ReactNode, useState, useMemo } from 'react'
 import { use100vh } from 'react-div-100vh'
 import { CSSObject, useTheme } from '@mui/material/styles'
 import Box from '@mui/material/Box'
@@ -10,13 +10,16 @@ import { MainPanelHeader } from './MainPanelHeader'
 import { AppHeader } from './AppHeader'
 import { SidePanel } from './SidePanel'
 
-export interface PageWrapperProps {
+interface PageWrapperProps {
   backHref?: string
   title: string
   menu?: ReactNode
   children?: ReactNode
   showAppHeader?: boolean
   sidePanelTitle?: string
+  /**
+   * Add default side panel padding and border by wrapping components with `SidePanelContainer`
+   */
   sidePanelChildren?: ReactNode
   bottomPanelChildren?: ReactNode
   authUser?: AuthUser
@@ -36,15 +39,18 @@ export function PageWrapper({
   const [open, setOpen] = useState<boolean>(false)
   const theme = useTheme()
   const viewportHeight = use100vh()
-  const toolbarStyle: { variant: 'dense' | 'regular'; height: number } = {
-    variant: 'dense',
-    // Height of the dense toolbar variant
-    height:
-      theme.components?.MuiToolbar != null
-        ? ((theme.components.MuiToolbar.styleOverrides?.dense as CSSObject)
-            .maxHeight as number)
-        : 12
-  }
+  const toolbarStyle: { variant: 'dense' | 'regular'; height: number } =
+    useMemo(() => {
+      return {
+        variant: 'dense',
+        // Height of the dense toolbar variant
+        height:
+          theme.components?.MuiToolbar != null
+            ? ((theme.components.MuiToolbar.styleOverrides?.dense as CSSObject)
+                .maxHeight as number)
+            : 12
+      }
+    }, [theme])
 
   return (
     <Box
@@ -84,9 +90,10 @@ export function PageWrapper({
               {children}
             </MainPanelBody>
           </Stack>
-
           {sidePanelChildren != null && (
-            <SidePanel title={sidePanelTitle}>{sidePanelChildren}</SidePanel>
+            <SidePanel title={sidePanelTitle} toolbarStyle={toolbarStyle}>
+              {sidePanelChildren}
+            </SidePanel>
           )}
         </Stack>
       </Stack>
