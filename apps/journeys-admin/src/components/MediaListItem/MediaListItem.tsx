@@ -117,10 +117,11 @@ export function MediaListItem({
             primary={
               loading ? (
                 <Skeleton
-                  variant="rounded"
+                  variant="rectangular"
                   width={9.5 * title.length}
                   sx={{
                     mt: 0.5,
+                    borderRadius: 1,
                     fontSize: theme.typography.subtitle1.fontSize
                   }}
                 />
