@@ -51,7 +51,7 @@ export function MainPanelHeader({
             >
               {title}
             </Typography>
-            {menu != null && menu}
+            {menu}
           </Stack>
         </Toolbar>
       </AppBar>

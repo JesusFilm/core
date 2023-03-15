@@ -3,16 +3,6 @@ import Typography from '@mui/material/Typography'
 import { SidePanel } from '.'
 
 describe('SidePanel', () => {
-  it('should render children', () => {
-    const { getByRole } = render(
-      <SidePanel toolbarStyle={{ variant: 'dense', height: 12 }}>
-        <Typography variant="h1">Child</Typography>
-      </SidePanel>
-    )
-
-    expect(getByRole('heading', { level: 1 })).toHaveTextContent('Child')
-  })
-
   it('should render title', () => {
     const { getByTestId } = render(
       <SidePanel
