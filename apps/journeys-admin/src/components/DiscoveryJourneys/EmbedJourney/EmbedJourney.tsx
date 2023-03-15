@@ -3,20 +3,57 @@ import Box from '@mui/material/Box'
 import { ReactElement } from 'react'
 
 interface Props {
-  slug: string
+  slug: 'admin-left' | 'admin-right' | 'admin-center'
 }
 
 export function EmbedJourney({ slug }: Props): ReactElement {
+  const width = {
+    xs: '270%',
+    sm: '180%',
+    md: '133%'
+  }
+
+  const scale = {
+    xs: 'scale(0.4)',
+    sm: 'scale(0.6)',
+    md: 'scale(0.8)'
+  }
+
+  const top = {
+    xs: -8,
+    sm: 0
+  }
+
+  // marginLeft and left is set to values for "admin-left" by default
+  let marginLeft = '0px'
+  let left = {
+    xs: -8,
+    sm: -32
+  }
+
+  switch (slug) {
+    case 'admin-right':
+      left = {
+        xs: 8,
+        sm: 32
+      }
+      marginLeft = `-28px`
+      break
+    case 'admin-center':
+      left = {
+        xs: 0,
+        sm: 0
+      }
+      marginLeft = `-12px`
+      break
+  }
+
   const StyledIframe = styled('iframe')(({ theme }) => ({}))
   return (
     <Box
       aria-label={`${slug}-embedded`}
       sx={{
-        transform: {
-          xs: 'scale(0.4)',
-          sm: 'scale(0.6)',
-          md: 'scale(0.8)'
-        },
+        transform: scale,
         transformOrigin: 'top left',
         position: 'relative',
         width: '33%',
@@ -25,11 +62,7 @@ export function EmbedJourney({ slug }: Props): ReactElement {
     >
       <Box
         sx={{
-          width: {
-            xs: '252%',
-            sm: '168%',
-            md: '125%'
-          }
+          width
         }}
       >
         <Box
@@ -37,6 +70,7 @@ export function EmbedJourney({ slug }: Props): ReactElement {
             position: 'relative',
             width: '100%',
             overflow: 'hidden',
+            ml: marginLeft,
             pt: '150%',
             pl: '94%'
           }}
@@ -46,12 +80,8 @@ export function EmbedJourney({ slug }: Props): ReactElement {
             src={`https://your.nextstep.is/embed/${slug}`}
             sx={{
               position: 'absolute',
-              top: 0,
-              left: {
-                xs: 0,
-                sm:
-                  slug === 'admin-left' ? -32 : slug === 'admin-right' ? 32 : 0
-              },
+              top,
+              left,
               bottom: 0,
               right: 0,
               width: '100%',

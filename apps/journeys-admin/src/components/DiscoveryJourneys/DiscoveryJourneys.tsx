@@ -8,7 +8,7 @@ export function DiscoveryJourneys(): ReactElement {
       direction="row"
       sx={{
         justifyContent: 'space-between',
-        pt: '15px'
+        pt: { xs: 0, sm: '15px' }
       }}
     >
       <EmbedJourney slug="admin-left" />
