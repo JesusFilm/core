@@ -48,12 +48,7 @@ export function NavigationCard({
         }}
       >
         {loading ? (
-          <Skeleton
-            variant="rectangular"
-            width={87}
-            height={132}
-            sx={{ m: 1, borderRadius: 1 }}
-          />
+          <Skeleton variant="rectangular" width={87} height={132} />
         ) : (
           <CardActionArea
             data-testid="navigation-card-button"
@@ -71,7 +66,9 @@ export function NavigationCard({
             >
               {header}
             </Box>
-            <Typography variant="body2">{title}</Typography>
+            <Typography variant="body2" px={2}>
+              {title}
+            </Typography>
           </CardActionArea>
         )}
       </Card>

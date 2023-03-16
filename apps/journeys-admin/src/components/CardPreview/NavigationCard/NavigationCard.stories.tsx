@@ -44,7 +44,8 @@ WithImage.args = {
   )
 }
 
-export const Loading = Template.bind({
+export const Loading = Template.bind({})
+Loading.args = {
   loading: true
-})
+}
 export default NavigationCardStory as Meta
