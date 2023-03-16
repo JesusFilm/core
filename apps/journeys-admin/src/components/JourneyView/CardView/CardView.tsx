@@ -31,18 +31,17 @@ export function CardView({
     if (step != null) {
       location += `?stepId=${step.id}`
     }
-    if (journey?.template !== true) {
-      void router.push(`/journeys/${location}`, undefined, {
-        shallow: true
-      })
-    }
     if (view != null) {
       void router.push(`/journeys/${location}?view=${view}`, undefined, {
         shallow: true
       })
+      return
     }
-
-    if (journey?.template === true && isPublisher === true) {
+    if (journey?.template !== true) {
+      void router.push(`/journeys/${location}`, undefined, {
+        shallow: true
+      })
+    } else if (journey.template && isPublisher === true) {
       void router.push(`/publisher/${location}`, undefined, {
         shallow: true
       })
