@@ -29,8 +29,7 @@ export function SocialPreviewPost({
                   height: 0,
                   border: '8px solid #C2C2C2'
                 }}
-              ></Box>
-              <div></div>
+              />
             </Stack>
           </CardHeader>
           <CardMedia sx={{ px: '8px' }}>
