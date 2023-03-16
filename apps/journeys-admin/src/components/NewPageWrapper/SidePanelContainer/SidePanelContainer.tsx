@@ -14,7 +14,8 @@ export function SidePanelContainer({
     if (border) {
       return {
         borderBottom: { sm: '1px solid' },
-        borderColor: { sm: 'divider' }
+        borderColor: { sm: 'divider' },
+        pb: 4
       }
     }
     return {}
@@ -26,7 +27,7 @@ export function SidePanelContainer({
         ...borderProps,
         backgroundColor: 'background.paper',
         px: 6,
-        py: 4
+        pt: 4
       }}
     >
       {children}
