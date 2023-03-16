@@ -200,6 +200,7 @@ export function CardPreview({
             />
           )
         }
+        loading={journey == null}
       />
       {steps != null ? (
         isDraggable === true ? (
