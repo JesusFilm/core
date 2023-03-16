@@ -50,6 +50,8 @@ export function ActionsList({ actions }: ActionsListProps): ReactElement {
       title: 'Goal Details',
       children: <ActionDetails url={actions[0]?.url} />
     })
+    console.log(actions)
+    console.log('I was ran')
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 

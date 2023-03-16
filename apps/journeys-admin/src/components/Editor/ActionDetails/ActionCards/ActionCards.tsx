@@ -22,8 +22,6 @@ export function ActionCards({ url }: ActionCardsProps): ReactElement {
   const { journey } = useJourney()
   const { rtl } = getJourneyRTL(journey)
 
-  console.log(journey?.blocks)
-
   const hasAction = (block: TreeBlock): boolean => {
     if (((block as ButtonBlock).action as LinkAction)?.url === url) return true
     if (block.children.length === 0) return false

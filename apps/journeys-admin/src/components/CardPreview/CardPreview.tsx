@@ -14,6 +14,8 @@ import {
   ActiveJourneyEditContent,
   useEditor
 } from '@core/journeys/ui/EditorProvider'
+import Card from '@mui/material/Card'
+import CardActionArea from '@mui/material/CardActionArea'
 import { StepsOrderUpdate } from '../../../__generated__/StepsOrderUpdate'
 import { StepAndCardBlockCreate } from '../../../__generated__/StepAndCardBlockCreate'
 import { GetJourney_journey_blocks_StepBlock as StepBlock } from '../../../__generated__/GetJourney'
@@ -67,7 +69,7 @@ export function CardPreview({
   showAddButton,
   isDraggable
 }: CardPreviewProps): ReactElement {
-  const { dispatch } = useEditor()
+  const { state } = useEditor()
   const [isDragging, setIsDragging] = useState(false)
   const [stepAndCardBlockCreate] = useMutation<StepAndCardBlockCreate>(
     STEP_AND_CARD_BLOCK_CREATE
@@ -180,18 +182,35 @@ export function CardPreview({
 
   return (
     <Stack direction="row">
-      <Box>
-        <button
-          onClick={() => {
-            dispatch({
-              type: 'SetJourneyEditContentAction',
-              component: ActiveJourneyEditContent.Action
-            })
+      <Card
+        id="CardPreviewAddButton"
+        variant="outlined"
+        sx={{
+          display: 'flex',
+          width: 87,
+          height: 132,
+          m: 1,
+          mt: '24px',
+          border: '3px solid transparent',
+          borderRadius: 2,
+          outline: (theme) =>
+            state.journeyEditContentComponent ===
+            ActiveJourneyEditContent.Action
+              ? `2px solid ${theme.palette.primary.main} `
+              : '2px solid transparent'
+        }}
+      >
+        <CardActionArea
+          sx={{
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center'
           }}
+          onClick={() => onSelect?.({ view: ActiveJourneyEditContent.Action })}
         >
-          <span>Action</span>
-        </button>
-      </Box>
+          Goals
+        </CardActionArea>
+      </Card>
       {steps != null ? (
         isDraggable === true ? (
           <DragDropContext

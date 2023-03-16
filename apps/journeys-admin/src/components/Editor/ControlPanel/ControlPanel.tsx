@@ -34,10 +34,15 @@ export function ControlPanel(): ReactElement {
     dispatch({ type: 'SetActiveTabAction', activeTab: newValue })
   }
 
-  const handleSelectStepPreview = ({ step }: OnSelectProps): void => {
+  const handleSelectStepPreview = ({ step, view }: OnSelectProps): void => {
     if (step != null) {
       dispatch({ type: 'SetSelectedStepAction', step })
       dispatch({ type: 'SetActiveFabAction', activeFab: ActiveFab.Add })
+    } else if (view != null) {
+      dispatch({
+        type: 'SetJourneyEditContentAction',
+        component: ActiveJourneyEditContent.Action
+      })
     }
   }
 
