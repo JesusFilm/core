@@ -9,7 +9,7 @@ import {
   GetJourney_journey_blocks_VideoBlock as VideoBlock
 } from '../../../../../../../__generated__/GetJourney'
 import { NavigateToBlockActionUpdate } from '../../../../../../../__generated__/NavigateToBlockActionUpdate'
-import { OnSelectProps } from '../../../../../CardPreview/CardPreview'
+import { OnSelectProps } from '../../../../../CardPreview/OnSelectProps'
 
 export const NAVIGATE_TO_BLOCK_ACTION_UPDATE = gql`
   mutation NavigateToBlockActionUpdate(

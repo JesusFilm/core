@@ -10,7 +10,7 @@ import {
 } from '@core/journeys/ui/EditorProvider'
 import { TabPanel, tabA11yProps } from '@core/shared/ui/TabPanel'
 import { CardPreview } from '../../CardPreview'
-import { OnSelectProps } from '../../CardPreview/CardPreview'
+import { OnSelectProps } from '../../CardPreview/OnSelectProps'
 import { Attributes } from './Attributes'
 import { BlocksTab } from './BlocksTab'
 import { Fab } from './Fab'

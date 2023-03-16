@@ -14,17 +14,14 @@ import {
   useEditor
 } from '@core/journeys/ui/EditorProvider'
 import { DragDropContext, Droppable } from 'react-beautiful-dnd'
-import Card from '@mui/material/Card'
-import CardActionArea from '@mui/material/CardActionArea'
+import Image from 'next/image'
+import ThumbUpOffAltIcon from '@mui/icons-material/ThumbUpOffAlt'
 import { StepsOrderUpdate } from '../../../__generated__/StepsOrderUpdate'
 import { StepAndCardBlockCreate } from '../../../__generated__/StepAndCardBlockCreate'
 import { GetJourney_journey_blocks_StepBlock as StepBlock } from '../../../__generated__/GetJourney'
 import { CardList } from './CardList'
-
-export interface OnSelectProps {
-  step?: TreeBlock<StepBlock>
-  view?: ActiveJourneyEditContent
-}
+import { OnSelectProps } from './OnSelectProps'
+import { NavigationCard } from './NavigationCard/NavigationCard'
 
 export interface CardPreviewProps {
   onSelect?: ({ step, view }: OnSelectProps) => void
@@ -181,39 +178,28 @@ export function CardPreview({
   )
 
   return (
-    <Stack direction="row">
-      <Card
-        id="CardPreviewAddButton"
-        variant="outlined"
-        sx={{
-          display: 'flex',
-          width: 87,
-          height: 132,
-          m: 1,
-          mt: '24px',
-          border: '3px solid transparent',
-          borderRadius: 2,
-          outline: (theme) =>
-            state.journeyEditContentComponent ===
-            ActiveJourneyEditContent.SocialPreview
-              ? `2px solid ${theme.palette.primary.main} `
-              : '2px solid transparent'
-        }}
-      >
-        <CardActionArea
-          sx={{
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center'
-          }}
-          onClick={() =>
-            onSelect?.({ view: ActiveJourneyEditContent.SocialPreview })
-          }
-        >
-          Social
-        </CardActionArea>
-      </Card>
-
+    <Stack direction="row" sx={{ ml: 2 }}>
+      <NavigationCard
+        title="Social Media"
+        onSelect={onSelect}
+        destination={ActiveJourneyEditContent.SocialPreview}
+        outlined={
+          state.journeyEditContentComponent ===
+          ActiveJourneyEditContent.SocialPreview
+        }
+        header={
+          journey?.primaryImageBlock?.src == null ? (
+            <ThumbUpOffAltIcon />
+          ) : (
+            <Image
+              src={journey?.primaryImageBlock?.src}
+              alt={journey?.primaryImageBlock?.src}
+              width={72}
+              height={72}
+            />
+          )
+        }
+      />
       {steps != null ? (
         isDraggable === true ? (
           <DragDropContext
