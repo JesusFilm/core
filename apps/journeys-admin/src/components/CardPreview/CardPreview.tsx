@@ -21,7 +21,8 @@ import { StepAndCardBlockCreate } from '../../../__generated__/StepAndCardBlockC
 import { GetJourney_journey_blocks_StepBlock as StepBlock } from '../../../__generated__/GetJourney'
 import { CardList } from './CardList'
 import { OnSelectProps } from './OnSelectProps'
-import { NavigationCard } from './NavigationCard/NavigationCard'
+
+import { NavigationCard } from './NavigationCard'
 
 export interface CardPreviewProps {
   onSelect?: ({ step, view }: OnSelectProps) => void

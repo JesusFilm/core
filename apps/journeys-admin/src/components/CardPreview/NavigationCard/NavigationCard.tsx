@@ -2,29 +2,32 @@ import { ReactElement } from 'react'
 import Card from '@mui/material/Card'
 import CardActionArea from '@mui/material/CardActionArea'
 import { ActiveJourneyEditContent } from '@core/journeys/ui/EditorProvider'
-import CardMedia from '@mui/material/CardMedia'
 import Typography from '@mui/material/Typography'
 import Box from '@mui/material/Box'
+import Skeleton from '@mui/material/Skeleton'
 
 import { OnSelectProps } from '../OnSelectProps'
 
 interface NavigationCardProps {
   title: string
   destination: ActiveJourneyEditContent
-  outlined: boolean
-  header: ReactElement
+  outlined?: boolean
+  header?: ReactElement
   onSelect?: ({ step, view }: OnSelectProps) => void
+  loading?: boolean
 }
 
 export function NavigationCard({
   title,
   destination,
-  outlined,
+  outlined = false,
   onSelect,
-  header
+  header,
+  loading = false
 }: NavigationCardProps): ReactElement {
   return (
     <Box
+      data-testid="navigation-card-container"
       sx={{
         mt: '24px',
         height: '140px',
@@ -37,7 +40,6 @@ export function NavigationCard({
       }}
     >
       <Card
-        id="CardPreviewAddButton"
         variant="outlined"
         sx={{
           width: 87,
@@ -46,23 +48,33 @@ export function NavigationCard({
           border: '3x solid transparent'
         }}
       >
-        <CardActionArea
-          sx={{
-            textAlign: 'center'
-          }}
-          onClick={() => onSelect?.({ view: destination })}
-        >
-          <Box
-            display="flex"
-            width="100%"
-            height="80px"
-            justifyContent="center"
-            alignItems="center"
+        {loading ? (
+          <Skeleton
+            variant="rectangular"
+            width={87}
+            height={132}
+            sx={{ m: 1, borderRadius: 1 }}
+          />
+        ) : (
+          <CardActionArea
+            data-testid="navigation-card-button"
+            sx={{
+              textAlign: 'center'
+            }}
+            onClick={() => onSelect?.({ view: destination })}
           >
-            {header}
-          </Box>
-          <Typography variant="body2">{title}</Typography>
-        </CardActionArea>
+            <Box
+              display="flex"
+              width="100%"
+              height="80px"
+              justifyContent="center"
+              alignItems="center"
+            >
+              {header}
+            </Box>
+            <Typography variant="body2">{title}</Typography>
+          </CardActionArea>
+        )}
       </Card>
     </Box>
   )
