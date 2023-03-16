@@ -5,19 +5,25 @@ import { ReactElement, SyntheticEvent } from 'react'
 import {
   useEditor,
   ActiveTab,
-  ActiveFab
+  ActiveFab,
+  ActiveJourneyEditContent
 } from '@core/journeys/ui/EditorProvider'
-import type { TreeBlock } from '@core/journeys/ui/block'
 import { TabPanel, tabA11yProps } from '@core/shared/ui/TabPanel'
-import { GetJourney_journey_blocks_StepBlock as StepBlock } from '../../../../__generated__/GetJourney'
 import { CardPreview } from '../../CardPreview'
+import { OnSelectProps } from '../../CardPreview/CardPreview'
 import { Attributes } from './Attributes'
 import { BlocksTab } from './BlocksTab'
 import { Fab } from './Fab'
 
 export function ControlPanel(): ReactElement {
   const {
-    state: { steps, selectedBlock, selectedStep, activeTab },
+    state: {
+      steps,
+      selectedBlock,
+      selectedStep,
+      activeTab,
+      journeyEditContentComponent
+    },
     dispatch
   } = useEditor()
 
@@ -28,9 +34,16 @@ export function ControlPanel(): ReactElement {
     dispatch({ type: 'SetActiveTabAction', activeTab: newValue })
   }
 
-  const handleSelectStepPreview = (step: TreeBlock<StepBlock>): void => {
-    dispatch({ type: 'SetSelectedStepAction', step })
-    dispatch({ type: 'SetActiveFabAction', activeFab: ActiveFab.Add })
+  const handleSelectStepPreview = ({ step, view }: OnSelectProps): void => {
+    if (step != null) {
+      dispatch({ type: 'SetSelectedStepAction', step })
+      dispatch({ type: 'SetActiveFabAction', activeFab: ActiveFab.Add })
+    } else if (view != null) {
+      dispatch({
+        type: 'SetJourneyEditContentAction',
+        component: ActiveJourneyEditContent.Action
+      })
+    }
   }
 
   const handleAddFabClick = (): void => {
@@ -41,7 +54,10 @@ export function ControlPanel(): ReactElement {
     <Box sx={{ width: '100%', position: 'relative' }}>
       <Box sx={{ position: 'absolute', top: '-64px', right: 20, zIndex: 1 }}>
         <Fab
-          visible={activeTab !== ActiveTab.Blocks}
+          visible={
+            activeTab !== ActiveTab.Blocks &&
+            journeyEditContentComponent === ActiveJourneyEditContent.Canvas
+          }
           onAddClick={handleAddFabClick}
           disabled={steps == null}
         />

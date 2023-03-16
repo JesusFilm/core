@@ -90,7 +90,7 @@ describe('CardPreview', () => {
       </MockedProvider>
     )
     fireEvent.click(getByTestId('preview-step.id'))
-    expect(onSelect).toHaveBeenCalledWith(step)
+    expect(onSelect).toHaveBeenCalledWith({ step })
   })
 
   it('should create step and card when add button is clicked', async () => {
@@ -117,26 +117,28 @@ describe('CardPreview', () => {
     fireEvent.click(getByTestId('AddIcon'))
     await waitFor(() =>
       expect(onSelect).toHaveBeenCalledWith({
-        __typename: 'StepBlock',
-        children: [
-          {
-            __typename: 'CardBlock',
-            backgroundColor: null,
-            children: [],
-            coverBlockId: null,
-            fullscreen: false,
-            id: 'cardId',
-            parentBlockId: 'stepId',
-            parentOrder: 0,
-            themeMode: null,
-            themeName: null
-          }
-        ],
-        id: 'stepId',
-        locked: false,
-        nextBlockId: null,
-        parentBlockId: null,
-        parentOrder: 0
+        step: {
+          __typename: 'StepBlock',
+          children: [
+            {
+              __typename: 'CardBlock',
+              backgroundColor: null,
+              children: [],
+              coverBlockId: null,
+              fullscreen: false,
+              id: 'cardId',
+              parentBlockId: 'stepId',
+              parentOrder: 0,
+              themeMode: null,
+              themeName: null
+            }
+          ],
+          id: 'stepId',
+          locked: false,
+          nextBlockId: null,
+          parentBlockId: null,
+          parentOrder: 0
+        }
       })
     )
   })
