@@ -10,16 +10,11 @@ import Stack from '@mui/material/Stack'
 import { v4 as uuidv4 } from 'uuid'
 import { useMutation, gql } from '@apollo/client'
 import { DragDropContext, Droppable } from 'react-beautiful-dnd'
-import { ActiveJourneyEditContent } from '@core/journeys/ui/EditorProvider'
 import { StepsOrderUpdate } from '../../../__generated__/StepsOrderUpdate'
 import { StepAndCardBlockCreate } from '../../../__generated__/StepAndCardBlockCreate'
 import { GetJourney_journey_blocks_StepBlock as StepBlock } from '../../../__generated__/GetJourney'
 import { CardList } from './CardList'
-
-export interface OnSelectProps {
-  step?: TreeBlock<StepBlock>
-  view?: ActiveJourneyEditContent
-}
+import { OnSelectProps } from './OnSelectProps'
 
 export interface CardPreviewProps {
   onSelect?: ({ step, view }: OnSelectProps) => void
