@@ -21,7 +21,7 @@ export function SidePanel({
       component="section"
       sx={{
         height: '100%',
-        minWidth: { xs: '100%', sm: '327px' },
+        minWidth: { xs: '100%', sm: styles.sidePanel.width },
         backgroundColor: 'background.paper',
         borderLeft: { sm: '1px solid' },
         borderColor: { sm: 'divider' }
@@ -52,7 +52,10 @@ export function SidePanel({
         sx={{
           overflow: 'none',
           overflowY: { sm: 'auto' },
-          pb: { xs: `${styles.bottomPanel.height - 5}px`, sm: 0 }
+          pb:
+            styles.bottomPanel.height !== '0px'
+              ? { xs: `calc(${styles.bottomPanel.height} - 5px)`, sm: 0 }
+              : 0
         }}
       >
         {children}

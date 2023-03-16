@@ -26,8 +26,10 @@ interface PageWrapperProps {
 }
 
 export interface PageWrapperStyles {
+  navbar: { width: string }
   toolbar: { variant: 'dense' | 'regular'; height: number }
-  bottomPanel: { height: number }
+  sidePanel: { width: string }
+  bottomPanel: { height: string }
 }
 
 export function PageWrapper({
@@ -46,6 +48,7 @@ export function PageWrapper({
   const viewportHeight = use100vh()
   const styles: PageWrapperStyles = useMemo(() => {
     return {
+      navbar: { width: '72px' },
       toolbar: {
         variant: 'dense',
         // Height of the dense toolbar variant
@@ -55,9 +58,10 @@ export function PageWrapper({
                 .maxHeight as number)
             : 12
       },
-      bottomPanel: { height: 300 }
+      sidePanel: { width: sidePanelChildren != null ? '327px' : '0px' },
+      bottomPanel: { height: bottomPanelChildren != null ? '300px' : '0px' }
     }
-  }, [theme])
+  }, [theme, sidePanelChildren, bottomPanelChildren])
 
   return (
     <Box
@@ -74,16 +78,30 @@ export function PageWrapper({
           direction={{ xs: 'column', sm: 'row' }}
           sx={{
             backgroundColor: 'background.default',
-            width: { xs: '100vw', sm: 'calc(100vw - 72px)' },
+            width: { xs: '100vw', sm: `calc(100vw - ${styles.navbar.width})` },
             pt: { xs: `${styles.toolbar.height}px`, sm: 0 },
-            pb: { xs: bottomPanelChildren != null ? '300px' : 0, sm: 0 }
+            pb: {
+              xs: bottomPanelChildren != null ? styles.bottomPanel.height : 0,
+              sm: 0
+            }
           }}
         >
           {showAppHeader && (
             <AppHeader styles={styles} onClick={() => setOpen(!open)} />
           )}
 
-          <Stack component="main" sx={{ width: 'inherit' }}>
+          <Stack
+            component="main"
+            sx={{
+              width: {
+                xs: 'inherit',
+                sm:
+                  sidePanelChildren != null
+                    ? `calc(100vw - ${styles.navbar.width} - ${styles.sidePanel.width})`
+                    : 'inherit'
+              }
+            }}
+          >
             <MainPanelHeader
               title={title}
               styles={styles}

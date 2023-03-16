@@ -41,7 +41,7 @@ export function MainPanelBody({
         <Stack
           data-testid="bottom-panel"
           sx={{
-            height: `${styles.bottomPanel.height}px`,
+            height: styles.bottomPanel.height,
             position: { xs: 'fixed', sm: 'unset' },
             bottom: 0,
             right: 0,
