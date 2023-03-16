@@ -16,6 +16,7 @@ import {
 import { JourneyCard } from '../JourneyCard'
 import { SortOrder } from '../JourneySort'
 import { sortJourneys } from '../JourneySort/utils/sortJourneys'
+import { DiscoveryJourneys } from '../../DiscoveryJourneys'
 
 export const GET_TRASHED_JOURNEYS = gql`
   query GetTrashedJourneys {
@@ -241,6 +242,7 @@ export function TrashedJourneyList({
               </Card>
             </>
           )}
+
           <span>
             <Box width="100%" sx={{ textAlign: 'center' }}>
               <Typography variant="caption">
@@ -248,6 +250,7 @@ export function TrashedJourneyList({
               </Typography>
             </Box>
           </span>
+          <DiscoveryJourneys />
         </>
       ) : (
         <>
