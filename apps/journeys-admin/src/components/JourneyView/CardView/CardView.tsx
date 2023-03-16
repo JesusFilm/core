@@ -36,14 +36,13 @@ export function CardView({
       void router.push(`/journeys/${location}`, undefined, {
         shallow: true
       })
+      return
     }
     if (view != null) {
       void router.push(`/journeys/${location}?view=${view}`, undefined, {
         shallow: true
       })
-    }
-
-    if (journey?.template === true && isPublisher === true) {
+    } else if (journey.template && isPublisher === true) {
       void router.push(`/publisher/${location}`, undefined, {
         shallow: true
       })
