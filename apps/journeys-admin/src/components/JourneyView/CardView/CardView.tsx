@@ -7,8 +7,7 @@ import { useBreakpoints } from '@core/shared/ui/useBreakpoints'
 import { useRouter } from 'next/router'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { BlockFields_StepBlock as StepBlock } from '../../../../__generated__/BlockFields'
-import { CardPreview } from '../../CardPreview'
-import { OnSelectProps } from '../../CardPreview/CardPreview'
+import { CardPreview, OnSelectProps } from '../../CardPreview'
 
 export interface CardViewProps {
   id?: string
