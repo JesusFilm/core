@@ -26,6 +26,14 @@ describe('ActionsList', () => {
     {
       url: 'https://www.google.com/',
       count: 2
+    },
+    {
+      url: 'https://www.biblegateway.com/versions/',
+      count: 1
+    },
+    {
+      url: 'https://www.messenger.com/t/',
+      count: 1
     }
   ]
 
@@ -47,14 +55,20 @@ describe('ActionsList', () => {
 
   it('should render a list of actions', () => {
     const { getByText } = render(<ActionsList actions={actions} />)
-    expect(getByText('https://www.google.com/')).toBeInTheDocument()
     expect(getByText('Visit a website')).toBeInTheDocument()
+    expect(getByText('https://www.google.com/')).toBeInTheDocument()
     expect(getByText(2)).toBeInTheDocument()
+    expect(getByText('Link to bible')).toBeInTheDocument()
+    expect(
+      getByText('https://www.biblegateway.com/versions/')
+    ).toBeInTheDocument()
+    expect(getByText('Start a conversation')).toBeInTheDocument()
+    expect(getByText('https://www.messenger.com/t/')).toBeInTheDocument()
   })
 
   it('should dispatch on click', () => {
-    const { getByTestId } = render(<ActionsList actions={actions} />)
-    fireEvent.click(getByTestId('EditRoundedIcon'))
+    const { getAllByTestId } = render(<ActionsList actions={actions} />)
+    fireEvent.click(getAllByTestId('EditRoundedIcon')[0])
     expect(dispatch).toHaveBeenCalledWith({
       type: 'SetDrawerPropsAction',
       mobileOpen: true,

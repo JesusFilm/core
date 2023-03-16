@@ -24,7 +24,8 @@ export function ActionsList({ actions }: ActionsListProps): ReactElement {
 
   const goalLabel = (url: string): string => {
     const urlObject = new URL(url)
-    switch (urlObject.hostname.replace('www.', '')) {
+    const hostname = urlObject.hostname.replace('www.', '') // Remove 'www.' and top-level domain suffixes
+    switch (hostname) {
       case 'm.me':
       case 'messenger.com':
       case 't.me':
@@ -38,6 +39,22 @@ export function ActionsList({ actions }: ActionsListProps): ReactElement {
       case 'line.me':
       case 'vk.com':
         return 'Start a conversation'
+      case 'bible.com':
+      case 'wordproject.org':
+      case 'biblegateway.com':
+      case 'worldbibles.org':
+      case 'biblestudytools.com':
+      case 'biblehub.com':
+      case 'biblia.com':
+      case 'blueletterbible.org':
+      case 'bible-ru.org':
+      case 'bibleonline.ru':
+      case 'bible.by':
+      case 'bible-facts.org':
+      case 'copticchurch.net':
+      case 'ebible.org':
+      case 'arabicbible.com':
+        return 'Link to bible'
       default:
         return 'Visit a website'
     }
@@ -50,8 +67,6 @@ export function ActionsList({ actions }: ActionsListProps): ReactElement {
       title: 'Goal Details',
       children: <ActionDetails url={actions[0]?.url} />
     })
-    console.log(actions)
-    console.log('I was ran')
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
