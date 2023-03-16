@@ -15,8 +15,6 @@ import {
   ActiveJourneyEditContent,
   useEditor
 } from '@core/journeys/ui/EditorProvider'
-import Card from '@mui/material/Card'
-import CardActionArea from '@mui/material/CardActionArea'
 import { StepsOrderUpdate } from '../../../__generated__/StepsOrderUpdate'
 import { StepAndCardBlockCreate } from '../../../__generated__/StepAndCardBlockCreate'
 import { GetJourney_journey_blocks_StepBlock as StepBlock } from '../../../__generated__/GetJourney'
