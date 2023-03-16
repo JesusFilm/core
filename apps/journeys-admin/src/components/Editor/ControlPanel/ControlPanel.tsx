@@ -100,6 +100,7 @@ export function ControlPanel(): ReactElement {
           steps={steps}
           showAddButton
           isDraggable
+          showActionButton
         />
       </TabPanel>
       <TabPanel name="control-panel" value={activeTab} index={1}>

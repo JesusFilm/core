@@ -10,17 +10,29 @@ export function ActionsBanner({
 }: ActionsBannerProps): ReactElement {
   return (
     <>
-      <Typography variant="h4">Every Journey should have a goal</Typography>
       {hasActions ? (
-        <Typography variant="body1">
-          Here you can see the list of goals for this journey
+        <Typography variant="subtitle1" gutterBottom>
+          A list of goals for this journey
         </Typography>
       ) : (
         <>
-          <Typography>Your Journey doesnt have actions yet</Typography>
-          <Typography>To add them:</Typography>
-          <Typography>Add a button/poll to your card</Typography>
-          <Typography>Choose an action for it</Typography>
+          <Typography variant="h3" gutterBottom>
+            Define a Goal for Your Journey
+          </Typography>
+          <Typography variant="body1" gutterBottom>
+            Your journey currently has no actions. Start adding them and
+            achieving your goals. Follow these steps:{' '}
+          </Typography>
+          <Typography variant="body1">
+            Clid the &quot;Add&quot; button or poll in your card
+          </Typography>
+          <Typography variant="body1">
+            Choose an action that align with your goals
+          </Typography>
+          <Typography variant="body1">
+            Start editin your journey and making progress towards your
+            objective!
+          </Typography>
         </>
       )}
     </>

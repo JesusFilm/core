@@ -32,6 +32,7 @@ export interface CardPreviewProps {
   steps?: Array<TreeBlock<StepBlock>>
   showAddButton?: boolean
   isDraggable?: boolean
+  showActionButton?: boolean
 }
 
 export const STEP_AND_CARD_BLOCK_CREATE = gql`
@@ -67,7 +68,8 @@ export function CardPreview({
   selected,
   onSelect,
   showAddButton,
-  isDraggable
+  isDraggable,
+  showActionButton
 }: CardPreviewProps): ReactElement {
   const { state } = useEditor()
   const [isDragging, setIsDragging] = useState(false)
@@ -182,35 +184,39 @@ export function CardPreview({
 
   return (
     <Stack direction="row">
-      <Card
-        id="CardPreviewAddButton"
-        variant="outlined"
-        sx={{
-          display: 'flex',
-          width: 87,
-          height: 132,
-          m: 1,
-          mt: '24px',
-          border: '3px solid transparent',
-          borderRadius: 2,
-          outline: (theme) =>
-            state.journeyEditContentComponent ===
-            ActiveJourneyEditContent.Action
-              ? `2px solid ${theme.palette.primary.main} `
-              : '2px solid transparent'
-        }}
-      >
-        <CardActionArea
+      {showActionButton != null && (
+        <Card
+          id="CardPreviewAddButton"
+          variant="outlined"
           sx={{
             display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center'
+            width: 87,
+            height: 132,
+            m: 1,
+            mt: '24px',
+            border: '3px solid transparent',
+            borderRadius: 2,
+            outline: (theme) =>
+              state.journeyEditContentComponent ===
+              ActiveJourneyEditContent.Action
+                ? `2px solid ${theme.palette.primary.main} `
+                : '2px solid transparent'
           }}
-          onClick={() => onSelect?.({ view: ActiveJourneyEditContent.Action })}
         >
-          Goals
-        </CardActionArea>
-      </Card>
+          <CardActionArea
+            sx={{
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center'
+            }}
+            onClick={() =>
+              onSelect?.({ view: ActiveJourneyEditContent.Action })
+            }
+          >
+            Goals
+          </CardActionArea>
+        </Card>
+      )}
       {steps != null ? (
         isDraggable === true ? (
           <DragDropContext

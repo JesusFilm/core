@@ -71,7 +71,7 @@ export function ActionsList({ actions }: ActionsListProps): ReactElement {
   }, [])
 
   return (
-    <TableContainer component={Paper} sx={{ width: '95%' }}>
+    <TableContainer component={Paper}>
       <Table>
         <TableHead
           sx={{
@@ -79,8 +79,12 @@ export function ActionsList({ actions }: ActionsListProps): ReactElement {
           }}
         >
           <TableRow>
-            <TableCell>Target and Action</TableCell>
-            <TableCell>Appears on</TableCell>
+            <TableCell>
+              <Typography variant="subtitle2">Target and Action</Typography>
+            </TableCell>
+            <TableCell>
+              <Typography variant="subtitle2">Appears on</Typography>
+            </TableCell>
           </TableRow>
         </TableHead>
         <TableBody>

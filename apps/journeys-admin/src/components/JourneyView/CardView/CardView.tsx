@@ -65,6 +65,7 @@ export function CardView({
         steps={blocks}
         showAddButton={journey?.template !== true || isPublisher}
         isDraggable={false}
+        showActionButton
       />
       <Box sx={{ pt: 2, display: 'flex', justifyContent: 'center' }}>
         <Typography variant="body1">
