@@ -197,6 +197,7 @@ export function CardPreview({
               alt={journey?.primaryImageBlock?.src}
               width={72}
               height={72}
+              objectFit="cover"
             />
           )
         }
