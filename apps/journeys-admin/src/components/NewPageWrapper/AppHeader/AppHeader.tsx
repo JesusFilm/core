@@ -7,17 +7,15 @@ import Stack from '@mui/material/Stack'
 import Toolbar from '@mui/material/Toolbar'
 import MenuIcon from '@mui/icons-material/Menu'
 import taskbarIcon from '../../../../public/taskbar-icon.svg'
-import { PageWrapperStyles } from '../PageWrapper'
+import { usePageWrapperStyles } from '../utils/usePageWrapperStyles'
 
 export interface MainBodyContainerProps {
-  styles: PageWrapperStyles
   onClick: () => void
 }
 
-export function AppHeader({
-  styles,
-  onClick
-}: MainBodyContainerProps): ReactElement {
+export function AppHeader({ onClick }: MainBodyContainerProps): ReactElement {
+  const { toolbar } = usePageWrapperStyles()
+
   return (
     <Box id="app-header" sx={{ display: { sm: 'none' } }}>
       <AppBar
@@ -28,7 +26,7 @@ export function AppHeader({
           backgroundColor: 'secondary.dark'
         }}
       >
-        <Toolbar variant={styles.toolbar.variant}>
+        <Toolbar variant={toolbar.variant}>
           <Stack direction="row" flexGrow={1} alignItems="center">
             <IconButton
               size="large"

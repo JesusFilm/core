@@ -4,14 +4,7 @@ import { MainPanelHeader } from '.'
 describe('MainPanelHeader', () => {
   it('should show back button with correct link', () => {
     const { getByRole } = render(
-      <MainPanelHeader
-        title="Page title"
-        backHref="/"
-        styles={{
-          toolbar: { variant: 'dense', height: 12 },
-          bottomPanel: { height: 300 }
-        }}
-      />
+      <MainPanelHeader title="Page title" backHref="/" />
     )
     expect(getByRole('link')).toHaveAttribute('href', '/')
   })

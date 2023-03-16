@@ -5,13 +5,7 @@ import { SidePanel } from '.'
 describe('SidePanel', () => {
   it('should render title', () => {
     const { getByTestId } = render(
-      <SidePanel
-        title="Side Panel Title"
-        styles={{
-          toolbar: { variant: 'dense', height: 12 },
-          bottomPanel: { height: 300 }
-        }}
-      >
+      <SidePanel title="Side Panel Title">
         <Typography variant="h1">Side Panel</Typography>
       </SidePanel>
     )

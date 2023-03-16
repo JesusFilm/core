@@ -3,25 +3,27 @@ import AppBar from '@mui/material/AppBar'
 import Stack from '@mui/material/Stack'
 import Toolbar from '@mui/material/Toolbar'
 import Typography from '@mui/material/Typography'
-import { PageWrapperStyles } from '../PageWrapper'
+import { usePageWrapperStyles } from '../utils/usePageWrapperStyles'
 
 interface SidePanelProps {
   children: ReactNode
-  styles: PageWrapperStyles
   title?: string
+  hasBottomPanel?: boolean
 }
 
 export function SidePanel({
   children,
-  styles,
-  title
+  title,
+  hasBottomPanel = false
 }: SidePanelProps): ReactElement {
+  const { toolbar, sidePanel, bottomPanel } = usePageWrapperStyles()
+
   return (
     <Stack
       component="section"
       sx={{
         height: '100%',
-        minWidth: { xs: '100%', sm: styles.sidePanel.width },
+        minWidth: { xs: '100%', sm: sidePanel.width },
         backgroundColor: 'background.paper',
         borderLeft: { sm: '1px solid' },
         borderColor: { sm: 'divider' }
@@ -36,7 +38,7 @@ export function SidePanel({
           display: { xs: 'none', sm: 'flex' }
         }}
       >
-        <Toolbar variant={styles.toolbar.variant}>
+        <Toolbar variant={toolbar.variant}>
           {title != null && (
             <Typography variant="subtitle1" component="div" noWrap>
               {title}
@@ -52,10 +54,9 @@ export function SidePanel({
         sx={{
           overflow: 'none',
           overflowY: { sm: 'auto' },
-          pb:
-            styles.bottomPanel.height !== '0px'
-              ? { xs: `calc(${styles.bottomPanel.height} - 5px)`, sm: 0 }
-              : 0
+          pb: hasBottomPanel
+            ? { xs: `calc(${bottomPanel.height} - 5px)`, sm: 0 }
+            : 0
         }}
       >
         {children}

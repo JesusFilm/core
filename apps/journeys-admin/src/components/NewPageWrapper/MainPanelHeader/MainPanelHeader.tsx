@@ -6,31 +6,31 @@ import IconButton from '@mui/material/IconButton'
 import Stack from '@mui/material/Stack'
 import Toolbar from '@mui/material/Toolbar'
 import Typography from '@mui/material/Typography'
-import { PageWrapperStyles } from '../PageWrapper'
+import { usePageWrapperStyles } from '../utils/usePageWrapperStyles'
 
 export interface MainBodyContainerProps {
   title: string
-  styles: PageWrapperStyles
   backHref?: string
   menu?: ReactNode
 }
 
 export function MainPanelHeader({
   title,
-  styles,
   backHref,
   menu
 }: MainBodyContainerProps): ReactElement {
+  const { toolbar } = usePageWrapperStyles()
+
   return (
     <>
       <AppBar
         color="default"
         sx={{
           position: { xs: 'fixed', sm: 'sticky' },
-          top: { xs: styles.toolbar.height, sm: 0 }
+          top: { xs: toolbar.height, sm: 0 }
         }}
       >
-        <Toolbar variant={styles.toolbar.variant}>
+        <Toolbar variant={toolbar.variant}>
           <Stack direction="row" flexGrow={1} alignItems="center">
             {backHref != null && (
               <Link href={backHref} passHref>
@@ -57,10 +57,7 @@ export function MainPanelHeader({
         </Toolbar>
       </AppBar>
       {/* Reserves space beneath MainHeader on mobile - allows us to export MainPanel */}
-      <Toolbar
-        variant={styles.toolbar.variant}
-        sx={{ display: { sm: 'none' } }}
-      />
+      <Toolbar variant={toolbar.variant} sx={{ display: { sm: 'none' } }} />
     </>
   )
 }

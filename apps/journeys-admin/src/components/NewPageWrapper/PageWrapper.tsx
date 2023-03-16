@@ -1,6 +1,6 @@
-import { ReactElement, ReactNode, useState, useMemo } from 'react'
+import { ReactElement, ReactNode, useState } from 'react'
 import { use100vh } from 'react-div-100vh'
-import { CSSObject, useTheme } from '@mui/material/styles'
+import { useTheme } from '@mui/material/styles'
 import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
 import { AuthUser } from 'next-firebase-auth'
@@ -9,6 +9,7 @@ import { MainPanelBody } from './MainPanelBody'
 import { MainPanelHeader } from './MainPanelHeader'
 import { AppHeader } from './AppHeader'
 import { SidePanel } from './SidePanel'
+import { usePageWrapperStyles } from './utils/usePageWrapperStyles'
 
 interface PageWrapperProps {
   backHref?: string
@@ -25,13 +26,6 @@ interface PageWrapperProps {
   authUser?: AuthUser
 }
 
-export interface PageWrapperStyles {
-  navbar: { width: string }
-  toolbar: { variant: 'dense' | 'regular'; height: number }
-  sidePanel: { width: string }
-  bottomPanel: { height: string }
-}
-
 export function PageWrapper({
   backHref,
   showAppHeader = true,
@@ -46,22 +40,7 @@ export function PageWrapper({
   const [open, setOpen] = useState<boolean>(false)
   const theme = useTheme()
   const viewportHeight = use100vh()
-  const styles: PageWrapperStyles = useMemo(() => {
-    return {
-      navbar: { width: '72px' },
-      toolbar: {
-        variant: 'dense',
-        // Height of the dense toolbar variant
-        height:
-          theme.components?.MuiToolbar != null
-            ? ((theme.components.MuiToolbar.styleOverrides?.dense as CSSObject)
-                .maxHeight as number)
-            : 12
-      },
-      sidePanel: { width: sidePanelChildren != null ? '327px' : '0px' },
-      bottomPanel: { height: bottomPanelChildren != null ? '300px' : '0px' }
-    }
-  }, [theme, sidePanelChildren, bottomPanelChildren])
+  const { navbar, toolbar, bottomPanel, sidePanel } = usePageWrapperStyles()
 
   return (
     <Box
@@ -78,17 +57,15 @@ export function PageWrapper({
           direction={{ xs: 'column', sm: 'row' }}
           sx={{
             backgroundColor: 'background.default',
-            width: { xs: '100vw', sm: `calc(100vw - ${styles.navbar.width})` },
-            pt: { xs: `${styles.toolbar.height}px`, sm: 0 },
+            width: { xs: '100vw', sm: `calc(100vw - ${navbar.width})` },
+            pt: { xs: `${toolbar.height}px`, sm: 0 },
             pb: {
-              xs: bottomPanelChildren != null ? styles.bottomPanel.height : 0,
+              xs: bottomPanelChildren != null ? bottomPanel.height : 0,
               sm: 0
             }
           }}
         >
-          {showAppHeader && (
-            <AppHeader styles={styles} onClick={() => setOpen(!open)} />
-          )}
+          {showAppHeader && <AppHeader onClick={() => setOpen(!open)} />}
 
           <Stack
             component="main"
@@ -97,26 +74,25 @@ export function PageWrapper({
                 xs: 'inherit',
                 sm:
                   sidePanelChildren != null
-                    ? `calc(100vw - ${styles.navbar.width} - ${styles.sidePanel.width})`
+                    ? `calc(100vw - ${navbar.width} - ${sidePanel.width})`
                     : 'inherit'
               }
             }}
           >
             <MainPanelHeader
               title={title}
-              styles={styles}
               backHref={backHref}
               menu={customMenu}
             />
-            <MainPanelBody
-              bottomPanelChildren={bottomPanelChildren}
-              styles={styles}
-            >
+            <MainPanelBody bottomPanelChildren={bottomPanelChildren}>
               {children}
             </MainPanelBody>
           </Stack>
           {sidePanelChildren != null && (
-            <SidePanel title={sidePanelTitle} styles={styles}>
+            <SidePanel
+              title={sidePanelTitle}
+              hasBottomPanel={bottomPanelChildren != null}
+            >
               {sidePanelChildren}
             </SidePanel>
           )}

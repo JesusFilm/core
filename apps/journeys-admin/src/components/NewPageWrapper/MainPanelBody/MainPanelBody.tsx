@@ -1,18 +1,18 @@
 import { ReactElement, ReactNode } from 'react'
 import Stack from '@mui/material/Stack'
-import { PageWrapperStyles } from '../PageWrapper'
+import { usePageWrapperStyles } from '../utils/usePageWrapperStyles'
 
 export interface MainPanelBodyProps {
   children: ReactNode
-  styles: PageWrapperStyles
   bottomPanelChildren?: ReactNode
 }
 
 export function MainPanelBody({
   children,
-  styles,
   bottomPanelChildren
 }: MainPanelBodyProps): ReactElement {
+  const { bottomPanel } = usePageWrapperStyles()
+
   return (
     <Stack
       flexGrow={1}
@@ -41,7 +41,7 @@ export function MainPanelBody({
         <Stack
           data-testid="bottom-panel"
           sx={{
-            height: styles.bottomPanel.height,
+            height: bottomPanel.height,
             position: { xs: 'fixed', sm: 'unset' },
             bottom: 0,
             right: 0,
