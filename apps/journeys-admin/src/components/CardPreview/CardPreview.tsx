@@ -19,8 +19,13 @@ import { StepAndCardBlockCreate } from '../../../__generated__/StepAndCardBlockC
 import { GetJourney_journey_blocks_StepBlock as StepBlock } from '../../../__generated__/GetJourney'
 import { CardList } from './CardList'
 
+export interface OnSelectProps {
+  step?: TreeBlock<StepBlock>
+  view?: ActiveJourneyEditContent
+}
+
 export interface CardPreviewProps {
-  onSelect?: (step: TreeBlock<StepBlock>) => void
+  onSelect?: ({ step, view }: OnSelectProps) => void
   selected?: TreeBlock<StepBlock>
   steps?: Array<TreeBlock<StepBlock>>
   showAddButton?: boolean
@@ -74,7 +79,7 @@ export function CardPreview({
     if (steps == null) return
 
     const selectedStep = steps.find(({ id }) => id === selectedId)
-    selectedStep != null && onSelect?.(selectedStep)
+    selectedStep != null && onSelect?.({ step: selectedStep })
   }
 
   const handleClick = async (): Promise<void> => {
@@ -118,12 +123,12 @@ export function CardPreview({
       }
     })
     if (data?.stepBlockCreate != null) {
-      onSelect?.(
-        transformer([
+      onSelect?.({
+        step: transformer([
           data.stepBlockCreate,
           data.cardBlockCreate
         ])[0] as TreeBlock<StepBlock>
-      )
+      })
     }
   }
 
