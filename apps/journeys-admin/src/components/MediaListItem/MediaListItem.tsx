@@ -5,7 +5,7 @@ import ListItemText from '@mui/material/ListItemText'
 import ListItemButton from '@mui/material/ListItemButton'
 import { NextImage } from '@core/shared/ui/NextImage'
 import Skeleton from '@mui/material/Skeleton'
-import { useTheme } from '@mui/material/styles'
+import { SxProps, useTheme } from '@mui/material/styles'
 
 interface MediaListItemProps {
   id: string
@@ -30,12 +30,26 @@ export function MediaListItem({
   onClick
 }: MediaListItemProps): ReactElement {
   const theme = useTheme()
-  const twoLineDisplayProps = {
-    display: '-webkit-box',
-    overflow: 'hidden',
-    textOverflow: 'ellipsis',
-    WebkitLineClamp: 2,
-    WebkitBoxOrient: 'vertical'
+  const twoLineDisplayProps = (variant: string): SxProps => {
+    return {
+      mb: 1,
+      position: 'relative',
+      maxHeight: `${
+        +(theme.typography[variant].lineHeight as string).slice(0, -2) * 2
+      }px`,
+      overflow: 'hidden',
+      '::before': {
+        content: "''",
+        textAlign: 'right',
+        position: 'absolute',
+        top: 0,
+        right: 0,
+        width: '30%',
+        mt: theme.typography[variant].lineHeight as string,
+        height: theme.typography[variant].lineHeight as string,
+        background: `linear-gradient(to right, rgba(255, 255, 255, 0), rgba(255, 255, 255, 1) 90%)`
+      }
+    }
   }
 
   return (
@@ -107,7 +121,7 @@ export function MediaListItem({
               <Typography
                 variant="overline"
                 color="secondary.light"
-                sx={{ ...twoLineDisplayProps, mb: 1 }}
+                sx={{ ...twoLineDisplayProps('overline') }}
               >
                 {overline}
               </Typography>
@@ -126,7 +140,10 @@ export function MediaListItem({
                   }}
                 />
               ) : (
-                <Typography variant="subtitle1" sx={{ ...twoLineDisplayProps }}>
+                <Typography
+                  variant="subtitle1"
+                  sx={{ ...twoLineDisplayProps('subtitle1') }}
+                >
                   {title}
                 </Typography>
               )
@@ -142,7 +159,7 @@ export function MediaListItem({
                 <Typography
                   variant="body2"
                   color="secondary.light"
-                  sx={{ ...twoLineDisplayProps }}
+                  sx={{ ...twoLineDisplayProps('body2') }}
                 >
                   {description}
                 </Typography>
