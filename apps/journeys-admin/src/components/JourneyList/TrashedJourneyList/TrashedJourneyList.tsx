@@ -221,6 +221,7 @@ export function TrashedJourneyList({
               />
             </JourneyProvider>
           ))}
+
           {sortedJourneys.length === 0 && (
             <>
               <Card
@@ -243,6 +244,7 @@ export function TrashedJourneyList({
             </>
           )}
 
+          <DiscoveryJourneys />
           <span>
             <Box width="100%" sx={{ textAlign: 'center' }}>
               <Typography variant="caption">
@@ -250,7 +252,6 @@ export function TrashedJourneyList({
               </Typography>
             </Box>
           </span>
-          <DiscoveryJourneys />
         </>
       ) : (
         <>

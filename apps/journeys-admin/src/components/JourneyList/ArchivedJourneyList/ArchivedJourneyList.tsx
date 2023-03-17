@@ -228,6 +228,9 @@ export function ArchivedJourneyList({
                   {t('No archived journeys.')}
                 </Typography>
               </Card>
+
+              <DiscoveryJourneys />
+
               <Box width="100%" sx={{ textAlign: 'center' }}>
                 <Typography variant="caption">
                   {t(
@@ -235,8 +238,6 @@ export function ArchivedJourneyList({
                   )}
                 </Typography>
               </Box>
-
-              <DiscoveryJourneys />
             </>
           )}
         </>

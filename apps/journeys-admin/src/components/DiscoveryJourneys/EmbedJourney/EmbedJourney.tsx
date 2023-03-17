@@ -13,6 +13,12 @@ export function EmbedJourney({ slug }: Props): ReactElement {
     md: '133%'
   }
 
+  const mb = {
+    xs: '52%',
+    sm: '55%',
+    md: '54%'
+  }
+
   const scale = {
     xs: 'scale(0.4)',
     sm: 'scale(0.6)',
@@ -57,7 +63,8 @@ export function EmbedJourney({ slug }: Props): ReactElement {
         transformOrigin: 'top left',
         position: 'relative',
         width: '33%',
-        height: 0
+        height: 0,
+        mb
       }}
     >
       <Box
