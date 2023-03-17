@@ -9,6 +9,7 @@ import type { TreeBlock } from '@core/journeys/ui/block'
 import { StepFields } from '../../../../../../../../../__generated__/StepFields'
 import { StepBlockNextBlockUpdate } from '../../../../../../../../../__generated__/StepBlockNextBlockUpdate'
 import { CardPreview } from '../../../../../../../CardPreview'
+import { OnSelectProps } from '../../../../../../../CardPreview/CardPreview'
 
 export const STEP_BLOCK_NEXT_BLOCK_UPDATE = gql`
   mutation StepBlockNextBlockUpdate(
@@ -43,9 +44,8 @@ export function Cards(): ReactElement {
     nextStep = steps?.find(({ id }) => nextBlockId === id)
   }
 
-  async function handleSelectStep(step: TreeBlock<StepFields>): Promise<void> {
-    if (journey == null) return
-
+  async function handleSelectStep({ step }: OnSelectProps): Promise<void> {
+    if (journey == null || step == null) return
     await stepBlockNextBlockUpdate({
       variables: {
         id,

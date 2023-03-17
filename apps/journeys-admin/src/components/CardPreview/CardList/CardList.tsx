@@ -15,6 +15,7 @@ import {
   DraggableStateSnapshot
 } from 'react-beautiful-dnd'
 import { getJourneyRTL } from '@core/journeys/ui/rtl'
+import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { FramePortal } from '../../FramePortal'
 import { ThemeName, ThemeMode } from '../../../../__generated__/globalTypes'
 import { HorizontalSelect } from '../../HorizontalSelect'
@@ -43,6 +44,7 @@ export function CardList({
   isDragging,
   isDraggable
 }: CardListProps): ReactElement {
+  const { state } = useEditor()
   const AddCardSlide = (): ReactElement => (
     <Card
       id="CardPreviewAddButton"
@@ -72,6 +74,7 @@ export function CardList({
       id={selected?.id}
       isDragging={isDragging}
       footer={showAddButton === true && <AddCardSlide />}
+      view={state.journeyEditContentComponent}
     >
       {droppableProvided != null &&
         steps.map((step, index) => (
