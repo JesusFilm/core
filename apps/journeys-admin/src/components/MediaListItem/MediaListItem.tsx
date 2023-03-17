@@ -35,9 +35,7 @@ export function MediaListItem({
     return {
       mb: 1,
       position: 'relative',
-      maxHeight: `${
-        +(theme.typography[variant].lineHeight as string).slice(0, -2) * 2
-      }px`,
+      maxHeight: `calc(${theme.typography[variant].lineHeight as string} * 2)`,
       overflow: 'hidden',
       '::before': {
         content: "''",

@@ -23,7 +23,7 @@ export const Default = Template.bind({})
 Default.args = {
   id: 'id',
   title: 'This is a Heading',
-  description: 'This is a description  ',
+  description: 'This is a description',
   image:
     'https://d1wl257kev7hsz.cloudfront.net/cinematics/2_AndreasStory-0-0.mobileCinematicHigh.jpg'
 }
@@ -49,7 +49,9 @@ LongContent.args = {
 
 export const EndImage = Template.bind({})
 EndImage.args = {
-  ...Default.args,
+  ...LongContent.args,
+  overline: '',
+  description: 'This is a description',
   imagePosition: 'end'
 }
 
