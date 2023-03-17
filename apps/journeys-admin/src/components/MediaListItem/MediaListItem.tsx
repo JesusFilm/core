@@ -125,7 +125,7 @@ export function MediaListItem({
             )}
           </Stack>
         )}
-        <Stack flexGrow={1}>
+        <Stack flexGrow={1} sx={{ overflow: 'hidden' }}>
           {overline != null &&
             (loading ? (
               <Skeleton
