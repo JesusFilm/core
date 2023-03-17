@@ -30,7 +30,8 @@ export function MediaListItem({
   onClick
 }: MediaListItemProps): ReactElement {
   const theme = useTheme()
-  const twoLineDisplayProps = (variant: string): SxProps => {
+  // TODO: Replace fade with `line-clamp` with ellipsis when line-clamp supported
+  const fadeOverflowText = (variant: string): SxProps => {
     return {
       mb: 1,
       position: 'relative',
@@ -46,14 +47,29 @@ export function MediaListItem({
         right: 0,
         width: '30%',
         mt: theme.typography[variant].lineHeight as string,
-        height: theme.typography[variant].lineHeight as string,
-        background: `linear-gradient(to right, rgba(255, 255, 255, 0), rgba(255, 255, 255, 1) 90%)`
+        background: `linear-gradient(to right, rgba(255, 255, 255, 0), rgba(255, 255, 255, 1) 90%)`,
+        height: theme.typography[variant].lineHeight as string
+      }
+    }
+  }
+  const faceOnButtonHoverFix = {
+    transition: 'none',
+    '&:hover': {
+      transition: 'none',
+      '.overflow-text': {
+        '::before': {
+          background: `linear-gradient(to right, rgba(245, 245, 245, 0), rgba(245, 245, 245, 1) 90%)`
+        }
       }
     }
   }
 
   return (
-    <ListItemButton onClick={onClick} disabled={loading}>
+    <ListItemButton
+      onClick={onClick}
+      disabled={loading}
+      sx={{ ...faceOnButtonHoverFix }}
+    >
       <Stack
         direction={imagePosition === 'start' ? 'row' : 'row-reverse'}
         spacing={4}
@@ -121,7 +137,8 @@ export function MediaListItem({
               <Typography
                 variant="overline"
                 color="secondary.light"
-                sx={{ ...twoLineDisplayProps('overline') }}
+                className="overflow-text"
+                sx={{ ...fadeOverflowText('overline') }}
               >
                 {overline}
               </Typography>
@@ -142,7 +159,8 @@ export function MediaListItem({
               ) : (
                 <Typography
                   variant="subtitle1"
-                  sx={{ ...twoLineDisplayProps('subtitle1') }}
+                  className="overflow-text"
+                  sx={{ ...fadeOverflowText('subtitle1') }}
                 >
                   {title}
                 </Typography>
@@ -159,7 +177,8 @@ export function MediaListItem({
                 <Typography
                   variant="body2"
                   color="secondary.light"
-                  sx={{ ...twoLineDisplayProps('body2') }}
+                  className="overflow-text"
+                  sx={{ ...fadeOverflowText('body2') }}
                 >
                   {description}
                 </Typography>
