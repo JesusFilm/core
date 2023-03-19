@@ -1,0 +1,1 @@
+export { ContainedIconButton } from './ContainedIconButton'
