@@ -1,16 +1,17 @@
-import { ReactElement, ReactNode } from 'react'
+import { ReactElement } from 'react'
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
 import AddRoundedIcon from '@mui/icons-material/AddRounded'
 import Card from '@mui/material/Card'
 import CardActionArea from '@mui/material/CardActionArea'
 import Stack from '@mui/material/Stack'
+import SvgIcon from '@mui/material/SvgIcon'
 import { ImageBlockThumbnail } from '../Editor/ImageBlockThumbnail'
 
 interface ContainedIconProps {
-  icon: ReactNode
+  icon?: typeof SvgIcon
   label: string
-  onClick: ()=> void
+  onClick: () => void
 }
 
 export function ContainedIconButton({
@@ -18,7 +19,6 @@ export function ContainedIconButton({
   label,
   onClick
 }: ContainedIconProps): ReactElement {
-
   return (
     <>
       <Card variant="outlined" sx={{ borderRadius: 2 }}>
