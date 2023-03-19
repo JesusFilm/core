@@ -140,20 +140,19 @@ SidePanel.parameters = {
   }
 }
 
-export const OpenSidePanel = Template.bind({})
-OpenSidePanel.args = {
+export const MobileSidePanel = Template.bind({})
+MobileSidePanel.args = {
   ...SidePanel.args,
   initialState: { mobileDrawerOpen: true }
 }
-OpenSidePanel.parameters = {
+MobileSidePanel.parameters = {
   chromatic: {
     viewports: [360]
   }
 }
-OpenSidePanel.play = async () => {
-  await waitFor(() => {
-    userEvent.click(screen.getByRole('button', { name: 'Open' }))
-  })
+MobileSidePanel.play = async () => {
+  const openButton = await screen.getByRole('button', { name: 'Open' })
+  await userEvent.click(openButton)
 }
 
 export const Complete = Template.bind({})
