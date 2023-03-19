@@ -5,6 +5,7 @@ import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
 import { AuthUser } from 'next-firebase-auth'
 import { NavigationDrawer } from '../PageWrapper/NavigationDrawer'
+import { PageProvider, PageState } from '../../libs/PageWrapperProvider'
 import { MainPanelBody } from './MainPanelBody'
 import { MainPanelHeader } from './MainPanelHeader'
 import { AppHeader } from './AppHeader'
@@ -24,6 +25,7 @@ interface PageWrapperProps {
   sidePanelChildren?: ReactNode
   bottomPanelChildren?: ReactNode
   authUser?: AuthUser
+  initialState?: Partial<PageState>
 }
 
 export function PageWrapper({
@@ -35,7 +37,8 @@ export function PageWrapper({
   sidePanelChildren,
   bottomPanelChildren,
   children,
-  authUser
+  authUser,
+  initialState
 }: PageWrapperProps): ReactElement {
   const [open, setOpen] = useState<boolean>(false)
   const theme = useTheme()
@@ -43,61 +46,58 @@ export function PageWrapper({
   const { navbar, toolbar, bottomPanel, sidePanel } = usePageWrapperStyles()
 
   return (
-    <Box
-      sx={{
-        height: viewportHeight ?? '100vh',
-        overflow: 'hidden',
-        [theme.breakpoints.only('xs')]: { overflowY: 'auto' }
-      }}
-    >
-      <Stack direction={{ sm: 'row' }} sx={{ height: 'inherit' }}>
-        <NavigationDrawer open={open} onClose={setOpen} authUser={authUser} />
-
-        <Stack
-          direction={{ xs: 'column', sm: 'row' }}
-          sx={{
-            backgroundColor: 'background.default',
-            width: { xs: '100vw', sm: `calc(100vw - ${navbar.width})` },
-            pt: { xs: `${toolbar.height}px`, sm: 0 },
-            pb: {
-              xs: bottomPanelChildren != null ? bottomPanel.height : 0,
-              sm: 0
-            }
-          }}
-        >
-          {showAppHeader && <AppHeader onClick={() => setOpen(!open)} />}
+    <PageProvider initialState={initialState}>
+      <Box
+        sx={{
+          height: viewportHeight ?? '100vh',
+          overflow: 'hidden',
+          [theme.breakpoints.only('xs')]: { overflowY: 'auto' }
+        }}
+      >
+        <Stack direction={{ sm: 'row' }} sx={{ height: 'inherit' }}>
+          <NavigationDrawer open={open} onClose={setOpen} authUser={authUser} />
 
           <Stack
-            component="main"
+            direction={{ xs: 'column', sm: 'row' }}
             sx={{
-              width: {
-                xs: 'inherit',
-                sm:
-                  sidePanelChildren != null
-                    ? `calc(100vw - ${navbar.width} - ${sidePanel.width})`
-                    : 'inherit'
+              backgroundColor: 'background.default',
+              width: { xs: '100vw', sm: `calc(100vw - ${navbar.width})` },
+              pt: { xs: `${toolbar.height}px`, sm: 0 },
+              pb: {
+                xs: bottomPanelChildren != null ? bottomPanel.height : 0,
+                sm: 0
               }
             }}
           >
-            <MainPanelHeader
-              title={title}
-              backHref={backHref}
-              menu={customMenu}
-            />
-            <MainPanelBody bottomPanelChildren={bottomPanelChildren}>
-              {children}
-            </MainPanelBody>
-          </Stack>
-          {sidePanelChildren != null && (
-            <SidePanel
-              title={sidePanelTitle}
-              hasBottomPanel={bottomPanelChildren != null}
+            {showAppHeader && <AppHeader onClick={() => setOpen(!open)} />}
+
+            <Stack
+              component="main"
+              sx={{
+                width: {
+                  xs: 'inherit',
+                  sm:
+                    sidePanelChildren != null
+                      ? `calc(100vw - ${navbar.width} - ${sidePanel.width})`
+                      : 'inherit'
+                }
+              }}
             >
-              {sidePanelChildren}
-            </SidePanel>
-          )}
+              <MainPanelHeader
+                title={title}
+                backHref={backHref}
+                menu={customMenu}
+              />
+              <MainPanelBody bottomPanelChildren={bottomPanelChildren}>
+                {children}
+              </MainPanelBody>
+            </Stack>
+            {sidePanelChildren != null && (
+              <SidePanel title={sidePanelTitle}>{sidePanelChildren}</SidePanel>
+            )}
+          </Stack>
         </Stack>
-      </Stack>
-    </Box>
+      </Box>
+    </PageProvider>
   )
 }

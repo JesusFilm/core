@@ -13,8 +13,8 @@ export function SidePanelContainer({
   const borderProps = useMemo(() => {
     if (border) {
       return {
-        borderBottom: { sm: '1px solid' },
-        borderColor: { sm: 'divider' },
+        borderBottom: '1px solid',
+        borderColor: 'divider',
         pb: 4
       }
     }

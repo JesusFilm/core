@@ -6,6 +6,7 @@ import Typography from '@mui/material/Typography'
 import { noop } from 'lodash'
 import { MockedProvider } from '@apollo/client/testing'
 import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
+import { screen, userEvent, waitFor } from '@storybook/testing-library'
 import { journeysAdminConfig } from '../../libs/storybook'
 import { Role } from '../../../__generated__/globalTypes'
 import { GET_USER_ROLE } from '../JourneyView/JourneyView'
@@ -45,45 +46,47 @@ const SidePanelContainers = (): ReactElement => (
 
 const Template: Story<
   ComponentProps<typeof PageWrapper> & { templates?: boolean }
-> = ({ templates = false, ...args }) => (
-  <MockedProvider
-    mocks={[
-      {
-        request: {
-          query: GET_ME
+> = ({ templates = false, ...args }) => {
+  return (
+    <MockedProvider
+      mocks={[
+        {
+          request: {
+            query: GET_ME
+          },
+          result: {
+            data: {
+              me: {
+                id: 'userId',
+                firstName: 'Test',
+                lastName: 'User',
+                imageUrl: 'https://bit.ly/3Gth4Yf',
+                email: 'amin@email.com'
+              }
+            }
+          }
         },
-        result: {
-          data: {
-            me: {
-              id: 'userId',
-              firstName: 'Test',
-              lastName: 'User',
-              imageUrl: 'https://bit.ly/3Gth4Yf',
-              email: 'amin@email.com'
+        {
+          request: {
+            query: GET_USER_ROLE
+          },
+          result: {
+            data: {
+              getUserRole: {
+                id: 'userId',
+                roles: [Role.publisher]
+              }
             }
           }
         }
-      },
-      {
-        request: {
-          query: GET_USER_ROLE
-        },
-        result: {
-          data: {
-            getUserRole: {
-              id: 'userId',
-              roles: [Role.publisher]
-            }
-          }
-        }
-      }
-    ]}
-  >
-    <FlagsProvider flags={{ templates }}>
-      <PageWrapper {...args} />
-    </FlagsProvider>
-  </MockedProvider>
-)
+      ]}
+    >
+      <FlagsProvider flags={{ templates }}>
+        <PageWrapper {...args} />
+      </FlagsProvider>
+    </MockedProvider>
+  )
+}
 
 export const Default = Template.bind({})
 Default.args = {
@@ -122,13 +125,6 @@ SidePanel.args = {
       >
         Main Body Content
       </Typography>
-      <Typography sx={{ backgroundColor: 'background.default' }} gutterBottom>
-        On this story we want to test scroll.
-      </Typography>
-      <Typography gutterBottom sx={{ backgroundColor: 'background.default' }}>
-        We should still see the side panel content below on mobile portrait and
-        to the side on desktop / mobile landscape.
-      </Typography>
       <Typography sx={{ backgroundColor: 'background.default' }}>
         Each child in the side panel must be wrapped by SidePanelContainer which
         adds padding and an optional border to the component.
@@ -137,6 +133,27 @@ SidePanel.args = {
   ),
   sidePanelTitle: 'Side Panel Content',
   sidePanelChildren: <SidePanelContainers />
+}
+SidePanel.parameters = {
+  chromatic: {
+    viewports: [1200]
+  }
+}
+
+export const OpenSidePanel = Template.bind({})
+OpenSidePanel.args = {
+  ...SidePanel.args,
+  initialState: { mobileDrawerOpen: true }
+}
+OpenSidePanel.parameters = {
+  chromatic: {
+    viewports: [360]
+  }
+}
+OpenSidePanel.play = async () => {
+  await waitFor(() => {
+    userEvent.click(screen.getByRole('button', { name: 'Open' }))
+  })
 }
 
 export const Complete = Template.bind({})
