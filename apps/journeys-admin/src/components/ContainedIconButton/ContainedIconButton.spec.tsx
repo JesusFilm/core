@@ -1,5 +1,5 @@
 import { render, fireEvent } from '@testing-library/react'
-import NoteAddIcon from '@mui/icons-material/NoteAdd';
+import NoteAddIcon from '@mui/icons-material/NoteAdd'
 import { ContainedIconButton } from './ContainedIconButton'
 
 describe('ContainedIconButton', () => {
@@ -7,29 +7,18 @@ describe('ContainedIconButton', () => {
 
   it('should render button', async () => {
     const { getByRole } = render(
-      <ContainedIconButton
-        icon={NoteAddIcon}
-        label="Label"
-        onClick={onClick}
-      />
+      <ContainedIconButton icon={NoteAddIcon} label="Label" onClick={onClick} />
     )
 
-    expect(getByRole('button')).toHaveTextContent(
-      'Label'
-    )
+    expect(getByRole('button')).toHaveTextContent('Label')
   })
 
   it('should call onClick on button click', () => {
     const { getByRole } = render(
-      <ContainedIconButton
-        icon={NoteAddIcon}
-        label="Label"
-        onClick={onClick}
-      />
+      <ContainedIconButton icon={NoteAddIcon} label="Label" onClick={onClick} />
     )
     fireEvent.click(getByRole('button'))
 
     expect(onClick).toHaveBeenCalled()
   })
-
 })
