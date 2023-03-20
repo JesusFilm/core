@@ -141,12 +141,12 @@ export class UserJourneyResolver {
   ): Promise<UserJourneyRecord | undefined> {
     const userJourney = await this.userJourneyService.forJourneyUser(id, userId)
 
-    if (userJourney != null) {
+    if (userJourney != null && userJourney.openedAt == null) {
       const input = { openedAt: new Date().toISOString() }
       return await this.userJourneyService.update(userJourney.id, input)
-    } else {
-      throw new Error('Invalid User')
     }
+
+    return userJourney
   }
 
   @ResolveField()

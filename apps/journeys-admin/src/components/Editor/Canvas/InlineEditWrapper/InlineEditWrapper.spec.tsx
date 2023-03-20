@@ -19,6 +19,15 @@ import { TypographyFields } from '../../../../../__generated__/TypographyFields'
 import { SelectableWrapper } from '../SelectableWrapper'
 import { InlineEditWrapper } from '.'
 
+jest.mock('react-i18next', () => ({
+  __esModule: true,
+  useTranslation: () => {
+    return {
+      t: (str: string) => str
+    }
+  }
+}))
+
 describe('InlineEditWrapper', () => {
   const typographyBlock: TreeBlock<TypographyFields> = {
     __typename: 'TypographyBlock',

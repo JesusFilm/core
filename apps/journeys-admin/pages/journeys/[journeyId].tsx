@@ -21,8 +21,8 @@ import { JourneyView } from '../../src/components/JourneyView'
 import { PageWrapper } from '../../src/components/PageWrapper'
 import { Menu } from '../../src/components/JourneyView/Menu'
 import i18nConfig from '../../next-i18next.config'
-import { useUserJourneyOpen } from '../../src/libs/useUserJourneyOpen'
 import { ACCEPT_USER_INVITE } from '..'
+import { UserJourneyOpen } from '../../__generated__/UserJourneyOpen'
 import { useTermsRedirect } from '../../src/libs/useTermsRedirect/useTermsRedirect'
 
 export const GET_JOURNEY = gql`
@@ -30,6 +30,14 @@ export const GET_JOURNEY = gql`
   query GetJourney($id: ID!) {
     journey: adminJourney(id: $id, idType: databaseId) {
       ...JourneyFields
+    }
+  }
+`
+
+export const USER_JOURNEY_OPEN = gql`
+  mutation UserJourneyOpen($id: ID!) {
+    userJourneyOpen(id: $id) {
+      id
     }
   }
 `
@@ -43,12 +51,6 @@ function JourneyIdPage(): ReactElement {
   })
 
   useTermsRedirect()
-
-  useUserJourneyOpen(
-    AuthUser.id,
-    data?.journey?.id,
-    data?.journey?.userJourneys
-  )
 
   return (
     <>
@@ -96,7 +98,7 @@ function JourneyIdPage(): ReactElement {
 
 export const getServerSideProps = withAuthUserTokenSSR({
   whenUnauthed: AuthAction.REDIRECT_TO_LOGIN
-})(async ({ AuthUser, locale }) => {
+})(async ({ AuthUser, locale, query }) => {
   const ldUser = {
     key: AuthUser.id as string,
     firstName: AuthUser.displayName ?? undefined,
@@ -112,6 +114,11 @@ export const getServerSideProps = withAuthUserTokenSSR({
 
   await apolloClient.mutate<UserInviteAcceptAll>({
     mutation: ACCEPT_USER_INVITE
+  })
+
+  await apolloClient.mutate<UserJourneyOpen>({
+    mutation: USER_JOURNEY_OPEN,
+    variables: { id: query?.journeyId }
   })
 
   return {

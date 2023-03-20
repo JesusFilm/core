@@ -160,7 +160,7 @@ export function UnsplashCollections({
               bgcolor: 'background.paper',
               border: (theme) => `1px solid ${theme.palette.divider}`,
               '&:hover': {
-                bgcolor: 'background.paper'
+                bgcolor: 'background.default'
               }
             }}
           />

@@ -46,7 +46,7 @@ export function RadioQuestionEdit({
         input: {
           journeyId: journey.id,
           parentBlockId: id,
-          label: `Option ${props.children.length + 1}`
+          label: ''
         }
       },
       update(cache, { data }) {

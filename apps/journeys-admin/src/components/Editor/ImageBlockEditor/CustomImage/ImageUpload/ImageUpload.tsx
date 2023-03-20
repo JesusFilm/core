@@ -65,6 +65,7 @@ export function ImageUpload({
           response.result.id as string
         }/public`
         onChange(src)
+        setTimeout(() => setSuccess(undefined), 4000)
       } catch (e) {
         setSuccess(false)
       }

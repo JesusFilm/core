@@ -13,7 +13,7 @@ export interface UserJourneyOpen_userJourneyOpen {
 }
 
 export interface UserJourneyOpen {
-  userJourneyOpen: UserJourneyOpen_userJourneyOpen;
+  userJourneyOpen: UserJourneyOpen_userJourneyOpen | null;
 }
 
 export interface UserJourneyOpenVariables {

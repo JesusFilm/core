@@ -191,7 +191,7 @@ describe('ControlPanel', () => {
                 input: {
                   journeyId: 'journeyId',
                   parentBlockId: 'cardId',
-                  content: 'Add your text here...',
+                  content: '',
                   variant: 'h1'
                 }
               }
@@ -239,12 +239,13 @@ describe('ControlPanel', () => {
     fireEvent.click(getByRole('button', { name: 'Add' }))
     expect(getByRole('tabpanel', { name: 'Blocks' })).toBeInTheDocument()
     fireEvent.click(getByRole('button', { name: 'Text' }))
-    await waitFor(() =>
+    await waitFor(() => {
+      expect(getByRole('button', { name: 'Done' })).toBeInTheDocument()
       expect(getByRole('tab', { name: 'Properties' })).toHaveAttribute(
         'aria-selected',
         'true'
       )
-    )
+    })
   })
 
   it('should change to properties tab on subscribe button click', async () => {
@@ -643,7 +644,7 @@ describe('ControlPanel', () => {
     )
   })
 
-  it('should change to properties tab on button button click', async () => {
+  it('should change to properties tab on "button" button click', async () => {
     const { getByRole, getByTestId } = render(
       <MockedProvider
         mocks={[
@@ -655,7 +656,7 @@ describe('ControlPanel', () => {
                   id: 'uuid',
                   journeyId: 'journeyId',
                   parentBlockId: 'cardId',
-                  label: 'Edit Text...',
+                  label: '',
                   variant: ButtonVariant.contained,
                   color: ButtonColor.primary,
                   size: ButtonSize.medium
@@ -710,7 +711,7 @@ describe('ControlPanel', () => {
                   parentBlockId: 'cardId',
                   parentOrder: 0,
                   journeyId: 'journeyId',
-                  label: 'Edit Text...',
+                  label: '',
                   variant: ButtonVariant.contained,
                   color: ButtonColor.primary,
                   size: ButtonSize.medium,
@@ -749,12 +750,13 @@ describe('ControlPanel', () => {
     fireEvent.click(getByRole('button', { name: 'Add' }))
     expect(getByRole('tabpanel', { name: 'Blocks' })).toBeInTheDocument()
     fireEvent.click(getByRole('button', { name: 'Button' }))
-    await waitFor(() =>
+    await waitFor(() => {
+      expect(getByRole('button', { name: 'Done' })).toBeInTheDocument()
       expect(getByRole('tab', { name: 'Properties' })).toHaveAttribute(
         'aria-selected',
         'true'
       )
-    )
+    })
   })
 
   it('should keep cards tab open when selecting a card', () => {
