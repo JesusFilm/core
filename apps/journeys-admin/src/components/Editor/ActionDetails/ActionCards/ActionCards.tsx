@@ -31,7 +31,7 @@ export function ActionCards({ url }: ActionCardsProps): ReactElement {
   const blocks = transformer(journey?.blocks as TreeBlock[]).filter(hasAction)
 
   return (
-    <Stack gap={6} sx={{ mt: 7, mb: 14 }}>
+    <Stack gap={6} sx={{ mt: 5, mb: 14 }}>
       <Box>
         <Typography variant="subtitle2" color="secondary.dark">
           Appears on the cards
@@ -44,9 +44,9 @@ export function ActionCards({ url }: ActionCardsProps): ReactElement {
         <Stack key={block.id} gap={4} direction="row">
           <Box
             sx={{
-              width: 102,
+              width: 85,
               position: 'relative',
-              height: 154,
+              height: 129,
               mb: 2,
               overflow: 'hidden',
               borderRadius: 2
@@ -55,7 +55,7 @@ export function ActionCards({ url }: ActionCardsProps): ReactElement {
             {block != null && (
               <Box
                 sx={{
-                  transform: 'scale(0.3)',
+                  transform: 'scale(0.25)',
                   transformOrigin: 'left top'
                 }}
               >

@@ -85,22 +85,18 @@ export function ActionEditor({
   let icon: ReactNode
   switch (goalLabel) {
     case 'Start a conversation':
-      icon = <QuestionAnswerOutlined />
+      icon = <QuestionAnswerOutlined sx={{ color: 'secondary.light' }} />
       break
     case 'Link to bible':
-      icon = <MenuBookRounded />
+      icon = <MenuBookRounded sx={{ color: 'secondary.light' }} />
       break
     default:
-      icon = <WebOutlined />
+      icon = <WebOutlined sx={{ color: 'secondary.light' }} />
       break
   }
 
   return (
-    <Box sx={{ pt: 8 }}>
-      <Stack gap={2} direction="row" alignItems="center" sx={{ pb: 2.5 }}>
-        {icon}
-        <Typography variant="subtitle2">{goalLabel}</Typography>
-      </Stack>
+    <Box sx={{ pt: 6 }}>
       <Formik
         initialValues={{
           link: url ?? ''
@@ -136,6 +132,10 @@ export function ActionEditor({
           </Form>
         )}
       </Formik>
+      <Stack gap={2} direction="row" alignItems="center" sx={{ pt: 2.5 }}>
+        {icon}
+        <Typography variant="subtitle2">{goalLabel}</Typography>
+      </Stack>
     </Box>
   )
 }
