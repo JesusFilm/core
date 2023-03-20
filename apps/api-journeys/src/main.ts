@@ -14,7 +14,8 @@ async function bootstrap(): Promise<void> {
     new Logger('main').log(`Listening on port: ${port}`)
   })
   // avoid 502 on ALB
-  server.setTimeout(61000)
+  server.keepAliveTimeout = 61000
+  server.headersTimeout = 62000
 }
 
 bootstrap().catch((err) => console.log(err))
