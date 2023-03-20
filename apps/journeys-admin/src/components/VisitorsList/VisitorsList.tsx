@@ -48,7 +48,7 @@ export function VisitorsList(): ReactElement {
       : []
 
   async function handleRowClick(params): Promise<void> {
-    await router.push(`/reports/visitors/${params.row.id as string}`)
+    // await router.push(`/reports/visitors/${params.row.id as string}`)
   }
 
   return (
@@ -67,6 +67,15 @@ export function VisitorsList(): ReactElement {
         // }}
         // pageSizeOptions={[5]}
         sx={{
+          backgroundColor: 'background.paper',
+          borderRadius: '1%',
+          overflow: 'hidden',
+          '& .MuiDataGrid-row': {
+            borderTop: '1px solid #DEDFE0'
+          },
+          '& .MuiDataGrid-row--lastVisible': {
+            borderBottom: '1px solid #DEDFE0'
+          },
           '& .MuiDataGrid-cell:focus': {
             outline: 'none'
           }
