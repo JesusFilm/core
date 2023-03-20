@@ -1,11 +1,18 @@
 import { ReactElement } from 'react'
 import Box from '@mui/material/Box'
+import {
+  useEditor,
+  ActiveJourneyEditContent
+} from '@core/journeys/ui/EditorProvider'
 import { Canvas } from '../Canvas'
 import { ControlPanel } from '../ControlPanel'
 import { Drawer, DRAWER_WIDTH } from '../Drawer'
 
 // This component is tested in Editor
 export function JourneyEdit(): ReactElement {
+  const {
+    state: { journeyEditContentComponent }
+  } = useEditor()
   return (
     <>
       <Box
@@ -27,7 +34,11 @@ export function JourneyEdit(): ReactElement {
           }}
         >
           <Box sx={{ my: 'auto' }}>
-            <Canvas />
+            {
+              {
+                [ActiveJourneyEditContent.Canvas]: <Canvas />
+              }[journeyEditContentComponent]
+            }
           </Box>
         </Box>
         <ControlPanel />

@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { Database } from 'arangojs'
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
-import { DocumentCollection } from 'arangojs/collection'
+import { DocumentCollection, EdgeCollection } from 'arangojs/collection'
 import { Injectable } from '@nestjs/common'
 import { omit } from 'lodash'
 import { AqlQuery } from 'arangojs/aql'
@@ -12,7 +12,7 @@ import { BaseService } from './BaseService'
 
 @Injectable()
 export class MockService extends BaseService {
-  collection: DocumentCollection = this.db.collection('mocks')
+  collection = this.db.collection('mocks')
 }
 
 const block = {
@@ -58,11 +58,12 @@ const blockResponse2 = omit(
 )
 
 describe('Base Service', () => {
-  let service: MockService
-  let db: DeepMockProxy<Database>
+  let service: MockService,
+    db: DeepMockProxy<Database>,
+    collectionMock: DeepMockProxy<DocumentCollection & EdgeCollection>
 
   beforeEach(async () => {
-    db = mockDeep<Database>()
+    db = mockDeep()
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         MockService,
@@ -74,27 +75,39 @@ describe('Base Service', () => {
     }).compile()
 
     service = module.get<MockService>(MockService)
-    service.collection = mockDeep<DocumentCollection>()
+    collectionMock = mockDeep()
+    service.collection = collectionMock
   })
   afterAll(() => {
     jest.resetAllMocks()
   })
 
-  describe('updateAll', () => {
-    it('should return updated objects', async () => {
-      ;(
-        service.collection as DeepMockProxy<DocumentCollection>
-      ).updateAll.mockReturnValue(
-        mockCollectionUpdateAllResult(service.collection, [block, block2])
-      )
-      expect(await service.updateAll([block, block2])).toEqual([
+  describe('load', () => {
+    it('should call getByIds with _key', async () => {
+      db.query.mockImplementationOnce(async (q) => {
+        const { bindVars } = q as unknown as AqlQuery
+        expect(bindVars).toEqual({
+          value0: [block._key]
+        })
+        return { all: () => [block] } as unknown as ArrayCursor
+      })
+      expect(await service.load(block._key)).toEqual(blockResponse)
+    })
+  })
+
+  describe('loadMany', () => {
+    it('should call getByIds with _keys', async () => {
+      db.query.mockImplementationOnce(async (q) => {
+        const { bindVars } = q as unknown as AqlQuery
+        expect(bindVars).toEqual({
+          value0: [block._key, block2._key]
+        })
+        return { all: () => [block2, block] } as unknown as ArrayCursor
+      })
+      expect(await service.loadMany([block._key, block2._key])).toEqual([
         blockResponse,
         blockResponse2
       ])
-      expect(service.collection.updateAll).toHaveBeenCalledWith(
-        [block, block2],
-        { returnNew: true }
-      )
     })
   })
 
@@ -115,6 +128,22 @@ describe('Base Service', () => {
         blockResponse,
         blockResponse2
       ])
+    })
+  })
+
+  describe('updateAll', () => {
+    it('should return updated objects', async () => {
+      collectionMock.updateAll.mockReturnValue(
+        mockCollectionUpdateAllResult(service.collection, [block, block2])
+      )
+      expect(await service.updateAll([block, block2])).toEqual([
+        blockResponse,
+        blockResponse2
+      ])
+      expect(service.collection.updateAll).toHaveBeenCalledWith(
+        [block, block2],
+        { returnNew: true }
+      )
     })
   })
 })

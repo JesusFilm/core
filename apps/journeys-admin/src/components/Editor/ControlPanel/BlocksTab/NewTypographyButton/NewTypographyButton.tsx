@@ -2,7 +2,11 @@ import { ReactElement } from 'react'
 import TextFieldsRounded from '@mui/icons-material/TextFieldsRounded'
 import { gql, useMutation } from '@apollo/client'
 import { TYPOGRAPHY_FIELDS } from '@core/journeys/ui/Typography/typographyFields'
-import { useEditor, ActiveTab } from '@core/journeys/ui/EditorProvider'
+import {
+  useEditor,
+  ActiveTab,
+  ActiveFab
+} from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { Button } from '../../Button'
@@ -43,7 +47,7 @@ export function NewTypographyButton(): ReactElement {
           input: {
             journeyId: journey.id,
             parentBlockId: card.id,
-            content: 'Add your text here...',
+            content: '',
             variant: checkTypography.length > 0 ? 'body2' : 'h1'
           }
         },
@@ -76,6 +80,10 @@ export function NewTypographyButton(): ReactElement {
         dispatch({
           type: 'SetActiveTabAction',
           activeTab: ActiveTab.Properties
+        })
+        dispatch({
+          type: 'SetActiveFabAction',
+          activeFab: ActiveFab.Save
         })
       }
     }

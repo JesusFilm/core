@@ -3,6 +3,7 @@ import { gql, useMutation } from '@apollo/client'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { Button } from '@core/journeys/ui/Button'
 import type { TreeBlock } from '@core/journeys/ui/block'
+import { useTranslation } from 'react-i18next'
 import { ButtonBlockUpdateContent } from '../../../../../../__generated__/ButtonBlockUpdateContent'
 import { ButtonFields } from '../../../../../../__generated__/ButtonFields'
 import { InlineEditInput } from '../InlineEditInput'
@@ -20,18 +21,17 @@ export const BUTTON_BLOCK_UPDATE_CONTENT = gql`
     }
   }
 `
-interface ButtonEditProps extends TreeBlock<ButtonFields> {
-  visibleCaret?: boolean
-}
+interface ButtonEditProps extends TreeBlock<ButtonFields> {}
 
 export function ButtonEdit({
   id,
   buttonVariant,
   buttonColor,
   label,
-  visibleCaret,
   ...buttonProps
 }: ButtonEditProps): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
+
   const [buttonBlockUpdate] = useMutation<ButtonBlockUpdateContent>(
     BUTTON_BLOCK_UPDATE_CONTENT
   )
@@ -68,11 +68,11 @@ export function ButtonEdit({
       autoFocus
       onBlur={handleSaveBlock}
       value={value}
+      placeholder={t('Edit text...')}
       onChange={(e) => {
         setValue(e.currentTarget.value)
       }}
       onClick={(e) => e.stopPropagation()}
-      sx={visibleCaret ?? true ? {} : { caretColor: 'transparent' }}
     />
   )
 

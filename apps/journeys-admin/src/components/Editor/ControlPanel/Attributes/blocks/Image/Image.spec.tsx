@@ -2,6 +2,7 @@ import { render } from '@testing-library/react'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import {
   ActiveFab,
+  ActiveJourneyEditContent,
   ActiveTab,
   EditorState,
   useEditor
@@ -39,7 +40,8 @@ describe('Image', () => {
     steps: [],
     drawerMobileOpen: false,
     activeTab: ActiveTab.Cards,
-    activeFab: ActiveFab.Add
+    activeFab: ActiveFab.Add,
+    journeyEditContentComponent: ActiveJourneyEditContent.Canvas
   }
 
   beforeEach(() => {
@@ -55,7 +57,7 @@ describe('Image', () => {
     expect(getByText(block.alt)).toBeInTheDocument()
   })
 
-  it('should open property drawr for variant', () => {
+  it('should open property drawer for variant', () => {
     const dispatch = jest.fn()
     mockUseEditor.mockReturnValue({
       state,
@@ -68,6 +70,7 @@ describe('Image', () => {
     })
     expect(dispatch).toHaveBeenCalledWith({
       type: 'SetDrawerPropsAction',
+      mobileOpen: true,
       title: 'Image',
       children: <ImageOptions />
     })

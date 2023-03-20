@@ -14,6 +14,7 @@ import {
   ThemeMode,
   ThemeName
 } from '../../../../__generated__/globalTypes'
+import { STEP_AND_CARD_BLOCK_CREATE } from '../../CardPreview/CardPreview'
 import { VIDEO_BLOCK_CREATE } from './BlocksTab/NewVideoButton/NewVideoButton'
 import { TYPOGRAPHY_BLOCK_CREATE } from './BlocksTab/NewTypographyButton/NewTypographyButton'
 import { IMAGE_BLOCK_CREATE } from './BlocksTab/NewImageButton/NewImageButton'
@@ -25,6 +26,15 @@ import { ControlPanel } from '.'
 jest.mock('uuid', () => ({
   __esModule: true,
   v4: () => 'uuid'
+}))
+
+jest.mock('react-i18next', () => ({
+  __esModule: true,
+  useTranslation: () => {
+    return {
+      t: (str: string) => str
+    }
+  }
 }))
 
 describe('ControlPanel', () => {
@@ -94,11 +104,11 @@ describe('ControlPanel', () => {
         </JourneyProvider>
       </MockedProvider>
     )
-    // Default start on Properties
+    // Default start on Cards
+    expect(getByRole('tabpanel', { name: 'Cards' })).toBeInTheDocument()
+    fireEvent.click(getByRole('tab', { name: 'Properties' }))
     expect(getByRole('tabpanel', { name: 'Properties' })).toBeInTheDocument()
     expect(getByText('Unlocked Card')).toBeInTheDocument()
-    fireEvent.click(getByRole('tab', { name: 'Cards' }))
-    expect(getByRole('tabpanel', { name: 'Cards' })).toBeInTheDocument()
     fireEvent.click(getByTestId('preview-step2.id'))
     expect(getByText('Locked With Interaction')).toBeInTheDocument()
     fireEvent.click(getByRole('tab', { name: 'Blocks' }))
@@ -181,7 +191,7 @@ describe('ControlPanel', () => {
                 input: {
                   journeyId: 'journeyId',
                   parentBlockId: 'cardId',
-                  content: 'Add your text here...',
+                  content: '',
                   variant: 'h1'
                 }
               }
@@ -229,12 +239,13 @@ describe('ControlPanel', () => {
     fireEvent.click(getByRole('button', { name: 'Add' }))
     expect(getByRole('tabpanel', { name: 'Blocks' })).toBeInTheDocument()
     fireEvent.click(getByRole('button', { name: 'Text' }))
-    await waitFor(() =>
+    await waitFor(() => {
+      expect(getByRole('button', { name: 'Done' })).toBeInTheDocument()
       expect(getByRole('tab', { name: 'Properties' })).toHaveAttribute(
         'aria-selected',
         'true'
       )
-    )
+    })
   })
 
   it('should change to properties tab on subscribe button click', async () => {
@@ -633,7 +644,7 @@ describe('ControlPanel', () => {
     )
   })
 
-  it('should change to properties tab on button button click', async () => {
+  it('should change to properties tab on "button" button click', async () => {
     const { getByRole, getByTestId } = render(
       <MockedProvider
         mocks={[
@@ -645,7 +656,7 @@ describe('ControlPanel', () => {
                   id: 'uuid',
                   journeyId: 'journeyId',
                   parentBlockId: 'cardId',
-                  label: 'Edit Text...',
+                  label: '',
                   variant: ButtonVariant.contained,
                   color: ButtonColor.primary,
                   size: ButtonSize.medium
@@ -700,7 +711,7 @@ describe('ControlPanel', () => {
                   parentBlockId: 'cardId',
                   parentOrder: 0,
                   journeyId: 'journeyId',
-                  label: 'Edit Text...',
+                  label: '',
                   variant: ButtonVariant.contained,
                   color: ButtonColor.primary,
                   size: ButtonSize.medium,
@@ -739,8 +750,119 @@ describe('ControlPanel', () => {
     fireEvent.click(getByRole('button', { name: 'Add' }))
     expect(getByRole('tabpanel', { name: 'Blocks' })).toBeInTheDocument()
     fireEvent.click(getByRole('button', { name: 'Button' }))
-    await waitFor(() =>
+    await waitFor(() => {
+      expect(getByRole('button', { name: 'Done' })).toBeInTheDocument()
       expect(getByRole('tab', { name: 'Properties' })).toHaveAttribute(
+        'aria-selected',
+        'true'
+      )
+    })
+  })
+
+  it('should keep cards tab open when selecting a card', () => {
+    const { getByRole, getByTestId } = render(
+      <MockedProvider>
+        <JourneyProvider
+          value={{
+            journey: {
+              id: 'journeyId',
+              themeMode: ThemeMode.dark,
+              themeName: ThemeName.base,
+              language: {
+                __typename: 'Language',
+                id: '529',
+                bcp47: 'en',
+                iso3: 'eng'
+              }
+            } as unknown as Journey,
+            admin: true
+          }}
+        >
+          <EditorProvider initialState={{ steps: [step1, step2, step3] }}>
+            <ControlPanel />
+          </EditorProvider>
+        </JourneyProvider>
+      </MockedProvider>
+    )
+    expect(getByRole('tab', { name: 'Cards' })).toHaveAttribute(
+      'aria-selected',
+      'true'
+    )
+    fireEvent.click(getByTestId('preview-step3.id'))
+    expect(getByRole('tab', { name: 'Cards' })).toHaveAttribute(
+      'aria-selected',
+      'true'
+    )
+  })
+
+  it('should keep cards tab open when adding a new card', async () => {
+    const { getByRole, getByTestId } = render(
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: STEP_AND_CARD_BLOCK_CREATE,
+              variables: {
+                journeyId: 'journeyId',
+                stepId: 'uuid',
+                cardId: 'uuid'
+              }
+            },
+            result: {
+              data: {
+                stepBlockCreate: {
+                  id: 'uuid',
+                  parentBlockId: null,
+                  parentOrder: 1,
+                  locked: false,
+                  nextBlockId: null,
+                  __typename: 'StepBlock'
+                },
+                cardBlockCreate: {
+                  id: 'uui',
+                  parentBlockId: 'uuid',
+                  parentOrder: 0,
+                  backgroundColor: null,
+                  coverBlockId: null,
+                  themeMode: ThemeMode.light,
+                  themeName: ThemeName.base,
+                  fullscreen: false,
+                  __typename: 'CardBlock'
+                }
+              }
+            }
+          }
+        ]}
+      >
+        <JourneyProvider
+          value={{
+            journey: {
+              id: 'journeyId',
+              themeMode: ThemeMode.dark,
+              themeName: ThemeName.base,
+              language: {
+                __typename: 'Language',
+                id: '529',
+                bcp47: 'en',
+                iso3: 'eng'
+              }
+            } as unknown as Journey,
+            admin: true
+          }}
+        >
+          <EditorProvider initialState={{ steps: [step1] }}>
+            <ControlPanel />
+          </EditorProvider>
+        </JourneyProvider>
+      </MockedProvider>
+    )
+    expect(getByRole('tab', { name: 'Cards' })).toHaveAttribute(
+      'aria-selected',
+      'true'
+    )
+    fireEvent.click(getByTestId('AddIcon'))
+    await waitFor(() =>
+      expect(getByRole('tab', { name: 'Cards' })).toHaveAttribute(
         'aria-selected',
         'true'
       )

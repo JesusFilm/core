@@ -8,8 +8,8 @@ import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { BlockRenderer } from '@core/journeys/ui/BlockRenderer'
 import {
   useEditor,
-  ActiveTab,
-  ActiveFab
+  ActiveFab,
+  ActiveTab
 } from '@core/journeys/ui/EditorProvider'
 import { getJourneyRTL } from '@core/journeys/ui/rtl'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
@@ -19,6 +19,7 @@ import { FramePortal } from '../../FramePortal'
 import { DRAWER_WIDTH } from '../Drawer'
 import 'swiper/swiper.min.css'
 import { ThemeName, ThemeMode } from '../../../../__generated__/globalTypes'
+import { NextCard } from '../ControlPanel/Attributes/blocks/Step/NextCard'
 import { InlineEditWrapper } from './InlineEditWrapper'
 import { SelectableWrapper } from './SelectableWrapper'
 import { VideoWrapper } from './VideoWrapper'
@@ -79,6 +80,13 @@ export function Canvas(): ReactElement {
         }
       }}
       onClick={() => {
+        // Prevent losing focus on empty input
+        if (
+          selectedBlock?.__typename === 'TypographyBlock' &&
+          selectedBlock.content === ''
+        ) {
+          return
+        }
         dispatch({
           type: 'SetSelectedBlockAction',
           block: selectedStep
@@ -88,7 +96,12 @@ export function Canvas(): ReactElement {
           type: 'SetActiveTabAction',
           activeTab: ActiveTab.Properties
         })
-        dispatch({ type: 'SetSelectedAttributeIdAction', id: undefined })
+        dispatch({
+          type: 'SetDrawerPropsAction',
+          title: 'Next Card Properties',
+          mobileOpen: true,
+          children: <NextCard />
+        })
       }}
     >
       <Swiper
@@ -117,7 +130,8 @@ export function Canvas(): ReactElement {
                   position: 'relative',
                   overflow: 'hidden',
                   border: (theme) =>
-                    step.id === selectedBlock?.id
+                    step.id === selectedBlock?.id &&
+                    selectedBlock?.__typename === 'StepBlock'
                       ? `2px solid ${theme.palette.primary.main}`
                       : `2px solid ${theme.palette.background.default}`,
                   transform:
@@ -141,7 +155,6 @@ export function Canvas(): ReactElement {
                       step.id === selectedStep?.id ? 'none' : 'auto'
                   }}
                 />
-
                 <FramePortal width={356} height={536} dir={rtl ? 'rtl' : 'ltr'}>
                   <ThemeProvider
                     themeName={journey?.themeName ?? ThemeName.base}

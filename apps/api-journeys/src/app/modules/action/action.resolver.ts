@@ -35,9 +35,9 @@ export class ActionResolver {
     @Args('id') id: string,
     @Args('journeyId') journeyId: string
   ): Promise<Block> {
-    const block = await this.blockService.get<Block & { __typename: string }>(
-      id
-    )
+    const block = (await this.blockService.get(id)) as Block & {
+      __typename: string
+    }
 
     if (
       !includes(

@@ -4,6 +4,7 @@ import { mockDeep } from 'jest-mock-extended'
 
 import { CardBlock, ThemeMode, ThemeName } from '../../../__generated__/graphql'
 import { JourneyService } from '../../journey/journey.service'
+import { MemberService } from '../../member/member.service'
 import { UserJourneyService } from '../../userJourney/userJourney.service'
 import { UserRoleService } from '../../userRole/userRole.service'
 import { BlockResolver } from '../block.resolver'
@@ -72,6 +73,7 @@ describe('CardBlockResolver', () => {
         UserJourneyService,
         UserRoleService,
         JourneyService,
+        MemberService,
         {
           provide: 'DATABASE',
           useFactory: () => mockDeep<Database>()
@@ -92,9 +94,7 @@ describe('CardBlockResolver', () => {
 
   describe('cardBlockCreate', () => {
     it('creates a CardBlock', async () => {
-      await resolver
-        .cardBlockCreate(blockUpdate)
-        .catch((err) => console.log(err))
+      await resolver.cardBlockCreate(blockUpdate)
       expect(service.getSiblings).toHaveBeenCalledWith(
         blockUpdate.journeyId,
         blockUpdate.parentBlockId
@@ -105,9 +105,7 @@ describe('CardBlockResolver', () => {
 
   describe('cardBlockUpdate', () => {
     it('updates a CardBlock', async () => {
-      resolver
-        .cardBlockUpdate(block.id, block.journeyId, blockUpdate)
-        .catch((err) => console.log(err))
+      await resolver.cardBlockUpdate(block.id, block.journeyId, blockUpdate)
       expect(service.update).toHaveBeenCalledWith(block.id, blockUpdate)
     })
   })

@@ -1,80 +1,101 @@
 schema
-  @core(feature: "https://specs.apollo.dev/core/v0.1"),
-  @core(feature: "https://specs.apollo.dev/join/v0.1")
+  @link(url: "https://specs.apollo.dev/link/v1.0")
+  @link(url: "https://specs.apollo.dev/join/v0.3", for: EXECUTION)
 {
   query: Query
   mutation: Mutation
 }
 
-directive @core(feature: String!) repeatable on SCHEMA
+directive @join__enumValue(graph: join__Graph!) repeatable on ENUM_VALUE
 
-directive @join__field(graph: join__Graph, requires: join__FieldSet, provides: join__FieldSet) on FIELD_DEFINITION
-
-directive @join__type(graph: join__Graph!, key: join__FieldSet) repeatable on OBJECT | INTERFACE
-
-directive @join__owner(graph: join__Graph!) on OBJECT | INTERFACE
+directive @join__field(graph: join__Graph, requires: join__FieldSet, provides: join__FieldSet, type: String, external: Boolean, override: String, usedOverridden: Boolean) repeatable on FIELD_DEFINITION | INPUT_FIELD_DEFINITION
 
 directive @join__graph(name: String!, url: String!) on ENUM_VALUE
 
-interface Action {
-  gtmEventName: String
+directive @join__implements(graph: join__Graph!, interface: String!) repeatable on OBJECT | INTERFACE
+
+directive @join__type(graph: join__Graph!, key: join__FieldSet, extension: Boolean! = false, resolvable: Boolean! = true, isInterfaceObject: Boolean! = false) repeatable on OBJECT | INTERFACE | UNION | ENUM | INPUT_OBJECT | SCALAR
+
+directive @join__unionMember(graph: join__Graph!, member: String!) repeatable on UNION
+
+directive @link(url: String, as: String, for: link__Purpose, import: [link__Import]) repeatable on SCHEMA
+
+interface Action
+  @join__type(graph: JOURNEYS)
+{
   parentBlockId: ID!
+  gtmEventName: String
 }
 
-interface Block {
+interface Block
+  @join__type(graph: JOURNEYS)
+{
   id: ID!
   journeyId: ID!
   parentBlockId: ID
   parentOrder: Int
 }
 
-type Browser {
+type Browser
+  @join__type(graph: JOURNEYS)
+{
   name: String
   version: String
 }
 
-type ButtonBlock implements Block {
-  action: Action
-  color: ButtonColor
-  endIconId: ID
+type ButtonBlock implements Block
+  @join__implements(graph: JOURNEYS, interface: "Block")
+  @join__type(graph: JOURNEYS)
+{
   id: ID!
   journeyId: ID!
-  label: String!
   parentBlockId: ID
   parentOrder: Int
+  label: String!
+  variant: ButtonVariant
+  color: ButtonColor
   size: ButtonSize
   startIconId: ID
-  variant: ButtonVariant
+  endIconId: ID
+  action: Action
 }
 
-input ButtonBlockCreateInput {
-  color: ButtonColor
+input ButtonBlockCreateInput
+  @join__type(graph: JOURNEYS)
+{
   id: ID
   journeyId: ID!
-  label: String!
   parentBlockId: ID!
-  size: ButtonSize
+  label: String!
   variant: ButtonVariant
+  color: ButtonColor
+  size: ButtonSize
 }
 
-input ButtonBlockUpdateInput {
-  color: ButtonColor
-  endIconId: ID
-  label: String
+input ButtonBlockUpdateInput
+  @join__type(graph: JOURNEYS)
+{
   parentBlockId: ID
+  label: String
+  variant: ButtonVariant
+  color: ButtonColor
   size: ButtonSize
   startIconId: ID
-  variant: ButtonVariant
+  endIconId: ID
 }
 
-type ButtonClickEvent implements Event {
-  """time event was created"""
-  createdAt: DateTime!
+type ButtonClickEvent implements Event
+  @join__implements(graph: JOURNEYS, interface: "Event")
+  @join__type(graph: JOURNEYS)
+{
   id: ID!
 
   """ID of the journey that the buttonBlock belongs to"""
   journeyId: ID!
 
+  """time event was created"""
+  createdAt: DateTime!
+
   """stepName of the parent stepBlock"""
   label: String
 
@@ -82,43 +103,58 @@ type ButtonClickEvent implements Event {
   value: String
 }
 
-input ButtonClickEventCreateInput {
-  blockId: ID!
-
+input ButtonClickEventCreateInput
+  @join__type(graph: JOURNEYS)
+{
   """
   ID should be unique Event UUID (Provided for optimistic mutation result matching)
   """
   id: ID
-
-  """stepName of the parent stepBlock"""
-  label: String
+  blockId: ID!
 
   """id of the parent stepBlock"""
   stepId: ID
+
+  """stepName of the parent stepBlock"""
+  label: String
 
   """label of the button"""
   value: String
 }
 
-enum ButtonColor {
-  error
-  inherit
-  primary
-  secondary
+enum ButtonColor
+  @join__type(graph: JOURNEYS)
+{
+  primary @join__enumValue(graph: JOURNEYS)
+  secondary @join__enumValue(graph: JOURNEYS)
+  error @join__enumValue(graph: JOURNEYS)
+  inherit @join__enumValue(graph: JOURNEYS)
 }
 
-enum ButtonSize {
-  large
-  medium
-  small
+enum ButtonSize
+  @join__type(graph: JOURNEYS)
+{
+  small @join__enumValue(graph: JOURNEYS)
+  medium @join__enumValue(graph: JOURNEYS)
+  large @join__enumValue(graph: JOURNEYS)
 }
 
-enum ButtonVariant {
-  contained
-  text
+enum ButtonVariant
+  @join__type(graph: JOURNEYS)
+{
+  text @join__enumValue(graph: JOURNEYS)
+  contained @join__enumValue(graph: JOURNEYS)
 }
 
-type CardBlock implements Block {
+type CardBlock implements Block
+  @join__implements(graph: JOURNEYS, interface: "Block")
+  @join__type(graph: JOURNEYS)
+{
+  id: ID!
+  journeyId: ID!
+  parentBlockId: ID
+  parentOrder: Int
+
   """backgroundColor should be a HEX color value e.g #FFFFFF for white."""
   backgroundColor: String
 
@@ -135,10 +171,6 @@ type CardBlock implements Block {
   background.
   """
   fullscreen: Boolean!
-  id: ID!
-  journeyId: ID!
-  parentBlockId: ID
-  parentOrder: Int
 
   """
   themeMode can override journey themeMode. If nothing is set then use
@@ -153,51 +185,60 @@ type CardBlock implements Block {
   themeName: ThemeName
 }
 
-input CardBlockCreateInput {
-  backgroundColor: String
-  fullscreen: Boolean
+input CardBlockCreateInput
+  @join__type(graph: JOURNEYS)
+{
   id: ID
   journeyId: ID!
   parentBlockId: ID!
-  themeMode: ThemeMode
-  themeName: ThemeName
-}
-
-input CardBlockUpdateInput {
   backgroundColor: String
   fullscreen: Boolean
-  parentBlockId: ID
   themeMode: ThemeMode
   themeName: ThemeName
 }
 
-type ChatOpenEvent implements Event {
-  """time event was created"""
-  createdAt: DateTime!
+input CardBlockUpdateInput
+  @join__type(graph: JOURNEYS)
+{
+  parentBlockId: ID
+  backgroundColor: String
+  fullscreen: Boolean
+  themeMode: ThemeMode
+  themeName: ThemeName
+}
+
+type ChatOpenEvent implements Event
+  @join__implements(graph: JOURNEYS, interface: "Event")
+  @join__type(graph: JOURNEYS)
+{
   id: ID!
 
   """ID of the journey that the buttonBlock belongs to"""
   journeyId: ID!
 
+  """time event was created"""
+  createdAt: DateTime!
+
   """null for ChatOpenEvent"""
   label: String
+
+  """messagePlatform of the link used for chat"""
+  value: String
 
   """
   messagePlatform of the link used for chat (based on the messagePlatform in the value field)
   """
   messagePlatform: MessagePlatform
-
-  """messagePlatform of the link used for chat"""
-  value: String
 }
 
-input ChatOpenEventCreateInput {
-  blockId: ID!
-
+input ChatOpenEventCreateInput
+  @join__type(graph: JOURNEYS)
+{
   """
   ID should be unique Event UUID (Provided for optimistic mutation result matching)
   """
   id: ID
+  blockId: ID!
 
   """id of the parent stepBlock"""
   stepId: ID
@@ -206,165 +247,217 @@ input ChatOpenEventCreateInput {
   value: MessagePlatform
 }
 
+type CloudflareImage
+  @join__type(graph: MEDIA)
+{
+  id: ID!
+  uploadUrl: String
+  userId: ID!
+  createdAt: String!
+}
+
 type Country
-  @join__owner(graph: LANGUAGES)
   @join__type(graph: LANGUAGES, key: "id")
 {
-  continent(languageId: ID, primary: Boolean): [Translation!]! @join__field(graph: LANGUAGES)
-  id: ID! @join__field(graph: LANGUAGES)
-  image: String @join__field(graph: LANGUAGES)
-  languages: [Language!]! @join__field(graph: LANGUAGES)
-  latitude: Float! @join__field(graph: LANGUAGES)
-  longitude: Float! @join__field(graph: LANGUAGES)
-  name(languageId: ID, primary: Boolean): [Translation!]! @join__field(graph: LANGUAGES)
-  population: Int! @join__field(graph: LANGUAGES)
+  id: ID!
+  name(languageId: ID, primary: Boolean): [Translation!]!
+  population: Int!
+  continent(languageId: ID, primary: Boolean): [Translation!]!
 
   """
   slug is a permanent link to the country. It should only be appended, not edited or deleted
   """
-  slug(languageId: ID, primary: Boolean): [Translation!]! @join__field(graph: LANGUAGES)
+  slug(languageId: ID, primary: Boolean): [Translation!]!
+  languages: [Language!]!
+  latitude: Float!
+  longitude: Float!
+  image: String
 }
 
-"""DateTime custom scalar"""
 scalar DateTime
+  @join__type(graph: JOURNEYS)
 
-type Device {
+type Device
+  @join__type(graph: JOURNEYS)
+{
   model: String
   type: DeviceType
   vendor: String
 }
 
-enum DeviceType {
-  console
-  embedded
-  mobile
-  smarttv
-  tablet
-  wearable
+enum DeviceType
+  @join__type(graph: JOURNEYS)
+{
+  console @join__enumValue(graph: JOURNEYS)
+  mobile @join__enumValue(graph: JOURNEYS)
+  tablet @join__enumValue(graph: JOURNEYS)
+  smarttv @join__enumValue(graph: JOURNEYS)
+  wearable @join__enumValue(graph: JOURNEYS)
+  embedded @join__enumValue(graph: JOURNEYS)
 }
 
-interface Event {
-  createdAt: DateTime!
+interface Event
+  @join__type(graph: JOURNEYS)
+{
   id: ID!
   journeyId: ID!
+  createdAt: DateTime!
   label: String
   value: String
 }
 
-enum GridAlignItems {
-  baseline
-  center
-  flexEnd
-  flexStart
+enum GridAlignItems
+  @join__type(graph: JOURNEYS)
+{
+  baseline @join__enumValue(graph: JOURNEYS)
+  flexStart @join__enumValue(graph: JOURNEYS)
+  flexEnd @join__enumValue(graph: JOURNEYS)
+  center @join__enumValue(graph: JOURNEYS)
 }
 
-type GridContainerBlock implements Block {
-  alignItems: GridAlignItems!
-  direction: GridDirection!
+type GridContainerBlock implements Block
+  @join__implements(graph: JOURNEYS, interface: "Block")
+  @join__type(graph: JOURNEYS)
+{
   id: ID!
   journeyId: ID!
-  justifyContent: GridJustifyContent!
   parentBlockId: ID
   parentOrder: Int
   spacing: Int!
+  direction: GridDirection!
+  justifyContent: GridJustifyContent!
+  alignItems: GridAlignItems!
 }
 
-enum GridDirection {
-  column
-  columnReverse
-  row
-  rowReverse
+enum GridDirection
+  @join__type(graph: JOURNEYS)
+{
+  columnReverse @join__enumValue(graph: JOURNEYS)
+  column @join__enumValue(graph: JOURNEYS)
+  row @join__enumValue(graph: JOURNEYS)
+  rowReverse @join__enumValue(graph: JOURNEYS)
 }
 
-type GridItemBlock implements Block {
+type GridItemBlock implements Block
+  @join__implements(graph: JOURNEYS, interface: "Block")
+  @join__type(graph: JOURNEYS)
+{
   id: ID!
   journeyId: ID!
-  lg: Int!
   parentBlockId: ID
   parentOrder: Int
-  sm: Int!
   xl: Int!
+  lg: Int!
+  sm: Int!
 }
 
-enum GridJustifyContent {
-  center
-  flexEnd
-  flexStart
+enum GridJustifyContent
+  @join__type(graph: JOURNEYS)
+{
+  flexStart @join__enumValue(graph: JOURNEYS)
+  flexEnd @join__enumValue(graph: JOURNEYS)
+  center @join__enumValue(graph: JOURNEYS)
 }
 
-type IconBlock implements Block {
-  color: IconColor
+type IconBlock implements Block
+  @join__implements(graph: JOURNEYS, interface: "Block")
+  @join__type(graph: JOURNEYS)
+{
   id: ID!
   journeyId: ID!
-  name: IconName
   parentBlockId: ID
   parentOrder: Int
+  name: IconName
+  color: IconColor
   size: IconSize
 }
 
-input IconBlockCreateInput {
-  color: IconColor
-
+input IconBlockCreateInput
+  @join__type(graph: JOURNEYS)
+{
   """
   ID should be unique Response UUID (Provided for optimistic mutation result matching)
   """
   id: ID
+  parentBlockId: ID!
   journeyId: ID!
   name: IconName
-  parentBlockId: ID!
-  size: IconSize
-}
-
-input IconBlockUpdateInput {
   color: IconColor
-  name: IconName
   size: IconSize
 }
 
-enum IconColor {
-  action
-  disabled
-  error
-  inherit
-  primary
-  secondary
+input IconBlockUpdateInput
+  @join__type(graph: JOURNEYS)
+{
+  name: IconName
+  color: IconColor
+  size: IconSize
+}
+
+enum IconColor
+  @join__type(graph: JOURNEYS)
+{
+  primary @join__enumValue(graph: JOURNEYS)
+  secondary @join__enumValue(graph: JOURNEYS)
+  action @join__enumValue(graph: JOURNEYS)
+  error @join__enumValue(graph: JOURNEYS)
+  disabled @join__enumValue(graph: JOURNEYS)
+  inherit @join__enumValue(graph: JOURNEYS)
 }
 
 """IconName is equivalent to the icons found in @mui/icons-material"""
-enum IconName {
-  ArrowBackRounded
-  ArrowForwardRounded
-  BeenhereRounded
-  ChatBubbleOutlineRounded
-  CheckCircleRounded
-  ChevronLeftRounded
-  ChevronRightRounded
-  ContactSupportRounded
-  FormatQuoteRounded
-  LiveTvRounded
-  LockOpenRounded
-  MenuBookRounded
-  PlayArrowRounded
-  RadioButtonUncheckedRounded
-  SendRounded
-  SubscriptionsRounded
-  TranslateRounded
+enum IconName
+  @join__type(graph: JOURNEYS)
+{
+  PlayArrowRounded @join__enumValue(graph: JOURNEYS)
+  TranslateRounded @join__enumValue(graph: JOURNEYS)
+  CheckCircleRounded @join__enumValue(graph: JOURNEYS)
+  RadioButtonUncheckedRounded @join__enumValue(graph: JOURNEYS)
+  FormatQuoteRounded @join__enumValue(graph: JOURNEYS)
+  LockOpenRounded @join__enumValue(graph: JOURNEYS)
+  ArrowForwardRounded @join__enumValue(graph: JOURNEYS)
+  ArrowBackRounded @join__enumValue(graph: JOURNEYS)
+  ChatBubbleOutlineRounded @join__enumValue(graph: JOURNEYS)
+  LiveTvRounded @join__enumValue(graph: JOURNEYS)
+  MenuBookRounded @join__enumValue(graph: JOURNEYS)
+  ChevronRightRounded @join__enumValue(graph: JOURNEYS)
+  ChevronLeftRounded @join__enumValue(graph: JOURNEYS)
+  BeenhereRounded @join__enumValue(graph: JOURNEYS)
+  SendRounded @join__enumValue(graph: JOURNEYS)
+  SubscriptionsRounded @join__enumValue(graph: JOURNEYS)
+  ContactSupportRounded @join__enumValue(graph: JOURNEYS)
 }
 
-enum IconSize {
-  inherit
-  lg
-  md
-  sm
-  xl
+enum IconSize
+  @join__type(graph: JOURNEYS)
+{
+  sm @join__enumValue(graph: JOURNEYS)
+  md @join__enumValue(graph: JOURNEYS)
+  lg @join__enumValue(graph: JOURNEYS)
+  xl @join__enumValue(graph: JOURNEYS)
+  inherit @join__enumValue(graph: JOURNEYS)
 }
 
-enum IdType {
-  databaseId
-  slug
+enum IdType
+  @join__type(graph: JOURNEYS)
+  @join__type(graph: LANGUAGES)
+  @join__type(graph: VIDEOS)
+{
+  databaseId @join__enumValue(graph: JOURNEYS) @join__enumValue(graph: LANGUAGES) @join__enumValue(graph: VIDEOS)
+  slug @join__enumValue(graph: JOURNEYS) @join__enumValue(graph: LANGUAGES) @join__enumValue(graph: VIDEOS)
 }
 
-type ImageBlock implements Block {
+type ImageBlock implements Block
+  @join__implements(graph: JOURNEYS, interface: "Block")
+  @join__type(graph: JOURNEYS)
+{
+  id: ID!
+  journeyId: ID!
+  parentBlockId: ID
+  parentOrder: Int
+  src: String
+  width: Int!
+  height: Int!
   alt: String!
 
   """
@@ -372,83 +465,96 @@ type ImageBlock implements Block {
   Find a frontend implementation at https://github.com/woltapp/blurhash
   """
   blurhash: String!
-  height: Int!
-  id: ID!
-  journeyId: ID!
-  parentBlockId: ID
-  parentOrder: Int
-  src: String
-  width: Int!
 }
 
-input ImageBlockCreateInput {
-  alt: String!
-  blurhash: String
-
+input ImageBlockCreateInput
+  @join__type(graph: JOURNEYS)
+{
   """
   ID should be unique Response UUID (Provided for optimistic mutation result matching)
   """
   id: ID
+  parentBlockId: ID!
+  journeyId: ID!
+  src: String
+  alt: String!
+
+  """
+  If blurhash, width, & height are provided, the image will skip blurhash processing. Otherwise these values will be calculated.
+  """
+  blurhash: String
+  width: Int
+  height: Int
 
   """
   True if the coverBlockId in a parent block should be set to this block's id.
   """
   isCover: Boolean
-  journeyId: ID!
-  parentBlockId: ID!
-  src: String
 }
 
-input ImageBlockUpdateInput {
-  alt: String
+input ImageBlockUpdateInput
+  @join__type(graph: JOURNEYS)
+{
   parentBlockId: ID
   src: String
+  alt: String
+
+  """
+  If blurhash, width, & height are provided, the image will skip blurhash processing. Otherwise these values will be calculated.
+  """
+  blurhash: String
+  width: Int
+  height: Int
 }
 
 scalar join__FieldSet
 
 enum join__Graph {
-  JOURNEYS @join__graph(name: "journeys" url: "http://127.0.0.1:4001/graphql")
-  LANGUAGES @join__graph(name: "languages" url: "http://127.0.0.1:4003/graphql")
-  USERS @join__graph(name: "users" url: "http://127.0.0.1:4002/graphql")
-  VIDEOS @join__graph(name: "videos" url: "http://127.0.0.1:4004/graphql")
+  JOURNEYS @join__graph(name: "journeys", url: "http://127.0.0.1:4001/graphql")
+  LANGUAGES @join__graph(name: "languages", url: "http://127.0.0.1:4003/graphql")
+  MEDIA @join__graph(name: "media", url: "http://127.0.0.1:4005/graphql")
+  USERS @join__graph(name: "users", url: "http://127.0.0.1:4002/graphql")
+  VIDEOS @join__graph(name: "videos", url: "http://127.0.0.1:4004/graphql")
 }
 
 type Journey
-  @join__owner(graph: JOURNEYS)
   @join__type(graph: JOURNEYS, key: "id")
 {
-  archivedAt: DateTime @join__field(graph: JOURNEYS)
-  blocks: [Block!] @join__field(graph: JOURNEYS)
-  createdAt: DateTime! @join__field(graph: JOURNEYS)
-  deletedAt: DateTime @join__field(graph: JOURNEYS)
-  description: String @join__field(graph: JOURNEYS)
-  featuredAt: DateTime @join__field(graph: JOURNEYS)
-  id: ID! @join__field(graph: JOURNEYS)
-  language: Language! @join__field(graph: JOURNEYS)
-  primaryImageBlock: ImageBlock @join__field(graph: JOURNEYS)
-  publishedAt: DateTime @join__field(graph: JOURNEYS)
-  seoDescription: String @join__field(graph: JOURNEYS)
-  seoTitle: String @join__field(graph: JOURNEYS)
-  slug: String! @join__field(graph: JOURNEYS)
-  status: JourneyStatus! @join__field(graph: JOURNEYS)
-  template: Boolean @join__field(graph: JOURNEYS)
-  themeMode: ThemeMode! @join__field(graph: JOURNEYS)
-  themeName: ThemeName! @join__field(graph: JOURNEYS)
-  title: String! @join__field(graph: JOURNEYS)
-  trashedAt: DateTime @join__field(graph: JOURNEYS)
-  userJourneys: [UserJourney!] @join__field(graph: JOURNEYS)
+  blocks: [Block!]
+  primaryImageBlock: ImageBlock
+  id: ID!
+  title: String!
+  language: Language!
+  themeMode: ThemeMode!
+  themeName: ThemeName!
+  description: String
+  slug: String!
+  archivedAt: DateTime
+  deletedAt: DateTime
+  publishedAt: DateTime
+  trashedAt: DateTime
+  featuredAt: DateTime
+  createdAt: DateTime!
+  status: JourneyStatus!
+  seoTitle: String
+  seoDescription: String
+  template: Boolean
+  userJourneys: [UserJourney!]
 }
 
-input JourneyCreateInput {
-  description: String
-
+input JourneyCreateInput
+  @join__type(graph: JOURNEYS)
+{
   """
   ID should be unique Response UUID
   (Provided for optimistic mutation result matching)
   """
   id: ID
+  title: String!
   languageId: String!
+  themeMode: ThemeMode
+  themeName: ThemeName
+  description: String
 
   """
   Slug should be unique amongst all journeys
@@ -458,68 +564,89 @@ input JourneyCreateInput {
   at the end of the slug guaranteeing uniqueness
   """
   slug: String
-  themeMode: ThemeMode
-  themeName: ThemeName
-  title: String!
 }
 
-input JourneysFilter {
+type JourneyProfile
+  @join__type(graph: JOURNEYS, key: "id")
+{
+  id: ID!
+  userId: ID!
+  acceptedTermsAt: DateTime
+}
+
+input JourneysFilter
+  @join__type(graph: JOURNEYS)
+{
   featured: Boolean
   template: Boolean
 }
 
-enum JourneysReportType {
-  multipleFull
-  multipleSummary
-  singleFull
-  singleSummary
+enum JourneysReportType
+  @join__type(graph: JOURNEYS)
+{
+  multipleFull @join__enumValue(graph: JOURNEYS)
+  multipleSummary @join__enumValue(graph: JOURNEYS)
+  singleFull @join__enumValue(graph: JOURNEYS)
+  singleSummary @join__enumValue(graph: JOURNEYS)
 }
 
-enum JourneyStatus {
-  archived
-  deleted
-  draft
-  published
-  trashed
+enum JourneyStatus
+  @join__type(graph: JOURNEYS)
+{
+  archived @join__enumValue(graph: JOURNEYS)
+  deleted @join__enumValue(graph: JOURNEYS)
+  draft @join__enumValue(graph: JOURNEYS)
+  published @join__enumValue(graph: JOURNEYS)
+  trashed @join__enumValue(graph: JOURNEYS)
 }
 
-input JourneyTemplateInput {
+input JourneyTemplateInput
+  @join__type(graph: JOURNEYS)
+{
   template: Boolean
 }
 
-input JourneyUpdateInput {
-  description: String
+input JourneyUpdateInput
+  @join__type(graph: JOURNEYS)
+{
+  title: String
   languageId: String
-  primaryImageBlockId: ID
-  seoDescription: String
-  seoTitle: String
-  slug: String
   themeMode: ThemeMode
   themeName: ThemeName
-  title: String
+  description: String
+  primaryImageBlockId: ID
+  slug: String
+  seoTitle: String
+  seoDescription: String
 }
 
-type JourneyViewEvent implements Event {
-  """time event was created"""
-  createdAt: DateTime!
+type JourneyViewEvent implements Event
+  @join__implements(graph: JOURNEYS, interface: "Event")
+  @join__type(graph: JOURNEYS)
+{
   id: ID!
 
   """ID of the journey being viewed"""
   journeyId: ID!
 
+  """time event was created"""
+  createdAt: DateTime!
+
   """title of the journey being viewed"""
   label: String
+
+  """languageId of the journey being viewed"""
+  value: String
 
   """
   language of the journey being viewed (based on the ID in the value field)
   """
   language: Language
-
-  """languageId of the journey being viewed"""
-  value: String
 }
 
-input JourneyViewEventCreateInput {
+input JourneyViewEventCreateInput
+  @join__type(graph: JOURNEYS)
+{
   """
   ID should be unique Event UUID (Provided for optimistic mutation result matching)
   """
@@ -534,57 +661,89 @@ input JourneyViewEventCreateInput {
 }
 
 type Language
-  @join__owner(graph: LANGUAGES)
-  @join__type(graph: LANGUAGES, key: "id")
   @join__type(graph: JOURNEYS, key: "id")
+  @join__type(graph: LANGUAGES, key: "id")
   @join__type(graph: VIDEOS, key: "id")
 {
+  id: ID!
   bcp47: String @join__field(graph: LANGUAGES)
-  id: ID! @join__field(graph: LANGUAGES)
   iso3: String @join__field(graph: LANGUAGES)
   name(languageId: ID, primary: Boolean): [Translation!]! @join__field(graph: LANGUAGES)
 }
 
-enum LanguageIdType {
-  bcp47
-  databaseId
+enum LanguageIdType
+  @join__type(graph: LANGUAGES)
+{
+  databaseId @join__enumValue(graph: LANGUAGES)
+  bcp47 @join__enumValue(graph: LANGUAGES)
 }
 
-type LanguageWithSlug {
+type LanguageWithSlug
+  @join__type(graph: VIDEOS)
+{
   language: Language
   slug: String
 }
 
-type LinkAction implements Action {
-  gtmEventName: String
+scalar link__Import
+
+enum link__Purpose {
+  """
+  `SECURITY` features provide metadata necessary to securely resolve fields.
+  """
+  SECURITY
+
+  """
+  `EXECUTION` features provide metadata necessary for operation execution.
+  """
+  EXECUTION
+}
+
+type LinkAction implements Action
+  @join__implements(graph: JOURNEYS, interface: "Action")
+  @join__type(graph: JOURNEYS)
+{
   parentBlockId: ID!
-  target: String
-  url: String!
-}
-
-input LinkActionInput {
   gtmEventName: String
-  target: String
   url: String!
+  target: String
 }
 
-enum MessagePlatform {
-  facebook
-  instagram
-  line
-  skype
-  snapchat
-  telegram
-  tikTok
-  viber
-  vk
-  whatsApp
+input LinkActionInput
+  @join__type(graph: JOURNEYS)
+{
+  gtmEventName: String
+  url: String!
+  target: String
 }
 
-type Mutation {
+enum MessagePlatform
+  @join__type(graph: JOURNEYS)
+{
+  facebook @join__enumValue(graph: JOURNEYS)
+  telegram @join__enumValue(graph: JOURNEYS)
+  whatsApp @join__enumValue(graph: JOURNEYS)
+  instagram @join__enumValue(graph: JOURNEYS)
+  viber @join__enumValue(graph: JOURNEYS)
+  vk @join__enumValue(graph: JOURNEYS)
+  snapchat @join__enumValue(graph: JOURNEYS)
+  skype @join__enumValue(graph: JOURNEYS)
+  line @join__enumValue(graph: JOURNEYS)
+  tikTok @join__enumValue(graph: JOURNEYS)
+}
+
+type Mutation
+  @join__type(graph: JOURNEYS)
+  @join__type(graph: MEDIA)
+{
+  blockDeleteAction(id: ID!, journeyId: ID!): Block! @join__field(graph: JOURNEYS)
+  blockUpdateNavigateAction(id: ID!, journeyId: ID!, input: NavigateActionInput!): NavigateAction! @join__field(graph: JOURNEYS)
+  blockUpdateNavigateToBlockAction(id: ID!, journeyId: ID!, input: NavigateToBlockActionInput!): NavigateToBlockAction! @join__field(graph: JOURNEYS)
+  blockUpdateNavigateToJourneyAction(id: ID!, journeyId: ID!, input: NavigateToJourneyActionInput!): NavigateToJourneyAction! @join__field(graph: JOURNEYS)
+  blockUpdateLinkAction(id: ID!, journeyId: ID!, input: LinkActionInput!): LinkAction! @join__field(graph: JOURNEYS)
+
   """blockDelete returns the updated sibling blocks on successful delete"""
   blockDelete(id: ID!, journeyId: ID!, parentBlockId: ID): [Block!]! @join__field(graph: JOURNEYS)
-  blockDeleteAction(id: ID!, journeyId: ID!): Block! @join__field(graph: JOURNEYS)
 
   """
   blockDuplicate returns the updated block, it's children and sibling blocks on successful duplicate
@@ -599,30 +758,49 @@ type Mutation {
     parentOrder: Int
   ): [Block!]! @join__field(graph: JOURNEYS)
   blockOrderUpdate(id: ID!, journeyId: ID!, parentOrder: Int!): [Block!]! @join__field(graph: JOURNEYS)
-  blockUpdateLinkAction(id: ID!, input: LinkActionInput!, journeyId: ID!): LinkAction! @join__field(graph: JOURNEYS)
-  blockUpdateNavigateAction(id: ID!, input: NavigateActionInput!, journeyId: ID!): NavigateAction! @join__field(graph: JOURNEYS)
-  blockUpdateNavigateToBlockAction(id: ID!, input: NavigateToBlockActionInput!, journeyId: ID!): NavigateToBlockAction! @join__field(graph: JOURNEYS)
-  blockUpdateNavigateToJourneyAction(id: ID!, input: NavigateToJourneyActionInput!, journeyId: ID!): NavigateToJourneyAction! @join__field(graph: JOURNEYS)
   buttonBlockCreate(input: ButtonBlockCreateInput!): ButtonBlock! @join__field(graph: JOURNEYS)
-  buttonBlockUpdate(id: ID!, input: ButtonBlockUpdateInput!, journeyId: ID!): ButtonBlock @join__field(graph: JOURNEYS)
-  buttonClickEventCreate(input: ButtonClickEventCreateInput!): ButtonClickEvent! @join__field(graph: JOURNEYS)
+  buttonBlockUpdate(id: ID!, journeyId: ID!, input: ButtonBlockUpdateInput!): ButtonBlock @join__field(graph: JOURNEYS)
   cardBlockCreate(input: CardBlockCreateInput!): CardBlock! @join__field(graph: JOURNEYS)
-  cardBlockUpdate(id: ID!, input: CardBlockUpdateInput!, journeyId: ID!): CardBlock! @join__field(graph: JOURNEYS)
-  chatOpenEventCreate(input: ChatOpenEventCreateInput!): ChatOpenEvent! @join__field(graph: JOURNEYS)
+  cardBlockUpdate(id: ID!, journeyId: ID!, input: CardBlockUpdateInput!): CardBlock! @join__field(graph: JOURNEYS)
   iconBlockCreate(input: IconBlockCreateInput!): IconBlock! @join__field(graph: JOURNEYS)
-  iconBlockUpdate(id: ID!, input: IconBlockUpdateInput!, journeyId: ID!): IconBlock! @join__field(graph: JOURNEYS)
+  iconBlockUpdate(id: ID!, journeyId: ID!, input: IconBlockUpdateInput!): IconBlock! @join__field(graph: JOURNEYS)
   imageBlockCreate(input: ImageBlockCreateInput!): ImageBlock! @join__field(graph: JOURNEYS)
-  imageBlockUpdate(id: ID!, input: ImageBlockUpdateInput!, journeyId: ID!): ImageBlock! @join__field(graph: JOURNEYS)
+  imageBlockUpdate(id: ID!, journeyId: ID!, input: ImageBlockUpdateInput!): ImageBlock! @join__field(graph: JOURNEYS)
+  radioOptionBlockCreate(input: RadioOptionBlockCreateInput!): RadioOptionBlock! @join__field(graph: JOURNEYS)
+  radioQuestionBlockCreate(input: RadioQuestionBlockCreateInput!): RadioQuestionBlock! @join__field(graph: JOURNEYS)
+  radioOptionBlockUpdate(id: ID!, journeyId: ID!, input: RadioOptionBlockUpdateInput!): RadioOptionBlock! @join__field(graph: JOURNEYS)
+  radioQuestionBlockUpdate(id: ID!, journeyId: ID!, parentBlockId: ID!): RadioQuestionBlock! @join__field(graph: JOURNEYS)
+  signUpBlockCreate(input: SignUpBlockCreateInput!): SignUpBlock! @join__field(graph: JOURNEYS)
+  signUpBlockUpdate(id: ID!, journeyId: ID!, input: SignUpBlockUpdateInput!): SignUpBlock @join__field(graph: JOURNEYS)
+  stepBlockCreate(input: StepBlockCreateInput!): StepBlock! @join__field(graph: JOURNEYS)
+  stepBlockUpdate(id: ID!, journeyId: ID!, input: StepBlockUpdateInput!): StepBlock! @join__field(graph: JOURNEYS)
+  textResponseBlockCreate(input: TextResponseBlockCreateInput!): TextResponseBlock! @join__field(graph: JOURNEYS)
+  textResponseBlockUpdate(id: ID!, journeyId: ID!, input: TextResponseBlockUpdateInput!): TextResponseBlock @join__field(graph: JOURNEYS)
+  typographyBlockCreate(input: TypographyBlockCreateInput!): TypographyBlock! @join__field(graph: JOURNEYS)
+  typographyBlockUpdate(id: ID!, journeyId: ID!, input: TypographyBlockUpdateInput!): TypographyBlock! @join__field(graph: JOURNEYS)
+  videoBlockCreate(input: VideoBlockCreateInput!): VideoBlock! @join__field(graph: JOURNEYS)
+  videoBlockUpdate(id: ID!, journeyId: ID!, input: VideoBlockUpdateInput!): VideoBlock! @join__field(graph: JOURNEYS)
+  buttonClickEventCreate(input: ButtonClickEventCreateInput!): ButtonClickEvent! @join__field(graph: JOURNEYS)
+  chatOpenEventCreate(input: ChatOpenEventCreateInput!): ChatOpenEvent! @join__field(graph: JOURNEYS)
+  journeyViewEventCreate(input: JourneyViewEventCreateInput!): JourneyViewEvent! @join__field(graph: JOURNEYS)
+  radioQuestionSubmissionEventCreate(input: RadioQuestionSubmissionEventCreateInput!): RadioQuestionSubmissionEvent! @join__field(graph: JOURNEYS)
+  signUpSubmissionEventCreate(input: SignUpSubmissionEventCreateInput!): SignUpSubmissionEvent! @join__field(graph: JOURNEYS)
+  stepViewEventCreate(input: StepViewEventCreateInput!): StepViewEvent! @join__field(graph: JOURNEYS)
+  stepNextEventCreate(input: StepNextEventCreateInput!): StepNextEvent! @join__field(graph: JOURNEYS)
+  textResponseSubmissionEventCreate(input: TextResponseSubmissionEventCreateInput!): TextResponseSubmissionEvent! @join__field(graph: JOURNEYS)
+  videoStartEventCreate(input: VideoStartEventCreateInput!): VideoStartEvent! @join__field(graph: JOURNEYS)
+  videoPlayEventCreate(input: VideoPlayEventCreateInput!): VideoPlayEvent! @join__field(graph: JOURNEYS)
+  videoPauseEventCreate(input: VideoPauseEventCreateInput!): VideoPauseEvent! @join__field(graph: JOURNEYS)
+  videoCompleteEventCreate(input: VideoCompleteEventCreateInput!): VideoCompleteEvent! @join__field(graph: JOURNEYS)
+  videoExpandEventCreate(input: VideoExpandEventCreateInput!): VideoExpandEvent! @join__field(graph: JOURNEYS)
+  videoCollapseEventCreate(input: VideoCollapseEventCreateInput!): VideoCollapseEvent! @join__field(graph: JOURNEYS)
+  videoProgressEventCreate(input: VideoProgressEventCreateInput!): VideoProgressEvent! @join__field(graph: JOURNEYS)
   journeyCreate(input: JourneyCreateInput!): Journey! @join__field(graph: JOURNEYS)
   journeyDuplicate(id: ID!): Journey! @join__field(graph: JOURNEYS)
+  journeyUpdate(id: ID!, input: JourneyUpdateInput!): Journey! @join__field(graph: JOURNEYS)
 
   """Sets journey status to published"""
   journeyPublish(id: ID!): Journey @join__field(graph: JOURNEYS)
-
-  """Updates template"""
-  journeyTemplate(id: ID!, input: JourneyTemplateInput!): Journey! @join__field(graph: JOURNEYS)
-  journeyUpdate(id: ID!, input: JourneyUpdateInput!): Journey! @join__field(graph: JOURNEYS)
-  journeyViewEventCreate(input: JourneyViewEventCreateInput!): JourneyViewEvent! @join__field(graph: JOURNEYS)
 
   """Sets journeys statuses to archived"""
   journeysArchive(ids: [ID!]!): [Journey] @join__field(graph: JOURNEYS)
@@ -630,191 +808,226 @@ type Mutation {
   """Sets journeys statuses to deleted"""
   journeysDelete(ids: [ID!]!): [Journey] @join__field(graph: JOURNEYS)
 
+  """Sets journeys statuses to trashed"""
+  journeysTrash(ids: [ID!]!): [Journey] @join__field(graph: JOURNEYS)
+
   """Sets journeys statuses to last active status"""
   journeysRestore(ids: [ID!]!): [Journey] @join__field(graph: JOURNEYS)
 
-  """Sets journeys statuses to trashed"""
-  journeysTrash(ids: [ID!]!): [Journey] @join__field(graph: JOURNEYS)
-  radioOptionBlockCreate(input: RadioOptionBlockCreateInput!): RadioOptionBlock! @join__field(graph: JOURNEYS)
-  radioOptionBlockUpdate(id: ID!, input: RadioOptionBlockUpdateInput!, journeyId: ID!): RadioOptionBlock! @join__field(graph: JOURNEYS)
-  radioQuestionBlockCreate(input: RadioQuestionBlockCreateInput!): RadioQuestionBlock! @join__field(graph: JOURNEYS)
-  radioQuestionBlockUpdate(id: ID!, journeyId: ID!, parentBlockId: ID!): RadioQuestionBlock! @join__field(graph: JOURNEYS)
-  radioQuestionSubmissionEventCreate(input: RadioQuestionSubmissionEventCreateInput!): RadioQuestionSubmissionEvent! @join__field(graph: JOURNEYS)
-  signUpBlockCreate(input: SignUpBlockCreateInput!): SignUpBlock! @join__field(graph: JOURNEYS)
-  signUpBlockUpdate(id: ID!, input: SignUpBlockUpdateInput!, journeyId: ID!): SignUpBlock @join__field(graph: JOURNEYS)
-  signUpSubmissionEventCreate(input: SignUpSubmissionEventCreateInput!): SignUpSubmissionEvent! @join__field(graph: JOURNEYS)
-  stepBlockCreate(input: StepBlockCreateInput!): StepBlock! @join__field(graph: JOURNEYS)
-  stepBlockUpdate(id: ID!, input: StepBlockUpdateInput!, journeyId: ID!): StepBlock! @join__field(graph: JOURNEYS)
-  stepNextEventCreate(input: StepNextEventCreateInput!): StepNextEvent! @join__field(graph: JOURNEYS)
-  stepViewEventCreate(input: StepViewEventCreateInput!): StepViewEvent! @join__field(graph: JOURNEYS)
-  textResponseBlockCreate(input: TextResponseBlockCreateInput!): TextResponseBlock! @join__field(graph: JOURNEYS)
-  textResponseBlockUpdate(id: ID!, input: TextResponseBlockUpdateInput!, journeyId: ID!): TextResponseBlock @join__field(graph: JOURNEYS)
-  textResponseSubmissionEventCreate(input: TextResponseSubmissionEventCreateInput!): TextResponseSubmissionEvent! @join__field(graph: JOURNEYS)
-  typographyBlockCreate(input: TypographyBlockCreateInput!): TypographyBlock! @join__field(graph: JOURNEYS)
-  typographyBlockUpdate(id: ID!, input: TypographyBlockUpdateInput!, journeyId: ID!): TypographyBlock! @join__field(graph: JOURNEYS)
+  """Updates template"""
+  journeyTemplate(id: ID!, input: JourneyTemplateInput!): Journey! @join__field(graph: JOURNEYS)
+  journeyProfileCreate: JourneyProfile! @join__field(graph: JOURNEYS)
+  userInviteCreate(journeyId: ID!, input: UserInviteCreateInput): UserInvite @join__field(graph: JOURNEYS)
+  userInviteRemove(id: ID!, journeyId: ID!): UserInvite! @join__field(graph: JOURNEYS)
+  userInviteAcceptAll: [UserInvite!]! @join__field(graph: JOURNEYS)
   userJourneyApprove(id: ID!): UserJourney! @join__field(graph: JOURNEYS)
   userJourneyPromote(id: ID!): UserJourney! @join__field(graph: JOURNEYS)
   userJourneyRemove(id: ID!): UserJourney! @join__field(graph: JOURNEYS)
 
   """Removes all userJourneys associated with a journeyId"""
   userJourneyRemoveAll(id: ID!): [UserJourney!]! @join__field(graph: JOURNEYS)
-  userJourneyRequest(idType: IdType, journeyId: ID!): UserJourney! @join__field(graph: JOURNEYS)
-  videoBlockCreate(input: VideoBlockCreateInput!): VideoBlock! @join__field(graph: JOURNEYS)
-  videoBlockUpdate(id: ID!, input: VideoBlockUpdateInput!, journeyId: ID!): VideoBlock! @join__field(graph: JOURNEYS)
-  videoCollapseEventCreate(input: VideoCollapseEventCreateInput!): VideoCollapseEvent! @join__field(graph: JOURNEYS)
-  videoCompleteEventCreate(input: VideoCompleteEventCreateInput!): VideoCompleteEvent! @join__field(graph: JOURNEYS)
-  videoExpandEventCreate(input: VideoExpandEventCreateInput!): VideoExpandEvent! @join__field(graph: JOURNEYS)
-  videoPauseEventCreate(input: VideoPauseEventCreateInput!): VideoPauseEvent! @join__field(graph: JOURNEYS)
-  videoPlayEventCreate(input: VideoPlayEventCreateInput!): VideoPlayEvent! @join__field(graph: JOURNEYS)
-  videoProgressEventCreate(input: VideoProgressEventCreateInput!): VideoProgressEvent! @join__field(graph: JOURNEYS)
-  videoStartEventCreate(input: VideoStartEventCreateInput!): VideoStartEvent! @join__field(graph: JOURNEYS)
+  userJourneyRequest(journeyId: ID!, idType: IdType): UserJourney! @join__field(graph: JOURNEYS)
+  userJourneyOpen(id: ID!): UserJourney @join__field(graph: JOURNEYS)
 
   """Update a visitor"""
   visitorUpdate(id: ID!, input: VisitorUpdateInput!): Visitor! @join__field(graph: JOURNEYS)
+  createCloudflareUploadByFile: CloudflareImage @join__field(graph: MEDIA)
+  createCloudflareUploadByUrl(url: String!): CloudflareImage @join__field(graph: MEDIA)
+  deleteCloudflareImage(id: ID!): Boolean @join__field(graph: MEDIA)
+  cloudflareUploadComplete(id: ID!): Boolean @join__field(graph: MEDIA)
+  triggerUnsplashDownload(url: String!): Boolean @join__field(graph: MEDIA)
 }
 
 """
 NavigateAction is an Action that navigates to the nextBlockId field set on the
 closest ancestor StepBlock.
 """
-type NavigateAction implements Action {
-  gtmEventName: String
+type NavigateAction implements Action
+  @join__implements(graph: JOURNEYS, interface: "Action")
+  @join__type(graph: JOURNEYS)
+{
   parentBlockId: ID!
-}
-
-input NavigateActionInput {
   gtmEventName: String
 }
 
-type NavigateToBlockAction implements Action {
-  blockId: String!
+input NavigateActionInput
+  @join__type(graph: JOURNEYS)
+{
   gtmEventName: String
+}
+
+type NavigateToBlockAction implements Action
+  @join__implements(graph: JOURNEYS, interface: "Action")
+  @join__type(graph: JOURNEYS)
+{
   parentBlockId: ID!
-}
-
-input NavigateToBlockActionInput {
+  gtmEventName: String
   blockId: String!
-  gtmEventName: String
 }
 
-type NavigateToJourneyAction implements Action {
+input NavigateToBlockActionInput
+  @join__type(graph: JOURNEYS)
+{
   gtmEventName: String
+  blockId: String!
+}
+
+type NavigateToJourneyAction implements Action
+  @join__implements(graph: JOURNEYS, interface: "Action")
+  @join__type(graph: JOURNEYS)
+{
+  parentBlockId: ID!
+  gtmEventName: String
+  journeyId: String!
   journey: Journey
-  journeyId: String!
-  parentBlockId: ID!
 }
 
-input NavigateToJourneyActionInput {
+input NavigateToJourneyActionInput
+  @join__type(graph: JOURNEYS)
+{
   gtmEventName: String
   journeyId: String!
 }
 
-type OperatingSystem {
+type OperatingSystem
+  @join__type(graph: JOURNEYS)
+{
   name: String
   version: String
 }
 
 """Information about pagination in a connection."""
-type PageInfo {
-  """When paginating forwards, the cursor to continue."""
-  endCursor: String
-
+type PageInfo
+  @join__type(graph: JOURNEYS)
+{
   """When paginating forwards, are there more items?"""
   hasNextPage: Boolean!
 
   """When paginating backwards, the cursor to continue."""
   startCursor: String
+
+  """When paginating forwards, the cursor to continue."""
+  endCursor: String
 }
 
-type PowerBiEmbed {
-  """The embed token"""
-  accessToken: String!
-
-  """The embed URL of the report"""
-  embedUrl: String!
-
-  """The date and time (UTC) of token expiration"""
-  expiration: String!
-
+type PowerBiEmbed
+  @join__type(graph: JOURNEYS)
+{
   """The report ID"""
   reportId: String!
 
   """The name of the report"""
   reportName: String!
+
+  """The embed URL of the report"""
+  embedUrl: String!
+
+  """The embed token"""
+  accessToken: String!
+
+  """The date and time (UTC) of token expiration"""
+  expiration: String!
 }
 
-type Query {
-  adminJourney(id: ID!, idType: IdType): Journey @join__field(graph: JOURNEYS)
+type Query
+  @join__type(graph: JOURNEYS)
+  @join__type(graph: LANGUAGES)
+  @join__type(graph: MEDIA)
+  @join__type(graph: USERS)
+  @join__type(graph: VIDEOS)
+{
   adminJourneys(status: [JourneyStatus!], template: Boolean): [Journey!]! @join__field(graph: JOURNEYS)
   adminJourneysReport(reportType: JourneysReportType!): PowerBiEmbed @join__field(graph: JOURNEYS)
-  countries: [Country!]! @join__field(graph: LANGUAGES)
-  country(id: ID!, idType: IdType): Country! @join__field(graph: LANGUAGES)
-  getUserRole: UserRole @join__field(graph: JOURNEYS)
-  journey(id: ID!, idType: IdType): Journey @join__field(graph: JOURNEYS)
+  adminJourney(id: ID!, idType: IdType): Journey @join__field(graph: JOURNEYS)
   journeys(where: JourneysFilter): [Journey!]! @join__field(graph: JOURNEYS)
-  language(id: ID!, idType: LanguageIdType): Language @join__field(graph: LANGUAGES)
-  languages(limit: Int, offset: Int): [Language!]! @join__field(graph: LANGUAGES)
-  me: User @join__field(graph: USERS)
-  video(id: ID!, idType: IdType): Video @join__field(graph: VIDEOS)
-  videos(limit: Int, offset: Int, where: VideosFilter): [Video!]! @join__field(graph: VIDEOS)
-
-  """Get a single visitor"""
-  visitor(id: ID!): Visitor! @join__field(graph: JOURNEYS)
+  journey(id: ID!, idType: IdType): Journey @join__field(graph: JOURNEYS)
+  getJourneyProfile: JourneyProfile @join__field(graph: JOURNEYS)
+  userInvites(journeyId: ID!): [UserInvite!] @join__field(graph: JOURNEYS)
+  getUserRole: UserRole @join__field(graph: JOURNEYS)
 
   """A list of visitors that are connected with a specific team."""
   visitorsConnection(
-    """Returns the elements in the list that come after the specified cursor."""
-    after: String
+    """Returns the visitor items related to a specific team."""
+    teamId: String!
 
     """Returns the first n elements from the list."""
     first: Int
 
-    """Returns the visitor items related to a specific team."""
-    teamId: String!
+    """Returns the elements in the list that come after the specified cursor."""
+    after: String
   ): VisitorsConnection! @join__field(graph: JOURNEYS)
+
+  """Get a single visitor"""
+  visitor(id: ID!): Visitor! @join__field(graph: JOURNEYS)
+  countries: [Country!]! @join__field(graph: LANGUAGES)
+  country(id: ID!, idType: IdType): Country! @join__field(graph: LANGUAGES)
+  languages(offset: Int, limit: Int): [Language!]! @join__field(graph: LANGUAGES)
+  language(id: ID!, idType: LanguageIdType): Language @join__field(graph: LANGUAGES)
+  getMyCloudflareImages: [CloudflareImage] @join__field(graph: MEDIA)
+  listUnsplashCollectionPhotos(collectionId: String!, page: Int, perPage: Int, orientation: UnsplashPhotoOrientation): [UnsplashPhoto!]! @join__field(graph: MEDIA)
+  searchUnsplashPhotos(query: String!, page: Int, perPage: Int, orderBy: UnsplashOrderBy, collections: [String], contentFilter: UnsplashContentFilter, color: UnsplashColor, orientation: UnsplashPhotoOrientation): UnsplashQueryResponse! @join__field(graph: MEDIA)
+  me: User @join__field(graph: USERS)
+  videos(where: VideosFilter, offset: Int, limit: Int): [Video!]! @join__field(graph: VIDEOS)
+  video(id: ID!, idType: IdType): Video @join__field(graph: VIDEOS)
 }
 
-type RadioOptionBlock implements Block {
+type RadioOptionBlock implements Block
+  @join__implements(graph: JOURNEYS, interface: "Block")
+  @join__type(graph: JOURNEYS)
+{
+  id: ID!
+  journeyId: ID!
+  parentBlockId: ID
+  parentOrder: Int
+  label: String!
   action: Action
-  id: ID!
-  journeyId: ID!
-  label: String!
-  parentBlockId: ID
-  parentOrder: Int
 }
 
-input RadioOptionBlockCreateInput {
+input RadioOptionBlockCreateInput
+  @join__type(graph: JOURNEYS)
+{
   id: ID
   journeyId: ID!
-  label: String!
   parentBlockId: ID!
+  label: String!
 }
 
-input RadioOptionBlockUpdateInput {
+input RadioOptionBlockUpdateInput
+  @join__type(graph: JOURNEYS)
+{
+  parentBlockId: ID
   label: String
-  parentBlockId: ID
 }
 
-type RadioQuestionBlock implements Block {
+type RadioQuestionBlock implements Block
+  @join__implements(graph: JOURNEYS, interface: "Block")
+  @join__type(graph: JOURNEYS)
+{
   id: ID!
   journeyId: ID!
   parentBlockId: ID
   parentOrder: Int
 }
 
-input RadioQuestionBlockCreateInput {
+input RadioQuestionBlockCreateInput
+  @join__type(graph: JOURNEYS)
+{
   id: ID
   journeyId: ID!
   parentBlockId: ID!
 }
 
-type RadioQuestionSubmissionEvent implements Event {
-  """time event was created"""
-  createdAt: DateTime!
+type RadioQuestionSubmissionEvent implements Event
+  @join__implements(graph: JOURNEYS, interface: "Event")
+  @join__type(graph: JOURNEYS)
+{
   id: ID!
 
   """ID of the journey that the radioQuestionBlock belongs to"""
   journeyId: ID!
+
+  """time event was created"""
+  createdAt: DateTime!
 
   """stepName of the parent stepBlock"""
   label: String
@@ -823,101 +1036,113 @@ type RadioQuestionSubmissionEvent implements Event {
   value: String
 }
 
-input RadioQuestionSubmissionEventCreateInput {
-  blockId: ID!
-
+input RadioQuestionSubmissionEventCreateInput
+  @join__type(graph: JOURNEYS)
+{
   """
   ID should be unique Event UUID (Provided for optimistic mutation result matching)
   """
   id: ID
-
-  """stepName of the parent stepBlock"""
-  label: String
+  blockId: ID!
   radioOptionBlockId: ID!
 
   """id of the parent stepBlock"""
   stepId: ID
 
+  """stepName of the parent stepBlock"""
+  label: String
+
   """label of the selected radioOption block"""
   value: String
 }
 
-enum Role {
+enum Role
+  @join__type(graph: JOURNEYS)
+{
   """
   User can create templates and
   add them to template library
   """
-  publisher
+  publisher @join__enumValue(graph: JOURNEYS)
 }
 
-type SignUpBlock implements Block {
-  action: Action
+type SignUpBlock implements Block
+  @join__implements(graph: JOURNEYS, interface: "Block")
+  @join__type(graph: JOURNEYS)
+{
   id: ID!
   journeyId: ID!
   parentBlockId: ID
   parentOrder: Int
+  action: Action
   submitIconId: ID
   submitLabel: String
 }
 
-input SignUpBlockCreateInput {
+input SignUpBlockCreateInput
+  @join__type(graph: JOURNEYS)
+{
   id: ID
   journeyId: ID!
   parentBlockId: ID!
   submitLabel: String!
 }
 
-input SignUpBlockUpdateInput {
+input SignUpBlockUpdateInput
+  @join__type(graph: JOURNEYS)
+{
   parentBlockId: ID
   submitIconId: ID
   submitLabel: String
 }
 
-type SignUpSubmissionEvent implements Event {
-  """time event was created"""
-  createdAt: DateTime!
-
-  """email from the signUpBlock form"""
-  email: String
+type SignUpSubmissionEvent implements Event
+  @join__implements(graph: JOURNEYS, interface: "Event")
+  @join__type(graph: JOURNEYS)
+{
   id: ID!
 
   """ID of the journey that the block belongs to"""
   journeyId: ID!
+
+  """time event was created"""
+  createdAt: DateTime!
 
   """null for signUpSubmissionEvent"""
   label: String
 
   """name from the signUpBlock form"""
   value: String
-}
-
-input SignUpSubmissionEventCreateInput {
-  blockId: ID!
 
   """email from the signUpBlock form"""
-  email: String!
+  email: String
+}
 
+input SignUpSubmissionEventCreateInput
+  @join__type(graph: JOURNEYS)
+{
   """
   ID should be unique Event UUID (Provided for optimistic mutation result matching)
   """
   id: ID
+  blockId: ID!
+
+  """id of the parent stepBlock"""
+  stepId: ID
 
   """name from the signUpBlock form"""
   name: String!
 
-  """id of the parent stepBlock"""
-  stepId: ID
+  """email from the signUpBlock form"""
+  email: String!
 }
 
-type StepBlock implements Block {
+type StepBlock implements Block
+  @join__implements(graph: JOURNEYS, interface: "Block")
+  @join__type(graph: JOURNEYS)
+{
   id: ID!
   journeyId: ID!
-
-  """
-  locked will be set to true if the user should not be able to manually
-  advance to the next step.
-  """
-  locked: Boolean!
 
   """
   nextBlockId contains the preferred block to navigate to when a
@@ -926,29 +1151,43 @@ type StepBlock implements Block {
   step in the journey based on parentOrder.
   """
   nextBlockId: ID
+
+  """
+  locked will be set to true if the user should not be able to manually
+  advance to the next step.
+  """
+  locked: Boolean!
   parentBlockId: ID
   parentOrder: Int
 }
 
-input StepBlockCreateInput {
+input StepBlockCreateInput
+  @join__type(graph: JOURNEYS)
+{
   id: ID
   journeyId: ID!
-  locked: Boolean
   nextBlockId: ID
+  locked: Boolean
 }
 
-input StepBlockUpdateInput {
-  locked: Boolean
+input StepBlockUpdateInput
+  @join__type(graph: JOURNEYS)
+{
   nextBlockId: ID
+  locked: Boolean
 }
 
-type StepNextEvent implements Event {
-  """time event was created"""
-  createdAt: DateTime!
+type StepNextEvent implements Event
+  @join__implements(graph: JOURNEYS, interface: "Event")
+  @join__type(graph: JOURNEYS)
+{
   id: ID!
 
   """ID of the journey that the stepBlock belongs to"""
   journeyId: ID!
+
+  """time event was created"""
+  createdAt: DateTime!
 
   """stepName of the stepBlock"""
   label: String
@@ -957,31 +1196,36 @@ type StepNextEvent implements Event {
   value: String
 }
 
-input StepNextEventCreateInput {
-  blockId: ID!
-
+input StepNextEventCreateInput
+  @join__type(graph: JOURNEYS)
+{
   """
   ID should be unique Event UUID (Provided for optimistic mutation result matching)
   """
   id: ID
-
-  """stepName of the stepBlock"""
-  label: String
+  blockId: ID!
 
   """id of the mext stepBlock"""
   nextStepId: ID!
+
+  """stepName of the stepBlock"""
+  label: String
 
   """stepName of the next stepBlock"""
   value: String
 }
 
-type StepViewEvent implements Event {
-  """time event was created"""
-  createdAt: DateTime!
+type StepViewEvent implements Event
+  @join__implements(graph: JOURNEYS, interface: "Event")
+  @join__type(graph: JOURNEYS)
+{
   id: ID!
 
   """ID of the journey that the stepBlock belongs to"""
   journeyId: ID!
+
+  """time event was created"""
+  createdAt: DateTime!
 
   """null for stepViewEvent"""
   label: String
@@ -990,55 +1234,67 @@ type StepViewEvent implements Event {
   value: String
 }
 
-input StepViewEventCreateInput {
-  blockId: ID!
-
+input StepViewEventCreateInput
+  @join__type(graph: JOURNEYS)
+{
   """
   ID should be unique Event UUID (Provided for optimistic mutation result matching)
   """
   id: ID
+  blockId: ID!
 
   """stepName of the stepBlock"""
   value: String
 }
 
-type TextResponseBlock implements Block {
-  action: Action
-  hint: String
+type TextResponseBlock implements Block
+  @join__implements(graph: JOURNEYS, interface: "Block")
+  @join__type(graph: JOURNEYS)
+{
   id: ID!
   journeyId: ID!
-  label: String!
-  minRows: Int
   parentBlockId: ID
   parentOrder: Int
+  label: String!
+  hint: String
+  minRows: Int
+  action: Action
   submitIconId: ID
   submitLabel: String
 }
 
-input TextResponseBlockCreateInput {
+input TextResponseBlockCreateInput
+  @join__type(graph: JOURNEYS)
+{
   id: ID
   journeyId: ID!
-  label: String!
   parentBlockId: ID!
+  label: String!
   submitLabel: String!
 }
 
-input TextResponseBlockUpdateInput {
-  hint: String
-  label: String
-  minRows: Int
+input TextResponseBlockUpdateInput
+  @join__type(graph: JOURNEYS)
+{
   parentBlockId: ID
+  label: String
+  hint: String
+  minRows: Int
   submitIconId: ID
   submitLabel: String
 }
 
-type TextResponseSubmissionEvent implements Event {
-  """time event was created"""
-  createdAt: DateTime!
+type TextResponseSubmissionEvent implements Event
+  @join__implements(graph: JOURNEYS, interface: "Event")
+  @join__type(graph: JOURNEYS)
+{
   id: ID!
 
   """ID of the journey that the buttonBlock belongs to"""
   journeyId: ID!
+
+  """time event was created"""
+  createdAt: DateTime!
 
   """stepName of the parent stepBlock"""
   label: String
@@ -1047,208 +1303,355 @@ type TextResponseSubmissionEvent implements Event {
   value: String
 }
 
-input TextResponseSubmissionEventCreateInput {
-  blockId: ID!
-
+input TextResponseSubmissionEventCreateInput
+  @join__type(graph: JOURNEYS)
+{
   """
   ID should be unique Event UUID (Provided for optimistic mutation result matching)
   """
   id: ID
-
-  """stepName of the parent stepBlock"""
-  label: String
+  blockId: ID!
 
   """id of the parent stepBlock"""
   stepId: ID
+
+  """stepName of the parent stepBlock"""
+  label: String
 
   """response from the TextResponseBlock form"""
   value: String!
 }
 
-enum ThemeMode {
-  dark
-  light
+enum ThemeMode
+  @join__type(graph: JOURNEYS)
+{
+  dark @join__enumValue(graph: JOURNEYS)
+  light @join__enumValue(graph: JOURNEYS)
 }
 
-enum ThemeName {
-  base
+enum ThemeName
+  @join__type(graph: JOURNEYS)
+{
+  base @join__enumValue(graph: JOURNEYS)
 }
 
-type Translation {
+type Translation
+  @join__type(graph: LANGUAGES)
+  @join__type(graph: VIDEOS)
+{
+  value: String!
   language: Language!
   primary: Boolean!
-  value: String!
 }
 
-enum TypographyAlign {
-  center
-  left
-  right
+enum TypographyAlign
+  @join__type(graph: JOURNEYS)
+{
+  left @join__enumValue(graph: JOURNEYS)
+  center @join__enumValue(graph: JOURNEYS)
+  right @join__enumValue(graph: JOURNEYS)
 }
 
-type TypographyBlock implements Block {
-  align: TypographyAlign
-  color: TypographyColor
-  content: String!
+type TypographyBlock implements Block
+  @join__implements(graph: JOURNEYS, interface: "Block")
+  @join__type(graph: JOURNEYS)
+{
   id: ID!
   journeyId: ID!
   parentBlockId: ID
   parentOrder: Int
+  content: String!
   variant: TypographyVariant
+  color: TypographyColor
+  align: TypographyAlign
 }
 
-input TypographyBlockCreateInput {
-  align: TypographyAlign
-  color: TypographyColor
-  content: String!
+input TypographyBlockCreateInput
+  @join__type(graph: JOURNEYS)
+{
   id: ID
   journeyId: ID!
   parentBlockId: ID!
+  content: String!
   variant: TypographyVariant
-}
-
-input TypographyBlockUpdateInput {
-  align: TypographyAlign
   color: TypographyColor
-  content: String
+  align: TypographyAlign
+}
+
+input TypographyBlockUpdateInput
+  @join__type(graph: JOURNEYS)
+{
   parentBlockId: ID
+  content: String
   variant: TypographyVariant
+  color: TypographyColor
+  align: TypographyAlign
 }
 
-enum TypographyColor {
-  error
-  primary
-  secondary
+enum TypographyColor
+  @join__type(graph: JOURNEYS)
+{
+  primary @join__enumValue(graph: JOURNEYS)
+  secondary @join__enumValue(graph: JOURNEYS)
+  error @join__enumValue(graph: JOURNEYS)
 }
 
-enum TypographyVariant {
-  body1
-  body2
-  caption
-  h1
-  h2
-  h3
-  h4
-  h5
-  h6
-  overline
-  subtitle1
-  subtitle2
+enum TypographyVariant
+  @join__type(graph: JOURNEYS)
+{
+  h1 @join__enumValue(graph: JOURNEYS)
+  h2 @join__enumValue(graph: JOURNEYS)
+  h3 @join__enumValue(graph: JOURNEYS)
+  h4 @join__enumValue(graph: JOURNEYS)
+  h5 @join__enumValue(graph: JOURNEYS)
+  h6 @join__enumValue(graph: JOURNEYS)
+  subtitle1 @join__enumValue(graph: JOURNEYS)
+  subtitle2 @join__enumValue(graph: JOURNEYS)
+  body1 @join__enumValue(graph: JOURNEYS)
+  body2 @join__enumValue(graph: JOURNEYS)
+  caption @join__enumValue(graph: JOURNEYS)
+  overline @join__enumValue(graph: JOURNEYS)
+}
+
+enum UnsplashColor
+  @join__type(graph: MEDIA)
+{
+  black_and_white @join__enumValue(graph: MEDIA)
+  black @join__enumValue(graph: MEDIA)
+  white @join__enumValue(graph: MEDIA)
+  yellow @join__enumValue(graph: MEDIA)
+  orange @join__enumValue(graph: MEDIA)
+  red @join__enumValue(graph: MEDIA)
+  purple @join__enumValue(graph: MEDIA)
+  magenta @join__enumValue(graph: MEDIA)
+  green @join__enumValue(graph: MEDIA)
+  teal @join__enumValue(graph: MEDIA)
+  blue @join__enumValue(graph: MEDIA)
+}
+
+enum UnsplashContentFilter
+  @join__type(graph: MEDIA)
+{
+  low @join__enumValue(graph: MEDIA)
+  high @join__enumValue(graph: MEDIA)
+}
+
+enum UnsplashOrderBy
+  @join__type(graph: MEDIA)
+{
+  latest @join__enumValue(graph: MEDIA)
+  relevant @join__enumValue(graph: MEDIA)
+}
+
+type UnsplashPhoto
+  @join__type(graph: MEDIA)
+{
+  id: String!
+  created_at: String!
+  updated_at: String
+  blur_hash: String!
+  width: Int!
+  height: Int!
+  color: String
+  description: String
+  alt_description: String
+  urls: UnsplashPhotoUrls!
+  links: UnsplashPhotoLinks!
+  categories: [String!]
+  likes: Int!
+  liked_by_user: Boolean!
+  current_user_collections: [String!]!
+  user: UnsplashUser!
+}
+
+type UnsplashPhotoLinks
+  @join__type(graph: MEDIA)
+{
+  self: String!
+  html: String!
+  download: String!
+  download_location: String!
+}
+
+enum UnsplashPhotoOrientation
+  @join__type(graph: MEDIA)
+{
+  landscape @join__enumValue(graph: MEDIA)
+  portrait @join__enumValue(graph: MEDIA)
+  squarish @join__enumValue(graph: MEDIA)
+}
+
+type UnsplashPhotoUrls
+  @join__type(graph: MEDIA)
+{
+  raw: String!
+  full: String!
+  regular: String!
+  small: String!
+  thumb: String!
+}
+
+type UnsplashQueryResponse
+  @join__type(graph: MEDIA)
+{
+  total: Int!
+  total_pages: Int!
+  results: [UnsplashPhoto!]!
+}
+
+type UnsplashUser
+  @join__type(graph: MEDIA)
+{
+  id: String!
+  updated_at: String
+  username: String!
+  name: String
+  first_name: String
+  last_name: String
+  twitter_username: String
+  portfolio_url: String
+  bio: String
+  location: String
+  links: UnsplashUserLinks!
+  profile_image: UnsplashUserImage
+  instagram_username: String
+  total_collections: Int!
+  total_likes: Int!
+  total_photos: Int!
+  accepted_tos: Boolean!
+}
+
+type UnsplashUserImage
+  @join__type(graph: MEDIA)
+{
+  small: String!
+  medium: String!
+  large: String!
+}
+
+type UnsplashUserLinks
+  @join__type(graph: MEDIA)
+{
+  self: String!
+  html: String!
+  photos: String!
+  likes: String!
+  portfolio: String!
+  following: String!
+  followers: String!
 }
 
 type User
-  @join__owner(graph: USERS)
-  @join__type(graph: USERS, key: "id")
   @join__type(graph: JOURNEYS, key: "id")
+  @join__type(graph: USERS, key: "id")
 {
-  email: String! @join__field(graph: USERS)
+  id: ID!
   firstName: String! @join__field(graph: USERS)
-  id: ID! @join__field(graph: USERS)
-  imageUrl: String @join__field(graph: USERS)
   lastName: String @join__field(graph: USERS)
+  email: String! @join__field(graph: USERS)
+  imageUrl: String @join__field(graph: USERS)
 }
 
 """These types are a subset provided by the @types/ua-parser-js library."""
-type UserAgent {
+type UserAgent
+  @join__type(graph: JOURNEYS)
+{
   browser: Browser!
   device: Device!
   os: OperatingSystem!
 }
 
-type UserJourney
-  @join__owner(graph: JOURNEYS)
+type UserInvite
   @join__type(graph: JOURNEYS, key: "id")
 {
-  id: ID! @join__field(graph: JOURNEYS)
-  journey: Journey @join__field(graph: JOURNEYS)
-  journeyId: ID! @join__field(graph: JOURNEYS)
-  role: UserJourneyRole! @join__field(graph: JOURNEYS)
-  user: User @join__field(graph: JOURNEYS)
-  userId: ID! @join__field(graph: JOURNEYS)
+  id: ID!
+  journeyId: ID!
+  senderId: ID!
+  email: String!
+  acceptedAt: DateTime
+  removedAt: DateTime
 }
 
-enum UserJourneyRole {
-  editor
-  inviteRequested
-  owner
+input UserInviteCreateInput
+  @join__type(graph: JOURNEYS)
+{
+  email: String!
+}
+
+type UserJourney
+  @join__type(graph: JOURNEYS, key: "id")
+{
+  journey: Journey
+  id: ID!
+  userId: ID!
+  journeyId: ID!
+  role: UserJourneyRole!
+  user: User
+
+  """Date time of when the journey was first opened"""
+  openedAt: DateTime
+}
+
+enum UserJourneyRole
+  @join__type(graph: JOURNEYS)
+{
+  inviteRequested @join__enumValue(graph: JOURNEYS)
+  editor @join__enumValue(graph: JOURNEYS)
+  owner @join__enumValue(graph: JOURNEYS)
 }
 
 type UserRole
-  @join__owner(graph: JOURNEYS)
   @join__type(graph: JOURNEYS, key: "id")
 {
-  id: ID! @join__field(graph: JOURNEYS)
-  roles: [Role!] @join__field(graph: JOURNEYS)
-  userId: ID! @join__field(graph: JOURNEYS)
+  id: ID!
+  userId: ID!
+  roles: [Role!]
 }
 
 type Video
-  @join__owner(graph: VIDEOS)
-  @join__type(graph: VIDEOS, key: "id primaryLanguageId")
   @join__type(graph: JOURNEYS, key: "id primaryLanguageId")
+  @join__type(graph: VIDEOS, key: "id primaryLanguageId")
 {
+  id: ID!
+  primaryLanguageId: ID!
+  label: VideoLabel! @join__field(graph: VIDEOS)
+  title(languageId: ID, primary: Boolean): [Translation!]! @join__field(graph: VIDEOS)
+  seoTitle(languageId: ID, primary: Boolean): [Translation!]! @join__field(graph: VIDEOS)
+  snippet(languageId: ID, primary: Boolean): [Translation!]! @join__field(graph: VIDEOS)
+  description(languageId: ID, primary: Boolean): [Translation!]! @join__field(graph: VIDEOS)
+  studyQuestions(languageId: ID, primary: Boolean): [Translation!]! @join__field(graph: VIDEOS)
+  image: String @join__field(graph: VIDEOS)
+  imageAlt(languageId: ID, primary: Boolean): [Translation!]! @join__field(graph: VIDEOS)
+  variantLanguages: [Language!]! @join__field(graph: VIDEOS)
+  variantLanguagesCount: Int! @join__field(graph: VIDEOS)
+
+  """slug is a permanent link to the video."""
+  slug: String! @join__field(graph: VIDEOS)
+  noIndex: Boolean @join__field(graph: VIDEOS)
   children: [Video!]! @join__field(graph: VIDEOS)
 
   """the number value of the amount of children on a video"""
   childrenCount: Int! @join__field(graph: VIDEOS)
-  description(languageId: ID, primary: Boolean): [Translation!]! @join__field(graph: VIDEOS)
-  id: ID! @join__field(graph: VIDEOS)
-  image: String @join__field(graph: VIDEOS)
-  imageAlt(languageId: ID, primary: Boolean): [Translation!]! @join__field(graph: VIDEOS)
-  label: VideoLabel! @join__field(graph: VIDEOS)
-  noIndex: Boolean @join__field(graph: VIDEOS)
-  primaryLanguageId: ID! @join__field(graph: VIDEOS)
-  seoTitle(languageId: ID, primary: Boolean): [Translation!]! @join__field(graph: VIDEOS)
-
-  """slug is a permanent link to the video."""
-  slug: String! @join__field(graph: VIDEOS)
-  snippet(languageId: ID, primary: Boolean): [Translation!]! @join__field(graph: VIDEOS)
-  studyQuestions(languageId: ID, primary: Boolean): [Translation!]! @join__field(graph: VIDEOS)
-  title(languageId: ID, primary: Boolean): [Translation!]! @join__field(graph: VIDEOS)
-  variant(languageId: ID): VideoVariant @join__field(graph: VIDEOS)
-  variantLanguages: [Language!]! @join__field(graph: VIDEOS)
-  variantLanguagesCount: Int! @join__field(graph: VIDEOS)
   variantLanguagesWithSlug: [LanguageWithSlug!]! @join__field(graph: VIDEOS)
+  variant(languageId: ID): VideoVariant @join__field(graph: VIDEOS)
 }
 
-type VideoBlock implements Block {
-  """action that should be performed when the video ends"""
-  action: Action
-  autoplay: Boolean
+type VideoBlock implements Block
+  @join__implements(graph: JOURNEYS, interface: "Block")
+  @join__type(graph: JOURNEYS)
+{
+  id: ID!
+  journeyId: ID!
+  parentBlockId: ID
+  parentOrder: Int
 
-  """
-  internal source videos: this field is not populated and instead only present
-  in the video field
-  For other sources this is automatically populated.
-  """
-  description: String
-
-  """
-  internal source videos: this field is not populated and instead only present
-  in the video field
-  For other sources this is automatically populated.
-  duration in seconds.
-  """
-  duration: Int
+  """startAt dictates at which point of time the video should start playing"""
+  startAt: Int
 
   """endAt dictates at which point of time the video should end"""
   endAt: Int
-  fullsize: Boolean
-  id: ID!
-
-  """
-  internal source videos: this field is not populated and instead only present
-  in the video field
-  For other sources this is automatically populated.
-  """
-  image: String
-  journeyId: ID!
   muted: Boolean
-
-  """how the video should display within the VideoBlock"""
-  objectFit: VideoBlockObjectFit
-  parentBlockId: ID
-  parentOrder: Int
+  autoplay: Boolean
 
   """
   posterBlockId is present if a child block should be used as a poster.
@@ -1256,22 +1659,7 @@ type VideoBlock implements Block {
   as the video poster. PosterBlock should be of type ImageBlock.
   """
   posterBlockId: ID
-
-  """
-  internal source: videoId, videoVariantLanguageId, and video present
-  youTube source: videoId, title, description, and duration present
-  """
-  source: VideoBlockSource!
-
-  """startAt dictates at which point of time the video should start playing"""
-  startAt: Int
-
-  """
-  internal source videos: this field is not populated and instead only present
-  in the video field.
-  For other sources this is automatically populated.
-  """
-  title: String
+  fullsize: Boolean
 
   """
   internal source videos: video is only populated when videoID and
@@ -1292,43 +1680,64 @@ type VideoBlock implements Block {
   For other sources only videoId needs to be set.
   """
   videoVariantLanguageId: ID
-}
 
-input VideoBlockCreateInput {
-  autoplay: Boolean
+  """
+  internal source: videoId, videoVariantLanguageId, and video present
+  youTube source: videoId, title, description, and duration present
+  """
+  source: VideoBlockSource!
+
+  """
+  internal source videos: this field is not populated and instead only present
+  in the video field.
+  For other sources this is automatically populated.
+  """
+  title: String
+
+  """
+  internal source videos: this field is not populated and instead only present
+  in the video field
+  For other sources this is automatically populated.
+  """
   description: String
 
-  """endAt dictates at which point of time the video should end"""
-  endAt: Int
-  fullsize: Boolean
-  id: ID
+  """
+  internal source videos: this field is not populated and instead only present
+  in the video field
+  For other sources this is automatically populated.
+  """
+  image: String
 
   """
-  True if the coverBlockId in a parent block should be set to this block's id.
+  internal source videos: this field is not populated and instead only present
+  in the video field
+  For other sources this is automatically populated.
+  duration in seconds.
   """
-  isCover: Boolean
-  journeyId: ID!
-  muted: Boolean
+  duration: Int
+
+  """action that should be performed when the video ends"""
+  action: Action
 
   """how the video should display within the VideoBlock"""
   objectFit: VideoBlockObjectFit
+}
+
+input VideoBlockCreateInput
+  @join__type(graph: JOURNEYS)
+{
+  id: ID
+  journeyId: ID!
   parentBlockId: ID!
-
-  """
-  posterBlockId is present if a child block should be used as a poster.
-  This child block should not be rendered normally, instead it should be used
-  as the video poster. PosterBlock should be of type ImageBlock.
-  """
-  posterBlockId: ID
-
-  """
-  internal source: videoId and videoVariantLanguageId required
-  youTube source: videoId required
-  """
-  source: VideoBlockSource
 
   """startAt dictates at which point of time the video should start playing"""
   startAt: Int
+
+  """endAt dictates at which point of time the video should end"""
+  endAt: Int
+  description: String
+  muted: Boolean
+  autoplay: Boolean
 
   """
   internal source videos: videoId and videoVariantLanguageId both need to be set
@@ -1343,15 +1752,39 @@ input VideoBlockCreateInput {
   For other sources only videoId needs to be set.
   """
   videoVariantLanguageId: ID
+
+  """
+  internal source: videoId and videoVariantLanguageId required
+  youTube source: videoId required
+  """
+  source: VideoBlockSource
+
+  """
+  posterBlockId is present if a child block should be used as a poster.
+  This child block should not be rendered normally, instead it should be used
+  as the video poster. PosterBlock should be of type ImageBlock.
+  """
+  posterBlockId: ID
+  fullsize: Boolean
+
+  """
+  True if the coverBlockId in a parent block should be set to this block's id.
+  """
+  isCover: Boolean
+
+  """how the video should display within the VideoBlock"""
+  objectFit: VideoBlockObjectFit
 }
 
-enum VideoBlockObjectFit {
+enum VideoBlockObjectFit
+  @join__type(graph: JOURNEYS)
+{
   """
   The video is scaled to maintain its aspect ratio while filling the
    entire VideoBlock. If the video's aspect ratio does not match the
    aspect ratio of the VideoBlock, then the video will be clipped to fit.
   """
-  fill
+  fill @join__enumValue(graph: JOURNEYS)
 
   """
   The video is scaled to maintain its aspect ratio while fitting within the
@@ -1359,7 +1792,7 @@ enum VideoBlockObjectFit {
    preserving its aspect ratio, so the video will be "letterboxed" if its
    aspect ratio does not match the aspect ratio of the VideoBlock.
   """
-  fit
+  fit @join__enumValue(graph: JOURNEYS)
 
   """
   12.5% of either side of the video is discarded (this has the effect of
@@ -1369,40 +1802,26 @@ enum VideoBlockObjectFit {
    aspect ratio, so the video will be "letterboxed" if its new aspect ratio
    does not match the aspect ratio of the VideoBlock.
   """
-  zoomed
+  zoomed @join__enumValue(graph: JOURNEYS)
 }
 
-enum VideoBlockSource {
-  internal
-  youTube
+enum VideoBlockSource
+  @join__type(graph: JOURNEYS)
+{
+  internal @join__enumValue(graph: JOURNEYS)
+  youTube @join__enumValue(graph: JOURNEYS)
 }
 
-input VideoBlockUpdateInput {
-  autoplay: Boolean
+input VideoBlockUpdateInput
+  @join__type(graph: JOURNEYS)
+{
+  """startAt dictates at which point of time the video should start playing"""
+  startAt: Int
 
   """endAt dictates at which point of time the video should end"""
   endAt: Int
-  fullsize: Boolean
   muted: Boolean
-
-  """how the video should display within the VideoBlock"""
-  objectFit: VideoBlockObjectFit
-
-  """
-  posterBlockId is present if a child block should be used as a poster.
-  This child block should not be rendered normally, instead it should be used
-  as the video poster. PosterBlock should be of type ImageBlock.
-  """
-  posterBlockId: ID
-
-  """
-  internal source: videoId and videoVariantLanguageId required
-  youTube source: videoId required
-  """
-  source: VideoBlockSource
-
-  """startAt dictates at which point of time the video should start playing"""
-  startAt: Int
+  autoplay: Boolean
 
   """
   internal source videos: videoId and videoVariantLanguageId both need to be set
@@ -1417,237 +1836,312 @@ input VideoBlockUpdateInput {
   For other sources only videoId needs to be set.
   """
   videoVariantLanguageId: ID
+
+  """
+  internal source: videoId and videoVariantLanguageId required
+  youTube source: videoId required
+  """
+  source: VideoBlockSource
+
+  """
+  posterBlockId is present if a child block should be used as a poster.
+  This child block should not be rendered normally, instead it should be used
+  as the video poster. PosterBlock should be of type ImageBlock.
+  """
+  posterBlockId: ID
+  fullsize: Boolean
+
+  """how the video should display within the VideoBlock"""
+  objectFit: VideoBlockObjectFit
 }
 
-type VideoCollapseEvent implements Event {
-  """time event was created"""
-  createdAt: DateTime!
+type VideoCollapseEvent implements Event
+  @join__implements(graph: JOURNEYS, interface: "Event")
+  @join__type(graph: JOURNEYS)
+{
   id: ID!
 
   """ID of the journey that the videoBlock belongs to"""
   journeyId: ID!
 
+  """time event was created"""
+  createdAt: DateTime!
+
   """title of the video"""
   label: String
+
+  """source of the video"""
+  value: String
 
   """duration of the video played when the VideoCollapseEvent is triggered"""
   position: Float
 
   """source of the video (based on the source in the value field)"""
   source: VideoBlockSource
-
-  """source of the video"""
-  value: String
 }
 
-input VideoCollapseEventCreateInput {
-  blockId: ID!
-
+input VideoCollapseEventCreateInput
+  @join__type(graph: JOURNEYS)
+{
   """
   ID should be unique Event UUID (Provided for optimistic mutation result matching)
   """
   id: ID
+  blockId: ID!
 
-  """title of the video"""
-  label: String
+  """id of the parent stepBlock"""
+  stepId: ID
 
   """duration of the video played when the VideoCollapseEvent is triggered"""
   position: Float
 
-  """id of the parent stepBlock"""
-  stepId: ID
+  """title of the video"""
+  label: String
 
   """source of the video"""
   value: VideoBlockSource
 }
 
-type VideoCompleteEvent implements Event {
-  """time event was created"""
-  createdAt: DateTime!
+type VideoCompleteEvent implements Event
+  @join__implements(graph: JOURNEYS, interface: "Event")
+  @join__type(graph: JOURNEYS)
+{
   id: ID!
 
   """ID of the journey that the videoBlock belongs to"""
   journeyId: ID!
 
+  """time event was created"""
+  createdAt: DateTime!
+
   """title of the video"""
   label: String
+
+  """source of the video"""
+  value: String
 
   """duration of the video played when the VideoCompleteEvent is triggered"""
   position: Float
 
   """source of the video (based on the source in the value field)"""
   source: VideoBlockSource
-
-  """source of the video"""
-  value: String
 }
 
-input VideoCompleteEventCreateInput {
-  blockId: ID!
-
+input VideoCompleteEventCreateInput
+  @join__type(graph: JOURNEYS)
+{
   """
   ID should be unique Event UUID (Provided for optimistic mutation result matching)
   """
   id: ID
+  blockId: ID!
 
-  """title of the video"""
-  label: String
+  """id of the parent stepBlock"""
+  stepId: ID
 
   """duration of the video played when the VideoCompleteEvent is triggered"""
   position: Float
 
-  """id of the parent stepBlock"""
-  stepId: ID
+  """title of the video"""
+  label: String
 
   """source of the video"""
   value: VideoBlockSource
 }
 
-type VideoExpandEvent implements Event {
-  """time event was created"""
-  createdAt: DateTime!
+type VideoExpandEvent implements Event
+  @join__implements(graph: JOURNEYS, interface: "Event")
+  @join__type(graph: JOURNEYS)
+{
   id: ID!
 
   """ID of the journey that the videoBlock belongs to"""
   journeyId: ID!
 
+  """time event was created"""
+  createdAt: DateTime!
+
   """title of the video"""
   label: String
+
+  """source of the video"""
+  value: String
 
   """duration of the video played when the VideoExpandEvent is triggered"""
   position: Float
 
   """source of the video (based on the source in the value field)"""
   source: VideoBlockSource
-
-  """source of the video"""
-  value: String
 }
 
-input VideoExpandEventCreateInput {
-  blockId: ID!
-
+input VideoExpandEventCreateInput
+  @join__type(graph: JOURNEYS)
+{
   """
   ID should be unique Event UUID (Provided for optimistic mutation result matching)
   """
   id: ID
+  blockId: ID!
 
-  """title of the video"""
-  label: String
+  """id of the parent stepBlock"""
+  stepId: ID
 
   """duration of the video played when the VideoExpandEvent is triggered"""
   position: Float
 
-  """id of the parent stepBlock"""
-  stepId: ID
+  """title of the video"""
+  label: String
 
   """source of the video"""
   value: VideoBlockSource
 }
 
-enum VideoLabel {
-  collection
-  episode
-  featureFilm
-  segment
-  series
-  shortFilm
+enum VideoLabel
+  @join__type(graph: VIDEOS)
+{
+  collection @join__enumValue(graph: VIDEOS)
+  episode @join__enumValue(graph: VIDEOS)
+  featureFilm @join__enumValue(graph: VIDEOS)
+  segment @join__enumValue(graph: VIDEOS)
+  series @join__enumValue(graph: VIDEOS)
+  shortFilm @join__enumValue(graph: VIDEOS)
 }
 
-type VideoPauseEvent implements Event {
-  """time event was created"""
-  createdAt: DateTime!
+type VideoPauseEvent implements Event
+  @join__implements(graph: JOURNEYS, interface: "Event")
+  @join__type(graph: JOURNEYS)
+{
   id: ID!
 
   """ID of the journey that the videoBlock belongs to"""
   journeyId: ID!
 
+  """time event was created"""
+  createdAt: DateTime!
+
   """title of the video"""
   label: String
+
+  """source of the video"""
+  value: String
 
   """duration of the video played when the VideoPauseEvent is triggered"""
   position: Float
 
   """source of the video (based on the source in the value field)"""
   source: VideoBlockSource
-
-  """source of the video"""
-  value: String
 }
 
-input VideoPauseEventCreateInput {
-  blockId: ID!
-
+input VideoPauseEventCreateInput
+  @join__type(graph: JOURNEYS)
+{
   """
   ID should be unique Event UUID (Provided for optimistic mutation result matching)
   """
   id: ID
+  blockId: ID!
 
-  """title of the video"""
-  label: String
+  """id of the parent stepBlock"""
+  stepId: ID
 
   """duration of the video played when the VideoPauseEvent is triggered"""
   position: Float
 
-  """id of the parent stepBlock"""
-  stepId: ID
+  """title of the video"""
+  label: String
 
   """source of the video"""
   value: VideoBlockSource
 }
 
-type VideoPlayEvent implements Event {
-  """time event was created"""
-  createdAt: DateTime!
+type VideoPlayEvent implements Event
+  @join__implements(graph: JOURNEYS, interface: "Event")
+  @join__type(graph: JOURNEYS)
+{
   id: ID!
 
   """ID of the journey that the videoBlock belongs to"""
   journeyId: ID!
 
+  """time event was created"""
+  createdAt: DateTime!
+
   """title of the video"""
   label: String
+
+  """source of the video"""
+  value: String
 
   """duration of the video played when the VideoPlayEvent is triggered"""
   position: Float
 
   """source of the video (based on the source in the value field)"""
   source: VideoBlockSource
-
-  """source of the video"""
-  value: String
 }
 
-input VideoPlayEventCreateInput {
-  blockId: ID!
-
+input VideoPlayEventCreateInput
+  @join__type(graph: JOURNEYS)
+{
   """
   ID should be unique Event UUID (Provided for optimistic mutation result matching)
   """
   id: ID
+  blockId: ID!
 
-  """title of the video"""
-  label: String
+  """id of the parent stepBlock"""
+  stepId: ID
 
   """duration of the video played when the VideoPlayEvent is triggered"""
   position: Float
 
-  """id of the parent stepBlock"""
-  stepId: ID
+  """title of the video"""
+  label: String
 
   """source of the video"""
   value: VideoBlockSource
 }
 
-type VideoProgressEvent implements Event {
-  """time event was created"""
-  createdAt: DateTime!
+type VideoProgressEvent implements Event
+  @join__implements(graph: JOURNEYS, interface: "Event")
+  @join__type(graph: JOURNEYS)
+{
   id: ID!
 
   """ID of the journey that the videoBlock belongs to"""
   journeyId: ID!
 
+  """time event was created"""
+  createdAt: DateTime!
+
   """title of the video"""
   label: String
+
+  """source of the video"""
+  value: String
+
+  """duration of the video played when the VideoProgressEvent is triggered"""
+  position: Float
+
+  """source of the video (based on the source in the value field)"""
+  source: VideoBlockSource
+
+  """
+  progress is a integer indicating the precentage completion from the startAt to the endAt times of the videoBlock
+  """
+  progress: Int!
+}
+
+input VideoProgressEventCreateInput
+  @join__type(graph: JOURNEYS)
+{
+  """
+  ID should be unique Event UUID (Provided for optimistic mutation result matching)
+  """
+  id: ID
+  blockId: ID!
+
+  """id of the parent stepBlock"""
+  stepId: ID
 
   """duration of the video played when the VideoProgressEvent is triggered"""
   position: Float
@@ -1657,84 +2151,65 @@ type VideoProgressEvent implements Event {
   """
   progress: Int!
 
-  """source of the video (based on the source in the value field)"""
-  source: VideoBlockSource
-
-  """source of the video"""
-  value: String
-}
-
-input VideoProgressEventCreateInput {
-  blockId: ID!
-
-  """
-  ID should be unique Event UUID (Provided for optimistic mutation result matching)
-  """
-  id: ID
-
   """title of the video"""
   label: String
-
-  """duration of the video played when the VideoProgressEvent is triggered"""
-  position: Float
-
-  """
-  progress is a integer indicating the precentage completion from the startAt to the endAt times of the videoBlock
-  """
-  progress: Int!
-
-  """id of the parent stepBlock"""
-  stepId: ID
 
   """source of the video"""
   value: VideoBlockSource
 }
 
-input VideosFilter {
+input VideosFilter
+  @join__type(graph: VIDEOS)
+{
   availableVariantLanguageIds: [ID!]
-  ids: [ID!]
-  labels: [VideoLabel!]
-  subtitleLanguageIds: [ID!]
   title: String
+  labels: [VideoLabel!]
+  ids: [ID!]
+  subtitleLanguageIds: [ID!]
 }
 
-type VideoStartEvent implements Event {
-  """time event was created"""
-  createdAt: DateTime!
+type VideoStartEvent implements Event
+  @join__implements(graph: JOURNEYS, interface: "Event")
+  @join__type(graph: JOURNEYS)
+{
   id: ID!
 
   """ID of the journey that the videoBlock belongs to"""
   journeyId: ID!
 
+  """time event was created"""
+  createdAt: DateTime!
+
   """title of the video"""
   label: String
+
+  """source of the video"""
+  value: String
 
   """duration of the video played when the VideoStartEvent is triggered"""
   position: Float
 
   """source of the video (based on the source in the value field)"""
   source: VideoBlockSource
-
-  """source of the video"""
-  value: String
 }
 
-input VideoStartEventCreateInput {
-  blockId: ID!
-
+input VideoStartEventCreateInput
+  @join__type(graph: JOURNEYS)
+{
   """
   ID should be unique Event UUID (Provided for optimistic mutation result matching)
   """
   id: ID
+  blockId: ID!
 
-  """title of the video"""
-  label: String
+  """id of the parent stepBlock"""
+  stepId: ID
 
   """duration of the video played when the VideoStartEvent is triggered"""
   position: Float
 
-  """id of the parent stepBlock"""
-  stepId: ID
+  """title of the video"""
+  label: String
 
   """source of the video"""
   value: VideoBlockSource
@@ -1744,8 +2219,10 @@ input VideoStartEventCreateInput {
 VideoTriggerBlock is a block that indicates the video to navigate
 to the next block at the designated time.
 """
-type VideoTriggerBlock implements Block {
-  action: Action!
+type VideoTriggerBlock implements Block
+  @join__implements(graph: JOURNEYS, interface: "Block")
+  @join__type(graph: JOURNEYS)
+{
   id: ID!
   journeyId: ID!
   parentBlockId: ID
@@ -1756,37 +2233,65 @@ type VideoTriggerBlock implements Block {
   this is the number of seconds since the start of the video
   """
   triggerStart: Int!
+  action: Action!
 }
 
-type VideoVariant {
+type VideoVariant
+  @join__type(graph: VIDEOS)
+{
+  id: String!
+  hls: String
   downloads: [VideoVariantDownload!]!
   duration: Int!
-  hls: String
-  id: String!
   language: Language!
+  subtitle(languageId: ID, primary: Boolean): [Translation!]!
+  subtitleCount: Int!
 
   """slug is a permanent link to the video variant."""
   slug: String!
-  subtitle(languageId: ID, primary: Boolean): [Translation!]!
-  subtitleCount: Int!
 }
 
-type VideoVariantDownload {
+type VideoVariantDownload
+  @join__type(graph: VIDEOS)
+{
   quality: VideoVariantDownloadQuality!
   size: Float!
   url: String!
 }
 
-enum VideoVariantDownloadQuality {
-  high
-  low
+enum VideoVariantDownloadQuality
+  @join__type(graph: VIDEOS)
+{
+  low @join__enumValue(graph: VIDEOS)
+  high @join__enumValue(graph: VIDEOS)
 }
 
 """A visitor with attributes connected to a team."""
 type Visitor
-  @join__owner(graph: JOURNEYS)
   @join__type(graph: JOURNEYS, key: "id")
 {
+  id: ID!
+
+  """
+  The time when the visitor created their first event on a journey connected
+  to the requested team.
+  """
+  createdAt: DateTime!
+
+  """
+  The last time the visitor called the ButtonClickEvent mutation where the url
+  is in the format of a recognized chat platform.
+  """
+  lastChatStartedAt: DateTime
+
+  """
+  The user agent of the visitor as poulated by the visitor's user-agent string
+  detected in the JourneyViewEventCreate mutation. This field is enriched
+  by data from the ua-parser-js library. If this field is empty it is likely
+  that the JourneyViewEventCreate mutation was not called by the visitor.
+  """
+  userAgent: UserAgent
+
   """
   The country code of the visitor as poulated by visitor ip address detected in
   the JourneyViewEventCreate mutation. This field country code is converted
@@ -1795,63 +2300,44 @@ type Visitor
   visitor or that the country was not able to be determined based on the
   visitor IP address.
   """
-  countryCode: String @join__field(graph: JOURNEYS)
-
-  """
-  The time when the visitor created their first event on a journey connected
-  to the requested team.
-  """
-  createdAt: DateTime! @join__field(graph: JOURNEYS)
-
-  """
-  The email address of the visitor as populated by VisitorUpdate mutation or
-  SignUpEventSubmissionEventCreate mutation.
-  """
-  email: String @join__field(graph: JOURNEYS)
-  events: [Event!]! @join__field(graph: JOURNEYS)
-  id: ID! @join__field(graph: JOURNEYS)
-
-  """
-  The last time the visitor called the ButtonClickEvent mutation where the url
-  is in the format of a recognized chat platform.
-  """
-  lastChatStartedAt: DateTime @join__field(graph: JOURNEYS)
-
-  """
-  Message platform the visitor wishes to be connected to us on as populated by
-  VisitorUpdate mutation or ChatOpenEventCreate mutation.
-  """
-  messagePlatform: MessagePlatform @join__field(graph: JOURNEYS)
-
-  """
-  ID of the visitor as set by VisitorUpdate mutation. This could be a phone
-  number, user id or other unique identifier provided by the message platform.
-  """
-  messagePlatformId: String @join__field(graph: JOURNEYS)
+  countryCode: String
 
   """
   The name of the visitor as populated by VisitorUpdate mutation or
   SignUpEventSubmissionEventCreate mutation.
   """
-  name: String @join__field(graph: JOURNEYS)
+  name: String
 
-  """Private notes of the visitor as set by VisitorUpdate mutation."""
-  notes: String @join__field(graph: JOURNEYS)
+  """
+  The email address of the visitor as populated by VisitorUpdate mutation or
+  SignUpEventSubmissionEventCreate mutation.
+  """
+  email: String
 
   """Status of the visitor as populated by VisitorUpdate mutation."""
-  status: VisitorStatus @join__field(graph: JOURNEYS)
+  status: VisitorStatus
 
   """
-  The user agent of the visitor as poulated by the visitor's user-agent string
-  detected in the JourneyViewEventCreate mutation. This field is enriched
-  by data from the ua-parser-js library. If this field is empty it is likely
-  that the JourneyViewEventCreate mutation was not called by the visitor.
+  Message platform the visitor wishes to be connected to us on as populated by
+  VisitorUpdate mutation or ChatOpenEventCreate mutation.
   """
-  userAgent: UserAgent @join__field(graph: JOURNEYS)
+  messagePlatform: MessagePlatform
+
+  """
+  ID of the visitor as set by VisitorUpdate mutation. This could be a phone
+  number, user id or other unique identifier provided by the message platform.
+  """
+  messagePlatformId: String
+
+  """Private notes of the visitor as set by VisitorUpdate mutation."""
+  notes: String
+  events: [Event!]!
 }
 
 """An edge in a connection."""
-type VisitorEdge {
+type VisitorEdge
+  @join__type(graph: JOURNEYS)
+{
   """A cursor for use in pagination."""
   cursor: String!
 
@@ -1860,7 +2346,9 @@ type VisitorEdge {
 }
 
 """A list of visitors connected with a team."""
-type VisitorsConnection {
+type VisitorsConnection
+  @join__type(graph: JOURNEYS)
+{
   """A list of edges."""
   edges: [VisitorEdge!]!
 
@@ -1873,23 +2361,27 @@ The status of a visitor according to team members interacting with the
 visitor admin interface. This enum should map to an emoji when displayed
 (names here match Apple's emoji name)
 """
-enum VisitorStatus {
-  checkMarkSymbol
-  partyPopper
-  prohibited
-  redExclamationMark
-  redQuestionMark
-  robotFace
-  star
-  thumbsDown
-  thumbsUp
-  warning
+enum VisitorStatus
+  @join__type(graph: JOURNEYS)
+{
+  star @join__enumValue(graph: JOURNEYS)
+  prohibited @join__enumValue(graph: JOURNEYS)
+  checkMarkSymbol @join__enumValue(graph: JOURNEYS)
+  thumbsUp @join__enumValue(graph: JOURNEYS)
+  thumbsDown @join__enumValue(graph: JOURNEYS)
+  partyPopper @join__enumValue(graph: JOURNEYS)
+  warning @join__enumValue(graph: JOURNEYS)
+  robotFace @join__enumValue(graph: JOURNEYS)
+  redExclamationMark @join__enumValue(graph: JOURNEYS)
+  redQuestionMark @join__enumValue(graph: JOURNEYS)
 }
 
 """
 A list of fields to update a visitor when calling the visitorUpdate mutation
 """
-input VisitorUpdateInput {
+input VisitorUpdateInput
+  @join__type(graph: JOURNEYS)
+{
   """
   The email address of the visitor (will prevent
   SignUpEventSubmissionEventCreate mutation from updating this field
@@ -1898,16 +2390,16 @@ input VisitorUpdateInput {
   email: String
 
   """
-  Message platform the visitor wishes to be connected to us on (will prevent
-  ChatOpenEventCreate mutation from updating this field automatically)
-  """
-  messagePlatform: MessagePlatform
-
-  """
   ID of the visitor. This could be a phone number, user id or other unique
   identifier provided by the message platform.
   """
   messagePlatformId: String
+
+  """
+  Message platform the visitor wishes to be connected to us on (will prevent
+  ChatOpenEventCreate mutation from updating this field automatically)
+  """
+  messagePlatform: MessagePlatform
 
   """
   The name of the visitor (will prevent SignUpEventSubmissionEventCreate

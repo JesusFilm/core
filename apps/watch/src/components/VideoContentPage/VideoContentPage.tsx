@@ -1,39 +1,38 @@
 import Box from '@mui/material/Box'
 import Container from '@mui/material/Container'
 import Stack from '@mui/material/Stack'
-import Typography from '@mui/material/Typography'
 import { ReactElement, useState } from 'react'
 import { NextSeo } from 'next-seo'
-
-import 'video.js/dist/video-js.css'
-
-import { VideoLabel } from '../../../__generated__/globalTypes'
 import { useVideo } from '../../libs/videoContext'
 import { PageWrapper } from '../PageWrapper'
 import { ShareDialog } from '../ShareDialog'
 import { DownloadDialog } from '../DownloadDialog'
 import { ShareButton } from '../ShareButton'
-import { VideoCard } from '../VideoCard'
-import { VideosCarousel } from '../VideosCarousel'
+import { useVideoChildren } from '../../libs/useVideoChildren'
+import { VideoCarousel } from '../VideoCarousel'
 import { DownloadButton } from './DownloadButton'
 import { VideoHero } from './VideoHero'
 import { VideoContent } from './VideoContent/VideoContent'
-import { VideoContentCarousel } from './VideoContentCarousel'
+
+import 'video.js/dist/video-js.css'
+import { VideoHeading } from './VideoHeading'
 
 // Usually FeatureFilm, ShortFilm, Episode or Segment Videos
 export function VideoContentPage(): ReactElement {
   const {
-    id,
     title,
     snippet,
     image,
     imageAlt,
     slug,
     variant,
-    children,
+    id,
     container,
-    label
+    childrenCount
   } = useVideo()
+  const { loading, children } = useVideoChildren(
+    container?.variant?.slug ?? variant?.slug
+  )
   const [hasPlayed, setHasPlayed] = useState(false)
   const [openShare, setOpenShare] = useState(false)
   const [openDownload, setOpenDownload] = useState(false)
@@ -77,82 +76,79 @@ export function VideoContentPage(): ReactElement {
       <PageWrapper
         hideHeader
         hero={
-          <VideoHero onPlay={() => setHasPlayed(true)} hasPlayed={hasPlayed} />
+          <>
+            <VideoHero
+              onPlay={() => setHasPlayed(true)}
+              hasPlayed={hasPlayed}
+            />
+            <Stack
+              sx={{
+                backgroundColor: 'background.default',
+                py:
+                  hasPlayed ||
+                  (container?.childrenCount ?? 0) > 0 ||
+                  childrenCount > 0
+                    ? 5
+                    : 0
+              }}
+              spacing={5}
+            >
+              <VideoHeading
+                loading={loading}
+                hasPlayed={hasPlayed}
+                videos={children}
+                onShareClick={() => setOpenShare(true)}
+                onDownloadClick={() => setOpenDownload(true)}
+              />
+              {((container?.childrenCount ?? 0) > 0 || childrenCount > 0) && (
+                <Box pb={4}>
+                  <VideoCarousel
+                    loading={loading}
+                    videos={children}
+                    containerSlug={container?.slug ?? slug}
+                    activeVideoId={id}
+                  />
+                </Box>
+              )}
+            </Stack>
+          </>
         }
       >
-        <>
-          <VideoContentCarousel
-            playing={hasPlayed}
-            onShareClick={() => setOpenShare(true)}
-            onDownloadClick={() => setOpenDownload(true)}
-          />
-          <Container maxWidth="xxl" sx={{ mb: 24 }}>
-            <Stack
-              direction="row"
-              spacing="40px"
-              sx={{
-                mx: 0,
-                mt: { xs: 5, md: 10 },
-                mb: { xs: 5, md: 10 },
-                maxWidth: '100%'
+        <Container maxWidth="xxl" sx={{ mb: 24 }}>
+          <Stack
+            direction="row"
+            spacing="40px"
+            sx={{
+              mx: 0,
+              mt: { xs: 5, md: 10 },
+              mb: { xs: 5, md: 10 },
+              maxWidth: '100%'
+            }}
+          >
+            <VideoContent />
+            <Box sx={{ display: { xs: 'none', md: 'block' } }}>
+              <Stack spacing={5} mb={8} direction={{ md: 'column', lg: 'row' }}>
+                <DownloadButton
+                  variant="button"
+                  onClick={() => setOpenDownload(true)}
+                />
+                <ShareButton
+                  variant="button"
+                  onClick={() => setOpenShare(true)}
+                />
+              </Stack>
+            </Box>
+          </Stack>
+          {variant != null && variant.downloads.length > 0 && (
+            <DownloadDialog
+              open={openDownload}
+              onClose={() => {
+                setOpenDownload(false)
               }}
-            >
-              <VideoContent />
-              <Box sx={{ display: { xs: 'none', md: 'block' } }}>
-                <Stack
-                  spacing={5}
-                  mb={8}
-                  direction={{ md: 'column', lg: 'row' }}
-                >
-                  <DownloadButton
-                    variant="button"
-                    onClick={() => setOpenDownload(true)}
-                  />
-                  <ShareButton
-                    variant="button"
-                    onClick={() => setOpenShare(true)}
-                  />
-                </Stack>
-              </Box>
-            </Stack>
-            {variant != null && variant.downloads.length > 0 && (
-              <DownloadDialog
-                open={openDownload}
-                onClose={() => {
-                  setOpenDownload(false)
-                }}
-              />
-            )}
-            <ShareDialog open={openShare} onClose={() => setOpenShare(false)} />
-          </Container>
-          {/* TODO: Replace with proper related video components */}
-          {container == null && label === VideoLabel.featureFilm && (
-            <Stack sx={{ mb: 14 }}>
-              <Container maxWidth="xxl">
-                <Typography variant="h4" gutterBottom sx={{ mb: 6 }}>
-                  {title[0].value} Scenes
-                </Typography>
-              </Container>
-              <VideosCarousel
-                videos={children}
-                activeVideo={id}
-                renderItem={(props: Parameters<typeof VideoCard>[0]) => {
-                  return (
-                    <VideoCard
-                      {...props}
-                      containerSlug={slug}
-                      imageSx={{
-                        ...props.imageSx,
-                        border: '1px solid rgba(255, 255, 255, .12)',
-                        borderRadius: '9px'
-                      }}
-                    />
-                  )
-                }}
-              />
-            </Stack>
+            />
           )}
-        </>
+          <ShareDialog open={openShare} onClose={() => setOpenShare(false)} />
+        </Container>
       </PageWrapper>
     </>
   )

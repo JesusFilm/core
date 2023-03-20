@@ -3,9 +3,10 @@ import { MockedProvider } from '@apollo/client/testing'
 import { useState } from 'react'
 import { ApolloLoadingProvider } from '../../../test/ApolloLoadingProvider'
 import { journeysAdminConfig } from '../../libs/storybook'
+import { GET_CURRENT_USER } from '../../libs/useCurrentUser'
 import {
-  GET_CURRENT_USER,
-  GET_JOURNEY_WITH_USER_JOURNEYS
+  GET_JOURNEY_WITH_USER_JOURNEYS,
+  GET_USER_INVITES
 } from './AccessDialog'
 import { AccessDialog } from '.'
 
@@ -19,7 +20,6 @@ export const Default: Story = () => {
   const [open, setOpen] = useState(true)
   return (
     <MockedProvider
-      addTypename={false}
       mocks={[
         {
           request: {
@@ -34,6 +34,7 @@ export const Default: Story = () => {
                 id: 'journeyId',
                 userJourneys: [
                   {
+                    __typename: 'UserJourney',
                     id: 'userJourneyId1',
                     role: 'owner',
                     user: {
@@ -41,10 +42,11 @@ export const Default: Story = () => {
                       firstName: 'Amin',
                       lastName: 'One',
                       imageUrl: 'https://bit.ly/3Gth4Yf',
-                      email: 'amin@email.com'
+                      email: 'admin@email.com'
                     }
                   },
                   {
+                    __typename: 'UserJourney',
                     id: 'userJourneyId2',
                     role: 'editor',
                     user: {
@@ -56,6 +58,7 @@ export const Default: Story = () => {
                     }
                   },
                   {
+                    __typename: 'UserJourney',
                     id: 'userJourneyId3',
                     role: 'inviteRequested',
                     user: {
@@ -73,14 +76,35 @@ export const Default: Story = () => {
         },
         {
           request: {
+            query: GET_USER_INVITES,
+            variables: {
+              journeyId: 'journeyId'
+            }
+          },
+          result: {
+            data: {
+              userInvites: [
+                {
+                  __typename: 'UserInvite',
+                  id: 'invite.id',
+                  journeyId: 'journey.id',
+                  email: 'invite@email.com',
+                  acceptedAt: null,
+                  removedAt: null
+                }
+              ]
+            }
+          }
+        },
+        {
+          request: {
             query: GET_CURRENT_USER
           },
           result: {
             data: {
               me: {
                 id: 'userId1',
-                __typename: 'User',
-                email: 'amin@email.com'
+                email: 'admin@email.com'
               }
             }
           }

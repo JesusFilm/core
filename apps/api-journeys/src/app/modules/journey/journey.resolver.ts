@@ -189,19 +189,32 @@ export class JourneyResolver {
           teamId: team.id,
           ...input
         })
-        await this.userJourneyService.save({
-          userId,
-          journeyId: journey.id,
-          role: UserJourneyRole.owner
-        })
-        await this.memberService.save(
+        await this.userJourneyService.save(
           {
-            id: `${userId}:${team.id}`,
+            id: uuidv4(),
             userId,
-            teamId: team.id
+            journeyId: journey.id,
+            role: UserJourneyRole.owner
           },
-          { overwriteMode: 'ignore' }
+          {
+            returnNew: false
+          }
         )
+        const existingMember = this.memberService.getMemberByTeamId(
+          userId,
+          team.id
+        )
+
+        if (existingMember == null) {
+          await this.memberService.save(
+            {
+              id: `${userId}:${team.id}`,
+              userId,
+              teamId: team.id
+            },
+            { overwriteMode: 'ignore', returnNew: false }
+          )
+        }
         retry = false
         return journey
       } catch (err) {
@@ -271,8 +284,12 @@ export class JourneyResolver {
       journey.title
     )
     const duplicateNumber = this.getFirstMissingNumber(duplicates)
-    const duplicateTitle = `${journey.title} copy ${
-      duplicateNumber === 1 ? '' : duplicateNumber
+    const duplicateTitle = `${journey.title}${
+      duplicateNumber === 0
+        ? ''
+        : duplicateNumber === 1
+        ? ' copy'
+        : ` copy ${duplicateNumber}`
     }`.trimEnd()
 
     const slug = slugify(duplicateTitle, {
@@ -314,6 +331,7 @@ export class JourneyResolver {
         const journey: Journey = await this.journeyService.save(input)
         await this.blockService.saveAll(duplicateBlocks)
         await this.userJourneyService.save({
+          id: uuidv4(),
           userId,
           journeyId: journey.id,
           role: UserJourneyRole.owner

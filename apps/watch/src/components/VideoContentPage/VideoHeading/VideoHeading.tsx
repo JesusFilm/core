@@ -1,0 +1,139 @@
+import { ReactElement, useMemo } from 'react'
+import NextLink from 'next/link'
+import Container from '@mui/material/Container'
+import Typography from '@mui/material/Typography'
+import Button from '@mui/material/Button'
+import Stack from '@mui/material/Stack'
+import Box from '@mui/material/Box'
+import Link from '@mui/material/Link'
+import Skeleton from '@mui/material/Skeleton'
+import Collapse from '@mui/material/Collapse'
+import { VideoLabel } from '../../../../__generated__/globalTypes'
+import { useVideo } from '../../../libs/videoContext'
+import { ShareButton } from '../../ShareButton'
+import { DownloadButton } from '../DownloadButton'
+import { VideoChildFields } from '../../../../__generated__/VideoChildFields'
+
+interface VideoHeadingProps {
+  loading?: boolean
+  hasPlayed?: boolean
+  onShareClick: () => void
+  onDownloadClick: () => void
+  videos?: VideoChildFields[]
+}
+
+export function VideoHeading({
+  hasPlayed = false,
+  loading,
+  onShareClick,
+  onDownloadClick,
+  videos = []
+}: VideoHeadingProps): ReactElement {
+  const { title, id, container } = useVideo()
+
+  const activeVideoIndex = useMemo(() => {
+    return container != null
+      ? videos.findIndex((child) => child.id === id) + 1
+      : -1
+  }, [container, videos, id])
+
+  return (
+    <>
+      <Collapse in={hasPlayed} unmountOnExit>
+        <Box>
+          <Container maxWidth="xxl">
+            <Stack
+              direction="row"
+              justifyContent="space-between"
+              alignItems="center"
+            >
+              <Typography variant="h5" color="text.primary">
+                {title[0].value}
+              </Typography>
+              <Stack
+                direction="row"
+                sx={{ display: { md: 'none' } }}
+                spacing={2}
+              >
+                <ShareButton variant="icon" onClick={onShareClick} />
+                <DownloadButton variant="icon" onClick={onDownloadClick} />
+              </Stack>
+            </Stack>
+          </Container>
+        </Box>
+      </Collapse>
+      {container != null && (
+        <Box>
+          <Container maxWidth="xxl">
+            <Stack
+              direction="row"
+              justifyContent="space-between"
+              alignItems="center"
+            >
+              <Stack direction="row" alignItems="center" spacing={2}>
+                <NextLink
+                  href={`/${container.variant?.slug as string}`}
+                  passHref
+                >
+                  <Link
+                    variant="overline1"
+                    color="primary"
+                    sx={{ textDecoration: 'none' }}
+                  >
+                    {container.title[0].value}
+                  </Link>
+                </NextLink>
+                <Typography
+                  variant="overline1"
+                  color="secondary"
+                  sx={{ display: { xs: 'none', xl: 'block' } }}
+                >
+                  •
+                </Typography>
+                <Typography
+                  variant="overline1"
+                  color="secondary"
+                  sx={{ display: { xs: 'none', xl: 'block' } }}
+                >
+                  {loading === true ? (
+                    <Skeleton width={100} />
+                  ) : (
+                    <>
+                      Clip {activeVideoIndex} of {container.childrenCount}
+                    </>
+                  )}
+                </Typography>
+              </Stack>
+              <NextLink href={`/${container.variant?.slug as string}`} passHref>
+                <Button
+                  variant="outlined"
+                  size="small"
+                  color="secondary"
+                  sx={{ display: { xs: 'none', xl: 'block' } }}
+                >
+                  {container.label === VideoLabel.featureFilm
+                    ? 'Watch Full Film'
+                    : 'See All'}
+                </Button>
+              </NextLink>
+              <Typography
+                data-testid="container-progress-short"
+                variant="overline1"
+                color="secondary"
+                sx={{ display: { xs: 'block', xl: 'none' } }}
+              >
+                {loading === true ? (
+                  <Skeleton width={50} />
+                ) : (
+                  <>
+                    {activeVideoIndex}/{container.childrenCount}
+                  </>
+                )}
+              </Typography>
+            </Stack>
+          </Container>
+        </Box>
+      )}
+    </>
+  )
+}

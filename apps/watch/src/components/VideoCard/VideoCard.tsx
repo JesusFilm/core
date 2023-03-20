@@ -7,7 +7,7 @@ import Stack from '@mui/material/Stack'
 import Link from '@mui/material/Link'
 import { styled, SxProps } from '@mui/material/styles'
 import ButtonBase from '@mui/material/ButtonBase'
-import NextImage from 'next/image'
+import Image from 'next/image'
 import Box from '@mui/material/Box'
 import Skeleton from '@mui/material/Skeleton'
 import { VideoLabel } from '../../../__generated__/globalTypes'
@@ -51,18 +51,21 @@ export function VideoCard({
     video?.label,
     video?.childrenCount ?? 0
   )
+  let href = ''
+
+  if (
+    containerSlug != null &&
+    video?.label != null &&
+    ![VideoLabel.collection, VideoLabel.series].includes(video.label)
+  ) {
+    href += `/${containerSlug}.html/${video?.variant?.slug ?? ''}.html`
+  } else {
+    const [videoId, languageId] = (video?.variant?.slug ?? '').split('/')
+    href = `/${videoId}.html/${languageId}.html`
+  }
 
   return (
-    <NextLink
-      href={`/${
-        containerSlug != null &&
-        video?.label != null &&
-        ![VideoLabel.collection, VideoLabel.series].includes(video.label)
-          ? `${containerSlug}/`
-          : ''
-      }${video?.variant?.slug ?? ''}`}
-      passHref
-    >
+    <NextLink href={href} passHref>
       <Link
         display="block"
         underline="none"
@@ -75,11 +78,7 @@ export function VideoCard({
             disabled={video == null}
             sx={{
               overflow: 'hidden',
-              height: {
-                xs: 166,
-                md: 136,
-                xl: 146
-              },
+              aspectRatio: '16 / 9',
               '&:hover, &.Mui-focusVisible': {
                 '& .MuiImageBackground-root': {
                   transform: 'scale(1.02)'
@@ -102,7 +101,7 @@ export function VideoCard({
               }}
             >
               {video?.image != null ? (
-                <NextImage
+                <Image
                   src={video.image}
                   layout="fill"
                   objectFit="cover"
@@ -110,18 +109,18 @@ export function VideoCard({
                   alt={video.title[0].value}
                 />
               ) : (
-                <Skeleton
+                <Box
                   sx={{
-                    height: {
-                      xs: 166,
-                      md: 136,
-                      xl: 146
-                    }
+                    aspectRatio: '16 / 9'
                   }}
-                  variant="rectangular"
-                  animation={false}
-                  data-testid="VideoImageSkeleton"
-                />
+                >
+                  <Skeleton
+                    sx={{ width: '100%', height: '100%' }}
+                    variant="rectangular"
+                    animation={false}
+                    data-testid="VideoImageSkeleton"
+                  />
+                </Box>
               )}
             </Layer>
             {variant === 'contained' && (
@@ -268,7 +267,7 @@ export function VideoCard({
                   )}
                 </Typography>
               )}
-              <Typography variant="h6" component="h3">
+              <Typography color="textPrimary" variant="h6" component="h3">
                 {video != null ? (
                   video?.title[0].value
                 ) : (

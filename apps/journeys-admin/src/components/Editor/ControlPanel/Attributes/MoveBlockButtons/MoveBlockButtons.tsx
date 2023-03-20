@@ -99,6 +99,7 @@ export function MoveBlockButtons({
           aria-label="move-block-up"
           disabled={selectedBlock.parentOrder === 0}
           onClick={handleMove('up')}
+          onMouseDown={(e) => e.preventDefault()}
         >
           <KeyboardArrowUpRoundedIcon />
         </StyledMoveButton>
@@ -106,6 +107,7 @@ export function MoveBlockButtons({
           aria-label="move-block-down"
           disabled={selectedBlock.parentOrder === lastBlockIndex}
           onClick={handleMove('down')}
+          onMouseDown={(e) => e.preventDefault()}
         >
           <KeyboardArrowDownRoundedIcon />
         </StyledMoveButton>

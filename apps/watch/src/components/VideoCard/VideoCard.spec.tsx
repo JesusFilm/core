@@ -17,9 +17,12 @@ describe('VideoCard', () => {
       const { getByRole } = render(
         <VideoCard video={videos[0]} variant="contained" />
       )
+      const [videoId, languageId] = (videos[0].variant?.slug as string).split(
+        '/'
+      )
       expect(getByRole('link')).toHaveAttribute(
         'href',
-        `/${videos[0].variant?.slug as string}`
+        `/${videoId}.html/${languageId}.html`
       )
     })
 
@@ -28,12 +31,12 @@ describe('VideoCard', () => {
         <VideoCard
           video={videos[0]}
           variant="contained"
-          containerSlug="jesus"
+          containerSlug="container"
         />
       )
       expect(getByRole('link')).toHaveAttribute(
         'href',
-        `/jesus/${videos[0].variant?.slug as string}`
+        `/container.html/${videos[0].variant?.slug as string}.html`
       )
     })
 
@@ -45,9 +48,12 @@ describe('VideoCard', () => {
           containerSlug="jesus"
         />
       )
+      const [videoId, languageId] = (videos[9].variant?.slug as string).split(
+        '/'
+      )
       expect(getByRole('link')).toHaveAttribute(
         'href',
-        `/${videos[9].variant?.slug as string}`
+        `/${videoId}.html/${languageId}.html`
       )
     })
 
@@ -59,9 +65,12 @@ describe('VideoCard', () => {
           containerSlug="jesus"
         />
       )
+      const [videoId, languageId] = (videos[5].variant?.slug as string).split(
+        '/'
+      )
       expect(getByRole('link')).toHaveAttribute(
         'href',
-        `/${videos[5].variant?.slug as string}`
+        `/${videoId}.html/${languageId}.html`
       )
     })
 

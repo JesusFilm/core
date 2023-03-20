@@ -2,14 +2,14 @@ import { Story, Meta } from '@storybook/react'
 import { MockedProvider } from '@apollo/client/testing'
 import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 import { journeysAdminConfig } from '../../libs/storybook'
-import { PageWrapper } from '../PageWrapper'
+import { PageWrapper } from '../NewPageWrapper'
+import { GET_ACTIVE_JOURNEYS } from '../../libs/useActiveJourneys/useActiveJourneys'
 import {
   defaultJourney,
   oldJourney,
   descriptiveJourney,
   publishedJourney
 } from './journeyListData'
-import { GET_ACTIVE_JOURNEYS } from './ActiveJourneyList/ActiveJourneyList'
 import { JourneyList } from '.'
 
 const JourneyListStory = {
@@ -31,18 +31,13 @@ const Template: Story = ({ ...args }) => (
         },
         result: {
           data: {
-            journeys: [
-              defaultJourney,
-              oldJourney,
-              descriptiveJourney,
-              publishedJourney
-            ]
+            journeys: [...args.props.journeys]
           }
         }
       }
     ]}
   >
-    <FlagsProvider>
+    <FlagsProvider flags={args.flags}>
       <PageWrapper title="Active Journeys">
         <JourneyList {...args.props} />
       </PageWrapper>
@@ -60,6 +55,25 @@ Default.args = {
       descriptiveJourney
     ],
     event: ''
+  }
+}
+
+export const NoJourneys = Template.bind({})
+NoJourneys.args = {
+  props: {
+    journeys: [],
+    event: ''
+  }
+}
+
+export const InviteRequirement = Template.bind({})
+InviteRequirement.args = {
+  props: {
+    journeys: [],
+    event: ''
+  },
+  flags: {
+    inviteRequirement: true
   }
 }
 

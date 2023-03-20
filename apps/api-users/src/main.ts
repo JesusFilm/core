@@ -14,9 +14,12 @@ async function bootstrap(): Promise<void> {
   await prismaService.enableShutdownHooks(app)
   await app.use(json({ limit: '50mb' }))
   const port = '4002'
-  await app.listen(port, () => {
+  const server = await app.listen(port, () => {
     new Logger('main').log(`Listening on port: ${port}`)
   })
+  // avoid 502 on ALB
+  server.keepAliveTimeout = 61000
+  server.headersTimeout = 62000
 }
 
 bootstrap().catch((err) => console.log(err))

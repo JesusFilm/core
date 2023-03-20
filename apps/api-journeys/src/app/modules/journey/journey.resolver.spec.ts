@@ -69,6 +69,13 @@ describe('JourneyResolver', () => {
     createdAt
   }
 
+  const template: Journey = {
+    ...journey,
+    title: 'template',
+    id: 'templateJourneyId',
+    template: true
+  }
+
   const draftJourney = {
     ...journey,
     id: 'draftJourney',
@@ -176,6 +183,8 @@ describe('JourneyResolver', () => {
         switch (id) {
           case journey.id:
             return journey
+          case template.id:
+            return template
           case draftJourney.id:
             return draftJourney
           case archivedJourney.id:
@@ -209,7 +218,9 @@ describe('JourneyResolver', () => {
         }
       }),
       getAllByRole: jest.fn(() => [journey, journey]),
-      getAllByTitle: jest.fn(() => [journey]),
+      getAllByTitle: jest.fn((title) =>
+        title === journey.title ? [journey] : []
+      ),
       save: jest.fn((input) => input),
       update: jest.fn(() => journey),
       updateAll: jest.fn(() => [journey, draftJourney])
@@ -254,7 +265,8 @@ describe('JourneyResolver', () => {
   const memberService = {
     provide: MemberService,
     useFactory: () => ({
-      save: jest.fn((member) => member)
+      save: jest.fn((member) => member),
+      getMemberByTeamId: jest.fn(() => null)
     })
   }
 
@@ -656,11 +668,14 @@ describe('JourneyResolver', () => {
         { title: 'Untitled Journey', languageId: '529' },
         'userId'
       )
-      expect(ujService.save).toHaveBeenCalledWith({
-        userId: 'userId',
-        journeyId: 'journeyId',
-        role: UserJourneyRole.owner
-      })
+      expect(ujService.save).toHaveBeenCalledWith(
+        {
+          userId: 'userId',
+          journeyId: 'journeyId',
+          role: UserJourneyRole.owner
+        },
+        { returnNew: false }
+      )
     })
 
     it('creates a Member', async () => {
@@ -675,8 +690,25 @@ describe('JourneyResolver', () => {
           userId: 'userId',
           teamId: 'jfp-team'
         },
-        { overwriteMode: 'ignore' }
+        { overwriteMode: 'ignore', returnNew: false }
       )
+    })
+
+    it('doesnt create an existing Member', async () => {
+      mockUuidv4.mockReturnValueOnce('journeyId')
+      const member = {
+        id: 'existingId',
+        userId: 'userId',
+        teamId: 'jfp-team'
+      }
+      mService.getMemberByTeamId = jest.fn(
+        async () => await Promise.resolve(member)
+      )
+      await resolver.journeyCreate(
+        { title: 'Untitled Journey', languageId: '529' },
+        'userId'
+      )
+      expect(mService.save).not.toHaveBeenCalled()
     })
 
     it('adds uuid if slug already taken', async () => {
@@ -790,7 +822,7 @@ describe('JourneyResolver', () => {
   })
 
   describe('journeyDuplicate', () => {
-    it('duplicates a Journey', async () => {
+    it('duplicates your journey', async () => {
       mockUuidv4.mockReturnValueOnce('duplicateJourneyId')
       expect(await resolver.journeyDuplicate('journeyId', 'userId')).toEqual({
         ...journey,
@@ -800,6 +832,21 @@ describe('JourneyResolver', () => {
         publishedAt: undefined,
         slug: `${journey.title}-copy`,
         title: `${journey.title} copy`,
+        template: false
+      })
+    })
+
+    it('duplicates a template journey', async () => {
+      mockUuidv4.mockReturnValueOnce('templateJourneyId')
+      expect(
+        await resolver.journeyDuplicate('templateJourneyId', 'userId')
+      ).toEqual({
+        ...template,
+        title: 'template',
+        slug: 'template',
+        createdAt: new Date().toISOString(),
+        status: JourneyStatus.draft,
+        publishedAt: undefined,
         template: false
       })
     })
@@ -866,10 +913,6 @@ describe('JourneyResolver', () => {
 
   describe('journeyUpdate', () => {
     it('updates a Journey', async () => {
-      await resolver.journeyUpdate('1', journeyUpdate)
-      expect(service.update).toHaveBeenCalledWith('1', journeyUpdate)
-    })
-    it('updates a Journey 2', async () => {
       await resolver.journeyUpdate('1', journeyUpdate)
       expect(service.update).toHaveBeenCalledWith('1', journeyUpdate)
     })

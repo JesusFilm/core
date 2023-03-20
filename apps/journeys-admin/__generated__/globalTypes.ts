@@ -198,77 +198,82 @@ export enum VisitorStatus {
 }
 
 export interface ButtonBlockCreateInput {
-  color?: ButtonColor | null;
   id?: string | null;
   journeyId: string;
-  label: string;
   parentBlockId: string;
-  size?: ButtonSize | null;
+  label: string;
   variant?: ButtonVariant | null;
+  color?: ButtonColor | null;
+  size?: ButtonSize | null;
 }
 
 export interface ButtonBlockUpdateInput {
-  color?: ButtonColor | null;
-  endIconId?: string | null;
-  label?: string | null;
   parentBlockId?: string | null;
+  label?: string | null;
+  variant?: ButtonVariant | null;
+  color?: ButtonColor | null;
   size?: ButtonSize | null;
   startIconId?: string | null;
-  variant?: ButtonVariant | null;
+  endIconId?: string | null;
 }
 
 export interface ButtonClickEventCreateInput {
-  blockId: string;
   id?: string | null;
-  label?: string | null;
+  blockId: string;
   stepId?: string | null;
+  label?: string | null;
   value?: string | null;
 }
 
 export interface CardBlockUpdateInput {
+  parentBlockId?: string | null;
   backgroundColor?: string | null;
   fullscreen?: boolean | null;
-  parentBlockId?: string | null;
   themeMode?: ThemeMode | null;
   themeName?: ThemeName | null;
 }
 
 export interface ChatOpenEventCreateInput {
-  blockId: string;
   id?: string | null;
+  blockId: string;
   stepId?: string | null;
   value?: MessagePlatform | null;
 }
 
 export interface IconBlockCreateInput {
-  color?: IconColor | null;
   id?: string | null;
+  parentBlockId: string;
   journeyId: string;
   name?: IconName | null;
-  parentBlockId: string;
+  color?: IconColor | null;
   size?: IconSize | null;
 }
 
 export interface IconBlockUpdateInput {
-  color?: IconColor | null;
   name?: IconName | null;
+  color?: IconColor | null;
   size?: IconSize | null;
 }
 
 export interface ImageBlockCreateInput {
+  id?: string | null;
+  parentBlockId: string;
+  journeyId: string;
+  src?: string | null;
   alt: string;
   blurhash?: string | null;
-  id?: string | null;
+  width?: number | null;
+  height?: number | null;
   isCover?: boolean | null;
-  journeyId: string;
-  parentBlockId: string;
-  src?: string | null;
 }
 
 export interface ImageBlockUpdateInput {
-  alt?: string | null;
   parentBlockId?: string | null;
   src?: string | null;
+  alt?: string | null;
+  blurhash?: string | null;
+  width?: number | null;
+  height?: number | null;
 }
 
 export interface JourneyTemplateInput {
@@ -276,21 +281,21 @@ export interface JourneyTemplateInput {
 }
 
 export interface JourneyUpdateInput {
-  description?: string | null;
+  title?: string | null;
   languageId?: string | null;
-  primaryImageBlockId?: string | null;
-  seoDescription?: string | null;
-  seoTitle?: string | null;
-  slug?: string | null;
   themeMode?: ThemeMode | null;
   themeName?: ThemeName | null;
-  title?: string | null;
+  description?: string | null;
+  primaryImageBlockId?: string | null;
+  slug?: string | null;
+  seoTitle?: string | null;
+  seoDescription?: string | null;
 }
 
 export interface LinkActionInput {
   gtmEventName?: string | null;
-  target?: string | null;
   url: string;
+  target?: string | null;
 }
 
 export interface NavigateActionInput {
@@ -298,8 +303,8 @@ export interface NavigateActionInput {
 }
 
 export interface NavigateToBlockActionInput {
-  blockId: string;
   gtmEventName?: string | null;
+  blockId: string;
 }
 
 export interface NavigateToJourneyActionInput {
@@ -310,13 +315,13 @@ export interface NavigateToJourneyActionInput {
 export interface RadioOptionBlockCreateInput {
   id?: string | null;
   journeyId: string;
-  label: string;
   parentBlockId: string;
+  label: string;
 }
 
 export interface RadioOptionBlockUpdateInput {
-  label?: string | null;
   parentBlockId?: string | null;
+  label?: string | null;
 }
 
 export interface RadioQuestionBlockCreateInput {
@@ -326,11 +331,11 @@ export interface RadioQuestionBlockCreateInput {
 }
 
 export interface RadioQuestionSubmissionEventCreateInput {
-  blockId: string;
   id?: string | null;
-  label?: string | null;
+  blockId: string;
   radioOptionBlockId: string;
   stepId?: string | null;
+  label?: string | null;
   value?: string | null;
 }
 
@@ -348,168 +353,172 @@ export interface SignUpBlockUpdateInput {
 }
 
 export interface SignUpSubmissionEventCreateInput {
-  blockId: string;
-  email: string;
   id?: string | null;
-  name: string;
+  blockId: string;
   stepId?: string | null;
+  name: string;
+  email: string;
 }
 
 export interface StepBlockUpdateInput {
-  locked?: boolean | null;
   nextBlockId?: string | null;
+  locked?: boolean | null;
 }
 
 export interface StepViewEventCreateInput {
-  blockId: string;
   id?: string | null;
+  blockId: string;
   value?: string | null;
 }
 
 export interface TextResponseBlockCreateInput {
   id?: string | null;
   journeyId: string;
-  label: string;
   parentBlockId: string;
+  label: string;
   submitLabel: string;
 }
 
 export interface TextResponseBlockUpdateInput {
-  hint?: string | null;
-  label?: string | null;
-  minRows?: number | null;
   parentBlockId?: string | null;
+  label?: string | null;
+  hint?: string | null;
+  minRows?: number | null;
   submitIconId?: string | null;
   submitLabel?: string | null;
 }
 
 export interface TextResponseSubmissionEventCreateInput {
-  blockId: string;
   id?: string | null;
-  label?: string | null;
+  blockId: string;
   stepId?: string | null;
+  label?: string | null;
   value: string;
 }
 
 export interface TypographyBlockCreateInput {
-  align?: TypographyAlign | null;
-  color?: TypographyColor | null;
-  content: string;
   id?: string | null;
   journeyId: string;
   parentBlockId: string;
+  content: string;
   variant?: TypographyVariant | null;
+  color?: TypographyColor | null;
+  align?: TypographyAlign | null;
 }
 
 export interface TypographyBlockUpdateInput {
-  align?: TypographyAlign | null;
-  color?: TypographyColor | null;
-  content?: string | null;
   parentBlockId?: string | null;
+  content?: string | null;
   variant?: TypographyVariant | null;
+  color?: TypographyColor | null;
+  align?: TypographyAlign | null;
+}
+
+export interface UserInviteCreateInput {
+  email: string;
 }
 
 export interface VideoBlockCreateInput {
-  autoplay?: boolean | null;
-  description?: string | null;
-  endAt?: number | null;
-  fullsize?: boolean | null;
   id?: string | null;
-  isCover?: boolean | null;
   journeyId: string;
-  muted?: boolean | null;
-  objectFit?: VideoBlockObjectFit | null;
   parentBlockId: string;
-  posterBlockId?: string | null;
-  source?: VideoBlockSource | null;
   startAt?: number | null;
+  endAt?: number | null;
+  description?: string | null;
+  muted?: boolean | null;
+  autoplay?: boolean | null;
   videoId?: string | null;
   videoVariantLanguageId?: string | null;
+  source?: VideoBlockSource | null;
+  posterBlockId?: string | null;
+  fullsize?: boolean | null;
+  isCover?: boolean | null;
+  objectFit?: VideoBlockObjectFit | null;
 }
 
 export interface VideoBlockUpdateInput {
-  autoplay?: boolean | null;
-  endAt?: number | null;
-  fullsize?: boolean | null;
-  muted?: boolean | null;
-  objectFit?: VideoBlockObjectFit | null;
-  posterBlockId?: string | null;
-  source?: VideoBlockSource | null;
   startAt?: number | null;
+  endAt?: number | null;
+  muted?: boolean | null;
+  autoplay?: boolean | null;
   videoId?: string | null;
   videoVariantLanguageId?: string | null;
+  source?: VideoBlockSource | null;
+  posterBlockId?: string | null;
+  fullsize?: boolean | null;
+  objectFit?: VideoBlockObjectFit | null;
 }
 
 export interface VideoCollapseEventCreateInput {
-  blockId: string;
   id?: string | null;
-  label?: string | null;
-  position?: number | null;
+  blockId: string;
   stepId?: string | null;
+  position?: number | null;
+  label?: string | null;
   value?: VideoBlockSource | null;
 }
 
 export interface VideoCompleteEventCreateInput {
-  blockId: string;
   id?: string | null;
-  label?: string | null;
-  position?: number | null;
+  blockId: string;
   stepId?: string | null;
+  position?: number | null;
+  label?: string | null;
   value?: VideoBlockSource | null;
 }
 
 export interface VideoExpandEventCreateInput {
-  blockId: string;
   id?: string | null;
-  label?: string | null;
-  position?: number | null;
+  blockId: string;
   stepId?: string | null;
+  position?: number | null;
+  label?: string | null;
   value?: VideoBlockSource | null;
 }
 
 export interface VideoPauseEventCreateInput {
-  blockId: string;
   id?: string | null;
-  label?: string | null;
-  position?: number | null;
+  blockId: string;
   stepId?: string | null;
+  position?: number | null;
+  label?: string | null;
   value?: VideoBlockSource | null;
 }
 
 export interface VideoPlayEventCreateInput {
-  blockId: string;
   id?: string | null;
-  label?: string | null;
-  position?: number | null;
+  blockId: string;
   stepId?: string | null;
+  position?: number | null;
+  label?: string | null;
   value?: VideoBlockSource | null;
 }
 
 export interface VideoProgressEventCreateInput {
-  blockId: string;
   id?: string | null;
-  label?: string | null;
+  blockId: string;
+  stepId?: string | null;
   position?: number | null;
   progress: number;
-  stepId?: string | null;
+  label?: string | null;
   value?: VideoBlockSource | null;
 }
 
 export interface VideoStartEventCreateInput {
-  blockId: string;
   id?: string | null;
-  label?: string | null;
-  position?: number | null;
+  blockId: string;
   stepId?: string | null;
+  position?: number | null;
+  label?: string | null;
   value?: VideoBlockSource | null;
 }
 
 export interface VideosFilter {
   availableVariantLanguageIds?: string[] | null;
-  ids?: string[] | null;
-  labels?: VideoLabel[] | null;
-  subtitleLanguageIds?: string[] | null;
   title?: string | null;
+  labels?: VideoLabel[] | null;
+  ids?: string[] | null;
+  subtitleLanguageIds?: string[] | null;
 }
 
 /**
@@ -517,8 +526,8 @@ export interface VideosFilter {
  */
 export interface VisitorUpdateInput {
   email?: string | null;
-  messagePlatform?: MessagePlatform | null;
   messagePlatformId?: string | null;
+  messagePlatform?: MessagePlatform | null;
   name?: string | null;
   notes?: string | null;
   status?: VisitorStatus | null;

@@ -54,8 +54,8 @@ describe('LanguageAutocomplete', () => {
         loading={false}
       />
     )
-    fireEvent.focus(getByRole('textbox'))
-    fireEvent.keyDown(getByRole('textbox'), { key: 'ArrowDown' })
+    fireEvent.focus(getByRole('combobox'))
+    fireEvent.keyDown(getByRole('combobox'), { key: 'ArrowDown' })
     expect(queryAllByRole('option')[0]).toHaveTextContent('English')
     expect(queryAllByRole('option')[1]).toHaveTextContent('French')
     expect(queryAllByRole('option')[2]).toHaveTextContent('German')
@@ -71,8 +71,8 @@ describe('LanguageAutocomplete', () => {
         loading={false}
       />
     )
-    fireEvent.focus(getByRole('textbox'))
-    fireEvent.keyDown(getByRole('textbox'), { key: 'ArrowDown' })
+    fireEvent.focus(getByRole('combobox'))
+    fireEvent.keyDown(getByRole('combobox'), { key: 'ArrowDown' })
     fireEvent.click(getByRole('option', { name: 'French Français' }))
     expect(handleChange).toHaveBeenCalledWith({
       id: '496',
@@ -94,7 +94,7 @@ describe('LanguageAutocomplete', () => {
         loading={false}
       />
     )
-    expect(getByRole('textbox')).toHaveValue('German, Standard')
+    expect(getByRole('combobox')).toHaveValue('German, Standard')
   })
 
   it('should show loading animation if loading', async () => {
@@ -138,8 +138,8 @@ describe('LanguageAutocomplete', () => {
 
     expect(getByTestId('test-input')).toBeInTheDocument()
 
-    fireEvent.focus(getByRole('textbox'))
-    fireEvent.keyDown(getByRole('textbox'), { key: 'ArrowDown' })
+    fireEvent.focus(getByRole('combobox'))
+    fireEvent.keyDown(getByRole('combobox'), { key: 'ArrowDown' })
 
     expect(getAllByTestId('test-option')).toHaveLength(3)
   })
