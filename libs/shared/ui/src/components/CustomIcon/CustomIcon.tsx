@@ -33,7 +33,7 @@ export function CustomIcon({
   ...iconProps
 }: CustomIconProps): ReactElement {
   return (
-    <Suspense fallback={<CircularProgress size="sm" />}>
+    <Suspense fallback={<CircularProgress size="16px" />}>
       {
         {
           none: null,

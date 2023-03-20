@@ -2,6 +2,7 @@ import { Meta, Story } from '@storybook/react'
 import Stack from '@mui/material/Stack'
 import { ComponentProps } from 'react'
 import Typography from '@mui/material/Typography'
+import CircularProgress from '@mui/material/CircularProgress'
 import { simpleComponentConfig } from '../../libs/simpleComponentConfig'
 import { CustomIcon, IconNames } from '.'
 
@@ -72,6 +73,7 @@ const Template: Story<ComponentProps<typeof CustomIcon>> = ({ ...args }) => {
           ))}
         </Stack>
       </Stack>
+
       {[...IconNames].slice(1).map((name) => (
         <Stack direction="row" gap={10}>
           <Stack
@@ -86,6 +88,8 @@ const Template: Story<ComponentProps<typeof CustomIcon>> = ({ ...args }) => {
                 ? name
                 : null}
             </Typography>
+            {/* Use to test loading state locally */}
+            {/* <CircularProgress size="16px" /> */}
             <CustomIcon variant={args.variant} name={name} fontSize="small" />
             <CustomIcon variant={args.variant} name={name} />
             <CustomIcon variant={args.variant} name={name} fontSize="large" />
