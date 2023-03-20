@@ -24,7 +24,7 @@ function DrawerContent({
   title,
   children,
   action
-}: DrawerContentProps): ReactElement<any> {
+}: DrawerContentProps): ReactElement {
   const { toolbar } = usePageWrapperStyles()
   return (
     <>
@@ -87,6 +87,7 @@ export function SidePanel({ children, title }: SidePanelProps): ReactElement {
           width: sidePanel.width,
           flexShrink: 1,
           '& .MuiDrawer-paper': {
+            overflowX: 'hidden',
             boxSizing: 'border-box',
             width: sidePanel.width,
             height: '100%'
