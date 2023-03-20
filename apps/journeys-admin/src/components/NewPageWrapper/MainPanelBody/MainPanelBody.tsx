@@ -11,7 +11,7 @@ export function MainPanelBody({
   children,
   bottomPanelChildren
 }: MainPanelBodyProps): ReactElement {
-  const { bottomPanel } = usePageWrapperStyles()
+  const { navbar, bottomPanel } = usePageWrapperStyles()
 
   return (
     <Stack
@@ -19,7 +19,8 @@ export function MainPanelBody({
       border="hidden"
       sx={{
         overflow: 'none',
-        overflowY: { sm: 'auto' }
+        overflowY: { sm: 'auto' },
+        width: 'inherit'
       }}
     >
       {/* MainBody */}
@@ -30,7 +31,8 @@ export function MainPanelBody({
           // Make optional or remove during cooldown
           // backgroundColor: 'background.paper',
           px: { xs: 6, sm: 8 },
-          py: { xs: 6, sm: 9 }
+          py: { xs: 6, sm: 9 },
+          mb: bottomPanelChildren != null ? bottomPanel.height : 0
         }}
       >
         {children}
@@ -40,12 +42,13 @@ export function MainPanelBody({
       {bottomPanelChildren != null && (
         <Stack
           data-testid="bottom-panel"
+          flexShrink={0}
           sx={{
+            width: 'inherit',
             height: bottomPanel.height,
-            position: { xs: 'fixed', sm: 'unset' },
+            position: 'fixed',
             bottom: 0,
-            right: 0,
-            left: 0,
+            left: { xs: 0, sm: navbar.width },
             backgroundColor: 'background.paper',
             borderTop: '1px solid',
             borderColor: 'divider'
