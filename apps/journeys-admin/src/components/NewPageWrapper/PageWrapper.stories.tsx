@@ -6,7 +6,6 @@ import Typography from '@mui/material/Typography'
 import { noop } from 'lodash'
 import { MockedProvider } from '@apollo/client/testing'
 import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
-import { screen, userEvent } from '@storybook/testing-library'
 import ListItemButton from '@mui/material/ListItemButton'
 import { journeysAdminConfig } from '../../libs/storybook'
 import { Role } from '../../../__generated__/globalTypes'
@@ -155,10 +154,6 @@ MobileSidePanel.parameters = {
   chromatic: {
     viewports: [360]
   }
-}
-MobileSidePanel.play = async () => {
-  const openButton = await screen.getByRole('button', { name: 'Open' })
-  await userEvent.click(openButton)
 }
 
 export const Complete = Template.bind({})
