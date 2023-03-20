@@ -31,7 +31,10 @@ export function MainPanelBody({
           // backgroundColor: 'background.paper',
           px: { xs: 6, sm: 8 },
           py: { xs: 6, sm: 9 },
-          mb: bottomPanelChildren != null ? bottomPanel.height : 0
+          mb: {
+            xs: bottomPanelChildren != null ? bottomPanel.height : 0,
+            sm: 0
+          }
         }}
       >
         {children}
