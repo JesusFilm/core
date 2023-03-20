@@ -57,12 +57,6 @@ export async function onboardingTemplates(action?: 'reset'): Promise<void> {
     `)
   }
 
-  if (action === 'reset') {
-    onboardingTemplates.forEach((template) => {
-      void deleteTemplate(template)
-    })
-  }
-
   async function createTemplate(template: Template): Promise<void> {
     const existingJourney = await (
       await db.query(aql`
@@ -76,7 +70,7 @@ export async function onboardingTemplates(action?: 'reset'): Promise<void> {
 
     const journey = await db.collection('journeys').save({
       _key: template.id,
-      title: `${template.slug.replace('-', ' ').replace('onboard', 'Onboard')}`,
+      title: `${template.slug.replace('-', ' ')}`,
       description: template.id,
       languageId: 529,
       themeMode: ThemeMode.dark,
@@ -152,7 +146,15 @@ export async function onboardingTemplates(action?: 'reset'): Promise<void> {
     ])
   }
 
-  onboardingTemplates.forEach((template): void => {
-    void createTemplate(template)
-  })
+  if (action === 'reset') {
+    onboardingTemplates.forEach((template) => {
+      void deleteTemplate(template).then(
+        async () => await createTemplate(template)
+      )
+    })
+  } else {
+    await onboardingTemplates.forEach((template): void => {
+      void createTemplate(template)
+    })
+  }
 }
