@@ -31,8 +31,15 @@ export function ActionCards({ url }: ActionCardsProps): ReactElement {
   const blocks = transformer(journey?.blocks as TreeBlock[]).filter(hasAction)
 
   return (
-    <>
-      <Typography>It appears on following cards and elements: </Typography>
+    <Stack gap={6} sx={{ mt: 7, mb: 14 }}>
+      <Box>
+        <Typography variant="subtitle2" color="secondary.dark">
+          Appears on the cards
+        </Typography>
+        <Typography variant="caption" sx={{ opacity: 0.5 }}>
+          Once you replace the URL it will apply on each of the following cards:
+        </Typography>
+      </Box>
       {blocks?.map((block) => (
         <Stack key={block.id} gap={4} direction="row">
           <Box
@@ -74,7 +81,7 @@ export function ActionCards({ url }: ActionCardsProps): ReactElement {
           <ActionCardsDetail block={block} url={url} />
         </Stack>
       ))}
-    </>
+    </Stack>
   )
 }
 
@@ -101,16 +108,25 @@ function ActionCardsDetail({
   const actionBlock = findBlockWithAction(block)
 
   let blockType: string | undefined
+  let label: string | undefined
+  const buttonBlock = actionBlock as ButtonBlock
 
   switch (actionBlock?.__typename) {
     case 'TextResponseBlock':
       blockType = 'Text'
+      label = actionBlock?.submitLabel ?? ''
       break
     case 'RadioOptionBlock':
       blockType = 'Poll'
+      label = actionBlock?.label ?? ''
+      break
+    case 'SignUpBlock':
+      blockType = 'Sign Up'
+      label = actionBlock?.submitLabel ?? ''
       break
     default:
-      blockType = actionBlock?.__typename.replace('Block', '')
+      blockType = buttonBlock?.__typename.replace('Block', '')
+      label = buttonBlock?.label ?? ''
       break
   }
 
@@ -119,9 +135,7 @@ function ActionCardsDetail({
       <Typography variant="subtitle2" color="text.secondary">
         {blockType}
       </Typography>
-      <Typography variant="subtitle1">
-        {(actionBlock as ButtonBlock)?.label}
-      </Typography>
+      <Typography variant="subtitle1">{label}</Typography>
     </Stack>
   )
 }

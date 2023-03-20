@@ -195,7 +195,7 @@ export function CardPreview({
           borderRadius: 2,
           outline: (theme) =>
             state.journeyEditContentComponent ===
-              ActiveJourneyEditContent.Action
+            ActiveJourneyEditContent.Action
               ? `2px solid ${theme.palette.primary.main} `
               : '2px solid transparent'
         }}

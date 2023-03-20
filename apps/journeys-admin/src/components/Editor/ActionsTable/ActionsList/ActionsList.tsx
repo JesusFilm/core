@@ -1,4 +1,4 @@
-import { ReactElement, useEffect } from 'react'
+import { ReactElement } from 'react'
 import Typography from '@mui/material/Typography'
 import Table from '@mui/material/Table'
 import TableBody from '@mui/material/TableBody'
@@ -16,44 +16,15 @@ import type { Actions } from '../ActionsTable'
 
 interface ActionsListProps {
   actions: Actions[]
+  goalLabel: (url: string) => string
 }
 
-export function ActionsList({ actions }: ActionsListProps): ReactElement {
+export function ActionsList({
+  actions,
+  goalLabel
+}: ActionsListProps): ReactElement {
   const { dispatch } = useEditor()
   const theme = useTheme()
-
-  const goalLabel = (url: string): string => {
-    const urlObject = new URL(url)
-    switch (urlObject.hostname.replace('www.', '')) {
-      case 'm.me':
-      case 'messenger.com':
-      case 't.me':
-      case 'telegram.org':
-      case 'wa.me':
-      case 'whatsapp.com':
-      case 'vb.me':
-      case 'viber.com':
-      case 'snapchat.com':
-      case 'skype.com':
-      case 'line.me':
-      case 'vk.com':
-        return 'Start a conversation'
-      default:
-        return 'Visit a website'
-    }
-  }
-
-  useEffect(() => {
-    dispatch({
-      type: 'SetDrawerPropsAction',
-      mobileOpen: true,
-      title: 'Goal Details',
-      children: <ActionDetails url={actions[0]?.url} />
-    })
-    console.log(actions)
-    console.log('I was ran')
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
 
   return (
     <TableContainer component={Paper} sx={{ width: '95%' }}>
@@ -86,7 +57,12 @@ export function ActionsList({ actions }: ActionsListProps): ReactElement {
                       type: 'SetDrawerPropsAction',
                       mobileOpen: true,
                       title: 'Goal Details',
-                      children: <ActionDetails url={url} />
+                      children: (
+                        <ActionDetails
+                          url={url}
+                          goalLabel={() => goalLabel(url)}
+                        />
+                      )
                     })
                   }}
                 >

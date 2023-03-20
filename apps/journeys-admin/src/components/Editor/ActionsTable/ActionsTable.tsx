@@ -1,4 +1,4 @@
-import { ReactElement } from 'react'
+import { ReactElement, useEffect } from 'react'
 import Stack from '@mui/material/Stack'
 import Button from '@mui/material/Button'
 import {
@@ -10,6 +10,7 @@ import { ActionFields_LinkAction as LinkAction } from '../../../../__generated__
 import { BlockFields_ButtonBlock as ButtonBlock } from '../../../../__generated__/BlockFields'
 import { SocialShareAppearance } from '../Drawer/SocialShareAppearance'
 import { GetJourney_journey as Journey } from '../../../../__generated__/GetJourney'
+import { ActionDetails } from '../ActionDetails'
 import { ActionsList } from './ActionsList'
 import { ActionsBanner } from './ActionsBanner'
 
@@ -20,6 +21,10 @@ export interface Actions {
 
 export function ActionsTable(): ReactElement {
   const { journey } = useJourney()
+  const {
+    state: { steps },
+    dispatch
+  } = useEditor()
 
   function countUrls(journey: Journey | undefined): Actions[] {
     const actions = (journey?.blocks ?? [])
@@ -42,10 +47,41 @@ export function ActionsTable(): ReactElement {
 
   const actions = countUrls(journey)
 
-  const {
-    state: { steps },
-    dispatch
-  } = useEditor()
+  const goalLabel = (url: string): string => {
+    const urlObject = new URL(url)
+    switch (urlObject.hostname.replace('www.', '')) {
+      case 'm.me':
+      case 'messenger.com':
+      case 't.me':
+      case 'telegram.org':
+      case 'wa.me':
+      case 'whatsapp.com':
+      case 'vb.me':
+      case 'viber.com':
+      case 'snapchat.com':
+      case 'skype.com':
+      case 'line.me':
+      case 'vk.com':
+        return 'Start a conversation'
+      default:
+        return 'Visit a website'
+    }
+  }
+
+  useEffect(() => {
+    dispatch({
+      type: 'SetDrawerPropsAction',
+      mobileOpen: true,
+      title: actions.length > 0 ? 'Goal Details' : 'Help Information',
+      children: (
+        <ActionDetails
+          url={actions[0]?.url}
+          goalLabel={() => goalLabel(actions[0]?.url)}
+        />
+      )
+    })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   const onStartClick = (): void => {
     if (steps == null) return
@@ -65,7 +101,7 @@ export function ActionsTable(): ReactElement {
     <Stack gap={2} justifyContent="center" alignItems="center">
       <ActionsBanner hasActions={actions.length > 0} />
       {actions != null && actions.length > 0 ? (
-        <ActionsList actions={actions} />
+        <ActionsList actions={actions} goalLabel={goalLabel} />
       ) : (
         <Button variant="contained" onClick={onStartClick}>
           Start

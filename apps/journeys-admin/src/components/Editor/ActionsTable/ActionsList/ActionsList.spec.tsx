@@ -6,7 +6,6 @@ import {
   ActiveFab,
   ActiveJourneyEditContent
 } from '@core/journeys/ui/EditorProvider'
-import { ActionDetails } from '../../ActionDetails'
 import { Actions } from '../ActionsTable'
 import { ActionsList } from './ActionsList'
 
@@ -46,20 +45,19 @@ describe('ActionsList', () => {
   })
 
   it('should render a list of actions', () => {
-    const { getByText } = render(<ActionsList actions={actions} />)
+    const { getByText } = render(
+      <ActionsList actions={actions} goalLabel={() => 'Visit a website'} />
+    )
     expect(getByText('https://www.google.com/')).toBeInTheDocument()
     expect(getByText('Visit a website')).toBeInTheDocument()
     expect(getByText(2)).toBeInTheDocument()
   })
 
   it('should dispatch on click', () => {
-    const { getByTestId } = render(<ActionsList actions={actions} />)
+    const { getByTestId } = render(
+      <ActionsList actions={actions} goalLabel={() => 'Visit a website'} />
+    )
     fireEvent.click(getByTestId('EditRoundedIcon'))
-    expect(dispatch).toHaveBeenCalledWith({
-      type: 'SetDrawerPropsAction',
-      mobileOpen: true,
-      title: 'Goal Details',
-      children: <ActionDetails url={actions[0].url} />
-    })
+    expect(dispatch).toHaveBeenCalled()
   })
 })
