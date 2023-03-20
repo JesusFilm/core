@@ -3,7 +3,7 @@ module "ecs-task" {
   cloudwatch_schedule_expression = "cron(0 0,4,8,12,16,20 * * ? *)"
   task_execution_role_arn        = var.task_execution_role_arn
   subnet_ids                     = var.subnet_ids
-  task_name                      = "jfp-arangodb-bigquery-etl"
+  task_name                      = "arangodb-bigquery-etl"
   doppler_token                  = var.doppler_token
   cluster_arn                    = var.cluster_arn
   env                            = "prod"
