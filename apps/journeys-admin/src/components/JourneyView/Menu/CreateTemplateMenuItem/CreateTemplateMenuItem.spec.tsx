@@ -3,9 +3,9 @@ import { MockedProvider } from '@apollo/client/testing'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { NextRouter, useRouter } from 'next/router'
 import { GetJourney_journey as Journey } from '../../../../../__generated__/GetJourney'
+import { DUPLICATE_JOURNEY } from '../../../../libs/useJourneyDuplicate'
 import {
   CreateTemplateMenuItem,
-  DUPLICATE_JOURNEY,
   REMOVE_USER_JOURNEY,
   CREATE_TEMPLATE
 } from './CreateTemplateMenuItem'
