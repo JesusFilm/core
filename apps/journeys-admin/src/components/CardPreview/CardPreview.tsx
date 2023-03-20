@@ -10,21 +10,17 @@ import Stack from '@mui/material/Stack'
 import { v4 as uuidv4 } from 'uuid'
 import { useMutation, gql } from '@apollo/client'
 import { DragDropContext, Droppable } from 'react-beautiful-dnd'
+import TrackChangesIcon from '@mui/icons-material/TrackChanges'
 import {
   ActiveJourneyEditContent,
   useEditor
 } from '@core/journeys/ui/EditorProvider'
-import Card from '@mui/material/Card'
-import CardActionArea from '@mui/material/CardActionArea'
 import { StepsOrderUpdate } from '../../../__generated__/StepsOrderUpdate'
 import { StepAndCardBlockCreate } from '../../../__generated__/StepAndCardBlockCreate'
 import { GetJourney_journey_blocks_StepBlock as StepBlock } from '../../../__generated__/GetJourney'
 import { CardList } from './CardList'
-
-export interface OnSelectProps {
-  step?: TreeBlock<StepBlock>
-  view?: ActiveJourneyEditContent
-}
+import { OnSelectProps } from './OnSelectProps'
+import { NavigationCard } from './NavigationCard'
 
 export interface CardPreviewProps {
   onSelect?: ({ step, view }: OnSelectProps) => void
@@ -181,36 +177,17 @@ export function CardPreview({
   )
 
   return (
-    <Stack direction="row">
-      <Card
-        id="CardPreviewAddButton"
-        variant="outlined"
-        sx={{
-          display: 'flex',
-          width: 87,
-          height: 132,
-          m: 1,
-          mt: '24px',
-          border: '3px solid transparent',
-          borderRadius: 2,
-          outline: (theme) =>
-            state.journeyEditContentComponent ===
-            ActiveJourneyEditContent.Action
-              ? `2px solid ${theme.palette.primary.main} `
-              : '2px solid transparent'
-        }}
-      >
-        <CardActionArea
-          sx={{
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center'
-          }}
-          onClick={() => onSelect?.({ view: ActiveJourneyEditContent.Action })}
-        >
-          Goals
-        </CardActionArea>
-      </Card>
+    <Stack direction="row" sx={{ ml: 2 }}>
+      <NavigationCard
+        title="Goals"
+        onSelect={onSelect}
+        destination={ActiveJourneyEditContent.Action}
+        outlined={
+          state.journeyEditContentComponent === ActiveJourneyEditContent.Action
+        }
+        loading={journey == null}
+        header={<TrackChangesIcon />}
+      />
       {steps != null ? (
         isDraggable === true ? (
           <DragDropContext
