@@ -1,5 +1,6 @@
 import { ReactElement } from 'react'
-import { DataGrid } from '@mui/x-data-grid'
+import { DataGrid, GridColDef } from '@mui/x-data-grid'
+import { styled } from '@mui/material/styles'
 import Box from '@mui/material/Box'
 import { useRouter } from 'next/router'
 import { useVisitors } from '../../libs/useVisitors'
@@ -7,7 +8,23 @@ import { useVisitors } from '../../libs/useVisitors'
 export function VisitorsList(): ReactElement {
   const visitors = useVisitors()
   const router = useRouter()
-  const columns = [
+
+  const StyledDataGrid = styled(DataGrid)(({ theme }) => ({
+    backgroundColor: theme.palette.background.paper,
+    borderRadius: 12,
+    overflow: 'hidden',
+    '& .MuiDataGrid-row': {
+      borderTop: `1px solid ${theme.palette.divider}`
+    },
+    '& .MuiDataGrid-row--lastVisible': {
+      borderBottom: `1px solid ${theme.palette.divider}`
+    },
+    '& .MuiDataGrid-cell:focus': {
+      outline: 'none'
+    }
+  }))
+
+  const columns: GridColDef[] = [
     {
       field: 'id',
       headerName: 'ID',
@@ -48,12 +65,12 @@ export function VisitorsList(): ReactElement {
       : []
 
   async function handleRowClick(params): Promise<void> {
-    // await router.push(`/reports/visitors/${params.row.id as string}`)
+    await router.push(`/reports/visitors/${params.row.id as string}`)
   }
 
   return (
-    <Box sx={{ height: '97vh', width: '100%' }}>
-      <DataGrid
+    <Box sx={{ height: '90vh', width: '100%' }}>
+      <StyledDataGrid
         columns={columns}
         rows={rows}
         onRowClick={handleRowClick}
@@ -66,20 +83,6 @@ export function VisitorsList(): ReactElement {
         //   }
         // }}
         // pageSizeOptions={[5]}
-        sx={{
-          backgroundColor: 'background.paper',
-          borderRadius: '1%',
-          overflow: 'hidden',
-          '& .MuiDataGrid-row': {
-            borderTop: '1px solid #DEDFE0'
-          },
-          '& .MuiDataGrid-row--lastVisible': {
-            borderBottom: '1px solid #DEDFE0'
-          },
-          '& .MuiDataGrid-cell:focus': {
-            outline: 'none'
-          }
-        }}
       />
     </Box>
   )

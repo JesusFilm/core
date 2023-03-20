@@ -6,17 +6,15 @@ import {
   withAuthUserTokenSSR
 } from 'next-firebase-auth'
 import { NextSeo } from 'next-seo'
-import { useRouter } from 'next/router'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import { useTranslation } from 'react-i18next'
 import { getLaunchDarklyClient } from '@core/shared/ui/getLaunchDarklyClient'
-import { PageWrapper } from '../../src/components/PageWrapper'
+import { PageWrapper } from '../../src/components/NewPageWrapper'
 import i18nConfig from '../../next-i18next.config'
 import { useTermsRedirect } from '../../src/libs/useTermsRedirect/useTermsRedirect'
 import { VisitorsList } from '../../src/components/VisitorsList'
 
 function ReportsVisitorsPage(): ReactElement {
-  const router = useRouter()
   const { t } = useTranslation('apps-journeys-admin')
   const AuthUser = useAuthUser()
 
@@ -25,11 +23,7 @@ function ReportsVisitorsPage(): ReactElement {
   return (
     <>
       <NextSeo title={t('Visitors Report')} />
-      <PageWrapper
-        title={t('Visitors Report')}
-        authUser={AuthUser}
-        router={router}
-      >
+      <PageWrapper title={t('Visitors Report')} authUser={AuthUser}>
         <VisitorsList />
       </PageWrapper>
     </>
