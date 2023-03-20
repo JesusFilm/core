@@ -6,7 +6,8 @@ import Typography from '@mui/material/Typography'
 import { noop } from 'lodash'
 import { MockedProvider } from '@apollo/client/testing'
 import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
-import { screen, userEvent, waitFor } from '@storybook/testing-library'
+import { screen, userEvent } from '@storybook/testing-library'
+import ListItemButton from '@mui/material/ListItemButton'
 import { journeysAdminConfig } from '../../libs/storybook'
 import { Role } from '../../../__generated__/globalTypes'
 import { GET_USER_ROLE } from '../JourneyView/JourneyView'
@@ -28,11 +29,16 @@ const SidePanelContainers = (): ReactElement => (
   <>
     {[0, 1, 2, 3, 4, 5].map((index) =>
       index === 3 ? (
-        <SidePanelContainer border={false}>
-          <Typography sx={{ backgroundColor: 'background.default' }}>
-            Side Panel Content without border
-          </Typography>
-        </SidePanelContainer>
+        <>
+          <SidePanelContainer border={false}>
+            <Typography sx={{ backgroundColor: 'background.default' }}>
+              Side Panel Content without border
+            </Typography>
+          </SidePanelContainer>
+          <ListItemButton sx={{ backgroundColor: 'background.default', px: 6 }}>
+            Component which does not need padding
+          </ListItemButton>
+        </>
       ) : (
         <SidePanelContainer>
           <Typography sx={{ backgroundColor: 'background.default' }}>
