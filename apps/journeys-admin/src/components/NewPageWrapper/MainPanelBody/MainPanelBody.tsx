@@ -30,7 +30,8 @@ export function MainPanelBody({
           // Make optional or remove during cooldown
           // backgroundColor: 'background.paper',
           px: { xs: 6, sm: 8 },
-          py: { xs: 6, sm: 9 }
+          py: { xs: 6, sm: 9 },
+          mb: bottomPanelChildren != null ? bottomPanel.height : 0
         }}
       >
         {children}

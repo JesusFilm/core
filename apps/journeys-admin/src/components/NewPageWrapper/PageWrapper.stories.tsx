@@ -131,7 +131,7 @@ SidePanel.args = {
         Main Body Content
       </Typography>
       <Typography sx={{ backgroundColor: 'background.default' }}>
-        Each child in the side panel must be wrapped by SidePanelContainer which
+        Children in the side panel can be wrapped by SidePanelContainer which
         adds padding and an optional border to the component.
       </Typography>
     </>
