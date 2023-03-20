@@ -7,6 +7,7 @@ import { noop } from 'lodash'
 import { MockedProvider } from '@apollo/client/testing'
 import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 import ListItemButton from '@mui/material/ListItemButton'
+import Paper from '@mui/material/Paper'
 import { journeysAdminConfig } from '../../libs/storybook'
 import { Role } from '../../../__generated__/globalTypes'
 import { GET_USER_ROLE } from '../JourneyView/JourneyView'
@@ -31,7 +32,7 @@ const SidePanelContainers = (): ReactElement => (
         <>
           <SidePanelContainer border={false}>
             <Typography sx={{ backgroundColor: 'background.default' }}>
-              Side Panel Content without border
+              Side Panel Content with no border SidePanelContainer
             </Typography>
           </SidePanelContainer>
           <ListItemButton sx={{ backgroundColor: 'background.default', px: 6 }}>
@@ -40,8 +41,11 @@ const SidePanelContainers = (): ReactElement => (
         </>
       ) : (
         <SidePanelContainer>
-          <Typography sx={{ backgroundColor: 'background.default' }}>
-            Side Panel Content
+          <Typography
+            sx={{ backgroundColor: 'background.default' }}
+            variant="body2"
+          >
+            Side Panel Content wrapped with default SidePanelContainer
           </Typography>
         </SidePanelContainer>
       )
@@ -123,17 +127,14 @@ SidePanel.args = {
   title: 'Main Content',
   children: (
     <>
-      <Typography
-        variant="h3"
-        sx={{ backgroundColor: 'background.default' }}
-        gutterBottom
-      >
+      <Typography variant="h3" gutterBottom>
         Main Body Content
       </Typography>
-      <Typography sx={{ backgroundColor: 'background.default' }}>
-        Children in the side panel can be wrapped by SidePanelContainer which
-        adds padding and an optional border to the component.
-      </Typography>
+      <Paper sx={{ width: '70%', height: '1000px', p: 4 }}>
+        <Typography gutterBottom>
+          This content is long to test scroll
+        </Typography>
+      </Paper>
     </>
   ),
   sidePanelTitle: 'Side Panel Content',
@@ -158,10 +159,8 @@ MobileSidePanel.parameters = {
 
 export const Complete = Template.bind({})
 Complete.args = {
-  ...Default.args,
+  ...SidePanel.args,
   backHref: '/',
-  sidePanelTitle: 'Side Panel Content',
-  sidePanelChildren: <SidePanelContainers />,
   bottomPanelChildren: (
     <Typography sx={{ backgroundColor: 'background.default' }}>
       Bottom Panel Content - no padding since TabPanels usually go here
