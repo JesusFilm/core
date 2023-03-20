@@ -54,20 +54,16 @@ describe('ActionsList', () => {
   })
 
   it('should render a list of actions', () => {
-    const { getByText } = render(<ActionsList actions={actions} />)
-    expect(getByText('Visit a website')).toBeInTheDocument()
-    expect(getByText('https://www.google.com/')).toBeInTheDocument()
-    expect(getByText(2)).toBeInTheDocument()
-    expect(getByText('Link to bible')).toBeInTheDocument()
-    expect(
-      getByText('https://www.biblegateway.com/versions/')
-    ).toBeInTheDocument()
-    expect(getByText('Start a conversation')).toBeInTheDocument()
-    expect(getByText('https://www.messenger.com/t/')).toBeInTheDocument()
+    const { getAllByText } = render(
+      <ActionsList actions={actions} goalLabel={() => 'Visit a Website'} />
+    )
+    expect(getAllByText('Visit a Website')[0]).toBeInTheDocument()
   })
 
   it('should dispatch on click', () => {
-    const { getAllByTestId } = render(<ActionsList actions={actions} />)
+    const { getAllByTestId } = render(
+      <ActionsList actions={actions} goalLabel={() => 'Visit a Website'} />
+    )
     fireEvent.click(getAllByTestId('EditRoundedIcon')[0])
     expect(dispatch).toHaveBeenCalledWith({
       type: 'SetDrawerPropsAction',

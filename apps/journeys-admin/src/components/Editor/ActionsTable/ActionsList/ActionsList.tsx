@@ -1,4 +1,4 @@
-import { ReactElement, useEffect } from 'react'
+import { ReactElement } from 'react'
 import Typography from '@mui/material/Typography'
 import Table from '@mui/material/Table'
 import TableBody from '@mui/material/TableBody'
@@ -9,6 +9,9 @@ import TableRow from '@mui/material/TableRow'
 import Paper from '@mui/material/Paper'
 import IconButton from '@mui/material/IconButton'
 import EditRounded from '@mui/icons-material/EditRounded'
+import QuestionAnswerOutlined from '@mui/icons-material/QuestionAnswerOutlined'
+import WebOutlined from '@mui/icons-material/WebOutlined'
+import MenuBookRounded from '@mui/icons-material/MenuBookRounded'
 import { useTheme } from '@mui/material/styles'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { ActionDetails } from '../../ActionDetails'
@@ -16,106 +19,90 @@ import type { Actions } from '../ActionsTable'
 
 interface ActionsListProps {
   actions: Actions[]
+  goalLabel: (url: string) => string
 }
 
-export function ActionsList({ actions }: ActionsListProps): ReactElement {
+export function ActionsList({
+  actions,
+  goalLabel
+}: ActionsListProps): ReactElement {
   const { dispatch } = useEditor()
   const theme = useTheme()
 
-  const goalLabel = (url: string): string => {
-    const urlObject = new URL(url)
-    const hostname = urlObject.hostname.replace('www.', '') // Remove 'www.' and top-level domain suffixes
-    switch (hostname) {
-      case 'm.me':
-      case 'messenger.com':
-      case 't.me':
-      case 'telegram.org':
-      case 'wa.me':
-      case 'whatsapp.com':
-      case 'vb.me':
-      case 'viber.com':
-      case 'snapchat.com':
-      case 'skype.com':
-      case 'line.me':
-      case 'vk.com':
-        return 'Start a conversation'
-      case 'bible.com':
-      case 'wordproject.org':
-      case 'biblegateway.com':
-      case 'worldbibles.org':
-      case 'biblestudytools.com':
-      case 'biblehub.com':
-      case 'biblia.com':
-      case 'blueletterbible.org':
-      case 'bible-ru.org':
-      case 'bibleonline.ru':
-      case 'bible.by':
-      case 'bible-facts.org':
-      case 'copticchurch.net':
-      case 'ebible.org':
-      case 'arabicbible.com':
-        return 'Link to bible'
+  const GoalIcon = ({ url }: { url: string }): ReactElement => {
+    switch (goalLabel(url)) {
+      case 'Start a Conversation':
+        return <QuestionAnswerOutlined sx={{ color: 'secondary.light' }} />
+      case 'Link to Bible':
+        return <MenuBookRounded sx={{ color: 'secondary.light' }} />
+      case 'Visit a Website':
+        return <WebOutlined sx={{ color: 'secondary.light' }} />
       default:
-        return 'Visit a website'
+        return <></>
     }
   }
 
-  useEffect(() => {
-    dispatch({
-      type: 'SetDrawerPropsAction',
-      mobileOpen: true,
-      title: 'Goal Details',
-      children: <ActionDetails url={actions[0]?.url} />
-    })
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
-
   return (
-    <TableContainer component={Paper}>
-      <Table>
-        <TableHead
-          sx={{
-            [theme.breakpoints.down('md')]: { display: 'none', width: '100%' }
-          }}
-        >
-          <TableRow>
-            <TableCell>
-              <Typography variant="subtitle2">Target and Action</Typography>
-            </TableCell>
-            <TableCell>
-              <Typography variant="subtitle2">Appears on</Typography>
-            </TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {actions?.map(({ url, count }, i) => (
-            <TableRow key={i}>
+    <>
+      <Typography variant="h1" gutterBottom>
+        This Journey has goals
+      </Typography>
+      <Typography>
+        You can change them to your own clicking on the rows of this table
+      </Typography>
+      <TableContainer component={Paper}>
+        <Table>
+          <TableHead
+            sx={{
+              [theme.breakpoints.down('md')]: { display: 'none', width: '100%' }
+            }}
+          >
+            <TableRow>
+              <TableCell sx={{ width: 75 }} />
               <TableCell>
-                <Typography variant="subtitle2">{goalLabel(url)}</Typography>
-                <Typography variant="body2">{url}</Typography>
+                <Typography variant="subtitle2">Target and Action</Typography>
               </TableCell>
               <TableCell align="center">
-                <Typography variant="subtitle2">{count}</Typography>
-                <Typography variant="body2">Cards</Typography>
+                <Typography variant="subtitle2">Appears on</Typography>
               </TableCell>
-              <TableCell>
-                <IconButton
-                  onClick={() => {
-                    dispatch({
-                      type: 'SetDrawerPropsAction',
-                      mobileOpen: true,
-                      title: 'Goal Details',
-                      children: <ActionDetails url={url} />
-                    })
-                  }}
-                >
-                  <EditRounded />
-                </IconButton>
-              </TableCell>
+              <TableCell sx={{ width: 75 }} />
             </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    </TableContainer>
+          </TableHead>
+          <TableBody>
+            {actions?.map(({ url, count }, i) => (
+              <TableRow key={i}>
+                <TableCell align="center" sx={{ width: 75 }}>
+                  <GoalIcon url={url} />
+                </TableCell>
+                <TableCell>
+                  <Typography variant="subtitle2">{url}</Typography>
+                  <Typography variant="body2">{goalLabel(url)}</Typography>
+                </TableCell>
+                <TableCell align="center">
+                  <Typography variant="subtitle2">{count}</Typography>
+                  <Typography variant="body2">
+                    {count > 1 ? 'cards' : 'card'}
+                  </Typography>
+                </TableCell>
+                <TableCell sx={{ width: 75 }}>
+                  <IconButton
+                    onClick={() => {
+                      dispatch({
+                        type: 'SetDrawerPropsAction',
+                        mobileOpen: true,
+                        title: 'Goal Details',
+                        children: <ActionDetails url={url} />
+                      })
+                    }}
+                  >
+                    <EditRounded sx={{ color: 'divider' }} />
+                  </IconButton>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
+    </>
   )
 }
