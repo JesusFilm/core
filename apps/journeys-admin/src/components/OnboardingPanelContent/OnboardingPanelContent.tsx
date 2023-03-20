@@ -54,11 +54,11 @@ export function OnboardingPanelContent(): ReactElement {
   const loading = [loading1, loading2, loading3, loading4, loading5]
 
   const handleClick = (journeyId?: string): void => {
-    console.log('clicked', journeyId)
+    void router.push(`/templates/${journeyId}`)
   }
 
-  const handleTemplatesRedirect = async (): Promise<void> => {
-    await router.push('/templates')
+  const handleTemplatesRedirect = (): void => {
+    void router.push('/templates')
   }
 
   return (
