@@ -74,7 +74,6 @@ const Template: Story = ({ ...args }) => {
               signOut: noop
             } as unknown as AuthUser
           }
-          title={args.title}
           router={{ pathname: undefined } as unknown as NextRouter}
         />
       </FlagsProvider>
@@ -84,20 +83,17 @@ const Template: Story = ({ ...args }) => {
 
 export const Default = Template.bind({})
 Default.args = {
-  templates: false,
-  title: 'Active Journeys'
+  templates: false
 }
 
 export const Complete = Template.bind({})
 Complete.args = {
-  templates: true,
-  title: 'Journeys'
+  templates: true
 }
 
 export const WithBadge = Template.bind({})
 WithBadge.args = {
   templates: false,
-  title: 'Active Journeys',
   result: {
     data: {
       journeys: [
