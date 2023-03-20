@@ -31,7 +31,7 @@ export function OnboardingPanelContent(): ReactElement {
   const router = useRouter()
   const { data: template1, loading: loading1 } =
     useQuery<GetOnboardingTemplate>(GET_ONBOARDING_TEMPLATE, {
-      variables: { id: '9d9ca229-9fb5-4d06-a18c-2d1a4ceba457' }
+      variables: { id: '014c7add-288b-4f84-ac85-ccefef7a07d3' }
     })
   const { data: template2, loading: loading2 } =
     useQuery<GetOnboardingTemplate>(GET_ONBOARDING_TEMPLATE, {
