@@ -1,9 +1,9 @@
 import { ReactElement, useState, useEffect } from 'react'
-import Container from '@mui/material/Container'
 import { NextRouter } from 'next/router'
 import { AuthUser } from 'next-firebase-auth'
 import { useFlags } from '@core/shared/ui/FlagsProvider'
 import { useTranslation } from 'react-i18next'
+import Box from '@mui/material/Box'
 import { GetJourneys_journeys as Journey } from '../../../__generated__/GetJourneys'
 import { MultipleSummaryReport } from '../MultipleSummaryReport'
 import { StatusTabPanel } from '../StatusTabPanel'
@@ -60,7 +60,7 @@ export function JourneyList({
       ) : (
         <>
           {journeysSummaryReport && <MultipleSummaryReport />}
-          <Container sx={{ px: { xs: 0, sm: 8 } }}>
+          <Box sx={{ mx: { xs: -6, sm: 0 } }}>
             <StatusTabPanel
               activeList={<ActiveJourneyList {...journeyListProps} />}
               archivedList={<ArchivedJourneyList {...journeyListProps} />}
@@ -71,10 +71,10 @@ export function JourneyList({
               sortOrder={sortOrder}
               router={router}
             />
-            {!['archived', 'trashed'].includes(
-              (router?.query?.tab as string) ?? ''
-            ) && <AddJourneyButton variant="fab" />}
-          </Container>
+          </Box>
+          {!['archived', 'trashed'].includes(
+            (router?.query?.tab as string) ?? ''
+          ) && <AddJourneyButton variant="fab" />}
         </>
       )}
     </>

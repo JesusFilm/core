@@ -8,6 +8,7 @@ import { useRouter } from 'next/router'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { BlockFields_StepBlock as StepBlock } from '../../../../__generated__/BlockFields'
 import { CardPreview } from '../../CardPreview'
+import { OnSelectProps } from '../../CardPreview/CardPreview'
 
 export interface CardViewProps {
   id?: string
@@ -24,17 +25,27 @@ export function CardView({
   const breakpoints = useBreakpoints()
   const router = useRouter()
 
-  const handleSelect = (step: { id: string }): void => {
+  const handleSelect = ({ step, view }: OnSelectProps): void => {
     if (id == null) return
 
-    if (journey?.template !== true) {
-      void router.push(`/journeys/${id}/edit?stepId=${step.id}`, undefined, {
-        shallow: true
-      })
+    let location = `${id}/edit`
+    if (step != null) {
+      location += `?stepId=${step.id}`
     }
 
-    if (journey?.template === true && isPublisher === true) {
-      void router.push(`/publisher/${id}/edit?stepId=${step.id}`, undefined, {
+    if (view != null) {
+      void router.push(`/journeys/${location}?view=${view}`, undefined, {
+        shallow: true
+      })
+      return
+    }
+
+    if (journey?.template !== true) {
+      void router.push(`/journeys/${location}`, undefined, {
+        shallow: true
+      })
+    } else if (journey.template && isPublisher === true) {
+      void router.push(`/publisher/${location}`, undefined, {
         shallow: true
       })
     }

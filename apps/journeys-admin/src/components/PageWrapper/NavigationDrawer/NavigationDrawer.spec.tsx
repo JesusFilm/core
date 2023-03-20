@@ -40,7 +40,7 @@ describe('NavigationDrawer', () => {
     const { getByText, getAllByRole, getByTestId } = render(
       <MockedProvider>
         <FlagsProvider>
-          <NavigationDrawer open onClose={onClose} title="Journeys" />
+          <NavigationDrawer open onClose={onClose} />
         </FlagsProvider>
       </MockedProvider>
     )
@@ -89,7 +89,6 @@ describe('NavigationDrawer', () => {
           <NavigationDrawer
             open
             onClose={onClose}
-            title="Journeys"
             authUser={
               {
                 displayName: 'Amin One',
@@ -114,7 +113,6 @@ describe('NavigationDrawer', () => {
           <NavigationDrawer
             open
             onClose={onClose}
-            title="Journey Templates"
             router={getRouter('/templates')}
           />
         </FlagsProvider>
@@ -133,7 +131,6 @@ describe('NavigationDrawer', () => {
           <NavigationDrawer
             open
             onClose={onClose}
-            title="Reports"
             router={getRouter('/reports')}
           />
         </FlagsProvider>
@@ -184,7 +181,6 @@ describe('NavigationDrawer', () => {
           <NavigationDrawer
             open
             onClose={onClose}
-            title="Templates Admin"
             authUser={
               {
                 displayName: 'Amin One',
@@ -245,7 +241,6 @@ describe('NavigationDrawer', () => {
           <NavigationDrawer
             open
             onClose={onClose}
-            title="Templates Admin"
             authUser={
               {
                 displayName: 'Amin One',
@@ -275,7 +270,7 @@ describe('NavigationDrawer', () => {
     const { getAllByRole, getByTestId } = render(
       <MockedProvider>
         <FlagsProvider>
-          <NavigationDrawer open onClose={onClose} title="Journeys" />
+          <NavigationDrawer open onClose={onClose} />
         </FlagsProvider>
       </MockedProvider>
     )
@@ -289,7 +284,7 @@ describe('NavigationDrawer', () => {
     const { getByTestId } = render(
       <MockedProvider>
         <FlagsProvider>
-          <NavigationDrawer open onClose={onClose} title="Active Journeys" />
+          <NavigationDrawer open onClose={onClose} />
         </FlagsProvider>
       </MockedProvider>
     )
