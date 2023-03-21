@@ -10,15 +10,19 @@ import { cache } from './cache'
 export function createApolloClient(
   token: string
 ): ApolloClient<NormalizedCacheObject> {
+  const isSsrMode = typeof window === 'undefined'
   const httpLink = createHttpLink({
     uri: process.env.NEXT_PUBLIC_GATEWAY_URL
   })
 
   const authLink = setContext(async (_, { headers }) => {
+    // If this is SSR, DO NOT PASS THE REQUEST HEADERS.
+    // Just send along the authorization headers.
+    // The **correct** headers will be supplied by the `getServerSideProps` invocation of the query
     return {
       headers: {
-        ...headers,
-        Authorization: token
+        ...(!isSsrMode ? headers : []),
+        Authorization: token ?? ''
       }
     }
   })
