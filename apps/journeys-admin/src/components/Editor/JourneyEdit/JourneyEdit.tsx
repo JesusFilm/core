@@ -31,7 +31,10 @@ export function JourneyEdit(): ReactElement {
             flexGrow: 1,
             overflow: 'auto',
             borderBottom: (theme) => `1px solid ${theme.palette.divider}`,
-            backgroundColor: (theme) => theme.palette.background.paper
+            backgroundColor: (theme) =>
+              journeyEditContentComponent === ActiveJourneyEditContent.Canvas
+                ? theme.palette.background.paper
+                : theme.palette.background.default
           }}
         >
           <Box sx={{ my: 'auto' }}>

@@ -107,7 +107,7 @@ describe('JourneyView/CardView', () => {
       )
     )
   })
-  it('should navigate to journey edit page when a view is selected', async () => {
+  it('should navigate to journey social preview page when a view is selected', async () => {
     const push = jest.fn()
     mockUseRouter.mockReturnValue({ push } as unknown as NextRouter)
     const { getByTestId } = render(
@@ -117,7 +117,7 @@ describe('JourneyView/CardView', () => {
         </JourneyProvider>
       </MockedProvider>
     )
-    fireEvent.click(getByTestId('navigation-card-button'))
+    fireEvent.click(getByTestId('social-preview-navigation-card'))
     await waitFor(() =>
       expect(push).toHaveBeenCalledWith(
         '/journeys/journeyId/edit?view=social',

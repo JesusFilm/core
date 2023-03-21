@@ -7,22 +7,15 @@ import type { TreeBlock } from '@core/journeys/ui/block'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import Skeleton from '@mui/material/Skeleton'
 import Stack from '@mui/material/Stack'
+import { ActiveJourneyEditContent } from '@core/journeys/ui/EditorProvider'
 import { v4 as uuidv4 } from 'uuid'
 import { useMutation, gql } from '@apollo/client'
-import {
-  ActiveJourneyEditContent,
-  useEditor
-} from '@core/journeys/ui/EditorProvider'
 import { DragDropContext, Droppable } from 'react-beautiful-dnd'
-import Image from 'next/image'
-import ThumbUpOffAltIcon from '@mui/icons-material/ThumbUpOffAlt'
 import { StepsOrderUpdate } from '../../../__generated__/StepsOrderUpdate'
 import { StepAndCardBlockCreate } from '../../../__generated__/StepAndCardBlockCreate'
 import { GetJourney_journey_blocks_StepBlock as StepBlock } from '../../../__generated__/GetJourney'
 import { CardList } from './CardList'
 import { OnSelectProps } from './OnSelectProps'
-
-import { NavigationCard } from './NavigationCard'
 
 export interface CardPreviewProps {
   onSelect?: ({ step, view }: OnSelectProps) => void
@@ -73,9 +66,13 @@ export function CardPreview({
   )
   const [stepsOrderUpdate] = useMutation<StepsOrderUpdate>(STEPS_ORDER_UPDATE)
   const { journey } = useJourney()
-  const { state } = useEditor()
 
   const handleChange = (selectedId: string): void => {
+    switch (selectedId) {
+      case 'social':
+        onSelect?.({ view: ActiveJourneyEditContent.SocialPreview })
+        return
+    }
     if (steps == null) return
 
     const selectedStep = steps.find(({ id }) => id === selectedId)
@@ -179,30 +176,7 @@ export function CardPreview({
   )
 
   return (
-    <Stack direction="row" sx={{ ml: 2 }}>
-      <NavigationCard
-        title="Social Media"
-        onSelect={onSelect}
-        destination={ActiveJourneyEditContent.SocialPreview}
-        outlined={
-          state.journeyEditContentComponent ===
-          ActiveJourneyEditContent.SocialPreview
-        }
-        header={
-          journey?.primaryImageBlock?.src == null ? (
-            <ThumbUpOffAltIcon />
-          ) : (
-            <Image
-              src={journey?.primaryImageBlock?.src}
-              alt={journey?.primaryImageBlock?.src}
-              width={72}
-              height={72}
-              objectFit="cover"
-            />
-          )
-        }
-        loading={journey == null}
-      />
+    <>
       {steps != null ? (
         isDraggable === true ? (
           <DragDropContext
@@ -221,6 +195,7 @@ export function CardPreview({
                     handleChange={handleChange}
                     isDragging={isDragging}
                     isDraggable={isDraggable}
+                    journey={journey}
                   />
                 </Box>
               )}
@@ -284,6 +259,6 @@ export function CardPreview({
           </Box>
         </Stack>
       )}
-    </Stack>
+    </>
   )
 }

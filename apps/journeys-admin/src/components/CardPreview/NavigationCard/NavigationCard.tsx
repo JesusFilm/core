@@ -9,27 +9,31 @@ import Skeleton from '@mui/material/Skeleton'
 import { OnSelectProps } from '../OnSelectProps'
 
 interface NavigationCardProps {
+  id: string
   title: string
   destination: ActiveJourneyEditContent
   outlined?: boolean
   header?: ReactElement
   onSelect?: ({ step, view }: OnSelectProps) => void
   loading?: boolean
+  testId?: string
 }
 
 export function NavigationCard({
+  id,
   title,
   destination,
   outlined = false,
   onSelect,
   header,
-  loading = false
+  loading = false,
+  testId
 }: NavigationCardProps): ReactElement {
   return (
     <Box
-      data-testid="navigation-card-container"
+      id={id}
+      data-testid={testId}
       sx={{
-        mt: '24px',
         height: '140px',
         width: '95px',
         borderRadius: 2,

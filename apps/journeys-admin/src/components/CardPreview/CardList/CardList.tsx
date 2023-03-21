@@ -15,13 +15,22 @@ import {
   DraggableStateSnapshot
 } from 'react-beautiful-dnd'
 import { getJourneyRTL } from '@core/journeys/ui/rtl'
-import { useEditor } from '@core/journeys/ui/EditorProvider'
+import {
+  ActiveJourneyEditContent,
+  useEditor
+} from '@core/journeys/ui/EditorProvider'
+import Image from 'next/image'
+import ThumbUpOffAltIcon from '@mui/icons-material/ThumbUpOffAlt'
+
 import { FramePortal } from '../../FramePortal'
 import { ThemeName, ThemeMode } from '../../../../__generated__/globalTypes'
 import { HorizontalSelect } from '../../HorizontalSelect'
 import { VideoWrapper } from '../../Editor/Canvas/VideoWrapper'
 import { CardWrapper } from '../../Editor/Canvas/CardWrapper'
 import { BlockFields_StepBlock as StepBlock } from '../../../../__generated__/BlockFields'
+import { NavigationCard } from '../NavigationCard'
+import { OnSelectProps } from '../OnSelectProps'
+import { JourneyFields as Journey } from '../../../../__generated__/JourneyFields'
 
 interface CardListProps {
   steps: Array<TreeBlock<StepBlock>>
@@ -32,6 +41,7 @@ interface CardListProps {
   handleChange?: (selectedId: string) => void
   isDragging?: boolean
   isDraggable?: boolean
+  journey?: Journey
 }
 
 export function CardList({
@@ -42,7 +52,8 @@ export function CardList({
   handleClick,
   handleChange,
   isDragging,
-  isDraggable
+  isDraggable,
+  journey
 }: CardListProps): ReactElement {
   const { state } = useEditor()
   const AddCardSlide = (): ReactElement => (
@@ -76,6 +87,30 @@ export function CardList({
       footer={showAddButton === true && <AddCardSlide />}
       view={state.journeyEditContentComponent}
     >
+      <NavigationCard
+        id="social"
+        testId="social-preview-navigation-card"
+        title="Social Media"
+        destination={ActiveJourneyEditContent.SocialPreview}
+        outlined={
+          state.journeyEditContentComponent ===
+          ActiveJourneyEditContent.SocialPreview
+        }
+        header={
+          journey?.primaryImageBlock?.src == null ? (
+            <ThumbUpOffAltIcon />
+          ) : (
+            <Image
+              src={journey?.primaryImageBlock?.src}
+              alt={journey?.primaryImageBlock?.src}
+              width={72}
+              height={72}
+              objectFit="cover"
+            />
+          )
+        }
+        loading={journey == null}
+      />
       {droppableProvided != null &&
         steps.map((step, index) => (
           <Draggable

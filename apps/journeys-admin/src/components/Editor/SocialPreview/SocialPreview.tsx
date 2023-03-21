@@ -1,21 +1,25 @@
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { ReactElement } from 'react'
-import Avatar from '@mui/material/Avatar'
+import Stack from '@mui/material/Stack'
+import Divider from '@mui/material/Divider'
 import { SocialPreviewPost } from './Post/SocialPreviewPost'
+import { SocialPreviewMessage } from './Message/SocialPreviewMessage'
 
 export function SocialPreview(): ReactElement {
   const { journey } = useJourney()
   return (
-    <div>
-      <h1>Social Preview</h1>
-      <SocialPreviewPost
-        journey={journey}
-        avatar={<Avatar sx={{ bgcolor: '#4267B2' }}>f</Avatar>}
-      />
-      <SocialPreviewPost
-        journey={journey}
-        avatar={<Avatar sx={{ bgcolor: '#1DA1F2' }}>tw</Avatar>}
-      />
-    </div>
+    <Stack
+      direction="row"
+      justifyContent="space-evenly"
+      divider={
+        <Divider
+          orientation="vertical"
+          sx={{ width: '2px', height: '308px', bgcolor: '#DCDDE5' }}
+        />
+      }
+    >
+      <SocialPreviewPost journey={journey} />
+      <SocialPreviewMessage journey={journey} />
+    </Stack>
   )
 }

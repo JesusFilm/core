@@ -20,6 +20,7 @@ describe('NavigationCard', () => {
   it('should display header', () => {
     const { getByTestId } = render(
       <NavigationCard
+        id="social"
         title="Test"
         destination={ActiveJourneyEditContent.Canvas}
         outlined={false}
@@ -33,6 +34,7 @@ describe('NavigationCard', () => {
     const onSelect = jest.fn()
     const { getByTestId } = render(
       <NavigationCard
+        id="social"
         title="Test"
         destination={ActiveJourneyEditContent.Canvas}
         outlined={false}
@@ -46,6 +48,8 @@ describe('NavigationCard', () => {
   it('should display outline when outlined is true', () => {
     const { getByTestId } = render(
       <NavigationCard
+        id="social"
+        testId="test-id"
         title="Test"
         destination={ActiveJourneyEditContent.Canvas}
         outlined
@@ -53,7 +57,7 @@ describe('NavigationCard', () => {
         header={<div />}
       />
     )
-    expect(getByTestId('navigation-card-container')).toHaveStyle({
+    expect(getByTestId('test-id')).toHaveStyle({
       outline: '2px solid #1976d2'
     })
   })
