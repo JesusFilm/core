@@ -31,12 +31,14 @@ export function CardView({
     if (step != null) {
       location += `?stepId=${step.id}`
     }
+
     if (view != null) {
       void router.push(`/journeys/${location}?view=${view}`, undefined, {
         shallow: true
       })
       return
     }
+
     if (journey?.template !== true) {
       void router.push(`/journeys/${location}`, undefined, {
         shallow: true

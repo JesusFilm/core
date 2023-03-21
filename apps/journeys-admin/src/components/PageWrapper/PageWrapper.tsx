@@ -123,7 +123,6 @@ export function PageWrapper({
         open={open}
         onClose={setOpen}
         authUser={authUser}
-        title={title}
         router={router}
       />
       <Box
