@@ -103,7 +103,7 @@
     "prisma-seed": {
       "executor": "@nx-tools/nx-prisma:seed",
       "options": {
-        "script": "apps/api-users/prisma/seed.ts",
+        "script": "apps/api-users/db/seed.ts",
         "tsConfig": "apps/api-users/tsconfig.app.json"
       }
     }

@@ -6,7 +6,7 @@
 import { aql } from 'arangojs'
 import { omit } from 'lodash'
 import { PrismaClient, User } from '.prisma/api-users-client'
-import { ArangoDB } from '../db/db'
+import { ArangoDB } from './db'
 
 const db = ArangoDB()
 const prisma = new PrismaClient()
