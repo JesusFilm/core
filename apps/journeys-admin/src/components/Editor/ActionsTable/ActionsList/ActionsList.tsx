@@ -7,13 +7,16 @@ import TableContainer from '@mui/material/TableContainer'
 import TableHead from '@mui/material/TableHead'
 import TableRow from '@mui/material/TableRow'
 import Paper from '@mui/material/Paper'
-import IconButton from '@mui/material/IconButton'
 import EditRounded from '@mui/icons-material/EditRounded'
 import QuestionAnswerOutlined from '@mui/icons-material/QuestionAnswerOutlined'
 import WebOutlined from '@mui/icons-material/WebOutlined'
 import MenuBookRounded from '@mui/icons-material/MenuBookRounded'
 import { useTheme } from '@mui/material/styles'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
+import Stack from '@mui/material/Stack'
+import Box from '@mui/system/Box'
+import Button from '@mui/material/Button'
+import InfoOutlined from '@mui/icons-material/InfoOutlined'
 import { ActionDetails } from '../../ActionDetails'
 import type { Actions } from '../ActionsTable'
 
@@ -42,36 +45,88 @@ export function ActionsList({
     }
   }
 
+  const handleClick = (url: string): void => {
+    dispatch({
+      type: 'SetDrawerPropsAction',
+      mobileOpen: true,
+      title: 'Goal Details',
+      children: <ActionDetails url={url} />
+    })
+  }
+
   return (
-    <>
-      <Typography variant="h1" gutterBottom>
-        This Journey has goals
-      </Typography>
-      <Typography>
-        You can change them to your own clicking on the rows of this table
-      </Typography>
-      <TableContainer component={Paper}>
-        <Table>
-          <TableHead
+    <Stack
+      sx={{
+        gap: 4,
+        [theme.breakpoints.up('md')]: {
+          mx: 10,
+          gap: 12
+        }
+      }}
+    >
+      <Box
+        sx={{
+          [theme.breakpoints.down('md')]: {
+            mx: 6
+          }
+        }}
+      >
+        <Box
+          sx={{
+            pb: 3,
+            display: 'flex',
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            [theme.breakpoints.down('md')]: {
+              flexDirection: 'column-reverse'
+            }
+          }}
+        >
+          <Typography variant="h1">Your Goals</Typography>
+          <Button
+            variant="outlined"
+            startIcon={<InfoOutlined sx={{ color: 'secondary.light' }} />}
             sx={{
-              [theme.breakpoints.down('md')]: { display: 'none', width: '100%' }
+              display: 'flex',
+              color: 'secondary.main',
+              borderColor: 'secondary.main',
+              borderRadius: 2,
+              [theme.breakpoints.down('md')]: {
+                alignSelf: 'end',
+                mb: 4
+              }
             }}
           >
+            <Typography variant="subtitle2">Learn More</Typography>
+          </Button>
+        </Box>
+        <Typography>
+          You can change them to your own clicking on the rows of this table
+        </Typography>
+      </Box>
+
+      {/* desktop view */}
+      <TableContainer
+        component={Paper}
+        sx={{ [theme.breakpoints.down('md')]: { display: 'none' } }}
+      >
+        <Table>
+          <TableHead>
             <TableRow>
-              <TableCell sx={{ width: 75 }} />
+              <TableCell />
               <TableCell>
                 <Typography variant="subtitle2">Target and Action</Typography>
               </TableCell>
               <TableCell align="center">
                 <Typography variant="subtitle2">Appears on</Typography>
               </TableCell>
-              <TableCell sx={{ width: 75 }} />
+              <TableCell />
             </TableRow>
           </TableHead>
           <TableBody>
             {actions?.map(({ url, count }, i) => (
-              <TableRow key={i}>
-                <TableCell align="center" sx={{ width: 75 }}>
+              <TableRow key={i} onClick={() => handleClick(url)}>
+                <TableCell align="center">
                   <GoalIcon url={url} />
                 </TableCell>
                 <TableCell>
@@ -84,25 +139,67 @@ export function ActionsList({
                     {count > 1 ? 'cards' : 'card'}
                   </Typography>
                 </TableCell>
-                <TableCell sx={{ width: 75 }}>
-                  <IconButton
-                    onClick={() => {
-                      dispatch({
-                        type: 'SetDrawerPropsAction',
-                        mobileOpen: true,
-                        title: 'Goal Details',
-                        children: <ActionDetails url={url} />
-                      })
-                    }}
-                  >
-                    <EditRounded sx={{ color: 'divider' }} />
-                  </IconButton>
+                <TableCell>
+                  <EditRounded sx={{ color: 'divider' }} />
                 </TableCell>
               </TableRow>
             ))}
           </TableBody>
         </Table>
       </TableContainer>
-    </>
+
+      {/* mobiel view */}
+      <TableContainer
+        component={Paper}
+        sx={{
+          [theme.breakpoints.up('md')]: {
+            display: 'none',
+            borderRadius: undefined
+          }
+        }}
+      >
+        <Table>
+          <TableHead>
+            <TableRow>
+              <TableCell>
+                <Typography variant="subtitle2">Target and Action</Typography>
+              </TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {actions?.map(({ url, count }, i) => (
+              <TableRow key={i} onClick={() => handleClick(url)}>
+                <TableCell>
+                  <Stack gap={2}>
+                    <Typography
+                      variant="subtitle2"
+                      sx={{
+                        textOverflow: 'ellipsis',
+                        whiteSpace: 'nowrap',
+                        overflow: 'hidden',
+                        width: '300px'
+                      }}
+                    >
+                      {url}
+                    </Typography>
+                    <Stack gap={2} direction="row">
+                      <GoalIcon url={url} />
+                      <Typography variant="subtitle2">
+                        {goalLabel(url)}
+                      </Typography>
+                    </Stack>
+                    <Typography variant="body2" color="secondary.light">
+                      Appears on{' '}
+                      <span style={{ fontWeight: 'bold' }}>{count}</span>{' '}
+                      {count > 1 ? 'cards' : 'card'}
+                    </Typography>
+                  </Stack>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
+    </Stack>
   )
 }

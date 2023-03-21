@@ -88,7 +88,7 @@ export function ActionsTable(): ReactElement {
   }, [])
 
   return (
-    <Stack gap={2} justifyContent="center" sx={{ mx: 6 }}>
+    <Stack gap={2} justifyContent="center">
       {actions != null && actions.length > 0 ? (
         <ActionsList actions={actions} goalLabel={goalLabel} />
       ) : (

@@ -38,7 +38,14 @@ export function JourneyEdit(): ReactElement {
                 : theme.palette.background.paper
           }}
         >
-          <Box sx={{ my: 'auto' }}>
+          <Box
+            sx={{
+              my:
+                journeyEditContentComponent === ActiveJourneyEditContent.Action
+                  ? 6
+                  : 'auto'
+            }}
+          >
             {
               {
                 [ActiveJourneyEditContent.Canvas]: <Canvas />,
