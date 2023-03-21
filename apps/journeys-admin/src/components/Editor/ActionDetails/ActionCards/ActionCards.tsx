@@ -8,6 +8,7 @@ import type { TreeBlock } from '@core/journeys/ui/block'
 import { transformer } from '@core/journeys/ui/transformer'
 import Typography from '@mui/material/Typography'
 import Stack from '@mui/material/Stack'
+import { ActiveFab, useEditor } from '@core/journeys/ui/EditorProvider'
 import { FramePortal } from '../../../FramePortal'
 import { ThemeMode, ThemeName } from '../../../../../__generated__/globalTypes'
 import {
@@ -21,6 +22,7 @@ interface ActionCardsProps {
 
 export function ActionCards({ url }: ActionCardsProps): ReactElement {
   const { journey } = useJourney()
+  const { dispatch } = useEditor()
   const { rtl } = getJourneyRTL(journey)
 
   function hasAction(block: TreeBlock): boolean {
@@ -29,6 +31,11 @@ export function ActionCards({ url }: ActionCardsProps): ReactElement {
     return block.children?.some(hasAction)
   }
   const blocks = transformer(journey?.blocks as TreeBlock[]).filter(hasAction)
+
+  function handleClick(step): void {
+    dispatch({ type: 'SetSelectedStepAction', step })
+    dispatch({ type: 'SetActiveFabAction', activeFab: ActiveFab.Add })
+  }
 
   return (
     <Stack gap={6} sx={{ mt: 5, mb: 14 }}>
@@ -51,6 +58,7 @@ export function ActionCards({ url }: ActionCardsProps): ReactElement {
               overflow: 'hidden',
               borderRadius: 2
             }}
+            onClick={() => handleClick(block)}
           >
             {block != null && (
               <Box
@@ -113,7 +121,7 @@ function ActionCardsDetail({
 
   switch (actionBlock?.__typename) {
     case 'TextResponseBlock':
-      blockType = 'Text'
+      blockType = 'Feedback'
       label = actionBlock?.submitLabel ?? ''
       break
     case 'RadioOptionBlock':
@@ -121,7 +129,7 @@ function ActionCardsDetail({
       label = actionBlock?.label ?? ''
       break
     case 'SignUpBlock':
-      blockType = 'Sign Up'
+      blockType = 'Subscribe'
       label = actionBlock?.submitLabel ?? ''
       break
     default:
@@ -135,7 +143,7 @@ function ActionCardsDetail({
       <Typography variant="subtitle2" color="text.secondary">
         {blockType}
       </Typography>
-      <Typography variant="subtitle1">{label}</Typography>
+      <Typography variant="subtitle2">{label}</Typography>
     </Stack>
   )
 }

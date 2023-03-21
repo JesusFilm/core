@@ -30,7 +30,7 @@ export function ActionDetails({
     description,
     icon
   }: GoalDescriptionProps): ReactElement => (
-    <Stack direction="row" gap={2.5}>
+    <Stack direction="row" gap={2.5} sx={{ pb: 2 }}>
       {icon}
       <Stack direction="column">
         <Typography variant="subtitle2" gutterBottom sx={{ pt: 0.5 }}>

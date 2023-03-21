@@ -19,7 +19,7 @@ describe('ActionCards', () => {
     expect(getByText('Appears on the cards')).toBeInTheDocument()
     expect(getByText('Button')).toBeInTheDocument()
     expect(getByText('Google link')).toBeInTheDocument()
-    expect(getByText('Sign Up')).toBeInTheDocument()
+    expect(getByText('Subscribe')).toBeInTheDocument()
     expect(getByText('Sign Up Form')).toBeInTheDocument()
   })
 })
