@@ -3,16 +3,13 @@ import { PrismaClient } from '.prisma/api-users-client'
 
 @Injectable()
 export class PrismaService extends PrismaClient implements OnModuleInit {
-  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-  async onModuleInit() {
+  async onModuleInit(): Promise<void> {
     await this.$connect()
   }
 
-  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-  async enableShutdownHooks(app: INestApplication) {
-    // eslint-disable-next-line @typescript-eslint/no-misused-promises
-    this.$on('beforeExit', async () => {
-      await app.close()
+  async enableShutdownHooks(app: INestApplication): Promise<void> {
+    this.$on('beforeExit', (): void => {
+      void app.close()
     })
   }
 }

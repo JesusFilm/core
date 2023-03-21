@@ -17,7 +17,7 @@ export class UserResolver {
   async me(@CurrentUserId() userId: string): Promise<User> {
     const existingUser = await this.prismaService.user.findUnique({
       where: {
-        userId: userId
+        userId
       }
     })
 
