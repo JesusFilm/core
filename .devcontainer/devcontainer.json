@@ -35,11 +35,11 @@
   // Comment out connect as root instead. More info: https://aka.ms/vscode-remote/containers/non-root.
   "remoteUser": "node",
   "features": {
-    "docker-from-docker": "latest",
-    "git": "os-provided",
-    "aws-cli": "latest",
-    "python": "os-provided",
-    "terraform": {
+    "ghcr.io/devcontainers/features/docker-outside-of-docker:1": {},
+    "ghcr.io/devcontainers/features/git:1": {},
+    "ghcr.io/devcontainers/features/aws-cli:1": {},
+    "ghcr.io/devcontainers/features/python:1": {},
+    "ghcr.io/devcontainers/features/terraform:1": {
       "version": "latest",
       "tflint": "latest",
       "terragrunt": "latest"
