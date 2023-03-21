@@ -1,5 +1,5 @@
 import { render, waitFor } from '@testing-library/react'
-import { CustomIcon } from '.'
+import { CustomIcon } from './index'
 
 describe('CustomIcon', () => {
   it('renders the circular progress on icon load', () => {
@@ -19,7 +19,9 @@ describe('CustomIcon', () => {
 
   // TODO: Update with solid icon once implemented
   it('renders the solid icon', async () => {
-    const { queryByRole, getByText } = render(<CustomIcon name="Like" />)
+    const { queryByRole, getByText } = render(
+      <CustomIcon name="Like" variant="solid" />
+    )
 
     await waitFor(() => {
       expect(queryByRole('progressbar')).not.toBeInTheDocument()

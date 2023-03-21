@@ -38,9 +38,17 @@ export function CustomIcon({
         {
           none: null,
           Like:
-            variant === 'outlined' ? <Like {...iconProps} /> : `${name}Solid`,
+            variant === 'outlined' ? (
+              <Like {...iconProps} />
+            ) : (
+              `${name}IconSolid`
+            ),
           Target:
-            variant === 'outlined' ? <Target {...iconProps} /> : `${name}Solid`
+            variant === 'outlined' ? (
+              <Target {...iconProps} />
+            ) : (
+              `${name}IconSolid`
+            )
         }[name]
       }
     </Suspense>
