@@ -244,8 +244,8 @@ export function TrashedJourneyList({
             </>
           )}
 
-          <DiscoveryJourneys />
           <span>
+            <DiscoveryJourneys />
             <Box width="100%" sx={{ textAlign: 'center' }}>
               <Typography variant="caption">
                 {t('Trashed journeys are moved here for up to 40 days.')}

@@ -192,7 +192,6 @@ export function ActiveJourneyList({
               <AddJourneyButton variant="button" />
             </Card>
           )}
-          <DiscoveryJourneys />
         </>
       ) : (
         <>
@@ -201,6 +200,9 @@ export function ActiveJourneyList({
           ))}
         </>
       )}
+      <span>
+        <DiscoveryJourneys />
+      </span>
       <Dialog
         open={openArchiveAll ?? false}
         onClose={handleClose}
