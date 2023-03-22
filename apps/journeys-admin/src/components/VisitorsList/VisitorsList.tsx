@@ -6,24 +6,27 @@ import { useRouter } from 'next/router'
 import { useVisitors } from '../../libs/useVisitors'
 import { getEvents } from './utils/getEvents'
 
+const StyledDataGrid = styled(DataGrid)(({ theme }) => ({
+  backgroundColor: theme.palette.background.paper,
+  borderRadius: 12,
+  overflow: 'hidden',
+  '& .MuiDataGrid-row': {
+    borderTop: `1px solid ${theme.palette.divider}`,
+    '&:hover': {
+      cursor: 'pointer'
+    }
+  },
+  '& .MuiDataGrid-row--lastVisible': {
+    borderBottom: `1px solid ${theme.palette.divider}`
+  },
+  '& .MuiDataGrid-cell:focus': {
+    outline: 'none'
+  }
+}))
+
 export function VisitorsList(): ReactElement {
   const visitors = useVisitors()
   const router = useRouter()
-
-  const StyledDataGrid = styled(DataGrid)(({ theme }) => ({
-    backgroundColor: theme.palette.background.paper,
-    borderRadius: 12,
-    overflow: 'hidden',
-    '& .MuiDataGrid-row': {
-      borderTop: `1px solid ${theme.palette.divider}`
-    },
-    '& .MuiDataGrid-row--lastVisible': {
-      borderBottom: `1px solid ${theme.palette.divider}`
-    },
-    '& .MuiDataGrid-cell:focus': {
-      outline: 'none'
-    }
-  }))
 
   const columns: GridColDef[] = [
     {
