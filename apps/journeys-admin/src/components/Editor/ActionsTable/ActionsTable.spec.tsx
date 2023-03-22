@@ -103,12 +103,9 @@ describe('ActionsTable', () => {
       </JourneyProvider>
     )
     expect(getByText('Every Journey has a goal')).toBeInTheDocument()
-    expect(
-      getByText('Check all URLs and actions used in the journey')
-    ).toBeInTheDocument()
   })
   it('should render a list of actions', () => {
-    const { getByText, getByTestId } = render(
+    const { getByText, getAllByText, getByTestId } = render(
       <JourneyProvider
         value={{
           journey: {
@@ -120,8 +117,8 @@ describe('ActionsTable', () => {
         <ActionsTable />
       </JourneyProvider>
     )
-    expect(getByText('This Journey has goals')).toBeInTheDocument()
-    expect(getByText('https://www.google.com/')).toBeInTheDocument()
+    expect(getByText('The Journey Goals')).toBeInTheDocument()
+    expect(getAllByText('https://www.google.com/')[0]).toBeInTheDocument()
     expect(getByTestId('EditRoundedIcon')).toBeInTheDocument()
   })
 })

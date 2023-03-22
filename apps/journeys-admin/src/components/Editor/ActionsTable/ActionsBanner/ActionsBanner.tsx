@@ -14,14 +14,13 @@ export function ActionsBanner(): ReactElement {
   return (
     <Box
       sx={{
+        mx: 10,
         gap: 10,
         display: 'flex',
-        [theme.breakpoints.up('md')]: {
-          flexDirection: 'row',
-          px: 10
-        },
+        flexDirection: 'row',
         [theme.breakpoints.down('md')]: {
-          flexDirection: 'column-reverse'
+          flexDirection: 'column-reverse',
+          mx: 4
         }
       }}
     >
