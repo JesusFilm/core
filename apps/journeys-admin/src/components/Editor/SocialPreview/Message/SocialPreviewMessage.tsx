@@ -62,8 +62,6 @@ export function SocialPreviewMessage({
               <Box
                 sx={{
                   bgcolor: 'rgba(0, 0, 0, 0.1)',
-                  width: 60,
-                  height: 60,
                   borderRadius: '6px'
                 }}
               />
@@ -73,13 +71,17 @@ export function SocialPreviewMessage({
                   src={journey?.primaryImageBlock.src}
                   alt={journey?.primaryImageBlock.alt}
                   objectFit="cover"
-                  width="240"
-                  height="240"
-                  style={{ width: 240, height: 240 }}
+                  width="60"
+                  height="60"
                 />
               )
             )}
-            <Stack>
+            <Stack
+              sx={{
+                maxWidth:
+                  journey?.primaryImageBlock?.src != null ? 160 : 'inherit'
+              }}
+            >
               <div>
                 <Typography variant="body1">{journey.seoTitle}</Typography>
               </div>
