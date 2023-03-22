@@ -99,40 +99,52 @@ export function SocialPreviewPost({
             )}
           </CardMedia>
           <CardContent sx={{ px: 0 }}>
-            <div>
-              <Typography variant="body2">YOUR.NEXTSTEP.IS</Typography>
-            </div>
-            <div>
-              {isEmpty ? (
-                <Box
-                  sx={{
-                    width: '224px',
-                    height: '12px',
-                    background: '#EFEFEF',
-                    borderRadius: '6px',
-                    mb: 1
-                  }}
-                />
-              ) : (
-                <Typography variant="subtitle1">{journey.seoTitle}</Typography>
-              )}
-            </div>
-            <div>
-              {isEmpty ? (
-                <Box
-                  sx={{
-                    width: '158px',
-                    height: '12px',
-                    background: '#EFEFEF',
-                    borderRadius: '6px'
-                  }}
-                />
-              ) : (
-                <Typography variant="body2">
-                  {journey.seoDescription}
-                </Typography>
-              )}
-            </div>
+            <Typography
+              variant="body2"
+              sx={{
+                fontSize: 7,
+                fontWeight: 400,
+                lineHeight: 2.5,
+                color: '#6D6D7D'
+              }}
+            >
+              YOUR.NEXTSTEP.IS
+            </Typography>
+            {isEmpty ? (
+              <Box
+                sx={{
+                  width: '224px',
+                  height: '12px',
+                  background: '#EFEFEF',
+                  borderRadius: '6px',
+                  mb: 1
+                }}
+              />
+            ) : (
+              <Typography
+                variant="subtitle1"
+                sx={{ fontSize: 9, lineHeight: 3, color: '#26262E' }}
+              >
+                {journey.seoTitle}
+              </Typography>
+            )}
+            {isEmpty ? (
+              <Box
+                sx={{
+                  width: '158px',
+                  height: '12px',
+                  background: '#EFEFEF',
+                  borderRadius: '6px'
+                }}
+              />
+            ) : (
+              <Typography
+                variant="body2"
+                sx={{ fontSize: 8, lineHeight: 3, color: '#6D6D7D' }}
+              >
+                {journey.seoDescription}
+              </Typography>
+            )}
           </CardContent>
         </Card>
       )}

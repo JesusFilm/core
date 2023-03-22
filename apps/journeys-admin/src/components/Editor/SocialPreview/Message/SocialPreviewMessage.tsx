@@ -54,10 +54,11 @@ export function SocialPreviewMessage({
             width: 240,
             borderRadius: '8px 8px 0 8px',
             px: 2,
+            py: 1,
             bgcolor: (theme) => theme.palette.background.paper
           }}
         >
-          <Stack direction="row">
+          <Stack direction="row" gap={2}>
             {isEmpty ? (
               <Box
                 sx={{
@@ -67,19 +68,22 @@ export function SocialPreviewMessage({
               />
             ) : (
               journey?.primaryImageBlock?.src != null && (
-                <Image
-                  src={journey?.primaryImageBlock.src}
-                  alt={journey?.primaryImageBlock.alt}
-                  objectFit="cover"
-                  width="60"
-                  height="60"
-                />
+                <div style={{ display: 'block', marginTop: '8px' }}>
+                  <Image
+                    src={journey?.primaryImageBlock.src}
+                    alt={journey?.primaryImageBlock.alt}
+                    objectFit="cover"
+                    width="60"
+                    height="60"
+                    style={{ borderRadius: '4px' }}
+                  />
+                </div>
               )
             )}
             <Stack
               sx={{
                 maxWidth:
-                  journey?.primaryImageBlock?.src != null ? 160 : 'inherit'
+                  journey?.primaryImageBlock?.src != null ? 164 : 'inherit'
               }}
             >
               <div>
