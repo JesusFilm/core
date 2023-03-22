@@ -10,7 +10,7 @@ export function EmbedJourney({ slug }: Props): ReactElement {
   const width = {
     xs: '270%',
     sm: '180%',
-    md: '133%'
+    md: '129%'
   }
 
   const mb = {
