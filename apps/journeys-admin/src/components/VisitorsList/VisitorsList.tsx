@@ -67,7 +67,10 @@ export function VisitorsList(): ReactElement {
             getEvents(visitor.node.events)
           return {
             id: visitor.node.id,
-            createdAt: visitor.node.createdAt,
+            createdAt: new Intl.DateTimeFormat('en-us', {
+              dateStyle: 'medium',
+              timeStyle: 'short'
+            }).format(new Date(visitor.node.createdAt)),
             chat: chatOpen?.messagePlatform,
             buttonClick: buttonClick?.value,
             textResponse: textResponse?.value,
@@ -87,6 +90,9 @@ export function VisitorsList(): ReactElement {
         rows={rows}
         onRowClick={handleRowClick}
         disableRowSelectionOnClick
+        columnVisibilityModel={{
+          id: false
+        }}
         // initialState={{
         //   pagination: {
         //     paginationModel: {
