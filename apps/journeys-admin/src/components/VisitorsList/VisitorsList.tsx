@@ -4,6 +4,7 @@ import { styled } from '@mui/material/styles'
 import Box from '@mui/material/Box'
 import { useRouter } from 'next/router'
 import { useVisitors } from '../../libs/useVisitors'
+import { getEvents } from './utils/getEvents'
 
 export function VisitorsList(): ReactElement {
   const visitors = useVisitors()
@@ -28,17 +29,7 @@ export function VisitorsList(): ReactElement {
     {
       field: 'id',
       headerName: 'ID',
-      width: 350
-    },
-    {
-      field: 'name',
-      headerName: 'Name',
-      width: 300
-    },
-    {
-      field: 'email',
-      headerName: 'Email',
-      width: 500
+      width: 100
     },
     {
       field: 'createdAt',
@@ -46,20 +37,41 @@ export function VisitorsList(): ReactElement {
       width: 300
     },
     {
-      field: 'status',
-      headerName: 'Status'
+      field: 'chat',
+      headerName: 'Chat',
+      width: 300
+    },
+    {
+      field: 'buttonClick',
+      headerName: 'Action',
+      width: 300
+    },
+    {
+      field: 'textResponse',
+      headerName: 'User Data',
+      width: 300
+    },
+    {
+      field: 'radioSubmission',
+      headerName: 'Polls',
+      width: 300
     }
   ]
+
+  console.log(visitors)
 
   const rows =
     visitors != null
       ? visitors.map((visitor) => {
+          const { chatOpen, textResponse, radioSubmission, buttonClick } =
+            getEvents(visitor.node.events)
           return {
             id: visitor.node.id,
-            name: visitor.node.name,
-            email: visitor.node.email,
             createdAt: visitor.node.createdAt,
-            status: visitor.node.status
+            chat: chatOpen?.messagePlatform,
+            buttonClick: buttonClick?.value,
+            textResponse: textResponse?.value,
+            radioSubmission: radioSubmission?.value
           }
         })
       : []

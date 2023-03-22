@@ -9,11 +9,39 @@ export const GET_VISITORS = gql`
     visitors: visitorsConnection(teamId: "jfp-team") {
       edges {
         node {
-          createdAt
-          email
           id
-          name
-          status
+          createdAt
+          events {
+            ... on ChatOpenEvent {
+              id
+              journeyId
+              createdAt
+              label
+              value
+              messagePlatform
+            }
+            ... on TextResponseSubmissionEvent {
+              id
+              journeyId
+              createdAt
+              label
+              value
+            }
+            ... on RadioQuestionSubmissionEvent {
+              id
+              journeyId
+              createdAt
+              label
+              value
+            }
+            ... on ButtonClickEvent {
+              id
+              journeyId
+              createdAt
+              label
+              value
+            }
+          }
         }
       }
     }

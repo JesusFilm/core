@@ -1,0 +1,1 @@
+export { getEvents } from './getEvents'
