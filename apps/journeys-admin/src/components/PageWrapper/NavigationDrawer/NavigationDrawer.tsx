@@ -40,7 +40,6 @@ export interface NavigationDrawerProps {
   open: boolean
   onClose: (value: boolean) => void
   authUser?: AuthUser
-  title: string
   router?: NextRouter
 }
 
@@ -57,11 +56,10 @@ export const GET_ME = gql`
 `
 
 const StyledNavigationDrawer = styled(Drawer)(({ theme, open }) => ({
-  width: DRAWER_WIDTH,
+  width: '72px',
   display: 'flex',
-  boxSizing: 'border-box',
-  border: 0,
   '& .MuiDrawer-paper': {
+    border: 0,
     backgroundColor: theme.palette.secondary.dark,
     overflowX: 'hidden',
     ...(open === true && {
@@ -103,7 +101,6 @@ export function NavigationDrawer({
   open,
   onClose,
   authUser,
-  title,
   router
 }: NavigationDrawerProps): ReactElement {
   const activeJourneys = useActiveJourneys()
@@ -143,7 +140,7 @@ export function NavigationDrawer({
     >
       {open && smUp && <Backdrop open={open} onClick={handleClose} />}
       <StyledList>
-        <ListItemButton onClick={handleClose}>
+        <ListItemButton onClick={handleClose} data-testid="toggle-nav-drawer">
           <ListItemIcon
             sx={{
               '> .MuiSvgIcon-root': {
