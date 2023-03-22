@@ -19,13 +19,15 @@ const StyledSwiperContainer = styled(Swiper)(({ theme }) => ({
   '.swiper-button-prev': {
     color: 'white',
     left: '36px',
+
     [theme.breakpoints.down('md')]: {
-      top: 0,
-      left: 0,
-      width: '20%',
-      height: '100%',
+      // top: 0,
+      // left: 0,
+      // width: '20%',
+      // height: '100%',
       '&:after': {
-        content: '""'
+        fontSize: '36px'
+        // content: '""'
       }
     }
   },
@@ -33,12 +35,13 @@ const StyledSwiperContainer = styled(Swiper)(({ theme }) => ({
     color: 'white',
     right: '36px',
     [theme.breakpoints.down('md')]: {
-      top: 0,
-      right: 0,
-      width: '20%',
-      height: '100%',
+      // top: 0,
+      // right: 0,
+      // width: '20%',
+      // height: '100%',
       '&:after': {
-        content: '""'
+        fontSize: '36px'
+        // content: '""'
       }
     }
   },
@@ -96,12 +99,6 @@ export function TestConductor({ blocks }: TestConductorProps): ReactElement {
         autoplay={{ delay: 30000 }}
         spaceBetween={50}
         slidesPerView={1}
-        onBeforeSlideChangeStart={(swiper) => {
-          console.log('before slide change', swiper)
-        }}
-        onSlideChangeTransitionStart={(swiper) => {
-          console.log('on slide change transition start', swiper)
-        }}
         onSlideChange={(swiper) => {
           console.log('slide change', swiper)
           setActiveBlock(treeBlocks[swiper.activeIndex] as TreeBlock<StepBlock>)
@@ -118,11 +115,11 @@ export function TestConductor({ blocks }: TestConductorProps): ReactElement {
               <Stack sx={{ height: 'inherit' }}>
                 <Paper
                   sx={{
-                    width: { xs: '100%', sm: '560px' },
-                    height: { xs: '100%', sm: '95%' },
-                    margin: { xs: 0, sm: 'auto' },
+                    width: { xs: '100%', md: '560px' },
+                    height: { xs: '100%', md: '95%' },
+                    margin: { xs: 0, md: 'auto' },
                     backgroundColor: 'divider',
-                    borderRadius: { xs: 0, sm: 4 }
+                    borderRadius: { xs: 0, md: 4 }
                   }}
                 >
                   <BlockRenderer block={block} />
