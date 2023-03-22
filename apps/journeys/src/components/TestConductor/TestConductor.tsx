@@ -1,5 +1,10 @@
 import { ReactElement, useEffect, useState } from 'react'
-import SwiperCore, { Navigation, Pagination } from 'swiper'
+import SwiperCore, {
+  Navigation,
+  Pagination,
+  Mousewheel,
+  Keyboard
+} from 'swiper'
 import { findIndex } from 'lodash'
 import Div100vh from 'react-div-100vh'
 // Import Swiper React components
@@ -109,17 +114,28 @@ export function TestConductor({ blocks }: TestConductorProps): ReactElement {
     setTreeBlocks(blocks)
   }, [setTreeBlocks, blocks])
 
+  // function cardProgression(index: number, className: string): ReactElement {
+  //   return <span className={className}>(index + 1) </span>
+  // }
+
   return (
-    <Div100vh>
+    <Div100vh style={{ overflowY: 'auto', WebkitOverflowScrolling: 'touch' }}>
       <StyledSwiperContainer
         direction="vertical"
-        modules={[Navigation, Pagination]}
+        modules={[Navigation, Pagination, Mousewheel, Keyboard]}
         navigation
         pagination={
           {
+            // renderBullet: (index, className) => cardProgression(index, className)
             // dynamicBullets: true
           }
         }
+        keyboard
+        mousewheel={{
+          sensitivity: 0.25,
+          forceToAxis: true,
+          thresholdDelta: 150
+        }}
         autoplay={{ delay: 30000 }}
         spaceBetween={50}
         slidesPerView={1}

@@ -43,7 +43,7 @@ export default class MyDocument extends Document<{
           {/* Inject MUI styles first to match with the prepend: true configuration. */}
           {this.props.emotionStyleTags}
         </Head>
-        <body>
+        <body style={{ overflow: 'hidden' }}>
           <Main />
           <NextScript />
         </body>
