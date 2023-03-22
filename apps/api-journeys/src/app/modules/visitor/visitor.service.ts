@@ -53,7 +53,7 @@ export class VisitorService extends BaseService<VisitorRecord> {
         ${aql.join(filters)}
         SORT item.createdAt DESC
         LIMIT ${first} + 1
-        RETURN { cursor: item.createdAt, node: MERGE({ id: item._key }, item) }
+        RETURN { cursor: item.createdAt, node: MERGE(item, { id: item._key }) }
     )
     LET $edges = SLICE($edges_plus_one, 0, ${first})
     RETURN {
