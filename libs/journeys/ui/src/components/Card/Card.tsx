@@ -125,8 +125,7 @@ export function CardWrapper({
       data-testid={id}
       sx={{
         display: 'flex',
-        flexDirection: { xs: 'column', sm: 'row' },
-        justifyContent: { md: 'flex-end' },
+        flexDirection: 'column',
         borderRadius: (theme) => theme.spacing(4),
         backgroundColor,
         width: '100%',

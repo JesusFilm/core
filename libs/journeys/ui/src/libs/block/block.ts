@@ -14,10 +14,15 @@ interface NextActiveBlockArgs {
 }
 interface UseBlocksHook {
   nextActiveBlock: (args?: NextActiveBlockArgs) => void
+  setActiveBlock: (block: TreeBlock<StepFields>) => void
   setTreeBlocks: (blocks: TreeBlock[]) => void
   activeBlock: TreeBlock<StepFields> | null
   treeBlocks: TreeBlock[]
   previousBlocks: TreeBlock[]
+}
+
+export function setActiveBlock(block: TreeBlock<StepFields>): void {
+  activeBlockVar(block)
 }
 
 export function nextActiveBlock(args?: NextActiveBlockArgs): void {
@@ -61,6 +66,7 @@ function flatten(children: TreeBlock[]): TreeBlock[] {
 
 export function isActiveBlockOrDescendant(blockId: string): boolean {
   const activeBlock = activeBlockVar()
+  // console.log('isActiveBlockOrDescendant', activeBlock, blockId)
   if (activeBlock == null) return false
   if (activeBlock.id === blockId) return true
 
@@ -81,6 +87,7 @@ export function useBlocks(): UseBlocksHook {
 
   return {
     nextActiveBlock,
+    setActiveBlock,
     setTreeBlocks,
     activeBlock,
     treeBlocks,

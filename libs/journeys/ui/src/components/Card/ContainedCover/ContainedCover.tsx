@@ -119,8 +119,8 @@ export function ContainedCover({
         sx={{
           position: 'relative',
           flexGrow: 1,
-          width: { xs: '100%', sm: 'calc(50% + 6vh)', md: '100%' },
-          height: { xs: 'auto', sm: '100%' },
+          width: '100%',
+          height: 'auto',
           '> .video-js': {
             width: '100%',
             height: '100%',

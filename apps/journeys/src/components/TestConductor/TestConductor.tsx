@@ -1,6 +1,6 @@
-import { ReactElement } from 'react'
-import { Navigation, Pagination } from 'swiper'
-
+import { ReactElement, useEffect, useState } from 'react'
+import SwiperCore, { Navigation, Pagination } from 'swiper'
+import { findIndex } from 'lodash'
 import Div100vh from 'react-div-100vh'
 // Import Swiper React components
 import { Swiper, SwiperSlide } from 'swiper/react'
@@ -8,10 +8,12 @@ import { Swiper, SwiperSlide } from 'swiper/react'
 import 'swiper/css'
 import 'swiper/css/navigation'
 import 'swiper/css/pagination'
-
+import { TreeBlock, useBlocks } from '@core/journeys/ui/block'
 import { styled } from '@mui/material/styles'
 import Paper from '@mui/material/Paper'
 import Stack from '@mui/material/Stack'
+import { BlockRenderer } from '@core/journeys/ui/BlockRenderer'
+import { BlockFields_StepBlock as StepBlock } from '@core/journeys/ui/block/__generated__/BlockFields'
 
 const StyledSwiperContainer = styled(Swiper)(() => ({
   '.swiper-button-prev': {
@@ -23,18 +25,47 @@ const StyledSwiperContainer = styled(Swiper)(() => ({
     right: '36px'
   },
   '.swiper-pagination-bullets-dynamic': {
-    color: 'black',
-    bottom: '36px !important'
+    color: 'white',
+    top: '36px !important',
+    height: '16px'
+  },
+  '.swiper-pagination-bullet': {
+    background: 'white'
   },
   '.swiper-pagination-bullet-active': {
-    background: 'black'
+    background: 'white'
   }
 }))
 const StyledSwiperSlide = styled(SwiperSlide)(() => ({}))
 
-export function TestConductor(): ReactElement {
+interface TestConductorProps {
+  blocks: TreeBlock[]
+}
+
+export function TestConductor({ blocks }: TestConductorProps): ReactElement {
+  console.log('blocks', blocks)
+  const { setTreeBlocks, activeBlock, treeBlocks, setActiveBlock } = useBlocks()
+  const [swiper, setSwiper] = useState<SwiperCore>()
+
   // const theme = useTheme()
   // const { journey } = useJourney()
+
+  // Navigate to selected block if set
+  useEffect(() => {
+    if (swiper != null && activeBlock != null && treeBlocks != null) {
+      const index = findIndex(
+        treeBlocks,
+        (treeBlock) => treeBlock.id === activeBlock.id
+      )
+      if (index > -1 && swiper.activeIndex !== index) {
+        swiper.slideTo(index)
+      }
+    }
+  }, [swiper, activeBlock, treeBlocks])
+
+  useEffect(() => {
+    setTreeBlocks(blocks)
+  }, [setTreeBlocks, blocks])
 
   return (
     <Div100vh>
@@ -44,31 +75,39 @@ export function TestConductor(): ReactElement {
         pagination={{
           dynamicBullets: true
         }}
+        autoplay={{ delay: 30000 }}
         spaceBetween={50}
         slidesPerView={1}
-        onSlideChange={() => console.log('slide change')}
-        onSwiper={(swiper) => console.log(swiper)}
+        onBeforeSlideChangeStart={(swiper) => {
+          console.log('before slide change', swiper)
+        }}
+        onSlideChangeTransitionStart={(swiper) => {
+          console.log('on slide change transition start', swiper)
+        }}
+        onSlideChange={(swiper) => {
+          console.log('slide change', swiper)
+          setActiveBlock(treeBlocks[swiper.activeIndex] as TreeBlock<StepBlock>)
+        }}
+        onSwiper={(swiper) => {
+          setSwiper(swiper)
+          console.log(swiper)
+        }}
         sx={{ height: 'inherit' }}
       >
-        {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((number) => {
+        {blocks.map((block) => {
           return (
-            <StyledSwiperSlide key={number} sx={{ height: 'inherit' }}>
+            <StyledSwiperSlide key={block.id} sx={{ height: 'inherit' }}>
               <Stack sx={{ height: 'inherit' }}>
                 <Paper
                   sx={{
                     width: '560px',
                     margin: 'auto',
                     height: '95%',
-                    backgroundColor: 'divider'
+                    backgroundColor: 'divider',
+                    borderRadius: 4
                   }}
                 >
-                  <Stack
-                    justifyContent="center"
-                    alignItems="center"
-                    sx={{ height: 'inherit' }}
-                  >
-                    Slide {number}
-                  </Stack>
+                  <BlockRenderer block={block} />
                 </Paper>
               </Stack>
             </StyledSwiperSlide>

@@ -16,7 +16,11 @@ import {
   VideoBlockObjectFit,
   VideoBlockSource
 } from '../../../__generated__/globalTypes'
-import type { TreeBlock } from '../../libs/block'
+import {
+  isActiveBlockOrDescendant,
+  TreeBlock,
+  useBlocks
+} from '../../libs/block'
 import { useEditor } from '../../libs/EditorProvider'
 import { blurImage } from '../../libs/blurImage'
 import { ImageFields } from '../Image/__generated__/ImageFields'
@@ -50,6 +54,8 @@ export function Video({
   const {
     state: { selectedBlock }
   } = useEditor()
+  const { activeBlock } = useBlocks()
+
   const videoRef = useRef<HTMLVideoElement>(null)
   const playerRef = useRef<videojs.Player>()
 
@@ -64,6 +70,12 @@ export function Video({
   }, [posterBlock, theme])
 
   useEffect(() => {
+    if (!isActiveBlockOrDescendant(blockId)) {
+      playerRef.current?.pause()
+    }
+  }, [activeBlock])
+
+  useEffect(() => {
     if (videoRef.current != null) {
       playerRef.current = videojs(videoRef.current, {
         autoplay: autoplay === true,
@@ -73,11 +85,13 @@ export function Video({
           hotkeys: true,
           doubleClick: true
         },
+        inactivityTimeout: 0,
         controlBar: {
           playToggle: true,
           captionsButton: true,
           subtitlesButton: true,
           remainingTimeDisplay: true,
+
           progressControl: {
             seekBar: true
           },
@@ -91,6 +105,7 @@ export function Video({
         // VideoJS blur background persists so we cover video when using png poster on non-autoplay videos
         poster: blurBackground
       })
+
       playerRef.current.on('ready', () => {
         playerRef.current?.currentTime(startAt ?? 0)
         // plays youTube videos at the start time
@@ -199,12 +214,43 @@ export function Video({
             zIndex: 1,
             display: source === VideoBlockSource.youTube ? 'none' : 'block'
           },
-          '> .vjs-big-play-button': {
-            zIndex: 1
-          },
           '> .vjs-poster': {
             backgroundColor: VIDEO_BACKGROUND_COLOR,
             backgroundSize: 'cover'
+          },
+          '.vjs-control-bar': {
+            backgroundColor: 'transparent',
+            height: 'auto'
+            // top: '0'
+          },
+          '.vjs-play-control': {
+            display: 'none'
+          },
+          '.vjs-volume-panel': {
+            display: 'none'
+          },
+          '.vjs-remaining-time': {
+            display: 'none'
+          },
+          '.vjs-picture-in-picture-control': {
+            display: 'none'
+          },
+          '.vjs-fullscreen-control': {
+            display: 'none'
+          },
+          '.vjs-progress-control': {
+            '.vjs-progress-holder': {
+              m: 0,
+              height: '6px'
+            },
+            '.vjs-play-progress': {
+              '::before': {
+                content: '""'
+              }
+            },
+            '.vjs-load-progress': {
+              display: 'none'
+            }
           }
         },
         '> .MuiIconButton-root': {
@@ -224,7 +270,10 @@ export function Video({
           display: 'none'
         },
         '> .video-js.vjs-controls-enabled.vjs-paused .vjs-big-play-button': {
-          display: 'block'
+          display: 'block',
+          border: 'none',
+          backgroundColor: 'transparent',
+          fontSize: '80px'
         }
       }}
     >
