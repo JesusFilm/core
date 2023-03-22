@@ -94,8 +94,10 @@ export class VisitorService extends BaseService<VisitorRecord> {
       `)
       ).next()
 
+      const id = uuidv4()
       visitor = await this.collection.save({
-        id: uuidv4(),
+        _key: id,
+        id,
         teamId: journey.teamId,
         userId,
         createdAt: new Date().toISOString()
