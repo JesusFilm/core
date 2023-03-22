@@ -18,23 +18,37 @@ import { BlockFields_StepBlock as StepBlock } from '@core/journeys/ui/block/__ge
 const StyledSwiperContainer = styled(Swiper)(({ theme }) => ({
   '.swiper-button-prev': {
     color: 'white',
-    left: '36px',
+    left: 'unset',
+    right: 'calc(50% - 350px)',
+    transform: 'rotate(90deg)',
+    top: '45%',
+    [theme.breakpoints.down('lg')]: {
+      right: '36px'
+    },
 
     [theme.breakpoints.down('md')]: {
+      display: 'none',
       // top: 0,
       // left: 0,
       // width: '20%',
       // height: '100%',
       '&:after': {
         fontSize: '36px'
+
         // content: '""'
       }
     }
   },
   '.swiper-button-next': {
     color: 'white',
-    right: '36px',
+    right: 'calc(50% - 350px)',
+    transform: 'rotate(90deg)',
+    top: '55%',
+    [theme.breakpoints.down('lg')]: {
+      right: '36px'
+    },
     [theme.breakpoints.down('md')]: {
+      display: 'none',
       // top: 0,
       // right: 0,
       // width: '20%',
@@ -45,10 +59,17 @@ const StyledSwiperContainer = styled(Swiper)(({ theme }) => ({
       }
     }
   },
+  '.swiper-pagination-vertical.swiper-pagination-bullets': {
+    right: 'calc(50% - 250px)',
+    left: 'unset',
+    [theme.breakpoints.down('md')]: {
+      right: '24px'
+    }
+  },
   '.swiper-pagination-bullets-dynamic': {
-    color: 'white',
-    top: '36px !important',
-    height: '16px'
+    color: 'white'
+    // top: '36px !important',
+    // height: '16px'
   },
   '.swiper-pagination-bullet': {
     background: 'white'
@@ -91,11 +112,14 @@ export function TestConductor({ blocks }: TestConductorProps): ReactElement {
   return (
     <Div100vh>
       <StyledSwiperContainer
+        direction="vertical"
         modules={[Navigation, Pagination]}
         navigation
-        pagination={{
-          dynamicBullets: true
-        }}
+        pagination={
+          {
+            // dynamicBullets: true
+          }
+        }
         autoplay={{ delay: 30000 }}
         spaceBetween={50}
         slidesPerView={1}
