@@ -145,6 +145,7 @@ describe('VisitorService', () => {
       await service.getByUserIdAndJourneyId('user.id', 'team.id')
       expect(service.collection.save).toHaveBeenCalledWith({
         ...visitorWithId,
+        _key: 'newVisitor.id',
         id: 'newVisitor.id',
         createdAt: new Date().toISOString()
       })
