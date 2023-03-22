@@ -126,7 +126,7 @@ export function CardWrapper({
       sx={{
         display: 'flex',
         flexDirection: 'column',
-        borderRadius: (theme) => theme.spacing(4),
+        borderRadius: { xs: 0, sm: 4 },
         backgroundColor,
         width: '100%',
         height: '100%',

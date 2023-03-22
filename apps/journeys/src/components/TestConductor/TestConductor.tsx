@@ -15,14 +15,32 @@ import Stack from '@mui/material/Stack'
 import { BlockRenderer } from '@core/journeys/ui/BlockRenderer'
 import { BlockFields_StepBlock as StepBlock } from '@core/journeys/ui/block/__generated__/BlockFields'
 
-const StyledSwiperContainer = styled(Swiper)(() => ({
+const StyledSwiperContainer = styled(Swiper)(({ theme }) => ({
   '.swiper-button-prev': {
-    color: 'black',
-    left: '36px'
+    color: 'white',
+    left: '36px',
+    [theme.breakpoints.down('md')]: {
+      top: 0,
+      left: 0,
+      width: '20%',
+      height: '100%',
+      '&:after': {
+        content: '""'
+      }
+    }
   },
   '.swiper-button-next': {
-    color: 'black',
-    right: '36px'
+    color: 'white',
+    right: '36px',
+    [theme.breakpoints.down('md')]: {
+      top: 0,
+      right: 0,
+      width: '20%',
+      height: '100%',
+      '&:after': {
+        content: '""'
+      }
+    }
   },
   '.swiper-pagination-bullets-dynamic': {
     color: 'white',
@@ -92,7 +110,7 @@ export function TestConductor({ blocks }: TestConductorProps): ReactElement {
           setSwiper(swiper)
           console.log(swiper)
         }}
-        sx={{ height: 'inherit' }}
+        sx={{ height: 'inherit', background: '#000000e6' }}
       >
         {blocks.map((block) => {
           return (
@@ -100,11 +118,11 @@ export function TestConductor({ blocks }: TestConductorProps): ReactElement {
               <Stack sx={{ height: 'inherit' }}>
                 <Paper
                   sx={{
-                    width: '560px',
-                    margin: 'auto',
-                    height: '95%',
+                    width: { xs: '100%', sm: '560px' },
+                    height: { xs: '100%', sm: '95%' },
+                    margin: { xs: 0, sm: 'auto' },
                     backgroundColor: 'divider',
-                    borderRadius: 4
+                    borderRadius: { xs: 0, sm: 4 }
                   }}
                 >
                   <BlockRenderer block={block} />
