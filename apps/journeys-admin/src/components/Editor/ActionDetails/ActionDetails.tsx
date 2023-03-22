@@ -12,7 +12,6 @@ import { ActionEditor } from './ActionEditor'
 interface ActionDetailsProps {
   url?: string
   goalLabel: () => string
-  // onSelect - go to card and edit it
 }
 
 interface GoalDescriptionProps {
