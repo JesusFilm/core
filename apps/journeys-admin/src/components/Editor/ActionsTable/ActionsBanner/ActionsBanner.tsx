@@ -14,7 +14,7 @@ export function ActionsBanner(): ReactElement {
   return (
     <Box
       sx={{
-        mx: 10,
+        mx: 'auto',
         gap: 10,
         display: 'flex',
         flexDirection: 'row',
@@ -60,17 +60,13 @@ export function ActionsBanner(): ReactElement {
           <Typography variant="h1" gutterBottom>
             Every Journey has a goal
           </Typography>
-          <Typography
-            variant="body2"
-            sx={{
-              [theme.breakpoints.up('md')]: {
-                width: '85%'
-              }
-            }}
-          >
+          <Typography variant="body2">
             On this screen you will see all your goals and actions listed in a
-            single table. Create cards with some actions like buttons. We will
-            list all your links and actions here so you can:
+            single table.
+          </Typography>
+          <Typography variant="body2">
+            Create cards with some actions like buttons. We will list all your
+            links and actions here so you can:
           </Typography>
         </Box>
         <Typography variant="subtitle2" color="secondary.light">

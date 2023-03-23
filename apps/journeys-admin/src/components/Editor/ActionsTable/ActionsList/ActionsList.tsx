@@ -52,6 +52,7 @@ export function ActionsList({
   const { dispatch } = useEditor()
   const theme = useTheme()
   const [selectedAction, setSelectedAction] = useState(actions[0]?.url)
+  const [hover, setHover] = useState<number>()
 
   const GoalIcon = ({ url }: { url: string }): ReactElement => {
     const color = selectedAction === url ? 'primary.main' : 'secondary.light'
@@ -132,56 +133,71 @@ export function ActionsList({
       {/* desktop view */}
       <TableContainer
         component={Paper}
-        sx={{ [theme.breakpoints.down('md')]: { display: 'none' } }}
+        sx={{
+          boxShadow: 'none',
+          border: '1px solid #DEDFE0',
+          [theme.breakpoints.down('md')]: { display: 'none' }
+        }}
       >
         <Table>
           <TableHead sx={{ borderBottom: '1.5px solid #DEDFE0' }}>
             <TableRow>
-              <TableCell />
+              <TableCell width={60} />
               <TableCell>
                 <Typography variant="subtitle2">Target and Action</Typography>
               </TableCell>
               <TableCell>
-                <Typography variant="subtitle2">Appears on </Typography>
+                <Typography variant="subtitle2" align="center" width={100}>
+                  Appears on{' '}
+                </Typography>
               </TableCell>
-              <TableCell />
+              <TableCell width={50} />
             </TableRow>
           </TableHead>
           <TableBody>
-            {actions?.map(({ url, count }, i) => (
+            {actions?.map(({ url, count }, index) => (
               <StyledTableRow
-                key={i}
+                key={index}
                 onClick={() => handleClick(url)}
+                onMouseOver={() => setHover(index)}
+                onMouseOut={() => setHover(undefined)}
                 selectedAction={selectedAction}
                 url={url}
               >
-                <TableCell align="center">
+                <TableCell width={0} align="center" sx={{ pr: 0 }}>
                   <GoalIcon url={url} />
                 </TableCell>
                 <TableCell>
                   <Typography
                     variant="subtitle2"
+                    color={
+                      selectedAction === url ? 'secondary.dark' : 'text.primary'
+                    }
                     sx={{
                       textOverflow: 'ellipsis',
                       whiteSpace: 'nowrap',
                       overflow: 'hidden',
-                      width: '325px'
+                      width: '650px',
+                      pb: 1
                     }}
                   >
                     {url}
                   </Typography>
-                  <Typography variant="body2">{goalLabel(url)}</Typography>
+                  <Typography variant="subtitle2" color="secondary.light">
+                    {goalLabel(url)}
+                  </Typography>
                 </TableCell>
-                <TableCell align="center">
+                <TableCell align="center" width={100}>
                   <Typography variant="subtitle2">{count}</Typography>
                   <Typography variant="body2">
                     {count > 1 ? 'cards' : 'card'}
                   </Typography>
                 </TableCell>
-                <TableCell align="center">
+                <TableCell width={40} sx={{ p: 0 }}>
                   <EditRounded
                     sx={{
-                      color: selectedAction === url ? 'primary.main' : 'divider'
+                      color:
+                        hover === index ? 'primary.main' : 'background.default'
                     }}
                   />
                 </TableCell>
@@ -196,6 +212,8 @@ export function ActionsList({
         component={Paper}
         sx={{
           borderRadius: 0,
+          boxShadow: 'none',
+          border: '1px solid #DEDFE0',
           [theme.breakpoints.up('md')]: {
             display: 'none'
           }
@@ -210,9 +228,9 @@ export function ActionsList({
             </TableRow>
           </TableHead>
           <TableBody>
-            {actions?.map(({ url, count }, i) => (
+            {actions?.map(({ url, count }, index) => (
               <StyledTableRow
-                key={i}
+                key={index}
                 onClick={() => handleClick(url)}
                 selectedAction={selectedAction}
                 url={url}
@@ -221,6 +239,11 @@ export function ActionsList({
                   <Stack gap={2}>
                     <Typography
                       variant="subtitle2"
+                      color={
+                        selectedAction === url
+                          ? 'secondary.dark'
+                          : 'text.primary'
+                      }
                       sx={{
                         textOverflow: 'ellipsis',
                         whiteSpace: 'nowrap',
@@ -232,7 +255,7 @@ export function ActionsList({
                     </Typography>
                     <Stack gap={2} direction="row" alignItems="center">
                       <GoalIcon url={url} />
-                      <Typography variant="subtitle2">
+                      <Typography variant="subtitle2" color="secondary.light">
                         {goalLabel(url)}
                       </Typography>
                     </Stack>

@@ -9,12 +9,16 @@ import { ActionDetails } from '../ActionDetails'
 import { ActionsList } from './ActionsList'
 import { ActionsBanner } from './ActionsBanner'
 
+interface ActionsTableProps {
+  hasAction?: (actions: boolean) => void
+}
+
 export interface Actions {
   url: string
   count: number
 }
 
-export function ActionsTable(): ReactElement {
+export function ActionsTable({ hasAction }: ActionsTableProps): ReactElement {
   const { journey } = useJourney()
   const { dispatch } = useEditor()
 
@@ -39,6 +43,8 @@ export function ActionsTable(): ReactElement {
 
   const actions = countUrls(journey)
 
+  if (actions.length > 1) hasAction?.(true)
+
   const goalLabel = (url: string): string => {
     const urlObject = new URL(url)
     const hostname = urlObject.hostname.replace('www.', '') // Remove 'www.' and top-level domain suffixes
@@ -50,11 +56,13 @@ export function ActionsTable(): ReactElement {
       case 'wa.me':
       case 'whatsapp.com':
       case 'vb.me':
-      case 'viber.com':
+      case 'viber.me':
       case 'snapchat.com':
       case 'skype.com':
       case 'line.me':
       case 'vk.com':
+      case 'tiktok.com':
+      case 'instagram.com':
         return 'Start a Conversation'
       case 'bible.com':
       case 'wordproject.org':

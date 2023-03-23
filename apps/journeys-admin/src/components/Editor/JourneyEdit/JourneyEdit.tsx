@@ -1,4 +1,4 @@
-import { ReactElement } from 'react'
+import { ReactElement, useState } from 'react'
 import Box from '@mui/material/Box'
 import {
   useEditor,
@@ -14,6 +14,7 @@ export function JourneyEdit(): ReactElement {
   const {
     state: { journeyEditContentComponent }
   } = useEditor()
+  const [hasAction, setHasAction] = useState(false)
 
   return (
     <>
@@ -33,7 +34,7 @@ export function JourneyEdit(): ReactElement {
             overflow: 'auto',
             borderBottom: (theme) => `1px solid ${theme.palette.divider}`,
             backgroundColor: (theme) =>
-              journeyEditContentComponent === ActiveJourneyEditContent.Action
+              hasAction
                 ? theme.palette.background.default
                 : theme.palette.background.paper
           }}
@@ -42,14 +43,16 @@ export function JourneyEdit(): ReactElement {
             sx={{
               my:
                 journeyEditContentComponent === ActiveJourneyEditContent.Action
-                  ? 6
+                  ? 10
                   : 'auto'
             }}
           >
             {
               {
                 [ActiveJourneyEditContent.Canvas]: <Canvas />,
-                [ActiveJourneyEditContent.Action]: <ActionsTable />
+                [ActiveJourneyEditContent.Action]: (
+                  <ActionsTable hasAction={(action) => setHasAction(action)} />
+                )
               }[journeyEditContentComponent]
             }
           </Box>
