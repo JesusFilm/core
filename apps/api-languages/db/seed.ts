@@ -1,6 +1,7 @@
 // version 2
 // increment to trigger re-seed (ie: files other than seed.ts are changed)
 
+import { Translation } from '@core/nest/common/TranslationModule'
 import { aql } from 'arangojs'
 import { float } from 'aws-sdk/clients/lightsail'
 import { isEmpty } from 'lodash'
@@ -22,12 +23,6 @@ interface MediaLanguage {
   nameNative: string
   metadataLanguageTag: string
   name: string
-}
-
-interface Translation {
-  value: string
-  languageId: string
-  primary: boolean
 }
 
 interface Country {

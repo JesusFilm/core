@@ -12,4 +12,4 @@ import { TranslationResolver } from './translation.resolver'
 @Module({
   providers: [TranslationResolver]
 })
-export class TranslationModule {}
+export default class TranslationModule {}
