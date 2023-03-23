@@ -9,10 +9,14 @@ import {
   TextResponseSubmissionEventCreateInput
 } from '../../../__generated__/graphql'
 import { EventService } from '../event.service'
+import { VisitorService } from '../../visitor/visitor.service'
 
 @Resolver('TextResponseSubmissionEvent')
 export class TextResponseSubmissionEventResolver {
-  constructor(private readonly eventService: EventService) {}
+  constructor(
+    private readonly eventService: EventService,
+    private readonly visitorService: VisitorService
+  ) {}
 
   @Mutation()
   @UseGuards(GqlAuthGuard)
@@ -25,6 +29,10 @@ export class TextResponseSubmissionEventResolver {
       input.blockId,
       input.stepId
     )
+
+    void this.visitorService.update(visitor.id, {
+      lastEventAt: new Date().toISOString()
+    })
 
     return await this.eventService.save({
       ...input,

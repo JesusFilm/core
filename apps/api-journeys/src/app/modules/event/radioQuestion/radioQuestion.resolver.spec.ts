@@ -1,6 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { EventService } from '../event.service'
 import { RadioQuestionSubmissionEventCreateInput } from '../../../__generated__/graphql'
+import { VisitorService } from '../../visitor/visitor.service'
 import { RadioQuestionSubmissionEventResolver } from './radioQuestion.resolver'
 
 describe('RadioQuestionSubmissionEventResolver', () => {
@@ -13,13 +14,20 @@ describe('RadioQuestionSubmissionEventResolver', () => {
     jest.useRealTimers()
   })
 
-  let resolver: RadioQuestionSubmissionEventResolver
+  let resolver: RadioQuestionSubmissionEventResolver, vService: VisitorService
 
   const eventService = {
     provide: EventService,
     useFactory: () => ({
       save: jest.fn((event) => event),
       validateBlockEvent: jest.fn(() => response)
+    })
+  }
+
+  const visitorService = {
+    provide: VisitorService,
+    useFactory: () => ({
+      update: jest.fn(() => null)
     })
   }
 
@@ -39,11 +47,16 @@ describe('RadioQuestionSubmissionEventResolver', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [RadioQuestionSubmissionEventResolver, eventService]
+      providers: [
+        RadioQuestionSubmissionEventResolver,
+        eventService,
+        visitorService
+      ]
     }).compile()
     resolver = module.get<RadioQuestionSubmissionEventResolver>(
       RadioQuestionSubmissionEventResolver
     )
+    vService = module.get<VisitorService>(VisitorService)
   })
 
   describe('radioQuestionSubmissionEventCreate', () => {
@@ -56,6 +69,14 @@ describe('RadioQuestionSubmissionEventResolver', () => {
         visitorId: 'visitor.id',
         createdAt: new Date().toISOString(),
         journeyId: 'journey.id'
+      })
+    })
+
+    it('should update visitor last event at', async () => {
+      await resolver.radioQuestionSubmissionEventCreate('userId', input)
+
+      expect(vService.update).toHaveBeenCalledWith('visitor.id', {
+        lastEventAt: new Date().toISOString()
       })
     })
   })

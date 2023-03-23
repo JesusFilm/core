@@ -12,7 +12,7 @@ import {
 } from './button.resolver'
 
 describe('ButtonClickEventResolver', () => {
-  let resolver: ButtonClickEventResolver
+  let resolver: ButtonClickEventResolver, vService: VisitorService
 
   beforeAll(() => {
     jest.useFakeTimers('modern')
@@ -36,11 +36,19 @@ describe('ButtonClickEventResolver', () => {
     })
   }
 
+  const visitorService = {
+    provide: VisitorService,
+    useFactory: () => ({
+      update: jest.fn(() => null)
+    })
+  }
+
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [ButtonClickEventResolver, eventService]
+      providers: [ButtonClickEventResolver, eventService, visitorService]
     }).compile()
     resolver = module.get<ButtonClickEventResolver>(ButtonClickEventResolver)
+    vService = module.get<VisitorService>(VisitorService)
   })
 
   describe('buttonClickEventCreate', () => {
@@ -59,6 +67,21 @@ describe('ButtonClickEventResolver', () => {
         visitorId: 'visitor.id',
         createdAt: new Date().toISOString(),
         journeyId: 'journey.id'
+      })
+    })
+
+    it('should update visitor last event at', async () => {
+      const input: ButtonClickEventCreateInput = {
+        id: '1',
+        blockId: 'block.id',
+        stepId: 'step.id',
+        label: 'Step name',
+        value: 'Button label'
+      }
+      await resolver.buttonClickEventCreate('userId', input)
+
+      expect(vService.update).toHaveBeenCalledWith('visitor.id', {
+        lastEventAt: new Date().toISOString()
       })
     })
   })
@@ -134,6 +157,20 @@ describe('ChatOpenEventResolver', () => {
 
       expect(vService.update).toHaveBeenCalledWith('visitor.id', {
         messagePlatform: MessagePlatform.facebook
+      })
+    })
+
+    it('should update visitor last event at', async () => {
+      const input: ChatOpenEventCreateInput = {
+        id: '1',
+        blockId: 'block.id',
+        stepId: 'step.id',
+        value: MessagePlatform.facebook
+      }
+      await resolver.chatOpenEventCreate('userId', input)
+
+      expect(vService.update).toHaveBeenCalledWith('visitor.id', {
+        lastEventAt: new Date().toISOString()
       })
     })
 

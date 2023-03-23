@@ -1,6 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { VideoBlockSource } from '../../../__generated__/graphql'
 import { EventService } from '../event.service'
+import { VisitorService } from '../../visitor/visitor.service'
 import {
   VideoStartEventResolver,
   VideoPlayEventResolver,
@@ -20,11 +21,19 @@ describe('VideoResolver', () => {
   afterAll(() => {
     jest.useRealTimers()
   })
+
   const eventService = {
     provide: EventService,
     useFactory: () => ({
       save: jest.fn((event) => event),
       validateBlockEvent: jest.fn(() => response)
+    })
+  }
+
+  const visitorService = {
+    provide: VisitorService,
+    useFactory: () => ({
+      update: jest.fn(() => null)
     })
   }
 
@@ -44,13 +53,14 @@ describe('VideoResolver', () => {
   }
 
   describe('videoStartEventCreate', () => {
-    let resolver: VideoStartEventResolver
+    let resolver: VideoStartEventResolver, vService: VisitorService
 
     beforeEach(async () => {
       const module: TestingModule = await Test.createTestingModule({
-        providers: [VideoStartEventResolver, eventService]
+        providers: [VideoStartEventResolver, eventService, visitorService]
       }).compile()
       resolver = module.get<VideoStartEventResolver>(VideoStartEventResolver)
+      vService = module.get<VisitorService>(VisitorService)
     })
 
     it('returns VideoStartEvent', async () => {
@@ -66,16 +76,25 @@ describe('VideoResolver', () => {
         VideoBlockSource.youTube
       )
     })
+
+    it('should update visitor last event at', async () => {
+      await resolver.videoStartEventCreate('userid', input)
+
+      expect(vService.update).toHaveBeenCalledWith('visitor.id', {
+        lastEventAt: new Date().toISOString()
+      })
+    })
   })
 
   describe('videoPlayEventCreate', () => {
-    let resolver: VideoPlayEventResolver
+    let resolver: VideoPlayEventResolver, vService: VisitorService
 
     beforeEach(async () => {
       const module: TestingModule = await Test.createTestingModule({
-        providers: [VideoPlayEventResolver, eventService]
+        providers: [VideoPlayEventResolver, eventService, visitorService]
       }).compile()
       resolver = module.get<VideoPlayEventResolver>(VideoPlayEventResolver)
+      vService = module.get<VisitorService>(VisitorService)
     })
 
     it('returns VideoPlayEvent', async () => {
@@ -91,16 +110,25 @@ describe('VideoResolver', () => {
         VideoBlockSource.internal
       )
     })
+
+    it('should update visitor last event at', async () => {
+      await resolver.videoPlayEventCreate('userid', input)
+
+      expect(vService.update).toHaveBeenCalledWith('visitor.id', {
+        lastEventAt: new Date().toISOString()
+      })
+    })
   })
 
   describe('videoPauseEventCreate', () => {
-    let resolver: VideoPauseEventResolver
+    let resolver: VideoPauseEventResolver, vService: VisitorService
 
     beforeEach(async () => {
       const module: TestingModule = await Test.createTestingModule({
-        providers: [VideoPauseEventResolver, eventService]
+        providers: [VideoPauseEventResolver, eventService, visitorService]
       }).compile()
       resolver = module.get<VideoPauseEventResolver>(VideoPauseEventResolver)
+      vService = module.get<VisitorService>(VisitorService)
     })
 
     it('returns VideoPauseEvent', async () => {
@@ -116,18 +144,27 @@ describe('VideoResolver', () => {
         VideoBlockSource.youTube
       )
     })
+
+    it('should update visitor last event at', async () => {
+      await resolver.videoPauseEventCreate('userid', input)
+
+      expect(vService.update).toHaveBeenCalledWith('visitor.id', {
+        lastEventAt: new Date().toISOString()
+      })
+    })
   })
 
   describe('videoCompleteEventCreate', () => {
-    let resolver: VideoCompleteEventResolver
+    let resolver: VideoCompleteEventResolver, vService: VisitorService
 
     beforeEach(async () => {
       const module: TestingModule = await Test.createTestingModule({
-        providers: [VideoCompleteEventResolver, eventService]
+        providers: [VideoCompleteEventResolver, eventService, visitorService]
       }).compile()
       resolver = module.get<VideoCompleteEventResolver>(
         VideoCompleteEventResolver
       )
+      vService = module.get<VisitorService>(VisitorService)
     })
 
     it('returns VideoCompleteEvent', async () => {
@@ -143,16 +180,25 @@ describe('VideoResolver', () => {
         VideoBlockSource.youTube
       )
     })
+
+    it('should update visitor last event at', async () => {
+      await resolver.videoCompleteEventCreate('userid', input)
+
+      expect(vService.update).toHaveBeenCalledWith('visitor.id', {
+        lastEventAt: new Date().toISOString()
+      })
+    })
   })
 
   describe('videoExpandEventCreate', () => {
-    let resolver: VideoExpandEventResolver
+    let resolver: VideoExpandEventResolver, vService: VisitorService
 
     beforeEach(async () => {
       const module: TestingModule = await Test.createTestingModule({
-        providers: [VideoExpandEventResolver, eventService]
+        providers: [VideoExpandEventResolver, eventService, visitorService]
       }).compile()
       resolver = module.get<VideoExpandEventResolver>(VideoExpandEventResolver)
+      vService = module.get<VisitorService>(VisitorService)
     })
 
     it('returns VideoExpandEvent', async () => {
@@ -168,18 +214,27 @@ describe('VideoResolver', () => {
         VideoBlockSource.youTube
       )
     })
+
+    it('should update visitor last event at', async () => {
+      await resolver.videoExpandEventCreate('userid', input)
+
+      expect(vService.update).toHaveBeenCalledWith('visitor.id', {
+        lastEventAt: new Date().toISOString()
+      })
+    })
   })
 
   describe('videoCollapseEventCreate', () => {
-    let resolver: VideoCollapseEventResolver
+    let resolver: VideoCollapseEventResolver, vService: VisitorService
 
     beforeEach(async () => {
       const module: TestingModule = await Test.createTestingModule({
-        providers: [VideoCollapseEventResolver, eventService]
+        providers: [VideoCollapseEventResolver, eventService, visitorService]
       }).compile()
       resolver = module.get<VideoCollapseEventResolver>(
         VideoCollapseEventResolver
       )
+      vService = module.get<VisitorService>(VisitorService)
     })
 
     it('returns VideoCollapseEvent', async () => {
@@ -195,18 +250,27 @@ describe('VideoResolver', () => {
         VideoBlockSource.youTube
       )
     })
+
+    it('should update visitor last event at', async () => {
+      await resolver.videoCollapseEventCreate('userid', input)
+
+      expect(vService.update).toHaveBeenCalledWith('visitor.id', {
+        lastEventAt: new Date().toISOString()
+      })
+    })
   })
 
   describe('videoProgressEventCreate', () => {
-    let resolver: VideoProgressEventResolver
+    let resolver: VideoProgressEventResolver, vService: VisitorService
 
     beforeEach(async () => {
       const module: TestingModule = await Test.createTestingModule({
-        providers: [VideoProgressEventResolver, eventService]
+        providers: [VideoProgressEventResolver, eventService, visitorService]
       }).compile()
       resolver = module.get<VideoProgressEventResolver>(
         VideoProgressEventResolver
       )
+      vService = module.get<VisitorService>(VisitorService)
     })
 
     const progressInput = {
@@ -228,6 +292,14 @@ describe('VideoResolver', () => {
       expect(resolver.source({ value: VideoBlockSource.youTube })).toEqual(
         VideoBlockSource.youTube
       )
+    })
+
+    it('should update visitor last event at', async () => {
+      await resolver.videoProgressEventCreate('userid', progressInput)
+
+      expect(vService.update).toHaveBeenCalledWith('visitor.id', {
+        lastEventAt: new Date().toISOString()
+      })
     })
   })
 })

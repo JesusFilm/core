@@ -20,11 +20,15 @@ import {
   VideoBlockSource
 } from '../../../__generated__/graphql'
 import { EventService } from '../event.service'
+import { VisitorService } from '../../visitor/visitor.service'
 
 @Resolver('VideoStartEvent')
 @UseGuards(GqlAuthGuard)
 export class VideoStartEventResolver {
-  constructor(private readonly eventService: EventService) {}
+  constructor(
+    private readonly eventService: EventService,
+    private readonly visitorService: VisitorService
+  ) {}
 
   @Mutation()
   async videoStartEventCreate(
@@ -36,6 +40,10 @@ export class VideoStartEventResolver {
       input.blockId,
       input.stepId
     )
+
+    void this.visitorService.update(visitor.id, {
+      lastEventAt: new Date().toISOString()
+    })
 
     return await this.eventService.save({
       ...input,
@@ -54,7 +62,10 @@ export class VideoStartEventResolver {
 @Resolver('VideoPlayEvent')
 @UseGuards(GqlAuthGuard)
 export class VideoPlayEventResolver {
-  constructor(private readonly eventService: EventService) {}
+  constructor(
+    private readonly eventService: EventService,
+    private readonly visitorService: VisitorService
+  ) {}
 
   @Mutation()
   async videoPlayEventCreate(
@@ -66,6 +77,10 @@ export class VideoPlayEventResolver {
       input.blockId,
       input.stepId
     )
+
+    void this.visitorService.update(visitor.id, {
+      lastEventAt: new Date().toISOString()
+    })
 
     return await this.eventService.save({
       ...input,
@@ -85,7 +100,10 @@ export class VideoPlayEventResolver {
 @Resolver('VideoPauseEvent')
 @UseGuards(GqlAuthGuard)
 export class VideoPauseEventResolver {
-  constructor(private readonly eventService: EventService) {}
+  constructor(
+    private readonly eventService: EventService,
+    private readonly visitorService: VisitorService
+  ) {}
 
   @Mutation()
   async videoPauseEventCreate(
@@ -97,6 +115,10 @@ export class VideoPauseEventResolver {
       input.blockId,
       input.stepId
     )
+
+    void this.visitorService.update(visitor.id, {
+      lastEventAt: new Date().toISOString()
+    })
 
     return await this.eventService.save({
       ...input,
@@ -116,7 +138,10 @@ export class VideoPauseEventResolver {
 @Resolver('VideoCompleteEvent')
 @UseGuards(GqlAuthGuard)
 export class VideoCompleteEventResolver {
-  constructor(private readonly eventService: EventService) {}
+  constructor(
+    private readonly eventService: EventService,
+    private readonly visitorService: VisitorService
+  ) {}
 
   @Mutation()
   async videoCompleteEventCreate(
@@ -128,6 +153,10 @@ export class VideoCompleteEventResolver {
       input.blockId,
       input.stepId
     )
+
+    void this.visitorService.update(visitor.id, {
+      lastEventAt: new Date().toISOString()
+    })
 
     return await this.eventService.save({
       ...input,
@@ -147,7 +176,10 @@ export class VideoCompleteEventResolver {
 @Resolver('VideoExpandEvent')
 @UseGuards(GqlAuthGuard)
 export class VideoExpandEventResolver {
-  constructor(private readonly eventService: EventService) {}
+  constructor(
+    private readonly eventService: EventService,
+    private readonly visitorService: VisitorService
+  ) {}
 
   @Mutation()
   async videoExpandEventCreate(
@@ -159,6 +191,10 @@ export class VideoExpandEventResolver {
       input.blockId,
       input.stepId
     )
+
+    void this.visitorService.update(visitor.id, {
+      lastEventAt: new Date().toISOString()
+    })
 
     return await this.eventService.save({
       ...input,
@@ -178,7 +214,10 @@ export class VideoExpandEventResolver {
 @Resolver('VideoCollapseEvent')
 @UseGuards(GqlAuthGuard)
 export class VideoCollapseEventResolver {
-  constructor(private readonly eventService: EventService) {}
+  constructor(
+    private readonly eventService: EventService,
+    private readonly visitorService: VisitorService
+  ) {}
 
   @Mutation()
   async videoCollapseEventCreate(
@@ -190,6 +229,11 @@ export class VideoCollapseEventResolver {
       input.blockId,
       input.stepId
     )
+
+    void this.visitorService.update(visitor.id, {
+      lastEventAt: new Date().toISOString()
+    })
+
     return await this.eventService.save({
       ...input,
       __typename: 'VideoCollapseEvent',
@@ -208,7 +252,10 @@ export class VideoCollapseEventResolver {
 @Resolver('VideoProgressEvent')
 @UseGuards(GqlAuthGuard)
 export class VideoProgressEventResolver {
-  constructor(private readonly eventService: EventService) {}
+  constructor(
+    private readonly eventService: EventService,
+    private readonly visitorService: VisitorService
+  ) {}
 
   @Mutation()
   async videoProgressEventCreate(
@@ -220,6 +267,10 @@ export class VideoProgressEventResolver {
       input.blockId,
       input.stepId
     )
+
+    void this.visitorService.update(visitor.id, {
+      lastEventAt: new Date().toISOString()
+    })
 
     return await this.eventService.save({
       ...input,

@@ -81,7 +81,14 @@ describe('SignUpEventResolver', () => {
         value: input.name,
         email: input.email
       })
-      expect(vService.update).not.toHaveBeenCalled()
+    })
+
+    it('should update visitor last event at', async () => {
+      await resolver.signUpSubmissionEventCreate('user.id', input)
+
+      expect(vService.update).toHaveBeenCalledWith('visitor.id', {
+        lastEventAt: new Date().toISOString()
+      })
     })
 
     it('should update visitor name', async () => {

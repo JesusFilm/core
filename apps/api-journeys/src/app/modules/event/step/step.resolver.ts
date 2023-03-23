@@ -11,10 +11,14 @@ import {
   StepViewEventCreateInput
 } from '../../../__generated__/graphql'
 import { EventService } from '../event.service'
+import { VisitorService } from '../../visitor/visitor.service'
 
 @Resolver('StepViewEvent')
 export class StepViewEventResolver {
-  constructor(private readonly eventService: EventService) {}
+  constructor(
+    private readonly eventService: EventService,
+    private readonly visitorService: VisitorService
+  ) {}
 
   @Mutation()
   @UseGuards(GqlAuthGuard)
@@ -27,6 +31,10 @@ export class StepViewEventResolver {
       input.blockId,
       input.blockId
     )
+
+    void this.visitorService.update(visitor.id, {
+      lastEventAt: new Date().toISOString()
+    })
 
     return await this.eventService.save({
       ...input,
@@ -41,7 +49,10 @@ export class StepViewEventResolver {
 
 @Resolver('StepNextEvent')
 export class StepNextEventResolver {
-  constructor(private readonly eventService: EventService) {}
+  constructor(
+    private readonly eventService: EventService,
+    private readonly visitorService: VisitorService
+  ) {}
 
   @Mutation()
   @UseGuards(GqlAuthGuard)
@@ -54,6 +65,10 @@ export class StepNextEventResolver {
       input.blockId,
       input.blockId
     )
+
+    void this.visitorService.update(visitor.id, {
+      lastEventAt: new Date().toISOString()
+    })
 
     return await this.eventService.save({
       ...input,

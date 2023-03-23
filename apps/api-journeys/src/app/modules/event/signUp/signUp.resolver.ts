@@ -30,6 +30,10 @@ export class SignUpSubmissionEventResolver {
       input.stepId
     )
 
+    void this.visitorService.update(visitor.id, {
+      lastEventAt: new Date().toISOString()
+    })
+
     if (visitor.name == null) {
       void this.visitorService.update(visitor.id, {
         name: input.name

@@ -98,8 +98,14 @@ describe('JourneyViewEventResolver', () => {
         visitorId: visitorWithId.id,
         createdAt: new Date().toISOString()
       })
+    })
 
-      expect(vService.update).not.toHaveBeenCalled()
+    it('should update visitor last event at', async () => {
+      await resolver.journeyViewEventCreate('user.id', userAgent, input)
+
+      expect(vService.update).toHaveBeenCalledWith('visitor.id', {
+        lastEventAt: new Date().toISOString()
+      })
     })
 
     it('should update user agent on visitor if visitor does not have a user agent', async () => {

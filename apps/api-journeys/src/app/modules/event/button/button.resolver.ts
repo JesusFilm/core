@@ -16,7 +16,10 @@ import { VisitorService } from '../../visitor/visitor.service'
 
 @Resolver('ButtonClickEvent')
 export class ButtonClickEventResolver {
-  constructor(private readonly eventService: EventService) {}
+  constructor(
+    private readonly eventService: EventService,
+    private readonly visitorService: VisitorService
+  ) {}
 
   @Mutation()
   @UseGuards(GqlAuthGuard)
@@ -29,6 +32,10 @@ export class ButtonClickEventResolver {
       input.blockId,
       input.stepId
     )
+
+    void this.visitorService.update(visitor.id, {
+      lastEventAt: new Date().toISOString()
+    })
 
     return await this.eventService.save({
       ...input,
@@ -58,6 +65,10 @@ export class ChatOpenEventResolver {
       input.blockId,
       input.stepId
     )
+
+    void this.visitorService.update(visitor.id, {
+      lastEventAt: new Date().toISOString()
+    })
 
     if (visitor.messagePlatform == null) {
       void this.visitorService.update(visitor.id, {

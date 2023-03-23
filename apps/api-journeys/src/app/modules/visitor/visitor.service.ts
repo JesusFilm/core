@@ -24,6 +24,7 @@ export interface VisitorRecord {
   teamId: string
   userId: string
   createdAt: string
+  lastEventAt: string
   userAgent?: string
   messagePlatform?: MessagePlatform
   name?: string
@@ -95,12 +96,14 @@ export class VisitorService extends BaseService<VisitorRecord> {
       ).next()
 
       const id = uuidv4()
+      const createdAt = new Date().toISOString()
       visitor = await this.collection.save({
         _key: id,
         id,
         teamId: journey.teamId,
         userId,
-        createdAt: new Date().toISOString()
+        createdAt,
+        lastEventAt: createdAt
       })
     }
 
