@@ -105,26 +105,12 @@ describe('VideoResolver', () => {
 
     it('return a filtered video', async () => {
       const filteredInfo = {
-        fieldNodes: [
-          {
-            selectionSet: {
-              selections: [
-                {
-                  name: { value: 'variant' },
-                  arguments: [
-                    {
-                      name: { value: 'languageId' },
-                      value: { value: 'en' }
-                    }
-                  ]
-                }
-              ]
-            }
-          }
-        ]
+        variableValues: {
+          languageId: '529'
+        }
       }
       expect(await resolver.video(filteredInfo, '20615')).toEqual(video)
-      expect(service.getVideo).toHaveBeenCalledWith('20615', 'en')
+      expect(service.getVideo).toHaveBeenCalledWith('20615', '529')
     })
 
     it('should return video with slug as idtype', async () => {
