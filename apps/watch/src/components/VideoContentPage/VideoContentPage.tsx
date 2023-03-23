@@ -37,6 +37,17 @@ export function VideoContentPage(): ReactElement {
   const [openShare, setOpenShare] = useState(false)
   const [openDownload, setOpenDownload] = useState(false)
 
+  const ogSlug =
+    container !== undefined
+      ? `${container.slug}.html/${
+          variant?.slug === undefined ? '' : variant.slug
+        }.html`
+      : `${
+          variant?.slug === undefined
+            ? ''
+            : `${variant.slug.split('/')[0]}.html/${variant.slug.split('/')[1]}`
+        }.html`
+
   return (
     <>
       <NextSeo
@@ -48,7 +59,7 @@ export function VideoContentPage(): ReactElement {
           url: `${
             process.env.NEXT_PUBLIC_WATCH_URL ??
             'https://watch-jesusfilm.vercel.app'
-          }/${slug}`,
+          }/watch/${ogSlug}`,
           description: snippet[0].value ?? undefined,
           images:
             image != null
