@@ -160,8 +160,6 @@ export function TestConductor({ blocks }: TestConductorProps): ReactElement {
         })}
       </Stack>
     )
-
-    console.log('current block')
     return renderToStaticMarkup(chapters)
   }
 
