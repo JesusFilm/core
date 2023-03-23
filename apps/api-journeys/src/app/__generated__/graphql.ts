@@ -1066,6 +1066,7 @@ export class Visitor {
     id: string;
     createdAt: DateTime;
     lastChatStartedAt?: Nullable<DateTime>;
+    lastChatPlatform?: Nullable<MessagePlatform>;
     userAgent?: Nullable<UserAgent>;
     countryCode?: Nullable<string>;
     name?: Nullable<string>;
@@ -1074,6 +1075,11 @@ export class Visitor {
     messagePlatform?: Nullable<MessagePlatform>;
     messagePlatformId?: Nullable<string>;
     notes?: Nullable<string>;
+    lastEventAt: DateTime;
+    lastLinkAction?: Nullable<string>;
+    lastTextResponse?: Nullable<string>;
+    lastRadioQuestion?: Nullable<string>;
+    lastRadioOptionSubmission?: Nullable<string>;
     events: Event[];
 }
 
