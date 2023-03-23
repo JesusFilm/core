@@ -67,6 +67,16 @@ export function ActionCards({ url }: ActionCardsProps): ReactElement {
                   transformOrigin: 'left top'
                 }}
               >
+                <Box
+                  sx={{
+                    position: 'absolute',
+                    display: 'block',
+                    width: 340,
+                    height: 520,
+                    zIndex: 2,
+                    cursor: 'pointer'
+                  }}
+                />
                 <FramePortal width={340} height={520} dir={rtl ? 'rtl' : 'ltr'}>
                   <ThemeProvider
                     themeName={journey?.themeName ?? ThemeName.base}
