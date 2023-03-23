@@ -44,7 +44,7 @@
     "watcher": {
       "executor": "@nrwl/workspace:run-commands",
       "options": {
-        "command": "npx ts-node apps/api-tags/src/generate-typings.ts"
+        "command": "npx ts-node tools/scripts/generate-typings.ts api-tags"
       }
     },
     "lint": {
