@@ -59,6 +59,18 @@ export function Video({
   const videoRef = useRef<HTMLVideoElement>(null)
   const playerRef = useRef<videojs.Player>()
 
+  // const videoEnd = useMemo(() => {
+  //   const videoTrigger = children.filter((child) => {
+  //     return child.__typename === 'VideoTriggerBlock'
+  //   })
+  //   return (
+  //     endAt ??
+  //     (videoTrigger.length > 0
+  //       ? (videoTrigger[0] as VideoTriggerFields).triggerStart
+  //       : null)
+  //   )
+  // }, [endAt, children])
+
   const posterBlock = children.find(
     (block) => block.id === posterBlockId && block.__typename === 'ImageBlock'
   ) as TreeBlock<ImageFields> | undefined
@@ -85,19 +97,19 @@ export function Video({
           hotkeys: true,
           doubleClick: true
         },
+
         inactivityTimeout: 0,
         controlBar: {
           playToggle: true,
-          captionsButton: true,
-          subtitlesButton: true,
-          remainingTimeDisplay: true,
-
+          captionsButton: false,
+          subtitlesButton: false,
+          remainingTimeDisplay: false,
           progressControl: {
             seekBar: true
           },
           fullscreenToggle: true,
           volumePanel: {
-            inline: true
+            inline: false
           }
         },
         responsive: true,
@@ -126,6 +138,27 @@ export function Video({
             playerRef.current?.exitFullscreen()
         })
         playerRef.current.on('timeupdate', () => {
+          // const start = startAt ?? 0
+          // const end = videoEnd ?? playerRef.current?.duration() ?? 0
+          // const currentTime = playerRef.current?.currentTime() ?? end
+
+          // console.log(
+          //   'current time',
+          //   start,
+          //   endAt,
+          //   end,
+          //   playerRef.current?.currentTime()
+          // )
+          // const progression = ((currentTime - start) / (end - start)) * 100
+
+          // console.log(
+          //   'width',
+          //   playerRef.current?.controlBar.children_[5]
+          //     .el()
+          //     .getElementsByClassName('vjs-play-progress vjs-slider-bar')[0]
+          //     .style.width.slice(0, -1)
+          // )
+
           if (playerRef.current != null) {
             if (
               action == null &&
@@ -273,7 +306,10 @@ export function Video({
           display: 'block',
           border: 'none',
           backgroundColor: 'transparent',
-          fontSize: '80px'
+          fontSize: '80px',
+          '.vjs-icon-placeholder': {
+            display: { xs: 'none', md: 'block' }
+          }
         }
       }}
     >
