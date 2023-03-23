@@ -43,6 +43,15 @@ type Browser
   version: String
 }
 
+enum ButtonAction
+  @join__type(graph: JOURNEYS)
+{
+  NavigateAction @join__enumValue(graph: JOURNEYS)
+  NavigateToBlockAction @join__enumValue(graph: JOURNEYS)
+  NavigateToJourneyAction @join__enumValue(graph: JOURNEYS)
+  LinkAction @join__enumValue(graph: JOURNEYS)
+}
+
 type ButtonBlock implements Block
   @join__implements(graph: JOURNEYS, interface: "Block")
   @join__type(graph: JOURNEYS)
@@ -101,6 +110,18 @@ type ButtonClickEvent implements Event
 
   """label of the button"""
   value: String
+
+  """Action type of the button when it was clicked"""
+  action: ButtonAction
+
+  """
+  The label for each corresponding action, mapping below:
+  NavigateAction - null
+  NavigateToBlockAction - StepName of the block
+  NavigateToJourneyAction - slug of the journey
+  LinkAction - url of the link
+  """
+  actionValue: String
 }
 
 input ButtonClickEventCreateInput
@@ -120,6 +141,18 @@ input ButtonClickEventCreateInput
 
   """label of the button"""
   value: String
+
+  """Action type of the button when it was clicked"""
+  action: ButtonAction
+
+  """
+  The label for each corresponding action, mapping below:
+  NavigateAction - null
+  NavigateToBlockAction - StepName of the block
+  NavigateToJourneyAction - slug of the journey
+  LinkAction - url of the link
+  """
+  actionValue: String
 }
 
 enum ButtonColor

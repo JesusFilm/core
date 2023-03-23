@@ -130,6 +130,13 @@ export enum VideoBlockObjectFit {
     zoomed = "zoomed"
 }
 
+export enum ButtonAction {
+    NavigateAction = "NavigateAction",
+    NavigateToBlockAction = "NavigateToBlockAction",
+    NavigateToJourneyAction = "NavigateToJourneyAction",
+    LinkAction = "LinkAction"
+}
+
 export enum MessagePlatform {
     facebook = "facebook",
     telegram = "telegram",
@@ -404,6 +411,8 @@ export class ButtonClickEventCreateInput {
     stepId?: Nullable<string>;
     label?: Nullable<string>;
     value?: Nullable<string>;
+    action?: Nullable<ButtonAction>;
+    actionValue?: Nullable<string>;
 }
 
 export class ChatOpenEventCreateInput {
@@ -821,6 +830,8 @@ export class ButtonClickEvent implements Event {
     createdAt: DateTime;
     label?: Nullable<string>;
     value?: Nullable<string>;
+    action?: Nullable<ButtonAction>;
+    actionValue?: Nullable<string>;
 }
 
 export class ChatOpenEvent implements Event {

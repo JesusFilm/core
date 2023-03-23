@@ -9,7 +9,8 @@ import {
   ButtonClickEventCreateInput,
   ChatOpenEventCreateInput,
   ChatOpenEvent,
-  MessagePlatform
+  MessagePlatform,
+  ButtonAction
 } from '../../../__generated__/graphql'
 import { EventService } from '../event.service'
 import { VisitorService } from '../../visitor/visitor.service'
@@ -36,6 +37,12 @@ export class ButtonClickEventResolver {
     void this.visitorService.update(visitor.id, {
       lastEventAt: new Date().toISOString()
     })
+
+    if (input.action === ButtonAction.LinkAction) {
+      void this.visitorService.update(visitor.id, {
+        lastLinkAction: input.actionValue ?? undefined
+      })
+    }
 
     return await this.eventService.save({
       ...input,

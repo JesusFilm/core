@@ -1,6 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { EventService } from '../event.service'
 import {
+  ButtonAction,
   ButtonClickEventCreateInput,
   ChatOpenEventCreateInput,
   MessagePlatform
@@ -58,7 +59,9 @@ describe('ButtonClickEventResolver', () => {
         blockId: 'block.id',
         stepId: 'step.id',
         label: 'Step name',
-        value: 'Button label'
+        value: 'Button label',
+        action: ButtonAction.NavigateToBlockAction,
+        actionValue: 'Step 1'
       }
 
       expect(await resolver.buttonClickEventCreate('userId', input)).toEqual({
@@ -70,18 +73,37 @@ describe('ButtonClickEventResolver', () => {
       })
     })
 
-    it('should update visitor', async () => {
+    it('should update visitor last event at', async () => {
       const input: ButtonClickEventCreateInput = {
         id: '1',
         blockId: 'block.id',
         stepId: 'step.id',
         label: 'Step name',
-        value: 'Button label'
+        value: 'Button label',
+        action: ButtonAction.NavigateToJourneyAction,
+        actionValue: 'another-journey'
       }
       await resolver.buttonClickEventCreate('userId', input)
 
       expect(vService.update).toHaveBeenCalledWith('visitor.id', {
         lastEventAt: new Date().toISOString()
+      })
+    })
+
+    it('should update visitor last link action', async () => {
+      const input: ButtonClickEventCreateInput = {
+        id: '1',
+        blockId: 'block.id',
+        stepId: 'step.id',
+        label: 'Step name',
+        value: 'Button label',
+        action: ButtonAction.LinkAction,
+        actionValue: 'https://test.com/some-link'
+      }
+      await resolver.buttonClickEventCreate('userId', input)
+
+      expect(vService.update).toHaveBeenCalledWith('visitor.id', {
+        lastLinkAction: 'https://test.com/some-link'
       })
     })
   })

@@ -34,6 +34,7 @@ export interface VisitorRecord {
   lastTextResponse?: string
   lastRadioQuestion?: string
   lastRadioOptionSubmission?: string
+  lastLinkAction?: string
 }
 
 @Injectable()
