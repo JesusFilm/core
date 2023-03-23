@@ -5,6 +5,7 @@ import { ActiveJourneyEditContent } from '@core/journeys/ui/EditorProvider'
 import Typography from '@mui/material/Typography'
 import Box from '@mui/material/Box'
 import Skeleton from '@mui/material/Skeleton'
+import Stack from '@mui/material/Stack'
 
 import { OnSelectProps } from '../OnSelectProps'
 
@@ -34,9 +35,12 @@ export function NavigationCard({
       id={id}
       data-testid={testId}
       sx={{
-        height: '140px',
-        width: '95px',
-        borderRadius: 2,
+        height: '150px',
+        width: '101px',
+        borderRadius: '8px',
+        p: 1,
+        pt: 1,
+        mt: -1,
         outline: (theme) =>
           outlined
             ? `2px solid ${theme.palette.primary.main} `
@@ -57,27 +61,32 @@ export function NavigationCard({
         ) : (
           <CardActionArea
             data-testid="navigation-card-button"
-            sx={{
-              textAlign: 'center'
-            }}
             onClick={() => onSelect?.({ view: destination })}
           >
-            <Box
-              display="flex"
-              width="100%"
-              height="80px"
+            <Stack
+              direction="column"
               justifyContent="center"
-              alignItems="center"
+              alignContent="center"
+              gap={1}
             >
-              {header}
-            </Box>
-            <Typography
-              variant="subtitle1"
-              sx={{ fontSize: 14, lineHeight: '16px' }}
-              px={2}
-            >
-              {title}
-            </Typography>
+              <Box
+                display="flex"
+                width="100%"
+                height="80px"
+                justifyContent="center"
+                alignItems="center"
+              >
+                {header}
+              </Box>
+              <Typography
+                variant="subtitle1"
+                textAlign="center"
+                sx={{ fontSize: 14, lineHeight: '16px' }}
+                px={2}
+              >
+                {title}
+              </Typography>
+            </Stack>
           </CardActionArea>
         )}
       </Card>
