@@ -65,10 +65,10 @@ const StyledSwiperContainer = styled(Swiper)(({ theme }) => ({
     }
   },
   '.swiper-pagination-vertical.swiper-pagination-bullets': {
-    right: 'calc(50% - 250px)',
+    right: 'calc(50% - 264px)',
     left: 'unset',
     [theme.breakpoints.down('md')]: {
-      right: '24px'
+      right: '10px'
     }
   },
   '.swiper-pagination-bullets-dynamic': {

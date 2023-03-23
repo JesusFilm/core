@@ -327,7 +327,7 @@ export function Video({
           <Paper
             sx={{
               backgroundColor: 'transparent',
-              borderRadius: (theme) => theme.spacing(4),
+              borderRadius: { xs: 0, sm: 4 },
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
