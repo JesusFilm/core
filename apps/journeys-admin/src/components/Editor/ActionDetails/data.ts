@@ -106,22 +106,18 @@ export const journey: Journey = {
       fullscreen: false
     },
     {
-      __typename: 'ButtonBlock',
-      id: 'button2.id',
+      id: 'signup.id',
+      __typename: 'SignUpBlock',
       parentBlockId: 'card2.id',
       parentOrder: 0,
-      label: 'Google link',
-      buttonVariant: ButtonVariant.contained,
-      buttonColor: ButtonColor.primary,
-      size: ButtonSize.medium,
-      startIconId: 'null',
-      endIconId: 'null',
+      submitLabel: 'Sign Up Form',
       action: {
         __typename: 'LinkAction',
-        parentBlockId: 'button2.id',
-        gtmEventName: null,
+        parentBlockId: 'signup.id',
+        gtmEventName: 'signup',
         url: 'https://www.google.com/'
-      }
+      },
+      submitIconId: 'icon'
     },
     {
       __typename: 'StepBlock',

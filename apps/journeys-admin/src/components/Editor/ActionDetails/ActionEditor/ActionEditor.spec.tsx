@@ -10,13 +10,13 @@ describe('ActionDetails', () => {
     const url =
       'https://www.youtube.com/watch?v=ga057VTHdP0&list=RDga057VTHdP0&start_radio=1'
 
-    const buttonBlock1 = journey.blocks?.[2]
-    const buttonBlock2 = journey.blocks?.[6]
+    const buttonBlock = journey.blocks?.[2]
+    const signUpBlock = journey.blocks?.[6]
 
     const result1 = jest.fn(() => ({
       data: {
         blockUpdateLinkAction: {
-          id: buttonBlock1?.id,
+          id: buttonBlock?.id,
           gtmEventName: 'gtmEventName',
           url
         }
@@ -26,7 +26,7 @@ describe('ActionDetails', () => {
     const result2 = jest.fn(() => ({
       data: {
         blockUpdateLinkAction: {
-          id: buttonBlock2?.id,
+          id: signUpBlock?.id,
           gtmEventName: 'gtmEventName',
           url
         }
@@ -40,7 +40,7 @@ describe('ActionDetails', () => {
             request: {
               query: MULTIPLE_LINK_ACTION_UPDATE,
               variables: {
-                id: buttonBlock1?.id,
+                id: buttonBlock?.id,
                 journeyId: 'journeyId',
                 input: {
                   url
@@ -53,7 +53,7 @@ describe('ActionDetails', () => {
             request: {
               query: MULTIPLE_LINK_ACTION_UPDATE,
               variables: {
-                id: buttonBlock2?.id,
+                id: signUpBlock?.id,
                 journeyId: 'journeyId',
                 input: {
                   url
@@ -65,7 +65,10 @@ describe('ActionDetails', () => {
         ]}
       >
         <JourneyProvider value={{ journey }}>
-          <ActionEditor url="https://www.google.com/" />
+          <ActionEditor
+            url="https://www.google.com/"
+            goalLabel="Visit a website"
+          />
         </JourneyProvider>
       </MockedProvider>
     )
