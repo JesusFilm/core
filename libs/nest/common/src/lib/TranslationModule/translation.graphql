@@ -1,0 +1,9 @@
+extend type Language @key(fields: "id") {
+  id: ID! @external
+}
+
+type Translation {
+  value: String!
+  language: Language!
+  primary: Boolean!
+}

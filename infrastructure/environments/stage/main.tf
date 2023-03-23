@@ -94,6 +94,13 @@ module "api-languages" {
   doppler_token = data.aws_ssm_parameter.doppler_api_languages_stage_token.value
 }
 
+module "api-tags" {
+  source        = "../../../apps/api-tags/infrastructure"
+  ecs_config    = local.internal_ecs_config
+  env           = "stage"
+  doppler_token = data.aws_ssm_parameter.doppler_api_tags_stage_token.value
+}
+
 module "api-users" {
   source        = "../../../apps/api-users/infrastructure"
   ecs_config    = local.internal_ecs_config
