@@ -70,7 +70,7 @@ describe('ButtonClickEventResolver', () => {
       })
     })
 
-    it('should update visitor last event at', async () => {
+    it('should update visitor', async () => {
       const input: ButtonClickEventCreateInput = {
         id: '1',
         blockId: 'block.id',
@@ -160,7 +160,7 @@ describe('ChatOpenEventResolver', () => {
       })
     })
 
-    it('should update visitor last event at', async () => {
+    it('should update visitor', async () => {
       const input: ChatOpenEventCreateInput = {
         id: '1',
         blockId: 'block.id',
@@ -170,6 +170,8 @@ describe('ChatOpenEventResolver', () => {
       await resolver.chatOpenEventCreate('userId', input)
 
       expect(vService.update).toHaveBeenCalledWith('visitor.id', {
+        lastChatStartedAt: new Date().toISOString(),
+        lastChatPlatform: MessagePlatform.facebook,
         lastEventAt: new Date().toISOString()
       })
     })

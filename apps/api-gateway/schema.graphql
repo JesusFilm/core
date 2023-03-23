@@ -2342,11 +2342,11 @@ type Visitor
   The last time the visitor called any event. It is populated when the visitor
   is first created, and is updated by all event creation mutations.
   """
-  lastEventAt: DateTime!
+  lastEventAt: DateTime
 
   """
   The label of a link action button of the last time the visitor clicked a
-  link action button. Populated by ChatOpenEventMutation
+  link action button. Populated by ButtonClickEvent
   """
   lastLinkAction: String
 

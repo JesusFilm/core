@@ -65,9 +65,11 @@ export class ChatOpenEventResolver {
       input.blockId,
       input.stepId
     )
-
+    const lastChatStartedAt = new Date().toISOString()
     void this.visitorService.update(visitor.id, {
-      lastEventAt: new Date().toISOString()
+      lastChatStartedAt,
+      lastChatPlatform: input.value ?? undefined,
+      lastEventAt: lastChatStartedAt
     })
 
     if (visitor.messagePlatform == null) {

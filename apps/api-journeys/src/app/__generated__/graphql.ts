@@ -1075,7 +1075,7 @@ export class Visitor {
     messagePlatform?: Nullable<MessagePlatform>;
     messagePlatformId?: Nullable<string>;
     notes?: Nullable<string>;
-    lastEventAt: DateTime;
+    lastEventAt?: Nullable<DateTime>;
     lastLinkAction?: Nullable<string>;
     lastTextResponse?: Nullable<string>;
     lastRadioQuestion?: Nullable<string>;

@@ -24,11 +24,16 @@ export interface VisitorRecord {
   teamId: string
   userId: string
   createdAt: string
-  lastEventAt: string
+  lastEventAt?: string
   userAgent?: string
   messagePlatform?: MessagePlatform
   name?: string
   email?: string
+  lastChatStartedAt?: string
+  lastChatPlatform?: MessagePlatform
+  lastTextResponse?: string
+  lastRadioQuestion?: string
+  lastRadioOptionSubmission?: string
 }
 
 @Injectable()
@@ -102,8 +107,7 @@ export class VisitorService extends BaseService<VisitorRecord> {
         id,
         teamId: journey.teamId,
         userId,
-        createdAt,
-        lastEventAt: createdAt
+        createdAt
       })
     }
 

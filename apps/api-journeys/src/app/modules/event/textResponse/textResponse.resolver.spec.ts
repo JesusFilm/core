@@ -70,11 +70,12 @@ describe('TextResponseEventResolver', () => {
       })
     })
 
-    it('should update visitor last event at', async () => {
+    it('should update visitor', async () => {
       await resolver.textResponseSubmissionEventCreate('userId', input)
 
       expect(vService.update).toHaveBeenCalledWith('visitor.id', {
-        lastEventAt: new Date().toISOString()
+        lastEventAt: new Date().toISOString(),
+        lastTextResponse: input.value
       })
     })
   })

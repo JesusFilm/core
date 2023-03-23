@@ -143,13 +143,11 @@ describe('VisitorService', () => {
       mockUuidv4.mockReturnValueOnce('newVisitor.id')
 
       await service.getByUserIdAndJourneyId('user.id', 'team.id')
-      const createdAt = new Date().toISOString()
       expect(service.collection.save).toHaveBeenCalledWith({
         ...visitorWithId,
         _key: 'newVisitor.id',
         id: 'newVisitor.id',
-        createdAt,
-        lastEventAt: createdAt
+        createdAt: new Date().toISOString()
       })
     })
   })

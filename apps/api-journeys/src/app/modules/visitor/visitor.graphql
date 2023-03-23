@@ -69,7 +69,7 @@ type Visitor @key(fields: "id") {
   The last message platform the visitor called the ButtonClickEvent where the
   url is in the format of a recognized chat platform
   """
-  lastChatPlatform: MessagePlatform """ ------------------------------------------- """
+  lastChatPlatform: MessagePlatform
   """
   The user agent of the visitor as poulated by the visitor's user-agent string
   detected in the JourneyViewEventCreate mutation. This field is enriched
@@ -118,27 +118,27 @@ type Visitor @key(fields: "id") {
   The last time the visitor called any event. It is populated when the visitor
   is first created, and is updated by all event creation mutations.
   """
-  lastEventAt: DateTime! """ ------------------------------------------- """
+  lastEventAt: DateTime
   """
   The label of a link action button of the last time the visitor clicked a
-  link action button. Populated by ChatOpenEventMutation
+  link action button. Populated by ButtonClickEvent
   """
-  lastLinkAction: String """ ------------------------------------------- """
+  lastLinkAction: String
   """
   The response of the last text response block the visitor filled out,
   populated by TextResponseSubmission mutation
   """
-  lastTextResponse: String """ ------------------------------------------- """
+  lastTextResponse: String
   """
   The question of the last radio option the visitor filled out,
   populated by RadioQuestionSubmission mutation
   """
-  lastRadioQuestion: String """ ------------------------------------------- """
+  lastRadioQuestion: String
   """
   The selected option  of the last radio option the visitor filled out,
   populated by RadioQuestionSubmission mutation
   """
-  lastRadioOptionSubmission: String """ ------------------------------------------- """
+  lastRadioOptionSubmission: String
   events: [Event!]!
 }
 
