@@ -4,10 +4,16 @@ import { GraphQLFederationDefinitionsFactory } from '@nestjs/graphql'
 const definitionsFactory = new GraphQLFederationDefinitionsFactory()
 definitionsFactory
   .generate({
-    typePaths: [join(process.cwd(), 'apps/api-users/src/app/**/*.graphql')],
+    typePaths: [
+      join(process.cwd(), `apps/${process.argv[2]}/src/app/**/*.graphql`),
+      join(
+        process.cwd(),
+        'libs/nest/common/src/lib/TranslationModule/translation.graphql'
+      )
+    ],
     path: join(
       process.cwd(),
-      'apps/api-users/src/app/__generated__/graphql.ts'
+      `apps/${process.argv[2]}/src/app/__generated__/graphql.ts`
     ),
     outputAs: 'class',
     watch: true,

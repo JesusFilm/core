@@ -1,3 +1,2 @@
-import { TranslationModule } from './translation.module'
-
-export default TranslationModule
+export { default } from './translation.module'
+export type { Translation } from './translation.resolver'

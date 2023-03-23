@@ -68,7 +68,7 @@ export function VideoControls({
   const [currentTime, setCurrentTime] = useState<string>()
   const [progress, setProgress] = useState(0)
   const [progressPercentNotYetEmitted, setProgressPercentNotYetEmitted] =
-    useState([10, 25, 50, 75, 95])
+    useState([10, 25, 50, 75, 90])
   const [volume, setVolume] = useState(0)
   const [mute, setMute] = useState(false)
   const [fullscreen, setFullscreen] = useState(false)
@@ -334,6 +334,7 @@ export function VideoControls({
                 alignItems="center"
               >
                 <IconButton
+                  id={play ? 'pause-button' : 'play-button'}
                   onClick={handlePlay}
                   sx={{ display: { xs: 'none', md: 'flex' } }}
                 >
