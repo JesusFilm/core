@@ -99,6 +99,7 @@ export function VideoHeroOverlay({
                 </Stack>
               </Box>
               <Button
+                id="play-button-lg"
                 size="large"
                 variant="contained"
                 onClick={handlePlay}
@@ -112,6 +113,7 @@ export function VideoHeroOverlay({
                 Play
               </Button>
               <Button
+                id="play-button-sm"
                 size="small"
                 variant="contained"
                 onClick={handlePlay}
