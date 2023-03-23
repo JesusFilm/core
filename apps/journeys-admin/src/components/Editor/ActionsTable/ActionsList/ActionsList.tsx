@@ -74,7 +74,7 @@ export function ActionsList({
       type: 'SetDrawerPropsAction',
       mobileOpen: true,
       title: 'Goal Details',
-      children: <ActionDetails url={url} />
+      children: <ActionDetails url={url} goalLabel={() => goalLabel(url)} />
     })
   }
 
@@ -126,7 +126,7 @@ export function ActionsList({
                 type: 'SetDrawerPropsAction',
                 mobileOpen: true,
                 title: 'Goal Details',
-                children: <ActionDetails url="" />
+                children: <ActionDetails />
               })
             }}
           >

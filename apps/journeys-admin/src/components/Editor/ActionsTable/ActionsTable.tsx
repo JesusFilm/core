@@ -89,8 +89,13 @@ export function ActionsTable({ hasAction }: ActionsTableProps): ReactElement {
     dispatch({
       type: 'SetDrawerPropsAction',
       mobileOpen: true,
-      title: 'Goal Details',
-      children: <ActionDetails url={actions[0]?.url} />
+      title: actions.length > 0 ? 'Goal Details' : 'Help Information',
+      children: (
+        <ActionDetails
+          url={actions[0]?.url}
+          goalLabel={() => goalLabel(actions[0]?.url)}
+        />
+      )
     })
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])

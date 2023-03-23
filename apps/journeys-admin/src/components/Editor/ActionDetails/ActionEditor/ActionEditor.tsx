@@ -1,13 +1,18 @@
-import { ReactElement } from 'react'
+import { ReactElement, ReactNode } from 'react'
 import Box from '@mui/material/Box'
 import { Formik, Form } from 'formik'
 import InputAdornment from '@mui/material/InputAdornment'
-import InsertLinkRoundedIcon from '@mui/icons-material/InsertLinkRounded'
 import TextField from '@mui/material/TextField'
 import { noop } from 'lodash'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { gql, useMutation } from '@apollo/client'
 import { object, string } from 'yup'
+import Typography from '@mui/material/Typography'
+import EditRounded from '@mui/icons-material/EditRounded'
+import QuestionAnswerOutlined from '@mui/icons-material/QuestionAnswerOutlined'
+import WebOutlined from '@mui/icons-material/WebOutlined'
+import MenuBookRounded from '@mui/icons-material/MenuBookRounded'
+import Stack from '@mui/material/Stack'
 import { BlockFields_ButtonBlock as ButtonBlock } from '../../../../../__generated__/BlockFields'
 import { ActionFields_LinkAction as LinkAction } from '../../../../../__generated__/ActionFields'
 import { MultipleLinkActionUpdate } from '../../../../../__generated__/MultipleLinkActionUpdate'
@@ -27,9 +32,13 @@ export const MULTIPLE_LINK_ACTION_UPDATE = gql`
 
 interface ActionEditorProps {
   url: string
+  goalLabel?: string
 }
 
-export function ActionEditor({ url }: ActionEditorProps): ReactElement {
+export function ActionEditor({
+  url,
+  goalLabel
+}: ActionEditorProps): ReactElement {
   const { journey } = useJourney()
 
   const blocks = (journey?.blocks ?? [])
@@ -73,8 +82,21 @@ export function ActionEditor({ url }: ActionEditorProps): ReactElement {
     })
   }
 
+  let icon: ReactNode
+  switch (goalLabel) {
+    case 'Start a conversation':
+      icon = <QuestionAnswerOutlined sx={{ color: 'secondary.light' }} />
+      break
+    case 'Link to bible':
+      icon = <MenuBookRounded sx={{ color: 'secondary.light' }} />
+      break
+    default:
+      icon = <WebOutlined sx={{ color: 'secondary.light' }} />
+      break
+  }
+
   return (
-    <Box sx={{ pt: 8 }}>
+    <Box sx={{ pt: 6 }}>
       <Formik
         initialValues={{
           link: url ?? ''
@@ -89,15 +111,15 @@ export function ActionEditor({ url }: ActionEditorProps): ReactElement {
               id="link"
               name="link"
               variant="filled"
-              label="Paste URL here..."
+              label="Navigate to"
               fullWidth
               value={values.link}
               error={touched.link === true && Boolean(errors.link)}
               helperText={touched.link === true && errors.link}
               InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <InsertLinkRoundedIcon />
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <EditRounded sx={{ color: 'divider' }} />
                   </InputAdornment>
                 )
               }}
@@ -110,6 +132,10 @@ export function ActionEditor({ url }: ActionEditorProps): ReactElement {
           </Form>
         )}
       </Formik>
+      <Stack gap={2} direction="row" alignItems="center" sx={{ pt: 2.5 }}>
+        {icon}
+        <Typography variant="subtitle2">{goalLabel}</Typography>
+      </Stack>
     </Box>
   )
 }
