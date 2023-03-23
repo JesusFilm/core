@@ -22,7 +22,6 @@ module "acm_central_jesusfilm_org" {
 locals {
   services = [
     "arangodb-bigquery-etl",
-    "arangodb-s3-backup"
   ]
 }
 
