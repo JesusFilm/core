@@ -38,7 +38,7 @@ export function SocialPreviewPost({
       {journey != null && (
         <Card sx={{ width: 240, borderRadius: '12px', px: 2 }} elevation={0}>
           <CardHeader
-            sx={{ px: 0 }}
+            sx={{ px: 0, pb: 2 }}
             avatar={
               <Avatar
                 sx={{
@@ -74,7 +74,7 @@ export function SocialPreviewPost({
               />
             }
           />
-          <CardMedia sx={{ px: 0 }}>
+          <CardMedia sx={{ px: 0, pt: 0 }}>
             {isEmpty ? (
               <Box
                 sx={{
@@ -98,13 +98,13 @@ export function SocialPreviewPost({
               )
             )}
           </CardMedia>
-          <CardContent sx={{ px: 0 }}>
+          <CardContent sx={{ px: 0, pt: 0 }}>
             <Typography
               variant="body2"
               sx={{
                 fontSize: 7,
                 fontWeight: 400,
-                lineHeight: 2.5,
+                lineHeight: '10px',
                 color: '#6D6D7D'
               }}
             >
@@ -123,7 +123,7 @@ export function SocialPreviewPost({
             ) : (
               <Typography
                 variant="subtitle1"
-                sx={{ fontSize: 9, lineHeight: 3, color: '#26262E' }}
+                sx={{ fontSize: 9, lineHeight: '12px', color: '#26262E' }}
               >
                 {journey.seoTitle}
               </Typography>
@@ -140,7 +140,7 @@ export function SocialPreviewPost({
             ) : (
               <Typography
                 variant="body2"
-                sx={{ fontSize: 8, lineHeight: 3, color: '#6D6D7D' }}
+                sx={{ fontSize: 8, lineHeight: '12px', color: '#6D6D7D' }}
               >
                 {journey.seoDescription}
               </Typography>

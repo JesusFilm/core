@@ -195,7 +195,6 @@ export function CardPreview({
                     handleChange={handleChange}
                     isDragging={isDragging}
                     isDraggable={isDraggable}
-                    journey={journey}
                   />
                 </Box>
               )}

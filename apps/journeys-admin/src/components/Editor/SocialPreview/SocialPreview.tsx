@@ -11,6 +11,7 @@ export function SocialPreview(): ReactElement {
     <Stack
       direction="row"
       justifyContent="space-evenly"
+      alignContent="start"
       divider={
         <Divider
           orientation="vertical"

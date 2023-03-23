@@ -71,7 +71,11 @@ export function NavigationCard({
             >
               {header}
             </Box>
-            <Typography variant="body2" px={2}>
+            <Typography
+              variant="subtitle1"
+              sx={{ fontSize: 14, lineHeight: '16px' }}
+              px={2}
+            >
               {title}
             </Typography>
           </CardActionArea>

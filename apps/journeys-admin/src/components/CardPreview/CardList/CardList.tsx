@@ -29,8 +29,6 @@ import { VideoWrapper } from '../../Editor/Canvas/VideoWrapper'
 import { CardWrapper } from '../../Editor/Canvas/CardWrapper'
 import { BlockFields_StepBlock as StepBlock } from '../../../../__generated__/BlockFields'
 import { NavigationCard } from '../NavigationCard'
-import { OnSelectProps } from '../OnSelectProps'
-import { JourneyFields as Journey } from '../../../../__generated__/JourneyFields'
 
 interface CardListProps {
   steps: Array<TreeBlock<StepBlock>>
@@ -41,7 +39,6 @@ interface CardListProps {
   handleChange?: (selectedId: string) => void
   isDragging?: boolean
   isDraggable?: boolean
-  journey?: Journey
 }
 
 export function CardList({
@@ -52,10 +49,10 @@ export function CardList({
   handleClick,
   handleChange,
   isDragging,
-  isDraggable,
-  journey
+  isDraggable
 }: CardListProps): ReactElement {
   const { state } = useEditor()
+  const { journey } = useJourney()
   const AddCardSlide = (): ReactElement => (
     <Card
       id="CardPreviewAddButton"
@@ -106,6 +103,7 @@ export function CardList({
               width={72}
               height={72}
               objectFit="cover"
+              style={{ borderRadius: '8px' }}
             />
           )
         }

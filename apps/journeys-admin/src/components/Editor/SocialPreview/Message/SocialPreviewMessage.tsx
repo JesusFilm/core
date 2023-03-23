@@ -25,7 +25,7 @@ export function SocialPreviewMessage({
   }, [journey, isEmpty])
 
   return (
-    <Stack direction="column" justifyContent="center">
+    <Stack direction="column" justifyContent="start">
       <Typography variant="subtitle2" sx={{ pb: 4 }}>
         Shared in the messenger
       </Typography>
@@ -40,11 +40,12 @@ export function SocialPreviewMessage({
       />
       <Box
         sx={{
-          width: 12,
-          height: 12,
-          bgcolor: (theme) => theme.palette.background.paper,
+          width: 0,
+          height: 0,
+          borderTop: (theme) =>
+            `12px solid ${theme.palette.background.paper as string}`,
+          borderRight: '12px solid transparent',
           ml: 5,
-          transform: 'matrix(-1, 0, 0, 1, 0, 0)',
           mb: 2
         }}
       />
@@ -55,6 +56,7 @@ export function SocialPreviewMessage({
             borderRadius: '8px 8px 0 8px',
             px: 2,
             py: 1,
+            pt: 2,
             bgcolor: (theme) => theme.palette.background.paper
           }}
         >
@@ -68,7 +70,7 @@ export function SocialPreviewMessage({
               />
             ) : (
               journey?.primaryImageBlock?.src != null && (
-                <div style={{ display: 'block', marginTop: '8px' }}>
+                <div style={{ display: 'block' }}>
                   <Image
                     src={journey?.primaryImageBlock.src}
                     alt={journey?.primaryImageBlock.alt}
@@ -86,26 +88,33 @@ export function SocialPreviewMessage({
                   journey?.primaryImageBlock?.src != null ? 164 : 'inherit'
               }}
             >
-              <div>
-                <Typography variant="body1">{journey.seoTitle}</Typography>
-              </div>
-              <div>
-                <Typography variant="body2">
-                  {journey.seoDescription}
-                </Typography>
-              </div>
+              <Typography
+                variant="body1"
+                sx={{ fontWeight: 600, fontSize: 9, lineHeight: '12px' }}
+              >
+                {journey.seoTitle}
+              </Typography>
+              <Typography
+                variant="body2"
+                sx={{ fontSize: 7, lineHeight: '11px' }}
+              >
+                {journey.seoDescription}
+              </Typography>
             </Stack>
           </Stack>
-          <Typography variant="body1">YOUR.NEXTSTEP.IS</Typography>
+          <Typography variant="body1" sx={{ fontSize: 8, lineHeight: '12px' }}>
+            YOUR.NEXTSTEP.IS
+          </Typography>
         </Box>
       )}
       <Box
         sx={{
-          width: 12,
-          height: 12,
-          bgcolor: (theme) => theme.palette.background.paper,
+          width: 0,
+          height: 0,
+          borderTop: (theme) =>
+            `12px solid ${theme.palette.background.paper as string}`,
+          borderLeft: '12px solid transparent',
           ml: 57,
-          transform: 'matrix(-1, 0, 0, 1, 0, 0)',
           mb: 2
         }}
       />
@@ -120,11 +129,12 @@ export function SocialPreviewMessage({
       />
       <Box
         sx={{
-          width: 12,
-          height: 12,
-          bgcolor: (theme) => theme.palette.background.paper,
+          width: 0,
+          height: 0,
+          borderTop: (theme) =>
+            `12px solid ${theme.palette.background.paper as string}`,
+          borderLeft: '12px solid transparent',
           ml: 52,
-          transform: 'matrix(-1, 0, 0, 1, 0, 0)',
           mb: 2
         }}
       />
