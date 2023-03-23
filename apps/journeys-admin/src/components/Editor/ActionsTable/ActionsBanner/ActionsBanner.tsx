@@ -6,10 +6,13 @@ import Stack from '@mui/material/Stack'
 import Image from 'next/image'
 import Button from '@mui/material/Button'
 import InfoOutlined from '@mui/icons-material/InfoOutlined'
+import { useEditor } from '@core/journeys/ui/EditorProvider'
 import goal from '../../../../../public/goal.svg'
+import { ActionDetails } from '../../ActionDetails'
 
 export function ActionsBanner(): ReactElement {
   const theme = useTheme()
+  const { dispatch } = useEditor()
 
   return (
     <Box
@@ -51,6 +54,15 @@ export function ActionsBanner(): ReactElement {
               color: 'secondary.main',
               borderColor: 'secondary.main',
               borderRadius: 2
+            }}
+            onClick={() => {
+              // update to be rendering help information drawer
+              dispatch({
+                type: 'SetDrawerPropsAction',
+                mobileOpen: true,
+                title: 'Goal Details',
+                children: <ActionDetails url="" />
+              })
             }}
           >
             <Typography variant="subtitle2">Learn More</Typography>

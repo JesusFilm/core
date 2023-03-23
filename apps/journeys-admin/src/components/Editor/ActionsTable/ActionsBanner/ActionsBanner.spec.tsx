@@ -5,5 +5,10 @@ describe('ActionsBanner', () => {
   it('should show actions banner', () => {
     const { getByText } = render(<ActionsBanner />)
     expect(getByText('Every Journey has a goal')).toBeInTheDocument()
+    expect(
+      getByText(
+        'On this screen you will see all your goals and actions listed in a single table.'
+      )
+    ).toBeInTheDocument()
   })
 })

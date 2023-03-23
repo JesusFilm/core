@@ -120,7 +120,15 @@ export function ActionsList({
                 mb: 4
               }
             }}
-            // onclick function to be set up once action details are in
+            onClick={() => {
+              // update to be rendering help information drawer
+              dispatch({
+                type: 'SetDrawerPropsAction',
+                mobileOpen: true,
+                title: 'Goal Details',
+                children: <ActionDetails url="" />
+              })
+            }}
           >
             <Typography variant="subtitle2">Learn More</Typography>
           </Button>
