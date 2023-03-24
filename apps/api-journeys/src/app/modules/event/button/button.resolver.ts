@@ -34,10 +34,6 @@ export class ButtonClickEventResolver {
       input.stepId
     )
 
-    void this.visitorService.update(visitor.id, {
-      lastEventAt: new Date().toISOString()
-    })
-
     if (input.action === ButtonAction.LinkAction) {
       void this.visitorService.update(visitor.id, {
         lastLinkAction: input.actionValue ?? undefined

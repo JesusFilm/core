@@ -76,7 +76,6 @@ describe('RadioQuestionSubmissionEventResolver', () => {
       await resolver.radioQuestionSubmissionEventCreate('userId', input)
 
       expect(vService.update).toHaveBeenCalledWith('visitor.id', {
-        lastEventAt: new Date().toISOString(),
         lastRadioQuestion: input.label,
         lastRadioOptionSubmission: input.value
       })

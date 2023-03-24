@@ -115,10 +115,10 @@ type Visitor @key(fields: "id") {
   """
   notes: String
   """
-  The last time the visitor called any event. It is populated when the visitor
-  is first created, and is updated by all event creation mutations.
+  The last time the visitor called StepViewEvent mutation. It is populated when
+  the visitor is first created, and is updated by all event creation mutations.
   """
-  lastEventAt: DateTime
+  lastStepViewedAt: DateTime
   """
   The label of a link action button of the last time the visitor clicked a
   link action button. Populated by ButtonClickEvent

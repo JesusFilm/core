@@ -31,7 +31,6 @@ export class TextResponseSubmissionEventResolver {
     )
 
     void this.visitorService.update(visitor.id, {
-      lastEventAt: new Date().toISOString(),
       lastTextResponse: input.value
     })
 
