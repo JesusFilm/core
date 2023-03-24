@@ -3,8 +3,10 @@ import { gql, useQuery } from '@apollo/client'
 import { DataGrid, GridColDef } from '@mui/x-data-grid'
 import { styled } from '@mui/material/styles'
 import Box from '@mui/material/Box'
+import Typography from '@mui/material/Typography'
 import { useRouter } from 'next/router'
-import Button from '@mui/material/Button'
+import LoadingButton from '@mui/lab/LoadingButton'
+import Stack from '@mui/material/Stack'
 import {
   GetVisitors,
   GetVisitors_visitors_edges as Visitor
@@ -56,8 +58,9 @@ export function VisitorsList(): ReactElement {
   const [visitors, setVisitors] = useState<Visitor[]>([])
   const [hasNextPage, setHasNextPage] = useState(true)
   const [endCursor, setEndCursor] = useState<string | null>()
+  const [pageNumber, setPageNumber] = useState<number>(1)
 
-  const { fetchMore } = useQuery<GetVisitors>(GET_VISITORS, {
+  const { fetchMore, loading } = useQuery<GetVisitors>(GET_VISITORS, {
     variables: {
       first: 10
     },
@@ -68,7 +71,7 @@ export function VisitorsList(): ReactElement {
     }
   })
 
-  async function handleFetchMore(): Promise<void> {
+  async function handleFetchNext(): Promise<void> {
     if (hasNextPage) {
       const response = await fetchMore({
         variables: {
@@ -80,6 +83,24 @@ export function VisitorsList(): ReactElement {
         setVisitors(response.data.visitors.edges)
         setHasNextPage(response.data.visitors.pageInfo.hasNextPage)
         setEndCursor(response.data.visitors.pageInfo.endCursor)
+        setPageNumber(pageNumber + 1)
+      }
+    }
+  }
+
+  async function handleFetchPrevious(): Promise<void> {
+    if (pageNumber > 1) {
+      const response = await fetchMore({
+        variables: {
+          first: 10,
+          after: endCursor
+        }
+      })
+      if (response.data.visitors.edges != null) {
+        setVisitors(response.data.visitors.edges)
+        setHasNextPage(response.data.visitors.pageInfo.hasNextPage)
+        setEndCursor(response.data.visitors.pageInfo.endCursor)
+        setPageNumber(pageNumber - 1)
       }
     }
   }
@@ -132,7 +153,7 @@ export function VisitorsList(): ReactElement {
   }
 
   return (
-    <>
+    <Stack spacing={20} sx={{ alignItems: 'center' }}>
       <Box sx={{ height: '60vh', width: '100%' }}>
         <StyledDataGrid
           columns={columns}
@@ -142,17 +163,30 @@ export function VisitorsList(): ReactElement {
           // columnVisibilityModel={{
           //   id: false
           // }}
-          // initialState={{
-          //   pagination: {
-          //     paginationModel: {
-          //       pageSize: 10
-          //     }
-          //   }
-          // }}
-          // pageSizeOptions={[10]}
         />
       </Box>
-      <Button onClick={handleFetchMore}>Fetch More</Button>
-    </>
+
+      <Stack direction="row" spacing={6} sx={{ alignItems: 'center' }}>
+        <LoadingButton
+          variant="outlined"
+          onClick={handleFetchPrevious}
+          disabled={pageNumber <= 1}
+          loading={loading}
+          sx={{ width: '250px' }}
+        >
+          Previous Page
+        </LoadingButton>
+        <Typography>{pageNumber}</Typography>
+        <LoadingButton
+          variant="outlined"
+          onClick={handleFetchNext}
+          disabled={!hasNextPage}
+          loading={loading}
+          sx={{ width: '250px' }}
+        >
+          Next Page
+        </LoadingButton>
+      </Stack>
+    </Stack>
   )
 }
