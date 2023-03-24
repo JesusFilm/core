@@ -1,1 +1,0 @@
-export { getEvents } from './getEvents'

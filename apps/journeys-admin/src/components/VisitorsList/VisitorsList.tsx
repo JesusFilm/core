@@ -4,7 +4,6 @@ import { styled } from '@mui/material/styles'
 import Box from '@mui/material/Box'
 import { useRouter } from 'next/router'
 import { useVisitors } from '../../libs/useVisitors'
-import { getEvents } from './utils/getEvents'
 
 const StyledDataGrid = styled(DataGrid)(({ theme }) => ({
   backgroundColor: theme.palette.background.paper,
@@ -35,27 +34,27 @@ export function VisitorsList(): ReactElement {
       width: 100
     },
     {
-      field: 'createdAt',
-      headerName: 'Date Created',
+      field: 'lastStepViewedAt',
+      headerName: 'Last Active',
       width: 300
     },
     {
-      field: 'chat',
-      headerName: 'Chat',
+      field: 'lastChatPlatform',
+      headerName: 'Chat Started',
       width: 300
     },
     {
-      field: 'buttonClick',
+      field: 'lastLinkAction',
       headerName: 'Action',
       width: 300
     },
     {
-      field: 'textResponse',
+      field: 'lastTextResponse',
       headerName: 'User Data',
       width: 300
     },
     {
-      field: 'radioSubmission',
+      field: 'lastRadioQuestion',
       headerName: 'Polls',
       width: 300
     }
@@ -66,18 +65,12 @@ export function VisitorsList(): ReactElement {
   const rows =
     visitors != null
       ? visitors.map((visitor) => {
-          const { chatOpen, textResponse, radioSubmission, buttonClick } =
-            getEvents(visitor.node.events)
           return {
             id: visitor.node.id,
             createdAt: new Intl.DateTimeFormat('en-us', {
               dateStyle: 'medium',
               timeStyle: 'short'
-            }).format(new Date(visitor.node.createdAt)),
-            chat: chatOpen?.messagePlatform,
-            buttonClick: buttonClick?.value,
-            textResponse: textResponse?.value,
-            radioSubmission: radioSubmission?.value
+            }).format(new Date(visitor.node.createdAt))
           }
         })
       : []
