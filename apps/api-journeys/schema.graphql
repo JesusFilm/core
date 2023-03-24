@@ -908,7 +908,7 @@ input ButtonClickEventCreateInput {
 
   """
   The label for each corresponding action, mapping below:
-  NavigateAction - null
+  NavigateAction - undefined
   NavigateToBlockAction - StepName of the block
   NavigateToJourneyAction - slug of the journey
   LinkAction - url of the link
@@ -1807,10 +1807,10 @@ type Visitor
   notes: String
 
   """
-  The last time the visitor called any event. It is populated when the visitor
-  is first created, and is updated by all event creation mutations.
+  The last time the visitor called StepViewEvent mutation. It is populated when
+  the visitor is first created, and is updated by all event creation mutations.
   """
-  lastEventAt: DateTime
+  lastStepViewedAt: DateTime
 
   """
   The label of a link action button of the last time the visitor clicked a

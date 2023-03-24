@@ -38,10 +38,6 @@ export class JourneyViewEventResolver {
       input.journeyId
     )
 
-    void this.visitorService.update(visitor.id, {
-      lastEventAt: new Date().toISOString()
-    })
-
     if (visitor.userAgent == null) {
       void this.visitorService.update(visitor.id, {
         userAgent

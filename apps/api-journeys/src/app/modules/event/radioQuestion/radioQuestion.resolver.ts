@@ -32,7 +32,6 @@ export class RadioQuestionSubmissionEventResolver {
     )
 
     void this.visitorService.update(visitor.id, {
-      lastEventAt: new Date().toISOString(),
       lastRadioQuestion: input.label ?? undefined,
       lastRadioOptionSubmission: input.value ?? undefined
     })

@@ -1086,7 +1086,7 @@ export class Visitor {
     messagePlatform?: Nullable<MessagePlatform>;
     messagePlatformId?: Nullable<string>;
     notes?: Nullable<string>;
-    lastEventAt?: Nullable<DateTime>;
+    lastStepViewedAt?: Nullable<DateTime>;
     lastLinkAction?: Nullable<string>;
     lastTextResponse?: Nullable<string>;
     lastRadioQuestion?: Nullable<string>;
@@ -1111,6 +1111,13 @@ export class VisitorsConnection {
     __typename?: 'VisitorsConnection';
     edges: VisitorEdge[];
     pageInfo: PageInfo;
+}
+
+export class Translation {
+    __typename?: 'Translation';
+    value: string;
+    language: Language;
+    primary: boolean;
 }
 
 export abstract class IMutation {

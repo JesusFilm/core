@@ -73,23 +73,6 @@ describe('ButtonClickEventResolver', () => {
       })
     })
 
-    it('should update visitor last event at', async () => {
-      const input: ButtonClickEventCreateInput = {
-        id: '1',
-        blockId: 'block.id',
-        stepId: 'step.id',
-        label: 'Step name',
-        value: 'Button label',
-        action: ButtonAction.NavigateToJourneyAction,
-        actionValue: 'another-journey'
-      }
-      await resolver.buttonClickEventCreate('userId', input)
-
-      expect(vService.update).toHaveBeenCalledWith('visitor.id', {
-        lastEventAt: new Date().toISOString()
-      })
-    })
-
     it('should update visitor last link action', async () => {
       const input: ButtonClickEventCreateInput = {
         id: '1',
