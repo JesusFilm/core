@@ -17,13 +17,12 @@ export function ActionsBanner(): ReactElement {
   return (
     <Box
       sx={{
-        mx: 'auto',
+        mx: 4,
         gap: 10,
         display: 'flex',
         flexDirection: 'row',
         [theme.breakpoints.down('md')]: {
-          flexDirection: 'column-reverse',
-          mx: 4
+          flexDirection: 'column-reverse'
         }
       }}
     >
@@ -56,12 +55,11 @@ export function ActionsBanner(): ReactElement {
               borderRadius: 2
             }}
             onClick={() => {
-              // update to be rendering help information drawer
               dispatch({
                 type: 'SetDrawerPropsAction',
                 mobileOpen: true,
-                title: 'Goal Details',
-                children: <ActionDetails url="" />
+                title: 'Information',
+                children: <ActionDetails />
               })
             }}
           >
@@ -74,11 +72,8 @@ export function ActionsBanner(): ReactElement {
           </Typography>
           <Typography variant="body2">
             On this screen you will see all your goals and actions listed in a
-            single table.
-          </Typography>
-          <Typography variant="body2">
-            Create cards with some actions like buttons. We will list all your
-            links and actions here so you can:
+            single table. Create cards with some actions like buttons. We will
+            list all your links and actions here so you can:
           </Typography>
         </Box>
         <Typography variant="subtitle2" color="secondary.light">

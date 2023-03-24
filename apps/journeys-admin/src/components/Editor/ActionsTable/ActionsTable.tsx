@@ -89,7 +89,7 @@ export function ActionsTable({ hasAction }: ActionsTableProps): ReactElement {
     dispatch({
       type: 'SetDrawerPropsAction',
       mobileOpen: true,
-      title: actions.length > 0 ? 'Goal Details' : 'Help Information',
+      title: actions.length > 0 ? 'Goal Details' : 'Information',
       children: (
         <ActionDetails
           url={actions[0]?.url}

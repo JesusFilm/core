@@ -33,14 +33,24 @@ interface StyledTableRowProps extends TableRowProps {
 const StyledTableRow = styled(TableRow)<StyledTableRowProps>(
   ({ theme, selectedAction, url }) => ({
     cursor: 'pointer',
-    borderBottom:
-      selectedAction === url ? '1.5px solid #C52D3A' : '1.5px solid #DEDFE0',
-    '&:last-child': {
-      borderBottom: selectedAction === url ? '1.5px solid #C52D3A' : 'none'
-    },
-    '&:hover': {
-      backgroundColor: theme.palette.background.default
-    },
+    ...(selectedAction === url
+      ? {
+          borderBottom: '1.5px solid #C52D3A',
+          backgroundColor: 'rgba(255, 255, 255, 0.7)',
+          '&:last-child': {
+            borderBottom: '1.5px solid #C52D3A'
+          }
+        }
+      : {
+          borderBottom: '1.5px solid #DEDFE0',
+          backgroundColor: theme.palette.background.paper,
+          '&:last-child': {
+            borderBottom: 'none'
+          },
+          '&:hover': {
+            backgroundColor: 'rgba(255, 255, 255, 0.8)'
+          }
+        }),
     transition: 'border-color 0.1s ease-in-out'
   })
 )
@@ -125,7 +135,7 @@ export function ActionsList({
               dispatch({
                 type: 'SetDrawerPropsAction',
                 mobileOpen: true,
-                title: 'Goal Details',
+                title: 'Information',
                 children: <ActionDetails />
               })
             }}
@@ -144,12 +154,13 @@ export function ActionsList({
         sx={{
           boxShadow: 'none',
           border: '1px solid #DEDFE0',
+          backgroundColor: 'transparent',
           [theme.breakpoints.down('md')]: { display: 'none' }
         }}
       >
         <Table>
           <TableHead sx={{ borderBottom: '1.5px solid #DEDFE0' }}>
-            <TableRow>
+            <TableRow sx={{ backgroundColor: 'background.paper' }}>
               <TableCell width={60} />
               <TableCell>
                 <Typography variant="subtitle2">Target and Action</Typography>
@@ -172,7 +183,7 @@ export function ActionsList({
                 selectedAction={selectedAction}
                 url={url}
               >
-                <TableCell width={0} align="center" sx={{ pr: 0 }}>
+                <TableCell width={0} align="center" sx={{ pr: 2, pl: 5 }}>
                   <GoalIcon url={url} />
                 </TableCell>
                 <TableCell>
@@ -182,10 +193,6 @@ export function ActionsList({
                       selectedAction === url ? 'secondary.dark' : 'text.primary'
                     }
                     sx={{
-                      textOverflow: 'ellipsis',
-                      whiteSpace: 'nowrap',
-                      overflow: 'hidden',
-                      width: '650px',
                       pb: 1
                     }}
                   >
@@ -201,7 +208,7 @@ export function ActionsList({
                     {count > 1 ? 'cards' : 'card'}
                   </Typography>
                 </TableCell>
-                <TableCell width={40} sx={{ p: 0 }}>
+                <TableCell width={40} sx={{ pl: 0, pr: 5 }}>
                   <EditRounded
                     sx={{
                       color:
@@ -261,7 +268,7 @@ export function ActionsList({
                     >
                       {url}
                     </Typography>
-                    <Stack gap={2} direction="row" alignItems="center">
+                    <Stack gap={2} direction="row" alignItems="center" pb={2.5}>
                       <GoalIcon url={url} />
                       <Typography variant="subtitle2" color="secondary.light">
                         {goalLabel(url)}
