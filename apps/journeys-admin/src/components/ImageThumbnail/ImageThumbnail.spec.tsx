@@ -16,13 +16,13 @@ const image: ImageBlock = {
 }
 
 describe('ImageThumbnail', () => {
-  describe('No existing ImageBlock', () => {
+  describe('No existing Image', () => {
     it('shows placeholders on null', async () => {
       const { getByTestId } = render(<ImageThumbnail imageSrc={null} />)
       expect(getByTestId('imageThumbnailPlaceholder')).toBeInTheDocument()
     })
   })
-  describe('Existing ImageBlock', () => {
+  describe('Existing Image', () => {
     it('shows image', async () => {
       const { getByRole } = render(
         <ImageThumbnail imageSrc={image.src} imageAlt={image.alt} />
