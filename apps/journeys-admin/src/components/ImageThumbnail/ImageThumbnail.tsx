@@ -50,7 +50,12 @@ export function ImageThumbnail({
           }}
         />
       ) : (
-        <Icon data-testid="imageThumbnailPlaceholder">{icon}</Icon>
+        <Icon
+          data-testid="imageThumbnailPlaceholder"
+          sx={{ color: 'secondary.light' }}
+        >
+          {icon}
+        </Icon>
       )}
     </Box>
   )
