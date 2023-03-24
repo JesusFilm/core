@@ -3,12 +3,13 @@ import CircularProgress from '@mui/material/CircularProgress'
 import Icon from '@mui/material/Icon'
 import BrokenImageOutlined from '@mui/icons-material/BrokenImageOutlined'
 import Box from '@mui/material/Box'
+import NoteAddIcon from '@mui/icons-material/NoteAdd'
 
 interface ImageThumbnailProps {
   imageSrc?: string | null
   imageAlt?: string
   loading?: boolean
-  icon: ReactNode
+  icon?: ReactNode
   error?: boolean
 }
 
@@ -16,7 +17,7 @@ export function ImageThumbnail({
   imageSrc,
   imageAlt,
   loading,
-  icon,
+  icon = <NoteAddIcon />,
   error
 }: ImageThumbnailProps): ReactElement {
   return (
@@ -49,7 +50,7 @@ export function ImageThumbnail({
           }}
         />
       ) : (
-        <Icon>{icon}</Icon>
+        <Icon data-testid="imageThumbnailPlaceholder">{icon}</Icon>
       )}
     </Box>
   )
