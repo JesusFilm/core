@@ -114,7 +114,7 @@ describe('CardPreview', () => {
         </JourneyProvider>
       </MockedProvider>
     )
-    fireEvent.click(getAllByRole('button')[0])
+    fireEvent.click(getAllByRole('button')[1])
     await waitFor(() =>
       expect(onSelect).toHaveBeenCalledWith({
         step: {
@@ -173,7 +173,7 @@ describe('CardPreview', () => {
         </JourneyProvider>
       </MockedProvider>
     )
-    fireEvent.click(getAllByRole('button')[0])
+    fireEvent.click(getAllByRole('button')[1])
     await waitFor(() => {
       expect(cache.extract()['Journey:journeyId']?.blocks).toEqual([
         { __ref: 'StepBlock:stepId' },
