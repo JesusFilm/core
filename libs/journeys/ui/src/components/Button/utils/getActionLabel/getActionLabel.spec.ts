@@ -9,14 +9,14 @@ import { TypographyVariant } from '../../../../../__generated__/globalTypes'
 import { getActionLabel } from './getActionLabel'
 
 describe('getActionLabel', () => {
-  it('should return empty string for NavigateAction', () => {
+  it('should undefined for NavigateAction', () => {
     const action: NavigateAction = {
       __typename: 'NavigateAction',
       parentBlockId: 'parentBlock.id',
       gtmEventName: 'click'
     }
     const result = getActionLabel(action)
-    expect(result).toEqual('')
+    expect(result).toBeUndefined()
   })
 
   it('should return step block title for NavigateToBlockAction', () => {

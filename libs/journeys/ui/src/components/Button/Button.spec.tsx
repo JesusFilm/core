@@ -142,7 +142,7 @@ describe('Button', () => {
           __typename: 'ButtonClickEvent',
           id: 'uuiid',
           action: action.__typename,
-          actionLabel: action.url
+          actionValue: action.url
         }
       }
     }))
@@ -161,7 +161,7 @@ describe('Button', () => {
                   label: 'stepName',
                   value: buttonWithAction.label,
                   action: action.__typename,
-                  actionLabel: action.url
+                  actionValue: action.url
                 }
               }
             },
@@ -219,7 +219,7 @@ describe('Button', () => {
                   label: 'Step {{number}}',
                   value: block.label,
                   action: undefined,
-                  actionLabel: ''
+                  actionValue: undefined
                 }
               }
             },
@@ -229,7 +229,7 @@ describe('Button', () => {
                   __typename: 'ButtonClickEvent',
                   id: 'uuiid',
                   action: undefined,
-                  actionLabel: ''
+                  actionValue: undefined
                 }
               }
             }

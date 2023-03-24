@@ -77,7 +77,7 @@ export function Button({
     | undefined
 
   const chatPlatform = useMemo(() => findChatPlatform(action), [action])
-  const actionLabel = useMemo(
+  const actionValue = useMemo(
     () => getActionLabel(action, treeBlocks, t),
     [action, treeBlocks, t]
   )
@@ -94,7 +94,7 @@ export function Button({
             label: heading,
             value: label,
             action: action?.__typename,
-            actionLabel
+            actionValue
           }
         }
       })

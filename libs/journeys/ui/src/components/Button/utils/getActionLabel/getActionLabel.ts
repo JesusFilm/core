@@ -7,8 +7,8 @@ export function getActionLabel(
   action: ButtonFields_action | null,
   treeBlocks?: TreeBlock[],
   t?: (str: string, options?: TOptions) => string
-): string {
-  let actionLabel = ''
+): string | undefined {
+  let actionLabel: string | undefined
 
   switch (action?.__typename) {
     case 'NavigateToBlockAction': {
