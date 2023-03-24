@@ -8,6 +8,7 @@ describe('NavigationCard', () => {
   it('should display title', () => {
     const { getByText } = render(
       <NavigationCard
+        id="social"
         title="Test"
         destination={ActiveJourneyEditContent.Canvas}
         outlined={false}

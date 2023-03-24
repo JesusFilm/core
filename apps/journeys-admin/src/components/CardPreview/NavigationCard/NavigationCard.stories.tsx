@@ -14,6 +14,7 @@ const NavigationCardStory = {
 const Template: Story = ({ ...args }) => {
   return (
     <NavigationCard
+      id="social"
       title="Social Media"
       destination={ActiveJourneyEditContent.Canvas}
       onSelect={() => ({})}
