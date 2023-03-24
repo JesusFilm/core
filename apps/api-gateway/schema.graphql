@@ -147,7 +147,7 @@ input ButtonClickEventCreateInput
 
   """
   The label for each corresponding action, mapping below:
-  NavigateAction - null
+  NavigateAction - undefined
   NavigateToBlockAction - StepName of the block
   NavigateToJourneyAction - slug of the journey
   LinkAction - url of the link
