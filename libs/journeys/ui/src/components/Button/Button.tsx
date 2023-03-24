@@ -17,7 +17,7 @@ import { Icon } from '../Icon'
 import { ButtonFields } from './__generated__/ButtonFields'
 import { ButtonClickEventCreate } from './__generated__/ButtonClickEventCreate'
 import { ChatOpenEventCreate } from './__generated__/ChatOpenEventCreate'
-import { findChatPlatform } from './findChatPlatform'
+import { findChatPlatform } from './utils/findChatPlatform'
 
 export const BUTTON_CLICK_EVENT_CREATE = gql`
   mutation ButtonClickEventCreate($input: ButtonClickEventCreateInput!) {
