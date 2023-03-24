@@ -65,7 +65,7 @@ describe('VisitorService', () => {
         FILTER item.@value0 == @value1
         SORT item.createdAt DESC
         LIMIT @value2 + 1
-        RETURN { cursor: item.createdAt, node: MERGE({ id: item._key }, item) }
+        RETURN { cursor: item.createdAt, node: MERGE(item, { id: item._key }) }
     )
     LET $edges = SLICE($edges_plus_one, 0, @value2)
     RETURN {
@@ -145,6 +145,7 @@ describe('VisitorService', () => {
       await service.getByUserIdAndJourneyId('user.id', 'team.id')
       expect(service.collection.save).toHaveBeenCalledWith({
         ...visitorWithId,
+        _key: 'newVisitor.id',
         id: 'newVisitor.id',
         createdAt: new Date().toISOString()
       })

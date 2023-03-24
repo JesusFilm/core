@@ -21,6 +21,7 @@ import { secondsToTimeFormat } from '@core/shared/ui/timeFormat'
 import fscreen from 'fscreen'
 import dynamic from 'next/dynamic'
 import TagManager from 'react-gtm-module'
+import debounce from 'lodash/debounce'
 import { useVideo } from '../../../../../libs/videoContext'
 import { AudioLanguageButton } from '../../../AudioLanguageButton'
 
@@ -46,7 +47,7 @@ function isMobile(): boolean {
   return /windows phone/i.test(userAgent) || /iPad|iPhone|iPod/.test(userAgent)
 }
 
-function eventToDataLayer(eventType, title, language, percent): void {
+function evtToDataLayer(eventType, title, language, percent): void {
   TagManager.dataLayer({
     dataLayer: {
       event: eventType,
@@ -56,6 +57,7 @@ function eventToDataLayer(eventType, title, language, percent): void {
     }
   })
 }
+const eventToDataLayer = debounce(evtToDataLayer, 500)
 
 export function VideoControls({
   player,
@@ -66,7 +68,7 @@ export function VideoControls({
   const [currentTime, setCurrentTime] = useState<string>()
   const [progress, setProgress] = useState(0)
   const [progressPercentNotYetEmitted, setProgressPercentNotYetEmitted] =
-    useState([10, 25, 50, 75, 95])
+    useState([10, 25, 50, 75, 90])
   const [volume, setVolume] = useState(0)
   const [mute, setMute] = useState(false)
   const [fullscreen, setFullscreen] = useState(false)
@@ -332,6 +334,7 @@ export function VideoControls({
                 alignItems="center"
               >
                 <IconButton
+                  id={play ? 'pause-button' : 'play-button'}
                   onClick={handlePlay}
                   sx={{ display: { xs: 'none', md: 'flex' } }}
                 >

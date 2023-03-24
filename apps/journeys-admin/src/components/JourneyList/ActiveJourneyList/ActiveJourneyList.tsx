@@ -11,6 +11,7 @@ import { useActiveJourneys } from '../../../libs/useActiveJourneys'
 import { SortOrder } from '../JourneySort'
 import { AddJourneyButton } from '../AddJourneyButton'
 import { JourneyCard } from '../JourneyCard'
+import { DiscoveryJourneys } from '../../DiscoveryJourneys'
 import { getDuplicatedJourney } from './utils/getDuplicatedJourney'
 import { ActivePriorityList } from './ActivePriorityList'
 
@@ -199,6 +200,9 @@ export function ActiveJourneyList({
           ))}
         </>
       )}
+      <span>
+        <DiscoveryJourneys />
+      </span>
       <Dialog
         open={openArchiveAll ?? false}
         onClose={handleClose}
