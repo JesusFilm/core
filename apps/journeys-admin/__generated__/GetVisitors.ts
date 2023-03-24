@@ -23,6 +23,26 @@ export interface GetVisitors_visitors_edges {
    * The item at the end of the edge.
    */
   node: GetVisitors_visitors_edges_node;
+  /**
+   * A cursor for use in pagination.
+   */
+  cursor: string;
+}
+
+export interface GetVisitors_visitors_pageInfo {
+  __typename: "PageInfo";
+  /**
+   * When paginating forwards, are there more items?
+   */
+  hasNextPage: boolean;
+  /**
+   * When paginating backwards, the cursor to continue.
+   */
+  startCursor: string | null;
+  /**
+   * When paginating forwards, the cursor to continue.
+   */
+  endCursor: string | null;
 }
 
 export interface GetVisitors_visitors {
@@ -31,6 +51,10 @@ export interface GetVisitors_visitors {
    * A list of edges.
    */
   edges: GetVisitors_visitors_edges[];
+  /**
+   * Information to aid in pagination.
+   */
+  pageInfo: GetVisitors_visitors_pageInfo;
 }
 
 export interface GetVisitors {
@@ -38,4 +62,9 @@ export interface GetVisitors {
    * A list of visitors that are connected with a specific team.
    */
   visitors: GetVisitors_visitors;
+}
+
+export interface GetVisitorsVariables {
+  first?: number | null;
+  after?: string | null;
 }
