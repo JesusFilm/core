@@ -1,3 +1,6 @@
+// version 2
+// increment to trigger re-seed (ie: files other than seed.ts are changed)
+
 import { ArangoDB } from './db'
 import { nua1 } from './seeds/nua1'
 import { nua2 } from './seeds/nua2'
