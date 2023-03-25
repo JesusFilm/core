@@ -2,8 +2,21 @@ import { render, fireEvent } from '@testing-library/react'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { MockedProvider } from '@apollo/client/testing'
 import { DragDropContext } from 'react-beautiful-dnd'
+import {
+  ActiveFab,
+  ActiveJourneyEditContent,
+  ActiveTab,
+  EditorState,
+  useEditor
+} from '@core/journeys/ui/EditorProvider'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { BlockFields_StepBlock as StepBlock } from '../../../../__generated__/BlockFields'
-import { VideoBlockSource } from '../../../../__generated__/globalTypes'
+import {
+  VideoBlockSource,
+  ThemeName,
+  ThemeMode
+} from '../../../../__generated__/globalTypes'
+import { JourneyFields as Journey } from '../../../../__generated__/JourneyFields'
 import { CardList } from '.'
 
 jest.mock('react-beautiful-dnd', () => ({
@@ -29,6 +42,15 @@ jest.mock('react-beautiful-dnd', () => ({
     ),
   DragDropContext: ({ children }) => children
 }))
+
+jest.mock('@core/journeys/ui/EditorProvider', () => {
+  const originalModule = jest.requireActual('@core/journeys/ui/EditorProvider')
+  return {
+    __esModule: true,
+    ...originalModule,
+    useEditor: jest.fn()
+  }
+})
 
 describe('CardList', () => {
   const selected: TreeBlock<StepBlock> = {
@@ -193,6 +215,23 @@ describe('CardList', () => {
     selected
   ]
 
+  const state: EditorState = {
+    steps,
+    selectedBlock: selected,
+    drawerMobileOpen: false,
+    activeTab: ActiveTab.Cards,
+    activeFab: ActiveFab.Add,
+    journeyEditContentComponent: ActiveJourneyEditContent.Canvas
+  }
+
+  const mockUseEditor = useEditor as jest.MockedFunction<typeof useEditor>
+  beforeEach(() => {
+    mockUseEditor.mockReturnValue({
+      state,
+      dispatch: jest.fn()
+    })
+  })
+
   it('should call handleClick on addCard click', () => {
     const handleClick = jest.fn()
     const { getByRole } = render(
@@ -234,5 +273,105 @@ describe('CardList', () => {
     )
     const dragHandle = getAllByTestId('DragHandleRoundedIcon')
     expect(dragHandle[0]).toHaveClass('MuiSvgIcon-root')
+  })
+
+  it('contains social preview card', () => {
+    const { getByTestId } = render(
+      <MockedProvider>
+        <DragDropContext>
+          <CardList
+            steps={steps}
+            selected={selected}
+            showAddButton
+            droppableProvided={droppableProvided}
+          />
+        </DragDropContext>
+      </MockedProvider>
+    )
+    expect(getByTestId('social-preview-navigation-card')).toBeInTheDocument()
+  })
+
+  it('navigates on social preview card click', async () => {
+    const dispatch = jest.fn()
+    const handleChange = jest.fn()
+    mockUseEditor.mockReturnValue({
+      state,
+      dispatch
+    })
+    const { getAllByRole } = render(
+      <MockedProvider>
+        <JourneyProvider
+          value={{
+            journey: {
+              id: 'journeyId',
+              themeMode: ThemeMode.light,
+              themeName: ThemeName.base,
+              language: {
+                __typename: 'Language',
+                id: '529',
+                bcp47: 'en',
+                iso3: 'eng'
+              }
+            } as unknown as Journey,
+            admin: true
+          }}
+        >
+          <DragDropContext>
+            <CardList
+              steps={steps}
+              selected={selected}
+              droppableProvided={droppableProvided}
+              handleChange={handleChange}
+            />
+          </DragDropContext>
+        </JourneyProvider>
+      </MockedProvider>
+    )
+    fireEvent.click(getAllByRole('button')[0])
+    expect(handleChange).toHaveBeenCalledWith('social')
+  })
+
+  it('should display image for social navigationcard if image is provided', () => {
+    const dispatch = jest.fn()
+    const handleChange = jest.fn()
+    mockUseEditor.mockReturnValue({
+      state,
+      dispatch
+    })
+    const { getAllByRole } = render(
+      <MockedProvider>
+        <JourneyProvider
+          value={{
+            journey: {
+              id: 'journeyId',
+              themeMode: ThemeMode.light,
+              themeName: ThemeName.base,
+              language: {
+                __typename: 'Language',
+                id: '529',
+                bcp47: 'en',
+                iso3: 'eng'
+              },
+              primaryImageBlock: {
+                src: 'https://images.unsplash.com/photo-1600133153574-25d98a99528c?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1600&q=80'
+              }
+            } as unknown as Journey,
+            admin: true
+          }}
+        >
+          <DragDropContext>
+            <CardList
+              steps={steps}
+              selected={selected}
+              droppableProvided={droppableProvided}
+              handleChange={handleChange}
+            />
+          </DragDropContext>
+        </JourneyProvider>
+      </MockedProvider>
+    )
+    expect(getAllByRole('img')[0].attributes.getNamedItem('src')?.value).toBe(
+      'https://images.unsplash.com/photo-1600133153574-25d98a99528c?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1600&q=80'
+    )
   })
 })

@@ -7,15 +7,12 @@ import Box from '@mui/material/Box'
 import Skeleton from '@mui/material/Skeleton'
 import Stack from '@mui/material/Stack'
 
-import { OnSelectProps } from '../OnSelectProps'
-
 interface NavigationCardProps {
   id: string
   title: string
   destination: ActiveJourneyEditContent
   outlined?: boolean
   header?: ReactElement
-  onSelect?: ({ step, view }: OnSelectProps) => void
   loading?: boolean
   testId?: string
 }
@@ -23,9 +20,7 @@ interface NavigationCardProps {
 export function NavigationCard({
   id,
   title,
-  destination,
   outlined = false,
-  onSelect,
   header,
   loading = false,
   testId
@@ -59,10 +54,7 @@ export function NavigationCard({
         {loading ? (
           <Skeleton variant="rectangular" width={87} height={132} />
         ) : (
-          <CardActionArea
-            data-testid="navigation-card-button"
-            onClick={() => onSelect?.({ view: destination })}
-          >
+          <CardActionArea>
             <Stack
               direction="column"
               justifyContent="center"

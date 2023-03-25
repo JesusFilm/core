@@ -12,7 +12,6 @@ describe('NavigationCard', () => {
         title="Test"
         destination={ActiveJourneyEditContent.Canvas}
         outlined={false}
-        onSelect={jest.fn()}
         header={<div />}
       />
     )
@@ -25,27 +24,12 @@ describe('NavigationCard', () => {
         title="Test"
         destination={ActiveJourneyEditContent.Canvas}
         outlined={false}
-        onSelect={jest.fn()}
         header={<div data-testid="header" />}
       />
     )
     expect(getByTestId('header')).toBeInTheDocument()
   })
-  it('should call onSelect to view when clicked', () => {
-    const onSelect = jest.fn()
-    const { getByTestId } = render(
-      <NavigationCard
-        id="social"
-        title="Test"
-        destination={ActiveJourneyEditContent.Canvas}
-        outlined={false}
-        onSelect={onSelect}
-        header={<div />}
-      />
-    )
-    getByTestId('navigation-card-button').click()
-    expect(onSelect).toBeCalledWith({ view: ActiveJourneyEditContent.Canvas })
-  })
+
   it('should display outline when outlined is true', () => {
     const { getByTestId } = render(
       <NavigationCard
@@ -54,7 +38,6 @@ describe('NavigationCard', () => {
         title="Test"
         destination={ActiveJourneyEditContent.Canvas}
         outlined
-        onSelect={jest.fn()}
         header={<div />}
       />
     )
