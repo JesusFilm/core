@@ -47,12 +47,16 @@ export class VideoResolver {
     @Args('id') id: string,
     @Args('idType') idType: IdType = IdType.databaseId
   ): Promise<Video> {
+    const variantLanguageId =
+      info.variableValues?.languageId ??
+      info.fieldNodes[0].selectionSet.selections
+        .find(({ name }) => name.value === 'variant')
+        ?.arguments.find(({ name }) => name.value === 'languageId')?.value
+        ?.value
+
     switch (idType) {
       case IdType.databaseId:
-        return await this.videoService.getVideo(
-          id,
-          info.variableValues?.languageId
-        )
+        return await this.videoService.getVideo(id, variantLanguageId)
       case IdType.slug:
         return await this.videoService.getVideoBySlug(id)
     }
