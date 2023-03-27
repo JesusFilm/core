@@ -18,19 +18,25 @@ import { CountryModule } from './modules/country/country.module'
     TranslationModule,
     GraphQLModule.forRoot<ApolloFederationDriverConfig>({
       driver: ApolloFederationDriver,
-      typePaths: [
-        join(process.cwd(), 'apps/api-languages/src/app/**/*.graphql'),
-        join(process.cwd(), 'assets/**/*.graphql'),
-        join(
-          process.cwd(),
-          'libs/nest/common/src/lib/TranslationModule/translation.graphql'
-        )
-      ],
+      typePaths:
+        process.env.NODE_ENV !== 'production'
+          ? [
+              join(process.cwd(), 'apps/api-languages/src/app/**/*.graphql'),
+              join(
+                process.cwd(),
+                'libs/nest/common/src/lib/TranslationModule/translation.graphql'
+              )
+            ]
+          : [join(process.cwd(), 'assets/**/*.graphql')],
       cors: true,
-      context: ({ req }) => ({ headers: req.headers })
+      context: ({ req }) => ({ headers: req.headers }),
+      cache: 'bounded'
     }),
     LoggerModule.forRoot({
       pinoHttp: {
+        autoLogging: {
+          ignore: (req) => req.url === '/.well-known/apollo/server-health'
+        },
         transport:
           process.env.NODE_ENV !== 'production'
             ? {
