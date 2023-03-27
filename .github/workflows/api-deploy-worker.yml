@@ -75,8 +75,9 @@ jobs:
         if: contains(steps.affected-apps.outputs.apps, inputs.name)
         uses: mansagroup/nrwl-nx-action@v3
         with:
-          targets: build:production
+          targets: build
           projects: ${{ inputs.name }}
+          args: --c=production
 
       # ECS Deployment
       - name: Configure ECS AWS credentials
