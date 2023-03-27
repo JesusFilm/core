@@ -152,7 +152,10 @@ export function CardWrapper({
           p: 2,
           backgroundColor: 'rgb(0,0,0,0.8)',
           borderRadius: 7,
-          color: 'white'
+          color: 'white',
+          position: 'absolute',
+          bottom: 0,
+          width: `calc(100% - 42px)`
         }}
         justifyContent="space-between"
         alignItems="center"
