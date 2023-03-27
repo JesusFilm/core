@@ -52,7 +52,7 @@ export function VideoContentPage(): ReactElement {
           url: `${
             process.env.NEXT_PUBLIC_WATCH_URL ??
             'https://watch-jesusfilm.vercel.app'
-          }/watch${ogSlug}`,
+          }${ogSlug }`,
           description: snippet[0].value ?? undefined,
           images:
             image != null
