@@ -2,7 +2,7 @@ import { Story, Meta } from '@storybook/react'
 import { MockedProvider } from '@apollo/client/testing'
 import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 import { journeysAdminConfig } from '../../libs/storybook'
-import { PageWrapper } from '../PageWrapper'
+import { PageWrapper } from '../NewPageWrapper'
 import { GET_ACTIVE_JOURNEYS } from '../../libs/useActiveJourneys/useActiveJourneys'
 import {
   defaultJourney,
