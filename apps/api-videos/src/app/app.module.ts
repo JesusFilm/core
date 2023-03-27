@@ -18,16 +18,19 @@ import { VideoVariantModule } from './modules/videoVariant/videoVariant.module'
     VideoVariantModule,
     GraphQLModule.forRoot<ApolloFederationDriverConfig>({
       driver: ApolloFederationDriver,
-      typePaths: [
-        join(process.cwd(), 'apps/api-videos/src/app/**/*.graphql'),
-        join(process.cwd(), 'assets/**/*.graphql'),
-        join(
-          process.cwd(),
-          'libs/nest/common/src/lib/TranslationModule/translation.graphql'
-        )
-      ],
+      typePaths:
+        process.env.NODE_ENV !== 'production'
+          ? [
+              join(process.cwd(), 'apps/api-videos/src/app/**/*.graphql'),
+              join(
+                process.cwd(),
+                'libs/nest/common/src/lib/TranslationModule/translation.graphql'
+              )
+            ]
+          : [join(process.cwd(), 'assets/**/*.graphql')],
       cors: true,
-      context: ({ req }) => ({ headers: req.headers })
+      context: ({ req }) => ({ headers: req.headers }),
+      cache: 'bounded'
     }),
     LoggerModule.forRoot({
       pinoHttp: {

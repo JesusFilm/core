@@ -13,13 +13,7 @@ directive @extends on OBJECT | INTERFACE
 extend type Language
   @key(fields: "id")
 {
-  id: ID! @external
-}
-
-type Translation {
-  value: String!
-  language: Language!
-  primary: Boolean!
+  id: ID!
 }
 
 enum IdType {
@@ -108,6 +102,12 @@ type VideoVariant {
 
   """slug is a permanent link to the video variant."""
   slug: String!
+}
+
+type Translation {
+  value: String!
+  language: Language!
+  primary: Boolean!
 }
 
 scalar _FieldSet
