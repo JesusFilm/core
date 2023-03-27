@@ -17,7 +17,6 @@ const Template: Story = ({ ...args }) => {
       id="social"
       title="Social Media"
       destination={ActiveJourneyEditContent.Canvas}
-      onSelect={() => ({})}
       outlined={args.outlined ?? false}
       header={args.header ?? <ThumbUpOffAltIcon />}
       loading={args.loading ?? false}
