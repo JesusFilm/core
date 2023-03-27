@@ -1,4 +1,4 @@
-import { ReactElement } from 'react'
+import { ReactElement, useEffect } from 'react'
 import Typography from '@mui/material/Typography'
 import { useTheme } from '@mui/material/styles'
 import Box from '@mui/material/Box'
@@ -13,6 +13,20 @@ import { ActionDetails } from '../../ActionDetails'
 export function ActionsBanner(): ReactElement {
   const theme = useTheme()
   const { dispatch } = useEditor()
+
+  const openActionDetails = (): void => {
+    dispatch({
+      type: 'SetDrawerPropsAction',
+      mobileOpen: true,
+      title: 'Information',
+      children: <ActionDetails />
+    })
+  }
+
+  useEffect(() => {
+    openActionDetails()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   return (
     <Box
@@ -54,14 +68,7 @@ export function ActionsBanner(): ReactElement {
               borderColor: 'secondary.main',
               borderRadius: 2
             }}
-            onClick={() => {
-              dispatch({
-                type: 'SetDrawerPropsAction',
-                mobileOpen: true,
-                title: 'Information',
-                children: <ActionDetails />
-              })
-            }}
+            onClick={openActionDetails}
           >
             <Typography variant="subtitle2">Learn More</Typography>
           </Button>

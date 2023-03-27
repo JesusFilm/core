@@ -34,17 +34,15 @@ export function JourneyEdit(): ReactElement {
             overflow: 'auto',
             borderBottom: (theme) => `1px solid ${theme.palette.divider}`,
             backgroundColor: (theme) =>
-              hasAction
+              hasAction &&
+              journeyEditContentComponent === ActiveJourneyEditContent.Action
                 ? theme.palette.background.default
                 : theme.palette.background.paper
           }}
         >
           <Box
             sx={{
-              my:
-                journeyEditContentComponent === ActiveJourneyEditContent.Action
-                  ? 10
-                  : 'auto'
+              my: 'auto'
             }}
           >
             {

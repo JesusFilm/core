@@ -44,7 +44,12 @@ export function ActionDetails({
 
   return (
     <Box sx={{ overflow: 'auto', height: '100%' }}>
-      {url == null ? (
+      {url != null ? (
+        <Stack gap={2} sx={{ px: 6, pb: 6 }}>
+          <ActionEditor url={url} goalLabel={goalLabel?.()} />
+          <ActionCards url={url} />
+        </Stack>
+      ) : (
         <Stack gap={2} sx={{ p: 6 }}>
           <Typography variant="subtitle2" color="secondary.dark">
             What are Goals?
@@ -70,11 +75,6 @@ export function ActionDetails({
             description="If the target of the journey is to download the Bible"
             icon={<MenuBookRounded />}
           />
-        </Stack>
-      ) : (
-        <Stack gap={2} sx={{ px: 6, pb: 6 }}>
-          <ActionEditor url={url} goalLabel={goalLabel?.()} />
-          <ActionCards url={url} />
         </Stack>
       )}
     </Box>

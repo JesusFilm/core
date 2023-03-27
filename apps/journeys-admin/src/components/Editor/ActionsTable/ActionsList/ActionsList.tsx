@@ -1,4 +1,4 @@
-import { ReactElement, useState } from 'react'
+import { ReactElement, useEffect, useState } from 'react'
 import Typography from '@mui/material/Typography'
 import Table from '@mui/material/Table'
 import TableBody from '@mui/material/TableBody'
@@ -78,8 +78,7 @@ export function ActionsList({
     }
   }
 
-  const handleClick = (url: string): void => {
-    setSelectedAction(url)
+  const openActionDetails = (url: string): void => {
     dispatch({
       type: 'SetDrawerPropsAction',
       mobileOpen: true,
@@ -87,6 +86,16 @@ export function ActionsList({
       children: <ActionDetails url={url} goalLabel={() => goalLabel(url)} />
     })
   }
+
+  const handleClick = (url: string): void => {
+    setSelectedAction(url)
+    openActionDetails(url)
+  }
+
+  useEffect(() => {
+    openActionDetails(actions[0]?.url)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   return (
     <Stack
