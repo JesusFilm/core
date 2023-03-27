@@ -1,3 +1,4 @@
+import { Translation } from '@core/nest/common/TranslationModule'
 import fetch, { Response, RequestInfo, RequestInit } from 'node-fetch'
 import { slugify } from '../slugify'
 
@@ -54,12 +55,6 @@ export interface ArclightMediaComponentLanguage {
       sizeInBytes: number
     }
   }
-}
-
-interface Translation {
-  value: string
-  languageId: string
-  primary: boolean
 }
 
 interface Download {

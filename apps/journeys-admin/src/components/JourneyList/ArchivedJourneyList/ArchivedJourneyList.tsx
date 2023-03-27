@@ -13,6 +13,7 @@ import { GetArchivedJourneys } from '../../../../__generated__/GetArchivedJourne
 import { JourneyCard } from '../JourneyCard'
 import { SortOrder } from '../JourneySort'
 import { sortJourneys } from '../JourneySort/utils/sortJourneys'
+import { DiscoveryJourneys } from '../../DiscoveryJourneys'
 
 export const GET_ARCHIVED_JOURNEYS = gql`
   query GetArchivedJourneys {
@@ -200,6 +201,7 @@ export function ArchivedJourneyList({
           ))}
           {journeys.length > 0 ? (
             <span>
+              <DiscoveryJourneys />
               <Box width="100%" sx={{ textAlign: 'center' }}>
                 <Typography variant="caption">
                   {t(
@@ -227,6 +229,7 @@ export function ArchivedJourneyList({
                   {t('No archived journeys.')}
                 </Typography>
               </Card>
+
               <Box width="100%" sx={{ textAlign: 'center' }}>
                 <Typography variant="caption">
                   {t(

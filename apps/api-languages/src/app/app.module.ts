@@ -7,8 +7,8 @@ import {
 } from '@nestjs/apollo'
 import { LoggerModule } from 'nestjs-pino'
 import { DatadogTraceModule } from 'nestjs-ddtrace'
+import TranslationModule from '@core/nest/common/TranslationModule'
 import { LanguageModule } from './modules/language/language.module'
-import { TranslationModule } from './modules/translation/translation.module'
 import { CountryModule } from './modules/country/country.module'
 
 @Module({
@@ -20,7 +20,11 @@ import { CountryModule } from './modules/country/country.module'
       driver: ApolloFederationDriver,
       typePaths: [
         join(process.cwd(), 'apps/api-languages/src/app/**/*.graphql'),
-        join(process.cwd(), 'assets/**/*.graphql')
+        join(process.cwd(), 'assets/**/*.graphql'),
+        join(
+          process.cwd(),
+          'libs/nest/common/src/lib/TranslationModule/translation.graphql'
+        )
       ],
       cors: true,
       context: ({ req }) => ({ headers: req.headers })
