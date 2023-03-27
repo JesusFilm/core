@@ -16,6 +16,11 @@
             "glob": "**/*.graphql",
             "input": "apps/api-videos/src/app/",
             "output": "./assets"
+          },
+          {
+            "glob": "**/*.graphql",
+            "input": "libs/nest/common/src/lib/TranslationModule/",
+            "output": "./assets"
           }
         ],
         "generatePackageJson": true
