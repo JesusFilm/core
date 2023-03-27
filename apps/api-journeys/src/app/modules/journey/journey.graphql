@@ -1,5 +1,5 @@
 extend type Language @key(fields: "id") {
-  id: ID! @external
+  id: ID!
 }
 
 type Journey @key(fields: "id") {

@@ -10,9 +10,10 @@ import { DownloadDialog } from '../DownloadDialog'
 import { ShareButton } from '../ShareButton'
 import { useVideoChildren } from '../../libs/useVideoChildren'
 import { VideoCarousel } from '../VideoCarousel'
+import { getSlug } from '../VideoCard'
+import { VideoContent } from './VideoContent/VideoContent'
 import { DownloadButton } from './DownloadButton'
 import { VideoHero } from './VideoHero'
-import { VideoContent } from './VideoContent/VideoContent'
 
 import 'video.js/dist/video-js.css'
 import { VideoHeading } from './VideoHeading'
@@ -27,6 +28,7 @@ export function VideoContentPage(): ReactElement {
     slug,
     variant,
     id,
+    label,
     container,
     childrenCount
   } = useVideo()
@@ -36,6 +38,8 @@ export function VideoContentPage(): ReactElement {
   const [hasPlayed, setHasPlayed] = useState(false)
   const [openShare, setOpenShare] = useState(false)
   const [openDownload, setOpenDownload] = useState(false)
+
+  const ogSlug = getSlug(container?.slug, label, variant?.slug)
 
   return (
     <>
@@ -48,7 +52,7 @@ export function VideoContentPage(): ReactElement {
           url: `${
             process.env.NEXT_PUBLIC_WATCH_URL ??
             'https://watch-jesusfilm.vercel.app'
-          }/${slug}`,
+          }${ogSlug}`,
           description: snippet[0].value ?? undefined,
           images:
             image != null
