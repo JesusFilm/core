@@ -33,19 +33,18 @@ const StyledSwiperContainer = styled(Swiper)(({ theme }) => ({
     // transform: 'rotate(90deg)',
     // top: '45%',
     [theme.breakpoints.down('lg')]: {
-      right: '36px'
+      left: '36px'
     },
 
     [theme.breakpoints.down('sm')]: {
-      display: 'none',
-      // top: 0,
-      // left: 0,
-      // width: '20%',
-      // height: '100%',
+      // display: 'none',
+      top: 0,
+      left: 0,
+      width: '50%',
+      height: '80%',
       '&:after': {
-        fontSize: '36px'
-
-        // content: '""'
+        fontSize: '36px',
+        content: '""'
       }
     }
   },
@@ -58,14 +57,14 @@ const StyledSwiperContainer = styled(Swiper)(({ theme }) => ({
       right: '36px'
     },
     [theme.breakpoints.down('sm')]: {
-      display: 'none',
-      // top: 0,
-      // right: 0,
-      // width: '20%',
-      // height: '100%',
+      // display: 'none',
+      top: 0,
+      right: 0,
+      width: '50%',
+      height: '80%',
       '&:after': {
-        fontSize: '36px'
-        // content: '""'
+        fontSize: '36px',
+        content: '""'
       }
     }
   },
@@ -175,6 +174,8 @@ export function TestConductor({ blocks }: TestConductorProps): ReactElement {
           renderCustom: (swiper, current, total) =>
             cardProgression(swiper, current, total)
         }}
+        shortSwipes={false}
+        longSwipes={false}
         fadeEffect={{ crossFade: true }}
         effect="fade"
         keyboard
