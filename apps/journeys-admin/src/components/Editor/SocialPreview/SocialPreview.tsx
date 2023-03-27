@@ -44,7 +44,7 @@ export function SocialPreview(): ReactElement {
           centeredSlides
           slideToClickedSlide
           pagination={{ clickable: true }}
-          style={{ height: '300px' }}
+          style={{ height: '330px' }}
         >
           <SwiperSlide key={0}>
             <SocialPreviewPost journey={journey} />
