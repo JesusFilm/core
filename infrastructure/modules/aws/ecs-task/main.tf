@@ -93,7 +93,12 @@ resource "aws_ecs_task_definition" "ecs_task_definition" {
           }
         ]
       }
-      environment = []
+      environment = [
+        {
+          name  = "NODE_ENV",
+          value = "production"
+        }
+      ]
       mountPoints = []
       volumesFrom = []
     },
