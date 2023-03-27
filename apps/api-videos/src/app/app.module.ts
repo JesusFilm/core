@@ -34,6 +34,9 @@ import { VideoVariantModule } from './modules/videoVariant/videoVariant.module'
     }),
     LoggerModule.forRoot({
       pinoHttp: {
+        autoLogging: {
+          ignore: (req) => req.url === '/.well-known/apollo/server-health'
+        },
         transport:
           process.env.NODE_ENV !== 'production'
             ? {

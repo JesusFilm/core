@@ -32,6 +32,9 @@ import { UnsplashImageModule } from './modules/unsplash/image/image.module'
     }),
     LoggerModule.forRoot({
       pinoHttp: {
+        autoLogging: {
+          ignore: (req) => req.url === '/.well-known/apollo/server-health'
+        },
         transport:
           process.env.NODE_ENV !== 'production'
             ? {
