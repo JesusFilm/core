@@ -50,7 +50,7 @@
     "watcher": {
       "executor": "@nrwl/workspace:run-commands",
       "options": {
-        "command": "npx ts-node apps/api-users/src/generate-typings.ts"
+        "command": "npx ts-node tools/scripts/generate-typings.ts api-users"
       }
     },
     "lint": {
