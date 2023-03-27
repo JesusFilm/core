@@ -34,10 +34,10 @@ import { TeamModule } from './modules/team/team.module'
     VisitorModule,
     GraphQLModule.forRoot<ApolloFederationDriverConfig>({
       driver: ApolloFederationDriver,
-      typePaths: [
-        join(process.cwd(), 'apps/api-journeys/src/app/**/*.graphql'),
-        join(process.cwd(), 'assets/**/*.graphql')
-      ],
+      typePaths:
+        process.env.NODE_ENV !== 'production'
+          ? [join(process.cwd(), 'apps/api-journeys/src/app/**/*.graphql')]
+          : [join(process.cwd(), 'assets/modules/**/*.graphql')],
       cors: true,
       context: ({ req }) => ({ headers: req.headers }),
       cache: 'bounded'
