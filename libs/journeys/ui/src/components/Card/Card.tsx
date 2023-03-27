@@ -4,6 +4,12 @@ import { getTheme } from '@core/shared/ui/themes'
 import { useTheme } from '@mui/material/styles'
 import Paper from '@mui/material/Paper'
 import { SxProps } from '@mui/system/styleFunctionSx'
+import Typography from '@mui/material/Typography'
+import Avatar from '@mui/material/Avatar'
+import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline'
+import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder'
+import ShareIcon from '@mui/icons-material/Share'
+import Stack from '@mui/material/Stack'
 import type { TreeBlock } from '../../libs/block'
 import { blurImage } from '../../libs/blurImage'
 import { BlockRenderer, WrappersProps } from '../BlockRenderer'
@@ -138,6 +144,28 @@ export function CardWrapper({
       elevation={3}
     >
       {children}
+      <Stack
+        direction="row"
+        sx={{
+          zIndex: 1,
+          m: 4,
+          p: 2,
+          backgroundColor: 'rgb(0,0,0,0.8)',
+          borderRadius: 7
+        }}
+        justifyContent="space-between"
+        alignItems="center"
+      >
+        <Stack direction="row" alignItems="center" spacing={4}>
+          <Avatar src="https://images.unsplash.com/photo-1635713150362-ed0cd425e697?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1015&q=80" />
+          <Typography variant="subtitle2">Amanda L.</Typography>
+        </Stack>
+        <Stack direction="row" alignItems="center" spacing={4} sx={{ mr: 2 }}>
+          <ChatBubbleOutlineIcon />
+          <ShareIcon />
+          <FavoriteBorderIcon />
+        </Stack>
+      </Stack>
     </Paper>
   )
 

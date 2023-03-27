@@ -136,7 +136,7 @@ export function TestConductor({ blocks }: TestConductorProps): ReactElement {
       <Stack
         direction="row"
         justifyContent="space-between"
-        width={536}
+        width={{ xs: `calc(100% - 32px)`, md: 536 }}
         sx={{ mx: 'auto', color: 'white' }}
       >
         {[...Array(total)].map((value, index) => {
@@ -150,7 +150,7 @@ export function TestConductor({ blocks }: TestConductorProps): ReactElement {
               value={index < current ? 100 : 0}
               color="inherit"
               sx={{
-                width: `calc(500px/${total})`,
+                width: `calc((100% - 32px)/${total})`,
                 height: '6px',
                 borderRadius: '2px',
                 backgroundColor: 'grey'
@@ -173,6 +173,7 @@ export function TestConductor({ blocks }: TestConductorProps): ReactElement {
           renderCustom: (swiper, current, total) =>
             cardProgression(swiper, current, total)
         }}
+        fadeEffect={{ crossFade: true }}
         effect="fade"
         keyboard
         mousewheel={{
