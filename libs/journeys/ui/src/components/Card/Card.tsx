@@ -151,19 +151,22 @@ export function CardWrapper({
           m: 4,
           p: 2,
           backgroundColor: 'rgb(0,0,0,0.8)',
-          borderRadius: 7
+          borderRadius: 7,
+          color: 'white'
         }}
         justifyContent="space-between"
         alignItems="center"
       >
         <Stack direction="row" alignItems="center" spacing={4}>
           <Avatar src="https://images.unsplash.com/photo-1635713150362-ed0cd425e697?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1015&q=80" />
-          <Typography variant="subtitle2">Amanda L.</Typography>
+          <Typography variant="subtitle2" color="inherit">
+            Amanda L.
+          </Typography>
         </Stack>
         <Stack direction="row" alignItems="center" spacing={4} sx={{ mr: 2 }}>
-          <ChatBubbleOutlineIcon />
-          <ShareIcon />
-          <FavoriteBorderIcon />
+          <ChatBubbleOutlineIcon color="inherit" />
+          <ShareIcon color="inherit" />
+          <FavoriteBorderIcon color="inherit" />
         </Stack>
       </Stack>
     </Paper>

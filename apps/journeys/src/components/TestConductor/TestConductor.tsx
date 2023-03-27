@@ -36,7 +36,7 @@ const StyledSwiperContainer = styled(Swiper)(({ theme }) => ({
       right: '36px'
     },
 
-    [theme.breakpoints.down('md')]: {
+    [theme.breakpoints.down('sm')]: {
       display: 'none',
       // top: 0,
       // left: 0,
@@ -57,7 +57,7 @@ const StyledSwiperContainer = styled(Swiper)(({ theme }) => ({
     [theme.breakpoints.down('lg')]: {
       right: '36px'
     },
-    [theme.breakpoints.down('md')]: {
+    [theme.breakpoints.down('sm')]: {
       display: 'none',
       // top: 0,
       // right: 0,
@@ -72,16 +72,15 @@ const StyledSwiperContainer = styled(Swiper)(({ theme }) => ({
   '.swiper-pagination-vertical.swiper-pagination-bullets': {
     right: 'calc(50% - 264px)',
     left: 'unset',
-    [theme.breakpoints.down('md')]: {
+    [theme.breakpoints.down('sm')]: {
       right: '10px'
     }
   },
   '.swiper-pagination-horizontal.swiper-pagination-custom': {
-    top: '36px'
-
-    // [theme.breakpoints.down('md')]: {
-    //   width: '100%'
-    // }
+    top: '36px',
+    [theme.breakpoints.down('sm')]: {
+      top: '16px'
+    }
   },
   '.swiper-pagination': {
     color: 'white',
@@ -136,7 +135,7 @@ export function TestConductor({ blocks }: TestConductorProps): ReactElement {
       <Stack
         direction="row"
         justifyContent="space-between"
-        width={{ xs: `calc(100% - 32px)`, md: 536 }}
+        width={{ xs: `calc(100% - 32px)`, sm: 536 }}
         sx={{ mx: 'auto', color: 'white' }}
       >
         {[...Array(total)].map((value, index) => {
@@ -150,7 +149,10 @@ export function TestConductor({ blocks }: TestConductorProps): ReactElement {
               value={index < current ? 100 : 0}
               color="inherit"
               sx={{
-                width: `calc((100% - 32px)/${total})`,
+                width: {
+                  xs: `calc((100% - 32px)/${total})`,
+                  sm: `calc(500px / ${total})`
+                },
                 height: '6px',
                 borderRadius: '2px',
                 backgroundColor: 'grey'
