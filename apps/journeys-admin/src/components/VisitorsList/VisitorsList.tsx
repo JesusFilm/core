@@ -3,7 +3,6 @@ import { gql, useQuery } from '@apollo/client'
 import { DataGrid, GridColDef } from '@mui/x-data-grid'
 import { styled } from '@mui/material/styles'
 import Box from '@mui/material/Box'
-import Typography from '@mui/material/Typography'
 import { useRouter } from 'next/router'
 import LoadingButton from '@mui/lab/LoadingButton'
 import Stack from '@mui/material/Stack'
@@ -58,7 +57,6 @@ export function VisitorsList(): ReactElement {
   const [visitors, setVisitors] = useState<Visitor[]>([])
   const [hasNextPage, setHasNextPage] = useState(true)
   const [endCursor, setEndCursor] = useState<string | null>()
-  const [pageNumber, setPageNumber] = useState<number>(1)
 
   const { fetchMore, loading } = useQuery<GetVisitors>(GET_VISITORS, {
     variables: {
@@ -83,24 +81,6 @@ export function VisitorsList(): ReactElement {
         setVisitors(response.data.visitors.edges)
         setHasNextPage(response.data.visitors.pageInfo.hasNextPage)
         setEndCursor(response.data.visitors.pageInfo.endCursor)
-        setPageNumber(pageNumber + 1)
-      }
-    }
-  }
-
-  async function handleFetchPrevious(): Promise<void> {
-    if (pageNumber > 1) {
-      const response = await fetchMore({
-        variables: {
-          first: 10,
-          after: endCursor
-        }
-      })
-      if (response.data.visitors.edges != null) {
-        setVisitors(response.data.visitors.edges)
-        setHasNextPage(response.data.visitors.pageInfo.hasNextPage)
-        setEndCursor(response.data.visitors.pageInfo.endCursor)
-        setPageNumber(pageNumber - 1)
       }
     }
   }
@@ -160,33 +140,21 @@ export function VisitorsList(): ReactElement {
           rows={rows}
           onRowClick={handleRowClick}
           disableRowSelectionOnClick
+          // hideFooterPagination
           // columnVisibilityModel={{
           //   id: false
           // }}
         />
       </Box>
-
-      <Stack direction="row" spacing={6} sx={{ alignItems: 'center' }}>
-        <LoadingButton
-          variant="outlined"
-          onClick={handleFetchPrevious}
-          disabled={pageNumber <= 1}
-          loading={loading}
-          sx={{ width: '250px' }}
-        >
-          Previous Page
-        </LoadingButton>
-        <Typography>{pageNumber}</Typography>
-        <LoadingButton
-          variant="outlined"
-          onClick={handleFetchNext}
-          disabled={!hasNextPage}
-          loading={loading}
-          sx={{ width: '250px' }}
-        >
-          Next Page
-        </LoadingButton>
-      </Stack>
+      <LoadingButton
+        variant="outlined"
+        onClick={handleFetchNext}
+        disabled={!hasNextPage}
+        loading={loading}
+        sx={{ width: '250px' }}
+      >
+        Load More
+      </LoadingButton>
     </Stack>
   )
 }
