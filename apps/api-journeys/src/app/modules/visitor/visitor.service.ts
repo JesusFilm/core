@@ -48,7 +48,7 @@ export class VisitorService extends BaseService<VisitorRecord> {
     filter
   }: ListParams): Promise<VisitorsConnection> {
     const filters: GeneratedAqlQuery[] = []
-    if (after != null) filters.push(aql`FILTER item.createdAt > ${after}`)
+    if (after != null) filters.push(aql`FILTER item.createdAt < ${after}`)
 
     forEach(filter, (value, key) => {
       if (value !== undefined) filters.push(aql`FILTER item.${key} == ${value}`)
