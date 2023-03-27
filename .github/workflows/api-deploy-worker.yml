@@ -75,7 +75,7 @@ jobs:
         if: contains(steps.affected-apps.outputs.apps, inputs.name)
         uses: mansagroup/nrwl-nx-action@v3
         with:
-          targets: build
+          targets: build:production
           projects: ${{ inputs.name }}
 
       # ECS Deployment

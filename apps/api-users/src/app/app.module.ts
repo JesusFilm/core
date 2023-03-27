@@ -19,7 +19,8 @@ import { UserModule } from './modules/user/user.module'
         join(process.cwd(), 'assets/**/*.graphql')
       ],
       cors: true,
-      context: ({ req }) => ({ headers: req.headers })
+      context: ({ req }) => ({ headers: req.headers }),
+      cache: 'bounded'
     }),
     LoggerModule.forRoot({
       pinoHttp: {

@@ -27,7 +27,8 @@ import { CountryModule } from './modules/country/country.module'
         )
       ],
       cors: true,
-      context: ({ req }) => ({ headers: req.headers })
+      context: ({ req }) => ({ headers: req.headers }),
+      cache: 'bounded'
     }),
     LoggerModule.forRoot({
       pinoHttp: {

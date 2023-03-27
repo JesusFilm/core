@@ -27,7 +27,8 @@ import { VideoVariantModule } from './modules/videoVariant/videoVariant.module'
         )
       ],
       cors: true,
-      context: ({ req }) => ({ headers: req.headers })
+      context: ({ req }) => ({ headers: req.headers }),
+      cache: 'bounded'
     }),
     LoggerModule.forRoot({
       pinoHttp: {
