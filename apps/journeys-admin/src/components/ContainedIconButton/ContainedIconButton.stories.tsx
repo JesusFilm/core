@@ -3,6 +3,8 @@ import Paper from '@mui/material/Paper'
 import { ComponentProps } from 'react'
 import Stack from '@mui/material/Stack'
 import NoteAddIcon from '@mui/icons-material/NoteAdd'
+import AddIcon from '@mui/icons-material/Add'
+import EditIcon from '@mui/icons-material/Edit'
 import { simpleComponentConfig } from '../../libs/storybook'
 import { ContainedIconButton } from '.'
 
@@ -24,8 +26,36 @@ const Template: Story<ComponentProps<typeof ContainedIconButton>> = ({
 
 export const Default = Template.bind({})
 Default.args = {
-  icon: NoteAddIcon,
-  label: 'label'
+  thumbnailIcon: <NoteAddIcon />,
+  actionIcon: <AddIcon />,
+  label: 'label',
+  description: undefined,
+  imageSrc: undefined,
+  imageAlt: undefined,
+  loading: false,
+  onClick: () => console.log('Clicked')
+}
+
+export const Image = Template.bind({})
+Image.args = {
+  thumbnailIcon: <NoteAddIcon />,
+  actionIcon: <EditIcon />,
+  label: 'Video Title',
+  description: 'descripition',
+  imageSrc:
+    'https://d1wl257kev7hsz.cloudfront.net/cinematics/2_Acts7302-0-0.mobileCinematicHigh.jpg',
+  imageAlt: undefined,
+  loading: false,
+  onClick: () => console.log('Clicked')
+}
+
+export const Loading = Template.bind({})
+Loading.args = {
+  thumbnailIcon: <NoteAddIcon />,
+  actionIcon: <AddIcon />,
+  label: 'label',
+  loading: true,
+  onClick: () => console.log('Clicked')
 }
 
 export default ContainedIconButtonDemo as Meta
