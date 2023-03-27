@@ -24,7 +24,7 @@ export function ShareDialog({
   ...dialogProps
 }: ShareDialogProps): ReactElement {
   const { enqueueSnackbar } = useSnackbar()
-  const { description, snippet, id, image, title, variant } = useVideo()
+  const { description, snippet, image, title, variant } = useVideo()
   const [value, setValue] = useState(0)
   const theme = useTheme()
   const router = useRouter()
@@ -56,11 +56,10 @@ export function ShareDialog({
     })
   }
 
-  const getRefId = (): string =>
-    id.split('_').length === 1 ? `529-${id}` : id.replace('_', '_529-')
-
   const getEmbedCode = (): string =>
-    `<div class="arc-cont"><iframe src="https://api.arclight.org/videoPlayerUrl?refId=${getRefId()}&playerStyle=default" allowfullscreen webkitallowfullscreen mozallowfullscreen></iframe><style>.arc-cont{position:relative;display:block;margin:10px auto;width:100%}.arc-cont:after{padding-top:59%;display:block;content:""}.arc-cont>iframe{position:absolute;top:0;bottom:0;right:0;left:0;width:98%;height:98%;border:0}</style></div>`
+    `<div class="arc-cont"><iframe src="https://api.arclight.org/videoPlayerUrl?refId=${
+      variant != null ? variant.id : ''
+    }&playerStyle=default" allowfullscreen webkitallowfullscreen mozallowfullscreen></iframe><style>.arc-cont{position:relative;display:block;margin:10px auto;width:100%}.arc-cont:after{padding-top:59%;display:block;content:""}.arc-cont>iframe{position:absolute;top:0;bottom:0;right:0;left:0;width:98%;height:98%;border:0}</style></div>`
 
   const handleEmbedCodeClick = async (): Promise<void> => {
     await navigator.clipboard.writeText(getEmbedCode())
