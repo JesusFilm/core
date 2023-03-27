@@ -31,123 +31,125 @@ export function SocialPreviewPost({
   }, [journey, isEmpty])
 
   return (
-    <Stack direction="column" justifyContent="start">
-      <Typography variant="subtitle2" sx={{ pb: 4 }}>
-        Shared on social media
-      </Typography>
-      {journey != null && (
-        <Card sx={{ width: 240, borderRadius: '12px', px: 2 }} elevation={0}>
-          <CardHeader
-            sx={{ px: 0, pb: 2 }}
-            avatar={
-              <Avatar
-                sx={{
-                  width: 20,
-                  height: 20,
-                  bgcolor: (theme) => theme.palette.background.default,
-                  color: (theme) => theme.palette.background.paper
-                }}
-              >
-                <PersonIcon />
-              </Avatar>
-            }
-            title={
-              <Box
-                sx={{
-                  width: '60px',
-                  height: '12px',
-                  background: '#EFEFEF',
-                  borderRadius: '6px'
-                }}
-              />
-            }
-            action={
-              <Box
-                sx={{
-                  width: '12px',
-                  height: '12px',
-                  background: '#EFEFEF',
-                  borderRadius: '6px',
-                  mt: '8px',
-                  mr: '12px'
-                }}
-              />
-            }
-          />
-          <CardMedia sx={{ px: 0, pt: 0 }}>
-            {isEmpty ? (
-              <Box
-                sx={{
-                  bgcolor: 'rgba(0, 0, 0, 0.1)',
-                  width: 224,
-                  height: 120,
-                  borderRadius: '4px'
-                }}
-              />
-            ) : (
-              journey?.primaryImageBlock?.src != null && (
-                <Image
-                  src={journey?.primaryImageBlock.src}
-                  alt={journey?.primaryImageBlock.alt}
-                  width={224}
-                  height={120}
-                  style={{
+    <Box sx={{ width: 256, mx: 'auto' }}>
+      <Stack direction="column" justifyContent="start" alignContent="center">
+        <Typography variant="subtitle2" sx={{ pb: 4 }}>
+          Shared on social media
+        </Typography>
+        {journey != null && (
+          <Card sx={{ width: 240, borderRadius: '12px', px: 2 }} elevation={0}>
+            <CardHeader
+              sx={{ px: 0, pb: 2 }}
+              avatar={
+                <Avatar
+                  sx={{
+                    width: 20,
+                    height: 20,
+                    bgcolor: (theme) => theme.palette.background.default,
+                    color: (theme) => theme.palette.background.paper
+                  }}
+                >
+                  <PersonIcon />
+                </Avatar>
+              }
+              title={
+                <Box
+                  sx={{
+                    width: '60px',
+                    height: '12px',
+                    background: '#EFEFEF',
+                    borderRadius: '6px'
+                  }}
+                />
+              }
+              action={
+                <Box
+                  sx={{
+                    width: '12px',
+                    height: '12px',
+                    background: '#EFEFEF',
+                    borderRadius: '6px',
+                    mt: '8px',
+                    mr: '12px'
+                  }}
+                />
+              }
+            />
+            <CardMedia sx={{ px: 0, pt: 0 }}>
+              {isEmpty ? (
+                <Box
+                  sx={{
+                    bgcolor: 'rgba(0, 0, 0, 0.1)',
+                    width: 224,
+                    height: 120,
                     borderRadius: '4px'
                   }}
                 />
-              )
-            )}
-          </CardMedia>
-          <CardContent sx={{ px: 0, pt: 0 }}>
-            <Typography
-              variant="body2"
-              sx={{
-                fontSize: 7,
-                fontWeight: 400,
-                lineHeight: '10px',
-                color: '#6D6D7D'
-              }}
-            >
-              YOUR.NEXTSTEP.IS
-            </Typography>
-            {isEmpty ? (
-              <Box
-                sx={{
-                  width: '224px',
-                  height: '12px',
-                  background: '#EFEFEF',
-                  borderRadius: '6px',
-                  mb: 1
-                }}
-              />
-            ) : (
-              <Typography
-                variant="subtitle1"
-                sx={{ fontSize: 9, lineHeight: '12px', color: '#26262E' }}
-              >
-                {journey.seoTitle}
-              </Typography>
-            )}
-            {isEmpty ? (
-              <Box
-                sx={{
-                  width: '158px',
-                  height: '12px',
-                  background: '#EFEFEF',
-                  borderRadius: '6px'
-                }}
-              />
-            ) : (
+              ) : (
+                journey?.primaryImageBlock?.src != null && (
+                  <Image
+                    src={journey?.primaryImageBlock.src}
+                    alt={journey?.primaryImageBlock.alt}
+                    width={224}
+                    height={120}
+                    style={{
+                      borderRadius: '4px'
+                    }}
+                  />
+                )
+              )}
+            </CardMedia>
+            <CardContent sx={{ px: 0, pt: 0 }}>
               <Typography
                 variant="body2"
-                sx={{ fontSize: 8, lineHeight: '12px', color: '#6D6D7D' }}
+                sx={{
+                  fontSize: 7,
+                  fontWeight: 400,
+                  lineHeight: '10px',
+                  color: '#6D6D7D'
+                }}
               >
-                {journey.seoDescription}
+                YOUR.NEXTSTEP.IS
               </Typography>
-            )}
-          </CardContent>
-        </Card>
-      )}
-    </Stack>
+              {isEmpty ? (
+                <Box
+                  sx={{
+                    width: '224px',
+                    height: '12px',
+                    background: '#EFEFEF',
+                    borderRadius: '6px',
+                    mb: 1
+                  }}
+                />
+              ) : (
+                <Typography
+                  variant="subtitle1"
+                  sx={{ fontSize: 9, lineHeight: '12px', color: '#26262E' }}
+                >
+                  {journey.seoTitle}
+                </Typography>
+              )}
+              {isEmpty ? (
+                <Box
+                  sx={{
+                    width: '158px',
+                    height: '12px',
+                    background: '#EFEFEF',
+                    borderRadius: '6px'
+                  }}
+                />
+              ) : (
+                <Typography
+                  variant="body2"
+                  sx={{ fontSize: 8, lineHeight: '12px', color: '#6D6D7D' }}
+                >
+                  {journey.seoDescription}
+                </Typography>
+              )}
+            </CardContent>
+          </Card>
+        )}
+      </Stack>
+    </Box>
   )
 }

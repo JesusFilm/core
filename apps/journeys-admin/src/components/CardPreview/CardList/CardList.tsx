@@ -20,7 +20,7 @@ import {
   useEditor
 } from '@core/journeys/ui/EditorProvider'
 import Image from 'next/image'
-import ThumbUpOffAltIcon from '@mui/icons-material/ThumbUpOffAlt'
+import { CustomIcon } from '@core/shared/ui/CustomIcon'
 
 import { FramePortal } from '../../FramePortal'
 import { ThemeName, ThemeMode } from '../../../../__generated__/globalTypes'
@@ -85,6 +85,7 @@ export function CardList({
       view={state.journeyEditContentComponent}
     >
       <NavigationCard
+        key="social"
         id="social"
         testId="social-preview-navigation-card"
         title="Social Media"
@@ -95,7 +96,7 @@ export function CardList({
         }
         header={
           journey?.primaryImageBlock?.src == null ? (
-            <ThumbUpOffAltIcon />
+            <CustomIcon name="Like" color="error" />
           ) : (
             <Image
               src={journey?.primaryImageBlock?.src}
