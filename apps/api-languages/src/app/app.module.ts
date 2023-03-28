@@ -21,11 +21,14 @@ import { CountryModule } from './modules/country/country.module'
       typePaths:
         process.env.NODE_ENV !== 'production'
           ? [
-              join(process.cwd(), 'apps/api-languages/src/app/**/*.graphql'),
-              join(
-                process.cwd(),
-                'libs/nest/common/src/lib/TranslationModule/translation.graphql'
-              )
+              join(process.cwd(), 'apps/api-languages/src/app/**/*.graphql')
+              /* As a language is defined by this API translation.graphql
+               * is deliberately not imported:
+               * join(
+               *   process.cwd(),
+               *   'libs/nest/common/src/lib/TranslationModule/translation.graphql'
+               * )
+               */
             ]
           : [join(process.cwd(), 'assets/**/*.graphql')],
       cors: true,
