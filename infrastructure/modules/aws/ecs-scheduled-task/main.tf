@@ -73,9 +73,10 @@ resource "aws_ecs_task_definition" "default" {
           Name        = "datadog"
           Host        = "http-intake.logs.datadoghq.com"
           TLS         = "on"
-          dd_service  = "ecs"
-          dd_source   = "aws"
-          dd_tags     = "env:${var.env},app:${var.task_name},host:${var.task_name}-app"
+          compress    = "gzip"
+          dd_service  = var.task_name
+          dd_source   = "node"
+          dd_tags     = "env:${var.env}"
           provider    = "ecs"
           retry_limit = "2"
         }
@@ -86,7 +87,12 @@ resource "aws_ecs_task_definition" "default" {
           }
         ]
       }
-      environment = []
+      environment = [
+        {
+          name  = "NODE_ENV",
+          value = "production"
+        }
+      ]
       mountPoints = []
       volumesFrom = []
     },
