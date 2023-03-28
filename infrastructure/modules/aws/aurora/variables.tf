@@ -9,3 +9,7 @@ variable "name" {
 variable "doppler_token" {
   type = string
 }
+
+variable "subnet_group_name" {
+  type = string
+}

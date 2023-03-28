@@ -9,7 +9,7 @@ resource "aws_rds_cluster" "default" {
   engine                  = "aurora-postgresql"
   engine_version          = "13.7"
   availability_zones      = data.aws_availability_zones.current.names.*
-  db_subnet_group_name    = var.env
+  db_subnet_group_name    = var.subnet_group_name
   database_name           = var.env
   master_username         = "root"
   master_password         = random_password.password.result
@@ -17,9 +17,14 @@ resource "aws_rds_cluster" "default" {
   preferred_backup_window = "07:00-09:00"
 }
 
-resource "aws_ssm_parameter" "rds_url" {
-  name      = "/rds/${var.name}/${var.env}/PG_DATABASE_URL"
-  type      = "SecureString"
-  value     = "postgresql://${aws_rds_cluster.default.master_username}:${random_password.password.result}@${aws_rds_cluster.default.endpoint}:${aws_rds_cluster.default.port}/${var.env}?schema=public"
-  overwrite = true
+resource "doppler_secret" "rds_password" {
+  name   = "PG_PASSWORD"
+  config = var.env == "prod" ? "prd" : "stg"
+  value  = random_password.password.result
+}
+
+resource "doppler_secret" "rds_url" {
+  name   = "PG_DATABASE_URL"
+  config = var.env == "prod" ? "prd" : "stg"
+  value  = "postgresql://${aws_rds_cluster.default.master_username}:${random_password.password.result}@${aws_rds_cluster.default.endpoint}:${aws_rds_cluster.default.port}/${var.env}?schema=public"
 }
