@@ -35,13 +35,6 @@ export class VideosFilter {
     subtitleLanguageIds?: Nullable<string[]>;
 }
 
-export class Translation {
-    __typename?: 'Translation';
-    value: string;
-    language: Language;
-    primary: boolean;
-}
-
 export class LanguageWithSlug {
     __typename?: 'LanguageWithSlug';
     language?: Nullable<Language>;
@@ -95,6 +88,13 @@ export class VideoVariant {
     subtitle: Translation[];
     subtitleCount: number;
     slug: string;
+}
+
+export class Translation {
+    __typename?: 'Translation';
+    value: string;
+    language: Language;
+    primary: boolean;
 }
 
 export class Language {

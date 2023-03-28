@@ -39,6 +39,23 @@ const Layer = styled(Box)({
   overflow: 'hidden'
 })
 
+export function getSlug(
+  containerSlug: string | undefined,
+  label: VideoLabel | undefined,
+  variantSlug: string | undefined
+): string {
+  if (
+    containerSlug != null &&
+    label !== undefined &&
+    ![VideoLabel.collection, VideoLabel.series].includes(label)
+  ) {
+    return `/${containerSlug}.html/${variantSlug ?? ''}.html`
+  } else {
+    const [videoId, languageId] = (variantSlug ?? '').split('/')
+    return `/${videoId}.html/${languageId}.html`
+  }
+}
+
 export function VideoCard({
   video,
   containerSlug,
@@ -51,18 +68,7 @@ export function VideoCard({
     video?.label,
     video?.childrenCount ?? 0
   )
-  let href = ''
-
-  if (
-    containerSlug != null &&
-    video?.label != null &&
-    ![VideoLabel.collection, VideoLabel.series].includes(video.label)
-  ) {
-    href += `/${containerSlug}.html/${video?.variant?.slug ?? ''}.html`
-  } else {
-    const [videoId, languageId] = (video?.variant?.slug ?? '').split('/')
-    href = `/${videoId}.html/${languageId}.html`
-  }
+  const href = getSlug(containerSlug, video?.label, video?.variant?.slug)
 
   return (
     <NextLink href={href} passHref>
