@@ -1,4 +1,4 @@
-import { ReactElement, useEffect } from 'react'
+import { ReactElement, ReactNode, useEffect } from 'react'
 import { useMutation, gql } from '@apollo/client'
 import { v4 as uuidv4 } from 'uuid'
 import TagManager from 'react-gtm-module'
