@@ -16,7 +16,7 @@ interface ContainedIconProps {
   imageSrc?: string
   imageAlt?: string
   loading?: boolean
-  handleClick: () => void
+  onClick: () => void
 }
 
 export function ContainedIconButton({
@@ -27,11 +27,11 @@ export function ContainedIconButton({
   imageSrc,
   imageAlt,
   loading,
-  handleClick
+  onClick
 }: ContainedIconProps): ReactElement {
   return (
     <Card variant="outlined" sx={{ borderRadius: 2 }}>
-      <CardActionArea onClick={handleClick}>
+      <CardActionArea onClick={onClick}>
         <Stack direction="row" alignItems="center" spacing={3} sx={{ p: 2 }}>
           <Box>
             <ImageThumbnail

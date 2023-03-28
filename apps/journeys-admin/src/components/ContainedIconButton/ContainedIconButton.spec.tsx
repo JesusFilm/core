@@ -11,7 +11,7 @@ describe('ContainedIconButton', () => {
       <ContainedIconButton
         thumbnailIcon={<NoteAddIcon />}
         label="Label"
-        handleClick={noop}
+        onClick={noop}
         actionIcon={<AddIcon />}
       />
     )
@@ -19,12 +19,12 @@ describe('ContainedIconButton', () => {
     expect(getByRole('button')).toHaveTextContent('Label')
   })
 
-  it('should call handleClick on button click', () => {
+  it('should call onClick on button click', () => {
     const { getByRole } = render(
       <ContainedIconButton
         thumbnailIcon={<NoteAddIcon />}
         label="Label"
-        handleClick={onClick}
+        onClick={onClick}
         actionIcon={<AddIcon />}
       />
     )
@@ -40,7 +40,7 @@ it('should render descripition', () => {
       thumbnailIcon={<NoteAddIcon />}
       label="Label"
       description="testDescription"
-      handleClick={noop}
+      onClick={noop}
       actionIcon={<AddIcon />}
     />
   )
