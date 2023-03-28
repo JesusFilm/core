@@ -5,32 +5,33 @@ import Card from '@mui/material/Card'
 import CardActionArea from '@mui/material/CardActionArea'
 import Stack from '@mui/material/Stack'
 import Icon from '@mui/material/Icon'
+import AddIcon from '@mui/icons-material/Add'
 import { ImageThumbnail } from '../ImageThumbnail'
 
 interface ContainedIconProps {
-  thumbnailIcon: ReactNode
-  actionIcon: ReactNode
+  thumbnailIcon?: ReactNode
+  actionIcon?: ReactNode
   label: string
   description?: string
   imageSrc?: string
   imageAlt?: string
   loading?: boolean
-  onClick: () => void
+  handleClick: () => void
 }
 
 export function ContainedIconButton({
   thumbnailIcon,
-  actionIcon,
+  actionIcon = <AddIcon />,
   label,
   description,
   imageSrc,
   imageAlt,
   loading,
-  onClick
+  handleClick
 }: ContainedIconProps): ReactElement {
   return (
     <Card variant="outlined" sx={{ borderRadius: 2 }}>
-      <CardActionArea onClick={onClick}>
+      <CardActionArea onClick={handleClick}>
         <Stack direction="row" alignItems="center" spacing={3} sx={{ p: 2 }}>
           <Box>
             <ImageThumbnail
