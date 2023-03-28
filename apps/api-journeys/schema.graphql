@@ -1907,6 +1907,12 @@ input VisitorUpdateInput {
   status: VisitorStatus
 }
 
+type Translation {
+  value: String!
+  language: Language!
+  primary: Boolean!
+}
+
 scalar _FieldSet
 
 scalar _Any

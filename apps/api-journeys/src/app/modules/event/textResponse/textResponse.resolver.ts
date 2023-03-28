@@ -30,16 +30,20 @@ export class TextResponseSubmissionEventResolver {
       input.stepId
     )
 
-    void this.visitorService.update(visitor.id, {
-      lastTextResponse: input.value
-    })
+    const promiseArray = [
+      this.eventService.save({
+        ...input,
+        __typename: 'TextResponseSubmissionEvent',
+        visitorId: visitor.id,
+        createdAt: new Date().toISOString(),
+        journeyId
+      }),
+      this.visitorService.update(visitor.id, {
+        lastTextResponse: input.value
+      })
+    ]
 
-    return await this.eventService.save({
-      ...input,
-      __typename: 'TextResponseSubmissionEvent',
-      visitorId: visitor.id,
-      createdAt: new Date().toISOString(),
-      journeyId
-    })
+    const [TextResponseSubmissionEvent] = await Promise.all([...promiseArray])
+    return TextResponseSubmissionEvent
   }
 }

@@ -32,18 +32,22 @@ export class StepViewEventResolver {
       input.blockId
     )
 
-    void this.visitorService.update(visitor.id, {
-      lastEventAt: new Date().toISOString()
-    })
+    const promiseArray = [
+      this.eventService.save({
+        ...input,
+        __typename: 'StepViewEvent',
+        visitorId: visitor.id,
+        createdAt: new Date().toISOString(),
+        journeyId,
+        stepId: input.blockId
+      }),
+      this.visitorService.update(visitor.id, {
+        lastEventAt: new Date().toISOString()
+      })
+    ]
 
-    return await this.eventService.save({
-      ...input,
-      __typename: 'StepViewEvent',
-      visitorId: visitor.id,
-      createdAt: new Date().toISOString(),
-      journeyId,
-      stepId: input.blockId
-    })
+    const [stepViewEvent] = await Promise.all([...promiseArray])
+    return stepViewEvent
   }
 }
 
@@ -66,16 +70,20 @@ export class StepNextEventResolver {
       input.blockId
     )
 
-    void this.visitorService.update(visitor.id, {
-      lastEventAt: new Date().toISOString()
-    })
+    const promiseArray = [
+      this.eventService.save({
+        ...input,
+        __typename: 'StepNextEvent',
+        visitorId: visitor.id,
+        createdAt: new Date().toISOString(),
+        journeyId
+      }),
+      this.visitorService.update(visitor.id, {
+        lastEventAt: new Date().toISOString()
+      })
+    ]
 
-    return await this.eventService.save({
-      ...input,
-      __typename: 'StepNextEvent',
-      visitorId: visitor.id,
-      createdAt: new Date().toISOString(),
-      journeyId
-    })
+    const [StepNextEvent] = await Promise.all([...promiseArray])
+    return StepNextEvent
   }
 }

@@ -1,4 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing'
+import { GraphQLResolveInfo, Kind } from 'graphql'
 import { IdType } from '../../__generated__/graphql'
 import { LanguageWithSlugResolver, VideoResolver } from './video.resolver'
 import { VideoService } from './video.service'
@@ -48,18 +49,21 @@ describe('VideoResolver', () => {
 
   describe('videos', () => {
     it('returns Videos', async () => {
-      const info = { fieldNodes: [{ selectionSet: { selections: [] } }] }
+      const info = {
+        fieldNodes: [{ selectionSet: { selections: [] } }]
+      } as unknown as GraphQLResolveInfo
       expect(await resolver.videos(info)).toEqual([video, video])
       expect(service.filterAll).toHaveBeenCalledWith({})
     })
 
-    it('returns filtered Videos', async () => {
+    it('returns videos filtered by variant language id with string argument', async () => {
       const info = {
         fieldNodes: [
           {
             selectionSet: {
               selections: [
                 {
+                  kind: Kind.FIELD,
                   name: { value: 'variant' },
                   arguments: [
                     {
@@ -72,7 +76,56 @@ describe('VideoResolver', () => {
             }
           }
         ]
-      }
+      } as unknown as GraphQLResolveInfo
+      expect(
+        await resolver.videos(
+          info,
+          {
+            title: 'abc',
+            availableVariantLanguageIds: ['fr'],
+            ids: ['1_jf-0-0']
+          },
+          100,
+          200
+        )
+      ).toEqual([video, video])
+      expect(service.filterAll).toHaveBeenCalledWith({
+        title: 'abc',
+        availableVariantLanguageIds: ['fr'],
+        ids: ['1_jf-0-0'],
+        variantLanguageId: 'en',
+        offset: 100,
+        limit: 200
+      })
+    })
+
+    it('returns videos filtered by variant language id with variable argument', async () => {
+      const info = {
+        fieldNodes: [
+          {
+            selectionSet: {
+              selections: [
+                {
+                  kind: Kind.FIELD,
+                  name: { value: 'variant' },
+                  arguments: [
+                    {
+                      name: { value: 'languageId' },
+                      value: {
+                        kind: Kind.VARIABLE,
+                        name: { value: 'customLanguageId' }
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        ],
+        variableValues: {
+          customLanguageId: 'en'
+        }
+      } as unknown as GraphQLResolveInfo
       expect(
         await resolver.videos(
           info,
@@ -97,13 +150,15 @@ describe('VideoResolver', () => {
   })
 
   describe('video', () => {
-    const info = { fieldNodes: [{ selectionSet: { selections: [] } }] }
+    const info = {
+      fieldNodes: [{ selectionSet: { selections: [] } }]
+    } as unknown as GraphQLResolveInfo
     it('return a video', async () => {
       expect(await resolver.video(info, '20615')).toEqual(video)
       expect(service.getVideo).toHaveBeenCalledWith('20615', undefined)
     })
 
-    it('return a filtered video', async () => {
+    it('returns a video filtered by variant language id with string argument', async () => {
       const filteredInfo = {
         fieldNodes: [
           {
@@ -111,6 +166,7 @@ describe('VideoResolver', () => {
               selections: [
                 {
                   name: { value: 'variant' },
+                  kind: Kind.FIELD,
                   arguments: [
                     {
                       name: { value: 'languageId' },
@@ -122,7 +178,38 @@ describe('VideoResolver', () => {
             }
           }
         ]
-      }
+      } as unknown as GraphQLResolveInfo
+      expect(await resolver.video(filteredInfo, '20615')).toEqual(video)
+      expect(service.getVideo).toHaveBeenCalledWith('20615', 'en')
+    })
+
+    it('returns a video filtered by variant language id with variable argument', async () => {
+      const filteredInfo = {
+        fieldNodes: [
+          {
+            selectionSet: {
+              selections: [
+                {
+                  name: { value: 'variant' },
+                  kind: Kind.FIELD,
+                  arguments: [
+                    {
+                      name: { value: 'languageId' },
+                      value: {
+                        kind: Kind.VARIABLE,
+                        name: { value: 'customLanguageId' }
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        ],
+        variableValues: {
+          customLanguageId: 'en'
+        }
+      } as unknown as GraphQLResolveInfo
       expect(await resolver.video(filteredInfo, '20615')).toEqual(video)
       expect(service.getVideo).toHaveBeenCalledWith('20615', 'en')
     })

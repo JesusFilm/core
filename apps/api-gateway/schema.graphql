@@ -696,6 +696,8 @@ input JourneyViewEventCreateInput
 type Language
   @join__type(graph: JOURNEYS, key: "id")
   @join__type(graph: LANGUAGES, key: "id")
+  @join__type(graph: MEDIA, key: "id")
+  @join__type(graph: USERS, key: "id")
   @join__type(graph: VIDEOS, key: "id")
 {
   id: ID!
@@ -1369,7 +1371,10 @@ enum ThemeName
 }
 
 type Translation
+  @join__type(graph: JOURNEYS)
   @join__type(graph: LANGUAGES)
+  @join__type(graph: MEDIA)
+  @join__type(graph: USERS)
   @join__type(graph: VIDEOS)
 {
   value: String!
