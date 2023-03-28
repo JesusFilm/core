@@ -1,7 +1,6 @@
 import { Meta, Story } from '@storybook/react'
-import Paper from '@mui/material/Paper'
+import Box from '@mui/material/Box'
 import { ComponentProps } from 'react'
-import Stack from '@mui/material/Stack'
 import NoteAddIcon from '@mui/icons-material/NoteAdd'
 import AddIcon from '@mui/icons-material/Add'
 import EditIcon from '@mui/icons-material/Edit'
@@ -18,11 +17,9 @@ const ContainedIconButtonDemo = {
 const Template: Story<ComponentProps<typeof ContainedIconButton>> = ({
   ...args
 }) => (
-  <Paper elevation={0} sx={{ p: 2 }}>
-    <Stack direction="row">
-      <ContainedIconButton {...args} />
-    </Stack>
-  </Paper>
+  <Box sx={{maxWidth: '300px'}}>
+    <ContainedIconButton {...args} />
+  </Box>
 )
 
 export const Default = Template.bind({})
