@@ -15,7 +15,7 @@ input JourneyViewEventCreateInput {
 }
 
 extend type Language @key(fields: "id") {
-  id: ID!
+  id: ID! @external
 }
 
 type JourneyViewEvent implements Event {
