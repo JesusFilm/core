@@ -14,7 +14,7 @@ import { ImageThumbnail } from './ImageThumbnail'
 const ImageEditorStory = {
   ...simpleComponentConfig,
   component: ImageThumbnail,
-  title: 'Journeys-Admin/Editor/ImageThumbnail',
+  title: 'Journeys-Admin/ImageThumbnail',
   parameters: {
     ...simpleComponentConfig.parameters,
     layout: 'fullscreen'
