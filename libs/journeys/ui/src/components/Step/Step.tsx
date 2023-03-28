@@ -22,12 +22,14 @@ export const STEP_VIEW_EVENT_CREATE = gql`
 
 interface StepProps extends TreeBlock<StepFields> {
   wrappers?: WrappersProps
+  navigation?: ReactNode
 }
 
 export function Step({
   id: blockId,
   children,
-  wrappers
+  wrappers,
+  navigation
 }: StepProps): ReactElement {
   const [stepViewEventCreate] = useMutation<StepViewEventCreate>(
     STEP_VIEW_EVENT_CREATE
@@ -60,7 +62,12 @@ export function Step({
     <>
       {!admin && <NextSeo title={`${journey?.title ?? ''} (${heading})`} />}
       {children.map((block) => (
-        <BlockRenderer block={block} wrappers={wrappers} key={block.id} />
+        <BlockRenderer
+          block={block}
+          wrappers={wrappers}
+          key={block.id}
+          navigation={navigation}
+        />
       ))}
     </>
   )

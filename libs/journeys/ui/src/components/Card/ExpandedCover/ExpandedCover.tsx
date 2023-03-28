@@ -31,7 +31,11 @@ export function ExpandedCover({
           margin: 'auto',
           width: '100%',
           maxWidth: 500,
-          zIndex: 1,
+          zIndex: 0,
+          display: 'flex',
+          height: '100%',
+          flexDirection: 'column',
+          justifyContent: 'center',
           '& > *': {
             '&:first-child': { mt: 0 },
             '&:last-child': { mb: 0 }

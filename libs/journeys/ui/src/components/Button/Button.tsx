@@ -140,7 +140,8 @@ export function Button({
             ? 5
             : size === 'small'
             ? 4
-            : 5
+            : 5,
+        zIndex: 1
       }}
     >
       <MuiButton

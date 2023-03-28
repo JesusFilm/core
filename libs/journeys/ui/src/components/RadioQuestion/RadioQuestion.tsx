@@ -32,7 +32,8 @@ interface RadioQuestionProps extends TreeBlock<RadioQuestionFields> {
 }
 
 const StyledRadioQuestion = styled(Box)<BoxProps>(({ theme }) => ({
-  marginBottom: theme.spacing(4)
+  marginBottom: theme.spacing(4),
+  zIndex: 1
 }))
 
 export function RadioQuestion({

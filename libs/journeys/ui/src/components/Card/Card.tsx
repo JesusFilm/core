@@ -23,9 +23,11 @@ import { ExpandedCover } from './ExpandedCover'
 
 interface CardProps extends TreeBlock<CardFields> {
   wrappers?: WrappersProps
+  navigation?: ReactNode
 }
 
 export function Card({
+  navigation,
   id,
   children,
   backgroundColor,
@@ -99,12 +101,42 @@ export function Card({
           imageBlock={imageBlock}
         >
           {renderedChildren}
+          {navigation}
         </ContainedCover>
       ) : (
         <ExpandedCover backgroundBlur={blurUrl}>
           {renderedChildren}
+          {navigation}
         </ExpandedCover>
       )}
+      <Stack
+        direction="row"
+        sx={{
+          zIndex: 1,
+          m: 4,
+          p: 2,
+          backgroundColor: 'rgb(0,0,0,0.8)',
+          borderRadius: 7,
+          color: 'white',
+          position: 'absolute',
+          bottom: 0,
+          width: `calc(100% - 42px)`
+        }}
+        justifyContent="space-between"
+        alignItems="center"
+      >
+        <Stack direction="row" alignItems="center" spacing={4}>
+          <Avatar src="https://images.unsplash.com/photo-1635713150362-ed0cd425e697?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1015&q=80" />
+          <Typography variant="subtitle2" color="inherit">
+            Amanda L.
+          </Typography>
+        </Stack>
+        <Stack direction="row" alignItems="center" spacing={4} sx={{ mr: 2 }}>
+          <ChatBubbleOutlineIcon color="inherit" />
+          <ShareIcon color="inherit" />
+          <FavoriteBorderIcon color="inherit" />
+        </Stack>
+      </Stack>
     </CardWrapper>
   )
 }
@@ -144,34 +176,6 @@ export function CardWrapper({
       elevation={3}
     >
       {children}
-      <Stack
-        direction="row"
-        sx={{
-          zIndex: 1,
-          m: 4,
-          p: 2,
-          backgroundColor: 'rgb(0,0,0,0.8)',
-          borderRadius: 7,
-          color: 'white',
-          position: 'absolute',
-          bottom: 0,
-          width: `calc(100% - 42px)`
-        }}
-        justifyContent="space-between"
-        alignItems="center"
-      >
-        <Stack direction="row" alignItems="center" spacing={4}>
-          <Avatar src="https://images.unsplash.com/photo-1635713150362-ed0cd425e697?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1015&q=80" />
-          <Typography variant="subtitle2" color="inherit">
-            Amanda L.
-          </Typography>
-        </Stack>
-        <Stack direction="row" alignItems="center" spacing={4} sx={{ mr: 2 }}>
-          <ChatBubbleOutlineIcon color="inherit" />
-          <ShareIcon color="inherit" />
-          <FavoriteBorderIcon color="inherit" />
-        </Stack>
-      </Stack>
     </Paper>
   )
 

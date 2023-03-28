@@ -1,7 +1,8 @@
-import { ReactElement, useEffect, useState } from 'react'
+import { ReactElement, useEffect, useRef, useState } from 'react'
 import { renderToStaticMarkup } from 'react-dom/server'
 import SwiperCore, {
   Navigation,
+  Swiper as SwiperType,
   Pagination,
   Mousewheel,
   Keyboard,
@@ -23,49 +24,54 @@ import Stack from '@mui/material/Stack'
 import { BlockRenderer } from '@core/journeys/ui/BlockRenderer'
 import { BlockFields_StepBlock as StepBlock } from '@core/journeys/ui/block/__generated__/BlockFields'
 import LinearProgress from '@mui/material/LinearProgress'
+import Box from '@mui/material/Box'
 
 const StyledSwiperContainer = styled(Swiper)(({ theme }) => ({
   '.swiper-button-prev': {
     color: 'white',
-    left: 'calc(50% - 350px)',
+    left: 'calc(50% - 280px)',
+    width: '50%',
+    height: '100%',
+    '&:after': {
+      fontSize: '36px',
+      content: '""'
+    },
+    top: '2.5%',
     // left: 'unset',
     // right: 'calc(50% - 350px)',
     // transform: 'rotate(90deg)',
     // top: '45%',
-    [theme.breakpoints.down('lg')]: {
-      left: '36px'
-    },
+    zIndex: 0,
+    // [theme.breakpoints.down('lg')]: {
+    //   left: '36px'
+    // },
 
     [theme.breakpoints.down('sm')]: {
       // display: 'none',
       top: 0,
-      left: 0,
-      width: '50%',
-      height: '80%',
-      '&:after': {
-        fontSize: '36px',
-        content: '""'
-      }
+      left: 0
     }
   },
   '.swiper-button-next': {
     color: 'white',
-    right: 'calc(50% - 350px)',
+    right: 'calc(50% - 280px)',
+    width: '50%',
+    height: '100%',
+    top: '2.5%',
+    '&:after': {
+      fontSize: '36px',
+      content: '""'
+    },
     // transform: 'rotate(90deg)',
     // top: '55%',
-    [theme.breakpoints.down('lg')]: {
-      right: '36px'
-    },
+    zIndex: 0,
+    // [theme.breakpoints.down('lg')]: {
+    //   right: '36px'
+    // },
     [theme.breakpoints.down('sm')]: {
       // display: 'none',
       top: 0,
-      right: 0,
-      width: '50%',
-      height: '80%',
-      '&:after': {
-        fontSize: '36px',
-        content: '""'
-      }
+      right: 0
     }
   },
   '.swiper-pagination-vertical.swiper-pagination-bullets': {
@@ -102,6 +108,7 @@ export function TestConductor({ blocks }: TestConductorProps): ReactElement {
   console.log('blocks', blocks)
   const { setTreeBlocks, activeBlock, treeBlocks, setActiveBlock } = useBlocks()
   const [swiper, setSwiper] = useState<SwiperCore>()
+  const swiperRef = useRef<SwiperType>()
 
   // const theme = useTheme()
   // const { journey } = useJourney()
@@ -168,14 +175,19 @@ export function TestConductor({ blocks }: TestConductorProps): ReactElement {
     <Div100vh style={{ overflowY: 'auto', WebkitOverflowScrolling: 'touch' }}>
       <StyledSwiperContainer
         modules={[Navigation, Pagination, Mousewheel, Keyboard, EffectFade]}
-        navigation
+        onBeforeInit={(swiper) => {
+          swiperRef.current = swiper
+        }}
+        navigation={{
+          nextEl: 'swiper-button-next',
+          prevEl: 'swiper-button-prev'
+        }}
         pagination={{
           type: 'custom',
           renderCustom: (swiper, current, total) =>
             cardProgression(swiper, current, total)
         }}
-        shortSwipes={false}
-        longSwipes={false}
+        noSwiping
         fadeEffect={{ crossFade: true }}
         effect="fade"
         keyboard
@@ -187,7 +199,6 @@ export function TestConductor({ blocks }: TestConductorProps): ReactElement {
         spaceBetween={50}
         slidesPerView={1}
         onSlideChange={(swiper) => {
-          console.log('slide change', swiper)
           setActiveBlock(treeBlocks[swiper.activeIndex] as TreeBlock<StepBlock>)
         }}
         onSwiper={(swiper) => {
@@ -209,7 +220,31 @@ export function TestConductor({ blocks }: TestConductorProps): ReactElement {
                     borderRadius: { xs: 0, md: 4 }
                   }}
                 >
-                  <BlockRenderer block={block} />
+                  <BlockRenderer
+                    block={block}
+                    navigation={
+                      <>
+                        <Box
+                          className="swiper-button-prev"
+                          onClickCapture={() => swiperRef?.current?.slidePrev()}
+                          sx={{
+                            position: 'absolute',
+                            top: 0,
+                            width: { xs: '50%', md: '280px' }
+                          }}
+                        />
+                        <Box
+                          className="swiper-button-next"
+                          onClickCapture={() => swiperRef?.current?.slideNext()}
+                          sx={{
+                            position: 'absolute',
+                            top: 0,
+                            width: { xs: '50%', md: '280px' }
+                          }}
+                        />
+                      </>
+                    }
+                  />
                 </Paper>
               </Stack>
             </StyledSwiperSlide>

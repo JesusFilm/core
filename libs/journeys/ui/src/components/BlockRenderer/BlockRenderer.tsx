@@ -1,4 +1,4 @@
-import { ReactElement } from 'react'
+import { ReactElement, ReactNode } from 'react'
 import { Button } from '../Button'
 import { Card } from '../Card'
 import { Image } from '../Image'
@@ -53,6 +53,7 @@ export interface WrappersProps {
 
 interface BlockRenderProps {
   block: TreeBlock
+  navigation?: ReactNode
   wrappers?: WrappersProps
 }
 
@@ -60,7 +61,8 @@ const DefaultWrapper: WrapperFn = ({ children }) => children
 
 export function BlockRenderer({
   block,
-  wrappers
+  wrappers,
+  navigation
 }: BlockRenderProps): ReactElement {
   const Wrapper = wrappers?.Wrapper ?? DefaultWrapper
   const ButtonWrapper = wrappers?.ButtonWrapper ?? DefaultWrapper
@@ -93,7 +95,7 @@ export function BlockRenderer({
       return (
         <Wrapper block={block}>
           <CardWrapper block={block}>
-            <Card {...block} wrappers={wrappers} />
+            <Card {...block} wrappers={wrappers} navigation={navigation} />
           </CardWrapper>
         </Wrapper>
       )
@@ -149,7 +151,7 @@ export function BlockRenderer({
       return (
         <Wrapper block={block}>
           <StepWrapper block={block}>
-            <Step {...block} wrappers={wrappers} />
+            <Step {...block} wrappers={wrappers} navigation={navigation} />
           </StepWrapper>
         </Wrapper>
       )
