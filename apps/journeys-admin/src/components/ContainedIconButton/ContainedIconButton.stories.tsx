@@ -36,7 +36,7 @@ Complete.args = {
   thumbnailIcon: <NoteAddIcon />,
   actionIcon: <EditIcon />,
   label: 'Video Title',
-  description: 'descripition',
+  description: 'description',
   imageSrc:
     'https://d1wl257kev7hsz.cloudfront.net/cinematics/2_Acts7302-0-0.mobileCinematicHigh.jpg',
   imageAlt: 'Image Alt Test Text',
