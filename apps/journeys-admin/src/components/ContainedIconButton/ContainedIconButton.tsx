@@ -53,7 +53,7 @@ export function ContainedIconButton({
               {label}
             </Typography>
 
-            {description !== undefined && (
+            {description != null && (
               <Typography
                 variant="caption"
                 sx={{
