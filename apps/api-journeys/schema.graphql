@@ -1017,7 +1017,7 @@ input JourneyViewEventCreateInput {
 extend type Language
   @key(fields: "id")
 {
-  id: ID!
+  id: ID! @external
 }
 
 type JourneyViewEvent implements Event {
@@ -1905,6 +1905,12 @@ input VisitorUpdateInput {
 
   """Status of the visitor."""
   status: VisitorStatus
+}
+
+type Translation {
+  value: String!
+  language: Language!
+  primary: Boolean!
 }
 
 scalar _FieldSet
