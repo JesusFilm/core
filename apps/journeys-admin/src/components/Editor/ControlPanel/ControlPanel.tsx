@@ -62,6 +62,7 @@ export function ControlPanel(): ReactElement {
         ActiveJourneyEditContent.SocialPreview ? (
           <MuiFab
             color="primary"
+            data-testid="social-edit-fab"
             onClick={handleSocialEditFabClick}
             sx={{ display: { xs: 'inherit', sm: 'none' } }}
           >

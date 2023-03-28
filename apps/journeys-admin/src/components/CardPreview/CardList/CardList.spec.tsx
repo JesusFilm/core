@@ -2,13 +2,6 @@ import { render, fireEvent } from '@testing-library/react'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { MockedProvider } from '@apollo/client/testing'
 import { DragDropContext } from 'react-beautiful-dnd'
-import {
-  ActiveFab,
-  ActiveJourneyEditContent,
-  ActiveTab,
-  EditorState,
-  useEditor
-} from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { BlockFields_StepBlock as StepBlock } from '../../../../__generated__/BlockFields'
 import {
@@ -42,15 +35,6 @@ jest.mock('react-beautiful-dnd', () => ({
     ),
   DragDropContext: ({ children }) => children
 }))
-
-jest.mock('@core/journeys/ui/EditorProvider', () => {
-  const originalModule = jest.requireActual('@core/journeys/ui/EditorProvider')
-  return {
-    __esModule: true,
-    ...originalModule,
-    useEditor: jest.fn()
-  }
-})
 
 describe('CardList', () => {
   const selected: TreeBlock<StepBlock> = {
@@ -215,23 +199,6 @@ describe('CardList', () => {
     selected
   ]
 
-  const state: EditorState = {
-    steps,
-    selectedBlock: selected,
-    drawerMobileOpen: false,
-    activeTab: ActiveTab.Cards,
-    activeFab: ActiveFab.Add,
-    journeyEditContentComponent: ActiveJourneyEditContent.Canvas
-  }
-
-  const mockUseEditor = useEditor as jest.MockedFunction<typeof useEditor>
-  beforeEach(() => {
-    mockUseEditor.mockReturnValue({
-      state,
-      dispatch: jest.fn()
-    })
-  })
-
   it('should call handleClick on addCard click', () => {
     const handleClick = jest.fn()
     const { getByRole } = render(
@@ -292,12 +259,7 @@ describe('CardList', () => {
   })
 
   it('navigates on social preview card click', async () => {
-    const dispatch = jest.fn()
     const handleChange = jest.fn()
-    mockUseEditor.mockReturnValue({
-      state,
-      dispatch
-    })
     const { getAllByRole } = render(
       <MockedProvider>
         <JourneyProvider
@@ -332,12 +294,7 @@ describe('CardList', () => {
   })
 
   it('should display image for social navigationcard if image is provided', () => {
-    const dispatch = jest.fn()
     const handleChange = jest.fn()
-    mockUseEditor.mockReturnValue({
-      state,
-      dispatch
-    })
     const { getAllByRole } = render(
       <MockedProvider>
         <JourneyProvider

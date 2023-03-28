@@ -1,8 +1,15 @@
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
-import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { render, fireEvent, waitFor } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
+import {
+  ActiveFab,
+  ActiveJourneyEditContent,
+  ActiveTab,
+  EditorState,
+  useEditor,
+  EditorProvider
+} from '@core/journeys/ui/EditorProvider'
 import {
   GetJourney_journey_blocks_StepBlock as StepBlock,
   GetJourney_journey as Journey
@@ -14,6 +21,7 @@ import {
   ThemeMode,
   ThemeName
 } from '../../../../__generated__/globalTypes'
+
 import { STEP_AND_CARD_BLOCK_CREATE } from '../../CardPreview/CardPreview'
 import { VIDEO_BLOCK_CREATE } from './BlocksTab/NewVideoButton/NewVideoButton'
 import { TYPOGRAPHY_BLOCK_CREATE } from './BlocksTab/NewTypographyButton/NewTypographyButton'
@@ -36,6 +44,17 @@ jest.mock('react-i18next', () => ({
     }
   }
 }))
+
+jest.mock('@core/journeys/ui/EditorProvider', () => {
+  const originalModule = jest.requireActual('@core/journeys/ui/EditorProvider')
+  return {
+    __esModule: true,
+    ...originalModule,
+    useEditor: jest.fn(
+      jest.requireActual('@core/journeys/ui/EditorProvider').useEditor
+    )
+  }
+})
 
 describe('ControlPanel', () => {
   const step1: TreeBlock<StepBlock> = {
@@ -867,5 +886,55 @@ describe('ControlPanel', () => {
         'true'
       )
     )
+  })
+
+  it('should open mobile drawer for social preview', async () => {
+    const state: EditorState = {
+      steps: [step1, step2, step3],
+      selectedBlock: step1,
+      drawerMobileOpen: false,
+      activeTab: ActiveTab.Cards,
+      activeFab: ActiveFab.Add,
+      journeyEditContentComponent: ActiveJourneyEditContent.SocialPreview
+    }
+
+    const mockUseEditor = useEditor as jest.MockedFunction<typeof useEditor>
+    const dispatch = jest.fn()
+    mockUseEditor.mockReturnValue({
+      state,
+      dispatch
+    })
+
+    const { getByRole, getByTestId } = render(
+      <MockedProvider>
+        <JourneyProvider
+          value={{
+            journey: {
+              id: 'journeyId',
+              themeMode: ThemeMode.dark,
+              themeName: ThemeName.base,
+              language: {
+                __typename: 'Language',
+                id: '529',
+                bcp47: 'en',
+                iso3: 'eng'
+              }
+            } as unknown as Journey,
+            admin: true
+          }}
+        >
+          <EditorProvider initialState={state}>
+            <ControlPanel />
+          </EditorProvider>
+        </JourneyProvider>
+      </MockedProvider>
+    )
+    expect(getByRole('tab', { name: 'Properties' })).toHaveAttribute('disabled')
+    expect(getByRole('tab', { name: 'Blocks' })).toHaveAttribute('disabled')
+    fireEvent.click(getByTestId('social-edit-fab'))
+    expect(dispatch).toHaveBeenCalledWith({
+      mobileOpen: true,
+      type: 'SetDrawerMobileOpenAction'
+    })
   })
 })
