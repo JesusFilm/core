@@ -23,7 +23,7 @@ describe('ContainedIconButton', () => {
     const { getByRole } = render(
       <ContainedIconButton
         thumbnailIcon={<NoteAddIcon />}
-        label='Label'
+        label="Label"
         handleClick={onClick}
         actionIcon={<AddIcon />}
       />
@@ -38,8 +38,8 @@ it('should render descripition', () => {
   const { getByRole } = render(
     <ContainedIconButton
       thumbnailIcon={<NoteAddIcon />}
-      label='Label'
-      description='testDescription'
+      label="Label"
+      description="testDescription"
       handleClick={noop}
       actionIcon={<AddIcon />}
     />
