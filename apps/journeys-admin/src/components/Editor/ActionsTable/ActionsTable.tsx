@@ -1,7 +1,6 @@
 import { ReactElement } from 'react'
 import Stack from '@mui/material/Stack'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
-import { useTheme } from '@mui/material/styles'
 import { ActionFields_LinkAction as LinkAction } from '../../../../__generated__/ActionFields'
 import { BlockFields_ButtonBlock as ButtonBlock } from '../../../../__generated__/BlockFields'
 import { GetJourney_journey as Journey } from '../../../../__generated__/GetJourney'
@@ -19,7 +18,6 @@ export interface Actions {
 
 export function ActionsTable({ hasAction }: ActionsTableProps): ReactElement {
   const { journey } = useJourney()
-  const theme = useTheme()
 
   function countUrls(journey: Journey | undefined): Actions[] {
     const actions = (journey?.blocks ?? [])
@@ -85,20 +83,13 @@ export function ActionsTable({ hasAction }: ActionsTableProps): ReactElement {
   }
 
   return (
-    <Stack
-      gap={2}
-      justifyContent="center"
-      sx={{
-        [theme.breakpoints.down('md')]: {
-          py: 6
-        }
-      }}
-    >
-      {actions != null && actions.length > 0 ? (
-        <ActionsList actions={actions} goalLabel={goalLabel} />
-      ) : (
-        <ActionsBanner />
-      )}
+    <Stack gap={2} justifyContent="center" py={6}>
+      {journey != null &&
+        (actions != null && actions.length > 0 ? (
+          <ActionsList actions={actions} goalLabel={goalLabel} />
+        ) : (
+          <ActionsBanner />
+        ))}
     </Stack>
   )
 }

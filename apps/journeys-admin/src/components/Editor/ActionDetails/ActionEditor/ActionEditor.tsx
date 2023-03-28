@@ -13,9 +13,11 @@ import QuestionAnswerOutlined from '@mui/icons-material/QuestionAnswerOutlined'
 import WebOutlined from '@mui/icons-material/WebOutlined'
 import MenuBookRounded from '@mui/icons-material/MenuBookRounded'
 import Stack from '@mui/material/Stack'
+import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { BlockFields_ButtonBlock as ButtonBlock } from '../../../../../__generated__/BlockFields'
 import { ActionFields_LinkAction as LinkAction } from '../../../../../__generated__/ActionFields'
 import { MultipleLinkActionUpdate } from '../../../../../__generated__/MultipleLinkActionUpdate'
+import { ActionDetails } from '../ActionDetails'
 
 export const MULTIPLE_LINK_ACTION_UPDATE = gql`
   mutation MultipleLinkActionUpdate(
@@ -32,14 +34,17 @@ export const MULTIPLE_LINK_ACTION_UPDATE = gql`
 
 interface ActionEditorProps {
   url: string
-  goalLabel?: string
+  goalLabel?: (url: string) => string
+  selectedAction?: (url: string) => void
 }
 
 export function ActionEditor({
   url,
-  goalLabel
+  goalLabel,
+  selectedAction
 }: ActionEditorProps): ReactElement {
   const { journey } = useJourney()
+  const { dispatch } = useEditor()
 
   const blocks = (journey?.blocks ?? [])
     .filter((block) => ((block as ButtonBlock).action as LinkAction) != null)
@@ -80,14 +85,27 @@ export function ActionEditor({
         }
       })
     })
+    selectedAction?.(target.value)
+    goalLabel?.(target.value)
+    dispatch({
+      type: 'SetDrawerPropsAction',
+      mobileOpen: true,
+      title: 'Goal Details',
+      children: (
+        <ActionDetails
+          url={target.value}
+          goalLabel={goalLabel}
+        />
+      )
+    })
   }
 
   let icon: ReactNode
-  switch (goalLabel) {
-    case 'Start a conversation':
+  switch (goalLabel?.(url)) {
+    case 'Start a Conversation':
       icon = <QuestionAnswerOutlined sx={{ color: 'secondary.light' }} />
       break
-    case 'Link to bible':
+    case 'Link to Bible':
       icon = <MenuBookRounded sx={{ color: 'secondary.light' }} />
       break
     default:
@@ -134,7 +152,7 @@ export function ActionEditor({
       </Formik>
       <Stack gap={2} direction="row" alignItems="center" sx={{ pt: 2.5 }}>
         {icon}
-        <Typography variant="subtitle2">{goalLabel}</Typography>
+        <Typography variant="subtitle2">{goalLabel?.(url)}</Typography>
       </Stack>
     </Box>
   )

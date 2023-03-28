@@ -67,7 +67,7 @@ describe('ActionDetails', () => {
         <JourneyProvider value={{ journey }}>
           <ActionEditor
             url="https://www.google.com/"
-            goalLabel="Visit a website"
+            goalLabel={jest.fn()}
           />
         </JourneyProvider>
       </MockedProvider>

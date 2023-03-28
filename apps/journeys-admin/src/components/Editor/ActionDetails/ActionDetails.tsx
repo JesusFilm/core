@@ -11,7 +11,8 @@ import { ActionEditor } from './ActionEditor'
 
 interface ActionDetailsProps {
   url?: string
-  goalLabel?: () => string
+  goalLabel?: (url: string) => string
+  selectedAction?: (url: string) => void
 }
 
 interface GoalDescriptionProps {
@@ -22,7 +23,8 @@ interface GoalDescriptionProps {
 
 export function ActionDetails({
   url,
-  goalLabel
+  goalLabel,
+  selectedAction
 }: ActionDetailsProps): ReactElement {
   const GoalDescription = ({
     label,
@@ -46,7 +48,11 @@ export function ActionDetails({
     <Box sx={{ overflow: 'auto', height: '100%' }}>
       {url != null ? (
         <Stack gap={2} sx={{ px: 6, pb: 6 }}>
-          <ActionEditor url={url} goalLabel={goalLabel?.()} />
+          <ActionEditor
+            url={url}
+            goalLabel={goalLabel}
+            selectedAction={selectedAction}
+          />
           <ActionCards url={url} />
         </Stack>
       ) : (
