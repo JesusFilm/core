@@ -5,6 +5,7 @@ import { noop } from 'lodash'
 import { ContainedIconButton } from './ContainedIconButton'
 
 describe('ContainedIconButton', () => {
+  const onClick = jest.fn()
   it('should render button', async () => {
     const { getByRole } = render(
       <ContainedIconButton
@@ -22,13 +23,27 @@ describe('ContainedIconButton', () => {
     const { getByRole } = render(
       <ContainedIconButton
         thumbnailIcon={<NoteAddIcon />}
-        label="Label"
-        handleClick={noop}
+        label='Label'
+        handleClick={onClick}
         actionIcon={<AddIcon />}
       />
     )
     fireEvent.click(getByRole('button'))
 
-    expect(noop).toHaveBeenCalled()
+    expect(onClick).toHaveBeenCalled()
   })
+})
+
+it('should render descripition', () => {
+  const { getByRole } = render(
+    <ContainedIconButton
+      thumbnailIcon={<NoteAddIcon />}
+      label='Label'
+      description='testDescription'
+      handleClick={noop}
+      actionIcon={<AddIcon />}
+    />
+  )
+
+  expect(getByRole('button')).toHaveTextContent('testDescription')
 })
