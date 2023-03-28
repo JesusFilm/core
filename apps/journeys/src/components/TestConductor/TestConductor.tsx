@@ -188,6 +188,8 @@ export function TestConductor({ blocks }: TestConductorProps): ReactElement {
             cardProgression(swiper, current, total)
         }}
         noSwiping
+        shortSwipes={false}
+        longSwipes={false}
         fadeEffect={{ crossFade: true }}
         effect="fade"
         keyboard
