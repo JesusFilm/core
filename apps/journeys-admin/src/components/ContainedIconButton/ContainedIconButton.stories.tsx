@@ -5,6 +5,7 @@ import Stack from '@mui/material/Stack'
 import NoteAddIcon from '@mui/icons-material/NoteAdd'
 import AddIcon from '@mui/icons-material/Add'
 import EditIcon from '@mui/icons-material/Edit'
+import { noop } from 'lodash'
 import { simpleComponentConfig } from '../../libs/storybook'
 import { ContainedIconButton } from '.'
 
@@ -29,24 +30,20 @@ Default.args = {
   thumbnailIcon: <NoteAddIcon />,
   actionIcon: <AddIcon />,
   label: 'label',
-  description: undefined,
-  imageSrc: undefined,
-  imageAlt: undefined,
   loading: false,
-  onClick: () => console.log('Clicked')
+  onClick: noop
 }
 
-export const Image = Template.bind({})
-Image.args = {
+export const Complete = Template.bind({})
+Complete.args = {
   thumbnailIcon: <NoteAddIcon />,
   actionIcon: <EditIcon />,
   label: 'Video Title',
   description: 'descripition',
   imageSrc:
     'https://d1wl257kev7hsz.cloudfront.net/cinematics/2_Acts7302-0-0.mobileCinematicHigh.jpg',
-  imageAlt: undefined,
   loading: false,
-  onClick: () => console.log('Clicked')
+  onClick: noop
 }
 
 export const Loading = Template.bind({})
@@ -55,7 +52,7 @@ Loading.args = {
   actionIcon: <AddIcon />,
   label: 'label',
   loading: true,
-  onClick: () => console.log('Clicked')
+  onClick: noop
 }
 
 export default ContainedIconButtonDemo as Meta
