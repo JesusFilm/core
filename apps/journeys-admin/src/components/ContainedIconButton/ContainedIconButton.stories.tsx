@@ -17,7 +17,7 @@ const ContainedIconButtonDemo = {
 const Template: Story<ComponentProps<typeof ContainedIconButton>> = ({
   ...args
 }) => (
-  <Box sx={{maxWidth: '300px'}}>
+  <Box sx={{ maxWidth: '300px' }}>
     <ContainedIconButton {...args} />
   </Box>
 )
