@@ -31,17 +31,21 @@ export class RadioQuestionSubmissionEventResolver {
       input.stepId
     )
 
-    void this.visitorService.update(visitor.id, {
-      lastRadioQuestion: input.label ?? undefined,
-      lastRadioOptionSubmission: input.value ?? undefined
-    })
+    const promiseArray = [
+      this.eventService.save({
+        ...input,
+        __typename: 'RadioQuestionSubmissionEvent',
+        visitorId: visitor.id,
+        createdAt: new Date().toISOString(),
+        journeyId
+      }),
+      this.visitorService.update(visitor.id, {
+        lastRadioQuestion: input.label ?? undefined,
+        lastRadioOptionSubmission: input.value ?? undefined
+      })
+    ]
 
-    return await this.eventService.save({
-      ...input,
-      __typename: 'RadioQuestionSubmissionEvent',
-      visitorId: visitor.id,
-      createdAt: new Date().toISOString(),
-      journeyId
-    })
+    const [RadioSubmissionEvent] = await Promise.all([...promiseArray])
+    return RadioSubmissionEvent
   }
 }

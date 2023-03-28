@@ -34,19 +34,26 @@ export class ButtonClickEventResolver {
       input.stepId
     )
 
-    if (input.action === ButtonAction.LinkAction) {
-      void this.visitorService.update(visitor.id, {
-        lastLinkAction: input.actionValue ?? undefined
+    const promiseArray = [
+      this.eventService.save({
+        ...input,
+        __typename: 'ButtonClickEvent',
+        visitorId: visitor.id,
+        createdAt: new Date().toISOString(),
+        journeyId
       })
+    ]
+
+    if (input.action === ButtonAction.LinkAction) {
+      promiseArray.push(
+        this.visitorService.update(visitor.id, {
+          lastLinkAction: input.actionValue ?? undefined
+        })
+      )
     }
 
-    return await this.eventService.save({
-      ...input,
-      __typename: 'ButtonClickEvent',
-      visitorId: visitor.id,
-      createdAt: new Date().toISOString(),
-      journeyId
-    })
+    const [buttonClickEvent] = await Promise.all([...promiseArray])
+    return buttonClickEvent
   }
 }
 
@@ -68,26 +75,32 @@ export class ChatOpenEventResolver {
       input.blockId,
       input.stepId
     )
-    const lastChatStartedAt = new Date().toISOString()
-    void this.visitorService.update(visitor.id, {
-      lastChatStartedAt,
-      lastChatPlatform: input.value ?? undefined,
-      lastEventAt: lastChatStartedAt
-    })
 
-    if (visitor.messagePlatform == null) {
-      void this.visitorService.update(visitor.id, {
-        messagePlatform: input.value ?? undefined
+    const lastChatStartedAt = new Date().toISOString()
+    const promiseArray = [
+      this.eventService.save({
+        ...input,
+        __typename: 'ChatOpenEvent',
+        visitorId: visitor.id,
+        createdAt: new Date().toISOString(),
+        journeyId
+      }),
+      this.visitorService.update(visitor.id, {
+        lastChatStartedAt,
+        lastChatPlatform: input.value ?? undefined,
+        lastEventAt: lastChatStartedAt
       })
+    ]
+    if (visitor?.messagePlatform == null) {
+      promiseArray.push(
+        this.visitorService.update(visitor.id, {
+          messagePlatform: input.value ?? undefined
+        })
+      )
     }
 
-    return await this.eventService.save({
-      ...input,
-      __typename: 'ChatOpenEvent',
-      visitorId: visitor.id,
-      createdAt: new Date().toISOString(),
-      journeyId
-    })
+    const [ChatOpenEvent] = await Promise.all([...promiseArray])
+    return ChatOpenEvent
   }
 
   @ResolveField('messagePlatform')
