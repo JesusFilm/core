@@ -27,10 +27,7 @@ const Template: Story<ComponentProps<typeof ContainedIconButton>> = ({
 
 export const Default = Template.bind({})
 Default.args = {
-  thumbnailIcon: <NoteAddIcon />,
-  actionIcon: <AddIcon />,
   label: 'label',
-  loading: false,
   onClick: noop
 }
 
@@ -42,6 +39,7 @@ Complete.args = {
   description: 'descripition',
   imageSrc:
     'https://d1wl257kev7hsz.cloudfront.net/cinematics/2_Acts7302-0-0.mobileCinematicHigh.jpg',
+  imageAlt: 'Image Alt Test Text',
   loading: false,
   onClick: noop
 }
