@@ -13,7 +13,7 @@ directive @extends on OBJECT | INTERFACE
 extend type Language
   @key(fields: "id")
 {
-  id: ID!
+  id: ID! @external
 }
 
 enum IdType {
