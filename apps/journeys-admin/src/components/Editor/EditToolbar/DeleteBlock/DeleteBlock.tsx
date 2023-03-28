@@ -4,7 +4,10 @@ import DeleteOutlineRounded from '@mui/icons-material/DeleteOutlineRounded'
 import { gql, useMutation } from '@apollo/client'
 import { Dialog } from '@core/shared/ui/Dialog'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
-import { useEditor } from '@core/journeys/ui/EditorProvider'
+import {
+  ActiveJourneyEditContent,
+  useEditor
+} from '@core/journeys/ui/EditorProvider'
 import { useSnackbar } from 'notistack'
 import Typography from '@mui/material/Typography'
 import { BlockDelete } from '../../../../../__generated__/BlockDelete'
@@ -35,7 +38,7 @@ export function DeleteBlock({
 
   const { journey } = useJourney()
   const {
-    state: { selectedBlock, selectedStep, steps },
+    state: { selectedBlock, selectedStep, steps, journeyEditContentComponent },
     dispatch
   } = useEditor()
 
@@ -113,7 +116,10 @@ export function DeleteBlock({
           aria-controls="delete-block-actions"
           aria-haspopup="true"
           aria-expanded="true"
-          disabled={selectedBlock == null}
+          disabled={
+            selectedBlock == null ||
+            journeyEditContentComponent === ActiveJourneyEditContent.Action
+          }
           onClick={label === 'Card' ? handleOpenDialog : handleDeleteBlock}
         >
           <DeleteOutlineRounded />
@@ -122,7 +128,10 @@ export function DeleteBlock({
         <MenuItem
           label={`Delete ${label}`}
           icon={<DeleteOutlineRounded />}
-          disabled={selectedBlock == null}
+          disabled={
+            selectedBlock == null ||
+            journeyEditContentComponent === ActiveJourneyEditContent.Action
+          }
           onClick={label === 'Card' ? handleOpenDialog : handleDeleteBlock}
         />
       )}

@@ -1,7 +1,10 @@
 import { ReactElement } from 'react'
 import ContentCopyRounded from '@mui/icons-material/ContentCopyRounded'
 import IconButton from '@mui/material/IconButton'
-import { useEditor } from '@core/journeys/ui/EditorProvider'
+import {
+  ActiveJourneyEditContent,
+  useEditor
+} from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { transformer } from '@core/journeys/ui/transformer'
 import type { TreeBlock } from '@core/journeys/ui/block'
@@ -31,7 +34,7 @@ export function DuplicateBlock({ variant }: DuplicateBlockProps): ReactElement {
   const [blockDuplicate] = useMutation<BlockDuplicate>(BLOCK_DUPLICATE)
 
   const {
-    state: { selectedBlock },
+    state: { selectedBlock, journeyEditContentComponent },
     dispatch
   } = useEditor()
   const { enqueueSnackbar } = useSnackbar()
@@ -120,6 +123,9 @@ export function DuplicateBlock({ variant }: DuplicateBlockProps): ReactElement {
         <IconButton
           id={`duplicate-${blockLabel}-actions`}
           aria-label={`Duplicate ${blockLabel} Actions`}
+          disabled={
+            journeyEditContentComponent === ActiveJourneyEditContent.Action
+          }
           onClick={handleDuplicateBlock}
         >
           <ContentCopyRounded />
@@ -128,7 +134,10 @@ export function DuplicateBlock({ variant }: DuplicateBlockProps): ReactElement {
         <MenuItem
           label={`Duplicate ${blockLabel}`}
           icon={<ContentCopyRounded color="inherit" />}
-          disabled={selectedBlock == null}
+          disabled={
+            selectedBlock == null ||
+            journeyEditContentComponent === ActiveJourneyEditContent.Action
+          }
           onClick={handleDuplicateBlock}
         />
       )}

@@ -140,7 +140,6 @@ export function ActionsList({
               }
             }}
             onClick={() => {
-              // update to be rendering help information drawer
               dispatch({
                 type: 'SetDrawerPropsAction',
                 mobileOpen: true,

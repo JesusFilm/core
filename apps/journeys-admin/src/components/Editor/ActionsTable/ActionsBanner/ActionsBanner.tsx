@@ -14,6 +14,21 @@ export function ActionsBanner(): ReactElement {
   const theme = useTheme()
   const { dispatch } = useEditor()
 
+  const ActionPoint = ({
+    description
+  }: {
+    description: string
+  }): ReactElement => (
+    <Stack direction="row" gap={1} alignItems="center">
+      <Typography variant="subtitle2" color="secondary.light">
+        &#x2022;
+      </Typography>
+      <Typography variant="subtitle2" color="secondary.light">
+        {description}
+      </Typography>
+    </Stack>
+  )
+
   const openActionDetails = (): void => {
     dispatch({
       type: 'SetDrawerPropsAction',
@@ -77,21 +92,23 @@ export function ActionsBanner(): ReactElement {
           <Typography variant="h1" gutterBottom>
             Every Journey has a goal
           </Typography>
-          <Typography variant="body2">
+          <Typography
+            variant="body2"
+            sx={{
+              width: '90%',
+              [theme.breakpoints.down('md')]: {
+                width: '100%'
+              }
+            }}
+          >
             On this screen you will see all your goals and actions listed in a
             single table. Create cards with some actions like buttons. We will
             list all your links and actions here so you can:
           </Typography>
         </Box>
-        <Typography variant="subtitle2" color="secondary.light">
-          &#x2022; Check all URLs and actions used in the journey
-        </Typography>
-        <Typography variant="subtitle2" color="secondary.light">
-          &#x2022; Assign a goal to each action and monitor it
-        </Typography>
-        <Typography variant="subtitle2" color="secondary.light">
-          &#x2022; Change all URLs in a single place
-        </Typography>
+        <ActionPoint description="Check all URLs and actions used in the journey" />
+        <ActionPoint description="Assign a goal to each action and monitor it" />
+        <ActionPoint description="Change all URLs in a single place" />
       </Stack>
     </Box>
   )
