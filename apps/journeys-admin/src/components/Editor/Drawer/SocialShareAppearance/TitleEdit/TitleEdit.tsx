@@ -26,7 +26,6 @@ export function TitleEdit(): ReactElement {
   async function handleSubmit(e: React.FocusEvent): Promise<void> {
     if (journey == null) return
     const target = e.target as HTMLInputElement
-    if (target.value == null) return
     await journeyUpdate({
       variables: {
         id: journey.id,
@@ -50,7 +49,6 @@ export function TitleEdit(): ReactElement {
           seoTitle: journey.seoTitle ?? journey.title
         }
       : null
-
   const seoTitleSchema = object().shape({
     seoTitle: string().max(50, 'Character limit reached')
   })

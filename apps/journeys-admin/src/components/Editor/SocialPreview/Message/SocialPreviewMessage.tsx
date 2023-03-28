@@ -65,6 +65,7 @@ export function SocialPreviewMessage({
               <Stack direction="row" gap={2}>
                 {isEmpty ? (
                   <Box
+                    data-testId="social-preview-message-empty"
                     sx={{
                       bgcolor: 'rgba(0, 0, 0, 0.1)',
                       borderRadius: '6px'
@@ -72,7 +73,7 @@ export function SocialPreviewMessage({
                   />
                 ) : (
                   journey?.primaryImageBlock?.src != null && (
-                    <div style={{ display: 'block' }}>
+                    <Box display="block">
                       <Image
                         src={journey?.primaryImageBlock.src}
                         alt={journey?.primaryImageBlock.alt}
@@ -81,7 +82,7 @@ export function SocialPreviewMessage({
                         height="60"
                         style={{ borderRadius: '4px' }}
                       />
-                    </div>
+                    </Box>
                   )
                 )}
                 <Stack

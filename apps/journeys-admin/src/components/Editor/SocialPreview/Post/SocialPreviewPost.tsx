@@ -78,6 +78,7 @@ export function SocialPreviewPost({
             <CardMedia sx={{ px: 0, pt: 0 }}>
               {isEmpty ? (
                 <Box
+                  data-testid="social-preview-post-empty"
                   sx={{
                     bgcolor: 'rgba(0, 0, 0, 0.1)',
                     width: 224,
