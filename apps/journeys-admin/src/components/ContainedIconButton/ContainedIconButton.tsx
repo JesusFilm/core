@@ -66,7 +66,7 @@ export function ContainedIconButton({
               </Typography>
             )}
           </Box>
-          <Icon color="primary" padding-right="3">
+          <Icon color="primary" sx={{ pr: 8 }}>
             {actionIcon}
           </Icon>
         </Stack>
