@@ -83,6 +83,7 @@ export function OnboardingPanelContent(): ReactElement {
         return (
           template?.template != null && (
             <MediaListItem
+              key={template.template.id}
               loading={loading[index]}
               title={template.template.title}
               description={template.template.description ?? ''}
