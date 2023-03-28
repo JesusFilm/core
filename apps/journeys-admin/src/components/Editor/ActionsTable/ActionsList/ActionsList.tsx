@@ -35,22 +35,22 @@ const StyledTableRow = styled(TableRow)<StyledTableRowProps>(
     cursor: 'pointer',
     ...(selectedAction === url
       ? {
-        borderBottom: '1.5px solid #C52D3A',
-        backgroundColor: 'rgba(255, 255, 255, 0.7)',
-        '&:last-child': {
-          borderBottom: '1.5px solid #C52D3A'
+          borderBottom: '1.5px solid #C52D3A',
+          backgroundColor: 'rgba(255, 255, 255, 0.7)',
+          '&:last-child': {
+            borderBottom: '1.5px solid #C52D3A'
+          }
         }
-      }
       : {
-        borderBottom: '1.5px solid #DEDFE0',
-        backgroundColor: theme.palette.background.paper,
-        '&:last-child': {
-          borderBottom: 'none'
-        },
-        '&:hover': {
-          backgroundColor: 'rgba(255, 255, 255, 0.8)'
-        }
-      }),
+          borderBottom: '1.5px solid #DEDFE0',
+          backgroundColor: theme.palette.background.paper,
+          '&:last-child': {
+            borderBottom: 'none'
+          },
+          '&:hover': {
+            backgroundColor: 'rgba(255, 255, 255, 0.8)'
+          }
+        }),
     transition: 'border-color 0.1s ease-in-out'
   })
 )

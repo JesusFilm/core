@@ -91,12 +91,7 @@ export function ActionEditor({
       type: 'SetDrawerPropsAction',
       mobileOpen: true,
       title: 'Goal Details',
-      children: (
-        <ActionDetails
-          url={target.value}
-          goalLabel={goalLabel}
-        />
-      )
+      children: <ActionDetails url={target.value} goalLabel={goalLabel} />
     })
   }
 
