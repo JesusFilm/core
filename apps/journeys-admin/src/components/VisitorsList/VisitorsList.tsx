@@ -60,7 +60,7 @@ export function VisitorsList(): ReactElement {
 
   const { fetchMore, loading } = useQuery<GetVisitors>(GET_VISITORS, {
     variables: {
-      first: 10
+      first: 100
     },
     onCompleted: (data) => {
       setVisitors(data.visitors.edges)
@@ -73,12 +73,12 @@ export function VisitorsList(): ReactElement {
     if (hasNextPage) {
       const response = await fetchMore({
         variables: {
-          first: 10,
+          first: 100,
           after: endCursor
         }
       })
       if (response.data.visitors.edges != null) {
-        setVisitors(response.data.visitors.edges)
+        setVisitors([...visitors, ...response.data.visitors.edges])
         setHasNextPage(response.data.visitors.pageInfo.hasNextPage)
         setEndCursor(response.data.visitors.pageInfo.endCursor)
       }
@@ -134,13 +134,13 @@ export function VisitorsList(): ReactElement {
 
   return (
     <Stack spacing={20} sx={{ alignItems: 'center' }}>
-      <Box sx={{ height: '60vh', width: '100%' }}>
+      <Box sx={{ height: '85vh', width: '100%' }}>
         <StyledDataGrid
           columns={columns}
           rows={rows}
+          loading={loading}
           onRowClick={handleRowClick}
           disableRowSelectionOnClick
-          // hideFooterPagination
           // columnVisibilityModel={{
           //   id: false
           // }}
