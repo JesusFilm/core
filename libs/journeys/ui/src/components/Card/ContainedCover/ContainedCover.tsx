@@ -17,7 +17,6 @@ import {
 } from '../../../../__generated__/globalTypes'
 import { ImageFields } from '../../Image/__generated__/ImageFields'
 import { VideoFields } from '../../Video/__generated__/VideoFields'
-import { ContentOverlay } from './ContentOverlay'
 
 import 'videojs-youtube'
 import 'video.js/dist/video-js.css'
@@ -121,7 +120,6 @@ export function ContainedCover({
           flexGrow: 1,
           width: '100%',
           height: 'auto',
-
           '> .video-js': {
             width: '100%',
             height: '100%',
@@ -191,7 +189,6 @@ export function ContainedCover({
           />
         )}
       </Box>
-
       <Box
         sx={{
           width: '100%',
