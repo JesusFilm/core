@@ -32,6 +32,24 @@ describe('TitleEdit', () => {
     expect(getByText('Social share title')).toBeInTheDocument()
   })
 
+  it('should display journey title when seo title not set', () => {
+    const { getByText } = render(
+      <MockedProvider>
+        <JourneyProvider
+          value={{
+            journey: {
+              title: 'journey title',
+              seoTitle: null
+            } as unknown as Journey,
+            admin: true
+          }}
+        >
+          <TitleEdit />
+        </JourneyProvider>
+      </MockedProvider>
+    )
+    expect(getByText('journey title')).toBeInTheDocument()
+  })
   it('should update seo title', async () => {
     const result = jest.fn(() => ({
       data: {

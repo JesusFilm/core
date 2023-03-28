@@ -114,7 +114,7 @@ describe('CardPreview', () => {
         </JourneyProvider>
       </MockedProvider>
     )
-    fireEvent.click(getAllByRole('button')[1])
+    fireEvent.click(getAllByRole('button')[0])
     await waitFor(() =>
       expect(onSelect).toHaveBeenCalledWith({
         step: {
@@ -173,7 +173,7 @@ describe('CardPreview', () => {
         </JourneyProvider>
       </MockedProvider>
     )
-    fireEvent.click(getAllByRole('button')[1])
+    fireEvent.click(getAllByRole('button')[0])
     await waitFor(() => {
       expect(cache.extract()['Journey:journeyId']?.blocks).toEqual([
         { __ref: 'StepBlock:stepId' },
@@ -203,7 +203,7 @@ describe('CardPreview', () => {
         </JourneyProvider>
       </MockedProvider>
     )
-    fireEvent.click(getAllByRole('button')[1])
+    fireEvent.click(getAllByRole('button')[0])
     await waitFor(() =>
       expect(onSelect).toHaveBeenCalledWith({
         step: {
@@ -246,7 +246,12 @@ describe('CardPreview', () => {
             admin: true
           }}
         >
-          <CardPreview steps={[]} onSelect={onSelect} showAddButton />
+          <CardPreview
+            steps={[]}
+            onSelect={onSelect}
+            showAddButton
+            showNavigationCards
+          />
         </JourneyProvider>
       </MockedProvider>
     )

@@ -39,6 +39,7 @@ interface CardListProps {
   handleChange?: (selectedId: string) => void
   isDragging?: boolean
   isDraggable?: boolean
+  showNavigationCards?: boolean
 }
 
 export function CardList({
@@ -49,7 +50,8 @@ export function CardList({
   handleClick,
   handleChange,
   isDragging,
-  isDraggable
+  isDraggable,
+  showNavigationCards = false
 }: CardListProps): ReactElement {
   const { state } = useEditor()
   const { journey } = useJourney()
@@ -84,32 +86,34 @@ export function CardList({
       footer={showAddButton === true && <AddCardSlide />}
       view={state.journeyEditContentComponent}
     >
-      <NavigationCard
-        key="social"
-        id="social"
-        testId="social-preview-navigation-card"
-        title="Social Media"
-        destination={ActiveJourneyEditContent.SocialPreview}
-        outlined={
-          state.journeyEditContentComponent ===
-          ActiveJourneyEditContent.SocialPreview
-        }
-        header={
-          journey?.primaryImageBlock?.src == null ? (
-            <CustomIcon name="Like" color="error" />
-          ) : (
-            <Image
-              src={journey?.primaryImageBlock?.src}
-              alt={journey?.primaryImageBlock?.src}
-              width={72}
-              height={72}
-              objectFit="cover"
-              style={{ borderRadius: '8px' }}
-            />
-          )
-        }
-        loading={journey == null}
-      />
+      {showNavigationCards && (
+        <NavigationCard
+          key="social"
+          id="social"
+          testId="social-preview-navigation-card"
+          title="Social Media"
+          destination={ActiveJourneyEditContent.SocialPreview}
+          outlined={
+            state.journeyEditContentComponent ===
+            ActiveJourneyEditContent.SocialPreview
+          }
+          header={
+            journey?.primaryImageBlock?.src == null ? (
+              <CustomIcon name="Like" color="error" />
+            ) : (
+              <Image
+                src={journey?.primaryImageBlock?.src}
+                alt={journey?.primaryImageBlock?.src}
+                width={72}
+                height={72}
+                objectFit="cover"
+                style={{ borderRadius: '8px' }}
+              />
+            )
+          }
+          loading={journey == null}
+        />
+      )}
       {droppableProvided != null &&
         steps.map((step, index) => (
           <Draggable

@@ -937,4 +937,52 @@ describe('ControlPanel', () => {
       type: 'SetDrawerMobileOpenAction'
     })
   })
+
+  it('should open social preview on selection', async () => {
+    const state: EditorState = {
+      steps: [step1, step2, step3],
+      selectedBlock: step1,
+      drawerMobileOpen: false,
+      activeTab: ActiveTab.Cards,
+      activeFab: ActiveFab.Add,
+      journeyEditContentComponent: ActiveJourneyEditContent.Canvas
+    }
+
+    const mockUseEditor = useEditor as jest.MockedFunction<typeof useEditor>
+    const dispatch = jest.fn()
+    mockUseEditor.mockReturnValue({
+      state,
+      dispatch
+    })
+
+    const { getByTestId } = render(
+      <MockedProvider>
+        <JourneyProvider
+          value={{
+            journey: {
+              id: 'journeyId',
+              themeMode: ThemeMode.dark,
+              themeName: ThemeName.base,
+              language: {
+                __typename: 'Language',
+                id: '529',
+                bcp47: 'en',
+                iso3: 'eng'
+              }
+            } as unknown as Journey,
+            admin: true
+          }}
+        >
+          <EditorProvider initialState={state}>
+            <ControlPanel />
+          </EditorProvider>
+        </JourneyProvider>
+      </MockedProvider>
+    )
+    fireEvent.click(getByTestId('social-preview-navigation-card'))
+    expect(dispatch).toHaveBeenCalledWith({
+      component: 'social',
+      type: 'SetJourneyEditContentAction'
+    })
+  })
 })

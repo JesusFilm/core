@@ -17,7 +17,10 @@ export function SocialPreview(): ReactElement {
 
   return (
     <>
-      <Box display={{ xs: 'none', sm: 'inherit' }}>
+      <Box
+        display={{ xs: 'none', sm: 'inherit' }}
+        data-testId="social-preview-panel"
+      >
         <Stack
           direction="row"
           justifyContent="space-evenly"

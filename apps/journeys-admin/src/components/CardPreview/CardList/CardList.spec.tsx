@@ -251,6 +251,7 @@ describe('CardList', () => {
             selected={selected}
             showAddButton
             droppableProvided={droppableProvided}
+            showNavigationCards
           />
         </DragDropContext>
       </MockedProvider>
@@ -284,6 +285,7 @@ describe('CardList', () => {
               selected={selected}
               droppableProvided={droppableProvided}
               handleChange={handleChange}
+              showNavigationCards
             />
           </DragDropContext>
         </JourneyProvider>
@@ -322,6 +324,7 @@ describe('CardList', () => {
               selected={selected}
               droppableProvided={droppableProvided}
               handleChange={handleChange}
+              showNavigationCards
             />
           </DragDropContext>
         </JourneyProvider>

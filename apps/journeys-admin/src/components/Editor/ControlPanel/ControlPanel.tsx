@@ -120,6 +120,7 @@ export function ControlPanel(): ReactElement {
           onSelect={handleSelectStepPreview}
           steps={steps}
           showAddButton
+          showNavigationCards
           isDraggable
         />
       </TabPanel>

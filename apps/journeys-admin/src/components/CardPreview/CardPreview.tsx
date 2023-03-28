@@ -23,6 +23,7 @@ export interface CardPreviewProps {
   steps?: Array<TreeBlock<StepBlock>>
   showAddButton?: boolean
   isDraggable?: boolean
+  showNavigationCards?: boolean
 }
 
 export const STEP_AND_CARD_BLOCK_CREATE = gql`
@@ -58,7 +59,8 @@ export function CardPreview({
   selected,
   onSelect,
   showAddButton,
-  isDraggable
+  isDraggable,
+  showNavigationCards
 }: CardPreviewProps): ReactElement {
   const [isDragging, setIsDragging] = useState(false)
   const [stepAndCardBlockCreate] = useMutation<StepAndCardBlockCreate>(
@@ -195,6 +197,7 @@ export function CardPreview({
                     handleChange={handleChange}
                     isDragging={isDragging}
                     isDraggable={isDraggable}
+                    showNavigationCards={showNavigationCards}
                   />
                 </Box>
               )}
@@ -207,6 +210,7 @@ export function CardPreview({
             handleClick={handleClick}
             handleChange={handleChange}
             showAddButton={showAddButton}
+            showNavigationCards={showNavigationCards}
           />
         )
       ) : (
