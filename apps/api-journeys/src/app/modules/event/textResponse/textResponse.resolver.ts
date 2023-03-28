@@ -30,7 +30,7 @@ export class TextResponseSubmissionEventResolver {
       input.stepId
     )
 
-    const promiseArray = [
+    const [textResponseSubmissionEvent] = await Promise.all([
       this.eventService.save({
         ...input,
         __typename: 'TextResponseSubmissionEvent',
@@ -41,9 +41,7 @@ export class TextResponseSubmissionEventResolver {
       this.visitorService.update(visitor.id, {
         lastTextResponse: input.value
       })
-    ]
-
-    const [TextResponseSubmissionEvent] = await Promise.all([...promiseArray])
-    return TextResponseSubmissionEvent
+    ])
+    return textResponseSubmissionEvent
   }
 }

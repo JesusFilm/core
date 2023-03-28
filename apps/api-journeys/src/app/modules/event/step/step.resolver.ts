@@ -32,7 +32,7 @@ export class StepViewEventResolver {
       input.blockId
     )
 
-    const promiseArray = [
+    const [stepViewEvent] = await Promise.all([
       this.eventService.save({
         ...input,
         __typename: 'StepViewEvent',
@@ -44,9 +44,7 @@ export class StepViewEventResolver {
       this.visitorService.update(visitor.id, {
         lastEventAt: new Date().toISOString()
       })
-    ]
-
-    const [stepViewEvent] = await Promise.all([...promiseArray])
+    ])
     return stepViewEvent
   }
 }
@@ -70,7 +68,7 @@ export class StepNextEventResolver {
       input.blockId
     )
 
-    const promiseArray = [
+    const [stepNextEvent] = await Promise.all([
       this.eventService.save({
         ...input,
         __typename: 'StepNextEvent',
@@ -81,9 +79,7 @@ export class StepNextEventResolver {
       this.visitorService.update(visitor.id, {
         lastEventAt: new Date().toISOString()
       })
-    ]
-
-    const [StepNextEvent] = await Promise.all([...promiseArray])
-    return StepNextEvent
+    ])
+    return stepNextEvent
   }
 }
