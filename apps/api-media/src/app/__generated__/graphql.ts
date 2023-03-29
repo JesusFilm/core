@@ -139,6 +139,13 @@ export class UnsplashPhotoLinks {
     download_location: string;
 }
 
+export class Translation {
+    __typename?: 'Translation';
+    value: string;
+    language: Language;
+    primary: boolean;
+}
+
 export abstract class IMutation {
     abstract createCloudflareUploadByFile(): Nullable<CloudflareImage> | Promise<Nullable<CloudflareImage>>;
 
@@ -149,6 +156,10 @@ export abstract class IMutation {
     abstract cloudflareUploadComplete(id: string): Nullable<boolean> | Promise<Nullable<boolean>>;
 
     abstract triggerUnsplashDownload(url: string): Nullable<boolean> | Promise<Nullable<boolean>>;
+}
+
+export class Language {
+    id: string;
 }
 
 type Nullable<T> = T | null;
