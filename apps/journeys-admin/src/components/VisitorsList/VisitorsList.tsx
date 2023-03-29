@@ -147,10 +147,8 @@ export function VisitorsList(): ReactElement {
       lastLinkAction,
       lastTextResponse,
       lastRadioQuestion:
-        lastRadioOptionSubmission != null
-          ? `${lastRadioQuestion as string}: ${
-              lastRadioOptionSubmission as string
-            }`
+        lastRadioQuestion != null && lastRadioOptionSubmission != null
+          ? `${lastRadioQuestion}: ${lastRadioOptionSubmission}`
           : null
     }
   })
