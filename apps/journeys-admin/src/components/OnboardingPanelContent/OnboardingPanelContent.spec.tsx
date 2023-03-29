@@ -1,4 +1,5 @@
 import { MockedProvider } from '@apollo/client/testing'
+import { NextRouter, useRouter } from 'next/router'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { GET_ONBOARDING_TEMPLATE } from './OnboardingPanelContent'
 import { OnboardingPanelContent } from '.'
@@ -12,7 +13,26 @@ jest.mock('react-i18next', () => ({
   }
 }))
 
+jest.mock('next/router', () => ({
+  __esModule: true,
+  useRouter: jest.fn()
+}))
+
+const mockUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
+
+// jest.mock('next/router', () => ({
+//   __esModule: true,
+//   useRouter: () => {
+//     return {
+//       push: jest.fn()
+//     }
+//   }
+// }))
+
 describe('OnboardingPanelContent', () => {
+  // const push = jest.fn()
+  // mockUseRouter.mockReturnValue({ push } as unknown as NextRouter)
+
   const mocks = [
     {
       request: {
@@ -126,14 +146,46 @@ describe('OnboardingPanelContent', () => {
   })
 
   it('should redirect to template details page onClick', async () => {
-    // test onClick for a template card
+    const push = jest.fn()
+    mockUseRouter.mockReturnValue({ push } as unknown as NextRouter)
+    const { getByText } = render(
+      <MockedProvider mocks={mocks}>
+        <OnboardingPanelContent />
+      </MockedProvider>
+    )
+
+    await waitFor(() =>
+      expect(getByText('template 1 title')).toBeInTheDocument()
+    )
+    fireEvent.click(getByText('template 1 title'))
+    expect(push).toHaveBeenCalledWith(
+      '/templates/014c7add-288b-4f84-ac85-ccefef7a07d3'
+    )
   })
 
   it('should redirect on See all link', () => {
-    // test router on See all link click
+    const { getByRole } = render(
+      <MockedProvider mocks={[]}>
+        <OnboardingPanelContent />
+      </MockedProvider>
+    )
+
+    expect(getByRole('link', { name: 'See all' })).toHaveAttribute(
+      'href',
+      '/templates'
+    )
   })
 
   it('should redirect on See all templates button', () => {
-    // test router on See all templates button click
+    const { getByRole } = render(
+      <MockedProvider mocks={[]}>
+        <OnboardingPanelContent />
+      </MockedProvider>
+    )
+
+    expect(getByRole('link', { name: 'See all templates' })).toHaveAttribute(
+      'href',
+      '/templates'
+    )
   })
 })
