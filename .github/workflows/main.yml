@@ -7,6 +7,16 @@ on:
 jobs:
   lint:
     runs-on: ubuntu-latest
+    services:
+      db:
+        image: postgres
+        env:
+          POSTGRES_PASSWORD: postgres
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
     steps:
       - uses: actions/checkout@v3
         with:
@@ -31,6 +41,7 @@ jobs:
         uses: mansagroup/nrwl-nx-action@v3
         with:
           targets: prisma-migrate
+          all: true
       - name: NPM apollo and graphql for codegen
         run: npm i -g apollo graphql @apollo/rover@0.10.0
       - name: Codegen
@@ -55,6 +66,16 @@ jobs:
         run: ./tools/scripts/check-git-status.sh
   build:
     runs-on: ubuntu-latest
+    services:
+      db:
+        image: postgres
+        env:
+          POSTGRES_PASSWORD: postgres
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
     steps:
       - uses: actions/checkout@v3
         with:
@@ -79,6 +100,7 @@ jobs:
         uses: mansagroup/nrwl-nx-action@v3
         with:
           targets: prisma-migrate
+          all: true
       - name: Install Doppler
         run: |
           sudo apt-get update && sudo apt-get install -y apt-transport-https ca-certificates curl gnupg
@@ -101,6 +123,16 @@ jobs:
           targets: fetch-secrets,generate,build
   test:
     runs-on: ubuntu-latest
+    services:
+      db:
+        image: postgres
+        env:
+          POSTGRES_PASSWORD: postgres
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
     steps:
       - uses: actions/checkout@v3
         with:
@@ -125,12 +157,23 @@ jobs:
         uses: mansagroup/nrwl-nx-action@v3
         with:
           targets: prisma-migrate
+          all: true
       - uses: mansagroup/nrwl-nx-action@v3
         with:
           targets: generate,test
           args: --ci
   visual-test:
     runs-on: ubuntu-latest
+    services:
+      db:
+        image: postgres
+        env:
+          POSTGRES_PASSWORD: postgres
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
     steps:
       - uses: actions/checkout@v3
         with:
@@ -152,10 +195,6 @@ jobs:
         run: npm install --silent
       - name: nx Install
         run: npm install -g nx --silent
-      - name: generate prisma imports
-        uses: mansagroup/nrwl-nx-action@v3
-        with:
-          targets: prisma-migrate
       - name: Build Stories
         id: build-storybook
         run: nx build-storybook shared-storybook --webpack-stats-json
