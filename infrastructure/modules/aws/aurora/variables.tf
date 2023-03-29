@@ -13,3 +13,7 @@ variable "doppler_token" {
 variable "subnet_group_name" {
   type = string
 }
+
+variable "doppler_project" {
+  type = string
+}

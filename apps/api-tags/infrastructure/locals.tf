@@ -1,11 +1,8 @@
 locals {
   port = 4006
   environment_variables = [
-    "DATABASE_DB",
-    "DATABASE_PASS",
-    "DATABASE_URL",
-    "DATABASE_USER",
-    "GOOGLE_APPLICATION_JSON"
+    "PG_DATABASE_URL",
+    "PRISMA_LOCATION"
   ]
   service_config = {
     name           = "api-tags"

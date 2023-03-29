@@ -18,13 +18,15 @@ resource "aws_rds_cluster" "default" {
 }
 
 resource "doppler_secret" "rds_password" {
-  name   = "PG_PASSWORD"
-  config = var.env == "prod" ? "prd" : "stg"
-  value  = random_password.password.result
+  name    = "PG_PASSWORD"
+  config  = var.env == "prod" ? "prd" : "stg"
+  project = var.doppler_project
+  value   = random_password.password.result
 }
 
 resource "doppler_secret" "rds_url" {
-  name   = "PG_DATABASE_URL"
-  config = var.env == "prod" ? "prd" : "stg"
-  value  = "postgresql://${aws_rds_cluster.default.master_username}:${random_password.password.result}@${aws_rds_cluster.default.endpoint}:${aws_rds_cluster.default.port}/${var.env}?schema=public"
+  name    = "PG_DATABASE_URL"
+  config  = var.env == "prod" ? "prd" : "stg"
+  project = var.doppler_project
+  value   = "postgresql://${aws_rds_cluster.default.master_username}:${random_password.password.result}@${aws_rds_cluster.default.endpoint}:${aws_rds_cluster.default.port}/${var.env}?schema=public"
 }

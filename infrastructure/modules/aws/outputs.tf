@@ -1,8 +1,9 @@
 output "vpc" {
   value = {
-    id               = module.vpc.vpc_id
-    public_subnets   = module.vpc.public_subnets
-    internal_subnets = module.vpc.internal_subnets
+    id                   = module.vpc.vpc_id
+    public_subnets       = module.vpc.public_subnets
+    internal_subnets     = module.vpc.internal_subnets
+    db_subnet_group_name = module.vpc.db_subnet_group_name
   }
 }
 
