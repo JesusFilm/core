@@ -14,6 +14,11 @@ import {
 } from '../../../../__generated__/globalTypes'
 import { ActionsTable } from './ActionsTable'
 
+jest.mock('@mui/material/useMediaQuery', () => ({
+  __esModule: true,
+  default: jest.fn()
+}))
+
 const blocks: Blocks[] = [
   {
     __typename: 'IconBlock',

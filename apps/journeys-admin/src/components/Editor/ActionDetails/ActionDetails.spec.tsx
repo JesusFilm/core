@@ -15,8 +15,8 @@ describe('ActionDetails', () => {
       </MockedProvider>
     )
     expect(getByText('What are Goals?')).toBeInTheDocument()
-    expect(getByText('Start a conversation')).toBeInTheDocument()
-    expect(getByText('Visit a website')).toBeInTheDocument()
+    expect(getByText('Start a Conversation')).toBeInTheDocument()
+    expect(getByText('Visit a Website')).toBeInTheDocument()
     expect(getByText('Link to Bible')).toBeInTheDocument()
   })
 

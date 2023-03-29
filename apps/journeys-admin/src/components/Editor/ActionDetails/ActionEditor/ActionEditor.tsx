@@ -91,7 +91,13 @@ export function ActionEditor({
       type: 'SetDrawerPropsAction',
       mobileOpen: true,
       title: 'Goal Details',
-      children: <ActionDetails url={target.value} goalLabel={goalLabel} />
+      children: (
+        <ActionDetails
+          url={target.value}
+          goalLabel={goalLabel}
+          selectedAction={selectedAction}
+        />
+      )
     })
   }
 
@@ -109,7 +115,7 @@ export function ActionEditor({
   }
 
   return (
-    <Box sx={{ pt: 6 }}>
+    <Box sx={{ pt: 6 }} data-testid="ActionEditor">
       <Formik
         initialValues={{
           link: url ?? ''
