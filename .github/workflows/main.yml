@@ -27,6 +27,10 @@ jobs:
           restore-keys: node-modules-
       - name: NPM Install
         run: npm install --silent
+      - name: generate prisma imports
+        uses: mansagroup/nrwl-nx-action@v3
+        with:
+          targets: prisma-migrate
       - name: NPM apollo and graphql for codegen
         run: npm i -g apollo graphql @apollo/rover@0.10.0
       - name: Codegen
@@ -71,6 +75,10 @@ jobs:
           restore-keys: node-modules-
       - name: NPM Install
         run: npm install --silent
+      - name: generate prisma imports
+        uses: mansagroup/nrwl-nx-action@v3
+        with:
+          targets: prisma-migrate
       - name: Install Doppler
         run: |
           sudo apt-get update && sudo apt-get install -y apt-transport-https ca-certificates curl gnupg
@@ -113,6 +121,10 @@ jobs:
           restore-keys: node-modules-
       - name: NPM Install
         run: npm install --silent
+      - name: generate prisma imports
+        uses: mansagroup/nrwl-nx-action@v3
+        with:
+          targets: prisma-migrate
       - uses: mansagroup/nrwl-nx-action@v3
         with:
           targets: generate,test
@@ -140,6 +152,10 @@ jobs:
         run: npm install --silent
       - name: nx Install
         run: npm install -g nx --silent
+      - name: generate prisma imports
+        uses: mansagroup/nrwl-nx-action@v3
+        with:
+          targets: prisma-migrate
       - name: Build Stories
         id: build-storybook
         run: nx build-storybook shared-storybook --webpack-stats-json
