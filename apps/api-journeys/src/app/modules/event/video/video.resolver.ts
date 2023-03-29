@@ -190,6 +190,7 @@ export class VideoCollapseEventResolver {
       input.blockId,
       input.stepId
     )
+
     return await this.eventService.save({
       ...input,
       __typename: 'VideoCollapseEvent',

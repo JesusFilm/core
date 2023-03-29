@@ -880,6 +880,13 @@ type VideoTriggerBlock implements Block {
   action: Action!
 }
 
+enum ButtonAction {
+  NavigateAction
+  NavigateToBlockAction
+  NavigateToJourneyAction
+  LinkAction
+}
+
 input ButtonClickEventCreateInput {
   """
   ID should be unique Event UUID (Provided for optimistic mutation result matching)
@@ -895,6 +902,18 @@ input ButtonClickEventCreateInput {
 
   """label of the button"""
   value: String
+
+  """Action type of the button when it was clicked"""
+  action: ButtonAction
+
+  """
+  The label for each corresponding action, mapping below:
+  NavigateAction - undefined
+  NavigateToBlockAction - StepName of the block
+  NavigateToJourneyAction - slug of the journey
+  LinkAction - url of the link
+  """
+  actionValue: String
 }
 
 type ButtonClickEvent implements Event {
@@ -911,6 +930,18 @@ type ButtonClickEvent implements Event {
 
   """label of the button"""
   value: String
+
+  """Action type of the button when it was clicked"""
+  action: ButtonAction
+
+  """
+  The label for each corresponding action, mapping below:
+  NavigateAction - null
+  NavigateToBlockAction - StepName of the block
+  NavigateToJourneyAction - slug of the journey
+  LinkAction - url of the link
+  """
+  actionValue: String
 }
 
 enum MessagePlatform {
@@ -1722,6 +1753,12 @@ type Visitor
   lastChatStartedAt: DateTime
 
   """
+  The last message platform the visitor called the ButtonClickEvent where the
+  url is in the format of a recognized chat platform
+  """
+  lastChatPlatform: MessagePlatform
+
+  """
   The user agent of the visitor as poulated by the visitor's user-agent string
   detected in the JourneyViewEventCreate mutation. This field is enriched
   by data from the ua-parser-js library. If this field is empty it is likely
@@ -1768,6 +1805,36 @@ type Visitor
 
   """Private notes of the visitor as set by VisitorUpdate mutation."""
   notes: String
+
+  """
+  The last time the visitor called StepViewEvent mutation. It is populated when
+  the visitor is first created, and is updated by all event creation mutations.
+  """
+  lastStepViewedAt: DateTime
+
+  """
+  The label of a link action button of the last time the visitor clicked a
+  link action button. Populated by ButtonClickEvent
+  """
+  lastLinkAction: String
+
+  """
+  The response of the last text response block the visitor filled out,
+  populated by TextResponseSubmission mutation
+  """
+  lastTextResponse: String
+
+  """
+  The question of the last radio option the visitor filled out,
+  populated by RadioQuestionSubmission mutation
+  """
+  lastRadioQuestion: String
+
+  """
+  The selected option  of the last radio option the visitor filled out,
+  populated by RadioQuestionSubmission mutation
+  """
+  lastRadioOptionSubmission: String
   events: [Event!]!
 }
 

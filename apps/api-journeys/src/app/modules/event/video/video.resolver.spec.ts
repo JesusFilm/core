@@ -20,6 +20,7 @@ describe('VideoResolver', () => {
   afterAll(() => {
     jest.useRealTimers()
   })
+
   const eventService = {
     provide: EventService,
     useFactory: () => ({

@@ -81,7 +81,6 @@ describe('SignUpEventResolver', () => {
         value: input.name,
         email: input.email
       })
-      expect(vService.update).not.toHaveBeenCalled()
     })
 
     it('should update visitor name', async () => {

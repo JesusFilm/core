@@ -130,6 +130,13 @@ export enum VideoBlockObjectFit {
     zoomed = "zoomed"
 }
 
+export enum ButtonAction {
+    NavigateAction = "NavigateAction",
+    NavigateToBlockAction = "NavigateToBlockAction",
+    NavigateToJourneyAction = "NavigateToJourneyAction",
+    LinkAction = "LinkAction"
+}
+
 export enum MessagePlatform {
     facebook = "facebook",
     telegram = "telegram",
@@ -404,6 +411,8 @@ export class ButtonClickEventCreateInput {
     stepId?: Nullable<string>;
     label?: Nullable<string>;
     value?: Nullable<string>;
+    action?: Nullable<ButtonAction>;
+    actionValue?: Nullable<string>;
 }
 
 export class ChatOpenEventCreateInput {
@@ -821,6 +830,8 @@ export class ButtonClickEvent implements Event {
     createdAt: DateTime;
     label?: Nullable<string>;
     value?: Nullable<string>;
+    action?: Nullable<ButtonAction>;
+    actionValue?: Nullable<string>;
 }
 
 export class ChatOpenEvent implements Event {
@@ -1066,6 +1077,7 @@ export class Visitor {
     id: string;
     createdAt: DateTime;
     lastChatStartedAt?: Nullable<DateTime>;
+    lastChatPlatform?: Nullable<MessagePlatform>;
     userAgent?: Nullable<UserAgent>;
     countryCode?: Nullable<string>;
     name?: Nullable<string>;
@@ -1074,6 +1086,11 @@ export class Visitor {
     messagePlatform?: Nullable<MessagePlatform>;
     messagePlatformId?: Nullable<string>;
     notes?: Nullable<string>;
+    lastStepViewedAt?: Nullable<DateTime>;
+    lastLinkAction?: Nullable<string>;
+    lastTextResponse?: Nullable<string>;
+    lastRadioQuestion?: Nullable<string>;
+    lastRadioOptionSubmission?: Nullable<string>;
     events: Event[];
 }
 
@@ -1094,13 +1111,6 @@ export class VisitorsConnection {
     __typename?: 'VisitorsConnection';
     edges: VisitorEdge[];
     pageInfo: PageInfo;
-}
-
-export class Translation {
-    __typename?: 'Translation';
-    value: string;
-    language: Language;
-    primary: boolean;
 }
 
 export abstract class IMutation {
