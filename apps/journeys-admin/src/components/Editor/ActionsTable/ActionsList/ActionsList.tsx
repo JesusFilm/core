@@ -208,7 +208,15 @@ export function ActionsList({
                 <TableCell width={0} align="center" sx={{ pr: 2, pl: 5 }}>
                   <GoalIcon url={url} />
                 </TableCell>
-                <TableCell>
+                <TableCell
+                  sx={{
+                    maxWidth: 0,
+                    width: '100%',
+                    whiteSpace: 'nowrap',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis'
+                  }}
+                >
                   <Typography
                     variant="subtitle2"
                     color={
