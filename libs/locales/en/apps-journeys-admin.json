@@ -152,5 +152,12 @@
   "Form submitted": "Form submitted",
   "Button clicked": "Button clicked",
   "Chat Opened": "Chat Opened",
-  "Chat started on {{messagePlatform}}": "Chat started on {{messagePlatform}}"
+  "Chat started on {{messagePlatform}}": "Chat started on {{messagePlatform}}",
+  "ID": "ID",
+  "Last Active": "Last Active",
+  "Chat Started": "Chat Started",
+  "Action": "Action",
+  "User Data": "User Data",
+  "Polls": "Polls",
+  "Load More": "Load More"
 }

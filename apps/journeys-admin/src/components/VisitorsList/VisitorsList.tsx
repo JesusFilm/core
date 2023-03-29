@@ -6,6 +6,7 @@ import Box from '@mui/material/Box'
 import { useRouter } from 'next/router'
 import LoadingButton from '@mui/lab/LoadingButton'
 import Stack from '@mui/material/Stack'
+import { useTranslation } from 'react-i18next'
 import {
   GetVisitors,
   GetVisitors_visitors_edges as Visitor
@@ -58,6 +59,7 @@ const StyledDataGrid = styled(DataGrid)(({ theme }) => ({
 }))
 
 export function VisitorsList(): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
   const router = useRouter()
   const [visitors, setVisitors] = useState<Visitor[]>([])
   const [hasNextPage, setHasNextPage] = useState(true)
@@ -93,32 +95,32 @@ export function VisitorsList(): ReactElement {
   const columns: GridColDef[] = [
     {
       field: 'id',
-      headerName: 'ID',
+      headerName: t('ID'),
       width: 100
     },
     {
       field: 'lastStepViewedAt',
-      headerName: 'Last Active',
+      headerName: t('Last Active'),
       width: 300
     },
     {
       field: 'lastChatPlatform',
-      headerName: 'Chat Started',
+      headerName: t('Chat Started'),
       width: 300
     },
     {
       field: 'lastLinkAction',
-      headerName: 'Action',
+      headerName: t('Action'),
       width: 300
     },
     {
       field: 'lastTextResponse',
-      headerName: 'User Data',
+      headerName: t('User Data'),
       width: 300
     },
     {
       field: 'lastRadioQuestion',
-      headerName: 'Polls',
+      headerName: t('Polls'),
       width: 300
     }
   ]
@@ -178,7 +180,7 @@ export function VisitorsList(): ReactElement {
         loading={loading}
         sx={{ width: '250px' }}
       >
-        Load More
+        {t('Load More')}
       </LoadingButton>
     </Stack>
   )
