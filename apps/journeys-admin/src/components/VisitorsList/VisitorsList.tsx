@@ -21,7 +21,12 @@ export const GET_VISITORS = gql`
       edges {
         node {
           id
-          createdAt
+          lastChatPlatform
+          lastStepViewedAt
+          lastLinkAction
+          lastTextResponse
+          lastRadioQuestion
+          lastRadioOptionSubmission
         }
         cursor
       }
@@ -121,10 +126,19 @@ export function VisitorsList(): ReactElement {
   const rows = visitors.map((visitor) => {
     return {
       id: visitor.node.id,
-      createdAt: new Intl.DateTimeFormat('en-us', {
+      lastStepViewedAt: new Intl.DateTimeFormat('en-us', {
         dateStyle: 'medium',
         timeStyle: 'short'
-      }).format(new Date(visitor.node.createdAt))
+      }).format(new Date(visitor.node.lastStepViewedAt)),
+      lastChatPlatForm: visitor.node.lastChatPlatform,
+      lastLinkAction: visitor.node.lastLinkAction,
+      lastTextResponse: visitor.node.lastTextResponse,
+      lastRadioQuestion:
+        visitor.node.lastRadioOptionSubmission != null
+          ? `${visitor.node.lastRadioQuestion as string}: ${
+              visitor.node.lastRadioOptionSubmission as string
+            }`
+          : ''
     }
   })
 
@@ -141,9 +155,9 @@ export function VisitorsList(): ReactElement {
           loading={loading}
           onRowClick={handleRowClick}
           disableRowSelectionOnClick
-          // columnVisibilityModel={{
-          //   id: false
-          // }}
+          columnVisibilityModel={{
+            id: false
+          }}
         />
       </Box>
       <LoadingButton

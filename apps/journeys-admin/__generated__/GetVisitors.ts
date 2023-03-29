@@ -3,6 +3,8 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
+import { MessagePlatform } from "./globalTypes";
+
 // ====================================================
 // GraphQL query operation: GetVisitors
 // ====================================================
@@ -11,10 +13,35 @@ export interface GetVisitors_visitors_edges_node {
   __typename: "Visitor";
   id: string;
   /**
-   * The time when the visitor created their first event on a journey connected
-   * to the requested team.
+   * The last message platform the visitor called the ButtonClickEvent where the
+   * url is in the format of a recognized chat platform
    */
-  createdAt: any;
+  lastChatPlatform: MessagePlatform | null;
+  /**
+   * The last time the visitor called StepViewEvent mutation. It is populated when
+   * the visitor is first created, and is updated by all event creation mutations.
+   */
+  lastStepViewedAt: any | null;
+  /**
+   * The label of a link action button of the last time the visitor clicked a
+   * link action button. Populated by ButtonClickEvent
+   */
+  lastLinkAction: string | null;
+  /**
+   * The response of the last text response block the visitor filled out,
+   * populated by TextResponseSubmission mutation
+   */
+  lastTextResponse: string | null;
+  /**
+   * The question of the last radio option the visitor filled out,
+   * populated by RadioQuestionSubmission mutation
+   */
+  lastRadioQuestion: string | null;
+  /**
+   * The selected option  of the last radio option the visitor filled out,
+   * populated by RadioQuestionSubmission mutation
+   */
+  lastRadioOptionSubmission: string | null;
 }
 
 export interface GetVisitors_visitors_edges {
