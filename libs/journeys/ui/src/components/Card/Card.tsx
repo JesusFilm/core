@@ -100,27 +100,28 @@ export function Card({
           videoBlock={videoBlock}
           imageBlock={imageBlock}
         >
-          {renderedChildren}
           {navigation}
+          {renderedChildren}
         </ContainedCover>
       ) : (
-        <ExpandedCover backgroundBlur={blurUrl}>
-          {renderedChildren}
+        <ExpandedCover backgroundBlur={imageBlock?.src ?? blurUrl}>
           {navigation}
+          {renderedChildren}
         </ExpandedCover>
       )}
       <Stack
         direction="row"
         sx={{
           zIndex: 1,
-          m: 4,
+          m: 4.5,
+          position: 'absolute',
+          bottom: 0,
+          right: 0,
           p: 2,
           backgroundColor: 'rgb(0,0,0,0.8)',
           borderRadius: 7,
           color: 'white',
-          position: 'absolute',
-          bottom: 0,
-          width: `calc(100% - 42px)`
+          width: `calc(100% - 56px)`
         }}
         justifyContent="space-between"
         alignItems="center"
@@ -131,7 +132,7 @@ export function Card({
             Amanda L.
           </Typography>
         </Stack>
-        <Stack direction="row" alignItems="center" spacing={4} sx={{ mr: 2 }}>
+        <Stack direction="row" alignItems="center" spacing={4} sx={{ mx: 2 }}>
           <ChatBubbleOutlineIcon color="inherit" />
           <ShareIcon color="inherit" />
           <FavoriteBorderIcon color="inherit" />

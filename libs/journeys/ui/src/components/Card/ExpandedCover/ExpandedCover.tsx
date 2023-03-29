@@ -17,11 +17,7 @@ export function ExpandedCover({
         flexGrow: 1,
         overflow: 'auto',
         display: 'flex',
-        padding: (theme) => ({
-          xs: theme.spacing(7),
-          sm: theme.spacing(7, 10),
-          md: theme.spacing(10)
-        }),
+        padding: 8,
         borderRadius: (theme) => theme.spacing(4),
         justifyContent: 'center'
       }}
@@ -31,7 +27,7 @@ export function ExpandedCover({
           margin: 'auto',
           width: '100%',
           maxWidth: 500,
-          zIndex: 0,
+          zIndex: 1,
           display: 'flex',
           height: '100%',
           flexDirection: 'column',
@@ -45,23 +41,35 @@ export function ExpandedCover({
         {children}
       </Box>
       {backgroundBlur != null && (
-        <Box
-          data-testid="expandedBlurBackground"
-          sx={{
-            position: 'absolute',
-            width: '100%',
-            height: '110%',
-            backgroundRepeat: 'no-repeat',
-            backgroundSize: '100% 100%',
-            backgroundPosition: '0% 0%',
-            left: 0,
-            top: '-10%',
-            zIndex: -1,
-            transform: 'scaleY(-1)',
-            backgroundBlendMode: 'hard-light',
-            backgroundImage: `url(${backgroundBlur}), url(${backgroundBlur})`
-          }}
-        />
+        <>
+          <Box
+            data-testid="expandedBlurBackground"
+            sx={{
+              position: 'absolute',
+              width: '100%',
+              height: '110%',
+              backgroundRepeat: 'no-repeat',
+              backgroundSize: '100% 100%',
+              backgroundPosition: '0% 0%',
+              left: 0,
+              top: '-10%',
+              zIndex: -1,
+              filter: 'blur(16px)',
+              backgroundImage: `url(${backgroundBlur}), url(${backgroundBlur})`
+            }}
+          />
+          <Box
+            data-testid="expandedBlurBackground"
+            sx={{
+              position: 'absolute',
+              width: '100%',
+              height: '100%',
+              zIndex: -1,
+              top: 0,
+              backgroundColor: 'rgb(0,0,0,0.5)'
+            }}
+          />
+        </>
       )}
     </Box>
   )

@@ -204,7 +204,22 @@ export function ContainedCover({
           borderBottomLeftRadius: 0,
           background:
             // Ease out gradient
-            'linear-gradient(to bottom,hsla(0, 0%, 0%, 0) 0%,hsla(0, 0%, 0%, 0.013) 10.6%,hsla(0, 0%, 0%, 0.049) 19.6%,hsla(0, 0%, 0%, 0.104) 27.3%,hsla(0, 0%, 0%, 0.175) 33.9%,hsla(0, 0%, 0%, 0.352) 44.8%,hsla(0, 0%, 0%, 0.45) 49.6%,hsla(0, 0%, 0%, 0.55) 54.1%,hsla(0, 0%, 0%, 0.648) 58.8%,hsla(0, 0%, 0%, 0.741) 63.6%,hsla(0, 0%, 0%, 0.825) 69%,hsla(0, 0%, 0%, 0.896) 75.1%,hsla(0, 0%, 0%, 0.951) 82.2%,hsla(0, 0%, 0%, 0.987) 90.4%,hsl(0, 0%, 0%) 100%)'
+            `linear-gradient(to bottom,
+              hsla(0, 0%, 0%, 0) 0%,
+              hsla(0, 0%, 0%, 0.013) 10.6%,
+              hsla(0, 0%, 0%, 0.049) 19.6%,
+              hsla(0, 0%, 0%, 0.104) 27.3%,
+              hsla(0, 0%, 0%, 0.175) 33.9%,
+              hsla(0, 0%, 0%, 0.352) 44.8%,
+              hsla(0, 0%, 0%, 0.45) 49.6%,
+              hsla(0, 0%, 0%, 0.55) 54.1%,
+              hsla(0, 0%, 0%, 0.648) 58.8%,
+              hsla(0, 0%, 0%, 0.741) 63.6%,
+              hsla(0, 0%, 0%, 0.825) 69%,
+              hsla(0, 0%, 0%, 0.896) 75.1%,
+              hsla(0, 0%, 0%, 0.951) 82.2%,
+              hsla(0, 0%, 0%, 0.987) 90.4%,
+              hsl(0, 0%, 0%) 100%)`
         }}
       >
         <Box
@@ -212,8 +227,15 @@ export function ContainedCover({
             display: 'flex',
             flexDirection: 'column',
             justifyContent: 'flex-end',
-            height: 'calc(100% - 90px)',
-            p: `${theme.spacing(0)} ${theme.spacing(7)} 90px`
+            height: { xs: 'calc(100% - 110px)', md: 'calc(100% - 110px)' },
+            p: {
+              xs: `${theme.spacing(0)} 32px 110px 32px`,
+              md: `${theme.spacing(0)} 32px 110px 32px`
+            },
+            '& > *': {
+              '&:first-child': { mt: 0 },
+              '&:last-child': { mb: 0 }
+            }
           }}
         >
           {children}
