@@ -57,10 +57,6 @@ export function OnboardingPanelContent(): ReactElement {
     if (journeyId != null) void router.push(`/templates/${journeyId}`)
   }
 
-  const handleTemplatesRedirect = (): void => {
-    void router.push('/templates')
-  }
-
   return (
     <>
       <SidePanelContainer>Create Empty Icon Button Here</SidePanelContainer>
@@ -96,14 +92,15 @@ export function OnboardingPanelContent(): ReactElement {
         )
       })}
       <SidePanelContainer border={false}>
-        <Button
-          variant="outlined"
-          startIcon={<DashboardRounded />}
-          sx={{ width: 'max-content', alignSelf: 'center' }}
-          onClick={handleTemplatesRedirect}
-        >
-          {t('See all templates')}
-        </Button>
+        <NextLink href="/templates" passHref>
+          <Button
+            variant="outlined"
+            startIcon={<DashboardRounded />}
+            sx={{ width: 'max-content', alignSelf: 'center' }}
+          >
+            {t('See all templates')}
+          </Button>
+        </NextLink>
       </SidePanelContainer>
     </>
   )
