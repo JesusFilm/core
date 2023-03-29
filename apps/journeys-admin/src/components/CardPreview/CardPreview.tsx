@@ -28,7 +28,6 @@ export interface CardPreviewProps {
   steps?: Array<TreeBlock<StepBlock>>
   showAddButton?: boolean
   isDraggable?: boolean
-  showActionButton?: boolean
 }
 
 export const STEP_AND_CARD_BLOCK_CREATE = gql`
@@ -64,8 +63,7 @@ export function CardPreview({
   selected,
   onSelect,
   showAddButton,
-  isDraggable,
-  showActionButton
+  isDraggable
 }: CardPreviewProps): ReactElement {
   const { state } = useEditor()
   const [isDragging, setIsDragging] = useState(false)
