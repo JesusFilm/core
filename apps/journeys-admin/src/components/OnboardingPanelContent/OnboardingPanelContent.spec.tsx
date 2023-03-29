@@ -20,19 +20,7 @@ jest.mock('next/router', () => ({
 
 const mockUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
 
-// jest.mock('next/router', () => ({
-//   __esModule: true,
-//   useRouter: () => {
-//     return {
-//       push: jest.fn()
-//     }
-//   }
-// }))
-
 describe('OnboardingPanelContent', () => {
-  // const push = jest.fn()
-  // mockUseRouter.mockReturnValue({ push } as unknown as NextRouter)
-
   const mocks = [
     {
       request: {
