@@ -13,7 +13,13 @@ describe('TranslationResolver', () => {
 
   describe('language', () => {
     it('returns object for federation', async () => {
-      expect(await resolver.language({ languageId: 'languageId' })).toEqual({
+      expect(
+        await resolver.language({
+          languageId: 'languageId',
+          value: 'English',
+          primary: true
+        })
+      ).toEqual({
         __typename: 'Language',
         id: 'languageId'
       })
