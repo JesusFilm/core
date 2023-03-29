@@ -124,21 +124,34 @@ export function VisitorsList(): ReactElement {
   ]
 
   const rows = visitors.map((visitor) => {
+    const {
+      id,
+      lastStepViewedAt,
+      lastChatPlatform,
+      lastLinkAction,
+      lastTextResponse,
+      lastRadioQuestion,
+      lastRadioOptionSubmission
+    } = visitor.node
+
     return {
-      id: visitor.node.id,
-      lastStepViewedAt: new Intl.DateTimeFormat('en-us', {
-        dateStyle: 'medium',
-        timeStyle: 'short'
-      }).format(new Date(visitor.node.lastStepViewedAt)),
-      lastChatPlatForm: visitor.node.lastChatPlatform,
-      lastLinkAction: visitor.node.lastLinkAction,
-      lastTextResponse: visitor.node.lastTextResponse,
+      id,
+      lastStepViewedAt:
+        lastStepViewedAt != null
+          ? new Intl.DateTimeFormat([], {
+              dateStyle: 'medium',
+              timeStyle: 'short'
+            }).format(new Date(lastStepViewedAt))
+          : null,
+      lastChatPlatform,
+      lastLinkAction,
+      lastTextResponse,
       lastRadioQuestion:
-        visitor.node.lastRadioOptionSubmission != null
-          ? `${visitor.node.lastRadioQuestion as string}: ${
-              visitor.node.lastRadioOptionSubmission as string
+        lastRadioOptionSubmission != null
+          ? `${lastRadioQuestion as string}: ${
+              lastRadioOptionSubmission as string
             }`
-          : ''
+          : null
     }
   })
 
@@ -155,9 +168,9 @@ export function VisitorsList(): ReactElement {
           loading={loading}
           onRowClick={handleRowClick}
           disableRowSelectionOnClick
-          columnVisibilityModel={{
-            id: false
-          }}
+          // columnVisibilityModel={{
+          //   id: false
+          // }}
         />
       </Box>
       <LoadingButton
