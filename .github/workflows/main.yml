@@ -8,7 +8,7 @@ jobs:
   lint:
     runs-on: ubuntu-latest
     services:
-      db:
+      postgres:
         image: postgres
         env:
           POSTGRES_PASSWORD: postgres
@@ -17,6 +17,8 @@ jobs:
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
+        ports:
+          - 5432:5432
     steps:
       - uses: actions/checkout@v3
         with:
@@ -40,7 +42,7 @@ jobs:
       - name: generate prisma imports
         uses: mansagroup/nrwl-nx-action@v3
         with:
-          targets: prisma-migrate
+          targets: prisma-generate
           all: true
       - name: NPM apollo and graphql for codegen
         run: npm i -g apollo graphql @apollo/rover@0.10.0
@@ -67,7 +69,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     services:
-      db:
+      postgres:
         image: postgres
         env:
           POSTGRES_PASSWORD: postgres
@@ -76,6 +78,8 @@ jobs:
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
+        ports:
+          - 5432:5432
     steps:
       - uses: actions/checkout@v3
         with:
@@ -99,7 +103,7 @@ jobs:
       - name: generate prisma imports
         uses: mansagroup/nrwl-nx-action@v3
         with:
-          targets: prisma-migrate
+          targets: prisma-generate
           all: true
       - name: Install Doppler
         run: |
@@ -124,7 +128,7 @@ jobs:
   test:
     runs-on: ubuntu-latest
     services:
-      db:
+      postgres:
         image: postgres
         env:
           POSTGRES_PASSWORD: postgres
@@ -133,6 +137,8 @@ jobs:
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
+        ports:
+          - 5432:5432
     steps:
       - uses: actions/checkout@v3
         with:
@@ -156,7 +162,7 @@ jobs:
       - name: generate prisma imports
         uses: mansagroup/nrwl-nx-action@v3
         with:
-          targets: prisma-migrate
+          targets: prisma-generate
           all: true
       - uses: mansagroup/nrwl-nx-action@v3
         with:
@@ -165,7 +171,7 @@ jobs:
   visual-test:
     runs-on: ubuntu-latest
     services:
-      db:
+      postgres:
         image: postgres
         env:
           POSTGRES_PASSWORD: postgres
@@ -174,6 +180,8 @@ jobs:
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
+        ports:
+          - 5432:5432
     steps:
       - uses: actions/checkout@v3
         with:
