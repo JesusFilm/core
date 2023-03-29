@@ -164,7 +164,8 @@ export function CardWrapper({
       sx={{
         display: 'flex',
         flexDirection: 'column',
-        borderRadius: { xs: 0, sm: 4 },
+        // borderRadius: { xs: 0, sm: 4 },
+        borderRadius: 0,
         backgroundColor,
         width: '100%',
         height: '100%',

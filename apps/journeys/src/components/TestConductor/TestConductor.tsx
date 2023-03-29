@@ -29,7 +29,7 @@ import Box from '@mui/material/Box'
 const StyledSwiperContainer = styled(Swiper)(({ theme }) => ({
   '.swiper-button-prev': {
     color: 'white',
-    left: 'calc(50% - 280px)',
+    left: '0',
     width: '50%',
     height: '100%',
     '&:after': {
@@ -54,7 +54,7 @@ const StyledSwiperContainer = styled(Swiper)(({ theme }) => ({
   },
   '.swiper-button-next': {
     color: 'white',
-    right: 'calc(50% - 280px)',
+    right: '0',
     width: '50%',
     height: '100%',
     top: '2.5%',
@@ -82,14 +82,14 @@ const StyledSwiperContainer = styled(Swiper)(({ theme }) => ({
     }
   },
   '.swiper-pagination-horizontal.swiper-pagination-custom': {
-    top: '36px',
-    [theme.breakpoints.down('sm')]: {
+    top: '28px',
+    [theme.breakpoints.down('md')]: {
       top: '16px'
     }
   },
   '.swiper-pagination': {
     color: 'white',
-    height: '28px'
+    height: '6px'
   },
   '.swiper-pagination-bullet': {
     background: 'white'
@@ -141,7 +141,11 @@ export function TestConductor({ blocks }: TestConductorProps): ReactElement {
       <Stack
         direction="row"
         justifyContent="space-between"
-        width={{ xs: `calc(100% - 32px)`, sm: 536 }}
+        width={{
+          xs: `calc(100% - 32px)`,
+          sm: `calc(100% - 56px)`
+          // sm: 536
+        }}
         sx={{ mx: 'auto', color: 'white' }}
       >
         {[...Array(total)].map((value, index) => {
@@ -157,11 +161,13 @@ export function TestConductor({ blocks }: TestConductorProps): ReactElement {
               sx={{
                 width: {
                   xs: `calc((100% - 32px)/${total})`,
-                  sm: `calc(500px / ${total})`
+                  sm: `calc((100% - 56px)/${total})`
+                  // sm: `calc(500px / ${total})`
                 },
                 height: '6px',
                 borderRadius: '2px',
-                backgroundColor: 'grey'
+                backgroundColor: 'grey',
+                boxShadow: '0px 0px 12px 0 rgb(0 0 0 / 40%)'
               }}
             />
           )
@@ -215,11 +221,14 @@ export function TestConductor({ blocks }: TestConductorProps): ReactElement {
               <Stack sx={{ height: 'inherit' }}>
                 <Paper
                   sx={{
-                    width: { xs: '100%', md: '560px' },
-                    height: { xs: '100%', md: '95%' },
+                    width: '100%',
+                    height: '100%',
+                    // width: { xs: '100%', md: '560px' },
+                    // height: { xs: '100%', md: '95%' },
                     margin: { xs: 0, md: 'auto' },
                     backgroundColor: 'divider',
-                    borderRadius: { xs: 0, md: 4 }
+                    // borderRadius: { xs: 0, md: 4 }
+                    borderRadius: 0
                   }}
                 >
                   <BlockRenderer
