@@ -75,7 +75,7 @@ export function OnboardingPanelContent(): ReactElement {
     <>
       <SidePanelContainer>
         <ContainedIconButton
-          label="Create Custom Journey"
+          label={t('Create Custom Journey')}
           thumbnailIcon={<ViewCarouselIcon />}
           onClick={handleCreateJourneyClick}
           loading={loading}
@@ -83,7 +83,7 @@ export function OnboardingPanelContent(): ReactElement {
       </SidePanelContainer>
       <SidePanelContainer border={false}>
         <Stack direction="row" justifyContent="space-between">
-          <Typography variant="subtitle1">Use Template</Typography>
+          <Typography variant="subtitle1">{t('Use Template')}</Typography>
           <NextLink href="/templates" passHref>
             <Link
               underline="none"
@@ -96,8 +96,8 @@ export function OnboardingPanelContent(): ReactElement {
           </NextLink>
         </Stack>
       </SidePanelContainer>
-      {templates.map((template, index) => {
-        return (
+      {templates.map(
+        (template, index) =>
           template?.template != null && (
             <MediaListItem
               key={template.template.id}
@@ -110,8 +110,7 @@ export function OnboardingPanelContent(): ReactElement {
               onClick={() => handleTemplateClick(template?.template?.id)}
             />
           )
-        )
-      })}
+      )}
       <SidePanelContainer border={false}>
         <NextLink href="/templates" passHref>
           <Button
