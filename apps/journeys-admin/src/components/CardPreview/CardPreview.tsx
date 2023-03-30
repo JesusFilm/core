@@ -10,17 +10,11 @@ import Stack from '@mui/material/Stack'
 import { v4 as uuidv4 } from 'uuid'
 import { useMutation, gql } from '@apollo/client'
 import { DragDropContext, Droppable } from 'react-beautiful-dnd'
-import TrackChangesIcon from '@mui/icons-material/TrackChanges'
-import {
-  ActiveJourneyEditContent,
-  useEditor
-} from '@core/journeys/ui/EditorProvider'
 import { StepsOrderUpdate } from '../../../__generated__/StepsOrderUpdate'
 import { StepAndCardBlockCreate } from '../../../__generated__/StepAndCardBlockCreate'
 import { GetJourney_journey_blocks_StepBlock as StepBlock } from '../../../__generated__/GetJourney'
 import { CardList } from './CardList'
 import { OnSelectProps } from './OnSelectProps'
-import { NavigationCard } from './NavigationCard'
 
 export interface CardPreviewProps {
   onSelect?: ({ step, view }: OnSelectProps) => void
@@ -65,7 +59,6 @@ export function CardPreview({
   showAddButton,
   isDraggable
 }: CardPreviewProps): ReactElement {
-  const { state } = useEditor()
   const [isDragging, setIsDragging] = useState(false)
   const [stepAndCardBlockCreate] = useMutation<StepAndCardBlockCreate>(
     STEP_AND_CARD_BLOCK_CREATE
@@ -177,17 +170,7 @@ export function CardPreview({
   )
 
   return (
-    <Stack direction="row" sx={{ ml: 2 }}>
-      <NavigationCard
-        title="Goals"
-        onSelect={onSelect}
-        destination={ActiveJourneyEditContent.Action}
-        outlined={
-          state.journeyEditContentComponent === ActiveJourneyEditContent.Action
-        }
-        loading={journey == null}
-        header={<TrackChangesIcon />}
-      />
+    <>
       {steps != null ? (
         isDraggable === true ? (
           <DragDropContext
@@ -269,6 +252,6 @@ export function CardPreview({
           </Box>
         </Stack>
       )}
-    </Stack>
+    </>
   )
 }
