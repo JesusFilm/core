@@ -117,7 +117,7 @@ type ButtonClickEvent implements Event
   """
   The label for each corresponding action, mapping below:
   NavigateAction - null
-  NavigateToBlockAction - StepName of the block
+  NavigateToBlockAction - StepName of the StepBlock
   NavigateToJourneyAction - slug of the journey
   LinkAction - url of the link
   """
