@@ -13,6 +13,7 @@ import { getLaunchDarklyClient } from '@core/shared/ui/getLaunchDarklyClient'
 import { PageWrapper } from '../../src/components/PageWrapper'
 import i18nConfig from '../../next-i18next.config'
 import { useTermsRedirect } from '../../src/libs/useTermsRedirect/useTermsRedirect'
+import { ReportsNavigation } from '../../src/components/ReportsNavigation'
 
 function ReportsVisitorsPage(): ReactElement {
   const router = useRouter()
@@ -29,6 +30,7 @@ function ReportsVisitorsPage(): ReactElement {
         authUser={AuthUser}
         router={router}
       >
+        <ReportsNavigation selected="visitors" />
         Visitors report list
       </PageWrapper>
     </>

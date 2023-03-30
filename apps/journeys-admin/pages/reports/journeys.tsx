@@ -16,6 +16,7 @@ import i18nConfig from '../../next-i18next.config'
 import { MemoizedDynamicReport } from '../../src/components/DynamicPowerBiReport'
 import { JourneysReportType } from '../../__generated__/globalTypes'
 import { useTermsRedirect } from '../../src/libs/useTermsRedirect/useTermsRedirect'
+import { ReportsNavigation } from '../../src/components/ReportsNavigation'
 
 function ReportsJourneysPage(): ReactElement {
   const router = useRouter()
@@ -33,6 +34,7 @@ function ReportsJourneysPage(): ReactElement {
         router={router}
       >
         <Box sx={{ height: 'calc(100vh - 48px)' }}>
+          <ReportsNavigation selected="journeys" />
           <MemoizedDynamicReport reportType={JourneysReportType.multipleFull} />
         </Box>
       </PageWrapper>
