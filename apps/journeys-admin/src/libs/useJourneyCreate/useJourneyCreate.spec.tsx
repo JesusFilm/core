@@ -159,4 +159,31 @@ describe('useJourneyCreate', () => {
       })
     })
   })
+
+  it('returns a loading state ', async () => {
+    const { result } = renderHook(() => useJourneyCreate(), {
+      wrapper: ({ children }) => (
+        <MockedProvider
+          addTypename={false}
+          mocks={[
+            {
+              request: {
+                query: CREATE_JOURNEY,
+                variables: { id: undefined }
+              },
+              result: { data: {} }
+            }
+          ]}
+        >
+          {children}
+        </MockedProvider>
+      )
+    })
+
+    await act(async () => {
+      await waitFor(async () => {
+        expect(await result.current.loading).toBe(false)
+      })
+    })
+  })
 })

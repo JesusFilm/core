@@ -33,7 +33,7 @@ export function OnboardingPanelContent(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const router = useRouter()
 
-  const { createJourney } = useJourneyCreate()
+  const { createJourney, loading } = useJourneyCreate()
 
   const { data: template1, loading: loading1 } =
     useQuery<GetOnboardingTemplate>(GET_ONBOARDING_TEMPLATE, {
@@ -56,7 +56,7 @@ export function OnboardingPanelContent(): ReactElement {
       variables: { id: '13317d05-a805-4b3c-b362-9018971d9b57' }
     })
   const templates = [template1, template2, template3, template4, template5]
-  const loading = [loading1, loading2, loading3, loading4, loading5]
+  const loadingTemplates = [loading1, loading2, loading3, loading4, loading5]
 
   const handleCreateJourneyClick = async (): Promise<void> => {
     const journey = await createJourney()
@@ -78,6 +78,7 @@ export function OnboardingPanelContent(): ReactElement {
           label="Create Custom Journey"
           thumbnailIcon={<ViewCarouselIcon />}
           onClick={handleCreateJourneyClick}
+          loading={loading}
         />
       </SidePanelContainer>
       <SidePanelContainer border={false}>
@@ -100,7 +101,7 @@ export function OnboardingPanelContent(): ReactElement {
           template?.template != null && (
             <MediaListItem
               key={template.template.id}
-              loading={loading[index]}
+              loading={loadingTemplates[index]}
               title={template.template.title}
               description={template.template.description ?? ''}
               image={template.template.primaryImageBlock?.src ?? ''}

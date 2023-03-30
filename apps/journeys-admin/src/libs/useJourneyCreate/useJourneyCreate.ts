@@ -110,8 +110,10 @@ export const CREATE_JOURNEY = gql`
 
 export function useJourneyCreate(): {
   createJourney: () => Promise<Journey | undefined>
+  loading: boolean
 } {
-  const [createJourney] = useMutation<CreateJourney>(CREATE_JOURNEY)
+  const [createJourney, { loading }] =
+    useMutation<CreateJourney>(CREATE_JOURNEY)
 
   return {
     createJourney: async (): Promise<Journey | undefined> => {
@@ -159,6 +161,7 @@ export function useJourneyCreate(): {
       } catch (e) {
         return undefined
       }
-    }
+    },
+    loading
   }
 }
