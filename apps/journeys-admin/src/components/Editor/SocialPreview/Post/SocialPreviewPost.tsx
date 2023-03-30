@@ -21,7 +21,7 @@ export function SocialPreviewPost({
     <Box sx={{ width: 256, mx: 'auto' }}>
       <Stack direction="column" justifyContent="start" alignContent="center">
         <Typography variant="caption" sx={{ pb: 4 }} textAlign="center">
-          Social media preview
+          Social App View
         </Typography>
         {journey != null && (
           <Card

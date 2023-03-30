@@ -28,7 +28,7 @@ export function SocialPreviewMessage({
     <Box sx={{ width: 256, mx: 'auto' }}>
       <Stack direction="column" justifyContent="start">
         <Typography variant="caption" sx={{ pb: 4 }} justifyContent="center">
-          Messenger
+          Messaging App View
         </Typography>
         <Box>
           <Box

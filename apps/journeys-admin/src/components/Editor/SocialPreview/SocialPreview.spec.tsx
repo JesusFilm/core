@@ -11,7 +11,7 @@ describe('SocialPreview', () => {
         <SocialPreview />
       </ThemeProvider>
     )
-    expect(getAllByText('Shared on social media')[0]).toBeInTheDocument()
+    expect(getAllByText('Social App View')[0]).toBeInTheDocument()
   })
   it('should display socialpreviewmessage', () => {
     const { getAllByText } = render(
@@ -19,6 +19,6 @@ describe('SocialPreview', () => {
         <SocialPreview />
       </ThemeProvider>
     )
-    expect(getAllByText('Shared in the messenger')[0]).toBeInTheDocument()
+    expect(getAllByText('Messaging App View')[0]).toBeInTheDocument()
   })
 })
