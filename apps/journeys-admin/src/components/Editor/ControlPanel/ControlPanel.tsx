@@ -52,14 +52,13 @@ export function ControlPanel(): ReactElement {
   return (
     <Box sx={{ width: '100%', position: 'relative' }}>
       <Box sx={{ position: 'absolute', top: '-64px', right: 20, zIndex: 1 }}>
-        {journeyEditContentComponent ===
-          ActiveJourneyEditContent.Canvas && (
-            <Fab
-              visible={activeTab !== ActiveTab.Blocks}
-              onAddClick={handleAddFabClick}
-              disabled={steps == null}
-            />
-          )}
+        {journeyEditContentComponent === ActiveJourneyEditContent.Canvas && (
+          <Fab
+            visible={activeTab !== ActiveTab.Blocks}
+            onAddClick={handleAddFabClick}
+            disabled={steps == null}
+          />
+        )}
       </Box>
       <Box
         sx={{

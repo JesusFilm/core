@@ -119,14 +119,14 @@ export function Attributes({ selected, step }: AttributesProps): ReactElement {
     selected.__typename === 'StepBlock'
       ? t('Card')
       : selected.__typename === 'SignUpBlock'
-        ? t('Subscribe')
-        : selected.__typename === 'TextResponseBlock'
-          ? t('Feedback')
-          : selected.__typename === 'RadioQuestionBlock'
-            ? t('Poll')
-            : selected.__typename === 'RadioOptionBlock'
-              ? t('Poll Option')
-              : selected.__typename.replace('Block', '')
+      ? t('Subscribe')
+      : selected.__typename === 'TextResponseBlock'
+      ? t('Feedback')
+      : selected.__typename === 'RadioQuestionBlock'
+      ? t('Poll')
+      : selected.__typename === 'RadioOptionBlock'
+      ? t('Poll Option')
+      : selected.__typename.replace('Block', '')
 
   return (
     <>
