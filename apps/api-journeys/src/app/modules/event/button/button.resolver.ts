@@ -34,7 +34,7 @@ export class ButtonClickEventResolver {
       input.stepId
     )
 
-    const promiseArray = [
+    const promises = [
       this.eventService.save({
         ...input,
         __typename: 'ButtonClickEvent',
@@ -45,14 +45,14 @@ export class ButtonClickEventResolver {
     ]
 
     if (input.action === ButtonAction.LinkAction) {
-      promiseArray.push(
+      promises.push(
         this.visitorService.update(visitor.id, {
           lastLinkAction: input.actionValue ?? undefined
         })
       )
     }
 
-    const [buttonClickEvent] = await Promise.all([...promiseArray])
+    const [buttonClickEvent] = await Promise.all(promises)
     return buttonClickEvent
   }
 }
@@ -76,8 +76,7 @@ export class ChatOpenEventResolver {
       input.stepId
     )
 
-    const lastChatStartedAt = new Date().toISOString()
-    const promiseArray = [
+    const promises = [
       this.eventService.save({
         ...input,
         __typename: 'ChatOpenEvent',
@@ -86,21 +85,20 @@ export class ChatOpenEventResolver {
         journeyId
       }),
       this.visitorService.update(visitor.id, {
-        lastChatStartedAt,
-        lastChatPlatform: input.value ?? undefined,
-        lastEventAt: lastChatStartedAt
+        lastChatStartedAt: new Date().toISOString(),
+        lastChatPlatform: input.value ?? undefined
       })
     ]
     if (visitor?.messagePlatform == null) {
-      promiseArray.push(
+      promises.push(
         this.visitorService.update(visitor.id, {
           messagePlatform: input.value ?? undefined
         })
       )
     }
 
-    const [ChatOpenEvent] = await Promise.all([...promiseArray])
-    return ChatOpenEvent
+    const [chatOpenEvent] = await Promise.all(promises)
+    return chatOpenEvent
   }
 
   @ResolveField('messagePlatform')

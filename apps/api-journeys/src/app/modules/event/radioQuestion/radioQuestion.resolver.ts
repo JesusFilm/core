@@ -31,7 +31,7 @@ export class RadioQuestionSubmissionEventResolver {
       input.stepId
     )
 
-    const promiseArray = [
+    const [radioSubmissionEvent] = await Promise.all([
       this.eventService.save({
         ...input,
         __typename: 'RadioQuestionSubmissionEvent',
@@ -43,9 +43,7 @@ export class RadioQuestionSubmissionEventResolver {
         lastRadioQuestion: input.label ?? undefined,
         lastRadioOptionSubmission: input.value ?? undefined
       })
-    ]
-
-    const [RadioSubmissionEvent] = await Promise.all([...promiseArray])
-    return RadioSubmissionEvent
+    ])
+    return radioSubmissionEvent
   }
 }

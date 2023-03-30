@@ -38,7 +38,7 @@ export class JourneyViewEventResolver {
       input.journeyId
     )
 
-    const promiseArray = [
+    const promises = [
       this.eventService.save({
         ...input,
         __typename: 'JourneyViewEvent',
@@ -49,15 +49,15 @@ export class JourneyViewEventResolver {
     ]
 
     if (visitor.userAgent == null) {
-      promiseArray.push(
+      promises.push(
         this.visitorService.update(visitor.id, {
           userAgent
         })
       )
     }
 
-    const [JourneyViewEvent] = await Promise.all([...promiseArray])
-    return JourneyViewEvent
+    const [journeyViewEvent] = await Promise.all(promises)
+    return journeyViewEvent
   }
 
   @ResolveField('language')

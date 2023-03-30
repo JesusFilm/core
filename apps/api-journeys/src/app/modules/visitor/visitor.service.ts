@@ -24,7 +24,7 @@ export interface VisitorRecord {
   teamId: string
   userId: string
   createdAt: string
-  lastEventAt?: string
+  lastStepViewedAt?: string
   userAgent?: string
   messagePlatform?: MessagePlatform
   name?: string

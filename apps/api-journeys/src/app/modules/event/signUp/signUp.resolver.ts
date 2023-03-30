@@ -30,7 +30,7 @@ export class SignUpSubmissionEventResolver {
       input.stepId
     )
 
-    const promiseArray = [
+    const promises = [
       this.eventService.save({
         id: input.id,
         blockId: input.blockId,
@@ -46,7 +46,7 @@ export class SignUpSubmissionEventResolver {
     ]
 
     if (visitor.name == null) {
-      promiseArray.push(
+      promises.push(
         this.visitorService.update(visitor.id, {
           name: input.name
         })
@@ -54,14 +54,14 @@ export class SignUpSubmissionEventResolver {
     }
 
     if (visitor.email == null) {
-      promiseArray.push(
+      promises.push(
         this.visitorService.update(visitor.id, {
           email: input.email
         })
       )
     }
 
-    const [SignUpSubmissionEvent] = await Promise.all([...promiseArray])
-    return SignUpSubmissionEvent
+    const [signUpSubmissionEvent] = await Promise.all(promises)
+    return signUpSubmissionEvent
   }
 }
