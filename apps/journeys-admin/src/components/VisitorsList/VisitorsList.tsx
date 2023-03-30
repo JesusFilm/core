@@ -168,9 +168,9 @@ export function VisitorsList(): ReactElement {
           loading={loading}
           onRowClick={handleRowClick}
           disableRowSelectionOnClick
-          // columnVisibilityModel={{
-          //   id: false
-          // }}
+          columnVisibilityModel={{
+            id: false
+          }}
         />
       </Box>
       <LoadingButton

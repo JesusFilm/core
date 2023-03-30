@@ -37,7 +37,7 @@ describe('VideoList', () => {
             node: {
               __typename: 'Visitor',
               id: 'visitor1.id',
-              lastChatPlatform: null,
+              lastChatPlatform: 'facebook',
               lastLinkAction: null,
               lastRadioOptionSubmission: null,
               lastRadioQuestion: null,
@@ -103,7 +103,7 @@ describe('VideoList', () => {
       }
     }))
 
-    const { getByRole } = render(
+    const { getByRole, getAllByRole } = render(
       <MockedProvider
         mocks={[
           {
@@ -154,7 +154,7 @@ describe('VideoList', () => {
       </MockedProvider>
     )
     await waitFor(() =>
-      expect(getByRole('row', { name: 'visitor1.id' })).toBeInTheDocument()
+      expect(getAllByRole('row')[1]).toHaveAttribute('data-id', 'visitor1.id')
     )
     fireEvent.click(getByRole('button', { name: 'Load More' }))
     await waitFor(() => expect(fetchResult).toHaveBeenCalled())
@@ -164,15 +164,15 @@ describe('VideoList', () => {
     const push = jest.fn()
     mockUseRouter.mockReturnValue({ push } as unknown as NextRouter)
 
-    const { getByRole } = render(
+    const { getAllByRole } = render(
       <MockedProvider mocks={mocks}>
         <VisitorsList />
       </MockedProvider>
     )
     await waitFor(() =>
-      expect(getByRole('row', { name: 'visitor1.id' })).toBeInTheDocument()
+      expect(getAllByRole('row')[1]).toHaveAttribute('data-id', 'visitor1.id')
     )
-    fireEvent.click(getByRole('row', { name: 'visitor1.id' }))
+    fireEvent.click(getAllByRole('row')[1])
     expect(push).toHaveBeenCalledWith('/reports/visitors/visitor1.id')
   })
 
