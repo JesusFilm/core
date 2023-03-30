@@ -43,6 +43,7 @@ export function SocialPreview(): ReactElement {
       </Box>
       <Box display={{ xs: 'block', sm: 'none' }}>
         <Swiper
+          id="social-swiper"
           slidesPerView={1}
           centeredSlides
           slideToClickedSlide

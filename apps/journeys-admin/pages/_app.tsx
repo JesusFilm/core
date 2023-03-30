@@ -17,6 +17,7 @@ import { ThemeProvider } from '../src/components/ThemeProvider'
 import { initAuth } from '../src/libs/firebaseClient/initAuth'
 import i18nConfig from '../next-i18next.config'
 import { HelpScoutBeacon } from '../src/components/HelpScoutBeacon'
+import '../public/swiper-pagination-override.css'
 
 // your _app component
 initAuth()

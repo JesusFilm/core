@@ -1,4 +1,4 @@
-import { ReactElement, useEffect, useState } from 'react'
+import { ReactElement } from 'react'
 import Image from 'next/image'
 import Typography from '@mui/material/Typography'
 import Card from '@mui/material/Card'
@@ -17,27 +17,17 @@ interface SocialPreviewPostProps {
 export function SocialPreviewPost({
   journey
 }: SocialPreviewPostProps): ReactElement {
-  const [isEmpty, setIsEmpty] = useState(true)
-  useEffect(() => {
-    if (
-      journey?.seoTitle != null ||
-      journey?.seoDescription != null ||
-      journey?.primaryImageBlock?.src != null
-    ) {
-      setIsEmpty(false)
-    } else {
-      setIsEmpty(true)
-    }
-  }, [journey, isEmpty])
-
   return (
     <Box sx={{ width: 256, mx: 'auto' }}>
       <Stack direction="column" justifyContent="start" alignContent="center">
-        <Typography variant="subtitle2" sx={{ pb: 4 }}>
-          Shared on social media
+        <Typography variant="caption" sx={{ pb: 4 }} textAlign="center">
+          Social media preview
         </Typography>
         {journey != null && (
-          <Card sx={{ width: 240, borderRadius: '12px', px: 2 }} elevation={0}>
+          <Card
+            sx={{ width: 240, borderRadius: '12px', px: 2, display: 'block' }}
+            elevation={0}
+          >
             <CardHeader
               sx={{ px: 0, pb: 2 }}
               avatar={
@@ -75,29 +65,35 @@ export function SocialPreviewPost({
                 />
               }
             />
-            <CardMedia sx={{ px: 0, pt: 0 }}>
-              {isEmpty ? (
+            <CardMedia
+              sx={{
+                px: 0,
+                pt: 0,
+                width: 224,
+                height: 120,
+                display: 'flex',
+                flexDirection: 'column'
+              }}
+            >
+              {journey.primaryImageBlock?.src == null ? (
                 <Box
                   data-testid="social-preview-post-empty"
-                  sx={{
-                    bgcolor: 'rgba(0, 0, 0, 0.1)',
-                    width: 224,
-                    height: 120,
+                  display="block"
+                  width={224}
+                  height={120}
+                  bgcolor="rgba(0, 0, 0, 0.1)"
+                  borderRadius="4px"
+                />
+              ) : (
+                <Image
+                  src={journey.primaryImageBlock.src}
+                  alt={journey.primaryImageBlock.alt}
+                  width={224}
+                  height={120}
+                  style={{
                     borderRadius: '4px'
                   }}
                 />
-              ) : (
-                journey?.primaryImageBlock?.src != null && (
-                  <Image
-                    src={journey?.primaryImageBlock.src}
-                    alt={journey?.primaryImageBlock.alt}
-                    width={224}
-                    height={120}
-                    style={{
-                      borderRadius: '4px'
-                    }}
-                  />
-                )
               )}
             </CardMedia>
             <CardContent sx={{ px: 0, pt: 0 }}>
@@ -112,7 +108,7 @@ export function SocialPreviewPost({
               >
                 YOUR.NEXTSTEP.IS
               </Typography>
-              {isEmpty ? (
+              {journey.seoTitle == null ? (
                 <Box
                   sx={{
                     width: '224px',
@@ -130,7 +126,7 @@ export function SocialPreviewPost({
                   {journey.seoTitle}
                 </Typography>
               )}
-              {isEmpty ? (
+              {journey.seoDescription == null ? (
                 <Box
                   sx={{
                     width: '158px',

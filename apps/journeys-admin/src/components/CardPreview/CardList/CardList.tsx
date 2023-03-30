@@ -99,7 +99,17 @@ export function CardList({
           }
           header={
             journey?.primaryImageBlock?.src == null ? (
-              <CustomIcon name="Like" color="error" />
+              <Box
+                bgcolor={(theme) => theme.palette.background.default}
+                borderRadius="4px"
+                width={72}
+                height={72}
+                display="flex"
+                justifyContent="center"
+                alignItems="center"
+              >
+                <CustomIcon name="Like" color="error" />
+              </Box>
             ) : (
               <Image
                 src={journey?.primaryImageBlock?.src}

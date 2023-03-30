@@ -67,6 +67,7 @@ export function NavigationCard({
                 height="80px"
                 justifyContent="center"
                 alignItems="center"
+                mt={1}
               >
                 {header}
               </Box>

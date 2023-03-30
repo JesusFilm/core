@@ -27,8 +27,8 @@ export function SocialPreviewMessage({
   return (
     <Box sx={{ width: 256, mx: 'auto' }}>
       <Stack direction="column" justifyContent="start">
-        <Typography variant="subtitle2" sx={{ pb: 4 }}>
-          Shared in the messenger
+        <Typography variant="caption" sx={{ pb: 4 }} justifyContent="center">
+          Messenger
         </Typography>
         <Box>
           <Box
@@ -52,28 +52,28 @@ export function SocialPreviewMessage({
             }}
           />
           {journey != null && (
-            <Box
-              sx={{
-                width: 240,
-                borderRadius: '8px 8px 0 8px',
-                px: 2,
-                py: 1,
-                pt: 2,
-                bgcolor: (theme) => theme.palette.background.paper
-              }}
-            >
-              <Stack direction="row" gap={2}>
-                {isEmpty ? (
-                  <Box
-                    data-testId="social-preview-message-empty"
-                    sx={{
-                      bgcolor: 'rgba(0, 0, 0, 0.1)',
-                      borderRadius: '6px'
-                    }}
-                  />
-                ) : (
-                  journey?.primaryImageBlock?.src != null && (
-                    <Box display="block">
+            <Stack direction="column">
+              <Box
+                sx={{
+                  width: 240,
+                  borderRadius: '8px 8px 0 8px',
+                  px: 2,
+                  py: 1,
+                  pt: 2,
+                  bgcolor: (theme) => theme.palette.background.paper
+                }}
+              >
+                <Stack direction="row" gap={2}>
+                  {isEmpty ? (
+                    <Box
+                      data-testId="social-preview-message-empty"
+                      sx={{
+                        bgcolor: 'rgba(0, 0, 0, 0.1)',
+                        borderRadius: '6px'
+                      }}
+                    />
+                  ) : (
+                    journey?.primaryImageBlock?.src != null && (
                       <Image
                         src={journey?.primaryImageBlock.src}
                         alt={journey?.primaryImageBlock.alt}
@@ -82,36 +82,38 @@ export function SocialPreviewMessage({
                         height="60"
                         style={{ borderRadius: '4px' }}
                       />
-                    </Box>
-                  )
-                )}
-                <Stack
-                  sx={{
-                    maxWidth:
-                      journey?.primaryImageBlock?.src != null ? 164 : 'inherit'
-                  }}
-                >
-                  <Typography
-                    variant="body1"
-                    sx={{ fontWeight: 600, fontSize: 9, lineHeight: '12px' }}
+                    )
+                  )}
+                  <Stack
+                    sx={{
+                      maxWidth:
+                        journey?.primaryImageBlock?.src != null
+                          ? 164
+                          : 'inherit'
+                    }}
                   >
-                    {journey.seoTitle}
-                  </Typography>
-                  <Typography
-                    variant="body2"
-                    sx={{ fontSize: 7, lineHeight: '11px' }}
-                  >
-                    {journey.seoDescription}
-                  </Typography>
+                    <Typography
+                      variant="body1"
+                      sx={{ fontWeight: 600, fontSize: 9, lineHeight: '12px' }}
+                    >
+                      {journey.seoTitle}
+                    </Typography>
+                    <Typography
+                      variant="body2"
+                      sx={{ fontSize: 7, lineHeight: '11px' }}
+                    >
+                      {journey.seoDescription}
+                    </Typography>
+                  </Stack>
                 </Stack>
-              </Stack>
-              <Typography
-                variant="body1"
-                sx={{ fontSize: 8, lineHeight: '12px' }}
-              >
-                YOUR.NEXTSTEP.IS
-              </Typography>
-            </Box>
+                <Typography
+                  variant="body1"
+                  sx={{ fontSize: 8, lineHeight: '12px' }}
+                >
+                  YOUR.NEXTSTEP.IS
+                </Typography>
+              </Box>
+            </Stack>
           )}
           <Box
             sx={{
