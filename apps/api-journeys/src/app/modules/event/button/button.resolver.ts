@@ -76,7 +76,6 @@ export class ChatOpenEventResolver {
       input.stepId
     )
 
-    const lastChatStartedAt = new Date().toISOString()
     const promises = [
       this.eventService.save({
         ...input,
@@ -86,9 +85,8 @@ export class ChatOpenEventResolver {
         journeyId
       }),
       this.visitorService.update(visitor.id, {
-        lastChatStartedAt,
-        lastChatPlatform: input.value ?? undefined,
-        lastEventAt: lastChatStartedAt
+        lastChatStartedAt: new Date().toISOString(),
+        lastChatPlatform: input.value ?? undefined
       })
     ]
     if (visitor?.messagePlatform == null) {

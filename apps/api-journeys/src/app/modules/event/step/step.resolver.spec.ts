@@ -74,36 +74,19 @@ describe('Step', () => {
       await resolver.stepViewEventCreate('userId', input)
 
       expect(vService.update).toHaveBeenCalledWith('visitor.id', {
-        lastEventAt: new Date().toISOString()
+        lastStepViewedAt: new Date().toISOString()
       })
     })
   })
 
   describe('StepNextEventResolver', () => {
-    let resolver: StepNextEventResolver, vService: VisitorService
-
-    beforeAll(() => {
-      jest.useFakeTimers('modern')
-      jest.setSystemTime(new Date('2021-02-18'))
-    })
-
-    afterAll(() => {
-      jest.useRealTimers()
-    })
-
-    const visitorService = {
-      provide: VisitorService,
-      useFactory: () => ({
-        update: jest.fn(() => null)
-      })
-    }
+    let resolver: StepNextEventResolver
 
     beforeEach(async () => {
       const module: TestingModule = await Test.createTestingModule({
         providers: [StepNextEventResolver, eventService, visitorService]
       }).compile()
       resolver = module.get<StepNextEventResolver>(StepNextEventResolver)
-      vService = module.get<VisitorService>(VisitorService)
     })
 
     describe('stepNextEventCreate', () => {
@@ -122,13 +105,6 @@ describe('Step', () => {
           visitorId: 'visitor.id',
           createdAt: new Date().toISOString(),
           journeyId: 'journey.id'
-        })
-      })
-
-      it('should update visitor last event at', async () => {
-        await resolver.stepNextEventCreate('userId', input)
-        expect(vService.update).toHaveBeenCalledWith('visitor.id', {
-          lastEventAt: new Date().toISOString()
         })
       })
     })
