@@ -179,7 +179,10 @@ Default.args = {
 
 export const Placeholder = Template.bind({})
 Placeholder.args = {
-  journey: null
+  journey: {
+    ...journey,
+    blocks: []
+  }
 }
 
 export default ActionsTableStory as Meta

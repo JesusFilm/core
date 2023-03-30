@@ -4,7 +4,6 @@ import Tabs from '@mui/material/Tabs'
 import { ReactElement, SyntheticEvent } from 'react'
 import {
   useEditor,
-  ActiveTab,
   ActiveFab,
   ActiveJourneyEditContent
 } from '@core/journeys/ui/EditorProvider'
@@ -12,7 +11,6 @@ import { TabPanel, tabA11yProps } from '@core/shared/ui/TabPanel'
 import { CardPreview, OnSelectProps } from '../../CardPreview'
 import { Attributes } from './Attributes'
 import { BlocksTab } from './BlocksTab'
-import { Fab } from './Fab'
 
 export function ControlPanel(): ReactElement {
   const {
@@ -45,22 +43,8 @@ export function ControlPanel(): ReactElement {
     }
   }
 
-  const handleAddFabClick = (): void => {
-    dispatch({ type: 'SetActiveTabAction', activeTab: ActiveTab.Blocks })
-  }
-
   return (
     <Box sx={{ width: '100%', position: 'relative' }}>
-      <Box sx={{ position: 'absolute', top: '-64px', right: 20, zIndex: 1 }}>
-        <Fab
-          visible={
-            activeTab !== ActiveTab.Blocks &&
-            journeyEditContentComponent === ActiveJourneyEditContent.Canvas
-          }
-          onAddClick={handleAddFabClick}
-          disabled={steps == null}
-        />
-      </Box>
       <Box
         sx={{
           borderBottom: 1,
@@ -71,7 +55,7 @@ export function ControlPanel(): ReactElement {
         <Tabs
           value={activeTab}
           onChange={handleChange}
-          aria-label="editor tabs"
+          aria-label="`editor` tabs"
         >
           <Tab
             label="Journey"
@@ -82,13 +66,20 @@ export function ControlPanel(): ReactElement {
             label="Properties"
             {...tabA11yProps('control-panel', 1)}
             sx={{ flexGrow: 1 }}
-            disabled={steps == null || selectedBlock == null}
+            disabled={
+              steps == null ||
+              selectedBlock == null ||
+              journeyEditContentComponent !== ActiveJourneyEditContent.Canvas
+            }
           />
           <Tab
             label="Blocks"
             {...tabA11yProps('control-panel', 2)}
             sx={{ flexGrow: 1 }}
-            disabled={steps == null}
+            disabled={
+              steps == null ||
+              journeyEditContentComponent !== ActiveJourneyEditContent.Canvas
+            }
           />
         </Tabs>
       </Box>
@@ -98,6 +89,7 @@ export function ControlPanel(): ReactElement {
           onSelect={handleSelectStepPreview}
           steps={steps}
           showAddButton
+          showNavigationCards
           isDraggable
         />
       </TabPanel>

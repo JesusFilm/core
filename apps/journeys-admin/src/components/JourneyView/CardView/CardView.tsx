@@ -64,6 +64,7 @@ export function CardView({
         onSelect={handleSelect}
         steps={blocks}
         showAddButton={journey?.template !== true || isPublisher}
+        showNavigationCards
         isDraggable={false}
       />
       <Box sx={{ pt: 2, display: 'flex', justifyContent: 'center' }}>
