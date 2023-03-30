@@ -42,28 +42,9 @@ export function ContainedIconButton({
             />
           </Box>
           <Box flexGrow={1} minWidth={0}>
-            <Typography
-              variant="subtitle2"
-              sx={{
-                textOverflow: 'ellipsis',
-                whiteSpace: 'nowrap',
-                overflow: 'hidden'
-              }}
-            >
-              {label}
-            </Typography>
-
+            <Typography variant="subtitle2">{label}</Typography>
             {description != null && (
-              <Typography
-                variant="caption"
-                sx={{
-                  textOverflow: 'ellipsis',
-                  whiteSpace: 'nowrap',
-                  overflow: 'hidden'
-                }}
-              >
-                {description} &nbsp;
-              </Typography>
+              <Typography variant="caption">{description} &nbsp;</Typography>
             )}
           </Box>
           <Icon color="primary" sx={{ pr: 8 }}>
