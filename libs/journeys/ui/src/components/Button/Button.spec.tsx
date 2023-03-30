@@ -140,7 +140,7 @@ describe('Button', () => {
       data: {
         buttonClickEventCreate: {
           __typename: 'ButtonClickEvent',
-          id: 'uuiid',
+          id: 'uuid',
           action: action.__typename,
           actionValue: action.url
         }
@@ -227,7 +227,7 @@ describe('Button', () => {
               data: {
                 buttonClickEventCreate: {
                   __typename: 'ButtonClickEvent',
-                  id: 'uuiid',
+                  id: 'uuid',
                   action: undefined,
                   actionValue: undefined
                 }
@@ -276,7 +276,7 @@ describe('Button', () => {
       data: {
         chatOpenEventCreate: {
           __typename: 'ChatOpenEvent',
-          id: 'uuiid'
+          id: 'uuid'
         }
       }
     }))

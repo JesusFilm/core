@@ -9,7 +9,7 @@ import { TypographyVariant } from '../../../../../__generated__/globalTypes'
 import { getActionLabel } from './getActionLabel'
 
 describe('getActionLabel', () => {
-  it('should undefined for NavigateAction', () => {
+  it('should be undefined for NavigateAction', () => {
     const action: NavigateAction = {
       __typename: 'NavigateAction',
       parentBlockId: 'parentBlock.id',
@@ -97,6 +97,18 @@ describe('getActionLabel', () => {
 
     const result = getActionLabel(action)
     expect(result).toEqual(action.journey?.slug)
+  })
+
+  it('should return Unknwon Journey for NavigateToJourneyAction if journey is null', () => {
+    const action: NavigateToJourneyAction = {
+      __typename: 'NavigateToJourneyAction',
+      parentBlockId: 'parentBlock.id',
+      gtmEventName: 'click',
+      journey: null
+    }
+
+    const result = getActionLabel(action)
+    expect(result).toEqual('Unknown Journey')
   })
 
   it('should return url for LinkAction', () => {

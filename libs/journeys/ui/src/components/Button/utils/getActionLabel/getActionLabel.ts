@@ -23,7 +23,7 @@ export function getActionLabel(
       break
     }
     case 'NavigateToJourneyAction':
-      actionLabel = action.journey?.slug ?? ''
+      actionLabel = action.journey?.slug ?? 'Unknown Journey'
       break
 
     case 'LinkAction':
