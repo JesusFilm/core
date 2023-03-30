@@ -46,7 +46,7 @@ describe('ActionsList', () => {
 
   const state: EditorState = {
     drawerMobileOpen: false,
-    activeTab: ActiveTab.Cards,
+    activeTab: ActiveTab.Journey,
     activeFab: ActiveFab.Add,
     journeyEditContentComponent: ActiveJourneyEditContent.Action
   }

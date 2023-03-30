@@ -4,6 +4,7 @@ import Tabs from '@mui/material/Tabs'
 import { ReactElement, SyntheticEvent } from 'react'
 import {
   useEditor,
+  ActiveTab,
   ActiveFab,
   ActiveJourneyEditContent
 } from '@core/journeys/ui/EditorProvider'
@@ -11,6 +12,7 @@ import { TabPanel, tabA11yProps } from '@core/shared/ui/TabPanel'
 import { CardPreview, OnSelectProps } from '../../CardPreview'
 import { Attributes } from './Attributes'
 import { BlocksTab } from './BlocksTab'
+import { Fab } from './Fab'
 
 export function ControlPanel(): ReactElement {
   const {
@@ -43,8 +45,22 @@ export function ControlPanel(): ReactElement {
     }
   }
 
+  const handleAddFabClick = (): void => {
+    dispatch({ type: 'SetActiveTabAction', activeTab: ActiveTab.Blocks })
+  }
+
   return (
     <Box sx={{ width: '100%', position: 'relative' }}>
+      <Box sx={{ position: 'absolute', top: '-64px', right: 20, zIndex: 1 }}>
+        {journeyEditContentComponent ===
+          ActiveJourneyEditContent.Canvas && (
+            <Fab
+              visible={activeTab !== ActiveTab.Blocks}
+              onAddClick={handleAddFabClick}
+              disabled={steps == null}
+            />
+          )}
+      </Box>
       <Box
         sx={{
           borderBottom: 1,
