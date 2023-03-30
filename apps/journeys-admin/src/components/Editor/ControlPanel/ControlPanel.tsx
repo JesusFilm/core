@@ -74,7 +74,7 @@ export function ControlPanel(): ReactElement {
           aria-label="editor tabs"
         >
           <Tab
-            label="Cards"
+            label="Journey"
             {...tabA11yProps('control-panel', 0)}
             sx={{ flexGrow: 1 }}
           />

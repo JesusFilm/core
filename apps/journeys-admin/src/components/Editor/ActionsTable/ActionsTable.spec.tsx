@@ -14,6 +14,11 @@ import {
 } from '../../../../__generated__/globalTypes'
 import { ActionsTable } from './ActionsTable'
 
+jest.mock('@mui/material/useMediaQuery', () => ({
+  __esModule: true,
+  default: jest.fn()
+}))
+
 const blocks: Blocks[] = [
   {
     __typename: 'IconBlock',
@@ -102,13 +107,10 @@ describe('ActionsTable', () => {
         <ActionsTable />
       </JourneyProvider>
     )
-    expect(
-      getByText('Your Journey doesnt have actions yet')
-    ).toBeInTheDocument()
-    expect(getByText('Add a button/poll to your card')).toBeInTheDocument()
+    expect(getByText('Every Journey has a goal')).toBeInTheDocument()
   })
   it('should render a list of actions', () => {
-    const { getByText, getByTestId } = render(
+    const { getByText, getAllByText, getByTestId } = render(
       <JourneyProvider
         value={{
           journey: {
@@ -120,10 +122,8 @@ describe('ActionsTable', () => {
         <ActionsTable />
       </JourneyProvider>
     )
-    expect(
-      getByText('Here you can see the list of goals for this journey')
-    ).toBeInTheDocument()
-    expect(getByText('https://www.google.com/')).toBeInTheDocument()
+    expect(getByText('The Journey Goals')).toBeInTheDocument()
+    expect(getAllByText('https://www.google.com/')[0]).toBeInTheDocument()
     expect(getByTestId('EditRoundedIcon')).toBeInTheDocument()
   })
 })
