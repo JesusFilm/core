@@ -1,6 +1,12 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { NextRouter, useRouter } from 'next/router'
 import { fireEvent, render, waitFor } from '@testing-library/react'
+import { v4 as uuidv4 } from 'uuid'
+import {
+  variables,
+  journeyCreateData,
+  CREATE_JOURNEY
+} from '../../libs/useJourneyCreate'
 import { GET_ONBOARDING_TEMPLATE } from './OnboardingPanelContent'
 import { OnboardingPanelContent } from '.'
 
@@ -18,6 +24,12 @@ jest.mock('next/router', () => ({
   useRouter: jest.fn()
 }))
 
+jest.mock('uuid', () => ({
+  __esModule: true,
+  v4: jest.fn()
+}))
+
+const mockUuidv4 = uuidv4 as jest.MockedFunction<typeof uuidv4>
 const mockUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
 
 describe('OnboardingPanelContent', () => {
@@ -111,11 +123,41 @@ describe('OnboardingPanelContent', () => {
           }
         }
       }
+    },
+    {
+      request: {
+        query: CREATE_JOURNEY,
+        variables
+      },
+      result: { data: journeyCreateData }
     }
   ]
 
-  it('should add a new journey on custom journey button click', () => {
-    // test that the useMutation call result is correct and cache is updated
+  it('should add a new journey on custom journey button click', async () => {
+    const push = jest.fn()
+    mockUseRouter.mockReturnValue({ push } as unknown as NextRouter)
+    mockUuidv4.mockReturnValueOnce(variables.journeyId)
+    mockUuidv4.mockReturnValueOnce(variables.stepId)
+    mockUuidv4.mockReturnValueOnce(variables.cardId)
+    mockUuidv4.mockReturnValueOnce(variables.imageId)
+
+    const { getByRole } = render(
+      <MockedProvider mocks={mocks}>
+        <OnboardingPanelContent />
+      </MockedProvider>
+    )
+
+    fireEvent.click(getByRole('button', { name: 'Create Custom Journey' }))
+
+    await waitFor(() => {
+      expect(push).toHaveBeenCalledWith(
+        `/journeys/${variables.journeyId}/edit`,
+        undefined,
+        {
+          shallow: true
+        }
+      )
+    })
   })
 
   it('should display onboarding templates', async () => {
@@ -136,6 +178,7 @@ describe('OnboardingPanelContent', () => {
   it('should redirect to template details page onClick', async () => {
     const push = jest.fn()
     mockUseRouter.mockReturnValue({ push } as unknown as NextRouter)
+
     const { getByText } = render(
       <MockedProvider mocks={mocks}>
         <OnboardingPanelContent />

@@ -1,7 +1,7 @@
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'react-i18next'
 import { ReactElement } from 'react'
-import { gql, useQuery, useMutation } from '@apollo/client'
+import { gql, useQuery } from '@apollo/client'
 import Link from '@mui/material/Link'
 import NextLink from 'next/link'
 import Stack from '@mui/material/Stack'
@@ -9,116 +9,12 @@ import ChevronRightRounded from '@mui/icons-material/ChevronRightRounded'
 import Button from '@mui/material/Button'
 import DashboardRounded from '@mui/icons-material/DashboardRounded'
 import { useRouter } from 'next/router'
-import ViewCarouselIcon from '@mui/icons-material/ViewCarousel';
-import { v4 as uuidv4 } from 'uuid'
+import ViewCarouselIcon from '@mui/icons-material/ViewCarousel'
 import { SidePanelContainer } from '../NewPageWrapper/SidePanelContainer'
 import { MediaListItem } from '../MediaListItem'
 import { GetOnboardingTemplate } from '../../../__generated__/GetOnboardingTemplate'
 import { ContainedIconButton } from '../ContainedIconButton'
-import { JourneyCreate } from '../../../__generated__/JourneyCreate'
-
-
-export const JOURNEY_CREATE = gql`
-  mutation JourneyCreate(
-    $journeyId: ID!
-    $title: String!
-    $description: String!
-    $stepId: ID!
-    $cardId: ID!
-    $imageId: ID!
-    $alt: String!
-    $headlineTypographyContent: String!
-    $bodyTypographyContent: String!
-    $captionTypographyContent: String!
-  ) {
-    journeyCreate(
-      input: {
-        id: $journeyId
-        title: $title
-        description: $description
-        languageId: "529"
-        themeMode: dark
-      }
-    ) {
-      id
-      title
-      createdAt
-      publishedAt
-      description
-      slug
-      themeName
-      themeMode
-      language {
-        id
-        name(primary: true) {
-          value
-          primary
-        }
-      }
-      status
-      userJourneys {
-        id
-        user {
-          id
-          firstName
-          lastName
-          imageUrl
-        }
-      }
-    }
-    stepBlockCreate(input: { id: $stepId, journeyId: $journeyId }) {
-      id
-    }
-    cardBlockCreate(
-      input: { id: $cardId, parentBlockId: $stepId, journeyId: $journeyId }
-    ) {
-      id
-    }
-    imageBlockCreate(
-      input: {
-        id: $imageId
-        parentBlockId: $cardId
-        journeyId: $journeyId
-        src: "https://images.unsplash.com/photo-1524414287096-c7fb74ab3ba0?w=854&q=50"
-        alt: $alt
-        blurhash: "LgFiG+59PC=s|AE3XT$gnjngs7Ne"
-        isCover: true
-      }
-    ) {
-      id
-    }
-    headlineTypographyBlockCreate: typographyBlockCreate(
-      input: {
-        journeyId: $journeyId
-        parentBlockId: $cardId
-        content: $headlineTypographyContent
-        variant: h3
-      }
-    ) {
-      id
-    }
-    bodyTypographyBlockCreate: typographyBlockCreate(
-      input: {
-        journeyId: $journeyId
-        parentBlockId: $cardId
-        content: $bodyTypographyContent
-        variant: body1
-      }
-    ) {
-      id
-    }
-    captionTypographyBlockCreate: typographyBlockCreate(
-      input: {
-        journeyId: $journeyId
-        parentBlockId: $cardId
-        content: $captionTypographyContent
-        variant: caption
-      }
-    ) {
-      id
-    }
-  }
-`
+import { useJourneyCreate } from '../../libs/useJourneyCreate/useJourneyCreate'
 
 export const GET_ONBOARDING_TEMPLATE = gql`
   query GetOnboardingTemplate($id: ID!) {
@@ -134,11 +30,11 @@ export const GET_ONBOARDING_TEMPLATE = gql`
 `
 
 export function OnboardingPanelContent(): ReactElement {
-  const [journeyCreate, { loading: loadingJourney }] =
-    useMutation<JourneyCreate>(JOURNEY_CREATE)
-
   const { t } = useTranslation('apps-journeys-admin')
   const router = useRouter()
+
+  const { createJourney } = useJourneyCreate()
+
   const { data: template1, loading: loading1 } =
     useQuery<GetOnboardingTemplate>(GET_ONBOARDING_TEMPLATE, {
       variables: { id: '014c7add-288b-4f84-ac85-ccefef7a07d3' }
@@ -159,68 +55,30 @@ export function OnboardingPanelContent(): ReactElement {
     useQuery<GetOnboardingTemplate>(GET_ONBOARDING_TEMPLATE, {
       variables: { id: '13317d05-a805-4b3c-b362-9018971d9b57' }
     })
-
   const templates = [template1, template2, template3, template4, template5]
   const loading = [loading1, loading2, loading3, loading4, loading5]
 
-  const handleClick1 = async (): Promise<void> => {
-    const journeyId = uuidv4()
-    const stepId = uuidv4()
-    const cardId = uuidv4()
-    const imageId = uuidv4()
-
-    const { data } = await journeyCreate({
-      variables: {
-        journeyId,
-        title: 'Untitled Journey',
-        description:
-          'Use journey description for notes about the audience, topic, traffic source, etc. Only you and other editors can see it.',
-        stepId,
-        cardId,
-        imageId,
-        alt: 'two hot air balloons in the sky',
-        headlineTypographyContent: 'The Journey Is On',
-        bodyTypographyContent: '"Go, and lead the people on their way..."',
-        captionTypographyContent: 'Deutoronomy 10:11'
-      },
-      update(cache, { data }) {
-        if (data?.journeyCreate != null) {
-          cache.modify({
-            fields: {
-              adminJourneys(existingAdminJourneyRefs = []) {
-                const newJourneyRef = cache.writeFragment({
-                  data: data.journeyCreate,
-                  fragment: gql`
-                    fragment NewJourney on Journey {
-                      id
-                    }
-                  `
-                })
-                return [...existingAdminJourneyRefs, newJourneyRef]
-              }
-            }
-          })
-        }
-      }
-    })
-    if (data?.journeyCreate != null) {
-      void router.push(`/journeys/${data.journeyCreate.id}/edit`, undefined, {
+  const handleCreateJourneyClick = async (): Promise<void> => {
+    const journey = await createJourney()
+    if (journey != null) {
+      void router.push(`/journeys/${journey.id}/edit`, undefined, {
         shallow: true
       })
     }
   }
 
-  const handleClick2 = (journeyId?: string): void => {
+  const handleTemplateClick = (journeyId?: string): void => {
     if (journeyId != null) void router.push(`/templates/${journeyId}`)
   }
 
   return (
     <>
       <SidePanelContainer>
-        <ContainedIconButton  label="Create Custom Journey" 
-      thumbnailIcon={<ViewCarouselIcon/>}
-      onClick={handleClick1} 
-      loading={loadingJourney}/>
+        <ContainedIconButton
+          label="Create Custom Journey"
+          thumbnailIcon={<ViewCarouselIcon />}
+          onClick={handleCreateJourneyClick}
+        />
       </SidePanelContainer>
       <SidePanelContainer border={false}>
         <Stack direction="row" justifyContent="space-between">
@@ -248,7 +106,7 @@ export function OnboardingPanelContent(): ReactElement {
               image={template.template.primaryImageBlock?.src ?? ''}
               overline={t('Template')}
               border
-              onClick={() => handleClick2(template?.template?.id)}
+              onClick={() => handleTemplateClick(template?.template?.id)}
             />
           )
         )

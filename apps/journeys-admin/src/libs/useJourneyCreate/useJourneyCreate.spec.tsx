@@ -12,21 +12,81 @@ jest.mock('uuid', () => ({
 
 const mockUuidv4 = uuidv4 as jest.MockedFunction<typeof uuidv4>
 
+export const variables = {
+  journeyId: 'createdJourneyId',
+  title: 'Untitled Journey',
+  description:
+    'Use journey description for notes about the audience, topic, traffic source, etc. Only you and other editors can see it.',
+  stepId: 'stepId',
+  cardId: 'cardId',
+  imageId: 'imageId',
+  alt: 'two hot air balloons in the sky',
+  headlineTypographyContent: 'The Journey Is On',
+  bodyTypographyContent: '"Go, and lead the people on their way..."',
+  captionTypographyContent: 'Deutoronomy 10:11'
+}
+
+export const data = {
+  journeyCreate: {
+    createdAt: '2022-02-17T21:47:32.004Z',
+    description: variables.description,
+    id: variables.journeyId,
+    language: {
+      id: '529',
+      name: {
+        value: 'English',
+        primary: true
+      }
+    },
+    publishedAt: null,
+    slug: 'untitled-journey-journeyId',
+    status: 'draft',
+    themeMode: 'dark',
+    themeName: 'base',
+    title: variables.title,
+    __typename: 'Journey',
+    userJourneys: [
+      {
+        __typename: 'UserJourney',
+        id: 'user-journey-id',
+        user: {
+          __typename: 'User',
+          id: 'user-id1',
+          firstName: 'Admin',
+          lastName: 'One',
+          imageUrl: 'https://bit.ly/3Gth4Yf'
+        }
+      }
+    ]
+  },
+  stepBlockCreate: {
+    id: variables.stepId,
+    __typename: 'StepBlock'
+  },
+  cardBlockCreate: {
+    id: variables.cardId,
+    __typename: 'CardBlock'
+  },
+  imageBlockCreate: {
+    id: variables.imageId,
+    __typename: 'ImageBlock'
+  },
+  headlineTypographyBlockCreate: {
+    id: 'headlineTypographyId',
+    __typename: 'TypographyBlock'
+  },
+  bodyTypographyBlockCreate: {
+    id: 'bodyTypographyId',
+    __typename: 'TypographyBlock'
+  },
+  captionTypographyBlockCreate: {
+    id: 'captionTypographyId',
+    __typename: 'TypographyBlock'
+  }
+}
+
 describe('useJourneyCreate', () => {
   it('returns a function which creates a journey by id', async () => {
-    const variables = {
-      journeyId: 'createdJourneyId',
-      title: 'Untitled Journey',
-      description:
-        'Use journey description for notes about the audience, topic, traffic source, etc. Only you and other editors can see it.',
-      stepId: 'stepId',
-      cardId: 'cardId',
-      imageId: 'imageId',
-      alt: 'two hot air balloons in the sky',
-      headlineTypographyContent: 'The Journey Is On',
-      bodyTypographyContent: '"Go, and lead the people on their way..."',
-      captionTypographyContent: 'Deutoronomy 10:11'
-    }
     mockUuidv4.mockReturnValueOnce(variables.journeyId)
     mockUuidv4.mockReturnValueOnce(variables.stepId)
     mockUuidv4.mockReturnValueOnce(variables.cardId)
@@ -39,65 +99,6 @@ describe('useJourneyCreate', () => {
         adminJourneys: []
       }
     })
-
-    const data = {
-      journeyCreate: {
-        createdAt: '2022-02-17T21:47:32.004Z',
-        description: variables.description,
-        id: variables.journeyId,
-        language: {
-          id: '529',
-          name: {
-            value: 'English',
-            primary: true
-          }
-        },
-        publishedAt: null,
-        slug: 'untitled-journey-journeyId',
-        status: 'draft',
-        themeMode: 'dark',
-        themeName: 'base',
-        title: variables.title,
-        __typename: 'Journey',
-        userJourneys: [
-          {
-            __typename: 'UserJourney',
-            id: 'user-journey-id',
-            user: {
-              __typename: 'User',
-              id: 'user-id1',
-              firstName: 'Admin',
-              lastName: 'One',
-              imageUrl: 'https://bit.ly/3Gth4Yf'
-            }
-          }
-        ]
-      },
-      stepBlockCreate: {
-        id: variables.stepId,
-        __typename: 'StepBlock'
-      },
-      cardBlockCreate: {
-        id: variables.cardId,
-        __typename: 'CardBlock'
-      },
-      imageBlockCreate: {
-        id: variables.imageId,
-        __typename: 'ImageBlock'
-      },
-      headlineTypographyBlockCreate: {
-        id: 'headlineTypographyId',
-        __typename: 'TypographyBlock'
-      },
-      bodyTypographyBlockCreate: {
-        id: 'bodyTypographyId',
-        __typename: 'TypographyBlock'
-      },
-      captionTypographyBlockCreate: {
-        id: 'captionTypographyId',
-        __typename: 'TypographyBlock'
-      }
-    }
 
     const { result } = renderHook(() => useJourneyCreate(), {
       wrapper: ({ children }) => (
