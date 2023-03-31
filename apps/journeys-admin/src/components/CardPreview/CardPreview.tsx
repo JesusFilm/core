@@ -175,7 +175,7 @@ export function CardPreview({
   )
 
   return (
-    <Stack direction="row">
+    <>
       {steps != null ? (
         isDraggable === true ? (
           <DragDropContext
@@ -257,6 +257,6 @@ export function CardPreview({
           </Box>
         </Stack>
       )}
-    </Stack>
+    </>
   )
 }
