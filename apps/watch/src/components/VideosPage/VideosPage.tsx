@@ -72,7 +72,7 @@ export function VideosPage({ videos }: VideosProps): ReactElement {
       : undefined
   )
 
-  const [filter, setFilter] = useState<VideoPageFilter>({
+  const filter: VideoPageFilter = {
     availableVariantLanguageIds:
       query.get('language') != null
         ? [query.get('language') as string]
@@ -83,7 +83,7 @@ export function VideosPage({ videos }: VideosProps): ReactElement {
         : undefined,
     title:
       query.get('title') != null ? (query.get('title') as string) : undefined
-  })
+  }
 
   const { data, loading, fetchMore, refetch } = useQuery<GetVideos>(
     GET_VIDEOS,
@@ -98,26 +98,21 @@ export function VideosPage({ videos }: VideosProps): ReactElement {
     }
   )
 
-  function handleFilterChange({
-    availableVariantLanguageIds,
-    subtitleLanguageIds,
-    title
-  }: VideoPageFilter): void {
-    const params = new URLSearchParams()
-    if (availableVariantLanguageIds != null)
-      params.set('language', availableVariantLanguageIds[0])
-    if (subtitleLanguageIds != null)
-      params.set('subtitle', subtitleLanguageIds[0])
-    if (title != null) params.set('title', title)
+  function handleFilterChange(filter: VideoPageFilter): void {
     void refetch({
-      where: { availableVariantLanguageIds, subtitleLanguageIds, title },
+      where: filter,
       offset: 0,
       limit,
       languageId:
-        availableVariantLanguageIds?.[0] ?? languageContext?.id ?? '529'
+        filter.availableVariantLanguageIds?.[0] ?? languageContext?.id ?? '529'
     })
+    const params = new URLSearchParams()
+    if (filter.availableVariantLanguageIds != null)
+      params.set('language', filter.availableVariantLanguageIds[0])
+    if (filter.subtitleLanguageIds != null)
+      params.set('subtitle', filter.subtitleLanguageIds[0])
+    if (filter.title != null) params.set('title', filter.title)
     void push(`/videos?${params.toString()}`, undefined, { shallow: true })
-    setFilter(filter)
   }
 
   useEffect(() => {
@@ -152,10 +147,10 @@ export function VideosPage({ videos }: VideosProps): ReactElement {
           <Box sx={{ width: '100%' }}>
             <VideoGrid
               videos={
-                filter.availableVariantLanguageIds == null &&
-                filter.subtitleLanguageIds == null &&
-                filter.title == null
-                  ? videos
+                data?.videos == null
+                  ? loading
+                    ? []
+                    : videos
                   : data?.videos ?? []
               }
               onLoadMore={handleLoadMore}

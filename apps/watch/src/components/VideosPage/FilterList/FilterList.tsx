@@ -129,20 +129,18 @@ export function FilterList({
     (panel: string) => (event: SyntheticEvent, isExpanded: boolean) => {
       setExpanded(isExpanded ? panel : false)
     }
-  const { data: languagesData, loading: languagesLoading } =
-    useQuery<GetLanguages>(GET_LANGUAGES, {
-      variables: { languageId: '529' }
-    })
-  const subtitleLanguages = languagesData?.languages.filter((language) =>
+  const { data, loading } = useQuery<GetLanguages>(GET_LANGUAGES, {
+    variables: { languageId: '529' }
+  })
+
+  const subtitleLanguages = data?.languages.filter((language) =>
     subtitleLanguageIds.includes(language.id)
   )
 
   function languageOptionFromIds(ids?: string[]): LanguageOption {
     if (ids == null || ids.length === 0) return { id: '' }
 
-    const language = languagesData?.languages.find(
-      (language) => language.id === ids[0]
-    )
+    const language = data?.languages.find((language) => language.id === ids[0])
 
     if (language != null) {
       return {
@@ -193,8 +191,8 @@ export function FilterList({
             <LanguagesFilter
               onChange={(language) => setFieldValue('language', language)}
               value={values.language}
-              languages={languagesData?.languages}
-              loading={languagesLoading}
+              languages={data?.languages}
+              loading={loading}
             />
           </Accordion>
           <Accordion
@@ -209,7 +207,7 @@ export function FilterList({
               }
               value={values.subtitleLanguage}
               languages={subtitleLanguages}
-              loading={languagesLoading}
+              loading={loading}
               helperText="54 languages"
             />
           </Accordion>

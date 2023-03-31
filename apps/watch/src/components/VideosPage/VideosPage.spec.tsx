@@ -4,12 +4,13 @@ import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { NextRouter, useRouter } from 'next/router'
 import { videos } from '../Videos/__generated__/testData'
-import { languages } from './testData'
 import { VideosPage, GET_VIDEOS, limit, GET_LANGUAGES } from './VideosPage'
 
 jest.mock('next/router', () => ({
   __esModule: true,
-  useRouter: jest.fn()
+  useRouter: jest.fn(() => ({
+    push: jest.fn()
+  }))
 }))
 
 const mockUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
@@ -57,8 +58,12 @@ describe('VideosPage', () => {
   })
 
   describe('filters', () => {
-    const push = jest.fn()
-    mockUseRouter.mockReturnValue({ push } as unknown as NextRouter)
+    let push: jest.Mock
+
+    beforeEach(() => {
+      push = jest.fn()
+      mockUseRouter.mockReturnValue({ push } as unknown as NextRouter)
+    })
 
     it('should handle audio language filter', async () => {
       const { getByText, getByRole, getByTestId } = render(
@@ -89,7 +94,17 @@ describe('VideosPage', () => {
               },
               result: {
                 data: {
-                  languages
+                  languages: [
+                    {
+                      id: '496',
+                      name: [
+                        {
+                          value: 'French',
+                          primary: true
+                        }
+                      ]
+                    }
+                  ]
                 }
               }
             },
@@ -97,10 +112,14 @@ describe('VideosPage', () => {
               request: {
                 query: GET_VIDEOS,
                 variables: {
-                  where: { availableVariantLanguageIds: ['4797'] },
+                  where: {
+                    availableVariantLanguageIds: ['496'],
+                    subtitleLanguageIds: undefined,
+                    title: undefined
+                  },
                   offset: 0,
                   limit,
-                  languageId: '4797'
+                  languageId: '496'
                 }
               },
               result: {
@@ -120,13 +139,13 @@ describe('VideosPage', () => {
       })
       fireEvent.focus(comboboxEl)
       fireEvent.keyDown(comboboxEl, { key: 'ArrowDown' })
-      await waitFor(() => getByRole('option', { name: 'Arabic' }))
-      fireEvent.click(getByRole('option', { name: 'Arabic' }))
-      expect(comboboxEl).toHaveValue('Arabic')
+      await waitFor(() => getByRole('option', { name: 'French' }))
+      fireEvent.click(getByRole('option', { name: 'French' }))
+      expect(comboboxEl).toHaveValue('French')
       await waitFor(() =>
         expect(getByText(videos[1].title[0].value)).toBeInTheDocument()
       )
-      expect(push).toHaveBeenCalledWith('/videos?language=2', undefined, {
+      expect(push).toHaveBeenCalledWith('/videos?language=496', undefined, {
         shallow: true
       })
     })
@@ -160,7 +179,17 @@ describe('VideosPage', () => {
               },
               result: {
                 data: {
-                  languages
+                  languages: [
+                    {
+                      id: '496',
+                      name: [
+                        {
+                          value: 'French',
+                          primary: true
+                        }
+                      ]
+                    }
+                  ]
                 }
               }
             },
@@ -168,7 +197,11 @@ describe('VideosPage', () => {
               request: {
                 query: GET_VIDEOS,
                 variables: {
-                  where: { sutitleLanguageIds: ['4797'] },
+                  where: {
+                    availableVariantLanguageIds: undefined,
+                    subtitleLanguageIds: ['496'],
+                    title: undefined
+                  },
                   offset: 0,
                   limit,
                   languageId: '529'
@@ -191,13 +224,13 @@ describe('VideosPage', () => {
       })
       fireEvent.focus(comboboxEl)
       fireEvent.keyDown(comboboxEl, { key: 'ArrowDown' })
-      await waitFor(() => getByRole('option', { name: 'Arabic' }))
-      fireEvent.click(getByRole('option', { name: 'Arabic' }))
-      expect(comboboxEl).toHaveValue('Arabic')
+      await waitFor(() => getByRole('option', { name: 'French' }))
+      fireEvent.click(getByRole('option', { name: 'French' }))
+      expect(comboboxEl).toHaveValue('French')
       await waitFor(() =>
         expect(getByText(videos[1].title[0].value)).toBeInTheDocument()
       )
-      expect(push).toHaveBeenCalledWith('/videos?subtitle=2', undefined, {
+      expect(push).toHaveBeenCalledWith('/videos?subtitle=496', undefined, {
         shallow: true
       })
     })
@@ -231,7 +264,17 @@ describe('VideosPage', () => {
               },
               result: {
                 data: {
-                  languages
+                  languages: [
+                    {
+                      id: '496',
+                      name: [
+                        {
+                          value: 'French',
+                          primary: true
+                        }
+                      ]
+                    }
+                  ]
                 }
               }
             },
