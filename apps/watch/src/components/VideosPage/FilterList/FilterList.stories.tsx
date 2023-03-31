@@ -1,42 +1,26 @@
 import { ComponentProps } from 'react'
 import { Story, Meta } from '@storybook/react'
-import TextField from '@mui/material/TextField'
 import { watchConfig } from '../../../libs/storybook'
-import { LanguagesFilter } from './LanguagesFilter'
-import { FilterContainer } from './FilterList'
+import { languages } from '../testData'
+import { FilterList } from './FilterList'
 
-const FilterContainerStory = {
+const FilterListStory = {
   ...watchConfig,
-  component: FilterContainer,
-  title: 'Watch/FilterContainer',
+  component: FilterList,
+  title: 'Watch/FilterList',
+  argTypes: { onChange: { action: 'onChange' } },
   parameters: {
     theme: 'light'
   }
 }
 
-const Template: Story<ComponentProps<typeof FilterContainer>> = () => {
+const Template: Story<ComponentProps<typeof FilterList>> = ({ onChange }) => {
   return (
-    <FilterContainer
-      rowFromParent={1}
-      audioSwitcher={
-        <LanguagesFilter onChange={() => null} languages={[]} loading={false} />
-      }
-      subtitleSwitcher={
-        <LanguagesFilter
-          onChange={() => null}
-          languages={[]}
-          loading={false}
-          helperText="54 languages"
-        />
-      }
-      titleSearch={
-        <TextField
-          onChange={() => null}
-          label="Search Titles"
-          variant="outlined"
-          helperText="724+ titles"
-        />
-      }
+    <FilterList
+      filter={{}}
+      onChange={onChange}
+      languagesData={{ languages }}
+      languagesLoading={false}
     />
   )
 }
@@ -44,4 +28,4 @@ const Template: Story<ComponentProps<typeof FilterContainer>> = () => {
 export const Default = Template.bind({})
 Default.args = {}
 
-export default FilterContainerStory as Meta
+export default FilterListStory as Meta
