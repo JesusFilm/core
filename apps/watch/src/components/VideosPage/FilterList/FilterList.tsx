@@ -127,7 +127,7 @@ export function FilterList({
   languagesData,
   languagesLoading
 }: FilterListProps): ReactElement {
-  const [expanded, setExpanded] = useState<string | false>(false)
+  const [expanded, setExpanded] = useState<string | false>('panel1')
   const handleExpandChange =
     (panel: string) => (_event: SyntheticEvent, isExpanded: boolean) => {
       setExpanded(isExpanded ? panel : false)

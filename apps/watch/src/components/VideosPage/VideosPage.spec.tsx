@@ -66,7 +66,7 @@ describe('VideosPage', () => {
     })
 
     it('should handle audio language filter', async () => {
-      const { getByText, getByRole, getByTestId } = render(
+      const { getByText, getByRole } = render(
         <MockedProvider
           mocks={[
             {
@@ -133,7 +133,6 @@ describe('VideosPage', () => {
           <VideosPage videos={[]} />
         </MockedProvider>
       )
-      fireEvent.click(getByTestId('filter-item-languages'))
       const comboboxEl = getByRole('combobox', {
         name: 'Search Languages'
       })
@@ -151,7 +150,7 @@ describe('VideosPage', () => {
     })
 
     it('should handle subtitle language filter', async () => {
-      const { getByText, getByTestId, getByRole } = render(
+      const { getByText, getByTestId, getByRole, getAllByRole } = render(
         <MockedProvider
           mocks={[
             {
@@ -219,9 +218,9 @@ describe('VideosPage', () => {
         </MockedProvider>
       )
       fireEvent.click(getByTestId('filter-item-subtitles'))
-      const comboboxEl = getByRole('combobox', {
+      const comboboxEl = getAllByRole('combobox', {
         name: 'Search Languages'
-      })
+      })[1]
       fireEvent.focus(comboboxEl)
       fireEvent.keyDown(comboboxEl, { key: 'ArrowDown' })
       await waitFor(() => getByRole('option', { name: 'French' }))
