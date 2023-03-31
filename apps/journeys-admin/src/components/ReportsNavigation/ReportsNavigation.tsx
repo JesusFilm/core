@@ -8,7 +8,7 @@ interface Props {
 
 export function ReportsNavigation({ selected }: Props): ReactElement {
   return (
-    <Stack direction="row" spacing={4} sx={{ p: 4 }}>
+    <Stack direction="row" spacing={4} sx={{ pb: 6 }}>
       <NavigationButton
         selected={selected === 'journeys'}
         value="Journeys"
