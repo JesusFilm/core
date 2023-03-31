@@ -117,7 +117,7 @@ export function CardList({
                 width={72}
                 height={72}
                 objectFit="cover"
-                style={{ borderRadius: '8px' }}
+                style={{ borderRadius: '4px' }}
               />
             )
           }

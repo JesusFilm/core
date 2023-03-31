@@ -1,5 +1,3 @@
-// Tests for NavigationCard
-
 import { ActiveJourneyEditContent } from '@core/journeys/ui/EditorProvider'
 import { render } from '@testing-library/react'
 import { NavigationCard } from './NavigationCard'

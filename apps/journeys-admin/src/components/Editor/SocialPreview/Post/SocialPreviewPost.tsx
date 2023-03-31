@@ -9,6 +9,7 @@ import Box from '@mui/system/Box'
 import Stack from '@mui/material/Stack'
 import PersonIcon from '@mui/icons-material/Person'
 import Avatar from '@mui/material/Avatar'
+import { isEmpty } from 'lodash'
 import { JourneyFields } from '../../../../../__generated__/JourneyFields'
 
 interface SocialPreviewPostProps {
@@ -18,9 +19,9 @@ export function SocialPreviewPost({
   journey
 }: SocialPreviewPostProps): ReactElement {
   return (
-    <Box sx={{ width: 256, mx: 'auto' }}>
+    <Box width={256} mx="auto">
       <Stack direction="column" justifyContent="start" alignContent="center">
-        <Typography variant="caption" sx={{ pb: 4 }} textAlign="center">
+        <Typography variant="caption" pb={4} textAlign="center">
           Social App View
         </Typography>
         {journey != null && (
@@ -44,24 +45,20 @@ export function SocialPreviewPost({
               }
               title={
                 <Box
-                  sx={{
-                    width: '60px',
-                    height: '12px',
-                    background: '#EFEFEF',
-                    borderRadius: '6px'
-                  }}
+                  width={60}
+                  height={12}
+                  bgcolor="#EFEFEF"
+                  borderRadius="6px"
                 />
               }
               action={
                 <Box
-                  sx={{
-                    width: '12px',
-                    height: '12px',
-                    background: '#EFEFEF',
-                    borderRadius: '6px',
-                    mt: '8px',
-                    mr: '12px'
-                  }}
+                  width={12}
+                  height={12}
+                  bgcolor="#EFEFEF"
+                  borderRadius="6px"
+                  mt={1}
+                  mr={3}
                 />
               }
             />
@@ -96,49 +93,48 @@ export function SocialPreviewPost({
                 />
               )}
             </CardMedia>
-            <CardContent sx={{ px: 0, pt: 0 }}>
+            <CardContent sx={{ p: 0 }}>
               <Typography
                 variant="body2"
-                sx={{
-                  fontSize: 7,
-                  fontWeight: 400,
-                  lineHeight: '10px',
-                  color: '#6D6D7D'
-                }}
+                fontSize={7}
+                fontWeight={400}
+                lineHeight="10px"
+                color="#6D6D7D"
+                my={2}
               >
                 YOUR.NEXTSTEP.IS
               </Typography>
-              {journey.seoTitle == null ? (
+              {isEmpty(journey.seoTitle) ? (
                 <Box
-                  sx={{
-                    width: '224px',
-                    height: '12px',
-                    background: '#EFEFEF',
-                    borderRadius: '6px',
-                    mb: 1
-                  }}
+                  width={224}
+                  height={12}
+                  bgcolor="#EFEFEF"
+                  borderRadius="6px"
+                  mb={1}
                 />
               ) : (
                 <Typography
                   variant="subtitle1"
-                  sx={{ fontSize: 9, lineHeight: '12px', color: '#26262E' }}
+                  fontSize={9}
+                  lineHeight="12px"
+                  color="#26262E"
                 >
                   {journey.seoTitle}
                 </Typography>
               )}
-              {journey.seoDescription == null ? (
+              {isEmpty(journey.seoDescription) ? (
                 <Box
-                  sx={{
-                    width: '158px',
-                    height: '12px',
-                    background: '#EFEFEF',
-                    borderRadius: '6px'
-                  }}
+                  width={158}
+                  height={12}
+                  bgcolor="#EFEFEF"
+                  borderRadius="6px"
                 />
               ) : (
                 <Typography
                   variant="body2"
-                  sx={{ fontSize: 8, lineHeight: '12px', color: '#6D6D7D' }}
+                  fontSize={8}
+                  lineHeight="12px"
+                  color="#6D6D7D"
                 >
                   {journey.seoDescription}
                 </Typography>
