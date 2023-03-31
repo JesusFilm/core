@@ -101,21 +101,32 @@ export function VideoControls({
   useEffect(() => {
     setVolume(player.volume() * 100)
     player.on('play', () => {
-      eventToDataLayer(
-        'video_play',
-        title[0].value,
-        variant?.language.name[0].value,
-        Math.round((player.currentTime() / player.duration()) * 100)
-      )
+      if (player.currentTime() < 0.02) {
+        eventToDataLayer(
+          'video_start',
+          title[0].value,
+          variant?.language.name[0].value,
+          Math.round((player.currentTime() / player.duration()) * 100)
+        )
+      } else {
+        eventToDataLayer(
+          'video_play',
+          title[0].value,
+          variant?.language.name[0].value,
+          Math.round((player.currentTime() / player.duration()) * 100)
+        )
+      }
       setPlay(true)
     })
     player.on('pause', () => {
-      eventToDataLayer(
-        'video_pause',
-        title[0].value,
-        variant?.language.name[0].value,
-        Math.round((player.currentTime() / player.duration()) * 100)
-      )
+      if (player.currentTime() > 0.02) {
+        eventToDataLayer(
+          'video_pause',
+          title[0].value,
+          variant?.language.name[0].value,
+          Math.round((player.currentTime() / player.duration()) * 100)
+        )
+      }
       setPlay(false)
     })
     player.on('timeupdate', () => {
