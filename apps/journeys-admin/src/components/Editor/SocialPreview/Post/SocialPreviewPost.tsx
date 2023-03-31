@@ -30,7 +30,12 @@ export function SocialPreviewPost({
         </Typography>
         {journey != null && (
           <Card
-            sx={{ width: 240, borderRadius: '12px', px: 2, display: 'block' }}
+            sx={{
+              width: { sm: 240, xs: 224 },
+              borderRadius: '12px',
+              px: 2,
+              display: 'block'
+            }}
             elevation={0}
           >
             <CardHeader
