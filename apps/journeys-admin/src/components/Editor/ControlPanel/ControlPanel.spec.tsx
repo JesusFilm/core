@@ -23,6 +23,7 @@ import {
 } from '../../../../__generated__/globalTypes'
 
 import { STEP_AND_CARD_BLOCK_CREATE } from '../../CardPreview/CardPreview'
+import { SocialShareAppearance } from '../Drawer/SocialShareAppearance'
 import { VIDEO_BLOCK_CREATE } from './BlocksTab/NewVideoButton/NewVideoButton'
 import { TYPOGRAPHY_BLOCK_CREATE } from './BlocksTab/NewTypographyButton/NewTypographyButton'
 import { IMAGE_BLOCK_CREATE } from './BlocksTab/NewImageButton/NewImageButton'
@@ -983,6 +984,12 @@ describe('ControlPanel', () => {
     expect(dispatch).toHaveBeenCalledWith({
       component: 'social',
       type: 'SetJourneyEditContentAction'
+    })
+    expect(dispatch).toHaveBeenCalledWith({
+      type: 'SetDrawerPropsAction',
+      title: 'Social Share Appearance',
+      mobileOpen: false,
+      children: <SocialShareAppearance />
     })
   })
 })

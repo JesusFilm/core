@@ -12,6 +12,7 @@ import { TabPanel, tabA11yProps } from '@core/shared/ui/TabPanel'
 import MuiFab from '@mui/material/Fab'
 import EditIcon from '@mui/icons-material/Edit'
 import { CardPreview, OnSelectProps } from '../../CardPreview'
+import { SocialShareAppearance } from '../Drawer/SocialShareAppearance'
 import { Attributes } from './Attributes'
 import { BlocksTab } from './BlocksTab'
 import { Fab } from './Fab'
@@ -43,6 +44,12 @@ export function ControlPanel(): ReactElement {
       dispatch({
         type: 'SetJourneyEditContentAction',
         component: ActiveJourneyEditContent.SocialPreview
+      })
+      dispatch({
+        type: 'SetDrawerPropsAction',
+        title: 'Social Share Appearance',
+        mobileOpen: false,
+        children: <SocialShareAppearance />
       })
     }
   }
