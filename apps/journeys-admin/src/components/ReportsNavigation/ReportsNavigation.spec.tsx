@@ -1,6 +1,15 @@
 import { render } from '@testing-library/react'
 import { ReportsNavigation } from './ReportsNavigation'
 
+jest.mock('react-i18next', () => ({
+  __esModule: true,
+  useTranslation: () => {
+    return {
+      t: (str: string) => str
+    }
+  }
+}))
+
 describe('ReportsNavigation', () => {
   it('should should select journeys', () => {
     const { getByRole } = render(<ReportsNavigation selected="journeys" />)
