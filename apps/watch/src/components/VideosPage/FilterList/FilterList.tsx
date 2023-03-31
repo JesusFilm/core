@@ -11,11 +11,10 @@ import Typography from '@mui/material/Typography'
 import Stack from '@mui/material/Stack'
 import { LanguageOption } from '@core/shared/ui/LanguageAutocomplete'
 import TextField from '@mui/material/TextField'
-import { useQuery } from '@apollo/client'
 import { Formik } from 'formik'
 import { SubmitListener } from '@core/shared/ui/SubmitListener'
 import { GetLanguages } from '../../../../__generated__/GetLanguages'
-import { GET_LANGUAGES, VideoPageFilter } from '../VideosPage'
+import type { VideoPageFilter } from '../VideosPage'
 import { LanguagesFilter } from './LanguagesFilter'
 
 const subtitleLanguageIds = [
@@ -118,29 +117,32 @@ function Accordion({
 interface FilterListProps {
   filter: VideoPageFilter
   onChange: (filter: VideoPageFilter) => void
+  languagesData?: GetLanguages
+  languagesLoading: boolean
 }
 
 export function FilterList({
   filter,
-  onChange
+  onChange,
+  languagesData,
+  languagesLoading
 }: FilterListProps): ReactElement {
   const [expanded, setExpanded] = useState<string | false>(false)
   const handleExpandChange =
-    (panel: string) => (event: SyntheticEvent, isExpanded: boolean) => {
+    (panel: string) => (_event: SyntheticEvent, isExpanded: boolean) => {
       setExpanded(isExpanded ? panel : false)
     }
-  const { data, loading } = useQuery<GetLanguages>(GET_LANGUAGES, {
-    variables: { languageId: '529' }
-  })
 
-  const subtitleLanguages = data?.languages.filter((language) =>
+  const subtitleLanguages = languagesData?.languages.filter((language) =>
     subtitleLanguageIds.includes(language.id)
   )
 
   function languageOptionFromIds(ids?: string[]): LanguageOption {
     if (ids == null || ids.length === 0) return { id: '' }
 
-    const language = data?.languages.find((language) => language.id === ids[0])
+    const language = languagesData?.languages.find(
+      (language) => language.id === ids[0]
+    )
 
     if (language != null) {
       return {
@@ -191,8 +193,8 @@ export function FilterList({
             <LanguagesFilter
               onChange={(language) => setFieldValue('language', language)}
               value={values.language}
-              languages={data?.languages}
-              loading={loading}
+              languages={languagesData?.languages}
+              loading={languagesLoading}
             />
           </Accordion>
           <Accordion
@@ -207,7 +209,7 @@ export function FilterList({
               }
               value={values.subtitleLanguage}
               languages={subtitleLanguages}
-              loading={loading}
+              loading={languagesLoading}
               helperText="54 languages"
             />
           </Accordion>

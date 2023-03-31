@@ -11,6 +11,7 @@ import { VIDEO_CHILD_FIELDS } from '../../libs/videoChildFields'
 import { PageWrapper } from '../PageWrapper'
 import { VideoGrid } from '../VideoGrid/VideoGrid'
 import { VideoChildFields } from '../../../__generated__/VideoChildFields'
+import { GetLanguages } from '../../../__generated__/GetLanguages'
 import { FilterList } from './FilterList'
 import { VideosHero } from './Hero'
 import { VideosSubHero } from './SubHero'
@@ -92,7 +93,10 @@ export function VideosPage({ videos }: VideosProps): ReactElement {
         where: filter,
         offset: 0,
         limit,
-        languageId: languageContext?.id ?? '529'
+        languageId:
+          filter.availableVariantLanguageIds?.[0] ??
+          languageContext?.id ??
+          '529'
       },
       notifyOnNetworkStatusChange: true
     }
@@ -114,6 +118,11 @@ export function VideosPage({ videos }: VideosProps): ReactElement {
     if (filter.title != null) params.set('title', filter.title)
     void push(`/videos?${params.toString()}`, undefined, { shallow: true })
   }
+
+  const { data: languagesData, loading: languagesLoading } =
+    useQuery<GetLanguages>(GET_LANGUAGES, {
+      variables: { languageId: '529' }
+    })
 
   useEffect(() => {
     setIsEnd(isAtEnd(data?.videos.length ?? 0, limit, previousCount))
@@ -142,7 +151,12 @@ export function VideosPage({ videos }: VideosProps): ReactElement {
           spacing={{ xs: 4, xl: 8 }}
         >
           <Box sx={{ minWidth: '278px' }}>
-            <FilterList filter={filter} onChange={handleFilterChange} />
+            <FilterList
+              filter={filter}
+              onChange={handleFilterChange}
+              languagesData={languagesData}
+              languagesLoading={languagesLoading}
+            />
           </Box>
           <Box sx={{ width: '100%' }}>
             <VideoGrid
