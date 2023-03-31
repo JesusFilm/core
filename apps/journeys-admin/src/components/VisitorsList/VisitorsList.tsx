@@ -77,6 +77,7 @@ const CellTextField = ({ value }: CellTextFieldProps): ReactElement => (
     sx={{
       p: 0,
       '& .MuiInputBase-input.Mui-disabled': {
+        fontSize: '14px',
         WebkitTextFillColor: 'black',
         '&:hover': {
           cursor: 'pointer'
