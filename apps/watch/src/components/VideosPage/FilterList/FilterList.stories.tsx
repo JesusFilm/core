@@ -7,7 +7,7 @@ import { FilterList } from './FilterList'
 const FilterListStory = {
   ...watchConfig,
   component: FilterList,
-  title: 'Watch/FilterList',
+  title: 'Watch/VideosPage/FilterList',
   argTypes: { onChange: { action: 'onChange' } },
   parameters: {
     theme: 'light'

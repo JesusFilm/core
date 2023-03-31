@@ -60,7 +60,7 @@ export interface VideoPageFilter {
 }
 
 export function VideosPage({ videos }: VideosProps): ReactElement {
-  const { push } = useRouter()
+  const router = useRouter()
   const languageContext = useLanguage()
   const [isEnd, setIsEnd] = useState(false)
   const [previousCount, setPreviousCount] = useState(0)
@@ -116,7 +116,9 @@ export function VideosPage({ videos }: VideosProps): ReactElement {
     if (filter.subtitleLanguageIds != null)
       params.set('subtitle', filter.subtitleLanguageIds[0])
     if (filter.title != null) params.set('title', filter.title)
-    void push(`/videos?${params.toString()}`, undefined, { shallow: true })
+    void router.push(`/videos?${params.toString()}`, undefined, {
+      shallow: true
+    })
   }
 
   const { data: languagesData, loading: languagesLoading } =
