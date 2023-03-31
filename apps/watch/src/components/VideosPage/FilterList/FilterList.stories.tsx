@@ -1,9 +1,9 @@
 import { ComponentProps } from 'react'
 import { Story, Meta } from '@storybook/react'
 import TextField from '@mui/material/TextField'
-import { watchConfig } from '../../libs/storybook'
-import { LanguagesFilter } from '../VideosPage/LanguagesFilter'
-import { FilterContainer } from './FilterContainer'
+import { watchConfig } from '../../../libs/storybook'
+import { LanguagesFilter } from './LanguagesFilter'
+import { FilterContainer } from './FilterList'
 
 const FilterContainerStory = {
   ...watchConfig,
