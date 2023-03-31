@@ -10,6 +10,10 @@ import Stack from '@mui/material/Stack'
 import PersonIcon from '@mui/icons-material/Person'
 import Avatar from '@mui/material/Avatar'
 import { isEmpty } from 'lodash'
+import CardActionArea from '@mui/material/CardActionArea'
+import ThumbUp from '@mui/icons-material/ThumbUp'
+import ChatBubble from '@mui/icons-material/ChatBubble'
+import Share from '@mui/icons-material/Share'
 import { JourneyFields } from '../../../../../__generated__/JourneyFields'
 
 interface SocialPreviewPostProps {
@@ -93,7 +97,7 @@ export function SocialPreviewPost({
                 />
               )}
             </CardMedia>
-            <CardContent sx={{ p: 0 }}>
+            <CardContent sx={{ p: 0, mb: 2 }}>
               <Typography
                 variant="body2"
                 fontSize={7}
@@ -140,6 +144,18 @@ export function SocialPreviewPost({
                 </Typography>
               )}
             </CardContent>
+            <CardActionArea>
+              <Stack
+                flexDirection="row"
+                justifyContent="space-around"
+                color="#EFEFEF"
+                mb={2}
+              >
+                <ThumbUp sx={{ fontSize: 12 }} />
+                <ChatBubble sx={{ fontSize: 12 }} />
+                <Share sx={{ fontSize: 12 }} />
+              </Stack>
+            </CardActionArea>
           </Card>
         )}
       </Stack>
