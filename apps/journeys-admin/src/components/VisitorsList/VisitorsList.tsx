@@ -7,6 +7,7 @@ import { useRouter } from 'next/router'
 import LoadingButton from '@mui/lab/LoadingButton'
 import Stack from '@mui/material/Stack'
 import { useTranslation } from 'react-i18next'
+import TextField from '@mui/material/TextField'
 import {
   GetVisitors,
   GetVisitors_visitors_edges as Visitor
@@ -45,6 +46,7 @@ const StyledDataGrid = styled(DataGrid)(({ theme }) => ({
   borderRadius: 12,
   overflow: 'hidden',
   '& .MuiDataGrid-row': {
+    maxHeight: '300px',
     borderTop: `1px solid ${theme.palette.divider}`,
     '&:hover': {
       cursor: 'pointer'
@@ -57,6 +59,32 @@ const StyledDataGrid = styled(DataGrid)(({ theme }) => ({
     outline: 'none'
   }
 }))
+
+interface CellTextFieldProps {
+  value: string
+}
+const CellTextField = ({ value }: CellTextFieldProps): ReactElement => (
+  <TextField
+    variant="standard"
+    value={value}
+    multiline
+    maxRows={3}
+    fullWidth
+    disabled
+    InputProps={{
+      disableUnderline: true
+    }}
+    sx={{
+      p: 0,
+      '& .MuiInputBase-input.Mui-disabled': {
+        WebkitTextFillColor: 'black',
+        '&:hover': {
+          cursor: 'pointer'
+        }
+      }
+    }}
+  />
+)
 
 export function VisitorsList(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
@@ -95,33 +123,34 @@ export function VisitorsList(): ReactElement {
   const columns: GridColDef[] = [
     {
       field: 'id',
-      headerName: t('ID'),
-      width: 100
+      headerName: t('ID')
     },
     {
       field: 'lastStepViewedAt',
       headerName: t('Last Active'),
-      width: 300
+      width: 200
     },
     {
       field: 'lastChatPlatform',
       headerName: t('Chat Started'),
-      width: 300
+      width: 200
     },
     {
       field: 'lastLinkAction',
       headerName: t('Action'),
-      width: 300
+      width: 400
     },
     {
       field: 'lastTextResponse',
       headerName: t('User Data'),
-      width: 300
+      flex: 1,
+      renderCell: (cellValues) => <CellTextField value={cellValues.value} />
     },
     {
       field: 'lastRadioQuestion',
       headerName: t('Polls'),
-      width: 300
+      flex: 1,
+      renderCell: (cellValues) => <CellTextField value={cellValues.value} />
     }
   ]
 
@@ -160,8 +189,8 @@ export function VisitorsList(): ReactElement {
   }
 
   return (
-    <Stack spacing={20} sx={{ alignItems: 'center' }}>
-      <Box sx={{ height: '85vh', width: '100%' }}>
+    <Stack spacing={6} sx={{ alignItems: 'center' }}>
+      <Box sx={{ height: '80vh', width: '100%' }}>
         <StyledDataGrid
           columns={columns}
           rows={rows}
@@ -171,6 +200,7 @@ export function VisitorsList(): ReactElement {
           columnVisibilityModel={{
             id: false
           }}
+          getRowHeight={() => 'auto'}
         />
       </Box>
       <LoadingButton
