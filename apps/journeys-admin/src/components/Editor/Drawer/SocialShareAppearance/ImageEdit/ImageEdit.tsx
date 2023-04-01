@@ -115,17 +115,6 @@ export function ImageEdit(): ReactElement {
                   `
                 })
                 return [...existingBlockRefs, newBlockRef]
-              },
-              primaryImageBlock() {
-                const newBlockRef = cache.writeFragment({
-                  data: data.imageBlockCreate,
-                  fragment: gql`
-                    fragment NewBlock on Block {
-                      id
-                    }
-                  `
-                })
-                return newBlockRef
               }
             }
           })
