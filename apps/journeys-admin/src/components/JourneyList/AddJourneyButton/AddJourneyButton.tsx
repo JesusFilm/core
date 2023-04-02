@@ -8,6 +8,7 @@ import { v4 as uuidv4 } from 'uuid'
 import { useRouter } from 'next/router'
 import CircularProgress from '@mui/material/CircularProgress'
 import { JourneyCreate } from '../../../../__generated__/JourneyCreate'
+import { usePage } from '../../../libs/PageWrapperProvider'
 
 export const JOURNEY_CREATE = gql`
   mutation JourneyCreate(
@@ -122,6 +123,11 @@ export function AddJourneyButton({
     useMutation<JourneyCreate>(JOURNEY_CREATE)
   const router = useRouter()
 
+  const {
+    state: { mobileDrawerOpen },
+    dispatch
+  } = usePage()
+
   const handleClick = async (): Promise<void> => {
     const journeyId = uuidv4()
     const stepId = uuidv4()
@@ -190,8 +196,19 @@ export function AddJourneyButton({
       variant="extended"
       size="large"
       color="primary"
-      onClick={handleClick}
-      sx={{ position: 'fixed', bottom: 16, right: 16, zIndex: 1 }}
+      onClick={() => {
+        dispatch({
+          type: 'SetMobileDrawerOpenAction',
+          mobileDrawerOpen: !mobileDrawerOpen
+        })
+      }}
+      sx={{
+        position: 'fixed',
+        bottom: 16,
+        right: 16,
+        zIndex: 1,
+        display: { xs: 'flex', sm: 'none' }
+      }}
       disabled={loading}
     >
       {loading ? (

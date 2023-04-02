@@ -31,7 +31,7 @@ export function ContainedIconButton({
 }: ContainedIconProps): ReactElement {
   return (
     <Card variant="outlined" sx={{ borderRadius: 2 }}>
-      <CardActionArea onClick={onClick}>
+      <CardActionArea onClick={onClick} disabled={loading}>
         <Stack direction="row" alignItems="center" spacing={3} sx={{ p: 2 }}>
           <Box>
             <ImageThumbnail
@@ -42,28 +42,9 @@ export function ContainedIconButton({
             />
           </Box>
           <Box flexGrow={1} minWidth={0}>
-            <Typography
-              variant="subtitle2"
-              sx={{
-                textOverflow: 'ellipsis',
-                whiteSpace: 'nowrap',
-                overflow: 'hidden'
-              }}
-            >
-              {label}
-            </Typography>
-
+            <Typography variant="subtitle2">{label}</Typography>
             {description != null && (
-              <Typography
-                variant="caption"
-                sx={{
-                  textOverflow: 'ellipsis',
-                  whiteSpace: 'nowrap',
-                  overflow: 'hidden'
-                }}
-              >
-                {description} &nbsp;
-              </Typography>
+              <Typography variant="caption">{description}</Typography>
             )}
           </Box>
           <Icon color="primary" sx={{ pr: 8 }}>
