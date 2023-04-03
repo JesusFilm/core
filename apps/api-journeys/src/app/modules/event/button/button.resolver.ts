@@ -83,16 +83,21 @@ export class ChatOpenEventResolver {
         visitorId: visitor.id,
         createdAt: new Date().toISOString(),
         journeyId
-      }),
-      this.visitorService.update(visitor.id, {
-        lastChatStartedAt: new Date().toISOString(),
-        lastChatPlatform: input.value ?? undefined
       })
     ]
     if (visitor?.messagePlatform == null) {
       promises.push(
         this.visitorService.update(visitor.id, {
+          lastChatStartedAt: new Date().toISOString(),
+          lastChatPlatform: input.value ?? undefined,
           messagePlatform: input.value ?? undefined
+        })
+      )
+    } else {
+      promises.push(
+        this.visitorService.update(visitor.id, {
+          lastChatStartedAt: new Date().toISOString(),
+          lastChatPlatform: input.value ?? undefined
         })
       )
     }

@@ -23,6 +23,10 @@ describe('SignUpEventResolver', () => {
         switch (userId) {
           case 'user.id':
             return response
+          case 'withName.id':
+            return withName
+          case 'withEmail.id':
+            return withEmail
           default:
             return newVisitorResponse
         }
@@ -39,6 +43,16 @@ describe('SignUpEventResolver', () => {
 
   const response = {
     visitor: { id: 'visitor.id', name: 'test name', email: 'test@email.com' },
+    journeyId: 'journey.id'
+  }
+
+  const withName = {
+    visitor: { id: 'withName.id', name: 'test name' },
+    journeyId: 'journey.id'
+  }
+
+  const withEmail = {
+    visitor: { id: 'withEmail.id', email: 'test@email.com' },
     journeyId: 'journey.id'
   }
 
@@ -83,18 +97,27 @@ describe('SignUpEventResolver', () => {
       })
     })
 
-    it('should update visitor name', async () => {
+    it('should update visitor', async () => {
       await resolver.signUpSubmissionEventCreate('newVisitor.id', input)
 
       expect(vService.update).toHaveBeenCalledWith('newVisitor.id', {
+        name: input.name,
+        email: input.email
+      })
+    })
+
+    it('should update visitor name with input if visitor does not have name', async () => {
+      await resolver.signUpSubmissionEventCreate('withEmail.id', input)
+
+      expect(vService.update).toHaveBeenCalledWith('withEmail.id', {
         name: input.name
       })
     })
 
-    it('should update visitor email', async () => {
-      await resolver.signUpSubmissionEventCreate('newVisitor.id', input)
+    it('should update visitor email with input if visitor does not have email', async () => {
+      await resolver.signUpSubmissionEventCreate('withName.id', input)
 
-      expect(vService.update).toHaveBeenCalledWith('newVisitor.id', {
+      expect(vService.update).toHaveBeenCalledWith('withName.id', {
         email: input.email
       })
     })
