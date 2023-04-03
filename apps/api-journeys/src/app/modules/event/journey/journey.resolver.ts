@@ -44,8 +44,7 @@ export class JourneyViewEventResolver {
         __typename: 'JourneyViewEvent',
         visitorId: visitor.id,
         createdAt: new Date().toISOString()
-      }),
-      this.visitorService.getByUserIdAndJourneyId(userId, input.journeyId)
+      })
     ]
 
     if (visitor.userAgent == null) {

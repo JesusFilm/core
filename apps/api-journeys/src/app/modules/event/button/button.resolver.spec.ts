@@ -105,7 +105,12 @@ describe('ChatOpenEventResolver', () => {
   })
 
   const response = {
-    visitor: { id: 'visitor.id' },
+    visitor: { id: 'visitor.id', messagePlatform: MessagePlatform.facebook },
+    journeyId: 'journey.id'
+  }
+
+  const newResponse = {
+    visitor: { id: 'newVisitor.id' },
     journeyId: 'journey.id'
   }
 
@@ -113,7 +118,14 @@ describe('ChatOpenEventResolver', () => {
     provide: EventService,
     useFactory: () => ({
       save: jest.fn((event) => event),
-      validateBlockEvent: jest.fn(() => response)
+      validateBlockEvent: jest.fn((userId) => {
+        switch (userId) {
+          case 'userId':
+            return response
+          default:
+            return newResponse
+        }
+      })
     })
   }
 
@@ -158,10 +170,12 @@ describe('ChatOpenEventResolver', () => {
         value: MessagePlatform.facebook
       }
 
-      await resolver.chatOpenEventCreate('userId', input)
+      await resolver.chatOpenEventCreate('newUserId', input)
 
-      expect(vService.update).toHaveBeenCalledWith('visitor.id', {
-        messagePlatform: MessagePlatform.facebook
+      expect(vService.update).toHaveBeenCalledWith('newVisitor.id', {
+        messagePlatform: MessagePlatform.facebook,
+        lastChatStartedAt: new Date().toISOString(),
+        lastChatPlatform: MessagePlatform.facebook
       })
     })
 

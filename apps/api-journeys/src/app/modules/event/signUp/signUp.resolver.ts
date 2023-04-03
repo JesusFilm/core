@@ -45,20 +45,20 @@ export class SignUpSubmissionEventResolver {
       })
     ]
 
+    let req = {}
     if (visitor.name == null) {
-      promises.push(
-        this.visitorService.update(visitor.id, {
-          name: input.name
-        })
-      )
+      req = {
+        name: input.name
+      }
     }
-
     if (visitor.email == null) {
-      promises.push(
-        this.visitorService.update(visitor.id, {
-          email: input.email
-        })
-      )
+      req = {
+        ...req,
+        email: input.email
+      }
+    }
+    if (req != null) {
+      promises.push(this.visitorService.update(visitor.id, req))
     }
 
     const [signUpSubmissionEvent] = await Promise.all(promises)
