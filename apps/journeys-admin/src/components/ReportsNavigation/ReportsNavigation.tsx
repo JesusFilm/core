@@ -10,7 +10,7 @@ interface Props {
 export function ReportsNavigation({ selected }: Props): ReactElement {
   const { t } = useTranslation('journeys-admin')
   return (
-    <Stack direction="row" spacing={4} sx={{ pb: 6 }}>
+    <Stack direction="row" spacing={4} sx={{ pb: 8 }}>
       <NavigationButton
         selected={selected === 'journeys'}
         value={t('Journeys')}
