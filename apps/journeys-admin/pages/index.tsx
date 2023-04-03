@@ -19,6 +19,7 @@ import { createApolloClient } from '../src/libs/apolloClient'
 import i18nConfig from '../next-i18next.config'
 import JourneyListMenu from '../src/components/JourneyList/JourneyListMenu/JourneyListMenu'
 import { useTermsRedirect } from '../src/libs/useTermsRedirect/useTermsRedirect'
+import { OnboardingPanelContent } from '../src/components/OnboardingPanelContent'
 
 export const ACCEPT_USER_INVITE = gql`
   mutation UserInviteAcceptAll {
@@ -60,6 +61,8 @@ function IndexPage(): ReactElement {
         title={pageTitle}
         authUser={AuthUser}
         menu={<JourneyListMenu router={router} onClick={handleClick} />}
+        sidePanelChildren={<OnboardingPanelContent />}
+        sidePanelTitle={t('Create a new journey')}
       >
         <JourneyList
           journeys={journeys}
