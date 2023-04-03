@@ -99,7 +99,7 @@ describe('getActionLabel', () => {
     expect(result).toEqual(action.journey?.slug)
   })
 
-  it('should return Unknwon Journey for NavigateToJourneyAction if journey is null', () => {
+  it('should return Unknown Journey for NavigateToJourneyAction if journey is null', () => {
     const action: NavigateToJourneyAction = {
       __typename: 'NavigateToJourneyAction',
       parentBlockId: 'parentBlock.id',
