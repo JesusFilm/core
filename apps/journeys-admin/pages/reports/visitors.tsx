@@ -13,6 +13,7 @@ import { PageWrapper } from '../../src/components/NewPageWrapper'
 import i18nConfig from '../../next-i18next.config'
 import { useTermsRedirect } from '../../src/libs/useTermsRedirect/useTermsRedirect'
 import { VisitorsList } from '../../src/components/VisitorsList'
+import { ReportsNavigation } from '../../src/components/ReportsNavigation'
 
 function ReportsVisitorsPage(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
@@ -24,6 +25,7 @@ function ReportsVisitorsPage(): ReactElement {
     <>
       <NextSeo title={t('Visitors Report')} />
       <PageWrapper title={t('Visitors Report')} authUser={AuthUser}>
+        <ReportsNavigation selected="visitors" />
         <VisitorsList />
       </PageWrapper>
     </>
