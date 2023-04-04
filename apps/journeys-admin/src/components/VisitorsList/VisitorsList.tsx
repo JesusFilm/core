@@ -177,11 +177,11 @@ export function VisitorsList(): ReactElement {
           : null,
       lastChatPlatform,
       lastLinkAction,
-      lastTextResponse,
+      lastTextResponse: lastTextResponse ?? '',
       lastRadioQuestion:
         lastRadioQuestion != null && lastRadioOptionSubmission != null
           ? `${lastRadioQuestion}: ${lastRadioOptionSubmission}`
-          : null
+          : ''
     }
   })
 
