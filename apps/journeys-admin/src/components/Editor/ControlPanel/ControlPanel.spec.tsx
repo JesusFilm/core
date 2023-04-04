@@ -987,7 +987,7 @@ describe('ControlPanel', () => {
     })
     expect(dispatch).toHaveBeenCalledWith({
       type: 'SetDrawerPropsAction',
-      title: 'Social Share Appearance',
+      title: 'Social Share Preview',
       mobileOpen: false,
       children: <SocialShareAppearance />
     })

@@ -52,7 +52,7 @@ export function ControlPanel(): ReactElement {
       })
       dispatch({
         type: 'SetDrawerPropsAction',
-        title: 'Social Share Appearance',
+        title: 'Social Share Preview',
         mobileOpen: false,
         children: <SocialShareAppearance />
       })

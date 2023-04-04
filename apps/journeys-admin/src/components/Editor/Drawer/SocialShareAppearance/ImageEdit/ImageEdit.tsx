@@ -1,6 +1,6 @@
 import { ReactElement, useState } from 'react'
 import { gql, useMutation } from '@apollo/client'
-import ImageIcon from '@mui/icons-material/Image'
+import EditIcon from '@mui/icons-material/Edit'
 import Typography from '@mui/material/Typography'
 import Button from '@mui/material/Button'
 import Box from '@mui/material/Box'
@@ -195,19 +195,19 @@ export function ImageEdit(): ReactElement {
     <>
       {journey != null ? (
         <Box
-          sx={{
-            overflow: 'hidden',
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            position: 'relative',
-            borderRadius: 2,
-            width: '100%',
-            height: 194,
-            mb: 6,
-            backgroundColor: '#EFEFEF'
-          }}
+          overflow="hidden"
+          display="flex"
+          justifyContent="center"
+          alignItems="center"
+          position="relative"
+          borderRadius={2}
+          width="100%"
+          height={194}
+          mb={6}
+          bgcolor="#EFEFEF"
+          sx={{ cursor: 'pointer' }}
           data-testid="social-image-edit"
+          onClick={handleOpen}
         >
           {journey?.primaryImageBlock?.src != null ? (
             <Box
@@ -221,7 +221,7 @@ export function ImageEdit(): ReactElement {
               }}
             />
           ) : (
-            <ImageIcon fontSize="large" />
+            <EditIcon fontSize="large" />
           )}
 
           <Button
@@ -235,7 +235,7 @@ export function ImageEdit(): ReactElement {
               backgroundColor: 'background.paper'
             }}
             startIcon={
-              <ImageIcon fontSize="small" sx={{ color: 'secondary.dark' }} />
+              <EditIcon fontSize="small" sx={{ color: 'secondary.dark' }} />
             }
             onClick={handleOpen}
           >
@@ -245,7 +245,12 @@ export function ImageEdit(): ReactElement {
           </Button>
         </Box>
       ) : (
-        <Box sx={{ position: 'relative', mb: 6 }}>
+        <Box
+          sx={{ cursor: 'pointer' }}
+          mb={6}
+          position="relative"
+          onClick={handleOpen}
+        >
           <Skeleton
             variant="rectangular"
             width="100%"
@@ -263,7 +268,7 @@ export function ImageEdit(): ReactElement {
               backgroundColor: 'background.paper'
             }}
             startIcon={
-              <ImageIcon fontSize="small" sx={{ color: 'secondary.dark' }} />
+              <EditIcon fontSize="small" sx={{ color: 'secondary.dark' }} />
             }
             onClick={handleOpen}
             disabled

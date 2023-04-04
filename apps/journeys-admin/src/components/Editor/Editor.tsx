@@ -38,7 +38,7 @@ export function Editor({
         initialState={{
           steps,
           selectedStep,
-          drawerTitle: 'Social Share Appearance',
+          drawerTitle: 'Social Share Preview',
           drawerChildren: <SocialShareAppearance />,
           journeyEditContentComponent: view ?? ActiveJourneyEditContent.Canvas
         }}

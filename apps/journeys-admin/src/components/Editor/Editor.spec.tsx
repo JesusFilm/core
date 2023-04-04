@@ -76,7 +76,7 @@ describe('Editor', () => {
       </MockedProvider>
     )
     expect(getByText('Journey')).toBeInTheDocument()
-    expect(getByText('Social Share Appearance')).toBeInTheDocument()
+    expect(getByText('Social Share Preview')).toBeInTheDocument()
     expect(getByText('Social Image')).toBeInTheDocument()
   })
 
