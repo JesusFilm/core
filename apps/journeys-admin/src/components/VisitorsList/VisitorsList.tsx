@@ -192,8 +192,14 @@ export function VisitorsList(): ReactElement {
   }
 
   return (
-    <Stack spacing={6} sx={{ alignItems: 'center' }}>
-      <Box sx={{ height: '80vh', width: '100%' }}>
+    <Stack
+      spacing={6}
+      sx={{
+        height: { xs: '600px', sm: '100%' },
+        alignItems: 'center'
+      }}
+    >
+      <Box sx={{ height: '95%', width: '100%' }}>
         <StyledDataGrid
           columns={columns}
           rows={rows}

@@ -21,7 +21,7 @@ export function NavigationButton({
         variant={selected ? 'contained' : 'outlined'}
         sx={{
           p: 4,
-          minWidth: '250px',
+          minWidth: { xs: '120px', md: '250px' },
           borderRadius: 1,
           backgroundColor: selected ? undefined : 'background.paper'
         }}
