@@ -145,12 +145,14 @@ export function VisitorsList(): ReactElement {
       field: 'lastTextResponse',
       headerName: t('User Data'),
       flex: 1,
+      minWidth: 300,
       renderCell: (cellValues) => <CellTextField value={cellValues.value} />
     },
     {
       field: 'lastRadioQuestion',
       headerName: t('Polls'),
       flex: 1,
+      minWidth: 300,
       renderCell: (cellValues) => <CellTextField value={cellValues.value} />
     }
   ]
