@@ -894,7 +894,7 @@ describe('ControlPanel', () => {
       steps: [step1, step2, step3],
       selectedBlock: step1,
       drawerMobileOpen: false,
-      activeTab: ActiveTab.Cards,
+      activeTab: ActiveTab.Properties,
       activeFab: ActiveFab.Add,
       journeyEditContentComponent: ActiveJourneyEditContent.SocialPreview
     }
@@ -944,7 +944,7 @@ describe('ControlPanel', () => {
       steps: [step1, step2, step3],
       selectedBlock: step1,
       drawerMobileOpen: false,
-      activeTab: ActiveTab.Cards,
+      activeTab: ActiveTab.Properties,
       activeFab: ActiveFab.Add,
       journeyEditContentComponent: ActiveJourneyEditContent.Canvas
     }

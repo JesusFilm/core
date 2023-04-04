@@ -126,7 +126,6 @@ export function DuplicateBlock({
           aria-label={`Duplicate ${blockLabel} Actions`}
           disabled={disabled}
           onClick={handleDuplicateBlock}
-          disabled={disabled}
         >
           <ContentCopyRounded />
         </IconButton>
