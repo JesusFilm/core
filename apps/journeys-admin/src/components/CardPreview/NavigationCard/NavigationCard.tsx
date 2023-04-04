@@ -48,7 +48,9 @@ export function NavigationCard({
           width: 87,
           height: 132,
           m: 1,
-          border: '3x solid transparent'
+          border: id === 'goals' ? 'none' : '3px solid transparent',
+          backgroundColor:
+            id === 'goals' ? 'background.default' : 'background.paper'
         }}
       >
         {loading ? (

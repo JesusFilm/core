@@ -13,7 +13,7 @@ import type { TreeBlock } from '../block'
 import { BlockFields_StepBlock as StepBlock } from '../block/__generated__/BlockFields'
 
 export enum ActiveTab {
-  Cards = 0,
+  Journey = 0,
   Properties = 1,
   Blocks = 2
 }
@@ -26,7 +26,8 @@ export enum ActiveFab {
 
 export enum ActiveJourneyEditContent {
   Canvas = 'canvas',
-  SocialPreview = 'social'
+  SocialPreview = 'social',
+  Action = 'action'
 }
 
 export interface EditorState {
@@ -185,7 +186,7 @@ export const EditorContext = createContext<{
   state: {
     steps: [],
     drawerMobileOpen: false,
-    activeTab: ActiveTab.Cards,
+    activeTab: ActiveTab.Journey,
     activeFab: ActiveFab.Add,
     journeyEditContentComponent: ActiveJourneyEditContent.Canvas
   },
@@ -206,7 +207,7 @@ export function EditorProvider({
     selectedStep: initialState?.steps?.[0],
     selectedBlock: initialState?.steps?.[0],
     drawerMobileOpen: false,
-    activeTab: ActiveTab.Cards,
+    activeTab: ActiveTab.Journey,
     activeFab: ActiveFab.Add,
     journeyEditContentComponent: ActiveJourneyEditContent.Canvas,
     ...initialState

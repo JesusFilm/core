@@ -40,7 +40,12 @@ export function ControlPanel(): ReactElement {
     if (step != null) {
       dispatch({ type: 'SetSelectedStepAction', step })
       dispatch({ type: 'SetActiveFabAction', activeFab: ActiveFab.Add })
-    } else if (view != null) {
+    } else if (view === ActiveJourneyEditContent.Action) {
+      dispatch({
+        type: 'SetJourneyEditContentAction',
+        component: ActiveJourneyEditContent.Action
+      })
+    } else if (view === ActiveJourneyEditContent.SocialPreview) {
       dispatch({
         type: 'SetJourneyEditContentAction',
         component: ActiveJourneyEditContent.SocialPreview
@@ -66,7 +71,7 @@ export function ControlPanel(): ReactElement {
     <Box sx={{ width: '100%', position: 'relative' }}>
       <Box sx={{ position: 'absolute', top: '-64px', right: 20, zIndex: 1 }}>
         {journeyEditContentComponent ===
-        ActiveJourneyEditContent.SocialPreview ? (
+          ActiveJourneyEditContent.SocialPreview && (
           <MuiFab
             color="primary"
             data-testid="social-edit-fab"
@@ -75,7 +80,8 @@ export function ControlPanel(): ReactElement {
           >
             <EditIcon />
           </MuiFab>
-        ) : (
+        )}
+        {journeyEditContentComponent === ActiveJourneyEditContent.Canvas && (
           <Fab
             visible={activeTab !== ActiveTab.Blocks}
             onAddClick={handleAddFabClick}
@@ -96,7 +102,7 @@ export function ControlPanel(): ReactElement {
           aria-label="`editor` tabs"
         >
           <Tab
-            label="Cards"
+            label="Journey"
             {...tabA11yProps('control-panel', 0)}
             sx={{ flexGrow: 1 }}
           />

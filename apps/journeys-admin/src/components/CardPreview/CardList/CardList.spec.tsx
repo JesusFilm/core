@@ -242,7 +242,7 @@ describe('CardList', () => {
     expect(dragHandle[0]).toHaveClass('MuiSvgIcon-root')
   })
 
-  it('contains social preview card', () => {
+  it('contains goals card', () => {
     const { getByTestId } = render(
       <MockedProvider>
         <DragDropContext>
@@ -256,10 +256,9 @@ describe('CardList', () => {
         </DragDropContext>
       </MockedProvider>
     )
-    expect(getByTestId('social-preview-navigation-card')).toBeInTheDocument()
+    expect(getByTestId('goals-navigation-card')).toBeInTheDocument()
   })
-
-  it('navigates on social preview card click', async () => {
+  it('navigates on goals card click', async () => {
     const handleChange = jest.fn()
     const { getAllByRole } = render(
       <MockedProvider>
@@ -292,6 +291,58 @@ describe('CardList', () => {
       </MockedProvider>
     )
     fireEvent.click(getAllByRole('button')[0])
+    expect(handleChange).toHaveBeenCalledWith('goals')
+  })
+
+  it('contains social preview card', () => {
+    const { getByTestId } = render(
+      <MockedProvider>
+        <DragDropContext>
+          <CardList
+            steps={steps}
+            selected={selected}
+            showAddButton
+            droppableProvided={droppableProvided}
+            showNavigationCards
+          />
+        </DragDropContext>
+      </MockedProvider>
+    )
+    expect(getByTestId('social-preview-navigation-card')).toBeInTheDocument()
+  })
+  it('navigates on social preview card click', async () => {
+    const handleChange = jest.fn()
+    const { getAllByRole } = render(
+      <MockedProvider>
+        <JourneyProvider
+          value={{
+            journey: {
+              id: 'journeyId',
+              themeMode: ThemeMode.light,
+              themeName: ThemeName.base,
+              language: {
+                __typename: 'Language',
+                id: '529',
+                bcp47: 'en',
+                iso3: 'eng'
+              }
+            } as unknown as Journey,
+            admin: true
+          }}
+        >
+          <DragDropContext>
+            <CardList
+              steps={steps}
+              selected={selected}
+              droppableProvided={droppableProvided}
+              handleChange={handleChange}
+              showNavigationCards
+            />
+          </DragDropContext>
+        </JourneyProvider>
+      </MockedProvider>
+    )
+    fireEvent.click(getAllByRole('button')[1])
     expect(handleChange).toHaveBeenCalledWith('social')
   })
 

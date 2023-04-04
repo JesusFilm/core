@@ -124,6 +124,7 @@ export function DuplicateBlock({
         <IconButton
           id={`duplicate-${blockLabel}-actions`}
           aria-label={`Duplicate ${blockLabel} Actions`}
+          disabled={disabled}
           onClick={handleDuplicateBlock}
           disabled={disabled}
         >

@@ -19,8 +19,9 @@ import {
   ActiveJourneyEditContent,
   useEditor
 } from '@core/journeys/ui/EditorProvider'
-import Image from 'next/image'
 import { CustomIcon } from '@core/shared/ui/CustomIcon'
+import Divider from '@mui/material/Divider'
+import Image from 'next/image'
 
 import { FramePortal } from '../../FramePortal'
 import { ThemeName, ThemeMode } from '../../../../__generated__/globalTypes'
@@ -86,6 +87,43 @@ export function CardList({
       footer={showAddButton === true && <AddCardSlide />}
       view={state.journeyEditContentComponent}
     >
+      {showNavigationCards && (
+        <NavigationCard
+          key="goals"
+          id="goals"
+          testId="goals-navigation-card"
+          title="Goals"
+          destination={ActiveJourneyEditContent.Action}
+          outlined={
+            state.journeyEditContentComponent ===
+            ActiveJourneyEditContent.Action
+          }
+          header={
+            <Box
+              bgcolor={(theme) => theme.palette.background.paper}
+              borderRadius={1}
+              width={72}
+              height={72}
+              display="flex"
+              justifyContent="center"
+              alignItems="center"
+            >
+              <CustomIcon name="Target" color="error" />
+            </Box>
+          }
+          loading={journey == null}
+        />
+      )}
+      {showNavigationCards && (
+        <Divider
+          id="cardlist-divider"
+          orientation="vertical"
+          sx={{
+            borderWidth: 1,
+            mr: 1
+          }}
+        />
+      )}
       {showNavigationCards && (
         <NavigationCard
           key="social"

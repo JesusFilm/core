@@ -125,7 +125,7 @@ describe('ControlPanel', () => {
       </MockedProvider>
     )
     // Default start on Cards
-    expect(getByRole('tabpanel', { name: 'Cards' })).toBeInTheDocument()
+    expect(getByRole('tabpanel', { name: 'Journey' })).toBeInTheDocument()
     fireEvent.click(getByRole('tab', { name: 'Properties' }))
     expect(getByRole('tabpanel', { name: 'Properties' })).toBeInTheDocument()
     expect(getByText('Unlocked Card')).toBeInTheDocument()
@@ -779,7 +779,7 @@ describe('ControlPanel', () => {
     })
   })
 
-  it('should keep cards tab open when selecting a card', () => {
+  it('should keep Journey tab open when selecting a card', () => {
     const { getByRole, getByTestId } = render(
       <MockedProvider>
         <JourneyProvider
@@ -804,12 +804,12 @@ describe('ControlPanel', () => {
         </JourneyProvider>
       </MockedProvider>
     )
-    expect(getByRole('tab', { name: 'Cards' })).toHaveAttribute(
+    expect(getByRole('tab', { name: 'Journey' })).toHaveAttribute(
       'aria-selected',
       'true'
     )
     fireEvent.click(getByTestId('preview-step3.id'))
-    expect(getByRole('tab', { name: 'Cards' })).toHaveAttribute(
+    expect(getByRole('tab', { name: 'Journey' })).toHaveAttribute(
       'aria-selected',
       'true'
     )
@@ -876,13 +876,13 @@ describe('ControlPanel', () => {
         </JourneyProvider>
       </MockedProvider>
     )
-    expect(getByRole('tab', { name: 'Cards' })).toHaveAttribute(
+    expect(getByRole('tab', { name: 'Journey' })).toHaveAttribute(
       'aria-selected',
       'true'
     )
     fireEvent.click(getByTestId('AddIcon'))
     await waitFor(() =>
-      expect(getByRole('tab', { name: 'Cards' })).toHaveAttribute(
+      expect(getByRole('tab', { name: 'Journey' })).toHaveAttribute(
         'aria-selected',
         'true'
       )
