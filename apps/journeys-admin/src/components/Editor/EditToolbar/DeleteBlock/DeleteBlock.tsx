@@ -24,11 +24,13 @@ export const BLOCK_DELETE = gql`
 interface DeleteBlockProps {
   variant: 'button' | 'list-item'
   closeMenu?: () => void
+  disabled?: boolean
 }
 
 export function DeleteBlock({
   variant = 'button',
-  closeMenu
+  closeMenu,
+  disabled = false
 }: DeleteBlockProps): ReactElement {
   const [blockDelete] = useMutation<BlockDelete>(BLOCK_DELETE)
   const { enqueueSnackbar } = useSnackbar()
@@ -113,7 +115,7 @@ export function DeleteBlock({
           aria-controls="delete-block-actions"
           aria-haspopup="true"
           aria-expanded="true"
-          disabled={selectedBlock == null}
+          disabled={selectedBlock == null || disabled}
           onClick={label === 'Card' ? handleOpenDialog : handleDeleteBlock}
         >
           <DeleteOutlineRounded />
@@ -122,7 +124,7 @@ export function DeleteBlock({
         <MenuItem
           label={`Delete ${label}`}
           icon={<DeleteOutlineRounded />}
-          disabled={selectedBlock == null}
+          disabled={selectedBlock == null || disabled}
           onClick={label === 'Card' ? handleOpenDialog : handleDeleteBlock}
         />
       )}

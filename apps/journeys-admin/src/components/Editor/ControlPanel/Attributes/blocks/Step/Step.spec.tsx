@@ -37,7 +37,7 @@ describe('Step', () => {
   const state: EditorState = {
     steps: [],
     drawerMobileOpen: false,
-    activeTab: ActiveTab.Cards,
+    activeTab: ActiveTab.Journey,
     activeFab: ActiveFab.Add,
     journeyEditContentComponent: ActiveJourneyEditContent.Canvas
   }
@@ -101,7 +101,7 @@ describe('Step', () => {
         state: {
           steps: [step1, step2],
           drawerMobileOpen: false,
-          activeTab: ActiveTab.Cards,
+          activeTab: ActiveTab.Journey,
           activeFab: ActiveFab.Add,
           journeyEditContentComponent: ActiveJourneyEditContent.Canvas
         },
@@ -176,7 +176,7 @@ describe('Step', () => {
         state: {
           steps: [step1, step2, step5],
           drawerMobileOpen: false,
-          activeTab: ActiveTab.Cards,
+          activeTab: ActiveTab.Journey,
           activeFab: ActiveFab.Add,
           journeyEditContentComponent: ActiveJourneyEditContent.Canvas
         },
@@ -242,7 +242,7 @@ describe('Step', () => {
         state: {
           steps: [step1, step2],
           drawerMobileOpen: false,
-          activeTab: ActiveTab.Cards,
+          activeTab: ActiveTab.Journey,
           activeFab: ActiveFab.Add,
           journeyEditContentComponent: ActiveJourneyEditContent.Canvas
         },
