@@ -50,6 +50,7 @@ describe('TitleEdit', () => {
     )
     expect(getByText('journey title')).toBeInTheDocument()
   })
+
   it('should update seo title', async () => {
     const result = jest.fn(() => ({
       data: {

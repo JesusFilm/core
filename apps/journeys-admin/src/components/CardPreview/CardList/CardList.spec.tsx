@@ -258,6 +258,7 @@ describe('CardList', () => {
     )
     expect(getByTestId('goals-navigation-card')).toBeInTheDocument()
   })
+
   it('navigates on goals card click', async () => {
     const handleChange = jest.fn()
     const { getAllByRole } = render(
