@@ -689,6 +689,7 @@ const Template: Story = ({ ...args }) => {
             steps={args.steps}
             showAddButton={args.showAddButton}
             isDraggable={args.isDraggable}
+            showNavigationCards={args.showNavigationCards ?? false}
           />
         </DragDropContext>
       </JourneyProvider>
@@ -716,6 +717,12 @@ AddButton.args = {
 export const Loading = Template.bind({})
 Loading.args = {
   steps: undefined
+}
+
+export const WithNavigationCards = Template.bind({})
+WithNavigationCards.args = {
+  steps,
+  showNavigationCards: true
 }
 
 export default CardPreviewStory as Meta
