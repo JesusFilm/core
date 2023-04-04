@@ -1,10 +1,7 @@
 import { ReactElement } from 'react'
 import ContentCopyRounded from '@mui/icons-material/ContentCopyRounded'
 import IconButton from '@mui/material/IconButton'
-import {
-  ActiveJourneyEditContent,
-  useEditor
-} from '@core/journeys/ui/EditorProvider'
+import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { transformer } from '@core/journeys/ui/transformer'
 import type { TreeBlock } from '@core/journeys/ui/block'
@@ -20,6 +17,7 @@ import {
 
 interface DuplicateBlockProps {
   variant: 'button' | 'list-item'
+  disabled?: boolean
 }
 
 export const BLOCK_DUPLICATE = gql`
@@ -30,11 +28,14 @@ export const BLOCK_DUPLICATE = gql`
   }
 `
 
-export function DuplicateBlock({ variant }: DuplicateBlockProps): ReactElement {
+export function DuplicateBlock({
+  variant,
+  disabled = false
+}: DuplicateBlockProps): ReactElement {
   const [blockDuplicate] = useMutation<BlockDuplicate>(BLOCK_DUPLICATE)
 
   const {
-    state: { selectedBlock, journeyEditContentComponent },
+    state: { selectedBlock },
     dispatch
   } = useEditor()
   const { enqueueSnackbar } = useSnackbar()
@@ -123,9 +124,7 @@ export function DuplicateBlock({ variant }: DuplicateBlockProps): ReactElement {
         <IconButton
           id={`duplicate-${blockLabel}-actions`}
           aria-label={`Duplicate ${blockLabel} Actions`}
-          disabled={
-            journeyEditContentComponent === ActiveJourneyEditContent.Action
-          }
+          disabled={disabled}
           onClick={handleDuplicateBlock}
         >
           <ContentCopyRounded />
@@ -134,10 +133,7 @@ export function DuplicateBlock({ variant }: DuplicateBlockProps): ReactElement {
         <MenuItem
           label={`Duplicate ${blockLabel}`}
           icon={<ContentCopyRounded color="inherit" />}
-          disabled={
-            selectedBlock == null ||
-            journeyEditContentComponent === ActiveJourneyEditContent.Action
-          }
+          disabled={selectedBlock == null || disabled}
           onClick={handleDuplicateBlock}
         />
       )}

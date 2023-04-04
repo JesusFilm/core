@@ -4,10 +4,7 @@ import DeleteOutlineRounded from '@mui/icons-material/DeleteOutlineRounded'
 import { gql, useMutation } from '@apollo/client'
 import { Dialog } from '@core/shared/ui/Dialog'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
-import {
-  ActiveJourneyEditContent,
-  useEditor
-} from '@core/journeys/ui/EditorProvider'
+import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { useSnackbar } from 'notistack'
 import Typography from '@mui/material/Typography'
 import { BlockDelete } from '../../../../../__generated__/BlockDelete'
@@ -27,18 +24,20 @@ export const BLOCK_DELETE = gql`
 interface DeleteBlockProps {
   variant: 'button' | 'list-item'
   closeMenu?: () => void
+  disabled?: boolean
 }
 
 export function DeleteBlock({
   variant = 'button',
-  closeMenu
+  closeMenu,
+  disabled = false
 }: DeleteBlockProps): ReactElement {
   const [blockDelete] = useMutation<BlockDelete>(BLOCK_DELETE)
   const { enqueueSnackbar } = useSnackbar()
 
   const { journey } = useJourney()
   const {
-    state: { selectedBlock, selectedStep, steps, journeyEditContentComponent },
+    state: { selectedBlock, selectedStep, steps },
     dispatch
   } = useEditor()
 
@@ -116,10 +115,7 @@ export function DeleteBlock({
           aria-controls="delete-block-actions"
           aria-haspopup="true"
           aria-expanded="true"
-          disabled={
-            selectedBlock == null ||
-            journeyEditContentComponent === ActiveJourneyEditContent.Action
-          }
+          disabled={selectedBlock == null || disabled}
           onClick={label === 'Card' ? handleOpenDialog : handleDeleteBlock}
         >
           <DeleteOutlineRounded />
@@ -128,10 +124,7 @@ export function DeleteBlock({
         <MenuItem
           label={`Delete ${label}`}
           icon={<DeleteOutlineRounded />}
-          disabled={
-            selectedBlock == null ||
-            journeyEditContentComponent === ActiveJourneyEditContent.Action
-          }
+          disabled={selectedBlock == null || disabled}
           onClick={label === 'Card' ? handleOpenDialog : handleDeleteBlock}
         />
       )}
