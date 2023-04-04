@@ -1,293 +1,270 @@
-import { render, fireEvent, waitFor } from '@testing-library/react'
+import Box from '@mui/material/Box'
+import { ReactElement, useState, useMemo } from 'react'
+import { transformer } from '@core/journeys/ui/transformer'
+import { CARD_FIELDS } from '@core/journeys/ui/Card/cardFields'
+import { STEP_FIELDS } from '@core/journeys/ui/Step/stepFields'
 import type { TreeBlock } from '@core/journeys/ui/block'
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
-import { MockedProvider } from '@apollo/client/testing'
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import Skeleton from '@mui/material/Skeleton'
+import Stack from '@mui/material/Stack'
+import { ActiveJourneyEditContent } from '@core/journeys/ui/EditorProvider'
 import { v4 as uuidv4 } from 'uuid'
-import { InMemoryCache } from '@apollo/client'
-import {
-  GetJourney_journey as Journey,
-  GetJourney_journey_blocks_StepBlock as StepBlock
-} from '../../../__generated__/GetJourney'
-import { ThemeName, ThemeMode } from '../../../__generated__/globalTypes'
-import { STEP_AND_CARD_BLOCK_CREATE } from './CardPreview'
-import { CardPreview } from '.'
+import { useMutation, gql } from '@apollo/client'
+import { DragDropContext, Droppable } from 'react-beautiful-dnd'
+import { StepsOrderUpdate } from '../../../__generated__/StepsOrderUpdate'
+import { StepAndCardBlockCreate } from '../../../__generated__/StepAndCardBlockCreate'
+import { GetJourney_journey_blocks_StepBlock as StepBlock } from '../../../__generated__/GetJourney'
+import { CardList } from './CardList'
+import { OnSelectProps } from './OnSelectProps'
 
-jest.mock('uuid', () => ({
-  __esModule: true,
-  v4: jest.fn()
-}))
+export interface CardPreviewProps {
+  onSelect?: ({ step, view }: OnSelectProps) => void
+  selected?: TreeBlock<StepBlock>
+  steps?: Array<TreeBlock<StepBlock>>
+  showAddButton?: boolean
+  isDraggable?: boolean
+  showNavigationCards?: boolean
+}
 
-const mockUuidv4 = uuidv4 as jest.MockedFunction<typeof uuidv4>
+export const STEP_AND_CARD_BLOCK_CREATE = gql`
+  ${STEP_FIELDS}
+  ${CARD_FIELDS}
+  mutation StepAndCardBlockCreate($journeyId: ID!, $stepId: ID!, $cardId: ID) {
+    stepBlockCreate(input: { id: $stepId, journeyId: $journeyId }) {
+      ...StepFields
+    }
+    cardBlockCreate(
+      input: { id: $cardId, journeyId: $journeyId, parentBlockId: $stepId }
+    ) {
+      ...CardFields
+    }
+  }
+`
 
-describe('CardPreview', () => {
-  const mocks = [
-    {
-      request: {
-        query: STEP_AND_CARD_BLOCK_CREATE,
-        variables: {
-          journeyId: 'journeyId',
-          stepId: 'stepId',
-          cardId: 'cardId'
-        }
+export const STEPS_ORDER_UPDATE = gql`
+  mutation StepsOrderUpdate($id: ID!, $journeyId: ID!, $parentOrder: Int!) {
+    blockOrderUpdate(
+      id: $id
+      journeyId: $journeyId
+      parentOrder: $parentOrder
+    ) {
+      id
+      parentOrder
+    }
+  }
+`
+
+export function CardPreview({
+  steps,
+  selected,
+  onSelect,
+  showAddButton,
+  isDraggable,
+  showNavigationCards
+}: CardPreviewProps): ReactElement {
+  const [isDragging, setIsDragging] = useState(false)
+  const [stepAndCardBlockCreate] = useMutation<StepAndCardBlockCreate>(
+    STEP_AND_CARD_BLOCK_CREATE
+  )
+  const [stepsOrderUpdate] = useMutation<StepsOrderUpdate>(STEPS_ORDER_UPDATE)
+  const { journey } = useJourney()
+
+  const handleChange = (selectedId: string): void => {
+    switch (selectedId) {
+      case 'goals':
+        onSelect?.({ view: ActiveJourneyEditContent.Action })
+        return
+      case 'social':
+        onSelect?.({ view: ActiveJourneyEditContent.SocialPreview })
+        return
+    }
+    if (steps == null) return
+
+    const selectedStep = steps.find(({ id }) => id === selectedId)
+    selectedStep != null && onSelect?.({ step: selectedStep })
+  }
+
+  const handleClick = async (): Promise<void> => {
+    if (journey == null || steps == null) return
+
+    const stepId = uuidv4()
+    const cardId = uuidv4()
+    const { data } = await stepAndCardBlockCreate({
+      variables: {
+        journeyId: journey.id,
+        stepId,
+        cardId
       },
-      result: {
-        data: {
-          stepBlockCreate: {
-            id: 'stepId',
-            parentBlockId: null,
-            parentOrder: 0,
-            locked: false,
-            nextBlockId: null,
-            __typename: 'StepBlock'
-          },
-          cardBlockCreate: {
-            id: 'cardId',
-            parentBlockId: 'stepId',
-            parentOrder: 0,
-            backgroundColor: null,
-            coverBlockId: null,
-            themeMode: null,
-            themeName: null,
-            fullscreen: false,
-            __typename: 'CardBlock'
-          }
-        }
-      }
-    }
-  ]
-
-  it('should call onSelect when step is clicked', () => {
-    const onSelect = jest.fn()
-    const step: TreeBlock<StepBlock> = {
-      id: 'step.id',
-      __typename: 'StepBlock',
-      parentBlockId: null,
-      parentOrder: 0,
-      locked: false,
-      nextBlockId: null,
-      children: []
-    }
-    const { getByTestId } = render(
-      <MockedProvider>
-        <JourneyProvider
-          value={{
-            journey: {
-              id: 'journeyId',
-              themeMode: ThemeMode.light,
-              themeName: ThemeName.base,
-              language: {
-                __typename: 'Language',
-                id: '529',
-                bcp47: 'en',
-                iso3: 'eng'
+      update(cache, { data }) {
+        if (data?.stepBlockCreate != null && data?.cardBlockCreate != null) {
+          cache.modify({
+            id: cache.identify({ __typename: 'Journey', id: journey.id }),
+            fields: {
+              blocks(existingBlockRefs = []) {
+                const newStepBlockRef = cache.writeFragment({
+                  data: data.stepBlockCreate,
+                  fragment: gql`
+                    fragment NewBlock on Block {
+                      id
+                    }
+                  `
+                })
+                const newCardBlockRef = cache.writeFragment({
+                  data: data.cardBlockCreate,
+                  fragment: gql`
+                    fragment NewBlock on Block {
+                      id
+                    }
+                  `
+                })
+                return [...existingBlockRefs, newStepBlockRef, newCardBlockRef]
               }
-            } as unknown as Journey,
-            admin: true
-          }}
-        >
-          <CardPreview onSelect={onSelect} steps={[step]} />
-        </JourneyProvider>
-      </MockedProvider>
-    )
-    fireEvent.click(getByTestId('preview-step.id'))
-    expect(onSelect).toHaveBeenCalledWith({ step })
-  })
-
-  it('should create step and card when add button is clicked', async () => {
-    mockUuidv4.mockReturnValueOnce('stepId')
-    mockUuidv4.mockReturnValueOnce('cardId')
-    const onSelect = jest.fn()
-
-    const { getAllByRole } = render(
-      <MockedProvider mocks={mocks}>
-        <JourneyProvider
-          value={{
-            journey: {
-              id: 'journeyId',
-              themeMode: ThemeMode.light,
-              themeName: ThemeName.base
-            } as unknown as Journey,
-            admin: true
-          }}
-        >
-          <CardPreview steps={[]} onSelect={onSelect} showAddButton />
-        </JourneyProvider>
-      </MockedProvider>
-    )
-    fireEvent.click(getAllByRole('button')[0])
-    await waitFor(() =>
-      expect(onSelect).toHaveBeenCalledWith({
-        step: {
-          __typename: 'StepBlock',
-          children: [
-            {
-              __typename: 'CardBlock',
-              backgroundColor: null,
-              children: [],
-              coverBlockId: null,
-              fullscreen: false,
-              id: 'cardId',
-              parentBlockId: 'stepId',
-              parentOrder: 0,
-              themeMode: null,
-              themeName: null
             }
-          ],
-          id: 'stepId',
-          locked: false,
-          nextBlockId: null,
-          parentBlockId: null,
-          parentOrder: 0
+          })
         }
-      })
-    )
-  })
-
-  it('should create a new cache reference for the newly created card', async () => {
-    mockUuidv4.mockReturnValueOnce('stepId')
-    mockUuidv4.mockReturnValueOnce('cardId')
-    const onSelect = jest.fn()
-
-    const cache = new InMemoryCache()
-    cache.restore({
-      'Journey:journeyId': {
-        blocks: [],
-        id: 'journeyId',
-        __typename: 'Journey'
       }
     })
-
-    const { getAllByRole } = render(
-      <MockedProvider cache={cache} mocks={mocks}>
-        <JourneyProvider
-          value={{
-            journey: {
-              id: 'journeyId',
-              themeMode: ThemeMode.light,
-              themeName: ThemeName.base
-            } as unknown as Journey,
-            admin: true
-          }}
-        >
-          <CardPreview steps={[]} onSelect={onSelect} showAddButton />
-        </JourneyProvider>
-      </MockedProvider>
-    )
-    fireEvent.click(getAllByRole('button')[0])
-    await waitFor(() => {
-      expect(cache.extract()['Journey:journeyId']?.blocks).toEqual([
-        { __ref: 'StepBlock:stepId' },
-        { __ref: 'CardBlock:cardId' }
-      ])
-    })
-  })
-
-  it('should create step and card when add button is clicked', async () => {
-    mockUuidv4.mockReturnValueOnce('stepId')
-    mockUuidv4.mockReturnValueOnce('cardId')
-    const onSelect = jest.fn()
-
-    const { getAllByRole } = render(
-      <MockedProvider mocks={mocks}>
-        <JourneyProvider
-          value={{
-            journey: {
-              id: 'journeyId',
-              themeMode: ThemeMode.light,
-              themeName: ThemeName.base
-            } as unknown as Journey,
-            admin: true
-          }}
-        >
-          <CardPreview steps={[]} onSelect={onSelect} showAddButton />
-        </JourneyProvider>
-      </MockedProvider>
-    )
-    fireEvent.click(getAllByRole('button')[0])
-    await waitFor(() =>
-      expect(onSelect).toHaveBeenCalledWith({
-        step: {
-          __typename: 'StepBlock',
-          children: [
-            {
-              __typename: 'CardBlock',
-              backgroundColor: null,
-              children: [],
-              coverBlockId: null,
-              fullscreen: false,
-              id: 'cardId',
-              parentBlockId: 'stepId',
-              parentOrder: 0,
-              themeMode: null,
-              themeName: null
-            }
-          ],
-          id: 'stepId',
-          locked: false,
-          nextBlockId: null,
-          parentBlockId: null,
-          parentOrder: 0
-        }
+    if (data?.stepBlockCreate != null) {
+      onSelect?.({
+        step: transformer([
+          data.stepBlockCreate,
+          data.cardBlockCreate
+        ])[0] as TreeBlock<StepBlock>
       })
-    )
-  })
-  it('should navigate to actions table when clicked', async () => {
-    const onSelect = jest.fn()
+    }
+  }
 
-    const { getAllByRole } = render(
-      <MockedProvider mocks={mocks}>
-        <JourneyProvider
-          value={{
-            journey: {
-              id: 'journeyId',
-              themeMode: ThemeMode.light,
-              themeName: ThemeName.base
-            } as unknown as Journey,
-            admin: true
+  const onBeforeCapture = (): void => {
+    setIsDragging(true)
+  }
+
+  const onDragEnd = useMemo(
+    () =>
+      async ({ destination, source }): Promise<void> => {
+        if (steps == null) return
+        if (journey == null) return
+        if (destination == null) return
+
+        const cardDragging = steps[source.index]
+        const destIndex: number = destination.index
+
+        if (
+          destination.droppableId === source.droppableId &&
+          destIndex === source.index
+        )
+          return
+
+        if (cardDragging.parentOrder != null) {
+          const parentOrder =
+            cardDragging.parentOrder + destIndex - source.index
+
+          await stepsOrderUpdate({
+            variables: {
+              id: cardDragging.id,
+              journeyId: journey.id,
+              parentOrder
+            },
+            optimisticResponse: {
+              blockOrderUpdate: [
+                {
+                  __typename: 'StepBlock',
+                  id: cardDragging.id,
+                  parentOrder
+                }
+              ]
+            }
+          })
+        }
+        setIsDragging(false)
+      },
+    [steps, journey, stepsOrderUpdate]
+  )
+
+  return (
+    <>
+      {steps != null ? (
+        isDraggable === true ? (
+          <DragDropContext
+            onBeforeCapture={onBeforeCapture}
+            onDragEnd={onDragEnd}
+          >
+            <Droppable droppableId="steps" direction="horizontal">
+              {(provided) => (
+                <Box ref={provided.innerRef} {...provided.droppableProps}>
+                  <CardList
+                    steps={steps}
+                    selected={selected}
+                    showAddButton={showAddButton}
+                    droppableProvided={provided}
+                    handleClick={handleClick}
+                    handleChange={handleChange}
+                    isDragging={isDragging}
+                    isDraggable={isDraggable}
+                    showNavigationCards={showNavigationCards}
+                  />
+                </Box>
+              )}
+            </Droppable>
+          </DragDropContext>
+        ) : (
+          <CardList
+            steps={steps}
+            selected={selected}
+            handleClick={handleClick}
+            handleChange={handleChange}
+            showAddButton={showAddButton}
+            showNavigationCards={showNavigationCards}
+          />
+        )
+      ) : (
+        <Stack
+          direction="row"
+          spacing={1}
+          sx={{
+            overflowX: 'auto',
+            overflowY: 'hidden',
+            py: 5,
+            px: 6
           }}
         >
-          <CardPreview
-            steps={[]}
-            onSelect={onSelect}
-            showAddButton
-            showNavigationCards
-          />
-        </JourneyProvider>
-      </MockedProvider>
-    )
-    fireEvent.click(getAllByRole('button')[0])
-    await waitFor(() =>
-      expect(onSelect).toHaveBeenCalledWith({ view: 'action' })
-    )
-  })
-
-  it('should navigate to social preview when clicked', async () => {
-    const onSelect = jest.fn()
-
-    const { getAllByRole } = render(
-      <MockedProvider mocks={mocks}>
-        <JourneyProvider
-          value={{
-            journey: {
-              id: 'journeyId',
-              themeMode: ThemeMode.light,
-              themeName: ThemeName.base
-            } as unknown as Journey,
-            admin: true
-          }}
-        >
-          <CardPreview
-            steps={[]}
-            onSelect={onSelect}
-            showAddButton
-            showNavigationCards
-          />
-        </JourneyProvider>
-      </MockedProvider>
-    )
-    fireEvent.click(getAllByRole('button')[1])
-    await waitFor(() =>
-      expect(onSelect).toHaveBeenCalledWith({ view: 'social' })
-    )
-  })
-})
+          <Box
+            sx={{
+              border: '3px solid transparent'
+            }}
+          >
+            <Skeleton
+              variant="rectangular"
+              width={87}
+              height={132}
+              sx={{ m: 1, borderRadius: 1 }}
+            />
+          </Box>
+          <Box
+            sx={{
+              border: '3px solid transparent'
+            }}
+          >
+            <Skeleton
+              variant="rectangular"
+              width={87}
+              height={132}
+              sx={{ m: 1, borderRadius: 1 }}
+            />
+          </Box>
+          <Box
+            sx={{
+              border: '3px solid transparent'
+            }}
+          >
+            <Skeleton
+              variant="rectangular"
+              width={87}
+              height={132}
+              sx={{ m: 1, borderRadius: 1 }}
+            />
+          </Box>
+        </Stack>
+      )}
+    </>
+  )
+}
