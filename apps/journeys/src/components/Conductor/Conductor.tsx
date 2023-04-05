@@ -51,6 +51,7 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
     useBlocks()
   const [swiper, setSwiper] = useState<SwiperCore>()
   const [slideTransitioning, setSlideTransitioning] = useState(false)
+  const [journeyViewed, setJourneyViewed] = useState(false)
   const breakpoints = useBreakpoints()
   const theme = useTheme()
   const { journey, admin } = useJourney()
@@ -70,16 +71,23 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
   useEffect(() => {
     if (!admin && journey != null) {
       const id = uuidv4()
-      void journeyViewEventCreate({
-        variables: {
-          input: {
-            id,
-            journeyId: journey.id,
-            label: journey.title,
-            value: journey.language.id
+      const handleJourneyView = async (): Promise<void> => {
+        const data = await journeyViewEventCreate({
+          variables: {
+            input: {
+              id,
+              journeyId: journey.id,
+              label: journey.title,
+              value: journey.language.id
+            }
           }
+        })
+        if (data != null) {
+          setJourneyViewed(true)
         }
-      })
+      }
+
+      void handleJourneyView()
       TagManager.dataLayer({
         dataLayer: {
           event: 'journey_view',
@@ -89,7 +97,7 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
         }
       })
     }
-  }, [admin, journey, journeyViewEventCreate])
+  }, [admin, journey, journeyViewEventCreate, setJourneyViewed])
 
   useEffect(() => {
     setTreeBlocks(blocks)
@@ -222,47 +230,48 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
               paddingRight: `${edgeSlideWidth + gapBetweenSlides / 2}px`
             }}
           >
-            {treeBlocks.map((block) => (
-              <SwiperSlide
-                key={block.id}
-                style={{
-                  marginRight: '0px'
-                }}
-              >
-                <Box
-                  sx={{
-                    px: `${gapBetweenSlides / 2}px`,
-                    height: `calc(100% - ${theme.spacing(6)})`,
-                    [theme.breakpoints.up('lg')]: {
-                      maxWidth: '854px'
-                    }
+            {journeyViewed &&
+              treeBlocks.map((block) => (
+                <SwiperSlide
+                  key={block.id}
+                  style={{
+                    marginRight: '0px'
                   }}
                 >
-                  <CardWrapper
-                    id={block.id}
-                    backgroundColor={theme.palette.primary.light}
-                    themeMode={null}
-                    themeName={null}
+                  <Box
+                    sx={{
+                      px: `${gapBetweenSlides / 2}px`,
+                      height: `calc(100% - ${theme.spacing(6)})`,
+                      [theme.breakpoints.up('lg')]: {
+                        maxWidth: '854px'
+                      }
+                    }}
                   >
-                    <Fade
-                      in={activeBlock?.id === block.id}
-                      mountOnEnter
-                      unmountOnExit
+                    <CardWrapper
+                      id={block.id}
+                      backgroundColor={theme.palette.primary.light}
+                      themeMode={null}
+                      themeName={null}
                     >
-                      <Box
-                        sx={{
-                          position: 'absolute',
-                          width: '100%',
-                          height: '100%'
-                        }}
+                      <Fade
+                        in={activeBlock?.id === block.id}
+                        mountOnEnter
+                        unmountOnExit
                       >
-                        <BlockRenderer block={block} />
-                      </Box>
-                    </Fade>
-                  </CardWrapper>
-                </Box>
-              </SwiperSlide>
-            ))}
+                        <Box
+                          sx={{
+                            position: 'absolute',
+                            width: '100%',
+                            height: '100%'
+                          }}
+                        >
+                          <BlockRenderer block={block} />
+                        </Box>
+                      </Fade>
+                    </CardWrapper>
+                  </Box>
+                </SwiperSlide>
+              ))}
             {showLeftButton && <Navigation variant="Left" />}
             {showRightButton && <Navigation variant="Right" />}
           </Swiper>

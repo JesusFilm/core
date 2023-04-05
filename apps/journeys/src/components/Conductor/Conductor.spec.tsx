@@ -9,6 +9,8 @@ import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { v4 as uuidv4 } from 'uuid'
 import TagManager from 'react-gtm-module'
+import { STEP_VIEW_EVENT_CREATE } from '@core/journeys/ui/Step/Step'
+import { RADIO_QUESTION_SUBMISSION_EVENT_CREATE } from '@core/journeys/ui/RadioQuestion'
 import {
   GetJourney_journey as Journey,
   GetJourney_journey_language as Language
@@ -44,6 +46,15 @@ jest.mock('react-gtm-module', () => ({
 const mockedDataLayer = TagManager.dataLayer as jest.MockedFunction<
   typeof TagManager.dataLayer
 >
+
+jest.mock('react-i18next', () => ({
+  __esModule: true,
+  useTranslation: () => {
+    return {
+      t: (str: string) => str
+    }
+  }
+}))
 
 beforeEach(() => {
   const useBreakpointsMock = useBreakpoints as jest.Mock
@@ -103,6 +114,137 @@ const defaultJourney: Journey = {
 }
 
 describe('Conductor', () => {
+  mockUuidv4.mockReturnValue('uuid')
+  const journeyViewEventMock = {
+    request: {
+      query: JOURNEY_VIEW_EVENT_CREATE,
+      variables: {
+        input: {
+          id: 'uuid',
+          journeyId: 'journeyId',
+          label: 'my journey',
+          value: '529'
+        }
+      }
+    },
+    result: {
+      data: {
+        journeyViewEventCreate: {
+          id: 'uuid',
+          __typename: 'JourneyViewEvent'
+        }
+      }
+    }
+  }
+
+  const mocks = [
+    journeyViewEventMock,
+    {
+      request: {
+        query: STEP_VIEW_EVENT_CREATE,
+        variables: {
+          input: {
+            id: 'uuid',
+            blockId: 'step1.id',
+            value: 'Step 1'
+          }
+        }
+      },
+      result: {
+        data: {
+          stepViewEventCreate: {
+            __typename: 'StepViewEvent',
+            id: 'uuid'
+          }
+        }
+      }
+    },
+    {
+      request: {
+        query: STEP_VIEW_EVENT_CREATE,
+        variables: {
+          input: {
+            id: 'uuid',
+            blockId: 'step2.id',
+            value: 'Step 2'
+          }
+        }
+      },
+      result: {
+        data: {
+          stepViewEventCreate: {
+            __typename: 'StepViewEvent',
+            id: 'uuid'
+          }
+        }
+      }
+    },
+
+    {
+      request: {
+        query: STEP_VIEW_EVENT_CREATE,
+        variables: {
+          input: {
+            id: 'uuid',
+            blockId: 'step3.id',
+            value: 'Step 3'
+          }
+        }
+      },
+      result: {
+        data: {
+          stepViewEventCreate: {
+            __typename: 'StepViewEvent',
+            id: 'uuid'
+          }
+        }
+      }
+    },
+    {
+      request: {
+        query: STEP_VIEW_EVENT_CREATE,
+        variables: {
+          input: {
+            id: 'uuid',
+            blockId: 'step4.id',
+            value: 'Step 4'
+          }
+        }
+      },
+      result: {
+        data: {
+          stepViewEventCreate: {
+            __typename: 'StepViewEvent',
+            id: 'uuid'
+          }
+        }
+      }
+    },
+    {
+      request: {
+        query: RADIO_QUESTION_SUBMISSION_EVENT_CREATE,
+        variables: {
+          input: {
+            id: 'uuid',
+            blockId: 'radioQuestion1.id',
+            radioOptionBlockId: 'radioOption3.id',
+            stepId: 'step2.id',
+            label: 'Step 2',
+            value: 'Step 3 (No nextBlockId)'
+          }
+        }
+      },
+      result: {
+        data: {
+          radioQuestionSubmissionEventCreate: {
+            __typename: 'RadioQuestionSubmissionEvent',
+            id: 'uuid'
+          }
+        }
+      }
+    }
+  ]
+
   it('should create a journeyViewEvent', async () => {
     mockUuidv4.mockReturnValueOnce('uuid')
 
@@ -146,31 +288,7 @@ describe('Conductor', () => {
     mockUuidv4.mockReturnValueOnce('uuid')
 
     render(
-      <MockedProvider
-        mocks={[
-          {
-            request: {
-              query: JOURNEY_VIEW_EVENT_CREATE,
-              variables: {
-                input: {
-                  id: 'uuid',
-                  journeyId: 'journeyId',
-                  label: 'my journey',
-                  value: '529'
-                }
-              }
-            },
-            result: {
-              data: {
-                journeyViewEventCreate: {
-                  id: 'uuid',
-                  __typename: 'JourneyViewEvent'
-                }
-              }
-            }
-          }
-        ]}
-      >
+      <MockedProvider mocks={[journeyViewEventMock]}>
         <JourneyProvider value={{ journey: defaultJourney }}>
           <Conductor blocks={[]} />
         </JourneyProvider>
@@ -202,7 +320,7 @@ describe('Conductor', () => {
   describe('ltr journey', () => {
     it('should navigate to next block on right button click', () => {
       const { getByTestId, queryByTestId } = render(
-        <MockedProvider mocks={[]}>
+        <MockedProvider mocks={mocks}>
           <JourneyProvider value={{ journey: defaultJourney }}>
             <Conductor blocks={basic} />
           </JourneyProvider>
@@ -224,7 +342,7 @@ describe('Conductor', () => {
 
     it('should disable navigating to previous step by default', () => {
       const { getByTestId } = render(
-        <MockedProvider mocks={[]}>
+        <MockedProvider mocks={mocks}>
           <JourneyProvider value={{ journey: defaultJourney }}>
             <Conductor blocks={basic} />
           </JourneyProvider>
@@ -242,7 +360,7 @@ describe('Conductor', () => {
 
     it('should disable right button if next step is locked', () => {
       const { getByTestId } = render(
-        <MockedProvider mocks={[]}>
+        <MockedProvider mocks={mocks}>
           <JourneyProvider value={{ journey: defaultJourney }}>
             <Conductor blocks={basic} />
           </JourneyProvider>
@@ -255,14 +373,16 @@ describe('Conductor', () => {
       expect(getByTestId('conductorRightButton')).toBeDisabled()
     })
 
-    it('should not show right button if on last card', () => {
+    it('should not show right button if on last card', async () => {
       const { getByTestId, getAllByRole, queryByTestId } = render(
-        <MockedProvider mocks={[]}>
+        <MockedProvider mocks={mocks}>
           <JourneyProvider value={{ journey: defaultJourney }}>
             <Conductor blocks={basic} />
           </JourneyProvider>
         </MockedProvider>
       )
+
+      await waitFor(() => expect(getByTestId('step1.id')).toBeInTheDocument())
 
       fireEvent.click(getByTestId('conductorRightButton'))
       expect(activeBlockVar()?.id).toBe('step2.id')
@@ -270,6 +390,7 @@ describe('Conductor', () => {
       fireEvent.click(
         getAllByRole('button', { name: 'Step 3 (No nextBlockId)' })[0]
       )
+
       expect(activeBlockVar()?.id).toBe('step3.id')
 
       fireEvent.click(getByTestId('conductorRightButton'))
@@ -282,7 +403,7 @@ describe('Conductor', () => {
   describe('rtl journey', () => {
     it('should navigate to next block on left button click', () => {
       const { getByTestId, queryByTestId } = render(
-        <MockedProvider mocks={[]}>
+        <MockedProvider mocks={mocks}>
           <JourneyProvider
             value={{ journey: { ...defaultJourney, language: rtlLanguage } }}
           >
@@ -306,7 +427,7 @@ describe('Conductor', () => {
 
     it('should disable navigating to previous step by default', () => {
       const { getByTestId } = render(
-        <MockedProvider mocks={[]}>
+        <MockedProvider mocks={mocks}>
           <JourneyProvider
             value={{ journey: { ...defaultJourney, language: rtlLanguage } }}
           >
@@ -326,7 +447,7 @@ describe('Conductor', () => {
 
     it('should disable left button if next step is locked', () => {
       const { getByTestId } = render(
-        <MockedProvider mocks={[]}>
+        <MockedProvider mocks={mocks}>
           <JourneyProvider
             value={{ journey: { ...defaultJourney, language: rtlLanguage } }}
           >
@@ -341,9 +462,9 @@ describe('Conductor', () => {
       expect(getByTestId('conductorLeftButton')).toBeDisabled()
     })
 
-    it('should not show left button if on last card', () => {
+    it('should not show left button if on last card', async () => {
       const { getByTestId, getAllByRole, queryByTestId } = render(
-        <MockedProvider mocks={[]}>
+        <MockedProvider mocks={mocks}>
           <JourneyProvider
             value={{ journey: { ...defaultJourney, language: rtlLanguage } }}
           >
@@ -351,6 +472,8 @@ describe('Conductor', () => {
           </JourneyProvider>
         </MockedProvider>
       )
+
+      await waitFor(() => expect(getByTestId('step1.id')).toBeInTheDocument())
 
       fireEvent.click(getByTestId('conductorLeftButton'))
       expect(activeBlockVar()?.id).toBe('step2.id')
