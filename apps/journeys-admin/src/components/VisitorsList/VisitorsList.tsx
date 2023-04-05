@@ -1,17 +1,18 @@
 import { ReactElement, useState } from 'react'
 import { gql, useQuery } from '@apollo/client'
-import { DataGrid, GridColDef } from '@mui/x-data-grid'
+import { DataGrid } from '@mui/x-data-grid'
 import { styled } from '@mui/material/styles'
 import Box from '@mui/material/Box'
 import { useRouter } from 'next/router'
 import LoadingButton from '@mui/lab/LoadingButton'
 import Stack from '@mui/material/Stack'
 import { useTranslation } from 'react-i18next'
-import TextField from '@mui/material/TextField'
 import {
   GetVisitors,
   GetVisitors_visitors_edges as Visitor
 } from '../../../__generated__/GetVisitors'
+import { getColDefs } from './utils/getColDefs'
+import { getVisitorRows } from './utils/getVisitorRows'
 
 export const GET_VISITORS = gql`
   query GetVisitors($first: Int, $after: String) {
@@ -60,48 +61,13 @@ const StyledDataGrid = styled(DataGrid)(({ theme }) => ({
   }
 }))
 
-interface CellTextFieldProps {
-  value: string
-}
-const CellTextField = ({ value }: CellTextFieldProps): ReactElement => (
-  <TextField
-    variant="standard"
-    value={value}
-    multiline
-    maxRows={3}
-    fullWidth
-    disabled
-    InputProps={{
-      disableUnderline: true
-    }}
-    sx={{
-      p: 0,
-      '& .MuiInputBase-input.Mui-disabled': {
-        fontSize: '14px',
-        WebkitTextFillColor: 'black',
-        '&:hover': {
-          cursor: 'pointer'
-        }
-      }
-    }}
-  />
-)
-
-interface GridRowDef {
-  id: string
-  lastStepViewedAt: string | null
-  lastChatPlatform: string | null
-  lastLinkAction: string | null
-  lastTextResponse: string
-  lastRadioQuestion: string
-}
-
 export function VisitorsList(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const router = useRouter()
   const [visitors, setVisitors] = useState<Visitor[]>([])
   const [hasNextPage, setHasNextPage] = useState(true)
   const [endCursor, setEndCursor] = useState<string | null>()
+  const columns = getColDefs(t)
 
   const { fetchMore, loading } = useQuery<GetVisitors>(GET_VISITORS, {
     variables: {
@@ -130,74 +96,7 @@ export function VisitorsList(): ReactElement {
     }
   }
 
-  const columns: GridColDef[] = [
-    {
-      field: 'id',
-      headerName: t('ID')
-    },
-    {
-      field: 'lastStepViewedAt',
-      headerName: t('Last Active'),
-      width: 200
-    },
-    {
-      field: 'lastChatPlatform',
-      headerName: t('Chat Started'),
-      width: 200
-    },
-    {
-      field: 'lastLinkAction',
-      headerName: t('Action'),
-      width: 400
-    },
-    {
-      field: 'lastTextResponse',
-      headerName: t('User Data'),
-      flex: 1,
-      minWidth: 300,
-      renderCell: (cellValues) => <CellTextField value={cellValues.value} />
-    },
-    {
-      field: 'lastRadioQuestion',
-      headerName: t('Polls'),
-      flex: 1,
-      minWidth: 300,
-      renderCell: (cellValues) => <CellTextField value={cellValues.value} />
-    }
-  ]
-
-  const rows: GridRowDef[] = []
-  visitors.forEach((visitor) => {
-    const {
-      id,
-      lastStepViewedAt,
-      lastChatPlatform,
-      lastLinkAction,
-      lastTextResponse,
-      lastRadioQuestion,
-      lastRadioOptionSubmission
-    } = visitor.node
-
-    if (lastStepViewedAt != null) {
-      rows.push({
-        id,
-        lastStepViewedAt:
-          lastStepViewedAt != null
-            ? new Intl.DateTimeFormat([], {
-                dateStyle: 'medium',
-                timeStyle: 'short'
-              }).format(new Date(lastStepViewedAt))
-            : null,
-        lastChatPlatform,
-        lastLinkAction,
-        lastTextResponse: lastTextResponse ?? '',
-        lastRadioQuestion:
-          lastRadioQuestion != null && lastRadioOptionSubmission != null
-            ? `${lastRadioQuestion}: ${lastRadioOptionSubmission}`
-            : ''
-      })
-    }
-  })
+  const rows = getVisitorRows(visitors)
 
   async function handleRowClick(params): Promise<void> {
     await router.push(`/reports/visitors/${params.row.id as string}`)

@@ -20,7 +20,7 @@ jest.mock('next/router', () => ({
 
 const mockUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
 
-describe('VideoList', () => {
+describe('VisitorList', () => {
   const request = {
     query: GET_VISITORS,
     variables: {
@@ -185,55 +185,5 @@ describe('VideoList', () => {
     await waitFor(() =>
       expect(getByRole('button', { name: 'Load More' })).toBeDisabled()
     )
-  })
-
-  it('should visitors without a lastStepViewedAt', async () => {
-    const { getAllByRole } = render(
-      <MockedProvider
-        mocks={[
-          {
-            request: {
-              query: GET_VISITORS,
-              variables: {
-                first: 100
-              }
-            },
-            result: {
-              data: {
-                visitors: {
-                  __typename: 'VisitorConnection',
-                  edges: [
-                    {
-                      __typename: 'VisitorEdge',
-                      node: {
-                        __typename: 'Visitor',
-                        id: 'visitor1.id',
-                        lastChatPlatform: 'facebook',
-                        lastLinkAction: null,
-                        lastRadioOptionSubmission: null,
-                        lastRadioQuestion: null,
-                        lastStepViewedAt: null,
-                        lastTextResponse: null
-                      },
-                      cursor: 'date string'
-                    }
-                  ],
-                  pageInfo: {
-                    __typename: 'PageInfo',
-                    hasNextPage: false,
-                    startCursor: null,
-                    endCursor: null
-                  }
-                }
-              }
-            }
-          }
-        ]}
-      >
-        <VisitorsList />
-      </MockedProvider>
-    )
-
-    await waitFor(() => expect(getAllByRole('row')).toHaveLength(1))
   })
 })
