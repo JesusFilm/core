@@ -8,6 +8,7 @@ import {
   ResolveField,
   Parent
 } from '@nestjs/graphql'
+import { FieldNode, GraphQLResolveInfo, Kind } from 'graphql'
 import { compact } from 'lodash'
 
 import { IdType, Video, VideosFilter } from '../../__generated__/graphql'
@@ -19,21 +20,17 @@ export class VideoResolver {
 
   @Query()
   async videos(
-    @Info() info,
+    @Info() info: GraphQLResolveInfo,
     @Args('where') where?: VideosFilter,
     @Args('offset') offset?: number,
     @Args('limit') limit?: number
   ): Promise<Video[]> {
-    const variantLanguageId = info.fieldNodes[0].selectionSet.selections
-      .find(({ name }) => name.value === 'variant')
-      ?.arguments.find(({ name }) => name.value === 'languageId')?.value?.value
-
     return await this.videoService.filterAll({
       title: where?.title ?? undefined,
       availableVariantLanguageIds:
         where?.availableVariantLanguageIds ?? undefined,
       ids: where?.ids ?? undefined,
-      variantLanguageId,
+      variantLanguageId: this.extractVariantLanguageId(info),
       labels: where?.labels ?? undefined,
       subtitleLanguageIds: where?.subtitleLanguageIds ?? undefined,
       offset,
@@ -43,17 +40,16 @@ export class VideoResolver {
 
   @Query()
   async video(
-    @Info() info,
+    @Info() info: GraphQLResolveInfo,
     @Args('id') id: string,
     @Args('idType') idType: IdType = IdType.databaseId
   ): Promise<Video> {
-    const variantLanguageId = info.fieldNodes[0].selectionSet.selections
-      .find(({ name }) => name.value === 'variant')
-      ?.arguments.find(({ name }) => name.value === 'languageId')?.value?.value
-
     switch (idType) {
       case IdType.databaseId:
-        return await this.videoService.getVideo(id, variantLanguageId)
+        return await this.videoService.getVideo(
+          id,
+          this.extractVariantLanguageId(info)
+        )
       case IdType.slug:
         return await this.videoService.getVideoBySlug(id)
     }
@@ -143,6 +139,26 @@ export class VideoResolver {
   @ResolveField('variantLanguagesCount')
   variantLanguagesCount(@Parent() video): number {
     return compact(video.variantLanguages).length
+  }
+
+  private extractVariantLanguageId(
+    info: GraphQLResolveInfo
+  ): string | undefined {
+    const argumentNode = (
+      info.fieldNodes[0].selectionSet?.selections.find(
+        (node) => node.kind === Kind.FIELD && node.name.value === 'variant'
+      ) as FieldNode | undefined
+    )?.arguments?.find(({ name }) => name.value === 'languageId')
+
+    let variantLanguageId: string | undefined
+    const valueNode = argumentNode?.value
+    if (valueNode != null && 'value' in valueNode) {
+      variantLanguageId = valueNode.value.toString()
+    }
+    if (valueNode != null && valueNode.kind === Kind.VARIABLE) {
+      variantLanguageId = info.variableValues[valueNode.name.value] as string
+    }
+    return variantLanguageId
   }
 }
 
