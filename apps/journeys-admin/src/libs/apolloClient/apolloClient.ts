@@ -14,8 +14,7 @@ function isTokenExpired(token: string): boolean {
   const decodedToken = JSON.parse(atob(base64))
   const tokenExpiresAt = decodedToken.exp
 
-  const now = Math.floor(Date.now() / 1000) // Convert to seconds
-  console.log(now, 'and', tokenExpiresAt)
+  const now = Math.floor(Date.now() / 1000)
   return now > tokenExpiresAt
 }
 
@@ -33,8 +32,7 @@ export function createApolloClient(
     // The **correct** headers will be supplied by the `getServerSideProps` invocation of the query
 
     let refreshToken
-
-    // Check if we are in CSR mode and load the AuthUser module
+    // Check if we are in SSR mode and load the AuthUser module
     if (isSsrMode) {
       const { verifyIdToken } = await import(
         /* webpackChunkName: "next-firebase-auth" */
@@ -49,7 +47,7 @@ export function createApolloClient(
 
     return {
       headers: {
-        ...(!isSsrMode ? headers : {}),
+        ...(!isSsrMode ? headers : []),
         Authorization: isTokenExpired(token) ? refreshToken : token
       }
     }
