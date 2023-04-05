@@ -8,7 +8,6 @@ import Skeleton from '@mui/material/Skeleton'
 import { SxProps, useTheme } from '@mui/material/styles'
 
 interface MediaListItemProps {
-  id: string
   image: string
   title: string
   description: string
@@ -16,6 +15,7 @@ interface MediaListItemProps {
   overline?: string
   imagePosition?: 'start' | 'end'
   duration?: string
+  border?: boolean
   onClick: () => void
 }
 
@@ -27,6 +27,7 @@ export function MediaListItem({
   overline,
   imagePosition = 'start',
   duration,
+  border = false,
   onClick
 }: MediaListItemProps): ReactElement {
   const theme = useTheme()
@@ -61,12 +62,15 @@ export function MediaListItem({
       }
     }
   }
+  const bottomBorder = border
+    ? { borderBottom: '1px solid', borderColor: 'divider' }
+    : {}
 
   return (
     <ListItemButton
       onClick={onClick}
       disabled={loading}
-      sx={{ ...faceOnButtonHoverFix }}
+      sx={{ ...faceOnButtonHoverFix, ...bottomBorder, px: 6 }}
     >
       <Stack
         direction={imagePosition === 'start' ? 'row' : 'row-reverse'}
@@ -136,7 +140,7 @@ export function MediaListItem({
                 variant="overline"
                 color="secondary.light"
                 className="overflow-text"
-                sx={{ ...fadeOverflowText('overline') }}
+                sx={{ ...fadeOverflowText('overline'), mt: 2 }}
               >
                 {overline}
               </Typography>

@@ -1,6 +1,4 @@
 import { render, fireEvent } from '@testing-library/react'
-import NoteAddIcon from '@mui/icons-material/NoteAdd'
-import AddIcon from '@mui/icons-material/Add'
 import { noop } from 'lodash'
 import { ContainedIconButton } from './ContainedIconButton'
 
@@ -8,12 +6,7 @@ describe('ContainedIconButton', () => {
   const onClick = jest.fn()
   it('should render button', async () => {
     const { getByRole } = render(
-      <ContainedIconButton
-        thumbnailIcon={<NoteAddIcon />}
-        label="Label"
-        onClick={noop}
-        actionIcon={<AddIcon />}
-      />
+      <ContainedIconButton label="Label" onClick={noop} />
     )
 
     expect(getByRole('button')).toHaveTextContent('Label')
@@ -21,12 +14,7 @@ describe('ContainedIconButton', () => {
 
   it('should call onClick on button click', () => {
     const { getByRole } = render(
-      <ContainedIconButton
-        thumbnailIcon={<NoteAddIcon />}
-        label="Label"
-        onClick={onClick}
-        actionIcon={<AddIcon />}
-      />
+      <ContainedIconButton label="Label" onClick={onClick} />
     )
     fireEvent.click(getByRole('button'))
 
@@ -34,16 +22,22 @@ describe('ContainedIconButton', () => {
   })
 })
 
-it('should render descripition', () => {
+it('should render description', () => {
   const { getByRole } = render(
     <ContainedIconButton
-      thumbnailIcon={<NoteAddIcon />}
       label="Label"
       description="testDescription"
       onClick={noop}
-      actionIcon={<AddIcon />}
     />
   )
 
   expect(getByRole('button')).toHaveTextContent('testDescription')
+})
+
+it('should be disabled when loading', () => {
+  const { getByRole } = render(
+    <ContainedIconButton label="Label" onClick={noop} loading />
+  )
+
+  expect(getByRole('button')).toBeDisabled()
 })
