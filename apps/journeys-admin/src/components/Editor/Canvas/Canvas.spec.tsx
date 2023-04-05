@@ -55,7 +55,7 @@ describe('Canvas', () => {
     selectedStep: step0,
     selectedBlock: step0,
     drawerMobileOpen: false,
-    activeTab: ActiveTab.Cards,
+    activeTab: ActiveTab.Journey,
     activeFab: ActiveFab.Add,
     journeyEditContentComponent: ActiveJourneyEditContent.Canvas
   }
