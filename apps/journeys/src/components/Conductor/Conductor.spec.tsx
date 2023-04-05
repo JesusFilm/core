@@ -318,7 +318,7 @@ describe('Conductor', () => {
   })
 
   describe('ltr journey', () => {
-    it('should navigate to next block on right button click', () => {
+    it('should navigate to next block on right button click', async () => {
       const { getByTestId, queryByTestId } = render(
         <MockedProvider mocks={mocks}>
           <JourneyProvider value={{ journey: defaultJourney }}>
@@ -326,6 +326,7 @@ describe('Conductor', () => {
           </JourneyProvider>
         </MockedProvider>
       )
+      await waitFor(() => expect(getByTestId('step1.id')).toBeInTheDocument())
       const leftButton = queryByTestId('conductorLeftButton')
       const rightButton = getByTestId('conductorRightButton')
 
@@ -340,7 +341,7 @@ describe('Conductor', () => {
       expect(activeBlockVar()?.id).toBe('step2.id')
     })
 
-    it('should disable navigating to previous step by default', () => {
+    it('should disable navigating to previous step by default', async () => {
       const { getByTestId } = render(
         <MockedProvider mocks={mocks}>
           <JourneyProvider value={{ journey: defaultJourney }}>
@@ -349,6 +350,7 @@ describe('Conductor', () => {
         </MockedProvider>
       )
 
+      await waitFor(() => expect(getByTestId('step1.id')).toBeInTheDocument())
       const rightButton = getByTestId('conductorRightButton')
       fireEvent.click(rightButton)
       expect(activeBlockVar()?.id).toBe('step2.id')
@@ -358,7 +360,7 @@ describe('Conductor', () => {
       expect(leftButton).toBeDisabled()
     })
 
-    it('should disable right button if next step is locked', () => {
+    it('should disable right button if next step is locked', async () => {
       const { getByTestId } = render(
         <MockedProvider mocks={mocks}>
           <JourneyProvider value={{ journey: defaultJourney }}>
@@ -366,6 +368,8 @@ describe('Conductor', () => {
           </JourneyProvider>
         </MockedProvider>
       )
+
+      await waitFor(() => expect(getByTestId('step1.id')).toBeInTheDocument())
 
       fireEvent.click(getByTestId('conductorRightButton'))
       expect(activeBlockVar()?.id).toBe('step2.id')
@@ -401,7 +405,7 @@ describe('Conductor', () => {
   })
 
   describe('rtl journey', () => {
-    it('should navigate to next block on left button click', () => {
+    it('should navigate to next block on left button click', async () => {
       const { getByTestId, queryByTestId } = render(
         <MockedProvider mocks={mocks}>
           <JourneyProvider
@@ -411,6 +415,8 @@ describe('Conductor', () => {
           </JourneyProvider>
         </MockedProvider>
       )
+      await waitFor(() => expect(getByTestId('step1.id')).toBeInTheDocument())
+
       const leftButton = getByTestId('conductorLeftButton')
       const rightButton = queryByTestId('conductorRightButton')
 
@@ -425,7 +431,7 @@ describe('Conductor', () => {
       expect(activeBlockVar()?.id).toBe('step2.id')
     })
 
-    it('should disable navigating to previous step by default', () => {
+    it('should disable navigating to previous step by default', async () => {
       const { getByTestId } = render(
         <MockedProvider mocks={mocks}>
           <JourneyProvider
@@ -435,6 +441,8 @@ describe('Conductor', () => {
           </JourneyProvider>
         </MockedProvider>
       )
+
+      await waitFor(() => expect(getByTestId('step1.id')).toBeInTheDocument())
 
       const leftButton = getByTestId('conductorLeftButton')
       fireEvent.click(leftButton)
@@ -445,7 +453,7 @@ describe('Conductor', () => {
       expect(rightButton).toBeDisabled()
     })
 
-    it('should disable left button if next step is locked', () => {
+    it('should disable left button if next step is locked', async () => {
       const { getByTestId } = render(
         <MockedProvider mocks={mocks}>
           <JourneyProvider
@@ -455,6 +463,8 @@ describe('Conductor', () => {
           </JourneyProvider>
         </MockedProvider>
       )
+
+      await waitFor(() => expect(getByTestId('step1.id')).toBeInTheDocument())
 
       fireEvent.click(getByTestId('conductorLeftButton'))
       expect(activeBlockVar()?.id).toBe('step2.id')

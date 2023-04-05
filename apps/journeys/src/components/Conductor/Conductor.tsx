@@ -213,25 +213,25 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
             }
           }}
         >
-          <Swiper
-            dir={!rtl ? 'ltr' : 'rtl'}
-            slidesPerView="auto"
-            centeredSlides
-            centeredSlidesBounds
-            onSwiper={(swiper) => setSwiper(swiper)}
-            resizeObserver
-            onBeforeResize={() => setGapBetween(getResponsiveGap())}
-            onSlideChangeTransitionStart={() => setSlideTransitioning(true)}
-            onSlideChangeTransitionEnd={() => setSlideTransitioning(false)}
-            allowTouchMove={false}
-            style={{
-              width: '100%',
-              paddingLeft: `${edgeSlideWidth + gapBetweenSlides / 2}px`,
-              paddingRight: `${edgeSlideWidth + gapBetweenSlides / 2}px`
-            }}
-          >
-            {journeyViewed &&
-              treeBlocks.map((block) => (
+          {journeyViewed && (
+            <Swiper
+              dir={!rtl ? 'ltr' : 'rtl'}
+              slidesPerView="auto"
+              centeredSlides
+              centeredSlidesBounds
+              onSwiper={(swiper) => setSwiper(swiper)}
+              resizeObserver
+              onBeforeResize={() => setGapBetween(getResponsiveGap())}
+              onSlideChangeTransitionStart={() => setSlideTransitioning(true)}
+              onSlideChangeTransitionEnd={() => setSlideTransitioning(false)}
+              allowTouchMove={false}
+              style={{
+                width: '100%',
+                paddingLeft: `${edgeSlideWidth + gapBetweenSlides / 2}px`,
+                paddingRight: `${edgeSlideWidth + gapBetweenSlides / 2}px`
+              }}
+            >
+              {treeBlocks.map((block) => (
                 <SwiperSlide
                   key={block.id}
                   style={{
@@ -272,10 +272,12 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
                   </Box>
                 </SwiperSlide>
               ))}
-            {showLeftButton && <Navigation variant="Left" />}
-            {showRightButton && <Navigation variant="Right" />}
-          </Swiper>
+              {showLeftButton && <Navigation variant="Left" />}
+              {showRightButton && <Navigation variant="Right" />}
+            </Swiper>
+          )}
         </Box>
+
         <Box
           sx={{
             px: `${edgeSlideWidth + gapBetweenSlides}px`,
