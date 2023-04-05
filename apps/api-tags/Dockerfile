@@ -9,7 +9,7 @@ COPY ./dist/apps/api-tags .
 RUN npm install --production --silent
 
 WORKDIR /prisma
-COPY ./apps/api-tags/prisma .
+COPY ./apps/api-tags/db .
 RUN npx prisma@^3.15.2 generate
 RUN npx prisma@^3.15.2 migrate deploy
 
