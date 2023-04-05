@@ -5,7 +5,19 @@ import {
 } from '@apollo/client'
 import { setContext } from '@apollo/client/link/context'
 import { useMemo } from 'react'
+import { AuthUser } from 'next-firebase-auth'
 import { cache } from './cache'
+
+function isTokenExpired(token: string): boolean {
+  const base64Url = token.split('.')[1]
+  const base64 = base64Url.replace('-', '+').replace('_', '/')
+  const decodedToken = JSON.parse(atob(base64))
+  const tokenExpiresAt = decodedToken.exp
+
+  const now = Math.floor(Date.now() / 1000) // Convert to seconds
+  console.log(now, 'and', tokenExpiresAt)
+  return now > tokenExpiresAt
+}
 
 export function createApolloClient(
   token: string
@@ -19,10 +31,26 @@ export function createApolloClient(
     // If this is SSR, DO NOT PASS THE REQUEST HEADERS.
     // Just send along the authorization headers.
     // The **correct** headers will be supplied by the `getServerSideProps` invocation of the query
+
+    let refreshToken
+
+    // Check if we are in CSR mode and load the AuthUser module
+    if (isSsrMode) {
+      const { verifyIdToken } = await import(
+        /* webpackChunkName: "next-firebase-auth" */
+        'next-firebase-auth'
+      )
+      const authUser: AuthUser = await verifyIdToken(token)
+      const newToken = await authUser.getIdToken(true)
+      if (newToken != null) {
+        refreshToken = newToken
+      }
+    }
+
     return {
       headers: {
-        ...(!isSsrMode ? headers : []),
-        Authorization: token ?? ''
+        ...(!isSsrMode ? headers : {}),
+        Authorization: isTokenExpired(token) ? refreshToken : token
       }
     }
   })
