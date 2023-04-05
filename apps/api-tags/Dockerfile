@@ -1,9 +1,6 @@
 FROM node:16-alpine
-ARG PRISMA_LOCATION=/app/node_modules/.prisma/api-tags-client
 
 EXPOSE 4006
-
-ENV PG_DATABASE_URL=$PG_DATABASE_URL
 
 WORKDIR /app
 COPY ./dist/apps/api-tags .
