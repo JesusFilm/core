@@ -6,16 +6,19 @@ import {
 import { setContext } from '@apollo/client/link/context'
 import { useMemo } from 'react'
 import { AuthUser } from 'next-firebase-auth'
+import jwt from 'jsonwebtoken'
 import { cache } from './cache'
 
 function isTokenExpired(token: string): boolean {
-  const base64Url = token.split('.')[1]
-  const base64 = base64Url.replace('-', '+').replace('_', '/')
-  const decodedToken = JSON.parse(atob(base64))
-  const tokenExpiresAt = decodedToken.exp
-
-  const now = Math.floor(Date.now() / 1000)
-  return now > tokenExpiresAt
+  try {
+    const decodedToken = jwt.decode(token) as { exp: number }
+    const tokenExpiresAt = decodedToken.exp
+    const now = Math.floor(Date.now() / 1000)
+    return now > tokenExpiresAt
+  } catch (error) {
+    console.error(error)
+    return true
+  }
 }
 
 export function createApolloClient(
