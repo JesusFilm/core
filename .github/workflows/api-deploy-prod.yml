@@ -18,7 +18,7 @@ jobs:
       JFP_AWS_SECRET_ACCESS_KEY: ${{ secrets.JFP_AWS_SECRET_ACCESS_KEY }}
       AWS_NETWORK_CONFIG: ${{ secrets.AWS_NETWORK_CONFIG }}
   api-tags:
-    uses: JesusFilm/core/.github/workflows/api-deploy-postgres-worker.yml@main
+    uses: JesusFilm/core/.github/workflows/api-deploy-worker.yml@main
     with:
       name: api-tags
       env: prod
@@ -31,7 +31,7 @@ jobs:
       JFP_AWS_SECRET_ACCESS_KEY: ${{ secrets.JFP_AWS_SECRET_ACCESS_KEY }}
       AWS_NETWORK_CONFIG: ${{ secrets.AWS_NETWORK_CONFIG }}
   api-users:
-    uses: JesusFilm/core/.github/workflows/api-deploy-postgres-worker.yml@main
+    uses: JesusFilm/core/.github/workflows/api-deploy-worker.yml@main
     with:
       name: api-users
       env: prod
