@@ -41,7 +41,7 @@ describe('VideoList', () => {
               lastLinkAction: null,
               lastRadioOptionSubmission: null,
               lastRadioQuestion: null,
-              lastStepViewedAt: null,
+              lastStepViewedAt: '2023-04-05T20:00:05.725Z',
               lastTextResponse: null
             },
             cursor: 'date string'
@@ -87,7 +87,7 @@ describe('VideoList', () => {
                 lastLinkAction: null,
                 lastRadioOptionSubmission: null,
                 lastRadioQuestion: null,
-                lastStepViewedAt: null,
+                lastStepViewedAt: '2023-04-05T20:00:05.725Z',
                 lastTextResponse: null
               },
               cursor: 'cursor2'
@@ -122,7 +122,7 @@ describe('VideoList', () => {
                         lastLinkAction: null,
                         lastRadioOptionSubmission: null,
                         lastRadioQuestion: null,
-                        lastStepViewedAt: null,
+                        lastStepViewedAt: '2023-04-05T20:00:05.725Z',
                         lastTextResponse: null
                       },
                       cursor: 'cursor1'
@@ -185,5 +185,55 @@ describe('VideoList', () => {
     await waitFor(() =>
       expect(getByRole('button', { name: 'Load More' })).toBeDisabled()
     )
+  })
+
+  it('should visitors without a lastStepViewedAt', async () => {
+    const { getAllByRole } = render(
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: GET_VISITORS,
+              variables: {
+                first: 100
+              }
+            },
+            result: {
+              data: {
+                visitors: {
+                  __typename: 'VisitorConnection',
+                  edges: [
+                    {
+                      __typename: 'VisitorEdge',
+                      node: {
+                        __typename: 'Visitor',
+                        id: 'visitor1.id',
+                        lastChatPlatform: 'facebook',
+                        lastLinkAction: null,
+                        lastRadioOptionSubmission: null,
+                        lastRadioQuestion: null,
+                        lastStepViewedAt: null,
+                        lastTextResponse: null
+                      },
+                      cursor: 'date string'
+                    }
+                  ],
+                  pageInfo: {
+                    __typename: 'PageInfo',
+                    hasNextPage: false,
+                    startCursor: null,
+                    endCursor: null
+                  }
+                }
+              }
+            }
+          }
+        ]}
+      >
+        <VisitorsList />
+      </MockedProvider>
+    )
+
+    await waitFor(() => expect(getAllByRole('row')).toHaveLength(1))
   })
 })

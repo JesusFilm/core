@@ -87,6 +87,15 @@ const CellTextField = ({ value }: CellTextFieldProps): ReactElement => (
   />
 )
 
+interface GridRowDef {
+  id: string
+  lastStepViewedAt: string | null
+  lastChatPlatform: string | null
+  lastLinkAction: string | null
+  lastTextResponse: string
+  lastRadioQuestion: string
+}
+
 export function VisitorsList(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const router = useRouter()
@@ -157,7 +166,8 @@ export function VisitorsList(): ReactElement {
     }
   ]
 
-  const rows = visitors.map((visitor) => {
+  const rows: GridRowDef[] = []
+  visitors.forEach((visitor) => {
     const {
       id,
       lastStepViewedAt,
@@ -168,22 +178,24 @@ export function VisitorsList(): ReactElement {
       lastRadioOptionSubmission
     } = visitor.node
 
-    return {
-      id,
-      lastStepViewedAt:
-        lastStepViewedAt != null
-          ? new Intl.DateTimeFormat([], {
-              dateStyle: 'medium',
-              timeStyle: 'short'
-            }).format(new Date(lastStepViewedAt))
-          : null,
-      lastChatPlatform,
-      lastLinkAction,
-      lastTextResponse: lastTextResponse ?? '',
-      lastRadioQuestion:
-        lastRadioQuestion != null && lastRadioOptionSubmission != null
-          ? `${lastRadioQuestion}: ${lastRadioOptionSubmission}`
-          : ''
+    if (lastStepViewedAt != null) {
+      rows.push({
+        id,
+        lastStepViewedAt:
+          lastStepViewedAt != null
+            ? new Intl.DateTimeFormat([], {
+                dateStyle: 'medium',
+                timeStyle: 'short'
+              }).format(new Date(lastStepViewedAt))
+            : null,
+        lastChatPlatform,
+        lastLinkAction,
+        lastTextResponse: lastTextResponse ?? '',
+        lastRadioQuestion:
+          lastRadioQuestion != null && lastRadioOptionSubmission != null
+            ? `${lastRadioQuestion}: ${lastRadioOptionSubmission}`
+            : ''
+      })
     }
   })
 
