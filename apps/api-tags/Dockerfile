@@ -2,6 +2,10 @@ FROM node:16-alpine
 
 EXPOSE 4006
 
+RUN apk upgrade --update-cache --available && \
+    apk add openssl && \
+    rm -rf /var/cache/apk/*
+    
 WORKDIR /app
 COPY ./dist/apps/api-tags .
 
