@@ -69,6 +69,20 @@ interface Props {
   showManageButton: boolean
 }
 
+const accessAvatars = (values?: UserJourney[]): UserJourney[] => {
+  // create new array of user journeys, with the owner pushed to the front
+  const users: UserJourney[] = []
+
+  values?.forEach((userJourney) => {
+    if (userJourney.role === UserJourneyRole.owner) {
+      users.splice(0, 0, userJourney)
+    } else {
+      users.push(userJourney)
+    }
+  })
+  return users
+}
+
 const withRenderLogic = ({
   size,
   max,
@@ -98,6 +112,7 @@ const withRenderLogic = ({
     const loading = values == null
     let invisible = true
     const maxIndex = max <= 2 ? 0 : max - 2
+    const users = accessAvatars(values)
 
     const children = loading
       ? [0, 1, 2].map((i) => {
@@ -113,7 +128,7 @@ const withRenderLogic = ({
             </MuiAvatar>
           )
         })
-      : values?.map(({ role, user }, index) => {
+      : users?.map(({ role, user }, index) => {
           if (
             index > maxIndex &&
             role === UserJourneyRole.inviteRequested &&
