@@ -78,7 +78,7 @@ jobs:
           files: 'apps/${{inputs.name}}/db/schema.prisma'
 
       - name: Prisma Migrate
-        if: steps.has_prisma.outputs.files_exists == 'true'
+        if: steps.has_prisma.outputs.files_exists == 'true' && contains(steps.affected-apps.outputs.apps, inputs.name)
         uses: mansagroup/nrwl-nx-action@v3
         with:
           targets: prisma-generate
