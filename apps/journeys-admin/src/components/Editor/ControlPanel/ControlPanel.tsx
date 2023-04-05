@@ -5,18 +5,24 @@ import { ReactElement, SyntheticEvent } from 'react'
 import {
   useEditor,
   ActiveTab,
-  ActiveFab
+  ActiveFab,
+  ActiveJourneyEditContent
 } from '@core/journeys/ui/EditorProvider'
 import { TabPanel, tabA11yProps } from '@core/shared/ui/TabPanel'
-import { CardPreview } from '../../CardPreview'
-import { OnSelectProps } from '../../CardPreview/CardPreview'
+import { CardPreview, OnSelectProps } from '../../CardPreview'
 import { Attributes } from './Attributes'
 import { BlocksTab } from './BlocksTab'
 import { Fab } from './Fab'
 
 export function ControlPanel(): ReactElement {
   const {
-    state: { steps, selectedBlock, selectedStep, activeTab },
+    state: {
+      steps,
+      selectedBlock,
+      selectedStep,
+      activeTab,
+      journeyEditContentComponent
+    },
     dispatch
   } = useEditor()
 
@@ -27,10 +33,15 @@ export function ControlPanel(): ReactElement {
     dispatch({ type: 'SetActiveTabAction', activeTab: newValue })
   }
 
-  const handleSelectStepPreview = ({ step }: OnSelectProps): void => {
+  const handleSelectStepPreview = ({ step, view }: OnSelectProps): void => {
     if (step != null) {
       dispatch({ type: 'SetSelectedStepAction', step })
       dispatch({ type: 'SetActiveFabAction', activeFab: ActiveFab.Add })
+    } else if (view === ActiveJourneyEditContent.Action) {
+      dispatch({
+        type: 'SetJourneyEditContentAction',
+        component: ActiveJourneyEditContent.Action
+      })
     }
   }
 
@@ -41,11 +52,13 @@ export function ControlPanel(): ReactElement {
   return (
     <Box sx={{ width: '100%', position: 'relative' }}>
       <Box sx={{ position: 'absolute', top: '-64px', right: 20, zIndex: 1 }}>
-        <Fab
-          visible={activeTab !== ActiveTab.Blocks}
-          onAddClick={handleAddFabClick}
-          disabled={steps == null}
-        />
+        {journeyEditContentComponent === ActiveJourneyEditContent.Canvas && (
+          <Fab
+            visible={activeTab !== ActiveTab.Blocks}
+            onAddClick={handleAddFabClick}
+            disabled={steps == null}
+          />
+        )}
       </Box>
       <Box
         sx={{
@@ -57,10 +70,10 @@ export function ControlPanel(): ReactElement {
         <Tabs
           value={activeTab}
           onChange={handleChange}
-          aria-label="editor tabs"
+          aria-label="`editor` tabs"
         >
           <Tab
-            label="Cards"
+            label="Journey"
             {...tabA11yProps('control-panel', 0)}
             sx={{ flexGrow: 1 }}
           />
@@ -68,13 +81,20 @@ export function ControlPanel(): ReactElement {
             label="Properties"
             {...tabA11yProps('control-panel', 1)}
             sx={{ flexGrow: 1 }}
-            disabled={steps == null || selectedBlock == null}
+            disabled={
+              steps == null ||
+              selectedBlock == null ||
+              journeyEditContentComponent !== ActiveJourneyEditContent.Canvas
+            }
           />
           <Tab
             label="Blocks"
             {...tabA11yProps('control-panel', 2)}
             sx={{ flexGrow: 1 }}
-            disabled={steps == null}
+            disabled={
+              steps == null ||
+              journeyEditContentComponent !== ActiveJourneyEditContent.Canvas
+            }
           />
         </Tabs>
       </Box>
@@ -84,6 +104,7 @@ export function ControlPanel(): ReactElement {
           onSelect={handleSelectStepPreview}
           steps={steps}
           showAddButton
+          showNavigationCards
           isDraggable
         />
       </TabPanel>

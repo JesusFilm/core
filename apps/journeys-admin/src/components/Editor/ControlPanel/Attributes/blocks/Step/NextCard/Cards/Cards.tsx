@@ -8,8 +8,7 @@ import { useEditor } from '@core/journeys/ui/EditorProvider'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { StepFields } from '../../../../../../../../../__generated__/StepFields'
 import { StepBlockNextBlockUpdate } from '../../../../../../../../../__generated__/StepBlockNextBlockUpdate'
-import { CardPreview } from '../../../../../../../CardPreview'
-import { OnSelectProps } from '../../../../../../../CardPreview/CardPreview'
+import { CardPreview, OnSelectProps } from '../../../../../../../CardPreview'
 
 export const STEP_BLOCK_NEXT_BLOCK_UPDATE = gql`
   mutation StepBlockNextBlockUpdate(

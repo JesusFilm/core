@@ -74,7 +74,7 @@ describe('Editor', () => {
         </FlagsProvider>
       </MockedProvider>
     )
-    expect(getByText('Cards')).toBeInTheDocument()
+    expect(getByText('Journey')).toBeInTheDocument()
     expect(getByText('Social Share Appearance')).toBeInTheDocument()
     expect(getByText('Social Image')).toBeInTheDocument()
   })
