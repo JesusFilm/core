@@ -51,7 +51,7 @@ export function ActionsList({
 
   const handleClick = (url: string): void => {
     setSelectedAction(url)
-    openActionDetails(url)
+    if (selectedAction != null) openActionDetails(selectedAction)
   }
 
   useEffect(() => {
@@ -69,7 +69,7 @@ export function ActionsList({
     return () => window.removeEventListener('resize', handleResize)
     // runs the useEffect once
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, [selectedAction])
 
   return (
     <>
