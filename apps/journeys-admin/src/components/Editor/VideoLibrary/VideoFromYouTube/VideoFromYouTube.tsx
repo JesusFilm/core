@@ -25,6 +25,7 @@ export interface YoutubeVideosData {
       thumbnails: { default: { url: string } }
     }
     contentDetails: {
+      videoId: string
       duration: string
     }
   }>
@@ -59,17 +60,18 @@ const fetcher = async (query: string): Promise<Data> => {
   }).toString()
   const videosData: YoutubeVideosData = await (
     await fetch(
-      `https://www.googleapis.com/youtube/v3/videos?${query}&${params}`
+      `https://www.googleapis.com/youtube/v3/playlistItems?${query}&${params}`
     )
   ).json()
+
   return {
     nextPageToken: videosData.nextPageToken,
     items: videosData.items.map((video) => ({
-      id: video.id,
+      id: video.contentDetails.videoId,
       title: video.snippet.title,
       description: video.snippet.description,
       image: video.snippet.thumbnails.default.url,
-      duration: parseISO8601Duration(video.contentDetails.duration),
+      // duration: parseISO8601Duration(video.contentDetails.duration),
       source: VideoBlockSource.youTube
     }))
   }
@@ -85,10 +87,11 @@ export function VideoFromYouTube({
         /^(?:https?:)?\/\/[^/]*(?:youtube(?:-nocookie)?.com|youtu.be).*[=/](?<id>[-\w]{11})(?:\\?|=|&|$)/
 
       const id = url.match(YOUTUBE_ID_REGEX)?.groups?.id
+      const playlistId = 'PLHvce-kc-easpXy3WTlIRB132mg5ZQX78'
       const pageToken = previousPageData?.nextPageToken ?? ''
       return id != null
         ? `id=${id}`
-        : `chart=mostPopular&pageToken=${pageToken}`
+        : `playlistId=${playlistId}&pageToken=${pageToken}`
     },
     fetcher
   )
