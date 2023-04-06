@@ -7,7 +7,8 @@ resource "random_password" "password" {
 resource "aws_rds_cluster" "default" {
   cluster_identifier      = "${var.name}-${var.env}"
   engine                  = "aurora-postgresql"
-  engine_version          = "13.7"
+  engine_mode             = "serverless"
+  engine_version          = null
   availability_zones      = data.aws_availability_zones.current.names.*
   db_subnet_group_name    = var.subnet_group_name
   database_name           = var.env
