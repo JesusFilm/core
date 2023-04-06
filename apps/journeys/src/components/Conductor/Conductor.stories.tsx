@@ -9,6 +9,7 @@ import {
   JourneyFields as Journey,
   JourneyFields_language as Language
 } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
+import { STEP_VIEW_EVENT_CREATE } from '@core/journeys/ui/Step/Step'
 import { journeysConfig } from '../../libs/storybook'
 import {
   ThemeName,
@@ -21,6 +22,7 @@ import {
   videoBlocks,
   videoLoop
 } from '../../libs/testData/storyData'
+import { JOURNEY_VIEW_EVENT_CREATE } from './Conductor'
 import { Conductor } from '.'
 
 const Demo = {
@@ -82,10 +84,54 @@ const defaultJourney: Journey = {
 const Template: Story<
   ComponentProps<typeof Conductor> & { journey?: Journey }
 > = ({ journey = defaultJourney, ...args }) => (
-  <MockedProvider mocks={[]}>
+  <MockedProvider
+    mocks={[
+      {
+        request: {
+          query: JOURNEY_VIEW_EVENT_CREATE,
+          variables: {
+            input: {
+              id: 'uuid',
+              journeyId: 'journeyId',
+              label: 'my journey',
+              value: '529'
+            }
+          }
+        },
+        result: {
+          data: {
+            journeyViewEventCreate: {
+              id: 'uuid',
+              __typename: 'JourneyViewEvent'
+            }
+          }
+        }
+      },
+      {
+        request: {
+          query: STEP_VIEW_EVENT_CREATE,
+          variables: {
+            input: {
+              id: 'uuid',
+              blockId: 'step0.id',
+              value: "What's our purpose, and how did we get here?"
+            }
+          }
+        },
+        result: {
+          data: {
+            stepViewEventCreate: {
+              __typename: 'StepViewEvent',
+              id: 'uuid'
+            }
+          }
+        }
+      }
+    ]}
+  >
     <JourneyProvider value={{ journey }}>
       <SnackbarProvider>
-        <Conductor {...args} />
+        <Conductor {...args} uuid={() => 'uuid'} />
       </SnackbarProvider>
     </JourneyProvider>
   </MockedProvider>
@@ -101,6 +147,9 @@ WithContent.args = {
   blocks: imageBlocks
 }
 WithContent.play = async () => {
+  await waitFor(() =>
+    expect(screen.getAllByTestId('conductorRightButton')[0]).toBeInTheDocument()
+  )
   const nextButton = screen.getAllByTestId('conductorRightButton')[0]
   await waitFor(() => {
     userEvent.click(nextButton)

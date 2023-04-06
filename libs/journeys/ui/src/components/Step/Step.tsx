@@ -22,12 +22,14 @@ export const STEP_VIEW_EVENT_CREATE = gql`
 
 interface StepProps extends TreeBlock<StepFields> {
   wrappers?: WrappersProps
+  uuid?: () => string
 }
 
 export function Step({
   id: blockId,
   children,
-  wrappers
+  wrappers,
+  uuid = uuidv4
 }: StepProps): ReactElement {
   const [stepViewEventCreate] = useMutation<StepViewEventCreate>(
     STEP_VIEW_EVENT_CREATE
@@ -41,7 +43,7 @@ export function Step({
 
   useEffect(() => {
     if (!admin) {
-      const id = uuidv4()
+      const id = uuid()
       void stepViewEventCreate({
         variables: { input: { id, blockId, value: heading } }
       })
@@ -54,7 +56,7 @@ export function Step({
         }
       })
     }
-  }, [blockId, stepViewEventCreate, admin, heading])
+  }, [blockId, stepViewEventCreate, admin, heading, uuid])
 
   return (
     <>

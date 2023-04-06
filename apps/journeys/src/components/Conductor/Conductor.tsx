@@ -44,9 +44,13 @@ const RightNavigationContainer = styled(Box)`
 `
 interface ConductorProps {
   blocks: TreeBlock[]
+  uuid?: () => string
 }
 
-export function Conductor({ blocks }: ConductorProps): ReactElement {
+export function Conductor({
+  blocks,
+  uuid = uuidv4
+}: ConductorProps): ReactElement {
   const { setTreeBlocks, nextActiveBlock, treeBlocks, activeBlock } =
     useBlocks()
   const [swiper, setSwiper] = useState<SwiperCore>()
@@ -70,7 +74,7 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
 
   useEffect(() => {
     if (!admin && journey != null) {
-      const id = uuidv4()
+      const id = uuid()
       const handleJourneyView = async (): Promise<void> => {
         const data = await journeyViewEventCreate({
           variables: {
@@ -97,7 +101,7 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
         }
       })
     }
-  }, [admin, journey, journeyViewEventCreate, setJourneyViewed])
+  }, [admin, journey, journeyViewEventCreate, setJourneyViewed, uuid])
 
   useEffect(() => {
     setTreeBlocks(blocks)
@@ -265,7 +269,7 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
                             height: '100%'
                           }}
                         >
-                          <BlockRenderer block={block} />
+                          <BlockRenderer block={block} uuid={uuid} />
                         </Box>
                       </Fade>
                     </CardWrapper>

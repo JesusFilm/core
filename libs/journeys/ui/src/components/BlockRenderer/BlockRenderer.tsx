@@ -54,13 +54,15 @@ export interface WrappersProps {
 interface BlockRenderProps {
   block: TreeBlock
   wrappers?: WrappersProps
+  uuid?: () => string
 }
 
 const DefaultWrapper: WrapperFn = ({ children }) => children
 
 export function BlockRenderer({
   block,
-  wrappers
+  wrappers,
+  uuid
 }: BlockRenderProps): ReactElement {
   const Wrapper = wrappers?.Wrapper ?? DefaultWrapper
   const ButtonWrapper = wrappers?.ButtonWrapper ?? DefaultWrapper
@@ -149,7 +151,7 @@ export function BlockRenderer({
       return (
         <Wrapper block={block}>
           <StepWrapper block={block}>
-            <Step {...block} wrappers={wrappers} />
+            <Step {...block} wrappers={wrappers} uuid={uuid} />
           </StepWrapper>
         </Wrapper>
       )
