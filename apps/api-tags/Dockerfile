@@ -2,6 +2,8 @@ FROM node:16-alpine
 
 EXPOSE 4006
 
+ENV PRISMA_LOCATION=/app/node_modules/.prisma/api-tags-client
+
 RUN apk upgrade --update-cache --available && \
     apk add openssl1.1-compat && \
     rm -rf /var/cache/apk/*
