@@ -3,7 +3,7 @@ FROM node:16-alpine
 EXPOSE 4006
 
 RUN apk upgrade --update-cache --available && \
-    apk add openssl openssl-dev libc6-compat && \
+    apk add openssl1.1-compat && \
     rm -rf /var/cache/apk/*
 
 WORKDIR /app
