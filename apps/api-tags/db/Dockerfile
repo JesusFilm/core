@@ -2,6 +2,10 @@ FROM node:16-alpine
 
 ENV PRISMA_LOCATION=/app/node_modules/.prisma/api-tags-client
 
+RUN apk upgrade --update-cache --available && \
+    apk add openssl1.1-compat && \
+    rm -rf /var/cache/apk/*
+
 WORKDIR /app
 COPY ./tsconfig.base.json /app/tsconfig.base.json
 COPY ./apps/api-tags /app/apps/api-tags
