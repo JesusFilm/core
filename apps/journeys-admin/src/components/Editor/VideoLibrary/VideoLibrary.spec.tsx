@@ -78,7 +78,8 @@ describe('Video Library', () => {
                   limit: 5,
                   where: {
                     availableVariantLanguageIds: ['529'],
-                    title: 'Andreas'
+                    title: 'Andreas',
+                    labels: ['episode', 'featureFilm', 'segment', 'shortFilm']
                   }
                 }
               },
@@ -152,7 +153,8 @@ describe('Video Library', () => {
                 limit: 5,
                 where: {
                   availableVariantLanguageIds: ['529'],
-                  title: null
+                  title: null,
+                  labels: ['episode', 'featureFilm', 'segment', 'shortFilm']
                 }
               }
             },

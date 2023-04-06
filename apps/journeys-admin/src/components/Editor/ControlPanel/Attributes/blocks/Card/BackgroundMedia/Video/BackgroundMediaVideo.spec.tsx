@@ -96,7 +96,8 @@ const getVideosMock = {
       limit: 5,
       where: {
         availableVariantLanguageIds: ['529'],
-        title: null
+        title: null,
+        labels: ['episode', 'featureFilm', 'segment', 'shortFilm']
       }
     }
   },

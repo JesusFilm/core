@@ -48,7 +48,8 @@ export function VideoFromLocal({
       limit: 5,
       where: {
         availableVariantLanguageIds: ['529'],
-        title: searchQuery === '' ? null : searchQuery
+        title: searchQuery === '' ? null : searchQuery,
+        labels: ['episode', 'featureFilm', 'segment', 'shortFilm']
       }
     },
     onCompleted: (data) => {

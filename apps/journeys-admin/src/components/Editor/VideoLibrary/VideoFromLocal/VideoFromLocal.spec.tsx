@@ -18,7 +18,8 @@ const getVideosMock = {
       limit: 5,
       where: {
         availableVariantLanguageIds: ['529'],
-        title: null
+        title: null,
+        labels: ['episode', 'featureFilm', 'segment', 'shortFilm']
       }
     }
   },
@@ -37,7 +38,8 @@ const getVideosEmptyWithOffsetMock = {
       limit: 5,
       where: {
         availableVariantLanguageIds: ['529'],
-        title: null
+        title: null,
+        labels: ['episode', 'featureFilm', 'segment', 'shortFilm']
       }
     }
   },
@@ -56,7 +58,8 @@ const getVideosEmptyMock = {
       limit: 5,
       where: {
         availableVariantLanguageIds: ['529'],
-        title: null
+        title: null,
+        labels: ['episode', 'featureFilm', 'segment', 'shortFilm']
       }
     }
   },
@@ -75,7 +78,8 @@ const getVideosWithTitleMock = {
       limit: 5,
       where: {
         availableVariantLanguageIds: ['529'],
-        title: 'abc'
+        title: 'abc',
+        labels: ['episode', 'featureFilm', 'segment', 'shortFilm']
       }
     }
   },
