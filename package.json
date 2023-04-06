@@ -61,6 +61,7 @@
     "adal-node": "^0.2.3",
     "apollo-datasource": "^3.3.1",
     "apollo-server-express": "^3.11.1",
+    "apollo-server-plugin-response-cache": "^3.8.2",
     "arangojs": "^7.6.1",
     "aws-sdk": "^2.1062.0",
     "blurhash": "^1.1.4",

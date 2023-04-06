@@ -18,7 +18,7 @@ type Country @key(fields: "id") {
   image: String
 }
 
-extend type Query {
-  countries: [Country!]!
-  country(id: ID!, idType: IdType): Country!
+type Query {
+  countries: [Country!]! @cacheControl(maxAge: 86400)
+  country(id: ID!, idType: IdType): Country! @cacheControl(maxAge: 86400)
 }
