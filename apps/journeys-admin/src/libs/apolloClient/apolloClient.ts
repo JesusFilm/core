@@ -5,15 +5,22 @@ import {
 } from '@apollo/client'
 import { setContext } from '@apollo/client/link/context'
 import { useMemo } from 'react'
+import { createPersistedQueryLink } from '@apollo/client/link/persisted-queries'
+import { sha256 } from 'crypto-hash'
 import { cache } from './cache'
 
 export function createApolloClient(
   token: string
 ): ApolloClient<NormalizedCacheObject> {
   const isSsrMode = typeof window === 'undefined'
-  const httpLink = createHttpLink({
-    uri: process.env.NEXT_PUBLIC_GATEWAY_URL
-  })
+  const httpLink = createPersistedQueryLink({
+    sha256,
+    useGETForHashedQueries: true
+  }).concat(
+    createHttpLink({
+      uri: process.env.NEXT_PUBLIC_GATEWAY_URL
+    })
+  )
 
   const authLink = setContext(async (_, { headers }) => {
     // If this is SSR, DO NOT PASS THE REQUEST HEADERS.

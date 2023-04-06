@@ -6,12 +6,19 @@ import {
 import { setContext } from '@apollo/client/link/context'
 import { getAuth, signInAnonymously } from 'firebase/auth'
 import { useMemo } from 'react'
+import { createPersistedQueryLink } from '@apollo/client/link/persisted-queries'
+import { sha256 } from 'crypto-hash'
 import { firebaseClient } from '../firebaseClient'
 import { cache } from './cache'
 
-const httpLink = createHttpLink({
-  uri: process.env.NEXT_PUBLIC_GATEWAY_URL
-})
+const httpLink = createPersistedQueryLink({
+  sha256,
+  useGETForHashedQueries: true
+}).concat(
+  createHttpLink({
+    uri: process.env.NEXT_PUBLIC_GATEWAY_URL
+  })
+)
 
 const authLink = setContext(async (_, { headers }) => {
   const isSsrMode = typeof window === 'undefined'
