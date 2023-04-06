@@ -67,7 +67,6 @@ export function ActionsList({
     handleResize()
     window.addEventListener('resize', handleResize)
     return () => window.removeEventListener('resize', handleResize)
-    // runs the useEffect once
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedAction])
 
