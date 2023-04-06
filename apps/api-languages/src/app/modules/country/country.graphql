@@ -3,7 +3,7 @@ enum IdType {
   slug
 }
 
-type Country @key(fields: "id") {
+type Country @key(fields: "id") @cacheControl(maxAge: 86400) {
   id: ID!
   name(languageId: ID, primary: Boolean): [Translation!]!
   population: Int!
