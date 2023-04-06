@@ -10,7 +10,7 @@ const databaseProviders = [
       const config: Config = {
         url: process.env.DATABASE_URL,
         databaseName: process.env.DATABASE_DB,
-        agentOptions: { maxSockets: 50 }
+        agentOptions: { maxSockets: 10 }
       }
 
       if (process.env.DATABASE_DB != null)
