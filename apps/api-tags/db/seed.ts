@@ -1,4 +1,4 @@
-// version 1
+// version 2
 // increment to trigger re-seed (ie: files other than seed.ts are changed)
 
 import { PrismaClient } from '.prisma/api-tags-client'
