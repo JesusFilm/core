@@ -131,7 +131,7 @@ export class VideoService extends BaseService {
       }
     `)
     const result = await res.next()
-    await this.cacheManager.set(key, result, 86400000)
+    if (result != null) await this.cacheManager.set(key, result, 86400000)
     return result
   }
 
@@ -153,7 +153,7 @@ export class VideoService extends BaseService {
       }
     `)
     const result = await res.next()
-    await this.cacheManager.set(key, result, 86400000)
+    if (result != null) await this.cacheManager.set(key, result, 86400000)
     return result
   }
 
