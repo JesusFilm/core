@@ -8,8 +8,8 @@ import { PageWrapper } from '../PageWrapper'
 import { ShareDialog } from '../ShareDialog'
 import { DownloadDialog } from '../DownloadDialog'
 import { ShareButton } from '../ShareButton'
-// import { useVideoChildren } from '../../libs/useVideoChildren'
-// import { VideoCarousel } from '../VideoCarousel'
+import { useVideoChildren } from '../../libs/useVideoChildren'
+import { VideoCarousel } from '../VideoCarousel'
 import { getSlug } from '../VideoCard'
 import { VideoContent } from './VideoContent/VideoContent'
 import { DownloadButton } from './DownloadButton'
@@ -25,16 +25,16 @@ export function VideoContentPage(): ReactElement {
     snippet,
     image,
     imageAlt,
-    // slug,
+    slug,
     variant,
-    // id,
+    id,
     label,
     container,
     childrenCount
   } = useVideo()
-  // const { loading, children } = useVideoChildren(
-  //   container?.variant?.slug ?? variant?.slug
-  // )
+  const { loading, children } = useVideoChildren(
+    container?.variant?.slug ?? variant?.slug
+  )
   const [hasPlayed, setHasPlayed] = useState(false)
   const [openShare, setOpenShare] = useState(false)
   const [openDownload, setOpenDownload] = useState(false)
@@ -98,13 +98,13 @@ export function VideoContentPage(): ReactElement {
               spacing={5}
             >
               <VideoHeading
-                // loading={loading}
+                loading={loading}
                 hasPlayed={hasPlayed}
-                // videos={children}
+                videos={children}
                 onShareClick={() => setOpenShare(true)}
                 onDownloadClick={() => setOpenDownload(true)}
               />
-              {/* {((container?.childrenCount ?? 0) > 0 || childrenCount > 0) && (
+              {((container?.childrenCount ?? 0) > 0 || childrenCount > 0) && (
                 <Box pb={4}>
                   <VideoCarousel
                     loading={loading}
@@ -113,7 +113,7 @@ export function VideoContentPage(): ReactElement {
                     activeVideoId={id}
                   />
                 </Box>
-              )} */}
+              )}
             </Stack>
           </>
         }
