@@ -80,13 +80,10 @@ export class VideoService extends BaseService {
   }
 
   @KeyAsId()
-  public async filterAll<T>(
-    filter?: ExtendedVideosFilter,
-    cached = true
-  ): Promise<T[]> {
+  public async filterAll<T>(filter?: ExtendedVideosFilter): Promise<T[]> {
     const key = `filterAll-${JSON.stringify({ filter })}`
     const cache = await this.cacheManager.get<T[]>(key)
-    if (cached && cache != null) return cache
+    if (cache != null) return cache
 
     const { variantLanguageId, offset = 0, limit = 100 } = filter ?? {}
     const search = this.videoFilter(filter)
@@ -114,12 +111,11 @@ export class VideoService extends BaseService {
   @KeyAsId()
   public async getVideo<T>(
     _key: string,
-    variantLanguageId?: string,
-    cached = true
+    variantLanguageId?: string
   ): Promise<T> {
     const key = `getVideo-${_key}-${variantLanguageId ?? ''}`
     const cache = await this.cacheManager.get<T>(key)
-    if (cached && cache != null) return cache
+    if (cache != null) return cache
 
     const res = await this.db.query(aql`
     FOR item in ${this.collection}
@@ -140,10 +136,10 @@ export class VideoService extends BaseService {
   }
 
   @KeyAsId()
-  public async getVideoBySlug<T>(slug: string, cached = true): Promise<T> {
+  public async getVideoBySlug<T>(slug: string): Promise<T> {
     const key = `getVideoBySlug-${slug}`
     const cache = await this.cacheManager.get<T>(key)
-    if (cached && cache != null) return cache
+    if (cache != null) return cache
 
     const res = await this.db.query(aql`
     FOR item IN ${this.collection}
@@ -164,12 +160,11 @@ export class VideoService extends BaseService {
   @KeyAsId()
   public async getVideosByIds<T>(
     keys: string[],
-    variantLanguageId?: string,
-    cached = true
+    variantLanguageId?: string
   ): Promise<T[]> {
     const key = `getVideosByIds-${variantLanguageId ?? ''}-${keys.join('-')}`
     const cache = await this.cacheManager.get<T[]>(key)
-    if (cached && cache != null) return cache
+    if (cache != null) return cache
 
     const res = await this.db.query(aql`
     FOR item IN ${this.collection}
