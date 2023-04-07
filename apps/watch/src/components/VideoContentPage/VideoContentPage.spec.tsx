@@ -1,9 +1,9 @@
-import { fireEvent, render /*, waitFor */ } from '@testing-library/react'
+import { fireEvent, render, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 import { MockedProvider } from '@apollo/client/testing'
 import { videos } from '../Videos/__generated__/testData'
 import { VideoProvider } from '../../libs/videoContext'
-// import { getVideoChildrenMock } from '../../libs/useVideoChildren/getVideoChildrenMock'
+import { getVideoChildrenMock } from '../../libs/useVideoChildren/getVideoChildrenMock'
 import { VideoContentPage } from '.'
 
 describe('VideoContentPage', () => {
@@ -34,23 +34,23 @@ describe('VideoContentPage', () => {
     expect(getByRole('tab', { name: 'Description' })).toBeInTheDocument()
   })
 
-  // it('should render children', async () => {
-  //   const { getByRole } = render(
-  //     <MockedProvider mocks={[getVideoChildrenMock]}>
-  //       <SnackbarProvider>
-  //         <VideoProvider value={{ content: videos[0] }}>
-  //           <VideoContentPage />
-  //         </VideoProvider>
-  //       </SnackbarProvider>
-  //     </MockedProvider>
-  //   )
+  it('should render children', async () => {
+    const { getByRole } = render(
+      <MockedProvider mocks={[getVideoChildrenMock]}>
+        <SnackbarProvider>
+          <VideoProvider value={{ content: videos[0] }}>
+            <VideoContentPage />
+          </VideoProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
 
-  //   await waitFor(() =>
-  //     expect(
-  //       getByRole('heading', { name: videos[1].title[0].value })
-  //     ).toBeInTheDocument()
-  //   )
-  // })
+    await waitFor(() =>
+      expect(
+        getByRole('heading', { name: videos[1].title[0].value })
+      ).toBeInTheDocument()
+    )
+  })
 
   it('should render share button', () => {
     const { getByRole } = render(
