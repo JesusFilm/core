@@ -1,3 +1,5 @@
+directive @cacheControl(maxAge: Int, scope: CacheControlScope, inheritMaxAge: Boolean) on FIELD_DEFINITION | OBJECT | INTERFACE | UNION
+
 directive @key(fields: _FieldSet!, resolvable: Boolean = true) repeatable on OBJECT | INTERFACE
 
 directive @requires(fields: _FieldSet!) on FIELD_DEFINITION
@@ -10,6 +12,11 @@ directive @tag(name: String!) repeatable on FIELD_DEFINITION | OBJECT | INTERFAC
 
 directive @extends on OBJECT | INTERFACE
 
+enum CacheControlScope {
+  PUBLIC
+  PRIVATE
+}
+
 enum IdType {
   databaseId
   slug
@@ -17,6 +24,7 @@ enum IdType {
 
 type Country
   @key(fields: "id")
+  @cacheControl(maxAge: 86400)
 {
   id: ID!
   name(languageId: ID, primary: Boolean): [Translation!]!
@@ -34,19 +42,17 @@ type Country
 }
 
 type Query {
+  countries: [Country!]! @cacheControl(maxAge: 86400)
+  country(id: ID!, idType: IdType): Country! @cacheControl(maxAge: 86400)
+  languages(offset: Int, limit: Int): [Language!]! @cacheControl(maxAge: 86400)
+  language(id: ID!, idType: LanguageIdType): Language @cacheControl(maxAge: 86400)
   _entities(representations: [_Any!]!): [_Entity]!
   _service: _Service!
 }
 
-extend type Query {
-  countries: [Country!]!
-  country(id: ID!, idType: IdType): Country!
-  languages(offset: Int, limit: Int): [Language!]!
-  language(id: ID!, idType: LanguageIdType): Language
-}
-
 type Language
   @key(fields: "id")
+  @cacheControl(maxAge: 86400)
 {
   id: ID!
   bcp47: String
