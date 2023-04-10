@@ -146,6 +146,14 @@ enum ButtonVariant
   contained @join__enumValue(graph: JOURNEYS)
 }
 
+enum CacheControlScope
+  @join__type(graph: LANGUAGES)
+  @join__type(graph: VIDEOS)
+{
+  PUBLIC @join__enumValue(graph: LANGUAGES) @join__enumValue(graph: VIDEOS)
+  PRIVATE @join__enumValue(graph: LANGUAGES) @join__enumValue(graph: VIDEOS)
+}
+
 type CardBlock implements Block
   @join__implements(graph: JOURNEYS, interface: "Block")
   @join__type(graph: JOURNEYS)
@@ -663,6 +671,8 @@ input JourneyViewEventCreateInput
 type Language
   @join__type(graph: JOURNEYS, key: "id")
   @join__type(graph: LANGUAGES, key: "id")
+  @join__type(graph: MEDIA, key: "id")
+  @join__type(graph: USERS, key: "id")
   @join__type(graph: VIDEOS, key: "id")
 {
   id: ID!
@@ -827,7 +837,7 @@ type Mutation
   """Removes all userJourneys associated with a journeyId"""
   userJourneyRemoveAll(id: ID!): [UserJourney!]! @join__field(graph: JOURNEYS)
   userJourneyRequest(journeyId: ID!, idType: IdType): UserJourney! @join__field(graph: JOURNEYS)
-  userJourneyOpen(id: ID!): UserJourney! @join__field(graph: JOURNEYS)
+  userJourneyOpen(id: ID!): UserJourney @join__field(graph: JOURNEYS)
 
   """Update a visitor"""
   visitorUpdate(id: ID!, input: VisitorUpdateInput!): Visitor! @join__field(graph: JOURNEYS)
@@ -1336,7 +1346,10 @@ enum ThemeName
 }
 
 type Translation
+  @join__type(graph: JOURNEYS)
   @join__type(graph: LANGUAGES)
+  @join__type(graph: MEDIA)
+  @join__type(graph: USERS)
   @join__type(graph: VIDEOS)
 {
   value: String!

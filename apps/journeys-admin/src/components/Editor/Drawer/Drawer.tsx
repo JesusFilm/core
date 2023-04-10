@@ -80,7 +80,8 @@ export function Drawer(): ReactElement {
         width: '328px',
         borderLeft: 1,
         borderColor: 'divider',
-        borderRadius: 0
+        borderRadius: 0,
+        overflow: 'hidden'
       }}
     >
       <DrawerContent title={title} handleDrawerToggle={handleDrawerToggle}>

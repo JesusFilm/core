@@ -29,6 +29,18 @@ extend type Query {
   me: User
 }
 
+extend type Language
+  @key(fields: "id")
+{
+  id: ID! @external
+}
+
+type Translation {
+  value: String!
+  language: Language!
+  primary: Boolean!
+}
+
 scalar _FieldSet
 
 scalar _Any
@@ -37,4 +49,4 @@ type _Service {
   sdl: String
 }
 
-union _Entity = User
+union _Entity = Language | User

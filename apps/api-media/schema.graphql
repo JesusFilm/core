@@ -18,6 +18,7 @@ type CloudflareImage {
 }
 
 type Query {
+  _entities(representations: [_Any!]!): [_Entity]!
   _service: _Service!
 }
 
@@ -141,6 +142,18 @@ type UnsplashPhotoLinks {
   download_location: String!
 }
 
+extend type Language
+  @key(fields: "id")
+{
+  id: ID! @external
+}
+
+type Translation {
+  value: String!
+  language: Language!
+  primary: Boolean!
+}
+
 scalar _FieldSet
 
 scalar _Any
@@ -148,3 +161,5 @@ scalar _Any
 type _Service {
   sdl: String
 }
+
+union _Entity = Language

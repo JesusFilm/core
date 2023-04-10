@@ -4,7 +4,8 @@ import {
   useEditor,
   EditorState,
   ActiveTab,
-  ActiveFab
+  ActiveFab,
+  ActiveJourneyEditContent
 } from '@core/journeys/ui/EditorProvider'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { MockedProvider } from '@apollo/client/testing'
@@ -54,8 +55,9 @@ describe('Canvas', () => {
     selectedStep: step0,
     selectedBlock: step0,
     drawerMobileOpen: false,
-    activeTab: ActiveTab.Cards,
-    activeFab: ActiveFab.Add
+    activeTab: ActiveTab.Journey,
+    activeFab: ActiveFab.Add,
+    journeyEditContentComponent: ActiveJourneyEditContent.Canvas
   }
 
   beforeEach(() => {

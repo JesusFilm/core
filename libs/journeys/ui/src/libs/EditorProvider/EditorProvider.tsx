@@ -13,7 +13,7 @@ import type { TreeBlock } from '../block'
 import { BlockFields_StepBlock as StepBlock } from '../block/__generated__/BlockFields'
 
 export enum ActiveTab {
-  Cards = 0,
+  Journey = 0,
   Properties = 1,
   Blocks = 2
 }
@@ -22,6 +22,11 @@ export enum ActiveFab {
   Add = 0,
   Edit = 1,
   Save = 2
+}
+
+export enum ActiveJourneyEditContent {
+  Canvas = 'canvas',
+  Action = 'action'
 }
 
 export interface EditorState {
@@ -34,6 +39,7 @@ export interface EditorState {
   drawerMobileOpen: boolean
   activeTab: ActiveTab
   activeFab: ActiveFab
+  journeyEditContentComponent: ActiveJourneyEditContent
 }
 
 export interface SetSelectedStepAction {
@@ -78,6 +84,11 @@ interface SetActiveFabAction {
   activeFab: ActiveFab
 }
 
+interface SetActiveJourneyEditContentAction {
+  type: 'SetJourneyEditContentAction'
+  component: ActiveJourneyEditContent
+}
+
 interface SetStepsAction {
   type: 'SetStepsAction'
   steps: Array<TreeBlock<StepBlock>>
@@ -93,6 +104,7 @@ type EditorAction =
   | SetActiveTabAction
   | SetActiveFabAction
   | SetStepsAction
+  | SetActiveJourneyEditContentAction
 
 export const reducer = (
   state: EditorState,
@@ -100,16 +112,26 @@ export const reducer = (
 ): EditorState => {
   switch (action.type) {
     case 'SetSelectedStepAction':
-      return { ...state, selectedStep: action.step, selectedBlock: action.step }
+      return {
+        ...state,
+        selectedStep: action.step,
+        selectedBlock: action.step,
+        journeyEditContentComponent: ActiveJourneyEditContent.Canvas
+      }
     case 'SetSelectedBlockAction':
-      return { ...state, selectedBlock: action.block }
+      return {
+        ...state,
+        selectedBlock: action.block,
+        journeyEditContentComponent: ActiveJourneyEditContent.Canvas
+      }
     case 'SetSelectedBlockByIdAction':
       return {
         ...state,
         selectedBlock:
           action.id != null
             ? searchBlocks(state.steps ?? [], action.id)
-            : undefined
+            : undefined,
+        journeyEditContentComponent: ActiveJourneyEditContent.Canvas
       }
     case 'SetSelectedAttributeIdAction':
       return { ...state, selectedAttributeId: action.id }
@@ -148,6 +170,11 @@ export const reducer = (
             ? searchBlocks(action.steps, state.selectedBlock.id)
             : action.steps[0]
       }
+    case 'SetJourneyEditContentAction':
+      return {
+        ...state,
+        journeyEditContentComponent: action.component
+      }
   }
 }
 
@@ -158,8 +185,9 @@ export const EditorContext = createContext<{
   state: {
     steps: [],
     drawerMobileOpen: false,
-    activeTab: ActiveTab.Cards,
-    activeFab: ActiveFab.Add
+    activeTab: ActiveTab.Journey,
+    activeFab: ActiveFab.Add,
+    journeyEditContentComponent: ActiveJourneyEditContent.Canvas
   },
   dispatch: () => null
 })
@@ -178,8 +206,9 @@ export function EditorProvider({
     selectedStep: initialState?.steps?.[0],
     selectedBlock: initialState?.steps?.[0],
     drawerMobileOpen: false,
-    activeTab: ActiveTab.Cards,
+    activeTab: ActiveTab.Journey,
     activeFab: ActiveFab.Add,
+    journeyEditContentComponent: ActiveJourneyEditContent.Canvas,
     ...initialState
   })
 

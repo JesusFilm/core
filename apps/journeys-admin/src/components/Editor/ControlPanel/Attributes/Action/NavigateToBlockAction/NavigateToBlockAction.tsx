@@ -3,9 +3,8 @@ import { useEditor } from '@core/journeys/ui/EditorProvider'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { gql, useMutation } from '@apollo/client'
 import { ReactElement } from 'react'
-import { CardPreview } from '../../../../../CardPreview'
+import { CardPreview, OnSelectProps } from '../../../../../CardPreview'
 import {
-  GetJourney_journey_blocks_StepBlock as StepBlock,
   GetJourney_journey_blocks_ButtonBlock as ButtonBlock,
   GetJourney_journey_blocks_VideoBlock as VideoBlock
 } from '../../../../../../../__generated__/GetJourney'
@@ -48,8 +47,8 @@ export function NavigateToBlockAction(): ReactElement {
         id === currentBlock?.action?.blockId
     ) ?? undefined
 
-  async function handleSelectStep(step: TreeBlock<StepBlock>): Promise<void> {
-    if (currentBlock != null && journey != null) {
+  async function handleSelectStep({ step }: OnSelectProps): Promise<void> {
+    if (currentBlock != null && journey != null && step != null) {
       const { id, __typename: typeName } = currentBlock
       await navigateToBlockActionUpdate({
         variables: {

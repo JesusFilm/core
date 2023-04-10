@@ -90,7 +90,7 @@ describe('CardPreview', () => {
       </MockedProvider>
     )
     fireEvent.click(getByTestId('preview-step.id'))
-    expect(onSelect).toHaveBeenCalledWith(step)
+    expect(onSelect).toHaveBeenCalledWith({ step })
   })
 
   it('should create step and card when add button is clicked', async () => {
@@ -98,7 +98,7 @@ describe('CardPreview', () => {
     mockUuidv4.mockReturnValueOnce('cardId')
     const onSelect = jest.fn()
 
-    const { getByRole } = render(
+    const { getAllByRole } = render(
       <MockedProvider mocks={mocks}>
         <JourneyProvider
           value={{
@@ -114,29 +114,31 @@ describe('CardPreview', () => {
         </JourneyProvider>
       </MockedProvider>
     )
-    fireEvent.click(getByRole('button'))
+    fireEvent.click(getAllByRole('button')[0])
     await waitFor(() =>
       expect(onSelect).toHaveBeenCalledWith({
-        __typename: 'StepBlock',
-        children: [
-          {
-            __typename: 'CardBlock',
-            backgroundColor: null,
-            children: [],
-            coverBlockId: null,
-            fullscreen: false,
-            id: 'cardId',
-            parentBlockId: 'stepId',
-            parentOrder: 0,
-            themeMode: null,
-            themeName: null
-          }
-        ],
-        id: 'stepId',
-        locked: false,
-        nextBlockId: null,
-        parentBlockId: null,
-        parentOrder: 0
+        step: {
+          __typename: 'StepBlock',
+          children: [
+            {
+              __typename: 'CardBlock',
+              backgroundColor: null,
+              children: [],
+              coverBlockId: null,
+              fullscreen: false,
+              id: 'cardId',
+              parentBlockId: 'stepId',
+              parentOrder: 0,
+              themeMode: null,
+              themeName: null
+            }
+          ],
+          id: 'stepId',
+          locked: false,
+          nextBlockId: null,
+          parentBlockId: null,
+          parentOrder: 0
+        }
       })
     )
   })
@@ -155,7 +157,7 @@ describe('CardPreview', () => {
       }
     })
 
-    const { getByRole } = render(
+    const { getAllByRole } = render(
       <MockedProvider cache={cache} mocks={mocks}>
         <JourneyProvider
           value={{
@@ -171,12 +173,91 @@ describe('CardPreview', () => {
         </JourneyProvider>
       </MockedProvider>
     )
-    fireEvent.click(getByRole('button'))
+    fireEvent.click(getAllByRole('button')[0])
     await waitFor(() => {
       expect(cache.extract()['Journey:journeyId']?.blocks).toEqual([
         { __ref: 'StepBlock:stepId' },
         { __ref: 'CardBlock:cardId' }
       ])
     })
+  })
+
+  it('should create step and card when add button is clicked', async () => {
+    mockUuidv4.mockReturnValueOnce('stepId')
+    mockUuidv4.mockReturnValueOnce('cardId')
+    const onSelect = jest.fn()
+
+    const { getAllByRole } = render(
+      <MockedProvider mocks={mocks}>
+        <JourneyProvider
+          value={{
+            journey: {
+              id: 'journeyId',
+              themeMode: ThemeMode.light,
+              themeName: ThemeName.base
+            } as unknown as Journey,
+            admin: true
+          }}
+        >
+          <CardPreview steps={[]} onSelect={onSelect} showAddButton />
+        </JourneyProvider>
+      </MockedProvider>
+    )
+    fireEvent.click(getAllByRole('button')[0])
+    await waitFor(() =>
+      expect(onSelect).toHaveBeenCalledWith({
+        step: {
+          __typename: 'StepBlock',
+          children: [
+            {
+              __typename: 'CardBlock',
+              backgroundColor: null,
+              children: [],
+              coverBlockId: null,
+              fullscreen: false,
+              id: 'cardId',
+              parentBlockId: 'stepId',
+              parentOrder: 0,
+              themeMode: null,
+              themeName: null
+            }
+          ],
+          id: 'stepId',
+          locked: false,
+          nextBlockId: null,
+          parentBlockId: null,
+          parentOrder: 0
+        }
+      })
+    )
+  })
+  it('should navigate to actions table when clicked', async () => {
+    const onSelect = jest.fn()
+
+    const { getAllByRole } = render(
+      <MockedProvider mocks={mocks}>
+        <JourneyProvider
+          value={{
+            journey: {
+              id: 'journeyId',
+              themeMode: ThemeMode.light,
+              themeName: ThemeName.base
+            } as unknown as Journey,
+            admin: true
+          }}
+        >
+          <CardPreview
+            steps={[]}
+            onSelect={onSelect}
+            showAddButton
+            showNavigationCards
+          />
+        </JourneyProvider>
+      </MockedProvider>
+    )
+    fireEvent.click(getAllByRole('button')[0])
+    await waitFor(() =>
+      expect(onSelect).toHaveBeenCalledWith({ view: 'action' })
+    )
   })
 })

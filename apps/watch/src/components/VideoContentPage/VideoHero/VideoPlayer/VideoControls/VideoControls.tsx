@@ -20,6 +20,8 @@ import CircularProgress from '@mui/material/CircularProgress'
 import { secondsToTimeFormat } from '@core/shared/ui/timeFormat'
 import fscreen from 'fscreen'
 import dynamic from 'next/dynamic'
+import TagManager from 'react-gtm-module'
+import debounce from 'lodash/debounce'
 import { useVideo } from '../../../../../libs/videoContext'
 import { AudioLanguageButton } from '../../../AudioLanguageButton'
 
@@ -45,6 +47,18 @@ function isMobile(): boolean {
   return /windows phone/i.test(userAgent) || /iPad|iPhone|iPod/.test(userAgent)
 }
 
+function evtToDataLayer(eventType, title, language, percent): void {
+  TagManager.dataLayer({
+    dataLayer: {
+      event: eventType,
+      title,
+      language,
+      percent
+    }
+  })
+}
+const eventToDataLayer = debounce(evtToDataLayer, 500)
+
 export function VideoControls({
   player,
   onVisibleChanged
@@ -53,6 +67,8 @@ export function VideoControls({
   const [active, setActive] = useState(true)
   const [currentTime, setCurrentTime] = useState<string>()
   const [progress, setProgress] = useState(0)
+  const [progressPercentNotYetEmitted, setProgressPercentNotYetEmitted] =
+    useState([10, 25, 50, 75, 90])
   const [volume, setVolume] = useState(0)
   const [mute, setMute] = useState(false)
   const [fullscreen, setFullscreen] = useState(false)
@@ -62,7 +78,7 @@ export function VideoControls({
 
   const duration = secondsToTimeFormat(player.duration(), { trimZeroes: true })
   const durationSeconds = Math.round(player.duration())
-  const { variant } = useVideo()
+  const { title, variant } = useVideo()
   const visible = !play || active || loading
 
   useEffect(() => {
@@ -70,11 +86,47 @@ export function VideoControls({
   }, [play, active, loading, onVisibleChanged])
 
   useEffect(() => {
+    if ((progress / durationSeconds) * 100 > progressPercentNotYetEmitted[0]) {
+      eventToDataLayer(
+        `video_time_update_${progressPercentNotYetEmitted[0]}`,
+        title[0].value,
+        variant?.language.name[0].value,
+        Math.round((progress / durationSeconds) * 100)
+      )
+      const [, ...rest] = progressPercentNotYetEmitted
+      setProgressPercentNotYetEmitted(rest)
+    }
+  }, [progress, durationSeconds, progressPercentNotYetEmitted, title, variant])
+
+  useEffect(() => {
     setVolume(player.volume() * 100)
     player.on('play', () => {
+      if (player.currentTime() < 0.02) {
+        eventToDataLayer(
+          'video_start',
+          title[0].value,
+          variant?.language.name[0].value,
+          Math.round((player.currentTime() / player.duration()) * 100)
+        )
+      } else {
+        eventToDataLayer(
+          'video_play',
+          title[0].value,
+          variant?.language.name[0].value,
+          Math.round((player.currentTime() / player.duration()) * 100)
+        )
+      }
       setPlay(true)
     })
     player.on('pause', () => {
+      if (player.currentTime() > 0.02) {
+        eventToDataLayer(
+          'video_pause',
+          title[0].value,
+          variant?.language.name[0].value,
+          Math.round((player.currentTime() / player.duration()) * 100)
+        )
+      }
       setPlay(false)
     })
     player.on('timeupdate', () => {
@@ -94,13 +146,36 @@ export function VideoControls({
     player.on('userinactive', () => setActive(false))
     player.on('waiting', () => setLoading(true))
     player.on('playing', () => setLoading(false))
-    player.on('ended', () => setLoading(false))
+    player.on('ended', () => {
+      setLoading(false)
+      eventToDataLayer(
+        'video_ended',
+        title[0].value,
+        variant?.language.name[0].value,
+        Math.round((player.currentTime() / player.duration()) * 100)
+      )
+    })
     player.on('canplay', () => setLoading(false))
     player.on('canplaythrough', () => setLoading(false))
-    fscreen.addEventListener('fullscreenchange', () =>
+    fscreen.addEventListener('fullscreenchange', () => {
+      if (fscreen.fullscreenElement != null) {
+        eventToDataLayer(
+          'video_enter_full_screen',
+          title[0].value,
+          variant?.language.name[0].value,
+          Math.round((player.currentTime() / player.duration()) * 100)
+        )
+      } else {
+        eventToDataLayer(
+          'video_exit_full_screen',
+          title[0].value,
+          variant?.language.name[0].value,
+          Math.round((player.currentTime() / player.duration()) * 100)
+        )
+      }
       setFullscreen(fscreen.fullscreenElement != null)
-    )
-  }, [player, setFullscreen, loading])
+    })
+  }, [player, setFullscreen, loading, title, variant])
 
   function handlePlay(): void {
     if (!play) {
@@ -270,6 +345,7 @@ export function VideoControls({
                 alignItems="center"
               >
                 <IconButton
+                  id={play ? 'pause-button' : 'play-button'}
                   onClick={handlePlay}
                   sx={{ display: { xs: 'none', md: 'flex' } }}
                 >

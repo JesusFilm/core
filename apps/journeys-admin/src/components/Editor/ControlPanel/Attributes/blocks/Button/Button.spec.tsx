@@ -2,6 +2,7 @@ import { render } from '@testing-library/react'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import {
   ActiveFab,
+  ActiveJourneyEditContent,
   ActiveTab,
   EditorState,
   useEditor
@@ -47,8 +48,9 @@ describe('Button attributes', () => {
   const state: EditorState = {
     steps: [],
     drawerMobileOpen: false,
-    activeTab: ActiveTab.Cards,
-    activeFab: ActiveFab.Add
+    activeTab: ActiveTab.Journey,
+    activeFab: ActiveFab.Add,
+    journeyEditContentComponent: ActiveJourneyEditContent.Canvas
   }
 
   beforeEach(() => {

@@ -1,3 +1,5 @@
+directive @cacheControl(maxAge: Int, scope: CacheControlScope, inheritMaxAge: Boolean) on FIELD_DEFINITION | OBJECT | INTERFACE | UNION
+
 directive @key(fields: _FieldSet!, resolvable: Boolean = true) repeatable on OBJECT | INTERFACE
 
 directive @requires(fields: _FieldSet!) on FIELD_DEFINITION
@@ -10,16 +12,15 @@ directive @tag(name: String!) repeatable on FIELD_DEFINITION | OBJECT | INTERFAC
 
 directive @extends on OBJECT | INTERFACE
 
+enum CacheControlScope {
+  PUBLIC
+  PRIVATE
+}
+
 extend type Language
   @key(fields: "id")
 {
   id: ID! @external
-}
-
-type Translation {
-  value: String!
-  language: Language!
-  primary: Boolean!
 }
 
 enum IdType {
@@ -43,6 +44,7 @@ type LanguageWithSlug {
 
 type Video
   @key(fields: "id primaryLanguageId")
+  @cacheControl(maxAge: 86400)
 {
   id: ID!
   label: VideoLabel!
@@ -77,13 +79,10 @@ input VideosFilter {
 }
 
 type Query {
+  videos(where: VideosFilter, offset: Int, limit: Int): [Video!]! @cacheControl(maxAge: 86400)
+  video(id: ID!, idType: IdType): Video @cacheControl(maxAge: 86400)
   _entities(representations: [_Any!]!): [_Entity]!
   _service: _Service!
-}
-
-extend type Query {
-  videos(where: VideosFilter, offset: Int, limit: Int): [Video!]!
-  video(id: ID!, idType: IdType): Video
 }
 
 enum VideoVariantDownloadQuality {
@@ -108,6 +107,12 @@ type VideoVariant {
 
   """slug is a permanent link to the video variant."""
   slug: String!
+}
+
+type Translation {
+  value: String!
+  language: Language!
+  primary: Boolean!
 }
 
 scalar _FieldSet

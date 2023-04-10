@@ -1096,6 +1096,13 @@ export class VisitorsConnection {
     pageInfo: PageInfo;
 }
 
+export class Translation {
+    __typename?: 'Translation';
+    value: string;
+    language: Language;
+    primary: boolean;
+}
+
 export abstract class IMutation {
     abstract blockDeleteAction(id: string, journeyId: string): Block | Promise<Block>;
 
@@ -1223,7 +1230,7 @@ export abstract class IMutation {
 
     abstract userJourneyRequest(journeyId: string, idType?: Nullable<IdType>): UserJourney | Promise<UserJourney>;
 
-    abstract userJourneyOpen(id: string): UserJourney | Promise<UserJourney>;
+    abstract userJourneyOpen(id: string): Nullable<UserJourney> | Promise<Nullable<UserJourney>>;
 
     abstract visitorUpdate(id: string, input: VisitorUpdateInput): Visitor | Promise<Visitor>;
 }

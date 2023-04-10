@@ -2,6 +2,7 @@ import type { TreeBlock } from '@core/journeys/ui/block'
 import { render } from '@testing-library/react'
 import {
   ActiveFab,
+  ActiveJourneyEditContent,
   ActiveTab,
   useEditor
 } from '@core/journeys/ui/EditorProvider'
@@ -40,8 +41,9 @@ describe('Typography properties', () => {
   const state = {
     steps: [],
     drawerMobileOpen: false,
-    activeTab: ActiveTab.Cards,
-    activeFab: ActiveFab.Add
+    activeTab: ActiveTab.Journey,
+    activeFab: ActiveFab.Add,
+    journeyEditContentComponent: ActiveJourneyEditContent.Canvas
   }
 
   beforeEach(() => {
