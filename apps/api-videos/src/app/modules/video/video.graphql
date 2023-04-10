@@ -21,7 +21,7 @@ type LanguageWithSlug {
   slug: String
 }
 
-type Video @key(fields: "id primaryLanguageId") {
+type Video @key(fields: "id primaryLanguageId") @cacheControl(maxAge: 86400) {
   id: ID!
   label: VideoLabel!
   primaryLanguageId: ID!
@@ -55,7 +55,8 @@ input VideosFilter {
   subtitleLanguageIds: [ID!]
 }
 
-extend type Query {
+type Query {
   videos(where: VideosFilter, offset: Int, limit: Int): [Video!]!
-  video(id: ID!, idType: IdType): Video
+    @cacheControl(maxAge: 86400)
+  video(id: ID!, idType: IdType): Video @cacheControl(maxAge: 86400)
 }
