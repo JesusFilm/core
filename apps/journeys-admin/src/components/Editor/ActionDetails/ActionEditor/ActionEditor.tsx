@@ -13,11 +13,9 @@ import QuestionAnswerOutlined from '@mui/icons-material/QuestionAnswerOutlined'
 import WebOutlined from '@mui/icons-material/WebOutlined'
 import MenuBookRounded from '@mui/icons-material/MenuBookRounded'
 import Stack from '@mui/material/Stack'
-import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { BlockFields_ButtonBlock as ButtonBlock } from '../../../../../__generated__/BlockFields'
 import { ActionFields_LinkAction as LinkAction } from '../../../../../__generated__/ActionFields'
 import { MultipleLinkActionUpdate } from '../../../../../__generated__/MultipleLinkActionUpdate'
-import { ActionDetails } from '../ActionDetails'
 
 export const MULTIPLE_LINK_ACTION_UPDATE = gql`
   mutation MultipleLinkActionUpdate(
@@ -44,7 +42,6 @@ export function ActionEditor({
   selectedAction
 }: ActionEditorProps): ReactElement {
   const { journey } = useJourney()
-  const { dispatch } = useEditor()
 
   const blocks = (journey?.blocks ?? [])
     .filter((block) => ((block as ButtonBlock).action as LinkAction) != null)
@@ -87,18 +84,6 @@ export function ActionEditor({
     })
     selectedAction?.(target.value)
     goalLabel?.(target.value)
-    dispatch({
-      type: 'SetDrawerPropsAction',
-      mobileOpen: true,
-      title: 'Goal Details',
-      children: (
-        <ActionDetails
-          url={target.value}
-          goalLabel={goalLabel}
-          selectedAction={selectedAction}
-        />
-      )
-    })
   }
 
   let icon: ReactNode
