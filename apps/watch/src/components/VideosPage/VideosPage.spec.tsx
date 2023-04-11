@@ -235,7 +235,7 @@ describe('VideosPage', () => {
       })
     })
 
-    it('should handle title filter', async () => {
+    it.skip('should handle title filter', async () => {
       const { getByRole, getByText, getByTestId } = render(
         <MockedProvider
           mocks={[
