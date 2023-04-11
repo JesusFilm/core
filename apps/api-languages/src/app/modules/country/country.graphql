@@ -3,7 +3,7 @@ enum IdType {
   slug
 }
 
-type Country @key(fields: "id") {
+type Country @key(fields: "id") @cacheControl(maxAge: 86400) {
   id: ID!
   name(languageId: ID, primary: Boolean): [Translation!]!
   population: Int!
@@ -18,7 +18,7 @@ type Country @key(fields: "id") {
   image: String
 }
 
-extend type Query {
-  countries: [Country!]!
-  country(id: ID!, idType: IdType): Country!
+type Query {
+  countries: [Country!]! @cacheControl(maxAge: 86400)
+  country(id: ID!, idType: IdType): Country! @cacheControl(maxAge: 86400)
 }
