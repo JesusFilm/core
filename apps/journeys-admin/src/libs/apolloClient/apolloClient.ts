@@ -9,7 +9,7 @@ import { AuthUser } from 'next-firebase-auth'
 import jwt from 'jsonwebtoken'
 import { cache } from './cache'
 
-function isTokenExpired(token: string): boolean {
+export function isTokenExpired(token: string): boolean {
   try {
     const decodedToken = jwt.decode(token) as { exp: number }
     const tokenExpiresAt = decodedToken.exp
