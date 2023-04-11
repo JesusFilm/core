@@ -11,7 +11,10 @@ import {
   GetJourney_journey_blocks_ImageBlock as ImageBlock,
   GetJourney_journey_blocks_VideoBlock as VideoBlock
 } from '../../../../../../../../../__generated__/GetJourney'
-import { VideoBlockSource } from '../../../../../../../../../__generated__/globalTypes'
+import {
+  VideoBlockSource,
+  VideoLabel
+} from '../../../../../../../../../__generated__/globalTypes'
 import { ThemeProvider } from '../../../../../../../ThemeProvider'
 import { GET_VIDEOS } from '../../../../../../VideoLibrary/VideoFromLocal/VideoFromLocal'
 import { GET_VIDEO } from '../../../../../../VideoLibrary/VideoFromLocal/LocalDetails/LocalDetails'
@@ -97,7 +100,12 @@ const getVideosMock = {
       where: {
         availableVariantLanguageIds: ['529'],
         title: null,
-        labels: ['episode', 'featureFilm', 'segment', 'shortFilm']
+        labels: [
+          VideoLabel.episode,
+          VideoLabel.featureFilm,
+          VideoLabel.segment,
+          VideoLabel.shortFilm
+        ]
       }
     }
   },

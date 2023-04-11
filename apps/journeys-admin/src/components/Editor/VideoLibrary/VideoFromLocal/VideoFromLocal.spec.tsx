@@ -1,6 +1,7 @@
 import { render, fireEvent, waitFor } from '@testing-library/react'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { MockedProvider } from '@apollo/client/testing'
+import { VideoLabel } from '../../../../../__generated__/globalTypes'
 import { GET_VIDEOS } from './VideoFromLocal'
 import { videos } from './data'
 import { VideoFromLocal } from '.'
@@ -19,7 +20,12 @@ const getVideosMock = {
       where: {
         availableVariantLanguageIds: ['529'],
         title: null,
-        labels: ['episode', 'featureFilm', 'segment', 'shortFilm']
+        labels: [
+          VideoLabel.episode,
+          VideoLabel.featureFilm,
+          VideoLabel.segment,
+          VideoLabel.shortFilm
+        ]
       }
     }
   },
@@ -39,7 +45,12 @@ const getVideosEmptyWithOffsetMock = {
       where: {
         availableVariantLanguageIds: ['529'],
         title: null,
-        labels: ['episode', 'featureFilm', 'segment', 'shortFilm']
+        labels: [
+          VideoLabel.episode,
+          VideoLabel.featureFilm,
+          VideoLabel.segment,
+          VideoLabel.shortFilm
+        ]
       }
     }
   },
@@ -59,7 +70,12 @@ const getVideosEmptyMock = {
       where: {
         availableVariantLanguageIds: ['529'],
         title: null,
-        labels: ['episode', 'featureFilm', 'segment', 'shortFilm']
+        labels: [
+          VideoLabel.episode,
+          VideoLabel.featureFilm,
+          VideoLabel.segment,
+          VideoLabel.shortFilm
+        ]
       }
     }
   },
@@ -79,7 +95,12 @@ const getVideosWithTitleMock = {
       where: {
         availableVariantLanguageIds: ['529'],
         title: 'abc',
-        labels: ['episode', 'featureFilm', 'segment', 'shortFilm']
+        labels: [
+          VideoLabel.episode,
+          VideoLabel.featureFilm,
+          VideoLabel.segment,
+          VideoLabel.shortFilm
+        ]
       }
     }
   },

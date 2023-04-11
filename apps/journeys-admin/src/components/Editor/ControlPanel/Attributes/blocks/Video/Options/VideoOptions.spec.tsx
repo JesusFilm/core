@@ -16,7 +16,8 @@ import {
 import {
   ThemeMode,
   ThemeName,
-  VideoBlockSource
+  VideoBlockSource,
+  VideoLabel
 } from '../../../../../../../../__generated__/globalTypes'
 import { ThemeProvider } from '../../../../../../ThemeProvider'
 import {
@@ -76,7 +77,12 @@ describe('VideoOptions', () => {
           where: {
             availableVariantLanguageIds: ['529'],
             title: null,
-            labels: ['episode', 'featureFilm', 'segment', 'shortFilm']
+            labels: [
+              VideoLabel.episode,
+              VideoLabel.featureFilm,
+              VideoLabel.segment,
+              VideoLabel.shortFilm
+            ]
           }
         }
       },
