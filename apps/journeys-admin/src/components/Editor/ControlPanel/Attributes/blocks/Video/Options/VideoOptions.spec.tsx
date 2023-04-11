@@ -75,7 +75,8 @@ describe('VideoOptions', () => {
           limit: 5,
           where: {
             availableVariantLanguageIds: ['529'],
-            title: null
+            title: null,
+            labels: ['episode', 'featureFilm', 'segment', 'shortFilm']
           }
         }
       },
@@ -117,7 +118,20 @@ describe('VideoOptions', () => {
               id: 'variantA',
               duration: 144,
               hls: 'https://arc.gt/opsgn'
-            }
+            },
+            variantLanguages: [
+              {
+                __typename: 'Language',
+                id: '529',
+                name: [
+                  {
+                    value: 'English',
+                    primary: true,
+                    __typename: 'Translation'
+                  }
+                ]
+              }
+            ]
           }
         }
       }
