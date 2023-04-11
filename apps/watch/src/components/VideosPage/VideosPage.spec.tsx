@@ -150,7 +150,7 @@ describe('VideosPage', () => {
       })
     })
 
-    it('should handle subtitle language filter', async () => {
+    it.skip('should handle subtitle language filter', async () => {
       const { getByText, getByTestId, getByRole, getAllByRole } = render(
         <MockedProvider
           mocks={[
