@@ -4,9 +4,11 @@ import {
   StepNextEventCreateInput,
   StepViewEventCreateInput
 } from '../../../__generated__/graphql'
+import { VisitorService } from '../../visitor/visitor.service'
 import { StepNextEventResolver, StepViewEventResolver } from './step.resolver'
 
 describe('Step', () => {
+  let vService: VisitorService
   beforeAll(() => {
     jest.useFakeTimers('modern')
     jest.setSystemTime(new Date('2021-02-18'))
@@ -23,6 +25,13 @@ describe('Step', () => {
     })
   }
 
+  const visitorService = {
+    provide: VisitorService,
+    useFactory: () => ({
+      update: jest.fn(() => null)
+    })
+  }
+
   const response = {
     visitor: { id: 'visitor.id' },
     journeyId: 'journey.id'
@@ -33,9 +42,10 @@ describe('Step', () => {
 
     beforeEach(async () => {
       const module: TestingModule = await Test.createTestingModule({
-        providers: [StepViewEventResolver, eventService]
+        providers: [StepViewEventResolver, eventService, visitorService]
       }).compile()
       resolver = module.get<StepViewEventResolver>(StepViewEventResolver)
+      vService = module.get<VisitorService>(VisitorService)
     })
 
     it('returns StepViewEvent', async () => {
@@ -54,6 +64,19 @@ describe('Step', () => {
         stepId: input.blockId
       })
     })
+
+    it('should update visitor last event at', async () => {
+      const input: StepViewEventCreateInput = {
+        id: '1',
+        blockId: 'block.id',
+        value: 'stepName'
+      }
+      await resolver.stepViewEventCreate('userId', input)
+
+      expect(vService.update).toHaveBeenCalledWith('visitor.id', {
+        lastStepViewedAt: new Date().toISOString()
+      })
+    })
   })
 
   describe('StepNextEventResolver', () => {
@@ -61,7 +84,7 @@ describe('Step', () => {
 
     beforeEach(async () => {
       const module: TestingModule = await Test.createTestingModule({
-        providers: [StepNextEventResolver, eventService]
+        providers: [StepNextEventResolver, eventService, visitorService]
       }).compile()
       resolver = module.get<StepNextEventResolver>(StepNextEventResolver)
     })

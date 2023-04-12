@@ -11,10 +11,14 @@ import {
   StepViewEventCreateInput
 } from '../../../__generated__/graphql'
 import { EventService } from '../event.service'
+import { VisitorService } from '../../visitor/visitor.service'
 
 @Resolver('StepViewEvent')
 export class StepViewEventResolver {
-  constructor(private readonly eventService: EventService) {}
+  constructor(
+    private readonly eventService: EventService,
+    private readonly visitorService: VisitorService
+  ) {}
 
   @Mutation()
   @UseGuards(GqlAuthGuard)
@@ -28,20 +32,29 @@ export class StepViewEventResolver {
       input.blockId
     )
 
-    return await this.eventService.save({
-      ...input,
-      __typename: 'StepViewEvent',
-      visitorId: visitor.id,
-      createdAt: new Date().toISOString(),
-      journeyId,
-      stepId: input.blockId
-    })
+    const [stepViewEvent] = await Promise.all([
+      this.eventService.save({
+        ...input,
+        __typename: 'StepViewEvent',
+        visitorId: visitor.id,
+        createdAt: new Date().toISOString(),
+        journeyId,
+        stepId: input.blockId
+      }),
+      this.visitorService.update(visitor.id, {
+        lastStepViewedAt: new Date().toISOString()
+      })
+    ])
+    return stepViewEvent
   }
 }
 
 @Resolver('StepNextEvent')
 export class StepNextEventResolver {
-  constructor(private readonly eventService: EventService) {}
+  constructor(
+    private readonly eventService: EventService,
+    private readonly visitorService: VisitorService
+  ) {}
 
   @Mutation()
   @UseGuards(GqlAuthGuard)
@@ -55,12 +68,14 @@ export class StepNextEventResolver {
       input.blockId
     )
 
-    return await this.eventService.save({
+    const stepNextEvent = await this.eventService.save({
       ...input,
       __typename: 'StepNextEvent',
       visitorId: visitor.id,
       createdAt: new Date().toISOString(),
       journeyId
     })
+
+    return stepNextEvent
   }
 }
