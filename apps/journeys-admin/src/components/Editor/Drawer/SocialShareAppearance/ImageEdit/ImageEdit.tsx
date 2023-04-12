@@ -1,6 +1,7 @@
 import { ReactElement, useState } from 'react'
 import { gql, useMutation } from '@apollo/client'
 import EditIcon from '@mui/icons-material/Edit'
+import ImageIcon from '@mui/icons-material/Image'
 import Typography from '@mui/material/Typography'
 import Button from '@mui/material/Button'
 import Box from '@mui/material/Box'
@@ -205,7 +206,11 @@ export function ImageEdit(): ReactElement {
           height={194}
           mb={6}
           bgcolor="#EFEFEF"
-          sx={{ cursor: 'pointer' }}
+          sx={{
+            cursor: 'pointer',
+            '&:hover': { bgcolor: 'rgba(0, 0, 0, 0.1)' },
+            '&:active:hover': { bgcolor: 'rgba(0, 0, 0, 0.2)' }
+          }}
           data-testid="social-image-edit"
           onClick={handleOpen}
         >
@@ -221,7 +226,7 @@ export function ImageEdit(): ReactElement {
               }}
             />
           ) : (
-            <EditIcon fontSize="large" />
+            <ImageIcon fontSize="large" />
           )}
 
           <Button
@@ -255,7 +260,10 @@ export function ImageEdit(): ReactElement {
             variant="rectangular"
             width="100%"
             height={194}
-            sx={{ borderRadius: 2 }}
+            sx={{
+              borderRadius: 2,
+              root: { '&:hover': { backgroundColor: 'yellow' } }
+            }}
           />
           <Button
             variant="contained"

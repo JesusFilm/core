@@ -3,7 +3,8 @@ import { ReactElement } from 'react'
 import Stack from '@mui/material/Stack'
 import Divider from '@mui/material/Divider'
 import Box from '@mui/material/Box'
-import { Theme, useMediaQuery } from '@mui/material'
+import useMediaQuery from '@mui/material/useMediaQuery'
+import { Theme } from '@mui/material/styles'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import SwiperCore, { Pagination } from 'swiper'
 import { Swiper, SwiperSlide } from 'swiper/react'
@@ -17,6 +18,7 @@ SwiperCore.use([Pagination])
 export function SocialPreview(): ReactElement {
   const { journey } = useJourney()
   const { dispatch } = useEditor()
+  // uses usemediaquery to force component reload for sizing
   const mdUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('md'))
   const handleSocialEditFabClick = (): void => {
     dispatch({ type: 'SetDrawerMobileOpenAction', mobileOpen: true })
@@ -24,10 +26,7 @@ export function SocialPreview(): ReactElement {
   return (
     <>
       {mdUp ? (
-        <Box
-          // display={{ xs: 'none', md: 'inherit' }}
-          data-testId="social-preview-panel"
-        >
+        <Box data-testId="social-preview-panel">
           <Stack
             direction="row"
             justifyContent="space-evenly"
@@ -49,9 +48,7 @@ export function SocialPreview(): ReactElement {
           </Stack>
         </Box>
       ) : (
-        <Box
-        // display={{ sm: 'block', md: 'none' }}
-        >
+        <Box>
           <Swiper
             id="social-swiper"
             slidesPerView={1}
