@@ -1,4 +1,4 @@
-import { ReactElement, ReactNode, useRef } from 'react'
+import { ReactElement, ReactNode, useEffect, useRef, useState } from 'react'
 import Image from 'next/image'
 import Typography from '@mui/material/Typography'
 import Box from '@mui/system/Box'
@@ -25,8 +25,12 @@ export function MessageBubble({
   pt = 0
 }: MessageBubbleProps): ReactElement {
   const ref = useRef<HTMLDivElement>()
+  const [clientHeight, setClientHeight] = useState(ref?.current?.clientHeight)
+  useEffect(() => {
+    setClientHeight(ref?.current?.clientHeight)
+  }, [])
   const top = (padding = 0): number => {
-    return ref?.current != null ? ref.current.clientHeight + pt + padding : 0
+    return clientHeight != null ? clientHeight + pt + padding : 0
   }
   const left = (padding = 0): number | undefined => {
     return direction === 'left' ? 0 + padding : undefined

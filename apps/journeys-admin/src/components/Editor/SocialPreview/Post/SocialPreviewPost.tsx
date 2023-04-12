@@ -157,19 +157,18 @@ export function SocialPreviewPost({
                   {journey.seoDescription}
                 </Typography>
               )}
-            </CardContent>
-            <CardActionArea>
               <Stack
                 flexDirection="row"
                 justifyContent="space-around"
                 color="#EFEFEF"
-                mb={2}
+                my={2}
               >
                 <ThumbUp sx={{ fontSize: 12 }} />
                 <ChatBubble sx={{ fontSize: 12 }} />
                 <Share sx={{ fontSize: 12 }} />
               </Stack>
-            </CardActionArea>
+            </CardContent>
+            <CardActionArea />
           </Card>
         )}
       </Stack>
