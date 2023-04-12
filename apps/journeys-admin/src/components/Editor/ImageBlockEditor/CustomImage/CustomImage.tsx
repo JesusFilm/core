@@ -7,6 +7,7 @@ import { ImageUpload } from './ImageUpload'
 
 interface CustomImageProps {
   onChange: (src: string) => void
+  setUploading?: (uploading?: boolean) => void
   selectedBlock: ImageBlock | null
   loading?: boolean
   error?: boolean
@@ -15,6 +16,7 @@ interface CustomImageProps {
 export function CustomImage({
   onChange,
   selectedBlock,
+  setUploading,
   loading,
   error
 }: CustomImageProps): ReactElement {
@@ -22,6 +24,7 @@ export function CustomImage({
     <Stack sx={{ bgcolor: 'background.paper' }}>
       <ImageUpload
         onChange={onChange}
+        setUploading={setUploading}
         loading={loading}
         selectedBlock={selectedBlock}
         error={error}
