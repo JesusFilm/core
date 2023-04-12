@@ -179,6 +179,14 @@ enum ButtonVariant
   contained @join__enumValue(graph: JOURNEYS)
 }
 
+enum CacheControlScope
+  @join__type(graph: LANGUAGES)
+  @join__type(graph: VIDEOS)
+{
+  PUBLIC @join__enumValue(graph: LANGUAGES) @join__enumValue(graph: VIDEOS)
+  PRIVATE @join__enumValue(graph: LANGUAGES) @join__enumValue(graph: VIDEOS)
+}
+
 type CardBlock implements Block
   @join__implements(graph: JOURNEYS, interface: "Block")
   @join__type(graph: JOURNEYS)
