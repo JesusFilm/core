@@ -4,10 +4,9 @@ import { useMutation, gql } from '@apollo/client'
 import { useRouter } from 'next/router'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { CreateTemplate } from '../../../../../__generated__/CreateTemplate'
-import { DuplicateJourney } from '../../../../../__generated__/DuplicateJourney'
 import { RemoveUserJourney } from '../../../../../__generated__/RemoveUserJourney'
 import { MenuItem } from '../../../MenuItem'
-import { DUPLICATE_JOURNEY } from '../../../../libs/useJourneyDuplicate'
+import { useJourneyDuplicate } from '../../../../libs/useJourneyDuplicate'
 
 export const REMOVE_USER_JOURNEY = gql`
   mutation RemoveUserJourney($id: ID!) {
@@ -30,7 +29,8 @@ export function CreateTemplateMenuItem(): ReactElement {
   const { journey } = useJourney()
   const router = useRouter()
 
-  const [duplicateJourney] = useMutation<DuplicateJourney>(DUPLICATE_JOURNEY)
+  const { duplicateJourney } = useJourneyDuplicate()
+
   const [removeUserJourney] =
     useMutation<RemoveUserJourney>(REMOVE_USER_JOURNEY)
   const [createTemplate] = useMutation<CreateTemplate>(CREATE_TEMPLATE)
@@ -38,35 +38,13 @@ export function CreateTemplateMenuItem(): ReactElement {
   const handleCreateTemplate = async (): Promise<void> => {
     if (journey == null) return
 
-    const { data } = await duplicateJourney({
-      variables: {
-        id: journey?.id
-      },
-      update(cache, { data }) {
-        if (data?.journeyDuplicate != null) {
-          cache.modify({
-            fields: {
-              adminJourneys(existingAdminJourneyRefs = []) {
-                const duplicatedJourneyRef = cache.writeFragment({
-                  data: data.journeyDuplicate,
-                  fragment: gql`
-                    fragment DuplicatedJourney on Journey {
-                      id
-                    }
-                  `
-                })
-                return [...existingAdminJourneyRefs, duplicatedJourneyRef]
-              }
-            }
-          })
-        }
-      }
-    })
+    const duplicatedJourney = await duplicateJourney({ id: journey?.id })
 
-    if (data?.journeyDuplicate != null) {
+    // Convert duplicated journey to a template
+    if (duplicatedJourney != null) {
       const { data: templateData } = await createTemplate({
         variables: {
-          id: data.journeyDuplicate.id,
+          id: duplicatedJourney.id,
           input: {
             template: true
           }
