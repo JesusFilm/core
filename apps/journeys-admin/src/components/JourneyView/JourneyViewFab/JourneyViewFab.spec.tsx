@@ -6,7 +6,8 @@ import { NextRouter, useRouter } from 'next/router'
 import { SnackbarProvider } from 'notistack'
 import TagManager from 'react-gtm-module'
 import { defaultJourney } from '../data'
-import { CONVERT_TEMPLATE, JourneyViewFab } from './JourneyViewFab'
+import { DUPLICATE_JOURNEY } from '../../../libs/useJourneyDuplicate'
+import { JourneyViewFab } from './JourneyViewFab'
 
 jest.mock('next/router', () => ({
   __esModule: true,
@@ -71,6 +72,7 @@ describe('JourneyViewFab', () => {
   it('should convert template to journey on use template click', async () => {
     const push = jest.fn()
     mockUseRouter.mockReturnValue({ push } as unknown as NextRouter)
+
     const result = jest.fn(() => {
       return {
         data: {
@@ -80,12 +82,13 @@ describe('JourneyViewFab', () => {
         }
       }
     })
+
     const { getByRole, getByText } = render(
       <MockedProvider
         mocks={[
           {
             request: {
-              query: CONVERT_TEMPLATE,
+              query: DUPLICATE_JOURNEY,
               variables: {
                 id: 'journey-id'
               }
@@ -106,7 +109,9 @@ describe('JourneyViewFab', () => {
       </MockedProvider>
     )
     expect(getByText('Use Template')).toBeInTheDocument()
-    fireEvent.click(getByRole('button'))
+
+    fireEvent.click(getByRole('button', { name: 'Use Template Use It' }))
+
     await waitFor(() => expect(result).toHaveBeenCalled())
     await waitFor(() => {
       expect(push).toHaveBeenCalledWith(
@@ -118,12 +123,15 @@ describe('JourneyViewFab', () => {
   })
 
   it('should send custom event to GTM when preview button is clicked', async () => {
+    const push = jest.fn()
+    mockUseRouter.mockReturnValue({ push } as unknown as NextRouter)
+
     const { getByRole } = render(
       <MockedProvider
         mocks={[
           {
             request: {
-              query: CONVERT_TEMPLATE,
+              query: DUPLICATE_JOURNEY,
               variables: {
                 id: 'journey-id'
               }
@@ -150,7 +158,8 @@ describe('JourneyViewFab', () => {
       </MockedProvider>
     )
 
-    fireEvent.click(getByRole('button'))
+    fireEvent.click(getByRole('button', { name: 'Use Template Use It' }))
+
     await waitFor(() =>
       expect(mockedDataLayer).toHaveBeenCalledWith({
         dataLayer: {
