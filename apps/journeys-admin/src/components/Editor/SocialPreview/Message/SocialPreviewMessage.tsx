@@ -1,4 +1,4 @@
-import { ReactElement } from 'react'
+import { ReactElement, ReactNode, useRef } from 'react'
 import Image from 'next/image'
 import Typography from '@mui/material/Typography'
 import Box from '@mui/system/Box'
@@ -9,43 +9,95 @@ import { JourneyFields } from '../../../../../__generated__/JourneyFields'
 interface SocialPreviewMessageProps {
   journey?: JourneyFields
 }
+
+interface MessageBubbleProps {
+  height?: number
+  width: number
+  direction?: 'left' | 'right'
+  children?: ReactNode
+  pt?: number
+}
+export function MessageBubble({
+  height,
+  width,
+  direction = 'left',
+  children,
+  pt = 0
+}: MessageBubbleProps): ReactElement {
+  const ref = useRef<HTMLDivElement>()
+  const top = (padding = 0): number => {
+    return ref?.current != null ? ref.current.clientHeight + pt + padding : 0
+  }
+  const left = (padding = 0): number | undefined => {
+    return direction === 'left' ? 0 + padding : undefined
+  }
+  const right = (padding = 0): number | undefined => {
+    return direction === 'right' ? 0 + padding : undefined
+  }
+  return (
+    <Box
+      ref={ref}
+      position="relative"
+      width={width}
+      height={height}
+      bgcolor={(theme) => theme.palette.background.paper}
+      border="0.5px solid #DEDFE0"
+      borderRadius={direction === 'left' ? '8px 8px 8px 0' : '8px 8px 0 8px'}
+      mx={5}
+      mb={5}
+      px={2}
+      pt={2}
+      pb={1}
+    >
+      <Box
+        position="absolute"
+        top={{ sm: top(-0.25), xs: top() }}
+        left={left(-0.5)}
+        right={right(-0.5)}
+        width={0}
+        height={0}
+        borderTop={(theme) => `13px solid #DEDFE0`}
+        borderRight={direction === 'left' ? '13px solid transparent' : ''}
+        borderLeft={direction === 'right' ? '13px solid transparent' : ''}
+        mb={2}
+        zIndex={1}
+      />
+      <Box
+        position="absolute"
+        left={left()}
+        right={right()}
+        top={{ sm: top(-0.25), xs: top() }}
+        width={0}
+        height={0}
+        borderTop={(theme) =>
+          `12px solid ${theme.palette.background.paper as string}`
+        }
+        borderRight={direction === 'left' ? '12px solid transparent' : ''}
+        borderLeft={direction === 'right' ? '12px solid transparent' : ''}
+        zIndex={2}
+      />
+      {children}
+    </Box>
+  )
+}
 export function SocialPreviewMessage({
   journey
 }: SocialPreviewMessageProps): ReactElement {
   return (
-    <Box width={256} mx="auto">
+    <Box
+      width={256}
+      mx="auto"
+      sx={{ transform: { xs: 'scale(1)', sm: 'scale(1.33)' } }}
+    >
       <Stack direction="column" justifyContent="start">
         <Typography variant="caption" pb={4} textAlign="center">
           Messaging App View
         </Typography>
         <Box>
-          <Box
-            width={200}
-            height={40}
-            bgcolor={(theme) => theme.palette.background.paper}
-            borderRadius="8px 8px 0 0"
-            mx={5}
-          />
-          <Box
-            width={0}
-            height={0}
-            borderTop={(theme) =>
-              `12px solid ${theme.palette.background.paper as string}`
-            }
-            borderRight="12px solid transparent"
-            ml={5}
-            mb={2}
-          />
+          <MessageBubble width={200} height={40} direction="left" />
           {journey != null && (
-            <Stack direction="column">
-              <Box
-                width={240}
-                borderRadius="8px 8px 0 8px"
-                px={2}
-                pt={2}
-                pb={1}
-                bgcolor={(theme) => theme.palette.background.paper}
-              >
+            <MessageBubble width={240} direction="right" pt={-0.5}>
+              <Stack direction="column">
                 <Stack direction="row" gap={2}>
                   {journey?.primaryImageBlock?.src == null ? (
                     <Box
@@ -67,7 +119,7 @@ export function SocialPreviewMessage({
                       />
                     )
                   )}
-                  <Stack width={164}>
+                  <Stack width={164} flexGrow={1} justifyContent="center">
                     {isEmpty(journey.seoTitle) ? (
                       <Box
                         width={156}
@@ -105,44 +157,21 @@ export function SocialPreviewMessage({
                     )}
                   </Stack>
                 </Stack>
-                <Typography
-                  variant="body1"
-                  fontSize={8}
-                  lineHeight="12px"
-                  mt={1}
-                >
-                  YOUR.NEXTSTEP.IS
-                </Typography>
-              </Box>
-            </Stack>
+                <Box maxWidth={224}>
+                  <Typography
+                    variant="body1"
+                    fontSize={8}
+                    lineHeight="12px"
+                    mt={1}
+                    color="#C52D3A"
+                  >
+                    https://your.nextstep.is/{journey.slug}
+                  </Typography>
+                </Box>
+              </Stack>
+            </MessageBubble>
           )}
-          <Box
-            width={0}
-            height={0}
-            borderTop={(theme) =>
-              `12px solid ${theme.palette.background.paper as string}`
-            }
-            borderLeft="12px solid transparent"
-            ml={{ sm: 57, xs: 61 }}
-            mb={2}
-          />
-          <Box
-            width={200}
-            height={40}
-            bgcolor={(theme) => theme.palette.background.paper}
-            borderRadius="8px 8px 0 8px"
-            mx={5}
-          />
-          <Box
-            width={0}
-            height={0}
-            borderTop={(theme) =>
-              `12px solid ${theme.palette.background.paper as string}`
-            }
-            borderLeft="12px solid transparent"
-            ml={52}
-            mb={2}
-          />
+          <MessageBubble width={200} height={40} direction="right" />
         </Box>
       </Stack>
     </Box>

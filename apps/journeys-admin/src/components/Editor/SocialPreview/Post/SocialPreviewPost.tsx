@@ -1,9 +1,7 @@
 import { ReactElement } from 'react'
 import Image from 'next/image'
 import Typography from '@mui/material/Typography'
-import Card from '@mui/material/Card'
 import CardMedia from '@mui/material/CardMedia'
-import CardHeader from '@mui/material/CardHeader'
 import CardContent from '@mui/material/CardContent'
 import Box from '@mui/system/Box'
 import Stack from '@mui/material/Stack'
@@ -14,16 +12,22 @@ import CardActionArea from '@mui/material/CardActionArea'
 import ThumbUp from '@mui/icons-material/ThumbUp'
 import ChatBubble from '@mui/icons-material/ChatBubble'
 import Share from '@mui/icons-material/Share'
+import Card from '@mui/material/Card'
 import { JourneyFields } from '../../../../../__generated__/JourneyFields'
 
 interface SocialPreviewPostProps {
   journey?: JourneyFields
 }
+
 export function SocialPreviewPost({
   journey
 }: SocialPreviewPostProps): ReactElement {
   return (
-    <Box width={256} mx="auto">
+    <Box
+      width={256}
+      mx="auto"
+      sx={{ transform: { xs: 'scale(1)', sm: 'scale(1.33)' } }}
+    >
       <Stack direction="column" justifyContent="start" alignContent="center">
         <Typography variant="caption" pb={4} textAlign="center">
           Social App View
@@ -32,45 +36,49 @@ export function SocialPreviewPost({
           <Card
             sx={{
               width: { sm: 240, xs: 224 },
+              border: '0.5px solid #DEDFE0',
               borderRadius: '12px',
               px: 2,
               display: 'block'
             }}
             elevation={0}
           >
-            <CardHeader
-              sx={{ px: 0, pb: 2 }}
-              avatar={
-                <Avatar
-                  sx={{
-                    width: 20,
-                    height: 20,
-                    bgcolor: (theme) => theme.palette.background.default,
-                    color: (theme) => theme.palette.background.paper
-                  }}
-                >
-                  <PersonIcon />
-                </Avatar>
-              }
-              title={
+            <Stack
+              pb={2}
+              mt={2}
+              mb={0}
+              direction="row"
+              width="100%"
+              justifyContent="space-between"
+              alignItems="center"
+            >
+              <Avatar
+                sx={{
+                  width: 20,
+                  height: 20,
+                  mr: 2,
+                  bgcolor: (theme) => theme.palette.background.default,
+                  color: (theme) => theme.palette.background.paper
+                }}
+              >
+                <PersonIcon />
+              </Avatar>
+              <Box flexGrow={1}>
                 <Box
                   width={60}
                   height={12}
                   bgcolor="#EFEFEF"
                   borderRadius="6px"
                 />
-              }
-              action={
-                <Box
-                  width={12}
-                  height={12}
-                  bgcolor="#EFEFEF"
-                  borderRadius="6px"
-                  mt={1}
-                  mr={3}
-                />
-              }
-            />
+              </Box>
+              <Box
+                width={12}
+                height={12}
+                bgcolor="#EFEFEF"
+                borderRadius="6px"
+                mr={0}
+              />
+            </Stack>
             <CardMedia
               sx={{
                 px: 0,
