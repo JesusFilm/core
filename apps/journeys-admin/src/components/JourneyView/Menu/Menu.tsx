@@ -24,9 +24,9 @@ import {
 } from '../../../../__generated__/globalTypes'
 import { JourneyPublish } from '../../../../__generated__/JourneyPublish'
 import { GetRole } from '../../../../__generated__/GetRole'
-import { ApplyTemplate } from '../../../../__generated__/ApplyTemplate'
 import { MenuItem } from '../../MenuItem'
 import { TitleDescriptionDialog } from '../TitleDescription/TitleDescriptionDialog'
+import { useJourneyDuplicate } from '../../../libs/useJourneyDuplicate'
 import { DescriptionDialog } from './DescriptionDialog'
 import { TitleDialog } from './TitleDialog'
 import { LanguageDialog } from './LanguageDialog'
@@ -51,19 +51,12 @@ export const GET_ROLE = gql`
   }
 `
 
-export const APPLY_TEMPLATE = gql`
-  mutation ApplyTemplate($id: ID!) {
-    journeyDuplicate(id: $id) {
-      id
-    }
-  }
-`
-
 export function Menu(): ReactElement {
   const { journey } = useJourney()
   const router = useRouter()
   const [journeyPublish] = useMutation<JourneyPublish>(JOURNEY_PUBLISH)
-  const [applyTemplate] = useMutation<ApplyTemplate>(APPLY_TEMPLATE)
+  const { duplicateJourney } = useJourneyDuplicate()
+
   const { data } = useQuery<GetRole>(GET_ROLE)
   const isPublisher = data?.getUserRole?.roles?.includes(Role.publisher)
   const isOwner =
@@ -113,33 +106,10 @@ export function Menu(): ReactElement {
   const handleTemplate = async (): Promise<void> => {
     if (journey == null) return
 
-    const { data } = await applyTemplate({
-      variables: {
-        id: journey.id
-      },
-      update(cache, { data }) {
-        if (data?.journeyDuplicate != null) {
-          cache.modify({
-            fields: {
-              adminJourneys(existingAdminJourneyRefs = []) {
-                const duplicatedJourneyRef = cache.writeFragment({
-                  data: data.journeyDuplicate,
-                  fragment: gql`
-                    fragment DuplicatedJourney on Journey {
-                      id
-                    }
-                  `
-                })
-                return [...existingAdminJourneyRefs, duplicatedJourneyRef]
-              }
-            }
-          })
-        }
-      }
-    })
+    const data = await duplicateJourney({ id: journey.id })
 
-    if (data?.journeyDuplicate != null) {
-      void router.push(`/journeys/${data.journeyDuplicate.id}`, undefined, {
+    if (data != null) {
+      void router.push(`/journeys/${data.id}`, undefined, {
         shallow: true
       })
     }
