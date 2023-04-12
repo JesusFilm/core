@@ -22,7 +22,7 @@ export function SocialPreview(): ReactElement {
   return (
     <>
       <Box
-        display={{ xs: 'none', sm: 'inherit' }}
+        display={{ xs: 'none', md: 'inherit' }}
         data-testId="social-preview-panel"
       >
         <Stack
@@ -36,7 +36,7 @@ export function SocialPreview(): ReactElement {
                 width: '2px',
                 height: '308px',
                 bgcolor: '#DCDDE5',
-                display: { xs: 'none', sm: 'inherit' }
+                display: { sm: 'none', md: 'inherit' }
               }}
             />
           }
@@ -45,7 +45,7 @@ export function SocialPreview(): ReactElement {
           <SocialPreviewMessage journey={journey} />
         </Stack>
       </Box>
-      <Box display={{ xs: 'block', sm: 'none' }}>
+      <Box display={{ sm: 'block', md: 'none' }}>
         <Swiper
           id="social-swiper"
           slidesPerView={1}

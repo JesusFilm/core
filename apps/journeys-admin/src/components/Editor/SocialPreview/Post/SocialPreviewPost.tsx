@@ -26,7 +26,7 @@ export function SocialPreviewPost({
     <Box
       width={256}
       mx="auto"
-      sx={{ transform: { xs: 'scale(1)', sm: 'scale(1.33)' } }}
+      sx={{ transform: { xs: 'scale(1)', lg: 'scale(1.33)' } }}
     >
       <Stack direction="column" justifyContent="start" alignContent="center">
         <Typography variant="caption" pb={4} textAlign="center">
@@ -35,7 +35,7 @@ export function SocialPreviewPost({
         {journey != null && (
           <Card
             sx={{
-              width: { sm: 240, xs: 224 },
+              width: { md: 240, xs: 224 },
               border: '0.5px solid #DEDFE0',
               borderRadius: '12px',
               px: 2,

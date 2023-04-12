@@ -51,7 +51,7 @@ export function MessageBubble({
     >
       <Box
         position="absolute"
-        top={{ sm: top(-0.25), xs: top() }}
+        top={{ md: top(-0.25), sm: top() }}
         left={left(-0.5)}
         right={right(-0.5)}
         width={0}
@@ -66,7 +66,7 @@ export function MessageBubble({
         position="absolute"
         left={left()}
         right={right()}
-        top={{ sm: top(-0.25), xs: top() }}
+        top={{ md: top(-0.25), sm: top() }}
         width={0}
         height={0}
         borderTop={(theme) =>
@@ -87,7 +87,7 @@ export function SocialPreviewMessage({
     <Box
       width={256}
       mx="auto"
-      sx={{ transform: { xs: 'scale(1)', sm: 'scale(1.33)' } }}
+      sx={{ transform: { md: 'scale(1)', lg: 'scale(1.33)' } }}
     >
       <Stack direction="column" justifyContent="start">
         <Typography variant="caption" pb={4} textAlign="center">
