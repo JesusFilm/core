@@ -76,7 +76,12 @@ export function ControlPanel(): ReactElement {
             color="primary"
             data-testid="social-edit-fab"
             onClick={handleSocialEditFabClick}
-            sx={{ display: { xs: 'inherit', sm: 'none' } }}
+            sx={{
+              display: { xs: 'inherit', sm: 'none' },
+              height: 48,
+              width: 48,
+              p: 2.5
+            }}
           >
             <EditIcon />
           </MuiFab>
