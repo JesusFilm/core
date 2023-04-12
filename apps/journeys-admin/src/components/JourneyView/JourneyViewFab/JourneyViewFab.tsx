@@ -1,5 +1,4 @@
 import { ReactElement } from 'react'
-import { gql, useMutation } from '@apollo/client'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import Fab from '@mui/material/Fab'
 import TagManager from 'react-gtm-module'
@@ -8,15 +7,7 @@ import CheckRoundedIcon from '@mui/icons-material/CheckRounded'
 import Typography from '@mui/material/Typography'
 import NextLink from 'next/link'
 import { useRouter } from 'next/router'
-import { ConvertTemplate } from '../../../../__generated__/ConvertTemplate'
-
-export const CONVERT_TEMPLATE = gql`
-  mutation ConvertTemplate($id: ID!) {
-    journeyDuplicate(id: $id) {
-      id
-    }
-  }
-`
+import { useJourneyDuplicate } from '../../../libs/useJourneyDuplicate'
 
 interface JourneyViewFabProps {
   isPublisher?: boolean
@@ -27,37 +18,15 @@ export function JourneyViewFab({
 }: JourneyViewFabProps): ReactElement {
   const { journey } = useJourney()
   const router = useRouter()
-  const [ConvertTemplate] = useMutation<ConvertTemplate>(CONVERT_TEMPLATE)
+
+  const { duplicateJourney } = useJourneyDuplicate()
 
   const handleConvertTemplate = async (): Promise<void> => {
     if (journey == null) return
 
-    const { data } = await ConvertTemplate({
-      variables: {
-        id: journey.id
-      },
-      update(cache, { data }) {
-        if (data?.journeyDuplicate != null) {
-          cache.modify({
-            fields: {
-              adminJourneys(existingAdminJourneyRefs = []) {
-                const duplicatedJourneyRef = cache.writeFragment({
-                  data: data.journeyDuplicate,
-                  fragment: gql`
-                    fragment DuplicatedJourney on Journey {
-                      id
-                    }
-                  `
-                })
-                return [...existingAdminJourneyRefs, duplicatedJourneyRef]
-              }
-            }
-          })
-        }
-      }
-    })
+    const data = await duplicateJourney({ id: journey.id })
 
-    if (data?.journeyDuplicate != null) {
+    if (data != null) {
       TagManager.dataLayer({
         dataLayer: {
           event: 'template_use',
@@ -66,7 +35,7 @@ export function JourneyViewFab({
         }
       })
 
-      void router.push(`/journeys/${data.journeyDuplicate.id}`, undefined, {
+      void router.push(`/journeys/${data.id}`, undefined, {
         shallow: true
       })
     }
