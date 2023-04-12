@@ -104,6 +104,7 @@ export function SocialPreviewPost({
                   alt={journey.primaryImageBlock.alt}
                   width={224}
                   height={120}
+                  objectFit="cover"
                   style={{
                     borderRadius: '4px'
                   }}
