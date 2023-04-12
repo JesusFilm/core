@@ -3,6 +3,7 @@ import { ReactElement } from 'react'
 import Stack from '@mui/material/Stack'
 import Divider from '@mui/material/Divider'
 import Box from '@mui/material/Box'
+import { useEditor } from '@core/journeys/ui/EditorProvider'
 import SwiperCore, { Pagination } from 'swiper'
 import { Swiper, SwiperSlide } from 'swiper/react'
 import { SocialPreviewPost } from './Post/SocialPreviewPost'
@@ -14,7 +15,10 @@ SwiperCore.use([Pagination])
 
 export function SocialPreview(): ReactElement {
   const { journey } = useJourney()
-
+  const { dispatch } = useEditor()
+  const handleSocialEditFabClick = (): void => {
+    dispatch({ type: 'SetDrawerMobileOpenAction', mobileOpen: true })
+  }
   return (
     <>
       <Box
@@ -50,10 +54,18 @@ export function SocialPreview(): ReactElement {
           pagination={{ clickable: true }}
           style={{ height: '330px' }}
         >
-          <SwiperSlide key={0}>
+          <SwiperSlide
+            key={0}
+            onClick={handleSocialEditFabClick}
+            style={{ cursor: 'pointer' }}
+          >
             <SocialPreviewPost journey={journey} />
           </SwiperSlide>
-          <SwiperSlide key={1}>
+          <SwiperSlide
+            key={1}
+            onClick={handleSocialEditFabClick}
+            style={{ cursor: 'pointer' }}
+          >
             <SocialPreviewMessage journey={journey} />
           </SwiperSlide>
         </Swiper>
