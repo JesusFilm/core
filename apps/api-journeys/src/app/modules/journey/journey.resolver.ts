@@ -272,8 +272,11 @@ export class JourneyResolver {
   async journeyDuplicate(
     @Args('id') id: string,
     @CurrentUserId() userId: string
-  ): Promise<Journey | undefined> {
-    const journey: Journey = await this.journeyService.get(id)
+  ): Promise<
+    (Journey & { primaryImageBlockId: string | undefined }) | undefined
+  > {
+    const journey: Journey & { primaryImageBlockId: string | undefined } =
+      await this.journeyService.get(id)
     const duplicateJourneyId = uuidv4()
     const existingDuplicateJourneys = await this.journeyService.getAllByTitle(
       journey.title,
@@ -314,6 +317,21 @@ export class JourneyResolver {
       duplicateStepIds
     )
 
+    let duplicatePrimaryImageBlock: (ImageBlock & { _key: string }) | undefined
+    if (journey.primaryImageBlockId != null) {
+      const original = await this.blockService.get(journey.primaryImageBlockId)
+      const id = uuidv4()
+      duplicatePrimaryImageBlock = {
+        ...original,
+        _key: id,
+        id,
+        journeyId: duplicateJourneyId,
+        parentBlockId: duplicateJourneyId
+      }
+      duplicatePrimaryImageBlock != null &&
+        duplicateBlocks.push(duplicatePrimaryImageBlock)
+    }
+
     const input = {
       ...journey,
       id: duplicateJourneyId,
@@ -322,13 +340,15 @@ export class JourneyResolver {
       createdAt: new Date().toISOString(),
       publishedAt: undefined,
       status: JourneyStatus.draft,
-      template: false
+      template: false,
+      primaryImageBlockId: duplicatePrimaryImageBlock?.id
     }
 
     let retry = true
     while (retry) {
       try {
-        const journey: Journey = await this.journeyService.save(input)
+        const journey: Journey & { primaryImageBlockId: string | undefined } =
+          await this.journeyService.save(input)
         await this.blockService.saveAll(duplicateBlocks)
         await this.userJourneyService.save({
           id: uuidv4(),
