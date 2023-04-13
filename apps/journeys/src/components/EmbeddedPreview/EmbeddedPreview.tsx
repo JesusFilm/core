@@ -3,6 +3,7 @@ import { ReactElement, useCallback, useEffect, useRef, useState } from 'react'
 import Box from '@mui/material/Box'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { BlockRenderer } from '@core/journeys/ui/BlockRenderer'
+import { FramePortal } from '@core/journeys/ui/FramePortal'
 import { useRouter } from 'next/router'
 import IconButton from '@mui/material/IconButton'
 import Close from '@mui/icons-material/Close'
@@ -18,10 +19,12 @@ import { RadioOptionWrapper } from './RadioOptionWrapper/RadioOptionWrapper'
 
 interface EmbeddedPreviewProps {
   blocks: TreeBlock[]
+  rtl?: boolean
 }
 
 export function EmbeddedPreview({
-  blocks
+  blocks,
+  rtl = false
 }: EmbeddedPreviewProps): ReactElement {
   const maximizableElement = useRef(null)
   const [allowFullscreen, setAllowFullscreen] = useState(true)
@@ -51,6 +54,11 @@ export function EmbeddedPreview({
   )
 
   // use router internally on this component as it does not function properly when passed as prop
+  /* Supports params: 
+      "padding" - removes padding around clickable card
+      "rtl" - enables right to left embed display
+  **/
+
   const router = useRouter()
   const once = useRef(false)
 
@@ -74,7 +82,10 @@ export function EmbeddedPreview({
   const ClickableCard = (): ReactElement => (
     <Box
       sx={{
-        p: 8,
+        p:
+          router.query.padding == null || router.query.padding === 'true'
+            ? 8
+            : 0.75,
         flexGrow: 1,
         display: 'flex',
         flexDirection: 'column',
@@ -140,8 +151,12 @@ export function EmbeddedPreview({
           box-shadow: none !important;
         }
       `}</style>
-      <Div100vh data-testid="embedded-preview">
-        {!(isFullscreen || isFullContainer) && <ClickableCard />}
+      <Div100vh data-testid="embedded-preview" style={{ overflow: 'hidden' }}>
+        {!(isFullscreen || isFullContainer) && (
+          <FramePortal width="100%" height="100%" dir={rtl ? 'rtl' : 'ltr'}>
+            <ClickableCard />
+          </FramePortal>
+        )}
         <Box
           ref={maximizableElement}
           sx={{

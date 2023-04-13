@@ -5,6 +5,7 @@ import { transformer } from '@core/journeys/ui/transformer'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import { NextSeo } from 'next-seo'
+import { useRouter } from 'next/router'
 import { EmbeddedPreview } from '../../src/components/EmbeddedPreview'
 import { createApolloClient } from '../../src/libs/apolloClient'
 import {
@@ -20,6 +21,7 @@ interface JourneyPageProps {
 }
 
 function JourneyPage({ journey }: JourneyPageProps): ReactElement {
+  const router = useRouter()
   return (
     <>
       <NextSeo
@@ -67,6 +69,7 @@ function JourneyPage({ journey }: JourneyPageProps): ReactElement {
         <ThemeProvider
           themeName={journey.themeName}
           themeMode={journey.themeMode}
+          rtl={router.query.rtl === 'true'}
         >
           {journey.blocks != null && (
             <EmbeddedPreview blocks={transformer(journey.blocks)} />
