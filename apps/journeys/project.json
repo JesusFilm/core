@@ -38,8 +38,8 @@
       "options": {
         "commands": [
           "VERCEL_PROJECT_ID=$JOURNEYS_VERCEL_PROJECT_ID npx vercel env pull apps/journeys/.env --environment=preview --token=$VERCEL_TOKEN",
-          "nx build journeys --prod",
-          "VERCEL_PROJECT_ID=$JOURNEYS_VERCEL_PROJECT_ID npx vercel deploy dist/apps/journeys --token=$VERCEL_TOKEN"
+          "npx vercel build --cwd apps/journeys",
+          "VERCEL_PROJECT_ID=$JOURNEYS_VERCEL_PROJECT_ID npx vercel deploy apps/journeys/.vercel/output --prebuilt --token=$VERCEL_TOKEN"
         ],
         "parallel": false
       },
@@ -47,8 +47,8 @@
         "production": {
           "commands": [
             "VERCEL_PROJECT_ID=$JOURNEYS_VERCEL_PROJECT_ID npx vercel env pull apps/journeys/.env --environment=production --token=$VERCEL_TOKEN",
-            "nx build journeys --prod",
-            "VERCEL_PROJECT_ID=$JOURNEYS_VERCEL_PROJECT_ID npx vercel deploy dist/apps/journeys --prod --token=$VERCEL_TOKEN"
+            "npx vercel build --cwd apps/journeys",
+            "VERCEL_PROJECT_ID=$JOURNEYS_VERCEL_PROJECT_ID npx vercel deploy apps/journeys/.vercel/output --prebuilt --prod --token=$VERCEL_TOKEN"
           ]
         }
       }
