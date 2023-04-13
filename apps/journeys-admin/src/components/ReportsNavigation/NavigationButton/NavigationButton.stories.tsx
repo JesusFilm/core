@@ -1,6 +1,6 @@
 import { Meta, Story } from '@storybook/react'
 import Stack from '@mui/material/Stack'
-import Typography from '@mui/material/Typography'
+import { ComponentProps } from 'react'
 import { simpleComponentConfig } from '../../../libs/storybook'
 import { NavigationButton } from '.'
 
@@ -9,27 +9,26 @@ const NavigationButtonStory = {
   title: 'Journeys-Admin/ReportsNavigation/NavigationButton'
 }
 
-const Template: Story = ({ ...args }) => (
+const Template: Story<ComponentProps<typeof NavigationButton>> = ({
+  ...args
+}) => (
   <Stack spacing={4} sx={{ maxWidth: '300px' }}>
-    <Typography>Default Navigation Button</Typography>
-    <NavigationButton {...args.default} />
-    <Typography>Selected Navigation Button</Typography>
-    <NavigationButton {...args.selected} />
+    <NavigationButton {...args} />
   </Stack>
 )
 
 export const Default = Template.bind({})
 Default.args = {
-  default: {
-    selected: false,
-    value: 'default',
-    link: '/some/link'
-  },
-  selected: {
-    selected: true,
-    value: 'selected',
-    link: '/some/link'
-  }
+  selected: false,
+  value: 'default',
+  link: '/some/link'
+}
+
+export const Selected = Template.bind({})
+Selected.args = {
+  selected: true,
+  value: 'selected',
+  link: '/some/link'
 }
 
 export default NavigationButtonStory as Meta

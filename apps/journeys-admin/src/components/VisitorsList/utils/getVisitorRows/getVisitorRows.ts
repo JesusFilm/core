@@ -44,5 +44,7 @@ export function getVisitorRows(visitors: Visitor[]): GridRowDef[] {
     }
   })
 
+  console.log(rows)
+
   return rows
 }

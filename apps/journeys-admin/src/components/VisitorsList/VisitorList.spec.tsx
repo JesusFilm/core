@@ -39,10 +39,10 @@ describe('VisitorList', () => {
               id: 'visitor1.id',
               lastChatPlatform: 'facebook',
               lastLinkAction: null,
-              lastRadioOptionSubmission: null,
-              lastRadioQuestion: null,
+              lastRadioOptionSubmission: 'selected option',
+              lastRadioQuestion: 'Poll question',
               lastStepViewedAt: '2023-04-05T20:00:05.725Z',
-              lastTextResponse: null
+              lastTextResponse: 'user response'
             },
             cursor: 'date string'
           }
@@ -185,5 +185,37 @@ describe('VisitorList', () => {
     await waitFor(() =>
       expect(getByRole('button', { name: 'Load More' })).toBeDisabled()
     )
+  })
+
+  it('should show grid column titles', async () => {
+    const { getByRole } = render(
+      <MockedProvider mocks={mocks}>
+        <VisitorsList />
+      </MockedProvider>
+    )
+
+    await waitFor(() => expect(result).toHaveBeenCalled())
+
+    expect(
+      getByRole('columnheader', { name: 'Last Active' })
+    ).toBeInTheDocument()
+    expect(
+      getByRole('columnheader', { name: 'Chat Started' })
+    ).toBeInTheDocument()
+    expect(getByRole('columnheader', { name: 'Action' })).toBeInTheDocument()
+    expect(getByRole('columnheader', { name: 'User Data' })).toBeInTheDocument()
+    expect(getByRole('columnheader', { name: 'Polls' })).toBeInTheDocument()
+  })
+
+  it('should show response in cell text field', async () => {
+    const { getByText } = render(
+      <MockedProvider mocks={mocks}>
+        <VisitorsList />
+      </MockedProvider>
+    )
+    await waitFor(() => expect(result).toHaveBeenCalled())
+
+    expect(getByText('Poll question: selected option')).toBeInTheDocument()
+    expect(getByText('user response')).toBeInTheDocument()
   })
 })
