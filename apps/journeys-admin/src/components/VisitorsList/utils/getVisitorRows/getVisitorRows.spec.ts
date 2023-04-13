@@ -2,7 +2,7 @@ import { GetVisitors_visitors_edges as Visitor } from '../../../../../__generate
 import { getVisitorRows } from '.'
 
 describe('getVisitorRows', () => {
-  it('should only should visitors with a lastStepViewedAt', () => {
+  it('should only show visitors with a lastStepViewedAt', () => {
     const visitors: Visitor[] = [
       {
         __typename: 'VisitorEdge',
