@@ -1,104 +1,54 @@
 import { styled } from '@mui/material/styles'
-import Box from '@mui/material/Box'
+import Stack from '@mui/material/Stack'
 import { ReactElement } from 'react'
 
 interface Props {
   slug: 'admin-left' | 'admin-right' | 'admin-center'
 }
 
+const StyledIframe = styled('iframe')(() => ({}))
+
 export function EmbedJourney({ slug }: Props): ReactElement {
-  const width = {
-    xs: '270%',
-    sm: '180%',
-    md: '133%'
-  }
-
-  const mb = {
-    xs: '52%',
-    sm: '55%',
-    md: '54%'
-  }
-
-  const scale = {
-    xs: 'scale(0.4)',
-    sm: 'scale(0.6)',
-    md: 'scale(0.8)'
-  }
-
-  const top = {
-    xs: -8,
-    sm: 0
-  }
-
-  // marginLeft and left is set to values for "admin-left" by default
-  let marginLeft = '0px'
-  let left = {
-    xs: -8,
-    sm: -32
-  }
-
-  switch (slug) {
-    case 'admin-right':
-      left = {
-        xs: 8,
-        sm: 32
-      }
-      marginLeft = `-28px`
-      break
-    case 'admin-center':
-      left = {
-        xs: 0,
-        sm: 0
-      }
-      marginLeft = `-12px`
-      break
-  }
-
-  const StyledIframe = styled('iframe')(({ theme }) => ({}))
   return (
-    <Box
-      aria-label={`${slug}-embedded`}
+    <Stack
       sx={{
-        transform: scale,
-        transformOrigin: 'top left',
-        position: 'relative',
-        width: '33%',
-        height: 0,
-        mb
+        width: '100%',
+        height: { xs: '300px', md: '360px' },
+        marginBottom: { xs: '-120px', sm: '-100px', md: '-90px' }
       }}
     >
-      <Box
+      <StyledIframe
+        id="jfm-iframe"
+        src={`https://your.nextstep.is/embed/${slug}/?padding=false`}
         sx={{
-          width
+          display: 'flex',
+          transform: { xs: 'scale(0.55)', sm: 'scale(0.6)', md: 'scale(0.7)' },
+          transformOrigin: {
+            xs:
+              slug === 'admin-center'
+                ? '5% 0%'
+                : slug === 'admin-left'
+                ? '15% 0%'
+                : '-5% 0%',
+            sm:
+              slug === 'admin-center'
+                ? '4% 0%'
+                : slug === 'admin-left'
+                ? 'top left'
+                : '8% 0%',
+            md:
+              slug === 'admin-center'
+                ? '3% 0%'
+                : slug === 'admin-left'
+                ? 'top left'
+                : '6% 0%'
+          },
+          width: { xs: '160%', md: '140%' },
+          height: '100%',
+          border: 'none'
         }}
-      >
-        <Box
-          sx={{
-            position: 'relative',
-            width: '100%',
-            overflow: 'hidden',
-            ml: marginLeft,
-            pt: '150%',
-            pl: '94%'
-          }}
-        >
-          <StyledIframe
-            id="jfm-iframe"
-            src={`https://your.nextstep.is/embed/${slug}`}
-            sx={{
-              position: 'absolute',
-              top,
-              left,
-              bottom: 0,
-              right: 0,
-              width: '100%',
-              height: '100%',
-              border: 'none'
-            }}
-            allow="fullscreen"
-          />
-        </Box>
-      </Box>
-    </Box>
+        allow="fullscreen"
+      />
+    </Stack>
   )
 }
