@@ -16,7 +16,8 @@ import {
 import {
   ThemeMode,
   ThemeName,
-  VideoBlockSource
+  VideoBlockSource,
+  VideoLabel
 } from '../../../../../../../../__generated__/globalTypes'
 import { ThemeProvider } from '../../../../../../ThemeProvider'
 import {
@@ -75,7 +76,13 @@ describe('VideoOptions', () => {
           limit: 5,
           where: {
             availableVariantLanguageIds: ['529'],
-            title: null
+            title: null,
+            labels: [
+              VideoLabel.episode,
+              VideoLabel.featureFilm,
+              VideoLabel.segment,
+              VideoLabel.shortFilm
+            ]
           }
         }
       },
@@ -117,7 +124,20 @@ describe('VideoOptions', () => {
               id: 'variantA',
               duration: 144,
               hls: 'https://arc.gt/opsgn'
-            }
+            },
+            variantLanguages: [
+              {
+                __typename: 'Language',
+                id: '529',
+                name: [
+                  {
+                    value: 'English',
+                    primary: true,
+                    __typename: 'Translation'
+                  }
+                ]
+              }
+            ]
           }
         }
       }
