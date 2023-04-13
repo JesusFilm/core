@@ -37,18 +37,18 @@
       "executor": "@nrwl/workspace:run-commands",
       "options": {
         "commands": [
-          "VERCEL_PROJECT_ID=$JOURNEYS_VERCEL_PROJECT_ID npx vercel env pull apps/journeys/.env --environment=preview",
+          "npx vercel env pull apps/journeys/.env --environment=preview --token=$JOURNEYS_VERCEL_PROJECT_ID",
           "nx build journeys --prod",
-          "VERCEL_PROJECT_ID=$JOURNEYS_VERCEL_PROJECT_ID npx vercel deploy dist/journeys"
+          "npx vercel deploy dist/journeys --token=$JOURNEYS_VERCEL_PROJECT_ID"
         ],
         "parallel": false
       },
       "configurations": {
         "production": {
           "commands": [
-            "VERCEL_PROJECT_ID=$JOURNEYS_VERCEL_PROJECT_ID npx vercel env pull apps/journeys/.env --environment=production",
+            "npx vercel env pull apps/journeys/.env --environment=production --token=$JOURNEYS_VERCEL_PROJECT_ID",
             "nx build journeys --prod",
-            "VERCEL_PROJECT_ID=$JOURNEYS_VERCEL_PROJECT_ID npx vercel deploy dist/journeys --prod"
+            "npx vercel deploy dist/journeys --prod --token=$JOURNEYS_VERCEL_PROJECT_ID"
           ]
         }
       }
