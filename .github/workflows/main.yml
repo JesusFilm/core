@@ -114,12 +114,22 @@ jobs:
       - name: NPM Install
         run: npm install --silent
       - uses: mansagroup/nrwl-nx-action@v3
+        if: ${{ github.event_name == 'pull_request' }}
         env:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
           JOURNEYS_VERCEL_PROJECT_ID: ${{ secrets.JOURNEYS_VERCEL_PROJECT_ID }}
         with:
           targets: deploy
+      - uses: mansagroup/nrwl-nx-action@v3
+        if: ${{ github.ref == 'refs/heads/main' && github.event_name != 'pull_request' }}
+        env:
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          JOURNEYS_VERCEL_PROJECT_ID: ${{ secrets.JOURNEYS_VERCEL_PROJECT_ID }}
+        with:
+          targets: deploy
+          args: --prod
   test:
     runs-on: ubuntu-latest
     steps:
