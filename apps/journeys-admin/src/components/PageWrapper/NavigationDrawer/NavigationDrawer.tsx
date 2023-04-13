@@ -18,7 +18,7 @@ import Backdrop from '@mui/material/Backdrop'
 import Image from 'next/image'
 import { NextRouter } from 'next/router'
 import { compact } from 'lodash'
-import { gql, useQuery } from '@apollo/client'
+import { useQuery } from '@apollo/client'
 import { useFlags } from '@core/shared/ui/FlagsProvider'
 import ViewCarouselRoundedIcon from '@mui/icons-material/ViewCarouselRounded'
 import LeaderboardRoundedIcon from '@mui/icons-material/LeaderboardRounded'
@@ -31,6 +31,7 @@ import { GetUserRole } from '../../../../__generated__/GetUserRole'
 import { GET_USER_ROLE } from '../../JourneyView/JourneyView'
 import { useActiveJourneys } from '../../../libs/useActiveJourneys'
 import { getJourneyTooltip } from '../utils/getJourneyTooltip'
+import { GET_ME } from '../../NewPageWrapper/NavigationDrawer'
 import { UserMenu } from './UserMenu'
 import { NavigationListItem } from './NavigationListItem'
 
@@ -42,18 +43,6 @@ export interface NavigationDrawerProps {
   authUser?: AuthUser
   router?: NextRouter
 }
-
-export const GET_ME = gql`
-  query GetMe {
-    me {
-      id
-      firstName
-      lastName
-      email
-      imageUrl
-    }
-  }
-`
 
 const StyledNavigationDrawer = styled(Drawer)(({ theme, open }) => ({
   width: '72px',
