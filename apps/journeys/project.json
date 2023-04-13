@@ -33,6 +33,26 @@
         "production": {}
       }
     },
+    "deploy": {
+      "executor": "@nrwl/workspace:run-commands",
+      "options": {
+        "commands": [
+          "VERCEL_PROJECT_ID=$JOURNEYS_VERCEL_PROJECT_ID npx vercel env pull apps/journeys/.env --environment=preview",
+          "nx build journeys --prod",
+          "VERCEL_PROJECT_ID=$JOURNEYS_VERCEL_PROJECT_ID npx vercel deploy dist/journeys"
+        ],
+        "parallel": false
+      },
+      "configurations": {
+        "production": {
+          "commands": [
+            "VERCEL_PROJECT_ID=$JOURNEYS_VERCEL_PROJECT_ID npx vercel env pull apps/journeys/.env --environment=production",
+            "nx build journeys --prod",
+            "VERCEL_PROJECT_ID=$JOURNEYS_VERCEL_PROJECT_ID npx vercel deploy dist/journeys --prod"
+          ]
+        }
+      }
+    },
     "serve": {
       "executor": "@nrwl/next:server",
       "options": {
