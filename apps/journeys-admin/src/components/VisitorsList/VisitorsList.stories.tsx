@@ -1,6 +1,7 @@
 import { Story, Meta } from '@storybook/react'
 import { ComponentProps } from 'react'
 import { MockedProvider } from '@apollo/client/testing'
+import Box from '@mui/material/Box'
 import { journeysAdminConfig } from '../../libs/storybook'
 import { ApolloLoadingProvider } from '../../../test/ApolloLoadingProvider'
 import { GET_VISITORS } from './VisitorsList'
@@ -84,7 +85,9 @@ export const Default: Story<ComponentProps<typeof VisitorsList>> = () => (
       }
     ]}
   >
-    <VisitorsList />
+    <Box sx={{ height: '600px' }}>
+      <VisitorsList />
+    </Box>
   </MockedProvider>
 )
 
