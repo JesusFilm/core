@@ -9,7 +9,7 @@ import { transformer } from '@core/journeys/ui/transformer'
 import Typography from '@mui/material/Typography'
 import Stack from '@mui/material/Stack'
 import { ActiveFab, useEditor } from '@core/journeys/ui/EditorProvider'
-import { FramePortal } from '../../../FramePortal'
+import { FramePortal } from '@core/journeys/ui/FramePortal'
 import { ThemeMode, ThemeName } from '../../../../../__generated__/globalTypes'
 import {
   BlockFields_ButtonBlock as ButtonBlock,

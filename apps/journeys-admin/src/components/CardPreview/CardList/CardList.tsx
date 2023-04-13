@@ -15,6 +15,7 @@ import {
   DraggableStateSnapshot
 } from 'react-beautiful-dnd'
 import { getJourneyRTL } from '@core/journeys/ui/rtl'
+import { FramePortal } from '@core/journeys/ui/FramePortal'
 import {
   ActiveJourneyEditContent,
   useEditor
@@ -22,7 +23,6 @@ import {
 import { CustomIcon } from '@core/shared/ui/CustomIcon'
 
 import Divider from '@mui/material/Divider'
-import { FramePortal } from '../../FramePortal'
 import { ThemeName, ThemeMode } from '../../../../__generated__/globalTypes'
 import { HorizontalSelect } from '../../HorizontalSelect'
 import { VideoWrapper } from '../../Editor/Canvas/VideoWrapper'

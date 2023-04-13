@@ -8,11 +8,11 @@ import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import { getJourneyRTL } from '@core/journeys/ui/rtl'
 import { Theme } from '@mui/material/styles'
 import useMediaQuery from '@mui/material/useMediaQuery'
+import { FramePortal } from '@core/journeys/ui/FramePortal'
 import {
   ThemeName,
   ThemeMode
 } from '../../../../../../__generated__/globalTypes'
-import { FramePortal } from '../../../../FramePortal'
 
 const CARD_WIDTH = 340
 

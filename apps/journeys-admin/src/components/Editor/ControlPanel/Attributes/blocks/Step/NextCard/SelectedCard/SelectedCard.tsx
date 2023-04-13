@@ -13,13 +13,13 @@ import { BlockRenderer } from '@core/journeys/ui/BlockRenderer'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { getJourneyRTL } from '@core/journeys/ui/rtl'
 import last from 'lodash/last'
+import { FramePortal } from '@core/journeys/ui/FramePortal'
 import { StepFields } from '../../../../../../../../../__generated__/StepFields'
 import { StepBlockNextBlockUpdate } from '../../../../../../../../../__generated__/StepBlockNextBlockUpdate'
 import {
   ThemeMode,
   ThemeName
 } from '../../../../../../../../../__generated__/globalTypes'
-import { FramePortal } from '../../../../../../../FramePortal'
 import { VideoWrapper } from '../../../../../../Canvas/VideoWrapper'
 import { CardWrapper } from '../../../../../../Canvas/CardWrapper'
 
