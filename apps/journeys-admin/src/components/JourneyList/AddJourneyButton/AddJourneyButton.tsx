@@ -207,7 +207,7 @@ export function AddJourneyButton({
         bottom: 16,
         right: 16,
         zIndex: 1,
-        display: { xs: 'flex', sm: 'none' }
+        display: { xs: 'flex', md: 'none' }
       }}
       disabled={loading}
     >

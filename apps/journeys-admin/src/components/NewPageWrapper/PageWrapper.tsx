@@ -4,8 +4,8 @@ import { useTheme } from '@mui/material/styles'
 import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
 import { AuthUser } from 'next-firebase-auth'
-import { NavigationDrawer } from '../PageWrapper/NavigationDrawer'
 import { PageProvider, PageState } from '../../libs/PageWrapperProvider'
+import { NavigationDrawer } from './NavigationDrawer'
 import { MainPanelBody } from './MainPanelBody'
 import { MainPanelHeader } from './MainPanelHeader'
 import { AppHeader } from './AppHeader'
@@ -51,21 +51,21 @@ export function PageWrapper({
         sx={{
           height: viewportHeight ?? '100vh',
           overflow: 'hidden',
-          [theme.breakpoints.only('xs')]: { overflowY: 'auto' }
+          [theme.breakpoints.down('md')]: { overflowY: 'auto' }
         }}
       >
-        <Stack direction={{ sm: 'row' }} sx={{ height: 'inherit' }}>
+        <Stack direction={{ md: 'row' }} sx={{ height: 'inherit' }}>
           <NavigationDrawer open={open} onClose={setOpen} authUser={authUser} />
 
           <Stack
-            direction={{ xs: 'column', sm: 'row' }}
+            direction={{ xs: 'column', md: 'row' }}
             sx={{
               backgroundColor: 'background.default',
-              width: { xs: '100vw', sm: `calc(100vw - ${navbar.width})` },
-              pt: { xs: `${toolbar.height}px`, sm: 0 },
+              width: { xs: '100vw', md: `calc(100vw - ${navbar.width})` },
+              pt: { xs: `${toolbar.height}px`, md: 0 },
               pb: {
                 xs: bottomPanelChildren != null ? bottomPanel.height : 0,
-                sm: 0
+                md: 0
               }
             }}
           >
@@ -76,7 +76,7 @@ export function PageWrapper({
               sx={{
                 width: {
                   xs: 'inherit',
-                  sm:
+                  md:
                     sidePanelChildren != null
                       ? `calc(100vw - ${navbar.width} - ${sidePanel.width})`
                       : 'inherit'
