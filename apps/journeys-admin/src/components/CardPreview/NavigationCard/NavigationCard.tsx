@@ -48,7 +48,6 @@ export function NavigationCard({
           height: 132,
           m: 0,
           p: 0,
-          '&:hover': { bgcolor: 'rgba(200, 200, 200)' },
           border: id === 'goals' ? 'none' : '3px solid transparent',
           backgroundColor:
             id === 'goals' ? 'background.default' : 'background.paper'
