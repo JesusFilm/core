@@ -88,19 +88,19 @@
     "prisma-generate": {
       "executor": "@nx-tools/nx-prisma:generate",
       "options": {
-        "schema": "apps/api-users/prisma/schema.prisma"
+        "schema": "apps/api-users/db/schema.prisma"
       }
     },
     "prisma-migrate": {
       "executor": "@nx-tools/nx-prisma:migrate",
       "options": {
-        "schema": "apps/api-users/prisma/schema.prisma"
+        "schema": "apps/api-users/db/schema.prisma"
       }
     },
     "prisma-rollback": {
       "executor": "@nx-tools/nx-prisma:rollback",
       "options": {
-        "schema": "apps/api-users/prisma/schema.prisma"
+        "schema": "apps/api-users/db/schema.prisma"
       }
     },
     "prisma-seed": {
