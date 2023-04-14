@@ -34,6 +34,10 @@ output "public_alb_security_group_id" {
   value = module.public_alb_security_group.security_group_id
 }
 
+output "private_rds_security_group_id" {
+  value = module.internal_rds_security_group.security_group_id
+}
+
 
 output "ecs" {
   value = {

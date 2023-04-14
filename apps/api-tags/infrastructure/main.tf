@@ -19,10 +19,11 @@ module "seed" {
 }
 
 module "database" {
-  source            = "../../../infrastructure/modules/aws/aurora"
-  name              = local.service_config.name
-  env               = var.env
-  doppler_token     = var.doppler_token
-  doppler_project   = local.service_config.name
-  subnet_group_name = var.subnet_group_name
+  source                = "../../../infrastructure/modules/aws/aurora"
+  name                  = local.service_config.name
+  env                   = var.env
+  doppler_token         = var.doppler_token
+  doppler_project       = local.service_config.name
+  subnet_group_name     = var.subnet_group_name
+  vpc_security_group_id = var.vpc_security_group_id
 }

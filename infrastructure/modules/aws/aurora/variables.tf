@@ -17,3 +17,7 @@ variable "subnet_group_name" {
 variable "doppler_project" {
   type = string
 }
+
+variable "vpc_security_group_id" {
+  type = string
+}

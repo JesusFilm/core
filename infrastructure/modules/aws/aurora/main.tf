@@ -5,6 +5,7 @@ resource "random_password" "password" {
 }
 
 resource "aws_rds_cluster" "default" {
+  apply_immediately       = true
   cluster_identifier      = "${var.name}-${var.env}"
   engine                  = "aurora-postgresql"
   engine_mode             = "serverless"
@@ -16,6 +17,10 @@ resource "aws_rds_cluster" "default" {
   master_password         = random_password.password.result
   backup_retention_period = 5
   preferred_backup_window = "07:00-09:00"
+  vpc_security_group_ids  = [var.vpc_security_group_id]
+  scaling_configuration {
+    min_capacity = 2
+  }
 }
 
 resource "doppler_secret" "rds_password" {
