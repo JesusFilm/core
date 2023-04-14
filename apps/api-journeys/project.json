@@ -16,6 +16,11 @@
             "glob": "**/*.graphql",
             "input": "apps/api-journeys/src/app/",
             "output": "./assets"
+          },
+          {
+            "glob": "**/*.graphql",
+            "input": "libs/nest/common/src/lib/TranslationModule/",
+            "output": "./assets"
           }
         ],
         "generatePackageJson": true
@@ -50,7 +55,7 @@
     "watcher": {
       "executor": "@nrwl/workspace:run-commands",
       "options": {
-        "command": "npx ts-node apps/api-journeys/src/generate-typings.ts"
+        "command": "npx ts-node tools/scripts/generate-typings.ts api-journeys"
       }
     },
     "lint": {
@@ -77,21 +82,19 @@
     "generate-graphql": {
       "executor": "@nrwl/workspace:run-commands",
       "options": {
-        "commands": [
-          {
-            "command": "rover subgraph introspect http://localhost:4001/graphql > apps/api-journeys/schema.graphql"
-          }
-        ]
+        "command": "rover subgraph introspect http://localhost:4001/graphql > apps/api-journeys/schema.graphql"
+      }
+    },
+    "subgraph-check": {
+      "executor": "@nrwl/workspace:run-commands",
+      "options": {
+        "command": "rover subgraph check API-GATEWAY-0zuda@current --name api-journeys --schema apps/api-journeys/schema.graphql"
       }
     },
     "fetch-secrets": {
       "executor": "@nrwl/workspace:run-commands",
       "options": {
-        "commands": [
-          {
-            "command": "DOPPLER_TOKEN=$DOPPLER_API_JOURNEYS_TOKEN doppler secrets download --no-file --format=env-no-quotes --project api-journeys > apps/api-journeys/.env"
-          }
-        ]
+        "command": "DOPPLER_TOKEN=$DOPPLER_API_JOURNEYS_TOKEN doppler secrets download --no-file --format=env-no-quotes --project api-journeys > apps/api-journeys/.env"
       }
     }
   },

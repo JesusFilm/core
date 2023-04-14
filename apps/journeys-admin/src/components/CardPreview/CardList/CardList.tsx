@@ -15,13 +15,20 @@ import {
   DraggableStateSnapshot
 } from 'react-beautiful-dnd'
 import { getJourneyRTL } from '@core/journeys/ui/rtl'
-import { useEditor } from '@core/journeys/ui/EditorProvider'
+import {
+  ActiveJourneyEditContent,
+  useEditor
+} from '@core/journeys/ui/EditorProvider'
+import { CustomIcon } from '@core/shared/ui/CustomIcon'
+
+import Divider from '@mui/material/Divider'
 import { FramePortal } from '../../FramePortal'
 import { ThemeName, ThemeMode } from '../../../../__generated__/globalTypes'
 import { HorizontalSelect } from '../../HorizontalSelect'
 import { VideoWrapper } from '../../Editor/Canvas/VideoWrapper'
 import { CardWrapper } from '../../Editor/Canvas/CardWrapper'
 import { BlockFields_StepBlock as StepBlock } from '../../../../__generated__/BlockFields'
+import { NavigationCard } from '../NavigationCard'
 
 interface CardListProps {
   steps: Array<TreeBlock<StepBlock>>
@@ -32,6 +39,7 @@ interface CardListProps {
   handleChange?: (selectedId: string) => void
   isDragging?: boolean
   isDraggable?: boolean
+  showNavigationCards?: boolean
 }
 
 export function CardList({
@@ -42,9 +50,11 @@ export function CardList({
   handleClick,
   handleChange,
   isDragging,
-  isDraggable
+  isDraggable,
+  showNavigationCards = false
 }: CardListProps): ReactElement {
   const { state } = useEditor()
+  const { journey } = useJourney()
   const AddCardSlide = (): ReactElement => (
     <Card
       id="CardPreviewAddButton"
@@ -76,6 +86,43 @@ export function CardList({
       footer={showAddButton === true && <AddCardSlide />}
       view={state.journeyEditContentComponent}
     >
+      {showNavigationCards && (
+        <NavigationCard
+          key="goals"
+          id="goals"
+          testId="goals-navigation-card"
+          title="Goals"
+          destination={ActiveJourneyEditContent.Action}
+          outlined={
+            state.journeyEditContentComponent ===
+            ActiveJourneyEditContent.Action
+          }
+          header={
+            <Box
+              bgcolor={(theme) => theme.palette.background.paper}
+              borderRadius={1}
+              width={72}
+              height={72}
+              display="flex"
+              justifyContent="center"
+              alignItems="center"
+            >
+              <CustomIcon name="Target" color="error" />
+            </Box>
+          }
+          loading={journey == null}
+        />
+      )}
+      {showNavigationCards && (
+        <Divider
+          id="cardlist-divider"
+          orientation="vertical"
+          sx={{
+            borderWidth: 1,
+            mr: 1
+          }}
+        />
+      )}
       {droppableProvided != null &&
         steps.map((step, index) => (
           <Draggable

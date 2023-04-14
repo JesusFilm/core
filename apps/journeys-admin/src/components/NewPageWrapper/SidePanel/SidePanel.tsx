@@ -102,7 +102,7 @@ export function SidePanel({ children, title }: SidePanelProps): ReactElement {
         open={mobileDrawerOpen}
         hideBackdrop
         transitionDuration={300}
-        data-testId="bottom-drawer"
+        data-testId="mobile-side-drawer"
         sx={{
           display: { xs: 'flex', sm: 'none' },
           width: '100%',

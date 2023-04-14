@@ -7,19 +7,15 @@ import type { TreeBlock } from '@core/journeys/ui/block'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import Skeleton from '@mui/material/Skeleton'
 import Stack from '@mui/material/Stack'
+import { ActiveJourneyEditContent } from '@core/journeys/ui/EditorProvider'
 import { v4 as uuidv4 } from 'uuid'
 import { useMutation, gql } from '@apollo/client'
 import { DragDropContext, Droppable } from 'react-beautiful-dnd'
-import { ActiveJourneyEditContent } from '@core/journeys/ui/EditorProvider'
 import { StepsOrderUpdate } from '../../../__generated__/StepsOrderUpdate'
 import { StepAndCardBlockCreate } from '../../../__generated__/StepAndCardBlockCreate'
 import { GetJourney_journey_blocks_StepBlock as StepBlock } from '../../../__generated__/GetJourney'
 import { CardList } from './CardList'
-
-export interface OnSelectProps {
-  step?: TreeBlock<StepBlock>
-  view?: ActiveJourneyEditContent
-}
+import { OnSelectProps } from './OnSelectProps'
 
 export interface CardPreviewProps {
   onSelect?: ({ step, view }: OnSelectProps) => void
@@ -27,6 +23,7 @@ export interface CardPreviewProps {
   steps?: Array<TreeBlock<StepBlock>>
   showAddButton?: boolean
   isDraggable?: boolean
+  showNavigationCards?: boolean
 }
 
 export const STEP_AND_CARD_BLOCK_CREATE = gql`
@@ -62,7 +59,8 @@ export function CardPreview({
   selected,
   onSelect,
   showAddButton,
-  isDraggable
+  isDraggable,
+  showNavigationCards
 }: CardPreviewProps): ReactElement {
   const [isDragging, setIsDragging] = useState(false)
   const [stepAndCardBlockCreate] = useMutation<StepAndCardBlockCreate>(
@@ -72,6 +70,11 @@ export function CardPreview({
   const { journey } = useJourney()
 
   const handleChange = (selectedId: string): void => {
+    switch (selectedId) {
+      case 'goals':
+        onSelect?.({ view: ActiveJourneyEditContent.Action })
+        return
+    }
     if (steps == null) return
 
     const selectedStep = steps.find(({ id }) => id === selectedId)
@@ -175,7 +178,7 @@ export function CardPreview({
   )
 
   return (
-    <Stack direction="row">
+    <>
       {steps != null ? (
         isDraggable === true ? (
           <DragDropContext
@@ -194,6 +197,7 @@ export function CardPreview({
                     handleChange={handleChange}
                     isDragging={isDragging}
                     isDraggable={isDraggable}
+                    showNavigationCards={showNavigationCards}
                   />
                 </Box>
               )}
@@ -206,6 +210,7 @@ export function CardPreview({
             handleClick={handleClick}
             handleChange={handleChange}
             showAddButton={showAddButton}
+            showNavigationCards={showNavigationCards}
           />
         )
       ) : (
@@ -257,6 +262,6 @@ export function CardPreview({
           </Box>
         </Stack>
       )}
-    </Stack>
+    </>
   )
 }

@@ -24,10 +24,17 @@ export interface VisitorRecord {
   teamId: string
   userId: string
   createdAt: string
+  lastStepViewedAt?: string
   userAgent?: string
   messagePlatform?: MessagePlatform
   name?: string
   email?: string
+  lastChatStartedAt?: string
+  lastChatPlatform?: MessagePlatform
+  lastTextResponse?: string
+  lastRadioQuestion?: string
+  lastRadioOptionSubmission?: string
+  lastLinkAction?: string
 }
 
 @Injectable()
@@ -41,7 +48,7 @@ export class VisitorService extends BaseService<VisitorRecord> {
     filter
   }: ListParams): Promise<VisitorsConnection> {
     const filters: GeneratedAqlQuery[] = []
-    if (after != null) filters.push(aql`FILTER item.createdAt > ${after}`)
+    if (after != null) filters.push(aql`FILTER item.createdAt < ${after}`)
 
     forEach(filter, (value, key) => {
       if (value !== undefined) filters.push(aql`FILTER item.${key} == ${value}`)
@@ -53,7 +60,7 @@ export class VisitorService extends BaseService<VisitorRecord> {
         ${aql.join(filters)}
         SORT item.createdAt DESC
         LIMIT ${first} + 1
-        RETURN { cursor: item.createdAt, node: MERGE({ id: item._key }, item) }
+        RETURN { cursor: item.createdAt, node: MERGE(item, { id: item._key }) }
     )
     LET $edges = SLICE($edges_plus_one, 0, ${first})
     RETURN {
@@ -94,11 +101,14 @@ export class VisitorService extends BaseService<VisitorRecord> {
       `)
       ).next()
 
+      const id = uuidv4()
+      const createdAt = new Date().toISOString()
       visitor = await this.collection.save({
-        id: uuidv4(),
+        _key: id,
+        id,
         teamId: journey.teamId,
         userId,
-        createdAt: new Date().toISOString()
+        createdAt
       })
     }
 

@@ -156,4 +156,48 @@ describe('ImageUpload', () => {
     expect(getByTestId('CloudOffRoundedIcon')).toBeInTheDocument()
     expect(getByText('Upload Failed!'))
   })
+
+  it('should call setUploading on file drop', async () => {
+    const setUploading = jest.fn()
+    const { getByTestId, getByText } = render(
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: CREATE_CLOUDFLARE_UPLOAD_BY_FILE
+            },
+            result: {
+              data: {
+                createCloudflareUploadByFile: {
+                  id: 'uploadId',
+                  uploadUrl: 'https://upload.imagedelivery.net/uploadId',
+                  userId: 'userId',
+                  __typename: 'CloudflareImage'
+                }
+              }
+            }
+          }
+        ]}
+      >
+        <ImageUpload
+          onChange={jest.fn()}
+          setUploading={setUploading}
+          loading
+          selectedBlock={imageBlock}
+          error
+        />
+      </MockedProvider>
+    )
+    const inputEl = getByTestId('drop zone')
+    Object.defineProperty(inputEl, 'files', {
+      value: [
+        new File([new Blob(['file'])], 'testFile.png', {
+          type: 'image/png'
+        })
+      ]
+    })
+    fireEvent.drop(inputEl)
+    await waitFor(() => expect(setUploading).toHaveBeenCalled())
+    expect(getByText('Uploading...'))
+  })
 })

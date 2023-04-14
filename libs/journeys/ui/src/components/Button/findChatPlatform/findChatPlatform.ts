@@ -18,11 +18,19 @@ const platforms = [
     messagePlatform: MessagePlatform.facebook
   },
   {
+    url: 'messenger.com/',
+    messagePlatform: MessagePlatform.facebook
+  },
+  {
     url: 'fb.me/',
     messagePlatform: MessagePlatform.facebook
   },
   {
     url: 't.me/',
+    messagePlatform: MessagePlatform.telegram
+  },
+  {
+    url: 'telegram.org/',
     messagePlatform: MessagePlatform.telegram
   },
   {
@@ -43,6 +51,10 @@ const platforms = [
   },
   {
     url: 'viber://',
+    messagePlatform: MessagePlatform.viber
+  },
+  {
+    url: 'vb.me',
     messagePlatform: MessagePlatform.viber
   },
   {
@@ -67,6 +79,10 @@ const platforms = [
   },
   {
     url: 'line://',
+    messagePlatform: MessagePlatform.line
+  },
+  {
+    url: 'line.me',
     messagePlatform: MessagePlatform.line
   },
   {
