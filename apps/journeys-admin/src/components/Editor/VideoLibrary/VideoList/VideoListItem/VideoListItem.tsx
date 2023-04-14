@@ -3,6 +3,7 @@ import Typography from '@mui/material/Typography'
 import Box from '@mui/material/Box'
 import ListItemText from '@mui/material/ListItemText'
 import ListItemButton from '@mui/material/ListItemButton'
+import { useTranslation } from 'react-i18next'
 import {
   VideoBlockSource,
   VideoBlockUpdateInput
@@ -25,10 +26,11 @@ export function VideoListItem({
   description,
   image,
   source,
-  duration: time = 0,
+  duration: time,
   onSelect: handleSelect
 }: VideoListItemProps): ReactElement {
   const [open, setOpen] = useState(false)
+  const { t } = useTranslation('apps-journeys-admin')
 
   const handleOpen = (): void => {
     setOpen(true)
@@ -39,9 +41,9 @@ export function VideoListItem({
   }
 
   const duration =
-    time < 3600
-      ? new Date(time * 1000).toISOString().substring(14, 19)
-      : new Date(time * 1000).toISOString().substring(11, 19)
+    time != null
+      ? new Date(time * 1000).toISOString().substring(time < 3600 ? 14 : 11, 19)
+      : undefined
 
   return (
     <>
@@ -50,8 +52,8 @@ export function VideoListItem({
         sx={{ alignItems: 'flex-start', py: 4, px: 6 }}
       >
         <ListItemText
-          primary={title}
-          secondary={description}
+          primary={t(title as string)}
+          secondary={t(description as string)}
           secondaryTypographyProps={{
             sx: {
               whiteSpace: 'nowrap',
@@ -77,19 +79,21 @@ export function VideoListItem({
                 backgroundImage: `url(${image})`
               }}
             >
-              <Typography
-                component="div"
-                variant="caption"
-                sx={{
-                  color: 'background.paper',
-                  backgroundColor: 'rgba(0, 0, 0, 0.35)',
-                  px: 1,
-                  m: 1,
-                  borderRadius: 2
-                }}
-              >
-                {duration}
-              </Typography>
+              {duration != null && (
+                <Typography
+                  component="div"
+                  variant="caption"
+                  sx={{
+                    color: 'background.paper',
+                    backgroundColor: 'rgba(0, 0, 0, 0.35)',
+                    px: 1,
+                    m: 1,
+                    borderRadius: 2
+                  }}
+                >
+                  {duration}
+                </Typography>
+              )}
             </Box>
           </Box>
         )}

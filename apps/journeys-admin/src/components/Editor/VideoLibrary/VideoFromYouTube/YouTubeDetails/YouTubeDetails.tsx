@@ -9,9 +9,24 @@ import Skeleton from '@mui/material/Skeleton'
 import 'video.js/dist/video-js.css'
 import useSWR from 'swr'
 import fetch from 'node-fetch'
-import { parseISO8601Duration, YoutubeVideosData } from '../VideoFromYouTube'
+import { parseISO8601Duration } from '../VideoFromYouTube'
 import { VideoBlockSource } from '../../../../../../__generated__/globalTypes'
 import type { VideoDetailsProps } from '../../VideoDetails/VideoDetails'
+
+interface YoutubeVideosData {
+  items: Array<{
+    id: string
+    snippet: {
+      title: string
+      description: string
+      thumbnails: { default: { url: string } }
+    }
+    contentDetails: {
+      duration: string
+    }
+  }>
+  nextPageToken?: string
+}
 
 const fetcher = async (
   id: string

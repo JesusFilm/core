@@ -16,9 +16,8 @@ interface VideoFromYouTubeProps {
   onSelect: (block: VideoBlockUpdateInput) => void
 }
 
-export interface YoutubeVideosData {
+export interface YoutubePlaylistItemsData {
   items: Array<{
-    id: string
     snippet: {
       title: string
       description: string
@@ -26,7 +25,6 @@ export interface YoutubeVideosData {
     }
     contentDetails: {
       videoId: string
-      duration: string
     }
   }>
   nextPageToken?: string
@@ -58,7 +56,7 @@ const fetcher = async (query: string): Promise<Data> => {
     part: 'snippet,contentDetails',
     key: process.env.NEXT_PUBLIC_FIREBASE_API_KEY ?? ''
   }).toString()
-  const videosData: YoutubeVideosData = await (
+  const videosData: YoutubePlaylistItemsData = await (
     await fetch(
       `https://www.googleapis.com/youtube/v3/playlistItems?${query}&${params}`
     )
@@ -71,7 +69,6 @@ const fetcher = async (query: string): Promise<Data> => {
       title: video.snippet.title,
       description: video.snippet.description,
       image: video.snippet.thumbnails.default.url,
-      // duration: parseISO8601Duration(video.contentDetails.duration),
       source: VideoBlockSource.youTube
     }))
   }
