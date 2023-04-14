@@ -26,7 +26,7 @@ export function SocialPreview(): ReactElement {
   return (
     <>
       {mdUp ? (
-        <Box data-testId="social-preview-panel">
+        <Box data-testid="social-preview-panel">
           <Stack
             direction="row"
             justifyContent="space-evenly"

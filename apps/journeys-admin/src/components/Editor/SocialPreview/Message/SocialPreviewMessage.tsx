@@ -107,7 +107,7 @@ export function SocialPreviewMessage({
                     <Box
                       width={60}
                       height={60}
-                      data-testId="social-preview-message-empty"
+                      data-testid="social-preview-message-empty"
                       bgcolor="rgba(0, 0, 0, 0.1)"
                       borderRadius="6px"
                     />

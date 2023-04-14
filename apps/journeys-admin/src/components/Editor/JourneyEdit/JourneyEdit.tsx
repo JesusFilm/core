@@ -43,7 +43,7 @@ export function JourneyEdit(): ReactElement {
         }}
       >
         <Box
-          data-testId="journey-edit-content"
+          data-testid="journey-edit-content"
           sx={{
             display: 'flex',
             flexDirection: 'column',

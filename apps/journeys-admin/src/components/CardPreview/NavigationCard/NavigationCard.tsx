@@ -29,13 +29,12 @@ export function NavigationCard({
     <Box
       id={id}
       data-testid={testId}
+      height={150}
+      width={100}
+      borderRadius={2}
+      p={1.5}
+      mt={-0.5}
       sx={{
-        height: '150px',
-        width: '101px',
-        borderRadius: '8px',
-        p: 1,
-        pt: 1,
-        mt: -1,
         outline: (theme) =>
           outlined
             ? `2px solid ${theme.palette.primary.main} `
@@ -47,7 +46,9 @@ export function NavigationCard({
         sx={{
           width: 87,
           height: 132,
-          m: 1,
+          m: 0,
+          p: 0,
+          '&:hover': { bgcolor: 'rgba(200, 200, 200)' },
           border: id === 'goals' ? 'none' : '3px solid transparent',
           backgroundColor:
             id === 'goals' ? 'background.default' : 'background.paper'
@@ -56,33 +57,31 @@ export function NavigationCard({
         {loading ? (
           <Skeleton variant="rectangular" width={87} height={132} />
         ) : (
-          <CardActionArea>
-            <Stack
-              direction="column"
+          <Stack
+            direction="column"
+            justifyContent="center"
+            alignContent="center"
+            gap={1}
+          >
+            <Box
+              display="flex"
+              width="100%"
+              height="80px"
               justifyContent="center"
-              alignContent="center"
-              gap={1}
+              alignItems="center"
+              mt={1}
             >
-              <Box
-                display="flex"
-                width="100%"
-                height="80px"
-                justifyContent="center"
-                alignItems="center"
-                mt={1}
-              >
-                {header}
-              </Box>
-              <Typography
-                variant="subtitle1"
-                textAlign="center"
-                sx={{ fontSize: 14, lineHeight: '16px' }}
-                px={2}
-              >
-                {title}
-              </Typography>
-            </Stack>
-          </CardActionArea>
+              {header}
+            </Box>
+            <Typography
+              variant="subtitle1"
+              textAlign="center"
+              sx={{ fontSize: 14, lineHeight: '16px' }}
+              px={2}
+            >
+              {title}
+            </Typography>
+          </Stack>
         )}
       </Card>
     </Box>
