@@ -320,6 +320,7 @@ export class JourneyResolver {
     let duplicatePrimaryImageBlock: (ImageBlock & { _key: string }) | undefined
     if (journey.primaryImageBlockId != null) {
       const original = await this.blockService.get(journey.primaryImageBlockId)
+      console.log(original)
       const id = uuidv4()
       duplicatePrimaryImageBlock = {
         ...original,
