@@ -13,7 +13,7 @@ import { parseISO8601Duration } from '../VideoFromYouTube'
 import { VideoBlockSource } from '../../../../../../__generated__/globalTypes'
 import type { VideoDetailsProps } from '../../VideoDetails/VideoDetails'
 
-interface YoutubeVideosData {
+export interface YoutubeVideosData {
   items: Array<{
     id: string
     snippet: {

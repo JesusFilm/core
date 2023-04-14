@@ -1,5 +1,6 @@
 import { rest } from 'msw'
 import { YoutubePlaylistItemsData } from './VideoFromYouTube'
+import { YoutubeVideosData } from './YouTubeDetails/YouTubeDetails'
 
 type Video = YoutubePlaylistItemsData['items'][number]
 
@@ -31,7 +32,7 @@ const video2: Video = {
     }
   },
   contentDetails: {
-    videoId: 'ak06MSETeo4'
+    videoId: 'jQaeIJOA6J0'
   }
 }
 
@@ -47,12 +48,12 @@ const video3: Video = {
     }
   },
   contentDetails: {
-    videoId: 'ak06MSETeo4'
+    videoId: '7_CGP-12AE0'
   }
 }
 
 export const getVideos = rest.get(
-  'https://www.googleapis.com/youtube/v3/videos',
+  'https://www.googleapis.com/youtube/v3/playlistItems',
   (_req, res, ctx) => {
     return res(
       ctx.json<YoutubePlaylistItemsData>({
@@ -63,7 +64,7 @@ export const getVideos = rest.get(
 )
 
 export const getVideosEmpty = rest.get(
-  'https://www.googleapis.com/youtube/v3/videos',
+  'https://www.googleapis.com/youtube/v3/playlistItems',
   (_req, res, ctx) => {
     return res(
       ctx.json<YoutubePlaylistItemsData>({
@@ -73,8 +74,8 @@ export const getVideosEmpty = rest.get(
   }
 )
 
-export const getVideosWithOffsetAndUrl = rest.get(
-  'https://www.googleapis.com/youtube/v3/videos',
+export const getPlaylistItemsWithOffsetAndUrl = rest.get(
+  'https://www.googleapis.com/youtube/v3/playlistItems',
   (req, res, ctx) => {
     if (req.url.searchParams.get('id') === video2.contentDetails?.videoId) {
       return res(
@@ -99,8 +100,57 @@ export const getVideosWithOffsetAndUrl = rest.get(
   }
 )
 
-export const getVideosLoading = rest.get(
+export const getVideosWithOffsetAndUrl = rest.get(
   'https://www.googleapis.com/youtube/v3/videos',
+  (req, res, ctx) => {
+    if (req.url.searchParams.get('id') === video2.contentDetails?.videoId) {
+      return res(
+        ctx.json<YoutubeVideosData>({
+          items: [
+            {
+              ...video2,
+              id: 'ak06MSETeo4',
+              contentDetails: { duration: 'PT6M03S' }
+            }
+          ]
+        })
+      )
+    }
+    if (req.url.searchParams.get('pageToken') !== 'nextPageToken') {
+      return res(
+        ctx.json<YoutubeVideosData>({
+          items: [
+            {
+              ...video1,
+              id: 'ak06MSETeo4',
+              contentDetails: { duration: 'PT5M48S' }
+            },
+            {
+              ...video2,
+              id: 'ak06MSETeo4',
+              contentDetails: { duration: 'PT6M03S' }
+            }
+          ],
+          nextPageToken: 'nextPageToken'
+        })
+      )
+    }
+    return res(
+      ctx.json<YoutubeVideosData>({
+        items: [
+          {
+            ...video3,
+            id: 'ak06MSETeo4',
+            contentDetails: { duration: 'PT6M03S' }
+          }
+        ]
+      })
+    )
+  }
+)
+
+export const getVideosLoading = rest.get(
+  'https://www.googleapis.com/youtube/v3/playlistItems',
   (_req, res, ctx) => {
     return res(
       ctx.delay(1000 * 60 * 60 * 60),
