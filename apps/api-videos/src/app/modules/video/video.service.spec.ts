@@ -5,6 +5,7 @@ import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 import { DocumentCollection, EdgeCollection } from 'arangojs/collection'
 import { ArrayCursor } from 'arangojs/cursor'
 import { AqlQuery, GeneratedAqlQuery } from 'arangojs/aql'
+import { CacheModule } from '@nestjs/common'
 import { VideoLabel } from '../../__generated__/graphql'
 import { VideoService } from './video.service'
 
@@ -70,6 +71,7 @@ describe('VideoService', () => {
   beforeEach(async () => {
     db = mockDeep()
     const module: TestingModule = await Test.createTestingModule({
+      imports: [CacheModule.register()],
       providers: [
         VideoService,
         {
@@ -173,6 +175,9 @@ describe('VideoService', () => {
         return { all: () => [] } as unknown as ArrayCursor
       })
       expect(await service.filterAll()).toEqual([])
+      // should cache
+      expect(await service.filterAll()).toEqual([])
+      expect(db.query).toHaveBeenCalledTimes(1)
     })
 
     it('should query with offset', async () => {
@@ -183,6 +188,9 @@ describe('VideoService', () => {
         return { all: () => [] } as unknown as ArrayCursor
       })
       expect(await service.filterAll({ offset: 200 })).toEqual([])
+      // should cache
+      expect(await service.filterAll({ offset: 200 })).toEqual([])
+      expect(db.query).toHaveBeenCalledTimes(1)
     })
 
     it('should query with limit', async () => {
@@ -193,6 +201,9 @@ describe('VideoService', () => {
         return { all: () => [] } as unknown as ArrayCursor
       })
       expect(await service.filterAll({ limit: 200 })).toEqual([])
+      // should cache
+      expect(await service.filterAll({ limit: 200 })).toEqual([])
+      expect(db.query).toHaveBeenCalledTimes(1)
     })
 
     it('should query with variantLanguageId', async () => {
@@ -207,6 +218,9 @@ describe('VideoService', () => {
         return { all: () => [] } as unknown as ArrayCursor
       })
       expect(await service.filterAll({ variantLanguageId: 'en' })).toEqual([])
+      // should cache
+      expect(await service.filterAll({ variantLanguageId: 'en' })).toEqual([])
+      expect(db.query).toHaveBeenCalledTimes(1)
     })
   })
 
@@ -234,10 +248,16 @@ describe('VideoService', () => {
 
     it('should return a video', async () => {
       expect(await service.getVideo('20615', '529')).toEqual(video)
+      // should cache
+      expect(await service.getVideo('20615', '529')).toEqual(video)
+      expect(db.query).toHaveBeenCalledTimes(1)
     })
 
     it('should return a video even without a langaugeId', async () => {
       expect(await service.getVideo('20615')).toEqual(video)
+      // should cache
+      expect(await service.getVideo('20615')).toEqual(video)
+      expect(db.query).toHaveBeenCalledTimes(1)
     })
   })
 
@@ -253,6 +273,9 @@ describe('VideoService', () => {
       })
 
       expect(await service.getVideoBySlug('jesus/english')).toEqual([])
+      // should cache
+      expect(await service.getVideoBySlug('jesus/english')).toEqual([])
+      expect(db.query).toHaveBeenCalledTimes(1)
     })
   })
 
@@ -265,6 +288,9 @@ describe('VideoService', () => {
         return { all: () => [] } as unknown as ArrayCursor
       })
       expect(await service.getVideosByIds(['20615', '20616'])).toEqual([])
+      // should cache
+      expect(await service.getVideosByIds(['20615', '20616'])).toEqual([])
+      expect(db.query).toHaveBeenCalledTimes(1)
     })
   })
 })

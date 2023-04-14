@@ -9,10 +9,14 @@ import {
   RadioQuestionSubmissionEventCreateInput
 } from '../../../__generated__/graphql'
 import { EventService } from '../event.service'
+import { VisitorService } from '../../visitor/visitor.service'
 
 @Resolver('RadioQuestionSubmissionEvent')
 export class RadioQuestionSubmissionEventResolver {
-  constructor(private readonly eventService: EventService) {}
+  constructor(
+    private readonly eventService: EventService,
+    private readonly visitorService: VisitorService
+  ) {}
 
   @Mutation()
   @UseGuards(GqlAuthGuard)
@@ -27,12 +31,19 @@ export class RadioQuestionSubmissionEventResolver {
       input.stepId
     )
 
-    return await this.eventService.save({
-      ...input,
-      __typename: 'RadioQuestionSubmissionEvent',
-      visitorId: visitor.id,
-      createdAt: new Date().toISOString(),
-      journeyId
-    })
+    const [radioSubmissionEvent] = await Promise.all([
+      this.eventService.save({
+        ...input,
+        __typename: 'RadioQuestionSubmissionEvent',
+        visitorId: visitor.id,
+        createdAt: new Date().toISOString(),
+        journeyId
+      }),
+      this.visitorService.update(visitor.id, {
+        lastRadioQuestion: input.label ?? undefined,
+        lastRadioOptionSubmission: input.value ?? undefined
+      })
+    ])
+    return radioSubmissionEvent
   }
 }

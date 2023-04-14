@@ -24,10 +24,17 @@ export interface VisitorRecord {
   teamId: string
   userId: string
   createdAt: string
+  lastStepViewedAt?: string
   userAgent?: string
   messagePlatform?: MessagePlatform
   name?: string
   email?: string
+  lastChatStartedAt?: string
+  lastChatPlatform?: MessagePlatform
+  lastTextResponse?: string
+  lastRadioQuestion?: string
+  lastRadioOptionSubmission?: string
+  lastLinkAction?: string
 }
 
 @Injectable()
@@ -95,12 +102,13 @@ export class VisitorService extends BaseService<VisitorRecord> {
       ).next()
 
       const id = uuidv4()
+      const createdAt = new Date().toISOString()
       visitor = await this.collection.save({
         _key: id,
         id,
         teamId: journey.teamId,
         userId,
-        createdAt: new Date().toISOString()
+        createdAt
       })
     }
 

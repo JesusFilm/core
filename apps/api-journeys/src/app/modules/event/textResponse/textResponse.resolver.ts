@@ -9,10 +9,14 @@ import {
   TextResponseSubmissionEventCreateInput
 } from '../../../__generated__/graphql'
 import { EventService } from '../event.service'
+import { VisitorService } from '../../visitor/visitor.service'
 
 @Resolver('TextResponseSubmissionEvent')
 export class TextResponseSubmissionEventResolver {
-  constructor(private readonly eventService: EventService) {}
+  constructor(
+    private readonly eventService: EventService,
+    private readonly visitorService: VisitorService
+  ) {}
 
   @Mutation()
   @UseGuards(GqlAuthGuard)
@@ -26,12 +30,18 @@ export class TextResponseSubmissionEventResolver {
       input.stepId
     )
 
-    return await this.eventService.save({
-      ...input,
-      __typename: 'TextResponseSubmissionEvent',
-      visitorId: visitor.id,
-      createdAt: new Date().toISOString(),
-      journeyId
-    })
+    const [textResponseSubmissionEvent] = await Promise.all([
+      this.eventService.save({
+        ...input,
+        __typename: 'TextResponseSubmissionEvent',
+        visitorId: visitor.id,
+        createdAt: new Date().toISOString(),
+        journeyId
+      }),
+      this.visitorService.update(visitor.id, {
+        lastTextResponse: input.value
+      })
+    ])
+    return textResponseSubmissionEvent
   }
 }

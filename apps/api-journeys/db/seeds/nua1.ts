@@ -115,14 +115,6 @@ export async function nua1(): Promise<void> {
       color: 'primary',
       align: 'left',
       parentOrder: 2
-    },
-    {
-      journeyId: journey._key,
-      __typename: 'TextResponseBlock',
-      parentBlockId: card1._key,
-      label: 'Your answer here',
-      submitLabel: 'Submit',
-      parentOrder: 3
     }
   ])
 
