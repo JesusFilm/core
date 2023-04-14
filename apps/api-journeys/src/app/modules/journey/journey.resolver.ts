@@ -324,7 +324,6 @@ export class JourneyResolver {
       duplicatePrimaryImageBlock = {
         ...original,
         _key: id,
-        id,
         journeyId: duplicateJourneyId,
         parentBlockId: duplicateJourneyId
       }

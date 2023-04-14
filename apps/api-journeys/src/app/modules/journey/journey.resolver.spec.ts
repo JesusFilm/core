@@ -959,7 +959,6 @@ describe('JourneyResolver', () => {
         {
           ...primaryImageBlock,
           _key: 'duplicatePrimaryImageBlock.id',
-          id: 'duplicatePrimaryImageBlock.id',
           journeyId: 'duplicateJourneyId',
           parentBlockId: 'duplicateJourneyId'
         }
