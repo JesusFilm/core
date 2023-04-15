@@ -1,4 +1,4 @@
-import { render, fireEvent, waitFor, getByTestId } from '@testing-library/react'
+import { render, fireEvent, waitFor } from '@testing-library/react'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { MockedProvider } from '@apollo/client/testing'
