@@ -23,6 +23,15 @@ resource "aws_rds_cluster" "default" {
   }
 }
 
+resource "aws_ssm_parameter" "parameter" {
+  name      = "/ecs/${var.service_config.name}/${var.env}/${each.key}"
+  type      = "SecureString"
+  value     = random_password.password.result
+  overwrite = true
+  tags = {
+    name = each.key
+  }
+}
 resource "doppler_secret" "rds_password" {
   name    = "PG_PASSWORD"
   config  = var.env == "prod" ? "prd" : "stg"
@@ -36,3 +45,4 @@ resource "doppler_secret" "rds_url" {
   project = var.doppler_project
   value   = "postgresql://${aws_rds_cluster.default.master_username}:${random_password.password.result}@${aws_rds_cluster.default.endpoint}:${aws_rds_cluster.default.port}/${var.env}?schema=public"
 }
+
