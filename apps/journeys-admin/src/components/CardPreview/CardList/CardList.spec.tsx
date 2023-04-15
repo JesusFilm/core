@@ -1,4 +1,4 @@
-import { render, fireEvent } from '@testing-library/react'
+import { render, fireEvent, getByTestId } from '@testing-library/react'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { MockedProvider } from '@apollo/client/testing'
 import { DragDropContext } from 'react-beautiful-dnd'
@@ -261,7 +261,7 @@ describe('CardList', () => {
 
   it('navigates on goals card click', async () => {
     const handleChange = jest.fn()
-    const { getAllByRole } = render(
+    const { getByTestId } = render(
       <MockedProvider>
         <JourneyProvider
           value={{
@@ -291,7 +291,7 @@ describe('CardList', () => {
         </JourneyProvider>
       </MockedProvider>
     )
-    fireEvent.click(getAllByRole('button')[0])
+    fireEvent.click(getByTestId('goals-navigation-card'))
     expect(handleChange).toHaveBeenCalledWith('goals')
   })
 
@@ -313,7 +313,7 @@ describe('CardList', () => {
   })
   it('navigates on social preview card click', async () => {
     const handleChange = jest.fn()
-    const { getAllByRole } = render(
+    const { getByTestId } = render(
       <MockedProvider>
         <JourneyProvider
           value={{
@@ -343,7 +343,7 @@ describe('CardList', () => {
         </JourneyProvider>
       </MockedProvider>
     )
-    fireEvent.click(getAllByRole('button')[1])
+    fireEvent.click(getByTestId('social-preview-navigation-card'))
     expect(handleChange).toHaveBeenCalledWith('social')
   })
 

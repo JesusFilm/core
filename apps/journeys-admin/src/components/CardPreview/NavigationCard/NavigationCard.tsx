@@ -1,6 +1,5 @@
 import { ReactElement } from 'react'
 import Card from '@mui/material/Card'
-import CardActionArea from '@mui/material/CardActionArea'
 import { ActiveJourneyEditContent } from '@core/journeys/ui/EditorProvider'
 import Typography from '@mui/material/Typography'
 import Box from '@mui/material/Box'

@@ -1,4 +1,4 @@
-import { render, fireEvent, waitFor } from '@testing-library/react'
+import { render, fireEvent, waitFor, getByTestId } from '@testing-library/react'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { MockedProvider } from '@apollo/client/testing'
@@ -234,7 +234,7 @@ describe('CardPreview', () => {
   it('should navigate to actions table when clicked', async () => {
     const onSelect = jest.fn()
 
-    const { getAllByRole } = render(
+    const { getByTestId } = render(
       <MockedProvider mocks={mocks}>
         <JourneyProvider
           value={{
@@ -255,7 +255,7 @@ describe('CardPreview', () => {
         </JourneyProvider>
       </MockedProvider>
     )
-    fireEvent.click(getAllByRole('button')[0])
+    fireEvent.click(getByTestId('goals-navigation-card'))
     await waitFor(() =>
       expect(onSelect).toHaveBeenCalledWith({ view: 'action' })
     )
@@ -264,7 +264,7 @@ describe('CardPreview', () => {
   it('should navigate to social preview when clicked', async () => {
     const onSelect = jest.fn()
 
-    const { getAllByRole } = render(
+    const { getByTestId } = render(
       <MockedProvider mocks={mocks}>
         <JourneyProvider
           value={{
@@ -285,7 +285,7 @@ describe('CardPreview', () => {
         </JourneyProvider>
       </MockedProvider>
     )
-    fireEvent.click(getAllByRole('button')[1])
+    fireEvent.click(getByTestId('social-preview-navigation-card'))
     await waitFor(() =>
       expect(onSelect).toHaveBeenCalledWith({ view: 'social' })
     )
