@@ -1,4 +1,4 @@
-import { render, fireEvent, getByTestId } from '@testing-library/react'
+import { render, fireEvent } from '@testing-library/react'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { MockedProvider } from '@apollo/client/testing'
 import { DragDropContext } from 'react-beautiful-dnd'
