@@ -17,8 +17,6 @@ module "seed" {
     "DATABASE_URL",
     "DATABASE_USER",
     "PG_DATABASE_URL",
-    "PRISMA_LOCATION",
-    "GOOGLE_APPLICATION_JSON"
   ]
   task_execution_role_arn = var.ecs_config.task_execution_role_arn
   env                     = var.env

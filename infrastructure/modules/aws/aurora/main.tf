@@ -24,12 +24,12 @@ resource "aws_rds_cluster" "default" {
 }
 
 resource "aws_ssm_parameter" "parameter" {
-  name      = "/ecs/${var.service_config.name}/${var.env}/${each.key}"
+  name      = "/ecs/${var.name}/${var.env}/PG_DATABASE_URL"
   type      = "SecureString"
-  value     = random_password.password.result
+  value     = "postgresql://${aws_rds_cluster.default.master_username}:${random_password.password.result}@${aws_rds_cluster.default.endpoint}:${aws_rds_cluster.default.port}/${var.env}?schema=public"
   overwrite = true
   tags = {
-    name = each.key
+    name = "PG_DATABASE_URL"
   }
 }
 resource "doppler_secret" "rds_password" {
