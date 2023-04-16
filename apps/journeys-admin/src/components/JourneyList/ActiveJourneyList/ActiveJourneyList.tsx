@@ -9,9 +9,9 @@ import { useSnackbar } from 'notistack'
 import { GetActiveJourneys_journeys as Journeys } from '../../../../__generated__/GetActiveJourneys'
 import { useActiveJourneys } from '../../../libs/useActiveJourneys'
 import { SortOrder } from '../JourneySort'
-import { AddJourneyButton } from '../AddJourneyButton'
 import { JourneyCard } from '../JourneyCard'
 import { DiscoveryJourneys } from '../../DiscoveryJourneys'
+import { AddJourneyButton } from './AddJourneyButton'
 import { getDuplicatedJourney } from './utils/getDuplicatedJourney'
 import { ActivePriorityList } from './ActivePriorityList'
 
@@ -189,7 +189,7 @@ export function ActiveJourneyList({
               <Typography variant="caption" align="center" gutterBottom>
                 Create a journey, then find it here.
               </Typography>
-              <AddJourneyButton variant="button" />
+              <AddJourneyButton />
             </Card>
           )}
         </>
