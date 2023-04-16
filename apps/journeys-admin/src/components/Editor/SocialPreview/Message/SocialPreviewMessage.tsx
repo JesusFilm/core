@@ -5,6 +5,7 @@ import Box from '@mui/system/Box'
 import Stack from '@mui/material/Stack'
 import { isEmpty } from 'lodash'
 import { JourneyFields } from '../../../../../__generated__/JourneyFields'
+import { useSocialPreview } from '../../SocialProvider'
 
 interface SocialPreviewMessageProps {
   journey?: JourneyFields
@@ -87,6 +88,7 @@ export function MessageBubble({
 export function SocialPreviewMessage({
   journey
 }: SocialPreviewMessageProps): ReactElement {
+  const { seoTitle, seoDescription, primaryImageBlock } = useSocialPreview()
   return (
     <Box
       width={256}
@@ -103,7 +105,7 @@ export function SocialPreviewMessage({
             <MessageBubble width={240} direction="right" pt={-0.5}>
               <Stack direction="column">
                 <Stack direction="row" gap={2}>
-                  {journey?.primaryImageBlock?.src == null ? (
+                  {primaryImageBlock?.src == null ? (
                     <Box
                       width={60}
                       height={60}
@@ -112,10 +114,10 @@ export function SocialPreviewMessage({
                       borderRadius="6px"
                     />
                   ) : (
-                    journey?.primaryImageBlock?.src != null && (
+                    primaryImageBlock?.src != null && (
                       <Image
-                        src={journey?.primaryImageBlock.src}
-                        alt={journey?.primaryImageBlock.alt}
+                        src={primaryImageBlock.src}
+                        alt={primaryImageBlock.alt}
                         objectFit="cover"
                         width="60"
                         height="60"
@@ -124,7 +126,7 @@ export function SocialPreviewMessage({
                     )
                   )}
                   <Stack width={164} flexGrow={1} justifyContent="center">
-                    {isEmpty(journey.seoTitle) ? (
+                    {isEmpty(seoTitle) ? (
                       <Box
                         width={156}
                         height={12}
@@ -139,10 +141,10 @@ export function SocialPreviewMessage({
                         fontSize={9}
                         lineHeight="12px"
                       >
-                        {journey.seoTitle}
+                        {seoTitle}
                       </Typography>
                     )}
-                    {isEmpty(journey.seoDescription) ? (
+                    {isEmpty(seoDescription) ? (
                       <Box
                         width={110}
                         height={12}
@@ -156,7 +158,7 @@ export function SocialPreviewMessage({
                         fontSize={7}
                         lineHeight="11px"
                       >
-                        {journey.seoDescription}
+                        {seoDescription}
                       </Typography>
                     )}
                   </Stack>

@@ -49,7 +49,8 @@ export function NavigationCard({
           p: 0,
           border: id === 'goals' ? 'none' : '3px solid transparent',
           backgroundColor:
-            id === 'goals' ? 'background.default' : 'background.paper'
+            id === 'goals' ? 'background.default' : 'background.paper',
+          '&:hover': { backgroundColor: id === 'goals' ? '#e3e3e3' : '#f8f8f8' }
         }}
       >
         {loading ? (

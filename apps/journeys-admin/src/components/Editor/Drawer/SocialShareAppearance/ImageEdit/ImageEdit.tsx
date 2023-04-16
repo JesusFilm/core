@@ -1,4 +1,4 @@
-import { ReactElement, useState } from 'react'
+import { ReactElement, useEffect, useRef, useState } from 'react'
 import { gql, useMutation } from '@apollo/client'
 import EditIcon from '@mui/icons-material/Edit'
 import ImageIcon from '@mui/icons-material/Image'
@@ -15,6 +15,7 @@ import { PrimaryImageBlockCreate } from '../../../../../../__generated__/Primary
 import { PrimaryImageBlockUpdate } from '../../../../../../__generated__/PrimaryImageBlockUpdate'
 import { JourneyPrimaryImageUpdate } from '../../../../../../__generated__/JourneyPrimaryImageUpdate'
 import { ImageLibrary } from '../../../ImageLibrary'
+import { useSocialPreview } from '../../../SocialProvider'
 
 export const BLOCK_DELETE_PRIMARY_IMAGE = gql`
   mutation BlockDeletePrimaryImage(
@@ -79,6 +80,16 @@ export function ImageEdit(): ReactElement {
   )
 
   const { journey } = useJourney()
+
+  const { primaryImageBlock, setPrimaryImageBlock } = useSocialPreview()
+  const once = useRef(false)
+  useEffect(() => {
+    if (!once.current && journey != null) {
+      setPrimaryImageBlock(journey?.primaryImageBlock)
+      once.current = true
+    }
+  }, [journey, setPrimaryImageBlock])
+
   const [open, setOpen] = useState(false)
 
   function handleOpen(): void {
@@ -132,6 +143,7 @@ export function ImageEdit(): ReactElement {
           }
         }
       })
+      setPrimaryImageBlock(data.imageBlockCreate)
     }
   }
 
@@ -149,12 +161,12 @@ export function ImageEdit(): ReactElement {
         }
       }
     })
+    setPrimaryImageBlock(imageBlock)
   }
 
   async function handleDelete(): Promise<void> {
-    if (journey == null || journey.primaryImageBlock == null) return
+    if (journey == null || primaryImageBlock == null) return
 
-    const primaryImageBlock = journey.primaryImageBlock
     const { data } = await blockDeletePrimaryImage({
       variables: {
         id: primaryImageBlock.id,
@@ -163,7 +175,7 @@ export function ImageEdit(): ReactElement {
       },
       update(cache, { data }) {
         blockDeleteUpdate(
-          primaryImageBlock,
+          primaryImageBlock as ImageBlock,
           data?.blockDelete,
           cache,
           journey.id
@@ -179,6 +191,7 @@ export function ImageEdit(): ReactElement {
           }
         }
       })
+      setPrimaryImageBlock(null)
     }
   }
 
@@ -214,11 +227,11 @@ export function ImageEdit(): ReactElement {
           data-testid="social-image-edit"
           onClick={handleOpen}
         >
-          {journey?.primaryImageBlock?.src != null ? (
+          {primaryImageBlock?.src != null ? (
             <Box
               component="img"
-              src={journey.primaryImageBlock.src}
-              alt={journey.primaryImageBlock.alt}
+              src={primaryImageBlock.src}
+              alt={primaryImageBlock.alt}
               sx={{
                 width: '100%',
                 height: '194px',
@@ -288,7 +301,7 @@ export function ImageEdit(): ReactElement {
         </Box>
       )}
       <ImageLibrary
-        selectedBlock={journey?.primaryImageBlock ?? null}
+        selectedBlock={(primaryImageBlock as ImageBlock) ?? null}
         open={open}
         onClose={handleClose}
         onChange={handleChange}

@@ -30,6 +30,7 @@ import { VideoWrapper } from '../../Editor/Canvas/VideoWrapper'
 import { CardWrapper } from '../../Editor/Canvas/CardWrapper'
 import { BlockFields_StepBlock as StepBlock } from '../../../../__generated__/BlockFields'
 import { NavigationCard } from '../NavigationCard'
+import { useSocialPreview } from '../../Editor/SocialProvider'
 
 interface CardListProps {
   steps: Array<TreeBlock<StepBlock>>
@@ -56,6 +57,7 @@ export function CardList({
 }: CardListProps): ReactElement {
   const { state } = useEditor()
   const { journey } = useJourney()
+  const { primaryImageBlock } = useSocialPreview()
   const AddCardSlide = (): ReactElement => (
     <Card
       id="CardPreviewAddButton"
@@ -136,7 +138,7 @@ export function CardList({
             ActiveJourneyEditContent.SocialPreview
           }
           header={
-            journey?.primaryImageBlock?.src == null ? (
+            primaryImageBlock?.src == null ? (
               <Box
                 bgcolor={(theme) => theme.palette.background.default}
                 borderRadius="4px"
@@ -150,8 +152,8 @@ export function CardList({
               </Box>
             ) : (
               <Image
-                src={journey?.primaryImageBlock?.src}
-                alt={journey?.primaryImageBlock?.src}
+                src={primaryImageBlock?.src}
+                alt={primaryImageBlock?.src}
                 width={72}
                 height={72}
                 objectFit="cover"

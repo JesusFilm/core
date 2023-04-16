@@ -10,6 +10,7 @@ import {
   ThemeMode
 } from '../../../../__generated__/globalTypes'
 import { JourneyFields as Journey } from '../../../../__generated__/JourneyFields'
+import { SocialProvider } from '../../Editor/SocialProvider'
 import { CardList } from '.'
 
 jest.mock('react-beautiful-dnd', () => ({
@@ -203,12 +204,14 @@ describe('CardList', () => {
     const handleClick = jest.fn()
     const { getByRole } = render(
       <MockedProvider>
-        <CardList
-          steps={steps}
-          selected={selected}
-          showAddButton
-          handleClick={handleClick}
-        />
+        <SocialProvider>
+          <CardList
+            steps={steps}
+            selected={selected}
+            showAddButton
+            handleClick={handleClick}
+          />
+        </SocialProvider>
       </MockedProvider>
     )
     expect(getByRole('button')).toBeInTheDocument()
@@ -362,23 +365,28 @@ describe('CardList', () => {
                 id: '529',
                 bcp47: 'en',
                 iso3: 'eng'
-              },
-              primaryImageBlock: {
-                src: 'https://images.unsplash.com/photo-1600133153574-25d98a99528c?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1600&q=80'
               }
             } as unknown as Journey,
             admin: true
           }}
         >
-          <DragDropContext>
-            <CardList
-              steps={steps}
-              selected={selected}
-              droppableProvided={droppableProvided}
-              handleChange={handleChange}
-              showNavigationCards
-            />
-          </DragDropContext>
+          <SocialProvider
+            initialValues={{
+              primaryImageBlock: {
+                src: 'https://images.unsplash.com/photo-1600133153574-25d98a99528c?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1600&q=80'
+              }
+            }}
+          >
+            <DragDropContext>
+              <CardList
+                steps={steps}
+                selected={selected}
+                droppableProvided={droppableProvided}
+                handleChange={handleChange}
+                showNavigationCards
+              />
+            </DragDropContext>
+          </SocialProvider>
         </JourneyProvider>
       </MockedProvider>
     )

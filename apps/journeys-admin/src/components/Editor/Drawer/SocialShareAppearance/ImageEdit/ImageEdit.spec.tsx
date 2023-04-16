@@ -7,6 +7,7 @@ import {
   GetJourney_journey_blocks_ImageBlock as ImageBlock
 } from '../../../../../../__generated__/GetJourney'
 import { createCloudflareUploadByUrlMock } from '../../../ImageBlockEditor/CustomImage/CustomUrl/data'
+import { SocialProvider } from '../../../SocialProvider'
 import {
   ImageEdit,
   BLOCK_DELETE_PRIMARY_IMAGE,
@@ -34,14 +35,16 @@ describe('ImageEdit', () => {
   it('should disaply placeholder icon when no image set', () => {
     const { getAllByTestId } = render(
       <MockedProvider>
-        <JourneyProvider
-          value={{
-            journey: { primaryImageBlockId: null } as unknown as Journey,
-            admin: true
-          }}
-        >
-          <ImageEdit />
-        </JourneyProvider>
+        <SocialProvider>
+          <JourneyProvider
+            value={{
+              journey: { primaryImageBlockId: null } as unknown as Journey,
+              admin: true
+            }}
+          >
+            <ImageEdit />
+          </JourneyProvider>
+        </SocialProvider>
       </MockedProvider>
     )
     expect(getAllByTestId('EditIcon')).toHaveLength(1)
@@ -50,19 +53,21 @@ describe('ImageEdit', () => {
   it('should display the primaryImage', () => {
     const { getByRole } = render(
       <MockedProvider>
-        <JourneyProvider
-          value={{
-            journey: {
-              primaryImageBlock: {
-                src: 'img.src',
-                alt: 'image.alt'
-              }
-            } as unknown as Journey,
-            admin: true
-          }}
-        >
-          <ImageEdit />
-        </JourneyProvider>
+        <SocialProvider>
+          <JourneyProvider
+            value={{
+              journey: {
+                primaryImageBlock: {
+                  src: 'img.src',
+                  alt: 'image.alt'
+                }
+              } as unknown as Journey,
+              admin: true
+            }}
+          >
+            <ImageEdit />
+          </JourneyProvider>
+        </SocialProvider>
       </MockedProvider>
     )
     expect(getByRole('img')).toBeInTheDocument()
@@ -139,14 +144,16 @@ describe('ImageEdit', () => {
           }
         ]}
       >
-        <JourneyProvider
-          value={{
-            journey: { id: 'journey.id' } as unknown as Journey,
-            admin: true
-          }}
-        >
-          <ImageEdit />
-        </JourneyProvider>
+        <SocialProvider>
+          <JourneyProvider
+            value={{
+              journey: { id: 'journey.id' } as unknown as Journey,
+              admin: true
+            }}
+          >
+            <ImageEdit />
+          </JourneyProvider>
+        </SocialProvider>
       </MockedProvider>
     )
     fireEvent.click(getByRole('button'))
@@ -229,17 +236,19 @@ describe('ImageEdit', () => {
           }
         ]}
       >
-        <JourneyProvider
-          value={{
-            journey: {
-              id: 'journey.id',
-              primaryImageBlock: { ...image }
-            } as unknown as Journey,
-            admin: true
-          }}
-        >
-          <ImageEdit />
-        </JourneyProvider>
+        <SocialProvider>
+          <JourneyProvider
+            value={{
+              journey: {
+                id: 'journey.id',
+                primaryImageBlock: { ...image }
+              } as unknown as Journey,
+              admin: true
+            }}
+          >
+            <ImageEdit />
+          </JourneyProvider>
+        </SocialProvider>
       </MockedProvider>
     )
     fireEvent.click(getByRole('button'))

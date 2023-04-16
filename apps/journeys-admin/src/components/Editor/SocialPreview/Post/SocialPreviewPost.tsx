@@ -14,6 +14,7 @@ import ChatBubble from '@mui/icons-material/ChatBubble'
 import Share from '@mui/icons-material/Share'
 import Card from '@mui/material/Card'
 import { JourneyFields } from '../../../../../__generated__/JourneyFields'
+import { useSocialPreview } from '../../SocialProvider'
 
 interface SocialPreviewPostProps {
   journey?: JourneyFields
@@ -22,6 +23,7 @@ interface SocialPreviewPostProps {
 export function SocialPreviewPost({
   journey
 }: SocialPreviewPostProps): ReactElement {
+  const { seoTitle, seoDescription, primaryImageBlock } = useSocialPreview()
   return (
     <Box
       width={256}
@@ -89,7 +91,7 @@ export function SocialPreviewPost({
                 flexDirection: 'column'
               }}
             >
-              {journey.primaryImageBlock?.src == null ? (
+              {primaryImageBlock?.src == null ? (
                 <Box
                   data-testid="social-preview-post-empty"
                   display="block"
@@ -100,8 +102,8 @@ export function SocialPreviewPost({
                 />
               ) : (
                 <Image
-                  src={journey.primaryImageBlock.src}
-                  alt={journey.primaryImageBlock.alt}
+                  src={primaryImageBlock.src}
+                  alt={primaryImageBlock.alt}
                   width={224}
                   height={120}
                   objectFit="cover"
@@ -122,7 +124,7 @@ export function SocialPreviewPost({
               >
                 YOUR.NEXTSTEP.IS
               </Typography>
-              {isEmpty(journey.seoTitle) ? (
+              {isEmpty(seoTitle) ? (
                 <Box
                   width={224}
                   height={12}
@@ -137,10 +139,10 @@ export function SocialPreviewPost({
                   lineHeight="12px"
                   color="#26262E"
                 >
-                  {journey.seoTitle}
+                  {seoTitle}
                 </Typography>
               )}
-              {isEmpty(journey.seoDescription) ? (
+              {isEmpty(seoDescription) ? (
                 <Box
                   width={158}
                   height={12}
@@ -154,7 +156,7 @@ export function SocialPreviewPost({
                   lineHeight="12px"
                   color="#6D6D7D"
                 >
-                  {journey.seoDescription}
+                  {seoDescription}
                 </Typography>
               )}
               <Stack
