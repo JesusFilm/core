@@ -1,0 +1,1 @@
+export { getColDefs } from './getColDefs'

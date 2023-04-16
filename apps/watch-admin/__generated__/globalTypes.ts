@@ -7,6 +7,13 @@
 // START Enums and Input Objects
 //==============================================================
 
+export enum ButtonAction {
+  LinkAction = "LinkAction",
+  NavigateAction = "NavigateAction",
+  NavigateToBlockAction = "NavigateToBlockAction",
+  NavigateToJourneyAction = "NavigateToJourneyAction",
+}
+
 export enum ButtonColor {
   error = "error",
   inherit = "inherit",
@@ -165,6 +172,8 @@ export interface ButtonClickEventCreateInput {
   stepId?: string | null;
   label?: string | null;
   value?: string | null;
+  action?: ButtonAction | null;
+  actionValue?: string | null;
 }
 
 export interface ChatOpenEventCreateInput {
