@@ -1,5 +1,5 @@
-import { ButtonFields_action } from '../__generated__/ButtonFields'
-import { MessagePlatform } from '../../../../__generated__/globalTypes'
+import { ButtonFields_action } from '../../__generated__/ButtonFields'
+import { MessagePlatform } from '../../../../../__generated__/globalTypes'
 import { findChatPlatform } from '.'
 
 describe('findChatPlatform', () => {
