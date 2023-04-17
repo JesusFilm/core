@@ -32,6 +32,7 @@ resource "aws_ssm_parameter" "parameter" {
     name = "PG_DATABASE_URL"
   }
 }
+
 resource "doppler_secret" "rds_password" {
   name    = "PG_PASSWORD"
   config  = var.env == "prod" ? "prd" : "stg"
@@ -45,4 +46,3 @@ resource "doppler_secret" "rds_url" {
   project = var.doppler_project
   value   = "postgresql://${aws_rds_cluster.default.master_username}:${random_password.password.result}@${aws_rds_cluster.default.endpoint}:${aws_rds_cluster.default.port}/${var.env}?schema=public"
 }
-
