@@ -27,7 +27,7 @@
       "outputs": ["{options.outputPath}"],
       "options": {
         "root": "apps/journeys",
-        "outputPath": "dist/apps/journeys"
+        "outputPath": "apps/journeys/dist/apps/journeys"
       },
       "configurations": {
         "production": {}

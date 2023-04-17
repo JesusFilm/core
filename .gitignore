@@ -57,4 +57,5 @@ terraform.tfstate
 terraform.tfstate.backup
 
 # vercel
-.vercel
+apps/**/.vercel
+apps/**/dist

@@ -149,6 +149,7 @@ jobs:
       - name: NPM Install
         run: npm install --silent
       - uses: mansagroup/nrwl-nx-action@v3
+        name: vercel preview deployment
         if: ${{ github.event_name == 'pull_request' }}
         env:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
@@ -157,6 +158,7 @@ jobs:
         with:
           targets: deploy
       - uses: mansagroup/nrwl-nx-action@v3
+        name: vercel production deployment
         if: ${{ github.ref == 'refs/heads/main' && github.event_name != 'pull_request' }}
         env:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
