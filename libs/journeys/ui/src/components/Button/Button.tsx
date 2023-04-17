@@ -17,7 +17,8 @@ import { Icon } from '../Icon'
 import { ButtonFields } from './__generated__/ButtonFields'
 import { ButtonClickEventCreate } from './__generated__/ButtonClickEventCreate'
 import { ChatOpenEventCreate } from './__generated__/ChatOpenEventCreate'
-import { findChatPlatform } from './findChatPlatform'
+import { findChatPlatform } from './utils/findChatPlatform'
+import { getActionLabel } from './utils/getActionLabel'
 
 export const BUTTON_CLICK_EVENT_CREATE = gql`
   mutation ButtonClickEventCreate($input: ButtonClickEventCreateInput!) {
@@ -76,6 +77,10 @@ export function Button({
     | undefined
 
   const chatPlatform = useMemo(() => findChatPlatform(action), [action])
+  const actionValue = useMemo(
+    () => getActionLabel(action, treeBlocks, t),
+    [action, treeBlocks, t]
+  )
 
   function createClickEvent(): void {
     if (!admin) {
@@ -87,7 +92,9 @@ export function Button({
             blockId,
             stepId: activeBlock?.id,
             label: heading,
-            value: label
+            value: label,
+            action: action?.__typename,
+            actionValue
           }
         }
       })

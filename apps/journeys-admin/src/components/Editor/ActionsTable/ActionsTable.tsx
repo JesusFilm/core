@@ -43,6 +43,7 @@ export function ActionsTable({ hasAction }: ActionsTableProps): ReactElement {
   if (actions.length > 1) hasAction?.(true)
 
   const goalLabel = (url: string): string => {
+    if (url === '') return ''
     const urlObject = new URL(url)
     const hostname = urlObject.hostname.replace('www.', '') // Remove 'www.' and top-level domain suffixes
     switch (hostname) {

@@ -15,7 +15,11 @@ import { handleAction } from '../../libs/action'
 import { JourneyProvider } from '../../libs/JourneyProvider'
 import { TreeBlock, activeBlockVar, treeBlocksVar } from '../../libs/block'
 import { BlockFields_StepBlock as StepBlock } from '../../libs/block/__generated__/BlockFields'
-import { ButtonFields_action, ButtonFields } from './__generated__/ButtonFields'
+import {
+  ButtonFields_action,
+  ButtonFields,
+  ButtonFields_action_LinkAction as LinkAction
+} from './__generated__/ButtonFields'
 import { BUTTON_CLICK_EVENT_CREATE, CHAT_OPEN_EVENT_CREATE } from './Button'
 import { Button } from '.'
 
@@ -120,11 +124,25 @@ describe('Button', () => {
     activeBlockVar(activeBlock)
     treeBlocksVar([activeBlock])
 
+    const action: LinkAction = {
+      __typename: 'LinkAction',
+      parentBlockId: 'button',
+      gtmEventName: null,
+      url: 'https://test.com/some-site'
+    }
+
+    const buttonWithAction = {
+      ...block,
+      action
+    }
+
     const result = jest.fn(() => ({
       data: {
         buttonClickEventCreate: {
           __typename: 'ButtonClickEvent',
-          id: 'uuiid'
+          id: 'uuid',
+          action: action.__typename,
+          actionValue: action.url
         }
       }
     }))
@@ -141,7 +159,9 @@ describe('Button', () => {
                   blockId: 'button',
                   stepId: 'step.id',
                   label: 'stepName',
-                  value: block.label
+                  value: buttonWithAction.label,
+                  action: action.__typename,
+                  actionValue: action.url
                 }
               }
             },
@@ -150,7 +170,7 @@ describe('Button', () => {
         ]}
       >
         <JourneyProvider>
-          <Button {...block} />
+          <Button {...buttonWithAction} />
         </JourneyProvider>
       </MockedProvider>
     )
@@ -197,7 +217,9 @@ describe('Button', () => {
                   blockId: 'button',
                   stepId: 'step.id',
                   label: 'Step {{number}}',
-                  value: block.label
+                  value: block.label,
+                  action: undefined,
+                  actionValue: undefined
                 }
               }
             },
@@ -205,7 +227,9 @@ describe('Button', () => {
               data: {
                 buttonClickEventCreate: {
                   __typename: 'ButtonClickEvent',
-                  id: 'uuiid'
+                  id: 'uuid',
+                  action: undefined,
+                  actionValue: undefined
                 }
               }
             }
@@ -252,7 +276,7 @@ describe('Button', () => {
       data: {
         chatOpenEventCreate: {
           __typename: 'ChatOpenEvent',
-          id: 'uuiid'
+          id: 'uuid'
         }
       }
     }))

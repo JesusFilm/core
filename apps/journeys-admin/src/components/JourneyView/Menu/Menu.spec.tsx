@@ -5,7 +5,8 @@ import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { NextRouter, useRouter } from 'next/router'
 import { defaultJourney, publishedJourney } from '../data'
 import { JourneyStatus, Role } from '../../../../__generated__/globalTypes'
-import { APPLY_TEMPLATE, GET_ROLE } from './Menu'
+import { DUPLICATE_JOURNEY } from '../../../libs/useJourneyDuplicate'
+import { GET_ROLE } from './Menu'
 import { Menu, JOURNEY_PUBLISH } from '.'
 
 Object.assign(navigator, {
@@ -252,7 +253,7 @@ describe('JourneyView/Menu', () => {
           mocks={[
             {
               request: {
-                query: APPLY_TEMPLATE,
+                query: DUPLICATE_JOURNEY,
                 variables: {
                   id: defaultJourney.id
                 }

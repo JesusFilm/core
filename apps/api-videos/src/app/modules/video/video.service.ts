@@ -108,16 +108,8 @@ export class VideoService extends BaseService {
     return result
   }
 
-  @KeyAsId()
-  public async getVideo<T>(
-    _key: string,
-    variantLanguageId?: string
-  ): Promise<T> {
-    const key = `getVideo-${_key}-${variantLanguageId ?? ''}`
-    const cache = await this.cacheManager.get<T>(key)
-    if (cache != null) return cache
-
-    const res = await this.db.query(aql`
+  private getVideoByIdAql(_key: string, variantLanguageId?: string): AqlQuery {
+    return aql`
     FOR item in ${this.collection}
       FILTER item._key == ${_key}
       LIMIT 1
@@ -129,7 +121,21 @@ export class VideoService extends BaseService {
           }, item.primaryLanguageId)
           LIMIT 1 RETURN CURRENT], 0)
       }
-    `)
+    `
+  }
+
+  @KeyAsId()
+  public async getVideo<T>(
+    _key: string,
+    variantLanguageId?: string
+  ): Promise<T> {
+    const key = `getVideo-${_key}-${variantLanguageId ?? ''}`
+    const cache = await this.cacheManager.get<T>(key)
+    if (cache != null) return cache
+
+    const res = await this.db.query(
+      this.getVideoByIdAql(_key, variantLanguageId)
+    )
     const result = await res.next()
     if (result != null) await this.cacheManager.set(key, result, 86400000)
     return result
@@ -162,24 +168,21 @@ export class VideoService extends BaseService {
     keys: string[],
     variantLanguageId?: string
   ): Promise<T[]> {
-    const key = `getVideosByIds-${variantLanguageId ?? ''}-${keys.join('-')}`
-    const cache = await this.cacheManager.get<T[]>(key)
-    if (cache != null) return cache
-
-    const res = await this.db.query(aql`
-    FOR item IN ${this.collection}
-      FILTER item._key IN ${keys}
-      RETURN {
-        ${aql.join(this.baseVideo)}
-        variant: NTH(item.variants[*
-          FILTER CURRENT.languageId == NOT_NULL(${
-            variantLanguageId ?? null
-          }, item.primaryLanguageId)
-          LIMIT 1 RETURN CURRENT], 0)
+    const result: T[] = []
+    for (let i = 0; i < keys.length; i++) {
+      const key = `getVideo-${keys[i]}-${variantLanguageId ?? ''}`
+      const cache = await this.cacheManager.get<T>(key)
+      if (cache != null) {
+        result.push(cache)
+        continue
       }
-    `)
-    const result = await res.all()
-    await this.cacheManager.set(key, result, 86400000)
+      const res = await this.db.query(
+        this.getVideoByIdAql(keys[i], variantLanguageId)
+      )
+      const next = await res.next()
+      await this.cacheManager.set(key, next, 86400000)
+      result.push(next)
+    }
     return result
   }
 }
