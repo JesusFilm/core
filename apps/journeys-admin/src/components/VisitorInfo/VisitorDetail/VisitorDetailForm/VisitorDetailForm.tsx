@@ -1,13 +1,10 @@
 import Box from '@mui/material/Box'
-import Card from '@mui/material/Card'
-import CardContent from '@mui/material/CardContent'
 import FormControl from '@mui/material/FormControl'
 import InputLabel from '@mui/material/InputLabel'
 import Select from '@mui/material/Select'
 import MenuItem from '@mui/material/MenuItem'
 import TextField from '@mui/material/TextField'
 import Stack from '@mui/material/Stack'
-import Container from '@mui/material/Container'
 import Typography from '@mui/material/Typography'
 import pick from 'lodash/pick'
 import { ReactElement } from 'react'
@@ -78,162 +75,148 @@ export function VisitorDetailForm({ id }: Props): ReactElement {
   }
 
   return (
-    <Card variant="outlined" sx={{ borderRadius: 4 }}>
-      <CardContent>
-        <Container maxWidth="xs">
-          {data?.visitor != null && (
-            <Formik
-              initialValues={pick(data.visitor, [
-                'messagePlatformId',
-                'messagePlatform',
-                'name',
-                'notes',
-                'status'
-              ])}
-              onSubmit={handleSubmit}
-              enableReinitialize
-            >
-              {({ values, errors, touched, handleChange, handleBlur }) => (
-                <Form>
-                  <Stack spacing={4}>
-                    <Stack spacing={4} direction="row" alignItems="center">
-                      <FormControl sx={{ width: 80 }}>
-                        <InputLabel id="status-label">{t('Status')}</InputLabel>
-                        <Select
-                          labelId="status-label"
-                          id="status"
-                          name="status"
-                          value={values.status ?? ''}
-                          label={t('Status')}
-                          onChange={handleChange}
-                          onBlur={handleBlur}
-                        >
-                          <MenuItem value="">⚪️</MenuItem>
-                          <MenuItem value={VisitorStatus.star}>⭐</MenuItem>
-                          <MenuItem value={VisitorStatus.prohibited}>
-                            🚫
-                          </MenuItem>
-                          <MenuItem value={VisitorStatus.checkMarkSymbol}>
-                            ✅
-                          </MenuItem>
-                          <MenuItem value={VisitorStatus.thumbsUp}>👍</MenuItem>
-                          <MenuItem value={VisitorStatus.thumbsDown}>
-                            👎
-                          </MenuItem>
-                          <MenuItem value={VisitorStatus.partyPopper}>
-                            🎉
-                          </MenuItem>
-                          <MenuItem value={VisitorStatus.warning}>⚠</MenuItem>
-                          <MenuItem value={VisitorStatus.robotFace}>
-                            🤖
-                          </MenuItem>
-                          <MenuItem value={VisitorStatus.redExclamationMark}>
-                            ❗
-                          </MenuItem>
-                          <MenuItem value={VisitorStatus.redQuestionMark}>
-                            ❓
-                          </MenuItem>
-                        </Select>
-                      </FormControl>
-                      {data?.visitor?.lastChatStartedAt != null && (
-                        <Box>
-                          <Typography variant="body2">
-                            {t('Last Chat')}
-                          </Typography>
-                          <Typography>
-                            {format(
-                              parseISO(data.visitor.lastChatStartedAt),
-                              'PPp'
-                            )}
-                          </Typography>
-                        </Box>
-                      )}
-                    </Stack>
-                    <Stack spacing={4} direction="row">
-                      <TextField
-                        id="messagePlatformId"
-                        name="messagePlatformId"
-                        variant="filled"
-                        label={
-                          values.messagePlatform != null &&
-                          values.messagePlatform !== ''
-                            ? messagePlatformToLabel(values.messagePlatform, t)
-                            : t('Contact')
-                        }
-                        fullWidth
-                        value={values.messagePlatformId ?? ''}
-                        error={
-                          touched.messagePlatformId === true &&
-                          Boolean(errors.messagePlatformId)
-                        }
-                        helperText={
-                          touched.messagePlatformId === true &&
-                          errors.messagePlatformId
-                        }
-                        onBlur={handleBlur}
-                        onChange={handleChange}
-                      />
-                      <FormControl sx={{ width: 200 }}>
-                        <InputLabel id="message-platform-label">
-                          {t('Platform')}
-                        </InputLabel>
-                        <Select
-                          labelId="message-platform-label"
-                          id="messagePlatform"
-                          name="messagePlatform"
-                          value={values.messagePlatform ?? ''}
-                          label={t('Platform')}
-                          onChange={handleChange}
-                          onBlur={handleBlur}
-                          sx={{
-                            '.MuiSelect-select': {
-                              height: 23
-                            }
-                          }}
-                        >
-                          <MenuItem value="">{t('None')}</MenuItem>
-                          {Object.values(MessagePlatform).map((value) => (
-                            <MenuItem key={value} value={value}>
-                              {messagePlatformToLabel(value, t)}
-                            </MenuItem>
-                          ))}
-                        </Select>
-                      </FormControl>
-                    </Stack>
-                    <TextField
-                      id="name"
-                      name="name"
-                      variant="filled"
-                      label={t('Name')}
-                      fullWidth
-                      value={values.name ?? ''}
-                      error={touched.name === true && Boolean(errors.name)}
-                      helperText={touched.name === true && errors.name}
-                      onBlur={handleBlur}
+    <Box sx={{ p: 4 }}>
+      {data?.visitor != null && (
+        <Formik
+          initialValues={pick(data.visitor, [
+            'messagePlatformId',
+            'messagePlatform',
+            'name',
+            'notes',
+            'status'
+          ])}
+          onSubmit={handleSubmit}
+          enableReinitialize
+        >
+          {({ values, errors, touched, handleChange, handleBlur }) => (
+            <Form>
+              <Stack spacing={4}>
+                <Stack spacing={4} direction="row" alignItems="center">
+                  <FormControl sx={{ width: 80 }}>
+                    <InputLabel id="status-label">{t('Status')}</InputLabel>
+                    <Select
+                      labelId="status-label"
+                      id="status"
+                      name="status"
+                      value={values.status ?? ''}
+                      label={t('Status')}
                       onChange={handleChange}
-                    />
-                    <TextField
-                      id="notes"
-                      name="notes"
-                      variant="filled"
-                      label={t('Notes')}
-                      fullWidth
-                      value={values.notes ?? ''}
-                      error={touched.notes === true && Boolean(errors.notes)}
-                      helperText={touched.notes === true && errors.notes}
                       onBlur={handleBlur}
+                    >
+                      <MenuItem value="">⚪️</MenuItem>
+                      <MenuItem value={VisitorStatus.star}>⭐</MenuItem>
+                      <MenuItem value={VisitorStatus.prohibited}>🚫</MenuItem>
+                      <MenuItem value={VisitorStatus.checkMarkSymbol}>
+                        ✅
+                      </MenuItem>
+                      <MenuItem value={VisitorStatus.thumbsUp}>👍</MenuItem>
+                      <MenuItem value={VisitorStatus.thumbsDown}>👎</MenuItem>
+                      <MenuItem value={VisitorStatus.partyPopper}>🎉</MenuItem>
+                      <MenuItem value={VisitorStatus.warning}>⚠</MenuItem>
+                      <MenuItem value={VisitorStatus.robotFace}>🤖</MenuItem>
+                      <MenuItem value={VisitorStatus.redExclamationMark}>
+                        ❗
+                      </MenuItem>
+                      <MenuItem value={VisitorStatus.redQuestionMark}>
+                        ❓
+                      </MenuItem>
+                    </Select>
+                  </FormControl>
+                  {data?.visitor?.lastChatStartedAt != null && (
+                    <Box>
+                      <Typography variant="body2">{t('Last Chat')}</Typography>
+                      <Typography>
+                        {format(
+                          parseISO(data.visitor.lastChatStartedAt),
+                          'PPp'
+                        )}
+                      </Typography>
+                    </Box>
+                  )}
+                </Stack>
+                <Stack spacing={4} direction="row">
+                  <TextField
+                    id="messagePlatformId"
+                    name="messagePlatformId"
+                    variant="filled"
+                    label={
+                      values.messagePlatform != null &&
+                      values.messagePlatform !== ''
+                        ? messagePlatformToLabel(values.messagePlatform, t)
+                        : t('Contact')
+                    }
+                    fullWidth
+                    value={values.messagePlatformId ?? ''}
+                    error={
+                      touched.messagePlatformId === true &&
+                      Boolean(errors.messagePlatformId)
+                    }
+                    helperText={
+                      touched.messagePlatformId === true &&
+                      errors.messagePlatformId
+                    }
+                    onBlur={handleBlur}
+                    onChange={handleChange}
+                  />
+                  <FormControl sx={{ width: 200 }}>
+                    <InputLabel id="message-platform-label">
+                      {t('Platform')}
+                    </InputLabel>
+                    <Select
+                      labelId="message-platform-label"
+                      id="messagePlatform"
+                      name="messagePlatform"
+                      value={values.messagePlatform ?? ''}
+                      label={t('Platform')}
                       onChange={handleChange}
-                      multiline
-                      minRows={2}
-                    />
-                  </Stack>
-                  <SubmitListener />
-                </Form>
-              )}
-            </Formik>
+                      onBlur={handleBlur}
+                      sx={{
+                        '.MuiSelect-select': {
+                          height: 23
+                        }
+                      }}
+                    >
+                      <MenuItem value="">{t('None')}</MenuItem>
+                      {Object.values(MessagePlatform).map((value) => (
+                        <MenuItem key={value} value={value}>
+                          {messagePlatformToLabel(value, t)}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+                </Stack>
+                <TextField
+                  id="name"
+                  name="name"
+                  variant="filled"
+                  label={t('Name')}
+                  fullWidth
+                  value={values.name ?? ''}
+                  error={touched.name === true && Boolean(errors.name)}
+                  helperText={touched.name === true && errors.name}
+                  onBlur={handleBlur}
+                  onChange={handleChange}
+                />
+                <TextField
+                  id="notes"
+                  name="notes"
+                  variant="filled"
+                  label={t('Notes')}
+                  fullWidth
+                  value={values.notes ?? ''}
+                  error={touched.notes === true && Boolean(errors.notes)}
+                  helperText={touched.notes === true && errors.notes}
+                  onBlur={handleBlur}
+                  onChange={handleChange}
+                  multiline
+                  minRows={2}
+                />
+              </Stack>
+              <SubmitListener />
+            </Form>
           )}
-        </Container>
-      </CardContent>
-    </Card>
+        </Formik>
+      )}
+    </Box>
   )
 }

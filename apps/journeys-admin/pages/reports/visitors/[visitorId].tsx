@@ -14,6 +14,7 @@ import { VisitorInfo } from '../../../src/components/VisitorInfo'
 import { PageWrapper } from '../../../src/components/NewPageWrapper'
 import i18nConfig from '../../../next-i18next.config'
 import { useTermsRedirect } from '../../../src/libs/useTermsRedirect/useTermsRedirect'
+import { VisitorDetailForm } from '../../../src/components/VisitorInfo/VisitorDetail/VisitorDetailForm'
 
 function SingleVisitorReportsPage(): ReactElement {
   const router = useRouter()
@@ -21,6 +22,8 @@ function SingleVisitorReportsPage(): ReactElement {
   const AuthUser = useAuthUser()
 
   useTermsRedirect()
+
+  const id = router.query.visitorId as string
 
   // TODO: give router to NavigationDrawer
 
@@ -31,8 +34,10 @@ function SingleVisitorReportsPage(): ReactElement {
         title={t('Visitor Info')}
         backHref="/reports/visitors"
         authUser={AuthUser}
+        sidePanelChildren={<VisitorDetailForm id={id} />}
+        sidePanelTitle="Users"
       >
-        <VisitorInfo id={router.query.visitorId as string} />
+        <VisitorInfo id={id} />
       </PageWrapper>
     </>
   )
