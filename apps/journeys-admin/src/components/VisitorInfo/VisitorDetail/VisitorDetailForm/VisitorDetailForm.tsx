@@ -74,6 +74,8 @@ export function VisitorDetailForm({ id }: Props): ReactElement {
     })
   }
 
+  // TODO: move some elements around according to design
+
   return (
     <Box sx={{ p: 4 }}>
       {data?.visitor != null && (
