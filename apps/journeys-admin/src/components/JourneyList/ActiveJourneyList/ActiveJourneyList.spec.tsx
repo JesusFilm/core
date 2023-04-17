@@ -62,7 +62,9 @@ describe('ActiveJourneyList', () => {
     expect(
       getByText('Create a journey, then find it here.')
     ).toBeInTheDocument()
-    expect(getByRole('button')).toBeInTheDocument()
+    expect(
+      getByRole('button', { name: 'Create a Journey' })
+    ).toBeInTheDocument()
   })
 
   it('should render loading skeleton', async () => {

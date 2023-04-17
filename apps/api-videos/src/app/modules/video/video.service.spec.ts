@@ -40,17 +40,6 @@ const DEFAULT_QUERY = aql`
       }
     `.query
 
-const VIDEO_CHILDREN_QUERY = aql`
-    FOR item IN undefined
-      FILTER item._key IN @value0
-      RETURN {
-        ${aql.join(baseVideo)}
-        variant: NTH(item.variants[*
-          FILTER CURRENT.languageId == NOT_NULL(@value1, item.primaryLanguageId)
-          LIMIT 1 RETURN CURRENT], 0)
-      }
-    `.query
-
 const GET_VIDEO_BY_SLUG_QUERY = aql`
     FOR item IN undefined
       FILTER @value0 IN item.variants[*].slug
@@ -62,6 +51,23 @@ const GET_VIDEO_BY_SLUG_QUERY = aql`
           LIMIT 1 RETURN CURRENT], 0)
       }
     `.query
+
+const video = {
+  id: '20615',
+  bcp47: 'zh',
+  name: [
+    {
+      value: '普通話',
+      primary: true,
+      videoId: '20615'
+    },
+    {
+      value: 'Chinese, Mandarin',
+      primary: false,
+      videoId: '529'
+    }
+  ]
+}
 
 describe('VideoService', () => {
   let service: VideoService,
@@ -225,23 +231,6 @@ describe('VideoService', () => {
   })
 
   describe('getVideo', () => {
-    const video = {
-      id: '20615',
-      bcp47: 'zh',
-      name: [
-        {
-          value: '普通話',
-          primary: true,
-          videoId: '20615'
-        },
-        {
-          value: 'Chinese, Mandarin',
-          primary: false,
-          videoId: '529'
-        }
-      ]
-    }
-
     beforeEach(() => {
       db.query.mockReturnValue(mockDbQueryResult(service.db, [video]))
     })
@@ -280,17 +269,22 @@ describe('VideoService', () => {
   })
 
   describe('children', () => {
+    beforeEach(() => {
+      db.query.mockReturnValueOnce(mockDbQueryResult(service.db, [video]))
+      db.query.mockReturnValueOnce(mockDbQueryResult(service.db, [video]))
+    })
     it('should query', async () => {
-      db.query.mockImplementationOnce(async (q) => {
-        const { query, bindVars } = q as unknown as AqlQuery
-        expect(query).toEqual(VIDEO_CHILDREN_QUERY)
-        expect(bindVars).toEqual({ value0: ['20615', '20616'], value1: null })
-        return { all: () => [] } as unknown as ArrayCursor
-      })
-      expect(await service.getVideosByIds(['20615', '20616'])).toEqual([])
+      expect(await service.getVideosByIds(['20615', '20616'])).toEqual([
+        video,
+        video
+      ])
+      expect(db.query).toHaveBeenCalledTimes(2)
       // should cache
-      expect(await service.getVideosByIds(['20615', '20616'])).toEqual([])
-      expect(db.query).toHaveBeenCalledTimes(1)
+      expect(await service.getVideosByIds(['20615', '20616'])).toEqual([
+        video,
+        video
+      ])
+      expect(db.query).toHaveBeenCalledTimes(2)
     })
   })
 })
