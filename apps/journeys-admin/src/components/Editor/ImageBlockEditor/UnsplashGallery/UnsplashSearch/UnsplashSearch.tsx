@@ -27,7 +27,8 @@ export function UnsplashSearch({
             name="src"
             variant="filled"
             hiddenLabel
-            value={value ?? 'Search by keyword'}
+            placeholder="Search by keyword"
+            value={values.src}
             onChange={handleChange}
             fullWidth
             inputProps={{
