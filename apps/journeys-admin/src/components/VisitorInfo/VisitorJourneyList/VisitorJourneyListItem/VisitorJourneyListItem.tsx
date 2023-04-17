@@ -32,6 +32,8 @@ export function VisitorJourneyListItem({
     })
   }
 
+  // TODO: open full journey events
+
   return (
     <Card
       variant="outlined"
