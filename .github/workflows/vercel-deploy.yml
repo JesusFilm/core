@@ -21,7 +21,7 @@ jobs:
       - uses: nrwl/nx-set-shas@v3
       - id: set-matrix
         run: |
-          AFFECTED=$(nx affected:apps --plain)
+          AFFECTED=$(npx nx affected:apps --plain)
           if [ -z "$var" ]
             echo "::set-output name=matrix::[\"${AFFECTED// /\",\"}\"]
           fi
