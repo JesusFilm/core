@@ -20,9 +20,10 @@ jobs:
       - run: npm ci
       - uses: nrwl/nx-set-shas@v3
       - id: set-matrix
+        name: set matrix app to affected array
         run: |
           AFFECTED=$(npx nx affected:apps --plain)
-          if [ -z "$AFFECTED" ]
+          if [ -z "${AFFECTED}" ]; then
             echo "::set-output name=matrix::[\"${AFFECTED// /\",\"}\"]"
           fi
   deploy:
