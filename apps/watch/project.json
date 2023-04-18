@@ -8,10 +8,30 @@
       "outputs": ["{options.outputPath}"],
       "options": {
         "root": "apps/watch",
-        "outputPath": "dist/apps/watch"
+        "outputPath": "apps/watch/dist/apps/watch"
       },
       "configurations": {
         "production": {}
+      }
+    },
+    "deploy": {
+      "executor": "@nrwl/workspace:run-commands",
+      "options": {
+        "commands": [
+          "VERCEL_PROJECT_ID=$WATCH_VERCEL_PROJECT_ID npx vercel pull apps/watch --environment=preview --token=$VERCEL_TOKEN",
+          "npx vercel build --cwd apps/watch",
+          "VERCEL_PROJECT_ID=$WATCH_VERCEL_PROJECT_ID npx vercel deploy apps/watch --prebuilt --token=$VERCEL_TOKEN > apps/watch/.vercel/url.txt"
+        ],
+        "parallel": false
+      },
+      "configurations": {
+        "production": {
+          "commands": [
+            "VERCEL_PROJECT_ID=$WATCH_VERCEL_PROJECT_ID npx vercel pull apps/watch --environment=production --token=$VERCEL_TOKEN",
+            "npx vercel build --cwd apps/watch",
+            "VERCEL_PROJECT_ID=$WATCH_VERCEL_PROJECT_ID npx vercel deploy apps/watch --prebuilt --prod --token=$VERCEL_TOKEN"
+          ]
+        }
       }
     },
     "serve": {

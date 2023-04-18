@@ -27,10 +27,30 @@
       "outputs": ["{options.outputPath}"],
       "options": {
         "root": "apps/journeys-admin",
-        "outputPath": "dist/apps/journeys-admin"
+        "outputPath": "apps/journeys-admin/dist/apps/journeys-admin"
       },
       "configurations": {
         "production": {}
+      }
+    },
+    "deploy": {
+      "executor": "@nrwl/workspace:run-commands",
+      "options": {
+        "commands": [
+          "VERCEL_PROJECT_ID=$JOURNEYS_ADMIN_VERCEL_PROJECT_ID npx vercel pull apps/journeys-admin --environment=preview --token=$VERCEL_TOKEN",
+          "npx vercel build --cwd apps/journeys-admin",
+          "VERCEL_PROJECT_ID=$JOURNEYS_ADMIN_VERCEL_PROJECT_ID npx vercel deploy apps/journeys-admin --prebuilt --token=$VERCEL_TOKEN > apps/journeys-admin/.vercel/url.txt"
+        ],
+        "parallel": false
+      },
+      "configurations": {
+        "production": {
+          "commands": [
+            "VERCEL_PROJECT_ID=$JOURNEYS_ADMIN_VERCEL_PROJECT_ID npx vercel pull apps/journeys-admin --environment=production --token=$VERCEL_TOKEN",
+            "npx vercel build --cwd apps/journeys-admin",
+            "VERCEL_PROJECT_ID=$JOURNEYS_ADMIN_VERCEL_PROJECT_ID npx vercel deploy apps/journeys-admin --prebuilt --prod --token=$VERCEL_TOKEN"
+          ]
+        }
       }
     },
     "serve": {
