@@ -17,6 +17,13 @@ jobs:
         with:
           node-version: 16
           cache: 'npm'
+      - name: Cache Node Modules
+        id: cache-node-modules
+        uses: actions/cache@v3
+        with:
+          path: node_modules
+          key: node-modules-${{ hashFiles('package-lock.json') }}
+          restore-keys: node-modules-
       - run: npm ci
       - uses: nrwl/nx-set-shas@v3
       - id: set-matrix
@@ -42,7 +49,15 @@ jobs:
         with:
           node-version: 16
           cache: 'npm'
-      - run: npm ci
+      - name: Cache Node Modules
+        id: cache-node-modules
+        uses: actions/cache@v3
+        with:
+          path: node_modules
+          key: node-modules-${{ hashFiles('package-lock.json') }}
+          restore-keys: node-modules-
+      - name: NPM Install
+        run: npm install --silent
       - uses: nrwl/nx-set-shas@v3
       - name: vercel preview deployment
         if: ${{ github.event_name == 'pull_request' }}
