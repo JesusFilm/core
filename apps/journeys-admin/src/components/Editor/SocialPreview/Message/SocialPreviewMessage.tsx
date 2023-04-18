@@ -45,7 +45,7 @@ export function MessageBubble({
       position="relative"
       width={width}
       height={height}
-      bgcolor={(theme) => theme.palette.background.paper}
+      bgcolor="background.paper"
       border="0.5px solid #DEDFE0"
       borderRadius={direction === 'left' ? '8px 8px 8px 0' : '8px 8px 0 8px'}
       mx={5}
@@ -53,21 +53,43 @@ export function MessageBubble({
       px={2}
       pt={2}
       pb={1}
+      sx={{
+        '&:before': {
+          content: '""',
+          width: 0,
+          height: 0,
+          borderRight: `12px solid ${
+            direction === 'left' ? 'transparent' : 'background.paper'
+          }`,
+          borderLeft: `12px solid ${
+            direction === 'right' ? 'transparent' : 'background.paper'
+          }`
+        },
+        '&:after': {
+          content: '""',
+          width: 0,
+          height: 0,
+          borderRight: `13px solid ${
+            direction === 'left' ? 'transparent' : 'background.paper'
+          }`,
+          borderLeft: `13px solid ${
+            direction === 'right' ? 'transparent' : 'background.paper'
+          }`
+        }
+      }}
     >
-      <Box
+      {/* <Box
         position="absolute"
         top={{ md: top(-0.25), sm: top() }}
         left={left(-0.5)}
         right={right(-0.5)}
-        width={0}
-        height={0}
+        
         borderTop={(theme) => `13px solid #DEDFE0`}
-        borderRight={direction === 'left' ? '13px solid transparent' : ''}
-        borderLeft={direction === 'right' ? '13px solid transparent' : ''}
+        
         mb={2}
         zIndex={1}
-      />
-      <Box
+      /> */}
+      {/* <Box
         position="absolute"
         left={left()}
         right={right()}
@@ -80,7 +102,7 @@ export function MessageBubble({
         borderRight={direction === 'left' ? '12px solid transparent' : ''}
         borderLeft={direction === 'right' ? '12px solid transparent' : ''}
         zIndex={2}
-      />
+      /> */}
       {children}
     </Box>
   )
