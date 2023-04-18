@@ -109,7 +109,6 @@ export function NavigationDrawer({
   const [profileAnchorEl, setProfileAnchorEl] = useState(null)
 
   const selectedPage = router?.pathname?.split('/')[1]
-  console.log(typeof selectedPage)
 
   const { templates } = useFlags()
 
