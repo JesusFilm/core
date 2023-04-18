@@ -37,6 +37,7 @@ export function YouTubeDetails({
   const videoRef = useRef<HTMLVideoElement>(null)
   const playerRef = useRef<videojs.Player>()
   const [playing, setPlaying] = useState(false)
+  const [isExpanded, setIsExpanded] = useState(false)
   const { data, error } = useSWR<YoutubeVideosData['items'][number]>(
     () => (open ? id : null),
     fetcher
@@ -130,20 +131,36 @@ export function YouTubeDetails({
             )}
           </Box>
           <Box>
-            <Typography variant="subtitle1">
+            <Typography variant="subtitle1" gutterBottom>
               {data?.snippet.localized.title}
             </Typography>
-            <Typography variant="caption" sx={{ whiteSpace: 'pre-wrap' }}>
-              {data?.snippet.localized.description}
-            </Typography>
+            <Box sx={{ position: 'relative' }}>
+              <Typography
+                variant="caption"
+                sx={{
+                  display: '-webkit-box',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  WebkitLineClamp: isExpanded ? '0' : '3',
+                  WebkitBoxOrient: 'vertical',
+                  whiteSpace: isExpanded ? 'pre-wrap' : 'unset'
+                }}
+              >
+                {data?.snippet.localized.description}
+              </Typography>
+              <Button
+                variant="text"
+                size="small"
+                sx={{ position: 'absolute' }}
+                onClick={() => setIsExpanded(!isExpanded)}
+              >
+                {isExpanded ? 'Less' : 'More'}
+              </Button>
+            </Box>
           </Box>
         </>
       )}
-      <Stack
-        direction="row"
-        spacing={2}
-        sx={{ justifyContent: 'space-between' }}
-      >
+      <Stack direction="row" spacing={2} sx={{ justifyContent: 'end' }}>
         <Button
           variant="contained"
           startIcon={<Check />}
