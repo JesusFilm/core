@@ -128,6 +128,8 @@ jobs:
           targets: fetch-secrets,build
   deploy:
     runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
     steps:
       - uses: actions/checkout@v3
         with:
@@ -167,6 +169,12 @@ jobs:
         with:
           targets: deploy
           args: --prod
+      - name: Generate GitHub deploy preview comment
+        run: ./tools/scripts/generate-deploy-preview-comment.sh
+      - uses: mshick/add-pr-comment@v2
+        name: Add deploy preview comment
+        with:
+          message-path: .github/deploy_preview_comment.md
   test:
     runs-on: ubuntu-latest
     services:
