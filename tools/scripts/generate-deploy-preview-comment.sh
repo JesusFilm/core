@@ -7,7 +7,7 @@
 function generate_row_for_project() {
     if [ -f "$2" ]; then
         echo "deployment-exists=true" >>$GITHUB_OUTPUT
-        echo "deployment-url=$2" >>$GITHUB_OUTPUT
+        echo "deployment-url=$(cat $2)" >>$GITHUB_OUTPUT
         echo "| **$1** | ✅ Ready | [Visit Preview]($(cat $2)) | $(date -u) |" >>./.github/deploy_preview_comment.md
     else
         echo "deployment-exists=false" >>$GITHUB_OUTPUT
