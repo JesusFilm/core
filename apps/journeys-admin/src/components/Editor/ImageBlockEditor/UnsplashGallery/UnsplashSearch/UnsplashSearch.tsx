@@ -16,11 +16,14 @@ export function UnsplashSearch({
   return (
     <Formik
       initialValues={{
-        src: undefined
+        src: value
       }}
-      onSubmit={async (e) => handleSubmit(e.src)}
+      onSubmit={async (e) => {
+        handleSubmit(e.src)
+      }}
+      enableReinitialize
     >
-      {({ values, handleChange }) => (
+      {({ values, handleBlur, handleChange }) => (
         <Form>
           <TextField
             id="src"
@@ -29,6 +32,7 @@ export function UnsplashSearch({
             hiddenLabel
             placeholder="Search by keyword"
             value={values.src}
+            onBlur={handleBlur}
             onChange={handleChange}
             fullWidth
             inputProps={{
