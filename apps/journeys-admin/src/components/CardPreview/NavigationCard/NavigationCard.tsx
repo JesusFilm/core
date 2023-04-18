@@ -31,7 +31,8 @@ export function NavigationCard({
       height={150}
       width={100}
       borderRadius={2}
-      p={1.5}
+      py={1.5}
+      px={1.25}
       mt={-0.5}
       sx={{
         outline: (theme) =>
@@ -43,11 +44,11 @@ export function NavigationCard({
       <Card
         variant="outlined"
         sx={{
-          width: 87,
-          height: 132,
+          width: 90,
+          height: 135,
           m: 0,
           p: 0,
-          border: id === 'goals' ? 'none' : '3px solid transparent',
+          border: id === 'goals' ? 'none' : '1px solid grey.300',
           backgroundColor:
             id === 'goals' ? 'background.default' : 'background.paper',
           '&:hover': { backgroundColor: id === 'goals' ? '#e3e3e3' : '#f8f8f8' }
