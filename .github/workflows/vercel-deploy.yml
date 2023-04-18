@@ -30,7 +30,7 @@ jobs:
       - id: set-matrix
         name: set matrix app to affected array
         run: |
-          AFFECTED=$(npx nx affected:apps --plain)
+          AFFECTED=$(echo "$(nx affected:apps --plain)" | sed -e 's/api-\w* *//g')
           if [ -n "${AFFECTED}" ]; then
             echo "matrix=[\"${AFFECTED// /\",\"}\"]" >> $GITHUB_OUTPUT
           fi
