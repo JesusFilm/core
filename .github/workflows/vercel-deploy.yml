@@ -30,9 +30,9 @@ jobs:
       - id: set-matrix
         name: set matrix app to affected array
         run: |
-          AFFECTED=$(npx nx affected:apps --plain)
+          AFFECTED=$(npx nx affected:apps --plain --exclude=api-*)
           if [ -n "${AFFECTED}" ]; then
-            echo "::set-output name=matrix::[\"${AFFECTED// /\",\"}\"]"
+            echo "matrix=[\"${AFFECTED// /\",\"}\"]" >> $GITHUB_OUTPUT
           fi
   deploy:
     needs: affected
