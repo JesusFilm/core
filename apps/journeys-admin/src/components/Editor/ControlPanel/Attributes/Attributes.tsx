@@ -97,19 +97,22 @@ interface AttributesProps {
 export function Attributes({ selected, step }: AttributesProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const {
-    state: { activeTab },
+    state: { activeTab, journeyEditContentComponent },
     dispatch
   } = useEditor()
 
   useEffect(() => {
-    if (activeTab === ActiveTab.Cards) {
+    if (
+      activeTab === ActiveTab.Journey &&
+      journeyEditContentComponent !== 'action'
+    ) {
       dispatch({
         type: 'SetDrawerPropsAction',
         title: 'Social Share Appearance',
         children: <SocialShareAppearance />
       })
     }
-  }, [activeTab, dispatch])
+  }, [activeTab, dispatch, journeyEditContentComponent])
 
   // Map typename to labels when we have translation keys
   const blockLabel =

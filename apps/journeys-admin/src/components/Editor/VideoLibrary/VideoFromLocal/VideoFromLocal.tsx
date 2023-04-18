@@ -4,7 +4,8 @@ import Typography from '@mui/material/Typography'
 import { gql, useQuery } from '@apollo/client'
 import {
   VideoBlockSource,
-  VideoBlockUpdateInput
+  VideoBlockUpdateInput,
+  VideoLabel
 } from '../../../../../__generated__/globalTypes'
 import { VideoSearch } from '../VideoSearch'
 import { VideoList } from '../VideoList'
@@ -48,7 +49,13 @@ export function VideoFromLocal({
       limit: 5,
       where: {
         availableVariantLanguageIds: ['529'],
-        title: searchQuery === '' ? null : searchQuery
+        title: searchQuery === '' ? null : searchQuery,
+        labels: [
+          VideoLabel.episode,
+          VideoLabel.featureFilm,
+          VideoLabel.segment,
+          VideoLabel.shortFilm
+        ]
       }
     },
     onCompleted: (data) => {

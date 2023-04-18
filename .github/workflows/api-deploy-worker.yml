@@ -71,6 +71,19 @@ jobs:
         run: echo "apps=$(nx affected:apps --plain --base=HEAD~1 --head=HEAD)" >> $GITHUB_OUTPUT
         id: affected-apps
 
+      - name: Has Prisma
+        id: has_prisma
+        uses: andstor/file-existence-action@v2
+        with:
+          files: 'apps/${{inputs.name}}/db/schema.prisma'
+
+      - name: Prisma Migrate
+        if: steps.has_prisma.outputs.files_exists == 'true' && contains(steps.affected-apps.outputs.apps, inputs.name)
+        uses: mansagroup/nrwl-nx-action@v3
+        with:
+          targets: prisma-generate
+          projects: ${{ inputs.name }}
+
       - name: Build ${{ inputs.name }}
         if: contains(steps.affected-apps.outputs.apps, inputs.name)
         uses: mansagroup/nrwl-nx-action@v3
