@@ -56,8 +56,5 @@
     ]
   },
   "typescript.preferences.importModuleSpecifier": "project-relative",
-  "javascript.preferences.importModuleSpecifier": "project-relative",
-  "[shellscript]": {
-    "editor.defaultFormatter": "foxundermoon.shell-format"
-  }
+  "javascript.preferences.importModuleSpecifier": "project-relative"
 }
