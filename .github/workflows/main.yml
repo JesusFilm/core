@@ -51,7 +51,7 @@ jobs:
         with:
           targets: codegen
           all: true
-      - name: lint, type-check, extract-translation, subgraph-check
+      - name: lint, type-check, extract-translations, subgraph-check
         uses: mansagroup/nrwl-nx-action@v3
         with:
           targets: lint,type-check,extract-translations,subgraph-check
