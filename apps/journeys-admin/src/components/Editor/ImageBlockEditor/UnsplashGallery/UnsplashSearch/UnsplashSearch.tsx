@@ -23,7 +23,7 @@ export function UnsplashSearch({
       }}
       enableReinitialize
     >
-      {({ values, handleBlur, handleChange }) => (
+      {({ values, handleChange }) => (
         <Form>
           <TextField
             id="src"
@@ -32,7 +32,6 @@ export function UnsplashSearch({
             hiddenLabel
             placeholder="Search by keyword"
             value={values.src}
-            onBlur={handleBlur}
             onChange={handleChange}
             fullWidth
             inputProps={{
