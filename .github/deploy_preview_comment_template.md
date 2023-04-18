@@ -1,4 +1,4 @@
-** The latest updates on your projects **.
+**The latest updates on your projects**.
 
 | Name | Status | Preview |
 | :--- | :----- | :------ |
