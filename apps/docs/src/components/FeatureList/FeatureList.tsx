@@ -1,11 +1,11 @@
-import React from 'react'
+import React, { ReactElement } from 'react'
 import clsx from 'clsx'
 import styles from './FeatureList.module.css'
 
-type Item = {
+interface Item {
   title: string
   image?: string
-  description: JSX.Element
+  description: ReactElement
 }
 
 const features: Item[] = [
@@ -38,7 +38,7 @@ const features: Item[] = [
   }
 ]
 
-function Feature({ title, image, description }: Item) {
+function Feature({ title, image, description }: Item): ReactElement {
   return (
     <div className={clsx('col col--4')}>
       {image != null && (
@@ -54,7 +54,7 @@ function Feature({ title, image, description }: Item) {
   )
 }
 
-export function FeatureList(): JSX.Element {
+export function FeatureList(): ReactElement {
   return (
     <section className={styles.featureList}>
       <div className="container">
