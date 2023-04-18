@@ -212,7 +212,7 @@
     "eslint-plugin-n": "^15.6.1",
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-promise": "6.1.1",
-    "eslint-plugin-react": "^7.29.3",
+    "eslint-plugin-react": "7.29.3",
     "eslint-plugin-react-hooks": "4.3.0",
     "eslint-plugin-storybook": "^0.5.7",
     "husky": "^7.0.4",
