@@ -5,6 +5,7 @@
     "api-journeys": "apps/api-journeys",
     "api-languages": "apps/api-languages",
     "api-media": "apps/api-media",
+    "api-tags": "apps/api-tags",
     "api-users": "apps/api-users",
     "api-videos": "apps/api-videos",
     "docs": "apps/docs",

@@ -554,6 +554,7 @@ enum join__Graph {
   JOURNEYS @join__graph(name: "journeys", url: "http://127.0.0.1:4001/graphql")
   LANGUAGES @join__graph(name: "languages", url: "http://127.0.0.1:4003/graphql")
   MEDIA @join__graph(name: "media", url: "http://127.0.0.1:4005/graphql")
+  TAGS @join__graph(name: "tags", url: "http://127.0.0.1:4006/graphql")
   USERS @join__graph(name: "users", url: "http://127.0.0.1:4002/graphql")
   VIDEOS @join__graph(name: "videos", url: "http://127.0.0.1:4004/graphql")
 }
@@ -705,6 +706,7 @@ type Language
   @join__type(graph: JOURNEYS, key: "id")
   @join__type(graph: LANGUAGES, key: "id")
   @join__type(graph: MEDIA, key: "id")
+  @join__type(graph: TAGS, key: "id")
   @join__type(graph: USERS, key: "id")
   @join__type(graph: VIDEOS, key: "id")
 {
@@ -976,6 +978,7 @@ type Query
   @join__type(graph: JOURNEYS)
   @join__type(graph: LANGUAGES)
   @join__type(graph: MEDIA)
+  @join__type(graph: TAGS)
   @join__type(graph: USERS)
   @join__type(graph: VIDEOS)
 {
@@ -1009,6 +1012,7 @@ type Query
   getMyCloudflareImages: [CloudflareImage] @join__field(graph: MEDIA)
   listUnsplashCollectionPhotos(collectionId: String!, page: Int, perPage: Int, orientation: UnsplashPhotoOrientation): [UnsplashPhoto!]! @join__field(graph: MEDIA)
   searchUnsplashPhotos(query: String!, page: Int, perPage: Int, orderBy: UnsplashOrderBy, collections: [String], contentFilter: UnsplashContentFilter, color: UnsplashColor, orientation: UnsplashPhotoOrientation): UnsplashQueryResponse! @join__field(graph: MEDIA)
+  tags: [Tag!]! @join__field(graph: TAGS)
   me: User @join__field(graph: USERS)
   videos(where: VideosFilter, offset: Int, limit: Int): [Video!]! @join__field(graph: VIDEOS)
   video(id: ID!, idType: IdType): Video @join__field(graph: VIDEOS)
@@ -1290,6 +1294,14 @@ input StepViewEventCreateInput
   value: String
 }
 
+type Tag
+  @join__type(graph: TAGS, key: "id")
+{
+  id: ID!
+  name: [Translation!]!
+  parentId: ID
+}
+
 type TextResponseBlock implements Block
   @join__implements(graph: JOURNEYS, interface: "Block")
   @join__type(graph: JOURNEYS)
@@ -1382,6 +1394,7 @@ type Translation
   @join__type(graph: JOURNEYS)
   @join__type(graph: LANGUAGES)
   @join__type(graph: MEDIA)
+  @join__type(graph: TAGS)
   @join__type(graph: USERS)
   @join__type(graph: VIDEOS)
 {

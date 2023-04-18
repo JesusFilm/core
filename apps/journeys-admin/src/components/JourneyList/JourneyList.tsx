@@ -9,7 +9,7 @@ import { GetJourneys_journeys as Journey } from '../../../__generated__/GetJourn
 import { MultipleSummaryReport } from '../MultipleSummaryReport'
 import { StatusTabPanel } from '../StatusTabPanel'
 import { ContactSupport } from '../ContactSupport'
-import { AddJourneyButton } from './AddJourneyButton'
+import { AddJourneyFab } from './AddJourneyFab'
 import { ActiveJourneyList } from './ActiveJourneyList'
 import { ArchivedJourneyList } from './ArchivedJourneyList'
 import { TrashedJourneyList } from './TrashedJourneyList'
@@ -77,7 +77,7 @@ export function JourneyList({
           </Box>
           {!['archived', 'trashed'].includes(
             (router?.query?.tab as string) ?? ''
-          ) && <AddJourneyButton variant="fab" />}
+          ) && <AddJourneyFab />}
         </>
       )}
     </>
