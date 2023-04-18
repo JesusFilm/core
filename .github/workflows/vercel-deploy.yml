@@ -85,6 +85,7 @@ jobs:
           WATCH_VERCEL_PROJECT_ID: ${{ secrets.WATCH_VERCEL_PROJECT_ID }}
         run: npx nx run-many --target=deploy --projects=${{ matrix.app }} --prod
       - name: Generate GitHub deploy preview comment
+        id: deployment-url
         env:
           APP: ${{ matrix.app }}
         run: ./tools/scripts/generate-deploy-preview-comment.sh
@@ -93,3 +94,11 @@ jobs:
         with:
           message-path: .github/deploy_preview_comment.md
           message-id: ${{ matrix.app }}
+      - uses: chrnorm/deployment-action@v2
+        name: Create GitHub deployment
+        id: deployment
+        if: ${{ github.event_name == 'pull_request' &&  steps.deployment-url.outputs.deployment-exists == 'true' }}
+        with:
+          token: ${{ github.token }}
+          environment-url: ${{ steps.deployment-url.outputs.deployment-url }}
+          environment: Preview - ${{ matrix.app }}
