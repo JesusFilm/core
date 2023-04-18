@@ -24,7 +24,8 @@ jobs:
           path: node_modules
           key: node-modules-${{ hashFiles('package-lock.json') }}
           restore-keys: node-modules-
-      - run: npm ci
+      - name: NPM Install
+        run: npm install --silent
       - uses: nrwl/nx-set-shas@v3
       - id: set-matrix
         name: set matrix app to affected array
