@@ -4,6 +4,7 @@ import Typography from '@mui/material/Typography'
 import Box from '@mui/system/Box'
 import Stack from '@mui/material/Stack'
 import { isEmpty } from 'lodash'
+import { SxProps } from '@mui/material/styles'
 import { JourneyFields } from '../../../../../__generated__/JourneyFields'
 import { useSocialPreview } from '../../SocialProvider'
 
@@ -18,26 +19,26 @@ interface MessageBubbleProps {
   children?: ReactNode
   pt?: number
 }
+
 export function MessageBubble({
   height,
   width,
   direction = 'left',
-  children,
-  pt = 0
+  children
 }: MessageBubbleProps): ReactElement {
   const ref = useRef<HTMLDivElement>()
   const [clientHeight, setClientHeight] = useState(ref?.current?.clientHeight)
   useEffect(() => {
     setClientHeight(ref?.current?.clientHeight)
   }, [])
-  const top = (padding = 0): number => {
-    return clientHeight != null ? clientHeight + pt + padding : 0
-  }
-  const left = (padding = 0): number | undefined => {
-    return direction === 'left' ? 0 + padding : undefined
-  }
-  const right = (padding = 0): number | undefined => {
-    return direction === 'right' ? 0 + padding : undefined
+  const triangleBase: Partial<SxProps> = {
+    content: '""',
+    width: 0,
+    height: 0,
+    top: clientHeight,
+    left: direction === 'left' ? 0 : undefined,
+    right: direction === 'right' ? 0 : undefined,
+    position: 'absolute'
   }
   return (
     <Box
@@ -55,20 +56,15 @@ export function MessageBubble({
       pb={1}
       sx={{
         '&:before': {
-          content: '""',
-          width: 0,
-          height: 0,
-          borderRight: `12px solid ${
-            direction === 'left' ? 'transparent' : 'background.paper'
-          }`,
-          borderLeft: `12px solid ${
-            direction === 'right' ? 'transparent' : 'background.paper'
-          }`
+          ...triangleBase,
+          borderTop: `12px solid #FFF`,
+          zIndex: 1,
+          borderRight: direction === 'left' ? '12px solid transparent' : '',
+          borderLeft: direction === 'right' ? '12px solid transparent' : ''
         },
         '&:after': {
-          content: '""',
-          width: 0,
-          height: 0,
+          ...triangleBase,
+          borderTop: `13px solid #DEDFE0`,
           borderRight: `13px solid ${
             direction === 'left' ? 'transparent' : 'background.paper'
           }`,
@@ -78,31 +74,6 @@ export function MessageBubble({
         }
       }}
     >
-      {/* <Box
-        position="absolute"
-        top={{ md: top(-0.25), sm: top() }}
-        left={left(-0.5)}
-        right={right(-0.5)}
-        
-        borderTop={(theme) => `13px solid #DEDFE0`}
-        
-        mb={2}
-        zIndex={1}
-      /> */}
-      {/* <Box
-        position="absolute"
-        left={left()}
-        right={right()}
-        top={{ md: top(-0.25), sm: top() }}
-        width={0}
-        height={0}
-        borderTop={(theme) =>
-          `12px solid ${theme.palette.background.paper as string}`
-        }
-        borderRight={direction === 'left' ? '12px solid transparent' : ''}
-        borderLeft={direction === 'right' ? '12px solid transparent' : ''}
-        zIndex={2}
-      /> */}
       {children}
     </Box>
   )
@@ -124,7 +95,7 @@ export function SocialPreviewMessage({
         <Box>
           <MessageBubble width={200} height={40} direction="left" />
           {journey != null && (
-            <MessageBubble width={240} direction="right" pt={-0.5}>
+            <MessageBubble width={240} direction="right">
               <Stack direction="column">
                 <Stack direction="row" gap={2}>
                   {primaryImageBlock?.src == null ? (
