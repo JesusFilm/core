@@ -6,25 +6,25 @@
     "build": {
       "executor": "@nx-plus/docusaurus:browser",
       "options": {
-        "outputPath": "apps/docs/dist/apps/docs"
+        "outputPath": "dist/apps/docs"
       }
     },
     "deploy": {
       "executor": "@nrwl/workspace:run-commands",
       "options": {
         "commands": [
-          "VERCEL_PROJECT_ID=$DOCS_VERCEL_PROJECT_ID npx vercel pull apps/docs --environment=preview --token=$VERCEL_TOKEN",
-          "npx vercel build --cwd apps/docs",
-          "VERCEL_PROJECT_ID=$DOCS_VERCEL_PROJECT_ID npx vercel deploy apps/docs --prebuilt --token=$VERCEL_TOKEN > apps/docs/.vercel/url.txt"
+          "VERCEL_PROJECT_ID=$DOCS_VERCEL_PROJECT_ID npx vercel pull --environment=preview",
+          "npx vercel build",
+          "VERCEL_PROJECT_ID=$DOCS_VERCEL_PROJECT_ID npx vercel deploy --prebuilt > apps/docs/.vercel-url"
         ],
         "parallel": false
       },
       "configurations": {
         "production": {
           "commands": [
-            "VERCEL_PROJECT_ID=$DOCS_VERCEL_PROJECT_ID npx vercel pull apps/docs --environment=production --token=$VERCEL_TOKEN",
-            "npx vercel build --cwd apps/docs",
-            "VERCEL_PROJECT_ID=$DOCS_VERCEL_PROJECT_ID npx vercel deploy apps/docs --prebuilt --prod --token=$VERCEL_TOKEN"
+            "VERCEL_PROJECT_ID=$DOCS_VERCEL_PROJECT_ID npx vercel pull --environment=production",
+            "npx vercel build",
+            "VERCEL_PROJECT_ID=$DOCS_VERCEL_PROJECT_ID npx vercel deploy --prebuilt --prod > apps/docs/.vercel-url"
           ]
         }
       }

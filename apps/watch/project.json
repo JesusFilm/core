@@ -23,7 +23,7 @@
       "outputs": ["{options.outputPath}"],
       "options": {
         "root": "apps/watch",
-        "outputPath": "apps/watch/dist/apps/watch"
+        "outputPath": "dist/apps/watch"
       },
       "configurations": {
         "production": {}
@@ -33,18 +33,18 @@
       "executor": "@nrwl/workspace:run-commands",
       "options": {
         "commands": [
-          "VERCEL_PROJECT_ID=$WATCH_VERCEL_PROJECT_ID npx vercel pull apps/watch --environment=preview --token=$VERCEL_TOKEN",
-          "npx vercel build --cwd apps/watch",
-          "VERCEL_PROJECT_ID=$WATCH_VERCEL_PROJECT_ID npx vercel deploy apps/watch --prebuilt --token=$VERCEL_TOKEN > apps/watch/.vercel/url.txt"
+          "VERCEL_PROJECT_ID=$WATCH_VERCEL_PROJECT_ID npx vercel pull --environment=preview",
+          "npx vercel build",
+          "VERCEL_PROJECT_ID=$WATCH_VERCEL_PROJECT_ID npx vercel deploy --prebuilt > apps/watch/.vercel-url"
         ],
         "parallel": false
       },
       "configurations": {
         "production": {
           "commands": [
-            "VERCEL_PROJECT_ID=$WATCH_VERCEL_PROJECT_ID npx vercel pull apps/watch --environment=production --token=$VERCEL_TOKEN",
-            "npx vercel build --cwd apps/watch",
-            "VERCEL_PROJECT_ID=$WATCH_VERCEL_PROJECT_ID npx vercel deploy apps/watch --prebuilt --prod --token=$VERCEL_TOKEN"
+            "VERCEL_PROJECT_ID=$WATCH_VERCEL_PROJECT_ID npx vercel pull --environment=production",
+            "npx vercel build",
+            "VERCEL_PROJECT_ID=$WATCH_VERCEL_PROJECT_ID npx vercel deploy --prebuilt --prod > apps/watch/.vercel-url"
           ]
         }
       }
