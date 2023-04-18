@@ -113,3 +113,4 @@ jobs:
           env: ${{ steps.deployment-preview.outputs.env }}
           env_url: ${{ steps.deployment-url.outputs.deployment-url }}
           deployment_id: ${{ steps.deployment-preview.outputs.deployment_id }}
+          debug: true
