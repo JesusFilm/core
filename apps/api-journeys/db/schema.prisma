@@ -1,0 +1,101 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+  output   = env("PRISMA_LOCATION")
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("PG_DATABASE_URL")
+}
+
+model Event {
+  id        String   @id @default(uuid())
+  journeyId String
+  createdAt DateTime @default(now())
+  label     String
+  value     String
+  extra     Json
+  Visitor   Visitor? @relation(fields: [visitorId], references: [id])
+  visitorId String?
+}
+
+enum MessagePlatform {
+  facebook
+  telegram
+  whatsApp
+  instagram
+  viber
+  vk
+  snapchat
+  skype
+  line
+  tikTok
+}
+
+enum VisitorStatus {
+  star
+  prohibited
+  checkMarkSymbol
+  thumbsUp
+  thumbsDown
+  partyPopper
+  warning
+  robotFace
+  redExclamationMark
+  redQuestionMark
+}
+
+type UserAgent {
+  browser Browser
+  device  Device
+  os      OperatingSystem
+}
+
+type Browser {
+  name    String?
+  version String?
+}
+
+enum DeviceType {
+  console
+  mobile
+  tablet
+  smarttv
+  wearable
+  embedded
+}
+
+type Device {
+  model  String?
+  type   DeviceType?
+  vendor String?
+}
+
+type OperatingSystem {
+  name    String?
+  version String?
+}
+
+model Visitor {
+  id                        String           @id
+  createdAt                 DateTime         @default(now())
+  lastChatStartedAt         DateTime?
+  lastChatPlatform          MessagePlatform?
+  userAgent                 UserAgent?
+  countryCode               String?
+  name                      String?
+  email                     String?
+  status                    VisitorStatus?
+  messagePlatform           MessagePlatform?
+  messagePlatformId         String?
+  notes                     String?
+  lastStepViewedAt          String?
+  lastLinkAction            String?
+  lastTextResponse          String?
+  lastRadioQuestion         String?
+  lastRadioOptionSubmission String?
+  events                    Event[]
+}
