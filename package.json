@@ -57,7 +57,6 @@
     "@nestjs/graphql": "^10.1.7",
     "@nestjs/platform-express": "^9.2.1",
     "@next/bundle-analyzer": "^13.0.7",
-
     "@nx-tools/nx-prisma": "^3.0.1",
     "@prisma/client": "^3.15.2",
     "adal-node": "^0.2.3",
