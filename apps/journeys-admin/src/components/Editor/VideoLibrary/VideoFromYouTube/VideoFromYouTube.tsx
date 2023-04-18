@@ -20,8 +20,10 @@ export interface YoutubeVideosData {
   items: Array<{
     id: string
     snippet: {
-      title: string
-      description: string
+      localized: {
+        title: string
+        description: string
+      }
       thumbnails: { default: { url: string } }
     }
     contentDetails: {
@@ -52,6 +54,35 @@ export function parseISO8601Duration(duration: string): number {
   )
 }
 
+const playlistIds = [
+  'Jot4_WAwatU',
+  '90XbaaQerz8',
+  'xeCYhGBcxH4',
+  'TDBSCCrem-Q',
+  'Mm_zpSDo8lw',
+  'pAg0vNW8bA4',
+  '32gzHHuJPDQ',
+  'kirjy-GsLRw',
+  '_AWpT0076og',
+  '_RRrHK6cU3U',
+  'bo_TRu2D2R8',
+  'NLC4Qszu6aA',
+  '0w7hirqpM8E',
+  'mfVeHE11mHc',
+  'D1hbp88jJ5c',
+  '1nq7rYNmeyI',
+  '_CGrnjKpdZo',
+  'BfbgfoMiMc0',
+  'LFOvw9K_EEc',
+  'MAwmrB0dCc0',
+  '6tchEpozHH0',
+  'ghTiJv0oVck',
+  'YThFUDhbjUM',
+  'A8RoxWebUBM',
+  'W5Nf-rcIHSQ',
+  'K_e-c3Gn0PU'
+]
+
 const fetcher = async (query: string): Promise<Data> => {
   const params = new URLSearchParams({
     part: 'snippet,contentDetails',
@@ -62,12 +93,13 @@ const fetcher = async (query: string): Promise<Data> => {
       `https://www.googleapis.com/youtube/v3/videos?${query}&${params}`
     )
   ).json()
+
   return {
     nextPageToken: videosData.nextPageToken,
     items: videosData.items.map((video) => ({
       id: video.id,
-      title: video.snippet.title,
-      description: video.snippet.description,
+      title: video.snippet.localized.title,
+      description: video.snippet.localized.description,
       image: video.snippet.thumbnails.default.url,
       duration: parseISO8601Duration(video.contentDetails.duration),
       source: VideoBlockSource.youTube
@@ -86,17 +118,18 @@ export function VideoFromYouTube({
 
       const id = url.match(YOUTUBE_ID_REGEX)?.groups?.id
       const pageToken = previousPageData?.nextPageToken ?? ''
+
       return id != null
         ? `id=${id}`
-        : `chart=mostPopular&pageToken=${pageToken}`
+        : `id=${playlistIds.join('%2C')}&hl=en&pageToken=${pageToken}`
     },
     fetcher
   )
+
   const loading = Boolean(
     (data == null && error == null) ||
       (size > 0 && data && typeof data[size - 1] === 'undefined')
   )
-
   const videos = reduce(
     data,
     (result, request) => [...result, ...request.items],

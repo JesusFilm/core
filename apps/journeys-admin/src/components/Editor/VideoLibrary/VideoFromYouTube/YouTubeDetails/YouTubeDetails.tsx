@@ -22,7 +22,9 @@ const fetcher = async (
     id
   }).toString()
   const videosData: YoutubeVideosData = await (
-    await fetch(`https://www.googleapis.com/youtube/v3/videos?${videosQuery}`)
+    await fetch(
+      `https://www.googleapis.com/youtube/v3/videos?${videosQuery}&hl=en`
+    )
   ).json()
   return videosData.items[0]
 }
@@ -128,9 +130,11 @@ export function YouTubeDetails({
             )}
           </Box>
           <Box>
-            <Typography variant="subtitle1">{data?.snippet.title}</Typography>
+            <Typography variant="subtitle1">
+              {data?.snippet.localized.title}
+            </Typography>
             <Typography variant="caption" sx={{ whiteSpace: 'pre-wrap' }}>
-              {data?.snippet.description}
+              {data?.snippet.localized.description}
             </Typography>
           </Box>
         </>
