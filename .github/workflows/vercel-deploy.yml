@@ -50,12 +50,11 @@ jobs:
     steps:
       - name: start preview deployment
         if: ${{ github.event_name == 'pull_request' }}
-        uses: bobheadxi/deployments@v1
-        id: deployment-preview
+        uses: chrnorm/deployment-action@v2
+        id: deployment
         with:
-          step: start
           token: ${{ secrets.GITHUB_TOKEN }}
-          env: Preview - ${{ matrix.app }}
+          environment: Preview - ${{ matrix.app }}
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
@@ -104,13 +103,10 @@ jobs:
           message-path: .github/deploy_preview_comment.md
           message-id: ${{ matrix.app }}
       - name: update preview deployment status
-        uses: bobheadxi/deployments@v1
+        uses: chrnorm/deployment-status@v2
         if: always() && ${{ github.event_name == 'pull_request' }}
         with:
-          step: finish
           token: ${{ secrets.GITHUB_TOKEN }}
-          status: ${{ job.status }}
-          env: ${{ steps.deployment-preview.outputs.env }}
-          env_url: ${{ steps.deployment-url.outputs.deployment-url }}
-          deployment_id: ${{ steps.deployment-preview.outputs.deployment_id }}
-          debug: true
+          state: ${{ job.status }}
+          environment-url: ${{ steps.deployment-url.outputs.deployment-url }}
+          deployment-id: ${{ steps.deployment.outputs.deployment_id }}
