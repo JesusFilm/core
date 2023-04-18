@@ -17,6 +17,7 @@ jobs:
         with:
           node-version: 16
           cache: 'npm'
+      - run: npm ci
       - uses: nrwl/nx-set-shas@v3
       - id: set-matrix
         run: |
@@ -40,9 +41,8 @@ jobs:
         with:
           node-version: 16
           cache: 'npm'
+      - run: npm ci
       - uses: nrwl/nx-set-shas@v3
-      - name: NPM Install
-        run: npm install --silent
       - name: vercel preview deployment
         if: ${{ github.event_name == 'pull_request' }}
         env:
