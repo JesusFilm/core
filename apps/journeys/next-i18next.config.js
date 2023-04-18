@@ -8,7 +8,7 @@ const i18nConfig = {
     defaultLocale: 'en',
     locales: ['en'],
     localePath: path.resolve(
-      process.env.NEXT_PUBLIC_VERCEL_ENV == null || process.env.CI != null
+      process.env.NEXT_PUBLIC_VERCEL_ENV == null
         ? './libs/locales'
         : './public/locales'
     )
