@@ -3,7 +3,7 @@ import MuiAvatar from '@mui/material/Avatar'
 import AvatarGroup from '@mui/material/AvatarGroup'
 import Box from '@mui/material/Box'
 import Badge from '@mui/material/Badge'
-import { noop } from 'lodash'
+import { forEach, noop } from 'lodash'
 import Skeleton from '@mui/material/Skeleton'
 import { styled } from '@mui/material/styles'
 import { AccessDialog } from '../AccessDialog'
@@ -69,7 +69,7 @@ interface Props {
   showManageButton: boolean
 }
 
-const accessAvatars = (values?: UserJourney[]): UserJourney[] => {
+const usersWithOwnerFirst = (values?: UserJourney[]): UserJourney[] => {
   // create new array of user journeys, with the owner pushed to the front
   const users: UserJourney[] = []
 
@@ -80,6 +80,8 @@ const accessAvatars = (values?: UserJourney[]): UserJourney[] => {
       users.push(userJourney)
     }
   })
+  // console.log('firstName : ', users[0].user?.firstName)
+  // console.log('role: ', users[0].role)
   return users
 }
 
@@ -112,7 +114,18 @@ const withRenderLogic = ({
     const loading = values == null
     let invisible = true
     const maxIndex = max <= 2 ? 0 : max - 2
-    const users = accessAvatars(values)
+    const users = usersWithOwnerFirst(values)
+    console.log('Values: ', values)
+    console.log('users: ', users)
+
+    // console.log('Values array: ')
+    // values?.forEach((user) => {
+    //   console.log('username = ', user.user?.firstName)
+    // })
+    // console.log('users array: ')
+    // users?.forEach((user) => {
+    //   console.log('username = ', user.user?.firstName)
+    // })
 
     const children = loading
       ? [0, 1, 2].map((i) => {
@@ -136,6 +149,8 @@ const withRenderLogic = ({
           ) {
             invisible = false
           }
+          // console.log('firstName : ', user?.firstName)
+          // console.log('invisible: ', invisible)
           return (
             user != null && (
               <Avatar

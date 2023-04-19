@@ -160,4 +160,37 @@ describe('AccessAvatars', () => {
 
     expect(queryAllByLabelText('Manage Access')).toHaveLength(2)
   })
+
+  it('should display owner of journey first', async () => {
+    const ownerUserJourney = {
+      ...userJourney2,
+      role: UserJourneyRole.owner
+    }
+    const editorUserJourney = {
+      ...userJourney1,
+      role: UserJourneyRole.editor
+    }
+    const inviteRequestedUserJourney = {
+      ...userJourney3,
+      role: UserJourneyRole.inviteRequested
+    }
+
+    const { getByAltText } = render(
+      <SnackbarProvider>
+        <MockedProvider>
+          <ThemeProvider>
+            <AccessAvatars
+              journeyId="journeyId"
+              userJourneys={[
+                editorUserJourney,
+                inviteRequestedUserJourney,
+                ownerUserJourney
+              ]}
+            />
+          </ThemeProvider>
+        </MockedProvider>
+      </SnackbarProvider>
+    )
+    expect(getByAltText('Horace Two')).toBeInTheDocument()
+  })
 })
