@@ -23,7 +23,7 @@
         "production": {
           "commands": [
             "VERCEL_PROJECT_ID=$DOCS_VERCEL_PROJECT_ID npx vercel pull --environment=production --token=$VERCEL_TOKEN",
-            "npx vercel build",
+            "npx vercel build --prod",
             "VERCEL_PROJECT_ID=$DOCS_VERCEL_PROJECT_ID npx vercel deploy --prebuilt --prod --token=$VERCEL_TOKEN > apps/docs/.vercel-url"
           ]
         }
