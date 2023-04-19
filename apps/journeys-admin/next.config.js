@@ -39,6 +39,14 @@ const nextConfig = {
       }
     ]
   },
-  productionBrowserSourceMaps: true
+  productionBrowserSourceMaps: true,
+  typescript: {
+    // handled by github actions
+    ignoreBuildErrors: true
+  },
+  eslint: {
+    // handled by github actions
+    ignoreDuringBuilds: true
+  }
 }
 module.exports = withPlugins([[withImages], [withNx]], nextConfig)

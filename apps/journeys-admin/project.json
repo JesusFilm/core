@@ -17,7 +17,7 @@
         "production": {
           "commands": [
             "cp -r libs/locales apps/journeys-admin/public",
-            "nx _build journeys-admin --prod"
+            "CI=true nx _build journeys-admin --prod"
           ]
         }
       }

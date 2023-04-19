@@ -13,7 +13,7 @@
         "production": {
           "commands": [
             "cp -r libs/locales apps/watch/public",
-            "nx _build watch --prod"
+            "CI=true nx _build watch --prod"
           ]
         }
       }

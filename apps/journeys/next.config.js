@@ -26,6 +26,14 @@ const nextConfig = {
     // See: https://github.com/gregberge/svgr
     svgr: false
   },
-  productionBrowserSourceMaps: true
+  productionBrowserSourceMaps: true,
+  typescript: {
+    // handled by github actions
+    ignoreBuildErrors: true
+  },
+  eslint: {
+    // handled by github actions
+    ignoreDuringBuilds: true
+  }
 }
 module.exports = withPlugins([[withImages], [withNx]], nextConfig)

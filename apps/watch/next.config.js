@@ -26,6 +26,14 @@ const nextConfig = {
   },
   basePath: '/watch',
   productionBrowserSourceMaps: true,
+  typescript: {
+    // handled by github actions
+    ignoreBuildErrors: true
+  },
+  eslint: {
+    // handled by github actions
+    ignoreDuringBuilds: true
+  },
   async redirects() {
     return [
       {
