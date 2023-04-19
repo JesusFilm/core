@@ -37,9 +37,9 @@
       "executor": "@nrwl/workspace:run-commands",
       "options": {
         "commands": [
-          "VERCEL_PROJECT_ID=$JOURNEYS_VERCEL_PROJECT_ID npx vercel pull --environment=preview",
+          "VERCEL_PROJECT_ID=$JOURNEYS_VERCEL_PROJECT_ID npx vercel pull --environment=preview --token=$VERCEL_TOKEN",
           "npx vercel build",
-          "VERCEL_PROJECT_ID=$JOURNEYS_VERCEL_PROJECT_ID npx vercel deploy --prebuilt > apps/journeys/.vercel-url"
+          "VERCEL_PROJECT_ID=$JOURNEYS_VERCEL_PROJECT_ID npx vercel deploy --prebuilt --token=$VERCEL_TOKEN > apps/journeys/.vercel-url"
         ],
         "parallel": false
       },
