@@ -20,3 +20,7 @@ subgraphs:
     routing_url: http://127.0.0.1:4005/graphql
     schema:
       file: ../api-media/schema.graphql
+  tags:
+    routing_url: http://127.0.0.1:4006/graphql
+    schema:
+      file: ../api-tags/schema.graphql
