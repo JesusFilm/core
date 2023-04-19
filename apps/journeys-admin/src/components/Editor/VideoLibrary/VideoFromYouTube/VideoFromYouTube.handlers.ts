@@ -6,9 +6,11 @@ type Video = YoutubeVideosData['items'][number]
 const video1: Video = {
   id: 'ak06MSETeo4',
   snippet: {
-    title: 'What is the Bible?',
-    description:
-      'This is episode 1 of an ongoing series that explores the origins, content, and purpose of the Bible.',
+    localized: {
+      title: 'What is the Bible?',
+      description:
+        'This is episode 1 of an ongoing series that explores the origins, content, and purpose of the Bible.'
+    },
     thumbnails: {
       default: {
         url: 'https://i.ytimg.com/vi/ak06MSETeo4/default.jpg'
@@ -23,9 +25,11 @@ const video1: Video = {
 const video2: Video = {
   id: 'jQaeIJOA6J0',
   snippet: {
-    title: 'Blessing and Curse',
-    description:
-      'Trace the theme of blessing and curse in the Bible to see how Jesus defeats the curse and restores the blessing of life to creation.',
+    localized: {
+      title: 'Blessing and Curse',
+      description:
+        'Trace the theme of blessing and curse in the Bible to see how Jesus defeats the curse and restores the blessing of life to creation.'
+    },
     thumbnails: {
       default: {
         url: 'https://i.ytimg.com/vi/jQaeIJOA6J0/default.jpg'
@@ -40,9 +44,11 @@ const video2: Video = {
 const video3: Video = {
   id: '7_CGP-12AE0',
   snippet: {
-    title: 'The Story of the Bible',
-    description:
-      'This video summarizes the overall story of the Bible as a series of crossroad decisions.',
+    localized: {
+      title: 'The Story of the Bible',
+      description:
+        'This video summarizes the overall story of the Bible as a series of crossroad decisions.'
+    },
     thumbnails: {
       default: {
         url: 'https://i.ytimg.com/vi/7_CGP-12AE0/default.jpg'
