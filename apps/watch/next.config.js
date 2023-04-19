@@ -28,11 +28,11 @@ const nextConfig = {
   productionBrowserSourceMaps: true,
   typescript: {
     // handled by github actions
-    ignoreBuildErrors: true
+    ignoreBuildErrors: process.env.CI === 'true'
   },
   eslint: {
     // handled by github actions
-    ignoreDuringBuilds: true
+    ignoreDuringBuilds: process.env.CI === 'true'
   },
   async redirects() {
     return [
