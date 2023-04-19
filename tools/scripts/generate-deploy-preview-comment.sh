@@ -16,4 +16,4 @@ function generate_row_for_project() {
 }
 
 cp ./.github/deploy_preview_comment_template.md ./.github/deploy_preview_comment.md
-generate_row_for_project $APP "apps/$APP/.vercel/url.txt"
+generate_row_for_project $APP "apps/$APP/.vercel-url"
