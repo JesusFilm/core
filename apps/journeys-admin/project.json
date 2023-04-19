@@ -46,9 +46,9 @@
       "configurations": {
         "production": {
           "commands": [
-            "VERCEL_PROJECT_ID=$JOURNEYS_ADMIN_VERCEL_PROJECT_ID npx vercel pull --environment=production",
+            "VERCEL_PROJECT_ID=$JOURNEYS_ADMIN_VERCEL_PROJECT_ID npx vercel pull --environment=production --token=$VERCEL_TOKEN",
             "npx vercel build",
-            "VERCEL_PROJECT_ID=$JOURNEYS_ADMIN_VERCEL_PROJECT_ID npx vercel deploy --prebuilt --prod > apps/journeys-admin/.vercel-url"
+            "VERCEL_PROJECT_ID=$JOURNEYS_ADMIN_VERCEL_PROJECT_ID npx vercel deploy --prebuilt --prod --token=$VERCEL_TOKEN > apps/journeys-admin/.vercel-url"
           ]
         }
       }
