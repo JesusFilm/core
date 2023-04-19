@@ -55,3 +55,8 @@ migrations.json
 .terraform
 terraform.tfstate
 terraform.tfstate.backup
+
+# vercel
+.vercel
+.vercel-url
+.github/deploy_preview_comment.md
