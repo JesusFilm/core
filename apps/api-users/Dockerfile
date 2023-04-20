@@ -1,9 +1,12 @@
 FROM node:16-alpine
-ARG PRISMA_LOCATION=/app/node_modules/.prisma/api-users-client
 
 EXPOSE 4002
 
-ENV PG_DATABASE_URL=$PG_DATABASE_URL
+ENV PRISMA_LOCATION=/app/node_modules/.prisma/api-users-client
+
+RUN apk upgrade --update-cache --available && \
+    apk add openssl1.1-compat && \
+    rm -rf /var/cache/apk/*
 
 WORKDIR /app
 COPY ./dist/apps/api-users .
@@ -13,9 +16,9 @@ RUN npm install --production --silent
 
 WORKDIR /prisma
 COPY ./apps/api-users/prisma .
-RUN npx prisma@^3.15.2 generate
+RUN npx prisma@^4.13.0 generate
 
 WORKDIR /app
-RUN npm install tslib apollo-server-express @nestjs/mapped-types @prisma/client@^3.15.2 pino-pretty@9.1.1
+RUN npm install tslib apollo-server-express @nestjs/mapped-types @prisma/client@^4.13.0 pino-pretty@9.1.1
 
-CMD node ./main.js
+CMD npx prisma@^4.13.0 migrate deploy --schema /prisma/schema.prisma; node ./main.js

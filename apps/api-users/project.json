@@ -86,28 +86,48 @@
       }
     },
     "prisma-generate": {
-      "executor": "@nx-tools/nx-prisma:generate",
+      "executor": "@nrwl/workspace:run-commands",
       "options": {
-        "schema": "apps/api-users/db/schema.prisma"
+        "commands": [
+          "npx prisma generate --schema apps/api-users/db/schema.prisma"
+        ]
       }
     },
     "prisma-migrate": {
-      "executor": "@nx-tools/nx-prisma:migrate",
+      "executor": "@nrwl/workspace:run-commands",
       "options": {
-        "schema": "apps/api-users/db/schema.prisma"
+        "commands": [
+          "npx prisma migrate dev --schema apps/api-users/db/schema.prisma"
+        ]
+      },
+      "configurations": {
+        "production": {
+          "commands": [
+            "npx prisma migrate deploy --schema apps/api-users/db/schema.prisma"
+          ]
+        }
       }
     },
-    "prisma-rollback": {
-      "executor": "@nx-tools/nx-prisma:rollback",
+    "prisma-reset": {
+      "executor": "@nrwl/workspace:run-commands",
       "options": {
-        "schema": "apps/api-users/db/schema.prisma"
+        "commands": [
+          "npx prisma reset --schema apps/api-users/db/schema.prisma"
+        ]
       }
     },
     "prisma-seed": {
-      "executor": "@nx-tools/nx-prisma:seed",
+      "executor": "@nrwl/workspace:run-commands",
       "options": {
-        "script": "apps/api-users/db/seed.ts",
-        "tsConfig": "apps/api-users/tsconfig.app.json"
+        "commands": ["npx ts-node apps/api-users/db/seed.ts"]
+      }
+    },
+    "prisma-validate": {
+      "executor": "@nrwl/workspace:run-commands",
+      "options": {
+        "commands": [
+          "npx prisma validate --schema apps/api-users/db/schema.prisma"
+        ]
       }
     }
   },
