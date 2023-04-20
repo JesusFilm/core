@@ -1,7 +1,7 @@
-name: Vercel Deploy
+name: App Deploy
 on:
   push:
-    branches: [main, stage]
+    branches: [main, stage, feature/*]
   pull_request:
     branches: [main, feature/*]
 concurrency:
@@ -37,7 +37,10 @@ jobs:
           if [ -n "${AFFECTED}" ]; then
             echo "matrix=[\"${AFFECTED// /\",\"}\"]" >> $GITHUB_OUTPUT
           fi
-  deploy:
+  deploy-preview:
+    name: Deploy Preview
+    # feature branch, stage branch, or pull request
+    if: ${{ github.ref != 'refs/heads/main' || github.event_name == 'pull_request' }}
     needs: affected
     strategy:
       fail-fast: false
@@ -48,8 +51,7 @@ jobs:
       pull-requests: write
       deployments: write
     steps:
-      - name: start preview deployment
-        if: ${{ github.event_name == 'pull_request' }}
+      - name: start deployment
         uses: chrnorm/deployment-action@v2
         id: deployment
         with:
@@ -72,8 +74,7 @@ jobs:
       - name: NPM Install
         run: npm install --silent
       - uses: nrwl/nx-set-shas@v3
-      - name: vercel preview deployment
-        if: ${{ github.event_name == 'pull_request' }}
+      - name: vercel deployment
         env:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
@@ -82,8 +83,61 @@ jobs:
           JOURNEYS_ADMIN_VERCEL_PROJECT_ID: ${{ secrets.JOURNEYS_ADMIN_VERCEL_PROJECT_ID }}
           WATCH_VERCEL_PROJECT_ID: ${{ secrets.WATCH_VERCEL_PROJECT_ID }}
         run: npx nx run-many --target=deploy --projects=${{ matrix.app }}
-      - name: vercel production deployment
-        if: ${{ github.ref == 'refs/heads/main' && github.event_name != 'pull_request' }}
+      - name: Generate GitHub deployment comment
+        id: deployment-url
+        env:
+          APP: ${{ matrix.app }}
+        run: ./tools/scripts/generate-deployment-comment.sh
+      - uses: mshick/add-pr-comment@v2
+        name: Add deployment comment
+        with:
+          message-path: .github/deployment_comment.md
+          message-id: ${{ matrix.app }}
+      - name: update deployment
+        uses: chrnorm/deployment-status@v2
+        if: always()
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          state: ${{ job.status }}
+          environment-url: ${{ steps.deployment-url.outputs.deployment-url }}
+          deployment-id: ${{ steps.deployment.outputs.deployment_id }}
+  deploy-production:
+    name: Deploy Production
+    # main branch and not a pull request
+    if: ${{ github.ref == 'refs/heads/main' && github.event_name != 'pull_request' }}
+    needs: affected
+    strategy:
+      fail-fast: false
+      matrix:
+        app: ${{fromJson(needs.affected.outputs.matrix)}}
+    runs-on: ubuntu-latest
+    permissions:
+      deployments: write
+    steps:
+      - name: start deployment
+        uses: chrnorm/deployment-action@v2
+        id: deployment
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          environment: Production - ${{ matrix.app }}
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 16
+          cache: 'npm'
+      - name: Cache Node Modules
+        id: cache-node-modules
+        uses: actions/cache@v3
+        with:
+          path: node_modules
+          key: node-modules-${{ hashFiles('package-lock.json') }}
+          restore-keys: node-modules-
+      - name: NPM Install
+        run: npm install --silent
+      - uses: nrwl/nx-set-shas@v3
+      - name: vercel deployment
         env:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
@@ -92,19 +146,19 @@ jobs:
           JOURNEYS_ADMIN_VERCEL_PROJECT_ID: ${{ secrets.JOURNEYS_ADMIN_VERCEL_PROJECT_ID }}
           WATCH_VERCEL_PROJECT_ID: ${{ secrets.WATCH_VERCEL_PROJECT_ID }}
         run: npx nx run-many --target=deploy --projects=${{ matrix.app }} --prod
-      - name: Generate GitHub deploy preview comment
+      - name: Generate GitHub comment
         id: deployment-url
         env:
           APP: ${{ matrix.app }}
-        run: ./tools/scripts/generate-deploy-preview-comment.sh
+        run: ./tools/scripts/generate-deployment-comment.sh
       - uses: mshick/add-pr-comment@v2
-        name: Add deploy preview comment
+        name: Add deployment comment
         with:
-          message-path: .github/deploy_preview_comment.md
+          message-path: .github/deployment_comment.md
           message-id: ${{ matrix.app }}
-      - name: update preview deployment status
+      - name: update deployment status
         uses: chrnorm/deployment-status@v2
-        if: always() && ${{ github.event_name == 'pull_request' }}
+        if: always()
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           state: ${{ job.status }}
