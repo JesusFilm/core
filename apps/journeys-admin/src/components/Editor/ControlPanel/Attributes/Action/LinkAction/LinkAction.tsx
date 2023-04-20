@@ -6,7 +6,7 @@ import { gql, useMutation } from '@apollo/client'
 import TextField from '@mui/material/TextField'
 import { Formik, Form } from 'formik'
 import { object, string } from 'yup'
-import { noop } from 'lodash'
+import { noop, startsWith } from 'lodash'
 import InputAdornment from '@mui/material/InputAdornment'
 import InsertLinkRoundedIcon from '@mui/icons-material/InsertLinkRounded'
 import Box from '@mui/material/Box'
@@ -46,8 +46,9 @@ export function LinkAction(): ReactElement {
 
   const initialValues: LinkActionFormValues = { link: linkAction?.url ?? '' }
 
+  // Regex that allows for mailto links and links without a protocol e.g google.com
   const urlRegex =
-    /^(?=.{4,2048}$)((http|https):\/\/)?(www.)?(?!.*(http|https|www.))[a-zA-Z0-9_-]{1,63}(\.[a-zA-Z]{1,63}){1,5}(\/)?.([\w?[a-zA-Z-_%/@?]+)*([^/\w?[a-zA-Z0-9_-]+=\w+(&[a-zA-Z0-9_]+=\w+)*)?$/
+    /^((http|https):\/\/)?((?!www\.)([a-zA-Z0-9_-]+\.)*)?[a-zA-Z0-9_-]+(\.[a-zA-Z]+)+(\/)?.*([\w?[a-zA-Z-_%/@?]+)*([^/\w?[a-zA-Z0-9_-]+=\w+(&[a-zA-Z0-9_]+=\w+)*)?$|^mailto:[\w.-]+@[\w.-]+\.\w+$/
 
   const linkActionSchema = object({
     link: string().matches(urlRegex, 'Invalid URL').required('Required')
@@ -55,13 +56,20 @@ export function LinkAction(): ReactElement {
 
   async function handleSubmit(e: React.FocusEvent): Promise<void> {
     const target = e.target as HTMLInputElement
+    const url = target.value
     if (selectedBlock != null && journey != null) {
       const { id, __typename: typeName } = selectedBlock
       await linkActionUpdate({
         variables: {
           id,
           journeyId: journey.id,
-          input: { url: target.value }
+          input: {
+            url: startsWith(url, 'https')
+              ? url
+              : startsWith(url, 'mailto')
+              ? url
+              : 'https://' + url
+          }
         },
         update(cache, { data }) {
           if (data?.blockUpdateLinkAction != null) {
