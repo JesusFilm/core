@@ -18,7 +18,10 @@ export function UnsplashSearch({
       initialValues={{
         src: value
       }}
-      onSubmit={async (e) => handleSubmit(e.src)}
+      onSubmit={async (e) => {
+        handleSubmit(e.src)
+      }}
+      enableReinitialize
     >
       {({ values, handleChange }) => (
         <Form>
@@ -27,7 +30,8 @@ export function UnsplashSearch({
             name="src"
             variant="filled"
             hiddenLabel
-            value={values.src ?? 'Search by keyword'}
+            placeholder="Search by keyword"
+            value={values.src}
             onChange={handleChange}
             fullWidth
             inputProps={{
