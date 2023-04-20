@@ -1,0 +1,38 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+  output   = env("PRISMA_LOCATION")
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("PG_DATABASE_URL")
+}
+
+model Tag {
+  id               String    @id @default(uuid())
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+  name             String    @unique
+  nameTranslations Json[]
+  Tagging          Tagging[]
+  parent           Tag?      @relation("ParentChildren", fields: [parentId], references: [id], onDelete: Cascade)
+  parentId         String?
+  children         Tag[]     @relation("ParentChildren")
+}
+
+model Tagging {
+  id           String   @id @default(uuid())
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  tag          Tag      @relation(fields: [tagId], references: [id], onDelete: Cascade)
+  tagId        String
+  taggableType String
+  taggableId   String
+  context      String
+
+  @@unique([taggableId, taggableType, tagId, context])
+  @@index([tagId])
+}
