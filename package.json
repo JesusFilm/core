@@ -57,7 +57,6 @@
     "@nestjs/graphql": "^10.1.7",
     "@nestjs/platform-express": "^9.2.1",
     "@next/bundle-analyzer": "^13.0.7",
-    "@nx-tools/nx-prisma": "^4.0.3",
     "@prisma/client": "^4.13.0",
     "adal-node": "^0.2.3",
     "apollo-datasource": "^3.3.1",
@@ -127,6 +126,7 @@
     "tslib": "^2.3.1",
     "ua-parser-js": "^1.0.33",
     "util": "^0.12.4",
+    "vercel": "^28.18.5",
     "video.js": "^7.14.3",
     "videojs-youtube": "^2.6.1",
     "yup": "^0.32.9"
