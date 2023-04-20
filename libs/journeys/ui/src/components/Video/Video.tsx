@@ -1,4 +1,6 @@
-import videojs from 'video.js'
+// import videojs from 'video.js'
+import dynamic from 'next/dynamic'
+
 import {
   ReactElement,
   useEffect,
@@ -29,6 +31,14 @@ import 'videojs-youtube'
 import 'video.js/dist/video-js.css'
 import { VideoEvents } from '../VideoEvents'
 import { VideoFields } from './__generated__/VideoFields'
+
+const videojs = dynamic(
+  async () =>
+    await import(
+      /* webpackChunkName: "videojs" */
+      'video.js'
+    )
+)
 
 const VIDEO_BACKGROUND_COLOR = '#000'
 const VIDEO_FOREGROUND_COLOR = '#FFF'
