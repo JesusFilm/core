@@ -48,17 +48,6 @@ enum VisitorStatus {
   redQuestionMark
 }
 
-type UserAgent {
-  browser Browser
-  device  Device
-  os      OperatingSystem
-}
-
-type Browser {
-  name    String?
-  version String?
-}
-
 enum DeviceType {
   console
   mobile
@@ -68,23 +57,12 @@ enum DeviceType {
   embedded
 }
 
-type Device {
-  model  String?
-  type   DeviceType?
-  vendor String?
-}
-
-type OperatingSystem {
-  name    String?
-  version String?
-}
-
 model Visitor {
   id                        String           @id
   createdAt                 DateTime         @default(now())
   lastChatStartedAt         DateTime?
   lastChatPlatform          MessagePlatform?
-  userAgent                 UserAgent?
+  userAgent                 Json?
   countryCode               String?
   name                      String?
   email                     String?

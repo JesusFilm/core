@@ -13,13 +13,16 @@ import { Event, VisitorsConnection } from '../../__generated__/graphql'
 import { EventService } from '../event/event.service'
 import { MemberService } from '../member/member.service'
 import { VisitorService, VisitorRecord } from './visitor.service'
+import { Inject } from '@nestjs/common'
+import { PrismaService } from '../../lib/prisma.service'
 
 @Resolver('Visitor')
 export class VisitorResolver {
   constructor(
     private readonly visitorService: VisitorService,
     private readonly memberService: MemberService,
-    private readonly eventService: EventService
+    private readonly eventService: EventService,
+    @Inject(PrismaService) private readonly prismaService: PrismaService
   ) {}
 
   @Query()
