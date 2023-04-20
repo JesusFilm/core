@@ -1,0 +1,169 @@
+name: App Deploy
+on:
+  push:
+    branches: [main, stage, feature/*]
+  pull_request:
+    branches: [main, feature/*]
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
+jobs:
+  affected:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 16
+          cache: 'npm'
+      - name: Cache Node Modules
+        id: cache-node-modules
+        uses: actions/cache@v3
+        with:
+          path: node_modules
+          key: node-modules-${{ hashFiles('package-lock.json') }}
+          restore-keys: node-modules-
+      - name: NPM Install
+        run: npm install --silent
+      - uses: nrwl/nx-set-shas@v3
+      - id: set-matrix
+        name: set matrix app to affected array
+        run: |
+          AFFECTED=$(echo "$(npx nx affected:apps --plain)" | sed -e 's/api-\w* *//g')
+          echo $AFFECTED
+          if [ -n "${AFFECTED}" ]; then
+            echo "matrix=[\"${AFFECTED// /\",\"}\"]" >> $GITHUB_OUTPUT
+          else
+            echo "matrix=[]" >> $GITHUB_OUTPUT
+          fi
+  deploy-preview:
+    name: Deploy Preview
+    needs: affected
+    # feature branch, stage branch, or pull request
+    if: ${{ needs.affected.outputs.matrix != '[]' && (github.ref != 'refs/heads/main' || github.event_name == 'pull_request') }}
+    strategy:
+      fail-fast: false
+      matrix:
+        app: ${{fromJson(needs.affected.outputs.matrix)}}
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+      deployments: write
+    steps:
+      - name: start deployment
+        uses: chrnorm/deployment-action@v2
+        id: deployment
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          environment: Preview - ${{ matrix.app }}
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 16
+          cache: 'npm'
+      - name: Cache Node Modules
+        id: cache-node-modules
+        uses: actions/cache@v3
+        with:
+          path: node_modules
+          key: node-modules-${{ hashFiles('package-lock.json') }}
+          restore-keys: node-modules-
+      - name: NPM Install
+        run: npm install --silent
+      - uses: nrwl/nx-set-shas@v3
+      - name: vercel deployment
+        env:
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          DOCS_VERCEL_PROJECT_ID: ${{ secrets.DOCS_VERCEL_PROJECT_ID }}
+          JOURNEYS_VERCEL_PROJECT_ID: ${{ secrets.JOURNEYS_VERCEL_PROJECT_ID }}
+          JOURNEYS_ADMIN_VERCEL_PROJECT_ID: ${{ secrets.JOURNEYS_ADMIN_VERCEL_PROJECT_ID }}
+          WATCH_VERCEL_PROJECT_ID: ${{ secrets.WATCH_VERCEL_PROJECT_ID }}
+        run: npx nx run-many --target=deploy --projects=${{ matrix.app }}
+      - name: Generate GitHub deployment comment
+        id: deployment-url
+        env:
+          APP: ${{ matrix.app }}
+        run: ./tools/scripts/generate-deployment-comment.sh
+      - uses: mshick/add-pr-comment@v2
+        name: Add deployment comment
+        with:
+          message-path: .github/deployment_comment.md
+          message-id: ${{ matrix.app }}
+      - name: update deployment
+        uses: chrnorm/deployment-status@v2
+        if: always()
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          state: ${{ job.status }}
+          environment-url: ${{ steps.deployment-url.outputs.deployment-url }}
+          deployment-id: ${{ steps.deployment.outputs.deployment_id }}
+  deploy-production:
+    name: Deploy Production
+    # main branch and not a pull request
+    if: ${{ needs.affected.outputs.matrix != '[]' && github.ref == 'refs/heads/main' && github.event_name != 'pull_request' }}
+    needs: affected
+    strategy:
+      fail-fast: false
+      matrix:
+        app: ${{fromJson(needs.affected.outputs.matrix)}}
+    runs-on: ubuntu-latest
+    permissions:
+      deployments: write
+    steps:
+      - name: start deployment
+        uses: chrnorm/deployment-action@v2
+        id: deployment
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          environment: Production - ${{ matrix.app }}
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 16
+          cache: 'npm'
+      - name: Cache Node Modules
+        id: cache-node-modules
+        uses: actions/cache@v3
+        with:
+          path: node_modules
+          key: node-modules-${{ hashFiles('package-lock.json') }}
+          restore-keys: node-modules-
+      - name: NPM Install
+        run: npm install --silent
+      - uses: nrwl/nx-set-shas@v3
+      - name: vercel deployment
+        env:
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          DOCS_VERCEL_PROJECT_ID: ${{ secrets.DOCS_VERCEL_PROJECT_ID }}
+          JOURNEYS_VERCEL_PROJECT_ID: ${{ secrets.JOURNEYS_VERCEL_PROJECT_ID }}
+          JOURNEYS_ADMIN_VERCEL_PROJECT_ID: ${{ secrets.JOURNEYS_ADMIN_VERCEL_PROJECT_ID }}
+          WATCH_VERCEL_PROJECT_ID: ${{ secrets.WATCH_VERCEL_PROJECT_ID }}
+        run: npx nx run-many --target=deploy --projects=${{ matrix.app }} --prod
+      - name: Generate GitHub comment
+        id: deployment-url
+        env:
+          APP: ${{ matrix.app }}
+        run: ./tools/scripts/generate-deployment-comment.sh
+      - uses: mshick/add-pr-comment@v2
+        name: Add deployment comment
+        with:
+          message-path: .github/deployment_comment.md
+          message-id: ${{ matrix.app }}
+      - name: update deployment status
+        uses: chrnorm/deployment-status@v2
+        if: always()
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          state: ${{ job.status }}
+          environment-url: ${{ steps.deployment-url.outputs.deployment-url }}
+          deployment-id: ${{ steps.deployment.outputs.deployment_id }}
