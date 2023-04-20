@@ -85,6 +85,7 @@ export function Video({
           hotkeys: true,
           doubleClick: true
         },
+        preload: 'auto',
         controlBar: {
           playToggle: true,
           captionsButton: true,
