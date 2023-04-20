@@ -86,7 +86,7 @@ export function CardList({
       footer={showAddButton === true && <AddCardSlide />}
       view={state.journeyEditContentComponent}
     >
-      {showNavigationCards && (
+      {showNavigationCards && journey?.template !== true && (
         <NavigationCard
           key="goals"
           id="goals"
@@ -113,7 +113,7 @@ export function CardList({
           loading={journey == null}
         />
       )}
-      {showNavigationCards && (
+      {showNavigationCards && journey?.template !== true && (
         <Divider
           id="cardlist-divider"
           orientation="vertical"
