@@ -42,9 +42,9 @@ jobs:
           fi
   deploy-preview:
     name: Deploy Preview
-    # feature branch, stage branch, or pull request
-    if: ${{ github.ref != 'refs/heads/main' || github.event_name == 'pull_request' }}
     needs: affected
+    # feature branch, stage branch, or pull request
+    if: ${{ needs.affected.outputs.matrix != '[]' && (github.ref != 'refs/heads/main' || github.event_name == 'pull_request') }}
     strategy:
       fail-fast: false
       matrix:
@@ -107,7 +107,7 @@ jobs:
   deploy-production:
     name: Deploy Production
     # main branch and not a pull request
-    if: ${{ github.ref == 'refs/heads/main' && github.event_name != 'pull_request' }}
+    if: ${{ needs.affected.outputs.matrix != '[]' && github.ref == 'refs/heads/main' && github.event_name != 'pull_request' }}
     needs: affected
     strategy:
       fail-fast: false
