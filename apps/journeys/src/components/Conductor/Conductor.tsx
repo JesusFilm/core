@@ -3,7 +3,7 @@ import SwiperCore from 'swiper'
 import { Swiper, SwiperSlide } from 'swiper/react'
 import { findIndex } from 'lodash'
 import Box from '@mui/material/Box'
-import Fade from '@mui/material/Fade'
+// import Fade from '@mui/material/Fade'
 import Stack from '@mui/material/Stack'
 import IconButton from '@mui/material/IconButton'
 import { useTheme, styled } from '@mui/material/styles'
@@ -244,21 +244,21 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
                     themeMode={null}
                     themeName={null}
                   >
-                    <Fade
+                    {/* <Fade
                       in={activeBlock?.id === block.id}
                       mountOnEnter
                       unmountOnExit
+                    > */}
+                    <Box
+                      sx={{
+                        position: 'absolute',
+                        width: '100%',
+                        height: '100%'
+                      }}
                     >
-                      <Box
-                        sx={{
-                          position: 'absolute',
-                          width: '100%',
-                          height: '100%'
-                        }}
-                      >
-                        <BlockRenderer block={block} />
-                      </Box>
-                    </Fade>
+                      <BlockRenderer block={block} />
+                    </Box>
+                    {/* </Fade> */}
                   </CardWrapper>
                 </Box>
               </SwiperSlide>
