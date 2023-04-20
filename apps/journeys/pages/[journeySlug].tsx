@@ -118,12 +118,10 @@ export const getStaticProps: GetStaticProps<JourneyPageProps> = async (
   } else {
     const { rtl, locale } = getJourneyRTL(data.journey)
 
-    console.log('-----------context', context, locale, rtl)
-
     return {
       props: {
         ...(await serverSideTranslations(
-          locale ?? 'en',
+          context.locale ?? 'en',
           ['apps-journeys', 'libs-journeys-ui'],
           i18nConfig
         )),

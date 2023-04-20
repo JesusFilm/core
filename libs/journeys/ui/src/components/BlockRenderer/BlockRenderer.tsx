@@ -1,6 +1,4 @@
 import { ReactElement } from 'react'
-// import dynamic from 'next/dynamic'
-
 import { Button } from '../Button'
 import { Card } from '../Card'
 import { Image } from '../Image'
@@ -25,77 +23,6 @@ import {
   BlockFields_TypographyBlock as TypographyBlock,
   BlockFields_VideoBlock as VideoBlock
 } from '../../libs/block/__generated__/BlockFields'
-
-// const Button = dynamic(
-//   async () =>
-//     await import(
-//       /* webpackChunkName: 'journey-ui-button' */
-//       '../Button'
-//     )
-// )
-// const Card = dynamic(
-//   async () =>
-//     await import(
-//       /* webpackChunkName: 'journey-ui-card' */
-//       '../Card'
-//     )
-// )
-// const Image = dynamic(
-//   async () =>
-//     await import(
-//       /* webpackChunkName: 'journey-ui-image' */
-//       '../Image'
-//     )
-// )
-// const RadioOption = dynamic(
-//   async () =>
-//     await import(
-//       /* webpackChunkName: 'journey-ui-radio-option' */
-//       '../RadioOption'
-//     )
-// )
-// const RadioQuestion = dynamic(
-//   async () =>
-//     await import(
-//       /* webpackChunkName: 'journey-ui-radio-question' */
-//       '../RadioQuestion'
-//     )
-// )
-// const SignUp = dynamic(
-//   async () =>
-//     await import(
-//       /* webpackChunkName: 'journey-ui-sign-up' */
-//       '../SignUp'
-//     )
-// )
-// const Step = dynamic(
-//   async () =>
-//     await import(
-//       /* webpackChunkName: 'journey-ui-step' */
-//       '../Step'
-//     )
-// )
-// const TextResponse = dynamic(
-//   async () =>
-//     await import(
-//       /* webpackChunkName: 'journey-ui-text-response' */
-//       '../TextResponse'
-//     )
-// )
-// const Typography = dynamic(
-//   async () =>
-//     await import(
-//       /* webpackChunkName: 'journey-ui-typography' */
-//       '../Typography'
-//     )
-// )
-// const Video = dynamic(
-//   async () =>
-//     await import(
-//       /* webpackChunkName: 'journey-ui-video' */
-//       '../Video'
-//     )
-// )
 
 export interface WrapperProps<T = Block> {
   block: TreeBlock<T>

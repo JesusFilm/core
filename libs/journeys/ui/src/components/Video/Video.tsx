@@ -16,11 +16,7 @@ import {
   VideoBlockObjectFit,
   VideoBlockSource
 } from '../../../__generated__/globalTypes'
-import {
-  isActiveBlockOrDescendant,
-  TreeBlock,
-  useBlocks
-} from '../../libs/block'
+import { TreeBlock } from '../../libs/block'
 import { useEditor } from '../../libs/EditorProvider'
 import { blurImage } from '../../libs/blurImage'
 import { ImageFields } from '../Image/__generated__/ImageFields'
@@ -54,7 +50,6 @@ export function Video({
   const {
     state: { selectedBlock }
   } = useEditor()
-  const { activeBlock } = useBlocks()
 
   const videoRef = useRef<HTMLVideoElement>(null)
   const playerRef = useRef<videojs.Player>()
@@ -70,12 +65,6 @@ export function Video({
   }, [posterBlock, theme])
 
   useEffect(() => {
-    if (!isActiveBlockOrDescendant(blockId)) {
-      playerRef.current?.pause()
-    }
-  }, [activeBlock, blockId])
-
-  useEffect(() => {
     if (videoRef.current != null) {
       playerRef.current = videojs(videoRef.current, {
         autoplay: autoplay === true,
@@ -85,7 +74,6 @@ export function Video({
           hotkeys: true,
           doubleClick: true
         },
-        preload: 'auto',
         controlBar: {
           playToggle: true,
           captionsButton: true,
