@@ -37,7 +37,9 @@ const fetcher = async (
     id
   }).toString()
   const videosData: YoutubeVideosData = await (
-    await fetch(`https://www.googleapis.com/youtube/v3/videos?${videosQuery}`)
+    await fetch(
+      `https://www.googleapis.com/youtube/v3/videos?${videosQuery}&hl=en`
+    )
   ).json()
   return videosData.items[0]
 }
@@ -50,6 +52,7 @@ export function YouTubeDetails({
   const videoRef = useRef<HTMLVideoElement>(null)
   const playerRef = useRef<videojs.Player>()
   const [playing, setPlaying] = useState(false)
+  const [isExpanded, setIsExpanded] = useState(false)
   const { data, error } = useSWR<YoutubeVideosData['items'][number]>(
     () => (open ? id : null),
     fetcher
@@ -143,18 +146,48 @@ export function YouTubeDetails({
             )}
           </Box>
           <Box>
-            <Typography variant="subtitle1">{data?.snippet.title}</Typography>
-            <Typography variant="caption" sx={{ whiteSpace: 'pre-wrap' }}>
-              {data?.snippet.description}
+            <Typography variant="subtitle1" gutterBottom>
+              {data?.snippet.title}
             </Typography>
+            <Box sx={{ position: 'relative' }}>
+              <Typography
+                variant="caption"
+                sx={{
+                  display: '-webkit-box',
+                  overflow: 'hidden',
+                  WebkitLineClamp: isExpanded ? '0' : '3',
+                  WebkitBoxOrient: 'vertical',
+                  whiteSpace: isExpanded ? 'pre-wrap' : 'unset'
+                }}
+              >
+                {data?.snippet.description}
+              </Typography>
+              <Button
+                variant="text"
+                size="small"
+                sx={{
+                  position: 'absolute',
+                  p: 0,
+                  bottom: isExpanded ? 'unset' : -4,
+                  right: isExpanded ? 'unset' : 0,
+                  width: 0,
+                  color: 'secondary.light',
+                  backgroundColor: 'background.paper',
+                  background:
+                    'linear-gradient(90deg, rgba(255,255,255,0.95) 0%, rgba(255,255,255,1) 50%)',
+                  '&:hover': {
+                    backgroundColor: 'background.paper'
+                  }
+                }}
+                onClick={() => setIsExpanded(!isExpanded)}
+              >
+                {isExpanded ? 'Less' : 'More'}
+              </Button>
+            </Box>
           </Box>
         </>
       )}
-      <Stack
-        direction="row"
-        spacing={2}
-        sx={{ justifyContent: 'space-between' }}
-      >
+      <Stack direction="row" spacing={2} sx={{ justifyContent: 'end' }}>
         <Button
           variant="contained"
           startIcon={<Check />}
