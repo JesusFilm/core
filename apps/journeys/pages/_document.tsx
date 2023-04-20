@@ -20,12 +20,12 @@ export default class MyDocument extends Document<{
           {this.props.rtl && this.props.locale !== 'ur' ? (
             <link
               href="https://fonts.googleapis.com/css2?family=El+Messiri:wght@400;600;700&family=Tajawal:wght@400;700&display=swap"
-              rel="stylesheet"
+              rel="preload"
             />
           ) : (
             <link
               href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;800&family=Open+Sans&display=swap"
-              rel="stylesheet"
+              rel="preload"
             />
           )}
           <link
