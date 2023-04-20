@@ -75,8 +75,8 @@ function JourneysApp({
   return (
     <CacheProvider value={emotionCache}>
       <DefaultSeo
-        titleTemplate={t('%s | Watch')}
-        defaultTitle={t('Watch | Jesus Film')}
+        titleTemplate={t('%s | Next Steps')}
+        defaultTitle={t('Next Steps')}
       />
       <Head>
         <meta
