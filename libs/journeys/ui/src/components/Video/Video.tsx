@@ -29,7 +29,7 @@ import { VideoFields } from './__generated__/VideoFields'
 const VIDEO_BACKGROUND_COLOR = '#000'
 const VIDEO_FOREGROUND_COLOR = '#FFF'
 
-export function Video({
+export default function Video({
   id: blockId,
   video,
   source,

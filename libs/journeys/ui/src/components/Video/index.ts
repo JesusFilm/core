@@ -1,2 +1,2 @@
-export { Video } from './Video'
+export { default } from './Video'
 export { VideoTrigger } from '../VideoTrigger'

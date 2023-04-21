@@ -5,7 +5,7 @@ import Box from '@mui/material/Box'
 import { journeyUiConfig } from '../../libs/journeyUiConfig'
 import { VIDEO_START_EVENT_CREATE } from '../VideoEvents/VideoEvents'
 import { VideoBlockSource } from '../../../__generated__/globalTypes'
-import { Video } from '.'
+import Video from '.'
 
 const Demo = {
   ...journeyUiConfig,

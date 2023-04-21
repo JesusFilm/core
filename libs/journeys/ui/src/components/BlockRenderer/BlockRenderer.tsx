@@ -8,7 +8,6 @@ import { RadioOption } from '../RadioOption'
 import { RadioQuestion } from '../RadioQuestion'
 import { Step } from '../Step'
 import { Typography } from '../Typography'
-import { Video } from '../Video'
 import type { TreeBlock } from '../../libs/block'
 import {
   BlockFields as Block,
@@ -37,6 +36,14 @@ const TextResponse = dynamic(
     await import(
       /* webpackChunkName: "TextResponse" */
       '../TextResponse'
+    )
+)
+
+const Video = dynamic(
+  async () =>
+    await import(
+      /* webpackChunkName: "Video" */
+      '../Video'
     )
 )
 
