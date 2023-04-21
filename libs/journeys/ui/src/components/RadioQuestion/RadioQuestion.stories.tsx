@@ -5,9 +5,9 @@ import { simpleComponentConfig } from '../../libs/simpleComponentConfig'
 import type { TreeBlock } from '../../libs/block'
 import { StoryCard } from '../StoryCard'
 import { TypographyVariant } from '../../../__generated__/globalTypes'
-import { Typography } from '../Typography'
+import Typography from '../Typography'
 import { RadioOptionFields } from '../RadioOption/__generated__/RadioOptionFields'
-import { RadioQuestion, RADIO_QUESTION_SUBMISSION_EVENT_CREATE } from '.'
+import RadioQuestion, { RADIO_QUESTION_SUBMISSION_EVENT_CREATE } from '.'
 
 const Demo = {
   ...simpleComponentConfig,

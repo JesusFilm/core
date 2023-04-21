@@ -6,7 +6,7 @@ import { activeBlockVar, treeBlocksVar } from '../../libs/block'
 import { JourneyProvider } from '../../libs/JourneyProvider'
 import { BlockFields_StepBlock as StepBlock } from '../../libs/block/__generated__/BlockFields'
 import { RadioQuestionFields } from './__generated__/RadioQuestionFields'
-import { RadioQuestion, RADIO_QUESTION_SUBMISSION_EVENT_CREATE } from '.'
+import RadioQuestion, { RADIO_QUESTION_SUBMISSION_EVENT_CREATE } from '.'
 
 jest.mock('../../libs/action', () => {
   const originalModule = jest.requireActual('../../libs/action')

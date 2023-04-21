@@ -11,7 +11,7 @@ import { useBlocks } from '../../libs/block'
 import { getStepHeading } from '../../libs/getStepHeading'
 import { useJourney } from '../../libs/JourneyProvider'
 import { BlockRenderer, WrappersProps } from '../BlockRenderer'
-import { RadioOption } from '../RadioOption'
+import RadioOption from '../RadioOption'
 import { RadioQuestionSubmissionEventCreate } from './__generated__/RadioQuestionSubmissionEventCreate'
 import { RadioQuestionFields } from './__generated__/RadioQuestionFields'
 
@@ -35,7 +35,7 @@ const StyledRadioQuestion = styled(Box)<BoxProps>(({ theme }) => ({
   marginBottom: theme.spacing(4)
 }))
 
-export function RadioQuestion({
+export default function RadioQuestion({
   id: blockId,
   children,
   uuid = uuidv4,

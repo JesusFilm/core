@@ -1,12 +1,7 @@
 import { ReactElement } from 'react'
 import dynamic from 'next/dynamic'
-import { Button } from '../Button'
 import { Card } from '../Card'
-import { Image } from '../Image'
-import { RadioOption } from '../RadioOption'
-import { RadioQuestion } from '../RadioQuestion'
 import { Step } from '../Step'
-import { Typography } from '../Typography'
 import type { TreeBlock } from '../../libs/block'
 import {
   BlockFields as Block,
@@ -28,16 +23,30 @@ const SnackbarProvider = dynamic(
       (mod) => mod.SnackbarProvider
     )
 )
-
+const Button = dynamic(
+  async () => await import(/* webpackChunkName: "Button" */ '../Button')
+)
+const Image = dynamic(
+  async () => await import(/* webpackChunkName: "Image" */ '../Image')
+)
+const RadioOption = dynamic(
+  async () =>
+    await import(/* webpackChunkName: "RadioOption" */ '../RadioOption')
+)
+const RadioQuestion = dynamic(
+  async () =>
+    await import(/* webpackChunkName: "RadioQuestion" */ '../RadioQuestion')
+)
 const SignUp = dynamic(
   async () => await import(/* webpackChunkName: "SignUp" */ '../SignUp')
 )
-
 const TextResponse = dynamic(
   async () =>
     await import(/* webpackChunkName: "TextResponse" */ '../TextResponse')
 )
-
+const Typography = dynamic(
+  async () => await import(/* webpackChunkName: "Typography" */ '../Typography')
+)
 const Video = dynamic(
   async () => await import(/* webpackChunkName: "Video" */ '../Video')
 )

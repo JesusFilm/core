@@ -26,7 +26,7 @@ export const StyledRadioOption = styled(Button)<ButtonProps>(({ theme }) => ({
   padding: '14px 10px 14px 14px'
 }))
 
-export function RadioOption({
+export default function RadioOption({
   label,
   action,
   id,

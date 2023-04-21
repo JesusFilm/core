@@ -2,7 +2,7 @@ import { fireEvent, render } from '@testing-library/react'
 import type { TreeBlock } from '../../libs/block'
 import { handleAction } from '../../libs/action'
 import { RadioOptionFields } from './__generated__/RadioOptionFields'
-import { RadioOption } from '.'
+import RadioOption from '.'
 
 jest.mock('../../libs/action', () => {
   const originalModule = jest.requireActual('../../libs/action')

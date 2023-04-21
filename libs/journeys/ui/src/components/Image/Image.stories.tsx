@@ -2,7 +2,7 @@ import { ComponentProps } from 'react'
 import { Story, Meta } from '@storybook/react'
 import { journeyUiConfig } from '../../libs/journeyUiConfig'
 import { StoryCard } from '../StoryCard'
-import { Image } from './Image'
+import Image from './Image'
 
 const Demo = {
   ...journeyUiConfig,

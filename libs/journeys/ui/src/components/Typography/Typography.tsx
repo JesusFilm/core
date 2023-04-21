@@ -7,7 +7,7 @@ export interface TypographyProps extends TreeBlock<TypographyFields> {
   editableContent?: ReactElement
 }
 
-export function Typography({
+export default function Typography({
   variant,
   color,
   align,

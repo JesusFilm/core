@@ -11,7 +11,7 @@ import {
 import { journeyUiConfig } from '../../libs/journeyUiConfig'
 import { simpleComponentConfig } from '../../libs/simpleComponentConfig'
 import { StoryCard } from '../StoryCard'
-import { Typography } from './Typography'
+import Typography from './Typography'
 
 const TypographyDemo = {
   ...journeyUiConfig,

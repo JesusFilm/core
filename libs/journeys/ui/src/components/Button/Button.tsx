@@ -40,7 +40,7 @@ export interface ButtonProps extends TreeBlock<ButtonFields> {
   editableLabel?: ReactElement
 }
 
-export function Button({
+export default function Button({
   id: blockId,
   buttonVariant,
   label,

@@ -11,7 +11,7 @@ import {
   IconName,
   IconSize
 } from '../../../__generated__/globalTypes'
-import { Button } from '.'
+import Button from '.'
 
 const ButtonDemo = {
   ...journeyUiConfig,

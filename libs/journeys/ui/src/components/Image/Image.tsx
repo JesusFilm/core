@@ -8,7 +8,7 @@ import type { TreeBlock } from '../../libs/block'
 import { blurImage } from '../../libs/blurImage'
 import { ImageFields } from './__generated__/ImageFields'
 
-export function Image({
+export default function Image({
   id,
   src,
   alt,

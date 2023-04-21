@@ -21,7 +21,7 @@ import {
   ButtonFields_action_LinkAction as LinkAction
 } from './__generated__/ButtonFields'
 import { BUTTON_CLICK_EVENT_CREATE, CHAT_OPEN_EVENT_CREATE } from './Button'
-import { Button } from '.'
+import Button from '.'
 
 jest.mock('uuid', () => ({
   __esModule: true,
