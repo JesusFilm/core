@@ -1,12 +1,12 @@
 import { ReactElement } from 'react'
+import { SnackbarProvider } from 'notistack'
+import dynamic from 'next/dynamic'
 import { Button } from '../Button'
 import { Card } from '../Card'
 import { Image } from '../Image'
 import { RadioOption } from '../RadioOption'
 import { RadioQuestion } from '../RadioQuestion'
-import { SignUp } from '../SignUp'
 import { Step } from '../Step'
-import { TextResponse } from '../TextResponse'
 import { Typography } from '../Typography'
 import { Video } from '../Video'
 import type { TreeBlock } from '../../libs/block'
@@ -23,6 +23,22 @@ import {
   BlockFields_TypographyBlock as TypographyBlock,
   BlockFields_VideoBlock as VideoBlock
 } from '../../libs/block/__generated__/BlockFields'
+
+const SignUp = dynamic(
+  async () =>
+    await import(
+      /* webpackChunkName: "SignUp" */
+      '../SignUp'
+    )
+)
+
+const TextResponse = dynamic(
+  async () =>
+    await import(
+      /* webpackChunkName: "TextResponse" */
+      '../TextResponse'
+    )
+)
 
 export interface WrapperProps<T = Block> {
   block: TreeBlock<T>
@@ -115,11 +131,13 @@ export function BlockRenderer({
       )
     case 'SignUpBlock':
       return (
-        <Wrapper block={block}>
-          <SignUpWrapper block={block}>
-            <SignUp {...block} />
-          </SignUpWrapper>
-        </Wrapper>
+        <SnackbarProvider>
+          <Wrapper block={block}>
+            <SignUpWrapper block={block}>
+              <SignUp {...block} />
+            </SignUpWrapper>
+          </Wrapper>
+        </SnackbarProvider>
       )
     case 'StepBlock':
       return (
@@ -131,11 +149,13 @@ export function BlockRenderer({
       )
     case 'TextResponseBlock':
       return (
-        <Wrapper block={block}>
-          <TextResponseWrapper block={block}>
-            <TextResponse {...block} />
-          </TextResponseWrapper>
-        </Wrapper>
+        <SnackbarProvider>
+          <Wrapper block={block}>
+            <TextResponseWrapper block={block}>
+              <TextResponse {...block} />
+            </TextResponseWrapper>
+          </Wrapper>
+        </SnackbarProvider>
       )
     case 'TypographyBlock':
       return (

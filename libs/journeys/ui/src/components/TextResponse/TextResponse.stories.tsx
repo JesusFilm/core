@@ -10,8 +10,7 @@ import { StoryCard } from '../StoryCard'
 import { ApolloLoadingProvider } from '../../../test/ApolloLoadingProvider'
 import { IconName, TypographyVariant } from '../../../__generated__/globalTypes'
 import { Typography } from '../Typography'
-import {
-  TextResponse,
+import TextResponse, {
   TEXT_RESPONSE_SUBMISSION_EVENT_CREATE
 } from './TextResponse'
 

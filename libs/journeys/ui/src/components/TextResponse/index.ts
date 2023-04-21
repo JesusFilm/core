@@ -1,1 +1,1 @@
-export { TextResponse } from './TextResponse'
+export { default } from './TextResponse'

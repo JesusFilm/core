@@ -42,7 +42,7 @@ interface SignUpFormValues {
   email: string
 }
 
-export const SignUp = ({
+export default function SignUp({
   id: blockId,
   uuid = uuidv4,
   submitIconId,
@@ -53,7 +53,7 @@ export const SignUp = ({
   children,
   sx,
   ...props
-}: SignUpProps): ReactElement => {
+}: SignUpProps): ReactElement {
   const { t } = useTranslation('libs-journeys-ui')
 
   const submitIcon = children.find((block) => block.id === submitIconId) as

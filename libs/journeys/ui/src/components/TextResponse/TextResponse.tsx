@@ -41,7 +41,7 @@ interface TextResponseFormValues {
   response: string
 }
 
-export const TextResponse = ({
+export default function TextResponse({
   id: blockId,
   uuid = uuidv4,
   label,
@@ -53,7 +53,7 @@ export const TextResponse = ({
   action,
   children,
   sx
-}: TextResponseProps): ReactElement => {
+}: TextResponseProps): ReactElement {
   const { t } = useTranslation('libs-journeys-ui')
 
   const submitIcon = children.find((block) => block.id === submitIconId) as

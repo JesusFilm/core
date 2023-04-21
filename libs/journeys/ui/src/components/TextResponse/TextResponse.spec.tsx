@@ -9,8 +9,7 @@ import { activeBlockVar, treeBlocksVar } from '../../libs/block'
 import { JourneyProvider } from '../../libs/JourneyProvider'
 import { handleAction } from '../../libs/action'
 import { BlockFields_StepBlock as StepBlock } from '../../libs/block/__generated__/BlockFields'
-import {
-  TextResponse,
+import TextResponse, {
   TEXT_RESPONSE_SUBMISSION_EVENT_CREATE
 } from './TextResponse'
 import { TextResponseFields } from './__generated__/TextResponseFields'

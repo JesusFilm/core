@@ -9,7 +9,7 @@ import { activeBlockVar, treeBlocksVar } from '../../libs/block'
 import { JourneyProvider } from '../../libs/JourneyProvider'
 import { handleAction } from '../../libs/action'
 import { BlockFields_StepBlock as StepBlock } from '../../libs/block/__generated__/BlockFields'
-import { SignUp, SIGN_UP_SUBMISSION_EVENT_CREATE } from './SignUp'
+import SignUp, { SIGN_UP_SUBMISSION_EVENT_CREATE } from './SignUp'
 import { SignUpFields } from './__generated__/SignUpFields'
 
 jest.mock('../../libs/action', () => {
