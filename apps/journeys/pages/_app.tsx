@@ -8,6 +8,7 @@ import { datadogRum } from '@datadog/browser-rum'
 import { CacheProvider } from '@emotion/react'
 import type { EmotionCache } from '@emotion/cache'
 import { createEmotionCache } from '@core/shared/ui/createEmotionCache'
+import { SnackbarProvider } from 'notistack'
 import { getAuth, onAuthStateChanged } from 'firebase/auth'
 import { appWithTranslation, SSRConfig } from 'next-i18next'
 import { useTranslation } from 'react-i18next'
@@ -84,7 +85,9 @@ function JourneysApp({
         />
       </Head>
       <ApolloProvider client={apolloClient}>
-        <Component {...pageProps} />
+        <SnackbarProvider>
+          <Component {...pageProps} />
+        </SnackbarProvider>
       </ApolloProvider>
     </CacheProvider>
   )
