@@ -89,7 +89,7 @@
       "executor": "@nrwl/workspace:run-commands",
       "options": {
         "commands": [
-          "npx prisma@^4.13.0 generate --schema apps/api-users/db/schema.prisma"
+          "npx prisma generate --schema apps/api-users/db/schema.prisma"
         ]
       }
     },
@@ -97,13 +97,13 @@
       "executor": "@nrwl/workspace:run-commands",
       "options": {
         "commands": [
-          "npx prisma@^4.13.0 migrate dev --schema apps/api-users/db/schema.prisma"
+          "npx prisma migrate dev --schema apps/api-users/db/schema.prisma"
         ]
       },
       "configurations": {
         "production": {
           "commands": [
-            "npx prisma@^4.13.0 migrate deploy --schema apps/api-users/db/schema.prisma"
+            "npx prisma migrate deploy --schema apps/api-users/db/schema.prisma"
           ]
         }
       }
@@ -112,7 +112,7 @@
       "executor": "@nrwl/workspace:run-commands",
       "options": {
         "commands": [
-          "npx prisma@^4.13.0 reset --schema apps/api-users/db/schema.prisma"
+          "npx prisma reset --schema apps/api-users/db/schema.prisma"
         ]
       }
     },
@@ -126,7 +126,7 @@
       "executor": "@nrwl/workspace:run-commands",
       "options": {
         "commands": [
-          "npx prisma@^4.13.0 validate --schema apps/api-users/db/schema.prisma"
+          "npx prisma validate --schema apps/api-users/db/schema.prisma"
         ]
       }
     }
