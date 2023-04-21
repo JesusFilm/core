@@ -1,5 +1,4 @@
 import { ReactElement } from 'react'
-import { SnackbarProvider } from 'notistack'
 import dynamic from 'next/dynamic'
 import { Button } from '../Button'
 import { Card } from '../Card'
@@ -23,28 +22,24 @@ import {
   BlockFields_VideoBlock as VideoBlock
 } from '../../libs/block/__generated__/BlockFields'
 
-const SignUp = dynamic(
+const SnackbarProvider = dynamic(
   async () =>
-    await import(
-      /* webpackChunkName: "SignUp" */
-      '../SignUp'
+    await import(/* webpackChunkName: "SnackbarProvider" */ 'notistack').then(
+      (mod) => mod.SnackbarProvider
     )
+)
+
+const SignUp = dynamic(
+  async () => await import(/* webpackChunkName: "SignUp" */ '../SignUp')
 )
 
 const TextResponse = dynamic(
   async () =>
-    await import(
-      /* webpackChunkName: "TextResponse" */
-      '../TextResponse'
-    )
+    await import(/* webpackChunkName: "TextResponse" */ '../TextResponse')
 )
 
 const Video = dynamic(
-  async () =>
-    await import(
-      /* webpackChunkName: "Video" */
-      '../Video'
-    )
+  async () => await import(/* webpackChunkName: "Video" */ '../Video')
 )
 
 export interface WrapperProps<T = Block> {
