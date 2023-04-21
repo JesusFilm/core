@@ -1,4 +1,5 @@
 import { ReactElement } from 'react'
+import { SnackbarProvider } from 'notistack'
 import { Button } from '../Button'
 import { Card } from '../Card'
 import { Image } from '../Image'
@@ -115,11 +116,13 @@ export function BlockRenderer({
       )
     case 'SignUpBlock':
       return (
-        <Wrapper block={block}>
-          <SignUpWrapper block={block}>
-            <SignUp {...block} />
-          </SignUpWrapper>
-        </Wrapper>
+        <SnackbarProvider>
+          <Wrapper block={block}>
+            <SignUpWrapper block={block}>
+              <SignUp {...block} />
+            </SignUpWrapper>
+          </Wrapper>
+        </SnackbarProvider>
       )
     case 'StepBlock':
       return (
@@ -131,11 +134,13 @@ export function BlockRenderer({
       )
     case 'TextResponseBlock':
       return (
-        <Wrapper block={block}>
-          <TextResponseWrapper block={block}>
-            <TextResponse {...block} />
-          </TextResponseWrapper>
-        </Wrapper>
+        <SnackbarProvider>
+          <Wrapper block={block}>
+            <TextResponseWrapper block={block}>
+              <TextResponse {...block} />
+            </TextResponseWrapper>
+          </Wrapper>
+        </SnackbarProvider>
       )
     case 'TypographyBlock':
       return (

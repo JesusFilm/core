@@ -3,7 +3,6 @@ import SwiperCore from 'swiper'
 import { Swiper, SwiperSlide } from 'swiper/react'
 import { findIndex } from 'lodash'
 import Box from '@mui/material/Box'
-import { SnackbarProvider } from 'notistack'
 import Fade from '@mui/material/Fade'
 import Stack from '@mui/material/Stack'
 import IconButton from '@mui/material/IconButton'
@@ -186,99 +185,97 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
 
   return (
     <Div100vh>
-      <SnackbarProvider>
-        <Stack
+      <Stack
+        sx={{
+          justifyContent: 'center',
+          height: '100%'
+        }}
+      >
+        <Box
           sx={{
-            justifyContent: 'center',
-            height: '100%'
+            display: 'flex',
+            flexGrow: 1,
+            pt: { md: 0, xs: 6 },
+            my: 'auto',
+            [theme.breakpoints.only('sm')]: {
+              maxHeight: '460px'
+            },
+            [theme.breakpoints.up('md')]: {
+              maxHeight: '480px'
+            }
           }}
         >
-          <Box
-            sx={{
-              display: 'flex',
-              flexGrow: 1,
-              pt: { md: 0, xs: 6 },
-              my: 'auto',
-              [theme.breakpoints.only('sm')]: {
-                maxHeight: '460px'
-              },
-              [theme.breakpoints.up('md')]: {
-                maxHeight: '480px'
-              }
+          <Swiper
+            dir={!rtl ? 'ltr' : 'rtl'}
+            slidesPerView="auto"
+            centeredSlides
+            centeredSlidesBounds
+            onSwiper={(swiper) => setSwiper(swiper)}
+            resizeObserver
+            onBeforeResize={() => setGapBetween(getResponsiveGap())}
+            onSlideChangeTransitionStart={() => setSlideTransitioning(true)}
+            onSlideChangeTransitionEnd={() => setSlideTransitioning(false)}
+            allowTouchMove={false}
+            style={{
+              width: '100%',
+              paddingLeft: `${edgeSlideWidth + gapBetweenSlides / 2}px`,
+              paddingRight: `${edgeSlideWidth + gapBetweenSlides / 2}px`
             }}
           >
-            <Swiper
-              dir={!rtl ? 'ltr' : 'rtl'}
-              slidesPerView="auto"
-              centeredSlides
-              centeredSlidesBounds
-              onSwiper={(swiper) => setSwiper(swiper)}
-              resizeObserver
-              onBeforeResize={() => setGapBetween(getResponsiveGap())}
-              onSlideChangeTransitionStart={() => setSlideTransitioning(true)}
-              onSlideChangeTransitionEnd={() => setSlideTransitioning(false)}
-              allowTouchMove={false}
-              style={{
-                width: '100%',
-                paddingLeft: `${edgeSlideWidth + gapBetweenSlides / 2}px`,
-                paddingRight: `${edgeSlideWidth + gapBetweenSlides / 2}px`
-              }}
-            >
-              {treeBlocks.map((block) => (
-                <SwiperSlide
-                  key={block.id}
-                  style={{
-                    marginRight: '0px'
+            {treeBlocks.map((block) => (
+              <SwiperSlide
+                key={block.id}
+                style={{
+                  marginRight: '0px'
+                }}
+              >
+                <Box
+                  sx={{
+                    px: `${gapBetweenSlides / 2}px`,
+                    height: `calc(100% - ${theme.spacing(6)})`,
+                    [theme.breakpoints.up('lg')]: {
+                      maxWidth: '854px'
+                    }
                   }}
                 >
-                  <Box
-                    sx={{
-                      px: `${gapBetweenSlides / 2}px`,
-                      height: `calc(100% - ${theme.spacing(6)})`,
-                      [theme.breakpoints.up('lg')]: {
-                        maxWidth: '854px'
-                      }
-                    }}
+                  <CardWrapper
+                    id={block.id}
+                    backgroundColor={theme.palette.primary.light}
+                    themeMode={null}
+                    themeName={null}
                   >
-                    <CardWrapper
-                      id={block.id}
-                      backgroundColor={theme.palette.primary.light}
-                      themeMode={null}
-                      themeName={null}
+                    <Fade
+                      in={activeBlock?.id === block.id}
+                      mountOnEnter
+                      unmountOnExit
                     >
-                      <Fade
-                        in={activeBlock?.id === block.id}
-                        mountOnEnter
-                        unmountOnExit
+                      <Box
+                        sx={{
+                          position: 'absolute',
+                          width: '100%',
+                          height: '100%'
+                        }}
                       >
-                        <Box
-                          sx={{
-                            position: 'absolute',
-                            width: '100%',
-                            height: '100%'
-                          }}
-                        >
-                          <BlockRenderer block={block} />
-                        </Box>
-                      </Fade>
-                    </CardWrapper>
-                  </Box>
-                </SwiperSlide>
-              ))}
-              {showLeftButton && <Navigation variant="Left" />}
-              {showRightButton && <Navigation variant="Right" />}
-            </Swiper>
-          </Box>
-          <Box
-            sx={{
-              px: `${edgeSlideWidth + gapBetweenSlides}px`,
-              pb: 2
-            }}
-          >
-            <Footer />
-          </Box>
-        </Stack>
-      </SnackbarProvider>
+                        <BlockRenderer block={block} />
+                      </Box>
+                    </Fade>
+                  </CardWrapper>
+                </Box>
+              </SwiperSlide>
+            ))}
+            {showLeftButton && <Navigation variant="Left" />}
+            {showRightButton && <Navigation variant="Right" />}
+          </Swiper>
+        </Box>
+        <Box
+          sx={{
+            px: `${edgeSlideWidth + gapBetweenSlides}px`,
+            pb: 2
+          }}
+        >
+          <Footer />
+        </Box>
+      </Stack>
     </Div100vh>
   )
 }
