@@ -66,6 +66,8 @@ export function LinkAction(): ReactElement {
           input: {
             url: startsWith(url, 'https')
               ? url
+              : startsWith(url, 'http')
+              ? url
               : startsWith(url, 'mailto')
               ? url
               : 'https://' + url

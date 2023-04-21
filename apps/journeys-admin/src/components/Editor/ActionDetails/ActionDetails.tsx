@@ -8,13 +8,13 @@ import { ActionInformation } from './ActionInformation'
 interface ActionDetailsProps {
   url?: string
   goalLabel?: (url: string) => string
-  selectedAction?: (url: string) => void
+  setSelectedAction?: (url: string) => void
 }
 
 export function ActionDetails({
   url,
   goalLabel,
-  selectedAction
+  setSelectedAction
 }: ActionDetailsProps): ReactElement {
   return (
     <Box sx={{ overflow: 'auto', height: '100%' }}>
@@ -23,7 +23,7 @@ export function ActionDetails({
           <ActionEditor
             url={url}
             goalLabel={goalLabel}
-            selectedAction={selectedAction}
+            setSelectedAction={setSelectedAction}
           />
           <ActionCards url={url} />
         </Stack>

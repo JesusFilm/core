@@ -46,7 +46,10 @@ export function ActionsTable({ hasAction }: ActionsTableProps): ReactElement {
   const goalLabel = (url: string): string => {
     let urlToInspect = url
     if (urlToInspect === '') return ''
-    if (!startsWith(urlToInspect, 'https')) {
+    if (
+      !startsWith(urlToInspect, 'https') &&
+      !startsWith(urlToInspect, 'http')
+    ) {
       urlToInspect = 'https://' + urlToInspect
     }
     const urlObject = new URL(urlToInspect)

@@ -33,13 +33,13 @@ export const MULTIPLE_LINK_ACTION_UPDATE = gql`
 interface ActionEditorProps {
   url: string
   goalLabel?: (url: string) => string
-  selectedAction?: (url: string) => void
+  setSelectedAction?: (url: string) => void
 }
 
 export function ActionEditor({
   url,
   goalLabel,
-  selectedAction
+  setSelectedAction
 }: ActionEditorProps): ReactElement {
   const { journey } = useJourney()
 
@@ -65,17 +65,20 @@ export function ActionEditor({
     if (journey == null) return
     const target = e.target as HTMLInputElement
     const url = target.value
+    const formattedUrl = startsWith(url, 'https')
+      ? url
+      : startsWith(url, 'http')
+      ? url
+      : startsWith(url, 'mailto')
+      ? url
+      : 'https://' + url
     blocks.map(async (block) => {
       await linkActionUpdate({
         variables: {
           id: block.id,
           journeyId: journey.id,
           input: {
-            url: startsWith(url, 'https')
-              ? url
-              : startsWith(url, 'mailto')
-              ? url
-              : 'https://' + url
+            url: formattedUrl
           }
         },
         update(cache, { data }) {
@@ -93,8 +96,8 @@ export function ActionEditor({
         }
       })
     })
-    selectedAction?.(target.value)
-    goalLabel?.(target.value)
+    setSelectedAction?.(formattedUrl)
+    goalLabel?.(formattedUrl)
   }
 
   let icon: ReactNode
