@@ -193,6 +193,7 @@ describe('VideoDetails', () => {
     expect(onSelect).toHaveBeenCalledWith({
       source: VideoBlockSource.internal,
       videoId: null,
+      posterBlockId: null,
       videoVariantLanguageId: null
     })
   })

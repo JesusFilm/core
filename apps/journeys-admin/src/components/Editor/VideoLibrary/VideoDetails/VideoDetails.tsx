@@ -61,6 +61,7 @@ export function VideoDetails({
     onSelect({
       videoId: null,
       videoVariantLanguageId: null,
+      posterBlockId: null,
       source: VideoBlockSource.internal
     })
   }
