@@ -2,6 +2,7 @@ import { ReactElement } from 'react'
 import dynamic from 'next/dynamic'
 import { Card } from '../Card'
 import { Step } from '../Step'
+import Typography from '../Typography'
 import type { TreeBlock } from '../../libs/block'
 import {
   BlockFields as Block,
@@ -43,9 +44,6 @@ const SignUp = dynamic(
 const TextResponse = dynamic(
   async () =>
     await import(/* webpackChunkName: "TextResponse" */ '../TextResponse')
-)
-const Typography = dynamic(
-  async () => await import(/* webpackChunkName: "Typography" */ '../Typography')
 )
 const Video = dynamic(
   async () => await import(/* webpackChunkName: "Video" */ '../Video')

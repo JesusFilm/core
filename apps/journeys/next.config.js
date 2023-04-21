@@ -1,6 +1,5 @@
 const withNx = require('@nrwl/next/plugins/with-nx')
 const withPlugins = require('next-compose-plugins')
-const withImages = require('next-images')
 const { i18n } = require('./next-i18next.config')
 
 /**
@@ -8,6 +7,7 @@ const { i18n } = require('./next-i18next.config')
  **/
 const nextConfig = {
   i18n,
+  swcMinify: true,
   images: {
     domains: [
       'images.unsplash.com',
@@ -19,7 +19,8 @@ const nextConfig = {
       'i.ytimg.com',
       // cloudflare
       'imagedelivery.net'
-    ]
+    ],
+    minimumCacheTTL: 31536000
   },
   nx: {
     // Set this to true if you would like to to use SVGR
@@ -36,4 +37,4 @@ const nextConfig = {
     ignoreDuringBuilds: process.env.CI === 'true'
   }
 }
-module.exports = withPlugins([[withImages], [withNx]], nextConfig)
+module.exports = withPlugins([[withNx]], nextConfig)
