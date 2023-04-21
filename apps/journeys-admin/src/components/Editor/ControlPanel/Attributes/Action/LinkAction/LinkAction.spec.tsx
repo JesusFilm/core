@@ -119,7 +119,7 @@ describe('LinkAction', () => {
       </MockedProvider>
     )
     fireEvent.change(getByRole('textbox'), {
-      target: { value: 'www.incorectUrl.com/needs-protocol' }
+      target: { value: 'google@http://asd.com' }
     })
     fireEvent.blur(getByRole('textbox'))
     await waitFor(() => expect(getByText('Invalid URL')).toBeInTheDocument())
