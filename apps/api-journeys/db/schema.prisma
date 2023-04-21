@@ -20,6 +20,8 @@ model Event {
   extra     Json
   Visitor   Visitor? @relation(fields: [visitorId], references: [id])
   visitorId String?
+
+  @@index([id, journeyId, visitorId])
 }
 
 enum MessagePlatform {
@@ -59,21 +61,34 @@ enum DeviceType {
 
 model Visitor {
   id                        String           @id
-  createdAt                 DateTime         @default(now())
+  createdAt                 DateTime         @unique @default(now())
+  countryCode               String?
+  email                     String?
+  events                    Event[]
   lastChatStartedAt         DateTime?
   lastChatPlatform          MessagePlatform?
-  userAgent                 Json?
-  countryCode               String?
-  name                      String?
-  email                     String?
-  status                    VisitorStatus?
-  messagePlatform           MessagePlatform?
-  messagePlatformId         String?
-  notes                     String?
   lastStepViewedAt          String?
   lastLinkAction            String?
   lastTextResponse          String?
   lastRadioQuestion         String?
   lastRadioOptionSubmission String?
-  events                    Event[]
+  messagePlatform           MessagePlatform?
+  messagePlatformId         String?
+  name                      String?
+  notes                     String?
+  status                    VisitorStatus?
+  team                      Team             @relation(fields: [teamId], references: [id])
+  teamId                    String
+  userId                    String
+  userAgent                 Json?
+
+  @@index([id, teamId, createdAt, userId])
+}
+
+model Team {
+  id           String    @id
+  title        String
+  contactEmail String?
+  createdAt    DateTime  @default(now())
+  Visitor      Visitor[]
 }

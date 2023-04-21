@@ -1,11 +1,9 @@
 import { Injectable, Inject } from '@nestjs/common'
 import { BaseService } from '@core/nest/database/BaseService'
 import { UserInputError } from 'apollo-server-errors'
-import { aql } from 'arangojs'
-import { KeyAsId } from '@core/nest/decorators/KeyAsId'
+import { Visitor } from '.prisma/api-journeys-client'
 import { BlockService } from '../block/block.service'
-import { VisitorRecord, VisitorService } from '../visitor/visitor.service'
-import { Event } from '../../__generated__/graphql'
+import { VisitorService } from '../visitor/visitor.service'
 
 @Injectable()
 export class EventService extends BaseService {
@@ -22,7 +20,7 @@ export class EventService extends BaseService {
     blockId: string,
     stepId: string | null = null
   ): Promise<{
-    visitor: VisitorRecord
+    visitor: Visitor
     journeyId: string
   }> {
     const block: { journeyId: string; _key: string } | undefined =
@@ -53,15 +51,5 @@ export class EventService extends BaseService {
     }
 
     return { visitor, journeyId }
-  }
-
-  @KeyAsId()
-  async getAllByVisitorId(visitorId: string): Promise<Event[]> {
-    const res = await this.db.query(aql`
-      FOR event IN ${this.collection}
-        FILTER event.visitorId == ${visitorId}
-        RETURN event
-    `)
-    return await res.all()
   }
 }

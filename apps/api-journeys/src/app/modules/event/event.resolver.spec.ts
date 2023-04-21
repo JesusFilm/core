@@ -1,6 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { DbEvent, EventResolver } from './event.resolver'
 import { EventService } from './event.service'
+import { PrismaService } from '../../lib/prisma.service'
 
 describe('EventResolver', () => {
   let resolver: EventResolver
@@ -19,7 +20,7 @@ describe('EventResolver', () => {
 
     beforeEach(async () => {
       const module: TestingModule = await Test.createTestingModule({
-        providers: [EventResolver, eventService]
+        providers: [EventResolver, eventService, PrismaService]
       }).compile()
       resolver = module.get<EventResolver>(EventResolver)
     })

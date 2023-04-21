@@ -5,6 +5,7 @@ import {
 } from '../../__generated__/graphql'
 import { EventService } from '../event/event.service'
 import { MemberService } from '../member/member.service'
+import { PrismaService } from '../../lib/prisma.service'
 
 import { VisitorResolver } from './visitor.resolver'
 import { VisitorService } from './visitor.service'
@@ -12,10 +13,11 @@ import { VisitorService } from './visitor.service'
 describe('VisitorResolver', () => {
   let resolver: VisitorResolver,
     vService: VisitorService,
-    eService: EventService
+    eService: EventService,
+    prisma: PrismaService
 
   const connection: VisitorsConnection = {
-    edges: [],
+    results: [],
     pageInfo: {
       hasNextPage: false,
       startCursor: null,
@@ -24,6 +26,7 @@ describe('VisitorResolver', () => {
   }
 
   const visitor = {
+    id: 'visitorId',
     countryCode: null,
     email: 'bob@example.com',
     lastChatStartedAt: null,
@@ -32,6 +35,7 @@ describe('VisitorResolver', () => {
     name: 'Bob Smith',
     notes: 'Bob called this afternoon to arrange a meet-up.',
     status: 'star',
+    teamId: 'teamId',
     userAgent: null
   }
 
@@ -86,11 +90,18 @@ describe('VisitorResolver', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [VisitorResolver, visitorService, memberService, eventService]
+      providers: [
+        VisitorResolver,
+        visitorService,
+        memberService,
+        eventService,
+        PrismaService
+      ]
     }).compile()
     resolver = module.get<VisitorResolver>(VisitorResolver)
     vService = module.get<VisitorService>(VisitorService)
     eService = module.get<EventService>(EventService)
+    prisma = module.get<PrismaService>(PrismaService)
   })
 
   describe('visitorsConnection', () => {
@@ -118,21 +129,25 @@ describe('VisitorResolver', () => {
   })
 
   describe('visitor', () => {
+    beforeEach(() => {
+      prisma.event.findMany = jest.fn().mockReturnValue([])
+    })
     it('returns visitor', async () => {
+      prisma.visitor.findUnique = jest.fn().mockReturnValue(visitor)
       expect(await resolver.visitor('userId', 'visitorId')).toEqual({
-        id: 'visitorId',
-        teamId: 'teamId',
         ...visitor
       })
     })
 
     it('throws error when invalid visitor ID', async () => {
+      prisma.visitor.findUnique = jest.fn().mockReturnValue(null)
       await expect(
         async () => await resolver.visitor('userId', 'unknownVisitorId')
       ).rejects.toThrow('Visitor with ID "unknownVisitorId" does not exist')
     })
 
     it('throws error when user is not member of visitors team', async () => {
+      prisma.visitor.findUnique = jest.fn().mockReturnValue(visitor)
       await expect(
         async () =>
           await resolver.visitor('userId', 'visitorWithDifferentTeamId')

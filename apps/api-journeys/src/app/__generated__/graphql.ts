@@ -1109,7 +1109,7 @@ export class PageInfo {
 
 export class VisitorsConnection {
     __typename?: 'VisitorsConnection';
-    edges: VisitorEdge[];
+    results: Visitor[];
     pageInfo: PageInfo;
 }
 

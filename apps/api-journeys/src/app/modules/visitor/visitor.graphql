@@ -181,7 +181,7 @@ type VisitorsConnection {
   """
   A list of edges.
   """
-  edges: [VisitorEdge!]!
+  results: [Visitor!]!
   """
   Information to aid in pagination.
   """
