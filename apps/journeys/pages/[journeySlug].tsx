@@ -120,11 +120,12 @@ export const getStaticProps: GetStaticProps<JourneyPageProps> = async (
 
     return {
       props: {
-        ...(await serverSideTranslations(
-          context.locale ?? 'en',
-          ['apps-journeys', 'libs-journeys-ui'],
-          i18nConfig
-        )),
+        ...(!locale.includes('en') &&
+          (await serverSideTranslations(
+            context.locale ?? 'en',
+            ['apps-journeys', 'libs-journeys-ui'],
+            i18nConfig
+          ))),
         journey: data.journey,
         locale,
         rtl
