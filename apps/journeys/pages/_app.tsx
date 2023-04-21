@@ -56,10 +56,11 @@ function JourneysApp({
       })
 
     // Remove the server-side injected CSS.
-    const jssStyles = document.querySelector('#jss-server-side')
-    if (jssStyles != null) {
-      jssStyles.parentElement?.removeChild(jssStyles)
-    }
+    // const jssStyles = document.querySelector('#jss-server-side')
+    // if (jssStyles != null) {
+    //   jssStyles.parentElement?.removeChild(jssStyles)
+    // }
+
     const auth = getAuth(firebaseClient)
     return onAuthStateChanged(auth, (user) => {
       if (user != null) {
