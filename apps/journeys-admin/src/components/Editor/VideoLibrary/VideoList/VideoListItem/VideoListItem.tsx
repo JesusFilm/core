@@ -1,13 +1,10 @@
 import { ReactElement, useState } from 'react'
-import Typography from '@mui/material/Typography'
-import Box from '@mui/material/Box'
-import ListItemText from '@mui/material/ListItemText'
-import ListItemButton from '@mui/material/ListItemButton'
 import {
   VideoBlockSource,
   VideoBlockUpdateInput
 } from '../../../../../../__generated__/globalTypes'
 import { VideoDetails } from '../../VideoDetails'
+import { MediaListItem } from '../../../../MediaListItem'
 
 export interface VideoListItemProps {
   id: string
@@ -45,55 +42,13 @@ export function VideoListItem({
 
   return (
     <>
-      <ListItemButton
+      <MediaListItem
+        image={image ?? ''}
         onClick={handleOpen}
-        sx={{ alignItems: 'flex-start', py: 4, px: 6 }}
-      >
-        <ListItemText
-          primary={title}
-          secondary={description}
-          secondaryTypographyProps={{
-            sx: {
-              whiteSpace: 'nowrap',
-              overflow: 'hidden',
-              textOverflow: 'ellipsis'
-            }
-          }}
-          sx={{ m: 0 }}
-        />
-        {image != null && (
-          <Box>
-            <Box
-              sx={{
-                display: 'flex',
-                alignItems: 'flex-end',
-                justifyContent: 'flex-end',
-                height: 79,
-                width: 79,
-                borderRadius: 2,
-                ml: 2,
-                backgroundSize: 'cover',
-                backgroundPosition: 'center center',
-                backgroundImage: `url(${image})`
-              }}
-            >
-              <Typography
-                component="div"
-                variant="caption"
-                sx={{
-                  color: 'background.paper',
-                  backgroundColor: 'rgba(0, 0, 0, 0.35)',
-                  px: 1,
-                  m: 1,
-                  borderRadius: 2
-                }}
-              >
-                {duration}
-              </Typography>
-            </Box>
-          </Box>
-        )}
-      </ListItemButton>
+        title={title ?? ''}
+        description={description ?? ''}
+        duration={duration}
+      />
       <VideoDetails
         id={id}
         open={open}
