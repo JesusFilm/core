@@ -1,9 +1,8 @@
 import { Inject, Injectable } from '@nestjs/common'
-import { aql } from 'arangojs'
 import { KeyAsId } from '@core/nest/decorators/KeyAsId'
 import { v4 as uuidv4 } from 'uuid'
 import { Visitor } from '.prisma/api-journeys-client'
-import { Journey, MessagePlatform, PageInfo } from '../../__generated__/graphql'
+import { MessagePlatform, PageInfo } from '../../__generated__/graphql'
 import { PrismaService } from '../../lib/prisma.service'
 import { JourneyService } from '../journey/journey.service'
 
@@ -60,7 +59,7 @@ export class VisitorService {
       orderBy: {
         createdAt: 'desc'
       },
-      skip: 1,
+      skip: after == null ? 0 : 1,
       take: first + 1
     })
     const sendResult = result.length > first ? result.slice(0, -1) : result

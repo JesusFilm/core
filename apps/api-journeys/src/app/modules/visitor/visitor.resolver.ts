@@ -12,7 +12,6 @@ import { IResult, UAParser } from 'ua-parser-js'
 import { Inject } from '@nestjs/common'
 import { Event, Visitor } from '.prisma/api-journeys-client'
 import { PrismaService } from '../../lib/prisma.service'
-import { EventService } from '../event/event.service'
 import { MemberService } from '../member/member.service'
 import { VisitorService, VisitorsConnection } from './visitor.service'
 
@@ -21,7 +20,6 @@ export class VisitorResolver {
   constructor(
     private readonly visitorService: VisitorService,
     private readonly memberService: MemberService,
-    private readonly eventService: EventService,
     @Inject(PrismaService) private readonly prismaService: PrismaService
   ) {}
 
