@@ -1,8 +1,5 @@
 import { ReactElement, useState } from 'react'
 import type { TreeBlock } from '@core/journeys/ui/block'
-import Card from '@mui/material/Card'
-import CardActionArea from '@mui/material/CardActionArea'
-import Stack from '@mui/material/Stack'
 import {
   VideoBlockSource,
   VideoBlockUpdateInput
