@@ -101,11 +101,11 @@ jobs:
           echo "$delimiter" >> $GITHUB_OUTPUT
       - uses: mshick/add-pr-comment@v2
         if: ${{ github.event_name == 'pull_request' }}
-        name: Add deployment comment to PR
+        name: add deployment comment to pull request
         with:
           message: ${{ steps.get-comment-body.outputs.body }}
           message-id: ${{ matrix.app }}
-      - name: Create commit comment
+      - name: add deployment comment to commit
         if: ${{ github.event_name != 'pull_request' }}
         uses: peter-evans/commit-comment@v2
         with:
@@ -176,7 +176,7 @@ jobs:
           echo "body<<$delimiter" >> $GITHUB_OUTPUT
           echo "$body" >> $GITHUB_OUTPUT
           echo "$delimiter" >> $GITHUB_OUTPUT
-      - name: Create commit comment
+      - name: add deployment comment to commit
         if: ${{ github.event_name != 'pull_request' }}
         uses: peter-evans/commit-comment@v2
         with:
