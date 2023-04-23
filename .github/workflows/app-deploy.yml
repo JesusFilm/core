@@ -53,6 +53,7 @@ jobs:
     permissions:
       pull-requests: write
       deployments: write
+      contents: write
     steps:
       - name: start deployment
         uses: chrnorm/deployment-action@v2
@@ -129,6 +130,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       deployments: write
+      contents: write
     steps:
       - name: start deployment
         uses: chrnorm/deployment-action@v2
