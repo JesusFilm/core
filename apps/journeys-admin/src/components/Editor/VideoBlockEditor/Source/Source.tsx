@@ -41,13 +41,10 @@ export function Source({ selectedBlock, onChange }: SourceProps): ReactElement {
 
   return (
     <>
-      <Card variant="outlined" sx={{ borderRadius: 2 }}>
-        <CardActionArea onClick={() => setOpen(true)}>
-          <Stack direction="row" alignItems="center" spacing={3} sx={{ p: 2 }}>
-            <SourceContent selectedBlock={selectedBlock} />
-          </Stack>
-        </CardActionArea>
-      </Card>
+      <SourceContent
+        onClick={() => setOpen(true)}
+        selectedBlock={selectedBlock}
+      />
       <VideoLibrary
         open={open}
         onClose={() => setOpen(false)}

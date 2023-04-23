@@ -1,20 +1,21 @@
 import { ReactElement } from 'react'
-import Box from '@mui/material/Box'
-import Typography from '@mui/material/Typography'
 import VideocamRoundedIcon from '@mui/icons-material/VideocamRounded'
 import AddRoundedIcon from '@mui/icons-material/AddRounded'
-import { ImageBlockThumbnail } from '../../../ImageBlockThumbnail'
+import { ContainedIconButton } from '../../../../ContainedIconButton'
 
-export function SourceEmpty(): ReactElement {
+interface SourceEmptyProps {
+  onClick: () => void
+}
+export function SourceEmpty({ onClick }: SourceEmptyProps): ReactElement {
   return (
-    <>
-      <Box>
-        <ImageBlockThumbnail Icon={VideocamRoundedIcon} />
-      </Box>
-      <Box flexGrow={1} minWidth={0}>
-        <Typography variant="subtitle2">Select Video</Typography>
-      </Box>
-      <AddRoundedIcon color="primary" />
-    </>
+    <ContainedIconButton
+      onClick={onClick}
+      thumbnailIcon={VideocamRoundedIcon}
+      loading={false}
+      imageSrc=""
+      imageAlt=""
+      label="Select Video"
+      actionIcon={<AddRoundedIcon color="primary" />}
+    />
   )
 }
