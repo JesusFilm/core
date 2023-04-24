@@ -3,7 +3,6 @@ import Typography from '@mui/material/Typography'
 import Box from '@mui/material/Box'
 import ListItemText from '@mui/material/ListItemText'
 import ListItemButton from '@mui/material/ListItemButton'
-import { useTranslation } from 'react-i18next'
 import {
   VideoBlockSource,
   VideoBlockUpdateInput
@@ -30,7 +29,6 @@ export function VideoListItem({
   onSelect: handleSelect
 }: VideoListItemProps): ReactElement {
   const [open, setOpen] = useState(false)
-  const { t } = useTranslation('apps-journeys-admin')
 
   const handleOpen = (): void => {
     setOpen(true)
@@ -52,8 +50,8 @@ export function VideoListItem({
         sx={{ alignItems: 'flex-start', py: 4, px: 6 }}
       >
         <ListItemText
-          primary={t(title as string)}
-          secondary={t(description as string)}
+          primary={title}
+          secondary={description}
           secondaryTypographyProps={{
             sx: {
               whiteSpace: 'nowrap',

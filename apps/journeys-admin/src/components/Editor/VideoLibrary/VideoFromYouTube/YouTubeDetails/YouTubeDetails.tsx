@@ -52,7 +52,6 @@ export function YouTubeDetails({
   const videoRef = useRef<HTMLVideoElement>(null)
   const playerRef = useRef<videojs.Player>()
   const [playing, setPlaying] = useState(false)
-  const [isExpanded, setIsExpanded] = useState(false)
   const { data, error } = useSWR<YoutubeVideosData['items'][number]>(
     () => (open ? id : null),
     fetcher
@@ -146,45 +145,10 @@ export function YouTubeDetails({
             )}
           </Box>
           <Box>
-            <Typography variant="subtitle1" gutterBottom>
-              {data?.snippet.title}
+            <Typography variant="subtitle1">{data?.snippet.title}</Typography>
+            <Typography variant="caption" sx={{ whiteSpace: 'pre-wrap' }}>
+              {data?.snippet.description}
             </Typography>
-            <Box sx={{ position: 'relative' }}>
-              <Typography
-                variant="caption"
-                sx={{
-                  display: '-webkit-box',
-                  overflow: 'hidden',
-                  WebkitLineClamp: isExpanded ? '0' : '3',
-                  WebkitBoxOrient: 'vertical',
-                  whiteSpace: isExpanded ? 'pre-wrap' : 'unset'
-                }}
-              >
-                {data?.snippet.description}
-                <Button
-                  variant="text"
-                  size="small"
-                  sx={{
-                    position: 'absolute',
-                    p: 0,
-                    bottom: -3,
-                    right: isExpanded ? 'unset' : 0,
-                    width: 0,
-                    color: 'secondary.light',
-                    backgroundColor: 'background.paper',
-                    background:
-                      'linear-gradient(90deg, rgba(255,255,255,0.85) 0%, rgba(255,255,255,1) 50%)',
-                    '&:hover': {
-                      backgroundColor:
-                        'linear-gradient(90deg, rgba(255,255,255,0.85) 0%, rgba(255,255,255,1) 50%)'
-                    }
-                  }}
-                  onClick={() => setIsExpanded(!isExpanded)}
-                >
-                  {isExpanded ? 'Less' : 'More'}
-                </Button>
-              </Typography>
-            </Box>
           </Box>
         </>
       )}
