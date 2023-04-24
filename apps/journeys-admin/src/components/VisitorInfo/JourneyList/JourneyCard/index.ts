@@ -1,1 +1,0 @@
-export { JourneyCard } from './JourneyCard'

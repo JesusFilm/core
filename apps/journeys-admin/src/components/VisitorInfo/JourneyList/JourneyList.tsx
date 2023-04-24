@@ -1,92 +1,57 @@
 import { ReactElement } from 'react'
-import { JourneyCard } from './JourneyCard'
+import { gql, useQuery } from '@apollo/client'
+import { GetVisitorEvents } from '../../../../__generated__/GetVisitorEvents'
+import { EventsCard } from './EventsCard'
+import { transformToJourney } from './utils/transformToJourney'
 
-export interface Event {
-  id: string
-  value: string
-  summaryEvent: boolean
-}
-
-export interface Journey {
-  id: string
-  title: string
-  events: Event[]
-}
-
-export function JourneyList(): ReactElement {
-  // transform events to journeys
-  const journeys: Journey[] = [
-    {
-      id: 'journey1.id',
-      title: 'Journey 1',
-      events: [
-        {
-          id: 'click.id',
-          value: 'click',
-          summaryEvent: true
-        },
-        {
-          id: 'generic1.id',
-          value: 'generic 1',
-          summaryEvent: false
-        },
-        {
-          id: 'generic2.id',
-          value: 'generic 2',
-          summaryEvent: false
-        },
-        {
-          id: 'stepView.id',
-          value: 'stepView',
-          summaryEvent: true
-        },
-        {
-          id: 'generic3.id',
-          value: 'generic 3',
-          summaryEvent: false
-        },
-        {
-          id: 'generic4.id',
-          value: 'generic 4',
-          summaryEvent: false
-        },
-        {
-          id: 'videoPlay.id',
-          value: 'videoPlay',
-          summaryEvent: true
+export const GET_VISITOR_EVENTS = gql`
+  query GetVisitorEvents($id: ID!) {
+    visitor(id: $id) {
+      id
+      events {
+        id
+        journeyId
+        label
+        value
+        createdAt
+        ... on JourneyViewEvent {
+          language {
+            id
+            name(primary: true) {
+              value
+            }
+          }
         }
-      ]
-    },
-    {
-      id: 'journey2.id',
-      title: 'Journey 2',
-      events: [
-        {
-          id: 'click.id',
-          value: 'click',
-          summaryEvent: true
-        },
-        {
-          id: 'stepView.id',
-          value: 'stepView',
-          summaryEvent: true
-        },
-        {
-          id: 'videoPlay.id',
-          value: 'videoPlay',
-          summaryEvent: true
+        ... on SignUpSubmissionEvent {
+          email
         }
-      ]
+        ... on VideoStartEvent {
+          source
+        }
+        ... on VideoCompleteEvent {
+          source
+        }
+        ... on ChatOpenEvent {
+          messagePlatform
+        }
+      }
     }
-  ]
+  }
+`
 
-  // CARD
-  // each journey starts in a collapsed state, but can be expanded
-  // determine which are the important events
+interface Props {
+  id: string
+}
+
+export function JourneyList({ id }: Props): ReactElement {
+  const { data } = useQuery<GetVisitorEvents>(GET_VISITOR_EVENTS, {
+    variables: { id }
+  })
+  const journeys = transformToJourney(data?.visitor.events)
   return (
     <>
       {journeys.map((journey) => (
-        <JourneyCard key={journey.id} journey={journey} />
+        <EventsCard key={journey.id} journey={journey} />
       ))}
     </>
   )

@@ -20,7 +20,7 @@ export function VisitorDetail({ id }: Props): ReactElement {
         <Typography variant="h5">{t('Latest Journey')}</Typography>
       </Box>
       {/* <VisitorJourneyList id={id} limit={1} /> */}
-      <JourneyList />
+      <JourneyList id={id} />
     </>
   )
 }
