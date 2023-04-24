@@ -48,7 +48,7 @@ export function LinkAction(): ReactElement {
 
   // Regex that allows for mailto links and links without a protocol e.g google.com
   const urlRegex =
-    /^((http|https):\/\/)?((?!www\.)([a-zA-Z0-9_-]+\.)*)?[a-zA-Z0-9_-]+(\.[a-zA-Z]+)+(\/)?.*([\w?[a-zA-Z-_%/@?]+)*([^/\w?[a-zA-Z0-9_-]+=\w+(&[a-zA-Z0-9_]+=\w+)*)?$|^mailto:[\w.-]+@[\w.-]+\.\w+$/
+    /^((http|https):\/\/)?((?!www\.)([a-zA-Z0-9_-]+\.)*)?[a-zA-Z0-9_-]+(\.[a-zA-Z]+)+(\/)?.*?([\w-]+\/)?([\w-]+(\?[\w-]+=\w+(&[\w-]+=\w+)*)?)?$|^mailto:[\w.-]+@[\w.-]+\.\w+$/
 
   const linkActionSchema = object({
     link: string().matches(urlRegex, 'Invalid URL').required('Required')
