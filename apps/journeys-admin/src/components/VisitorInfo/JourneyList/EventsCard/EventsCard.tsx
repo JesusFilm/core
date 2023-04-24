@@ -6,6 +6,7 @@ import Divider from '@mui/material/Divider'
 import Button from '@mui/material/Button'
 import { transformEvents } from '../utils/transformEvents'
 import { JourneyWithEvents } from '../utils/transformToJourney/transformToJourney'
+import { TimelineEvent } from '../TimelineEvent'
 
 interface Props {
   journey: JourneyWithEvents
@@ -32,15 +33,13 @@ export function EventsCard({ journey }: Props): ReactElement {
           if (Array.isArray(event)) {
             if (open) {
               return event.map((nestedEvent) => (
-                <Typography key={nestedEvent.id}>
-                  {nestedEvent.value}
-                </Typography>
+                <TimelineEvent key={nestedEvent.id} event={nestedEvent} />
               ))
             } else {
               return <Typography key={index}>{event.length}</Typography>
             }
           } else {
-            return <Typography key={event.id}>{event.value}</Typography>
+            return <TimelineEvent key={event.id} event={event} />
           }
         })}
       </Box>

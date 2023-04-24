@@ -1,3 +1,4 @@
+import { forEachRight } from 'lodash'
 import { GetVisitorEvents_visitor_events as Event } from '../../../../../../__generated__/GetVisitorEvents'
 
 export function transformEvents(events: Event[]): Array<Event | Event[]> {
@@ -9,7 +10,7 @@ export function transformEvents(events: Event[]): Array<Event | Event[]> {
     'RadioQuestionSubmissionEvent'
   ]
 
-  events.forEach((event) => {
+  forEachRight(events, (event) => {
     if (summaryEvents.includes(event.__typename)) {
       if (result[pointer] != null) pointer++
       result = [...result, event]
