@@ -161,28 +161,29 @@ export function YouTubeDetails({
                 }}
               >
                 {data?.snippet.description}
+                <Button
+                  variant="text"
+                  size="small"
+                  sx={{
+                    position: 'absolute',
+                    p: 0,
+                    bottom: -3,
+                    right: isExpanded ? 'unset' : 0,
+                    width: 0,
+                    color: 'secondary.light',
+                    backgroundColor: 'background.paper',
+                    background:
+                      'linear-gradient(90deg, rgba(255,255,255,0.85) 0%, rgba(255,255,255,1) 50%)',
+                    '&:hover': {
+                      backgroundColor:
+                        'linear-gradient(90deg, rgba(255,255,255,0.85) 0%, rgba(255,255,255,1) 50%)'
+                    }
+                  }}
+                  onClick={() => setIsExpanded(!isExpanded)}
+                >
+                  {isExpanded ? 'Less' : 'More'}
+                </Button>
               </Typography>
-              <Button
-                variant="text"
-                size="small"
-                sx={{
-                  position: 'absolute',
-                  p: 0,
-                  bottom: isExpanded ? 'unset' : -4,
-                  right: isExpanded ? 'unset' : 0,
-                  width: 0,
-                  color: 'secondary.light',
-                  backgroundColor: 'background.paper',
-                  background:
-                    'linear-gradient(90deg, rgba(255,255,255,0.95) 0%, rgba(255,255,255,1) 50%)',
-                  '&:hover': {
-                    backgroundColor: 'background.paper'
-                  }
-                }}
-                onClick={() => setIsExpanded(!isExpanded)}
-              >
-                {isExpanded ? 'Less' : 'More'}
-              </Button>
             </Box>
           </Box>
         </>
