@@ -109,7 +109,7 @@
       "executor": "@nrwl/workspace:run-commands",
       "options": {
         "commands": [
-          "npx prisma migrate dev --schema apps/api-journeys/db/schema.prisma"
+          "bash -c 'npx prisma migrate dev --schema apps/api-journeys/db/schema.prisma --name `date +\"%Y%m%d%H%M%S\"`'"
         ]
       },
       "configurations": {
@@ -124,7 +124,7 @@
       "executor": "@nrwl/workspace:run-commands",
       "options": {
         "commands": [
-          "npx prisma reset --schema apps/api-journeys/db/schema.prisma"
+          "npx prisma migrate reset --schema apps/api-journeys/db/schema.prisma --force"
         ]
       }
     },
