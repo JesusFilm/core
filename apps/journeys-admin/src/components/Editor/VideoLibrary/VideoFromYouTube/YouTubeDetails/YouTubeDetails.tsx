@@ -37,9 +37,7 @@ const fetcher = async (
     id
   }).toString()
   const videosData: YoutubeVideosData = await (
-    await fetch(
-      `https://www.googleapis.com/youtube/v3/videos?${videosQuery}&hl=en`
-    )
+    await fetch(`https://www.googleapis.com/youtube/v3/videos?${videosQuery}`)
   ).json()
   return videosData.items[0]
 }

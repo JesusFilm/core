@@ -84,11 +84,12 @@ export function VideoFromYouTube({
         /^(?:https?:)?\/\/[^/]*(?:youtube(?:-nocookie)?.com|youtu.be).*[=/](?<id>[-\w]{11})(?:\\?|=|&|$)/
 
       const id = url.match(YOUTUBE_ID_REGEX)?.groups?.id
-      const playlistId = 'PLHvce-kc-easpXy3WTlIRB132mg5ZQX78'
       const pageToken = previousPageData?.nextPageToken ?? ''
       return id != null
         ? `id=${id}`
-        : `playlistId=${playlistId}&pageToken=${pageToken}`
+        : `playlistId=${
+            process.env.NEXT_PUBLIC_YOUTUBE_PLAYLIST_ID ?? ''
+          }&pageToken=${pageToken}`
     },
     fetcher
   )
