@@ -37,9 +37,10 @@ export class ButtonClickEventResolver {
     const promises = [
       this.eventService.save({
         ...input,
+        id: input.id ?? undefined,
         __typename: 'ButtonClickEvent',
         visitorId: visitor.id,
-        createdAt: new Date().toISOString(),
+        stepId: input.stepId ?? undefined,
         journeyId
       })
     ]
@@ -53,7 +54,7 @@ export class ButtonClickEventResolver {
     }
 
     const [buttonClickEvent] = await Promise.all(promises)
-    return buttonClickEvent
+    return buttonClickEvent as ButtonClickEvent
   }
 }
 
@@ -79,9 +80,10 @@ export class ChatOpenEventResolver {
     const promises = [
       this.eventService.save({
         ...input,
+        id: input.id ?? undefined,
         __typename: 'ChatOpenEvent',
         visitorId: visitor.id,
-        createdAt: new Date().toISOString(),
+        stepId: input.stepId ?? undefined,
         journeyId
       })
     ]
@@ -103,7 +105,7 @@ export class ChatOpenEventResolver {
     }
 
     const [chatOpenEvent] = await Promise.all(promises)
-    return chatOpenEvent
+    return chatOpenEvent as ChatOpenEvent
   }
 
   @ResolveField('messagePlatform')

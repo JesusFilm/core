@@ -32,13 +32,12 @@ export class SignUpSubmissionEventResolver {
 
     const promises = [
       this.eventService.save({
-        id: input.id,
+        id: input.id ?? undefined,
         blockId: input.blockId,
         __typename: 'SignUpSubmissionEvent',
         visitorId: visitor.id,
-        createdAt: new Date().toISOString(),
         journeyId,
-        stepId: input.stepId,
+        stepId: input.stepId ?? undefined,
         label: null,
         value: input.name,
         email: input.email
@@ -62,6 +61,6 @@ export class SignUpSubmissionEventResolver {
     }
 
     const [signUpSubmissionEvent] = await Promise.all(promises)
-    return signUpSubmissionEvent
+    return signUpSubmissionEvent as SignUpSubmissionEvent
   }
 }

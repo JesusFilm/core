@@ -5,15 +5,6 @@ import { VisitorService } from '../../visitor/visitor.service'
 import { TextResponseSubmissionEventResolver } from './textResponse.resolver'
 
 describe('TextResponseEventResolver', () => {
-  beforeAll(() => {
-    jest.useFakeTimers('modern')
-    jest.setSystemTime(new Date('2021-02-18'))
-  })
-
-  afterAll(() => {
-    jest.useRealTimers()
-  })
-
   let resolver: TextResponseSubmissionEventResolver, vService: VisitorService
 
   const eventService = {
@@ -65,7 +56,6 @@ describe('TextResponseEventResolver', () => {
         ...input,
         __typename: 'TextResponseSubmissionEvent',
         visitorId: 'visitor.id',
-        createdAt: new Date().toISOString(),
         journeyId: 'journey.id'
       })
     })

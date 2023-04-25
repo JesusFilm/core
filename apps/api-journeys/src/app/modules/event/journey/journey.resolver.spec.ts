@@ -7,15 +7,6 @@ import { JourneyService } from '../../journey/journey.service'
 import { JourneyViewEventResolver } from './journey.resolver'
 
 describe('JourneyViewEventResolver', () => {
-  beforeAll(() => {
-    jest.useFakeTimers('modern')
-    jest.setSystemTime(new Date('2021-02-18'))
-  })
-
-  afterAll(() => {
-    jest.useRealTimers()
-  })
-
   let resolver: JourneyViewEventResolver, vService: VisitorService
 
   const eventService = {
@@ -95,8 +86,7 @@ describe('JourneyViewEventResolver', () => {
       ).toEqual({
         ...input,
         __typename: 'JourneyViewEvent',
-        visitorId: visitorWithId.id,
-        createdAt: new Date().toISOString()
+        visitorId: visitorWithId.id
       })
     })
 

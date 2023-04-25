@@ -59,7 +59,6 @@ describe('Step', () => {
         ...input,
         __typename: 'StepViewEvent',
         visitorId: 'visitor.id',
-        createdAt: new Date().toISOString(),
         journeyId: 'journey.id',
         stepId: input.blockId
       })
@@ -103,7 +102,6 @@ describe('Step', () => {
           ...input,
           __typename: 'StepNextEvent',
           visitorId: 'visitor.id',
-          createdAt: new Date().toISOString(),
           journeyId: 'journey.id'
         })
       })

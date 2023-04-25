@@ -5,15 +5,6 @@ import { VisitorService } from '../../visitor/visitor.service'
 import { RadioQuestionSubmissionEventResolver } from './radioQuestion.resolver'
 
 describe('RadioQuestionSubmissionEventResolver', () => {
-  beforeAll(() => {
-    jest.useFakeTimers('modern')
-    jest.setSystemTime(new Date('2021-02-18'))
-  })
-
-  afterAll(() => {
-    jest.useRealTimers()
-  })
-
   let resolver: RadioQuestionSubmissionEventResolver, vService: VisitorService
 
   const eventService = {
@@ -67,7 +58,6 @@ describe('RadioQuestionSubmissionEventResolver', () => {
         ...input,
         __typename: 'RadioQuestionSubmissionEvent',
         visitorId: 'visitor.id',
-        createdAt: new Date().toISOString(),
         journeyId: 'journey.id'
       })
     })

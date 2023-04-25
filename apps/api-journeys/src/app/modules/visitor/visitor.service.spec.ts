@@ -31,6 +31,10 @@ describe('VisitorService', () => {
     jest.setSystemTime(new Date('2021-02-18'))
   })
 
+  afterAll(() => {
+    jest.useRealTimers()
+  })
+
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [

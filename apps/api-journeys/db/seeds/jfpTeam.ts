@@ -48,46 +48,9 @@ export async function jfpTeam(): Promise<void> {
   `)
 
   // TODO: REMOVE once converted to postgresql
-  // import events from arangodb
+  // import visitors from arangodb
   let offset = 0
   let end = true
-  do {
-    const events = await (
-      await db.query(aql`
-        FOR event IN events
-        LIMIT ${offset}, 50
-        RETURN event
-      `)
-    ).all()
-    for (let i = 0; i < events.length; i++) {
-      const event = events[i]
-      await prisma.event.create({
-        data: {
-          id: event._key,
-          journeyId: event.journeyId,
-          createdAt: new Date(event.createdAt),
-          label: event.label,
-          value: event.value,
-          visitorId: event.visitorId,
-          extra: omit(event, [
-            '_key',
-            'journeyId',
-            'createdAt',
-            'label',
-            'value',
-            'visitorId'
-          ])
-        }
-      })
-    }
-    offset += 50
-    end = events.length > 49
-  } while (end)
-
-  // TODO: REMOVE once converted to postgresql
-  // import visitors from arangodb
-  offset = 0
-  end = true
   do {
     const visitors = await (
       await db.query(aql`
@@ -96,18 +59,55 @@ export async function jfpTeam(): Promise<void> {
       RETURN visitor
   `)
     ).all()
-    for (let i = 0; i < visitors.length; i++) {
-      const visitor = visitors[i]
-      await prisma.visitor.create({
-        data: {
-          id: visitor._key,
-          teamId: visitor.teamId,
-          userId: visitor.userId,
-          createdAt: new Date(visitor.createdAt)
-        }
-      })
-    }
+    await prisma.visitor.createMany({
+      data: visitors.map((visitor) => ({
+        id: visitor._key,
+        teamId: visitor.teamId,
+        userId: visitor.userId,
+        createdAt: new Date(visitor.createdAt)
+      })),
+      skipDuplicates: true
+    })
     offset += 50
     end = visitors.length > 49
+  } while (end)
+
+  // TODO: REMOVE once converted to postgresql
+  // import events from arangodb
+  offset = 0
+  end = true
+  do {
+    const events = await (
+      await db.query(aql`
+        FOR event IN events
+        LIMIT ${offset}, 50
+        RETURN event
+      `)
+    ).all()
+    await prisma.event.createMany({
+      data: events.map((event) => ({
+        id: event._key,
+        typename: event.__typename,
+        journeyId: event.journeyId,
+        createdAt: new Date(event.createdAt),
+        label: event.label,
+        value: event.value,
+        visitorId: event.visitorId,
+        extra: omit(event, [
+          '_id',
+          '_key',
+          '_rev',
+          '__typename',
+          'journeyId',
+          'createdAt',
+          'label',
+          'value',
+          'visitorId'
+        ])
+      })),
+      skipDuplicates: true
+    })
+    offset += 50
+    end = events.length > 49
   } while (end)
 }

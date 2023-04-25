@@ -34,9 +34,10 @@ export class RadioQuestionSubmissionEventResolver {
     const [radioSubmissionEvent] = await Promise.all([
       this.eventService.save({
         ...input,
+        id: input.id ?? undefined,
         __typename: 'RadioQuestionSubmissionEvent',
         visitorId: visitor.id,
-        createdAt: new Date().toISOString(),
+        stepId: input.stepId ?? undefined,
         journeyId
       }),
       this.visitorService.update(visitor.id, {
@@ -44,6 +45,6 @@ export class RadioQuestionSubmissionEventResolver {
         lastRadioOptionSubmission: input.value ?? undefined
       })
     ])
-    return radioSubmissionEvent
+    return radioSubmissionEvent as RadioQuestionSubmissionEvent
   }
 }

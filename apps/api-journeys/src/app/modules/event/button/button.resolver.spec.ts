@@ -15,15 +15,6 @@ import {
 describe('ButtonClickEventResolver', () => {
   let resolver: ButtonClickEventResolver, vService: VisitorService
 
-  beforeAll(() => {
-    jest.useFakeTimers('modern')
-    jest.setSystemTime(new Date('2021-02-18'))
-  })
-
-  afterAll(() => {
-    jest.useRealTimers()
-  })
-
   const response = {
     visitor: { id: 'visitor.id' },
     journeyId: 'journey.id'
@@ -68,7 +59,6 @@ describe('ButtonClickEventResolver', () => {
         ...input,
         __typename: 'ButtonClickEvent',
         visitorId: 'visitor.id',
-        createdAt: new Date().toISOString(),
         journeyId: 'journey.id'
       })
     })
@@ -157,7 +147,6 @@ describe('ChatOpenEventResolver', () => {
         ...input,
         __typename: 'ChatOpenEvent',
         visitorId: 'visitor.id',
-        createdAt: new Date().toISOString(),
         journeyId: 'journey.id'
       })
     })

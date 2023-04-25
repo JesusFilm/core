@@ -41,9 +41,9 @@ export class JourneyViewEventResolver {
     const promises = [
       this.eventService.save({
         ...input,
+        id: input.id ?? undefined,
         __typename: 'JourneyViewEvent',
-        visitorId: visitor.id,
-        createdAt: new Date().toISOString()
+        visitorId: visitor.id
       })
     ]
 
@@ -56,7 +56,7 @@ export class JourneyViewEventResolver {
     }
 
     const [journeyViewEvent] = await Promise.all(promises)
-    return journeyViewEvent
+    return journeyViewEvent as JourneyViewEvent
   }
 
   @ResolveField('language')

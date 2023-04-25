@@ -103,4 +103,11 @@ export class VisitorService {
 
     return visitor
   }
+
+  async update(id: string, data: Partial<VisitorRecord>): Promise<Visitor> {
+    return await this.prismaService.visitor.update({
+      where: { id },
+      data
+    })
+  }
 }

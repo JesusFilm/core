@@ -13,11 +13,12 @@ datasource db {
 
 model Event {
   id        String   @id @default(uuid())
-  journeyId String
+  typename  String
+  journeyId String?
   createdAt DateTime @default(now())
-  label     String
-  value     String
-  extra     Json
+  label     String?
+  value     String?
+  extra     Json?
   Visitor   Visitor? @relation(fields: [visitorId], references: [id])
   visitorId String?
 
