@@ -3,6 +3,7 @@ import Card from '@mui/material/Card'
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
 import Divider from '@mui/material/Divider'
+import Collapse from '@mui/material/Collapse'
 import { transformEvents } from '../utils/transformEvents'
 import { JourneyWithEvents } from '../utils/transformToJourney/transformToJourney'
 import { TimelineEvent } from '../TimelineEvent'
@@ -31,19 +32,28 @@ export function EventsCard({ journey }: Props): ReactElement {
       <Box sx={{ p: 6 }}>
         {nestedEvents.map((event, index) => {
           if (Array.isArray(event)) {
-            if (open) {
-              return event.map((nestedEvent) => (
-                <TimelineEvent key={nestedEvent.id} event={nestedEvent} />
-              ))
-            } else {
-              return (
-                <CompactEvent
-                  key={index}
-                  handleClick={handleOpen}
-                  value={`${event.length} more events`}
-                />
-              )
-            }
+            return (
+              <>
+                <Collapse
+                  in={open}
+                  collapsedSize={60}
+                  sx={{
+                    display: open ? 'none' : 'block'
+                  }}
+                >
+                  <CompactEvent
+                    key={index}
+                    handleClick={handleOpen}
+                    value={`${event.length} more events`}
+                  />
+                </Collapse>
+                <Collapse in={open}>
+                  {event.map((nestedEvent) => (
+                    <TimelineEvent key={nestedEvent.id} event={nestedEvent} />
+                  ))}
+                </Collapse>
+              </>
+            )
           } else {
             return <TimelineEvent key={event.id} event={event} />
           }
