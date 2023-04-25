@@ -4,18 +4,25 @@ import { GetVisitorEvents_visitor_events as Event } from '../../../../../../__ge
 export function transformEvents(events: Event[]): Array<Event | Event[]> {
   let result: Array<Event | Event[]> = []
   let pointer = 0
-  const summaryEvents: Array<Event['__typename']> = [
+  const featured: Array<Event['__typename']> = [
     'ChatOpenEvent',
     'TextResponseSubmissionEvent',
     'RadioQuestionSubmissionEvent'
   ]
 
+  const compact: Array<Event['__typename']> = [
+    'ButtonClickEvent',
+    'VideoCompleteEvent',
+    'VideoStartEvent',
+    'SignUpSubmissionEvent'
+  ]
+
   forEachRight(events, (event) => {
-    if (summaryEvents.includes(event.__typename)) {
+    if (featured.includes(event.__typename)) {
       if (result[pointer] != null) pointer++
       result = [...result, event]
       pointer++
-    } else {
+    } else if (compact.includes(event.__typename)) {
       const nestedEvent = result[pointer]
       if (nestedEvent == null) {
         result = [...result, [event]]
