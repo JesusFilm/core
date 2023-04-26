@@ -16,15 +16,16 @@ interface VideoFromYouTubeProps {
   onSelect: (block: VideoBlockUpdateInput) => void
 }
 
-export interface YoutubePlaylistItemsData {
+export interface YoutubeVideosData {
   items: Array<{
+    id: string
     snippet: {
       title: string
       description: string
       thumbnails: { default: { url: string } }
     }
     contentDetails: {
-      videoId: string
+      duration: string
     }
   }>
   nextPageToken?: string
@@ -56,19 +57,20 @@ const fetcher = async (query: string): Promise<Data> => {
     part: 'snippet,contentDetails',
     key: process.env.NEXT_PUBLIC_FIREBASE_API_KEY ?? ''
   }).toString()
-  const videosData: YoutubePlaylistItemsData = await (
+  const videosData: YoutubeVideosData = await (
     await fetch(
-      `https://www.googleapis.com/youtube/v3/playlistItems?${query}&${params}`
+      `https://www.googleapis.com/youtube/v3/videos?${query}&${params}`
     )
   ).json()
 
   return {
     nextPageToken: videosData.nextPageToken,
     items: videosData.items.map((video) => ({
-      id: video.contentDetails.videoId,
+      id: video.id,
       title: video.snippet.title,
       description: video.snippet.description,
       image: video.snippet.thumbnails.default.url,
+      duration: parseISO8601Duration(video.contentDetails.duration),
       source: VideoBlockSource.youTube
     }))
   }
@@ -87,9 +89,7 @@ export function VideoFromYouTube({
       const pageToken = previousPageData?.nextPageToken ?? ''
       return id != null
         ? `id=${id}`
-        : `playlistId=${
-            process.env.NEXT_PUBLIC_YOUTUBE_PLAYLIST_ID ?? ''
-          }&pageToken=${pageToken}`
+        : `chart=mostPopular&pageToken=${pageToken}`
     },
     fetcher
   )
