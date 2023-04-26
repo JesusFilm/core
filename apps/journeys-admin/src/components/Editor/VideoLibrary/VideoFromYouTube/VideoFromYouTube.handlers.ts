@@ -100,6 +100,18 @@ export const getPlaylistItemsWithOffsetAndUrl = rest.get(
   }
 )
 
+export const getPlaylistItemsLoading = rest.get(
+  'https://www.googleapis.com/youtube/v3/playlistItems',
+  (_req, res, ctx) => {
+    return res(
+      ctx.delay(1000 * 60 * 60 * 60),
+      ctx.json<YoutubePlaylistItemsData>({
+        items: []
+      })
+    )
+  }
+)
+
 export const getVideosWithOffsetAndUrl = rest.get(
   'https://www.googleapis.com/youtube/v3/videos',
   (req, res, ctx) => {
@@ -150,11 +162,11 @@ export const getVideosWithOffsetAndUrl = rest.get(
 )
 
 export const getVideosLoading = rest.get(
-  'https://www.googleapis.com/youtube/v3/playlistItems',
+  'https://www.googleapis.com/youtube/v3/videos',
   (_req, res, ctx) => {
     return res(
       ctx.delay(1000 * 60 * 60 * 60),
-      ctx.json<YoutubePlaylistItemsData>({
+      ctx.json<YoutubeVideosData>({
         items: []
       })
     )
