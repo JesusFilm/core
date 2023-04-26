@@ -20,6 +20,7 @@ import {
 } from 'apollo-server-errors'
 import { GqlAuthGuard } from '@core/nest/gqlAuthGuard/GqlAuthGuard'
 import { v4 as uuidv4 } from 'uuid'
+import { UserJourney, UserJourneyRole } from '.prisma/api-journeys-client'
 
 import { BlockService } from '../block/block.service'
 import {
@@ -32,8 +33,6 @@ import {
   JourneyUpdateInput,
   ThemeMode,
   ThemeName,
-  UserJourney,
-  UserJourneyRole,
   JourneysFilter,
   JourneyTemplateInput,
   JourneysReportType,
@@ -189,17 +188,13 @@ export class JourneyResolver {
           teamId: team.id,
           ...input
         })
-        await this.userJourneyService.save(
-          {
-            id: uuidv4(),
-            userId,
-            journeyId: journey.id,
-            role: UserJourneyRole.owner
-          },
-          {
-            returnNew: false
-          }
-        )
+        await this.userJourneyService.save({
+          id: uuidv4(),
+          userId,
+          journeyId: journey.id,
+          role: UserJourneyRole.owner,
+          openedAt: new Date()
+        })
         const existingMember = this.memberService.getMemberByTeamId(
           userId,
           team.id
@@ -353,7 +348,8 @@ export class JourneyResolver {
           id: uuidv4(),
           userId,
           journeyId: journey.id,
-          role: UserJourneyRole.owner
+          role: UserJourneyRole.owner,
+          openedAt: new Date()
         })
         retry = false
         return journey

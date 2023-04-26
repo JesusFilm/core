@@ -204,7 +204,7 @@ describe('UserJourneyResolver', () => {
     it('should update openedAt for userJourney', async () => {
       await resolver.userJourneyOpen(userJourney.id, userJourney.userId)
       expect(service.update).toHaveBeenCalledWith(userJourney.id, {
-        openedAt: new Date().toISOString()
+        openedAt: new Date()
       })
     })
 

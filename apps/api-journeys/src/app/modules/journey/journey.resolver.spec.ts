@@ -698,14 +698,12 @@ describe('JourneyResolver', () => {
         { title: 'Untitled Journey', languageId: '529' },
         'userId'
       )
-      expect(ujService.save).toHaveBeenCalledWith(
-        {
-          userId: 'userId',
-          journeyId: 'journeyId',
-          role: UserJourneyRole.owner
-        },
-        { returnNew: false }
-      )
+      expect(ujService.save).toHaveBeenCalledWith({
+        userId: 'userId',
+        journeyId: 'journeyId',
+        role: UserJourneyRole.owner,
+        openedAt: new Date()
+      })
     })
 
     it('creates a Member', async () => {
@@ -887,7 +885,8 @@ describe('JourneyResolver', () => {
       expect(ujService.save).toHaveBeenCalledWith({
         userId: 'userId',
         journeyId: 'duplicateJourneyId',
-        role: UserJourneyRole.owner
+        role: UserJourneyRole.owner,
+        openedAt: new Date()
       })
     })
 

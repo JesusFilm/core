@@ -6,6 +6,7 @@ import { JourneyService } from '../../journey/journey.service'
 import { MemberService } from '../../member/member.service'
 import { UserJourneyService } from '../../userJourney/userJourney.service'
 import { UserRoleService } from '../../userRole/userRole.service'
+import { PrismaService } from '../../../lib/prisma.service'
 import { ActionResolver } from '../action.resolver'
 import { NavigateActionResolver } from './navigateAction.resolver'
 
@@ -51,6 +52,7 @@ describe('NavigateActionResolver', () => {
         UserRoleService,
         JourneyService,
         MemberService,
+        PrismaService,
         {
           provide: 'DATABASE',
           useFactory: () => mockDeep<Database>()

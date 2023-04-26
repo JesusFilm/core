@@ -110,4 +110,30 @@ export async function jfpTeam(): Promise<void> {
     offset += 50
     end = events.length > 49
   } while (end)
+
+  // TODO: REMOVE once converted to postgresql
+  // import userJourneys from arangodb
+  offset = 0
+  end = true
+  do {
+    const userJourneys = await (
+      await db.query(aql`
+      FOR uj IN userJourneys
+      LIMIT ${offset}, 50
+      RETURN uj
+  `)
+    ).all()
+    await prisma.userJourney.createMany({
+      data: userJourneys.map((uj) => ({
+        id: uj._key,
+        userId: uj.userId,
+        openedAt: new Date(uj.openedAt),
+        role: uj.role,
+        journeyId: uj.journeyId
+      })),
+      skipDuplicates: true
+    })
+    offset += 50
+    end = userJourneys.length > 49
+  } while (end)
 }

@@ -2,6 +2,7 @@ import { ExecutionContext } from '@nestjs/common'
 import { createMock, DeepMocked } from '@golevelup/ts-jest'
 import { AuthenticationError } from 'apollo-server-errors'
 import { contextToUserId } from '@core/nest/common/firebaseClient'
+import { UserJourney } from '.prisma/api-journeys-client'
 import {
   Journey,
   JourneyStatus,
@@ -11,10 +12,7 @@ import {
   UserJourneyRole,
   UserRole
 } from '../../__generated__/graphql'
-import {
-  UserJourneyRecord,
-  UserJourneyService
-} from '../../modules/userJourney/userJourney.service'
+import { UserJourneyService } from '../../modules/userJourney/userJourney.service'
 import { UserRoleService } from '../../modules/userRole/userRole.service'
 import { JourneyService } from '../../modules/journey/journey.service'
 import { RoleGuard } from './roleGuard'
@@ -29,7 +27,7 @@ const mockContextToUserId = contextToUserId as jest.MockedFunction<
 >
 
 describe('RoleGuard', () => {
-  const userJourney: UserJourneyRecord = {
+  const userJourney: UserJourney = {
     id: '1',
     userId: '1',
     journeyId: '2',
@@ -86,7 +84,7 @@ describe('RoleGuard', () => {
     _userJourneyService: UserJourneyService,
     _journeyId: string,
     _userId: string
-  ): Promise<UserJourneyRecord | undefined> => {
+  ): Promise<UserJourney | undefined> => {
     return userJourney
   }
 

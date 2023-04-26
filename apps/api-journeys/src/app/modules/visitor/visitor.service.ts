@@ -77,7 +77,6 @@ export class VisitorService {
     }
   }
 
-  @KeyAsId()
   async getByUserIdAndJourneyId(
     userId: string,
     journeyId: string

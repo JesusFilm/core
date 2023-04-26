@@ -4,6 +4,7 @@ import { mockDeep } from 'jest-mock-extended'
 import { omit } from 'lodash'
 
 import { UserJourneyService } from '../../userJourney/userJourney.service'
+import { PrismaService } from '../../../lib/prisma.service'
 import { BlockResolver } from '../block.resolver'
 import { BlockService } from '../block.service'
 import { StepBlock } from '../../../__generated__/graphql'
@@ -55,6 +56,7 @@ describe('StepBlockResolver', () => {
         UserRoleService,
         JourneyService,
         MemberService,
+        PrismaService,
         {
           provide: 'DATABASE',
           useFactory: () => mockDeep<Database>()

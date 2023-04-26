@@ -104,6 +104,8 @@ export class EventService {
             ? new Date(input.createdAt)
             : undefined,
         journeyId: input.journeyId ?? undefined,
+        blockId: input.blockId ?? undefined,
+        stepId: input.stepId ?? undefined,
         label: input.label,
         value: input.value,
         visitorId: input.visitorId,
@@ -113,6 +115,8 @@ export class EventService {
           '_rev',
           '__typename',
           'journeyId',
+          'blockId',
+          'stepId',
           'createdAt',
           'label',
           'value',

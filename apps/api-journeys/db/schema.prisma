@@ -15,6 +15,8 @@ model Event {
   id        String   @id @default(uuid())
   typename  String
   journeyId String?
+  blockId   String?
+  stepId    String?
   createdAt DateTime @default(now())
   label     String?
   value     String?
@@ -22,7 +24,7 @@ model Event {
   Visitor   Visitor? @relation(fields: [visitorId], references: [id])
   visitorId String?
 
-  @@index([id, journeyId, visitorId])
+  @@index([id, journeyId, visitorId, blockId])
 }
 
 enum MessagePlatform {
@@ -92,4 +94,20 @@ model Team {
   contactEmail String?
   createdAt    DateTime  @default(now())
   Visitor      Visitor[]
+}
+
+enum UserJourneyRole {
+  inviteRequested
+  editor
+  owner
+}
+
+model UserJourney {
+  id        String          @id @default(uuid())
+  userId    String
+  journeyId String
+  role      UserJourneyRole
+  openedAt  DateTime?       @default(now())
+
+  @@unique([journeyId, userId])
 }

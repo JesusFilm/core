@@ -9,6 +9,7 @@ import {
 import { CurrentUserId } from '@core/nest/decorators/CurrentUserId'
 import { UseGuards } from '@nestjs/common'
 import { GqlAuthGuard } from '@core/nest/gqlAuthGuard/GqlAuthGuard'
+import { UserJourney } from '.prisma/api-journeys-client'
 import { AuthenticationError, UserInputError } from 'apollo-server-errors'
 import {
   IdType,
@@ -18,7 +19,7 @@ import {
 } from '../../__generated__/graphql'
 import { JourneyService } from '../journey/journey.service'
 import { RoleGuard } from '../../lib/roleGuard/roleGuard'
-import { UserJourneyRecord, UserJourneyService } from './userJourney.service'
+import { UserJourneyService } from './userJourney.service'
 
 @Resolver('UserJourney')
 export class UserJourneyResolver {
@@ -28,7 +29,7 @@ export class UserJourneyResolver {
   ) {}
 
   @Query()
-  async userJourneys(@Parent() journey: Journey): Promise<UserJourneyRecord[]> {
+  async userJourneys(@Parent() journey: Journey): Promise<UserJourney[]> {
     return await this.userJourneyService.forJourney(journey)
   }
 
@@ -38,7 +39,7 @@ export class UserJourneyResolver {
     @Args('journeyId') journeyId: string,
     @Args('idType') idType: IdType = IdType.slug,
     @CurrentUserId() userId: string
-  ): Promise<UserJourneyRecord | undefined> {
+  ): Promise<UserJourney | undefined> {
     return await this.userJourneyService.requestAccess(
       journeyId,
       idType,
@@ -46,7 +47,7 @@ export class UserJourneyResolver {
     )
   }
 
-  async checkOwnership(id: string, userId: string): Promise<UserJourneyRecord> {
+  async checkOwnership(id: string, userId: string): Promise<UserJourney> {
     // can only update user journey roles if you are the journey's owner.
     const actor = await this.userJourneyService.forJourneyUser(id, userId)
 
@@ -58,7 +59,7 @@ export class UserJourneyResolver {
     return actor
   }
 
-  async getUserJourney(id: string): Promise<UserJourneyRecord | undefined> {
+  async getUserJourney(id: string): Promise<UserJourney | undefined> {
     const userJourney = await this.userJourneyService.get(id)
     if (userJourney === null) throw new UserInputError('User journey not found')
     return userJourney
@@ -69,7 +70,7 @@ export class UserJourneyResolver {
   async userJourneyApprove(
     @Args('id') id: string,
     @CurrentUserId() userId: string
-  ): Promise<UserJourneyRecord | undefined> {
+  ): Promise<UserJourney | null> {
     return await this.userJourneyService.approveAccess(id, userId)
   }
 
@@ -78,7 +79,7 @@ export class UserJourneyResolver {
   async userJourneyPromote(
     @Args('id') id: string,
     @CurrentUserId() userId: string
-  ): Promise<UserJourneyRecord | undefined> {
+  ): Promise<UserJourney | null> {
     const userJourney = await this.getUserJourney(id)
 
     if (userJourney == null)
@@ -103,7 +104,7 @@ export class UserJourneyResolver {
   async userJourneyRemove(
     @Args('id') id: string,
     @CurrentUserId() userId: string
-  ): Promise<UserJourneyRecord | undefined> {
+  ): Promise<UserJourney | undefined> {
     const userJourney = await this.getUserJourney(id)
 
     if (userJourney == null)
@@ -123,14 +124,15 @@ export class UserJourneyResolver {
   )
   async userJourneyRemoveAll(
     @Args('id') id: string
-  ): Promise<Array<UserJourneyRecord | undefined>> {
+  ): Promise<UserJourney[] | undefined> {
     const journey: Journey = await this.journeyService.get(id)
     const userJourneys = await this.userJourneyService.forJourney(journey)
     const userJourneyIds: string[] = userJourneys.map(
       (userJourney) => userJourney.id
     )
 
-    return await this.userJourneyService.removeAll(userJourneyIds)
+    const result = await this.userJourneyService.removeAll(userJourneyIds)
+    return result != null ? userJourneys : undefined
   }
 
   @Mutation()
@@ -138,11 +140,11 @@ export class UserJourneyResolver {
   async userJourneyOpen(
     @Args('id') id: string,
     @CurrentUserId() userId: string
-  ): Promise<UserJourneyRecord | undefined> {
+  ): Promise<UserJourney | null> {
     const userJourney = await this.userJourneyService.forJourneyUser(id, userId)
 
     if (userJourney != null && userJourney.openedAt == null) {
-      const input = { openedAt: new Date().toISOString() }
+      const input = { openedAt: new Date() }
       return await this.userJourneyService.update(userJourney.id, input)
     }
 
@@ -150,13 +152,13 @@ export class UserJourneyResolver {
   }
 
   @ResolveField()
-  async journey(@Parent() userJourney: UserJourneyRecord): Promise<Journey> {
+  async journey(@Parent() userJourney: UserJourney): Promise<Journey> {
     return await this.journeyService.get(userJourney.journeyId)
   }
 
   @ResolveField('user')
   async user(
-    @Parent() userJourney: UserJourneyRecord
+    @Parent() userJourney: UserJourney
   ): Promise<{ __typename: string; id: string }> {
     return { __typename: 'User', id: userJourney.userId }
   }

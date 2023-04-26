@@ -1,14 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing'
-import { Database } from 'arangojs'
-import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 import { v4 as uuidv4 } from 'uuid'
-import {
-  mockCollectionRemoveResult,
-  mockCollectionSaveResult,
-  mockDbQueryResult
-} from '@core/nest/database/mock'
-import { DocumentCollection, EdgeCollection } from 'arangojs/collection'
-import { keyAsId } from '@core/nest/decorators/KeyAsId'
+import { UserJourney } from '.prisma/api-journeys-client'
 
 import {
   IdType,
@@ -18,9 +10,10 @@ import {
   ThemeName,
   UserJourneyRole
 } from '../../__generated__/graphql'
+import { PrismaService } from '../../lib/prisma.service'
 import { JourneyService } from '../journey/journey.service'
 import { MemberService } from '../member/member.service'
-import { UserJourneyRecord, UserJourneyService } from './userJourney.service'
+import { UserJourneyService } from './userJourney.service'
 
 jest.mock('uuid', () => ({
   __esModule: true,
@@ -32,8 +25,7 @@ const mockUuidv4 = uuidv4 as jest.MockedFunction<typeof uuidv4>
 describe('UserJourneyService', () => {
   let service: UserJourneyService,
     mService: MemberService,
-    db: DeepMockProxy<Database>,
-    collectionMock: DeepMockProxy<DocumentCollection & EdgeCollection>
+    prisma: PrismaService
 
   const journeyService = {
     provide: JourneyService,
@@ -54,36 +46,30 @@ describe('UserJourneyService', () => {
   }
 
   beforeEach(async () => {
-    db = mockDeep()
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         UserJourneyService,
         journeyService,
         memberService,
-        {
-          provide: 'DATABASE',
-          useFactory: () => db
-        }
+        PrismaService
       ]
     }).compile()
 
     service = module.get<UserJourneyService>(UserJourneyService)
-    collectionMock = mockDeep()
-    service.collection = collectionMock
     mService = module.get<MemberService>(MemberService)
+    prisma = module.get<PrismaService>(PrismaService)
   })
   afterAll(() => {
     jest.resetAllMocks()
   })
 
-  const userJourney: UserJourneyRecord = {
+  const userJourney: UserJourney = {
     id: '1',
     userId: '1',
     journeyId: '2',
-    role: UserJourneyRole.editor
+    role: UserJourneyRole.editor,
+    openedAt: new Date()
   }
-
-  const userJourneyWithId = keyAsId(userJourney)
 
   const userJourneyInvited = {
     id: '2',
@@ -107,72 +93,47 @@ describe('UserJourneyService', () => {
   }
 
   describe('forJourney', () => {
-    beforeEach(() => {
-      db.query.mockReturnValue(
-        mockDbQueryResult(service.db, [userJourney, userJourney])
-      )
-    })
-
     it('should return an array of userjourneys', async () => {
+      prisma.userJourney.findMany = jest
+        .fn()
+        .mockResolvedValueOnce([userJourney, userJourney])
       expect(await service.forJourney(journey)).toEqual([
-        userJourneyWithId,
-        userJourneyWithId
+        userJourney,
+        userJourney
       ])
     })
   })
 
   describe('forUserJourney', () => {
-    beforeEach(() => {
-      db.query.mockReturnValue(mockDbQueryResult(service.db, [userJourney]))
-    })
-
     it('should return a userjourney', async () => {
-      expect(await service.forJourneyUser('1', '2')).toEqual(userJourneyWithId)
+      prisma.userJourney.findUnique = jest
+        .fn()
+        .mockResolvedValueOnce(userJourney)
+      expect(await service.forJourneyUser('1', '2')).toEqual(userJourney)
+      expect(prisma.userJourney.findUnique).toHaveBeenCalledWith({
+        where: { journeyId_userId: { userId: '2', journeyId: '1' } }
+      })
     })
   })
 
   describe('remove', () => {
-    beforeEach(() => {
-      collectionMock.remove.mockReturnValue(
-        mockCollectionRemoveResult(service.collection, {
-          ...userJourney,
-          _key: userJourney.id
-        })
-      )
-    })
-
     it('should return a removed userJourney', async () => {
-      expect(await service.remove('1')).toEqual(userJourneyWithId)
-    })
-  })
-
-  describe('save', () => {
-    beforeEach(() => {
-      collectionMock.save.mockReturnValue(
-        mockCollectionSaveResult(service.collection, {
-          ...userJourney,
-          _key: userJourney.id
-        })
-      )
-    })
-
-    it('should return a saved userJourney', async () => {
-      expect(await service.save(userJourney)).toEqual(userJourneyWithId)
+      prisma.userJourney.delete = jest.fn().mockResolvedValueOnce(userJourney)
+      await service.remove('1')
+      expect(prisma.userJourney.delete).toHaveBeenCalledWith({
+        where: { id: '1' }
+      })
     })
   })
 
   describe('update', () => {
-    beforeEach(() => {
-      collectionMock.update.mockReturnValue(
-        mockCollectionSaveResult(service.collection, {
-          ...userJourney,
-          _key: userJourney.id
-        })
-      )
-    })
-
     it('should return an updated userJourney', async () => {
-      expect(await service.update('1', userJourney)).toEqual(userJourneyWithId)
+      prisma.userJourney.update = jest.fn().mockResolvedValueOnce(userJourney)
+      expect(await service.update('1', userJourney)).toEqual(userJourney)
+      expect(prisma.userJourney.update).toHaveBeenCalledWith({
+        where: { id: '1' },
+        data: userJourney
+      })
     })
   })
 
@@ -186,47 +147,37 @@ describe('UserJourneyService', () => {
     })
 
     it('creates a UserJourney when journeyId is databaseId', async () => {
-      db.query.mockReturnValueOnce(mockDbQueryResult(service.db, []))
       mockUuidv4.mockReturnValueOnce(userJourneyInvited.id)
-      collectionMock.save.mockReturnValue(
-        mockCollectionSaveResult(service.collection, {
-          ...userJourneyInvited,
-          _key: userJourneyInvited.id
-        })
-      )
-
+      prisma.userJourney.findUnique = jest
+        .fn()
+        .mockResolvedValueOnce(userJourneyInvited)
+      prisma.userJourney.create = jest
+        .fn()
+        .mockReturnValueOnce(userJourneyInvited)
       expect(
         await service.requestAccess(journey.id, IdType.databaseId, '1')
       ).toEqual(userJourneyInvited)
     })
     it('creates a UserJourney when journeyId is slug', async () => {
-      db.query.mockReturnValueOnce(mockDbQueryResult(service.db, []))
       mockUuidv4.mockReturnValueOnce(userJourneyInvited.id)
-      collectionMock.save.mockReturnValue(
-        mockCollectionSaveResult(service.collection, {
-          ...userJourneyInvited,
-          _key: userJourneyInvited.id
-        })
-      )
-
+      service.forJourneyUser = jest.fn().mockReturnValueOnce(null)
+      prisma.userJourney.create = jest
+        .fn()
+        .mockReturnValueOnce(userJourneyInvited)
       expect(
         await service.requestAccess(journey.slug, IdType.slug, '1')
       ).toEqual(userJourneyInvited)
     })
 
     it('returns an existing a UserJourney access request ', async () => {
-      db.query.mockReturnValueOnce(
-        mockDbQueryResult(service.db, [userJourneyInvited])
-      )
-
+      service.forJourneyUser = jest.fn().mockReturnValueOnce(userJourneyInvited)
       expect(
         await service.requestAccess(journey.id, IdType.databaseId, '1')
       ).toEqual(userJourneyInvited)
     })
 
     it('returns undefined if UserJourney role access already granted', async () => {
-      db.query.mockReturnValueOnce(mockDbQueryResult(service.db, [userJourney]))
-
+      service.forJourneyUser = jest.fn().mockReturnValueOnce(userJourney)
       expect(
         await service.requestAccess(journey.id, IdType.databaseId, '1')
       ).toEqual(undefined)
@@ -240,21 +191,17 @@ describe('UserJourneyService', () => {
     }
 
     it('should throw UserInputError if userJourney does not exist', async () => {
-      db.query.mockReturnValueOnce(mockDbQueryResult(service.db, []))
-
+      service.get = jest.fn().mockReturnValueOnce(null)
       await service.approveAccess('wrongId', '1').catch((error) => {
         expect(error.message).toEqual('userJourney does not exist')
       })
     })
 
     it('should throw Auth error if approver an invitee', async () => {
-      db.query.mockReturnValueOnce(
-        mockDbQueryResult(service.db, [userJourneyInvited])
-      )
-      db.query.mockReturnValueOnce(
-        mockDbQueryResult(service.db, [userJourneyInvited])
-      )
-
+      service.get = jest.fn().mockReturnValueOnce(userJourneyInvited)
+      prisma.userJourney.findUnique = jest
+        .fn()
+        .mockReturnValueOnce(userJourneyInvited)
       await service
         .approveAccess(userJourneyInvited.id, userJourneyInvited.userId)
         .catch((error) => {
@@ -265,20 +212,12 @@ describe('UserJourneyService', () => {
     })
 
     it('updates a UserJourney to editor status', async () => {
-      db.query.mockReturnValueOnce(
-        mockDbQueryResult(service.db, [userJourneyInvited])
-      )
-      db.query.mockReturnValueOnce(
-        mockDbQueryResult(service.db, [userJourneyOwner])
-      )
-      collectionMock.update.mockReturnValue(
-        mockCollectionSaveResult(service.collection, {
-          ...userJourneyInvited,
-          role: UserJourneyRole.editor,
-          _key: userJourneyInvited.id
-        })
-      )
-
+      service.get = jest.fn().mockReturnValueOnce(userJourneyInvited)
+      prisma.userJourney.findUnique = jest.fn().mockReturnValueOnce(userJourney)
+      prisma.userJourney.update = jest.fn().mockReturnValueOnce({
+        ...userJourneyInvited,
+        role: UserJourneyRole.editor
+      })
       expect(
         await service.approveAccess(
           userJourneyInvited.id,
@@ -291,20 +230,11 @@ describe('UserJourneyService', () => {
     })
 
     it('adds user to team', async () => {
-      db.query.mockReturnValueOnce(
-        mockDbQueryResult(service.db, [userJourneyInvited])
-      )
-      db.query.mockReturnValueOnce(
-        mockDbQueryResult(service.db, [userJourneyOwner])
-      )
-      collectionMock.update.mockReturnValue(
-        mockCollectionSaveResult(service.collection, {
-          ...userJourneyInvited,
-          role: UserJourneyRole.editor,
-          _key: userJourneyInvited.id
-        })
-      )
-
+      service.get = jest.fn().mockReturnValueOnce(userJourneyInvited)
+      prisma.userJourney.findUnique = jest.fn().mockReturnValueOnce(userJourney)
+      prisma.userJourney.update = jest
+        .fn()
+        .mockReturnValueOnce(userJourneyInvited)
       await service.approveAccess(userJourney.id, userJourney.userId)
       expect(mService.save).toHaveBeenCalledWith(
         {

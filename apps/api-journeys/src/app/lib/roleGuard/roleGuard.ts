@@ -9,16 +9,9 @@ import {
 import { get, includes, reduce } from 'lodash'
 import { AuthenticationError } from 'apollo-server-errors'
 import { contextToUserId } from '@core/nest/common/firebaseClient'
-import {
-  UserJourneyRecord,
-  UserJourneyService
-} from '../../modules/userJourney/userJourney.service'
-import {
-  Journey,
-  Role,
-  UserJourneyRole,
-  UserRole
-} from '../../__generated__/graphql'
+import { UserJourney, UserJourneyRole } from '.prisma/api-journeys-client'
+import { UserJourneyService } from '../../modules/userJourney/userJourney.service'
+import { Journey, Role, UserRole } from '../../__generated__/graphql'
 import { UserRoleService } from '../../modules/userRole/userRole.service'
 import { JourneyService } from '../../modules/journey/journey.service'
 
@@ -27,7 +20,7 @@ export const fetchUserJourney = async (
   userJourneyService: UserJourneyService,
   journeyId: string,
   userId: string
-): Promise<UserJourneyRecord | undefined> => {
+): Promise<UserJourney | null> => {
   return await userJourneyService.forJourneyUser(journeyId, userId)
 }
 
@@ -86,10 +79,7 @@ export const RoleGuard = (
       return permission === 'public'
     }
 
-    userJourneyRole(
-      permission: Permission,
-      userJourney: UserJourneyRecord
-    ): boolean {
+    userJourneyRole(permission: Permission, userJourney: UserJourney): boolean {
       return (
         permission !== UserJourneyRole.inviteRequested &&
         permission === userJourney.role
@@ -103,7 +93,7 @@ export const RoleGuard = (
     checkAllowedAccess(
       permissions: Permission[],
       journey: Journey,
-      userJourney: UserJourneyRecord | undefined,
+      userJourney: UserJourney | null,
       userRole: UserRole,
       attributes?: Partial<Journey>
     ): boolean {

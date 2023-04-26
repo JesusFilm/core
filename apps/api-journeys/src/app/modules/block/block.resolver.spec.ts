@@ -5,6 +5,7 @@ import { JourneyService } from '../journey/journey.service'
 import { MemberService } from '../member/member.service'
 import { UserJourneyService } from '../userJourney/userJourney.service'
 import { UserRoleService } from '../userRole/userRole.service'
+import { PrismaService } from '../../lib/prisma.service'
 import { BlockResolver } from './block.resolver'
 import { BlockService } from './block.service'
 
@@ -69,6 +70,7 @@ describe('BlockResolver', () => {
         UserRoleService,
         JourneyService,
         MemberService,
+        PrismaService,
         {
           provide: 'DATABASE',
           useFactory: () => mockDeep<Database>()

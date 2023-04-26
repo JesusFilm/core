@@ -8,6 +8,7 @@ import { UserRoleService } from '../../userRole/userRole.service'
 
 import { BlockResolver } from '../block.resolver'
 import { BlockService } from '../block.service'
+import { PrismaService } from '../../../lib/prisma.service'
 
 describe('GridItemResolver', () => {
   let resolver: BlockResolver
@@ -40,6 +41,7 @@ describe('GridItemResolver', () => {
         UserRoleService,
         JourneyService,
         MemberService,
+        PrismaService,
         {
           provide: 'DATABASE',
           useFactory: () => mockDeep<Database>()

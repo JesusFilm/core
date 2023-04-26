@@ -1,62 +1,41 @@
-import { BaseService } from '@core/nest/database/BaseService'
 import { Inject, Injectable } from '@nestjs/common'
-import { aql } from 'arangojs'
-import { KeyAsId } from '@core/nest/decorators/KeyAsId'
 import { AuthenticationError, UserInputError } from 'apollo-server-errors'
-import { ArrayCursor } from 'arangojs/cursor'
+import { UserJourney, UserJourneyRole } from '.prisma/api-journeys-client'
 import { v4 as uuidv4 } from 'uuid'
-import { IdType, Journey, UserJourneyRole } from '../../__generated__/graphql'
+import { IdType, Journey } from '../../__generated__/graphql'
 import { JourneyService } from '../journey/journey.service'
 import { MemberService } from '../member/member.service'
-
-export interface UserJourneyRecord {
-  id: string
-  role: UserJourneyRole
-  userId: string
-  journeyId: string
-  openedAt?: string
-}
+import { PrismaService } from '../../lib/prisma.service'
 
 @Injectable()
-export class UserJourneyService extends BaseService<UserJourneyRecord> {
+export class UserJourneyService {
+  @Inject(PrismaService) private readonly prismaService: PrismaService
   @Inject(JourneyService)
   private readonly journeyService: JourneyService
 
   @Inject(MemberService)
   private readonly memberService: MemberService
 
-  collection = this.db.collection<UserJourneyRecord>('userJourneys')
-
-  @KeyAsId()
-  async forJourney(journey: Journey): Promise<UserJourneyRecord[]> {
-    const res = (await this.db.query(aql`
-      FOR item in ${this.collection}
-        FILTER item.journeyId == ${journey.id}
-        RETURN item
-    `)) as ArrayCursor<UserJourneyRecord>
-    return await res.all()
+  async forJourney(journey: Journey): Promise<UserJourney[]> {
+    return await this.prismaService.userJourney.findMany({
+      where: { journeyId: journey.id }
+    })
   }
 
-  @KeyAsId()
   async forJourneyUser(
     journeyId: string,
     userId: string
-  ): Promise<UserJourneyRecord | undefined> {
-    const res = (await this.db.query(aql`
-      FOR item in ${this.collection}
-        FILTER item.journeyId == ${journeyId} && item.userId == ${userId}
-        LIMIT 1
-        RETURN item
-    `)) as ArrayCursor<UserJourneyRecord>
-    return await res.next()
+  ): Promise<UserJourney | null> {
+    return await this.prismaService.userJourney.findUnique({
+      where: { journeyId_userId: { journeyId, userId } }
+    })
   }
 
-  @KeyAsId()
   async requestAccess(
     journeyId: string,
     idType: IdType,
     userId: string
-  ): Promise<UserJourneyRecord | undefined> {
+  ): Promise<UserJourney | undefined> {
     const journey: Journey =
       idType === IdType.slug
         ? await this.journeyService.getBySlug(journeyId)
@@ -73,19 +52,17 @@ export class UserJourneyService extends BaseService<UserJourneyRecord> {
         : undefined
     }
 
-    return await this.save({
-      id: uuidv4(),
-      userId,
-      journeyId: journey.id,
-      role: UserJourneyRole.inviteRequested
+    return await this.prismaService.userJourney.create({
+      data: {
+        id: uuidv4(),
+        userId,
+        journeyId: journey.id,
+        role: UserJourneyRole.inviteRequested
+      }
     })
   }
 
-  @KeyAsId()
-  async approveAccess(
-    id: string,
-    userId: string
-  ): Promise<UserJourneyRecord | undefined> {
+  async approveAccess(id: string, userId: string): Promise<UserJourney | null> {
     const userJourney = await this.get(id)
 
     if (userJourney == null)
@@ -120,6 +97,31 @@ export class UserJourneyService extends BaseService<UserJourneyRecord> {
 
     return await this.update(id, {
       role: UserJourneyRole.editor
+    })
+  }
+
+  async get(id: string): Promise<UserJourney | null> {
+    return await this.prismaService.userJourney.findUnique({ where: { id } })
+  }
+
+  async update(
+    id: string,
+    data: Partial<UserJourney>
+  ): Promise<UserJourney | null> {
+    return await this.prismaService.userJourney.update({ where: { id }, data })
+  }
+
+  async remove(id: string): Promise<UserJourney | undefined> {
+    return await this.prismaService.userJourney.delete({ where: { id } })
+  }
+
+  async removeAll(ids: string[]): Promise<Array<UserJourney | undefined>> {
+    return await Promise.all(ids.map(async (id) => await this.remove(id)))
+  }
+
+  async save(data: UserJourney): Promise<UserJourney> {
+    return await this.prismaService.userJourney.create({
+      data
     })
   }
 }

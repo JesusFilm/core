@@ -7,14 +7,20 @@ CREATE TYPE "VisitorStatus" AS ENUM ('star', 'prohibited', 'checkMarkSymbol', 't
 -- CreateEnum
 CREATE TYPE "DeviceType" AS ENUM ('console', 'mobile', 'tablet', 'smarttv', 'wearable', 'embedded');
 
+-- CreateEnum
+CREATE TYPE "UserJourneyRole" AS ENUM ('inviteRequested', 'editor', 'owner');
+
 -- CreateTable
 CREATE TABLE "Event" (
     "id" TEXT NOT NULL,
-    "journeyId" TEXT NOT NULL,
+    "typename" TEXT NOT NULL,
+    "journeyId" TEXT,
+    "blockId" TEXT,
+    "stepId" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "label" TEXT NOT NULL,
-    "value" TEXT NOT NULL,
-    "extra" JSONB NOT NULL,
+    "label" TEXT,
+    "value" TEXT,
+    "extra" JSONB,
     "visitorId" TEXT,
 
     CONSTRAINT "Event_pkey" PRIMARY KEY ("id")
@@ -55,14 +61,28 @@ CREATE TABLE "Team" (
     CONSTRAINT "Team_pkey" PRIMARY KEY ("id")
 );
 
+-- CreateTable
+CREATE TABLE "UserJourney" (
+    "id" TEXT NOT NULL,
+    "userId" TEXT NOT NULL,
+    "journeyId" TEXT NOT NULL,
+    "role" "UserJourneyRole" NOT NULL,
+    "openedAt" TIMESTAMP(3),
+
+    CONSTRAINT "UserJourney_pkey" PRIMARY KEY ("id")
+);
+
 -- CreateIndex
-CREATE INDEX "Event_id_journeyId_visitorId_idx" ON "Event"("id", "journeyId", "visitorId");
+CREATE INDEX "Event_id_journeyId_visitorId_blockId_idx" ON "Event"("id", "journeyId", "visitorId", "blockId");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Visitor_createdAt_key" ON "Visitor"("createdAt");
 
 -- CreateIndex
 CREATE INDEX "Visitor_id_teamId_createdAt_userId_idx" ON "Visitor"("id", "teamId", "createdAt", "userId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "UserJourney_journeyId_userId_key" ON "UserJourney"("journeyId", "userId");
 
 -- AddForeignKey
 ALTER TABLE "Event" ADD CONSTRAINT "Event_visitorId_fkey" FOREIGN KEY ("visitorId") REFERENCES "Visitor"("id") ON DELETE SET NULL ON UPDATE CASCADE;

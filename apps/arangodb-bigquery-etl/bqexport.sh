@@ -15,18 +15,6 @@ done
 
 # The following collections require some custom queries or import information to avoid errors on import.
 
-# userJourneys
-echo "Exporting userJourneys from ArangoDB"
-arangoexport --type jsonl --compress-output true --overwrite true --server.authentication true --server.database $DATABASE_DB --server.username $DATABASE_USER --server.password $DATABASE_PASS --server.endpoint $DATABASE_URL --custom-query "FOR uj IN userJourneys RETURN { _key: uj._key, userId: uj.userId, journeyId: uj.journeyId, role: uj.role }"
-echo "Importing userJourneys to BigQuery"
-bq --project_id jfp-data-warehouse load --replace --source_format NEWLINE_DELIMITED_JSON nextsteps.userJourneys export/query.jsonl.gz _key:string,userId:string,journeyId:string,role:string
-
-# events
-echo "Exporting events from ArangoDB"
-arangoexport --type jsonl --compress-output true --overwrite true --server.authentication true --server.database $DATABASE_DB --server.username $DATABASE_USER --server.password $DATABASE_PASS --server.endpoint $DATABASE_URL --custom-query "FOR e IN events RETURN { _key: e._key, blockId: e.blockId, stepId: e.stepId, label: e.label, value: e.value, journeyId: e.journeyId, radioOptionBlockId: e.radioOptionBlockId, email: e.email, position: e.position, createdAt: e.createdAt }"
-echo "Importing events to BigQuery"
-bq --project_id jfp-data-warehouse load --replace --source_format NEWLINE_DELIMITED_JSON nextsteps.events export/query.jsonl.gz _key:string,blockId:string,stepId:string,label:string,value:string,journeyId:string,radioOptionBlockId:string,email:string,position:string,createdAt:string
-
 # blocks
 echo "Exporting blocks from ArangoDB"
 arangoexport --type jsonl --compress-output true --overwrite true --server.authentication true --server.database $DATABASE_DB --server.username $DATABASE_USER --server.password $DATABASE_PASS --server.endpoint $DATABASE_URL \

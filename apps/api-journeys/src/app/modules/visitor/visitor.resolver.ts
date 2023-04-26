@@ -9,7 +9,6 @@ import {
 } from '@nestjs/graphql'
 import { ForbiddenError, UserInputError } from 'apollo-server-errors'
 import { IResult, UAParser } from 'ua-parser-js'
-import { Inject } from '@nestjs/common'
 import { Event, Visitor } from '.prisma/api-journeys-client'
 import { PrismaService } from '../../lib/prisma.service'
 import { MemberService } from '../member/member.service'
@@ -20,7 +19,7 @@ export class VisitorResolver {
   constructor(
     private readonly visitorService: VisitorService,
     private readonly memberService: MemberService,
-    @Inject(PrismaService) private readonly prismaService: PrismaService
+    private readonly prismaService: PrismaService
   ) {}
 
   @Query()
