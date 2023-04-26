@@ -1,10 +1,10 @@
 import { rest } from 'msw'
-import { YoutubeVideosData } from './VideoFromYouTube'
+import { YoutubePlaylistItemsData } from './VideoFromYouTube'
+import { YoutubeVideosData } from './YouTubeDetails/YouTubeDetails'
 
-type Video = YoutubeVideosData['items'][number]
+type Video = YoutubePlaylistItemsData['items'][number]
 
 const video1: Video = {
-  id: 'ak06MSETeo4',
   snippet: {
     title: 'What is the Bible?',
     description:
@@ -16,12 +16,11 @@ const video1: Video = {
     }
   },
   contentDetails: {
-    duration: 'PT5M48S'
+    videoId: 'ak06MSETeo4'
   }
 }
 
 const video2: Video = {
-  id: 'jQaeIJOA6J0',
   snippet: {
     title: 'Blessing and Curse',
     description:
@@ -33,12 +32,11 @@ const video2: Video = {
     }
   },
   contentDetails: {
-    duration: 'PT6M03S'
+    videoId: 'jQaeIJOA6J0'
   }
 }
 
 const video3: Video = {
-  id: '7_CGP-12AE0',
   snippet: {
     title: 'The Story of the Bible',
     description:
@@ -50,15 +48,15 @@ const video3: Video = {
     }
   },
   contentDetails: {
-    duration: 'PT6M03S'
+    videoId: '7_CGP-12AE0'
   }
 }
 
 export const getVideos = rest.get(
-  'https://www.googleapis.com/youtube/v3/videos',
+  'https://www.googleapis.com/youtube/v3/playlistItems',
   (_req, res, ctx) => {
     return res(
-      ctx.json<YoutubeVideosData>({
+      ctx.json<YoutubePlaylistItemsData>({
         items: [video1, video2, video3]
       })
     )
@@ -66,10 +64,48 @@ export const getVideos = rest.get(
 )
 
 export const getVideosEmpty = rest.get(
-  'https://www.googleapis.com/youtube/v3/videos',
+  'https://www.googleapis.com/youtube/v3/playlistItems',
   (_req, res, ctx) => {
     return res(
-      ctx.json<YoutubeVideosData>({
+      ctx.json<YoutubePlaylistItemsData>({
+        items: []
+      })
+    )
+  }
+)
+
+export const getPlaylistItemsWithOffsetAndUrl = rest.get(
+  'https://www.googleapis.com/youtube/v3/playlistItems',
+  (req, res, ctx) => {
+    if (req.url.searchParams.get('id') === video2.contentDetails?.videoId) {
+      return res(
+        ctx.json<YoutubePlaylistItemsData>({
+          items: [video2]
+        })
+      )
+    }
+    if (req.url.searchParams.get('pageToken') !== 'nextPageToken') {
+      return res(
+        ctx.json<YoutubePlaylistItemsData>({
+          items: [video1, video2],
+          nextPageToken: 'nextPageToken'
+        })
+      )
+    }
+    return res(
+      ctx.json<YoutubePlaylistItemsData>({
+        items: [video3]
+      })
+    )
+  }
+)
+
+export const getPlaylistItemsLoading = rest.get(
+  'https://www.googleapis.com/youtube/v3/playlistItems',
+  (_req, res, ctx) => {
+    return res(
+      ctx.delay(1000 * 60 * 60 * 60),
+      ctx.json<YoutubePlaylistItemsData>({
         items: []
       })
     )
@@ -79,24 +115,47 @@ export const getVideosEmpty = rest.get(
 export const getVideosWithOffsetAndUrl = rest.get(
   'https://www.googleapis.com/youtube/v3/videos',
   (req, res, ctx) => {
-    if (req.url.searchParams.get('id') === video2.id) {
+    if (req.url.searchParams.get('id') === video2.contentDetails?.videoId) {
       return res(
         ctx.json<YoutubeVideosData>({
-          items: [video2]
+          items: [
+            {
+              ...video2,
+              id: 'ak06MSETeo4',
+              contentDetails: { duration: 'PT6M03S' }
+            }
+          ]
         })
       )
     }
     if (req.url.searchParams.get('pageToken') !== 'nextPageToken') {
       return res(
         ctx.json<YoutubeVideosData>({
-          items: [video1, video2],
+          items: [
+            {
+              ...video1,
+              id: 'ak06MSETeo4',
+              contentDetails: { duration: 'PT5M48S' }
+            },
+            {
+              ...video2,
+              id: 'ak06MSETeo4',
+              contentDetails: { duration: 'PT6M03S' }
+            }
+          ],
           nextPageToken: 'nextPageToken'
         })
       )
     }
     return res(
       ctx.json<YoutubeVideosData>({
-        items: [video3]
+        items: [
+          {
+            ...video3,
+            id: 'ak06MSETeo4',
+            contentDetails: { duration: 'PT6M03S' }
+          }
+        ]
       })
     )
   }

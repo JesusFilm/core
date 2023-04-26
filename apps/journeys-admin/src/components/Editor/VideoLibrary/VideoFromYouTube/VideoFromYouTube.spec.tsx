@@ -5,7 +5,7 @@ import { mswServer } from '../../../../../test/mswServer'
 import {
   getVideos,
   getVideosEmpty,
-  getVideosWithOffsetAndUrl
+  getPlaylistItemsWithOffsetAndUrl
 } from './VideoFromYouTube.handlers'
 import { VideoFromYouTube } from '.'
 
@@ -30,7 +30,7 @@ describe('VideoFromYouTube', () => {
   })
 
   it('should call api to get more videos', async () => {
-    mswServer.use(getVideosWithOffsetAndUrl)
+    mswServer.use(getPlaylistItemsWithOffsetAndUrl)
     const { getByRole } = render(
       <SWRConfig value={{ provider: () => new Map() }}>
         <VideoFromYouTube onSelect={jest.fn()} />
@@ -60,7 +60,7 @@ describe('VideoFromYouTube', () => {
   })
 
   it('should re-enable Load More if filters change', async () => {
-    mswServer.use(getVideosWithOffsetAndUrl)
+    mswServer.use(getPlaylistItemsWithOffsetAndUrl)
     const { getByRole, getByText } = render(
       <SWRConfig value={{ provider: () => new Map() }}>
         <VideoFromYouTube onSelect={jest.fn()} />
