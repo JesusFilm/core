@@ -28,7 +28,7 @@ export function EventsCard({ journey }: Props): ReactElement {
       sx={{ borderRadius: 4, minHeight: '200px', mb: 6 }}
     >
       <Stack direction="row" sx={{ alignItems: 'center', p: 5 }}>
-        <Typography variant="body2" sx={{ pl: '52px', pr: '36px' }}>
+        <Typography variant="body2" sx={{ pl: '46px', pr: '42px' }}>
           {totalDuration}
         </Typography>
         <Typography variant="h3">{journey.title}</Typography>
