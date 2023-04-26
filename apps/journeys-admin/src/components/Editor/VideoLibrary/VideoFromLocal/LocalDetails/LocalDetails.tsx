@@ -170,8 +170,7 @@ export function LocalDetails({
                 sx={{
                   display: '-webkit-box',
                   overflow: 'hidden',
-                  WebkitLineClamp: isExpanded ? '0' : '3',
-                  WebkitBoxOrient: 'vertical',
+                  height: isExpanded ? '100%' : '54px',
                   whiteSpace: isExpanded ? 'pre-wrap' : 'unset'
                 }}
               >
