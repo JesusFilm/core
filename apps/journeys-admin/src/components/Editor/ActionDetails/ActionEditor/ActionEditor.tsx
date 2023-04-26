@@ -53,32 +53,27 @@ export function ActionEditor({
     MULTIPLE_LINK_ACTION_UPDATE
   )
 
-  // Regex that allows for mailto links and links without a protocol e.g google.com
-  const urlRegex =
-    /^((http|https):\/\/)?((?!www\.)([a-zA-Z0-9_-]+\.)*)?[a-zA-Z0-9_-]+(\.[a-zA-Z]+)+(\/)?.*?([\w-]+\/)?([\w-]+(\?[\w-]+=\w+(&[\w-]+=\w+)*)?)?$|^mailto:[\w.-]+@[\w.-]+\.\w+$/
-
   const linkActionSchema = object({
-    link: string().matches(urlRegex, 'Invalid URL').required('Required')
+    link: string().url('Invalid URL').required('Required')
   })
 
+  // ^(?!mailto:)((https?|ftp):\/\/)?(((([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&'\(\)\*\+,;=]|:)*@)?(((\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5])\.(\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5])\.(\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5])\.(\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5]))|((([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))\.)+(([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))\.?)(:\d*)?)(\/((([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&'\(\)\*\+,;=]|:|@)+(\/(([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&'\(\)\*\+,;=]|:|@)*)*)?)?(\?((([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&'\(\)\*\+,;=]|:|@)|[\uE000-\uF8FF]|\/|\?)*)?(\#((([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&'\(\)\*\+,;=]|:|@)|\/|\?)*)?$
   async function handleSubmit(e: React.FocusEvent): Promise<void> {
     if (journey == null) return
     const target = e.target as HTMLInputElement
     const url = target.value
-    const formattedUrl = startsWith(url, 'https')
-      ? url
-      : startsWith(url, 'http')
-      ? url
-      : startsWith(url, 'mailto')
-      ? url
-      : 'https://' + url
+    // const formattedUrl = startsWith(url, 'https')
+    //   ? url
+    //   : startsWith(url, 'http')
+    //   ? url
+    //   : 'https://' + url
     blocks.map(async (block) => {
       await linkActionUpdate({
         variables: {
           id: block.id,
           journeyId: journey.id,
           input: {
-            url: formattedUrl
+            url
           }
         },
         update(cache, { data }) {
@@ -96,8 +91,8 @@ export function ActionEditor({
         }
       })
     })
-    setSelectedAction?.(formattedUrl)
-    goalLabel?.(formattedUrl)
+    setSelectedAction?.(url)
+    goalLabel?.(url)
   }
 
   let icon: ReactNode
@@ -123,7 +118,14 @@ export function ActionEditor({
         onSubmit={noop}
         enableReinitialize
       >
-        {({ values, touched, errors, handleChange, handleBlur }) => (
+        {({
+          values,
+          touched,
+          errors,
+          handleChange,
+          handleBlur,
+          setFieldValue
+        }) => (
           <Form>
             <TextField
               id="link"
@@ -143,6 +145,9 @@ export function ActionEditor({
               }}
               onBlur={(e) => {
                 handleBlur(e)
+                // if (!startsWith(e.target.value, 'https')) {
+                //   setFieldValue('link', 'https://' + e.target.value)
+                // }
                 errors.link == null && handleSubmit(e)
               }}
               onChange={handleChange}

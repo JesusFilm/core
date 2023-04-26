@@ -46,12 +46,8 @@ export function LinkAction(): ReactElement {
 
   const initialValues: LinkActionFormValues = { link: linkAction?.url ?? '' }
 
-  // Regex that allows for mailto links and links without a protocol e.g google.com
-  const urlRegex =
-    /^((http|https):\/\/)?((?!www\.)([a-zA-Z0-9_-]+\.)*)?[a-zA-Z0-9_-]+(\.[a-zA-Z]+)+(\/)?.*?([\w-]+\/)?([\w-]+(\?[\w-]+=\w+(&[\w-]+=\w+)*)?)?$|^mailto:[\w.-]+@[\w.-]+\.\w+$/
-
   const linkActionSchema = object({
-    link: string().matches(urlRegex, 'Invalid URL').required('Required')
+    link: string().url('Invalid URL').required('Required')
   })
 
   async function handleSubmit(e: React.FocusEvent): Promise<void> {
@@ -64,13 +60,7 @@ export function LinkAction(): ReactElement {
           id,
           journeyId: journey.id,
           input: {
-            url: startsWith(url, 'https')
-              ? url
-              : startsWith(url, 'http')
-              ? url
-              : startsWith(url, 'mailto')
-              ? url
-              : 'https://' + url
+            url
           }
         },
         update(cache, { data }) {
