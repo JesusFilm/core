@@ -20,7 +20,7 @@ export function EventsCard({ journey }: Props): ReactElement {
     setOpen(true)
   }
 
-  const nestedEvents = transformEvents(journey.events)
+  const timelineItems = transformEvents(journey.events)
 
   return (
     <Card
@@ -30,8 +30,8 @@ export function EventsCard({ journey }: Props): ReactElement {
       <Typography sx={{ p: 6 }}>{journey.title}</Typography>
       <Divider />
       <Box sx={{ p: 6 }}>
-        {nestedEvents.map((event, index) => {
-          if (Array.isArray(event)) {
+        {timelineItems.map((timelineItem, index) => {
+          if (Array.isArray(timelineItem)) {
             return (
               <>
                 <Collapse
@@ -44,18 +44,26 @@ export function EventsCard({ journey }: Props): ReactElement {
                   <CompactEvent
                     key={index}
                     handleClick={handleOpen}
-                    value={`${event.length} more events`}
+                    value={`${timelineItem.length} more events`}
                   />
                 </Collapse>
                 <Collapse in={open}>
-                  {event.map((nestedEvent) => (
-                    <TimelineEvent key={nestedEvent.id} event={nestedEvent} />
+                  {timelineItem.map((nestedEvent) => (
+                    <TimelineEvent
+                      key={nestedEvent.event.id}
+                      event={nestedEvent.event}
+                    />
                   ))}
                 </Collapse>
               </>
             )
           } else {
-            return <TimelineEvent key={event.id} event={event} />
+            return (
+              <TimelineEvent
+                key={timelineItem.event.id}
+                event={timelineItem.event}
+              />
+            )
           }
         })}
       </Box>
