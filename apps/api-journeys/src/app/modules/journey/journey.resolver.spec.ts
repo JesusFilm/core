@@ -9,7 +9,8 @@ import {
   ThemeName,
   UserJourneyRole,
   JourneysReportType,
-  Role
+  Role,
+  ImageBlock
 } from '../../__generated__/graphql'
 import { BlockResolver } from '../block/block.resolver'
 import { BlockService } from '../block/block.service'
@@ -67,6 +68,26 @@ describe('JourneyResolver', () => {
     primaryImageBlock: null,
     publishedAt,
     createdAt
+  }
+
+  const primaryImageBlock: ImageBlock & { _key: string } = {
+    _key: 'primaryImageBlock.id',
+    __typename: 'ImageBlock',
+    id: 'primaryImageBlock.id',
+    journeyId: 'socialJourney.id',
+    parentBlockId: 'socialJourney.id',
+    parentOrder: 1,
+    src: 'image.src',
+    width: 100,
+    height: 100,
+    alt: 'primary-image-block',
+    blurhash: 'image.blurhash'
+  }
+
+  const socialJourney: Journey & { primaryImageBlockId: string | undefined } = {
+    ...journey,
+    id: 'socialJourney.id',
+    primaryImageBlockId: 'primaryImageBlock.id'
   }
 
   const template: Journey = {
@@ -183,6 +204,8 @@ describe('JourneyResolver', () => {
         switch (id) {
           case journey.id:
             return journey
+          case socialJourney.id:
+            return socialJourney
           case template.id:
             return template
           case draftJourney.id:
@@ -231,7 +254,14 @@ describe('JourneyResolver', () => {
     provide: BlockService,
     useFactory: () => ({
       forJourney: jest.fn(() => [block]),
-      get: jest.fn(() => block),
+      get: jest.fn((id) => {
+        switch (id) {
+          case block.id:
+            return block
+          case primaryImageBlock.id:
+            return primaryImageBlock
+        }
+      }),
       getBlocksByType: jest.fn(() => [stepBlock]),
       getDuplicateChildren: jest.fn(() => [duplicatedStep]),
       saveAll: jest.fn(() => [duplicatedStep])
@@ -908,6 +938,31 @@ describe('JourneyResolver', () => {
       await expect(
         resolver.journeyDuplicate('journeyId', 'userId')
       ).rejects.toThrow('database error')
+    })
+
+    it('should duplicate the primaryImageBlock and add it to the duplicated journey', async () => {
+      mockUuidv4.mockReturnValueOnce('duplicateJourneyId')
+      mockUuidv4.mockReturnValueOnce('duplicateStepId')
+      mockUuidv4.mockReturnValueOnce('duplicatePrimaryImageBlock.id')
+      const duplicateStepIds = new Map([[stepBlock.id, duplicatedStep.id]])
+      await resolver.journeyDuplicate('socialJourney.id', 'userId')
+      expect(bService.getDuplicateChildren).toHaveBeenCalledWith(
+        [stepBlock],
+        'socialJourney.id',
+        null,
+        duplicateStepIds,
+        'duplicateJourneyId',
+        duplicateStepIds
+      )
+      expect(bService.saveAll).toHaveBeenCalledWith([
+        duplicatedStep,
+        {
+          ...primaryImageBlock,
+          _key: 'duplicatePrimaryImageBlock.id',
+          journeyId: 'duplicateJourneyId',
+          parentBlockId: 'duplicateJourneyId'
+        }
+      ])
     })
   })
 

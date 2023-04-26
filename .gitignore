@@ -59,4 +59,4 @@ terraform.tfstate.backup
 # vercel
 .vercel
 .vercel-url
-.github/deploy_preview_comment.md
+.github/deployment_comment.md
