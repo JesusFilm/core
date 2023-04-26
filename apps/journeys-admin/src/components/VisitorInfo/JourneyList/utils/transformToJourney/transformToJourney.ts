@@ -24,9 +24,8 @@ export function transformToJourney(events: Event[] = []): JourneyWithEvents[] {
         journey.title = event.label
         journey.subtitle = event.language?.name[0].value
         journey.createdAt = event.createdAt
-      } else {
-        journey.events.push(event)
       }
+      journey.events.push(event)
       return result
     },
     [] as JourneyWithEvents[]

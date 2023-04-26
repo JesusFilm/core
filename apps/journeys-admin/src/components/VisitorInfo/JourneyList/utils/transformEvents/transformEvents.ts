@@ -3,39 +3,40 @@ import parseISO from 'date-fns/parseISO'
 import differenceInMilliseconds from 'date-fns/differenceInMilliseconds'
 import { GetVisitorEvents_visitor_events as Event } from '../../../../../../__generated__/GetVisitorEvents'
 
-export interface EventWithDuration {
+export interface TimelineItem {
   event: Event
   duration?: string
 }
 
 export function transformEvents(
   events: Event[]
-): Array<EventWithDuration | EventWithDuration[]> {
+): Array<TimelineItem | TimelineItem[]> {
   const featured: Array<Event['__typename']> = [
     'ChatOpenEvent',
     'TextResponseSubmissionEvent',
-    'RadioQuestionSubmissionEvent'
+    'RadioQuestionSubmissionEvent',
+    'JourneyViewEvent'
   ]
 
-  const compact: Array<Event['__typename']> = [
+  const eventTypesFilter: Array<Event['__typename']> = [
+    ...featured,
     'ButtonClickEvent',
     'VideoCompleteEvent',
     'VideoStartEvent',
     'SignUpSubmissionEvent'
   ]
 
-  const filteredEvents = events.filter(
-    (event) =>
-      featured.includes(event.__typename) || compact.includes(event.__typename)
+  const filteredEvents = events.filter((event) =>
+    eventTypesFilter.includes(event.__typename)
   )
 
-  const eventsWithDuration: EventWithDuration[] = []
+  const eventsWithDuration: TimelineItem[] = []
   filteredEvents.forEach((event, i) => {
     eventsWithDuration.push({ event })
     if (i - 1 >= 0) {
       const duration = getDuration(
-        filteredEvents[i].createdAt,
-        filteredEvents[i - 1].createdAt
+        filteredEvents[i - 1].createdAt,
+        filteredEvents[i].createdAt
       )
 
       eventsWithDuration[i - 1] = {
@@ -45,20 +46,20 @@ export function transformEvents(
     }
   })
 
-  const result: Array<EventWithDuration | EventWithDuration[]> = []
+  const result: Array<TimelineItem | TimelineItem[]> = []
   let pointer = 0
 
-  forEachRight(eventsWithDuration, ({ event }) => {
-    if (featured.includes(event.__typename)) {
+  forEachRight(eventsWithDuration, (timelineEvent) => {
+    if (featured.includes(timelineEvent.event.__typename)) {
       if (result[pointer] != null) pointer++
-      result.push({ event })
+      result.push(timelineEvent)
       pointer++
-    } else if (compact.includes(event.__typename)) {
+    } else {
       const nestedEvent = result[pointer]
       if (nestedEvent == null) {
-        result.push([{ event }])
+        result.push([timelineEvent])
       } else if (Array.isArray(nestedEvent)) {
-        nestedEvent.push({ event })
+        nestedEvent.push(timelineEvent)
       }
     }
   })

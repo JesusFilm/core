@@ -36,7 +36,7 @@ export function EventsCard({ journey }: Props): ReactElement {
               <>
                 <Collapse
                   in={open}
-                  collapsedSize={60}
+                  collapsedSize={40}
                   sx={{
                     display: open ? 'none' : 'block'
                   }}
@@ -44,14 +44,18 @@ export function EventsCard({ journey }: Props): ReactElement {
                   <CompactEvent
                     key={index}
                     handleClick={handleOpen}
-                    value={`${timelineItem.length} more events`}
+                    value={
+                      timelineItem.length === 1
+                        ? `${timelineItem.length} more event`
+                        : `${timelineItem.length} more events`
+                    }
                   />
                 </Collapse>
                 <Collapse in={open}>
                   {timelineItem.map((nestedEvent) => (
                     <TimelineEvent
                       key={nestedEvent.event.id}
-                      event={nestedEvent.event}
+                      timelineItem={nestedEvent}
                     />
                   ))}
                 </Collapse>
@@ -61,7 +65,7 @@ export function EventsCard({ journey }: Props): ReactElement {
             return (
               <TimelineEvent
                 key={timelineItem.event.id}
-                event={timelineItem.event}
+                timelineItem={timelineItem}
               />
             )
           }

@@ -6,32 +6,45 @@ import PlayArrowIcon from '@mui/icons-material/PlayArrowRounded'
 import RadioButtonUncheckedIcon from '@mui/icons-material/RadioButtonUncheckedRounded'
 import MovieIcon from '@mui/icons-material/MovieRounded'
 import AnnouncementIcon from '@mui/icons-material/AnnouncementRounded'
+import EmojiFlagsRoundedIcon from '@mui/icons-material/EmojiFlagsRounded'
 import { useTranslation } from 'react-i18next'
-import { GetVisitorEvents_visitor_events as Event } from '../../../../../__generated__/GetVisitorEvents'
+// import { GetVisitorEvents_visitor_events as Event } from '../../../../../__generated__/GetVisitorEvents'
 import { videoBlockSourceToLabel } from '../../videoBlockSourceToLabel'
 import { messagePlatformToLabel } from '../../messagePlatformToLabel'
+import { TimelineItem } from '../utils/transformEvents/transformEvents'
 import { GenericEvent } from './GenericEvent'
 
 interface Props {
-  event: Event
+  timelineItem: TimelineItem
 }
 
 type GenericEventProps = ComponentProps<typeof GenericEvent>
 
-export function TimelineEvent({ event }: Props): ReactElement {
+export function TimelineEvent({ timelineItem }: Props): ReactElement {
+  const { event, duration } = timelineItem
+
   const { t } = useTranslation('apps-journeys-admin')
+
   let icon = <RadioButtonUncheckedIcon />
-  let label: GenericEventProps['label'] = event.label
+  let label: GenericEventProps['label']
   let value: GenericEventProps['value'] = event.value
   let activity: GenericEventProps['activity']
+  const position: 'start' | 'end' | undefined =
+    event.__typename === 'JourneyViewEvent'
+      ? 'start'
+      : duration == null
+      ? 'end'
+      : undefined
 
   switch (event.__typename) {
     case 'RadioQuestionSubmissionEvent':
       icon = <ListIcon />
+      label = event.label
       activity = t('Poll selected')
       break
     case 'TextResponseSubmissionEvent':
       icon = <HelpIcon />
+      label = event.label
       activity = t('Response submitted')
       break
     case 'VideoCompleteEvent':
@@ -77,6 +90,10 @@ export function TimelineEvent({ event }: Props): ReactElement {
             : t('Message Platform')
       })
       break
+    case 'JourneyViewEvent':
+      icon = <EmojiFlagsRoundedIcon />
+      value = t('Journey Started')
+      break
   }
 
   return (
@@ -86,6 +103,8 @@ export function TimelineEvent({ event }: Props): ReactElement {
       label={label}
       value={value}
       activity={activity}
+      duration={duration}
+      position={position}
     />
   )
 }

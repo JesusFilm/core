@@ -15,14 +15,16 @@ export function CompactEvent({ value, handleClick }: Props): ReactElement {
   return (
     <TimelineItem
       sx={{
+        minHeight: '40px',
+        maxHeight: '40px',
         '&:before': {
-          flex: 0,
-          padding: 0
+          flex: 0
+          // padding: '36px'
         }
       }}
     >
-      <TimelineSeparator sx={{ ml: '17px' }}>
-        <TimelineConnector />
+      <TimelineSeparator sx={{ ml: '57px' }}>
+        <TimelineConnector sx={{ flexGrow: '2' }} />
       </TimelineSeparator>
 
       <TimelineContent
@@ -42,6 +44,7 @@ export function CompactEvent({ value, handleClick }: Props): ReactElement {
               border: '1px solid',
               borderColor: 'divider',
               borderRadius: 8,
+              py: 0,
               px: 3
             }}
           />
