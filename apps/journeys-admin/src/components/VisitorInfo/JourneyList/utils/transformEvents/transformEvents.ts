@@ -8,9 +8,12 @@ export interface TimelineItem {
   duration?: string
 }
 
-export function transformEvents(
-  events: Event[]
-): Array<TimelineItem | TimelineItem[]> {
+interface TransformedEvents {
+  timelineItems: Array<TimelineItem | TimelineItem[]>
+  totalDuration: string
+}
+
+export function transformEvents(events: Event[]): TransformedEvents {
   const featured: Array<Event['__typename']> = [
     'ChatOpenEvent',
     'TextResponseSubmissionEvent',
@@ -46,25 +49,31 @@ export function transformEvents(
     }
   })
 
-  const result: Array<TimelineItem | TimelineItem[]> = []
+  const timelineItems: Array<TimelineItem | TimelineItem[]> = []
   let pointer = 0
 
   forEachRight(eventsWithDuration, (timelineEvent) => {
     if (featured.includes(timelineEvent.event.__typename)) {
-      if (result[pointer] != null) pointer++
-      result.push(timelineEvent)
+      if (timelineItems[pointer] != null) pointer++
+      timelineItems.push(timelineEvent)
       pointer++
     } else {
-      const nestedEvent = result[pointer]
+      const nestedEvent = timelineItems[pointer]
       if (nestedEvent == null) {
-        result.push([timelineEvent])
+        timelineItems.push([timelineEvent])
       } else if (Array.isArray(nestedEvent)) {
         nestedEvent.push(timelineEvent)
       }
     }
   })
 
-  return result
+  return {
+    timelineItems,
+    totalDuration: getDuration(
+      filteredEvents[0].createdAt,
+      filteredEvents.slice(-1)[0].createdAt
+    )
+  }
 }
 
 function getDuration(start: string, end: string): string {

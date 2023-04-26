@@ -4,6 +4,7 @@ import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
 import Divider from '@mui/material/Divider'
 import Collapse from '@mui/material/Collapse'
+import Stack from '@mui/material/Stack'
 import { transformEvents } from '../utils/transformEvents'
 import { JourneyWithEvents } from '../utils/transformToJourney/transformToJourney'
 import { TimelineEvent } from '../TimelineEvent'
@@ -20,16 +21,29 @@ export function EventsCard({ journey }: Props): ReactElement {
     setOpen(true)
   }
 
-  const timelineItems = transformEvents(journey.events)
+  const { timelineItems, totalDuration } = transformEvents(journey.events)
 
   return (
     <Card
       variant="outlined"
       sx={{ borderRadius: 4, minHeight: '200px', mb: 6 }}
     >
-      <Typography sx={{ p: 6 }}>{journey.title}</Typography>
+      <Stack direction="row" sx={{ alignItems: 'center', p: 5 }}>
+        <Typography variant="body2" sx={{ pl: '52px', pr: '36px' }}>
+          {totalDuration}
+        </Typography>
+        <Typography variant="h3">{journey.title}</Typography>
+        {journey.createdAt != null && (
+          <Typography variant="body2" sx={{ ml: 'auto', pr: 1 }}>
+            {new Intl.DateTimeFormat([], {
+              dateStyle: 'long'
+            }).format(new Date(journey.createdAt))}
+          </Typography>
+        )}
+      </Stack>
+
       <Divider />
-      <Box sx={{ p: 6 }}>
+      <Box sx={{ px: 6 }}>
         {timelineItems.map((timelineItem, index) => {
           if (Array.isArray(timelineItem)) {
             return (

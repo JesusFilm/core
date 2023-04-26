@@ -8,9 +8,8 @@ import MovieIcon from '@mui/icons-material/MovieRounded'
 import AnnouncementIcon from '@mui/icons-material/AnnouncementRounded'
 import EmojiFlagsRoundedIcon from '@mui/icons-material/EmojiFlagsRounded'
 import { useTranslation } from 'react-i18next'
-// import { GetVisitorEvents_visitor_events as Event } from '../../../../../__generated__/GetVisitorEvents'
-import { videoBlockSourceToLabel } from '../../videoBlockSourceToLabel'
-import { messagePlatformToLabel } from '../../messagePlatformToLabel'
+import { videoBlockSourceToLabel } from '../../videoBlockSourceToLabel' // duplicate into utils
+import { messagePlatformToLabel } from '../../messagePlatformToLabel' // duplicate into utils
 import { TimelineItem } from '../utils/transformEvents/transformEvents'
 import { GenericEvent } from './GenericEvent'
 

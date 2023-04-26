@@ -19,7 +19,6 @@ export function CompactEvent({ value, handleClick }: Props): ReactElement {
         maxHeight: '40px',
         '&:before': {
           flex: 0
-          // padding: '36px'
         }
       }}
     >
