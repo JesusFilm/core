@@ -83,7 +83,7 @@ export function GenericEvent({
         sx={{ px: 2, py: 4, display: 'flex', alignItems: 'center' }}
       >
         <Stack direction="column" sx={{ width: '100%' }}>
-          <Stack direction="row">
+          <Stack direction="row" sx={{ width: '100%' }}>
             {activity != null && (
               <Typography variant="body2" sx={{ fontWeight: 'bold' }}>
                 {`${activity}:\u00A0`}

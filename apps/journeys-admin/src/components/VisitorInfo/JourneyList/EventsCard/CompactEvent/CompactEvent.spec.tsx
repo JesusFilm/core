@@ -1,5 +1,5 @@
 import { fireEvent, render } from '@testing-library/react'
-import { CompactEvent } from './CompactEvent'
+import { CompactEvent } from '.'
 
 describe('CompactEvent', () => {
   it('should handle click', () => {

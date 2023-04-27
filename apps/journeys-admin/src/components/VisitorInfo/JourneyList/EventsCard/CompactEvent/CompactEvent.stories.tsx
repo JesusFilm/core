@@ -2,7 +2,7 @@ import { Meta, Story } from '@storybook/react'
 import { ComponentProps } from 'react'
 import { noop } from 'lodash'
 import { simpleComponentConfig } from '../../../../../libs/storybook'
-import { CompactEvent } from './CompactEvent'
+import { CompactEvent } from '.'
 
 const CompactEventStory = {
   ...simpleComponentConfig,
