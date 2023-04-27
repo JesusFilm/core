@@ -102,7 +102,6 @@ export function EmbeddedPreview({
           height: 6.5,
           width: '90%',
           backgroundColor: '#DCDDE5',
-
           borderRadius: '16px 16px 0 0',
           opacity: 0.6
         }}
