@@ -8,6 +8,7 @@ import Stack from '@mui/material/Stack'
 import { transformEvents, JourneyWithEvents } from '../utils'
 import { TimelineEvent } from './TimelineEvent'
 import { CompactEvent } from './CompactEvent'
+import { GenericEvent } from './GenericEvent'
 
 interface Props {
   journey: JourneyWithEvents
@@ -27,19 +28,23 @@ export function EventsCard({ journey }: Props): ReactElement {
       variant="outlined"
       sx={{ borderRadius: 4, minHeight: '200px', mb: 6 }}
     >
-      <Stack direction="row" sx={{ alignItems: 'center', p: 5 }}>
-        <Typography variant="body2" sx={{ pl: '46px', pr: '42px' }}>
-          {totalDuration}
-        </Typography>
-        <Typography variant="h3">{journey.title}</Typography>
-        {journey.createdAt != null && (
-          <Typography variant="body2" sx={{ ml: 'auto', pr: 1 }}>
-            {new Intl.DateTimeFormat([], {
-              dateStyle: 'long'
-            }).format(new Date(journey.createdAt))}
-          </Typography>
-        )}
-      </Stack>
+      <Box sx={{ px: 6 }}>
+        <GenericEvent
+          duration={totalDuration}
+          value={
+            <Stack direction="row" sx={{ alignItems: 'center' }}>
+              <Typography variant="h3">{journey.title}</Typography>
+              {journey.createdAt != null && (
+                <Typography variant="body2" sx={{ ml: 'auto' }}>
+                  {new Intl.DateTimeFormat([], {
+                    dateStyle: 'long'
+                  }).format(new Date(journey.createdAt))}
+                </Typography>
+              )}
+            </Stack>
+          }
+        />
+      </Box>
 
       <Divider />
       <Box sx={{ px: 6 }}>

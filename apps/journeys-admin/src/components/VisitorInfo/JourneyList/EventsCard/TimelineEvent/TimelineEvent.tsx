@@ -13,7 +13,7 @@ import {
   messagePlatformToLabel,
   TimelineItem
 } from '../../utils'
-import { GenericEvent } from './GenericEvent'
+import { GenericEvent } from '../GenericEvent'
 
 interface Props {
   timelineItem: TimelineItem
