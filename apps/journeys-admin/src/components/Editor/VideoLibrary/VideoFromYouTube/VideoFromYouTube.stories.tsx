@@ -2,8 +2,8 @@ import { Story, Meta } from '@storybook/react'
 import { SWRConfig } from 'swr'
 import { journeysAdminConfig } from '../../../../libs/storybook'
 import {
-  getPlaylistItemsLoading,
-  getPlaylistItemsWithOffsetAndUrl
+  getVideosLoading,
+  getVideosWithOffsetAndUrl
 } from './VideoFromYouTube.handlers'
 import { VideoFromYouTube } from '.'
 
@@ -23,14 +23,14 @@ const Template: Story = ({ onSelect }) => (
 export const Default = Template.bind({})
 Default.parameters = {
   msw: {
-    handlers: [getPlaylistItemsWithOffsetAndUrl]
+    handlers: [getVideosWithOffsetAndUrl]
   }
 }
 
 export const Loading = Template.bind({})
 Loading.parameters = {
   msw: {
-    handlers: [getPlaylistItemsLoading]
+    handlers: [getVideosLoading]
   }
 }
 
