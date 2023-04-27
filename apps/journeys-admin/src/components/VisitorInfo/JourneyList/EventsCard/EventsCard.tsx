@@ -6,8 +6,8 @@ import Divider from '@mui/material/Divider'
 import Collapse from '@mui/material/Collapse'
 import Stack from '@mui/material/Stack'
 import { transformEvents, JourneyWithEvents } from '../utils'
-import { TimelineEvent } from '../TimelineEvent'
-import { CompactEvent } from '../CompactEvent'
+import { TimelineEvent } from './TimelineEvent'
+import { CompactEvent } from './CompactEvent'
 
 interface Props {
   journey: JourneyWithEvents

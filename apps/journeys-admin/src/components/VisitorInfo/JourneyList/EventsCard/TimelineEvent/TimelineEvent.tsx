@@ -12,7 +12,7 @@ import {
   videoBlockSourceToLabel,
   messagePlatformToLabel,
   TimelineItem
-} from '../utils'
+} from '../../utils'
 import { GenericEvent } from './GenericEvent'
 
 interface Props {
