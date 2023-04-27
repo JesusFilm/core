@@ -3,7 +3,7 @@ import Box from '@mui/material/Box'
 import { Formik, Form } from 'formik'
 import InputAdornment from '@mui/material/InputAdornment'
 import TextField from '@mui/material/TextField'
-import { noop, startsWith } from 'lodash'
+import { noop } from 'lodash'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { gql, useMutation } from '@apollo/client'
 import { object, string } from 'yup'
@@ -53,20 +53,33 @@ export function ActionEditor({
     MULTIPLE_LINK_ACTION_UPDATE
   )
 
+  // check for valid URL
+  function checkURL(value?: string): boolean {
+    const protocol = /^\w+:\/\//
+    let urlInspect = value ?? ''
+    if (!protocol.test(urlInspect)) {
+      if (/^mailto:/.test(urlInspect)) return false
+      urlInspect = 'https://' + urlInspect
+    }
+    try {
+      return new URL(urlInspect).toString() !== ''
+    } catch (error) {
+      return false
+    }
+  }
+
   const linkActionSchema = object({
-    link: string().url('Invalid URL').required('Required')
+    link: string()
+      .test('valid-url', 'Invalid URL', checkURL)
+      .required('Required')
   })
 
-  // ^(?!mailto:)((https?|ftp):\/\/)?(((([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&'\(\)\*\+,;=]|:)*@)?(((\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5])\.(\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5])\.(\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5])\.(\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5]))|((([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))\.)+(([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))\.?)(:\d*)?)(\/((([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&'\(\)\*\+,;=]|:|@)+(\/(([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&'\(\)\*\+,;=]|:|@)*)*)?)?(\?((([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&'\(\)\*\+,;=]|:|@)|[\uE000-\uF8FF]|\/|\?)*)?(\#((([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&'\(\)\*\+,;=]|:|@)|\/|\?)*)?$
   async function handleSubmit(e: React.FocusEvent): Promise<void> {
     if (journey == null) return
     const target = e.target as HTMLInputElement
-    const url = target.value
-    // const formattedUrl = startsWith(url, 'https')
-    //   ? url
-    //   : startsWith(url, 'http')
-    //   ? url
-    //   : 'https://' + url
+    const url = /^\w+:\/\//.test(target.value) // checks if url has a protocol
+      ? target.value
+      : `https://${target.value}`
     blocks.map(async (block) => {
       await linkActionUpdate({
         variables: {
@@ -118,14 +131,7 @@ export function ActionEditor({
         onSubmit={noop}
         enableReinitialize
       >
-        {({
-          values,
-          touched,
-          errors,
-          handleChange,
-          handleBlur,
-          setFieldValue
-        }) => (
+        {({ values, touched, errors, handleChange, handleBlur }) => (
           <Form>
             <TextField
               id="link"
@@ -145,9 +151,6 @@ export function ActionEditor({
               }}
               onBlur={(e) => {
                 handleBlur(e)
-                // if (!startsWith(e.target.value, 'https')) {
-                //   setFieldValue('link', 'https://' + e.target.value)
-                // }
                 errors.link == null && handleSubmit(e)
               }}
               onChange={handleChange}
