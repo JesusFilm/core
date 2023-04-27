@@ -25,7 +25,7 @@ export function VideoListItem({
   description,
   image,
   source,
-  duration: time,
+  duration: time = 0,
   onSelect: handleSelect
 }: VideoListItemProps): ReactElement {
   const [open, setOpen] = useState(false)
@@ -39,9 +39,9 @@ export function VideoListItem({
   }
 
   const duration =
-    time != null
-      ? new Date(time * 1000).toISOString().substring(time < 3600 ? 14 : 11, 19)
-      : undefined
+    time < 3600
+      ? new Date(time * 1000).toISOString().substring(14, 19)
+      : new Date(time * 1000).toISOString().substring(11, 19)
 
   return (
     <>
@@ -77,21 +77,19 @@ export function VideoListItem({
                 backgroundImage: `url(${image})`
               }}
             >
-              {duration != null && (
-                <Typography
-                  component="div"
-                  variant="caption"
-                  sx={{
-                    color: 'background.paper',
-                    backgroundColor: 'rgba(0, 0, 0, 0.35)',
-                    px: 1,
-                    m: 1,
-                    borderRadius: 2
-                  }}
-                >
-                  {duration}
-                </Typography>
-              )}
+              <Typography
+                component="div"
+                variant="caption"
+                sx={{
+                  color: 'background.paper',
+                  backgroundColor: 'rgba(0, 0, 0, 0.35)',
+                  px: 1,
+                  m: 1,
+                  borderRadius: 2
+                }}
+              >
+                {duration}
+              </Typography>
             </Box>
           </Box>
         )}
