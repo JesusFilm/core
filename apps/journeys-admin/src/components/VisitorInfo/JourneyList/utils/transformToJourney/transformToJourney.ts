@@ -31,5 +31,5 @@ export function transformToJourney(events: Event[] = []): JourneyWithEvents[] {
     [] as JourneyWithEvents[]
   )
 
-  return journeys
+  return journeys.reverse()
 }
