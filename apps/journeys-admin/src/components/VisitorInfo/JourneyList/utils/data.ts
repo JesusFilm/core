@@ -114,6 +114,53 @@ export const journeyViewEvent: TimelineItem = {
   duration: '0.01'
 }
 
+const textResponse2Event = {
+  __typename: 'TextResponseSubmissionEvent',
+  id: 'eventId3',
+  journeyId: 'journey2.id',
+  label: 'How do you feel at the end of the journey?',
+  value:
+    "Don't adventures ever have an end? I suppose not. Someone else always has to carry on the story",
+  createdAt: '2022-11-02T03:20:26.368Z'
+}
+
+const buttonClick2Event = {
+  __typename: 'ButtonClickEvent',
+  id: 'eventId2',
+  journeyId: 'journey2.id',
+  label: 'Lets recap your journey!',
+  value: 'Get started',
+  createdAt: '2022-11-02T03:20:26.368Z'
+}
+
+const radioSubmission2Event = {
+  __typename: 'RadioQuestionSubmissionEvent',
+  id: 'eventId1',
+  journeyId: 'journey2.id',
+  label: 'How do you feel about Sam?',
+  value: 'Best friend ever!',
+  createdAt: '2022-11-02T03:20:26.368Z'
+}
+
+const journey2ViewEvent: JourneyViewEvent = {
+  __typename: 'JourneyViewEvent',
+  id: 'eventId0',
+  journeyId: 'journey2.id',
+  label: 'A Journey: There and Back Again',
+  value: '19',
+  createdAt: '2022-11-02T03:20:26.368Z',
+  language: {
+    id: 'languageId',
+    __typename: 'Language',
+    name: [
+      {
+        value: 'Hobbitish',
+        __typename: 'Translation'
+      }
+    ]
+  }
+}
+
 const events = [
   journeyViewEvent.event,
   buttonClickEvent.event,
@@ -133,7 +180,7 @@ export const getVisitorEvents: GetVisitorEvents = {
   }
 }
 
-export const getVisitorEventsMock = {
+export const getJourneysMock = {
   request: {
     query: GET_VISITOR_EVENTS,
     variables: {
@@ -141,7 +188,19 @@ export const getVisitorEventsMock = {
     }
   },
   result: {
-    data: getVisitorEvents
+    data: {
+      visitor: {
+        __typename: 'Visitor',
+        id: 'visitorId',
+        events: [
+          ...events,
+          journey2ViewEvent,
+          radioSubmission2Event,
+          textResponse2Event,
+          buttonClick2Event
+        ]
+      }
+    }
   }
 }
 
