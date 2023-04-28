@@ -16,7 +16,7 @@ import {
   VideoBlockObjectFit,
   VideoBlockSource
 } from '../../../__generated__/globalTypes'
-import type { TreeBlock } from '../../libs/block'
+import { TreeBlock } from '../../libs/block'
 import { useEditor } from '../../libs/EditorProvider'
 import { blurImage } from '../../libs/blurImage'
 import { ImageFields } from '../Image/__generated__/ImageFields'
@@ -50,6 +50,7 @@ export function Video({
   const {
     state: { selectedBlock }
   } = useEditor()
+
   const videoRef = useRef<HTMLVideoElement>(null)
   const playerRef = useRef<videojs.Player>()
 
