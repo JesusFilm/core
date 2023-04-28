@@ -80,6 +80,7 @@ export function TimelineEvent({ timelineItem }: Props): ReactElement {
       break
     case 'ButtonClickEvent':
       activity = t('Button clicked')
+      value = event.label
       break
     case 'ChatOpenEvent':
       icon = <AnnouncementIcon />
