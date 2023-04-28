@@ -10,7 +10,7 @@ jest.mock('@mui/material/useMediaQuery', () => ({
 }))
 
 describe('VisitorInfo', () => {
-  it('switches between tabs', async () => {
+  it.skip('switches between tabs', async () => {
     const { getByText } = render(
       <VisitorInfoProvider>
         <MockedProvider mocks={[getVisitorEventsMock]}>

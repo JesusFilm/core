@@ -2,7 +2,12 @@ import {
   MessagePlatform,
   VideoBlockSource
 } from '../../../../../__generated__/globalTypes'
-import { TimelineItem } from '.'
+import {
+  GetVisitorEvents,
+  GetVisitorEvents_visitor_events_JourneyViewEvent as JourneyViewEvent
+} from '../../../../../__generated__/GetVisitorEvents'
+import { GET_VISITOR_EVENTS } from '../JourneyList'
+import { JourneyWithEvents, TimelineItem } from '.'
 
 export const buttonClickEvent: TimelineItem = {
   event: {
@@ -55,7 +60,7 @@ export const videoCompleteEvent: TimelineItem = {
     __typename: 'VideoCompleteEvent',
     id: 'VideoCompleteEventId',
     journeyId: 'journeyId',
-    label: 'JESUS',
+    label: 'JESUS youtube',
     value: 'youTube',
     createdAt: '2022-11-02T03:20:26.368Z',
     source: VideoBlockSource.youTube
@@ -67,7 +72,7 @@ export const videoStartEvent: TimelineItem = {
     __typename: 'VideoStartEvent',
     id: 'VideoStartEventId',
     journeyId: 'journeyId',
-    label: 'JESUS',
+    label: 'JESUS internal',
     value: 'internal',
     createdAt: '2022-11-02T03:20:26.368Z',
     source: VideoBlockSource.internal
@@ -86,24 +91,64 @@ export const signUpSubmissionEvent: TimelineItem = {
   },
   duration: '0.01'
 }
-export const journeyViewEvent: TimelineItem = {
-  event: {
-    __typename: 'JourneyViewEvent',
-    id: 'journeyViewEventId',
-    journeyId: 'journeyId',
-    createdAt: '2022-11-02T03:20:26.368Z',
-    label: 'There and back again',
-    language: {
-      __typename: 'Language',
-      id: '529',
-      name: [
-        {
-          __typename: 'Translation',
-          value: 'English'
-        }
-      ]
-    },
-    value: '529'
+const journeyView: JourneyViewEvent = {
+  __typename: 'JourneyViewEvent',
+  id: 'journeyViewEventId',
+  journeyId: 'journeyId',
+  createdAt: '2022-11-02T03:20:26.368Z',
+  label: 'Lord of the Rings',
+  language: {
+    __typename: 'Language',
+    id: 'languageId',
+    name: [
+      {
+        __typename: 'Translation',
+        value: 'Hobbitish'
+      }
+    ]
   },
+  value: '529'
+}
+export const journeyViewEvent: TimelineItem = {
+  event: journeyView,
   duration: '0.01'
+}
+
+const events = [
+  journeyViewEvent.event,
+  buttonClickEvent.event,
+  radioQuestionSubmissionEvent.event,
+  textResponseSubmissionEvent.event,
+  videoCompleteEvent.event,
+  videoStartEvent.event,
+  signUpSubmissionEvent.event,
+  chatOpenedEvent.event
+]
+
+export const getVisitorEvents: GetVisitorEvents = {
+  visitor: {
+    __typename: 'Visitor',
+    id: 'visitorId',
+    events
+  }
+}
+
+export const getVisitorEventsMock = {
+  request: {
+    query: GET_VISITOR_EVENTS,
+    variables: {
+      id: 'visitorId'
+    }
+  },
+  result: {
+    data: getVisitorEvents
+  }
+}
+
+export const journey: JourneyWithEvents = {
+  id: journeyView.journeyId,
+  subtitle: journeyView.language?.name[0].value,
+  title: journeyView.label,
+  createdAt: journeyView.createdAt,
+  events
 }

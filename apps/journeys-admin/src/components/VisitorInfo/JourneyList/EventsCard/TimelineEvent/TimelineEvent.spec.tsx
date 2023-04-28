@@ -82,7 +82,7 @@ describe('TimelineEvent', () => {
     const { getByText } = render(
       <TimelineEvent timelineItem={videoCompleteEvent} />
     )
-    expect(getByText('JESUS')).toBeInTheDocument()
+    expect(getByText('JESUS youtube')).toBeInTheDocument()
     expect(getByText('YouTube')).toBeInTheDocument()
     expect(getByText('Video completed:')).toBeInTheDocument()
   })
@@ -97,7 +97,7 @@ describe('TimelineEvent', () => {
       } as unknown as VideoCompleteEvent
     }
     const { getByText } = render(<TimelineEvent timelineItem={videoComplete} />)
-    expect(getByText('JESUS')).toBeInTheDocument()
+    expect(getByText('JESUS youtube')).toBeInTheDocument()
     expect(getByText('Video')).toBeInTheDocument()
     expect(getByText('Video completed:')).toBeInTheDocument()
   })
@@ -106,7 +106,7 @@ describe('TimelineEvent', () => {
     const { getByText } = render(
       <TimelineEvent timelineItem={videoStartEvent} />
     )
-    expect(getByText('JESUS')).toBeInTheDocument()
+    expect(getByText('JESUS internal')).toBeInTheDocument()
     expect(getByText('Jesus Film Library')).toBeInTheDocument()
     expect(getByText('Video started:')).toBeInTheDocument()
   })
@@ -121,7 +121,7 @@ describe('TimelineEvent', () => {
       } as unknown as VideoStartEvent
     }
     const { getByText } = render(<TimelineEvent timelineItem={videoStart} />)
-    expect(getByText('JESUS')).toBeInTheDocument()
+    expect(getByText('JESUS internal')).toBeInTheDocument()
     expect(getByText('Video')).toBeInTheDocument()
     expect(getByText('Video started:')).toBeInTheDocument()
   })
