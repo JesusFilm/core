@@ -76,7 +76,7 @@ export function transformEvents(events: Event[]): TransformedEvents {
   }
 }
 
-function getDuration(start: string, end: string): string {
+export function getDuration(start: string, end: string): string {
   const durationInMilliseconds = differenceInMilliseconds(
     parseISO(end),
     parseISO(start)
