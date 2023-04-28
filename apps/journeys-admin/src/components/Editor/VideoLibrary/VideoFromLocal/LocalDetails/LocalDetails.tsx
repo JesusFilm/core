@@ -168,7 +168,7 @@ export function LocalDetails({
               <Typography
                 variant="caption"
                 sx={{
-                  display: '-webkit-box',
+                  display: 'flex',
                   overflow: 'hidden',
                   height: isExpanded ? '100%' : '54px',
                   whiteSpace: isExpanded ? 'pre-wrap' : 'unset'
@@ -178,29 +178,31 @@ export function LocalDetails({
                   data?.video?.description?.find(({ primary }) => primary)
                     ?.value
                 }
-                <Button
-                  variant="text"
-                  size="small"
-                  sx={{
-                    position: 'absolute',
-                    p: 0,
-                    bottom: -3,
-                    right: isExpanded ? 'unset' : 0,
-                    width: 0,
-                    color: 'secondary.light',
-                    backgroundColor: 'background.paper',
-                    background:
-                      'linear-gradient(90deg, rgba(255,255,255,0.85) 0%, rgba(255,255,255,1) 50%)',
-                    '&:hover': {
-                      backgroundColor:
-                        'linear-gradient(90deg, rgba(255,255,255,0.85) 0%, rgba(255,255,255,1) 50%)'
-                    }
-                  }}
-                  onClick={() => setIsExpanded(!isExpanded)}
-                >
-                  {isExpanded ? 'Less' : 'More'}
-                </Button>
               </Typography>
+              <Button
+                variant="text"
+                size="small"
+                sx={{
+                  position: isExpanded ? 'unset' : 'absolute',
+                  p: 0,
+                  bottom: -3,
+                  right: isExpanded ? 'unset' : 0,
+                  ml: isExpanded ? 1 : 0,
+                  mt: isExpanded ? 0 : -3,
+                  width: 0,
+                  color: 'secondary.light',
+                  backgroundColor: 'background.paper',
+                  background:
+                    'linear-gradient(90deg, rgba(255,255,255,0.85) 0%, rgba(255,255,255,1) 50%)',
+                  '&:hover': {
+                    backgroundColor:
+                      'linear-gradient(90deg, rgba(255,255,255,0.85) 0%, rgba(255,255,255,1) 50%)'
+                  }
+                }}
+                onClick={() => setIsExpanded(!isExpanded)}
+              >
+                {isExpanded ? 'Less' : 'More'}
+              </Button>
             </Box>
           </Box>
         </>
