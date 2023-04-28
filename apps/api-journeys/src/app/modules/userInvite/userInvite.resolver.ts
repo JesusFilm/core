@@ -14,7 +14,7 @@ import {
   UserJourneyRole
 } from '../../__generated__/graphql'
 import { RoleGuard } from '../../lib/roleGuard/roleGuard'
-import { JourneyService } from '../journey/journey.service'
+import { PrismaService } from '../../lib/prisma.service'
 import { UserJourneyService } from '../userJourney/userJourney.service'
 import { UserInviteService } from './userInvite.service'
 
@@ -23,7 +23,7 @@ export class UserInviteResolver {
   constructor(
     private readonly userInviteService: UserInviteService,
     private readonly userJourneyService: UserJourneyService,
-    private readonly journeyService: JourneyService
+    private readonly prismaService: PrismaService
   ) {}
 
   @Query()
@@ -55,7 +55,9 @@ export class UserInviteResolver {
 
     // Create invite if doesn't exist.
     if (userInvite == null) {
-      const journey: Journey = await this.journeyService.get(journeyId)
+      const journey = await this.prismaService.journey.findUnique({
+        where: { id: journeyId }
+      })
 
       if (journey == null) throw new UserInputError('journey does not exist')
 

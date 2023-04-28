@@ -7,7 +7,6 @@ import {
   TextResponseBlockCreateInput
 } from '../../../__generated__/graphql'
 import { JourneyService } from '../../journey/journey.service'
-import { MemberService } from '../../member/member.service'
 import { UserJourneyService } from '../../userJourney/userJourney.service'
 import { UserRoleService } from '../../userRole/userRole.service'
 import { PrismaService } from '../../../lib/prisma.service'
@@ -83,7 +82,6 @@ describe('TextResponseBlockResolver', () => {
         UserJourneyService,
         UserRoleService,
         JourneyService,
-        MemberService,
         PrismaService,
         {
           provide: 'DATABASE',

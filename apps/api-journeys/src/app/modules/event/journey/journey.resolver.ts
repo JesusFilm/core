@@ -12,14 +12,14 @@ import {
 } from '../../../__generated__/graphql'
 import { EventService } from '../event.service'
 import { VisitorService } from '../../visitor/visitor.service'
-import { JourneyService } from '../../journey/journey.service'
+import { PrismaService } from '../../../lib/prisma.service'
 
 @Resolver('JourneyViewEvent')
 export class JourneyViewEventResolver {
   constructor(
     private readonly eventService: EventService,
     private readonly visitorService: VisitorService,
-    private readonly journeyService: JourneyService
+    private readonly prismaService: PrismaService
   ) {}
 
   @Mutation()
@@ -29,7 +29,9 @@ export class JourneyViewEventResolver {
     @CurrentUserAgent() userAgent: string,
     @Args('input') input: JourneyViewEventCreateInput
   ): Promise<JourneyViewEvent> {
-    const journey = await this.journeyService.get(input.journeyId)
+    const journey = await this.prismaService.journey.findUnique({
+      where: { id: input.journeyId }
+    })
     if (journey == null) {
       throw new UserInputError('Journey does not exist')
     }

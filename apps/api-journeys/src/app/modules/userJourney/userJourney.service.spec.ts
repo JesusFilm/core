@@ -12,7 +12,6 @@ import {
 } from '../../__generated__/graphql'
 import { PrismaService } from '../../lib/prisma.service'
 import { JourneyService } from '../journey/journey.service'
-import { MemberService } from '../member/member.service'
 import { UserJourneyService } from './userJourney.service'
 
 jest.mock('uuid', () => ({
@@ -23,9 +22,7 @@ jest.mock('uuid', () => ({
 const mockUuidv4 = uuidv4 as jest.MockedFunction<typeof uuidv4>
 
 describe('UserJourneyService', () => {
-  let service: UserJourneyService,
-    mService: MemberService,
-    prisma: PrismaService
+  let service: UserJourneyService, prisma: PrismaService
 
   const journeyService = {
     provide: JourneyService,
@@ -35,28 +32,12 @@ describe('UserJourneyService', () => {
     })
   }
 
-  const memberService = {
-    provide: MemberService,
-    useFactory: () => ({
-      save: jest.fn((member) => member),
-      getMemberByTeamId: jest.fn((userId, teamId) => {
-        'memberId'
-      })
-    })
-  }
-
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [
-        UserJourneyService,
-        journeyService,
-        memberService,
-        PrismaService
-      ]
+      providers: [UserJourneyService, journeyService, PrismaService]
     }).compile()
 
     service = module.get<UserJourneyService>(UserJourneyService)
-    mService = module.get<MemberService>(MemberService)
     prisma = module.get<PrismaService>(PrismaService)
   })
   afterAll(() => {
@@ -213,6 +194,7 @@ describe('UserJourneyService', () => {
 
     it('updates a UserJourney to editor status', async () => {
       service.get = jest.fn().mockReturnValueOnce(userJourneyInvited)
+      prisma.member.findUnique = jest.fn().mockReturnValueOnce(userJourneyOwner)
       prisma.userJourney.findUnique = jest.fn().mockReturnValueOnce(userJourney)
       prisma.userJourney.update = jest.fn().mockReturnValueOnce({
         ...userJourneyInvited,
@@ -235,15 +217,17 @@ describe('UserJourneyService', () => {
       prisma.userJourney.update = jest
         .fn()
         .mockReturnValueOnce(userJourneyInvited)
+      prisma.member.findUnique = jest.fn().mockResolvedValueOnce(null)
+      prisma.member.create = jest.fn()
       await service.approveAccess(userJourney.id, userJourney.userId)
-      expect(mService.save).toHaveBeenCalledWith(
-        {
+
+      expect(prisma.member.create).toHaveBeenCalledWith({
+        data: {
           id: '1:teamId',
           teamId: 'teamId',
           userId: '1'
-        },
-        { overwriteMode: 'ignore' }
-      )
+        }
+      })
     })
   })
 })

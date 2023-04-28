@@ -1,7 +1,7 @@
 import { Injectable, Inject } from '@nestjs/common'
 import { UserInputError } from 'apollo-server-errors'
-import { omit } from 'lodash'
-import { Visitor, Event } from '.prisma/api-journeys-client'
+import { ToPostgresql } from '@core/nest/decorators/ToPostgresql'
+import { Visitor } from '.prisma/api-journeys-client'
 import { BlockService } from '../block/block.service'
 import { VisitorService } from '../visitor/visitor.service'
 import { PrismaService } from '../../lib/prisma.service'
@@ -94,9 +94,11 @@ export class EventService {
     return { visitor, journeyId }
   }
 
+  @ToPostgresql()
   async save<T>(input: EventTypes): Promise<T> {
-    const result = await this.prismaService.event.create({
+    return (await this.prismaService.event.create({
       data: {
+        ...input,
         id: input.id ?? undefined,
         typename: input.__typename ?? 'Event',
         createdAt:
@@ -105,31 +107,8 @@ export class EventService {
             : undefined,
         journeyId: input.journeyId ?? undefined,
         blockId: input.blockId ?? undefined,
-        stepId: input.stepId ?? undefined,
-        label: input.label,
-        value: input.value,
-        visitorId: input.visitorId,
-        extra: omit(input, [
-          '_id',
-          '_key',
-          '_rev',
-          '__typename',
-          'journeyId',
-          'blockId',
-          'stepId',
-          'createdAt',
-          'label',
-          'value',
-          'visitorId'
-        ]) as object
+        stepId: input.stepId ?? undefined
       }
-    })
-    return {
-      ...omit(result, 'extra'),
-      id: result.id,
-      __typename: result.typename,
-      createdAt: result.createdAt.toISOString(),
-      ...(result.extra as object)
-    } as unknown as T
+    })) as unknown as T
   }
 }

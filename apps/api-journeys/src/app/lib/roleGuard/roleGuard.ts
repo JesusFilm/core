@@ -9,11 +9,16 @@ import {
 import { get, includes, reduce } from 'lodash'
 import { AuthenticationError } from 'apollo-server-errors'
 import { contextToUserId } from '@core/nest/common/firebaseClient'
-import { UserJourney, UserJourneyRole } from '.prisma/api-journeys-client'
+import {
+  Journey,
+  Role,
+  UserJourney,
+  UserJourneyRole,
+  UserRole
+} from '.prisma/api-journeys-client'
 import { UserJourneyService } from '../../modules/userJourney/userJourney.service'
-import { Journey, Role, UserRole } from '../../__generated__/graphql'
 import { UserRoleService } from '../../modules/userRole/userRole.service'
-import { JourneyService } from '../../modules/journey/journey.service'
+import { PrismaService } from '../prisma.service'
 
 // broken out into function for test injection
 export const fetchUserJourney = async (
@@ -32,10 +37,10 @@ export const fetchUserRole = async (
 }
 
 export const fetchJourney = async (
-  journeyService: JourneyService,
-  userId: string
-): Promise<Journey> => {
-  return await journeyService.get(userId)
+  prismaService: PrismaService,
+  id: string
+): Promise<Journey | null> => {
+  return await prismaService.journey.findUnique({ where: { id } })
 }
 
 type DefinedRole = UserJourneyRole | Role | PublicRole
@@ -63,8 +68,8 @@ export const RoleGuard = (
       private readonly userJourneyService: UserJourneyService,
       @Inject(UserRoleService)
       private readonly userRoleService: UserRoleService,
-      @Inject(JourneyService)
-      private readonly journeyService: JourneyService
+      @Inject(PrismaService)
+      private readonly prismaService: PrismaService
     ) {}
 
     checkAttributes(journey: Journey, attributes?: Partial<Journey>): boolean {
@@ -92,7 +97,7 @@ export const RoleGuard = (
 
     checkAllowedAccess(
       permissions: Permission[],
-      journey: Journey,
+      journey: Journey | null,
       userJourney: UserJourney | null,
       userRole: UserRole,
       attributes?: Partial<Journey>
@@ -104,6 +109,7 @@ export const RoleGuard = (
 
           if (
             this.publicRole(permission) &&
+            journey != null &&
             this.checkAttributes(journey, attributes)
           )
             return true
@@ -111,12 +117,14 @@ export const RoleGuard = (
           if (
             userJourney != null &&
             this.userJourneyRole(permission, userJourney) &&
+            journey != null &&
             this.checkAttributes(journey, attributes)
           )
             return true
 
           if (
             this.userRole(permission, userRole) &&
+            journey != null &&
             this.checkAttributes(journey, attributes)
           )
             return true
@@ -156,7 +164,7 @@ export const RoleGuard = (
 
       let result = false
       for (const journeyId of journeyIds) {
-        const journey = await fj(this.journeyService, journeyId)
+        const journey = await fj(this.prismaService, journeyId)
         const userJourney = await fuj(
           this.userJourneyService,
           journeyId,

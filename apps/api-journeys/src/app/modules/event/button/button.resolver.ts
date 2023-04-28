@@ -90,7 +90,7 @@ export class ChatOpenEventResolver {
     if (visitor?.messagePlatform == null) {
       promises.push(
         this.visitorService.update(visitor.id, {
-          lastChatStartedAt: new Date().toISOString(),
+          lastChatStartedAt: new Date(),
           lastChatPlatform: input.value ?? undefined,
           messagePlatform: input.value ?? undefined
         })
@@ -98,7 +98,7 @@ export class ChatOpenEventResolver {
     } else {
       promises.push(
         this.visitorService.update(visitor.id, {
-          lastChatStartedAt: new Date().toISOString(),
+          lastChatStartedAt: new Date(),
           lastChatPlatform: input.value ?? undefined
         })
       )

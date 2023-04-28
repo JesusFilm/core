@@ -4,7 +4,6 @@ import {
   VisitorsConnection
 } from '../../__generated__/graphql'
 import { EventService } from '../event/event.service'
-import { MemberService } from '../member/member.service'
 import { PrismaService } from '../../lib/prisma.service'
 
 import { VisitorResolver } from './visitor.resolver'
@@ -60,19 +59,19 @@ describe('VisitorResolver', () => {
     teamId: 'teamId'
   }
 
-  const memberService = {
-    provide: MemberService,
-    useFactory: () => ({
-      getMemberByTeamId: jest.fn((_userId, teamId) => {
-        switch (teamId) {
-          case 'teamId':
-            return member
-          case 'differentTeamId':
-            return undefined
-        }
-      })
-    })
-  }
+  // const memberService = {
+  //   provide: MemberService,
+  //   useFactory: () => ({
+  //     getMemberByTeamId: jest.fn((_userId, teamId) => {
+  //       switch (teamId) {
+  //         case 'teamId':
+  //           return member
+  //         case 'differentTeamId':
+  //           return undefined
+  //       }
+  //     })
+  //   })
+  // }
 
   const event = {
     id: 'eventId'
@@ -87,13 +86,7 @@ describe('VisitorResolver', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [
-        VisitorResolver,
-        visitorService,
-        memberService,
-        eventService,
-        PrismaService
-      ]
+      providers: [VisitorResolver, visitorService, eventService, PrismaService]
     }).compile()
     resolver = module.get<VisitorResolver>(VisitorResolver)
     vService = module.get<VisitorService>(VisitorService)
@@ -102,12 +95,14 @@ describe('VisitorResolver', () => {
 
   describe('visitorsConnection', () => {
     it('returns connection', async () => {
+      prisma.member.findUnique = jest.fn().mockResolvedValueOnce(member)
       expect(await resolver.visitorsConnection('userId', 'teamId')).toEqual(
         connection
       )
     })
 
     it('calls service with first, after and filter', async () => {
+      prisma.member.findUnique = jest.fn().mockResolvedValueOnce(member)
       await resolver.visitorsConnection('userId', 'teamId', 50, 'cursorId')
       expect(vService.getList).toHaveBeenCalledWith({
         after: 'cursorId',
@@ -117,6 +112,7 @@ describe('VisitorResolver', () => {
     })
 
     it('throws error when user is not a team member', async () => {
+      prisma.member.findUnique = jest.fn().mockResolvedValueOnce(null)
       await expect(
         async () =>
           await resolver.visitorsConnection('userId', 'differentTeamId')
@@ -129,6 +125,7 @@ describe('VisitorResolver', () => {
       prisma.event.findMany = jest.fn().mockReturnValue([])
     })
     it('returns visitor', async () => {
+      prisma.member.findUnique = jest.fn().mockResolvedValueOnce(member)
       prisma.visitor.findUnique = jest.fn().mockReturnValue(visitor)
       expect(await resolver.visitor('userId', 'visitorId')).toEqual({
         ...visitor
@@ -143,6 +140,7 @@ describe('VisitorResolver', () => {
     })
 
     it('throws error when user is not member of visitors team', async () => {
+      prisma.member.findUnique = jest.fn().mockResolvedValueOnce(null)
       prisma.visitor.findUnique = jest
         .fn()
         .mockReturnValue({ ...visitor, teamId: 'junk' })
@@ -165,6 +163,7 @@ describe('VisitorResolver', () => {
       status: 'star'
     }
     it('returns updated visitor', async () => {
+      prisma.member.findUnique = jest.fn().mockResolvedValueOnce(member)
       prisma.visitor.findUnique = jest.fn().mockReturnValueOnce(visitor)
       prisma.visitor.update = jest
         .fn()
@@ -183,6 +182,7 @@ describe('VisitorResolver', () => {
     })
 
     it('throws error when user is not member of visitors team', async () => {
+      prisma.member.findUnique = jest.fn().mockResolvedValueOnce(null)
       prisma.visitor.findUnique = jest
         .fn()
         .mockReturnValueOnce({ ...visitor, teamId: 'junk' })

@@ -2,30 +2,33 @@ import { Args, Mutation, Parent, ResolveField, Resolver } from '@nestjs/graphql'
 import { UseGuards } from '@nestjs/common'
 import { includes } from 'lodash'
 import { UserInputError } from 'apollo-server-errors'
-
+import { Journey } from '.prisma/api-journeys-client'
 import { RoleGuard } from '../../../lib/roleGuard/roleGuard'
 import {
   Action,
   Block,
-  Journey,
   NavigateToJourneyAction,
   NavigateToJourneyActionInput,
   Role,
   UserJourneyRole
 } from '../../../__generated__/graphql'
-import { JourneyService } from '../../journey/journey.service'
 import { BlockService } from '../../block/block.service'
+import { PrismaService } from '../../../lib/prisma.service'
 
 @Resolver('NavigateToJourneyAction')
 export class NavigateToJourneyActionResolver {
   constructor(
-    private readonly journeyService: JourneyService,
-    private readonly blockService: BlockService
+    private readonly blockService: BlockService,
+    private readonly prismaService: PrismaService
   ) {}
 
   @ResolveField()
-  async journey(@Parent() action: NavigateToJourneyAction): Promise<Journey> {
-    return await this.journeyService.get(action.journeyId)
+  async journey(
+    @Parent() action: NavigateToJourneyAction
+  ): Promise<Journey | null> {
+    return await this.prismaService.journey.findUnique({
+      where: { id: action.journeyId }
+    })
   }
 
   @Mutation()

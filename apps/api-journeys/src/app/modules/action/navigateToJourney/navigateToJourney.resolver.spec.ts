@@ -8,7 +8,6 @@ import { JourneyService } from '../../journey/journey.service'
 import { ActionResolver } from '../action.resolver'
 import { UserJourneyService } from '../../userJourney/userJourney.service'
 import { UserRoleService } from '../../userRole/userRole.service'
-import { MemberService } from '../../member/member.service'
 import { PrismaService } from '../../../lib/prisma.service'
 import { NavigateToJourneyActionResolver } from './navigateToJourney.resolver'
 
@@ -74,7 +73,6 @@ describe('NavigateToJourneyActionResolver', () => {
         ActionResolver,
         UserJourneyService,
         UserRoleService,
-        MemberService,
         PrismaService,
         {
           provide: 'DATABASE',

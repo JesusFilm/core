@@ -16,8 +16,6 @@ import { JourneyProfileModule } from './modules/journeyProfile/journeyProfile.mo
 import { UserRoleModule } from './modules/userRole/userRole.module'
 import { UserInviteModule } from './modules/userInvite/userInvite.module'
 import { VisitorModule } from './modules/visitor/visitor.module'
-import { MemberModule } from './modules/member/member.module'
-import { TeamModule } from './modules/team/team.module'
 
 @Module({
   imports: [
@@ -25,8 +23,6 @@ import { TeamModule } from './modules/team/team.module'
     BlockModule,
     JourneyModule,
     EventModule,
-    MemberModule,
-    TeamModule,
     UserJourneyModule,
     UserInviteModule,
     UserRoleModule,

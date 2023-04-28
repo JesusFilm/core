@@ -2,7 +2,6 @@ import { Test, TestingModule } from '@nestjs/testing'
 import { Database } from 'arangojs'
 import { mockDeep } from 'jest-mock-extended'
 import { JourneyService } from '../../journey/journey.service'
-import { MemberService } from '../../member/member.service'
 import { UserJourneyService } from '../../userJourney/userJourney.service'
 import { UserRoleService } from '../../userRole/userRole.service'
 
@@ -40,7 +39,6 @@ describe('GridItemResolver', () => {
         UserJourneyService,
         UserRoleService,
         JourneyService,
-        MemberService,
         PrismaService,
         {
           provide: 'DATABASE',

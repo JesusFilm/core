@@ -1,20 +1,20 @@
 import { Inject, Injectable } from '@nestjs/common'
 import { AuthenticationError, UserInputError } from 'apollo-server-errors'
-import { UserJourney, UserJourneyRole } from '.prisma/api-journeys-client'
+import {
+  UserJourney,
+  UserJourneyRole,
+  Journey
+} from '.prisma/api-journeys-client'
 import { v4 as uuidv4 } from 'uuid'
-import { IdType, Journey } from '../../__generated__/graphql'
-import { JourneyService } from '../journey/journey.service'
-import { MemberService } from '../member/member.service'
+import { IdType } from '../../__generated__/graphql'
 import { PrismaService } from '../../lib/prisma.service'
+import { JourneyService } from '../journey/journey.service'
 
 @Injectable()
 export class UserJourneyService {
   @Inject(PrismaService) private readonly prismaService: PrismaService
   @Inject(JourneyService)
   private readonly journeyService: JourneyService
-
-  @Inject(MemberService)
-  private readonly memberService: MemberService
 
   async forJourney(journey: Journey): Promise<UserJourney[]> {
     return await this.prismaService.userJourney.findMany({
@@ -36,10 +36,12 @@ export class UserJourneyService {
     idType: IdType,
     userId: string
   ): Promise<UserJourney | undefined> {
-    const journey: Journey =
+    const journey =
       idType === IdType.slug
         ? await this.journeyService.getBySlug(journeyId)
-        : await this.journeyService.get(journeyId)
+        : await this.prismaService.journey.findUnique({
+            where: { id: journeyId }
+          })
 
     if (journey == null) throw new UserInputError('journey does not exist')
 
@@ -75,23 +77,25 @@ export class UserJourneyService {
         'You do not have permission to approve access'
       )
 
-    const journey = await this.journeyService.get(userJourney.journeyId)
+    const journey = await this.prismaService.journey.findUnique({
+      where: { id: userJourney.journeyId }
+    })
+
+    if (journey == null) throw new UserInputError('journey does not exist')
 
     if (journey.teamId != null) {
-      const existingMember = this.memberService.getMemberByTeamId(
-        userId,
-        journey.teamId
-      )
+      const existingMember = await this.prismaService.member.findUnique({
+        where: { teamId_userId: { userId, teamId: journey.teamId } }
+      })
 
       if (existingMember == null) {
-        await this.memberService.save(
-          {
+        await this.prismaService.member.create({
+          data: {
             id: `${userId}:${(journey as { teamId: string }).teamId}`,
             userId,
             teamId: journey.teamId
-          },
-          { overwriteMode: 'ignore' }
-        )
+          }
+        })
       }
     }
 

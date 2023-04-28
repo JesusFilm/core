@@ -9,23 +9,22 @@ import {
 import { CurrentUserId } from '@core/nest/decorators/CurrentUserId'
 import { UseGuards } from '@nestjs/common'
 import { GqlAuthGuard } from '@core/nest/gqlAuthGuard/GqlAuthGuard'
-import { UserJourney } from '.prisma/api-journeys-client'
-import { AuthenticationError, UserInputError } from 'apollo-server-errors'
 import {
-  IdType,
+  UserJourney,
   Journey,
-  Role,
   UserJourneyRole
-} from '../../__generated__/graphql'
-import { JourneyService } from '../journey/journey.service'
+} from '.prisma/api-journeys-client'
+import { AuthenticationError, UserInputError } from 'apollo-server-errors'
+import { IdType, Role } from '../../__generated__/graphql'
 import { RoleGuard } from '../../lib/roleGuard/roleGuard'
+import { PrismaService } from '../../lib/prisma.service'
 import { UserJourneyService } from './userJourney.service'
 
 @Resolver('UserJourney')
 export class UserJourneyResolver {
   constructor(
     private readonly userJourneyService: UserJourneyService,
-    private readonly journeyService: JourneyService
+    private readonly prismaService: PrismaService
   ) {}
 
   @Query()
@@ -125,7 +124,11 @@ export class UserJourneyResolver {
   async userJourneyRemoveAll(
     @Args('id') id: string
   ): Promise<UserJourney[] | undefined> {
-    const journey: Journey = await this.journeyService.get(id)
+    const journey = await this.prismaService.journey.findUnique({
+      where: { id }
+    })
+    if (journey == null) throw new UserInputError('Journey does not exist')
+
     const userJourneys = await this.userJourneyService.forJourney(journey)
     const userJourneyIds: string[] = userJourneys.map(
       (userJourney) => userJourney.id
@@ -152,8 +155,10 @@ export class UserJourneyResolver {
   }
 
   @ResolveField()
-  async journey(@Parent() userJourney: UserJourney): Promise<Journey> {
-    return await this.journeyService.get(userJourney.journeyId)
+  async journey(@Parent() userJourney: UserJourney): Promise<Journey | null> {
+    return await this.prismaService.journey.findUnique({
+      where: { id: userJourney.journeyId }
+    })
   }
 
   @ResolveField('user')

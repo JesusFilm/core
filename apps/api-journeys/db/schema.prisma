@@ -11,18 +11,39 @@ datasource db {
   url      = env("PG_DATABASE_URL")
 }
 
+enum ButtonAction {
+  NavigateAction
+  NavigateToBlockAction
+  NavigateToJourneyAction
+  LinkAction
+}
+
+enum VideoBlockSource {
+  internal
+  youTube
+}
+
 model Event {
-  id        String   @id @default(uuid())
-  typename  String
-  journeyId String?
-  blockId   String?
-  stepId    String?
-  createdAt DateTime @default(now())
-  label     String?
-  value     String?
-  extra     Json?
-  Visitor   Visitor? @relation(fields: [visitorId], references: [id])
-  visitorId String?
+  id                 String            @id @default(uuid())
+  typename           String
+  journeyId          String?
+  blockId            String?
+  stepId             String?
+  createdAt          DateTime          @default(now())
+  label              String?
+  value              String?
+  visitorId          String?
+  Visitor            Visitor?          @relation(fields: [visitorId], references: [id])
+  action             ButtonAction?
+  actionValue        String?
+  messagePlatform    MessagePlatform?
+  languageId         String?
+  radioOptionBlockId String?
+  email              String?
+  nextStepId         String?
+  position           Float?
+  source             VideoBlockSource?
+  progress           Int?
 
   @@index([id, journeyId, visitorId, blockId])
 }
@@ -93,7 +114,9 @@ model Team {
   title        String
   contactEmail String?
   createdAt    DateTime  @default(now())
-  Visitor      Visitor[]
+  visitor      Visitor[]
+  member       Member[]
+  journey      Journey[]
 }
 
 enum UserJourneyRole {
@@ -106,8 +129,72 @@ model UserJourney {
   id        String          @id @default(uuid())
   userId    String
   journeyId String
+  journey   Journey         @relation(fields: [journeyId], references: [id])
   role      UserJourneyRole
   openedAt  DateTime?       @default(now())
 
   @@unique([journeyId, userId])
+}
+
+enum JourneyStatus {
+  archived
+  deleted
+  draft
+  published
+  trashed
+}
+
+enum ThemeMode {
+  dark
+  light
+}
+
+enum ThemeName {
+  base
+}
+
+model Journey {
+  id                  String        @id @default(uuid())
+  title               String
+  languageId          String
+  description         String?
+  slug                String        @unique
+  archivedAt          DateTime?
+  createdAt           DateTime      @default(now())
+  deletedAt           DateTime?
+  publishedAt         DateTime?
+  trashedAt           DateTime?
+  featuredAt          DateTime?
+  status              JourneyStatus
+  seoTitle            String?
+  seoDescription      String?
+  primaryImageBlockId String?
+  template            Boolean?      @default(false)
+  teamId              String?
+  themeMode           ThemeMode?    @default(light)
+  themeName           ThemeName?    @default(base)
+  userJourney         UserJourney[]
+  team                Team?         @relation(fields: [teamId], references: [id])
+
+  @@index([slug])
+}
+
+model Member {
+  id        String   @id
+  team      Team     @relation(fields: [teamId], references: [id])
+  teamId    String
+  userId    String
+  createdAt DateTime @default(now())
+
+  @@unique([teamId, userId])
+}
+
+enum Role {
+  publisher
+}
+
+model UserRole {
+  id     String @id @default(uuid())
+  userId String
+  roles  Role[]
 }

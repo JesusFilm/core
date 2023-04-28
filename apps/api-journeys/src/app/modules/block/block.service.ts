@@ -4,17 +4,14 @@ import { aql } from 'arangojs'
 import { BaseService } from '@core/nest/database/BaseService'
 import { KeyAsId, keyAsId } from '@core/nest/decorators/KeyAsId'
 import { idAsKey } from '@core/nest/decorators/IdAsKey'
-import {
-  Block,
-  Journey,
-  NavigateToBlockAction
-} from '../../__generated__/graphql'
+import { Journey } from '.prisma/api-journeys-client'
+import { Block, NavigateToBlockAction } from '../../__generated__/graphql'
 
 @Injectable()
 export class BlockService extends BaseService {
   @KeyAsId()
   async forJourney(journey: Journey): Promise<Block[]> {
-    const primaryImageBlockId = journey.primaryImageBlock?.id ?? null
+    const primaryImageBlockId = journey.primaryImageBlockId ?? null
     const res = await this.db.query(aql`
       FOR block in ${this.collection}
         FILTER block.journeyId == ${journey.id}
