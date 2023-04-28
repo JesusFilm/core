@@ -89,7 +89,6 @@ const videoFetcher = async (query: string): Promise<Data> => {
   }
 }
 
-
 const playlistFetcher = async (query: string): Promise<Data> => {
   const params = new URLSearchParams({
     part: 'snippet,contentDetails',
@@ -116,37 +115,41 @@ export function VideoFromYouTube({
   onSelect
 }: VideoFromYouTubeProps): ReactElement {
   const [url, setUrl] = useState<string>('')
-  const { data: videoData, error: videoError, size: videoSize, setSize: videoSetSize } = useSWRInfinite<Data>(
-    (_pageIndex) => {
-      const YOUTUBE_ID_REGEX =
-        /^(?:https?:)?\/\/[^/]*(?:youtube(?:-nocookie)?.com|youtu.be).*[=/](?<id>[-\w]{11})(?:\\?|=|&|$)/
+  const { data: videoData } = useSWRInfinite<Data>((_pageIndex) => {
+    const YOUTUBE_ID_REGEX =
+      /^(?:https?:)?\/\/[^/]*(?:youtube(?:-nocookie)?.com|youtu.be).*[=/](?<id>[-\w]{11})(?:\\?|=|&|$)/
 
-      const id = url.match(YOUTUBE_ID_REGEX)?.groups?.id
-      return id != null && `id=${id}`
-    },
-    videoFetcher
-  )
+    const id = url.match(YOUTUBE_ID_REGEX)?.groups?.id
+    return id != null && `id=${id}`
+  }, videoFetcher)
 
-  const { data: playlistData, error: playlistError, size: playlistSize, setSize: playlistSetSize } = useSWRInfinite<Data>(
-    (_pageIndex, previousPageData?: Data) => {
-      const pageToken = previousPageData?.nextPageToken ?? ''
-      return `playlistId=${process.env.NEXT_PUBLIC_YOUTUBE_PLAYLIST_ID ?? ''
-        }& pageToken=${pageToken}`
-    },
-    playlistFetcher
-  )
+  const {
+    data: playlistData,
+    error,
+    size,
+    setSize
+  } = useSWRInfinite<Data>((_pageIndex, previousPageData?: Data) => {
+    const pageToken = previousPageData?.nextPageToken ?? ''
+    console.log(pageToken)
+    return `playlistId=${
+      process.env.NEXT_PUBLIC_YOUTUBE_PLAYLIST_ID ?? ''
+    }& pageToken=${pageToken}`
+  }, playlistFetcher)
 
   const loading = Boolean(
-    (videoData == null && videoError == null) ||
-    (videoSize > 0 && videoData && typeof videoData[videoSize - 1] === 'undefined')
+    (playlistData == null && error == null) ||
+      (size > 0 &&
+        playlistData &&
+        typeof playlistData[size - 1] === 'undefined')
   )
-
 
   const videos = reduce(
     videoData != null ? videoData : playlistData,
     (result, request) => [...result, ...request.items],
     [] as Required<VideoListProps>['videos']
   )
+
+  console.log(videos)
 
   return (
     <>
@@ -170,9 +173,11 @@ export function VideoFromYouTube({
           loading={loading}
           videos={videos}
           fetchMore={async () => {
-            await videoSetSize(videoSize + 1)
+            await setSize(size + 1)
           }}
-          hasMore={videoData?.[videoData.length - 1]?.nextPageToken != null}
+          hasMore={
+            playlistData?.[playlistData.length - 1]?.nextPageToken != null
+          }
         />
       </Box>
     </>
