@@ -31,6 +31,20 @@ export interface YoutubeVideosData {
   nextPageToken?: string
 }
 
+export interface YoutubePlaylistItemsData {
+  items: Array<{
+    snippet: {
+      title: string
+      description: string
+      thumbnails: { default: { url: string } }
+    }
+    contentDetails: {
+      videoId: string
+    }
+  }>
+  nextPageToken?: string
+}
+
 interface Data {
   items: Required<VideoListProps>['videos']
   nextPageToken?: string
@@ -52,7 +66,7 @@ export function parseISO8601Duration(duration: string): number {
   )
 }
 
-const fetcher = async (query: string): Promise<Data> => {
+const videoFetcher = async (query: string): Promise<Data> => {
   const params = new URLSearchParams({
     part: 'snippet,contentDetails',
     key: process.env.NEXT_PUBLIC_FIREBASE_API_KEY ?? ''
@@ -75,30 +89,61 @@ const fetcher = async (query: string): Promise<Data> => {
   }
 }
 
+
+const playlistFetcher = async (query: string): Promise<Data> => {
+  const params = new URLSearchParams({
+    part: 'snippet,contentDetails',
+    key: process.env.NEXT_PUBLIC_FIREBASE_API_KEY ?? ''
+  }).toString()
+  const playlistData: YoutubePlaylistItemsData = await (
+    await fetch(
+      `https://www.googleapis.com/youtube/v3/playlistItems?${query}&${params}`
+    )
+  ).json()
+  return {
+    nextPageToken: playlistData.nextPageToken,
+    items: playlistData.items.map((item) => ({
+      id: item.contentDetails.videoId,
+      title: item.snippet.title,
+      description: item.snippet.description,
+      image: item.snippet.thumbnails.default.url,
+      source: VideoBlockSource.youTube
+    }))
+  }
+}
+
 export function VideoFromYouTube({
   onSelect
 }: VideoFromYouTubeProps): ReactElement {
   const [url, setUrl] = useState<string>('')
-  const { data, error, size, setSize } = useSWRInfinite<Data>(
-    (_pageIndex, previousPageData?: Data) => {
+  const { data: videoData, error: videoError, size: videoSize, setSize: videoSetSize } = useSWRInfinite<Data>(
+    (_pageIndex) => {
       const YOUTUBE_ID_REGEX =
         /^(?:https?:)?\/\/[^/]*(?:youtube(?:-nocookie)?.com|youtu.be).*[=/](?<id>[-\w]{11})(?:\\?|=|&|$)/
 
       const id = url.match(YOUTUBE_ID_REGEX)?.groups?.id
-      const pageToken = previousPageData?.nextPageToken ?? ''
-      return id != null
-        ? `id=${id}`
-        : `chart=mostPopular&pageToken=${pageToken}`
+      return id != null && `id=${id}`
     },
-    fetcher
-  )
-  const loading = Boolean(
-    (data == null && error == null) ||
-      (size > 0 && data && typeof data[size - 1] === 'undefined')
+    videoFetcher
   )
 
+  const { data: playlistData, error: playlistError, size: playlistSize, setSize: playlistSetSize } = useSWRInfinite<Data>(
+    (_pageIndex, previousPageData?: Data) => {
+      const pageToken = previousPageData?.nextPageToken ?? ''
+      return `playlistId=${process.env.NEXT_PUBLIC_YOUTUBE_PLAYLIST_ID ?? ''
+        }& pageToken=${pageToken}`
+    },
+    playlistFetcher
+  )
+
+  const loading = Boolean(
+    (videoData == null && videoError == null) ||
+    (videoSize > 0 && videoData && typeof videoData[videoSize - 1] === 'undefined')
+  )
+
+
   const videos = reduce(
-    data,
+    videoData != null ? videoData : playlistData,
     (result, request) => [...result, ...request.items],
     [] as Required<VideoListProps>['videos']
   )
@@ -125,9 +170,9 @@ export function VideoFromYouTube({
           loading={loading}
           videos={videos}
           fetchMore={async () => {
-            await setSize(size + 1)
+            await videoSetSize(videoSize + 1)
           }}
-          hasMore={data?.[data.length - 1]?.nextPageToken != null}
+          hasMore={videoData?.[videoData.length - 1]?.nextPageToken != null}
         />
       </Box>
     </>
