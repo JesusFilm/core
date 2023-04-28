@@ -63,8 +63,8 @@ export function LinkAction(): ReactElement {
 
   const linkActionSchema = object({
     link: string()
-      .test('valid-url', 'Invalid URL', checkURL)
       .required('Required')
+      .test('valid-url', 'Invalid URL', checkURL)
   })
 
   async function handleSubmit(e: React.FocusEvent): Promise<void> {

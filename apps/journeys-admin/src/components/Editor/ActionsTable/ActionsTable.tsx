@@ -1,7 +1,6 @@
 import { ReactElement } from 'react'
 import Stack from '@mui/material/Stack'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
-import { startsWith } from 'lodash'
 import { ActionFields_LinkAction as LinkAction } from '../../../../__generated__/ActionFields'
 import { BlockFields_ButtonBlock as ButtonBlock } from '../../../../__generated__/BlockFields'
 import { GetJourney_journey as Journey } from '../../../../__generated__/GetJourney'
@@ -44,15 +43,9 @@ export function ActionsTable({ hasAction }: ActionsTableProps): ReactElement {
   if (actions.length > 1) hasAction?.(true)
 
   const goalLabel = (url: string): string => {
-    let urlToInspect = url
-    if (urlToInspect === '') return ''
-    if (
-      !startsWith(urlToInspect, 'https') &&
-      !startsWith(urlToInspect, 'http')
-    ) {
-      urlToInspect = 'https://' + urlToInspect
-    }
-    const urlObject = new URL(urlToInspect)
+    if (url === '') return ''
+
+    const urlObject = new URL(url)
 
     const hostname = urlObject.hostname.replace('www.', '') // Remove 'www.' and top-level domain suffixes
     switch (hostname) {

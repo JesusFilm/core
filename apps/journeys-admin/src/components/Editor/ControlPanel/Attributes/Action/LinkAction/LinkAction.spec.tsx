@@ -110,7 +110,41 @@ describe('LinkAction', () => {
     await waitFor(() => expect(getByText('Required')).toBeInTheDocument())
   })
 
-  it('validates the input as a URL', async () => {
+  it('accepts links without protocol as a URL', async () => {
+    const { queryByText, getByRole } = render(
+      <MockedProvider>
+        <EditorProvider>
+          <LinkAction />
+        </EditorProvider>
+      </MockedProvider>
+    )
+    fireEvent.change(getByRole('textbox'), {
+      target: { value: 'google.com' }
+    })
+    fireEvent.blur(getByRole('textbox'))
+    await waitFor(() =>
+      expect(queryByText('Invalid URL')).not.toBeInTheDocument()
+    )
+  })
+
+  it('accepts deep links as a URL', async () => {
+    const { queryByText, getByRole } = render(
+      <MockedProvider>
+        <EditorProvider>
+          <LinkAction />
+        </EditorProvider>
+      </MockedProvider>
+    )
+    fireEvent.change(getByRole('textbox'), {
+      target: { value: 'viber://' }
+    })
+    fireEvent.blur(getByRole('textbox'))
+    await waitFor(() =>
+      expect(queryByText('Invalid URL')).not.toBeInTheDocument()
+    )
+  })
+
+  it('rejects mailto links as a URL', async () => {
     const { getByText, getByRole } = render(
       <MockedProvider>
         <EditorProvider>
@@ -119,7 +153,7 @@ describe('LinkAction', () => {
       </MockedProvider>
     )
     fireEvent.change(getByRole('textbox'), {
-      target: { value: 'google@http://asd.com' }
+      target: { value: 'mailto:test@test.com' }
     })
     fireEvent.blur(getByRole('textbox'))
     await waitFor(() => expect(getByText('Invalid URL')).toBeInTheDocument())
