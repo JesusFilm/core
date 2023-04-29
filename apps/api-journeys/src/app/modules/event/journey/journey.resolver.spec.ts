@@ -3,11 +3,13 @@ import { keyAsId } from '@core/nest/decorators/KeyAsId'
 import { EventService } from '../event.service'
 import { JourneyViewEventCreateInput } from '../../../__generated__/graphql'
 import { VisitorService } from '../../visitor/visitor.service'
-import { JourneyService } from '../../journey/journey.service'
+import { PrismaService } from '../../../lib/prisma.service'
 import { JourneyViewEventResolver } from './journey.resolver'
 
 describe('JourneyViewEventResolver', () => {
-  let resolver: JourneyViewEventResolver, vService: VisitorService
+  let resolver: JourneyViewEventResolver,
+    vService: VisitorService,
+    prisma: PrismaService
 
   const eventService = {
     provide: EventService,
@@ -28,18 +30,6 @@ describe('JourneyViewEventResolver', () => {
         }
       }),
       update: jest.fn(() => '')
-    })
-  }
-
-  const journeyService = {
-    provide: JourneyService,
-    useFactory: () => ({
-      get: jest.fn((journeyId) => {
-        switch (journeyId) {
-          case input.journeyId:
-            return { id: input.journeyId }
-        }
-      })
     })
   }
 
@@ -72,15 +62,17 @@ describe('JourneyViewEventResolver', () => {
         JourneyViewEventResolver,
         eventService,
         visitorService,
-        journeyService
+        PrismaService
       ]
     }).compile()
     resolver = module.get<JourneyViewEventResolver>(JourneyViewEventResolver)
     vService = module.get<VisitorService>(VisitorService)
+    prisma = module.get<PrismaService>(PrismaService)
   })
 
   describe('JourneyViewEventCreate', () => {
     it('returns journeyViewEvent', async () => {
+      prisma.journey.findUnique = jest.fn().mockResolvedValue({ id: input.id })
       expect(
         await resolver.journeyViewEventCreate('user.id', userAgent, input)
       ).toEqual({
@@ -91,6 +83,7 @@ describe('JourneyViewEventResolver', () => {
     })
 
     it('should update user agent on visitor if visitor does not have a user agent', async () => {
+      prisma.journey.findUnique = jest.fn().mockResolvedValue({ id: input.id })
       await resolver.journeyViewEventCreate('newUser.id', userAgent, input)
 
       expect(vService.update).toHaveBeenCalledWith('newVisitor.id', {
@@ -99,6 +92,7 @@ describe('JourneyViewEventResolver', () => {
     })
 
     it('should throw error if journey doesnt exist', async () => {
+      prisma.journey.findUnique = jest.fn().mockResolvedValue(null)
       const errorInput = {
         ...input,
         journeyId: 'anotherJourney.id'

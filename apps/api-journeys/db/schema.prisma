@@ -170,11 +170,12 @@ model Journey {
   seoDescription      String?
   primaryImageBlockId String?
   template            Boolean?      @default(false)
-  teamId              String?
+  teamId              String
   themeMode           ThemeMode?    @default(light)
   themeName           ThemeName?    @default(base)
   userJourney         UserJourney[]
-  team                Team?         @relation(fields: [teamId], references: [id])
+  team                Team          @relation(fields: [teamId], references: [id])
+  UserInvite          UserInvite[]
 
   @@index([slug])
 }
@@ -197,4 +198,23 @@ model UserRole {
   id     String @id @default(uuid())
   userId String
   roles  Role[]
+}
+
+model JourneyProfile {
+  id              String   @id @default(uuid())
+  userId          String   @unique
+  acceptedTermsAt DateTime @default(now())
+}
+
+model UserInvite {
+  id         String    @id @default(uuid())
+  journeyId  String
+  senderId   String
+  email      String
+  acceptedAt DateTime?
+  removedAt  DateTime?
+  journey    Journey   @relation(fields: [journeyId], references: [id])
+
+  @@unique([journeyId, email])
+  @@index([journeyId, email])
 }

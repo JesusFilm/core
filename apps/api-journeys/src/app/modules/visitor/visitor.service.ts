@@ -1,10 +1,9 @@
-import { Inject, Injectable } from '@nestjs/common'
+import { Injectable } from '@nestjs/common'
 import { KeyAsId } from '@core/nest/decorators/KeyAsId'
 import { v4 as uuidv4 } from 'uuid'
 import { Visitor } from '.prisma/api-journeys-client'
 import { PageInfo } from '../../__generated__/graphql'
 import { PrismaService } from '../../lib/prisma.service'
-import { JourneyService } from '../journey/journey.service'
 
 interface ListParams {
   after?: string | null
@@ -22,10 +21,7 @@ export interface VisitorsConnection {
 
 @Injectable()
 export class VisitorService {
-  constructor(
-    @Inject(PrismaService) private readonly prismaService: PrismaService,
-    private readonly journeyService: JourneyService
-  ) {}
+  constructor(private readonly prismaService: PrismaService) {}
 
   @KeyAsId()
   async getList({
@@ -77,7 +73,7 @@ export class VisitorService {
 
     if (visitor == null) {
       const id = uuidv4()
-      const createdAt = new Date().toISOString()
+      const createdAt = new Date()
       visitor = await this.prismaService.visitor.create({
         data: {
           id,

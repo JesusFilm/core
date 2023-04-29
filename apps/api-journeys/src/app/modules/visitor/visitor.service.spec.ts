@@ -1,7 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { v4 as uuidv4 } from 'uuid'
 import { PrismaService } from '../../lib/prisma.service'
-import { JourneyService } from '../journey/journey.service'
 import { VisitorService } from './visitor.service'
 
 jest.mock('uuid', () => ({
@@ -39,13 +38,7 @@ describe('VisitorService', () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         VisitorService,
-        PrismaService,
-        {
-          provide: JourneyService,
-          useFactory: () => ({
-            get: jest.fn((id) => (id === journey.id ? journey : null)),
-          })
-        }
+        PrismaService
       ]
     }).compile()
 
@@ -106,6 +99,7 @@ describe('VisitorService', () => {
 
   describe('getVisitorId', () => {    
     it('should return visitor id', async () => {
+      prisma.journey.findUnique = jest.fn().mockReturnValueOnce(journey)
       prisma.visitor.findFirst = jest.fn().mockReturnValueOnce(visitor)
       expect(
         await service.getByUserIdAndJourneyId('user.id', 'journey.id')
@@ -113,6 +107,7 @@ describe('VisitorService', () => {
     })
 
     it('should create a new visitor if visitor does not exist', async () => {
+      prisma.journey.findUnique = jest.fn().mockReturnValueOnce(journey)
       prisma.visitor.findFirst = jest.fn().mockReturnValueOnce(null)
       prisma.visitor.create = jest.fn()
       mockUuidv4.mockReturnValueOnce('newVisitor.id')
@@ -122,7 +117,7 @@ describe('VisitorService', () => {
         data: {
           ...visitor,
           id: 'newVisitor.id',
-          createdAt: new Date().toISOString()
+          createdAt: new Date()
         }
       })
     })

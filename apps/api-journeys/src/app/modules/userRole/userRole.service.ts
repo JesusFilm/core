@@ -13,6 +13,8 @@ export class UserRoleService {
 
     return response != null
       ? response
-      : this.prismaService.userRole.create({ data: { userId } })
+      : await this.prismaService.userRole.create({
+          data: { userId }
+        })
   }
 }

@@ -1,22 +1,20 @@
-import { BaseService } from '@core/nest/database/BaseService'
 import { KeyAsId } from '@core/nest/decorators/KeyAsId'
-import { Injectable } from '@nestjs/common'
-import { aql } from 'arangojs'
-import { JourneyProfile } from '../../__generated__/graphql'
+import { Inject, Injectable } from '@nestjs/common'
+import { JourneyProfile } from '.prisma/api-journeys-client'
+import { PrismaService } from '../../lib/prisma.service'
 
 @Injectable()
-export class JourneyProfileService extends BaseService {
-  collection = this.db.collection('journeyProfiles')
+export class JourneyProfileService {
+  constructor(
+    @Inject(PrismaService) private readonly prismaService: PrismaService
+  ) {}
 
   @KeyAsId()
-  async getJourneyProfileByUserId(userId: string): Promise<JourneyProfile> {
-    const response = await this.db.query(aql`
-      FOR user in ${this.collection}
-        FILTER user.userId == ${userId}
-        LIMIT 1
-        RETURN user
-    `)
-
-    return response.hasNext ? await response.next() : null
+  async getJourneyProfileByUserId(
+    userId: string
+  ): Promise<JourneyProfile | null> {
+    return this.prismaService.journeyProfile.findUnique({
+      where: { userId }
+    })
   }
 }

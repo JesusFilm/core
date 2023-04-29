@@ -1,20 +1,19 @@
 import { Test, TestingModule } from '@nestjs/testing'
-import { mockDeep } from 'jest-mock-extended'
-import { Database } from 'arangojs'
 import { JourneyStatus } from '../../../__generated__/graphql'
 import { BlockResolver } from '../../block/block.resolver'
 import { BlockService } from '../../block/block.service'
-import { JourneyService } from '../../journey/journey.service'
 import { ActionResolver } from '../action.resolver'
 import { UserJourneyService } from '../../userJourney/userJourney.service'
 import { UserRoleService } from '../../userRole/userRole.service'
 import { PrismaService } from '../../../lib/prisma.service'
+import { JourneyService } from '../../journey/journey.service'
 import { NavigateToJourneyActionResolver } from './navigateToJourney.resolver'
 
 describe('NavigateToJourneyActionResolver', () => {
   let resolver: NavigateToJourneyActionResolver,
     blockResolver: BlockResolver,
-    service: BlockService
+    service: BlockService,
+    prisma: PrismaService
 
   const block = {
     id: '1',
@@ -56,12 +55,6 @@ describe('NavigateToJourneyActionResolver', () => {
       update: jest.fn((navigateToJourneyInput) => navigateToJourneyInput)
     })
   }
-  const journeyService = {
-    provide: JourneyService,
-    useFactory: () => ({
-      get: jest.fn(() => journey)
-    })
-  }
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -69,15 +62,11 @@ describe('NavigateToJourneyActionResolver', () => {
         BlockResolver,
         NavigateToJourneyActionResolver,
         blockService,
-        journeyService,
         ActionResolver,
+        JourneyService,
         UserJourneyService,
         UserRoleService,
-        PrismaService,
-        {
-          provide: 'DATABASE',
-          useFactory: () => mockDeep<Database>()
-        }
+        PrismaService
       ]
     }).compile()
     resolver = module.get<NavigateToJourneyActionResolver>(
@@ -85,6 +74,8 @@ describe('NavigateToJourneyActionResolver', () => {
     )
     blockResolver = module.get<BlockResolver>(BlockResolver)
     service = await module.resolve(BlockService)
+    prisma = module.get<PrismaService>(PrismaService)
+    prisma.journey.findUnique = jest.fn().mockResolvedValue(journey)
   })
 
   describe('NavigateToJourneyAction', () => {

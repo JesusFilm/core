@@ -1,16 +1,14 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { Role, UserJourneyRole } from '../../__generated__/graphql'
-import { JourneyService } from '../journey/journey.service'
 import { UserJourneyService } from '../userJourney/userJourney.service'
 import { UserRoleService } from '../userRole/userRole.service'
-
+import { PrismaService } from '../../lib/prisma.service'
 import { UserInviteResolver } from './userInvite.resolver'
-import { UserInviteService } from './userInvite.service'
 
 describe('UserInviteResolver', () => {
   let resolver: UserInviteResolver,
-    service: UserInviteService,
-    ujService: UserJourneyService
+    ujService: UserJourneyService,
+    prisma: PrismaService
 
   const createInput = {
     email: 'test@email.com'
@@ -29,14 +27,14 @@ describe('UserInviteResolver', () => {
     ...userInvite,
     id: '2',
     journeyId: 'acceptedJourneyId',
-    acceptedAt: '2021-02-10T00:00:00.000Z'
+    acceptedAt: new Date('2021-02-10T00:00:00.000Z')
   }
 
   const removedInvite = {
     ...userInvite,
     id: '3',
     journeyId: 'removedJourneyId',
-    removedAt: '2021-02-18T00:00:00.000Z'
+    removedAt: new Date('2021-02-18T00:00:00.000Z')
   }
 
   const outdatedAcceptedInvite = {
@@ -44,54 +42,7 @@ describe('UserInviteResolver', () => {
     id: '4',
     journeyId: 'outdatedAcceptedJourneyId',
     email: 'existing@email.com',
-    acceptedAt: '2021-02-10T00:00:00.000Z'
-  }
-
-  const userInviteService = {
-    provide: UserInviteService,
-    useFactory: () => ({
-      save: jest.fn((input) => {
-        return { ...input, acceptedAt: null, removedAt: null }
-      }),
-      update: jest.fn((id, input) => {
-        if (id === removedInvite.id) {
-          return { ...removedInvite, ...input }
-        } else if (id === acceptedInvite.id) {
-          return { ...acceptedInvite, ...input }
-        } else if (id === outdatedAcceptedInvite.id) {
-          return { ...outdatedAcceptedInvite, ...input }
-        }
-        return { ...userInvite, ...input }
-      }),
-      remove: jest.fn((id, journeyId) =>
-        id === userInvite.id ? userInvite : outdatedAcceptedInvite
-      ),
-      getAllUserInvitesByEmail: jest.fn((email) => {
-        if (email === userInvite.email) {
-          return [userInvite, acceptedInvite, removedInvite]
-        } else if (email === outdatedAcceptedInvite.email) {
-          return [outdatedAcceptedInvite]
-        }
-        return []
-      }),
-      getAllUserInvitesByJourney: jest.fn((journeyId) => {
-        return [{ ...userInvite, journeyId }]
-      }),
-      getUserInviteByJourneyAndEmail: jest.fn((journeyId, email) => {
-        if (
-          journeyId === removedInvite.journeyId &&
-          email === removedInvite.email
-        ) {
-          return removedInvite
-        } else if (
-          journeyId === acceptedInvite.journeyId &&
-          email === acceptedInvite.email
-        ) {
-          return acceptedInvite
-        }
-        return null
-      })
-    })
+    acceptedAt: new Date('2021-02-10T00:00:00.000Z')
   }
 
   const userJourney = {
@@ -137,13 +88,6 @@ describe('UserInviteResolver', () => {
     })
   }
 
-  const journeyService = {
-    provide: JourneyService,
-    useFactory: () => ({
-      get: jest.fn((id) => ({ id }))
-    })
-  }
-
   const user = {
     id: 'userId',
     email: 'test@email.com',
@@ -163,24 +107,61 @@ describe('UserInviteResolver', () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         UserInviteResolver,
-        userInviteService,
         userJourneyService,
         userRoleService,
-        journeyService
+        PrismaService
       ]
     }).compile()
     resolver = module.get(UserInviteResolver)
-    service = await module.resolve(UserInviteService)
     ujService = await module.resolve(UserJourneyService)
+    prisma = module.get<PrismaService>(PrismaService)
+    prisma.journey.findUnique = jest
+      .fn()
+      .mockImplementationOnce((request) => ({ id: request.where.id }))
+    prisma.userInvite.findMany = jest.fn().mockImplementation((input) => {
+      if (input.where.email === userInvite.email) {
+        return [userInvite, acceptedInvite, removedInvite]
+      } else if (input.where.email === outdatedAcceptedInvite.email) {
+        return [outdatedAcceptedInvite]
+      }
+      return []
+    })
+    prisma.userInvite.create = jest.fn().mockImplementation((input) => {
+      return { ...input.data, acceptedAt: null, removedAt: null }
+    })
+    prisma.userInvite.update = jest.fn().mockImplementation((input) => {
+      if (input.where.id === removedInvite.id) {
+        return { ...removedInvite, ...input.data }
+      } else if (input.where.id === acceptedInvite.id) {
+        return { ...acceptedInvite, ...input.data }
+      } else if (input.where.id === outdatedAcceptedInvite.id) {
+        return { ...outdatedAcceptedInvite, ...input.data }
+      }
+      return { ...userInvite, ...input.data }
+    })
+    prisma.userInvite.findUnique = jest.fn().mockImplementationOnce((input) => {
+      if (
+        input.where.journeyId_email.journeyId === removedInvite.journeyId &&
+        input.where.journeyId_email.email === removedInvite.email
+      ) {
+        return removedInvite
+      } else if (
+        input.where.journeyId_email.journeyId === acceptedInvite.journeyId &&
+        input.where.journeyId_email.email === acceptedInvite.email
+      ) {
+        return acceptedInvite
+      }
+      return null
+    })
   })
 
   describe('userInvites', () => {
     it('should return all user invites sent for a journey', async () => {
       await resolver.userInvites('journeyId')
 
-      expect(service.getAllUserInvitesByJourney).toHaveBeenCalledWith(
-        'journeyId'
-      )
+      expect(prisma.userInvite.findMany).toHaveBeenCalledWith({
+        where: { journeyId: 'journeyId' }
+      })
     })
   })
 
@@ -192,14 +173,16 @@ describe('UserInviteResolver', () => {
         createInput
       )
 
-      expect(service.save).toHaveBeenCalledWith({
-        journeyId: 'newJourneyId',
-        senderId: 'senderId',
-        email: createInput.email,
-        acceptedAt: null,
-        removedAt: null
+      expect(prisma.userInvite.create).toHaveBeenCalledWith({
+        data: {
+          journeyId: 'newJourneyId',
+          senderId: 'senderId',
+          email: createInput.email,
+          acceptedAt: null,
+          removedAt: null
+        }
       })
-      expect(service.update).not.toHaveBeenCalled()
+      expect(prisma.userInvite.update).not.toHaveBeenCalled()
       expect(invite).toEqual({
         journeyId: 'newJourneyId',
         senderId: 'senderId',
@@ -216,11 +199,14 @@ describe('UserInviteResolver', () => {
         createInput
       )
 
-      expect(service.save).not.toHaveBeenCalled()
-      expect(service.update).toHaveBeenCalledWith(removedInvite.id, {
-        senderId: removedInvite.senderId,
-        acceptedAt: null,
-        removedAt: null
+      expect(prisma.userInvite.create).not.toHaveBeenCalled()
+      expect(prisma.userInvite.update).toHaveBeenCalledWith({
+        where: { id: removedInvite.id },
+        data: {
+          senderId: removedInvite.senderId,
+          acceptedAt: null,
+          removedAt: null
+        }
       })
     })
 
@@ -230,9 +216,9 @@ describe('UserInviteResolver', () => {
         'acceptedJourneyId',
         createInput
       )
-
-      expect(service.save).not.toHaveBeenCalled()
-      expect(service.update).not.toHaveBeenCalled()
+      console.log(invite)
+      expect(prisma.userInvite.create).not.toHaveBeenCalled()
+      expect(prisma.userInvite.update).not.toHaveBeenCalled()
       expect(invite).toEqual(null)
     })
 
@@ -249,14 +235,17 @@ describe('UserInviteResolver', () => {
     it('should remove user invite', async () => {
       const invite = await resolver.userInviteRemove('1', 'journeyId')
 
-      expect(service.update).toHaveBeenCalledWith('1', {
-        acceptedAt: null,
-        removedAt: '2021-02-18T00:00:00.000Z'
+      expect(prisma.userInvite.update).toHaveBeenCalledWith({
+        where: { id: '1' },
+        data: {
+          acceptedAt: null,
+          removedAt: new Date('2021-02-18T00:00:00.000Z')
+        }
       })
       expect(invite).toEqual({
         ...userInvite,
         acceptedAt: null,
-        removedAt: '2021-02-18T00:00:00.000Z'
+        removedAt: new Date('2021-02-18T00:00:00.000Z')
       })
     })
   })
@@ -279,7 +268,7 @@ describe('UserInviteResolver', () => {
 
       expect(await invites[0]).toEqual({
         ...userInvite,
-        acceptedAt: '2021-02-18T00:00:00.000Z'
+        acceptedAt: new Date('2021-02-18T00:00:00.000Z')
       })
       // accepted invites unchanged
       expect(await invites[1]).toEqual(acceptedInvite)
@@ -295,7 +284,7 @@ describe('UserInviteResolver', () => {
 
       expect(ujService.requestAccess).not.toHaveBeenCalled()
       expect(ujService.approveAccess).not.toHaveBeenCalled()
-      expect(service.update).not.toHaveBeenCalled()
+      expect(prisma.userInvite.update).not.toHaveBeenCalled()
       expect(rejectedInvite).toEqual([])
     })
   })

@@ -163,7 +163,7 @@ describe('ChatOpenEventResolver', () => {
 
       expect(vService.update).toHaveBeenCalledWith('newVisitor.id', {
         messagePlatform: MessagePlatform.facebook,
-        lastChatStartedAt: new Date().toISOString(),
+        lastChatStartedAt: new Date(),
         lastChatPlatform: MessagePlatform.facebook
       })
     })
@@ -178,7 +178,7 @@ describe('ChatOpenEventResolver', () => {
       await resolver.chatOpenEventCreate('userId', input)
 
       expect(vService.update).toHaveBeenCalledWith('visitor.id', {
-        lastChatStartedAt: new Date().toISOString(),
+        lastChatStartedAt: new Date(),
         lastChatPlatform: MessagePlatform.facebook
       })
     })

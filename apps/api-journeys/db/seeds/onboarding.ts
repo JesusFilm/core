@@ -1,4 +1,5 @@
 import { aql } from 'arangojs'
+import { PrismaClient } from '.prisma/api-journeys-client'
 import { ArangoDB } from '../db'
 import {
   JourneyStatus,
@@ -6,6 +7,7 @@ import {
   ThemeName
 } from '../../src/app/__generated__/graphql'
 
+const prisma = new PrismaClient()
 const db = ArangoDB()
 
 export async function onboarding(action?: 'reset'): Promise<void> {
@@ -19,48 +21,43 @@ export async function onboarding(action?: 'reset'): Promise<void> {
   }
 
   if (action === 'reset') {
-    await db.query(aql`
-    FOR journey in journeys
-      FILTER journey.slug == ${onboardingJourney.slug}
-      FOR block in blocks
-        FILTER block.journeyId == journey._key
-        REMOVE block IN blocks
-  `)
-
-    await db.query(aql`
-    FOR journey in journeys
-      FILTER journey.slug == ${onboardingJourney.slug}
-      REMOVE journey in journeys
-  `)
+    const existingJourney = await prisma.journey.findUnique({
+      where: { slug: onboardingJourney.slug }
+    })
+    if (existingJourney != null) {
+      await db.query(aql`
+          FOR block in blocks
+              FILTER block.journeyId == ${existingJourney.id}
+              REMOVE block IN blocks`)
+      await prisma.journey.delete({ where: { slug: onboardingJourney.slug } })
+    }
   }
 
-  const existingJourney = await (
-    await db.query(aql`
-      FOR journey in journeys
-        FILTER journey.slug == ${onboardingJourney.slug}
-          LIMIT 1
-          return journey
-    `)
-  ).next()
+  const existingJourney = await prisma.journey.findUnique({
+    where: { slug: onboardingJourney.slug }
+  })
   if (existingJourney != null) return
 
-  const journey = await db.collection('journeys').save({
-    _key: onboardingJourney.id,
-    title: 'Dev Onboarding Journey',
-    description:
-      'Only used for development and staging. Production should use actual onboarding journey.',
-    languageId: 529,
-    themeMode: ThemeMode.dark,
-    themeName: ThemeName.base,
-    slug: onboardingJourney.slug,
-    status: JourneyStatus.published,
-    template: true,
-    createdAt: new Date(),
-    publishedAt: new Date()
+  const journey = await prisma.journey.create({
+    data: {
+      id: onboardingJourney.id,
+      title: 'Dev Onboarding Journey',
+      description:
+        'Only used for development and staging. Production should use actual onboarding journey.',
+      languageId: '529',
+      themeMode: ThemeMode.dark,
+      themeName: ThemeName.base,
+      slug: onboardingJourney.slug,
+      status: JourneyStatus.published,
+      template: true,
+      createdAt: new Date(),
+      publishedAt: new Date(),
+      teamId: 'jfp-team'
+    }
   })
 
   const primaryImageBlock = await db.collection('blocks').save({
-    journeyId: journey._key,
+    journeyId: journey.id,
     __typename: 'ImageBlock',
     src: 'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/e8692352-21c7-4f66-cb57-0298e86a3300/public',
     alt: 'onboarding primary',
@@ -68,21 +65,21 @@ export async function onboarding(action?: 'reset'): Promise<void> {
     height: 768,
     blurhash: 'UE9Qmr%MIpWCtmbH%Mxu_4xuWYoL-;oIWYt7',
     parentOrder: 1,
-    parentBlockId: journey._key
+    parentBlockId: journey.id
   })
   await db
     .collection('journeys')
-    .update(journey._key, { primaryImageBlockId: primaryImageBlock._key })
+    .update(journey.id, { primaryImageBlockId: primaryImageBlock._key })
 
   const step = await db.collection('blocks').save({
-    journeyId: journey._key,
+    journeyId: journey.id,
     __typename: 'StepBlock',
     locked: false,
     parentOrder: 0
   })
 
   const card = await db.collection('blocks').save({
-    journeyId: journey._key,
+    journeyId: journey.id,
     __typename: 'CardBlock',
     parentBlockId: step._key,
     fullScreen: false,
@@ -90,7 +87,7 @@ export async function onboarding(action?: 'reset'): Promise<void> {
   })
 
   const coverBlock = await db.collection('blocks').save({
-    journeyId: journey._key,
+    journeyId: journey.id,
     __typename: 'ImageBlock',
     src: 'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/ae95a856-1401-41e1-6f3e-7b4e6f707f00/public',
     alt: 'onboarding card 1 cover',
@@ -105,7 +102,7 @@ export async function onboarding(action?: 'reset'): Promise<void> {
 
   await db.collection('blocks').saveAll([
     {
-      journeyId: journey._key,
+      journeyId: journey.id,
       __typename: 'TypographyBlock',
       parentBlockId: card._key,
       content: 'The Journey Is On',
@@ -113,7 +110,7 @@ export async function onboarding(action?: 'reset'): Promise<void> {
       parentOrder: 0
     },
     {
-      journeyId: journey._key,
+      journeyId: journey.id,
       __typename: 'TypographyBlock',
       parentBlockId: card._key,
       content: '"Go, and lead the people on their way..."',
@@ -121,7 +118,7 @@ export async function onboarding(action?: 'reset'): Promise<void> {
       parentOrder: 1
     },
     {
-      journeyId: journey._key,
+      journeyId: journey.id,
       __typename: 'TypographyBlock',
       parentBlockId: card._key,
       content: 'Deuteronomy 10:11',

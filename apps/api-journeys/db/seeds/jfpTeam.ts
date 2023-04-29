@@ -1,9 +1,6 @@
-import { aql } from 'arangojs'
 import { PrismaClient } from '.prisma/api-journeys-client'
-import { ArangoDB } from '../db'
 
 const prisma = new PrismaClient()
-const db = ArangoDB()
 
 // this should be removed when the UI can support team management
 export async function jfpTeam(): Promise<void> {
@@ -28,21 +25,19 @@ export async function jfpTeam(): Promise<void> {
   })
 
   // update all journeys to belong to JFP team (journeys)
-  await db.query(aql`
-    FOR journey IN journeys
-      UPDATE journey._key WITH { teamId: ${team.id} }
-      IN journeys
-  `)
+  await prisma.journey.updateMany({
+    data: { teamId: team.id }
+  })
 
   // add all users to JFP team (members)
-  await db.query(aql`
-    FOR userJourney IN userJourneys
-      INSERT {
-        _key: CONCAT(userJourney.userId, ":", ${team.id}),
-        teamId: ${team.id}, 
-        userId: userJourney.userId, 
-        createdAt: DATE_ISO8601(DATE_NOW())
-      }
-      INTO members OPTIONS { ignoreErrors: true }
-  `)
+  const userJourneys = await prisma.userJourney.findMany()
+  await prisma.member.createMany({
+    data: userJourneys.map((userJourney) => ({
+      id: `${userJourney.userId}:${team.id}`,
+      teamId: team.id,
+      userId: userJourney.userId,
+      createdAt: new Date()
+    })),
+    skipDuplicates: true
+  })
 }

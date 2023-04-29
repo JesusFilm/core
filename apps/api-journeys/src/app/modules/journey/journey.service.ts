@@ -13,17 +13,6 @@ import { PrismaService } from '../../lib/prisma.service'
 export class JourneyService {
   constructor(private readonly prismaService: PrismaService) {}
 
-  //   return aql.join(
-  //     [
-  //       template === true
-  //         ? aql`AND journey.template == true`
-  //         : aql`AND journey.template != true`,
-  //       featured === true && aql`AND journey.featuredAt != null`,
-  //       featured === false && aql`AND journey.featuredAt == null`
-  //     ].filter((x) => x !== false)
-  //   )
-  // }
-
   async getAllPublishedJourneys(filter?: JourneysFilter): Promise<Journey[]> {
     const { featured, template } = filter ?? {}
     return await this.prismaService.journey.findMany({
@@ -60,28 +49,12 @@ export class JourneyService {
         status: { in: [JourneyStatus.published, JourneyStatus.draft] }
       }
     })
-    // const result = await this.db.query(aql`
-    // FOR userJourney in userJourneys
-    //   FOR journey in ${this.collection}
-    //     FILTER CONTAINS(journey.title, ${title}) && userJourney.journeyId == journey._key && userJourney.userId == ${userId} && journey.status IN ${[
-    //   JourneyStatus.published,
-    //   JourneyStatus.draft
-    // ]}
-    //     RETURN journey
-    // `)
-    // return await result.all()
   }
 
   async getAllByIds(ids: string[]): Promise<Journey[]> {
     return await this.prismaService.journey.findMany({
       where: { id: { in: ids } }
     })
-    // const result = await this.db.query(aql`
-    //   FOR journey in ${this.collection}
-    //       FILTER journey._key IN ${ids}
-    //       RETURN journey
-    // `)
-    // return await result.all()
   }
 
   async getAllByRole(
@@ -90,18 +63,6 @@ export class JourneyService {
     template?: boolean
   ): Promise<Journey[]> {
     if (template === true && !includes(user.roles, Role.publisher)) return []
-
-    // const statusFilter =
-    //   status != null ? aql`&& journey.status IN ${status}` : aql`&& true`
-
-    // const roleFilter =
-    //   template === true
-    //     ? aql`FOR journey in ${this.collection}
-    //           FILTER journey.template == true`
-    //     : aql`FOR userJourney in userJourneys
-    //       FOR journey in ${this.collection}
-    //         FILTER userJourney.journeyId == journey._key && userJourney.userId == ${user.userId}
-    //           && (userJourney.role == ${UserJourneyRole.owner} || userJourney.role == ${UserJourneyRole.editor})`
 
     return await this.prismaService.journey.findMany({
       where: {
@@ -120,10 +81,5 @@ export class JourneyService {
             : undefined
       }
     })
-    // const result = await this.db.query(aql`${roleFilter}
-    //       ${statusFilter}
-    //         RETURN journey
-    //   `)
-    // return await result.all()
   }
 }

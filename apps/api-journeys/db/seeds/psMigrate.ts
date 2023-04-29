@@ -1,10 +1,6 @@
 import { aql } from 'arangojs'
 import { omit } from 'lodash'
-import {
-  PrismaClient,
-  ThemeMode,
-  JourneyStatus
-} from '.prisma/api-journeys-client'
+import { PrismaClient, JourneyStatus } from '.prisma/api-journeys-client'
 import { ArangoDB } from '../db'
 
 const prisma = new PrismaClient()
@@ -123,27 +119,30 @@ export async function psMigrate(): Promise<void> {
       data: journeys.map((journey) => ({
         id: journey._key,
         title: journey.title,
-        languageId: journey.languageId,
-        description: journey.description ?? null,
+        languageId: journey.languageId.toString(),
+        description: journey.description ?? undefined,
         slug: journey.slug,
         archivedAt:
-          journey.archivedAt != null ? new Date(journey.archivedAt) : null,
+          journey.archivedAt != null ? new Date(journey.archivedAt) : undefined,
         createdAt: new Date(journey.createdAt),
         deletedAt:
-          journey.deletedAt != null ? new Date(journey.deletedAt) : null,
+          journey.deletedAt != null ? new Date(journey.deletedAt) : undefined,
         publishedAt:
-          journey.publishedAt != null ? new Date(journey.publishedAt) : null,
+          journey.publishedAt != null
+            ? new Date(journey.publishedAt)
+            : undefined,
         trashedAt:
-          journey.trashedAt != null ? new Date(journey.trashedAt) : null,
+          journey.trashedAt != null ? new Date(journey.trashedAt) : undefined,
         featuredAt:
-          journey.trashedAt != null ? new Date(journey.trashedAt) : null,
-        status: JourneyStatus[journey.status],
-        seoTitle: journey.seoTitle ?? null,
-        seoDescription: journey.seoDescription ?? null,
-        primaryImageBlockId: journey.primaryImageBlockId ?? null,
+          journey.trashedAt != null ? new Date(journey.trashedAt) : undefined,
+        status: journey.status ?? JourneyStatus.draft,
+        seoTitle: journey.seoTitle ?? undefined,
+        seoDescription: journey.seoDescription ?? undefined,
+        primaryImageBlockId: journey.primaryImageBlockId ?? undefined,
         template: journey.template ?? false,
-        teamId: journey.teamId ?? null,
-        themeMode: ThemeMode[journey.themeMode]
+        teamId: journey.teamId ?? 'jfp-team',
+        themeMode: journey.themeMode ?? undefined,
+        themeName: journey.themeName ?? undefined
       })),
       skipDuplicates: true
     })
@@ -174,5 +173,77 @@ export async function psMigrate(): Promise<void> {
     })
     offset += 50
     end = userJourneys.length > 49
+  } while (end)
+
+  // import userRoles from arangodb
+  offset = 0
+  end = true
+  do {
+    const userRoles = await (
+      await db.query(aql`
+          FOR ur IN userRoles
+          LIMIT ${offset}, 50
+          RETURN ur
+      `)
+    ).all()
+    await prisma.userRole.createMany({
+      data: userRoles.map((ur) => ({
+        id: ur._key,
+        userId: ur.userId,
+        roles: ur.roles
+      })),
+      skipDuplicates: true
+    })
+    offset += 50
+    end = userRoles.length > 49
+  } while (end)
+
+  // import journeyProfiles from arangodb
+  offset = 0
+  end = true
+  do {
+    const journeyProfiles = await (
+      await db.query(aql`
+          FOR jp IN journeyProfiles
+          LIMIT ${offset}, 50
+          RETURN jp
+      `)
+    ).all()
+    await prisma.journeyProfile.createMany({
+      data: journeyProfiles.map((jp) => ({
+        id: jp._key,
+        userId: jp.userId,
+        acceptedTermsAt: new Date(jp.acceptedTermsAt)
+      })),
+      skipDuplicates: true
+    })
+    offset += 50
+    end = journeyProfiles.length > 49
+  } while (end)
+
+  // import userInvites from arangodb
+  offset = 0
+  end = true
+  do {
+    const userInvites = await (
+      await db.query(aql`
+          FOR ui IN userInvites
+          LIMIT ${offset}, 50
+          RETURN ui
+      `)
+    ).all()
+    await prisma.userInvite.createMany({
+      data: userInvites.map((ui) => ({
+        id: ui._key,
+        journeyId: ui.journeyId,
+        senderId: ui.senderId,
+        email: ui.email,
+        acceptedAt: ui.acceptedAt != null ? new Date(ui.acceptedAt) : undefined,
+        removedAt: ui.removedAt != null ? new Date(ui.removedAt) : undefined
+      })),
+      skipDuplicates: true
+    })
+    offset += 50
+    end = userInvites.length > 49
   } while (end)
 }

@@ -1,32 +1,19 @@
 import { Test, TestingModule } from '@nestjs/testing'
-import { Database } from 'arangojs'
-import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
-import { mockDbQueryResult } from '@core/nest/database/mock'
-import { DocumentCollection, EdgeCollection } from 'arangojs/collection'
 import { keyAsId } from '@core/nest/decorators/KeyAsId'
 
+import { PrismaService } from '../../lib/prisma.service'
 import { JourneyProfileService } from './journeyProfile.service'
 
 describe('journeyProfileService', () => {
-  let service: JourneyProfileService,
-    db: DeepMockProxy<Database>,
-    collectionMock: DeepMockProxy<DocumentCollection & EdgeCollection>
+  let service: JourneyProfileService, prisma: PrismaService
 
   beforeEach(async () => {
-    db = mockDeep()
     const module: TestingModule = await Test.createTestingModule({
-      providers: [
-        JourneyProfileService,
-        {
-          provide: 'DATABASE',
-          useFactory: () => db
-        }
-      ]
+      providers: [JourneyProfileService, PrismaService]
     }).compile()
 
     service = module.get<JourneyProfileService>(JourneyProfileService)
-    collectionMock = mockDeep()
-    service.collection = collectionMock
+    prisma = module.get<PrismaService>(PrismaService)
   })
   afterAll(() => {
     jest.resetAllMocks()
@@ -42,17 +29,12 @@ describe('journeyProfileService', () => {
 
   describe('getJourneyProfileByUserId', () => {
     it('should return a user role if exists', async () => {
-      ;(service.db as DeepMockProxy<Database>).query.mockReturnValue(
-        mockDbQueryResult(service.db, [user])
-      )
+      prisma.journeyProfile.findUnique = jest.fn().mockResolvedValue(user)
       expect(await service.getJourneyProfileByUserId('1')).toEqual(userWithId)
     })
 
     it('should return null if user role does not exist', async () => {
-      ;(service.db as DeepMockProxy<Database>).query.mockReturnValue(
-        mockDbQueryResult(service.db, [])
-      )
-
+      prisma.journeyProfile.findUnique = jest.fn().mockResolvedValue(null)
       expect(await service.getJourneyProfileByUserId('2')).toEqual(null)
     })
   })

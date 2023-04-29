@@ -43,7 +43,7 @@ import { PrismaService } from '../../lib/prisma.service'
 import { UserRoleService } from '../userRole/userRole.service'
 import { JourneyService } from './journey.service'
 
-const ERROR_ARANGO_UNIQUE_CONSTRAINT_VIOLATED = 1210
+export const ERROR_PSQL_UNIQUE_CONSTRAINT_VIOLATED = 'P2002'
 
 @Resolver('Journey')
 export class JourneyResolver {
@@ -170,14 +170,18 @@ export class JourneyResolver {
   @Mutation()
   @UseGuards(GqlAuthGuard)
   async journeyCreate(
-    @Args('input') input: Journey,
+    @Args('input')
+    input: Pick<Journey, 'title' | 'languageId'> &
+      Partial<Journey> &
+      ({ slug: string; title?: string } | { slug?: string; title: string }),
     @CurrentUserId() userId: string
   ): Promise<Journey | undefined> {
-    input.slug = slugify(input.slug ?? input.title, {
+    let retry = true
+    let slug = slugify(input.slug ?? input.title, {
       lower: true,
       strict: true
     })
-    let retry = true
+    const id = input.id ?? uuidv4()
     while (retry) {
       try {
         // this should be removed when the UI can support team management
@@ -185,7 +189,8 @@ export class JourneyResolver {
         const journey = await this.prismaService.journey.create({
           data: {
             ...input,
-            id: input.id ?? uuidv4(),
+            slug,
+            id,
             createdAt: new Date(),
             status: JourneyStatus.draft,
             teamId: team.id
@@ -214,8 +219,8 @@ export class JourneyResolver {
         retry = false
         return journey
       } catch (err) {
-        if (err.errorNum === ERROR_ARANGO_UNIQUE_CONSTRAINT_VIOLATED) {
-          input.slug = slugify(`${input.slug}-${input.id}`)
+        if (err.code === ERROR_PSQL_UNIQUE_CONSTRAINT_VIOLATED) {
+          slug = slugify(`${slug}-${id}`)
         } else {
           retry = false
           throw err
@@ -332,7 +337,7 @@ export class JourneyResolver {
       id: duplicateJourneyId,
       slug,
       title: duplicateTitle,
-      createdAt: new Date().toISOString(),
+      createdAt: new Date(),
       publishedAt: undefined,
       status: JourneyStatus.draft,
       template: false,
@@ -354,7 +359,7 @@ export class JourneyResolver {
         retry = false
         return journey
       } catch (err) {
-        if (err.errorNum === ERROR_ARANGO_UNIQUE_CONSTRAINT_VIOLATED) {
+        if (err.code === ERROR_PSQL_UNIQUE_CONSTRAINT_VIOLATED) {
           input.slug = slugify(`${input.slug}-${input.id}`)
         } else {
           retry = false
@@ -387,7 +392,7 @@ export class JourneyResolver {
         data: input
       })
     } catch (err) {
-      if (err.errorNum === ERROR_ARANGO_UNIQUE_CONSTRAINT_VIOLATED) {
+      if (err.code === ERROR_PSQL_UNIQUE_CONSTRAINT_VIOLATED) {
         throw new UserInputError('Slug is not unique')
       } else {
         throw err

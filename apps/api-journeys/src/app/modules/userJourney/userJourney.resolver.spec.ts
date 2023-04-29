@@ -8,12 +8,14 @@ import {
   UserJourneyRole
 } from '../../__generated__/graphql'
 import { UserJourneyService } from '../userJourney/userJourney.service'
-import { JourneyService } from '../journey/journey.service'
 import { UserRoleService } from '../userRole/userRole.service'
+import { PrismaService } from '../../lib/prisma.service'
 import { UserJourneyResolver } from './userJourney.resolver'
 
 describe('UserJourneyResolver', () => {
-  let resolver: UserJourneyResolver, service: UserJourneyService
+  let resolver: UserJourneyResolver,
+    service: UserJourneyService,
+    prisma: PrismaService
 
   const userJourney = {
     id: '1',
@@ -59,16 +61,6 @@ describe('UserJourneyResolver', () => {
     publishedAt,
     createdAt,
     teamId: 'jfp-team'
-  }
-
-  const journeyService = {
-    provide: JourneyService,
-    useFactory: () => ({
-      get: jest.fn((id) => (id === journey.id ? journey : undefined)),
-      getBySlug: jest.fn((slug) =>
-        slug === journey.slug ? journey : undefined
-      )
-    })
   }
 
   const userJourneyService = {
@@ -122,12 +114,13 @@ describe('UserJourneyResolver', () => {
       providers: [
         UserJourneyResolver,
         userJourneyService,
-        journeyService,
+        PrismaService,
         userRoleService
       ]
     }).compile()
     resolver = module.get<UserJourneyResolver>(UserJourneyResolver)
     service = await module.resolve(UserJourneyService)
+    prisma = module.get<PrismaService>(PrismaService)
   })
 
   describe('userJourneyRequest', () => {
@@ -191,6 +184,7 @@ describe('UserJourneyResolver', () => {
   })
 
   describe('userJourneyRemoveAll', () => {
+    prisma.journey.findUnique = jest.fn().mockResolvedValueOnce({ id: '1' })
     it('removes all userJourneys', async () => {
       await resolver.userJourneyRemoveAll(journey.id)
       expect(service.removeAll).toHaveBeenCalledWith([
