@@ -115,41 +115,45 @@ export function VideoFromYouTube({
   onSelect
 }: VideoFromYouTubeProps): ReactElement {
   const [url, setUrl] = useState<string>('')
-  const { data: videoData } = useSWRInfinite<Data>((_pageIndex) => {
-    const YOUTUBE_ID_REGEX =
-      /^(?:https?:)?\/\/[^/]*(?:youtube(?:-nocookie)?.com|youtu.be).*[=/](?<id>[-\w]{11})(?:\\?|=|&|$)/
+  const { data: videoData, error: videoError } = useSWRInfinite<Data>(
+    (_pageIndex) => {
+      const YOUTUBE_ID_REGEX =
+        /^(?:https?:)?\/\/[^/]*(?:youtube(?:-nocookie)?.com|youtu.be).*[=/](?<id>[-\w]{11})(?:\\?|=|&|$)/
 
-    const id = url.match(YOUTUBE_ID_REGEX)?.groups?.id
-    return id != null && `id=${id}`
-  }, videoFetcher)
+      const id = url.match(YOUTUBE_ID_REGEX)?.groups?.id
+      return id != null && `id=${id}`
+    },
+    videoFetcher
+  )
 
   const {
     data: playlistData,
-    error,
+    error: playlistError,
     size,
     setSize
   } = useSWRInfinite<Data>((_pageIndex, previousPageData?: Data) => {
     const pageToken = previousPageData?.nextPageToken ?? ''
-    console.log(pageToken)
     return `playlistId=${
       process.env.NEXT_PUBLIC_YOUTUBE_PLAYLIST_ID ?? ''
-    }& pageToken=${pageToken}`
+    }&pageToken=${pageToken}`
   }, playlistFetcher)
 
-  const loading = Boolean(
-    (playlistData == null && error == null) ||
+  const videoLoading = Boolean(videoData == null && videoError == null)
+
+  const playlistLoading = Boolean(
+    (playlistData == null && playlistError == null) ||
       (size > 0 &&
         playlistData &&
         typeof playlistData[size - 1] === 'undefined')
   )
+
+  const loading = videoData != null ? videoLoading : playlistLoading
 
   const videos = reduce(
     videoData != null ? videoData : playlistData,
     (result, request) => [...result, ...request.items],
     [] as Required<VideoListProps>['videos']
   )
-
-  console.log(videos)
 
   return (
     <>

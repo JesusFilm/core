@@ -25,7 +25,7 @@ export function VideoListItem({
   description,
   image,
   source,
-  duration: time = 0,
+  duration: time,
   onSelect: handleSelect
 }: VideoListItemProps): ReactElement {
   const [open, setOpen] = useState(false)
