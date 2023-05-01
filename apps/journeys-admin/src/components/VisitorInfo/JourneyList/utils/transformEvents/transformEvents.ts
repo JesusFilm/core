@@ -84,13 +84,15 @@ export function getDuration(start: string, end: string): string {
 
   const minutes = Math.floor((durationInMilliseconds % 3600000) / 60000)
   const seconds = Math.floor(((durationInMilliseconds % 360000) % 60000) / 1000)
-  const secondsAsString =
-    seconds > 0
-      ? seconds < 10
-        ? `0${seconds as unknown as string}`
-        : (seconds as unknown as string)
-      : '01'
-  return `${seconds === 0 ? '<' : ''} ${
-    minutes as unknown as string
-  }:${secondsAsString}`
+
+  let result: string
+  if (minutes === 0 && seconds === 0) {
+    result = '< 0:01'
+  } else if (seconds < 10) {
+    result = `${minutes}:0${seconds}`
+  } else {
+    result = `${minutes}:${seconds}`
+  }
+
+  return result
 }
