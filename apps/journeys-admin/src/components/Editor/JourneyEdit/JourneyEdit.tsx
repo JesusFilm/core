@@ -28,6 +28,7 @@ export function JourneyEdit(): ReactElement {
   } = useEditor()
   const [hasAction, setHasAction] = useState(false)
 
+  console.log(journeyEditContentComponent)
   return (
     <>
       <Box
@@ -51,7 +52,8 @@ export function JourneyEdit(): ReactElement {
         >
           <Box
             sx={{
-              my: 'auto'
+              py: journeyEditContentComponent === 'action' ? 5 : 0,
+              my: journeyEditContentComponent === 'canvas' ? 'auto' : 0
             }}
           >
             {
