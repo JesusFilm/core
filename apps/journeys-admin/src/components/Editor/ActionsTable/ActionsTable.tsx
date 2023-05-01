@@ -40,7 +40,7 @@ export function ActionsTable({ hasAction }: ActionsTableProps): ReactElement {
 
   const actions = countUrls(journey)
 
-  if (actions.length > 1) hasAction?.(true)
+  if (actions.length >= 1) hasAction?.(true)
 
   const goalLabel = (url: string): string => {
     if (url === '') return ''
