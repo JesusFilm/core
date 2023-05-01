@@ -59,8 +59,6 @@ export function ContainedCover({
       : // Use Youtube set poster image
         videoBlock?.image
 
-  console.log(posterImage != null, videoBlock, imageBlock != null)
-
   useEffect(() => {
     if (videoRef.current != null) {
       // autoplay when video is YouTube on iOS does not work. We should disable autoplay in that case.

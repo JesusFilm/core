@@ -80,6 +80,8 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
   )
 
   useEffect(() => {
+    setTreeBlocks(blocks)
+
     if (!admin && journey != null) {
       const id = uuidv4()
       void journeyViewEventCreate({
@@ -101,10 +103,6 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
         }
       })
     }
-  }, [admin, journey, journeyViewEventCreate])
-
-  useEffect(() => {
-    setTreeBlocks(blocks)
   }, [])
 
   // Update Swiper - navigate to activeBlock after NavigateBlockAction & going back to node of a branch
@@ -183,27 +181,20 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
                   ].style.opacity = '1'
                 } else {
                   // Keep normal transition
-                  visibleSlides[0].style.opacity = '0'
-                  visibleSlides[1].style.opacity = '1'
+                  visibleSlides[0].style.opacity = '1'
+                  visibleSlides[1].style.opacity = '0'
                 }
               }
             }
           }
         }}
         onBeforeSlideChangeStart={(swiper) => {
-          console.log(
-            'slide change',
-            swiper.previousIndex,
-            swiper.activeIndex,
-            swiper
-          )
           // Update Swiper navigation after
           if (treeBlocks[swiper.activeIndex] !== activeBlock) {
             const index = findIndex(
               treeBlocks,
               (treeBlock) => treeBlock.id === activeBlock?.id
             )
-            console.log('mismatch', swiper.activeIndex, index)
             if (index > swiper.activeIndex) {
               console.log('change prev block')
               prevActiveBlock()
