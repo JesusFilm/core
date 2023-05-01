@@ -11,9 +11,9 @@ import {
 } from '@core/nest/database/mock'
 import { DocumentCollection, EdgeCollection } from 'arangojs/collection'
 import { keyAsId } from '@core/nest/decorators/KeyAsId'
+import { Journey } from '.prisma/api-journeys-client'
 
 import {
-  Journey,
   JourneyStatus,
   ThemeMode,
   ThemeName,
@@ -53,18 +53,19 @@ describe('BlockService', () => {
     jest.resetAllMocks()
   })
 
-  const journey: Journey = {
+  const journey = {
     id: '1',
     title: 'published',
-    createdAt: '1234',
+    createdAt: new Date(),
     status: JourneyStatus.published,
-    language: { id: '529' },
+    languageId: '529',
     themeMode: ThemeMode.light,
     themeName: ThemeName.base,
     description: null,
-    primaryImageBlock: null,
-    slug: 'published-slug'
-  }
+    primaryImageBlockId: null,
+    slug: 'published-slug',
+    teamId: 'teamId'
+  } as unknown as Journey
 
   const block = {
     _key: '1',

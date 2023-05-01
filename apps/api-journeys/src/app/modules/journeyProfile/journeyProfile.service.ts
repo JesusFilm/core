@@ -13,7 +13,7 @@ export class JourneyProfileService {
   async getJourneyProfileByUserId(
     userId: string
   ): Promise<JourneyProfile | null> {
-    return this.prismaService.journeyProfile.findUnique({
+    return await this.prismaService.journeyProfile.findUnique({
       where: { userId }
     })
   }

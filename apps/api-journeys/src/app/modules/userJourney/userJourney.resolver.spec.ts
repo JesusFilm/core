@@ -184,8 +184,8 @@ describe('UserJourneyResolver', () => {
   })
 
   describe('userJourneyRemoveAll', () => {
-    prisma.journey.findUnique = jest.fn().mockResolvedValueOnce({ id: '1' })
     it('removes all userJourneys', async () => {
+      prisma.journey.findUnique = jest.fn().mockResolvedValueOnce(journey)
       await resolver.userJourneyRemoveAll(journey.id)
       expect(service.removeAll).toHaveBeenCalledWith([
         userJourney.id,

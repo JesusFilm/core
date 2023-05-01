@@ -22,8 +22,7 @@ const visitor = {
 }
 
 describe('VisitorService', () => {
-  let service: VisitorService,
-    prisma: PrismaService,
+  let service: VisitorService, prisma: PrismaService
 
   beforeAll(() => {
     jest.useFakeTimers('modern')
@@ -36,10 +35,7 @@ describe('VisitorService', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [
-        VisitorService,
-        PrismaService
-      ]
+      providers: [VisitorService, PrismaService]
     }).compile()
 
     service = module.get<VisitorService>(VisitorService)
@@ -61,7 +57,7 @@ describe('VisitorService', () => {
       }
     }
     it('returns a visitors connection', async () => {
-      prisma.visitor.findMany = jest.fn().mockReturnValueOnce([])      
+      prisma.visitor.findMany = jest.fn().mockReturnValueOnce([])
       expect(
         await service.getList({ first: 50, filter: { teamId: 'jfp-team' } })
       ).toEqual(connection)
@@ -72,32 +68,30 @@ describe('VisitorService', () => {
         },
         skip: 0,
         take: 51,
-        where: { teamId: 'jfp-team'}
+        where: { teamId: 'jfp-team' }
       })
     })
 
     it('allows pagination of the visitors connection', async () => {
-      prisma.visitor.findMany = jest.fn().mockReturnValueOnce([])  
+      prisma.visitor.findMany = jest.fn().mockReturnValueOnce([])
       await service.getList({
         first: 50,
         after: new Date('2021-02-18').toISOString(),
         filter: { teamId: 'jfp-team' }
       })
-      expect(prisma.visitor.findMany).toHaveBeenCalledWith(
-        {
-          cursor: { createdAt: new Date('2021-02-18') },
-          orderBy: {
-            createdAt: 'desc'
-          },
-          skip: 1,
-          take: 51,
-          where: { teamId: 'jfp-team'}
-        }
-      )
+      expect(prisma.visitor.findMany).toHaveBeenCalledWith({
+        cursor: { createdAt: new Date('2021-02-18') },
+        orderBy: {
+          createdAt: 'desc'
+        },
+        skip: 1,
+        take: 51,
+        where: { teamId: 'jfp-team' }
+      })
     })
   })
 
-  describe('getVisitorId', () => {    
+  describe('getVisitorId', () => {
     it('should return visitor id', async () => {
       prisma.journey.findUnique = jest.fn().mockReturnValueOnce(journey)
       prisma.visitor.findFirst = jest.fn().mockReturnValueOnce(visitor)

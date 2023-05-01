@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing'
+import { PrismaService } from '../../lib/prisma.service'
 import { DbEvent, EventResolver } from './event.resolver'
 import { EventService } from './event.service'
-import { PrismaService } from '../../lib/prisma.service'
 
 describe('EventResolver', () => {
   let resolver: EventResolver

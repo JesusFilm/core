@@ -2,19 +2,17 @@ import { ExecutionContext } from '@nestjs/common'
 import { createMock, DeepMocked } from '@golevelup/ts-jest'
 import { AuthenticationError } from 'apollo-server-errors'
 import { contextToUserId } from '@core/nest/common/firebaseClient'
-import { UserJourney } from '.prisma/api-journeys-client'
+import { UserJourney, Journey, UserRole } from '.prisma/api-journeys-client'
 import {
-  Journey,
   JourneyStatus,
   Role,
   ThemeMode,
   ThemeName,
-  UserJourneyRole,
-  UserRole
+  UserJourneyRole
 } from '../../__generated__/graphql'
 import { UserJourneyService } from '../../modules/userJourney/userJourney.service'
 import { UserRoleService } from '../../modules/userRole/userRole.service'
-import { JourneyService } from '../../modules/journey/journey.service'
+import { PrismaService } from '../prisma.service'
 import { RoleGuard } from './roleGuard'
 
 jest.mock('@core/nest/common/firebaseClient', () => ({
@@ -27,12 +25,12 @@ const mockContextToUserId = contextToUserId as jest.MockedFunction<
 >
 
 describe('RoleGuard', () => {
-  const userJourney: UserJourney = {
+  const userJourney = {
     id: '1',
     userId: '1',
     journeyId: '2',
     role: UserJourneyRole.owner
-  }
+  } as unknown as UserJourney
 
   const userRole: UserRole = {
     id: '1',
@@ -40,24 +38,23 @@ describe('RoleGuard', () => {
     roles: [Role.publisher]
   }
 
-  const journey: Journey = {
+  const journey = {
     id: 'journey-id',
     title: 'Journey Heading',
     description: 'Description',
     slug: 'default',
-    language: { id: '529' },
+    languageId: '529',
     status: JourneyStatus.published,
-    createdAt: '2021-11-19T12:34:56.647Z',
+    createdAt: new Date('2021-11-19T12:34:56.647Z'),
     publishedAt: null,
     themeName: ThemeName.base,
     themeMode: ThemeMode.light,
-    blocks: null,
-    primaryImageBlock: null,
+    primaryImageBlockId: null,
     seoTitle: null,
     seoDescription: null,
     userJourneys: [userJourney],
     template: true
-  }
+  } as unknown as Journey
 
   afterAll(() => {
     jest.resetAllMocks()
@@ -84,7 +81,7 @@ describe('RoleGuard', () => {
     _userJourneyService: UserJourneyService,
     _journeyId: string,
     _userId: string
-  ): Promise<UserJourney | undefined> => {
+  ): Promise<UserJourney | null> => {
     return userJourney
   }
 
@@ -96,9 +93,9 @@ describe('RoleGuard', () => {
   }
 
   const fetchJourney = async (
-    _journeyService: JourneyService,
+    _prismaService: PrismaService,
     _journeyId: string
-  ): Promise<Journey> => {
+  ): Promise<Journey | null> => {
     return journey
   }
 

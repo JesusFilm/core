@@ -23,18 +23,6 @@ async function main(): Promise<void> {
     name: 'journeyId'
   })
 
-  if (!(await db.collection('userInvites').exists()))
-    await db.createCollection('userInvites', {
-      keyOptions: { type: 'uuid' }
-    })
-
-  await db.collection('userInvites').ensureIndex({
-    type: 'persistent',
-    fields: ['journeyId', 'email'],
-    name: 'journeyIdAndEmail',
-    unique: true
-  })
-
   await nua1()
   await nua2()
   await nua8()

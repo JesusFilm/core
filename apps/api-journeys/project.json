@@ -141,6 +141,12 @@
           "npx prisma validate --schema apps/api-journeys/db/schema.prisma"
         ]
       }
+    },
+    "type-check": {
+      "executor": "@nrwl/workspace:run-commands",
+      "options": {
+        "command": "npx tsc -b apps/api-journeys/tsconfig.json"
+      }
     }
   },
   "tags": []
