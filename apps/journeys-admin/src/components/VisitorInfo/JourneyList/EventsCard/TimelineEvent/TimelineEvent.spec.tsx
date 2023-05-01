@@ -14,7 +14,6 @@ import {
   GetVisitorEvents_visitor_events_VideoStartEvent as VideoStartEvent
 } from '../../../../../../__generated__/GetVisitorEvents'
 import { TimelineItem } from '../../utils'
-
 import { TimelineEvent } from '.'
 
 jest.mock('react-i18next', () => ({
