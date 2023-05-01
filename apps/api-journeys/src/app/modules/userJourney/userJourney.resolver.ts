@@ -59,7 +59,9 @@ export class UserJourneyResolver {
   }
 
   async getUserJourney(id: string): Promise<UserJourney | undefined> {
-    const userJourney = await this.userJourneyService.get(id)
+    const userJourney = await this.prismaService.userJourney.findUnique({
+      where: { id }
+    })
     if (userJourney === null) throw new UserInputError('User journey not found')
     return userJourney
   }
@@ -87,14 +89,15 @@ export class UserJourneyResolver {
     const actor = await this.checkOwnership(userJourney.journeyId, userId)
     if (actor.userId === userJourney.userId) return actor
 
-    const newOwner = await this.userJourneyService.update(id, {
-      role: UserJourneyRole.owner
+    const newOwner = await this.prismaService.userJourney.update({
+      where: { id },
+      data: { role: UserJourneyRole.owner }
     })
 
-    await this.userJourneyService.update(actor.id, {
-      role: UserJourneyRole.editor
+    await this.prismaService.userJourney.update({
+      where: { id: actor.id },
+      data: { role: UserJourneyRole.editor }
     })
-
     return newOwner
   }
 
@@ -113,7 +116,7 @@ export class UserJourneyResolver {
       await this.checkOwnership(userJourney.journeyId, userId)
     }
 
-    return await this.userJourneyService.remove(id)
+    return await this.prismaService.userJourney.delete({ where: { id } })
   }
 
   @Mutation()
@@ -148,7 +151,10 @@ export class UserJourneyResolver {
 
     if (userJourney != null && userJourney.openedAt == null) {
       const input = { openedAt: new Date() }
-      return await this.userJourneyService.update(userJourney.id, input)
+      return await this.prismaService.userJourney.update({
+        where: { id: userJourney.id },
+        data: input
+      })
     }
 
     return userJourney

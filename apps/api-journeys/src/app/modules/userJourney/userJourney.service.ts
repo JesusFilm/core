@@ -65,7 +65,9 @@ export class UserJourneyService {
   }
 
   async approveAccess(id: string, userId: string): Promise<UserJourney | null> {
-    const userJourney = await this.get(id)
+    const userJourney = await this.prismaService.userJourney.findUnique({
+      where: { id }
+    })
 
     if (userJourney == null)
       throw new UserInputError('userJourney does not exist')
@@ -99,33 +101,18 @@ export class UserJourneyService {
       }
     }
 
-    return await this.update(id, {
-      role: UserJourneyRole.editor
+    return await this.prismaService.userJourney.update({
+      where: { id },
+      data: { role: UserJourneyRole.editor }
     })
-  }
-
-  async get(id: string): Promise<UserJourney | null> {
-    return await this.prismaService.userJourney.findUnique({ where: { id } })
-  }
-
-  async update(
-    id: string,
-    data: Partial<UserJourney>
-  ): Promise<UserJourney | null> {
-    return await this.prismaService.userJourney.update({ where: { id }, data })
-  }
-
-  async remove(id: string): Promise<UserJourney | undefined> {
-    return await this.prismaService.userJourney.delete({ where: { id } })
   }
 
   async removeAll(ids: string[]): Promise<Array<UserJourney | undefined>> {
-    return await Promise.all(ids.map(async (id) => await this.remove(id)))
-  }
-
-  async save(data: UserJourney): Promise<UserJourney> {
-    return await this.prismaService.userJourney.create({
-      data
-    })
+    return await Promise.all(
+      ids.map(
+        async (id) =>
+          await this.prismaService.userJourney.delete({ where: { id } })
+      )
+    )
   }
 }
