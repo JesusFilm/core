@@ -49,16 +49,22 @@ export function ControlPanel(): ReactElement {
     dispatch({ type: 'SetActiveTabAction', activeTab: ActiveTab.Blocks })
   }
 
+  const hasVideoBlock =
+    selectedStep?.children[0].children.filter(
+      (block) => block.__typename === 'VideoBlock'
+    ).length !== 0
+
   return (
     <Box sx={{ width: '100%', position: 'relative' }}>
       <Box sx={{ position: 'absolute', top: '-64px', right: 20, zIndex: 1 }}>
-        {journeyEditContentComponent === ActiveJourneyEditContent.Canvas && (
-          <Fab
-            visible={activeTab !== ActiveTab.Blocks}
-            onAddClick={handleAddFabClick}
-            disabled={steps == null}
-          />
-        )}
+        {journeyEditContentComponent === ActiveJourneyEditContent.Canvas ||
+          (!hasVideoBlock && (
+            <Fab
+              visible={activeTab !== ActiveTab.Blocks}
+              onAddClick={handleAddFabClick}
+              disabled={steps == null}
+            />
+          ))}
       </Box>
       <Box
         sx={{
@@ -93,7 +99,8 @@ export function ControlPanel(): ReactElement {
             sx={{ flexGrow: 1 }}
             disabled={
               steps == null ||
-              journeyEditContentComponent !== ActiveJourneyEditContent.Canvas
+              journeyEditContentComponent !== ActiveJourneyEditContent.Canvas ||
+              hasVideoBlock
             }
           />
         </Tabs>
