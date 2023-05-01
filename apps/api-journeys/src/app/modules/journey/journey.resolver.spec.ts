@@ -14,7 +14,6 @@ import {
 } from '../../__generated__/graphql'
 import { BlockResolver } from '../block/block.resolver'
 import { BlockService } from '../block/block.service'
-import { UserJourneyService } from '../userJourney/userJourney.service'
 import { UserRoleService } from '../userRole/userRole.service'
 import { UserRoleResolver } from '../userRole/userRole.resolver'
 import { PrismaService } from '../../lib/prisma.service'
@@ -53,7 +52,6 @@ describe('JourneyResolver', () => {
   let resolver: JourneyResolver,
     service: JourneyService,
     bService: BlockService,
-    ujService: UserJourneyService,
     urService: UserRoleService,
     prisma: PrismaService
 
@@ -249,18 +247,6 @@ describe('JourneyResolver', () => {
     teamId: 'jfp-team'
   }
 
-  const userJourneyService = {
-    provide: UserJourneyService,
-    useFactory: () => ({
-      forJourney: jest.fn(() => [userJourney, userJourney]),
-      forJourneyUser: jest.fn((journeyId, userId) => {
-        if (userId === invitedUserJourney.userId) return invitedUserJourney
-        if (userId === userJourney.userId) return userJourney
-        return null
-      })
-    })
-  }
-
   const userRoleService = {
     provide: UserRoleService,
     useFactory: () => ({
@@ -279,7 +265,6 @@ describe('JourneyResolver', () => {
         journeyService,
         blockService,
         BlockResolver,
-        userJourneyService,
         UserRoleResolver,
         userRoleService,
         PrismaService
@@ -287,7 +272,6 @@ describe('JourneyResolver', () => {
     }).compile()
     resolver = module.get<JourneyResolver>(JourneyResolver)
     service = module.get<JourneyService>(JourneyService)
-    ujService = module.get<UserJourneyService>(UserJourneyService)
     bService = module.get<BlockService>(BlockService)
     urService = module.get<UserRoleService>(UserRoleService)
     prisma = module.get<PrismaService>(PrismaService)
@@ -328,6 +312,15 @@ describe('JourneyResolver', () => {
           return null
       }
     })
+    prisma.userJourney.findUnique = jest
+      .fn()
+      .mockImplementationOnce((input) => {
+        if (input.where.journeyId_userId.userId === invitedUserJourney.userId)
+          return invitedUserJourney
+        if (input.where.journeyId_userId.userId === userJourney.userId)
+          return userJourney
+        return null
+      })
   })
 
   describe('adminJourneysEmbed', () => {
@@ -538,10 +531,14 @@ describe('JourneyResolver', () => {
         await resolver.adminJourney('userId', 'journey-slug', IdType.slug)
       ).toEqual(journey)
       expect(service.getBySlug).toHaveBeenCalledWith('journey-slug')
-      expect(ujService.forJourneyUser).toHaveBeenCalledWith(
-        userJourney.journeyId,
-        userJourney.userId
-      )
+      expect(prisma.userJourney.findUnique).toHaveBeenCalledWith({
+        where: {
+          journeyId_userId: {
+            journeyId: userJourney.journeyId,
+            userId: userJourney.userId
+          }
+        }
+      })
     })
 
     it('returns Journey by id', async () => {
@@ -551,10 +548,14 @@ describe('JourneyResolver', () => {
       expect(prisma.journey.findUnique).toHaveBeenCalledWith({
         where: { id: 'journeyId' }
       })
-      expect(ujService.forJourneyUser).toHaveBeenCalledWith(
-        userJourney.journeyId,
-        userJourney.userId
-      )
+      expect(prisma.userJourney.findUnique).toHaveBeenCalledWith({
+        where: {
+          journeyId_userId: {
+            journeyId: userJourney.journeyId,
+            userId: userJourney.userId
+          }
+        }
+      })
     })
 
     it('returns null if no journey found', async () => {
@@ -1154,11 +1155,16 @@ describe('JourneyResolver', () => {
 
   describe('userJourneys', () => {
     it('should get userJourneys', async () => {
+      prisma.userJourney.findMany = jest
+        .fn()
+        .mockResolvedValueOnce([userJourney, userJourney])
       expect(await resolver.userJourneys(journey)).toEqual([
         userJourney,
         userJourney
       ])
-      expect(ujService.forJourney).toHaveBeenCalledWith(journey)
+      expect(prisma.userJourney.findMany).toHaveBeenCalledWith({
+        where: { journeyId: journey.id }
+      })
     })
   })
 

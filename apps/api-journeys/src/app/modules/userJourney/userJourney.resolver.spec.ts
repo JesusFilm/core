@@ -66,21 +66,6 @@ describe('UserJourneyResolver', () => {
   const userJourneyService = {
     provide: UserJourneyService,
     useFactory: () => ({
-      getAll: jest.fn(() => [userJourney, userJourney]),
-      removeAll: jest.fn(() => [userJourney, userJourney]),
-      forJourneyUser: jest.fn((key, userId) => {
-        switch (userId) {
-          case userJourney.userId:
-            return userJourney
-          case actorUserJourney.userId:
-            return actorUserJourney
-          case openedUserJourney.userId:
-            return openedUserJourney
-          default:
-            return null
-        }
-      }),
-      forJourney: jest.fn(() => [userJourney, userJourney]),
       requestAccess: jest.fn(),
       approveAccess: jest.fn()
     })
@@ -115,9 +100,24 @@ describe('UserJourneyResolver', () => {
     service = await module.resolve(UserJourneyService)
     prisma = module.get<PrismaService>(PrismaService)
     prisma.userJourney.findUnique = jest.fn().mockImplementation((input) => {
-      if (input.where.id === actorUserJourney.id) return actorUserJourney
-      return userJourney
+      if (input.where.id != null) {
+        if (input.where.id === actorUserJourney.id) return actorUserJourney
+        return userJourney
+      }
+      switch (input.where.journeyId_userId.userId) {
+        case userJourney.userId:
+          return userJourney
+        case actorUserJourney.userId:
+          return actorUserJourney
+        case openedUserJourney.userId:
+          return openedUserJourney
+        default:
+          return null
+      }
     })
+    prisma.userJourney.delete = jest
+      .fn()
+      .mockImplementation((input) => input.data)
   })
 
   describe('userJourneyRequest', () => {
@@ -196,12 +196,15 @@ describe('UserJourneyResolver', () => {
 
   describe('userJourneyRemoveAll', () => {
     it('removes all userJourneys', async () => {
+      prisma.userJourney.findMany = jest
+        .fn()
+        .mockResolvedValueOnce([userJourney, userJourney])
       prisma.journey.findUnique = jest.fn().mockResolvedValueOnce(journey)
       await resolver.userJourneyRemoveAll(journey.id)
-      expect(service.removeAll).toHaveBeenCalledWith([
-        userJourney.id,
-        userJourney.id
-      ])
+      expect(prisma.userJourney.delete).toHaveBeenCalledWith({
+        where: { id: userJourney.id }
+      })
+      expect(prisma.userJourney.delete).toHaveBeenCalledTimes(2)
     })
   })
 

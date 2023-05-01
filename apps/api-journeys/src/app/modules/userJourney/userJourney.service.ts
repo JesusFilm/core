@@ -1,10 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common'
 import { AuthenticationError, UserInputError } from 'apollo-server-errors'
-import {
-  UserJourney,
-  UserJourneyRole,
-  Journey
-} from '.prisma/api-journeys-client'
+import { UserJourney, UserJourneyRole } from '.prisma/api-journeys-client'
 import { v4 as uuidv4 } from 'uuid'
 import { IdType } from '../../__generated__/graphql'
 import { PrismaService } from '../../lib/prisma.service'
@@ -15,21 +11,6 @@ export class UserJourneyService {
   @Inject(PrismaService) private readonly prismaService: PrismaService
   @Inject(JourneyService)
   private readonly journeyService: JourneyService
-
-  async forJourney(journey: Journey): Promise<UserJourney[]> {
-    return await this.prismaService.userJourney.findMany({
-      where: { journeyId: journey.id }
-    })
-  }
-
-  async forJourneyUser(
-    journeyId: string,
-    userId: string
-  ): Promise<UserJourney | null> {
-    return await this.prismaService.userJourney.findUnique({
-      where: { journeyId_userId: { journeyId, userId } }
-    })
-  }
 
   async requestAccess(
     journeyId: string,
@@ -45,7 +26,11 @@ export class UserJourneyService {
 
     if (journey == null) throw new UserInputError('journey does not exist')
 
-    const existingUserJourney = await this.forJourneyUser(journeyId, userId)
+    const existingUserJourney = await this.prismaService.userJourney.findUnique(
+      {
+        where: { journeyId_userId: { journeyId, userId } }
+      }
+    )
 
     // Return existing access request or do nothing if user has access
     if (existingUserJourney != null) {
@@ -72,7 +57,9 @@ export class UserJourneyService {
     if (userJourney == null)
       throw new UserInputError('userJourney does not exist')
 
-    const actor = await this.forJourneyUser(id, userId)
+    const actor = await this.prismaService.userJourney.findUnique({
+      where: { journeyId_userId: { journeyId: id, userId } }
+    })
 
     if (actor?.role === UserJourneyRole.inviteRequested)
       throw new AuthenticationError(
@@ -105,14 +92,5 @@ export class UserJourneyService {
       where: { id },
       data: { role: UserJourneyRole.editor }
     })
-  }
-
-  async removeAll(ids: string[]): Promise<Array<UserJourney | undefined>> {
-    return await Promise.all(
-      ids.map(
-        async (id) =>
-          await this.prismaService.userJourney.delete({ where: { id } })
-      )
-    )
   }
 }

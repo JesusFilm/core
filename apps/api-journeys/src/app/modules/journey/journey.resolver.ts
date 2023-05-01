@@ -37,7 +37,6 @@ import {
   JourneysReportType,
   Role
 } from '../../__generated__/graphql'
-import { UserJourneyService } from '../userJourney/userJourney.service'
 import { RoleGuard } from '../../lib/roleGuard/roleGuard'
 import { PrismaService } from '../../lib/prisma.service'
 import { UserRoleService } from '../userRole/userRole.service'
@@ -50,7 +49,6 @@ export class JourneyResolver {
   constructor(
     private readonly journeyService: JourneyService,
     private readonly blockService: BlockService,
-    private readonly userJourneyService: UserJourneyService,
     private readonly userRoleService: UserRoleService,
     private readonly prismaService: PrismaService
   ) {}
@@ -124,10 +122,9 @@ export class JourneyResolver {
           })
     if (result == null) return null
     if (result.template !== true) {
-      const ujResult = await this.userJourneyService.forJourneyUser(
-        result.id,
-        userId
-      )
+      const ujResult = await this.prismaService.userJourney.findUnique({
+        where: { journeyId_userId: { journeyId: result.id, userId } }
+      })
       if (ujResult == null)
         throw new ForbiddenError(
           'User has not received an invitation to edit this journey.'
@@ -530,7 +527,9 @@ export class JourneyResolver {
 
   @ResolveField()
   async userJourneys(@Parent() journey: Journey): Promise<UserJourney[]> {
-    return await this.userJourneyService.forJourney(journey)
+    return await this.prismaService.userJourney.findMany({
+      where: { journeyId: journey.id }
+    })
   }
 
   @ResolveField('language')

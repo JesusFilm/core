@@ -29,7 +29,9 @@ export class UserJourneyResolver {
 
   @Query()
   async userJourneys(@Parent() journey: Journey): Promise<UserJourney[]> {
-    return await this.userJourneyService.forJourney(journey)
+    return await this.prismaService.userJourney.findMany({
+      where: { journeyId: journey.id }
+    })
   }
 
   @Mutation()
@@ -48,8 +50,11 @@ export class UserJourneyResolver {
 
   async checkOwnership(id: string, userId: string): Promise<UserJourney> {
     // can only update user journey roles if you are the journey's owner.
-    const actor = await this.userJourneyService.forJourneyUser(id, userId)
-
+    const actor = await this.prismaService.userJourney.findUnique({
+      where: {
+        journeyId_userId: { journeyId: id, userId }
+      }
+    })
     if (actor?.role !== UserJourneyRole.owner)
       throw new AuthenticationError(
         'You do not own this journey, so you cannot make changes to it'
@@ -132,12 +137,19 @@ export class UserJourneyResolver {
     })
     if (journey == null) throw new UserInputError('Journey does not exist')
 
-    const userJourneys = await this.userJourneyService.forJourney(journey)
+    const userJourneys = await this.prismaService.userJourney.findMany({
+      where: { journeyId: journey.id }
+    })
     const userJourneyIds: string[] = userJourneys.map(
       (userJourney) => userJourney.id
     )
 
-    const result = await this.userJourneyService.removeAll(userJourneyIds)
+    const result = await Promise.all(
+      userJourneyIds.map(
+        async (id) =>
+          await this.prismaService.userJourney.delete({ where: { id } })
+      )
+    )
     return result != null ? userJourneys : undefined
   }
 
@@ -147,7 +159,9 @@ export class UserJourneyResolver {
     @Args('id') id: string,
     @CurrentUserId() userId: string
   ): Promise<UserJourney | null> {
-    const userJourney = await this.userJourneyService.forJourneyUser(id, userId)
+    const userJourney = await this.prismaService.userJourney.findUnique({
+      where: { journeyId_userId: { journeyId: id, userId } }
+    })
 
     if (userJourney != null && userJourney.openedAt == null) {
       const input = { openedAt: new Date() }

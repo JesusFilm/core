@@ -16,17 +16,18 @@ import {
   UserJourneyRole,
   UserRole
 } from '.prisma/api-journeys-client'
-import { UserJourneyService } from '../../modules/userJourney/userJourney.service'
 import { UserRoleService } from '../../modules/userRole/userRole.service'
 import { PrismaService } from '../prisma.service'
 
 // broken out into function for test injection
 export const fetchUserJourney = async (
-  userJourneyService: UserJourneyService,
+  prismaService: PrismaService,
   journeyId: string,
   userId: string
 ): Promise<UserJourney | null> => {
-  return await userJourneyService.forJourneyUser(journeyId, userId)
+  return await prismaService.userJourney.findUnique({
+    where: { journeyId_userId: { journeyId, userId } }
+  })
 }
 
 export const fetchUserRole = async (
@@ -64,8 +65,6 @@ export const RoleGuard = (
   @Injectable()
   class RolesGuard implements CanActivate {
     constructor(
-      @Inject(UserJourneyService)
-      private readonly userJourneyService: UserJourneyService,
       @Inject(UserRoleService)
       private readonly userRoleService: UserRoleService,
       @Inject(PrismaService)
@@ -165,11 +164,7 @@ export const RoleGuard = (
       let result = false
       for (const journeyId of journeyIds) {
         const journey = await fj(this.prismaService, journeyId)
-        const userJourney = await fuj(
-          this.userJourneyService,
-          journeyId,
-          userId
-        )
+        const userJourney = await fuj(this.prismaService, journeyId, userId)
 
         result = this.checkAllowedAccess(access, journey, userJourney, userRole)
       }

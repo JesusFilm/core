@@ -71,30 +71,6 @@ describe('UserJourneyService', () => {
     teamId: 'teamId'
   } as unknown as Journey
 
-  describe('forJourney', () => {
-    it('should return an array of userjourneys', async () => {
-      prisma.userJourney.findMany = jest
-        .fn()
-        .mockResolvedValueOnce([userJourney, userJourney])
-      expect(await service.forJourney(journey)).toEqual([
-        userJourney,
-        userJourney
-      ])
-    })
-  })
-
-  describe('forUserJourney', () => {
-    it('should return a userjourney', async () => {
-      prisma.userJourney.findUnique = jest
-        .fn()
-        .mockResolvedValueOnce(userJourney)
-      expect(await service.forJourneyUser('1', '2')).toEqual(userJourney)
-      expect(prisma.userJourney.findUnique).toHaveBeenCalledWith({
-        where: { journeyId_userId: { userId: '2', journeyId: '1' } }
-      })
-    })
-  })
-
   describe('requestAccess', () => {
     it('throws UserInputError when journey does not exist', async () => {
       prisma.journey.findUnique = jest.fn().mockResolvedValueOnce(null)
@@ -120,7 +96,7 @@ describe('UserJourneyService', () => {
     })
     it('creates a UserJourney when journeyId is slug', async () => {
       mockUuidv4.mockReturnValueOnce(userJourneyInvited.id)
-      service.forJourneyUser = jest.fn().mockReturnValueOnce(null)
+      prisma.userJourney.findUnique = jest.fn().mockResolvedValueOnce(null)
       prisma.userJourney.create = jest
         .fn()
         .mockReturnValueOnce(userJourneyInvited)
@@ -131,7 +107,9 @@ describe('UserJourneyService', () => {
 
     it('returns an existing a UserJourney access request ', async () => {
       prisma.journey.findUnique = jest.fn().mockResolvedValueOnce(journey)
-      service.forJourneyUser = jest.fn().mockReturnValueOnce(userJourneyInvited)
+      prisma.userJourney.findUnique = jest
+        .fn()
+        .mockResolvedValueOnce(userJourneyInvited)
       expect(
         await service.requestAccess(journey.id, IdType.databaseId, '1')
       ).toEqual(userJourneyInvited)
@@ -139,7 +117,9 @@ describe('UserJourneyService', () => {
 
     it('returns undefined if UserJourney role access already granted', async () => {
       prisma.journey.findUnique = jest.fn().mockResolvedValueOnce(journey)
-      service.forJourneyUser = jest.fn().mockReturnValueOnce(userJourney)
+      prisma.userJourney.findUnique = jest
+        .fn()
+        .mockResolvedValueOnce(userJourney)
       expect(
         await service.requestAccess(journey.id, IdType.databaseId, '1')
       ).toEqual(undefined)
