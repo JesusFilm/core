@@ -2,7 +2,6 @@ import { Test, TestingModule } from '@nestjs/testing'
 
 import { PrismaService } from '../../lib/prisma.service'
 import { JourneyProfileResolver } from './journeyProfile.resolver'
-import { JourneyProfileService } from './journeyProfile.service'
 
 describe('JourneyProfileResolver', () => {
   let resolver: JourneyProfileResolver, prisma: PrismaService
@@ -13,18 +12,6 @@ describe('JourneyProfileResolver', () => {
     acceptedTermsAt: null
   }
 
-  const journeyProfileService = {
-    provide: JourneyProfileService,
-    useFactory: () => ({
-      getJourneyProfileByUserId: jest.fn((userId) =>
-        userId === profile.userId ? profile : null
-      ),
-      save: jest.fn((input) => {
-        return { ...profile, ...input }
-      })
-    })
-  }
-
   beforeAll(() => {
     jest.useFakeTimers('modern')
     jest.setSystemTime(new Date('2021-02-18'))
@@ -32,7 +19,7 @@ describe('JourneyProfileResolver', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [JourneyProfileResolver, journeyProfileService, PrismaService]
+      providers: [JourneyProfileResolver, PrismaService]
     }).compile()
     resolver = module.get<JourneyProfileResolver>(JourneyProfileResolver)
     prisma = module.get<PrismaService>(PrismaService)
@@ -40,12 +27,16 @@ describe('JourneyProfileResolver', () => {
 
   describe('getJourneyProfile', () => {
     it('should return user profile', async () => {
+      prisma.journeyProfile.findUnique = jest
+        .fn()
+        .mockResolvedValueOnce(profile)
       expect(await resolver.getJourneyProfile('userId')).toEqual(profile)
     })
   })
 
   describe('journeyProfileCreate', () => {
     it('should create user profile', async () => {
+      prisma.journeyProfile.findUnique = jest.fn().mockResolvedValueOnce(null)
       prisma.journeyProfile.create = jest
         .fn()
         .mockImplementationOnce((result) => result.data)
@@ -59,6 +50,9 @@ describe('JourneyProfileResolver', () => {
     })
 
     it('should return existing profile', async () => {
+      prisma.journeyProfile.findUnique = jest
+        .fn()
+        .mockResolvedValueOnce(profile)
       expect(await resolver.journeyProfileCreate('userId')).toEqual(profile)
     })
   })
