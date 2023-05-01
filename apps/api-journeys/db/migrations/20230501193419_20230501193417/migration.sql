@@ -143,6 +143,27 @@ CREATE TABLE "UserRole" (
     CONSTRAINT "UserRole_pkey" PRIMARY KEY ("id")
 );
 
+-- CreateTable
+CREATE TABLE "JourneyProfile" (
+    "id" TEXT NOT NULL,
+    "userId" TEXT NOT NULL,
+    "acceptedTermsAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT "JourneyProfile_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "UserInvite" (
+    "id" TEXT NOT NULL,
+    "journeyId" TEXT NOT NULL,
+    "senderId" TEXT NOT NULL,
+    "email" TEXT NOT NULL,
+    "acceptedAt" TIMESTAMP(3),
+    "removedAt" TIMESTAMP(3),
+
+    CONSTRAINT "UserInvite_pkey" PRIMARY KEY ("id")
+);
+
 -- CreateIndex
 CREATE INDEX "Event_id_journeyId_visitorId_blockId_idx" ON "Event"("id", "journeyId", "visitorId", "blockId");
 
@@ -164,6 +185,15 @@ CREATE INDEX "Journey_slug_idx" ON "Journey"("slug");
 -- CreateIndex
 CREATE UNIQUE INDEX "Member_teamId_userId_key" ON "Member"("teamId", "userId");
 
+-- CreateIndex
+CREATE UNIQUE INDEX "JourneyProfile_userId_key" ON "JourneyProfile"("userId");
+
+-- CreateIndex
+CREATE INDEX "UserInvite_journeyId_email_idx" ON "UserInvite"("journeyId", "email");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "UserInvite_journeyId_email_key" ON "UserInvite"("journeyId", "email");
+
 -- AddForeignKey
 ALTER TABLE "Event" ADD CONSTRAINT "Event_visitorId_fkey" FOREIGN KEY ("visitorId") REFERENCES "Visitor"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
@@ -178,3 +208,6 @@ ALTER TABLE "Journey" ADD CONSTRAINT "Journey_teamId_fkey" FOREIGN KEY ("teamId"
 
 -- AddForeignKey
 ALTER TABLE "Member" ADD CONSTRAINT "Member_teamId_fkey" FOREIGN KEY ("teamId") REFERENCES "Team"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "UserInvite" ADD CONSTRAINT "UserInvite_journeyId_fkey" FOREIGN KEY ("journeyId") REFERENCES "Journey"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
