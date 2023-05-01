@@ -22,7 +22,6 @@ export function ExpandedCover({
           sm: theme.spacing(7, 10),
           md: theme.spacing(10)
         }),
-        borderRadius: (theme) => theme.spacing(4),
         justifyContent: 'center'
       }}
     >

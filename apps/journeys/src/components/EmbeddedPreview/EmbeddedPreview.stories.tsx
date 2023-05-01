@@ -61,8 +61,5 @@ export const WithVideoLoop = Template.bind({})
 WithVideoLoop.args = {
   blocks: videoLoop
 }
-WithVideoLoop.parameters = {
-  chromatic: { disableSnapshot: true }
-}
 
 export default Demo as Meta

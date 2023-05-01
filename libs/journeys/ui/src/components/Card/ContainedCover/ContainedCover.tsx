@@ -8,8 +8,9 @@ import {
 } from 'react'
 import videojs from 'video.js'
 import { NextImage } from '@core/shared/ui/NextImage'
-import { useTheme } from '@mui/material/styles'
+import { useTheme, styled } from '@mui/material/styles'
 import Box from '@mui/material/Box'
+import Stack from '@mui/material/Stack'
 import type { TreeBlock } from '../../../libs/block'
 import {
   VideoBlockObjectFit,
@@ -17,22 +18,21 @@ import {
 } from '../../../../__generated__/globalTypes'
 import { ImageFields } from '../../Image/__generated__/ImageFields'
 import { VideoFields } from '../../Video/__generated__/VideoFields'
-import { ContentOverlay } from './ContentOverlay'
 
 import 'videojs-youtube'
 import 'video.js/dist/video-js.css'
 
 interface ContainedCoverProps {
   children: ReactNode
-  backgroundColor: string
   videoBlock?: TreeBlock<VideoFields>
   imageBlock?: TreeBlock<ImageFields>
   backgroundBlur?: string
 }
 
+const StyledVideo = styled('video')(() => ({}))
+
 export function ContainedCover({
   children,
-  backgroundColor,
   backgroundBlur,
   videoBlock,
   imageBlock
@@ -44,6 +44,23 @@ export function ContainedCover({
 
   const isYouTube = videoBlock?.source === VideoBlockSource.youTube
 
+  const posterImage =
+    videoBlock?.source === VideoBlockSource.internal
+      ? // Use posterBlockId image or default poster image on video
+        videoBlock?.posterBlockId != null
+        ? (
+            videoBlock.children.find(
+              (block) =>
+                block.id === videoBlock.posterBlockId &&
+                block.__typename === 'ImageBlock'
+            ) as TreeBlock<ImageFields>
+          ).src
+        : videoBlock?.video?.image
+      : // Use Youtube set poster image
+        videoBlock?.image
+
+  console.log(posterImage != null, videoBlock, imageBlock != null)
+
   useEffect(() => {
     if (videoRef.current != null) {
       // autoplay when video is YouTube on iOS does not work. We should disable autoplay in that case.
@@ -53,13 +70,15 @@ export function ContainedCover({
         autoplay: !isYouTubeAndiOS,
         controls: false,
         preload: 'metadata',
+        // Make video fill container instead of set aspect ratio
+        fill: true,
         userActions: {
           hotkeys: false,
           doubleClick: false
         },
         muted: true,
-        loop: true,
-        poster: backgroundBlur
+        loop: true
+        // poster: posterImage ?? undefined
       })
       playerRef.current.on('ready', () => {
         playerRef.current?.currentTime(videoBlock?.startAt ?? 0)
@@ -86,24 +105,14 @@ export function ContainedCover({
         }
       })
     }
-  }, [imageBlock, theme, videoBlock, backgroundBlur, isYouTube])
-
-  const videoImage =
-    videoBlock?.source === VideoBlockSource.internal
-      ? videoBlock?.video?.image
-      : videoBlock?.image
+  }, [imageBlock, theme, videoBlock, posterImage, isYouTube])
 
   let videoFit: CSSProperties['objectFit']
   if (videoBlock?.source === VideoBlockSource.youTube) {
     videoFit = 'contain'
   } else {
     switch (videoBlock?.objectFit) {
-      case VideoBlockObjectFit.fill:
-        videoFit = 'cover'
-        break
       case VideoBlockObjectFit.fit:
-        videoFit = 'contain'
-        break
       case VideoBlockObjectFit.zoomed:
         videoFit = 'contain'
         break
@@ -114,39 +123,28 @@ export function ContainedCover({
   }
   return (
     <>
-      <Box
-        data-testid="ContainedCover"
-        sx={{
-          position: 'relative',
-          flexGrow: 1,
-          width: { xs: '100%', sm: 'calc(50% + 6vh)', md: '100%' },
-          height: { xs: 'auto', sm: '100%' },
-          '> .video-js': {
-            width: '100%',
-            height: '100%',
-            '> .vjs-tech': {
-              objectFit: videoFit,
-              transform:
-                videoBlock?.objectFit === VideoBlockObjectFit.zoomed
-                  ? 'scale(1.33)'
-                  : undefined
-            },
-            '> .vjs-loading-spinner': {
-              zIndex: 1,
-              display: isYouTube ? 'none' : 'block'
-            },
-            '> .vjs-poster': {
-              backgroundSize: 'cover'
-            }
-          }
-        }}
-      >
+      <Box data-testid="ContainedCover" sx={{ width: '100%', height: '100%' }}>
+        {/* Background Video */}
         {videoBlock?.videoId != null && (
-          <video
+          <StyledVideo
             ref={videoRef}
             className="video-js"
             playsInline
-            style={{ pointerEvents: 'none' }}
+            preload="auto"
+            sx={{
+              '> .vjs-tech': {
+                objectFit: videoFit,
+                transform:
+                  videoBlock?.objectFit === VideoBlockObjectFit.zoomed
+                    ? 'scale(1.33)'
+                    : undefined
+              },
+              '> .vjs-loading-spinner': {
+                zIndex: 1,
+                display: isYouTube ? 'none' : 'block'
+              },
+              pointerEvents: 'none'
+            }}
           >
             {videoBlock?.source === VideoBlockSource.internal &&
               videoBlock?.video?.variant?.hls != null && (
@@ -161,41 +159,76 @@ export function ContainedCover({
                 type="video/youtube"
               />
             )}
-          </video>
+          </StyledVideo>
         )}
-        {/* video image */}
-        {videoImage != null && loading && (
-          <NextImage
-            src={videoImage}
-            alt="card video image"
-            layout="fill"
-            objectFit="cover"
-          />
-        )}
+        {/* Video Poster Image - not linked to video as poster so causes longer LCP loading times, but still faster since using optimized image */}
+        {posterImage != null &&
+          videoBlock != null &&
+          imageBlock == null &&
+          loading && (
+            <NextImage
+              className="vjs-poster"
+              src={posterImage}
+              alt="card video image"
+              layout="fill"
+              objectFit="cover"
+              priority
+            />
+          )}
 
-        {/* background image */}
-        {loading && imageBlock != null && backgroundBlur != null && (
-          <NextImage
-            data-testid={
-              videoBlock != null
-                ? 'VideoPosterCover'
-                : 'ContainedCardImageCover'
-            }
-            src={imageBlock?.src ?? backgroundBlur}
-            alt={imageBlock.alt}
-            placeholder="blur"
-            blurDataURL={backgroundBlur}
-            layout="fill"
-            objectFit="cover"
-          />
-        )}
+        {/* Background Image */}
+        {backgroundBlur != null &&
+          videoBlock == null &&
+          imageBlock != null &&
+          loading && (
+            <NextImage
+              data-testid="ContainedCardImageCover"
+              src={imageBlock?.src ?? backgroundBlur}
+              alt={imageBlock.alt}
+              placeholder="blur"
+              blurDataURL={backgroundBlur}
+              layout="fill"
+              objectFit="cover"
+              priority
+            />
+          )}
       </Box>
-      <ContentOverlay
-        backgroundColor={backgroundColor}
-        backgroundSrc={backgroundBlur}
+      <Box
+        sx={{
+          position: 'absolute',
+          zIndex: 1,
+          width: 'inherit',
+          height: '100%',
+          filter: 'blur(10%)',
+          background:
+            // Ease out gradient
+            'linear-gradient(to bottom,hsla(0, 0%, 0%, 0) 0%,hsla(0, 0%, 0%, 0.013) 10.6%,hsla(0, 0%, 0%, 0.049) 19.6%,hsla(0, 0%, 0%, 0.104) 27.3%,hsla(0, 0%, 0%, 0.175) 33.9%,hsla(0, 0%, 0%, 0.352) 44.8%,hsla(0, 0%, 0%, 0.45) 49.6%,hsla(0, 0%, 0%, 0.55) 54.1%,hsla(0, 0%, 0%, 0.648) 58.8%,hsla(0, 0%, 0%, 0.741) 63.6%,hsla(0, 0%, 0%, 0.825) 69%,hsla(0, 0%, 0%, 0.896) 75.1%,hsla(0, 0%, 0%, 0.951) 82.2%,hsla(0, 0%, 0%, 0.987) 90.4%,hsl(0, 0%, 0%) 100%)'
+        }}
       >
-        {children}
-      </ContentOverlay>
+        <Box
+          sx={{
+            filter: 'blur(10px)',
+            background: 'linear-gradient(to top, rgba(0,0,0,1), rgba(0,0,0,0))'
+          }}
+        />
+        <Stack
+          sx={{
+            justifyContent: 'flex-end',
+            bottom: 0,
+            position: 'absolute',
+            width: 'calc(100% - 32px)',
+            px: 4,
+            pt: 10,
+            pb: 28,
+            '& > *': {
+              '&:first-child': { mt: 0 },
+              '&:last-child': { mb: 0 }
+            }
+          }}
+        >
+          {children}
+        </Stack>
+      </Box>
     </>
   )
 }

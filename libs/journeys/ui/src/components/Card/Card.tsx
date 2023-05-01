@@ -4,6 +4,9 @@ import { getTheme } from '@core/shared/ui/themes'
 import { useTheme } from '@mui/material/styles'
 import Paper from '@mui/material/Paper'
 import { SxProps } from '@mui/system/styleFunctionSx'
+import Chip from '@mui/material/Chip'
+import Stack from '@mui/material/Stack'
+import Typography from '@mui/material/Typography'
 import type { TreeBlock } from '../../libs/block'
 import { blurImage } from '../../libs/blurImage'
 import { BlockRenderer, WrappersProps } from '../BlockRenderer'
@@ -33,27 +36,6 @@ export function Card({
   const { journey } = useJourney()
   const { rtl, locale } = getJourneyRTL(journey)
 
-  const coverBlock = children.find(
-    (block) =>
-      block.id === coverBlockId &&
-      (block.__typename === 'ImageBlock' || block.__typename === 'VideoBlock')
-  ) as TreeBlock<ImageFields | VideoFields> | undefined
-
-  const videoBlock =
-    coverBlock?.__typename === 'VideoBlock' ? coverBlock : undefined
-
-  // ImageBlock is card cover image or video poster image
-  const imageBlock =
-    coverBlock?.__typename === 'ImageBlock'
-      ? coverBlock
-      : videoBlock != null
-      ? (videoBlock.children.find(
-          (block) =>
-            block.id === videoBlock.posterBlockId &&
-            block.__typename === 'ImageBlock'
-        ) as TreeBlock<ImageFields> | undefined)
-      : undefined
-
   const customCardTheme =
     themeName != null && themeMode != null
       ? getTheme({ themeName, themeMode, rtl, locale })
@@ -65,6 +47,15 @@ export function Card({
       : customCardTheme != null
       ? customCardTheme.palette.background.paper
       : theme.palette.background.paper
+
+  const coverBlock = children.find(
+    (block) =>
+      block.id === coverBlockId &&
+      (block.__typename === 'ImageBlock' || block.__typename === 'VideoBlock')
+  ) as TreeBlock<ImageFields | VideoFields> | undefined
+
+  const imageBlock =
+    coverBlock?.__typename === 'ImageBlock' ? coverBlock : undefined
 
   const blurUrl = useMemo(() => {
     return imageBlock != null
@@ -84,12 +75,14 @@ export function Card({
       backgroundColor={backgroundColor}
       themeMode={themeMode}
       themeName={themeName}
+      title={journey?.seoTitle ?? journey?.title ?? ''}
     >
       {coverBlock != null && !fullscreen ? (
         <ContainedCover
-          backgroundColor={cardColor}
           backgroundBlur={blurUrl}
-          videoBlock={videoBlock}
+          videoBlock={
+            coverBlock?.__typename === 'VideoBlock' ? coverBlock : undefined
+          }
           imageBlock={imageBlock}
         >
           {renderedChildren}
@@ -109,6 +102,7 @@ interface CardWrapperProps
     'id' | 'backgroundColor' | 'themeMode' | 'themeName'
   > {
   children: ReactNode
+  title: string
   sx?: SxProps
 }
 
@@ -118,6 +112,7 @@ export function CardWrapper({
   themeMode,
   themeName,
   children,
+  title,
   sx
 }: CardWrapperProps): ReactElement {
   const Card = (
@@ -125,20 +120,35 @@ export function CardWrapper({
       data-testid={id}
       sx={{
         display: 'flex',
-        flexDirection: { xs: 'column', sm: 'row' },
-        justifyContent: { md: 'flex-end' },
-        borderRadius: (theme) => theme.spacing(4),
+        flexDirection: 'column',
+        borderRadius: 0,
         backgroundColor,
         width: '100%',
         height: '100%',
         overflow: 'hidden',
-        position: 'relative',
         transform: 'translateZ(0)', // safari glitch with border radius
         ...sx
       }}
       elevation={3}
     >
       {children}
+      <Stack
+        className="swiper-no-swiping"
+        sx={{ zIndex: 1, px: 4 }}
+        direction="row"
+        spacing={3}
+      >
+        <Chip label="Share" />
+        <Chip label="Like" />
+        <Chip label="Dislike" />
+      </Stack>
+      <Typography
+        className="swiper-no-swiping"
+        color="primary"
+        sx={{ zIndex: 1, px: 4, py: 3 }}
+      >
+        {title}
+      </Typography>
     </Paper>
   )
 
