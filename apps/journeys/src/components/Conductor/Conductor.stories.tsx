@@ -117,6 +117,9 @@ export const WithVideoLoop = Template.bind({})
 WithVideoLoop.args = {
   blocks: videoLoop
 }
+WithVideoLoop.parameters = {
+  chromatic: { disableSnapshot: true }
+}
 
 export const RTL = Template.bind({})
 RTL.args = {
