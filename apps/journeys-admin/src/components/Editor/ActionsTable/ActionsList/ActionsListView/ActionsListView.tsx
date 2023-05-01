@@ -30,8 +30,6 @@ export function ActionsListView({
   selectedAction,
   handleClick
 }: ActionsListViewProps): ReactElement {
-  const [hover, setHover] = useState<number>()
-
   const mdUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('md'))
 
   const GoalIcon = ({ url }: { url: string }): ReactElement => {
@@ -80,8 +78,6 @@ export function ActionsListView({
               <StyledTableRow
                 key={index}
                 onClick={() => handleClick(url)}
-                onMouseOver={() => setHover(index)}
-                onMouseOut={() => setHover(undefined)}
                 selectedAction={selectedAction}
                 url={url}
               >
