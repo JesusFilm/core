@@ -122,7 +122,9 @@ export function ActionsListView({
                   <EditRounded
                     sx={{
                       color:
-                        hover === index ? 'primary.main' : 'background.default'
+                        selectedAction === url
+                          ? 'primary.main'
+                          : 'background.default'
                     }}
                   />
                 </TableCell>
