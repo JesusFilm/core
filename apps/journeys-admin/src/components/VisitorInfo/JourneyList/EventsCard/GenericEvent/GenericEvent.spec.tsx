@@ -19,11 +19,7 @@ describe('GenericEvent', () => {
 
   it('should show createdAt date for position start', () => {
     const { getByText, queryByText } = render(
-      <GenericEvent
-        createdAt="2021-02-18T00:00:00.000Z"
-        duration="0.10"
-        position="start"
-      />
+      <GenericEvent createdAt="2021-02-18T00:00:00.000Z" duration="0.10" />
     )
     expect(queryByText('0.01')).not.toBeInTheDocument()
     expect(getByText('12:00 AM')).toBeInTheDocument()

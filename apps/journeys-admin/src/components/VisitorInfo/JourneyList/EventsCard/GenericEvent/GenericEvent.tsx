@@ -17,7 +17,6 @@ interface Props {
   icon?: ReactElement
   activity?: string
   duration?: string
-  position?: 'start' | 'end'
 }
 
 export function GenericEvent({
@@ -26,39 +25,27 @@ export function GenericEvent({
   label,
   value,
   activity,
-  duration,
-  position
+  duration
 }: Props): ReactElement {
   return (
     <TimelineItem>
       <TimelineOppositeContent
         sx={{
           display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'flex-end',
-          p: 0,
+          alignItems: icon == null ? 'center' : undefined,
+          justifyContent: 'center',
+          px: 0,
           mr: 2,
           maxWidth: '64px'
         }}
       >
         <Typography variant="body2">
-          {position === 'start' && createdAt != null
-            ? format(parseISO(createdAt), 'p')
-            : duration}
+          {createdAt != null ? format(parseISO(createdAt), 'p') : duration}
         </Typography>
       </TimelineOppositeContent>
 
       {icon != null ? (
-        <TimelineSeparator
-          sx={{
-            justifyContent: position === 'end' ? 'flex-end' : 'flex-start'
-          }}
-        >
-          <TimelineConnector
-            sx={{
-              display: position === 'end' ? 'none' : 'flex'
-            }}
-          />
+        <TimelineSeparator>
           <TimelineDot
             sx={{
               color: 'text.primary',
@@ -69,18 +56,17 @@ export function GenericEvent({
           >
             {icon}
           </TimelineDot>
-          <TimelineConnector
-            sx={{
-              flexGrow: position === 'end' ? '0.5' : '1'
-            }}
-          />
+          <TimelineConnector />
         </TimelineSeparator>
       ) : (
         <Box sx={{ width: '36px' }} />
       )}
 
       <TimelineContent
-        sx={{ px: 2, py: 4, display: 'flex', alignItems: 'center' }}
+        sx={{
+          display: 'flex',
+          alignItems: icon == null ? 'center' : undefined
+        }}
       >
         <Stack direction="column" sx={{ width: '100%' }}>
           <Stack direction="row" sx={{ width: '100%' }}>

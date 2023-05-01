@@ -29,15 +29,7 @@ Start.args = {
   createdAt: '2021-02-18T00:00:00.000Z',
   value: 'Journey Started',
   icon: <RadioButtonUncheckedIcon />,
-  position: 'start'
-}
-
-export const End = Template.bind({})
-End.args = {
-  label: 'Default label',
-  value: 'Some contnet related to event',
-  icon: <RadioButtonUncheckedIcon />,
-  position: 'end'
+  showCreatedAt: true
 }
 
 export const CustomValue = Template.bind({})

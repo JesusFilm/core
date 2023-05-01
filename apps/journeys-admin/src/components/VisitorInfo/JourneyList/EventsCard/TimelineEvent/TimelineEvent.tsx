@@ -30,12 +30,7 @@ export function TimelineEvent({ timelineItem }: Props): ReactElement {
   let label: GenericEventProps['label']
   let value: GenericEventProps['value'] = event.value
   let activity: GenericEventProps['activity']
-  const position: 'start' | 'end' | undefined =
-    event.__typename === 'JourneyViewEvent'
-      ? 'start'
-      : duration == null
-      ? 'end'
-      : undefined
+  let createdAt: GenericEventProps['createdAt']
 
   switch (event.__typename) {
     case 'RadioQuestionSubmissionEvent':
@@ -95,18 +90,18 @@ export function TimelineEvent({ timelineItem }: Props): ReactElement {
     case 'JourneyViewEvent':
       icon = <EmojiFlagsRoundedIcon />
       value = t('Journey Started')
+      createdAt = event.createdAt
       break
   }
 
   return (
     <GenericEvent
       icon={icon}
-      createdAt={event.createdAt}
+      createdAt={createdAt}
       label={label}
       value={value}
       activity={activity}
       duration={duration}
-      position={position}
     />
   )
 }
