@@ -7,15 +7,20 @@ import SwiperCore, {
   EffectFade
 } from 'swiper'
 import { Swiper, SwiperSlide } from 'swiper/react'
+import 'swiper/css/navigation'
 import 'swiper/css/pagination'
 import 'swiper/css/effect-fade'
 import 'swiper/swiper.min.css'
 
 import { findIndex } from 'lodash'
 import { styled } from '@mui/material/styles'
-import type { TreeBlock } from '@core/journeys/ui/block'
+import {
+  nextActiveBlock,
+  prevActiveBlock,
+  TreeBlock,
+  useBlocks
+} from '@core/journeys/ui/block'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
-import { useBlocks } from '@core/journeys/ui/block'
 import { BlockRenderer } from '@core/journeys/ui/BlockRenderer'
 import { gql, useMutation } from '@apollo/client'
 import { getJourneyRTL } from '@core/journeys/ui/rtl'
@@ -56,15 +61,10 @@ const StyledSwiperContainer = styled(Swiper)(({ theme }) => ({
 const StyledSwiperSlide = styled(SwiperSlide)(() => ({}))
 
 export function Conductor({ blocks }: ConductorProps): ReactElement {
-  const { setTreeBlocks, treeBlocks, activeBlock } = useBlocks()
+  const { setTreeBlocks, treeBlocks, activeBlock, previousBlocks } = useBlocks()
   const [swiper, setSwiper] = useState<SwiperCore>()
   const swiperRef = useRef<SwiperType>()
 
-  console.log('blocks', blocks)
-
-  // const [slideTransitioning, setSlideTransitioning] = useState(false)
-  // const breakpoints = useBreakpoints()
-  // const theme = useTheme()
   const { journey, admin } = useJourney()
   const { rtl } = getJourneyRTL(journey)
 
@@ -105,9 +105,9 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
 
   useEffect(() => {
     setTreeBlocks(blocks)
-  }, [setTreeBlocks, blocks])
+  }, [])
 
-  // Navigate to selected block if set
+  // Update Swiper - navigate to activeBlock after NavigateBlockAction & going back to node of a branch
   useEffect(() => {
     if (swiper != null && activeBlock != null && treeBlocks != null) {
       const index = findIndex(
@@ -115,14 +115,30 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
         (treeBlock) => treeBlock.id === activeBlock.id
       )
       if (index > -1 && swiper.activeIndex !== index) {
-        swiper.slideTo(index)
+        console.log('button navigate', index, swiper.activeIndex)
+        const allowFurtherOnSlideChange = false
+        swiper.slideTo(index, 0, allowFurtherOnSlideChange)
       }
     }
   }, [swiper, activeBlock, treeBlocks])
 
-  // function handleNext(): void {
-  //   if (activeBlock != null && !activeBlock.locked) nextActiveBlock()
-  // }
+  // Update activeBlock after Swiper swipe/tap navigation
+  function handleNext(activeIndex: number): void {
+    if (
+      activeBlock != null &&
+      !activeBlock.locked &&
+      activeBlock.id !== treeBlocks[activeIndex].id
+    )
+      console.log('handleNext', activeIndex)
+    nextActiveBlock({ id: undefined })
+  }
+
+  function handlePrev(activeIndex: number): void {
+    if (activeBlock != null && activeBlock.id !== treeBlocks[activeIndex].id) {
+      console.log('handlePrev', activeIndex)
+      prevActiveBlock()
+    }
+  }
 
   return (
     <Div100vh style={{ overflowY: 'auto', WebkitOverflowScrolling: 'touch' }}>
@@ -139,19 +155,72 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
         effect="fade"
         fadeEffect={{ crossFade: true }}
         keyboard
+        preventInteractionOnTransition
         dir={!rtl ? 'ltr' : 'rtl'}
+        speed={0}
         onSwiper={(swiper) => setSwiper(swiper)}
         sx={{ width: '100%', height: 'inherit' }}
+        onSetTranslate={(swiper) => {
+          if (swiper.swipeDirection != null) {
+            const visibleSlides = swiper.slides.filter((slides) =>
+              slides.classList.contains('swiper-slide-visible')
+            )
+
+            if (visibleSlides.length === 2) {
+              // Show - swiper-slide-active && swiper-slide-visible when swiper-slide-prev && swiper-slide-visible
+              if (visibleSlides[0].classList.contains('swiper-slide-prev')) {
+                visibleSlides[0].style.opacity = '0'
+                visibleSlides[1].style.opacity = '1'
+              }
+
+              if (visibleSlides[1].classList.contains('swiper-slide-next')) {
+                if (swiper.swipeDirection === 'prev') {
+                  // Hide swiper-slide-active && swiper-slide-visible when swiper-slide-next && swiper-slide-visible
+                  visibleSlides[0].style.opacity = '0'
+                  visibleSlides[1].style.opacity = '0'
+                  swiper.slides[
+                    previousBlocks[previousBlocks.length - 2].parentOrder
+                  ].style.opacity = '1'
+                } else {
+                  // Keep normal transition
+                  visibleSlides[0].style.opacity = '0'
+                  visibleSlides[1].style.opacity = '1'
+                }
+              }
+            }
+          }
+        }}
+        onBeforeSlideChangeStart={(swiper) => {
+          console.log(
+            'slide change',
+            swiper.previousIndex,
+            swiper.activeIndex,
+            swiper
+          )
+          // Update Swiper navigation after
+          if (treeBlocks[swiper.activeIndex] !== activeBlock) {
+            const index = findIndex(
+              treeBlocks,
+              (treeBlock) => treeBlock.id === activeBlock?.id
+            )
+            console.log('mismatch', swiper.activeIndex, index)
+            if (index > swiper.activeIndex) {
+              console.log('change prev block')
+              prevActiveBlock()
+            } else {
+              console.log('change next block')
+              nextActiveBlock({ id: treeBlocks[swiper.activeIndex].id })
+            }
+          } else {
+            console.log('normal swiper navigate')
+            const allowFurtherOnSlideChange = false
+            swiper.slideTo(swiper.activeIndex, 0, allowFurtherOnSlideChange)
+          }
+        }}
       >
-        {treeBlocks.map((block) => (
+        {blocks.map((block) => (
           <StyledSwiperSlide key={block.id} sx={{ height: 'inherit' }}>
-            {/* <Fade
-                in={activeBlock?.id === block.id}
-                mountOnEnter
-                unmountOnExit
-              > */}
             <BlockRenderer block={block} />
-            {/* </Fade> */}
           </StyledSwiperSlide>
         ))}
         {/* {showLeftButton && <Navigation variant="Left" />}

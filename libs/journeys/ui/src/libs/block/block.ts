@@ -7,23 +7,41 @@ export const activeBlockVar = makeVar<TreeBlock<StepFields> | null>(null)
 export const previousBlocksVar = makeVar<TreeBlock[]>([])
 export const treeBlocksVar = makeVar<TreeBlock[]>([])
 
-interface NextActiveBlockArgs {
+interface ActiveBlockArgs {
   /** StepBlock id to set as activeBlock. If no id is set, block will be set to
    *  activeBlock.nextBlockId */
   id?: string
 }
 interface UseBlocksHook {
-  nextActiveBlock: (args?: NextActiveBlockArgs) => void
+  prevActiveBlock: (args?: ActiveBlockArgs) => void
+  nextActiveBlock: (args?: ActiveBlockArgs) => void
   setTreeBlocks: (blocks: TreeBlock[]) => void
   activeBlock: TreeBlock<StepFields> | null
   treeBlocks: TreeBlock[]
   previousBlocks: TreeBlock[]
 }
 
-export function nextActiveBlock(args?: NextActiveBlockArgs): void {
+export function prevActiveBlock(): void {
+  const blocks = treeBlocksVar()
+  const previousBlocks = previousBlocksVar()
+  const updatedBlocks = previousBlocksVar([...previousBlocks.slice(0, -1)])
+
+  // Use prev block in history else use first block in tree
+  if (updatedBlocks.length > 0) {
+    activeBlockVar(
+      updatedBlocks[updatedBlocks.length - 1] as TreeBlock<StepFields>
+    )
+  } else {
+    activeBlockVar(blocks[0] as TreeBlock<StepFields>)
+  }
+}
+
+export function nextActiveBlock(args?: ActiveBlockArgs, src?: string): void {
   const blocks = treeBlocksVar()
   const activeBlock = activeBlockVar()
+  const previousBlocks = previousBlocksVar()
   let block: TreeBlock<StepFields> | undefined
+  // Set next block from id, nextBlockId or next block in treeBlocks
   if (args?.id != null) {
     block = blocks.find(
       (block) => block.__typename === 'StepBlock' && block.id === args.id
@@ -45,9 +63,7 @@ export function nextActiveBlock(args?: NextActiveBlockArgs): void {
     }
   }
   if (block != null) {
-    if (activeBlock != null) {
-      previousBlocksVar([...previousBlocksVar(), activeBlock])
-    }
+    previousBlocksVar([...previousBlocks, block])
     activeBlockVar(block)
   }
 }
@@ -80,6 +96,7 @@ export function useBlocks(): UseBlocksHook {
   }, [])
 
   return {
+    prevActiveBlock,
     nextActiveBlock,
     setTreeBlocks,
     activeBlock,
