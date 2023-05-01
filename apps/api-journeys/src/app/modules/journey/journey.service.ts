@@ -51,12 +51,6 @@ export class JourneyService {
     })
   }
 
-  async getAllByIds(ids: string[]): Promise<Journey[]> {
-    return await this.prismaService.journey.findMany({
-      where: { id: { in: ids } }
-    })
-  }
-
   async getAllByRole(
     user: UserRole,
     status?: JourneyStatus[],

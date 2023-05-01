@@ -196,12 +196,14 @@ export class JourneyResolver {
             teamId: team.id
           }
         })
-        await this.userJourneyService.save({
-          id: uuidv4(),
-          userId,
-          journeyId: journey.id,
-          role: UserJourneyRole.owner,
-          openedAt: new Date()
+        await this.prismaService.userJourney.create({
+          data: {
+            id: uuidv4(),
+            userId,
+            journeyId: journey.id,
+            role: UserJourneyRole.owner,
+            openedAt: new Date()
+          }
         })
         const existingMember = await this.prismaService.member.findUnique({
           where: { teamId_userId: { userId, teamId: team.id } }
@@ -349,12 +351,14 @@ export class JourneyResolver {
       try {
         const journey = await this.prismaService.journey.create({ data: input })
         await this.blockService.saveAll(duplicateBlocks)
-        await this.userJourneyService.save({
-          id: uuidv4(),
-          userId,
-          journeyId: journey.id,
-          role: UserJourneyRole.owner,
-          openedAt: new Date()
+        await this.prismaService.userJourney.create({
+          data: {
+            id: uuidv4(),
+            userId,
+            journeyId: journey.id,
+            role: UserJourneyRole.owner,
+            openedAt: new Date()
+          }
         })
         retry = false
         return journey
@@ -429,7 +433,9 @@ export class JourneyResolver {
       where: { id: { in: ids } },
       data: { status: JourneyStatus.archived, archivedAt: new Date() }
     })
-    return await this.journeyService.getAllByIds(ids)
+    return await this.prismaService.journey.findMany({
+      where: { id: { in: ids } }
+    })
   }
 
   @Mutation()
@@ -444,7 +450,9 @@ export class JourneyResolver {
       where: { id: { in: ids } },
       data: { status: JourneyStatus.deleted, deletedAt: new Date() }
     })
-    return await this.journeyService.getAllByIds(ids)
+    return await this.prismaService.journey.findMany({
+      where: { id: { in: ids } }
+    })
   }
 
   @Mutation()
@@ -459,7 +467,9 @@ export class JourneyResolver {
       where: { id: { in: ids } },
       data: { status: JourneyStatus.trashed, trashedAt: new Date() }
     })
-    return await this.journeyService.getAllByIds(ids)
+    return await this.prismaService.journey.findMany({
+      where: { id: { in: ids } }
+    })
   }
 
   @Mutation()
@@ -470,7 +480,9 @@ export class JourneyResolver {
     ])
   )
   async journeysRestore(@Args('ids') ids: string[]): Promise<Journey[]> {
-    const results = await this.journeyService.getAllByIds(ids)
+    const results = await this.prismaService.journey.findMany({
+      where: { id: { in: ids } }
+    })
 
     return await Promise.all(
       results.map((journey) =>

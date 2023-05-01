@@ -218,25 +218,10 @@ describe('JourneyResolver', () => {
         return null
       }),
       getAllPublishedJourneys: jest.fn(() => [journey, journey]),
-      getAllByIds: jest.fn((ids) => {
-        switch (ids[0]) {
-          case archivedJourney.id:
-            return [archivedJourney]
-          case trashedJourney.id:
-            return [trashedJourney]
-          case trashedDraftJourney.id:
-            return [trashedDraftJourney]
-          default:
-            return [journey, draftJourney]
-        }
-      }),
       getAllByRole: jest.fn(() => [journey, journey]),
       getAllByTitle: jest.fn((title) =>
         title === journey.title ? [journey] : []
       )
-      // save: jest.fn((input) => input),
-      // update: jest.fn(() => journey),
-      // updateAll: jest.fn(() => [journey, draftJourney])
     })
   }
 
@@ -267,7 +252,6 @@ describe('JourneyResolver', () => {
   const userJourneyService = {
     provide: UserJourneyService,
     useFactory: () => ({
-      save: jest.fn((input) => input),
       forJourney: jest.fn(() => [userJourney, userJourney]),
       forJourneyUser: jest.fn((journeyId, userId) => {
         if (userId === invitedUserJourney.userId) return invitedUserJourney
@@ -307,6 +291,21 @@ describe('JourneyResolver', () => {
     bService = module.get<BlockService>(BlockService)
     urService = module.get<UserRoleService>(UserRoleService)
     prisma = module.get<PrismaService>(PrismaService)
+    prisma.userJourney.create = jest
+      .fn()
+      .mockImplementationOnce((input) => input.data)
+    prisma.journey.findMany = jest.fn().mockImplementationOnce((input) => {
+      switch (input.where.id.in[0]) {
+        case archivedJourney.id:
+          return [archivedJourney]
+        case trashedJourney.id:
+          return [trashedJourney]
+        case trashedDraftJourney.id:
+          return [trashedDraftJourney]
+        default:
+          return [journey, draftJourney]
+      }
+    })
     prisma.journey.findUnique = jest.fn().mockImplementationOnce((input) => {
       switch (input.where.id) {
         case journey.id:
@@ -726,11 +725,13 @@ describe('JourneyResolver', () => {
         { title: 'Untitled Journey', languageId: '529' },
         'userId'
       )
-      expect(ujService.save).toHaveBeenCalledWith({
-        userId: 'userId',
-        journeyId: 'journeyId',
-        role: UserJourneyRole.owner,
-        openedAt: new Date()
+      expect(prisma.userJourney.create).toHaveBeenCalledWith({
+        data: {
+          userId: 'userId',
+          journeyId: 'journeyId',
+          role: UserJourneyRole.owner,
+          openedAt: new Date()
+        }
       })
     })
 
@@ -930,12 +931,14 @@ describe('JourneyResolver', () => {
         .mockImplementation((result) => result.data)
       mockUuidv4.mockReturnValueOnce('duplicateJourneyId')
       await resolver.journeyDuplicate('journeyId', 'userId')
-      expect(ujService.save).toHaveBeenCalledWith({
-        id: undefined,
-        userId: 'userId',
-        journeyId: 'duplicateJourneyId',
-        role: UserJourneyRole.owner,
-        openedAt: new Date()
+      expect(prisma.userJourney.create).toHaveBeenCalledWith({
+        data: {
+          id: undefined,
+          userId: 'userId',
+          journeyId: 'duplicateJourneyId',
+          role: UserJourneyRole.owner,
+          openedAt: new Date()
+        }
       })
     })
 
