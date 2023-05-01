@@ -8,7 +8,8 @@ import { GenericEvent } from '.'
 
 const GenericEventStory = {
   ...journeysAdminConfig,
-  title: 'Journeys-Admin/VisitorInfo/JourneyList/EventsCard/GenericEvent'
+  title:
+    'Journeys-Admin/VisitorInfo/VisitorJourneysList/EventsCard/GenericEvent'
 }
 
 const Template: Story<ComponentProps<typeof GenericEvent>> = ({ ...args }) => (

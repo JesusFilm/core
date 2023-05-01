@@ -1,8 +1,8 @@
 import { render, waitFor } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
-import { GET_VISITOR_EVENTS } from './JourneyList'
+import { GET_VISITOR_EVENTS } from './VisitorJourneysList'
 import { getVisitorEvents } from './utils/data'
-import { JourneyList } from '.'
+import { VisitorJourneysList } from '.'
 
 describe('JourneyList', () => {
   it('should get visitor events', async () => {
@@ -24,7 +24,7 @@ describe('JourneyList', () => {
           }
         ]}
       >
-        <JourneyList id="visitorId" />
+        <VisitorJourneysList id="visitorId" />
       </MockedProvider>
     )
     await waitFor(() => expect(result).toHaveBeenCalled())

@@ -3,16 +3,18 @@ import { ComponentProps } from 'react'
 import { MockedProvider } from '@apollo/client/testing'
 import { journeysAdminConfig } from '../../../libs/storybook'
 import { getJourneysMock } from './utils/data'
-import { JourneyList } from '.'
+import { VisitorJourneysList } from '.'
 
 const JourneyListStory = {
   ...journeysAdminConfig,
-  title: 'Journeys-Admin/VisitorInfo/JourneyList'
+  title: 'Journeys-Admin/VisitorInfo/VisitorJourneysList'
 }
 
-const Template: Story<ComponentProps<typeof JourneyList>> = ({ ...args }) => (
+const Template: Story<ComponentProps<typeof VisitorJourneysList>> = ({
+  ...args
+}) => (
   <MockedProvider mocks={[getJourneysMock]}>
-    <JourneyList {...args} />
+    <VisitorJourneysList {...args} />
   </MockedProvider>
 )
 

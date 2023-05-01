@@ -43,7 +43,7 @@ interface Props {
   id: string
 }
 
-export function JourneyList({ id }: Props): ReactElement {
+export function VisitorJourneysList({ id }: Props): ReactElement {
   const { data } = useQuery<GetVisitorEvents>(GET_VISITOR_EVENTS, {
     variables: { id }
   })

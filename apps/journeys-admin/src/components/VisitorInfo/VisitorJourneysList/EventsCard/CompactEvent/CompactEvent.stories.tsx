@@ -6,7 +6,8 @@ import { CompactEvent } from '.'
 
 const CompactEventStory = {
   ...simpleComponentConfig,
-  title: 'Journeys-Admin/VisitorInfo/JourneyList/EventsCard/CompactEvent'
+  title:
+    'Journeys-Admin/VisitorInfo/VisitorJourneysList/EventsCard/CompactEvent'
 }
 
 const Template: Story<ComponentProps<typeof CompactEvent>> = ({ ...args }) => (

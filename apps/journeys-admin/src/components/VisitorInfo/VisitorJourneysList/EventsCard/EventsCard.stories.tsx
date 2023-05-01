@@ -7,7 +7,7 @@ import { EventsCard } from '.'
 
 const EventsCardStory = {
   ...journeysAdminConfig,
-  title: 'Journeys-Admin/VisitorInfo/JourneyList/EventsCard'
+  title: 'Journeys-Admin/VisitorInfo/VisitorJourneysList/EventsCard'
 }
 
 const Template: Story<ComponentProps<typeof EventsCard>> = ({ ...args }) => (

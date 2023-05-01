@@ -19,7 +19,8 @@ import { TimelineEvent } from '.'
 
 const TimelineEventStory = {
   ...journeysAdminConfig,
-  title: 'Journeys-Admin/VisitorInfo/JourneyList/EventsCard/TimelineEvent'
+  title:
+    'Journeys-Admin/VisitorInfo/VisitorJourneysList/EventsCard/TimelineEvent'
 }
 
 interface Props {

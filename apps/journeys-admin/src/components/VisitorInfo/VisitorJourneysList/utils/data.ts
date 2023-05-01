@@ -6,7 +6,7 @@ import {
   GetVisitorEvents,
   GetVisitorEvents_visitor_events_JourneyViewEvent as JourneyViewEvent
 } from '../../../../../__generated__/GetVisitorEvents'
-import { GET_VISITOR_EVENTS } from '../JourneyList'
+import { GET_VISITOR_EVENTS } from '../VisitorJourneysList'
 import { JourneyWithEvents, TimelineItem } from '.'
 
 export const buttonClickEvent: TimelineItem = {
