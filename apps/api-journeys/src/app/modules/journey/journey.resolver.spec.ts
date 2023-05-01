@@ -233,10 +233,10 @@ describe('JourneyResolver', () => {
       getAllByRole: jest.fn(() => [journey, journey]),
       getAllByTitle: jest.fn((title) =>
         title === journey.title ? [journey] : []
-      ),
-      save: jest.fn((input) => input),
-      update: jest.fn(() => journey),
-      updateAll: jest.fn(() => [journey, draftJourney])
+      )
+      // save: jest.fn((input) => input),
+      // update: jest.fn(() => journey),
+      // updateAll: jest.fn(() => [journey, draftJourney])
     })
   }
 
@@ -307,6 +307,28 @@ describe('JourneyResolver', () => {
     bService = module.get<BlockService>(BlockService)
     urService = module.get<UserRoleService>(UserRoleService)
     prisma = module.get<PrismaService>(PrismaService)
+    prisma.journey.findUnique = jest.fn().mockImplementationOnce((input) => {
+      switch (input.where.id) {
+        case journey.id:
+          return journey
+        case socialJourney.id:
+          return socialJourney
+        case template.id:
+          return template
+        case draftJourney.id:
+          return draftJourney
+        case archivedJourney.id:
+          return archivedJourney
+        case trashedJourney.id:
+          return trashedJourney
+        case trashedDraftJourney.id:
+          return trashedDraftJourney
+        case draftTemplate.id:
+          return draftTemplate
+        default:
+          return null
+      }
+    })
   })
 
   describe('adminJourneysEmbed', () => {
@@ -524,7 +546,6 @@ describe('JourneyResolver', () => {
     })
 
     it('returns Journey by id', async () => {
-      prisma.journey.findUnique = jest.fn().mockResolvedValue(journey)
       expect(
         await resolver.adminJourney('userId', 'journeyId', IdType.databaseId)
       ).toEqual(journey)
@@ -538,7 +559,6 @@ describe('JourneyResolver', () => {
     })
 
     it('returns null if no journey found', async () => {
-      prisma.journey.findUnique = jest.fn().mockResolvedValue(null)
       expect(
         await resolver.adminJourney('userId', '404', IdType.databaseId)
       ).toEqual(null)
@@ -548,7 +568,6 @@ describe('JourneyResolver', () => {
     })
 
     it('throws error if user is unknown', async () => {
-      prisma.journey.findUnique = jest.fn().mockResolvedValue(journey)
       await expect(
         async () =>
           await resolver.adminJourney(
@@ -565,7 +584,6 @@ describe('JourneyResolver', () => {
     })
 
     it('throws error if user is invited', async () => {
-      prisma.journey.findUnique = jest.fn().mockResolvedValue(journey)
       await expect(
         async () =>
           await resolver.adminJourney(
@@ -592,7 +610,6 @@ describe('JourneyResolver', () => {
     })
 
     it('returns template by id', async () => {
-      prisma.journey.findUnique = jest.fn().mockResolvedValue(draftTemplate)
       expect(
         await resolver.adminJourney(
           'user.id',
@@ -607,7 +624,6 @@ describe('JourneyResolver', () => {
     })
 
     it('throws error if user is not a publisher', async () => {
-      prisma.journey.findUnique = jest.fn().mockResolvedValue(draftTemplate)
       await expect(
         async () =>
           await resolver.adminJourney(
@@ -628,7 +644,6 @@ describe('JourneyResolver', () => {
     })
 
     it('returns Journey by id', async () => {
-      prisma.journey.findUnique = jest.fn().mockResolvedValue(journey)
       expect(await resolver.journey('journeyId', IdType.databaseId)).toEqual(
         journey
       )
@@ -638,7 +653,6 @@ describe('JourneyResolver', () => {
     })
 
     it('returns null if no journey found', async () => {
-      prisma.journey.findUnique = jest.fn().mockResolvedValue(null)
       expect(await resolver.journey('404', IdType.databaseId)).toEqual(null)
       expect(prisma.journey.findUnique).toHaveBeenCalledWith({
         where: { id: '404' }
@@ -873,7 +887,6 @@ describe('JourneyResolver', () => {
       const date = '2021-12-07T03:22:41.135Z'
       jest.useFakeTimers().setSystemTime(new Date(date).getTime())
       mockUuidv4.mockReturnValueOnce('duplicateJourneyId')
-      prisma.journey.findUnique = jest.fn().mockResolvedValueOnce(journey)
       prisma.journey.create = jest
         .fn()
         .mockImplementation((result) => result.data)
@@ -894,7 +907,6 @@ describe('JourneyResolver', () => {
       const date = '2021-12-07T03:22:41.135Z'
       jest.useFakeTimers().setSystemTime(new Date(date).getTime())
       mockUuidv4.mockReturnValueOnce('templateJourneyId')
-      prisma.journey.findUnique = jest.fn().mockResolvedValueOnce(template)
       prisma.journey.create = jest
         .fn()
         .mockImplementation((result) => result.data)
@@ -913,7 +925,6 @@ describe('JourneyResolver', () => {
     })
 
     it('duplicates a UserJourney', async () => {
-      prisma.journey.findUnique = jest.fn().mockResolvedValueOnce(journey)
       prisma.journey.create = jest
         .fn()
         .mockImplementation((result) => result.data)
@@ -931,7 +942,6 @@ describe('JourneyResolver', () => {
     it('duplicates blocks in journey', async () => {
       mockUuidv4.mockReturnValueOnce('duplicateJourneyId')
       mockUuidv4.mockReturnValueOnce('duplicateStepId')
-      prisma.journey.findUnique = jest.fn().mockResolvedValueOnce(template)
       prisma.journey.create = jest
         .fn()
         .mockImplementation((result) => result.data)
@@ -952,7 +962,6 @@ describe('JourneyResolver', () => {
       const date = '2021-12-07T03:22:41.135Z'
       jest.useFakeTimers().setSystemTime(new Date(date).getTime())
       mockUuidv4.mockReturnValueOnce('duplicateJourneyId2')
-      prisma.journey.findUnique = jest.fn().mockResolvedValueOnce(journey)
       prisma.journey.create = jest
         .fn()
         .mockImplementation((result) => result.data)
@@ -981,7 +990,6 @@ describe('JourneyResolver', () => {
     })
 
     it('throws error and does not get stuck in retry loop', async () => {
-      prisma.journey.findUnique = jest.fn().mockResolvedValueOnce(journey)
       prisma.journey.create = jest
         .fn()
         .mockRejectedValueOnce(new Error('database error'))
@@ -995,7 +1003,6 @@ describe('JourneyResolver', () => {
         .mockReturnValueOnce('duplicateJourneyId')
         .mockReturnValueOnce('duplicateStepId')
         .mockReturnValueOnce('duplicatePrimaryImageBlock.id')
-      prisma.journey.findUnique = jest.fn().mockResolvedValueOnce(socialJourney)
       prisma.journey.create = jest
         .fn()
         .mockResolvedValueOnce((result) => result)
@@ -1070,10 +1077,6 @@ describe('JourneyResolver', () => {
     it('archives an array of Journeys', async () => {
       const date = '2021-12-07T03:22:41.135Z'
       jest.useFakeTimers().setSystemTime(new Date(date).getTime())
-      prisma.journey.findUnique = jest
-        .fn()
-        .mockResolvedValue(journey)
-        .mockResolvedValueOnce(draftJourney)
       prisma.journey.updateMany = jest
         .fn()
         .mockResolvedValueOnce([journey, draftJourney])
@@ -1089,10 +1092,6 @@ describe('JourneyResolver', () => {
     it('trashes an array of Journeys', async () => {
       const date = '2021-12-07T03:22:41.135Z'
       jest.useFakeTimers().setSystemTime(new Date(date).getTime())
-      prisma.journey.findUnique = jest
-        .fn()
-        .mockResolvedValue(journey)
-        .mockResolvedValueOnce(draftJourney)
       prisma.journey.updateMany = jest
         .fn()
         .mockResolvedValueOnce([journey, draftJourney])
@@ -1108,10 +1107,6 @@ describe('JourneyResolver', () => {
     it('deletes an array of Journeys', async () => {
       const date = '2021-12-07T03:22:41.135Z'
       jest.useFakeTimers().setSystemTime(new Date(date).getTime())
-      prisma.journey.findUnique = jest
-        .fn()
-        .mockResolvedValue(journey)
-        .mockResolvedValueOnce(draftJourney)
       prisma.journey.updateMany = jest
         .fn()
         .mockResolvedValueOnce([journey, draftJourney])
@@ -1125,7 +1120,6 @@ describe('JourneyResolver', () => {
 
   describe('journeysRestore', () => {
     it('resores a published Journey', async () => {
-      prisma.journey.findUnique = jest.fn().mockResolvedValue(trashedJourney)
       prisma.journey.update = jest.fn().mockResolvedValue(trashedJourney)
       await resolver.journeysRestore([trashedJourney.id])
       expect(prisma.journey.update).toHaveBeenCalledWith({
@@ -1135,9 +1129,6 @@ describe('JourneyResolver', () => {
     })
 
     it('restores an draft Journey', async () => {
-      prisma.journey.findUnique = jest
-        .fn()
-        .mockResolvedValue(trashedDraftJourney)
       prisma.journey.update = jest.fn().mockResolvedValue(trashedJourney)
       await resolver.journeysRestore([trashedDraftJourney.id])
       expect(prisma.journey.update).toHaveBeenCalledWith({
