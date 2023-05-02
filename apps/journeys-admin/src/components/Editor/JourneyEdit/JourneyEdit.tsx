@@ -28,7 +28,6 @@ export function JourneyEdit(): ReactElement {
   } = useEditor()
   const [hasAction, setHasAction] = useState(false)
 
-  console.log(journeyEditContentComponent)
   return (
     <>
       <Box
