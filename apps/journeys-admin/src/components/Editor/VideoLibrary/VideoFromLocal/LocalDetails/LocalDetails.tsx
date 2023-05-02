@@ -183,12 +183,10 @@ export function LocalDetails({
                 variant="text"
                 size="small"
                 sx={{
-                  position: isExpanded ? 'unset' : 'absolute',
+                  position: 'absolute',
                   p: 0,
                   bottom: -3,
-                  right: isExpanded ? 'unset' : 0,
-                  ml: isExpanded ? 1 : 0,
-                  mt: isExpanded ? 0 : -3,
+                  right: 0,
                   width: 0,
                   color: 'secondary.light',
                   backgroundColor: 'background.paper',

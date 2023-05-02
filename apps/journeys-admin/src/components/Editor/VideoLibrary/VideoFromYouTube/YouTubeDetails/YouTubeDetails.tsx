@@ -146,12 +146,10 @@ export function YouTubeDetails({
                 variant="text"
                 size="small"
                 sx={{
-                  position: isExpanded ? 'unset' : 'absolute',
+                  position: 'absolute',
                   p: 0,
-                  bottom: isExpanded ? 'unset' : -3,
-                  right: isExpanded ? 'unset' : 0,
-                  ml: isExpanded ? 1 : 0,
-                  mt: 0,
+                  bottom: -3,
+                  right: 0,
                   width: 0,
                   color: 'secondary.light',
                   backgroundColor: 'background.paper',
