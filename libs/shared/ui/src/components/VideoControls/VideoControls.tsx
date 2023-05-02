@@ -101,8 +101,6 @@ export function VideoControls({
   }
 
   function handleSeek(event: Event, value: number | number[]): void {
-    event.stopPropagation()
-    console.log('value', value)
     if (!Array.isArray(value)) {
       setProgress(value)
       player.currentTime(value)
@@ -182,7 +180,12 @@ export function VideoControls({
             className="swiper-no-swiping"
             data-testid="vjs-jfp-custom-controls"
             maxWidth="xxl"
-            sx={{ zIndex: 1, pb: 26 }}
+            sx={{
+              zIndex: 1,
+              pb: 26,
+              transitionDelay: visible ? undefined : '0.5s'
+            }}
+            onClick={(event) => event.stopPropagation()}
           >
             <Slider
               aria-label="mobile-progress-control"

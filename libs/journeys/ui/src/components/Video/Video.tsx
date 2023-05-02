@@ -107,9 +107,8 @@ export function Video({
     if (videoRef.current != null) {
       playerRef.current = videojs(videoRef.current, {
         controls: false,
+        controlBar: false,
         bigPlayButton: false,
-        loadingSpinner: false,
-        nativeControlsForTouch: true,
         // Make video fill container instead of set aspect ratio
         fill: true,
         userActions: {
@@ -189,6 +188,23 @@ export function Video({
     }
   }
 
+  //  Set video src
+  useEffect(() => {
+    if (playerRef.current != null) {
+      if (source === VideoBlockSource.internal && video?.variant?.hls != null) {
+        playerRef.current.src({
+          src: video.variant?.hls ?? '',
+          type: 'application/x-mpegURL'
+        })
+      } else if (source === VideoBlockSource.youTube && videoId != null) {
+        playerRef.current.src({
+          src: `https://www.youtube.com/watch?v=${videoId}`,
+          type: 'video/youtube'
+        })
+      }
+    }
+  }, [playerRef, video, videoId])
+
   return (
     <Box
       data-testid={`video-${blockId}`}
@@ -246,18 +262,7 @@ export function Video({
                 backgroundSize: 'cover'
               }
             }}
-          >
-            {source === VideoBlockSource.internal &&
-              video?.variant?.hls != null && (
-                <source src={video.variant.hls} type="application/x-mpegURL" />
-              )}
-            {source === VideoBlockSource.youTube && (
-              <source
-                src={`https://www.youtube.com/watch?v=${videoId}`}
-                type="video/youtube"
-              />
-            )}
-          </StyledVideo>
+          />
           {playerRef.current != null && (
             <VideoControls
               player={playerRef.current}

@@ -67,6 +67,8 @@ export function ContainedCover({
       playerRef.current = videojs(videoRef.current, {
         autoplay: !isYouTubeAndiOS,
         controls: false,
+        controlBar: false,
+        bigPlayButton: false,
         preload: 'metadata',
         // Make video fill container instead of set aspect ratio
         fill: true,
@@ -74,9 +76,9 @@ export function ContainedCover({
           hotkeys: false,
           doubleClick: false
         },
+        responsive: true,
         muted: true,
         loop: true
-        // poster: posterImage ?? undefined
       })
       playerRef.current.on('ready', () => {
         playerRef.current?.currentTime(videoBlock?.startAt ?? 0)
@@ -119,6 +121,30 @@ export function ContainedCover({
         break
     }
   }
+
+  //  Set video src
+  useEffect(() => {
+    if (playerRef.current != null && videoBlock != null) {
+      if (
+        videoBlock.source === VideoBlockSource.internal &&
+        videoBlock.video?.variant?.hls != null
+      ) {
+        playerRef.current.src({
+          src: videoBlock.video.variant?.hls ?? '',
+          type: 'application/x-mpegURL'
+        })
+      } else if (
+        videoBlock.source === VideoBlockSource.youTube &&
+        videoBlock.videoId != null
+      ) {
+        playerRef.current.src({
+          src: `https://www.youtube.com/watch?v=${videoBlock?.videoId}`,
+          type: 'video/youtube'
+        })
+      }
+    }
+  }, [playerRef, videoBlock])
+
   return (
     <>
       <Box data-testid="ContainedCover" sx={{ width: '100%', height: '100%' }}>
@@ -130,6 +156,10 @@ export function ContainedCover({
             playsInline
             preload="auto"
             sx={{
+              '&.video-js.vjs-fill:not(.vjs-audio-only-mode)': {
+                height: isYouTube ? 'inherit' : '100%',
+                transform: isYouTube ? 'scale(3.65)' : 'unset'
+              },
               '> .vjs-tech': {
                 objectFit: videoFit,
                 transform:
@@ -143,21 +173,7 @@ export function ContainedCover({
               },
               pointerEvents: 'none'
             }}
-          >
-            {videoBlock?.source === VideoBlockSource.internal &&
-              videoBlock?.video?.variant?.hls != null && (
-                <source
-                  src={videoBlock?.video.variant.hls}
-                  type="application/x-mpegURL"
-                />
-              )}
-            {videoBlock?.source === VideoBlockSource.youTube && (
-              <source
-                src={`https://www.youtube.com/watch?v=${videoBlock?.videoId}`}
-                type="video/youtube"
-              />
-            )}
-          </StyledVideo>
+          />
         )}
         {/* Video Poster Image - not linked to video as poster so causes longer LCP loading times, but still faster since using optimized image */}
         {posterImage != null &&
@@ -170,6 +186,7 @@ export function ContainedCover({
               alt="card video image"
               layout="fill"
               objectFit="cover"
+              style={{ transform: isYouTube ? 'scale(1.35)' : 'unset' }}
               priority
             />
           )}
@@ -200,35 +217,24 @@ export function ContainedCover({
           height: '100%'
         }}
       >
-        {/* <Box
-          sx={{
-            display: 'flex',
-            width: '100%',
-            height: 30,
-            background:
-              backgroundBlur != null
-                ? `linear-gradient(to top, ${backgroundBlur}4d 95%, ${backgroundBlur}00 100%)`
-                : 'unset'
-          }}
-        /> */}
         <Stack
           sx={{
             justifyContent: 'flex-end',
-            width: 'calc(100% - 32px)',
+            width: '100%',
             WebkitBackdropFilter: 'blur(20px)',
             backdropFilter: 'blur(20px)',
-            maxHeight: 'calc(50% - 100px)',
+            maxHeight: 'calc(50% - 80px)',
             background:
               backgroundBlur != null
                 ? `linear-gradient(to top, ${backgroundBlur} 0%, ${backgroundBlur}f2 55%, ${backgroundBlur}ab 80%, ${backgroundBlur}73 100%)`
                 : 'unset',
-            px: 4,
             pt: 6,
             pb: 28
           }}
         >
           <Box
             sx={{
+              px: 4,
               overflowY: 'scroll',
               // Hide on Firefox https://caniuse.com/?search=scrollbar-width
               scrollbarWidth: 'none',
