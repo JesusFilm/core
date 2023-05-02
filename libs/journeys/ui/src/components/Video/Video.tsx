@@ -70,8 +70,6 @@ export function Video({
     endAt ?? playerRef.current?.duration()
   )
 
-  console.log('----PROGRESS END TIME', progressEndTime)
-
   // Pause video if admin
   const {
     state: { selectedBlock }

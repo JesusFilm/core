@@ -3,7 +3,7 @@ import { ReactElement, useEffect } from 'react'
 import videojs from 'video.js'
 import TagManager from 'react-gtm-module'
 import { v4 as uuidv4 } from 'uuid'
-import { useBlocks } from '../../libs/block'
+import { useBlocks, isActiveBlockOrDescendant } from '../../libs/block'
 import { VideoBlockSource } from '../../../__generated__/globalTypes'
 import { VideoStartEventCreate } from './__generated__/VideoStartEventCreate'
 import { VideoPlayEventCreate } from './__generated__/VideoPlayEventCreate'
@@ -122,7 +122,7 @@ export function VideoEvents({
     function playListener(): void {
       const id = uuidv4()
       const currentTime = player.currentTime()
-      if (currentTime >= start) {
+      if (isActiveBlockOrDescendant(blockId) && currentTime >= start) {
         void videoPlayEventCreate({
           variables: {
             input: {
@@ -165,28 +165,30 @@ export function VideoEvents({
     function pauseListener(): void {
       const id = uuidv4()
       const currentPosition = player.currentTime()
-      void videoPauseEventCreate({
-        variables: {
-          input: {
-            id,
-            blockId,
-            position: currentPosition,
-            stepId,
-            label: videoTitle,
-            value: source
+      if (isActiveBlockOrDescendant(blockId)) {
+        void videoPauseEventCreate({
+          variables: {
+            input: {
+              id,
+              blockId,
+              position: currentPosition,
+              stepId,
+              label: videoTitle,
+              value: source
+            }
           }
-        }
-      })
-      TagManager.dataLayer({
-        dataLayer: {
-          event: 'video_pause',
-          eventId: id,
-          blockId,
-          videoPosition: currentPosition,
-          videoTitle,
-          videoId
-        }
-      })
+        })
+        TagManager.dataLayer({
+          dataLayer: {
+            event: 'video_pause',
+            eventId: id,
+            blockId,
+            videoPosition: currentPosition,
+            videoTitle,
+            videoId
+          }
+        })
+      }
     }
     player.on('pause', pauseListener)
     return () => player.off('pause', pauseListener)
@@ -205,7 +207,7 @@ export function VideoEvents({
     function expandListener(): void {
       const id = uuidv4()
       const currentPosition = player.currentTime()
-      if (player.isFullscreen()) {
+      if (isActiveBlockOrDescendant(blockId) && player.isFullscreen()) {
         void videoExpandEventCreate({
           variables: {
             input: {
@@ -247,7 +249,7 @@ export function VideoEvents({
     function collapseListener(): void {
       const id = uuidv4()
       const currentPosition = player.currentTime()
-      if (!player.isFullscreen()) {
+      if (isActiveBlockOrDescendant(blockId) && !player.isFullscreen()) {
         void videoCollapseEventCreate({
           variables: {
             input: {
@@ -289,7 +291,11 @@ export function VideoEvents({
     function startListener(): void {
       const id = uuidv4()
       const currentPosition = player.currentTime()
-      if (!calledStart && currentPosition >= start) {
+      if (
+        isActiveBlockOrDescendant(blockId) &&
+        !calledStart &&
+        currentPosition >= start
+      ) {
         void videoStartEventCreate({
           variables: {
             input: {
@@ -333,7 +339,11 @@ export function VideoEvents({
     function timeupdate25Listener(): void {
       const id = uuidv4()
       const currentPosition = player.currentTime()
-      if (!called25 && currentPosition >= position25) {
+      if (
+        isActiveBlockOrDescendant(blockId) &&
+        !called25 &&
+        currentPosition >= position25
+      ) {
         void videoProgressEventCreate25({
           variables: {
             input: {
@@ -379,7 +389,11 @@ export function VideoEvents({
     function timeupdate50Listener(): void {
       const id = uuidv4()
       const currentPosition = player.currentTime()
-      if (!called50 && currentPosition >= position50) {
+      if (
+        isActiveBlockOrDescendant(blockId) &&
+        !called50 &&
+        currentPosition >= position50
+      ) {
         void videoProgressEventCreate50({
           variables: {
             input: {
@@ -425,7 +439,11 @@ export function VideoEvents({
     function timeupdate75Listener(): void {
       const id = uuidv4()
       const currentPosition = player.currentTime()
-      if (!called75 && currentPosition >= position75) {
+      if (
+        isActiveBlockOrDescendant(blockId) &&
+        !called75 &&
+        currentPosition >= position75
+      ) {
         void videoProgressEventCreate75({
           variables: {
             input: {
@@ -472,7 +490,11 @@ export function VideoEvents({
     function completeListener(): void {
       const id = uuidv4()
       const currentPosition = player.currentTime()
-      if (!calledComplete && currentPosition >= end) {
+      if (
+        isActiveBlockOrDescendant(blockId) &&
+        !calledComplete &&
+        currentPosition >= end
+      ) {
         void videoCompleteEventCreate({
           variables: {
             input: {

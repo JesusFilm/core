@@ -45,7 +45,7 @@ export function RadioOption({
   return (
     <StyledRadioOption
       variant="contained"
-      disabled={disabled}
+      // disabled={disabled}
       onClick={handleClick}
       fullWidth
       disableRipple

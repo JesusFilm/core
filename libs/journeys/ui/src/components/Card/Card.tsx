@@ -4,6 +4,7 @@ import { getTheme } from '@core/shared/ui/themes'
 import { useTheme } from '@mui/material/styles'
 import Paper from '@mui/material/Paper'
 import { SxProps } from '@mui/system/styleFunctionSx'
+import Box from '@mui/material/Box'
 import Chip from '@mui/material/Chip'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
@@ -57,11 +58,11 @@ export function Card({
   const imageBlock =
     coverBlock?.__typename === 'ImageBlock' ? coverBlock : undefined
 
-  const blurUrl = useMemo(() => {
-    return imageBlock != null
-      ? blurImage(imageBlock.blurhash, cardColor)
-      : undefined
-  }, [imageBlock, cardColor])
+  // const blurUrl = useMemo(() => {
+  //   return imageBlock != null
+  //     ? blurImage(imageBlock.blurhash, cardColor)
+  //     : undefined
+  // }, [imageBlock, cardColor])
 
   const renderedChildren = children
     .filter(({ id }) => id !== coverBlockId)
@@ -77,9 +78,19 @@ export function Card({
       themeName={themeName}
       title={journey?.seoTitle ?? journey?.title ?? ''}
     >
+      <Box
+        className="swiper-no-swiping"
+        sx={{
+          width: '100%',
+          height: '50px',
+          position: 'absolute',
+          zIndex: 1,
+          background: `linear-gradient(${cardColor}4d 10%, ${cardColor}00 100%)`
+        }}
+      />
       {coverBlock != null && !fullscreen ? (
         <ContainedCover
-          backgroundBlur={blurUrl}
+          backgroundBlur={cardColor}
           videoBlock={
             coverBlock?.__typename === 'VideoBlock' ? coverBlock : undefined
           }
@@ -88,7 +99,7 @@ export function Card({
           {renderedChildren}
         </ContainedCover>
       ) : (
-        <ExpandedCover backgroundBlur={blurUrl}>
+        <ExpandedCover backgroundBlur={cardColor}>
           {renderedChildren}
         </ExpandedCover>
       )}

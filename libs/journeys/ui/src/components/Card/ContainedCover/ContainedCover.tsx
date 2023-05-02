@@ -191,42 +191,60 @@ export function ContainedCover({
             />
           )}
       </Box>
-      <Box
+      <Stack
+        justifyContent="flex-end"
         sx={{
           position: 'absolute',
           zIndex: 1,
           width: 'inherit',
-          height: '100%',
-          filter: 'blur(10%)',
-          background:
-            // Ease out gradient
-            'linear-gradient(to bottom,hsla(0, 0%, 0%, 0) 0%,hsla(0, 0%, 0%, 0.013) 10.6%,hsla(0, 0%, 0%, 0.049) 19.6%,hsla(0, 0%, 0%, 0.104) 27.3%,hsla(0, 0%, 0%, 0.175) 33.9%,hsla(0, 0%, 0%, 0.352) 44.8%,hsla(0, 0%, 0%, 0.45) 49.6%,hsla(0, 0%, 0%, 0.55) 54.1%,hsla(0, 0%, 0%, 0.648) 58.8%,hsla(0, 0%, 0%, 0.741) 63.6%,hsla(0, 0%, 0%, 0.825) 69%,hsla(0, 0%, 0%, 0.896) 75.1%,hsla(0, 0%, 0%, 0.951) 82.2%,hsla(0, 0%, 0%, 0.987) 90.4%,hsl(0, 0%, 0%) 100%)'
+          height: '100%'
         }}
       >
-        <Box
+        {/* <Box
           sx={{
-            filter: 'blur(10px)',
-            background: 'linear-gradient(to top, rgba(0,0,0,1), rgba(0,0,0,0))'
+            display: 'flex',
+            width: '100%',
+            height: 30,
+            background:
+              backgroundBlur != null
+                ? `linear-gradient(to top, ${backgroundBlur}4d 95%, ${backgroundBlur}00 100%)`
+                : 'unset'
           }}
-        />
+        /> */}
         <Stack
           sx={{
             justifyContent: 'flex-end',
-            bottom: 0,
-            position: 'absolute',
             width: 'calc(100% - 32px)',
+            backdropFilter: 'blur(20px)',
+            maxHeight: 'calc(50% - 100px)',
+            background:
+              backgroundBlur != null
+                ? `linear-gradient(to top, ${backgroundBlur} 0%, ${backgroundBlur}f2 55%, ${backgroundBlur}ab 80%, ${backgroundBlur}73 100%)`
+                : 'unset',
             px: 4,
-            pt: 10,
-            pb: 28,
-            '& > *': {
-              '&:first-child': { mt: 0 },
-              '&:last-child': { mb: 0 }
-            }
+            pt: 6,
+            pb: 28
           }}
         >
-          {children}
+          <Box
+            sx={{
+              overflowY: 'scroll',
+              // Hide on Firefox https://caniuse.com/?search=scrollbar-width
+              scrollbarWidth: 'none',
+              // Hide on all others https://caniuse.com/?search=webkit-scrollbar
+              '&::-webkit-scrollbar': {
+                display: 'none'
+              },
+              '& > *': {
+                '&:first-child': { mt: 0 },
+                '&:last-child': { mb: 0 }
+              }
+            }}
+          >
+            {children}
+          </Box>
         </Stack>
-      </Box>
+      </Stack>
     </>
   )
 }
