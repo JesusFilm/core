@@ -35,7 +35,7 @@ export function ActionInformation(): ReactElement {
       <Typography variant="subtitle2" color="secondary.dark">
         What are Goals?
       </Typography>
-      <Typography variant="body1" color="secondary.light" sx={{ mb: 4 }}>
+      <Typography variant="body1" color="secondary.light" sx={{ mb: 6 }}>
         Depending on the link you provide for the actions, the target of your
         Journey will be determined automatically from the following list:
       </Typography>
