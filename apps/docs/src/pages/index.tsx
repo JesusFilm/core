@@ -1,12 +1,12 @@
-import React from 'react'
+import React, { ReactElement } from 'react'
 import clsx from 'clsx'
 import Layout from '@theme/Layout'
 import Link from '@docusaurus/Link'
 import useDocusaurusContext from '@docusaurus/useDocusaurusContext'
-import styles from './index.module.css'
 import { FeatureList } from '../components/FeatureList'
+import styles from './index.module.css'
 
-function HomepageHeader() {
+function HomepageHeader(): ReactElement {
   const { siteConfig } = useDocusaurusContext()
   return (
     <header className={clsx('hero hero--primary', styles.heroBanner)}>
@@ -18,7 +18,10 @@ function HomepageHeader() {
             className="button button--secondary button--lg"
             to="/docs/welcome"
           >
-            Welcome - 5min ⏱️
+            Welcome - 5min{' '}
+            <span role="img" aria-label="time emoji">
+              ⏱️
+            </span>
           </Link>
         </div>
       </div>
@@ -26,7 +29,7 @@ function HomepageHeader() {
   )
 }
 
-export default function Home(): JSX.Element {
+export default function Home(): ReactElement {
   const { siteConfig } = useDocusaurusContext()
   return (
     <Layout

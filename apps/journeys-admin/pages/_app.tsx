@@ -57,7 +57,8 @@ function JourneysAdminApp({
         service: 'journeys-admin',
         env: process.env.NEXT_PUBLIC_VERCEL_ENV,
         version: process.env.NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA,
-        sampleRate: 100,
+        sampleRate: 50,
+        sessionReplaySampleRate: 10,
         trackInteractions: true,
         defaultPrivacyLevel: 'mask-user-input'
       })
