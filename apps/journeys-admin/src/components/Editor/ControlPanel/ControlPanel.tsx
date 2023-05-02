@@ -49,22 +49,25 @@ export function ControlPanel(): ReactElement {
     dispatch({ type: 'SetActiveTabAction', activeTab: ActiveTab.Blocks })
   }
 
+  const cardBlock = selectedStep?.children.find(
+    (block) => block.__typename === 'CardBlock'
+  )
+
   const hasVideoBlock =
-    selectedStep?.children[0].children.filter(
-      (block) => block.__typename === 'VideoBlock'
-    ).length !== 0
+    cardBlock?.children?.find((block) => block.__typename === 'VideoBlock') !=
+    null
 
   return (
     <Box sx={{ width: '100%', position: 'relative' }}>
       <Box sx={{ position: 'absolute', top: '-64px', right: 20, zIndex: 1 }}>
-        {journeyEditContentComponent === ActiveJourneyEditContent.Canvas ||
-          (!hasVideoBlock && (
+        {journeyEditContentComponent === ActiveJourneyEditContent.Canvas &&
+          !hasVideoBlock && (
             <Fab
               visible={activeTab !== ActiveTab.Blocks}
               onAddClick={handleAddFabClick}
               disabled={steps == null}
             />
-          ))}
+          )}
       </Box>
       <Box
         sx={{
