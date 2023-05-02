@@ -54,7 +54,7 @@ export function ActionsBanner(): ReactElement {
   return (
     <Box
       sx={{
-        mx: 4,
+        mx: 8,
         gap: 10,
         display: 'flex',
         flexDirection: 'row',
