@@ -25,6 +25,7 @@ export const CREATE_CLOUDFLARE_UPLOAD_BY_FILE = gql`
 
 interface ImageUploadProps {
   onChange: (src: string) => void
+  setUploading?: (uploading?: boolean) => void
   selectedBlock: ImageBlock | null
   loading?: boolean
   error?: boolean
@@ -33,6 +34,7 @@ interface ImageUploadProps {
 export function ImageUpload({
   onChange,
   selectedBlock,
+  setUploading,
   loading,
   error
 }: ImageUploadProps): ReactElement {
@@ -42,6 +44,7 @@ export function ImageUpload({
 
   const onDrop = async (acceptedFiles: File[]): Promise<void> => {
     const { data } = await createCloudflareUploadByFile({})
+    setUploading?.(true)
 
     if (data?.createCloudflareUploadByFile?.uploadUrl != null) {
       const file = acceptedFiles[0]
@@ -66,6 +69,7 @@ export function ImageUpload({
         }/public`
         onChange(src)
         setTimeout(() => setSuccess(undefined), 4000)
+        setUploading?.(undefined)
       } catch (e) {
         setSuccess(false)
       }

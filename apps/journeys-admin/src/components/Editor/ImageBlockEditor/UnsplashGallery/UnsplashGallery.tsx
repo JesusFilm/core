@@ -155,12 +155,17 @@ export function UnsplashGallery({
     setPage(page + 1)
   }
 
+  const handleCollectionChange = (id, query): void => {
+    setCollectionId(id)
+    setQuery(query)
+  }
+
   return (
     <Stack
       sx={{ pt: 6, px: 6, height: 'calc(100vh - 231px)', overflowY: 'auto' }}
     >
       <UnsplashSearch value={query} handleSubmit={handleSubmit} />
-      <UnsplashCollections onClick={(id) => setCollectionId(id)} />
+      <UnsplashCollections onClick={handleCollectionChange} />
       <Stack sx={{ pt: 4, pb: 1 }}>
         <Typography variant="overline" color="primary">
           Unsplash

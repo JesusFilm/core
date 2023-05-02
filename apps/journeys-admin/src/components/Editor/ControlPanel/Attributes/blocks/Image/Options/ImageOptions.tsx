@@ -50,10 +50,6 @@ export function ImageOptions(): ReactElement {
           }
         }
       })
-      enqueueSnackbar('Image Deleted', {
-        variant: 'success',
-        preventDuplicate: true
-      })
     } catch (e) {
       enqueueSnackbar(e.message, {
         variant: 'error',

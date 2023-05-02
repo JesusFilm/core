@@ -12,6 +12,6 @@ describe('UnsplashCollections', () => {
     expect(christChip).toBeInTheDocument()
     expect(getByText('Church')).toBeInTheDocument()
     fireEvent.click(christChip)
-    expect(onClick).toHaveBeenCalledWith('5TziIavS84o')
+    expect(onClick).toHaveBeenCalledWith('5TziIavS84o', 'Christ')
   })
 })
