@@ -215,6 +215,7 @@ export function ContainedCover({
           sx={{
             justifyContent: 'flex-end',
             width: 'calc(100% - 32px)',
+            WebkitBackdropFilter: 'blur(20px)',
             backdropFilter: 'blur(20px)',
             maxHeight: 'calc(50% - 100px)',
             background:
