@@ -108,15 +108,16 @@ export function VideoFromYouTube({
       const pageToken = previousPageData?.nextPageToken ?? ''
       return id != null
         ? `id=${id}`
-        : `playlistId=${process.env.NEXT_PUBLIC_YOUTUBE_PLAYLIST_ID ?? ''
-        }&pageToken=${pageToken}`
+        : `playlistId=${
+            process.env.NEXT_PUBLIC_YOUTUBE_PLAYLIST_ID ?? ''
+          }&pageToken=${pageToken}`
     },
     fetcher
   )
 
   const loading = Boolean(
     (data == null && error == null) ||
-    (size > 0 && data && typeof data[size - 1] === 'undefined')
+      (size > 0 && data && typeof data[size - 1] === 'undefined')
   )
 
   const videos = reduce(
