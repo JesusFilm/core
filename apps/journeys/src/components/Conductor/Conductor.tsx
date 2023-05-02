@@ -189,6 +189,7 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
           }
         }}
         onBeforeSlideChangeStart={(swiper) => {
+          console.log('swiper', swiper)
           // Update Swiper navigation after
           if (treeBlocks[swiper.activeIndex] !== activeBlock) {
             const index = findIndex(

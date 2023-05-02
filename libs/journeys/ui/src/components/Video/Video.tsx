@@ -108,6 +108,7 @@ export function Video({
       playerRef.current = videojs(videoRef.current, {
         controls: false,
         bigPlayButton: false,
+        loadingSpinner: false,
         nativeControlsForTouch: true,
         // Make video fill container instead of set aspect ratio
         fill: true,
@@ -240,10 +241,6 @@ export function Video({
                     ? 'scale(1.33)'
                     : undefined
               },
-              '> .vjs-loading-spinner': {
-                zIndex: 1,
-                display: source === VideoBlockSource.youTube ? 'none' : 'block'
-              },
               '> .vjs-poster': {
                 backgroundColor: VIDEO_BACKGROUND_COLOR,
                 backgroundSize: 'cover'
@@ -266,6 +263,7 @@ export function Video({
               player={playerRef.current}
               startAt={startAt ?? 0}
               endAt={progressEndTime}
+              isYoutube={source === VideoBlockSource.youTube}
             />
           )}
           {/* Trigger action on video midway */}

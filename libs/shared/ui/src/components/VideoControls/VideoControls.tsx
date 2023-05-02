@@ -19,6 +19,7 @@ interface VideoControlProps {
   player: videojs.Player
   startAt: number
   endAt: number
+  isYoutube: boolean
 }
 
 function isMobile(): boolean {
@@ -29,7 +30,8 @@ function isMobile(): boolean {
 export function VideoControls({
   player,
   startAt,
-  endAt
+  endAt,
+  isYoutube
 }: VideoControlProps): ReactElement {
   const [play, setPlay] = useState(false)
   const [active, setActive] = useState(true)
@@ -150,24 +152,31 @@ export function VideoControls({
       >
         <Stack justifyContent="flex-end" sx={{ height: '100%' }}>
           {/* Play/Pause */}
-          <Stack flexGrow={1} alignItems="center" justifyContent="center">
-            {!loading ? (
-              <IconButton
-                sx={{
-                  fontSize: 100,
-                  display: { xs: 'flex', md: 'none' }
-                }}
-              >
-                {play ? (
-                  <PauseRounded fontSize="inherit" />
-                ) : (
-                  <PlayArrowRounded fontSize="inherit" />
-                )}
-              </IconButton>
-            ) : (
-              <CircularProgress size={65} />
-            )}
-          </Stack>
+          {!isMobile() && (
+            <Stack
+              flexGrow={1}
+              alignItems="center"
+              justifyContent="center"
+              sx={{ pt: '50px' }}
+            >
+              {!loading ? (
+                <IconButton
+                  sx={{
+                    fontSize: 100,
+                    display: { xs: 'flex', md: 'none' }
+                  }}
+                >
+                  {play ? (
+                    <PauseRounded fontSize="inherit" />
+                  ) : (
+                    <PlayArrowRounded fontSize="inherit" />
+                  )}
+                </IconButton>
+              ) : (
+                !isYoutube && <CircularProgress size={65} />
+              )}
+            </Stack>
+          )}
           {/* Progress Bar */}
           <Container
             className="swiper-no-swiping"
