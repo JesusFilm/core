@@ -9,7 +9,9 @@ import {
   ActiveJourneyEditContent
 } from '@core/journeys/ui/EditorProvider'
 import { TabPanel, tabA11yProps } from '@core/shared/ui/TabPanel'
+import { TreeBlock } from '@core/journeys/ui/block'
 import { CardPreview, OnSelectProps } from '../../CardPreview'
+import { GetJourney_journey_blocks_CardBlock as CardBlock } from '../../../../__generated__/GetJourney'
 import { Attributes } from './Attributes'
 import { BlocksTab } from './BlocksTab'
 import { Fab } from './Fab'
@@ -51,11 +53,13 @@ export function ControlPanel(): ReactElement {
 
   const cardBlock = selectedStep?.children.find(
     (block) => block.__typename === 'CardBlock'
-  )
+  ) as TreeBlock<CardBlock>
+
+  console.log(cardBlock)
 
   const hasVideoBlock =
     cardBlock?.children?.find((block) => block.__typename === 'VideoBlock') !=
-    null
+      null && cardBlock.coverBlockId == null
 
   return (
     <Box sx={{ width: '100%', position: 'relative' }}>
