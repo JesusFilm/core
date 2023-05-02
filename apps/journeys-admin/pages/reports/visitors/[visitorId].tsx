@@ -14,7 +14,7 @@ import { VisitorInfo } from '../../../src/components/VisitorInfo'
 import { PageWrapper } from '../../../src/components/NewPageWrapper'
 import i18nConfig from '../../../next-i18next.config'
 import { useTermsRedirect } from '../../../src/libs/useTermsRedirect/useTermsRedirect'
-import { VisitorDetailForm } from '../../../src/components/VisitorInfo/VisitorDetail/VisitorDetailForm'
+import { DetailsForm } from '../../../src/components/VisitorInfo/DetailsForm'
 
 function SingleVisitorReportsPage(): ReactElement {
   const router = useRouter()
@@ -34,7 +34,7 @@ function SingleVisitorReportsPage(): ReactElement {
         title={t('Visitor Info')}
         backHref="/reports/visitors"
         authUser={AuthUser}
-        sidePanelChildren={<VisitorDetailForm id={id} />}
+        sidePanelChildren={<DetailsForm id={id} />}
         sidePanelTitle="Users"
       >
         <VisitorInfo id={id} />

@@ -1,13 +1,13 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { render, screen, waitFor, fireEvent } from '@testing-library/react'
-import { getVisitorMock, visitorUpdateMock } from './VisitorDetailFormData'
-import { VisitorDetailForm } from '.'
+import { getVisitorMock, visitorUpdateMock } from './DetailsFormData'
+import { DetailsForm } from '.'
 
-describe('VisitorDetailForm', () => {
+describe('DetailsForm', () => {
   it('fetches remote data and fills in form', async () => {
     const { getByRole } = render(
       <MockedProvider mocks={[getVisitorMock]}>
-        <VisitorDetailForm id="visitorId" />
+        <DetailsForm id="visitorId" />
       </MockedProvider>
     )
     await waitFor(() =>
@@ -31,7 +31,7 @@ describe('VisitorDetailForm', () => {
           { ...visitorUpdateMock, result: visitorUpdateResult }
         ]}
       >
-        <VisitorDetailForm id="visitorId" />
+        <DetailsForm id="visitorId" />
       </MockedProvider>
     )
     await waitFor(() =>

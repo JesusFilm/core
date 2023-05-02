@@ -13,13 +13,13 @@ import { gql, useMutation, useQuery } from '@apollo/client'
 import { useTranslation } from 'react-i18next'
 import { format, parseISO } from 'date-fns'
 import { SubmitListener } from '@core/shared/ui/SubmitListener'
-import { GetVisitor } from '../../../../../__generated__/GetVisitor'
+import { GetVisitor } from '../../../../__generated__/GetVisitor'
 import {
   MessagePlatform,
   VisitorStatus
-} from '../../../../../__generated__/globalTypes'
-import { VisitorUpdate } from '../../../../../__generated__/VisitorUpdate'
-import { messagePlatformToLabel } from '../../messagePlatformToLabel'
+} from '../../../../__generated__/globalTypes'
+import { VisitorUpdate } from '../../../../__generated__/VisitorUpdate'
+import { messagePlatformToLabel } from '../messagePlatformToLabel'
 
 export const GET_VISITOR = gql`
   query GetVisitor($id: ID!) {
@@ -53,7 +53,7 @@ interface Props {
   id: string
 }
 
-export function VisitorDetailForm({ id }: Props): ReactElement {
+export function DetailsForm({ id }: Props): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const [visitorUpdate] = useMutation<VisitorUpdate>(VISITOR_UPDATE)
   // 529 (english) should be changed when adding internalization

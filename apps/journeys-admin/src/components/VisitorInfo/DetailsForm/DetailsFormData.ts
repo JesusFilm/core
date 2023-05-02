@@ -1,11 +1,11 @@
-import { VisitorUpdate } from '../../../../../__generated__/VisitorUpdate'
-import { GetVisitor } from '../../../../../__generated__/GetVisitor'
+import { VisitorUpdate } from '../../../../__generated__/VisitorUpdate'
+import { GetVisitor } from '../../../../__generated__/GetVisitor'
 import {
   MessagePlatform,
   VisitorStatus,
   VisitorUpdateInput
-} from '../../../../../__generated__/globalTypes'
-import { GET_VISITOR, VISITOR_UPDATE } from './VisitorDetailForm'
+} from '../../../../__generated__/globalTypes'
+import { GET_VISITOR, VISITOR_UPDATE } from './DetailsForm'
 
 const getVisitor: GetVisitor = {
   visitor: {
