@@ -76,17 +76,6 @@ export function ActionsBanner(): ReactElement {
           </Typography>
           <Button
             variant="outlined"
-            disabled
-            startIcon={<InfoOutlined />}
-            sx={{
-              [theme.breakpoints.up('md')]: { display: 'none' },
-              [theme.breakpoints.down('md')]: { display: 'none' }
-            }}
-          >
-            Learn More
-          </Button>
-          <Button
-            variant="outlined"
             startIcon={<InfoOutlined sx={{ color: 'secondary.light' }} />}
             sx={{
               [theme.breakpoints.up('md')]: { display: 'none' },
