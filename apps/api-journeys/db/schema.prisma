@@ -32,8 +32,8 @@ model Event {
   createdAt          DateTime          @default(now())
   label              String?
   value              String?
-  visitorId          String?
-  Visitor            Visitor?          @relation(fields: [visitorId], references: [id])
+  visitorId          String
+  Visitor            Visitor           @relation(fields: [visitorId], references: [id])
   action             ButtonAction?
   actionValue        String?
   messagePlatform    MessagePlatform?
@@ -44,8 +44,9 @@ model Event {
   position           Float?
   source             VideoBlockSource?
   progress           Int?
+  userId             String?
 
-  @@index([id, journeyId, visitorId, blockId])
+  @@index([id, journeyId, visitorId, blockId, userId])
 }
 
 enum MessagePlatform {
@@ -91,7 +92,7 @@ model Visitor {
   events                    Event[]
   lastChatStartedAt         DateTime?
   lastChatPlatform          MessagePlatform?
-  lastStepViewedAt          String?
+  lastStepViewedAt          DateTime?
   lastLinkAction            String?
   lastTextResponse          String?
   lastRadioQuestion         String?

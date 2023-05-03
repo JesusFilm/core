@@ -42,7 +42,7 @@ export class StepViewEventResolver {
         stepId: input.blockId ?? undefined
       }),
       this.visitorService.update(visitor.id, {
-        lastStepViewedAt: new Date().toISOString()
+        lastStepViewedAt: new Date()
       })
     ])
     return stepViewEvent as StepViewEvent
@@ -51,10 +51,7 @@ export class StepViewEventResolver {
 
 @Resolver('StepNextEvent')
 export class StepNextEventResolver {
-  constructor(
-    private readonly eventService: EventService,
-    private readonly visitorService: VisitorService
-  ) {}
+  constructor(private readonly eventService: EventService) {}
 
   @Mutation()
   @UseGuards(GqlAuthGuard)
