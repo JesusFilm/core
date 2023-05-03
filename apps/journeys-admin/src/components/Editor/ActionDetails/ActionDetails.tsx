@@ -19,7 +19,7 @@ export function ActionDetails({
   return (
     <Box sx={{ overflow: 'auto', height: '100%' }}>
       {url != null ? (
-        <Stack gap={2} sx={{ px: 6, pb: 6 }}>
+        <Stack gap={7} sx={{ px: 6, pb: 6 }}>
           <ActionEditor
             url={url}
             goalLabel={goalLabel}

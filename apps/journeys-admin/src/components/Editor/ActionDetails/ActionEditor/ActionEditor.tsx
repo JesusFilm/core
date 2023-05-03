@@ -159,7 +159,7 @@ export function ActionEditor({
           </Form>
         )}
       </Formik>
-      <Stack gap={2} direction="row" alignItems="center" sx={{ pt: 2.5 }}>
+      <Stack gap={2} direction="row" alignItems="center" sx={{ pt: 3 }}>
         {icon}
         <Typography variant="subtitle2">{goalLabel?.(url)}</Typography>
       </Stack>
