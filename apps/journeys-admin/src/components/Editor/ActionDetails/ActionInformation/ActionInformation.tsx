@@ -1,5 +1,4 @@
 import { ReactElement, ReactNode } from 'react'
-import Divider from '@mui/material/Divider'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import QuestionAnswerOutlined from '@mui/icons-material/QuestionAnswerOutlined'
@@ -18,7 +17,7 @@ export function ActionInformation(): ReactElement {
     description,
     icon
   }: GoalDescriptionProps): ReactElement => (
-    <Stack direction="row" gap={2.5} sx={{ pb: 2 }}>
+    <Stack direction="row" gap={3} sx={{ pb: 2 }}>
       {icon}
       <Stack direction="column">
         <Typography variant="subtitle2" gutterBottom sx={{ pt: 0.5 }}>
@@ -36,11 +35,10 @@ export function ActionInformation(): ReactElement {
       <Typography variant="subtitle2" color="secondary.dark">
         What are Goals?
       </Typography>
-      <Typography variant="body1" color="secondary.light">
+      <Typography variant="body1" color="secondary.light" sx={{ mb: 6 }}>
         Depending on the link you provide for the actions, the target of your
         Journey will be determined automatically from the following list:
       </Typography>
-      <Divider sx={{ my: 2 }} />
       <GoalDescription
         label="Start a Conversation"
         description="If the goal is to go any chat platform"
