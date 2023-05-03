@@ -25,8 +25,6 @@ function SingleVisitorReportsPage(): ReactElement {
 
   const id = router.query.visitorId as string
 
-  // TODO: give router to NavigationDrawer
-
   return (
     <>
       <NextSeo title={t('Visitor Info')} />
@@ -35,7 +33,7 @@ function SingleVisitorReportsPage(): ReactElement {
         backHref="/reports/visitors"
         authUser={AuthUser}
         sidePanelChildren={<DetailsForm id={id} />}
-        sidePanelTitle="Users"
+        sidePanelTitle="User details"
       >
         <VisitorInfo id={id} />
       </PageWrapper>

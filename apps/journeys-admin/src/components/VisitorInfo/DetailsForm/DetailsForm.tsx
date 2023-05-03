@@ -1,4 +1,3 @@
-import Box from '@mui/material/Box'
 import FormControl from '@mui/material/FormControl'
 import InputLabel from '@mui/material/InputLabel'
 import Select from '@mui/material/Select'
@@ -11,15 +10,18 @@ import { ReactElement } from 'react'
 import { Formik, Form } from 'formik'
 import { gql, useMutation, useQuery } from '@apollo/client'
 import { useTranslation } from 'react-i18next'
-import { format, parseISO } from 'date-fns'
+// import { format, parseISO } from 'date-fns'
 import { SubmitListener } from '@core/shared/ui/SubmitListener'
+import Divider from '@mui/material/Divider'
+import Paper from '@mui/material/Paper'
 import { GetVisitor } from '../../../../__generated__/GetVisitor'
 import {
   MessagePlatform,
   VisitorStatus
 } from '../../../../__generated__/globalTypes'
 import { VisitorUpdate } from '../../../../__generated__/VisitorUpdate'
-import { messagePlatformToLabel } from '../messagePlatformToLabel'
+import { messagePlatformToLabel } from '../VisitorJourneysList/utils'
+import { ChatButton } from './ChatButton'
 
 export const GET_VISITOR = gql`
   query GetVisitor($id: ID!) {
@@ -74,15 +76,13 @@ export function DetailsForm({ id }: Props): ReactElement {
     })
   }
 
-  // TODO: move some elements around according to design
-
   return (
-    <Box sx={{ p: 4 }}>
+    <Paper elevation={0} sx={{ p: 4, mb: 4 }}>
       {data?.visitor != null && (
         <Formik
           initialValues={pick(data.visitor, [
-            'messagePlatformId',
             'messagePlatform',
+            'messagePlatformId',
             'name',
             'notes',
             'status'
@@ -93,15 +93,20 @@ export function DetailsForm({ id }: Props): ReactElement {
           {({ values, errors, touched, handleChange, handleBlur }) => (
             <Form>
               <Stack spacing={4}>
-                <Stack spacing={4} direction="row" alignItems="center">
-                  <FormControl sx={{ width: 80 }}>
-                    <InputLabel id="status-label">{t('Status')}</InputLabel>
+                <Stack direction="row">
+                  {/* Start chat */}
+                  <ChatButton
+                    messagePlatform={data.visitor.messagePlatform}
+                    messagePlatformId={data.visitor.messagePlatformId}
+                  />
+
+                  {/* Status */}
+                  <FormControl sx={{ width: 80, ml: 'auto' }}>
                     <Select
                       labelId="status-label"
                       id="status"
                       name="status"
                       value={values.status ?? ''}
-                      label={t('Status')}
                       onChange={handleChange}
                       onBlur={handleBlur}
                     >
@@ -124,7 +129,9 @@ export function DetailsForm({ id }: Props): ReactElement {
                       </MenuItem>
                     </Select>
                   </FormControl>
-                  {data?.visitor?.lastChatStartedAt != null && (
+
+                  {/* Move this */}
+                  {/* {data?.visitor?.lastChatStartedAt != null && (
                     <Box>
                       <Typography variant="body2">{t('Last Chat')}</Typography>
                       <Typography>
@@ -134,59 +141,65 @@ export function DetailsForm({ id }: Props): ReactElement {
                         )}
                       </Typography>
                     </Box>
-                  )}
+                  )} */}
                 </Stack>
-                <Stack spacing={4} direction="row">
-                  <TextField
-                    id="messagePlatformId"
-                    name="messagePlatformId"
-                    variant="filled"
-                    label={
-                      values.messagePlatform != null &&
-                      values.messagePlatform !== ''
-                        ? messagePlatformToLabel(values.messagePlatform, t)
-                        : t('Contact')
-                    }
-                    fullWidth
-                    value={values.messagePlatformId ?? ''}
-                    error={
-                      touched.messagePlatformId === true &&
-                      Boolean(errors.messagePlatformId)
-                    }
-                    helperText={
-                      touched.messagePlatformId === true &&
-                      errors.messagePlatformId
-                    }
-                    onBlur={handleBlur}
+
+                {/* Platform */}
+                <FormControl fullWidth variant="filled">
+                  <InputLabel id="message-platform-label">
+                    {t('Chat Platform')}
+                  </InputLabel>
+                  <Select
+                    labelId="message-platform-label"
+                    id="messagePlatform"
+                    name="messagePlatform"
+                    value={values.messagePlatform ?? ''}
+                    // label={t('Chat Platform')}
                     onChange={handleChange}
-                  />
-                  <FormControl sx={{ width: 200 }}>
-                    <InputLabel id="message-platform-label">
-                      {t('Platform')}
-                    </InputLabel>
-                    <Select
-                      labelId="message-platform-label"
-                      id="messagePlatform"
-                      name="messagePlatform"
-                      value={values.messagePlatform ?? ''}
-                      label={t('Platform')}
-                      onChange={handleChange}
-                      onBlur={handleBlur}
-                      sx={{
-                        '.MuiSelect-select': {
-                          height: 23
-                        }
-                      }}
-                    >
-                      <MenuItem value="">{t('None')}</MenuItem>
-                      {Object.values(MessagePlatform).map((value) => (
-                        <MenuItem key={value} value={value}>
-                          {messagePlatformToLabel(value, t)}
-                        </MenuItem>
-                      ))}
-                    </Select>
-                  </FormControl>
-                </Stack>
+                    onBlur={handleBlur}
+                    sx={{
+                      '.MuiSelect-select': {
+                        height: 23
+                      }
+                    }}
+                  >
+                    <MenuItem value="">{t('None')}</MenuItem>
+                    {Object.values(MessagePlatform).map((value) => (
+                      <MenuItem key={value} value={value}>
+                        {messagePlatformToLabel(value, t)}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+
+                {/* Username */}
+                <TextField
+                  id="messagePlatformId"
+                  name="messagePlatformId"
+                  variant="filled"
+                  label={
+                    values.messagePlatform != null &&
+                    values.messagePlatform !== ''
+                      ? messagePlatformToLabel(values.messagePlatform, t)
+                      : t('Username')
+                  }
+                  fullWidth
+                  value={values.messagePlatformId ?? ''}
+                  error={
+                    touched.messagePlatformId === true &&
+                    Boolean(errors.messagePlatformId)
+                  }
+                  helperText={
+                    touched.messagePlatformId === true &&
+                    errors.messagePlatformId
+                  }
+                  onBlur={handleBlur}
+                  onChange={handleChange}
+                />
+
+                <Divider />
+
+                {/* name */}
                 <TextField
                   id="name"
                   name="name"
@@ -199,11 +212,13 @@ export function DetailsForm({ id }: Props): ReactElement {
                   onBlur={handleBlur}
                   onChange={handleChange}
                 />
+
+                {/* note */}
                 <TextField
                   id="notes"
                   name="notes"
                   variant="filled"
-                  label={t('Notes')}
+                  label={t('Private Note')}
                   fullWidth
                   value={values.notes ?? ''}
                   error={touched.notes === true && Boolean(errors.notes)}
@@ -213,12 +228,15 @@ export function DetailsForm({ id }: Props): ReactElement {
                   multiline
                   minRows={2}
                 />
+                <Typography variant="caption">
+                  {t('Visible to your team only')}
+                </Typography>
               </Stack>
               <SubmitListener />
             </Form>
           )}
         </Formik>
       )}
-    </Box>
+    </Paper>
   )
 }

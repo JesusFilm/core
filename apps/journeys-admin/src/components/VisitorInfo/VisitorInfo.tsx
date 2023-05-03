@@ -1,4 +1,5 @@
 import { ReactElement } from 'react'
+import Box from '@mui/material/Box'
 import { DetailsForm } from './DetailsForm'
 import { VisitorJourneysList } from './VisitorJourneysList'
 
@@ -9,7 +10,9 @@ interface Props {
 export function VisitorInfo({ id }: Props): ReactElement {
   return (
     <>
-      <DetailsForm id={id} />
+      <Box sx={{ display: { xs: 'block', sm: 'none' } }}>
+        <DetailsForm id={id} />
+      </Box>
       <VisitorJourneysList id={id} />
     </>
   )
