@@ -1,4 +1,4 @@
-import { ReactElement } from 'react'
+import { ReactElement, useEffect } from 'react'
 import { gql, useQuery } from '@apollo/client'
 import { JOURNEY_FIELDS } from '@core/journeys/ui/JourneyProvider/journeyFields'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
@@ -51,6 +51,13 @@ function JourneyIdPage(): ReactElement {
   })
 
   useTermsRedirect()
+
+  useEffect(() => {
+    const checkValidJourney = (): void => {
+      data?.journey == null && data?.journey !== undefined && router.push('/')
+    }
+    checkValidJourney()
+  }, [data, router])
 
   return (
     <>
