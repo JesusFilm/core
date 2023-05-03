@@ -1,4 +1,4 @@
-import { ReactElement, useState } from 'react'
+import { ReactElement } from 'react'
 import Table from '@mui/material/Table'
 import TableBody from '@mui/material/TableBody'
 import TableRow, { TableRowProps } from '@mui/material/TableRow'
@@ -30,8 +30,6 @@ export function ActionsListView({
   selectedAction,
   handleClick
 }: ActionsListViewProps): ReactElement {
-  const [hover, setHover] = useState<number>()
-
   const mdUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('md'))
 
   const GoalIcon = ({ url }: { url: string }): ReactElement => {
@@ -80,8 +78,6 @@ export function ActionsListView({
               <StyledTableRow
                 key={index}
                 onClick={() => handleClick(url)}
-                onMouseOver={() => setHover(index)}
-                onMouseOut={() => setHover(undefined)}
                 selectedAction={selectedAction}
                 url={url}
               >
@@ -122,7 +118,9 @@ export function ActionsListView({
                   <EditRounded
                     sx={{
                       color:
-                        hover === index ? 'primary.main' : 'background.default'
+                        selectedAction === url
+                          ? 'primary.main'
+                          : 'background.default'
                     }}
                   />
                 </TableCell>
