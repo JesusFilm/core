@@ -163,7 +163,14 @@ export function ContainedCover({
             sx={{
               '&.video-js.vjs-fill:not(.vjs-audio-only-mode)': {
                 height: isYouTube ? 'inherit' : '100%',
-                transform: isYouTube ? 'scale(3.65)' : 'unset'
+                transform: isYouTube
+                  ? {
+                      xs: 'scale(3.65)',
+                      md: 'scale(3.1)',
+                      lg: 'scale(2)',
+                      xl: 'scale(1.6)'
+                    }
+                  : 'unset'
               },
               '> .vjs-tech': {
                 objectFit: videoFit,
@@ -215,6 +222,7 @@ export function ContainedCover({
       </Box>
       <Stack
         justifyContent="flex-end"
+        alignItems={{ xs: 'flex-end', md: 'flex-end' }}
         sx={{
           position: 'absolute',
           zIndex: 1,
@@ -223,23 +231,29 @@ export function ContainedCover({
         }}
       >
         <Stack
+          justifyContent="center"
           sx={{
-            justifyContent: 'flex-end',
             width: '100%',
+            maxWidth: { xs: '100%', md: '340px' },
             WebkitBackdropFilter: 'blur(20px)',
             backdropFilter: 'blur(20px)',
-            maxHeight: 'calc(50% - 80px)',
+            height: { md: '100%' },
+            maxHeight: { xs: 'calc(50% - 80px)', md: '100%' },
             background:
               backgroundBlur != null
-                ? `linear-gradient(to top, ${backgroundBlur} 0%, ${backgroundBlur}f2 55%, ${backgroundBlur}ab 80%, ${backgroundBlur}73 100%)`
+                ? {
+                    xs: `linear-gradient(to top, ${backgroundBlur} 0%, ${backgroundBlur}f2 55%, ${backgroundBlur}ab 80%, ${backgroundBlur}73 100%)`,
+                    // TODO: Tweak
+                    md: `linear-gradient(to top, ${backgroundBlur} 0%, ${backgroundBlur}f2 55%, ${backgroundBlur}ab 80%, ${backgroundBlur}73 100%)`
+                  }
                 : 'unset',
-            pt: 6,
-            pb: 28
+            pt: { xs: 6, md: 0 },
+            pb: { xs: 28, md: 0 }
           }}
         >
           <Box
             sx={{
-              px: 4,
+              px: { xs: 4, md: 14 },
               overflowY: 'scroll',
               // Hide on Firefox https://caniuse.com/?search=scrollbar-width
               scrollbarWidth: 'none',
