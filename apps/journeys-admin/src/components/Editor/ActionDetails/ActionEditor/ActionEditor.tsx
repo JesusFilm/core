@@ -77,7 +77,8 @@ export function ActionEditor({
   async function handleSubmit(e: React.FocusEvent): Promise<void> {
     if (journey == null) return
     const target = e.target as HTMLInputElement
-    const url = /^\w+:\/\//.test(target.value) // checks if url has a protocol
+    // checks if url has a protocol
+    const url = /^\w+:\/\//.test(target.value)
       ? target.value
       : `https://${target.value}`
     blocks.map(async (block) => {
