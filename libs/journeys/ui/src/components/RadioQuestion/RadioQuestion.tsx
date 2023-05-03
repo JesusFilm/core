@@ -50,7 +50,6 @@ export function RadioQuestion({
   const [selectedId, setSelectedId] = useState<string | null>(null)
   const { treeBlocks, blockHistory } = useBlocks()
   const { t } = useTranslation('libs-journeys-ui')
-
   const activeBlock = blockHistory[blockHistory.length - 1]
 
   const heading =
@@ -63,7 +62,6 @@ export function RadioQuestion({
     radioOptionLabel: string
   ): void => {
     if (!admin) {
-      console.log('activeBlock', activeBlock, blockHistory)
       const id = uuid()
       void radioQuestionSubmissionEventCreate({
         variables: {

@@ -153,7 +153,6 @@ export function Video({
 
   // Pause video if card not active
   useEffect(() => {
-    // console.log('changed card', blockId, previousBlocks)
     if (player != null) {
       if (isActiveBlockOrDescendant(blockId) && autoplay === true) {
         void player.play()

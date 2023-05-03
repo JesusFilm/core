@@ -150,31 +150,29 @@ export function VideoControls({
       >
         <Stack justifyContent="flex-end" sx={{ height: '100%' }}>
           {/* Play/Pause */}
-          {!isMobile() && (
-            <Stack
-              flexGrow={1}
-              alignItems="center"
-              justifyContent="center"
-              sx={{ pt: '50px' }}
-            >
-              {!loading ? (
-                <IconButton
-                  sx={{
-                    fontSize: 100,
-                    display: { xs: 'flex', md: 'none' }
-                  }}
-                >
-                  {play ? (
-                    <PauseRounded fontSize="inherit" />
-                  ) : (
-                    <PlayArrowRounded fontSize="inherit" />
-                  )}
-                </IconButton>
-              ) : (
-                !isYoutube && <CircularProgress size={65} />
-              )}
-            </Stack>
-          )}
+          <Stack
+            flexGrow={1}
+            alignItems="center"
+            justifyContent="center"
+            sx={{ pt: '50px' }}
+          >
+            {!loading ? (
+              <IconButton
+                sx={{
+                  fontSize: 100,
+                  display: { xs: 'flex', md: 'none' }
+                }}
+              >
+                {play ? (
+                  <PauseRounded fontSize="inherit" />
+                ) : (
+                  <PlayArrowRounded fontSize="inherit" />
+                )}
+              </IconButton>
+            ) : (
+              !isYoutube && <CircularProgress size={65} />
+            )}
+          </Stack>
           {/* Progress Bar */}
           <Container
             className="swiper-no-swiping"
