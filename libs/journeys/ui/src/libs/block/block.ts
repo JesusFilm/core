@@ -12,26 +12,35 @@ interface ActiveBlockArgs {
   id?: string
 }
 interface UseBlocksHook {
-  prevActiveBlock: (args?: ActiveBlockArgs) => void
+  prevActiveBlock: (args: ActiveBlockArgs) => void
   nextActiveBlock: (args?: ActiveBlockArgs) => void
   setTreeBlocks: (blocks: TreeBlock[]) => void
   treeBlocks: TreeBlock[]
   blockHistory: TreeBlock[]
 }
 
-export function prevActiveBlock(): void {
+export function prevActiveBlock(args: ActiveBlockArgs): void {
   const blockHistory = blockHistoryVar()
-  const updatedBlocks = [...blockHistory.slice(0, -1)]
 
-  console.log('updated block history', updatedBlocks)
+  const lastBlock = blockHistory[
+    blockHistory.length - 1
+  ] as TreeBlock<StepFields>
+
+  const updatedBlocks =
+    lastBlock.id === args.id ? [...blockHistory.slice(0, -1)] : blockHistory
 
   // Use prev block in history else use first block in tree
-  if (updatedBlocks.length > 0) {
-    blockHistoryVar(updatedBlocks)
-  } else {
-    blockHistoryVar([blockHistory[0]])
-  }
-  console.log('blocks - prevActiveBlock', updatedBlocks)
+  // if (updatedBlocks.length > 0) {
+  blockHistoryVar(updatedBlocks)
+  // } else {
+  //   blockHistoryVar([blockHistory[0]])
+  // }
+  console.log(
+    'blocks - prevActiveBlock',
+    lastBlock.parentOrder,
+    blockHistory,
+    updatedBlocks
+  )
 }
 
 export function nextActiveBlock(args?: ActiveBlockArgs): void {

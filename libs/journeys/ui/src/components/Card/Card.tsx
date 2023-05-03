@@ -55,6 +55,9 @@ export function Card({
       (block.__typename === 'ImageBlock' || block.__typename === 'VideoBlock')
   ) as TreeBlock<ImageFields | VideoFields> | undefined
 
+  const videoBlock =
+    coverBlock?.__typename === 'VideoBlock' ? coverBlock : undefined
+
   const imageBlock =
     coverBlock?.__typename === 'ImageBlock' ? coverBlock : undefined
 
@@ -91,15 +94,13 @@ export function Card({
       {coverBlock != null && !fullscreen ? (
         <ContainedCover
           backgroundBlur={cardColor}
-          videoBlock={
-            coverBlock?.__typename === 'VideoBlock' ? coverBlock : undefined
-          }
+          videoBlock={videoBlock}
           imageBlock={imageBlock}
         >
           {renderedChildren}
         </ContainedCover>
       ) : (
-        <ExpandedCover backgroundBlur={cardColor}>
+        <ExpandedCover imageBlock={imageBlock} backgroundBlur={cardColor}>
           {renderedChildren}
         </ExpandedCover>
       )}

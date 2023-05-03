@@ -103,7 +103,15 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
       //   (treeBlock) => treeBlock.id === activeBlock.id
       // )
       const activeIndex = blockHistory[blockHistory.length - 1].parentOrder
+      console.log('useEffect', {
+        swiperDirection: swiper.swipeDirection,
+        swiperActiveIndex: swiper.activeIndex,
+        swiperPreviousIndex: swiper.previousIndex,
+        activeIndex,
+        blockHistory
+      })
       if (activeIndex != null && swiper.activeIndex !== activeIndex) {
+        console.log('useEffect - slideTo', activeIndex)
         const allowFurtherOnSlideChange = false
         swiper.slideTo(activeIndex, 0, allowFurtherOnSlideChange)
       }
@@ -177,7 +185,7 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
             }
           }
         }}
-        onBeforeSlideChangeStart={(swiper) => {
+        onActiveIndexChange={(swiper) => {
           // Indices from useBlock state
           const activeIndex = blockHistory[blockHistory.length - 1].parentOrder
           const previousIndex =
@@ -185,22 +193,30 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
               ? blockHistory[blockHistory.length - 2].parentOrder
               : undefined
 
+          console.log('onActiveIndexChange', {
+            swiperDirection: swiper.swipeDirection,
+            swiperActiveIndex: swiper.activeIndex,
+            swiperPreviousIndex: swiper.previousIndex,
+            activeIndex,
+            previousIndex,
+            blockHistory
+          })
+
           // Update useBlock history stack
           if (activeIndex != null) {
-            if (swiper.swipeDirection === 'prev' && previousIndex != null) {
-              console.log(
-                'change prev block',
-                previousIndex,
-                'from',
-                activeIndex
-              )
+            if (swiper.swipeDirection === 'prev') {
               // Trigger slide change via useEffect
-              if (activeIndex !== swiper.activeIndex) {
-                console.log('triggered due to', activeIndex, swiper.activeIndex)
-                prevActiveBlock()
+              if (
+                activeIndex !== swiper.activeIndex &&
+                swiper.activeIndex < swiper.previousIndex
+              ) {
+                console.log('active index remove', activeIndex)
+                prevActiveBlock({ id: treeBlocks[activeIndex].id })
+              } else {
+                swiper.slideTo(activeIndex, 0, false)
               }
             } else if (swiper.swipeDirection === 'next') {
-              console.log('change next block')
+              console.log('change next block', blockHistory, swiper.activeIndex)
               nextActiveBlock({ id: treeBlocks[swiper.activeIndex].id })
               // Navigate via button
             } else {
