@@ -56,6 +56,8 @@ export function ControlPanel(): ReactElement {
     (block) => block.__typename === 'CardBlock'
   ) as TreeBlock<CardBlock>
 
+  console.log(cardBlock)
+
   const hasVideoBlock =
     cardBlock?.children?.find((block) => block.__typename === 'VideoBlock') !=
       null && cardBlock.coverBlockId == null
@@ -99,13 +101,16 @@ export function ControlPanel(): ReactElement {
               journeyEditContentComponent !== ActiveJourneyEditContent.Canvas
             }
           />
-          <Tooltip
-            title="Blocks cannot be placed on top of Video Block"
-            arrow
-            placement="top"
-            // // open={hasVideoBlock}
-            // disableHoverListener={!hasVideoBlock}
-          >
+          {hasVideoBlock ? (
+            <Tooltip
+              title="Blocks cannot be placed on top of Video Block"
+              arrow
+            >
+              <Box sx={{ flexGrow: 1, display: 'flex' }}>
+                <Tab label="Blocks" sx={{ flexGrow: 1 }} disabled />
+              </Box>
+            </Tooltip>
+          ) : (
             <Tab
               label="Blocks"
               {...tabA11yProps('control-panel', 2)}
@@ -117,7 +122,7 @@ export function ControlPanel(): ReactElement {
                 hasVideoBlock
               }
             />
-          </Tooltip>
+          )}
         </Tabs>
       </Box>
       <TabPanel name="control-panel" value={activeTab} index={0}>
