@@ -99,7 +99,9 @@ export function VideoEvents({
     VIDEO_COLLAPSE_EVENT_CREATE
   )
 
-  const { activeBlock } = useBlocks()
+  const { blockHistory } = useBlocks()
+  const activeBlock = blockHistory[blockHistory.length - 1]
+
   const stepId = activeBlock?.id
 
   const start = startAt ?? 0

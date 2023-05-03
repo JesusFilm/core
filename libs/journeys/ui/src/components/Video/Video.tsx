@@ -1,4 +1,4 @@
-import videojs from 'video.js'
+import videojs, { VideoJsPlayer } from 'video.js'
 import {
   ReactElement,
   useEffect,
@@ -45,7 +45,7 @@ export function Video({
   image,
   title,
   autoplay,
-  startAt,
+  startAt = 0,
   endAt,
   muted,
   posterBlockId,
@@ -56,38 +56,15 @@ export function Video({
   const [loading, setLoading] = useState(true)
   const theme = useTheme()
   const videoRef = useRef<HTMLVideoElement>(null)
-  const playerRef = useRef<videojs.Player>()
-  const { treeBlocks, activeBlock } = useBlocks()
-
-  const eventVideoTitle = video?.title[0].value ?? title
-  const eventVideoId = video?.id ?? videoId
-
-  const endTimes = children
-    .filter((block) => block.__typename === 'VideoTriggerBlock')
-    .map((block) => (block as VideoTriggerFields).triggerStart)
-  const progressEndTime = Math.min(
-    ...endTimes,
-    endAt ?? playerRef.current?.duration()
-  )
-
-  // Pause video if admin
+  const [player, setPlayer] = useState<VideoJsPlayer>()
   const {
     state: { selectedBlock }
   } = useEditor()
-  useEffect(() => {
-    if (selectedBlock !== undefined) {
-      playerRef.current?.pause()
-    }
-  }, [selectedBlock])
+  const { blockHistory } = useBlocks()
+  const activeBlock = blockHistory[blockHistory.length - 1]
 
-  // Pause video if card not active
-  useEffect(() => {
-    if (isActiveBlockOrDescendant(blockId) && autoplay === true) {
-      void playerRef.current?.play()
-    } else {
-      void playerRef.current?.pause()
-    }
-  }, [activeBlock, blockId, autoplay, treeBlocks])
+  const eventVideoTitle = video?.title[0].value ?? title
+  const eventVideoId = video?.id ?? videoId
 
   // Setup poster image
   const posterBlock = children.find(
@@ -105,67 +82,86 @@ export function Video({
   // Initiate video player
   useEffect(() => {
     if (videoRef.current != null) {
-      playerRef.current = videojs(videoRef.current, {
-        controls: false,
-        controlBar: false,
-        bigPlayButton: false,
-        // Make video fill container instead of set aspect ratio
-        fill: true,
-        userActions: {
-          hotkeys: true,
-          doubleClick: true
-        },
-        responsive: true,
-        muted: muted === true,
-        startAt,
-        endAt,
-        // VideoJS blur background persists so we cover video when using png poster on non-autoplay videos
-        poster: blurBackground
-      })
-      playerRef.current.on('ready', () => {
-        playerRef.current?.currentTime(startAt ?? 0)
-        // plays youTube videos at the start time
-        if (source === VideoBlockSource.youTube && autoplay === true)
-          void playerRef.current?.play()
-      })
+      setPlayer(
+        videojs(videoRef.current, {
+          controls: false,
+          controlBar: false,
+          bigPlayButton: false,
+          // Make video fill container instead of set aspect ratio
+          fill: true,
+          userActions: {
+            hotkeys: true,
+            doubleClick: true
+          },
+          responsive: true,
+          muted: muted === true,
+          // VideoJS blur background persists so we cover video when using png poster on non-autoplay videos
+          poster: blurBackground
+        })
+      )
+    }
+  }, [startAt, endAt, muted, blurBackground])
 
+  // Initiate video player listeners
+  useEffect(() => {
+    if (player != null) {
       if (selectedBlock === undefined) {
+        player.on('ready', () => {
+          player.currentTime(startAt ?? 0)
+          // plays youTube videos at the start time
+          if (source === VideoBlockSource.youTube && autoplay === true)
+            void player?.play()
+        })
+
         // Video jumps to new time and finishes loading - occurs on autoplay
-        playerRef.current.on('seeked', () => {
+        player.on('seeked', () => {
           if (autoplay === true) setLoading(false)
         })
-        playerRef.current.on('playing', () => {
+        player.on('playing', () => {
           if (autoplay !== true) setLoading(false)
         })
-        playerRef.current.on('ended', () => {
-          if (playerRef?.current?.isFullscreen() === true)
-            playerRef.current?.exitFullscreen()
+        player.on('ended', () => {
+          if (player.isFullscreen()) player.exitFullscreen()
         })
-        playerRef.current.on('timeupdate', () => {
-          if (playerRef.current != null) {
+        player.on('timeupdate', () => {
+          if (player != null) {
             if (
               action == null &&
               endAt != null &&
-              playerRef.current.currentTime() >= endAt
+              player.currentTime() >= endAt
             ) {
-              playerRef.current.pause()
+              player.pause()
             }
           }
         })
       }
     }
-  }, [
-    startAt,
-    endAt,
-    muted,
-    autoplay,
-    action,
-    blockId,
-    posterBlock,
-    selectedBlock,
-    blurBackground,
-    source
-  ])
+  }, [player, selectedBlock, startAt, endAt, autoplay, action, source])
+
+  const endTimes = children
+    .filter((block) => block.__typename === 'VideoTriggerBlock')
+    .map((block) => (block as VideoTriggerFields).triggerStart)
+  const progressEndTime =
+    player != null ? Math.min(...endTimes, endAt ?? player.duration()) : 0
+
+  // Pause video if admin
+  useEffect(() => {
+    if (selectedBlock !== undefined && player != null) {
+      player.pause()
+    }
+  }, [selectedBlock, player])
+
+  // Pause video if card not active
+  useEffect(() => {
+    // console.log('changed card', blockId, previousBlocks)
+    if (player != null) {
+      if (isActiveBlockOrDescendant(blockId) && autoplay === true) {
+        void player.play()
+      } else {
+        void player.pause()
+      }
+    }
+  }, [activeBlock, blockId, autoplay, player])
 
   // Set video layout
   let videoFit: CSSProperties['objectFit']
@@ -190,20 +186,20 @@ export function Video({
 
   //  Set video src
   useEffect(() => {
-    if (playerRef.current != null) {
+    if (player != null) {
       if (source === VideoBlockSource.internal && video?.variant?.hls != null) {
-        playerRef.current.src({
+        player.src({
           src: video.variant?.hls ?? '',
           type: 'application/x-mpegURL'
         })
       } else if (source === VideoBlockSource.youTube && videoId != null) {
-        playerRef.current.src({
+        player.src({
           src: `https://www.youtube.com/watch?v=${videoId}`,
           type: 'video/youtube'
         })
       }
     }
-  }, [playerRef, video, videoId])
+  }, [player, video, videoId])
 
   return (
     <Box
@@ -230,19 +226,17 @@ export function Video({
         }
       }}
     >
-      {playerRef.current != null &&
-        eventVideoTitle != null &&
-        eventVideoId != null && (
-          <VideoEvents
-            player={playerRef.current}
-            blockId={blockId}
-            videoTitle={eventVideoTitle}
-            source={source}
-            videoId={eventVideoId}
-            startAt={startAt}
-            endAt={endAt}
-          />
-        )}
+      {player != null && eventVideoTitle != null && eventVideoId != null && (
+        <VideoEvents
+          player={player}
+          blockId={blockId}
+          videoTitle={eventVideoTitle}
+          source={source}
+          videoId={eventVideoId}
+          startAt={startAt}
+          endAt={endAt}
+        />
+      )}
       {videoId != null ? (
         <>
           <StyledVideo
@@ -263,9 +257,9 @@ export function Video({
               }
             }}
           />
-          {playerRef.current != null && (
+          {player != null && (
             <VideoControls
-              player={playerRef.current}
+              player={player}
               startAt={startAt ?? 0}
               endAt={progressEndTime}
               isYoutube={source === VideoBlockSource.youTube}
@@ -277,7 +271,7 @@ export function Video({
               option.__typename === 'VideoTriggerBlock' && (
                 <VideoTrigger
                   key={`video-trigger-${option.id}`}
-                  player={playerRef.current}
+                  player={player}
                   {...option}
                 />
               )
@@ -285,7 +279,7 @@ export function Video({
           {/* Default navigate to next card on video end */}
           {action != null && endAt != null && endAt > 0 && (
             <VideoTrigger
-              player={playerRef.current}
+              player={player}
               triggerStart={endAt}
               triggerAction={action}
             />

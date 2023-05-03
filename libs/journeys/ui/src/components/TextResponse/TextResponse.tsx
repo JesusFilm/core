@@ -62,7 +62,8 @@ export const TextResponse = ({
 
   const { admin } = useJourney()
   const { enqueueSnackbar } = useSnackbar()
-  const { activeBlock, treeBlocks } = useBlocks()
+  const { treeBlocks, blockHistory } = useBlocks()
+  const activeBlock = blockHistory[blockHistory.length - 1]
 
   const heading =
     activeBlock != null

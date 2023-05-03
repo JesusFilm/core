@@ -6,9 +6,9 @@ import {
   useState,
   CSSProperties
 } from 'react'
-import videojs from 'video.js'
+import videojs, { VideoJsPlayer } from 'video.js'
 import { NextImage } from '@core/shared/ui/NextImage'
-import { useTheme, styled } from '@mui/material/styles'
+import { styled } from '@mui/material/styles'
 import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
 import type { TreeBlock } from '../../../libs/block'
@@ -38,8 +38,7 @@ export function ContainedCover({
   imageBlock
 }: ContainedCoverProps): ReactElement {
   const videoRef = useRef<HTMLVideoElement>(null)
-  const playerRef = useRef<videojs.Player>()
-  const theme = useTheme()
+  const [player, setPlayer] = useState<VideoJsPlayer>()
   const [loading, setLoading] = useState(true)
 
   const isYouTube = videoBlock?.source === VideoBlockSource.youTube
@@ -64,48 +63,54 @@ export function ContainedCover({
       // autoplay when video is YouTube on iOS does not work. We should disable autoplay in that case.
       const isYouTubeAndiOS =
         isYouTube && /iPhone|iPad|iPod/i.test(navigator?.userAgent)
-      playerRef.current = videojs(videoRef.current, {
-        autoplay: !isYouTubeAndiOS,
-        controls: false,
-        controlBar: false,
-        bigPlayButton: false,
-        preload: 'metadata',
-        // Make video fill container instead of set aspect ratio
-        fill: true,
-        userActions: {
-          hotkeys: false,
-          doubleClick: false
-        },
-        responsive: true,
-        muted: true,
-        loop: true
-      })
-      playerRef.current.on('ready', () => {
-        playerRef.current?.currentTime(videoBlock?.startAt ?? 0)
+      setPlayer(
+        videojs(videoRef.current, {
+          autoplay: !isYouTubeAndiOS,
+          controls: false,
+          controlBar: false,
+          bigPlayButton: false,
+          preload: 'metadata',
+          // Make video fill container instead of set aspect ratio
+          fill: true,
+          userActions: {
+            hotkeys: false,
+            doubleClick: false
+          },
+          responsive: true,
+          muted: true,
+          loop: true
+        })
+      )
+    }
+  }, [isYouTube])
+
+  useEffect(() => {
+    if (player != null) {
+      player.on('ready', () => {
+        player?.currentTime(videoBlock?.startAt ?? 0)
         // plays youTube videos at the start time
-        if (videoBlock?.source === VideoBlockSource.youTube)
-          void playerRef.current?.play()
+        if (videoBlock?.source === VideoBlockSource.youTube) void player?.play()
       })
       // Video jumps to new time and finishes loading
-      playerRef.current.on('seeked', () => {
+      player.on('seeked', () => {
         setLoading(false)
       })
-      playerRef.current.on('timeupdate', () => {
+      player.on('timeupdate', () => {
         if (
           videoBlock?.startAt != null &&
           videoBlock?.endAt != null &&
           videoBlock?.endAt > 0 &&
-          playerRef.current != null
+          player != null
         ) {
-          const currentTime = playerRef.current.currentTime()
+          const currentTime = player.currentTime()
           const { startAt, endAt } = videoBlock
           if (currentTime < (startAt ?? 0) || currentTime >= endAt) {
-            playerRef.current.currentTime(startAt ?? 0)
+            player.currentTime(startAt ?? 0)
           }
         }
       })
     }
-  }, [imageBlock, theme, videoBlock, posterImage, isYouTube])
+  }, [player, videoBlock])
 
   let videoFit: CSSProperties['objectFit']
   if (videoBlock?.source === VideoBlockSource.youTube) {
@@ -124,12 +129,12 @@ export function ContainedCover({
 
   //  Set video src
   useEffect(() => {
-    if (playerRef.current != null && videoBlock != null) {
+    if (player != null && videoBlock != null) {
       if (
         videoBlock.source === VideoBlockSource.internal &&
         videoBlock.video?.variant?.hls != null
       ) {
-        playerRef.current.src({
+        player.src({
           src: videoBlock.video.variant?.hls ?? '',
           type: 'application/x-mpegURL'
         })
@@ -137,13 +142,13 @@ export function ContainedCover({
         videoBlock.source === VideoBlockSource.youTube &&
         videoBlock.videoId != null
       ) {
-        playerRef.current.src({
+        player.src({
           src: `https://www.youtube.com/watch?v=${videoBlock?.videoId}`,
           type: 'video/youtube'
         })
       }
     }
-  }, [playerRef, videoBlock])
+  }, [player, videoBlock])
 
   return (
     <>

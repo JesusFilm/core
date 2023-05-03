@@ -76,7 +76,7 @@ export function VideoControls({
     fscreen.addEventListener('fullscreenchange', () => {
       setFullscreen(fscreen.fullscreenElement != null)
     })
-  }, [player, setFullscreen, loading])
+  }, [player, setFullscreen, loading, startAt])
 
   function handlePlay(): void {
     if (!play) {

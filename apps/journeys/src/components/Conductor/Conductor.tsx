@@ -3,7 +3,6 @@ import SwiperCore, {
   Navigation,
   Swiper as SwiperType,
   Pagination,
-  Keyboard,
   EffectFade
 } from 'swiper'
 import { Swiper, SwiperSlide } from 'swiper/react'
@@ -12,7 +11,6 @@ import 'swiper/css/pagination'
 import 'swiper/css/effect-fade'
 import 'swiper/swiper.min.css'
 
-import { findIndex } from 'lodash'
 import { styled } from '@mui/material/styles'
 import {
   nextActiveBlock,
@@ -61,19 +59,11 @@ const StyledSwiperContainer = styled(Swiper)(({ theme }) => ({
 const StyledSwiperSlide = styled(SwiperSlide)(() => ({}))
 
 export function Conductor({ blocks }: ConductorProps): ReactElement {
-  const { setTreeBlocks, treeBlocks, activeBlock, previousBlocks } = useBlocks()
+  const { setTreeBlocks, treeBlocks, blockHistory } = useBlocks()
   const [swiper, setSwiper] = useState<SwiperCore>()
   const swiperRef = useRef<SwiperType>()
-
   const { journey, admin } = useJourney()
   const { rtl } = getJourneyRTL(journey)
-
-  // const onFirstStep = activeBlock === treeBlocks[0]
-  // const onLastStep = activeBlock === last(treeBlocks)
-  // const showLeftButton = (!rtl && !onFirstStep) || (rtl && !onLastStep)
-  // const showRightButton = (!rtl && !onLastStep) || (rtl && !onFirstStep)
-  // const disableLeftButton = !rtl || (rtl && activeBlock?.locked === true)
-  // const disableRightButton = rtl || (!rtl && activeBlock?.locked === true)
 
   const [journeyViewEventCreate] = useMutation<JourneyViewEventCreate>(
     JOURNEY_VIEW_EVENT_CREATE
@@ -107,41 +97,41 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
 
   // Update Swiper - navigate to activeBlock after NavigateBlockAction & going back to node of a branch
   useEffect(() => {
-    if (swiper != null && activeBlock != null && treeBlocks != null) {
-      const index = findIndex(
-        treeBlocks,
-        (treeBlock) => treeBlock.id === activeBlock.id
-      )
-      if (index > -1 && swiper.activeIndex !== index) {
-        console.log('button navigate', index, swiper.activeIndex)
+    if (swiper != null && blockHistory.length > 0) {
+      // const index = findIndex(
+      //   treeBlocks,
+      //   (treeBlock) => treeBlock.id === activeBlock.id
+      // )
+      const activeIndex = blockHistory[blockHistory.length - 1].parentOrder
+      if (activeIndex != null && swiper.activeIndex !== activeIndex) {
         const allowFurtherOnSlideChange = false
-        swiper.slideTo(index, 0, allowFurtherOnSlideChange)
+        swiper.slideTo(activeIndex, 0, allowFurtherOnSlideChange)
       }
     }
-  }, [swiper, activeBlock, treeBlocks])
+  }, [swiper, blockHistory])
 
   // Update activeBlock after Swiper swipe/tap navigation
-  function handleNext(activeIndex: number): void {
-    if (
-      activeBlock != null &&
-      !activeBlock.locked &&
-      activeBlock.id !== treeBlocks[activeIndex].id
-    )
-      console.log('handleNext', activeIndex)
-    nextActiveBlock({ id: undefined })
-  }
+  // function handleNext(activeIndex: number): void {
+  //   if (
+  //     activeBlock != null &&
+  //     !activeBlock.locked &&
+  //     activeBlock.id !== treeBlocks[activeIndex].id
+  //   )
+  //     console.log('handleNext', activeIndex)
+  //   nextActiveBlock({ id: undefined })
+  // }
 
-  function handlePrev(activeIndex: number): void {
-    if (activeBlock != null && activeBlock.id !== treeBlocks[activeIndex].id) {
-      console.log('handlePrev', activeIndex)
-      prevActiveBlock()
-    }
-  }
+  // function handlePrev(activeIndex: number): void {
+  //   if (activeBlock != null && activeBlock.id !== treeBlocks[activeIndex].id) {
+  //     console.log('handlePrev', activeIndex)
+  //     prevActiveBlock()
+  //   }
+  // }
 
   return (
     <Div100vh style={{ overflowY: 'auto', WebkitOverflowScrolling: 'touch' }}>
       <StyledSwiperContainer
-        modules={[Navigation, Pagination, Keyboard, EffectFade]}
+        modules={[Navigation, Pagination, EffectFade]}
         onBeforeInit={(swiper) => {
           swiperRef.current = swiper
         }}
@@ -152,7 +142,6 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
         pagination={{ dynamicBullets: true }}
         effect="fade"
         fadeEffect={{ crossFade: true }}
-        keyboard
         preventInteractionOnTransition
         dir={!rtl ? 'ltr' : 'rtl'}
         speed={0}
@@ -165,20 +154,20 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
             )
 
             if (visibleSlides.length === 2) {
-              // Show - swiper-slide-active && swiper-slide-visible when swiper-slide-prev && swiper-slide-visible
               if (visibleSlides[0].classList.contains('swiper-slide-prev')) {
                 visibleSlides[0].style.opacity = '0'
                 visibleSlides[1].style.opacity = '1'
+                if (blockHistory.length > 1) {
+                  swiper.slides[
+                    blockHistory[blockHistory.length - 2].parentOrder ?? 0
+                  ].style.opacity = '1'
+                }
               }
 
               if (visibleSlides[1].classList.contains('swiper-slide-next')) {
                 if (swiper.swipeDirection === 'prev') {
-                  // Hide swiper-slide-active && swiper-slide-visible when swiper-slide-next && swiper-slide-visible
                   visibleSlides[0].style.opacity = '0'
-                  visibleSlides[1].style.opacity = '0'
-                  swiper.slides[
-                    previousBlocks[previousBlocks.length - 2].parentOrder
-                  ].style.opacity = '1'
+                  visibleSlides[1].style.opacity = '1'
                 } else {
                   // Keep normal transition
                   visibleSlides[0].style.opacity = '1'
@@ -189,24 +178,34 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
           }
         }}
         onBeforeSlideChangeStart={(swiper) => {
-          console.log('swiper', swiper)
-          // Update Swiper navigation after
-          if (treeBlocks[swiper.activeIndex] !== activeBlock) {
-            const index = findIndex(
-              treeBlocks,
-              (treeBlock) => treeBlock.id === activeBlock?.id
-            )
-            if (index > swiper.activeIndex) {
-              console.log('change prev block')
-              prevActiveBlock()
-            } else {
+          // Indices from useBlock state
+          const activeIndex = blockHistory[blockHistory.length - 1].parentOrder
+          const previousIndex =
+            blockHistory.length >= 2
+              ? blockHistory[blockHistory.length - 2].parentOrder
+              : undefined
+
+          // Update useBlock history stack
+          if (activeIndex != null) {
+            if (swiper.swipeDirection === 'prev' && previousIndex != null) {
+              console.log(
+                'change prev block',
+                previousIndex,
+                'from',
+                activeIndex
+              )
+              // Trigger slide change via useEffect
+              if (activeIndex !== swiper.activeIndex) {
+                console.log('triggered due to', activeIndex, swiper.activeIndex)
+                prevActiveBlock()
+              }
+            } else if (swiper.swipeDirection === 'next') {
               console.log('change next block')
               nextActiveBlock({ id: treeBlocks[swiper.activeIndex].id })
+              // Navigate via button
+            } else {
+              // useBlock history updated in action.ts
             }
-          } else {
-            console.log('normal swiper navigate')
-            const allowFurtherOnSlideChange = false
-            swiper.slideTo(swiper.activeIndex, 0, allowFurtherOnSlideChange)
           }
         }}
       >
