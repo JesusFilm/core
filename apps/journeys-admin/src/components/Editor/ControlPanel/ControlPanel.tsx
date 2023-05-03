@@ -105,6 +105,7 @@ export function ControlPanel(): ReactElement {
             <Tooltip
               title="Blocks cannot be placed on top of Video Block"
               arrow
+              placement="top"
             >
               <Box sx={{ flexGrow: 1, display: 'flex' }}>
                 <Tab label="Blocks" sx={{ flexGrow: 1 }} disabled />
