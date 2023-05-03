@@ -1,6 +1,7 @@
 import Box from '@mui/material/Box'
 import Tab from '@mui/material/Tab'
 import Tabs from '@mui/material/Tabs'
+import Tooltip from '@mui/material/Tooltip'
 import { ReactElement, SyntheticEvent } from 'react'
 import {
   useEditor,
@@ -55,8 +56,6 @@ export function ControlPanel(): ReactElement {
     (block) => block.__typename === 'CardBlock'
   ) as TreeBlock<CardBlock>
 
-  console.log(cardBlock)
-
   const hasVideoBlock =
     cardBlock?.children?.find((block) => block.__typename === 'VideoBlock') !=
       null && cardBlock.coverBlockId == null
@@ -100,16 +99,25 @@ export function ControlPanel(): ReactElement {
               journeyEditContentComponent !== ActiveJourneyEditContent.Canvas
             }
           />
-          <Tab
-            label="Blocks"
-            {...tabA11yProps('control-panel', 2)}
-            sx={{ flexGrow: 1 }}
-            disabled={
-              steps == null ||
-              journeyEditContentComponent !== ActiveJourneyEditContent.Canvas ||
-              hasVideoBlock
-            }
-          />
+          <Tooltip
+            title="Blocks cannot be placed on top of Video Block"
+            arrow
+            placement="top"
+            // // open={hasVideoBlock}
+            // disableHoverListener={!hasVideoBlock}
+          >
+            <Tab
+              label="Blocks"
+              {...tabA11yProps('control-panel', 2)}
+              sx={{ flexGrow: 1 }}
+              disabled={
+                steps == null ||
+                journeyEditContentComponent !==
+                  ActiveJourneyEditContent.Canvas ||
+                hasVideoBlock
+              }
+            />
+          </Tooltip>
         </Tabs>
       </Box>
       <TabPanel name="control-panel" value={activeTab} index={0}>

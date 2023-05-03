@@ -759,7 +759,7 @@ describe('ControlPanel', () => {
     })
   })
 
-  it('should keep Journey tab open when selecting a card', () => {
+  it('should keep Journey tab open when selecting a card', async () => {
     const { getByRole, getByTestId } = render(
       <MockedProvider>
         <JourneyProvider
@@ -867,5 +867,15 @@ describe('ControlPanel', () => {
         'true'
       )
     )
+  })
+  it('should allow blocks to be added with video selected as background', async () => {
+    console.log('hello')
+  })
+  it('should not blocks to be added when a Video Block is present', async () => {
+    // todo: write this test
+  })
+
+  it('should show a tooltip when disabled blocks tab is hovered over', async () => {
+    // todo: write this test
   })
 })
