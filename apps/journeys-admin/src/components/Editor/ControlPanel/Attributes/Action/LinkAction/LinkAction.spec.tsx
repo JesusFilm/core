@@ -9,6 +9,33 @@ import { LinkAction, LINK_ACTION_UPDATE } from './LinkAction'
 
 describe('LinkAction', () => {
   const selectedBlock = steps[1].children[0].children[3]
+
+  const result = jest.fn(() => ({
+    data: {
+      blockUpdateLinkAction: {
+        id: selectedBlock.id,
+        gtmEventName: 'gtmEventName',
+        url: 'https://www.github.com'
+      }
+    }
+  }))
+
+  const mocks = [
+    {
+      request: {
+        query: LINK_ACTION_UPDATE,
+        variables: {
+          id: selectedBlock.id,
+          journeyId: 'journeyId',
+          input: {
+            url: 'https://www.github.com'
+          }
+        }
+      },
+      result
+    }
+  ]
+
   it('defaults to place holder text', () => {
     const { getByLabelText } = render(
       <MockedProvider>
@@ -42,35 +69,8 @@ describe('LinkAction', () => {
       }
     })
 
-    const result = jest.fn(() => ({
-      data: {
-        blockUpdateLinkAction: {
-          id: selectedBlock.id,
-          gtmEventName: 'gtmEventName',
-          url: 'https://www.github.com'
-        }
-      }
-    }))
-
     const { getByRole } = render(
-      <MockedProvider
-        mocks={[
-          {
-            request: {
-              query: LINK_ACTION_UPDATE,
-              variables: {
-                id: selectedBlock.id,
-                journeyId: 'journeyId',
-                input: {
-                  url: 'https://www.github.com'
-                }
-              }
-            },
-            result
-          }
-        ]}
-        cache={cache}
-      >
+      <MockedProvider mocks={mocks} cache={cache}>
         <JourneyProvider
           value={{
             journey: { id: 'journeyId' } as unknown as Journey,
@@ -112,7 +112,7 @@ describe('LinkAction', () => {
 
   it('accepts links without protocol as a URL', async () => {
     const { queryByText, getByRole } = render(
-      <MockedProvider>
+      <MockedProvider mocks={mocks}>
         <EditorProvider>
           <LinkAction />
         </EditorProvider>
@@ -125,11 +125,12 @@ describe('LinkAction', () => {
     await waitFor(() =>
       expect(queryByText('Invalid URL')).not.toBeInTheDocument()
     )
+    await waitFor(() => expect(result).toHaveBeenCalled())
   })
 
   it('accepts deep links as a URL', async () => {
     const { queryByText, getByRole } = render(
-      <MockedProvider>
+      <MockedProvider mocks={mocks}>
         <EditorProvider>
           <LinkAction />
         </EditorProvider>
@@ -142,11 +143,12 @@ describe('LinkAction', () => {
     await waitFor(() =>
       expect(queryByText('Invalid URL')).not.toBeInTheDocument()
     )
+    await waitFor(() => expect(result).toHaveBeenCalled())
   })
 
   it('rejects mailto links as a URL', async () => {
     const { getByText, getByRole } = render(
-      <MockedProvider>
+      <MockedProvider mocks={mocks}>
         <EditorProvider>
           <LinkAction />
         </EditorProvider>
@@ -157,5 +159,6 @@ describe('LinkAction', () => {
     })
     fireEvent.blur(getByRole('textbox'))
     await waitFor(() => expect(getByText('Invalid URL')).toBeInTheDocument())
+    await waitFor(() => expect(result).toHaveBeenCalled())
   })
 })

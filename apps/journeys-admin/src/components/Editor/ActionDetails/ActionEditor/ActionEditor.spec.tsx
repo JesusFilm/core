@@ -90,6 +90,8 @@ describe('ActionDetails', () => {
     await waitFor(() =>
       expect(queryByText('Invalid URL')).not.toBeInTheDocument()
     )
+    await waitFor(() => expect(result1).toHaveBeenCalled())
+    await waitFor(() => expect(result2).toHaveBeenCalled())
   })
 
   it('accept deep links as a URL', async () => {
@@ -107,6 +109,8 @@ describe('ActionDetails', () => {
     await waitFor(() =>
       expect(queryByText('Invalid URL')).not.toBeInTheDocument()
     )
+    await waitFor(() => expect(result1).toHaveBeenCalled())
+    await waitFor(() => expect(result2).toHaveBeenCalled())
   })
 
   it('rejects mailto links as a URL', async () => {
@@ -124,5 +128,7 @@ describe('ActionDetails', () => {
     await waitFor(() =>
       expect(queryByText('Invalid URL')).not.toBeInTheDocument()
     )
+    await waitFor(() => expect(result1).toHaveBeenCalled())
+    await waitFor(() => expect(result2).toHaveBeenCalled())
   })
 })
