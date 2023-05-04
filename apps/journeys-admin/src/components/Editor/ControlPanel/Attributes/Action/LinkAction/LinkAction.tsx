@@ -6,7 +6,6 @@ import { gql, useMutation } from '@apollo/client'
 import TextField from '@mui/material/TextField'
 import { Formik, Form } from 'formik'
 import { object, string } from 'yup'
-import { noop } from 'lodash'
 import InputAdornment from '@mui/material/InputAdornment'
 import InsertLinkRoundedIcon from '@mui/icons-material/InsertLinkRounded'
 import Box from '@mui/material/Box'
@@ -67,11 +66,9 @@ export function LinkAction(): ReactElement {
       .test('valid-url', 'Invalid URL', checkURL)
   })
 
-  async function handleSubmit(e: React.FocusEvent): Promise<void> {
-    const target = e.target as HTMLInputElement
-    const url = /^\w+:\/\//.test(target.value) // checks if url has a protocol
-      ? target.value
-      : `https://${target.value}`
+  async function handleSubmit(src: string): Promise<void> {
+    // checks if url has a protocol
+    const url = /^\w+:\/\//.test(src) ? src : `https://${src}`
     if (selectedBlock != null && journey != null) {
       const { id, __typename: typeName } = selectedBlock
       await linkActionUpdate({
@@ -104,7 +101,9 @@ export function LinkAction(): ReactElement {
       <Formik
         initialValues={initialValues}
         validationSchema={linkActionSchema}
-        onSubmit={noop}
+        onSubmit={async (values): Promise<void> => {
+          await handleSubmit(values.link)
+        }}
         enableReinitialize
       >
         {({ values, touched, errors, handleChange, handleBlur }) => (
@@ -127,7 +126,7 @@ export function LinkAction(): ReactElement {
               }}
               onBlur={(e) => {
                 handleBlur(e)
-                errors.link == null && handleSubmit(e)
+                errors.link == null && handleSubmit(e.target.value)
               }}
               onChange={handleChange}
             />

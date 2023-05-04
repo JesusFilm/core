@@ -3,7 +3,6 @@ import Box from '@mui/material/Box'
 import { Formik, Form } from 'formik'
 import InputAdornment from '@mui/material/InputAdornment'
 import TextField from '@mui/material/TextField'
-import { noop } from 'lodash'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { gql, useMutation } from '@apollo/client'
 import { object, string } from 'yup'
@@ -74,13 +73,10 @@ export function ActionEditor({
       .required('Required')
   })
 
-  async function handleSubmit(e: React.FocusEvent): Promise<void> {
+  async function handleSubmit(src: string): Promise<void> {
     if (journey == null) return
-    const target = e.target as HTMLInputElement
     // checks if url has a protocol
-    const url = /^\w+:\/\//.test(target.value)
-      ? target.value
-      : `https://${target.value}`
+    const url = /^\w+:\/\//.test(src) ? src : `https://${src}`
     blocks.map(async (block) => {
       await linkActionUpdate({
         variables: {
@@ -129,7 +125,9 @@ export function ActionEditor({
           link: url ?? ''
         }}
         validationSchema={linkActionSchema}
-        onSubmit={noop}
+        onSubmit={async (values): Promise<void> => {
+          await handleSubmit(values.link)
+        }}
         enableReinitialize
       >
         {({ values, touched, errors, handleChange, handleBlur }) => (
@@ -152,7 +150,7 @@ export function ActionEditor({
               }}
               onBlur={(e) => {
                 handleBlur(e)
-                errors.link == null && handleSubmit(e)
+                errors.link == null && handleSubmit(e.target.value)
               }}
               onChange={handleChange}
             />
