@@ -73,7 +73,7 @@ describe('Step', () => {
       await resolver.stepViewEventCreate('userId', input)
 
       expect(vService.update).toHaveBeenCalledWith('visitor.id', {
-        lastStepViewedAt: new Date().toISOString()
+        lastStepViewedAt: new Date()
       })
     })
   })

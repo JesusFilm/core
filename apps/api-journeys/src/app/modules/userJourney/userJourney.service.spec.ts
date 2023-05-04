@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { v4 as uuidv4 } from 'uuid'
-import { UserJourney, Journey } from '.prisma/api-journeys-client'
+import { Journey } from '.prisma/api-journeys-client'
 
 import {
   IdType,
@@ -42,12 +42,11 @@ describe('UserJourneyService', () => {
     jest.resetAllMocks()
   })
 
-  const userJourney: UserJourney = {
+  const userJourney = {
     id: '1',
     userId: '1',
     journeyId: '2',
-    role: UserJourneyRole.editor,
-    openedAt: new Date()
+    role: UserJourneyRole.editor
   }
 
   const userJourneyInvited = {

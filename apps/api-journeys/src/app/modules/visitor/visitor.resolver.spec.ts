@@ -59,20 +59,6 @@ describe('VisitorResolver', () => {
     teamId: 'teamId'
   }
 
-  // const memberService = {
-  //   provide: MemberService,
-  //   useFactory: () => ({
-  //     getMemberByTeamId: jest.fn((_userId, teamId) => {
-  //       switch (teamId) {
-  //         case 'teamId':
-  //           return member
-  //         case 'differentTeamId':
-  //           return undefined
-  //       }
-  //     })
-  //   })
-  // }
-
   const event = {
     id: 'eventId'
   }
