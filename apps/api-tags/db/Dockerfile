@@ -10,11 +10,7 @@ WORKDIR /app
 COPY ./tsconfig.base.json /app/tsconfig.base.json
 COPY ./apps/api-tags /app/apps/api-tags
 
-WORKDIR /prisma
-COPY ./apps/api-tags/db .
-RUN npm install --silent prisma@^3.15.2
-RUN npx prisma@^3.15.2 generate
+RUN npm install --silent arangojs@^7.6.1 ts-node@^10.9.1 tslib@^2.3.1 prisma@^4.13.0 @prisma/client@^4.13.0
+RUN npx prisma@^4.13.0 generate --schema apps/api-tags/db/prisma.schema
 
-WORKDIR /app
-RUN npm install --silent arangojs@^7.6.1 ts-node@^10.9.1 tslib@^2.3.1 prisma@^3.15.2 @prisma/client@^3.15.2
-CMD npx prisma@^3.15.2 migrate deploy --schema /prisma/schema.prisma; npx ts-node /app/apps/api-tags/db/seed.ts
+CMD npx prisma@^4.13.0 migrate deploy --schema /prisma/schema.prisma; npx ts-node /app/apps/api-tags/db/seed.ts
