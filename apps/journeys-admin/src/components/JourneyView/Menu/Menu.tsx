@@ -197,7 +197,7 @@ export function Menu(): ReactElement {
                 onClick={handlePublish}
               />
             )}
-            {journey.template === true && isPublisher !== true && (
+            {journey.template === true && (
               <MenuItem
                 label="Use Template"
                 icon={<CheckRounded />}
