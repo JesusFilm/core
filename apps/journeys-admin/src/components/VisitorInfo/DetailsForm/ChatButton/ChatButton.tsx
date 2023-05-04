@@ -4,8 +4,8 @@ import Button from '@mui/material/Button'
 import { MessagePlatform } from '../../../../../__generated__/globalTypes'
 
 interface Props {
-  messagePlatform: MessagePlatform | null
-  messagePlatformId: string | null
+  messagePlatform?: MessagePlatform | null
+  messagePlatformId?: string | null
 }
 
 export function ChatButton({
