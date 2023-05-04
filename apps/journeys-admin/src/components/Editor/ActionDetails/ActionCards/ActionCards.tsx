@@ -38,12 +38,12 @@ export function ActionCards({ url }: ActionCardsProps): ReactElement {
   }
 
   return (
-    <Stack gap={6} sx={{ mt: 5, mb: 14 }}>
+    <Stack gap={6} sx={{ mb: 14 }}>
       <Box>
         <Typography variant="subtitle2" color="secondary.dark">
           Appears on the cards
         </Typography>
-        <Typography variant="caption" sx={{ opacity: 0.5 }}>
+        <Typography variant="caption" sx={{ color: 'text.secondary' }}>
           Once you replace the URL it will apply on each of the following cards:
         </Typography>
       </Box>
