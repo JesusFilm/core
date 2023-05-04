@@ -5,14 +5,12 @@ import {
   VisitorStatus,
   VisitorUpdateInput
 } from '../../../../__generated__/globalTypes'
-import { GET_VISITOR, VISITOR_UPDATE } from './DetailsForm'
+import { GET_VISITOR_FOR_FORM, VISITOR_UPDATE } from './DetailsForm'
 
 const getVisitor: GetVisitor = {
   visitor: {
     __typename: 'Visitor',
     id: 'visitorId',
-    countryCode: 'NZ',
-    lastChatStartedAt: '2022-11-02T03:20:26.368Z',
     messagePlatformId: '0800123456',
     messagePlatform: MessagePlatform.whatsApp,
     name: 'Bilbo Baggins',
@@ -23,7 +21,7 @@ const getVisitor: GetVisitor = {
 
 export const getVisitorMock = {
   request: {
-    query: GET_VISITOR,
+    query: GET_VISITOR_FOR_FORM,
     variables: {
       id: 'visitorId'
     }
@@ -37,8 +35,6 @@ const getVisitorUnfilled: GetVisitor = {
   visitor: {
     __typename: 'Visitor',
     id: 'visitorId',
-    countryCode: null,
-    lastChatStartedAt: null,
     messagePlatformId: null,
     messagePlatform: null,
     name: null,
@@ -49,7 +45,7 @@ const getVisitorUnfilled: GetVisitor = {
 
 export const getVisitorUnfilledMock = {
   request: {
-    query: GET_VISITOR,
+    query: GET_VISITOR_FOR_FORM,
     variables: {
       id: 'visitorId'
     }
