@@ -23,13 +23,14 @@ describe('JourneyProfileResolver', () => {
     }).compile()
     resolver = module.get<JourneyProfileResolver>(JourneyProfileResolver)
     prisma = module.get<PrismaService>(PrismaService)
+    prisma.journeyProfile.findUnique = jest.fn().mockResolvedValueOnce(profile)
+    prisma.journeyProfile.create = jest
+      .fn()
+      .mockImplementationOnce((result) => result.data)
   })
 
   describe('getJourneyProfile', () => {
     it('should return user profile', async () => {
-      prisma.journeyProfile.findUnique = jest
-        .fn()
-        .mockResolvedValueOnce(profile)
       expect(await resolver.getJourneyProfile('userId')).toEqual(profile)
     })
   })
@@ -37,9 +38,6 @@ describe('JourneyProfileResolver', () => {
   describe('journeyProfileCreate', () => {
     it('should create user profile', async () => {
       prisma.journeyProfile.findUnique = jest.fn().mockResolvedValueOnce(null)
-      prisma.journeyProfile.create = jest
-        .fn()
-        .mockImplementationOnce((result) => result.data)
       await resolver.journeyProfileCreate('newUserId')
       expect(prisma.journeyProfile.create).toHaveBeenCalledWith({
         data: {
@@ -50,9 +48,6 @@ describe('JourneyProfileResolver', () => {
     })
 
     it('should return existing profile', async () => {
-      prisma.journeyProfile.findUnique = jest
-        .fn()
-        .mockResolvedValueOnce(profile)
       expect(await resolver.journeyProfileCreate('userId')).toEqual(profile)
     })
   })

@@ -18,7 +18,9 @@ describe('JourneyService', () => {
 
     service = module.get<JourneyService>(JourneyService)
     prisma = module.get<PrismaService>(PrismaService)
+    prisma.journey.findMany = jest.fn().mockResolvedValue([journey])
   })
+
   afterAll(() => {
     jest.resetAllMocks()
   })
@@ -50,12 +52,10 @@ describe('JourneyService', () => {
 
   describe('getAllPublishedJourneys', () => {
     it('should return published journeys', async () => {
-      prisma.journey.findMany = jest.fn().mockResolvedValue([journey])
       expect(await service.getAllPublishedJourneys()).toEqual([journey])
     })
 
     it('should filter by filter query', async () => {
-      prisma.journey.findMany = jest.fn().mockResolvedValue([journey])
       await service.getAllPublishedJourneys({ featured: true })
       expect(prisma.journey.findMany).toHaveBeenCalledWith({
         where: {
@@ -68,7 +68,6 @@ describe('JourneyService', () => {
 
   describe('getAllByTitle', () => {
     it('should return all for title', async () => {
-      prisma.journey.findMany = jest.fn().mockResolvedValue([journey])
       expect(await service.getAllByTitle('publish', 'userId')).toEqual([
         journey
       ])
@@ -77,7 +76,6 @@ describe('JourneyService', () => {
 
   describe('getAllByRole', () => {
     it('should return all for user', async () => {
-      prisma.journey.findMany = jest.fn().mockResolvedValue([journey])
       expect(
         await service.getAllByRole(userRole, [JourneyStatus.published])
       ).toEqual([journey])
@@ -93,7 +91,6 @@ describe('JourneyService', () => {
     })
 
     it('should return templates for publishers', async () => {
-      prisma.journey.findMany = jest.fn().mockResolvedValue([journey])
       await service.getAllPublishedJourneys({ featured: true })
       expect(prisma.journey.findMany).toHaveBeenCalledWith({
         where: {

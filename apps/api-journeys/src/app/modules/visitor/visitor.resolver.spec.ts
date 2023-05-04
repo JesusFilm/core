@@ -77,18 +77,19 @@ describe('VisitorResolver', () => {
     resolver = module.get<VisitorResolver>(VisitorResolver)
     vService = module.get<VisitorService>(VisitorService)
     prisma = module.get<PrismaService>(PrismaService)
+    prisma.event.findMany = jest.fn().mockReturnValue([event])
+    prisma.member.findUnique = jest.fn().mockResolvedValueOnce(member)
+    prisma.visitor.findUnique = jest.fn().mockReturnValue(visitor)
   })
 
   describe('visitorsConnection', () => {
     it('returns connection', async () => {
-      prisma.member.findUnique = jest.fn().mockResolvedValueOnce(member)
       expect(await resolver.visitorsConnection('userId', 'teamId')).toEqual(
         connection
       )
     })
 
     it('calls service with first, after and filter', async () => {
-      prisma.member.findUnique = jest.fn().mockResolvedValueOnce(member)
       await resolver.visitorsConnection('userId', 'teamId', 50, 'cursorId')
       expect(vService.getList).toHaveBeenCalledWith({
         after: 'cursorId',
@@ -107,12 +108,8 @@ describe('VisitorResolver', () => {
   })
 
   describe('visitor', () => {
-    beforeEach(() => {
-      prisma.event.findMany = jest.fn().mockReturnValue([])
-    })
     it('returns visitor', async () => {
-      prisma.member.findUnique = jest.fn().mockResolvedValueOnce(member)
-      prisma.visitor.findUnique = jest.fn().mockReturnValue(visitor)
+      prisma.event.findMany = jest.fn().mockReturnValue([])
       expect(await resolver.visitor('userId', 'visitorId')).toEqual({
         ...visitor
       })
@@ -149,8 +146,6 @@ describe('VisitorResolver', () => {
       status: 'star'
     }
     it('returns updated visitor', async () => {
-      prisma.member.findUnique = jest.fn().mockResolvedValueOnce(member)
-      prisma.visitor.findUnique = jest.fn().mockReturnValueOnce(visitor)
       prisma.visitor.update = jest
         .fn()
         .mockReturnValueOnce({ ...visitor, ...input })
@@ -187,12 +182,10 @@ describe('VisitorResolver', () => {
 
   describe('events', () => {
     it('returns visitor events', async () => {
-      prisma.event.findMany = jest.fn().mockReturnValue([event])
       expect(await resolver.events({ id: 'visitorId' })).toEqual([event])
     })
 
     it('calls event service with visitorId', async () => {
-      prisma.event.findMany = jest.fn().mockReturnValue([event])
       await resolver.events({ id: 'visitorId' })
       expect(prisma.event.findMany).toHaveBeenCalledWith({
         where: { visitorId: 'visitorId' }

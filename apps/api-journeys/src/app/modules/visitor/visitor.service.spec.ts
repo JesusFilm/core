@@ -40,6 +40,9 @@ describe('VisitorService', () => {
 
     service = module.get<VisitorService>(VisitorService)
     prisma = module.get<PrismaService>(PrismaService)
+    prisma.journey.findUnique = jest.fn().mockReturnValueOnce(journey)
+    prisma.visitor.create = jest.fn()
+    prisma.visitor.findMany = jest.fn().mockReturnValueOnce([])
   })
 
   afterAll(() => {
@@ -57,7 +60,6 @@ describe('VisitorService', () => {
       }
     }
     it('returns a visitors connection', async () => {
-      prisma.visitor.findMany = jest.fn().mockReturnValueOnce([])
       expect(
         await service.getList({ first: 50, filter: { teamId: 'jfp-team' } })
       ).toEqual(connection)
@@ -73,7 +75,6 @@ describe('VisitorService', () => {
     })
 
     it('allows pagination of the visitors connection', async () => {
-      prisma.visitor.findMany = jest.fn().mockReturnValueOnce([])
       await service.getList({
         first: 50,
         after: new Date('2021-02-18').toISOString(),
@@ -93,7 +94,6 @@ describe('VisitorService', () => {
 
   describe('getVisitorId', () => {
     it('should return visitor id', async () => {
-      prisma.journey.findUnique = jest.fn().mockReturnValueOnce(journey)
       prisma.visitor.findFirst = jest.fn().mockReturnValueOnce(visitor)
       expect(
         await service.getByUserIdAndJourneyId('user.id', 'journey.id')
@@ -101,9 +101,7 @@ describe('VisitorService', () => {
     })
 
     it('should create a new visitor if visitor does not exist', async () => {
-      prisma.journey.findUnique = jest.fn().mockReturnValueOnce(journey)
       prisma.visitor.findFirst = jest.fn().mockReturnValueOnce(null)
-      prisma.visitor.create = jest.fn()
       mockUuidv4.mockReturnValueOnce('newVisitor.id')
 
       await service.getByUserIdAndJourneyId('user.id', 'journey.id')

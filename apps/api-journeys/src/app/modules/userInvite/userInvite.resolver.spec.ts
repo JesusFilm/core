@@ -119,25 +119,29 @@ describe('UserInviteResolver', () => {
       .fn()
       .mockImplementationOnce((request) => ({ id: request.where.id }))
     prisma.userInvite.findMany = jest.fn().mockImplementation((input) => {
-      if (input.where.email === userInvite.email) {
-        return [userInvite, acceptedInvite, removedInvite]
-      } else if (input.where.email === outdatedAcceptedInvite.email) {
-        return [outdatedAcceptedInvite]
+      switch (input.where.email) {
+        case userInvite.email:
+          return [userInvite, acceptedInvite, removedInvite]
+        case outdatedAcceptedInvite.email:
+          return [outdatedAcceptedInvite]
+        default:
+          return []
       }
-      return []
     })
     prisma.userInvite.create = jest.fn().mockImplementation((input) => {
       return { ...input.data, acceptedAt: null, removedAt: null }
     })
     prisma.userInvite.update = jest.fn().mockImplementation((input) => {
-      if (input.where.id === removedInvite.id) {
-        return { ...removedInvite, ...input.data }
-      } else if (input.where.id === acceptedInvite.id) {
-        return { ...acceptedInvite, ...input.data }
-      } else if (input.where.id === outdatedAcceptedInvite.id) {
-        return { ...outdatedAcceptedInvite, ...input.data }
+      switch (input.where.id) {
+        case removedInvite.id:
+          return { ...removedInvite, ...input.data }
+        case acceptedInvite.id:
+          return { ...acceptedInvite, ...input.data }
+        case outdatedAcceptedInvite.id:
+          return { ...outdatedAcceptedInvite, ...input.data }
+        default:
+          return { ...userInvite, ...input.data }
       }
-      return { ...userInvite, ...input.data }
     })
     prisma.userInvite.findUnique = jest.fn().mockImplementationOnce((input) => {
       if (

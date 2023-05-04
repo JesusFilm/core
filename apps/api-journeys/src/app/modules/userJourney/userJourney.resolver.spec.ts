@@ -99,6 +99,7 @@ describe('UserJourneyResolver', () => {
     resolver = module.get<UserJourneyResolver>(UserJourneyResolver)
     service = await module.resolve(UserJourneyService)
     prisma = module.get<PrismaService>(PrismaService)
+    prisma.journey.findUnique = jest.fn().mockResolvedValueOnce(journey)
     prisma.userJourney.findUnique = jest.fn().mockImplementation((input) => {
       if (input.where.id != null) {
         if (input.where.id === actorUserJourney.id) return actorUserJourney
@@ -115,6 +116,12 @@ describe('UserJourneyResolver', () => {
           return null
       }
     })
+    prisma.userJourney.findMany = jest
+      .fn()
+      .mockResolvedValueOnce([userJourney, userJourney])
+    prisma.userJourney.update = jest
+      .fn()
+      .mockImplementation((input) => input.data)
     prisma.userJourney.delete = jest
       .fn()
       .mockImplementation((input) => input.data)
@@ -143,11 +150,6 @@ describe('UserJourneyResolver', () => {
   })
 
   describe('userJourneyPromote', () => {
-    beforeEach(() => {
-      prisma.userJourney.update = jest
-        .fn()
-        .mockImplementation((input) => input.data)
-    })
     it('updates a UserJourney to owner status', async () => {
       await resolver.userJourneyPromote(userJourney.id, actorUserJourney.userId)
       expect(prisma.userJourney.update).toHaveBeenCalledWith({
@@ -183,7 +185,6 @@ describe('UserJourneyResolver', () => {
 
   describe('userJourneyRemove', () => {
     it('removes a UserJourney', async () => {
-      prisma.userJourney.delete = jest.fn().mockResolvedValueOnce(userJourney)
       await resolver.userJourneyRemove(
         actorUserJourney.id,
         actorUserJourney.userId
@@ -196,10 +197,6 @@ describe('UserJourneyResolver', () => {
 
   describe('userJourneyRemoveAll', () => {
     it('removes all userJourneys', async () => {
-      prisma.userJourney.findMany = jest
-        .fn()
-        .mockResolvedValueOnce([userJourney, userJourney])
-      prisma.journey.findUnique = jest.fn().mockResolvedValueOnce(journey)
       await resolver.userJourneyRemoveAll(journey.id)
       expect(prisma.userJourney.delete).toHaveBeenCalledWith({
         where: { id: userJourney.id }
@@ -209,11 +206,6 @@ describe('UserJourneyResolver', () => {
   })
 
   describe('UserJourneyOpen', () => {
-    beforeEach(() => {
-      prisma.userJourney.update = jest
-        .fn()
-        .mockImplementation((input) => input.data)
-    })
     it('should update openedAt for userJourney', async () => {
       await resolver.userJourneyOpen(userJourney.id, userJourney.userId)
       expect(prisma.userJourney.update).toHaveBeenCalledWith({

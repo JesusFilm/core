@@ -278,6 +278,9 @@ describe('JourneyResolver', () => {
     prisma.userJourney.create = jest
       .fn()
       .mockImplementationOnce((input) => input.data)
+    prisma.journey.create = jest
+      .fn()
+      .mockImplementationOnce((result) => result.data)
     prisma.journey.findMany = jest.fn().mockImplementationOnce((input) => {
       switch (input.where.id.in[0]) {
         case archivedJourney.id:
@@ -312,6 +315,13 @@ describe('JourneyResolver', () => {
           return null
       }
     })
+    prisma.journey.update = jest.fn().mockImplementationOnce((input) => {
+      if (input.where.id === trashedJourney.id) return trashedJourney
+      return journey
+    })
+    prisma.journey.updateMany = jest
+      .fn()
+      .mockResolvedValueOnce([journey, draftJourney])
     prisma.userJourney.findUnique = jest
       .fn()
       .mockImplementationOnce((input) => {
@@ -321,6 +331,11 @@ describe('JourneyResolver', () => {
           return userJourney
         return null
       })
+    prisma.userJourney.findMany = jest
+      .fn()
+      .mockResolvedValueOnce([userJourney, userJourney])
+    prisma.member.create = jest.fn()
+    prisma.member.findUnique = jest.fn().mockResolvedValueOnce(member)
   })
 
   describe('adminJourneysEmbed', () => {
@@ -697,10 +712,6 @@ describe('JourneyResolver', () => {
 
   describe('journeyCreate', () => {
     it('creates a Journey', async () => {
-      prisma.member.findUnique = jest.fn().mockResolvedValueOnce(member)
-      prisma.journey.create = jest
-        .fn()
-        .mockImplementationOnce((result) => result.data)
       mockUuidv4.mockReturnValueOnce('journeyId')
       expect(
         await resolver.journeyCreate(
@@ -719,8 +730,6 @@ describe('JourneyResolver', () => {
     })
 
     it('creates a UserJourney', async () => {
-      prisma.member.findUnique = jest.fn().mockResolvedValueOnce(member)
-      prisma.journey.create = jest.fn().mockResolvedValueOnce(journey)
       mockUuidv4.mockReturnValueOnce('journeyId')
       await resolver.journeyCreate(
         { title: 'Untitled Journey', languageId: '529' },
@@ -738,8 +747,6 @@ describe('JourneyResolver', () => {
 
     it('creates a Member', async () => {
       prisma.member.findUnique = jest.fn().mockResolvedValueOnce(null)
-      prisma.member.create = jest.fn()
-      prisma.journey.create = jest.fn().mockResolvedValueOnce(journey)
       mockUuidv4.mockReturnValueOnce('journeyId')
       await resolver.journeyCreate(
         { title: 'Untitled Journey', languageId: '529' },
@@ -756,9 +763,6 @@ describe('JourneyResolver', () => {
 
     it('doesnt create an existing Member', async () => {
       mockUuidv4.mockReturnValueOnce('journeyId')
-      prisma.member.findUnique = jest.fn().mockResolvedValueOnce(member)
-      prisma.member.create = jest.fn()
-      prisma.journey.create = jest.fn().mockResolvedValueOnce(journey)
       await resolver.journeyCreate(
         { title: 'Untitled Journey', languageId: '529' },
         'userId'
@@ -769,8 +773,6 @@ describe('JourneyResolver', () => {
     it('adds uuid if slug already taken', async () => {
       const date = '2021-12-07T03:22:41.135Z'
       jest.useFakeTimers().setSystemTime(new Date(date).getTime())
-      prisma.member.findUnique = jest.fn().mockResolvedValueOnce(member)
-      prisma.journey.findUnique = jest.fn().mockResolvedValueOnce(journey)
       prisma.journey.create = jest
         .fn()
         .mockRejectedValueOnce({
@@ -889,9 +891,6 @@ describe('JourneyResolver', () => {
       const date = '2021-12-07T03:22:41.135Z'
       jest.useFakeTimers().setSystemTime(new Date(date).getTime())
       mockUuidv4.mockReturnValueOnce('duplicateJourneyId')
-      prisma.journey.create = jest
-        .fn()
-        .mockImplementation((result) => result.data)
       expect(await resolver.journeyDuplicate('journeyId', 'userId')).toEqual({
         ...journey,
         id: 'duplicateJourneyId',
@@ -909,9 +908,6 @@ describe('JourneyResolver', () => {
       const date = '2021-12-07T03:22:41.135Z'
       jest.useFakeTimers().setSystemTime(new Date(date).getTime())
       mockUuidv4.mockReturnValueOnce('templateJourneyId')
-      prisma.journey.create = jest
-        .fn()
-        .mockImplementation((result) => result.data)
       expect(
         await resolver.journeyDuplicate('templateJourneyId', 'userId')
       ).toEqual({
@@ -927,9 +923,6 @@ describe('JourneyResolver', () => {
     })
 
     it('duplicates a UserJourney', async () => {
-      prisma.journey.create = jest
-        .fn()
-        .mockImplementation((result) => result.data)
       mockUuidv4.mockReturnValueOnce('duplicateJourneyId')
       await resolver.journeyDuplicate('journeyId', 'userId')
       expect(prisma.userJourney.create).toHaveBeenCalledWith({
@@ -946,9 +939,6 @@ describe('JourneyResolver', () => {
     it('duplicates blocks in journey', async () => {
       mockUuidv4.mockReturnValueOnce('duplicateJourneyId')
       mockUuidv4.mockReturnValueOnce('duplicateStepId')
-      prisma.journey.create = jest
-        .fn()
-        .mockImplementation((result) => result.data)
       const duplicateStepIds = new Map([[stepBlock.id, duplicatedStep.id]])
       await resolver.journeyDuplicate('journeyId', 'userId')
       expect(bService.getDuplicateChildren).toHaveBeenCalledWith(
@@ -966,9 +956,6 @@ describe('JourneyResolver', () => {
       const date = '2021-12-07T03:22:41.135Z'
       jest.useFakeTimers().setSystemTime(new Date(date).getTime())
       mockUuidv4.mockReturnValueOnce('duplicateJourneyId2')
-      prisma.journey.create = jest
-        .fn()
-        .mockImplementation((result) => result.data)
       const mockGetAllByTitle = service.getAllByTitle as jest.MockedFunction<
         typeof service.getAllByTitle
       >
@@ -1007,9 +994,6 @@ describe('JourneyResolver', () => {
         .mockReturnValueOnce('duplicateJourneyId')
         .mockReturnValueOnce('duplicateStepId')
         .mockReturnValueOnce('duplicatePrimaryImageBlock.id')
-      prisma.journey.create = jest
-        .fn()
-        .mockResolvedValueOnce((result) => result)
       const duplicateStepIds = new Map([[stepBlock.id, duplicatedStep.id]])
       await resolver.journeyDuplicate('socialJourney.id', 'userId')
       expect(bService.getDuplicateChildren).toHaveBeenCalledWith(
@@ -1034,7 +1018,6 @@ describe('JourneyResolver', () => {
 
   describe('journeyUpdate', () => {
     it('updates a Journey', async () => {
-      prisma.journey.update = jest.fn().mockResolvedValueOnce(journey)
       await resolver.journeyUpdate('1', journeyUpdate)
       expect(prisma.journey.update).toHaveBeenCalledWith({
         where: { id: '1' },
@@ -1065,7 +1048,6 @@ describe('JourneyResolver', () => {
     it('publishes a Journey', async () => {
       const date = '2021-12-07T03:22:41.135Z'
       jest.useFakeTimers().setSystemTime(new Date(date).getTime())
-      prisma.journey.update = jest.fn().mockResolvedValue(journey)
       await resolver.journeyPublish('1')
       expect(prisma.journey.update).toHaveBeenCalledWith({
         where: { id: '1' },
@@ -1081,9 +1063,6 @@ describe('JourneyResolver', () => {
     it('archives an array of Journeys', async () => {
       const date = '2021-12-07T03:22:41.135Z'
       jest.useFakeTimers().setSystemTime(new Date(date).getTime())
-      prisma.journey.updateMany = jest
-        .fn()
-        .mockResolvedValueOnce([journey, draftJourney])
       await resolver.journeysArchive([journey.id, draftJourney.id])
       expect(prisma.journey.updateMany).toHaveBeenCalledWith({
         where: { id: { in: [journey.id, draftJourney.id] } },
@@ -1096,9 +1075,6 @@ describe('JourneyResolver', () => {
     it('trashes an array of Journeys', async () => {
       const date = '2021-12-07T03:22:41.135Z'
       jest.useFakeTimers().setSystemTime(new Date(date).getTime())
-      prisma.journey.updateMany = jest
-        .fn()
-        .mockResolvedValueOnce([journey, draftJourney])
       await resolver.journeysTrash([journey.id, draftJourney.id])
       expect(prisma.journey.updateMany).toHaveBeenCalledWith({
         where: { id: { in: [journey.id, draftJourney.id] } },
@@ -1111,9 +1087,6 @@ describe('JourneyResolver', () => {
     it('deletes an array of Journeys', async () => {
       const date = '2021-12-07T03:22:41.135Z'
       jest.useFakeTimers().setSystemTime(new Date(date).getTime())
-      prisma.journey.updateMany = jest
-        .fn()
-        .mockResolvedValueOnce([journey, draftJourney])
       await resolver.journeysDelete([journey.id, draftJourney.id])
       expect(prisma.journey.updateMany).toHaveBeenCalledWith({
         where: { id: { in: [journey.id, draftJourney.id] } },
@@ -1124,7 +1097,6 @@ describe('JourneyResolver', () => {
 
   describe('journeysRestore', () => {
     it('resores a published Journey', async () => {
-      prisma.journey.update = jest.fn().mockResolvedValue(trashedJourney)
       await resolver.journeysRestore([trashedJourney.id])
       expect(prisma.journey.update).toHaveBeenCalledWith({
         where: { id: trashedJourney.id },
@@ -1133,7 +1105,6 @@ describe('JourneyResolver', () => {
     })
 
     it('restores an draft Journey', async () => {
-      prisma.journey.update = jest.fn().mockResolvedValue(trashedJourney)
       await resolver.journeysRestore([trashedDraftJourney.id])
       expect(prisma.journey.update).toHaveBeenCalledWith({
         where: { id: trashedDraftJourney.id },
@@ -1144,7 +1115,6 @@ describe('JourneyResolver', () => {
 
   describe('journeyTemplate', () => {
     it('updates template', async () => {
-      prisma.journey.update = jest.fn().mockResolvedValueOnce(journey)
       await resolver.journeyTemplate('1', templateUpdate)
       expect(prisma.journey.update).toHaveBeenCalledWith({
         where: { id: '1' },
@@ -1155,9 +1125,6 @@ describe('JourneyResolver', () => {
 
   describe('userJourneys', () => {
     it('should get userJourneys', async () => {
-      prisma.userJourney.findMany = jest
-        .fn()
-        .mockResolvedValueOnce([userJourney, userJourney])
       expect(await resolver.userJourneys(journey)).toEqual([
         userJourney,
         userJourney
