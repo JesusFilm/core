@@ -1,10 +1,12 @@
 import { rest } from 'msw'
-import { YoutubePlaylistItemsData, YoutubeVideosData } from './VideoFromYouTube'
+import {
+  YoutubeVideosData,
+  YoutubePlaylist,
+  YoutubeVideo
+} from './VideoFromYouTube'
 
-type PlaylistItem = YoutubePlaylistItemsData['items'][number]
-type Video = YoutubeVideosData['items'][number]
-
-const playlistItem1: PlaylistItem = {
+const playlistItem1: YoutubePlaylist = {
+  kind: 'youtube#playlistItem',
   snippet: {
     title: 'What is the Bible?',
     description:
@@ -20,7 +22,8 @@ const playlistItem1: PlaylistItem = {
   }
 }
 
-const playlistItem2: PlaylistItem = {
+const playlistItem2: YoutubePlaylist = {
+  kind: 'youtube#playlistItem',
   snippet: {
     title: 'Blessing and Curse',
     description:
@@ -36,7 +39,8 @@ const playlistItem2: PlaylistItem = {
   }
 }
 
-const playlistItem3: PlaylistItem = {
+const playlistItem3: YoutubePlaylist = {
+  kind: 'youtube#playlistItem',
   snippet: {
     title: 'The Story of the Bible',
     description:
@@ -52,9 +56,19 @@ const playlistItem3: PlaylistItem = {
   }
 }
 
-const video1: Video = {
-  ...playlistItem2,
+const video1: YoutubeVideo = {
+  kind: 'youtube#video',
   id: 'jQaeIJOA6J0',
+  snippet: {
+    title: 'Blessing and Curse',
+    description:
+      'Trace the theme of blessing and curse in the Bible to see how Jesus defeats the curse and restores the blessing of life to creation.',
+    thumbnails: {
+      default: {
+        url: 'https://i.ytimg.com/vi/jQaeIJOA6J0/default.jpg'
+      }
+    }
+  },
   contentDetails: { duration: 'PT6M03S' }
 }
 
@@ -62,7 +76,7 @@ export const getPlaylistItems = rest.get(
   'https://www.googleapis.com/youtube/v3/playlistItems',
   (_req, res, ctx) => {
     return res(
-      ctx.json<YoutubePlaylistItemsData>({
+      ctx.json<YoutubeVideosData>({
         items: [playlistItem1, playlistItem2, playlistItem3]
       })
     )
@@ -73,7 +87,7 @@ export const getPlaylistItemsEmpty = rest.get(
   'https://www.googleapis.com/youtube/v3/playlistItems',
   (_req, res, ctx) => {
     return res(
-      ctx.json<YoutubePlaylistItemsData>({
+      ctx.json<YoutubeVideosData>({
         items: []
       })
     )
@@ -87,21 +101,21 @@ export const getPlaylistItemsWithOffsetAndUrl = rest.get(
       req.url.searchParams.get('id') === playlistItem2.contentDetails?.videoId
     ) {
       return res(
-        ctx.json<YoutubePlaylistItemsData>({
+        ctx.json<YoutubeVideosData>({
           items: [playlistItem2]
         })
       )
     }
     if (req.url.searchParams.get('pageToken') !== 'nextPageToken') {
       return res(
-        ctx.json<YoutubePlaylistItemsData>({
+        ctx.json<YoutubeVideosData>({
           items: [playlistItem1, playlistItem2],
           nextPageToken: 'nextPageToken'
         })
       )
     }
     return res(
-      ctx.json<YoutubePlaylistItemsData>({
+      ctx.json<YoutubeVideosData>({
         items: [playlistItem3]
       })
     )
@@ -113,7 +127,7 @@ export const getPlaylistItemsLoading = rest.get(
   (_req, res, ctx) => {
     return res(
       ctx.delay(1000 * 60 * 60 * 60),
-      ctx.json<YoutubePlaylistItemsData>({
+      ctx.json<YoutubeVideosData>({
         items: []
       })
     )

@@ -16,32 +16,33 @@ interface VideoFromYouTubeProps {
   onSelect: (block: VideoBlockUpdateInput) => void
 }
 
-export interface YoutubeVideosData {
-  items: Array<{
-    id: string
-    snippet: {
-      title: string
-      description: string
-      thumbnails: { default: { url: string } }
-    }
-    contentDetails: {
-      duration: string
-    }
-  }>
-  nextPageToken?: string
+export interface YoutubeVideo {
+  kind: 'youtube#video'
+  id: string
+  snippet: {
+    title: string
+    description: string
+    thumbnails: { default: { url: string } }
+  }
+  contentDetails: {
+    duration: string
+  }
 }
 
-export interface YoutubePlaylistItemsData {
-  items: Array<{
-    snippet: {
-      title: string
-      description: string
-      thumbnails: { default: { url: string } }
-    }
-    contentDetails: {
-      videoId: string
-    }
-  }>
+export interface YoutubePlaylist {
+  kind: 'youtube#playlistItem'
+  snippet: {
+    title: string
+    description: string
+    thumbnails: { default: { url: string } }
+  }
+  contentDetails: {
+    videoId: string
+  }
+}
+
+export interface YoutubeVideosData {
+  items: Array<YoutubeVideo | YoutubePlaylist>
   nextPageToken?: string
 }
 
@@ -71,22 +72,22 @@ const fetcher = async (query: string): Promise<Data> => {
     part: 'snippet,contentDetails',
     key: process.env.NEXT_PUBLIC_FIREBASE_API_KEY ?? ''
   }).toString()
-  const hasQueryId = query.startsWith('id')
-  const apiUrl = hasQueryId
+  const apiUrl = query.startsWith('id')
     ? `https://www.googleapis.com/youtube/v3/videos?${query}&${params}`
     : `https://www.googleapis.com/youtube/v3/playlistItems?${query}&${params}`
 
-  const videosData = await (await fetch(apiUrl)).json()
+  const videosData: YoutubeVideosData = await (await fetch(apiUrl)).json()
 
   const items = videosData.items.map((item) => ({
-    id: hasQueryId ? item.id : item.contentDetails.videoId,
+    id: item.kind === 'youtube#video' ? item.id : item.contentDetails.videoId,
     title: item.snippet.title,
     description: item.snippet.description,
     image: item.snippet.thumbnails.default.url,
     source: VideoBlockSource.youTube,
-    duration: hasQueryId
-      ? parseISO8601Duration(item.contentDetails.duration)
-      : undefined
+    duration:
+      item.kind === 'youtube#video'
+        ? parseISO8601Duration(item.contentDetails.duration)
+        : undefined
   }))
 
   return {
