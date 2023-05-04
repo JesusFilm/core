@@ -16,7 +16,7 @@ import ShopRoundedIcon from '@mui/icons-material/ShopRounded'
 import ShopTwoRoundedIcon from '@mui/icons-material/ShopTwoRounded'
 import Backdrop from '@mui/material/Backdrop'
 import Image from 'next/image'
-import { NextRouter } from 'next/router'
+import { useRouter } from 'next/router'
 import { compact } from 'lodash'
 import { gql, useQuery } from '@apollo/client'
 import { useFlags } from '@core/shared/ui/FlagsProvider'
@@ -40,7 +40,6 @@ export interface NavigationDrawerProps {
   open: boolean
   onClose: (value: boolean) => void
   authUser?: AuthUser
-  router?: NextRouter
 }
 
 export const GET_ME = gql`
@@ -100,12 +99,12 @@ export const StyledList = styled(List)({
 export function NavigationDrawer({
   open,
   onClose,
-  authUser,
-  router
+  authUser
 }: NavigationDrawerProps): ReactElement {
   const activeJourneys = useActiveJourneys()
   const journeys = activeJourneys?.data?.journeys
   const { t } = useTranslation('apps-journeys-admin')
+  const router = useRouter()
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
   const [profileAnchorEl, setProfileAnchorEl] = useState(null)
 
@@ -157,7 +156,7 @@ export function NavigationDrawer({
         <NavigationListItem
           icon={<ViewCarouselRoundedIcon />}
           label="Discover"
-          selected={selectedPage === 'journeys' || selectedPage == null} // null for when page is index. UPDATE when we add the actual index page
+          selected={selectedPage === 'journeys' || selectedPage === ''} // empty string for when page is index. UPDATE when we add the actual index page
           link="/"
           tooltipText={journeyTooltip}
         />
