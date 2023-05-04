@@ -64,7 +64,7 @@ describe('VisitorService', () => {
         await service.getList({ first: 50, filter: { teamId: 'jfp-team' } })
       ).toEqual(connection)
       expect(prisma.visitor.findMany).toHaveBeenCalledWith({
-        cursor: { createdAt: undefined },
+        cursor: undefined,
         orderBy: {
           createdAt: 'desc'
         },

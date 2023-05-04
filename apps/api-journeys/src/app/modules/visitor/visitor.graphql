@@ -143,6 +143,20 @@ type Visitor @key(fields: "id") {
 }
 
 """
+An edge in a connection.
+"""
+type VisitorEdge {
+  """
+  A cursor for use in pagination.
+  """
+  cursor: String!
+  """
+  The item at the end of the edge.
+  """
+  node: Visitor!
+}
+
+"""
 Information about pagination in a connection.
 """
 type PageInfo {
@@ -165,9 +179,9 @@ A list of visitors connected with a team.
 """
 type VisitorsConnection {
   """
-  A list of visitors.
+  A list of edges.
   """
-  results: [Visitor!]!
+  edges: [VisitorEdge!]!
   """
   Information to aid in pagination.
   """
