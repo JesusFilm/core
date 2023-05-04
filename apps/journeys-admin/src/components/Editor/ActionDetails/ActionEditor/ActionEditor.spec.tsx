@@ -131,4 +131,23 @@ describe('ActionDetails', () => {
     await waitFor(() => expect(result1).toHaveBeenCalled())
     await waitFor(() => expect(result2).toHaveBeenCalled())
   })
+
+  it('should submit when enter is pressed', async () => {
+    const { getByRole, queryByText } = render(
+      <MockedProvider mocks={mocks}>
+        <JourneyProvider value={{ journey }}>
+          <ActionEditor url="https://www.google.com/" goalLabel={jest.fn()} />
+        </JourneyProvider>
+      </MockedProvider>
+    )
+    fireEvent.change(getByRole('textbox'), {
+      target: { value: url }
+    })
+    fireEvent.submit(getByRole('textbox'), { target: { value: url } })
+    await waitFor(() =>
+      expect(queryByText('Invalid URL')).not.toBeInTheDocument()
+    )
+    await waitFor(() => expect(result1).toHaveBeenCalled())
+    await waitFor(() => expect(result2).toHaveBeenCalled())
+  })
 })
