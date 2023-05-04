@@ -5,6 +5,7 @@ import MenuItem from '@mui/material/MenuItem'
 import TextField from '@mui/material/TextField'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
+import Box from '@mui/material/Box'
 import pick from 'lodash/pick'
 import { ReactElement } from 'react'
 import { Formik, Form } from 'formik'
@@ -77,7 +78,12 @@ export function DetailsForm({ id }: Props): ReactElement {
   }
 
   return (
-    <Paper elevation={0} sx={{ p: 4, mb: 4 }}>
+    <Paper
+      elevation={0}
+      sx={{
+        m: { xs: '-24px -24px  0px -24px', sm: '0px 0px 0px 0px' }
+      }}
+    >
       {data?.visitor != null && (
         <Formik
           initialValues={pick(data.visitor, [
@@ -92,46 +98,49 @@ export function DetailsForm({ id }: Props): ReactElement {
         >
           {({ values, errors, touched, handleChange, handleBlur }) => (
             <Form>
-              <Stack spacing={4}>
-                <Stack direction="row">
-                  {/* Start chat */}
-                  <ChatButton
-                    messagePlatform={data.visitor.messagePlatform}
-                    messagePlatformId={data.visitor.messagePlatformId}
-                  />
+              <Stack>
+                <Box>
+                  <Stack direction="row" sx={{ p: 4 }}>
+                    {/* Start chat */}
+                    <ChatButton
+                      messagePlatform={data.visitor.messagePlatform}
+                      messagePlatformId={data.visitor.messagePlatformId}
+                    />
 
-                  {/* Status */}
-                  <FormControl sx={{ width: 80, ml: 'auto' }}>
-                    <Select
-                      labelId="status-label"
-                      id="status"
-                      name="status"
-                      value={values.status ?? ''}
-                      onChange={handleChange}
-                      onBlur={handleBlur}
-                    >
-                      <MenuItem value="">⚪️</MenuItem>
-                      <MenuItem value={VisitorStatus.star}>⭐</MenuItem>
-                      <MenuItem value={VisitorStatus.prohibited}>🚫</MenuItem>
-                      <MenuItem value={VisitorStatus.checkMarkSymbol}>
-                        ✅
-                      </MenuItem>
-                      <MenuItem value={VisitorStatus.thumbsUp}>👍</MenuItem>
-                      <MenuItem value={VisitorStatus.thumbsDown}>👎</MenuItem>
-                      <MenuItem value={VisitorStatus.partyPopper}>🎉</MenuItem>
-                      <MenuItem value={VisitorStatus.warning}>⚠</MenuItem>
-                      <MenuItem value={VisitorStatus.robotFace}>🤖</MenuItem>
-                      <MenuItem value={VisitorStatus.redExclamationMark}>
-                        ❗
-                      </MenuItem>
-                      <MenuItem value={VisitorStatus.redQuestionMark}>
-                        ❓
-                      </MenuItem>
-                    </Select>
-                  </FormControl>
+                    {/* Status */}
+                    <FormControl sx={{ width: 80, ml: 'auto' }}>
+                      <Select
+                        labelId="status-label"
+                        id="status"
+                        name="status"
+                        value={values.status ?? ''}
+                        onChange={handleChange}
+                        onBlur={handleBlur}
+                      >
+                        <MenuItem value="">⚪️</MenuItem>
+                        <MenuItem value={VisitorStatus.star}>⭐</MenuItem>
+                        <MenuItem value={VisitorStatus.prohibited}>🚫</MenuItem>
+                        <MenuItem value={VisitorStatus.checkMarkSymbol}>
+                          ✅
+                        </MenuItem>
+                        <MenuItem value={VisitorStatus.thumbsUp}>👍</MenuItem>
+                        <MenuItem value={VisitorStatus.thumbsDown}>👎</MenuItem>
+                        <MenuItem value={VisitorStatus.partyPopper}>
+                          🎉
+                        </MenuItem>
+                        <MenuItem value={VisitorStatus.warning}>⚠</MenuItem>
+                        <MenuItem value={VisitorStatus.robotFace}>🤖</MenuItem>
+                        <MenuItem value={VisitorStatus.redExclamationMark}>
+                          ❗
+                        </MenuItem>
+                        <MenuItem value={VisitorStatus.redQuestionMark}>
+                          ❓
+                        </MenuItem>
+                      </Select>
+                    </FormControl>
 
-                  {/* Move this */}
-                  {/* {data?.visitor?.lastChatStartedAt != null && (
+                    {/* Move this */}
+                    {/* {data?.visitor?.lastChatStartedAt != null && (
                     <Box>
                       <Typography variant="body2">{t('Last Chat')}</Typography>
                       <Typography>
@@ -142,95 +151,114 @@ export function DetailsForm({ id }: Props): ReactElement {
                       </Typography>
                     </Box>
                   )} */}
-                </Stack>
+                  </Stack>
 
-                {/* Platform */}
-                <FormControl fullWidth variant="filled">
-                  <InputLabel id="message-platform-label">
-                    {t('Chat Platform')}
-                  </InputLabel>
-                  <Select
-                    labelId="message-platform-label"
-                    id="messagePlatform"
-                    name="messagePlatform"
-                    value={values.messagePlatform ?? ''}
-                    // label={t('Chat Platform')}
-                    onChange={handleChange}
+                  {/* Platform */}
+                  <FormControl fullWidth variant="filled" sx={{ px: 4, pb: 4 }}>
+                    <InputLabel id="message-platform-label" sx={{ pl: 4 }}>
+                      {t('Chat Platform')}
+                    </InputLabel>
+                    <Select
+                      labelId="message-platform-label"
+                      id="messagePlatform"
+                      name="messagePlatform"
+                      value={values.messagePlatform ?? ''}
+                      // label={t('Chat Platform')}
+                      onChange={handleChange}
+                      onBlur={handleBlur}
+                      sx={{
+                        '.MuiSelect-select': {
+                          height: 23
+                        }
+                      }}
+                    >
+                      <MenuItem value="">{t('None')}</MenuItem>
+                      {Object.values(MessagePlatform).map((value) => (
+                        <MenuItem key={value} value={value}>
+                          {messagePlatformToLabel(value, t)}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+
+                  {/* Username */}
+                  <TextField
+                    id="messagePlatformId"
+                    name="messagePlatformId"
+                    variant="filled"
+                    label={t('Username')}
+                    fullWidth
+                    value={values.messagePlatformId ?? ''}
+                    error={
+                      touched.messagePlatformId === true &&
+                      Boolean(errors.messagePlatformId)
+                    }
+                    helperText={
+                      touched.messagePlatformId === true &&
+                      errors.messagePlatformId
+                    }
                     onBlur={handleBlur}
+                    onChange={handleChange}
                     sx={{
-                      '.MuiSelect-select': {
-                        height: 23
+                      px: 4,
+                      pb: 4,
+                      '.MuiFormLabel-root': {
+                        'padding-left': '16px'
                       }
                     }}
-                  >
-                    <MenuItem value="">{t('None')}</MenuItem>
-                    {Object.values(MessagePlatform).map((value) => (
-                      <MenuItem key={value} value={value}>
-                        {messagePlatformToLabel(value, t)}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
+                  />
+                </Box>
 
-                {/* Username */}
-                <TextField
-                  id="messagePlatformId"
-                  name="messagePlatformId"
-                  variant="filled"
-                  label={
-                    values.messagePlatform != null &&
-                    values.messagePlatform !== ''
-                      ? messagePlatformToLabel(values.messagePlatform, t)
-                      : t('Username')
-                  }
-                  fullWidth
-                  value={values.messagePlatformId ?? ''}
-                  error={
-                    touched.messagePlatformId === true &&
-                    Boolean(errors.messagePlatformId)
-                  }
-                  helperText={
-                    touched.messagePlatformId === true &&
-                    errors.messagePlatformId
-                  }
-                  onBlur={handleBlur}
-                  onChange={handleChange}
-                />
+                <Divider sx={{ mb: 4 }} />
 
-                <Divider />
+                <Box>
+                  {/* name */}
+                  <TextField
+                    id="name"
+                    name="name"
+                    variant="filled"
+                    label={t('Name')}
+                    fullWidth
+                    value={values.name ?? ''}
+                    error={touched.name === true && Boolean(errors.name)}
+                    helperText={touched.name === true && errors.name}
+                    onBlur={handleBlur}
+                    onChange={handleChange}
+                    sx={{
+                      px: 4,
+                      pb: 4,
+                      '.MuiFormLabel-root': {
+                        'padding-left': '16px'
+                      }
+                    }}
+                  />
 
-                {/* name */}
-                <TextField
-                  id="name"
-                  name="name"
-                  variant="filled"
-                  label={t('Name')}
-                  fullWidth
-                  value={values.name ?? ''}
-                  error={touched.name === true && Boolean(errors.name)}
-                  helperText={touched.name === true && errors.name}
-                  onBlur={handleBlur}
-                  onChange={handleChange}
-                />
-
-                {/* note */}
-                <TextField
-                  id="notes"
-                  name="notes"
-                  variant="filled"
-                  label={t('Private Note')}
-                  fullWidth
-                  value={values.notes ?? ''}
-                  error={touched.notes === true && Boolean(errors.notes)}
-                  helperText={touched.notes === true && errors.notes}
-                  onBlur={handleBlur}
-                  onChange={handleChange}
-                  multiline
-                  minRows={2}
-                />
-                <Typography variant="caption">
-                  {t('Visible to your team only')}
-                </Typography>
+                  {/* note */}
+                  <TextField
+                    id="notes"
+                    name="notes"
+                    variant="filled"
+                    label={t('Private Note')}
+                    fullWidth
+                    value={values.notes ?? ''}
+                    error={touched.notes === true && Boolean(errors.notes)}
+                    helperText={touched.notes === true && errors.notes}
+                    onBlur={handleBlur}
+                    onChange={handleChange}
+                    multiline
+                    minRows={2}
+                    sx={{
+                      px: 4,
+                      pb: 4,
+                      '.MuiFormLabel-root': {
+                        'padding-left': '16px'
+                      }
+                    }}
+                  />
+                  <Typography variant="caption" sx={{ px: 4, pb: 5 }}>
+                    {t('Visible to your team only')}
+                  </Typography>
+                </Box>
               </Stack>
               <SubmitListener />
             </Form>
