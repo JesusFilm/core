@@ -1,9 +1,12 @@
 name: Main
 on:
   push:
-    branches: [main]
+    branches: [main, feature/*]
   pull_request:
     branches: [main, feature/*]
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
 jobs:
   lint:
     runs-on: ubuntu-latest
@@ -51,7 +54,7 @@ jobs:
         with:
           targets: codegen
           all: true
-      - name: lint, type-check, extract-translation, subgraph-check
+      - name: lint, type-check, extract-translations, subgraph-check
         uses: mansagroup/nrwl-nx-action@v3
         with:
           targets: lint,type-check,extract-translations,subgraph-check
@@ -125,7 +128,7 @@ jobs:
           DOPPLER_WATCH_TOKEN: ${{ secrets.DOPPLER_WATCH_TOKEN }}
           DOPPLER_WATCH_ADMIN_TOKEN: ${{ secrets.DOPPLER_WATCH_ADMIN_TOKEN }}
         with:
-          targets: fetch-secrets,generate,build
+          targets: fetch-secrets,build
   test:
     runs-on: ubuntu-latest
     services:
@@ -167,7 +170,7 @@ jobs:
           all: true
       - uses: mansagroup/nrwl-nx-action@v3
         with:
-          targets: generate,test
+          targets: test
           args: --ci
   visual-test:
     runs-on: ubuntu-latest

@@ -20,11 +20,12 @@ import i18nConfig from '../next-i18next.config'
 
 interface JourneyPageProps {
   journey: Journey
+  locale: string
+  rtl: boolean
 }
 
-function JourneyPage({ journey }: JourneyPageProps): ReactElement {
+function JourneyPage({ journey, locale, rtl }: JourneyPageProps): ReactElement {
   const router = useRouter()
-  const { rtl, locale } = getJourneyRTL(journey)
   const isIframe = typeof window !== 'undefined' && window.self !== window.top
   if (isIframe) {
     void router.push('/embed/[journeySlug]', `/embed/${journey.slug}`)
@@ -115,6 +116,8 @@ export const getStaticProps: GetStaticProps<JourneyPageProps> = async (
       revalidate: 60
     }
   } else {
+    const { rtl, locale } = getJourneyRTL(data.journey)
+
     return {
       props: {
         ...(await serverSideTranslations(
@@ -122,7 +125,9 @@ export const getStaticProps: GetStaticProps<JourneyPageProps> = async (
           ['apps-journeys', 'libs-journeys-ui'],
           i18nConfig
         )),
-        journey: data.journey
+        journey: data.journey,
+        locale,
+        rtl
       },
       revalidate: 60
     }

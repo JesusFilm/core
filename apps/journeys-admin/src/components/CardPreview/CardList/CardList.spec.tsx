@@ -10,6 +10,7 @@ import {
   ThemeMode
 } from '../../../../__generated__/globalTypes'
 import { JourneyFields as Journey } from '../../../../__generated__/JourneyFields'
+import { SocialProvider } from '../../Editor/SocialProvider'
 import { CardList } from '.'
 
 jest.mock('react-beautiful-dnd', () => ({
@@ -203,12 +204,14 @@ describe('CardList', () => {
     const handleClick = jest.fn()
     const { getByRole } = render(
       <MockedProvider>
-        <CardList
-          steps={steps}
-          selected={selected}
-          showAddButton
-          handleClick={handleClick}
-        />
+        <SocialProvider>
+          <CardList
+            steps={steps}
+            selected={selected}
+            showAddButton
+            handleClick={handleClick}
+          />
+        </SocialProvider>
       </MockedProvider>
     )
     expect(getByRole('button')).toBeInTheDocument()
@@ -242,7 +245,7 @@ describe('CardList', () => {
     expect(dragHandle[0]).toHaveClass('MuiSvgIcon-root')
   })
 
-  it('contains social preview card', () => {
+  it('contains goals card', () => {
     const { getByTestId } = render(
       <MockedProvider>
         <DragDropContext>
@@ -261,7 +264,7 @@ describe('CardList', () => {
 
   it('navigates on goals card click', async () => {
     const handleChange = jest.fn()
-    const { getAllByRole } = render(
+    const { getByTestId } = render(
       <MockedProvider>
         <JourneyProvider
           value={{
@@ -291,7 +294,104 @@ describe('CardList', () => {
         </JourneyProvider>
       </MockedProvider>
     )
-    fireEvent.click(getAllByRole('button')[0])
+    fireEvent.click(getByTestId('goals-navigation-card'))
     expect(handleChange).toHaveBeenCalledWith('goals')
+  })
+
+  it('contains social preview card', () => {
+    const { getByTestId } = render(
+      <MockedProvider>
+        <DragDropContext>
+          <CardList
+            steps={steps}
+            selected={selected}
+            showAddButton
+            droppableProvided={droppableProvided}
+            showNavigationCards
+          />
+        </DragDropContext>
+      </MockedProvider>
+    )
+    expect(getByTestId('social-preview-navigation-card')).toBeInTheDocument()
+  })
+  it('navigates on social preview card click', async () => {
+    const handleChange = jest.fn()
+    const { getByTestId } = render(
+      <MockedProvider>
+        <JourneyProvider
+          value={{
+            journey: {
+              id: 'journeyId',
+              themeMode: ThemeMode.light,
+              themeName: ThemeName.base,
+              language: {
+                __typename: 'Language',
+                id: '529',
+                bcp47: 'en',
+                iso3: 'eng'
+              }
+            } as unknown as Journey,
+            admin: true
+          }}
+        >
+          <DragDropContext>
+            <CardList
+              steps={steps}
+              selected={selected}
+              droppableProvided={droppableProvided}
+              handleChange={handleChange}
+              showNavigationCards
+            />
+          </DragDropContext>
+        </JourneyProvider>
+      </MockedProvider>
+    )
+    fireEvent.click(getByTestId('social-preview-navigation-card'))
+    expect(handleChange).toHaveBeenCalledWith('social')
+  })
+
+  it('should display image for social navigationcard if image is provided', () => {
+    const handleChange = jest.fn()
+    const { getAllByRole } = render(
+      <MockedProvider>
+        <JourneyProvider
+          value={{
+            journey: {
+              id: 'journeyId',
+              themeMode: ThemeMode.light,
+              themeName: ThemeName.base,
+              language: {
+                __typename: 'Language',
+                id: '529',
+                bcp47: 'en',
+                iso3: 'eng'
+              }
+            } as unknown as Journey,
+            admin: true
+          }}
+        >
+          <SocialProvider
+            initialValues={{
+              primaryImageBlock: {
+                src: 'https://images.unsplash.com/photo-1600133153574-25d98a99528c?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1600&q=80'
+              }
+            }}
+          >
+            <DragDropContext>
+              <CardList
+                steps={steps}
+                selected={selected}
+                droppableProvided={droppableProvided}
+                handleChange={handleChange}
+                showNavigationCards
+              />
+            </DragDropContext>
+          </SocialProvider>
+        </JourneyProvider>
+      </MockedProvider>
+    )
+    expect(getAllByRole('img')[0].attributes.getNamedItem('src')?.value).toBe(
+      'https://images.unsplash.com/photo-1600133153574-25d98a99528c?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1600&q=80'
+    )
   })
 })

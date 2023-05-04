@@ -8,7 +8,6 @@ import {
   withAuthUser,
   withAuthUserTokenSSR
 } from 'next-firebase-auth'
-import { useRouter } from 'next/router'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import { getLaunchDarklyClient } from '@core/shared/ui/getLaunchDarklyClient'
 import { PageWrapper } from '../../src/components/PageWrapper'
@@ -72,7 +71,6 @@ function LibraryIndex(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const AuthUser = useAuthUser()
   const { data } = useQuery<GetPublishedTemplates>(GET_PUBLISHED_TEMPLATES)
-  const router = useRouter()
   const journeys = useJourneys()
   const { data: userData } = useQuery<GetUserRole>(GET_USER_ROLE)
 
@@ -83,11 +81,7 @@ function LibraryIndex(): ReactElement {
   return (
     <>
       <NextSeo title={t('Journey Templates')} />
-      <PageWrapper
-        title={t('Journey Templates')}
-        authUser={AuthUser}
-        router={router}
-      >
+      <PageWrapper title={t('Journey Templates')} authUser={AuthUser}>
         <TemplateLibrary
           isPublisher={isPublisher}
           journeys={journeys}

@@ -17,6 +17,7 @@ import { ThemeProvider } from '../src/components/ThemeProvider'
 import { initAuth } from '../src/libs/firebaseClient/initAuth'
 import i18nConfig from '../next-i18next.config'
 import { HelpScoutBeacon } from '../src/components/HelpScoutBeacon'
+import '../public/swiper-pagination-override.css'
 
 // your _app component
 initAuth()
@@ -57,7 +58,8 @@ function JourneysAdminApp({
         service: 'journeys-admin',
         env: process.env.NEXT_PUBLIC_VERCEL_ENV,
         version: process.env.NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA,
-        sampleRate: 100,
+        sampleRate: 50,
+        sessionReplaySampleRate: 10,
         trackInteractions: true,
         defaultPrivacyLevel: 'mask-user-input'
       })
