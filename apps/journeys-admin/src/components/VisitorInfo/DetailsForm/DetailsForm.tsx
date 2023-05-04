@@ -99,8 +99,8 @@ export function DetailsForm({ id }: Props): ReactElement {
           {({ values, errors, touched, handleChange, handleBlur }) => (
             <Form>
               <Stack>
-                <Box>
-                  <Stack direction="row" sx={{ p: 4 }}>
+                <Box sx={{ px: 4 }}>
+                  <Stack direction="row" sx={{ py: 4 }}>
                     {/* Start chat */}
                     <ChatButton
                       messagePlatform={data.visitor.messagePlatform}
@@ -138,24 +138,11 @@ export function DetailsForm({ id }: Props): ReactElement {
                         </MenuItem>
                       </Select>
                     </FormControl>
-
-                    {/* Move this */}
-                    {/* {data?.visitor?.lastChatStartedAt != null && (
-                    <Box>
-                      <Typography variant="body2">{t('Last Chat')}</Typography>
-                      <Typography>
-                        {format(
-                          parseISO(data.visitor.lastChatStartedAt),
-                          'PPp'
-                        )}
-                      </Typography>
-                    </Box>
-                  )} */}
                   </Stack>
 
                   {/* Platform */}
-                  <FormControl fullWidth variant="filled" sx={{ px: 4, pb: 4 }}>
-                    <InputLabel id="message-platform-label" sx={{ pl: 4 }}>
+                  <FormControl fullWidth variant="filled" sx={{ pb: 4 }}>
+                    <InputLabel id="message-platform-label">
                       {t('Chat Platform')}
                     </InputLabel>
                     <Select
@@ -163,7 +150,6 @@ export function DetailsForm({ id }: Props): ReactElement {
                       id="messagePlatform"
                       name="messagePlatform"
                       value={values.messagePlatform ?? ''}
-                      // label={t('Chat Platform')}
                       onChange={handleChange}
                       onBlur={handleBlur}
                       sx={{
@@ -199,19 +185,13 @@ export function DetailsForm({ id }: Props): ReactElement {
                     }
                     onBlur={handleBlur}
                     onChange={handleChange}
-                    sx={{
-                      px: 4,
-                      pb: 4,
-                      '.MuiFormLabel-root': {
-                        'padding-left': '16px'
-                      }
-                    }}
+                    sx={{ pb: 4 }}
                   />
                 </Box>
 
                 <Divider sx={{ mb: 4 }} />
 
-                <Box>
+                <Box sx={{ px: 4, pb: 5 }}>
                   {/* name */}
                   <TextField
                     id="name"
@@ -224,13 +204,7 @@ export function DetailsForm({ id }: Props): ReactElement {
                     helperText={touched.name === true && errors.name}
                     onBlur={handleBlur}
                     onChange={handleChange}
-                    sx={{
-                      px: 4,
-                      pb: 4,
-                      '.MuiFormLabel-root': {
-                        'padding-left': '16px'
-                      }
-                    }}
+                    sx={{ pb: 4 }}
                   />
 
                   {/* note */}
@@ -247,15 +221,9 @@ export function DetailsForm({ id }: Props): ReactElement {
                     onChange={handleChange}
                     multiline
                     minRows={2}
-                    sx={{
-                      px: 4,
-                      pb: 4,
-                      '.MuiFormLabel-root': {
-                        'padding-left': '16px'
-                      }
-                    }}
+                    sx={{ pb: 4 }}
                   />
-                  <Typography variant="caption" sx={{ px: 4, pb: 5 }}>
+                  <Typography variant="caption">
                     {t('Visible to your team only')}
                   </Typography>
                 </Box>

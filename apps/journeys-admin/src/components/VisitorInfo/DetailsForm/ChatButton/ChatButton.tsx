@@ -13,56 +13,49 @@ export function ChatButton({
   messagePlatformId
 }: Props): ReactElement {
   function handleClick(): void {
-    let platformLink: string | undefined
-    let platformId: string | undefined | null
+    if (messagePlatformId == null) return
+    let link: string | undefined
     switch (messagePlatform) {
-      case MessagePlatform.facebook:
-        platformLink = 'https://m.me/'
-        platformId = messagePlatformId
-        break
       case MessagePlatform.telegram:
-        platformLink = 'https://web.telegram.org/z/#'
-        platformId = messagePlatformId
-        break
-      case MessagePlatform.instagram:
-        platformLink = 'https://www.instagram.com/direct/t/'
-        platformId = messagePlatformId
-        break
-      case MessagePlatform.snapchat:
-        platformLink = 'https://web.snapchat.com/'
-        platformId = messagePlatformId
+        link = `https://web.telegram.org/z/#${messagePlatformId}`
         break
       case MessagePlatform.viber:
-        platformLink = 'https://chats.viber.com/'
-        platformId = messagePlatformId
+        link = `https://chats.viber.com/${messagePlatformId}`
         break
       case MessagePlatform.vk:
-        platformLink = 'https://vk.com/'
-        platformId = messagePlatformId
+        link = `https://vk.com/${messagePlatformId}`
         break
-      case MessagePlatform.line:
-        // not sure if this actually links to chat
-        platformLink = 'https://line.me/'
+      case MessagePlatform.snapchat:
+        link = `https://web.snapchat.com/${messagePlatformId}`
         break
-      case MessagePlatform.skype:
-        // does not use userId's
-        platformLink = 'https://web.skype.com/'
+      case MessagePlatform.instagram:
+        // needs the id (can't be username)
+        link = `https://www.instagram.com/direct/t/${messagePlatformId}`
         break
-      case MessagePlatform.tikTok:
-        // does not use userId's
-        platformLink = 'https://www.tiktok.com/messages?lang=en'
+      case MessagePlatform.facebook:
+        // doesn't always work
+        link = `https://m.me/${messagePlatformId}`
         break
       case MessagePlatform.whatsApp:
-        // does not use userId's
-        platformLink = 'https://web.whatsapp.com/'
+        // doesn't open in web app
+        // link = 'https://web.whatsapp.com/'
+        link = `https://wa.me/${messagePlatformId}`
+        break
+      case MessagePlatform.skype:
+        // link = `https://web/skype:${messagePlatformId}?chat`
+        link = `https://web.skype.com`
+        break
+      case MessagePlatform.tikTok:
+        // opens profile rather than messages
+        // platformLink = 'https://www.tiktok.com/messages?lang=en'
+        link = `https://www.tiktok.com/@${messagePlatformId}`
+        break
+      case MessagePlatform.line:
+        link = `https://ln.ee/${messagePlatformId}`
         break
     }
-    if (platformLink == null) return
-    if (platformId != null) {
-      console.log(platformId)
-      window.open(`${platformLink}${platformId}`, '_blank')
-    } else {
-      window.open(`${platformLink as unknown as string}`, '_blank')
+    if (link != null) {
+      window.open(link)
     }
   }
 
