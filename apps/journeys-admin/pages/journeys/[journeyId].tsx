@@ -1,4 +1,4 @@
-import { ReactElement, useEffect } from 'react'
+import { ReactElement } from 'react'
 import { gql, useQuery } from '@apollo/client'
 import { JOURNEY_FIELDS } from '@core/journeys/ui/JourneyProvider/journeyFields'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
@@ -24,6 +24,7 @@ import i18nConfig from '../../next-i18next.config'
 import { ACCEPT_USER_INVITE } from '..'
 import { UserJourneyOpen } from '../../__generated__/UserJourneyOpen'
 import { useTermsRedirect } from '../../src/libs/useTermsRedirect/useTermsRedirect'
+import { useInvalidJourneyRedirect } from '../../src/libs/useInvalidJourneyRedirect/useInvalidJourneyRedirect'
 
 export const GET_JOURNEY = gql`
   ${JOURNEY_FIELDS}
@@ -51,13 +52,7 @@ function JourneyIdPage(): ReactElement {
   })
 
   useTermsRedirect()
-
-  useEffect(() => {
-    const checkValidJourney = (): void => {
-      data?.journey == null && data?.journey !== undefined && router.push('/')
-    }
-    checkValidJourney()
-  }, [data, router])
+  useInvalidJourneyRedirect(data)
 
   return (
     <>
