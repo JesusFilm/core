@@ -6,6 +6,10 @@ export const useInvalidJourneyRedirect = (data): void => {
   useEffect(() => {
     const checkValidJourney = (): void => {
       data?.journey == null && data?.journey !== undefined && router.push('/')
+      data?.template == null && data?.template !== undefined && router.push('/')
+      data?.publisherTemplate == null &&
+        data?.publisherTemplate !== undefined &&
+        router.push('/')
     }
     checkValidJourney()
   }, [data, router])
