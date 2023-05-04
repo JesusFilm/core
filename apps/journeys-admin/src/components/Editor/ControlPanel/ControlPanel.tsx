@@ -9,7 +9,10 @@ import {
   ActiveJourneyEditContent
 } from '@core/journeys/ui/EditorProvider'
 import { TabPanel, tabA11yProps } from '@core/shared/ui/TabPanel'
+import MuiFab from '@mui/material/Fab'
+import EditIcon from '@mui/icons-material/Edit'
 import { CardPreview, OnSelectProps } from '../../CardPreview'
+import { SocialShareAppearance } from '../Drawer/SocialShareAppearance'
 import { Attributes } from './Attributes'
 import { BlocksTab } from './BlocksTab'
 import { Fab } from './Fab'
@@ -42,6 +45,17 @@ export function ControlPanel(): ReactElement {
         type: 'SetJourneyEditContentAction',
         component: ActiveJourneyEditContent.Action
       })
+    } else if (view === ActiveJourneyEditContent.SocialPreview) {
+      dispatch({
+        type: 'SetJourneyEditContentAction',
+        component: ActiveJourneyEditContent.SocialPreview
+      })
+      dispatch({
+        type: 'SetDrawerPropsAction',
+        title: 'Social Share Preview',
+        mobileOpen: false,
+        children: <SocialShareAppearance />
+      })
     }
   }
 
@@ -49,9 +63,29 @@ export function ControlPanel(): ReactElement {
     dispatch({ type: 'SetActiveTabAction', activeTab: ActiveTab.Blocks })
   }
 
+  const handleSocialEditFabClick = (): void => {
+    dispatch({ type: 'SetDrawerMobileOpenAction', mobileOpen: true })
+  }
+
   return (
     <Box sx={{ width: '100%', position: 'relative' }}>
       <Box sx={{ position: 'absolute', top: '-64px', right: 20, zIndex: 1 }}>
+        {journeyEditContentComponent ===
+          ActiveJourneyEditContent.SocialPreview && (
+          <MuiFab
+            color="primary"
+            data-testid="social-edit-fab"
+            onClick={handleSocialEditFabClick}
+            sx={{
+              display: { xs: 'inherit', sm: 'none' },
+              height: 48,
+              width: 48,
+              p: 2.5
+            }}
+          >
+            <EditIcon />
+          </MuiFab>
+        )}
         {journeyEditContentComponent === ActiveJourneyEditContent.Canvas && (
           <Fab
             visible={activeTab !== ActiveTab.Blocks}
