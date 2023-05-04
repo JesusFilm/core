@@ -86,10 +86,6 @@ export function BackgroundMediaImage({
   const handleImageDelete = async (): Promise<void> => {
     try {
       await deleteCoverBlock()
-      enqueueSnackbar('Image Deleted', {
-        variant: 'success',
-        preventDuplicate: true
-      })
     } catch (e) {
       enqueueSnackbar(e.message, {
         variant: 'error',

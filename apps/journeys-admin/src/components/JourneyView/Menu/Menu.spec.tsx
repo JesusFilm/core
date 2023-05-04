@@ -528,4 +528,68 @@ describe('JourneyView/Menu', () => {
       '/journeys/journey-id/reports'
     )
   })
+
+  it('should enable publishers to use template', async () => {
+    const push = jest.fn()
+    mockUseRouter.mockReturnValue({ push } as unknown as NextRouter)
+    const result = jest.fn(() => {
+      return {
+        data: {
+          journeyDuplicate: {
+            id: 'duplicatedJourneyId'
+          }
+        }
+      }
+    })
+    const { getByRole } = render(
+      <SnackbarProvider>
+        <MockedProvider
+          mocks={[
+            {
+              request: {
+                query: DUPLICATE_JOURNEY,
+                variables: {
+                  id: defaultJourney.id
+                }
+              },
+              result
+            },
+            {
+              request: {
+                query: GET_ROLE
+              },
+              result: {
+                data: {
+                  getUserRole: {
+                    id: 'userRoleId',
+                    userId: '1',
+                    roles: [Role.publisher]
+                  }
+                }
+              }
+            }
+          ]}
+        >
+          <JourneyProvider
+            value={{
+              journey: { ...defaultJourney, template: true },
+              admin: true
+            }}
+          >
+            <Menu />
+          </JourneyProvider>
+        </MockedProvider>
+      </SnackbarProvider>
+    )
+    fireEvent.click(getByRole('button'))
+    fireEvent.click(getByRole('menuitem', { name: 'Use Template' }))
+    await waitFor(() => expect(result).toHaveBeenCalled())
+    await waitFor(() => {
+      expect(push).toHaveBeenCalledWith(
+        '/journeys/duplicatedJourneyId',
+        undefined,
+        { shallow: true }
+      )
+    })
+  })
 })

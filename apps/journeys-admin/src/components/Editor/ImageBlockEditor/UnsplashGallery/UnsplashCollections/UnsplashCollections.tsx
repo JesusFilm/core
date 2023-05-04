@@ -7,7 +7,7 @@ import IconButton from '@mui/material/IconButton'
 import Typography from '@mui/material/Typography'
 
 interface UnsplashCollectionsProps {
-  onClick: (collectionId: string) => void
+  onClick: (collectionId: string, query: string) => void
 }
 
 interface Collection {
@@ -153,7 +153,7 @@ export function UnsplashCollections({
         {collections.map((collection) => (
           <Chip
             key={collection.collectionId}
-            onClick={() => onClick(collection.collectionId)}
+            onClick={() => onClick(collection.collectionId, collection.label)}
             label={<Typography variant="body2">{collection.label}</Typography>}
             sx={{
               mr: 2,

@@ -2,12 +2,11 @@ import { ReactElement } from 'react'
 import { Button } from '../Button'
 import { Card } from '../Card'
 import { Image } from '../Image'
-import { GridItem } from '../GridItem'
-import { GridContainer } from '../GridContainer'
 import { RadioOption } from '../RadioOption'
 import { RadioQuestion } from '../RadioQuestion'
 import { SignUp } from '../SignUp'
 import { Step } from '../Step'
+import { TextResponse } from '../TextResponse'
 import { Typography } from '../Typography'
 import { Video } from '../Video'
 import type { TreeBlock } from '../../libs/block'
@@ -15,8 +14,6 @@ import {
   BlockFields as Block,
   BlockFields_ButtonBlock as ButtonBlock,
   BlockFields_CardBlock as CardBlock,
-  BlockFields_GridItemBlock as GridItemBlock,
-  BlockFields_GridContainerBlock as GridContainerBlock,
   BlockFields_ImageBlock as ImageBlock,
   BlockFields_RadioOptionBlock as RadioOptionBlock,
   BlockFields_RadioQuestionBlock as RadioQuestionBlock,
@@ -26,7 +23,6 @@ import {
   BlockFields_TypographyBlock as TypographyBlock,
   BlockFields_VideoBlock as VideoBlock
 } from '../../libs/block/__generated__/BlockFields'
-import { TextResponse } from '../TextResponse'
 
 export interface WrapperProps<T = Block> {
   block: TreeBlock<T>
@@ -39,8 +35,6 @@ export interface WrappersProps {
   Wrapper?: WrapperFn
   ButtonWrapper?: WrapperFn<ButtonBlock>
   CardWrapper?: WrapperFn<CardBlock>
-  GridItemWrapper?: WrapperFn<GridItemBlock>
-  GridContainerWrapper?: WrapperFn<GridContainerBlock>
   ImageWrapper?: WrapperFn<ImageBlock>
   RadioOptionWrapper?: WrapperFn<RadioOptionBlock>
   RadioQuestionWrapper?: WrapperFn<RadioQuestionBlock>
@@ -65,8 +59,6 @@ export function BlockRenderer({
   const Wrapper = wrappers?.Wrapper ?? DefaultWrapper
   const ButtonWrapper = wrappers?.ButtonWrapper ?? DefaultWrapper
   const CardWrapper = wrappers?.CardWrapper ?? DefaultWrapper
-  const GridItemWrapper = wrappers?.GridItemWrapper ?? DefaultWrapper
-  const GridContainerWrapper = wrappers?.GridContainerWrapper ?? DefaultWrapper
   const ImageWrapper = wrappers?.ImageWrapper ?? DefaultWrapper
   const RadioOptionWrapper = wrappers?.RadioOptionWrapper ?? DefaultWrapper
   const RadioQuestionWrapper = wrappers?.RadioQuestionWrapper ?? DefaultWrapper
@@ -95,22 +87,6 @@ export function BlockRenderer({
           <CardWrapper block={block}>
             <Card {...block} wrappers={wrappers} />
           </CardWrapper>
-        </Wrapper>
-      )
-    case 'GridItemBlock':
-      return (
-        <Wrapper block={block}>
-          <GridItemWrapper block={block}>
-            <GridItem {...block} wrappers={wrappers} />
-          </GridItemWrapper>
-        </Wrapper>
-      )
-    case 'GridContainerBlock':
-      return (
-        <Wrapper block={block}>
-          <GridContainerWrapper block={block}>
-            <GridContainer {...block} wrappers={wrappers} />
-          </GridContainerWrapper>
         </Wrapper>
       )
     case 'ImageBlock':
