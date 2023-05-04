@@ -13,7 +13,7 @@ const DrawerStory = {
 const Template: Story = () => (
   <EditorProvider
     initialState={{
-      drawerTitle: 'Social Share Appearance',
+      drawerTitle: 'Social Share Preview',
       drawerChildren: <Box m={6}>Hello World</Box>,
       drawerMobileOpen: true
     }}
