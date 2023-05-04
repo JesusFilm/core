@@ -2,6 +2,15 @@ import { fireEvent, render } from '@testing-library/react'
 import { MessagePlatform } from '../../../../../__generated__/globalTypes'
 import { ChatButton } from '.'
 
+jest.mock('react-i18next', () => ({
+  __esModule: true,
+  useTranslation: () => {
+    return {
+      t: (str: string) => str
+    }
+  }
+}))
+
 describe('ChatButton', () => {
   window.open = jest.fn()
   it('should handle click for facebook', () => {

@@ -1,6 +1,7 @@
 import { ReactElement } from 'react'
 import ChatRoundedIcon from '@mui/icons-material/ChatRounded'
 import Button from '@mui/material/Button'
+import { useTranslation } from 'react-i18next'
 import { MessagePlatform } from '../../../../../__generated__/globalTypes'
 
 interface Props {
@@ -12,6 +13,8 @@ export function ChatButton({
   messagePlatform,
   messagePlatformId
 }: Props): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
+
   function handleClick(): void {
     if (messagePlatformId == null) return
     let link: string | undefined
@@ -65,7 +68,7 @@ export function ChatButton({
       disabled={messagePlatform == null || messagePlatformId == null}
       onClick={handleClick}
     >
-      Start Conversation
+      {t('Start Conversation')}
     </Button>
   )
 }

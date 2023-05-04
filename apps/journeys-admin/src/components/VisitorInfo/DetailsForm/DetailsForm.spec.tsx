@@ -3,6 +3,15 @@ import { render, screen, waitFor, fireEvent } from '@testing-library/react'
 import { getVisitorMock, visitorUpdateMock } from './DetailsFormData'
 import { DetailsForm } from '.'
 
+jest.mock('react-i18next', () => ({
+  __esModule: true,
+  useTranslation: () => {
+    return {
+      t: (str: string) => str
+    }
+  }
+}))
+
 describe('DetailsForm', () => {
   it('fetches remote data and fills in form', async () => {
     const { getByRole } = render(
@@ -39,7 +48,6 @@ describe('DetailsForm', () => {
     )
     fireEvent.mouseDown(getByRole('button', { name: '🎉' }))
     fireEvent.click(screen.getByRole('option', { name: '⚪️' }))
-    jest.runAllTimers()
     await waitFor(() => expect(visitorUpdateResult).toHaveBeenCalled())
   })
 })
