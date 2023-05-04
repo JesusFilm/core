@@ -1,6 +1,7 @@
 import { Story, Meta } from '@storybook/react'
 import { MockedProvider } from '@apollo/client/testing'
 import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
+import { ActiveJourneyEditContent } from '@core/journeys/ui/EditorProvider'
 import { journeysAdminConfig } from '../../libs/storybook'
 import {
   ButtonColor,
@@ -597,7 +598,10 @@ const blocks: GetJourney_journey_blocks[] = [
 const Template: Story = (args) => (
   <MockedProvider>
     <FlagsProvider>
-      <Editor journey={args.journey}>
+      <Editor
+        journey={args.journey}
+        view={args.view ?? ActiveJourneyEditContent.Canvas}
+      >
         <PageWrapper
           title={args.journey?.title ?? 'Edit Journey'}
           showDrawer
@@ -641,6 +645,12 @@ Default.args = {
     userJourneys: [],
     blocks
   }
+}
+
+export const SocialPreview = Template.bind({})
+SocialPreview.args = {
+  ...Default.args,
+  view: ActiveJourneyEditContent.SocialPreview
 }
 
 export const Loading = Template.bind({})
