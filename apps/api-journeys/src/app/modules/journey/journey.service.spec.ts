@@ -93,23 +93,14 @@ describe('JourneyService', () => {
     })
 
     it('should return templates for publishers', async () => {
-      // db.query.mockImplementationOnce(async (q) => {
-      //   const { query } = q as unknown as AqlQuery
-      //   expect(query).toEqual(
-      //     aql`FOR journey in undefined
-      //         FILTER journey.template == true
-      //     && true
-      //       RETURN journey
-      // `.query
-      //   )
-      //   return await mockDbQueryResult(db, [journey])
-      // })
       prisma.journey.findMany = jest.fn().mockResolvedValue([journey])
       await service.getAllPublishedJourneys({ featured: true })
-      // expect(db.query).toHaveBeenCalled()
-      // expect(await service.getAllByRole(userRole, undefined, true)).toEqual([
-      //   journey
-      // ])
+      expect(prisma.journey.findMany).toHaveBeenCalledWith({
+        where: {
+          status: JourneyStatus.published,
+          featuredAt: { not: null }
+        }
+      })
     })
   })
 })

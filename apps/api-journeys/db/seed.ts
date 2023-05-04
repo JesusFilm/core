@@ -23,6 +23,9 @@ async function main(): Promise<void> {
     name: 'journeyId'
   })
 
+  // this should be removed when the UI can support team management
+  await jfpTeam()
+
   await nua1()
   await nua2()
   await nua8()
@@ -30,9 +33,6 @@ async function main(): Promise<void> {
   await onboarding()
   await onboardingTemplates()
   await psMigrate()
-
-  // this should be removed when the UI can support team management
-  await jfpTeam()
 }
 main().catch((e) => {
   console.error(e)

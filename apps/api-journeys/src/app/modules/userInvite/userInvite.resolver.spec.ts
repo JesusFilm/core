@@ -216,7 +216,6 @@ describe('UserInviteResolver', () => {
         'acceptedJourneyId',
         createInput
       )
-      console.log(invite)
       expect(prisma.userInvite.create).not.toHaveBeenCalled()
       expect(prisma.userInvite.update).not.toHaveBeenCalled()
       expect(invite).toEqual(null)
