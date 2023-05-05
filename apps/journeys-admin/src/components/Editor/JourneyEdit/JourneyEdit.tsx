@@ -59,6 +59,8 @@ export function JourneyEdit(): ReactElement {
               my:
                 journeyEditContentComponent === 'canvas'
                   ? 'auto'
+                  : journeyEditContentComponent === 'social'
+                  ? 'auto'
                   : journeyEditContentComponent === 'action'
                   ? 5
                   : 0
