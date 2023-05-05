@@ -52,6 +52,7 @@ function JourneyIdPage(): ReactElement {
   })
 
   useTermsRedirect()
+  console.log(data?.journey)
   useInvalidJourneyRedirect(data)
 
   return (
