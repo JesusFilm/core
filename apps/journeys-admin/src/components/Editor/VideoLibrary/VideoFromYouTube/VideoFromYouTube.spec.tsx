@@ -1,6 +1,7 @@
 import { render, fireEvent, waitFor } from '@testing-library/react'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { SWRConfig } from 'swr'
+import { MockedProvider } from '@apollo/client/testing'
 import { mswServer } from '../../../../../test/mswServer'
 import {
   getVideos,
@@ -20,9 +21,11 @@ describe('VideoFromYouTube', () => {
   it('should render a video list item', async () => {
     mswServer.use(getVideos)
     const { getByText } = render(
-      <SWRConfig value={{ provider: () => new Map() }}>
-        <VideoFromYouTube onSelect={jest.fn()} />
-      </SWRConfig>
+      <MockedProvider>
+        <SWRConfig value={{ provider: () => new Map() }}>
+          <VideoFromYouTube onSelect={jest.fn()} />
+        </SWRConfig>
+      </MockedProvider>
     )
     await waitFor(() =>
       expect(getByText('What is the Bible?')).toBeInTheDocument()

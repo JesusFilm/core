@@ -14,13 +14,15 @@ describe('VideoList', () => {
 
   it('should render a video list items', () => {
     const { getByText } = render(
-      <VideoList
-        videos={videos}
-        loading={false}
-        fetchMore={jest.fn()}
-        hasMore
-        onSelect={jest.fn()}
-      />
+      <MockedProvider>
+        <VideoList
+          videos={videos}
+          loading={false}
+          fetchMore={jest.fn()}
+          hasMore
+          onSelect={jest.fn()}
+        />
+      </MockedProvider>
     )
     expect(getByText('Brand_Video')).toBeInTheDocument()
     expect(getByText('The Demoniac')).toBeInTheDocument()
