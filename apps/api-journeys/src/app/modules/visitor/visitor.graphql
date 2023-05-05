@@ -188,6 +188,12 @@ type VisitorsConnection {
   pageInfo: PageInfo!
 }
 
+enum VisitorConnectionFilter {
+  involved
+  passive
+  all
+}
+
 extend type Query {
   """
   A list of visitors that are connected with a specific team.
@@ -205,6 +211,7 @@ extend type Query {
     Returns the elements in the list that come after the specified cursor.
     """
     after: String
+    filter: VisitorConnectionFilter
   ): VisitorsConnection!
   """
   Get a single visitor

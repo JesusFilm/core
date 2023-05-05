@@ -202,6 +202,12 @@ export enum VisitorStatus {
     redQuestionMark = "redQuestionMark"
 }
 
+export enum VisitorConnectionFilter {
+    involved = "involved",
+    passive = "passive",
+    all = "all"
+}
+
 export class NavigateActionInput {
     gtmEventName?: Nullable<string>;
 }
@@ -1006,7 +1012,7 @@ export abstract class IQuery {
 
     abstract getUserRole(): Nullable<UserRole> | Promise<Nullable<UserRole>>;
 
-    abstract visitorsConnection(teamId: string, first?: Nullable<number>, after?: Nullable<string>): VisitorsConnection | Promise<VisitorsConnection>;
+    abstract visitorsConnection(teamId: string, first?: Nullable<number>, after?: Nullable<string>, filter?: Nullable<VisitorConnectionFilter>): VisitorsConnection | Promise<VisitorsConnection>;
 
     abstract visitor(id: string): Visitor | Promise<Visitor>;
 }

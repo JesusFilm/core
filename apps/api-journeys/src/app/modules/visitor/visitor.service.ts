@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common'
 import { KeyAsId } from '@core/nest/decorators/KeyAsId'
 import { v4 as uuidv4 } from 'uuid'
 import { Visitor } from '.prisma/api-journeys-client'
-import { PageInfo } from '../../__generated__/graphql'
+import { PageInfo, VisitorConnectionFilter } from '../../__generated__/graphql'
 import { PrismaService } from '../../lib/prisma.service'
 
 interface ListParams {
@@ -10,6 +10,7 @@ interface ListParams {
   first: number
   filter: {
     teamId: string | undefined
+    filter: VisitorConnectionFilter
   }
   sortOrder?: 'ASC' | 'DESC'
 }
@@ -33,7 +34,15 @@ export class VisitorService {
     filter
   }: ListParams): Promise<VisitorsConnection> {
     const result = await this.prismaService.visitor.findMany({
-      where: filter,
+      where: {
+        teamId: filter.teamId,
+        events:
+          filter.filter === VisitorConnectionFilter.all
+            ? undefined
+            : {
+                some: { typename: filter.filter }
+              }
+      },
       cursor:
         after != null
           ? {
