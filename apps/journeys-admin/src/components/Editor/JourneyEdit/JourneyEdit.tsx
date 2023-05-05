@@ -56,12 +56,7 @@ export function JourneyEdit(): ReactElement {
         >
           <Box
             sx={{
-              my:
-                journeyEditContentComponent === 'canvas'
-                  ? 'auto'
-                  : journeyEditContentComponent === 'action'
-                  ? 5
-                  : 0
+              my: journeyEditContentComponent === 'action' ? 5 : 'auto'
             }}
           >
             {
