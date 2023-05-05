@@ -108,7 +108,7 @@ export function EmailInviteForm({ users }: EmailInviteFormProps): ReactElement {
             helperText={
               touched?.email != null && errors.email != null
                 ? errors.email
-                : t("Users invited by email don't require approval")
+                : t('No email notifications. New users get access instantly')
             }
             InputProps={{
               endAdornment: (
