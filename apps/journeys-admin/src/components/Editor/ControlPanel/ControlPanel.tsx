@@ -70,9 +70,12 @@ export function ControlPanel(): ReactElement {
     (block) => block.__typename === 'CardBlock'
   ) as TreeBlock<CardBlock>
 
+  console.log(cardBlock)
   const hasVideoBlock =
-    cardBlock?.children?.find((block) => block.__typename === 'VideoBlock') !=
-      null && cardBlock.coverBlockId == null
+    cardBlock?.children?.find(
+      (block) =>
+        block.__typename === 'VideoBlock' && cardBlock.coverBlockId !== block.id
+    ) != null
 
   const handleSocialEditFabClick = (): void => {
     dispatch({ type: 'SetDrawerMobileOpenAction', mobileOpen: true })
