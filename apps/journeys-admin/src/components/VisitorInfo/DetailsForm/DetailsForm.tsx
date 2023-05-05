@@ -198,7 +198,7 @@ export function DetailsForm({ id }: Props): ReactElement {
                     variant="filled"
                     label={t('Name')}
                     fullWidth
-                    value={values.name ?? ''}
+                    value={values.name ?? data.visitor.id}
                     error={touched.name === true && Boolean(errors.name)}
                     helperText={touched.name === true && errors.name}
                     onBlur={handleBlur}
