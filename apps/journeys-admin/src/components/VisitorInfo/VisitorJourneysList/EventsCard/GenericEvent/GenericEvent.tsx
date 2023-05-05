@@ -17,6 +17,7 @@ interface Props {
   icon?: ReactElement
   activity?: string
   duration?: string
+  variant?: 'default' | 'featured' | 'chat' | 'title'
 }
 
 export function GenericEvent({
@@ -25,30 +26,58 @@ export function GenericEvent({
   label,
   value,
   activity,
-  duration
+  duration,
+  variant = 'default'
 }: Props): ReactElement {
+  let textAlign: string | undefined
+  let iconColor = 'secondary.light'
+  let color: string | undefined
+  let durationVariant = 'caption'
+  let activityVariant = 'body2'
+  let valueVariant = 'body2'
+  switch (variant) {
+    case 'title':
+      textAlign = 'center'
+      durationVariant = 'body2'
+      valueVariant = 'h3'
+      break
+    case 'chat':
+      color = 'primary'
+      iconColor = 'primary.main'
+      valueVariant = 'subtitle1'
+      break
+    case 'featured':
+      activityVariant = 'body2'
+      valueVariant = 'subtitle1'
+      color = 'secondary.dark'
+      break
+  }
+
   return (
     <TimelineItem>
+      {/* Time */}
       <TimelineOppositeContent
         sx={{
           display: 'flex',
-          alignItems: icon == null ? 'center' : undefined,
+          alignItems: textAlign,
           justifyContent: 'center',
           px: 0,
           mr: 2,
           maxWidth: '64px'
         }}
       >
-        <Typography variant="body2">
+        <Typography variant={durationVariant} color={color}>
           {createdAt != null ? format(parseISO(createdAt), 'p') : duration}
         </Typography>
       </TimelineOppositeContent>
 
+      {/* Icon */}
       {icon != null ? (
         <TimelineSeparator>
           <TimelineDot
             sx={{
-              color: 'text.primary',
+              // color: 'text.primary',
+              color: iconColor,
               backgroundColor: 'transparent',
               boxShadow: 'none',
               m: 0
@@ -65,23 +94,32 @@ export function GenericEvent({
       <TimelineContent
         sx={{
           display: 'flex',
-          alignItems: icon == null ? 'center' : undefined
+          alignItems: variant === 'title' ? 'center' : undefined
         }}
       >
         <Stack direction="column" sx={{ width: '100%' }}>
           <Stack direction="row" sx={{ width: '100%' }}>
+            {/* Activity */}
             {activity != null && (
-              <Typography variant="body2" sx={{ fontWeight: 'bold' }}>
+              <Typography
+                variant={activityVariant}
+                color={color}
+                sx={{ fontWeight: 'bold' }}
+              >
                 {`${activity}:\u00A0`}
               </Typography>
             )}
+            {/* Label */}
             {label != null && (
               <Typography variant="body2" gutterBottom>
                 {label}
               </Typography>
             )}
           </Stack>
-          <Typography variant="subtitle1">{value}</Typography>
+          {/* Value */}
+          <Typography variant={valueVariant} color={color}>
+            {value}
+          </Typography>
         </Stack>
       </TimelineContent>
     </TimelineItem>

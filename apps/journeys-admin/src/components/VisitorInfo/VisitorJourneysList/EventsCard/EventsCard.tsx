@@ -43,6 +43,7 @@ export function EventsCard({ journey }: Props): ReactElement {
               )}
             </Stack>
           }
+          variant="title"
         />
       </Box>
 

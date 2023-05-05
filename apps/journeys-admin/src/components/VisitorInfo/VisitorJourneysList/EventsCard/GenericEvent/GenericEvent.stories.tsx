@@ -3,6 +3,7 @@ import { ComponentProps } from 'react'
 import Typography from '@mui/material/Typography'
 import Stack from '@mui/material/Stack'
 import RadioButtonUncheckedIcon from '@mui/icons-material/RadioButtonUncheckedRounded'
+import AnnouncementIcon from '@mui/icons-material/AnnouncementRounded'
 import { journeysAdminConfig } from '../../../../../libs/storybook'
 import { GenericEvent } from '.'
 
@@ -33,8 +34,28 @@ Start.args = {
   showCreatedAt: true
 }
 
-export const CustomValue = Template.bind({})
-CustomValue.args = {
+export const Chat = Template.bind({})
+Chat.args = {
+  activity: 'Chat Open',
+  label: 'Facebook',
+  value: '2:34pm, Sep 25',
+  icon: <AnnouncementIcon />,
+  duration: '0.02',
+  variant: 'chat'
+}
+
+export const Featured = Template.bind({})
+Featured.args = {
+  activity: 'Button Click',
+  label: 'www.google.com',
+  value: 'Button Label',
+  icon: <RadioButtonUncheckedIcon />,
+  duration: '1:02',
+  variant: 'featured'
+}
+
+export const Title = Template.bind({})
+Title.args = {
   label: (
     <Stack direction="row" sx={{ alignItems: 'center' }}>
       <Typography variant="h3" sx={{ pr: 30 }}>
@@ -45,7 +66,8 @@ CustomValue.args = {
       </Typography>
     </Stack>
   ),
-  duration: '5:10'
+  duration: '5:10',
+  variant: 'title'
 }
 
 export default GenericEventStory as Meta
