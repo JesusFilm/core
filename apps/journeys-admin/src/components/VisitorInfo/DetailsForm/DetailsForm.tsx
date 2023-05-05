@@ -14,7 +14,7 @@ import { useTranslation } from 'react-i18next'
 import { SubmitListener } from '@core/shared/ui/SubmitListener'
 import Divider from '@mui/material/Divider'
 import Paper from '@mui/material/Paper'
-import { GetVisitor } from '../../../../__generated__/GetVisitor'
+import { GetVisitorForForm } from '../../../../__generated__/GetVisitorForForm'
 import {
   MessagePlatform,
   VisitorStatus
@@ -24,7 +24,7 @@ import { messagePlatformToLabel } from '../VisitorJourneysList/utils'
 import { ChatButton } from './ChatButton'
 
 export const GET_VISITOR_FOR_FORM = gql`
-  query GetVisitor($id: ID!) {
+  query GetVisitorForForm($id: ID!) {
     visitor(id: $id) {
       id
       messagePlatformId
@@ -57,7 +57,7 @@ export function DetailsForm({ id }: Props): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const [visitorUpdate] = useMutation<VisitorUpdate>(VISITOR_UPDATE)
   // 529 (english) should be changed when adding internalization
-  const { data } = useQuery<GetVisitor>(GET_VISITOR_FOR_FORM, {
+  const { data } = useQuery<GetVisitorForForm>(GET_VISITOR_FOR_FORM, {
     variables: { id }
   })
 
@@ -75,12 +75,7 @@ export function DetailsForm({ id }: Props): ReactElement {
   }
 
   return (
-    <Paper
-      elevation={0}
-      sx={{
-        m: { xs: '-24px -24px  0px -24px', sm: '0px 0px 0px 0px' }
-      }}
-    >
+    <Paper elevation={0} sx={{ mx: { xs: -6, sm: 0 } }}>
       {data?.visitor != null && (
         <Formik
           initialValues={pick(data.visitor, [

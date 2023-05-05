@@ -1,5 +1,5 @@
 import { VisitorUpdate } from '../../../../__generated__/VisitorUpdate'
-import { GetVisitor } from '../../../../__generated__/GetVisitor'
+import { GetVGetVisitorForForm } from '../../../../__generated__/GetVisitorForForm'
 import {
   MessagePlatform,
   VisitorStatus,
@@ -7,7 +7,7 @@ import {
 } from '../../../../__generated__/globalTypes'
 import { GET_VISITOR_FOR_FORM, VISITOR_UPDATE } from './DetailsForm'
 
-const getVisitor: GetVisitor = {
+const getVisitor: GetVGetVisitorForForm = {
   visitor: {
     __typename: 'Visitor',
     id: 'visitorId',
@@ -31,7 +31,7 @@ export const getVisitorMock = {
   }
 }
 
-const getVisitorUnfilled: GetVisitor = {
+const getVisitorUnfilled: GetVGetVisitorForForm = {
   visitor: {
     __typename: 'Visitor',
     id: 'visitorId',

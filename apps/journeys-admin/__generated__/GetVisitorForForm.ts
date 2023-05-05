@@ -6,10 +6,10 @@
 import { MessagePlatform, VisitorStatus } from "./globalTypes";
 
 // ====================================================
-// GraphQL query operation: GetVisitor
+// GraphQL query operation: GetVisitorForForm
 // ====================================================
 
-export interface GetVisitor_visitor {
+export interface GetVisitorForForm_visitor {
   __typename: "Visitor";
   id: string;
   /**
@@ -37,13 +37,13 @@ export interface GetVisitor_visitor {
   status: VisitorStatus | null;
 }
 
-export interface GetVisitor {
+export interface GetVisitorForForm {
   /**
    * Get a single visitor
    */
-  visitor: GetVisitor_visitor;
+  visitor: GetVisitorForForm_visitor;
 }
 
-export interface GetVisitorVariables {
+export interface GetVisitorForFormVariables {
   id: string;
 }
