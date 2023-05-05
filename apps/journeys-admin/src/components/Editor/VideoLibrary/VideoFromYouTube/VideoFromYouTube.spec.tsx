@@ -35,9 +35,11 @@ describe('VideoFromYouTube', () => {
   it('should call api to get more videos', async () => {
     mswServer.use(getVideosWithOffsetAndUrl)
     const { getByRole } = render(
-      <SWRConfig value={{ provider: () => new Map() }}>
-        <VideoFromYouTube onSelect={jest.fn()} />
-      </SWRConfig>
+      <MockedProvider>
+        <SWRConfig value={{ provider: () => new Map() }}>
+          <VideoFromYouTube onSelect={jest.fn()} />
+        </SWRConfig>
+      </MockedProvider>
     )
     await waitFor(() =>
       expect(getByRole('button', { name: 'Load More' })).toBeEnabled()
@@ -52,9 +54,11 @@ describe('VideoFromYouTube', () => {
     mswServer.use(getVideosEmpty)
 
     const { getByText, getByRole } = render(
-      <SWRConfig value={{ provider: () => new Map() }}>
-        <VideoFromYouTube onSelect={jest.fn()} />
-      </SWRConfig>
+      <MockedProvider>
+        <SWRConfig value={{ provider: () => new Map() }}>
+          <VideoFromYouTube onSelect={jest.fn()} />
+        </SWRConfig>
+      </MockedProvider>
     )
     await waitFor(() =>
       expect(getByText('No Results Found')).toBeInTheDocument()
@@ -65,9 +69,11 @@ describe('VideoFromYouTube', () => {
   it('should re-enable Load More if filters change', async () => {
     mswServer.use(getVideosWithOffsetAndUrl)
     const { getByRole, getByText } = render(
-      <SWRConfig value={{ provider: () => new Map() }}>
-        <VideoFromYouTube onSelect={jest.fn()} />
-      </SWRConfig>
+      <MockedProvider>
+        <SWRConfig value={{ provider: () => new Map() }}>
+          <VideoFromYouTube onSelect={jest.fn()} />
+        </SWRConfig>
+      </MockedProvider>
     )
     await waitFor(() =>
       expect(getByRole('button', { name: 'Load More' })).toBeEnabled()
