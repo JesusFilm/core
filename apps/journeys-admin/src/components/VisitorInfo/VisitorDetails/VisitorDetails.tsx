@@ -35,7 +35,7 @@ export function VisitorDetails({ id }: Props): ReactElement {
     <Stack
       direction={{ xs: 'column', sm: 'row' }}
       justifyContent="flex-end"
-      alignItems="center"
+      alignItems={{ xs: 'flex-start', sm: 'center' }}
       spacing={8}
       sx={{ pb: 4, px: 6 }}
     >
@@ -51,11 +51,9 @@ export function VisitorDetails({ id }: Props): ReactElement {
             {`
               ${new Intl.DateTimeFormat([], { timeStyle: 'short' }).format(
                 new Date(data?.visitor.lastChatStartedAt)
-              )}
-              ,\xa0
-              ${new Intl.DateTimeFormat([], {
-                dateStyle: 'medium'
-              }).format(new Date(data?.visitor.lastChatStartedAt))}
+              )},\xa0${new Intl.DateTimeFormat([], {
+              dateStyle: 'medium'
+            }).format(new Date(data?.visitor.lastChatStartedAt))}
             `}
           </Typography>
         </Stack>
