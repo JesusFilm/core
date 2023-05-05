@@ -9,13 +9,17 @@ import { Canvas } from '../Canvas'
 import { ControlPanel } from '../ControlPanel'
 import { Drawer, DRAWER_WIDTH } from '../Drawer'
 import { ActionsTable } from '../ActionsTable'
+import { SocialPreview } from '../SocialPreview/SocialPreview'
 
 function bgColor(
   theme: Theme,
   view: ActiveJourneyEditContent,
   hasAction: boolean
 ): string {
-  if (hasAction && view === ActiveJourneyEditContent.Action) {
+  if (
+    view === ActiveJourneyEditContent.SocialPreview ||
+    (hasAction && view === ActiveJourneyEditContent.Action)
+  ) {
     return theme.palette.background.default
   }
   return theme.palette.background.paper
@@ -39,6 +43,7 @@ export function JourneyEdit(): ReactElement {
         }}
       >
         <Box
+          data-testid="journey-edit-content"
           sx={{
             display: 'flex',
             flexDirection: 'column',
@@ -54,6 +59,8 @@ export function JourneyEdit(): ReactElement {
               my:
                 journeyEditContentComponent === 'canvas'
                   ? 'auto'
+                  : journeyEditContentComponent === 'social'
+                  ? 'auto'
                   : journeyEditContentComponent === 'action'
                   ? 5
                   : 0
@@ -64,7 +71,8 @@ export function JourneyEdit(): ReactElement {
                 [ActiveJourneyEditContent.Canvas]: <Canvas />,
                 [ActiveJourneyEditContent.Action]: (
                   <ActionsTable hasAction={(action) => setHasAction(action)} />
-                )
+                ),
+                [ActiveJourneyEditContent.SocialPreview]: <SocialPreview />
               }[journeyEditContentComponent]
             }
           </Box>

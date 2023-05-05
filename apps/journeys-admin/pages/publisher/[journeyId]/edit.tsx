@@ -63,7 +63,6 @@ function TemplateEditPage(): ReactElement {
               backHref={`/publisher/${router.query.journeyId as string}`}
               authUser={AuthUser}
               menu={<EditToolbar />}
-              router={router}
             >
               <JourneyEdit />
             </PageWrapper>

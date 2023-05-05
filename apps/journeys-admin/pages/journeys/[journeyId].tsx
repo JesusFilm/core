@@ -72,7 +72,6 @@ function JourneyIdPage(): ReactElement {
               backHref="/"
               menu={<Menu />}
               authUser={AuthUser}
-              router={router}
             >
               <JourneyView journeyType="Journey" />
             </PageWrapper>

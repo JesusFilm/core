@@ -60,7 +60,6 @@ function JourneyEditPage(): ReactElement {
           backHref={`/journeys/${router.query.journeyId as string}`}
           menu={<EditToolbar />}
           authUser={AuthUser}
-          router={router}
         >
           <JourneyEdit />
         </PageWrapper>
