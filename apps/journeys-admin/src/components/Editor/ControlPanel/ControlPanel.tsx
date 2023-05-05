@@ -70,7 +70,6 @@ export function ControlPanel(): ReactElement {
     (block) => block.__typename === 'CardBlock'
   ) as TreeBlock<CardBlock>
 
-  console.log(cardBlock)
   const hasVideoBlock =
     cardBlock?.children?.find(
       (block) =>
