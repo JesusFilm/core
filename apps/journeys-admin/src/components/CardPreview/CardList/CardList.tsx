@@ -20,8 +20,9 @@ import {
   useEditor
 } from '@core/journeys/ui/EditorProvider'
 import { CustomIcon } from '@core/shared/ui/CustomIcon'
-
 import Divider from '@mui/material/Divider'
+import Image from 'next/image'
+
 import { FramePortal } from '../../FramePortal'
 import { ThemeName, ThemeMode } from '../../../../__generated__/globalTypes'
 import { HorizontalSelect } from '../../HorizontalSelect'
@@ -29,6 +30,7 @@ import { VideoWrapper } from '../../Editor/Canvas/VideoWrapper'
 import { CardWrapper } from '../../Editor/Canvas/CardWrapper'
 import { BlockFields_StepBlock as StepBlock } from '../../../../__generated__/BlockFields'
 import { NavigationCard } from '../NavigationCard'
+import { useSocialPreview } from '../../Editor/SocialProvider'
 
 interface CardListProps {
   steps: Array<TreeBlock<StepBlock>>
@@ -55,6 +57,7 @@ export function CardList({
 }: CardListProps): ReactElement {
   const { state } = useEditor()
   const { journey } = useJourney()
+  const { primaryImageBlock } = useSocialPreview()
   const AddCardSlide = (): ReactElement => (
     <Card
       id="CardPreviewAddButton"
@@ -121,6 +124,44 @@ export function CardList({
             borderWidth: 1,
             mr: 1
           }}
+        />
+      )}
+      {showNavigationCards && (
+        <NavigationCard
+          key="social"
+          id="social"
+          testId="social-preview-navigation-card"
+          title="Social Media"
+          destination={ActiveJourneyEditContent.SocialPreview}
+          outlined={
+            state.journeyEditContentComponent ===
+            ActiveJourneyEditContent.SocialPreview
+          }
+          header={
+            primaryImageBlock?.src == null ? (
+              <Box
+                bgcolor={(theme) => theme.palette.background.default}
+                borderRadius="4px"
+                width={72}
+                height={72}
+                display="flex"
+                justifyContent="center"
+                alignItems="center"
+              >
+                <CustomIcon name="Like" color="error" />
+              </Box>
+            ) : (
+              <Image
+                src={primaryImageBlock?.src}
+                alt={primaryImageBlock?.src}
+                width={72}
+                height={72}
+                objectFit="cover"
+                style={{ borderRadius: '4px' }}
+              />
+            )
+          }
+          loading={journey == null}
         />
       )}
       {droppableProvided != null &&
