@@ -1,5 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { v4 as uuidv4 } from 'uuid'
+import { VisitorConnectionSort } from '../../__generated__/graphql'
 import { PrismaService } from '../../lib/prisma.service'
 import { VisitorService } from './visitor.service'
 
@@ -52,7 +53,7 @@ describe('VisitorService', () => {
 
   describe('getList', () => {
     const connection = {
-      results: [],
+      edges: [],
       pageInfo: {
         hasNextPage: false,
         startCursor: null,
@@ -61,7 +62,11 @@ describe('VisitorService', () => {
     }
     it('returns a visitors connection', async () => {
       expect(
-        await service.getList({ first: 50, filter: { teamId: 'jfp-team' } })
+        await service.getList({
+          first: 50,
+          teamId: 'jfp-team',
+          sort: VisitorConnectionSort.date
+        })
       ).toEqual(connection)
       expect(prisma.visitor.findMany).toHaveBeenCalledWith({
         cursor: undefined,
@@ -78,7 +83,8 @@ describe('VisitorService', () => {
       await service.getList({
         first: 50,
         after: new Date('2021-02-18').toISOString(),
-        filter: { teamId: 'jfp-team' }
+        teamId: 'jfp-team',
+        sort: VisitorConnectionSort.date
       })
       expect(prisma.visitor.findMany).toHaveBeenCalledWith({
         cursor: { createdAt: new Date('2021-02-18') },

@@ -2,16 +2,19 @@ import { Injectable } from '@nestjs/common'
 import { KeyAsId } from '@core/nest/decorators/KeyAsId'
 import { v4 as uuidv4 } from 'uuid'
 import { Visitor } from '.prisma/api-journeys-client'
-import { PageInfo, VisitorConnectionFilter } from '../../__generated__/graphql'
+import {
+  PageInfo,
+  VisitorConnectionFilter,
+  VisitorConnectionSort
+} from '../../__generated__/graphql'
 import { PrismaService } from '../../lib/prisma.service'
 
 interface ListParams {
   after?: string | null
   first: number
-  filter: {
-    teamId: string | undefined
-    filter: VisitorConnectionFilter
-  }
+  teamId: string | undefined
+  filter?: VisitorConnectionFilter
+  sort: VisitorConnectionSort
   sortOrder?: 'ASC' | 'DESC'
 }
 
@@ -29,19 +32,20 @@ export class VisitorService {
 
   @KeyAsId()
   async getList({
+    teamId,
     after,
     first,
-    filter
+    filter,
+    sort
   }: ListParams): Promise<VisitorsConnection> {
     const result = await this.prismaService.visitor.findMany({
       where: {
-        teamId: filter.teamId,
-        events:
-          filter.filter === VisitorConnectionFilter.all
-            ? undefined
-            : {
-                some: { typename: filter.filter }
-              }
+        teamId,
+        lastChatStartedAt: filter?.hasChat === true ? { not: null } : undefined,
+        lastRadioQuestion:
+          filter?.hasAnswers === true ? { not: null } : undefined,
+        status: filter?.hasIcon === true ? { not: null } : undefined,
+        events: filter?.isInactive === true ? { none: {} } : undefined
       },
       cursor:
         after != null
@@ -50,12 +54,17 @@ export class VisitorService {
             }
           : undefined,
       orderBy: {
-        createdAt: 'desc'
-      },
+        [VisitorConnectionSort.date]: {
+          createdAt: 'desc'
+        },
+        // [VisitorConnectionSort.activity]: {},
+        [VisitorConnectionSort.duration]: {
+          duration: 'desc'
+        }
+      }[sort],
       skip: after == null ? 0 : 1,
       take: first + 1
     })
-    console.log(result)
     const sendResult = result.length > first ? result.slice(0, -1) : result
     return {
       edges: sendResult.map((visitor) => ({

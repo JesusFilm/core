@@ -12,12 +12,14 @@ import {
 } from '../../../__generated__/graphql'
 import { EventService } from '../event.service'
 import { VisitorService } from '../../visitor/visitor.service'
+import { PrismaService } from '../../../lib/prisma.service'
 
 @Resolver('StepViewEvent')
 export class StepViewEventResolver {
   constructor(
     private readonly eventService: EventService,
-    private readonly visitorService: VisitorService
+    private readonly visitorService: VisitorService,
+    private readonly prismaService: PrismaService
   ) {}
 
   @Mutation()
@@ -31,6 +33,7 @@ export class StepViewEventResolver {
       input.blockId,
       input.blockId
     )
+    const date = new Date()
 
     const [stepViewEvent] = await Promise.all([
       this.eventService.save({
@@ -42,7 +45,8 @@ export class StepViewEventResolver {
         stepId: input.blockId ?? undefined
       }),
       this.visitorService.update(visitor.id, {
-        lastStepViewedAt: new Date()
+        duration: Math.abs(date - visitor.createdAt) / 1000,
+        lastStepViewedAt: date
       })
     ])
     return stepViewEvent as StepViewEvent

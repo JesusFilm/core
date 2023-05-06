@@ -10,7 +10,10 @@ import {
 import { ForbiddenError, UserInputError } from 'apollo-server-errors'
 import { IResult, UAParser } from 'ua-parser-js'
 import { Event, Visitor } from '.prisma/api-journeys-client'
-import { VisitorConnectionFilter } from '../../__generated__/graphql'
+import {
+  VisitorConnectionFilter,
+  VisitorConnectionSort
+} from '../../__generated__/graphql'
 import { PrismaService } from '../../lib/prisma.service'
 import { VisitorService, VisitorsConnection } from './visitor.service'
 
@@ -27,7 +30,8 @@ export class VisitorResolver {
     @Args('teamId') teamId: string,
     @Args('first') first?: number | null,
     @Args('after') after?: string | null,
-    @Args('filter') filter = VisitorConnectionFilter.all
+    @Args('filter') filter?: VisitorConnectionFilter,
+    @Args('sort') sort = VisitorConnectionSort.date
   ): Promise<VisitorsConnection> {
     const memberResult = await this.prismaService.member.findUnique({
       where: { teamId_userId: { userId, teamId } }
@@ -37,9 +41,11 @@ export class VisitorResolver {
       throw new ForbiddenError('User is not a member of the team.')
 
     return await this.visitorService.getList({
-      filter: { teamId, filter },
+      teamId,
       first: first ?? 50,
-      after
+      after,
+      filter,
+      sort
     })
   }
 

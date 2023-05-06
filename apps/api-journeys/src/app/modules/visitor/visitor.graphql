@@ -140,6 +140,10 @@ type Visitor @key(fields: "id") {
   """
   lastRadioOptionSubmission: String
   events: [Event!]!
+  """
+  Number of seconds between creation and last viewed step
+  """
+  duration: Int
 }
 
 """
@@ -188,10 +192,18 @@ type VisitorsConnection {
   pageInfo: PageInfo!
 }
 
-enum VisitorConnectionFilter {
-  involved
-  passive
-  all
+input VisitorConnectionFilter {
+  hasChat: Boolean
+  hasAnswers: Boolean
+  hasData: Boolean
+  hasIcon: Boolean
+  isInactive: Boolean
+}
+
+enum VisitorConnectionSort {
+  date
+  duration
+  activity
 }
 
 extend type Query {
@@ -212,6 +224,7 @@ extend type Query {
     """
     after: String
     filter: VisitorConnectionFilter
+    sort: VisitorConnectionSort
   ): VisitorsConnection!
   """
   Get a single visitor

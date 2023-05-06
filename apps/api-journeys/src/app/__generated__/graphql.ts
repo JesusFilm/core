@@ -202,10 +202,10 @@ export enum VisitorStatus {
     redQuestionMark = "redQuestionMark"
 }
 
-export enum VisitorConnectionFilter {
-    involved = "involved",
-    passive = "passive",
-    all = "all"
+export enum VisitorConnectionSort {
+    date = "date",
+    duration = "duration",
+    activity = "activity"
 }
 
 export class NavigateActionInput {
@@ -571,6 +571,14 @@ export class JourneyTemplateInput {
 
 export class UserInviteCreateInput {
     email: string;
+}
+
+export class VisitorConnectionFilter {
+    hasChat?: Nullable<boolean>;
+    hasAnswers?: Nullable<boolean>;
+    hasData?: Nullable<boolean>;
+    hasIcon?: Nullable<boolean>;
+    isInactive?: Nullable<boolean>;
 }
 
 export class VisitorUpdateInput {
@@ -1012,7 +1020,7 @@ export abstract class IQuery {
 
     abstract getUserRole(): Nullable<UserRole> | Promise<Nullable<UserRole>>;
 
-    abstract visitorsConnection(teamId: string, first?: Nullable<number>, after?: Nullable<string>, filter?: Nullable<VisitorConnectionFilter>): VisitorsConnection | Promise<VisitorsConnection>;
+    abstract visitorsConnection(teamId: string, first?: Nullable<number>, after?: Nullable<string>, filter?: Nullable<VisitorConnectionFilter>, sort?: Nullable<VisitorConnectionSort>): VisitorsConnection | Promise<VisitorsConnection>;
 
     abstract visitor(id: string): Visitor | Promise<Visitor>;
 }
@@ -1098,6 +1106,7 @@ export class Visitor {
     lastRadioQuestion?: Nullable<string>;
     lastRadioOptionSubmission?: Nullable<string>;
     events: Event[];
+    duration?: Nullable<number>;
 }
 
 export class VisitorEdge {

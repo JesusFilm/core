@@ -156,6 +156,7 @@ model Journey {
   title               String
   languageId          String
   description         String?
+  duration            Int           @default(0)
   slug                String        @unique
   archivedAt          DateTime?
   createdAt           DateTime      @default(now())

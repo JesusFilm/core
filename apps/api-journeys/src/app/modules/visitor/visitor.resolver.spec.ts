@@ -1,6 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import {
   MessagePlatform,
+  VisitorConnectionSort,
   VisitorsConnection
 } from '../../__generated__/graphql'
 import { EventService } from '../event/event.service'
@@ -13,7 +14,7 @@ describe('VisitorResolver', () => {
   let resolver: VisitorResolver, vService: VisitorService, prisma: PrismaService
 
   const connection: VisitorsConnection = {
-    results: [],
+    edges: [],
     pageInfo: {
       hasNextPage: false,
       startCursor: null,
@@ -93,8 +94,10 @@ describe('VisitorResolver', () => {
       await resolver.visitorsConnection('userId', 'teamId', 50, 'cursorId')
       expect(vService.getList).toHaveBeenCalledWith({
         after: 'cursorId',
-        filter: { teamId: 'teamId' },
-        first: 50
+        teamId: 'teamId',
+        first: 50,
+        sort: VisitorConnectionSort.date,
+        filter: undefined
       })
     })
 
