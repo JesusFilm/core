@@ -3,8 +3,9 @@ import useMediaQuery from '@mui/material/useMediaQuery'
 import { SWRConfig } from 'swr'
 import { mswServer } from '../../../../../test/mswServer'
 import {
-  getVideos,
-  getVideosEmpty,
+  getPlaylistItems,
+  getPlaylistItemsEmpty,
+  getPlaylistItemsWithOffsetAndUrl,
   getVideosWithOffsetAndUrl
 } from './VideoFromYouTube.handlers'
 import { VideoFromYouTube } from '.'
@@ -18,7 +19,7 @@ describe('VideoFromYouTube', () => {
   beforeEach(() => (useMediaQuery as jest.Mock).mockImplementation(() => true))
 
   it('should render a video list item', async () => {
-    mswServer.use(getVideos)
+    mswServer.use(getPlaylistItems)
     const { getByText } = render(
       <SWRConfig value={{ provider: () => new Map() }}>
         <VideoFromYouTube onSelect={jest.fn()} />
@@ -29,8 +30,8 @@ describe('VideoFromYouTube', () => {
     )
   })
 
-  it('should call api to get more videos', async () => {
-    mswServer.use(getVideosWithOffsetAndUrl)
+  it('should call api to get more playlist', async () => {
+    mswServer.use(getPlaylistItemsWithOffsetAndUrl)
     const { getByRole } = render(
       <SWRConfig value={{ provider: () => new Map() }}>
         <VideoFromYouTube onSelect={jest.fn()} />
@@ -45,8 +46,8 @@ describe('VideoFromYouTube', () => {
     )
   })
 
-  it('should render No More Videos if video length is 0', async () => {
-    mswServer.use(getVideosEmpty)
+  it('should render No More Videos if playlist length is 0', async () => {
+    mswServer.use(getPlaylistItemsEmpty)
 
     const { getByText, getByRole } = render(
       <SWRConfig value={{ provider: () => new Map() }}>
@@ -60,7 +61,7 @@ describe('VideoFromYouTube', () => {
   })
 
   it('should re-enable Load More if filters change', async () => {
-    mswServer.use(getVideosWithOffsetAndUrl)
+    mswServer.use(getPlaylistItemsWithOffsetAndUrl)
     const { getByRole, getByText } = render(
       <SWRConfig value={{ provider: () => new Map() }}>
         <VideoFromYouTube onSelect={jest.fn()} />
@@ -80,5 +81,21 @@ describe('VideoFromYouTube', () => {
     await waitFor(() =>
       expect(getByText('Blessing and Curse')).toBeInTheDocument()
     )
+  })
+
+  it('should render video item if filters change', async () => {
+    mswServer.use(getVideosWithOffsetAndUrl)
+    const { getByRole, getByText } = render(
+      <SWRConfig value={{ provider: () => new Map() }}>
+        <VideoFromYouTube onSelect={jest.fn()} />
+      </SWRConfig>
+    )
+    const textbox = getByRole('textbox', { name: 'Search' })
+    fireEvent.change(textbox, {
+      target: { value: 'https://www.youtube.com/watch?v=ak06MSETeo4' }
+    })
+    await waitFor(() => {
+      expect(getByText('Blessing and Curse')).toBeInTheDocument()
+    })
   })
 })
