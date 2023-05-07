@@ -9,6 +9,7 @@ import Typography from '@mui/material/Typography'
 import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
 import { format, parseISO } from 'date-fns'
+import { getEventVariant, EventVariant } from '../../utils'
 
 interface Props {
   createdAt?: string
@@ -17,7 +18,7 @@ interface Props {
   icon?: ReactElement
   activity?: string
   duration?: string
-  variant?: 'default' | 'featured' | 'chat' | 'title'
+  variant?: EventVariant
 }
 
 export function GenericEvent({
@@ -27,31 +28,18 @@ export function GenericEvent({
   value,
   activity,
   duration,
-  variant = 'default'
+  variant = EventVariant.default
 }: Props): ReactElement {
-  let textAlign: string | undefined
-  let iconColor = 'secondary.light'
-  let color: string | undefined
-  let durationVariant = 'caption'
-  let activityVariant = 'body2'
-  let valueVariant = 'body2'
-  switch (variant) {
-    case 'title':
-      textAlign = 'center'
-      durationVariant = 'body2'
-      valueVariant = 'h3'
-      break
-    case 'chat':
-      color = 'primary'
-      iconColor = 'primary.main'
-      valueVariant = 'subtitle1'
-      break
-    case 'featured':
-      activityVariant = 'body2'
-      valueVariant = 'subtitle1'
-      color = 'secondary.dark'
-      break
-  }
+  const {
+    textAlign,
+    durationColor,
+    activityColor,
+    valueColor,
+    iconColor,
+    durationVariant,
+    activityVariant,
+    valueVariant
+  } = getEventVariant(variant)
 
   return (
     <TimelineItem>
@@ -66,7 +54,7 @@ export function GenericEvent({
           maxWidth: '64px'
         }}
       >
-        <Typography variant={durationVariant} color={color}>
+        <Typography variant={durationVariant} color={durationColor}>
           {createdAt != null ? format(parseISO(createdAt), 'p') : duration}
         </Typography>
       </TimelineOppositeContent>
@@ -76,7 +64,6 @@ export function GenericEvent({
         <TimelineSeparator>
           <TimelineDot
             sx={{
-              // color: 'text.primary',
               color: iconColor,
               backgroundColor: 'transparent',
               boxShadow: 'none',
@@ -103,7 +90,7 @@ export function GenericEvent({
             {activity != null && (
               <Typography
                 variant={activityVariant}
-                color={color}
+                color={activityColor}
                 sx={{ fontWeight: 'bold' }}
               >
                 {`${activity}:\u00A0`}
@@ -111,13 +98,13 @@ export function GenericEvent({
             )}
             {/* Label */}
             {label != null && (
-              <Typography variant="body2" gutterBottom>
+              <Typography variant="body2" color="text.secondary" gutterBottom>
                 {label}
               </Typography>
             )}
           </Stack>
           {/* Value */}
-          <Typography variant={valueVariant} color={color}>
+          <Typography variant={valueVariant} color={valueColor}>
             {value}
           </Typography>
         </Stack>

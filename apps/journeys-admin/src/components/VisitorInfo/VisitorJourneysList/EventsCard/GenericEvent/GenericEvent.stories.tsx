@@ -5,6 +5,7 @@ import Stack from '@mui/material/Stack'
 import RadioButtonUncheckedIcon from '@mui/icons-material/RadioButtonUncheckedRounded'
 import AnnouncementIcon from '@mui/icons-material/AnnouncementRounded'
 import { journeysAdminConfig } from '../../../../../libs/storybook'
+import { EventVariant } from '../../utils'
 import { GenericEvent } from '.'
 
 const GenericEventStory = {
@@ -31,7 +32,8 @@ Start.args = {
   createdAt: '2021-02-18T00:00:00.000Z',
   value: 'Journey Started',
   icon: <RadioButtonUncheckedIcon />,
-  showCreatedAt: true
+  showCreatedAt: true,
+  variant: EventVariant.start
 }
 
 export const Chat = Template.bind({})
@@ -41,7 +43,7 @@ Chat.args = {
   value: '2:34pm, Sep 25',
   icon: <AnnouncementIcon />,
   duration: '0.02',
-  variant: 'chat'
+  variant: EventVariant.chat
 }
 
 export const Featured = Template.bind({})
@@ -51,12 +53,12 @@ Featured.args = {
   value: 'Button Label',
   icon: <RadioButtonUncheckedIcon />,
   duration: '1:02',
-  variant: 'featured'
+  variant: EventVariant.featured
 }
 
 export const Title = Template.bind({})
 Title.args = {
-  label: (
+  value: (
     <Stack direction="row" sx={{ alignItems: 'center' }}>
       <Typography variant="h3" sx={{ pr: 30 }}>
         Journey Title
@@ -67,7 +69,7 @@ Title.args = {
     </Stack>
   ),
   duration: '5:10',
-  variant: 'title'
+  variant: EventVariant.title
 }
 
 export default GenericEventStory as Meta
