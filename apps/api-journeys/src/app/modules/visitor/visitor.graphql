@@ -198,6 +198,7 @@ input VisitorConnectionFilter {
   hasData: Boolean
   hasIcon: Boolean
   isInactive: Boolean
+  countryCode: String
 }
 
 enum VisitorConnectionSort {

@@ -579,6 +579,7 @@ export class VisitorConnectionFilter {
     hasData?: Nullable<boolean>;
     hasIcon?: Nullable<boolean>;
     isInactive?: Nullable<boolean>;
+    countryCode?: Nullable<string>;
 }
 
 export class VisitorUpdateInput {

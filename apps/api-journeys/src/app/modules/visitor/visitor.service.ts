@@ -45,7 +45,11 @@ export class VisitorService {
         lastRadioQuestion:
           filter?.hasAnswers === true ? { not: null } : undefined,
         status: filter?.hasIcon === true ? { not: null } : undefined,
-        events: filter?.isInactive === true ? { none: {} } : undefined
+        events: filter?.isInactive === true ? { none: {} } : undefined,
+        countryCode:
+          filter?.countryCode != null
+            ? { contains: filter.countryCode }
+            : undefined
       },
       cursor:
         after != null
