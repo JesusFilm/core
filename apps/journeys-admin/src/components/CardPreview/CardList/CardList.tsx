@@ -70,7 +70,7 @@ export function CardList({
   const isPublisher = data?.getUserRole?.roles?.includes(Role.publisher)
 
   const showNavigation =
-    (showNavigationCards && journey?.template !== true) || isPublisher
+    showNavigationCards && (journey?.template !== true || isPublisher)
 
   function AddCardSlide(): ReactElement {
     return (

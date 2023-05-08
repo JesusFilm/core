@@ -449,7 +449,7 @@ describe('CardList', () => {
     expect(getByTestId('social-preview-navigation-card')).toBeInTheDocument()
   })
 
-  it('should not ernder the goal and social navigation card if journey is a template', () => {
+  it('should not render the goal and social navigation card if journey is a template', () => {
     const { queryByTestId } = render(
       <MockedProvider>
         <JourneyProvider
