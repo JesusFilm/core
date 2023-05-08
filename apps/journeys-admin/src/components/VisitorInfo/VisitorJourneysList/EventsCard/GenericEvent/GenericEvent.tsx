@@ -93,7 +93,7 @@ export function GenericEvent({
                 color={activityColor}
                 sx={{ fontWeight: 'bold' }}
               >
-                {`${activity}:\u00A0`}
+                {`${activity}\u00A0`}
               </Typography>
             )}
             {/* Label */}

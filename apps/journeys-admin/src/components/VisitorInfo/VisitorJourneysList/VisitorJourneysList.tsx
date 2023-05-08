@@ -14,6 +14,10 @@ export const GET_VISITOR_EVENTS = gql`
         label
         value
         createdAt
+        ... on ButtonClickEvent {
+          action
+          actionValue
+        }
         ... on JourneyViewEvent {
           language {
             id
@@ -33,6 +37,31 @@ export const GET_VISITOR_EVENTS = gql`
         }
         ... on ChatOpenEvent {
           messagePlatform
+        }
+        ... on VideoCollapseEvent {
+          position
+          source
+        }
+        ... on VideoExpandEvent {
+          position
+          source
+        }
+        ... on VideoPauseEvent {
+          position
+          source
+        }
+        ... on VideoPlayEvent {
+          position
+          source
+        }
+        ... on VideoStartEvent {
+          position
+          source
+        }
+        ... on VideoProgressEvent {
+          position
+          source
+          progress
         }
       }
     }

@@ -5,7 +5,7 @@ import Typography from '@mui/material/Typography'
 import Divider from '@mui/material/Divider'
 import Collapse from '@mui/material/Collapse'
 import Stack from '@mui/material/Stack'
-import { transformEvents, JourneyWithEvents } from '../utils'
+import { transformEvents, JourneyWithEvents, EventVariant } from '../utils'
 import { TimelineEvent } from './TimelineEvent'
 import { CompactEvent } from './CompactEvent'
 import { GenericEvent } from './GenericEvent'
@@ -43,7 +43,7 @@ export function EventsCard({ journey }: Props): ReactElement {
               )}
             </Stack>
           }
-          variant="title"
+          variant={EventVariant.title}
         />
       </Box>
 
