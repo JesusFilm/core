@@ -25,7 +25,7 @@ Open.args = {
 }
 Open.play = async () => {
   await waitFor(() => {
-    userEvent.click(screen.getByRole('button', { name: '3 more events' }))
+    userEvent.click(screen.getByRole('button', { name: '2 more events' }))
   })
 }
 

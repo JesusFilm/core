@@ -8,7 +8,10 @@ import {
   journeyViewEvent,
   chatOpenedEvent,
   textResponseSubmissionEvent,
-  buttonClickEvent,
+  buttonClickNavigateEvent,
+  buttonClickNavigateToBlockEvent,
+  buttonClickNavigateToJourneyEvent,
+  buttonClickLinkEvent,
   radioQuestionSubmissionEvent,
   stepNextEvent,
   stepViewEvent,
@@ -30,16 +33,18 @@ const TimelineEventStory = {
 }
 
 interface Props {
-  title: string
+  title?: string
   event: TimelineItem
 }
 
 function StoryItem({ title, event }: Props): ReactElement {
   return (
     <>
-      <Typography variant="h5" sx={{ py: 2 }}>
-        {title}
-      </Typography>
+      {title != null && (
+        <Typography variant="h5" sx={{ py: 2 }}>
+          {title}
+        </Typography>
+      )}
       <TimelineEvent timelineItem={event} />
       <Box sx={{ pb: 6 }} />
     </>
@@ -54,7 +59,10 @@ const Template: Story<ComponentProps<typeof TimelineEvent>> = () => (
       title="TextResponseSubmissionEvent"
       event={textResponseSubmissionEvent}
     />
-    <StoryItem title="ButtonClickEvent" event={buttonClickEvent} />
+    <StoryItem title="ButtonClickEvent" event={buttonClickNavigateEvent} />
+    <StoryItem event={buttonClickNavigateToBlockEvent} />
+    <StoryItem event={buttonClickNavigateToJourneyEvent} />
+    <StoryItem event={buttonClickLinkEvent} />
     <StoryItem
       title="RadioQuestionSubmissionEvent"
       event={radioQuestionSubmissionEvent}

@@ -64,7 +64,7 @@ export function TimelineEvent({ timelineItem }: Props): ReactElement {
       break
     case 'ButtonClickEvent':
       activity = `${t('Button click')}:`
-      label = getButtonLabel(event)
+      label = getButtonLabel(event, t)
       value = event.label
       variant = EventVariant.featured
       break
@@ -79,11 +79,13 @@ export function TimelineEvent({ timelineItem }: Props): ReactElement {
           {event.email}
         </>
       )
+      variant = EventVariant.featured
       break
     case 'RadioQuestionSubmissionEvent':
       icon = <ListIcon />
       activity = `${t('Poll')}:`
       label = event.label
+      variant = EventVariant.featured
       break
 
     // default
