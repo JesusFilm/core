@@ -324,7 +324,7 @@ describe('BackgroundMediaImage', () => {
                   input: {
                     src: image.src,
                     alt: image.alt,
-                    blurhash: '',
+                    blurhash: undefined,
                     width: 1920,
                     height: 1080
                   }

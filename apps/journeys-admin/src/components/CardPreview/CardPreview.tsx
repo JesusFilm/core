@@ -74,6 +74,9 @@ export function CardPreview({
       case 'goals':
         onSelect?.({ view: ActiveJourneyEditContent.Action })
         return
+      case 'social':
+        onSelect?.({ view: ActiveJourneyEditContent.SocialPreview })
+        return
     }
     if (steps == null) return
 

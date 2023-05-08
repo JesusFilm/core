@@ -73,7 +73,7 @@ const Template: Story = ({ ...args }) => {
       <JourneyProvider value={{ journey: args.journey, admin: true }}>
         <EditorProvider
           initialState={{
-            drawerTitle: 'Social Share Appearance',
+            drawerTitle: 'Social Share Preview',
             drawerChildren: <SocialShareAppearance />,
             drawerMobileOpen: true
           }}
