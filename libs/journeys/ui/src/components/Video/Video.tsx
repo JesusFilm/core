@@ -69,7 +69,7 @@ export function Video({
       playerRef.current = videojs(videoRef.current, {
         autoplay: autoplay === true,
         controls: true,
-        nativeControlsForTouch: true,
+        nativeControlsForTouch: objectFit !== VideoBlockObjectFit.zoomed,
         userActions: {
           hotkeys: true,
           doubleClick: true
@@ -134,7 +134,8 @@ export function Video({
     posterBlock,
     selectedBlock,
     blurBackground,
-    source
+    source,
+    objectFit
   ])
 
   useEffect(() => {
