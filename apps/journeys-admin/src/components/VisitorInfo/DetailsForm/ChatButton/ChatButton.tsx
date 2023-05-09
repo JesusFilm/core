@@ -32,29 +32,23 @@ export function ChatButton({
         link = `https://web.snapchat.com/${messagePlatformId}`
         break
       case MessagePlatform.instagram:
-        // needs the id (can't be username)
-        link = `https://www.instagram.com/direct/t/${messagePlatformId}`
+        link = `https://www.instagram.com/${messagePlatformId}`
         break
       case MessagePlatform.facebook:
-        // doesn't always work
         link = `https://m.me/${messagePlatformId}`
         break
       case MessagePlatform.whatsApp:
-        // doesn't open in web app
-        // link = 'https://web.whatsapp.com/'
-        link = `https://wa.me/${messagePlatformId}`
+        link = 'https://web.whatsapp.com/'
         break
       case MessagePlatform.skype:
-        // link = `https://web/skype:${messagePlatformId}?chat`
         link = `https://web.skype.com`
         break
       case MessagePlatform.tikTok:
-        // opens profile rather than messages
-        // platformLink = 'https://www.tiktok.com/messages?lang=en'
         link = `https://www.tiktok.com/@${messagePlatformId}`
         break
       case MessagePlatform.line:
-        link = `https://ln.ee/${messagePlatformId}`
+        // Has no web app and no easy way to link to users
+        // link = `https://ln.ee/${messagePlatformId}`
         break
     }
     if (link != null) {
@@ -65,7 +59,11 @@ export function ChatButton({
   return (
     <Button
       startIcon={<ChatRoundedIcon />}
-      disabled={messagePlatform == null || messagePlatformId == null}
+      disabled={
+        messagePlatform == null ||
+        messagePlatformId == null ||
+        messagePlatform === MessagePlatform.line
+      }
       onClick={handleClick}
     >
       {t('Start Conversation')}
