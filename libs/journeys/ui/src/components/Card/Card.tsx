@@ -1,15 +1,12 @@
-import { ReactElement, ReactNode, useMemo } from 'react'
+import { ReactElement, ReactNode } from 'react'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import { getTheme } from '@core/shared/ui/themes'
 import { useTheme } from '@mui/material/styles'
 import Paper from '@mui/material/Paper'
 import { SxProps } from '@mui/system/styleFunctionSx'
 import Box from '@mui/material/Box'
-import Chip from '@mui/material/Chip'
-import Stack from '@mui/material/Stack'
-import Typography from '@mui/material/Typography'
 import type { TreeBlock } from '../../libs/block'
-import { blurImage } from '../../libs/blurImage'
+// import { blurImage } from '../../libs/blurImage'
 import { BlockRenderer, WrappersProps } from '../BlockRenderer'
 import { ImageFields } from '../Image/__generated__/ImageFields'
 import { VideoFields } from '../Video/__generated__/VideoFields'
@@ -87,8 +84,8 @@ export function Card({
           width: '100%',
           height: '50px',
           position: 'absolute',
-          zIndex: 1,
-          background: `linear-gradient(${cardColor}4d 10%, ${cardColor}00 100%)`
+          zIndex: 2,
+          background: `linear-gradient(#0000004d 10%, #00000000 100%)`
         }}
       />
       {coverBlock != null && !fullscreen ? (
@@ -127,16 +124,22 @@ export function CardWrapper({
   title,
   sx
 }: CardWrapperProps): ReactElement {
+  const { admin } = useJourney()
+
   const Card = (
     <Paper
       data-testid={id}
       sx={{
         display: 'flex',
         flexDirection: 'column',
-        borderRadius: 0,
+        borderRadius: { xs: admin ? 4 : 0, lg: 3 },
         backgroundColor,
         width: '100%',
         height: '100%',
+        maxWidth: { lg: 'calc(100% - 48px)' },
+        // 16:9 aspect ratio
+        maxHeight: { lg: '56.25vw' },
+        mx: { lg: 6 },
         overflow: 'hidden',
         transform: 'translateZ(0)', // safari glitch with border radius
         ...sx
@@ -144,23 +147,6 @@ export function CardWrapper({
       elevation={3}
     >
       {children}
-      <Stack
-        className="swiper-no-swiping"
-        sx={{ zIndex: 1, px: 4 }}
-        direction="row"
-        spacing={3}
-      >
-        <Chip label="Share" />
-        <Chip label="Like" />
-        <Chip label="Dislike" />
-      </Stack>
-      <Typography
-        className="swiper-no-swiping"
-        color="primary"
-        sx={{ zIndex: 1, px: 4, py: 3 }}
-      >
-        {title}
-      </Typography>
     </Paper>
   )
 

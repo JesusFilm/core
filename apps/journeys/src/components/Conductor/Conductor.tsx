@@ -6,12 +6,11 @@ import SwiperCore, {
   EffectFade
 } from 'swiper'
 import { Swiper, SwiperSlide } from 'swiper/react'
-import 'swiper/css/navigation'
 import 'swiper/css/pagination'
 import 'swiper/css/effect-fade'
 import 'swiper/swiper.min.css'
 
-import { styled } from '@mui/material/styles'
+import { styled, useTheme } from '@mui/material/styles'
 import {
   nextActiveBlock,
   prevActiveBlock,
@@ -26,7 +25,14 @@ import { getJourneyRTL } from '@core/journeys/ui/rtl'
 import Div100vh from 'react-div-100vh'
 import { v4 as uuidv4 } from 'uuid'
 import TagManager from 'react-gtm-module'
+import Fade from '@mui/material/Fade'
+import Stack from '@mui/material/Stack'
+import ChevronLeftRounded from '@mui/icons-material/ChevronLeftRounded'
+import ChevronRightRounded from '@mui/icons-material/ChevronRightRounded'
+import { StepFields } from '@core/journeys/ui/Step/__generated__/StepFields'
 import { JourneyViewEventCreate } from '../../../__generated__/JourneyViewEventCreate'
+import StepFooter from './StepFooter'
+import StepHeader from './StepHeader'
 
 export const JOURNEY_VIEW_EVENT_CREATE = gql`
   mutation JourneyViewEventCreate($input: JourneyViewEventCreateInput!) {
@@ -40,30 +46,53 @@ interface ConductorProps {
 }
 
 const StyledSwiperContainer = styled(Swiper)(({ theme }) => ({
+  '--swiper-pagination-top': '16px',
+  [theme.breakpoints.up('lg')]: {
+    '--swiper-pagination-top': 'max(12px, calc(44vh - 26vw))'
+  },
   '.swiper-pagination.swiper-pagination-horizontal': {
     position: 'absolute',
-    top: 16,
     height: 16,
     width: 100
   },
   '.swiper-pagination-bullet': {
-    background: theme.palette.background.default,
+    background: theme.palette.common.white,
     opacity: '60%'
   },
   '.swiper-pagination-bullet-active': {
-    background: theme.palette.background.default,
     opacity: '100%'
   }
 }))
 
-const StyledSwiperSlide = styled(SwiperSlide)(() => ({}))
+const StyledSwiperSlide = styled(SwiperSlide)(({ theme }) => ({
+  '&.swiper-slide': {
+    background: theme.palette.grey[900]
+  }
+}))
+
+const StyledNavArea = styled(Stack)(({ theme }) => ({
+  position: 'absolute',
+  justifyContent: 'center',
+  alignItems: 'center',
+  width: 75,
+  height: 'calc(100vh - 240px)',
+  zIndex: 3,
+  bottom: '180px',
+  [theme.breakpoints.up('lg')]: {
+    width: 60,
+    height: 'calc(100vh - 55vh)',
+    bottom: 'calc(25% + 56px)'
+  }
+}))
 
 export function Conductor({ blocks }: ConductorProps): ReactElement {
   const { setTreeBlocks, treeBlocks, blockHistory } = useBlocks()
   const [swiper, setSwiper] = useState<SwiperCore>()
+  const [visibleNav, setVisibleNav] = useState(true)
   const swiperRef = useRef<SwiperType>()
   const { journey, admin } = useJourney()
   const { rtl } = getJourneyRTL(journey)
+  const theme = useTheme()
 
   const [journeyViewEventCreate] = useMutation<JourneyViewEventCreate>(
     JOURNEY_VIEW_EVENT_CREATE
@@ -95,23 +124,25 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
     }
   }, [])
 
+  useEffect(() => {
+    setTimeout(() => {
+      setVisibleNav(false)
+    }, 1000)
+  }, [])
+
   // Update Swiper - navigate to activeBlock after NavigateBlockAction & going back to node of a branch
   useEffect(() => {
     if (swiper != null && blockHistory.length > 0) {
-      // const index = findIndex(
-      //   treeBlocks,
-      //   (treeBlock) => treeBlock.id === activeBlock.id
-      // )
       const activeIndex = blockHistory[blockHistory.length - 1].parentOrder
-      console.log('useEffect', {
-        swiperDirection: swiper.swipeDirection,
-        swiperActiveIndex: swiper.activeIndex,
-        swiperPreviousIndex: swiper.previousIndex,
-        activeIndex,
-        blockHistory
-      })
+      // console.log('useEffect', {
+      //   swiperDirection: swiper.swipeDirection,
+      //   swiperActiveIndex: swiper.activeIndex,
+      //   swiperPreviousIndex: swiper.previousIndex,
+      //   activeIndex,
+      //   blockHistory
+      // })
       if (activeIndex != null && swiper.activeIndex !== activeIndex) {
-        console.log('useEffect - slideTo', activeIndex)
+        // console.log('useEffect - slideTo', activeIndex)
         const allowFurtherOnSlideChange = false
         swiper.slideTo(activeIndex, 0, allowFurtherOnSlideChange)
       }
@@ -119,22 +150,24 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
   }, [swiper, blockHistory])
 
   // Update activeBlock after Swiper swipe/tap navigation
-  // function handleNext(activeIndex: number): void {
-  //   if (
-  //     activeBlock != null &&
-  //     !activeBlock.locked &&
-  //     activeBlock.id !== treeBlocks[activeIndex].id
-  //   )
-  //     console.log('handleNext', activeIndex)
-  //   nextActiveBlock({ id: undefined })
-  // }
+  function handleNav(activeIndex: number, direction: 'next' | 'prev'): void {
+    console.log('handleNav', activeIndex, blockHistory)
 
-  // function handlePrev(activeIndex: number): void {
-  //   if (activeBlock != null && activeBlock.id !== treeBlocks[activeIndex].id) {
-  //     console.log('handlePrev', activeIndex)
-  //     prevActiveBlock()
-  //   }
-  // }
+    const activeBlock = treeBlocks[activeIndex] as TreeBlock<StepFields>
+
+    if (direction === 'next' && !activeBlock.locked) {
+      console.log('handleNext', activeBlock.parentOrder, activeIndex)
+      const targetBlockId =
+        activeBlock.nextBlockId ??
+        (activeIndex < treeBlocks.length - 1
+          ? treeBlocks[activeIndex + 1].id
+          : null)
+      if (targetBlockId != null) nextActiveBlock({ id: targetBlockId })
+    } else {
+      const targetBlockId = activeIndex >= 0 ? treeBlocks[activeIndex].id : null
+      if (targetBlockId != null) prevActiveBlock({ id: targetBlockId })
+    }
+  }
 
   return (
     <Div100vh style={{ overflowY: 'auto', WebkitOverflowScrolling: 'touch' }}>
@@ -144,8 +177,9 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
           swiperRef.current = swiper
         }}
         navigation={{
-          nextEl: 'swiper-button-next',
-          prevEl: 'swiper-button-prev'
+          enabled: true,
+          prevEl: 'button-prev',
+          nextEl: 'button-next'
         }}
         pagination={{ dynamicBullets: true }}
         effect="fade"
@@ -185,22 +219,28 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
             }
           }
         }}
+        onSlideChange={(swiper) => {
+          setVisibleNav(true)
+          setTimeout(() => {
+            setVisibleNav(false)
+          }, 2225)
+        }}
         onActiveIndexChange={(swiper) => {
           // Indices from useBlock state
           const activeIndex = blockHistory[blockHistory.length - 1].parentOrder
-          const previousIndex =
-            blockHistory.length >= 2
-              ? blockHistory[blockHistory.length - 2].parentOrder
-              : undefined
+          // const previousIndex =
+          //   blockHistory.length >= 2
+          //     ? blockHistory[blockHistory.length - 2].parentOrder
+          //     : undefined
 
-          console.log('onActiveIndexChange', {
-            swiperDirection: swiper.swipeDirection,
-            swiperActiveIndex: swiper.activeIndex,
-            swiperPreviousIndex: swiper.previousIndex,
-            activeIndex,
-            previousIndex,
-            blockHistory
-          })
+          // console.log('onActiveIndexChange', {
+          //   swiperDirection: swiper.swipeDirection,
+          //   swiperActiveIndex: swiper.activeIndex,
+          //   swiperPreviousIndex: swiper.previousIndex,
+          //   activeIndex,
+          //   previousIndex,
+          //   blockHistory
+          // })
 
           // Update useBlock history stack
           if (activeIndex != null) {
@@ -210,13 +250,11 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
                 activeIndex !== swiper.activeIndex &&
                 swiper.activeIndex < swiper.previousIndex
               ) {
-                console.log('active index remove', activeIndex)
                 prevActiveBlock({ id: treeBlocks[activeIndex].id })
               } else {
                 swiper.slideTo(activeIndex, 0, false)
               }
             } else if (swiper.swipeDirection === 'next') {
-              console.log('change next block', blockHistory, swiper.activeIndex)
               nextActiveBlock({ id: treeBlocks[swiper.activeIndex].id })
               // Navigate via button
             } else {
@@ -226,12 +264,79 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
         }}
       >
         {blocks.map((block) => (
-          <StyledSwiperSlide key={block.id} sx={{ height: 'inherit' }}>
-            <BlockRenderer block={block} />
+          <StyledSwiperSlide key={block.id}>
+            <Stack
+              justifyContent="center"
+              sx={{ width: '100%', height: '100%' }}
+            >
+              <StepHeader block={block} />
+              <BlockRenderer block={block} />
+              <StepFooter block={block} />
+            </Stack>
           </StyledSwiperSlide>
         ))}
-        {/* {showLeftButton && <Navigation variant="Left" />}
-        {showRightButton && <Navigation variant="Right" />} */}
+        <StyledNavArea
+          className="button-prev"
+          sx={{ left: { xs: 0, lg: 24 } }}
+          onClick={() => handleNav(swiper?.activeIndex ?? 0, 'prev')}
+          onMouseOver={() => setVisibleNav(true)}
+          onMouseLeave={() => {
+            setTimeout(() => {
+              setVisibleNav(false)
+            }, 1000)
+          }}
+        >
+          <Fade
+            in={visibleNav}
+            style={{ transitionDuration: '600ms', position: 'absolute' }}
+            timeout={{ exit: 2225 }}
+          >
+            <ChevronLeftRounded
+              sx={{
+                fontSize: '44px',
+                borderRadius: 6,
+                ml: { xs: 4, lg: 0 },
+                backgroundColor: `${theme.palette.common.black}00010`,
+                '&:hover': {
+                  backgroundColor: `${theme.palette.common.black}00030`
+                }
+              }}
+              viewBox="0 0 25 24"
+              htmlColor={theme.palette.common.white}
+            />
+          </Fade>
+        </StyledNavArea>
+        <StyledNavArea
+          className="button-next"
+          sx={{ right: { xs: 0, lg: 24 } }}
+          onClick={() => handleNav(swiper?.activeIndex ?? 0, 'next')}
+          onMouseOver={() => setVisibleNav(true)}
+          onMouseLeave={() => {
+            setTimeout(() => {
+              setVisibleNav(false)
+            }, 1000)
+          }}
+        >
+          <Fade
+            in={visibleNav}
+            style={{ transitionDuration: '600ms', position: 'absolute' }}
+            timeout={{ exit: 2225 }}
+          >
+            <ChevronRightRounded
+              fontSize="large"
+              sx={{
+                fontSize: '44px',
+                borderRadius: 6,
+                backgroundColor: `${theme.palette.common.black}00010`,
+                '&:hover': {
+                  backgroundColor: `${theme.palette.common.black}00030`
+                }
+              }}
+              htmlColor={theme.palette.common.white}
+              viewBox="0 0 23 24"
+            />
+          </Fade>
+        </StyledNavArea>
       </StyledSwiperContainer>
     </Div100vh>
   )

@@ -21,15 +21,25 @@ import { VideoFields } from '../../Video/__generated__/VideoFields'
 
 import 'videojs-youtube'
 import 'video.js/dist/video-js.css'
+import { useJourney } from '../../../libs/JourneyProvider'
 
 interface ContainedCoverProps {
-  children: ReactNode
+  children: ReactNode[]
   videoBlock?: TreeBlock<VideoFields>
   imageBlock?: TreeBlock<ImageFields>
   backgroundBlur?: string
 }
 
 const StyledVideo = styled('video')(() => ({}))
+
+const StyledGradientBackground = styled(Stack)(({ theme }) => ({
+  position: 'absolute',
+  bottom: 0,
+  width: '100%',
+  height: '200px',
+  background: `linear-gradient(360deg, ${theme.palette.background.paper}cc 0%, ${theme.palette.background.paper}38 57%, ${theme.palette.background.paper}00 90%)`
+  // background: `linear-gradient(to top, ${theme.palette.background.paper} 0%, ${theme.palette.background.paper}f2 55%, ${theme.palette.background.paper}ab 80%, ${theme.palette.background.paper}73 100%)`
+}))
 
 export function ContainedCover({
   children,
@@ -40,6 +50,7 @@ export function ContainedCover({
   const videoRef = useRef<HTMLVideoElement>(null)
   const [player, setPlayer] = useState<VideoJsPlayer>()
   const [loading, setLoading] = useState(true)
+  const { admin } = useJourney()
 
   const isYouTube = videoBlock?.source === VideoBlockSource.youTube
 
@@ -165,12 +176,13 @@ export function ContainedCover({
                 height: isYouTube ? 'inherit' : '100%',
                 transform: isYouTube
                   ? {
-                      xs: 'scale(3.65)',
-                      md: 'scale(3.1)',
-                      lg: 'scale(2)',
-                      xl: 'scale(1.6)'
+                      xs: 'scale(4)',
+                      sm: 'scale(1.3)',
+                      md: 'scale(2.65)',
+                      lg: 'scale(1.2)'
                     }
-                  : 'unset'
+                  : 'unset',
+                bottom: { xs: children.length !== 0 ? 50 : 0, lg: 0 }
               },
               '> .vjs-tech': {
                 objectFit: videoFit,
@@ -222,7 +234,7 @@ export function ContainedCover({
       </Box>
       <Stack
         justifyContent="flex-end"
-        alignItems={{ xs: 'flex-end', md: 'flex-end' }}
+        alignItems={{ xs: 'flex-end', lg: 'flex-end' }}
         sx={{
           position: 'absolute',
           zIndex: 1,
@@ -230,46 +242,54 @@ export function ContainedCover({
           height: '100%'
         }}
       >
-        <Stack
-          justifyContent="center"
-          sx={{
-            width: '100%',
-            maxWidth: { xs: '100%', md: '340px' },
-            WebkitBackdropFilter: 'blur(20px)',
-            backdropFilter: 'blur(20px)',
-            height: { md: '100%' },
-            maxHeight: { xs: 'calc(50% - 80px)', md: '100%' },
-            background:
-              backgroundBlur != null
-                ? {
-                    xs: `linear-gradient(to top, ${backgroundBlur} 0%, ${backgroundBlur}f2 55%, ${backgroundBlur}ab 80%, ${backgroundBlur}73 100%)`,
-                    // TODO: Tweak
-                    md: `linear-gradient(to top, ${backgroundBlur} 0%, ${backgroundBlur}f2 55%, ${backgroundBlur}ab 80%, ${backgroundBlur}73 100%)`
-                  }
-                : 'unset',
-            pt: { xs: 6, md: 0 },
-            pb: { xs: 28, md: 0 }
-          }}
-        >
-          <Box
+        {children.length !== 0 ? (
+          <Stack
+            justifyContent="center"
             sx={{
-              px: { xs: 4, md: 14 },
-              overflowY: 'scroll',
-              // Hide on Firefox https://caniuse.com/?search=scrollbar-width
-              scrollbarWidth: 'none',
-              // Hide on all others https://caniuse.com/?search=webkit-scrollbar
-              '&::-webkit-scrollbar': {
-                display: 'none'
-              },
-              '& > *': {
-                '&:first-child': { mt: 0 },
-                '&:last-child': { mb: 0 }
-              }
+              width: '100%',
+              maxWidth: { xs: '100%', lg: '380px' },
+              WebkitBackdropFilter: 'blur(55px)',
+              backdropFilter: 'blur(55px)',
+              height: { lg: '100%' },
+              maxHeight: { xs: 'calc(50% - 80px)', lg: '100%' },
+              borderBottomLeftRadius: admin ? 16 : 0,
+              borderBottomRightRadius: admin ? 16 : 0,
+              background:
+                backgroundBlur != null
+                  ? // xs: `linear-gradient(360deg, ${backgroundBlur}cc 0%, ${backgroundBlur}38 57%, ${backgroundBlur}00 90%)`,
+                    // lg: `${backgroundBlur}4d`
+                    // TODO: Tweak
+                    `${backgroundBlur}a6`
+                  : // xs: `linear-gradient(to top, ${backgroundBlur} 0%, ${backgroundBlur}f2 55%, ${backgroundBlur}ab 80%, ${backgroundBlur}73 100%)`,
+                    // lg: `linear-gradient(to top, ${backgroundBlur} 0%, ${backgroundBlur}f2 55%, ${backgroundBlur}ab 80%, ${backgroundBlur}73 100%)`
+
+                    'unset',
+              pt: { xs: 6, lg: 0 },
+              pb: { xs: 28, lg: 0 }
             }}
           >
-            {children}
-          </Box>
-        </Stack>
+            <Box
+              sx={{
+                px: { xs: 6, lg: 10 },
+                overflowY: 'scroll',
+                // Hide on Firefox https://caniuse.com/?search=scrollbar-width
+                scrollbarWidth: 'none',
+                // Hide on all others https://caniuse.com/?search=webkit-scrollbar
+                '&::-webkit-scrollbar': {
+                  display: 'none'
+                },
+                '& > *': {
+                  '&:first-child': { mt: 0 },
+                  '&:last-child': { mb: 0 }
+                }
+              }}
+            >
+              {children}
+            </Box>
+          </Stack>
+        ) : (
+          <StyledGradientBackground />
+        )}
       </Stack>
     </>
   )

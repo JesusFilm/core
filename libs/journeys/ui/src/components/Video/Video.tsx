@@ -37,6 +37,15 @@ const VIDEO_FOREGROUND_COLOR = '#FFF'
 
 const StyledVideo = styled('video')(() => ({}))
 
+const StyledVideoGradient = styled(Box)(() => ({
+  width: '100%',
+  height: '25%',
+  position: 'absolute',
+  bottom: 0,
+  zIndex: 1,
+  background: `linear-gradient(to top,#000000cf 0%, #000000a3 15%, #0000007d 30%,#0000002e 60%, #00000000 95%)`
+}))
+
 export function Video({
   id: blockId,
   video,
@@ -102,6 +111,16 @@ export function Video({
     }
   }, [startAt, endAt, muted, blurBackground])
 
+  const triggerTimes = useMemo(() => {
+    return children
+      .filter((block) => block.__typename === 'VideoTriggerBlock')
+      .map((block) => (block as VideoTriggerFields).triggerStart)
+  }, [children])
+
+  const endOfVideo = endAt ?? player?.duration() ?? 0
+  const progressEndTime =
+    player != null ? Math.min(...triggerTimes, endOfVideo) : 0
+
   // Initiate video player listeners
   useEffect(() => {
     if (player != null) {
@@ -112,7 +131,6 @@ export function Video({
           if (source === VideoBlockSource.youTube && autoplay === true)
             void player?.play()
         })
-
         // Video jumps to new time and finishes loading - occurs on autoplay
         player.on('seeked', () => {
           if (autoplay === true) setLoading(false)
@@ -123,26 +141,17 @@ export function Video({
         player.on('ended', () => {
           if (player.isFullscreen()) player.exitFullscreen()
         })
-        player.on('timeupdate', () => {
-          if (player != null) {
-            if (
-              action == null &&
-              endAt != null &&
-              player.currentTime() >= endAt
-            ) {
-              player.pause()
-            }
-          }
-        })
       }
     }
-  }, [player, selectedBlock, startAt, endAt, autoplay, action, source])
-
-  const endTimes = children
-    .filter((block) => block.__typename === 'VideoTriggerBlock')
-    .map((block) => (block as VideoTriggerFields).triggerStart)
-  const progressEndTime =
-    player != null ? Math.min(...endTimes, endAt ?? player.duration()) : 0
+  }, [
+    player,
+    selectedBlock,
+    startAt,
+    progressEndTime,
+    autoplay,
+    action,
+    source
+  ])
 
   // Pause video if admin
   useEffect(() => {
@@ -154,10 +163,14 @@ export function Video({
   // Pause video if card not active
   useEffect(() => {
     if (player != null) {
-      if (isActiveBlockOrDescendant(blockId) && autoplay === true) {
-        void player.play()
-      } else {
+      if (
+        !isActiveBlockOrDescendant(blockId) ||
+        autoplay === false ||
+        (endAt != null && player.currentTime() < endAt)
+      ) {
         void player.pause()
+      } else {
+        void player.play()
       }
     }
   }, [activeBlock, blockId, autoplay, player])
@@ -238,11 +251,16 @@ export function Video({
       )}
       {videoId != null ? (
         <>
+          <StyledVideoGradient />
           <StyledVideo
             ref={videoRef}
             className="video-js"
             playsInline
             sx={{
+              '&.video-js.vjs-youtube.vjs-fill': {
+                height: { xs: 'calc(100% - 150px)', lg: 'calc(100% - 46px)' },
+                mt: { xs: 5, lg: 1 }
+              },
               '> .vjs-tech': {
                 objectFit: videoFit,
                 transform:

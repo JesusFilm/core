@@ -33,7 +33,7 @@ export function VideoControls({
   endAt,
   isYoutube
 }: VideoControlProps): ReactElement {
-  const [play, setPlay] = useState(false)
+  const [playing, setPlaying] = useState(false)
   const [active, setActive] = useState(true)
   const [displayTime, setDisplayTime] = useState<string>()
   const [progress, setProgress] = useState(0)
@@ -43,17 +43,22 @@ export function VideoControls({
   const durationSeconds = endAt - startAt
   const duration = secondsToTimeFormat(durationSeconds, { trimZeroes: true })
 
-  const visible = !play || active || loading
+  const visible = !playing || active || loading
 
   useEffect(() => {
     player.on('play', () => {
-      setPlay(true)
+      setPlaying(true)
     })
     player.on('pause', () => {
-      setPlay(false)
+      setPlaying(false)
     })
     // Recalculate for startAt/endAt snippet
     player.on('timeupdate', () => {
+      if (endAt > 0 && player.currentTime() >= endAt) {
+        void player.currentTime(endAt - 1)
+        void player.pause()
+        setPlaying(false)
+      }
       setDisplayTime(
         secondsToTimeFormat(player.currentTime() - startAt, {
           trimZeroes: true
@@ -79,10 +84,13 @@ export function VideoControls({
   }, [player, setFullscreen, loading, startAt])
 
   function handlePlay(): void {
-    if (!play) {
+    if (!playing) {
       void player.play()
+      // Youtube breaks when this is gone
+      setPlaying(true)
     } else {
       void player.pause()
+      setPlaying(false)
     }
   }
 
@@ -132,9 +140,10 @@ export function VideoControls({
       id="video-controls"
       sx={{
         position: 'absolute',
+        zIndex: 4,
         top: 0,
         right: 0,
-        bottom: 0,
+        bottom: { xs: 90, lg: 4 },
         left: 0,
         cursor: visible ? undefined : 'none'
       }}
@@ -160,10 +169,10 @@ export function VideoControls({
               <IconButton
                 sx={{
                   fontSize: 100,
-                  display: { xs: 'flex', md: 'none' }
+                  display: { xs: 'flex', lg: 'none' }
                 }}
               >
-                {play ? (
+                {playing ? (
                   <PauseRounded fontSize="inherit" />
                 ) : (
                   <PlayArrowRounded fontSize="inherit" />
@@ -180,7 +189,6 @@ export function VideoControls({
             maxWidth="xxl"
             sx={{
               zIndex: 1,
-              pb: 26,
               transitionDelay: visible ? undefined : '0.5s'
             }}
             onClick={(event) => event.stopPropagation()}
@@ -199,9 +207,11 @@ export function VideoControls({
                 width: 'initial',
                 height: 5,
                 mx: 2.5,
-                display: { xs: 'flex', md: 'none' },
+                display: { xs: 'flex', lg: 'none' },
                 '& .MuiSlider-thumb': {
-                  display: 'none'
+                  // display: 'none'
+                  width: 10,
+                  height: 10
                 },
                 '& .MuiSlider-rail': {
                   backgroundColor: 'secondary.main'
@@ -214,15 +224,18 @@ export function VideoControls({
             <Stack
               direction="row"
               gap={5}
-              justifyContent={{ xs: 'space-between', md: 'none' }}
+              justifyContent={{ xs: 'space-between', lg: 'none' }}
               alignItems="center"
             >
               <IconButton
-                id={play ? 'pause-button' : 'play-button'}
+                id={playing ? 'pause-button' : 'play-button'}
                 onClick={handlePlay}
-                sx={{ display: { xs: 'none', md: 'flex' } }}
+                sx={{
+                  display: { xs: 'none', lg: 'flex' },
+                  ml: { xs: 0, lg: -1 }
+                }}
               >
-                {!play ? (
+                {!playing ? (
                   <PlayArrowRounded fontSize="large" />
                 ) : (
                   <PauseRounded fontSize="large" />
@@ -240,7 +253,7 @@ export function VideoControls({
                 onChange={handleSeek}
                 sx={{
                   height: 8,
-                  display: { xs: 'none', md: 'flex' },
+                  display: { xs: 'none', lg: 'flex' },
                   '& .MuiSlider-thumb': {
                     width: 13,
                     height: 13
@@ -257,7 +270,7 @@ export function VideoControls({
                 direction="row"
                 alignItems="center"
                 justifyContent="space-between"
-                sx={{ width: { xs: '100%', md: 'unset' }, pl: 2.5, pr: 1.5 }}
+                sx={{ width: { xs: '100%', lg: 'unset' }, pl: 2.5, pr: 1.5 }}
               >
                 {player != null && (
                   <Typography
