@@ -5,6 +5,7 @@ import Typography from '@mui/material/Typography'
 import Divider from '@mui/material/Divider'
 import Collapse from '@mui/material/Collapse'
 import Stack from '@mui/material/Stack'
+import ErrorOutlineRoundedIcon from '@mui/icons-material/ErrorOutlineRounded'
 import { transformEvents, JourneyWithEvents, EventVariant } from '../utils'
 import { TimelineEvent } from './TimelineEvent'
 import { CompactEvent } from './CompactEvent'
@@ -55,7 +56,7 @@ export function EventsCard({ journey }: Props): ReactElement {
 
       <Divider />
       <Box sx={{ px: 6 }}>
-        {timelineItems.map((timelineItem, index) => {
+        {timelineItems.map((timelineItem, index, array) => {
           if (Array.isArray(timelineItem)) {
             return (
               <>
@@ -88,10 +89,19 @@ export function EventsCard({ journey }: Props): ReactElement {
             )
           } else {
             return (
-              <TimelineEvent
-                key={timelineItem.event.id}
-                timelineItem={timelineItem}
-              />
+              <>
+                {array.length === 1 &&
+                  timelineItem.event.__typename === 'JourneyViewEvent' && (
+                    <GenericEvent
+                      icon={<ErrorOutlineRoundedIcon />}
+                      value="User left journey with no actions"
+                    />
+                  )}
+                <TimelineEvent
+                  key={timelineItem.event.id}
+                  timelineItem={timelineItem}
+                />
+              </>
             )
           }
         })}
