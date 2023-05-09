@@ -59,11 +59,14 @@ Featured.args = {
 export const Title = Template.bind({})
 Title.args = {
   value: (
-    <Stack direction="row" sx={{ alignItems: 'center' }}>
+    <Stack
+      direction={{ xs: 'column', sm: 'row' }}
+      sx={{ alignItems: { xs: 'flex-start', sm: 'center' } }}
+    >
       <Typography variant="h3" sx={{ pr: 30 }}>
         Journey Title
       </Typography>
-      <Typography variant="body2" sx={{ ml: 'auto' }}>
+      <Typography variant="body2" sx={{ ml: { xs: undefined, sm: 'auto' } }}>
         18 Apri 2023
       </Typography>
     </Stack>

@@ -26,16 +26,22 @@ export function EventsCard({ journey }: Props): ReactElement {
   return (
     <Card
       variant="outlined"
-      sx={{ borderRadius: 4, minHeight: '200px', mb: 6 }}
+      sx={{ borderRadius: { xs: 0, sm: 4 }, mx: { xs: -6, sm: 0 }, mb: 6 }}
     >
       <Box sx={{ px: 6 }}>
         <GenericEvent
           duration={totalDuration}
           value={
-            <Stack direction="row" sx={{ alignItems: 'center' }}>
+            <Stack
+              direction={{ xs: 'column', sm: 'row' }}
+              sx={{ alignItems: { xs: 'flex-start', sm: 'center' } }}
+            >
               <Typography variant="h3">{journey.title}</Typography>
               {journey.createdAt != null && (
-                <Typography variant="body2" sx={{ ml: 'auto' }}>
+                <Typography
+                  variant="body2"
+                  sx={{ ml: { xs: undefined, sm: 'auto' } }}
+                >
                   {new Intl.DateTimeFormat([], {
                     dateStyle: 'long'
                   }).format(new Date(journey.createdAt))}

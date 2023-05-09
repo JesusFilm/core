@@ -50,8 +50,9 @@ export function GenericEvent({
           alignItems: textAlign,
           justifyContent: 'center',
           px: 0,
-          mr: 2,
-          maxWidth: '64px'
+          // mr: 2,
+          minWidth: '46px',
+          maxWidth: '46px'
         }}
       >
         <Typography variant={durationVariant} color={durationColor}>
@@ -85,7 +86,7 @@ export function GenericEvent({
         }}
       >
         <Stack direction="column" sx={{ width: '100%' }}>
-          <Stack direction="row" sx={{ width: '100%' }}>
+          <Stack direction={{ xs: 'column', sm: 'row' }} sx={{ width: '100%' }}>
             {/* Activity */}
             {activity != null && (
               <Typography
