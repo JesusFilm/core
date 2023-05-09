@@ -4,6 +4,6 @@ export {
   nextActiveBlock,
   prevActiveBlock,
   isActiveBlockOrDescendant,
-  previousBlocksVar,
-  treeBlocksVar
+  treeBlocksVar,
+  blockHistoryVar
 } from './block'

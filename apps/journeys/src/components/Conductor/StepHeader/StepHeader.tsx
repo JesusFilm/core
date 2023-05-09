@@ -75,7 +75,11 @@ export default function StepHeader({ block }: StepHeaderProps): ReactElement {
           }}
         >
           <NextLink
-            href={`mailto:support@nextstep.is?subject=Report%20Journey:%20${journey?.title}&body=I want to report journey (your.nextstep.is/journey/${journey?.slug}) because ...`}
+            href={`mailto:support@nextstep.is?subject=Report%20Journey:%20${
+              journey?.title ?? journey?.seoTitle ?? ''
+            }&body=I want to report journey (your.nextstep.is/journey/${
+              journey?.slug ?? ''
+            }) because ...`}
             passHref
           >
             <MuiMenuItem onClick={handleClose}>

@@ -122,6 +122,7 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
         }
       })
     }
+    // eslint-disable-next-line
   }, [])
 
   useEffect(() => {
