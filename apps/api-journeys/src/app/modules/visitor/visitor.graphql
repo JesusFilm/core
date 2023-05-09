@@ -232,6 +232,7 @@ extend type Query {
   Get a single visitor
   """
   visitor(id: ID!): Visitor!
+  visitorCount(teamId: String!, filter: VisitorConnectionFilter): Int!
 }
 
 """

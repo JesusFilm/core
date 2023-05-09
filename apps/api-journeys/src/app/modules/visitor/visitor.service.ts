@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common'
-import { KeyAsId } from '@core/nest/decorators/KeyAsId'
 import { v4 as uuidv4 } from 'uuid'
 import { Visitor } from '.prisma/api-journeys-client'
 import {
@@ -30,7 +29,23 @@ export interface VisitorsConnection {
 export class VisitorService {
   constructor(private readonly prismaService: PrismaService) {}
 
-  @KeyAsId()
+  generateWhere(filter?: VisitorConnectionFilter) {
+    const events =
+      filter?.journeyId != null ? { some: { id: filter.journeyId } } : undefined
+    return {
+      lastChatStartedAt: filter?.hasChat === true ? { not: null } : undefined,
+      lastRadioQuestion:
+        filter?.hasAnswers === true ? { not: null } : undefined,
+      lastTextResponse: filter?.hasData === true ? { not: null } : undefined,
+      status: filter?.hasIcon === true ? { not: null } : undefined,
+      events: filter?.isInactive === true ? { none: {} } : undefined,
+      countryCode:
+        filter?.countryCode != null
+          ? { contains: filter.countryCode }
+          : undefined
+    }
+  }
+
   async getList({
     teamId,
     after,
@@ -39,19 +54,7 @@ export class VisitorService {
     sort
   }: ListParams): Promise<VisitorsConnection> {
     const result = await this.prismaService.visitor.findMany({
-      where: {
-        teamId,
-        lastChatStartedAt: filter?.hasChat === true ? { not: null } : undefined,
-        lastRadioQuestion:
-          filter?.hasAnswers === true ? { not: null } : undefined,
-        lastTextResponse: filter?.hasData === true ? { not: null } : undefined,
-        status: filter?.hasIcon === true ? { not: null } : undefined,
-        events: filter?.isInactive === true ? { none: {} } : undefined,
-        countryCode:
-          filter?.countryCode != null
-            ? { contains: filter.countryCode }
-            : undefined
-      },
+      where: this.generateWhere(filter),
       cursor:
         after != null
           ? {
