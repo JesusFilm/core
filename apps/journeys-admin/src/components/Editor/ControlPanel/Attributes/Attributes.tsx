@@ -6,7 +6,7 @@ import Divider from '@mui/material/Divider'
 import MuiTypography from '@mui/material/Typography'
 import { ReactElement, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
-import { SocialShareAppearance } from '../../Drawer/SocialShareAppearance'
+import { Properties } from '../../../JourneyView/Properties'
 import {
   Card,
   Step,
@@ -108,8 +108,8 @@ export function Attributes({ selected, step }: AttributesProps): ReactElement {
     ) {
       dispatch({
         type: 'SetDrawerPropsAction',
-        title: 'Social Share Preview',
-        children: <SocialShareAppearance />
+        title: 'Properties',
+        children: <Properties journeyType="Journey" isPublisher={false} />
       })
     }
   }, [activeTab, dispatch, journeyEditContentComponent])
