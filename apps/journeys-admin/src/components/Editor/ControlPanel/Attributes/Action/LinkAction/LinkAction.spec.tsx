@@ -9,7 +9,6 @@ import { LinkAction, LINK_ACTION_UPDATE } from './LinkAction'
 
 describe('LinkAction', () => {
   const selectedBlock = steps[1].children[0].children[3]
-
   const result = jest.fn(() => ({
     data: {
       blockUpdateLinkAction: {
@@ -111,32 +110,6 @@ describe('LinkAction', () => {
   })
 
   it('accepts links without protocol as a URL', async () => {
-    const result = jest.fn(() => ({
-      data: {
-        blockUpdateLinkAction: {
-          id: selectedBlock.id,
-          gtmEventName: 'gtmEventName',
-          url: 'https://github.com'
-        }
-      }
-    }))
-
-    const mocks = [
-      {
-        request: {
-          query: LINK_ACTION_UPDATE,
-          variables: {
-            id: selectedBlock.id,
-            journeyId: 'journeyId',
-            input: {
-              url: 'https://github.com'
-            }
-          }
-        },
-        result
-      }
-    ]
-
     const cache = new InMemoryCache()
     cache.restore({
       'Journey:journeyId': {
@@ -171,7 +144,6 @@ describe('LinkAction', () => {
       expect(queryByText('Invalid URL')).not.toBeInTheDocument()
     )
     await waitFor(() => expect(result).toHaveBeenCalled())
-
     await waitFor(() =>
       expect(cache.extract()['ButtonBlock:button1.id']?.action).toEqual({
         gtmEventName: 'gtmEventName',
@@ -203,24 +175,25 @@ describe('LinkAction', () => {
       }
     }))
 
-    const mocks = [
-      {
-        request: {
-          query: LINK_ACTION_UPDATE,
-          variables: {
-            id: selectedBlock.id,
-            journeyId: 'journeyId',
-            input: {
-              url: 'viber://'
-            }
-          }
-        },
-        result
-      }
-    ]
-
     const { queryByText, getByRole } = render(
-      <MockedProvider mocks={mocks} cache={cache}>
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: LINK_ACTION_UPDATE,
+              variables: {
+                id: selectedBlock.id,
+                journeyId: 'journeyId',
+                input: {
+                  url: 'viber://'
+                }
+              }
+            },
+            result
+          }
+        ]}
+        cache={cache}
+      >
         <JourneyProvider
           value={{
             journey: { id: 'journeyId' } as unknown as Journey,
