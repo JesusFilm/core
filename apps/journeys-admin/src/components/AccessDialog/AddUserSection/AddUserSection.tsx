@@ -40,7 +40,7 @@ export function AddUserSection({ users }: AddUserSectionProps): ReactElement {
       <Stack direction="row" alignItems="center" sx={{ mb: 4 }}>
         <GroupAddIcon />
         <Typography variant="subtitle1" sx={{ marginLeft: 3 }}>
-          {t('Invite Editor by')}
+          {t('Add editor by')}
         </Typography>
         <Button
           variant="outlined"
