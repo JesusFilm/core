@@ -3,14 +3,16 @@ import { useRouter } from 'next/router'
 
 export const useInvalidJourneyRedirect = (data): void => {
   const router = useRouter()
+
   useEffect(() => {
-    const checkValidJourney = (): void => {
-      data?.journey == null && data?.journey !== undefined && router.push('/')
-      data?.template == null && data?.template !== undefined && router.push('/')
-      data?.publisherTemplate == null &&
-        data?.publisherTemplate !== undefined &&
-        router.push('/')
+    const checkValidJourney = async (): Promise<void> => {
+      if (
+        data?.journey === null ||
+        data?.template === null ||
+        data?.publisherTemplate === null
+      )
+        await router.push('/')
     }
-    checkValidJourney()
+    void checkValidJourney()
   }, [data, router])
 }
