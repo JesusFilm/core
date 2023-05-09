@@ -1,13 +1,13 @@
 import { ComponentProps, ReactElement } from 'react'
-import HelpIcon from '@mui/icons-material/HelpRounded'
-import ListIcon from '@mui/icons-material/ListRounded'
-import MarkEmailReadIcon from '@mui/icons-material/MarkEmailReadRounded'
-import PlayArrowIcon from '@mui/icons-material/PlayArrowRounded'
-import RadioButtonUncheckedIcon from '@mui/icons-material/RadioButtonUncheckedRounded'
 import { format, parseISO } from 'date-fns'
-import MovieIcon from '@mui/icons-material/MovieRounded'
-import AnnouncementIcon from '@mui/icons-material/AnnouncementRounded'
+import RadioButtonUncheckedIcon from '@mui/icons-material/RadioButtonUncheckedRounded'
+import CheckCircleOutlineRoundedIcon from '@mui/icons-material/CheckCircleOutlineRounded'
+import ArrowCircleRightOutlinedIcon from '@mui/icons-material/ArrowCircleRightOutlined'
 import EmojiFlagsRoundedIcon from '@mui/icons-material/EmojiFlagsRounded'
+import ChatBubbleOutlineRoundedIcon from '@mui/icons-material/ChatBubbleOutlineRounded'
+import MailOutlineRoundedIcon from '@mui/icons-material/MailOutlineRounded'
+import PauseCircleOutlineRoundedIcon from '@mui/icons-material/PauseCircleOutlineRounded'
+import PlayCircleOutlineRoundedIcon from '@mui/icons-material/PlayCircleOutlineRounded'
 import { useTranslation } from 'react-i18next'
 import {
   messagePlatformToLabel,
@@ -45,7 +45,7 @@ export function TimelineEvent({ timelineItem }: Props): ReactElement {
       variant = EventVariant.start
       break
     case 'ChatOpenEvent':
-      icon = <AnnouncementIcon />
+      icon = <ChatBubbleOutlineRoundedIcon />
       activity = `${t('Chat Opened')}:`
       label = t('{{messagePlatform}}', {
         messagePlatform:
@@ -57,12 +57,13 @@ export function TimelineEvent({ timelineItem }: Props): ReactElement {
       variant = EventVariant.chat
       break
     case 'TextResponseSubmissionEvent':
-      icon = <HelpIcon />
+      icon = <ChatBubbleOutlineRoundedIcon />
       activity = `${t('Text submitted')}:`
       label = event.label
       variant = EventVariant.featured
       break
     case 'ButtonClickEvent':
+      icon = <CheckCircleOutlineRoundedIcon />
       activity = `${t('Button click')}:`
       label = getButtonLabel(event, t)
       value = event.label
@@ -70,7 +71,7 @@ export function TimelineEvent({ timelineItem }: Props): ReactElement {
       break
     case 'SignUpSubmissionEvent':
       activity = `${t('Form submitted')}:`
-      icon = <MarkEmailReadIcon />
+      icon = <MailOutlineRoundedIcon />
       label = t('Sign Up Submission')
       value = (
         <>
@@ -82,7 +83,7 @@ export function TimelineEvent({ timelineItem }: Props): ReactElement {
       variant = EventVariant.featured
       break
     case 'RadioQuestionSubmissionEvent':
-      icon = <ListIcon />
+      icon = <CheckCircleOutlineRoundedIcon />
       activity = `${t('Poll')}:`
       label = event.label
       variant = EventVariant.featured
@@ -90,46 +91,47 @@ export function TimelineEvent({ timelineItem }: Props): ReactElement {
 
     // default
     case 'StepNextEvent':
-      // icon =
+      icon = <ArrowCircleRightOutlinedIcon />
       activity = `${t('Skip Step')}:`
       label = event.label
       break
     case 'StepViewEvent':
+      icon = <ArrowCircleRightOutlinedIcon />
       activity = t('Next Step')
       break
 
     // Video
     case 'VideoStartEvent':
-      icon = <PlayArrowIcon />
+      icon = <PlayCircleOutlineRoundedIcon />
       activity = t('Video Start')
       value = event.label
       break
     case 'VideoPlayEvent':
-      icon = <PlayArrowIcon />
+      icon = <PlayCircleOutlineRoundedIcon />
       activity = t('Video Play')
       value = event.label
       break
     case 'VideoPauseEvent':
-      icon = <PlayArrowIcon />
+      icon = <PauseCircleOutlineRoundedIcon />
       activity = t('Video Pause')
       value = `${event.label as string} paused at ${videoPositionToLabel(
         event.position
       )}`
       break
     case 'VideoProgressEvent':
-      icon = <PlayArrowIcon />
+      icon = <PlayCircleOutlineRoundedIcon />
       activity = `${t('Video Progress')} ${event.progress}%`
       value = event.label
       break
     case 'VideoExpandEvent':
-      icon = <PlayArrowIcon />
+      icon = <PlayCircleOutlineRoundedIcon />
       activity = `${t(
         'Video expanded to fullscreen at'
       )} (${videoPositionToLabel(event.position)})`
       value = event.label
       break
     case 'VideoCompleteEvent':
-      icon = <MovieIcon />
+      icon = <PlayCircleOutlineRoundedIcon />
       activity = t('Video completed')
       value = event.label
       break

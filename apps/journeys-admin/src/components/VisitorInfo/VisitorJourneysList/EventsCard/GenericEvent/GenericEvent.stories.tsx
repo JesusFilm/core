@@ -3,7 +3,9 @@ import { ComponentProps } from 'react'
 import Typography from '@mui/material/Typography'
 import Stack from '@mui/material/Stack'
 import RadioButtonUncheckedIcon from '@mui/icons-material/RadioButtonUncheckedRounded'
-import AnnouncementIcon from '@mui/icons-material/AnnouncementRounded'
+import ChatBubbleOutlineRoundedIcon from '@mui/icons-material/ChatBubbleOutlineRounded'
+import EmojiFlagsRoundedIcon from '@mui/icons-material/EmojiFlagsRounded'
+import CheckCircleOutlineRoundedIcon from '@mui/icons-material/CheckCircleOutlineRounded'
 import { journeysAdminConfig } from '../../../../../libs/storybook'
 import { EventVariant } from '../../utils'
 import { GenericEvent } from '.'
@@ -31,7 +33,7 @@ export const Start = Template.bind({})
 Start.args = {
   createdAt: '2021-02-18T00:00:00.000Z',
   value: 'Journey Started',
-  icon: <RadioButtonUncheckedIcon />,
+  icon: <EmojiFlagsRoundedIcon />,
   showCreatedAt: true,
   variant: EventVariant.start
 }
@@ -41,7 +43,7 @@ Chat.args = {
   activity: 'Chat Open',
   label: 'Facebook',
   value: '2:34pm, Sep 25',
-  icon: <AnnouncementIcon />,
+  icon: <ChatBubbleOutlineRoundedIcon />,
   duration: '0.02',
   variant: EventVariant.chat
 }
@@ -51,7 +53,7 @@ Featured.args = {
   activity: 'Button Click',
   label: 'www.google.com',
   value: 'Button Label',
-  icon: <RadioButtonUncheckedIcon />,
+  icon: <CheckCircleOutlineRoundedIcon />,
   duration: '1:02',
   variant: EventVariant.featured
 }
