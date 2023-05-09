@@ -9,6 +9,32 @@ import { LinkAction, LINK_ACTION_UPDATE } from './LinkAction'
 
 describe('LinkAction', () => {
   const selectedBlock = steps[1].children[0].children[3]
+  const result = jest.fn(() => ({
+    data: {
+      blockUpdateLinkAction: {
+        id: selectedBlock.id,
+        gtmEventName: 'gtmEventName',
+        url: 'https://github.com'
+      }
+    }
+  }))
+
+  const mocks = [
+    {
+      request: {
+        query: LINK_ACTION_UPDATE,
+        variables: {
+          id: selectedBlock.id,
+          journeyId: 'journeyId',
+          input: {
+            url: 'https://github.com'
+          }
+        }
+      },
+      result
+    }
+  ]
+
   it('defaults to place holder text', () => {
     const { getByLabelText } = render(
       <MockedProvider>
@@ -42,17 +68,114 @@ describe('LinkAction', () => {
       }
     })
 
+    const { getByRole } = render(
+      <MockedProvider mocks={mocks} cache={cache}>
+        <JourneyProvider
+          value={{
+            journey: { id: 'journeyId' } as unknown as Journey,
+            admin: true
+          }}
+        >
+          <EditorProvider initialState={{ selectedBlock }}>
+            <LinkAction />
+          </EditorProvider>
+        </JourneyProvider>
+      </MockedProvider>
+    )
+    fireEvent.change(getByRole('textbox'), {
+      target: { value: 'https://github.com' }
+    })
+    fireEvent.blur(getByRole('textbox'))
+    await waitFor(() => expect(result).toHaveBeenCalled())
+
+    expect(cache.extract()['ButtonBlock:button1.id']?.action).toEqual({
+      gtmEventName: 'gtmEventName',
+      url: 'https://github.com'
+    })
+  })
+
+  it('is a required field', async () => {
+    const { getByText, getByRole } = render(
+      <MockedProvider>
+        <EditorProvider>
+          <LinkAction />
+        </EditorProvider>
+      </MockedProvider>
+    )
+    fireEvent.change(getByRole('textbox'), {
+      target: { value: '' }
+    })
+    fireEvent.blur(getByRole('textbox'))
+    await waitFor(() => expect(getByText('Required')).toBeInTheDocument())
+  })
+
+  it('accepts links without protocol as a URL', async () => {
+    const cache = new InMemoryCache()
+    cache.restore({
+      'Journey:journeyId': {
+        blocks: [{ __ref: 'ButtonBlock:button1.id' }],
+        id: 'journeyId',
+        __typename: 'Journey'
+      },
+      'ButtonBlock:button1.id': {
+        ...selectedBlock
+      }
+    })
+
+    const { queryByText, getByRole } = render(
+      <MockedProvider mocks={mocks} cache={cache}>
+        <JourneyProvider
+          value={{
+            journey: { id: 'journeyId' } as unknown as Journey,
+            admin: true
+          }}
+        >
+          <EditorProvider initialState={{ selectedBlock }}>
+            <LinkAction />
+          </EditorProvider>
+        </JourneyProvider>
+      </MockedProvider>
+    )
+    fireEvent.change(getByRole('textbox'), {
+      target: { value: 'github.com' }
+    })
+    fireEvent.blur(getByRole('textbox'))
+    await waitFor(() =>
+      expect(queryByText('Invalid URL')).not.toBeInTheDocument()
+    )
+    await waitFor(() => expect(result).toHaveBeenCalled())
+    await waitFor(() =>
+      expect(cache.extract()['ButtonBlock:button1.id']?.action).toEqual({
+        gtmEventName: 'gtmEventName',
+        url: 'https://github.com'
+      })
+    )
+  })
+
+  it('accepts deep links as a URL', async () => {
+    const cache = new InMemoryCache()
+    cache.restore({
+      'Journey:journeyId': {
+        blocks: [{ __ref: 'ButtonBlock:button1.id' }],
+        id: 'journeyId',
+        __typename: 'Journey'
+      },
+      'ButtonBlock:button1.id': {
+        ...selectedBlock
+      }
+    })
+
     const result = jest.fn(() => ({
       data: {
         blockUpdateLinkAction: {
           id: selectedBlock.id,
           gtmEventName: 'gtmEventName',
-          url: 'https://www.github.com'
+          url: 'viber://'
         }
       }
     }))
 
-    const { getByRole } = render(
+    const { queryByText, getByRole } = render(
       <MockedProvider
         mocks={[
           {
@@ -62,7 +185,7 @@ describe('LinkAction', () => {
                 id: selectedBlock.id,
                 journeyId: 'journeyId',
                 input: {
-                  url: 'https://www.github.com'
+                  url: 'viber://'
                 }
               }
             },
@@ -84,44 +207,78 @@ describe('LinkAction', () => {
       </MockedProvider>
     )
     fireEvent.change(getByRole('textbox'), {
-      target: { value: 'https://www.github.com' }
+      target: { value: 'viber://' }
     })
     fireEvent.blur(getByRole('textbox'))
+    await waitFor(() =>
+      expect(queryByText('Invalid URL')).not.toBeInTheDocument()
+    )
     await waitFor(() => expect(result).toHaveBeenCalled())
-
-    expect(cache.extract()['ButtonBlock:button1.id']?.action).toEqual({
-      gtmEventName: 'gtmEventName',
-      url: 'https://www.github.com'
-    })
+    await waitFor(() =>
+      expect(cache.extract()['ButtonBlock:button1.id']?.action).toEqual({
+        gtmEventName: 'gtmEventName',
+        url: 'viber://'
+      })
+    )
   })
 
-  it('is a required field', async () => {
+  it('rejects mailto links as a URL', async () => {
     const { getByText, getByRole } = render(
-      <MockedProvider>
+      <MockedProvider mocks={mocks}>
         <EditorProvider>
           <LinkAction />
         </EditorProvider>
       </MockedProvider>
     )
     fireEvent.change(getByRole('textbox'), {
-      target: { value: '' }
-    })
-    fireEvent.blur(getByRole('textbox'))
-    await waitFor(() => expect(getByText('Required')).toBeInTheDocument())
-  })
-
-  it('validates the input as a URL', async () => {
-    const { getByText, getByRole } = render(
-      <MockedProvider>
-        <EditorProvider>
-          <LinkAction />
-        </EditorProvider>
-      </MockedProvider>
-    )
-    fireEvent.change(getByRole('textbox'), {
-      target: { value: 'www.incorectUrl.com/needs-protocol' }
+      target: { value: 'mailto:test@test.com' }
     })
     fireEvent.blur(getByRole('textbox'))
     await waitFor(() => expect(getByText('Invalid URL')).toBeInTheDocument())
+  })
+
+  it('should submit when enter is pressed', async () => {
+    const cache = new InMemoryCache()
+    cache.restore({
+      'Journey:journeyId': {
+        blocks: [{ __ref: 'ButtonBlock:button1.id' }],
+        id: 'journeyId',
+        __typename: 'Journey'
+      },
+      'ButtonBlock:button1.id': {
+        ...selectedBlock
+      }
+    })
+
+    const { getByRole, queryByText } = render(
+      <MockedProvider mocks={mocks} cache={cache}>
+        <JourneyProvider
+          value={{
+            journey: { id: 'journeyId' } as unknown as Journey,
+            admin: true
+          }}
+        >
+          <EditorProvider initialState={{ selectedBlock }}>
+            <LinkAction />
+          </EditorProvider>
+        </JourneyProvider>
+      </MockedProvider>
+    )
+    fireEvent.change(getByRole('textbox'), {
+      target: { value: 'https://github.com' }
+    })
+    fireEvent.submit(getByRole('textbox'), {
+      target: { value: 'https://github.com' }
+    })
+    await waitFor(() =>
+      expect(queryByText('Invalid URL')).not.toBeInTheDocument()
+    )
+    await waitFor(() => expect(result).toHaveBeenCalled())
+    await waitFor(() =>
+      expect(cache.extract()['ButtonBlock:button1.id']?.action).toEqual({
+        gtmEventName: 'gtmEventName',
+        url: 'https://github.com'
+      })
+    )
   })
 })
