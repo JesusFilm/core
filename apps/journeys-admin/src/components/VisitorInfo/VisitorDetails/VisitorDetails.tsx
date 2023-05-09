@@ -2,10 +2,10 @@ import { ReactElement } from 'react'
 import { gql, useQuery } from '@apollo/client'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
-import ChatRoundedIcon from '@mui/icons-material/ChatRounded'
-import FmdGoodRoundedIcon from '@mui/icons-material/FmdGoodRounded'
-import PhoneAndroidRoundedIcon from '@mui/icons-material/PhoneAndroidRounded'
-import PersonRoundedIcon from '@mui/icons-material/PersonRounded'
+import ChatBubbleOutlineRoundedIcon from '@mui/icons-material/ChatBubbleOutlineRounded'
+import LocationOnOutlinedIcon from '@mui/icons-material/LocationOnOutlined'
+import PhoneIphoneOutlinedIcon from '@mui/icons-material/PhoneIphoneOutlined'
+import PersonOutlinedIcon from '@mui/icons-material/PersonOutlined'
 import { GetVisitorForDetails } from '../../../../__generated__/GetVisitorForDetails'
 
 export const GET_VISITOR_FOR_DETAILS = gql`
@@ -46,7 +46,7 @@ export function VisitorDetails({ id }: Props): ReactElement {
           spacing={1}
           sx={{ mr: 'auto' }}
         >
-          <ChatRoundedIcon />
+          <ChatBubbleOutlineRoundedIcon />
           <Typography>
             {`
               ${new Intl.DateTimeFormat([], { timeStyle: 'short' }).format(
@@ -61,14 +61,14 @@ export function VisitorDetails({ id }: Props): ReactElement {
 
       {data?.visitor.countryCode != null && (
         <Stack direction="row" alignItems="center" spacing={1}>
-          <FmdGoodRoundedIcon />
+          <LocationOnOutlinedIcon />
           <Typography>{data?.visitor.countryCode}</Typography>
         </Stack>
       )}
 
       {data?.visitor.userAgent?.os.name != null && (
         <Stack direction="row" alignItems="center" spacing={1}>
-          <PhoneAndroidRoundedIcon />
+          <PhoneIphoneOutlinedIcon />
           <Typography>{data?.visitor.userAgent?.os.name}</Typography>
         </Stack>
       )}
@@ -80,7 +80,7 @@ export function VisitorDetails({ id }: Props): ReactElement {
           spacing={1}
           sx={{ display: { xs: 'none', md: 'flex' } }}
         >
-          <PersonRoundedIcon />
+          <PersonOutlinedIcon />
           <Typography>{`#${data?.visitor.id}`}</Typography>
         </Stack>
       )}
