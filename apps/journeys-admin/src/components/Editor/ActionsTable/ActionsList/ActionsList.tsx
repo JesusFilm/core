@@ -43,7 +43,7 @@ export function ActionsList({
         <ActionDetails
           url={url}
           goalLabel={goalLabel}
-          selectedAction={setSelectedAction}
+          setSelectedAction={setSelectedAction}
         />
       )
     })
