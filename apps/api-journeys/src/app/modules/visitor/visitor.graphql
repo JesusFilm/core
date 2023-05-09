@@ -193,6 +193,7 @@ type VisitorsConnection {
 }
 
 input VisitorConnectionFilter {
+  journeyId: String
   hasChat: Boolean
   hasAnswers: Boolean
   hasData: Boolean

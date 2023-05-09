@@ -44,6 +44,7 @@ export class VisitorService {
         lastChatStartedAt: filter?.hasChat === true ? { not: null } : undefined,
         lastRadioQuestion:
           filter?.hasAnswers === true ? { not: null } : undefined,
+        lastTextResponse: filter?.hasData === true ? { not: null } : undefined,
         status: filter?.hasIcon === true ? { not: null } : undefined,
         events: filter?.isInactive === true ? { none: {} } : undefined,
         countryCode:
