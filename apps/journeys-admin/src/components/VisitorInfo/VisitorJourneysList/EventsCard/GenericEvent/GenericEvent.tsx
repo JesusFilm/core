@@ -50,7 +50,6 @@ export function GenericEvent({
           alignItems: textAlign,
           justifyContent: 'center',
           px: 0,
-          // mr: 2,
           minWidth: '46px',
           maxWidth: '46px'
         }}

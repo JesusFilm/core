@@ -1,5 +1,7 @@
 import { ReactElement } from 'react'
 import { gql, useQuery } from '@apollo/client'
+import TimelineSeparator from '@mui/lab/TimelineSeparator'
+import TimelineConnector from '@mui/lab/TimelineConnector'
 import { GetVisitorEvents } from '../../../../__generated__/GetVisitorEvents'
 import { EventsCard } from './EventsCard'
 import { transformToJourney } from './utils/transformToJourney'
@@ -79,8 +81,21 @@ export function VisitorJourneysList({ id }: Props): ReactElement {
   const journeys = transformToJourney(data?.visitor.events)
   return (
     <>
-      {journeys.map((journey) => (
-        <EventsCard key={journey.id} journey={journey} />
+      {journeys.map((journey, index, array) => (
+        <>
+          <EventsCard key={journey.id} journey={journey} />
+          {index + 1 < array.length && (
+            <TimelineSeparator sx={{ justifyContent: 'flex-start' }}>
+              <TimelineConnector
+                sx={{
+                  height: '24px',
+                  alignSelf: 'flex-start',
+                  ml: { xs: '64px', sm: '88px' }
+                }}
+              />
+            </TimelineSeparator>
+          )}
+        </>
       ))}
     </>
   )
