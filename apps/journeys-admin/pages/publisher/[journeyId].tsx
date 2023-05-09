@@ -75,7 +75,6 @@ function TemplateDetailsAdmin(): ReactElement {
               showDrawer
               backHref="/publisher"
               menu={<Menu />}
-              router={router}
             >
               <JourneyView journeyType="Template" />
             </PageWrapper>

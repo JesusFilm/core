@@ -2,6 +2,7 @@ import { render } from '@testing-library/react'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { MockedProvider } from '@apollo/client/testing'
 import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
+import { ActiveJourneyEditContent } from '@core/journeys/ui/EditorProvider'
 import { GetJourney_journey as Journey } from '../../../__generated__/GetJourney'
 import {
   JourneyStatus,
@@ -75,7 +76,7 @@ describe('Editor', () => {
       </MockedProvider>
     )
     expect(getByText('Journey')).toBeInTheDocument()
-    expect(getByText('Social Share Appearance')).toBeInTheDocument()
+    expect(getByText('Social Share Preview')).toBeInTheDocument()
     expect(getByText('Social Image')).toBeInTheDocument()
   })
 
@@ -93,5 +94,26 @@ describe('Editor', () => {
     )
     expect(getByText('Next Card')).toBeInTheDocument()
     expect(getByText('Unlocked Card')).toBeInTheDocument()
+  })
+
+  it('should display Social Preview', () => {
+    const { getByTestId } = render(
+      <MockedProvider>
+        <FlagsProvider>
+          <ThemeProvider>
+            <Editor
+              journey={journey}
+              view={ActiveJourneyEditContent.SocialPreview}
+            >
+              <JourneyEdit />
+            </Editor>
+          </ThemeProvider>
+        </FlagsProvider>
+      </MockedProvider>
+    )
+    expect(getByTestId('social-preview-panel')).toBeInTheDocument()
+    expect(getByTestId('journey-edit-content')).toHaveStyle({
+      backgroundColor: 'none'
+    })
   })
 })

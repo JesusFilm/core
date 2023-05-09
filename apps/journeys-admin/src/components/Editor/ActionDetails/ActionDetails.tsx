@@ -8,22 +8,22 @@ import { ActionInformation } from './ActionInformation'
 interface ActionDetailsProps {
   url?: string
   goalLabel?: (url: string) => string
-  selectedAction?: (url: string) => void
+  setSelectedAction?: (url: string) => void
 }
 
 export function ActionDetails({
   url,
   goalLabel,
-  selectedAction
+  setSelectedAction
 }: ActionDetailsProps): ReactElement {
   return (
     <Box sx={{ overflow: 'auto', height: '100%' }}>
       {url != null ? (
-        <Stack gap={2} sx={{ px: 6, pb: 6 }}>
+        <Stack gap={7} sx={{ px: 6, pb: 6 }}>
           <ActionEditor
             url={url}
             goalLabel={goalLabel}
-            selectedAction={selectedAction}
+            setSelectedAction={setSelectedAction}
           />
           <ActionCards url={url} />
         </Stack>
