@@ -90,7 +90,7 @@ export function EmbeddedPreview({
           mb: 0,
           height: 6.5,
           width: '82.5%',
-          backgroundColor: '#DCDDE5',
+          backgroundColor: '#AAACBB',
           borderRadius: '16px 16px 0 0',
           opacity: 0.3
         }}
@@ -103,7 +103,7 @@ export function EmbeddedPreview({
           width: '90%',
           backgroundColor: '#AAACBB',
           borderRadius: '16px 16px 0 0',
-          opacity: 0.3
+          opacity: 0.6
         }}
       />
       <Box
