@@ -12,6 +12,7 @@ import {
 } from '@core/journeys/ui/EditorProvider'
 import {
   GetJourney_journey_blocks_StepBlock as StepBlock,
+  GetJourney_journey_blocks_VideoBlock as VideoBlock,
   GetJourney_journey as Journey
 } from '../../../../__generated__/GetJourney'
 import {
@@ -19,7 +20,8 @@ import {
   ButtonColor,
   ButtonSize,
   ThemeMode,
-  ThemeName
+  ThemeName,
+  VideoBlockSource
 } from '../../../../__generated__/globalTypes'
 
 import { STEP_AND_CARD_BLOCK_CREATE } from '../../CardPreview/CardPreview'
@@ -97,6 +99,30 @@ describe('ControlPanel', () => {
         children: []
       }
     ]
+  }
+
+  const videoBlock: TreeBlock<VideoBlock> = {
+    __typename: 'VideoBlock',
+    id: 'videoId',
+    parentBlockId: null,
+    parentOrder: null,
+    muted: true,
+    autoplay: false,
+    startAt: null,
+    endAt: null,
+    posterBlockId: null,
+    fullsize: null,
+    videoId: null,
+    videoVariantLanguageId: null,
+    source: VideoBlockSource.internal,
+    title: null,
+    description: null,
+    image: null,
+    duration: null,
+    objectFit: null,
+    video: null,
+    action: null,
+    children: []
   }
 
   it('should render tabs and tab panels', async () => {
@@ -779,7 +805,7 @@ describe('ControlPanel', () => {
     })
   })
 
-  it('should keep Journey tab open when selecting a card', () => {
+  it('should keep Journey tab open when selecting a card', async () => {
     const { getByRole, getByTestId } = render(
       <MockedProvider>
         <JourneyProvider
@@ -886,6 +912,79 @@ describe('ControlPanel', () => {
         'aria-selected',
         'true'
       )
+    )
+  })
+
+  it('should not allow blocks to be added when a Video Block is present', async () => {
+    const step4 = step3
+    step4.children[0].children.push(videoBlock)
+    const { getByRole } = render(
+      <MockedProvider>
+        <JourneyProvider
+          value={{
+            journey: {
+              id: 'journeyId',
+              themeMode: ThemeMode.dark,
+              themeName: ThemeName.base,
+              language: {
+                __typename: 'Language',
+                id: '529',
+                bcp47: 'en',
+                iso3: 'eng'
+              }
+            } as unknown as Journey,
+            admin: true
+          }}
+        >
+          <EditorProvider initialState={{ steps: [step4] }}>
+            <ControlPanel />
+          </EditorProvider>
+        </JourneyProvider>
+      </MockedProvider>
+    )
+
+    expect(getByRole('tab', { name: 'Blocks' })).toBeInTheDocument()
+    expect(getByRole('tab', { name: 'Blocks' })).toBeDisabled()
+  })
+
+  it('should show a tooltip when disabled blocks tab is hovered over', async () => {
+    const step4 = step3
+    step4.children[0].children.push(videoBlock)
+    const { getByRole, queryByRole } = render(
+      <MockedProvider>
+        <JourneyProvider
+          value={{
+            journey: {
+              id: 'journeyId',
+              themeMode: ThemeMode.dark,
+              themeName: ThemeName.base,
+              language: {
+                __typename: 'Language',
+                id: '529',
+                bcp47: 'en',
+                iso3: 'eng'
+              }
+            } as unknown as Journey,
+            admin: true
+          }}
+        >
+          <EditorProvider initialState={{ steps: [step4] }}>
+            <ControlPanel />
+          </EditorProvider>
+        </JourneyProvider>
+      </MockedProvider>
+    )
+
+    expect(getByRole('tab', { name: 'Blocks' })).toBeInTheDocument()
+    expect(getByRole('tab', { name: 'Blocks' })).toBeDisabled()
+    expect(queryByRole('tooltip')).not.toBeInTheDocument()
+    fireEvent.mouseEnter(getByRole('tab', { name: 'Blocks' }))
+    await waitFor(() =>
+      expect(
+        getByRole('tooltip', {
+          name: 'Blocks cannot be placed on top of Video Block'
+        })
+      ).toBeInTheDocument()
     )
   })
 
