@@ -1,6 +1,9 @@
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
-import { VideoBlockSource } from '../../../../../__generated__/globalTypes'
+import {
+  VideoBlockSource,
+  VideoLabel
+} from '../../../../../__generated__/globalTypes'
 import { GET_VIDEOS } from '../../VideoLibrary/VideoFromLocal/VideoFromLocal'
 import { GET_VIDEO } from '../../VideoLibrary/VideoFromLocal/LocalDetails/LocalDetails'
 import { videos } from '../../VideoLibrary/VideoFromLocal/data'
@@ -19,7 +22,13 @@ const getVideosMock = {
       limit: 5,
       where: {
         availableVariantLanguageIds: ['529'],
-        title: null
+        title: null,
+        labels: [
+          VideoLabel.episode,
+          VideoLabel.featureFilm,
+          VideoLabel.segment,
+          VideoLabel.shortFilm
+        ]
       }
     }
   },

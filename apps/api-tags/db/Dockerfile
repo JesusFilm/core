@@ -1,0 +1,16 @@
+FROM node:16-alpine
+
+ENV PRISMA_LOCATION=/app/node_modules/.prisma/api-tags-client
+
+RUN apk upgrade --update-cache --available && \
+    apk add openssl1.1-compat && \
+    rm -rf /var/cache/apk/*
+
+WORKDIR /app
+COPY ./tsconfig.base.json /app/tsconfig.base.json
+COPY ./apps/api-tags /app/apps/api-tags
+
+RUN npm install --silent arangojs@^7.6.1 ts-node@^10.9.1 tslib@^2.3.1 prisma@^4.13.0 @prisma/client@^4.13.0
+RUN npx prisma@^4.13.0 generate --schema apps/api-tags/db/prisma.schema
+
+CMD npx prisma@^4.13.0 migrate deploy --schema /prisma/schema.prisma; npx ts-node /app/apps/api-tags/db/seed.ts

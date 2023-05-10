@@ -7,6 +7,13 @@
 // START Enums and Input Objects
 //==============================================================
 
+export enum ButtonAction {
+  LinkAction = "LinkAction",
+  NavigateAction = "NavigateAction",
+  NavigateToBlockAction = "NavigateToBlockAction",
+  NavigateToJourneyAction = "NavigateToJourneyAction",
+}
+
 export enum ButtonColor {
   error = "error",
   inherit = "inherit",
@@ -23,26 +30,6 @@ export enum ButtonSize {
 export enum ButtonVariant {
   contained = "contained",
   text = "text",
-}
-
-export enum GridAlignItems {
-  baseline = "baseline",
-  center = "center",
-  flexEnd = "flexEnd",
-  flexStart = "flexStart",
-}
-
-export enum GridDirection {
-  column = "column",
-  columnReverse = "columnReverse",
-  row = "row",
-  rowReverse = "rowReverse",
-}
-
-export enum GridJustifyContent {
-  center = "center",
-  flexEnd = "flexEnd",
-  flexStart = "flexStart",
 }
 
 export enum IconColor {
@@ -179,6 +166,8 @@ export interface ButtonClickEventCreateInput {
   stepId?: string | null;
   label?: string | null;
   value?: string | null;
+  action?: ButtonAction | null;
+  actionValue?: string | null;
 }
 
 export interface ChatOpenEventCreateInput {

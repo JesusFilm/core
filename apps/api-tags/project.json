@@ -1,0 +1,137 @@
+{
+  "root": "apps/api-tags",
+  "sourceRoot": "apps/api-tags/src",
+  "projectType": "application",
+  "targets": {
+    "build": {
+      "executor": "@nrwl/node:webpack",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/apps/api-tags",
+        "main": "apps/api-tags/src/main.ts",
+        "tsConfig": "apps/api-tags/tsconfig.app.json",
+        "assets": [
+          "apps/api-tags/src/assets",
+          {
+            "glob": "**/*.graphql",
+            "input": "apps/api-tags/src/app/",
+            "output": "./assets"
+          },
+          {
+            "glob": "**/*.graphql",
+            "input": "libs/nest/common/src/lib/TranslationModule/",
+            "output": "./assets"
+          }
+        ],
+        "generatePackageJson": true
+      },
+      "configurations": {
+        "production": {
+          "optimization": true,
+          "extractLicenses": true,
+          "inspect": false,
+          "fileReplacements": [
+            {
+              "replace": "apps/api-tags/src/environments/environment.ts",
+              "with": "apps/api-tags/src/environments/environment.prod.ts"
+            }
+          ]
+        }
+      }
+    },
+    "serve": {
+      "executor": "@nrwl/node:node",
+      "options": {
+        "buildTarget": "api-tags:build",
+        "inspect": false
+      }
+    },
+    "watcher": {
+      "executor": "@nrwl/workspace:run-commands",
+      "options": {
+        "command": "npx ts-node tools/scripts/generate-typings.ts api-tags"
+      }
+    },
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": ["apps/api-tags/**/*.ts"]
+      }
+    },
+    "test": {
+      "executor": "@nrwl/jest:jest",
+      "outputs": ["coverage/apps/api-tags"],
+      "options": {
+        "jestConfig": "apps/api-tags/jest.config.js",
+        "passWithNoTests": true
+      }
+    },
+    "generate-graphql": {
+      "executor": "@nrwl/workspace:run-commands",
+      "options": {
+        "commands": [
+          {
+            "command": "rover subgraph introspect http://localhost:4006/graphql > apps/api-tags/schema.graphql"
+          }
+        ]
+      }
+    },
+    "fetch-secrets": {
+      "executor": "@nrwl/workspace:run-commands",
+      "options": {
+        "commands": [
+          {
+            "command": "DOPPLER_TOKEN=$DOPPLER_API_TAGS_TOKEN doppler secrets download --no-file --format=env-no-quotes --project api-tags > apps/api-tags/.env"
+          }
+        ]
+      }
+    },
+    "prisma-generate": {
+      "executor": "@nrwl/workspace:run-commands",
+      "options": {
+        "commands": [
+          "npx prisma generate --schema apps/api-tags/db/schema.prisma"
+        ]
+      }
+    },
+    "prisma-migrate": {
+      "executor": "@nrwl/workspace:run-commands",
+      "options": {
+        "commands": [
+          "bash -c 'npx prisma migrate dev --schema apps/api-tags/db/schema.prisma --name `date +\"%Y%m%d%H%M%S\"`'"
+        ]
+      },
+      "configurations": {
+        "production": {
+          "commands": [
+            "npx prisma migrate deploy --schema apps/api-tags/db/schema.prisma"
+          ]
+        }
+      }
+    },
+    "prisma-reset": {
+      "executor": "@nrwl/workspace:run-commands",
+      "options": {
+        "commands": [
+          "npx prisma reset --schema apps/api-tags/db/schema.prisma --force"
+        ]
+      }
+    },
+    "prisma-seed": {
+      "executor": "@nrwl/workspace:run-commands",
+      "options": {
+        "commands": ["npx ts-node apps/api-tags/db/seed.ts"]
+      }
+    },
+    "prisma-validate": {
+      "executor": "@nrwl/workspace:run-commands",
+      "options": {
+        "commands": [
+          "npx prisma validate --schema apps/api-tags/db/schema.prisma"
+        ]
+      }
+    }
+  },
+  "tags": []
+}

@@ -1,9 +1,11 @@
 import { BaseService } from '@core/nest/database/BaseService'
-import { Injectable } from '@nestjs/common'
-import { aql } from 'arangojs'
+import { CACHE_MANAGER, Inject, Injectable } from '@nestjs/common'
+import { Cache } from 'cache-manager'
+import { Database, aql } from 'arangojs'
 import { KeyAsId } from '@core/nest/decorators/KeyAsId'
 import { AqlQuery, GeneratedAqlQuery } from 'arangojs/aql'
 import { compact } from 'lodash'
+import { DeepMockProxy } from 'jest-mock-extended'
 import { VideosFilter } from '../../__generated__/graphql'
 
 interface ExtendedVideosFilter extends VideosFilter {
@@ -34,6 +36,13 @@ export class VideoService extends BaseService {
   ]
 
   videosView = this.db.view('videosView')
+
+  constructor(
+    @Inject('DATABASE') public readonly db: Database | DeepMockProxy<Database>,
+    @Inject(CACHE_MANAGER) private readonly cacheManager: Cache
+  ) {
+    super(db)
+  }
 
   public videoFilter(filter: VideosFilter = {}): AqlQuery {
     const {
@@ -72,6 +81,10 @@ export class VideoService extends BaseService {
 
   @KeyAsId()
   public async filterAll<T>(filter?: ExtendedVideosFilter): Promise<T[]> {
+    const key = `filterAll-${JSON.stringify({ filter })}`
+    const cache = await this.cacheManager.get<T[]>(key)
+    if (cache != null) return cache
+
     const { variantLanguageId, offset = 0, limit = 100 } = filter ?? {}
     const search = this.videoFilter(filter)
 
@@ -90,15 +103,13 @@ export class VideoService extends BaseService {
       }
     `
     const res = await this.db.query(query)
-    return await res.all()
+    const result = await res.all()
+    await this.cacheManager.set(key, result, 86400000)
+    return result
   }
 
-  @KeyAsId()
-  public async getVideo<T>(
-    _key: string,
-    variantLanguageId?: string
-  ): Promise<T> {
-    const res = await this.db.query(aql`
+  private getVideoByIdAql(_key: string, variantLanguageId?: string): AqlQuery {
+    return aql`
     FOR item in ${this.collection}
       FILTER item._key == ${_key}
       LIMIT 1
@@ -110,12 +121,32 @@ export class VideoService extends BaseService {
           }, item.primaryLanguageId)
           LIMIT 1 RETURN CURRENT], 0)
       }
-    `)
-    return await res.next()
+    `
+  }
+
+  @KeyAsId()
+  public async getVideo<T>(
+    _key: string,
+    variantLanguageId?: string
+  ): Promise<T> {
+    const key = `getVideo-${_key}-${variantLanguageId ?? ''}`
+    const cache = await this.cacheManager.get<T>(key)
+    if (cache != null) return cache
+
+    const res = await this.db.query(
+      this.getVideoByIdAql(_key, variantLanguageId)
+    )
+    const result = await res.next()
+    if (result != null) await this.cacheManager.set(key, result, 86400000)
+    return result
   }
 
   @KeyAsId()
   public async getVideoBySlug<T>(slug: string): Promise<T> {
+    const key = `getVideoBySlug-${slug}`
+    const cache = await this.cacheManager.get<T>(key)
+    if (cache != null) return cache
+
     const res = await this.db.query(aql`
     FOR item IN ${this.collection}
       FILTER ${slug} IN item.variants[*].slug
@@ -127,7 +158,9 @@ export class VideoService extends BaseService {
           LIMIT 1 RETURN CURRENT], 0)
       }
     `)
-    return await res.next()
+    const result = await res.next()
+    if (result != null) await this.cacheManager.set(key, result, 86400000)
+    return result
   }
 
   @KeyAsId()
@@ -135,18 +168,21 @@ export class VideoService extends BaseService {
     keys: string[],
     variantLanguageId?: string
   ): Promise<T[]> {
-    const res = await this.db.query(aql`
-    FOR item IN ${this.collection}
-      FILTER item._key IN ${keys}
-      RETURN {
-        ${aql.join(this.baseVideo)}
-        variant: NTH(item.variants[*
-          FILTER CURRENT.languageId == NOT_NULL(${
-            variantLanguageId ?? null
-          }, item.primaryLanguageId)
-          LIMIT 1 RETURN CURRENT], 0)
+    const result: T[] = []
+    for (let i = 0; i < keys.length; i++) {
+      const key = `getVideo-${keys[i]}-${variantLanguageId ?? ''}`
+      const cache = await this.cacheManager.get<T>(key)
+      if (cache != null) {
+        result.push(cache)
+        continue
       }
-    `)
-    return await res.all()
+      const res = await this.db.query(
+        this.getVideoByIdAql(keys[i], variantLanguageId)
+      )
+      const next = await res.next()
+      await this.cacheManager.set(key, next, 86400000)
+      result.push(next)
+    }
+    return result
   }
 }

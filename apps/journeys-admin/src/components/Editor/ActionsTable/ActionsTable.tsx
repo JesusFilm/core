@@ -40,9 +40,10 @@ export function ActionsTable({ hasAction }: ActionsTableProps): ReactElement {
 
   const actions = countUrls(journey)
 
-  if (actions.length > 1) hasAction?.(true)
+  actions.length >= 1 ? hasAction?.(true) : hasAction?.(false)
 
   const goalLabel = (url: string): string => {
+    if (url === '') return ''
     const urlObject = new URL(url)
     const hostname = urlObject.hostname.replace('www.', '') // Remove 'www.' and top-level domain suffixes
     switch (hostname) {

@@ -24,6 +24,7 @@ import i18nConfig from '../../next-i18next.config'
 import { ACCEPT_USER_INVITE } from '..'
 import { UserJourneyOpen } from '../../__generated__/UserJourneyOpen'
 import { useTermsRedirect } from '../../src/libs/useTermsRedirect/useTermsRedirect'
+import { useInvalidJourneyRedirect } from '../../src/libs/useInvalidJourneyRedirect/useInvalidJourneyRedirect'
 
 export const GET_JOURNEY = gql`
   ${JOURNEY_FIELDS}
@@ -51,6 +52,7 @@ function JourneyIdPage(): ReactElement {
   })
 
   useTermsRedirect()
+  useInvalidJourneyRedirect(data)
 
   return (
     <>
@@ -69,7 +71,6 @@ function JourneyIdPage(): ReactElement {
               backHref="/"
               menu={<Menu />}
               authUser={AuthUser}
-              router={router}
             >
               <JourneyView journeyType="Journey" />
             </PageWrapper>

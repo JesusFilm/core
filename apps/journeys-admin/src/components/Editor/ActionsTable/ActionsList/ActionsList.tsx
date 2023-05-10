@@ -43,7 +43,7 @@ export function ActionsList({
         <ActionDetails
           url={url}
           goalLabel={goalLabel}
-          selectedAction={setSelectedAction}
+          setSelectedAction={setSelectedAction}
         />
       )
     })
@@ -51,12 +51,12 @@ export function ActionsList({
 
   const handleClick = (url: string): void => {
     setSelectedAction(url)
-    openActionDetails(url)
+    if (selectedAction != null) openActionDetails(selectedAction)
   }
 
   useEffect(() => {
     if (window.innerWidth < 768) {
-      setSelectedAction(undefined)
+      setSelectedAction(selectedAction)
     }
 
     function handleResize(): void {
@@ -67,16 +67,15 @@ export function ActionsList({
     handleResize()
     window.addEventListener('resize', handleResize)
     return () => window.removeEventListener('resize', handleResize)
-    // runs the useEffect once
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, [selectedAction])
 
   return (
     <>
       <Stack
         sx={{
           gap: mdUp ? 12 : 4,
-          mx: mdUp ? 10 : 0
+          mx: mdUp ? 8 : 0
         }}
       >
         <Stack

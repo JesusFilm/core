@@ -2,8 +2,24 @@
   "root": "apps/watch",
   "sourceRoot": "apps/watch",
   "projectType": "application",
+  "implicitDependencies": ["locales"],
   "targets": {
     "build": {
+      "executor": "@nrwl/workspace:run-commands",
+      "options": {
+        "commands": ["cp -r libs/locales apps/watch/public", "nx _build watch"],
+        "parallel": false
+      },
+      "configurations": {
+        "production": {
+          "commands": [
+            "cp -r libs/locales apps/watch/public",
+            "CI=true nx _build watch --prod"
+          ]
+        }
+      }
+    },
+    "_build": {
       "executor": "@nrwl/next:build",
       "outputs": ["{options.outputPath}"],
       "options": {
@@ -14,17 +30,37 @@
         "production": {}
       }
     },
+    "deploy": {
+      "executor": "@nrwl/workspace:run-commands",
+      "options": {
+        "commands": [
+          "VERCEL_PROJECT_ID=$WATCH_VERCEL_PROJECT_ID npx vercel pull --environment=preview --token=$VERCEL_TOKEN",
+          "npx vercel build",
+          "VERCEL_PROJECT_ID=$WATCH_VERCEL_PROJECT_ID npx vercel deploy --prebuilt --token=$VERCEL_TOKEN > apps/watch/.vercel-url"
+        ],
+        "parallel": false
+      },
+      "configurations": {
+        "production": {
+          "commands": [
+            "VERCEL_PROJECT_ID=$WATCH_VERCEL_PROJECT_ID npx vercel pull --environment=production --token=$VERCEL_TOKEN",
+            "npx vercel build --prod",
+            "VERCEL_PROJECT_ID=$WATCH_VERCEL_PROJECT_ID npx vercel deploy --prebuilt --prod --token=$VERCEL_TOKEN > apps/watch/.vercel-url"
+          ]
+        }
+      }
+    },
     "serve": {
       "executor": "@nrwl/next:server",
       "options": {
-        "buildTarget": "watch:build",
+        "buildTarget": "watch:_build",
         "dev": true,
         "hostname": "0.0.0.0",
         "port": 4300
       },
       "configurations": {
         "production": {
-          "buildTarget": "watch:build:production",
+          "buildTarget": "watch:_build:production",
           "dev": false
         }
       }

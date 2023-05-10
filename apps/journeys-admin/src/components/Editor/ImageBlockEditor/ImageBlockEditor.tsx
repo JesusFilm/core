@@ -31,6 +31,7 @@ export function ImageBlockEditor({
 }: ImageBlockEditorProps): ReactElement {
   const [tabValue, setTabValue] = useState(0)
   const [unsplashAuthor, setUnsplashAuthor] = useState<UnsplashAuthor>()
+  const [uploading, setUploading] = useState<boolean>()
 
   const handleTabChange = (
     _event: SyntheticEvent<Element, Event>,
@@ -55,6 +56,10 @@ export function ImageBlockEditor({
     const block = {
       ...selectedBlock,
       src,
+      blurhash:
+        selectedBlock?.blurhash !== blurhash
+          ? undefined
+          : selectedBlock?.blurhash,
       alt: src.replace(/(.*\/)*/, '').replace(/\?.*/, '') // per Vlad 26/1/22, we are hardcoding the image alt for now
     }
     if ((blurhash?.length ?? 0) > 0) {
@@ -85,7 +90,7 @@ export function ImageBlockEditor({
         <ImageBlockHeader
           selectedBlock={selectedBlock}
           onDelete={onDelete}
-          loading={loading}
+          loading={uploading != null ? uploading : loading}
           showAdd={showAdd}
           error={error}
           unsplashAuthor={unsplashAuthor}
@@ -123,8 +128,9 @@ export function ImageBlockEditor({
       <TabPanel name="custom" value={tabValue} index={1}>
         <CustomImage
           onChange={handleSrcChange}
+          setUploading={(upload) => setUploading(upload)}
           selectedBlock={selectedBlock}
-          loading={loading}
+          loading={uploading != null ? uploading : loading}
           error={error}
         />
       </TabPanel>

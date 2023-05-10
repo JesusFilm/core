@@ -2,7 +2,6 @@ import { Story, Meta } from '@storybook/react'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { MockedProvider } from '@apollo/client/testing'
 import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
-import { NextRouter } from 'next/router'
 import { journeysAdminConfig } from '../../libs/storybook'
 import { PageWrapper } from '../PageWrapper'
 import { ApolloLoadingProvider } from '../../../test/ApolloLoadingProvider'
@@ -30,7 +29,6 @@ const Template: Story = ({ ...args }) => (
           showDrawer
           backHref="/"
           menu={<Menu />}
-          router={{ pathname: undefined } as unknown as NextRouter}
         >
           <JourneyView journeyType="Journey" />
         </PageWrapper>

@@ -3,7 +3,6 @@ import Box from '@mui/material/Box'
 import { Formik, Form } from 'formik'
 import InputAdornment from '@mui/material/InputAdornment'
 import TextField from '@mui/material/TextField'
-import { noop } from 'lodash'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { gql, useMutation } from '@apollo/client'
 import { object, string } from 'yup'
@@ -13,11 +12,9 @@ import QuestionAnswerOutlined from '@mui/icons-material/QuestionAnswerOutlined'
 import WebOutlined from '@mui/icons-material/WebOutlined'
 import MenuBookRounded from '@mui/icons-material/MenuBookRounded'
 import Stack from '@mui/material/Stack'
-import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { BlockFields_ButtonBlock as ButtonBlock } from '../../../../../__generated__/BlockFields'
 import { ActionFields_LinkAction as LinkAction } from '../../../../../__generated__/ActionFields'
 import { MultipleLinkActionUpdate } from '../../../../../__generated__/MultipleLinkActionUpdate'
-import { ActionDetails } from '../ActionDetails'
 
 export const MULTIPLE_LINK_ACTION_UPDATE = gql`
   mutation MultipleLinkActionUpdate(
@@ -35,16 +32,15 @@ export const MULTIPLE_LINK_ACTION_UPDATE = gql`
 interface ActionEditorProps {
   url: string
   goalLabel?: (url: string) => string
-  selectedAction?: (url: string) => void
+  setSelectedAction?: (url: string) => void
 }
 
 export function ActionEditor({
   url,
   goalLabel,
-  selectedAction
+  setSelectedAction
 }: ActionEditorProps): ReactElement {
   const { journey } = useJourney()
-  const { dispatch } = useEditor()
 
   const blocks = (journey?.blocks ?? [])
     .filter((block) => ((block as ButtonBlock).action as LinkAction) != null)
@@ -56,19 +52,39 @@ export function ActionEditor({
     MULTIPLE_LINK_ACTION_UPDATE
   )
 
-  const linkActionSchema = object().shape({
-    link: string().url('Invalid URL').required('Required')
+  // check for valid URL
+  function checkURL(value?: string): boolean {
+    const protocol = /^\w+:\/\//
+    let urlInspect = value ?? ''
+    if (!protocol.test(urlInspect)) {
+      if (/^mailto:/.test(urlInspect)) return false
+      urlInspect = 'https://' + urlInspect
+    }
+    try {
+      return new URL(urlInspect).toString() !== ''
+    } catch (error) {
+      return false
+    }
+  }
+
+  const linkActionSchema = object({
+    link: string()
+      .test('valid-url', 'Invalid URL', checkURL)
+      .required('Required')
   })
 
-  async function handleSubmit(e: React.FocusEvent): Promise<void> {
+  async function handleSubmit(src: string): Promise<void> {
     if (journey == null) return
-    const target = e.target as HTMLInputElement
+    // checks if url has a protocol
+    const url = /^\w+:\/\//.test(src) ? src : `https://${src}`
     blocks.map(async (block) => {
       await linkActionUpdate({
         variables: {
           id: block.id,
           journeyId: journey.id,
-          input: { url: target.value }
+          input: {
+            url
+          }
         },
         update(cache, { data }) {
           if (data?.blockUpdateLinkAction != null) {
@@ -85,20 +101,8 @@ export function ActionEditor({
         }
       })
     })
-    selectedAction?.(target.value)
-    goalLabel?.(target.value)
-    dispatch({
-      type: 'SetDrawerPropsAction',
-      mobileOpen: true,
-      title: 'Goal Details',
-      children: (
-        <ActionDetails
-          url={target.value}
-          goalLabel={goalLabel}
-          selectedAction={selectedAction}
-        />
-      )
-    })
+    setSelectedAction?.(url)
+    goalLabel?.(url)
   }
 
   let icon: ReactNode
@@ -121,7 +125,9 @@ export function ActionEditor({
           link: url ?? ''
         }}
         validationSchema={linkActionSchema}
-        onSubmit={noop}
+        onSubmit={async (values): Promise<void> => {
+          await handleSubmit(values.link)
+        }}
         enableReinitialize
       >
         {({ values, touched, errors, handleChange, handleBlur }) => (
@@ -144,14 +150,14 @@ export function ActionEditor({
               }}
               onBlur={(e) => {
                 handleBlur(e)
-                errors.link == null && handleSubmit(e)
+                errors.link == null && handleSubmit(e.target.value)
               }}
               onChange={handleChange}
             />
           </Form>
         )}
       </Formik>
-      <Stack gap={2} direction="row" alignItems="center" sx={{ pt: 2.5 }}>
+      <Stack gap={2} direction="row" alignItems="center" sx={{ pt: 3 }}>
         {icon}
         <Typography variant="subtitle2">{goalLabel?.(url)}</Typography>
       </Stack>

@@ -1,6 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { EventService } from '../event.service'
 import {
+  ButtonAction,
   ButtonClickEventCreateInput,
   ChatOpenEventCreateInput,
   MessagePlatform
@@ -12,7 +13,7 @@ import {
 } from './button.resolver'
 
 describe('ButtonClickEventResolver', () => {
-  let resolver: ButtonClickEventResolver
+  let resolver: ButtonClickEventResolver, vService: VisitorService
 
   beforeAll(() => {
     jest.useFakeTimers('modern')
@@ -36,11 +37,19 @@ describe('ButtonClickEventResolver', () => {
     })
   }
 
+  const visitorService = {
+    provide: VisitorService,
+    useFactory: () => ({
+      update: jest.fn(() => null)
+    })
+  }
+
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [ButtonClickEventResolver, eventService]
+      providers: [ButtonClickEventResolver, eventService, visitorService]
     }).compile()
     resolver = module.get<ButtonClickEventResolver>(ButtonClickEventResolver)
+    vService = module.get<VisitorService>(VisitorService)
   })
 
   describe('buttonClickEventCreate', () => {
@@ -50,7 +59,9 @@ describe('ButtonClickEventResolver', () => {
         blockId: 'block.id',
         stepId: 'step.id',
         label: 'Step name',
-        value: 'Button label'
+        value: 'Button label',
+        action: ButtonAction.NavigateToBlockAction,
+        actionValue: 'Step 1'
       }
 
       expect(await resolver.buttonClickEventCreate('userId', input)).toEqual({
@@ -59,6 +70,23 @@ describe('ButtonClickEventResolver', () => {
         visitorId: 'visitor.id',
         createdAt: new Date().toISOString(),
         journeyId: 'journey.id'
+      })
+    })
+
+    it('should update visitor last link action', async () => {
+      const input: ButtonClickEventCreateInput = {
+        id: '1',
+        blockId: 'block.id',
+        stepId: 'step.id',
+        label: 'Step name',
+        value: 'Button label',
+        action: ButtonAction.LinkAction,
+        actionValue: 'https://test.com/some-link'
+      }
+      await resolver.buttonClickEventCreate('userId', input)
+
+      expect(vService.update).toHaveBeenCalledWith('visitor.id', {
+        lastLinkAction: 'https://test.com/some-link'
       })
     })
   })
@@ -77,7 +105,12 @@ describe('ChatOpenEventResolver', () => {
   })
 
   const response = {
-    visitor: { id: 'visitor.id' },
+    visitor: { id: 'visitor.id', messagePlatform: MessagePlatform.facebook },
+    journeyId: 'journey.id'
+  }
+
+  const newResponse = {
+    visitor: { id: 'newVisitor.id' },
     journeyId: 'journey.id'
   }
 
@@ -85,7 +118,14 @@ describe('ChatOpenEventResolver', () => {
     provide: EventService,
     useFactory: () => ({
       save: jest.fn((event) => event),
-      validateBlockEvent: jest.fn(() => response)
+      validateBlockEvent: jest.fn((userId) => {
+        switch (userId) {
+          case 'userId':
+            return response
+          default:
+            return newResponse
+        }
+      })
     })
   }
 
@@ -130,10 +170,27 @@ describe('ChatOpenEventResolver', () => {
         value: MessagePlatform.facebook
       }
 
+      await resolver.chatOpenEventCreate('newUserId', input)
+
+      expect(vService.update).toHaveBeenCalledWith('newVisitor.id', {
+        messagePlatform: MessagePlatform.facebook,
+        lastChatStartedAt: new Date().toISOString(),
+        lastChatPlatform: MessagePlatform.facebook
+      })
+    })
+
+    it('should update visitor', async () => {
+      const input: ChatOpenEventCreateInput = {
+        id: '1',
+        blockId: 'block.id',
+        stepId: 'step.id',
+        value: MessagePlatform.facebook
+      }
       await resolver.chatOpenEventCreate('userId', input)
 
       expect(vService.update).toHaveBeenCalledWith('visitor.id', {
-        messagePlatform: MessagePlatform.facebook
+        lastChatStartedAt: new Date().toISOString(),
+        lastChatPlatform: MessagePlatform.facebook
       })
     })
 
