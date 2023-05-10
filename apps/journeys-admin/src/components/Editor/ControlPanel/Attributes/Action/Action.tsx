@@ -62,6 +62,10 @@ export const actions = [
   {
     value: 'LinkAction',
     label: 'URL/Website'
+  },
+  {
+    value: 'EmailAction',
+    label: 'Email'
   }
 ]
 
@@ -160,6 +164,7 @@ export function Action(): ReactElement {
     setAction(event.target.value)
   }
 
+  console.log('action.tsx', action)
   return (
     <>
       <Stack sx={{ pt: 4, px: 6 }}>
@@ -194,8 +199,9 @@ export function Action(): ReactElement {
           Redirect user to the selected resource
         </Typography>
         {action === 'NavigateAction' && <NavigateAction />}
-        {action === 'LinkAction' && <LinkAction />}
+        {action === 'LinkAction' && <LinkAction action={action} />}
         {action === 'NavigateToJourneyAction' && <NavigateToJourneyAction />}
+        {action === 'EmailAction' && <LinkAction action={action} />}
       </Stack>
       {action === 'NavigateToBlockAction' && <NavigateToBlockAction />}
     </>

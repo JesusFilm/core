@@ -29,7 +29,12 @@ interface LinkActionFormValues {
   link: string
 }
 
-export function LinkAction(): ReactElement {
+interface LinkActionProps {
+  action: string
+}
+
+export function LinkAction({ action }: LinkActionProps): ReactElement {
+  console.log(action)
   const { state } = useEditor()
   const { journey } = useJourney()
   const selectedBlock = state.selectedBlock as
@@ -47,28 +52,51 @@ export function LinkAction(): ReactElement {
 
   // check for valid URL
   function checkURL(value?: string): boolean {
-    const protocol = /^\w+:\/\//
     let urlInspect = value ?? ''
-    if (!protocol.test(urlInspect)) {
-      if (/^mailto:/.test(urlInspect)) return false
-      urlInspect = 'https://' + urlInspect
+    if (action === 'LinkAction') {
+      const protocol = /^\w+:\/\//
+      if (!protocol.test(urlInspect)) {
+        if (/^mailto:/.test(urlInspect)) return false
+        urlInspect = 'https://' + urlInspect
+      }
+      try {
+        return new URL(urlInspect).toString() !== ''
+      } catch (error) {
+        return false
+      }
     }
-    try {
-      return new URL(urlInspect).toString() !== ''
-    } catch (error) {
-      return false
+    if (action === 'EmailAction') {
+      const protocol = /^mailto:/
+      if (!protocol.test(urlInspect)) {
+        if (/^\w+:\/\//.test(urlInspect)) return false
+        urlInspect = 'mailto:' + urlInspect
+        return true
+      }
     }
+    return false
   }
 
   const linkActionSchema = object({
     link: string()
       .required('Required')
-      .test('valid-url', 'Invalid URL', checkURL)
+      .test(
+        'valid-url',
+        () => {
+          return action !== 'EmailAction' ? 'Invalid URL' : 'Invalid Email'
+        },
+        checkURL
+      )
   })
 
   async function handleSubmit(src: string): Promise<void> {
     // checks if url has a protocol
-    const url = /^\w+:\/\//.test(src) ? src : `https://${src}`
+    let url
+    if (action === 'LinkAction') {
+      url = /^\w+:\/\//.test(src) ? src : `https://${src}`
+    }
+    if (action === 'EmailAction') {
+      url = /^mailto:/.test(src) ? src : `mailto:${src}`
+    }
     if (selectedBlock != null && journey != null) {
       const { id, __typename: typeName } = selectedBlock
       await linkActionUpdate({
@@ -112,7 +140,11 @@ export function LinkAction(): ReactElement {
               id="link"
               name="link"
               variant="filled"
-              label="Paste URL here..."
+              label={
+                action === 'EmailAction'
+                  ? 'Paste Email here...'
+                  : 'Paste URL here...'
+              }
               fullWidth
               value={values.link}
               error={touched.link === true && Boolean(errors.link)}
