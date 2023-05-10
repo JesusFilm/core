@@ -81,7 +81,7 @@ export function VisitorDetails({ id }: Props): ReactElement {
           sx={{ display: { xs: 'none', md: 'flex' } }}
         >
           <PersonOutlinedIcon />
-          <Typography>{`#${data?.visitor.id}`}</Typography>
+          <Typography>{`#${data?.visitor.id.slice(-12)}`}</Typography>
         </Stack>
       )}
     </Stack>
