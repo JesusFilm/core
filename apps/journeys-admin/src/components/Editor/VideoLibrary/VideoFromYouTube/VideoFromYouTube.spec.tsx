@@ -95,9 +95,11 @@ describe('VideoFromYouTube', () => {
   it('should render video item if filters change', async () => {
     mswServer.use(getVideosWithOffsetAndUrl)
     const { getByRole, getByText } = render(
-      <SWRConfig value={{ provider: () => new Map() }}>
-        <VideoFromYouTube onSelect={jest.fn()} />
-      </SWRConfig>
+      <MockedProvider>
+        <SWRConfig value={{ provider: () => new Map() }}>
+          <VideoFromYouTube onSelect={jest.fn()} />
+        </SWRConfig>
+      </MockedProvider>
     )
     const textbox = getByRole('textbox', { name: 'Search' })
     fireEvent.change(textbox, {
