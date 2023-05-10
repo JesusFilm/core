@@ -43,7 +43,7 @@ export function ActionsList({
         <ActionDetails
           url={url}
           goalLabel={goalLabel}
-          selectedAction={setSelectedAction}
+          setSelectedAction={setSelectedAction}
         />
       )
     })
@@ -56,7 +56,7 @@ export function ActionsList({
 
   useEffect(() => {
     if (window.innerWidth < 768) {
-      setSelectedAction(undefined)
+      setSelectedAction(selectedAction)
     }
 
     function handleResize(): void {
