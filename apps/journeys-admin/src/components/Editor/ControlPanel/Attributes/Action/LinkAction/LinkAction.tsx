@@ -6,7 +6,6 @@ import { gql, useMutation } from '@apollo/client'
 import TextField from '@mui/material/TextField'
 import { Formik, Form } from 'formik'
 import { object, string } from 'yup'
-import { noop } from 'lodash'
 import InputAdornment from '@mui/material/InputAdornment'
 import InsertLinkRoundedIcon from '@mui/icons-material/InsertLinkRounded'
 import Box from '@mui/material/Box'
@@ -46,19 +45,39 @@ export function LinkAction(): ReactElement {
 
   const initialValues: LinkActionFormValues = { link: linkAction?.url ?? '' }
 
-  const linkActionSchema = object().shape({
-    link: string().url('Invalid URL').required('Required')
+  // check for valid URL
+  function checkURL(value?: string): boolean {
+    const protocol = /^\w+:\/\//
+    let urlInspect = value ?? ''
+    if (!protocol.test(urlInspect)) {
+      if (/^mailto:/.test(urlInspect)) return false
+      urlInspect = 'https://' + urlInspect
+    }
+    try {
+      return new URL(urlInspect).toString() !== ''
+    } catch (error) {
+      return false
+    }
+  }
+
+  const linkActionSchema = object({
+    link: string()
+      .required('Required')
+      .test('valid-url', 'Invalid URL', checkURL)
   })
 
-  async function handleSubmit(e: React.FocusEvent): Promise<void> {
-    const target = e.target as HTMLInputElement
+  async function handleSubmit(src: string): Promise<void> {
+    // checks if url has a protocol
+    const url = /^\w+:\/\//.test(src) ? src : `https://${src}`
     if (selectedBlock != null && journey != null) {
       const { id, __typename: typeName } = selectedBlock
       await linkActionUpdate({
         variables: {
           id,
           journeyId: journey.id,
-          input: { url: target.value }
+          input: {
+            url
+          }
         },
         update(cache, { data }) {
           if (data?.blockUpdateLinkAction != null) {
@@ -82,7 +101,9 @@ export function LinkAction(): ReactElement {
       <Formik
         initialValues={initialValues}
         validationSchema={linkActionSchema}
-        onSubmit={noop}
+        onSubmit={async (values): Promise<void> => {
+          await handleSubmit(values.link)
+        }}
         enableReinitialize
       >
         {({ values, touched, errors, handleChange, handleBlur }) => (
@@ -105,7 +126,7 @@ export function LinkAction(): ReactElement {
               }}
               onBlur={(e) => {
                 handleBlur(e)
-                errors.link == null && handleSubmit(e)
+                errors.link == null && handleSubmit(e.target.value)
               }}
               onChange={handleChange}
             />
