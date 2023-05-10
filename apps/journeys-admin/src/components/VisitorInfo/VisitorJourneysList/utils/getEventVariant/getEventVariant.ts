@@ -11,11 +11,10 @@ export enum EventVariant {
 interface EventVariantStyle {
   textAlign: string | undefined
   durationColor: string
-  activityColor: string
   valueColor: string
   iconColor: string
   durationVariant: TypographyVariant
-  activityVariant: TypographyVariant
+  activityVariant: number
   valueVariant: TypographyVariant
 }
 
@@ -23,11 +22,10 @@ export function getEventVariant(variant: EventVariant): EventVariantStyle {
   let res: EventVariantStyle = {
     textAlign: undefined,
     durationColor: 'text.secondary',
-    activityColor: 'text.secondary',
     valueColor: 'text.secondary',
     iconColor: 'secondary.light',
     durationVariant: TypographyVariant.caption,
-    activityVariant: TypographyVariant.body2,
+    activityVariant: 400,
     valueVariant: TypographyVariant.body2
   }
 
@@ -45,9 +43,9 @@ export function getEventVariant(variant: EventVariant): EventVariantStyle {
       res = {
         ...res,
         durationColor: 'primary.main',
-        activityColor: 'primary.main',
         valueColor: 'primary.main',
         iconColor: 'primary.main',
+        activityVariant: 600,
         valueVariant: TypographyVariant.subtitle1
       }
       break
@@ -55,7 +53,7 @@ export function getEventVariant(variant: EventVariant): EventVariantStyle {
       res = {
         ...res,
         valueColor: 'text.primary',
-        activityVariant: TypographyVariant.body2,
+        activityVariant: 600,
         valueVariant: TypographyVariant.subtitle1
       }
       break

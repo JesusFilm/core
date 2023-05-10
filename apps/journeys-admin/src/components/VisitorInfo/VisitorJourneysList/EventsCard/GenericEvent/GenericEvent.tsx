@@ -33,7 +33,6 @@ export function GenericEvent({
   const {
     textAlign,
     durationColor,
-    activityColor,
     valueColor,
     iconColor,
     durationVariant,
@@ -85,24 +84,16 @@ export function GenericEvent({
         }}
       >
         <Stack direction="column" sx={{ width: '100%' }}>
-          <Stack direction={{ xs: 'column', sm: 'row' }} sx={{ width: '100%' }}>
-            {/* Activity */}
+          <Typography variant="body2" color="text.secondary" gutterBottom>
+            {/* activity */}
             {activity != null && (
-              <Typography
-                variant={activityVariant}
-                color={activityColor}
-                sx={{ fontWeight: 'bold' }}
-              >
-                {`${activity}\u00A0`}
-              </Typography>
+              <span
+                style={{ fontWeight: activityVariant }}
+              >{`${activity}\xa0`}</span>
             )}
-            {/* Label */}
-            {label != null && (
-              <Typography variant="body2" color="text.secondary" gutterBottom>
-                {label}
-              </Typography>
-            )}
-          </Stack>
+            {/* label */}
+            {label != null && label}
+          </Typography>
           {/* Value */}
           <Typography variant={valueVariant} color={valueColor}>
             {value}

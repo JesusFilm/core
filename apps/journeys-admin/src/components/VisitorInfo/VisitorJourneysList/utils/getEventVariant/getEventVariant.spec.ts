@@ -5,11 +5,10 @@ describe('getEventVariant', () => {
   const defaultResult = {
     textAlign: undefined,
     durationColor: 'text.secondary',
-    activityColor: 'text.secondary',
     valueColor: 'text.secondary',
     iconColor: 'secondary.light',
     durationVariant: TypographyVariant.caption,
-    activityVariant: TypographyVariant.body2,
+    activityVariant: 400,
     valueVariant: TypographyVariant.body2
   }
 
@@ -23,7 +22,7 @@ describe('getEventVariant', () => {
     expect(result).toEqual({
       ...defaultResult,
       valueColor: 'text.primary',
-      activityVariant: TypographyVariant.body2,
+      activityVariant: 600,
       valueVariant: TypographyVariant.subtitle1
     })
   })
@@ -33,10 +32,10 @@ describe('getEventVariant', () => {
     expect(result).toEqual({
       ...defaultResult,
       durationColor: 'primary.main',
-      activityColor: 'primary.main',
       valueColor: 'primary.main',
       iconColor: 'primary.main',
-      valueVariant: TypographyVariant.subtitle1
+      valueVariant: TypographyVariant.subtitle1,
+      activityVariant: 600
     })
   })
 

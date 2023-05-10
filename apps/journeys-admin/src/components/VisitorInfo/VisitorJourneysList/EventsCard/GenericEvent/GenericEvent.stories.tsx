@@ -22,8 +22,8 @@ const Template: Story<ComponentProps<typeof GenericEvent>> = ({ ...args }) => (
 
 export const Default = Template.bind({})
 Default.args = {
+  activity: 'Event action:',
   label: 'Default label',
-  activity: 'Event action',
   value: 'Some contnet related to event',
   icon: <RadioButtonUncheckedIcon />,
   duration: '0.02'
@@ -40,7 +40,7 @@ Start.args = {
 
 export const Chat = Template.bind({})
 Chat.args = {
-  activity: 'Chat Open',
+  activity: 'Chat Open:',
   label: 'Facebook',
   value: '2:34pm, Sep 25',
   icon: <ChatBubbleOutlineRoundedIcon />,
@@ -50,7 +50,7 @@ Chat.args = {
 
 export const Featured = Template.bind({})
 Featured.args = {
-  activity: 'Button Click',
+  activity: 'Button Click:',
   label: 'www.google.com',
   value: 'Button Label',
   icon: <CheckCircleOutlineRoundedIcon />,
