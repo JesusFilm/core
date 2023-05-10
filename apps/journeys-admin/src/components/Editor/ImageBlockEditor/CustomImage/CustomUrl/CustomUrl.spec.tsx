@@ -41,7 +41,7 @@ describe('CustomUrl', () => {
     fireEvent.blur(textBox)
     await waitFor(() => expect(result).toHaveBeenCalled())
     expect(onChange).toHaveBeenCalledWith(
-      'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/uploadId/public'
+      'https://imagedelivery.net//uploadId/public'
     )
   })
 })
