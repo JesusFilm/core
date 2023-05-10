@@ -17,7 +17,7 @@ export interface Event {
 
 export const fakeJourneys: Journey[] = [
   {
-    id: '1',
+    id: '36f0af56-2aa0-4477-8b79-f8303182c69b',
     name: 'Ben',
     location: 'Dnipro, Ukraine',
     source: 'Facebook',
@@ -44,7 +44,7 @@ export const fakeJourneys: Journey[] = [
     ]
   },
   {
-    id: '2',
+    id: '416960f7-b037-481e-80e3-3e4d9897970a',
     name: undefined,
     location: 'Dnipro, Ukraine',
     source: 'Youtube',
@@ -54,7 +54,7 @@ export const fakeJourneys: Journey[] = [
     events: []
   },
   {
-    id: '3',
+    id: '0c874c32-ac87-4480-b0fb-23ef3d61babe',
     name: 'John',
     location: 'Halifax, Canada',
     source: 'Facebook',
@@ -70,7 +70,7 @@ export const fakeJourneys: Journey[] = [
     ]
   },
   {
-    id: '4',
+    id: '0357598b-597d-4419-8c7c-d94854f8a95b',
     name: undefined,
     location: 'Auckland, New Zealand',
     source: 'WhatsApp',

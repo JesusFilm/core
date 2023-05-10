@@ -36,7 +36,7 @@ export function VisitorCard({ journey }: Props): ReactElement {
         <CardContent sx={{ p: 6 }}>
           <VisitorCardHeader
             icon={icon}
-            name={name ?? id}
+            name={name ?? `#${id.slice(-12)}`}
             location={location}
             source={source}
             createdAt={createdAt}
