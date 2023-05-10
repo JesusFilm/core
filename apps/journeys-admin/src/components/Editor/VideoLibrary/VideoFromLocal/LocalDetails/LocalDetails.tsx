@@ -54,6 +54,7 @@ export function LocalDetails({
   const videoRef = useRef<HTMLVideoElement>(null)
   const playerRef = useRef<videojs.Player>()
   const [playing, setPlaying] = useState(false)
+  const [displayMore, setDisplayMore] = useState(false)
   const [openLanguage, setOpenLanguage] = useState(false)
   const [selectedLanguage, setSelectedLanguage] = useState<LanguageOption>({
     id: '529',
@@ -78,11 +79,20 @@ export function LocalDetails({
     })
   }
 
+  const handleDisplay = (): void => {
+    displayMore ? setDisplayMore(false) : setDisplayMore(true)
+  }
+
   const time = data?.video?.variant?.duration ?? 0
   const duration =
     time < 3600
       ? new Date(time * 1000).toISOString().substring(14, 19)
       : new Date(time * 1000).toISOString().substring(11, 19)
+
+  const videoCaption =
+    data?.video?.description?.find(({ primary }) => primary)?.value ?? ''
+
+  const VIDEO_CAPTION_MAX_LENGTH = 141
 
   useEffect(() => {
     if (videoRef.current != null && data != null) {
@@ -163,8 +173,25 @@ export function LocalDetails({
             <Typography variant="subtitle1">
               {data?.video?.title?.find(({ primary }) => primary)?.value}
             </Typography>
+
             <Typography variant="caption">
-              {data?.video?.description?.find(({ primary }) => primary)?.value}
+              {!displayMore
+                ? videoCaption.slice(0, VIDEO_CAPTION_MAX_LENGTH)
+                : videoCaption}
+              <Button
+                variant="text"
+                size="small"
+                sx={{
+                  backgroundColor: '#FFFFFF',
+                  color: '#6D6F81',
+                  opacity: '0.6',
+                  position: 'absolute'
+                  // zIndex: 2
+                }}
+                onClick={handleDisplay}
+              >
+                More
+              </Button>
             </Typography>
           </Box>
         </>
