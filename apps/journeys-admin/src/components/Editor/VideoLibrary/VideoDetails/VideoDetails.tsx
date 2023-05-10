@@ -61,7 +61,7 @@ export function VideoDetails({
   activeVideo
 }: VideoDetailsProps): ReactElement {
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
-  const [coverImageBlockDelete] = useMutation<BlockDeleteForCoverImage>(
+  const [blockDeleteForCoverImage] = useMutation<BlockDeleteForCoverImage>(
     BLOCK_DELETE_FOR_COVER_IMAGE
   )
 
@@ -93,12 +93,11 @@ export function VideoDetails({
     const imageBlock = videoBlock?.children.find(
       (child) => child.__typename === 'ImageBlock'
     )
-    const journeyId = journey?.id
     if (videoBlock.posterBlockId === imageBlock?.id) {
-      await coverImageBlockDelete({
+      await blockDeleteForCoverImage({
         variables: {
           blockDeleteId: imageBlock?.id,
-          journeyId,
+          journeyId: journey?.id,
           parentBlockId: imageBlock?.parentBlockId
         }
       })
