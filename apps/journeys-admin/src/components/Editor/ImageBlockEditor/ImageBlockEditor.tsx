@@ -56,6 +56,10 @@ export function ImageBlockEditor({
     const block = {
       ...selectedBlock,
       src,
+      blurhash:
+        selectedBlock?.blurhash !== blurhash
+          ? undefined
+          : selectedBlock?.blurhash,
       alt: src.replace(/(.*\/)*/, '').replace(/\?.*/, '') // per Vlad 26/1/22, we are hardcoding the image alt for now
     }
     if ((blurhash?.length ?? 0) > 0) {
