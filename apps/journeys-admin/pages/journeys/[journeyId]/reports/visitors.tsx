@@ -19,6 +19,7 @@ import i18nConfig from '../../../../next-i18next.config'
 import { createApolloClient } from '../../../../src/libs/apolloClient'
 import { ACCEPT_USER_INVITE } from '../../..'
 import { UserJourneyOpen } from '../../../../__generated__/UserJourneyOpen'
+import { JourneyVisitorsList } from '../../../../src/components/JourneyVisitorsList'
 
 function JourneyVisitorsPage(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
@@ -37,7 +38,7 @@ function JourneyVisitorsPage(): ReactElement {
         authUser={AuthUser}
         backHref={`/journeys/${journeyId}/reports`}
       >
-        Content
+        <JourneyVisitorsList id={journeyId} />
       </PageWrapper>
     </>
   )
