@@ -8,8 +8,9 @@ import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 
 import { ReactElement } from 'react'
-// import Share from '@core/shared/ui/CustomIcon/outlined/Share'
-// import ThumbsDown from '@core/shared/ui/CustomIcon/outlined/ThumbsDown'
+import Share from '@core/shared/ui/CustomIcon/outlined/Share'
+import Like from '@core/shared/ui/CustomIcon/outlined/Like'
+import ThumbsDown from '@core/shared/ui/CustomIcon/outlined/ThumbsDown'
 
 interface StepFooterProps {
   block: TreeBlock
@@ -61,30 +62,33 @@ export default function StepFooter({ block }: StepFooterProps): ReactElement {
         <Stack className="swiper-no-swiping" direction="row" spacing={3}>
           <StyledChip
             label="Share"
-            // icon={<Share />}
+            icon={<Share fontSize="small" />}
             sx={{
+              pl: 1.5,
               '.MuiChip-icon': {
                 color: contentColorProps
               }
             }}
           />
           <StyledChip
-            label="Link"
-            // icon={<ThumbsDown fontSize="small" />}
+            label=""
+            icon={<Like fontSize="small" />}
             sx={{
               '.MuiChip-icon': {
                 color: contentColorProps,
-                ml: 5
+                ml: 3.5,
+                mr: -2.5
               }
             }}
           />
           <StyledChip
-            label="Dislike"
-            // icon={<ThumbsDown fontSize="small" />}
+            label=""
+            icon={<ThumbsDown fontSize="small" />}
             sx={{
               '.MuiChip-icon': {
                 color: contentColorProps,
-                ml: 5
+                ml: 3.5,
+                mr: -2.5
               }
             }}
           />

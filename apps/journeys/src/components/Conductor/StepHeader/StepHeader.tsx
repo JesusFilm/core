@@ -59,7 +59,7 @@ export default function StepHeader({ block }: StepHeaderProps): ReactElement {
           aria-controls="more-info"
           aria-haspopup="true"
           aria-expanded={open ? 'true' : 'false'}
-          sx={{ pr: 4 }}
+          sx={{ mr: 4 }}
           onClick={handleClick}
         >
           <InfoOutlinedIcon sx={{ color: 'white' }} />

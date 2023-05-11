@@ -27,7 +27,7 @@ interface ContainedCoverProps {
   children: ReactNode[]
   videoBlock?: TreeBlock<VideoFields>
   imageBlock?: TreeBlock<ImageFields>
-  backgroundBlur?: string
+  backgroundBlur: string
 }
 
 const StyledVideo = styled('video')(() => ({}))
@@ -35,10 +35,20 @@ const StyledVideo = styled('video')(() => ({}))
 const StyledGradientBackground = styled(Stack)(({ theme }) => ({
   position: 'absolute',
   bottom: 0,
+  zIndex: 0,
   width: '100%',
   height: '200px',
-  background: `linear-gradient(360deg, ${theme.palette.background.paper}cc 0%, ${theme.palette.background.paper}38 57%, ${theme.palette.background.paper}00 90%)`
-  // background: `linear-gradient(to top, ${theme.palette.background.paper} 0%, ${theme.palette.background.paper}f2 55%, ${theme.palette.background.paper}ab 80%, ${theme.palette.background.paper}73 100%)`
+  background: `linear-gradient(to top, ${theme.palette.background.paper} 0%, ${theme.palette.background.paper}f2 20%, ${theme.palette.background.paper}bf 40%, ${theme.palette.background.paper}1a 85%, ${theme.palette.background.paper}00 100%)`
+}))
+
+const StyledBlurBackground = styled(Stack)(({ theme }) => ({
+  justifyContent: 'flex-end',
+  flexDirection: 'row',
+  position: 'absolute',
+  zIndex: 0,
+  width: '100%',
+  WebkitBackdropFilter: 'blur(4px)',
+  backdropFilter: 'blur(4px)'
 }))
 
 export function ContainedCover({
@@ -50,7 +60,9 @@ export function ContainedCover({
   const videoRef = useRef<HTMLVideoElement>(null)
   const [player, setPlayer] = useState<VideoJsPlayer>()
   const [loading, setLoading] = useState(true)
+  const [contentHeight, setContentHeight] = useState(0)
   const { admin } = useJourney()
+  const contentRef = useRef()
 
   const isYouTube = videoBlock?.source === VideoBlockSource.youTube
 
@@ -161,6 +173,11 @@ export function ContainedCover({
     }
   }, [player, videoBlock])
 
+  useEffect(() => {
+    if (contentRef.current != null)
+      setContentHeight((contentRef.current as HTMLDivElement).clientHeight ?? 0)
+  }, [contentRef])
+
   return (
     <>
       <Box data-testid="ContainedCover" sx={{ width: '100%', height: '100%' }}>
@@ -233,62 +250,106 @@ export function ContainedCover({
           )}
       </Box>
       <Stack
+        className="overlay-container"
         justifyContent="flex-end"
-        alignItems={{ xs: 'flex-end', lg: 'flex-end' }}
+        alignItems="flex-end"
         sx={{
           position: 'absolute',
           zIndex: 1,
-          width: 'inherit',
+          width: '100%',
           height: '100%'
         }}
       >
         {children.length !== 0 ? (
-          <Stack
-            justifyContent="center"
-            sx={{
-              width: '100%',
-              maxWidth: { xs: '100%', lg: '380px' },
-              WebkitBackdropFilter: 'blur(55px)',
-              backdropFilter: 'blur(55px)',
-              height: { lg: '100%' },
-              maxHeight: { xs: 'calc(50% - 80px)', lg: '100%' },
-              borderBottomLeftRadius: admin ? 16 : 0,
-              borderBottomRightRadius: admin ? 16 : 0,
-              background:
-                backgroundBlur != null
-                  ? // xs: `linear-gradient(360deg, ${backgroundBlur}cc 0%, ${backgroundBlur}38 57%, ${backgroundBlur}00 90%)`,
-                    // lg: `${backgroundBlur}4d`
-                    // TODO: Tweak
-                    `${backgroundBlur}a6`
-                  : // xs: `linear-gradient(to top, ${backgroundBlur} 0%, ${backgroundBlur}f2 55%, ${backgroundBlur}ab 80%, ${backgroundBlur}73 100%)`,
-                    // lg: `linear-gradient(to top, ${backgroundBlur} 0%, ${backgroundBlur}f2 55%, ${backgroundBlur}ab 80%, ${backgroundBlur}73 100%)`
-
-                    'unset',
-              pt: { xs: 6, lg: 0 },
-              pb: { xs: 28, lg: 0 }
-            }}
-          >
-            <Box
+          <>
+            <StyledBlurBackground
+              className="overlay-blur"
               sx={{
-                px: { xs: 6, lg: 10 },
-                overflowY: 'scroll',
-                // Hide on Firefox https://caniuse.com/?search=scrollbar-width
-                scrollbarWidth: 'none',
-                // Hide on all others https://caniuse.com/?search=webkit-scrollbar
-                '&::-webkit-scrollbar': {
-                  display: 'none'
-                },
-                '& > *': {
-                  '&:first-child': { mt: 0 },
-                  '&:last-child': { mb: 0 }
-                }
+                height: contentHeight - 40,
+                WebkitBackdropFilter: 'blur(1px)',
+                backdropFilter: 'blur(1px)'
+              }}
+            />
+            <StyledBlurBackground
+              className="overlay-blur"
+              sx={{
+                height: contentHeight - 80,
+                WebkitBackdropFilter: 'blur(1px)',
+                backdropFilter: 'blur(1px)'
+              }}
+            />
+            <StyledBlurBackground
+              className="overlay-blur"
+              sx={{
+                height: contentHeight * 0.9 - 80,
+                WebkitBackdropFilter: 'blur(2px)',
+                backdropFilter: 'blur(2px)'
+              }}
+            />
+            <StyledBlurBackground
+              className="overlay-blur"
+              sx={{ height: contentHeight * 0.8 - 80 }}
+            />
+            <StyledBlurBackground
+              className="overlay-blur"
+              sx={{ height: contentHeight * 0.7 - 80 }}
+            />
+            <StyledBlurBackground
+              className="overlay-blur"
+              sx={{ height: contentHeight * 0.6 - 80 }}
+            />
+            <StyledBlurBackground
+              className="overlay-blur"
+              sx={{ height: contentHeight * 0.5 - 80 }}
+            />
+            <Stack
+              ref={contentRef}
+              className="overlay-gradient"
+              flexDirection="row"
+              justifyContent="center"
+              sx={{
+                position: 'absolute',
+                zIndex: 1,
+                width: '100%',
+                maxWidth: { xs: '100%', lg: '380px' },
+                maxHeight: { xs: 'calc(55% - 80px)', lg: '100%' },
+                borderBottomLeftRadius: admin ? 16 : 0,
+                borderBottomRightRadius: admin ? 16 : 0,
+                pt: { xs: 30, lg: 0 },
+                pb: { xs: 22, lg: 0 },
+                WebkitMask: `linear-gradient(transparent 0%,  ${backgroundBlur}14 10%, ${backgroundBlur}33 15%, ${backgroundBlur}60 20%, ${backgroundBlur}b0 30%, ${backgroundBlur}e6 40%, ${backgroundBlur} 98%)`,
+                mask: `linear-gradient(transparent 0%,  ${backgroundBlur}14 10%, ${backgroundBlur}33 15%, ${backgroundBlur}60 20%, ${backgroundBlur}b0 30%, ${backgroundBlur}e6 40%, ${backgroundBlur} 98%)`,
+                backgroundColor: ` ${backgroundBlur}fc`
               }}
             >
-              {children}
-            </Box>
-          </Stack>
+              <Box
+                className="overlay-content"
+                sx={{
+                  height: 'inherit',
+                  px: { xs: 6, lg: 10 },
+
+                  overflowY: 'scroll',
+                  WebkitMask: `linear-gradient(transparent 0%, ${backgroundBlur}1a 4%,${backgroundBlur} 8%, ${backgroundBlur} 90%, ${backgroundBlur}1a 96%, transparent 100%)`,
+                  mask: `linear-gradient(transparent 0%, ${backgroundBlur}1a 4%,${backgroundBlur} 8%, ${backgroundBlur} 90%, ${backgroundBlur}1a 96%, transparent 100%)`,
+                  // Hide on Firefox https://caniuse.com/?search=scrollbar-width
+                  scrollbarWidth: 'none',
+                  zIndex: 1,
+                  // Hide on all others https://caniuse.com/?search=webkit-scrollbar
+                  '&::-webkit-scrollbar': {
+                    display: 'none'
+                  },
+                  '& > *': {
+                    '&:first-child': { mt: 6 },
+                    '&:last-child': { mb: 6 }
+                  }
+                }}
+              >
+                {children}
+              </Box>
+            </Stack>
+          </>
         ) : (
-          <StyledGradientBackground />
+          <StyledGradientBackground className="overlay-gradient" />
         )}
       </Stack>
     </>

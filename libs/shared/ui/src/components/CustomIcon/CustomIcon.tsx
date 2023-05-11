@@ -2,13 +2,6 @@ import { SvgIconProps } from '@mui/material/SvgIcon'
 import CircularProgress from '@mui/material/CircularProgress'
 import { ReactElement, lazy, Suspense } from 'react'
 
-const Target = lazy(
-  async () =>
-    await import(
-      /* webpackChunkName: 'custom-icon' */
-      './outlined/Target'
-    )
-)
 const Like = lazy(
   async () =>
     await import(
@@ -17,7 +10,36 @@ const Like = lazy(
     )
 )
 
-export const IconNames = ['none', 'Like', 'Target'] as const
+const Share = lazy(
+  async () =>
+    await import(
+      /* webpackChunkName: 'custom-icon' */
+      './outlined/Share'
+    )
+)
+const Target = lazy(
+  async () =>
+    await import(
+      /* webpackChunkName: 'custom-icon' */
+      './outlined/Target'
+    )
+)
+
+const ThumbsDown = lazy(
+  async () =>
+    await import(
+      /* webpackChunkName: 'custom-icon' */
+      './outlined/ThumbsDown'
+    )
+)
+
+export const IconNames = [
+  'none',
+  'Like',
+  'Share',
+  'Target',
+  'ThumbsDown'
+] as const
 
 type IconName = (typeof IconNames)[number]
 
@@ -36,19 +58,11 @@ export function CustomIcon({
     <Suspense fallback={<CircularProgress size="16px" />}>
       {
         {
-          none: null,
-          Like:
-            variant === 'outlined' ? (
-              <Like {...iconProps} />
-            ) : (
-              `${name}IconSolid`
-            ),
-          Target:
-            variant === 'outlined' ? (
-              <Target {...iconProps} />
-            ) : (
-              `${name}IconSolid`
-            )
+          none: <div />,
+          Like: <Like {...iconProps} />,
+          Share: <Share {...iconProps} />,
+          Target: <Target {...iconProps} />,
+          ThumbsDown: <ThumbsDown {...iconProps} />
         }[name]
       }
     </Suspense>
