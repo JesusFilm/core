@@ -100,14 +100,18 @@ export class ChatOpenEventResolver {
     ]
     const data = {
       lastChatStartedAt: new Date(),
-      lastChatPlatform: input.value ?? undefined,
-      messagePlatform:
-        visitor?.messagePlatform == null ? input.value : visitor.messagePlatform
+      lastChatPlatform: input.value ?? undefined
     }
     promises.push(
       this.prismaService.visitor.update({
         where: { id: visitor.id },
-        data
+        data: {
+          ...data,
+          messagePlatform:
+            visitor?.messagePlatform == null
+              ? input.value
+              : visitor.messagePlatform
+        }
       })
     )
     promises.push(
