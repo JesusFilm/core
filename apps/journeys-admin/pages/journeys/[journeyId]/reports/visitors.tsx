@@ -20,6 +20,7 @@ import { createApolloClient } from '../../../../src/libs/apolloClient'
 import { ACCEPT_USER_INVITE } from '../../..'
 import { UserJourneyOpen } from '../../../../__generated__/UserJourneyOpen'
 import { JourneyVisitorsList } from '../../../../src/components/JourneyVisitorsList'
+import { FilterDrawer } from '../../../../src/components/JourneyVisitorsList/FilterDrawer'
 
 function JourneyVisitorsPage(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
@@ -37,6 +38,8 @@ function JourneyVisitorsPage(): ReactElement {
         title={t('Visitors')}
         authUser={AuthUser}
         backHref={`/journeys/${journeyId}/reports`}
+        sidePanelTitle={t('Filters')}
+        sidePanelChildren={<FilterDrawer />}
       >
         <JourneyVisitorsList id={journeyId} />
       </PageWrapper>
