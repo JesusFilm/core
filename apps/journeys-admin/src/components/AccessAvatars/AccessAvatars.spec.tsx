@@ -181,16 +181,24 @@ describe('AccessAvatars', () => {
           <ThemeProvider>
             <AccessAvatars
               journeyId="journeyId"
+              // userJourneys={[
+              //   editorUserJourney,
+              //   inviteRequestedUserJourney,
+              //   ownerUserJourney
+              // ]}
               userJourneys={[
-                editorUserJourney,
-                inviteRequestedUserJourney,
-                ownerUserJourney
+                userJourney1,
+                userJourney2,
+                userJourney3,
+                userJourney4,
+                userJourney5
               ]}
             />
           </ThemeProvider>
         </MockedProvider>
       </SnackbarProvider>
     )
-    expect(getByAltText('Horace Two')).toBeInTheDocument()
+    // expect(getByAltText('Horace Two')).toBeInTheDocument()
+    expect(getByAltText('Janelle Five')).toBeInTheDocument()
   })
 })

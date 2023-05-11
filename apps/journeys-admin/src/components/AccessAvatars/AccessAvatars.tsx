@@ -69,20 +69,14 @@ interface Props {
   showManageButton: boolean
 }
 
-const usersWithOwnerFirst = (values?: UserJourney[]): UserJourney[] => {
-  // create new array of user journeys, with the owner pushed to the front
-  const users: UserJourney[] = []
-
-  values?.forEach((userJourney) => {
-    if (userJourney.role === UserJourneyRole.owner) {
-      users.splice(0, 0, userJourney)
-    } else {
-      users.push(userJourney)
-    }
-  })
-  // console.log('firstName : ', users[0].user?.firstName)
-  // console.log('role: ', users[0].role)
-  return users
+const usersWithOwnerFirst = (values: UserJourney[] = []): UserJourney[] => {
+  const ownerJourneys = values?.filter(
+    (userJourney) => userJourney.role === UserJourneyRole.owner
+  )
+  const remainingJourneys = values?.filter(
+    (userJourney) => userJourney.role !== UserJourneyRole.owner
+  )
+  return ownerJourneys.concat(remainingJourneys)
 }
 
 const withRenderLogic = ({
@@ -115,6 +109,7 @@ const withRenderLogic = ({
     let invisible = true
     const maxIndex = max <= 2 ? 0 : max - 2
     const users = usersWithOwnerFirst(values)
+
     console.log('Values: ', values)
     console.log('users: ', users)
 
