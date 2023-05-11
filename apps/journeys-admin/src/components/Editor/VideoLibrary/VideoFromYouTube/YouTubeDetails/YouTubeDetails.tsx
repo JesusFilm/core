@@ -169,7 +169,7 @@ export function YouTubeDetails({
                     zIndex: '2',
                     '&:hover': {
                       background:
-                        'linear-gradient(90deg, rgba(255,255,255,0.4542410714285714) 0%, rgba(255,255,255,0.8772102591036415) 14%, rgba(255,255,255,1) 32%)'
+                        'linear-gradient(90deg, rgba(255,255,255,0.49625787815126055) 0%, rgba(255,255,255,0.9192270658263305) 17%, rgba(255,255,255,1) 29%)'
                     }
                   }}
                   onClick={handleDisplay}

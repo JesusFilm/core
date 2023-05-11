@@ -2,10 +2,15 @@ import { render, fireEvent, waitFor } from '@testing-library/react'
 import { SWRConfig } from 'swr'
 import { VideoBlockSource } from '../../../../../../__generated__/globalTypes'
 import { mswServer } from '../../../../../../test/mswServer'
-import { getVideosWithOffsetAndUrl } from '../VideoFromYouTube.handlers'
+import {
+  getVideosWithOffsetAndUrl,
+  getVideoWithLongDescription
+} from '../VideoFromYouTube.handlers'
 import { YouTubeDetails } from '.'
 
 describe('YouTubeDetails', () => {
+  const longVideoDescription =
+    'Trace the theme of blessing and curse in the Bible to see how Jesus defeats the curse of sin that entered through Adam and restores the blessing of life to creation to what it once was like in the Garden of Eden.'
   it('should render details of a video', async () => {
     mswServer.use(getVideosWithOffsetAndUrl)
     const { getByText, getByRole } = render(
@@ -35,6 +40,45 @@ describe('YouTubeDetails', () => {
     expect(imageTag).toHaveStyle(
       "background-image: url('https://i.ytimg.com/vi/jQaeIJOA6J0/default.jpg')"
     )
+  })
+
+  it('should not render show more or show less buttons for short video descriptions', async () => {
+    mswServer.use(getVideosWithOffsetAndUrl)
+    const { queryByRole } = render(
+      <SWRConfig value={{ provider: () => new Map() }}>
+        <YouTubeDetails id="jQaeIJOA6J0" open onSelect={jest.fn()} />
+      </SWRConfig>
+    )
+    await waitFor(() =>
+      expect(queryByRole('button', { name: 'More' })).not.toBeInTheDocument()
+    )
+  })
+
+  it('should render show more button for long video descriptions', async () => {
+    mswServer.use(getVideoWithLongDescription)
+    const { getByRole } = render(
+      <SWRConfig value={{ provider: () => new Map() }}>
+        <YouTubeDetails id="jQaeIJOA6J0" open onSelect={jest.fn()} />
+      </SWRConfig>
+    )
+    await waitFor(() =>
+      expect(getByRole('button', { name: 'More' })).toBeInTheDocument()
+    )
+  })
+
+  it('should expand and truncate video description on button click', async () => {
+    mswServer.use(getVideoWithLongDescription)
+    const { queryByRole, getByRole, getByText, queryByText } = render(
+      <SWRConfig value={{ provider: () => new Map() }}>
+        <YouTubeDetails id="jQaeIJOA6J0" open onSelect={jest.fn()} />
+      </SWRConfig>
+    )
+    await waitFor(() => fireEvent.click(getByRole('button', { name: 'More' })))
+    expect(queryByRole('button', { name: 'Less' })).toBeInTheDocument()
+    expect(getByText(longVideoDescription)).toBeInTheDocument()
+    await waitFor(() => fireEvent.click(getByRole('button', { name: 'Less' })))
+    expect(getByRole('button', { name: 'More' })).toBeInTheDocument()
+    expect(queryByText(longVideoDescription)).not.toBeInTheDocument()
   })
 
   it('should call onSelect on select click', async () => {

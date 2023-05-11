@@ -162,6 +162,20 @@ describe('LocalDetails', () => {
     )
   })
 
+  it('should expand and truncate video description on button click', async () => {
+    const { getByText, getByRole, queryByText } = render(
+      <MockedProvider mocks={mocksForLongDescriptions}>
+        <LocalDetails id="2_Acts7302-0-0" open onSelect={jest.fn()} />
+      </MockedProvider>
+    )
+    await waitFor(() => fireEvent.click(getByRole('button', { name: 'More' })))
+    expect(getByText(longVideoDescription)).toBeInTheDocument()
+    expect(getByRole('button', { name: 'Less' })).toBeInTheDocument()
+    await waitFor(() => fireEvent.click(getByRole('button', { name: 'Less' })))
+    expect(getByRole('button', { name: 'More' })).toBeInTheDocument()
+    expect(queryByText(longVideoDescription)).not.toBeInTheDocument()
+  })
+
   it('should open the languages drawer on language button click', () => {
     const { getByRole, getByText } = render(
       <MockedProvider>
