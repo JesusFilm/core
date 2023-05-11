@@ -77,7 +77,7 @@ export default function StepHeader({ block }: StepHeaderProps): ReactElement {
           <NextLink
             href={`mailto:support@nextstep.is?subject=Report%20Journey:%20${
               journey?.title ?? journey?.seoTitle ?? ''
-            }&body=I want to report journey (your.nextstep.is/journey/${
+            }&body=I want to report journey (your.nextstep.is/${
               journey?.slug ?? ''
             }) because ...`}
             passHref

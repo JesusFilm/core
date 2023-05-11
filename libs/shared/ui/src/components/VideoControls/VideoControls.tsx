@@ -14,8 +14,8 @@ import FullscreenExitRounded from '@mui/icons-material/FullscreenExitRounded'
 import CircularProgress from '@mui/material/CircularProgress'
 import fscreen from 'fscreen'
 import { secondsToTimeFormat } from '../../libs/timeFormat'
-// import Volume02 from '../CustomIcon/outlined/Volume02'
-// import Volume05 from '../CustomIcon/outlined/Volume05'
+import Volume02 from '../CustomIcon/outlined/Volume02'
+import Volume05 from '../CustomIcon/outlined/Volume05'
 
 interface VideoControlProps {
   player: videojs.Player
@@ -161,19 +161,26 @@ export function VideoControls({
       >
         <Stack justifyContent="flex-end" sx={{ height: '100%' }}>
           {/* Mute / Unmute */}
-          {/* <Stack flexDirection="row" justifyContent="flex-end" sx={{ mt: 16 }}>
+          <Stack flexDirection="row" justifyContent="flex-end" sx={{ mt: 16 }}>
             <IconButton
               aria-label="mute"
-              sx={{ mr: 4, mt: 1 }}
+              sx={{
+                mr: 4,
+                mt: 1,
+                backgroundColor: '#ffffff29',
+                ':hover': {
+                  background: '#ffffff3d'
+                }
+              }}
               onClick={(e) => {
                 e.stopPropagation()
+                void player.play()
                 player.muted(!player.muted())
-                console.log(player.muted())
               }}
             >
               {player.muted() ? <Volume02 /> : <Volume05 />}
             </IconButton>
-          </Stack> */}
+          </Stack>
           {/* Play/Pause */}
           <Stack flexGrow={1} alignItems="center" justifyContent="center">
             {!loading ? (

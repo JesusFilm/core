@@ -47,8 +47,8 @@ const StyledGradientBackground = styled(Stack)(({ theme }) => ({
 const StyledBlurBackground = styled(Stack)(({ theme }) => ({
   position: 'absolute',
   width: '100%',
-  WebkitBackdropFilter: 'blur(4px)',
-  backdropFilter: 'blur(4px)',
+  WebkitBackdropFilter: 'blur(2px)',
+  backdropFilter: 'blur(2px)',
   [theme.breakpoints.up('lg')]: {
     height: '100%'
   }
@@ -303,16 +303,14 @@ export function ContainedCover({
                 sx={{
                   width: { lg: 480 },
                   height: contentHeight * 0.9 - 80,
-                  WebkitBackdropFilter: 'blur(2px)',
-                  backdropFilter: 'blur(2px)'
+                  WebkitBackdropFilter: 'blur(1.5px)',
+                  backdropFilter: 'blur(1.5px)'
                 }}
               />
               <StyledBlurBackground
                 sx={{
                   width: { lg: 420 },
-                  height: contentHeight * 0.8 - 80,
-                  WebkitBackdropFilter: 'blur(3px)',
-                  backdropFilter: 'blur(3px)'
+                  height: contentHeight * 0.8 - 80
                 }}
               />
               <StyledBlurBackground
@@ -339,7 +337,7 @@ export function ContainedCover({
                 maxHeight: { xs: 'calc(55% - 80px)', lg: '100%' },
                 borderBottomLeftRadius: admin ? 16 : 0,
                 borderBottomRightRadius: admin ? 16 : 0,
-                pt: { xs: 30, lg: 0 },
+                pt: { xs: 40, lg: 0 },
                 pb: { xs: 22, lg: 0 },
                 pl: { lg: 50 },
                 WebkitMask: {
