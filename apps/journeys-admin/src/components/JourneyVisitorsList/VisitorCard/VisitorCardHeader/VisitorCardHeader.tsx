@@ -44,23 +44,23 @@ export function VisitorCardHeader({
         ) : (
           <PersonOutlineRoundedIcon sx={{ mr: 3 }} />
         )}
-        <Typography>{name}</Typography>
+        <Typography variant="subtitle1">{name}</Typography>
         {name != null && location != null && (
-          <Typography>{'\u00A0\u00B7\u00A0'}</Typography>
+          <Typography variant="subtitle1">{'\u00A0\u00B7\u00A0'}</Typography>
         )}
-        <Typography>{location}</Typography>
+        <Typography variant="subtitle1">{location}</Typography>
 
         {((name != null && source != null) ||
           (location != null && source != null)) && (
-          <Typography>{'\u00A0\u00B7\u00A0'}</Typography>
+          <Typography variant="subtitle1">{'\u00A0\u00B7\u00A0'}</Typography>
         )}
-        <Typography>{source}</Typography>
+        <Typography variant="subtitle1">{source}</Typography>
         <Stack direction="row" sx={{ ml: 'auto' }}>
-          <Typography>
+          <Typography variant="subtitle1">
             {format(parseISO(createdAt), 'hmmaaa, LLL. do')}
           </Typography>
-          <Typography>{'\u00A0\u00B7\u00A0'}</Typography>
-          <Typography>{duration}</Typography>
+          <Typography variant="subtitle1">{'\u00A0\u00B7\u00A0'}</Typography>
+          <Typography variant="subtitle1">{duration}</Typography>
         </Stack>
       </Stack>
 
@@ -73,20 +73,22 @@ export function VisitorCardHeader({
         )}
         <Stack direction="column">
           <Stack direction="row">
-            <Typography>
+            <Typography variant="subtitle1">
               {format(parseISO(createdAt), 'hmmaaa, LLL. do')}
             </Typography>
-            <Typography>{'\u00A0\u00B7\u00A0'}</Typography>
-            <Typography>{duration}</Typography>
+            <Typography variant="subtitle1">{'\u00A0\u00B7\u00A0'}</Typography>
+            <Typography variant="subtitle1">{duration}</Typography>
           </Stack>
           <Stack direction="row">
-            <Typography>{name}</Typography>
+            <Typography variant="subtitle1">{name}</Typography>
             {name != null && source != null && (
-              <Typography>{'\u00A0\u00B7\u00A0'}</Typography>
+              <Typography variant="subtitle1">
+                {'\u00A0\u00B7\u00A0'}
+              </Typography>
             )}
-            <Typography>{source}</Typography>
+            <Typography variant="subtitle1">{source}</Typography>
           </Stack>
-          <Typography>{location}</Typography>
+          <Typography variant="subtitle1">{location}</Typography>
         </Stack>
       </Stack>
     </>

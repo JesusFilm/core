@@ -42,7 +42,7 @@ export function VisitorCard({ journey }: Props): ReactElement {
             createdAt={createdAt}
             duration={duration}
           />
-          <VisitorCardDetails name={name ?? id} events={events} />
+          <VisitorCardDetails name={name ?? id.slice(-12)} events={events} />
         </CardContent>
       </CardActionArea>
     </Card>

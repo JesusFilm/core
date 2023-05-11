@@ -11,6 +11,7 @@ export interface Journey {
 
 export interface Event {
   __typename: string
+  id: string
   label: string
   value: string
 }
@@ -27,16 +28,19 @@ export const fakeJourneys: Journey[] = [
     events: [
       {
         __typename: 'Chat',
+        id: 'chat1.id',
         label: 'Chat Started',
         value: '2:34pm'
       },
       {
         __typename: 'Poll',
+        id: 'poll1.id',
         label: 'Do you think Jesus loves you?',
         value: 'Yes, Im sure of it!'
       },
       {
         __typename: 'Text',
+        id: 'text1.id',
         label: 'If you have any question...',
         value:
           'Sometimes its hard to hear God, but we know that God delights in the prayers of the faithful, and He promises to give us what we need.'
@@ -64,6 +68,7 @@ export const fakeJourneys: Journey[] = [
     events: [
       {
         __typename: 'Poll',
+        id: 'poll2.id',
         label: 'Do you think Jesus loves you?',
         value: 'Yes, Im sure of it!'
       }
