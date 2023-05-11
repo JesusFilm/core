@@ -60,13 +60,6 @@ describe('LocalDetails', () => {
       }
     }
   ]
-  const longVideoDescription =
-    'Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat massa quis enim. Donec.'
-
-  // deep clone mock array
-  const longDescriptionMock = JSON.parse(JSON.stringify(mocks))
-  longDescriptionMock[0].result.data.video.description[0].value =
-    longVideoDescription
 
   it('should render details of a video', async () => {
     const { getByText, getByRole } = render(
@@ -103,29 +96,26 @@ describe('LocalDetails', () => {
     )
   })
 
-  it('should render show more or show less buttons for long video descriptions', async () => {
-    const { queryByRole } = render(
-      <MockedProvider mocks={longDescriptionMock}>
+  it('should expand and truncate video description on button click', async () => {
+    const longVideoDescription =
+      'Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat massa quis enim. Donec.'
+    const defaultValue = 'Jesus promises the Holy Spirit.'
+    mocks[0].result.data.video.description[0].value = longVideoDescription
+    const { getByText, getByRole, queryByText } = render(
+      <MockedProvider mocks={mocks}>
         <LocalDetails id="2_Acts7302-0-0" open onSelect={jest.fn()} />
       </MockedProvider>
     )
     await waitFor(() =>
-      expect(queryByRole('button', { name: 'More' })).toBeInTheDocument()
+      expect(getByRole('button', { name: 'More' })).toBeInTheDocument()
     )
-  })
-
-  it('should expand and truncate video description on button click', async () => {
-    const { getByText, getByRole, queryByText } = render(
-      <MockedProvider mocks={longDescriptionMock}>
-        <LocalDetails id="2_Acts7302-0-0" open onSelect={jest.fn()} />
-      </MockedProvider>
-    )
-    await waitFor(() => fireEvent.click(getByRole('button', { name: 'More' })))
+    fireEvent.click(getByRole('button', { name: 'More' }))
     expect(getByText(longVideoDescription)).toBeInTheDocument()
     expect(getByRole('button', { name: 'Less' })).toBeInTheDocument()
-    await waitFor(() => fireEvent.click(getByRole('button', { name: 'Less' })))
+    fireEvent.click(getByRole('button', { name: 'Less' }))
     expect(getByRole('button', { name: 'More' })).toBeInTheDocument()
     expect(queryByText(longVideoDescription)).not.toBeInTheDocument()
+    mocks[0].result.data.video.description[0].value = defaultValue
   })
 
   it('should open the languages drawer on language button click', () => {

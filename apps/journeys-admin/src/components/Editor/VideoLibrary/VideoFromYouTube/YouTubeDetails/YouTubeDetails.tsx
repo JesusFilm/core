@@ -145,7 +145,6 @@ export function YouTubeDetails({
                 variant="caption"
                 sx={{
                   position: 'relative',
-                  // whitespace: normal reduces edge cases
                   whiteSpace: 'normal'
                 }}
               >

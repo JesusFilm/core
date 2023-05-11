@@ -80,7 +80,7 @@ export function LocalDetails({
   }
 
   const handleDisplay = (): void => {
-    setDisplayMore((prevDisplayMore) => !prevDisplayMore)
+    setDisplayMore(!displayMore)
   }
 
   const time = data?.video?.variant?.duration ?? 0

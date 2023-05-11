@@ -9,8 +9,6 @@ import {
 import { YouTubeDetails } from '.'
 
 describe('YouTubeDetails', () => {
-  const longVideoDescription =
-    'Trace the theme of blessing and curse in the Bible to see how Jesus defeats the curse of sin that entered through Adam and restores the blessing of life to creation to what it once was like in the Garden of Eden.'
   it('should render details of a video', async () => {
     mswServer.use(getVideosWithOffsetAndUrl)
     const { getByText, getByRole } = render(
@@ -54,29 +52,25 @@ describe('YouTubeDetails', () => {
     )
   })
 
-  it('should render show more button for long video descriptions', async () => {
-    mswServer.use(getVideoWithLongDescription)
-    const { getByRole } = render(
-      <SWRConfig value={{ provider: () => new Map() }}>
-        <YouTubeDetails id="jQaeIJOA6J0" open onSelect={jest.fn()} />
-      </SWRConfig>
-    )
-    await waitFor(() =>
-      expect(getByRole('button', { name: 'More' })).toBeInTheDocument()
-    )
-  })
-
   it('should expand and truncate video description on button click', async () => {
     mswServer.use(getVideoWithLongDescription)
+
+    const longVideoDescription =
+      'Trace the theme of blessing and curse in the Bible to see how Jesus defeats the curse of sin that entered through Adam and restores the blessing of life to creation to what it once was like in the Garden of Eden.'
+
     const { queryByRole, getByRole, getByText, queryByText } = render(
       <SWRConfig value={{ provider: () => new Map() }}>
         <YouTubeDetails id="jQaeIJOA6J0" open onSelect={jest.fn()} />
       </SWRConfig>
     )
-    await waitFor(() => fireEvent.click(getByRole('button', { name: 'More' })))
+
+    await waitFor(() =>
+      expect(getByRole('button', { name: 'More' })).toBeInTheDocument()
+    )
+    fireEvent.click(getByRole('button', { name: 'More' }))
     expect(queryByRole('button', { name: 'Less' })).toBeInTheDocument()
     expect(getByText(longVideoDescription)).toBeInTheDocument()
-    await waitFor(() => fireEvent.click(getByRole('button', { name: 'Less' })))
+    fireEvent.click(getByRole('button', { name: 'Less' }))
     expect(getByRole('button', { name: 'More' })).toBeInTheDocument()
     expect(queryByText(longVideoDescription)).not.toBeInTheDocument()
   })
