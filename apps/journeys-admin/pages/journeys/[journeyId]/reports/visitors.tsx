@@ -21,6 +21,7 @@ import { ACCEPT_USER_INVITE } from '../../..'
 import { UserJourneyOpen } from '../../../../__generated__/UserJourneyOpen'
 import { JourneyVisitorsList } from '../../../../src/components/JourneyVisitorsList'
 import { FilterDrawer } from '../../../../src/components/JourneyVisitorsList/FilterDrawer'
+import { VisitorToolbar } from '../../../../src/components/JourneyVisitorsList/VisitorToolbar'
 
 function JourneyVisitorsPage(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
@@ -38,6 +39,7 @@ function JourneyVisitorsPage(): ReactElement {
         title={t('Visitors')}
         authUser={AuthUser}
         backHref={`/journeys/${journeyId}/reports`}
+        menu={<VisitorToolbar />}
         sidePanelTitle={t('Filters')}
         sidePanelChildren={<FilterDrawer />}
       >
