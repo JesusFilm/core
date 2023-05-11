@@ -104,12 +104,14 @@ export function Attributes({ selected, step }: AttributesProps): ReactElement {
   useEffect(() => {
     if (
       activeTab === ActiveTab.Journey &&
-      journeyEditContentComponent !== 'action'
+      journeyEditContentComponent !== 'action' &&
+      journeyEditContentComponent !== 'social'
     ) {
       dispatch({
         type: 'SetDrawerPropsAction',
         title: 'Properties',
-        children: <Properties journeyType="Journey" isPublisher={false} />
+        children: <Properties journeyType="Journey" isPublisher={false} />,
+        mobileOpen: false
       })
     }
   }, [activeTab, dispatch, journeyEditContentComponent])
