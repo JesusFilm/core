@@ -72,7 +72,7 @@ const video1: YoutubeVideo = {
   contentDetails: { duration: 'PT6M03S' }
 }
 
-const video1withLongDescription: YoutubeVideo = {
+const video2: YoutubeVideo = {
   kind: 'youtube#video',
   id: 'jQaeIJOA6J0',
   snippet: {
@@ -178,13 +178,13 @@ export const getVideoWithLongDescription = rest.get(
     ) {
       return res(
         ctx.json<YoutubeVideosData>({
-          items: [video1withLongDescription]
+          items: [video2]
         })
       )
     }
     return res(
       ctx.json<YoutubeVideosData>({
-        items: [video1withLongDescription]
+        items: [video2]
       })
     )
   }

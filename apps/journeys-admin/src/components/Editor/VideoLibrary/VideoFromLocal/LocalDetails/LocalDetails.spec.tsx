@@ -9,9 +9,6 @@ jest.mock('@mui/material/useMediaQuery', () => ({
 }))
 
 describe('LocalDetails', () => {
-  const longVideoDescription =
-    'Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat massa quis enim. Donec.'
-
   const mocks = [
     {
       request: {
@@ -63,58 +60,13 @@ describe('LocalDetails', () => {
       }
     }
   ]
+  const longVideoDescription =
+    'Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat massa quis enim. Donec.'
 
-  const mocksForLongDescriptions = [
-    {
-      request: {
-        query: GET_VIDEO,
-        variables: {
-          id: '2_Acts7302-0-0',
-          languageId: '529'
-        }
-      },
-      result: {
-        data: {
-          video: {
-            id: '2_Acts7302-0-0',
-            primaryLanguageId: '529',
-            image:
-              'https://d1wl257kev7hsz.cloudfront.net/cinematics/2_Acts7302-0-0.mobileCinematicHigh.jpg',
-            title: [
-              {
-                primary: true,
-                value: 'Jesus Taken Up Into Heaven'
-              }
-            ],
-            description: [
-              {
-                primary: true,
-                value: longVideoDescription
-              }
-            ],
-            variant: {
-              id: 'variantA',
-              duration: 144,
-              hls: 'https://arc.gt/opsgn'
-            },
-            variantLanguages: [
-              {
-                __typename: 'Language',
-                id: '529',
-                name: [
-                  {
-                    value: 'English',
-                    primary: true,
-                    __typename: 'Translation'
-                  }
-                ]
-              }
-            ]
-          }
-        }
-      }
-    }
-  ]
+  // deep clone mock array
+  const longDescriptionMock = JSON.parse(JSON.stringify(mocks))
+  longDescriptionMock[0].result.data.video.description[0].value =
+    longVideoDescription
 
   it('should render details of a video', async () => {
     const { getByText, getByRole } = render(
@@ -153,7 +105,7 @@ describe('LocalDetails', () => {
 
   it('should render show more or show less buttons for long video descriptions', async () => {
     const { queryByRole } = render(
-      <MockedProvider mocks={mocksForLongDescriptions}>
+      <MockedProvider mocks={longDescriptionMock}>
         <LocalDetails id="2_Acts7302-0-0" open onSelect={jest.fn()} />
       </MockedProvider>
     )
@@ -164,7 +116,7 @@ describe('LocalDetails', () => {
 
   it('should expand and truncate video description on button click', async () => {
     const { getByText, getByRole, queryByText } = render(
-      <MockedProvider mocks={mocksForLongDescriptions}>
+      <MockedProvider mocks={longDescriptionMock}>
         <LocalDetails id="2_Acts7302-0-0" open onSelect={jest.fn()} />
       </MockedProvider>
     )

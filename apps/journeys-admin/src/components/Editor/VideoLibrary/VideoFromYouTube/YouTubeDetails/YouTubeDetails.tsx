@@ -53,7 +53,7 @@ export function YouTubeDetails({
   }
 
   const handleDisplay = (): void => {
-    displayMore ? setDisplayMore(false) : setDisplayMore(true)
+    setDisplayMore((prevDisplayMore) => !prevDisplayMore)
   }
 
   const time =
@@ -63,10 +63,9 @@ export function YouTubeDetails({
       ? new Date(time * 1000).toISOString().substring(14, 19)
       : new Date(time * 1000).toISOString().substring(11, 19)
 
-  const videoCaption = data?.snippet.description ?? ''
-  console.log(videoCaption)
+  const videoDescription = data?.snippet.description ?? ''
 
-  const videoCaptionMaxLength = 139
+  const videoDescriptionMaxLength = 139
 
   useEffect(() => {
     if (videoRef.current != null) {
@@ -151,25 +150,25 @@ export function YouTubeDetails({
                 }}
               >
                 {!displayMore
-                  ? videoCaption.slice(0, videoCaptionMaxLength)
-                  : videoCaption}
+                  ? videoDescription.slice(0, videoDescriptionMaxLength)
+                  : videoDescription}
               </Typography>
 
-              {videoCaption.length > videoCaptionMaxLength && (
+              {videoDescription.length > videoDescriptionMaxLength && (
                 <Button
                   variant="text"
                   size="small"
                   sx={{
                     background:
-                      'linear-gradient(90deg, rgba(255,255,255,0.49625787815126055) 0%, rgba(255,255,255,0.9192270658263305) 17%, rgba(255,255,255,1) 29%)',
+                      'linear-gradient(90deg, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0.93) 17%, rgba(255,255,255,1) 29%)',
                     color: 'secondary.light',
                     position: 'relative',
-                    margin: !displayMore ? '-4em' : '-0.1em',
+                    margin: !displayMore ? '-64px' : '-1.6px',
                     fontWeight: '600',
                     zIndex: '2',
                     '&:hover': {
                       background:
-                        'linear-gradient(90deg, rgba(255,255,255,0.49625787815126055) 0%, rgba(255,255,255,0.9192270658263305) 17%, rgba(255,255,255,1) 29%)'
+                        'linear-gradient(90deg, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0.93) 17%, rgba(255,255,255,1) 29%)'
                     }
                   }}
                   onClick={handleDisplay}
