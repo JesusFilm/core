@@ -127,4 +127,15 @@ describe('VisitorService', () => {
       })
     })
   })
+
+  describe('getJourneyVisitorCount', () => {
+    it('should return the number of visitors for a journey', async () => {
+      prisma.journeyVisitor.count = jest.fn().mockReturnValueOnce(2)
+      expect(
+        await service.getJourneyVisitorCount({
+          journeyId: 'journey.id'
+        })
+      ).toEqual(2)
+    })
+  })
 })

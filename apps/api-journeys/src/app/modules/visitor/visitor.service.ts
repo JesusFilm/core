@@ -76,6 +76,7 @@ export class VisitorService {
     filter?: JourneyVisitorFilter
   ): Prisma.JourneyVisitorWhereInput {
     return {
+      journeyId: filter?.journeyId ?? undefined,
       lastChatStartedAt:
         filter?.hasChatStarted === true ? { not: null } : undefined,
       lastRadioQuestion:
