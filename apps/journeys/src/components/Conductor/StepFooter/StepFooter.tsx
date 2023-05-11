@@ -44,6 +44,17 @@ export default function StepFooter({ block }: StepFooterProps): ReactElement {
         : 'primary.contrastText'
   }
 
+  const shareJourney = async (): Promise<void> => {
+    if (navigator.share != null && navigator.canShare() === true) {
+      await navigator.share({
+        title: journey?.seoTitle ?? '',
+        url: `https://your.nextstep.is/journeys/${journey?.slug ?? ''}`
+      })
+    } else {
+      console.log("can't share")
+    }
+  }
+
   return (
     <ThemeProvider {...cardTheme}>
       <Stack
@@ -69,6 +80,7 @@ export default function StepFooter({ block }: StepFooterProps): ReactElement {
                 color: contentColorProps
               }
             }}
+            onClick={shareJourney}
           />
           <StyledChip
             label=""

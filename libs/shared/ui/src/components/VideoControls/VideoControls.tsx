@@ -14,6 +14,8 @@ import FullscreenExitRounded from '@mui/icons-material/FullscreenExitRounded'
 import CircularProgress from '@mui/material/CircularProgress'
 import fscreen from 'fscreen'
 import { secondsToTimeFormat } from '../../libs/timeFormat'
+// import Volume02 from '../CustomIcon/outlined/Volume02'
+// import Volume05 from '../CustomIcon/outlined/Volume05'
 
 interface VideoControlProps {
   player: videojs.Player
@@ -154,17 +156,26 @@ export function VideoControls({
     >
       <Fade
         in={visible}
-        style={{ transitionDuration: '225ms' }}
+        style={{ transitionDuration: '500ms' }}
         timeout={{ exit: 2225 }}
       >
         <Stack justifyContent="flex-end" sx={{ height: '100%' }}>
+          {/* Mute / Unmute */}
+          {/* <Stack flexDirection="row" justifyContent="flex-end" sx={{ mt: 16 }}>
+            <IconButton
+              aria-label="mute"
+              sx={{ mr: 4, mt: 1 }}
+              onClick={(e) => {
+                e.stopPropagation()
+                player.muted(!player.muted())
+                console.log(player.muted())
+              }}
+            >
+              {player.muted() ? <Volume02 /> : <Volume05 />}
+            </IconButton>
+          </Stack> */}
           {/* Play/Pause */}
-          <Stack
-            flexGrow={1}
-            alignItems="center"
-            justifyContent="center"
-            sx={{ pt: '50px' }}
-          >
+          <Stack flexGrow={1} alignItems="center" justifyContent="center">
             {!loading ? (
               <IconButton
                 sx={{

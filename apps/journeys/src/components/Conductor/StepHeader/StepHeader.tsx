@@ -8,7 +8,7 @@ import { ThemeName, ThemeMode } from '@core/shared/ui/themes'
 import NextLink from 'next/link'
 import IconButton from '@mui/material/IconButton'
 import Stack from '@mui/material/Stack'
-import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'
+import InfoCircleContained from '@core/shared/ui/CustomIcon/outlined/InfoCircleContained'
 import Typography from '@mui/material/Typography'
 import Divider from '@mui/material/Divider'
 import { useTranslation } from 'react-i18next'
@@ -59,10 +59,10 @@ export default function StepHeader({ block }: StepHeaderProps): ReactElement {
           aria-controls="more-info"
           aria-haspopup="true"
           aria-expanded={open ? 'true' : 'false'}
-          sx={{ mr: 4 }}
+          sx={{ mr: 4, mt: 1 }}
           onClick={handleClick}
         >
-          <InfoOutlinedIcon sx={{ color: 'white' }} />
+          <InfoCircleContained sx={{ color: 'white' }} />
         </IconButton>
         <Menu
           id="basic-menu"

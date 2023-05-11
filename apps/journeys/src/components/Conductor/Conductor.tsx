@@ -73,8 +73,8 @@ const StyledSwiperSlide = styled(SwiperSlide)(({ theme }) => ({
 const StyledNavArea = styled(Stack)(({ theme }) => ({
   position: 'absolute',
   justifyContent: 'center',
-  width: 75,
-  height: 'calc(100vh - 240px)',
+  width: 48,
+  height: 'calc(100vh - 320px)',
   zIndex: 3,
   bottom: '180px',
   [theme.breakpoints.up('lg')]: {
@@ -294,7 +294,7 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
         {(swiper?.activeIndex !== treeBlocks?.length - 1 ||
           !(treeBlocks[swiper.activeIndex] as TreeBlock<StepFields>)
             .locked) && (
-            <StyledNavArea
+          <StyledNavArea
             className="button-next"
             sx={{
               right: { xs: 0, lg: 24 },
@@ -309,12 +309,12 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
               }, 1000)
             }}
           >
-              <Fade
+            <Fade
               in={visibleNav}
               style={{ transitionDuration: '600ms', position: 'absolute' }}
               timeout={{ exit: 2225 }}
             >
-                <ChevronRightRounded
+              <ChevronRightRounded
                 fontSize="large"
                 sx={{
                   fontSize: '44px',
@@ -327,8 +327,8 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
                 htmlColor={theme.palette.common.white}
                 viewBox="0 0 23 24"
               />
-              </Fade>
-            </StyledNavArea>
+            </Fade>
+          </StyledNavArea>
         )}
       </StyledSwiperContainer>
     </Div100vh>
