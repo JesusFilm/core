@@ -13,9 +13,11 @@ import FullscreenRounded from '@mui/icons-material/FullscreenRounded'
 import FullscreenExitRounded from '@mui/icons-material/FullscreenExitRounded'
 import CircularProgress from '@mui/material/CircularProgress'
 import fscreen from 'fscreen'
+import VolumeUpOutlined from '@mui/icons-material/VolumeUpOutlined'
+import VolumeDownOutlined from '@mui/icons-material/VolumeDownOutlined'
+import VolumeMuteOutlined from '@mui/icons-material/VolumeMuteOutlined'
+import VolumeOffOutlined from '@mui/icons-material/VolumeOffOutlined'
 import { secondsToTimeFormat } from '../../libs/timeFormat'
-import Volume02 from '../CustomIcon/outlined/Volume02'
-import Volume05 from '../CustomIcon/outlined/Volume05'
 
 interface VideoControlProps {
   player: videojs.Player
@@ -39,6 +41,7 @@ export function VideoControls({
   const [active, setActive] = useState(true)
   const [displayTime, setDisplayTime] = useState<string>()
   const [progress, setProgress] = useState(0)
+  const [volume, setVolume] = useState(0)
   const [fullscreen, setFullscreen] = useState(false)
   const [loading, setLoading] = useState(false)
 
@@ -57,7 +60,7 @@ export function VideoControls({
     // Recalculate for startAt/endAt snippet
     player.on('timeupdate', () => {
       if (endAt > 0 && player.currentTime() >= endAt) {
-        void player.currentTime(endAt - 1)
+        void player.currentTime(0)
         void player.pause()
         setPlaying(false)
       }
@@ -117,6 +120,17 @@ export function VideoControls({
     }
   }
 
+  function handleMute(): void {
+    player.muted(!player.muted())
+  }
+
+  function handleVolume(_event: Event, value: number | number[]): void {
+    if (!Array.isArray(value)) {
+      setVolume(value)
+      player.volume(value / 100)
+    }
+  }
+
   function getClickHandler(
     onClick: MouseEventHandler,
     onDblClick: MouseEventHandler,
@@ -161,7 +175,11 @@ export function VideoControls({
       >
         <Stack justifyContent="flex-end" sx={{ height: '100%' }}>
           {/* Mute / Unmute */}
-          <Stack flexDirection="row" justifyContent="flex-end" sx={{ mt: 16 }}>
+          <Stack
+            flexDirection="row"
+            justifyContent="flex-end"
+            sx={{ mt: 16, display: { lg: 'none' } }}
+          >
             <IconButton
               aria-label="mute"
               sx={{
@@ -175,10 +193,10 @@ export function VideoControls({
               onClick={(e) => {
                 e.stopPropagation()
                 void player.play()
-                player.muted(!player.muted())
+                handleMute()
               }}
             >
-              {player.muted() ? <Volume02 /> : <Volume05 />}
+              {player.muted() ? <VolumeOffOutlined /> : <VolumeUpOutlined />}
             </IconButton>
           </Stack>
           {/* Play/Pause */}
@@ -301,6 +319,58 @@ export function VideoControls({
                     {displayTime} / {duration}
                   </Typography>
                 )}
+                <Stack
+                  alignItems="center"
+                  spacing={2}
+                  direction="row"
+                  sx={{
+                    display: { xs: 'none', lg: 'flex' },
+                    '> .MuiSlider-root': {
+                      width: 0,
+                      opacity: 0,
+                      transition: 'all 0.2s ease-out'
+                    },
+                    '&:hover': {
+                      '> .MuiSlider-root': {
+                        width: 70,
+                        mr: 4,
+                        opacity: 1
+                      }
+                    }
+                  }}
+                >
+                  <IconButton onClick={handleMute}>
+                    {player.muted() || volume === 0 ? (
+                      <VolumeOffOutlined />
+                    ) : volume > 60 ? (
+                      <VolumeUpOutlined />
+                    ) : volume > 30 ? (
+                      <VolumeDownOutlined />
+                    ) : (
+                      <VolumeMuteOutlined />
+                    )}
+                  </IconButton>
+                  <Slider
+                    aria-label="volume-control"
+                    min={0}
+                    max={100}
+                    value={player.muted() ? 0 : volume}
+                    valueLabelFormat={(value) => {
+                      return `${value}%`
+                    }}
+                    valueLabelDisplay="auto"
+                    onChange={handleVolume}
+                    sx={{
+                      '& .MuiSlider-thumb': {
+                        width: 10,
+                        height: 10
+                      },
+                      '& .MuiSlider-rail': {
+                        backgroundColor: 'secondary.main'
+                      }
+                    }}
+                  />
+                </Stack>
                 <IconButton onClick={handleFullscreen} sx={{ p: 0 }}>
                   {fullscreen ? (
                     <FullscreenExitRounded />

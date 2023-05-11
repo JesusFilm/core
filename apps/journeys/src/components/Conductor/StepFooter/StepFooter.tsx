@@ -45,6 +45,7 @@ export default function StepFooter({ block }: StepFooterProps): ReactElement {
   }
 
   const shareJourney = async (): Promise<void> => {
+    console.log(navigator.share, navigator.canShare())
     if (navigator.share != null && navigator.canShare() === true) {
       await navigator.share({
         title: journey?.seoTitle ?? '',
