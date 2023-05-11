@@ -39,8 +39,8 @@ export class ButtonClickEventResolver {
       this.eventService.save({
         ...input,
         id: input.id ?? undefined,
-        __typename: 'ButtonClickEvent',
-        visitorId: visitor.id,
+        typename: 'ButtonClickEvent',
+        visitor: { connect: { id: visitor.id } },
         stepId: input.stepId ?? undefined,
         journeyId
       })
@@ -92,8 +92,8 @@ export class ChatOpenEventResolver {
       this.eventService.save({
         ...input,
         id: input.id ?? undefined,
-        __typename: 'ChatOpenEvent',
-        visitorId: visitor.id,
+        typename: 'ChatOpenEvent',
+        visitor: { connect: { id: visitor.id } },
         stepId: input.stepId ?? undefined,
         journeyId
       })

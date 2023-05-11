@@ -44,8 +44,8 @@ export class JourneyViewEventResolver {
       this.eventService.save({
         ...input,
         id: input.id ?? undefined,
-        __typename: 'JourneyViewEvent',
-        visitorId: visitor.id
+        typename: 'JourneyViewEvent',
+        visitor: { connect: { id: visitor.id } }
       })
     ]
 

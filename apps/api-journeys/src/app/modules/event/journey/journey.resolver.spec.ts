@@ -97,8 +97,10 @@ describe('JourneyViewEventResolver', () => {
         await resolver.journeyViewEventCreate('user.id', userAgent, input)
       ).toEqual({
         ...input,
-        __typename: 'JourneyViewEvent',
-        visitorId: visitorWithId.id
+        typename: 'JourneyViewEvent',
+        visitor: {
+          connect: { id: visitorWithId.id }
+        }
       })
     })
 

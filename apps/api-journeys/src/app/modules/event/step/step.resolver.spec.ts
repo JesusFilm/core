@@ -28,12 +28,12 @@ describe('Step', () => {
   const response = {
     visitor: {
       id: 'visitor.id',
-      createdAt: new Date('2021-02-18').setMinutes(-5)
+      createdAt: new Date(new Date('2021-02-18').setMinutes(-5))
     },
     journeyVisitor: {
       visitorId: 'visitor.id',
       journeyId: 'journey.id',
-      createdAt: new Date('2021-02-18').setMinutes(-5)
+      createdAt: new Date(new Date('2021-02-18').setMinutes(-5))
     },
     journeyId: 'journey.id'
   }
@@ -60,8 +60,10 @@ describe('Step', () => {
 
       expect(await resolver.stepViewEventCreate('userId', input)).toEqual({
         ...input,
-        __typename: 'StepViewEvent',
-        visitorId: 'visitor.id',
+        typename: 'StepViewEvent',
+        visitor: {
+          connect: { id: 'visitor.id' }
+        },
         journeyId: 'journey.id',
         stepId: input.blockId
       })
@@ -107,8 +109,10 @@ describe('Step', () => {
       it('should return step next event', async () => {
         expect(await resolver.stepNextEventCreate('userId', input)).toEqual({
           ...input,
-          __typename: 'StepNextEvent',
-          visitorId: 'visitor.id',
+          typename: 'StepNextEvent',
+          visitor: {
+            connect: { id: 'visitor.id' }
+          },
           createdAt: new Date().toISOString(),
           journeyId: 'journey.id'
         })

@@ -39,8 +39,8 @@ export class RadioQuestionSubmissionEventResolver {
       this.eventService.save({
         ...input,
         id: input.id ?? undefined,
-        __typename: 'RadioQuestionSubmissionEvent',
-        visitorId: visitor.id,
+        typename: 'RadioQuestionSubmissionEvent',
+        visitor: { connect: { id: visitor.id } },
         stepId: input.stepId ?? undefined,
         journeyId
       }),

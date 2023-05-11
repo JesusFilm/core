@@ -101,8 +101,10 @@ describe('SignUpEventResolver', () => {
       ).toEqual({
         id: input.id,
         blockId: input.blockId,
-        __typename: 'SignUpSubmissionEvent',
-        visitorId: 'visitor.id',
+        typename: 'SignUpSubmissionEvent',
+        visitor: {
+          connect: { id: 'visitor.id' }
+        },
         createdAt: new Date().toISOString(),
         journeyId: 'journey.id',
         stepId: input.stepId,

@@ -33,22 +33,23 @@ export class StepViewEventResolver {
         input.blockId
       )
 
-    const date = new Date()
     const [stepViewEvent] = await Promise.all([
       this.eventService.save({
         ...input,
         id: input.id ?? undefined,
-        __typename: 'StepViewEvent',
-        visitorId: visitor.id,
+        typename: 'StepViewEvent',
+        visitor: { connect: { id: visitor.id } },
         journeyId,
         stepId: input.blockId
       }),
       this.prismaService.visitor.update({
         where: { id: visitor.id },
         data: {
-          duration:
-            Math.abs(date.getTime() - new Date(visitor.createdAt).getTime()) /
-            1000,
+          duration: Math.floor(
+            Math.abs(
+              new Date().getTime() - new Date(visitor.createdAt).getTime()
+            ) / 1000
+          ),
           lastStepViewedAt: new Date()
         }
       }),
@@ -60,10 +61,12 @@ export class StepViewEventResolver {
           }
         },
         data: {
-          duration:
+          duration: Math.floor(
             Math.abs(
-              date.getTime() - new Date(journeyVisitor.createdAt).getTime()
-            ) / 1000,
+              new Date().getTime() -
+                new Date(journeyVisitor.createdAt).getTime()
+            ) / 1000
+          ),
           lastStepViewedAt: new Date()
         }
       })
@@ -91,8 +94,8 @@ export class StepNextEventResolver {
     const stepNextEvent = await this.eventService.save({
       ...input,
       id: input.id ?? undefined,
-      __typename: 'StepNextEvent',
-      visitorId: visitor.id,
+      typename: 'StepNextEvent',
+      visitor: { connect: { id: visitor.id } },
       createdAt: new Date().toISOString(),
       journeyId
     })

@@ -65,8 +65,10 @@ describe('RadioQuestionSubmissionEventResolver', () => {
         await resolver.radioQuestionSubmissionEventCreate('userId', input)
       ).toEqual({
         ...input,
-        __typename: 'RadioQuestionSubmissionEvent',
-        visitorId: 'visitor.id',
+        typename: 'RadioQuestionSubmissionEvent',
+        visitor: {
+          connect: { id: 'visitor.id' }
+        },
         journeyId: 'journey.id'
       })
     })

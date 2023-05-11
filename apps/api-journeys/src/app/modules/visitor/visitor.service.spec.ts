@@ -58,9 +58,9 @@ describe('VisitorService', () => {
     prisma.journeyVisitor.findUnique = jest
       .fn()
       .mockReturnValueOnce(journeyVisitor)
-    prisma.journeyVisitor.create = jest
+    prisma.journeyVisitor.upsert = jest
       .fn()
-      .mockImplementationOnce((input) => input.data)
+      .mockImplementationOnce((input) => input.create)
   })
 
   describe('getList', () => {

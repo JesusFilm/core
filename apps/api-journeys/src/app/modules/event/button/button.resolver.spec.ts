@@ -57,8 +57,10 @@ describe('ButtonClickEventResolver', () => {
 
       expect(await resolver.buttonClickEventCreate('userId', input)).toEqual({
         ...input,
-        __typename: 'ButtonClickEvent',
-        visitorId: 'visitor.id',
+        typename: 'ButtonClickEvent',
+        visitor: {
+          connect: { id: 'visitor.id' }
+        },
         journeyId: 'journey.id'
       })
     })
@@ -143,8 +145,10 @@ describe('ChatOpenEventResolver', () => {
 
       expect(await resolver.chatOpenEventCreate('userId', input)).toEqual({
         ...input,
-        __typename: 'ChatOpenEvent',
-        visitorId: 'visitor.id',
+        typename: 'ChatOpenEvent',
+        visitor: {
+          connect: { id: 'visitor.id' }
+        },
         journeyId: 'journey.id'
       })
     })

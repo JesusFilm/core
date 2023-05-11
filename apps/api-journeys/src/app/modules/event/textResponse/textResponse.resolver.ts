@@ -35,8 +35,8 @@ export class TextResponseSubmissionEventResolver {
       this.eventService.save({
         ...input,
         id: input.id ?? undefined,
-        __typename: 'TextResponseSubmissionEvent',
-        visitorId: visitor.id,
+        typename: 'TextResponseSubmissionEvent',
+        visitor: { connect: { id: visitor.id } },
         createdAt: new Date().toISOString(),
         journeyId,
         stepId: input.stepId ?? undefined

@@ -117,7 +117,6 @@ model JourneyVisitor {
   visitorId                 String
   createdAt                 DateTime         @unique @default(now())
   duration                  Int              @default(0)
-  countryCode               String?
   lastChatStartedAt         DateTime?
   lastChatPlatform          MessagePlatform?
   lastStepViewedAt          DateTime?

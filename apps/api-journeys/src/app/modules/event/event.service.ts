@@ -1,51 +1,10 @@
 import { Injectable } from '@nestjs/common'
 import { UserInputError } from 'apollo-server-errors'
-import { ToPostgresql } from '@core/nest/decorators/ToPostgresql'
-import { Visitor, JourneyVisitor } from '.prisma/api-journeys-client'
+import { FromPostgresql } from '@core/nest/decorators/FromPostgresql'
+import { Prisma, Visitor, JourneyVisitor } from '.prisma/api-journeys-client'
 import { BlockService } from '../block/block.service'
 import { VisitorService } from '../visitor/visitor.service'
 import { PrismaService } from '../../lib/prisma.service'
-import {
-  ButtonClickEvent,
-  ChatOpenEvent,
-  JourneyViewEvent,
-  RadioQuestionSubmissionEvent,
-  SignUpSubmissionEvent,
-  StepNextEvent,
-  StepViewEvent,
-  TextResponseSubmissionEvent,
-  VideoCollapseEvent,
-  VideoCompleteEvent,
-  VideoExpandEvent,
-  VideoPauseEvent,
-  VideoPlayEvent,
-  VideoProgressEvent,
-  VideoStartEvent
-} from '../../__generated__/graphql'
-
-type EventCollections =
-  | Partial<ButtonClickEvent>
-  | Partial<ChatOpenEvent>
-  | Partial<JourneyViewEvent>
-  | Partial<RadioQuestionSubmissionEvent>
-  | Partial<StepNextEvent>
-  | Partial<StepViewEvent>
-  | Partial<SignUpSubmissionEvent>
-  | Partial<TextResponseSubmissionEvent>
-  | Partial<VideoCollapseEvent>
-  | Partial<VideoCompleteEvent>
-  | Partial<VideoExpandEvent>
-  | Partial<VideoPauseEvent>
-  | Partial<VideoPlayEvent>
-  | Partial<VideoProgressEvent>
-  | Partial<VideoStartEvent>
-
-type EventTypes = EventCollections & {
-  visitorId: string
-  __typename?: string
-  stepId?: string
-  blockId?: string
-}
 
 @Injectable()
 export class EventService {
@@ -92,21 +51,10 @@ export class EventService {
     return { visitor, journeyVisitor, journeyId }
   }
 
-  @ToPostgresql()
-  async save<T>(input: EventTypes): Promise<T> {
+  @FromPostgresql()
+  async save<T>(input: Prisma.EventCreateInput): Promise<T> {
     return (await this.prismaService.event.create({
-      data: {
-        ...input,
-        id: input.id ?? undefined,
-        typename: input.__typename ?? 'Event',
-        createdAt:
-          input.createdAt != null && typeof input.createdAt === 'string'
-            ? new Date(input.createdAt)
-            : undefined,
-        journeyId: input.journeyId ?? undefined,
-        blockId: input.blockId ?? undefined,
-        stepId: input.stepId ?? undefined
-      }
+      data: input
     })) as unknown as T
   }
 }

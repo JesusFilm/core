@@ -278,11 +278,11 @@ type JourneyVisitorsConnection {
 
 input JourneyVisitorFilter {
   journeyId: String
-  hasChat: Boolean
-  hasAnswers: Boolean
-  hasData: Boolean
+  hasChatStarted: Boolean
+  hasPollAnswers: Boolean
+  hasTextResponse: Boolean
   hasIcon: Boolean
-  isInactive: Boolean
+  hideInactive: Boolean
   countryCode: String
 }
 
@@ -318,10 +318,26 @@ extend type Query {
   Get a list of Visitor Information by Journey
   """
   journeyVisitorsConnection(
-    filter: JourneyVisitorFilter
+    """
+    Returns the visitor items related to a specific team.
+    """
+    teamId: String!
+    """
+    Returns the first n elements from the list.
+    """
     first: Int
+    """
+    Returns the elements in the list that come after the specified cursor.
+    """
     after: String
+    """
+    Returns the elements in the list that match the specified filter.
+    """
+    filter: JourneyVisitorFilter
   ): JourneyVisitorsConnection!
+  """
+  Get a JourneyVisitor count by JourneyVisitorFilter
+  """
   journeyVisitorCount(filter: JourneyVisitorFilter): Int!
 }
 

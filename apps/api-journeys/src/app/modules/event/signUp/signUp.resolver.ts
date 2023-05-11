@@ -35,8 +35,8 @@ export class SignUpSubmissionEventResolver {
       this.eventService.save({
         id: input.id ?? undefined,
         blockId: input.blockId,
-        __typename: 'SignUpSubmissionEvent',
-        visitorId: visitor.id,
+        typename: 'SignUpSubmissionEvent',
+        visitor: { connect: { id: visitor.id } },
         createdAt: new Date().toISOString(),
         journeyId,
         stepId: input.stepId ?? undefined,

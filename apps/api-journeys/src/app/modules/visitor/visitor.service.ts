@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common'
 import { v4 as uuidv4 } from 'uuid'
-import { Visitor, JourneyVisitor } from '.prisma/api-journeys-client'
+import { Visitor, JourneyVisitor, Prisma } from '.prisma/api-journeys-client'
 import {
   PageInfo,
   JourneyVisitorFilter,
@@ -72,18 +72,24 @@ export class VisitorService {
     }
   }
 
-  generateWhere(filter?: JourneyVisitorFilter): any {
+  generateWhere(
+    filter?: JourneyVisitorFilter
+  ): Prisma.JourneyVisitorWhereInput {
     return {
-      lastChatStartedAt: filter?.hasChat === true ? { not: null } : undefined,
+      lastChatStartedAt:
+        filter?.hasChatStarted === true ? { not: null } : undefined,
       lastRadioQuestion:
-        filter?.hasAnswers === true ? { not: null } : undefined,
-      lastTextResponse: filter?.hasData === true ? { not: null } : undefined,
-      status: filter?.hasIcon === true ? { not: null } : undefined,
-      events: filter?.isInactive === true ? { none: {} } : undefined,
-      countryCode:
-        filter?.countryCode != null
-          ? { contains: filter.countryCode }
-          : undefined
+        filter?.hasPollAnswers === true ? { not: null } : undefined,
+      lastTextResponse:
+        filter?.hasTextResponse === true ? { not: null } : undefined,
+      activityCount: filter?.hideInactive === true ? { gt: 0 } : undefined,
+      visitor: {
+        status: filter?.hasIcon === true ? { not: null } : undefined,
+        countryCode:
+          filter?.countryCode != null
+            ? { contains: filter.countryCode }
+            : undefined
+      }
     }
   }
 
@@ -158,17 +164,14 @@ export class VisitorService {
         }
       })
     }
-    let journeyVisitor = await this.prismaService.journeyVisitor.findUnique({
-      where: { journeyId_visitorId: { journeyId, visitorId: visitor.id } }
+    const journeyVisitor = await this.prismaService.journeyVisitor.upsert({
+      where: { journeyId_visitorId: { journeyId, visitorId: visitor.id } },
+      update: {},
+      create: {
+        journeyId,
+        visitorId: visitor.id
+      }
     })
-    if (journeyVisitor == null) {
-      journeyVisitor = await this.prismaService.journeyVisitor.create({
-        data: {
-          journeyId,
-          visitorId: visitor.id
-        }
-      })
-    }
 
     return { visitor, journeyVisitor }
   }

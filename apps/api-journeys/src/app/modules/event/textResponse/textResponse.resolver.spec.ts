@@ -63,8 +63,10 @@ describe('TextResponseEventResolver', () => {
         await resolver.textResponseSubmissionEventCreate('userId', input)
       ).toEqual({
         ...input,
-        __typename: 'TextResponseSubmissionEvent',
-        visitorId: 'visitor.id',
+        typename: 'TextResponseSubmissionEvent',
+        visitor: {
+          connect: { id: 'visitor.id' }
+        },
         createdAt: new Date().toISOString(),
         journeyId: 'journey.id'
       })
