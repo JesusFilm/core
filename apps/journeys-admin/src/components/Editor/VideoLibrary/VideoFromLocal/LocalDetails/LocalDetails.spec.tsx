@@ -9,6 +9,9 @@ jest.mock('@mui/material/useMediaQuery', () => ({
 }))
 
 describe('LocalDetails', () => {
+  const longVideoDescription =
+    'Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat massa quis enim. Donec.'
+
   const mocks = [
     {
       request: {
@@ -61,6 +64,58 @@ describe('LocalDetails', () => {
     }
   ]
 
+  const mocksForLongDescriptions = [
+    {
+      request: {
+        query: GET_VIDEO,
+        variables: {
+          id: '2_Acts7302-0-0',
+          languageId: '529'
+        }
+      },
+      result: {
+        data: {
+          video: {
+            id: '2_Acts7302-0-0',
+            primaryLanguageId: '529',
+            image:
+              'https://d1wl257kev7hsz.cloudfront.net/cinematics/2_Acts7302-0-0.mobileCinematicHigh.jpg',
+            title: [
+              {
+                primary: true,
+                value: 'Jesus Taken Up Into Heaven'
+              }
+            ],
+            description: [
+              {
+                primary: true,
+                value: longVideoDescription
+              }
+            ],
+            variant: {
+              id: 'variantA',
+              duration: 144,
+              hls: 'https://arc.gt/opsgn'
+            },
+            variantLanguages: [
+              {
+                __typename: 'Language',
+                id: '529',
+                name: [
+                  {
+                    value: 'English',
+                    primary: true,
+                    __typename: 'Translation'
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      }
+    }
+  ]
+
   it('should render details of a video', async () => {
     const { getByText, getByRole } = render(
       <MockedProvider mocks={mocks}>
@@ -82,6 +137,28 @@ describe('LocalDetails', () => {
     const imageTag = videoPlayer.querySelector('.vjs-poster')
     expect(imageTag).toHaveStyle(
       "background-image: url('https://d1wl257kev7hsz.cloudfront.net/cinematics/2_Acts7302-0-0.mobileCinematicHigh.jpg')"
+    )
+  })
+
+  it('should not render show more or show less buttons for short video descriptions', async () => {
+    const { queryByRole } = render(
+      <MockedProvider mocks={mocks}>
+        <LocalDetails id="2_Acts7302-0-0" open onSelect={jest.fn()} />
+      </MockedProvider>
+    )
+    await waitFor(() =>
+      expect(queryByRole('button', { name: 'More' })).not.toBeInTheDocument()
+    )
+  })
+
+  it('should render show more or show less buttons for long video descriptions', async () => {
+    const { queryByRole } = render(
+      <MockedProvider mocks={mocksForLongDescriptions}>
+        <LocalDetails id="2_Acts7302-0-0" open onSelect={jest.fn()} />
+      </MockedProvider>
+    )
+    await waitFor(() =>
+      expect(queryByRole('button', { name: 'More' })).toBeInTheDocument()
     )
   })
 

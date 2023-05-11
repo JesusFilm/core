@@ -37,6 +37,7 @@ export function YouTubeDetails({
   const videoRef = useRef<HTMLVideoElement>(null)
   const playerRef = useRef<videojs.Player>()
   const [playing, setPlaying] = useState(false)
+  const [displayMore, setDisplayMore] = useState(false)
   const { data, error } = useSWR<YoutubeVideo>(
     () => (open ? id : null),
     fetcher
@@ -51,12 +52,21 @@ export function YouTubeDetails({
     })
   }
 
+  const handleDisplay = (): void => {
+    displayMore ? setDisplayMore(false) : setDisplayMore(true)
+  }
+
   const time =
     data != null ? parseISO8601Duration(data.contentDetails.duration) : 0
   const duration =
     time < 3600
       ? new Date(time * 1000).toISOString().substring(14, 19)
       : new Date(time * 1000).toISOString().substring(11, 19)
+
+  const videoCaption = data?.snippet.description ?? ''
+  console.log(videoCaption)
+
+  const videoCaptionMaxLength = 139
 
   useEffect(() => {
     if (videoRef.current != null) {
@@ -131,9 +141,43 @@ export function YouTubeDetails({
           </Box>
           <Box>
             <Typography variant="subtitle1">{data?.snippet.title}</Typography>
-            <Typography variant="caption" sx={{ whiteSpace: 'pre-wrap' }}>
-              {data?.snippet.description}
-            </Typography>
+            <Box sx={{ display: 'inline' }}>
+              <Typography
+                variant="caption"
+                sx={{
+                  position: 'relative',
+                  // whitespace: normal reduces edge cases
+                  whiteSpace: 'normal'
+                }}
+              >
+                {!displayMore
+                  ? videoCaption.slice(0, videoCaptionMaxLength)
+                  : videoCaption}
+              </Typography>
+
+              {videoCaption.length > videoCaptionMaxLength && (
+                <Button
+                  variant="text"
+                  size="small"
+                  sx={{
+                    background:
+                      'linear-gradient(90deg, rgba(255,255,255,0.49625787815126055) 0%, rgba(255,255,255,0.9192270658263305) 17%, rgba(255,255,255,1) 29%)',
+                    color: 'secondary.light',
+                    position: 'relative',
+                    margin: !displayMore ? '-4em' : '-0.1em',
+                    fontWeight: '600',
+                    zIndex: '2',
+                    '&:hover': {
+                      background:
+                        'linear-gradient(90deg, rgba(255,255,255,0.4542410714285714) 0%, rgba(255,255,255,0.8772102591036415) 14%, rgba(255,255,255,1) 32%)'
+                    }
+                  }}
+                  onClick={handleDisplay}
+                >
+                  {!displayMore ? 'More' : 'Less'}
+                </Button>
+              )}
+            </Box>
           </Box>
         </>
       )}
