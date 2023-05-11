@@ -35,7 +35,7 @@ export function ControlPanel(): ReactElement {
   useEffect(() => {
     if (
       activeTab === ActiveTab.Journey &&
-      journeyEditContentComponent === 'social'
+      journeyEditContentComponent === ActiveJourneyEditContent.SocialPreview
     ) {
       dispatch({
         type: 'SetDrawerPropsAction',

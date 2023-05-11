@@ -1,4 +1,8 @@
-import { ActiveTab, useEditor } from '@core/journeys/ui/EditorProvider'
+import {
+  ActiveJourneyEditContent,
+  ActiveTab,
+  useEditor
+} from '@core/journeys/ui/EditorProvider'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import Stack from '@mui/material/Stack'
 import Box from '@mui/material/Box'
@@ -104,8 +108,8 @@ export function Attributes({ selected, step }: AttributesProps): ReactElement {
   useEffect(() => {
     if (
       activeTab === ActiveTab.Journey &&
-      journeyEditContentComponent !== 'action' &&
-      journeyEditContentComponent !== 'social'
+      journeyEditContentComponent !== ActiveJourneyEditContent.Action &&
+      journeyEditContentComponent !== ActiveJourneyEditContent.SocialPreview
     ) {
       dispatch({
         type: 'SetDrawerPropsAction',
