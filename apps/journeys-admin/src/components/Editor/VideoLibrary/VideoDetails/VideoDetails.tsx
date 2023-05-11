@@ -22,7 +22,10 @@ import {
 } from '../../../../../__generated__/globalTypes'
 import { LocalDetails } from '../VideoFromLocal/LocalDetails'
 import { YouTubeDetails } from '../VideoFromYouTube/YouTubeDetails'
-import { GetJourney_journey_blocks_VideoBlock as VideoBlock } from '../../../../../__generated__/GetJourney'
+import {
+  GetJourney_journey_blocks_VideoBlock as VideoBlock,
+  GetJourney_journey_blocks_ImageBlock as ImageBlock
+} from '../../../../../__generated__/GetJourney'
 import { BlockDeleteForCoverImage } from '../../../../../__generated__/BlockDeleteForCoverImage'
 
 export const DRAWER_WIDTH = 328
@@ -66,7 +69,7 @@ export function VideoDetails({
   )
 
   const {
-    state: { selectedBlock }
+    state: { selectedStep }
   } = useEditor()
 
   const { journey } = useJourney()
@@ -89,10 +92,14 @@ export function VideoDetails({
   }
 
   const handleClearVideo = async (): Promise<void> => {
-    const videoBlock = selectedBlock as TreeBlock<VideoBlock>
+    const videoBlock = selectedStep?.children
+      .find((child) => child.__typename === 'CardBlock')
+      ?.children.find(
+        (child) => child.__typename === 'VideoBlock'
+      ) as TreeBlock<VideoBlock>
     const imageBlock = videoBlock?.children.find(
       (child) => child.__typename === 'ImageBlock'
-    )
+    ) as TreeBlock<ImageBlock>
     if (videoBlock.posterBlockId === imageBlock?.id) {
       await blockDeleteForCoverImage({
         variables: {

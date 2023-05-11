@@ -250,7 +250,32 @@ describe('VideoDetails', () => {
             admin: true
           }}
         >
-          <EditorProvider initialState={{ selectedBlock: videoBlock }}>
+          <EditorProvider
+            initialState={{
+              selectedStep: {
+                id: 'step0.id',
+                __typename: 'StepBlock',
+                parentBlockId: null,
+                parentOrder: 0,
+                locked: false,
+                nextBlockId: 'step1.id',
+                children: [
+                  {
+                    id: 'card0.id',
+                    __typename: 'CardBlock',
+                    parentBlockId: 'step0.id',
+                    coverBlockId: null,
+                    parentOrder: 0,
+                    backgroundColor: null,
+                    themeMode: null,
+                    themeName: null,
+                    fullscreen: false,
+                    children: [videoBlock]
+                  }
+                ]
+              }
+            }}
+          >
             <VideoDetails
               id="2_0-FallingPlates"
               source={VideoBlockSource.internal}
