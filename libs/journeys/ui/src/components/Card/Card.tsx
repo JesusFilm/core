@@ -81,6 +81,7 @@ export function Card({
       <Box
         className="swiper-no-swiping"
         sx={{
+          display: { lg: 'none' },
           width: '100%',
           height: '50px',
           position: 'absolute',

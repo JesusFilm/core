@@ -38,17 +38,20 @@ const StyledGradientBackground = styled(Stack)(({ theme }) => ({
   zIndex: 0,
   width: '100%',
   height: '200px',
-  background: `linear-gradient(to top, ${theme.palette.background.paper} 0%, ${theme.palette.background.paper}f2 20%, ${theme.palette.background.paper}bf 40%, ${theme.palette.background.paper}1a 85%, ${theme.palette.background.paper}00 100%)`
+  background: `linear-gradient(to top,  ${theme.palette.background.paper}cc 0%, ${theme.palette.background.paper}33 60%, ${theme.palette.background.paper}00 100%)`,
+  [theme.breakpoints.up('lg')]: {
+    background: 'unset'
+  }
 }))
 
 const StyledBlurBackground = styled(Stack)(({ theme }) => ({
-  justifyContent: 'flex-end',
-  flexDirection: 'row',
   position: 'absolute',
-  zIndex: 0,
   width: '100%',
   WebkitBackdropFilter: 'blur(4px)',
-  backdropFilter: 'blur(4px)'
+  backdropFilter: 'blur(4px)',
+  [theme.breakpoints.up('lg')]: {
+    height: '100%'
+  }
 }))
 
 export function ContainedCover({
@@ -174,9 +177,18 @@ export function ContainedCover({
   }, [player, videoBlock])
 
   useEffect(() => {
-    if (contentRef.current != null)
-      setContentHeight((contentRef.current as HTMLDivElement).clientHeight ?? 0)
+    if (contentRef.current != null) {
+      console.log('window.innerHeight', window.innerHeight)
+      setContentHeight(
+        (contentRef.current as unknown as HTMLDivElement).clientHeight ?? 0
+      )
+    }
   }, [contentRef])
+
+  const overlayGradient = (isMobile: boolean): string =>
+    `linear-gradient(${
+      isMobile ? 'to bottom' : 'to right'
+    }, transparent 0%,  ${backgroundBlur}14 10%, ${backgroundBlur}33 15%, ${backgroundBlur}60 20%, ${backgroundBlur}b0 30%, ${backgroundBlur}e6 40%, ${backgroundBlur} 98%)`
 
   return (
     <>
@@ -251,57 +263,68 @@ export function ContainedCover({
       </Box>
       <Stack
         className="overlay-container"
-        justifyContent="flex-end"
         alignItems="flex-end"
         sx={{
           position: 'absolute',
           zIndex: 1,
           width: '100%',
-          height: '100%'
+          height: '100%',
+          justifyContent: { xs: 'flex-end', lg: 'center' }
         }}
       >
         {children.length !== 0 ? (
           <>
-            <StyledBlurBackground
+            <Stack
               className="overlay-blur"
               sx={{
-                height: contentHeight - 40,
-                WebkitBackdropFilter: 'blur(1px)',
-                backdropFilter: 'blur(1px)'
+                width: { xs: '100%', lg: 380 },
+                height: { xs: contentHeight, lg: '100%' },
+                flexDirection: { lg: 'row' },
+                justifyContent: 'flex-end'
               }}
-            />
-            <StyledBlurBackground
-              className="overlay-blur"
-              sx={{
-                height: contentHeight - 80,
-                WebkitBackdropFilter: 'blur(1px)',
-                backdropFilter: 'blur(1px)'
-              }}
-            />
-            <StyledBlurBackground
-              className="overlay-blur"
-              sx={{
-                height: contentHeight * 0.9 - 80,
-                WebkitBackdropFilter: 'blur(2px)',
-                backdropFilter: 'blur(2px)'
-              }}
-            />
-            <StyledBlurBackground
-              className="overlay-blur"
-              sx={{ height: contentHeight * 0.8 - 80 }}
-            />
-            <StyledBlurBackground
-              className="overlay-blur"
-              sx={{ height: contentHeight * 0.7 - 80 }}
-            />
-            <StyledBlurBackground
-              className="overlay-blur"
-              sx={{ height: contentHeight * 0.6 - 80 }}
-            />
-            <StyledBlurBackground
-              className="overlay-blur"
-              sx={{ height: contentHeight * 0.5 - 80 }}
-            />
+            >
+              <StyledBlurBackground
+                sx={{
+                  width: { lg: 600 },
+                  height: contentHeight - 40,
+                  WebkitBackdropFilter: 'blur(1px)',
+                  backdropFilter: 'blur(1px)'
+                }}
+              />
+              <StyledBlurBackground
+                sx={{
+                  width: { lg: 570 },
+                  height: contentHeight - 80,
+                  WebkitBackdropFilter: 'blur(1px)',
+                  backdropFilter: 'blur(1px)'
+                }}
+              />
+              <StyledBlurBackground
+                sx={{
+                  width: { lg: 480 },
+                  height: contentHeight * 0.9 - 80,
+                  WebkitBackdropFilter: 'blur(2px)',
+                  backdropFilter: 'blur(2px)'
+                }}
+              />
+              <StyledBlurBackground
+                sx={{
+                  width: { lg: 420 },
+                  height: contentHeight * 0.8 - 80,
+                  WebkitBackdropFilter: 'blur(3px)',
+                  backdropFilter: 'blur(3px)'
+                }}
+              />
+              <StyledBlurBackground
+                sx={{ width: { lg: 380 }, height: contentHeight * 0.7 - 80 }}
+              />
+              <StyledBlurBackground
+                sx={{ width: { lg: 340 }, height: contentHeight * 0.6 - 80 }}
+              />
+              <StyledBlurBackground
+                sx={{ width: { lg: 300 }, height: contentHeight * 0.5 - 80 }}
+              />
+            </Stack>
             <Stack
               ref={contentRef}
               className="overlay-gradient"
@@ -311,23 +334,31 @@ export function ContainedCover({
                 position: 'absolute',
                 zIndex: 1,
                 width: '100%',
+                height: { lg: '100%' },
                 maxWidth: { xs: '100%', lg: '380px' },
                 maxHeight: { xs: 'calc(55% - 80px)', lg: '100%' },
                 borderBottomLeftRadius: admin ? 16 : 0,
                 borderBottomRightRadius: admin ? 16 : 0,
                 pt: { xs: 30, lg: 0 },
                 pb: { xs: 22, lg: 0 },
-                WebkitMask: `linear-gradient(transparent 0%,  ${backgroundBlur}14 10%, ${backgroundBlur}33 15%, ${backgroundBlur}60 20%, ${backgroundBlur}b0 30%, ${backgroundBlur}e6 40%, ${backgroundBlur} 98%)`,
-                mask: `linear-gradient(transparent 0%,  ${backgroundBlur}14 10%, ${backgroundBlur}33 15%, ${backgroundBlur}60 20%, ${backgroundBlur}b0 30%, ${backgroundBlur}e6 40%, ${backgroundBlur} 98%)`,
-                backgroundColor: ` ${backgroundBlur}fc`
+                pl: { lg: 50 },
+                WebkitMask: {
+                  xs: overlayGradient(true),
+                  lg: overlayGradient(false)
+                },
+                mask: {
+                  xs: overlayGradient(true),
+                  lg: overlayGradient(false)
+                },
+                backgroundColor: `${backgroundBlur}d9`
               }}
             >
-              <Box
+              <Stack
                 className="overlay-content"
+                justifyContent="center"
                 sx={{
                   height: 'inherit',
                   px: { xs: 6, lg: 10 },
-
                   overflowY: 'scroll',
                   WebkitMask: `linear-gradient(transparent 0%, ${backgroundBlur}1a 4%,${backgroundBlur} 8%, ${backgroundBlur} 90%, ${backgroundBlur}1a 96%, transparent 100%)`,
                   mask: `linear-gradient(transparent 0%, ${backgroundBlur}1a 4%,${backgroundBlur} 8%, ${backgroundBlur} 90%, ${backgroundBlur}1a 96%, transparent 100%)`,
@@ -345,7 +376,7 @@ export function ContainedCover({
                 }}
               >
                 {children}
-              </Box>
+              </Stack>
             </Stack>
           </>
         ) : (

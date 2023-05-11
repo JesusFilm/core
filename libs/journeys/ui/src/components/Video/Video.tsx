@@ -43,7 +43,7 @@ const StyledVideoGradient = styled(Box)(() => ({
   position: 'absolute',
   bottom: 0,
   zIndex: 1,
-  background: `linear-gradient(to top,#000000cf 0%, #000000a3 15%, #0000007d 30%,#0000002e 60%, #00000000 95%)`
+  background: `linear-gradient(to top,#000000a6 0%, #00000080 15%, #00000000 95%)`
 }))
 
 export function Video({
