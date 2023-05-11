@@ -31,7 +31,7 @@ export function ControlPanel(): ReactElement {
     },
     dispatch
   } = useEditor()
-  
+
   useEffect(() => {
     if (
       activeTab === ActiveTab.Journey &&
@@ -39,7 +39,7 @@ export function ControlPanel(): ReactElement {
     ) {
       dispatch({
         type: 'SetDrawerPropsAction',
-        title: 'Properties',
+        title: 'Social Share Preview',
         children: <SocialShareAppearance />
       })
     }
