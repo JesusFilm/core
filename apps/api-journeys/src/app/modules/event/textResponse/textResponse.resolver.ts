@@ -9,13 +9,13 @@ import {
   TextResponseSubmissionEventCreateInput
 } from '../../../__generated__/graphql'
 import { EventService } from '../event.service'
-import { VisitorService } from '../../visitor/visitor.service'
+import { PrismaService } from '../../../lib/prisma.service'
 
 @Resolver('TextResponseSubmissionEvent')
 export class TextResponseSubmissionEventResolver {
   constructor(
     private readonly eventService: EventService,
-    private readonly visitorService: VisitorService
+    private readonly prismaService: PrismaService
   ) {}
 
   @Mutation()
@@ -24,24 +24,42 @@ export class TextResponseSubmissionEventResolver {
     @CurrentUserId() userId: string,
     @Args('input') input: TextResponseSubmissionEventCreateInput
   ): Promise<TextResponseSubmissionEvent> {
-    const { visitor, journeyId } = await this.eventService.validateBlockEvent(
-      userId,
-      input.blockId,
-      input.stepId
-    )
+    const { visitor, journeyVisitor, journeyId } =
+      await this.eventService.validateBlockEvent(
+        userId,
+        input.blockId,
+        input.stepId
+      )
 
     const [textResponseSubmissionEvent] = await Promise.all([
       this.eventService.save({
         ...input,
+        id: input.id ?? undefined,
         __typename: 'TextResponseSubmissionEvent',
         visitorId: visitor.id,
         createdAt: new Date().toISOString(),
-        journeyId
+        journeyId,
+        stepId: input.stepId ?? undefined
       }),
-      this.visitorService.update(visitor.id, {
-        lastTextResponse: input.value
+      this.prismaService.visitor.update({
+        where: { id: visitor.id },
+        data: {
+          lastTextResponse: input.value
+        }
+      }),
+      this.prismaService.journeyVisitor.update({
+        where: {
+          journeyId_visitorId: {
+            journeyId,
+            visitorId: journeyVisitor.visitorId
+          }
+        },
+        data: {
+          lastTextResponse: input.value,
+          activityCount: journeyVisitor.activityCount + 1
+        }
       })
     ])
-    return textResponseSubmissionEvent
+    return textResponseSubmissionEvent as TextResponseSubmissionEvent
   }
 }

@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { EventService } from '../event.service'
 import { TextResponseSubmissionEventCreateInput } from '../../../__generated__/graphql'
-import { VisitorService } from '../../visitor/visitor.service'
+import { PrismaService } from '../../../lib/prisma.service'
 import { TextResponseSubmissionEventResolver } from './textResponse.resolver'
 
 describe('TextResponseEventResolver', () => {
@@ -14,7 +14,7 @@ describe('TextResponseEventResolver', () => {
     jest.useRealTimers()
   })
 
-  let resolver: TextResponseSubmissionEventResolver, vService: VisitorService
+  let resolver: TextResponseSubmissionEventResolver, prisma: PrismaService
 
   const eventService = {
     provide: EventService,
@@ -24,15 +24,13 @@ describe('TextResponseEventResolver', () => {
     })
   }
 
-  const visitorService = {
-    provide: VisitorService,
-    useFactory: () => ({
-      update: jest.fn(() => null)
-    })
-  }
-
   const response = {
     visitor: { id: 'visitor.id' },
+    journeyVisitor: {
+      journeyId: 'journey.id',
+      visitorId: 'visitor.id',
+      activityCount: 0
+    },
     journeyId: 'journey.id'
   }
 
@@ -41,13 +39,15 @@ describe('TextResponseEventResolver', () => {
       providers: [
         TextResponseSubmissionEventResolver,
         eventService,
-        visitorService
+        PrismaService
       ]
     }).compile()
     resolver = module.get<TextResponseSubmissionEventResolver>(
       TextResponseSubmissionEventResolver
     )
-    vService = module.get<VisitorService>(VisitorService)
+    prisma = module.get<PrismaService>(PrismaService)
+    prisma.visitor.update = jest.fn().mockResolvedValueOnce(null)
+    prisma.journeyVisitor.update = jest.fn().mockResolvedValueOnce(null)
   })
 
   describe('textResponseSubmissionEventCreate', () => {
@@ -73,8 +73,11 @@ describe('TextResponseEventResolver', () => {
     it('should update visitor', async () => {
       await resolver.textResponseSubmissionEventCreate('userId', input)
 
-      expect(vService.update).toHaveBeenCalledWith('visitor.id', {
-        lastTextResponse: input.value
+      expect(prisma.visitor.update).toHaveBeenCalledWith({
+        where: { id: 'visitor.id' },
+        data: {
+          lastTextResponse: input.value
+        }
       })
     })
   })

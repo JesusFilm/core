@@ -6,26 +6,22 @@ import {
   ChatOpenEventCreateInput,
   MessagePlatform
 } from '../../../__generated__/graphql'
-import { VisitorService } from '../../visitor/visitor.service'
+import { PrismaService } from '../../../lib/prisma.service'
 import {
   ButtonClickEventResolver,
   ChatOpenEventResolver
 } from './button.resolver'
 
 describe('ButtonClickEventResolver', () => {
-  let resolver: ButtonClickEventResolver, vService: VisitorService
-
-  beforeAll(() => {
-    jest.useFakeTimers('modern')
-    jest.setSystemTime(new Date('2021-02-18'))
-  })
-
-  afterAll(() => {
-    jest.useRealTimers()
-  })
+  let resolver: ButtonClickEventResolver, prisma: PrismaService
 
   const response = {
     visitor: { id: 'visitor.id' },
+    journeyVisitor: {
+      journeyId: 'journey.id',
+      visitorId: 'visitor.id',
+      activityCount: 0
+    },
     journeyId: 'journey.id'
   }
 
@@ -37,19 +33,14 @@ describe('ButtonClickEventResolver', () => {
     })
   }
 
-  const visitorService = {
-    provide: VisitorService,
-    useFactory: () => ({
-      update: jest.fn(() => null)
-    })
-  }
-
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [ButtonClickEventResolver, eventService, visitorService]
+      providers: [ButtonClickEventResolver, eventService, PrismaService]
     }).compile()
     resolver = module.get<ButtonClickEventResolver>(ButtonClickEventResolver)
-    vService = module.get<VisitorService>(VisitorService)
+    prisma = module.get<PrismaService>(PrismaService)
+    prisma.visitor.update = jest.fn().mockResolvedValueOnce(null)
+    prisma.journeyVisitor.update = jest.fn().mockResolvedValueOnce(null)
   })
 
   describe('buttonClickEventCreate', () => {
@@ -68,7 +59,6 @@ describe('ButtonClickEventResolver', () => {
         ...input,
         __typename: 'ButtonClickEvent',
         visitorId: 'visitor.id',
-        createdAt: new Date().toISOString(),
         journeyId: 'journey.id'
       })
     })
@@ -85,15 +75,18 @@ describe('ButtonClickEventResolver', () => {
       }
       await resolver.buttonClickEventCreate('userId', input)
 
-      expect(vService.update).toHaveBeenCalledWith('visitor.id', {
-        lastLinkAction: 'https://test.com/some-link'
+      expect(prisma.visitor.update).toHaveBeenCalledWith({
+        where: { id: 'visitor.id' },
+        data: {
+          lastLinkAction: 'https://test.com/some-link'
+        }
       })
     })
   })
 })
 
 describe('ChatOpenEventResolver', () => {
-  let resolver: ChatOpenEventResolver, vService: VisitorService
+  let resolver: ChatOpenEventResolver, prisma: PrismaService
 
   beforeAll(() => {
     jest.useFakeTimers('modern')
@@ -129,19 +122,14 @@ describe('ChatOpenEventResolver', () => {
     })
   }
 
-  const visitorService = {
-    provide: VisitorService,
-    useFactory: () => ({
-      update: jest.fn(() => null)
-    })
-  }
-
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [ChatOpenEventResolver, eventService, visitorService]
+      providers: [ChatOpenEventResolver, eventService, PrismaService]
     }).compile()
     resolver = module.get<ChatOpenEventResolver>(ChatOpenEventResolver)
-    vService = module.get<VisitorService>(VisitorService)
+    prisma = module.get<PrismaService>(PrismaService)
+    prisma.visitor.update = jest.fn().mockResolvedValueOnce(null)
+    prisma.journeyVisitor.update = jest.fn().mockResolvedValueOnce(null)
   })
 
   describe('chatOpenEventCreate', () => {
@@ -157,7 +145,6 @@ describe('ChatOpenEventResolver', () => {
         ...input,
         __typename: 'ChatOpenEvent',
         visitorId: 'visitor.id',
-        createdAt: new Date().toISOString(),
         journeyId: 'journey.id'
       })
     })
@@ -172,10 +159,13 @@ describe('ChatOpenEventResolver', () => {
 
       await resolver.chatOpenEventCreate('newUserId', input)
 
-      expect(vService.update).toHaveBeenCalledWith('newVisitor.id', {
-        messagePlatform: MessagePlatform.facebook,
-        lastChatStartedAt: new Date().toISOString(),
-        lastChatPlatform: MessagePlatform.facebook
+      expect(prisma.visitor.update).toHaveBeenCalledWith({
+        where: { id: 'newVisitor.id' },
+        data: {
+          messagePlatform: MessagePlatform.facebook,
+          lastChatStartedAt: new Date(),
+          lastChatPlatform: MessagePlatform.facebook
+        }
       })
     })
 
@@ -188,9 +178,26 @@ describe('ChatOpenEventResolver', () => {
       }
       await resolver.chatOpenEventCreate('userId', input)
 
-      expect(vService.update).toHaveBeenCalledWith('visitor.id', {
-        lastChatStartedAt: new Date().toISOString(),
-        lastChatPlatform: MessagePlatform.facebook
+      expect(prisma.visitor.update).toHaveBeenCalledWith({
+        where: { id: 'visitor.id' },
+        data: {
+          lastChatStartedAt: new Date(),
+          lastChatPlatform: MessagePlatform.facebook,
+          messagePlatform: MessagePlatform.facebook
+        }
+      })
+      expect(prisma.journeyVisitor.update).toHaveBeenCalledWith({
+        where: {
+          journeyId_visitorId: {
+            journeyId: 'journey.id',
+            visitorId: 'visitor.id'
+          }
+        },
+        data: {
+          lastChatStartedAt: new Date(),
+          lastChatPlatform: MessagePlatform.facebook,
+          messagePlatform: MessagePlatform.facebook
+        }
       })
     })
 

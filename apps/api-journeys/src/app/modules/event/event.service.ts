@@ -1,28 +1,67 @@
-import { Injectable, Inject } from '@nestjs/common'
-import { BaseService } from '@core/nest/database/BaseService'
+import { Injectable } from '@nestjs/common'
 import { UserInputError } from 'apollo-server-errors'
-import { aql } from 'arangojs'
-import { KeyAsId } from '@core/nest/decorators/KeyAsId'
+import { ToPostgresql } from '@core/nest/decorators/ToPostgresql'
+import { Visitor, JourneyVisitor } from '.prisma/api-journeys-client'
 import { BlockService } from '../block/block.service'
-import { VisitorRecord, VisitorService } from '../visitor/visitor.service'
-import { Event } from '../../__generated__/graphql'
+import { VisitorService } from '../visitor/visitor.service'
+import { PrismaService } from '../../lib/prisma.service'
+import {
+  ButtonClickEvent,
+  ChatOpenEvent,
+  JourneyViewEvent,
+  RadioQuestionSubmissionEvent,
+  SignUpSubmissionEvent,
+  StepNextEvent,
+  StepViewEvent,
+  TextResponseSubmissionEvent,
+  VideoCollapseEvent,
+  VideoCompleteEvent,
+  VideoExpandEvent,
+  VideoPauseEvent,
+  VideoPlayEvent,
+  VideoProgressEvent,
+  VideoStartEvent
+} from '../../__generated__/graphql'
+
+type EventCollections =
+  | Partial<ButtonClickEvent>
+  | Partial<ChatOpenEvent>
+  | Partial<JourneyViewEvent>
+  | Partial<RadioQuestionSubmissionEvent>
+  | Partial<StepNextEvent>
+  | Partial<StepViewEvent>
+  | Partial<SignUpSubmissionEvent>
+  | Partial<TextResponseSubmissionEvent>
+  | Partial<VideoCollapseEvent>
+  | Partial<VideoCompleteEvent>
+  | Partial<VideoExpandEvent>
+  | Partial<VideoPauseEvent>
+  | Partial<VideoPlayEvent>
+  | Partial<VideoProgressEvent>
+  | Partial<VideoStartEvent>
+
+type EventTypes = EventCollections & {
+  visitorId: string
+  __typename?: string
+  stepId?: string
+  blockId?: string
+}
 
 @Injectable()
-export class EventService extends BaseService {
-  @Inject(BlockService)
-  private readonly blockService: BlockService
-
-  @Inject(VisitorService)
-  private readonly visitorService: VisitorService
-
-  collection = this.db.collection('events')
+export class EventService {
+  constructor(
+    private readonly prismaService: PrismaService,
+    private readonly blockService: BlockService,
+    private readonly visitorService: VisitorService
+  ) {}
 
   async validateBlockEvent(
     userId: string,
     blockId: string,
     stepId: string | null = null
   ): Promise<{
-    visitor: VisitorRecord
+    visitor: Visitor
+    journeyVisitor: JourneyVisitor
     journeyId: string
   }> {
     const block: { journeyId: string; _key: string } | undefined =
@@ -33,10 +72,8 @@ export class EventService extends BaseService {
     }
     const journeyId = block.journeyId
 
-    const visitor = await this.visitorService.getByUserIdAndJourneyId(
-      userId,
-      journeyId
-    )
+    const { visitor, journeyVisitor } =
+      await this.visitorService.getByUserIdAndJourneyId(userId, journeyId)
 
     const validStep = await this.blockService.validateBlock(
       stepId,
@@ -52,16 +89,24 @@ export class EventService extends BaseService {
       )
     }
 
-    return { visitor, journeyId }
+    return { visitor, journeyVisitor, journeyId }
   }
 
-  @KeyAsId()
-  async getAllByVisitorId(visitorId: string): Promise<Event[]> {
-    const res = await this.db.query(aql`
-      FOR event IN ${this.collection}
-        FILTER event.visitorId == ${visitorId}
-        RETURN event
-    `)
-    return await res.all()
+  @ToPostgresql()
+  async save<T>(input: EventTypes): Promise<T> {
+    return (await this.prismaService.event.create({
+      data: {
+        ...input,
+        id: input.id ?? undefined,
+        typename: input.__typename ?? 'Event',
+        createdAt:
+          input.createdAt != null && typeof input.createdAt === 'string'
+            ? new Date(input.createdAt)
+            : undefined,
+        journeyId: input.journeyId ?? undefined,
+        blockId: input.blockId ?? undefined,
+        stepId: input.stepId ?? undefined
+      }
+    })) as unknown as T
   }
 }

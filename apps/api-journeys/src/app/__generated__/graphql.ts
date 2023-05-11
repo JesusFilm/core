@@ -202,6 +202,12 @@ export enum VisitorStatus {
     redQuestionMark = "redQuestionMark"
 }
 
+export enum JourneyVisitorSort {
+    date = "date",
+    duration = "duration",
+    activity = "activity"
+}
+
 export class NavigateActionInput {
     gtmEventName?: Nullable<string>;
 }
@@ -565,6 +571,16 @@ export class JourneyTemplateInput {
 
 export class UserInviteCreateInput {
     email: string;
+}
+
+export class JourneyVisitorFilter {
+    journeyId?: Nullable<string>;
+    hasChat?: Nullable<boolean>;
+    hasAnswers?: Nullable<boolean>;
+    hasData?: Nullable<boolean>;
+    hasIcon?: Nullable<boolean>;
+    isInactive?: Nullable<boolean>;
+    countryCode?: Nullable<string>;
 }
 
 export class VisitorUpdateInput {
@@ -1009,6 +1025,10 @@ export abstract class IQuery {
     abstract visitorsConnection(teamId: string, first?: Nullable<number>, after?: Nullable<string>): VisitorsConnection | Promise<VisitorsConnection>;
 
     abstract visitor(id: string): Visitor | Promise<Visitor>;
+
+    abstract journeyVisitorsConnection(filter?: Nullable<JourneyVisitorFilter>, first?: Nullable<number>, after?: Nullable<string>): JourneyVisitorsConnection | Promise<JourneyVisitorsConnection>;
+
+    abstract journeyVisitorCount(filter?: Nullable<JourneyVisitorFilter>): number | Promise<number>;
 }
 
 export class UserJourney {
@@ -1094,6 +1114,31 @@ export class Visitor {
     events: Event[];
 }
 
+export class JourneyVisitor {
+    __typename?: 'JourneyVisitor';
+    visitorId: string;
+    journeyId: string;
+    createdAt: DateTime;
+    lastChatStartedAt?: Nullable<DateTime>;
+    lastChatPlatform?: Nullable<MessagePlatform>;
+    countryCode?: Nullable<string>;
+    messagePlatform?: Nullable<MessagePlatform>;
+    notes?: Nullable<string>;
+    lastStepViewedAt?: Nullable<DateTime>;
+    lastLinkAction?: Nullable<string>;
+    lastTextResponse?: Nullable<string>;
+    lastRadioQuestion?: Nullable<string>;
+    lastRadioOptionSubmission?: Nullable<string>;
+    events: Event[];
+    visitor: Visitor;
+}
+
+export class JourneyVisitorEdge {
+    __typename?: 'JourneyVisitorEdge';
+    cursor: string;
+    node: JourneyVisitor;
+}
+
 export class VisitorEdge {
     __typename?: 'VisitorEdge';
     cursor: string;
@@ -1110,6 +1155,12 @@ export class PageInfo {
 export class VisitorsConnection {
     __typename?: 'VisitorsConnection';
     edges: VisitorEdge[];
+    pageInfo: PageInfo;
+}
+
+export class JourneyVisitorsConnection {
+    __typename?: 'JourneyVisitorsConnection';
+    edges: JourneyVisitorEdge[];
     pageInfo: PageInfo;
 }
 

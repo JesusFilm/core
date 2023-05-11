@@ -4,6 +4,7 @@ import { EventService } from '../event.service'
 import { JourneyViewEventCreateInput } from '../../../__generated__/graphql'
 import { VisitorService } from '../../visitor/visitor.service'
 import { JourneyService } from '../../journey/journey.service'
+import { PrismaService } from '../../../lib/prisma.service'
 import { JourneyViewEventResolver } from './journey.resolver'
 
 describe('JourneyViewEventResolver', () => {
@@ -16,7 +17,7 @@ describe('JourneyViewEventResolver', () => {
     jest.useRealTimers()
   })
 
-  let resolver: JourneyViewEventResolver, vService: VisitorService
+  let resolver: JourneyViewEventResolver, prisma: PrismaService
 
   const eventService = {
     provide: EventService,
@@ -31,12 +32,11 @@ describe('JourneyViewEventResolver', () => {
       getByUserIdAndJourneyId: jest.fn((userId) => {
         switch (userId) {
           case visitor.userId:
-            return visitorWithId
+            return { visitor: visitorWithId }
           case newVisitor.userId:
-            return newVisitorWithId
+            return { visitor: newVisitorWithId }
         }
-      }),
-      update: jest.fn(() => '')
+      })
     })
   }
 
@@ -81,11 +81,14 @@ describe('JourneyViewEventResolver', () => {
         JourneyViewEventResolver,
         eventService,
         visitorService,
-        journeyService
+        journeyService,
+        PrismaService
       ]
     }).compile()
     resolver = module.get<JourneyViewEventResolver>(JourneyViewEventResolver)
-    vService = module.get<VisitorService>(VisitorService)
+    prisma = module.get<PrismaService>(PrismaService)
+    prisma.journeyVisitor.upsert = jest.fn().mockResolvedValueOnce(null)
+    prisma.visitor.update = jest.fn().mockResolvedValueOnce(null)
   })
 
   describe('JourneyViewEventCreate', () => {
@@ -95,16 +98,18 @@ describe('JourneyViewEventResolver', () => {
       ).toEqual({
         ...input,
         __typename: 'JourneyViewEvent',
-        visitorId: visitorWithId.id,
-        createdAt: new Date().toISOString()
+        visitorId: visitorWithId.id
       })
     })
 
     it('should update user agent on visitor if visitor does not have a user agent', async () => {
       await resolver.journeyViewEventCreate('newUser.id', userAgent, input)
 
-      expect(vService.update).toHaveBeenCalledWith('newVisitor.id', {
-        userAgent
+      expect(prisma.visitor.update).toHaveBeenCalledWith({
+        where: { id: 'newVisitor.id' },
+        data: {
+          userAgent
+        }
       })
     })
 
