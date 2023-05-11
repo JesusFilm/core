@@ -92,7 +92,7 @@ export function LocalDetails({
   const videoCaption =
     data?.video?.description?.find(({ primary }) => primary)?.value ?? ''
 
-  const VIDEO_CAPTION_MAX_LENGTH = 141
+  const videoCaptionMaxLength = 139
 
   useEffect(() => {
     if (videoRef.current != null && data != null) {
@@ -173,26 +173,41 @@ export function LocalDetails({
             <Typography variant="subtitle1">
               {data?.video?.title?.find(({ primary }) => primary)?.value}
             </Typography>
-
-            <Typography variant="caption">
-              {!displayMore
-                ? videoCaption.slice(0, VIDEO_CAPTION_MAX_LENGTH)
-                : videoCaption}
-              <Button
-                variant="text"
-                size="small"
+            <Box sx={{ display: 'inline' }}>
+              <Typography
+                variant="caption"
                 sx={{
-                  backgroundColor: '#FFFFFF',
-                  color: '#6D6F81',
-                  opacity: '0.6',
-                  position: 'absolute'
-                  // zIndex: 2
+                  position: 'relative'
                 }}
-                onClick={handleDisplay}
               >
-                More
-              </Button>
-            </Typography>
+                {!displayMore
+                  ? videoCaption.slice(0, videoCaptionMaxLength)
+                  : videoCaption}
+              </Typography>
+
+              {videoCaption.length > videoCaptionMaxLength && (
+                <Button
+                  variant="text"
+                  size="small"
+                  sx={{
+                    background:
+                      'linear-gradient(90deg, rgba(255,255,255,0.49625787815126055) 0%, rgba(255,255,255,0.9192270658263305) 17%, rgba(255,255,255,1) 29%)',
+                    color: 'secondary.light',
+                    position: 'relative',
+                    margin: !displayMore ? '-4em' : '-0.1em',
+                    fontWeight: '600',
+                    zIndex: '2',
+                    '&:hover': {
+                      background:
+                        'linear-gradient(90deg, rgba(255,255,255,0.4542410714285714) 0%, rgba(255,255,255,0.8772102591036415) 14%, rgba(255,255,255,1) 32%)'
+                    }
+                  }}
+                  onClick={handleDisplay}
+                >
+                  {!displayMore ? 'More' : 'Less'}
+                </Button>
+              )}
+            </Box>
           </Box>
         </>
       )}
