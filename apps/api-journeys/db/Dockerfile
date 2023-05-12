@@ -8,7 +8,7 @@ RUN apk upgrade --update-cache --available && \
 
 WORKDIR /app
 COPY ./tsconfig.base.json /app/tsconfig.base.json
-COPT ./package.json /app/package.json
+COPY ./package.json /app/package.json
 COPY ./apps/api-journeys /app/apps/api-journeys
 
 RUN npm install --silent
