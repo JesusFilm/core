@@ -132,8 +132,6 @@ const withRenderLogic = ({
           ) {
             invisible = false
           }
-          // console.log('firstName : ', user?.firstName)
-          // console.log('invisible: ', invisible)
           return (
             user != null && (
               <Avatar
