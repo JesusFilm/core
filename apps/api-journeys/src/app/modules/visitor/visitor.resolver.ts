@@ -57,7 +57,7 @@ export class VisitorResolver {
     @CurrentUserId() userId: string,
     @Args('teamId') teamId: string,
     @Args('filter') filter: JourneyVisitorFilter,
-    @Args('sort') sort?: JourneyVisitorSort,
+    @Args('sort') sort = JourneyVisitorSort.date,
     @Args('first') first?: number | null,
     @Args('after') after?: string | null
   ): Promise<JourneyVisitorsConnection> {

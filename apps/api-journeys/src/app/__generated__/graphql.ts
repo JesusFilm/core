@@ -574,7 +574,7 @@ export class UserInviteCreateInput {
 }
 
 export class JourneyVisitorFilter {
-    journeyId?: Nullable<string>;
+    journeyId: string;
     hasChatStarted?: Nullable<boolean>;
     hasPollAnswers?: Nullable<boolean>;
     hasTextResponse?: Nullable<boolean>;
@@ -1026,9 +1026,9 @@ export abstract class IQuery {
 
     abstract visitor(id: string): Visitor | Promise<Visitor>;
 
-    abstract journeyVisitorsConnection(teamId: string, first?: Nullable<number>, after?: Nullable<string>, filter?: Nullable<JourneyVisitorFilter>): JourneyVisitorsConnection | Promise<JourneyVisitorsConnection>;
+    abstract journeyVisitorsConnection(teamId: string, filter: JourneyVisitorFilter, first?: Nullable<number>, after?: Nullable<string>): JourneyVisitorsConnection | Promise<JourneyVisitorsConnection>;
 
-    abstract journeyVisitorCount(filter?: Nullable<JourneyVisitorFilter>): number | Promise<number>;
+    abstract journeyVisitorCount(filter: JourneyVisitorFilter): number | Promise<number>;
 }
 
 export class UserJourney {

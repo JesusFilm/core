@@ -1,6 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { v4 as uuidv4 } from 'uuid'
 import { PrismaService } from '../../lib/prisma.service'
+import { JourneyVisitorSort } from '../../__generated__/graphql'
 import { JourneyService } from '../journey/journey.service'
 import { VisitorService } from './visitor.service'
 
@@ -61,6 +62,7 @@ describe('VisitorService', () => {
     prisma.journeyVisitor.upsert = jest
       .fn()
       .mockImplementationOnce((input) => input.create)
+    prisma.journeyVisitor.findMany = jest.fn().mockReturnValueOnce([])
   })
 
   describe('getList', () => {
@@ -136,6 +138,87 @@ describe('VisitorService', () => {
           journeyId: 'journey.id'
         })
       ).toEqual(2)
+    })
+  })
+
+  describe('getJourneyVisitorList', () => {
+    it('should return the list of visitors for a journey', async () => {
+      const connection = {
+        edges: [],
+        pageInfo: {
+          hasNextPage: false,
+          startCursor: null,
+          endCursor: null
+        }
+      }
+      expect(
+        await service.getJourneyVisitorList({
+          first: 50,
+          filter: {
+            journeyId: 'journey.id'
+          },
+          sort: JourneyVisitorSort.date
+        })
+      ).toEqual(connection)
+      expect(prisma.journeyVisitor.findMany).toHaveBeenCalledWith({
+        cursor: undefined,
+        orderBy: {
+          createdAt: 'desc'
+        },
+        skip: 0,
+        take: 51,
+        where: { journeyId: 'journey.id' }
+      })
+    })
+
+    it('allows pagination of the visitors connection', async () => {
+      await service.getJourneyVisitorList({
+        first: 50,
+        after: 'journey.id',
+        filter: { journeyId: 'journey.id' },
+        sort: JourneyVisitorSort.date
+      })
+      expect(prisma.journeyVisitor.findMany).toHaveBeenCalledWith({
+        cursor: { id: 'journey.id' },
+        orderBy: {
+          createdAt: 'desc'
+        },
+        skip: 1,
+        take: 51,
+        where: { journeyId: 'journey.id' }
+      })
+    })
+  })
+
+  describe('generateWhere', () => {
+    it('should return the where clause for a filter', () => {
+      expect(
+        service.generateWhere({
+          journeyId: 'journey.id',
+          hasChatStarted: true,
+          hasIcon: true,
+          hasPollAnswers: true,
+          hasTextResponse: true,
+          hideInactive: true,
+          countryCode: 'JA'
+        })
+      ).toEqual({
+        journeyId: 'journey.id',
+        lastChatStartedAt: { not: null },
+        lastRadioQuestion: { not: null },
+        lastTextResponse: { not: null },
+        activityCount: { gt: 0 },
+        visitor: { status: { not: null }, countryCode: { contains: 'JA' } }
+      })
+    })
+    it('should handle null values', () => {
+      expect(
+        service.generateWhere({
+          journeyId: 'journey.id'
+        })
+      ).toEqual({
+        journeyId: 'journey.id'
+      })
     })
   })
 })

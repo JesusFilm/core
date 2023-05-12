@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common'
 import { v4 as uuidv4 } from 'uuid'
+import { isNil, omitBy } from 'lodash'
 import { Visitor, JourneyVisitor, Prisma } from '.prisma/api-journeys-client'
 import {
   PageInfo,
@@ -75,23 +76,32 @@ export class VisitorService {
   generateWhere(
     filter?: JourneyVisitorFilter
   ): Prisma.JourneyVisitorWhereInput {
-    return {
-      journeyId: filter?.journeyId ?? undefined,
-      lastChatStartedAt:
-        filter?.hasChatStarted === true ? { not: null } : undefined,
-      lastRadioQuestion:
-        filter?.hasPollAnswers === true ? { not: null } : undefined,
-      lastTextResponse:
-        filter?.hasTextResponse === true ? { not: null } : undefined,
-      activityCount: filter?.hideInactive === true ? { gt: 0 } : undefined,
-      visitor: {
-        status: filter?.hasIcon === true ? { not: null } : undefined,
-        countryCode:
-          filter?.countryCode != null
-            ? { contains: filter.countryCode }
+    return omitBy(
+      {
+        journeyId: filter?.journeyId ?? undefined,
+        lastChatStartedAt:
+          filter?.hasChatStarted === true ? { not: null } : undefined,
+        lastRadioQuestion:
+          filter?.hasPollAnswers === true ? { not: null } : undefined,
+        lastTextResponse:
+          filter?.hasTextResponse === true ? { not: null } : undefined,
+        activityCount: filter?.hideInactive === true ? { gt: 0 } : undefined,
+        visitor:
+          filter?.hasIcon === true || filter?.countryCode != null
+            ? omitBy(
+                {
+                  status: filter?.hasIcon === true ? { not: null } : undefined,
+                  countryCode:
+                    filter?.countryCode != null
+                      ? { contains: filter.countryCode }
+                      : undefined
+                },
+                isNil
+              )
             : undefined
-      }
-    }
+      },
+      isNil
+    )
   }
 
   async getJourneyVisitorList({
@@ -108,12 +118,15 @@ export class VisitorService {
     const result = await this.prismaService.journeyVisitor.findMany({
       where: this.generateWhere(filter),
       cursor: after != null ? { id: after } : undefined,
-      orderBy: {
-        createdAt: sort === JourneyVisitorSort.date ? 'desc' : undefined,
-        activityCount:
-          sort === JourneyVisitorSort.activity ? 'desc' : undefined,
-        duration: sort === JourneyVisitorSort.duration ? 'desc' : undefined
-      },
+      orderBy: omitBy(
+        {
+          createdAt: sort === JourneyVisitorSort.date ? 'desc' : undefined,
+          activityCount:
+            sort === JourneyVisitorSort.activity ? 'desc' : undefined,
+          duration: sort === JourneyVisitorSort.duration ? 'desc' : undefined
+        },
+        isNil
+      ),
       skip: after == null ? 0 : 1,
       take: first + 1
     })

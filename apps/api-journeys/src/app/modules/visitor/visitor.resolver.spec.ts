@@ -1,5 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import {
+  JourneyVisitorSort,
   MessagePlatform,
   VisitorsConnection
 } from '../../__generated__/graphql'
@@ -8,12 +9,21 @@ import { EventService } from '../event/event.service'
 import { MemberService } from '../member/member.service'
 
 import { VisitorResolver } from './visitor.resolver'
-import { VisitorService } from './visitor.service'
+import { JourneyVisitorsConnection, VisitorService } from './visitor.service'
 
 describe('VisitorResolver', () => {
   let resolver: VisitorResolver, vService: VisitorService, prisma: PrismaService
 
   const connection: VisitorsConnection = {
+    edges: [],
+    pageInfo: {
+      hasNextPage: false,
+      startCursor: null,
+      endCursor: null
+    }
+  }
+
+  const jvConnection: JourneyVisitorsConnection = {
     edges: [],
     pageInfo: {
       hasNextPage: false,
@@ -40,6 +50,7 @@ describe('VisitorResolver', () => {
     provide: VisitorService,
     useFactory: () => ({
       getList: jest.fn(() => connection),
+      getJourneyVisitorList: jest.fn(() => jvConnection),
       get: jest.fn((id) => {
         switch (id) {
           case 'visitorId':
@@ -238,6 +249,33 @@ describe('VisitorResolver', () => {
         browser: { major: '19', name: 'Chrome', version: '19.0.1084.60' },
         device: { model: 'iPhone', type: 'mobile', vendor: 'Apple' },
         os: { name: 'iOS', version: '5.1.1' }
+      })
+    })
+  })
+
+  describe('journeyVisitorsConnection', () => {
+    it('returns connection', async () => {
+      expect(
+        await resolver.journeyVisitorsConnection('userId', 'teamId', {
+          journeyId: 'journeyId'
+        })
+      ).toEqual(jvConnection)
+    })
+
+    it('calls service with first, after and filter', async () => {
+      await resolver.journeyVisitorsConnection(
+        'userId',
+        'teamId',
+        { journeyId: 'journeyId' },
+        JourneyVisitorSort.activity,
+        50,
+        'cursorId'
+      )
+      expect(vService.getJourneyVisitorList).toHaveBeenCalledWith({
+        after: 'cursorId',
+        filter: { journeyId: 'journeyId' },
+        first: 50,
+        sort: JourneyVisitorSort.activity
       })
     })
   })

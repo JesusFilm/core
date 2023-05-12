@@ -277,7 +277,7 @@ type JourneyVisitorsConnection {
 }
 
 input JourneyVisitorFilter {
-  journeyId: String
+  journeyId: String!
   hasChatStarted: Boolean
   hasPollAnswers: Boolean
   hasTextResponse: Boolean
@@ -323,6 +323,10 @@ extend type Query {
     """
     teamId: String!
     """
+    Returns the elements in the list that match the specified filter.
+    """
+    filter: JourneyVisitorFilter!
+    """
     Returns the first n elements from the list.
     """
     first: Int
@@ -330,15 +334,11 @@ extend type Query {
     Returns the elements in the list that come after the specified cursor.
     """
     after: String
-    """
-    Returns the elements in the list that match the specified filter.
-    """
-    filter: JourneyVisitorFilter
   ): JourneyVisitorsConnection!
   """
   Get a JourneyVisitor count by JourneyVisitorFilter
   """
-  journeyVisitorCount(filter: JourneyVisitorFilter): Int!
+  journeyVisitorCount(filter: JourneyVisitorFilter!): Int!
 }
 
 """
