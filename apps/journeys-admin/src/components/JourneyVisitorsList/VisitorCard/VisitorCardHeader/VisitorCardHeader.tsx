@@ -44,9 +44,7 @@ export function VisitorCardHeader({
         ) : (
           <PersonOutlineRoundedIcon sx={{ mr: 3 }} />
         )}
-        <Typography variant="subtitle1" noWrap>
-          {name}
-        </Typography>
+        <Typography variant="subtitle1">{name}</Typography>
         {name != null && location != null && (
           <Typography variant="subtitle1">{'\u00A0\u00B7\u00A0'}</Typography>
         )}
