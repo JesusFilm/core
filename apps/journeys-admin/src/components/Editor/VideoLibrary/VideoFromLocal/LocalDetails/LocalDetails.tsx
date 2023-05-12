@@ -79,10 +79,6 @@ export function LocalDetails({
     })
   }
 
-  const handleDisplay = (): void => {
-    setDisplayMore(!displayMore)
-  }
-
   const time = data?.video?.variant?.duration ?? 0
   const duration =
     time < 3600
@@ -195,14 +191,13 @@ export function LocalDetails({
                     color: 'secondary.light',
                     position: 'relative',
                     margin: !displayMore ? '-64px' : '-1.6px',
-                    fontWeight: '600',
                     zIndex: '2',
                     '&:hover': {
                       background:
                         'linear-gradient(90deg, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0.93) 17%, rgba(255,255,255,1) 29%)'
                     }
                   }}
-                  onClick={handleDisplay}
+                  onClick={() => setDisplayMore(!displayMore)}
                 >
                   {!displayMore ? 'More' : 'Less'}
                 </Button>

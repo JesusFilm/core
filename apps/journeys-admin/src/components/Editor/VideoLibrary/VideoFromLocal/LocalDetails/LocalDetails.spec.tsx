@@ -99,7 +99,6 @@ describe('LocalDetails', () => {
   it('should expand and truncate video description on button click', async () => {
     const longVideoDescription =
       'Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat massa quis enim. Donec.'
-    const defaultValue = 'Jesus promises the Holy Spirit.'
     mocks[0].result.data.video.description[0].value = longVideoDescription
     const { getByText, getByRole, queryByText } = render(
       <MockedProvider mocks={mocks}>
@@ -115,7 +114,6 @@ describe('LocalDetails', () => {
     fireEvent.click(getByRole('button', { name: 'Less' }))
     expect(getByRole('button', { name: 'More' })).toBeInTheDocument()
     expect(queryByText(longVideoDescription)).not.toBeInTheDocument()
-    mocks[0].result.data.video.description[0].value = defaultValue
   })
 
   it('should open the languages drawer on language button click', () => {

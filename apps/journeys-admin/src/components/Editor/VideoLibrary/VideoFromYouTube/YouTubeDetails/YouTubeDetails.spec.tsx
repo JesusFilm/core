@@ -58,7 +58,7 @@ describe('YouTubeDetails', () => {
     const longVideoDescription =
       'Trace the theme of blessing and curse in the Bible to see how Jesus defeats the curse of sin that entered through Adam and restores the blessing of life to creation to what it once was like in the Garden of Eden.'
 
-    const { queryByRole, getByRole, getByText, queryByText } = render(
+    const { getByRole, getByText, queryByText } = render(
       <SWRConfig value={{ provider: () => new Map() }}>
         <YouTubeDetails id="jQaeIJOA6J0" open onSelect={jest.fn()} />
       </SWRConfig>
@@ -68,7 +68,7 @@ describe('YouTubeDetails', () => {
       expect(getByRole('button', { name: 'More' })).toBeInTheDocument()
     )
     fireEvent.click(getByRole('button', { name: 'More' }))
-    expect(queryByRole('button', { name: 'Less' })).toBeInTheDocument()
+    expect(getByRole('button', { name: 'Less' })).toBeInTheDocument()
     expect(getByText(longVideoDescription)).toBeInTheDocument()
     fireEvent.click(getByRole('button', { name: 'Less' }))
     expect(getByRole('button', { name: 'More' })).toBeInTheDocument()
