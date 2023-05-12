@@ -3,7 +3,7 @@ import MuiAvatar from '@mui/material/Avatar'
 import AvatarGroup from '@mui/material/AvatarGroup'
 import Box from '@mui/material/Box'
 import Badge from '@mui/material/Badge'
-import { forEach, noop } from 'lodash'
+import { noop } from 'lodash'
 import Skeleton from '@mui/material/Skeleton'
 import { styled } from '@mui/material/styles'
 import { AccessDialog } from '../AccessDialog'
@@ -109,18 +109,6 @@ const withRenderLogic = ({
     let invisible = true
     const maxIndex = max <= 2 ? 0 : max - 2
     const users = usersWithOwnerFirst(values)
-
-    console.log('Values: ', values)
-    console.log('users: ', users)
-
-    // console.log('Values array: ')
-    // values?.forEach((user) => {
-    //   console.log('username = ', user.user?.firstName)
-    // })
-    // console.log('users array: ')
-    // users?.forEach((user) => {
-    //   console.log('username = ', user.user?.firstName)
-    // })
 
     const children = loading
       ? [0, 1, 2].map((i) => {

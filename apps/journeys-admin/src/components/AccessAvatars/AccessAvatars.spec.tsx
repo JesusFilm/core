@@ -33,7 +33,8 @@ describe('AccessAvatars', () => {
         </MockedProvider>
       </SnackbarProvider>
     )
-    expect(getByAltText('Janelle Five')).toBeInTheDocument()
+    expect(getByAltText('Horace Two')).toBeInTheDocument()
+    // expect(getByAltText('Janelle Five')).toBeInTheDocument()
   })
 
   it('should use first name and last as tooltip', async () => {
@@ -166,8 +167,12 @@ describe('AccessAvatars', () => {
       ...userJourney2,
       role: UserJourneyRole.owner
     }
-    const editorUserJourney = {
+    const editorUserJourney1 = {
       ...userJourney1,
+      role: UserJourneyRole.editor
+    }
+    const editorUserJourney2 = {
+      ...userJourney4,
       role: UserJourneyRole.editor
     }
     const inviteRequestedUserJourney = {
@@ -175,30 +180,36 @@ describe('AccessAvatars', () => {
       role: UserJourneyRole.inviteRequested
     }
 
-    const { getByAltText } = render(
+    const { getAllByRole } = render(
       <SnackbarProvider>
         <MockedProvider>
           <ThemeProvider>
             <AccessAvatars
               journeyId="journeyId"
-              // userJourneys={[
-              //   editorUserJourney,
-              //   inviteRequestedUserJourney,
-              //   ownerUserJourney
-              // ]}
               userJourneys={[
-                userJourney1,
-                userJourney2,
-                userJourney3,
-                userJourney4,
-                userJourney5
+                editorUserJourney1,
+                editorUserJourney2,
+                inviteRequestedUserJourney,
+                ownerUserJourney
               ]}
             />
           </ThemeProvider>
         </MockedProvider>
       </SnackbarProvider>
     )
-    // expect(getByAltText('Horace Two')).toBeInTheDocument()
-    expect(getByAltText('Janelle Five')).toBeInTheDocument()
+    // expect the owner, Horace Two, to be at the final index for mobile
+    // and desktop, as this is the index which displays first from a user perspective
+    expect(
+      getAllByRole('img').map((element) => element.getAttribute('alt'))
+    ).toEqual([
+      // Mobile
+      'Amin One',
+      'Horace Two',
+      // Desktop
+      'Coral Three',
+      'Effie Four',
+      'Amin One',
+      'Horace Two'
+    ])
   })
 })
