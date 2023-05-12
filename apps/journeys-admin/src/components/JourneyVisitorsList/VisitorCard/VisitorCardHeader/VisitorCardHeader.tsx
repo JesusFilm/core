@@ -48,19 +48,25 @@ export function VisitorCardHeader({
         {name != null && location != null && (
           <Typography variant="subtitle1">{'\u00A0\u00B7\u00A0'}</Typography>
         )}
-        <Typography variant="subtitle1">{location}</Typography>
+        <Typography variant="subtitle1" noWrap>
+          {location}
+        </Typography>
 
         {((name != null && source != null) ||
           (location != null && source != null)) && (
           <Typography variant="subtitle1">{'\u00A0\u00B7\u00A0'}</Typography>
         )}
-        <Typography variant="subtitle1">{source}</Typography>
+        <Typography variant="subtitle1" noWrap>
+          {source}
+        </Typography>
         <Stack direction="row" sx={{ ml: 'auto' }}>
-          <Typography variant="subtitle1">
+          <Typography variant="subtitle1" noWrap>
             {format(parseISO(createdAt), 'hmmaaa, LLL. do')}
           </Typography>
           <Typography variant="subtitle1">{'\u00A0\u00B7\u00A0'}</Typography>
-          <Typography variant="subtitle1">{duration}</Typography>
+          <Typography variant="subtitle1" noWrap>
+            {duration}
+          </Typography>
         </Stack>
       </Stack>
 
