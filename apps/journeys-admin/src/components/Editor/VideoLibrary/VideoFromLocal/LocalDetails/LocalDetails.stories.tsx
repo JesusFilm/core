@@ -59,7 +59,7 @@ const languages: Language[] = [
   }
 ]
 
-const Template: Story = ({ id, onSelect }) => {
+const Template: Story = ({ id, onSelect, description }) => {
   return (
     <MockedProvider
       mocks={[
@@ -87,8 +87,7 @@ const Template: Story = ({ id, onSelect }) => {
                 description: [
                   {
                     primary: true,
-                    value:
-                      'Jesus promises the Holy Spirit; then ascends into the clouds.'
+                    value: description
                   }
                 ],
                 variant: {
@@ -110,7 +109,15 @@ const Template: Story = ({ id, onSelect }) => {
 
 export const Default = Template.bind({})
 Default.args = {
-  id: '2_Acts7302-0-0'
+  id: '2_Acts7302-0-0',
+  description: 'Jesus promises the Holy Spirit; then ascends into the clouds.'
+}
+
+export const LongDescription = Template.bind({})
+LongDescription.args = {
+  ...Default.args,
+  description:
+    'Jesus promises the Holy Spirit; then ascends into the clouds. This description is set long on purpose to showcase the functinality of the "More" and "Less" buttons.'
 }
 
 export const Loading: Story = ({ id, onSelect }) => {

@@ -3,6 +3,7 @@ import { SWRConfig } from 'swr'
 import { journeysAdminConfig } from '../../../../../libs/storybook'
 import {
   getVideosLoading,
+  getVideoWithLongDescription,
   getVideosWithOffsetAndUrl
 } from '../VideoFromYouTube.handlers'
 import { YouTubeDetails } from '.'
@@ -29,6 +30,16 @@ Default.args = {
 Default.parameters = {
   msw: {
     handlers: [getVideosWithOffsetAndUrl]
+  }
+}
+
+export const LongDescription = Template.bind({})
+LongDescription.args = {
+  id: 'jQaeIJOA6J0'
+}
+LongDescription.parameters = {
+  msw: {
+    handlers: [getVideoWithLongDescription]
   }
 }
 
