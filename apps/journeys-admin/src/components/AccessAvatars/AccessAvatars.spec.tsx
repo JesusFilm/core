@@ -33,8 +33,7 @@ describe('AccessAvatars', () => {
         </MockedProvider>
       </SnackbarProvider>
     )
-    expect(getByAltText('Horace Two')).toBeInTheDocument()
-    // expect(getByAltText('Janelle Five')).toBeInTheDocument()
+    expect(getByAltText('Janelle Five')).toBeInTheDocument()
   })
 
   it('should use first name and last as tooltip', async () => {
