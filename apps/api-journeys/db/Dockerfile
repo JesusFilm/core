@@ -9,6 +9,7 @@ RUN apk upgrade --update-cache --available && \
 WORKDIR /app
 COPY ./tsconfig.base.json /app/tsconfig.base.json
 COPY ./apps/api-journeys /app/apps/api-journeys
+RUN ls -la /app/*
 
 RUN npm install --save-dev --silent ts-node@10.9.1 tslib@2.3.1 uuid prisma@^4.13.0 @types/node@14.14.33
 RUN npm install --silent arangojs@^7.6.1 @prisma/client@^4.13.0 
