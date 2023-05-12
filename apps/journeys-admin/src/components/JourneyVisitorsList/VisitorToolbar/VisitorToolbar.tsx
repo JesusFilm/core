@@ -21,7 +21,7 @@ export function VisitorToolbar(): ReactElement {
           <FilterListRoundedIcon onClick={handleOpen} />
         </IconButton>
         <Drawer anchor="bottom" open={open} onClose={handleClose}>
-          <FilterDrawer />
+          <FilterDrawer handleClose={handleClose} />
         </Drawer>
       </Box>
       {/* CSV download */}

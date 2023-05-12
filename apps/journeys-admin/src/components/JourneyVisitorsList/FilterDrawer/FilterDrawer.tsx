@@ -2,15 +2,22 @@ import Divider from '@mui/material/Divider'
 import Typography from '@mui/material/Typography'
 import Box from '@mui/material/Box'
 import { ReactElement } from 'react'
+import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
 import Autocomplete from '@mui/material/Autocomplete'
 import FormGroup from '@mui/material/FormGroup'
 import FormControlLabel from '@mui/material/FormControlLabel'
 import Checkbox from '@mui/material/Checkbox'
+import IconButton from '@mui/material/IconButton'
 import Radio from '@mui/material/Radio'
 import RadioGroup from '@mui/material/RadioGroup'
+import CloseRoundedIcon from '@mui/icons-material/CloseRounded'
 
-export function FilterDrawer(): ReactElement {
+interface Props {
+  handleClose?: () => void
+}
+
+export function FilterDrawer({ handleClose }: Props): ReactElement {
   const locationOptions = [
     'Dnipro, Ukraine',
     'Halifax, Canada',
@@ -20,7 +27,17 @@ export function FilterDrawer(): ReactElement {
   const sourceOptions = ['Facebook', 'Youtube', 'whatsApp']
 
   return (
-    <>
+    <Box sx={{ height: '100vh' }}>
+      <Box sx={{ display: { xs: 'block', sm: 'none' } }}>
+        <Stack direction="row" sx={{ px: 6, py: 5 }} alignItems="center">
+          <Typography variant="subtitle1">Filters</Typography>
+          <IconButton sx={{ ml: 'auto' }}>
+            <CloseRoundedIcon onClick={handleClose} />
+          </IconButton>
+        </Stack>
+        <Divider />
+      </Box>
+
       <Box sx={{ px: 6, py: 5 }}>
         <Autocomplete
           disablePortal
@@ -85,6 +102,6 @@ export function FilterDrawer(): ReactElement {
           />
         </RadioGroup>
       </Box>
-    </>
+    </Box>
   )
 }
