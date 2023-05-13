@@ -1300,7 +1300,7 @@ export abstract class IMutation {
 
     abstract userJourneyOpen(id: string): Nullable<UserJourney> | Promise<Nullable<UserJourney>>;
 
-    abstract visitorUpdate(id: string, input: VisitorUpdateInput): Visitor | Promise<Visitor>;
+    abstract visitorUpdate(input: VisitorUpdateInput, id?: Nullable<string>): Visitor | Promise<Visitor>;
 }
 
 export class Video {

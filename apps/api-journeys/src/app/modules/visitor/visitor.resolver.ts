@@ -115,25 +115,35 @@ export class VisitorResolver {
     @Args('id') id: string,
     @Args('input') input
   ): Promise<Visitor | undefined> {
-    const visitor = await this.prismaService.visitor.findUnique({
-      where: { id }
-    })
+    let visitor
+    if (id == null) {
+      visitor = await this.prismaService.visitor.findFirst({
+        where: { userId }
+      })
+    } else {
+      visitor = await this.prismaService.visitor.findUnique({
+        where: { id }
+      })
+    }
 
     if (visitor == null)
       throw new UserInputError(`Visitor with ID "${id}" does not exist`)
 
-    const memberResult = await this.memberService.getMemberByTeamId(
-      userId,
-      visitor.teamId
-    )
-
-    if (memberResult == null)
-      throw new ForbiddenError(
-        'User is not a member of the team the visitor belongs to'
+    // if visitor is not current user
+    if (id != null) {
+      const memberResult = await this.memberService.getMemberByTeamId(
+        userId,
+        visitor.teamId
       )
 
+      if (memberResult == null)
+        throw new ForbiddenError(
+          'User is not a member of the team the visitor belongs to'
+        )
+    }
+
     return await this.prismaService.visitor.update({
-      where: { id },
+      where: { id: visitor.id },
       data: input
     })
   }

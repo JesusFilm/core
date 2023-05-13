@@ -381,5 +381,5 @@ extend type Mutation {
   """
   Update a visitor
   """
-  visitorUpdate(id: ID!, input: VisitorUpdateInput!): Visitor!
+  visitorUpdate(input: VisitorUpdateInput!, id: ID): Visitor!
 }
