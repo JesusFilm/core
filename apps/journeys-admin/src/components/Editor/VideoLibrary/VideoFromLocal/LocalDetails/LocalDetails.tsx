@@ -169,39 +169,76 @@ export function LocalDetails({
             <Typography variant="subtitle1">
               {data?.video?.title?.find(({ primary }) => primary)?.value}
             </Typography>
-            <Box sx={{ display: 'inline' }}>
-              <Typography
-                variant="caption"
+            <Box sx={{ display: 'inline', position: 'relative' }}>
+              <Box
                 sx={{
+                  height:
+                    !displayMore &&
+                    videoDescription.length > videoDescriptionMaxLength
+                      ? '70px'
+                      : 'auto',
+                  overflow: 'hidden',
                   position: 'relative'
                 }}
               >
-                {!displayMore
-                  ? videoDescription.slice(0, videoDescriptionMaxLength)
-                  : videoDescription}
-              </Typography>
-
-              {videoDescription.length > videoDescriptionMaxLength && (
-                <Button
-                  variant="text"
-                  size="small"
+                <Typography
+                  variant="caption"
                   sx={{
-                    background:
-                      'linear-gradient(90deg, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0.93) 17%, rgba(255,255,255,1) 29%)',
-                    color: 'secondary.light',
-                    position: 'relative',
-                    margin: !displayMore ? '-64px' : '-1.6px',
-                    zIndex: '2',
-                    '&:hover': {
-                      background:
-                        'linear-gradient(90deg, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0.93) 17%, rgba(255,255,255,1) 29%)'
-                    }
+                    position: 'relative'
                   }}
-                  onClick={() => setDisplayMore(!displayMore)}
                 >
-                  {!displayMore ? 'More' : 'Less'}
-                </Button>
-              )}
+                  {videoDescription}
+                  {videoDescription.length > videoDescriptionMaxLength &&
+                    displayMore && (
+                      <Button
+                        variant="text"
+                        size="small"
+                        sx={{
+                          background:
+                            'linear-gradient(90deg, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0.93) 17%, rgba(255,255,255,1) 29%)',
+                          color: 'secondary.light',
+                          scale: '0.9',
+                          position: 'relative',
+                          bottom: 1.7,
+                          right: 2,
+                          padding: '0',
+                          '&:hover': {
+                            background:
+                              'linear-gradient(90deg, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0.93) 17%, rgba(255,255,255,1) 29%)'
+                          }
+                        }}
+                        onClick={() => setDisplayMore(!displayMore)}
+                      >
+                        Less
+                      </Button>
+                    )}
+                </Typography>
+                {videoDescription.length > videoDescriptionMaxLength && (
+                  <Button
+                    variant="text"
+                    size="small"
+                    sx={{
+                      background:
+                        'linear-gradient(90deg, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0.93) 17%, rgba(255,255,255,1) 29%)',
+                      color: 'secondary.light',
+                      position: 'absolute',
+                      bottom: -2.5,
+                      right: -4,
+                      scale: '0.9',
+                      padding: '0',
+                      display: !displayMore ? 'inline' : 'none',
+                      zIndex: '2',
+                      '&:hover': {
+                        background:
+                          'linear-gradient(90deg, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0.93) 17%, rgba(255,255,255,1) 29%)'
+                      }
+                    }}
+                    onClick={() => setDisplayMore(!displayMore)}
+                  >
+                    More
+                  </Button>
+                )}
+              </Box>
             </Box>
           </Box>
         </>
