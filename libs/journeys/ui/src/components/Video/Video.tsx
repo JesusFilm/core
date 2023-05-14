@@ -88,7 +88,7 @@ export function Video({
           }
         },
         responsive: true,
-        muted: muted === true,
+        muted: true,
         // VideoJS blur background persists so we cover video when using png poster on non-autoplay videos
         poster: blurBackground
       })
@@ -145,6 +145,10 @@ export function Video({
 
   const eventVideoTitle = video?.title[0].value ?? title
   const eventVideoId = video?.id ?? videoId
+  let ytAutoplay = 0
+  if (autoplay != null) {
+    if (autoplay) ytAutoplay = 1
+  }
 
   const videoImage = source === VideoBlockSource.internal ? video?.image : image
 
@@ -168,6 +172,8 @@ export function Video({
     }
   }
 
+  console.log('startAt', startAt)
+  console.log('endAt', endAt)
   return (
     <Box
       data-testid={`video-${blockId}`}
@@ -255,7 +261,9 @@ export function Video({
               )}
             {source === VideoBlockSource.youTube && (
               <source
-                src={`https://www.youtube.com/watch?v=${videoId}`}
+                src={`https://www.youtube.com/embed/${videoId}?start=${
+                  startAt ?? 0
+                }&end=${endAt ?? 0}&autoplay=${ytAutoplay}`}
                 type="video/youtube"
               />
             )}
