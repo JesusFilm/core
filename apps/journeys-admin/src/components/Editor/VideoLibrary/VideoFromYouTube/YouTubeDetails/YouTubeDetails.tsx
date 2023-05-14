@@ -63,6 +63,31 @@ export function YouTubeDetails({
 
   const videoDescriptionMaxLength = 139
 
+  const DescriptionButton = (): ReactElement => {
+    return (
+      <Button
+        disableRipple
+        variant="text"
+        size="small"
+        sx={{
+          background:
+            'linear-gradient(90deg, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0.93) 17%, rgba(255,255,255,1) 29%)',
+          color: 'secondary.light',
+          position: displayMore ? 'relative' : 'absolute',
+          bottom: displayMore ? 1.7 : -6,
+          right: displayMore ? 0 : -4,
+          '&:hover': {
+            background:
+              'linear-gradient(90deg, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0.93) 17%, rgba(255,255,255,1) 29%)'
+          }
+        }}
+        onClick={() => setDisplayMore(!displayMore)}
+      >
+        {displayMore ? 'Less' : 'More'}
+      </Button>
+    )
+  }
+
   useEffect(() => {
     if (videoRef.current != null) {
       playerRef.current = videojs(videoRef.current, {
@@ -157,54 +182,10 @@ export function YouTubeDetails({
                 >
                   {videoDescription}
                   {videoDescription.length > videoDescriptionMaxLength &&
-                    displayMore && (
-                      <Button
-                        variant="text"
-                        size="small"
-                        sx={{
-                          background:
-                            'linear-gradient(90deg, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0.93) 17%, rgba(255,255,255,1) 29%)',
-                          color: 'secondary.light',
-                          position: 'relative',
-                          bottom: 1.7,
-                          right: 2,
-                          padding: '0',
-                          '&:hover': {
-                            background:
-                              'linear-gradient(90deg, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0.93) 17%, rgba(255,255,255,1) 29%)'
-                          }
-                        }}
-                        onClick={() => setDisplayMore(!displayMore)}
-                      >
-                        Less
-                      </Button>
-                    )}
+                    displayMore && <DescriptionButton />}
                 </Typography>
-                {videoDescription.length > videoDescriptionMaxLength && (
-                  <Button
-                    variant="text"
-                    size="small"
-                    sx={{
-                      background:
-                        'linear-gradient(90deg, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0.93) 17%, rgba(255,255,255,1) 29%)',
-                      color: 'secondary.light',
-                      position: 'absolute',
-                      bottom: -2.5,
-                      right: -4,
-                      scale: '0.9',
-                      padding: '0',
-                      display: !displayMore ? 'inline' : 'none',
-                      zIndex: '2',
-                      '&:hover': {
-                        background:
-                          'linear-gradient(90deg, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0.93) 17%, rgba(255,255,255,1) 29%)'
-                      }
-                    }}
-                    onClick={() => setDisplayMore(!displayMore)}
-                  >
-                    More
-                  </Button>
-                )}
+                {videoDescription.length > videoDescriptionMaxLength &&
+                  !displayMore && <DescriptionButton />}
               </Box>
             </Box>
           </Box>
