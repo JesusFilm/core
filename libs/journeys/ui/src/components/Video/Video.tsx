@@ -145,9 +145,9 @@ export function Video({
 
   const eventVideoTitle = video?.title[0].value ?? title
   const eventVideoId = video?.id ?? videoId
-  let ytAutoplay = 0
+  let youtubeAutoplay = 0
   if (autoplay != null) {
-    if (autoplay) ytAutoplay = 1
+    if (autoplay) youtubeAutoplay = 1
   }
 
   const videoImage = source === VideoBlockSource.internal ? video?.image : image
@@ -172,8 +172,6 @@ export function Video({
     }
   }
 
-  console.log('startAt', startAt)
-  console.log('endAt', endAt)
   return (
     <Box
       data-testid={`video-${blockId}`}
@@ -263,7 +261,7 @@ export function Video({
               <source
                 src={`https://www.youtube.com/embed/${videoId}?start=${
                   startAt ?? 0
-                }&end=${endAt ?? 0}&autoplay=${ytAutoplay}`}
+                }&end=${endAt ?? 0}&autoplay=${youtubeAutoplay}`}
                 type="video/youtube"
               />
             )}
