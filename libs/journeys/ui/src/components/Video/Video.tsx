@@ -146,9 +146,7 @@ export function Video({
   const eventVideoTitle = video?.title[0].value ?? title
   const eventVideoId = video?.id ?? videoId
   let youtubeAutoplay = 0
-  if (autoplay != null) {
-    if (autoplay) youtubeAutoplay = 1
-  }
+  if (autoplay === true) youtubeAutoplay = 1
 
   const videoImage = source === VideoBlockSource.internal ? video?.image : image
 
