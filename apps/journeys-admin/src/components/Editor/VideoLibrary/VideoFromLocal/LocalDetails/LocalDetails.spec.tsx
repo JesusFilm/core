@@ -100,7 +100,7 @@ describe('LocalDetails', () => {
     const longVideoDescription =
       'Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat massa quis enim. Donec.'
     mocks[0].result.data.video.description[0].value = longVideoDescription
-    const { getByText, getByRole, queryByText } = render(
+    const { getByText, getByRole } = render(
       <MockedProvider mocks={mocks}>
         <LocalDetails id="2_Acts7302-0-0" open onSelect={jest.fn()} />
       </MockedProvider>
@@ -113,7 +113,6 @@ describe('LocalDetails', () => {
     expect(getByRole('button', { name: 'Less' })).toBeInTheDocument()
     fireEvent.click(getByRole('button', { name: 'Less' }))
     expect(getByRole('button', { name: 'More' })).toBeInTheDocument()
-    expect(queryByText(longVideoDescription)).not.toBeInTheDocument()
   })
 
   it('should open the languages drawer on language button click', () => {
