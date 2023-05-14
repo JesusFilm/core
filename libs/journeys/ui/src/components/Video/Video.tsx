@@ -88,7 +88,7 @@ export function Video({
           }
         },
         responsive: true,
-        muted: true,
+        muted: muted === true,
         // VideoJS blur background persists so we cover video when using png poster on non-autoplay videos
         poster: blurBackground
       })
