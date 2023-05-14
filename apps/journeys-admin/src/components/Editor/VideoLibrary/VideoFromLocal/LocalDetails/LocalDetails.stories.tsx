@@ -1,5 +1,6 @@
 import { Story, Meta } from '@storybook/react'
 import { MockedProvider } from '@apollo/client/testing'
+import { ComponentProps } from 'react'
 import { journeysAdminConfig } from '../../../../../libs/storybook'
 import { GetVideo_video_variantLanguages as Language } from '../../../../../../__generated__/GetVideo'
 import { ApolloLoadingProvider } from '../../../../../../test/ApolloLoadingProvider'
@@ -59,7 +60,9 @@ const languages: Language[] = [
   }
 ]
 
-const Template: Story = ({ id, onSelect, description }) => {
+const Template: Story<
+  ComponentProps<typeof LocalDetails> & { description: string }
+> = ({ id, onSelect, description }) => {
   return (
     <MockedProvider
       mocks={[

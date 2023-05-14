@@ -165,7 +165,6 @@ export function YouTubeDetails({
                           background:
                             'linear-gradient(90deg, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0.93) 17%, rgba(255,255,255,1) 29%)',
                           color: 'secondary.light',
-                          scale: '0.9',
                           position: 'relative',
                           bottom: 1.7,
                           right: 2,
