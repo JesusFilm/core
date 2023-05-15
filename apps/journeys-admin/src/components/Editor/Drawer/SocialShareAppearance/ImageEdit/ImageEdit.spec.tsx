@@ -21,12 +21,25 @@ jest.mock('@mui/material/useMediaQuery', () => ({
 }))
 
 describe('ImageEdit', () => {
+  let originalEnv
+  beforeEach(() => {
+    originalEnv = process.env
+    process.env = {
+      ...originalEnv,
+      NEXT_PUBLIC_CLOUDFLARE_UPLOAD_KEY: 'cloudflare-key'
+    }
+  })
+
+  afterEach(() => {
+    process.env = originalEnv
+  })
+
   const image: ImageBlock = {
     id: 'image1.id',
     __typename: 'ImageBlock',
     parentBlockId: null,
     parentOrder: 0,
-    src: 'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/uploadId/public',
+    src: 'https://imagedelivery.net/cloudflare-key/uploadId/public',
     alt: 'public',
     width: 1920,
     height: 1080,

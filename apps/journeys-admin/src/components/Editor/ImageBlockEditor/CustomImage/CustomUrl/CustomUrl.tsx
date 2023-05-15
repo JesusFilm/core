@@ -39,7 +39,9 @@ export function CustomUrl({ onChange }: CustomUrlProps): ReactElement {
     })
 
     if (data?.createCloudflareUploadByUrl != null) {
-      const src = `https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/${data?.createCloudflareUploadByUrl.id}/public`
+      const src = `https://imagedelivery.net/${
+        process.env.NEXT_PUBLIC_CLOUDFLARE_UPLOAD_KEY ?? ''
+      }/${data?.createCloudflareUploadByUrl.id}/public`
       onChange(src)
       formik.resetForm({ values: { src: '' } })
     }
