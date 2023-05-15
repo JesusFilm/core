@@ -1,6 +1,5 @@
 import { Story, Meta } from '@storybook/react'
 import { MockedProvider } from '@apollo/client/testing'
-import { ComponentProps } from 'react'
 import { journeysAdminConfig } from '../../../../../libs/storybook'
 import { GetVideo_video_variantLanguages as Language } from '../../../../../../__generated__/GetVideo'
 import { ApolloLoadingProvider } from '../../../../../../test/ApolloLoadingProvider'
@@ -60,9 +59,7 @@ const languages: Language[] = [
   }
 ]
 
-const Template: Story<
-  ComponentProps<typeof LocalDetails> & { description: string }
-> = ({ id, onSelect, description }) => {
+const Template: Story = ({ id, onSelect }) => {
   return (
     <MockedProvider
       mocks={[
@@ -90,7 +87,8 @@ const Template: Story<
                 description: [
                   {
                     primary: true,
-                    value: description
+                    value:
+                      'Jesus promises the Holy Spirit; then ascends into the clouds.'
                   }
                 ],
                 variant: {
@@ -112,15 +110,7 @@ const Template: Story<
 
 export const Default = Template.bind({})
 Default.args = {
-  id: '2_Acts7302-0-0',
-  description: 'Jesus promises the Holy Spirit; then ascends into the clouds.'
-}
-
-export const LongDescription = Template.bind({})
-LongDescription.args = {
-  ...Default.args,
-  description:
-    'Jesus promises the Holy Spirit; then ascends into the clouds. This description is set long on purpose to showcase the functinality of the "More" and "Less" buttons.'
+  id: '2_Acts7302-0-0'
 }
 
 export const Loading: Story = ({ id, onSelect }) => {

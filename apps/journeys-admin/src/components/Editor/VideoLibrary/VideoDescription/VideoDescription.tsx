@@ -1,15 +1,21 @@
-import { Dispatch, ReactElement, SetStateAction } from 'react'
+import { Dispatch, ReactElement, SetStateAction, useState } from 'react'
 import Button from '@mui/material/Button'
+import Box from '@mui/system/Box'
+import Typography from '@mui/material/Typography'
 
-interface VideoDescriptionProps {
+interface ShowMoreButtonProps {
   displayMore: boolean
   setDisplayMore: Dispatch<SetStateAction<boolean>>
 }
 
-export const VideoDescription = ({
+interface VideoDescriptionProps {
+  videoDescription: string
+}
+
+export const ShowMoreButton = ({
   displayMore,
   setDisplayMore
-}: VideoDescriptionProps): ReactElement => {
+}: ShowMoreButtonProps): ReactElement => {
   return (
     <Button
       disableRipple
@@ -31,5 +37,46 @@ export const VideoDescription = ({
     >
       {displayMore ? 'Less' : 'More'}
     </Button>
+  )
+}
+
+export const VideoDescription = ({
+  videoDescription
+}: VideoDescriptionProps): ReactElement => {
+  const [displayMore, setDisplayMore] = useState(false)
+
+  const videoDescriptionMaxLength = 139
+  return (
+    <Box
+      sx={{
+        height:
+          !displayMore && videoDescription.length > videoDescriptionMaxLength
+            ? '70px'
+            : 'auto',
+        overflow: 'hidden',
+        position: 'relative'
+      }}
+    >
+      <Typography
+        variant="caption"
+        sx={{
+          position: 'relative'
+        }}
+      >
+        {videoDescription}
+        {videoDescription.length > videoDescriptionMaxLength && displayMore && (
+          <ShowMoreButton
+            displayMore={displayMore}
+            setDisplayMore={setDisplayMore}
+          />
+        )}
+      </Typography>
+      {videoDescription.length > videoDescriptionMaxLength && !displayMore && (
+        <ShowMoreButton
+          displayMore={displayMore}
+          setDisplayMore={setDisplayMore}
+        />
+      )}
+    </Box>
   )
 }

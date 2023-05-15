@@ -15,7 +15,7 @@ import { VideoBlockSource } from '../../../../../../__generated__/globalTypes'
 import { VideoLanguage } from '../../VideoLanguage'
 import 'video.js/dist/video-js.css'
 import type { VideoDetailsProps } from '../../VideoDetails/VideoDetails'
-import { VideoDescription as DescriptionButton } from '../../VideoDescription'
+import { VideoDescription } from '../../VideoDescription'
 
 export const GET_VIDEO = gql`
   query GetVideo($id: ID!, $languageId: ID!) {
@@ -55,7 +55,7 @@ export function LocalDetails({
   const videoRef = useRef<HTMLVideoElement>(null)
   const playerRef = useRef<videojs.Player>()
   const [playing, setPlaying] = useState(false)
-  const [displayMore, setDisplayMore] = useState(false)
+
   const [openLanguage, setOpenLanguage] = useState(false)
   const [selectedLanguage, setSelectedLanguage] = useState<LanguageOption>({
     id: '529',
@@ -88,8 +88,6 @@ export function LocalDetails({
 
   const videoDescription =
     data?.video?.description?.find(({ primary }) => primary)?.value ?? ''
-
-  const videoDescriptionMaxLength = 139
 
   useEffect(() => {
     if (videoRef.current != null && data != null) {
@@ -170,42 +168,8 @@ export function LocalDetails({
             <Typography variant="subtitle1">
               {data?.video?.title?.find(({ primary }) => primary)?.value}
             </Typography>
-            <Box sx={{ display: 'inline', position: 'relative' }}>
-              <Box
-                sx={{
-                  height:
-                    !displayMore &&
-                    videoDescription.length > videoDescriptionMaxLength
-                      ? '70px'
-                      : 'auto',
-                  overflow: 'hidden',
-                  position: 'relative'
-                }}
-              >
-                <Typography
-                  variant="caption"
-                  sx={{
-                    position: 'relative'
-                  }}
-                >
-                  {videoDescription}
-                  {videoDescription.length > videoDescriptionMaxLength &&
-                    displayMore && (
-                      <DescriptionButton
-                        displayMore={displayMore}
-                        setDisplayMore={setDisplayMore}
-                      />
-                    )}
-                </Typography>
-                {videoDescription.length > videoDescriptionMaxLength &&
-                  !displayMore && (
-                    <DescriptionButton
-                      displayMore={displayMore}
-                      setDisplayMore={setDisplayMore}
-                    />
-                  )}
-              </Box>
-            </Box>
+            <Box sx={{ display: 'inline', position: 'relative' }} />
+            <VideoDescription videoDescription={videoDescription} />
           </Box>
         </>
       )}

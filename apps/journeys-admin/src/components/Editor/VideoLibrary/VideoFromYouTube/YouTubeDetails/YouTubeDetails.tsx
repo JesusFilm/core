@@ -16,6 +16,7 @@ import {
 } from '../VideoFromYouTube'
 import { VideoBlockSource } from '../../../../../../__generated__/globalTypes'
 import type { VideoDetailsProps } from '../../VideoDetails/VideoDetails'
+import { VideoDescription } from '../../VideoDescription'
 
 const fetcher = async (id: string): Promise<YoutubeVideo> => {
   const videosQuery = new URLSearchParams({
@@ -37,7 +38,6 @@ export function YouTubeDetails({
   const videoRef = useRef<HTMLVideoElement>(null)
   const playerRef = useRef<videojs.Player>()
   const [playing, setPlaying] = useState(false)
-  const [displayMore, setDisplayMore] = useState(false)
   const { data, error } = useSWR<YoutubeVideo>(
     () => (open ? id : null),
     fetcher
@@ -60,33 +60,6 @@ export function YouTubeDetails({
       : new Date(time * 1000).toISOString().substring(11, 19)
 
   const videoDescription = data?.snippet.description ?? ''
-
-  const videoDescriptionMaxLength = 139
-
-  const DescriptionButton = (): ReactElement => {
-    return (
-      <Button
-        disableRipple
-        variant="text"
-        size="small"
-        sx={{
-          background:
-            'linear-gradient(90deg, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0.93) 17%, rgba(255,255,255,1) 29%)',
-          color: 'secondary.light',
-          position: displayMore ? 'relative' : 'absolute',
-          bottom: displayMore ? 1.7 : -6,
-          right: displayMore ? 0 : -4,
-          '&:hover': {
-            background:
-              'linear-gradient(90deg, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0.93) 17%, rgba(255,255,255,1) 29%)'
-          }
-        }}
-        onClick={() => setDisplayMore(!displayMore)}
-      >
-        {displayMore ? 'Less' : 'More'}
-      </Button>
-    )
-  }
 
   useEffect(() => {
     if (videoRef.current != null) {
@@ -161,32 +134,8 @@ export function YouTubeDetails({
           </Box>
           <Box>
             <Typography variant="subtitle1">{data?.snippet.title}</Typography>
-            <Box sx={{ display: 'inline' }}>
-              <Box
-                sx={{
-                  height:
-                    !displayMore &&
-                    videoDescription.length > videoDescriptionMaxLength
-                      ? '70px'
-                      : 'auto',
-                  overflow: 'hidden',
-                  position: 'relative'
-                }}
-              >
-                <Typography
-                  variant="caption"
-                  sx={{
-                    position: 'relative',
-                    whiteSpace: 'normal'
-                  }}
-                >
-                  {videoDescription}
-                  {videoDescription.length > videoDescriptionMaxLength &&
-                    displayMore && <DescriptionButton />}
-                </Typography>
-                {videoDescription.length > videoDescriptionMaxLength &&
-                  !displayMore && <DescriptionButton />}
-              </Box>
+            <Box sx={{ display: 'inline', position: 'relative' }}>
+              <VideoDescription videoDescription={videoDescription} />
             </Box>
           </Box>
         </>
