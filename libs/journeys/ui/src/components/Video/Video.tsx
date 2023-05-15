@@ -145,8 +145,6 @@ export function Video({
 
   const eventVideoTitle = video?.title[0].value ?? title
   const eventVideoId = video?.id ?? videoId
-  let youtubeAutoplay = 0
-  if (autoplay === true) youtubeAutoplay = 1
 
   const videoImage = source === VideoBlockSource.internal ? video?.image : image
 
@@ -259,7 +257,7 @@ export function Video({
               <source
                 src={`https://www.youtube.com/embed/${videoId}?start=${
                   startAt ?? 0
-                }&end=${endAt ?? 0}&autoplay=${youtubeAutoplay}`}
+                }&end=${endAt ?? 0}`}
                 type="video/youtube"
               />
             )}
