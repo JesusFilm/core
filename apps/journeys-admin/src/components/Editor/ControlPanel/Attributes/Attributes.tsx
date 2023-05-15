@@ -1,4 +1,8 @@
-import { ActiveTab, useEditor } from '@core/journeys/ui/EditorProvider'
+import {
+  ActiveJourneyEditContent,
+  ActiveTab,
+  useEditor
+} from '@core/journeys/ui/EditorProvider'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import Stack from '@mui/material/Stack'
 import Box from '@mui/material/Box'
@@ -6,7 +10,7 @@ import Divider from '@mui/material/Divider'
 import MuiTypography from '@mui/material/Typography'
 import { ReactElement, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
-import { SocialShareAppearance } from '../../Drawer/SocialShareAppearance'
+import { Properties } from '../../../JourneyView/Properties'
 import {
   Card,
   Step,
@@ -104,12 +108,14 @@ export function Attributes({ selected, step }: AttributesProps): ReactElement {
   useEffect(() => {
     if (
       activeTab === ActiveTab.Journey &&
-      journeyEditContentComponent !== 'action'
+      journeyEditContentComponent !== ActiveJourneyEditContent.Action &&
+      journeyEditContentComponent !== ActiveJourneyEditContent.SocialPreview
     ) {
       dispatch({
         type: 'SetDrawerPropsAction',
-        title: 'Social Share Preview',
-        children: <SocialShareAppearance />
+        title: 'Properties',
+        children: <Properties journeyType="Journey" isPublisher={false} />,
+        mobileOpen: false
       })
     }
   }, [activeTab, dispatch, journeyEditContentComponent])
