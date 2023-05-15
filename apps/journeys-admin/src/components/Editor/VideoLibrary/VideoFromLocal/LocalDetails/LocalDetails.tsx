@@ -15,6 +15,7 @@ import { VideoBlockSource } from '../../../../../../__generated__/globalTypes'
 import { VideoLanguage } from '../../VideoLanguage'
 import 'video.js/dist/video-js.css'
 import type { VideoDetailsProps } from '../../VideoDetails/VideoDetails'
+import { VideoDescription as DescriptionButton } from '../../VideoDescription'
 
 export const GET_VIDEO = gql`
   query GetVideo($id: ID!, $languageId: ID!) {
@@ -89,31 +90,6 @@ export function LocalDetails({
     data?.video?.description?.find(({ primary }) => primary)?.value ?? ''
 
   const videoDescriptionMaxLength = 139
-
-  const DescriptionButton = (): ReactElement => {
-    return (
-      <Button
-        disableRipple
-        variant="text"
-        size="small"
-        sx={{
-          background:
-            'linear-gradient(90deg, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0.93) 17%, rgba(255,255,255,1) 29%)',
-          color: 'secondary.light',
-          position: displayMore ? 'relative' : 'absolute',
-          bottom: displayMore ? 1.7 : -6,
-          right: displayMore ? 0 : -4,
-          '&:hover': {
-            background:
-              'linear-gradient(90deg, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0.93) 17%, rgba(255,255,255,1) 29%)'
-          }
-        }}
-        onClick={() => setDisplayMore(!displayMore)}
-      >
-        {displayMore ? 'Less' : 'More'}
-      </Button>
-    )
-  }
 
   useEffect(() => {
     if (videoRef.current != null && data != null) {
@@ -214,10 +190,20 @@ export function LocalDetails({
                 >
                   {videoDescription}
                   {videoDescription.length > videoDescriptionMaxLength &&
-                    displayMore && <DescriptionButton />}
+                    displayMore && (
+                      <DescriptionButton
+                        displayMore={displayMore}
+                        setDisplayMore={setDisplayMore}
+                      />
+                    )}
                 </Typography>
                 {videoDescription.length > videoDescriptionMaxLength &&
-                  !displayMore && <DescriptionButton />}
+                  !displayMore && (
+                    <DescriptionButton
+                      displayMore={displayMore}
+                      setDisplayMore={setDisplayMore}
+                    />
+                  )}
               </Box>
             </Box>
           </Box>
