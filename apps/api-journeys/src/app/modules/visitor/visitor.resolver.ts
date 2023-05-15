@@ -10,6 +10,7 @@ import {
 import { ForbiddenError, UserInputError } from 'apollo-server-errors'
 import { IResult, UAParser } from 'ua-parser-js'
 import { Event, Visitor } from '.prisma/api-journeys-client'
+import { FromPostgresql } from '@core/nest/decorators/FromPostgresql'
 import {
   JourneyVisitorFilter,
   JourneyVisitorSort
@@ -139,6 +140,7 @@ export class VisitorResolver {
   }
 
   @ResolveField()
+  @FromPostgresql()
   async events(@Parent() visitor): Promise<Event[]> {
     return await this.prismaService.event.findMany({
       where: { visitorId: visitor.id }
