@@ -46,7 +46,6 @@ export function Video({
   objectFit
 }: TreeBlock<VideoFields>): ReactElement {
   const [loading, setLoading] = useState(true)
-  // const [touchPause, setTouchPause] = useState(false)
   const theme = useTheme()
   const {
     state: { selectedBlock }
@@ -146,12 +145,6 @@ export function Video({
     source,
     objectFit
   ])
-
-  // useEffect(() => {
-  //   if (playerRef.current != null) {
-
-  //   }
-  // })
 
   useEffect(() => {
     if (selectedBlock !== undefined) {
