@@ -8,7 +8,7 @@ import {
 } from '@core/journeys/ui/EditorProvider'
 import { GetJourney_journey as Journey } from '../../../__generated__/GetJourney'
 import { BlockFields_StepBlock as StepBlock } from '../../../__generated__/BlockFields'
-import { SocialShareAppearance } from './Drawer/SocialShareAppearance'
+import { Properties } from '../JourneyView/Properties'
 import { SocialProvider } from './SocialProvider'
 
 interface EditorProps {
@@ -45,8 +45,10 @@ export function Editor({
           initialState={{
             steps,
             selectedStep,
-            drawerTitle: 'Social Share Preview',
-            drawerChildren: <SocialShareAppearance />,
+            drawerTitle: 'Properties',
+            drawerChildren: (
+              <Properties journeyType="Journey" isPublisher={false} />
+            ),
             journeyEditContentComponent: view ?? ActiveJourneyEditContent.Canvas
           }}
         >
