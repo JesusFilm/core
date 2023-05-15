@@ -3,7 +3,7 @@ import { fireEvent, render, waitFor } from '@testing-library/react'
 import { VideoDescription } from './VideoDescription'
 
 describe('VideoDescription', () => {
-  it('should elongate the text when the More button is clicked', async () => {
+  it('should elongate and truncate the text when the More and Less button is clicked', async () => {
     const videoDescription =
       'Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat massa quis enim. Donec.'
 
@@ -11,9 +11,7 @@ describe('VideoDescription', () => {
       <VideoDescription videoDescription={videoDescription} />
     )
 
-    await waitFor(() => {
-      fireEvent.click(getByRole('button', { name: 'More' }))
-    })
+    fireEvent.click(getByRole('button', { name: 'More' }))
     expect(getByRole('button', { name: 'Less' })).toBeInTheDocument()
     fireEvent.click(getByRole('button', { name: 'Less' }))
     expect(getByRole('button', { name: 'More' })).toBeInTheDocument()
@@ -26,8 +24,6 @@ describe('VideoDescription', () => {
       <VideoDescription videoDescription={videoDescription} />
     )
 
-    await waitFor(() => {
-      expect(queryByRole('button', { name: 'More' })).not.toBeInTheDocument()
-    })
+    expect(queryByRole('button', { name: 'More' })).not.toBeInTheDocument()
   })
 })
