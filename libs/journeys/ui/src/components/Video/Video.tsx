@@ -46,6 +46,7 @@ export function Video({
   objectFit
 }: TreeBlock<VideoFields>): ReactElement {
   const [loading, setLoading] = useState(true)
+  // const [touchPause, setTouchPause] = useState(false)
   const theme = useTheme()
   const {
     state: { selectedBlock }
@@ -99,6 +100,14 @@ export function Video({
           void playerRef.current?.play()
       })
 
+      playerRef.current.on('touchstart', (e) => {
+        if (playerRef.current !== undefined) {
+          if (e.target.nodeName === 'VIDEO' && !playerRef.current?.paused()) {
+            playerRef.current?.pause()
+          }
+        }
+      })
+
       if (selectedBlock === undefined) {
         // Video jumps to new time and finishes loading - occurs on autoplay
         playerRef.current.on('seeked', () => {
@@ -137,6 +146,12 @@ export function Video({
     source,
     objectFit
   ])
+
+  // useEffect(() => {
+  //   if (playerRef.current != null) {
+
+  //   }
+  // })
 
   useEffect(() => {
     if (selectedBlock !== undefined) {
