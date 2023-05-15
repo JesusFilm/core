@@ -5,7 +5,7 @@ import { VideoDescription } from './VideoDescription'
 describe('VideoDescription', () => {
   it('should elongate the text when the More button is clicked', async () => {
     const videoDescription =
-      'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Lorem ipsum dolor sit amet, consectetur adipiscing elit.'
+      'Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat massa quis enim. Donec.'
 
     const { getByRole } = render(
       <VideoDescription videoDescription={videoDescription} />

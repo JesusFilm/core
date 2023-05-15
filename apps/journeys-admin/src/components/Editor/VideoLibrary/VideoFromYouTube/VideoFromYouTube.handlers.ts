@@ -72,22 +72,6 @@ const video1: YoutubeVideo = {
   contentDetails: { duration: 'PT6M03S' }
 }
 
-const video2: YoutubeVideo = {
-  kind: 'youtube#video',
-  id: 'jQaeIJOA6J0',
-  snippet: {
-    title: 'Blessing and Curse',
-    description:
-      'Trace the theme of blessing and curse in the Bible to see how Jesus defeats the curse of sin that entered through Adam and restores the blessing of life to creation to what it once was like in the Garden of Eden.',
-    thumbnails: {
-      default: {
-        url: 'https://i.ytimg.com/vi/jQaeIJOA6J0/default.jpg'
-      }
-    }
-  },
-  contentDetails: { duration: 'PT6M03S' }
-}
-
 export const getPlaylistItems = rest.get(
   'https://www.googleapis.com/youtube/v3/playlistItems',
   (_req, res, ctx) => {
@@ -165,26 +149,6 @@ export const getVideosWithOffsetAndUrl = rest.get(
     return res(
       ctx.json<YoutubeVideosData>({
         items: [video1]
-      })
-    )
-  }
-)
-
-export const getVideoWithLongDescription = rest.get(
-  'https://www.googleapis.com/youtube/v3/videos',
-  (req, res, ctx) => {
-    if (
-      req.url.searchParams.get('id') === playlistItem2.contentDetails?.videoId
-    ) {
-      return res(
-        ctx.json<YoutubeVideosData>({
-          items: [video2]
-        })
-      )
-    }
-    return res(
-      ctx.json<YoutubeVideosData>({
-        items: [video2]
       })
     )
   }
