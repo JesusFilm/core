@@ -139,6 +139,10 @@ type Visitor @key(fields: "id") {
   populated by RadioQuestionSubmission mutation
   """
   lastRadioOptionSubmission: String
+  """
+  The url visitor was referred from
+  """
+  referrer: String
   events: [Event!]!
 }
 
@@ -375,6 +379,14 @@ input VisitorUpdateInput {
   Status of the visitor.
   """
   status: VisitorStatus
+  """
+  The country code of the visitor as poulated by visitor ip address detected
+  """
+  countryCode: String
+  """
+  The referring url of the visitor
+  """
+  referrer: String
 }
 
 extend type Mutation {

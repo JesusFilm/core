@@ -590,6 +590,8 @@ export class VisitorUpdateInput {
     name?: Nullable<string>;
     notes?: Nullable<string>;
     status?: Nullable<VisitorStatus>;
+    countryCode?: Nullable<string>;
+    referrer?: Nullable<string>;
 }
 
 export interface Action {
@@ -1111,6 +1113,7 @@ export class Visitor {
     lastTextResponse?: Nullable<string>;
     lastRadioQuestion?: Nullable<string>;
     lastRadioOptionSubmission?: Nullable<string>;
+    referrer?: Nullable<string>;
     events: Event[];
 }
 
