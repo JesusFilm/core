@@ -29,8 +29,13 @@ export function sortJourneys(
     sortOrder === SortOrder.TITLE
       ? orderBy(
           journeys,
-          [({ title }) => title.toLowerCase()[0], ({ title }) => title],
-          ['asc', 'asc']
+          [
+            ({ title }) => {
+              const noSpecialCharacters = title.replace(/[^a-zA-Z0-9 ]/g, '')
+              return noSpecialCharacters.toLowerCase()
+            }
+          ],
+          ['asc']
         )
       : orderBy(journeys, ({ createdAt }) =>
           new Date(createdAt).getTime()
