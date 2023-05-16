@@ -71,7 +71,7 @@ export default function StepFooter({ block }: StepFooterProps): ReactElement {
           alignItems: { xs: 'flex-start', lg: 'center' }
         }}
       >
-        <Stack className="swiper-no-swiping" direction="row" spacing={3}>
+        {/* <Stack className="swiper-no-swiping" direction="row" spacing={3}>
           <StyledChip
             label="Share"
             icon={<Share fontSize="small" />}
@@ -105,7 +105,7 @@ export default function StepFooter({ block }: StepFooterProps): ReactElement {
               }
             }}
           />
-        </Stack>
+        </Stack> */}
         <Typography
           className="swiper-no-swiping"
           color={contentColorProps}

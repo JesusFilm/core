@@ -1,20 +1,40 @@
 import { ReactElement, ReactNode } from 'react'
 import Box from '@mui/material/Box'
+import Stack from '@mui/material/Stack'
 import { NextImage } from '@core/shared/ui/NextImage'
 import type { TreeBlock } from '../../../libs/block'
 import { ImageFields } from '../../Image/__generated__/ImageFields'
 
 interface ExpandedCoverProps {
-  children: ReactNode
+  children: ReactNode[]
   imageBlock?: TreeBlock<ImageFields>
   backgroundBlur?: string
+  isVideoOnlyCard?: boolean
 }
 
 export function ExpandedCover({
   children,
   imageBlock,
-  backgroundBlur
+  backgroundBlur,
+  isVideoOnlyCard = false
 }: ExpandedCoverProps): ReactElement {
+  const enableVerticalScroll = {
+    overflowY: 'scroll',
+    // Hide on Firefox https://caniuse.com/?search=scrollbar-width
+    scrollbarWidth: 'none',
+    // Hide on all others https://caniuse.com/?search=webkit-scrollbar
+    '&::-webkit-scrollbar': {
+      display: 'none'
+    }
+  }
+
+  const overflowScrollFadeEffect = isVideoOnlyCard
+    ? {}
+    : {
+        WebkitMask: `linear-gradient(transparent 0%, #0000001a 4%, #000000 8%, #000000 90%, #0000001a 98%, transparent 100%)`,
+        mask: `linear-gradient(transparent 0%, #0000001a 4%, #000000 8%, #000000 90%, #0000001a 98%, transparent 100%)`
+      }
+
   return (
     <>
       {/* Background Image */}
@@ -30,61 +50,52 @@ export function ExpandedCover({
           style={{ background: '#fff' }}
         />
       )}
-      <Box
+      <Stack
         data-testid="ExpandedCover"
         sx={{
-          flexGrow: 1,
-          overflow: 'auto',
-          display: 'flex',
-          padding: (theme) => ({
-            xs: theme.spacing(7),
-            sm: theme.spacing(7, 10),
-            md: theme.spacing(10)
-          }),
-          justifyContent: 'center',
-          WebkitBackdropFilter: 'blur(55px)',
-          backdropFilter: 'blur(55px)',
+          // position: 'absolute',
+          // width: '100%',
+          height: '100%',
+          // overflow: 'hidden',
+          WebkitBackdropFilter: 'blur(20px)',
+          backdropFilter: 'blur(20px)',
           background:
             backgroundBlur != null
               ? `linear-gradient(360deg, ${backgroundBlur}cc 0%, ${backgroundBlur}38 57%, ${backgroundBlur}00 90%)`
               : 'unset'
         }}
       >
-        <Box
+        <Stack
+          data-testid="overlay-content-container"
           sx={{
-            margin: 'auto',
-            width: '100%',
-            maxWidth: 500,
-            zIndex: 1,
-            '& > *': {
-              '&:first-child': { mt: 0 },
-              '&:last-child': { mb: 0 }
-            }
+            flexGrow: 1,
+            py: isVideoOnlyCard ? 0 : { xs: 9, lg: 8 },
+            ...enableVerticalScroll
           }}
         >
-          {children}
-        </Box>
-
-        {/* {backgroundBlur != null && (
-        <Box
-          data-testid="expandedBlurBackground"
-          sx={{
-            position: 'absolute',
-            width: '100%',
-            height: '110%',
-            backgroundRepeat: 'no-repeat',
-            backgroundSize: '100% 100%',
-            backgroundPosition: '0% 0%',
-            left: 0,
-            top: '-10%',
-            zIndex: -1,
-            transform: 'scaleY(-1)',
-            backgroundBlendMode: 'hard-light',
-            backgroundImage: `url(${backgroundBlur}), url(${backgroundBlur})`
-          }}
-        />
-      )} */}
-      </Box>
+          <Box
+            data-testid="overlay-content"
+            sx={{
+              margin: 'auto',
+              width: '100%',
+              maxWidth: {
+                xs: isVideoOnlyCard ? '100%' : 'calc(100% - 48px)',
+                lg: 500
+              },
+              p: isVideoOnlyCard ? 0 : { xs: 2, lg: 'auto' },
+              zIndex: 1,
+              ...enableVerticalScroll,
+              ...overflowScrollFadeEffect,
+              '& > *': {
+                '&:first-child': { mt: { xs: 6, lg: 12 } },
+                '&:last-child': { mb: { xs: 6, lg: 12 } }
+              }
+            }}
+          >
+            {children}
+          </Box>
+        </Stack>
+      </Stack>
     </>
   )
 }

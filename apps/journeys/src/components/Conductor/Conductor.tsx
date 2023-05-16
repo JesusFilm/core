@@ -30,9 +30,9 @@ import Stack from '@mui/material/Stack'
 import ChevronLeftRounded from '@mui/icons-material/ChevronLeftRounded'
 import ChevronRightRounded from '@mui/icons-material/ChevronRightRounded'
 import { StepFields } from '@core/journeys/ui/Step/__generated__/StepFields'
+import StepHeader from '@core/journeys/ui/StepHeader'
+import StepFooter from '@core/journeys/ui/StepFooter'
 import { JourneyViewEventCreate } from '../../../__generated__/JourneyViewEventCreate'
-import StepFooter from './StepFooter'
-import StepHeader from './StepHeader'
 
 export const JOURNEY_VIEW_EVENT_CREATE = gql`
   mutation JourneyViewEventCreate($input: JourneyViewEventCreateInput!) {
@@ -87,7 +87,7 @@ const StyledNavArea = styled(Stack)(({ theme }) => ({
 export function Conductor({ blocks }: ConductorProps): ReactElement {
   const { setTreeBlocks, treeBlocks, blockHistory } = useBlocks()
   const [swiper, setSwiper] = useState<SwiperCore>()
-  const [visibleNav, setVisibleNav] = useState(true)
+  const [visibleNav, setVisibleNav] = useState(blockHistory.length === 1)
   const swiperRef = useRef<SwiperType>()
   const { journey, admin } = useJourney()
   const { rtl } = getJourneyRTL(journey)
@@ -134,13 +134,6 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
   useEffect(() => {
     if (swiper != null && blockHistory.length > 0) {
       const activeIndex = blockHistory[blockHistory.length - 1].parentOrder
-      // console.log('useEffect', {
-      //   swiperDirection: swiper.swipeDirection,
-      //   swiperActiveIndex: swiper.activeIndex,
-      //   swiperPreviousIndex: swiper.previousIndex,
-      //   activeIndex,
-      //   blockHistory
-      // })
       if (activeIndex != null && swiper.activeIndex !== activeIndex) {
         const allowFurtherOnSlideChange = false
         swiper.slideTo(activeIndex, 0, allowFurtherOnSlideChange)
@@ -215,12 +208,6 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
             }
           }
         }}
-        onSlideChange={(swiper) => {
-          setVisibleNav(true)
-          setTimeout(() => {
-            setVisibleNav(false)
-          }, 2225)
-        }}
         onActiveIndexChange={(swiper) => {
           // Indices from useBlock state
           const activeIndex = blockHistory[blockHistory.length - 1].parentOrder
@@ -257,7 +244,7 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
             </Stack>
           </StyledSwiperSlide>
         ))}
-        {swiper?.activeIndex !== 0 && (
+        {swiper != null && swiper.activeIndex !== 0 && (
           <StyledNavArea
             className="button-prev"
             sx={{ left: { xs: 0, lg: 24 } }}
@@ -266,13 +253,13 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
             onMouseLeave={() => {
               setTimeout(() => {
                 setVisibleNav(false)
-              }, 1000)
+              }, 3000)
             }}
           >
             <Fade
               in={visibleNav}
-              style={{ transitionDuration: '600ms', position: 'absolute' }}
-              timeout={{ exit: 2225 }}
+              style={{ transitionDuration: '300ms', position: 'absolute' }}
+              timeout={{ exit: 3000 }}
             >
               <ChevronLeftRounded
                 sx={{
@@ -290,46 +277,45 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
             </Fade>
           </StyledNavArea>
         )}
-
-        {(swiper?.activeIndex !== treeBlocks?.length - 1 ||
-          !(treeBlocks[swiper.activeIndex] as TreeBlock<StepFields>)
-            .locked) && (
-          <StyledNavArea
-            className="button-next"
-            sx={{
-              right: { xs: 0, lg: 24 },
-              mr: 2,
-              alignItems: 'flex-end'
-            }}
-            onClick={() => handleNav(swiper?.activeIndex ?? 0, 'next')}
-            onMouseOver={() => setVisibleNav(true)}
-            onMouseLeave={() => {
-              setTimeout(() => {
-                setVisibleNav(false)
-              }, 1000)
-            }}
-          >
-            <Fade
-              in={visibleNav}
-              style={{ transitionDuration: '600ms', position: 'absolute' }}
-              timeout={{ exit: 2225 }}
+        {swiper != null &&
+          swiper.activeIndex !== treeBlocks.length - 1 &&
+          !(treeBlocks[swiper.activeIndex] as TreeBlock<StepFields>).locked && (
+            <StyledNavArea
+              className="button-next"
+              sx={{
+                right: { xs: 0, lg: 24 },
+                mr: 2,
+                alignItems: 'flex-end'
+              }}
+              onClick={() => handleNav(swiper?.activeIndex ?? 0, 'next')}
+              onMouseOver={() => setVisibleNav(true)}
+              onMouseLeave={() => {
+                setTimeout(() => {
+                  setVisibleNav(false)
+                }, 3000)
+              }}
             >
-              <ChevronRightRounded
-                fontSize="large"
-                sx={{
-                  fontSize: '44px',
-                  borderRadius: 6,
-                  backgroundColor: `${theme.palette.common.black}00010`,
-                  '&:hover': {
-                    backgroundColor: `${theme.palette.common.black}00030`
-                  }
-                }}
-                htmlColor={theme.palette.common.white}
-                viewBox="0 0 23 24"
-              />
-            </Fade>
-          </StyledNavArea>
-        )}
+              <Fade
+                in={visibleNav}
+                style={{ transitionDuration: '300ms', position: 'absolute' }}
+                timeout={{ exit: 3000 }}
+              >
+                <ChevronRightRounded
+                  fontSize="large"
+                  sx={{
+                    fontSize: '44px',
+                    borderRadius: 6,
+                    backgroundColor: `${theme.palette.common.black}00010`,
+                    '&:hover': {
+                      backgroundColor: `${theme.palette.common.black}00030`
+                    }
+                  }}
+                  htmlColor={theme.palette.common.white}
+                  viewBox="0 0 23 24"
+                />
+              </Fade>
+            </StyledNavArea>
+          )}
       </StyledSwiperContainer>
     </Div100vh>
   )

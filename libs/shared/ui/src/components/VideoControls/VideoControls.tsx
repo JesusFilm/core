@@ -24,6 +24,7 @@ interface VideoControlProps {
   startAt: number
   endAt: number
   isYoutube: boolean
+  loading: boolean
 }
 
 function isMobile(): boolean {
@@ -35,7 +36,8 @@ export function VideoControls({
   player,
   startAt,
   endAt,
-  isYoutube
+  isYoutube,
+  loading
 }: VideoControlProps): ReactElement {
   const [playing, setPlaying] = useState(false)
   const [active, setActive] = useState(true)
@@ -43,7 +45,6 @@ export function VideoControls({
   const [progress, setProgress] = useState(0)
   const [volume, setVolume] = useState(0)
   const [fullscreen, setFullscreen] = useState(false)
-  const [loading, setLoading] = useState(false)
 
   const durationSeconds = endAt - startAt
   const duration = secondsToTimeFormat(durationSeconds, { trimZeroes: true })
@@ -51,6 +52,7 @@ export function VideoControls({
   const visible = !playing || active || loading
 
   useEffect(() => {
+    setVolume(player.volume() * 100)
     player.on('play', () => {
       setPlaying(true)
     })
@@ -59,11 +61,6 @@ export function VideoControls({
     })
     // Recalculate for startAt/endAt snippet
     player.on('timeupdate', () => {
-      if (endAt > 0 && player.currentTime() >= endAt) {
-        void player.currentTime(0)
-        void player.pause()
-        setPlaying(false)
-      }
       setDisplayTime(
         secondsToTimeFormat(player.currentTime() - startAt, {
           trimZeroes: true
@@ -76,17 +73,13 @@ export function VideoControls({
     })
     player.on('useractive', () => setActive(true))
     player.on('userinactive', () => setActive(false))
-    player.on('waiting', () => setLoading(true))
-    player.on('playing', () => setLoading(false))
-    player.on('ended', () => {
-      setLoading(false)
+    player.on('volumechange', () => {
+      setVolume(player.volume() * 100)
     })
-    player.on('canplay', () => setLoading(false))
-    player.on('canplaythrough', () => setLoading(false))
     fscreen.addEventListener('fullscreenchange', () => {
       setFullscreen(fscreen.fullscreenElement != null)
     })
-  }, [player, setFullscreen, loading, startAt])
+  }, [player, setFullscreen, startAt])
 
   function handlePlay(): void {
     if (!playing) {
@@ -159,7 +152,7 @@ export function VideoControls({
         zIndex: 4,
         top: 0,
         right: 0,
-        bottom: { xs: 90, lg: 4 },
+        bottom: { xs: 50, lg: 4 },
         left: 0,
         cursor: visible ? undefined : 'none'
       }}

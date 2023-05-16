@@ -1,10 +1,13 @@
 import Box from '@mui/material/Box'
+import Stack from '@mui/material/Stack'
 import Skeleton from '@mui/material/Skeleton'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { Theme } from '@mui/material/styles'
 import Fade from '@mui/material/Fade'
 import { ReactElement, useEffect, useState } from 'react'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import StepHeader from '@core/journeys/ui/StepHeader'
+import StepFooter from '@core/journeys/ui/StepFooter'
 import { BlockRenderer } from '@core/journeys/ui/BlockRenderer'
 import {
   useEditor,
@@ -70,7 +73,7 @@ export function Canvas(): ReactElement {
     <Box
       sx={{
         backgroundColor: (theme) => theme.palette.background.paper,
-        paddingY: 9,
+        paddingY: 3,
         '& .swiper-container': {
           paddingX: 6
         },
@@ -129,14 +132,17 @@ export function Canvas(): ReactElement {
                   transition: '0.2s all ease-out 0.1s',
                   position: 'relative',
                   overflow: 'hidden',
-                  border: (theme) =>
+                  outline: (theme) =>
                     step.id === selectedBlock?.id &&
                     selectedBlock?.__typename === 'StepBlock'
                       ? `2px solid ${theme.palette.primary.main}`
                       : `2px solid ${theme.palette.background.default}`,
+                  outlineOffset: 4,
                   transform:
-                    step.id === selectedStep?.id ? 'scaleY(1)' : 'scaleY(0.9)',
-                  height: 536
+                    step.id === selectedStep?.id
+                      ? 'scale(0.95)'
+                      : 'scaleY(0.9)',
+                  height: 640
                 }}
               >
                 <Box
@@ -155,7 +161,7 @@ export function Canvas(): ReactElement {
                       step.id === selectedStep?.id ? 'none' : 'auto'
                   }}
                 />
-                <FramePortal width={356} height={536} dir={rtl ? 'rtl' : 'ltr'}>
+                <FramePortal width={360} height={640} dir={rtl ? 'rtl' : 'ltr'}>
                   <ThemeProvider
                     themeName={journey?.themeName ?? ThemeName.base}
                     themeMode={journey?.themeMode ?? ThemeMode.light}
@@ -167,7 +173,11 @@ export function Canvas(): ReactElement {
                       mountOnEnter
                       unmountOnExit
                     >
-                      <Box sx={{ p: 1, height: '100%' }}>
+                      <Stack
+                        justifyContent="center"
+                        sx={{ width: '100%', height: '100%' }}
+                      >
+                        <StepHeader block={step} />
                         <BlockRenderer
                           block={step}
                           wrappers={{
@@ -182,7 +192,8 @@ export function Canvas(): ReactElement {
                             CardWrapper
                           }}
                         />
-                      </Box>
+                        <StepFooter block={step} />
+                      </Stack>
                     </Fade>
                   </ThemeProvider>
                 </FramePortal>

@@ -19,13 +19,13 @@ interface StepHeaderProps {
 }
 
 export default function StepHeader({ block }: StepHeaderProps): ReactElement {
-  const { journey } = useJourney()
+  const { journey, admin } = useJourney()
   const { t } = useTranslation('apps-journeys')
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
   const open = Boolean(anchorEl)
 
   const handleClick = (event: MouseEvent<HTMLButtonElement>): void => {
-    setAnchorEl(event.currentTarget)
+    if (!admin) setAnchorEl(event.currentTarget)
   }
   const handleClose = (): void => {
     setAnchorEl(null)
@@ -59,7 +59,7 @@ export default function StepHeader({ block }: StepHeaderProps): ReactElement {
           aria-controls="more-info"
           aria-haspopup="true"
           aria-expanded={open ? 'true' : 'false'}
-          sx={{ mr: 4, mt: 1 }}
+          sx={{ mx: 2, mt: 1 }}
           onClick={handleClick}
         >
           <InfoCircleContained sx={{ color: 'white' }} />

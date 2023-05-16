@@ -86,7 +86,7 @@ export function Card({
           height: '50px',
           position: 'absolute',
           zIndex: 2,
-          background: `linear-gradient(#0000004d 10%, #00000000 100%)`
+          background: `linear-gradient(to top, #0000004d 10%, #00000000 100%)`
         }}
       />
       {coverBlock != null && !fullscreen ? (
@@ -98,7 +98,13 @@ export function Card({
           {renderedChildren}
         </ContainedCover>
       ) : (
-        <ExpandedCover imageBlock={imageBlock} backgroundBlur={cardColor}>
+        <ExpandedCover
+          imageBlock={imageBlock}
+          backgroundBlur={cardColor}
+          isVideoOnlyCard={
+            children.length === 1 && children[0].__typename === 'VideoBlock'
+          }
+        >
           {renderedChildren}
         </ExpandedCover>
       )}
@@ -133,6 +139,7 @@ export function CardWrapper({
       sx={{
         display: 'flex',
         flexDirection: 'column',
+        justifyContent: 'flex-end',
         borderRadius: { xs: admin ? 4 : 0, lg: 3 },
         backgroundColor,
         width: '100%',

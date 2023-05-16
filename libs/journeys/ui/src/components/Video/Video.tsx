@@ -104,6 +104,7 @@ export function Video({
           },
           responsive: true,
           muted: muted === true,
+          loop: true,
           // VideoJS blur background persists so we cover video when using png poster on non-autoplay videos
           poster: blurBackground
         })
@@ -136,9 +137,12 @@ export function Video({
           if (autoplay === true) setLoading(false)
         })
         player.on('playing', () => {
-          if (autoplay !== true) setLoading(false)
+          setLoading(false)
         })
+        player.on('canplay', () => setLoading(false))
+        player.on('canplaythrough', () => setLoading(false))
         player.on('ended', () => {
+          setLoading(false)
           if (player.isFullscreen()) player.exitFullscreen()
         })
       }
@@ -163,11 +167,7 @@ export function Video({
   // Pause video if card not active
   useEffect(() => {
     if (player != null) {
-      if (
-        !isActiveBlockOrDescendant(blockId) ||
-        autoplay === false ||
-        (endAt != null && player.currentTime() < endAt)
-      ) {
+      if (!isActiveBlockOrDescendant(blockId) || autoplay === false) {
         void player.pause()
       } else {
         void player.play()
@@ -223,7 +223,7 @@ export function Video({
         minHeight: 'inherit',
         backgroundColor: VIDEO_BACKGROUND_COLOR,
         overflow: 'hidden',
-        m: 0,
+        m: '0px !important',
         position: 'absolute',
         top: 0,
         right: 0,
@@ -258,7 +258,7 @@ export function Video({
             playsInline
             sx={{
               '&.video-js.vjs-youtube.vjs-fill': {
-                height: { xs: 'calc(100% - 150px)', lg: 'calc(100% - 46px)' },
+                height: { xs: 'calc(100% - 110px)', lg: 'calc(100% - 46px)' },
                 mt: { xs: 5, lg: 1 }
               },
               '> .vjs-tech': {
@@ -280,6 +280,7 @@ export function Video({
               startAt={startAt ?? 0}
               endAt={progressEndTime}
               isYoutube={source === VideoBlockSource.youTube}
+              loading={loading}
             />
           )}
           {/* Trigger action on video midway */}
