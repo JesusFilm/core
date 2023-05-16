@@ -61,7 +61,7 @@ export function VisitorCardHeader({
         </Typography>
         <Stack direction="row" sx={{ ml: 'auto' }}>
           <Typography variant="subtitle1" noWrap>
-            {format(parseISO(createdAt), 'hmmaaa, LLL. do')}
+            {format(parseISO(createdAt), 'h:mmaaa, LLL. do')}
           </Typography>
           <Typography variant="subtitle1">{'\u00A0\u00B7\u00A0'}</Typography>
           <Typography variant="subtitle1" noWrap>
@@ -80,7 +80,7 @@ export function VisitorCardHeader({
         <Stack direction="column">
           <Stack direction="row">
             <Typography variant="subtitle1">
-              {format(parseISO(createdAt), 'hmmaaa, LLL. do')}
+              {format(parseISO(createdAt), 'h:mmaaa, LLL. do')}
             </Typography>
             <Typography variant="subtitle1">{'\u00A0\u00B7\u00A0'}</Typography>
             <Typography variant="subtitle1">{duration}</Typography>
