@@ -5,7 +5,8 @@ import {
   Query,
   ResolveField,
   Parent,
-  Mutation
+  Mutation,
+  Resolver
 } from '@nestjs/graphql'
 import { ForbiddenError, UserInputError } from 'apollo-server-errors'
 import { IResult, UAParser } from 'ua-parser-js'
@@ -51,38 +52,6 @@ export class VisitorResolver {
       first: first ?? 50,
       after
     })
-  }
-
-  @Query()
-  async journeyVisitorsConnection(
-    @CurrentUserId() userId: string,
-    @Args('teamId') teamId: string,
-    @Args('filter') filter: JourneyVisitorFilter,
-    @Args('sort') sort = JourneyVisitorSort.date,
-    @Args('first') first?: number | null,
-    @Args('after') after?: string | null
-  ): Promise<JourneyVisitorsConnection> {
-    const memberResult = await this.memberService.getMemberByTeamId(
-      userId,
-      teamId
-    )
-
-    if (memberResult == null)
-      throw new ForbiddenError('User is not a member of the team.')
-
-    return await this.visitorService.getJourneyVisitorList({
-      filter,
-      sort,
-      first: first ?? 50,
-      after
-    })
-  }
-
-  @Query()
-  async journeyVisitorCount(
-    @Args('filter') filter: JourneyVisitorFilter
-  ): Promise<number> {
-    return await this.visitorService.getJourneyVisitorCount(filter)
   }
 
   @Query()
