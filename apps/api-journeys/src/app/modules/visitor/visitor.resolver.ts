@@ -5,24 +5,15 @@ import {
   Query,
   ResolveField,
   Parent,
-  Mutation,
-  Resolver
+  Mutation
 } from '@nestjs/graphql'
 import { ForbiddenError, UserInputError } from 'apollo-server-errors'
 import { IResult, UAParser } from 'ua-parser-js'
 import { Event, Visitor } from '.prisma/api-journeys-client'
 import { FromPostgresql } from '@core/nest/decorators/FromPostgresql'
-import {
-  JourneyVisitorFilter,
-  JourneyVisitorSort
-} from '../../__generated__/graphql'
 import { PrismaService } from '../../lib/prisma.service'
 import { MemberService } from '../member/member.service'
-import {
-  VisitorService,
-  VisitorsConnection,
-  JourneyVisitorsConnection
-} from './visitor.service'
+import { VisitorService, VisitorsConnection } from './visitor.service'
 
 @Resolver('Visitor')
 export class VisitorResolver {

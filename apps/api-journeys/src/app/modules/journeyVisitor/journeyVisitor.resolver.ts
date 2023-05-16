@@ -1,19 +1,23 @@
 import { Args, Parent, Query, ResolveField, Resolver } from '@nestjs/graphql'
 import { FromPostgresql } from '@core/nest/decorators/FromPostgresql'
-import { Visitor } from '.prisma/api-journeys-client'
-import { VisitorService } from '../visitor/visitor.service'
+import { CurrentUserId } from '@core/nest/decorators/CurrentUserId'
+import { ForbiddenError } from 'apollo-server-errors'
+import { Visitor, Event } from '.prisma/api-journeys-client'
 import { MemberService } from '../member/member.service'
 import { PrismaService } from '../../lib/prisma.service'
 import {
   JourneyVisitorFilter,
   JourneyVisitorSort
 } from '../../__generated__/graphql'
-import { JourneyVisitorsConnection } from './journeyVisitor.service'
+import {
+  JourneyVisitorService,
+  JourneyVisitorsConnection
+} from './journeyVisitor.service'
 
 @Resolver('JourneyVisitor')
 export class JourneyVisitorResolver {
   constructor(
-    private readonly visitorService: VisitorService,
+    private readonly journeyVisitorService: JourneyVisitorService,
     private readonly memberService: MemberService,
     private readonly prismaService: PrismaService
   ) {}
@@ -22,27 +26,27 @@ export class JourneyVisitorResolver {
   async journeyVisitorCount(
     @Args('filter') filter: JourneyVisitorFilter
   ): Promise<number> {
-    return await this.visitorService.getJourneyVisitorCount(filter)
+    return await this.journeyVisitorService.getJourneyVisitorCount(filter)
   }
 
   @Query()
   async journeyVisitorsConnection(
-    // @CurrentUserId() userId: string,
+    @CurrentUserId() userId: string,
     @Args('teamId') teamId: string,
     @Args('filter') filter: JourneyVisitorFilter,
     @Args('sort') sort = JourneyVisitorSort.date,
     @Args('first') first?: number | null,
     @Args('after') after?: string | null
   ): Promise<JourneyVisitorsConnection> {
-    // const memberResult = await this.memberService.getMemberByTeamId(
-    //   userId,
-    //   teamId
-    // )
+    const memberResult = await this.memberService.getMemberByTeamId(
+      userId,
+      teamId
+    )
 
-    // if (memberResult == null)
-    //   throw new ForbiddenError('User is not a member of the team.')
+    if (memberResult == null)
+      throw new ForbiddenError('User is not a member of the team.')
 
-    return await this.visitorService.getJourneyVisitorList({
+    return await this.journeyVisitorService.getJourneyVisitorList({
       filter,
       sort,
       first: first ?? 50,
