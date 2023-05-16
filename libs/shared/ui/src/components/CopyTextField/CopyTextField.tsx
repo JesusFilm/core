@@ -40,6 +40,7 @@ export function CopyTextField({
       sx={{ ...sx }}
       hiddenLabel={label == null}
       label={label}
+      InputLabelProps={{ shrink: true }}
       inputRef={inputRef}
       disabled={value == null}
       inputProps={{ onFocus: handleFocus, value }}

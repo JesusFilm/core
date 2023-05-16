@@ -59,4 +59,5 @@ locals {
     ]
     egress_rules = local.egress_rules
   }
+  google_datastream_ip_list = ["34.74.216.163/32", "34.75.166.194/32", "104.196.6.24/32", "34.73.50.6/32", "35.237.45.20/32"]
 }
