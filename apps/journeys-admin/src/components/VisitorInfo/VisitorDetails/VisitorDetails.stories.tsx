@@ -1,8 +1,6 @@
 import { Story, Meta } from '@storybook/react'
 import { MockedProvider } from '@apollo/client/testing'
-// import Box from '@mui/material/Box'
 import { journeysAdminConfig } from '../../../libs/storybook'
-// import { ApolloLoadingProvider } from '../../../test/ApolloLoadingProvider'
 import { GET_VISITOR_FOR_DETAILS } from './VisitorDetails'
 import { VisitorDetails } from '.'
 
