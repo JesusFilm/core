@@ -1,27 +1,27 @@
-import { styled } from '@mui/material/styles'
-import { TreeBlock } from '@core/journeys/ui/block'
-import { useJourney } from '@core/journeys/ui/JourneyProvider'
+// import { styled } from '@mui/material/styles'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import { ThemeName, ThemeMode } from '@core/shared/ui/themes'
-import Chip from '@mui/material/Chip'
+// import Chip from '@mui/material/Chip'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 
 import { ReactElement } from 'react'
-import Share from '@core/shared/ui/CustomIcon/outlined/Share'
-import Like from '@core/shared/ui/CustomIcon/outlined/Like'
-import ThumbsDown from '@core/shared/ui/CustomIcon/outlined/ThumbsDown'
+import { useJourney } from '../../libs/JourneyProvider'
+import { TreeBlock } from '../../libs/block'
+// import Share from '@core/shared/ui/CustomIcon/outlined/Share'
+// import Like from '@core/shared/ui/CustomIcon/outlined/Like'
+// import ThumbsDown from '@core/shared/ui/CustomIcon/outlined/ThumbsDown'
 
 interface StepFooterProps {
   block: TreeBlock
 }
 
-const StyledChip = styled(Chip)(({ theme }) => ({
-  [theme.breakpoints.up('lg')]: {
-    color: theme.palette.common.white,
-    backgroundColor: `${theme.palette.grey[50]}26`
-  }
-}))
+// const StyledChip = styled(Chip)(({ theme }) => ({
+//   [theme.breakpoints.up('lg')]: {
+//     color: theme.palette.common.white,
+//     backgroundColor: `${theme.palette.grey[50]}26`
+//   }
+// }))
 
 export default function StepFooter({ block }: StepFooterProps): ReactElement {
   const { journey } = useJourney()
@@ -44,17 +44,17 @@ export default function StepFooter({ block }: StepFooterProps): ReactElement {
         : 'primary.contrastText'
   }
 
-  const shareJourney = async (): Promise<void> => {
-    console.log(navigator.share, navigator.canShare())
-    if (navigator.share != null && navigator.canShare() === true) {
-      await navigator.share({
-        title: journey?.seoTitle ?? '',
-        url: `https://your.nextstep.is/journeys/${journey?.slug ?? ''}`
-      })
-    } else {
-      console.log("can't share")
-    }
-  }
+  // const shareJourney = async (): Promise<void> => {
+  //   console.log(navigator.share, navigator.canShare())
+  //   if (navigator.share != null && navigator.canShare() === true) {
+  //     await navigator.share({
+  //       title: journey?.seoTitle ?? '',
+  //       url: `https://your.nextstep.is/journeys/${journey?.slug ?? ''}`
+  //     })
+  //   } else {
+  //     console.log("can't share")
+  //   }
+  // }
 
   return (
     <ThemeProvider {...cardTheme}>

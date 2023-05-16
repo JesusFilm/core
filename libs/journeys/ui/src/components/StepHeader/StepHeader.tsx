@@ -1,8 +1,6 @@
 import { ReactElement, useState, MouseEvent } from 'react'
 import Menu from '@mui/material/Menu'
 import MuiMenuItem from '@mui/material/MenuItem'
-import { TreeBlock } from '@core/journeys/ui/block'
-import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import { ThemeName, ThemeMode } from '@core/shared/ui/themes'
 import NextLink from 'next/link'
@@ -13,6 +11,8 @@ import Typography from '@mui/material/Typography'
 import Divider from '@mui/material/Divider'
 import { useTranslation } from 'react-i18next'
 import Link from '@mui/material/Link'
+import { TreeBlock } from '../../libs/block'
+import { useJourney } from '../../libs/JourneyProvider'
 
 interface StepHeaderProps {
   block: TreeBlock
