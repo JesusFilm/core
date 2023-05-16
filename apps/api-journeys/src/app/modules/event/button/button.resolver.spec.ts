@@ -199,8 +199,7 @@ describe('ChatOpenEventResolver', () => {
         },
         data: {
           lastChatStartedAt: new Date(),
-          lastChatPlatform: MessagePlatform.facebook,
-          messagePlatform: MessagePlatform.facebook
+          lastChatPlatform: MessagePlatform.facebook
         }
       })
     })

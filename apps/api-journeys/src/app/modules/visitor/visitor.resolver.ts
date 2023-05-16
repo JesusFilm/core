@@ -10,17 +10,10 @@ import {
 import { ForbiddenError, UserInputError } from 'apollo-server-errors'
 import { IResult, UAParser } from 'ua-parser-js'
 import { Event, Visitor } from '.prisma/api-journeys-client'
-import {
-  JourneyVisitorFilter,
-  JourneyVisitorSort
-} from '../../__generated__/graphql'
+import { FromPostgresql } from '@core/nest/decorators/FromPostgresql'
 import { PrismaService } from '../../lib/prisma.service'
 import { MemberService } from '../member/member.service'
-import {
-  VisitorService,
-  VisitorsConnection,
-  JourneyVisitorsConnection
-} from './visitor.service'
+import { VisitorService, VisitorsConnection } from './visitor.service'
 
 @Resolver('Visitor')
 export class VisitorResolver {
@@ -50,38 +43,6 @@ export class VisitorResolver {
       first: first ?? 50,
       after
     })
-  }
-
-  @Query()
-  async journeyVisitorsConnection(
-    @CurrentUserId() userId: string,
-    @Args('teamId') teamId: string,
-    @Args('filter') filter: JourneyVisitorFilter,
-    @Args('sort') sort?: JourneyVisitorSort,
-    @Args('first') first?: number | null,
-    @Args('after') after?: string | null
-  ): Promise<JourneyVisitorsConnection> {
-    const memberResult = await this.memberService.getMemberByTeamId(
-      userId,
-      teamId
-    )
-
-    if (memberResult == null)
-      throw new ForbiddenError('User is not a member of the team.')
-
-    return await this.visitorService.getJourneyVisitorList({
-      filter,
-      sort,
-      first: first ?? 50,
-      after
-    })
-  }
-
-  @Query()
-  async journeyVisitorCount(
-    @Args('filter') filter: JourneyVisitorFilter
-  ): Promise<number> {
-    return await this.visitorService.getJourneyVisitorCount(filter)
   }
 
   @Query()
@@ -139,6 +100,7 @@ export class VisitorResolver {
   }
 
   @ResolveField()
+  @FromPostgresql()
   async events(@Parent() visitor): Promise<Event[]> {
     return await this.prismaService.event.findMany({
       where: { visitorId: visitor.id }

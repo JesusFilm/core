@@ -1,4 +1,4 @@
-// version 3
+// version 5
 // increment to trigger re-seed (ie: files other than seed.ts are changed)
 
 import { ArangoDB } from './db'
