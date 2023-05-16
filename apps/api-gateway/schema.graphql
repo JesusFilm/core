@@ -714,6 +714,9 @@ type JourneyVisitor
   """
   createdAt: DateTime!
 
+  """Duration between createdAt and lastStepViewedAt in seconds"""
+  duration: Int
+
   """
   The last time the visitor called the ButtonClickEvent mutation where the url
   is in the format of a recognized chat platform.
@@ -1107,23 +1110,6 @@ type Query
   journeys(where: JourneysFilter): [Journey!]! @join__field(graph: JOURNEYS)
   journey(id: ID!, idType: IdType): Journey @join__field(graph: JOURNEYS)
   getJourneyProfile: JourneyProfile @join__field(graph: JOURNEYS)
-  userInvites(journeyId: ID!): [UserInvite!] @join__field(graph: JOURNEYS)
-  getUserRole: UserRole @join__field(graph: JOURNEYS)
-
-  """A list of visitors that are connected with a specific team."""
-  visitorsConnection(
-    """Returns the visitor items related to a specific team."""
-    teamId: String!
-
-    """Returns the first n elements from the list."""
-    first: Int
-
-    """Returns the elements in the list that come after the specified cursor."""
-    after: String
-  ): VisitorsConnection! @join__field(graph: JOURNEYS)
-
-  """Get a single visitor"""
-  visitor(id: ID!): Visitor! @join__field(graph: JOURNEYS)
 
   """Get a list of Visitor Information by Journey"""
   journeyVisitorsConnection(
@@ -1142,6 +1128,23 @@ type Query
 
   """Get a JourneyVisitor count by JourneyVisitorFilter"""
   journeyVisitorCount(filter: JourneyVisitorFilter!): Int! @join__field(graph: JOURNEYS)
+  userInvites(journeyId: ID!): [UserInvite!] @join__field(graph: JOURNEYS)
+  getUserRole: UserRole @join__field(graph: JOURNEYS)
+
+  """A list of visitors that are connected with a specific team."""
+  visitorsConnection(
+    """Returns the visitor items related to a specific team."""
+    teamId: String!
+
+    """Returns the first n elements from the list."""
+    first: Int
+
+    """Returns the elements in the list that come after the specified cursor."""
+    after: String
+  ): VisitorsConnection! @join__field(graph: JOURNEYS)
+
+  """Get a single visitor"""
+  visitor(id: ID!): Visitor! @join__field(graph: JOURNEYS)
   countries: [Country!]! @join__field(graph: LANGUAGES)
   country(id: ID!, idType: IdType): Country! @join__field(graph: LANGUAGES)
   languages(offset: Int, limit: Int): [Language!]! @join__field(graph: LANGUAGES)
