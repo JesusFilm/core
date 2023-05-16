@@ -16,6 +16,7 @@ import {
 } from '../VideoFromYouTube'
 import { VideoBlockSource } from '../../../../../../__generated__/globalTypes'
 import type { VideoDetailsProps } from '../../VideoDetails/VideoDetails'
+import { VideoDescription } from '../../VideoDescription'
 
 const fetcher = async (id: string): Promise<YoutubeVideo> => {
   const videosQuery = new URLSearchParams({
@@ -57,6 +58,8 @@ export function YouTubeDetails({
     time < 3600
       ? new Date(time * 1000).toISOString().substring(14, 19)
       : new Date(time * 1000).toISOString().substring(11, 19)
+
+  const videoDescription = data?.snippet.description ?? ''
 
   useEffect(() => {
     if (videoRef.current != null) {
@@ -131,9 +134,9 @@ export function YouTubeDetails({
           </Box>
           <Box>
             <Typography variant="subtitle1">{data?.snippet.title}</Typography>
-            <Typography variant="caption" sx={{ whiteSpace: 'pre-wrap' }}>
-              {data?.snippet.description}
-            </Typography>
+            <Box sx={{ display: 'inline', position: 'relative' }}>
+              <VideoDescription videoDescription={videoDescription} />
+            </Box>
           </Box>
         </>
       )}
