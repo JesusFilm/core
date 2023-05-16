@@ -14,6 +14,14 @@ interface TransformedEvents {
 }
 
 export function transformEvents(events: Event[]): TransformedEvents {
+  const sortedEvents = events.sort((a, b) => {
+    if (a.createdAt < b.createdAt) {
+      return -1
+    } else if (a.createdAt > b.createdAt) {
+      return 1
+    } else return 0
+  })
+
   const featured: Array<Event['__typename']> = [
     'ChatOpenEvent',
     'TextResponseSubmissionEvent',
@@ -29,7 +37,7 @@ export function transformEvents(events: Event[]): TransformedEvents {
     'SignUpSubmissionEvent'
   ]
 
-  const filteredEvents = events.filter((event) =>
+  const filteredEvents = sortedEvents.filter((event) =>
     eventTypesFilter.includes(event.__typename)
   )
 

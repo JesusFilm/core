@@ -121,8 +121,8 @@ describe('transformEvents', () => {
 
     it('should nest non featured events', () => {
       const result = transformEvents([
-        journeyViewEvent,
         buttonClickEvent,
+        journeyViewEvent,
         radioQuestionResponseEvent,
         videoStartEvent,
         videoCompleteEvent,
