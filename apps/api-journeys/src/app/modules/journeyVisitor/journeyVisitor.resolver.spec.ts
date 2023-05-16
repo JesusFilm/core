@@ -106,11 +106,11 @@ describe('JourneyVisitorResolver', () => {
 
   describe('events', () => {
     it('returns visitor events', async () => {
-      expect(await resolver.events({ id: 'visitorId' })).toEqual([event])
+      expect(await resolver.events({ visitorId: 'visitorId' })).toEqual([event])
     })
 
     it('calls event service with visitorId', async () => {
-      await resolver.events({ id: 'visitorId' })
+      await resolver.events({ visitorId: 'visitorId' })
       expect(prisma.event.findMany).toHaveBeenCalledWith({
         where: { visitorId: 'visitorId' }
       })

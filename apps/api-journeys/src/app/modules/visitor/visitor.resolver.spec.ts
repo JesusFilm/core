@@ -8,21 +8,12 @@ import { EventService } from '../event/event.service'
 import { MemberService } from '../member/member.service'
 
 import { VisitorResolver } from './visitor.resolver'
-import { JourneyVisitorsConnection, VisitorService } from './visitor.service'
+import { VisitorService } from './visitor.service'
 
 describe('VisitorResolver', () => {
   let resolver: VisitorResolver, vService: VisitorService, prisma: PrismaService
 
   const connection: VisitorsConnection = {
-    edges: [],
-    pageInfo: {
-      hasNextPage: false,
-      startCursor: null,
-      endCursor: null
-    }
-  }
-
-  const jvConnection: JourneyVisitorsConnection = {
     edges: [],
     pageInfo: {
       hasNextPage: false,
@@ -49,7 +40,6 @@ describe('VisitorResolver', () => {
     provide: VisitorService,
     useFactory: () => ({
       getList: jest.fn(() => connection),
-      getJourneyVisitorList: jest.fn(() => jvConnection),
       get: jest.fn((id) => {
         switch (id) {
           case 'visitorId':

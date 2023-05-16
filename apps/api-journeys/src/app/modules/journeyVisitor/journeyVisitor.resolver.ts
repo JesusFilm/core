@@ -63,9 +63,9 @@ export class JourneyVisitorResolver {
 
   @ResolveField()
   @FromPostgresql()
-  async events(@Parent() visitor): Promise<Event[]> {
+  async events(@Parent() journeyVisitor): Promise<Event[]> {
     return await this.prismaService.event.findMany({
-      where: { visitorId: visitor.id }
+      where: { visitorId: journeyVisitor.visitorId }
     })
   }
 }

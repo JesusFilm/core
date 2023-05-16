@@ -127,6 +127,10 @@ extend type Query {
     Returns the elements in the list that come after the specified cursor.
     """
     after: String
+    """
+    Specifies the sort field for the list.
+    """
+    sort: JourneyVisitorSort
   ): JourneyVisitorsConnection!
   """
   Get a JourneyVisitor count by JourneyVisitorFilter

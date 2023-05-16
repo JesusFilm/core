@@ -1130,6 +1130,7 @@ export class Visitor {
     __typename?: 'Visitor';
     id: string;
     createdAt: DateTime;
+    duration?: Nullable<number>;
     lastChatStartedAt?: Nullable<DateTime>;
     lastChatPlatform?: Nullable<MessagePlatform>;
     userAgent?: Nullable<UserAgent>;

@@ -1878,6 +1878,9 @@ type Visitor
   """
   createdAt: DateTime!
 
+  """Duration between createdAt and lastStepViewedAt in seconds"""
+  duration: Int
+
   """
   The last time the visitor called the ButtonClickEvent mutation where the url
   is in the format of a recognized chat platform.
