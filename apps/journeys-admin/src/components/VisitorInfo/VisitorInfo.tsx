@@ -5,7 +5,7 @@ import Tabs from '@mui/material/Tabs'
 import { ReactElement, SyntheticEvent, useState } from 'react'
 import { TabPanel, tabA11yProps } from '@core/shared/ui/TabPanel'
 import { VisitorDetail } from './VisitorDetail'
-import { VisitorJourneyList } from './VisitorJourneyList'
+import { VisitorJourneysList } from './VisitorJourneysList'
 import { VisitorInfoProvider } from './VisitorInfoProvider'
 import { VisitorJourneyDrawer } from './VisitorJourneyDrawer'
 import { DRAWER_WIDTH } from './VisitorJourneyDrawer/VisitorJourneyDrawer'
@@ -49,7 +49,7 @@ export function VisitorInfo({ id }: Props): ReactElement {
             <VisitorDetail id={id} />
           </TabPanel>
           <TabPanel name="visitor-info" value={activeTab} index={1}>
-            <VisitorJourneyList id={id} />
+            <VisitorJourneysList id={id} />
           </TabPanel>
         </Container>
       </Box>

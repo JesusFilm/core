@@ -2,7 +2,6 @@ import { Meta, Story } from '@storybook/react'
 import { MockedProvider } from '@apollo/client/testing'
 import { ComponentProps } from 'react'
 import { simpleComponentConfig } from '../../../libs/storybook'
-import { getVisitorEventsMock } from '../VisitorJourneyList/VisitorJourneyListData'
 import { VisitorInfoProvider } from '../VisitorInfoProvider'
 import { getVisitorMock } from './VisitorDetailForm/VisitorDetailFormData'
 import { VisitorDetail } from '.'
@@ -14,7 +13,7 @@ const VisitorDetailDemo = {
 }
 
 const Template: Story<ComponentProps<typeof VisitorDetail>> = ({ ...args }) => (
-  <MockedProvider mocks={[getVisitorMock, getVisitorEventsMock]}>
+  <MockedProvider mocks={[getVisitorMock]}>
     <VisitorInfoProvider>
       <VisitorDetail {...args} />
     </VisitorInfoProvider>

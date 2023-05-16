@@ -2,7 +2,7 @@ import { ReactElement } from 'react'
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'react-i18next'
-import { VisitorJourneyList } from '../VisitorJourneyList'
+import { VisitorJourneysList } from '../VisitorJourneysList'
 import { VisitorDetailForm } from './VisitorDetailForm'
 
 interface Props {
@@ -18,7 +18,7 @@ export function VisitorDetail({ id }: Props): ReactElement {
       <Box sx={{ py: 4 }}>
         <Typography variant="h5">{t('Latest Journey')}</Typography>
       </Box>
-      <VisitorJourneyList id={id} limit={1} />
+      <VisitorJourneysList id={id} />
     </>
   )
 }
