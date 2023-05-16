@@ -190,8 +190,8 @@ describe('transformEvents', () => {
 
     it('should nest non featured events', () => {
       const result = transformEvents([
-        journeyViewEvent,
         chatOpenEvent,
+        journeyViewEvent,
         textResponseEvent,
         buttonClickEvent,
         radioQuestionResponseEvent,
