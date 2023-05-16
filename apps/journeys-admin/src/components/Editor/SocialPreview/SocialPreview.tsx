@@ -11,7 +11,7 @@ import { Swiper, SwiperSlide } from 'swiper/react'
 import { SocialPreviewPost } from './Post/SocialPreviewPost'
 import { SocialPreviewMessage } from './Message/SocialPreviewMessage'
 import 'swiper/swiper.min.css'
-import 'swiper/components/pagination/pagination.min.css'
+import 'swiper/css/pagination'
 
 SwiperCore.use([Pagination])
 
