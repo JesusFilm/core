@@ -178,7 +178,6 @@ export function ContainedCover({
 
   useEffect(() => {
     if (contentRef.current != null) {
-      console.log('window.innerHeight', window.innerHeight)
       setContentHeight(
         (contentRef.current as unknown as HTMLDivElement).clientHeight ?? 0
       )

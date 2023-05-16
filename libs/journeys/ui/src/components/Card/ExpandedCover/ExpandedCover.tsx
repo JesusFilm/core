@@ -47,7 +47,6 @@ export function ExpandedCover({
           blurDataURL={backgroundBlur}
           layout="fill"
           objectFit="cover"
-          style={{ background: '#fff' }}
         />
       )}
       <Stack

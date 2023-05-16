@@ -22,7 +22,10 @@ export function Image({
   }, [blurhash, theme])
 
   return (
-    <Box data-testid={`image-${id}`} sx={{ mb: 4 }}>
+    <Box
+      data-testid={`image-${id}`}
+      sx={{ mb: 4, overflow: 'hidden', borderRadius: 4 }}
+    >
       {src != null ? (
         <NextImage
           src={src}
@@ -33,7 +36,6 @@ export function Image({
           blurDataURL={placeholderSrc ?? src}
           layout="responsive"
           objectFit="cover"
-          style={{ borderRadius: theme.spacing(4) }}
         />
       ) : (
         <Paper

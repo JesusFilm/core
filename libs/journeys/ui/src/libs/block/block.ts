@@ -63,7 +63,7 @@ export function nextActiveBlock(args?: ActiveBlockArgs): void {
         | undefined
     }
   }
-  console.log('block', block)
+
   if (block != null && block !== activeBlock) {
     blockHistoryVar([...blockHistory, block])
   }
