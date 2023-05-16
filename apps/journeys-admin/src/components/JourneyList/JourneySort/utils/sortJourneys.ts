@@ -31,8 +31,7 @@ export function sortJourneys(
           journeys,
           [
             ({ title }) => {
-              const noSpecialCharacters = title.replace(/[^a-zA-Z0-9 ]/g, '')
-              return noSpecialCharacters.toLowerCase()
+              return title.replace(/[^a-zA-Z0-9 ]/g, '').toLowerCase()
             }
           ],
           ['asc']
