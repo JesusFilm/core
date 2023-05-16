@@ -1124,6 +1124,9 @@ type Query
 
     """Returns the elements in the list that come after the specified cursor."""
     after: String
+
+    """Specifies the sort field for the list."""
+    sort: JourneyVisitorSort
   ): JourneyVisitorsConnection! @join__field(graph: JOURNEYS)
 
   """Get a JourneyVisitor count by JourneyVisitorFilter"""
