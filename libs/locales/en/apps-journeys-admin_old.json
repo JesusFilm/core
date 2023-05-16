@@ -1,5 +1,7 @@
 {
   "This user already has access": "This user already has access",
   "Add Editor By Email": "Add Editor By Email",
-  "View Timeline": "View Timeline"
+  "View Timeline": "View Timeline",
+  "Invite Editor by": "Invite Editor by",
+  "Users invited by email don't require approval": "Users invited by email don't require approval"
 }
