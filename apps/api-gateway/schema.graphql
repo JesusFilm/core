@@ -889,7 +889,7 @@ type Mutation
   createCloudflareUploadByUrl(url: String!): CloudflareImage @join__field(graph: MEDIA)
   deleteCloudflareImage(id: ID!): Boolean @join__field(graph: MEDIA)
   cloudflareUploadComplete(id: ID!): Boolean @join__field(graph: MEDIA)
-  createCloudflareVideoUploadByFile(uploadLength: Int!): CloudflareVideo @join__field(graph: MEDIA)
+  createCloudflareVideoUploadByFile(uploadLength: Int!, name: String!): CloudflareVideo @join__field(graph: MEDIA)
   createCloudflareVideoUploadByUrl(url: String!): CloudflareVideo @join__field(graph: MEDIA)
   deleteCloudflareVideo(id: ID!): Boolean @join__field(graph: MEDIA)
   cloudflareUploadVideoComplete(id: ID!): Boolean @join__field(graph: MEDIA)
