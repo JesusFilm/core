@@ -1,4 +1,4 @@
-import { ReactElement } from 'react'
+import { ReactElement, useEffect, useState } from 'react'
 import {
   AuthAction,
   useAuthUser,
@@ -16,9 +16,17 @@ import i18nConfig from '../../../next-i18next.config'
 import { useTermsRedirect } from '../../../src/libs/useTermsRedirect/useTermsRedirect'
 
 function SingleVisitorReportsPage(): ReactElement {
+  const [shouldUseHistory, setShouldUseHistory] = useState(true)
+
   const router = useRouter()
   const { t } = useTranslation('apps-journeys-admin')
   const AuthUser = useAuthUser()
+
+  useEffect(() => {
+    document.referrer === ''
+      ? setShouldUseHistory(false)
+      : setShouldUseHistory(true)
+  }, [shouldUseHistory])
 
   useTermsRedirect()
 
@@ -27,8 +35,8 @@ function SingleVisitorReportsPage(): ReactElement {
       <NextSeo title={t('Visitor Info')} />
       <PageWrapper
         title={t('Visitor Info')}
-        backHref="/reports/visitors"
         authUser={AuthUser}
+        shouldUseHistory={shouldUseHistory}
       >
         <VisitorInfo id={router.query.visitorId as string} />
       </PageWrapper>
