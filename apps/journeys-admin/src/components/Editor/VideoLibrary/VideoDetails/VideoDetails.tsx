@@ -18,6 +18,7 @@ import {
 } from '../../../../../__generated__/globalTypes'
 import { LocalDetails } from '../VideoFromLocal/LocalDetails'
 import { YouTubeDetails } from '../VideoFromYouTube/YouTubeDetails'
+import { UploadDetails } from '../VideoFromUpload/UploadDetails'
 
 export const DRAWER_WIDTH = 328
 
@@ -45,6 +46,9 @@ export function VideoDetails({
   ) => ReactElement
 
   switch (source) {
+    case VideoBlockSource.cloudflare:
+      Details = UploadDetails
+      break
     case VideoBlockSource.internal:
       Details = LocalDetails
       break

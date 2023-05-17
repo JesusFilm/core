@@ -144,6 +144,7 @@ export enum VideoBlockObjectFit {
 export enum VideoBlockSource {
   internal = "internal",
   youTube = "youTube",
+  
 }
 
 export enum VideoLabel {

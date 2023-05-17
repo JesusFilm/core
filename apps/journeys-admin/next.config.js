@@ -17,7 +17,9 @@ const nextConfig = {
       'd1wl257kev7hsz.cloudfront.net',
       'i.ytimg.com',
       // cloudflare
-      'imagedelivery.net'
+      'imagedelivery.net',
+      'customer-209o3ptmsiaetvfx.cloudflarestream.com',
+      'cloudflarestream.com'
     ]
   },
   nx: {

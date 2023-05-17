@@ -7,6 +7,7 @@ import AppBar from '@mui/material/AppBar'
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
 import Close from '@mui/icons-material/Close'
+import BrushRoundedIcon from '@mui/icons-material/BrushRounded'
 import IconButton from '@mui/material/IconButton'
 import Toolbar from '@mui/material/Toolbar'
 import { TabPanel, tabA11yProps } from '@core/shared/ui/TabPanel'
@@ -19,6 +20,7 @@ import { GetJourney_journey_blocks_VideoBlock as VideoBlock } from '../../../../
 import { VideoFromYouTube } from './VideoFromYouTube'
 import { VideoFromLocal } from './VideoFromLocal'
 import { VideoDetails } from './VideoDetails'
+import { VideoFromUpload } from './VideoFromUpload'
 
 export const DRAWER_WIDTH = 328
 interface VideoLibraryProps {
@@ -129,6 +131,12 @@ export function VideoLibrary({
               {...tabA11yProps('video-library-panel', 1)}
               sx={{ flexGrow: 1 }}
             />
+            <Tab
+              icon={<BrushRoundedIcon />}
+              label="Custom"
+              {...tabA11yProps('video-library-panel', 2)}
+              sx={{ flexGrow: 1 }}
+            />
           </Tabs>
         </Box>
         <TabPanel
@@ -146,6 +154,14 @@ export function VideoLibrary({
           sx={{ flexGrow: 1, overflow: 'scroll' }}
         >
           <VideoFromYouTube onSelect={onSelect} />
+        </TabPanel>
+        <TabPanel
+          name="video-library-panel"
+          value={activeTab}
+          index={2}
+          sx={{ flexGrow: 1, overflow: 'scroll' }}
+        >
+          <VideoFromUpload onSelect={onSelect} />
         </TabPanel>
       </Drawer>
       {selectedBlock?.videoId != null && (

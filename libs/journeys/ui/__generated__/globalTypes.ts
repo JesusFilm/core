@@ -144,6 +144,7 @@ export enum VideoBlockObjectFit {
 export enum VideoBlockSource {
   internal = "internal",
   youTube = "youTube",
+  cloudflare = "cloudflare"
 }
 
 export interface ButtonClickEventCreateInput {

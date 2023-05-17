@@ -1,0 +1,1 @@
+export { UploadDetails } from './UploadDetails'
