@@ -69,7 +69,7 @@ interface Props {
   showManageButton: boolean
 }
 
-const usersWithOwnerFirst = (values: UserJourney[] = []): UserJourney[] => {
+const sortByOwner = (values: UserJourney[] = []): UserJourney[] => {
   const ownerJourneys = values?.filter(
     (userJourney) => userJourney.role === UserJourneyRole.owner
   )
@@ -108,7 +108,7 @@ const withRenderLogic = ({
     const loading = values == null
     let invisible = true
     const maxIndex = max <= 2 ? 0 : max - 2
-    const users = usersWithOwnerFirst(values)
+    const users = sortByOwner(values)
 
     const children = loading
       ? [0, 1, 2].map((i) => {

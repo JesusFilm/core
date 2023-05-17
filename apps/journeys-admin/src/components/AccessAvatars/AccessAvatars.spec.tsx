@@ -162,19 +162,19 @@ describe('AccessAvatars', () => {
   })
 
   it('should display owner of journey first', async () => {
-    const ownerUserJourney = {
+    const ownerUser = {
       ...userJourney2,
       role: UserJourneyRole.owner
     }
-    const editorUserJourney1 = {
+    const editorUser1 = {
       ...userJourney1,
       role: UserJourneyRole.editor
     }
-    const editorUserJourney2 = {
+    const editorUser2 = {
       ...userJourney4,
       role: UserJourneyRole.editor
     }
-    const inviteRequestedUserJourney = {
+    const inviteRequestedUser = {
       ...userJourney3,
       role: UserJourneyRole.inviteRequested
     }
@@ -186,18 +186,17 @@ describe('AccessAvatars', () => {
             <AccessAvatars
               journeyId="journeyId"
               userJourneys={[
-                editorUserJourney1,
-                editorUserJourney2,
-                inviteRequestedUserJourney,
-                ownerUserJourney
+                editorUser1,
+                editorUser2,
+                inviteRequestedUser,
+                ownerUser
               ]}
             />
           </ThemeProvider>
         </MockedProvider>
       </SnackbarProvider>
     )
-    // expect the owner, Horace Two, to be at the final index for mobile
-    // and desktop, as this is the index which displays first from a user perspective
+    // expect the owner, Horace Two, to be at the final index for both mobile and desktop, as it is the first index displayed to the user
     expect(
       getAllByRole('img').map((element) => element.getAttribute('alt'))
     ).toEqual([
