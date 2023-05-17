@@ -26,8 +26,6 @@ import {
   GetJourneyVisitors_visitors_edges as VisitorEdge
 } from '../../../../__generated__/GetJourneyVisitors'
 import { GetJourneyVisitorsCount } from '../../../../__generated__/GetJourneyVisitorsCount'
-import { FilterDrawer } from '../../../../src/components/JourneyVisitorsList/FilterDrawer'
-import { VisitorToolbar } from '../../../../src/components/JourneyVisitorsList/VisitorToolbar'
 
 export const GET_JOURNEY_VISITORS = gql`
   query GetJourneyVisitors(
@@ -136,9 +134,6 @@ function JourneyVisitorsPage(): ReactElement {
         title={t('Visitors')}
         authUser={AuthUser}
         backHref={`/journeys/${journeyId}/reports`}
-        menu={<VisitorToolbar />}
-        sidePanelTitle={t('Filters')}
-        sidePanelChildren={<FilterDrawer />}
       >
         <JourneyVisitorsList
           visitorEdges={visitorEdges}

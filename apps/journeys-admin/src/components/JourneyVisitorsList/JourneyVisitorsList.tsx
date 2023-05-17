@@ -4,6 +4,7 @@ import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
 import LoadingButton from '@mui/lab/LoadingButton'
 import Typography from '@mui/material/Typography'
+import { useTranslation } from 'react-i18next'
 import { GetJourneyVisitors_visitors_edges as VisitorEdge } from '../../../__generated__/GetJourneyVisitors'
 import VisitorsPlaceholder from '../../../public/VisitorsPlaceholder.svg'
 import { VisitorCard } from './VisitorCard'
@@ -23,6 +24,7 @@ export function JourneyVisitorsList({
   loading,
   hasNextPage
 }: Props): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
   const hasVisitors = visitorEdges != null && visitorEdges.length > 0
   return (
     <Stack
@@ -52,7 +54,9 @@ export function JourneyVisitorsList({
 
       {hasVisitors && visitorsCount != null && (
         <Typography>
-          {`Showing ${visitorEdges.length} visitors out of ${visitorsCount}`}
+          {`${t('Showing')} ${visitorEdges.length} ${t(
+            'visitors out of'
+          )} ${visitorsCount}`}
         </Typography>
       )}
 
@@ -63,7 +67,7 @@ export function JourneyVisitorsList({
         loading={loading}
         sx={{ width: '250px', display: hasVisitors ? 'flex' : 'none' }}
       >
-        Load More
+        {t('Load More')}
       </LoadingButton>
     </Stack>
   )
