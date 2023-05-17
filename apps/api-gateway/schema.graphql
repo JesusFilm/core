@@ -714,6 +714,9 @@ type JourneyVisitor
   """
   createdAt: DateTime!
 
+  """Duration between createdAt and lastStepViewedAt in seconds"""
+  duration: Int
+
   """
   The last time the visitor called the ButtonClickEvent mutation where the url
   is in the format of a recognized chat platform.
@@ -1107,6 +1110,27 @@ type Query
   journeys(where: JourneysFilter): [Journey!]! @join__field(graph: JOURNEYS)
   journey(id: ID!, idType: IdType): Journey @join__field(graph: JOURNEYS)
   getJourneyProfile: JourneyProfile @join__field(graph: JOURNEYS)
+
+  """Get a list of Visitor Information by Journey"""
+  journeyVisitorsConnection(
+    """Returns the visitor items related to a specific team."""
+    teamId: String!
+
+    """Returns the elements in the list that match the specified filter."""
+    filter: JourneyVisitorFilter!
+
+    """Returns the first n elements from the list."""
+    first: Int
+
+    """Returns the elements in the list that come after the specified cursor."""
+    after: String
+
+    """Specifies the sort field for the list."""
+    sort: JourneyVisitorSort
+  ): JourneyVisitorsConnection! @join__field(graph: JOURNEYS)
+
+  """Get a JourneyVisitor count by JourneyVisitorFilter"""
+  journeyVisitorCount(filter: JourneyVisitorFilter!): Int! @join__field(graph: JOURNEYS)
   userInvites(journeyId: ID!): [UserInvite!] @join__field(graph: JOURNEYS)
   getUserRole: UserRole @join__field(graph: JOURNEYS)
 
@@ -1124,24 +1148,6 @@ type Query
 
   """Get a single visitor"""
   visitor(id: ID!): Visitor! @join__field(graph: JOURNEYS)
-
-  """Get a list of Visitor Information by Journey"""
-  journeyVisitorsConnection(
-    """Returns the visitor items related to a specific team."""
-    teamId: String!
-
-    """Returns the elements in the list that match the specified filter."""
-    filter: JourneyVisitorFilter!
-
-    """Returns the first n elements from the list."""
-    first: Int
-
-    """Returns the elements in the list that come after the specified cursor."""
-    after: String
-  ): JourneyVisitorsConnection! @join__field(graph: JOURNEYS)
-
-  """Get a JourneyVisitor count by JourneyVisitorFilter"""
-  journeyVisitorCount(filter: JourneyVisitorFilter!): Int! @join__field(graph: JOURNEYS)
   countries: [Country!]! @join__field(graph: LANGUAGES)
   country(id: ID!, idType: IdType): Country! @join__field(graph: LANGUAGES)
   languages(offset: Int, limit: Int): [Language!]! @join__field(graph: LANGUAGES)
@@ -2474,6 +2480,9 @@ type Visitor
   """
   createdAt: DateTime!
 
+  """Duration between createdAt and lastStepViewedAt in seconds"""
+  duration: Int
+
   """
   The last time the visitor called the ButtonClickEvent mutation where the url
   is in the format of a recognized chat platform.
@@ -2563,6 +2572,9 @@ type Visitor
   populated by RadioQuestionSubmission mutation
   """
   lastRadioOptionSubmission: String
+
+  """The url visitor was referred from"""
+  referrer: String
   events: [Event!]!
 }
 
@@ -2647,4 +2659,12 @@ input VisitorUpdateInput
 
   """Status of the visitor."""
   status: VisitorStatus
+
+  """
+  The country code of the visitor as poulated by visitor ip address detected
+  """
+  countryCode: String
+
+  """The referring url of the visitor"""
+  referrer: String
 }

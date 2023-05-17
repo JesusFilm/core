@@ -103,12 +103,13 @@ model Visitor {
   name                      String?
   notes                     String?
   status                    VisitorStatus?
+  referrer                  String?
   teamId                    String
   userId                    String
   userAgent                 Json?
   journeyVisitor            JourneyVisitor[]
 
-  @@index([id, teamId, createdAt, userId])
+  @@index([id, teamId, createdAt, userId, status, countryCode])
 }
 
 model JourneyVisitor {
@@ -129,5 +130,5 @@ model JourneyVisitor {
   events                    Event[]
 
   @@unique([journeyId, visitorId])
-  @@index([journeyId, visitorId, createdAt])
+  @@index([journeyId, visitorId, createdAt, lastChatStartedAt, lastRadioQuestion, lastTextResponse, activityCount, duration])
 }

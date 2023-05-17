@@ -170,6 +170,12 @@ export enum JourneysReportType {
     singleSummary = "singleSummary"
 }
 
+export enum JourneyVisitorSort {
+    date = "date",
+    duration = "duration",
+    activity = "activity"
+}
+
 export enum UserJourneyRole {
     inviteRequested = "inviteRequested",
     editor = "editor",
@@ -200,12 +206,6 @@ export enum VisitorStatus {
     robotFace = "robotFace",
     redExclamationMark = "redExclamationMark",
     redQuestionMark = "redQuestionMark"
-}
-
-export enum JourneyVisitorSort {
-    date = "date",
-    duration = "duration",
-    activity = "activity"
 }
 
 export class NavigateActionInput {
@@ -569,10 +569,6 @@ export class JourneyTemplateInput {
     template?: Nullable<boolean>;
 }
 
-export class UserInviteCreateInput {
-    email: string;
-}
-
 export class JourneyVisitorFilter {
     journeyId: string;
     hasChatStarted?: Nullable<boolean>;
@@ -583,6 +579,10 @@ export class JourneyVisitorFilter {
     countryCode?: Nullable<string>;
 }
 
+export class UserInviteCreateInput {
+    email: string;
+}
+
 export class VisitorUpdateInput {
     email?: Nullable<string>;
     messagePlatformId?: Nullable<string>;
@@ -590,6 +590,8 @@ export class VisitorUpdateInput {
     name?: Nullable<string>;
     notes?: Nullable<string>;
     status?: Nullable<VisitorStatus>;
+    countryCode?: Nullable<string>;
+    referrer?: Nullable<string>;
 }
 
 export interface Action {
@@ -1018,6 +1020,10 @@ export abstract class IQuery {
 
     abstract getJourneyProfile(): Nullable<JourneyProfile> | Promise<Nullable<JourneyProfile>>;
 
+    abstract journeyVisitorsConnection(teamId: string, filter: JourneyVisitorFilter, first?: Nullable<number>, after?: Nullable<string>): JourneyVisitorsConnection | Promise<JourneyVisitorsConnection>;
+
+    abstract journeyVisitorCount(filter: JourneyVisitorFilter): number | Promise<number>;
+
     abstract userInvites(journeyId: string): Nullable<UserInvite[]> | Promise<Nullable<UserInvite[]>>;
 
     abstract getUserRole(): Nullable<UserRole> | Promise<Nullable<UserRole>>;
@@ -1025,10 +1031,6 @@ export abstract class IQuery {
     abstract visitorsConnection(teamId: string, first?: Nullable<number>, after?: Nullable<string>): VisitorsConnection | Promise<VisitorsConnection>;
 
     abstract visitor(id: string): Visitor | Promise<Visitor>;
-
-    abstract journeyVisitorsConnection(teamId: string, filter: JourneyVisitorFilter, first?: Nullable<number>, after?: Nullable<string>): JourneyVisitorsConnection | Promise<JourneyVisitorsConnection>;
-
-    abstract journeyVisitorCount(filter: JourneyVisitorFilter): number | Promise<number>;
 }
 
 export class UserJourney {
@@ -1047,6 +1049,38 @@ export class JourneyProfile {
     id: string;
     userId: string;
     acceptedTermsAt?: Nullable<DateTime>;
+}
+
+export class JourneyVisitor {
+    __typename?: 'JourneyVisitor';
+    visitorId: string;
+    journeyId: string;
+    createdAt: DateTime;
+    duration?: Nullable<number>;
+    lastChatStartedAt?: Nullable<DateTime>;
+    lastChatPlatform?: Nullable<MessagePlatform>;
+    countryCode?: Nullable<string>;
+    messagePlatform?: Nullable<MessagePlatform>;
+    notes?: Nullable<string>;
+    lastStepViewedAt?: Nullable<DateTime>;
+    lastLinkAction?: Nullable<string>;
+    lastTextResponse?: Nullable<string>;
+    lastRadioQuestion?: Nullable<string>;
+    lastRadioOptionSubmission?: Nullable<string>;
+    events: Event[];
+    visitor: Visitor;
+}
+
+export class JourneyVisitorEdge {
+    __typename?: 'JourneyVisitorEdge';
+    cursor: string;
+    node: JourneyVisitor;
+}
+
+export class JourneyVisitorsConnection {
+    __typename?: 'JourneyVisitorsConnection';
+    edges: JourneyVisitorEdge[];
+    pageInfo: PageInfo;
 }
 
 export class UserInvite {
@@ -1096,6 +1130,7 @@ export class Visitor {
     __typename?: 'Visitor';
     id: string;
     createdAt: DateTime;
+    duration?: Nullable<number>;
     lastChatStartedAt?: Nullable<DateTime>;
     lastChatPlatform?: Nullable<MessagePlatform>;
     userAgent?: Nullable<UserAgent>;
@@ -1111,32 +1146,8 @@ export class Visitor {
     lastTextResponse?: Nullable<string>;
     lastRadioQuestion?: Nullable<string>;
     lastRadioOptionSubmission?: Nullable<string>;
+    referrer?: Nullable<string>;
     events: Event[];
-}
-
-export class JourneyVisitor {
-    __typename?: 'JourneyVisitor';
-    visitorId: string;
-    journeyId: string;
-    createdAt: DateTime;
-    lastChatStartedAt?: Nullable<DateTime>;
-    lastChatPlatform?: Nullable<MessagePlatform>;
-    countryCode?: Nullable<string>;
-    messagePlatform?: Nullable<MessagePlatform>;
-    notes?: Nullable<string>;
-    lastStepViewedAt?: Nullable<DateTime>;
-    lastLinkAction?: Nullable<string>;
-    lastTextResponse?: Nullable<string>;
-    lastRadioQuestion?: Nullable<string>;
-    lastRadioOptionSubmission?: Nullable<string>;
-    events: Event[];
-    visitor: Visitor;
-}
-
-export class JourneyVisitorEdge {
-    __typename?: 'JourneyVisitorEdge';
-    cursor: string;
-    node: JourneyVisitor;
 }
 
 export class VisitorEdge {
@@ -1155,12 +1166,6 @@ export class PageInfo {
 export class VisitorsConnection {
     __typename?: 'VisitorsConnection';
     edges: VisitorEdge[];
-    pageInfo: PageInfo;
-}
-
-export class JourneyVisitorsConnection {
-    __typename?: 'JourneyVisitorsConnection';
-    edges: JourneyVisitorEdge[];
     pageInfo: PageInfo;
 }
 
