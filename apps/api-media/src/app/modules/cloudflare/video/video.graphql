@@ -10,7 +10,10 @@ extend type Query {
 }
 
 extend type Mutation {
-  createCloudflareVideoUploadByFile(uploadLength: Int!): CloudflareVideo
+  createCloudflareVideoUploadByFile(
+    uploadLength: Int!
+    name: String!
+  ): CloudflareVideo
   createCloudflareVideoUploadByUrl(url: String!): CloudflareVideo
   deleteCloudflareVideo(id: ID!): Boolean
 }

@@ -23,6 +23,7 @@ export class VideoService extends BaseService {
   collection = this.db.collection('cloudflareVideos')
   async uploadToCloudflareByFile(
     uploadLength: number,
+    name: string,
     userId: string
   ): Promise<CloudflareVideoUploadUrl | undefined> {
     const response = await fetch(
@@ -35,7 +36,8 @@ export class VideoService extends BaseService {
           Authorization: `Bearer ${process.env.CLOUDFLARE_STREAM_TOKEN ?? ''}`,
           'Tus-Resumable': '1.0.0',
           'Upload-Length': uploadLength.toString(),
-          'Upload-Creator': userId
+          'Upload-Creator': userId,
+          'Upload-Metadata': 'name ' + btoa(name)
         }
       }
     )

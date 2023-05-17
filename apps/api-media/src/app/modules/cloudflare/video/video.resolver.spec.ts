@@ -70,14 +70,16 @@ describe('VideoResolver', () => {
   describe('createCloudflareUploadByFile ', () => {
     it('return cloudflare video', async () => {
       expect(
-        await resolver.createCloudflareVideoUploadByFile(100, 'userId')
+        await resolver.createCloudflareVideoUploadByFile(100, 'name', 'userId')
       ).toEqual({
         ...cloudflareVideoUploadUrl,
+        name: 'name',
         createdAt: expect.any(String),
         userId: 'userId'
       })
       expect(service.uploadToCloudflareByFile).toHaveBeenCalledWith(
         100,
+        'name',
         'userId'
       )
     })
@@ -85,10 +87,15 @@ describe('VideoResolver', () => {
       service.uploadToCloudflareByFile.mockResolvedValueOnce(undefined)
       await expect(
         async () =>
-          await resolver.createCloudflareVideoUploadByFile(100, 'userId')
+          await resolver.createCloudflareVideoUploadByFile(
+            100,
+            'name',
+            'userId'
+          )
       ).rejects.toThrow('unable to connect to cloudflare')
       expect(service.uploadToCloudflareByFile).toHaveBeenCalledWith(
         100,
+        'name',
         'userId'
       )
     })

@@ -165,13 +165,11 @@ export abstract class IMutation {
 
     abstract cloudflareUploadComplete(id: string): Nullable<boolean> | Promise<Nullable<boolean>>;
 
-    abstract createCloudflareVideoUploadByFile(uploadLength: number): Nullable<CloudflareVideo> | Promise<Nullable<CloudflareVideo>>;
+    abstract createCloudflareVideoUploadByFile(uploadLength: number, name: string): Nullable<CloudflareVideo> | Promise<Nullable<CloudflareVideo>>;
 
     abstract createCloudflareVideoUploadByUrl(url: string): Nullable<CloudflareVideo> | Promise<Nullable<CloudflareVideo>>;
 
     abstract deleteCloudflareVideo(id: string): Nullable<boolean> | Promise<Nullable<boolean>>;
-
-    abstract cloudflareUploadVideoComplete(id: string): Nullable<boolean> | Promise<Nullable<boolean>>;
 
     abstract triggerUnsplashDownload(url: string): Nullable<boolean> | Promise<Nullable<boolean>>;
 }

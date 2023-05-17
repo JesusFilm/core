@@ -11,10 +11,12 @@ export class VideoResolver {
   @Mutation()
   async createCloudflareVideoUploadByFile(
     @Args('uploadLength') uploadLength: number,
+    @Args('name') name: string,
     @CurrentUserId() userId: string
   ): Promise<CloudflareVideo> {
     const response = await this.videoService.uploadToCloudflareByFile(
       uploadLength,
+      name,
       userId
     )
     if (response == null) throw new Error('unable to connect to cloudflare')
@@ -22,6 +24,7 @@ export class VideoResolver {
       _key: response.id,
       uploadUrl: response.uploadUrl,
       userId,
+      name,
       createdAt: new Date().toISOString()
     })
   }

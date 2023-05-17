@@ -59,7 +59,9 @@ describe('VideoService', () => {
           }
         }
       } as unknown as Response)
-      expect(await service.uploadToCloudflareByFile(100, 'userId')).toEqual({
+      expect(
+        await service.uploadToCloudflareByFile(100, 'name', 'userId')
+      ).toEqual({
         id: 'streamMediaId',
         uploadUrl: 'https://example.com'
       })
@@ -74,7 +76,8 @@ describe('VideoService', () => {
             }`,
             'Tus-Resumable': '1.0.0',
             'Upload-Length': '100',
-            'Upload-Creator': 'userId'
+            'Upload-Creator': 'userId',
+            'Upload-Metadata': 'name bmFtZQ=='
           },
           method: 'POST'
         }
@@ -92,9 +95,9 @@ describe('VideoService', () => {
           }
         }
       } as unknown as Response)
-      expect(await service.uploadToCloudflareByFile(100, 'userId')).toEqual(
-        undefined
-      )
+      expect(
+        await service.uploadToCloudflareByFile(100, 'name', 'userId')
+      ).toEqual(undefined)
     })
   })
   describe('deleteVideoFromCloudflare', () => {
