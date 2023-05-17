@@ -5,7 +5,7 @@ import { JourneysReportType } from '../../../__generated__/globalTypes'
 import { NavigationButton } from './NavigationButton'
 
 interface Props {
-  reportType: JourneysReportType
+  reportType?: JourneysReportType
   journeyId?: string
   selected: 'journeys' | 'visitors'
 }
