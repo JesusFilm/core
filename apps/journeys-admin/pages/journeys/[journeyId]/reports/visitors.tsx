@@ -30,8 +30,17 @@ import { FilterDrawer } from '../../../../src/components/JourneyVisitorsList/Fil
 import { VisitorToolbar } from '../../../../src/components/JourneyVisitorsList/VisitorToolbar'
 
 export const GET_JOURNEY_VISITORS = gql`
-  query GetJourneyVisitors($filter: JourneyVisitorFilter!) {
-    visitors: journeyVisitorsConnection(teamId: "jfp-team", filter: $filter) {
+  query GetJourneyVisitors(
+    $filter: JourneyVisitorFilter!
+    $first: Int
+    $after: String
+  ) {
+    visitors: journeyVisitorsConnection(
+      teamId: "jfp-team"
+      filter: $filter
+      first: $first
+      after: $after
+    ) {
       edges {
         cursor
         node {
@@ -119,8 +128,6 @@ function JourneyVisitorsPage(): ReactElement {
       }
     }
   }
-
-  console.log(data)
 
   return (
     <>
