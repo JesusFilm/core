@@ -3,14 +3,16 @@ import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import PersonOutlineRoundedIcon from '@mui/icons-material/PersonOutlineRounded'
 import { format, parseISO } from 'date-fns'
+import { VisitorStatus } from '../../../../../__generated__/globalTypes'
+import { getStatusIcon, transformDuration } from '../utils'
 
 interface Props {
-  icon?: string
+  icon: VisitorStatus | null
   name?: string
-  location?: string
-  source?: string
+  location: string | null
+  source: string | null
   createdAt: string
-  duration: string
+  duration: number | null
 }
 
 export function VisitorCardHeader({
@@ -21,20 +23,8 @@ export function VisitorCardHeader({
   createdAt,
   duration
 }: Props): ReactElement {
-  function getIcon(icon?: string): string | undefined {
-    let res
-    switch (icon) {
-      case 'tick':
-        res = '✅'
-        break
-      case 'warning':
-        res = '❗'
-        break
-    }
-    return res
-  }
-
-  const status = getIcon(icon)
+  const status = getStatusIcon(icon)
+  const journeyDuration = transformDuration(duration)
   return (
     <>
       {/* Desktop */}
@@ -65,7 +55,7 @@ export function VisitorCardHeader({
           </Typography>
           <Typography variant="subtitle1">{'\u00A0\u00B7\u00A0'}</Typography>
           <Typography variant="subtitle1" noWrap>
-            {duration}
+            {journeyDuration}
           </Typography>
         </Stack>
       </Stack>
@@ -83,7 +73,7 @@ export function VisitorCardHeader({
               {format(parseISO(createdAt), 'h:mmaaa, LLL. do')}
             </Typography>
             <Typography variant="subtitle1">{'\u00A0\u00B7\u00A0'}</Typography>
-            <Typography variant="subtitle1">{duration}</Typography>
+            <Typography variant="subtitle1">{journeyDuration}</Typography>
           </Stack>
           <Stack direction="row">
             <Typography variant="subtitle1">{name}</Typography>

@@ -2,7 +2,8 @@ import { ReactElement } from 'react'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import Box from '@mui/material/Box'
-import { Event } from '../../fakeData'
+import { format, parseISO } from 'date-fns'
+import { GetJourneyVisitors_visitors_edges_node_events as Event } from '../../../../../__generated__/GetJourneyVisitors'
 
 interface Props {
   name?: string
@@ -10,28 +11,52 @@ interface Props {
 }
 
 export function VisitorCardDetails({ name, events }: Props): ReactElement {
+  console.log(events)
+
+  const eventsFilter: Array<Event['__typename']> = [
+    'ChatOpenEvent',
+    'TextResponseSubmissionEvent',
+    'RadioQuestionSubmissionEvent'
+  ]
+
+  const filteredEvents = events.filter((event) =>
+    eventsFilter.includes(event.__typename)
+  )
+
   return (
     <>
-      {events.length > 0 && (
+      {filteredEvents.length > 0 && (
         <Box sx={{ pt: 3 }}>
           <DetailsRow label="Name" value={name} />
         </Box>
       )}
-      {events.map((event) => (
-        <DetailsRow
-          key={event.id}
-          label={event.label}
-          value={event.value}
-          chatEvent={event.__typename === 'Chat'}
-        />
-      ))}
+      {filteredEvents.map((event) => {
+        if (event.__typename === 'ChatOpenEvent') {
+          return (
+            <DetailsRow
+              key={event.id}
+              label="Chat Started"
+              value={format(parseISO(event.createdAt), 'h:mmaaa')}
+              chatEvent
+            />
+          )
+        } else {
+          return (
+            <DetailsRow
+              key={event.id}
+              label={event.label}
+              value={event.value}
+            />
+          )
+        }
+      })}
     </>
   )
 }
 
 interface DetailsRowProps {
-  label?: string
-  value?: string
+  label: string | null
+  value?: string | null
   chatEvent?: boolean
 }
 
