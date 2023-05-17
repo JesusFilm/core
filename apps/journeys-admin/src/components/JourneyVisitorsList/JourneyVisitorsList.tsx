@@ -22,7 +22,11 @@ export function JourneyVisitorsList({
 }: Props): ReactElement {
   const hasVisitors = visitorEdges != null && visitorEdges.length > 0
   return (
-    <Stack spacing={6} alignItems="center" sx={{ width: '100%' }}>
+    <Stack
+      spacing={6}
+      alignItems="center"
+      sx={{ width: '100%', height: '100%' }}
+    >
       {hasVisitors ? (
         <Box sx={{ mx: { xs: -6, sm: 0 }, width: '100%' }}>
           {visitorEdges.map((visitor) => (

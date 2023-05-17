@@ -11,8 +11,6 @@ interface Props {
 }
 
 export function VisitorCardDetails({ name, events }: Props): ReactElement {
-  console.log(events)
-
   const eventsFilter: Array<Event['__typename']> = [
     'ChatOpenEvent',
     'TextResponseSubmissionEvent',
