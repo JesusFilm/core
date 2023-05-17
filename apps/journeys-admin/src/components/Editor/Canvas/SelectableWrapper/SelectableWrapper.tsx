@@ -78,6 +78,13 @@ export function SelectableWrapper({
     }
   }
 
+  const handleMouseOut = (): void => {
+    // TODO: it'll always run this everytime, fix it
+    if (block.__typename === 'TypographyBlock') {
+      selectBlock(block)
+    }
+  }
+
   // Container Blocks (RadioQuestion, Grid) don't stop propogation on ClickCapture, stop onClick so child events still occur.
   const blockNonSelectionEvents = (e: MouseEvent<HTMLElement>): void => {
     e.stopPropagation()
@@ -86,17 +93,17 @@ export function SelectableWrapper({
   const videoOutlineStyles =
     selectedBlock?.__typename === 'VideoBlock'
       ? {
-          width: '100%',
-          height: '100%',
-          position: 'absolute',
-          top: 0,
-          left: 0,
-          outlineOffset: '-3px',
-          borderRadius: '16px',
-          '&:first-child': {
-            '& > *': { zIndex: -1 }
-          }
+        width: '100%',
+        height: '100%',
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        outlineOffset: '-3px',
+        borderRadius: '16px',
+        '&:first-child': {
+          '& > *': { zIndex: -1 }
         }
+      }
       : {}
 
   return isSelectable ? (
@@ -120,6 +127,7 @@ export function SelectableWrapper({
         zIndex: selectedBlock?.id === block.id ? 1 : 0,
         ...videoOutlineStyles
       }}
+      onMouseOut={handleMouseOut}
       onClickCapture={handleSelectBlock}
       onClick={blockNonSelectionEvents}
     >
