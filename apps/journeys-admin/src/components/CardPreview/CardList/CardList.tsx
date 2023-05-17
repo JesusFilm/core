@@ -62,7 +62,9 @@ export function CardList({
   isDraggable,
   showNavigationCards = false
 }: CardListProps): ReactElement {
-  const { state } = useEditor()
+  const {
+    state: { journeyEditContentComponent }
+  } = useEditor()
   const { journey } = useJourney()
   const { primaryImageBlock } = useSocialPreview()
 
@@ -97,13 +99,21 @@ export function CardList({
       </Card>
     )
   }
+
+  const selectedId =
+    journeyEditContentComponent === ActiveJourneyEditContent.Action
+      ? 'goals'
+      : journeyEditContentComponent === ActiveJourneyEditContent.SocialPreview
+      ? 'social'
+      : selected?.id
+
   return (
     <HorizontalSelect
       onChange={handleChange}
-      id={selected?.id}
+      id={selectedId}
       isDragging={isDragging}
       footer={showAddButton === true && <AddCardSlide />}
-      view={state.journeyEditContentComponent}
+      view={journeyEditContentComponent}
     >
       {showNavigation === true && (
         <NavigationCard
@@ -113,8 +123,7 @@ export function CardList({
           title="Goals"
           destination={ActiveJourneyEditContent.Action}
           outlined={
-            state.journeyEditContentComponent ===
-            ActiveJourneyEditContent.Action
+            journeyEditContentComponent === ActiveJourneyEditContent.Action
           }
           header={
             <Box
@@ -150,7 +159,7 @@ export function CardList({
           title="Social Media"
           destination={ActiveJourneyEditContent.SocialPreview}
           outlined={
-            state.journeyEditContentComponent ===
+            journeyEditContentComponent ===
             ActiveJourneyEditContent.SocialPreview
           }
           header={
