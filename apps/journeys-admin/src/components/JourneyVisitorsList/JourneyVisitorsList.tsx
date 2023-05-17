@@ -1,59 +1,31 @@
 import { ReactElement } from 'react'
-import { gql, useQuery } from '@apollo/client'
 import Image from 'next/image'
 import Box from '@mui/material/Box'
-import { GetJourneyVisitors } from '../../../__generated__/GetJourneyVisitors'
+import Stack from '@mui/material/Stack'
+import LoadingButton from '@mui/lab/LoadingButton'
+import { GetJourneyVisitors_visitors_edges as VisitorEdge } from '../../../__generated__/GetJourneyVisitors'
 import VisitorsPlaceholder from '../../../public/VisitorsPlaceholder.svg'
 import { VisitorCard } from './VisitorCard'
 
-export const GET_JOURNEY_VISITORS = gql`
-  query GetJourneyVisitors($filter: JourneyVisitorFilter!) {
-    visitors: journeyVisitorsConnection(teamId: "jfp-team", filter: $filter) {
-      edges {
-        cursor
-        node {
-          visitorId
-          countryCode
-          createdAt
-          duration
-          visitor {
-            name
-            status
-            referrer
-          }
-          events {
-            id
-            createdAt
-            label
-            value
-          }
-        }
-      }
-      pageInfo {
-        hasNextPage
-        startCursor
-        endCursor
-      }
-    }
-  }
-`
-
 interface Props {
-  id: string
+  visitorEdges?: VisitorEdge[]
+  fetchNext: () => Promise<void>
+  loading: boolean
+  hasNextPage: boolean
 }
 
-export function JourneyVisitorsList({ id }: Props): ReactElement {
-  const { data } = useQuery<GetJourneyVisitors>(GET_JOURNEY_VISITORS, {
-    variables: {
-      filter: { journeyId: id }
-    }
-  })
-
+export function JourneyVisitorsList({
+  visitorEdges,
+  fetchNext,
+  loading,
+  hasNextPage
+}: Props): ReactElement {
+  const hasVisitors = visitorEdges != null && visitorEdges.length > 0
   return (
-    <>
-      {data?.visitors != null && data.visitors.edges.length > 0 ? (
-        <Box sx={{ mx: { xs: -6, sm: 0 } }}>
-          {data?.visitors.edges.map((visitor) => (
+    <Stack spacing={6} alignItems="center" sx={{ width: '100%' }}>
+      {hasVisitors ? (
+        <Box sx={{ mx: { xs: -6, sm: 0 }, width: '100%' }}>
+          {visitorEdges.map((visitor) => (
             <VisitorCard
               key={visitor.node.visitorId}
               visitorNode={visitor.node}
@@ -70,6 +42,16 @@ export function JourneyVisitorsList({ id }: Props): ReactElement {
           />
         </Box>
       )}
-    </>
+
+      <LoadingButton
+        variant="outlined"
+        onClick={fetchNext}
+        disabled={!hasNextPage}
+        loading={loading}
+        sx={{ width: '250px', display: hasVisitors ? 'flex' : 'none' }}
+      >
+        Load More
+      </LoadingButton>
+    </Stack>
   )
 }
