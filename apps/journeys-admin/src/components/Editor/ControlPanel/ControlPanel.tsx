@@ -2,7 +2,7 @@ import Box from '@mui/material/Box'
 import Tab from '@mui/material/Tab'
 import Tabs from '@mui/material/Tabs'
 import Tooltip from '@mui/material/Tooltip'
-import { ReactElement, SyntheticEvent } from 'react'
+import { ReactElement, SyntheticEvent, useEffect } from 'react'
 import {
   useEditor,
   ActiveTab,
@@ -31,6 +31,19 @@ export function ControlPanel(): ReactElement {
     },
     dispatch
   } = useEditor()
+
+  useEffect(() => {
+    if (
+      activeTab === ActiveTab.Journey &&
+      journeyEditContentComponent === ActiveJourneyEditContent.SocialPreview
+    ) {
+      dispatch({
+        type: 'SetDrawerPropsAction',
+        title: 'Social Share Preview',
+        children: <SocialShareAppearance />
+      })
+    }
+  }, [activeTab, dispatch, journeyEditContentComponent])
 
   const handleChange = (
     _event: SyntheticEvent<Element, Event>,

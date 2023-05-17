@@ -4,11 +4,11 @@ import {
   StepNextEventCreateInput,
   StepViewEventCreateInput
 } from '../../../__generated__/graphql'
-import { VisitorService } from '../../visitor/visitor.service'
+import { PrismaService } from '../../../lib/prisma.service'
 import { StepNextEventResolver, StepViewEventResolver } from './step.resolver'
 
 describe('Step', () => {
-  let vService: VisitorService
+  let prisma: PrismaService
   beforeAll(() => {
     jest.useFakeTimers('modern')
     jest.setSystemTime(new Date('2021-02-18'))
@@ -25,15 +25,16 @@ describe('Step', () => {
     })
   }
 
-  const visitorService = {
-    provide: VisitorService,
-    useFactory: () => ({
-      update: jest.fn(() => null)
-    })
-  }
-
   const response = {
-    visitor: { id: 'visitor.id' },
+    visitor: {
+      id: 'visitor.id',
+      createdAt: new Date(new Date('2021-02-18').setMinutes(-5))
+    },
+    journeyVisitor: {
+      visitorId: 'visitor.id',
+      journeyId: 'journey.id',
+      createdAt: new Date(new Date('2021-02-18').setMinutes(-5))
+    },
     journeyId: 'journey.id'
   }
 
@@ -42,10 +43,12 @@ describe('Step', () => {
 
     beforeEach(async () => {
       const module: TestingModule = await Test.createTestingModule({
-        providers: [StepViewEventResolver, eventService, visitorService]
+        providers: [StepViewEventResolver, eventService, PrismaService]
       }).compile()
       resolver = module.get<StepViewEventResolver>(StepViewEventResolver)
-      vService = module.get<VisitorService>(VisitorService)
+      prisma = module.get<PrismaService>(PrismaService)
+      prisma.visitor.update = jest.fn().mockResolvedValueOnce(null)
+      prisma.journeyVisitor.update = jest.fn().mockResolvedValueOnce(null)
     })
 
     it('returns StepViewEvent', async () => {
@@ -57,9 +60,10 @@ describe('Step', () => {
 
       expect(await resolver.stepViewEventCreate('userId', input)).toEqual({
         ...input,
-        __typename: 'StepViewEvent',
-        visitorId: 'visitor.id',
-        createdAt: new Date().toISOString(),
+        typename: 'StepViewEvent',
+        visitor: {
+          connect: { id: 'visitor.id' }
+        },
         journeyId: 'journey.id',
         stepId: input.blockId
       })
@@ -73,8 +77,12 @@ describe('Step', () => {
       }
       await resolver.stepViewEventCreate('userId', input)
 
-      expect(vService.update).toHaveBeenCalledWith('visitor.id', {
-        lastStepViewedAt: new Date().toISOString()
+      expect(prisma.visitor.update).toHaveBeenCalledWith({
+        where: { id: 'visitor.id' },
+        data: {
+          duration: 300,
+          lastStepViewedAt: new Date()
+        }
       })
     })
   })
@@ -84,7 +92,7 @@ describe('Step', () => {
 
     beforeEach(async () => {
       const module: TestingModule = await Test.createTestingModule({
-        providers: [StepNextEventResolver, eventService, visitorService]
+        providers: [StepNextEventResolver, eventService]
       }).compile()
       resolver = module.get<StepNextEventResolver>(StepNextEventResolver)
     })
@@ -101,8 +109,10 @@ describe('Step', () => {
       it('should return step next event', async () => {
         expect(await resolver.stepNextEventCreate('userId', input)).toEqual({
           ...input,
-          __typename: 'StepNextEvent',
-          visitorId: 'visitor.id',
+          typename: 'StepNextEvent',
+          visitor: {
+            connect: { id: 'visitor.id' }
+          },
           createdAt: new Date().toISOString(),
           journeyId: 'journey.id'
         })

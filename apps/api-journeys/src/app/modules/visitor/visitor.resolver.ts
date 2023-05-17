@@ -9,17 +9,18 @@ import {
 } from '@nestjs/graphql'
 import { ForbiddenError, UserInputError } from 'apollo-server-errors'
 import { IResult, UAParser } from 'ua-parser-js'
-import { Event, VisitorsConnection } from '../../__generated__/graphql'
-import { EventService } from '../event/event.service'
+import { Event, Visitor } from '.prisma/api-journeys-client'
+import { FromPostgresql } from '@core/nest/decorators/FromPostgresql'
+import { PrismaService } from '../../lib/prisma.service'
 import { MemberService } from '../member/member.service'
-import { VisitorService, VisitorRecord } from './visitor.service'
+import { VisitorService, VisitorsConnection } from './visitor.service'
 
 @Resolver('Visitor')
 export class VisitorResolver {
   constructor(
     private readonly visitorService: VisitorService,
     private readonly memberService: MemberService,
-    private readonly eventService: EventService
+    private readonly prismaService: PrismaService
   ) {}
 
   @Query()
@@ -48,8 +49,10 @@ export class VisitorResolver {
   async visitor(
     @CurrentUserId() userId: string,
     @Args('id') id: string
-  ): Promise<VisitorRecord> {
-    const visitor = await this.visitorService.get(id)
+  ): Promise<Visitor> {
+    const visitor = await this.prismaService.visitor.findUnique({
+      where: { id }
+    })
 
     if (visitor == null)
       throw new UserInputError(`Visitor with ID "${id}" does not exist`)
@@ -72,8 +75,10 @@ export class VisitorResolver {
     @CurrentUserId() userId: string,
     @Args('id') id: string,
     @Args('input') input
-  ): Promise<VisitorRecord | undefined> {
-    const visitor = await this.visitorService.get(id)
+  ): Promise<Visitor | undefined> {
+    const visitor = await this.prismaService.visitor.findUnique({
+      where: { id }
+    })
 
     if (visitor == null)
       throw new UserInputError(`Visitor with ID "${id}" does not exist`)
@@ -88,12 +93,18 @@ export class VisitorResolver {
         'User is not a member of the team the visitor belongs to'
       )
 
-    return await this.visitorService.update(id, input)
+    return await this.prismaService.visitor.update({
+      where: { id },
+      data: input
+    })
   }
 
   @ResolveField()
+  @FromPostgresql()
   async events(@Parent() visitor): Promise<Event[]> {
-    return await this.eventService.getAllByVisitorId(visitor.id)
+    return await this.prismaService.event.findMany({
+      where: { visitorId: visitor.id }
+    })
   }
 
   @ResolveField()
