@@ -4,6 +4,7 @@ import { useTheme } from '@mui/material/styles'
 import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
 import { AuthUser } from 'next-firebase-auth'
+import { useRouter } from 'next/router'
 import { PageProvider, PageState } from '../../libs/PageWrapperProvider'
 import { NavigationDrawer } from './NavigationDrawer'
 import { MainPanelBody } from './MainPanelBody'
@@ -44,6 +45,7 @@ export function PageWrapper({
   const theme = useTheme()
   const viewportHeight = use100vh()
   const { navbar, toolbar, bottomPanel, sidePanel } = usePageWrapperStyles()
+  const router = useRouter()
 
   return (
     <PageProvider initialState={initialState}>
@@ -55,7 +57,12 @@ export function PageWrapper({
         }}
       >
         <Stack direction={{ md: 'row' }} sx={{ height: 'inherit' }}>
-          <NavigationDrawer open={open} onClose={setOpen} authUser={authUser} />
+          <NavigationDrawer
+            open={open}
+            onClose={setOpen}
+            authUser={authUser}
+            router={router}
+          />
 
           <Stack
             direction={{ xs: 'column', md: 'row' }}
