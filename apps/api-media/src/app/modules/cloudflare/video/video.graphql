@@ -1,0 +1,16 @@
+type CloudflareVideo {
+  id: ID!
+  uploadUrl: String
+  userId: ID!
+  createdAt: String!
+}
+
+extend type Query {
+  getMyCloudflareVideos: [CloudflareVideo]
+}
+
+extend type Mutation {
+  createCloudflareVideoUploadByFile(uploadLength: Int!): CloudflareVideo
+  createCloudflareVideoUploadByUrl(url: String!): CloudflareVideo
+  deleteCloudflareVideo(id: ID!): Boolean
+}
