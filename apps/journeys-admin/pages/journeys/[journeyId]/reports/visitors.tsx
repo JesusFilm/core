@@ -25,6 +25,7 @@ import {
   GetJourneyVisitors,
   GetJourneyVisitors_visitors_edges as VisitorEdge
 } from '../../../../__generated__/GetJourneyVisitors'
+import { GetJourneyVisitorsCount } from '../../../../__generated__/GetJourneyVisitorsCount'
 
 export const GET_JOURNEY_VISITORS = gql`
   query GetJourneyVisitors($filter: JourneyVisitorFilter!) {
@@ -58,6 +59,12 @@ export const GET_JOURNEY_VISITORS = gql`
   }
 `
 
+export const GET_JOURNEY_VISITORS_COUNT = gql`
+  query GetJourneyVisitorsCount($filter: JourneyVisitorFilter!) {
+    journeyVisitorCount(filter: $filter)
+  }
+`
+
 function JourneyVisitorsPage(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const AuthUser = useAuthUser()
@@ -65,6 +72,15 @@ function JourneyVisitorsPage(): ReactElement {
   const journeyId = router.query.journeyId as string
 
   useTermsRedirect()
+
+  const { data } = useQuery<GetJourneyVisitorsCount>(
+    GET_JOURNEY_VISITORS_COUNT,
+    {
+      variables: {
+        filter: { journeyId }
+      }
+    }
+  )
 
   const [visitorEdges, setVisitorEdges] = useState<VisitorEdge[]>([])
   const [hasNextPage, setHasNextPage] = useState(false)
@@ -102,6 +118,8 @@ function JourneyVisitorsPage(): ReactElement {
     }
   }
 
+  console.log(data)
+
   return (
     <>
       <NextSeo title={t('Visitors')} />
@@ -112,6 +130,7 @@ function JourneyVisitorsPage(): ReactElement {
       >
         <JourneyVisitorsList
           visitorEdges={visitorEdges}
+          visitorsCount={data?.journeyVisitorCount}
           fetchNext={handleFetchNext}
           loading={loading}
           hasNextPage={hasNextPage}

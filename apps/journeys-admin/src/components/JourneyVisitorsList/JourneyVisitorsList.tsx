@@ -3,12 +3,14 @@ import Image from 'next/image'
 import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
 import LoadingButton from '@mui/lab/LoadingButton'
+import Typography from '@mui/material/Typography'
 import { GetJourneyVisitors_visitors_edges as VisitorEdge } from '../../../__generated__/GetJourneyVisitors'
 import VisitorsPlaceholder from '../../../public/VisitorsPlaceholder.svg'
 import { VisitorCard } from './VisitorCard'
 
 interface Props {
   visitorEdges?: VisitorEdge[]
+  visitorsCount?: number
   fetchNext: () => Promise<void>
   loading: boolean
   hasNextPage: boolean
@@ -16,6 +18,7 @@ interface Props {
 
 export function JourneyVisitorsList({
   visitorEdges,
+  visitorsCount,
   fetchNext,
   loading,
   hasNextPage
@@ -45,6 +48,12 @@ export function JourneyVisitorsList({
             height={245.69}
           />
         </Box>
+      )}
+
+      {hasVisitors && visitorsCount != null && (
+        <Typography>
+          {`Showing ${visitorEdges.length} visitors out of ${visitorsCount}`}
+        </Typography>
       )}
 
       <LoadingButton
