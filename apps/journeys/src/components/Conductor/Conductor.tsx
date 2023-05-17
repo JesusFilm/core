@@ -129,7 +129,7 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
         }
       })
     }
-  }, [admin, journey, journeyViewEventCreate])
+  }, [admin, journey, journeyViewEventCreate, journeyVisitorUpdate])
 
   useEffect(() => {
     setTreeBlocks(blocks)
