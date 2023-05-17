@@ -255,7 +255,9 @@ export function Video({
               )}
             {source === VideoBlockSource.youTube && (
               <source
-                src={`https://www.youtube.com/watch?v=${videoId}`}
+                src={`https://www.youtube.com/embed/${videoId}?start=${
+                  startAt ?? 0
+                }&end=${endAt ?? 0}`}
                 type="video/youtube"
               />
             )}

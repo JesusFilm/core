@@ -62,7 +62,7 @@ const video1: YoutubeVideo = {
   snippet: {
     title: 'Blessing and Curse',
     description:
-      'Trace the theme of blessing and curse in the Bible to see how Jesus defeats the curse and restores the blessing of life to creation.',
+      'Trace the theme of blessing and curse in the Bible to see how Jesus defeats the curse and restores the blessing of life to creation. ',
     thumbnails: {
       default: {
         url: 'https://i.ytimg.com/vi/jQaeIJOA6J0/default.jpg'

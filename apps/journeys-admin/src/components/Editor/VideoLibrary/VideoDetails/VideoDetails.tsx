@@ -136,7 +136,7 @@ export function VideoDetails({
           }
         }}
       >
-        <AppBar position="static" color="default">
+        <AppBar position="sticky" color="default">
           <Toolbar variant="dense">
             <Typography
               variant="subtitle1"
