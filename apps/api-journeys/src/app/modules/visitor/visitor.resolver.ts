@@ -11,6 +11,7 @@ import { ForbiddenError, UserInputError } from 'apollo-server-errors'
 import { IResult, UAParser } from 'ua-parser-js'
 import { Event, Visitor } from '.prisma/api-journeys-client'
 import { FromPostgresql } from '@core/nest/decorators/FromPostgresql'
+import { pick } from 'lodash'
 import { PrismaService } from '../../lib/prisma.service'
 import { MemberService } from '../member/member.service'
 import { VisitorService, VisitorsConnection } from './visitor.service'
@@ -76,36 +77,44 @@ export class VisitorResolver {
     @Args('id') id: string,
     @Args('input') input
   ): Promise<Visitor | undefined> {
-    let visitor
-    if (id == null) {
-      visitor = await this.prismaService.visitor.findFirst({
-        where: { userId }
-      })
-    } else {
-      visitor = await this.prismaService.visitor.findUnique({
-        where: { id }
-      })
-    }
+    const visitor = await this.prismaService.visitor.findUnique({
+      where: { id }
+    })
 
     if (visitor == null)
       throw new UserInputError(`Visitor with ID "${id}" does not exist`)
 
-    // if visitor is not current user
-    if (id != null) {
-      const memberResult = await this.memberService.getMemberByTeamId(
-        userId,
-        visitor.teamId
-      )
+    const memberResult = await this.memberService.getMemberByTeamId(
+      userId,
+      visitor.teamId
+    )
 
-      if (memberResult == null)
-        throw new ForbiddenError(
-          'User is not a member of the team the visitor belongs to'
-        )
-    }
+    if (memberResult == null)
+      throw new ForbiddenError(
+        'User is not a member of the team the visitor belongs to'
+      )
 
     return await this.prismaService.visitor.update({
       where: { id: visitor.id },
       data: input
+    })
+  }
+
+  @Mutation()
+  async visitorUpdateForCurrentUser(
+    @CurrentUserId() userId: string,
+    @Args('input') input
+  ): Promise<Visitor | undefined> {
+    const visitor = await this.prismaService.visitor.findFirst({
+      where: { userId }
+    })
+
+    if (visitor == null)
+      throw new UserInputError(`No visitor record found for user "${userId}"`)
+
+    return await this.prismaService.visitor.update({
+      where: { id: visitor.id },
+      data: pick(input, ['countryCode', 'referrer'])
     })
   }
 

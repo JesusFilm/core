@@ -268,5 +268,9 @@ extend type Mutation {
   """
   Update a visitor
   """
-  visitorUpdate(input: VisitorUpdateInput!, id: ID): Visitor!
+  visitorUpdate(id: ID!, input: VisitorUpdateInput!): Visitor!
+  """
+  Allow current user to update specific allowable fields of their visitor record
+  """
+  visitorUpdateForCurrentUser(input: VisitorUpdateInput!): Visitor!
 }

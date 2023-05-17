@@ -293,6 +293,8 @@ export interface VisitorUpdateInput {
   name?: string | null;
   notes?: string | null;
   status?: VisitorStatus | null;
+  countryCode?: string | null;
+  referrer?: string | null;
 }
 
 //==============================================================

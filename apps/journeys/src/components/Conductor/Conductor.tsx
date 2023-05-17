@@ -36,8 +36,8 @@ export const JOURNEY_VIEW_EVENT_CREATE = gql`
 `
 
 export const JOURNEY_VISITOR_UPDATE = gql`
-  mutation VisitorUpdate($input: VisitorUpdateInput!) {
-    visitorUpdate(input: $input) {
+  mutation VisitorUpdateForCurrentUser($input: VisitorUpdateInput!) {
+    visitorUpdateForCurrentUser(input: $input) {
       id
     }
   }
@@ -107,7 +107,8 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
                   void journeyVisitorUpdate({
                     variables: {
                       input: {
-                        countryCode: countryCodes.join(', ')
+                        countryCode: countryCodes.join(', '),
+                        referrer: document.referrer ?? undefined
                       }
                     }
                   })

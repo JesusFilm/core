@@ -997,7 +997,12 @@ type Mutation
   userJourneyOpen(id: ID!): UserJourney @join__field(graph: JOURNEYS)
 
   """Update a visitor"""
-  visitorUpdate(input: VisitorUpdateInput!, id: ID): Visitor! @join__field(graph: JOURNEYS)
+  visitorUpdate(id: ID!, input: VisitorUpdateInput!): Visitor! @join__field(graph: JOURNEYS)
+
+  """
+  Allow current user to update specific allowable fields of their visitor record
+  """
+  visitorUpdateForCurrentUser(input: VisitorUpdateInput!): Visitor! @join__field(graph: JOURNEYS)
   createCloudflareUploadByFile: CloudflareImage @join__field(graph: MEDIA)
   createCloudflareUploadByUrl(url: String!): CloudflareImage @join__field(graph: MEDIA)
   deleteCloudflareImage(id: ID!): Boolean @join__field(graph: MEDIA)
