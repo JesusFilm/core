@@ -12,5 +12,7 @@ export function videoBlockSourceToLabel(
       return t('Custom')
     case VideoBlockSource.youTube:
       return t('YouTube')
+    default:
+      return ''
   }
 }
