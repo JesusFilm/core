@@ -9,10 +9,12 @@ import { LoggerModule } from 'nestjs-pino'
 import { DatadogTraceModule } from 'nestjs-ddtrace'
 import { CloudflareImageModule } from './modules/cloudflare/image/image.module'
 import { UnsplashImageModule } from './modules/unsplash/image/image.module'
+import { CloudflareVideoModule } from './modules/cloudflare/video/video.module'
 
 @Module({
   imports: [
     CloudflareImageModule,
+    CloudflareVideoModule,
     UnsplashImageModule,
     GraphQLModule.forRoot<ApolloFederationDriverConfig>({
       driver: ApolloFederationDriver,
