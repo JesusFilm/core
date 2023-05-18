@@ -213,7 +213,7 @@ export class VideoBlockResolver {
         if (input.videoId != null) {
           input = {
             ...input,
-            ...(await this.fetchFieldsFromCloudflare(block.videoId))
+            ...(await this.fetchFieldsFromCloudflare(input.videoId))
           }
         }
         break

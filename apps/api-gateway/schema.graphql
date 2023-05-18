@@ -1019,7 +1019,6 @@ type Mutation
   createCloudflareVideoUploadByFile(uploadLength: Int!, name: String!): CloudflareVideo @join__field(graph: MEDIA)
   createCloudflareVideoUploadByUrl(url: String!): CloudflareVideo @join__field(graph: MEDIA)
   deleteCloudflareVideo(id: ID!): Boolean @join__field(graph: MEDIA)
-  cloudflareUploadVideoComplete(id: ID!): Boolean @join__field(graph: MEDIA)
   triggerUnsplashDownload(url: String!): Boolean @join__field(graph: MEDIA)
 }
 
