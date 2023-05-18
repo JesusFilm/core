@@ -125,4 +125,10 @@ Default.args = {
   hasNextPage: true
 }
 
+export const Empty = Template.bind({})
+Empty.args = {
+  fetchNext: noop,
+  loading: false
+}
+
 export default JourneyVisitorsListStory as Meta
