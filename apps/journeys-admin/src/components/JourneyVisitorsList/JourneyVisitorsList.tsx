@@ -34,7 +34,7 @@ export function JourneyVisitorsList({
     >
       {hasVisitors ? (
         <Box sx={{ mx: { xs: -6, sm: 0 }, width: '100%' }}>
-          {visitorEdges.map((visitor) => (
+          {visitorEdges?.map((visitor) => (
             <VisitorCard
               key={visitor.node.visitorId}
               visitorNode={visitor.node}
@@ -54,7 +54,7 @@ export function JourneyVisitorsList({
 
       {hasVisitors && visitorsCount != null && (
         <Typography>
-          {`${t('Showing')} ${visitorEdges.length} ${t(
+          {`${t('Showing')} ${visitorEdges?.length as unknown as string} ${t(
             'visitors out of'
           )} ${visitorsCount}`}
         </Typography>
