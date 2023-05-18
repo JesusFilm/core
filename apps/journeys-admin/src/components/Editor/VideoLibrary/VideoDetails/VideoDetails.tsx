@@ -85,6 +85,9 @@ export function VideoDetails({
     case VideoBlockSource.youTube:
       Details = YouTubeDetails
       break
+    default:
+      Details = LocalDetails
+      break
   }
 
   const handleSelect = (block: VideoBlockUpdateInput): void => {
