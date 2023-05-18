@@ -1,9 +1,9 @@
 import { render, fireEvent, waitFor } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
-import { CREATE_CLOUDFLARE_VIDEO_UPLOAD_BY_URL } from './CustomUrl'
-import { CustomUrl } from '.'
+import { CREATE_CLOUDFLARE_VIDEO_UPLOAD_BY_URL } from './AddByUrl'
+import { AddByUrl } from '.'
 
-describe('CustomUrl', () => {
+describe('AddByUrl', () => {
   it('should check if the mutation gets called', async () => {
     const result = jest.fn(() => ({
       data: {
@@ -28,7 +28,7 @@ describe('CustomUrl', () => {
           }
         ]}
       >
-        <CustomUrl onChange={onChange} />
+        <AddByUrl onChange={onChange} />
       </MockedProvider>
     )
 

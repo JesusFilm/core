@@ -5,8 +5,8 @@ import {
   VideoBlockUpdateInput,
   VideoBlockSource
 } from '../../../../../__generated__/globalTypes'
-import { VideoUpload } from './VideoUpload'
-import { CustomUrl } from './CustomUrl'
+import { AddByFile } from './AddByFile'
+import { AddByUrl } from './AddByUrl'
 
 interface VideoFromCloudflareProps {
   onSelect: (block: VideoBlockUpdateInput) => void
@@ -26,9 +26,9 @@ export function VideoFromCloudflare({
 
   return (
     <Stack sx={{ bgcolor: 'background.paper' }}>
-      <VideoUpload onChange={handleChange} />
+      <AddByFile onChange={handleChange} />
       <Divider sx={{ my: 4 }} />
-      <CustomUrl onChange={handleChange} />
+      <AddByUrl onChange={handleChange} />
     </Stack>
   )
 }

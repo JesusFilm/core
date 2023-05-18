@@ -1,8 +1,12 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import fetch, { Response } from 'node-fetch'
-import { GetJourney_journey_blocks_ImageBlock as ImageBlock } from '../../../../../../__generated__/GetJourney'
-import { CREATE_CLOUDFLARE_UPLOAD_BY_FILE, VideoUpload } from './VideoUpload'
+import { VideoBlockSource } from 'libs/journeys/ui/__generated__/globalTypes'
+import { GetJourney_journey_blocks_VideoBlock as VideoBlock } from '../../../../../../__generated__/GetJourney'
+import {
+  CREATE_CLOUDFLARE_VIDEO_UPLOAD_BY_FILE,
+  VideoUpload
+} from './AddByFile'
 
 jest.mock('node-fetch', () => {
   const originalModule = jest.requireActual('node-fetch')
@@ -15,17 +19,28 @@ jest.mock('node-fetch', () => {
 
 const mockFetch = fetch as jest.MockedFunction<typeof fetch>
 
-describe('ImageUpload', () => {
-  const imageBlock: ImageBlock = {
+describe('AddByFile', () => {
+  const videoBlock: VideoBlock = {
     id: 'imageBlockId',
-    __typename: 'ImageBlock',
-    src: 'https://images.unsplash.com/photo-1508363778367-af363f107cbb?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&dl=chester-wade-hLP7lVm4KUE-unsplash.jpg&w=1920',
-    alt: 'random image from unsplash',
-    width: 1600,
-    height: 1067,
-    blurhash: 'L9AS}j^-0dVC4Tq[=~PATeXSV?aL',
+    __typename: 'VideoBlock',
     parentBlockId: 'card',
-    parentOrder: 0
+    parentOrder: 0,
+    muted: false,
+    autoplay: false,
+    startAt: 0,
+    endAt: 0,
+    posterBlockId: null,
+    fullsize: false,
+    videoId: 'videoId',
+    videoVariantLanguageId: null,
+    source: VideoBlockSource.cloudflare,
+    title: null,
+    description: null,
+    image: null,
+    duration: null,
+    objectFit: null,
+    video: null,
+    action: null
   }
 
   const cfResponse = {
@@ -47,10 +62,10 @@ describe('ImageUpload', () => {
   it('should check if the mutations gets called', async () => {
     const result = jest.fn(() => ({
       data: {
-        createCloudflareUploadByUrl: {
+        createCloudflareVideoUploadByFile: {
           id: 'uploadId',
-          upload: 'uploadUrl',
-          __typename: 'CloudflareImage'
+          uploadUrl: 'https://example.com/upload',
+          __typename: 'CloudflareVideo'
         }
       }
     }))
@@ -60,23 +75,23 @@ describe('ImageUpload', () => {
         mocks={[
           {
             request: {
-              query: CREATE_CLOUDFLARE_UPLOAD_BY_FILE
+              query: CREATE_CLOUDFLARE_VIDEO_UPLOAD_BY_FILE,
+              variables: {
+                uploadLength: 4,
+                name: 'testFile'
+              }
             },
             result
           }
         ]}
       >
-        <VideoUpload
-          onChange={onChange}
-          loading={false}
-          selectedBlock={imageBlock}
-        />
+        <VideoUpload onChange={onChange} />
       </MockedProvider>
     )
     window.URL.createObjectURL = jest.fn().mockImplementation(() => 'url')
     const input = getByTestId('drop zone')
-    const file = new File(['file'], 'testFile.png', {
-      type: 'image/png'
+    const file = new File(['file'], 'testFile.mp4', {
+      type: 'video/mp4'
     })
     Object.defineProperty(input, 'files', {
       value: [file]
@@ -97,15 +112,14 @@ describe('ImageUpload', () => {
         mocks={[
           {
             request: {
-              query: CREATE_CLOUDFLARE_UPLOAD_BY_FILE
+              query: CREATE_CLOUDFLARE_VIDEO_UPLOAD_BY_FILE
             },
             result: {
               data: {
-                createCloudflareUploadByFile: {
+                createCloudflareVideoUploadByFile: {
                   id: 'uploadId',
-                  uploadUrl: 'https://upload.imagedelivery.net/uploadId',
-                  userId: 'userId',
-                  __typename: 'CloudflareImage'
+                  uploadUrl: 'https://example.com/upload',
+                  __typename: 'CloudflareVideo'
                 }
               }
             }
@@ -135,7 +149,7 @@ describe('ImageUpload', () => {
   it('should render loading state', () => {
     const { getByTestId, getByText } = render(
       <MockedProvider>
-        <VideoUpload onChange={jest.fn()} loading selectedBlock={imageBlock} />
+        <VideoUpload onChange={jest.fn()} />
       </MockedProvider>
     )
     expect(getByTestId('BackupOutlinedIcon')).toBeInTheDocument()
@@ -145,59 +159,10 @@ describe('ImageUpload', () => {
   it('should render error state', () => {
     const { getByTestId, getByText } = render(
       <MockedProvider>
-        <VideoUpload
-          onChange={jest.fn()}
-          loading={false}
-          selectedBlock={imageBlock}
-          error
-        />
+        <VideoUpload onChange={jest.fn()} />
       </MockedProvider>
     )
     expect(getByTestId('CloudOffRoundedIcon')).toBeInTheDocument()
     expect(getByText('Upload Failed!'))
-  })
-
-  it('should call setUploading on file drop', async () => {
-    const setUploading = jest.fn()
-    const { getByTestId, getByText } = render(
-      <MockedProvider
-        mocks={[
-          {
-            request: {
-              query: CREATE_CLOUDFLARE_UPLOAD_BY_FILE
-            },
-            result: {
-              data: {
-                createCloudflareUploadByFile: {
-                  id: 'uploadId',
-                  uploadUrl: 'https://upload.imagedelivery.net/uploadId',
-                  userId: 'userId',
-                  __typename: 'CloudflareImage'
-                }
-              }
-            }
-          }
-        ]}
-      >
-        <VideoUpload
-          onChange={jest.fn()}
-          setUploading={setUploading}
-          loading
-          selectedBlock={imageBlock}
-          error
-        />
-      </MockedProvider>
-    )
-    const inputEl = getByTestId('drop zone')
-    Object.defineProperty(inputEl, 'files', {
-      value: [
-        new File([new Blob(['file'])], 'testFile.png', {
-          type: 'image/png'
-        })
-      ]
-    })
-    fireEvent.drop(inputEl)
-    await waitFor(() => expect(setUploading).toHaveBeenCalled())
-    expect(getByText('Uploading...'))
   })
 })

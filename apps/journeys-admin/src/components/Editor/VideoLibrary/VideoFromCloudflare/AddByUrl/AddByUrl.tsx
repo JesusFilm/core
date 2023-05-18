@@ -22,11 +22,11 @@ export const CREATE_CLOUDFLARE_VIDEO_UPLOAD_BY_URL = gql`
   }
 `
 
-interface CustomUrlProps {
+interface AddByUrlProps {
   onChange: (id: string) => void
 }
 
-export function CustomUrl({ onChange }: CustomUrlProps): ReactElement {
+export function AddByUrl({ onChange }: AddByUrlProps): ReactElement {
   const [open, setOpen] = useState(false)
   const [createCloudflareUploadByUrl] =
     useMutation<CreateCloudflareVideoUploadByUrl>(

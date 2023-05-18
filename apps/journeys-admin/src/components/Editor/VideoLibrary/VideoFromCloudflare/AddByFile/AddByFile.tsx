@@ -27,11 +27,11 @@ export const CREATE_CLOUDFLARE_VIDEO_UPLOAD_BY_FILE = gql`
   }
 `
 
-interface VideoUploadProps {
+interface AddByFileProps {
   onChange: (id: string) => void
 }
 
-export function VideoUpload({ onChange }: VideoUploadProps): ReactElement {
+export function AddByFile({ onChange }: AddByFileProps): ReactElement {
   const [createCloudflareVideoUploadByFile] =
     useMutation<CreateCloudflareVideoUploadByFile>(
       CREATE_CLOUDFLARE_VIDEO_UPLOAD_BY_FILE

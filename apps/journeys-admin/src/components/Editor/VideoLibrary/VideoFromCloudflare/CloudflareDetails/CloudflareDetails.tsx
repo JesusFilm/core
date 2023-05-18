@@ -8,7 +8,6 @@ import type { VideoDetailsProps } from '../../VideoDetails/VideoDetails'
 import 'video.js/dist/video-js.css'
 
 export function CloudflareDetails({
-  open,
   id,
   onSelect
 }: Pick<VideoDetailsProps, 'open' | 'id' | 'onSelect'>): ReactElement {

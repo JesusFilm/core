@@ -1,5 +1,4 @@
 import { render, fireEvent, waitFor } from '@testing-library/react'
-import { VideoBlockSource } from '../../../../../../__generated__/globalTypes'
 import { CloudflareDetails } from './CloudflareDetails'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
