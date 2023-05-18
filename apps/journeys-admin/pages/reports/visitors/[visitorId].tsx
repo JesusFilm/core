@@ -11,9 +11,10 @@ import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import { useTranslation } from 'react-i18next'
 import { getLaunchDarklyClient } from '@core/shared/ui/getLaunchDarklyClient'
 import { VisitorInfo } from '../../../src/components/VisitorInfo'
-import { PageWrapper } from '../../../src/components/PageWrapper'
+import { PageWrapper } from '../../../src/components/NewPageWrapper'
 import i18nConfig from '../../../next-i18next.config'
 import { useTermsRedirect } from '../../../src/libs/useTermsRedirect/useTermsRedirect'
+import { DetailsForm } from '../../../src/components/VisitorInfo/DetailsForm'
 
 function SingleVisitorReportsPage(): ReactElement {
   const router = useRouter()
@@ -22,6 +23,8 @@ function SingleVisitorReportsPage(): ReactElement {
 
   useTermsRedirect()
 
+  const id = router.query.visitorId as string
+
   return (
     <>
       <NextSeo title={t('Visitor Info')} />
@@ -29,8 +32,10 @@ function SingleVisitorReportsPage(): ReactElement {
         title={t('Visitor Info')}
         backHref="/reports/visitors"
         authUser={AuthUser}
+        sidePanelChildren={<DetailsForm id={id} />}
+        sidePanelTitle="User details"
       >
-        <VisitorInfo id={router.query.visitorId as string} />
+        <VisitorInfo id={id} />
       </PageWrapper>
     </>
   )

@@ -1,23 +1,32 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { render, screen, waitFor, fireEvent } from '@testing-library/react'
-import { getVisitorMock, visitorUpdateMock } from './VisitorDetailFormData'
-import { VisitorDetailForm } from '.'
+import { getVisitorMock, visitorUpdateMock } from './DetailsFormData'
+import { DetailsForm } from '.'
 
-describe('VisitorDetailForm', () => {
+jest.mock('react-i18next', () => ({
+  __esModule: true,
+  useTranslation: () => {
+    return {
+      t: (str: string) => str
+    }
+  }
+}))
+
+describe('DetailsForm', () => {
   it('fetches remote data and fills in form', async () => {
     const { getByRole } = render(
       <MockedProvider mocks={[getVisitorMock]}>
-        <VisitorDetailForm id="visitorId" />
+        <DetailsForm id="visitorId" />
       </MockedProvider>
     )
     await waitFor(() =>
-      expect(getByRole('textbox', { name: 'WhatsApp' })).toHaveValue(
+      expect(getByRole('textbox', { name: 'Username' })).toHaveValue(
         '0800123456'
       )
     )
-    expect(getByRole('button', { name: 'Status 🎉' })).toBeInTheDocument()
+    expect(getByRole('button', { name: '🎉' })).toBeInTheDocument()
     expect(getByRole('textbox', { name: 'Name' })).toHaveValue('Bilbo Baggins')
-    expect(getByRole('textbox', { name: 'Notes' })).toHaveValue(
+    expect(getByRole('textbox', { name: 'Private Note' })).toHaveValue(
       'Has a ring to give you.'
     )
   })
@@ -31,15 +40,14 @@ describe('VisitorDetailForm', () => {
           { ...visitorUpdateMock, result: visitorUpdateResult }
         ]}
       >
-        <VisitorDetailForm id="visitorId" />
+        <DetailsForm id="visitorId" />
       </MockedProvider>
     )
     await waitFor(() =>
-      expect(getByRole('button', { name: 'Status 🎉' })).toBeInTheDocument()
+      expect(getByRole('button', { name: '🎉' })).toBeInTheDocument()
     )
-    fireEvent.mouseDown(getByRole('button', { name: 'Status 🎉' }))
+    fireEvent.mouseDown(getByRole('button', { name: '🎉' }))
     fireEvent.click(screen.getByRole('option', { name: '⚪️' }))
-    jest.runAllTimers()
     await waitFor(() => expect(visitorUpdateResult).toHaveBeenCalled())
   })
 })
