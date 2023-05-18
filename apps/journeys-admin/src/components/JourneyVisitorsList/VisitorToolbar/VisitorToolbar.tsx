@@ -5,7 +5,11 @@ import FilterListRoundedIcon from '@mui/icons-material/FilterListRounded'
 import Box from '@mui/material/Box'
 import { FilterDrawer } from '../FilterDrawer'
 
-export function VisitorToolbar(): ReactElement {
+interface VisitorProps {
+  handleChange?: (e) => void
+}
+
+export function VisitorToolbar({ handleChange }: VisitorProps): ReactElement {
   const [open, setOpen] = useState(false)
   function handleOpen(): void {
     setOpen(true)
@@ -17,11 +21,16 @@ export function VisitorToolbar(): ReactElement {
   return (
     <>
       <Box sx={{ display: { xs: 'block', sm: 'none' } }}>
-        <IconButton>
+        <IconButton id="filterIcon">
           <FilterListRoundedIcon onClick={handleOpen} />
         </IconButton>
-        <Drawer anchor="bottom" open={open} onClose={handleClose}>
-          <FilterDrawer handleClose={handleClose} />
+        <Drawer
+          anchor="bottom"
+          open={open}
+          onClose={handleClose}
+          variant="persistent"
+        >
+          <FilterDrawer handleClose={handleClose} handleChange={handleChange} />
         </Drawer>
       </Box>
       {/* CSV download */}

@@ -15,9 +15,13 @@ import CloseRoundedIcon from '@mui/icons-material/CloseRounded'
 
 interface Props {
   handleClose?: () => void
+  handleChange?: (e) => void
 }
 
-export function FilterDrawer({ handleClose }: Props): ReactElement {
+export function FilterDrawer({
+  handleClose,
+  handleChange
+}: Props): ReactElement {
   const locationOptions = [
     'Dnipro, Ukraine',
     'Halifax, Canada',
@@ -74,14 +78,36 @@ export function FilterDrawer({ handleClose }: Props): ReactElement {
       <Box sx={{ px: 6, py: 5 }}>
         <Typography variant="subtitle2">Categories</Typography>
         <FormGroup>
-          <FormControlLabel control={<Checkbox />} label="Chat Started" />
-          <FormControlLabel control={<Checkbox />} label="With Poll Answers" />
           <FormControlLabel
             control={<Checkbox />}
-            label="With Submitted Text"
+            label="Chat Started"
+            value="Chat Started"
+            onChange={handleChange}
           />
-          <FormControlLabel control={<Checkbox />} label="With Icon" />
-          <FormControlLabel control={<Checkbox />} label="Hide Inactive" />
+          <FormControlLabel
+            control={<Checkbox />}
+            label="With Answers"
+            value="With Poll Answers"
+            onChange={handleChange}
+          />
+          <FormControlLabel
+            control={<Checkbox />}
+            label="With Data"
+            value="With Data"
+            onChange={handleChange}
+          />
+          <FormControlLabel
+            control={<Checkbox />}
+            label="With Icon"
+            value="With Icon"
+            onChange={handleChange}
+          />
+          <FormControlLabel
+            control={<Checkbox />}
+            label="Inactive"
+            value="Hide Inactive"
+            onChange={handleChange}
+          />
         </FormGroup>
       </Box>
 
@@ -94,11 +120,23 @@ export function FilterDrawer({ handleClose }: Props): ReactElement {
           defaultValue="date"
           name="journeys-sort-radio-group"
         >
-          <FormControlLabel value="date" control={<Radio />} label="Date" />
+          <FormControlLabel
+            value="date"
+            control={<Radio />}
+            label="Date"
+            onChange={handleChange}
+          />
           <FormControlLabel
             value="duration"
             control={<Radio />}
             label="Duration"
+            onChange={handleChange}
+          />
+          <FormControlLabel
+            value="activity"
+            control={<Radio />}
+            label="Activity"
+            onChange={handleChange}
           />
         </RadioGroup>
       </Box>
