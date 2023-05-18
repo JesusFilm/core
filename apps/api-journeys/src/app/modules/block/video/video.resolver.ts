@@ -306,8 +306,6 @@ export class VideoBlockResolver {
       )
     ).json()
 
-    console.log(response)
-
     if (response.result == null) {
       throw new UserInputError('videoId cannot be found on Cloudflare', {
         videoId: ['videoId cannot be found on Cloudflare']
