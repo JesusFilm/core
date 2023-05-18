@@ -13,7 +13,6 @@ jest.mock('react-i18next', () => ({
 
 describe('ChatButton', () => {
   window.open = jest.fn()
-
   it('should handle click for facebook', () => {
     const { getByRole } = render(
       <ChatButton
@@ -33,7 +32,20 @@ describe('ChatButton', () => {
       />
     )
     fireEvent.click(getByRole('button'))
-    expect(window.open).toHaveBeenCalledWith('https://www.instagram.com/testId')
+    expect(window.open).toHaveBeenCalledWith(
+      'https://www.instagram.com/direct/t/testId'
+    )
+  })
+
+  it('should handle click for line', () => {
+    const { getByRole } = render(
+      <ChatButton
+        messagePlatform={MessagePlatform.line}
+        messagePlatformId="testId"
+      />
+    )
+    fireEvent.click(getByRole('button'))
+    expect(window.open).toHaveBeenCalledWith('https://ln.ee/testId')
   })
 
   it('should handle click for skype', () => {
@@ -112,17 +124,7 @@ describe('ChatButton', () => {
       />
     )
     fireEvent.click(getByRole('button'))
-    expect(window.open).toHaveBeenCalledWith('https://web.whatsapp.com/')
-  })
-
-  it('should disable button for line', () => {
-    const { getByRole } = render(
-      <ChatButton
-        messagePlatform={MessagePlatform.line}
-        messagePlatformId="testId"
-      />
-    )
-    expect(getByRole('button')).toBeDisabled()
+    expect(window.open).toHaveBeenCalledWith('https://wa.me/testId')
   })
 
   it('should be disabled if messagePlatform or messagePlatformId is null', () => {

@@ -14,7 +14,7 @@ import { useTranslation } from 'react-i18next'
 import { SubmitListener } from '@core/shared/ui/SubmitListener'
 import Divider from '@mui/material/Divider'
 import Paper from '@mui/material/Paper'
-import { GetVisitorForForm } from '../../../../__generated__/GetVisitorForForm'
+import { GetVisitor } from '../../../../__generated__/GetVisitor'
 import {
   MessagePlatform,
   VisitorStatus
@@ -23,10 +23,12 @@ import { VisitorUpdate } from '../../../../__generated__/VisitorUpdate'
 import { messagePlatformToLabel } from '../VisitorJourneysList/utils'
 import { ChatButton } from './ChatButton'
 
-export const GET_VISITOR_FOR_FORM = gql`
-  query GetVisitorForForm($id: ID!) {
+export const GET_VISITOR = gql`
+  query GetVisitor($id: ID!) {
     visitor(id: $id) {
+      countryCode
       id
+      lastChatStartedAt
       messagePlatformId
       messagePlatform
       name
@@ -57,7 +59,7 @@ export function DetailsForm({ id }: Props): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const [visitorUpdate] = useMutation<VisitorUpdate>(VISITOR_UPDATE)
   // 529 (english) should be changed when adding internalization
-  const { data } = useQuery<GetVisitorForForm>(GET_VISITOR_FOR_FORM, {
+  const { data } = useQuery<GetVisitor>(GET_VISITOR, {
     variables: { id }
   })
 
@@ -75,7 +77,12 @@ export function DetailsForm({ id }: Props): ReactElement {
   }
 
   return (
-    <Paper elevation={0} sx={{ mx: { xs: -6, sm: 0 } }}>
+    <Paper
+      elevation={0}
+      sx={{
+        m: { xs: '-24px -24px  0px -24px', sm: '0px 0px 0px 0px' }
+      }}
+    >
       {data?.visitor != null && (
         <Formik
           initialValues={pick(data.visitor, [
@@ -191,7 +198,7 @@ export function DetailsForm({ id }: Props): ReactElement {
                     variant="filled"
                     label={t('Name')}
                     fullWidth
-                    value={values.name ?? data.visitor.id.slice(-12)}
+                    value={values.name ?? data.visitor.id}
                     error={touched.name === true && Boolean(errors.name)}
                     helperText={touched.name === true && errors.name}
                     onBlur={handleBlur}

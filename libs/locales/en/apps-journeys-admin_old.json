@@ -2,7 +2,6 @@
   "This user already has access": "This user already has access",
   "Add Editor By Email": "Add Editor By Email",
   "View Timeline": "View Timeline",
-  "Latest Journey": "Latest Journey",
   "Status": "Status",
   "Last Chat": "Last Chat",
   "Contact": "Contact",
@@ -10,5 +9,6 @@
   "Notes": "Notes",
   "Timeline": "Timeline",
   "Invite Editor by": "Invite Editor by",
-  "Users invited by email don't require approval": "Users invited by email don't require approval"
+  "Users invited by email don't require approval": "Users invited by email don't require approval",
+  "Latest Journey": "Latest Journey"
 }
