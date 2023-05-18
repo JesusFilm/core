@@ -35,7 +35,7 @@ export class JourneyVisitorResolver {
     @Args('teamId') teamId: string,
     @Args('filter') filter: JourneyVisitorFilter,
     @Args('sort') sort = JourneyVisitorSort.date,
-    @Args('first') first?: number | null,
+    @Args('first') first = 50,
     @Args('after') after?: string | null
   ): Promise<JourneyVisitorsConnection> {
     const memberResult = await this.memberService.getMemberByTeamId(
@@ -49,7 +49,7 @@ export class JourneyVisitorResolver {
     return await this.journeyVisitorService.getJourneyVisitorList({
       filter,
       sort,
-      first: first ?? 50,
+      first,
       after
     })
   }

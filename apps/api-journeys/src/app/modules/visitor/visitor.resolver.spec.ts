@@ -241,4 +241,29 @@ describe('VisitorResolver', () => {
       })
     })
   })
+
+  describe('visitorUpdateForCurrentUser', () => {
+    it('returns updated visitor', async () => {
+      prisma.visitor.findFirst = jest.fn().mockReturnValueOnce(visitor)
+      prisma.visitor.update = jest.fn().mockReturnValueOnce({
+        ...visitor,
+        countryCode: 'South Lake Tahoe, CA, USA'
+      })
+      expect(
+        await resolver.visitorUpdateForCurrentUser('userId', {
+          countryCode: 'South Lake Tahoe, CA, USA'
+        })
+      ).toEqual({ ...visitor, countryCode: 'South Lake Tahoe, CA, USA' })
+    })
+
+    it('throws error when invalid visitor ID', async () => {
+      prisma.visitor.findFirst = jest.fn().mockReturnValueOnce(null)
+      await expect(
+        async () =>
+          await resolver.visitorUpdateForCurrentUser('unknownVisitorId', {
+            countryCode: 'South Lake Tahoe, CA, USA'
+          })
+      ).rejects.toThrow('No visitor record found for user "unknownVisitorId"')
+    })
+  })
 })
