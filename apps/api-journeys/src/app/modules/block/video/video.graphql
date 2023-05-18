@@ -6,6 +6,7 @@ extend type Video @key(fields: "id primaryLanguageId") {
 enum VideoBlockSource {
   internal
   youTube
+  cloudflare
 }
 enum VideoBlockObjectFit {
   """
