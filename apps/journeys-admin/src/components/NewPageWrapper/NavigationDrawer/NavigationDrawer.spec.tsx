@@ -284,7 +284,7 @@ describe('NavigationDrawer', () => {
     const { getByTestId } = render(
       <MockedProvider>
         <FlagsProvider>
-          <NavigationDrawer open onClose={onClose} />
+          <NavigationDrawer open onClose={onClose} router={getRouter('/')} />
         </FlagsProvider>
       </MockedProvider>
     )
