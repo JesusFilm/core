@@ -1,11 +1,11 @@
 import { VisitorUpdate } from '../../../../__generated__/VisitorUpdate'
-import { GetVisitor } from '../../../../__generated__/GetVisitor'
+import { GetVisitorForForm } from '../../../../__generated__/GetVisitorForForm'
 import {
   MessagePlatform,
   VisitorStatus,
   VisitorUpdateInput
 } from '../../../../__generated__/globalTypes'
-import { GET_VISITOR, VISITOR_UPDATE } from './DetailsForm'
+import { GET_VISITOR_FOR_FORM, VISITOR_UPDATE } from './DetailsForm'
 
 const getVisitor: GetVisitorForForm = {
   visitor: {

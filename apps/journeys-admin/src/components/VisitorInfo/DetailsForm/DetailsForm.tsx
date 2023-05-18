@@ -14,7 +14,7 @@ import { useTranslation } from 'react-i18next'
 import { SubmitListener } from '@core/shared/ui/SubmitListener'
 import Divider from '@mui/material/Divider'
 import Paper from '@mui/material/Paper'
-import { GetVisitor } from '../../../../__generated__/GetVisitor'
+import { GetVisitorForForm } from '../../../../__generated__/GetVisitorForForm'
 import {
   MessagePlatform,
   VisitorStatus
@@ -23,7 +23,7 @@ import { VisitorUpdate } from '../../../../__generated__/VisitorUpdate'
 import { messagePlatformToLabel } from '../VisitorJourneysList/utils'
 import { ChatButton } from './ChatButton'
 
-export const GET_VISITOR = gql`
+export const GET_VISITOR_FOR_FORM = gql`
   query GetVisitor($id: ID!) {
     visitor(id: $id) {
       countryCode
@@ -59,7 +59,7 @@ export function DetailsForm({ id }: Props): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const [visitorUpdate] = useMutation<VisitorUpdate>(VISITOR_UPDATE)
   // 529 (english) should be changed when adding internalization
-  const { data } = useQuery<GetVisitor>(GET_VISITOR, {
+  const { data } = useQuery<GetVisitorForForm>(GET_VISITOR_FOR_FORM, {
     variables: { id }
   })
 
