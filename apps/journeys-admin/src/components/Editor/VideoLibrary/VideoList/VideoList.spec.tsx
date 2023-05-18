@@ -14,13 +14,15 @@ describe('VideoList', () => {
 
   it('should render a video list items', () => {
     const { getByText } = render(
-      <VideoList
-        videos={videos}
-        loading={false}
-        fetchMore={jest.fn()}
-        hasMore
-        onSelect={jest.fn()}
-      />
+      <MockedProvider>
+        <VideoList
+          videos={videos}
+          loading={false}
+          fetchMore={jest.fn()}
+          hasMore
+          onSelect={jest.fn()}
+        />
+      </MockedProvider>
     )
     expect(getByText('Brand_Video')).toBeInTheDocument()
     expect(getByText('The Demoniac')).toBeInTheDocument()
@@ -51,13 +53,15 @@ describe('VideoList', () => {
   it('should call fetchMore when Load More is clicked', () => {
     const fetchMore = jest.fn()
     const { getByRole } = render(
-      <VideoList
-        videos={videos}
-        loading={false}
-        fetchMore={fetchMore}
-        hasMore
-        onSelect={jest.fn()}
-      />
+      <MockedProvider>
+        <VideoList
+          videos={videos}
+          loading={false}
+          fetchMore={fetchMore}
+          hasMore
+          onSelect={jest.fn()}
+        />
+      </MockedProvider>
     )
     fireEvent.click(getByRole('button', { name: 'Load More' }))
     expect(fetchMore).toHaveBeenCalled()
@@ -65,26 +69,30 @@ describe('VideoList', () => {
 
   it('should render No More Videos if hasMore is false', () => {
     const { getByRole } = render(
-      <VideoList
-        videos={videos}
-        loading={false}
-        fetchMore={jest.fn()}
-        hasMore={false}
-        onSelect={jest.fn()}
-      />
+      <MockedProvider>
+        <VideoList
+          videos={videos}
+          loading={false}
+          fetchMore={jest.fn()}
+          hasMore={false}
+          onSelect={jest.fn()}
+        />
+      </MockedProvider>
     )
     expect(getByRole('button', { name: 'No More Videos' })).toBeDisabled()
   })
 
   it('should render No More Videos and No Results if videos is empty', () => {
     const { getByText, getByRole } = render(
-      <VideoList
-        videos={[]}
-        loading={false}
-        fetchMore={jest.fn()}
-        hasMore
-        onSelect={jest.fn()}
-      />
+      <MockedProvider>
+        <VideoList
+          videos={[]}
+          loading={false}
+          fetchMore={jest.fn()}
+          hasMore
+          onSelect={jest.fn()}
+        />
+      </MockedProvider>
     )
     expect(getByText('No Results Found')).toBeInTheDocument()
     expect(getByRole('button', { name: 'No More Videos' })).toBeDisabled()
@@ -92,13 +100,15 @@ describe('VideoList', () => {
 
   it('should render No More Videos and No Results if videos is empty', () => {
     const { getByText, getByRole } = render(
-      <VideoList
-        videos={[]}
-        loading={false}
-        fetchMore={jest.fn()}
-        hasMore
-        onSelect={jest.fn()}
-      />
+      <MockedProvider>
+        <VideoList
+          videos={[]}
+          loading={false}
+          fetchMore={jest.fn()}
+          hasMore
+          onSelect={jest.fn()}
+        />
+      </MockedProvider>
     )
     expect(getByText('No Results Found')).toBeInTheDocument()
     expect(getByRole('button', { name: 'No More Videos' })).toBeDisabled()

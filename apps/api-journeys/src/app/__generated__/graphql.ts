@@ -121,7 +121,8 @@ export enum TypographyAlign {
 
 export enum VideoBlockSource {
     internal = "internal",
-    youTube = "youTube"
+    youTube = "youTube",
+    cloudflare = "cloudflare"
 }
 
 export enum VideoBlockObjectFit {

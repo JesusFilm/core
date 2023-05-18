@@ -11,6 +11,11 @@ async function main(): Promise<void> {
       keyOptions: { type: 'uuid' }
     })
   }
+  if (!(await db.collection('cloudflareVideos').exists())) {
+    await db.createCollection('cloudflareVideos', {
+      keyOptions: { type: 'uuid' }
+    })
+  }
 }
 main().catch((e) => {
   console.error(e)
