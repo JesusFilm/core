@@ -13,8 +13,14 @@ import LinearProgress from '@mui/material/LinearProgress'
 import { CreateCloudflareVideoUploadByFile } from '../../../../../../__generated__/CreateCloudflareVideoUploadByFile'
 
 export const CREATE_CLOUDFLARE_VIDEO_UPLOAD_BY_FILE = gql`
-  mutation CreateCloudflareVideoUploadByFile($uploadLength: Int!, $name: String!){
-    createCloudflareVideoUploadByFile(uploadLength: $uploadLength, name: $name) {
+  mutation CreateCloudflareVideoUploadByFile(
+    $uploadLength: Int!
+    $name: String!
+  ) {
+    createCloudflareVideoUploadByFile(
+      uploadLength: $uploadLength
+      name: $name
+    ) {
       uploadUrl
       id
     }
@@ -136,54 +142,54 @@ export function VideoUpload({ onChange }: VideoUploadProps): ReactElement {
             : 'Drop a video here'}
         </Typography>
       </Box>
+      <Stack
+        direction="row"
+        spacing={1}
+        color={error != null ? 'error.main' : 'secondary.light'}
+      >
+        <WarningAmberRounded
+          fontSize="small"
+          sx={{
+            display: error != null ? 'flex' : 'none'
+          }}
+        />
+        <Typography variant="caption">
+          {error != null
+            ? 'Something went wrong, try again'
+            : 'Max length is 30 minutes'}
+        </Typography>
+      </Stack>
+
       {loading ? (
-        <Box sx={{ width: '100%' }}>
+        <Box sx={{ width: '100%', mt: 4 }}>
           <LinearProgress
             variant="determinate"
             value={progress}
-            sx={{ height: 18, borderRadius: 2 }}
+            sx={{ height: 32, borderRadius: 2 }}
           />
         </Box>
       ) : (
-        <Stack
-          direction="row"
-          spacing={1}
-          color={error != null ? 'error.main' : 'secondary.light'}
+        <Button
+          size="small"
+          color="secondary"
+          variant="outlined"
+          onClick={open}
+          sx={{
+            mt: 4,
+            height: 32,
+            width: '100%',
+            borderRadius: 2
+          }}
         >
-          <WarningAmberRounded
-            fontSize="small"
-            sx={{
-              display: error != null ? 'flex' : 'none'
-            }}
-          />
-          <Typography variant="caption">
-            {error != null
-              ? 'Something went wrong, try again'
-              : 'Max length is 30 minutes'}
+          <Typography
+            variant="subtitle2"
+            fontSize={14}
+            sx={{ color: 'secondary.main' }}
+          >
+            Upload file
           </Typography>
-        </Stack>
+        </Button>
       )}
-      <Button
-        size="small"
-        color="secondary"
-        variant="outlined"
-        disabled={loading}
-        onClick={open}
-        sx={{
-          mt: 4,
-          height: 32,
-          width: '100%',
-          borderRadius: 2
-        }}
-      >
-        <Typography
-          variant="subtitle2"
-          fontSize={14}
-          sx={{ color: 'secondary.main' }}
-        >
-          Upload file
-        </Typography>
-      </Button>
     </Stack>
   )
 }

@@ -3,18 +3,18 @@ import Box from '@mui/material/Box'
 import { MockedProvider } from '@apollo/client/testing'
 import { noop } from 'lodash'
 import { simpleComponentConfig } from '../../../../libs/storybook'
-import { VideoFromUpload } from '.'
+import { VideoFromCloudflare } from '.'
 
-const VideoFromUploadStory = {
+const VideoFromCloudflareStory = {
   ...simpleComponentConfig,
-  component: VideoFromUpload,
+  component: VideoFromCloudflare,
   title: 'Journeys-Admin/Editor/VideoLibrary/VideoFromUpload'
 }
 
 const Template: Story = () => (
   <MockedProvider mocks={[]}>
     <Box sx={{ bgcolor: 'background.paper' }}>
-      <VideoFromUpload
+      <VideoFromCloudflare
         selectedBlock={{
           id: 'imageBlockId',
           __typename: 'ImageBlock',
@@ -34,4 +34,4 @@ const Template: Story = () => (
 
 export const Default = Template.bind({})
 
-export default VideoFromUploadStory as Meta
+export default VideoFromCloudflareStory as Meta

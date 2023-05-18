@@ -20,8 +20,7 @@ export function SourceFromCloudflare({
         <ImageBlockThumbnail
           selectedBlock={{
             src: `https://customer-${
-              process.env.NEXT_PUBLIC_CLOUDFLARE_STREAM_CUSTOMER_CODE ??
-              '209o3ptmsiaetvfx'
+              process.env.NEXT_PUBLIC_CLOUDFLARE_STREAM_CUSTOMER_CODE ?? ''
             }.cloudflarestream.com/${
               selectedBlock.videoId ?? ''
             }/thumbnails/thumbnail.jpg?time=2s&height=55&width=55`,

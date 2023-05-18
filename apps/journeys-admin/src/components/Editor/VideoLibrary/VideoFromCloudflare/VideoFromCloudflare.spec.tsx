@@ -1,7 +1,7 @@
 import { render, fireEvent } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
 import { GetJourney_journey_blocks_ImageBlock as ImageBlock } from '../../../../../__generated__/GetJourney'
-import { VideoFromUpload } from '.'
+import { VideoFromCloudflare } from '.'
 
 describe('CustomImage', () => {
   const imageBlock: ImageBlock = {
@@ -18,7 +18,7 @@ describe('CustomImage', () => {
   it('should render custom url image upload', () => {
     const { getByRole, getByText } = render(
       <MockedProvider>
-        <VideoFromUpload onChange={jest.fn()} selectedBlock={imageBlock} />
+        <VideoFromCloudflare onChange={jest.fn()} selectedBlock={imageBlock} />
       </MockedProvider>
     )
     fireEvent.click(getByRole('button', { name: 'Add image by URL' }))

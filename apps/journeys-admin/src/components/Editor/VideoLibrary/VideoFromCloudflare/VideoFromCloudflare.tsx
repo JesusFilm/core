@@ -9,13 +9,13 @@ import {
 import { VideoUpload } from './VideoUpload'
 import { CustomUrl } from './CustomUrl'
 
-interface VideoFromUploadProps {
+interface VideoFromCloudflareProps {
   onSelect: (block: VideoBlockUpdateInput) => void
 }
 
-export function VideoFromUpload({
+export function VideoFromCloudflare({
   onSelect
-}: VideoFromUploadProps): ReactElement {
+}: VideoFromCloudflareProps): ReactElement {
   const handleChange = (id: string): void => {
     const block: VideoBlockUpdateInput = {
       videoId: id,

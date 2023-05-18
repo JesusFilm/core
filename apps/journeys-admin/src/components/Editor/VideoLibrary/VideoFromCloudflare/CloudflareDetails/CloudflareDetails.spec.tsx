@@ -1,7 +1,7 @@
 import { render, fireEvent, waitFor } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
 import { VideoBlockSource } from '../../../../../../__generated__/globalTypes'
-import { GET_VIDEO, UploadDetails } from './UploadDetails'
+import { GET_VIDEO, CloudflareDetails } from './CloudflareDetails'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
@@ -64,7 +64,7 @@ describe('UploadDetails', () => {
   it('should render details of a video', async () => {
     const { getByText, getByRole } = render(
       <MockedProvider mocks={mocks}>
-        <UploadDetails id="2_Acts7302-0-0" open onSelect={jest.fn()} />
+        <CloudflareDetails id="2_Acts7302-0-0" open onSelect={jest.fn()} />
       </MockedProvider>
     )
     await waitFor(() =>
@@ -88,7 +88,7 @@ describe('UploadDetails', () => {
   it('should open the languages drawer on language button click', () => {
     const { getByRole, getByText } = render(
       <MockedProvider>
-        <UploadDetails id="2_Acts7302-0-0" open onSelect={jest.fn()} />
+        <CloudflareDetails id="2_Acts7302-0-0" open onSelect={jest.fn()} />
       </MockedProvider>
     )
     fireEvent.click(getByRole('button', { name: 'Other Languages' }))
@@ -99,7 +99,7 @@ describe('UploadDetails', () => {
     const onSelect = jest.fn()
     const { getByRole } = render(
       <MockedProvider mocks={mocks}>
-        <UploadDetails id="2_Acts7302-0-0" open onSelect={onSelect} />
+        <CloudflareDetails id="2_Acts7302-0-0" open onSelect={onSelect} />
       </MockedProvider>
     )
     await waitFor(() =>

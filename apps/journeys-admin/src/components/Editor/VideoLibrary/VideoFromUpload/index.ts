@@ -1,1 +1,0 @@
-export { VideoFromUpload } from './VideoFromUpload'

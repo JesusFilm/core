@@ -22,7 +22,7 @@ import {
 } from '../../../../../__generated__/globalTypes'
 import { LocalDetails } from '../VideoFromLocal/LocalDetails'
 import { YouTubeDetails } from '../VideoFromYouTube/YouTubeDetails'
-import { UploadDetails } from '../VideoFromUpload/UploadDetails'
+import { CloudflareDetails } from '../VideoFromCloudflare/CloudflareDetails'
 import {
   GetJourney_journey_blocks_VideoBlock as VideoBlock,
   GetJourney_journey_blocks_ImageBlock as ImageBlock
@@ -81,7 +81,7 @@ export function VideoDetails({
 
   switch (source) {
     case VideoBlockSource.cloudflare:
-      Details = UploadDetails
+      Details = CloudflareDetails
       break
     case VideoBlockSource.internal:
       Details = LocalDetails

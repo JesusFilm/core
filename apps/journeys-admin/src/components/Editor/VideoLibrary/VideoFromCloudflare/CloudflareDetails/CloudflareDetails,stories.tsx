@@ -3,7 +3,7 @@ import { MockedProvider } from '@apollo/client/testing'
 import { journeysAdminConfig } from '../../../../../libs/storybook'
 import { GetVideo_video_variantLanguages as Language } from '../../../../../../__generated__/GetVideo'
 import { ApolloLoadingProvider } from '../../../../../../test/ApolloLoadingProvider'
-import { GET_VIDEO } from './UploadDetails'
+import { GET_VIDEO } from './CloudflareDetails'
 import { UploadDetails } from '.'
 
 const UploadDetailsStory = {

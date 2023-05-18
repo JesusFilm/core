@@ -5,7 +5,7 @@ import Stack from '@mui/material/Stack'
 import 'video.js/dist/video-js.css'
 import type { VideoDetailsProps } from '../../VideoDetails/VideoDetails'
 
-export function UploadDetails({
+export function CloudflareDetails({
   open,
   id,
   onSelect
@@ -54,5 +54,3 @@ export function UploadDetails({
     </Stack>
   )
 }
-
-export default UploadDetails

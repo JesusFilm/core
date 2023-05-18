@@ -20,7 +20,7 @@ import { GetJourney_journey_blocks_VideoBlock as VideoBlock } from '../../../../
 import { VideoFromYouTube } from './VideoFromYouTube'
 import { VideoFromLocal } from './VideoFromLocal'
 import { VideoDetails } from './VideoDetails'
-import { VideoFromUpload } from './VideoFromUpload'
+import { VideoFromCloudflare } from './VideoFromCloudflare'
 
 export const DRAWER_WIDTH = 328
 interface VideoLibraryProps {
@@ -161,7 +161,7 @@ export function VideoLibrary({
           index={2}
           sx={{ flexGrow: 1, overflow: 'scroll' }}
         >
-          <VideoFromUpload onSelect={onSelect} />
+          <VideoFromCloudflare onSelect={onSelect} />
         </TabPanel>
       </Drawer>
       {selectedBlock?.videoId != null && (
