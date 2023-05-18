@@ -297,6 +297,15 @@ type CloudflareImage
   createdAt: String!
 }
 
+type CloudflareVideo
+  @join__type(graph: MEDIA)
+{
+  id: ID!
+  uploadUrl: String
+  userId: ID!
+  createdAt: String!
+}
+
 type Country
   @join__type(graph: LANGUAGES, key: "id")
 {
@@ -880,6 +889,10 @@ type Mutation
   createCloudflareUploadByUrl(url: String!): CloudflareImage @join__field(graph: MEDIA)
   deleteCloudflareImage(id: ID!): Boolean @join__field(graph: MEDIA)
   cloudflareUploadComplete(id: ID!): Boolean @join__field(graph: MEDIA)
+  createCloudflareVideoUploadByFile(uploadLength: Int!, name: String!): CloudflareVideo @join__field(graph: MEDIA)
+  createCloudflareVideoUploadByUrl(url: String!): CloudflareVideo @join__field(graph: MEDIA)
+  deleteCloudflareVideo(id: ID!): Boolean @join__field(graph: MEDIA)
+  cloudflareUploadVideoComplete(id: ID!): Boolean @join__field(graph: MEDIA)
   triggerUnsplashDownload(url: String!): Boolean @join__field(graph: MEDIA)
 }
 
@@ -1010,6 +1023,7 @@ type Query
   languages(offset: Int, limit: Int): [Language!]! @join__field(graph: LANGUAGES)
   language(id: ID!, idType: LanguageIdType): Language @join__field(graph: LANGUAGES)
   getMyCloudflareImages: [CloudflareImage] @join__field(graph: MEDIA)
+  getMyCloudflareVideos: [CloudflareVideo] @join__field(graph: MEDIA)
   listUnsplashCollectionPhotos(collectionId: String!, page: Int, perPage: Int, orientation: UnsplashPhotoOrientation): [UnsplashPhoto!]! @join__field(graph: MEDIA)
   searchUnsplashPhotos(query: String!, page: Int, perPage: Int, orderBy: UnsplashOrderBy, collections: [String], contentFilter: UnsplashContentFilter, color: UnsplashColor, orientation: UnsplashPhotoOrientation): UnsplashQueryResponse! @join__field(graph: MEDIA)
   tags: [Tag!]! @join__field(graph: TAGS)
@@ -1869,6 +1883,7 @@ enum VideoBlockSource
 {
   internal @join__enumValue(graph: JOURNEYS)
   youTube @join__enumValue(graph: JOURNEYS)
+  cloudflare @join__enumValue(graph: JOURNEYS)
 }
 
 input VideoBlockUpdateInput
