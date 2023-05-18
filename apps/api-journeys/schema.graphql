@@ -662,6 +662,7 @@ extend type Video
 enum VideoBlockSource {
   internal
   youTube
+  cloudflare
 }
 
 enum VideoBlockObjectFit {
