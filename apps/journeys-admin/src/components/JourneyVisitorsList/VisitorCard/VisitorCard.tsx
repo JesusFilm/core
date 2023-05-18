@@ -15,6 +15,7 @@ export function VisitorCard({ visitorNode }: Props): ReactElement {
   return (
     <Card
       variant="outlined"
+      aria-label={`visitor-card-${visitorNode.visitorId}`}
       sx={{
         borderRadius: 0,
         borderColor: 'divider',

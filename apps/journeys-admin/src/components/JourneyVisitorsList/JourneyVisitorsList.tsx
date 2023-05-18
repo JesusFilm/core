@@ -12,9 +12,9 @@ import { VisitorCard } from './VisitorCard'
 interface Props {
   visitorEdges?: VisitorEdge[]
   visitorsCount?: number
-  fetchNext: () => Promise<void>
+  fetchNext: () => void
   loading: boolean
-  hasNextPage: boolean
+  hasNextPage?: boolean
 }
 
 export function JourneyVisitorsList({
@@ -22,7 +22,7 @@ export function JourneyVisitorsList({
   visitorsCount,
   fetchNext,
   loading,
-  hasNextPage
+  hasNextPage = false
 }: Props): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const hasVisitors = visitorEdges != null && visitorEdges.length > 0
