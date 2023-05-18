@@ -49,7 +49,7 @@ export function SourceFromCloudflare({
             overflow: 'hidden'
           }}
         >
-          Cloudflare &nbsp;
+          Custom Video &nbsp;
         </Typography>
       </Box>
       <EditRoundedIcon color="primary" />

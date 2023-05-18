@@ -2,8 +2,10 @@ import videojs from 'video.js'
 import { ReactElement, useEffect, useRef } from 'react'
 import Box from '@mui/system/Box'
 import Stack from '@mui/material/Stack'
-import 'video.js/dist/video-js.css'
+import Button from '@mui/material/Button'
+import Check from '@mui/icons-material/Check'
 import type { VideoDetailsProps } from '../../VideoDetails/VideoDetails'
+import 'video.js/dist/video-js.css'
 
 export function CloudflareDetails({
   open,
@@ -19,8 +21,7 @@ export function CloudflareDetails({
         fluid: true,
         controls: true,
         poster: `https://customer-${
-          process.env.NEXT_PUBLIC_CLOUDFLARE_STREAM_CUSTOMER_CODE ??
-          '209o3ptmsiaetvfx'
+          process.env.NEXT_PUBLIC_CLOUDFLARE_STREAM_CUSTOMER_CODE ?? ''
         }.cloudflarestream.com/${id ?? ''}/thumbnails/thumbnail.jpg?time=2s`
       })
     }
@@ -28,29 +29,41 @@ export function CloudflareDetails({
 
   return (
     <Stack spacing={4} sx={{ p: 6 }}>
-      <>
-        <Box
-          sx={{
-            borderRadius: 3,
-            position: 'relative',
-            overflow: 'hidden'
-          }}
+      <Box
+        sx={{
+          borderRadius: 3,
+          position: 'relative',
+          overflow: 'hidden'
+        }}
+      >
+        <video
+          ref={videoRef}
+          className="video-js vjs-big-play-centered"
+          playsInline
         >
-          <video
-            ref={videoRef}
-            className="video-js vjs-big-play-centered"
-            playsInline
-          >
-            <source
-              src={`https://customer-${
-                process.env.NEXT_PUBLIC_CLOUDFLARE_STREAM_CUSTOMER_CODE ??
-                '209o3ptmsiaetvfx'
-              }.cloudflarestream.com/${id ?? ''}/manifest/video.m3u8`}
-              type="application/x-mpegURL"
-            />
-          </video>
-        </Box>
-      </>
+          <source
+            src={`https://customer-${
+              process.env.NEXT_PUBLIC_CLOUDFLARE_STREAM_CUSTOMER_CODE ?? ''
+            }.cloudflarestream.com/${id ?? ''}/manifest/video.m3u8`}
+            type="application/x-mpegURL"
+          />
+        </video>
+      </Box>
+      <Stack
+        direction="row"
+        spacing={2}
+        sx={{ justifyContent: 'space-between' }}
+      >
+        <Button
+          variant="contained"
+          startIcon={<Check />}
+          onClick={() => onSelect({})}
+          size="small"
+          sx={{ backgroundColor: 'secondary.dark' }}
+        >
+          Select
+        </Button>
+      </Stack>
     </Stack>
   )
 }

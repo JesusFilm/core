@@ -8,7 +8,7 @@ import { VideoFromCloudflare } from '.'
 const VideoFromCloudflareStory = {
   ...simpleComponentConfig,
   component: VideoFromCloudflare,
-  title: 'Journeys-Admin/Editor/VideoLibrary/VideoFromUpload'
+  title: 'Journeys-Admin/Editor/VideoLibrary/VideoFromCloudflare'
 }
 
 const Template: Story = () => (
