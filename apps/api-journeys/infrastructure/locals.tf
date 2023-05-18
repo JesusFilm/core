@@ -17,7 +17,7 @@ locals {
     "POWER_BI_WORKSPACE_ID",
     "GOOGLE_APPLICATION_JSON",
     "CLOUDFLARE_ACCOUNT_ID",
-    "CLOUDFLARE_STREAM_TOKEN",
+    "CLOUDFLARE_STREAM_TOKEN"
   ]
   service_config = {
     name           = "api-journeys"
