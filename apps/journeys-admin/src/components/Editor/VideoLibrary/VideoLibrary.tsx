@@ -122,25 +122,25 @@ export function VideoLibrary({
             <Tab
               icon={<VideocamIcon />}
               label="Library"
-              {...tabA11yProps('video-library-panel', 0)}
+              {...tabA11yProps('video-from-local', 0)}
               sx={{ flexGrow: 1 }}
             />
             <Tab
               icon={<YouTubeIcon />}
               label="YouTube"
-              {...tabA11yProps('video-library-panel', 1)}
+              {...tabA11yProps('video-from-youtube', 1)}
               sx={{ flexGrow: 1 }}
             />
             <Tab
               icon={<BrushRoundedIcon />}
               label="Custom"
-              {...tabA11yProps('video-library-panel', 2)}
+              {...tabA11yProps('video-from-cloudflare', 2)}
               sx={{ flexGrow: 1 }}
             />
           </Tabs>
         </Box>
         <TabPanel
-          name="video-library-panel"
+          name="video-from-local"
           value={activeTab}
           index={0}
           sx={{ flexGrow: 1, overflow: 'scroll' }}
@@ -148,7 +148,7 @@ export function VideoLibrary({
           <VideoFromLocal onSelect={onSelect} />
         </TabPanel>
         <TabPanel
-          name="video-library-panel"
+          name="video-from-youtube"
           value={activeTab}
           index={1}
           sx={{ flexGrow: 1, overflow: 'scroll' }}
@@ -156,7 +156,7 @@ export function VideoLibrary({
           <VideoFromYouTube onSelect={onSelect} />
         </TabPanel>
         <TabPanel
-          name="video-library-panel"
+          name="video-from-cloudflare"
           value={activeTab}
           index={2}
           sx={{ flexGrow: 1, overflow: 'scroll' }}

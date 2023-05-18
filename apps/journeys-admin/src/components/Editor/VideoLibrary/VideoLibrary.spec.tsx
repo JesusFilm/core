@@ -13,7 +13,7 @@ jest.mock('@mui/material/useMediaQuery', () => ({
   default: jest.fn()
 }))
 
-describe('Video Library', () => {
+describe('VideoLibrary', () => {
   describe('smUp', () => {
     beforeEach(() =>
       (useMediaQuery as jest.Mock).mockImplementation(() => true)
@@ -260,5 +260,25 @@ describe('Video Library', () => {
       </MockedProvider>
     )
     expect(getByText('Video Details')).toBeInTheDocument()
+  })
+
+  it('should render YouTube', () => {
+    const { getByText, getByRole } = render(
+      <MockedProvider>
+        <VideoLibrary open />
+      </MockedProvider>
+    )
+    fireEvent.click(getByRole('tab', { name: 'YouTube' }))
+    expect(getByText('Paste any YouTube Link')).toBeInTheDocument()
+  })
+
+  it('should render Cloudflare', () => {
+    const { getByText, getByRole } = render(
+      <MockedProvider>
+        <VideoLibrary open />
+      </MockedProvider>
+    )
+    fireEvent.click(getByRole('tab', { name: 'Custom' }))
+    expect(getByText('Drop a video here')).toBeInTheDocument()
   })
 })

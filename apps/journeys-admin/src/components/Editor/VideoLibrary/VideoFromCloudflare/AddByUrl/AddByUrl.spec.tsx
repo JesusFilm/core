@@ -9,7 +9,7 @@ describe('AddByUrl', () => {
       data: {
         createCloudflareVideoUploadByUrl: {
           id: 'uploadId',
-          __typename: 'CloudflareImage'
+          __typename: 'CloudflareVideo'
         }
       }
     }))
