@@ -254,8 +254,7 @@ export function Video({
             {source === VideoBlockSource.cloudflare && videoId != null && (
               <source
                 src={`https://customer-${
-                  process.env.NEXT_PUBLIC_CLOUDFLARE_STREAM_CUSTOMER_CODE ??
-                  '209o3ptmsiaetvfx'
+                  process.env.NEXT_PUBLIC_CLOUDFLARE_STREAM_CUSTOMER_CODE ?? ''
                 }.cloudflarestream.com/${videoId ?? ''}/manifest/video.m3u8`}
                 type="application/x-mpegURL"
               />
