@@ -213,7 +213,7 @@ export class VideoBlockResolver {
         if (input.videoId != null) {
           input = {
             ...input,
-            ...(await this.fetchFieldsFromCloudflare(block.videoId))
+            ...(await this.fetchFieldsFromCloudflare(input.videoId))
           }
         }
         break
@@ -305,6 +305,8 @@ export class VideoBlockResolver {
         }
       )
     ).json()
+
+    console.log(response)
 
     if (response.result == null) {
       throw new UserInputError('videoId cannot be found on Cloudflare', {

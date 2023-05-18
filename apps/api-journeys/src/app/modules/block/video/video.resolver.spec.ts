@@ -32,7 +32,7 @@ jest.mock('node-fetch', () => {
 const mockFetch = fetch as jest.MockedFunction<typeof fetch>
 
 describe('VideoBlockResolver', () => {
-  let resolver: VideoBlockResolver, service: BlockService
+  let resolver: VideoBlockResolver, service: jest.Mocked<BlockService>
 
   const block = {
     id: 'abc',
@@ -430,6 +430,10 @@ describe('VideoBlockResolver', () => {
       })
 
       it('updates videoId', async () => {
+        service.get.mockResolvedValueOnce({
+          ...updatedBlock,
+          videoId: undefined
+        })
         mockFetch.mockResolvedValueOnce({
           ok: true,
           json: async () =>
@@ -474,6 +478,10 @@ describe('VideoBlockResolver', () => {
           title: 'video.mp4',
           objectFit: 'fill'
         })
+        expect(mockFetch).toHaveBeenCalledWith(
+          'https://api.cloudflare.com/client/v4/accounts//stream/ea95132c15732412d22c1476fa83f27a',
+          { headers: { Authorization: 'Bearer ' } }
+        )
       })
 
       it('updates videoId title when meta name not present', async () => {
