@@ -15,7 +15,9 @@ const getVisitor: GetVisitorForForm = {
     messagePlatform: MessagePlatform.whatsApp,
     name: 'Bilbo Baggins',
     notes: 'Has a ring to give you.',
-    status: VisitorStatus.partyPopper
+    status: VisitorStatus.partyPopper,
+    countryCode: null,
+    lastChatStartedAt: null
   }
 }
 
@@ -39,7 +41,9 @@ const getVisitorUnfilled: GetVisitorForForm = {
     messagePlatform: null,
     name: null,
     notes: null,
-    status: null
+    status: null,
+    countryCode: null,
+    lastChatStartedAt: null
   }
 }
 
