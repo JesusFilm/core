@@ -1,9 +1,17 @@
 import { render, fireEvent, waitFor } from '@testing-library/react'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { MockedProvider } from '@apollo/client/testing'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import { EditorProvider } from '@core/journeys/ui/EditorProvider'
+import { TreeBlock } from '@core/journeys/ui/block'
 import { GET_VIDEO } from '../VideoFromLocal/LocalDetails/LocalDetails'
 import { VideoBlockSource } from '../../../../../__generated__/globalTypes'
-import { VideoDetails } from './VideoDetails'
+import {
+  GetJourney_journey as Journey,
+  GetJourney_journey_blocks_VideoBlock as VideoBlock,
+  GetJourney_journey_blocks_ImageBlock as ImageBlock
+} from '../../../../../__generated__/GetJourney'
+import { BLOCK_DELETE_FOR_COVER_IMAGE, VideoDetails } from './VideoDetails'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
@@ -12,6 +20,42 @@ jest.mock('@mui/material/useMediaQuery', () => ({
 
 describe('VideoDetails', () => {
   beforeEach(() => (useMediaQuery as jest.Mock).mockImplementation(() => true))
+
+  const imageBlock: TreeBlock<ImageBlock> = {
+    id: 'imageBlockId',
+    __typename: 'ImageBlock',
+    parentBlockId: 'videoBlockId',
+    parentOrder: 0,
+    src: 'https://d1wl257kev7hsz.cloudfront.net/cinematics/2_Acts7302-0-0.mobileCinematicHigh.jpg',
+    alt: 'Default Image Icon',
+    width: 0,
+    height: 0,
+    blurhash: '',
+    children: []
+  }
+  const videoBlock: TreeBlock<VideoBlock> = {
+    id: 'videoBlockId',
+    __typename: 'VideoBlock',
+    parentBlockId: 'card1.id',
+    parentOrder: 0,
+    startAt: 0,
+    endAt: null,
+    muted: true,
+    autoplay: true,
+    fullsize: true,
+    action: null,
+    videoId: null,
+    videoVariantLanguageId: null,
+    source: VideoBlockSource.internal,
+    title: null,
+    description: null,
+    duration: null,
+    image: null,
+    video: null,
+    posterBlockId: 'imageBlockId',
+    objectFit: null,
+    children: [imageBlock]
+  }
 
   const mocks = [
     {
@@ -174,25 +218,82 @@ describe('VideoDetails', () => {
     expect(onClose).toHaveBeenCalled()
   })
 
-  it('should clear the video on delete icon click', () => {
+  it('should clear the video on delete icon click', async () => {
     const onSelect = jest.fn()
     const onClose = jest.fn()
+    const result = jest.fn(() => ({
+      data: {
+        coverBlockImageDelete: {
+          id: 'imageBlockId'
+        }
+      }
+    }))
     const { getByRole } = render(
-      <MockedProvider mocks={mocks}>
-        <VideoDetails
-          id="2_0-FallingPlates"
-          source={VideoBlockSource.internal}
-          open
-          onClose={onClose}
-          onSelect={onSelect}
-          activeVideo
-        />
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: BLOCK_DELETE_FOR_COVER_IMAGE,
+              variables: {
+                blockDeleteId: imageBlock?.id,
+                journeyId: 'journeyId',
+                parentBlockId: imageBlock?.parentBlockId
+              }
+            },
+            result
+          }
+        ]}
+      >
+        <JourneyProvider
+          value={{
+            journey: { id: 'journeyId' } as unknown as Journey,
+            admin: true
+          }}
+        >
+          <EditorProvider
+            initialState={{
+              selectedStep: {
+                id: 'step0.id',
+                __typename: 'StepBlock',
+                parentBlockId: null,
+                parentOrder: 0,
+                locked: false,
+                nextBlockId: 'step1.id',
+                children: [
+                  {
+                    id: 'card0.id',
+                    __typename: 'CardBlock',
+                    parentBlockId: 'step0.id',
+                    coverBlockId: null,
+                    parentOrder: 0,
+                    backgroundColor: null,
+                    themeMode: null,
+                    themeName: null,
+                    fullscreen: false,
+                    children: [videoBlock]
+                  }
+                ]
+              }
+            }}
+          >
+            <VideoDetails
+              id="2_0-FallingPlates"
+              source={VideoBlockSource.internal}
+              open
+              onClose={onClose}
+              onSelect={onSelect}
+              activeVideo
+            />
+          </EditorProvider>
+        </JourneyProvider>
       </MockedProvider>
     )
     fireEvent.click(getByRole('button', { name: 'clear-video' }))
+    await waitFor(() => expect(result).toHaveBeenCalled())
     expect(onSelect).toHaveBeenCalledWith({
       source: VideoBlockSource.internal,
       videoId: null,
+      posterBlockId: null,
       videoVariantLanguageId: null
     })
   })

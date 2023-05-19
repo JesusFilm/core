@@ -69,6 +69,16 @@ interface Props {
   showManageButton: boolean
 }
 
+const sortByOwner = (values: UserJourney[] = []): UserJourney[] => {
+  const ownerJourneys = values?.filter(
+    (userJourney) => userJourney.role === UserJourneyRole.owner
+  )
+  const remainingJourneys = values?.filter(
+    (userJourney) => userJourney.role !== UserJourneyRole.owner
+  )
+  return ownerJourneys.concat(remainingJourneys)
+}
+
 const withRenderLogic = ({
   size,
   max,
@@ -98,6 +108,7 @@ const withRenderLogic = ({
     const loading = values == null
     let invisible = true
     const maxIndex = max <= 2 ? 0 : max - 2
+    const users = sortByOwner(values)
 
     const children = loading
       ? [0, 1, 2].map((i) => {
@@ -113,7 +124,7 @@ const withRenderLogic = ({
             </MuiAvatar>
           )
         })
-      : values?.map(({ role, user }, index) => {
+      : users?.map(({ role, user }, index) => {
           if (
             index > maxIndex &&
             role === UserJourneyRole.inviteRequested &&
