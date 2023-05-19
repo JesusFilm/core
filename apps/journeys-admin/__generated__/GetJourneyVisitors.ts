@@ -108,4 +108,6 @@ export interface GetJourneyVisitors {
 
 export interface GetJourneyVisitorsVariables {
   filter: JourneyVisitorFilter;
+  first?: number | null;
+  after?: string | null;
 }

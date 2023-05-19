@@ -26,18 +26,23 @@ import {
   GetJourneyVisitors_visitors_edges as VisitorEdge
 } from '../../../../__generated__/GetJourneyVisitors'
 import { GetJourneyVisitorsCount } from '../../../../__generated__/GetJourneyVisitorsCount'
-import { FilterDrawer } from '../../../../src/components/JourneyVisitorsList/FilterDrawer'
-import { VisitorToolbar } from '../../../../src/components/JourneyVisitorsList/VisitorToolbar'
+import { FilterDrawer } from '../../../../src/components/JourneyVisitorsList/FilterDrawer/FilterDrawer'
+import { VisitorToolbar } from '../../../../src/components/JourneyVisitorsList/VisitorToolbar/VisitorToolbar'
+import { ClearAllButton } from '../../../../src/components/JourneyVisitorsList/FilterDrawer/ClearAllButton'
 
 export const GET_JOURNEY_VISITORS = gql`
   query GetJourneyVisitors(
     $filter: JourneyVisitorFilter!
     $sort: JourneyVisitorSort
+    $first: Int
+    $after: String
   ) {
     visitors: journeyVisitorsConnection(
       teamId: "jfp-team"
       filter: $filter
       sort: $sort
+      first: $first
+      after: $after
     ) {
       edges {
         cursor
@@ -191,7 +196,7 @@ function JourneyVisitorsPage(): ReactElement {
       case 'With Poll Answers':
         setWithPollAnswers(e.target.checked as boolean)
         break
-      case 'With Data':
+      case 'With Submitted Text':
         setWithSubmittedText(e.target.checked as boolean)
         break
       case 'With Icon':
@@ -206,18 +211,17 @@ function JourneyVisitorsPage(): ReactElement {
       case 'duration':
         setSortSetting('duration')
         break
-      case 'activity':
-        setSortSetting('activity')
-        break
     }
   }
 
-  // console.log('chat started:', chatStarted)
-  // console.log('With Poll Answers:', withPollAnswers)
-  // console.log('With Submitted Text:', withSubmittedText)
-  // console.log('With Icon:', withIcon)
-  // console.log('Hide Interactive', hideInteractive)
-  // console.log('sortSetting', sortSetting)
+  const handleClearAll = (): void => {
+    setChatStarted(false)
+    setWithPollAnswers(false)
+    setWithSubmittedText(false)
+    setWithIcon(false)
+    setHideInterActive(false)
+    setSortSetting('date')
+  }
 
   return (
     <>
@@ -226,9 +230,31 @@ function JourneyVisitorsPage(): ReactElement {
         title={t('Visitors')}
         authUser={AuthUser}
         backHref={`/journeys/${journeyId}/reports`}
-        menu={<VisitorToolbar handleChange={handleChange} />}
+        menu={
+          <VisitorToolbar
+            handleChange={handleChange}
+            sortSetting={sortSetting}
+            chatStarted={chatStarted}
+            withPollAnswers={withPollAnswers}
+            withSubmittedText={withSubmittedText}
+            withIcon={withIcon}
+            hideInteractive={hideInteractive}
+            handleClearAll={handleClearAll}
+          />
+        }
         sidePanelTitle={t('Filters')}
-        sidePanelChildren={<FilterDrawer handleChange={handleChange} />}
+        sidePanelChildren={
+          <FilterDrawer
+            handleChange={handleChange}
+            sortSetting={sortSetting}
+            chatStarted={chatStarted}
+            withPollAnswers={withPollAnswers}
+            withSubmittedText={withSubmittedText}
+            withIcon={withIcon}
+            hideInteractive={hideInteractive}
+          />
+        }
+        titleAction={<ClearAllButton handleClearAll={handleClearAll} />}
       >
         <JourneyVisitorsList
           visitorEdges={visitorEdges}

@@ -171,6 +171,11 @@ extend type Mutation {
 
   """Update a visitor"""
   visitorUpdate(id: ID!, input: VisitorUpdateInput!): Visitor!
+
+  """
+  Allow current user to update specific allowable fields of their visitor record
+  """
+  visitorUpdateForCurrentUser(input: VisitorUpdateInput!): Visitor!
 }
 
 interface Block {
@@ -657,6 +662,7 @@ extend type Video
 enum VideoBlockSource {
   internal
   youTube
+  cloudflare
 }
 
 enum VideoBlockObjectFit {

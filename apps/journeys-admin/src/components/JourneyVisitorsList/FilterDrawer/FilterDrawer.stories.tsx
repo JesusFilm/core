@@ -2,11 +2,10 @@ import { Meta, Story } from '@storybook/react'
 import { ComponentProps } from 'react'
 import { MockedProvider } from '@apollo/client/testing'
 import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
-
-import { journeysAdminConfig } from '../../../libs/storybook'
 import { PageWrapper } from '../../NewPageWrapper'
-
+import { journeysAdminConfig } from '../../../libs/storybook'
 import { FilterDrawer } from './FilterDrawer'
+import { ClearAllButton } from './ClearAllButton'
 
 const FilterDrawerStory = {
   ...journeysAdminConfig,
@@ -31,7 +30,6 @@ const Template: Story<
           title="Visitors"
           backHref="/"
           sidePanelTitle="Filters"
-          sidePanelChildren={<FilterDrawer />}
         />
       </FlagsProvider>
     </MockedProvider>
@@ -39,5 +37,33 @@ const Template: Story<
 }
 
 export const Default = Template.bind({})
+Default.args = {
+  titleAction: <ClearAllButton />,
+  sidePanelChildren: (
+    <FilterDrawer
+      sortSetting="date"
+      chatStarted={false}
+      withPollAnswers={false}
+      withSubmittedText={false}
+      withIcon={false}
+      hideInteractive={false}
+    />
+  )
+}
+
+export const Checked = Template.bind({})
+Checked.args = {
+  ...Default.args,
+  sidePanelChildren: (
+    <FilterDrawer
+      sortSetting="date"
+      chatStarted
+      withPollAnswers
+      withSubmittedText
+      withIcon
+      hideInteractive
+    />
+  )
+}
 
 export default FilterDrawerStory as Meta

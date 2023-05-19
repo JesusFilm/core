@@ -3,6 +3,7 @@ import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import PersonOutlineRoundedIcon from '@mui/icons-material/PersonOutlineRounded'
 import { format, parseISO } from 'date-fns'
+import { useTranslation } from 'react-i18next'
 import { VisitorStatus } from '../../../../../__generated__/globalTypes'
 import { getStatusIcon, transformDuration } from '../utils'
 
@@ -23,8 +24,9 @@ export function VisitorCardHeader({
   createdAt,
   duration
 }: Props): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
   const status = getStatusIcon(icon)
-  const journeyDuration = transformDuration(duration)
+  const journeyDuration = transformDuration(duration, t)
   return (
     <>
       {/* Desktop */}

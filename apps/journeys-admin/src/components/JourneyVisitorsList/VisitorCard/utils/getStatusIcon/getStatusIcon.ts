@@ -14,10 +14,10 @@ export function getStatusIcon(status: VisitorStatus | null): string | null {
       res = '🚫'
       break
     case VisitorStatus.redExclamationMark:
-      res = '❓'
+      res = '❗'
       break
     case VisitorStatus.redQuestionMark:
-      res = '✅'
+      res = '❓'
       break
     case VisitorStatus.robotFace:
       res = '🤖'

@@ -4,6 +4,7 @@ import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
 import LoadingButton from '@mui/lab/LoadingButton'
 import Typography from '@mui/material/Typography'
+import { useTranslation } from 'react-i18next'
 import { GetJourneyVisitors_visitors_edges as VisitorEdge } from '../../../__generated__/GetJourneyVisitors'
 import VisitorsPlaceholder from '../../../public/VisitorsPlaceholder.svg'
 import { VisitorCard } from './VisitorCard'
@@ -11,9 +12,9 @@ import { VisitorCard } from './VisitorCard'
 interface Props {
   visitorEdges?: VisitorEdge[]
   visitorsCount?: number
-  fetchNext: () => Promise<void>
+  fetchNext: () => void
   loading: boolean
-  hasNextPage: boolean
+  hasNextPage?: boolean
 }
 
 export function JourneyVisitorsList({
@@ -21,8 +22,9 @@ export function JourneyVisitorsList({
   visitorsCount,
   fetchNext,
   loading,
-  hasNextPage
+  hasNextPage = false
 }: Props): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
   const hasVisitors = visitorEdges != null && visitorEdges.length > 0
   return (
     <Stack
@@ -32,7 +34,7 @@ export function JourneyVisitorsList({
     >
       {hasVisitors ? (
         <Box sx={{ mx: { xs: -6, sm: 0 }, width: '100%' }}>
-          {visitorEdges.map((visitor) => (
+          {visitorEdges?.map((visitor) => (
             <VisitorCard
               key={visitor.node.visitorId}
               visitorNode={visitor.node}
@@ -52,7 +54,9 @@ export function JourneyVisitorsList({
 
       {hasVisitors && visitorsCount != null && (
         <Typography>
-          {`Showing ${visitorEdges.length} visitors out of ${visitorsCount}`}
+          {`${t('Showing')} ${visitorEdges?.length as unknown as string} ${t(
+            'visitors out of'
+          )} ${visitorsCount}`}
         </Typography>
       )}
 
@@ -63,7 +67,7 @@ export function JourneyVisitorsList({
         loading={loading}
         sx={{ width: '250px', display: hasVisitors ? 'flex' : 'none' }}
       >
-        Load More
+        {t('Load More')}
       </LoadingButton>
     </Stack>
   )

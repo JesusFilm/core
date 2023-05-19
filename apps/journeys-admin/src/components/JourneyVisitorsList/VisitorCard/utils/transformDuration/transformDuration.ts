@@ -1,10 +1,13 @@
-export function transformDuration(seconds: number | null): string {
+export function transformDuration(
+  seconds: number | null,
+  t: (str: string) => string
+): string {
   if (seconds == null) {
-    return '0 min'
+    return t('0 min')
   } else if (seconds <= 60) {
-    return `${seconds} sec`
+    return `${seconds} ${t('sec')}`
   } else {
     const minutes = Math.floor(seconds / 60)
-    return `${minutes} min`
+    return `${minutes} ${t('min')}`
   }
 }

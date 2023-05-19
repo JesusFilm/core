@@ -1,5 +1,6 @@
 import { ReactElement } from 'react'
 import Stack from '@mui/material/Stack'
+import { useTranslation } from 'react-i18next'
 import Typography from '@mui/material/Typography'
 import Box from '@mui/material/Box'
 import { format, parseISO } from 'date-fns'
@@ -11,6 +12,8 @@ interface Props {
 }
 
 export function VisitorCardDetails({ name, events }: Props): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
+
   const eventsFilter: Array<Event['__typename']> = [
     'ChatOpenEvent',
     'TextResponseSubmissionEvent',
@@ -25,7 +28,7 @@ export function VisitorCardDetails({ name, events }: Props): ReactElement {
     <>
       {filteredEvents.length > 0 && (
         <Box sx={{ pt: 3 }}>
-          <DetailsRow label="Name" value={name} />
+          <DetailsRow label={t('Name')} value={name} />
         </Box>
       )}
       {filteredEvents.map((event) => {
@@ -33,7 +36,7 @@ export function VisitorCardDetails({ name, events }: Props): ReactElement {
           return (
             <DetailsRow
               key={event.id}
-              label="Chat Started"
+              label={t('Chat Started')}
               value={format(parseISO(event.createdAt), 'h:mmaaa')}
               chatEvent
             />

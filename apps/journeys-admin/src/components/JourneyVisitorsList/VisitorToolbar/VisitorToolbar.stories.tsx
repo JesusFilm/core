@@ -8,7 +8,7 @@ import { VisitorToolbar } from './VisitorToolbar'
 const VisitorToolbarStory = {
   ...journeysAdminConfig,
   component: VisitorToolbar,
-  title: 'Journeys-Admin/JourneyVisitorsList/VisitorToolBar',
+  title: 'Journeys-Admin/JourneyVisitorsList/FilterDrawer/VisitorToolBar',
   parameters: {
     ...journeysAdminConfig.parameters,
     layout: 'fullscreen'
