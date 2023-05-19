@@ -8,12 +8,16 @@ const VideoFromCloudflareStory = {
   ...simpleComponentConfig,
   component: VideoFromCloudflare,
   title: 'Journeys-Admin/Editor/VideoLibrary/VideoFromCloudflare',
-  argTypes: { onSelect: { action: 'clicked' } }
+  argTypes: { onSelect: { action: 'clicked' } },
+  parameters: {
+    ...simpleComponentConfig.parameters,
+    layout: 'fullscreen'
+  }
 }
 
 const Template: Story = ({ onSelect }) => (
   <MockedProvider mocks={[]}>
-    <Box sx={{ bgcolor: 'background.paper' }}>
+    <Box sx={{ bgcolor: 'background.paper', pb: 5 }}>
       <VideoFromCloudflare onSelect={onSelect} />
     </Box>
   </MockedProvider>
