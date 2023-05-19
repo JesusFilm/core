@@ -278,7 +278,7 @@ describe('VideoLibrary', () => {
         <VideoLibrary open />
       </MockedProvider>
     )
-    fireEvent.click(getByRole('tab', { name: 'Custom' }))
+    fireEvent.click(getByRole('tab', { name: 'Upload' }))
     expect(getByText('Drop a video here')).toBeInTheDocument()
   })
 })

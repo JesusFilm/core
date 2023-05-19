@@ -1,4 +1,4 @@
-import { render, fireEvent, waitFor } from '@testing-library/react'
+import { render } from '@testing-library/react'
 import { CloudflareDetails } from './CloudflareDetails'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
@@ -23,17 +23,5 @@ describe('CloudflareDetails', () => {
     expect(imageTag).toHaveStyle(
       "background-image: url('https://customer-.cloudflarestream.com/videoId/thumbnails/thumbnail.jpg?time=2s')"
     )
-  })
-
-  it('should call onSelect on select click', async () => {
-    const onSelect = jest.fn()
-    const { getByRole } = render(
-      <CloudflareDetails id="2_Acts7302-0-0" open onSelect={onSelect} />
-    )
-    await waitFor(() =>
-      expect(getByRole('button', { name: 'Select' })).toBeEnabled()
-    )
-    fireEvent.click(getByRole('button', { name: 'Select' }))
-    expect(onSelect).toHaveBeenCalledWith({})
   })
 })

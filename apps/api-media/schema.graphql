@@ -38,7 +38,6 @@ extend type Mutation {
   createCloudflareVideoUploadByFile(uploadLength: Int!, name: String!): CloudflareVideo
   createCloudflareVideoUploadByUrl(url: String!): CloudflareVideo
   deleteCloudflareVideo(id: ID!): Boolean
-  cloudflareVideoCheckReadyToStream(id: ID!): CloudflareVideo
   triggerUnsplashDownload(url: String!): Boolean
 }
 

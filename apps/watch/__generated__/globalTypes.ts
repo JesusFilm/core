@@ -145,7 +145,6 @@ export enum VideoBlockSource {
   cloudflare = "cloudflare",
   internal = "internal",
   youTube = "youTube",
-  
 }
 
 export enum VideoLabel {

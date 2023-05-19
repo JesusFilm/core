@@ -2,14 +2,11 @@ import videojs from 'video.js'
 import { ReactElement, useEffect, useRef } from 'react'
 import Box from '@mui/system/Box'
 import Stack from '@mui/material/Stack'
-import Button from '@mui/material/Button'
-import Check from '@mui/icons-material/Check'
 import type { VideoDetailsProps } from '../../VideoDetails/VideoDetails'
 import 'video.js/dist/video-js.css'
 
 export function CloudflareDetails({
-  id,
-  onSelect
+  id
 }: Pick<VideoDetailsProps, 'open' | 'id' | 'onSelect'>): ReactElement {
   const videoRef = useRef<HTMLVideoElement>(null)
   const playerRef = useRef<videojs.Player>()
@@ -48,21 +45,6 @@ export function CloudflareDetails({
           />
         </video>
       </Box>
-      <Stack
-        direction="row"
-        spacing={2}
-        sx={{ justifyContent: 'space-between' }}
-      >
-        <Button
-          variant="contained"
-          startIcon={<Check />}
-          onClick={() => onSelect({})}
-          size="small"
-          sx={{ backgroundColor: 'secondary.dark' }}
-        >
-          Select
-        </Button>
-      </Stack>
     </Stack>
   )
 }

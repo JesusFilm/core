@@ -174,8 +174,6 @@ export abstract class IMutation {
 
     abstract deleteCloudflareVideo(id: string): Nullable<boolean> | Promise<Nullable<boolean>>;
 
-    abstract cloudflareVideoCheckReadyToStream(id: string): Nullable<CloudflareVideo> | Promise<Nullable<CloudflareVideo>>;
-
     abstract triggerUnsplashDownload(url: string): Nullable<boolean> | Promise<Nullable<boolean>>;
 }
 
