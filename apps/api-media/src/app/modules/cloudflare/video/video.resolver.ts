@@ -25,7 +25,8 @@ export class VideoResolver {
       uploadUrl: response.uploadUrl,
       userId,
       name,
-      createdAt: new Date().toISOString()
+      createdAt: new Date().toISOString(),
+      readyToStream: false
     })
   }
 
@@ -43,7 +44,8 @@ export class VideoResolver {
     return await this.videoService.save({
       _key: response.result.uid,
       userId,
-      createdAt: new Date().toISOString()
+      createdAt: new Date().toISOString(),
+      readyToStream: false
     })
   }
 
@@ -72,5 +74,26 @@ export class VideoResolver {
     }
     await this.videoService.remove(id)
     return true
+  }
+
+  @Mutation()
+  async cloudflareVideoCheckReadyToStream(
+    @Args('id') id: string,
+    @CurrentUserId() userId: string
+  ): Promise<CloudflareVideo> {
+    const video = await this.videoService.get(id)
+    if (video == null) {
+      throw new UserInputError('Video not found')
+    }
+    if (video.userId !== userId) {
+      throw new ForbiddenError('This video does not belong to you')
+    }
+    const response = await this.videoService.getVideoFromCloudflare(id)
+    if (!response.success) {
+      throw new Error(response.errors[0])
+    }
+    return await this.videoService.update(id, {
+      readyToStream: response.result?.readyToStream ?? false
+    })
   }
 }
