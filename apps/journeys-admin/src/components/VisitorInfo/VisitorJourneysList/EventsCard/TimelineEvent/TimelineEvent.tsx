@@ -91,49 +91,49 @@ export function TimelineEvent({ timelineItem }: Props): ReactElement {
 
     // default
     case 'StepNextEvent':
-      icon = <ArrowCircleRightOutlinedIcon />
+      icon = <ArrowCircleRightOutlinedIcon color="disabled" />
       activity = `${t('Skip Step')}:`
       label = event.label
       break
     case 'StepViewEvent':
-      icon = <ArrowCircleRightOutlinedIcon />
+      icon = <ArrowCircleRightOutlinedIcon color="disabled" />
       activity = t('Next Step')
       break
 
     // Video
     case 'VideoStartEvent':
-      icon = <PlayCircleOutlineRoundedIcon />
+      icon = <PlayCircleOutlineRoundedIcon color="disabled" />
       activity = t('Video Start')
       value = event.label
       break
     case 'VideoPlayEvent':
-      icon = <PlayCircleOutlineRoundedIcon />
+      icon = <PlayCircleOutlineRoundedIcon color="disabled" />
       activity = t('Video Play')
       value = event.label
       break
     case 'VideoPauseEvent':
-      icon = <PauseCircleOutlineRoundedIcon />
+      icon = <PauseCircleOutlineRoundedIcon color="disabled" />
       activity = t('Video Pause')
       value = `${event.label as string} paused at ${videoPositionToLabel(
         event.position
       )}`
       break
     case 'VideoProgressEvent':
-      icon = <PlayCircleOutlineRoundedIcon />
+      icon = <PlayCircleOutlineRoundedIcon color="disabled" />
       activity = `${t('Video Progress')} ${
         event.progress as unknown as string
       }%`
       value = event.label
       break
     case 'VideoExpandEvent':
-      icon = <PlayCircleOutlineRoundedIcon />
+      icon = <PlayCircleOutlineRoundedIcon color="disabled" />
       activity = `${t(
         'Video expanded to fullscreen at'
       )} (${videoPositionToLabel(event.position)})`
       value = event.label
       break
     case 'VideoCompleteEvent':
-      icon = <PlayCircleOutlineRoundedIcon />
+      icon = <PlayCircleOutlineRoundedIcon color="disabled" />
       activity = t('Video completed')
       value = event.label
       break
