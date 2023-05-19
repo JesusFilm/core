@@ -1,12 +1,12 @@
 import type { ReadStream } from 'fs'
-import { ReactElement, useState } from 'react'
+import { ReactElement, useEffect, useState } from 'react'
 import { useDropzone } from 'react-dropzone'
 import Typography from '@mui/material/Typography'
 import BackupOutlinedIcon from '@mui/icons-material/BackupOutlined'
 import Button from '@mui/material/Button'
 import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
-import { gql, useMutation } from '@apollo/client'
+import { gql, useLazyQuery, useMutation } from '@apollo/client'
 import CloudOffRoundedIcon from '@mui/icons-material/CloudOffRounded'
 import WarningAmberRounded from '@mui/icons-material/WarningAmberRounded'
 import {
@@ -16,10 +16,11 @@ import {
   Upload
 } from 'tus-js-client'
 import LinearProgress from '@mui/material/LinearProgress'
-import { CreateCloudflareVideoUploadByFile } from '../../../../../../__generated__/CreateCloudflareVideoUploadByFile'
+import { CreateCloudflareVideoUploadByFileMutation } from '../../../../../../__generated__/CreateCloudflareVideoUploadByFileMutation'
+import { GetMyCloudflareVideoQuery } from '../../../../../../__generated__/GetMyCloudflareVideoQuery'
 
-export const CREATE_CLOUDFLARE_VIDEO_UPLOAD_BY_FILE = gql`
-  mutation CreateCloudflareVideoUploadByFile(
+export const CREATE_CLOUDFLARE_VIDEO_UPLOAD_BY_FILE_MUTATION = gql`
+  mutation CreateCloudflareVideoUploadByFileMutation(
     $uploadLength: Int!
     $name: String!
   ) {
@@ -33,6 +34,15 @@ export const CREATE_CLOUDFLARE_VIDEO_UPLOAD_BY_FILE = gql`
   }
 `
 
+export const GET_MY_CLOUDFLARE_VIDEO_QUERY = gql`
+  query GetMyCloudflareVideoQuery($id: ID!) {
+    getMyCloudflareVideo(id: $id) {
+      id
+      readyToStream
+    }
+  }
+`
+
 interface AddByFileProps {
   onChange: (id: string) => void
   httpStack?: HttpStack // required for testing in jest
@@ -42,13 +52,43 @@ export function AddByFile({
   onChange,
   httpStack
 }: AddByFileProps): ReactElement {
-  const [createCloudflareVideoUploadByFile] =
-    useMutation<CreateCloudflareVideoUploadByFile>(
-      CREATE_CLOUDFLARE_VIDEO_UPLOAD_BY_FILE
+  const [createCloudflareVideoUploadByFile, { data }] =
+    useMutation<CreateCloudflareVideoUploadByFileMutation>(
+      CREATE_CLOUDFLARE_VIDEO_UPLOAD_BY_FILE_MUTATION
     )
-  const [loading, setLoading] = useState(false)
+  const [getMyCloudflareVideo, { data: getMyCloudflareVideoData }] =
+    useLazyQuery<GetMyCloudflareVideoQuery>(GET_MY_CLOUDFLARE_VIDEO_QUERY, {
+      pollInterval: 1000
+    })
+  const [uploading, setUploading] = useState(false)
+  const [processing, setProcessing] = useState(false)
   const [error, setError] = useState<Error | DetailedError>()
   const [progress, setProgress] = useState(0)
+
+  useEffect(() => {
+    if (processing && data?.createCloudflareVideoUploadByFile?.id != null) {
+      void getMyCloudflareVideo({
+        variables: { id: data.createCloudflareVideoUploadByFile.id }
+      })
+    }
+  }, [
+    processing,
+    getMyCloudflareVideo,
+    data?.createCloudflareVideoUploadByFile?.id
+  ])
+
+  useEffect(() => {
+    if (
+      getMyCloudflareVideoData?.getMyCloudflareVideo?.readyToStream === true &&
+      data?.createCloudflareVideoUploadByFile?.id != null
+    ) {
+      onChange(data.createCloudflareVideoUploadByFile.id)
+    }
+  }, [
+    getMyCloudflareVideoData?.getMyCloudflareVideo?.readyToStream,
+    data?.createCloudflareVideoUploadByFile?.id,
+    onChange
+  ])
 
   const onDrop = async (acceptedFiles: File[]): Promise<void> => {
     if (acceptedFiles.length > 0) {
@@ -64,7 +104,7 @@ export function AddByFile({
         data?.createCloudflareVideoUploadByFile?.uploadUrl != null &&
         data?.createCloudflareVideoUploadByFile?.id != null
       ) {
-        setLoading(true)
+        setUploading(true)
         // the following if statement is required for testing in jest
         let buffer: ReadStream | File
         if (process.env.NODE_ENV === 'test') {
@@ -84,14 +124,12 @@ export function AddByFile({
           uploadUrl: data.createCloudflareVideoUploadByFile.uploadUrl,
           chunkSize: 150 * 1024 * 1024,
           onSuccess: (): void => {
-            if (data.createCloudflareVideoUploadByFile?.id != null)
-              onChange(data.createCloudflareVideoUploadByFile.id)
-            setLoading(false)
-            setProgress(0)
+            setUploading(false)
+            setProcessing(true)
           },
           onError: (err): void => {
             setError(err)
-            setLoading(false)
+            setUploading(false)
             setProgress(0)
           },
           onProgress(bytesUploaded, bytesTotal): void {
@@ -112,7 +150,7 @@ export function AddByFile({
     }
   })
 
-  const noBorder = error != null || loading
+  const noBorder = error != null || uploading
 
   return (
     <Stack alignItems="center" gap={1} sx={{ px: 6, py: 3 }}>
@@ -125,7 +163,7 @@ export function AddByFile({
           height: 162,
           borderWidth: noBorder ? undefined : 2,
           backgroundColor:
-            isDragAccept || loading
+            isDragAccept || uploading
               ? 'rgba(239, 239, 239, 0.9)'
               : error != null
               ? 'rgba(197, 45, 58, 0.08)'
@@ -154,11 +192,10 @@ export function AddByFile({
           color={error != null ? 'error.main' : 'secondary.main'}
           sx={{ pb: 4 }}
         >
-          {loading
-            ? 'Uploading...'
-            : error != null
-            ? 'Upload Failed!'
-            : 'Drop a video here'}
+          {uploading && 'Uploading...'}
+          {processing && 'Processing...'}
+          {error != null && 'Upload Failed!'}
+          {!uploading && !processing && error == null && 'Drop a video here'}
         </Typography>
       </Box>
       <Stack
@@ -179,10 +216,10 @@ export function AddByFile({
         </Typography>
       </Stack>
 
-      {loading ? (
+      {uploading || processing ? (
         <Box sx={{ width: '100%', mt: 4 }}>
           <LinearProgress
-            variant="determinate"
+            variant={processing ? 'indeterminate' : 'determinate'}
             value={progress}
             sx={{ height: 32, borderRadius: 2 }}
           />
