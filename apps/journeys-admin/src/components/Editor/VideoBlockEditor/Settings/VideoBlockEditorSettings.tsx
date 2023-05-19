@@ -55,10 +55,7 @@ export function VideoBlockEditorSettings({
     validate: async (values) => {
       const convertedStartAt = timeFormatToSeconds(values.startAt)
       const convertedEndAt = timeFormatToSeconds(values.endAt)
-      console.log('CStartAt', convertedStartAt)
-      console.log('CEndAt', convertedEndAt)
       if (convertedStartAt > convertedEndAt) {
-        console.log('HERE')
         errors.startAt = 'Start time cannot exceed end time'
         enqueueSnackbar(errors.startAt, {
           variant: 'error',
@@ -71,9 +68,6 @@ export function VideoBlockEditorSettings({
           endAt: convertedEndAt
         })
       }
-      console.log('values', values)
-      console.log('errors', errors)
-
       return errors
     },
     onSubmit: noop
@@ -117,7 +111,6 @@ export function VideoBlockEditorSettings({
                 />
               }
             />
-            {console.log('116 error', errors)}
             <TimeField
               showSeconds
               value={values.endAt}
