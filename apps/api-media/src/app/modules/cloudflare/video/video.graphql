@@ -8,6 +8,7 @@ type CloudflareVideo {
 
 extend type Query {
   getMyCloudflareVideos: [CloudflareVideo]
+  getMyCloudflareVideo(id: ID!): CloudflareVideo
 }
 
 extend type Mutation {
@@ -17,5 +18,4 @@ extend type Mutation {
   ): CloudflareVideo
   createCloudflareVideoUploadByUrl(url: String!): CloudflareVideo
   deleteCloudflareVideo(id: ID!): Boolean
-  cloudflareVideoCheckReadyToStream(id: ID!): CloudflareVideo
 }
