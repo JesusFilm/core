@@ -1,3 +1,4 @@
+import type { ReadStream } from 'fs'
 import { ReactElement, useState } from 'react'
 import { useDropzone } from 'react-dropzone'
 import Typography from '@mui/material/Typography'
@@ -8,7 +9,12 @@ import Stack from '@mui/material/Stack'
 import { gql, useMutation } from '@apollo/client'
 import CloudOffRoundedIcon from '@mui/icons-material/CloudOffRounded'
 import WarningAmberRounded from '@mui/icons-material/WarningAmberRounded'
-import { DetailedError, Upload } from 'tus-js-client'
+import {
+  DefaultHttpStack,
+  DetailedError,
+  HttpStack,
+  Upload
+} from 'tus-js-client'
 import LinearProgress from '@mui/material/LinearProgress'
 import { CreateCloudflareVideoUploadByFile } from '../../../../../../__generated__/CreateCloudflareVideoUploadByFile'
 
@@ -29,9 +35,13 @@ export const CREATE_CLOUDFLARE_VIDEO_UPLOAD_BY_FILE = gql`
 
 interface AddByFileProps {
   onChange: (id: string) => void
+  httpStack?: HttpStack // required for testing in jest
 }
 
-export function AddByFile({ onChange }: AddByFileProps): ReactElement {
+export function AddByFile({
+  onChange,
+  httpStack
+}: AddByFileProps): ReactElement {
   const [createCloudflareVideoUploadByFile] =
     useMutation<CreateCloudflareVideoUploadByFile>(
       CREATE_CLOUDFLARE_VIDEO_UPLOAD_BY_FILE
@@ -41,8 +51,8 @@ export function AddByFile({ onChange }: AddByFileProps): ReactElement {
   const [progress, setProgress] = useState(0)
 
   const onDrop = async (acceptedFiles: File[]): Promise<void> => {
-    const file = acceptedFiles[0]
-    if (acceptedFiles.length !== 0) {
+    if (acceptedFiles.length > 0) {
+      const file = acceptedFiles[0]
       const { data } = await createCloudflareVideoUploadByFile({
         variables: {
           uploadLength: file.size,
@@ -54,10 +64,23 @@ export function AddByFile({ onChange }: AddByFileProps): ReactElement {
         data?.createCloudflareVideoUploadByFile?.uploadUrl != null &&
         data?.createCloudflareVideoUploadByFile?.id != null
       ) {
-        const file = acceptedFiles[0]
-
         setLoading(true)
-        const upload = new Upload(file, {
+        // the following if statement is required for testing in jest
+        let buffer: ReadStream | File
+        if (process.env.NODE_ENV === 'test') {
+          /* eslint-disable @typescript-eslint/no-var-requires */
+          buffer = require('fs').createReadStream(
+            require('path').join(
+              __dirname,
+              (file as unknown as { path: string }).path
+            )
+          )
+          /* eslint-enable @typescript-eslint/no-var-requires */
+        } else {
+          buffer = file
+        }
+        const upload = new Upload(buffer, {
+          httpStack: httpStack ?? new DefaultHttpStack({}),
           uploadUrl: data.createCloudflareVideoUploadByFile.uploadUrl,
           chunkSize: 150 * 1024 * 1024,
           onSuccess: (): void => {
@@ -92,13 +115,7 @@ export function AddByFile({ onChange }: AddByFileProps): ReactElement {
   const noBorder = error != null || loading
 
   return (
-    <Stack
-      {...getRootProps({ isDragAccept })}
-      alignItems="center"
-      gap={1}
-      sx={{ px: 6, py: 3 }}
-    >
-      <input {...getInputProps()} />
+    <Stack alignItems="center" gap={1} sx={{ px: 6, py: 3 }}>
       <Box
         data-testid="drop zone"
         sx={{
@@ -120,7 +137,9 @@ export function AddByFile({ onChange }: AddByFileProps): ReactElement {
           flexDirection: 'column',
           alignItems: 'center'
         }}
+        {...getRootProps({ isDragAccept })}
       >
+        <input {...getInputProps()} />
         {error != null ? (
           <CloudOffRoundedIcon
             sx={{ fontSize: 48, color: 'primary.main', mb: 1 }}
