@@ -74,12 +74,12 @@ const StyledNavArea = styled(Stack)(({ theme }) => ({
   position: 'absolute',
   justifyContent: 'center',
   width: 48,
-  height: 'calc(100vh - 320px)',
+  height: 'calc(100% - 280px)',
   zIndex: 3,
-  bottom: '180px',
+  bottom: '140px',
   [theme.breakpoints.up('lg')]: {
     width: 60,
-    height: 'calc(100vh - 55vh)',
+    height: 'calc(100% - 58vh)',
     bottom: 'calc(25% + 56px)'
   }
 }))
@@ -87,7 +87,7 @@ const StyledNavArea = styled(Stack)(({ theme }) => ({
 export function Conductor({ blocks }: ConductorProps): ReactElement {
   const { setTreeBlocks, treeBlocks, blockHistory } = useBlocks()
   const [swiper, setSwiper] = useState<SwiperCore>()
-  const [visibleNav, setVisibleNav] = useState(blockHistory.length === 1)
+  const [visibleNav, setVisibleNav] = useState(true)
   const swiperRef = useRef<SwiperType>()
   const { journey, admin } = useJourney()
   const { rtl } = getJourneyRTL(journey)
@@ -158,6 +158,23 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
     }
   }
 
+  const arrowProps = {
+    sx: {
+      fontSize: '44px',
+      borderRadius: 6,
+      ml: 2,
+      backgroundColor: `${theme.palette.common.black}00010`,
+      '&:hover': {
+        backgroundColor: `${theme.palette.common.black}00030`
+      }
+    },
+    viewBox: '0 0 25 24',
+    htmlColor: theme.palette.common.white
+  }
+
+  const LeftArrow = <ChevronLeftRounded {...arrowProps} />
+  const RightArrow = <ChevronRightRounded {...arrowProps} />
+
   return (
     <Div100vh style={{ overflowY: 'auto', WebkitOverflowScrolling: 'touch' }}>
       <StyledSwiperContainer
@@ -208,6 +225,13 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
             }
           }
         }}
+        // Hide Navigation after swiping
+        onTouchMove={() => {
+          setVisibleNav(true)
+          setTimeout(() => {
+            setVisibleNav(false)
+          }, 3000)
+        }}
         onActiveIndexChange={(swiper) => {
           // Indices from useBlock state
           const activeIndex = blockHistory[blockHistory.length - 1].parentOrder
@@ -227,13 +251,13 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
               // Navigate via button
               nextActiveBlock({ id: treeBlocks[swiper.activeIndex].id })
             } else {
-              // useBlock history updated in action.ts
+              // useBlock history is updated from action.ts
             }
           }
         }}
       >
         {blocks.map((block) => (
-          <StyledSwiperSlide key={block.id}>
+          <StyledSwiperSlide key={block.id} onClick={() => setVisibleNav(true)}>
             <Stack
               justifyContent="center"
               sx={{ width: '100%', height: '100%' }}
@@ -244,42 +268,35 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
             </Stack>
           </StyledSwiperSlide>
         ))}
-        {swiper != null && swiper.activeIndex !== 0 && (
-          <StyledNavArea
-            className="button-prev"
-            sx={{ left: { xs: 0, lg: 24 } }}
-            onClick={() => handleNav(swiper?.activeIndex ?? 0, 'prev')}
-            onMouseOver={() => setVisibleNav(true)}
-            onMouseLeave={() => {
-              setTimeout(() => {
-                setVisibleNav(false)
-              }, 3000)
-            }}
-          >
-            <Fade
-              in={visibleNav}
-              style={{ transitionDuration: '300ms', position: 'absolute' }}
-              timeout={{ exit: 3000 }}
+        {blockHistory.length > 1 &&
+          blockHistory[blockHistory.length - 1].parentOrder !== 0 && (
+            <StyledNavArea
+              className="button-prev"
+              sx={{ left: { xs: 0, lg: 24 } }}
+              onClick={() => handleNav(swiper?.activeIndex ?? 0, 'prev')}
+              // Show / Hide navigation after tapping
+              onMouseOver={() => setVisibleNav(true)}
+              onMouseLeave={() => {
+                if (visibleNav) setVisibleNav(false)
+              }}
             >
-              <ChevronLeftRounded
-                sx={{
-                  fontSize: '44px',
-                  borderRadius: 6,
-                  ml: 2,
-                  backgroundColor: `${theme.palette.common.black}00010`,
-                  '&:hover': {
-                    backgroundColor: `${theme.palette.common.black}00030`
-                  }
+              <Fade
+                in={visibleNav}
+                style={{ position: 'absolute' }}
+                timeout={{
+                  appear: 0,
+                  exit: blockHistory.length > 1 ? 2000 : 0
                 }}
-                viewBox="0 0 25 24"
-                htmlColor={theme.palette.common.white}
-              />
-            </Fade>
-          </StyledNavArea>
-        )}
-        {swiper != null &&
-          swiper.activeIndex !== treeBlocks.length - 1 &&
-          !(treeBlocks[swiper.activeIndex] as TreeBlock<StepFields>).locked && (
+              >
+                {rtl ? RightArrow : LeftArrow}
+              </Fade>
+            </StyledNavArea>
+          )}
+        {blockHistory.length > 0 &&
+          blockHistory[blockHistory.length - 1].parentOrder !==
+            treeBlocks.length - 1 &&
+          !(blockHistory[blockHistory.length - 1] as TreeBlock<StepFields>)
+            .locked && (
             <StyledNavArea
               className="button-next"
               sx={{
@@ -288,31 +305,27 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
                 alignItems: 'flex-end'
               }}
               onClick={() => handleNav(swiper?.activeIndex ?? 0, 'next')}
+              // Show / Hide navigation after tapping
               onMouseOver={() => setVisibleNav(true)}
               onMouseLeave={() => {
-                setTimeout(() => {
+                if (visibleNav) {
                   setVisibleNav(false)
-                }, 3000)
+                }
               }}
             >
               <Fade
                 in={visibleNav}
-                style={{ transitionDuration: '300ms', position: 'absolute' }}
-                timeout={{ exit: 3000 }}
+                style={{ position: 'absolute' }}
+                timeout={{
+                  appear: 300,
+                  exit:
+                    blockHistory[blockHistory.length - 1].parentOrder !==
+                    treeBlocks.length - 1
+                      ? 2000
+                      : 0
+                }}
               >
-                <ChevronRightRounded
-                  fontSize="large"
-                  sx={{
-                    fontSize: '44px',
-                    borderRadius: 6,
-                    backgroundColor: `${theme.palette.common.black}00010`,
-                    '&:hover': {
-                      backgroundColor: `${theme.palette.common.black}00030`
-                    }
-                  }}
-                  htmlColor={theme.palette.common.white}
-                  viewBox="0 0 23 24"
-                />
+                {rtl ? LeftArrow : RightArrow}
               </Fade>
             </StyledNavArea>
           )}

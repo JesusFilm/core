@@ -11,19 +11,25 @@ import { NextImage } from '@core/shared/ui/NextImage'
 import { styled } from '@mui/material/styles'
 import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
-import type { TreeBlock } from '../../../libs/block'
+import {
+  isActiveBlockOrDescendant,
+  TreeBlock,
+  useBlocks
+} from '../../../libs/block'
 import {
   VideoBlockObjectFit,
   VideoBlockSource
 } from '../../../../__generated__/globalTypes'
 import { ImageFields } from '../../Image/__generated__/ImageFields'
 import { VideoFields } from '../../Video/__generated__/VideoFields'
+import { useJourney } from '../../../libs/JourneyProvider'
+import { getJourneyRTL } from '../../../libs/rtl'
 
 import 'videojs-youtube'
 import 'video.js/dist/video-js.css'
-import { useJourney } from '../../../libs/JourneyProvider'
 
 interface ContainedCoverProps {
+  cardId: string
   children: ReactNode[]
   videoBlock?: TreeBlock<VideoFields>
   imageBlock?: TreeBlock<ImageFields>
@@ -55,6 +61,7 @@ const StyledBlurBackground = styled(Stack)(({ theme }) => ({
 }))
 
 export function ContainedCover({
+  cardId,
   children,
   backgroundBlur,
   videoBlock,
@@ -64,8 +71,11 @@ export function ContainedCover({
   const [player, setPlayer] = useState<VideoJsPlayer>()
   const [loading, setLoading] = useState(true)
   const [contentHeight, setContentHeight] = useState(0)
-  const { admin } = useJourney()
+  const { journey, admin } = useJourney()
+  const { rtl } = getJourneyRTL(journey)
   const contentRef = useRef()
+  const { blockHistory } = useBlocks()
+  const activeBlock = blockHistory[blockHistory.length - 1]
 
   const isYouTube = videoBlock?.source === VideoBlockSource.youTube
 
@@ -91,7 +101,7 @@ export function ContainedCover({
         isYouTube && /iPhone|iPad|iPod/i.test(navigator?.userAgent)
       setPlayer(
         videojs(videoRef.current, {
-          autoplay: !isYouTubeAndiOS,
+          // autoplay: !isYouTubeAndiOS,
           controls: false,
           controlBar: false,
           bigPlayButton: false,
@@ -114,24 +124,36 @@ export function ContainedCover({
     if (player != null) {
       player.on('ready', () => {
         player?.currentTime(videoBlock?.startAt ?? 0)
-        // plays youTube videos at the start time
-        if (videoBlock?.source === VideoBlockSource.youTube) void player?.play()
       })
       // Video jumps to new time and finishes loading
       player.on('seeked', () => {
         setLoading(false)
       })
-      player.on('timeupdate', () => {
-        if (
-          videoBlock?.startAt != null &&
-          videoBlock?.endAt != null &&
-          videoBlock?.endAt > 0 &&
-          player != null
-        ) {
+      player.on('pause', () => {
+        if (videoBlock != null) {
+          // 2) Loop video if at end
           const currentTime = player.currentTime()
           const { startAt, endAt } = videoBlock
-          if (currentTime < (startAt ?? 0) || currentTime >= endAt) {
+
+          if (
+            currentTime < (startAt ?? 0) ||
+            (endAt != null && currentTime >= endAt)
+          ) {
             player.currentTime(startAt ?? 0)
+            void player.play()
+          }
+        }
+      })
+      player.on('timeupdate', () => {
+        if (videoBlock != null) {
+          const currentTime = player.currentTime()
+          const { startAt, endAt } = videoBlock
+
+          if (
+            currentTime < (startAt ?? 0) ||
+            (endAt != null && currentTime >= endAt)
+          ) {
+            player.pause()
           }
         }
       })
@@ -169,7 +191,9 @@ export function ContainedCover({
         videoBlock.videoId != null
       ) {
         player.src({
-          src: `https://www.youtube.com/watch?v=${videoBlock?.videoId}`,
+          src: `https://www.youtube.com/embed/${videoBlock?.videoId}?start=${
+            videoBlock?.startAt ?? 0
+          }`,
           type: 'video/youtube'
         })
       }
@@ -183,6 +207,19 @@ export function ContainedCover({
       )
     }
   }, [contentRef])
+
+  // Pause video if card not active
+  useEffect(() => {
+    if (player != null) {
+      if (isActiveBlockOrDescendant(cardId)) {
+        player.autoplay(true)
+        void player.play()
+      } else {
+        player.autoplay(false)
+        void player.pause()
+      }
+    }
+  }, [activeBlock, cardId, player])
 
   const overlayGradient = (direction: string): string =>
     `linear-gradient(to ${direction}, transparent 0%,  ${backgroundBlur}14 10%, ${backgroundBlur}33 17%, ${backgroundBlur}60 25%, ${backgroundBlur}b0 40%, ${backgroundBlur}e6 60%, ${backgroundBlur} 98%)`
@@ -270,6 +307,7 @@ export function ContainedCover({
                 sx={{
                   width: '100%',
                   height: '100%',
+                  WebkitBackdropFilter: 'blur(60px)',
                   backdropFilter: 'blur(60px)'
                 }}
               />
@@ -313,7 +351,7 @@ export function ContainedCover({
           width: '100%',
           height: { lg: '100%' },
           justifyContent: { xs: 'flex-end', lg: 'center' },
-          alignItems: { lg: 'flex-end' }
+          alignItems: { lg: rtl ? 'flex-start' : 'flex-end' }
         }}
       >
         {children.length !== 0 ? (
@@ -324,7 +362,6 @@ export function ContainedCover({
                 width: { xs: videoBlock != null ? '100%' : '0%', lg: 380 },
                 height: { xs: videoBlock != null ? '85%' : '0%', lg: '100%' },
                 flexDirection: { lg: 'row' },
-                justifyContent: 'flex-end',
                 position: 'absolute'
               }}
             >

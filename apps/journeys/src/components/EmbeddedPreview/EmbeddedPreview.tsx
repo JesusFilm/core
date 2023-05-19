@@ -110,8 +110,8 @@ export function EmbeddedPreview({
         sx={{
           height: '100%',
           width: '100%',
-          borderRadius: '16px',
-          border: '1px solid rgba(186, 186, 187, 0.5)'
+          borderRadius: { xs: '16px', lg: '0px' },
+          overflow: 'hidden'
         }}
       >
         <BlockRenderer

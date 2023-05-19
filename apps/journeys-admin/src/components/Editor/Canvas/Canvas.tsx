@@ -133,10 +133,11 @@ export function Canvas(): ReactElement {
                   position: 'relative',
                   overflow: 'hidden',
                   outline: (theme) =>
-                    step.id === selectedBlock?.id &&
-                    selectedBlock?.__typename === 'StepBlock'
-                      ? `2px solid ${theme.palette.primary.main}`
-                      : `2px solid ${theme.palette.background.default}`,
+                    step.parentOrder === swiper?.activeIndex
+                      ? step.id === selectedBlock?.id
+                        ? `2px solid ${theme.palette.primary.main}`
+                        : `2px solid ${theme.palette.background.default}`
+                      : `0px solid`,
                   outlineOffset: 4,
                   transform:
                     step.id === selectedStep?.id

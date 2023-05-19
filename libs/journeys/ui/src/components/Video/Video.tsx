@@ -9,7 +9,7 @@ import {
 } from 'react'
 import { NextImage } from '@core/shared/ui/NextImage'
 import Box from '@mui/material/Box'
-import { useTheme, styled } from '@mui/material/styles'
+import { useTheme, styled, ThemeProvider } from '@mui/material/styles'
 import Paper from '@mui/material/Paper'
 import VideocamRounded from '@mui/icons-material/VideocamRounded'
 import { VideoControls } from '@core/shared/ui/VideoControls'
@@ -93,6 +93,7 @@ export function Video({
     if (videoRef.current != null) {
       setPlayer(
         videojs(videoRef.current, {
+          autoplay: autoplay ?? false,
           controls: false,
           controlBar: false,
           bigPlayButton: false,
@@ -126,12 +127,6 @@ export function Video({
   useEffect(() => {
     if (player != null) {
       if (selectedBlock === undefined) {
-        player.on('ready', () => {
-          player.currentTime(startAt ?? 0)
-          // plays youTube videos at the start time
-          if (source === VideoBlockSource.youTube && autoplay === true)
-            void player?.play()
-        })
         // Video jumps to new time and finishes loading - occurs on autoplay
         player.on('seeked', () => {
           if (autoplay === true) setLoading(false)
@@ -206,12 +201,12 @@ export function Video({
         })
       } else if (source === VideoBlockSource.youTube && videoId != null) {
         player.src({
-          src: `https://www.youtube.com/watch?v=${videoId}`,
+          src: `https://www.youtube.com/embed/${videoId}?start=${startAt ?? 0}`,
           type: 'video/youtube'
         })
       }
     }
-  }, [player, video, videoId])
+  }, [player, video, videoId, source, startAt, endAt])
 
   return (
     <Box
@@ -275,25 +270,17 @@ export function Video({
             }}
           />
           {player != null && (
-            <VideoControls
-              player={player}
-              startAt={startAt ?? 0}
-              endAt={progressEndTime}
-              isYoutube={source === VideoBlockSource.youTube}
-              loading={loading}
-            />
+            <ThemeProvider theme={{ ...theme, direction: 'ltr' }}>
+              <VideoControls
+                player={player}
+                startAt={startAt ?? 0}
+                endAt={progressEndTime}
+                isYoutube={source === VideoBlockSource.youTube}
+                loading={loading}
+              />
+            </ThemeProvider>
           )}
-          {/* Trigger action on video midway */}
-          {children?.map(
-            (option) =>
-              option.__typename === 'VideoTriggerBlock' && (
-                <VideoTrigger
-                  key={`video-trigger-${option.id}`}
-                  player={player}
-                  {...option}
-                />
-              )
-          )}
+          {/* TODO: Add back VideoTriggers when we have a way to add them in admin */}
           {/* Default navigate to next card on video end */}
           {action != null && endAt != null && endAt > 0 && (
             <VideoTrigger

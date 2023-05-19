@@ -52,15 +52,12 @@ export function ExpandedCover({
       <Stack
         data-testid="ExpandedCover"
         sx={{
-          // position: 'absolute',
-          // width: '100%',
           height: '100%',
-          // overflow: 'hidden',
           WebkitBackdropFilter: 'blur(20px)',
           backdropFilter: 'blur(20px)',
           background:
             backgroundBlur != null
-              ? `linear-gradient(360deg, ${backgroundBlur}cc 0%, ${backgroundBlur}38 57%, ${backgroundBlur}00 90%)`
+              ? `linear-gradient(to top, ${backgroundBlur}cc 0%, ${backgroundBlur}38 57%, ${backgroundBlur}00 90%)`
               : 'unset'
         }}
       >

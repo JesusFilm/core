@@ -53,14 +53,33 @@ export function VideoControls({
 
   useEffect(() => {
     setVolume(player.volume() * 100)
+    player.on('ready', () => {
+      player.currentTime(startAt)
+    })
     player.on('play', () => {
       setPlaying(true)
+
+      if (startAt > 0 && player.currentTime() < startAt) {
+        player.currentTime(startAt)
+        setProgress(startAt)
+      }
     })
     player.on('pause', () => {
       setPlaying(false)
+
+      // 2) Loop video if at end
+      if (endAt > 0 && player.currentTime() > endAt) {
+        player.currentTime(startAt)
+        setProgress(startAt)
+        void player.play()
+      }
     })
     // Recalculate for startAt/endAt snippet
     player.on('timeupdate', () => {
+      if (endAt > 0 && player.currentTime() > endAt) {
+        // 1) Trigger pause, we get an error if trying to update time here
+        player.pause()
+      }
       setDisplayTime(
         secondsToTimeFormat(player.currentTime() - startAt, {
           trimZeroes: true
@@ -79,7 +98,7 @@ export function VideoControls({
     fscreen.addEventListener('fullscreenchange', () => {
       setFullscreen(fscreen.fullscreenElement != null)
     })
-  }, [player, setFullscreen, startAt])
+  }, [player, setFullscreen, startAt, endAt])
 
   function handlePlay(): void {
     if (!playing) {
@@ -119,6 +138,7 @@ export function VideoControls({
 
   function handleVolume(_event: Event, value: number | number[]): void {
     if (!Array.isArray(value)) {
+      player.muted(false)
       setVolume(value)
       player.volume(value / 100)
     }
@@ -147,6 +167,7 @@ export function VideoControls({
   return (
     <Box
       id="video-controls"
+      dir="ltr"
       sx={{
         position: 'absolute',
         zIndex: 4,
@@ -238,9 +259,9 @@ export function VideoControls({
                 mx: 2.5,
                 display: { xs: 'flex', lg: 'none' },
                 '& .MuiSlider-thumb': {
-                  // display: 'none'
                   width: 10,
-                  height: 10
+                  height: 10,
+                  mr: -3
                 },
                 '& .MuiSlider-rail': {
                   backgroundColor: 'secondary.main'
@@ -285,7 +306,8 @@ export function VideoControls({
                   display: { xs: 'none', lg: 'flex' },
                   '& .MuiSlider-thumb': {
                     width: 13,
-                    height: 13
+                    height: 13,
+                    mr: -3
                   },
                   '& .MuiSlider-rail': {
                     backgroundColor: 'secondary.main'
@@ -295,23 +317,23 @@ export function VideoControls({
                   }
                 }}
               />
+              {player != null && (
+                <Typography
+                  variant="caption"
+                  color="secondary.main"
+                  noWrap
+                  overflow="unset"
+                  sx={{ p: 2 }}
+                >
+                  {displayTime} / {duration}
+                </Typography>
+              )}
               <Stack
                 direction="row"
                 alignItems="center"
-                justifyContent="space-between"
-                sx={{ width: { xs: '100%', lg: 'unset' }, pl: 2.5, pr: 1.5 }}
+                justifyContent="flex-end"
+                sx={{ width: { xs: '100%', lg: 'unset' }, p: 1.5 }}
               >
-                {player != null && (
-                  <Typography
-                    variant="caption"
-                    color="secondary.main"
-                    noWrap
-                    overflow="unset"
-                    paddingRight={4}
-                  >
-                    {displayTime} / {duration}
-                  </Typography>
-                )}
                 <Stack
                   alignItems="center"
                   spacing={2}
@@ -326,13 +348,13 @@ export function VideoControls({
                     '&:hover': {
                       '> .MuiSlider-root': {
                         width: 70,
-                        mr: 4,
+                        mx: 3,
                         opacity: 1
                       }
                     }
                   }}
                 >
-                  <IconButton onClick={handleMute}>
+                  <IconButton onClick={handleMute} sx={{ p: 0 }}>
                     {player.muted() || volume === 0 ? (
                       <VolumeOffOutlined />
                     ) : volume > 60 ? (
@@ -349,14 +371,15 @@ export function VideoControls({
                     max={100}
                     value={player.muted() ? 0 : volume}
                     valueLabelFormat={(value) => {
-                      return `${value}%`
+                      return `${Math.round(value)}%`
                     }}
                     valueLabelDisplay="auto"
                     onChange={handleVolume}
                     sx={{
                       '& .MuiSlider-thumb': {
                         width: 10,
-                        height: 10
+                        height: 10,
+                        mr: -3
                       },
                       '& .MuiSlider-rail': {
                         backgroundColor: 'secondary.main'
@@ -364,7 +387,7 @@ export function VideoControls({
                     }}
                   />
                 </Stack>
-                <IconButton onClick={handleFullscreen} sx={{ p: 0 }}>
+                <IconButton onClick={handleFullscreen} sx={{ py: 0, px: 2 }}>
                   {fullscreen ? (
                     <FullscreenExitRounded />
                   ) : (

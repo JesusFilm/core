@@ -66,7 +66,7 @@ export default function StepFooter({ block }: StepFooterProps): ReactElement {
           position: { xs: 'absolute', lg: 'relative' },
           zIndex: 1,
           bottom: 0,
-          flexDirection: { xs: 'column', lg: 'row-reverse' },
+          flexDirection: { xs: 'column', lg: 'row' },
           justifyContent: 'space-between',
           alignItems: { xs: 'flex-start', lg: 'center' }
         }}

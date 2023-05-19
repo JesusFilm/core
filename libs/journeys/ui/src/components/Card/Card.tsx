@@ -76,6 +76,8 @@ export function Card({
       backgroundColor={backgroundColor}
       themeMode={themeMode}
       themeName={themeName}
+      rtl={rtl}
+      locale={locale}
       title={journey?.seoTitle ?? journey?.title ?? ''}
     >
       <Box
@@ -91,6 +93,7 @@ export function Card({
       />
       {coverBlock != null && !fullscreen ? (
         <ContainedCover
+          cardId={id}
           backgroundBlur={cardColor}
           videoBlock={videoBlock}
           imageBlock={imageBlock}
@@ -119,6 +122,8 @@ interface CardWrapperProps
   > {
   children: ReactNode
   title: string
+  rtl?: boolean
+  locale?: string
   sx?: SxProps
 }
 
@@ -129,6 +134,8 @@ export function CardWrapper({
   themeName,
   children,
   title,
+  rtl = false,
+  locale,
   sx
 }: CardWrapperProps): ReactElement {
   const { admin } = useJourney()
@@ -160,7 +167,13 @@ export function CardWrapper({
 
   if (themeMode != null && themeName != null) {
     return (
-      <ThemeProvider themeMode={themeMode} themeName={themeName} nested>
+      <ThemeProvider
+        themeMode={themeMode}
+        themeName={themeName}
+        rtl={rtl}
+        locale={locale}
+        nested
+      >
         {Card}
       </ThemeProvider>
     )
