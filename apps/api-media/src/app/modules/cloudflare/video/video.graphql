@@ -3,6 +3,7 @@ type CloudflareVideo {
   uploadUrl: String
   userId: ID!
   createdAt: String!
+  readyToStream: Boolean!
 }
 
 extend type Query {
@@ -16,4 +17,5 @@ extend type Mutation {
   ): CloudflareVideo
   createCloudflareVideoUploadByUrl(url: String!): CloudflareVideo
   deleteCloudflareVideo(id: ID!): Boolean
+  cloudflareVideoCheckReadyToStream(id: ID!): CloudflareVideo
 }

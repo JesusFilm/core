@@ -304,6 +304,7 @@ type CloudflareVideo
   uploadUrl: String
   userId: ID!
   createdAt: String!
+  readyToStream: Boolean!
 }
 
 type Country
@@ -892,6 +893,7 @@ type Mutation
   createCloudflareVideoUploadByFile(uploadLength: Int!, name: String!): CloudflareVideo @join__field(graph: MEDIA)
   createCloudflareVideoUploadByUrl(url: String!): CloudflareVideo @join__field(graph: MEDIA)
   deleteCloudflareVideo(id: ID!): Boolean @join__field(graph: MEDIA)
+  cloudflareVideoCheckReadyToStream(id: ID!): CloudflareVideo @join__field(graph: MEDIA)
   triggerUnsplashDownload(url: String!): Boolean @join__field(graph: MEDIA)
 }
 
