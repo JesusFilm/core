@@ -120,7 +120,9 @@ export function TimelineEvent({ timelineItem }: Props): ReactElement {
       break
     case 'VideoProgressEvent':
       icon = <PlayCircleOutlineRoundedIcon />
-      activity = `${t('Video Progress')} ${event.progress}%`
+      activity = `${t('Video Progress')} ${
+        event.progress as unknown as string
+      }%`
       value = event.label
       break
     case 'VideoExpandEvent':
