@@ -24,7 +24,7 @@ import { messagePlatformToLabel } from '../VisitorJourneysList/utils'
 import { ChatButton } from './ChatButton'
 
 export const GET_VISITOR_FOR_FORM = gql`
-  query GetVisitor($id: ID!) {
+  query GetVisitorForForm($id: ID!) {
     visitor(id: $id) {
       countryCode
       id
