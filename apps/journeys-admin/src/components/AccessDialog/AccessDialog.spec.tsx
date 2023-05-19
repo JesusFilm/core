@@ -128,9 +128,7 @@ describe('AccessDialog', () => {
         getByRole('heading', { name: 'Requested Access' })
       ).toBeInTheDocument()
     })
-    expect(
-      getByRole('heading', { name: 'Invite Editor by' })
-    ).toBeInTheDocument()
+    expect(getByRole('heading', { name: 'Add editor by' })).toBeInTheDocument()
   })
 
   it('calls on close', () => {
