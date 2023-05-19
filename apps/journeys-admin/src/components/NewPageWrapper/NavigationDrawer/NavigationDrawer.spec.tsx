@@ -1,12 +1,12 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
-import { NextRouter, useRouter } from 'next/router'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { AuthUser } from 'next-firebase-auth'
 import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
+import { NextRouter } from 'next/router'
 import { Role } from '../../../../__generated__/globalTypes'
 import { GET_USER_ROLE } from '../../JourneyView/JourneyView'
-import { GET_ME } from '../../NewPageWrapper/NavigationDrawer'
+import { GET_ME } from './NavigationDrawer'
 import { NavigationDrawer } from '.'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
@@ -23,17 +23,18 @@ jest.mock('react-i18next', () => ({
   }
 }))
 
-jest.mock('next/router', () => ({
-  __esModule: true,
-  useRouter: jest.fn()
-}))
-const mockUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
-
 describe('NavigationDrawer', () => {
   beforeEach(() => (useMediaQuery as jest.Mock).mockImplementation(() => true))
 
   const onClose = jest.fn()
   const signOut = jest.fn()
+
+  function getRouter(path: string): NextRouter {
+    /* eslint-disable-next-line @typescript-eslint/consistent-type-assertions */
+    return {
+      pathname: path
+    } as unknown as NextRouter
+  }
 
   it('should render the default menu items', () => {
     const { getByText, getAllByRole, getByTestId } = render(
@@ -106,14 +107,14 @@ describe('NavigationDrawer', () => {
   })
 
   it('should select templates button', () => {
-    mockUseRouter.mockReturnValue({
-      pathname: '/templates'
-    } as unknown as NextRouter)
-
     const { getByTestId } = render(
       <MockedProvider>
         <FlagsProvider flags={{ templates: true }}>
-          <NavigationDrawer open onClose={onClose} />
+          <NavigationDrawer
+            open
+            onClose={onClose}
+            router={getRouter('/templates')}
+          />
         </FlagsProvider>
       </MockedProvider>
     )
@@ -124,14 +125,14 @@ describe('NavigationDrawer', () => {
   })
 
   it('should select the reports button', () => {
-    mockUseRouter.mockReturnValue({
-      pathname: '/reports'
-    } as unknown as NextRouter)
-
     const { getByTestId } = render(
       <MockedProvider>
         <FlagsProvider>
-          <NavigationDrawer open onClose={onClose} />
+          <NavigationDrawer
+            open
+            onClose={onClose}
+            router={getRouter('/reports')}
+          />
         </FlagsProvider>
       </MockedProvider>
     )
@@ -142,10 +143,6 @@ describe('NavigationDrawer', () => {
   })
 
   it('should select publisher button', async () => {
-    mockUseRouter.mockReturnValue({
-      pathname: '/publisher/[journeyId]'
-    } as unknown as NextRouter)
-
     const { getByTestId } = render(
       <MockedProvider
         mocks={[
@@ -192,6 +189,7 @@ describe('NavigationDrawer', () => {
                 signOut
               } as unknown as AuthUser
             }
+            router={getRouter('/publisher/[journeyId]')}
           />
         </FlagsProvider>
       </MockedProvider>
@@ -283,14 +281,10 @@ describe('NavigationDrawer', () => {
   })
 
   it('should select the journeys drawer', () => {
-    mockUseRouter.mockReturnValue({
-      pathname: '/'
-    } as unknown as NextRouter)
-
     const { getByTestId } = render(
       <MockedProvider>
         <FlagsProvider>
-          <NavigationDrawer open onClose={onClose} />
+          <NavigationDrawer open onClose={onClose} router={getRouter('/')} />
         </FlagsProvider>
       </MockedProvider>
     )

@@ -17,12 +17,12 @@ export function AppHeader({ onClick }: MainBodyContainerProps): ReactElement {
   const { toolbar } = usePageWrapperStyles()
 
   return (
-    <Box id="app-header" sx={{ display: { sm: 'none' } }}>
+    <Box id="app-header" sx={{ display: { md: 'none' } }}>
       <AppBar
         role="banner"
         position="fixed"
         sx={{
-          display: { xs: 'flex', sm: 'none' },
+          display: { xs: 'flex', md: 'none' },
           backgroundColor: 'secondary.dark'
         }}
       >
