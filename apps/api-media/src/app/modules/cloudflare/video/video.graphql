@@ -8,6 +8,7 @@ type CloudflareVideo {
 
 extend type Query {
   getMyCloudflareVideos: [CloudflareVideo]
+  getMyCloudflareVideo(id: ID!): CloudflareVideo
 }
 
 extend type Mutation {

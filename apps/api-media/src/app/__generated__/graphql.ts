@@ -53,6 +53,8 @@ export abstract class IQuery {
 
     abstract getMyCloudflareVideos(): Nullable<Nullable<CloudflareVideo>[]> | Promise<Nullable<Nullable<CloudflareVideo>[]>>;
 
+    abstract getMyCloudflareVideo(id: string): Nullable<CloudflareVideo> | Promise<Nullable<CloudflareVideo>>;
+
     abstract listUnsplashCollectionPhotos(collectionId: string, page?: Nullable<number>, perPage?: Nullable<number>, orientation?: Nullable<UnsplashPhotoOrientation>): UnsplashPhoto[] | Promise<UnsplashPhoto[]>;
 
     abstract searchUnsplashPhotos(query: string, page?: Nullable<number>, perPage?: Nullable<number>, orderBy?: Nullable<UnsplashOrderBy>, collections?: Nullable<Nullable<string>[]>, contentFilter?: Nullable<UnsplashContentFilter>, color?: Nullable<UnsplashColor>, orientation?: Nullable<UnsplashPhotoOrientation>): UnsplashQueryResponse | Promise<UnsplashQueryResponse>;
