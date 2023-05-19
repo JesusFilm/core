@@ -25,6 +25,7 @@ type Query {
 extend type Query {
   getMyCloudflareImages: [CloudflareImage]
   getMyCloudflareVideos: [CloudflareVideo]
+  getMyCloudflareVideo(id: ID!): CloudflareVideo
   listUnsplashCollectionPhotos(collectionId: String!, page: Int, perPage: Int, orientation: UnsplashPhotoOrientation): [UnsplashPhoto!]!
   searchUnsplashPhotos(query: String!, page: Int, perPage: Int, orderBy: UnsplashOrderBy, collections: [String], contentFilter: UnsplashContentFilter, color: UnsplashColor, orientation: UnsplashPhotoOrientation): UnsplashQueryResponse!
 }
@@ -37,7 +38,6 @@ extend type Mutation {
   createCloudflareVideoUploadByFile(uploadLength: Int!, name: String!): CloudflareVideo
   createCloudflareVideoUploadByUrl(url: String!): CloudflareVideo
   deleteCloudflareVideo(id: ID!): Boolean
-  cloudflareVideoCheckReadyToStream(id: ID!): CloudflareVideo
   triggerUnsplashDownload(url: String!): Boolean
 }
 
