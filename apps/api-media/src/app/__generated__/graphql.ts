@@ -64,6 +64,7 @@ export class CloudflareVideo {
     uploadUrl?: Nullable<string>;
     userId: string;
     createdAt: string;
+    readyToStream: boolean;
 }
 
 export class UnsplashQueryResponse {
@@ -170,6 +171,8 @@ export abstract class IMutation {
     abstract createCloudflareVideoUploadByUrl(url: string): Nullable<CloudflareVideo> | Promise<Nullable<CloudflareVideo>>;
 
     abstract deleteCloudflareVideo(id: string): Nullable<boolean> | Promise<Nullable<boolean>>;
+
+    abstract cloudflareVideoCheckReadyToStream(id: string): Nullable<CloudflareVideo> | Promise<Nullable<CloudflareVideo>>;
 
     abstract triggerUnsplashDownload(url: string): Nullable<boolean> | Promise<Nullable<boolean>>;
 }
