@@ -7,7 +7,6 @@ import AppBar from '@mui/material/AppBar'
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
 import Close from '@mui/icons-material/Close'
-import BrushRoundedIcon from '@mui/icons-material/BrushRounded'
 import IconButton from '@mui/material/IconButton'
 import Toolbar from '@mui/material/Toolbar'
 import { TabPanel, tabA11yProps } from '@core/shared/ui/TabPanel'
@@ -15,6 +14,7 @@ import Tab from '@mui/material/Tab'
 import Tabs from '@mui/material/Tabs'
 import VideocamIcon from '@mui/icons-material/Videocam'
 import YouTubeIcon from '@mui/icons-material/YouTube'
+import UploadIcon from '@mui/icons-material/Upload'
 import { VideoBlockUpdateInput } from '../../../../__generated__/globalTypes'
 import { GetJourney_journey_blocks_VideoBlock as VideoBlock } from '../../../../__generated__/GetJourney'
 import { VideoFromYouTube } from './VideoFromYouTube'
@@ -132,8 +132,8 @@ export function VideoLibrary({
               sx={{ flexGrow: 1 }}
             />
             <Tab
-              icon={<BrushRoundedIcon />}
-              label="Custom"
+              icon={<UploadIcon />}
+              label="Upload"
               {...tabA11yProps('video-from-cloudflare', 2)}
               sx={{ flexGrow: 1 }}
             />
