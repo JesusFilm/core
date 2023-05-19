@@ -16,9 +16,9 @@ import ShopRoundedIcon from '@mui/icons-material/ShopRounded'
 import ShopTwoRoundedIcon from '@mui/icons-material/ShopTwoRounded'
 import Backdrop from '@mui/material/Backdrop'
 import Image from 'next/image'
-import { useRouter } from 'next/router'
+import { NextRouter } from 'next/router'
 import { compact } from 'lodash'
-import { useQuery } from '@apollo/client'
+import { gql, useQuery } from '@apollo/client'
 import { useFlags } from '@core/shared/ui/FlagsProvider'
 import ViewCarouselRoundedIcon from '@mui/icons-material/ViewCarouselRounded'
 import LeaderboardRoundedIcon from '@mui/icons-material/LeaderboardRounded'
@@ -31,7 +31,6 @@ import { GetUserRole } from '../../../../__generated__/GetUserRole'
 import { GET_USER_ROLE } from '../../JourneyView/JourneyView'
 import { useActiveJourneys } from '../../../libs/useActiveJourneys'
 import { getJourneyTooltip } from '../utils/getJourneyTooltip'
-import { GET_ME } from '../../NewPageWrapper/NavigationDrawer'
 import { UserMenu } from './UserMenu'
 import { NavigationListItem } from './NavigationListItem'
 
@@ -41,7 +40,20 @@ export interface NavigationDrawerProps {
   open: boolean
   onClose: (value: boolean) => void
   authUser?: AuthUser
+  router?: NextRouter
 }
+
+export const GET_ME = gql`
+  query GetMe {
+    me {
+      id
+      firstName
+      lastName
+      email
+      imageUrl
+    }
+  }
+`
 
 const StyledNavigationDrawer = styled(Drawer)(({ theme, open }) => ({
   width: '72px',
@@ -88,13 +100,13 @@ export const StyledList = styled(List)({
 export function NavigationDrawer({
   open,
   onClose,
-  authUser
+  authUser,
+  router
 }: NavigationDrawerProps): ReactElement {
   const activeJourneys = useActiveJourneys()
   const journeys = activeJourneys?.data?.journeys
   const { t } = useTranslation('apps-journeys-admin')
-  const router = useRouter()
-  const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
+  const mdUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('md'))
   const [profileAnchorEl, setProfileAnchorEl] = useState(null)
 
   const selectedPage = router?.pathname?.split('/')[1]
@@ -123,10 +135,10 @@ export function NavigationDrawer({
     <StyledNavigationDrawer
       open={open}
       onClose={handleClose}
-      variant={smUp ? 'permanent' : 'temporary'}
+      variant={mdUp ? 'permanent' : 'temporary'}
       anchor="left"
     >
-      {open && smUp && <Backdrop open={open} onClick={handleClose} />}
+      {open && mdUp && <Backdrop open={open} onClick={handleClose} />}
       <StyledList>
         <ListItemButton onClick={handleClose} data-testid="toggle-nav-drawer">
           <ListItemIcon
@@ -145,7 +157,7 @@ export function NavigationDrawer({
         <NavigationListItem
           icon={<ViewCarouselRoundedIcon />}
           label="Discover"
-          selected={selectedPage === 'journeys' || selectedPage === ''} // empty string for when page is index. UPDATE when we add the actual index page
+          selected={selectedPage === 'journeys' || selectedPage === ''} // empty for when page is index. UPDATE when we add the actual index page
           link="/"
           tooltipText={journeyTooltip}
         />

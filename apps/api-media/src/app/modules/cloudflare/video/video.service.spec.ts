@@ -7,7 +7,11 @@ import { DocumentCollection, EdgeCollection } from 'arangojs/collection'
 import fetch, { Response } from 'node-fetch'
 
 import { CloudflareVideo } from '../../../__generated__/graphql'
-import { CloudflareVideoUrlUploadResponse, VideoService } from './video.service'
+import {
+  CloudflareVideoGetResponse,
+  CloudflareVideoUrlUploadResponse,
+  VideoService
+} from './video.service'
 
 jest.mock('node-fetch', () => {
   const originalModule = jest.requireActual('node-fetch')
@@ -136,6 +140,66 @@ describe('VideoService', () => {
       )
     })
   })
+  describe('getVideoFromCloudflare', () => {
+    it('returns true when successful', async () => {
+      const result: CloudflareVideoGetResponse['result'] = {
+        readyToStream: true
+      }
+      const request = mockFetch.mockResolvedValueOnce({
+        json: async () => {
+          const response: CloudflareVideoGetResponse = {
+            result,
+            success: true,
+            errors: [],
+            messages: []
+          }
+          return await Promise.resolve(response)
+        }
+      } as unknown as Response)
+      expect((await service.getVideoFromCloudflare('videoId')).result).toEqual(
+        result
+      )
+      expect(request).toHaveBeenCalledWith(
+        `https://api.cloudflare.com/client/v4/accounts/${
+          process.env.CLOUDFLARE_ACCOUNT_ID ?? ''
+        }/stream/videoId`,
+        {
+          headers: {
+            Authorization: `Bearer ${process.env.CLOUDFLARE_STREAM_TOKEN ?? ''}`
+          },
+          method: 'GET'
+        }
+      )
+    })
+
+    it('returns false when unsuccessful', async () => {
+      const request = mockFetch.mockResolvedValueOnce({
+        json: async () => {
+          const response: CloudflareVideoGetResponse = {
+            result: null,
+            success: false,
+            errors: [],
+            messages: []
+          }
+          return await Promise.resolve(response)
+        }
+      } as unknown as Response)
+      expect((await service.getVideoFromCloudflare('videoId')).success).toEqual(
+        false
+      )
+      expect(request).toHaveBeenCalledWith(
+        `https://api.cloudflare.com/client/v4/accounts/${
+          process.env.CLOUDFLARE_ACCOUNT_ID ?? ''
+        }/stream/videoId`,
+        {
+          headers: {
+            Authorization: `Bearer ${process.env.CLOUDFLARE_STREAM_TOKEN ?? ''}`
+          },
+          method: 'GET'
+        }
+      )
+    })
+  })
   describe('uploadToCloudflareByUrl', () => {
     it('returns cloudflare response information', async () => {
       const response: CloudflareVideoUrlUploadResponse = {
@@ -181,13 +245,15 @@ describe('VideoService', () => {
       id: 'video1Id',
       uploadUrl: 'https://example.com/video1.mp4',
       userId: 'userId',
-      createdAt: new Date().toISOString()
+      createdAt: new Date().toISOString(),
+      readyToStream: true
     }
     const video2: CloudflareVideo = {
       id: 'video2Id',
       uploadUrl: 'https://example.com/video2.mp4',
       userId: 'userId',
-      createdAt: new Date().toISOString()
+      createdAt: new Date().toISOString(),
+      readyToStream: true
     }
     beforeEach(() => {
       db.query.mockReturnValue(mockDbQueryResult(service.db, [video1, video2]))
