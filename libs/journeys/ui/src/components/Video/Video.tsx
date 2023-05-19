@@ -282,10 +282,10 @@ export function Video({
           )}
           {/* TODO: Add back VideoTriggers when we have a way to add them in admin */}
           {/* Default navigate to next card on video end */}
-          {action != null && endAt != null && endAt > 0 && (
+          {action != null && (
             <VideoTrigger
               player={player}
-              triggerStart={endAt}
+              triggerStart={progressEndTime}
               triggerAction={action}
             />
           )}
