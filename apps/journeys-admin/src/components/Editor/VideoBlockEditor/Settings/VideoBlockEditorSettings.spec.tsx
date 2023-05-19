@@ -1,6 +1,7 @@
-import { fireEvent, render, waitFor } from '@testing-library/react'
+import { fireEvent, getByText, render, waitFor } from '@testing-library/react'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { MockedProvider } from '@apollo/client/testing'
+import { SnackbarProvider } from 'notistack'
 import {
   VideoBlockSource,
   VideoBlockObjectFit as ObjectFit
@@ -234,5 +235,32 @@ describe('VideoBlockEditorSettings', () => {
       'true'
     )
     expect(getByRole('button', { name: 'Crop' })).toBeDisabled()
+  })
+
+  it('should now allow startAt to be greater than endAt', async () => {
+    const onChange = jest.fn()
+    const { getByRole, getByText } = render(
+      <ThemeProvider>
+        <MockedProvider>
+          <SnackbarProvider>
+            <VideoBlockEditorSettings
+              selectedBlock={video}
+              posterBlock={null}
+              onChange={onChange}
+            />
+          </SnackbarProvider>
+        </MockedProvider>
+      </ThemeProvider>
+    )
+    fireEvent.change(getByRole('textbox', { name: 'Starts At' }), {
+      target: { value: '00:00:11' }
+    })
+    fireEvent.blur(getByRole('textbox', { name: 'Starts At' }))
+    fireEvent.change(getByRole('textbox', { name: 'Ends At' }), {
+      target: { value: '00:00:10' }
+    })
+    fireEvent.blur(getByRole('textbox', { name: 'Ends At' }))
+    await waitFor(() => expect(onChange).not.toHaveBeenCalled())
+    expect(getByText('Start time cannot exceed end time')).toBeInTheDocument()
   })
 })
