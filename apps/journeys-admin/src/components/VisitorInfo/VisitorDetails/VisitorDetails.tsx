@@ -43,7 +43,7 @@ export function VisitorDetails({ id }: Props): ReactElement {
         <Stack
           direction="row"
           alignItems="center"
-          spacing={1}
+          spacing={2}
           sx={{ mr: 'auto' }}
         >
           <ChatBubbleOutlineRoundedIcon />
@@ -60,14 +60,14 @@ export function VisitorDetails({ id }: Props): ReactElement {
       )}
 
       {data?.visitor.countryCode != null && (
-        <Stack direction="row" alignItems="center" spacing={1}>
+        <Stack direction="row" alignItems="center" spacing={2}>
           <LocationOnOutlinedIcon />
           <Typography>{data?.visitor.countryCode}</Typography>
         </Stack>
       )}
 
       {data?.visitor.userAgent?.os.name != null && (
-        <Stack direction="row" alignItems="center" spacing={1}>
+        <Stack direction="row" alignItems="center" spacing={2}>
           <PhoneIphoneOutlinedIcon />
           <Typography>{data?.visitor.userAgent?.os.name}</Typography>
         </Stack>
@@ -77,7 +77,7 @@ export function VisitorDetails({ id }: Props): ReactElement {
         <Stack
           direction="row"
           alignItems="center"
-          spacing={1}
+          spacing={2}
           sx={{ display: { xs: 'none', md: 'flex' } }}
         >
           <PersonOutlinedIcon />
