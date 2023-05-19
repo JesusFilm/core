@@ -197,7 +197,7 @@ export function VideoControls({
             <IconButton
               aria-label="mute"
               sx={{
-                mr: 4,
+                mx: 4,
                 mt: 1,
                 backgroundColor: '#ffffff29',
                 ':hover': {

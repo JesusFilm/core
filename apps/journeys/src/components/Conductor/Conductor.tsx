@@ -190,9 +190,8 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
         pagination={{ dynamicBullets: true }}
         effect="fade"
         fadeEffect={{ crossFade: true }}
-        preventInteractionOnTransition
+        // preventInteractionOnTransition
         dir={!rtl ? 'ltr' : 'rtl'}
-        speed={0}
         onSwiper={(swiper) => setSwiper(swiper)}
         sx={{ width: '100%', height: 'inherit' }}
         onSetTranslate={(swiper) => {
@@ -226,7 +225,7 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
           }
         }}
         // Hide Navigation after swiping
-        onTouchMove={() => {
+        onSlideChange={() => {
           setVisibleNav(true)
           setTimeout(() => {
             setVisibleNav(false)
@@ -258,14 +257,24 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
       >
         {blocks.map((block) => (
           <StyledSwiperSlide key={block.id} onClick={() => setVisibleNav(true)}>
-            <Stack
-              justifyContent="center"
-              sx={{ width: '100%', height: '100%' }}
+            <Fade
+              in={
+                swiper?.activeIndex != null && block.parentOrder != null
+                  ? Math.abs(block.parentOrder - swiper.activeIndex) < 6
+                  : true
+              }
+              mountOnEnter
+              unmountOnExit
             >
-              <StepHeader block={block} />
-              <BlockRenderer block={block} />
-              <StepFooter block={block} />
-            </Stack>
+              <Stack
+                justifyContent="center"
+                sx={{ width: '100%', height: '100%' }}
+              >
+                <StepHeader block={block} />
+                <BlockRenderer block={block} />
+                <StepFooter block={block} />
+              </Stack>
+            </Fade>
           </StyledSwiperSlide>
         ))}
         {blockHistory.length > 1 &&
