@@ -23,7 +23,7 @@ const Template: Story<ComponentProps<typeof AddByFile>> = ({ ...args }) => (
 
 export const Default = Template.bind({})
 Default.args = {
-  onChange: () => {}
+  onChange: noop
 }
 
 export default AddByFileStory as Meta
