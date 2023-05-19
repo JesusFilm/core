@@ -14,6 +14,7 @@ import { useFormik } from 'formik'
 import TimeField from 'react-simple-timefield'
 import PlayCircle from '@mui/icons-material/PlayCircle'
 import StopCircle from '@mui/icons-material/StopCircle'
+import { useSnackbar } from 'notistack'
 import {
   secondsToTimeFormat,
   timeFormatToSeconds
@@ -41,7 +42,8 @@ export function VideoBlockEditorSettings({
   posterBlock,
   onChange
 }: VideoBlockEditorSettingsProps): ReactElement {
-  const { values, handleChange, setFieldValue } = useFormik({
+  const { enqueueSnackbar } = useSnackbar()
+  const { values, errors, handleChange, setFieldValue } = useFormik({
     initialValues: {
       autoplay: selectedBlock?.autoplay ?? true,
       muted: selectedBlock?.muted ?? true,
@@ -51,11 +53,28 @@ export function VideoBlockEditorSettings({
     },
     enableReinitialize: true,
     validate: async (values) => {
-      await onChange({
-        ...values,
-        startAt: timeFormatToSeconds(values.startAt),
-        endAt: timeFormatToSeconds(values.endAt)
-      })
+      const convertedStartAt = timeFormatToSeconds(values.startAt)
+      const convertedEndAt = timeFormatToSeconds(values.endAt)
+      console.log('CStartAt', convertedStartAt)
+      console.log('CEndAt', convertedEndAt)
+      if (convertedStartAt > convertedEndAt) {
+        console.log('HERE')
+        errors.startAt = 'Start time cannot exceed end time'
+        enqueueSnackbar(errors.startAt, {
+          variant: 'error',
+          preventDuplicate: true
+        })
+      } else {
+        await onChange({
+          ...values,
+          startAt: convertedStartAt,
+          endAt: convertedEndAt
+        })
+      }
+      console.log('values', values)
+      console.log('errors', errors)
+
+      return errors
     },
     onSubmit: noop
   })
@@ -98,6 +117,7 @@ export function VideoBlockEditorSettings({
                 />
               }
             />
+            {console.log('116 error', errors)}
             <TimeField
               showSeconds
               value={values.endAt}
