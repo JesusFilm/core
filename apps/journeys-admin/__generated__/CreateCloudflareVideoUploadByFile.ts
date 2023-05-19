@@ -19,4 +19,5 @@ export interface CreateCloudflareVideoUploadByFile {
 
 export interface CreateCloudflareVideoUploadByFileVariables {
   uploadLength: number;
+  name: string;
 }
