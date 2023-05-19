@@ -473,6 +473,7 @@ describe('VideoBlockResolver', () => {
           videoId: 'ea95132c15732412d22c1476fa83f27a',
           source: VideoBlockSource.cloudflare,
           duration: 100,
+          endAt: 100,
           image:
             'https://cloudflarestream.com/ea95132c15732412d22c1476fa83f27a/thumbnails/thumbnail.jpg?time=2s',
           title: 'video.mp4',
@@ -522,6 +523,7 @@ describe('VideoBlockResolver', () => {
           videoId: 'ea95132c15732412d22c1476fa83f27a',
           source: VideoBlockSource.cloudflare,
           duration: 100,
+          endAt: 100,
           image:
             'https://cloudflarestream.com/ea95132c15732412d22c1476fa83f27a/thumbnails/thumbnail.jpg?time=2s',
           title: 'ea95132c15732412d22c1476fa83f27a',
