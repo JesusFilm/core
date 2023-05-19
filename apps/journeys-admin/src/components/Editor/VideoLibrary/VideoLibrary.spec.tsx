@@ -1,6 +1,7 @@
 import { render, fireEvent, waitFor } from '@testing-library/react'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { MockedProvider } from '@apollo/client/testing'
+import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 import {
   VideoBlockSource,
   VideoLabel
@@ -22,7 +23,9 @@ describe('VideoLibrary', () => {
     it('should render the Video Library on the right', () => {
       const { getByText, getByTestId } = render(
         <MockedProvider>
-          <VideoLibrary open />
+          <FlagsProvider>
+            <VideoLibrary open />
+          </FlagsProvider>
         </MockedProvider>
       )
       expect(getByText('Video Library')).toBeInTheDocument()
@@ -35,7 +38,9 @@ describe('VideoLibrary', () => {
       const onClose = jest.fn()
       const { getAllByRole, getByTestId } = render(
         <MockedProvider>
-          <VideoLibrary open onClose={onClose} />
+          <FlagsProvider>
+            <VideoLibrary open onClose={onClose} />
+          </FlagsProvider>
         </MockedProvider>
       )
       expect(getAllByRole('button')[0]).toContainElement(
@@ -54,7 +59,9 @@ describe('VideoLibrary', () => {
     it('should render the VideoLibrary from the bottom', () => {
       const { getByText, getByTestId } = render(
         <MockedProvider>
-          <VideoLibrary open />
+          <FlagsProvider>
+            <VideoLibrary open />
+          </FlagsProvider>
         </MockedProvider>
       )
       expect(getByText('Video Library')).toBeInTheDocument()
@@ -122,7 +129,9 @@ describe('VideoLibrary', () => {
             }
           ]}
         >
-          <VideoLibrary open />
+          <FlagsProvider>
+            <VideoLibrary open />
+          </FlagsProvider>
         </MockedProvider>
       )
       const textBox = getByRole('textbox')
@@ -138,7 +147,9 @@ describe('VideoLibrary', () => {
   it('should render the Video Library on the right', () => {
     const { getByText, getByTestId } = render(
       <MockedProvider>
-        <VideoLibrary open />
+        <FlagsProvider>
+          <VideoLibrary open />
+        </FlagsProvider>
       </MockedProvider>
     )
     expect(getByText('Video Library')).toBeInTheDocument()
@@ -202,7 +213,9 @@ describe('VideoLibrary', () => {
           }
         ]}
       >
-        <VideoLibrary open onSelect={onSelect} onClose={onClose} />
+        <FlagsProvider>
+          <VideoLibrary open onSelect={onSelect} onClose={onClose} />
+        </FlagsProvider>
       </MockedProvider>
     )
     await waitFor(() => expect(getByText("Andreas' Story")).toBeInTheDocument())
@@ -228,35 +241,37 @@ describe('VideoLibrary', () => {
 
     const { getByText } = render(
       <MockedProvider>
-        <VideoLibrary
-          open
-          selectedBlock={{
-            id: 'video1.id',
-            __typename: 'VideoBlock',
-            parentBlockId: 'card1.id',
-            description:
-              'This is episode 1 of an ongoing series that explores the origins, content, and purpose of the Bible.',
-            duration: 348,
-            endAt: 348,
-            fullsize: true,
-            image: 'https://i.ytimg.com/vi/ak06MSETeo4/default.jpg',
-            muted: false,
-            autoplay: true,
-            startAt: 0,
-            title: 'What is the Bible?',
-            videoId: 'ak06MSETeo4',
-            videoVariantLanguageId: null,
-            parentOrder: 0,
-            action: null,
-            source: VideoBlockSource.youTube,
-            video: null,
-            objectFit: null,
-            posterBlockId: 'poster1.id',
-            children: []
-          }}
-          onSelect={onSelect}
-          onClose={onClose}
-        />
+        <FlagsProvider>
+          <VideoLibrary
+            open
+            selectedBlock={{
+              id: 'video1.id',
+              __typename: 'VideoBlock',
+              parentBlockId: 'card1.id',
+              description:
+                'This is episode 1 of an ongoing series that explores the origins, content, and purpose of the Bible.',
+              duration: 348,
+              endAt: 348,
+              fullsize: true,
+              image: 'https://i.ytimg.com/vi/ak06MSETeo4/default.jpg',
+              muted: false,
+              autoplay: true,
+              startAt: 0,
+              title: 'What is the Bible?',
+              videoId: 'ak06MSETeo4',
+              videoVariantLanguageId: null,
+              parentOrder: 0,
+              action: null,
+              source: VideoBlockSource.youTube,
+              video: null,
+              objectFit: null,
+              posterBlockId: 'poster1.id',
+              children: []
+            }}
+            onSelect={onSelect}
+            onClose={onClose}
+          />
+        </FlagsProvider>
       </MockedProvider>
     )
     expect(getByText('Video Details')).toBeInTheDocument()
@@ -265,17 +280,32 @@ describe('VideoLibrary', () => {
   it('should render YouTube', () => {
     const { getByText, getByRole } = render(
       <MockedProvider>
-        <VideoLibrary open />
+        <FlagsProvider>
+          <VideoLibrary open />
+        </FlagsProvider>
       </MockedProvider>
     )
     fireEvent.click(getByRole('tab', { name: 'YouTube' }))
     expect(getByText('Paste any YouTube Link')).toBeInTheDocument()
   })
 
+  it('should hide Cloudflare', () => {
+    const { queryByRole } = render(
+      <MockedProvider>
+        <FlagsProvider flags={{ videoFromCloudflare: false }}>
+          <VideoLibrary open />
+        </FlagsProvider>
+      </MockedProvider>
+    )
+    expect(queryByRole('tab', { name: 'Upload' })).not.toBeInTheDocument()
+  })
+
   it('should render Cloudflare', () => {
     const { getByText, getByRole } = render(
       <MockedProvider>
-        <VideoLibrary open />
+        <FlagsProvider flags={{ videoFromCloudflare: true }}>
+          <VideoLibrary open />
+        </FlagsProvider>
       </MockedProvider>
     )
     fireEvent.click(getByRole('tab', { name: 'Upload' }))
