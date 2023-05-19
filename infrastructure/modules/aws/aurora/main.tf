@@ -8,7 +8,7 @@ resource "aws_rds_cluster" "default" {
   apply_immediately           = true
   cluster_identifier          = "${var.name}-${var.env}"
   engine                      = "aurora-postgresql"
-  engine_mode                 = "serverless"
+  engine_mode                 = "provisioned"
   engine_version              = "13.9"
   availability_zones          = data.aws_availability_zones.current.names.*
   db_subnet_group_name        = var.subnet_group_name
@@ -19,9 +19,18 @@ resource "aws_rds_cluster" "default" {
   preferred_backup_window     = "07:00-09:00"
   vpc_security_group_ids      = [var.vpc_security_group_id]
   allow_major_version_upgrade = true
-  scaling_configuration {
-    min_capacity = 2
+  serverlessv2_scaling_configuration {
+    max_capacity = 16
+    min_capacity = 0.5
   }
+}
+
+resource "aws_rds_cluster_instance" "default" {
+  cluster_identifier = aws_rds_cluster.default.id
+  instance_class     = "db.serverless"
+  engine             = aws_rds_cluster.default.engine
+  engine_version     = aws_rds_cluster.default.engine_version
+  promotion_tier     = 1
 }
 
 resource "aws_ssm_parameter" "parameter" {
