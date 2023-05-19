@@ -1,6 +1,9 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
-import { CREATE_CLOUDFLARE_VIDEO_UPLOAD_BY_FILE } from './AddByFile'
+import {
+  CREATE_CLOUDFLARE_VIDEO_UPLOAD_BY_FILE_MUTATION,
+  GET_MY_CLOUDFLARE_VIDEO_QUERY
+} from './AddByFile'
 import { TestHttpStack } from './TestHttpStack'
 import { AddByFile } from '.'
 
@@ -22,7 +25,7 @@ describe('AddByFile', () => {
         mocks={[
           {
             request: {
-              query: CREATE_CLOUDFLARE_VIDEO_UPLOAD_BY_FILE,
+              query: CREATE_CLOUDFLARE_VIDEO_UPLOAD_BY_FILE_MUTATION,
               variables: {
                 uploadLength: 4,
                 name: 'testFile'
@@ -55,7 +58,7 @@ describe('AddByFile', () => {
         mocks={[
           {
             request: {
-              query: CREATE_CLOUDFLARE_VIDEO_UPLOAD_BY_FILE,
+              query: CREATE_CLOUDFLARE_VIDEO_UPLOAD_BY_FILE_MUTATION,
               variables: {
                 uploadLength: 4,
                 name: 'testFile'
@@ -66,6 +69,23 @@ describe('AddByFile', () => {
                 createCloudflareVideoUploadByFile: {
                   id: 'uploadId',
                   uploadUrl: 'https://example.com/upload',
+                  __typename: 'CloudflareVideo'
+                }
+              }
+            }
+          },
+          {
+            request: {
+              query: GET_MY_CLOUDFLARE_VIDEO_QUERY,
+              variables: {
+                id: 'uploadId'
+              }
+            },
+            result: {
+              data: {
+                getMyCloudflareVideo: {
+                  id: 'uploadId',
+                  readyToStream: true,
                   __typename: 'CloudflareVideo'
                 }
               }
@@ -117,6 +137,7 @@ describe('AddByFile', () => {
         'Upload-Offset': '16315'
       }
     })
+    await waitFor(() => expect(getByText('Processing...')).toBeInTheDocument())
     await waitFor(() => expect(onChange).toHaveBeenCalledWith('uploadId'))
   })
 
@@ -128,7 +149,7 @@ describe('AddByFile', () => {
         mocks={[
           {
             request: {
-              query: CREATE_CLOUDFLARE_VIDEO_UPLOAD_BY_FILE,
+              query: CREATE_CLOUDFLARE_VIDEO_UPLOAD_BY_FILE_MUTATION,
               variables: {
                 uploadLength: 4,
                 name: 'testFile'
