@@ -65,7 +65,6 @@ export function SourceFromLocal({
         onClick={onClick}
         imageSrc={selectedBlock?.video?.image ?? ''}
         imageAlt={selectedBlock?.video?.title?.[0]?.value ?? ''}
-        thumbnailIcon={VideocamRoundedIcon}
         label={selectedBlock?.video?.title?.[0]?.value ?? ''}
         description={language}
         actionIcon={<EditRoundedIcon color="primary" />}
