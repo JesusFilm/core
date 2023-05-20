@@ -11,9 +11,6 @@ export function SourceEmpty({ onClick }: SourceEmptyProps): ReactElement {
     <ContainedIconButton
       onClick={onClick}
       thumbnailIcon={<VideocamRoundedIcon />}
-      loading={false}
-      imageSrc=""
-      imageAlt=""
       label="Select Video"
       actionIcon={<AddRoundedIcon color="primary" />}
     />
