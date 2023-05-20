@@ -20,7 +20,6 @@ export function SourceFromYouTube({
         label={selectedBlock.title ?? ''}
         imageSrc={selectedBlock.image ?? ''}
         imageAlt={selectedBlock.title ?? ''}
-        thumbnailIcon={VideocamRoundedIcon}
         description="YouTube"
         onClick={onClick}
         actionIcon={<EditRoundedIcon color="primary" />}
