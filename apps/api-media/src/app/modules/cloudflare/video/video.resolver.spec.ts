@@ -151,6 +151,46 @@ describe('VideoResolver', () => {
       )
     })
   })
+  describe('getMyCloudflareVideo', () => {
+    it('throws an error if not found', async () => {
+      service.get.mockResolvedValueOnce(undefined)
+      await expect(
+        async () => await resolver.getMyCloudflareVideo('videoId', user.id)
+      ).rejects.toThrow('Video not found')
+    })
+    it('throws an error if wrong user', async () => {
+      await expect(
+        async () => await resolver.getMyCloudflareVideo('videoId', 'user2Id')
+      ).rejects.toThrow('This video does not belong to you')
+    })
+    it('throws an error if could not be retrieved from cloudflare', async () => {
+      service.getVideoFromCloudflare.mockResolvedValueOnce({
+        result: null,
+        success: false,
+        errors: ['Video could not be retrieved from cloudflare'],
+        messages: []
+      })
+      await expect(
+        async () => await resolver.getMyCloudflareVideo('videoId', user.id)
+      ).rejects.toThrow('Video could not be retrieved from cloudflare')
+    })
+    it('updates video and returns updated video', async () => {
+      service.getVideoFromCloudflare.mockResolvedValueOnce({
+        result: {
+          readyToStream: true
+        },
+        success: true,
+        errors: [],
+        messages: []
+      })
+      expect(await resolver.getMyCloudflareVideo('videoId', user.id)).toEqual({
+        readyToStream: true
+      })
+      expect(service.update).toHaveBeenCalledWith('videoId', {
+        readyToStream: true
+      })
+    })
+  })
   describe('deleteCloudflareVideo', () => {
     it('throws an error if not found', async () => {
       service.get.mockResolvedValueOnce(undefined)
@@ -178,49 +218,6 @@ describe('VideoResolver', () => {
     it('calls service.remove', async () => {
       expect(await resolver.deleteCloudflareVideo('1', user.id)).toEqual(true)
       expect(service.remove).toHaveBeenCalledWith('1')
-    })
-  })
-  describe('cloudflareVideoCheckReadyToStream', () => {
-    it('throws an error if not found', async () => {
-      service.get.mockResolvedValueOnce(undefined)
-      await expect(
-        async () =>
-          await resolver.cloudflareVideoCheckReadyToStream('videoId', user.id)
-      ).rejects.toThrow('Video not found')
-    })
-    it('throws an error if wrong user', async () => {
-      await expect(
-        async () =>
-          await resolver.cloudflareVideoCheckReadyToStream('videoId', 'user2Id')
-      ).rejects.toThrow('This video does not belong to you')
-    })
-    it('throws an error if could not be retrieved from cloudflare', async () => {
-      service.getVideoFromCloudflare.mockResolvedValueOnce({
-        result: null,
-        success: false,
-        errors: ['Video could not be retrieved from cloudflare'],
-        messages: []
-      })
-      await expect(
-        async () =>
-          await resolver.cloudflareVideoCheckReadyToStream('videoId', user.id)
-      ).rejects.toThrow('Video could not be retrieved from cloudflare')
-    })
-    it('updates video and returns updated video', async () => {
-      service.getVideoFromCloudflare.mockResolvedValueOnce({
-        result: {
-          readyToStream: true
-        },
-        success: true,
-        errors: [],
-        messages: []
-      })
-      expect(
-        await resolver.cloudflareVideoCheckReadyToStream('videoId', user.id)
-      ).toEqual({ readyToStream: true })
-      expect(service.update).toHaveBeenCalledWith('videoId', {
-        readyToStream: true
-      })
     })
   })
 })
