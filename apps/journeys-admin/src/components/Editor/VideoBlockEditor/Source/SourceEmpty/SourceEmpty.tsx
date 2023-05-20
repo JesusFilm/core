@@ -10,7 +10,7 @@ export function SourceEmpty({ onClick }: SourceEmptyProps): ReactElement {
   return (
     <ContainedIconButton
       onClick={onClick}
-      thumbnailIcon={VideocamRoundedIcon}
+      thumbnailIcon={<VideocamRoundedIcon />}
       loading={false}
       imageSrc=""
       imageAlt=""
