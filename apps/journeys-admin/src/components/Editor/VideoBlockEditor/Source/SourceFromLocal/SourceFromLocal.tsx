@@ -1,7 +1,6 @@
 import { ReactElement, useEffect, useState } from 'react'
 import { gql, useQuery } from '@apollo/client'
 import type { TreeBlock } from '@core/journeys/ui/block'
-import VideocamRoundedIcon from '@mui/icons-material/VideocamRounded'
 import EditRoundedIcon from '@mui/icons-material/EditRounded'
 import { GetVideoVariantLanguages } from '../../../../../../__generated__/GetVideoVariantLanguages'
 import { GetJourney_journey_blocks_VideoBlock as VideoBlock } from '../../../../../../__generated__/GetJourney'
@@ -60,15 +59,13 @@ export function SourceFromLocal({
   }, [data?.video?.variantLanguages, selectedBlock?.videoVariantLanguageId])
 
   return (
-    <>
-      <ContainedIconButton
-        onClick={onClick}
-        imageSrc={selectedBlock?.video?.image ?? ''}
-        imageAlt={selectedBlock?.video?.title?.[0]?.value ?? ''}
-        label={selectedBlock?.video?.title?.[0]?.value ?? ''}
-        description={language}
-        actionIcon={<EditRoundedIcon color="primary" />}
-      />
-    </>
+    <ContainedIconButton
+      onClick={onClick}
+      imageSrc={selectedBlock?.video?.image ?? ''}
+      imageAlt={selectedBlock?.video?.title?.[0]?.value ?? ''}
+      label={selectedBlock?.video?.title?.[0]?.value ?? ''}
+      description={language}
+      actionIcon={<EditRoundedIcon color="primary" />}
+    />
   )
 }
