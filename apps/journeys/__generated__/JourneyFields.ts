@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { JourneyStatus, ThemeName, ThemeMode, ButtonVariant, ButtonColor, ButtonSize, GridDirection, GridJustifyContent, GridAlignItems, IconName, IconSize, IconColor, TypographyAlign, TypographyColor, TypographyVariant, VideoBlockSource, VideoBlockObjectFit, UserJourneyRole } from "./globalTypes";
+import { JourneyStatus, ThemeName, ThemeMode, ButtonVariant, ButtonColor, ButtonSize, IconName, IconSize, IconColor, TypographyAlign, TypographyColor, TypographyVariant, VideoBlockSource, VideoBlockObjectFit, UserJourneyRole } from "./globalTypes";
 
 // ====================================================
 // GraphQL fragment: JourneyFields
@@ -21,6 +21,13 @@ export interface JourneyFields_language {
   bcp47: string | null;
   iso3: string | null;
   name: JourneyFields_language_name[];
+}
+
+export interface JourneyFields_blocks_GridContainerBlock {
+  __typename: "GridContainerBlock" | "GridItemBlock";
+  id: string;
+  parentBlockId: string | null;
+  parentOrder: number | null;
 }
 
 export interface JourneyFields_blocks_ButtonBlock_action_NavigateAction {
@@ -109,27 +116,6 @@ export interface JourneyFields_blocks_CardBlock {
    * background.
    */
   fullscreen: boolean;
-}
-
-export interface JourneyFields_blocks_GridContainerBlock {
-  __typename: "GridContainerBlock";
-  id: string;
-  parentBlockId: string | null;
-  parentOrder: number | null;
-  spacing: number;
-  direction: GridDirection;
-  justifyContent: GridJustifyContent;
-  alignItems: GridAlignItems;
-}
-
-export interface JourneyFields_blocks_GridItemBlock {
-  __typename: "GridItemBlock";
-  id: string;
-  parentBlockId: string | null;
-  parentOrder: number | null;
-  xl: number;
-  lg: number;
-  sm: number;
 }
 
 export interface JourneyFields_blocks_IconBlock {
@@ -543,7 +529,7 @@ export interface JourneyFields_blocks_VideoTriggerBlock {
   triggerAction: JourneyFields_blocks_VideoTriggerBlock_triggerAction;
 }
 
-export type JourneyFields_blocks = JourneyFields_blocks_ButtonBlock | JourneyFields_blocks_CardBlock | JourneyFields_blocks_GridContainerBlock | JourneyFields_blocks_GridItemBlock | JourneyFields_blocks_IconBlock | JourneyFields_blocks_ImageBlock | JourneyFields_blocks_RadioOptionBlock | JourneyFields_blocks_RadioQuestionBlock | JourneyFields_blocks_SignUpBlock | JourneyFields_blocks_StepBlock | JourneyFields_blocks_TextResponseBlock | JourneyFields_blocks_TypographyBlock | JourneyFields_blocks_VideoBlock | JourneyFields_blocks_VideoTriggerBlock;
+export type JourneyFields_blocks = JourneyFields_blocks_GridContainerBlock | JourneyFields_blocks_ButtonBlock | JourneyFields_blocks_CardBlock | JourneyFields_blocks_IconBlock | JourneyFields_blocks_ImageBlock | JourneyFields_blocks_RadioOptionBlock | JourneyFields_blocks_RadioQuestionBlock | JourneyFields_blocks_SignUpBlock | JourneyFields_blocks_StepBlock | JourneyFields_blocks_TextResponseBlock | JourneyFields_blocks_TypographyBlock | JourneyFields_blocks_VideoBlock | JourneyFields_blocks_VideoTriggerBlock;
 
 export interface JourneyFields_primaryImageBlock {
   __typename: "ImageBlock";

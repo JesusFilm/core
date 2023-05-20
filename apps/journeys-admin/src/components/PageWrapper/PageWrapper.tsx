@@ -9,7 +9,6 @@ import ChevronLeftRounded from '@mui/icons-material/ChevronLeftRounded'
 import Image from 'next/image'
 import { AuthUser } from 'next-firebase-auth'
 import useMediaQuery from '@mui/material/useMediaQuery'
-import { NextRouter } from 'next/router'
 import MenuIcon from '@mui/icons-material/Menu'
 import { Theme } from '@mui/material/styles'
 import taskbarIcon from '../../../public/taskbar-icon.svg'
@@ -22,7 +21,6 @@ export interface PageWrapperProps {
   menu?: ReactNode
   children?: ReactNode
   authUser?: AuthUser
-  router?: NextRouter
 }
 
 export function PageWrapper({
@@ -31,8 +29,7 @@ export function PageWrapper({
   title,
   menu: customMenu,
   children,
-  authUser,
-  router
+  authUser
 }: PageWrapperProps): ReactElement {
   const [open, setOpen] = useState<boolean>(false)
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
@@ -119,12 +116,7 @@ export function PageWrapper({
           {customMenu != null && customMenu}
         </Toolbar>
       </AppBar>
-      <NavigationDrawer
-        open={open}
-        onClose={setOpen}
-        authUser={authUser}
-        router={router}
-      />
+      <NavigationDrawer open={open} onClose={setOpen} authUser={authUser} />
       <Box
         sx={{
           ml: { sm: '72px' }

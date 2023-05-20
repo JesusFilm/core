@@ -2,6 +2,8 @@ import { render } from '@testing-library/react'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { MockedProvider } from '@apollo/client/testing'
 import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
+import { ActiveJourneyEditContent } from '@core/journeys/ui/EditorProvider'
+import { SnackbarProvider } from 'notistack'
 import { GetJourney_journey as Journey } from '../../../__generated__/GetJourney'
 import {
   JourneyStatus,
@@ -65,33 +67,57 @@ describe('Editor', () => {
   it('should render the element', () => {
     const { getByText } = render(
       <MockedProvider>
-        <FlagsProvider>
-          <ThemeProvider>
-            <Editor journey={journey}>
-              <JourneyEdit />
-            </Editor>
-          </ThemeProvider>
-        </FlagsProvider>
+        <SnackbarProvider>
+          <FlagsProvider>
+            <ThemeProvider>
+              <Editor journey={journey}>
+                <JourneyEdit />
+              </Editor>
+            </ThemeProvider>
+          </FlagsProvider>
+        </SnackbarProvider>
       </MockedProvider>
     )
     expect(getByText('Journey')).toBeInTheDocument()
-    expect(getByText('Social Share Appearance')).toBeInTheDocument()
-    expect(getByText('Social Image')).toBeInTheDocument()
+    expect(getByText('Access Control')).toBeInTheDocument()
   })
 
   it('should display Next Card property', () => {
     const { getByText } = render(
       <MockedProvider>
+        <SnackbarProvider>
+          <FlagsProvider>
+            <ThemeProvider>
+              <Editor journey={journey} selectedStepId="step0.id">
+                <JourneyEdit />
+              </Editor>
+            </ThemeProvider>
+          </FlagsProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+    expect(getByText('Next Card')).toBeInTheDocument()
+    expect(getByText('Unlocked Card')).toBeInTheDocument()
+  })
+
+  it('should display Social Preview', () => {
+    const { getByTestId } = render(
+      <MockedProvider>
         <FlagsProvider>
           <ThemeProvider>
-            <Editor journey={journey} selectedStepId="step0.id">
+            <Editor
+              journey={journey}
+              view={ActiveJourneyEditContent.SocialPreview}
+            >
               <JourneyEdit />
             </Editor>
           </ThemeProvider>
         </FlagsProvider>
       </MockedProvider>
     )
-    expect(getByText('Next Card')).toBeInTheDocument()
-    expect(getByText('Unlocked Card')).toBeInTheDocument()
+    expect(getByTestId('social-preview-panel')).toBeInTheDocument()
+    expect(getByTestId('journey-edit-content')).toHaveStyle({
+      backgroundColor: 'none'
+    })
   })
 })

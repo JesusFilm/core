@@ -19,6 +19,7 @@ import { PageWrapper } from '../../src/components/PageWrapper'
 import i18nConfig from '../../next-i18next.config'
 import { Menu } from '../../src/components/JourneyView/Menu'
 import { useTermsRedirect } from '../../src/libs/useTermsRedirect/useTermsRedirect'
+import { useInvalidJourneyRedirect } from '../../src/libs/useInvalidJourneyRedirect'
 
 export const GET_TEMPLATE = gql`
   ${JOURNEY_FIELDS}
@@ -37,6 +38,7 @@ function TemplateDetails(): ReactElement {
     variables: { id: router.query.journeyId }
   })
   useTermsRedirect()
+  useInvalidJourneyRedirect(data)
 
   return (
     <>
@@ -53,7 +55,6 @@ function TemplateDetails(): ReactElement {
           showDrawer
           backHref="/templates"
           menu={<Menu />}
-          router={router}
         >
           <JourneyView journeyType="Template" />
         </PageWrapper>

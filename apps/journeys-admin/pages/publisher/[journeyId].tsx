@@ -22,6 +22,7 @@ import { Role } from '../../__generated__/globalTypes'
 import { PublisherInvite } from '../../src/components/PublisherInvite'
 import { Menu } from '../../src/components/JourneyView/Menu'
 import { useTermsRedirect } from '../../src/libs/useTermsRedirect/useTermsRedirect'
+import { useInvalidJourneyRedirect } from '../../src/libs/useInvalidJourneyRedirect'
 
 export const GET_PUBLISHER_TEMPLATE = gql`
   ${JOURNEY_FIELDS}
@@ -54,7 +55,7 @@ function TemplateDetailsAdmin(): ReactElement {
   )
 
   useTermsRedirect()
-
+  useInvalidJourneyRedirect(data)
   return (
     <>
       {isPublisher === true && (
@@ -75,7 +76,6 @@ function TemplateDetailsAdmin(): ReactElement {
               showDrawer
               backHref="/publisher"
               menu={<Menu />}
-              router={router}
             >
               <JourneyView journeyType="Template" />
             </PageWrapper>
