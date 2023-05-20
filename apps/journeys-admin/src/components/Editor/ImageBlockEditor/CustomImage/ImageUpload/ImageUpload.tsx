@@ -64,9 +64,9 @@ export function ImageUpload({
           setSuccess(false)
         }
 
-        const src = `https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/${
-          response.result.id as string
-        }/public`
+        const src = `https://imagedelivery.net/${
+          process.env.NEXT_PUBLIC_CLOUDFLARE_UPLOAD_KEY ?? ''
+        }/${response.result.id as string}/public`
         onChange(src)
         setTimeout(() => setSuccess(undefined), 4000)
         setUploading?.(undefined)

@@ -4,12 +4,11 @@ import { noop } from 'lodash'
 import { MockedProvider } from '@apollo/client/testing'
 import { AuthUser } from 'next-firebase-auth'
 import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
-import { NextRouter } from 'next/router'
 import { journeysAdminConfig } from '../../../libs/storybook'
 import { Role, UserJourneyRole } from '../../../../__generated__/globalTypes'
 import { GET_USER_ROLE } from '../../JourneyView/JourneyView'
 import { GET_JOURNEYS } from '../../../libs/useJourneys/useJourneys'
-import { GET_ME } from './NavigationDrawer'
+import { GET_ME } from '../../NewPageWrapper/NavigationDrawer'
 import { NavigationDrawer } from '.'
 
 const NavigationDrawerStory = {
@@ -74,7 +73,6 @@ const Template: Story = ({ ...args }) => {
               signOut: noop
             } as unknown as AuthUser
           }
-          router={{ pathname: undefined } as unknown as NextRouter}
         />
       </FlagsProvider>
     </MockedProvider>

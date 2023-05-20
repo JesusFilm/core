@@ -22,6 +22,7 @@ import { PublisherInvite } from '../../../src/components/PublisherInvite'
 import { Role } from '../../../__generated__/globalTypes'
 import { GET_PUBLISHER, GET_PUBLISHER_TEMPLATE } from '../[journeyId]'
 import { useTermsRedirect } from '../../../src/libs/useTermsRedirect/useTermsRedirect'
+import { useInvalidJourneyRedirect } from '../../../src/libs/useInvalidJourneyRedirect'
 
 function TemplateEditPage(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
@@ -36,6 +37,7 @@ function TemplateEditPage(): ReactElement {
   )
 
   useTermsRedirect()
+  useInvalidJourneyRedirect(data)
 
   return (
     <>
@@ -61,7 +63,6 @@ function TemplateEditPage(): ReactElement {
               backHref={`/publisher/${router.query.journeyId as string}`}
               authUser={AuthUser}
               menu={<EditToolbar />}
-              router={router}
             >
               <JourneyEdit />
             </PageWrapper>

@@ -16,7 +16,10 @@ import { UserJourneyService } from '../../userJourney/userJourney.service'
 import { UserRoleService } from '../../userRole/userRole.service'
 import { BlockResolver } from '../block.resolver'
 import { BlockService } from '../block.service'
-import { VideoBlockResolver } from './video.resolver'
+import {
+  CloudflareRetrieveVideoDetailsResponse,
+  VideoBlockResolver
+} from './video.resolver'
 
 jest.mock('node-fetch', () => {
   const originalModule = jest.requireActual('node-fetch')
@@ -29,7 +32,7 @@ jest.mock('node-fetch', () => {
 const mockFetch = fetch as jest.MockedFunction<typeof fetch>
 
 describe('VideoBlockResolver', () => {
-  let resolver: VideoBlockResolver, service: BlockService
+  let resolver: VideoBlockResolver, service: jest.Mocked<BlockService>
 
   const block = {
     id: 'abc',
@@ -387,7 +390,7 @@ describe('VideoBlockResolver', () => {
           duration: 1167,
           image: 'https://i.ytimg.com/vi/7RoqnGcEjcs/hqdefault.jpg',
           title: 'What is the Bible?',
-          objectFit: null
+          objectFit: 'fill'
         })
       })
 
@@ -401,6 +404,143 @@ describe('VideoBlockResolver', () => {
           ...updatedBlock,
           autoplay: true,
           source: VideoBlockSource.youTube
+        })
+      })
+    })
+
+    describe('Cloudflare Source', () => {
+      it('throws error when videoId is not on Cloudflare', async () => {
+        mockFetch.mockResolvedValueOnce({
+          ok: true,
+          json: async () =>
+            await Promise.resolve<CloudflareRetrieveVideoDetailsResponse>({
+              errors: [],
+              messages: [],
+              result: null,
+              success: false
+            })
+        } as unknown as Response)
+        await expect(
+          async () =>
+            await resolver.videoBlockUpdate('blockId', 'journeyId', {
+              videoId: 'ea95132c15732412d22c1476fa83f27a',
+              source: VideoBlockSource.cloudflare
+            })
+        ).rejects.toThrow('videoId cannot be found on Cloudflare')
+      })
+
+      it('updates videoId', async () => {
+        service.get.mockResolvedValueOnce({
+          ...updatedBlock,
+          videoId: undefined
+        })
+        mockFetch.mockResolvedValueOnce({
+          ok: true,
+          json: async () =>
+            await Promise.resolve<CloudflareRetrieveVideoDetailsResponse>({
+              errors: [],
+              messages: [],
+              result: {
+                duration: 100,
+                input: {
+                  height: 0,
+                  width: 0
+                },
+                playback: {
+                  hls: 'https://cloudflarestream.com/ea95132c15732412d22c1476fa83f27a/manifest/video.m3u8'
+                },
+                preview:
+                  'https://cloudflarestream.com/ea95132c15732412d22c1476fa83f27a/watch',
+                readyToStream: true,
+                size: 4190963,
+                thumbnail:
+                  'https://cloudflarestream.com/ea95132c15732412d22c1476fa83f27a/thumbnails/thumbnail.jpg',
+                uid: 'ea95132c15732412d22c1476fa83f27a',
+                meta: {
+                  name: 'video.mp4'
+                }
+              },
+              success: true
+            })
+        } as unknown as Response)
+        expect(
+          await resolver.videoBlockUpdate('blockId', 'journeyId', {
+            videoId: 'ea95132c15732412d22c1476fa83f27a',
+            source: VideoBlockSource.cloudflare
+          })
+        ).toEqual({
+          ...updatedBlock,
+          videoId: 'ea95132c15732412d22c1476fa83f27a',
+          source: VideoBlockSource.cloudflare,
+          duration: 100,
+          endAt: 100,
+          image:
+            'https://cloudflarestream.com/ea95132c15732412d22c1476fa83f27a/thumbnails/thumbnail.jpg?time=2s',
+          title: 'video.mp4',
+          objectFit: 'fill'
+        })
+        expect(mockFetch).toHaveBeenCalledWith(
+          'https://api.cloudflare.com/client/v4/accounts//stream/ea95132c15732412d22c1476fa83f27a',
+          { headers: { Authorization: 'Bearer ' } }
+        )
+      })
+
+      it('updates videoId title when meta name not present', async () => {
+        mockFetch.mockResolvedValueOnce({
+          ok: true,
+          json: async () =>
+            await Promise.resolve<CloudflareRetrieveVideoDetailsResponse>({
+              errors: [],
+              messages: [],
+              result: {
+                duration: 100,
+                input: {
+                  height: 0,
+                  width: 0
+                },
+                playback: {
+                  hls: 'https://cloudflarestream.com/ea95132c15732412d22c1476fa83f27a/manifest/video.m3u8'
+                },
+                preview:
+                  'https://cloudflarestream.com/ea95132c15732412d22c1476fa83f27a/watch',
+                readyToStream: true,
+                size: 4190963,
+                thumbnail:
+                  'https://cloudflarestream.com/ea95132c15732412d22c1476fa83f27a/thumbnails/thumbnail.jpg',
+                uid: 'ea95132c15732412d22c1476fa83f27a',
+                meta: {}
+              },
+              success: true
+            })
+        } as unknown as Response)
+        expect(
+          await resolver.videoBlockUpdate('blockId', 'journeyId', {
+            videoId: 'ea95132c15732412d22c1476fa83f27a',
+            source: VideoBlockSource.cloudflare
+          })
+        ).toEqual({
+          ...updatedBlock,
+          videoId: 'ea95132c15732412d22c1476fa83f27a',
+          source: VideoBlockSource.cloudflare,
+          duration: 100,
+          endAt: 100,
+          image:
+            'https://cloudflarestream.com/ea95132c15732412d22c1476fa83f27a/thumbnails/thumbnail.jpg?time=2s',
+          title: 'ea95132c15732412d22c1476fa83f27a',
+          objectFit: 'fill'
+        })
+      })
+
+      it('updates a VideoBlock', async () => {
+        expect(
+          await resolver.videoBlockUpdate('blockId', 'journeyId', {
+            autoplay: true,
+            source: VideoBlockSource.cloudflare
+          })
+        ).toEqual({
+          ...updatedBlock,
+          autoplay: true,
+          source: VideoBlockSource.cloudflare
         })
       })
     })

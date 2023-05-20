@@ -53,7 +53,6 @@ function TemplateIndex(): ReactElement {
         title={t('Templates Admin')}
         authUser={AuthUser}
         menu={<JourneyListMenu router={router} onClick={handleClick} />}
-        router={router}
       >
         <TemplateList router={router} event={listEvent} authUser={AuthUser} />
       </PageWrapper>
