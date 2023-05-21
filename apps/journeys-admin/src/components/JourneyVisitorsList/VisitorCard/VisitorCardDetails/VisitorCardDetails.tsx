@@ -67,6 +67,7 @@ function DetailsRow({
   chatEvent = false
 }: DetailsRowProps): ReactElement {
   const textColor = chatEvent ? 'primary' : 'secondary'
+  const isBold = chatEvent ? 900 : 'normal'
   return (
     <>
       {label != null && value != null && (
@@ -87,7 +88,11 @@ function DetailsRow({
             <Typography
               noWrap
               color={textColor}
-              sx={{ minWidth: '262px', maxWidth: '262px' }}
+              sx={{
+                minWidth: '262px',
+                maxWidth: '262px',
+                fontWeight: isBold
+              }}
             >
               {label}
             </Typography>
@@ -98,7 +103,9 @@ function DetailsRow({
             >
               {'\u00B7\u00A0'}
             </Typography>
-            <Typography color={textColor}>{value}</Typography>
+            <Typography color={textColor} sx={{ fontWeight: isBold }}>
+              {value}
+            </Typography>
           </Stack>
         </Stack>
       )}
