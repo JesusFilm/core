@@ -90,7 +90,7 @@ export function VisitorJourneysList({ id }: Props): ReactElement {
                 sx={{
                   height: '24px',
                   alignSelf: 'flex-start',
-                  ml: { xs: '64px', sm: '88px' }
+                  ml: { xs: '74px', sm: '98px' }
                 }}
               />
             </TimelineSeparator>

@@ -22,7 +22,7 @@ export function CompactEvent({ value, handleClick }: Props): ReactElement {
         }
       }}
     >
-      <TimelineSeparator sx={{ ml: '31px', mr: '26px' }}>
+      <TimelineSeparator sx={{ ml: '41px', mr: '26px' }}>
         <TimelineConnector sx={{ flexGrow: '2' }} />
       </TimelineSeparator>
 

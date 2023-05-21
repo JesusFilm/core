@@ -49,8 +49,8 @@ export function GenericEvent({
           alignItems: textAlign,
           justifyContent: 'center',
           px: 0,
-          minWidth: '46px',
-          maxWidth: '46px'
+          minWidth: '56px',
+          maxWidth: '56px'
         }}
       >
         <Typography variant={durationVariant} color={durationColor}>
@@ -74,7 +74,7 @@ export function GenericEvent({
           <TimelineConnector />
         </TimelineSeparator>
       ) : (
-        <Box sx={{ width: '36px' }} />
+        <Box sx={{ width: '38px' }} />
       )}
 
       <TimelineContent
