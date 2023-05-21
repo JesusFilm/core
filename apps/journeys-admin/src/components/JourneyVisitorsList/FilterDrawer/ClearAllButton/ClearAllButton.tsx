@@ -14,6 +14,7 @@ export const ClearAllButton = ({
       sx={{
         backgroundColor: 'background.paper',
         color: 'secondary.light',
+        border: 1,
         marginLeft: '20px',
         marginBottom: '3px',
         '&:hover': {
@@ -21,7 +22,7 @@ export const ClearAllButton = ({
         }
       }}
     >
-      Clear All
+      Clear all
     </Button>
   )
 }
