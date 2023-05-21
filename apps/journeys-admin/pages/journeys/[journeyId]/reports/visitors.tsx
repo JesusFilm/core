@@ -99,7 +99,6 @@ function JourneyVisitorsPage(): ReactElement {
   const [visitorEdges, setVisitorEdges] = useState<VisitorEdge[]>([])
   const [hasNextPage, setHasNextPage] = useState(false)
   const [endCursor, setEndCursor] = useState<string | null>()
-
   const [chatStarted, setChatStarted] = useState(false)
   const [withPollAnswers, setWithPollAnswers] = useState(false)
   const [withSubmittedText, setWithSubmittedText] = useState(false)
