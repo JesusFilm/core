@@ -16,7 +16,7 @@ describe('FilterDrawer', () => {
   it('calls handleClearAll when the clear all button is clicked', async () => {
     const { getByText } = render(<FilterDrawer {...props} />)
 
-    fireEvent.click(getByText('Clear All'))
+    fireEvent.click(getByText('Clear all'))
     expect(props.handleClearAll).toHaveBeenCalled()
   })
   it('calls handleChange when checkboxes and radio buttons are selected', async () => {
