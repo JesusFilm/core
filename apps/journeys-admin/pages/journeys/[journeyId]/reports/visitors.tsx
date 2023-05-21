@@ -148,7 +148,6 @@ function JourneyVisitorsPage(): ReactElement {
 
   useEffect(() => {
     const handleRefetchOnChange = async (): Promise<void> => {
-      console.log('withPollAnswers', withPollAnswers)
       const response = await refetch({
         variables: {
           filter: {
@@ -170,8 +169,6 @@ function JourneyVisitorsPage(): ReactElement {
         setHasNextPage(response.data.visitors.pageInfo.hasNextPage)
         setEndCursor(response.data.visitors.pageInfo.endCursor)
       }
-
-      console.log('this is the response', response)
     }
     void handleRefetchOnChange()
   }, [
