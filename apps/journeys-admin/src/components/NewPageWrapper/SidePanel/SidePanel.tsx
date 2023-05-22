@@ -12,21 +12,21 @@ import { usePage } from '../../../libs/PageWrapperProvider'
 interface SidePanelProps {
   children: ReactNode
   title?: string
-  titleAction?: ReactNode
+  sidePanelTitleAction?: ReactNode
 }
 
 interface DrawerContentProps {
   title?: string
   children: ReactNode
   action?: ReactNode
-  titleAction?: ReactNode
+  sidePanelTitleAction?: ReactNode
 }
 
 function DrawerContent({
   title,
   children,
   action,
-  titleAction
+  sidePanelTitleAction
 }: DrawerContentProps): ReactElement {
   const { toolbar } = usePageWrapperStyles()
   return (
@@ -45,7 +45,7 @@ function DrawerContent({
             <>
               <Typography variant="subtitle1" component="div" noWrap>
                 {title}
-                {titleAction != null && titleAction}
+                {sidePanelTitleAction != null && sidePanelTitleAction}
               </Typography>
             </>
           )}
@@ -69,7 +69,7 @@ function DrawerContent({
 export function SidePanel({
   children,
   title,
-  titleAction
+  sidePanelTitleAction
 }: SidePanelProps): ReactElement {
   const { toolbar, sidePanel } = usePageWrapperStyles()
   const {
@@ -104,7 +104,10 @@ export function SidePanel({
           }
         }}
       >
-        <DrawerContent title={title} titleAction={titleAction}>
+        <DrawerContent
+          title={title}
+          sidePanelTitleAction={sidePanelTitleAction}
+        >
           {children}
         </DrawerContent>
       </Drawer>
@@ -128,7 +131,7 @@ export function SidePanel({
       >
         <DrawerContent
           title={title}
-          titleAction={titleAction}
+          sidePanelTitleAction={sidePanelTitleAction}
           action={
             <IconButton
               onClick={handleClose}

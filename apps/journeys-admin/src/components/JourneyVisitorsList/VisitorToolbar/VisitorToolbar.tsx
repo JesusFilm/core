@@ -8,7 +8,7 @@ import { FilterDrawer } from '../FilterDrawer/FilterDrawer'
 interface VisitorProps {
   handleChange?: (e) => void
   handleClearAll?: () => void
-  sortSetting: string
+  sortSetting?: 'date' | 'duration'
   chatStarted: boolean
   withPollAnswers: boolean
   withSubmittedText: boolean
@@ -35,31 +35,29 @@ export function VisitorToolbar({
   }
 
   return (
-    <>
-      <Box sx={{ display: { xs: 'block', sm: 'none' } }}>
-        <IconButton id="filterIcon">
-          <FilterListRoundedIcon onClick={handleOpen} />
-        </IconButton>
-        <Drawer
-          anchor="bottom"
-          open={open}
-          onClose={handleClose}
-          variant="persistent"
-        >
-          <FilterDrawer
-            handleClose={handleClose}
-            handleChange={handleChange}
-            handleClearAll={handleClearAll}
-            sortSetting={sortSetting}
-            chatStarted={chatStarted}
-            withPollAnswers={withPollAnswers}
-            withSubmittedText={withSubmittedText}
-            withIcon={withIcon}
-            hideInteractive={hideInteractive}
-          />
-        </Drawer>
-      </Box>
-      {/* CSV download */}
-    </>
+    <Box sx={{ display: { xs: 'block', sm: 'none' } }}>
+      <IconButton>
+        <FilterListRoundedIcon onClick={handleOpen} />
+      </IconButton>
+      <Drawer
+        anchor="bottom"
+        open={open}
+        onClose={handleClose}
+        variant="persistent"
+        data-testid="filterDrawer"
+      >
+        <FilterDrawer
+          handleClose={handleClose}
+          handleChange={handleChange}
+          handleClearAll={handleClearAll}
+          sortSetting={sortSetting}
+          chatStarted={chatStarted}
+          withPollAnswers={withPollAnswers}
+          withSubmittedText={withSubmittedText}
+          withIcon={withIcon}
+          hideInteractive={hideInteractive}
+        />
+      </Drawer>
+    </Box>
   )
 }

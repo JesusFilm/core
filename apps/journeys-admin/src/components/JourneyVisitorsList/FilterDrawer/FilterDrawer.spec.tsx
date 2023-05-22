@@ -2,7 +2,6 @@ import { fireEvent, render } from '@testing-library/react'
 import { FilterDrawer } from './FilterDrawer'
 
 const props = {
-  sortSetting: '',
   chatStarted: false,
   withPollAnswers: false,
   withSubmittedText: false,
@@ -21,7 +20,7 @@ describe('FilterDrawer', () => {
   })
   it('calls handleChange when checkboxes and radio buttons are selected', async () => {
     const { handleChange } = props
-    const { getByText } = render(<FilterDrawer {...props} />)
+    const { getByText, getByRole } = render(<FilterDrawer {...props} />)
 
     fireEvent.click(getByText('Chat Started'))
     expect(handleChange).toReturnWith('Chat Started')
@@ -35,7 +34,9 @@ describe('FilterDrawer', () => {
     expect(handleChange).toReturnWith('Hide Inactive')
     fireEvent.click(getByText('Duration'))
     expect(handleChange).toReturnWith('duration')
+    expect(getByRole('radio', { name: 'Date' })).not.toBeChecked()
     fireEvent.click(getByText('Date'))
     expect(handleChange).toReturnWith('date')
+    expect(getByRole('radio', { name: 'Duration' })).not.toBeChecked()
   })
 })

@@ -104,7 +104,7 @@ function JourneyVisitorsPage(): ReactElement {
   const [withSubmittedText, setWithSubmittedText] = useState(false)
   const [withIcon, setWithIcon] = useState(false)
   const [hideInteractive, setHideInterActive] = useState(false)
-  const [sortSetting, setSortSetting] = useState('date')
+  const [sortSetting, setSortSetting] = useState<'date' | 'duration'>('date')
 
   const { fetchMore, loading, refetch } = useQuery<GetJourneyVisitors>(
     GET_JOURNEY_VISITORS,
@@ -118,7 +118,7 @@ function JourneyVisitorsPage(): ReactElement {
           hasIcon: withIcon,
           hideInactive: hideInteractive
         },
-        first: 20,
+        first: 50,
         sort: sortSetting
       },
       onCompleted: (data) => {
@@ -134,7 +134,7 @@ function JourneyVisitorsPage(): ReactElement {
       const response = await fetchMore({
         variables: {
           filter: { journeyId },
-          first: 20,
+          first: 50,
           after: endCursor
         }
       })
@@ -158,7 +158,7 @@ function JourneyVisitorsPage(): ReactElement {
             hasIcon: withIcon,
             hideInactive: hideInteractive
           },
-          first: 20,
+          first: 50,
           after: endCursor,
           sort: sortSetting
         }
@@ -250,7 +250,9 @@ function JourneyVisitorsPage(): ReactElement {
             hideInteractive={hideInteractive}
           />
         }
-        titleAction={<ClearAllButton handleClearAll={handleClearAll} />}
+        sidePanelTitleAction={
+          <ClearAllButton handleClearAll={handleClearAll} />
+        }
       >
         <JourneyVisitorsList
           visitorEdges={visitorEdges}

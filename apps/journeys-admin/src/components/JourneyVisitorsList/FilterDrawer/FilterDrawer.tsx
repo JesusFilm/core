@@ -16,7 +16,7 @@ import { ClearAllButton } from './ClearAllButton'
 interface Props {
   handleClose?: () => void
   handleChange?: (e) => void
-  sortSetting: string
+  sortSetting?: 'date' | 'duration'
   chatStarted: boolean
   withPollAnswers: boolean
   withSubmittedText: boolean

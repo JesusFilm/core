@@ -13,13 +13,9 @@ const ClearAllButtonStory = {
   }
 }
 
-const Template: Story<ComponentProps<typeof ClearAllButton>> = () => {
-  return (
-    <>
-      <ClearAllButton />
-    </>
-  )
-}
+const Template: Story<ComponentProps<typeof ClearAllButton>> = () => (
+  <ClearAllButton />
+)
 
 export const Default = Template.bind({})
 

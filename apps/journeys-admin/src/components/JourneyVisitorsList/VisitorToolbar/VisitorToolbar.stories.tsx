@@ -1,6 +1,6 @@
 import { Meta, Story } from '@storybook/react'
 import { useState, ComponentProps } from 'react'
-import IconButton from '@mui/material/IconButton'
+
 import FilterListRoundedIcon from '@mui/icons-material/FilterListRounded'
 import { journeysAdminConfig } from '../../../libs/storybook'
 import { VisitorToolbar } from './VisitorToolbar'
@@ -19,9 +19,7 @@ const Template: Story<ComponentProps<typeof VisitorToolbar>> = (args) => {
   const [open, setOpen] = useState(false)
   return (
     <>
-      <IconButton>
-        <FilterListRoundedIcon onClick={() => setOpen(!open)} />
-      </IconButton>
+      <FilterListRoundedIcon onClick={() => setOpen(!open)} />
     </>
   )
 }

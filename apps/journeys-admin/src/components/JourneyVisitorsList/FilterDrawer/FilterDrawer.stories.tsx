@@ -17,11 +17,7 @@ const FilterDrawerStory = {
   }
 }
 
-const Template: Story<
-  ComponentProps<typeof FilterDrawer> & {
-    templates?: boolean
-  }
-> = ({ templates = true, ...args }) => {
+const Template: Story<ComponentProps<typeof FilterDrawer>> = ({ ...args }) => {
   return (
     <MockedProvider>
       <FlagsProvider>
@@ -51,8 +47,8 @@ Default.args = {
   )
 }
 
-export const Checked = Template.bind({})
-Checked.args = {
+export const Complete = Template.bind({})
+Complete.args = {
   ...Default.args,
   sidePanelChildren: (
     <FilterDrawer
