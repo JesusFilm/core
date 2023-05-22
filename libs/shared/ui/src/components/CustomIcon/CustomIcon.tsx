@@ -1,9 +1,9 @@
 import { SvgIconProps } from '@mui/material/SvgIcon'
 import CircularProgress from '@mui/material/CircularProgress'
 import { ReactElement, Suspense } from 'react'
-import { iconComponents, IconNames } from './Icons'
+import { iconComponents, iconNames } from './icons'
 
-type IconName = (typeof IconNames)[number]
+type IconName = (typeof iconNames)[number]
 
 interface CustomIconProps
   extends Pick<SvgIconProps, 'color' | 'fontSize' | 'sx'> {
@@ -17,7 +17,7 @@ export function CustomIcon({
   const IconComponent = iconComponents[name]
   return (
     <Suspense fallback={<CircularProgress size="16px" />}>
-      {IconComponent != null && <IconComponent {...iconProps} />}
+      {IconComponent != null ? <IconComponent {...iconProps} /> : <div />}
     </Suspense>
   )
 }

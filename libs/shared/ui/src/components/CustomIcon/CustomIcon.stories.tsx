@@ -3,8 +3,9 @@ import Stack from '@mui/material/Stack'
 import { ComponentProps } from 'react'
 import Typography from '@mui/material/Typography'
 // import CircularProgress from '@mui/material/CircularProgress'
+import IconButton from '@mui/material/IconButton'
 import { simpleComponentConfig } from '../../libs/simpleComponentConfig'
-import { IconNames } from './Icons'
+import { iconNames } from './icons'
 import { CustomIcon } from '.'
 
 const CustomIconsDemo = {
@@ -74,7 +75,7 @@ const Template: Story<ComponentProps<typeof CustomIcon>> = () => {
         </Stack>
       </Stack>
 
-      {[...IconNames].slice(1).map((name) => (
+      {[...iconNames].slice(1).map((name) => (
         <Stack direction="row" gap={10}>
           <Stack
             direction="row"
@@ -89,7 +90,9 @@ const Template: Story<ComponentProps<typeof CustomIcon>> = () => {
             {/* Use to test loading state locally */}
             {/* <CircularProgress size="16px" /> */}
             <CustomIcon name={name} fontSize="small" />
-            <CustomIcon name={name} />
+            <IconButton>
+              <CustomIcon name={name} />
+            </IconButton>
             <CustomIcon name={name} fontSize="large" />
             <CustomIcon name={name} sx={{ fontSize: '48px', ml: -1 }} />
           </Stack>
