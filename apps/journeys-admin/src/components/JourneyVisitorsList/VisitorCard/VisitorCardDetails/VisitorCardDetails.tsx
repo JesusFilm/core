@@ -4,14 +4,20 @@ import { useTranslation } from 'react-i18next'
 import Typography from '@mui/material/Typography'
 import Box from '@mui/material/Box'
 import { format, parseISO } from 'date-fns'
+import Skeleton from '@mui/material/Skeleton'
 import { GetJourneyVisitors_visitors_edges_node_events as Event } from '../../../../../__generated__/GetJourneyVisitors'
 
 interface Props {
   name?: string
   events: Event[]
+  loading: boolean
 }
 
-export function VisitorCardDetails({ name, events }: Props): ReactElement {
+export function VisitorCardDetails({
+  name,
+  events,
+  loading
+}: Props): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
 
   const eventsFilter: Array<Event['__typename']> = [
@@ -26,11 +32,10 @@ export function VisitorCardDetails({ name, events }: Props): ReactElement {
 
   return (
     <>
-      {filteredEvents.length > 0 && (
-        <Box sx={{ pt: 3 }}>
-          <DetailsRow label={t('Name')} value={name} />
-        </Box>
-      )}
+      <Box sx={{ pt: 3 }}>
+        <DetailsRow label={t('Name')} value={name} loading={loading} />
+      </Box>
+
       {filteredEvents.map((event) => {
         if (event.__typename === 'ChatOpenEvent') {
           return (
@@ -39,6 +44,7 @@ export function VisitorCardDetails({ name, events }: Props): ReactElement {
               label={t('Chat Started')}
               value={format(parseISO(event.createdAt), 'h:mmaaa')}
               chatEvent
+              loading={loading}
             />
           )
         } else {
@@ -47,6 +53,7 @@ export function VisitorCardDetails({ name, events }: Props): ReactElement {
               key={event.id}
               label={event.label}
               value={event.value}
+              loading={loading}
             />
           )
         }
@@ -59,33 +66,43 @@ interface DetailsRowProps {
   label: string | null
   value?: string | null
   chatEvent?: boolean
+  loading: boolean
 }
 
 function DetailsRow({
   label,
   value,
-  chatEvent = false
+  chatEvent = false,
+  loading
 }: DetailsRowProps): ReactElement {
   const textColor = chatEvent ? 'primary' : 'secondary'
   const isBold = chatEvent ? 900 : 'normal'
   return (
     <>
-      {label != null && value != null && (
-        <Stack direction="row">
-          <Typography
-            variant="subtitle1"
-            color={textColor}
-            sx={{
-              display: { xs: 'flex', sm: 'none' },
-              paddingLeft: { xs: '10px', sm: 'none' },
-              pt: 6,
-              pl: 1,
-              minWidth: '28px'
-            }}
-          >
-            {'\u00B7\u00A0'}
-          </Typography>
-          <Stack direction={{ xs: 'column', sm: 'row' }} sx={{ pb: 1 }}>
+      <Stack direction="row">
+        <Typography
+          variant="subtitle1"
+          color={textColor}
+          sx={{
+            display: { xs: 'flex', sm: 'none' },
+            paddingLeft: { xs: '10px', sm: 'none' },
+            pt: 6,
+            pl: 1,
+            minWidth: '28px'
+          }}
+        >
+          {'\u00B7\u00A0'}
+        </Typography>
+        <Stack direction={{ xs: 'column', sm: 'row' }} sx={{ pb: 1 }}>
+          {loading ? (
+            <Skeleton
+              width={50}
+              height={25}
+              sx={{
+                marginRight: { xs: 'none', sm: '212px' }
+              }}
+            />
+          ) : (
             <Typography
               noWrap
               color={textColor}
@@ -98,23 +115,27 @@ function DetailsRow({
             >
               {label}
             </Typography>
+          )}
 
-            <Typography
-              variant="subtitle1"
-              color={textColor}
-              sx={{
-                display: { xs: 'none', sm: 'flex' },
-                paddingRight: { xs: 'none', sm: '10px' }
-              }}
-            >
-              {'\u00B7\u00A0'}
-            </Typography>
+          <Typography
+            variant="subtitle1"
+            color={textColor}
+            sx={{
+              display: { xs: 'none', sm: 'flex' },
+              paddingRight: { xs: 'none', sm: '10px' }
+            }}
+          >
+            {'\u00B7\u00A0'}
+          </Typography>
+          {loading ? (
+            <Skeleton width={100} height={25} />
+          ) : (
             <Typography color={textColor} sx={{ fontWeight: isBold }}>
               {value}
             </Typography>
-          </Stack>
+          )}
         </Stack>
-      )}
+      </Stack>
     </>
   )
 }
