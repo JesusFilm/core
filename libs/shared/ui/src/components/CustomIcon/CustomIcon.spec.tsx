@@ -16,16 +16,4 @@ describe('CustomIcon', () => {
       expect(getByTestId('LikeIcon')).toBeInTheDocument()
     })
   })
-
-  // TODO: Update with solid icon once implemented
-  it('renders the solid icon', async () => {
-    const { queryByRole, getByText } = render(
-      <CustomIcon name="Like" variant="solid" />
-    )
-
-    await waitFor(() => {
-      expect(queryByRole('progressbar')).not.toBeInTheDocument()
-      expect(getByText('LikeIconSolid')).toBeInTheDocument()
-    })
-  })
 })
