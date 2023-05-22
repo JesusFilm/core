@@ -18,19 +18,18 @@ describe('MainPanelHeader', () => {
     expect(getByRole('link')).toHaveAttribute('href', '/')
   })
 
-  it('should show alt back button with router.push', async () => {
+  it('should take user to previous page on back click', async () => {
     const back = jest.fn()
     mockUseRouter.mockReturnValue({ back } as unknown as NextRouter)
     const { getByRole } = render(
       <MainPanelHeader title="Page title" backHrefHistory />
     )
 
-    expect(getByRole('button')).toBeInTheDocument()
     fireEvent.click(getByRole('button'))
     await waitFor(() => expect(back).toHaveBeenCalled())
   })
 
-  it('should take user to last visited page', async () => {
+  it('should take user to home page on back click', async () => {
     const push = jest.fn()
     mockUseRouter.mockReturnValue({ push } as unknown as NextRouter)
     const { getByRole } = render(
