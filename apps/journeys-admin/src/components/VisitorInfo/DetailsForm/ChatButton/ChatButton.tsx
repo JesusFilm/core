@@ -68,7 +68,7 @@ export function ChatButton({
       disabled={messagePlatform == null || messagePlatformId == null}
       onClick={handleClick}
     >
-      {t('Start Conversation')}
+      {t('Open conversation')}
     </Button>
   )
 }
