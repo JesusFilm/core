@@ -77,6 +77,7 @@ function DetailsRow({
             color={textColor}
             sx={{
               display: { xs: 'flex', sm: 'none' },
+              paddingLeft: { xs: '10px', sm: 'none' },
               pt: 6,
               pl: 1,
               minWidth: '28px'
