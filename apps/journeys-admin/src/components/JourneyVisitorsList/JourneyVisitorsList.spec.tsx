@@ -114,15 +114,25 @@ describe('JourneyVisitorsList', () => {
 
   it('should show empty visitors placeholder', () => {
     const { getByRole, queryByRole, queryByText } = render(
-      <JourneyVisitorsList
-        fetchNext={noop}
-        visitorsCount={123}
-        loading={false}
-      />
+      <JourneyVisitorsList fetchNext={noop} visitorsCount={5} loading={false} />
     )
 
     expect(getByRole('img')).toHaveAttribute('alt', 'visitors-placeholder')
     expect(queryByRole('button', { name: 'Load More' })).not.toBeInTheDocument()
     expect(queryByText('123')).not.toBeInTheDocument()
+  })
+
+  it('should show loading skeletons', () => {
+    const { queryByLabelText } = render(
+      <JourneyVisitorsList
+        fetchNext={noop}
+        visitorsCount={5}
+        loading
+        visitorEdges={visitorEdges}
+      />
+    )
+    expect(queryByLabelText('visitor-card-visitor1.id')).not.toBeInTheDocument()
+    expect(queryByLabelText('visitor-card-visitor2.id')).not.toBeInTheDocument()
+    expect(queryByLabelText('visitor-card-visitor3.id')).not.toBeInTheDocument()
   })
 })
