@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { JourneyVisitorFilter, VisitorStatus } from "./globalTypes";
+import { JourneyVisitorFilter, JourneyVisitorSort, VisitorStatus } from "./globalTypes";
 
 // ====================================================
 // GraphQL query operation: GetJourneyVisitors
@@ -108,6 +108,7 @@ export interface GetJourneyVisitors {
 
 export interface GetJourneyVisitorsVariables {
   filter: JourneyVisitorFilter;
+  sort?: JourneyVisitorSort | null;
   first?: number | null;
   after?: string | null;
 }
