@@ -10,5 +10,7 @@ export function videoBlockSourceToLabel(
       return t('Jesus Film Library')
     case VideoBlockSource.youTube:
       return t('YouTube')
+    default:
+      return ''
   }
 }

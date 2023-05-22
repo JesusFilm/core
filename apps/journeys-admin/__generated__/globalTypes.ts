@@ -153,6 +153,7 @@ export enum VideoBlockObjectFit {
 }
 
 export enum VideoBlockSource {
+  cloudflare = "cloudflare",
   internal = "internal",
   youTube = "youTube",
 }
@@ -520,6 +521,8 @@ export interface VisitorUpdateInput {
   name?: string | null;
   notes?: string | null;
   status?: VisitorStatus | null;
+  countryCode?: string | null;
+  referrer?: string | null;
 }
 
 //==============================================================
