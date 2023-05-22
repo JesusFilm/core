@@ -42,7 +42,7 @@ function SingleVisitorReportsPage(): ReactElement {
         authUser={AuthUser}
         sidePanelChildren={<DetailsForm id={id} />}
         sidePanelTitle={t('Visitor Details')}
-        shouldUseHistory={shouldUseHistory}
+        // shouldUseHistory={shouldUseHistory}
       >
         <VisitorInfo id={id} />
       </PageWrapper>
