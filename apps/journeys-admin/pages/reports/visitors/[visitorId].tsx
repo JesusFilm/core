@@ -1,4 +1,4 @@
-import { ReactElement } from 'react'
+import { ReactElement, useEffect, useState } from 'react'
 import {
   AuthAction,
   useAuthUser,
@@ -17,9 +17,17 @@ import { useTermsRedirect } from '../../../src/libs/useTermsRedirect/useTermsRed
 import { DetailsForm } from '../../../src/components/VisitorInfo/DetailsForm'
 
 function SingleVisitorReportsPage(): ReactElement {
+  const [shouldUseHistory, setShouldUseHistory] = useState(true)
+
   const router = useRouter()
   const { t } = useTranslation('apps-journeys-admin')
   const AuthUser = useAuthUser()
+
+  useEffect(() => {
+    document.referrer === ''
+      ? setShouldUseHistory(false)
+      : setShouldUseHistory(true)
+  }, [shouldUseHistory])
 
   useTermsRedirect()
 
@@ -34,6 +42,7 @@ function SingleVisitorReportsPage(): ReactElement {
         authUser={AuthUser}
         sidePanelChildren={<DetailsForm id={id} />}
         sidePanelTitle={t('Visitor Details')}
+        shouldUseHistory={shouldUseHistory}
       >
         <VisitorInfo id={id} />
       </PageWrapper>
