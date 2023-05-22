@@ -17,5 +17,6 @@
   "Video started": "Video started",
   "Sign Up": "Sign Up",
   "Button clicked": "Button clicked",
-  "Chat started on {{messagePlatform}}": "Chat started on {{messagePlatform}}"
+  "Chat started on {{messagePlatform}}": "Chat started on {{messagePlatform}}",
+  "Start Conversation": "Start Conversation"
 }

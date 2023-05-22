@@ -1,29 +1,29 @@
 import { VisitorUpdate } from '../../../../__generated__/VisitorUpdate'
-import { GetVisitor } from '../../../../__generated__/GetVisitor'
+import { GetVisitorForForm } from '../../../../__generated__/GetVisitorForForm'
 import {
   MessagePlatform,
   VisitorStatus,
   VisitorUpdateInput
 } from '../../../../__generated__/globalTypes'
-import { GET_VISITOR, VISITOR_UPDATE } from './DetailsForm'
+import { GET_VISITOR_FOR_FORM, VISITOR_UPDATE } from './DetailsForm'
 
-const getVisitor: GetVisitor = {
+const getVisitor: GetVisitorForForm = {
   visitor: {
     __typename: 'Visitor',
     id: 'visitorId',
-    countryCode: 'NZ',
-    lastChatStartedAt: '2022-11-02T03:20:26.368Z',
     messagePlatformId: '0800123456',
     messagePlatform: MessagePlatform.whatsApp,
     name: 'Bilbo Baggins',
     notes: 'Has a ring to give you.',
-    status: VisitorStatus.partyPopper
+    status: VisitorStatus.partyPopper,
+    countryCode: null,
+    lastChatStartedAt: null
   }
 }
 
 export const getVisitorMock = {
   request: {
-    query: GET_VISITOR,
+    query: GET_VISITOR_FOR_FORM,
     variables: {
       id: 'visitorId'
     }
@@ -33,23 +33,23 @@ export const getVisitorMock = {
   }
 }
 
-const getVisitorUnfilled: GetVisitor = {
+const getVisitorUnfilled: GetVisitorForForm = {
   visitor: {
     __typename: 'Visitor',
     id: 'visitorId',
-    countryCode: null,
-    lastChatStartedAt: null,
     messagePlatformId: null,
     messagePlatform: null,
     name: null,
     notes: null,
-    status: null
+    status: null,
+    countryCode: null,
+    lastChatStartedAt: null
   }
 }
 
 export const getVisitorUnfilledMock = {
   request: {
-    query: GET_VISITOR,
+    query: GET_VISITOR_FOR_FORM,
     variables: {
       id: 'visitorId'
     }
