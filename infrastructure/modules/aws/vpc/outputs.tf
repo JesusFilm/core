@@ -11,5 +11,5 @@ output "public_subnets" {
 }
 
 output "db_subnet_group_name" {
-  value = aws_db_subnet_group.default.name
+  value = aws_db_subnet_group.public.name
 }

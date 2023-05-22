@@ -103,7 +103,7 @@ resource "aws_eip" "eip" {
   }
 }
 
-resource "aws_db_subnet_group" "default" {
-  name       = var.env
-  subnet_ids = [for subnet in aws_subnet.internal_subnet : subnet.id]
+resource "aws_db_subnet_group" "public" {
+  name       = "${var.env}-public"
+  subnet_ids = [for subnet in aws_subnet.public_subnet : subnet.id]
 }

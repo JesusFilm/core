@@ -24,14 +24,7 @@ module "internal_rds_security_group" {
       cidr_blocks = concat([var.cidr], local.google_datastream_ip_list)
     }
   ]
-  egress_rules = [
-    {
-      from_port   = 0
-      to_port     = 0
-      protocol    = "-1"
-      cidr_blocks = [var.cidr]
-    }
-  ]
+  egress_rules = local.egress_rules
 }
 
 module "public_alb_security_group" {

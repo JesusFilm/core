@@ -19,6 +19,8 @@ resource "aws_rds_cluster" "default" {
   preferred_backup_window     = "07:00-09:00"
   vpc_security_group_ids      = [var.vpc_security_group_id]
   allow_major_version_upgrade = true
+  snapshot_identifier         = "${var.name}-${var.env}-final-snapshot"
+  final_snapshot_identifier   = "${var.name}-${var.env}-final-snapshot"
   serverlessv2_scaling_configuration {
     max_capacity = 16
     min_capacity = 0.5
@@ -26,11 +28,12 @@ resource "aws_rds_cluster" "default" {
 }
 
 resource "aws_rds_cluster_instance" "default" {
-  cluster_identifier = aws_rds_cluster.default.id
-  instance_class     = "db.serverless"
-  engine             = aws_rds_cluster.default.engine
-  engine_version     = aws_rds_cluster.default.engine_version
-  promotion_tier     = 1
+  cluster_identifier  = aws_rds_cluster.default.id
+  instance_class      = "db.serverless"
+  engine              = aws_rds_cluster.default.engine
+  engine_version      = aws_rds_cluster.default.engine_version
+  publicly_accessible = true
+  promotion_tier      = 1
 }
 
 resource "aws_ssm_parameter" "parameter" {
