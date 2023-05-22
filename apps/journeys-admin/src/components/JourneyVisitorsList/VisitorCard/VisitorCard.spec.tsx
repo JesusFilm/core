@@ -41,7 +41,7 @@ describe('VisitorCard', () => {
 
   it('should link to visitor details', () => {
     const { getByRole, getAllByText } = render(
-      <VisitorCard visitorNode={visitorNode} />
+      <VisitorCard visitorNode={visitorNode} loading={false} />
     )
     expect(getAllByText('FirstName LastName')).toHaveLength(3)
     expect(getByRole('link')).toHaveAttribute(
@@ -61,7 +61,9 @@ describe('VisitorCard', () => {
       events: []
     }
 
-    const { getAllByText } = render(<VisitorCard visitorNode={emptyVisitor} />)
+    const { getAllByText } = render(
+      <VisitorCard visitorNode={emptyVisitor} loading={false} />
+    )
     expect(getAllByText('#012345678901')).toHaveLength(2)
   })
 })
