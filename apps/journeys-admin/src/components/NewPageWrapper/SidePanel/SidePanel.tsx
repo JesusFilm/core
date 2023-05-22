@@ -12,18 +12,21 @@ import { usePage } from '../../../libs/PageWrapperProvider'
 interface SidePanelProps {
   children: ReactNode
   title?: string
+  titleAction?: ReactNode
 }
 
 interface DrawerContentProps {
   title?: string
   children: ReactNode
   action?: ReactNode
+  titleAction?: ReactNode
 }
 
 function DrawerContent({
   title,
   children,
-  action
+  action,
+  titleAction
 }: DrawerContentProps): ReactElement {
   const { toolbar } = usePageWrapperStyles()
   return (
@@ -39,9 +42,12 @@ function DrawerContent({
           sx={{ justifyContent: 'space-between' }}
         >
           {title != null && (
-            <Typography variant="subtitle1" component="div" noWrap>
-              {title}
-            </Typography>
+            <>
+              <Typography variant="subtitle1" component="div" noWrap>
+                {title}
+                {titleAction != null && titleAction}
+              </Typography>
+            </>
           )}
           {action}
         </Toolbar>
@@ -60,7 +66,11 @@ function DrawerContent({
   )
 }
 
-export function SidePanel({ children, title }: SidePanelProps): ReactElement {
+export function SidePanel({
+  children,
+  title,
+  titleAction
+}: SidePanelProps): ReactElement {
   const { toolbar, sidePanel } = usePageWrapperStyles()
   const {
     state: { mobileDrawerOpen },
@@ -94,7 +104,9 @@ export function SidePanel({ children, title }: SidePanelProps): ReactElement {
           }
         }}
       >
-        <DrawerContent title={title}>{children}</DrawerContent>
+        <DrawerContent title={title} titleAction={titleAction}>
+          {children}
+        </DrawerContent>
       </Drawer>
       <Drawer
         anchor="bottom"
@@ -116,6 +128,7 @@ export function SidePanel({ children, title }: SidePanelProps): ReactElement {
       >
         <DrawerContent
           title={title}
+          titleAction={titleAction}
           action={
             <IconButton
               onClick={handleClose}

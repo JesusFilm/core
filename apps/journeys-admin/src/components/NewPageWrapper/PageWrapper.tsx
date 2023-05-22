@@ -27,6 +27,7 @@ interface PageWrapperProps {
   bottomPanelChildren?: ReactNode
   authUser?: AuthUser
   initialState?: Partial<PageState>
+  titleAction?: ReactNode
 }
 
 export function PageWrapper({
@@ -39,7 +40,8 @@ export function PageWrapper({
   bottomPanelChildren,
   children,
   authUser,
-  initialState
+  initialState,
+  titleAction
 }: PageWrapperProps): ReactElement {
   const [open, setOpen] = useState<boolean>(false)
   const theme = useTheme()
@@ -100,7 +102,9 @@ export function PageWrapper({
               </MainPanelBody>
             </Stack>
             {sidePanelChildren != null && (
-              <SidePanel title={sidePanelTitle}>{sidePanelChildren}</SidePanel>
+              <SidePanel title={sidePanelTitle} titleAction={titleAction}>
+                {sidePanelChildren}
+              </SidePanel>
             )}
           </Stack>
         </Stack>
