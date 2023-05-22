@@ -16,8 +16,15 @@ const Like = lazy(
       './outlined/Like'
     )
 )
+const Edit = lazy(
+  async () =>
+    await import(
+      /* webpackChunkName: 'custom-icon' */
+      './outlined/Edit'
+    )
+)
 
-export const IconNames = ['none', 'Like', 'Target'] as const
+export const IconNames = ['none', 'Edit', 'Like', 'Target'] as const
 
 type IconName = (typeof IconNames)[number]
 
@@ -37,6 +44,12 @@ export function CustomIcon({
       {
         {
           none: null,
+          Edit:
+            variant === 'outlined' ? (
+              <Edit {...iconProps} />
+            ) : (
+              `${name}IconSolid`
+            ),
           Like:
             variant === 'outlined' ? (
               <Like {...iconProps} />
