@@ -51,7 +51,7 @@ export function VisitorDetails({ id }: Props): ReactElement {
           <Typography>
             {format(
               parseISO(data?.visitor.lastChatStartedAt),
-              'h:maaa, MMM do'
+              'h:mmaaa, MMM do'
             )}
           </Typography>
         </Stack>
