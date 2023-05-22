@@ -1,14 +1,21 @@
 import {
+  ButtonAction,
   MessagePlatform,
   VideoBlockSource
 } from '../../../../../../__generated__/globalTypes'
 import {
-  GetVisitorEvents_visitor_events_ButtonClickEvent as Event,
+  GetVisitorEvents_visitor_events_RadioQuestionSubmissionEvent as Event,
   GetVisitorEvents_visitor_events_JourneyViewEvent as JourneyViewEvent,
+  GetVisitorEvents_visitor_events_ChatOpenEvent as ChatOpenEvent,
+  GetVisitorEvents_visitor_events_ButtonClickEvent as ButtonClickEvent,
   GetVisitorEvents_visitor_events_SignUpSubmissionEvent as SignUpEvent,
   GetVisitorEvents_visitor_events_VideoStartEvent as VideoStartEvent,
-  GetVisitorEvents_visitor_events_VideoCompleteEvent as VideoCompleteEvent,
-  GetVisitorEvents_visitor_events_ChatOpenEvent as ChatOpenEvent
+  GetVisitorEvents_visitor_events_VideoPlayEvent as VideoPlayEvent,
+  GetVisitorEvents_visitor_events_VideoPauseEvent as VideoPauseEvent,
+  GetVisitorEvents_visitor_events_VideoCollapseEvent as VideoCollapseEvent,
+  GetVisitorEvents_visitor_events_VideoExpandEvent as VideoExpandEvent,
+  GetVisitorEvents_visitor_events_VideoProgressEvent as VideoProgressEvent,
+  GetVisitorEvents_visitor_events_VideoCompleteEvent as VideoCompleteEvent
 } from '../../../../../../__generated__/GetVisitorEvents'
 import { getDuration } from './transformEvents'
 import { TimelineItem, transformEvents } from '.'
@@ -17,7 +24,7 @@ const journeyViewEvent: JourneyViewEvent = {
   __typename: 'JourneyViewEvent',
   id: 'journeyView1.id',
   journeyId: 'journey1.id',
-  createdAt: '2022-11-02T03:20:26.368Z',
+  createdAt: '2022-11-02T03:20:06.368Z',
   label: 'Journey 1',
   language: {
     __typename: 'Language',
@@ -31,47 +38,14 @@ const journeyViewEvent: JourneyViewEvent = {
   },
   value: '529'
 }
-const stepViewEvent: Event = {
-  __typename: 'StepViewEvent',
-  id: 'stepViewEvent1.id',
+const chatOpenEvent: ChatOpenEvent = {
+  __typename: 'ChatOpenEvent',
+  id: 'chatOpenEvent1.id',
   journeyId: 'journey1.id',
   label: null,
-  value: 'Step title',
-  createdAt: '2022-11-02T03:20:27.368Z'
-}
-const buttonClickEvent: Event = {
-  __typename: 'ButtonClickEvent',
-  id: 'buttonClickEvent1.id',
-  journeyId: 'journey1.id',
-  label: 'Button label - journey 1',
-  value: 'Button  value - journey 1',
-  createdAt: '2022-11-02T03:20:28.368Z'
-}
-const radioQuestionResponseEvent: Event = {
-  __typename: 'RadioQuestionSubmissionEvent',
-  id: 'radioQuestionSubmissionEvent1.id',
-  journeyId: 'journey1.id',
-  label: 'Radio question - journey 1',
-  value: 'Radio option - journey 1',
-  createdAt: '2022-11-02T03:20:30.368Z'
-}
-const videoStartEvent: VideoStartEvent = {
-  __typename: 'VideoStartEvent',
-  id: 'videoStartEvent1.id',
-  journeyId: 'journey1.id',
-  label: 'JESUS - journey 1 - internal',
-  value: 'video description - journey 1 - internal',
-  source: VideoBlockSource.internal,
-  createdAt: '2022-11-02T03:20:30.868Z'
-}
-const videoCompleteEvent: VideoCompleteEvent = {
-  __typename: 'VideoCompleteEvent',
-  id: 'videoCompleteEvent1.id',
-  journeyId: 'journey1.id',
-  label: 'JESUS journey 1 - youtube',
-  value: 'video description - journey 1 - youTube',
-  source: VideoBlockSource.youTube,
-  createdAt: '2022-11-02T03:34:26.368Z'
+  value: 'button label - journey 1',
+  messagePlatform: MessagePlatform.facebook,
+  createdAt: '2022-11-02T03:20:16.368Z'
 }
 const textResponseEvent: Event = {
   __typename: 'TextResponseSubmissionEvent',
@@ -79,7 +53,25 @@ const textResponseEvent: Event = {
   journeyId: 'journey1.id',
   label: 'Text response label - journey 1',
   value: 'Text response submission - journey 1',
-  createdAt: '2022-11-02T03:34:36.368Z'
+  createdAt: '2022-11-02T03:30:16.368Z'
+}
+const buttonClickEvent: ButtonClickEvent = {
+  __typename: 'ButtonClickEvent',
+  id: 'buttonClickEvent1.id',
+  journeyId: 'journey1.id',
+  label: 'Button label - journey 1',
+  value: 'Button  value - journey 1',
+  createdAt: '2022-11-02T03:33:16.368Z',
+  action: ButtonAction.NavigateAction,
+  actionValue: null
+}
+const radioQuestionResponseEvent: Event = {
+  __typename: 'RadioQuestionSubmissionEvent',
+  id: 'radioQuestionSubmissionEvent1.id',
+  journeyId: 'journey1.id',
+  label: 'Radio question - journey 1',
+  value: 'Radio option - journey 1',
+  createdAt: '2022-11-02T03:33:26.368Z'
 }
 const signUpSubmissionEvent: SignUpEvent = {
   __typename: 'SignUpSubmissionEvent',
@@ -88,16 +80,93 @@ const signUpSubmissionEvent: SignUpEvent = {
   label: 'Sign Up submission label - journey 1',
   email: 'signUpJourney1@email.com',
   value: 'Sign up name - journey 1',
-  createdAt: '2022-11-02T03:35:26.368Z'
+  createdAt: '2022-11-02T03:33:27.368Z'
 }
-const chatOpenEvent: ChatOpenEvent = {
-  __typename: 'ChatOpenEvent',
-  id: 'chatOpenEvent1.id',
+const stepNextEvent: Event = {
+  __typename: 'StepNextEvent',
+  id: 'stepNextEvent1.id',
+  journeyId: 'journey1.id',
+  label: 'Current step block name',
+  value: 'Next StepBlock Name',
+  createdAt: '2022-11-02T03:34:27.368Z'
+}
+const stepViewEvent: Event = {
+  __typename: 'StepViewEvent',
+  id: 'stepViewEvent1.id',
   journeyId: 'journey1.id',
   label: null,
-  value: 'button label - journey 1',
-  messagePlatform: MessagePlatform.facebook,
-  createdAt: '2022-11-02T03:35:39.368Z'
+  value: 'Step title',
+  createdAt: '2022-11-02T03:34:37.368Z'
+}
+const videoStartEvent: VideoStartEvent = {
+  __typename: 'VideoStartEvent',
+  id: 'videoStartEvent1.id',
+  journeyId: 'journey1.id',
+  label: 'JESUS - journey 1 - internal',
+  value: 'video description - journey 1 - internal',
+  source: VideoBlockSource.internal,
+  createdAt: '2022-11-02T03:44:37.368Z',
+  position: 0
+}
+const videoPlayEvent: VideoPlayEvent = {
+  __typename: 'VideoPlayEvent',
+  id: 'videoPlayEvent1.id',
+  journeyId: 'journey1.id',
+  label: 'JESUS - journey 1 - internal',
+  value: 'video description - journey 1 - internal',
+  source: VideoBlockSource.internal,
+  createdAt: '2022-11-02T03:44:47.368Z',
+  position: 0
+}
+const videoPauseEvent: VideoPauseEvent = {
+  __typename: 'VideoPauseEvent',
+  id: 'videoPauseEvent1.id',
+  journeyId: 'journey1.id',
+  label: 'JESUS - journey 1 - internal',
+  value: 'video description - journey 1 - internal',
+  source: VideoBlockSource.internal,
+  createdAt: '2022-11-02T03:45:47.368Z',
+  position: 0
+}
+const videoProgressEvent: VideoProgressEvent = {
+  __typename: 'VideoProgressEvent',
+  id: 'videoProgressEvent1.id',
+  journeyId: 'journey1.id',
+  label: 'JESUS - journey 1 - internal',
+  value: 'video description - journey 1 - internal',
+  source: VideoBlockSource.internal,
+  createdAt: '2022-11-02T03:47:47.368Z',
+  position: 0,
+  progress: 25
+}
+const videoExpandEvent: VideoExpandEvent = {
+  __typename: 'VideoExpandEvent',
+  id: 'videoExpandEvent1.id',
+  journeyId: 'journey1.id',
+  label: 'JESUS - journey 1 - internal',
+  value: 'video description - journey 1 - internal',
+  source: VideoBlockSource.internal,
+  createdAt: '2022-11-02T03:47:48.368Z',
+  position: 0
+}
+const videoCollapseEvent: VideoCollapseEvent = {
+  __typename: 'VideoCollapseEvent',
+  id: 'videoCollapseEvent1.id',
+  journeyId: 'journey1.id',
+  label: 'JESUS - journey 1 - internal',
+  value: 'video description - journey 1 - internal',
+  source: VideoBlockSource.internal,
+  createdAt: '2022-11-02T03:47:58.368Z',
+  position: 0
+}
+const videoCompleteEvent: VideoCompleteEvent = {
+  __typename: 'VideoCompleteEvent',
+  id: 'videoCompleteEvent1.id',
+  journeyId: 'journey1.id',
+  label: 'JESUS journey 1 - youtube',
+  value: 'video description - journey 1 - youTube',
+  source: VideoBlockSource.youTube,
+  createdAt: '2022-11-02T03:47:58.468Z'
 }
 
 describe('transformEvents', () => {
@@ -105,15 +174,15 @@ describe('transformEvents', () => {
     it('should filter events', () => {
       const result = transformEvents([
         journeyViewEvent,
-        stepViewEvent,
-        buttonClickEvent
+        buttonClickEvent,
+        videoCollapseEvent
       ])
       const expected = {
         timelineItems: [
-          [{ event: buttonClickEvent }],
-          { event: journeyViewEvent, duration: '0:02' }
+          { event: buttonClickEvent },
+          { event: journeyViewEvent, duration: '13:10' }
         ],
-        totalDuration: '0:02'
+        totalDuration: '13:10'
       }
 
       expect(result).toEqual(expected)
@@ -121,29 +190,42 @@ describe('transformEvents', () => {
 
     it('should nest non featured events', () => {
       const result = transformEvents([
-        buttonClickEvent,
+        chatOpenEvent,
         journeyViewEvent,
-        radioQuestionResponseEvent,
-        videoStartEvent,
-        videoCompleteEvent,
         textResponseEvent,
+        buttonClickEvent,
+        radioQuestionResponseEvent,
         signUpSubmissionEvent,
-        chatOpenEvent
+        stepNextEvent,
+        stepViewEvent,
+        videoStartEvent,
+        videoPlayEvent,
+        videoPauseEvent,
+        videoProgressEvent,
+        videoExpandEvent,
+        videoCollapseEvent,
+        videoCompleteEvent
       ])
       const expected = {
         timelineItems: [
-          { event: chatOpenEvent },
-          [{ event: signUpSubmissionEvent, duration: '0:13' }],
-          { event: textResponseEvent, duration: '0:50' },
           [
-            { event: videoCompleteEvent, duration: '0:10' },
-            { event: videoStartEvent, duration: '13:55' }
+            { event: videoCompleteEvent },
+            { event: videoExpandEvent, duration: '0:10' },
+            { event: videoProgressEvent, duration: '0:01' },
+            { event: videoPauseEvent, duration: '2:00' },
+            { event: videoPlayEvent, duration: '1:00' },
+            { event: videoStartEvent, duration: '0:10' },
+            { event: stepViewEvent, duration: '10:00' },
+            { event: stepNextEvent, duration: '0:10' }
           ],
-          { event: radioQuestionResponseEvent, duration: '< 0:01' },
-          [{ event: buttonClickEvent, duration: '0:02' }],
-          { event: journeyViewEvent, duration: '0:02' }
+          { event: signUpSubmissionEvent, duration: '1:00' },
+          { event: radioQuestionResponseEvent, duration: '0:01' },
+          { event: buttonClickEvent, duration: '0:10' },
+          { event: textResponseEvent, duration: '3:00' },
+          { event: chatOpenEvent, duration: '10:00' },
+          { event: journeyViewEvent, duration: '0:10' }
         ],
-        totalDuration: '15:13'
+        totalDuration: '27:52'
       }
 
       expect(result).toEqual(expected)
@@ -159,8 +241,8 @@ describe('transformEvents', () => {
     })
 
     it('should calculate total duration', () => {
-      const result = transformEvents([journeyViewEvent, chatOpenEvent])
-      expect(result.totalDuration).toEqual('15:13')
+      const result = transformEvents([journeyViewEvent, videoCompleteEvent])
+      expect(result.totalDuration).toEqual('27:52')
     })
   })
 
@@ -170,21 +252,21 @@ describe('transformEvents', () => {
         journeyViewEvent.createdAt,
         chatOpenEvent.createdAt
       )
-      expect(result).toEqual('15:13')
+      expect(result).toEqual('0:10')
     })
 
     it('should return duration with 2 digit seconds if singular', () => {
       const result = getDuration(
-        journeyViewEvent.createdAt,
-        buttonClickEvent.createdAt
+        radioQuestionResponseEvent.createdAt,
+        signUpSubmissionEvent.createdAt
       )
-      expect(result).toEqual('0:02')
+      expect(result).toEqual('0:01')
     })
 
     it('should return < 0.01 if if duration is less than a second', () => {
       const result = getDuration(
-        radioQuestionResponseEvent.createdAt,
-        videoStartEvent.createdAt
+        videoCollapseEvent.createdAt,
+        videoCompleteEvent.createdAt
       )
       expect(result).toEqual('< 0:01')
     })

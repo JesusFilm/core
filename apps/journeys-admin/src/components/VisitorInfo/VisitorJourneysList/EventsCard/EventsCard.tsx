@@ -5,7 +5,8 @@ import Typography from '@mui/material/Typography'
 import Divider from '@mui/material/Divider'
 import Collapse from '@mui/material/Collapse'
 import Stack from '@mui/material/Stack'
-import { transformEvents, JourneyWithEvents } from '../utils'
+import ErrorOutlineRoundedIcon from '@mui/icons-material/ErrorOutlineRounded'
+import { transformEvents, JourneyWithEvents, EventVariant } from '../utils'
 import { TimelineEvent } from './TimelineEvent'
 import { CompactEvent } from './CompactEvent'
 import { GenericEvent } from './GenericEvent'
@@ -26,16 +27,22 @@ export function EventsCard({ journey }: Props): ReactElement {
   return (
     <Card
       variant="outlined"
-      sx={{ borderRadius: 4, minHeight: '200px', mb: 6 }}
+      sx={{ borderRadius: { xs: 0, sm: 4 }, mx: { xs: -6, sm: 0 } }}
     >
       <Box sx={{ px: 6 }}>
         <GenericEvent
           duration={totalDuration}
           value={
-            <Stack direction="row" sx={{ alignItems: 'center' }}>
+            <Stack
+              direction={{ xs: 'column', sm: 'row' }}
+              sx={{ alignItems: { xs: 'flex-start', sm: 'center' } }}
+            >
               <Typography variant="h3">{journey.title}</Typography>
               {journey.createdAt != null && (
-                <Typography variant="body2" sx={{ ml: 'auto' }}>
+                <Typography
+                  variant="body2"
+                  sx={{ ml: { xs: undefined, sm: 'auto' } }}
+                >
                   {new Intl.DateTimeFormat([], {
                     dateStyle: 'long'
                   }).format(new Date(journey.createdAt))}
@@ -43,12 +50,13 @@ export function EventsCard({ journey }: Props): ReactElement {
               )}
             </Stack>
           }
+          variant={EventVariant.title}
         />
       </Box>
 
       <Divider />
       <Box sx={{ px: 6 }}>
-        {timelineItems.map((timelineItem, index) => {
+        {timelineItems.map((timelineItem, index, array) => {
           if (Array.isArray(timelineItem)) {
             return (
               <>
@@ -81,10 +89,19 @@ export function EventsCard({ journey }: Props): ReactElement {
             )
           } else {
             return (
-              <TimelineEvent
-                key={timelineItem.event.id}
-                timelineItem={timelineItem}
-              />
+              <>
+                {array.length === 1 &&
+                  timelineItem.event.__typename === 'JourneyViewEvent' && (
+                    <GenericEvent
+                      icon={<ErrorOutlineRoundedIcon />}
+                      value="User left journey with no actions"
+                    />
+                  )}
+                <TimelineEvent
+                  key={timelineItem.event.id}
+                  timelineItem={timelineItem}
+                />
+              </>
             )
           }
         })}

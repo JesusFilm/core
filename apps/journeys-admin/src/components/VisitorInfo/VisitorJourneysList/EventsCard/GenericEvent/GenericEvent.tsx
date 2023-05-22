@@ -9,6 +9,7 @@ import Typography from '@mui/material/Typography'
 import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
 import { format, parseISO } from 'date-fns'
+import { getEventVariant, EventVariant } from '../../utils'
 
 interface Props {
   createdAt?: string
@@ -17,6 +18,7 @@ interface Props {
   icon?: ReactElement
   activity?: string
   duration?: string
+  variant?: EventVariant
 }
 
 export function GenericEvent({
@@ -25,30 +27,43 @@ export function GenericEvent({
   label,
   value,
   activity,
-  duration
+  duration,
+  variant = EventVariant.default
 }: Props): ReactElement {
+  const {
+    textAlign,
+    durationColor,
+    valueColor,
+    iconColor,
+    durationVariant,
+    activityVariant,
+    valueVariant
+  } = getEventVariant(variant)
+
   return (
     <TimelineItem>
+      {/* Time */}
       <TimelineOppositeContent
         sx={{
           display: 'flex',
-          alignItems: icon == null ? 'center' : undefined,
+          alignItems: textAlign,
           justifyContent: 'center',
           px: 0,
-          mr: 2,
-          maxWidth: '64px'
+          minWidth: '56px',
+          maxWidth: '56px'
         }}
       >
-        <Typography variant="body2">
+        <Typography variant={durationVariant} color={durationColor}>
           {createdAt != null ? format(parseISO(createdAt), 'p') : duration}
         </Typography>
       </TimelineOppositeContent>
 
+      {/* Icon */}
       {icon != null ? (
         <TimelineSeparator>
           <TimelineDot
             sx={{
-              color: 'text.primary',
+              color: iconColor,
               backgroundColor: 'transparent',
               boxShadow: 'none',
               m: 0
@@ -59,29 +74,30 @@ export function GenericEvent({
           <TimelineConnector />
         </TimelineSeparator>
       ) : (
-        <Box sx={{ width: '36px' }} />
+        <Box sx={{ width: '38px' }} />
       )}
 
       <TimelineContent
         sx={{
           display: 'flex',
-          alignItems: icon == null ? 'center' : undefined
+          alignItems: variant === 'title' ? 'center' : undefined
         }}
       >
         <Stack direction="column" sx={{ width: '100%' }}>
-          <Stack direction="row" sx={{ width: '100%' }}>
+          <Typography variant="body2" color="text.secondary" gutterBottom>
+            {/* activity */}
             {activity != null && (
-              <Typography variant="body2" sx={{ fontWeight: 'bold' }}>
-                {`${activity}:\u00A0`}
-              </Typography>
+              <span
+                style={{ fontWeight: activityVariant }}
+              >{`${activity}\xa0`}</span>
             )}
-            {label != null && (
-              <Typography variant="body2" gutterBottom>
-                {label}
-              </Typography>
-            )}
-          </Stack>
-          <Typography variant="subtitle1">{value}</Typography>
+            {/* label */}
+            {label != null && label}
+          </Typography>
+          {/* Value */}
+          <Typography variant={valueVariant} color={valueColor}>
+            {value}
+          </Typography>
         </Stack>
       </TimelineContent>
     </TimelineItem>

@@ -25,8 +25,38 @@ Open.args = {
 }
 Open.play = async () => {
   await waitFor(() => {
-    userEvent.click(screen.getByRole('button', { name: '3 more events' }))
+    userEvent.click(screen.getByRole('button', { name: '8 more events' }))
   })
+}
+
+export const Empty = Template.bind({})
+Empty.args = {
+  journey: {
+    id: 'emptyJourney.id',
+    subtitle: 'English',
+    title: 'Another Journey',
+    createdAt: '2022-11-02T03:20:26.368Z',
+    events: [
+      {
+        __typename: 'JourneyViewEvent',
+        id: 'epmtyJourneyViewEventId',
+        journeyId: 'emptyJourney.id',
+        createdAt: '2022-11-02T03:20:26.368Z',
+        label: 'Another Journey',
+        language: {
+          __typename: 'Language',
+          id: 'languageId',
+          name: [
+            {
+              __typename: 'Translation',
+              value: 'English'
+            }
+          ]
+        },
+        value: '529'
+      }
+    ]
+  }
 }
 
 export default EventsCardStory as Meta
