@@ -26,6 +26,7 @@ interface PageWrapperProps {
   bottomPanelChildren?: ReactNode
   authUser?: AuthUser
   initialState?: Partial<PageState>
+  backHrefHistory?: boolean
 }
 
 export function PageWrapper({
@@ -38,7 +39,8 @@ export function PageWrapper({
   bottomPanelChildren,
   children,
   authUser,
-  initialState
+  initialState,
+  backHrefHistory
 }: PageWrapperProps): ReactElement {
   const [open, setOpen] = useState<boolean>(false)
   const theme = useTheme()
@@ -86,6 +88,7 @@ export function PageWrapper({
               <MainPanelHeader
                 title={title}
                 backHref={backHref}
+                backHrefHistory={backHrefHistory}
                 menu={customMenu}
               />
               <MainPanelBody bottomPanelChildren={bottomPanelChildren}>

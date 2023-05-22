@@ -6,21 +6,33 @@ import IconButton from '@mui/material/IconButton'
 import Stack from '@mui/material/Stack'
 import Toolbar from '@mui/material/Toolbar'
 import Typography from '@mui/material/Typography'
+import Box from '@mui/system/Box'
+import { useRouter } from 'next/router'
 import { usePageWrapperStyles } from '../utils/usePageWrapperStyles'
 
 export interface MainBodyContainerProps {
   title: string
   backHref?: string
   menu?: ReactNode
+  backHrefHistory?: boolean
 }
 
 export function MainPanelHeader({
   title,
   backHref,
+  backHrefHistory,
   menu
 }: MainBodyContainerProps): ReactElement {
   const { toolbar } = usePageWrapperStyles()
+  const router = useRouter()
 
+  async function handleClick(): Promise<void> {
+    if (backHrefHistory === true) {
+      router.back()
+    } else {
+      await router.push('/')
+    }
+  }
   return (
     <>
       <AppBar
@@ -43,6 +55,19 @@ export function MainPanelHeader({
                   <ChevronLeftRounded />
                 </IconButton>
               </Link>
+            )}
+            {backHrefHistory != null && (
+              <Box onClick={handleClick}>
+                <IconButton
+                  data-testid="routerLink"
+                  edge="start"
+                  size="small"
+                  color="inherit"
+                  sx={{ mr: 2 }}
+                >
+                  <ChevronLeftRounded />
+                </IconButton>
+              </Box>
             )}
             <Typography
               variant="subtitle1"

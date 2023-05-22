@@ -11,7 +11,6 @@ import { AuthUser } from 'next-firebase-auth'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import MenuIcon from '@mui/icons-material/Menu'
 import { Theme } from '@mui/material/styles'
-import { useRouter } from 'next/router'
 import taskbarIcon from '../../../public/taskbar-icon.svg'
 import { NavigationDrawer } from './NavigationDrawer'
 
@@ -22,7 +21,6 @@ export interface PageWrapperProps {
   menu?: ReactNode
   children?: ReactNode
   authUser?: AuthUser
-  shouldUseHistory?: boolean
 }
 
 export function PageWrapper({
@@ -31,8 +29,7 @@ export function PageWrapper({
   title,
   menu: customMenu,
   children,
-  authUser,
-  shouldUseHistory
+  authUser
 }: PageWrapperProps): ReactElement {
   const [open, setOpen] = useState<boolean>(false)
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
@@ -46,8 +43,6 @@ export function PageWrapper({
     title === 'Journey Templates' ||
     title === 'Journey Template' ||
     title === 'Template Details'
-
-  const router = useRouter()
 
   return (
     <>
@@ -111,24 +106,6 @@ export function PageWrapper({
             </Link>
           )}
 
-          {shouldUseHistory != null && (
-            <Box
-              onClick={
-                shouldUseHistory
-                  ? () => router.back()
-                  : async () => await router.push('/')
-              }
-            >
-              <IconButton
-                edge="start"
-                size="small"
-                color="inherit"
-                sx={{ mr: 2 }}
-              >
-                <ChevronLeftRounded />
-              </IconButton>
-            </Box>
-          )}
           <Typography
             variant="subtitle1"
             component="div"
