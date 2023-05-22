@@ -25,10 +25,19 @@ import TagManager from 'react-gtm-module'
 import last from 'lodash/last'
 import { JourneyViewEventCreate } from '../../../__generated__/JourneyViewEventCreate'
 import { Footer } from '../Footer'
+import { VisitorUpdateInput } from '../../../__generated__/globalTypes'
 
 export const JOURNEY_VIEW_EVENT_CREATE = gql`
   mutation JourneyViewEventCreate($input: JourneyViewEventCreateInput!) {
     journeyViewEventCreate(input: $input) {
+      id
+    }
+  }
+`
+
+export const JOURNEY_VISITOR_UPDATE = gql`
+  mutation VisitorUpdateForCurrentUser($input: VisitorUpdateInput!) {
+    visitorUpdateForCurrentUser(input: $input) {
       id
     }
   }
@@ -67,6 +76,10 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
     JOURNEY_VIEW_EVENT_CREATE
   )
 
+  const [journeyVisitorUpdate] = useMutation<VisitorUpdateInput>(
+    JOURNEY_VISITOR_UPDATE
+  )
+
   useEffect(() => {
     if (!admin && journey != null) {
       const id = uuidv4()
@@ -79,6 +92,33 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
             value: journey.language.id
           }
         }
+      }).then(() => {
+        void fetch('/api/geolocation').then((response) => {
+          void response
+            .json()
+            .then(
+              (data: { city?: string; country?: string; region?: string }) => {
+                const countryCodes: string[] = []
+                if (data.city != null) countryCodes.push(data.city)
+                if (data.region != null) countryCodes.push(data.region)
+                if (data.country != null) countryCodes.push(data.country)
+
+                if (countryCodes.length > 0 || document.referrer != null) {
+                  void journeyVisitorUpdate({
+                    variables: {
+                      input: {
+                        countryCode:
+                          countryCodes.length > 0
+                            ? countryCodes.join(', ')
+                            : undefined,
+                        referrer: document.referrer ?? undefined
+                      }
+                    }
+                  })
+                }
+              }
+            )
+        })
       })
       TagManager.dataLayer({
         dataLayer: {
@@ -89,7 +129,7 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
         }
       })
     }
-  }, [admin, journey, journeyViewEventCreate])
+  }, [admin, journey, journeyViewEventCreate, journeyVisitorUpdate])
 
   useEffect(() => {
     setTreeBlocks(blocks)
