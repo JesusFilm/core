@@ -77,6 +77,7 @@ function DetailsRow({
 }: DetailsRowProps): ReactElement {
   const textColor = chatEvent ? 'primary' : 'secondary'
   const isBold = chatEvent ? 900 : 'normal'
+  const variant = chatEvent ? 'subtitle1' : 'body2'
   return (
     <>
       <Stack direction="row">
@@ -106,6 +107,7 @@ function DetailsRow({
             <Typography
               noWrap
               color={textColor}
+              variant={variant}
               sx={{
                 minWidth: '262px',
                 maxWidth: '262px',
@@ -130,7 +132,11 @@ function DetailsRow({
           {loading ? (
             <Skeleton width={100} height={25} />
           ) : (
-            <Typography color={textColor} sx={{ fontWeight: isBold }}>
+            <Typography
+              color={textColor}
+              variant={variant}
+              sx={{ fontWeight: isBold }}
+            >
               {value}
             </Typography>
           )}
