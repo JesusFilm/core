@@ -80,7 +80,7 @@ export function DetailsForm({ id }: Props): ReactElement {
     <Paper
       elevation={0}
       sx={{
-        m: { xs: '-24px -24px  0px -24px', sm: '0px 0px 0px 0px' }
+        mx: { xs: -6, sm: 0 }
       }}
     >
       {data?.visitor != null && (
