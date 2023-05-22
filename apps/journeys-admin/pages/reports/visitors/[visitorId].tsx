@@ -29,11 +29,11 @@ function SingleVisitorReportsPage(): ReactElement {
     <>
       <NextSeo title={t('Visitor Info')} />
       <PageWrapper
-        title={t('Visitor Info')}
+        title={t("Visitor's Activity")}
         backHref="/reports/visitors"
         authUser={AuthUser}
         sidePanelChildren={<DetailsForm id={id} />}
-        sidePanelTitle="User details"
+        sidePanelTitle={t('Visitor Details')}
       >
         <VisitorInfo id={id} />
       </PageWrapper>
