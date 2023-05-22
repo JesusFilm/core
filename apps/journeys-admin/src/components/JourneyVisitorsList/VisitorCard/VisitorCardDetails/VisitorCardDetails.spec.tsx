@@ -15,6 +15,7 @@ describe('VisitorCardDetails', () => {
   it('should show name', () => {
     const { getByText } = render(
       <VisitorCardDetails
+        loading={false}
         name="test name"
         events={[
           {
@@ -62,7 +63,7 @@ describe('VisitorCardDetails', () => {
       }
     ]
     const { getByText, queryByText } = render(
-      <VisitorCardDetails name="test name" events={events} />
+      <VisitorCardDetails name="test name" events={events} loading={false} />
     )
 
     expect(getByText('Chat Started')).toBeInTheDocument()

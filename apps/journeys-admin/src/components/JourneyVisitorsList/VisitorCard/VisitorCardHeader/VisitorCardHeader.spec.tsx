@@ -19,7 +19,8 @@ describe('VisitorCardHeader', () => {
       location: 'location',
       source: 'source',
       createdAt: '2021-11-19T12:34:56.647Z',
-      duration: 75
+      duration: 75,
+      loading: false
     }
 
     const { getAllByText } = render(<VisitorCardHeader {...props} />)
@@ -27,7 +28,7 @@ describe('VisitorCardHeader', () => {
     expect(getAllByText('location')).toHaveLength(2)
     expect(getAllByText('source')).toHaveLength(2)
     expect(getAllByText('12:34pm, Nov. 19th')).toHaveLength(2)
-    expect(getAllByText('⭐')).toHaveLength(2)
+    expect(getAllByText('⭐')).toHaveLength(1)
     expect(getAllByText('1 min')).toHaveLength(2)
   })
 
@@ -38,10 +39,11 @@ describe('VisitorCardHeader', () => {
       location: null,
       source: null,
       createdAt: '2021-11-19T12:34:56.647Z',
-      duration: 45
+      duration: 45,
+      loading: false
     }
 
     const { getAllByTestId } = render(<VisitorCardHeader {...props} />)
-    expect(getAllByTestId('PersonOutlineRoundedIcon')).toHaveLength(2)
+    expect(getAllByTestId('PersonOutlineRoundedIcon')).toHaveLength(1)
   })
 })
