@@ -83,7 +83,7 @@ export function SidePanel({ children, title }: SidePanelProps): ReactElement {
         hideBackdrop
         data-testId="side-drawer"
         sx={{
-          display: { xs: 'none', sm: 'flex' },
+          display: { xs: 'none', md: 'flex' },
           width: sidePanel.width,
           flexShrink: 1,
           '& .MuiDrawer-paper': {
@@ -104,7 +104,7 @@ export function SidePanel({ children, title }: SidePanelProps): ReactElement {
         transitionDuration={300}
         data-testId="mobile-side-drawer"
         sx={{
-          display: { xs: 'flex', sm: 'none' },
+          display: { xs: 'flex', md: 'none' },
           width: '100%',
           flexShrink: 1,
           '& .MuiDrawer-paper': {

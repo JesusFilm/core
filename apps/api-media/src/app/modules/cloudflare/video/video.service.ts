@@ -18,6 +18,15 @@ export interface CloudflareVideoUrlUploadResponse {
   messages: string[]
 }
 
+export interface CloudflareVideoGetResponse {
+  result: {
+    readyToStream: boolean
+  } | null
+  success: boolean
+  errors: string[]
+  messages: string[]
+}
+
 @Injectable()
 export class VideoService extends BaseService {
   collection = this.db.collection('cloudflareVideos')
@@ -64,6 +73,23 @@ export class VideoService extends BaseService {
       }
     )
     return response.ok
+  }
+
+  async getVideoFromCloudflare(
+    videoId: string
+  ): Promise<CloudflareVideoGetResponse> {
+    const response = await fetch(
+      `https://api.cloudflare.com/client/v4/accounts/${
+        process.env.CLOUDFLARE_ACCOUNT_ID ?? ''
+      }/stream/${videoId}`,
+      {
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${process.env.CLOUDFLARE_STREAM_TOKEN ?? ''}`
+        }
+      }
+    )
+    return await response.json()
   }
 
   async uploadToCloudflareByUrl(
