@@ -31,11 +31,6 @@ export function VisitorCardHeader({
     <>
       {/* Desktop */}
       <Stack direction="row" sx={{ display: { xs: 'none', sm: 'flex' } }}>
-        {status != null ? (
-          <Typography sx={{ mr: 3 }}>{status}</Typography>
-        ) : (
-          <PersonOutlineRoundedIcon sx={{ mr: 3 }} />
-        )}
         <Typography variant="subtitle1">{name}</Typography>
         {name != null && location != null && (
           <Typography variant="subtitle1">{'\u00A0\u00B7\u00A0'}</Typography>
@@ -52,11 +47,21 @@ export function VisitorCardHeader({
           {source}
         </Typography>
         <Stack direction="row" sx={{ ml: 'auto' }}>
-          <Typography variant="subtitle1" noWrap>
+          <Typography
+            variant="subtitle1"
+            sx={{ color: 'secondary.light' }}
+            noWrap
+          >
             {format(parseISO(createdAt), 'h:mmaaa, LLL. do')}
           </Typography>
-          <Typography variant="subtitle1">{'\u00A0\u00B7\u00A0'}</Typography>
-          <Typography variant="subtitle1" noWrap>
+          <Typography variant="subtitle1" sx={{ color: 'secondary.light' }}>
+            {'\u00A0\u00B7\u00A0'}
+          </Typography>
+          <Typography
+            variant="subtitle1"
+            sx={{ color: 'secondary.light' }}
+            noWrap
+          >
             {journeyDuration}
           </Typography>
         </Stack>
@@ -71,11 +76,15 @@ export function VisitorCardHeader({
         )}
         <Stack direction="column">
           <Stack direction="row">
-            <Typography variant="subtitle1">
+            <Typography variant="subtitle1" sx={{ color: 'secondary.light' }}>
               {format(parseISO(createdAt), 'h:mmaaa, LLL. do')}
             </Typography>
-            <Typography variant="subtitle1">{'\u00A0\u00B7\u00A0'}</Typography>
-            <Typography variant="subtitle1">{journeyDuration}</Typography>
+            <Typography variant="subtitle1" sx={{ color: 'secondary.light' }}>
+              {'\u00A0\u00B7\u00A0'}
+            </Typography>
+            <Typography variant="subtitle1" sx={{ color: 'secondary.light' }}>
+              {journeyDuration}
+            </Typography>
           </Stack>
           <Stack direction="row">
             <Typography variant="subtitle1">{name}</Typography>

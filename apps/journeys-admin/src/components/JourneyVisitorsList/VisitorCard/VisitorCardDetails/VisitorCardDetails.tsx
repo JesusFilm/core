@@ -91,15 +91,20 @@ function DetailsRow({
               sx={{
                 minWidth: '262px',
                 maxWidth: '262px',
-                fontWeight: isBold
+                fontWeight: isBold,
+                paddingRight: { xs: 'none', sm: '35px' }
               }}
             >
               {label}
             </Typography>
+
             <Typography
               variant="subtitle1"
               color={textColor}
-              sx={{ display: { xs: 'none', sm: 'flex' } }}
+              sx={{
+                display: { xs: 'none', sm: 'flex' },
+                paddingRight: { xs: 'none', sm: '10px' }
+              }}
             >
               {'\u00B7\u00A0'}
             </Typography>
