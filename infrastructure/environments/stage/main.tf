@@ -1,9 +1,10 @@
 module "stage" {
-  source            = "../../modules/aws"
-  env               = "stage"
-  cidr              = "10.11.0.0/16"
-  internal_url_name = "stage.internal"
-  certificate_arn   = aws_acm_certificate.stage.arn
+  source              = "../../modules/aws"
+  env                 = "stage"
+  cidr                = "10.11.0.0/16"
+  internal_url_name   = "stage.internal"
+  certificate_arn     = aws_acm_certificate.stage.arn
+  vpn_certificate_arn = data.aws_acm_certificate.acm_central_jesusfilm_org.arn
 }
 
 module "route53_stage_central_jesusfilm_org" {
