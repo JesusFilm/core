@@ -15,25 +15,14 @@ describe('MainPanelHeader', () => {
     )
     expect(getByRole('link')).toHaveAttribute('href', '/')
   })
-  it('should show back button with correct link', async () => {
+  it('should show router button if a hardcoded href is not passed through', async () => {
     const back = jest.fn()
     mockUseRouter.mockReturnValue({ back } as unknown as NextRouter)
     const { getByTestId } = render(
       <MainPanelHeader title="Page title" backHrefHistory />
     )
-    fireEvent.click(getByTestId('backHref-history-button'))
+    fireEvent.click(getByTestId('back-button'))
 
     await waitFor(() => expect(back).toHaveBeenCalled())
-  })
-
-  it('should show back button with correct link', async () => {
-    const push = jest.fn()
-    mockUseRouter.mockReturnValue({ push } as unknown as NextRouter)
-    const { getByTestId } = render(
-      <MainPanelHeader title="Page title" backHrefHistory={false} />
-    )
-    fireEvent.click(getByTestId('backHref-history-button'))
-
-    await waitFor(() => expect(push).toHaveBeenCalled())
   })
 })

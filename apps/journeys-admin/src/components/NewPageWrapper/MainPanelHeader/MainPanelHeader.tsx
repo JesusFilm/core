@@ -18,7 +18,13 @@ export interface MainBodyContainerProps {
 }
 
 const BackButton = (): ReactElement => (
-  <IconButton edge="start" size="small" color="inherit" sx={{ mr: 2 }}>
+  <IconButton
+    edge="start"
+    size="small"
+    color="inherit"
+    sx={{ mr: 2 }}
+    data-testid="back-button"
+  >
     <ChevronLeftRounded />
   </IconButton>
 )
