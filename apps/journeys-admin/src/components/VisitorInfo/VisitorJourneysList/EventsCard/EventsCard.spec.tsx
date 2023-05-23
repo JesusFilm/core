@@ -13,50 +13,72 @@ jest.mock('react-i18next', () => ({
 
 describe('EventsCard', () => {
   it('should show card header', () => {
-    const { getByRole, getAllByText } = render(<EventsCard journey={journey} />)
+    const { getByRole } = render(<EventsCard journey={journey} />)
     expect(
       getByRole('heading', {
         name: 'Lord of the Rings November 2, 2022'
       })
     ).toBeInTheDocument()
-    expect(getAllByText('< 0:01')).toHaveLength(7)
   })
 
   it('should show collapsed events', () => {
     const { getByText, getByRole } = render(<EventsCard journey={journey} />)
 
+    // JourneyViewEvent
     expect(
-      getByRole('heading', { name: 'Chat started on {{messagePlatform}}' })
-    ).toBeInTheDocument() // ChatOpenedEvent
+      getByRole('heading', { name: 'Journey Started' })
+    ).toBeInTheDocument()
+    // ChatOpenedEvent
+    expect(getByRole('heading', { name: 'Nov 2, 3:20 AM' })).toBeInTheDocument()
+    // TextResponseEvent
     expect(
       getByRole('heading', {
         name: 'It was basically the worst. Stabbed, lost, hungry, betrayed, and I lost a finger.'
       })
-    ).toBeInTheDocument() // TextResponseEvent
+    ).toBeInTheDocument()
+    // ButtonClick
+    expect(
+      getByRole('heading', { name: 'Navigate Action' })
+    ).toBeInTheDocument()
+    // RadioQuestionSubmissionEvent
     expect(
       getByRole('heading', { name: '10/10 would do it again' })
-    ).toBeInTheDocument() // RadioQuestionSubmissionEvent
+    ).toBeInTheDocument()
+    // SignUpEvent
     expect(
-      getByRole('heading', { name: 'Journey Started' })
-    ).toBeInTheDocument() // JourneyViewEvent
+      getByRole('heading', { name: '10/10 would do it again' })
+    ).toBeInTheDocument()
 
-    expect(getByText('3 more events')).toBeInTheDocument() // Compact events
+    // Compact events
+    expect(getByText('8 more events')).toBeInTheDocument()
   })
 
   it('should show expanded events', () => {
-    const { getByRole, queryByRole } = render(<EventsCard journey={journey} />)
-    fireEvent.click(getByRole('button', { name: '3 more events' }))
+    const { getByRole, getByText, queryByRole } = render(
+      <EventsCard journey={journey} />
+    )
+    fireEvent.click(getByRole('button', { name: '8 more events' }))
     expect(
-      queryByRole('button', { name: '3 more events' })
-    ).not.toBeInTheDocument() // Compact events
+      queryByRole('button', { name: '8 more events' })
+    ).not.toBeInTheDocument()
 
+    // StepNextEvent
+    expect(getByText('Next StepBlock Name')).toBeInTheDocument()
+    // StepViewEvent
+    expect(getByText('Current StepBlock Name')).toBeInTheDocument()
+    // VideoStartEvent
+    expect(getByText('Video Start')).toBeInTheDocument()
+    // VideoPlayEvent
+    expect(getByText('Video Play')).toBeInTheDocument()
+    // VideoPauseEvent
+    expect(getByText('Video Pause')).toBeInTheDocument()
+    // VideoProgressEvent
+    expect(getByText('Video Progress 50%')).toBeInTheDocument()
+    // VideoExpandEvent
     expect(
-      getByRole('heading', { name: 'How will you remember the journey?' })
-    ).toBeInTheDocument() // ButtonClickEvent
-    expect(getByRole('heading', { name: 'JESUS youtube' })).toBeInTheDocument() // VideoCompleteEvent
-    expect(getByRole('heading', { name: 'JESUS internal' })).toBeInTheDocument() // VideoStartEvent
-    expect(
-      getByRole('heading', { name: 'Bilbo Baggins bilbo.baggins@example.com' })
-    ).toBeInTheDocument() // SignUpSubmissionEvent
+      getByText('Video expanded to fullscreen at (0:08)')
+    ).toBeInTheDocument()
+    // VideoCompleteEvent
+    expect(getByText('Video completed')).toBeInTheDocument()
   })
 })

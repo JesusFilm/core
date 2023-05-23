@@ -23,18 +23,24 @@ export function transformEvents(events: Event[]): TransformedEvents {
   })
 
   const featured: Array<Event['__typename']> = [
+    'JourneyViewEvent',
     'ChatOpenEvent',
     'TextResponseSubmissionEvent',
+    'ButtonClickEvent',
     'RadioQuestionSubmissionEvent',
-    'JourneyViewEvent'
+    'SignUpSubmissionEvent'
   ]
 
   const eventTypesFilter: Array<Event['__typename']> = [
     ...featured,
-    'ButtonClickEvent',
-    'VideoCompleteEvent',
+    'StepNextEvent',
+    'StepViewEvent',
     'VideoStartEvent',
-    'SignUpSubmissionEvent'
+    'VideoPlayEvent',
+    'VideoPauseEvent',
+    'VideoProgressEvent',
+    'VideoExpandEvent',
+    'VideoCompleteEvent'
   ]
 
   const filteredEvents = sortedEvents.filter((event) =>

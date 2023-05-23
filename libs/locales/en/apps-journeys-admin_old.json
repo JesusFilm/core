@@ -11,5 +11,12 @@
   "Invite Editor by": "Invite Editor by",
   "Users invited by email don't require approval": "Users invited by email don't require approval",
   "Latest Journey": "Latest Journey",
+  "Poll selected": "Poll selected",
+  "Response submitted": "Response submitted",
+  "Video": "Video",
+  "Video started": "Video started",
+  "Sign Up": "Sign Up",
+  "Button clicked": "Button clicked",
+  "Chat started on {{messagePlatform}}": "Chat started on {{messagePlatform}}",
   "Start Conversation": "Start Conversation"
 }

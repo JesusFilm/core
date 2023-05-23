@@ -6,7 +6,7 @@ import ChatBubbleOutlineRoundedIcon from '@mui/icons-material/ChatBubbleOutlineR
 import LocationOnOutlinedIcon from '@mui/icons-material/LocationOnOutlined'
 import PhoneIphoneOutlinedIcon from '@mui/icons-material/PhoneIphoneOutlined'
 import PersonOutlinedIcon from '@mui/icons-material/PersonOutlined'
-import { format, parseISO } from 'date-fns'
+import { parseISO, intlFormat } from 'date-fns'
 import { GetVisitorForDetails } from '../../../../__generated__/GetVisitorForDetails'
 
 export const GET_VISITOR_FOR_DETAILS = gql`
@@ -49,10 +49,13 @@ export function VisitorDetails({ id }: Props): ReactElement {
         >
           <ChatBubbleOutlineRoundedIcon />
           <Typography>
-            {format(
-              parseISO(data?.visitor.lastChatStartedAt),
-              'h:mmaaa, MMM do'
-            )}
+            {intlFormat(parseISO(data?.visitor.lastChatStartedAt), {
+              hour: 'numeric',
+              minute: 'numeric',
+              month: 'short',
+              day: 'numeric',
+              hour12: true
+            })}
           </Typography>
         </Stack>
       )}

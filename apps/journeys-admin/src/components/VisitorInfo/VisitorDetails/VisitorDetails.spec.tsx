@@ -35,7 +35,7 @@ describe('VisitorDetails', () => {
       </MockedProvider>
     )
     await waitFor(() => expect(result).toHaveBeenCalled())
-    expect(getByText('2:01am, May 5th')).toBeInTheDocument()
+    expect(getByText('May 5, 2:01 AM')).toBeInTheDocument()
   })
 
   it('should show country code', async () => {
