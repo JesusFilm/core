@@ -29,7 +29,7 @@ describe('EventsCard', () => {
       getByRole('heading', { name: 'Journey Started' })
     ).toBeInTheDocument()
     // ChatOpenedEvent
-    expect(getByRole('heading', { name: '3:20 am Nov. 2' })).toBeInTheDocument()
+    expect(getByRole('heading', { name: 'Nov 2, 3:20 AM' })).toBeInTheDocument()
     // TextResponseEvent
     expect(
       getByRole('heading', {

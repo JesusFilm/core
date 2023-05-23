@@ -44,7 +44,7 @@ describe('TimelineEvent', () => {
     )
     expect(getByText('Chat Opened:')).toBeInTheDocument()
     expect(getByText('{{messagePlatform}}')).toBeInTheDocument()
-    expect(getByText('3:20 am Nov. 2')).toBeInTheDocument()
+    expect(getByText('Nov 2, 3:20 AM')).toBeInTheDocument()
   })
 
   it('shows textResponseSubmissionEvent', () => {

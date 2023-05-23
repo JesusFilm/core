@@ -1,4 +1,5 @@
 import { ReactElement, useState } from 'react'
+import { parseISO, intlFormat } from 'date-fns'
 import Card from '@mui/material/Card'
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
@@ -43,9 +44,11 @@ export function EventsCard({ journey }: Props): ReactElement {
                   variant="body2"
                   sx={{ ml: { xs: undefined, sm: 'auto' } }}
                 >
-                  {new Intl.DateTimeFormat([], {
-                    dateStyle: 'long'
-                  }).format(new Date(journey.createdAt))}
+                  {intlFormat(parseISO(journey.createdAt), {
+                    month: 'long',
+                    day: 'numeric',
+                    year: 'numeric'
+                  })}
                 </Typography>
               )}
             </Stack>

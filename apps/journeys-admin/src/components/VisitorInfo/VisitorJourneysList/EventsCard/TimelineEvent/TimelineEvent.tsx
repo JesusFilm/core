@@ -1,5 +1,5 @@
 import { ComponentProps, ReactElement } from 'react'
-import { format, parseISO } from 'date-fns'
+import { intlFormat, parseISO } from 'date-fns'
 import RadioButtonUncheckedIcon from '@mui/icons-material/RadioButtonUncheckedRounded'
 import CheckCircleOutlineRoundedIcon from '@mui/icons-material/CheckCircleOutlineRounded'
 import ArrowCircleRightOutlinedIcon from '@mui/icons-material/ArrowCircleRightOutlined'
@@ -53,7 +53,13 @@ export function TimelineEvent({ timelineItem }: Props): ReactElement {
             ? messagePlatformToLabel(event.messagePlatform, t)
             : t('Message Platform')
       })
-      value = format(parseISO(event.createdAt), 'h:m aaa LLL. d')
+      value = intlFormat(parseISO(event.createdAt), {
+        hour: 'numeric',
+        minute: 'numeric',
+        hour12: true,
+        month: 'short',
+        day: 'numeric'
+      })
       variant = EventVariant.chat
       break
     case 'TextResponseSubmissionEvent':
