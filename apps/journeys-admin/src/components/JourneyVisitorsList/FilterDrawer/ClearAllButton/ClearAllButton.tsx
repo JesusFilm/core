@@ -10,16 +10,13 @@ export const ClearAllButton = ({
 }: ClearAllProps): ReactElement => {
   return (
     <Button
+      variant="outlined"
+      color="secondary"
+      size="small"
       onClick={handleClearAll}
       sx={{
-        backgroundColor: 'background.paper',
-        color: 'secondary.light',
-        border: 1,
-        marginLeft: '20px',
-        marginBottom: '3px',
-        '&:hover': {
-          backgroundColor: 'background.default'
-        }
+        ml: 5,
+        mb: 1
       }}
     >
       Clear all

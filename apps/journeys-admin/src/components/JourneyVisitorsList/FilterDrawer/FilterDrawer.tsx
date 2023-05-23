@@ -39,7 +39,7 @@ export function FilterDrawer({
   return (
     <Box sx={{ height: '100vh' }}>
       <Box sx={{ display: { xs: 'block', sm: 'none' } }}>
-        <Stack direction="row" sx={{ px: 6, py: 5 }} alignItems="center">
+        <Stack direction="row" sx={{ px: 6, py: 2 }} alignItems="center">
           <Typography variant="subtitle1">
             Filters <ClearAllButton handleClearAll={handleClearAll} />
           </Typography>
