@@ -17,6 +17,12 @@ export interface MainBodyContainerProps {
   backHrefHistory?: boolean
 }
 
+const BackButton = (): ReactElement => (
+  <IconButton edge="start" size="small" color="inherit" sx={{ mr: 2 }}>
+    <ChevronLeftRounded />
+  </IconButton>
+)
+
 export function MainPanelHeader({
   title,
   backHref,
@@ -37,36 +43,16 @@ export function MainPanelHeader({
       >
         <Toolbar variant={toolbar.variant}>
           <Stack direction="row" flexGrow={1} alignItems="center">
-            {backHref != null && (
-              <Link href={backHref} passHref>
-                <IconButton
-                  edge="start"
-                  size="small"
-                  color="inherit"
-                  sx={{ mr: 2 }}
-                >
-                  <ChevronLeftRounded />
-                </IconButton>
-              </Link>
-            )}
-            {backHrefHistory != null && (
-              <Box
-                onClick={
-                  backHrefHistory
-                    ? () => router.back()
-                    : async () => await router.push('/')
-                }
-              >
-                <IconButton
-                  data-testid="backHref-history-button"
-                  edge="start"
-                  size="small"
-                  color="inherit"
-                  sx={{ mr: 2 }}
-                >
-                  <ChevronLeftRounded />
-                </IconButton>
+            {backHrefHistory === true ? (
+              <Box onClick={() => router.back()}>
+                <BackButton />
               </Box>
+            ) : (
+              backHref != null && (
+                <Link href={backHref} passHref>
+                  <BackButton />
+                </Link>
+              )
             )}
             <Typography
               variant="subtitle1"

@@ -37,6 +37,7 @@ function SingleVisitorReportsPage(): ReactElement {
         title={t('Visitor Info')}
         authUser={AuthUser}
         backHrefHistory={backHrefHistory}
+        backHref="/reports/visitors"
       >
         <VisitorInfo id={router.query.visitorId as string} />
       </PageWrapper>
