@@ -57,8 +57,8 @@ describe('VideoResolver', () => {
     it('returns VideoStartEvent', async () => {
       expect(await resolver.videoStartEventCreate('userid', input)).toEqual({
         ...input,
-        __typename: 'VideoStartEvent',
-        createdAt: new Date().toISOString()
+        typename: 'VideoStartEvent',
+        visitor: { connect: { id: 'visitor.id' } }
       })
     })
 
@@ -82,8 +82,8 @@ describe('VideoResolver', () => {
     it('returns VideoPlayEvent', async () => {
       expect(await resolver.videoPlayEventCreate('userid', input)).toEqual({
         ...input,
-        __typename: 'VideoPlayEvent',
-        createdAt: new Date().toISOString()
+        typename: 'VideoPlayEvent',
+        visitor: { connect: { id: 'visitor.id' } }
       })
     })
 
@@ -107,8 +107,8 @@ describe('VideoResolver', () => {
     it('returns VideoPauseEvent', async () => {
       expect(await resolver.videoPauseEventCreate('userid', input)).toEqual({
         ...input,
-        __typename: 'VideoPauseEvent',
-        createdAt: new Date().toISOString()
+        typename: 'VideoPauseEvent',
+        visitor: { connect: { id: 'visitor.id' } }
       })
     })
 
@@ -134,8 +134,8 @@ describe('VideoResolver', () => {
     it('returns VideoCompleteEvent', async () => {
       expect(await resolver.videoCompleteEventCreate('userid', input)).toEqual({
         ...input,
-        __typename: 'VideoCompleteEvent',
-        createdAt: new Date().toISOString()
+        typename: 'VideoCompleteEvent',
+        visitor: { connect: { id: 'visitor.id' } }
       })
     })
 
@@ -159,8 +159,8 @@ describe('VideoResolver', () => {
     it('returns VideoExpandEvent', async () => {
       expect(await resolver.videoExpandEventCreate('userid', input)).toEqual({
         ...input,
-        __typename: 'VideoExpandEvent',
-        createdAt: new Date().toISOString()
+        typename: 'VideoExpandEvent',
+        visitor: { connect: { id: 'visitor.id' } }
       })
     })
 
@@ -186,8 +186,8 @@ describe('VideoResolver', () => {
     it('returns VideoCollapseEvent', async () => {
       expect(await resolver.videoCollapseEventCreate('userid', input)).toEqual({
         ...input,
-        __typename: 'VideoCollapseEvent',
-        createdAt: new Date().toISOString()
+        typename: 'VideoCollapseEvent',
+        visitor: { connect: { id: 'visitor.id' } }
       })
     })
 
@@ -220,8 +220,8 @@ describe('VideoResolver', () => {
         await resolver.videoProgressEventCreate('userid', progressInput)
       ).toEqual({
         ...progressInput,
-        __typename: 'VideoProgressEvent',
-        createdAt: new Date().toISOString()
+        typename: 'VideoProgressEvent',
+        visitor: { connect: { id: 'visitor.id' } }
       })
     })
 

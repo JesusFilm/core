@@ -28,7 +28,10 @@ function ReportsJourneysPage(): ReactElement {
       <NextSeo title={t('Journeys Report')} />
       <PageWrapper title={t('Journeys Report')} authUser={AuthUser}>
         <Box sx={{ height: 'calc(100vh - 48px)' }}>
-          <ReportsNavigation selected="journeys" />
+          <ReportsNavigation
+            reportType={JourneysReportType.multipleFull}
+            selected="journeys"
+          />
           <MemoizedDynamicReport reportType={JourneysReportType.multipleFull} />
         </Box>
       </PageWrapper>

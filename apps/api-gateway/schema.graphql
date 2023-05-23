@@ -297,6 +297,15 @@ type CloudflareImage
   createdAt: String!
 }
 
+type CloudflareVideo
+  @join__type(graph: MEDIA)
+{
+  id: ID!
+  uploadUrl: String
+  userId: ID!
+  createdAt: String!
+}
+
 type Country
   @join__type(graph: LANGUAGES, key: "id")
 {
@@ -702,6 +711,128 @@ input JourneyViewEventCreateInput
   value: ID
 }
 
+type JourneyVisitor
+  @join__type(graph: JOURNEYS, key: "visitorId journeyId")
+{
+  visitorId: ID!
+  journeyId: ID!
+
+  """
+  The time when the visitor created their first event on a journey connected
+  to the requested team.
+  """
+  createdAt: DateTime!
+
+  """Duration between createdAt and lastStepViewedAt in seconds"""
+  duration: Int
+
+  """
+  The last time the visitor called the ButtonClickEvent mutation where the url
+  is in the format of a recognized chat platform.
+  """
+  lastChatStartedAt: DateTime
+
+  """
+  The last message platform the visitor called the ButtonClickEvent where the
+  url is in the format of a recognized chat platform
+  """
+  lastChatPlatform: MessagePlatform
+
+  """
+  The country code of the visitor as poulated by visitor ip address detected in
+  the JourneyViewEventCreate mutation. This field country code is converted
+  from an IP address by the @maxmind/geoip2-node library. If this field is empty
+  it is likely that the JourneyViewEventCreate mutation was not called by the
+  visitor or that the country was not able to be determined based on the
+  visitor IP address.
+  """
+  countryCode: String
+
+  """
+  Message platform the visitor wishes to be connected to us on as populated by
+  VisitorUpdate mutation or ChatOpenEventCreate mutation.
+  """
+  messagePlatform: MessagePlatform
+
+  """
+  ID of the visitor as set by VisitorUpdate mutation. This could be a phone
+  number, user id or other unique identifier provided by the message platform.
+  """
+  notes: String
+
+  """
+  The last time the visitor called StepViewEvent mutation. It is populated when
+  the visitor is first created, and is updated by all event creation mutations.
+  """
+  lastStepViewedAt: DateTime
+
+  """
+  The label of a link action button of the last time the visitor clicked a
+  link action button. Populated by ButtonClickEvent
+  """
+  lastLinkAction: String
+
+  """
+  The response of the last text response block the visitor filled out,
+  populated by TextResponseSubmission mutation
+  """
+  lastTextResponse: String
+
+  """
+  The question of the last radio option the visitor filled out,
+  populated by RadioQuestionSubmission mutation
+  """
+  lastRadioQuestion: String
+
+  """
+  The selected option  of the last radio option the visitor filled out,
+  populated by RadioQuestionSubmission mutation
+  """
+  lastRadioOptionSubmission: String
+  events: [Event!]!
+  visitor: Visitor!
+}
+
+type JourneyVisitorEdge
+  @join__type(graph: JOURNEYS)
+{
+  """A cursor for use in pagination."""
+  cursor: String!
+
+  """The item at the end of the edge."""
+  node: JourneyVisitor!
+}
+
+input JourneyVisitorFilter
+  @join__type(graph: JOURNEYS)
+{
+  journeyId: String!
+  hasChatStarted: Boolean
+  hasPollAnswers: Boolean
+  hasTextResponse: Boolean
+  hasIcon: Boolean
+  hideInactive: Boolean
+  countryCode: String
+}
+
+type JourneyVisitorsConnection
+  @join__type(graph: JOURNEYS)
+{
+  """A list of edges."""
+  edges: [JourneyVisitorEdge!]!
+
+  """Information to aid in pagination."""
+  pageInfo: PageInfo!
+}
+
+enum JourneyVisitorSort
+  @join__type(graph: JOURNEYS)
+{
+  date @join__enumValue(graph: JOURNEYS)
+  duration @join__enumValue(graph: JOURNEYS)
+  activity @join__enumValue(graph: JOURNEYS)
+}
+
 type Language
   @join__type(graph: JOURNEYS, key: "id")
   @join__type(graph: LANGUAGES, key: "id")
@@ -876,10 +1007,18 @@ type Mutation
 
   """Update a visitor"""
   visitorUpdate(id: ID!, input: VisitorUpdateInput!): Visitor! @join__field(graph: JOURNEYS)
+
+  """
+  Allow current user to update specific allowable fields of their visitor record
+  """
+  visitorUpdateForCurrentUser(input: VisitorUpdateInput!): Visitor! @join__field(graph: JOURNEYS)
   createCloudflareUploadByFile: CloudflareImage @join__field(graph: MEDIA)
   createCloudflareUploadByUrl(url: String!): CloudflareImage @join__field(graph: MEDIA)
   deleteCloudflareImage(id: ID!): Boolean @join__field(graph: MEDIA)
   cloudflareUploadComplete(id: ID!): Boolean @join__field(graph: MEDIA)
+  createCloudflareVideoUploadByFile(uploadLength: Int!, name: String!): CloudflareVideo @join__field(graph: MEDIA)
+  createCloudflareVideoUploadByUrl(url: String!): CloudflareVideo @join__field(graph: MEDIA)
+  deleteCloudflareVideo(id: ID!): Boolean @join__field(graph: MEDIA)
   triggerUnsplashDownload(url: String!): Boolean @join__field(graph: MEDIA)
 }
 
@@ -988,6 +1127,27 @@ type Query
   journeys(where: JourneysFilter): [Journey!]! @join__field(graph: JOURNEYS)
   journey(id: ID!, idType: IdType): Journey @join__field(graph: JOURNEYS)
   getJourneyProfile: JourneyProfile @join__field(graph: JOURNEYS)
+
+  """Get a list of Visitor Information by Journey"""
+  journeyVisitorsConnection(
+    """Returns the visitor items related to a specific team."""
+    teamId: String!
+
+    """Returns the elements in the list that match the specified filter."""
+    filter: JourneyVisitorFilter!
+
+    """Returns the first n elements from the list."""
+    first: Int
+
+    """Returns the elements in the list that come after the specified cursor."""
+    after: String
+
+    """Specifies the sort field for the list."""
+    sort: JourneyVisitorSort
+  ): JourneyVisitorsConnection! @join__field(graph: JOURNEYS)
+
+  """Get a JourneyVisitor count by JourneyVisitorFilter"""
+  journeyVisitorCount(filter: JourneyVisitorFilter!): Int! @join__field(graph: JOURNEYS)
   userInvites(journeyId: ID!): [UserInvite!] @join__field(graph: JOURNEYS)
   getUserRole: UserRole @join__field(graph: JOURNEYS)
 
@@ -1010,6 +1170,7 @@ type Query
   languages(offset: Int, limit: Int): [Language!]! @join__field(graph: LANGUAGES)
   language(id: ID!, idType: LanguageIdType): Language @join__field(graph: LANGUAGES)
   getMyCloudflareImages: [CloudflareImage] @join__field(graph: MEDIA)
+  getMyCloudflareVideos: [CloudflareVideo] @join__field(graph: MEDIA)
   listUnsplashCollectionPhotos(collectionId: String!, page: Int, perPage: Int, orientation: UnsplashPhotoOrientation): [UnsplashPhoto!]! @join__field(graph: MEDIA)
   searchUnsplashPhotos(query: String!, page: Int, perPage: Int, orderBy: UnsplashOrderBy, collections: [String], contentFilter: UnsplashContentFilter, color: UnsplashColor, orientation: UnsplashPhotoOrientation): UnsplashQueryResponse! @join__field(graph: MEDIA)
   tags: [Tag!]! @join__field(graph: TAGS)
@@ -1869,6 +2030,7 @@ enum VideoBlockSource
 {
   internal @join__enumValue(graph: JOURNEYS)
   youTube @join__enumValue(graph: JOURNEYS)
+  cloudflare @join__enumValue(graph: JOURNEYS)
 }
 
 input VideoBlockUpdateInput
@@ -2337,6 +2499,9 @@ type Visitor
   """
   createdAt: DateTime!
 
+  """Duration between createdAt and lastStepViewedAt in seconds"""
+  duration: Int
+
   """
   The last time the visitor called the ButtonClickEvent mutation where the url
   is in the format of a recognized chat platform.
@@ -2426,6 +2591,9 @@ type Visitor
   populated by RadioQuestionSubmission mutation
   """
   lastRadioOptionSubmission: String
+
+  """The url visitor was referred from"""
+  referrer: String
   events: [Event!]!
 }
 
@@ -2510,4 +2678,12 @@ input VisitorUpdateInput
 
   """Status of the visitor."""
   status: VisitorStatus
+
+  """
+  The country code of the visitor as poulated by visitor ip address detected
+  """
+  countryCode: String
+
+  """The referring url of the visitor"""
+  referrer: String
 }

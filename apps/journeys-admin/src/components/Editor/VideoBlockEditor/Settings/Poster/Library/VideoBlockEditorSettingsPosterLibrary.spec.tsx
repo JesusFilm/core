@@ -108,7 +108,7 @@ const image: ImageBlock = {
   __typename: 'ImageBlock',
   parentBlockId: video.id,
   parentOrder: 0,
-  src: 'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/uploadId/public',
+  src: 'https://imagedelivery.net/cloudflare-key/uploadId/public',
   alt: 'public',
   width: 1920,
   height: 1080,
@@ -119,6 +119,20 @@ const onClose = jest.fn()
 
 describe('VideoBlockEditorSettingsPosterLibrary', () => {
   beforeEach(() => (useMediaQuery as jest.Mock).mockImplementation(() => true))
+
+  let originalEnv
+  beforeEach(() => {
+    originalEnv = process.env
+    process.env = {
+      ...originalEnv,
+      NEXT_PUBLIC_CLOUDFLARE_UPLOAD_KEY: 'cloudflare-key'
+    }
+  })
+
+  afterEach(() => {
+    process.env = originalEnv
+  })
+
   describe('No existing Image', () => {
     it('creates a new image poster block', async () => {
       const cache = new InMemoryCache()
