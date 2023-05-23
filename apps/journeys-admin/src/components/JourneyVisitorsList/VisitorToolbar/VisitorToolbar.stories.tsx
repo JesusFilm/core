@@ -17,11 +17,7 @@ const VisitorToolbarStory = {
 
 const Template: Story<ComponentProps<typeof VisitorToolbar>> = (args) => {
   const [open, setOpen] = useState(false)
-  return (
-    <>
-      <FilterListRoundedIcon onClick={() => setOpen(!open)} />
-    </>
-  )
+  return <FilterListRoundedIcon onClick={() => setOpen(!open)} />
 }
 
 export const MobileView = Template.bind({})
