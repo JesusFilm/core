@@ -46,14 +46,14 @@ interface ConductorProps {
 }
 
 const StyledSwiperContainer = styled(Swiper)(({ theme }) => ({
-  '--swiper-pagination-top': '16px',
-  [theme.breakpoints.up('lg')]: {
-    '--swiper-pagination-top': 'max(12px, calc(44vh - 26vw))'
-  },
   '.swiper-pagination.swiper-pagination-horizontal': {
     position: 'absolute',
     height: 16,
-    width: 100
+    width: 100,
+    top: 16,
+    [theme.breakpoints.up('lg')]: {
+      top: 'max(12px, calc(44vh - 26vw))'
+    }
   },
   '.swiper-pagination-bullet': {
     background: theme.palette.common.white,
@@ -168,7 +168,7 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
         backgroundColor: `${theme.palette.common.black}00030`
       }
     },
-    viewBox: '0 0 25 24',
+    viewBox: '0 0 24 24',
     htmlColor: theme.palette.common.white
   }
 
@@ -201,24 +201,37 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
             )
 
             if (visibleSlides.length === 2) {
-              if (visibleSlides[0].classList.contains('swiper-slide-prev')) {
-                visibleSlides[0].style.opacity = '0'
-                visibleSlides[1].style.opacity = '1'
-                if (blockHistory.length > 1) {
-                  swiper.slides[
-                    blockHistory[blockHistory.length - 2].parentOrder ?? 0
-                  ].style.opacity = '1'
-                }
-              }
+              const targetCardOpacity =
+                Math.abs(swiper.touches.diff) / swiper.width
+              const activeCardOpacity = Math.max(1 - targetCardOpacity, 0)
 
-              if (visibleSlides[1].classList.contains('swiper-slide-next')) {
-                if (swiper.swipeDirection === 'prev') {
+              if (swiper.swipeDirection === 'next') {
+                // Keep normal transition
+                visibleSlides[0].style.opacity = `${activeCardOpacity}`
+                visibleSlides[1].style.opacity = `${targetCardOpacity}`
+              } else if (swiper.swipeDirection === 'prev') {
+                // On drag start the previous card has this class
+                if (visibleSlides[0].classList.contains('swiper-slide-prev')) {
+                  // Hide default previous slide
                   visibleSlides[0].style.opacity = '0'
-                  visibleSlides[1].style.opacity = '1'
+                  // Show current slide
+                  visibleSlides[1].style.opacity = `${activeCardOpacity}`
+                  if (blockHistory.length > 1) {
+                    // Show block history previous slide
+                    swiper.slides[
+                      blockHistory[blockHistory.length - 2].parentOrder ?? 0
+                    ].style.opacity = `${targetCardOpacity}`
+                  }
+                  // Halfway through drag, previous card is set to active class
                 } else {
-                  // Keep normal transition
-                  visibleSlides[0].style.opacity = '1'
-                  visibleSlides[1].style.opacity = '0'
+                  visibleSlides[0].style.opacity = '0'
+                  visibleSlides[1].style.opacity = `${activeCardOpacity}`
+                  if (blockHistory.length > 1) {
+                    // Show block history previous slide
+                    swiper.slides[
+                      blockHistory[blockHistory.length - 1].parentOrder ?? 0
+                    ].style.opacity = `${targetCardOpacity}`
+                  }
                 }
               }
             }

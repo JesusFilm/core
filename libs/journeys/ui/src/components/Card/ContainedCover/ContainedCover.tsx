@@ -94,14 +94,11 @@ export function ContainedCover({
       : // Use Youtube set poster image
         videoBlock?.image
 
+  // Initiate Video
   useEffect(() => {
     if (videoRef.current != null) {
-      // autoplay when video is YouTube on iOS does not work. We should disable autoplay in that case.
-      const isYouTubeAndiOS =
-        isYouTube && /iPhone|iPad|iPod/i.test(navigator?.userAgent)
       setPlayer(
         videojs(videoRef.current, {
-          // autoplay: !isYouTubeAndiOS,
           controls: false,
           controlBar: false,
           bigPlayButton: false,
@@ -118,12 +115,13 @@ export function ContainedCover({
         })
       )
     }
-  }, [isYouTube])
+  }, [])
 
+  // Set up video listeners and source
   useEffect(() => {
-    if (player != null) {
+    if (player != null && videoBlock != null) {
       player.on('ready', () => {
-        player?.currentTime(videoBlock?.startAt ?? 0)
+        player?.currentTime(videoBlock.startAt ?? 0)
       })
       // Video jumps to new time and finishes loading
       player.on('seeked', () => {
@@ -157,27 +155,7 @@ export function ContainedCover({
           }
         }
       })
-    }
-  }, [player, videoBlock])
 
-  let videoFit: CSSProperties['objectFit']
-  if (videoBlock?.source === VideoBlockSource.youTube) {
-    videoFit = 'contain'
-  } else {
-    switch (videoBlock?.objectFit) {
-      case VideoBlockObjectFit.fit:
-      case VideoBlockObjectFit.zoomed:
-        videoFit = 'contain'
-        break
-      default:
-        videoFit = 'cover'
-        break
-    }
-  }
-
-  //  Set video src
-  useEffect(() => {
-    if (player != null && videoBlock != null) {
       if (
         videoBlock.source === VideoBlockSource.internal &&
         videoBlock.video?.variant?.hls != null
@@ -220,6 +198,21 @@ export function ContainedCover({
       }
     }
   }, [activeBlock, cardId, player])
+
+  let videoFit: CSSProperties['objectFit']
+  if (videoBlock?.source === VideoBlockSource.youTube) {
+    videoFit = 'contain'
+  } else {
+    switch (videoBlock?.objectFit) {
+      case VideoBlockObjectFit.fit:
+      case VideoBlockObjectFit.zoomed:
+        videoFit = 'contain'
+        break
+      default:
+        videoFit = 'cover'
+        break
+    }
+  }
 
   const overlayGradient = (direction: string): string =>
     `linear-gradient(to ${direction}, transparent 0%,  ${backgroundBlur}14 10%, ${backgroundBlur}33 17%, ${backgroundBlur}60 25%, ${backgroundBlur}b0 40%, ${backgroundBlur}e6 60%, ${backgroundBlur} 98%)`
@@ -361,7 +354,7 @@ export function ContainedCover({
               sx={{
                 width: { xs: videoBlock != null ? '100%' : '0%', lg: 380 },
                 height: { xs: videoBlock != null ? '85%' : '0%', lg: '100%' },
-                flexDirection: { lg: 'row' },
+                flexDirection: { xs: 'column-reverse', lg: 'row' },
                 position: 'absolute'
               }}
             >
