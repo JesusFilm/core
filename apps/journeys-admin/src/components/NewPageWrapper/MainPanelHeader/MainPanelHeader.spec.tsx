@@ -21,7 +21,7 @@ describe('MainPanelHeader', () => {
     const { getByTestId } = render(
       <MainPanelHeader title="Page title" backHrefHistory />
     )
-    fireEvent.click(getByTestId('back-button'))
+    fireEvent.click(getByTestId('backHref-history-button'))
 
     await waitFor(() => expect(back).toHaveBeenCalled())
   })
