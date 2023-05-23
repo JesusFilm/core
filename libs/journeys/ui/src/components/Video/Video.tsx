@@ -204,6 +204,13 @@ export function Video({
           src: `https://www.youtube.com/embed/${videoId}?start=${startAt ?? 0}`,
           type: 'video/youtube'
         })
+      } else if (source === VideoBlockSource.cloudflare && videoId != null) {
+        player.src({
+          src: `https://customer-${
+            process.env.NEXT_PUBLIC_CLOUDFLARE_STREAM_CUSTOMER_CODE ?? ''
+          }.cloudflarestream.com/${videoId ?? ''}/manifest/video.m3u8`,
+          type: 'application/x-mpegURL'
+        })
       }
     }
   }, [player, video, videoId, source, startAt, endAt])
