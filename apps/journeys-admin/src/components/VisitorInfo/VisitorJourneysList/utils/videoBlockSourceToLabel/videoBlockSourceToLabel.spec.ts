@@ -12,9 +12,15 @@ describe('videoBlockSourceToLabel', () => {
     )
   })
 
-  it('returns Instagram', () => {
+  it('returns YouTube', () => {
     expect(videoBlockSourceToLabel(VideoBlockSource.youTube, t)).toEqual(
       'YouTube'
+    )
+  })
+
+  it('returns Custom', () => {
+    expect(videoBlockSourceToLabel(VideoBlockSource.cloudflare, t)).toEqual(
+      'Custom'
     )
   })
 })
