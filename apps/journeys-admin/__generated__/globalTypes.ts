@@ -282,6 +282,16 @@ export interface JourneyUpdateInput {
   seoDescription?: string | null;
 }
 
+export interface JourneyVisitorFilter {
+  journeyId: string;
+  hasChatStarted?: boolean | null;
+  hasPollAnswers?: boolean | null;
+  hasTextResponse?: boolean | null;
+  hasIcon?: boolean | null;
+  hideInactive?: boolean | null;
+  countryCode?: string | null;
+}
+
 export interface LinkActionInput {
   gtmEventName?: string | null;
   url: string;
