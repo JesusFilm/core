@@ -76,72 +76,65 @@ function DetailsRow({
   loading
 }: DetailsRowProps): ReactElement {
   const textColor = chatEvent ? 'primary' : 'secondary'
-  const isBold = chatEvent ? 900 : 'normal'
-  const variant = chatEvent ? 'subtitle1' : 'body2'
+  const variant = chatEvent ? 'subtitle2' : 'body1'
   return (
-    <>
-      <Stack direction="row">
+    <Stack direction="row">
+      <Typography
+        variant="subtitle1"
+        color={textColor}
+        sx={{
+          display: { xs: 'flex', sm: 'none' },
+          paddingLeft: { xs: '10px', sm: 'none' },
+          pt: 6,
+          pl: 1,
+          minWidth: '28px'
+        }}
+      >
+        {'\u00B7\u00A0'}
+      </Typography>
+      <Stack direction={{ xs: 'column', sm: 'row' }} sx={{ pb: 1 }}>
+        {loading ? (
+          <Skeleton
+            width={50}
+            height={25}
+            data-testid="description-skeleton"
+            sx={{
+              marginRight: { xs: 'none', sm: '212px' }
+            }}
+          />
+        ) : (
+          <Typography
+            noWrap
+            color={textColor}
+            variant={variant}
+            sx={{
+              minWidth: '262px',
+              maxWidth: '262px',
+              paddingRight: { xs: 'none', sm: '35px' }
+            }}
+          >
+            {label}
+          </Typography>
+        )}
+
         <Typography
           variant="subtitle1"
           color={textColor}
           sx={{
-            display: { xs: 'flex', sm: 'none' },
-            paddingLeft: { xs: '10px', sm: 'none' },
-            pt: 6,
-            pl: 1,
-            minWidth: '28px'
+            display: { xs: 'none', sm: 'flex' },
+            paddingRight: { xs: 'none', sm: '10px' }
           }}
         >
           {'\u00B7\u00A0'}
         </Typography>
-        <Stack direction={{ xs: 'column', sm: 'row' }} sx={{ pb: 1 }}>
-          {loading ? (
-            <Skeleton
-              width={50}
-              height={25}
-              sx={{
-                marginRight: { xs: 'none', sm: '212px' }
-              }}
-            />
-          ) : (
-            <Typography
-              noWrap
-              color={textColor}
-              variant={variant}
-              sx={{
-                minWidth: '262px',
-                maxWidth: '262px',
-                fontWeight: isBold,
-                paddingRight: { xs: 'none', sm: '35px' }
-              }}
-            >
-              {label}
-            </Typography>
-          )}
-
-          <Typography
-            variant="subtitle1"
-            color={textColor}
-            sx={{
-              display: { xs: 'none', sm: 'flex' },
-              paddingRight: { xs: 'none', sm: '10px' }
-            }}
-          >
-            {'\u00B7\u00A0'}
+        {loading ? (
+          <Skeleton width={100} height={25} />
+        ) : (
+          <Typography color={textColor} variant={variant}>
+            {value}
           </Typography>
-          {loading ? (
-            <Skeleton width={100} height={25} />
-          ) : (
-            <Typography
-              color={textColor}
-              variant={variant}
-              sx={{ fontWeight: isBold }}
-            >
-              {value}
-            </Typography>
-          )}
-        </Stack>
+        )}
       </Stack>
-    </>
+    </Stack>
   )
 }

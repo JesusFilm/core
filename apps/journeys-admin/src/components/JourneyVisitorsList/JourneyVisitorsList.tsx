@@ -30,7 +30,7 @@ export function JourneyVisitorsList({
     <Stack
       spacing={6}
       alignItems="center"
-      sx={{ width: '100%', height: '100%' }}
+      sx={{ height: '100%', mx: { xs: -6, sm: 0 } }}
     >
       {loading ? (
         <Box sx={{ mx: { xs: -6, sm: 0 }, width: '100%' }}>
@@ -40,7 +40,7 @@ export function JourneyVisitorsList({
         </Box>
       ) : hasVisitors ? (
         <Box sx={{ mx: { xs: -6, sm: 0 }, width: '100%' }}>
-          {visitorEdges?.map((visitor) => (
+          {visitorEdges.map((visitor) => (
             <VisitorCard
               key={visitor.node.visitorId}
               visitorNode={visitor.node}
@@ -72,14 +72,10 @@ export function JourneyVisitorsList({
         onClick={fetchNext}
         disabled={!hasNextPage}
         loading={loading}
+        color="secondary"
         sx={{
           width: '250px',
-          display: hasVisitors ? 'flex' : 'none',
-          color: 'secondary.main',
-          borderColor: 'secondary.main',
-          '&:hover': {
-            color: 'primary.main'
-          }
+          display: hasVisitors ? 'flex' : 'none'
         }}
       >
         {t('Load More')}

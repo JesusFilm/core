@@ -28,7 +28,8 @@ Default.args = {
       referrer: null
     },
     events: []
-  }
+  },
+  loading: false
 }
 
 export const Complete = Template.bind({})
@@ -68,7 +69,8 @@ Complete.args = {
         value: 'text value'
       }
     ]
-  }
+  },
+  loading: false
 }
 
 export default VisitorCardStory as Meta

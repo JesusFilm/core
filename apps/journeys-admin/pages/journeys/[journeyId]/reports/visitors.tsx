@@ -100,7 +100,7 @@ function JourneyVisitorsPage(): ReactElement {
     {
       variables: {
         filter: { journeyId },
-        first: 50
+        first: 100
       },
       onCompleted: (data) => {
         setVisitorEdges(data.visitors.edges)
@@ -115,7 +115,7 @@ function JourneyVisitorsPage(): ReactElement {
       const response = await fetchMore({
         variables: {
           filter: { journeyId },
-          first: 50,
+          first: 100,
           after: endCursor
         }
       })

@@ -46,4 +46,19 @@ describe('VisitorCardHeader', () => {
     const { getAllByTestId } = render(<VisitorCardHeader {...props} />)
     expect(getAllByTestId('PersonOutlineRoundedIcon')).toHaveLength(1)
   })
+
+  it('should show skeleton while loading', () => {
+    const props = {
+      icon: null,
+      name: '12345234',
+      location: null,
+      source: null,
+      createdAt: '2021-11-19T12:34:56.647Z',
+      duration: 45,
+      loading: true
+    }
+
+    const { getByTestId } = render(<VisitorCardHeader {...props} />)
+    expect(getByTestId('header-skeleton')).toBeInTheDocument()
+  })
 })

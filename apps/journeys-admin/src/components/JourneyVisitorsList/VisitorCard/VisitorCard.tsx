@@ -38,6 +38,7 @@ export function VisitorCard({ visitorNode, loading }: Props): ReactElement {
         {loading ? (
           <Skeleton
             variant="circular"
+            data-testid="loading-skeleton"
             width={25}
             height={25}
             sx={{ mr: 3, display: { xs: 'none', sm: 'flex' } }}

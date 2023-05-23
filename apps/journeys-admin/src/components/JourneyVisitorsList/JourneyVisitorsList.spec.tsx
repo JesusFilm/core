@@ -1,4 +1,4 @@
-import { fireEvent, render } from '@testing-library/react'
+import { fireEvent, render, waitFor } from '@testing-library/react'
 import { noop } from 'lodash'
 import { GetJourneyVisitors_visitors_edges as VisitorEdge } from '../../../__generated__/GetJourneyVisitors'
 import { JourneyVisitorsList } from '.'
@@ -122,17 +122,13 @@ describe('JourneyVisitorsList', () => {
     expect(queryByText('123')).not.toBeInTheDocument()
   })
 
-  it('should show loading skeletons', () => {
-    const { queryByLabelText } = render(
-      <JourneyVisitorsList
-        fetchNext={noop}
-        visitorsCount={5}
-        loading
-        visitorEdges={visitorEdges}
-      />
+  it('should show loading skeletons', async () => {
+    const { getAllByTestId } = render(
+      <JourneyVisitorsList fetchNext={noop} loading />
     )
-    expect(queryByLabelText('visitor-card-visitor1.id')).not.toBeInTheDocument()
-    expect(queryByLabelText('visitor-card-visitor2.id')).not.toBeInTheDocument()
-    expect(queryByLabelText('visitor-card-visitor3.id')).not.toBeInTheDocument()
+
+    await waitFor(() =>
+      expect(getAllByTestId('loading-skeleton')).toHaveLength(4)
+    )
   })
 })

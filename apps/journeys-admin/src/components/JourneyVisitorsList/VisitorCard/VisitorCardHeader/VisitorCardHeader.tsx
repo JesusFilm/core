@@ -63,7 +63,7 @@ export function VisitorCardHeader({
               {format(parseISO(createdAt), 'h:mmaaa, LLL. do')}
             </Typography>
           ) : (
-            <Skeleton width={250} />
+            <Skeleton width={250} data-testid="header-skeleton" />
           )}
           <Typography variant="subtitle1" sx={{ color: 'secondary.light' }}>
             {'\u00A0\u00B7\u00A0'}

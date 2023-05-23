@@ -71,4 +71,46 @@ describe('VisitorCardDetails', () => {
     expect(getByText('radio value')).toBeInTheDocument()
     expect(queryByText('button value')).not.toBeInTheDocument()
   })
+
+  it('should only show skeletons while loading', () => {
+    const events: Event[] = [
+      {
+        __typename: 'ChatOpenEvent',
+        id: 'ChatOpenEvent.id',
+        createdAt: '2021-11-19T12:34:56.647Z',
+        label: 'chat label',
+        value: 'chat value'
+      },
+      {
+        __typename: 'TextResponseSubmissionEvent',
+        id: 'TextResponseSubmissionEvent.id',
+        createdAt: 'isostring',
+        label: 'text label',
+        value: 'text value'
+      },
+      {
+        __typename: 'RadioQuestionSubmissionEvent',
+        id: 'RadioQuestionSubmissionEvent.id',
+        createdAt: 'isostring',
+        label: 'radio label',
+        value: 'radio value'
+      },
+      {
+        __typename: 'ButtonClickEvent',
+        id: 'ButtonClickEvent.id',
+        createdAt: 'isostring',
+        label: 'button label',
+        value: 'button value'
+      }
+    ]
+    const { queryByText, getAllByTestId } = render(
+      <VisitorCardDetails name="test name" events={events} loading />
+    )
+
+    expect(queryByText('Chat Started')).not.toBeInTheDocument()
+    expect(queryByText('text value')).not.toBeInTheDocument()
+    expect(queryByText('radio value')).not.toBeInTheDocument()
+    expect(queryByText('button value')).not.toBeInTheDocument()
+    expect(getAllByTestId('description-skeleton')).toHaveLength(4)
+  })
 })
