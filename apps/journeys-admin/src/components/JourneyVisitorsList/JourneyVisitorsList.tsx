@@ -31,14 +31,21 @@ export function JourneyVisitorsList({
     <Stack
       spacing={6}
       alignItems="center"
-      sx={{ width: '100%', height: '100%' }}
+      sx={{ height: '100%', mx: { xs: -6, sm: 0 } }}
     >
-      {hasVisitors ? (
+      {loading ? (
+        <Box sx={{ mx: { xs: -6, sm: 0 }, width: '100%' }}>
+          {[0, 1, 2, 3].map((index) => (
+            <VisitorCard key={index} loading={loading} />
+          ))}
+        </Box>
+      ) : hasVisitors ? (
         <Box sx={{ mx: { xs: -6, sm: 0 }, width: '100%' }}>
           {visitorEdges?.map((visitor) => (
             <VisitorCard
               key={visitor.node.visitorId}
               visitorNode={visitor.node}
+              loading={loading}
             />
           ))}
         </Box>

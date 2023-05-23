@@ -131,4 +131,10 @@ Empty.args = {
   loading: false
 }
 
+export const Loading = Template.bind({})
+Loading.args = {
+  fetchNext: noop,
+  loading: true
+}
+
 export default JourneyVisitorsListStory as Meta

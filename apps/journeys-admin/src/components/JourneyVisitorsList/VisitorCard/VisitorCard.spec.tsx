@@ -41,7 +41,7 @@ describe('VisitorCard', () => {
 
   it('should link to visitor details', () => {
     const { getByRole, getAllByText } = render(
-      <VisitorCard visitorNode={visitorNode} />
+      <VisitorCard visitorNode={visitorNode} loading={false} />
     )
     expect(getAllByText('FirstName LastName')).toHaveLength(3)
     expect(getByRole('link')).toHaveAttribute(
@@ -61,7 +61,39 @@ describe('VisitorCard', () => {
       events: []
     }
 
-    const { getAllByText } = render(<VisitorCard visitorNode={emptyVisitor} />)
+    const { getAllByText } = render(
+      <VisitorCard visitorNode={emptyVisitor} loading={false} />
+    )
     expect(getAllByText('#012345678901')).toHaveLength(2)
+  })
+
+  it('should show skeleton when loading', () => {
+    const visitorNode: VisitorNode = {
+      __typename: 'JourneyVisitor',
+      visitorId: 'visitor.id-012345678901',
+      countryCode: 'Town, City',
+      createdAt: '2021-11-19T12:34:56.647Z',
+      duration: 75,
+      visitor: {
+        __typename: 'Visitor',
+        name: 'FirstName LastName',
+        status: VisitorStatus.star,
+        referrer: 'referrer.com'
+      },
+      events: [
+        {
+          __typename: 'ChatOpenEvent',
+          id: 'chat.id',
+          createdAt: '2021-11-19T12:35:56.647Z',
+          label: 'button label',
+          value: 'button value'
+        }
+      ]
+    }
+    const { getByTestId, getAllByTestId } = render(
+      <VisitorCard visitorNode={visitorNode} loading />
+    )
+    expect(getByTestId('header-skeleton')).toBeInTheDocument()
+    expect(getAllByTestId('description-skeleton')).toHaveLength(2)
   })
 })

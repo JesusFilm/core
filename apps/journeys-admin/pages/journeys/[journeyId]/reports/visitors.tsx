@@ -134,7 +134,7 @@ function JourneyVisitorsPage(): ReactElement {
       const response = await fetchMore({
         variables: {
           filter: { journeyId },
-          first: 50,
+          first: 100,
           after: endCursor
         }
       })
