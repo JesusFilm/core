@@ -6,20 +6,25 @@ import IconButton from '@mui/material/IconButton'
 import Stack from '@mui/material/Stack'
 import Toolbar from '@mui/material/Toolbar'
 import Typography from '@mui/material/Typography'
+import Box from '@mui/system/Box'
+import { useRouter } from 'next/router'
 import { usePageWrapperStyles } from '../utils/usePageWrapperStyles'
 
 export interface MainBodyContainerProps {
   title: string
   backHref?: string
   menu?: ReactNode
+  backHrefHistory?: boolean
 }
 
 export function MainPanelHeader({
   title,
   backHref,
-  menu
+  menu,
+  backHrefHistory
 }: MainBodyContainerProps): ReactElement {
   const { toolbar } = usePageWrapperStyles()
+  const router = useRouter()
 
   return (
     <>
@@ -43,6 +48,25 @@ export function MainPanelHeader({
                   <ChevronLeftRounded />
                 </IconButton>
               </Link>
+            )}
+            {backHrefHistory != null && (
+              <Box
+                onClick={
+                  backHrefHistory
+                    ? () => router.back()
+                    : async () => await router.push('/')
+                }
+              >
+                <IconButton
+                  data-testid="backHref-history-button"
+                  edge="start"
+                  size="small"
+                  color="inherit"
+                  sx={{ mr: 2 }}
+                >
+                  <ChevronLeftRounded />
+                </IconButton>
+              </Box>
             )}
             <Typography
               variant="subtitle1"
