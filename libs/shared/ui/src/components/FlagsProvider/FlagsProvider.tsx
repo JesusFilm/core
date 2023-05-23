@@ -23,8 +23,5 @@ export const FlagsProvider = ({
 export function useFlags(): { [key: string]: boolean } {
   const context = useContext(FlagsContext)
 
-  if (context === undefined) {
-    throw new Error('useFlags must be used within a FlagsProvider')
-  }
-  return context
+  return context ?? {}
 }
