@@ -3,15 +3,10 @@ import Card from '@mui/material/Card'
 import CardActionArea from '@mui/material/CardActionArea'
 import CardContent from '@mui/material/CardContent'
 import NextLink from 'next/link'
-import PersonOutlineRoundedIcon from '@mui/icons-material/PersonOutlineRounded'
-import Typography from '@mui/material/Typography'
 import Stack from '@mui/material/Stack'
-import Skeleton from '@mui/material/Skeleton'
-
 import { GetJourneyVisitors_visitors_edges_node as VisitorNode } from '../../../../__generated__/GetJourneyVisitors'
 import { VisitorCardHeader } from './VisitorCardHeader'
 import { VisitorCardDetails } from './VisitorCardDetails'
-import { getStatusIcon } from './utils'
 
 interface Props {
   visitorNode?: VisitorNode
@@ -19,8 +14,6 @@ interface Props {
 }
 
 export function VisitorCard({ visitorNode, loading }: Props): ReactElement {
-  const status = getStatusIcon(visitorNode?.visitor.status ?? null)
-
   const withLink = (block: ReactElement): ReactElement => {
     return (
       <NextLink
@@ -35,35 +28,18 @@ export function VisitorCard({ visitorNode, loading }: Props): ReactElement {
   const Content: ReactElement = (
     <CardActionArea>
       <CardContent sx={{ p: 6, display: 'flex' }}>
-        {loading ? (
-          <Skeleton
-            variant="circular"
-            data-testid="loading-skeleton"
-            width={25}
-            height={25}
-            sx={{ mr: 3, display: { xs: 'none', sm: 'flex' } }}
-          />
-        ) : status != null && !loading ? (
-          <Typography sx={{ mr: 3, display: { xs: 'none', sm: 'flex' } }}>
-            {status}
-          </Typography>
-        ) : (
-          <PersonOutlineRoundedIcon
-            sx={{ mr: 3, display: { xs: 'none', sm: 'flex' } }}
-          />
-        )}
         <Stack direction="column" sx={{ width: '100%' }}>
           <VisitorCardHeader
             loading={loading}
-            icon={visitorNode?.visitor.status ?? null}
+            icon={visitorNode?.visitor.status}
             name={
               visitorNode?.visitor?.name ??
               `#${visitorNode?.visitorId.slice(-12) as unknown as string}`
             }
-            location={visitorNode?.countryCode ?? null}
-            source={visitorNode?.visitor.referrer ?? null}
+            location={visitorNode?.countryCode}
+            source={visitorNode?.visitor.referrer}
             createdAt={visitorNode?.createdAt}
-            duration={visitorNode?.duration ?? null}
+            duration={visitorNode?.duration}
           />
 
           <VisitorCardDetails

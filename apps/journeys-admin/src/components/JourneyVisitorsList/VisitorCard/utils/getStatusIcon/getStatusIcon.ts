@@ -1,6 +1,6 @@
 import { VisitorStatus } from '../../../../../../__generated__/globalTypes'
 
-export function getStatusIcon(status: VisitorStatus | null): string | null {
+export function getStatusIcon(status?: VisitorStatus | null): string | null {
   let res: string | null = null
 
   switch (status) {

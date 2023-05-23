@@ -32,29 +32,33 @@ export function VisitorCardDetails({
 
   return (
     <>
-      <Box sx={{ pt: 3 }}>
+      <Box sx={{ pt: 3, pl: 9 }}>
         <DetailsRow label={t('Name')} value={name} loading={loading} />
       </Box>
 
       {filteredEvents.map((event) => {
         if (event.__typename === 'ChatOpenEvent') {
           return (
-            <DetailsRow
-              key={event.id}
-              label={t('Chat Started')}
-              value={format(parseISO(event.createdAt), 'h:mmaaa')}
-              chatEvent
-              loading={loading}
-            />
+            <Box sx={{ pl: 9 }}>
+              <DetailsRow
+                key={event.id}
+                label={t('Chat Started')}
+                value={format(parseISO(event.createdAt), 'h:mmaaa')}
+                chatEvent
+                loading={loading}
+              />
+            </Box>
           )
         } else {
           return (
-            <DetailsRow
-              key={event.id}
-              label={event.label}
-              value={event.value}
-              loading={loading}
-            />
+            <Box sx={{ pl: 9 }}>
+              <DetailsRow
+                key={event.id}
+                label={event.label}
+                value={event.value}
+                loading={loading}
+              />
+            </Box>
           )
         }
       })}

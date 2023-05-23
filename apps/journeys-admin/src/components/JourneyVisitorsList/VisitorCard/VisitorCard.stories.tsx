@@ -73,4 +73,10 @@ Complete.args = {
   loading: false
 }
 
+export const Loading = Template.bind({})
+Loading.args = {
+  ...Default.args,
+  loading: true
+}
+
 export default VisitorCardStory as Meta

@@ -9,12 +9,12 @@ import { VisitorStatus } from '../../../../../__generated__/globalTypes'
 import { getStatusIcon, transformDuration } from '../utils'
 
 interface Props {
-  icon: VisitorStatus | null
+  icon?: VisitorStatus | null
   name?: string | null
-  location: string | null
-  source: string | null
+  location?: string | null
+  source?: string | null
   createdAt: string
-  duration: number | null
+  duration?: number | null
   loading: boolean
 }
 
@@ -29,11 +29,38 @@ export function VisitorCardHeader({
 }: Props): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const status = getStatusIcon(icon)
-  const journeyDuration = transformDuration(duration, t)
+  const journeyDuration = transformDuration(t, duration)
+
   return (
     <>
       {/* Desktop */}
       <Stack direction="row" sx={{ display: { xs: 'none', sm: 'flex' } }}>
+        {loading ? (
+          <Skeleton
+            variant="circular"
+            data-testid="loading-skeleton"
+            width={25}
+            height={25}
+            sx={{ mr: 3, display: { xs: 'none', sm: 'flex' } }}
+          />
+        ) : status != null && !loading ? (
+          <Typography
+            sx={{
+              mr: 3,
+              display: { xs: 'none', sm: 'flex' },
+              minWidth: '24px'
+            }}
+          >
+            {status}
+          </Typography>
+        ) : (
+          <PersonOutlineRoundedIcon
+            sx={{
+              mr: 3,
+              display: { xs: 'none', sm: 'flex' }
+            }}
+          />
+        )}
         {loading ? (
           <Skeleton width={200} />
         ) : (

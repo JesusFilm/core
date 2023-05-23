@@ -1,6 +1,6 @@
 export function transformDuration(
-  seconds: number | null,
-  t: (str: string) => string
+  t: (str: string) => string,
+  seconds?: number | null
 ): string {
   if (seconds == null) {
     return t('0 min')

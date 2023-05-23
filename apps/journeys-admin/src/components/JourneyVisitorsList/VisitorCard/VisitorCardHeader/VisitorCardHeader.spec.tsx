@@ -28,7 +28,7 @@ describe('VisitorCardHeader', () => {
     expect(getAllByText('location')).toHaveLength(2)
     expect(getAllByText('source')).toHaveLength(2)
     expect(getAllByText('12:34pm, Nov. 19th')).toHaveLength(2)
-    expect(getAllByText('⭐')).toHaveLength(1)
+    expect(getAllByText('⭐')).toHaveLength(2)
     expect(getAllByText('1 min')).toHaveLength(2)
   })
 
@@ -44,7 +44,7 @@ describe('VisitorCardHeader', () => {
     }
 
     const { getAllByTestId } = render(<VisitorCardHeader {...props} />)
-    expect(getAllByTestId('PersonOutlineRoundedIcon')).toHaveLength(1)
+    expect(getAllByTestId('PersonOutlineRoundedIcon')).toHaveLength(2)
   })
 
   it('should show skeleton while loading', () => {
@@ -58,7 +58,10 @@ describe('VisitorCardHeader', () => {
       loading: true
     }
 
-    const { getByTestId } = render(<VisitorCardHeader {...props} />)
+    const { getByTestId, getAllByTestId } = render(
+      <VisitorCardHeader {...props} />
+    )
     expect(getByTestId('header-skeleton')).toBeInTheDocument()
+    expect(getAllByTestId('description-skeleton')).toHaveLength(4)
   })
 })
