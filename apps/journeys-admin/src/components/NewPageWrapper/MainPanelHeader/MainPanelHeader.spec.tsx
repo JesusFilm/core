@@ -15,7 +15,7 @@ describe('MainPanelHeader', () => {
     )
     expect(getByRole('link')).toHaveAttribute('href', '/')
   })
-  it('should show router button if a hardcoded href is not passed through', async () => {
+  it('should show back button with backHrefHistory', async () => {
     const back = jest.fn()
     mockUseRouter.mockReturnValue({ back } as unknown as NextRouter)
     const { getByTestId } = render(
