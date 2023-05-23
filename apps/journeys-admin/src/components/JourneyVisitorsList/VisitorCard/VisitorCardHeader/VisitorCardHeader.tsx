@@ -2,7 +2,7 @@ import { ReactElement } from 'react'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import PersonOutlineRoundedIcon from '@mui/icons-material/PersonOutlineRounded'
-import { format, parseISO } from 'date-fns'
+import { intlFormat, parseISO } from 'date-fns'
 import { useTranslation } from 'react-i18next'
 import Skeleton from '@mui/material/Skeleton'
 import { VisitorStatus } from '../../../../../__generated__/globalTypes'
@@ -87,7 +87,13 @@ export function VisitorCardHeader({
               noWrap
               sx={{ color: 'secondary.light' }}
             >
-              {format(parseISO(createdAt), 'h:mmaaa, LLL. do')}
+              {intlFormat(parseISO(createdAt), {
+                month: 'short',
+                day: 'numeric',
+                hour: 'numeric',
+                minute: 'numeric',
+                hour12: true
+              })}
             </Typography>
           ) : (
             <Skeleton width={250} data-testid="header-skeleton" />
@@ -127,7 +133,13 @@ export function VisitorCardHeader({
           <Stack direction="row">
             {createdAt != null && !loading ? (
               <Typography variant="subtitle1" sx={{ color: 'secondary.light' }}>
-                {format(parseISO(createdAt), 'h:mmaaa, LLL. do')}
+                {intlFormat(parseISO(createdAt), {
+                  month: 'short',
+                  day: 'numeric',
+                  hour: 'numeric',
+                  minute: 'numeric',
+                  hour12: true
+                })}
               </Typography>
             ) : (
               <Skeleton width={100} />

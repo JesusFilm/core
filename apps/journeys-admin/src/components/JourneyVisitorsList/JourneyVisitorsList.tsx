@@ -40,7 +40,7 @@ export function JourneyVisitorsList({
         </Box>
       ) : hasVisitors ? (
         <Box sx={{ mx: { xs: -6, sm: 0 }, width: '100%' }}>
-          {visitorEdges.map((visitor) => (
+          {visitorEdges?.map((visitor) => (
             <VisitorCard
               key={visitor.node.visitorId}
               visitorNode={visitor.node}

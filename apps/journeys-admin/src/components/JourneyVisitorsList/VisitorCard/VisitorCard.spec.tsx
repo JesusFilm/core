@@ -67,7 +67,7 @@ describe('VisitorCard', () => {
     expect(getAllByText('#012345678901')).toHaveLength(2)
   })
 
-  it('it should show skeleton when loading', () => {
+  it('should show skeleton when loading', () => {
     const visitorNode: VisitorNode = {
       __typename: 'JourneyVisitor',
       visitorId: 'visitor.id-012345678901',

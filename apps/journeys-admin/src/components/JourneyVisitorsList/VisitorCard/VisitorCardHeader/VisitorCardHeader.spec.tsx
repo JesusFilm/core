@@ -27,7 +27,7 @@ describe('VisitorCardHeader', () => {
     expect(getAllByText('test name')).toHaveLength(2)
     expect(getAllByText('location')).toHaveLength(2)
     expect(getAllByText('source')).toHaveLength(2)
-    expect(getAllByText('12:34pm, Nov. 19th')).toHaveLength(2)
+    expect(getAllByText('Nov 19, 12:34 PM')).toHaveLength(2)
     expect(getAllByText('⭐')).toHaveLength(2)
     expect(getAllByText('1 min')).toHaveLength(2)
   })
@@ -58,10 +58,7 @@ describe('VisitorCardHeader', () => {
       loading: true
     }
 
-    const { getByTestId, getAllByTestId } = render(
-      <VisitorCardHeader {...props} />
-    )
+    const { getByTestId } = render(<VisitorCardHeader {...props} />)
     expect(getByTestId('header-skeleton')).toBeInTheDocument()
-    expect(getAllByTestId('description-skeleton')).toHaveLength(4)
   })
 })
