@@ -18,7 +18,7 @@ interface PageWrapperProps {
   menu?: ReactNode
   children?: ReactNode
   showAppHeader?: boolean
-  sidePanelTitle?: string
+  sidePanelTitle?: string | ReactNode
   /**
    * Add default side panel padding and border by wrapping components with `SidePanelContainer`
    */
@@ -26,7 +26,6 @@ interface PageWrapperProps {
   bottomPanelChildren?: ReactNode
   authUser?: AuthUser
   initialState?: Partial<PageState>
-  sidePanelTitleAction?: ReactNode
 }
 
 export function PageWrapper({
@@ -39,8 +38,7 @@ export function PageWrapper({
   bottomPanelChildren,
   children,
   authUser,
-  initialState,
-  sidePanelTitleAction
+  initialState
 }: PageWrapperProps): ReactElement {
   const [open, setOpen] = useState<boolean>(false)
   const theme = useTheme()
@@ -95,12 +93,7 @@ export function PageWrapper({
               </MainPanelBody>
             </Stack>
             {sidePanelChildren != null && (
-              <SidePanel
-                title={sidePanelTitle}
-                sidePanelTitleAction={sidePanelTitleAction}
-              >
-                {sidePanelChildren}
-              </SidePanel>
+              <SidePanel title={sidePanelTitle}>{sidePanelChildren}</SidePanel>
             )}
           </Stack>
         </Stack>

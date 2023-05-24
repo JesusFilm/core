@@ -11,22 +11,20 @@ import { usePage } from '../../../libs/PageWrapperProvider'
 
 interface SidePanelProps {
   children: ReactNode
-  title?: string
+  title?: string | ReactNode
   sidePanelTitleAction?: ReactNode
 }
 
 interface DrawerContentProps {
-  title?: string
+  title?: string | ReactNode
   children: ReactNode
   action?: ReactNode
-  sidePanelTitleAction?: ReactNode
 }
 
 function DrawerContent({
   title,
   children,
-  action,
-  sidePanelTitleAction
+  action
 }: DrawerContentProps): ReactElement {
   const { toolbar } = usePageWrapperStyles()
   return (
@@ -42,12 +40,9 @@ function DrawerContent({
           sx={{ justifyContent: 'space-between' }}
         >
           {title != null && (
-            <>
-              <Typography variant="subtitle1" component="div" noWrap>
-                {title}
-                {sidePanelTitleAction != null && sidePanelTitleAction}
-              </Typography>
-            </>
+            <Typography variant="subtitle1" component="div" noWrap>
+              {title}
+            </Typography>
           )}
           {action}
         </Toolbar>
@@ -66,11 +61,7 @@ function DrawerContent({
   )
 }
 
-export function SidePanel({
-  children,
-  title,
-  sidePanelTitleAction
-}: SidePanelProps): ReactElement {
+export function SidePanel({ children, title }: SidePanelProps): ReactElement {
   const { toolbar, sidePanel } = usePageWrapperStyles()
   const {
     state: { mobileDrawerOpen },
@@ -104,12 +95,7 @@ export function SidePanel({
           }
         }}
       >
-        <DrawerContent
-          title={title}
-          sidePanelTitleAction={sidePanelTitleAction}
-        >
-          {children}
-        </DrawerContent>
+        <DrawerContent title={title}>{children}</DrawerContent>
       </Drawer>
       <Drawer
         anchor="bottom"
@@ -131,7 +117,6 @@ export function SidePanel({
       >
         <DrawerContent
           title={title}
-          sidePanelTitleAction={sidePanelTitleAction}
           action={
             <IconButton
               onClick={handleClose}

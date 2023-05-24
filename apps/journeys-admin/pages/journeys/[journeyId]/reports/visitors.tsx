@@ -249,7 +249,12 @@ function JourneyVisitorsPage(): ReactElement {
             handleClearAll={handleClearAll}
           />
         }
-        sidePanelTitle={t('Filters')}
+        sidePanelTitle={
+          <>
+            {t('Filters')}
+            <ClearAllButton handleClearAll={handleClearAll} />
+          </>
+        }
         sidePanelChildren={
           <FilterDrawer
             handleChange={handleChange}
@@ -260,9 +265,6 @@ function JourneyVisitorsPage(): ReactElement {
             withIcon={withIcon}
             hideInteractive={hideInteractive}
           />
-        }
-        sidePanelTitleAction={
-          <ClearAllButton handleClearAll={handleClearAll} />
         }
       >
         <JourneyVisitorsList
