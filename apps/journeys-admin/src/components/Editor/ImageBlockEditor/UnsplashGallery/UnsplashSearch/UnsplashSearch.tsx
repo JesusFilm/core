@@ -28,7 +28,7 @@ export function UnsplashSearch({
           <TextField
             id="src"
             name="src"
-            type="search"
+            // type="search"
             variant="filled"
             hiddenLabel
             placeholder="Search by keyword"
@@ -36,14 +36,14 @@ export function UnsplashSearch({
             onChange={handleChange}
             fullWidth
             inputProps={{
-              'aria-label': 'UnsplashSearch'
-              // enterkeyhint: 'Search'
+              'aria-label': 'UnsplashSearch',
+              enterkeyhint: 'Search'
             }}
-            sx={{
-              'input[type="search"]::-webkit-search-cancel-button': {
-                WebkitAppearance: 'none'
-              }
-            }}
+            // sx={{
+            //   'input[type="search"]::-webkit-search-cancel-button': {
+            //     WebkitAppearance: 'none'
+            //   }
+            // }}
             InputProps={{
               startAdornment: (
                 <InputAdornment position="start">
