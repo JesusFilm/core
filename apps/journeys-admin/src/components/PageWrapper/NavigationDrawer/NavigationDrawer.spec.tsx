@@ -6,7 +6,7 @@ import { AuthUser } from 'next-firebase-auth'
 import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 import { Role } from '../../../../__generated__/globalTypes'
 import { GET_USER_ROLE } from '../../JourneyView/JourneyView'
-import { GET_ME } from './NavigationDrawer'
+import { GET_ME } from '../../NewPageWrapper/NavigationDrawer'
 import { NavigationDrawer } from '.'
 
 jest.mock('@mui/material/useMediaQuery', () => ({

@@ -7,8 +7,8 @@ import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 import { journeysAdminConfig } from '../../libs/storybook'
 import { Role } from '../../../__generated__/globalTypes'
 import { GET_USER_ROLE } from '../JourneyView/JourneyView'
+import { GET_ME } from '../NewPageWrapper/NavigationDrawer'
 import { PageWrapperProps } from './PageWrapper'
-import { GET_ME } from './NavigationDrawer/NavigationDrawer'
 import { PageWrapper } from '.'
 
 const PageWrapperStory = {

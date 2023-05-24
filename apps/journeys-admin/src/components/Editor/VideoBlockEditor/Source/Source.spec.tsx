@@ -141,6 +141,59 @@ describe('Source', () => {
         name: 'What is the Bible? What is the Bible? YouTube'
       })
     ).toBeInTheDocument()
+    expect(
+      getByRole('img', {
+        name: 'What is the Bible?'
+      })
+    ).toHaveAttribute('src', 'https://i.ytimg.com/vi/ak06MSETeo4/default.jpg')
+  })
+
+  it('shows Cloudflare video', async () => {
+    const onChange = jest.fn()
+    const { getByRole } = render(
+      <MockedProvider>
+        <Source
+          selectedBlock={{
+            id: 'video1.id',
+            __typename: 'VideoBlock',
+            parentBlockId: 'card1.id',
+            description:
+              'This is episode 1 of an ongoing series that explores the origins, content, and purpose of the Bible.',
+            duration: 348,
+            endAt: 348,
+            fullsize: true,
+            image: null,
+            muted: false,
+            autoplay: true,
+            startAt: 0,
+            title: 'What is the Bible?',
+            videoId: 'videoId',
+            videoVariantLanguageId: null,
+            parentOrder: 0,
+            action: null,
+            source: VideoBlockSource.cloudflare,
+            video: null,
+            objectFit: null,
+            posterBlockId: 'poster1.id',
+            children: []
+          }}
+          onChange={onChange}
+        />
+      </MockedProvider>
+    )
+    expect(
+      getByRole('button', {
+        name: 'What is the Bible? What is the Bible? Custom Video'
+      })
+    ).toBeInTheDocument()
+    expect(
+      getByRole('img', {
+        name: 'What is the Bible?'
+      })
+    ).toHaveAttribute(
+      'src',
+      'https://customer-.cloudflarestream.com/videoId/thumbnails/thumbnail.jpg?time=2s&height=55&width=55'
+    )
   })
 
   it('shows video details on source button click', () => {

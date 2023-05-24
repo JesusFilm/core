@@ -212,8 +212,8 @@ export class VideoBlockResolver {
         })
         if (input.videoId != null) {
           input = {
-            ...input,
-            ...(await this.fetchFieldsFromCloudflare(input.videoId))
+            ...(await this.fetchFieldsFromCloudflare(input.videoId)),
+            ...input
           }
         }
         break
@@ -314,7 +314,8 @@ export class VideoBlockResolver {
     return {
       title: response.result.meta.name ?? response.result.uid,
       image: `${response.result.thumbnail}?time=2s`,
-      duration: Math.round(response.result.duration)
+      duration: Math.round(response.result.duration),
+      endAt: Math.round(response.result.duration)
     }
   }
 }
