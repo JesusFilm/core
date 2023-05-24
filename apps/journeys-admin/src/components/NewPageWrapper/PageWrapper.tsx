@@ -14,7 +14,7 @@ import { usePageWrapperStyles } from './utils/usePageWrapperStyles'
 
 interface PageWrapperProps {
   backHref?: string
-  title: string
+  title: string | ReactNode
   menu?: ReactNode
   children?: ReactNode
   showAppHeader?: boolean
