@@ -28,6 +28,7 @@ export function UnsplashSearch({
           <TextField
             id="src"
             name="src"
+            type="Search"
             variant="filled"
             hiddenLabel
             placeholder="Search by keyword"
