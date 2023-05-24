@@ -1,4 +1,4 @@
-// version 3
+// version 4
 // increment to trigger re-seed (ie: files other than seed.ts are changed)
 
 import { PrismaClient } from '.prisma/api-tags-client'
@@ -38,7 +38,7 @@ async function main(): Promise<void> {
     await prisma.$executeRaw`CREATE PUBLICATION BIGQUERY FOR ALL TABLES`
     await prisma.$executeRaw`SELECT PG_CREATE_LOGICAL_REPLICATION_SLOT('BIGQUERY_SLOT', 'PGOUTPUT')`
   }
-  
+
   await upsertTag('Felt Needs', [
     'Loneliness',
     'Fear/Anxiety',
