@@ -347,6 +347,24 @@ enum DeviceType
   embedded @join__enumValue(graph: JOURNEYS)
 }
 
+type EmailAction implements Action
+  @join__implements(graph: JOURNEYS, interface: "Action")
+  @join__type(graph: JOURNEYS)
+{
+  parentBlockId: ID!
+  gtmEventName: String
+  email: String!
+  target: String
+}
+
+input EmailActionInput
+  @join__type(graph: JOURNEYS)
+{
+  gtmEventName: String
+  email: String!
+  target: String
+}
+
 interface Event
   @join__type(graph: JOURNEYS)
 {
@@ -796,6 +814,7 @@ type Mutation
   blockUpdateNavigateToBlockAction(id: ID!, journeyId: ID!, input: NavigateToBlockActionInput!): NavigateToBlockAction! @join__field(graph: JOURNEYS)
   blockUpdateNavigateToJourneyAction(id: ID!, journeyId: ID!, input: NavigateToJourneyActionInput!): NavigateToJourneyAction! @join__field(graph: JOURNEYS)
   blockUpdateLinkAction(id: ID!, journeyId: ID!, input: LinkActionInput!): LinkAction! @join__field(graph: JOURNEYS)
+  blockUpdateEmailAction(id: ID!, journeyId: ID!, input: EmailActionInput!): EmailAction! @join__field(graph: JOURNEYS)
 
   """blockDelete returns the updated sibling blocks on successful delete"""
   blockDelete(id: ID!, journeyId: ID!, parentBlockId: ID): [Block!]! @join__field(graph: JOURNEYS)

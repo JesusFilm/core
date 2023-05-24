@@ -55,6 +55,13 @@ type LinkAction implements Action {
   target: String
 }
 
+type EmailAction implements Action {
+  parentBlockId: ID!
+  gtmEventName: String
+  email: String!
+  target: String
+}
+
 input NavigateActionInput {
   gtmEventName: String
 }
@@ -75,12 +82,19 @@ input LinkActionInput {
   target: String
 }
 
+input EmailActionInput {
+  gtmEventName: String
+  email: String!
+  target: String
+}
+
 extend type Mutation {
   blockDeleteAction(id: ID!, journeyId: ID!): Block!
   blockUpdateNavigateAction(id: ID!, journeyId: ID!, input: NavigateActionInput!): NavigateAction!
   blockUpdateNavigateToBlockAction(id: ID!, journeyId: ID!, input: NavigateToBlockActionInput!): NavigateToBlockAction!
   blockUpdateNavigateToJourneyAction(id: ID!, journeyId: ID!, input: NavigateToJourneyActionInput!): NavigateToJourneyAction!
   blockUpdateLinkAction(id: ID!, journeyId: ID!, input: LinkActionInput!): LinkAction!
+  blockUpdateEmailAction(id: ID!, journeyId: ID!, input: EmailActionInput!): EmailAction!
 
   """blockDelete returns the updated sibling blocks on successful delete"""
   blockDelete(id: ID!, journeyId: ID!, parentBlockId: ID): [Block!]!
