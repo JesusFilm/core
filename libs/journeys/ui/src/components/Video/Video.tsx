@@ -93,7 +93,6 @@ export function Video({
     if (videoRef.current != null) {
       setPlayer(
         videojs(videoRef.current, {
-          autoplay: autoplay ?? false,
           controls: false,
           controlBar: false,
           bigPlayButton: false,
@@ -164,8 +163,10 @@ export function Video({
     if (player != null) {
       if (!isActiveBlockOrDescendant(blockId) || autoplay === false) {
         void player.pause()
+        void player.muted(true)
       } else {
         void player.play()
+        player.autoplay()
       }
     }
   }, [activeBlock, blockId, autoplay, player])

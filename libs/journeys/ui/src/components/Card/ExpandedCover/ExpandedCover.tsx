@@ -25,11 +25,16 @@ export function ExpandedCover({
     // Hide on all others https://caniuse.com/?search=webkit-scrollbar
     '&::-webkit-scrollbar': {
       display: 'none'
+    },
+    // Add spacing to children so centered when scrolling to edge
+    '& > *': {
+      '&:first-child': { mt: { xs: 6, lg: 12 } },
+      '&:last-child': { mb: { xs: 6, lg: 12 } }
     }
   }
 
   const overflowScrollFadeEffect = isVideoOnlyCard
-    ? {}
+    ? undefined
     : {
         WebkitMask: `linear-gradient(transparent 0%, #0000001a 4%, #000000 8%, #000000 90%, #0000001a 98%, transparent 100%)`,
         mask: `linear-gradient(transparent 0%, #0000001a 4%, #000000 8%, #000000 90%, #0000001a 98%, transparent 100%)`
@@ -47,6 +52,7 @@ export function ExpandedCover({
           blurDataURL={backgroundBlur}
           layout="fill"
           objectFit="cover"
+          // priority
         />
       )}
       <Stack
@@ -63,9 +69,11 @@ export function ExpandedCover({
       >
         <Stack
           data-testid="overlay-content-container"
+          justifyContent="center"
           sx={{
             flexGrow: 1,
             py: isVideoOnlyCard ? 0 : { xs: 9, lg: 8 },
+
             ...enableVerticalScroll
           }}
         >
@@ -79,13 +87,8 @@ export function ExpandedCover({
                 lg: 500
               },
               p: isVideoOnlyCard ? 0 : { xs: 2, lg: 'auto' },
-              zIndex: 1,
               ...enableVerticalScroll,
-              ...overflowScrollFadeEffect,
-              '& > *': {
-                '&:first-child': { mt: { xs: 6, lg: 12 } },
-                '&:last-child': { mb: { xs: 6, lg: 12 } }
-              }
+              ...overflowScrollFadeEffect
             }}
           >
             {children}

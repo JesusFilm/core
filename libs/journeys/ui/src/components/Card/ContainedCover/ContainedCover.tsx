@@ -176,6 +176,15 @@ export function ContainedCover({
         })
       }
     }
+
+    // return () => {
+    //   if (player != null) {
+    //     player.off('ready')
+    //     player.off('seeked')
+    //     player.off('pause')
+    //     player.off('timeupdate')
+    //   }
+    // }
   }, [player, videoBlock])
 
   useEffect(() => {
@@ -192,6 +201,7 @@ export function ContainedCover({
       if (isActiveBlockOrDescendant(cardId)) {
         player.autoplay(true)
         void player.play()
+        void player.muted(true)
       } else {
         player.autoplay(false)
         void player.pause()
@@ -276,7 +286,7 @@ export function ContainedCover({
               layout="fill"
               objectFit="cover"
               style={{ transform: isYouTube ? 'scale(1.35)' : 'unset' }}
-              priority
+              // priority
             />
           )}
         {/* Background image */}
@@ -293,7 +303,6 @@ export function ContainedCover({
                 blurDataURL={backgroundBlur}
                 layout="fill"
                 objectFit="cover"
-                priority
                 style={{ transform: 'scale(2) translate(0px, -25%)' }}
               />
               <Box
@@ -332,7 +341,7 @@ export function ContainedCover({
               blurDataURL={backgroundBlur}
               layout="fill"
               objectFit="cover"
-              priority
+              // priority
             />
           </Stack>
         )}
@@ -406,7 +415,6 @@ export function ContainedCover({
               justifyContent="center"
               sx={{
                 position: 'absolute',
-                zIndex: 1,
                 width: '100%',
                 // TODO: admin height is different
                 height: { xs: admin ? '150%' : '100%', lg: '100%' },
@@ -438,7 +446,6 @@ export function ContainedCover({
                 overflowY: 'scroll',
                 WebkitMask: `linear-gradient(transparent 0%, #0000001a 4%, #000000 8%, #000000 90%, #0000001a 98%, transparent 100%)`,
                 mask: `linear-gradient(transparent 0%, #0000001a 4%, #000000 8%, #000000 90%, #0000001a 98%, transparent 100%)`,
-                zIndex: 1,
                 // Hide on Firefox https://caniuse.com/?search=scrollbar-width
                 scrollbarWidth: 'none',
                 // Hide on all others https://caniuse.com/?search=webkit-scrollbar
