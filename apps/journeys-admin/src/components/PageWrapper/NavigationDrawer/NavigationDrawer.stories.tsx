@@ -8,7 +8,7 @@ import { journeysAdminConfig } from '../../../libs/storybook'
 import { Role, UserJourneyRole } from '../../../../__generated__/globalTypes'
 import { GET_USER_ROLE } from '../../JourneyView/JourneyView'
 import { GET_JOURNEYS } from '../../../libs/useJourneys/useJourneys'
-import { GET_ME } from './NavigationDrawer'
+import { GET_ME } from '../../NewPageWrapper/NavigationDrawer'
 import { NavigationDrawer } from '.'
 
 const NavigationDrawerStory = {

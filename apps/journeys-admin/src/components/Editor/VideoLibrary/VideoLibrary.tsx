@@ -14,11 +14,14 @@ import Tab from '@mui/material/Tab'
 import Tabs from '@mui/material/Tabs'
 import VideocamIcon from '@mui/icons-material/Videocam'
 import YouTubeIcon from '@mui/icons-material/YouTube'
+import UploadIcon from '@mui/icons-material/Upload'
+import { useFlags } from '@core/shared/ui/FlagsProvider'
 import { VideoBlockUpdateInput } from '../../../../__generated__/globalTypes'
 import { GetJourney_journey_blocks_VideoBlock as VideoBlock } from '../../../../__generated__/GetJourney'
 import { VideoFromYouTube } from './VideoFromYouTube'
 import { VideoFromLocal } from './VideoFromLocal'
 import { VideoDetails } from './VideoDetails'
+import { VideoFromCloudflare } from './VideoFromCloudflare'
 
 export const DRAWER_WIDTH = 328
 interface VideoLibraryProps {
@@ -37,6 +40,7 @@ export function VideoLibrary({
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
   const [openVideoDetails, setOpenVideoDetails] = useState(false)
   const [activeTab, setActiveTab] = useState(0)
+  const { videoFromCloudflare } = useFlags()
 
   useEffect(() => {
     // opens video details if videoId is not null
@@ -120,19 +124,27 @@ export function VideoLibrary({
             <Tab
               icon={<VideocamIcon />}
               label="Library"
-              {...tabA11yProps('video-library-panel', 0)}
+              {...tabA11yProps('video-from-local', 0)}
               sx={{ flexGrow: 1 }}
             />
             <Tab
               icon={<YouTubeIcon />}
               label="YouTube"
-              {...tabA11yProps('video-library-panel', 1)}
+              {...tabA11yProps('video-from-youtube', 1)}
               sx={{ flexGrow: 1 }}
             />
+            {videoFromCloudflare && (
+              <Tab
+                icon={<UploadIcon />}
+                label="Upload"
+                {...tabA11yProps('video-from-cloudflare', 2)}
+                sx={{ flexGrow: 1 }}
+              />
+            )}
           </Tabs>
         </Box>
         <TabPanel
-          name="video-library-panel"
+          name="video-from-local"
           value={activeTab}
           index={0}
           sx={{ flexGrow: 1, overflow: 'scroll' }}
@@ -140,12 +152,20 @@ export function VideoLibrary({
           <VideoFromLocal onSelect={onSelect} />
         </TabPanel>
         <TabPanel
-          name="video-library-panel"
+          name="video-from-youtube"
           value={activeTab}
           index={1}
           sx={{ flexGrow: 1, overflow: 'scroll' }}
         >
           <VideoFromYouTube onSelect={onSelect} />
+        </TabPanel>
+        <TabPanel
+          name="video-from-cloudflare"
+          value={activeTab}
+          index={2}
+          sx={{ flexGrow: 1, overflow: 'scroll' }}
+        >
+          <VideoFromCloudflare onSelect={onSelect} />
         </TabPanel>
       </Drawer>
       {selectedBlock?.videoId != null && (

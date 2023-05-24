@@ -3,6 +3,7 @@ import { useState } from 'react'
 import { MockedProvider } from '@apollo/client/testing'
 import { userEvent, waitFor, within } from '@storybook/testing-library'
 import { expect } from '@storybook/jest'
+import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 import { journeysAdminConfig } from '../../../libs/storybook'
 import { videos } from './VideoFromLocal/data'
 import { GET_VIDEOS } from './VideoFromLocal/VideoFromLocal'
@@ -118,11 +119,13 @@ const Template: Story = ({ onSelect }) => {
         }
       ]}
     >
-      <VideoLibrary
-        open={open}
-        onClose={() => setOpen(false)}
-        onSelect={onSelect}
-      />
+      <FlagsProvider flags={{ videoFromCloudflare: true }}>
+        <VideoLibrary
+          open={open}
+          onClose={() => setOpen(false)}
+          onSelect={onSelect}
+        />
+      </FlagsProvider>
     </MockedProvider>
   )
 }
