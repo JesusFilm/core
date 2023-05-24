@@ -1,10 +1,9 @@
 module "prod" {
-  source              = "../../modules/aws"
-  certificate_arn     = data.aws_acm_certificate.acm_central_jesusfilm_org.arn
-  env                 = "prod"
-  cidr                = "10.10.0.0/16"
-  internal_url_name   = "service.internal"
-  vpn_certificate_arn = data.aws_acm_certificate.acm_central_jesusfilm_org.arn
+  source            = "../../modules/aws"
+  certificate_arn   = data.aws_acm_certificate.acm_central_jesusfilm_org.arn
+  env               = "prod"
+  cidr              = "10.10.0.0/16"
+  internal_url_name = "service.internal"
 }
 
 locals {
@@ -98,4 +97,14 @@ module "arango-bigquery-etl" {
   task_execution_role_arn = data.aws_iam_role.ecs_task_execution_role.arn
   subnet_ids              = module.prod.vpc.internal_subnets
   cluster_arn             = module.prod.ecs.ecs_cluster.arn
+}
+
+module "bastion" {
+  source             = "../../modules/aws/ec2-bastion"
+  name               = "bastion"
+  env                = "prod"
+  dns_name           = "bastion.central.jesusfilm.org"
+  subnet_id          = module.prod.vpc.public_subnets[0]
+  zone_id            = data.aws_route53_zone.route53_central_jesusfilm_org.zone_id
+  security_group_ids = [module.prod.public_bastion_security_group_id]
 }

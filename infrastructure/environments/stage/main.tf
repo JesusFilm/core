@@ -1,10 +1,9 @@
 module "stage" {
-  source              = "../../modules/aws"
-  env                 = "stage"
-  cidr                = "10.11.0.0/16"
-  internal_url_name   = "stage.internal"
-  certificate_arn     = aws_acm_certificate.stage.arn
-  vpn_certificate_arn = data.aws_acm_certificate.acm_central_jesusfilm_org.arn
+  source            = "../../modules/aws"
+  env               = "stage"
+  cidr              = "10.11.0.0/16"
+  internal_url_name = "stage.internal"
+  certificate_arn   = aws_acm_certificate.stage.arn
 }
 
 module "route53_stage_central_jesusfilm_org" {
@@ -125,4 +124,14 @@ module "api-media" {
   ecs_config    = local.internal_ecs_config
   env           = "stage"
   doppler_token = data.aws_ssm_parameter.doppler_api_media_stage_token.value
+}
+
+module "bastion" {
+  source             = "../../modules/aws/ec2-bastion"
+  name               = "bastion"
+  env                = "stage"
+  dns_name           = "bastion.stage.central.jesusfilm.org"
+  subnet_id          = module.stage.vpc.public_subnets[0]
+  zone_id            = data.aws_route53_zone.route53_central_jesusfilm_org.zone_id
+  security_group_ids = [module.stage.public_bastion_security_group_id]
 }

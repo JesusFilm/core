@@ -35,6 +35,21 @@ module "public_alb_security_group" {
   egress_rules  = local.public_alb_config.egress_rules
 }
 
+module "public_bastion_security_group" {
+  source = "./security-group"
+  name   = "jfp-public-bastion-sg-${var.env}"
+  vpc_id = module.vpc.vpc_id
+  ingress_rules = [
+    {
+      from_port   = 22
+      to_port     = 22
+      protocol    = "tcp"
+      cidr_blocks = concat([var.cidr], local.google_datastream_ip_list)
+    }
+  ]
+  egress_rules = local.egress_rules
+}
+
 module "internal_alb" {
   source            = "./alb"
   name              = "jfp-internal-alb-${var.env}"
@@ -74,16 +89,4 @@ module "ecs" {
   vpc_id                      = module.vpc.vpc_id
   internal_alb_security_group = module.internal_alb_security_group
   public_alb_security_group   = module.public_alb_security_group
-}
-
-module "vpn" {
-  source          = "./vpn"
-  dns_name        = "vpn-${var.env}.central.jesusfilm.org"
-  name            = "jfp-vpn-${var.env}"
-  vpc_id          = module.vpc.vpc_id
-  vpc_cidr_block  = var.cidr
-  cidr_block      = "10.0.0.0/16"
-  subnets         = module.vpc.public_subnets
-  certificate_arn = var.vpn_certificate_arn
-  dns_server      = var.env == "prod" ? "10.10.0.2" : "10.11.0.2"
 }
