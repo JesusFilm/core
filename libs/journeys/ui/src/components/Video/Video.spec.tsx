@@ -60,7 +60,7 @@ const block: TreeBlock<VideoFields> = {
 }
 
 describe('Video', () => {
-  it('should render the video through mediaComponentId and languageId successfully', () => {
+  it('should render internal video', () => {
     const { getByTestId } = render(
       <MockedProvider>
         <Video {...block} />
@@ -70,6 +70,24 @@ describe('Video', () => {
       getByTestId('video-video0.id').querySelector('.vjs-tech source')
     expect(sourceTag?.getAttribute('src')).toEqual(
       'https://arc.gt/hls/2_0-FallingPlates/529'
+    )
+    expect(sourceTag?.getAttribute('type')).toEqual('application/x-mpegURL')
+  })
+
+  it('should render cloudflare video', () => {
+    const { getByTestId } = render(
+      <Video
+        {...{
+          ...block,
+          source: VideoBlockSource.cloudflare,
+          videoId: 'videoId'
+        }}
+      />
+    )
+    const sourceTag =
+      getByTestId('video-video0.id').querySelector('.vjs-tech source')
+    expect(sourceTag?.getAttribute('src')).toEqual(
+      'https://customer-.cloudflarestream.com/videoId/manifest/video.m3u8'
     )
     expect(sourceTag?.getAttribute('type')).toEqual('application/x-mpegURL')
   })

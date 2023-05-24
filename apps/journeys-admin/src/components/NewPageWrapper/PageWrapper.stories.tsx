@@ -13,8 +13,8 @@ import Paper from '@mui/material/Paper'
 import { journeysAdminConfig } from '../../libs/storybook'
 import { Role } from '../../../__generated__/globalTypes'
 import { GET_USER_ROLE } from '../JourneyView/JourneyView'
-import { GET_ME } from '../PageWrapper/NavigationDrawer/NavigationDrawer'
 import { SidePanelContainer } from './SidePanelContainer'
+import { GET_ME } from './NavigationDrawer'
 import { PageWrapper } from '.'
 
 const PageWrapperStory = {

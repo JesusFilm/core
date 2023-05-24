@@ -3,10 +3,12 @@ type CloudflareVideo {
   uploadUrl: String
   userId: ID!
   createdAt: String!
+  readyToStream: Boolean!
 }
 
 extend type Query {
   getMyCloudflareVideos: [CloudflareVideo]
+  getMyCloudflareVideo(id: ID!): CloudflareVideo
 }
 
 extend type Mutation {
