@@ -13,4 +13,4 @@ COPY ./apps/api-tags /app/apps/api-tags
 RUN npm install --silent arangojs@^7.6.1 ts-node@^10.9.1 tslib@^2.3.1 prisma@^4.13.0 @prisma/client@^4.13.0
 RUN npx prisma@^4.13.0 generate --schema apps/api-tags/db/prisma.schema
 
-CMD npx prisma@^4.13.0 migrate deploy --schema /prisma/schema.prisma; npx ts-node /app/apps/api-tags/db/seed.ts
+CMD npx prisma@^4.13.0 migrate deploy --schema /prisma/schema.prisma; npx ts-node /app/apps/api-tags/db/seed.ts --prod

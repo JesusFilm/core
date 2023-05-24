@@ -34,6 +34,11 @@ async function upsertTag(
 }
 
 async function main(): Promise<void> {
+  if (process.argv.includes('--prod')) {
+    await prisma.$executeRaw`CREATE PUBLICATION BIGQUERY FOR ALL TABLES`
+    await prisma.$executeRaw`SELECT PG_CREATE_LOGICAL_REPLICATION_SLOT('BIGQUERY_SLOT', 'PGOUTPUT')`
+  }
+  
   await upsertTag('Felt Needs', [
     'Loneliness',
     'Fear/Anxiety',
