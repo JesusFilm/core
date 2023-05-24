@@ -11,7 +11,7 @@ import { useRouter } from 'next/router'
 import { usePageWrapperStyles } from '../utils/usePageWrapperStyles'
 
 export interface MainBodyContainerProps {
-  title: string
+  title: string | ReactNode
   backHref?: string
   menu?: ReactNode
   backHrefHistory?: boolean

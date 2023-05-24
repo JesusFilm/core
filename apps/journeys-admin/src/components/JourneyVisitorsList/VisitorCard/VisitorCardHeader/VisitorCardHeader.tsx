@@ -57,6 +57,7 @@ export function VisitorCardHeader({
           <PersonOutlineRoundedIcon
             sx={{
               mr: 3,
+              minWidth: '24px',
               display: { xs: 'none', sm: 'flex' }
             }}
           />
@@ -125,9 +126,11 @@ export function VisitorCardHeader({
             sx={{ mr: 3, mt: 6, display: { xs: 'block', sm: 'none' } }}
           />
         ) : status != null ? (
-          <Typography sx={{ mr: 3, mt: 6 }}>{status}</Typography>
+          <Typography sx={{ mr: 3, mt: 6, minWidth: '24px' }}>
+            {status}
+          </Typography>
         ) : (
-          <PersonOutlineRoundedIcon sx={{ mr: 3, mt: 6 }} />
+          <PersonOutlineRoundedIcon sx={{ mr: 3, mt: 6, minWidth: '24px' }} />
         )}
         <Stack direction="column">
           <Stack direction="row">

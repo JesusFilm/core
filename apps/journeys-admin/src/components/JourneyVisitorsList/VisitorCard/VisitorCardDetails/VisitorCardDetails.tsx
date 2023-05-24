@@ -32,14 +32,14 @@ export function VisitorCardDetails({
 
   return (
     <>
-      <Box sx={{ pt: 3, pl: 9 }}>
+      <Box sx={{ pt: 3, pl: { xs: '9px', sm: 9 } }}>
         <DetailsRow label={t('Name')} value={name} loading={loading} />
       </Box>
 
       {filteredEvents.map((event) => {
         if (event.__typename === 'ChatOpenEvent') {
           return (
-            <Box sx={{ pl: 9 }}>
+            <Box sx={{ pl: { xs: '9px', sm: 9 } }}>
               <DetailsRow
                 key={event.id}
                 label={t('Chat Started')}
@@ -51,7 +51,7 @@ export function VisitorCardDetails({
           )
         } else {
           return (
-            <Box sx={{ pl: 9 }}>
+            <Box sx={{ pl: { xs: '9px', sm: 9 } }}>
               <DetailsRow
                 key={event.id}
                 label={event.label}
@@ -88,9 +88,8 @@ function DetailsRow({
         color={textColor}
         sx={{
           display: { xs: 'flex', sm: 'none' },
-          paddingLeft: { xs: '10px', sm: 'none' },
           pt: 6,
-          pl: 1,
+          pl: { xs: 1, sm: 1 },
           minWidth: '28px'
         }}
       >
