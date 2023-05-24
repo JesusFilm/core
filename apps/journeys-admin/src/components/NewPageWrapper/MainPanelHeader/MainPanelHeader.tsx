@@ -37,7 +37,6 @@ export function MainPanelHeader({
       >
         <Toolbar variant={toolbar.variant}>
           <Stack direction="row" flexGrow={1} alignItems="center">
-            {/* {backHref != null && } */}
             {backHrefHistory === true ? (
               <Box onClick={() => router.back()}>
                 <IconButton
