@@ -11,6 +11,8 @@ import { NextSeo } from 'next-seo'
 import { gql, useQuery } from '@apollo/client'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import { getLaunchDarklyClient } from '@core/shared/ui/getLaunchDarklyClient'
+import Typography from '@mui/material/Typography'
+import Stack from '@mui/material/Stack'
 import { PageWrapper } from '../../../../src/components/NewPageWrapper'
 import { useTermsRedirect } from '../../../../src/libs/useTermsRedirect'
 import { GetJourney } from '../../../../__generated__/GetJourney'
@@ -131,7 +133,16 @@ function JourneyVisitorsPage(): ReactElement {
     <>
       <NextSeo title={t('Visitors')} />
       <PageWrapper
-        title={t('Visitors')}
+        title={
+          <Stack direction="row" alignItems="center">
+            {t('Visitors')}
+            {data?.journeyVisitorCount != null && (
+              <Typography variant="caption" sx={{ pl: 4 }}>
+                {data?.journeyVisitorCount}
+              </Typography>
+            )}
+          </Stack>
+        }
         authUser={AuthUser}
         backHref={`/journeys/${journeyId}/reports`}
       >

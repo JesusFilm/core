@@ -9,7 +9,7 @@ import Typography from '@mui/material/Typography'
 import { usePageWrapperStyles } from '../utils/usePageWrapperStyles'
 
 export interface MainBodyContainerProps {
-  title: string
+  title: string | ReactNode
   backHref?: string
   menu?: ReactNode
 }
