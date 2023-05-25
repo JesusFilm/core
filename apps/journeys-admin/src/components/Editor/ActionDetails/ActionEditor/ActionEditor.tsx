@@ -120,6 +120,7 @@ export function ActionEditor({
   return (
     <Box sx={{ pt: 6 }} data-testid="ActionEditor">
       <TextFieldForm
+        id="link"
         label="Navigate to"
         initialValues={url}
         validationSchema={linkActionSchema}

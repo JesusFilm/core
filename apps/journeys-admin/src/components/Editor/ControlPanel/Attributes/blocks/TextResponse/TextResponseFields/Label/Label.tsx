@@ -57,6 +57,7 @@ export function Label(): ReactElement {
   return (
     <Box sx={{ px: 6, py: 4 }}>
       <TextFieldForm
+        id="textResponseLabel"
         label="Label"
         initialValues={selectedBlock?.label}
         handleSubmit={handleSubmit}

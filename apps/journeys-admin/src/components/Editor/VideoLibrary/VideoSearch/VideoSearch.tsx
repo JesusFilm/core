@@ -41,6 +41,7 @@ export function VideoSearch({
       }}
     >
       <TextFieldForm
+        id="videoSearch"
         label={label ?? 'Search by title in JF Library'}
         initialValues={search}
         handleSubmit={onSearchChange}

@@ -161,6 +161,7 @@ export function BackgroundColor(): ReactElement {
       <Stack sx={{ p: 6, py: 4 }} spacing={3} direction="row">
         <Swatch id={`bg-color-${selectedColor}`} color={selectedColor} />
         <TextFieldForm
+          id="bgColorTextField"
           hiddenLabel
           initialValues={selectedColor}
           handleSubmit={handleColorChange}

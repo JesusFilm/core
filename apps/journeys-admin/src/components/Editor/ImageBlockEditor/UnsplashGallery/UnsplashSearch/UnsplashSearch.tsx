@@ -14,10 +14,14 @@ export function UnsplashSearch({
 }: UnsplashSearchProps): ReactElement {
   return (
     <TextFieldForm
+      id="src"
       initialValues={value}
       placeholder="Search by keyword"
       handleSubmit={handleSubmit}
       hiddenLabel
+      inputProps={{
+        'aria-label': 'UnsplashSearch'
+      }}
       startIcon={
         <InputAdornment position="start">
           <SearchIcon />

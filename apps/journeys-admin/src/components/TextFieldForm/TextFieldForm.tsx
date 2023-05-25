@@ -4,28 +4,30 @@ import TextField, { TextFieldProps } from '@mui/material/TextField'
 
 type IconPosition = 'start' | 'end'
 
-// add id to the components affected
-interface TextFieldFormProps
-  extends Pick<
-    TextFieldProps,
-    | 'id'
-    | 'label'
-    | 'placeholder'
-    | 'disabled'
-    | 'helperText'
-    | 'hiddenLabel'
-    | 'inputProps'
-    | 'sx'
-  > {
+type FieldProps = Pick<
+  TextFieldProps,
+  | 'id'
+  | 'label'
+  | 'placeholder'
+  | 'disabled'
+  | 'helperText'
+  | 'hiddenLabel'
+  | 'inputProps'
+  | 'sx'
+>
+
+interface TextFieldFormProps extends FieldProps {
   initialValues?: string
   validationSchema?: any
   handleSubmit: (value?: string) => void
+  resetField?: boolean
   startIcon?: ReactNode
   endIcon?: ReactNode
   iconPosition?: IconPosition
 }
 
 export function TextFieldForm({
+  id,
   label,
   initialValues,
   validationSchema,
@@ -34,6 +36,7 @@ export function TextFieldForm({
   hiddenLabel,
   placeholder,
   handleSubmit,
+  resetField = false,
   startIcon,
   endIcon,
   iconPosition
@@ -49,10 +52,10 @@ export function TextFieldForm({
       }}
       enableReinitialize
     >
-      {({ values, touched, errors, handleChange, handleBlur }) => (
+      {({ values, touched, errors, handleChange, handleBlur, resetForm }) => (
         <Form>
           <TextField
-            id="value"
+            id={id}
             name="value"
             variant="filled"
             fullWidth
@@ -74,8 +77,12 @@ export function TextFieldForm({
             onBlur={(e) => {
               handleBlur(e)
               errors.value == null && handleSubmit(e.target.value)
+              // todo: manage reset
             }}
-            onChange={handleChange}
+            onChange={(e) => {
+              handleChange(e)
+              // todo: manage reset
+            }}
           />
         </Form>
       )}

@@ -1,8 +1,7 @@
-import { ReactElement, ClipboardEvent, useState } from 'react'
+import { ReactElement, useState } from 'react'
 import LinkIcon from '@mui/icons-material/Link'
 import InputAdornment from '@mui/material/InputAdornment'
 import Stack from '@mui/material/Stack'
-import TextField from '@mui/material/TextField'
 import Collapse from '@mui/material/Collapse'
 import Fade from '@mui/material/Fade'
 import Typography from '@mui/material/Typography'
@@ -10,9 +9,9 @@ import Button from '@mui/material/ListItemButton'
 import ExpandLess from '@mui/icons-material/ExpandLess'
 import ExpandMore from '@mui/icons-material/ExpandMore'
 import { gql, useMutation } from '@apollo/client'
-import { useFormik } from 'formik'
-import { noop } from 'lodash'
+import { isEmpty } from 'lodash'
 import { CreateCloudflareUploadByUrl } from '../../../../../../__generated__/CreateCloudflareUploadByUrl'
+import { TextFieldForm } from '../../../../TextFieldForm'
 
 export const CREATE_CLOUDFLARE_UPLOAD_BY_URL = gql`
   mutation CreateCloudflareUploadByUrl($url: String!) {
@@ -31,7 +30,8 @@ export function CustomUrl({ onChange }: CustomUrlProps): ReactElement {
   const [createCloudflareUploadByUrl] =
     useMutation<CreateCloudflareUploadByUrl>(CREATE_CLOUDFLARE_UPLOAD_BY_URL)
 
-  const handleChange = async (url: string): Promise<void> => {
+  const handleChange = async (url?: string): Promise<void> => {
+    if (isEmpty(url)) return
     const { data } = await createCloudflareUploadByUrl({
       variables: {
         url
@@ -43,22 +43,8 @@ export function CustomUrl({ onChange }: CustomUrlProps): ReactElement {
         process.env.NEXT_PUBLIC_CLOUDFLARE_UPLOAD_KEY ?? ''
       }/${data?.createCloudflareUploadByUrl.id}/public`
       onChange(src)
-      formik.resetForm({ values: { src: '' } })
     }
   }
-
-  const handlePaste = async (
-    e: ClipboardEvent<HTMLDivElement>
-  ): Promise<void> => {
-    await handleChange(e.clipboardData.getData('text'))
-  }
-
-  const formik = useFormik({
-    initialValues: {
-      src: ''
-    },
-    onSubmit: noop
-  })
 
   return (
     <>
@@ -87,39 +73,18 @@ export function CustomUrl({ onChange }: CustomUrlProps): ReactElement {
       <Collapse in={open}>
         <Fade in={open}>
           <Stack sx={{ pt: 3, px: 6 }}>
-            <form>
-              <TextField
-                id="src"
-                name="src"
-                variant="filled"
-                label="Paste URL of image..."
-                fullWidth
-                value={formik.values.src}
-                onChange={formik.handleChange}
-                onPaste={async (e) => {
-                  await handlePaste(e)
-                }}
-                onBlur={async (e) => {
-                  formik.handleBlur(e)
-                  await handleChange(e.target.value)
-                }}
-                helperText={
-                  formik.errors.src != null
-                    ? formik.errors.src
-                    : 'Make sure image address is permanent'
-                }
-                error={
-                  formik.touched.src === true && Boolean(formik.errors.src)
-                }
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <LinkIcon />
-                    </InputAdornment>
-                  )
-                }}
-              />
-            </form>
+            <TextFieldForm
+              id="src"
+              label="Paste URL of image..."
+              handleSubmit={handleChange}
+              helperText="Make sure image address is permanent"
+              startIcon={
+                <InputAdornment position="start">
+                  <LinkIcon />
+                </InputAdornment>
+              }
+              iconPosition="start"
+            />
           </Stack>
         </Fade>
       </Collapse>

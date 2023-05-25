@@ -54,6 +54,7 @@ export function Hint(): ReactElement {
   return (
     <Box sx={{ px: 6, py: 4 }}>
       <TextFieldForm
+        id="textResponseHint"
         label="Hint"
         initialValues={selectedBlock?.hint ?? ''}
         handleSubmit={handleSubmit}
