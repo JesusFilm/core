@@ -103,7 +103,7 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
                 if (data.region != null) countryCodes.push(data.region)
                 if (data.country != null) countryCodes.push(data.country)
 
-                if (countryCodes.length > 0 || document.referrer != null) {
+                if (countryCodes.length > 0 || document.referrer !== '') {
                   void journeyVisitorUpdate({
                     variables: {
                       input: {
@@ -111,7 +111,7 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
                           countryCodes.length > 0
                             ? countryCodes.join(', ')
                             : undefined,
-                        referrer: document.referrer ?? undefined
+                        referrer: document.referrer
                       }
                     }
                   })
