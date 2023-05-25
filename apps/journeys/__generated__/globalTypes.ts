@@ -147,6 +147,24 @@ export enum VideoBlockSource {
   youTube = "youTube",
 }
 
+/**
+ * The status of a visitor according to team members interacting with the
+ * visitor admin interface. This enum should map to an emoji when displayed
+ * (names here match Apple's emoji name)
+ */
+export enum VisitorStatus {
+  checkMarkSymbol = "checkMarkSymbol",
+  partyPopper = "partyPopper",
+  prohibited = "prohibited",
+  redExclamationMark = "redExclamationMark",
+  redQuestionMark = "redQuestionMark",
+  robotFace = "robotFace",
+  star = "star",
+  thumbsDown = "thumbsDown",
+  thumbsUp = "thumbsUp",
+  warning = "warning",
+}
+
 export interface ButtonClickEventCreateInput {
   id?: string | null;
   blockId: string;
@@ -264,6 +282,20 @@ export interface VideoStartEventCreateInput {
   position?: number | null;
   label?: string | null;
   value?: VideoBlockSource | null;
+}
+
+/**
+ * A list of fields to update a visitor when calling the visitorUpdate mutation
+ */
+export interface VisitorUpdateInput {
+  email?: string | null;
+  messagePlatformId?: string | null;
+  messagePlatform?: MessagePlatform | null;
+  name?: string | null;
+  notes?: string | null;
+  status?: VisitorStatus | null;
+  countryCode?: string | null;
+  referrer?: string | null;
 }
 
 //==============================================================
