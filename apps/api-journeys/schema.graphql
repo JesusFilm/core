@@ -59,7 +59,6 @@ type EmailAction implements Action {
   parentBlockId: ID!
   gtmEventName: String
   email: String!
-  target: String
 }
 
 input NavigateActionInput {
@@ -85,7 +84,6 @@ input LinkActionInput {
 input EmailActionInput {
   gtmEventName: String
   email: String!
-  target: String
 }
 
 extend type Mutation {

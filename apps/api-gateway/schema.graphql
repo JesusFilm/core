@@ -354,7 +354,6 @@ type EmailAction implements Action
   parentBlockId: ID!
   gtmEventName: String
   email: String!
-  target: String
 }
 
 input EmailActionInput
@@ -362,7 +361,6 @@ input EmailActionInput
 {
   gtmEventName: String
   email: String!
-  target: String
 }
 
 interface Event
