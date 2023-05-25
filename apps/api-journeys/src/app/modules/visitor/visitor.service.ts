@@ -178,14 +178,17 @@ export class VisitorService {
         }
       })
     }
-    const journeyVisitor = await this.prismaService.journeyVisitor.upsert({
-      where: { journeyId_visitorId: { journeyId, visitorId: visitor.id } },
-      update: {},
-      create: {
-        journeyId,
-        visitorId: visitor.id
-      }
+    let journeyVisitor = await this.prismaService.journeyVisitor.findUnique({
+      where: { journeyId_visitorId: { journeyId, visitorId: visitor.id } }
     })
+    if (journeyVisitor == null) {
+      journeyVisitor = await this.prismaService.journeyVisitor.create({
+        data: {
+          journeyId,
+          visitorId: visitor.id
+        }
+      })
+    }
 
     return { visitor, journeyVisitor }
   }
