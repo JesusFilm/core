@@ -3,6 +3,8 @@ import { Meta, Story } from '@storybook/react'
 import IconButton from '@mui/material/IconButton'
 import MenuRounded from '@mui/icons-material/MenuRounded'
 import Typography from '@mui/material/Typography'
+import Stack from '@mui/material/Stack'
+import Button from '@mui/material/Button'
 import { noop } from 'lodash'
 import { MockedProvider } from '@apollo/client/testing'
 import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
@@ -11,8 +13,8 @@ import Paper from '@mui/material/Paper'
 import { journeysAdminConfig } from '../../libs/storybook'
 import { Role } from '../../../__generated__/globalTypes'
 import { GET_USER_ROLE } from '../JourneyView/JourneyView'
-import { GET_ME } from '../PageWrapper/NavigationDrawer/NavigationDrawer'
 import { SidePanelContainer } from './SidePanelContainer'
+import { GET_ME } from './NavigationDrawer'
 import { PageWrapper } from '.'
 
 const PageWrapperStory = {
@@ -124,7 +126,14 @@ Default.args = {
 
 export const SidePanel = Template.bind({})
 SidePanel.args = {
-  title: 'Main Content',
+  title: (
+    <Stack direction="row" alignItems="center">
+      Main Content
+      <Typography variant="caption" sx={{ pl: 4 }}>
+        custom content
+      </Typography>
+    </Stack>
+  ),
   children: (
     <>
       <Typography variant="h3" gutterBottom>
@@ -137,7 +146,12 @@ SidePanel.args = {
       </Paper>
     </>
   ),
-  sidePanelTitle: 'Side Panel Content',
+  sidePanelTitle: (
+    <>
+      Side Panel Content
+      <Button size="small">Custom Content</Button>
+    </>
+  ),
   sidePanelChildren: <SidePanelContainers />
 }
 SidePanel.parameters = {

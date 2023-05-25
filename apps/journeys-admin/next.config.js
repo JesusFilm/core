@@ -17,7 +17,10 @@ const nextConfig = {
       'd1wl257kev7hsz.cloudfront.net',
       'i.ytimg.com',
       // cloudflare
-      'imagedelivery.net'
+      'imagedelivery.net',
+      `customer-${
+        process.env.NEXT_PUBLIC_CLOUDFLARE_STREAM_CUSTOMER_CODE ?? ''
+      }.cloudflarestream.com`
     ]
   },
   nx: {
