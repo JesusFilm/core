@@ -85,7 +85,8 @@ const StyledNavArea = styled(Stack)(({ theme }) => ({
 }))
 
 export function Conductor({ blocks }: ConductorProps): ReactElement {
-  const { setTreeBlocks, treeBlocks, blockHistory } = useBlocks()
+  const { setTreeBlocks, setBlockHistory, treeBlocks, blockHistory } =
+    useBlocks()
   const [swiper, setSwiper] = useState<SwiperCore>()
   const [visibleNav, setVisibleNav] = useState(true)
   const swiperRef = useRef<SwiperType>()
@@ -99,6 +100,7 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
 
   useEffect(() => {
     setTreeBlocks(blocks)
+    setBlockHistory([blocks[0]])
 
     if (!admin && journey != null) {
       const id = uuidv4()
@@ -122,7 +124,7 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
       })
     }
     // eslint-disable-next-line
-  }, [])
+  }, [journey])
 
   useEffect(() => {
     setTimeout(() => {
@@ -165,7 +167,7 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
       ml: 2,
       backgroundColor: `${theme.palette.common.black}00010`,
       '&:hover': {
-        backgroundColor: `${theme.palette.common.black}00030`
+        backgroundColor: { lg: `${theme.palette.common.black}00030` }
       }
     },
     viewBox: '0 0 24 24',
@@ -190,6 +192,7 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
         pagination={{ dynamicBullets: true }}
         effect="fade"
         fadeEffect={{ crossFade: true }}
+        speed={300}
         // preventInteractionOnTransition
         dir={!rtl ? 'ltr' : 'rtl'}
         onSwiper={(swiper) => setSwiper(swiper)}

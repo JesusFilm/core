@@ -15,6 +15,7 @@ interface UseBlocksHook {
   prevActiveBlock: (args?: ActiveBlockArgs) => void
   nextActiveBlock: (args?: ActiveBlockArgs) => void
   setTreeBlocks: (blocks: TreeBlock[]) => void
+  setBlockHistory: (blocks: TreeBlock[]) => void
   treeBlocks: TreeBlock[]
   blockHistory: TreeBlock[]
 }
@@ -97,10 +98,15 @@ export function useBlocks(): UseBlocksHook {
     nextActiveBlock({ id: blocks[0]?.id })
   }, [])
 
+  const setBlockHistory = useCallback((blocks: TreeBlock[]): void => {
+    blockHistoryVar([blocks[0]])
+  }, [])
+
   return {
     prevActiveBlock,
     nextActiveBlock,
     setTreeBlocks,
+    setBlockHistory,
     treeBlocks,
     blockHistory
   }

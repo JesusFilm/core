@@ -141,6 +141,15 @@ export function Video({
         })
       }
     }
+    return () => {
+      if (player != null) {
+        player.off('seeked')
+        player.off('playing')
+        player.off('canplay')
+        player.off('canplaythrough')
+        player.off('ended')
+      }
+    }
   }, [
     player,
     selectedBlock,

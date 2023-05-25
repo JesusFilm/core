@@ -98,6 +98,17 @@ export function VideoControls({
     fscreen.addEventListener('fullscreenchange', () => {
       setFullscreen(fscreen.fullscreenElement != null)
     })
+
+    return () => {
+      player.off('ready')
+      player.off('play')
+      player.off('pause')
+      player.off('timeupdate')
+      player.off('fullscreenchange')
+      player.off('useractive')
+      player.off('userinactive')
+      player.off('volumechange')
+    }
   }, [player, setFullscreen, startAt, endAt])
 
   function handlePlay(): void {
@@ -248,9 +259,7 @@ export function VideoControls({
               min={startAt}
               max={endAt}
               value={progress}
-              valueLabelFormat={(value) => {
-                return secondsToTimeFormat(value, { trimZeroes: true })
-              }}
+              valueLabelFormat={displayTime}
               valueLabelDisplay="auto"
               onChange={handleSeek}
               sx={{
@@ -296,9 +305,7 @@ export function VideoControls({
                 min={startAt}
                 max={endAt}
                 value={progress}
-                valueLabelFormat={(value) => {
-                  return secondsToTimeFormat(value, { trimZeroes: true })
-                }}
+                valueLabelFormat={displayTime}
                 valueLabelDisplay="auto"
                 onChange={handleSeek}
                 sx={{

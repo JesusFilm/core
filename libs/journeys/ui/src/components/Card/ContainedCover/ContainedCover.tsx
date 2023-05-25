@@ -96,13 +96,15 @@ export function ContainedCover({
 
   // Initiate Video
   useEffect(() => {
+    const isSafari = !/^((?!chrome|android).)*safari/i.test(navigator.userAgent)
+
     if (videoRef.current != null) {
       setPlayer(
         videojs(videoRef.current, {
           controls: false,
           controlBar: false,
           bigPlayButton: false,
-          preload: 'metadata',
+          preload: isSafari ? 'metadata' : 'auto',
           // Make video fill container instead of set aspect ratio
           fill: true,
           userActions: {
@@ -177,14 +179,14 @@ export function ContainedCover({
       }
     }
 
-    // return () => {
-    //   if (player != null) {
-    //     player.off('ready')
-    //     player.off('seeked')
-    //     player.off('pause')
-    //     player.off('timeupdate')
-    //   }
-    // }
+    return () => {
+      if (player != null) {
+        player.off('ready')
+        player.off('seeked')
+        player.off('pause')
+        player.off('timeupdate')
+      }
+    }
   }, [player, videoBlock])
 
   useEffect(() => {
@@ -245,7 +247,6 @@ export function ContainedCover({
             ref={videoRef}
             className="video-js"
             playsInline
-            preload="auto"
             sx={{
               '&.video-js.vjs-fill:not(.vjs-audio-only-mode)': {
                 height: isYouTube ? 'inherit' : '100%',
@@ -286,7 +287,6 @@ export function ContainedCover({
               layout="fill"
               objectFit="cover"
               style={{ transform: isYouTube ? 'scale(1.35)' : 'unset' }}
-              // priority
             />
           )}
         {/* Background image */}
@@ -341,7 +341,6 @@ export function ContainedCover({
               blurDataURL={backgroundBlur}
               layout="fill"
               objectFit="cover"
-              // priority
             />
           </Stack>
         )}
