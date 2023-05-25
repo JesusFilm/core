@@ -1,12 +1,7 @@
 import { Injectable } from '@nestjs/common'
 import { v4 as uuidv4 } from 'uuid'
-import { isNil, omitBy } from 'lodash'
-import { Visitor, JourneyVisitor, Prisma } from '.prisma/api-journeys-client'
-import {
-  PageInfo,
-  JourneyVisitorFilter,
-  JourneyVisitorSort
-} from '../../__generated__/graphql'
+import { Visitor, JourneyVisitor } from '.prisma/api-journeys-client'
+import { PageInfo } from '../../__generated__/graphql'
 import { PrismaService } from '../../lib/prisma.service'
 import { JourneyService } from '../journey/journey.service'
 
@@ -22,14 +17,6 @@ interface ListParams {
 export interface VisitorsConnection {
   edges: Array<{
     node: Visitor
-    cursor: string
-  }>
-  pageInfo: PageInfo
-}
-
-export interface JourneyVisitorsConnection {
-  edges: Array<{
-    node: JourneyVisitor
     cursor: string
   }>
   pageInfo: PageInfo
@@ -63,93 +50,11 @@ export class VisitorService {
       })),
       pageInfo: {
         hasNextPage: result.length > first,
-        startCursor:
-          result.length > 0 ? result[0].createdAt.toISOString() : null,
-        endCursor:
-          result.length > 0
-            ? sendResult[sendResult.length - 1].createdAt.toISOString()
-            : null
-      }
-    }
-  }
-
-  generateWhere(
-    filter?: JourneyVisitorFilter
-  ): Prisma.JourneyVisitorWhereInput {
-    return omitBy(
-      {
-        journeyId: filter?.journeyId ?? undefined,
-        lastChatStartedAt:
-          filter?.hasChatStarted === true ? { not: null } : undefined,
-        lastRadioQuestion:
-          filter?.hasPollAnswers === true ? { not: null } : undefined,
-        lastTextResponse:
-          filter?.hasTextResponse === true ? { not: null } : undefined,
-        activityCount: filter?.hideInactive === true ? { gt: 0 } : undefined,
-        visitor:
-          filter?.hasIcon === true || filter?.countryCode != null
-            ? omitBy(
-                {
-                  status: filter?.hasIcon === true ? { not: null } : undefined,
-                  countryCode:
-                    filter?.countryCode != null
-                      ? { contains: filter.countryCode }
-                      : undefined
-                },
-                isNil
-              )
-            : undefined
-      },
-      isNil
-    )
-  }
-
-  async getJourneyVisitorList({
-    after,
-    first,
-    filter,
-    sort
-  }: {
-    after?: string | null
-    first: number
-    filter: JourneyVisitorFilter
-    sort?: JourneyVisitorSort
-  }): Promise<JourneyVisitorsConnection> {
-    const result = await this.prismaService.journeyVisitor.findMany({
-      where: this.generateWhere(filter),
-      cursor: after != null ? { id: after } : undefined,
-      orderBy: omitBy(
-        {
-          createdAt: sort === JourneyVisitorSort.date ? 'desc' : undefined,
-          activityCount:
-            sort === JourneyVisitorSort.activity ? 'desc' : undefined,
-          duration: sort === JourneyVisitorSort.duration ? 'desc' : undefined
-        },
-        isNil
-      ),
-      skip: after == null ? 0 : 1,
-      take: first + 1
-    })
-
-    const sendResult = result.length > first ? result.slice(0, -1) : result
-    return {
-      edges: sendResult.map((visitor) => ({
-        node: visitor,
-        cursor: visitor.id
-      })),
-      pageInfo: {
-        hasNextPage: result.length > first,
         startCursor: result.length > 0 ? result[0].id : null,
         endCursor:
           result.length > 0 ? sendResult[sendResult.length - 1].id : null
       }
     }
-  }
-
-  async getJourneyVisitorCount(filter: JourneyVisitorFilter): Promise<number> {
-    return await this.prismaService.journeyVisitor.count({
-      where: this.generateWhere(filter)
-    })
   }
 
   async getByUserIdAndJourneyId(
