@@ -5,7 +5,7 @@ import {
   withAuthUserTokenSSR
 } from 'next-firebase-auth'
 import { useRouter } from 'next/router'
-import { ReactElement, useState } from 'react'
+import { ReactElement, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { NextSeo } from 'next-seo'
 import { gql, useQuery } from '@apollo/client'
@@ -28,16 +28,21 @@ import {
   GetJourneyVisitors_visitors_edges as VisitorEdge
 } from '../../../../__generated__/GetJourneyVisitors'
 import { GetJourneyVisitorsCount } from '../../../../__generated__/GetJourneyVisitorsCount'
+import { FilterDrawer } from '../../../../src/components/JourneyVisitorsList/FilterDrawer/FilterDrawer'
+import { VisitorToolbar } from '../../../../src/components/JourneyVisitorsList/VisitorToolbar/VisitorToolbar'
+import { ClearAllButton } from '../../../../src/components/JourneyVisitorsList/FilterDrawer/ClearAllButton'
 
 export const GET_JOURNEY_VISITORS = gql`
   query GetJourneyVisitors(
     $filter: JourneyVisitorFilter!
+    $sort: JourneyVisitorSort
     $first: Int
     $after: String
   ) {
     visitors: journeyVisitorsConnection(
       teamId: "jfp-team"
       filter: $filter
+      sort: $sort
       first: $first
       after: $after
     ) {
@@ -96,13 +101,27 @@ function JourneyVisitorsPage(): ReactElement {
   const [visitorEdges, setVisitorEdges] = useState<VisitorEdge[]>([])
   const [hasNextPage, setHasNextPage] = useState(false)
   const [endCursor, setEndCursor] = useState<string | null>()
+  const [chatStarted, setChatStarted] = useState(false)
+  const [withPollAnswers, setWithPollAnswers] = useState(false)
+  const [withSubmittedText, setWithSubmittedText] = useState(false)
+  const [withIcon, setWithIcon] = useState(false)
+  const [hideInteractive, setHideInterActive] = useState(false)
+  const [sortSetting, setSortSetting] = useState<'date' | 'duration'>('date')
 
-  const { fetchMore, loading } = useQuery<GetJourneyVisitors>(
+  const { fetchMore, loading, refetch } = useQuery<GetJourneyVisitors>(
     GET_JOURNEY_VISITORS,
     {
       variables: {
-        filter: { journeyId },
-        first: 100
+        filter: {
+          journeyId,
+          hasChatStarted: chatStarted,
+          hasPollAnswers: withPollAnswers,
+          hasTextResponse: withSubmittedText,
+          hasIcon: withIcon,
+          hideInactive: hideInteractive
+        },
+        first: 100,
+        sort: sortSetting
       },
       onCompleted: (data) => {
         setVisitorEdges(data.visitors.edges)
@@ -129,6 +148,79 @@ function JourneyVisitorsPage(): ReactElement {
     }
   }
 
+  useEffect(() => {
+    const handleRefetchOnChange = async (): Promise<void> => {
+      const response = await refetch({
+        variables: {
+          filter: {
+            journeyId,
+            hasChatStarted: chatStarted,
+            hasPollAnswers: withPollAnswers,
+            hasTextResponse: withSubmittedText,
+            hasIcon: withIcon,
+            hideInactive: hideInteractive
+          },
+          first: 100,
+          after: endCursor,
+          sort: sortSetting
+        }
+      })
+
+      if (response.data.visitors.edges != null) {
+        setVisitorEdges([...response.data.visitors.edges])
+        setHasNextPage(response.data.visitors.pageInfo.hasNextPage)
+        setEndCursor(response.data.visitors.pageInfo.endCursor)
+      }
+    }
+    void handleRefetchOnChange()
+  }, [
+    chatStarted,
+    withPollAnswers,
+    withSubmittedText,
+    withIcon,
+    hideInteractive,
+    journeyId,
+    endCursor,
+    sortSetting,
+    refetch,
+    hasNextPage
+  ])
+
+  const handleChange = (e): void => {
+    switch (e.target.value) {
+      case 'Chat Started':
+        setChatStarted(e.target.checked as boolean)
+        break
+      case 'With Poll Answers':
+        setWithPollAnswers(e.target.checked as boolean)
+        break
+      case 'With Submitted Text':
+        setWithSubmittedText(e.target.checked as boolean)
+        break
+      case 'With Icon':
+        setWithIcon(e.target.checked as boolean)
+        break
+      case 'Hide Inactive':
+        setHideInterActive(e.target.checked as boolean)
+        break
+      case 'date':
+        setSortSetting('date')
+        break
+      case 'duration':
+        setSortSetting('duration')
+        break
+    }
+  }
+
+  const handleClearAll = (): void => {
+    setChatStarted(false)
+    setWithPollAnswers(false)
+    setWithSubmittedText(false)
+    setWithIcon(false)
+    setHideInterActive(false)
+    setSortSetting('date')
+  }
+
   return (
     <>
       <NextSeo title={t('Visitors')} />
@@ -145,6 +237,35 @@ function JourneyVisitorsPage(): ReactElement {
         }
         authUser={AuthUser}
         backHref={`/journeys/${journeyId}/reports`}
+        menu={
+          <VisitorToolbar
+            handleChange={handleChange}
+            sortSetting={sortSetting}
+            chatStarted={chatStarted}
+            withPollAnswers={withPollAnswers}
+            withSubmittedText={withSubmittedText}
+            withIcon={withIcon}
+            hideInteractive={hideInteractive}
+            handleClearAll={handleClearAll}
+          />
+        }
+        sidePanelTitle={
+          <>
+            {t('Filters')}
+            <ClearAllButton handleClearAll={handleClearAll} />
+          </>
+        }
+        sidePanelChildren={
+          <FilterDrawer
+            handleChange={handleChange}
+            sortSetting={sortSetting}
+            chatStarted={chatStarted}
+            withPollAnswers={withPollAnswers}
+            withSubmittedText={withSubmittedText}
+            withIcon={withIcon}
+            hideInteractive={hideInteractive}
+          />
+        }
       >
         <JourneyVisitorsList
           visitorEdges={visitorEdges}

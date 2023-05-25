@@ -22,7 +22,7 @@ interface ListParams {
 export interface VisitorsConnection {
   edges: Array<{
     node: Visitor
-    cursor: Date
+    cursor: string
   }>
   pageInfo: PageInfo
 }
@@ -49,7 +49,7 @@ export class VisitorService {
   }: ListParams): Promise<VisitorsConnection> {
     const result = await this.prismaService.visitor.findMany({
       where: { teamId: filter.teamId },
-      cursor: after != null ? { createdAt: new Date(after) } : undefined,
+      cursor: after != null ? { id: after } : undefined,
       orderBy: { createdAt: 'desc' },
       skip: after == null ? 0 : 1,
       take: first + 1
@@ -59,7 +59,7 @@ export class VisitorService {
     return {
       edges: sendResult.map((visitor) => ({
         node: visitor,
-        cursor: visitor.createdAt
+        cursor: visitor.id
       })),
       pageInfo: {
         hasNextPage: result.length > first,

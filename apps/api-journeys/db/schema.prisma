@@ -86,7 +86,7 @@ model Event {
 
 model Visitor {
   id                        String           @id
-  createdAt                 DateTime         @unique @default(now())
+  createdAt                 DateTime         @default(now())
   countryCode               String?
   duration                  Int              @default(0)
   email                     String?
@@ -116,7 +116,7 @@ model JourneyVisitor {
   id                        String           @id @default(uuid())
   journeyId                 String
   visitorId                 String
-  createdAt                 DateTime         @unique @default(now())
+  createdAt                 DateTime         @default(now())
   duration                  Int              @default(0)
   lastChatStartedAt         DateTime?
   lastChatPlatform          MessagePlatform?
