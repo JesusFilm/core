@@ -1,14 +1,12 @@
 import Box from '@mui/material/Box'
-import TextField from '@mui/material/TextField'
-import { ReactElement, FocusEvent } from 'react'
+import { ReactElement } from 'react'
 import { useMutation, gql } from '@apollo/client'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
-import { Formik, Form } from 'formik'
-import { noop } from 'lodash'
 import { TextResponseHintUpdate } from '../../../../../../../../../__generated__/TextResponseHintUpdate'
 import { GetJourney_journey_blocks_TextResponseBlock as TextResponseBlock } from '../../../../../../../../../__generated__/GetJourney'
+import { TextFieldForm } from '../../../../../../../TextFieldForm'
 
 export const TEXT_RESPONSE_HINT_UPDATE = gql`
   mutation TextResponseHintUpdate(
@@ -33,68 +31,38 @@ export function Hint(): ReactElement {
     | TreeBlock<TextResponseBlock>
     | undefined
 
-  async function handleSubmit(e: FocusEvent): Promise<void> {
+  async function handleSubmit(hint: string): Promise<void> {
     if (journey == null || selectedBlock == null) return
-    const target = e.target as HTMLInputElement
     await textResponseHintUpdate({
       variables: {
         id: selectedBlock?.id,
         journeyId: journey.id,
         input: {
-          hint: target.value
+          hint
         }
       },
       optimisticResponse: {
         textResponseBlockUpdate: {
           id: selectedBlock?.id,
           __typename: 'TextResponseBlock',
-          hint: target.value
+          hint
         }
       }
     })
   }
 
-  const initialValues =
-    selectedBlock != null
-      ? {
-          textResponseHint: selectedBlock.hint ?? ''
-        }
-      : null
-
   return (
     <Box sx={{ px: 6, py: 4 }}>
-      {initialValues != null ? (
-        <Formik initialValues={initialValues} onSubmit={noop}>
-          {({ values, errors, handleChange, handleBlur }) => (
-            <Form>
-              <TextField
-                id="textResponseHint"
-                name="textResponseHint"
-                variant="filled"
-                label="Hint"
-                fullWidth
-                value={values.textResponseHint}
-                inputProps={{ maxLength: 250 }}
-                onChange={handleChange}
-                onBlur={(e) => {
-                  handleBlur(e)
-                  errors.textResponseHint == null && handleSubmit(e)
-                }}
-              />
-            </Form>
-          )}
-        </Formik>
-      ) : (
-        <TextField
-          variant="filled"
-          label="Hint"
-          fullWidth
-          disabled
-          sx={{
-            pb: 4
-          }}
-        />
-      )}
+      <TextFieldForm
+        label="Hint"
+        initialValues={selectedBlock?.hint ?? ''}
+        handleSubmit={handleSubmit}
+        inputProps={{ maxLength: 250 }}
+        disabled={selectedBlock == null}
+        sx={{
+          pb: selectedBlock != null ? 0 : 4
+        }}
+      />
     </Box>
   )
 }

@@ -1,22 +1,42 @@
 import { ReactElement, ReactNode } from 'react'
 import { Formik, Form } from 'formik'
-import TextField from '@mui/material/TextField'
-import InputAdornment from '@mui/material/InputAdornment'
+import TextField, { TextFieldProps } from '@mui/material/TextField'
 
-interface TextFieldFormProps {
-  label: string
+type IconPosition = 'start' | 'end'
+
+// add id to the components affected
+interface TextFieldFormProps
+  extends Pick<
+    TextFieldProps,
+    | 'id'
+    | 'label'
+    | 'placeholder'
+    | 'disabled'
+    | 'helperText'
+    | 'hiddenLabel'
+    | 'inputProps'
+    | 'sx'
+  > {
   initialValues?: string
   validationSchema?: any
   handleSubmit: (value?: string) => void
+  startIcon?: ReactNode
   endIcon?: ReactNode
+  iconPosition?: IconPosition
 }
 
 export function TextFieldForm({
   label,
   initialValues,
   validationSchema,
+  helperText,
+  inputProps,
+  hiddenLabel,
+  placeholder,
   handleSubmit,
-  endIcon
+  startIcon,
+  endIcon,
+  iconPosition
 }: TextFieldFormProps): ReactElement {
   return (
     <Formik
@@ -35,15 +55,21 @@ export function TextFieldForm({
             id="value"
             name="value"
             variant="filled"
-            label={label}
             fullWidth
+            label={label}
+            placeholder={placeholder}
+            hiddenLabel={hiddenLabel}
+            inputProps={inputProps}
             value={values.value}
             error={touched.value === true && Boolean(errors.value)}
-            helperText={touched.value === true && errors.value}
+            helperText={
+              touched.value === true && errors.value != null
+                ? errors.value
+                : helperText
+            }
             InputProps={{
-              endAdornment: (
-                <InputAdornment position="end">{endIcon}</InputAdornment>
-              )
+              startAdornment: iconPosition === 'start' && startIcon,
+              endAdornment: iconPosition === 'end' && endIcon
             }}
             onBlur={(e) => {
               handleBlur(e)

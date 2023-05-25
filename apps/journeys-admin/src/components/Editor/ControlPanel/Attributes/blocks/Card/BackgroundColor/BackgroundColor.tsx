@@ -5,7 +5,6 @@ import Divider from '@mui/material/Divider'
 import InputAdornment from '@mui/material/InputAdornment'
 import Tab from '@mui/material/Tab'
 import Tabs from '@mui/material/Tabs'
-import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 import Stack from '@mui/material/Stack'
 import EditIcon from '@mui/icons-material/Edit'
@@ -19,6 +18,7 @@ import { TabPanel, tabA11yProps } from '@core/shared/ui/TabPanel'
 import { getTheme, ThemeMode, ThemeName } from '@core/shared/ui/themes'
 import { CardFields } from '../../../../../../../../__generated__/CardFields'
 import { CardBlockBackgroundColorUpdate } from '../../../../../../../../__generated__/CardBlockBackgroundColorUpdate'
+import { TextFieldForm } from '../../../../../../TextFieldForm'
 import { Swatch } from './Swatch'
 import { PaletteColorPicker } from './PaletteColorPicker'
 
@@ -160,23 +160,20 @@ export function BackgroundColor(): ReactElement {
     <>
       <Stack sx={{ p: 6, py: 4 }} spacing={3} direction="row">
         <Swatch id={`bg-color-${selectedColor}`} color={selectedColor} />
-        <TextField
-          data-testid="bgColorTextField"
-          variant="filled"
+        <TextFieldForm
           hiddenLabel
-          value={selectedColor}
-          onChange={async (e) => await handleColorChange(e.target.value)}
+          initialValues={selectedColor}
+          handleSubmit={handleColorChange}
           sx={{ flexGrow: 1 }}
-          InputProps={{
-            startAdornment: (
-              <InputAdornment position="start">
-                <EditIcon
-                  onClick={(e) => handleTabChange(e, 1)}
-                  style={{ cursor: 'pointer' }}
-                />
-              </InputAdornment>
-            )
-          }}
+          startIcon={
+            <InputAdornment position="start">
+              <EditIcon
+                onClick={(e) => handleTabChange(e, 1)}
+                style={{ cursor: 'pointer' }}
+              />
+            </InputAdornment>
+          }
+          iconPosition="start"
         />
       </Stack>
       <Box

@@ -1,10 +1,10 @@
-import { ReactElement, useMemo, useEffect, useState, ChangeEvent } from 'react'
-import TextField from '@mui/material/TextField'
+import { ReactElement, useMemo, useEffect, useState } from 'react'
 import InputAdornment from '@mui/material/InputAdornment'
 import Search from '@mui/icons-material/Search'
 import LinkRounded from '@mui/icons-material/LinkRounded'
 import { debounce } from 'lodash'
 import Box from '@mui/material/Box'
+import { TextFieldForm } from '../../../TextFieldForm'
 
 interface VideoSearchProps {
   label?: string
@@ -22,11 +22,9 @@ export function VideoSearch({
   const handleChange = useMemo(() => debounce(onChange, 500), [onChange])
   const [search, setSearch] = useState(value ?? '')
 
-  function onSearchChange(
-    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ): void {
-    setSearch(e.target.value)
-    handleChange(e.target.value)
+  function onSearchChange(value: string): void {
+    setSearch(value)
+    handleChange(value)
   }
 
   useEffect(() => {
@@ -42,24 +40,21 @@ export function VideoSearch({
         py: 8
       }}
     >
-      <TextField
+      <TextFieldForm
         label={label ?? 'Search by title in JF Library'}
-        variant="filled"
-        fullWidth
-        value={search}
-        onChange={onSearchChange}
+        initialValues={search}
+        handleSubmit={onSearchChange}
         inputProps={{
           'data-testid': 'VideoSearch',
           'aria-label': 'Search'
         }}
-        InputProps={{
-          endAdornment: (
-            <InputAdornment position="end">
-              {icon === 'search' && <Search />}
-              {icon === 'link' && <LinkRounded />}
-            </InputAdornment>
-          )
-        }}
+        endIcon={
+          <InputAdornment position="end">
+            {icon === 'search' && <Search />}
+            {icon === 'link' && <LinkRounded />}
+          </InputAdornment>
+        }
+        iconPosition="end"
       />
     </Box>
   )

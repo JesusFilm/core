@@ -8,6 +8,7 @@ import QuestionAnswerOutlined from '@mui/icons-material/QuestionAnswerOutlined'
 import WebOutlined from '@mui/icons-material/WebOutlined'
 import MenuBookRounded from '@mui/icons-material/MenuBookRounded'
 import Stack from '@mui/material/Stack'
+import InputAdornment from '@mui/material/InputAdornment'
 import EditRounded from '@mui/icons-material/EditRounded'
 import { BlockFields_ButtonBlock as ButtonBlock } from '../../../../../__generated__/BlockFields'
 import { ActionFields_LinkAction as LinkAction } from '../../../../../__generated__/ActionFields'
@@ -123,7 +124,12 @@ export function ActionEditor({
         initialValues={url}
         validationSchema={linkActionSchema}
         handleSubmit={handleSubmit}
-        endIcon={<EditRounded sx={{ color: 'divider' }} />}
+        endIcon={
+          <InputAdornment position="end">
+            <EditRounded sx={{ color: 'divider' }} />
+          </InputAdornment>
+        }
+        iconPosition="end"
       />
       <Stack gap={2} direction="row" alignItems="center" sx={{ pt: 3 }}>
         {icon}

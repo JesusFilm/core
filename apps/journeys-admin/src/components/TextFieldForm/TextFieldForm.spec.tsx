@@ -21,6 +21,18 @@ describe('TextFieldForm', () => {
       expect(handleSubmit).toHaveBeenCalled()
     })
   })
+  it('should render with start icon', () => {
+    const { getByTestId } = render(
+      <TextFieldForm
+        label="Navigate to..."
+        initialValues="Default Value"
+        handleSubmit={jest.fn()}
+        startIcon={<EditRounded />}
+        iconPosition="start"
+      />
+    )
+    expect(getByTestId('EditRoundedIcon'))
+  })
 
   it('should render with end icon', () => {
     const { getByTestId } = render(
@@ -29,6 +41,7 @@ describe('TextFieldForm', () => {
         initialValues="Default Value"
         handleSubmit={jest.fn()}
         endIcon={<EditRounded />}
+        iconPosition="end"
       />
     )
     expect(getByTestId('EditRoundedIcon'))

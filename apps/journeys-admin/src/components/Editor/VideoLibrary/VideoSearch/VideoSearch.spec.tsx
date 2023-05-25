@@ -16,6 +16,9 @@ describe('VideoSearch', () => {
     fireEvent.change(textbox, {
       target: { value: 'Jesus' }
     })
+    fireEvent.submit(textbox, {
+      target: { value: 'Jesus' }
+    })
     await waitFor(() => expect(onChange).toHaveBeenCalledWith('Jesus'))
   })
 

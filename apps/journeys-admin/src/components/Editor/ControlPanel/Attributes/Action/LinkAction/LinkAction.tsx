@@ -6,6 +6,7 @@ import { gql, useMutation } from '@apollo/client'
 import { object, string } from 'yup'
 import InsertLinkRoundedIcon from '@mui/icons-material/InsertLinkRounded'
 import Box from '@mui/material/Box'
+import InputAdornment from '@mui/material/InputAdornment'
 import { GetJourney_journey_blocks_ButtonBlock as ButtonBlock } from '../../../../../../../__generated__/GetJourney'
 import { LinkActionUpdate } from '../../../../../../../__generated__/LinkActionUpdate'
 import { TextFieldForm } from '../../../../../TextFieldForm'
@@ -95,7 +96,12 @@ export function LinkAction(): ReactElement {
         initialValues={linkAction?.url}
         validationSchema={linkActionSchema}
         handleSubmit={handleSubmit}
-        endIcon={<InsertLinkRoundedIcon />}
+        endIcon={
+          <InputAdornment position="end">
+            <InsertLinkRoundedIcon />
+          </InputAdornment>
+        }
+        iconPosition="end"
       />
     </Box>
   )
