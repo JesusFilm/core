@@ -1,58 +1,53 @@
 import { ReactElement, ReactNode } from 'react'
 import { Formik, Form } from 'formik'
-import InputAdornment from '@mui/material/InputAdornment'
 import TextField from '@mui/material/TextField'
-import EditRounded from '@mui/icons-material/EditRounded'
+import InputAdornment from '@mui/material/InputAdornment'
 
 interface TextFieldFormProps {
+  label: string
   initialValues?: string
   validationSchema?: any
-  handleSubmit?: (value?: string) => void
-  iconPosition?: boolean
-  icon?: ReactNode
+  handleSubmit: (value?: string) => void
+  endIcon?: ReactNode
 }
 
 export function TextFieldForm({
+  label,
   initialValues,
   validationSchema,
   handleSubmit,
-  iconPosition,
-  icon
+  endIcon
 }: TextFieldFormProps): ReactElement {
   return (
     <Formik
       initialValues={{
-        link: initialValues ?? ''
+        value: initialValues ?? ''
       }}
       validationSchema={validationSchema}
       onSubmit={async (values): Promise<void> => {
-        if (handleSubmit != null) await handleSubmit(values.link)
+        await handleSubmit(values.value)
       }}
       enableReinitialize
     >
       {({ values, touched, errors, handleChange, handleBlur }) => (
         <Form>
           <TextField
-            id="link"
-            name="link"
+            id="value"
+            name="value"
             variant="filled"
-            label="Navigate to"
+            label={label}
             fullWidth
-            value={values.link}
-            error={touched.link === true && Boolean(errors.link)}
-            helperText={touched.link === true && errors.link}
+            value={values.value}
+            error={touched.value === true && Boolean(errors.value)}
+            helperText={touched.value === true && errors.value}
             InputProps={{
               endAdornment: (
-                <InputAdornment position="end">
-                  <EditRounded sx={{ color: 'divider' }} />
-                </InputAdornment>
+                <InputAdornment position="end">{endIcon}</InputAdornment>
               )
             }}
             onBlur={(e) => {
               handleBlur(e)
-              errors.link == null &&
-                handleSubmit != null &&
-                handleSubmit(e.target.value)
+              errors.value == null && handleSubmit(e.target.value)
             }}
             onChange={handleChange}
           />
