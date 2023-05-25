@@ -30,7 +30,7 @@ export function EventsCard({ journey }: Props): ReactElement {
       variant="outlined"
       sx={{ borderRadius: { xs: 0, sm: 4 }, mx: { xs: -6, sm: 0 } }}
     >
-      <Box sx={{ px: 6 }}>
+      <Box sx={{ px: { xs: 4, sm: 6 } }}>
         <GenericEvent
           duration={totalDuration}
           value={
@@ -58,7 +58,7 @@ export function EventsCard({ journey }: Props): ReactElement {
       </Box>
 
       <Divider />
-      <Box sx={{ px: 6 }}>
+      <Box sx={{ px: { xs: 4, sm: 6 } }}>
         {timelineItems.map((timelineItem, index, array) => {
           if (Array.isArray(timelineItem)) {
             return (
