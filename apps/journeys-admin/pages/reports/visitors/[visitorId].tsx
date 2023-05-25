@@ -1,4 +1,4 @@
-import { ReactElement, useEffect, useState } from 'react'
+import { ReactElement, useEffect, useRef } from 'react'
 import {
   AuthAction,
   useAuthUser,
@@ -16,17 +16,16 @@ import i18nConfig from '../../../next-i18next.config'
 import { useTermsRedirect } from '../../../src/libs/useTermsRedirect/useTermsRedirect'
 
 function SingleVisitorReportsPage(): ReactElement {
-  const [backHrefHistory, setBackHrefHistory] = useState(true)
-
+  const historyRef = useRef<boolean | undefined>(undefined)
   const router = useRouter()
   const { t } = useTranslation('apps-journeys-admin')
   const AuthUser = useAuthUser()
 
   useEffect(() => {
     document.referrer === ''
-      ? setBackHrefHistory(false)
-      : setBackHrefHistory(true)
-  }, [backHrefHistory])
+      ? (historyRef.current = true)
+      : (historyRef.current = false)
+  }, [historyRef])
 
   useTermsRedirect()
 
@@ -36,7 +35,7 @@ function SingleVisitorReportsPage(): ReactElement {
       <PageWrapper
         title={t('Visitor Info')}
         authUser={AuthUser}
-        backHrefHistory={backHrefHistory}
+        backHrefHistory={historyRef.current}
         backHref="/reports/visitors"
       >
         <VisitorInfo id={router.query.visitorId as string} />
