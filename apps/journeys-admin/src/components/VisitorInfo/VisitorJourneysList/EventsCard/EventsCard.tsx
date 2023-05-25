@@ -65,7 +65,7 @@ export function EventsCard({ journey }: Props): ReactElement {
               <>
                 <Collapse
                   in={open}
-                  collapsedSize={40}
+                  collapsedSize={56}
                   sx={{
                     display: open ? 'none' : 'block'
                   }}

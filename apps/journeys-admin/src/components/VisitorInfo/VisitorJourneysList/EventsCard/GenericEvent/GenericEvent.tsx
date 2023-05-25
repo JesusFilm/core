@@ -80,7 +80,8 @@ export function GenericEvent({
       <TimelineContent
         sx={{
           display: 'flex',
-          alignItems: variant === 'title' ? 'center' : undefined
+          alignItems: variant === 'title' ? 'center' : undefined,
+          pb: 5
         }}
       >
         <Stack direction="column" sx={{ width: '100%' }}>
