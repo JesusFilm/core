@@ -22,6 +22,7 @@ import {
 } from '../../../../../__generated__/globalTypes'
 import { LocalDetails } from '../VideoFromLocal/LocalDetails'
 import { YouTubeDetails } from '../VideoFromYouTube/YouTubeDetails'
+import { CloudflareDetails } from '../VideoFromCloudflare/CloudflareDetails'
 import {
   GetJourney_journey_blocks_VideoBlock as VideoBlock,
   GetJourney_journey_blocks_ImageBlock as ImageBlock
@@ -79,6 +80,9 @@ export function VideoDetails({
   ) => ReactElement
 
   switch (source) {
+    case VideoBlockSource.cloudflare:
+      Details = CloudflareDetails
+      break
     case VideoBlockSource.internal:
       Details = LocalDetails
       break
