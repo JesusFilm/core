@@ -120,7 +120,7 @@ function JourneyVisitorsPage(): ReactElement {
           hasIcon: withIcon,
           hideInactive: hideInteractive
         },
-        first: 50,
+        first: 100,
         sort: sortSetting
       },
       onCompleted: (data) => {
@@ -160,7 +160,7 @@ function JourneyVisitorsPage(): ReactElement {
             hasIcon: withIcon,
             hideInactive: hideInteractive
           },
-          first: 50,
+          first: 100,
           after: endCursor,
           sort: sortSetting
         }

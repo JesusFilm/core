@@ -76,7 +76,11 @@ export function JourneyVisitorsList({
           onClick={fetchNext}
           disabled={!hasNextPage}
           loading={loading}
-          sx={{ display: hasVisitors ? 'flex' : 'none' }}
+          color="secondary"
+          sx={{
+            width: '250px',
+            display: hasVisitors ? 'flex' : 'none'
+          }}
         >
           {t('Load More')}
         </LoadingButton>
