@@ -276,7 +276,7 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
             <Fade
               in={
                 swiper?.activeIndex != null && block.parentOrder != null
-                  ? Math.abs(block.parentOrder - swiper.activeIndex) < 6
+                  ? Math.abs(block.parentOrder - swiper.activeIndex) < 2
                   : true
               }
               mountOnEnter

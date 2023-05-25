@@ -96,15 +96,13 @@ export function ContainedCover({
 
   // Initiate Video
   useEffect(() => {
-    const isSafari = !/^((?!chrome|android).)*safari/i.test(navigator.userAgent)
-
     if (videoRef.current != null) {
       setPlayer(
         videojs(videoRef.current, {
           controls: false,
           controlBar: false,
           bigPlayButton: false,
-          preload: isSafari ? 'metadata' : 'auto',
+          preload: 'metadata',
           // Make video fill container instead of set aspect ratio
           fill: true,
           userActions: {
@@ -171,9 +169,9 @@ export function ContainedCover({
         videoBlock.videoId != null
       ) {
         player.src({
-          src: `https://www.youtube.com/embed/${videoBlock?.videoId}?start=${
-            videoBlock?.startAt ?? 0
-          }`,
+          src: `https://www.youtube.com/embed/${videoBlock.videoId}?start=${
+            videoBlock.startAt ?? 0
+          }&end=${videoBlock.endAt ?? 0}`,
           type: 'video/youtube'
         })
       }
@@ -203,10 +201,10 @@ export function ContainedCover({
       if (isActiveBlockOrDescendant(cardId)) {
         player.autoplay(true)
         void player.play()
-        void player.muted(true)
       } else {
         player.autoplay(false)
         void player.pause()
+        void player.muted(true)
       }
     }
   }, [activeBlock, cardId, player])

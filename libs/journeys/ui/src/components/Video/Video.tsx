@@ -211,7 +211,9 @@ export function Video({
         })
       } else if (source === VideoBlockSource.youTube && videoId != null) {
         player.src({
-          src: `https://www.youtube.com/embed/${videoId}?start=${startAt ?? 0}`,
+          src: `https://www.youtube.com/embed/${videoId}?start=${
+            startAt ?? 0
+          }&end=${endAt ?? 0}`,
           type: 'video/youtube'
         })
       } else if (source === VideoBlockSource.cloudflare && videoId != null) {

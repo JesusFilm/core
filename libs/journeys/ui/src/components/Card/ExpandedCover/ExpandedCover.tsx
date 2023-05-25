@@ -52,7 +52,6 @@ export function ExpandedCover({
           blurDataURL={backgroundBlur}
           layout="fill"
           objectFit="cover"
-          // priority
         />
       )}
       <Stack
@@ -73,7 +72,6 @@ export function ExpandedCover({
           sx={{
             flexGrow: 1,
             py: isVideoOnlyCard ? 0 : { xs: 9, lg: 8 },
-
             ...enableVerticalScroll
           }}
         >
