@@ -4,8 +4,8 @@ import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
 import LoadingButton from '@mui/lab/LoadingButton'
 import Typography from '@mui/material/Typography'
-import Container from '@mui/material/Container'
 import { useTranslation } from 'react-i18next'
+import Container from '@mui/material/Container'
 import AddCircleOutlineRoundedIcon from '@mui/icons-material/AddCircleOutlineRounded'
 import { GetJourneyVisitors_visitors_edges as VisitorEdge } from '../../../__generated__/GetJourneyVisitors'
 import VisitorsPlaceholder from '../../../public/VisitorsPlaceholder.svg'
@@ -77,10 +77,7 @@ export function JourneyVisitorsList({
           disabled={!hasNextPage}
           loading={loading}
           color="secondary"
-          sx={{
-            width: '250px',
-            display: hasVisitors ? 'flex' : 'none'
-          }}
+          sx={{ display: hasVisitors ? 'flex' : 'none' }}
         >
           {t('Load More')}
         </LoadingButton>

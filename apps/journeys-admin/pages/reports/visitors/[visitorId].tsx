@@ -1,4 +1,4 @@
-import { ReactElement } from 'react'
+import { ReactElement, useEffect, useState } from 'react'
 import {
   AuthAction,
   useAuthUser,
@@ -11,14 +11,22 @@ import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import { useTranslation } from 'react-i18next'
 import { getLaunchDarklyClient } from '@core/shared/ui/getLaunchDarklyClient'
 import { VisitorInfo } from '../../../src/components/VisitorInfo'
-import { PageWrapper } from '../../../src/components/PageWrapper'
+import { PageWrapper } from '../../../src/components/NewPageWrapper'
 import i18nConfig from '../../../next-i18next.config'
 import { useTermsRedirect } from '../../../src/libs/useTermsRedirect/useTermsRedirect'
 
 function SingleVisitorReportsPage(): ReactElement {
+  const [backHrefHistory, setBackHrefHistory] = useState(true)
+
   const router = useRouter()
   const { t } = useTranslation('apps-journeys-admin')
   const AuthUser = useAuthUser()
+
+  useEffect(() => {
+    document.referrer === ''
+      ? setBackHrefHistory(false)
+      : setBackHrefHistory(true)
+  }, [backHrefHistory])
 
   useTermsRedirect()
 
@@ -27,8 +35,9 @@ function SingleVisitorReportsPage(): ReactElement {
       <NextSeo title={t('Visitor Info')} />
       <PageWrapper
         title={t('Visitor Info')}
-        backHref="/reports/visitors"
         authUser={AuthUser}
+        backHrefHistory={backHrefHistory}
+        backHref="/reports/visitors"
       >
         <VisitorInfo id={router.query.visitorId as string} />
       </PageWrapper>
