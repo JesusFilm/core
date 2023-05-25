@@ -92,4 +92,17 @@ describe('EmailActionResolver', () => {
         )
       })
   })
+
+  it('throws an error if input is not an email address', async () => {
+    const wrongEmailInput = {
+      ...emailActionInput,
+      email: 'tataiwashere.com'
+    }
+    service.get = jest.fn().mockResolvedValue(block)
+    await resolver
+      .blockUpdateEmailAction(block.id, block.journeyId, wrongEmailInput)
+      .catch((error) => {
+        expect(error.message).toEqual('must be a valid email')
+      })
+  })
 })
