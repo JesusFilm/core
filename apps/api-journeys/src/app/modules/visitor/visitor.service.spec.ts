@@ -92,11 +92,11 @@ describe('VisitorService', () => {
     it('allows pagination of the visitors connection', async () => {
       await service.getList({
         first: 50,
-        after: new Date('2021-02-18').toISOString(),
+        after: '1',
         filter: { teamId: 'jfp-team' }
       })
       expect(prisma.visitor.findMany).toHaveBeenCalledWith({
-        cursor: { createdAt: new Date('2021-02-18') },
+        cursor: { id: '1' },
         orderBy: {
           createdAt: 'desc'
         },

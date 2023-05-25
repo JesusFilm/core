@@ -3,6 +3,7 @@ import { Meta, Story } from '@storybook/react'
 import IconButton from '@mui/material/IconButton'
 import MenuRounded from '@mui/icons-material/MenuRounded'
 import Typography from '@mui/material/Typography'
+import Stack from '@mui/material/Stack'
 import { noop } from 'lodash'
 import { MockedProvider } from '@apollo/client/testing'
 import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
@@ -124,7 +125,14 @@ Default.args = {
 
 export const SidePanel = Template.bind({})
 SidePanel.args = {
-  title: 'Main Content',
+  title: (
+    <Stack direction="row" alignItems="center">
+      Main Content
+      <Typography variant="caption" sx={{ pl: 4 }}>
+        custom content
+      </Typography>
+    </Stack>
+  ),
   children: (
     <>
       <Typography variant="h3" gutterBottom>

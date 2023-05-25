@@ -103,6 +103,14 @@
   "Access Control": "Access Control",
   "Details": "Details",
   "Properties": "Properties",
+  "Showing": "Showing",
+  "visitors out of": "visitors out of",
+  "Load More": "Load More",
+  "0 min": "0 min",
+  "sec": "sec",
+  "min": "min",
+  "Name": "Name",
+  "Chat Started": "Chat Started",
   "New editing request": "New editing request",
   "New journey": "New journey",
   "Create Custom Journey": "Create Custom Journey",
@@ -147,7 +155,6 @@
   "Contact": "Contact",
   "Platform": "Platform",
   "None": "None",
-  "Name": "Name",
   "Notes": "Notes",
   "Timeline": "Timeline",
   "View Timeline": "View Timeline",
@@ -163,9 +170,7 @@
   "Chat started on {{messagePlatform}}": "Chat started on {{messagePlatform}}",
   "ID": "ID",
   "Last Active": "Last Active",
-  "Chat Started": "Chat Started",
   "Action": "Action",
   "User Data": "User Data",
-  "Polls": "Polls",
-  "Load More": "Load More"
+  "Polls": "Polls"
 }
