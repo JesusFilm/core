@@ -19,7 +19,7 @@ interface PageWrapperProps {
   menu?: ReactNode
   children?: ReactNode
   showAppHeader?: boolean
-  sidePanelTitle?: string
+  sidePanelTitle?: string | ReactNode
   /**
    * Add default side panel padding and border by wrapping components with `SidePanelContainer`
    */

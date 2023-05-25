@@ -80,6 +80,12 @@ export enum JourneyStatus {
   trashed = "trashed",
 }
 
+export enum JourneyVisitorSort {
+  activity = "activity",
+  date = "date",
+  duration = "duration",
+}
+
 export enum JourneysReportType {
   multipleFull = "multipleFull",
   multipleSummary = "multipleSummary",

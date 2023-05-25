@@ -11,11 +11,12 @@ import { usePage } from '../../../libs/PageWrapperProvider'
 
 interface SidePanelProps {
   children: ReactNode
-  title?: string
+  title?: string | ReactNode
+  sidePanelTitleAction?: ReactNode
 }
 
 interface DrawerContentProps {
-  title?: string
+  title?: string | ReactNode
   children: ReactNode
   action?: ReactNode
 }

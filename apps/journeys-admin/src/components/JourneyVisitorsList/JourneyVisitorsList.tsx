@@ -6,6 +6,7 @@ import LoadingButton from '@mui/lab/LoadingButton'
 import Typography from '@mui/material/Typography'
 import Container from '@mui/material/Container'
 import { useTranslation } from 'react-i18next'
+import AddCircleOutlineRoundedIcon from '@mui/icons-material/AddCircleOutlineRounded'
 import { GetJourneyVisitors_visitors_edges as VisitorEdge } from '../../../__generated__/GetJourneyVisitors'
 import VisitorsPlaceholder from '../../../public/VisitorsPlaceholder.svg'
 import { VisitorCard } from './VisitorCard'
@@ -28,7 +29,7 @@ export function JourneyVisitorsList({
   const { t } = useTranslation('apps-journeys-admin')
   const hasVisitors = visitorEdges != null && visitorEdges.length > 0
   return (
-    <Container>
+    <Container disableGutters>
       <Stack
         spacing={6}
         alignItems="center"
@@ -70,6 +71,7 @@ export function JourneyVisitorsList({
         )}
 
         <LoadingButton
+          startIcon={<AddCircleOutlineRoundedIcon />}
           variant="outlined"
           onClick={fetchNext}
           disabled={!hasNextPage}
