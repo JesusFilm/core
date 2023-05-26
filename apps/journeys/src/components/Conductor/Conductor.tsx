@@ -24,7 +24,9 @@ import last from 'lodash/last'
 import { JourneyViewEventCreate } from '../../../__generated__/JourneyViewEventCreate'
 
 import 'swiper/swiper.min.css'
-import 'swiper/css/pagination'
+import 'swiper/components/pagination/pagination.min.css'
+
+SwiperCore.use([Pagination])
 
 export const JOURNEY_VIEW_EVENT_CREATE = gql`
   mutation JourneyViewEventCreate($input: JourneyViewEventCreateInput!) {
@@ -209,7 +211,6 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
         }}
       >
         <StyledSwiperContainer
-          modules={[Pagination]}
           dir={!rtl ? 'ltr' : 'rtl'}
           pagination={{ dynamicBullets: true }}
           slidesPerView="auto"
