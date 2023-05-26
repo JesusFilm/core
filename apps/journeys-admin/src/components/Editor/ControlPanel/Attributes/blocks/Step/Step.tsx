@@ -27,6 +27,7 @@ export function Step({
   } else if (parentOrder != null) {
     nextStep = steps?.find((step) => parentOrder + 1 === step.parentOrder)
   }
+  console.log(steps)
 
   const heading =
     nextStep != null && steps != null
