@@ -33,27 +33,6 @@ export function Card({
   const { journey } = useJourney()
   const { rtl, locale } = getJourneyRTL(journey)
 
-  const coverBlock = children.find(
-    (block) =>
-      block.id === coverBlockId &&
-      (block.__typename === 'ImageBlock' || block.__typename === 'VideoBlock')
-  ) as TreeBlock<ImageFields | VideoFields> | undefined
-
-  const videoBlock =
-    coverBlock?.__typename === 'VideoBlock' ? coverBlock : undefined
-
-  // ImageBlock is card cover image or video poster image
-  const imageBlock =
-    coverBlock?.__typename === 'ImageBlock'
-      ? coverBlock
-      : videoBlock != null
-      ? (videoBlock.children.find(
-          (block) =>
-            block.id === videoBlock.posterBlockId &&
-            block.__typename === 'ImageBlock'
-        ) as TreeBlock<ImageFields> | undefined)
-      : undefined
-
   const customCardTheme =
     themeName != null && themeMode != null
       ? getTheme({ themeName, themeMode, rtl, locale })
@@ -66,11 +45,25 @@ export function Card({
       ? customCardTheme.palette.background.paper
       : theme.palette.background.paper
 
-  const blurUrl = useMemo(() => {
-    return imageBlock != null
-      ? blurImage(imageBlock.blurhash, cardColor)
-      : undefined
-  }, [imageBlock, cardColor])
+  const coverBlock = children.find(
+    (block) =>
+      block.id === coverBlockId &&
+      (block.__typename === 'ImageBlock' || block.__typename === 'VideoBlock')
+  ) as TreeBlock<ImageFields | VideoFields> | undefined
+
+  const videoBlock =
+    coverBlock?.__typename === 'VideoBlock' ? coverBlock : undefined
+
+  const imageBlock =
+    coverBlock?.__typename === 'ImageBlock' ? coverBlock : undefined
+
+  const blurUrl = useMemo(
+    () =>
+      imageBlock != null
+        ? blurImage(imageBlock.blurhash, cardColor)
+        : undefined,
+    [imageBlock, cardColor]
+  )
 
   const renderedChildren = children
     .filter(({ id }) => id !== coverBlockId)
@@ -84,6 +77,9 @@ export function Card({
       backgroundColor={backgroundColor}
       themeMode={themeMode}
       themeName={themeName}
+      rtl={rtl}
+      locale={locale}
+      title={journey?.seoTitle ?? journey?.title ?? ''}
     >
       {coverBlock != null && !fullscreen ? (
         <ContainedCover
@@ -95,7 +91,14 @@ export function Card({
           {renderedChildren}
         </ContainedCover>
       ) : (
-        <ExpandedCover backgroundBlur={blurUrl}>
+        <ExpandedCover
+          backgroundColor={cardColor}
+          backgroundBlur={blurUrl}
+          imageBlock={imageBlock}
+          isVideoOnlyCard={
+            children.length === 1 && children[0].__typename === 'VideoBlock'
+          }
+        >
           {renderedChildren}
         </ExpandedCover>
       )}
@@ -109,6 +112,9 @@ interface CardWrapperProps
     'id' | 'backgroundColor' | 'themeMode' | 'themeName'
   > {
   children: ReactNode
+  title: string
+  rtl?: boolean
+  locale?: string
   sx?: SxProps
 }
 
@@ -118,6 +124,8 @@ export function CardWrapper({
   themeMode,
   themeName,
   children,
+  rtl = false,
+  locale,
   sx
 }: CardWrapperProps): ReactElement {
   const Card = (
@@ -125,14 +133,13 @@ export function CardWrapper({
       data-testid={id}
       sx={{
         display: 'flex',
-        flexDirection: { xs: 'column', sm: 'row' },
-        justifyContent: { md: 'flex-end' },
-        borderRadius: (theme) => theme.spacing(4),
+        flexDirection: 'column',
+        justifyContent: 'flex-end',
+        borderRadius: { xs: 'inherit', lg: 3 },
         backgroundColor,
         width: '100%',
         height: '100%',
         overflow: 'hidden',
-        position: 'relative',
         transform: 'translateZ(0)', // safari glitch with border radius
         ...sx
       }}
@@ -144,7 +151,13 @@ export function CardWrapper({
 
   if (themeMode != null && themeName != null) {
     return (
-      <ThemeProvider themeMode={themeMode} themeName={themeName} nested>
+      <ThemeProvider
+        themeMode={themeMode}
+        themeName={themeName}
+        rtl={rtl}
+        locale={locale}
+        nested
+      >
         {Card}
       </ThemeProvider>
     )

@@ -177,7 +177,7 @@ describe('CardBlock', () => {
     expect(blurImage).toBeCalledWith(imageBlock.blurhash, '#fff')
     expect(getByTestId('ExpandedCover')).toBeInTheDocument()
     await waitFor(() =>
-      expect(getByTestId('expandedBlurBackground')).toBeInTheDocument()
+      expect(getByTestId('ExpandedImageCover')).toBeInTheDocument()
     )
     expect(queryByText('How did we get here?')).toBeInTheDocument()
   })
@@ -193,7 +193,7 @@ describe('CardBlock', () => {
 
     expect(blurImage).toBeCalledWith(imageBlock.blurhash, '#fff')
     expect(queryByTestId('ContainedCover')).toBeInTheDocument()
-    expect(queryByTestId('ContainedCardImageCover')).toHaveAccessibleName(
+    expect(queryByTestId('background-image')).toHaveAccessibleName(
       'random image from unsplash'
     )
     expect(standaloneImageBlock).not.toBeInTheDocument()
@@ -209,10 +209,9 @@ describe('CardBlock', () => {
     )
     const standaloneVideoBlock = queryByTestId(`video-${videoBlock.id}`)
 
-    expect(blurImage).toBeCalledWith(imageBlock.blurhash, '#fff')
     expect(queryByTestId('ContainedCover')).toBeInTheDocument()
-    expect(queryByTestId('VideoPosterCover')).toHaveAccessibleName(
-      'random image from unsplash - video'
+    expect(queryByTestId('video-poster-image')).toHaveAccessibleName(
+      'card video image'
     )
     expect(standaloneVideoBlock).not.toBeInTheDocument()
     expect(queryAllByText('How did we get here?')[0]).toBeInTheDocument()

@@ -1,5 +1,5 @@
 import { createElement, ReactElement, useEffect, useState } from 'react'
-import SwiperCore from 'swiper'
+import SwiperCore, { Pagination } from 'swiper'
 import { Swiper, SwiperSlide } from 'swiper/react'
 import { findIndex } from 'lodash'
 import Box from '@mui/material/Box'
@@ -11,20 +11,20 @@ import type { TreeBlock } from '@core/journeys/ui/block'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { useBlocks } from '@core/journeys/ui/block'
 import { BlockRenderer } from '@core/journeys/ui/BlockRenderer'
-import { CardWrapper } from '@core/journeys/ui/Card'
-import { useBreakpoints } from '@core/shared/ui/useBreakpoints'
-import 'swiper/swiper.min.css'
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft'
 import ChevronRightIcon from '@mui/icons-material/ChevronRight'
 import { gql, useMutation } from '@apollo/client'
 import { getJourneyRTL } from '@core/journeys/ui/rtl'
+import StepHeader from '@core/journeys/ui/StepHeader'
 // Used to resolve dynamic viewport height on Safari
 import Div100vh from 'react-div-100vh'
 import { v4 as uuidv4 } from 'uuid'
 import TagManager from 'react-gtm-module'
 import last from 'lodash/last'
 import { JourneyViewEventCreate } from '../../../__generated__/JourneyViewEventCreate'
-import { Footer } from '../Footer'
+
+import 'swiper/swiper.min.css'
+import 'swiper/css/pagination'
 
 export const JOURNEY_VIEW_EVENT_CREATE = gql`
   mutation JourneyViewEventCreate($input: JourneyViewEventCreateInput!) {
@@ -33,6 +33,45 @@ export const JOURNEY_VIEW_EVENT_CREATE = gql`
     }
   }
 `
+
+const StyledSwiperContainer = styled(Swiper)(({ theme }) => ({
+  width: '100%',
+  height: '100%',
+  [theme.breakpoints.up('lg')]: {
+    height: 'auto'
+  },
+  '.swiper-wrapper': {
+    height: '100%',
+    [theme.breakpoints.up('lg')]: {
+      // 16:9 aspect ratio
+      height: '56.25vw',
+      paddingTop: '30px',
+      maxHeight: 'calc(100vh - 160px) '
+    }
+  },
+  '.swiper-pagination.swiper-pagination-horizontal': {
+    position: 'absolute',
+    height: 16,
+    width: 100,
+    top: 16,
+    [theme.breakpoints.up('lg')]: {
+      top: 44
+    }
+  },
+  '.swiper-pagination-bullet': {
+    background: theme.palette.common.white,
+    opacity: '60%'
+  },
+  '.swiper-pagination-bullet-active': {
+    opacity: '100%'
+  }
+}))
+
+const StyledSwiperSlide = styled(SwiperSlide)(({ theme }) => ({
+  '&.swiper-slide': {
+    background: theme.palette.grey[900]
+  }
+}))
 
 const LeftNavigationContainer = styled(Box)`
   /* @noflip */
@@ -51,7 +90,6 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
     useBlocks()
   const [swiper, setSwiper] = useState<SwiperCore>()
   const [slideTransitioning, setSlideTransitioning] = useState(false)
-  const breakpoints = useBreakpoints()
   const theme = useTheme()
   const { journey, admin } = useJourney()
   const { rtl } = getJourneyRTL(journey)
@@ -112,32 +150,6 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
     if (activeBlock != null && !activeBlock.locked) nextActiveBlock()
   }
 
-  const [windowWidth, setWindowWidth] = useState(theme.breakpoints.values.xl)
-
-  useEffect(() => {
-    const updateWidth = (): void => {
-      setWindowWidth(window.innerWidth)
-    }
-
-    // Set initial windowWidth
-    setWindowWidth(window.innerWidth)
-
-    window.addEventListener('resize', updateWidth)
-    return () => window.removeEventListener('resize', updateWidth)
-  }, [])
-
-  const edgeSlideWidth = 16
-  const getResponsiveGap = (
-    minGapBetween = breakpoints.sm ? 44 : 16,
-    maxSlideWidth = 854
-  ): number =>
-    Math.max(
-      minGapBetween,
-      (windowWidth - maxSlideWidth - edgeSlideWidth * 2) / 2
-    )
-
-  const [gapBetweenSlides, setGapBetween] = useState(getResponsiveGap())
-
   const Navigation = ({
     variant
   }: {
@@ -151,8 +163,7 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
 
     const iconName = variant === 'Left' ? ChevronLeftIcon : ChevronRightIcon
     const icon = createElement(iconName, {
-      fontSize: 'large',
-      sx: { display: { xs: 'none', xl: 'block' } }
+      fontSize: 'large'
     })
     const NavigationContainer =
       variant === 'Left' ? LeftNavigationContainer : RightNavigationContainer
@@ -163,11 +174,12 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
         sx={{
           ...alignSx,
           position: 'absolute',
-          top: 0,
+          top: '10%',
           bottom: 0,
           zIndex: 2,
           display: slideTransitioning ? 'none' : 'flex',
-          width: `${2 * edgeSlideWidth + gapBetweenSlides}px`
+          width: { xs: 82, lg: 114 },
+          height: '80%'
         }}
       >
         <IconButton
@@ -175,7 +187,11 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
           onClick={handleNext}
           disabled={variant === 'Left' ? disableLeftButton : disableRightButton}
           disableRipple
-          sx={{ color: 'text.primary', px: 13 }}
+          sx={{
+            px: 13,
+            color: 'primary.contrastText',
+            '&:hover': { color: 'primary.contrastText' }
+          }}
         >
           {icon}
         </IconButton>
@@ -188,93 +204,42 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
       <Stack
         sx={{
           justifyContent: 'center',
+          background: theme.palette.grey[900],
           height: '100%'
         }}
       >
-        <Box
-          sx={{
-            display: 'flex',
-            flexGrow: 1,
-            pt: { md: 0, xs: 6 },
-            my: 'auto',
-            [theme.breakpoints.only('sm')]: {
-              maxHeight: '460px'
-            },
-            [theme.breakpoints.up('md')]: {
-              maxHeight: '480px'
-            }
-          }}
+        <StyledSwiperContainer
+          modules={[Pagination]}
+          dir={!rtl ? 'ltr' : 'rtl'}
+          pagination={{ dynamicBullets: true }}
+          slidesPerView="auto"
+          centeredSlides
+          centeredSlidesBounds
+          onSwiper={(swiper) => setSwiper(swiper)}
+          onSlideChangeTransitionStart={() => setSlideTransitioning(true)}
+          onSlideChangeTransitionEnd={() => setSlideTransitioning(false)}
+          allowTouchMove={false}
         >
-          <Swiper
-            dir={!rtl ? 'ltr' : 'rtl'}
-            slidesPerView="auto"
-            centeredSlides
-            centeredSlidesBounds
-            onSwiper={(swiper) => setSwiper(swiper)}
-            resizeObserver
-            onBeforeResize={() => setGapBetween(getResponsiveGap())}
-            onSlideChangeTransitionStart={() => setSlideTransitioning(true)}
-            onSlideChangeTransitionEnd={() => setSlideTransitioning(false)}
-            allowTouchMove={false}
-            style={{
-              width: '100%',
-              paddingLeft: `${edgeSlideWidth + gapBetweenSlides / 2}px`,
-              paddingRight: `${edgeSlideWidth + gapBetweenSlides / 2}px`
-            }}
-          >
-            {treeBlocks.map((block) => (
-              <SwiperSlide
-                key={block.id}
-                style={{
-                  marginRight: '0px'
-                }}
+          {treeBlocks.map((block) => (
+            <StyledSwiperSlide key={block.id}>
+              <Fade
+                in={activeBlock?.id === block.id}
+                mountOnEnter
+                unmountOnExit
               >
-                <Box
-                  sx={{
-                    px: `${gapBetweenSlides / 2}px`,
-                    height: `calc(100% - ${theme.spacing(6)})`,
-                    [theme.breakpoints.up('lg')]: {
-                      maxWidth: '854px'
-                    }
-                  }}
+                <Stack
+                  justifyContent="center"
+                  sx={{ height: '100%', px: { lg: 6 } }}
                 >
-                  <CardWrapper
-                    id={block.id}
-                    backgroundColor={theme.palette.primary.light}
-                    themeMode={null}
-                    themeName={null}
-                  >
-                    <Fade
-                      in={activeBlock?.id === block.id}
-                      mountOnEnter
-                      unmountOnExit
-                    >
-                      <Box
-                        sx={{
-                          position: 'absolute',
-                          width: '100%',
-                          height: '100%'
-                        }}
-                      >
-                        <BlockRenderer block={block} />
-                      </Box>
-                    </Fade>
-                  </CardWrapper>
-                </Box>
-              </SwiperSlide>
-            ))}
-            {showLeftButton && <Navigation variant="Left" />}
-            {showRightButton && <Navigation variant="Right" />}
-          </Swiper>
-        </Box>
-        <Box
-          sx={{
-            px: `${edgeSlideWidth + gapBetweenSlides}px`,
-            pb: 2
-          }}
-        >
-          <Footer />
-        </Box>
+                  <StepHeader block={block} />
+                  <BlockRenderer block={block} />
+                </Stack>
+              </Fade>
+            </StyledSwiperSlide>
+          ))}
+          {showLeftButton && <Navigation variant="Left" />}
+          {showRightButton && <Navigation variant="Right" />}
+        </StyledSwiperContainer>
       </Stack>
     </Div100vh>
   )
