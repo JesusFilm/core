@@ -82,11 +82,12 @@ export class ChatOpenEventResolver {
     @CurrentUserId() userId: string,
     @Args('input') input: ChatOpenEventCreateInput
   ): Promise<ChatOpenEvent> {
-    const { visitor, journeyId } = await this.eventService.validateBlockEvent(
-      userId,
-      input.blockId,
-      input.stepId
-    )
+    const { visitor, journeyId, journeyVisitor } =
+      await this.eventService.validateBlockEvent(
+        userId,
+        input.blockId,
+        input.stepId
+      )
 
     const promises = [
       this.eventService.save({
@@ -117,7 +118,10 @@ export class ChatOpenEventResolver {
     promises.push(
       this.prismaService.journeyVisitor.update({
         where: { journeyId_visitorId: { journeyId, visitorId: visitor.id } },
-        data
+        data: {
+          ...data,
+          activityCount: journeyVisitor.activityCount + 1
+        }
       })
     )
 
