@@ -1,17 +1,11 @@
 import { Test, TestingModule } from '@nestjs/testing'
-import { Database } from 'arangojs'
-import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
-import { mockDbQueryResult } from '@core/nest/database/mock'
-import { DocumentCollection, EdgeCollection } from 'arangojs/collection'
-import { AqlQuery } from 'arangojs/aql'
+import { PrismaService } from '../../lib/prisma.service'
 import { BlockService } from '../block/block.service'
 import { VisitorService } from '../visitor/visitor.service'
 import { EventService } from './event.service'
 
 describe('EventService', () => {
-  let service: EventService,
-    db: DeepMockProxy<Database>,
-    collectionMock: DeepMockProxy<DocumentCollection & EdgeCollection>
+  let service: EventService
 
   const blockService = {
     provide: BlockService,
@@ -39,7 +33,7 @@ describe('EventService', () => {
       getByUserIdAndJourneyId: jest.fn((userId) => {
         switch (userId) {
           case visitor.userId:
-            return visitor
+            return { visitor, journeyVisitor }
         }
       })
     })
@@ -60,23 +54,17 @@ describe('EventService', () => {
     userId: 'user.id'
   }
 
+  const journeyVisitor = {
+    journeyId: 'journey.id',
+    visitorId: 'visitor.id'
+  }
+
   beforeEach(async () => {
-    db = mockDeep()
     const module: TestingModule = await Test.createTestingModule({
-      providers: [
-        EventService,
-        blockService,
-        visitorService,
-        {
-          provide: 'DATABASE',
-          useFactory: () => db
-        }
-      ]
+      providers: [EventService, blockService, visitorService, PrismaService]
     }).compile()
 
     service = module.get<EventService>(EventService)
-    collectionMock = mockDeep()
-    service.collection = collectionMock
   })
   afterAll(() => {
     jest.resetAllMocks()
@@ -88,6 +76,7 @@ describe('EventService', () => {
         await service.validateBlockEvent('user.id', 'block.id', 'step.id')
       ).toEqual({
         visitor,
+        journeyVisitor,
         journeyId: 'journey.id'
       })
     })
@@ -114,28 +103,6 @@ describe('EventService', () => {
       ).rejects.toThrow(
         'Step ID anotherStep.id does not exist on Journey with ID journey.id'
       )
-    })
-
-    describe('getAllByVisitorId', () => {
-      const event = {
-        id: 'eventId'
-      }
-
-      it('returns a list of events by visitor', async () => {
-        db.query.mockImplementation(async (q) => {
-          const { query, bindVars } = q as unknown as AqlQuery
-          expect(query).toEqual(`
-      FOR event IN undefined
-        FILTER event.visitorId == @value0
-        RETURN event
-    `)
-          expect(bindVars).toEqual({
-            value0: 'visitorId'
-          })
-          return await mockDbQueryResult(service.db, [event])
-        })
-        expect(await service.getAllByVisitorId('visitorId')).toEqual([event])
-      })
     })
   })
 })

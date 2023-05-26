@@ -26,6 +26,7 @@ import { createApolloClient } from '../../../src/libs/apolloClient'
 import i18nConfig from '../../../next-i18next.config'
 import { ACCEPT_USER_INVITE } from '../..'
 import { useTermsRedirect } from '../../../src/libs/useTermsRedirect/useTermsRedirect'
+import { useInvalidJourneyRedirect } from '../../../src/libs/useInvalidJourneyRedirect/useInvalidJourneyRedirect'
 import { UserJourneyOpen } from '../../../__generated__/UserJourneyOpen'
 
 function JourneyEditPage(): ReactElement {
@@ -36,6 +37,7 @@ function JourneyEditPage(): ReactElement {
     variables: { id: router.query.journeyId }
   })
   useTermsRedirect()
+  useInvalidJourneyRedirect(data)
 
   return (
     <>
@@ -58,7 +60,6 @@ function JourneyEditPage(): ReactElement {
           backHref={`/journeys/${router.query.journeyId as string}`}
           menu={<EditToolbar />}
           authUser={AuthUser}
-          router={router}
         >
           <JourneyEdit />
         </PageWrapper>

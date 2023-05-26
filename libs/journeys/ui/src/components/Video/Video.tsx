@@ -16,7 +16,7 @@ import {
   VideoBlockObjectFit,
   VideoBlockSource
 } from '../../../__generated__/globalTypes'
-import type { TreeBlock } from '../../libs/block'
+import { TreeBlock } from '../../libs/block'
 import { useEditor } from '../../libs/EditorProvider'
 import { blurImage } from '../../libs/blurImage'
 import { ImageFields } from '../Image/__generated__/ImageFields'
@@ -50,6 +50,7 @@ export function Video({
   const {
     state: { selectedBlock }
   } = useEditor()
+
   const videoRef = useRef<HTMLVideoElement>(null)
   const playerRef = useRef<videojs.Player>()
 
@@ -95,6 +96,8 @@ export function Video({
         playerRef.current?.currentTime(startAt ?? 0)
         // plays youTube videos at the start time
         if (source === VideoBlockSource.youTube && autoplay === true)
+          void playerRef.current?.play()
+        if (source === VideoBlockSource.cloudflare && autoplay === true)
           void playerRef.current?.play()
       })
 
@@ -248,13 +251,23 @@ export function Video({
             className="video-js vjs-big-play-centered"
             playsInline
           >
+            {source === VideoBlockSource.cloudflare && videoId != null && (
+              <source
+                src={`https://customer-${
+                  process.env.NEXT_PUBLIC_CLOUDFLARE_STREAM_CUSTOMER_CODE ?? ''
+                }.cloudflarestream.com/${videoId ?? ''}/manifest/video.m3u8`}
+                type="application/x-mpegURL"
+              />
+            )}
             {source === VideoBlockSource.internal &&
               video?.variant?.hls != null && (
                 <source src={video.variant.hls} type="application/x-mpegURL" />
               )}
             {source === VideoBlockSource.youTube && (
               <source
-                src={`https://www.youtube.com/watch?v=${videoId}`}
+                src={`https://www.youtube.com/embed/${videoId}?start=${
+                  startAt ?? 0
+                }&end=${endAt ?? 0}`}
                 type="video/youtube"
               />
             )}

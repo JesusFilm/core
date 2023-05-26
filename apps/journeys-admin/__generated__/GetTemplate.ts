@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { JourneyStatus, ThemeName, ThemeMode, ButtonVariant, ButtonColor, ButtonSize, GridDirection, GridJustifyContent, GridAlignItems, IconName, IconSize, IconColor, TypographyAlign, TypographyColor, TypographyVariant, VideoBlockSource, VideoBlockObjectFit, UserJourneyRole } from "./globalTypes";
+import { JourneyStatus, ThemeName, ThemeMode, ButtonVariant, ButtonColor, ButtonSize, IconName, IconSize, IconColor, TypographyAlign, TypographyColor, TypographyVariant, VideoBlockSource, VideoBlockObjectFit, UserJourneyRole } from "./globalTypes";
 
 // ====================================================
 // GraphQL query operation: GetTemplate
@@ -21,6 +21,13 @@ export interface GetTemplate_template_language {
   bcp47: string | null;
   iso3: string | null;
   name: GetTemplate_template_language_name[];
+}
+
+export interface GetTemplate_template_blocks_GridContainerBlock {
+  __typename: "GridContainerBlock" | "GridItemBlock";
+  id: string;
+  parentBlockId: string | null;
+  parentOrder: number | null;
 }
 
 export interface GetTemplate_template_blocks_ButtonBlock_action_NavigateAction {
@@ -109,27 +116,6 @@ export interface GetTemplate_template_blocks_CardBlock {
    * background.
    */
   fullscreen: boolean;
-}
-
-export interface GetTemplate_template_blocks_GridContainerBlock {
-  __typename: "GridContainerBlock";
-  id: string;
-  parentBlockId: string | null;
-  parentOrder: number | null;
-  spacing: number;
-  direction: GridDirection;
-  justifyContent: GridJustifyContent;
-  alignItems: GridAlignItems;
-}
-
-export interface GetTemplate_template_blocks_GridItemBlock {
-  __typename: "GridItemBlock";
-  id: string;
-  parentBlockId: string | null;
-  parentOrder: number | null;
-  xl: number;
-  lg: number;
-  sm: number;
 }
 
 export interface GetTemplate_template_blocks_IconBlock {
@@ -543,7 +529,7 @@ export interface GetTemplate_template_blocks_VideoTriggerBlock {
   triggerAction: GetTemplate_template_blocks_VideoTriggerBlock_triggerAction;
 }
 
-export type GetTemplate_template_blocks = GetTemplate_template_blocks_ButtonBlock | GetTemplate_template_blocks_CardBlock | GetTemplate_template_blocks_GridContainerBlock | GetTemplate_template_blocks_GridItemBlock | GetTemplate_template_blocks_IconBlock | GetTemplate_template_blocks_ImageBlock | GetTemplate_template_blocks_RadioOptionBlock | GetTemplate_template_blocks_RadioQuestionBlock | GetTemplate_template_blocks_SignUpBlock | GetTemplate_template_blocks_StepBlock | GetTemplate_template_blocks_TextResponseBlock | GetTemplate_template_blocks_TypographyBlock | GetTemplate_template_blocks_VideoBlock | GetTemplate_template_blocks_VideoTriggerBlock;
+export type GetTemplate_template_blocks = GetTemplate_template_blocks_GridContainerBlock | GetTemplate_template_blocks_ButtonBlock | GetTemplate_template_blocks_CardBlock | GetTemplate_template_blocks_IconBlock | GetTemplate_template_blocks_ImageBlock | GetTemplate_template_blocks_RadioOptionBlock | GetTemplate_template_blocks_RadioQuestionBlock | GetTemplate_template_blocks_SignUpBlock | GetTemplate_template_blocks_StepBlock | GetTemplate_template_blocks_TextResponseBlock | GetTemplate_template_blocks_TypographyBlock | GetTemplate_template_blocks_VideoBlock | GetTemplate_template_blocks_VideoTriggerBlock;
 
 export interface GetTemplate_template_primaryImageBlock {
   __typename: "ImageBlock";

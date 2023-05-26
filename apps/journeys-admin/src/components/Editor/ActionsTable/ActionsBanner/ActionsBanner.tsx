@@ -54,7 +54,7 @@ export function ActionsBanner(): ReactElement {
   return (
     <Box
       sx={{
-        mx: 4,
+        mx: 8,
         gap: 10,
         display: 'flex',
         flexDirection: 'row',
@@ -74,14 +74,6 @@ export function ActionsBanner(): ReactElement {
           <Typography variant="overline" color="secondary.light">
             Goals
           </Typography>
-          <Button
-            variant="outlined"
-            disabled
-            startIcon={<InfoOutlined />}
-            sx={{ [theme.breakpoints.down('md')]: { display: 'none' } }}
-          >
-            Learn More
-          </Button>
           <Button
             variant="outlined"
             startIcon={<InfoOutlined sx={{ color: 'secondary.light' }} />}

@@ -106,4 +106,45 @@ describe('JourneyView/Menu/TitleDialog', () => {
       ).toBeInTheDocument()
     )
   })
+
+  it('is a required field', async () => {
+    const result = jest.fn(() => ({
+      data: {
+        journeyUpdate: {
+          id: defaultJourney.id,
+          __typename: 'Journey'
+        }
+      }
+    }))
+
+    const { getByRole, getByText } = render(
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: JOURNEY_TITLE_UPDATE,
+              variables: {
+                id: defaultJourney.id,
+                input: {
+                  title: 'New Journey'
+                }
+              }
+            },
+            result
+          }
+        ]}
+      >
+        <SnackbarProvider>
+          <JourneyProvider value={{ journey: defaultJourney, admin: true }}>
+            <TitleDialog open onClose={onClose} />
+          </JourneyProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    fireEvent.change(getByRole('textbox'), { target: { value: '' } })
+    fireEvent.click(getByRole('button', { name: 'Save' }))
+    await waitFor(() => expect(getByText('Required')).toBeInTheDocument())
+    await waitFor(() => expect(result).not.toHaveBeenCalled())
+  })
 })
