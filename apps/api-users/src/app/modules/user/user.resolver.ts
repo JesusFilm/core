@@ -1,6 +1,6 @@
 import { Resolver, Query, ResolveReference } from '@nestjs/graphql'
 import { CurrentUserId } from '@core/nest/decorators/CurrentUserId'
-import { Inject, UseGuards } from '@nestjs/common'
+import { UseGuards } from '@nestjs/common'
 import { GqlAuthGuard } from '@core/nest/gqlAuthGuard/GqlAuthGuard'
 import { firebaseClient } from '@core/nest/common/firebaseClient'
 import { User } from '.prisma/api-users-client'
@@ -8,9 +8,7 @@ import { PrismaService } from '../../lib/prisma.service'
 
 @Resolver('User')
 export class UserResolver {
-  constructor(
-    @Inject(PrismaService) private readonly prismaService: PrismaService
-  ) {}
+  constructor(private readonly prismaService: PrismaService) {}
 
   @Query()
   @UseGuards(GqlAuthGuard)

@@ -97,7 +97,7 @@
       "executor": "@nrwl/workspace:run-commands",
       "options": {
         "commands": [
-          "npx prisma migrate dev --schema apps/api-users/db/schema.prisma"
+          "bash -c 'npx prisma migrate dev --schema apps/api-users/db/schema.prisma --name `date +\"%Y%m%d%H%M%S\"`'"
         ]
       },
       "configurations": {
@@ -129,6 +129,12 @@
           "npx prisma validate --schema apps/api-users/db/schema.prisma"
         ]
       }
+    }
+  },
+  "type-check": {
+    "executor": "@nrwl/workspace:run-commands",
+    "options": {
+      "command": "npx tsc -b apps/api-users/tsconfig.json"
     }
   },
   "tags": []

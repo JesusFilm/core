@@ -4,8 +4,8 @@
 // Please note, this seed transfers existing arangodb users to postgresql
 
 import { aql } from 'arangojs'
-import { omit } from 'lodash'
-import { PrismaClient, User } from '.prisma/api-users-client'
+import { pick } from 'lodash'
+import { PrismaClient } from '.prisma/api-users-client'
 import { ArangoDB } from './db'
 
 const db = ArangoDB()
@@ -17,16 +17,10 @@ async function main(): Promise<void> {
     RETURN user`)
   const users = await result.all()
   await prisma.user.createMany({
-    data: users.map(
-      (user) =>
-        omit(
-          {
-            ...user,
-            id: user._key
-          },
-          ['_key', '_id', '_rev']
-        ) as User
-    ),
+    data: users.map((user) => ({
+      ...pick(user, ['email', 'userId', 'firstName', 'lastName', 'imageUrl']),
+      id: user._key
+    })),
     skipDuplicates: true
   })
 }
