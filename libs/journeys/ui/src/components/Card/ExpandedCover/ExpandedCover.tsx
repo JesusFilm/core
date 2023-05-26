@@ -50,7 +50,10 @@ export function ExpandedCover({
           height: '100%',
           WebkitBackdropFilter: 'blur(20px)',
           backdropFilter: 'blur(20px)',
-          background: backgroundColor != null ? `${backgroundColor}4d` : 'unset'
+          background:
+            backgroundColor != null ? `${backgroundColor}4d` : 'unset',
+          borderRadius: 'inherit',
+          overflow: 'hidden'
         }}
       >
         <Stack
