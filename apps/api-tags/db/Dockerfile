@@ -6,8 +6,6 @@ RUN apk upgrade --update-cache --available && \
     apk add openssl1.1-compat && \
     rm -rf /var/cache/apk/*
 
-RUN npm i -g --silent prisma@^4.13.0
-
 WORKDIR /app
 COPY ./tsconfig.base.json /app/tsconfig.base.json
 COPY ./apps/api-tags /app/apps/api-tags
