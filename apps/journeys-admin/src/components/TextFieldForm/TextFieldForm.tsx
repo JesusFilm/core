@@ -20,7 +20,6 @@ interface TextFieldFormProps extends FieldProps {
   initialValues?: string
   validationSchema?: any
   handleSubmit: (value?: string) => void
-  resetField?: boolean
   startIcon?: ReactNode
   endIcon?: ReactNode
   iconPosition?: IconPosition
@@ -36,7 +35,6 @@ export function TextFieldForm({
   hiddenLabel,
   placeholder,
   handleSubmit,
-  resetField = false,
   startIcon,
   endIcon,
   iconPosition
@@ -77,11 +75,9 @@ export function TextFieldForm({
             onBlur={(e) => {
               handleBlur(e)
               errors.value == null && handleSubmit(e.target.value)
-              // todo: manage reset
             }}
             onChange={(e) => {
               handleChange(e)
-              // todo: manage reset
             }}
           />
         </Form>
