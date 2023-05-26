@@ -31,6 +31,13 @@ describe('VisitorCardDetails', () => {
     expect(getByText('test name')).toBeInTheDocument()
   })
 
+  it('should hide details if there are no events', () => {
+    const { queryByText } = render(
+      <VisitorCardDetails loading={false} name="test name" events={[]} />
+    )
+    expect(queryByText('test name')).not.toBeInTheDocument()
+  })
+
   it('should show filtered events', () => {
     const events: Event[] = [
       {
@@ -111,6 +118,6 @@ describe('VisitorCardDetails', () => {
     expect(queryByText('text value')).not.toBeInTheDocument()
     expect(queryByText('radio value')).not.toBeInTheDocument()
     expect(queryByText('button value')).not.toBeInTheDocument()
-    expect(getAllByTestId('description-skeleton')).toHaveLength(4)
+    expect(getAllByTestId('description-skeleton')).toHaveLength(2)
   })
 })
