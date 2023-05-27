@@ -43,9 +43,7 @@ export function VisitorCard({ visitorNode, loading }: Props): ReactElement {
           />
 
           <VisitorCardDetails
-            name={
-              visitorNode?.visitor.name ?? visitorNode?.visitorId.slice(-12)
-            }
+            name={visitorNode?.visitor.name}
             events={visitorNode?.events ?? []}
             loading={loading}
           />

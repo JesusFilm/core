@@ -49,7 +49,7 @@ describe('VisitorCard', () => {
       '/reports/visitors/visitor.id-012345678901'
     )
   })
-  it('should use a shortened id for name', () => {
+  it('should show name', () => {
     const emptyVisitor = {
       ...visitorNode,
       visitor: {

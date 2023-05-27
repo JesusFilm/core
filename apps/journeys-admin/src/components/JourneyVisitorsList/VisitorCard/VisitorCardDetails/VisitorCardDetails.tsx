@@ -8,7 +8,7 @@ import Skeleton from '@mui/material/Skeleton'
 import { GetJourneyVisitors_visitors_edges_node_events as Event } from '../../../../../__generated__/GetJourneyVisitors'
 
 interface Props {
-  name?: string
+  name?: string | null
   events: Event[]
   loading: boolean
 }
@@ -31,7 +31,9 @@ export function VisitorCardDetails({
   )
 
   return (
-    <Box sx={{ pl: { xs: '9px', sm: 9 }, pt: 3 }}>
+    <Box
+      sx={{ pl: { xs: '9px', sm: 9 }, pt: filteredEvents.length > 0 ? 3 : 0 }}
+    >
       {loading ? (
         <>
           {[0, 1].map((i) => (
@@ -44,7 +46,7 @@ export function VisitorCardDetails({
         </>
       ) : (
         <>
-          {filteredEvents.length > 0 && (
+          {name != null && (
             <DetailsRow label={t('Name')} value={name} loading={loading} />
           )}
 
