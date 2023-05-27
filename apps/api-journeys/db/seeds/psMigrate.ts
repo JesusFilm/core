@@ -54,16 +54,17 @@ export async function psMigrate(): Promise<void> {
             userAgent: visitor.userAgent ?? undefined
           }
         })
-
-        console.log(`Importing events for visitor ${visitor._key as string}...`)
-        const events = await (
-          await db.query(aql`
+      } catch {}
+      console.log(`Importing events for visitor ${visitor._key as string}...`)
+      const events = await (
+        await db.query(aql`
           FOR event IN events
-          FILTER event.visitorId == ${visitor._key}
+          FILTER event.userId == ${visitor.userId}
           RETURN event
       `)
-        ).all()
-        if (events.length === 0) continue
+      ).all()
+      if (events.length === 0) continue
+      try {
         await prisma.event.createMany({
           data: events.map((event) => ({
             id: event._key,
@@ -75,7 +76,7 @@ export async function psMigrate(): Promise<void> {
             stepId: event.stepId ?? undefined,
             label: event.label ?? undefined,
             value: event.value ?? undefined,
-            visitorId: event.visitorId,
+            visitorId: visitor._key,
             actionValue: event.actionValue ?? undefined,
             messagePlatform: event.messagePlatform ?? undefined,
             languageId: event.languageId ?? undefined,
