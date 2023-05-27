@@ -98,3 +98,13 @@ module "arango-bigquery-etl" {
   subnet_ids              = module.prod.vpc.internal_subnets
   cluster_arn             = module.prod.ecs.ecs_cluster.arn
 }
+
+module "bastion" {
+  source             = "../../modules/aws/ec2-bastion"
+  name               = "bastion"
+  env                = "prod"
+  dns_name           = "bastion.central.jesusfilm.org"
+  subnet_id          = module.prod.vpc.public_subnets[0]
+  zone_id            = data.aws_route53_zone.route53_central_jesusfilm_org.zone_id
+  security_group_ids = [module.prod.public_bastion_security_group_id]
+}

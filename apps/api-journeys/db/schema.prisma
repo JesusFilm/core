@@ -1,0 +1,134 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = env("PRISMA_LOCATION")
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("PG_DATABASE_URL")
+}
+
+enum MessagePlatform {
+  facebook
+  telegram
+  whatsApp
+  instagram
+  viber
+  vk
+  snapchat
+  skype
+  line
+  tikTok
+}
+
+enum VisitorStatus {
+  star
+  prohibited
+  checkMarkSymbol
+  thumbsUp
+  thumbsDown
+  partyPopper
+  warning
+  robotFace
+  redExclamationMark
+  redQuestionMark
+}
+
+enum DeviceType {
+  console
+  mobile
+  tablet
+  smarttv
+  wearable
+  embedded
+}
+
+enum ButtonAction {
+  NavigateAction
+  NavigateToBlockAction
+  NavigateToJourneyAction
+  LinkAction
+}
+
+enum VideoBlockSource {
+  internal
+  youTube
+}
+
+model Event {
+  id                      String            @id @default(uuid())
+  typename                String
+  journeyId               String?
+  blockId                 String?
+  stepId                  String?
+  createdAt               DateTime          @default(now())
+  label                   String?
+  value                   String?
+  visitorId               String
+  action                  ButtonAction?
+  actionValue             String?
+  messagePlatform         MessagePlatform?
+  languageId              String?
+  radioOptionBlockId      String?
+  email                   String?
+  nextStepId              String?
+  position                Float?
+  source                  VideoBlockSource?
+  progress                Int?
+  userId                  String?
+  journeyVisitorJourneyId String?
+  journeyVisitorVisitorId String?
+  visitor                 Visitor           @relation(fields: [visitorId], references: [id])
+  journeyVisitor          JourneyVisitor?   @relation(fields: [journeyVisitorJourneyId, journeyVisitorVisitorId], references: [journeyId, visitorId])
+
+  @@index([id, journeyId, visitorId, blockId, userId])
+}
+
+model Visitor {
+  id                        String           @id
+  createdAt                 DateTime         @default(now())
+  countryCode               String?
+  duration                  Int              @default(0)
+  email                     String?
+  events                    Event[]
+  lastChatStartedAt         DateTime?
+  lastChatPlatform          MessagePlatform?
+  lastStepViewedAt          DateTime?
+  lastLinkAction            String?
+  lastTextResponse          String?
+  lastRadioQuestion         String?
+  lastRadioOptionSubmission String?
+  messagePlatform           MessagePlatform?
+  messagePlatformId         String?
+  name                      String?
+  notes                     String?
+  status                    VisitorStatus?
+  referrer                  String?
+  teamId                    String
+  userId                    String
+  userAgent                 Json?
+  journeyVisitor            JourneyVisitor[]
+
+  @@index([id, teamId, createdAt, userId, status, countryCode])
+}
+
+model JourneyVisitor {
+  id                        String           @id @default(uuid())
+  journeyId                 String
+  visitorId                 String
+  createdAt                 DateTime         @default(now())
+  duration                  Int              @default(0)
+  lastChatStartedAt         DateTime?
+  lastChatPlatform          MessagePlatform?
+  lastStepViewedAt          DateTime?
+  lastLinkAction            String?
+  lastTextResponse          String?
+  lastRadioQuestion         String?
+  lastRadioOptionSubmission String?
+  activityCount             Int              @default(0)
+  visitor                   Visitor          @relation(fields: [visitorId], references: [id])
+  events                    Event[]
+
+  @@unique([journeyId, visitorId])
+  @@index([journeyId, visitorId, createdAt, lastChatStartedAt, lastRadioQuestion, lastTextResponse, activityCount, duration])
+}
