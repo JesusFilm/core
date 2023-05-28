@@ -171,6 +171,12 @@ export enum JourneysReportType {
     singleSummary = "singleSummary"
 }
 
+export enum JourneyVisitorSort {
+    date = "date",
+    duration = "duration",
+    activity = "activity"
+}
+
 export enum UserJourneyRole {
     inviteRequested = "inviteRequested",
     editor = "editor",
@@ -569,6 +575,16 @@ export class JourneyTemplateInput {
     template?: Nullable<boolean>;
 }
 
+export class JourneyVisitorFilter {
+    journeyId: string;
+    hasChatStarted?: Nullable<boolean>;
+    hasPollAnswers?: Nullable<boolean>;
+    hasTextResponse?: Nullable<boolean>;
+    hasIcon?: Nullable<boolean>;
+    hideInactive?: Nullable<boolean>;
+    countryCode?: Nullable<string>;
+}
+
 export class UserInviteCreateInput {
     email: string;
 }
@@ -580,6 +596,8 @@ export class VisitorUpdateInput {
     name?: Nullable<string>;
     notes?: Nullable<string>;
     status?: Nullable<VisitorStatus>;
+    countryCode?: Nullable<string>;
+    referrer?: Nullable<string>;
 }
 
 export interface Action {
@@ -1015,6 +1033,10 @@ export abstract class IQuery {
 
     abstract getJourneyProfile(): Nullable<JourneyProfile> | Promise<Nullable<JourneyProfile>>;
 
+    abstract journeyVisitorsConnection(teamId: string, filter: JourneyVisitorFilter, first?: Nullable<number>, after?: Nullable<string>, sort?: Nullable<JourneyVisitorSort>): JourneyVisitorsConnection | Promise<JourneyVisitorsConnection>;
+
+    abstract journeyVisitorCount(filter: JourneyVisitorFilter): number | Promise<number>;
+
     abstract userInvites(journeyId: string): Nullable<UserInvite[]> | Promise<Nullable<UserInvite[]>>;
 
     abstract getUserRole(): Nullable<UserRole> | Promise<Nullable<UserRole>>;
@@ -1040,6 +1062,38 @@ export class JourneyProfile {
     id: string;
     userId: string;
     acceptedTermsAt?: Nullable<DateTime>;
+}
+
+export class JourneyVisitor {
+    __typename?: 'JourneyVisitor';
+    visitorId: string;
+    journeyId: string;
+    createdAt: DateTime;
+    duration?: Nullable<number>;
+    lastChatStartedAt?: Nullable<DateTime>;
+    lastChatPlatform?: Nullable<MessagePlatform>;
+    countryCode?: Nullable<string>;
+    messagePlatform?: Nullable<MessagePlatform>;
+    notes?: Nullable<string>;
+    lastStepViewedAt?: Nullable<DateTime>;
+    lastLinkAction?: Nullable<string>;
+    lastTextResponse?: Nullable<string>;
+    lastRadioQuestion?: Nullable<string>;
+    lastRadioOptionSubmission?: Nullable<string>;
+    events: Event[];
+    visitor: Visitor;
+}
+
+export class JourneyVisitorEdge {
+    __typename?: 'JourneyVisitorEdge';
+    cursor: string;
+    node: JourneyVisitor;
+}
+
+export class JourneyVisitorsConnection {
+    __typename?: 'JourneyVisitorsConnection';
+    edges: JourneyVisitorEdge[];
+    pageInfo: PageInfo;
 }
 
 export class UserInvite {
@@ -1089,6 +1143,7 @@ export class Visitor {
     __typename?: 'Visitor';
     id: string;
     createdAt: DateTime;
+    duration?: Nullable<number>;
     lastChatStartedAt?: Nullable<DateTime>;
     lastChatPlatform?: Nullable<MessagePlatform>;
     userAgent?: Nullable<UserAgent>;
@@ -1104,6 +1159,7 @@ export class Visitor {
     lastTextResponse?: Nullable<string>;
     lastRadioQuestion?: Nullable<string>;
     lastRadioOptionSubmission?: Nullable<string>;
+    referrer?: Nullable<string>;
     events: Event[];
 }
 
@@ -1265,6 +1321,8 @@ export abstract class IMutation {
     abstract userJourneyOpen(id: string): Nullable<UserJourney> | Promise<Nullable<UserJourney>>;
 
     abstract visitorUpdate(id: string, input: VisitorUpdateInput): Visitor | Promise<Visitor>;
+
+    abstract visitorUpdateForCurrentUser(input: VisitorUpdateInput): Visitor | Promise<Visitor>;
 }
 
 export class Video {
