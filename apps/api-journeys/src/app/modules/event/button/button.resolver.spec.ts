@@ -101,11 +101,21 @@ describe('ChatOpenEventResolver', () => {
 
   const response = {
     visitor: { id: 'visitor.id', messagePlatform: MessagePlatform.facebook },
+    journeyVisitor: {
+      journeyId: 'journey.id',
+      visitorId: 'visitor.id',
+      activityCount: 0
+    },
     journeyId: 'journey.id'
   }
 
   const newResponse = {
     visitor: { id: 'newVisitor.id' },
+    journeyVisitor: {
+      journeyId: 'journey.id',
+      visitorId: 'newVisitor.id',
+      activityCount: 0
+    },
     journeyId: 'journey.id'
   }
 
@@ -199,7 +209,8 @@ describe('ChatOpenEventResolver', () => {
         },
         data: {
           lastChatStartedAt: new Date(),
-          lastChatPlatform: MessagePlatform.facebook
+          lastChatPlatform: MessagePlatform.facebook,
+          activityCount: 1
         }
       })
     })
