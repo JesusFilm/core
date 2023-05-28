@@ -7,89 +7,69 @@ import TextField from '@mui/material/TextField'
 import { Formik, Form } from 'formik'
 import { object, string } from 'yup'
 import InputAdornment from '@mui/material/InputAdornment'
-import InsertLinkRoundedIcon from '@mui/icons-material/InsertLinkRounded'
+// import InsertEmailRoundedIcon from '@mui/icons-material/InsertEmailRounded'
 import Box from '@mui/material/Box'
 import { GetJourney_journey_blocks_ButtonBlock as ButtonBlock } from '../../../../../../../__generated__/GetJourney'
-import { LinkActionUpdate } from '../../../../../../../__generated__/LinkActionUpdate'
 
 export const LINK_ACTION_UPDATE = gql`
-  mutation LinkActionUpdate(
+  mutation EmailActionUpdate(
     $id: ID!
     $journeyId: ID!
-    $input: LinkActionInput!
+    $input: EmailActionInput!
   ) {
-    blockUpdateLinkAction(id: $id, journeyId: $journeyId, input: $input) {
+    blockUpdateEmailAction(id: $id, journeyId: $journeyId, input: $input) {
       gtmEventName
-      url
+      email
     }
   }
 `
 
-interface LinkActionFormValues {
-  link: string
+interface EmailActionFormValues {
+  email: string
 }
 
-export function LinkAction(): ReactElement {
+export function EmailAction(): ReactElement {
   const { state } = useEditor()
   const { journey } = useJourney()
   const selectedBlock = state.selectedBlock as
     | TreeBlock<ButtonBlock>
     | undefined
 
-  const [linkActionUpdate] = useMutation<LinkActionUpdate>(LINK_ACTION_UPDATE)
+  const [emailActionUpdate] = useMutation(LINK_ACTION_UPDATE)
 
-  const linkAction =
-    selectedBlock?.action?.__typename === 'LinkAction'
+  const emailAction =
+    selectedBlock?.action?.__typename === 'EmailAction'
       ? selectedBlock.action
       : undefined
 
-  const initialValues: LinkActionFormValues = { link: linkAction?.url ?? '' }
-
-  // check for valid URL
-  function checkURL(value?: string): boolean {
-    let urlInspect = value ?? ''
-
-    const protocol = /^\w+:\/\//
-    if (!protocol.test(urlInspect)) {
-      if (/^mailto:/.test(urlInspect)) return false
-      urlInspect = 'https://' + urlInspect
-    }
-    try {
-      return new URL(urlInspect).toString() !== ''
-    } catch (error) {
-      return false
-    }
+  const initialValues: EmailActionFormValues = {
+    email: emailAction?.email ?? ''
   }
 
-  const linkActionSchema = object({
-    link: string()
-      .required('Required')
-      .test('valid-url', 'Invalid URL', checkURL)
+  const emailActionSchema = object({
+    email: string().required('Required').email('Invalid Email')
   })
 
   async function handleSubmit(src: string): Promise<void> {
-    // checks if url has a protocol
-    const url = /^\w+:\/\//.test(src) ? src : `https://${src}`
-
     if (selectedBlock != null && journey != null) {
       const { id, __typename: typeName } = selectedBlock
-      await linkActionUpdate({
+      await emailActionUpdate({
         variables: {
           id,
           journeyId: journey.id,
           input: {
-            url
+            email: src
           }
         },
         update(cache, { data }) {
-          if (data?.blockUpdateLinkAction != null) {
+          if (data?.blockUpdateEmailAction != null) {
             cache.modify({
               id: cache.identify({
                 __typename: typeName,
                 id
               }),
               fields: {
-                action: () => data.blockUpdateLinkAction
+                action: () => data.blockUpdateEmailAction
               }
             })
           }
@@ -102,33 +82,33 @@ export function LinkAction(): ReactElement {
     <Box sx={{ pt: 8 }}>
       <Formik
         initialValues={initialValues}
-        validationSchema={linkActionSchema}
+        validationSchema={emailActionSchema}
         onSubmit={async (values): Promise<void> => {
-          await handleSubmit(values.link)
+          await handleSubmit(values.email)
         }}
         enableReinitialize
       >
         {({ values, touched, errors, handleChange, handleBlur }) => (
           <Form>
             <TextField
-              id="link"
-              name="link"
+              id="email"
+              name="email"
               variant="filled"
               label="Paste URL here..."
               fullWidth
-              value={values.link}
-              error={touched.link === true && Boolean(errors.link)}
-              helperText={touched.link === true && errors.link}
+              value={values.email}
+              error={touched.email === true && Boolean(errors.email)}
+              helperText={touched.email === true && errors.email}
               InputProps={{
                 startAdornment: (
                   <InputAdornment position="start">
-                    <InsertLinkRoundedIcon />
+                    {/* <InsertEmailRoundedIcon /> */}
                   </InputAdornment>
                 )
               }}
               onBlur={(e) => {
                 handleBlur(e)
-                errors.link == null && handleSubmit(e.target.value)
+                errors.email == null && handleSubmit(e.target.value)
               }}
               onChange={handleChange}
             />

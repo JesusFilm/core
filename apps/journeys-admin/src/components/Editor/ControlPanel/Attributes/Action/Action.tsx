@@ -22,6 +22,7 @@ import { NavigateAction } from './NavigateAction'
 import { NavigateToBlockAction } from './NavigateToBlockAction'
 import { NavigateToJourneyAction } from './NavigateToJourneyAction'
 import { LinkAction } from './LinkAction'
+import { EmailAction } from './EmailAction/EmailAction'
 
 export const NAVIGATE_ACTION_UPDATE = gql`
   mutation NavigateActionUpdate(
@@ -199,9 +200,9 @@ export function Action(): ReactElement {
           Redirect user to the selected resource
         </Typography>
         {action === 'NavigateAction' && <NavigateAction />}
-        {action === 'LinkAction' && <LinkAction action={action} />}
+        {action === 'LinkAction' && <LinkAction />}
         {action === 'NavigateToJourneyAction' && <NavigateToJourneyAction />}
-        {action === 'EmailAction' && <LinkAction action={action} />}
+        {action === 'EmailAction' && <EmailAction />}
       </Stack>
       {action === 'NavigateToBlockAction' && <NavigateToBlockAction />}
     </>

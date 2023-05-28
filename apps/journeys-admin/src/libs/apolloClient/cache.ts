@@ -14,7 +14,8 @@ export const cache = (): InMemoryCache =>
         'NavigateAction',
         'NavigateToBlockAction',
         'NavigateToJourneyAction',
-        'LinkAction'
+        'LinkAction',
+        'EmailAction'
       ],
       Block: [
         'ButtonBlock',
