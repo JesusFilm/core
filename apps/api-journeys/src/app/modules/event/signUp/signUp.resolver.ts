@@ -9,13 +9,13 @@ import {
   SignUpSubmissionEventCreateInput
 } from '../../../__generated__/graphql'
 import { EventService } from '../event.service'
-import { VisitorService } from '../../visitor/visitor.service'
+import { PrismaService } from '../../../lib/prisma.service'
 
 @Resolver('SignUpSubmissionEvent')
 export class SignUpSubmissionEventResolver {
   constructor(
     private readonly eventService: EventService,
-    private readonly visitorService: VisitorService
+    private readonly prismaService: PrismaService
   ) {}
 
   @Mutation()
@@ -24,21 +24,22 @@ export class SignUpSubmissionEventResolver {
     @CurrentUserId() userId: string,
     @Args('input') input: SignUpSubmissionEventCreateInput
   ): Promise<SignUpSubmissionEvent> {
-    const { visitor, journeyId } = await this.eventService.validateBlockEvent(
-      userId,
-      input.blockId,
-      input.stepId
-    )
+    const { visitor, journeyVisitor, journeyId } =
+      await this.eventService.validateBlockEvent(
+        userId,
+        input.blockId,
+        input.stepId
+      )
 
     const promises = [
       this.eventService.save({
-        id: input.id,
+        id: input.id ?? undefined,
         blockId: input.blockId,
-        __typename: 'SignUpSubmissionEvent',
-        visitorId: visitor.id,
+        typename: 'SignUpSubmissionEvent',
+        visitor: { connect: { id: visitor.id } },
         createdAt: new Date().toISOString(),
         journeyId,
-        stepId: input.stepId,
+        stepId: input.stepId ?? undefined,
         label: null,
         value: input.name,
         email: input.email
@@ -58,10 +59,21 @@ export class SignUpSubmissionEventResolver {
       }
     }
     if (req != null) {
-      promises.push(this.visitorService.update(visitor.id, req))
+      promises.push(
+        this.prismaService.visitor.update({
+          where: { id: visitor.id },
+          data: req
+        })
+      )
+      promises.push(
+        this.prismaService.journeyVisitor.update({
+          where: { journeyId_visitorId: { journeyId, visitorId: visitor.id } },
+          data: { activityCount: journeyVisitor.activityCount + 1 }
+        })
+      )
     }
 
     const [signUpSubmissionEvent] = await Promise.all(promises)
-    return signUpSubmissionEvent
+    return signUpSubmissionEvent as SignUpSubmissionEvent
   }
 }
