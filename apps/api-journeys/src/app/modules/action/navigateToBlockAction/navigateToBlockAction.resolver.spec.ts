@@ -30,6 +30,7 @@ describe('NavigateToBlockActionResolver', () => {
   const navigateToBlockInput = {
     gtmEventName: 'gtmEventName',
     blockId: '4',
+    email: null,
     journeyId: null,
     url: null,
     target: null
