@@ -32,7 +32,9 @@ describe('EmailActionResolver', () => {
     gtmEventName: 'gtmEventName',
     email: 'edmondshen@gmail.com',
     blockId: null,
-    journeyId: null
+    journeyId: null,
+    target: null,
+    url: null
   }
 
   beforeEach(async () => {
