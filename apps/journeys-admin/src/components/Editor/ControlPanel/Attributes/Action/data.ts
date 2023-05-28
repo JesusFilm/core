@@ -161,6 +161,25 @@ export const steps: Array<TreeBlock<StepBlock>> = [
               url: 'https://www.google.com'
             },
             children: []
+          },
+          {
+            __typename: 'ButtonBlock',
+            id: 'button2.id',
+            parentBlockId: 'card1.id',
+            parentOrder: 4,
+            label: 'Contact Us',
+            buttonVariant: ButtonVariant.contained,
+            buttonColor: ButtonColor.primary,
+            size: ButtonSize.large,
+            startIconId: null,
+            endIconId: null,
+            action: {
+              parentBlockId: 'button2.id',
+              __typename: 'EmailAction',
+              gtmEventName: 'gtmEventName',
+              email: 'imissedmondshen@gmail.com'
+            },
+            children: []
           }
         ]
       }

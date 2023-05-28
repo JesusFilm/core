@@ -7,11 +7,11 @@ import TextField from '@mui/material/TextField'
 import { Formik, Form } from 'formik'
 import { object, string } from 'yup'
 import InputAdornment from '@mui/material/InputAdornment'
-// import InsertEmailRoundedIcon from '@mui/icons-material/InsertEmailRounded'
+import DraftsIcon from '@mui/icons-material/Drafts'
 import Box from '@mui/material/Box'
 import { GetJourney_journey_blocks_ButtonBlock as ButtonBlock } from '../../../../../../../__generated__/GetJourney'
 
-export const LINK_ACTION_UPDATE = gql`
+export const EMAIL_ACTION_UPDATE = gql`
   mutation EmailActionUpdate(
     $id: ID!
     $journeyId: ID!
@@ -35,7 +35,7 @@ export function EmailAction(): ReactElement {
     | TreeBlock<ButtonBlock>
     | undefined
 
-  const [emailActionUpdate] = useMutation(LINK_ACTION_UPDATE)
+  const [emailActionUpdate] = useMutation(EMAIL_ACTION_UPDATE)
 
   const emailAction =
     selectedBlock?.action?.__typename === 'EmailAction'
@@ -47,7 +47,9 @@ export function EmailAction(): ReactElement {
   }
 
   const emailActionSchema = object({
-    email: string().required('Required').email('Invalid Email')
+    email: string()
+      .required('Invalid Email')
+      .email('Email must be a valid email')
   })
 
   async function handleSubmit(src: string): Promise<void> {
@@ -94,7 +96,7 @@ export function EmailAction(): ReactElement {
               id="email"
               name="email"
               variant="filled"
-              label="Paste URL here..."
+              label="Paste Email here..."
               fullWidth
               value={values.email}
               error={touched.email === true && Boolean(errors.email)}
@@ -102,13 +104,13 @@ export function EmailAction(): ReactElement {
               InputProps={{
                 startAdornment: (
                   <InputAdornment position="start">
-                    {/* <InsertEmailRoundedIcon /> */}
+                    <DraftsIcon />
                   </InputAdornment>
                 )
               }}
-              onBlur={(e) => {
+              onBlur={async (e) => {
                 handleBlur(e)
-                errors.email == null && handleSubmit(e.target.value)
+                errors.email == null && (await handleSubmit(e.target.value))
               }}
               onChange={handleChange}
             />
