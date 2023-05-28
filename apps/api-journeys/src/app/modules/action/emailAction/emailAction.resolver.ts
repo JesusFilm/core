@@ -67,7 +67,9 @@ export class EmailActionResolver {
           ...input,
           parentBlockId: block.id,
           blockId: null,
-          journeyId: null
+          journeyId: null,
+          url: null,
+          target: null
         }
       }
     )
