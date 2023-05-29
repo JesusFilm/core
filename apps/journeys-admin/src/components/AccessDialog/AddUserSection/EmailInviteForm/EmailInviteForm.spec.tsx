@@ -60,6 +60,25 @@ describe('EmailInviteForm', () => {
     })
   })
 
+  it('should validate when user inputs uppercase strings for email', async () => {
+    const { getByRole, getByText } = render(
+      <SnackbarProvider>
+        <MockedProvider>
+          <EmailInviteForm users={[]} />
+        </MockedProvider>
+      </SnackbarProvider>
+    )
+    const email = getByRole('textbox', { name: 'Email' })
+    fireEvent.change(email, {
+      target: { value: 'Edmondshenwashere@gmail.com' }
+    })
+    fireEvent.click(getByRole('button', { name: 'add user' }))
+    await waitFor(() => {
+      const inlineError = getByText('email must be a lowercase string')
+      expect(inlineError).toBeInTheDocument()
+    })
+  })
+
   it('should validate when email is already exists', async () => {
     const { getByRole, getByText } = render(
       <SnackbarProvider>
