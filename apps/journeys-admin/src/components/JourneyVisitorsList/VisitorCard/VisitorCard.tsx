@@ -36,7 +36,7 @@ export function VisitorCard({ visitorNode, loading }: Props): ReactElement {
               visitorNode?.visitor?.name ??
               `#${visitorNode?.visitorId.slice(-12) as unknown as string}`
             }
-            location={visitorNode?.countryCode}
+            location={visitorNode?.visitor.countryCode}
             source={visitorNode?.visitor.referrer}
             createdAt={visitorNode?.createdAt}
             duration={visitorNode?.duration}

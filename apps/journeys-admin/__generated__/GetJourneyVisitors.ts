@@ -21,6 +21,15 @@ export interface GetJourneyVisitors_visitors_edges_node_visitor {
    */
   status: VisitorStatus | null;
   /**
+   * The country code of the visitor as poulated by visitor ip address detected in
+   * the JourneyViewEventCreate mutation. This field country code is converted
+   * from an IP address by the @maxmind/geoip2-node library. If this field is empty
+   * it is likely that the JourneyViewEventCreate mutation was not called by the
+   * visitor or that the country was not able to be determined based on the
+   * visitor IP address.
+   */
+  countryCode: string | null;
+  /**
    * The url visitor was referred from
    */
   referrer: string | null;
@@ -37,15 +46,6 @@ export interface GetJourneyVisitors_visitors_edges_node_events {
 export interface GetJourneyVisitors_visitors_edges_node {
   __typename: "JourneyVisitor";
   visitorId: string;
-  /**
-   * The country code of the visitor as poulated by visitor ip address detected in
-   * the JourneyViewEventCreate mutation. This field country code is converted
-   * from an IP address by the @maxmind/geoip2-node library. If this field is empty
-   * it is likely that the JourneyViewEventCreate mutation was not called by the
-   * visitor or that the country was not able to be determined based on the
-   * visitor IP address.
-   */
-  countryCode: string | null;
   /**
    * The time when the visitor created their first event on a journey connected
    * to the requested team.

@@ -19,13 +19,13 @@ describe('VisitorCard', () => {
   const visitorNode: VisitorNode = {
     __typename: 'JourneyVisitor',
     visitorId: 'visitor.id-012345678901',
-    countryCode: 'Town, City',
     createdAt: '2021-11-19T12:34:56.647Z',
     duration: 75,
     visitor: {
       __typename: 'Visitor',
       name: 'FirstName LastName',
       status: VisitorStatus.star,
+      countryCode: 'Town, City',
       referrer: 'referrer.com'
     },
     events: [
@@ -71,12 +71,12 @@ describe('VisitorCard', () => {
     const visitorNode: VisitorNode = {
       __typename: 'JourneyVisitor',
       visitorId: 'visitor.id-012345678901',
-      countryCode: 'Town, City',
       createdAt: '2021-11-19T12:34:56.647Z',
       duration: 75,
       visitor: {
         __typename: 'Visitor',
         name: 'FirstName LastName',
+        countryCode: 'Town, City',
         status: VisitorStatus.star,
         referrer: 'referrer.com'
       },
