@@ -135,7 +135,8 @@ export enum ButtonAction {
     NavigateAction = "NavigateAction",
     NavigateToBlockAction = "NavigateToBlockAction",
     NavigateToJourneyAction = "NavigateToJourneyAction",
-    LinkAction = "LinkAction"
+    LinkAction = "LinkAction",
+    EmailAction = "EmailAction"
 }
 
 export enum MessagePlatform {
