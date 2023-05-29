@@ -52,7 +52,7 @@ export default function BackgroundVideo({
     }
   }, [])
 
-  // Set up video listeners and source
+  // Set up video listeners
   useEffect(() => {
     const player = playerRef.current
     if (player != null) {

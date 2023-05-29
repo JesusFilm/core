@@ -51,14 +51,6 @@ const StyledSwiperContainer = styled(Swiper)(({ theme }) => ({
   }
 }))
 
-const StyledSwiperSlide = styled(SwiperSlide)(({ theme }) => ({
-  [theme.breakpoints.up('lg')]: {},
-
-  '&.swiper-slide': {
-    background: theme.palette.grey[900]
-  }
-}))
-
 const LeftNavigationContainer = styled(Box)`
   /* @noflip */
   left: 0;
@@ -208,7 +200,7 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
             allowTouchMove={false}
           >
             {treeBlocks.map((block) => (
-              <SwiperSlide key={block.id} className="swiper-slide">
+              <SwiperSlide key={block.id}>
                 <Fade
                   in={activeBlock?.id === block.id}
                   mountOnEnter

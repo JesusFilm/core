@@ -1,5 +1,4 @@
 import { render } from '@testing-library/react'
-import { MockedProvider } from '@apollo/client/testing'
 import type { TreeBlock } from '../../../libs/block'
 import { ImageFields } from '../../Image/__generated__/ImageFields'
 import { VideoFields } from '../../Video/__generated__/VideoFields'
@@ -114,21 +113,19 @@ describe('ContainedCover', () => {
     expect(imageCover).toHaveStyle(`background-image: url(${blurUrl})`)
   })
 
-  it('should render background video with custom poster image', async () => {
+  it('should render background video with custom poster image', () => {
     const { getByTestId, getByRole } = render(
-      <MockedProvider>
-        <ContainedCover
-          backgroundColor="#DDD"
-          backgroundBlur={blurUrl}
-          videoBlock={{
-            ...videoBlock,
-            children: [imageBlock],
-            posterBlockId: imageBlock.id
-          }}
-        >
-          {children}
-        </ContainedCover>
-      </MockedProvider>
+      <ContainedCover
+        backgroundColor="#DDD"
+        backgroundBlur={blurUrl}
+        videoBlock={{
+          ...videoBlock,
+          children: [imageBlock],
+          posterBlockId: imageBlock.id
+        }}
+      >
+        {children}
+      </ContainedCover>
     )
 
     const source = getByRole('region', { name: 'Video Player' }).querySelector(
