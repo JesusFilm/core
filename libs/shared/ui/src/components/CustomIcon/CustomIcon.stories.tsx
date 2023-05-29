@@ -84,20 +84,14 @@ const Template: Story<ComponentProps<typeof CustomIcon>> = ({ ...args }) => {
             sx={{ pb: 2, width: '320px' }}
           >
             <Typography variant="body2">
-              {<CustomIcon variant={args.variant} name={name} /> != null
-                ? name
-                : null}
+              {<CustomIcon name={name} /> != null ? name : null}
             </Typography>
             {/* Use to test loading state locally */}
             {/* <CircularProgress size="16px" /> */}
-            <CustomIcon variant={args.variant} name={name} fontSize="small" />
-            <CustomIcon variant={args.variant} name={name} />
-            <CustomIcon variant={args.variant} name={name} fontSize="large" />
-            <CustomIcon
-              variant={args.variant}
-              name={name}
-              sx={{ fontSize: '48px', ml: -1 }}
-            />
+            <CustomIcon name={name} fontSize="small" />
+            <CustomIcon name={name} />
+            <CustomIcon name={name} fontSize="large" />
+            <CustomIcon name={name} sx={{ fontSize: '48px', ml: -1 }} />
           </Stack>
           <Stack direction="row" gap={2} alignItems="center">
             {[
@@ -109,11 +103,7 @@ const Template: Story<ComponentProps<typeof CustomIcon>> = ({ ...args }) => {
               'action',
               'disabled'
             ].map((color) => (
-              <CustomIcon
-                variant={args.variant}
-                name={name}
-                color={color as Color}
-              />
+              <CustomIcon name={name} color={color as Color} />
             ))}
           </Stack>
         </Stack>
@@ -123,8 +113,5 @@ const Template: Story<ComponentProps<typeof CustomIcon>> = ({ ...args }) => {
 }
 
 export const Outlined = Template.bind({})
-Outlined.args = {
-  variant: 'outlined'
-}
 
 export default CustomIconsDemo as Meta
