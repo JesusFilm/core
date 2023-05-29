@@ -106,7 +106,9 @@ async function main(): Promise<void> {
   await nua9()
   await onboarding()
   await onboardingTemplates()
-  await psMigrate()
+
+  // commented out until future migration
+  // await psMigrate()
 
   // this should be removed when the UI can support team management
   await jfpTeam()
