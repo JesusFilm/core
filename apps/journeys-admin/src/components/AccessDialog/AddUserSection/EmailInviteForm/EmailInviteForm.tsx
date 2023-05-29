@@ -81,7 +81,6 @@ export function EmailInviteForm({ users }: EmailInviteFormProps): ReactElement {
 
   const validationSchema = object().shape({
     email: string()
-      .strict()
       .lowercase()
       .email(t('Please enter a valid email address'))
       .required(t('Required'))
