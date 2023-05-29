@@ -162,8 +162,8 @@ export function ContainedCover({
               flexGrow: 1,
               zIndex: { xs: 2, lg: 0 },
               position: { xs: 'relative', lg: 'absolute' },
-              WebkitMask: overlayImageMask,
-              mask: overlayImageMask
+              WebkitMask: { xs: overlayImageMask, lg: 'unset' },
+              mask: { xs: overlayImageMask, lg: 'unset' }
             }}
           >
             <NextImage
