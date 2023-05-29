@@ -4,9 +4,9 @@ import videojs from 'video.js'
 import {
   VideoBlockObjectFit,
   VideoBlockSource
-} from '../../../../__generated__/globalTypes'
-import { TreeBlock } from '../../../libs/block'
-import { VideoFields } from '../../Video/__generated__/VideoFields'
+} from '../../../../../__generated__/globalTypes'
+import { TreeBlock } from '../../../../libs/block'
+import { VideoFields } from '../../../Video/__generated__/VideoFields'
 
 interface BackgroundVideoProps extends TreeBlock<VideoFields> {
   setLoading: (loading: boolean) => void
