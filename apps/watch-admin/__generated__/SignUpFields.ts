@@ -46,7 +46,14 @@ export interface SignUpFields_action_LinkAction {
   url: string;
 }
 
-export type SignUpFields_action = SignUpFields_action_NavigateAction | SignUpFields_action_NavigateToBlockAction | SignUpFields_action_NavigateToJourneyAction | SignUpFields_action_LinkAction;
+export interface SignUpFields_action_EmailAction {
+  __typename: "EmailAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  email: string;
+}
+
+export type SignUpFields_action = SignUpFields_action_NavigateAction | SignUpFields_action_NavigateToBlockAction | SignUpFields_action_NavigateToJourneyAction | SignUpFields_action_LinkAction | SignUpFields_action_EmailAction;
 
 export interface SignUpFields {
   __typename: "SignUpBlock";

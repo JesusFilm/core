@@ -63,7 +63,14 @@ export interface SignUpBlockCreate_signUpBlockUpdate_action_LinkAction {
   url: string;
 }
 
-export type SignUpBlockCreate_signUpBlockUpdate_action = SignUpBlockCreate_signUpBlockUpdate_action_NavigateAction | SignUpBlockCreate_signUpBlockUpdate_action_NavigateToBlockAction | SignUpBlockCreate_signUpBlockUpdate_action_NavigateToJourneyAction | SignUpBlockCreate_signUpBlockUpdate_action_LinkAction;
+export interface SignUpBlockCreate_signUpBlockUpdate_action_EmailAction {
+  __typename: "EmailAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  email: string;
+}
+
+export type SignUpBlockCreate_signUpBlockUpdate_action = SignUpBlockCreate_signUpBlockUpdate_action_NavigateAction | SignUpBlockCreate_signUpBlockUpdate_action_NavigateToBlockAction | SignUpBlockCreate_signUpBlockUpdate_action_NavigateToJourneyAction | SignUpBlockCreate_signUpBlockUpdate_action_LinkAction | SignUpBlockCreate_signUpBlockUpdate_action_EmailAction;
 
 export interface SignUpBlockCreate_signUpBlockUpdate {
   __typename: "SignUpBlock";

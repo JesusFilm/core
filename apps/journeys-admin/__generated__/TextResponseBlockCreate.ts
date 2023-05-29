@@ -48,7 +48,14 @@ export interface TextResponseBlockCreate_textResponseBlockCreate_action_LinkActi
   url: string;
 }
 
-export type TextResponseBlockCreate_textResponseBlockCreate_action = TextResponseBlockCreate_textResponseBlockCreate_action_NavigateAction | TextResponseBlockCreate_textResponseBlockCreate_action_NavigateToBlockAction | TextResponseBlockCreate_textResponseBlockCreate_action_NavigateToJourneyAction | TextResponseBlockCreate_textResponseBlockCreate_action_LinkAction;
+export interface TextResponseBlockCreate_textResponseBlockCreate_action_EmailAction {
+  __typename: "EmailAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  email: string;
+}
+
+export type TextResponseBlockCreate_textResponseBlockCreate_action = TextResponseBlockCreate_textResponseBlockCreate_action_NavigateAction | TextResponseBlockCreate_textResponseBlockCreate_action_NavigateToBlockAction | TextResponseBlockCreate_textResponseBlockCreate_action_NavigateToJourneyAction | TextResponseBlockCreate_textResponseBlockCreate_action_LinkAction | TextResponseBlockCreate_textResponseBlockCreate_action_EmailAction;
 
 export interface TextResponseBlockCreate_textResponseBlockCreate {
   __typename: "TextResponseBlock";
@@ -112,7 +119,14 @@ export interface TextResponseBlockCreate_textResponseBlockUpdate_action_LinkActi
   url: string;
 }
 
-export type TextResponseBlockCreate_textResponseBlockUpdate_action = TextResponseBlockCreate_textResponseBlockUpdate_action_NavigateAction | TextResponseBlockCreate_textResponseBlockUpdate_action_NavigateToBlockAction | TextResponseBlockCreate_textResponseBlockUpdate_action_NavigateToJourneyAction | TextResponseBlockCreate_textResponseBlockUpdate_action_LinkAction;
+export interface TextResponseBlockCreate_textResponseBlockUpdate_action_EmailAction {
+  __typename: "EmailAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  email: string;
+}
+
+export type TextResponseBlockCreate_textResponseBlockUpdate_action = TextResponseBlockCreate_textResponseBlockUpdate_action_NavigateAction | TextResponseBlockCreate_textResponseBlockUpdate_action_NavigateToBlockAction | TextResponseBlockCreate_textResponseBlockUpdate_action_NavigateToJourneyAction | TextResponseBlockCreate_textResponseBlockUpdate_action_LinkAction | TextResponseBlockCreate_textResponseBlockUpdate_action_EmailAction;
 
 export interface TextResponseBlockCreate_textResponseBlockUpdate {
   __typename: "TextResponseBlock";
