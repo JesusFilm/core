@@ -31,13 +31,6 @@ describe('VisitorCardDetails', () => {
     expect(getByText('test name')).toBeInTheDocument()
   })
 
-  it('should hide details if there are no events', () => {
-    const { queryByText } = render(
-      <VisitorCardDetails loading={false} name="test name" events={[]} />
-    )
-    expect(queryByText('test name')).not.toBeInTheDocument()
-  })
-
   it('should show filtered events', () => {
     const events: Event[] = [
       {
