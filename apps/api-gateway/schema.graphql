@@ -50,6 +50,7 @@ enum ButtonAction
   NavigateToBlockAction @join__enumValue(graph: JOURNEYS)
   NavigateToJourneyAction @join__enumValue(graph: JOURNEYS)
   LinkAction @join__enumValue(graph: JOURNEYS)
+  EmailAction @join__enumValue(graph: JOURNEYS)
 }
 
 type ButtonBlock implements Block
