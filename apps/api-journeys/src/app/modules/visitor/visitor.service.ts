@@ -77,7 +77,7 @@ export class VisitorService {
       visitor = await this.prismaService.visitor.create({
         data: {
           id,
-          teamId: journey.teamId,
+          teamId: 'jfp-team',
           userId,
           createdAt
         }
