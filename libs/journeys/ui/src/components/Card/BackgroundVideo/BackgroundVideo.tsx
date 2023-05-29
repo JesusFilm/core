@@ -1,4 +1,4 @@
-import { ReactElement, useRef, useEffect, useMemo, CSSProperties } from 'react'
+import { ReactElement, useRef, useEffect, CSSProperties } from 'react'
 import { styled } from '@mui/material/styles'
 import videojs from 'video.js'
 import {
@@ -29,34 +29,6 @@ export default function BackgroundVideo({
 
   const isYouTube = source === VideoBlockSource.youTube
 
-  const videoSrc = useMemo(() => {
-    switch (source) {
-      case VideoBlockSource.internal:
-        return {
-          src: video?.variant?.hls ?? '',
-          type: 'application/x-mpegURL'
-        }
-      case VideoBlockSource.youTube:
-        return {
-          src: `https://www.youtube.com/embed/${videoId ?? ''}?start=${
-            startAt ?? 0
-          }&end=${endAt ?? 0}`,
-          type: 'video/youtube'
-        }
-
-      case VideoBlockSource.cloudflare:
-        return {
-          src: `https://customer-${
-            process.env.NEXT_PUBLIC_CLOUDFLARE_STREAM_CUSTOMER_CODE ?? ''
-          }.cloudflarestream.com/${videoId ?? ''}/manifest/video.m3u8`,
-          type: 'application/x-mpegURL'
-        }
-
-      default:
-        return ''
-    }
-  }, [source, startAt, endAt, videoId, video?.variant])
-
   // Initiate Video
   useEffect(() => {
     if (videoRef.current != null) {
@@ -77,9 +49,8 @@ export default function BackgroundVideo({
         responsive: true
         // Don't use poster prop as image isn't optimised
       })
-      playerRef.current.src(videoSrc)
     }
-  }, [videoSrc])
+  }, [])
 
   // Set up video listeners and source
   useEffect(() => {
@@ -161,6 +132,26 @@ export default function BackgroundVideo({
         },
         pointerEvents: 'none'
       }}
-    />
+    >
+      {source === VideoBlockSource.cloudflare && videoId != null && (
+        <source
+          src={`https://customer-${
+            process.env.NEXT_PUBLIC_CLOUDFLARE_STREAM_CUSTOMER_CODE ?? ''
+          }.cloudflarestream.com/${videoId ?? ''}/manifest/video.m3u8`}
+          type="application/x-mpegURL"
+        />
+      )}
+      {source === VideoBlockSource.internal && video?.variant?.hls != null && (
+        <source src={video.variant.hls} type="application/x-mpegURL" />
+      )}
+      {source === VideoBlockSource.youTube && videoId != null && (
+        <source
+          src={`https://www.youtube.com/embed/${videoId}?start=${
+            startAt ?? 0
+          }&end=${endAt ?? 0}`}
+          type="video/youtube"
+        />
+      )}
+    </StyledVideo>
   )
 }

@@ -1,4 +1,5 @@
 import { render } from '@testing-library/react'
+import { MockedProvider } from '@apollo/client/testing'
 import type { TreeBlock } from '../../../libs/block'
 import { ImageFields } from '../../Image/__generated__/ImageFields'
 import { VideoFields } from '../../Video/__generated__/VideoFields'
@@ -114,30 +115,30 @@ describe('ContainedCover', () => {
   })
 
   it('should render background video with custom poster image', async () => {
-    const { getByTestId } = render(
-      <ContainedCover
-        backgroundColor="#DDD"
-        backgroundBlur={blurUrl}
-        videoBlock={{
-          ...videoBlock,
-          children: [imageBlock],
-          posterBlockId: imageBlock.id
-        }}
-      >
-        {children}
-      </ContainedCover>
+    const { getByTestId, getByRole } = render(
+      <MockedProvider>
+        <ContainedCover
+          backgroundColor="#DDD"
+          backgroundBlur={blurUrl}
+          videoBlock={{
+            ...videoBlock,
+            children: [imageBlock],
+            posterBlockId: imageBlock.id
+          }}
+        >
+          {children}
+        </ContainedCover>
+      </MockedProvider>
     )
 
-    // await waitFor(() => {
-    //   expect(getByRole('region', { name: 'Video Player' })).toHaveAttribute(
-    //     'src',
-    //     'https://arc.gt/hls/2_0-FallingPlates/529'
-    //   )
-    //   expect(getByRole('region', { name: 'Video Player' })).toHaveAttribute(
-    //     'type',
-    //     'application/x-mpegURL'
-    //   )
-    // })
+    const source = getByRole('region', { name: 'Video Player' }).querySelector(
+      '.vjs-tech source'
+    )
+    expect(source).toHaveAttribute(
+      'src',
+      'https://arc.gt/hls/2_0-FallingPlates/529'
+    )
+    expect(source).toHaveAttribute('type', 'application/x-mpegURL')
 
     const posterImage = getByTestId('video-poster-image')
 
@@ -146,15 +147,24 @@ describe('ContainedCover', () => {
   })
 
   it('should render background video with video.image', () => {
-    const { getByTestId } = render(
+    const { getByTestId, getByRole } = render(
       <ContainedCover
         backgroundColor="#DDD"
         backgroundBlur={blurUrl}
-        videoBlock={{ ...videoBlock }}
+        videoBlock={{ ...videoBlock, source: VideoBlockSource.cloudflare }}
       >
         {children}
       </ContainedCover>
     )
+
+    const source = getByRole('region', { name: 'Video Player' }).querySelector(
+      '.vjs-tech source'
+    )
+    expect(source).toHaveAttribute(
+      'src',
+      'https://customer-.cloudflarestream.com/2_0-FallingPlates/manifest/video.m3u8'
+    )
+    expect(source).toHaveAttribute('type', 'application/x-mpegURL')
 
     const posterImage = getByTestId('video-poster-image')
 
@@ -163,7 +173,7 @@ describe('ContainedCover', () => {
   })
 
   it('should render background video with default youtube thumbnail image', () => {
-    const { getByTestId } = render(
+    const { getByTestId, getByRole } = render(
       <ContainedCover
         backgroundColor="#DDD"
         backgroundBlur={blurUrl}
@@ -176,6 +186,15 @@ describe('ContainedCover', () => {
         {children}
       </ContainedCover>
     )
+
+    const source = getByRole('region', {
+      name: 'Video Player'
+    }).querySelector('.vjs-tech source')
+    expect(source).toHaveAttribute(
+      'src',
+      'https://www.youtube.com/embed/2_0-FallingPlates?start=0&end=0'
+    )
+    expect(source).toHaveAttribute('type', 'video/youtube')
 
     const posterImage = getByTestId('video-poster-image')
 
