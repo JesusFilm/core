@@ -8,6 +8,7 @@ import { NavigateToJourneyActionResolver } from './navigateToJourney/navigateToJ
 import { NavigateToBlockActionResolver } from './navigateToBlockAction/navigateToBlockAction.resolver'
 import { LinkActionResolver } from './linkAction/linkAction.resolver'
 import { NavigateActionResolver } from './navigateAction/navigateAction.resolver'
+import { EmailActionResolver } from './emailAction/emailAction.resolver'
 
 @Module({
   imports: [DatabaseModule],
@@ -17,6 +18,7 @@ import { NavigateActionResolver } from './navigateAction/navigateAction.resolver
     DateTimeScalar,
     JourneyService,
     LinkActionResolver,
+    EmailActionResolver,
     NavigateActionResolver,
     NavigateToBlockActionResolver,
     NavigateToJourneyActionResolver
