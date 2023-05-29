@@ -48,7 +48,14 @@ export interface ButtonFields_action_LinkAction {
   url: string;
 }
 
-export type ButtonFields_action = ButtonFields_action_NavigateAction | ButtonFields_action_NavigateToBlockAction | ButtonFields_action_NavigateToJourneyAction | ButtonFields_action_LinkAction;
+export interface ButtonFields_action_EmailAction {
+  __typename: "EmailAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  email: string;
+}
+
+export type ButtonFields_action = ButtonFields_action_NavigateAction | ButtonFields_action_NavigateToBlockAction | ButtonFields_action_NavigateToJourneyAction | ButtonFields_action_LinkAction | ButtonFields_action_EmailAction;
 
 export interface ButtonFields {
   __typename: "ButtonBlock";
