@@ -9,7 +9,7 @@ import { nua9 } from './seeds/nua9'
 import { jfpTeam } from './seeds/jfpTeam'
 import { onboarding } from './seeds/onboarding'
 import { onboardingTemplates } from './seeds/onboardingTemplates'
-import { psMigrate } from './seeds/psMigrate'
+// import { psMigrate } from './seeds/psMigrate'
 
 const db = ArangoDB()
 
