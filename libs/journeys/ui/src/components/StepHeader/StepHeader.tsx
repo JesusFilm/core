@@ -18,9 +18,9 @@ interface StepHeaderProps {
   block: TreeBlock
 }
 
-export default function StepHeader({ block }: StepHeaderProps): ReactElement {
+export function StepHeader({ block }: StepHeaderProps): ReactElement {
   const { journey, admin } = useJourney()
-  const { t } = useTranslation('apps-journeys')
+  const { t } = useTranslation('libs-journeys-ui')
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
   const open = Boolean(anchorEl)
 

@@ -1,7 +1,7 @@
 import { fireEvent, render } from '@testing-library/react'
 import { TreeBlock } from '../../libs/block'
 import { StepFields } from '../Step/__generated__/StepFields'
-import StepHeader from './StepHeader'
+import { StepHeader } from './StepHeader'
 
 const block: TreeBlock<StepFields> = {
   __typename: 'StepBlock',

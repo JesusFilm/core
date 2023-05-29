@@ -1,6 +1,4 @@
 {
-  "Report this content": "Report this content",
-  "Terms & Conditions": "Terms & Conditions",
-  "Privacy Policy": "Privacy Policy",
-  "NextSteps © {{year}}": "NextSteps © {{year}}"
+  "%s | Next Steps": "%s | Next Steps",
+  "Next Steps": "Next Steps"
 }

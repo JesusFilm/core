@@ -6,6 +6,10 @@
   "Name": "Name",
   "Email": "Email",
   "Submit": "Submit",
+  "Report this content": "Report this content",
+  "Terms & Conditions": "Terms & Conditions",
+  "Privacy Policy": "Privacy Policy",
+  "NextSteps © {{year}}": "NextSteps © {{year}}",
   "Untitled": "Untitled",
   "Step {{number}}": "Step {{number}}"
 }

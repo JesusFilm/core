@@ -6,7 +6,7 @@ import { Theme } from '@mui/material/styles'
 import Fade from '@mui/material/Fade'
 import { ReactElement, useEffect, useState } from 'react'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
-import StepHeader from '@core/journeys/ui/StepHeader'
+import { StepHeader } from '@core/journeys/ui/StepHeader'
 import { BlockRenderer } from '@core/journeys/ui/BlockRenderer'
 import {
   useEditor,
@@ -72,7 +72,6 @@ export function Canvas(): ReactElement {
     <Box
       sx={{
         backgroundColor: (theme) => theme.palette.background.paper,
-        paddingY: 3,
         '& .swiper-container': {
           paddingX: 6
         },
@@ -140,8 +139,8 @@ export function Canvas(): ReactElement {
                   outlineOffset: 4,
                   transform:
                     step.id === selectedStep?.id
-                      ? 'scale(0.95)'
-                      : 'scaleY(0.9)',
+                      ? { xs: 'scale(0.9)', lg: 'scale(1)' }
+                      : { xs: 'scale(0.8)', lg: 'scale(0.9)' },
                   height: 640
                 }}
               >

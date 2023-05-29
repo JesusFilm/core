@@ -15,7 +15,7 @@ import ChevronLeftIcon from '@mui/icons-material/ChevronLeft'
 import ChevronRightIcon from '@mui/icons-material/ChevronRight'
 import { gql, useMutation } from '@apollo/client'
 import { getJourneyRTL } from '@core/journeys/ui/rtl'
-import StepHeader from '@core/journeys/ui/StepHeader'
+import { StepHeader } from '@core/journeys/ui/StepHeader'
 // Used to resolve dynamic viewport height on Safari
 import Div100vh from 'react-div-100vh'
 import { v4 as uuidv4 } from 'uuid'
