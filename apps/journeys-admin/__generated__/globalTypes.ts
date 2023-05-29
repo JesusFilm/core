@@ -8,6 +8,7 @@
 //==============================================================
 
 export enum ButtonAction {
+  EmailAction = "EmailAction",
   LinkAction = "LinkAction",
   NavigateAction = "NavigateAction",
   NavigateToBlockAction = "NavigateToBlockAction",
@@ -228,6 +229,11 @@ export interface ChatOpenEventCreateInput {
   blockId: string;
   stepId?: string | null;
   value?: MessagePlatform | null;
+}
+
+export interface EmailActionInput {
+  gtmEventName?: string | null;
+  email: string;
 }
 
 export interface IconBlockCreateInput {
