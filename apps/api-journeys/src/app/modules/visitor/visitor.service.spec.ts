@@ -12,8 +12,7 @@ jest.mock('uuid', () => ({
 const mockUuidv4 = uuidv4 as jest.MockedFunction<typeof uuidv4>
 
 const journey = {
-  id: 'journey.id',
-  teamId: 'team.id'
+  id: 'journey.id'
 }
 
 const journeyVisitor = {
@@ -123,6 +122,7 @@ describe('VisitorService', () => {
         data: {
           ...visitor,
           id: 'newVisitor.id',
+          teamId: 'jfp-team',
           createdAt: new Date()
         }
       })
