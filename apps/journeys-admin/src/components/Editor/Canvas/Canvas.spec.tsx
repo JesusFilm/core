@@ -93,9 +93,10 @@ describe('Canvas', () => {
       </MockedProvider>
     )
 
-    expect(getByTestId('step-step0.id')).toHaveStyle(
-      'border: 2px solid #c52d3a'
-    )
+    expect(getByTestId('step-step0.id')).toHaveStyle({
+      outline: '2px solid #C52D3A',
+      'outline-offset': '4px'
+    })
   })
 
   it('should dispatch on click', () => {

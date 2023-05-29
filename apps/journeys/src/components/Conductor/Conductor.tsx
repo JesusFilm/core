@@ -37,28 +37,10 @@ export const JOURNEY_VIEW_EVENT_CREATE = gql`
 `
 
 const StyledSwiperContainer = styled(Swiper)(({ theme }) => ({
-  width: '100%',
-  height: '100%',
-  [theme.breakpoints.up('lg')]: {
-    height: 'auto'
-  },
-  '.swiper-wrapper': {
-    height: '100%',
-    [theme.breakpoints.up('lg')]: {
-      // 16:9 aspect ratio
-      height: '56.25vw',
-      paddingTop: '30px',
-      maxHeight: 'calc(100vh - 160px) '
-    }
-  },
-  '.swiper-pagination.swiper-pagination-horizontal': {
-    position: 'absolute',
+  background: theme.palette.grey[900],
+  '.swiper-pagination': {
     height: 16,
-    width: 100,
-    top: 16,
-    [theme.breakpoints.up('lg')]: {
-      top: 44
-    }
+    top: 16
   },
   '.swiper-pagination-bullet': {
     background: theme.palette.common.white,
@@ -70,6 +52,8 @@ const StyledSwiperContainer = styled(Swiper)(({ theme }) => ({
 }))
 
 const StyledSwiperSlide = styled(SwiperSlide)(({ theme }) => ({
+  [theme.breakpoints.up('lg')]: {},
+
   '&.swiper-slide': {
     background: theme.palette.grey[900]
   }
@@ -202,45 +186,52 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
   }
 
   return (
-    <Div100vh>
+    <Div100vh style={{ overflow: 'hidden' }}>
       <Stack
         sx={{
           justifyContent: 'center',
-          background: theme.palette.grey[900],
-          height: '100%'
+          height: '100%',
+          background: theme.palette.grey[900]
         }}
       >
-        <StyledSwiperContainer
-          dir={!rtl ? 'ltr' : 'rtl'}
-          pagination={{ dynamicBullets: true }}
-          slidesPerView="auto"
-          centeredSlides
-          centeredSlidesBounds
-          onSwiper={(swiper) => setSwiper(swiper)}
-          onSlideChangeTransitionStart={() => setSlideTransitioning(true)}
-          onSlideChangeTransitionEnd={() => setSlideTransitioning(false)}
-          allowTouchMove={false}
-        >
-          {treeBlocks.map((block) => (
-            <StyledSwiperSlide key={block.id}>
-              <Fade
-                in={activeBlock?.id === block.id}
-                mountOnEnter
-                unmountOnExit
-              >
-                <Stack
-                  justifyContent="center"
-                  sx={{ height: '100%', px: { lg: 6 } }}
+        <Box>
+          <StyledSwiperContainer
+            dir={!rtl ? 'ltr' : 'rtl'}
+            pagination={{ dynamicBullets: true }}
+            slidesPerView="auto"
+            centeredSlides
+            centeredSlidesBounds
+            resizeObserver
+            onSwiper={(swiper) => setSwiper(swiper)}
+            onSlideChangeTransitionStart={() => setSlideTransitioning(true)}
+            onSlideChangeTransitionEnd={() => setSlideTransitioning(false)}
+            allowTouchMove={false}
+          >
+            {treeBlocks.map((block) => (
+              <SwiperSlide key={block.id} className="swiper-slide">
+                <Fade
+                  in={activeBlock?.id === block.id}
+                  mountOnEnter
+                  unmountOnExit
                 >
-                  <StepHeader block={block} />
-                  <BlockRenderer block={block} />
-                </Stack>
-              </Fade>
-            </StyledSwiperSlide>
-          ))}
-          {showLeftButton && <Navigation variant="Left" />}
-          {showRightButton && <Navigation variant="Right" />}
-        </StyledSwiperContainer>
+                  <Stack
+                    justifyContent="center"
+                    sx={{
+                      maxHeight: { xs: '100vh', lg: 'calc(100vh - 160px)' },
+                      height: { xs: '100vh', lg: '56.25vw' },
+                      px: { lg: 6 }
+                    }}
+                  >
+                    <StepHeader block={block} />
+                    <BlockRenderer block={block} />
+                  </Stack>
+                </Fade>
+              </SwiperSlide>
+            ))}
+            {showLeftButton && <Navigation variant="Left" />}
+            {showRightButton && <Navigation variant="Right" />}
+          </StyledSwiperContainer>
+        </Box>
       </Stack>
     </Div100vh>
   )
