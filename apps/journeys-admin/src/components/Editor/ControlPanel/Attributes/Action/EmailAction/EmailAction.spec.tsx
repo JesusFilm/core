@@ -5,7 +5,8 @@ import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { InMemoryCache } from '@apollo/client'
 import { steps } from '../data'
 import { GetJourney_journey as Journey } from '../../../../../../../__generated__/GetJourney'
-import { EmailAction, EMAIL_ACTION_UPDATE } from './EmailAction'
+import { EMAIL_ACTION_UPDATE } from './EmailAction'
+import { EmailAction } from '.'
 
 describe('EmailAction', () => {
   const selectedBlock = steps[1].children[0].children[4]
@@ -107,5 +108,23 @@ describe('EmailAction', () => {
     })
     fireEvent.blur(getByRole('textbox'))
     await waitFor(() => expect(getByText('Invalid Email')).toBeInTheDocument())
+  })
+
+  it('should validate on incorrect email format', async () => {
+    const { getByText, getByRole } = render(
+      <MockedProvider>
+        <EditorProvider>
+          <EmailAction />
+        </EditorProvider>
+      </MockedProvider>
+    )
+
+    fireEvent.change(getByRole('textbox'), {
+      target: { value: 'edmondshen-atgmail.com' }
+    })
+    fireEvent.blur(getByRole('textbox'))
+    await waitFor(() =>
+      expect(getByText('Email must be a valid email')).toBeInTheDocument()
+    )
   })
 })

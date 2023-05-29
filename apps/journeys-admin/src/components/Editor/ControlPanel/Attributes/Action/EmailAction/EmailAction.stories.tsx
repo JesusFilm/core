@@ -6,7 +6,7 @@ import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
 import { simpleComponentConfig } from '../../../../../../libs/storybook'
 import { steps } from '../data'
-import { EmailAction } from './EmailAction'
+import { EmailAction } from '.'
 
 const EmailActionStory = {
   ...simpleComponentConfig,

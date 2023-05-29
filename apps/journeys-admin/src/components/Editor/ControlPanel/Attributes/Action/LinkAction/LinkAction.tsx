@@ -47,9 +47,8 @@ export function LinkAction(): ReactElement {
 
   // check for valid URL
   function checkURL(value?: string): boolean {
-    let urlInspect = value ?? ''
-
     const protocol = /^\w+:\/\//
+    let urlInspect = value ?? ''
     if (!protocol.test(urlInspect)) {
       if (/^mailto:/.test(urlInspect)) return false
       urlInspect = 'https://' + urlInspect
@@ -70,7 +69,6 @@ export function LinkAction(): ReactElement {
   async function handleSubmit(src: string): Promise<void> {
     // checks if url has a protocol
     const url = /^\w+:\/\//.test(src) ? src : `https://${src}`
-
     if (selectedBlock != null && journey != null) {
       const { id, __typename: typeName } = selectedBlock
       await linkActionUpdate({
