@@ -18,12 +18,12 @@ Default.args = {
   visitorNode: {
     __typename: 'JourneyVisitor',
     visitorId: 'visitor.id-012345678901',
-    countryCode: null,
     createdAt: '2021-11-19T12:34:56.647Z',
     duration: 5,
     visitor: {
       __typename: 'Visitor',
       name: null,
+      countryCode: null,
       status: null,
       referrer: null
     },
@@ -37,12 +37,12 @@ Complete.args = {
   visitorNode: {
     __typename: 'JourneyVisitor',
     visitorId: 'visitor.id',
-    countryCode: 'Town, City',
     createdAt: '2021-11-19T12:34:56.647Z',
     duration: 75,
     visitor: {
       __typename: 'Visitor',
       name: 'John Doe',
+      countryCode: 'Town, City',
       status: VisitorStatus.star,
       referrer: 'referrer.com'
     },

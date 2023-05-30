@@ -50,12 +50,12 @@ export const GET_JOURNEY_VISITORS = gql`
         cursor
         node {
           visitorId
-          countryCode
           createdAt
           duration
           visitor {
             name
             status
+            countryCode
             referrer
           }
           events {
