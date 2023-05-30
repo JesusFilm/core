@@ -37,7 +37,7 @@ export function handleAction(
       }
       break
     case 'EmailAction':
-      window.open(`mailto:${action.email}`, '_blank')
+      window.open(`${action.email}`, '_blank')
       break
   }
 }
