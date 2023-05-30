@@ -35,7 +35,7 @@ export function VisitorToolbar({
   }
 
   return (
-    <Box sx={{ display: { xs: 'block', sm: 'none' } }}>
+    <Box sx={{ display: { sm: 'block', md: 'none' } }}>
       <IconButton>
         <FilterListRoundedIcon onClick={handleOpen} />
       </IconButton>

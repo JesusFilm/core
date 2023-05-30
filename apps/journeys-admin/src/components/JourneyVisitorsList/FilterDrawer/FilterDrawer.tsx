@@ -38,7 +38,7 @@ export function FilterDrawer({
 }: Props): ReactElement {
   return (
     <Box sx={{ height: '100vh' }}>
-      <Box sx={{ display: { xs: 'block', sm: 'none' } }}>
+      <Box sx={{ display: { sm: 'block', md: 'none' } }}>
         <Stack direction="row" sx={{ px: 6, py: 2 }} alignItems="center">
           <Typography variant="subtitle1">
             Filters <ClearAllButton handleClearAll={handleClearAll} />
