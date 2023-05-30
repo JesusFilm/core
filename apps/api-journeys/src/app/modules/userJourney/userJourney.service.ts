@@ -101,16 +101,18 @@ export class UserJourneyService extends BaseService<UserJourneyRecord> {
     const journey = await this.journeyService.get(userJourney.journeyId)
 
     if (journey.teamId != null) {
-      const existingMember = this.memberService.getMemberByTeamId(
-        userId,
+      const existingMember = await this.memberService.getMemberByTeamId(
+        userJourney.userId,
         journey.teamId
       )
 
       if (existingMember == null) {
         await this.memberService.save(
           {
-            id: `${userId}:${(journey as { teamId: string }).teamId}`,
-            userId,
+            id: `${userJourney.userId}:${
+              (journey as { teamId: string }).teamId
+            }`,
+            userId: userJourney.userId,
             teamId: journey.teamId
           },
           { overwriteMode: 'ignore' }
