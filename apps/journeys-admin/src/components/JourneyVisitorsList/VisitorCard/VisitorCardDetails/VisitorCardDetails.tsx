@@ -8,7 +8,7 @@ import Skeleton from '@mui/material/Skeleton'
 import { GetJourneyVisitors_visitors_edges_node_events as Event } from '../../../../../__generated__/GetJourneyVisitors'
 
 interface Props {
-  name?: string
+  name?: string | null
   events: Event[]
   loading: boolean
 }
@@ -31,38 +31,53 @@ export function VisitorCardDetails({
   )
 
   return (
-    <>
-      <Box sx={{ pt: 3, pl: { xs: '9px', sm: 9 } }}>
-        <DetailsRow label={t('Name')} value={name} loading={loading} />
-      </Box>
+    <Box
+      sx={{
+        pl: { xs: '9px', sm: 9 },
+        pt: filteredEvents.length > 0 || loading ? 3 : 0
+      }}
+    >
+      {loading ? (
+        <>
+          {[0, 1].map((i) => (
+            <DetailsRow
+              key={i}
+              label={i as unknown as string}
+              loading={loading}
+            />
+          ))}
+        </>
+      ) : (
+        <>
+          {name != null && (
+            <DetailsRow label={t('Name')} value={name} loading={loading} />
+          )}
 
-      {filteredEvents.map((event) => {
-        if (event.__typename === 'ChatOpenEvent') {
-          return (
-            <Box sx={{ pl: { xs: '9px', sm: 9 } }}>
-              <DetailsRow
-                key={event.id}
-                label={t('Chat Started')}
-                value={format(parseISO(event.createdAt), 'h:mmaaa')}
-                chatEvent
-                loading={loading}
-              />
-            </Box>
-          )
-        } else {
-          return (
-            <Box sx={{ pl: { xs: '9px', sm: 9 } }}>
-              <DetailsRow
-                key={event.id}
-                label={event.label}
-                value={event.value}
-                loading={loading}
-              />
-            </Box>
-          )
-        }
-      })}
-    </>
+          {filteredEvents.map((event) => {
+            if (event.__typename === 'ChatOpenEvent') {
+              return (
+                <DetailsRow
+                  key={event.id}
+                  label={t('Chat Started')}
+                  value={format(parseISO(event.createdAt), 'h:mmaaa')}
+                  chatEvent
+                  loading={loading}
+                />
+              )
+            } else {
+              return (
+                <DetailsRow
+                  key={event.id}
+                  label={event.label}
+                  value={event.value}
+                  loading={loading}
+                />
+              )
+            }
+          })}
+        </>
+      )}
+    </Box>
   )
 }
 
@@ -84,7 +99,7 @@ function DetailsRow({
   return (
     <Stack direction="row">
       <Typography
-        variant="subtitle1"
+        variant="h5"
         color={textColor}
         sx={{
           display: { xs: 'flex', sm: 'none' },
@@ -113,7 +128,7 @@ function DetailsRow({
             sx={{
               minWidth: '262px',
               maxWidth: '262px',
-              paddingRight: { xs: 'none', sm: '35px' }
+              paddingRight: { xs: 0, sm: 5 }
             }}
           >
             {label}
@@ -121,11 +136,11 @@ function DetailsRow({
         )}
 
         <Typography
-          variant="subtitle1"
+          variant="h5"
           color={textColor}
           sx={{
             display: { xs: 'none', sm: 'flex' },
-            paddingRight: { xs: 'none', sm: '10px' }
+            paddingRight: { xs: 0, sm: 3 }
           }}
         >
           {'\u00B7\u00A0'}

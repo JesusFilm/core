@@ -111,6 +111,6 @@ describe('VisitorCardDetails', () => {
     expect(queryByText('text value')).not.toBeInTheDocument()
     expect(queryByText('radio value')).not.toBeInTheDocument()
     expect(queryByText('button value')).not.toBeInTheDocument()
-    expect(getAllByTestId('description-skeleton')).toHaveLength(4)
+    expect(getAllByTestId('description-skeleton')).toHaveLength(2)
   })
 })
