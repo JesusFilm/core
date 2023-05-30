@@ -17,19 +17,25 @@ const Like = lazy(
     )
 )
 
-export const IconNames = ['none', 'Like', 'Target'] as const
+const ThumbsDown = lazy(
+  async () =>
+    await import(
+      /* webpackChunkName: 'custom-icon' */
+      './outlined/ThumbsDown'
+    )
+)
+
+export const IconNames = ['none', 'Like', 'Target', 'ThumbsDown'] as const
 
 type IconName = (typeof IconNames)[number]
 
 interface CustomIconProps
   extends Pick<SvgIconProps, 'color' | 'fontSize' | 'sx'> {
   name: IconName
-  variant?: 'outlined' | 'solid'
 }
 
 export function CustomIcon({
   name,
-  variant = 'outlined',
   ...iconProps
 }: CustomIconProps): ReactElement {
   return (
@@ -37,18 +43,9 @@ export function CustomIcon({
       {
         {
           none: null,
-          Like:
-            variant === 'outlined' ? (
-              <Like {...iconProps} />
-            ) : (
-              `${name}IconSolid`
-            ),
-          Target:
-            variant === 'outlined' ? (
-              <Target {...iconProps} />
-            ) : (
-              `${name}IconSolid`
-            )
+          Like: <Like {...iconProps} />,
+          Target: <Target {...iconProps} />,
+          ThumbsDown: <ThumbsDown {...iconProps} />
         }[name]
       }
     </Suspense>
