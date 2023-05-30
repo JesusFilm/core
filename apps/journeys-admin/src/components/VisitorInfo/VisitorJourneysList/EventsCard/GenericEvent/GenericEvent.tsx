@@ -84,8 +84,12 @@ export function GenericEvent({
           pb: 5
         }}
       >
-        <Stack direction="column" sx={{ width: '100%' }}>
-          <Typography variant="body2" color="text.secondary" gutterBottom>
+        <Stack direction="column" sx={{ width: '100%', pt: 0 }}>
+          <Typography
+            variant="body2"
+            color="text.secondary"
+            gutterBottom={activity != null || label != null}
+          >
             {/* activity */}
             {activity != null && (
               <span
