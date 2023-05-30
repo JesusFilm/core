@@ -1,16 +1,17 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { Database } from 'arangojs'
 import { mockDeep } from 'jest-mock-extended'
+import { BlockResolver } from '../../block/block.resolver'
 import { BlockService } from '../../block/block.service'
 import { JourneyService } from '../../journey/journey.service'
 import { MemberService } from '../../member/member.service'
 import { UserJourneyService } from '../../userJourney/userJourney.service'
 import { UserRoleService } from '../../userRole/userRole.service'
 import { ActionResolver } from '../action.resolver'
-import { NavigateActionResolver } from './navigateAction.resolver'
+import { EmailActionResolver } from './emailAction.resolver'
 
-describe('NavigateActionResolver', () => {
-  let resolver: NavigateActionResolver, service: BlockService
+describe('EmailActionResolver', () => {
+  let resolver: EmailActionResolver, service: BlockService
 
   const block = {
     id: '1',
@@ -22,17 +23,18 @@ describe('NavigateActionResolver', () => {
     description: 'description',
     action: {
       parentBlockId: '1',
-      gtmEventName: 'gtmEventName'
+      gtmEventName: 'gtmEventName',
+      email: ''
     }
   }
 
-  const navigateActionInput = {
-    gtmEventName: 'gtmEventNameUpdated',
+  const emailActionInput = {
+    gtmEventName: 'gtmEventName',
+    email: 'edmondshen@gmail.com',
     blockId: null,
-    email: null,
     journeyId: null,
-    url: null,
-    target: null
+    target: null,
+    url: null
   }
 
   beforeEach(async () => {
@@ -40,13 +42,14 @@ describe('NavigateActionResolver', () => {
       provide: BlockService,
       useFactory: () => ({
         get: jest.fn().mockResolvedValue(block),
-        update: jest.fn((navigateActionInput) => navigateActionInput)
+        update: jest.fn((navigateToBlockInput) => navigateToBlockInput)
       })
     }
     const module: TestingModule = await Test.createTestingModule({
       providers: [
+        BlockResolver,
         blockService,
-        NavigateActionResolver,
+        EmailActionResolver,
         ActionResolver,
         UserJourneyService,
         UserRoleService,
@@ -58,21 +61,18 @@ describe('NavigateActionResolver', () => {
         }
       ]
     }).compile()
-    resolver = module.get<NavigateActionResolver>(NavigateActionResolver)
+    resolver = module.get<EmailActionResolver>(EmailActionResolver)
     service = await module.resolve(BlockService)
   })
 
-  it('updates navigate action', async () => {
-    await resolver.blockUpdateNavigateAction(
+  it('updates email action', async () => {
+    await resolver.blockUpdateEmailAction(
       block.id,
       block.journeyId,
-      navigateActionInput
+      emailActionInput
     )
     expect(service.update).toHaveBeenCalledWith(block.id, {
-      action: {
-        ...navigateActionInput,
-        parentBlockId: block.action.parentBlockId
-      }
+      action: { ...emailActionInput, parentBlockId: block.action.parentBlockId }
     })
   })
 
@@ -83,15 +83,28 @@ describe('NavigateActionResolver', () => {
     }
     service.get = jest.fn().mockResolvedValue(wrongBlock)
     await resolver
-      .blockUpdateNavigateAction(
+      .blockUpdateEmailAction(
         wrongBlock.id,
         wrongBlock.journeyId,
-        navigateActionInput
+        emailActionInput
       )
       .catch((error) => {
         expect(error.message).toEqual(
-          'This block does not support navigate actions'
+          'This block does not support email actions'
         )
+      })
+  })
+
+  it('throws an error if input is not an email address', async () => {
+    const wrongEmailInput = {
+      ...emailActionInput,
+      email: 'tataiwashere.com'
+    }
+    service.get = jest.fn().mockResolvedValue(block)
+    await resolver
+      .blockUpdateEmailAction(block.id, block.journeyId, wrongEmailInput)
+      .catch((error) => {
+        expect(error.message).toEqual('must be a valid email')
       })
   })
 })
