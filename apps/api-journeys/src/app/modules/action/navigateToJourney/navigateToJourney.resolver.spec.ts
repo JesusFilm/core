@@ -44,6 +44,7 @@ describe('NavigateToJourneyActionResolver', () => {
   const navigateToJourneyInput = {
     gtmEventName: 'gtmEventName',
     journeyId: '4',
+    email: null,
     blockId: null,
     url: null,
     target: null

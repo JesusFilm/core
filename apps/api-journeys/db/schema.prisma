@@ -48,6 +48,7 @@ enum ButtonAction {
   NavigateToBlockAction
   NavigateToJourneyAction
   LinkAction
+  EmailAction
 }
 
 enum VideoBlockSource {

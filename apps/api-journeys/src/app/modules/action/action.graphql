@@ -31,6 +31,12 @@ type LinkAction implements Action {
   target: String
 }
 
+type EmailAction implements Action {
+  parentBlockId: ID!
+  gtmEventName: String
+  email: String!
+}
+
 input NavigateActionInput {
   gtmEventName: String
 }
@@ -49,6 +55,11 @@ input LinkActionInput {
   gtmEventName: String
   url: String!
   target: String
+}
+
+input EmailActionInput {
+  gtmEventName: String
+  email: String!
 }
 
 extend type Mutation {
@@ -73,4 +84,9 @@ extend type Mutation {
     journeyId: ID!
     input: LinkActionInput!
   ): LinkAction!
+  blockUpdateEmailAction(
+    id: ID!
+    journeyId: ID!
+    input: EmailActionInput!
+  ): EmailAction!
 }
