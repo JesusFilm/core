@@ -39,7 +39,7 @@ export function EmailInviteForm({ users }: EmailInviteFormProps): ReactElement {
         variables: {
           journeyId: journey.id,
           input: {
-            email: values.email
+            email: values.email.toLowerCase()
           }
         },
         update(cache, { data }) {
