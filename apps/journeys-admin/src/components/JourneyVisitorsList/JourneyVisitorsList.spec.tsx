@@ -11,12 +11,12 @@ describe('JourneyVisitorsList', () => {
       node: {
         __typename: 'JourneyVisitor',
         visitorId: 'visitor1.id',
-        countryCode: null,
         createdAt: '2021-11-19T12:35:56.647Z',
         duration: null,
         visitor: {
           __typename: 'Visitor',
           name: null,
+          countryCode: null,
           status: null,
           referrer: null
         },
@@ -29,12 +29,12 @@ describe('JourneyVisitorsList', () => {
       node: {
         __typename: 'JourneyVisitor',
         visitorId: 'visitor2.id',
-        countryCode: null,
         createdAt: '2021-11-19T12:35:56.647Z',
         duration: null,
         visitor: {
           __typename: 'Visitor',
           name: null,
+          countryCode: null,
           status: null,
           referrer: null
         },
@@ -47,12 +47,12 @@ describe('JourneyVisitorsList', () => {
       node: {
         __typename: 'JourneyVisitor',
         visitorId: 'visitor3.id',
-        countryCode: null,
         createdAt: '2021-11-19T12:35:56.647Z',
         duration: null,
         visitor: {
           __typename: 'Visitor',
           name: null,
+          countryCode: null,
           status: null,
           referrer: null
         },

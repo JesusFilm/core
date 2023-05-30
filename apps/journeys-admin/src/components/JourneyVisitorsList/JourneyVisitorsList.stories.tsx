@@ -23,12 +23,12 @@ Default.args = {
       node: {
         __typename: 'JourneyVisitor',
         visitorId: '36f0af56-2aa0-4477-8b79-f8303182c69b',
-        countryCode: 'Dnipro, Ukraine',
         createdAt: '2021-11-19T12:35:56.647Z',
         duration: 300,
         visitor: {
           __typename: 'Visitor',
           name: 'Ben',
+          countryCode: 'Dnipro, Ukraine',
           status: VisitorStatus.checkMarkSymbol,
           referrer: 'Facebook'
         },
@@ -63,11 +63,11 @@ Default.args = {
       node: {
         __typename: 'JourneyVisitor',
         visitorId: '416960f7-b037-481e-80e3-3e4d9897970a',
-        countryCode: 'Dnipro, Ukraine',
         createdAt: '2021-11-19T12:35:56.647Z',
         duration: 3,
         visitor: {
           __typename: 'Visitor',
+          countryCode: 'Dnipro, Ukraine',
           name: null,
           status: null,
           referrer: 'Youtube'
@@ -81,12 +81,12 @@ Default.args = {
       node: {
         __typename: 'JourneyVisitor',
         visitorId: '0c874c32-ac87-4480-b0fb-23ef3d61babe',
-        countryCode: 'Halifax, Canada',
         createdAt: '2021-11-19T12:35:56.647Z',
         duration: 300,
         visitor: {
           __typename: 'Visitor',
           name: 'John',
+          countryCode: 'Halifax, Canada',
           status: VisitorStatus.warning,
           referrer: 'Facebook'
         },
@@ -106,11 +106,11 @@ Default.args = {
       node: {
         __typename: 'JourneyVisitor',
         visitorId: '0357598b-597d-4419-8c7c-d94854f8a95b',
-        countryCode: 'Auckland, New Zealand',
         createdAt: '2021-11-19T12:35:56.647Z',
         duration: null,
         visitor: {
           __typename: 'Visitor',
+          countryCode: 'Auckland, New Zealand',
           name: null,
           status: null,
           referrer: 'WhatsApp'
