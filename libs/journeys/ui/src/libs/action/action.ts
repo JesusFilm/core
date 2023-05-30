@@ -9,7 +9,6 @@ export function handleAction(
   action?: ActionFields | null
 ): void {
   if (action == null) return
-  const userAgent = navigator.userAgent.toLowerCase().includes('android')
   switch (action.__typename) {
     case 'NavigateToBlockAction':
       nextActiveBlock({ id: action.blockId })
@@ -38,13 +37,8 @@ export function handleAction(
       }
       break
     case 'EmailAction':
-      // window.location.href = `mailto:${action.email}`
-      userAgent
-        ? window.open(
-            `intent://${action.email}#Intent;action=android.intent.action.SENDTO;type=text/plain;S.android.intent.extra.EMAIL=${action.email};end`,
-            '_blank'
-          )
-        : window.open(`mailto:${action.email}`, '_blank')
+      window.location.href = `mailto:${action.email}`
+      // window.open(`mailto:${action.email}`, '_blank')
       break
   }
 }
