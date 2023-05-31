@@ -111,7 +111,7 @@ export function VideoFromYouTube({
         ? `id=${id}`
         : `playlistId=${
             process.env.NEXT_PUBLIC_YOUTUBE_PLAYLIST_ID ?? ''
-          }&pageToken=${pageToken}`
+          }&maxResults=18&pageToken=${pageToken}`
     },
     fetcher
   )

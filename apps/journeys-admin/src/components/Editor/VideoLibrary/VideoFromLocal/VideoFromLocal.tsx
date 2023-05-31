@@ -46,7 +46,7 @@ export function VideoFromLocal({
     notifyOnNetworkStatusChange: true,
     variables: {
       offset: 0,
-      limit: 5,
+      limit: 18,
       where: {
         availableVariantLanguageIds: ['529'],
         title: searchQuery === '' ? null : searchQuery,

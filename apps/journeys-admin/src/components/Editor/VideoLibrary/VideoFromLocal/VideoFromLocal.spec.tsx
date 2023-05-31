@@ -16,7 +16,7 @@ const getVideosMock = {
     query: GET_VIDEOS,
     variables: {
       offset: 0,
-      limit: 5,
+      limit: 18,
       where: {
         availableVariantLanguageIds: ['529'],
         title: null,
@@ -41,7 +41,7 @@ const getVideosEmptyWithOffsetMock = {
     query: GET_VIDEOS,
     variables: {
       offset: 3,
-      limit: 5,
+      limit: 18,
       where: {
         availableVariantLanguageIds: ['529'],
         title: null,
@@ -66,7 +66,7 @@ const getVideosEmptyMock = {
     query: GET_VIDEOS,
     variables: {
       offset: 0,
-      limit: 5,
+      limit: 18,
       where: {
         availableVariantLanguageIds: ['529'],
         title: null,
@@ -91,7 +91,7 @@ const getVideosWithTitleMock = {
     query: GET_VIDEOS,
     variables: {
       offset: 0,
-      limit: 5,
+      limit: 18,
       where: {
         availableVariantLanguageIds: ['529'],
         title: 'abc',
