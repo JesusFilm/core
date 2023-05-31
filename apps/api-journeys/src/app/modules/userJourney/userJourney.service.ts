@@ -84,14 +84,15 @@ export class UserJourneyService extends BaseService<UserJourneyRecord> {
   @KeyAsId()
   async approveAccess(
     id: string,
-    userId: string
+    approverUserId: string
   ): Promise<UserJourneyRecord | undefined> {
     const userJourney = await this.get(id)
 
     if (userJourney == null)
       throw new UserInputError('userJourney does not exist')
 
-    const actor = await this.forJourneyUser(id, userId)
+    const actor = await this.forJourneyUser(id, approverUserId)
+    const requesterUserId = userJourney.userId
 
     if (actor?.role === UserJourneyRole.inviteRequested)
       throw new AuthenticationError(
@@ -102,17 +103,15 @@ export class UserJourneyService extends BaseService<UserJourneyRecord> {
 
     if (journey.teamId != null) {
       const existingMember = await this.memberService.getMemberByTeamId(
-        userJourney.userId,
+        requesterUserId,
         journey.teamId
       )
 
       if (existingMember == null) {
         await this.memberService.save(
           {
-            id: `${userJourney.userId}:${
-              (journey as { teamId: string }).teamId
-            }`,
-            userId: userJourney.userId,
+            id: `${requesterUserId}:${(journey as { teamId: string }).teamId}`,
+            userId: requesterUserId,
             teamId: journey.teamId
           },
           { overwriteMode: 'ignore' }
