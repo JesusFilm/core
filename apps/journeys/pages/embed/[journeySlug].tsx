@@ -24,6 +24,8 @@ function JourneyPage({ journey }: JourneyPageProps): ReactElement {
     <>
       <NextSeo
         title={journey.title}
+        nofollow
+        noindex
         description={journey.description ?? undefined}
         openGraph={{
           type: 'website',
