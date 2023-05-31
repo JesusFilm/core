@@ -1,5 +1,4 @@
 import { render, waitFor } from '@testing-library/react'
-import { getTheme } from '@core/shared/ui/themes'
 import type { TreeBlock } from '../../libs/block'
 import { blurImage } from '../../libs/blurImage'
 import {
