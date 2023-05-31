@@ -135,7 +135,8 @@ export enum ButtonAction {
     NavigateAction = "NavigateAction",
     NavigateToBlockAction = "NavigateToBlockAction",
     NavigateToJourneyAction = "NavigateToJourneyAction",
-    LinkAction = "LinkAction"
+    LinkAction = "LinkAction",
+    EmailAction = "EmailAction"
 }
 
 export enum MessagePlatform {
@@ -227,6 +228,11 @@ export class LinkActionInput {
     gtmEventName?: Nullable<string>;
     url: string;
     target?: Nullable<string>;
+}
+
+export class EmailActionInput {
+    gtmEventName?: Nullable<string>;
+    email: string;
 }
 
 export class ButtonBlockCreateInput {
@@ -642,6 +648,13 @@ export class LinkAction implements Action {
     gtmEventName?: Nullable<string>;
     url: string;
     target?: Nullable<string>;
+}
+
+export class EmailAction implements Action {
+    __typename?: 'EmailAction';
+    parentBlockId: string;
+    gtmEventName?: Nullable<string>;
+    email: string;
 }
 
 export class Journey {
@@ -1187,6 +1200,8 @@ export abstract class IMutation {
     abstract blockUpdateNavigateToJourneyAction(id: string, journeyId: string, input: NavigateToJourneyActionInput): NavigateToJourneyAction | Promise<NavigateToJourneyAction>;
 
     abstract blockUpdateLinkAction(id: string, journeyId: string, input: LinkActionInput): LinkAction | Promise<LinkAction>;
+
+    abstract blockUpdateEmailAction(id: string, journeyId: string, input: EmailActionInput): EmailAction | Promise<EmailAction>;
 
     abstract blockDelete(id: string, journeyId: string, parentBlockId?: Nullable<string>): Block[] | Promise<Block[]>;
 
