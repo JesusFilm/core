@@ -9,13 +9,13 @@ import {
   RadioQuestionSubmissionEventCreateInput
 } from '../../../__generated__/graphql'
 import { EventService } from '../event.service'
-import { VisitorService } from '../../visitor/visitor.service'
+import { PrismaService } from '../../../lib/prisma.service'
 
 @Resolver('RadioQuestionSubmissionEvent')
 export class RadioQuestionSubmissionEventResolver {
   constructor(
     private readonly eventService: EventService,
-    private readonly visitorService: VisitorService
+    private readonly prismaService: PrismaService
   ) {}
 
   @Mutation()
@@ -25,25 +25,31 @@ export class RadioQuestionSubmissionEventResolver {
     @Args('input')
     input: RadioQuestionSubmissionEventCreateInput
   ): Promise<RadioQuestionSubmissionEvent> {
-    const { visitor, journeyId } = await this.eventService.validateBlockEvent(
-      userId,
-      input.blockId,
-      input.stepId
-    )
-
+    const { visitor, journeyVisitor, journeyId } =
+      await this.eventService.validateBlockEvent(
+        userId,
+        input.blockId,
+        input.stepId
+      )
+    const data = {
+      lastRadioQuestion: input.label ?? undefined,
+      lastRadioOptionSubmission: input.value ?? undefined
+    }
     const [radioSubmissionEvent] = await Promise.all([
       this.eventService.save({
         ...input,
-        __typename: 'RadioQuestionSubmissionEvent',
-        visitorId: visitor.id,
-        createdAt: new Date().toISOString(),
+        id: input.id ?? undefined,
+        typename: 'RadioQuestionSubmissionEvent',
+        visitor: { connect: { id: visitor.id } },
+        stepId: input.stepId ?? undefined,
         journeyId
       }),
-      this.visitorService.update(visitor.id, {
-        lastRadioQuestion: input.label ?? undefined,
-        lastRadioOptionSubmission: input.value ?? undefined
+      this.prismaService.visitor.update({ where: { id: visitor.id }, data }),
+      this.prismaService.journeyVisitor.update({
+        where: { journeyId_visitorId: { journeyId, visitorId: visitor.id } },
+        data: { ...data, activityCount: journeyVisitor.activityCount + 1 }
       })
     ])
-    return radioSubmissionEvent
+    return radioSubmissionEvent as RadioQuestionSubmissionEvent
   }
 }

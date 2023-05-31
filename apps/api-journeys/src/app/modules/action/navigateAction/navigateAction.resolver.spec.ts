@@ -29,6 +29,7 @@ describe('NavigateActionResolver', () => {
   const navigateActionInput = {
     gtmEventName: 'gtmEventNameUpdated',
     blockId: null,
+    email: null,
     journeyId: null,
     url: null,
     target: null

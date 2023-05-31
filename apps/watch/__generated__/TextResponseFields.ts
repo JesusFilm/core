@@ -46,7 +46,14 @@ export interface TextResponseFields_action_LinkAction {
   url: string;
 }
 
-export type TextResponseFields_action = TextResponseFields_action_NavigateAction | TextResponseFields_action_NavigateToBlockAction | TextResponseFields_action_NavigateToJourneyAction | TextResponseFields_action_LinkAction;
+export interface TextResponseFields_action_EmailAction {
+  __typename: "EmailAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  email: string;
+}
+
+export type TextResponseFields_action = TextResponseFields_action_NavigateAction | TextResponseFields_action_NavigateToBlockAction | TextResponseFields_action_NavigateToJourneyAction | TextResponseFields_action_LinkAction | TextResponseFields_action_EmailAction;
 
 export interface TextResponseFields {
   __typename: "TextResponseBlock";

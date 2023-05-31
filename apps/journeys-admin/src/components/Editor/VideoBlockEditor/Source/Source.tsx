@@ -10,6 +10,7 @@ import {
 import { VideoLibrary } from '../../VideoLibrary'
 import { GetJourney_journey_blocks_VideoBlock as VideoBlock } from '../../../../../__generated__/GetJourney'
 import { SourceFromYouTube } from './SourceFromYouTube'
+import { SourceFromCloudflare } from './SourceFromCloudflare'
 import { SourceEmpty } from './SourceEmpty'
 import { SourceFromLocal } from './SourceFromLocal'
 
@@ -33,6 +34,9 @@ export function Source({ selectedBlock, onChange }: SourceProps): ReactElement {
       break
     case VideoBlockSource.youTube:
       SourceContent = SourceFromYouTube
+      break
+    case VideoBlockSource.cloudflare:
+      SourceContent = SourceFromCloudflare
       break
     default:
       SourceContent = SourceEmpty
