@@ -20,6 +20,7 @@ export class ActionResolver {
     if (get(obj, 'blockId') != null) return 'NavigateToBlockAction'
     if (get(obj, 'journeyId') != null) return 'NavigateToJourneyAction'
     if (get(obj, 'url') != null) return 'LinkAction'
+    if (get(obj, 'email') != null) return 'EmailAction'
     return 'NavigateAction'
   }
 

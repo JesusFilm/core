@@ -60,7 +60,8 @@ export class NavigateToBlockActionResolver {
           parentBlockId: block.id,
           journeyId: null,
           url: null,
-          target: null
+          target: null,
+          email: null
         }
       }
     )

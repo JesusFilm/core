@@ -1,4 +1,4 @@
-// version 3
+// version 5
 // increment to trigger re-seed (ie: files other than seed.ts are changed)
 
 import { ArangoDB } from './db'
@@ -9,6 +9,7 @@ import { nua9 } from './seeds/nua9'
 import { jfpTeam } from './seeds/jfpTeam'
 import { onboarding } from './seeds/onboarding'
 import { onboardingTemplates } from './seeds/onboardingTemplates'
+// import { psMigrate } from './seeds/psMigrate'
 
 const db = ArangoDB()
 
@@ -99,29 +100,15 @@ async function main(): Promise<void> {
       keyOptions: { type: 'uuid' }
     })
 
-  if (!(await db.collection('visitors').exists()))
-    await db.createCollection('visitors', {
-      keyOptions: { type: 'uuid' }
-    })
-
-  await db.collection('visitors').ensureIndex({
-    type: 'persistent',
-    fields: ['teamId', 'userId'],
-    name: 'teamIdAndUserId',
-    unique: true
-  })
-
-  if (!(await db.collection('events').exists()))
-    await db.createCollection('events', {
-      keyOptions: { type: 'uuid' }
-    })
-
   await nua1()
   await nua2()
   await nua8()
   await nua9()
   await onboarding()
   await onboardingTemplates()
+
+  // commented out until future migration
+  // await psMigrate()
 
   // this should be removed when the UI can support team management
   await jfpTeam()
