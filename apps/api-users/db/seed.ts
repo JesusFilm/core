@@ -1,4 +1,4 @@
-// version 2
+// version 3
 // increment to trigger re-seed (ie: files other than seed.ts are changed)
 
 // Please note, this seed transfers existing arangodb users to postgresql
