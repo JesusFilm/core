@@ -38,6 +38,9 @@ output "private_rds_security_group_id" {
   value = module.internal_rds_security_group.security_group_id
 }
 
+output "public_bastion_security_group_id" {
+  value = module.public_bastion_security_group.security_group_id
+}
 
 output "ecs" {
   value = {

@@ -13,13 +13,15 @@ import {
 import { EventService } from '../event.service'
 import { VisitorService } from '../../visitor/visitor.service'
 import { JourneyService } from '../../journey/journey.service'
+import { PrismaService } from '../../../lib/prisma.service'
 
 @Resolver('JourneyViewEvent')
 export class JourneyViewEventResolver {
   constructor(
     private readonly eventService: EventService,
     private readonly visitorService: VisitorService,
-    private readonly journeyService: JourneyService
+    private readonly journeyService: JourneyService,
+    private readonly prismaService: PrismaService
   ) {}
 
   @Mutation()
@@ -33,7 +35,7 @@ export class JourneyViewEventResolver {
     if (journey == null) {
       throw new UserInputError('Journey does not exist')
     }
-    const visitor = await this.visitorService.getByUserIdAndJourneyId(
+    const { visitor } = await this.visitorService.getByUserIdAndJourneyId(
       userId,
       input.journeyId
     )
@@ -41,22 +43,25 @@ export class JourneyViewEventResolver {
     const promises = [
       this.eventService.save({
         ...input,
-        __typename: 'JourneyViewEvent',
-        visitorId: visitor.id,
-        createdAt: new Date().toISOString()
+        id: input.id ?? undefined,
+        typename: 'JourneyViewEvent',
+        visitor: { connect: { id: visitor.id } }
       })
     ]
 
     if (visitor.userAgent == null) {
       promises.push(
-        this.visitorService.update(visitor.id, {
-          userAgent
+        this.prismaService.visitor.update({
+          where: { id: visitor.id },
+          data: {
+            userAgent
+          }
         })
       )
     }
 
     const [journeyViewEvent] = await Promise.all(promises)
-    return journeyViewEvent
+    return journeyViewEvent as JourneyViewEvent
   }
 
   @ResolveField('language')

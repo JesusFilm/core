@@ -1,11 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing'
-import { Database } from 'arangojs'
-import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
-import { mockDbQueryResult } from '@core/nest/database/mock'
 import { v4 as uuidv4 } from 'uuid'
-import { DocumentCollection, EdgeCollection } from 'arangojs/collection'
-import { AqlQuery } from 'arangojs/aql'
-import { keyAsId } from '@core/nest/decorators/KeyAsId'
+import { PrismaService } from '../../lib/prisma.service'
+import { JourneyService } from '../journey/journey.service'
 import { VisitorService } from './visitor.service'
 
 jest.mock('uuid', () => ({
@@ -15,36 +11,57 @@ jest.mock('uuid', () => ({
 
 const mockUuidv4 = uuidv4 as jest.MockedFunction<typeof uuidv4>
 
+const journey = {
+  id: 'journey.id',
+  teamId: 'team.id'
+}
+
+const journeyVisitor = {
+  journeyId: 'journey.id',
+  visitorId: 'visitor.id'
+}
+const visitor = {
+  id: 'visitor.id',
+  userId: 'user.id',
+  teamId: 'team.id'
+}
+
+const journeyService = {
+  provide: JourneyService,
+  useFactory: () => ({
+    get: jest.fn(() => journey)
+  })
+}
 describe('VisitorService', () => {
-  let service: VisitorService,
-    db: DeepMockProxy<Database>,
-    collectionMock: DeepMockProxy<DocumentCollection & EdgeCollection>
+  let service: VisitorService, prisma: PrismaService
 
   beforeAll(() => {
     jest.useFakeTimers('modern')
     jest.setSystemTime(new Date('2021-02-18'))
   })
 
+  afterAll(() => {
+    jest.useRealTimers()
+  })
+
   beforeEach(async () => {
-    db = mockDeep()
     const module: TestingModule = await Test.createTestingModule({
-      providers: [
-        VisitorService,
-        {
-          provide: 'DATABASE',
-          useFactory: () => db
-        }
-      ]
+      providers: [VisitorService, PrismaService, journeyService]
     }).compile()
 
     service = module.get<VisitorService>(VisitorService)
-    collectionMock = mockDeep()
-    service.collection = collectionMock
-  })
-
-  afterAll(() => {
-    jest.resetAllMocks()
-    jest.useRealTimers()
+    prisma = module.get<PrismaService>(PrismaService)
+    prisma.visitor.create = jest
+      .fn()
+      .mockImplementationOnce((input) => input.data)
+    prisma.visitor.findMany = jest.fn().mockReturnValueOnce([])
+    prisma.journeyVisitor.findUnique = jest
+      .fn()
+      .mockReturnValueOnce(journeyVisitor)
+    prisma.journeyVisitor.upsert = jest
+      .fn()
+      .mockImplementationOnce((input) => input.create)
+    prisma.journeyVisitor.findMany = jest.fn().mockReturnValueOnce([])
   })
 
   describe('getList', () => {
@@ -57,97 +74,57 @@ describe('VisitorService', () => {
       }
     }
     it('returns a visitors connection', async () => {
-      db.query.mockImplementation(async (q) => {
-        const { query, bindVars } = q as unknown as AqlQuery
-        expect(query).toEqual(`
-    LET $edges_plus_one = (
-      FOR item IN visitors
-        FILTER item.@value0 == @value1
-        SORT item.createdAt DESC
-        LIMIT @value2 + 1
-        RETURN { cursor: item.createdAt, node: MERGE(item, { id: item._key }) }
-    )
-    LET $edges = SLICE($edges_plus_one, 0, @value2)
-    RETURN {
-      edges: $edges,
-      pageInfo: {
-        hasNextPage: LENGTH($edges_plus_one) == @value2 + 1,
-        startCursor: LENGTH($edges) > 0 ? FIRST($edges).cursor : null,
-        endCursor: LENGTH($edges) > 0 ? LAST($edges).cursor : null
-      }
-    }
-    `)
-        expect(bindVars).toEqual({
-          value0: 'teamId',
-          value1: 'jfp-team',
-          value2: 50
-        })
-        return await mockDbQueryResult(service.db, [connection])
-      })
       expect(
         await service.getList({ first: 50, filter: { teamId: 'jfp-team' } })
       ).toEqual(connection)
+      expect(prisma.visitor.findMany).toHaveBeenCalledWith({
+        cursor: undefined,
+        orderBy: {
+          createdAt: 'desc'
+        },
+        skip: 0,
+        take: 51,
+        where: { teamId: 'jfp-team' }
+      })
     })
 
     it('allows pagination of the visitors connection', async () => {
-      db.query.mockImplementation(async (q) => {
-        const { bindVars } = q as unknown as AqlQuery
-        expect(bindVars).toEqual({
-          value0: 'cursorId',
-          value1: 'teamId',
-          value2: 'jfp-team',
-          value3: 50
-        })
-        return await mockDbQueryResult(service.db, [connection])
-      })
       await service.getList({
         first: 50,
-        after: 'cursorId',
+        after: '1',
         filter: { teamId: 'jfp-team' }
+      })
+      expect(prisma.visitor.findMany).toHaveBeenCalledWith({
+        cursor: { id: '1' },
+        orderBy: {
+          createdAt: 'desc'
+        },
+        skip: 1,
+        take: 51,
+        where: { teamId: 'jfp-team' }
       })
     })
   })
 
   describe('getVisitorId', () => {
     it('should return visitor id', async () => {
-      const visitor = {
-        _key: 'visitor.id',
-        userId: 'user.id',
-        teamId: 'team.id'
-      }
-
-      const visitorWithId = keyAsId(visitor)
-
-      db.query.mockReturnValueOnce(mockDbQueryResult(db, [visitorWithId]))
+      prisma.visitor.findFirst = jest.fn().mockReturnValueOnce(visitor)
       expect(
-        await service.getByUserIdAndJourneyId('user.id', 'team.id')
-      ).toEqual(visitorWithId)
+        await service.getByUserIdAndJourneyId('user.id', 'journey.id')
+      ).toEqual({ visitor, journeyVisitor })
     })
 
     it('should create a new visitor if visitor does not exist', async () => {
-      const visitor = {
-        _key: 'visitor.id',
-        userId: 'user.id',
-        teamId: 'team.id'
-      }
-
-      const visitorWithId = keyAsId(visitor)
-
-      const journey = {
-        teamId: 'team.id'
-      }
-
-      db.query.mockReturnValueOnce(mockDbQueryResult(db, [])) // mock failing to find existing visitor
-      db.query.mockReturnValueOnce(mockDbQueryResult(db, [journey]))
-
+      prisma.visitor.findFirst = jest.fn().mockReturnValueOnce(null)
       mockUuidv4.mockReturnValueOnce('newVisitor.id')
 
-      await service.getByUserIdAndJourneyId('user.id', 'team.id')
-      expect(service.collection.save).toHaveBeenCalledWith({
-        ...visitorWithId,
-        _key: 'newVisitor.id',
-        id: 'newVisitor.id',
-        createdAt: new Date().toISOString()
+      await service.getByUserIdAndJourneyId('user.id', 'journey.id')
+      expect(prisma.visitor.create).toHaveBeenCalledWith({
+        data: {
+          ...visitor,
+          id: 'newVisitor.id',
+          createdAt: new Date()
+        }
       })
     })
   })

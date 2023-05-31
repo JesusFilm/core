@@ -32,7 +32,8 @@ export async function nua9(): Promise<void> {
     status: JourneyStatus.published,
     createdAt: new Date(),
     publishedAt: new Date(),
-    featuredAt: new Date()
+    featuredAt: new Date(),
+    teamId: 'jfp-team'
   })
 
   //   first step

@@ -18,12 +18,14 @@ import { UserInviteModule } from './modules/userInvite/userInvite.module'
 import { VisitorModule } from './modules/visitor/visitor.module'
 import { MemberModule } from './modules/member/member.module'
 import { TeamModule } from './modules/team/team.module'
+import { JourneyVisitorModule } from './modules/journeyVisitor/journeyVisitor.module'
 
 @Module({
   imports: [
     ActionModule,
     BlockModule,
     JourneyModule,
+    JourneyVisitorModule,
     EventModule,
     MemberModule,
     TeamModule,
