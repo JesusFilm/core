@@ -60,6 +60,25 @@ describe('EmailInviteForm', () => {
     })
   })
 
+  it('should validate when user inputs uppercase strings for email if email already exists', async () => {
+    const { getByRole, getByText } = render(
+      <SnackbarProvider>
+        <MockedProvider>
+          <EmailInviteForm users={['edmondshenwashere@gmail.com']} />
+        </MockedProvider>
+      </SnackbarProvider>
+    )
+    const email = getByRole('textbox', { name: 'Email' })
+    fireEvent.change(email, {
+      target: { value: 'EdmondShenWasHere@gmail.com' }
+    })
+    fireEvent.click(getByRole('button', { name: 'add user' }))
+    await waitFor(() => {
+      const inlineError = getByText('This email is already on the list')
+      expect(inlineError).toHaveProperty('id', 'email-helper-text')
+    })
+  })
+
   it('should validate when email is already exists', async () => {
     const { getByRole, getByText } = render(
       <SnackbarProvider>
