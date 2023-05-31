@@ -45,10 +45,13 @@ export class StepViewEventResolver {
       this.prismaService.visitor.update({
         where: { id: visitor.id },
         data: {
-          duration: Math.floor(
-            Math.abs(
-              new Date().getTime() - new Date(visitor.createdAt).getTime()
-            ) / 1000
+          duration: Math.min(
+            1200,
+            Math.floor(
+              Math.abs(
+                new Date().getTime() - new Date(visitor.createdAt).getTime()
+              ) / 1000
+            )
           ),
           lastStepViewedAt: new Date()
         }
@@ -61,11 +64,14 @@ export class StepViewEventResolver {
           }
         },
         data: {
-          duration: Math.floor(
-            Math.abs(
-              new Date().getTime() -
-                new Date(journeyVisitor.createdAt).getTime()
-            ) / 1000
+          duration: Math.min(
+            1200,
+            Math.floor(
+              Math.abs(
+                new Date().getTime() -
+                  new Date(journeyVisitor.createdAt).getTime()
+              ) / 1000
+            )
           ),
           lastStepViewedAt: new Date()
         }
