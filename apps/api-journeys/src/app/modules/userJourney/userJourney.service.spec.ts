@@ -305,12 +305,12 @@ describe('UserJourneyService', () => {
         })
       )
 
-      await service.approveAccess(userJourney.id, userJourney.userId)
+      await service.approveAccess(userJourneyInvited.id, userJourney.userId)
       expect(mService.save).toHaveBeenCalledWith(
         {
-          id: '1:teamId',
+          id: '2:teamId',
           teamId: 'teamId',
-          userId: '1'
+          userId: '2'
         },
         { overwriteMode: 'ignore' }
       )
