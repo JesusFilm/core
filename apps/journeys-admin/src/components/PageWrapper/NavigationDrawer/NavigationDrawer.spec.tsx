@@ -3,7 +3,6 @@ import { fireEvent, render, waitFor } from '@testing-library/react'
 import { NextRouter, useRouter } from 'next/router'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { AuthUser } from 'next-firebase-auth'
-import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 import { Role } from '../../../../__generated__/globalTypes'
 import { GET_USER_ROLE } from '../../JourneyView/JourneyView'
 import { GET_ME } from '../../NewPageWrapper/NavigationDrawer'
@@ -38,9 +37,7 @@ describe('NavigationDrawer', () => {
   it('should render the default menu items', () => {
     const { getByText, getAllByRole, getByTestId } = render(
       <MockedProvider>
-        <FlagsProvider>
-          <NavigationDrawer open onClose={onClose} />
-        </FlagsProvider>
+        <NavigationDrawer open onClose={onClose} />
       </MockedProvider>
     )
     expect(getAllByRole('button')[0]).toContainElement(
@@ -84,20 +81,18 @@ describe('NavigationDrawer', () => {
           }
         ]}
       >
-        <FlagsProvider flags={{ templates: true, reports: true }}>
-          <NavigationDrawer
-            open
-            onClose={onClose}
-            authUser={
-              {
-                displayName: 'Amin One',
-                photoURL: 'https://bit.ly/3Gth4Yf',
-                email: 'amin@email.com',
-                signOut
-              } as unknown as AuthUser
-            }
-          />
-        </FlagsProvider>
+        <NavigationDrawer
+          open
+          onClose={onClose}
+          authUser={
+            {
+              displayName: 'Amin One',
+              photoURL: 'https://bit.ly/3Gth4Yf',
+              email: 'amin@email.com',
+              signOut
+            } as unknown as AuthUser
+          }
+        />
       </MockedProvider>
     )
     expect(getByText('Templates')).toBeInTheDocument()
@@ -112,9 +107,7 @@ describe('NavigationDrawer', () => {
 
     const { getByTestId } = render(
       <MockedProvider>
-        <FlagsProvider flags={{ templates: true }}>
-          <NavigationDrawer open onClose={onClose} />
-        </FlagsProvider>
+        <NavigationDrawer open onClose={onClose} />
       </MockedProvider>
     )
     expect(getByTestId('Templates-list-item')).toHaveAttribute(
@@ -130,9 +123,7 @@ describe('NavigationDrawer', () => {
 
     const { getByTestId } = render(
       <MockedProvider>
-        <FlagsProvider>
-          <NavigationDrawer open onClose={onClose} />
-        </FlagsProvider>
+        <NavigationDrawer open onClose={onClose} />
       </MockedProvider>
     )
     expect(getByTestId('Reports-list-item')).toHaveAttribute(
@@ -180,20 +171,18 @@ describe('NavigationDrawer', () => {
           }
         ]}
       >
-        <FlagsProvider flags={{ templates: true }}>
-          <NavigationDrawer
-            open
-            onClose={onClose}
-            authUser={
-              {
-                displayName: 'Amin One',
-                photoURL: 'https://bit.ly/3Gth4Yf',
-                email: 'amin@email.com',
-                signOut
-              } as unknown as AuthUser
-            }
-          />
-        </FlagsProvider>
+        <NavigationDrawer
+          open
+          onClose={onClose}
+          authUser={
+            {
+              displayName: 'Amin One',
+              photoURL: 'https://bit.ly/3Gth4Yf',
+              email: 'amin@email.com',
+              signOut
+            } as unknown as AuthUser
+          }
+        />
       </MockedProvider>
     )
     await waitFor(() =>
@@ -239,20 +228,18 @@ describe('NavigationDrawer', () => {
           }
         ]}
       >
-        <FlagsProvider flags={{ templates: true }}>
-          <NavigationDrawer
-            open
-            onClose={onClose}
-            authUser={
-              {
-                displayName: 'Amin One',
-                photoURL: 'https://bit.ly/3Gth4Yf',
-                email: 'amin@email.com',
-                signOut
-              } as unknown as AuthUser
-            }
-          />
-        </FlagsProvider>
+        <NavigationDrawer
+          open
+          onClose={onClose}
+          authUser={
+            {
+              displayName: 'Amin One',
+              photoURL: 'https://bit.ly/3Gth4Yf',
+              email: 'amin@email.com',
+              signOut
+            } as unknown as AuthUser
+          }
+        />
       </MockedProvider>
     )
     await waitFor(() =>
@@ -271,9 +258,7 @@ describe('NavigationDrawer', () => {
   it('should close the navigation drawer on chevron left click', () => {
     const { getAllByRole, getByTestId } = render(
       <MockedProvider>
-        <FlagsProvider>
-          <NavigationDrawer open onClose={onClose} />
-        </FlagsProvider>
+        <NavigationDrawer open onClose={onClose} />
       </MockedProvider>
     )
     const button = getAllByRole('button')[0]
@@ -289,9 +274,7 @@ describe('NavigationDrawer', () => {
 
     const { getByTestId } = render(
       <MockedProvider>
-        <FlagsProvider>
-          <NavigationDrawer open onClose={onClose} />
-        </FlagsProvider>
+        <NavigationDrawer open onClose={onClose} />
       </MockedProvider>
     )
     expect(getByTestId('ViewCarouselRoundedIcon').parentElement).toHaveStyle(
