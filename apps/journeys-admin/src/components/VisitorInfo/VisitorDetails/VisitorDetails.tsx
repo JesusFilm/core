@@ -38,7 +38,7 @@ export function VisitorDetails({ id }: Props): ReactElement {
       justifyContent="flex-end"
       alignItems={{ xs: 'flex-start', sm: 'center' }}
       spacing={8}
-      sx={{ pb: 5, px: 6 }}
+      sx={{ pb: 5, px: 6, mx: { xs: -6, sm: '-30px', md: 0 } }}
     >
       {data?.visitor.lastChatStartedAt != null && (
         <Stack

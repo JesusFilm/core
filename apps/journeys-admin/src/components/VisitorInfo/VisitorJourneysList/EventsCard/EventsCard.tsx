@@ -28,7 +28,10 @@ export function EventsCard({ journey }: Props): ReactElement {
   return (
     <Card
       variant="outlined"
-      sx={{ borderRadius: { xs: 0, sm: 4 }, mx: { xs: -6, sm: 0 } }}
+      sx={{
+        borderRadius: { sm: 0, md: 4 },
+        mx: { xs: -6, sm: '-32px', md: 0 }
+      }}
     >
       <Box sx={{ px: { xs: 4, sm: 6 } }}>
         <GenericEvent

@@ -77,12 +77,7 @@ export function DetailsForm({ id }: Props): ReactElement {
   }
 
   return (
-    <Paper
-      elevation={0}
-      sx={{
-        mx: { sm: -6, md: 0 }
-      }}
-    >
+    <Paper elevation={0} sx={{ borderRadius: 0 }}>
       {data?.visitor != null && (
         <Formik
           initialValues={pick(data.visitor, [
