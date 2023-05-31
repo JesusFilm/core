@@ -34,6 +34,7 @@ function SingleVisitorReportsPage(): ReactElement {
         authUser={AuthUser}
         sidePanelChildren={<DetailsForm id={id} />}
         sidePanelTitle={t('Visitor Details')}
+        backHrefHistory
       >
         <VisitorInfo id={id} />
       </PageWrapper>
