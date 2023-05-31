@@ -8,7 +8,7 @@ import { PrismaService } from '../../../lib/prisma.service'
 import { StepNextEventResolver, StepViewEventResolver } from './step.resolver'
 
 describe('Step', () => {
-  let prisma: PrismaService
+  let prisma: PrismaService, eService: EventService
   beforeAll(() => {
     jest.useFakeTimers('modern')
     jest.setSystemTime(new Date('2021-02-18'))
@@ -46,6 +46,7 @@ describe('Step', () => {
         providers: [StepViewEventResolver, eventService, PrismaService]
       }).compile()
       resolver = module.get<StepViewEventResolver>(StepViewEventResolver)
+      eService = module.get<EventService>(EventService)
       prisma = module.get<PrismaService>(PrismaService)
       prisma.visitor.update = jest.fn().mockResolvedValueOnce(null)
       prisma.journeyVisitor.update = jest.fn().mockResolvedValueOnce(null)
@@ -81,6 +82,35 @@ describe('Step', () => {
         where: { id: 'visitor.id' },
         data: {
           duration: 300,
+          lastStepViewedAt: new Date()
+        }
+      })
+    })
+
+    it('should have a max duration of 20 minutes', async () => {
+      const input: StepViewEventCreateInput = {
+        id: '1',
+        blockId: 'block.id',
+        value: 'stepName'
+      }
+      prisma.visitor.update = jest.fn().mockResolvedValueOnce(null)
+      eService.validateBlockEvent = jest.fn().mockResolvedValueOnce({
+        ...response,
+        visitor: {
+          ...response.visitor,
+          createdAt: new Date(new Date('2021-02-18').setMinutes(-25))
+        },
+        journeyVisitor: {
+          ...response.journeyVisitor,
+          createdAt: new Date(new Date('2021-02-18').setMinutes(-25))
+        }
+      })
+      await resolver.stepViewEventCreate('userId', input)
+
+      expect(prisma.visitor.update).toHaveBeenCalledWith({
+        where: { id: 'visitor.id' },
+        data: {
+          duration: 1200,
           lastStepViewedAt: new Date()
         }
       })
