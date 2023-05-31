@@ -15,8 +15,8 @@ export function CompactEvent({ value, handleClick }: Props): ReactElement {
   return (
     <TimelineItem
       sx={{
-        minHeight: '44px',
-        maxHeight: '44px',
+        minHeight: '56px',
+        maxHeight: '56px',
         '&:before': {
           flex: 0
         }
@@ -28,10 +28,12 @@ export function CompactEvent({ value, handleClick }: Props): ReactElement {
 
       <TimelineContent
         sx={{
-          p: 2,
           alignItems: 'center',
           display: 'flex',
-          justifyContent: 'center'
+          justifyContent: 'center',
+          pt: 2,
+          px: 2,
+          pb: 5
         }}
       >
         <Divider sx={{ width: '100%' }}>
