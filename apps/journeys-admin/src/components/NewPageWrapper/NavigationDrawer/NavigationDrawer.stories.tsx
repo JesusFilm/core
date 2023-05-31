@@ -3,7 +3,6 @@ import { Meta, Story } from '@storybook/react'
 import { noop } from 'lodash'
 import { MockedProvider } from '@apollo/client/testing'
 import { AuthUser } from 'next-firebase-auth'
-import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 import { NextRouter } from 'next/router'
 import { journeysAdminConfig } from '../../../libs/storybook'
 import { Role, UserJourneyRole } from '../../../../__generated__/globalTypes'
@@ -61,35 +60,25 @@ const Template: Story = ({ ...args }) => {
         }
       ]}
     >
-      <FlagsProvider flags={{ templates: args.templates }}>
-        <NavigationDrawer
-          open={open}
-          onClose={() => setOpen(!open)}
-          authUser={
-            {
-              id: 'user.id',
-              displayName: 'Amin One',
-              photoURL: 'https://bit.ly/3Gth4Yf',
-              email: 'amin@email.com',
-              signOut: noop
-            } as unknown as AuthUser
-          }
-          router={{ pathname: undefined } as unknown as NextRouter}
-        />
-      </FlagsProvider>
+      <NavigationDrawer
+        open={open}
+        onClose={() => setOpen(!open)}
+        authUser={
+          {
+            id: 'user.id',
+            displayName: 'Amin One',
+            photoURL: 'https://bit.ly/3Gth4Yf',
+            email: 'amin@email.com',
+            signOut: noop
+          } as unknown as AuthUser
+        }
+        router={{ pathname: undefined } as unknown as NextRouter}
+      />
     </MockedProvider>
   )
 }
 
 export const Default = Template.bind({})
-Default.args = {
-  templates: false
-}
-
-export const Complete = Template.bind({})
-Complete.args = {
-  templates: true
-}
 
 export const WithBadge = Template.bind({})
 WithBadge.args = {
