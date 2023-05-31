@@ -1,21 +1,9 @@
 import { fireEvent, render } from '@testing-library/react'
-import { TreeBlock } from '../../libs/block'
-import { StepFields } from '../Step/__generated__/StepFields'
 import { StepHeader } from './StepHeader'
-
-const block: TreeBlock<StepFields> = {
-  __typename: 'StepBlock',
-  id: 'Step1',
-  parentBlockId: null,
-  parentOrder: 0,
-  nextBlockId: null,
-  locked: false,
-  children: []
-}
 
 describe('StepHeader', () => {
   it('should have report contact button', () => {
-    const { getByRole } = render(<StepHeader block={block} />)
+    const { getByRole } = render(<StepHeader />)
     fireEvent.click(getByRole('button'))
 
     expect(
@@ -27,7 +15,7 @@ describe('StepHeader', () => {
   })
 
   it('should have the terms and conditions link', () => {
-    const { getByRole } = render(<StepHeader block={block} />)
+    const { getByRole } = render(<StepHeader />)
     fireEvent.click(getByRole('button'))
     expect(getByRole('link', { name: 'Terms & Conditions' })).toHaveAttribute(
       'href',
@@ -36,7 +24,7 @@ describe('StepHeader', () => {
   })
 
   it('should have the privacy policy link', () => {
-    const { getByRole } = render(<StepHeader block={block} />)
+    const { getByRole } = render(<StepHeader />)
     fireEvent.click(getByRole('button'))
     expect(getByRole('link', { name: 'Privacy Policy' })).toHaveAttribute(
       'href',

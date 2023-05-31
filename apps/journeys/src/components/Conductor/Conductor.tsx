@@ -7,7 +7,9 @@ import Fade from '@mui/material/Fade'
 import Stack from '@mui/material/Stack'
 import IconButton from '@mui/material/IconButton'
 import { useTheme, styled } from '@mui/material/styles'
+import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import type { TreeBlock } from '@core/journeys/ui/block'
+import { getStepTheme } from '@core/journeys/ui/getStepTheme'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { useBlocks } from '@core/journeys/ui/block'
 import { BlockRenderer } from '@core/journeys/ui/BlockRenderer'
@@ -25,6 +27,7 @@ import { JourneyViewEventCreate } from '../../../__generated__/JourneyViewEventC
 
 import 'swiper/swiper.min.css'
 import 'swiper/components/pagination/pagination.min.css'
+import { StepFields } from '../../../__generated__/StepFields'
 
 SwiperCore.use([Pagination])
 
@@ -70,7 +73,7 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
   const [slideTransitioning, setSlideTransitioning] = useState(false)
   const theme = useTheme()
   const { journey, admin } = useJourney()
-  const { rtl } = getJourneyRTL(journey)
+  const { locale, rtl } = getJourneyRTL(journey)
 
   const onFirstStep = activeBlock === treeBlocks[0]
   const onLastStep = activeBlock === last(treeBlocks)
@@ -199,27 +202,35 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
             onSlideChangeTransitionEnd={() => setSlideTransitioning(false)}
             allowTouchMove={false}
           >
-            {treeBlocks.map((block) => (
-              <SwiperSlide key={block.id}>
-                <Fade
-                  in={activeBlock?.id === block.id}
-                  mountOnEnter
-                  unmountOnExit
-                >
-                  <Stack
-                    justifyContent="center"
-                    sx={{
-                      maxHeight: { xs: '100vh', lg: 'calc(100vh - 160px)' },
-                      height: { xs: '100vh', lg: '56.25vw' },
-                      px: { lg: 6 }
-                    }}
-                  >
-                    <StepHeader block={block} />
-                    <BlockRenderer block={block} />
-                  </Stack>
-                </Fade>
-              </SwiperSlide>
-            ))}
+            {treeBlocks.map((block) => {
+              const theme = getStepTheme(
+                block as TreeBlock<StepFields>,
+                journey
+              )
+              return (
+                <SwiperSlide key={block.id}>
+                  <ThemeProvider {...theme} locale={locale} rtl={rtl} nested>
+                    <Fade
+                      in={activeBlock?.id === block.id}
+                      mountOnEnter
+                      unmountOnExit
+                    >
+                      <Stack
+                        justifyContent="center"
+                        sx={{
+                          maxHeight: { xs: '100vh', lg: 'calc(100vh - 160px)' },
+                          height: { xs: '100vh', lg: '56.25vw' },
+                          px: { lg: 6 }
+                        }}
+                      >
+                        <StepHeader />
+                        <BlockRenderer block={block} />
+                      </Stack>
+                    </Fade>
+                  </ThemeProvider>
+                </SwiperSlide>
+              )
+            })}
             {showLeftButton && <Navigation variant="Left" />}
             {showRightButton && <Navigation variant="Right" />}
           </StyledSwiperContainer>

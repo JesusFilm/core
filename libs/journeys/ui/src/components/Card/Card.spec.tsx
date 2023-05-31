@@ -109,26 +109,12 @@ describe('CardBlock', () => {
     ]
   }
 
-  it('should render card with journey theme background color', () => {
+  it('should render card with theme background color', () => {
     const { getByTestId, getByText } = render(<Card {...block} />)
 
     expect(blurImage).not.toBeCalled()
     expect(getByTestId('card')).toHaveStyle('background-color: #FFF')
     expect(getByText('How did we get here?')).toBeInTheDocument()
-  })
-
-  it('should render card with card theme background color', () => {
-    const { getByTestId } = render(
-      <Card {...block} themeMode={ThemeMode.dark} themeName={ThemeName.base} />
-    )
-
-    expect(blurImage).not.toBeCalled()
-    expect(getByTestId('card')).toHaveStyle(
-      `background-color: ${
-        getTheme({ themeName: ThemeName.base, themeMode: ThemeMode.dark })
-          .palette.background.paper
-      }`
-    )
   })
 
   it('should render card with override background color', () => {

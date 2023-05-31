@@ -266,7 +266,7 @@ export function ContainedCover({
             className="overlay-gradient"
             sx={{
               background: {
-                xs: `linear-gradient(to top,  ${backgroundColor}ff 100%, ${backgroundColor}33 60%, ${backgroundColor}00 100%)`,
+                xs: `linear-gradient(to top,  ${backgroundColor}ff 0%, ${backgroundColor}33 60%, ${backgroundColor}00 100%)`,
                 lg: 'unset'
               }
             }}

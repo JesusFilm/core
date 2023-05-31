@@ -1,8 +1,7 @@
 import { ReactElement, useState, MouseEvent } from 'react'
 import Menu from '@mui/material/Menu'
 import MuiMenuItem from '@mui/material/MenuItem'
-import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
-import { ThemeName, ThemeMode } from '@core/shared/ui/themes'
+
 import NextLink from 'next/link'
 import IconButton from '@mui/material/IconButton'
 import Stack from '@mui/material/Stack'
@@ -11,14 +10,9 @@ import Typography from '@mui/material/Typography'
 import Divider from '@mui/material/Divider'
 import { useTranslation } from 'react-i18next'
 import Link from '@mui/material/Link'
-import { TreeBlock } from '../../libs/block'
 import { useJourney } from '../../libs/JourneyProvider'
 
-interface StepHeaderProps {
-  block: TreeBlock
-}
-
-export function StepHeader({ block }: StepHeaderProps): ReactElement {
+export function StepHeader(): ReactElement {
   const { journey, admin } = useJourney()
   const { t } = useTranslation('libs-journeys-ui')
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
@@ -31,100 +25,85 @@ export function StepHeader({ block }: StepHeaderProps): ReactElement {
     setAnchorEl(null)
   }
 
-  const card =
-    block.children.length > 0 && block.children[0].__typename === 'CardBlock'
-      ? block.children[0]
-      : undefined
-
-  const cardTheme = {
-    themeName: card?.themeName ?? journey?.themeName ?? ThemeName.base,
-    themeMode: card?.themeMode ?? journey?.themeMode ?? ThemeMode.dark
-  }
-
   return (
-    <ThemeProvider {...cardTheme}>
-      <Stack
-        sx={{
-          width: { xs: '100%', lg: 'unset' },
-          mt: { xs: 1, lg: 0 },
-          position: { xs: 'absolute', lg: 'relative' },
-          zIndex: 1,
-          top: 0,
-          alignItems: 'flex-end'
+    <Stack
+      sx={{
+        width: { xs: '100%', lg: 'unset' },
+        mt: { xs: 1, lg: 0 },
+        position: { xs: 'absolute', lg: 'relative' },
+        zIndex: 1,
+        top: 0,
+        alignItems: 'flex-end'
+      }}
+    >
+      <IconButton
+        id="more-info"
+        aria-controls="more-info"
+        aria-haspopup="true"
+        aria-expanded={open ? 'true' : 'false'}
+        sx={{ mx: 2, mt: 1 }}
+        onClick={handleClick}
+      >
+        <InfoCircleContained sx={{ color: 'white' }} />
+      </IconButton>
+      <Menu
+        id="basic-menu"
+        anchorEl={anchorEl}
+        open={open}
+        onClose={handleClose}
+        MenuListProps={{
+          dense: true,
+          'aria-labelledby': 'more-info'
         }}
       >
-        <IconButton
-          id="more-info"
-          aria-controls="more-info"
-          aria-haspopup="true"
-          aria-expanded={open ? 'true' : 'false'}
-          sx={{ mx: 2, mt: 1 }}
-          onClick={handleClick}
+        <NextLink
+          href={`mailto:support@nextstep.is?subject=Report%20Journey:%20${
+            journey?.title ?? journey?.seoTitle ?? ''
+          }&body=I want to report journey (your.nextstep.is/${
+            journey?.slug ?? ''
+          }) because ...`}
+          passHref
         >
-          <InfoCircleContained sx={{ color: 'white' }} />
-        </IconButton>
-        <Menu
-          id="basic-menu"
-          anchorEl={anchorEl}
-          open={open}
-          onClose={handleClose}
-          MenuListProps={{
-            dense: true,
-            'aria-labelledby': 'more-info'
-          }}
-        >
-          <NextLink
-            href={`mailto:support@nextstep.is?subject=Report%20Journey:%20${
-              journey?.title ?? journey?.seoTitle ?? ''
-            }&body=I want to report journey (your.nextstep.is/${
-              journey?.slug ?? ''
-            }) because ...`}
-            passHref
-          >
-            <MuiMenuItem onClick={handleClose}>
-              <Typography color="text.primary" variant="body2">
-                {t('Report this content')}
-              </Typography>
-            </MuiMenuItem>
-          </NextLink>
-          <Divider />
-          <NextLink
-            href="https://www.cru.org/us/en/about/terms-of-use.html"
-            passHref
-          >
-            <Link
-              variant="body2"
-              underline="none"
-              target="_blank"
-              rel="noopener"
-              sx={{ px: 0 }}
-              onClick={handleClose}
-            >
-              <MuiMenuItem>{t('Terms & Conditions')}</MuiMenuItem>
-            </Link>
-          </NextLink>
-          <NextLink
-            href="https://www.cru.org/us/en/about/privacy.html"
-            passHref
-          >
-            <Link
-              variant="body2"
-              underline="none"
-              target="_blank"
-              rel="noopener"
-              sx={{ px: 0 }}
-              onClick={handleClose}
-            >
-              <MuiMenuItem>{t('Privacy Policy')}</MuiMenuItem>
-            </Link>
-          </NextLink>
-          <MuiMenuItem disabled>
-            <Typography variant="caption">
-              {t('NextSteps © {{year}}', { year: new Date().getFullYear() })}
+          <MuiMenuItem onClick={handleClose}>
+            <Typography color="text.primary" variant="body2">
+              {t('Report this content')}
             </Typography>
           </MuiMenuItem>
-        </Menu>
-      </Stack>
-    </ThemeProvider>
+        </NextLink>
+        <Divider />
+        <NextLink
+          href="https://www.cru.org/us/en/about/terms-of-use.html"
+          passHref
+        >
+          <Link
+            variant="body2"
+            underline="none"
+            target="_blank"
+            rel="noopener"
+            sx={{ px: 0 }}
+            onClick={handleClose}
+          >
+            <MuiMenuItem>{t('Terms & Conditions')}</MuiMenuItem>
+          </Link>
+        </NextLink>
+        <NextLink href="https://www.cru.org/us/en/about/privacy.html" passHref>
+          <Link
+            variant="body2"
+            underline="none"
+            target="_blank"
+            rel="noopener"
+            sx={{ px: 0 }}
+            onClick={handleClose}
+          >
+            <MuiMenuItem>{t('Privacy Policy')}</MuiMenuItem>
+          </Link>
+        </NextLink>
+        <MuiMenuItem disabled>
+          <Typography variant="caption">
+            {t('NextSteps © {{year}}', { year: new Date().getFullYear() })}
+          </Typography>
+        </MuiMenuItem>
+      </Menu>
+    </Stack>
   )
 }
