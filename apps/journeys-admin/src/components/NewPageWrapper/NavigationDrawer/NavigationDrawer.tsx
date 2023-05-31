@@ -19,7 +19,6 @@ import Image from 'next/image'
 import { NextRouter } from 'next/router'
 import { compact } from 'lodash'
 import { gql, useQuery } from '@apollo/client'
-import { useFlags } from '@core/shared/ui/FlagsProvider'
 import ViewCarouselRoundedIcon from '@mui/icons-material/ViewCarouselRounded'
 import LeaderboardRoundedIcon from '@mui/icons-material/LeaderboardRounded'
 import { useTranslation } from 'react-i18next'
@@ -111,8 +110,6 @@ export function NavigationDrawer({
 
   const selectedPage = router?.pathname?.split('/')[1]
 
-  const { templates } = useFlags()
-
   const profileOpen = Boolean(profileAnchorEl)
   const handleProfileClick = (event): void => {
     setProfileAnchorEl(event.currentTarget)
@@ -162,14 +159,12 @@ export function NavigationDrawer({
           tooltipText={journeyTooltip}
         />
 
-        {templates && (
-          <NavigationListItem
-            icon={<ShopRoundedIcon />}
-            label="Templates"
-            selected={selectedPage === 'templates'}
-            link="/templates"
-          />
-        )}
+        <NavigationListItem
+          icon={<ShopRoundedIcon />}
+          label="Templates"
+          selected={selectedPage === 'templates'}
+          link="/templates"
+        />
 
         <NavigationListItem
           icon={<LeaderboardRoundedIcon />}
@@ -183,15 +178,14 @@ export function NavigationDrawer({
             <Divider sx={{ mb: 2, mx: 6, borderColor: 'secondary.main' }} />
 
             {userRoleData?.getUserRole?.roles?.includes(Role.publisher) ===
-              true &&
-              templates && (
-                <NavigationListItem
-                  icon={<ShopTwoRoundedIcon />}
-                  label="Publisher"
-                  selected={selectedPage === 'publisher'}
-                  link="/publisher"
-                />
-              )}
+              true && (
+              <NavigationListItem
+                icon={<ShopTwoRoundedIcon />}
+                label="Publisher"
+                selected={selectedPage === 'publisher'}
+                link="/publisher"
+              />
+            )}
 
             <NavigationListItem
               icon={
