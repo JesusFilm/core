@@ -15,7 +15,7 @@ COPY ./dist/apps/api-users .
 RUN npm install --production --silent
 
 WORKDIR /prisma
-COPY ./apps/api-users/prisma .
+COPY ./apps/api-users/db .
 RUN npx prisma@^4.13.0 generate
 
 WORKDIR /app
