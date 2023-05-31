@@ -69,7 +69,14 @@ export interface JourneyFields_blocks_ButtonBlock_action_LinkAction {
   url: string;
 }
 
-export type JourneyFields_blocks_ButtonBlock_action = JourneyFields_blocks_ButtonBlock_action_NavigateAction | JourneyFields_blocks_ButtonBlock_action_NavigateToBlockAction | JourneyFields_blocks_ButtonBlock_action_NavigateToJourneyAction | JourneyFields_blocks_ButtonBlock_action_LinkAction;
+export interface JourneyFields_blocks_ButtonBlock_action_EmailAction {
+  __typename: "EmailAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  email: string;
+}
+
+export type JourneyFields_blocks_ButtonBlock_action = JourneyFields_blocks_ButtonBlock_action_NavigateAction | JourneyFields_blocks_ButtonBlock_action_NavigateToBlockAction | JourneyFields_blocks_ButtonBlock_action_NavigateToJourneyAction | JourneyFields_blocks_ButtonBlock_action_LinkAction | JourneyFields_blocks_ButtonBlock_action_EmailAction;
 
 export interface JourneyFields_blocks_ButtonBlock {
   __typename: "ButtonBlock";
@@ -183,7 +190,14 @@ export interface JourneyFields_blocks_RadioOptionBlock_action_LinkAction {
   url: string;
 }
 
-export type JourneyFields_blocks_RadioOptionBlock_action = JourneyFields_blocks_RadioOptionBlock_action_NavigateAction | JourneyFields_blocks_RadioOptionBlock_action_NavigateToBlockAction | JourneyFields_blocks_RadioOptionBlock_action_NavigateToJourneyAction | JourneyFields_blocks_RadioOptionBlock_action_LinkAction;
+export interface JourneyFields_blocks_RadioOptionBlock_action_EmailAction {
+  __typename: "EmailAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  email: string;
+}
+
+export type JourneyFields_blocks_RadioOptionBlock_action = JourneyFields_blocks_RadioOptionBlock_action_NavigateAction | JourneyFields_blocks_RadioOptionBlock_action_NavigateToBlockAction | JourneyFields_blocks_RadioOptionBlock_action_NavigateToJourneyAction | JourneyFields_blocks_RadioOptionBlock_action_LinkAction | JourneyFields_blocks_RadioOptionBlock_action_EmailAction;
 
 export interface JourneyFields_blocks_RadioOptionBlock {
   __typename: "RadioOptionBlock";
@@ -240,7 +254,14 @@ export interface JourneyFields_blocks_SignUpBlock_action_LinkAction {
   url: string;
 }
 
-export type JourneyFields_blocks_SignUpBlock_action = JourneyFields_blocks_SignUpBlock_action_NavigateAction | JourneyFields_blocks_SignUpBlock_action_NavigateToBlockAction | JourneyFields_blocks_SignUpBlock_action_NavigateToJourneyAction | JourneyFields_blocks_SignUpBlock_action_LinkAction;
+export interface JourneyFields_blocks_SignUpBlock_action_EmailAction {
+  __typename: "EmailAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  email: string;
+}
+
+export type JourneyFields_blocks_SignUpBlock_action = JourneyFields_blocks_SignUpBlock_action_NavigateAction | JourneyFields_blocks_SignUpBlock_action_NavigateToBlockAction | JourneyFields_blocks_SignUpBlock_action_NavigateToJourneyAction | JourneyFields_blocks_SignUpBlock_action_LinkAction | JourneyFields_blocks_SignUpBlock_action_EmailAction;
 
 export interface JourneyFields_blocks_SignUpBlock {
   __typename: "SignUpBlock";
@@ -310,7 +331,14 @@ export interface JourneyFields_blocks_TextResponseBlock_action_LinkAction {
   url: string;
 }
 
-export type JourneyFields_blocks_TextResponseBlock_action = JourneyFields_blocks_TextResponseBlock_action_NavigateAction | JourneyFields_blocks_TextResponseBlock_action_NavigateToBlockAction | JourneyFields_blocks_TextResponseBlock_action_NavigateToJourneyAction | JourneyFields_blocks_TextResponseBlock_action_LinkAction;
+export interface JourneyFields_blocks_TextResponseBlock_action_EmailAction {
+  __typename: "EmailAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  email: string;
+}
+
+export type JourneyFields_blocks_TextResponseBlock_action = JourneyFields_blocks_TextResponseBlock_action_NavigateAction | JourneyFields_blocks_TextResponseBlock_action_NavigateToBlockAction | JourneyFields_blocks_TextResponseBlock_action_NavigateToJourneyAction | JourneyFields_blocks_TextResponseBlock_action_LinkAction | JourneyFields_blocks_TextResponseBlock_action_EmailAction;
 
 export interface JourneyFields_blocks_TextResponseBlock {
   __typename: "TextResponseBlock";
@@ -394,7 +422,14 @@ export interface JourneyFields_blocks_VideoBlock_action_LinkAction {
   url: string;
 }
 
-export type JourneyFields_blocks_VideoBlock_action = JourneyFields_blocks_VideoBlock_action_NavigateAction | JourneyFields_blocks_VideoBlock_action_NavigateToBlockAction | JourneyFields_blocks_VideoBlock_action_NavigateToJourneyAction | JourneyFields_blocks_VideoBlock_action_LinkAction;
+export interface JourneyFields_blocks_VideoBlock_action_EmailAction {
+  __typename: "EmailAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  email: string;
+}
+
+export type JourneyFields_blocks_VideoBlock_action = JourneyFields_blocks_VideoBlock_action_NavigateAction | JourneyFields_blocks_VideoBlock_action_NavigateToBlockAction | JourneyFields_blocks_VideoBlock_action_NavigateToJourneyAction | JourneyFields_blocks_VideoBlock_action_LinkAction | JourneyFields_blocks_VideoBlock_action_EmailAction;
 
 export interface JourneyFields_blocks_VideoBlock {
   __typename: "VideoBlock";
@@ -514,7 +549,14 @@ export interface JourneyFields_blocks_VideoTriggerBlock_triggerAction_LinkAction
   url: string;
 }
 
-export type JourneyFields_blocks_VideoTriggerBlock_triggerAction = JourneyFields_blocks_VideoTriggerBlock_triggerAction_NavigateAction | JourneyFields_blocks_VideoTriggerBlock_triggerAction_NavigateToBlockAction | JourneyFields_blocks_VideoTriggerBlock_triggerAction_NavigateToJourneyAction | JourneyFields_blocks_VideoTriggerBlock_triggerAction_LinkAction;
+export interface JourneyFields_blocks_VideoTriggerBlock_triggerAction_EmailAction {
+  __typename: "EmailAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  email: string;
+}
+
+export type JourneyFields_blocks_VideoTriggerBlock_triggerAction = JourneyFields_blocks_VideoTriggerBlock_triggerAction_NavigateAction | JourneyFields_blocks_VideoTriggerBlock_triggerAction_NavigateToBlockAction | JourneyFields_blocks_VideoTriggerBlock_triggerAction_NavigateToJourneyAction | JourneyFields_blocks_VideoTriggerBlock_triggerAction_LinkAction | JourneyFields_blocks_VideoTriggerBlock_triggerAction_EmailAction;
 
 export interface JourneyFields_blocks_VideoTriggerBlock {
   __typename: "VideoTriggerBlock";

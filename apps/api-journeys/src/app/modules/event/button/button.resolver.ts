@@ -64,6 +64,17 @@ export class ButtonClickEventResolver {
       )
     }
 
+    if (input.action === ButtonAction.EmailAction) {
+      promises.push(
+        this.prismaService.journeyVisitor.update({
+          where: { journeyId_visitorId: { journeyId, visitorId: visitor.id } },
+          data: {
+            activityCount: journeyVisitor.activityCount + 1
+          }
+        })
+      )
+    }
+
     const [buttonClickEvent] = await Promise.all(promises)
     return buttonClickEvent as ButtonClickEvent
   }

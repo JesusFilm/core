@@ -8,6 +8,7 @@
 //==============================================================
 
 export enum ButtonAction {
+  EmailAction = "EmailAction",
   LinkAction = "LinkAction",
   NavigateAction = "NavigateAction",
   NavigateToBlockAction = "NavigateToBlockAction",
