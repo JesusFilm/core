@@ -85,7 +85,7 @@ describe('VideoLibrary', () => {
                 query: GET_VIDEOS,
                 variables: {
                   offset: 0,
-                  limit: 5,
+                  limit: 18,
                   where: {
                     availableVariantLanguageIds: ['529'],
                     title: 'Andreas',
@@ -169,7 +169,7 @@ describe('VideoLibrary', () => {
               query: GET_VIDEOS,
               variables: {
                 offset: 0,
-                limit: 5,
+                limit: 18,
                 where: {
                   availableVariantLanguageIds: ['529'],
                   title: null,
