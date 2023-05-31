@@ -79,11 +79,13 @@ export function EmailInviteForm({ users }: EmailInviteFormProps): ReactElement {
     }
   }
 
+  const usersToLowerCase = users.map((user) => user.toLowerCase())
   const validationSchema = object().shape({
     email: string()
+      .lowercase()
       .email(t('Please enter a valid email address'))
       .required(t('Required'))
-      .notOneOf(users, t('This email is already on the list'))
+      .notOneOf(usersToLowerCase, t('This email is already on the list'))
   })
 
   return (
