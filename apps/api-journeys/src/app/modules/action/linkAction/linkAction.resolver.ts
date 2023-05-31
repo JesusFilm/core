@@ -57,7 +57,8 @@ export class LinkActionResolver {
           ...input,
           parentBlockId: block.id,
           blockId: null,
-          journeyId: null
+          journeyId: null,
+          email: null
         }
       }
     )

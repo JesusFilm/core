@@ -59,7 +59,8 @@ export class NavigateActionResolver {
           blockId: null,
           journeyId: null,
           url: null,
-          target: null
+          target: null,
+          email: null
         }
       }
     )

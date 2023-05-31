@@ -14,6 +14,7 @@ import { VisitorInfo } from '../../../src/components/VisitorInfo'
 import { PageWrapper } from '../../../src/components/NewPageWrapper'
 import i18nConfig from '../../../next-i18next.config'
 import { useTermsRedirect } from '../../../src/libs/useTermsRedirect/useTermsRedirect'
+import { DetailsForm } from '../../../src/components/VisitorInfo/DetailsForm'
 
 function SingleVisitorReportsPage(): ReactElement {
   const router = useRouter()
@@ -22,16 +23,19 @@ function SingleVisitorReportsPage(): ReactElement {
 
   useTermsRedirect()
 
+  const id = router.query.visitorId as string
+
   return (
     <>
       <NextSeo title={t('Visitor Info')} />
       <PageWrapper
-        title={t('Visitor Info')}
-        authUser={AuthUser}
-        backHrefHistory
+        title={t("Visitor's Activity")}
         backHref="/reports/visitors"
+        authUser={AuthUser}
+        sidePanelChildren={<DetailsForm id={id} />}
+        sidePanelTitle={t('Visitor Details')}
       >
-        <VisitorInfo id={router.query.visitorId as string} />
+        <VisitorInfo id={id} />
       </PageWrapper>
     </>
   )
