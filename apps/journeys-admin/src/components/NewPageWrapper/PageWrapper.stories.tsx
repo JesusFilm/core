@@ -5,7 +5,6 @@ import MenuRounded from '@mui/icons-material/MenuRounded'
 import Typography from '@mui/material/Typography'
 import { noop } from 'lodash'
 import { MockedProvider } from '@apollo/client/testing'
-import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 import ListItemButton from '@mui/material/ListItemButton'
 import Paper from '@mui/material/Paper'
 import { journeysAdminConfig } from '../../libs/storybook'
@@ -53,9 +52,7 @@ const SidePanelContainers = (): ReactElement => (
   </>
 )
 
-const Template: Story<
-  ComponentProps<typeof PageWrapper> & { templates?: boolean }
-> = ({ templates = false, ...args }) => {
+const Template: Story<ComponentProps<typeof PageWrapper>> = ({ ...args }) => {
   return (
     <MockedProvider
       mocks={[
@@ -90,9 +87,7 @@ const Template: Story<
         }
       ]}
     >
-      <FlagsProvider flags={{ templates }}>
-        <PageWrapper {...args} />
-      </FlagsProvider>
+      <PageWrapper {...args} />
     </MockedProvider>
   )
 }
