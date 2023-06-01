@@ -132,7 +132,7 @@ export function ContainedCover({
               width: '100%',
               height: '100%',
               flexGrow: 1,
-              zIndex: { xs: 2, lg: 1 },
+              zIndex: 1,
               position: { xs: 'relative', lg: 'absolute' },
               WebkitMask: { xs: overlayImageMask, lg: 'unset' },
               mask: { xs: overlayImageMask, lg: 'unset' }
