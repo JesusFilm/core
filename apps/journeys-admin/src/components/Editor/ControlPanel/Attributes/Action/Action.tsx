@@ -167,10 +167,7 @@ export function Action(): ReactElement {
         currentParentOrder != null &&
         currentParentOrder + 1 === step.parentOrder
     )
-    if (nextStep != null) {
-      return false
-    }
-    return true
+    return nextStep == null
   }
 
   return (
