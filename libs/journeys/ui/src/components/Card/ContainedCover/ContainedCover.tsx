@@ -10,7 +10,7 @@ import { VideoFields } from '../../Video/__generated__/VideoFields'
 import { useJourney } from '../../../libs/JourneyProvider'
 import { getJourneyRTL } from '../../../libs/rtl'
 import OverlayContent from '../OverlayContent'
-import BackgroundVideo from './BackgroundVideo'
+import { BackgroundVideo } from './BackgroundVideo'
 
 import 'videojs-youtube'
 import 'video.js/dist/video-js.css'

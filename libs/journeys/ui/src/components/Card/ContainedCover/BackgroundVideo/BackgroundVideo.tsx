@@ -14,7 +14,7 @@ interface BackgroundVideoProps extends TreeBlock<VideoFields> {
 
 const StyledVideo = styled('video')(() => ({}))
 
-export default function BackgroundVideo({
+export function BackgroundVideo({
   source,
   children,
   video,
