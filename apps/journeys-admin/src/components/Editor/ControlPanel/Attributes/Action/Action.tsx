@@ -159,21 +159,19 @@ export function Action(): ReactElement {
     }
     setAction(event.target.value)
   }
-  // find out if there is a possible next step(ie. another card in the order)
-  // only disable if you know you're on the last card
-  // check if parentOrder + 1 exists
 
-  // const nextStepAvailable = ():boolean => {
-  //   const currentParentOrder = state.selectedStep?.parentOrder
-  //   const nextStep = state.steps?.find((step) => currentParentOrder? + 1 === step.parentOrder)
-  //   if (currentParentOrder !=null){
-  //   if (state.steps?.find((step) => currentParentOrder? + 1 === step.parentOrder) != null){
-
-  //   }
-  // }
-
-  //   return true
-  // }
+  const noNextStepAvailable = (): boolean => {
+    const currentParentOrder = state.selectedStep?.parentOrder
+    const nextStep = state.steps?.find(
+      (step) =>
+        currentParentOrder != null &&
+        currentParentOrder + 1 === step.parentOrder
+    )
+    if (nextStep != null) {
+      return false
+    }
+    return true
+  }
 
   return (
     <>
@@ -194,8 +192,7 @@ export function Action(): ReactElement {
                   key={`button-action-${action.value}`}
                   value={action.value}
                   disabled={
-                    state.selectedStep?.nextBlockId == null &&
-                    action.value === 'NavigateAction'
+                    noNextStepAvailable() && action.value === 'NavigateAction'
                   }
                 >
                   {action.label}
