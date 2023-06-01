@@ -94,7 +94,7 @@ export const steps: Array<TreeBlock<StepBlock>> = [
     id: 'step1.id',
     __typename: 'StepBlock',
     parentBlockId: null,
-    parentOrder: 0,
+    parentOrder: 1,
     locked: false,
     nextBlockId: 'step2.id',
     children: [
@@ -170,7 +170,7 @@ export const steps: Array<TreeBlock<StepBlock>> = [
     id: 'step2.id',
     __typename: 'StepBlock',
     parentBlockId: null,
-    parentOrder: 0,
+    parentOrder: 2,
     locked: false,
     nextBlockId: 'step3.id',
     children: [
@@ -274,7 +274,7 @@ export const steps: Array<TreeBlock<StepBlock>> = [
     id: 'step3.id',
     __typename: 'StepBlock',
     parentBlockId: null,
-    parentOrder: 0,
+    parentOrder: 2,
     locked: false,
     nextBlockId: 'step4.id',
     children: [
@@ -383,7 +383,7 @@ export const steps: Array<TreeBlock<StepBlock>> = [
     id: 'step4.id',
     __typename: 'StepBlock',
     parentBlockId: null,
-    parentOrder: 0,
+    parentOrder: 3,
     locked: false,
     nextBlockId: null,
     children: [

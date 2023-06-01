@@ -81,6 +81,12 @@ export enum JourneyStatus {
   trashed = "trashed",
 }
 
+export enum JourneyVisitorSort {
+  activity = "activity",
+  date = "date",
+  duration = "duration",
+}
+
 export enum JourneysReportType {
   multipleFull = "multipleFull",
   multipleSummary = "multipleSummary",
@@ -281,6 +287,16 @@ export interface JourneyUpdateInput {
   slug?: string | null;
   seoTitle?: string | null;
   seoDescription?: string | null;
+}
+
+export interface JourneyVisitorFilter {
+  journeyId: string;
+  hasChatStarted?: boolean | null;
+  hasPollAnswers?: boolean | null;
+  hasTextResponse?: boolean | null;
+  hasIcon?: boolean | null;
+  hideInactive?: boolean | null;
+  countryCode?: string | null;
 }
 
 export interface LinkActionInput {

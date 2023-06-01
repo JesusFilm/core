@@ -160,6 +160,16 @@ export function Action(): ReactElement {
     setAction(event.target.value)
   }
 
+  const noNextStepAvailable = (): boolean => {
+    const currentParentOrder = state.selectedStep?.parentOrder
+    const nextStep = state.steps?.find(
+      (step) =>
+        currentParentOrder != null &&
+        currentParentOrder + 1 === step.parentOrder
+    )
+    return nextStep == null
+  }
+
   return (
     <>
       <Stack sx={{ pt: 4, px: 6 }}>
@@ -179,8 +189,7 @@ export function Action(): ReactElement {
                   key={`button-action-${action.value}`}
                   value={action.value}
                   disabled={
-                    state.selectedStep?.nextBlockId == null &&
-                    action.value === 'NavigateAction'
+                    noNextStepAvailable() && action.value === 'NavigateAction'
                   }
                 >
                   {action.label}
