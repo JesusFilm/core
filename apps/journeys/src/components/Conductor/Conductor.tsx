@@ -24,10 +24,12 @@ import { v4 as uuidv4 } from 'uuid'
 import TagManager from 'react-gtm-module'
 import last from 'lodash/last'
 import { JourneyViewEventCreate } from '../../../__generated__/JourneyViewEventCreate'
+import { StepFields } from '../../../__generated__/StepFields'
+import { Footer } from '../Footer'
+import { VisitorUpdateInput } from '../../../__generated__/globalTypes'
 
 import 'swiper/swiper.min.css'
 import 'swiper/components/pagination/pagination.min.css'
-import { StepFields } from '../../../__generated__/StepFields'
 
 SwiperCore.use([Pagination])
 
@@ -53,6 +55,13 @@ const StyledSwiperContainer = styled(Swiper)(({ theme }) => ({
     opacity: '100%'
   }
 }))
+export const JOURNEY_VISITOR_UPDATE = gql`
+  mutation VisitorUpdateForCurrentUser($input: VisitorUpdateInput!) {
+    visitorUpdateForCurrentUser(input: $input) {
+      id
+    }
+  }
+`
 
 const LeftNavigationContainer = styled(Box)`
   /* @noflip */
@@ -86,6 +95,10 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
     JOURNEY_VIEW_EVENT_CREATE
   )
 
+  const [journeyVisitorUpdate] = useMutation<VisitorUpdateInput>(
+    JOURNEY_VISITOR_UPDATE
+  )
+
   useEffect(() => {
     if (!admin && journey != null) {
       const id = uuidv4()
@@ -98,6 +111,33 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
             value: journey.language.id
           }
         }
+      }).then(() => {
+        void fetch('/api/geolocation').then((response) => {
+          void response
+            .json()
+            .then(
+              (data: { city?: string; country?: string; region?: string }) => {
+                const countryCodes: string[] = []
+                if (data.city != null) countryCodes.push(data.city)
+                if (data.region != null) countryCodes.push(data.region)
+                if (data.country != null) countryCodes.push(data.country)
+
+                if (countryCodes.length > 0 || document.referrer !== '') {
+                  void journeyVisitorUpdate({
+                    variables: {
+                      input: {
+                        countryCode:
+                          countryCodes.length > 0
+                            ? countryCodes.join(', ')
+                            : undefined,
+                        referrer: document.referrer
+                      }
+                    }
+                  })
+                }
+              }
+            )
+        })
       })
       TagManager.dataLayer({
         dataLayer: {
@@ -108,7 +148,7 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
         }
       })
     }
-  }, [admin, journey, journeyViewEventCreate])
+  }, [admin, journey, journeyViewEventCreate, journeyVisitorUpdate])
 
   useEffect(() => {
     setTreeBlocks(blocks)

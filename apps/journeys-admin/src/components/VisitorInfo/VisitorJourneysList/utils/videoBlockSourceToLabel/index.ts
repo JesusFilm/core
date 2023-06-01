@@ -1,0 +1,1 @@
+export { videoBlockSourceToLabel } from './videoBlockSourceToLabel'
