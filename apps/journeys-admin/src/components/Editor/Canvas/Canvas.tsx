@@ -73,7 +73,8 @@ export function Canvas(): ReactElement {
       sx={{
         backgroundColor: (theme) => theme.palette.background.paper,
         '& .swiper-container': {
-          paddingX: 6
+          paddingX: 6,
+          paddingY: 2
         },
         '& .swiper-slide': {
           display: 'flex',
