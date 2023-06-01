@@ -15,11 +15,11 @@ import { usePageWrapperStyles } from './utils/usePageWrapperStyles'
 
 interface PageWrapperProps {
   backHref?: string
-  title: string
+  title: string | ReactNode
   menu?: ReactNode
   children?: ReactNode
   showAppHeader?: boolean
-  sidePanelTitle?: string
+  sidePanelTitle?: string | ReactNode
   /**
    * Add default side panel padding and border by wrapping components with `SidePanelContainer`
    */
@@ -27,6 +27,7 @@ interface PageWrapperProps {
   bottomPanelChildren?: ReactNode
   authUser?: AuthUser
   initialState?: Partial<PageState>
+  backHrefHistory?: boolean
 }
 
 export function PageWrapper({
@@ -39,7 +40,8 @@ export function PageWrapper({
   bottomPanelChildren,
   children,
   authUser,
-  initialState
+  initialState,
+  backHrefHistory
 }: PageWrapperProps): ReactElement {
   const [open, setOpen] = useState<boolean>(false)
   const theme = useTheme()
@@ -94,6 +96,7 @@ export function PageWrapper({
                 title={title}
                 backHref={backHref}
                 menu={customMenu}
+                backHrefHistory={backHrefHistory}
               />
               <MainPanelBody bottomPanelChildren={bottomPanelChildren}>
                 {children}

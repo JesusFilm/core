@@ -85,7 +85,7 @@ describe('NavigationDrawer', () => {
           }
         ]}
       >
-        <FlagsProvider flags={{ templates: true, reports: true }}>
+        <FlagsProvider flags={{ reports: true }}>
           <NavigationDrawer
             open
             onClose={onClose}
@@ -109,13 +109,11 @@ describe('NavigationDrawer', () => {
   it('should select templates button', () => {
     const { getByTestId } = render(
       <MockedProvider>
-        <FlagsProvider flags={{ templates: true }}>
-          <NavigationDrawer
-            open
-            onClose={onClose}
-            router={getRouter('/templates')}
-          />
-        </FlagsProvider>
+        <NavigationDrawer
+          open
+          onClose={onClose}
+          router={getRouter('/templates')}
+        />
       </MockedProvider>
     )
     expect(getByTestId('Templates-list-item')).toHaveAttribute(
@@ -127,13 +125,11 @@ describe('NavigationDrawer', () => {
   it('should select the reports button', () => {
     const { getByTestId } = render(
       <MockedProvider>
-        <FlagsProvider>
-          <NavigationDrawer
-            open
-            onClose={onClose}
-            router={getRouter('/reports')}
-          />
-        </FlagsProvider>
+        <NavigationDrawer
+          open
+          onClose={onClose}
+          router={getRouter('/reports')}
+        />
       </MockedProvider>
     )
     expect(getByTestId('Reports-list-item')).toHaveAttribute(
@@ -177,21 +173,19 @@ describe('NavigationDrawer', () => {
           }
         ]}
       >
-        <FlagsProvider flags={{ templates: true }}>
-          <NavigationDrawer
-            open
-            onClose={onClose}
-            authUser={
-              {
-                displayName: 'Amin One',
-                photoURL: 'https://bit.ly/3Gth4Yf',
-                email: 'amin@email.com',
-                signOut
-              } as unknown as AuthUser
-            }
-            router={getRouter('/publisher/[journeyId]')}
-          />
-        </FlagsProvider>
+        <NavigationDrawer
+          open
+          onClose={onClose}
+          authUser={
+            {
+              displayName: 'Amin One',
+              photoURL: 'https://bit.ly/3Gth4Yf',
+              email: 'amin@email.com',
+              signOut
+            } as unknown as AuthUser
+          }
+          router={getRouter('/publisher/[journeyId]')}
+        />
       </MockedProvider>
     )
     await waitFor(() =>
@@ -237,20 +231,18 @@ describe('NavigationDrawer', () => {
           }
         ]}
       >
-        <FlagsProvider flags={{ templates: true }}>
-          <NavigationDrawer
-            open
-            onClose={onClose}
-            authUser={
-              {
-                displayName: 'Amin One',
-                photoURL: 'https://bit.ly/3Gth4Yf',
-                email: 'amin@email.com',
-                signOut
-              } as unknown as AuthUser
-            }
-          />
-        </FlagsProvider>
+        <NavigationDrawer
+          open
+          onClose={onClose}
+          authUser={
+            {
+              displayName: 'Amin One',
+              photoURL: 'https://bit.ly/3Gth4Yf',
+              email: 'amin@email.com',
+              signOut
+            } as unknown as AuthUser
+          }
+        />
       </MockedProvider>
     )
     await waitFor(() =>
@@ -269,9 +261,7 @@ describe('NavigationDrawer', () => {
   it('should close the navigation drawer on chevron left click', () => {
     const { getAllByRole, getByTestId } = render(
       <MockedProvider>
-        <FlagsProvider>
-          <NavigationDrawer open onClose={onClose} />
-        </FlagsProvider>
+        <NavigationDrawer open onClose={onClose} />
       </MockedProvider>
     )
     const button = getAllByRole('button')[0]
@@ -283,9 +273,7 @@ describe('NavigationDrawer', () => {
   it('should select the journeys drawer', () => {
     const { getByTestId } = render(
       <MockedProvider>
-        <FlagsProvider>
-          <NavigationDrawer open onClose={onClose} router={getRouter('/')} />
-        </FlagsProvider>
+        <NavigationDrawer open onClose={onClose} router={getRouter('/')} />
       </MockedProvider>
     )
     expect(getByTestId('ViewCarouselRoundedIcon').parentElement).toHaveStyle(
