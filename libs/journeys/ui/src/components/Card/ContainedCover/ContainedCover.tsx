@@ -124,31 +124,6 @@ export function ContainedCover({
             }}
           />
         )}
-        {/* Background image */}
-        {imageBlock != null && backgroundBlur != null && (
-          <Stack
-            data-testid="overlay-image-container"
-            sx={{
-              width: '100%',
-              height: '100%',
-              flexGrow: 1,
-              zIndex: 1,
-              position: { xs: 'relative', lg: 'absolute' },
-              WebkitMask: { xs: overlayImageMask, lg: 'unset' },
-              mask: { xs: overlayImageMask, lg: 'unset' }
-            }}
-          >
-            <NextImage
-              data-testid="background-image"
-              src={imageBlock.src ?? backgroundBlur}
-              alt={imageBlock.alt}
-              placeholder="blur"
-              blurDataURL={backgroundBlur}
-              layout="fill"
-              objectFit="cover"
-            />
-          </Stack>
-        )}
         {/* Blurred Content Background image */}
         {imageBlock != null && backgroundBlur != null && (
           <>
@@ -174,6 +149,31 @@ export function ContainedCover({
           </>
         )}
       </Box>
+      {/* Background image */}
+      <Stack
+        data-testid="overlay-image-container"
+        sx={{
+          width: '100%',
+          height: '100%',
+          flexGrow: 1,
+          zIndex: 1,
+          position: { xs: 'relative', lg: 'absolute' },
+          WebkitMask: { xs: overlayImageMask, lg: 'unset' },
+          mask: { xs: overlayImageMask, lg: 'unset' }
+        }}
+      >
+        {imageBlock != null && backgroundBlur != null && (
+          <NextImage
+            data-testid="background-image"
+            src={imageBlock.src ?? backgroundBlur}
+            alt={imageBlock.alt}
+            placeholder="blur"
+            blurDataURL={backgroundBlur}
+            layout="fill"
+            objectFit="cover"
+          />
+        )}
+      </Stack>
       <Stack
         data-testid="overlay-content-container"
         sx={{
