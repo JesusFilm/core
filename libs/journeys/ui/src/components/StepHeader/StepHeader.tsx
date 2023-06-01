@@ -1,11 +1,10 @@
 import { ReactElement, useState, MouseEvent } from 'react'
 import Menu from '@mui/material/Menu'
 import MuiMenuItem from '@mui/material/MenuItem'
-
 import NextLink from 'next/link'
 import IconButton from '@mui/material/IconButton'
 import Stack from '@mui/material/Stack'
-import InfoCircleContained from '@core/shared/ui/CustomIcon/outlined/InfoCircleContained'
+import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'
 import Typography from '@mui/material/Typography'
 import Divider from '@mui/material/Divider'
 import { useTranslation } from 'react-i18next'
@@ -44,7 +43,7 @@ export function StepHeader(): ReactElement {
         sx={{ mx: 2, mt: 1 }}
         onClick={handleClick}
       >
-        <InfoCircleContained sx={{ color: 'white' }} />
+        <InfoOutlinedIcon sx={{ color: 'white' }} />
       </IconButton>
       <Menu
         id="basic-menu"

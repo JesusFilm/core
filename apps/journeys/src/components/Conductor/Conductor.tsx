@@ -25,7 +25,6 @@ import TagManager from 'react-gtm-module'
 import last from 'lodash/last'
 import { JourneyViewEventCreate } from '../../../__generated__/JourneyViewEventCreate'
 import { StepFields } from '../../../__generated__/StepFields'
-import { Footer } from '../Footer'
 import { VisitorUpdateInput } from '../../../__generated__/globalTypes'
 
 import 'swiper/swiper.min.css'
