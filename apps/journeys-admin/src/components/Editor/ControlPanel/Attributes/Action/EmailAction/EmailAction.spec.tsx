@@ -20,21 +20,6 @@ describe('EmailAction', () => {
     }
   }))
 
-  const mocks = [
-    {
-      request: {
-        query: EMAIL_ACTION_UPDATE,
-        variables: {
-          id: selectedBlock.id,
-          journeyId: 'journeyId',
-          input: {
-            email: 'edmondwashere@gmail.com'
-          }
-        }
-      },
-      result
-    }
-  ]
   it('defaults to place holder text', () => {
     const { getByLabelText } = render(
       <MockedProvider>
@@ -68,6 +53,22 @@ describe('EmailAction', () => {
       }
     })
 
+    const mocks = [
+      {
+        request: {
+          query: EMAIL_ACTION_UPDATE,
+          variables: {
+            id: selectedBlock.id,
+            journeyId: 'journeyId',
+            input: {
+              email: 'edmondwashere@gmail.com'
+            }
+          }
+        },
+        result
+      }
+    ]
+
     const { getByRole } = render(
       <MockedProvider mocks={mocks} cache={cache}>
         <JourneyProvider
@@ -85,7 +86,6 @@ describe('EmailAction', () => {
     fireEvent.change(getByRole('textbox'), {
       target: { value: 'edmondwashere@gmail.com' }
     })
-    console.log(selectedBlock.id)
     fireEvent.submit(getByRole('textbox'))
     await waitFor(() => expect(result).toHaveBeenCalled())
 

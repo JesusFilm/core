@@ -165,7 +165,6 @@ export function Action(): ReactElement {
     setAction(event.target.value)
   }
 
-  console.log('action.tsx', action)
   return (
     <>
       <Stack sx={{ pt: 4, px: 6 }}>
