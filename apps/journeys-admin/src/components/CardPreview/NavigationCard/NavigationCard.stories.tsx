@@ -2,7 +2,7 @@ import { ActiveJourneyEditContent } from '@core/journeys/ui/EditorProvider'
 import { Story, Meta } from '@storybook/react'
 import ThumbUpOffAltIcon from '@mui/icons-material/ThumbUpOffAlt'
 import Box from '@mui/material/Box'
-import Target from '@core/shared/ui/Icon/Target'
+import Target from '@core/shared/ui/Icons/Target'
 import { simpleComponentConfig } from '../../../libs/storybook'
 import { NavigationCard } from '.'
 
