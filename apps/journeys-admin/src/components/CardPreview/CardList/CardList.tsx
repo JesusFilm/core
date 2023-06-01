@@ -19,7 +19,8 @@ import {
   ActiveJourneyEditContent,
   useEditor
 } from '@core/journeys/ui/EditorProvider'
-import { CustomIcon } from '@core/shared/ui/CustomIcon'
+import Target from '@core/shared/ui/Icon/Target'
+import ThumbsUp from '@core/shared/ui/Icon/ThumbsUp'
 import Divider from '@mui/material/Divider'
 import Image from 'next/image'
 
@@ -135,7 +136,7 @@ export function CardList({
               justifyContent="center"
               alignItems="center"
             >
-              <CustomIcon name="Target" color="error" />
+              <Target color="error" />
             </Box>
           }
           loading={journey == null}
@@ -173,7 +174,7 @@ export function CardList({
                 justifyContent="center"
                 alignItems="center"
               >
-                <CustomIcon name="Like" color="error" />
+                <ThumbsUp color="error" />
               </Box>
             ) : (
               <Image
