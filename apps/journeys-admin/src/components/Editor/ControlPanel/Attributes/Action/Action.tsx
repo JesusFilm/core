@@ -22,6 +22,7 @@ import { NavigateAction } from './NavigateAction'
 import { NavigateToBlockAction } from './NavigateToBlockAction'
 import { NavigateToJourneyAction } from './NavigateToJourneyAction'
 import { LinkAction } from './LinkAction'
+import { EmailAction } from './EmailAction'
 
 export const NAVIGATE_ACTION_UPDATE = gql`
   mutation NavigateActionUpdate(
@@ -62,6 +63,10 @@ export const actions = [
   {
     value: 'LinkAction',
     label: 'URL/Website'
+  },
+  {
+    value: 'EmailAction',
+    label: 'Email'
   }
 ]
 
@@ -205,6 +210,7 @@ export function Action(): ReactElement {
         {action === 'NavigateAction' && <NavigateAction />}
         {action === 'LinkAction' && <LinkAction />}
         {action === 'NavigateToJourneyAction' && <NavigateToJourneyAction />}
+        {action === 'EmailAction' && <EmailAction />}
       </Stack>
       {action === 'NavigateToBlockAction' && <NavigateToBlockAction />}
     </>
