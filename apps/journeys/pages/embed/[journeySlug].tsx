@@ -5,6 +5,7 @@ import { transformer } from '@core/journeys/ui/transformer'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import { NextSeo } from 'next-seo'
+import { getJourneyRTL } from '@core/journeys/ui/rtl'
 import { EmbeddedPreview } from '../../src/components/EmbeddedPreview'
 import { createApolloClient } from '../../src/libs/apolloClient'
 import {
@@ -17,9 +18,11 @@ import { GET_JOURNEY, GET_JOURNEY_SLUGS } from '../[journeySlug]'
 
 interface JourneyPageProps {
   journey: Journey
+  locale: string
+  rtl: boolean
 }
 
-function JourneyPage({ journey }: JourneyPageProps): ReactElement {
+function JourneyPage({ journey, locale, rtl }: JourneyPageProps): ReactElement {
   return (
     <>
       <NextSeo
@@ -67,6 +70,8 @@ function JourneyPage({ journey }: JourneyPageProps): ReactElement {
         <ThemeProvider
           themeName={journey.themeName}
           themeMode={journey.themeMode}
+          rtl={rtl}
+          locale={locale}
         >
           {journey.blocks != null && (
             <EmbeddedPreview blocks={transformer(journey.blocks)} />
@@ -101,6 +106,8 @@ export const getStaticProps: GetStaticProps<JourneyPageProps> = async (
       revalidate: 60
     }
   } else {
+    const { rtl, locale } = getJourneyRTL(data.journey)
+
     return {
       props: {
         ...(await serverSideTranslations(
@@ -108,7 +115,9 @@ export const getStaticProps: GetStaticProps<JourneyPageProps> = async (
           ['apps-journeys', 'libs-journeys-ui'],
           i18nConfig
         )),
-        journey: data.journey
+        journey: data.journey,
+        locale,
+        rtl
       },
       revalidate: 60
     }

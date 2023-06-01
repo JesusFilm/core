@@ -110,7 +110,7 @@ export function EmbeddedPreview({
         sx={{
           height: '100%',
           width: '100%',
-          borderRadius: { xs: '16px', lg: '0px' },
+          borderRadius: '16px',
           overflow: 'hidden'
         }}
       >
@@ -119,7 +119,6 @@ export function EmbeddedPreview({
           block={blocks?.[0]}
           wrappers={{
             ButtonWrapper,
-            ImageWrapper: NullWrapper,
             RadioOptionWrapper,
             VideoWrapper
           }}
@@ -172,8 +171,4 @@ export function EmbeddedPreview({
       </Div100vh>
     </>
   )
-}
-
-function NullWrapper({ children }): ReactElement {
-  return <fieldset disabled>{children}</fieldset>
 }
