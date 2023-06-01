@@ -1,4 +1,4 @@
-import { ReactElement } from 'react'
+import { ReactElement, useMemo } from 'react'
 import { GetStaticPaths, GetStaticProps } from 'next'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import { transformer } from '@core/journeys/ui/transformer'
@@ -6,6 +6,8 @@ import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import { NextSeo } from 'next-seo'
 import { getJourneyRTL } from '@core/journeys/ui/rtl'
+import { getStepTheme } from '@core/journeys/ui/getStepTheme'
+import { TreeBlock } from '@core/journeys/ui/block'
 import { EmbeddedPreview } from '../../src/components/EmbeddedPreview'
 import { createApolloClient } from '../../src/libs/apolloClient'
 import {
@@ -15,6 +17,7 @@ import {
 import { GetJourneySlugs } from '../../__generated__/GetJourneySlugs'
 import i18nConfig from '../../next-i18next.config'
 import { GET_JOURNEY, GET_JOURNEY_SLUGS } from '../[journeySlug]'
+import { StepFields } from '../../__generated__/StepFields'
 
 interface JourneyPageProps {
   journey: Journey
@@ -23,6 +26,14 @@ interface JourneyPageProps {
 }
 
 function JourneyPage({ journey, locale, rtl }: JourneyPageProps): ReactElement {
+  const blocks = useMemo(() => {
+    return transformer(journey.blocks ?? [])
+  }, [journey])
+
+  const theme =
+    blocks.length > 0
+      ? getStepTheme(blocks[0] as TreeBlock<StepFields>, journey)
+      : { themeName: journey.themeName, themeMode: journey.themeMode }
   return (
     <>
       <NextSeo
@@ -67,12 +78,7 @@ function JourneyPage({ journey, locale, rtl }: JourneyPageProps): ReactElement {
         }
       `}</style>
       <JourneyProvider value={{ journey }}>
-        <ThemeProvider
-          themeName={journey.themeName}
-          themeMode={journey.themeMode}
-          rtl={rtl}
-          locale={locale}
-        >
+        <ThemeProvider {...theme} rtl={rtl} locale={locale}>
           {journey.blocks != null && (
             <EmbeddedPreview blocks={transformer(journey.blocks)} />
           )}
