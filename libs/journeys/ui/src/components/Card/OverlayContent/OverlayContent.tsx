@@ -7,7 +7,7 @@ interface OverlayContentProps {
   sx: SxProps
 }
 
-export default function OverlayContent({
+export function OverlayContent({
   children,
   sx
 }: OverlayContentProps): ReactElement {

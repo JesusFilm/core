@@ -3,7 +3,7 @@ import Stack from '@mui/material/Stack'
 import { NextImage } from '@core/shared/ui/NextImage'
 import type { TreeBlock } from '../../../libs/block'
 import { ImageFields } from '../../Image/__generated__/ImageFields'
-import OverlayContent from '../OverlayContent'
+import { OverlayContent } from '../OverlayContent'
 
 interface ExpandedCoverProps {
   children: ReactNode

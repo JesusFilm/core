@@ -1,1 +1,1 @@
-export { default } from './OverlayContent'
+export { OverlayContent } from './OverlayContent'
