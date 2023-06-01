@@ -19,8 +19,17 @@ import {
   JourneyStatus
 } from '../../../__generated__/globalTypes'
 import { basic } from '../../libs/testData/storyData'
-import { JOURNEY_VIEW_EVENT_CREATE } from './Conductor'
+import { JOURNEY_VIEW_EVENT_CREATE, JOURNEY_VISITOR_UPDATE } from './Conductor'
 import { Conductor } from '.'
+
+jest.mock('react-i18next', () => ({
+  __esModule: true,
+  useTranslation: () => {
+    return {
+      t: (str: string) => str
+    }
+  }
+}))
 
 jest.mock('@core/shared/ui/useBreakpoints', () => ({
   __esModule: true,
@@ -45,6 +54,18 @@ const mockedDataLayer = TagManager.dataLayer as jest.MockedFunction<
   typeof TagManager.dataLayer
 >
 
+global.fetch = jest.fn(
+  async () =>
+    await Promise.resolve({
+      json: async () =>
+        await Promise.resolve({
+          city: 'Blenheim',
+          region: 'Marlborough',
+          country: 'New Zealand'
+        })
+    })
+) as jest.Mock
+
 beforeEach(() => {
   const useBreakpointsMock = useBreakpoints as jest.Mock
   useBreakpointsMock.mockReturnValue({
@@ -68,6 +89,21 @@ const rtlLanguage: Language = {
       primary: false
     }
   ]
+}
+
+const visitorUpdateMock = {
+  request: {
+    query: JOURNEY_VISITOR_UPDATE,
+    variables: {
+      input: {
+        countryCode: 'Blenheim, Marlborough, New Zealand',
+        referrer: ''
+      }
+    }
+  },
+  result: {
+    data: { visitorUpdateForCurrentUser: { id: 'uuid', __typename: 'Visitor' } }
+  }
 }
 
 const defaultJourney: Journey = {
@@ -131,7 +167,8 @@ describe('Conductor', () => {
               }
             },
             result
-          }
+          },
+          visitorUpdateMock
         ]}
       >
         <JourneyProvider value={{ journey: defaultJourney }}>
@@ -168,7 +205,8 @@ describe('Conductor', () => {
                 }
               }
             }
-          }
+          },
+          visitorUpdateMock
         ]}
       >
         <JourneyProvider value={{ journey: defaultJourney }}>
