@@ -12,7 +12,7 @@ import { getLaunchDarklyClient } from '@core/shared/ui/getLaunchDarklyClient'
 import Box from '@mui/material/Box'
 import { useRouter } from 'next/router'
 import { GetJourney } from '../../../__generated__/GetJourney'
-import { PageWrapper } from '../../../src/components/PageWrapper'
+import { PageWrapper } from '../../../src/components/NewPageWrapper'
 import { GET_JOURNEY, USER_JOURNEY_OPEN } from '../[journeyId]'
 import { UserInviteAcceptAll } from '../../../__generated__/UserInviteAcceptAll'
 import i18nConfig from '../../../next-i18next.config'
@@ -22,6 +22,7 @@ import { JourneysReportType } from '../../../__generated__/globalTypes'
 import { ACCEPT_USER_INVITE } from '../..'
 import { useTermsRedirect } from '../../../src/libs/useTermsRedirect/useTermsRedirect'
 import { UserJourneyOpen } from '../../../__generated__/UserJourneyOpen'
+import { ReportsNavigation } from '../../../src/components/ReportsNavigation'
 
 function JourneyReportsPage(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
@@ -41,6 +42,11 @@ function JourneyReportsPage(): ReactElement {
         backHref={`/journeys/${journeyId}`}
       >
         <Box sx={{ height: 'calc(100vh - 48px)' }}>
+          <ReportsNavigation
+            reportType={JourneysReportType.singleFull}
+            journeyId={journeyId}
+            selected="journeys"
+          />
           <MemoizedDynamicReport
             reportType={JourneysReportType.singleFull}
             journeyId={journeyId}
