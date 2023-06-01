@@ -106,7 +106,7 @@ export function VisitorsList(): ReactElement {
     <Stack
       spacing={6}
       sx={{
-        height: { xs: '600px', sm: '100%' },
+        height: { xs: '600px', sm: '600px', md: '100%' },
         alignItems: 'center'
       }}
     >
