@@ -1,17 +1,22 @@
 import { ReactElement, ReactNode } from 'react'
 import Stack from '@mui/material/Stack'
+import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { usePageWrapperStyles } from '../utils/usePageWrapperStyles'
 
 export interface MainPanelBodyProps {
   children: ReactNode
   bottomPanelChildren?: ReactNode
+  isEdit?: boolean
 }
 
 export function MainPanelBody({
   children,
-  bottomPanelChildren
+  bottomPanelChildren,
+  isEdit
 }: MainPanelBodyProps): ReactElement {
   const { navbar, bottomPanel } = usePageWrapperStyles()
+  const { state } = useEditor()
+  console.log(state)
 
   return (
     <Stack
@@ -30,8 +35,8 @@ export function MainPanelBody({
         sx={{
           // Make optional or remove during cooldown
           // backgroundColor: 'background.paper',
-          px: { xs: 6, sm: 8 },
-          py: { xs: 6, sm: 9 },
+          px: { xs: isEdit != null ? 0 : 6, sm: isEdit != null ? 0 : 8 },
+          py: { xs: isEdit != null ? 0 : 6, sm: isEdit != null ? 0 : 9 },
           mb: bottomPanelChildren != null ? bottomPanel.height : 0
         }}
       >

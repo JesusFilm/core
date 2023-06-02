@@ -16,9 +16,11 @@ import {
   VideoBlockSource
 } from '../../../__generated__/globalTypes'
 import { GetJourney_journey_blocks } from '../../../__generated__/GetJourney'
-import { PageWrapper } from '../PageWrapper'
+import { PageWrapper } from '../NewPageWrapper'
 import { JourneyEdit } from './JourneyEdit'
 import { EditToolbar } from './EditToolbar'
+import { Drawer } from './Drawer'
+import { DrawerTitle } from './Drawer/DrawerTitle'
 import { Editor } from '.'
 
 const EditorStory = {
@@ -604,9 +606,10 @@ const Template: Story = (args) => (
       >
         <PageWrapper
           title={args.journey?.title ?? 'Edit Journey'}
-          showDrawer
           menu={<EditToolbar />}
           backHref="/journeys/nua-journey-ep-3-decision"
+          sidePanelTitle={<DrawerTitle />}
+          sidePanelChildren={<Drawer />}
         >
           <JourneyEdit />
         </PageWrapper>

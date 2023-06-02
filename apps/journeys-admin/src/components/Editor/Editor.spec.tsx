@@ -11,7 +11,11 @@ import {
   ThemeName
 } from '../../../__generated__/globalTypes'
 import { ThemeProvider } from '../ThemeProvider'
+import { PageWrapper } from '../NewPageWrapper'
 import { JourneyEdit } from './JourneyEdit'
+import { EditToolbar } from './EditToolbar'
+import { DrawerTitle } from './Drawer/DrawerTitle'
+import { Drawer } from './Drawer'
 import { Editor } from '.'
 
 describe('Editor', () => {
@@ -71,7 +75,14 @@ describe('Editor', () => {
           <FlagsProvider>
             <ThemeProvider>
               <Editor journey={journey}>
-                <JourneyEdit />
+                <PageWrapper
+                  title="Edit Journey"
+                  menu={<EditToolbar />}
+                  sidePanelTitle={<DrawerTitle />}
+                  sidePanelChildren={<Drawer />}
+                >
+                  <JourneyEdit />
+                </PageWrapper>
               </Editor>
             </ThemeProvider>
           </FlagsProvider>

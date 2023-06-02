@@ -18,7 +18,7 @@ import {
 } from '../../../__generated__/GetJourney'
 import { UserInviteAcceptAll } from '../../../__generated__/UserInviteAcceptAll'
 import { Editor } from '../../../src/components/Editor'
-import { PageWrapper } from '../../../src/components/PageWrapper'
+import { PageWrapper } from '../../../src/components/NewPageWrapper'
 import { GET_JOURNEY, USER_JOURNEY_OPEN } from '../[journeyId]'
 import { JourneyEdit } from '../../../src/components/Editor/JourneyEdit'
 import { EditToolbar } from '../../../src/components/Editor/EditToolbar'
@@ -28,6 +28,8 @@ import { ACCEPT_USER_INVITE } from '../..'
 import { useTermsRedirect } from '../../../src/libs/useTermsRedirect/useTermsRedirect'
 import { useInvalidJourneyRedirect } from '../../../src/libs/useInvalidJourneyRedirect/useInvalidJourneyRedirect'
 import { UserJourneyOpen } from '../../../__generated__/UserJourneyOpen'
+import { Drawer } from '../../../src/components/Editor/Drawer'
+import { DrawerTitle } from '../../../src/components/Editor/Drawer/DrawerTitle'
 
 function JourneyEditPage(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
@@ -38,6 +40,7 @@ function JourneyEditPage(): ReactElement {
   })
   useTermsRedirect()
   useInvalidJourneyRedirect(data)
+  const isEdit = true
 
   return (
     <>
@@ -56,10 +59,12 @@ function JourneyEditPage(): ReactElement {
       >
         <PageWrapper
           title={data?.journey?.title ?? t('Edit Journey')}
-          showDrawer
           backHref={`/journeys/${router.query.journeyId as string}`}
           menu={<EditToolbar />}
           authUser={AuthUser}
+          sidePanelTitle={<DrawerTitle />}
+          sidePanelChildren={<Drawer />}
+          isEdit={isEdit}
         >
           <JourneyEdit />
         </PageWrapper>

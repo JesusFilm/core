@@ -28,6 +28,7 @@ interface PageWrapperProps {
   authUser?: AuthUser
   initialState?: Partial<PageState>
   backHrefHistory?: boolean
+  isEdit?: boolean
 }
 
 export function PageWrapper({
@@ -41,7 +42,8 @@ export function PageWrapper({
   children,
   authUser,
   initialState,
-  backHrefHistory
+  backHrefHistory,
+  isEdit
 }: PageWrapperProps): ReactElement {
   const [open, setOpen] = useState<boolean>(false)
   const theme = useTheme()
@@ -54,8 +56,7 @@ export function PageWrapper({
       <Box
         sx={{
           height: viewportHeight ?? '100vh',
-          overflow: 'hidden',
-          [theme.breakpoints.down('md')]: { overflowY: 'auto' }
+          overflow: 'hidden'
         }}
       >
         <Stack direction={{ md: 'row' }} sx={{ height: 'inherit' }}>
@@ -83,6 +84,7 @@ export function PageWrapper({
             <Stack
               component="main"
               sx={{
+                [theme.breakpoints.down('md')]: { overflowY: 'auto' },
                 width: {
                   xs: 'inherit',
                   md:
@@ -98,7 +100,10 @@ export function PageWrapper({
                 menu={customMenu}
                 backHrefHistory={backHrefHistory}
               />
-              <MainPanelBody bottomPanelChildren={bottomPanelChildren}>
+              <MainPanelBody
+                bottomPanelChildren={bottomPanelChildren}
+                isEdit={isEdit}
+              >
                 {children}
               </MainPanelBody>
             </Stack>

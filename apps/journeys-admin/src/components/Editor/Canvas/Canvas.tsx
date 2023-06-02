@@ -56,7 +56,17 @@ export function Canvas(): ReactElement {
           EDGE_SLIDE_WIDTH * 2) /
           2
       )
-      setSpaceBetween(spaceBetween)
+      const midBreakPointSpace = Math.max(
+        MIN_SPACE_BETWEEN,
+        (window.innerWidth -
+          Number(smUp) * TASKBAR_WIDTH -
+          362 -
+          EDGE_SLIDE_WIDTH * 2) /
+          2
+      )
+      window.innerWidth < 900 && window.innerWidth >= 600
+        ? setSpaceBetween(midBreakPointSpace)
+        : setSpaceBetween(spaceBetween)
     }
 
     // Set initial windowWidth
