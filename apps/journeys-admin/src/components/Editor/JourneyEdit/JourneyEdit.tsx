@@ -7,7 +7,6 @@ import {
 import { Theme } from '@mui/system/createTheme'
 import { Canvas } from '../Canvas'
 import { ControlPanel } from '../ControlPanel'
-// import { Drawer, DRAWER_WIDTH } from '../Drawer'
 import { ActionsTable } from '../ActionsTable'
 import { SocialPreview } from '../SocialPreview/SocialPreview'
 
@@ -39,7 +38,6 @@ export function JourneyEdit(): ReactElement {
           display: 'flex',
           height: 'calc(100vh - 48px)',
           flexDirection: 'column'
-          // marginRight: { sm: `${DRAWER_WIDTH}px` }
         }}
       >
         <Box
@@ -72,7 +70,6 @@ export function JourneyEdit(): ReactElement {
         </Box>
         <ControlPanel />
       </Box>
-      {/* <Drawer /> */}
     </>
   )
 }

@@ -1,6 +1,5 @@
 import { ReactElement, ReactNode } from 'react'
 import Stack from '@mui/material/Stack'
-import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { usePageWrapperStyles } from '../utils/usePageWrapperStyles'
 
 export interface MainPanelBodyProps {
@@ -15,8 +14,6 @@ export function MainPanelBody({
   isEdit
 }: MainPanelBodyProps): ReactElement {
   const { navbar, bottomPanel } = usePageWrapperStyles()
-  const { state } = useEditor()
-  console.log(state)
 
   return (
     <Stack
