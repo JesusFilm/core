@@ -1,10 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing'
-
+import { PrismaService } from '../../lib/prisma.service'
 import { UserResolver } from './user.resolver'
-import { UserService } from './user.service'
 
 describe('UserResolver', () => {
-  let resolver: UserResolver
+  let resolver: UserResolver, prisma: PrismaService
 
   const user = {
     id: '1',
@@ -15,32 +14,32 @@ describe('UserResolver', () => {
   }
 
   beforeEach(async () => {
-    const userService = {
-      provide: UserService,
-      useFactory: () => ({
-        get: jest.fn(() => user),
-        getByUserId: jest.fn(() => user),
-        getAll: jest.fn(() => [user, user]),
-        save: jest.fn((input) => input)
-      })
-    }
     const module: TestingModule = await Test.createTestingModule({
-      providers: [UserResolver, userService]
+      providers: [UserResolver, PrismaService]
     }).compile()
     resolver = module.get<UserResolver>(UserResolver)
+    prisma = module.get<PrismaService>(PrismaService)
   })
 
   describe('me', () => {
     it('returns User', async () => {
+      prisma.user.findUnique = jest.fn().mockReturnValueOnce(user)
       expect(await resolver.me(user.id)).toEqual(user)
+      expect(prisma.user.findUnique).toHaveBeenCalledWith({
+        where: { userId: user.id }
+      })
     })
   })
 
   describe('resolveReference', () => {
     it('returns User', async () => {
+      prisma.user.findUnique = jest.fn().mockReturnValueOnce(user)
       expect(
         await resolver.resolveReference({ __typename: 'User', id: user.id })
       ).toEqual(user)
+      expect(prisma.user.findUnique).toHaveBeenCalledWith({
+        where: { userId: user.id }
+      })
     })
   })
 })

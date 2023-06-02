@@ -4,7 +4,7 @@ printenv GCLOUD > /gcloud.json
 export GOOGLE_APPLICATION_CREDENTIALS="/gcloud.json"
 gcloud auth activate-service-account jfp-core@jfp-data-warehouse.iam.gserviceaccount.com --key-file="/gcloud.json" --project=jfp-data-warehouse
 
-collections=("journeys" "languages" "users" "countries")
+collections=("journeys" "languages" "countries")
 for collection in "${collections[@]}"
 do
   echo "Exporting $collection from ArangoDB"
