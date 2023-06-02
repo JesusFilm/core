@@ -44,7 +44,7 @@ describe('LinkAction', () => {
     expect(getByLabelText('Paste URL here...')).toBeInTheDocument()
   })
 
-  it('displays the aciton url', async () => {
+  it('displays the action url', async () => {
     const { getByDisplayValue } = render(
       <MockedProvider>
         <EditorProvider initialState={{ selectedBlock }}>

@@ -179,7 +179,6 @@ export function Video({
         height: '100%',
         minHeight: 'inherit',
         backgroundColor: VIDEO_BACKGROUND_COLOR,
-        borderRadius: 4,
         overflow: 'hidden',
         m: 0,
         position: 'absolute',
