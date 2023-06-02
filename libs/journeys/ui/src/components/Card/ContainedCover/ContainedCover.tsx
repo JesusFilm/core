@@ -149,128 +149,126 @@ export function ContainedCover({
           </>
         )}
       </Box>
-      <Stack flexDirection="column-reverse" sx={{ height: '100%' }}>
-        <Stack
-          data-testid="overlay-content-container"
-          sx={{
-            position: 'relative',
-            zIndex: 1,
-            width: '100%',
-            height: { lg: '100%' },
-            justifyContent: { xs: 'flex-end', lg: 'center' },
-            alignItems: { lg: rtl ? 'flex-start' : 'flex-end' }
-          }}
-        >
-          {children.length !== 0 ? (
-            <>
-              <Stack
-                data-testid="overlay-blur"
-                sx={{
-                  width: { xs: videoBlock != null ? '100%' : '0%', lg: 380 },
-                  height: { xs: videoBlock != null ? '85%' : '0%', lg: '100%' },
-                  flexDirection: {
-                    xs: 'column-reverse',
-                    lg: rtl ? 'row' : 'row-reverse'
-                  },
-                  position: 'absolute'
-                }}
-              >
-                <StyledSoftBlurBackground
-                  sx={{ width: { lg: 500 }, height: contentHeight - 40 }}
-                />
-                <StyledSoftBlurBackground
-                  sx={{ width: { lg: 450 }, height: contentHeight - 80 }}
-                />
-                <StyledSoftBlurBackground
-                  sx={{ width: { lg: 400 }, height: contentHeight * 0.9 - 80 }}
-                />
-                <StyledBlurBackground
-                  sx={{ width: { lg: 350 }, height: contentHeight * 0.8 - 80 }}
-                />
-                <StyledBlurBackground
-                  sx={{ width: { lg: 325 }, height: contentHeight * 0.7 - 80 }}
-                />
-                <StyledBlurBackground
-                  sx={{ width: { lg: 275 }, height: contentHeight * 0.6 - 80 }}
-                />
-                <StyledBlurBackground
-                  sx={{ width: { lg: 250 }, height: contentHeight * 0.5 - 80 }}
-                />
-              </Stack>
-
-              <Stack
-                ref={contentRef}
-                data-testid="overlay-gradient"
-                flexDirection="row"
-                justifyContent="center"
-                sx={{
-                  position: 'absolute',
-                  width: '100%',
-                  height: { xs: '100%', lg: '100%' },
-                  maxWidth: { xs: '100%', lg: '380px' },
-                  pt: { xs: videoBlock != null ? 40 : 5, lg: 0 },
-                  pb: { xs: 10, lg: 0 },
-                  pl: { lg: 50 },
-                  WebkitMask: {
-                    xs: overlayGradient('bottom'),
-                    lg: overlayGradient(rtl ? 'left' : 'right')
-                  },
-                  mask: {
-                    xs: overlayGradient('bottom'),
-                    lg: overlayGradient(rtl ? 'left' : 'right')
-                  },
-                  backgroundColor: `${backgroundColor}d9`
-                }}
-              />
-              <OverlayContent
-                sx={{
-                  // This should match width of journey card content in admin
-                  width: { lg: '312px' },
-                  maxHeight: { xs: '55vh', lg: '100%' },
-                  px: { xs: 6, lg: 10 },
-                  mb: { xs: 9, lg: 0 }
-                }}
-              >
-                {children}
-              </OverlayContent>
-            </>
-          ) : (
-            <StyledGradientBackground
-              className="overlay-gradient"
+      {/* Background image, after overlay-content-container temp fix embed render bug */}
+      <Box
+        data-testid="overlay-image-container"
+        sx={{
+          width: '100%',
+          height: '100%',
+          flexGrow: 1,
+          zIndex: 1,
+          top: 0,
+          position: { xs: 'relative', lg: 'absolute' },
+          WebkitMask: { xs: overlayImageMask, lg: 'unset' },
+          mask: { xs: overlayImageMask, lg: 'unset' }
+        }}
+      >
+        {imageBlock != null && backgroundBlur != null && (
+          <NextImage
+            data-testid="background-image"
+            src={imageBlock?.src ?? backgroundBlur}
+            alt={imageBlock?.alt}
+            placeholder="blur"
+            blurDataURL={backgroundBlur}
+            layout="fill"
+            objectFit="cover"
+          />
+        )}
+      </Box>
+      <Stack
+        data-testid="overlay-content-container"
+        sx={{
+          position: 'relative',
+          zIndex: 1,
+          width: '100%',
+          height: { lg: '100%' },
+          justifyContent: { xs: 'flex-end', lg: 'center' },
+          alignItems: { lg: rtl ? 'flex-start' : 'flex-end' }
+        }}
+      >
+        {children.length !== 0 ? (
+          <>
+            <Stack
+              data-testid="overlay-blur"
               sx={{
-                background: {
-                  xs: `linear-gradient(to top,  ${backgroundColor}ff 0%, ${backgroundColor}33 60%, ${backgroundColor}00 100%)`,
-                  lg: 'unset'
-                }
+                width: { xs: videoBlock != null ? '100%' : '0%', lg: 380 },
+                height: { xs: videoBlock != null ? '85%' : '0%', lg: '100%' },
+                flexDirection: {
+                  xs: 'column-reverse',
+                  lg: rtl ? 'row' : 'row-reverse'
+                },
+                position: 'absolute'
+              }}
+            >
+              <StyledSoftBlurBackground
+                sx={{ width: { lg: 500 }, height: contentHeight - 40 }}
+              />
+              <StyledSoftBlurBackground
+                sx={{ width: { lg: 450 }, height: contentHeight - 80 }}
+              />
+              <StyledSoftBlurBackground
+                sx={{ width: { lg: 400 }, height: contentHeight * 0.9 - 80 }}
+              />
+              <StyledBlurBackground
+                sx={{ width: { lg: 350 }, height: contentHeight * 0.8 - 80 }}
+              />
+              <StyledBlurBackground
+                sx={{ width: { lg: 325 }, height: contentHeight * 0.7 - 80 }}
+              />
+              <StyledBlurBackground
+                sx={{ width: { lg: 275 }, height: contentHeight * 0.6 - 80 }}
+              />
+              <StyledBlurBackground
+                sx={{ width: { lg: 250 }, height: contentHeight * 0.5 - 80 }}
+              />
+            </Stack>
+
+            <Stack
+              ref={contentRef}
+              data-testid="overlay-gradient"
+              flexDirection="row"
+              justifyContent="center"
+              sx={{
+                position: 'absolute',
+                width: '100%',
+                height: { xs: '100%', lg: '100%' },
+                maxWidth: { xs: '100%', lg: '380px' },
+                pt: { xs: videoBlock != null ? 40 : 5, lg: 0 },
+                pb: { xs: 10, lg: 0 },
+                pl: { lg: 50 },
+                WebkitMask: {
+                  xs: overlayGradient('bottom'),
+                  lg: overlayGradient(rtl ? 'left' : 'right')
+                },
+                mask: {
+                  xs: overlayGradient('bottom'),
+                  lg: overlayGradient(rtl ? 'left' : 'right')
+                },
+                backgroundColor: `${backgroundColor}d9`
               }}
             />
-          )}
-        </Stack>
-        {/* Background image, after overlay-content-container temp fix embed render bug */}
-        {imageBlock != null && backgroundBlur != null && (
-          <Box
-            data-testid="overlay-image-container"
+            <OverlayContent
+              sx={{
+                // This should match width of journey card content in admin
+                width: { lg: '312px' },
+                maxHeight: { xs: '55vh', lg: '100%' },
+                px: { xs: 6, lg: 10 },
+                mb: { xs: 9, lg: 0 }
+              }}
+            >
+              {children}
+            </OverlayContent>
+          </>
+        ) : (
+          <StyledGradientBackground
+            className="overlay-gradient"
             sx={{
-              width: '100%',
-              height: '100%',
-              flexGrow: 1,
-              zIndex: 0,
-              top: 0,
-              position: { xs: 'relative', lg: 'absolute' },
-              WebkitMask: { xs: overlayImageMask, lg: 'unset' },
-              mask: { xs: overlayImageMask, lg: 'unset' }
+              background: {
+                xs: `linear-gradient(to top,  ${backgroundColor}ff 0%, ${backgroundColor}33 60%, ${backgroundColor}00 100%)`,
+                lg: 'unset'
+              }
             }}
-          >
-            <NextImage
-              data-testid="background-image"
-              src={imageBlock?.src ?? backgroundBlur}
-              alt={imageBlock?.alt}
-              placeholder="blur"
-              blurDataURL={backgroundBlur}
-              layout="fill"
-              objectFit="cover"
-            />
-          </Box>
+          />
         )}
       </Stack>
     </>

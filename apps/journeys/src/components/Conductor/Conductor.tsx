@@ -228,7 +228,7 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
           background: theme.palette.grey[900]
         }}
       >
-        <Box>
+        <Box sx={{ height: { xs: '100%', lg: 'unset' } }}>
           <StyledSwiperContainer
             dir={!rtl ? 'ltr' : 'rtl'}
             pagination={{ dynamicBullets: true }}
