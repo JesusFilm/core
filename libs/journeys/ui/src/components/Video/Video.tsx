@@ -321,7 +321,13 @@ export function Video({
           src={videoImage}
           alt="video image"
           layout="fill"
-          objectFit="cover"
+          objectFit={videoFit}
+          style={{
+            transform:
+              objectFit === VideoBlockObjectFit.zoomed
+                ? 'scale(1.33)'
+                : undefined
+          }}
         />
       )}
       {/* Lazy load higher res poster */}
@@ -332,7 +338,13 @@ export function Video({
           placeholder={blurBackground != null ? 'blur' : 'empty'}
           blurDataURL={blurBackground}
           layout="fill"
-          objectFit="cover"
+          objectFit={videoFit}
+          style={{
+            transform:
+              objectFit === VideoBlockObjectFit.zoomed
+                ? 'scale(1.33)'
+                : undefined
+          }}
         />
       )}
     </Box>
