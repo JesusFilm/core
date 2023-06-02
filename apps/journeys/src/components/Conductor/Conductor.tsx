@@ -42,6 +42,7 @@ export const JOURNEY_VIEW_EVENT_CREATE = gql`
 
 const StyledSwiperContainer = styled(Swiper)(({ theme }) => ({
   background: theme.palette.grey[900],
+  height: 'inherit',
   '.swiper-pagination': {
     height: 16,
     top: 16
@@ -258,7 +259,7 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
                         justifyContent="center"
                         sx={{
                           maxHeight: { xs: '100vh', lg: 'calc(100vh - 160px)' },
-                          height: { xs: '100vh', lg: '56.25vw' },
+                          height: { xs: 'inherit', lg: '56.25vw' },
                           px: { lg: 6 }
                         }}
                       >
