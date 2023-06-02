@@ -4,7 +4,6 @@ import { PrismaService } from '../../lib/prisma.service'
 import { BlockService } from '../block/block.service'
 import { JourneyService } from '../journey/journey.service'
 import { VisitorService } from '../visitor/visitor.service'
-import { PrismaService } from '../../lib/prisma.service'
 import { EventService } from './event.service'
 import { EventResolver } from './event.resolver'
 import {

@@ -24,8 +24,6 @@ services:
       PGPASSWORD: postgres
       PGUSER: postgres
       PGDATABASE: postgres
-    extra_hosts:
-      - 'host.docker.internal:host-gateway'
   arangodb:
     image: arangodb/arangodb:3.8.8
     volumes:

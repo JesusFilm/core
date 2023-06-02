@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common'
 import { v4 as uuidv4 } from 'uuid'
-import { Visitor } from '.prisma/api-journeys-client'
+import { Visitor, JourneyVisitor } from '.prisma/api-journeys-client'
 import { PageInfo } from '../../__generated__/graphql'
 import { PrismaService } from '../../lib/prisma.service'
 
@@ -56,7 +56,10 @@ export class VisitorService {
   async getByUserIdAndJourneyId(
     userId: string,
     journeyId: string
-  ): Promise<Visitor> {
+  ): Promise<{
+    visitor: Visitor
+    journeyVisitor: JourneyVisitor
+  }> {
     const journey = await this.prismaService.journey.findUnique({
       where: {
         id: journeyId

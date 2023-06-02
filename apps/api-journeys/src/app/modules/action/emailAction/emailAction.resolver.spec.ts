@@ -1,10 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing'
-import { Database } from 'arangojs'
-import { mockDeep } from 'jest-mock-extended'
+import { PrismaService } from '../../../lib/prisma.service'
 import { BlockResolver } from '../../block/block.resolver'
 import { BlockService } from '../../block/block.service'
 import { JourneyService } from '../../journey/journey.service'
-import { MemberService } from '../../member/member.service'
 import { UserJourneyService } from '../../userJourney/userJourney.service'
 import { UserRoleService } from '../../userRole/userRole.service'
 import { ActionResolver } from '../action.resolver'
@@ -54,11 +52,7 @@ describe('EmailActionResolver', () => {
         UserJourneyService,
         UserRoleService,
         JourneyService,
-        MemberService,
-        {
-          provide: 'DATABASE',
-          useFactory: () => mockDeep<Database>()
-        }
+        PrismaService
       ]
     }).compile()
     resolver = module.get<EmailActionResolver>(EmailActionResolver)

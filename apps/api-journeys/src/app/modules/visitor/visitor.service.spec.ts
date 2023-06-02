@@ -60,7 +60,7 @@ describe('VisitorService', () => {
 
   describe('getList', () => {
     const connection = {
-      results: [],
+      edges: [],
       pageInfo: {
         hasNextPage: false,
         startCursor: null,

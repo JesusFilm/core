@@ -255,7 +255,7 @@ describe('ActionResolver', () => {
           UserJourneyService,
           UserRoleService,
           JourneyService,
-          MemberService,
+          PrismaService,
           {
             provide: 'DATABASE',
             useFactory: () => mockDeep<Database>()

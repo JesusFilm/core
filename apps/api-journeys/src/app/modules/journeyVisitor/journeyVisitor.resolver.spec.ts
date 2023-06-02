@@ -5,7 +5,6 @@ import {
 } from '../../__generated__/graphql'
 import { PrismaService } from '../../lib/prisma.service'
 import { EventService } from '../event/event.service'
-import { MemberService } from '../member/member.service'
 
 import { JourneyVisitorResolver } from './journeyVisitor.resolver'
 import {
@@ -54,20 +53,6 @@ describe('JourneyVisitorResolver', () => {
     teamId: 'teamId'
   }
 
-  const memberService = {
-    provide: MemberService,
-    useFactory: () => ({
-      getMemberByTeamId: jest.fn((_userId, teamId) => {
-        switch (teamId) {
-          case 'teamId':
-            return member
-          case 'differentTeamId':
-            return undefined
-        }
-      })
-    })
-  }
-
   const event = {
     id: 'eventId'
   }
@@ -84,7 +69,6 @@ describe('JourneyVisitorResolver', () => {
       providers: [
         JourneyVisitorResolver,
         journeyVisitorService,
-        memberService,
         eventService,
         PrismaService
       ]
@@ -94,6 +78,7 @@ describe('JourneyVisitorResolver', () => {
     prisma = module.get<PrismaService>(PrismaService)
     prisma.event.findMany = jest.fn().mockReturnValue([event])
     prisma.visitor.findUnique = jest.fn().mockReturnValue(visitor)
+    prisma.member.findUnique = jest.fn().mockResolvedValueOnce(member)
   })
 
   describe('visitor', () => {
