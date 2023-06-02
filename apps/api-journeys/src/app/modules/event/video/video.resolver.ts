@@ -40,8 +40,8 @@ export class VideoStartEventResolver {
     return await this.eventService.save({
       ...input,
       id: input.id ?? undefined,
-      __typename: 'VideoStartEvent',
-      visitorId: visitor.id,
+      typename: 'VideoStartEvent',
+      visitor: { connect: { id: visitor.id } },
       stepId: input.stepId ?? undefined,
       journeyId
     })
@@ -71,8 +71,8 @@ export class VideoPlayEventResolver {
     return await this.eventService.save({
       ...input,
       id: input.id ?? undefined,
-      __typename: 'VideoPlayEvent',
-      visitorId: visitor.id,
+      typename: 'VideoPlayEvent',
+      visitor: { connect: { id: visitor.id } },
       stepId: input.stepId ?? undefined,
       journeyId
     })
@@ -103,10 +103,10 @@ export class VideoPauseEventResolver {
     return await this.eventService.save({
       ...input,
       id: input.id ?? undefined,
-      __typename: 'VideoPauseEvent',
-      visitorId: visitor.id,
-      stepId: input.stepId ?? undefined,
-      journeyId
+      typename: 'VideoPauseEvent',
+      visitor: { connect: { id: visitor.id } },
+      journeyId,
+      stepId: input.stepId ?? undefined
     })
   }
 
@@ -135,10 +135,10 @@ export class VideoCompleteEventResolver {
     return await this.eventService.save({
       ...input,
       id: input.id ?? undefined,
-      __typename: 'VideoCompleteEvent',
-      visitorId: visitor.id,
-      stepId: input.stepId ?? undefined,
-      journeyId
+      typename: 'VideoCompleteEvent',
+      visitor: { connect: { id: visitor.id } },
+      journeyId,
+      stepId: input.stepId ?? undefined
     })
   }
 
@@ -167,10 +167,10 @@ export class VideoExpandEventResolver {
     return await this.eventService.save({
       ...input,
       id: input.id ?? undefined,
-      __typename: 'VideoExpandEvent',
-      visitorId: visitor.id,
-      stepId: input.stepId ?? undefined,
-      journeyId
+      typename: 'VideoExpandEvent',
+      visitor: { connect: { id: visitor.id } },
+      journeyId,
+      stepId: input.stepId ?? undefined
     })
   }
 
@@ -199,10 +199,10 @@ export class VideoCollapseEventResolver {
     return await this.eventService.save({
       ...input,
       id: input.id ?? undefined,
-      __typename: 'VideoCollapseEvent',
-      visitorId: visitor.id,
-      stepId: input.stepId ?? undefined,
-      journeyId
+      typename: 'VideoCollapseEvent',
+      visitor: { connect: { id: visitor.id } },
+      journeyId,
+      stepId: input.stepId ?? undefined
     })
   }
 
@@ -231,10 +231,10 @@ export class VideoProgressEventResolver {
     return await this.eventService.save({
       ...input,
       id: input.id ?? undefined,
-      __typename: 'VideoProgressEvent',
-      visitorId: visitor.id,
-      stepId: input.stepId ?? undefined,
-      journeyId
+      typename: 'VideoProgressEvent',
+      visitor: { connect: { id: visitor.id } },
+      journeyId,
+      stepId: input.stepId ?? undefined
     })
   }
 

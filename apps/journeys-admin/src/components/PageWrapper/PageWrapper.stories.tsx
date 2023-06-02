@@ -3,12 +3,11 @@ import IconButton from '@mui/material/IconButton'
 import MenuRounded from '@mui/icons-material/MenuRounded'
 import { noop } from 'lodash'
 import { MockedProvider } from '@apollo/client/testing'
-import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 import { journeysAdminConfig } from '../../libs/storybook'
 import { Role } from '../../../__generated__/globalTypes'
 import { GET_USER_ROLE } from '../JourneyView/JourneyView'
+import { GET_ME } from '../NewPageWrapper/NavigationDrawer'
 import { PageWrapperProps } from './PageWrapper'
-import { GET_ME } from './NavigationDrawer/NavigationDrawer'
 import { PageWrapper } from '.'
 
 const PageWrapperStory = {
@@ -55,9 +54,7 @@ const Template: Story = ({ ...args }) => (
       }
     ]}
   >
-    <FlagsProvider flags={{ templates: args.templates }}>
-      <PageWrapper {...(args.props as unknown as PageWrapperProps)} />
-    </FlagsProvider>
+    <PageWrapper {...(args.props as unknown as PageWrapperProps)} />
   </MockedProvider>
 )
 
@@ -83,8 +80,7 @@ Complete.args = {
         <MenuRounded />
       </IconButton>
     )
-  },
-  templates: true
+  }
 }
 
 export default PageWrapperStory as Meta

@@ -35,7 +35,7 @@ export class JourneyViewEventResolver {
     if (journey == null) {
       throw new UserInputError('Journey does not exist')
     }
-    const visitor = await this.visitorService.getByUserIdAndJourneyId(
+    const { visitor } = await this.visitorService.getByUserIdAndJourneyId(
       userId,
       input.journeyId
     )
@@ -44,15 +44,18 @@ export class JourneyViewEventResolver {
       this.eventService.save({
         ...input,
         id: input.id ?? undefined,
-        __typename: 'JourneyViewEvent',
-        visitorId: visitor.id
+        typename: 'JourneyViewEvent',
+        visitor: { connect: { id: visitor.id } }
       })
     ]
 
     if (visitor.userAgent == null) {
       promises.push(
-        this.visitorService.update(visitor.id, {
-          userAgent
+        this.prismaService.visitor.update({
+          where: { id: visitor.id },
+          data: {
+            userAgent
+          }
         })
       )
     }

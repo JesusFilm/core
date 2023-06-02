@@ -8,44 +8,6 @@ datasource db {
   url      = env("PG_DATABASE_URL")
 }
 
-enum ButtonAction {
-  NavigateAction
-  NavigateToBlockAction
-  NavigateToJourneyAction
-  LinkAction
-}
-
-enum VideoBlockSource {
-  internal
-  youTube
-}
-
-model Event {
-  id                 String            @id @default(uuid())
-  typename           String
-  journeyId          String?
-  blockId            String?
-  stepId             String?
-  createdAt          DateTime          @default(now())
-  label              String?
-  value              String?
-  visitorId          String
-  Visitor            Visitor           @relation(fields: [visitorId], references: [id])
-  action             ButtonAction?
-  actionValue        String?
-  messagePlatform    MessagePlatform?
-  languageId         String?
-  radioOptionBlockId String?
-  email              String?
-  nextStepId         String?
-  position           Float?
-  source             VideoBlockSource?
-  progress           Int?
-  userId             String?
-
-  @@index([id, journeyId, visitorId, blockId, userId])
-}
-
 enum MessagePlatform {
   facebook
   telegram
@@ -81,10 +43,53 @@ enum DeviceType {
   embedded
 }
 
+enum ButtonAction {
+  NavigateAction
+  NavigateToBlockAction
+  NavigateToJourneyAction
+  LinkAction
+  EmailAction
+}
+
+enum VideoBlockSource {
+  internal
+  youTube
+}
+
+model Event {
+  id                      String            @id @default(uuid())
+  typename                String
+  journeyId               String?
+  blockId                 String?
+  stepId                  String?
+  createdAt               DateTime          @default(now())
+  label                   String?
+  value                   String?
+  visitorId               String
+  action                  ButtonAction?
+  actionValue             String?
+  messagePlatform         MessagePlatform?
+  languageId              String?
+  radioOptionBlockId      String?
+  email                   String?
+  nextStepId              String?
+  position                Float?
+  source                  VideoBlockSource?
+  progress                Int?
+  userId                  String?
+  journeyVisitorJourneyId String?
+  journeyVisitorVisitorId String?
+  visitor                 Visitor           @relation(fields: [visitorId], references: [id])
+  journeyVisitor          JourneyVisitor?   @relation(fields: [journeyVisitorJourneyId, journeyVisitorVisitorId], references: [journeyId, visitorId])
+
+  @@index([id, journeyId, visitorId, blockId, userId])
+}
+
 model Visitor {
   id                        String           @id
-  createdAt                 DateTime         @unique @default(now())
+  createdAt                 DateTime         @default(now())
   countryCode               String?
+  duration                  Int              @default(0)
   email                     String?
   events                    Event[]
   lastChatStartedAt         DateTime?
@@ -99,12 +104,35 @@ model Visitor {
   name                      String?
   notes                     String?
   status                    VisitorStatus?
-  team                      Team             @relation(fields: [teamId], references: [id])
+  referrer                  String?
   teamId                    String
   userId                    String
   userAgent                 Json?
+  journeyVisitor            JourneyVisitor[]
+  team                      Team             @relation(fields: [teamId], references: [id])
 
-  @@index([id, teamId, createdAt, userId])
+  @@index([id, teamId, createdAt, userId, status, countryCode])
+}
+
+model JourneyVisitor {
+  id                        String           @id @default(uuid())
+  journeyId                 String
+  visitorId                 String
+  createdAt                 DateTime         @default(now())
+  duration                  Int              @default(0)
+  lastChatStartedAt         DateTime?
+  lastChatPlatform          MessagePlatform?
+  lastStepViewedAt          DateTime?
+  lastLinkAction            String?
+  lastTextResponse          String?
+  lastRadioQuestion         String?
+  lastRadioOptionSubmission String?
+  activityCount             Int              @default(0)
+  visitor                   Visitor          @relation(fields: [visitorId], references: [id])
+  events                    Event[]
+
+  @@unique([journeyId, visitorId])
+  @@index([journeyId, visitorId, createdAt, lastChatStartedAt, lastRadioQuestion, lastTextResponse, activityCount, duration])
 }
 
 model Team {

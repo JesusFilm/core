@@ -80,7 +80,7 @@ const image: TreeBlock<ImageBlock> = {
   __typename: 'ImageBlock',
   parentBlockId: card.id,
   parentOrder: 0,
-  src: 'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/uploadId/public',
+  src: 'https://imagedelivery.net/cloudflare-key/uploadId/public',
   alt: 'public',
   width: 1920,
   height: 1080,
@@ -130,6 +130,19 @@ const video: TreeBlock<VideoBlock> = {
 
 describe('BackgroundMediaImage', () => {
   beforeEach(() => (useMediaQuery as jest.Mock).mockImplementation(() => true))
+
+  let originalEnv
+  beforeEach(() => {
+    originalEnv = process.env
+    process.env = {
+      ...originalEnv,
+      NEXT_PUBLIC_CLOUDFLARE_UPLOAD_KEY: 'cloudflare-key'
+    }
+  })
+
+  afterEach(() => {
+    process.env = originalEnv
+  })
 
   it('creates a new image cover block', async () => {
     const cache = new InMemoryCache()
@@ -324,7 +337,7 @@ describe('BackgroundMediaImage', () => {
                   input: {
                     src: image.src,
                     alt: image.alt,
-                    blurhash: '',
+                    blurhash: undefined,
                     width: 1920,
                     height: 1080
                   }

@@ -16,12 +16,14 @@ import { JourneyProfileModule } from './modules/journeyProfile/journeyProfile.mo
 import { UserRoleModule } from './modules/userRole/userRole.module'
 import { UserInviteModule } from './modules/userInvite/userInvite.module'
 import { VisitorModule } from './modules/visitor/visitor.module'
+import { JourneyVisitorModule } from './modules/journeyVisitor/journeyVisitor.module'
 
 @Module({
   imports: [
     ActionModule,
     BlockModule,
     JourneyModule,
+    JourneyVisitorModule,
     EventModule,
     UserJourneyModule,
     UserInviteModule,

@@ -1,4 +1,4 @@
-// version 3
+// version 5
 // increment to trigger re-seed (ie: files other than seed.ts are changed)
 
 import { ArangoDB } from './db'
@@ -32,6 +32,8 @@ async function main(): Promise<void> {
   await nua9()
   await onboarding()
   await onboardingTemplates()
+
+  // commented out until future migration
   await psMigrate()
 }
 main().catch((e) => {

@@ -1,6 +1,6 @@
 FROM node:16-alpine
 
-ENV PRISMA_LOCATION=/app/node_modules/.prisma/api-tags-client
+ENV PRISMA_LOCATION=/app/node_modules/.prisma/api-journeys-client
 
 RUN apk upgrade --update-cache --available && \
     apk add openssl1.1-compat && \
@@ -10,10 +10,8 @@ WORKDIR /app
 COPY ./tsconfig.base.json /app/tsconfig.base.json
 COPY ./apps/api-journeys /app/apps/api-journeys
 
-WORKDIR /prisma
-COPY ./apps/api-journeys/db .
-RUN npm install --silent prisma@^3.15.2
-RUN npx prisma@^3.15.2 generate
+RUN npm install --save-dev --silent ts-node@10.9.1 tslib@2.3.1 uuid prisma@^4.13.0 @types/node@14.14.33
+RUN npm install --silent arangojs@^7.6.1 @prisma/client@^4.13.0 
+RUN npx prisma@^4.13.0 generate --schema /app/apps/api-journeys/db/schema.prisma
 
-RUN npm install arangojs@^7.6.1 ts-node@^10.9.1 tslib@^2.3.1 uuid prisma@^3.15.2 @prisma/client@^3.15.2
-CMD npx prisma@^3.15.2 migrate deploy --schema /prisma/schema.prisma; npx ts-node /app/apps/api-journeys/db/seed.ts
+CMD npx prisma@^4.13.0 migrate deploy --schema /app/apps/api-journeys/db/schema.prisma; npx ts-node /app/apps/api-journeys/db/seed.ts

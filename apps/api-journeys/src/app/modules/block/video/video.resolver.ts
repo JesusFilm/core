@@ -22,6 +22,9 @@ const videoBlockYouTubeSchema = object().shape({
     'videoId must be a valid YouTube videoId'
   )
 })
+const videoBlockCloudflareSchema = object().shape({
+  videoId: string().nullable()
+})
 const videoBlockInternalSchema = object().shape({
   videoId: string().nullable(),
   videoVariantLanguageId: string().nullable()
@@ -39,6 +42,33 @@ export interface YoutubeVideosData {
       duration: string
     }
   }>
+}
+
+// https://developers.cloudflare.com/api/operations/stream-videos-retrieve-video-details
+export interface CloudflareRetrieveVideoDetailsResponse {
+  result: CloudflareRetrieveVideoDetailsResponseResult | null
+  success: boolean
+  errors: Array<{ code: number; message: string }>
+  messages: Array<{ code: number; message: string }>
+}
+
+interface CloudflareRetrieveVideoDetailsResponseResult {
+  uid: string
+  size: number
+  readyToStream: boolean
+  thumbnail: string
+  duration: number
+  preview: string
+  input: {
+    width: number
+    height: number
+  }
+  playback: {
+    hls: string
+  }
+  meta: {
+    [key: string]: string
+  }
 }
 
 function parseISO8601Duration(duration: string): number {
@@ -88,6 +118,14 @@ export class VideoBlockResolver {
         input = {
           ...input,
           ...(await this.fetchFieldsFromYouTube(input.videoId as string)),
+          objectFit: null
+        }
+        break
+      case VideoBlockSource.cloudflare:
+        await videoBlockInternalSchema.validate(input)
+        input = {
+          ...input,
+          ...(await this.fetchFieldsFromCloudflare(input.videoId as string)),
           objectFit: null
         }
         break
@@ -163,8 +201,19 @@ export class VideoBlockResolver {
         if (input.videoId != null) {
           input = {
             ...input,
-            ...(await this.fetchFieldsFromYouTube(input.videoId)),
-            objectFit: null
+            ...(await this.fetchFieldsFromYouTube(input.videoId))
+          }
+        }
+        break
+      case VideoBlockSource.cloudflare:
+        await videoBlockCloudflareSchema.validate({
+          ...block,
+          ...input
+        })
+        if (input.videoId != null) {
+          input = {
+            ...(await this.fetchFieldsFromCloudflare(input.videoId)),
+            ...input
           }
         }
         break
@@ -238,6 +287,35 @@ export class VideoBlockResolver {
       duration: parseISO8601Duration(
         videosData.items[0].contentDetails.duration
       )
+    }
+  }
+
+  private async fetchFieldsFromCloudflare(
+    videoId: string
+  ): Promise<Pick<VideoBlock, 'title' | 'image' | 'duration' | 'endAt'>> {
+    const response: CloudflareRetrieveVideoDetailsResponse = await (
+      await fetch(
+        `https://api.cloudflare.com/client/v4/accounts/${
+          process.env.CLOUDFLARE_ACCOUNT_ID ?? ''
+        }/stream/${videoId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${process.env.CLOUDFLARE_STREAM_TOKEN ?? ''}`
+          }
+        }
+      )
+    ).json()
+
+    if (response.result == null) {
+      throw new UserInputError('videoId cannot be found on Cloudflare', {
+        videoId: ['videoId cannot be found on Cloudflare']
+      })
+    }
+    return {
+      title: response.result.meta.name ?? response.result.uid,
+      image: `${response.result.thumbnail}?time=2s`,
+      duration: Math.round(response.result.duration),
+      endAt: Math.round(response.result.duration)
     }
   }
 }

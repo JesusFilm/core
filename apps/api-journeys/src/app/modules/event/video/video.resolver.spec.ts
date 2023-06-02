@@ -48,7 +48,8 @@ describe('VideoResolver', () => {
     it('returns VideoStartEvent', async () => {
       expect(await resolver.videoStartEventCreate('userid', input)).toEqual({
         ...input,
-        __typename: 'VideoStartEvent'
+        typename: 'VideoStartEvent',
+        visitor: { connect: { id: 'visitor.id' } }
       })
     })
 
@@ -72,7 +73,8 @@ describe('VideoResolver', () => {
     it('returns VideoPlayEvent', async () => {
       expect(await resolver.videoPlayEventCreate('userid', input)).toEqual({
         ...input,
-        __typename: 'VideoPlayEvent'
+        typename: 'VideoPlayEvent',
+        visitor: { connect: { id: 'visitor.id' } }
       })
     })
 
@@ -96,7 +98,8 @@ describe('VideoResolver', () => {
     it('returns VideoPauseEvent', async () => {
       expect(await resolver.videoPauseEventCreate('userid', input)).toEqual({
         ...input,
-        __typename: 'VideoPauseEvent'
+        typename: 'VideoPauseEvent',
+        visitor: { connect: { id: 'visitor.id' } }
       })
     })
 
@@ -122,7 +125,8 @@ describe('VideoResolver', () => {
     it('returns VideoCompleteEvent', async () => {
       expect(await resolver.videoCompleteEventCreate('userid', input)).toEqual({
         ...input,
-        __typename: 'VideoCompleteEvent'
+        typename: 'VideoCompleteEvent',
+        visitor: { connect: { id: 'visitor.id' } }
       })
     })
 
@@ -146,7 +150,8 @@ describe('VideoResolver', () => {
     it('returns VideoExpandEvent', async () => {
       expect(await resolver.videoExpandEventCreate('userid', input)).toEqual({
         ...input,
-        __typename: 'VideoExpandEvent'
+        typename: 'VideoExpandEvent',
+        visitor: { connect: { id: 'visitor.id' } }
       })
     })
 
@@ -172,7 +177,8 @@ describe('VideoResolver', () => {
     it('returns VideoCollapseEvent', async () => {
       expect(await resolver.videoCollapseEventCreate('userid', input)).toEqual({
         ...input,
-        __typename: 'VideoCollapseEvent'
+        typename: 'VideoCollapseEvent',
+        visitor: { connect: { id: 'visitor.id' } }
       })
     })
 
@@ -205,7 +211,8 @@ describe('VideoResolver', () => {
         await resolver.videoProgressEventCreate('userid', progressInput)
       ).toEqual({
         ...progressInput,
-        __typename: 'VideoProgressEvent'
+        typename: 'VideoProgressEvent',
+        visitor: { connect: { id: 'visitor.id' } }
       })
     })
 

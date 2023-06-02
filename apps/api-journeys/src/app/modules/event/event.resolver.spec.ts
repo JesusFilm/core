@@ -1,26 +1,14 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { PrismaService } from '../../lib/prisma.service'
 import { DbEvent, EventResolver } from './event.resolver'
-import { EventService } from './event.service'
 
 describe('EventResolver', () => {
   let resolver: EventResolver
 
   describe('__resolveType', () => {
-    const event = {
-      id: 'eventId'
-    }
-
-    const eventService = {
-      provide: EventService,
-      useFactory: () => ({
-        getAllByVisitorId: jest.fn(() => [event])
-      })
-    }
-
     beforeEach(async () => {
       const module: TestingModule = await Test.createTestingModule({
-        providers: [EventResolver, eventService, PrismaService]
+        providers: [EventResolver, PrismaService]
       }).compile()
       resolver = module.get<EventResolver>(EventResolver)
     })

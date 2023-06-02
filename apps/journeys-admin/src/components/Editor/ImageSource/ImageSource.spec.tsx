@@ -13,6 +13,19 @@ const onChange = jest.fn()
 const onDelete = jest.fn()
 
 describe('ImageSource', () => {
+  let originalEnv
+  beforeEach(() => {
+    originalEnv = process.env
+    process.env = {
+      ...originalEnv,
+      NEXT_PUBLIC_CLOUDFLARE_UPLOAD_KEY: 'cloudflare-key'
+    }
+  })
+
+  afterEach(() => {
+    process.env = originalEnv
+  })
+
   beforeEach(() => (useMediaQuery as jest.Mock).mockImplementation(() => true))
 
   describe('No existing ImageBlock', () => {

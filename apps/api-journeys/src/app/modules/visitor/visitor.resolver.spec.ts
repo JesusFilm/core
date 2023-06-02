@@ -13,7 +13,7 @@ describe('VisitorResolver', () => {
   let resolver: VisitorResolver, vService: VisitorService, prisma: PrismaService
 
   const connection: VisitorsConnection = {
-    results: [],
+    edges: [],
     pageInfo: {
       hasNextPage: false,
       startCursor: null,
@@ -222,6 +222,31 @@ describe('VisitorResolver', () => {
         device: { model: 'iPhone', type: 'mobile', vendor: 'Apple' },
         os: { name: 'iOS', version: '5.1.1' }
       })
+    })
+  })
+
+  describe('visitorUpdateForCurrentUser', () => {
+    it('returns updated visitor', async () => {
+      prisma.visitor.findFirst = jest.fn().mockReturnValueOnce(visitor)
+      prisma.visitor.update = jest.fn().mockReturnValueOnce({
+        ...visitor,
+        countryCode: 'South Lake Tahoe, CA, USA'
+      })
+      expect(
+        await resolver.visitorUpdateForCurrentUser('userId', {
+          countryCode: 'South Lake Tahoe, CA, USA'
+        })
+      ).toEqual({ ...visitor, countryCode: 'South Lake Tahoe, CA, USA' })
+    })
+
+    it('throws error when invalid visitor ID', async () => {
+      prisma.visitor.findFirst = jest.fn().mockReturnValueOnce(null)
+      await expect(
+        async () =>
+          await resolver.visitorUpdateForCurrentUser('unknownVisitorId', {
+            countryCode: 'South Lake Tahoe, CA, USA'
+          })
+      ).rejects.toThrow('No visitor record found for user "unknownVisitorId"')
     })
   })
 })

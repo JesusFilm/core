@@ -1,11 +1,20 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { EventService } from '../event.service'
 import { RadioQuestionSubmissionEventCreateInput } from '../../../__generated__/graphql'
-import { VisitorService } from '../../visitor/visitor.service'
+import { PrismaService } from '../../../lib/prisma.service'
 import { RadioQuestionSubmissionEventResolver } from './radioQuestion.resolver'
 
 describe('RadioQuestionSubmissionEventResolver', () => {
-  let resolver: RadioQuestionSubmissionEventResolver, vService: VisitorService
+  beforeAll(() => {
+    jest.useFakeTimers('modern')
+    jest.setSystemTime(new Date('2021-02-18'))
+  })
+
+  afterAll(() => {
+    jest.useRealTimers()
+  })
+
+  let resolver: RadioQuestionSubmissionEventResolver, prisma: PrismaService
 
   const eventService = {
     provide: EventService,
@@ -15,15 +24,13 @@ describe('RadioQuestionSubmissionEventResolver', () => {
     })
   }
 
-  const visitorService = {
-    provide: VisitorService,
-    useFactory: () => ({
-      update: jest.fn(() => null)
-    })
-  }
-
   const response = {
     visitor: { id: 'visitor.id' },
+    journeyVisitor: {
+      journeyId: 'journey.id',
+      visitorId: 'visitor.id',
+      activityCount: 0
+    },
     journeyId: 'journey.id'
   }
 
@@ -41,13 +48,15 @@ describe('RadioQuestionSubmissionEventResolver', () => {
       providers: [
         RadioQuestionSubmissionEventResolver,
         eventService,
-        visitorService
+        PrismaService
       ]
     }).compile()
     resolver = module.get<RadioQuestionSubmissionEventResolver>(
       RadioQuestionSubmissionEventResolver
     )
-    vService = module.get<VisitorService>(VisitorService)
+    prisma = module.get<PrismaService>(PrismaService)
+    prisma.visitor.update = jest.fn().mockResolvedValueOnce(null)
+    prisma.journeyVisitor.update = jest.fn().mockResolvedValueOnce(null)
   })
 
   describe('radioQuestionSubmissionEventCreate', () => {
@@ -56,8 +65,10 @@ describe('RadioQuestionSubmissionEventResolver', () => {
         await resolver.radioQuestionSubmissionEventCreate('userId', input)
       ).toEqual({
         ...input,
-        __typename: 'RadioQuestionSubmissionEvent',
-        visitorId: 'visitor.id',
+        typename: 'RadioQuestionSubmissionEvent',
+        visitor: {
+          connect: { id: 'visitor.id' }
+        },
         journeyId: 'journey.id'
       })
     })
@@ -65,9 +76,12 @@ describe('RadioQuestionSubmissionEventResolver', () => {
     it('should update visitor last event at', async () => {
       await resolver.radioQuestionSubmissionEventCreate('userId', input)
 
-      expect(vService.update).toHaveBeenCalledWith('visitor.id', {
-        lastRadioQuestion: input.label,
-        lastRadioOptionSubmission: input.value
+      expect(prisma.visitor.update).toHaveBeenCalledWith({
+        where: { id: 'visitor.id' },
+        data: {
+          lastRadioQuestion: input.label,
+          lastRadioOptionSubmission: input.value
+        }
       })
     })
   })

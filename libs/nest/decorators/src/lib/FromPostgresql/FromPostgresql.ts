@@ -1,15 +1,13 @@
 import { omit } from 'lodash'
 
 interface TransformObject {
-  extra?: object
   __typename?: string
   typename?: string
 }
 
 export const fromPostgresql = (obj: TransformObject): object => ({
-  ...(obj?.extra != null ? obj.extra : {}),
   ...(obj.typename != null ? { __typename: obj.typename } : {}),
-  ...omit(obj, 'extra')
+  ...omit(obj, 'typename')
 })
 
 export function FromPostgresql() {

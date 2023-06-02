@@ -1,6 +1,5 @@
 import { Story, Meta } from '@storybook/react'
 import { MockedProvider } from '@apollo/client/testing'
-import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 import { journeysAdminConfig } from '../../libs/storybook'
 import {
   defaultTemplate,
@@ -41,9 +40,7 @@ const Template: Story = ({ ...args }) => (
       }
     ]}
   >
-    <FlagsProvider flags={{ templates: true }}>
-      <TemplateList {...args.props} />
-    </FlagsProvider>
+    <TemplateList {...args.props} />
   </MockedProvider>
 )
 

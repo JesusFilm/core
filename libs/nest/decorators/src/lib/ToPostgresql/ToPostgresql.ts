@@ -1,24 +1,17 @@
-import { omit, pick } from 'lodash'
-import { fromPostgresql } from '../FromPostgresql/FromPostgresql'
+import { omit } from 'lodash'
+import { fromPostgresql } from '../FromPostgresql'
 
 interface TransformObject {
-  extra?: object
   __typename?: string
   typename?: string
 }
 
-export const toPostgresql = (
-  obj: TransformObject,
-  objectFields?: string[]
-): TransformObject => ({
-  ...pick(omit(obj, '__typename'), objectFields ?? []),
-  ...(obj.__typename != null ? { typename: obj.__typename } : {}),
-  ...(objectFields != null
-    ? { extra: omit(obj, [...objectFields, '__typename']) }
-    : {})
+export const toPostgresql = (obj: TransformObject): TransformObject => ({
+  ...omit(obj, '__typename'),
+  ...(obj.__typename != null ? { typename: obj.__typename } : {})
 })
 
-export function ToPostgresql(objectFields?: string[]) {
+export function ToPostgresql() {
   return (
     target: unknown,
     propertyKey: string,
@@ -29,8 +22,8 @@ export function ToPostgresql(objectFields?: string[]) {
       obj: TransformObject[] | TransformObject
     ) {
       const newArg = Array.isArray(obj)
-        ? obj.map((result) => toPostgresql(result, objectFields))
-        : toPostgresql(obj, objectFields)
+        ? obj.map((result) => toPostgresql(result))
+        : toPostgresql(obj)
       const result = await childFunction.apply(this, newArg)
       return Array.isArray(result)
         ? result.map(fromPostgresql)

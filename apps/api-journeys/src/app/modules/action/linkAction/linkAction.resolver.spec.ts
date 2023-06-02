@@ -30,6 +30,7 @@ describe('LinkActionResolver', () => {
 
   const linkActionInput = {
     gtmEventName: 'gtmEventName',
+    email: null,
     url: 'https://google.com',
     blockId: null,
     journeyId: null

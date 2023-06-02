@@ -58,6 +58,15 @@ describe('ActionResolver', () => {
     }
   }
 
+  const block5 = {
+    ...block1,
+    action: {
+      parentBlockId: '1',
+      gtmEventName: 'gtmEventName',
+      email: 'imissedmondshen@gmail.com'
+    }
+  }
+
   describe('__resolveType', () => {
     beforeEach(async () => {
       const blockService = {
@@ -121,6 +130,17 @@ describe('ActionResolver', () => {
         target: 'target'
       } as unknown as Action
       expect(resolver.__resolveType(action)).toBe('LinkAction')
+    })
+
+    it('returns EmailAction', () => {
+      const action = {
+        blockId: null,
+        journeyId: null,
+        target: null,
+        url: null,
+        email: 'imissedmondshen@gmail.com'
+      } as unknown as Action
+      expect(resolver.__resolveType(action)).toBe('EmailAction')
     })
   })
 
@@ -217,6 +237,38 @@ describe('ActionResolver', () => {
       expect(
         ((await blockResolver.block('1')) as RadioOptionBlock).action
       ).toHaveProperty('url')
+    })
+  })
+
+  describe('EmailAction', () => {
+    beforeEach(async () => {
+      const blockService = {
+        provide: BlockService,
+        useFactory: () => ({
+          get: jest.fn(() => block5)
+        })
+      }
+      const module: TestingModule = await Test.createTestingModule({
+        providers: [
+          BlockResolver,
+          blockService,
+          UserJourneyService,
+          UserRoleService,
+          JourneyService,
+          MemberService,
+          {
+            provide: 'DATABASE',
+            useFactory: () => mockDeep<Database>()
+          }
+        ]
+      }).compile()
+      blockResolver = module.get<BlockResolver>(BlockResolver)
+    })
+    it('returns EmailAction', async () => {
+      expect(await blockResolver.block('1')).toEqual(block5)
+      expect(
+        ((await blockResolver.block('1')) as RadioOptionBlock).action
+      ).toHaveProperty('email')
     })
   })
 

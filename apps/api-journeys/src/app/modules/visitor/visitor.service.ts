@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common'
-import { KeyAsId } from '@core/nest/decorators/KeyAsId'
 import { v4 as uuidv4 } from 'uuid'
 import { Visitor } from '.prisma/api-journeys-client'
 import { PageInfo } from '../../__generated__/graphql'
@@ -17,7 +16,7 @@ interface ListParams {
 export interface VisitorsConnection {
   edges: Array<{
     node: Visitor
-    cursor: Date
+    cursor: string
   }>
   pageInfo: PageInfo
 }
@@ -26,40 +25,30 @@ export interface VisitorsConnection {
 export class VisitorService {
   constructor(private readonly prismaService: PrismaService) {}
 
-  @KeyAsId()
   async getList({
     after,
     first,
     filter
   }: ListParams): Promise<VisitorsConnection> {
     const result = await this.prismaService.visitor.findMany({
-      where: filter,
-      cursor:
-        after != null
-          ? {
-              createdAt: new Date(after)
-            }
-          : undefined,
-      orderBy: {
-        createdAt: 'desc'
-      },
+      where: { teamId: filter.teamId },
+      cursor: after != null ? { id: after } : undefined,
+      orderBy: { createdAt: 'desc' },
       skip: after == null ? 0 : 1,
       take: first + 1
     })
+
     const sendResult = result.length > first ? result.slice(0, -1) : result
     return {
       edges: sendResult.map((visitor) => ({
         node: visitor,
-        cursor: visitor.createdAt
+        cursor: visitor.id
       })),
       pageInfo: {
         hasNextPage: result.length > first,
-        startCursor:
-          result.length > 0 ? result[0].createdAt.toISOString() : null,
+        startCursor: result.length > 0 ? result[0].id : null,
         endCursor:
-          result.length > 0
-            ? sendResult[sendResult.length - 1].createdAt.toISOString()
-            : null
+          result.length > 0 ? sendResult[sendResult.length - 1].id : null
       }
     }
   }
@@ -92,8 +81,19 @@ export class VisitorService {
         }
       })
     }
+    let journeyVisitor = await this.prismaService.journeyVisitor.findUnique({
+      where: { journeyId_visitorId: { journeyId, visitorId: visitor.id } }
+    })
+    if (journeyVisitor == null) {
+      journeyVisitor = await this.prismaService.journeyVisitor.create({
+        data: {
+          journeyId,
+          visitorId: visitor.id
+        }
+      })
+    }
 
-    return visitor
+    return { visitor, journeyVisitor }
   }
 
   async update(id: string, data: Partial<Visitor>): Promise<Visitor> {

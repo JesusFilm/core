@@ -6,6 +6,7 @@ import { EventService } from './event.service'
 
 describe('EventService', () => {
   let service: EventService
+
   const blockService = {
     provide: BlockService,
     useFactory: () => ({
@@ -32,7 +33,7 @@ describe('EventService', () => {
       getByUserIdAndJourneyId: jest.fn((userId) => {
         switch (userId) {
           case visitor.userId:
-            return visitor
+            return { visitor, journeyVisitor }
         }
       })
     })
@@ -53,6 +54,11 @@ describe('EventService', () => {
     userId: 'user.id'
   }
 
+  const journeyVisitor = {
+    journeyId: 'journey.id',
+    visitorId: 'visitor.id'
+  }
+
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [EventService, blockService, visitorService, PrismaService]
@@ -70,6 +76,7 @@ describe('EventService', () => {
         await service.validateBlockEvent('user.id', 'block.id', 'step.id')
       ).toEqual({
         visitor,
+        journeyVisitor,
         journeyId: 'journey.id'
       })
     })
