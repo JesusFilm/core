@@ -36,5 +36,8 @@ export function handleAction(
         void router.push(action.url)
       }
       break
+    case 'EmailAction':
+      window.open(`mailto:${action.email}`, '_blank')
+      break
   }
 }
