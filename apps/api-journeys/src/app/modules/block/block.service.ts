@@ -1,40 +1,35 @@
 import { Injectable } from '@nestjs/common'
 import { v4 as uuidv4 } from 'uuid'
 import { aql } from 'arangojs'
-import { BaseService } from '@core/nest/database/BaseService'
 import { KeyAsId, keyAsId } from '@core/nest/decorators/KeyAsId'
 import { idAsKey } from '@core/nest/decorators/IdAsKey'
-import { Journey } from '.prisma/api-journeys-client'
-import { Block, NavigateToBlockAction } from '../../__generated__/graphql'
+import { Journey, Block } from '.prisma/api-journeys-client'
+import { NavigateToBlockAction } from '../../__generated__/graphql'
+import { PrismaService } from '../../lib/prisma.service'
+import { FromPostgresql } from '@core/nest/decorators/FromPostgresql'
 
 @Injectable()
-export class BlockService extends BaseService {
-  @KeyAsId()
+export class BlockService {
+  constructor(private readonly prismaService: PrismaService) {}
+
+  @FromPostgresql()
   async forJourney(journey: Journey): Promise<Block[]> {
     const primaryImageBlockId = journey.primaryImageBlockId ?? null
-    const res = await this.db.query(aql`
-      FOR block in ${this.collection}
-        FILTER block.journeyId == ${journey.id}
-          AND block._key != ${primaryImageBlockId}
-        SORT block.parentOrder ASC
-        RETURN block
-    `)
-    return await res.all()
+    return await this.prismaService.block.findMany({
+      where: { journeyId: journey.id, id: { not: primaryImageBlockId } },
+      orderBy: { parentOrder: 'asc' }
+    })
   }
 
-  @KeyAsId()
+  @FromPostgresql()
   async getBlocksByType(journey: Journey, typename: string): Promise<Block[]> {
-    const res = await this.db.query(aql`
-      FOR block in ${this.collection}
-        FILTER block.journeyId == ${journey.id}
-          AND block.__typename == ${typename}
-        SORT block.parentOrder ASC
-        RETURN block
-    `)
-    return await res.all()
+    return await this.prismaService.block.findMany({
+      where: { journeyId: journey.id, typename: typename },
+      orderBy: { parentOrder: 'asc' }
+    })
   }
 
-  @KeyAsId()
+  @FromPostgresql()
   async getSiblings(
     journeyId: string,
     parentBlockId?: string | null
@@ -45,32 +40,28 @@ export class BlockService extends BaseService {
   async getSiblingsInternal(
     journeyId: string,
     parentBlockId?: string | null
-  ): Promise<Array<Block & { _key: string }>> {
+  ): Promise<Block[]> {
     // Only StepBlocks should not have parentBlockId
-    const res =
-      parentBlockId != null
-        ? await this.db.query(aql`
-        FOR block in ${this.collection}
-          FILTER block.journeyId == ${journeyId}
-            AND block.parentBlockId == ${parentBlockId}
-            AND block.parentOrder != null
-          SORT block.parentOrder ASC
-          RETURN block
-    `)
-        : await this.db.query(aql`
-        FOR block in ${this.collection}
-          FILTER block.journeyId == ${journeyId}
-            AND block.__typename == 'StepBlock'
-            AND block.parentOrder != null
-          SORT block.parentOrder ASC
-          RETURN block
-    `)
-    return await res.all()
+    return parentBlockId != null
+      ? await this.prismaService.block.findMany({
+          where: {
+            journeyId,
+            parentBlockId,
+            parentOrder: { not: null }
+          },
+          orderBy: { parentOrder: 'asc' }
+        })
+      : await this.prismaService.block.findMany({
+          where: {
+            journeyId,
+            typename: 'StepBlock',
+            parentOrder: { not: null }
+          },
+          orderBy: { parentOrder: 'asc' }
+        })
   }
 
-  async reorderSiblings(
-    siblings: Array<Block & { _key: string }>
-  ): Promise<Block[]> {
+  async reorderSiblings(siblings: Block[]): Promise<Block[]> {
     const updatedSiblings = siblings.map((block, index) => ({
       ...block,
       parentOrder: index
@@ -78,15 +69,15 @@ export class BlockService extends BaseService {
     return await this.updateAll(updatedSiblings)
   }
 
-  @KeyAsId()
+  @FromPostgresql()
   async reorderBlock(
     id: string,
     journeyId: string,
     parentOrder: number
   ): Promise<Block[]> {
-    const block = idAsKey(await this.get(id)) as Block & { _key: string }
+    const block = await this.prismaService.block.findUnique({ where: { id } })
 
-    if (block.journeyId === journeyId && block.parentOrder != null) {
+    if (block?.journeyId === journeyId && block.parentOrder != null) {
       const siblings = await this.getSiblingsInternal(
         journeyId,
         block.parentBlockId
@@ -149,7 +140,7 @@ export class BlockService extends BaseService {
     // Below 2 only used when duplicating journeys
     duplicateJourneyId?: string,
     duplicateStepIds?: Map<string, string>
-  ): Promise<Array<Block & { _key: string }>> {
+  ): Promise<Block[]> {
     const duplicateChildren = await Promise.all(
       children.map(async (block) => {
         return await this.getDuplicateBlockAndChildren(
@@ -162,12 +153,9 @@ export class BlockService extends BaseService {
         )
       })
     )
-    return duplicateChildren.reduce<Array<Block & { _key: string }>>(
-      (acc, val) => {
-        return acc.concat(val)
-      },
-      []
-    )
+    return duplicateChildren.reduce<Block[]>((acc, val) => {
+      return acc.concat(val)
+    }, [])
   }
 
   async getDuplicateBlockAndChildren(
@@ -179,7 +167,9 @@ export class BlockService extends BaseService {
     duplicateJourneyId?: string,
     duplicateStepIds?: Map<string, string>
   ): Promise<Array<Block & { _key: string }>> {
-    const block = keyAsId(await this.get(id)) as Block
+    const block = await this.prismaService.block.findUnique({
+      where: { id }
+    })
     const duplicateBlockId = duplicateId ?? uuidv4()
 
     const children = await this.getBlocksForParentId(block.id, journeyId)
@@ -237,20 +227,15 @@ export class BlockService extends BaseService {
     return [duplicateBlock, ...duplicateChildren]
   }
 
-  @KeyAsId()
+  @FromPostgresql()
   async getBlocksForParentId(
     parentId: string,
     journeyId: string
   ): Promise<Block[]> {
-    const res = await this.db.query(aql`
-      FOR block IN ${this.collection}
-        FILTER block.journeyId == ${journeyId}
-          AND block.parentBlockId == ${parentId}
-        SORT block.parentOrder ASC
-        RETURN block
-    `)
-
-    return await res.all()
+    return await this.prismaService.block.findMany({
+      where: { parentBlockId: parentId, journeyId },
+      orderBy: { parentOrder: 'asc' }
+    })
   }
 
   protected async removeAllBlocksForParentId(
@@ -260,26 +245,30 @@ export class BlockService extends BaseService {
     if (parentIds.length === 0) {
       return blockArray
     }
-    const res = await this.db.query(aql`
-      FOR block IN ${this.collection}
-        FILTER block.parentBlockId IN ${parentIds}
-        REMOVE block IN ${this.collection} RETURN OLD
-    `)
-    const blocks = await res.all()
-    const blockIds = blocks.map((block) => block._key)
-    return await this.removeAllBlocksForParentId(blockIds, [
+    const blocks = await this.prismaService.block.findMany({
+      where: { parentBlockId: { in: parentIds } }
+    })
+    const blockIds = blocks.map((block) => block.id)
+
+    const result = await this.removeAllBlocksForParentId(blockIds, [
       ...blockArray,
       ...blocks
     ])
+    await this.prismaService.block.deleteMany({
+      where: { id: { in: blockIds } }
+    })
+    return result
   }
 
-  @KeyAsId()
+  @FromPostgresql()
   async removeBlockAndChildren(
     blockId: string,
     journeyId: string,
     parentBlockId?: string
   ): Promise<Block[]> {
-    const res: Block = await this.remove(blockId)
+    const res: Block = await this.prismaService.block.delete({
+      where: { id: blockId }
+    })
     await this.removeAllBlocksForParentId([blockId], [res])
     const result = await this.reorderSiblings(
       await this.getSiblingsInternal(journeyId, parentBlockId)
@@ -293,10 +282,13 @@ export class BlockService extends BaseService {
     value: string | null,
     type: 'parentBlockId' | 'journeyId' = 'parentBlockId'
   ): Promise<boolean> {
-    const block: Block | null = id != null ? await this.get(id) : null
+    const block: Block | null =
+      id != null
+        ? await this.prismaService.block.findUnique({
+            where: { id }
+          })
+        : null
 
     return block != null ? block[type] === value : false
   }
-
-  collection = this.db.collection('blocks')
 }
