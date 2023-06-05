@@ -33,6 +33,8 @@ function JourneyPage({ journey, locale, rtl }: JourneyPageProps): ReactElement {
   return (
     <>
       <NextSeo
+        nofollow
+        noindex
         title={journey.seoTitle ?? undefined}
         description={journey.seoDescription ?? undefined}
         openGraph={{

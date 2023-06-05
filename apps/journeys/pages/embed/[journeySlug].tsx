@@ -38,6 +38,8 @@ function JourneyPage({ journey, locale, rtl }: JourneyPageProps): ReactElement {
     <>
       <NextSeo
         title={journey.title}
+        nofollow
+        noindex
         description={journey.description ?? undefined}
         openGraph={{
           type: 'website',
