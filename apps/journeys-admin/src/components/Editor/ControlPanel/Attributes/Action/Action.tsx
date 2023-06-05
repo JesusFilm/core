@@ -22,6 +22,7 @@ import { NavigateAction } from './NavigateAction'
 import { NavigateToBlockAction } from './NavigateToBlockAction'
 import { NavigateToJourneyAction } from './NavigateToJourneyAction'
 import { LinkAction } from './LinkAction'
+import { EmailAction } from './EmailAction'
 
 export const NAVIGATE_ACTION_UPDATE = gql`
   mutation NavigateActionUpdate(
@@ -62,6 +63,10 @@ export const actions = [
   {
     value: 'LinkAction',
     label: 'URL/Website'
+  },
+  {
+    value: 'EmailAction',
+    label: 'Email'
   }
 ]
 
@@ -160,6 +165,16 @@ export function Action(): ReactElement {
     setAction(event.target.value)
   }
 
+  const noNextStepAvailable = (): boolean => {
+    const currentParentOrder = state.selectedStep?.parentOrder
+    const nextStep = state.steps?.find(
+      (step) =>
+        currentParentOrder != null &&
+        currentParentOrder + 1 === step.parentOrder
+    )
+    return nextStep == null
+  }
+
   return (
     <>
       <Stack sx={{ pt: 4, px: 6 }}>
@@ -179,8 +194,7 @@ export function Action(): ReactElement {
                   key={`button-action-${action.value}`}
                   value={action.value}
                   disabled={
-                    state.selectedStep?.nextBlockId == null &&
-                    action.value === 'NavigateAction'
+                    noNextStepAvailable() && action.value === 'NavigateAction'
                   }
                 >
                   {action.label}
@@ -196,6 +210,7 @@ export function Action(): ReactElement {
         {action === 'NavigateAction' && <NavigateAction />}
         {action === 'LinkAction' && <LinkAction />}
         {action === 'NavigateToJourneyAction' && <NavigateToJourneyAction />}
+        {action === 'EmailAction' && <EmailAction />}
       </Stack>
       {action === 'NavigateToBlockAction' && <NavigateToBlockAction />}
     </>

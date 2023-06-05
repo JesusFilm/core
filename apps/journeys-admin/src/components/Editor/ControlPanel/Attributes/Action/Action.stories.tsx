@@ -129,6 +129,11 @@ LinkAction.args = {
   selectedBlock: steps[1].children[0].children[3]
 }
 
+export const EmailAction = Template.bind({})
+EmailAction.args = {
+  selectedBlock: steps[1].children[0].children[4]
+}
+
 export const NavigateAction = Template.bind({})
 NavigateAction.args = {
   steps,

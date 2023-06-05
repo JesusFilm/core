@@ -98,7 +98,7 @@ export const baseComponents: Required<Pick<ThemeOptions, 'components'>> = {
           '&:-webkit-autofill': {
             transitionDelay: '9999s',
             transitionProperty: 'background-color, color',
-            '-webkit-box-shadow': 'none'
+            WebkitBoxShadow: 'none'
           }
         }
       }
