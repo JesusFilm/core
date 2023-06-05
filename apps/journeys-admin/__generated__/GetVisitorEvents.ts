@@ -3,19 +3,52 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { VideoBlockSource, MessagePlatform } from "./globalTypes";
+import { ButtonAction, VideoBlockSource, MessagePlatform } from "./globalTypes";
 
 // ====================================================
 // GraphQL query operation: GetVisitorEvents
 // ====================================================
 
-export interface GetVisitorEvents_visitor_events_ButtonClickEvent {
-  __typename: "ButtonClickEvent" | "RadioQuestionSubmissionEvent" | "StepViewEvent" | "StepNextEvent" | "TextResponseSubmissionEvent" | "VideoPlayEvent" | "VideoPauseEvent" | "VideoExpandEvent" | "VideoCollapseEvent" | "VideoProgressEvent";
+export interface GetVisitorEvents_visitor_events_RadioQuestionSubmissionEvent {
+  __typename: "RadioQuestionSubmissionEvent" | "StepViewEvent" | "StepNextEvent" | "TextResponseSubmissionEvent";
   id: string;
   journeyId: string;
   label: string | null;
   value: string | null;
   createdAt: any;
+}
+
+export interface GetVisitorEvents_visitor_events_ButtonClickEvent {
+  __typename: "ButtonClickEvent";
+  id: string;
+  /**
+   * ID of the journey that the buttonBlock belongs to
+   */
+  journeyId: string;
+  /**
+   * stepName of the parent stepBlock
+   */
+  label: string | null;
+  /**
+   * label of the button
+   */
+  value: string | null;
+  /**
+   * time event was created
+   */
+  createdAt: any;
+  /**
+   * Action type of the button when it was clicked
+   */
+  action: ButtonAction | null;
+  /**
+   * The label for each corresponding action, mapping below:
+   * NavigateAction - null
+   * NavigateToBlockAction - StepName (generated in client) of the StepBlock
+   * NavigateToJourneyAction - slug of the journey
+   * LinkAction - url of the link
+   */
+  actionValue: string | null;
 }
 
 export interface GetVisitorEvents_visitor_events_JourneyViewEvent_language_name {
@@ -102,6 +135,10 @@ export interface GetVisitorEvents_visitor_events_VideoStartEvent {
    * source of the video (based on the source in the value field)
    */
   source: VideoBlockSource | null;
+  /**
+   * duration of the video played when the VideoStartEvent is triggered
+   */
+  position: number | null;
 }
 
 export interface GetVisitorEvents_visitor_events_VideoCompleteEvent {
@@ -154,7 +191,156 @@ export interface GetVisitorEvents_visitor_events_ChatOpenEvent {
   messagePlatform: MessagePlatform | null;
 }
 
-export type GetVisitorEvents_visitor_events = GetVisitorEvents_visitor_events_ButtonClickEvent | GetVisitorEvents_visitor_events_JourneyViewEvent | GetVisitorEvents_visitor_events_SignUpSubmissionEvent | GetVisitorEvents_visitor_events_VideoStartEvent | GetVisitorEvents_visitor_events_VideoCompleteEvent | GetVisitorEvents_visitor_events_ChatOpenEvent;
+export interface GetVisitorEvents_visitor_events_VideoCollapseEvent {
+  __typename: "VideoCollapseEvent";
+  id: string;
+  /**
+   * ID of the journey that the videoBlock belongs to
+   */
+  journeyId: string;
+  /**
+   * title of the video
+   */
+  label: string | null;
+  /**
+   * source of the video
+   */
+  value: string | null;
+  /**
+   * time event was created
+   */
+  createdAt: any;
+  /**
+   * duration of the video played when the VideoCollapseEvent is triggered
+   */
+  position: number | null;
+  /**
+   * source of the video (based on the source in the value field)
+   */
+  source: VideoBlockSource | null;
+}
+
+export interface GetVisitorEvents_visitor_events_VideoExpandEvent {
+  __typename: "VideoExpandEvent";
+  id: string;
+  /**
+   * ID of the journey that the videoBlock belongs to
+   */
+  journeyId: string;
+  /**
+   * title of the video
+   */
+  label: string | null;
+  /**
+   * source of the video
+   */
+  value: string | null;
+  /**
+   * time event was created
+   */
+  createdAt: any;
+  /**
+   * duration of the video played when the VideoExpandEvent is triggered
+   */
+  position: number | null;
+  /**
+   * source of the video (based on the source in the value field)
+   */
+  source: VideoBlockSource | null;
+}
+
+export interface GetVisitorEvents_visitor_events_VideoPauseEvent {
+  __typename: "VideoPauseEvent";
+  id: string;
+  /**
+   * ID of the journey that the videoBlock belongs to
+   */
+  journeyId: string;
+  /**
+   * title of the video
+   */
+  label: string | null;
+  /**
+   * source of the video
+   */
+  value: string | null;
+  /**
+   * time event was created
+   */
+  createdAt: any;
+  /**
+   * duration of the video played when the VideoPauseEvent is triggered
+   */
+  position: number | null;
+  /**
+   * source of the video (based on the source in the value field)
+   */
+  source: VideoBlockSource | null;
+}
+
+export interface GetVisitorEvents_visitor_events_VideoPlayEvent {
+  __typename: "VideoPlayEvent";
+  id: string;
+  /**
+   * ID of the journey that the videoBlock belongs to
+   */
+  journeyId: string;
+  /**
+   * title of the video
+   */
+  label: string | null;
+  /**
+   * source of the video
+   */
+  value: string | null;
+  /**
+   * time event was created
+   */
+  createdAt: any;
+  /**
+   * duration of the video played when the VideoPlayEvent is triggered
+   */
+  position: number | null;
+  /**
+   * source of the video (based on the source in the value field)
+   */
+  source: VideoBlockSource | null;
+}
+
+export interface GetVisitorEvents_visitor_events_VideoProgressEvent {
+  __typename: "VideoProgressEvent";
+  id: string;
+  /**
+   * ID of the journey that the videoBlock belongs to
+   */
+  journeyId: string;
+  /**
+   * title of the video
+   */
+  label: string | null;
+  /**
+   * source of the video
+   */
+  value: string | null;
+  /**
+   * time event was created
+   */
+  createdAt: any;
+  /**
+   * duration of the video played when the VideoProgressEvent is triggered
+   */
+  position: number | null;
+  /**
+   * source of the video (based on the source in the value field)
+   */
+  source: VideoBlockSource | null;
+  /**
+   * progress is a integer indicating the precentage completion from the startAt to the endAt times of the videoBlock
+   */
+  progress: number;
+}
+
+export type GetVisitorEvents_visitor_events = GetVisitorEvents_visitor_events_RadioQuestionSubmissionEvent | GetVisitorEvents_visitor_events_ButtonClickEvent | GetVisitorEvents_visitor_events_JourneyViewEvent | GetVisitorEvents_visitor_events_SignUpSubmissionEvent | GetVisitorEvents_visitor_events_VideoStartEvent | GetVisitorEvents_visitor_events_VideoCompleteEvent | GetVisitorEvents_visitor_events_ChatOpenEvent | GetVisitorEvents_visitor_events_VideoCollapseEvent | GetVisitorEvents_visitor_events_VideoExpandEvent | GetVisitorEvents_visitor_events_VideoPauseEvent | GetVisitorEvents_visitor_events_VideoPlayEvent | GetVisitorEvents_visitor_events_VideoProgressEvent;
 
 export interface GetVisitorEvents_visitor {
   __typename: "Visitor";

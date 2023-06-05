@@ -94,7 +94,7 @@ export const steps: Array<TreeBlock<StepBlock>> = [
     id: 'step1.id',
     __typename: 'StepBlock',
     parentBlockId: null,
-    parentOrder: 0,
+    parentOrder: 1,
     locked: false,
     nextBlockId: 'step2.id',
     children: [
@@ -161,6 +161,25 @@ export const steps: Array<TreeBlock<StepBlock>> = [
               url: 'https://www.google.com'
             },
             children: []
+          },
+          {
+            __typename: 'ButtonBlock',
+            id: 'button2.id',
+            parentBlockId: 'card1.id',
+            parentOrder: 4,
+            label: 'Contact Us',
+            buttonVariant: ButtonVariant.contained,
+            buttonColor: ButtonColor.primary,
+            size: ButtonSize.large,
+            startIconId: null,
+            endIconId: null,
+            action: {
+              parentBlockId: 'button2.id',
+              __typename: 'EmailAction',
+              gtmEventName: 'gtmEventName',
+              email: 'imissedmondshen@gmail.com'
+            },
+            children: []
           }
         ]
       }
@@ -170,7 +189,7 @@ export const steps: Array<TreeBlock<StepBlock>> = [
     id: 'step2.id',
     __typename: 'StepBlock',
     parentBlockId: null,
-    parentOrder: 0,
+    parentOrder: 2,
     locked: false,
     nextBlockId: 'step3.id',
     children: [
@@ -274,7 +293,7 @@ export const steps: Array<TreeBlock<StepBlock>> = [
     id: 'step3.id',
     __typename: 'StepBlock',
     parentBlockId: null,
-    parentOrder: 0,
+    parentOrder: 2,
     locked: false,
     nextBlockId: 'step4.id',
     children: [
@@ -383,7 +402,7 @@ export const steps: Array<TreeBlock<StepBlock>> = [
     id: 'step4.id',
     __typename: 'StepBlock',
     parentBlockId: null,
-    parentOrder: 0,
+    parentOrder: 3,
     locked: false,
     nextBlockId: null,
     children: [

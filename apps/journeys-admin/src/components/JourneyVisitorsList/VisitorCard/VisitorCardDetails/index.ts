@@ -1,0 +1,1 @@
+export { VisitorCardDetails } from './VisitorCardDetails'

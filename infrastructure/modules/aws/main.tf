@@ -45,7 +45,14 @@ module "public_bastion_security_group" {
       to_port     = 22
       protocol    = "tcp"
       cidr_blocks = concat([var.cidr], local.google_datastream_ip_list)
+    },
+    {
+      from_port   = 22
+      to_port     = 22
+      protocol    = "tcp"
+      cidr_blocks = ["47.33.63.40/32"]
     }
+
   ]
   egress_rules = local.egress_rules
 }
