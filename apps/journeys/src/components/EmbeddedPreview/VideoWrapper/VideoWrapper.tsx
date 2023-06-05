@@ -62,7 +62,6 @@ export function VideoWrapper({
         height: '100%',
         minHeight: 'inherit',
         backgroundColor: VIDEO_BACKGROUND_COLOR,
-        borderRadius: 4,
         overflow: 'hidden',
         m: 0,
         position: 'absolute',
@@ -121,7 +120,6 @@ export function VideoWrapper({
         <Paper
           sx={{
             backgroundColor: 'transparent',
-            borderRadius: (theme) => theme.spacing(4),
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',

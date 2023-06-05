@@ -83,6 +83,21 @@ describe('action', () => {
       expect(nextActiveBlock).toHaveBeenCalledWith()
     })
 
+    it('should handle EmailAction', () => {
+      window.open = jest.fn()
+
+      handleAction(router, {
+        __typename: 'EmailAction',
+        parentBlockId: 'parent-id',
+        gtmEventName: null,
+        email: 'edmondshen@gmail.com'
+      })
+      expect(window.open).toHaveBeenCalledWith(
+        'mailto:edmondshen@gmail.com',
+        '_blank'
+      )
+    })
+
     it('should handle external LinkAction', () => {
       window.open = jest.fn()
 

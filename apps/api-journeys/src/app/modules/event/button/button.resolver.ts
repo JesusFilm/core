@@ -4,6 +4,7 @@ import { UseGuards } from '@nestjs/common'
 import { Args, Mutation, Parent, ResolveField, Resolver } from '@nestjs/graphql'
 import { GqlAuthGuard } from '@core/nest/gqlAuthGuard/GqlAuthGuard'
 import { CurrentUserId } from '@core/nest/decorators/CurrentUserId'
+import { Prisma } from '.prisma/api-journeys-client'
 import {
   ButtonClickEvent,
   ButtonClickEventCreateInput,
@@ -43,7 +44,7 @@ export class ButtonClickEventResolver {
         visitor: { connect: { id: visitor.id } },
         stepId: input.stepId ?? undefined,
         journeyId
-      })
+      } as unknown as Prisma.EventCreateInput)
     ]
 
     if (input.action === ButtonAction.LinkAction) {

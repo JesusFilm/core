@@ -237,6 +237,11 @@ export interface ChatOpenEventCreateInput {
   value?: MessagePlatform | null;
 }
 
+export interface EmailActionInput {
+  gtmEventName?: string | null;
+  email: string;
+}
+
 export interface IconBlockCreateInput {
   id?: string | null;
   parentBlockId: string;
