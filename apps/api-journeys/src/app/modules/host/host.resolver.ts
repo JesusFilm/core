@@ -1,4 +1,4 @@
-import { Args, Mutation, Resolver } from '@nestjs/graphql'
+import { Args, Mutation, Resolver, Query } from '@nestjs/graphql'
 import { UseGuards } from '@nestjs/common'
 import { v4 as uuidv4 } from 'uuid'
 import { RoleGuard } from '../../lib/roleGuard/roleGuard'
@@ -6,37 +6,37 @@ import {
   Host,
   HostUpdateInput,
   Role,
-  UserJourneyRole
+  UserJourneyRole,
+  HostCreateInput
 } from '../../__generated__/graphql'
 
 import { PrismaService } from '../../lib/prisma.service'
 
 @Resolver('Host')
 export class HostResolver {
-  constructor(
-    // private readonly journeyService: JourneyService,
-    private readonly prismaService: PrismaService
-  ) {}
+  constructor(private readonly prismaService: PrismaService) {}
+
+  @Query()
+  async hosts(@Args('teamId') teamId: string): Promise<Host[]> {
+    return await this.prismaService.host.findMany({
+      where: { teamId }
+    })
+  }
 
   @Mutation()
-  @UseGuards(
-    RoleGuard('journeyId', [UserJourneyRole.owner, UserJourneyRole.editor])
-  )
+  //   @UseGuards(
+  //     RoleGuard('teamId', [UserJourneyRole.owner, UserJourneyRole.editor])
+  //   )
   async hostCreate(
     @Args('teamId') teamId: string,
-    @Args('name') name: string,
-    @Args('location') location: string,
-    @Args('avatar1Id') avatar1Id: string,
-    @Args('avatar2Id') avatar2Id: string
+    @Args('input') input: HostCreateInput
   ): Promise<Host> {
     const host = {
       id: uuidv4(),
       teamId,
-      name,
-      location,
-      avatar1Id,
-      avatar2Id
+      ...input
     }
+    await this.prismaService.host.create({ data: host })
     return host
   }
 

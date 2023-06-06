@@ -552,6 +552,13 @@ export class HostUpdateInput {
     avatar2Id?: Nullable<string>;
 }
 
+export class HostCreateInput {
+    name: string;
+    location?: Nullable<string>;
+    avatar1Id?: Nullable<string>;
+    avatar2Id?: Nullable<string>;
+}
+
 export class JourneysFilter {
     featured?: Nullable<boolean>;
     template?: Nullable<boolean>;
@@ -1027,17 +1034,10 @@ export class Host {
     avatar2Id?: Nullable<string>;
 }
 
-export class PowerBiEmbed {
-    __typename?: 'PowerBiEmbed';
-    reportId: string;
-    reportName: string;
-    embedUrl: string;
-    accessToken: string;
-    expiration: string;
-}
-
 export abstract class IQuery {
     __typename?: 'IQuery';
+
+    abstract hosts(teamId: string): Host[] | Promise<Host[]>;
 
     abstract adminJourneys(status?: Nullable<JourneyStatus[]>, template?: Nullable<boolean>): Journey[] | Promise<Journey[]>;
 
@@ -1062,6 +1062,15 @@ export abstract class IQuery {
     abstract visitorsConnection(teamId: string, first?: Nullable<number>, after?: Nullable<string>): VisitorsConnection | Promise<VisitorsConnection>;
 
     abstract visitor(id: string): Visitor | Promise<Visitor>;
+}
+
+export class PowerBiEmbed {
+    __typename?: 'PowerBiEmbed';
+    reportId: string;
+    reportName: string;
+    embedUrl: string;
+    accessToken: string;
+    expiration: string;
 }
 
 export class UserJourney {
@@ -1300,7 +1309,7 @@ export abstract class IMutation {
 
     abstract videoProgressEventCreate(input: VideoProgressEventCreateInput): VideoProgressEvent | Promise<VideoProgressEvent>;
 
-    abstract hostCreate(teamId: string, name: string, location?: Nullable<string>, avatar1Id?: Nullable<string>, avatar2Id?: Nullable<string>): Host | Promise<Host>;
+    abstract hostCreate(teamId: string, input: HostCreateInput): Host | Promise<Host>;
 
     abstract hostUpdate(id: string, journeyId: string, input?: Nullable<HostUpdateInput>): Host | Promise<Host>;
 

@@ -147,7 +147,7 @@ extend type Mutation {
   videoExpandEventCreate(input: VideoExpandEventCreateInput!): VideoExpandEvent!
   videoCollapseEventCreate(input: VideoCollapseEventCreateInput!): VideoCollapseEvent!
   videoProgressEventCreate(input: VideoProgressEventCreateInput!): VideoProgressEvent!
-  hostCreate(teamId: ID!, name: String!, location: String, avatar1Id: ID, avatar2Id: ID): Host!
+  hostCreate(teamId: ID!, input: HostCreateInput!): Host!
   hostUpdate(id: ID!, journeyId: ID!, input: HostUpdateInput): Host!
   hostDelete(id: ID!, journeyId: ID!): Host!
   journeyCreate(input: JourneyCreateInput!): Journey!
@@ -1546,54 +1546,13 @@ input HostUpdateInput {
   avatar2Id: ID
 }
 
-enum IdType {
-  databaseId
-  slug
-}
-
-enum JourneyStatus {
-  archived
-  deleted
-  draft
-  published
-  trashed
-}
-
-input JourneysFilter {
-  featured: Boolean
-  template: Boolean
-}
-
-enum JourneysReportType {
-  multipleFull
-  multipleSummary
-  singleFull
-  singleSummary
-}
-
-type PowerBiEmbed {
-  """The report ID"""
-  reportId: String!
-
-  """The name of the report"""
-  reportName: String!
-
-  """The embed URL of the report"""
-  embedUrl: String!
-
-  """The embed token"""
-  accessToken: String!
-
-  """The date and time (UTC) of token expiration"""
-  expiration: String!
-}
-
 type Query {
   _entities(representations: [_Any!]!): [_Entity]!
   _service: _Service!
 }
 
 extend type Query {
+  hosts(teamId: ID!): [Host!]!
   adminJourneys(status: [JourneyStatus!], template: Boolean): [Journey!]!
   adminJourneysReport(reportType: JourneysReportType!): PowerBiEmbed
   adminJourney(id: ID!, idType: IdType): Journey
@@ -1638,6 +1597,55 @@ extend type Query {
 
   """Get a single visitor"""
   visitor(id: ID!): Visitor!
+}
+
+input HostCreateInput {
+  name: String!
+  location: String
+  avatar1Id: ID
+  avatar2Id: ID
+}
+
+enum IdType {
+  databaseId
+  slug
+}
+
+enum JourneyStatus {
+  archived
+  deleted
+  draft
+  published
+  trashed
+}
+
+input JourneysFilter {
+  featured: Boolean
+  template: Boolean
+}
+
+enum JourneysReportType {
+  multipleFull
+  multipleSummary
+  singleFull
+  singleSummary
+}
+
+type PowerBiEmbed {
+  """The report ID"""
+  reportId: String!
+
+  """The name of the report"""
+  reportName: String!
+
+  """The embed URL of the report"""
+  embedUrl: String!
+
+  """The embed token"""
+  accessToken: String!
+
+  """The date and time (UTC) of token expiration"""
+  expiration: String!
 }
 
 input JourneyCreateInput {
