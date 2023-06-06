@@ -24,9 +24,7 @@ export class HostResolver {
   }
 
   @Mutation()
-  //   @UseGuards(
-  //     RoleGuard('teamId', [UserJourneyRole.owner, UserJourneyRole.editor])
-  //   )
+  //   @UseGuards(RoleGuard('teamId', [UserTeamRole.manager, UserTeamRole.member]))
   async hostCreate(
     @Args('teamId') teamId: string,
     @Args('input') input: HostCreateInput
