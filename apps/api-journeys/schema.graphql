@@ -147,6 +147,9 @@ extend type Mutation {
   videoExpandEventCreate(input: VideoExpandEventCreateInput!): VideoExpandEvent!
   videoCollapseEventCreate(input: VideoCollapseEventCreateInput!): VideoCollapseEvent!
   videoProgressEventCreate(input: VideoProgressEventCreateInput!): VideoProgressEvent!
+  hostCreate(teamId: ID!, name: String!, location: String, avatar1Id: ID, avatar2Id: ID): Host!
+  hostUpdate(id: ID!, journeyId: ID!, input: HostUpdateInput): Host!
+  hostDelete(id: ID!, journeyId: ID!): Host!
   journeyCreate(input: JourneyCreateInput!): Journey!
   journeyDuplicate(id: ID!): Journey!
   journeyUpdate(id: ID!, input: JourneyUpdateInput!): Journey!
@@ -1525,6 +1528,22 @@ type VideoProgressEvent implements Event {
   progress is a integer indicating the precentage completion from the startAt to the endAt times of the videoBlock
   """
   progress: Int!
+}
+
+type Host {
+  id: ID!
+  teamId: ID!
+  name: String!
+  location: String
+  avatar1Id: ID
+  avatar2Id: ID
+}
+
+input HostUpdateInput {
+  name: String
+  location: String
+  avatar1Id: ID
+  avatar2Id: ID
 }
 
 enum IdType {

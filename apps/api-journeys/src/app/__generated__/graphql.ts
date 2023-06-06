@@ -545,6 +545,13 @@ export class VideoProgressEventCreateInput {
     value?: Nullable<VideoBlockSource>;
 }
 
+export class HostUpdateInput {
+    name?: Nullable<string>;
+    location?: Nullable<string>;
+    avatar1Id?: Nullable<string>;
+    avatar2Id?: Nullable<string>;
+}
+
 export class JourneysFilter {
     featured?: Nullable<boolean>;
     template?: Nullable<boolean>;
@@ -1010,6 +1017,16 @@ export class VideoProgressEvent implements Event {
     progress: number;
 }
 
+export class Host {
+    __typename?: 'Host';
+    id: string;
+    teamId: string;
+    name: string;
+    location?: Nullable<string>;
+    avatar1Id?: Nullable<string>;
+    avatar2Id?: Nullable<string>;
+}
+
 export class PowerBiEmbed {
     __typename?: 'PowerBiEmbed';
     reportId: string;
@@ -1282,6 +1299,12 @@ export abstract class IMutation {
     abstract videoCollapseEventCreate(input: VideoCollapseEventCreateInput): VideoCollapseEvent | Promise<VideoCollapseEvent>;
 
     abstract videoProgressEventCreate(input: VideoProgressEventCreateInput): VideoProgressEvent | Promise<VideoProgressEvent>;
+
+    abstract hostCreate(teamId: string, name: string, location?: Nullable<string>, avatar1Id?: Nullable<string>, avatar2Id?: Nullable<string>): Host | Promise<Host>;
+
+    abstract hostUpdate(id: string, journeyId: string, input?: Nullable<HostUpdateInput>): Host | Promise<Host>;
+
+    abstract hostDelete(id: string, journeyId: string): Host | Promise<Host>;
 
     abstract journeyCreate(input: JourneyCreateInput): Journey | Promise<Journey>;
 

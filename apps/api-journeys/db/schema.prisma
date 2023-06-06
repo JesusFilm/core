@@ -113,6 +113,15 @@ model Visitor {
   @@index([id, teamId, createdAt, userId, status, countryCode])
 }
 
+model Host {
+  id        String  @id @default(uuid())
+  teamId    String
+  name      String
+  location  String?
+  avatar1Id String?
+  avatar2Id String?
+}
+
 model JourneyVisitor {
   id                        String           @id @default(uuid())
   journeyId                 String

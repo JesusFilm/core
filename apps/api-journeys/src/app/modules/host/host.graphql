@@ -1,0 +1,27 @@
+type Host {
+  id: ID!
+  teamId: ID!
+  name: String!
+  location: String
+  avatar1Id: ID
+  avatar2Id: ID
+}
+
+input HostUpdateInput {
+  name: String
+  location: String
+  avatar1Id: ID
+  avatar2Id: ID
+}
+
+extend type Mutation {
+  hostCreate(
+    teamId: ID!
+    name: String!
+    location: String
+    avatar1Id: ID
+    avatar2Id: ID
+  ): Host!
+  hostUpdate(id: ID!, journeyId: ID!, input: HostUpdateInput): Host!
+  hostDelete(id: ID!, journeyId: ID!): Host!
+}
