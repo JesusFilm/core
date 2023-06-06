@@ -1,0 +1,27 @@
+type ChatWidget {
+  id: ID!
+  chatLink: String
+  chatIcon: ChatIcon
+}
+
+enum ChatIcon {
+  facebook
+  whatsapp
+  viber
+  telegram
+  line
+  vk
+  instagram
+  gmail
+  snapchat
+  default
+}
+
+extend type Journey {
+  chatWidgets: [ChatWidget]
+}
+
+extend type Mutation {
+  chatWidgetsUpdate(id: ID!): ChatWidget
+  chatWidgetsRemove(id: ID!): ChatWidget
+}

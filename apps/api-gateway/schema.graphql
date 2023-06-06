@@ -614,6 +614,7 @@ type Journey
 {
   blocks: [Block!]
   primaryImageBlock: ImageBlock
+  chatWidgets: [ChatWidget]
   id: ID!
   title: String!
   language: Language!
@@ -631,7 +632,6 @@ type Journey
   seoTitle: String
   seoDescription: String
   template: Boolean
-  chatWidgets: [ChatWidget]
   userJourneys: [UserJourney!]
 }
 
@@ -999,6 +999,8 @@ type Mutation
   typographyBlockUpdate(id: ID!, journeyId: ID!, input: TypographyBlockUpdateInput!): TypographyBlock! @join__field(graph: JOURNEYS)
   videoBlockCreate(input: VideoBlockCreateInput!): VideoBlock! @join__field(graph: JOURNEYS)
   videoBlockUpdate(id: ID!, journeyId: ID!, input: VideoBlockUpdateInput!): VideoBlock! @join__field(graph: JOURNEYS)
+  chatWidgetsUpdate(id: ID!): ChatWidget @join__field(graph: JOURNEYS)
+  chatWidgetsRemove(id: ID!): ChatWidget @join__field(graph: JOURNEYS)
   buttonClickEventCreate(input: ButtonClickEventCreateInput!): ButtonClickEvent! @join__field(graph: JOURNEYS)
   chatOpenEventCreate(input: ChatOpenEventCreateInput!): ChatOpenEvent! @join__field(graph: JOURNEYS)
   journeyViewEventCreate(input: JourneyViewEventCreateInput!): JourneyViewEvent! @join__field(graph: JOURNEYS)
