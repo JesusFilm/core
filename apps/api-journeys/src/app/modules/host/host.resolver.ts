@@ -42,11 +42,7 @@ export class HostResolver {
 
   @Mutation()
   @UseGuards(
-    RoleGuard('journeyId', [
-      UserJourneyRole.owner,
-      UserJourneyRole.editor,
-      { role: Role.publisher, attributes: { template: true } }
-    ])
+    RoleGuard('journeyId', [UserJourneyRole.owner, UserJourneyRole.editor])
   )
   async hostUpdate(
     @Args('id') id: string,
