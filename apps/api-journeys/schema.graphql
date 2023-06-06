@@ -219,6 +219,7 @@ type Journey
   seoTitle: String
   seoDescription: String
   template: Boolean
+  chatWidgets: [ChatWidget]
   userJourneys: [UserJourney!]
 }
 
@@ -1525,6 +1526,25 @@ type VideoProgressEvent implements Event {
   progress is a integer indicating the precentage completion from the startAt to the endAt times of the videoBlock
   """
   progress: Int!
+}
+
+type ChatWidget {
+  id: ID!
+  chatLink: String
+  chatIcon: ChatIcon
+}
+
+enum ChatIcon {
+  facebook
+  whatsapp
+  viber
+  telegram
+  line
+  vk
+  instagram
+  gmail
+  snapchat
+  default
 }
 
 enum IdType {

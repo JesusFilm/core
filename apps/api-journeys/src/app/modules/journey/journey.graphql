@@ -20,6 +20,26 @@ type Journey @key(fields: "id") {
   seoTitle: String
   seoDescription: String
   template: Boolean
+  chatWidgets: [ChatWidget]
+}
+
+type ChatWidget {
+  id: ID!
+  chatLink: String
+  chatIcon: ChatIcon
+}
+
+enum ChatIcon {
+  facebook
+  whatsapp
+  viber
+  telegram
+  line
+  vk
+  instagram
+  gmail
+  snapchat
+  default
 }
 
 enum IdType {

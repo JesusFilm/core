@@ -249,6 +249,21 @@ input CardBlockUpdateInput
   themeName: ThemeName
 }
 
+enum ChatIcon
+  @join__type(graph: JOURNEYS)
+{
+  facebook @join__enumValue(graph: JOURNEYS)
+  whatsapp @join__enumValue(graph: JOURNEYS)
+  viber @join__enumValue(graph: JOURNEYS)
+  telegram @join__enumValue(graph: JOURNEYS)
+  line @join__enumValue(graph: JOURNEYS)
+  vk @join__enumValue(graph: JOURNEYS)
+  instagram @join__enumValue(graph: JOURNEYS)
+  gmail @join__enumValue(graph: JOURNEYS)
+  snapchat @join__enumValue(graph: JOURNEYS)
+  default @join__enumValue(graph: JOURNEYS)
+}
+
 type ChatOpenEvent implements Event
   @join__implements(graph: JOURNEYS, interface: "Event")
   @join__type(graph: JOURNEYS)
@@ -287,6 +302,14 @@ input ChatOpenEventCreateInput
 
   """messagePlatform of the link used for chat"""
   value: MessagePlatform
+}
+
+type ChatWidget
+  @join__type(graph: JOURNEYS)
+{
+  id: ID!
+  chatLink: String
+  chatIcon: ChatIcon
 }
 
 type CloudflareImage
@@ -608,6 +631,7 @@ type Journey
   seoTitle: String
   seoDescription: String
   template: Boolean
+  chatWidgets: [ChatWidget]
   userJourneys: [UserJourney!]
 }
 

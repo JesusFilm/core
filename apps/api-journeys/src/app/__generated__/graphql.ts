@@ -152,6 +152,19 @@ export enum MessagePlatform {
     tikTok = "tikTok"
 }
 
+export enum ChatIcon {
+    facebook = "facebook",
+    whatsapp = "whatsapp",
+    viber = "viber",
+    telegram = "telegram",
+    line = "line",
+    vk = "vk",
+    instagram = "instagram",
+    gmail = "gmail",
+    snapchat = "snapchat",
+    "default" = "default"
+}
+
 export enum IdType {
     databaseId = "databaseId",
     slug = "slug"
@@ -678,6 +691,7 @@ export class Journey {
     seoTitle?: Nullable<string>;
     seoDescription?: Nullable<string>;
     template?: Nullable<boolean>;
+    chatWidgets?: Nullable<Nullable<ChatWidget>[]>;
     userJourneys?: Nullable<UserJourney[]>;
 }
 
@@ -1008,6 +1022,13 @@ export class VideoProgressEvent implements Event {
     position?: Nullable<number>;
     source?: Nullable<VideoBlockSource>;
     progress: number;
+}
+
+export class ChatWidget {
+    __typename?: 'ChatWidget';
+    id: string;
+    chatLink?: Nullable<string>;
+    chatIcon?: Nullable<ChatIcon>;
 }
 
 export class PowerBiEmbed {
