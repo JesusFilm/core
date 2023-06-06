@@ -18,7 +18,7 @@ export function VideoContainerPage(): ReactElement {
   const router = useRouter()
   const [shareDialog, setShareDialog] = useState<boolean>(false)
   const routeArray: string[] = []
-
+  const realChildren = children.filter((video) => video.variant !== null)
   function handleOpenDialog(): void {
     setShareDialog(true)
   }
@@ -54,7 +54,7 @@ export function VideoContainerPage(): ReactElement {
             ) : (
               <VideoGrid
                 containerSlug={slug}
-                videos={children}
+                videos={realChildren}
                 variant="expanded"
               />
             )}
