@@ -7,6 +7,7 @@ import Fade from '@mui/material/Fade'
 import { ReactElement, useEffect, useState } from 'react'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { StepHeader } from '@core/journeys/ui/StepHeader'
+import { StepFooter } from '@core/journeys/ui/StepFooter'
 import { BlockRenderer } from '@core/journeys/ui/BlockRenderer'
 import {
   useEditor,
@@ -193,6 +194,7 @@ export function Canvas(): ReactElement {
                               CardWrapper
                             }}
                           />
+                          <StepFooter />
                         </Stack>
                       </Fade>
                     </ThemeProvider>

@@ -18,6 +18,7 @@ import ChevronRightIcon from '@mui/icons-material/ChevronRight'
 import { gql, useMutation } from '@apollo/client'
 import { getJourneyRTL } from '@core/journeys/ui/rtl'
 import { StepHeader } from '@core/journeys/ui/StepHeader'
+import { StepFooter } from '@core/journeys/ui/StepFooter'
 // Used to resolve dynamic viewport height on Safari
 import Div100vh from 'react-div-100vh'
 import { v4 as uuidv4 } from 'uuid'
@@ -258,13 +259,17 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
                       <Stack
                         justifyContent="center"
                         sx={{
-                          maxHeight: { xs: '100vh', lg: 'calc(100vh - 160px)' },
-                          height: { xs: 'inherit', lg: '56.25vw' },
+                          maxHeight: { xs: '100vh', lg: 'calc(100vh - 80px)' },
+                          height: {
+                            xs: 'inherit',
+                            lg: 'calc(54.25vw + 102px)'
+                          },
                           px: { lg: 6 }
                         }}
                       >
                         <StepHeader />
                         <BlockRenderer block={block} />
+                        <StepFooter />
                       </Stack>
                     </Fade>
                   </ThemeProvider>
