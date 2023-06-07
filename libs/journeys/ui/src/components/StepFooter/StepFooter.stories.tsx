@@ -76,4 +76,8 @@ const Template: Story<ComponentProps<typeof StepFooter>> = () => {
 // StepFooter exists only on dark mode on desktop view
 export const Default = Template.bind({})
 
+export const RTL = Template.bind({})
+RTL.args = { ...Default.args }
+RTL.parameters = { rtl: true }
+
 export default Demo as Meta

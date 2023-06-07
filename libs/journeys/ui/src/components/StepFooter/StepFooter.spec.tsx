@@ -53,7 +53,7 @@ describe('StepFooter', () => {
 
   it('should display journey title if no social media title', () => {
     const { getByText } = render(
-      <JourneyProvider value={{ journey }}>
+      <JourneyProvider value={{ journey: { ...journey, seoTitle: null } }}>
         <StepFooter />
       </JourneyProvider>
     )
