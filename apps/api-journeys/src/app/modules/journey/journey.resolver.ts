@@ -43,6 +43,7 @@ import { UserJourneyService } from '../userJourney/userJourney.service'
 import { RoleGuard } from '../../lib/roleGuard/roleGuard'
 import { UserRoleService } from '../userRole/userRole.service'
 import { MemberService } from '../member/member.service'
+import { PrismaService } from '../../lib/prisma.service'
 import { JourneyService } from './journey.service'
 
 const ERROR_ARANGO_UNIQUE_CONSTRAINT_VIOLATED = 1210
@@ -54,7 +55,8 @@ export class JourneyResolver {
     private readonly blockService: BlockService,
     private readonly userJourneyService: UserJourneyService,
     private readonly userRoleService: UserRoleService,
-    private readonly memberService: MemberService
+    private readonly memberService: MemberService,
+    private readonly prismaService: PrismaService
   ) {}
 
   @Query()
@@ -385,6 +387,17 @@ export class JourneyResolver {
         lower: true,
         strict: true
       })
+    if (input.hostId != null) {
+      const journey = await this.journeyService.get(id)
+      const host = await this.prismaService.host.findUnique({
+        where: { id: input.hostId }
+      })
+      if (host == null || journey == null || host?.teamId !== journey.teamId) {
+        throw new UserInputError(
+          'the team id of host doest not match team id of journey'
+        )
+      }
+    }
     try {
       return await this.journeyService.update(id, input)
     } catch (err) {

@@ -222,6 +222,7 @@ type Journey
   seoTitle: String
   seoDescription: String
   template: Boolean
+  hostId: String
   userJourneys: [UserJourney!]
 }
 
@@ -1680,6 +1681,7 @@ input JourneyUpdateInput {
   slug: String
   seoTitle: String
   seoDescription: String
+  hostId: String
 }
 
 type UserJourney

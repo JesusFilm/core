@@ -44,6 +44,7 @@ export class HostResolver {
   )
   async hostUpdate(
     @Args('id') id: string,
+    @Args('journeyId') journeyId: string,
     @Args('input') input: HostUpdateInput
   ): Promise<Host> {
     const host = await this.prismaService.host.findUnique({
