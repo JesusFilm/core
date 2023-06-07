@@ -15,9 +15,27 @@ import {
 export class ChatWidgetsResolver {
   constructor(private readonly journeyService: JourneyService) {}
 
+  updateChatWidgets(chatWidgets, chatWidget, input, id): ChatWidget[] {
+    if (input === null && id !== undefined) {
+      return chatWidgets.filter((widget) => widget.id !== id)
+    }
+
+    const chatWidgetIndex = chatWidgets.findIndex(
+      (widget) => widget.id === chatWidget.id
+    )
+
+    if (chatWidgetIndex === -1) {
+      return [...chatWidgets, chatWidget]
+    }
+
+    return chatWidgets.map((widget, index) =>
+      index === chatWidgetIndex ? chatWidget : widget
+    )
+  }
+
   @Mutation()
   @UseGuards(
-    RoleGuard('input.journeyId', [
+    RoleGuard('id', [
       UserJourneyRole.owner,
       UserJourneyRole.editor,
       { role: Role.publisher, attributes: { template: true } }
@@ -35,20 +53,13 @@ export class ChatWidgetsResolver {
     }
 
     const journey: Journey = await this.journeyService.get(journeyId)
-    const chatWidgets = journey.chatWidgets ?? []
 
-    const chatWidgetIndex = chatWidgets.findIndex(
-      (widget) => widget?.id === chatWidget?.id
+    const updatedChatWidgets = this.updateChatWidgets(
+      journey.chatWidgets ?? [],
+      chatWidget,
+      input,
+      id
     )
-
-    const updatedChatWidgets =
-      input === null && id !== undefined
-        ? chatWidgets.filter((widget) => widget?.id !== id)
-        : chatWidgetIndex === -1
-        ? [...chatWidgets, chatWidget]
-        : chatWidgets.map((widget, index) =>
-            index === chatWidgetIndex ? chatWidget : widget
-          )
 
     await this.journeyService.update(journeyId, {
       chatWidgets: updatedChatWidgets
