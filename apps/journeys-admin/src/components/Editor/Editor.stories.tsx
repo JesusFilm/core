@@ -596,7 +596,7 @@ const blocks: GetJourney_journey_blocks[] = [
     iconSize: IconSize.md
   }
 ]
-const isEdit = true
+
 const Template: Story = (args) => (
   <MockedProvider>
     <FlagsProvider>
@@ -610,7 +610,7 @@ const Template: Story = (args) => (
           backHref="/journeys/nua-journey-ep-3-decision"
           sidePanelTitle={<DrawerTitle />}
           sidePanelChildren={<Drawer />}
-          isEdit={isEdit}
+          disableGutters
         >
           <JourneyEdit />
         </PageWrapper>
