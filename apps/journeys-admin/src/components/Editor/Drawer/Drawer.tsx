@@ -15,43 +15,49 @@ export const DRAWER_WIDTH = 328
 interface DrawerContentProps {
   title?: string
   children?: ReactNode
-  handleDrawerToggle: () => void
+  handleDrawerToggle?: () => void
 }
 
-function DrawerContent({
+export function DrawerContent({
   title,
   children,
   handleDrawerToggle
 }: DrawerContentProps): ReactElement {
   return (
     <>
-      <AppBar position="static" color="default">
-        <Toolbar>
-          <Typography
-            variant="subtitle1"
-            noWrap
-            component="div"
-            sx={{ flexGrow: 1 }}
-            data-testid="drawer-title"
-          >
-            {title}
-          </Typography>
-          <IconButton
-            onClick={handleDrawerToggle}
-            sx={{ display: { xs: 'inline-flex', sm: 'none' } }}
-            edge="end"
-          >
-            <Close />
-          </IconButton>
-        </Toolbar>
-      </AppBar>
+      <DrawerTitle title={title} handleDrawerToggle={handleDrawerToggle} />
       {children}
     </>
   )
 }
 
+export function DrawerTitle({ title, handleDrawerToggle }): ReactElement {
+  return (
+    <AppBar position="static" color="default">
+      <Toolbar>
+        <Typography
+          variant="subtitle1"
+          noWrap
+          component="div"
+          sx={{ flexGrow: 1 }}
+          data-testid="drawer-title"
+        >
+          {title}
+        </Typography>
+        <IconButton
+          onClick={handleDrawerToggle}
+          sx={{ display: { xs: 'inline-flex', sm: 'inline-flex', md: 'none' } }}
+          edge="end"
+        >
+          <Close />
+        </IconButton>
+      </Toolbar>
+    </AppBar>
+  )
+}
+
 export function Drawer(): ReactElement {
-  const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
+  const mdUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('md'))
   const {
     state: {
       drawerTitle: title,
@@ -68,7 +74,7 @@ export function Drawer(): ReactElement {
     })
   }
 
-  return smUp ? (
+  return mdUp ? (
     <Paper
       elevation={0}
       sx={{
@@ -96,7 +102,7 @@ export function Drawer(): ReactElement {
         open={mobileOpen}
         onClose={handleDrawerToggle}
         sx={{
-          display: { xs: 'block', sm: 'none' }
+          display: { xs: 'block', sm: 'block' }
         }}
       >
         <DrawerContent title={title} handleDrawerToggle={handleDrawerToggle}>

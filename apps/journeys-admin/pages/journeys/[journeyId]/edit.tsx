@@ -40,7 +40,6 @@ function JourneyEditPage(): ReactElement {
   })
   useTermsRedirect()
   useInvalidJourneyRedirect(data)
-  const isEdit = true
 
   return (
     <>
@@ -64,7 +63,7 @@ function JourneyEditPage(): ReactElement {
           authUser={AuthUser}
           sidePanelTitle={<DrawerTitle />}
           sidePanelChildren={<Drawer />}
-          isEdit={isEdit}
+          disableGutters
         >
           <JourneyEdit />
         </PageWrapper>

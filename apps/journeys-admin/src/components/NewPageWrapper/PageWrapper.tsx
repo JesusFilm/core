@@ -28,7 +28,7 @@ interface PageWrapperProps {
   authUser?: AuthUser
   initialState?: Partial<PageState>
   backHrefHistory?: boolean
-  isEdit?: boolean
+  disableGutters?: boolean
 }
 
 export function PageWrapper({
@@ -43,7 +43,7 @@ export function PageWrapper({
   authUser,
   initialState,
   backHrefHistory,
-  isEdit
+  disableGutters
 }: PageWrapperProps): ReactElement {
   const [open, setOpen] = useState<boolean>(false)
   const theme = useTheme()
@@ -102,7 +102,7 @@ export function PageWrapper({
               />
               <MainPanelBody
                 bottomPanelChildren={bottomPanelChildren}
-                isEdit={isEdit}
+                disableGutters={disableGutters}
               >
                 {children}
               </MainPanelBody>

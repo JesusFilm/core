@@ -5,13 +5,13 @@ import { usePageWrapperStyles } from '../utils/usePageWrapperStyles'
 export interface MainPanelBodyProps {
   children: ReactNode
   bottomPanelChildren?: ReactNode
-  isEdit?: boolean
+  disableGutters?: boolean
 }
 
 export function MainPanelBody({
   children,
   bottomPanelChildren,
-  isEdit
+  disableGutters
 }: MainPanelBodyProps): ReactElement {
   const { navbar, bottomPanel } = usePageWrapperStyles()
 
@@ -32,8 +32,14 @@ export function MainPanelBody({
         sx={{
           // Make optional or remove during cooldown
           // backgroundColor: 'background.paper',
-          px: { xs: isEdit != null ? 0 : 6, sm: isEdit != null ? 0 : 8 },
-          py: { xs: isEdit != null ? 0 : 6, sm: isEdit != null ? 0 : 9 },
+          px: {
+            xs: disableGutters != null ? 0 : 6,
+            sm: disableGutters != null ? 0 : 8
+          },
+          py: {
+            xs: disableGutters != null ? 0 : 6,
+            sm: disableGutters != null ? 0 : 9
+          },
           mb: bottomPanelChildren != null ? bottomPanel.height : 0
         }}
       >
