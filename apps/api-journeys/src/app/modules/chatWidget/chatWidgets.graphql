@@ -1,5 +1,5 @@
 type ChatWidget {
-  id: ID!
+  id: ID
   chatLink: String
   chatIcon: ChatIcon
 }
@@ -15,13 +15,22 @@ enum ChatIcon {
   gmail
   snapchat
   default
+  # needs clarification
+  # wechat
+  # chat
+  # website
 }
 
 extend type Journey {
   chatWidgets: [ChatWidget]
 }
 
+input ChatWidgetUpdateInput {
+  id: ID
+  chatLink: String
+  chatIcon: ChatIcon
+}
+
 extend type Mutation {
-  chatWidgetsUpdate(id: ID!): ChatWidget
-  chatWidgetsRemove(id: ID!): ChatWidget
+  chatWidgetsUpdate(journeyId: ID!, input: ChatWidgetUpdateInput): ChatWidget
 }

@@ -132,8 +132,7 @@ extend type Mutation {
   typographyBlockUpdate(id: ID!, journeyId: ID!, input: TypographyBlockUpdateInput!): TypographyBlock!
   videoBlockCreate(input: VideoBlockCreateInput!): VideoBlock!
   videoBlockUpdate(id: ID!, journeyId: ID!, input: VideoBlockUpdateInput!): VideoBlock!
-  chatWidgetsUpdate(id: ID!): ChatWidget
-  chatWidgetsRemove(id: ID!): ChatWidget
+  chatWidgetsUpdate(journeyId: ID!, input: ChatWidgetUpdateInput): ChatWidget
   buttonClickEventCreate(input: ButtonClickEventCreateInput!): ButtonClickEvent!
   chatOpenEventCreate(input: ChatOpenEventCreateInput!): ChatOpenEvent!
   journeyViewEventCreate(input: JourneyViewEventCreateInput!): JourneyViewEvent!
@@ -902,7 +901,7 @@ type VideoTriggerBlock implements Block {
 }
 
 type ChatWidget {
-  id: ID!
+  id: ID
   chatLink: String
   chatIcon: ChatIcon
 }
@@ -918,6 +917,12 @@ enum ChatIcon {
   gmail
   snapchat
   default
+}
+
+input ChatWidgetUpdateInput {
+  id: ID
+  chatLink: String
+  chatIcon: ChatIcon
 }
 
 enum ButtonAction {

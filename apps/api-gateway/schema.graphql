@@ -307,7 +307,15 @@ input ChatOpenEventCreateInput
 type ChatWidget
   @join__type(graph: JOURNEYS)
 {
-  id: ID!
+  id: ID
+  chatLink: String
+  chatIcon: ChatIcon
+}
+
+input ChatWidgetUpdateInput
+  @join__type(graph: JOURNEYS)
+{
+  id: ID
   chatLink: String
   chatIcon: ChatIcon
 }
@@ -999,8 +1007,7 @@ type Mutation
   typographyBlockUpdate(id: ID!, journeyId: ID!, input: TypographyBlockUpdateInput!): TypographyBlock! @join__field(graph: JOURNEYS)
   videoBlockCreate(input: VideoBlockCreateInput!): VideoBlock! @join__field(graph: JOURNEYS)
   videoBlockUpdate(id: ID!, journeyId: ID!, input: VideoBlockUpdateInput!): VideoBlock! @join__field(graph: JOURNEYS)
-  chatWidgetsUpdate(id: ID!): ChatWidget @join__field(graph: JOURNEYS)
-  chatWidgetsRemove(id: ID!): ChatWidget @join__field(graph: JOURNEYS)
+  chatWidgetsUpdate(journeyId: ID!, input: ChatWidgetUpdateInput): ChatWidget @join__field(graph: JOURNEYS)
   buttonClickEventCreate(input: ButtonClickEventCreateInput!): ButtonClickEvent! @join__field(graph: JOURNEYS)
   chatOpenEventCreate(input: ChatOpenEventCreateInput!): ChatOpenEvent! @join__field(graph: JOURNEYS)
   journeyViewEventCreate(input: JourneyViewEventCreateInput!): JourneyViewEvent! @join__field(graph: JOURNEYS)
