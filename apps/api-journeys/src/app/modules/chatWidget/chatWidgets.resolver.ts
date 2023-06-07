@@ -1,7 +1,6 @@
 import { Args, Mutation, Resolver } from '@nestjs/graphql'
 import { UseGuards } from '@nestjs/common'
 import { v4 as uuidv4 } from 'uuid'
-import { has } from 'lodash'
 import { JourneyService } from '../journey/journey.service'
 import { RoleGuard } from '../../lib/roleGuard/roleGuard'
 import {
@@ -17,20 +16,21 @@ export class ChatWidgetsResolver {
   constructor(private readonly journeyService: JourneyService) {}
 
   @Mutation()
-  // @UseGuards(
-  //   RoleGuard('input.journeyId', [
-  //     UserJourneyRole.owner,
-  //     UserJourneyRole.editor,
-  //     { role: Role.publisher, attributes: { template: true } }
-  //   ])
-  // )
+  @UseGuards(
+    RoleGuard('input.journeyId', [
+      UserJourneyRole.owner,
+      UserJourneyRole.editor,
+      { role: Role.publisher, attributes: { template: true } }
+    ])
+  )
   async chatWidgetsUpdate(
+    @Args('id') id: string,
     @Args('journeyId') journeyId: string,
     @Args('input') input: ChatWidgetUpdateInput
-  ): Promise<ChatWidget> {
-    const chatWidget = { ...input }
+  ): Promise<ChatWidget | null> {
+    const chatWidget = input != null ? { ...input } : null
 
-    if (!has(chatWidget, 'id')) {
+    if (chatWidget != null && id == null) {
       chatWidget.id = uuidv4()
     }
 
@@ -38,12 +38,12 @@ export class ChatWidgetsResolver {
     const chatWidgets = journey.chatWidgets ?? []
 
     const chatWidgetIndex = chatWidgets.findIndex(
-      (widget) => widget?.id === chatWidget.id
+      (widget) => widget?.id === chatWidget?.id
     )
 
     const updatedChatWidgets =
-      input === null
-        ? chatWidgets.filter((widget) => widget?.id !== chatWidget.id)
+      input === null && id !== undefined
+        ? chatWidgets.filter((widget) => widget?.id !== id)
         : chatWidgetIndex === -1
         ? [...chatWidgets, chatWidget]
         : chatWidgets.map((widget, index) =>

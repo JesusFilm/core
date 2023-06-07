@@ -132,7 +132,7 @@ extend type Mutation {
   typographyBlockUpdate(id: ID!, journeyId: ID!, input: TypographyBlockUpdateInput!): TypographyBlock!
   videoBlockCreate(input: VideoBlockCreateInput!): VideoBlock!
   videoBlockUpdate(id: ID!, journeyId: ID!, input: VideoBlockUpdateInput!): VideoBlock!
-  chatWidgetsUpdate(journeyId: ID!, input: ChatWidgetUpdateInput): ChatWidget
+  chatWidgetsUpdate(id: ID, journeyId: ID, input: ChatWidgetUpdateInput): ChatWidget
   buttonClickEventCreate(input: ButtonClickEventCreateInput!): ButtonClickEvent!
   chatOpenEventCreate(input: ChatOpenEventCreateInput!): ChatOpenEvent!
   journeyViewEventCreate(input: JourneyViewEventCreateInput!): JourneyViewEvent!

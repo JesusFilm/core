@@ -32,5 +32,9 @@ input ChatWidgetUpdateInput {
 }
 
 extend type Mutation {
-  chatWidgetsUpdate(journeyId: ID!, input: ChatWidgetUpdateInput): ChatWidget
+  chatWidgetsUpdate(
+    id: ID
+    journeyId: ID
+    input: ChatWidgetUpdateInput
+  ): ChatWidget
 }

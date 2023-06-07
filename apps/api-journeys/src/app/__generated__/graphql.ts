@@ -1280,7 +1280,7 @@ export abstract class IMutation {
 
     abstract videoBlockUpdate(id: string, journeyId: string, input: VideoBlockUpdateInput): VideoBlock | Promise<VideoBlock>;
 
-    abstract chatWidgetsUpdate(journeyId: string, input?: Nullable<ChatWidgetUpdateInput>): Nullable<ChatWidget> | Promise<Nullable<ChatWidget>>;
+    abstract chatWidgetsUpdate(id?: Nullable<string>, journeyId?: Nullable<string>, input?: Nullable<ChatWidgetUpdateInput>): Nullable<ChatWidget> | Promise<Nullable<ChatWidget>>;
 
     abstract buttonClickEventCreate(input: ButtonClickEventCreateInput): ButtonClickEvent | Promise<ButtonClickEvent>;
 
