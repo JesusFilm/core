@@ -17,6 +17,7 @@ import {
 } from '../__generated__/GetJourney'
 import { GetJourneySlugs } from '../__generated__/GetJourneySlugs'
 import i18nConfig from '../next-i18next.config'
+import { Facebook } from '../src/components/Facebook/Facebook'
 
 interface JourneyPageProps {
   journey: Journey
@@ -76,6 +77,7 @@ function JourneyPage({ journey, locale, rtl }: JourneyPageProps): ReactElement {
           rtl={rtl}
           locale={locale}
         >
+          <Facebook />
           {journey.blocks != null && (
             <Conductor blocks={transformer(journey.blocks)} />
           )}
