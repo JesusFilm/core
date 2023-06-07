@@ -1,6 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { v4 as uuidv4 } from 'uuid'
 import { getPowerBiEmbed } from '@core/nest/powerBi/getPowerBiEmbed'
+import { PrismaService } from '../../lib/prisma.service'
 import {
   IdType,
   Journey,
@@ -310,7 +311,8 @@ describe('JourneyResolver', () => {
         userJourneyService,
         UserRoleResolver,
         userRoleService,
-        memberService
+        memberService,
+        PrismaService
       ]
     }).compile()
     resolver = module.get<JourneyResolver>(JourneyResolver)
