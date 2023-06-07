@@ -17,7 +17,7 @@ import { BlockService } from '../block/block.service'
 import { UserJourneyService } from '../userJourney/userJourney.service'
 import { UserRoleService } from '../userRole/userRole.service'
 import { UserRoleResolver } from '../userRole/userRole.resolver'
-import { MemberService } from '../member/member.service'
+import { PrismaService } from '../../lib/prisma.service'
 import { JourneyResolver } from './journey.resolver'
 import { JourneyService } from './journey.service'
 
@@ -52,7 +52,7 @@ describe('JourneyResolver', () => {
     bService: BlockService,
     ujService: UserJourneyService,
     urService: UserRoleService,
-    mService: MemberService
+    prismaService: PrismaService
   const publishedAt = new Date('2021-11-19T12:34:56.647Z').toISOString()
   const createdAt = new Date('2021-11-19T12:34:56.647Z').toISOString()
 
@@ -292,14 +292,6 @@ describe('JourneyResolver', () => {
     })
   }
 
-  const memberService = {
-    provide: MemberService,
-    useFactory: () => ({
-      save: jest.fn((member) => member),
-      getMemberByTeamId: jest.fn(() => null)
-    })
-  }
-
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
@@ -310,7 +302,7 @@ describe('JourneyResolver', () => {
         userJourneyService,
         UserRoleResolver,
         userRoleService,
-        memberService
+        PrismaService
       ]
     }).compile()
     resolver = module.get<JourneyResolver>(JourneyResolver)
@@ -318,7 +310,8 @@ describe('JourneyResolver', () => {
     ujService = module.get<UserJourneyService>(UserJourneyService)
     bService = module.get<BlockService>(BlockService)
     urService = module.get<UserRoleService>(UserRoleService)
-    mService = module.get<MemberService>(MemberService)
+    prismaService = module.get<PrismaService>(PrismaService)
+    prismaService.userTeam.upsert = jest.fn()
   })
 
   describe('adminJourneysEmbed', () => {
@@ -708,37 +701,26 @@ describe('JourneyResolver', () => {
       )
     })
 
-    it('creates a Member', async () => {
+    it('upserts a userTeam', async () => {
       mockUuidv4.mockReturnValueOnce('journeyId')
       await resolver.journeyCreate(
         { title: 'Untitled Journey', languageId: '529' },
         'userId'
       )
-      expect(mService.save).toHaveBeenCalledWith(
-        {
-          id: 'userId:jfp-team',
+      expect(prismaService.userTeam.upsert).toHaveBeenCalledWith({
+        create: {
+          teamId: 'jfp-team',
           userId: 'userId',
-          teamId: 'jfp-team'
+          role: 'guest'
         },
-        { overwriteMode: 'ignore', returnNew: false }
-      )
-    })
-
-    it('doesnt create an existing Member', async () => {
-      mockUuidv4.mockReturnValueOnce('journeyId')
-      const member = {
-        id: 'existingId',
-        userId: 'userId',
-        teamId: 'jfp-team'
-      }
-      mService.getMemberByTeamId = jest.fn(
-        async () => await Promise.resolve(member)
-      )
-      await resolver.journeyCreate(
-        { title: 'Untitled Journey', languageId: '529' },
-        'userId'
-      )
-      expect(mService.save).not.toHaveBeenCalled()
+        update: {},
+        where: {
+          teamId_userId: {
+            teamId: 'jfp-team',
+            userId: 'userId'
+          }
+        }
+      })
     })
 
     it('adds uuid if slug already taken', async () => {

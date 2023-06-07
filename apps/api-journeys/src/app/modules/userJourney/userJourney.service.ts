@@ -7,7 +7,7 @@ import { ArrayCursor } from 'arangojs/cursor'
 import { v4 as uuidv4 } from 'uuid'
 import { IdType, Journey, UserJourneyRole } from '../../__generated__/graphql'
 import { JourneyService } from '../journey/journey.service'
-import { MemberService } from '../member/member.service'
+import { PrismaService } from '../../lib/prisma.service'
 
 export interface UserJourneyRecord {
   id: string
@@ -22,8 +22,8 @@ export class UserJourneyService extends BaseService<UserJourneyRecord> {
   @Inject(JourneyService)
   private readonly journeyService: JourneyService
 
-  @Inject(MemberService)
-  private readonly memberService: MemberService
+  @Inject(PrismaService)
+  private readonly prismaService: PrismaService
 
   collection = this.db.collection<UserJourneyRecord>('userJourneys')
 
@@ -102,21 +102,20 @@ export class UserJourneyService extends BaseService<UserJourneyRecord> {
     const journey = await this.journeyService.get(userJourney.journeyId)
 
     if (journey.teamId != null) {
-      const existingMember = await this.memberService.getMemberByTeamId(
-        requesterUserId,
-        journey.teamId
-      )
-
-      if (existingMember == null) {
-        await this.memberService.save(
-          {
-            id: `${requesterUserId}:${(journey as { teamId: string }).teamId}`,
+      await this.prismaService.userTeam.upsert({
+        where: {
+          teamId_userId: {
             userId: requesterUserId,
             teamId: journey.teamId
-          },
-          { overwriteMode: 'ignore' }
-        )
-      }
+          }
+        },
+        update: {},
+        create: {
+          userId: requesterUserId,
+          teamId: journey.teamId,
+          role: 'guest'
+        }
+      })
     }
 
     return await this.update(id, {
