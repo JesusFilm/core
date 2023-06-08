@@ -8,7 +8,13 @@ import { JourneyResolver } from './journey.resolver'
 
 @Module({
   imports: [DatabaseModule],
-  providers: [JourneyService, JourneyResolver, BlockService, DateTimeScalar, PrismaService],
+  providers: [
+    JourneyService,
+    JourneyResolver,
+    BlockService,
+    DateTimeScalar,
+    PrismaService
+  ],
   exports: [JourneyService]
 })
 export class JourneyModule {}

@@ -8,7 +8,12 @@ import { UserJourneyResolver } from './userJourney.resolver'
 @Global()
 @Module({
   imports: [DatabaseModule],
-  providers: [UserJourneyService, UserJourneyResolver, JourneyService, PrismaService],
+  providers: [
+    UserJourneyService,
+    UserJourneyResolver,
+    JourneyService,
+    PrismaService
+  ],
   exports: [UserJourneyService]
 })
 export class UserJourneyModule {}
