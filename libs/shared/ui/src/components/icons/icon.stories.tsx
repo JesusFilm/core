@@ -4,7 +4,7 @@ import { ComponentProps } from 'react'
 import Typography from '@mui/material/Typography'
 // import CircularProgress from '@mui/material/CircularProgress'
 import { simpleComponentConfig } from '../../libs/simpleComponentConfig'
-import { Icons } from './Icons'
+import { Icon } from './icon'
 
 const iconNames = [
   'AddSquare2',
@@ -137,10 +137,10 @@ const iconNames = [
   'XSquareContained'
 ] as const
 
-const IconsDemo = {
+const IconDemo = {
   ...simpleComponentConfig,
-  component: Icons,
-  title: 'Shared-ui/Icons',
+  component: Icon,
+  title: 'Shared-ui/Icon',
   parameters: {
     ...simpleComponentConfig.parameters,
     chromatic: {
@@ -162,7 +162,7 @@ const Colors = [
 
 type Color = (typeof Colors)[number]
 
-const Template: Story<ComponentProps<typeof Icons>> = () => {
+const Template: Story<ComponentProps<typeof Icon>> = () => {
   return (
     <Stack sx={{ ml: 30 }}>
       <Stack
@@ -214,14 +214,14 @@ const Template: Story<ComponentProps<typeof Icons>> = () => {
             sx={{ pb: 2, width: '320px' }}
           >
             <Typography variant="body2">
-              {<Icons name={name} /> != null ? name : null}
+              {<Icon name={name} /> != null ? name : null}
             </Typography>
             {/* Use to test loading state locally */}
             {/* <CircularProgress size="16px" /> */}
-            <Icons name={name} fontSize="small" />
-            <Icons name={name} />
-            <Icons name={name} fontSize="large" />
-            <Icons name={name} sx={{ fontSize: '48px', ml: -1 }} />
+            <Icon name={name} fontSize="small" />
+            <Icon name={name} />
+            <Icon name={name} fontSize="large" />
+            <Icon name={name} sx={{ fontSize: '48px', ml: -1 }} />
           </Stack>
           <Stack direction="row" gap={2} alignItems="center">
             {[
@@ -233,7 +233,7 @@ const Template: Story<ComponentProps<typeof Icons>> = () => {
               'action',
               'disabled'
             ].map((color) => (
-              <Icons name={name} color={color as Color} />
+              <Icon name={name} color={color as Color} />
             ))}
           </Stack>
         </Stack>
@@ -244,4 +244,4 @@ const Template: Story<ComponentProps<typeof Icons>> = () => {
 
 export const Default = Template.bind({})
 
-export default IconsDemo as Meta
+export default IconDemo as Meta

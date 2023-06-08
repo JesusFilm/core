@@ -394,11 +394,11 @@ const iconComponents: IconComponents = {
   XSquareContained
 }
 
-interface IconsProps extends Pick<SvgIconProps, 'color' | 'fontSize' | 'sx'> {
+interface IconProps extends Pick<SvgIconProps, 'color' | 'fontSize' | 'sx'> {
   name: IconNames
 }
 
-export function Icons({ name, color, fontSize, sx }: IconsProps): ReactElement {
+export function Icon({ name, color, fontSize, sx }: IconProps): ReactElement {
   const IconComponent = iconComponents[name]
   return <IconComponent color={color} fontSize={fontSize} sx={{ ...sx }} />
 }

@@ -19,8 +19,8 @@ import {
   ActiveJourneyEditContent,
   useEditor
 } from '@core/journeys/ui/EditorProvider'
-import Target from '@core/shared/ui/Icons/Target'
-import ThumbsUp from '@core/shared/ui/Icons/ThumbsUp'
+import Target from '@core/shared/ui/icons/Target'
+import ThumbsUp from '@core/shared/ui/icons/ThumbsUp'
 import Divider from '@mui/material/Divider'
 import Image from 'next/image'
 
