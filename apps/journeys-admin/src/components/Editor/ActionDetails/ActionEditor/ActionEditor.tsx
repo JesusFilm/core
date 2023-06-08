@@ -1,13 +1,11 @@
 import { ReactElement, ReactNode } from 'react'
 import Box from '@mui/material/Box'
 import { Formik, Form } from 'formik'
-import InputAdornment from '@mui/material/InputAdornment'
 import TextField from '@mui/material/TextField'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { gql, useMutation } from '@apollo/client'
 import { object, string } from 'yup'
 import Typography from '@mui/material/Typography'
-import EditRounded from '@mui/icons-material/EditRounded'
 import QuestionAnswerOutlined from '@mui/icons-material/QuestionAnswerOutlined'
 import WebOutlined from '@mui/icons-material/WebOutlined'
 import MenuBookRounded from '@mui/icons-material/MenuBookRounded'
@@ -141,13 +139,6 @@ export function ActionEditor({
               value={values.link}
               error={touched.link === true && Boolean(errors.link)}
               helperText={touched.link === true && errors.link}
-              InputProps={{
-                endAdornment: (
-                  <InputAdornment position="end">
-                    <EditRounded sx={{ color: 'divider' }} />
-                  </InputAdornment>
-                )
-              }}
               onBlur={(e) => {
                 handleBlur(e)
                 errors.link == null && handleSubmit(e.target.value)

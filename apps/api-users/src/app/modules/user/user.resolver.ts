@@ -3,17 +3,21 @@ import { CurrentUserId } from '@core/nest/decorators/CurrentUserId'
 import { UseGuards } from '@nestjs/common'
 import { GqlAuthGuard } from '@core/nest/gqlAuthGuard/GqlAuthGuard'
 import { firebaseClient } from '@core/nest/common/firebaseClient'
-import { User } from '../../__generated__/graphql'
-import { UserService } from './user.service'
+import { User } from '.prisma/api-users-client'
+import { PrismaService } from '../../lib/prisma.service'
 
 @Resolver('User')
 export class UserResolver {
-  constructor(private readonly userService: UserService) {}
+  constructor(private readonly prismaService: PrismaService) {}
 
   @Query()
   @UseGuards(GqlAuthGuard)
   async me(@CurrentUserId() userId: string): Promise<User> {
-    const existingUser: User = await this.userService.getByUserId(userId)
+    const existingUser = await this.prismaService.user.findUnique({
+      where: {
+        userId
+      }
+    })
 
     if (existingUser != null) return existingUser
 
@@ -26,12 +30,16 @@ export class UserResolver {
     const firstName = displayName?.split(' ')?.slice(0, -1)?.join(' ') ?? ''
     const lastName = displayName?.split(' ')?.slice(-1)?.join(' ') ?? ''
 
-    return await this.userService.save({
+    const data = {
       userId,
       firstName,
       lastName,
-      email,
+      email: email ?? '',
       imageUrl
+    }
+
+    return await this.prismaService.user.create({
+      data
     })
   }
 
@@ -39,7 +47,11 @@ export class UserResolver {
   async resolveReference(reference: {
     __typename: string
     id: string
-  }): Promise<User> {
-    return await this.userService.getByUserId(reference.id)
+  }): Promise<User | null> {
+    return await this.prismaService.user.findUnique({
+      where: {
+        userId: reference.id
+      }
+    })
   }
 }

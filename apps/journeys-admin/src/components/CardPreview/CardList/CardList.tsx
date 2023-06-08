@@ -294,7 +294,7 @@ const CardItem = ({
             rtl={rtl}
             locale={locale}
           >
-            <Box sx={{ p: 4, height: '100%' }}>
+            <Box sx={{ p: 4, height: '100%', borderRadius: 4 }}>
               <BlockRenderer
                 block={step}
                 wrappers={{
