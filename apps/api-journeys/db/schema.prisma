@@ -137,7 +137,7 @@ model JourneyVisitor {
 model Team {
   id        String     @id @default(uuid())
   title     String
-  UserTeam  UserTeam[]
+  userTeams UserTeam[]
   createdAt DateTime   @default(now())
   updatedAt DateTime   @updatedAt
 
