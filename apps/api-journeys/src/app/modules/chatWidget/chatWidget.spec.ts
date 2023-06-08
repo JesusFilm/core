@@ -5,7 +5,7 @@ import { mockDeep } from 'jest-mock-extended'
 
 import { JourneyService } from '../journey/journey.service'
 import {
-  ChatIcon,
+  ChatPlatform,
   ChatWidgetUpdateInput,
   Journey,
   JourneyStatus,
@@ -42,7 +42,7 @@ describe('ChatWidgetsResolver', () => {
   }
 
   const input: ChatWidgetUpdateInput = {
-    chatIcon: ChatIcon.facebook,
+    chatPlatform: ChatPlatform.facebook,
     chatLink: 'm.me/user'
   }
 

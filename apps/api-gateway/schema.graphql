@@ -249,24 +249,6 @@ input CardBlockUpdateInput
   themeName: ThemeName
 }
 
-enum ChatIcon
-  @join__type(graph: JOURNEYS)
-{
-  facebook @join__enumValue(graph: JOURNEYS)
-  whatsapp @join__enumValue(graph: JOURNEYS)
-  viber @join__enumValue(graph: JOURNEYS)
-  telegram @join__enumValue(graph: JOURNEYS)
-  line @join__enumValue(graph: JOURNEYS)
-  vk @join__enumValue(graph: JOURNEYS)
-  instagram @join__enumValue(graph: JOURNEYS)
-  gmail @join__enumValue(graph: JOURNEYS)
-  snapchat @join__enumValue(graph: JOURNEYS)
-  default @join__enumValue(graph: JOURNEYS)
-  wechat @join__enumValue(graph: JOURNEYS)
-  chat @join__enumValue(graph: JOURNEYS)
-  website @join__enumValue(graph: JOURNEYS)
-}
-
 type ChatOpenEvent implements Event
   @join__implements(graph: JOURNEYS, interface: "Event")
   @join__type(graph: JOURNEYS)
@@ -307,12 +289,30 @@ input ChatOpenEventCreateInput
   value: MessagePlatform
 }
 
+enum ChatPlatform
+  @join__type(graph: JOURNEYS)
+{
+  facebook @join__enumValue(graph: JOURNEYS)
+  whatsApp @join__enumValue(graph: JOURNEYS)
+  viber @join__enumValue(graph: JOURNEYS)
+  telegram @join__enumValue(graph: JOURNEYS)
+  line @join__enumValue(graph: JOURNEYS)
+  vk @join__enumValue(graph: JOURNEYS)
+  instagram @join__enumValue(graph: JOURNEYS)
+  mail @join__enumValue(graph: JOURNEYS)
+  snapchat @join__enumValue(graph: JOURNEYS)
+  weChat @join__enumValue(graph: JOURNEYS)
+  chat @join__enumValue(graph: JOURNEYS)
+  website @join__enumValue(graph: JOURNEYS)
+  default @join__enumValue(graph: JOURNEYS)
+}
+
 type ChatWidget
   @join__type(graph: JOURNEYS)
 {
   id: ID
   chatLink: String
-  chatIcon: ChatIcon
+  chatPlatform: ChatPlatform
 }
 
 input ChatWidgetUpdateInput
@@ -320,7 +320,7 @@ input ChatWidgetUpdateInput
 {
   id: ID
   chatLink: String
-  chatIcon: ChatIcon
+  chatPlatform: ChatPlatform
 }
 
 type CloudflareImage

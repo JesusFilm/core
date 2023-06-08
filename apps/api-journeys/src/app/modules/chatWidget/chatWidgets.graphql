@@ -1,23 +1,23 @@
 type ChatWidget {
   id: ID
   chatLink: String
-  chatIcon: ChatIcon
+  chatPlatform: ChatPlatform
 }
 
-enum ChatIcon {
+enum ChatPlatform {
   facebook
-  whatsapp
+  whatsApp
   viber
   telegram
   line
   vk
   instagram
-  gmail
+  mail
   snapchat
-  default
-  wechat
+  weChat
   chat
   website
+  default
 }
 
 extend type Journey {
@@ -27,7 +27,7 @@ extend type Journey {
 input ChatWidgetUpdateInput {
   id: ID
   chatLink: String
-  chatIcon: ChatIcon
+  chatPlatform: ChatPlatform
 }
 
 extend type Mutation {

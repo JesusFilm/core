@@ -131,20 +131,20 @@ export enum VideoBlockObjectFit {
     zoomed = "zoomed"
 }
 
-export enum ChatIcon {
+export enum ChatPlatform {
     facebook = "facebook",
-    whatsapp = "whatsapp",
+    whatsApp = "whatsApp",
     viber = "viber",
     telegram = "telegram",
     line = "line",
     vk = "vk",
     instagram = "instagram",
-    gmail = "gmail",
+    mail = "mail",
     snapchat = "snapchat",
-    "default" = "default",
-    wechat = "wechat",
+    weChat = "weChat",
     chat = "chat",
-    website = "website"
+    website = "website",
+    "default" = "default"
 }
 
 export enum ButtonAction {
@@ -437,7 +437,7 @@ export class VideoBlockUpdateInput {
 export class ChatWidgetUpdateInput {
     id?: Nullable<string>;
     chatLink?: Nullable<string>;
-    chatIcon?: Nullable<ChatIcon>;
+    chatPlatform?: Nullable<ChatPlatform>;
 }
 
 export class ButtonClickEventCreateInput {
@@ -882,7 +882,7 @@ export class ChatWidget {
     __typename?: 'ChatWidget';
     id?: Nullable<string>;
     chatLink?: Nullable<string>;
-    chatIcon?: Nullable<ChatIcon>;
+    chatPlatform?: Nullable<ChatPlatform>;
 }
 
 export class ButtonClickEvent implements Event {
