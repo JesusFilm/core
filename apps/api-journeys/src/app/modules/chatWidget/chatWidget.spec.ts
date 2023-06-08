@@ -42,6 +42,7 @@ describe('ChatWidgetsResolver', () => {
   }
 
   const input: ChatWidgetUpdateInput = {
+    id: 'chatwidgetsid',
     chatPlatform: ChatPlatform.facebook,
     chatLink: 'm.me/user'
   }
@@ -72,24 +73,54 @@ describe('ChatWidgetsResolver', () => {
     service = module.get<JourneyService>(JourneyService)
   })
 
-  it('should create a new chat widget', async () => {
-    await resolver.chatWidgetsUpdate('', 'journeyId', input)
-    expect(service.get).toHaveBeenCalledWith('journeyId')
-    expect(service.update).toHaveBeenCalledWith('journeyId', {
-      chatWidgets: [input]
-    })
-  })
-
   it('should create a new chat widget and generate an id', async () => {
     mockUuidv4.mockReturnValueOnce('uuid')
 
-    const result = await resolver.chatWidgetsUpdate(null, 'journeyId', input)
+    const result = await resolver.chatWidgetsUpdate(null, 'journeyId', {
+      ...input,
+      id: null
+    })
 
     expect(service.get).toHaveBeenCalledWith('journeyId')
     expect(service.update).toHaveBeenCalledWith('journeyId', {
       chatWidgets: [{ ...input, id: 'uuid' }]
     })
     expect(result).toEqual({ ...input, id: 'uuid' })
+  })
+
+  it('should update an existing chat widget', async () => {
+    journey.chatWidgets = [input]
+
+    const updatedInput: ChatWidgetUpdateInput = {
+      chatPlatform: ChatPlatform.facebook,
+      chatLink: 'm.me/newuser'
+    }
+
+    await resolver.chatWidgetsUpdate('chatwidgetsid', 'journeyId', updatedInput)
+    expect(service.get).toHaveBeenCalledWith('journeyId')
+    expect(service.update).toHaveBeenCalledWith('journeyId', {
+      chatWidgets: [{ ...updatedInput, id: 'chatwidgetsid' }]
+    })
+  })
+
+  it('should add a new widget to the chatWidgets array if one already exists', async () => {
+    journey.chatWidgets = [input]
+
+    const newInput: ChatWidgetUpdateInput = {
+      chatPlatform: ChatPlatform.facebook,
+      chatLink: 'm.me/newWidget'
+    }
+
+    const newWidget = await resolver.chatWidgetsUpdate(
+      null,
+      'journeyId',
+      newInput
+    )
+
+    expect(service.get).toHaveBeenCalledWith('journeyId')
+    expect(service.update).toHaveBeenCalledWith('journeyId', {
+      chatWidgets: [input, { ...newInput, id: newWidget?.id }]
+    })
   })
 
   it('should remove the chat widget from the journey', async () => {

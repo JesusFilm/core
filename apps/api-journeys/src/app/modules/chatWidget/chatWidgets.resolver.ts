@@ -1,6 +1,7 @@
 import { Args, Mutation, Resolver } from '@nestjs/graphql'
 import { UseGuards } from '@nestjs/common'
 import { v4 as uuidv4 } from 'uuid'
+import { remove, findIndex, isEqual } from 'lodash'
 import { JourneyService } from '../journey/journey.service'
 import { RoleGuard } from '../../lib/roleGuard/roleGuard'
 import {
@@ -15,21 +16,22 @@ import {
 export class ChatWidgetsResolver {
   constructor(private readonly journeyService: JourneyService) {}
 
-  updateChatWidgets(chatWidgets, chatWidget, input, id): ChatWidget[] {
-    if (input === null && id !== undefined) {
-      return chatWidgets.filter((widget) => widget.id !== id)
+  updateChatWidgets(chatWidgets, chatWidget, id): ChatWidget[] {
+    const compareWidgetId = (widget): boolean =>
+      isEqual(widget.id, chatWidget?.id ?? id)
+
+    const existingWidgetIndex = findIndex(chatWidgets, compareWidgetId)
+
+    if (chatWidget === null && id !== null) {
+      return remove(chatWidgets, (widget) => !compareWidgetId(widget))
     }
 
-    const chatWidgetIndex = chatWidgets.findIndex(
-      (widget) => widget.id === chatWidget.id
-    )
-
-    if (chatWidgetIndex === -1) {
+    if (existingWidgetIndex === -1 && chatWidget !== null) {
       return [...chatWidgets, chatWidget]
     }
 
     return chatWidgets.map((widget, index) =>
-      index === chatWidgetIndex ? chatWidget : widget
+      index === existingWidgetIndex && chatWidget !== null ? chatWidget : widget
     )
   }
 
@@ -46,18 +48,23 @@ export class ChatWidgetsResolver {
     @Args('journeyId') journeyId: string,
     @Args('input') input: ChatWidgetUpdateInput | null
   ): Promise<ChatWidget | null> {
-    const chatWidget = input != null ? { ...input } : null
-
-    if (chatWidget != null && id == null) {
-      chatWidget.id = uuidv4()
-    }
-
     const journey: Journey = await this.journeyService.get(journeyId)
+    let chatWidget: ChatWidget | null = null
+
+    if (input !== null) {
+      const existingChatWidget =
+        journey.chatWidgets?.find((widget) => widget?.id === id) ?? null
+
+      chatWidget = {
+        ...existingChatWidget,
+        ...input
+      }
+      chatWidget.id = id ?? uuidv4()
+    }
 
     const updatedChatWidgets = this.updateChatWidgets(
       journey.chatWidgets ?? [],
       chatWidget,
-      input,
       id
     )
 
