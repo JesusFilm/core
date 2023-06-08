@@ -5,13 +5,13 @@ import {
 } from '../../__generated__/graphql'
 import { PrismaService } from '../../lib/prisma.service'
 import { EventService } from '../event/event.service'
-import { MemberService } from '../member/member.service'
-
 import { VisitorResolver } from './visitor.resolver'
 import { VisitorService } from './visitor.service'
 
 describe('VisitorResolver', () => {
-  let resolver: VisitorResolver, vService: VisitorService, prisma: PrismaService
+  let resolver: VisitorResolver,
+    vService: VisitorService,
+    prismaService: PrismaService
 
   const connection: VisitorsConnection = {
     edges: [],
@@ -54,24 +54,10 @@ describe('VisitorResolver', () => {
     })
   }
 
-  const member = {
-    id: 'memberId',
+  const userTeam = {
+    id: 'userTeamId',
     userId: 'userId',
     teamId: 'teamId'
-  }
-
-  const memberService = {
-    provide: MemberService,
-    useFactory: () => ({
-      getMemberByTeamId: jest.fn((_userId, teamId) => {
-        switch (teamId) {
-          case 'teamId':
-            return member
-          case 'differentTeamId':
-            return undefined
-        }
-      })
-    })
   }
 
   const event = {
@@ -87,19 +73,14 @@ describe('VisitorResolver', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [
-        VisitorResolver,
-        visitorService,
-        memberService,
-        eventService,
-        PrismaService
-      ]
+      providers: [VisitorResolver, visitorService, eventService, PrismaService]
     }).compile()
     resolver = module.get<VisitorResolver>(VisitorResolver)
     vService = module.get<VisitorService>(VisitorService)
-    prisma = module.get<PrismaService>(PrismaService)
-    prisma.event.findMany = jest.fn().mockReturnValue([event])
-    prisma.visitor.findUnique = jest.fn().mockReturnValue(visitor)
+    prismaService = module.get<PrismaService>(PrismaService)
+    prismaService.event.findMany = jest.fn().mockReturnValue([event])
+    prismaService.visitor.findUnique = jest.fn().mockReturnValue(visitor)
+    prismaService.userTeam.findUnique = jest.fn().mockReturnValue(userTeam)
   })
 
   describe('visitorsConnection', () => {
@@ -119,6 +100,7 @@ describe('VisitorResolver', () => {
     })
 
     it('throws error when user is not a team member', async () => {
+      prismaService.userTeam.findUnique = jest.fn().mockReturnValue(null)
       await expect(
         async () =>
           await resolver.visitorsConnection('userId', 'differentTeamId')
@@ -128,23 +110,24 @@ describe('VisitorResolver', () => {
 
   describe('visitor', () => {
     it('returns visitor', async () => {
-      prisma.event.findMany = jest.fn().mockReturnValue([])
+      prismaService.event.findMany = jest.fn().mockReturnValue([])
       expect(await resolver.visitor('userId', 'visitorId')).toEqual({
         ...visitor
       })
     })
 
     it('throws error when invalid visitor ID', async () => {
-      prisma.visitor.findUnique = jest.fn().mockReturnValue(null)
+      prismaService.visitor.findUnique = jest.fn().mockReturnValue(null)
       await expect(
         async () => await resolver.visitor('userId', 'unknownVisitorId')
       ).rejects.toThrow('Visitor with ID "unknownVisitorId" does not exist')
     })
 
     it('throws error when user is not member of visitors team', async () => {
-      prisma.visitor.findUnique = jest
+      prismaService.visitor.findUnique = jest
         .fn()
         .mockReturnValue({ ...visitor, teamId: 'junk' })
+      prismaService.userTeam.findUnique = jest.fn().mockReturnValue(null)
       await expect(
         async () =>
           await resolver.visitor('userId', 'visitorWithDifferentTeamId')
@@ -164,7 +147,7 @@ describe('VisitorResolver', () => {
       status: 'star'
     }
     it('returns updated visitor', async () => {
-      prisma.visitor.update = jest
+      prismaService.visitor.update = jest
         .fn()
         .mockReturnValueOnce({ ...visitor, ...input })
       expect(
@@ -173,7 +156,7 @@ describe('VisitorResolver', () => {
     })
 
     it('throws error when invalid visitor ID', async () => {
-      prisma.visitor.findUnique = jest.fn().mockReturnValueOnce(null)
+      prismaService.visitor.findUnique = jest.fn().mockReturnValueOnce(null)
       await expect(
         async () =>
           await resolver.visitorUpdate('userId', 'unknownVisitorId', input)
@@ -181,9 +164,10 @@ describe('VisitorResolver', () => {
     })
 
     it('throws error when user is not member of visitors team', async () => {
-      prisma.visitor.findUnique = jest
+      prismaService.visitor.findUnique = jest
         .fn()
         .mockReturnValueOnce({ ...visitor, teamId: 'junk' })
+      prismaService.userTeam.findUnique = jest.fn().mockReturnValue(null)
       await expect(
         async () =>
           await resolver.visitorUpdate(
@@ -204,7 +188,7 @@ describe('VisitorResolver', () => {
 
     it('calls event service with visitorId', async () => {
       await resolver.events({ id: 'visitorId' })
-      expect(prisma.event.findMany).toHaveBeenCalledWith({
+      expect(prismaService.event.findMany).toHaveBeenCalledWith({
         where: { visitorId: 'visitorId' }
       })
     })
@@ -244,8 +228,8 @@ describe('VisitorResolver', () => {
 
   describe('visitorUpdateForCurrentUser', () => {
     it('returns updated visitor', async () => {
-      prisma.visitor.findFirst = jest.fn().mockReturnValueOnce(visitor)
-      prisma.visitor.update = jest.fn().mockReturnValueOnce({
+      prismaService.visitor.findFirst = jest.fn().mockReturnValueOnce(visitor)
+      prismaService.visitor.update = jest.fn().mockReturnValueOnce({
         ...visitor,
         countryCode: 'South Lake Tahoe, CA, USA'
       })
@@ -257,7 +241,7 @@ describe('VisitorResolver', () => {
     })
 
     it('throws error when invalid visitor ID', async () => {
-      prisma.visitor.findFirst = jest.fn().mockReturnValueOnce(null)
+      prismaService.visitor.findFirst = jest.fn().mockReturnValueOnce(null)
       await expect(
         async () =>
           await resolver.visitorUpdateForCurrentUser('unknownVisitorId', {
