@@ -34,6 +34,7 @@ export class HostResolver {
   }
 
   @Mutation()
+  // for future dev:  use teamID prop in future once RoleGuards are in
   async hostUpdate(
     @Args('id') id: string,
     @Args('input') input: HostUpdateInput
@@ -54,6 +55,7 @@ export class HostResolver {
   }
 
   @Mutation()
+  // for future dev: use teamID prop in future once RoleGuards are in
   async hostDelete(@Args('id') id: string): Promise<Host> {
     return await this.prismaService.host.delete({
       where: {
