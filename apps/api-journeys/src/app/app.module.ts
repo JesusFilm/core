@@ -19,12 +19,14 @@ import { VisitorModule } from './modules/visitor/visitor.module'
 import { MemberModule } from './modules/member/member.module'
 import { TeamModule } from './modules/team/team.module'
 import { JourneyVisitorModule } from './modules/journeyVisitor/journeyVisitor.module'
+import { HostModule } from './modules/host/host.module'
 
 @Module({
   imports: [
     ActionModule,
     BlockModule,
     JourneyModule,
+    HostModule,
     JourneyVisitorModule,
     EventModule,
     MemberModule,

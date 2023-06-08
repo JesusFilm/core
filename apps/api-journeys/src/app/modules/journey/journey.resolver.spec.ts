@@ -53,7 +53,8 @@ describe('JourneyResolver', () => {
     bService: BlockService,
     ujService: UserJourneyService,
     urService: UserRoleService,
-    mService: MemberService
+    mService: MemberService,
+    prismaService: PrismaService
   const publishedAt = new Date('2021-11-19T12:34:56.647Z').toISOString()
   const createdAt = new Date('2021-11-19T12:34:56.647Z').toISOString()
 
@@ -69,6 +70,21 @@ describe('JourneyResolver', () => {
     primaryImageBlock: null,
     publishedAt,
     createdAt
+  }
+
+  const journeyWithTeamId = {
+    id: 'journeyId',
+    slug: 'journey-slug',
+    title: 'published',
+    status: JourneyStatus.published,
+    language: { id: '529' },
+    themeMode: ThemeMode.light,
+    themeName: ThemeName.base,
+    description: null,
+    primaryImageBlock: null,
+    publishedAt,
+    createdAt,
+    teamId: 'jfp-team'
   }
 
   const primaryImageBlock: ImageBlock & { _key: string } = {
@@ -151,6 +167,19 @@ describe('JourneyResolver', () => {
     slug: 'published-slug',
     seoTitle: 'Social media title',
     seoDescription: 'Social media description'
+  }
+
+  const journeyUpdateHost = {
+    title: 'published',
+    languageId: '529',
+    themeMode: ThemeMode.light,
+    themeName: ThemeName.base,
+    description: null,
+    primaryImageBlockId: null,
+    slug: 'published-slug',
+    seoTitle: 'Social media title',
+    seoDescription: 'Social media description',
+    hostId: 'host-id2'
   }
 
   const templateUpdate = {
@@ -321,6 +350,7 @@ describe('JourneyResolver', () => {
     bService = module.get<BlockService>(BlockService)
     urService = module.get<UserRoleService>(UserRoleService)
     mService = module.get<MemberService>(MemberService)
+    prismaService = module.get<PrismaService>(PrismaService)
   })
 
   describe('adminJourneysEmbed', () => {
@@ -864,7 +894,8 @@ describe('JourneyResolver', () => {
         publishedAt: undefined,
         slug: `${journey.title}-copy`,
         title: `${journey.title} copy`,
-        template: false
+        template: false,
+        hostId: null
       })
     })
 
@@ -879,7 +910,8 @@ describe('JourneyResolver', () => {
         createdAt: new Date().toISOString(),
         status: JourneyStatus.draft,
         publishedAt: undefined,
-        template: false
+        template: false,
+        hostId: null
       })
     })
 
@@ -930,7 +962,8 @@ describe('JourneyResolver', () => {
         publishedAt: undefined,
         slug: `${journey.title}-copy-2`,
         title: `${journey.title} copy 2`,
-        template: false
+        template: false,
+        hostId: null
       })
     })
 
@@ -972,6 +1005,25 @@ describe('JourneyResolver', () => {
     it('updates a Journey', async () => {
       await resolver.journeyUpdate('1', journeyUpdate)
       expect(service.update).toHaveBeenCalledWith('1', journeyUpdate)
+    })
+
+    it('updates a Journey with host input', async () => {
+      const mockHost = {
+        id: 'host-id2',
+        teamId: 'jfp-team',
+        name: 'Edmond Shen & Nisal Cottingham',
+        location: 'New Zealand',
+        avatar1Id: 'avatar1-id',
+        avatar2Id: 'avatar2-id'
+      }
+
+      prismaService.host.findUnique = jest.fn().mockResolvedValueOnce(mockHost)
+      service.get = jest.fn().mockResolvedValueOnce(journeyWithTeamId)
+      await resolver.journeyUpdate('journeyId', journeyUpdateHost)
+      expect(service.update).toHaveBeenCalledWith(
+        'journeyId',
+        journeyUpdateHost
+      )
     })
 
     it('throws UserInputErrror', async () => {

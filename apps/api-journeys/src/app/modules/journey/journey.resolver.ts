@@ -342,7 +342,8 @@ export class JourneyResolver {
       publishedAt: undefined,
       status: JourneyStatus.draft,
       template: false,
-      primaryImageBlockId: duplicatePrimaryImageBlock?._key
+      primaryImageBlockId: duplicatePrimaryImageBlock?._key,
+      hostId: null
     }
 
     let retry = true
