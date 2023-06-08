@@ -1,5 +1,5 @@
 import { aql } from 'arangojs'
-import { PrismaClient } from '.prisma/api-journeys-client'
+import { PrismaClient, UserTeamRole } from '.prisma/api-journeys-client'
 import { ArangoDB } from '../db'
 
 const db = ArangoDB()
@@ -29,7 +29,11 @@ export async function jfpTeam(): Promise<void> {
           teamId_userId: { userId: member.userId, teamId: member.teamId }
         },
         update: {},
-        create: { userId: member.userId, teamId: member.teamId, role: 'guest' }
+        create: {
+          userId: member.userId,
+          teamId: member.teamId,
+          role: UserTeamRole.guest
+        }
       })
     })
   )

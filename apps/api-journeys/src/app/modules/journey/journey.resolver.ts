@@ -20,7 +20,7 @@ import {
 } from 'apollo-server-errors'
 import { GqlAuthGuard } from '@core/nest/gqlAuthGuard/GqlAuthGuard'
 import { v4 as uuidv4 } from 'uuid'
-
+import { UserTeamRole } from '.prisma/api-journeys-client'
 import { BlockService } from '../block/block.service'
 import {
   Block,
@@ -211,7 +211,7 @@ export class JourneyResolver {
           create: {
             userId,
             teamId: team.id,
-            role: 'guest'
+            role: UserTeamRole.guest
           }
         })
 

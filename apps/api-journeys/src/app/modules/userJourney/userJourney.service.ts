@@ -5,6 +5,7 @@ import { KeyAsId } from '@core/nest/decorators/KeyAsId'
 import { AuthenticationError, UserInputError } from 'apollo-server-errors'
 import { ArrayCursor } from 'arangojs/cursor'
 import { v4 as uuidv4 } from 'uuid'
+import { UserTeamRole } from '.prisma/api-journeys-client'
 import { IdType, Journey, UserJourneyRole } from '../../__generated__/graphql'
 import { JourneyService } from '../journey/journey.service'
 import { PrismaService } from '../../lib/prisma.service'
@@ -113,7 +114,7 @@ export class UserJourneyService extends BaseService<UserJourneyRecord> {
         create: {
           userId: requesterUserId,
           teamId: journey.teamId,
-          role: 'guest'
+          role: UserTeamRole.guest
         }
       })
     }

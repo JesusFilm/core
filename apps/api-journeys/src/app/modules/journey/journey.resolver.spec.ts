@@ -1,6 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { v4 as uuidv4 } from 'uuid'
 import { getPowerBiEmbed } from '@core/nest/powerBi/getPowerBiEmbed'
+import { UserTeamRole } from '.prisma/api-journeys-client'
 import {
   IdType,
   Journey,
@@ -711,7 +712,7 @@ describe('JourneyResolver', () => {
         create: {
           teamId: 'jfp-team',
           userId: 'userId',
-          role: 'guest'
+          role: UserTeamRole.guest
         },
         update: {},
         where: {

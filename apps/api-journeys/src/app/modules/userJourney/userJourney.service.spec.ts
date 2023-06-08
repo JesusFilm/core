@@ -9,7 +9,7 @@ import {
 } from '@core/nest/database/mock'
 import { DocumentCollection, EdgeCollection } from 'arangojs/collection'
 import { keyAsId } from '@core/nest/decorators/KeyAsId'
-
+import { UserTeamRole } from '.prisma/api-journeys-client'
 import {
   IdType,
   Journey,
@@ -301,7 +301,7 @@ describe('UserJourneyService', () => {
         create: {
           teamId: 'teamId',
           userId: '2',
-          role: 'guest'
+          role: UserTeamRole.guest
         },
         update: {},
         where: {
