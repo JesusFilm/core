@@ -8,7 +8,7 @@ const prisma = new PrismaClient()
 // this should be removed when the UI can support team management
 export async function jfpTeam(): Promise<void> {
   // create JFP team (teams)
-  prisma.team.upsert({
+  await prisma.team.upsert({
     where: { id: 'jfp-team' },
     update: {},
     create: {
