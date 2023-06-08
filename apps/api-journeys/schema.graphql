@@ -917,6 +917,9 @@ enum ChatIcon {
   gmail
   snapchat
   default
+  wechat
+  chat
+  website
 }
 
 input ChatWidgetUpdateInput {

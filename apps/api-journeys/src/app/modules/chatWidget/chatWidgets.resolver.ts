@@ -42,9 +42,9 @@ export class ChatWidgetsResolver {
     ])
   )
   async chatWidgetsUpdate(
-    @Args('id') id: string,
+    @Args('id') id: string | null,
     @Args('journeyId') journeyId: string,
-    @Args('input') input: ChatWidgetUpdateInput
+    @Args('input') input: ChatWidgetUpdateInput | null
   ): Promise<ChatWidget | null> {
     const chatWidget = input != null ? { ...input } : null
 

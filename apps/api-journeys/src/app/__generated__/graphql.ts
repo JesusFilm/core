@@ -141,7 +141,10 @@ export enum ChatIcon {
     instagram = "instagram",
     gmail = "gmail",
     snapchat = "snapchat",
-    "default" = "default"
+    "default" = "default",
+    wechat = "wechat",
+    chat = "chat",
+    website = "website"
 }
 
 export enum ButtonAction {

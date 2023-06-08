@@ -262,6 +262,9 @@ enum ChatIcon
   gmail @join__enumValue(graph: JOURNEYS)
   snapchat @join__enumValue(graph: JOURNEYS)
   default @join__enumValue(graph: JOURNEYS)
+  wechat @join__enumValue(graph: JOURNEYS)
+  chat @join__enumValue(graph: JOURNEYS)
+  website @join__enumValue(graph: JOURNEYS)
 }
 
 type ChatOpenEvent implements Event

@@ -15,10 +15,9 @@ enum ChatIcon {
   gmail
   snapchat
   default
-  # needs clarification
-  # wechat
-  # chat
-  # website
+  wechat
+  chat
+  website
 }
 
 extend type Journey {
