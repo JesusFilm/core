@@ -116,6 +116,7 @@ model Visitor {
 model Host {
   id        String  @id @default(uuid())
   teamId    String
+  team      Team    @relation(fields: [teamId], references: [id])
   name      String
   location  String?
   avatar1Id String?
@@ -149,6 +150,7 @@ model Team {
   UserTeam  UserTeam[]
   createdAt DateTime   @default(now())
   updatedAt DateTime   @updatedAt
+  Host      Host[]
 
   @@index([title])
 }
