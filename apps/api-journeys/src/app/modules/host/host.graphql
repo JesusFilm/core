@@ -27,6 +27,6 @@ input HostCreateInput {
 
 extend type Mutation {
   hostCreate(teamId: ID!, input: HostCreateInput!): Host!
-  hostUpdate(id: ID!, journeyId: ID!, input: HostUpdateInput): Host!
-  hostDelete(id: ID!, journeyId: ID!): Host!
+  hostUpdate(id: ID!, input: HostUpdateInput): Host!
+  hostDelete(id: ID!): Host!
 }

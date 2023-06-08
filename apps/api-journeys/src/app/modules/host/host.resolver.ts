@@ -1,12 +1,8 @@
 import { Args, Mutation, Resolver, Query } from '@nestjs/graphql'
-import { UseGuards } from '@nestjs/common'
 import { v4 as uuidv4 } from 'uuid'
-import { RoleGuard } from '../../lib/roleGuard/roleGuard'
 import {
   Host,
   HostUpdateInput,
-  Role,
-  UserJourneyRole,
   HostCreateInput
 } from '../../__generated__/graphql'
 
@@ -24,7 +20,6 @@ export class HostResolver {
   }
 
   @Mutation()
-  //   @UseGuards(RoleGuard('teamId', [UserTeamRole.manager, UserTeamRole.member]))
   async hostCreate(
     @Args('teamId') teamId: string,
     @Args('input') input: HostCreateInput
@@ -39,9 +34,6 @@ export class HostResolver {
   }
 
   @Mutation()
-  @UseGuards(
-    RoleGuard('journeyId', [UserJourneyRole.owner, UserJourneyRole.editor])
-  )
   async hostUpdate(
     @Args('id') id: string,
     @Args('input') input: HostUpdateInput
@@ -53,26 +45,16 @@ export class HostResolver {
       where: { id },
       data: {
         name: input.name ?? host?.name,
-        location: input.location,
-        avatar1Id: input.avatar1Id,
-        avatar2Id: input.avatar2Id
+        location: input.location ?? host?.location,
+        avatar1Id: input.avatar1Id ?? host?.avatar1Id,
+        avatar2Id: input.avatar2Id ?? host?.avatar2Id
       }
     })
     return hostToUpdate
   }
 
   @Mutation()
-  @UseGuards(
-    RoleGuard('journeyId', [
-      UserJourneyRole.owner,
-      UserJourneyRole.editor,
-      { role: Role.publisher, attributes: { template: true } }
-    ])
-  )
-  async hostDelete(
-    @Args('id') id: string,
-    @Args('journeyId') journeyId: HostUpdateInput
-  ): Promise<Host> {
+  async hostDelete(@Args('id') id: string): Promise<Host> {
     return await this.prismaService.host.delete({
       where: {
         id
