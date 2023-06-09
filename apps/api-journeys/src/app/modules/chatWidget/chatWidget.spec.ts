@@ -14,7 +14,7 @@ import {
 } from '../../__generated__/graphql'
 import { UserJourneyService } from '../userJourney/userJourney.service'
 import { UserRoleService } from '../userRole/userRole.service'
-import { MemberService } from '../member/member.service'
+import { PrismaService } from '../../lib/prisma.service'
 import { ChatWidgetsResolver } from './chatWidgets.resolver'
 
 jest.mock('uuid', () => ({
@@ -60,8 +60,8 @@ describe('ChatWidgetsResolver', () => {
       providers: [
         ChatWidgetsResolver,
         UserJourneyService,
+        PrismaService,
         UserRoleService,
-        MemberService,
         journeyService,
         {
           provide: 'DATABASE',
