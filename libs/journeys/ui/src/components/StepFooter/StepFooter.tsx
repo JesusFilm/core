@@ -5,6 +5,7 @@ import Typography from '@mui/material/Typography'
 import { ReactElement } from 'react'
 import { useJourney } from '../../libs/JourneyProvider'
 import { getJourneyRTL } from '../../libs/rtl'
+import { NameAndLocation } from './NameAndLocation/NameAndLocation'
 
 export function StepFooter(): ReactElement {
   const { journey } = useJourney()
@@ -54,7 +55,8 @@ export function StepFooter(): ReactElement {
               flexGrow: 1,
               flexDirection: 'row',
               alignItems: 'center',
-              justifyContent: 'space-between'
+              justifyContent: 'space-between',
+              overflow: 'clip'
             }}
           >
             <Typography
@@ -66,7 +68,9 @@ export function StepFooter(): ReactElement {
               }}
             >
               {journey?.seoTitle ?? journey?.title}
+              <NameAndLocation />
             </Typography>
+
             {/* <Stack
               data-testid="chip"
               sx={{
