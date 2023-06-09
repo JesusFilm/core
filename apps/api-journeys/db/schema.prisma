@@ -142,3 +142,31 @@ model JourneyVisitor {
   @@unique([journeyId, visitorId])
   @@index([journeyId, visitorId, createdAt, lastChatStartedAt, lastRadioQuestion, lastTextResponse, activityCount, duration])
 }
+
+model Team {
+  id        String     @id @default(uuid())
+  title     String
+  userTeams UserTeam[]
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+
+  @@index([title])
+}
+
+model UserTeam {
+  id        String       @id @default(uuid())
+  teamId    String
+  team      Team         @relation(fields: [teamId], references: [id])
+  userId    String
+  role      UserTeamRole @default(guest)
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+
+  @@unique([teamId, userId])
+}
+
+enum UserTeamRole {
+  manager
+  member
+  guest
+}
