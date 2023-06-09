@@ -3,7 +3,6 @@ import { FromPostgresql } from '@core/nest/decorators/FromPostgresql'
 import { CurrentUserId } from '@core/nest/decorators/CurrentUserId'
 import { ForbiddenError } from 'apollo-server-errors'
 import { Visitor, Event } from '.prisma/api-journeys-client'
-import { MemberService } from '../member/member.service'
 import { PrismaService } from '../../lib/prisma.service'
 import {
   JourneyVisitorFilter,
@@ -18,7 +17,6 @@ import {
 export class JourneyVisitorResolver {
   constructor(
     private readonly journeyVisitorService: JourneyVisitorService,
-    private readonly memberService: MemberService,
     private readonly prismaService: PrismaService
   ) {}
 
@@ -38,10 +36,9 @@ export class JourneyVisitorResolver {
     @Args('first') first = 50,
     @Args('after') after?: string | null
   ): Promise<JourneyVisitorsConnection> {
-    const memberResult = await this.memberService.getMemberByTeamId(
-      userId,
-      teamId
-    )
+    const memberResult = await this.prismaService.userTeam.findUnique({
+      where: { teamId_userId: { userId, teamId } }
+    })
 
     if (memberResult == null)
       throw new ForbiddenError('User is not a member of the team.')
