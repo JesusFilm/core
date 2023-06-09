@@ -3,6 +3,7 @@ import { DatabaseModule } from '@core/nest/database/DatabaseModule'
 import { BlockService } from '../block/block.service'
 import { DateTimeScalar } from '../../lib/dateTime/dateTime.provider'
 import { ChatWidgetsResolver } from '../chatWidget/chatWidgets.resolver'
+import { PrismaService } from '../../lib/prisma.service'
 import { JourneyService } from './journey.service'
 import { JourneyResolver } from './journey.resolver'
 
@@ -13,7 +14,8 @@ import { JourneyResolver } from './journey.resolver'
     JourneyResolver,
     BlockService,
     ChatWidgetsResolver,
-    DateTimeScalar
+    DateTimeScalar,
+    PrismaService
   ],
   exports: [JourneyService]
 })
