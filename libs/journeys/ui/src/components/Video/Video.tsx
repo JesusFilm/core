@@ -188,10 +188,7 @@ export function Video({
           width: '100%',
           display: 'flex',
           alignSelf: 'center',
-          height:
-            source === VideoBlockSource.youTube
-              ? { xs: 'calc(100vh - 112px)', lg: '100%' }
-              : '100%',
+          height: { xs: 'calc(100vh - 128px)', lg: '100%' },
           minHeight: 'inherit',
           '> .vjs-tech': {
             objectFit: videoFit,
@@ -214,7 +211,6 @@ export function Video({
           '> .vjs-control-bar': {
             width: { xs: '90%', lg: '100%' },
             mx: { xs: 'auto', lg: 0 },
-            mb: { xs: 17, lg: 0 },
             borderRadius: { xs: 4, lg: 0 }
           }
         },
