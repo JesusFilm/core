@@ -1311,9 +1311,9 @@ export abstract class IMutation {
 
     abstract hostCreate(teamId: string, input: HostCreateInput): Host | Promise<Host>;
 
-    abstract hostUpdate(id: string, input?: Nullable<HostUpdateInput>): Host | Promise<Host>;
+    abstract hostUpdate(id: string, teamId: string, input?: Nullable<HostUpdateInput>): Host | Promise<Host>;
 
-    abstract hostDelete(id: string): Host | Promise<Host>;
+    abstract hostDelete(id: string, teamId: string): Host | Promise<Host>;
 
     abstract journeyCreate(input: JourneyCreateInput): Journey | Promise<Journey>;
 
