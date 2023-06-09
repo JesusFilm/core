@@ -8,6 +8,22 @@ datasource db {
   url      = env("PG_DATABASE_URL")
 }
 
+enum ChatPlatform {
+  facebook
+  whatsApp
+  viber
+  telegram
+  line
+  vk
+  instagram
+  mail
+  snapchat
+  weChat
+  chat
+  website
+  default
+}
+
 enum MessagePlatform {
   facebook
   telegram
@@ -54,6 +70,16 @@ enum ButtonAction {
 enum VideoBlockSource {
   internal
   youTube
+}
+
+model ChatWidgets {
+  id           String       @id @default(uuid())
+  chatLink     String
+  chatPlatform ChatPlatform
+  journeyId    String
+  // add relation to journey
+
+  @@index([journeyId])
 }
 
 model Event {
