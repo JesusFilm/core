@@ -17,18 +17,20 @@ import { UserRoleModule } from './modules/userRole/userRole.module'
 import { UserInviteModule } from './modules/userInvite/userInvite.module'
 import { VisitorModule } from './modules/visitor/visitor.module'
 import { JourneyVisitorModule } from './modules/journeyVisitor/journeyVisitor.module'
+import { TeamModule } from './modules/team/team.module'
 
 @Module({
   imports: [
     ActionModule,
     BlockModule,
+    EventModule,
     JourneyModule,
     JourneyVisitorModule,
-    EventModule,
+    JourneyProfileModule,
+    TeamModule,
     UserJourneyModule,
     UserInviteModule,
     UserRoleModule,
-    JourneyProfileModule,
     VisitorModule,
     GraphQLModule.forRoot<ApolloFederationDriverConfig>({
       driver: ApolloFederationDriver,
@@ -48,6 +50,7 @@ import { JourneyVisitorModule } from './modules/journeyVisitor/journeyVisitor.mo
     }),
     LoggerModule.forRoot({
       pinoHttp: {
+        redact: ['req.headers.authorization'],
         autoLogging: {
           ignore: (req) => req.url === '/.well-known/apollo/server-health'
         },
