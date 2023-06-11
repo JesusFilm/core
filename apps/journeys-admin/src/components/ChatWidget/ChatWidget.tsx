@@ -73,98 +73,153 @@ export function ChatWidget(): ReactElement {
     enableIconSelect: true
   })
 
+  function findChatPlatform(platform?: ChatIcon): ChatItem | undefined {
+    let res
+    if (platform == null) {
+      res = chatWidgets.find(
+        (chatWidget) =>
+          chatWidget.chatIcon !== ChatIcon.facebook &&
+          chatWidget.chatIcon !== ChatIcon.whatsApp &&
+          chatWidget.chatIcon !== ChatIcon.telegram &&
+          chatWidget.chatIcon !== ChatIcon.line
+      )
+    } else {
+      res = chatWidgets.find((chatWidget) => chatWidget.chatIcon === platform)
+    }
+    return res
+  }
+
   // UPDATE STATES FROM API
-  function setValues(chatWidgets: ChatItem[]): void {
-    chatWidgets.forEach((chatWidget) => {
-      switch (chatWidget.chatIcon) {
-        case ChatIcon.facebook:
-          setFacebook((prevFacebook) => ({
-            ...prevFacebook,
-            id: chatWidget.id,
-            linkValue: chatWidget.chatLink,
-            active: true
-          }))
-          break
-        case ChatIcon.whatsApp:
-          setWhatsApp((prevWhatsApp) => ({
-            ...prevWhatsApp,
-            id: chatWidget.id,
-            linkValue: chatWidget.chatLink,
-            active: true
-          }))
-          break
-        case ChatIcon.telegram:
-          setTelegram((prevTelegram) => ({
-            ...prevTelegram,
-            linkValue: chatWidget.chatLink,
-            active: true
-          }))
-          break
-        case ChatIcon.line:
-          setLine((prevLine) => ({
-            ...prevLine,
-            id: chatWidget.id,
-            linkValue: chatWidget.chatLink,
-            active: true
-          }))
-          break
-        default:
-          setCustom((prevCustom) => ({
-            ...prevCustom,
-            id: chatWidget.id,
-            linkValue: chatWidget.chatLink,
-            chatIcon: chatWidget.chatIcon,
-            active: true
-          }))
-          break
-      }
-    })
+  function setValues(): void {
+    const facebookWidget = findChatPlatform(ChatIcon.facebook)
+    const whatsAppWidget = findChatPlatform(ChatIcon.whatsApp)
+    const telegramWidget = findChatPlatform(ChatIcon.telegram)
+    const lineWidget = findChatPlatform(ChatIcon.line)
+    const customWidget = findChatPlatform()
+
+    if (facebookWidget != null) {
+      setFacebook((prevValue) => ({
+        ...prevValue,
+        id: facebookWidget.id,
+        linkValue: facebookWidget.chatLink,
+        active: true
+      }))
+    } else {
+      setFacebook((prevValue) => ({
+        ...prevValue,
+        active: false
+      }))
+    }
+    if (whatsAppWidget != null) {
+      setWhatsApp((prevValue) => ({
+        ...prevValue,
+        id: whatsAppWidget.id,
+        linkValue: whatsAppWidget.chatLink,
+        active: true
+      }))
+    } else {
+      setWhatsApp((prevValue) => ({
+        ...prevValue,
+        active: false
+      }))
+    }
+    if (telegramWidget != null) {
+      setTelegram((prevValue) => ({
+        ...prevValue,
+        id: telegramWidget.id,
+        linkValue: telegramWidget.chatLink,
+        active: true
+      }))
+    } else {
+      setTelegram((prevValue) => ({
+        ...prevValue,
+        active: false
+      }))
+    }
+    if (lineWidget != null) {
+      setLine((prevValue) => ({
+        ...prevValue,
+        id: lineWidget.id,
+        linkValue: lineWidget.chatLink,
+        active: true
+      }))
+    } else {
+      setLine((prevValue) => ({
+        ...prevValue,
+        active: false
+      }))
+    }
+    if (customWidget != null) {
+      setCustom((prevValue) => ({
+        ...prevValue,
+        id: customWidget.id,
+        linkValue: customWidget.chatLink,
+        active: true
+      }))
+    } else {
+      setCustom((prevValue) => ({
+        ...prevValue,
+        active: false
+      }))
+    }
   }
 
   useEffect(() => {
-    setValues(chatWidgets)
-  }, [chatWidgets])
+    //  should only run when mutations are fired
+    setValues()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [chatWidgets, setChatWidgets])
+
+  function findWidget(id: string): ChatItem {
+    switch (id) {
+      case facebook.id:
+        return {
+          id: facebook.id,
+          chatLink: facebook.linkValue,
+          chatIcon: facebook.chatIcon
+        }
+      case whatsApp.id:
+        return {
+          id: whatsApp.id,
+          chatLink: whatsApp.linkValue,
+          chatIcon: whatsApp.chatIcon
+        }
+      case telegram.id:
+        return {
+          id: telegram.id,
+          chatLink: telegram.linkValue,
+          chatIcon: telegram.chatIcon
+        }
+      case line.id:
+        return {
+          id: line.id,
+          chatLink: line.linkValue,
+          chatIcon: line.chatIcon
+        }
+      default:
+        return {
+          id: custom.id,
+          chatLink: custom.linkValue,
+          chatIcon: custom.chatIcon
+        }
+    }
+  }
 
   // MUTATE DATA
   function handleUpdate(): void {
-    const toUpdate = chatWidgets.map((widget) => {
-      switch (widget.id) {
-        case facebook.id:
-          return {
-            id: facebook.id,
-            chatLink: facebook.linkValue,
-            chatIcon: facebook.chatIcon
-          }
-        case whatsApp.id:
-          return {
-            id: whatsApp.id,
-            chatLink: whatsApp.linkValue,
-            chatIcon: whatsApp.chatIcon
-          }
-        case telegram.id:
-          return {
-            id: telegram.id,
-            chatLink: telegram.linkValue,
-            chatIcon: telegram.chatIcon
-          }
-        case line.id:
-          return {
-            id: line.id,
-            chatLink: line.linkValue,
-            chatIcon: line.chatIcon
-          }
-        default:
-          return {
-            id: custom.id,
-            chatLink: custom.linkValue,
-            chatIcon: custom.chatIcon
-          }
-      }
-    })
+    const toUpdate = chatWidgets.map((widget) => findWidget(widget.id))
     setChatWidgets(toUpdate)
   }
 
-  function handleToggle(): void {}
+  function handleToggle(id: string, checked: boolean): void {
+    let toUpdate: ChatItem[]
+    if (checked && chatWidgets.length < 2) {
+      toUpdate = [...chatWidgets, findWidget(id)]
+    } else {
+      toUpdate = chatWidgets.filter((widget) => widget.id !== id)
+    }
+    setChatWidgets(toUpdate)
+  }
 
   return (
     <>
@@ -172,26 +227,31 @@ export function ChatWidget(): ReactElement {
         value={facebook}
         setValue={setFacebook}
         handleUpdate={handleUpdate}
+        handleToggle={handleToggle}
       />
       <AccordionItem
         value={whatsApp}
         setValue={setWhatsApp}
         handleUpdate={handleUpdate}
+        handleToggle={handleToggle}
       />
       <AccordionItem
         value={telegram}
         setValue={setTelegram}
         handleUpdate={handleUpdate}
+        handleToggle={handleToggle}
       />
       <AccordionItem
         value={line}
         setValue={setLine}
         handleUpdate={handleUpdate}
+        handleToggle={handleToggle}
       />
       <AccordionItem
         value={custom}
         setValue={setCustom}
         handleUpdate={handleUpdate}
+        handleToggle={handleToggle}
       />
     </>
   )

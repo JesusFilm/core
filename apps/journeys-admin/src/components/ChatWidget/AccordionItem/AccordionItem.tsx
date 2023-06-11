@@ -40,13 +40,16 @@ interface Props {
   value: ChatPlatformSelection
   setValue: (value: ChatPlatformSelection) => void
   handleUpdate: () => void
+  handleToggle: (id: string, checked: boolean) => void
 }
 export function AccordionItem({
   value,
   setValue,
-  handleUpdate
+  handleUpdate,
+  handleToggle
 }: Props): ReactElement {
   const {
+    id,
     active,
     title,
     enableScript,
@@ -56,6 +59,12 @@ export function AccordionItem({
     enableIconSelect,
     chatIcon
   } = value
+
+  function handleChangeActive(
+    event: React.ChangeEvent<HTMLInputElement>
+  ): void {
+    handleToggle(id, event.target.checked)
+  }
 
   function handleChangeType(
     event: React.MouseEvent<HTMLElement>,
@@ -94,9 +103,14 @@ export function AccordionItem({
   return (
     <Accordion disableGutters>
       <AccordionSummary expandIcon={<ExpandMoreIcon />} sx={{ px: 6 }}>
-        <Checkbox checked={active} sx={{ pl: 0 }} />
+        <Checkbox
+          checked={active}
+          sx={{ pl: 0 }}
+          onChange={handleChangeActive}
+        />
         <Typography sx={{ my: 'auto' }}>{title}</Typography>
       </AccordionSummary>
+
       <AccordionDetails sx={{ px: 6 }}>
         <Stack direction="column" spacing={8} sx={{ pb: 4 }}>
           {enableScript === true && (
