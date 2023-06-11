@@ -1,224 +1,136 @@
 import { ReactElement, useState, useEffect } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 import { AccordionItem } from './AccordionItem'
-import { ChatIcon, ChatPlatformSelection } from './AccordionItem/AccordionItem'
+import { Platform, PlatformDetails } from './AccordionItem/AccordionItem'
+import { getByPlatform } from './utils/getByPlatform/getByPlatform'
+import { getChatButton } from './utils/getChatButton/getChatButton'
+import { stateSetter } from './utils/stateSetter/stateSetter'
 
-interface ChatItem {
+export interface ChatButton {
   id: string
   chatLink: string
-  chatIcon: ChatIcon
+  chatIcon: Platform
+}
+
+const defaultValues: PlatformDetails = {
+  id: '',
+  title: '',
+  linkValue: '',
+  chatIcon: Platform.default,
+  active: false,
+  type: 'link',
+  enableScript: false,
+  scriptValue: ''
 }
 
 export function ChatWidget(): ReactElement {
-  // GET DATA FROM API
-  const [chatWidgets, setChatWidgets] = useState<ChatItem[]>([
+  const [facebook, setFacebook] = useState<PlatformDetails>({
+    ...defaultValues,
+    id: uuidv4(),
+    title: 'Facebook Messenger',
+    chatIcon: Platform.facebook
+  })
+  const [whatsApp, setWhatsApp] = useState<PlatformDetails>({
+    ...defaultValues,
+    id: uuidv4(),
+    title: 'WhatsApp',
+    chatIcon: Platform.whatsApp
+  })
+  const [telegram, setTelegram] = useState<PlatformDetails>({
+    ...defaultValues,
+    id: uuidv4(),
+    title: 'Telegram',
+    chatIcon: Platform.telegram
+  })
+  const [line, setLine] = useState<PlatformDetails>({
+    ...defaultValues,
+    id: uuidv4(),
+    title: 'LINE',
+    chatIcon: Platform.line
+  })
+  const [custom, setCustom] = useState<PlatformDetails>({
+    ...defaultValues,
+    id: uuidv4(),
+    title: 'Custom',
+    chatIcon: Platform.default,
+    enableIconSelect: true
+  })
+
+  // TODO: replace with gql query
+  const [chatButtons, setChatButtons] = useState<ChatButton[]>([
     {
       id: '1',
       chatLink: 'link1',
-      chatIcon: ChatIcon.facebook
+      chatIcon: Platform.facebook
     },
     {
       id: '2',
       chatLink: 'link2',
-      chatIcon: ChatIcon.default
+      chatIcon: Platform.default
     }
   ])
 
-  // SET INITIAL STATE
-  const [facebook, setFacebook] = useState<ChatPlatformSelection>({
-    id: uuidv4(),
-    title: 'Facebook Messenger',
-    linkValue: '',
-    chatIcon: ChatIcon.facebook,
-    active: false,
-    type: 'link',
-    enableScript: true,
-    scriptValue: ''
-  })
-  const [whatsApp, setWhatsApp] = useState<ChatPlatformSelection>({
-    id: uuidv4(),
-    title: 'WhatsApp',
-    linkValue: '',
-    chatIcon: ChatIcon.whatsApp,
-    active: false,
-    type: 'link',
-    scriptValue: ''
-  })
-  const [telegram, setTelegram] = useState<ChatPlatformSelection>({
-    id: uuidv4(),
-    title: 'Telegram',
-    linkValue: '',
-    chatIcon: ChatIcon.telegram,
-    active: false,
-    type: 'link',
-    scriptValue: ''
-  })
-  const [line, setLine] = useState<ChatPlatformSelection>({
-    id: uuidv4(),
-    title: 'LINE',
-    linkValue: '',
-    chatIcon: ChatIcon.line,
-    active: false,
-    type: 'link',
-    scriptValue: ''
-  })
-  const [custom, setCustom] = useState<ChatPlatformSelection>({
-    id: uuidv4(),
-    title: 'Custom',
-    linkValue: '',
-    chatIcon: ChatIcon.default,
-    active: false,
-    type: 'link',
-    scriptValue: '',
-    enableIconSelect: true
-  })
-
-  function findChatPlatform(platform?: ChatIcon): ChatItem | undefined {
-    let res
-    if (platform == null) {
-      res = chatWidgets.find(
-        (chatWidget) =>
-          chatWidget.chatIcon !== ChatIcon.facebook &&
-          chatWidget.chatIcon !== ChatIcon.whatsApp &&
-          chatWidget.chatIcon !== ChatIcon.telegram &&
-          chatWidget.chatIcon !== ChatIcon.line
-      )
-    } else {
-      res = chatWidgets.find((chatWidget) => chatWidget.chatIcon === platform)
-    }
-    return res
-  }
-
-  // UPDATE STATES FROM API
   function setValues(): void {
-    const facebookWidget = findChatPlatform(ChatIcon.facebook)
-    const whatsAppWidget = findChatPlatform(ChatIcon.whatsApp)
-    const telegramWidget = findChatPlatform(ChatIcon.telegram)
-    const lineWidget = findChatPlatform(ChatIcon.line)
-    const customWidget = findChatPlatform()
+    const [
+      facebookWidget,
+      whatsAppWidget,
+      telegramWidget,
+      lineWidget,
+      customWidget
+    ] = [
+      Platform.facebook,
+      Platform.whatsApp,
+      Platform.telegram,
+      Platform.line,
+      undefined
+    ].map((platform) => getByPlatform(chatButtons, platform))
 
-    if (facebookWidget != null) {
-      setFacebook((prevValue) => ({
-        ...prevValue,
-        id: facebookWidget.id,
-        linkValue: facebookWidget.chatLink,
-        active: true
-      }))
-    } else {
-      setFacebook((prevValue) => ({
-        ...prevValue,
-        active: false
-      }))
-    }
-    if (whatsAppWidget != null) {
-      setWhatsApp((prevValue) => ({
-        ...prevValue,
-        id: whatsAppWidget.id,
-        linkValue: whatsAppWidget.chatLink,
-        active: true
-      }))
-    } else {
-      setWhatsApp((prevValue) => ({
-        ...prevValue,
-        active: false
-      }))
-    }
-    if (telegramWidget != null) {
-      setTelegram((prevValue) => ({
-        ...prevValue,
-        id: telegramWidget.id,
-        linkValue: telegramWidget.chatLink,
-        active: true
-      }))
-    } else {
-      setTelegram((prevValue) => ({
-        ...prevValue,
-        active: false
-      }))
-    }
-    if (lineWidget != null) {
-      setLine((prevValue) => ({
-        ...prevValue,
-        id: lineWidget.id,
-        linkValue: lineWidget.chatLink,
-        active: true
-      }))
-    } else {
-      setLine((prevValue) => ({
-        ...prevValue,
-        active: false
-      }))
-    }
-    if (customWidget != null) {
-      setCustom((prevValue) => ({
-        ...prevValue,
-        id: customWidget.id,
-        linkValue: customWidget.chatLink,
-        active: true
-      }))
-    } else {
-      setCustom((prevValue) => ({
-        ...prevValue,
-        active: false
-      }))
-    }
+    stateSetter(setFacebook, facebookWidget)
+    stateSetter(setWhatsApp, whatsAppWidget)
+    stateSetter(setTelegram, telegramWidget)
+    stateSetter(setLine, lineWidget)
+    stateSetter(setCustom, customWidget)
   }
 
   useEffect(() => {
-    //  should only run when mutations are fired
+    //  should only run when mutations run
     setValues()
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [chatWidgets, setChatWidgets])
+  }, [chatButtons, setChatButtons])
 
-  function findWidget(id: string): ChatItem {
-    switch (id) {
-      case facebook.id:
-        return {
-          id: facebook.id,
-          chatLink: facebook.linkValue,
-          chatIcon: facebook.chatIcon
-        }
-      case whatsApp.id:
-        return {
-          id: whatsApp.id,
-          chatLink: whatsApp.linkValue,
-          chatIcon: whatsApp.chatIcon
-        }
-      case telegram.id:
-        return {
-          id: telegram.id,
-          chatLink: telegram.linkValue,
-          chatIcon: telegram.chatIcon
-        }
-      case line.id:
-        return {
-          id: line.id,
-          chatLink: line.linkValue,
-          chatIcon: line.chatIcon
-        }
-      default:
-        return {
-          id: custom.id,
-          chatLink: custom.linkValue,
-          chatIcon: custom.chatIcon
-        }
-    }
-  }
-
-  // MUTATE DATA
   function handleUpdate(): void {
-    const toUpdate = chatWidgets.map((widget) => findWidget(widget.id))
-    setChatWidgets(toUpdate)
+    const toUpdate = chatButtons.forEach((button) => {
+      const chatButton = getChatButton(button.id, [
+        facebook,
+        whatsApp,
+        telegram,
+        line,
+        custom
+      ])
+      if (chatButton != null) {
+        return chatButton
+      }
+    })
+    // TODO: replace with gql mutation
+    toUpdate != null && setChatButtons(toUpdate)
   }
 
   function handleToggle(id: string, checked: boolean): void {
-    let toUpdate: ChatItem[]
-    if (checked && chatWidgets.length < 2) {
-      toUpdate = [...chatWidgets, findWidget(id)]
+    let toUpdate: ChatButton[]
+    const newChatButton = getChatButton(id, [
+      facebook,
+      whatsApp,
+      telegram,
+      line,
+      custom
+    ])
+    if (checked && chatButtons.length < 2 && newChatButton != null) {
+      toUpdate = [...chatButtons, newChatButton]
     } else {
-      toUpdate = chatWidgets.filter((widget) => widget.id !== id)
+      toUpdate = chatButtons.filter((widget) => widget.id !== id)
     }
-    setChatWidgets(toUpdate)
+    // TODO: replace with gql mutation
+    setChatButtons(toUpdate)
   }
 
   return (

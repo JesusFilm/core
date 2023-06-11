@@ -14,22 +14,27 @@ import Checkbox from '@mui/material/Checkbox'
 import Stack from '@mui/material/Stack'
 import findKey from 'lodash/findKey'
 
-export enum ChatIcon {
+export enum Platform {
   default = 'default',
+  website = 'website',
+  mail = 'mail',
   facebook = 'facebook',
   whatsApp = 'whatsApp',
   telegram = 'telegram',
   line = 'line',
-  snapChat = 'snapChat',
+  viber = 'viber',
+  vk = 'vk',
+  weChat = 'weChat',
+  snapchat = 'snapchat',
   instagram = 'instagram'
 }
 
-export interface ChatPlatformSelection {
+export interface PlatformDetails {
   id: string
   title: string
   linkValue: string
   active: boolean
-  chatIcon: ChatIcon
+  chatIcon: Platform
   enableScript?: boolean
   type?: 'link' | 'script'
   scriptValue: string
@@ -37,8 +42,8 @@ export interface ChatPlatformSelection {
 }
 
 interface Props {
-  value: ChatPlatformSelection
-  setValue: (value: ChatPlatformSelection) => void
+  value: PlatformDetails
+  setValue: (value: PlatformDetails) => void
   handleUpdate: () => void
   handleToggle: (id: string, checked: boolean) => void
 }
@@ -94,9 +99,9 @@ export function AccordionItem({
     setValue({
       ...value,
       chatIcon: findKey(
-        ChatIcon,
+        Platform,
         (value) => value === event.target.value
-      ) as ChatIcon
+      ) as Platform
     })
   }
 
@@ -143,9 +148,14 @@ export function AccordionItem({
           {enableIconSelect === true && (
             <FormControl fullWidth hiddenLabel>
               <Select value={chatIcon} displayEmpty onChange={handleChangeIcon}>
-                <MenuItem value={ChatIcon.default}>Default</MenuItem>
-                <MenuItem value={ChatIcon.snapChat}>SnapChat</MenuItem>
-                <MenuItem value={ChatIcon.instagram}>Instagram</MenuItem>
+                <MenuItem value={Platform.default}>Default</MenuItem>
+                <MenuItem value={Platform.website}>Website</MenuItem>
+                <MenuItem value={Platform.mail}>Mail</MenuItem>
+                <MenuItem value={Platform.viber}>Viber</MenuItem>
+                <MenuItem value={Platform.vk}>VK</MenuItem>
+                <MenuItem value={Platform.weChat}>WeChat</MenuItem>
+                <MenuItem value={Platform.snapchat}>Snapchat</MenuItem>
+                <MenuItem value={Platform.instagram}>Instagram</MenuItem>
               </Select>
             </FormControl>
           )}
