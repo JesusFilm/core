@@ -5,14 +5,14 @@ import Typography from '@mui/material/Typography'
 import { ReactElement } from 'react'
 import { useJourney } from '../../libs/JourneyProvider'
 import { getJourneyRTL } from '../../libs/rtl'
-import { NameAndLocation } from './NameAndLocation/NameAndLocation'
+import { NameAndLocation } from './NameAndLocation'
 
 export function StepFooter(): ReactElement {
   const { journey } = useJourney()
   const { rtl } = getJourneyRTL(journey)
 
   const name = 'Alexander & Eliza Hamilton'
-  const location = 'New York you can be a new man'
+  const location = 'New York'
 
   return (
     <Box
