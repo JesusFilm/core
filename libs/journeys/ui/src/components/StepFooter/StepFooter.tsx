@@ -11,6 +11,9 @@ export function StepFooter(): ReactElement {
   const { journey } = useJourney()
   const { rtl } = getJourneyRTL(journey)
 
+  const name = 'Alexander & Eliza Hamilton'
+  const location = 'New York Harbour'
+
   return (
     <Box
       className="swiper-no-swiping"
@@ -68,7 +71,7 @@ export function StepFooter(): ReactElement {
               }}
             >
               {journey?.seoTitle ?? journey?.title}
-              <NameAndLocation />
+              <NameAndLocation name={name} location={location} />
             </Typography>
 
             {/* <Stack

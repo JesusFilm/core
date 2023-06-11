@@ -3,15 +3,16 @@ import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 
 import { ReactElement } from 'react'
-// import { useJourney } from '../../../libs/JourneyProvider'
-// import { getJourneyRTL } from '../../../libs/rtl'
 
-export const NameAndLocation = (): ReactElement => {
-  //   const { journey } = useJourney()
-  //   const nameToFetch = journey.hostId
+interface NameAndLocationProps {
+  name?: string
+  location?: string
+}
 
-  const name = 'Alexander & Eliza Hamilton'
-  const location = 'New York Harbour'
+export const NameAndLocation = ({
+  name,
+  location
+}: NameAndLocationProps): ReactElement => {
   return (
     <Stack
       className="name-and-location"
@@ -23,20 +24,21 @@ export const NameAndLocation = (): ReactElement => {
     >
       <Box>
         <Typography
-          className="writing"
           variant="body2"
           sx={{
+            // minHeight: name != null ? 'none' : '10px',
             whiteSpace: 'nowrap',
-            maxWidth: '250px',
+            maxWidth: '260px',
             overflow: 'clip',
             textOverflow: 'ellipsis',
             color: 'secondary.light'
           }}
         >
-          {`${name} `}{' '}
+          {name != null && `${name} `}
           {location != null &&
+            name != null &&
             location.toString().length > 0 &&
-            `• ${location}`}
+            `\u00A0\u00B7\u00A0 ${location}`}
         </Typography>
       </Box>
     </Stack>
