@@ -12,7 +12,7 @@ export function StepFooter(): ReactElement {
   const { rtl } = getJourneyRTL(journey)
 
   const name = 'Alexander & Eliza Hamilton'
-  const location = 'New York'
+  const location = 'New York Harbour'
 
   return (
     <Box
