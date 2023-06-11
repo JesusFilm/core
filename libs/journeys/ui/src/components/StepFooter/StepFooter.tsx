@@ -12,7 +12,7 @@ export function StepFooter(): ReactElement {
   const { rtl } = getJourneyRTL(journey)
 
   const name = 'Alexander & Eliza Hamilton'
-  const location = 'New York Harbour'
+  const location = 'New York you can be a new man'
 
   return (
     <Box
@@ -71,7 +71,7 @@ export function StepFooter(): ReactElement {
               }}
             >
               {journey?.seoTitle ?? journey?.title}
-              <NameAndLocation name={name} location={location} />
+              <NameAndLocation name={name} location={location} rtl={rtl} />
             </Typography>
 
             {/* <Stack
