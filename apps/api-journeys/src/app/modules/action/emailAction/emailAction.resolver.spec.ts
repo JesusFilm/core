@@ -4,10 +4,10 @@ import { mockDeep } from 'jest-mock-extended'
 import { BlockResolver } from '../../block/block.resolver'
 import { BlockService } from '../../block/block.service'
 import { JourneyService } from '../../journey/journey.service'
-import { MemberService } from '../../member/member.service'
 import { UserJourneyService } from '../../userJourney/userJourney.service'
 import { UserRoleService } from '../../userRole/userRole.service'
 import { ActionResolver } from '../action.resolver'
+import { PrismaService } from '../../../lib/prisma.service'
 import { EmailActionResolver } from './emailAction.resolver'
 
 describe('EmailActionResolver', () => {
@@ -54,7 +54,7 @@ describe('EmailActionResolver', () => {
         UserJourneyService,
         UserRoleService,
         JourneyService,
-        MemberService,
+        PrismaService,
         {
           provide: 'DATABASE',
           useFactory: () => mockDeep<Database>()

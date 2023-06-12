@@ -13,7 +13,7 @@ import {
 import { UserJourneyService } from '../../userJourney/userJourney.service'
 import { UserRoleService } from '../../userRole/userRole.service'
 import { JourneyService } from '../../journey/journey.service'
-import { MemberService } from '../../member/member.service'
+import { PrismaService } from '../../../lib/prisma.service'
 import { IconBlockResolver } from './icon.resolver'
 
 describe('Icon', () => {
@@ -82,7 +82,7 @@ describe('Icon', () => {
         UserJourneyService,
         UserRoleService,
         JourneyService,
-        MemberService,
+        PrismaService,
         {
           provide: 'DATABASE',
           useFactory: () => mockDeep<Database>()

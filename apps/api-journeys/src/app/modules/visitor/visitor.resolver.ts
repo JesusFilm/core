@@ -13,14 +13,12 @@ import { Event, Visitor } from '.prisma/api-journeys-client'
 import { FromPostgresql } from '@core/nest/decorators/FromPostgresql'
 import { pick } from 'lodash'
 import { PrismaService } from '../../lib/prisma.service'
-import { MemberService } from '../member/member.service'
 import { VisitorService, VisitorsConnection } from './visitor.service'
 
 @Resolver('Visitor')
 export class VisitorResolver {
   constructor(
     private readonly visitorService: VisitorService,
-    private readonly memberService: MemberService,
     private readonly prismaService: PrismaService
   ) {}
 
@@ -31,10 +29,9 @@ export class VisitorResolver {
     @Args('first') first?: number | null,
     @Args('after') after?: string | null
   ): Promise<VisitorsConnection> {
-    const memberResult = await this.memberService.getMemberByTeamId(
-      userId,
-      teamId
-    )
+    const memberResult = await this.prismaService.userTeam.findUnique({
+      where: { teamId_userId: { userId, teamId } }
+    })
 
     if (memberResult == null)
       throw new ForbiddenError('User is not a member of the team.')
@@ -58,10 +55,9 @@ export class VisitorResolver {
     if (visitor == null)
       throw new UserInputError(`Visitor with ID "${id}" does not exist`)
 
-    const memberResult = await this.memberService.getMemberByTeamId(
-      userId,
-      visitor.teamId
-    )
+    const memberResult = await this.prismaService.userTeam.findUnique({
+      where: { teamId_userId: { userId, teamId: visitor.teamId } }
+    })
 
     if (memberResult == null)
       throw new ForbiddenError(
@@ -84,10 +80,9 @@ export class VisitorResolver {
     if (visitor == null)
       throw new UserInputError(`Visitor with ID "${id}" does not exist`)
 
-    const memberResult = await this.memberService.getMemberByTeamId(
-      userId,
-      visitor.teamId
-    )
+    const memberResult = await this.prismaService.userTeam.findUnique({
+      where: { teamId_userId: { userId, teamId: visitor.teamId } }
+    })
 
     if (memberResult == null)
       throw new ForbiddenError(
