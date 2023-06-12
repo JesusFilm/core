@@ -229,4 +229,26 @@ describe('DuplicateBlock', () => {
     fireEvent.click(getByRole('menuitem', { name: 'Duplicate Card' }))
     await waitFor(() => expect(result).toHaveBeenCalled())
   })
+
+  it('should be disabled if nothing is selected', () => {
+    const { getByRole } = render(
+      <SnackbarProvider>
+        <MockedProvider>
+          <DuplicateBlock variant="button" />
+        </MockedProvider>
+      </SnackbarProvider>
+    )
+    expect(getByRole('button')).toBeDisabled()
+  })
+
+  it('should be disabled if manually disabling button', () => {
+    const { getByRole } = render(
+      <SnackbarProvider>
+        <MockedProvider>
+          <DuplicateBlock variant="button" disabled />
+        </MockedProvider>
+      </SnackbarProvider>
+    )
+    expect(getByRole('button')).toBeDisabled()
+  })
 })
