@@ -11,9 +11,9 @@ const defaultValues: PlatformDetails = {
   linkValue: '',
   chatIcon: Platform.default,
   active: false,
-  type: 'link',
-  enableScript: false,
-  scriptValue: ''
+  type: 'link'
+  // enableScript: false,
+  // scriptValue: ''
 }
 
 export function Chat(): ReactElement {
