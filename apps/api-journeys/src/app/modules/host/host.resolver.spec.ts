@@ -29,6 +29,7 @@ describe('HostResolver', () => {
   })
 
   it('should return an array of hosts', async () => {
+    const userId = 'user-1'
     const teamId = 'edmondshen'
     const mockHosts = [
       {
@@ -50,11 +51,11 @@ describe('HostResolver', () => {
     ]
     jest.spyOn(prismaService.host, 'findMany').mockResolvedValue(mockHosts)
 
-    const result = await hostResolver.hosts(teamId)
+    const result = await hostResolver.hosts(userId, teamId)
 
     expect(result).toEqual(mockHosts)
     expect(prismaService.host.findMany).toHaveBeenCalledWith({
-      where: { teamId }
+      where: { teamId, team: { userTeams: { some: { userId } } } }
     })
   })
 

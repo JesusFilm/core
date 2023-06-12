@@ -1,5 +1,6 @@
 import { Args, Mutation, Resolver, Query } from '@nestjs/graphql'
 import { UserInputError } from 'apollo-server-errors'
+import { CurrentUserId } from '@core/nest/decorators/CurrentUserId'
 import {
   Host,
   HostUpdateInput,
@@ -13,9 +14,12 @@ export class HostResolver {
   constructor(private readonly prismaService: PrismaService) {}
 
   @Query()
-  async hosts(@Args('teamId') teamId: string): Promise<Host[]> {
+  async hosts(
+    @CurrentUserId() userId: string,
+    @Args('teamId') teamId: string
+  ): Promise<Host[]> {
     return await this.prismaService.host.findMany({
-      where: { teamId }
+      where: { teamId, team: { userTeams: { some: { userId } } } }
     })
   }
 
