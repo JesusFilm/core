@@ -1,5 +1,6 @@
 import { Args, Mutation, Resolver, Query } from '@nestjs/graphql'
-import { v4 as uuidv4 } from 'uuid'
+import { UserInputError } from 'apollo-server-errors'
+import { CurrentUserId } from '@core/nest/decorators/CurrentUserId'
 import {
   Host,
   HostUpdateInput,
@@ -13,9 +14,12 @@ export class HostResolver {
   constructor(private readonly prismaService: PrismaService) {}
 
   @Query()
-  async hosts(@Args('teamId') teamId: string): Promise<Host[]> {
+  async hosts(
+    @CurrentUserId() userId: string,
+    @Args('teamId') teamId: string
+  ): Promise<Host[]> {
     return await this.prismaService.host.findMany({
-      where: { teamId }
+      where: { teamId, team: { userTeams: { some: { userId } } } }
     })
   }
 
@@ -25,12 +29,10 @@ export class HostResolver {
     @Args('input') input: HostCreateInput
   ): Promise<Host> {
     const host = {
-      id: uuidv4(),
       teamId,
       ...input
     }
-    await this.prismaService.host.create({ data: host })
-    return host
+    return await this.prismaService.host.create({ data: host })
   }
 
   @Mutation()
@@ -39,16 +41,15 @@ export class HostResolver {
     @Args('id') id: string,
     @Args('input') input: HostUpdateInput
   ): Promise<Host> {
-    const host = await this.prismaService.host.findUnique({
-      where: { id }
-    })
+    if (input.title == null)
+      throw new UserInputError('host title cannot be undefined or null')
     const hostToUpdate = await this.prismaService.host.update({
       where: { id },
       data: {
-        name: input.name ?? host?.name,
-        location: input.location ?? host?.location,
-        avatar1Id: input.avatar1Id ?? host?.avatar1Id,
-        avatar2Id: input.avatar2Id ?? host?.avatar2Id
+        title: input.title,
+        location: input.location,
+        avatar1Id: input.avatar1Id,
+        avatar2Id: input.avatar2Id
       }
     })
     return hostToUpdate

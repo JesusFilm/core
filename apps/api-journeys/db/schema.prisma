@@ -117,7 +117,7 @@ model Host {
   id        String  @id @default(uuid())
   teamId    String
   team      Team    @relation(fields: [teamId], references: [id])
-  name      String
+  title     String
   location  String?
   avatar1Id String?
   avatar2Id String?
