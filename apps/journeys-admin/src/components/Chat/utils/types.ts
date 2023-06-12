@@ -1,16 +1,14 @@
 export enum Platform {
-  default = 'default',
-  website = 'website',
-  mail = 'mail',
   facebook = 'facebook',
   whatsApp = 'whatsApp',
   telegram = 'telegram',
+  instagram = 'instagram',
   line = 'line',
-  viber = 'viber',
-  vk = 'vk',
-  weChat = 'weChat',
+  skype = 'skype',
   snapchat = 'snapchat',
-  instagram = 'instagram'
+  tikTok = 'tikTok',
+  viber = 'viber',
+  vk = 'vk'
 }
 
 export interface ChatButton {

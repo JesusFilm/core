@@ -9,7 +9,7 @@ const defaultValues: PlatformDetails = {
   id: '',
   title: '',
   linkValue: '',
-  chatIcon: Platform.default,
+  chatIcon: undefined,
   active: false,
   type: 'link'
 }
@@ -33,17 +33,11 @@ export function Chat(): ReactElement {
     title: 'Telegram',
     chatIcon: Platform.telegram
   })
-  const [line, setLine] = useState<PlatformDetails>({
-    ...defaultValues,
-    id: uuidv4(),
-    title: 'LINE',
-    chatIcon: Platform.line
-  })
   const [custom, setCustom] = useState<PlatformDetails>({
     ...defaultValues,
     id: uuidv4(),
     title: 'Custom',
-    chatIcon: Platform.default,
+    chatIcon: undefined,
     enableIconSelect: true
   })
 
@@ -57,29 +51,21 @@ export function Chat(): ReactElement {
     {
       id: '2',
       chatLink: 'link2',
-      chatIcon: Platform.default
+      chatIcon: Platform.tikTok
     }
   ])
 
   function setValues(): void {
-    const [
-      facebookButton,
-      whatsAppButton,
-      telegramButton,
-      lineButton,
-      customButton
-    ] = [
+    const [facebookButton, whatsAppButton, telegramButton, customButton] = [
       Platform.facebook,
       Platform.whatsApp,
       Platform.telegram,
-      Platform.line,
       undefined
     ].map((platform) => getByPlatform(chatButtons, platform))
 
     stateSetter(setFacebook, facebookButton)
     stateSetter(setWhatsApp, whatsAppButton)
     stateSetter(setTelegram, telegramButton)
-    stateSetter(setLine, lineButton)
     stateSetter(setCustom, customButton)
   }
 
@@ -95,7 +81,6 @@ export function Chat(): ReactElement {
         facebook,
         whatsApp,
         telegram,
-        line,
         custom
       ])
       if (chatButton != null) {
@@ -112,7 +97,6 @@ export function Chat(): ReactElement {
       facebook,
       whatsApp,
       telegram,
-      line,
       custom
     ])
     if (checked && chatButtons.length < 2 && newChatButton != null) {
@@ -128,30 +112,28 @@ export function Chat(): ReactElement {
     <>
       <ChatOption
         value={facebook}
+        disableSelection={chatButtons.length >= 2}
         setValue={setFacebook}
         handleUpdate={handleUpdate}
         handleToggle={handleToggle}
       />
       <ChatOption
         value={whatsApp}
+        disableSelection={chatButtons.length >= 2}
         setValue={setWhatsApp}
         handleUpdate={handleUpdate}
         handleToggle={handleToggle}
       />
       <ChatOption
         value={telegram}
+        disableSelection={chatButtons.length >= 2}
         setValue={setTelegram}
         handleUpdate={handleUpdate}
         handleToggle={handleToggle}
       />
       <ChatOption
-        value={line}
-        setValue={setLine}
-        handleUpdate={handleUpdate}
-        handleToggle={handleToggle}
-      />
-      <ChatOption
         value={custom}
+        disableSelection={chatButtons.length >= 2}
         setValue={setCustom}
         handleUpdate={handleUpdate}
         handleToggle={handleToggle}
