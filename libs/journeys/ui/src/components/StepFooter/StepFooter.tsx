@@ -15,8 +15,7 @@ export function StepFooter(): ReactElement {
   const name = 'Bartholomew & Bernadette'
   const location = 'Karaganda'
 
-  const src1 =
-    'https://images.unsplash.com/photo-1575936123452-b67c3203c357?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80'
+  const src1 =  undefined
   const src2 = undefined
   return (
     <Box

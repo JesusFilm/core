@@ -17,13 +17,14 @@ export const HostAvatars = ({
   return (
     <>
       {(src1 != null || src2 != null) && !admin && (
-        <AvatarGroup spacing="small">
+        <AvatarGroup spacing="small" data-testId='journeys-avatars'>
           {src1 != null && <Avatar src={src1} />}
           {src2 != null && <Avatar src={src2} />}
         </AvatarGroup>
       )}
       {src1 == null && src2 == null && admin ? (
         <AccountCircleOutlinedIcon
+        
           sx={{
             height: '44px',
             width: '44px',
@@ -31,17 +32,17 @@ export const HostAvatars = ({
           }}
         />
       ) : (src1 == null || src2 == null) && admin ? (
-        <AvatarGroup spacing="small">
+        <AvatarGroup spacing="small" data-testId = 'journeys-admin-render-one-avatar'>
           <Avatar src={src1 == null && src2 != null ? src2 : src1} />
           <Avatar>
-            <AccountCircleOutlinedIcon />
+            <AccountCircleOutlinedIcon  />
           </Avatar>
         </AvatarGroup>
       ) : (
-        <AvatarGroup spacing="small">
+        admin && (<AvatarGroup spacing="small" data-testId='journeys-admin-render-two-avatars'>
           <Avatar src={src1} />
           <Avatar src={src2} />
-        </AvatarGroup>
+        </AvatarGroup>)
       )}
     </>
   )

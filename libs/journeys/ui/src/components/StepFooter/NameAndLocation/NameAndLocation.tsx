@@ -21,7 +21,7 @@ export const NameAndLocation = ({
   src2,
   admin
 }: NameAndLocationProps): ReactElement => {
-  const maxWidthAmount = src1 != null && src2 != null ? '180px' : '216px'
+  const maxWidthAmount = src1 != null || src2 != null ? '180px' : '216px'
   return (
     <Stack
       className="name-and-location"
