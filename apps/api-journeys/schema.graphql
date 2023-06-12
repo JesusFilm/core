@@ -1540,7 +1540,7 @@ type Host {
 }
 
 input HostUpdateInput {
-  title: String
+  title: String!
   location: String
   avatar1Id: ID
   avatar2Id: ID

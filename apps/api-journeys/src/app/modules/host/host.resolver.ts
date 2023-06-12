@@ -45,12 +45,7 @@ export class HostResolver {
       throw new UserInputError('host title cannot be undefined or null')
     const hostToUpdate = await this.prismaService.host.update({
       where: { id },
-      data: {
-        title: input.title,
-        location: input.location,
-        avatar1Id: input.avatar1Id,
-        avatar2Id: input.avatar2Id
-      }
+      data: input
     })
     return hostToUpdate
   }
