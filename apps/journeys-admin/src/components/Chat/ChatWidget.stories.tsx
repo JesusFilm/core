@@ -1,17 +1,17 @@
 import { Story, Meta } from '@storybook/react'
 import { ComponentProps } from 'react'
 import { journeysAdminConfig } from '../../libs/storybook'
-import { ChatWidget } from './Chat'
+import { Chat } from './Chat'
 
 const ChatWidgetStory = {
   ...journeysAdminConfig,
-  component: ChatWidget,
-  title: 'Journeys-Admin/ChatWidget'
+  component: Chat,
+  title: 'Journeys-Admin/Chat'
 }
 
-const Template: Story<ComponentProps<typeof ChatWidget>> = () => <ChatWidget />
-// const Template: Story<ComponentProps<typeof ChatWidget>> = ({ ...args }) => (
-//   <ChatWidget {...args} />
+const Template: Story<ComponentProps<typeof Chat>> = () => <Chat />
+// const Template: Story<ComponentProps<typeof Chat>> = ({ ...args }) => (
+//   <Chat {...args} />
 // )
 
 export const Default = Template.bind({})
