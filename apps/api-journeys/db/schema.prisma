@@ -70,10 +70,10 @@ enum VideoBlockSource {
 }
 
 model ChatButton {
-  id        String       @id @default(uuid())
+  id        String        @id @default(uuid())
   journeyId String
-  link      String
-  platform  ChatPlatform
+  link      String?
+  platform  ChatPlatform?
 
   @@index([journeyId])
 }

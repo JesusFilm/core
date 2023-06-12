@@ -432,12 +432,11 @@ export class VideoBlockUpdateInput {
 }
 
 export class ChatButtonCreateInput {
-    link: string;
-    platform: ChatPlatform;
+    link?: Nullable<string>;
+    platform?: Nullable<ChatPlatform>;
 }
 
 export class ChatButtonUpdateInput {
-    id?: Nullable<string>;
     link?: Nullable<string>;
     platform?: Nullable<ChatPlatform>;
 }
@@ -883,8 +882,8 @@ export class VideoTriggerBlock implements Block {
 export class ChatButton {
     __typename?: 'ChatButton';
     id: string;
-    link: string;
-    platform: ChatPlatform;
+    link?: Nullable<string>;
+    platform?: Nullable<ChatPlatform>;
 }
 
 export class ButtonClickEvent implements Event {
@@ -1285,9 +1284,11 @@ export abstract class IMutation {
 
     abstract videoBlockUpdate(id: string, journeyId: string, input: VideoBlockUpdateInput): VideoBlock | Promise<VideoBlock>;
 
-    abstract chatButtonCreate(journeyId: string, input: ChatButtonCreateInput): ChatButton | Promise<ChatButton>;
+    abstract chatButtonCreate(journeyId: string, input?: Nullable<ChatButtonCreateInput>): ChatButton | Promise<ChatButton>;
 
-    abstract chatButtonsUpdate(id: string, input: ChatButtonUpdateInput): ChatButton | Promise<ChatButton>;
+    abstract chatButtonUpdate(id: string, journeyId: string, input: ChatButtonUpdateInput): ChatButton | Promise<ChatButton>;
+
+    abstract chatButtonRemove(id: string): ChatButton | Promise<ChatButton>;
 
     abstract buttonClickEventCreate(input: ButtonClickEventCreateInput): ButtonClickEvent | Promise<ButtonClickEvent>;
 

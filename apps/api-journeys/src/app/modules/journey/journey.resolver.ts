@@ -510,7 +510,7 @@ export class JourneyResolver {
   }
 
   @ResolveField()
-  async chatButttons(@Parent() journey: Journey): Promise<ChatButton[]> {
+  async chatButtons(@Parent() journey: Journey): Promise<ChatButton[]> {
     return await this.prismaService.chatButton.findMany({
       where: { journeyId: journey.id }
     })

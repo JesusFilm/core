@@ -68,7 +68,8 @@ describe('JourneyResolver', () => {
     description: null,
     primaryImageBlock: null,
     publishedAt,
-    createdAt
+    createdAt,
+    chatButtons: []
   }
 
   const primaryImageBlock: ImageBlock & { _key: string } = {

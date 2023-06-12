@@ -36,13 +36,17 @@ export class ChatButtonResolver {
   @Mutation()
   async chatButtonUpdate(
     @Args('id') id: string,
+    @Args('journeyId') journeyId: string,
     @Args('input') input: ChatButtonUpdateInput
   ): Promise<ChatButton> {
     return await this.prismaService.chatButton.update({
       where: {
         id
       },
-      data: input
+      data: {
+        journeyId,
+        ...input
+      }
     })
   }
 

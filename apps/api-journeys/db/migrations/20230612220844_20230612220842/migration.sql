@@ -5,8 +5,8 @@ CREATE TYPE "ChatPlatform" AS ENUM ('facebook', 'telegram', 'whatsApp', 'instagr
 CREATE TABLE "ChatButton" (
     "id" TEXT NOT NULL,
     "journeyId" TEXT NOT NULL,
-    "link" TEXT NOT NULL,
-    "platform" "ChatPlatform" NOT NULL,
+    "link" TEXT,
+    "platform" "ChatPlatform",
 
     CONSTRAINT "ChatButton_pkey" PRIMARY KEY ("id")
 );

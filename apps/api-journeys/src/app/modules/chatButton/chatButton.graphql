@@ -1,7 +1,7 @@
 type ChatButton {
   id: ID!
-  link: String!
-  platform: ChatPlatform!
+  link: String
+  platform: ChatPlatform
 }
 
 enum ChatPlatform {
@@ -22,18 +22,21 @@ extend type Journey {
 }
 
 input ChatButtonCreateInput {
-  link: String!
-  platform: ChatPlatform!
+  link: String
+  platform: ChatPlatform
 }
 
 input ChatButtonUpdateInput {
-  id: ID
   link: String
   platform: ChatPlatform
 }
 
 extend type Mutation {
-  chatButtonCreate(journeyId: ID!, input: ChatButtonCreateInput!): ChatButton!
-  chatButtonsUpdate(id: ID!, input: ChatButtonUpdateInput!): ChatButton!
-  chatButtonsUpdate(id: ID!): ChatButton!
+  chatButtonCreate(journeyId: ID!, input: ChatButtonCreateInput): ChatButton!
+  chatButtonUpdate(
+    id: ID!
+    journeyId: ID!
+    input: ChatButtonUpdateInput!
+  ): ChatButton!
+  chatButtonRemove(id: ID!): ChatButton!
 }

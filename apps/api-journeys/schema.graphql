@@ -132,8 +132,9 @@ extend type Mutation {
   typographyBlockUpdate(id: ID!, journeyId: ID!, input: TypographyBlockUpdateInput!): TypographyBlock!
   videoBlockCreate(input: VideoBlockCreateInput!): VideoBlock!
   videoBlockUpdate(id: ID!, journeyId: ID!, input: VideoBlockUpdateInput!): VideoBlock!
-  chatButtonCreate(journeyId: ID!, input: ChatButtonCreateInput!): ChatButton!
-  chatButtonsUpdate(id: ID!, journeyId: ID!, input: ChatButtonUpdateInput!): ChatButton!
+  chatButtonCreate(journeyId: ID!, input: ChatButtonCreateInput): ChatButton!
+  chatButtonUpdate(id: ID!, journeyId: ID!, input: ChatButtonUpdateInput!): ChatButton!
+  chatButtonRemove(id: ID!): ChatButton!
   buttonClickEventCreate(input: ButtonClickEventCreateInput!): ButtonClickEvent!
   chatOpenEventCreate(input: ChatOpenEventCreateInput!): ChatOpenEvent!
   journeyViewEventCreate(input: JourneyViewEventCreateInput!): JourneyViewEvent!
@@ -903,8 +904,8 @@ type VideoTriggerBlock implements Block {
 
 type ChatButton {
   id: ID!
-  link: String!
-  platform: ChatPlatform!
+  link: String
+  platform: ChatPlatform
 }
 
 enum ChatPlatform {
@@ -921,12 +922,11 @@ enum ChatPlatform {
 }
 
 input ChatButtonCreateInput {
-  link: String!
-  platform: ChatPlatform!
+  link: String
+  platform: ChatPlatform
 }
 
 input ChatButtonUpdateInput {
-  id: ID
   link: String
   platform: ChatPlatform
 }

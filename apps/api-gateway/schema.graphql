@@ -253,21 +253,20 @@ type ChatButton
   @join__type(graph: JOURNEYS)
 {
   id: ID!
-  link: String!
-  platform: ChatPlatform!
+  link: String
+  platform: ChatPlatform
 }
 
 input ChatButtonCreateInput
   @join__type(graph: JOURNEYS)
 {
-  link: String!
-  platform: ChatPlatform!
+  link: String
+  platform: ChatPlatform
 }
 
 input ChatButtonUpdateInput
   @join__type(graph: JOURNEYS)
 {
-  id: ID
   link: String
   platform: ChatPlatform
 }
@@ -1014,8 +1013,9 @@ type Mutation
   typographyBlockUpdate(id: ID!, journeyId: ID!, input: TypographyBlockUpdateInput!): TypographyBlock! @join__field(graph: JOURNEYS)
   videoBlockCreate(input: VideoBlockCreateInput!): VideoBlock! @join__field(graph: JOURNEYS)
   videoBlockUpdate(id: ID!, journeyId: ID!, input: VideoBlockUpdateInput!): VideoBlock! @join__field(graph: JOURNEYS)
-  chatButtonCreate(journeyId: ID!, input: ChatButtonCreateInput!): ChatButton! @join__field(graph: JOURNEYS)
-  chatButtonsUpdate(id: ID!, journeyId: ID!, input: ChatButtonUpdateInput!): ChatButton! @join__field(graph: JOURNEYS)
+  chatButtonCreate(journeyId: ID!, input: ChatButtonCreateInput): ChatButton! @join__field(graph: JOURNEYS)
+  chatButtonUpdate(id: ID!, journeyId: ID!, input: ChatButtonUpdateInput!): ChatButton! @join__field(graph: JOURNEYS)
+  chatButtonRemove(id: ID!): ChatButton! @join__field(graph: JOURNEYS)
   buttonClickEventCreate(input: ButtonClickEventCreateInput!): ButtonClickEvent! @join__field(graph: JOURNEYS)
   chatOpenEventCreate(input: ChatOpenEventCreateInput!): ChatOpenEvent! @join__field(graph: JOURNEYS)
   journeyViewEventCreate(input: JourneyViewEventCreateInput!): JourneyViewEvent! @join__field(graph: JOURNEYS)
