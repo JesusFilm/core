@@ -37,7 +37,9 @@ export function Chat(): ReactElement {
     ...defaultValues,
     id: uuidv4(),
     title: 'Telegram',
-    chatIcon: Platform.telegram
+    chatIcon: Platform.telegram,
+    helperInfo:
+      'A text block containing a link with information on how the user can extract the correct link to Telegram chat.'
   })
   const [custom, setCustom] = useState<PlatformDetails>({
     ...defaultValues,
@@ -116,37 +118,41 @@ export function Chat(): ReactElement {
     setChatButtons(toUpdate)
   }
 
+  const maxSelection = chatButtons.length >= 2
+
   return (
     <>
       <ChatOption
         value={facebook}
-        disableSelection={chatButtons.length >= 2}
+        disableSelection={maxSelection}
         setValue={setFacebook}
         handleUpdate={handleUpdate}
         handleToggle={handleToggle}
       />
       <ChatOption
         value={whatsApp}
-        disableSelection={chatButtons.length >= 2}
+        disableSelection={maxSelection}
         setValue={setWhatsApp}
         handleUpdate={handleUpdate}
         handleToggle={handleToggle}
       />
       <ChatOption
         value={telegram}
-        disableSelection={chatButtons.length >= 2}
+        disableSelection={maxSelection}
         setValue={setTelegram}
         handleUpdate={handleUpdate}
         handleToggle={handleToggle}
       />
       <ChatOption
         value={custom}
-        disableSelection={chatButtons.length >= 2}
+        disableSelection={maxSelection}
         setValue={setCustom}
         handleUpdate={handleUpdate}
         handleToggle={handleToggle}
       />
-      <Box sx={{ px: 6, py: 2, mt: 5 }}>
+      <Box
+        sx={{ display: maxSelection ? 'block' : 'none', px: 6, py: 2, mt: 5 }}
+      >
         <HelperInfo value="You can add no more than two chat platforms" />
       </Box>
     </>
