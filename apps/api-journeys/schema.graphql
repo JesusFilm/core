@@ -1533,7 +1533,7 @@ type VideoProgressEvent implements Event {
 type Host {
   id: ID!
   teamId: ID!
-  name: String!
+  team: String!
   location: String
   avatar1Id: ID
   avatar2Id: ID

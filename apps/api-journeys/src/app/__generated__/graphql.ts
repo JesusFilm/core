@@ -546,14 +546,14 @@ export class VideoProgressEventCreateInput {
 }
 
 export class HostUpdateInput {
-    name?: Nullable<string>;
+    title?: Nullable<string>;
     location?: Nullable<string>;
     avatar1Id?: Nullable<string>;
     avatar2Id?: Nullable<string>;
 }
 
 export class HostCreateInput {
-    name: string;
+    title: string;
     location?: Nullable<string>;
     avatar1Id?: Nullable<string>;
     avatar2Id?: Nullable<string>;
@@ -1028,7 +1028,7 @@ export class Host {
     __typename?: 'Host';
     id: string;
     teamId: string;
-    name: string;
+    title: string;
     location?: Nullable<string>;
     avatar1Id?: Nullable<string>;
     avatar2Id?: Nullable<string>;

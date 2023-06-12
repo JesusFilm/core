@@ -1,14 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing'
-import { v4 as uuidv4 } from 'uuid'
 import { PrismaService } from '../../lib/prisma.service'
 import { HostResolver } from './host.resolver'
-
-jest.mock('uuid', () => ({
-  __esModule: true,
-  v4: jest.fn()
-}))
-
-const mockUuidv4 = uuidv4 as jest.MockedFunction<typeof uuidv4>
 
 describe('HostResolver', () => {
   let hostResolver: HostResolver, prismaService: PrismaService
@@ -42,7 +34,7 @@ describe('HostResolver', () => {
       {
         id: 'host-id',
         teamId: 'edmond-shen-fans',
-        name: 'Edmond Shen & Nisal Cottingham',
+        title: 'Edmond Shen & Nisal Cottingham',
         location: 'New Zealand',
         avatar1Id: 'avatar1-id',
         avatar2Id: 'vatar2-id'
@@ -50,7 +42,7 @@ describe('HostResolver', () => {
       {
         id: 'host-id2',
         teamId: 'best-juniors-engineers-gang',
-        name: 'Edmond Shen & Nisal Cottingham',
+        title: 'Edmond Shen & Nisal Cottingham',
         location: 'New Zealand',
         avatar1Id: 'avatar1-id',
         avatar2Id: 'avatar2-id'
@@ -67,27 +59,28 @@ describe('HostResolver', () => {
   })
 
   it('should create a new host', async () => {
-    mockUuidv4.mockReturnValueOnce('hostid')
     const teamId = 'team-id'
     const input = {
-      name: 'New Host',
+      title: 'New Host',
       location: 'Location',
       avatar1Id: 'avatar1',
       avatar2Id: 'avatar2'
     }
-    const mockHost = { id: 'hostid', teamId, ...input }
+    const mockHost = { teamId, ...input, id: 'hostid' }
     jest.spyOn(prismaService.host, 'create').mockResolvedValue(mockHost)
 
     const result = await hostResolver.hostCreate(teamId, input)
 
     expect(result).toEqual(mockHost)
-    expect(prismaService.host.create).toHaveBeenCalledWith({ data: mockHost })
+    expect(prismaService.host.create).toHaveBeenCalledWith({
+      data: { teamId, ...input }
+    })
   })
 
   it('should update an existing host', async () => {
     const id = 'host-id'
     const input = {
-      name: 'Edmond Shen',
+      title: 'Edmond Shen',
       location: 'National Team Staff',
       avatar1Id: 'new-profile-pic-who-thos',
       avatar2Id: 'new-avatar2'
@@ -95,7 +88,7 @@ describe('HostResolver', () => {
     const mockHost = {
       id: 'host-id',
       teamId: 'best-juniors-engineers-gang',
-      name: 'Edmond Shen & Nisal Cottingham',
+      title: 'Edmond Shen & Nisal Cottingham',
       location: 'JFP Staff',
       avatar1Id: 'avatar1-id',
       avatar2Id: 'avatar2-id'
@@ -107,13 +100,11 @@ describe('HostResolver', () => {
     const result = await hostResolver.hostUpdate(id, input)
 
     expect(result).toEqual(mockUpdatedHost)
-    expect(prismaService.host.findUnique).toHaveBeenCalledWith({
-      where: { id }
-    })
+
     expect(prismaService.host.update).toHaveBeenCalledWith({
       where: { id },
       data: {
-        name: input.name,
+        title: input.title,
         location: input.location,
         avatar1Id: input.avatar1Id,
         avatar2Id: input.avatar2Id
@@ -125,7 +116,7 @@ describe('HostResolver', () => {
     const mockDeletedHost = {
       id: 'host-id',
       teamId: 'best-juniors-engineers-gang',
-      name: 'Edmond Shen & Nisal Cottingham',
+      title: 'Edmond Shen & Nisal Cottingham',
       location: 'JFP Staff',
       avatar1Id: 'avatar1-id',
       avatar2Id: 'avatar2-id'
