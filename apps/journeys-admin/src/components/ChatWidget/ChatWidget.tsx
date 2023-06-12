@@ -1,16 +1,9 @@
 import { ReactElement, useState, useEffect } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 import { AccordionItem } from './AccordionItem'
-import { Platform, PlatformDetails } from './AccordionItem/AccordionItem'
-import { getByPlatform } from './utils/getByPlatform/getByPlatform'
-import { getChatButton } from './utils/getChatButton/getChatButton'
-import { stateSetter } from './utils/stateSetter/stateSetter'
-
-export interface ChatButton {
-  id: string
-  chatLink: string
-  chatIcon: Platform
-}
+import { PlatformDetails } from './AccordionItem/AccordionItem'
+import { ChatButton, Platform } from './utils/types' // TODO: replace with generated type
+import { getByPlatform, getChatButton, stateSetter } from './utils'
 
 const defaultValues: PlatformDetails = {
   id: '',
@@ -93,7 +86,7 @@ export function ChatWidget(): ReactElement {
   }
 
   useEffect(() => {
-    //  should only run when mutations run
+    //  should only run when the query and mutations run
     setValues()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [chatButtons, setChatButtons])

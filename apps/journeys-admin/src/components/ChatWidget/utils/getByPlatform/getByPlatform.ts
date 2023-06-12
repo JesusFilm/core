@@ -1,5 +1,4 @@
-import { Platform } from '../../AccordionItem/AccordionItem'
-import { ChatButton } from '../../ChatWidget'
+import { ChatButton, Platform } from '../types'
 
 export function getByPlatform(
   chatButtons: ChatButton[],

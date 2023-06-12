@@ -1,0 +1,1 @@
+export { getByPlatform } from './getByPlatform'

@@ -1,6 +1,6 @@
 import { SetStateAction } from 'react'
 import { PlatformDetails } from '../../AccordionItem/AccordionItem'
-import { ChatButton } from '../../ChatWidget'
+import { ChatButton } from '../types'
 
 export function stateSetter(
   setState: (state: SetStateAction<PlatformDetails>) => void,

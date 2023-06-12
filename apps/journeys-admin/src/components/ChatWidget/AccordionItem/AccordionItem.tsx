@@ -13,21 +13,7 @@ import FormControl from '@mui/material/FormControl'
 import Checkbox from '@mui/material/Checkbox'
 import Stack from '@mui/material/Stack'
 import findKey from 'lodash/findKey'
-
-export enum Platform {
-  default = 'default',
-  website = 'website',
-  mail = 'mail',
-  facebook = 'facebook',
-  whatsApp = 'whatsApp',
-  telegram = 'telegram',
-  line = 'line',
-  viber = 'viber',
-  vk = 'vk',
-  weChat = 'weChat',
-  snapchat = 'snapchat',
-  instagram = 'instagram'
-}
+import { Platform } from '../utils/types' // TODO: replace with generated type
 
 export interface PlatformDetails {
   id: string
