@@ -4,8 +4,6 @@ import AccordionSummary from '@mui/material/AccordionSummary'
 import AccordionDetails from '@mui/material/AccordionDetails'
 import Typography from '@mui/material/Typography'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
-// import ToggleButton from '@mui/material/ToggleButton'
-// import ToggleButtonGroup from '@mui/material/ToggleButtonGroup'
 import TextField from '@mui/material/TextField'
 import Select, { SelectChangeEvent } from '@mui/material/Select'
 import MenuItem from '@mui/material/MenuItem'
@@ -21,9 +19,7 @@ export interface PlatformDetails {
   linkValue: string
   active: boolean
   chatIcon: Platform
-  // enableScript?: boolean
   type?: 'link' | 'script'
-  // scriptValue: string
   enableIconSelect?: boolean
 }
 
@@ -39,17 +35,7 @@ export function ChatOption({
   handleUpdate,
   handleToggle
 }: Props): ReactElement {
-  const {
-    id,
-    active,
-    title,
-    // enableScript,
-    // type,
-    // scriptValue,
-    linkValue,
-    enableIconSelect,
-    chatIcon
-  } = value
+  const { id, active, title, linkValue, enableIconSelect, chatIcon } = value
 
   function handleChangeActive(
     event: React.ChangeEvent<HTMLInputElement>
@@ -57,28 +43,11 @@ export function ChatOption({
     handleToggle(id, event.target.checked)
   }
 
-  // function handleChangeType(
-  //   event: React.MouseEvent<HTMLElement>,
-  //   type: 'link' | 'script'
-  // ): void {
-  //   setValue({
-  //     ...value,
-  //     type
-  //   })
-  // }
-
   function handleChangeValue(event: React.ChangeEvent<HTMLInputElement>): void {
-    // if (enableScript === true && type === 'script') {
-    //   setValue({
-    //     ...value,
-    //     scriptValue: event.target.value
-    //   })
-    // } else {
     setValue({
       ...value,
       linkValue: event.target.value
     })
-    // }
   }
 
   function handleChangeIcon(event: SelectChangeEvent): void {
@@ -104,31 +73,10 @@ export function ChatOption({
 
       <AccordionDetails sx={{ px: 6 }}>
         <Stack direction="column" spacing={8} sx={{ pb: 4 }}>
-          {/* {enableScript === true && (
-            <ToggleButtonGroup
-              value={type}
-              exclusive
-              onChange={handleChangeType}
-            >
-              <ToggleButton value="link">Link</ToggleButton>
-              <ToggleButton value="script">Widget</ToggleButton>
-            </ToggleButtonGroup>
-          )} */}
-
           <TextField
             variant="outlined"
             placeholder="Paste URL here"
-            // placeholder={
-            //   enableScript === true && type === 'script'
-            //     ? 'Past Page ID here'
-            //     : 'Paste URL here'
-            // }
             value={linkValue}
-            // value={
-            //   enableScript === true && type === 'script'
-            //     ? scriptValue
-            //     : linkValue
-            // }
             onChange={handleChangeValue}
             onBlur={handleUpdate}
           />

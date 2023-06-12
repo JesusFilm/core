@@ -10,9 +10,6 @@ const ChatWidgetStory = {
 }
 
 const Template: Story<ComponentProps<typeof Chat>> = () => <Chat />
-// const Template: Story<ComponentProps<typeof Chat>> = ({ ...args }) => (
-//   <Chat {...args} />
-// )
 
 export const Default = Template.bind({})
 
