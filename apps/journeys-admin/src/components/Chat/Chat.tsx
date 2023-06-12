@@ -106,11 +106,13 @@ export function Chat(): ReactElement {
       custom
     ])
     if (checked && chatButtons.length < 2 && newChatButton != null) {
+      // TODO: replace with gql create mutation
       toUpdate = [...chatButtons, newChatButton]
     } else {
+      // TODO: replace with gql delete mutation
       toUpdate = chatButtons.filter((button) => button.id !== id)
     }
-    // TODO: replace with gql mutation
+    // TODO: remove
     setChatButtons(toUpdate)
   }
 
