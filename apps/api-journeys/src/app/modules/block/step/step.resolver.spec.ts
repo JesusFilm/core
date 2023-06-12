@@ -9,7 +9,7 @@ import { BlockService } from '../block.service'
 import { StepBlock } from '../../../__generated__/graphql'
 import { UserRoleService } from '../../userRole/userRole.service'
 import { JourneyService } from '../../journey/journey.service'
-import { MemberService } from '../../member/member.service'
+import { PrismaService } from '../../../lib/prisma.service'
 import { StepBlockResolver } from './step.resolver'
 
 describe('StepBlockResolver', () => {
@@ -54,7 +54,7 @@ describe('StepBlockResolver', () => {
         UserJourneyService,
         UserRoleService,
         JourneyService,
-        MemberService,
+        PrismaService,
         {
           provide: 'DATABASE',
           useFactory: () => mockDeep<Database>()
