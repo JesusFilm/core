@@ -150,7 +150,7 @@ model Team {
   userTeams UserTeam[]
   createdAt DateTime   @default(now())
   updatedAt DateTime   @updatedAt
-  Host      Host[]
+  host      Host[]
 
   @@index([title])
 }

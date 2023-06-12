@@ -432,7 +432,7 @@ type Host
 {
   id: ID!
   teamId: ID!
-  team: String!
+  title: String!
   location: String
   avatar1Id: ID
   avatar2Id: ID
@@ -441,7 +441,7 @@ type Host
 input HostCreateInput
   @join__type(graph: JOURNEYS)
 {
-  name: String!
+  title: String!
   location: String
   avatar1Id: ID
   avatar2Id: ID
@@ -450,7 +450,7 @@ input HostCreateInput
 input HostUpdateInput
   @join__type(graph: JOURNEYS)
 {
-  name: String
+  title: String
   location: String
   avatar1Id: ID
   avatar2Id: ID

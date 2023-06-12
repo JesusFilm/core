@@ -1533,14 +1533,14 @@ type VideoProgressEvent implements Event {
 type Host {
   id: ID!
   teamId: ID!
-  team: String!
+  title: String!
   location: String
   avatar1Id: ID
   avatar2Id: ID
 }
 
 input HostUpdateInput {
-  name: String
+  title: String
   location: String
   avatar1Id: ID
   avatar2Id: ID
@@ -1600,7 +1600,7 @@ extend type Query {
 }
 
 input HostCreateInput {
-  name: String!
+  title: String!
   location: String
   avatar1Id: ID
   avatar2Id: ID

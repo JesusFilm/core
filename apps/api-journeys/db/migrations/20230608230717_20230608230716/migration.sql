@@ -1,2 +1,0 @@
--- AddForeignKey
-ALTER TABLE "Host" ADD CONSTRAINT "Host_teamId_fkey" FOREIGN KEY ("teamId") REFERENCES "Team"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
