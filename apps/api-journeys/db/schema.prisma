@@ -10,18 +10,15 @@ datasource db {
 
 enum ChatPlatform {
   facebook
-  whatsApp
-  viber
   telegram
-  line
-  vk
+  whatsApp
   instagram
-  mail
+  viber
+  vk
   snapchat
-  weChat
-  chat
-  website
-  default
+  skype
+  line
+  tikTok
 }
 
 enum MessagePlatform {
@@ -72,12 +69,11 @@ enum VideoBlockSource {
   youTube
 }
 
-model ChatWidgets {
-  id           String       @id @default(uuid())
-  chatLink     String
-  chatPlatform ChatPlatform
-  journeyId    String
-  // add relation to journey
+model ChatButton {
+  id        String       @id @default(uuid())
+  journeyId String
+  link      String
+  platform  ChatPlatform
 
   @@index([journeyId])
 }

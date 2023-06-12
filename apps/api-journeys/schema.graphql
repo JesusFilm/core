@@ -132,7 +132,8 @@ extend type Mutation {
   typographyBlockUpdate(id: ID!, journeyId: ID!, input: TypographyBlockUpdateInput!): TypographyBlock!
   videoBlockCreate(input: VideoBlockCreateInput!): VideoBlock!
   videoBlockUpdate(id: ID!, journeyId: ID!, input: VideoBlockUpdateInput!): VideoBlock!
-  chatWidgetsUpdate(id: ID, journeyId: ID, input: ChatWidgetUpdateInput): ChatWidget
+  chatButtonCreate(journeyId: ID!, input: ChatButtonCreateInput!): ChatButton!
+  chatButtonsUpdate(id: ID!, journeyId: ID!, input: ChatButtonUpdateInput!): ChatButton!
   buttonClickEventCreate(input: ButtonClickEventCreateInput!): ButtonClickEvent!
   chatOpenEventCreate(input: ChatOpenEventCreateInput!): ChatOpenEvent!
   journeyViewEventCreate(input: JourneyViewEventCreateInput!): JourneyViewEvent!
@@ -203,7 +204,7 @@ type Journey
 {
   blocks: [Block!]
   primaryImageBlock: ImageBlock
-  chatWidgets: [ChatWidget]
+  chatButtons: [ChatButton!]!
   id: ID!
   title: String!
   language: Language!
@@ -900,32 +901,34 @@ type VideoTriggerBlock implements Block {
   action: Action!
 }
 
-type ChatWidget {
-  id: ID
-  chatLink: String
-  chatPlatform: ChatPlatform
+type ChatButton {
+  id: ID!
+  link: String!
+  platform: ChatPlatform!
 }
 
 enum ChatPlatform {
   facebook
-  whatsApp
-  viber
   telegram
-  line
-  vk
+  whatsApp
   instagram
-  mail
+  viber
+  vk
   snapchat
-  weChat
-  chat
-  website
-  default
+  skype
+  line
+  tikTok
 }
 
-input ChatWidgetUpdateInput {
+input ChatButtonCreateInput {
+  link: String!
+  platform: ChatPlatform!
+}
+
+input ChatButtonUpdateInput {
   id: ID
-  chatLink: String
-  chatPlatform: ChatPlatform
+  link: String
+  platform: ChatPlatform
 }
 
 enum ButtonAction {

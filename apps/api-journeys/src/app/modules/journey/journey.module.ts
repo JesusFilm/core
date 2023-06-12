@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common'
 import { DatabaseModule } from '@core/nest/database/DatabaseModule'
 import { BlockService } from '../block/block.service'
 import { DateTimeScalar } from '../../lib/dateTime/dateTime.provider'
-import { ChatWidgetsResolver } from '../chatWidget/chatWidgets.resolver'
+import { ChatButtonResolver } from '../chatButton/chatButton.resolver'
 import { PrismaService } from '../../lib/prisma.service'
 import { JourneyService } from './journey.service'
 import { JourneyResolver } from './journey.resolver'
@@ -13,8 +13,8 @@ import { JourneyResolver } from './journey.resolver'
     JourneyService,
     JourneyResolver,
     BlockService,
-    ChatWidgetsResolver,
     DateTimeScalar,
+    ChatButtonResolver,
     PrismaService
   ],
   exports: [JourneyService]

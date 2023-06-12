@@ -1,0 +1,39 @@
+type ChatButton {
+  id: ID!
+  link: String!
+  platform: ChatPlatform!
+}
+
+enum ChatPlatform {
+  facebook
+  telegram
+  whatsApp
+  instagram
+  viber
+  vk
+  snapchat
+  skype
+  line
+  tikTok
+}
+
+extend type Journey {
+  chatButtons: [ChatButton!]!
+}
+
+input ChatButtonCreateInput {
+  link: String!
+  platform: ChatPlatform!
+}
+
+input ChatButtonUpdateInput {
+  id: ID
+  link: String
+  platform: ChatPlatform
+}
+
+extend type Mutation {
+  chatButtonCreate(journeyId: ID!, input: ChatButtonCreateInput!): ChatButton!
+  chatButtonsUpdate(id: ID!, input: ChatButtonUpdateInput!): ChatButton!
+  chatButtonsUpdate(id: ID!): ChatButton!
+}

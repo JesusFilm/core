@@ -133,18 +133,15 @@ export enum VideoBlockObjectFit {
 
 export enum ChatPlatform {
     facebook = "facebook",
-    whatsApp = "whatsApp",
-    viber = "viber",
     telegram = "telegram",
-    line = "line",
-    vk = "vk",
+    whatsApp = "whatsApp",
     instagram = "instagram",
-    mail = "mail",
+    viber = "viber",
+    vk = "vk",
     snapchat = "snapchat",
-    weChat = "weChat",
-    chat = "chat",
-    website = "website",
-    "default" = "default"
+    skype = "skype",
+    line = "line",
+    tikTok = "tikTok"
 }
 
 export enum ButtonAction {
@@ -434,10 +431,15 @@ export class VideoBlockUpdateInput {
     objectFit?: Nullable<VideoBlockObjectFit>;
 }
 
-export class ChatWidgetUpdateInput {
+export class ChatButtonCreateInput {
+    link: string;
+    platform: ChatPlatform;
+}
+
+export class ChatButtonUpdateInput {
     id?: Nullable<string>;
-    chatLink?: Nullable<string>;
-    chatPlatform?: Nullable<ChatPlatform>;
+    link?: Nullable<string>;
+    platform?: Nullable<ChatPlatform>;
 }
 
 export class ButtonClickEventCreateInput {
@@ -683,7 +685,7 @@ export class Journey {
     __typename?: 'Journey';
     blocks?: Nullable<Block[]>;
     primaryImageBlock?: Nullable<ImageBlock>;
-    chatWidgets?: Nullable<Nullable<ChatWidget>[]>;
+    chatButtons: ChatButton[];
     id: string;
     title: string;
     language: Language;
@@ -878,11 +880,11 @@ export class VideoTriggerBlock implements Block {
     action: Action;
 }
 
-export class ChatWidget {
-    __typename?: 'ChatWidget';
-    id?: Nullable<string>;
-    chatLink?: Nullable<string>;
-    chatPlatform?: Nullable<ChatPlatform>;
+export class ChatButton {
+    __typename?: 'ChatButton';
+    id: string;
+    link: string;
+    platform: ChatPlatform;
 }
 
 export class ButtonClickEvent implements Event {
@@ -1283,7 +1285,9 @@ export abstract class IMutation {
 
     abstract videoBlockUpdate(id: string, journeyId: string, input: VideoBlockUpdateInput): VideoBlock | Promise<VideoBlock>;
 
-    abstract chatWidgetsUpdate(id?: Nullable<string>, journeyId?: Nullable<string>, input?: Nullable<ChatWidgetUpdateInput>): Nullable<ChatWidget> | Promise<Nullable<ChatWidget>>;
+    abstract chatButtonCreate(journeyId: string, input: ChatButtonCreateInput): ChatButton | Promise<ChatButton>;
+
+    abstract chatButtonsUpdate(id: string, input: ChatButtonUpdateInput): ChatButton | Promise<ChatButton>;
 
     abstract buttonClickEventCreate(input: ButtonClickEventCreateInput): ButtonClickEvent | Promise<ButtonClickEvent>;
 

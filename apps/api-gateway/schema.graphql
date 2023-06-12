@@ -249,6 +249,29 @@ input CardBlockUpdateInput
   themeName: ThemeName
 }
 
+type ChatButton
+  @join__type(graph: JOURNEYS)
+{
+  id: ID!
+  link: String!
+  platform: ChatPlatform!
+}
+
+input ChatButtonCreateInput
+  @join__type(graph: JOURNEYS)
+{
+  link: String!
+  platform: ChatPlatform!
+}
+
+input ChatButtonUpdateInput
+  @join__type(graph: JOURNEYS)
+{
+  id: ID
+  link: String
+  platform: ChatPlatform
+}
+
 type ChatOpenEvent implements Event
   @join__implements(graph: JOURNEYS, interface: "Event")
   @join__type(graph: JOURNEYS)
@@ -293,34 +316,15 @@ enum ChatPlatform
   @join__type(graph: JOURNEYS)
 {
   facebook @join__enumValue(graph: JOURNEYS)
-  whatsApp @join__enumValue(graph: JOURNEYS)
-  viber @join__enumValue(graph: JOURNEYS)
   telegram @join__enumValue(graph: JOURNEYS)
-  line @join__enumValue(graph: JOURNEYS)
-  vk @join__enumValue(graph: JOURNEYS)
+  whatsApp @join__enumValue(graph: JOURNEYS)
   instagram @join__enumValue(graph: JOURNEYS)
-  mail @join__enumValue(graph: JOURNEYS)
+  viber @join__enumValue(graph: JOURNEYS)
+  vk @join__enumValue(graph: JOURNEYS)
   snapchat @join__enumValue(graph: JOURNEYS)
-  weChat @join__enumValue(graph: JOURNEYS)
-  chat @join__enumValue(graph: JOURNEYS)
-  website @join__enumValue(graph: JOURNEYS)
-  default @join__enumValue(graph: JOURNEYS)
-}
-
-type ChatWidget
-  @join__type(graph: JOURNEYS)
-{
-  id: ID
-  chatLink: String
-  chatPlatform: ChatPlatform
-}
-
-input ChatWidgetUpdateInput
-  @join__type(graph: JOURNEYS)
-{
-  id: ID
-  chatLink: String
-  chatPlatform: ChatPlatform
+  skype @join__enumValue(graph: JOURNEYS)
+  line @join__enumValue(graph: JOURNEYS)
+  tikTok @join__enumValue(graph: JOURNEYS)
 }
 
 type CloudflareImage
@@ -625,7 +629,7 @@ type Journey
 {
   blocks: [Block!]
   primaryImageBlock: ImageBlock
-  chatWidgets: [ChatWidget]
+  chatButtons: [ChatButton!]!
   id: ID!
   title: String!
   language: Language!
@@ -1010,7 +1014,8 @@ type Mutation
   typographyBlockUpdate(id: ID!, journeyId: ID!, input: TypographyBlockUpdateInput!): TypographyBlock! @join__field(graph: JOURNEYS)
   videoBlockCreate(input: VideoBlockCreateInput!): VideoBlock! @join__field(graph: JOURNEYS)
   videoBlockUpdate(id: ID!, journeyId: ID!, input: VideoBlockUpdateInput!): VideoBlock! @join__field(graph: JOURNEYS)
-  chatWidgetsUpdate(id: ID, journeyId: ID, input: ChatWidgetUpdateInput): ChatWidget @join__field(graph: JOURNEYS)
+  chatButtonCreate(journeyId: ID!, input: ChatButtonCreateInput!): ChatButton! @join__field(graph: JOURNEYS)
+  chatButtonsUpdate(id: ID!, journeyId: ID!, input: ChatButtonUpdateInput!): ChatButton! @join__field(graph: JOURNEYS)
   buttonClickEventCreate(input: ButtonClickEventCreateInput!): ButtonClickEvent! @join__field(graph: JOURNEYS)
   chatOpenEventCreate(input: ChatOpenEventCreateInput!): ChatOpenEvent! @join__field(graph: JOURNEYS)
   journeyViewEventCreate(input: JourneyViewEventCreateInput!): JourneyViewEvent! @join__field(graph: JOURNEYS)
