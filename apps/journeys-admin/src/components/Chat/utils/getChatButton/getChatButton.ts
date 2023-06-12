@@ -1,5 +1,5 @@
 import { ChatButton } from '../types'
-import { PlatformDetails } from '../../AccordionItem/AccordionItem'
+import { PlatformDetails } from '../../ChatOption/ChatOption'
 
 export function getChatButton(
   id: string,

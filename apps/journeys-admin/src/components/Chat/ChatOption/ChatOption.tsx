@@ -33,7 +33,7 @@ interface Props {
   handleUpdate: () => void
   handleToggle: (id: string, checked: boolean) => void
 }
-export function AccordionItem({
+export function ChatOption({
   value,
   setValue,
   handleUpdate,

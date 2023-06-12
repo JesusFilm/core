@@ -1,7 +1,7 @@
 import { Story, Meta } from '@storybook/react'
 import { ComponentProps } from 'react'
 import { journeysAdminConfig } from '../../libs/storybook'
-import { ChatWidget } from './ChatWidget'
+import { ChatWidget } from './Chat'
 
 const ChatWidgetStory = {
   ...journeysAdminConfig,

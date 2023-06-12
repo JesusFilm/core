@@ -1,5 +1,5 @@
 import { SetStateAction } from 'react'
-import { PlatformDetails } from '../../AccordionItem/AccordionItem'
+import { PlatformDetails } from '../../ChatOption/ChatOption'
 import { ChatButton } from '../types'
 
 export function stateSetter(

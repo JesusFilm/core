@@ -1,7 +1,7 @@
 import { ReactElement, useState, useEffect } from 'react'
 import { v4 as uuidv4 } from 'uuid'
-import { AccordionItem } from './AccordionItem'
-import { PlatformDetails } from './AccordionItem/AccordionItem'
+import { ChatOption } from './ChatOption'
+import { PlatformDetails } from './ChatOption/ChatOption'
 import { ChatButton, Platform } from './utils/types' // TODO: replace with generated type
 import { getByPlatform, getChatButton, stateSetter } from './utils'
 
@@ -16,7 +16,7 @@ const defaultValues: PlatformDetails = {
   scriptValue: ''
 }
 
-export function ChatWidget(): ReactElement {
+export function Chat(): ReactElement {
   const [facebook, setFacebook] = useState<PlatformDetails>({
     ...defaultValues,
     id: uuidv4(),
@@ -65,11 +65,11 @@ export function ChatWidget(): ReactElement {
 
   function setValues(): void {
     const [
-      facebookWidget,
-      whatsAppWidget,
-      telegramWidget,
-      lineWidget,
-      customWidget
+      facebookButton,
+      whatsAppButton,
+      telegramButton,
+      lineButton,
+      customButton
     ] = [
       Platform.facebook,
       Platform.whatsApp,
@@ -78,11 +78,11 @@ export function ChatWidget(): ReactElement {
       undefined
     ].map((platform) => getByPlatform(chatButtons, platform))
 
-    stateSetter(setFacebook, facebookWidget)
-    stateSetter(setWhatsApp, whatsAppWidget)
-    stateSetter(setTelegram, telegramWidget)
-    stateSetter(setLine, lineWidget)
-    stateSetter(setCustom, customWidget)
+    stateSetter(setFacebook, facebookButton)
+    stateSetter(setWhatsApp, whatsAppButton)
+    stateSetter(setTelegram, telegramButton)
+    stateSetter(setLine, lineButton)
+    stateSetter(setCustom, customButton)
   }
 
   useEffect(() => {
@@ -120,7 +120,7 @@ export function ChatWidget(): ReactElement {
     if (checked && chatButtons.length < 2 && newChatButton != null) {
       toUpdate = [...chatButtons, newChatButton]
     } else {
-      toUpdate = chatButtons.filter((widget) => widget.id !== id)
+      toUpdate = chatButtons.filter((button) => button.id !== id)
     }
     // TODO: replace with gql mutation
     setChatButtons(toUpdate)
@@ -128,31 +128,31 @@ export function ChatWidget(): ReactElement {
 
   return (
     <>
-      <AccordionItem
+      <ChatOption
         value={facebook}
         setValue={setFacebook}
         handleUpdate={handleUpdate}
         handleToggle={handleToggle}
       />
-      <AccordionItem
+      <ChatOption
         value={whatsApp}
         setValue={setWhatsApp}
         handleUpdate={handleUpdate}
         handleToggle={handleToggle}
       />
-      <AccordionItem
+      <ChatOption
         value={telegram}
         setValue={setTelegram}
         handleUpdate={handleUpdate}
         handleToggle={handleToggle}
       />
-      <AccordionItem
+      <ChatOption
         value={line}
         setValue={setLine}
         handleUpdate={handleUpdate}
         handleToggle={handleToggle}
       />
-      <AccordionItem
+      <ChatOption
         value={custom}
         setValue={setCustom}
         handleUpdate={handleUpdate}
