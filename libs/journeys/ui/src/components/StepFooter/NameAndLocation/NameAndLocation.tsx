@@ -8,13 +8,18 @@ interface NameAndLocationProps {
   name?: string
   location?: string
   rtl: boolean
+  src1?: string
+  src2?: string
 }
 
 export const NameAndLocation = ({
   name,
   location,
-  rtl
+  rtl,
+  src1,
+  src2
 }: NameAndLocationProps): ReactElement => {
+  const maxWidthAmount = src1 != null && src2 != null ? '180px' : '216px'
   return (
     <Stack
       className="name-and-location"
@@ -29,7 +34,7 @@ export const NameAndLocation = ({
           variant="body2"
           sx={{
             whiteSpace: 'nowrap',
-            maxWidth: { xs: '260px', lg: '100%' },
+            maxWidth: { xs: maxWidthAmount, lg: '100%' },
             overflow: 'clip',
             textOverflow: 'ellipsis',
             color: 'secondary.light'

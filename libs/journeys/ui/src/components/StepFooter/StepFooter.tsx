@@ -6,14 +6,19 @@ import { ReactElement } from 'react'
 import { useJourney } from '../../libs/JourneyProvider'
 import { getJourneyRTL } from '../../libs/rtl'
 import { NameAndLocation } from './NameAndLocation'
+import { HostAvatars } from './HostAvatars/HostAvatars'
 
 export function StepFooter(): ReactElement {
-  const { journey } = useJourney()
+  const { journey, admin } = useJourney()
   const { rtl } = getJourneyRTL(journey)
 
-  const name = 'Alexander & Eliza Hamilton'
-  const location = 'New York Harbour'
+  const name = 'Bartholomew & Bernadette'
+  const location = 'Karaganda'
 
+  const src1 =
+    'https://images.unsplash.com/photo-1575936123452-b67c3203c357?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80'
+  const src2 =
+    'https://images.unsplash.com/photo-1575936123452-b67c3203c357?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80'
   return (
     <Box
       className="swiper-no-swiping"
@@ -53,6 +58,7 @@ export function StepFooter(): ReactElement {
           }}
           gap={4}
         >
+          <HostAvatars src1={src1} src2={src2} admin={admin} />
           <Stack
             sx={{
               flexGrow: 1,
@@ -71,7 +77,13 @@ export function StepFooter(): ReactElement {
               }}
             >
               {journey?.seoTitle ?? journey?.title}
-              <NameAndLocation name={name} location={location} rtl={rtl} />
+              <NameAndLocation
+                name={name}
+                location={location}
+                rtl={rtl}
+                src1={src1}
+                src2={src2}
+              />
             </Typography>
 
             {/* <Stack
