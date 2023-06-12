@@ -14,6 +14,7 @@ import Stack from '@mui/material/Stack'
 import KeyboardArrowDownRoundedIcon from '@mui/icons-material/KeyboardArrowDownRounded'
 import findKey from 'lodash/findKey'
 import { Platform } from '../utils/types' // TODO: replace with generated type
+import { HelperInfo } from '../HelperInfo'
 
 export interface PlatformDetails {
   id: string
@@ -23,6 +24,7 @@ export interface PlatformDetails {
   chatIcon?: Platform
   type?: 'link' | 'script'
   enableIconSelect?: boolean
+  helperInfo?: string
 }
 
 interface Props {
@@ -39,7 +41,15 @@ export function ChatOption({
   handleUpdate,
   handleToggle
 }: Props): ReactElement {
-  const { id, active, title, linkValue, enableIconSelect, chatIcon } = value
+  const {
+    id,
+    active,
+    title,
+    linkValue,
+    enableIconSelect,
+    chatIcon,
+    helperInfo
+  } = value
 
   function handleChangeActive(
     event: React.ChangeEvent<HTMLInputElement>
@@ -74,9 +84,6 @@ export function ChatOption({
         borderColor: 'divider',
         '&:not(:last-child)': {
           borderBottom: 0
-        },
-        '&:before': {
-          display: 'none'
         }
       }}
     >
@@ -122,6 +129,8 @@ export function ChatOption({
             onChange={handleChangeValue}
             onBlur={handleUpdate}
           />
+
+          {helperInfo != null && <HelperInfo value={helperInfo} />}
         </Stack>
       </AccordionDetails>
     </Accordion>
