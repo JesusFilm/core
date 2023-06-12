@@ -8,7 +8,7 @@ import { getJourneyRTL } from '../../libs/rtl'
 import { NameAndLocation } from './NameAndLocation'
 
 export function StepFooter(): ReactElement {
-  const { journey } = useJourney()
+  const { journey, admin } = useJourney()
   const { rtl } = getJourneyRTL(journey)
 
   const name = 'Alexander & Eliza Hamilton'
@@ -71,7 +71,12 @@ export function StepFooter(): ReactElement {
               }}
             >
               {journey?.seoTitle ?? journey?.title}
-              <NameAndLocation name={name} location={location} rtl={rtl} />
+              <NameAndLocation
+                name={name}
+                location={location}
+                rtl={rtl}
+                admin={admin}
+              />
             </Typography>
 
             {/* <Stack
