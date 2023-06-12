@@ -56,6 +56,11 @@ export function Card({
       <BlockRenderer block={block} wrappers={wrappers} key={block.id} />
     ))
 
+  const hasFullscreenVideo =
+    children.filter(
+      (child) => child.__typename === 'VideoBlock' && child.id !== coverBlockId
+    ).length > 0
+
   return (
     <Paper
       data-testid={id}
@@ -78,6 +83,7 @@ export function Card({
           backgroundBlur={blurUrl}
           videoBlock={videoBlock}
           imageBlock={imageBlock}
+          hasFullscreenVideo={hasFullscreenVideo}
         >
           {renderedChildren}
         </ContainedCover>
@@ -86,9 +92,7 @@ export function Card({
           backgroundColor={cardColor}
           backgroundBlur={blurUrl}
           imageBlock={imageBlock}
-          isVideoOnlyCard={
-            children.length === 1 && children[0].__typename === 'VideoBlock'
-          }
+          hasFullscreenVideo={hasFullscreenVideo}
         >
           {renderedChildren}
         </ExpandedCover>

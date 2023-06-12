@@ -10,7 +10,7 @@ interface ExpandedCoverProps {
   imageBlock?: TreeBlock<ImageFields>
   backgroundColor?: string
   backgroundBlur?: string
-  isVideoOnlyCard?: boolean
+  hasFullscreenVideo?: boolean
 }
 
 export function ExpandedCover({
@@ -18,7 +18,7 @@ export function ExpandedCover({
   imageBlock,
   backgroundColor,
   backgroundBlur,
-  isVideoOnlyCard = false
+  hasFullscreenVideo = false
 }: ExpandedCoverProps): ReactElement {
   const enableVerticalScroll = {
     overflowY: 'scroll',
@@ -61,24 +61,21 @@ export function ExpandedCover({
           justifyContent="center"
           sx={{
             flexGrow: 1,
-            py: isVideoOnlyCard ? 0 : { xs: 9, lg: 8 },
+            py: { xs: 9, lg: 8 },
             ...enableVerticalScroll
           }}
         >
-          {isVideoOnlyCard ? (
-            children
-          ) : (
-            <OverlayContent
-              sx={{
-                margin: 'auto',
-                width: '100%',
-                maxWidth: { xs: 'calc(100% - 48px)', lg: 500 },
-                p: { xs: 2, lg: 'auto' }
-              }}
-            >
-              {children}
-            </OverlayContent>
-          )}
+          <OverlayContent
+            hasFullscreenVideo={hasFullscreenVideo}
+            sx={{
+              margin: 'auto',
+              width: '100%',
+              maxWidth: { xs: 'calc(100% - 48px)', lg: 500 },
+              p: { xs: 2, lg: 'auto' }
+            }}
+          >
+            {children}
+          </OverlayContent>
         </Stack>
       </Stack>
     </>

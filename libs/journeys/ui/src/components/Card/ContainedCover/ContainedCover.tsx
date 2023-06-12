@@ -21,6 +21,7 @@ interface ContainedCoverProps {
   backgroundBlur?: string
   videoBlock?: TreeBlock<VideoFields>
   imageBlock?: TreeBlock<ImageFields>
+  hasFullscreenVideo?: boolean
 }
 
 const StyledGradientBackground = styled(Stack)(() => ({
@@ -56,7 +57,8 @@ export function ContainedCover({
   backgroundColor,
   backgroundBlur,
   videoBlock,
-  imageBlock
+  imageBlock,
+  hasFullscreenVideo = false
 }: ContainedCoverProps): ReactElement {
   const [loading, setLoading] = useState(true)
   const [contentHeight, setContentHeight] = useState(0)
@@ -154,7 +156,7 @@ export function ContainedCover({
         data-testid="overlay-image-container"
         sx={{
           width: '100%',
-          height: '100%',
+          height: hasFullscreenVideo ? undefined : '100%',
           flexGrow: 1,
           zIndex: 1,
           top: 0,
@@ -181,7 +183,7 @@ export function ContainedCover({
           position: 'relative',
           zIndex: 1,
           width: '100%',
-          height: { lg: '100%' },
+          height: { xs: hasFullscreenVideo ? '100%' : undefined, lg: '100%' },
           justifyContent: { xs: 'flex-end', lg: 'center' },
           alignItems: { lg: rtl ? 'flex-start' : 'flex-end' }
         }}
@@ -248,12 +250,17 @@ export function ContainedCover({
               }}
             />
             <OverlayContent
+              hasFullscreenVideo={hasFullscreenVideo}
               sx={{
                 // This should match width of journey card content in admin
                 width: { lg: '312px' },
                 maxHeight: { xs: '55vh', lg: '100%' },
                 px: { xs: 6, lg: 10 },
-                mb: { xs: 9, lg: 0 }
+                mb: { xs: 9, lg: 0 },
+                height: {
+                  xs: hasFullscreenVideo ? '100%' : undefined,
+                  lg: undefined
+                }
               }}
             >
               {children}
