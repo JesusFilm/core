@@ -41,6 +41,7 @@ import { RoleGuard } from '../../lib/roleGuard/roleGuard'
 import { PrismaService } from '../../lib/prisma.service'
 import { UserRoleService } from '../userRole/userRole.service'
 import { JourneyService } from './journey.service'
+import { FromPostgresql } from '@core/nest/decorators/FromPostgresql'
 
 export const ERROR_PSQL_UNIQUE_CONSTRAINT_VIOLATED = 'P2002'
 
@@ -509,8 +510,13 @@ export class JourneyResolver {
   }
 
   @ResolveField()
+  @FromPostgresql()
   async blocks(@Parent() journey: Journey): Promise<Block[]> {
-    return await this.blockService.forJourney(journey)
+    const primaryImageBlockId = journey.primaryImageBlockId ?? null
+    return await this.prismaService.block.findMany({
+      where: { journeyId: journey.id, id: { not: primaryImageBlockId } },
+      orderBy: { parentOrder: 'asc' }
+    })
   }
 
   @ResolveField()

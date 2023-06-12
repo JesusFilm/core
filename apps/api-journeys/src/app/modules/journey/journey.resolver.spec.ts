@@ -226,7 +226,6 @@ describe('JourneyResolver', () => {
   const blockService = {
     provide: BlockService,
     useFactory: () => ({
-      forJourney: jest.fn(() => [block]),
       get: jest.fn((id) => {
         switch (id) {
           case block.id:
@@ -336,6 +335,7 @@ describe('JourneyResolver', () => {
       .mockResolvedValueOnce([userJourney, userJourney])
     prisma.member.create = jest.fn()
     prisma.member.findUnique = jest.fn().mockResolvedValueOnce(member)
+    prisma.block.findMany = jest.fn().mockResolvedValueOnce([block])
   })
 
   describe('adminJourneysEmbed', () => {

@@ -9,7 +9,7 @@ import { BlockResolver } from './block.resolver'
 import { BlockService } from './block.service'
 
 describe('BlockResolver', () => {
-  let resolver: BlockResolver, service: BlockService
+  let resolver: BlockResolver, service: BlockService, prisma: PrismaService
 
   const image1 = {
     id: 'image1',
@@ -49,8 +49,8 @@ describe('BlockResolver', () => {
 
   const blockService = {
     provide: BlockService,
+    PrismaService,
     useFactory: () => ({
-      get: jest.fn(() => image1),
       duplicateBlock: jest.fn(() => [image1, image1, image2, image3]),
       removeBlockAndChildren: jest.fn(() => [image1, image2, image3]),
       reorderBlock: jest.fn(() => [
@@ -77,6 +77,8 @@ describe('BlockResolver', () => {
     }).compile()
     resolver = module.get<BlockResolver>(BlockResolver)
     service = await module.resolve(BlockService)
+    prisma = await module.resolve(PrismaService)
+    prisma.block.findUnique = jest.fn(() => image1)
   })
 
   describe('blockDelete', () => {

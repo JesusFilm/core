@@ -17,7 +17,8 @@ import { SignUpBlockResolver } from './signUp.resolver'
 describe('SignUpBlockResolver', () => {
   let resolver: SignUpBlockResolver,
     blockResolver: BlockResolver,
-    service: BlockService
+    service: BlockService,
+    prisma: PrismaService
 
   const block = {
     id: '1',
@@ -49,8 +50,10 @@ describe('SignUpBlockResolver', () => {
   const signUpBlockResponse = {
     id: input.id,
     parentBlockId: input.parentBlockId,
-    journeyId: input.journeyId,
-    __typename: 'SignUpBlock',
+    journey: {
+      connect: { id: input.journeyId }
+    },
+    typename: 'SignUpBlock',
     parentOrder: 2,
     submitLabel: input.submitLabel
   }
@@ -65,8 +68,6 @@ describe('SignUpBlockResolver', () => {
   const blockService = {
     provide: BlockService,
     useFactory: () => ({
-      get: jest.fn(() => block),
-      getAll: jest.fn(() => [block, block]),
       getSiblings: jest.fn(() => [block, block]),
       save: jest.fn((input) => input),
       update: jest.fn((input) => input),
@@ -93,6 +94,9 @@ describe('SignUpBlockResolver', () => {
     blockResolver = module.get<BlockResolver>(BlockResolver)
     resolver = module.get<SignUpBlockResolver>(SignUpBlockResolver)
     service = await module.resolve(BlockService)
+    prisma = await module.resolve(PrismaService)
+    prisma.block.findUnique = jest.fn().mockResolvedValueOnce(block)
+    prisma.block.findMany = jest.fn().mockResolvedValueOnce([block, block])
   })
 
   describe('SignUpBlock', () => {

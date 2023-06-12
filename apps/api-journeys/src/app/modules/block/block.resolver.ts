@@ -2,7 +2,9 @@
 
 import { Args, Query, ResolveField, Resolver, Mutation } from '@nestjs/graphql'
 import { UseGuards } from '@nestjs/common'
-import { Block, Role, UserJourneyRole } from '../../__generated__/graphql'
+import { Block } from '.prisma/api-journeys-client'
+import { PrismaService } from '../../lib/prisma.service'
+import { Role, UserJourneyRole } from '../../__generated__/graphql'
 import { RoleGuard } from '../../lib/roleGuard/roleGuard'
 import { BlockService } from './block.service'
 
@@ -11,7 +13,11 @@ interface DbBlock extends Block {
 }
 @Resolver('Block')
 export class BlockResolver {
-  constructor(private readonly blockService: BlockService) {}
+  constructor(
+    private readonly blockService: BlockService,
+    private readonly prismaService: PrismaService
+  ) {}
+
   @ResolveField()
   __resolveType(obj: DbBlock): string {
     return obj.__typename
@@ -19,12 +25,12 @@ export class BlockResolver {
 
   @Query()
   async blocks(): Promise<Block[]> {
-    return await this.blockService.getAll()
+    return await this.prismaService.block.findMany({})
   }
 
   @Query()
-  async block(@Args('id') id: string): Promise<Block> {
-    return await this.blockService.get(id)
+  async block(@Args('id') id: string): Promise<Block | null> {
+    return await this.prismaService.block.findUnique({ where: { id } })
   }
 
   @Mutation()

@@ -1,6 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing'
-import { Database } from 'arangojs'
-import { mockDeep } from 'jest-mock-extended'
+import { omit } from 'lodash'
 
 import {
   TypographyAlign,
@@ -18,7 +17,8 @@ import { TypographyBlockResolver } from './typography.resolver'
 describe('TypographyBlockResolver', () => {
   let resolver: TypographyBlockResolver,
     blockResolver: BlockResolver,
-    service: BlockService
+    service: BlockService,
+    prisma: PrismaService
 
   const block = {
     id: '1',
@@ -44,8 +44,11 @@ describe('TypographyBlockResolver', () => {
   }
 
   const blockCreateResponse = {
-    journeyId: '2',
-    __typename: 'TypographyBlock',
+    id: undefined,
+    journey: {
+      connect: { id: '2' }
+    },
+    typename: 'TypographyBlock',
     parentBlockId: '3',
     parentOrder: 2,
     content: 'text',
@@ -57,8 +60,6 @@ describe('TypographyBlockResolver', () => {
   const blockService = {
     provide: BlockService,
     useFactory: () => ({
-      get: jest.fn(() => block),
-      getAll: jest.fn(() => [block, block]),
       getSiblings: jest.fn(() => [block, block]),
       save: jest.fn((input) => input),
       update: jest.fn((input) => input)
@@ -74,16 +75,15 @@ describe('TypographyBlockResolver', () => {
         UserJourneyService,
         UserRoleService,
         JourneyService,
-        PrismaService,
-        {
-          provide: 'DATABASE',
-          useFactory: () => mockDeep<Database>()
-        }
+        PrismaService
       ]
     }).compile()
     blockResolver = module.get<BlockResolver>(BlockResolver)
     resolver = module.get<TypographyBlockResolver>(TypographyBlockResolver)
     service = await module.resolve(BlockService)
+    prisma = await module.resolve(PrismaService)
+    prisma.block.findUnique = jest.fn().mockResolvedValueOnce(block)
+    prisma.block.findMany = jest.fn().mockResolvedValueOnce([block, block])
   })
 
   describe('TypographyBlock', () => {
@@ -111,7 +111,10 @@ describe('TypographyBlockResolver', () => {
         block.journeyId,
         blockUpdate
       )
-      expect(service.update).toHaveBeenCalledWith(block.id, blockUpdate)
+      expect(service.update).toHaveBeenCalledWith(
+        block.id,
+        omit(blockUpdate, ['journeyId', '__typename'])
+      )
     })
   })
 })

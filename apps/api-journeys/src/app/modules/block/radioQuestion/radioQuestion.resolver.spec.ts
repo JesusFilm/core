@@ -18,7 +18,8 @@ describe('RadioQuestionBlockResolver', () => {
   let resolver: RadioQuestionBlockResolver,
     blockResolver: BlockResolver,
     radioOptionBlockResolver: RadioOptionBlockResolver,
-    service: BlockService
+    service: BlockService,
+    prisma: PrismaService
 
   const block = {
     id: '1',
@@ -46,6 +47,16 @@ describe('RadioQuestionBlockResolver', () => {
     label: 'label'
   }
 
+  const radioOptionResponse = {
+    typename: 'RadioOptionBlock',
+    parentBlockId: '2',
+    parentOrder: 2,
+    journey: {
+      connect: { id: '2' }
+    },
+    label: 'label'
+  }
+
   const radioOptionUpdate = {
     __typename: 'RadioOptionBlock',
     parentBlockId: '2',
@@ -65,11 +76,16 @@ describe('RadioQuestionBlockResolver', () => {
     journeyId: '2'
   }
 
+  const radioQuestionResponse = {
+    typename: 'RadioQuestionBlock',
+    parentBlockId: '2',
+    parentOrder: 2,
+    journey: { connect: { id: '2' } }
+  }
+
   const blockService = {
     provide: BlockService,
     useFactory: () => ({
-      get: jest.fn(() => block),
-      getAll: jest.fn(() => [block, block]),
       getSiblings: jest.fn(() => [block, block]),
       save: jest.fn((input) => input),
       update: jest.fn((input) => input)
@@ -101,6 +117,9 @@ describe('RadioQuestionBlockResolver', () => {
       RadioQuestionBlockResolver
     )
     service = await module.resolve(BlockService)
+    prisma = await module.resolve(PrismaService)
+    prisma.block.findUnique = jest.fn().mockResolvedValueOnce(block)
+    prisma.block.findMany = jest.fn().mockResolvedValueOnce([block, block])
   })
 
   describe('RadioOptionBlock', () => {
@@ -127,7 +146,7 @@ describe('RadioQuestionBlockResolver', () => {
         radioOptionInput.journeyId,
         radioOptionInput.parentBlockId
       )
-      expect(service.save).toHaveBeenCalledWith(radioOptionInput)
+      expect(service.save).toHaveBeenCalledWith(radioOptionResponse)
     })
   })
 
@@ -138,7 +157,7 @@ describe('RadioQuestionBlockResolver', () => {
         radioQuestionInput.journeyId,
         radioQuestionInput.parentBlockId
       )
-      expect(service.save).toHaveBeenCalledWith(radioQuestionInput)
+      expect(service.save).toHaveBeenCalledWith(radioQuestionResponse)
     })
   })
 

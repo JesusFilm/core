@@ -1,6 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { Database } from 'arangojs'
 import { mockDeep } from 'jest-mock-extended'
+import { omit } from 'lodash'
 
 import {
   TextResponseBlock,
@@ -17,7 +18,8 @@ import { TextResponseBlockResolver } from './textResponse.resolver'
 describe('TextResponseBlockResolver', () => {
   let resolver: TextResponseBlockResolver,
     blockResolver: BlockResolver,
-    service: BlockService
+    service: BlockService,
+    prisma: PrismaService
 
   const block = {
     id: '1',
@@ -48,9 +50,10 @@ describe('TextResponseBlockResolver', () => {
   }
 
   const textResponseBlockResponse = {
-    ...input,
-    __typename: 'TextResponseBlock',
-    parentOrder: 2
+    ...omit(input, ['__typename', 'journeyId']),
+    typename: 'TextResponseBlock',
+    parentOrder: 2,
+    journey: { connect: { id: '2' } }
   }
 
   const blockUpdate = {
@@ -64,8 +67,6 @@ describe('TextResponseBlockResolver', () => {
   const blockService = {
     provide: BlockService,
     useFactory: () => ({
-      get: jest.fn(() => block),
-      getAll: jest.fn(() => [block, block]),
       getSiblings: jest.fn(() => [block, block]),
       save: jest.fn((input) => input),
       update: jest.fn((input) => input),
@@ -92,6 +93,9 @@ describe('TextResponseBlockResolver', () => {
     blockResolver = module.get<BlockResolver>(BlockResolver)
     resolver = module.get<TextResponseBlockResolver>(TextResponseBlockResolver)
     service = await module.resolve(BlockService)
+    prisma = module.get<PrismaService>(PrismaService)
+    prisma.block.findUnique = jest.fn().mockResolvedValueOnce(block)
+    prisma.block.findMany = jest.fn().mockResolvedValueOnce([block, block])
   })
 
   describe('TextResponseBlock', () => {

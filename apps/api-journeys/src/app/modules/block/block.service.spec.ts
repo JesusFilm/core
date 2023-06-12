@@ -1,7 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { v4 as uuidv4 } from 'uuid'
-import { Database } from 'arangojs'
-import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 import {
   mockCollectionRemoveResult,
   mockCollectionSaveResult,
@@ -9,10 +7,10 @@ import {
   mockCollectionUpdateAllResult,
   mockDbQueryResult
 } from '@core/nest/database/mock'
-import { DocumentCollection, EdgeCollection } from 'arangojs/collection'
 import { keyAsId } from '@core/nest/decorators/KeyAsId'
 import { Journey } from '.prisma/api-journeys-client'
 
+import { PrismaService } from '../../lib/prisma.service'
 import {
   JourneyStatus,
   ThemeMode,
@@ -29,25 +27,15 @@ jest.mock('uuid', () => ({
 const mockUuidv4 = uuidv4 as jest.MockedFunction<typeof uuidv4>
 
 describe('BlockService', () => {
-  let service: BlockService,
-    db: DeepMockProxy<Database>,
-    collectionMock: DeepMockProxy<DocumentCollection & EdgeCollection>
+  let service: BlockService, prisma: PrismaService
 
   beforeEach(async () => {
-    db = mockDeep()
     const module: TestingModule = await Test.createTestingModule({
-      providers: [
-        BlockService,
-        {
-          provide: 'DATABASE',
-          useFactory: () => db
-        }
-      ]
+      providers: [BlockService, PrismaService]
     }).compile()
 
     service = module.get<BlockService>(BlockService)
-    collectionMock = mockDeep()
-    service.collection = collectionMock
+    prisma = module.get<PrismaService>(PrismaService)
   })
   afterAll(() => {
     jest.resetAllMocks()
@@ -68,9 +56,9 @@ describe('BlockService', () => {
   } as unknown as Journey
 
   const block = {
-    _key: '1',
+    id: '1',
     journeyId: journey.id,
-    __typename: 'CardBlock',
+    typename: 'CardBlock',
     parentBlockId: '3',
     parentOrder: 0,
     backgroundColor: '#FFF',
@@ -79,7 +67,6 @@ describe('BlockService', () => {
     themeName: ThemeName.base,
     fullscreen: true
   }
-  const blockWithId = keyAsId(block) as Block
 
   const stepBlock = {
     __typename: 'StepBlock',
@@ -132,109 +119,59 @@ describe('BlockService', () => {
     parentBlockId: buttonBlock.id
   }
 
-  describe('getAll', () => {
-    beforeEach(() => {
-      db.query.mockReturnValue(mockDbQueryResult(service.db, [block, block]))
-    })
-
-    it('should return an array of all blocks', async () => {
-      expect(await service.getAll()).toEqual([blockWithId, blockWithId])
-    })
-  })
-
-  describe('forJourney', () => {
-    beforeEach(() => {
-      db.query.mockReturnValue(mockDbQueryResult(service.db, [block, block]))
-    })
-
-    it('should return all blocks in a journey', async () => {
-      expect(await service.forJourney(journey)).toEqual([
-        blockWithId,
-        blockWithId
-      ])
-    })
-  })
-
   describe('getSiblings', () => {
-    beforeEach(() => {
-      db.query.mockReturnValue(mockDbQueryResult(service.db, [block, block]))
-    })
-
     it('should return all siblings of a block', async () => {
+      prisma.block.findMany = jest.fn().mockReturnValue([block, block])
       expect(
         await service.getSiblings(block.journeyId, block.parentBlockId)
-      ).toEqual([blockWithId, blockWithId])
-    })
-  })
-
-  describe('get', () => {
-    beforeEach(() => {
-      db.query.mockReturnValue(mockDbQueryResult(service.db, [block]))
-    })
-
-    it('should return a block', async () => {
-      expect(await service.get('1')).toEqual(blockWithId)
+      ).toEqual([block, block])
     })
   })
 
   describe('save', () => {
-    beforeEach(() => {
-      collectionMock.save.mockReturnValue(
-        mockCollectionSaveResult(service.collection, block)
-      )
-    })
-
     it('should return a saved block', async () => {
-      expect(await service.save(block)).toEqual(blockWithId)
-    })
-  })
-
-  describe('saveAll', () => {
-    beforeEach(() => {
-      collectionMock.saveAll.mockReturnValue(
-        mockCollectionSaveAllResult(service.collection, [block, block])
-      )
-    })
-
-    it('should return saved blocks', async () => {
-      expect(await service.saveAll([block, block])).toEqual([
-        blockWithId,
-        blockWithId
-      ])
+      prisma.block.create = jest.fn().mockReturnValue(block)
+      expect(await service.save(block)).toEqual(block)
     })
   })
 
   describe('update', () => {
-    beforeEach(() => {
-      collectionMock.update.mockReturnValue(
-        mockCollectionSaveResult(service.collection, block)
-      )
-    })
-
     it('should return an updated block', async () => {
-      expect(await service.update(block._key, block)).toEqual(blockWithId)
+      prisma.block.update = jest
+        .fn()
+        .mockImplementationOnce((data) => data.data)
+      expect(await service.update(block.id, block)).toEqual(block)
     })
   })
 
   describe('reorderSiblings', () => {
     it('should update parent order', async () => {
-      service.updateAll = jest.fn().mockReturnValue([
-        { ...block, parentOrder: 0 },
-        { ...block, parentOrder: 1 }
-      ])
+      prisma.block.update = jest
+        .fn()
+        .mockImplementationOnce((result) => result.data)
+      // service.updateAll = jest.fn().mockReturnValue([
+      //   { ...block, parentOrder: 0 },
+      //   { ...block, parentOrder: 1 }
+      // ])
       expect(
         await service.reorderSiblings([
-          { ...block, id: block._key, parentOrder: 2 },
-          { ...block, id: block._key, parentOrder: 3 }
+          { ...block, id: block.id, parentOrder: 2 },
+          { ...block, id: block.id, parentOrder: 3 }
         ])
       ).toEqual([
         { ...block, parentOrder: 0 },
         { ...block, parentOrder: 1 }
       ])
-      expect(service.updateAll).toHaveBeenCalledWith([
-        { ...block, id: block._key, parentOrder: 0 },
-        { ...block, id: block._key, parentOrder: 1 }
-      ])
+      expect(prisma.block.update).toHaveBeenCalledWith({
+        ...block,
+        id: block.id,
+        parentOrder: 0
+      })
+      expect(prisma.block.update).toHaveBeenCalledWith({
+        ...block,
+        id: block.id,
+        parentOrder: 1
+      })
     })
   })
 

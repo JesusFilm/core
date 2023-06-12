@@ -24,7 +24,7 @@ export class EventService {
     journeyId: string
   }> {
     const block: { journeyId: string; _key: string } | undefined =
-      await this.blockService.get(blockId)
+      await this.prismaService.block.findUnique({ where: { id: blockId } })
 
     if (block == null) {
       throw new UserInputError('Block does not exist')

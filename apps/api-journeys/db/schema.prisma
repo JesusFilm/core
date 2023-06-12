@@ -264,7 +264,7 @@ model Block {
   size                   String?
   startIconId            String?
   endIconId              String?
-  action                 String?
+  action                 Json?
   backgroundColor        String?
   coverBlockId           String?
   fullscreen             Boolean?

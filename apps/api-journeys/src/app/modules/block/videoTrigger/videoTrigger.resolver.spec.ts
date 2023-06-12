@@ -11,7 +11,9 @@ import { BlockService } from '../block.service'
 import { VideoTriggerResolver } from './videoTrigger.resolver'
 
 describe('VideoTriggerBlockResolver', () => {
-  let resolver: VideoTriggerResolver, blockResolver: BlockResolver
+  let resolver: VideoTriggerResolver,
+    blockResolver: BlockResolver,
+    prisma: PrismaService
 
   const block = {
     id: '1',
@@ -28,8 +30,8 @@ describe('VideoTriggerBlockResolver', () => {
 
   const blockResponse = {
     id: '1',
-    journeyId: '2',
-    __typename: 'VideoTriggerBlock',
+    journey: { connect: { id: '2' } },
+    typename: 'VideoTriggerBlock',
     parentBlockId: '3',
     parentOrder: 0,
     triggerStart: 5,
@@ -47,7 +49,6 @@ describe('VideoTriggerBlockResolver', () => {
   const blockService = {
     provide: BlockService,
     useFactory: () => ({
-      get: jest.fn(() => block),
       getAll: jest.fn(() => [block, block])
     })
   }
@@ -70,6 +71,8 @@ describe('VideoTriggerBlockResolver', () => {
     }).compile()
     resolver = module.get<VideoTriggerResolver>(VideoTriggerResolver)
     blockResolver = module.get<BlockResolver>(BlockResolver)
+    prisma = module.get<PrismaService>(PrismaService)
+    prisma.block.findUnique = jest.fn().mockResolvedValue(blockResponse)
   })
 
   describe('VideoTriggerBlock', () => {
