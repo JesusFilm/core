@@ -256,11 +256,7 @@ export function ContainedCover({
                 width: { lg: '312px' },
                 maxHeight: { xs: '55vh', lg: '100%' },
                 px: { xs: 6, lg: 10 },
-                mb: { xs: 9, lg: 0 },
-                height: {
-                  xs: hasFullscreenVideo ? '100%' : undefined,
-                  lg: undefined
-                }
+                mb: { xs: 9, lg: 0 }
               }}
             >
               {children}
