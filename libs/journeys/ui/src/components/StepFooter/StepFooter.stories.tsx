@@ -55,7 +55,9 @@ const journey: Journey = {
   seoDescription: null
 }
 
-const Template: Story<ComponentProps<typeof StepFooter>> = () => {
+const Template: Story<
+  ComponentProps<typeof StepFooter> & { journey: Journey }
+> = ({ journey }) => {
   return (
     <JourneyProvider value={{ journey }}>
       <Stack
@@ -75,6 +77,19 @@ const Template: Story<ComponentProps<typeof StepFooter>> = () => {
 
 // StepFooter exists only on dark mode on desktop view
 export const Default = Template.bind({})
+Default.args = {
+  journey
+}
+
+export const Long = Template.bind({})
+Long.args = {
+  ...Default.args,
+  journey: {
+    ...journey,
+    seoTitle:
+      'Some really really really really incredibly absolutely humungo wungo massively very very very long beyond a shadow of a doubt, needed only for testing a very strange edge case where a title is really really long - title'
+  }
+}
 
 export const RTL = Template.bind({})
 RTL.args = { ...Default.args }
