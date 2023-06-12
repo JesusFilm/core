@@ -5,7 +5,7 @@ import Typography from '@mui/material/Typography'
 import { ReactElement } from 'react'
 import { useJourney } from '../../libs/JourneyProvider'
 import { getJourneyRTL } from '../../libs/rtl'
-import { NameAndLocation } from './NameAndLocation/NameAndLocation'
+import { NameAndLocation } from './NameAndLocation'
 
 export function StepFooter(): ReactElement {
   const { journey } = useJourney()
@@ -71,7 +71,7 @@ export function StepFooter(): ReactElement {
               }}
             >
               {journey?.seoTitle ?? journey?.title}
-              <NameAndLocation name={name} location={location} />
+              <NameAndLocation name={name} location={location} rtl={rtl} />
             </Typography>
 
             {/* <Stack
