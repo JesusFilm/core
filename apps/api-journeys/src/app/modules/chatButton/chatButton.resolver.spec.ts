@@ -39,7 +39,7 @@ describe('ChatButtonResolver', () => {
     expect(result).toEqual([{ id: '1', journeyId: 'journeyId' }])
   })
 
-  it('should create more than two ChatButtons', async () => {
+  it('should not create more than two ChatButtons', async () => {
     prismaService.chatButton.findMany = jest
       .fn()
       .mockReturnValue([chatButton, chatButton2])
