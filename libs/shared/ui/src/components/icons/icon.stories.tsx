@@ -4,7 +4,7 @@ import { ComponentProps } from 'react'
 import Typography from '@mui/material/Typography'
 // import CircularProgress from '@mui/material/CircularProgress'
 import { simpleComponentConfig } from '../../libs/simpleComponentConfig'
-import { Icon } from './icon'
+import { Icon } from './Icon'
 
 const iconNames = [
   'AddSquare2',
