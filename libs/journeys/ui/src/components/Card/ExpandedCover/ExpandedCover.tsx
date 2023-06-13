@@ -61,7 +61,7 @@ export function ExpandedCover({
           justifyContent="center"
           sx={{
             flexGrow: 1,
-            py: { xs: 9, lg: 8 },
+            py: { xs: 15, lg: 8 },
             ...enableVerticalScroll
           }}
         >

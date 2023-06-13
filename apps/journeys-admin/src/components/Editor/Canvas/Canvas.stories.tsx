@@ -595,6 +595,7 @@ const Template: Story = ({ ...args }) => {
             id: 'journeyId',
             themeMode: ThemeMode.light,
             themeName: ThemeName.base,
+            seoTitle: 'my journey',
             ...args
           } as unknown as Journey,
           admin: true
