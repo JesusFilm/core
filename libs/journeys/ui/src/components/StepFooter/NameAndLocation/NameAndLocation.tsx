@@ -43,7 +43,7 @@ export const NameAndLocation = ({
                   ? '110px'
                   : maxWidthAmount
               })`,
-              sm: `calc(100vw - ${
+              lg: `calc(100vw - ${
                 !admin && src1 == null && src2 == null
                   ? '180px'
                   : maxWidthAmountDesktop
