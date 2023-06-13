@@ -13,8 +13,7 @@ export function StepFooter(): ReactElement {
   const { rtl } = getJourneyRTL(journey)
 
   const name = 'Bartholomew & Bernadette'
-  const location =
-    'Karaganda asjklhdfasjkldfhjlaskfhasjkfhlask;dfjalskdjfl;askdjfal;skdjflask;djfal;sdkjfaskl;dfjasl;kdjfaskl;djfalsk;djfalsk;jfalskdfjasklfjaskl;dfj'
+  const location = 'Karaganda is a very long city name'
 
   const src1 = 'undefined'
   const src2 = 'undefined'
