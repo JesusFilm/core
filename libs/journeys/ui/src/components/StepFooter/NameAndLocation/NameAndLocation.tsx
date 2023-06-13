@@ -21,7 +21,7 @@ export const NameAndLocation = ({
   src2,
   admin
 }: NameAndLocationProps): ReactElement => {
-  const maxWidthAmount = src1 != null && src2 != null ? '180px' : '216px'
+  const maxWidthAmount = src1 != null || src2 != null ? '190px' : '150px'
   return (
     <Stack
       className="name-and-location"
@@ -36,13 +36,9 @@ export const NameAndLocation = ({
           variant="body2"
           sx={{
             whiteSpace: 'nowrap',
-            maxWidth: {
-              xs:
-                !admin && src1 == null && src2 == null
-                  ? '260px '
-                  : maxWidthAmount,
-              lg: '100%'
-            },
+            width: `calc(100vw - ${
+              !admin && src1 == null && src2 == null ? '110px' : maxWidthAmount
+            })`,
             overflow: 'clip',
             textOverflow: 'ellipsis',
             color: 'secondary.light'

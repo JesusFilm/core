@@ -58,8 +58,7 @@ export function StepFooter(): ReactElement {
               flexGrow: 1,
               flexDirection: 'row',
               alignItems: 'center',
-              justifyContent: 'space-between',
-              overflow: 'clip'
+              justifyContent: 'space-between'
             }}
           >
             <Typography
