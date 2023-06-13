@@ -129,4 +129,19 @@ describe('HostResolver', () => {
     expect(result).toEqual(mockDeletedHost)
     expect(prismaService.host.delete).toHaveBeenCalledWith({ where: { id } })
   })
+
+  it('should throw UserInputError when host title is undefined', async () => {
+    const hostId = 'host-id'
+    const input = {
+      title: undefined as unknown as string,
+      location: 'National Team Staff',
+      avatar1Id: 'new-profile-pic-who-thos',
+      avatar2Id: 'new-avatar2'
+    }
+    await hostResolver
+      .hostUpdate(hostId, input)
+      .catch((e) =>
+        expect(e.message).toEqual('host title cannot be undefined or null')
+      )
+  })
 })
