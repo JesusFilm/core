@@ -1,7 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { PrismaService } from '../../../lib/prisma.service'
 import { BlockResolver } from '../../block/block.resolver'
-import { BlockService } from '../../block/block.service'
 import { JourneyService } from '../../journey/journey.service'
 import { UserJourneyService } from '../../userJourney/userJourney.service'
 import { UserRoleService } from '../../userRole/userRole.service'
@@ -9,8 +8,7 @@ import { ActionResolver } from '../action.resolver'
 import { EmailActionResolver } from './emailAction.resolver'
 
 describe('EmailActionResolver', () => {
-  let resolver: EmailActionResolver, service: BlockService
-
+  let resolver: EmailActionResolver, prismaService: PrismaService
   const block = {
     id: '1',
     journeyId: '2',
@@ -36,17 +34,9 @@ describe('EmailActionResolver', () => {
   }
 
   beforeEach(async () => {
-    const blockService = {
-      provide: BlockService,
-      useFactory: () => ({
-        get: jest.fn().mockResolvedValue(block),
-        update: jest.fn((navigateToBlockInput) => navigateToBlockInput)
-      })
-    }
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         BlockResolver,
-        blockService,
         EmailActionResolver,
         ActionResolver,
         UserJourneyService,
@@ -56,7 +46,11 @@ describe('EmailActionResolver', () => {
       ]
     }).compile()
     resolver = module.get<EmailActionResolver>(EmailActionResolver)
-    service = await module.resolve(BlockService)
+    prismaService = await module.resolve(PrismaService)
+    prismaService.block.findUnique = jest.fn().mockResolvedValue(block)
+    prismaService.action.update = jest
+      .fn()
+      .mockResolvedValue((result) => result.data)
   })
 
   it('updates email action', async () => {
@@ -65,7 +59,7 @@ describe('EmailActionResolver', () => {
       block.journeyId,
       emailActionInput
     )
-    expect(service.update).toHaveBeenCalledWith(block.id, {
+    expect(prismaService.action.update).toHaveBeenCalledWith(block.id, {
       action: { ...emailActionInput, parentBlockId: block.action.parentBlockId }
     })
   })
@@ -75,7 +69,7 @@ describe('EmailActionResolver', () => {
       ...block,
       __typename: 'WrongBlock'
     }
-    service.get = jest.fn().mockResolvedValue(wrongBlock)
+    prismaService.block.findUnique = jest.fn().mockResolvedValue(wrongBlock)
     await resolver
       .blockUpdateEmailAction(
         wrongBlock.id,
@@ -94,7 +88,7 @@ describe('EmailActionResolver', () => {
       ...emailActionInput,
       email: 'tataiwashere.com'
     }
-    service.get = jest.fn().mockResolvedValue(block)
+    prismaService.block.findUnique = jest.fn().mockResolvedValue(block)
     await resolver
       .blockUpdateEmailAction(block.id, block.journeyId, wrongEmailInput)
       .catch((error) => {

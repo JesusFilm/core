@@ -1,6 +1,4 @@
 import { Test, TestingModule } from '@nestjs/testing'
-import { Database } from 'arangojs'
-import { mockDeep } from 'jest-mock-extended'
 import { omit } from 'lodash'
 
 import { UserJourneyService } from '../../userJourney/userJourney.service'
@@ -15,30 +13,30 @@ import { StepBlockResolver } from './step.resolver'
 describe('StepBlockResolver', () => {
   let resolver: StepBlockResolver,
     blockResolver: BlockResolver,
-    service: BlockService
+    service: BlockService,
+    prismaService: PrismaService
 
   const block = {
     id: '1',
     journeyId: '2',
-    __typename: 'StepBlock',
+    typename: 'StepBlock',
     parentBlockId: '3',
     parentOrder: 0,
     locked: true,
     nextBlockId: '4'
   }
 
-  const blockUpdate = omit(block, 'id')
+  const blockUpdate = omit(block, ['id', 'journeyId'])
 
   const blockCreateResponse = {
-    ...block,
+    ...omit(block, ['id', 'journeyId', 'typename']),
+    __typename: 'StepBlock',
     parentOrder: 2
   }
 
   const blockService = {
     provide: BlockService,
     useFactory: () => ({
-      get: jest.fn(() => block),
-      getAll: jest.fn(() => [block, block]),
       getSiblings: jest.fn(() => [block, block]),
       save: jest.fn(() => blockCreateResponse),
       update: jest.fn((input) => input)
@@ -54,16 +52,15 @@ describe('StepBlockResolver', () => {
         UserJourneyService,
         UserRoleService,
         JourneyService,
-        PrismaService,
-        {
-          provide: 'DATABASE',
-          useFactory: () => mockDeep<Database>()
-        }
+        PrismaService
       ]
     }).compile()
     blockResolver = module.get<BlockResolver>(BlockResolver)
     resolver = module.get<StepBlockResolver>(StepBlockResolver)
     service = await module.resolve(BlockService)
+    prismaService = await module.resolve(PrismaService)
+    prismaService.block.findUnique = jest.fn().mockResolvedValue(block)
+    prismaService.block.findMany = jest.fn().mockResolvedValue([block, block])
   })
 
   describe('StepBlock', () => {
@@ -81,6 +78,7 @@ describe('StepBlockResolver', () => {
       expect(service.getSiblings).toHaveBeenCalledWith(block.journeyId)
       expect(service.save).toHaveBeenCalledWith({
         ...blockUpdate,
+        journey: { connect: { id: block.journeyId } },
         parentOrder: 2
       })
     })

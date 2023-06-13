@@ -83,7 +83,7 @@ describe('JourneyService', () => {
         where: {
           status: { in: [JourneyStatus.published] },
           template: undefined,
-          userJourney: {
+          userJourneys: {
             some: { userId: 'user.id', role: { in: ['owner', 'editor'] } }
           }
         }

@@ -1,9 +1,6 @@
 import { Injectable } from '@nestjs/common'
 import { v4 as uuidv4 } from 'uuid'
-import {
-  FromPostgresql,
-  fromPostgresql
-} from '@core/nest/decorators/FromPostgresql'
+import { FromPostgresql } from '@core/nest/decorators/FromPostgresql'
 import { ToPostgresql } from '@core/nest/decorators/ToPostgresql'
 import { Journey, Block, Prisma } from '.prisma/api-journeys-client'
 import { NavigateToBlockAction } from '../../__generated__/graphql'
@@ -230,7 +227,7 @@ export class BlockService {
       duplicateStepIds
     )
 
-    return [duplicateBlock, ...duplicateChildren]
+    return [duplicateBlock as Block, ...duplicateChildren]
   }
 
   @FromPostgresql()
@@ -303,6 +300,18 @@ export class BlockService {
     return (await this.prismaService.block.create({
       data: input
     })) as unknown as T
+  }
+
+  @FromPostgresql()
+  async saveAll<T>(inputs: Prisma.BlockCreateInput[]): Promise<T[]> {
+    return await Promise.all(
+      inputs.map(
+        async (input) =>
+          (await this.prismaService.block.create({
+            data: input
+          })) as unknown as T
+      )
+    )
   }
 
   @ToPostgresql()

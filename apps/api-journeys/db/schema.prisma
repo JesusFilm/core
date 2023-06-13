@@ -136,21 +136,13 @@ model JourneyVisitor {
 }
 
 model Team {
-  id        String     @id @default(uuid())
-  title     String
-  createdAt DateTime   @default(now())
-  updatedAt DateTime   @updatedAt
-  visitor   Visitor[]
-  journey   Journey[]
-  userTeams UserTeam[]
-
-  @@index([title])
-}
-
-enum UserTeamRole {
-  manager
-  member
-  guest
+  id           String     @id
+  title        String
+  contactEmail String?
+  createdAt    DateTime   @default(now())
+  visitors     Visitor[]
+  userTeams    UserTeam[]
+  journeys     Journey[]
 }
 
 model UserTeam {
@@ -163,6 +155,29 @@ model UserTeam {
   updatedAt DateTime     @updatedAt
 
   @@unique([teamId, userId])
+}
+
+enum UserTeamRole {
+  manager
+  member
+  guest
+}
+
+enum UserJourneyRole {
+  inviteRequested
+  editor
+  owner
+}
+
+model UserJourney {
+  id        String          @id @default(uuid())
+  userId    String
+  journeyId String
+  journey   Journey         @relation(fields: [journeyId], references: [id])
+  role      UserJourneyRole
+  openedAt  DateTime?       @default(now())
+
+  @@unique([journeyId, userId])
 }
 
 enum JourneyStatus {
@@ -202,22 +217,12 @@ model Journey {
   teamId              String
   themeMode           ThemeMode?    @default(light)
   themeName           ThemeName?    @default(base)
-  userJourney         UserJourney[]
+  userJourneys        UserJourney[]
   team                Team          @relation(fields: [teamId], references: [id])
-  UserInvite          UserInvite[]
-  Block               Block[]
+  userInvites         UserInvite[]
+  blocks              Block[]
 
   @@index([slug])
-}
-
-model Member {
-  id        String   @id
-  team      Team     @relation(fields: [teamId], references: [id])
-  teamId    String
-  userId    String
-  createdAt DateTime @default(now())
-
-  @@unique([teamId, userId])
 }
 
 enum Role {
@@ -267,7 +272,7 @@ model Block {
   size                   String?
   startIconId            String?
   endIconId              String?
-  action                 Json?
+  action                 Action?
   backgroundColor        String?
   coverBlockId           String?
   fullscreen             Boolean?
@@ -310,4 +315,16 @@ model Block {
   objectFit              VideoBlockObjectFit?
   triggerStart           Int?
   journey                Journey              @relation(fields: [journeyId], references: [id])
+}
+
+model Action {
+  id            String  @id
+  parentBlockId String?
+  gtmEventName  String?
+  blockId       String?
+  journeyId     String?
+  url           String?
+  target        String?
+  email         String?
+  block         Block   @relation(fields: [id], references: [id])
 }

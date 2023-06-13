@@ -10,7 +10,6 @@ import {
   UserJourneyRole,
   JourneysReportType,
   Role,
-  ImageBlock
 } from '../../__generated__/graphql'
 import { BlockResolver } from '../block/block.resolver'
 import { BlockService } from '../block/block.service'
@@ -80,9 +79,8 @@ describe('JourneyResolver', () => {
     template: false
   }
 
-  const primaryImageBlock: ImageBlock & { _key: string } = {
-    _key: 'primaryImageBlock.id',
-    __typename: 'ImageBlock',
+  const primaryImageBlock = {
+    typename: 'ImageBlock',
     id: 'primaryImageBlock.id',
     journeyId: 'socialJourney.id',
     parentBlockId: 'socialJourney.id',
@@ -94,7 +92,7 @@ describe('JourneyResolver', () => {
     blurhash: 'image.blurhash'
   }
 
-  const socialJourney: Journey & { primaryImageBlockId: string | undefined } = {
+  const socialJourney = {
     ...journey,
     id: 'socialJourney.id',
     primaryImageBlockId: 'primaryImageBlock.id'
@@ -141,7 +139,7 @@ describe('JourneyResolver', () => {
   const block = {
     id: 'blockId',
     journeyId: 'journeyId',
-    __typename: 'ImageBlock',
+    typename: 'ImageBlock',
     parentBlockId: 'stepId',
     parentOrder: 0,
     src: 'https://source.unsplash.com/random/1920x1080',
@@ -195,7 +193,7 @@ describe('JourneyResolver', () => {
   const stepBlock = {
     id: 'stepId',
     journeyId: 'journeyId',
-    __typename: 'StepBlock',
+    typename: 'StepBlock',
     parentBlockId: null,
     parentOrder: 0,
     nextBlockId: null
@@ -226,14 +224,6 @@ describe('JourneyResolver', () => {
   const blockService = {
     provide: BlockService,
     useFactory: () => ({
-      get: jest.fn((id) => {
-        switch (id) {
-          case block.id:
-            return block
-          case primaryImageBlock.id:
-            return primaryImageBlock
-        }
-      }),
       getBlocksByType: jest.fn(() => [stepBlock]),
       getDuplicateChildren: jest.fn(() => [duplicatedStep]),
       saveAll: jest.fn(() => [duplicatedStep])
@@ -274,13 +264,21 @@ describe('JourneyResolver', () => {
     bService = module.get<BlockService>(BlockService)
     urService = module.get<UserRoleService>(UserRoleService)
     prisma = module.get<PrismaService>(PrismaService)
+    prisma.block.findUnique = jest.fn().mockImplementation((input) => {
+      switch (input.where.id) {
+        case block.id:
+          return block
+        case primaryImageBlock.id:
+          return primaryImageBlock
+      }
+    })
     prisma.userJourney.create = jest
       .fn()
       .mockImplementationOnce((input) => input.data)
     prisma.journey.create = jest
       .fn()
       .mockImplementationOnce((result) => result.data)
-    prisma.journey.findMany = jest.fn().mockImplementationOnce((input) => {
+    prisma.journey.findMany = jest.fn().mockImplementation((input) => {
       switch (input.where.id.in[0]) {
         case archivedJourney.id:
           return [archivedJourney]
@@ -292,7 +290,7 @@ describe('JourneyResolver', () => {
           return [journey, draftJourney]
       }
     })
-    prisma.journey.findUnique = jest.fn().mockImplementationOnce((input) => {
+    prisma.journey.findUnique = jest.fn().mockImplementation((input) => {
       switch (input.where.id) {
         case journey.id:
           return journey
@@ -1006,7 +1004,8 @@ describe('JourneyResolver', () => {
         duplicatedStep,
         {
           ...primaryImageBlock,
-          _key: 'duplicatePrimaryImageBlock.id',
+          id: 'duplicatePrimaryImageBlock.id',
+          journey: { connect: { id: 'duplicateJourneyId'}},
           journeyId: 'duplicateJourneyId',
           parentBlockId: 'duplicateJourneyId'
         }

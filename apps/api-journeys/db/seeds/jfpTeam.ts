@@ -7,11 +7,6 @@ const prisma = new PrismaClient()
 
 // this should be removed when the UI can support team management
 export async function jfpTeam(): Promise<void> {
-  await prisma.$connect()
-  const data = {
-    title: 'Jesus Film Project',
-    contactEmail: 'sway.ciaramello@jesusfilm.org'
-  }
   // create JFP team (teams)
   await prisma.team.upsert({
     where: { id: 'jfp-team' },

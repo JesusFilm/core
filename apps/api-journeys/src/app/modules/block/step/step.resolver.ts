@@ -1,5 +1,7 @@
 import { UseGuards } from '@nestjs/common'
 import { Args, Mutation, Parent, ResolveField, Resolver } from '@nestjs/graphql'
+import { omit } from 'lodash'
+import { FromPostgresql } from '@core/nest/decorators/FromPostgresql'
 
 import {
   Role,
@@ -22,13 +24,16 @@ export class StepBlockResolver {
       { role: Role.publisher, attributes: { template: true } }
     ])
   )
+    @FromPostgresql()
   async stepBlockCreate(
-    @Args('input') input: StepBlockCreateInput & { __typename }
+    @Args('input') input: StepBlockCreateInput
   ): Promise<StepBlock> {
-    input.__typename = 'StepBlock'
     const siblings = await this.blockService.getSiblings(input.journeyId)
     return await this.blockService.save({
-      ...input,
+      ...omit(input, ['journeyId', '__typename']),
+      id: input.id ?? undefined,
+      typename: 'StepBlock',
+      journey: { connect: { id: input.journeyId } },
       parentOrder: siblings.length
     })
   }

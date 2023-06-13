@@ -5,6 +5,7 @@ import { encode } from 'blurhash'
 import fetch from 'node-fetch'
 import sharp from 'sharp'
 import { omit } from 'lodash'
+import { FromPostgresql } from '@core/nest/decorators/FromPostgresql'
 
 import { BlockService } from '../block.service'
 import {
@@ -84,6 +85,7 @@ export class ImageBlockResolver {
       { role: Role.publisher, attributes: { template: true } }
     ])
   )
+    @FromPostgresql()
   async imageBlockCreate(
     @Args('input') input: ImageBlockCreateInput
   ): Promise<ImageBlock> {

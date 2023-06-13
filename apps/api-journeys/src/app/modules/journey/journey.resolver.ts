@@ -1,10 +1,10 @@
 import {
   Args,
   Mutation,
-  Parent,
   Query,
+  Resolver,
   ResolveField,
-  Resolver
+  Parent
 } from '@nestjs/graphql'
 import { CurrentUserId } from '@core/nest/decorators/CurrentUserId'
 import slugify from 'slugify'
@@ -21,17 +21,17 @@ import {
 import { GqlAuthGuard } from '@core/nest/gqlAuthGuard/GqlAuthGuard'
 import { v4 as uuidv4 } from 'uuid'
 import {
+  Block,
+  Journey,
   UserJourney,
   UserJourneyRole,
-  UserTeamRole,
-  Journey
+  UserTeamRole
 } from '.prisma/api-journeys-client'
+import { FromPostgresql } from '@core/nest/decorators/FromPostgresql'
 
 import { BlockService } from '../block/block.service'
 import {
-  Block,
   IdType,
-  ImageBlock,
   JourneyStatus,
   JourneysFilter,
   JourneyTemplateInput,
@@ -320,14 +320,16 @@ export class JourneyResolver {
       duplicateStepIds
     )
 
-    let duplicatePrimaryImageBlock: (ImageBlock & { _key: string }) | undefined
+    let duplicatePrimaryImageBlock
     if (journey.primaryImageBlockId != null) {
-      const original = await this.blockService.get(journey.primaryImageBlockId)
+      const original = await this.prismaService.block.findUnique({
+        where: { id: journey.primaryImageBlockId }
+      })
       const id = uuidv4()
       duplicatePrimaryImageBlock = {
         ...original,
-        _key: id,
-        journeyId: duplicateJourneyId,
+        id,
+        journey: { connect: { id: duplicateJourneyId } },
         parentBlockId: duplicateJourneyId
       }
       duplicatePrimaryImageBlock != null &&
@@ -343,14 +345,19 @@ export class JourneyResolver {
       publishedAt: undefined,
       status: JourneyStatus.draft,
       template: false,
-      primaryImageBlockId: duplicatePrimaryImageBlock?._key
+      primaryImageBlockId: duplicatePrimaryImageBlock?.id
     }
 
     let retry = true
     while (retry) {
       try {
         const journey = await this.prismaService.journey.create({ data: input })
-        await this.blockService.saveAll(duplicateBlocks)
+        await this.blockService.saveAll(
+          duplicateBlocks.map((block) => ({
+            ...block,
+            journey: { connect: { id: duplicateJourneyId } }
+          }))
+        )
         await this.prismaService.userJourney.create({
           data: {
             id: uuidv4(),
@@ -516,20 +523,24 @@ export class JourneyResolver {
   async blocks(@Parent() journey: Journey): Promise<Block[]> {
     const primaryImageBlockId = journey.primaryImageBlockId ?? null
     return await this.prismaService.block.findMany({
-      where: { journeyId: journey.id, id: { not: primaryImageBlockId } },
+      where: {
+        journeyId: journey.id,
+        id:
+          primaryImageBlockId != null ? { not: primaryImageBlockId } : undefined
+      },
       orderBy: { parentOrder: 'asc' }
     })
   }
 
   @ResolveField()
   async primaryImageBlock(
-    @Parent() journey: Journey & { primaryImageBlockId?: string | null }
-  ): Promise<ImageBlock | null> {
+    @Parent() journey: Journey
+  ): Promise<Block | null> {
     if (journey.primaryImageBlockId == null) return null
-    const block: ImageBlock = await this.blockService.get(
-      journey.primaryImageBlockId
-    )
-    if (block.journeyId !== journey.id) return null
+    const block = await this.prismaService.block.findUnique({
+      where: { id: journey.primaryImageBlockId }
+    })
+    if (block?.journeyId !== journey.id) return null
     return block
   }
 

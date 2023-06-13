@@ -45,7 +45,7 @@ export class JourneyService {
         title: {
           contains: title
         },
-        userJourney: { some: { userId } },
+        userJourneys: { some: { userId } },
         status: { in: [JourneyStatus.published, JourneyStatus.draft] }
       }
     })
@@ -62,7 +62,7 @@ export class JourneyService {
       where: {
         status: { in: status },
         template: template === true ? true : undefined,
-        userJourney:
+        userJourneys:
           template !== true
             ? {
                 some: {

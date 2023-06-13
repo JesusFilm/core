@@ -1,7 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing'
-import { Database } from 'arangojs'
-import { mockDeep } from 'jest-mock-extended'
 import fetch, { Response } from 'node-fetch'
+
 import {
   CardBlock,
   ImageBlockCreateInput,
@@ -114,23 +113,6 @@ describe('ImageBlockResolver', () => {
   const blockService = {
     provide: BlockService,
     useFactory: () => ({
-      // get: jest.fn((id) => {
-      //   switch (id) {
-      //     case blockCreate.id: {
-      //       return createdBlock
-      //     }
-      //     case parentBlock.id: {
-      //       return parentBlock
-      //     }
-      //     case parentBlockWithDeletedCover.id: {
-      //       return parentBlockWithDeletedCover
-      //     }
-      //     default: {
-      //       return undefined
-      //     }
-      //   }
-      // }),
-      // getAll: jest.fn(() => [createdBlock, createdBlock]),
       getSiblings: jest.fn(() => [createdBlock, createdBlock]),
       removeBlockAndChildren: jest.fn((input) => input),
       save: jest.fn((input) => createdBlock),
@@ -147,18 +129,14 @@ describe('ImageBlockResolver', () => {
         UserRoleService,
         JourneyService,
         PrismaService,
-        {
-          provide: 'DATABASE',
-          useFactory: () => mockDeep<Database>()
-        }
       ]
     }).compile()
     blockResolver = module.get<BlockResolver>(BlockResolver)
     resolver = module.get<ImageBlockResolver>(ImageBlockResolver)
     service = await module.resolve(BlockService)
     prisma = await module.resolve(PrismaService)
-    prisma.block.findUnique = jest.fn().mockImplementation((id) => {
-      switch (id) {
+    prisma.block.findUnique = jest.fn().mockImplementation((input) => {
+      switch (input.where.id) {
         case blockCreate.id: {
           return createdBlock
         }
@@ -173,7 +151,7 @@ describe('ImageBlockResolver', () => {
         }
       }
     })
-    // prisma.block.findMany = jest.fn().mockResolvedValueOnce([block, block])
+    prisma.block.findMany = jest.fn().mockResolvedValueOnce([createdBlock, createdBlock])
 
     // this kinda doesnt matter since sharp returns the data we need, but still need to mock so it doesnt run the API
     mockFetch.mockResolvedValueOnce({

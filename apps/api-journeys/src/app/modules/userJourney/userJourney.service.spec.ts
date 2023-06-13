@@ -1,7 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { v4 as uuidv4 } from 'uuid'
-import { Journey } from '.prisma/api-journeys-client'
-import { UserTeamRole } from '.prisma/api-journeys-client'
+import { Journey, UserTeamRole } from '.prisma/api-journeys-client'
 import {
   IdType,
   JourneyStatus,
@@ -11,7 +10,7 @@ import {
 } from '../../__generated__/graphql'
 import { PrismaService } from '../../lib/prisma.service'
 import { JourneyService } from '../journey/journey.service'
-import { UserJourneyRecord, UserJourneyService } from './userJourney.service'
+import { UserJourneyService } from './userJourney.service'
 
 jest.mock('uuid', () => ({
   __esModule: true,
@@ -23,16 +22,9 @@ const mockUuidv4 = uuidv4 as jest.MockedFunction<typeof uuidv4>
 describe('UserJourneyService', () => {
   let service: UserJourneyService, prisma: PrismaService
 
-  const journeyService = {
-    provide: JourneyService,
-    useFactory: () => ({
-      getBySlug: jest.fn((slug) => (slug === journey.slug ? journey : null))
-    })
-  }
-
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [UserJourneyService, journeyService, PrismaService]
+      providers: [UserJourneyService, JourneyService, PrismaService]
     }).compile()
 
     service = module.get<UserJourneyService>(UserJourneyService)
@@ -48,8 +40,6 @@ describe('UserJourneyService', () => {
     prisma.userJourney.update = jest
       .fn()
       .mockReturnValueOnce(userJourneyInvited)
-
-    }).compile()
   })
   afterAll(() => {
     jest.resetAllMocks()
