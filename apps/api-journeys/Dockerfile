@@ -16,9 +16,9 @@ RUN npm install --production --silent
 
 WORKDIR /prisma
 COPY ./apps/api-journeys/db .
-RUN npx prisma@^4.15.0 generate
+RUN npx prisma@^4.13.0 generate
 
 WORKDIR /app
 
-RUN npm install tslib apollo-server-express @nestjs/mapped-types prisma@^4.15.0 @prisma/client@^4.15.0 pino-pretty@9.1.1
-CMD npx prisma@^4.15.0 migrate deploy --schema /prisma/schema.prisma; node ./main.js
+RUN npm install tslib apollo-server-express @nestjs/mapped-types prisma@^4.13.0 @prisma/client@^4.13.0 pino-pretty@9.1.1
+CMD npx prisma@^4.13.0 migrate deploy --schema /prisma/schema.prisma; node ./main.js
