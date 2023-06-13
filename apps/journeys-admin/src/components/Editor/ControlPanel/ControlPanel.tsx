@@ -147,7 +147,7 @@ export function ControlPanel(): ReactElement {
             sx={{ flexGrow: 1 }}
             disabled={
               steps == null ||
-              selected == null ||
+              selected === 'none' ||
               journeyEditContentComponent !== ActiveJourneyEditContent.Canvas
             }
           />
