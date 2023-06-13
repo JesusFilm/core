@@ -93,6 +93,7 @@ import Maximise2 from './Maximise2'
 import Menu1 from './Menu1'
 import MessageChat1 from './MessageChat1'
 import MessageText1 from './MessageText1'
+import MessageTyping from './MessageTyping'
 import Minimise1 from './Minimise1'
 import Minimise2 from './Minimise2'
 import MinusCircleContained from './MinusCircleContained'
@@ -121,6 +122,9 @@ import Target2 from './Target2'
 import ThumbsUp from './ThumbsUp'
 import Trash2 from './Trash2'
 import UserProfile2 from './UserProfile2'
+import UserProfile3 from './UserProfile3'
+import UserProfileAdd from './UserProfileAdd'
+import UserProfileCircle from './UserProfileCircle'
 import UsersProfiles2 from './UsersProfiles2'
 import Web from './Web'
 import X1 from './X1'
@@ -223,6 +227,7 @@ type IconNames =
   | 'Menu1'
   | 'MessageChat1'
   | 'MessageText1'
+  | 'MessageTyping'
   | 'Minimise1'
   | 'Minimise2'
   | 'MinusCircleContained'
@@ -251,6 +256,9 @@ type IconNames =
   | 'Trash2'
   | 'ThumbsUp'
   | 'UserProfile2'
+  | 'UserProfile3'
+  | 'UserProfileAdd'
+  | 'UserProfileCircle'
   | 'UsersProfiles2'
   | 'Web'
   | 'X1'
@@ -357,6 +365,7 @@ const iconComponents: IconComponents = {
   Menu1,
   MessageChat1,
   MessageText1,
+  MessageTyping,
   Minimise1,
   Minimise2,
   MinusCircleContained,
@@ -385,6 +394,9 @@ const iconComponents: IconComponents = {
   ThumbsUp,
   Trash2,
   UserProfile2,
+  UserProfile3,
+  UserProfileAdd,
+  UserProfileCircle,
   UsersProfiles2,
   Web,
   X1,
