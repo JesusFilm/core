@@ -451,7 +451,7 @@ input HostUpdateInput
   @join__type(graph: JOURNEYS)
 {
   """
-  title can be undefiend as to undefined but it cannot be null as to clear the value of title
+  title can be undefined as to not update title, but it cannot be null as to clear the value of title
   """
   title: String
   location: String
