@@ -19,7 +19,7 @@ import { HelperInfo } from '../HelperInfo'
 export interface PlatformDetails {
   id: string
   title: string
-  linkValue: string
+  linkValue?: string
   active: boolean
   chatIcon?: Platform
   enableIconSelect?: boolean
