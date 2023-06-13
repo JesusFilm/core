@@ -188,7 +188,7 @@ export function Video({
           width: '100%',
           display: 'flex',
           alignSelf: 'center',
-          height: '100%',
+          height: { xs: 'calc(100vh - 185px)', lg: '100%' },
           minHeight: 'inherit',
           '> .vjs-tech': {
             objectFit: videoFit,
@@ -207,6 +207,11 @@ export function Video({
           '> .vjs-poster': {
             backgroundColor: VIDEO_BACKGROUND_COLOR,
             backgroundSize: 'cover'
+          },
+          '> .vjs-control-bar': {
+            width: { xs: '90%', lg: '100%' },
+            mx: { xs: 'auto', lg: 0 },
+            borderRadius: { xs: 4, lg: 0 }
           }
         },
         '> .MuiIconButton-root': {
