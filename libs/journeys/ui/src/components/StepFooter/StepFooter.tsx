@@ -6,6 +6,7 @@ import { SxProps } from '@mui/material/styles'
 import { ReactElement } from 'react'
 import { useJourney } from '../../libs/JourneyProvider'
 import { getJourneyRTL } from '../../libs/rtl'
+import { ChatButtons } from './ChatButtons'
 
 interface StepFooterProps {
   onFooterClick?: () => void
@@ -99,15 +100,7 @@ export function StepFooter({
               }}
             /> */}
           </Stack>
-          {/* <Stack
-            data-testid="chat-widget"
-            sx={{
-              width: 36,
-              height: 36,
-              borderRadius: 5,
-              backgroundColor: 'white'
-            }}
-          /> */}
+          <ChatButtons />
         </Stack>
       </Stack>
     </Box>
