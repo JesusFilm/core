@@ -188,7 +188,7 @@ export function Video({
           width: '100%',
           display: 'flex',
           alignSelf: 'center',
-          height: { xs: 'calc(100vh - 128px)', lg: '100%' },
+          height: { xs: 'calc(100vh - 185px)', lg: '100%' },
           minHeight: 'inherit',
           '> .vjs-tech': {
             objectFit: videoFit,
