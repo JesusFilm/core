@@ -61,7 +61,7 @@ export function ExpandedCover({
           justifyContent="center"
           sx={{
             flexGrow: 1,
-            py: isVideoOnlyCard ? 0 : { xs: 9, lg: 8 },
+            py: isVideoOnlyCard ? 0 : { xs: 15, lg: 8 },
             ...enableVerticalScroll
           }}
         >
