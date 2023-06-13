@@ -546,7 +546,7 @@ export class VideoProgressEventCreateInput {
 }
 
 export class HostUpdateInput {
-    title: string;
+    title?: Nullable<string>;
     location?: Nullable<string>;
     avatar1Id?: Nullable<string>;
     avatar2Id?: Nullable<string>;

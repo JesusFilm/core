@@ -7,21 +7,7 @@ describe('HostResolver', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [
-        HostResolver,
-        {
-          provide: PrismaService,
-          useValue: {
-            host: {
-              findMany: jest.fn(),
-              create: jest.fn(),
-              findUnique: jest.fn(),
-              update: jest.fn(),
-              delete: jest.fn()
-            }
-          }
-        }
-      ]
+      providers: [HostResolver, PrismaService]
     }).compile()
 
     hostResolver = module.get<HostResolver>(HostResolver)
@@ -100,7 +86,6 @@ describe('HostResolver', () => {
         avatar2Id: 'avatar2-id'
       }
       const mockUpdatedHost = { ...mockHost, ...input }
-      jest.spyOn(prismaService.host, 'findUnique').mockResolvedValue(mockHost)
       jest
         .spyOn(prismaService.host, 'update')
         .mockResolvedValue(mockUpdatedHost)
@@ -120,19 +105,53 @@ describe('HostResolver', () => {
       })
     })
 
-    it('should throw UserInputError when host title is undefined', async () => {
-      const hostId = 'host-id'
+    it('should update an existing host if input title is undefined', async () => {
+      const id = 'host-id'
       const input = {
-        title: undefined as unknown as string,
         location: 'National Team Staff',
         avatar1Id: 'new-profile-pic-who-thos',
         avatar2Id: 'new-avatar2'
       }
-      await hostResolver
-        .hostUpdate(hostId, input)
-        .catch((e) =>
-          expect(e.message).toEqual('host title cannot be undefined or null')
-        )
+      const mockHost = {
+        id: 'host-id',
+        teamId: 'best-juniors-engineers-gang',
+        title: 'Edmond Shen & Nisal Cottingham',
+        location: 'JFP Staff',
+        avatar1Id: 'avatar1-id',
+        avatar2Id: 'avatar2-id'
+      }
+      const mockUpdatedHost = { ...mockHost, ...input }
+      jest
+        .spyOn(prismaService.host, 'update')
+        .mockResolvedValue(mockUpdatedHost)
+
+      const result = await hostResolver.hostUpdate(id, input)
+
+      expect(result).toEqual(mockUpdatedHost)
+
+      expect(prismaService.host.update).toHaveBeenCalledWith({
+        where: { id },
+        data: {
+          title: undefined,
+          location: input.location,
+          avatar1Id: input.avatar1Id,
+          avatar2Id: input.avatar2Id
+        }
+      })
+    })
+
+    it('should throw UserInputError when host title is null', async () => {
+      const hostId = 'host-id'
+      const input = {
+        title: null,
+        location: 'National Team Staff',
+        avatar1Id: 'new-profile-pic-who-thos',
+        avatar2Id: 'new-avatar2'
+      }
+
+      await expect(hostResolver.hostUpdate(hostId, input)).rejects.toThrow(
+        'host title cannot be set to null'
+      )
     })
   })
 

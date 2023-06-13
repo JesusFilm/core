@@ -41,11 +41,11 @@ export class HostResolver {
     @Args('id') id: string,
     @Args('input') input: HostUpdateInput
   ): Promise<Host> {
-    if (input.title == null)
-      throw new UserInputError('host title cannot be undefined or null')
+    if (input.title === null)
+      throw new UserInputError('host title cannot be set to null')
     return await this.prismaService.host.update({
       where: { id },
-      data: input
+      data: { ...input, title: input.title ?? undefined }
     })
   }
 
