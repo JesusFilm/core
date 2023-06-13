@@ -28,7 +28,7 @@ const Template: Story<ComponentProps<typeof TextFieldForm>> = () => (
       handleSubmit={noop}
     />
     <TextFieldForm
-      initialValues="Start Icon"
+      label="Start Icon"
       handleSubmit={noop}
       startIcon={
         <InputAdornment position="start">
