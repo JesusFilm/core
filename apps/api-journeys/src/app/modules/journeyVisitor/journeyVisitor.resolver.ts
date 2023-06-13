@@ -36,7 +36,7 @@ export class JourneyVisitorResolver {
     @Args('first') first = 50,
     @Args('after') after?: string | null
   ): Promise<JourneyVisitorsConnection> {
-    const memberResult = await this.prismaService.member.findUnique({
+    const memberResult = await this.prismaService.userTeam.findUnique({
       where: { teamId_userId: { userId, teamId } }
     })
 

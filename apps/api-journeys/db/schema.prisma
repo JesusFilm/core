@@ -136,30 +136,33 @@ model JourneyVisitor {
 }
 
 model Team {
-  id           String    @id
-  title        String
-  contactEmail String?
-  createdAt    DateTime  @default(now())
-  visitor      Visitor[]
-  member       Member[]
-  journey      Journey[]
+  id        String     @id @default(uuid())
+  title     String
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  visitor   Visitor[]
+  journey   Journey[]
+  userTeams UserTeam[]
+
+  @@index([title])
 }
 
-enum UserJourneyRole {
-  inviteRequested
-  editor
-  owner
+enum UserTeamRole {
+  manager
+  member
+  guest
 }
 
-model UserJourney {
-  id        String          @id @default(uuid())
+model UserTeam {
+  id        String       @id @default(uuid())
+  teamId    String
+  team      Team         @relation(fields: [teamId], references: [id])
   userId    String
-  journeyId String
-  journey   Journey         @relation(fields: [journeyId], references: [id])
-  role      UserJourneyRole
-  openedAt  DateTime?       @default(now())
+  role      UserTeamRole @default(guest)
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
 
-  @@unique([journeyId, userId])
+  @@unique([teamId, userId])
 }
 
 enum JourneyStatus {

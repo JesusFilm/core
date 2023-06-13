@@ -5,7 +5,8 @@ locals {
     "DATABASE_PASS",
     "DATABASE_URL",
     "DATABASE_USER",
-    "GOOGLE_APPLICATION_JSON"
+    "GOOGLE_APPLICATION_JSON",
+    "PG_DATABASE_URL"
   ]
   service_config = {
     name           = "api-users"

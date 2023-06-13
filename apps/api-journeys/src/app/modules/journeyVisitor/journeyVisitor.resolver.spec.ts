@@ -5,7 +5,6 @@ import {
 } from '../../__generated__/graphql'
 import { PrismaService } from '../../lib/prisma.service'
 import { EventService } from '../event/event.service'
-
 import { JourneyVisitorResolver } from './journeyVisitor.resolver'
 import {
   JourneyVisitorsConnection,
@@ -47,8 +46,8 @@ describe('JourneyVisitorResolver', () => {
     })
   }
 
-  const member = {
-    id: 'memberId',
+  const userTeam = {
+    id: 'userTeamId',
     userId: 'userId',
     teamId: 'teamId'
   }
@@ -78,7 +77,7 @@ describe('JourneyVisitorResolver', () => {
     prisma = module.get<PrismaService>(PrismaService)
     prisma.event.findMany = jest.fn().mockReturnValue([event])
     prisma.visitor.findUnique = jest.fn().mockReturnValue(visitor)
-    prisma.member.findUnique = jest.fn().mockResolvedValueOnce(member)
+    prisma.userTeam.findUnique = jest.fn().mockReturnValue(userTeam)
   })
 
   describe('visitor', () => {
@@ -126,6 +125,20 @@ describe('JourneyVisitorResolver', () => {
         first: 50,
         sort: JourneyVisitorSort.activity
       })
+    })
+
+    it('throws error if user is not a member of the team', async () => {
+      prisma.userTeam.findUnique = jest.fn().mockReturnValue(null)
+      await expect(
+        resolver.journeyVisitorsConnection(
+          'userId',
+          'teamId',
+          { journeyId: 'journeyId' },
+          JourneyVisitorSort.activity,
+          50,
+          'cursorId'
+        )
+      ).rejects.toThrowError('User is not a member of the team')
     })
   })
 })

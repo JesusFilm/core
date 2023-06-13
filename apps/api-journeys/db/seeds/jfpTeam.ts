@@ -1,5 +1,8 @@
-import { PrismaClient } from '.prisma/api-journeys-client'
+import { aql } from 'arangojs'
+import { PrismaClient, UserTeamRole } from '.prisma/api-journeys-client'
+import { ArangoDB } from '../db'
 
+const db = ArangoDB()
 const prisma = new PrismaClient()
 
 // this should be removed when the UI can support team management
@@ -10,34 +13,33 @@ export async function jfpTeam(): Promise<void> {
     contactEmail: 'sway.ciaramello@jesusfilm.org'
   }
   // create JFP team (teams)
-  const team = await prisma.team.upsert({
-    where: {
-      id: 'jfp-team'
-    },
+  await prisma.team.upsert({
+    where: { id: 'jfp-team' },
+    update: {},
     create: {
-      ...data,
       id: 'jfp-team',
-      createdAt: new Date()
-    },
-    update: {
-      ...data
+      title: 'Jesus Film Project'
     }
   })
 
-  // update all journeys to belong to JFP team (journeys)
-  await prisma.journey.updateMany({
-    data: { teamId: team.id }
-  })
+  // copy all members (arango) to userTeams (postgres)
+  const members = await (
+    await db.query(aql` FOR member IN members RETURN member`)
+  ).all()
 
-  // add all users to JFP team (members)
-  const userJourneys = await prisma.userJourney.findMany()
-  await prisma.member.createMany({
-    data: userJourneys.map((userJourney) => ({
-      id: `${userJourney.userId}:${team.id}`,
-      teamId: team.id,
-      userId: userJourney.userId,
-      createdAt: new Date()
-    })),
-    skipDuplicates: true
-  })
+  await Promise.all(
+    members.map(async (member) => {
+      await prisma.userTeam.upsert({
+        where: {
+          teamId_userId: { userId: member.userId, teamId: member.teamId }
+        },
+        update: {},
+        create: {
+          userId: member.userId,
+          teamId: member.teamId,
+          role: UserTeamRole.guest
+        }
+      })
+    })
+  )
 }

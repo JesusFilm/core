@@ -1,10 +1,14 @@
 import { Inject, Injectable } from '@nestjs/common'
 import { AuthenticationError, UserInputError } from 'apollo-server-errors'
-import { UserJourney, UserJourneyRole } from '.prisma/api-journeys-client'
+import {
+  UserJourney,
+  UserJourneyRole,
+  UserTeamRole
+} from '.prisma/api-journeys-client'
 import { v4 as uuidv4 } from 'uuid'
-import { IdType } from '../../__generated__/graphql'
 import { PrismaService } from '../../lib/prisma.service'
 import { JourneyService } from '../journey/journey.service'
+import { IdType, Journey } from '../../__generated__/graphql'
 
 @Injectable()
 export class UserJourneyService {
@@ -73,19 +77,20 @@ export class UserJourneyService {
     if (journey == null) throw new UserInputError('journey does not exist')
 
     if (journey.teamId != null) {
-      const existingMember = await this.prismaService.member.findUnique({
-        where: { teamId_userId: { userId, teamId: journey.teamId } }
-      })
-
-      if (existingMember == null) {
-        await this.prismaService.member.create({
-          data: {
-            id: `${userId}:${(journey as { teamId: string }).teamId}`,
-            userId,
+      await this.prismaService.userTeam.upsert({
+        where: {
+          teamId_userId: {
+            userId: requesterUserId,
             teamId: journey.teamId
           }
-        })
-      }
+        },
+        update: {},
+        create: {
+          userId: requesterUserId,
+          teamId: journey.teamId,
+          role: UserTeamRole.guest
+        }
+      })
     }
 
     return await this.prismaService.userJourney.update({

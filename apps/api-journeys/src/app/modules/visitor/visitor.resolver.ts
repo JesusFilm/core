@@ -29,7 +29,7 @@ export class VisitorResolver {
     @Args('first') first?: number | null,
     @Args('after') after?: string | null
   ): Promise<VisitorsConnection> {
-    const memberResult = await this.prismaService.member.findUnique({
+    const memberResult = await this.prismaService.userTeam.findUnique({
       where: { teamId_userId: { userId, teamId } }
     })
 
@@ -55,7 +55,7 @@ export class VisitorResolver {
     if (visitor == null)
       throw new UserInputError(`Visitor with ID "${id}" does not exist`)
 
-    const memberResult = await this.prismaService.member.findUnique({
+    const memberResult = await this.prismaService.userTeam.findUnique({
       where: { teamId_userId: { userId, teamId: visitor.teamId } }
     })
 
@@ -80,7 +80,7 @@ export class VisitorResolver {
     if (visitor == null)
       throw new UserInputError(`Visitor with ID "${id}" does not exist`)
 
-    const memberResult = await this.prismaService.member.findUnique({
+    const memberResult = await this.prismaService.userTeam.findUnique({
       where: { teamId_userId: { userId, teamId: visitor.teamId } }
     })
 

@@ -102,6 +102,10 @@ export function VideosPage({ videos }: VideosProps): ReactElement {
     }
   )
 
+  const realVideos = (data?.videos ?? []).filter(
+    (video) => video.variant !== null
+  )
+
   function handleFilterChange(filter: VideoPageFilter): void {
     void refetch({
       where: filter,
@@ -163,11 +167,7 @@ export function VideosPage({ videos }: VideosProps): ReactElement {
           <Box sx={{ width: '100%' }}>
             <VideoGrid
               videos={
-                data?.videos == null
-                  ? loading
-                    ? []
-                    : videos
-                  : data?.videos ?? []
+                data?.videos == null ? (loading ? [] : videos) : realVideos
               }
               onLoadMore={handleLoadMore}
               loading={loading}

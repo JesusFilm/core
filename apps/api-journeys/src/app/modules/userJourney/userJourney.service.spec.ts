@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { v4 as uuidv4 } from 'uuid'
 import { Journey } from '.prisma/api-journeys-client'
-
+import { UserTeamRole } from '.prisma/api-journeys-client'
 import {
   IdType,
   JourneyStatus,
@@ -11,7 +11,7 @@ import {
 } from '../../__generated__/graphql'
 import { PrismaService } from '../../lib/prisma.service'
 import { JourneyService } from '../journey/journey.service'
-import { UserJourneyService } from './userJourney.service'
+import { UserJourneyRecord, UserJourneyService } from './userJourney.service'
 
 jest.mock('uuid', () => ({
   __esModule: true,
@@ -38,8 +38,7 @@ describe('UserJourneyService', () => {
     service = module.get<UserJourneyService>(UserJourneyService)
     prisma = module.get<PrismaService>(PrismaService)
     prisma.journey.findUnique = jest.fn().mockResolvedValueOnce(journey)
-    prisma.member.create = jest.fn()
-    prisma.member.findUnique = jest.fn().mockReturnValueOnce(userJourneyOwner)
+    prisma.userTeam.upsert = jest.fn()
     prisma.userJourney.create = jest
       .fn()
       .mockReturnValueOnce(userJourneyInvited)
@@ -49,6 +48,8 @@ describe('UserJourneyService', () => {
     prisma.userJourney.update = jest
       .fn()
       .mockReturnValueOnce(userJourneyInvited)
+
+    }).compile()
   })
   afterAll(() => {
     jest.resetAllMocks()
@@ -164,14 +165,20 @@ describe('UserJourneyService', () => {
 
     it('adds user to team', async () => {
       prisma.userJourney.findUnique = jest.fn().mockReturnValueOnce(userJourney)
-      prisma.member.findUnique = jest.fn().mockResolvedValueOnce(null)
-      await service.approveAccess(userJourney.id, userJourney.userId)
 
-      expect(prisma.member.create).toHaveBeenCalledWith({
-        data: {
-          id: '1:teamId',
+      // await service.approveAccess(userJourneyInvited.id, userJourney.userId)
+      expect(prisma.userTeam.upsert).toHaveBeenCalledWith({
+        create: {
           teamId: 'teamId',
-          userId: '1'
+          userId: '2',
+          role: UserTeamRole.guest
+        },
+        update: {},
+        where: {
+          teamId_userId: {
+            teamId: 'teamId',
+            userId: '2'
+          }
         }
       })
     })

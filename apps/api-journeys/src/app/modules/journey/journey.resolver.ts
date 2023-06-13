@@ -23,6 +23,7 @@ import { v4 as uuidv4 } from 'uuid'
 import {
   UserJourney,
   UserJourneyRole,
+  UserTeamRole,
   Journey
 } from '.prisma/api-journeys-client'
 
@@ -41,7 +42,6 @@ import { RoleGuard } from '../../lib/roleGuard/roleGuard'
 import { PrismaService } from '../../lib/prisma.service'
 import { UserRoleService } from '../userRole/userRole.service'
 import { JourneyService } from './journey.service'
-import { FromPostgresql } from '@core/nest/decorators/FromPostgresql'
 
 export const ERROR_PSQL_UNIQUE_CONSTRAINT_VIOLATED = 'P2002'
 
@@ -203,19 +203,21 @@ export class JourneyResolver {
             openedAt: new Date()
           }
         })
-        const existingMember = await this.prismaService.member.findUnique({
-          where: { teamId_userId: { userId, teamId: team.id } }
-        })
-
-        if (existingMember == null) {
-          await this.prismaService.member.create({
-            data: {
-              id: `${userId}:${team.id}`,
+        await this.prismaService.userTeam.upsert({
+          where: {
+            teamId_userId: {
               userId,
               teamId: team.id
             }
-          })
-        }
+          },
+          update: {},
+          create: {
+            userId,
+            teamId: team.id,
+            role: UserTeamRole.guest
+          }
+        })
+
         retry = false
         return journey
       } catch (err) {

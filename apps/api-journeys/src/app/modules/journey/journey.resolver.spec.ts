@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { v4 as uuidv4 } from 'uuid'
 import { getPowerBiEmbed } from '@core/nest/powerBi/getPowerBiEmbed'
-import { Journey } from '.prisma/api-journeys-client'
+import { Journey, UserTeamRole } from '.prisma/api-journeys-client'
 import {
   IdType,
   JourneyStatus,
@@ -333,9 +333,10 @@ describe('JourneyResolver', () => {
     prisma.userJourney.findMany = jest
       .fn()
       .mockResolvedValueOnce([userJourney, userJourney])
-    prisma.member.create = jest.fn()
-    prisma.member.findUnique = jest.fn().mockResolvedValueOnce(member)
+    prisma.userTeam.create = jest.fn()
+    prisma.userTeam.findUnique = jest.fn().mockResolvedValueOnce(member)
     prisma.block.findMany = jest.fn().mockResolvedValueOnce([block])
+    prisma.userTeam.upsert = jest.fn()
   })
 
   describe('adminJourneysEmbed', () => {
@@ -745,29 +746,26 @@ describe('JourneyResolver', () => {
       })
     })
 
-    it('creates a Member', async () => {
-      prisma.member.findUnique = jest.fn().mockResolvedValueOnce(null)
+    it('upserts a userTeam', async () => {
       mockUuidv4.mockReturnValueOnce('journeyId')
       await resolver.journeyCreate(
         { title: 'Untitled Journey', languageId: '529' },
         'userId'
       )
-      expect(prisma.member.create).toHaveBeenCalledWith({
-        data: {
-          id: 'userId:jfp-team',
+      expect(prisma.userTeam.upsert).toHaveBeenCalledWith({
+        create: {
+          teamId: 'jfp-team',
           userId: 'userId',
-          teamId: 'jfp-team'
+          role: UserTeamRole.guest
+        },
+        update: {},
+        where: {
+          teamId_userId: {
+            teamId: 'jfp-team',
+            userId: 'userId'
+          }
         }
       })
-    })
-
-    it('doesnt create an existing Member', async () => {
-      mockUuidv4.mockReturnValueOnce('journeyId')
-      await resolver.journeyCreate(
-        { title: 'Untitled Journey', languageId: '529' },
-        'userId'
-      )
-      expect(prisma.member.create).not.toHaveBeenCalled()
     })
 
     it('adds uuid if slug already taken', async () => {

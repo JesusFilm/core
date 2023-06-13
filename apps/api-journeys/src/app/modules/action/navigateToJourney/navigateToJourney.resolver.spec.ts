@@ -6,7 +6,6 @@ import { ActionResolver } from '../action.resolver'
 import { UserJourneyService } from '../../userJourney/userJourney.service'
 import { UserRoleService } from '../../userRole/userRole.service'
 import { PrismaService } from '../../../lib/prisma.service'
-import { JourneyService } from '../../journey/journey.service'
 import { NavigateToJourneyActionResolver } from './navigateToJourney.resolver'
 
 describe('NavigateToJourneyActionResolver', () => {
@@ -64,7 +63,6 @@ describe('NavigateToJourneyActionResolver', () => {
         NavigateToJourneyActionResolver,
         blockService,
         ActionResolver,
-        JourneyService,
         UserJourneyService,
         UserRoleService,
         PrismaService

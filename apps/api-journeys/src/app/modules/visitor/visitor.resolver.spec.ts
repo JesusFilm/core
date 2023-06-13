@@ -5,7 +5,6 @@ import {
 } from '../../__generated__/graphql'
 import { EventService } from '../event/event.service'
 import { PrismaService } from '../../lib/prisma.service'
-
 import { VisitorResolver } from './visitor.resolver'
 import { VisitorService } from './visitor.service'
 
@@ -53,8 +52,8 @@ describe('VisitorResolver', () => {
     })
   }
 
-  const member = {
-    id: 'memberId',
+  const userTeam = {
+    id: 'userTeamId',
     userId: 'userId',
     teamId: 'teamId'
   }
@@ -78,7 +77,7 @@ describe('VisitorResolver', () => {
     vService = module.get<VisitorService>(VisitorService)
     prisma = module.get<PrismaService>(PrismaService)
     prisma.event.findMany = jest.fn().mockReturnValue([event])
-    prisma.member.findUnique = jest.fn().mockResolvedValueOnce(member)
+    prisma.userTeam.findUnique = jest.fn().mockResolvedValueOnce(member)
     prisma.visitor.findUnique = jest.fn().mockReturnValue(visitor)
   })
 
@@ -99,7 +98,7 @@ describe('VisitorResolver', () => {
     })
 
     it('throws error when user is not a team member', async () => {
-      prisma.member.findUnique = jest.fn().mockResolvedValueOnce(null)
+      prisma.userTeam.findUnique = jest.fn().mockReturnValue(null)
       await expect(
         async () =>
           await resolver.visitorsConnection('userId', 'differentTeamId')
@@ -123,10 +122,10 @@ describe('VisitorResolver', () => {
     })
 
     it('throws error when user is not member of visitors team', async () => {
-      prisma.member.findUnique = jest.fn().mockResolvedValueOnce(null)
       prisma.visitor.findUnique = jest
         .fn()
         .mockReturnValue({ ...visitor, teamId: 'junk' })
+      prisma.userTeam.findUnique = jest.fn().mockReturnValue(null)
       await expect(
         async () =>
           await resolver.visitor('userId', 'visitorWithDifferentTeamId')
@@ -163,10 +162,10 @@ describe('VisitorResolver', () => {
     })
 
     it('throws error when user is not member of visitors team', async () => {
-      prisma.member.findUnique = jest.fn().mockResolvedValueOnce(null)
       prisma.visitor.findUnique = jest
         .fn()
         .mockReturnValueOnce({ ...visitor, teamId: 'junk' })
+      prisma.userTeam.findUnique = jest.fn().mockReturnValue(null)
       await expect(
         async () =>
           await resolver.visitorUpdate(

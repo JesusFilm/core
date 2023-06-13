@@ -4,7 +4,6 @@ import { mockDeep } from 'jest-mock-extended'
 import { JourneyService } from '../../journey/journey.service'
 import { UserJourneyService } from '../../userJourney/userJourney.service'
 import { UserRoleService } from '../../userRole/userRole.service'
-
 import { BlockResolver } from '../block.resolver'
 import { BlockService } from '../block.service'
 import { PrismaService } from '../../../lib/prisma.service'
