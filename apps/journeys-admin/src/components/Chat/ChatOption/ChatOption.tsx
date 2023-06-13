@@ -14,7 +14,6 @@ import Stack from '@mui/material/Stack'
 import KeyboardArrowDownRoundedIcon from '@mui/icons-material/KeyboardArrowDownRounded'
 import findKey from 'lodash/findKey'
 import { Platform } from '../utils/types' // TODO: replace with generated type
-import { HelperInfo } from '../HelperInfo'
 
 export interface PlatformDetails {
   id: string
@@ -90,10 +89,11 @@ export function ChatOption({
         }
       }}
     >
-      <AccordionSummary expandIcon={<ExpandMoreIcon />} sx={{ px: 6 }}>
+      <AccordionSummary expandIcon={<ExpandMoreIcon />} sx={{ px: 6, py: 2 }}>
         <Checkbox
           checked={active}
-          sx={{ pl: 0 }}
+          size="small"
+          sx={{ p: 1, mr: 1 }}
           disabled={disableSelection && !active}
           onChange={handleChangeActive}
         />
@@ -134,7 +134,9 @@ export function ChatOption({
             onBlur={handleUpdate}
           />
 
-          {helperInfo != null && <HelperInfo value={helperInfo} />}
+          {helperInfo != null && (
+            <Typography variant="caption">{helperInfo}</Typography>
+          )}
         </Stack>
       </AccordionDetails>
     </Accordion>

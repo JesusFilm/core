@@ -1,11 +1,12 @@
 import { ReactElement, useState, useEffect } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 import Box from '@mui/material/Box'
+import Typography from '@mui/material/Typography'
+import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'
 import { ChatOption } from './ChatOption'
 import { PlatformDetails } from './ChatOption/ChatOption'
 import { ChatButton, Platform } from './utils/types' // TODO: replace with generated type
 import { getByPlatform, getChatButton, stateSetter } from './utils'
-import { HelperInfo } from './HelperInfo'
 
 const defaultValues: PlatformDetails = {
   id: '',
@@ -150,9 +151,18 @@ export function Chat(): ReactElement {
         handleToggle={handleToggle}
       />
       <Box
-        sx={{ display: maxSelection ? 'block' : 'none', px: 6, py: 2, mt: 5 }}
+        sx={{
+          display: maxSelection ? 'flex' : 'none',
+          alignItems: 'center',
+          px: 6,
+          py: 2,
+          mt: 5
+        }}
       >
-        <HelperInfo value="You can add no more than two chat platforms" />
+        <InfoOutlinedIcon sx={{ mr: 3 }} />
+        <Typography variant="caption">
+          You can add no more than two chat platforms
+        </Typography>
       </Box>
     </>
   )
