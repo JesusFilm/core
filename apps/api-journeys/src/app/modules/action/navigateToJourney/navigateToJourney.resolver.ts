@@ -3,22 +3,20 @@ import { UseGuards } from '@nestjs/common'
 import { includes } from 'lodash'
 import { UserInputError } from 'apollo-server-errors'
 import { Journey } from '.prisma/api-journeys-client'
+
 import { RoleGuard } from '../../../lib/roleGuard/roleGuard'
 import {
   Action,
-  Block,
   NavigateToJourneyAction,
   NavigateToJourneyActionInput,
   Role,
   UserJourneyRole
 } from '../../../__generated__/graphql'
-import { BlockService } from '../../block/block.service'
 import { PrismaService } from '../../../lib/prisma.service'
 
 @Resolver('NavigateToJourneyAction')
 export class NavigateToJourneyActionResolver {
   constructor(
-    private readonly blockService: BlockService,
     private readonly prismaService: PrismaService
   ) {}
 
@@ -44,11 +42,9 @@ export class NavigateToJourneyActionResolver {
     @Args('journeyId') journeyId: string,
     @Args('input') input: NavigateToJourneyActionInput
   ): Promise<Action> {
-    const block = (await this.blockService.get(id)) as Block & {
-      __typename: string
-    }
+    const block = (await this.prismaService.block.findUnique({ where: { id } }))
 
-    if (
+    if (block == null ||
       !includes(
         [
           'SignUpBlock',
@@ -58,17 +54,16 @@ export class NavigateToJourneyActionResolver {
           'VideoTriggerBlock',
           'TextResponseBlock'
         ],
-        block.__typename
+        block.typename
       )
     ) {
       throw new UserInputError(
         'This block does not support navigate to journey actions'
       )
     }
-    const updatedBlock: { action: Action } = await this.blockService.update(
-      id,
-      {
-        action: {
+    return await this.prismaService.action.update(
+      { where: { id },
+      data:{
           ...input,
           parentBlockId: block.id,
           blockId: null,
@@ -77,7 +72,5 @@ export class NavigateToJourneyActionResolver {
         }
       }
     )
-
-    return updatedBlock.action
   }
 }

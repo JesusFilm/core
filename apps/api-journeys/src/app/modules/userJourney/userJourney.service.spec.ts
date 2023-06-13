@@ -97,6 +97,8 @@ describe('UserJourneyService', () => {
     it('creates a UserJourney when journeyId is slug', async () => {
       mockUuidv4.mockReturnValueOnce(userJourneyInvited.id)
       prisma.userJourney.findUnique = jest.fn().mockResolvedValueOnce(null)
+      prisma.journey.findFirst = jest.fn().mockResolvedValueOnce(journey)
+
       expect(
         await service.requestAccess(journey.slug, IdType.slug, '1')
       ).toEqual(userJourneyInvited)
@@ -154,9 +156,9 @@ describe('UserJourneyService', () => {
     })
 
     it('adds user to team', async () => {
-      prisma.userJourney.findUnique = jest.fn().mockReturnValueOnce(userJourney)
+      prisma.userJourney.findUnique = jest.fn().mockReturnValueOnce(userJourneyInvited)
 
-      // await service.approveAccess(userJourneyInvited.id, userJourney.userId)
+      await service.approveAccess(userJourneyInvited.id, userJourney.userId)
       expect(prisma.userTeam.upsert).toHaveBeenCalledWith({
         create: {
           teamId: 'teamId',

@@ -9,12 +9,12 @@ import { BlockService } from '../block.service'
 import { PrismaService } from '../../../lib/prisma.service'
 
 describe('GridItemResolver', () => {
-  let resolver: BlockResolver
+  let resolver: BlockResolver, prismaService: PrismaService
 
   const block = {
     id: '1',
     journeyId: '2',
-    __typename: 'GridItemBlock',
+    typename: 'GridItemBlock',
     parentBlockId: '3',
     parentOrder: 2,
     xl: 6,
@@ -22,19 +22,11 @@ describe('GridItemResolver', () => {
     sm: 6
   }
 
-  const blockService = {
-    provide: BlockService,
-    useFactory: () => ({
-      get: jest.fn(() => block),
-      getAll: jest.fn(() => [block, block])
-    })
-  }
-
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         BlockResolver,
-        blockService,
+        BlockService,
         UserJourneyService,
         UserRoleService,
         JourneyService,
@@ -46,6 +38,9 @@ describe('GridItemResolver', () => {
       ]
     }).compile()
     resolver = module.get<BlockResolver>(BlockResolver)
+    prismaService = module.get<PrismaService>(PrismaService)
+    prismaService.block.findUnique = jest.fn().mockResolvedValue(block)
+    prismaService.block.findMany = jest.fn().mockResolvedValue([block, block])
   })
 
   describe('GridItemBlock', () => {

@@ -1,6 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { PrismaService } from '../../../lib/prisma.service'
-import { BlockResolver } from '../../block/block.resolver'
 import { JourneyService } from '../../journey/journey.service'
 import { UserJourneyService } from '../../userJourney/userJourney.service'
 import { UserRoleService } from '../../userRole/userRole.service'
@@ -36,7 +35,6 @@ describe('EmailActionResolver', () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
-        BlockResolver,
         EmailActionResolver,
         ActionResolver,
         UserJourneyService,

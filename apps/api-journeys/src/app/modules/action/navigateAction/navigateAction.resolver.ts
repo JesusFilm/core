@@ -59,6 +59,5 @@ export class NavigateActionResolver {
         email: null
       }
     })
-
   }
 }

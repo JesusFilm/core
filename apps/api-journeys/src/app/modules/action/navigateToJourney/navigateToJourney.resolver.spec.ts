@@ -12,7 +12,7 @@ describe('NavigateToJourneyActionResolver', () => {
   let resolver: NavigateToJourneyActionResolver,
     blockResolver: BlockResolver,
     service: BlockService,
-    prisma: PrismaService
+    prismaService: PrismaService
 
   const block = {
     id: '1',
@@ -46,22 +46,14 @@ describe('NavigateToJourneyActionResolver', () => {
     blockId: null,
     url: null,
     target: null
-  }
-
-  const blockService = {
-    provide: BlockService,
-    useFactory: () => ({
-      get: jest.fn(() => block),
-      update: jest.fn((navigateToJourneyInput) => navigateToJourneyInput)
-    })
-  }
+  }  
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         BlockResolver,
         NavigateToJourneyActionResolver,
-        blockService,
+        BlockService,
         ActionResolver,
         UserJourneyService,
         UserRoleService,
@@ -73,8 +65,10 @@ describe('NavigateToJourneyActionResolver', () => {
     )
     blockResolver = module.get<BlockResolver>(BlockResolver)
     service = await module.resolve(BlockService)
-    prisma = module.get<PrismaService>(PrismaService)
-    prisma.journey.findUnique = jest.fn().mockResolvedValue(journey)
+    prismaService = module.get<PrismaService>(PrismaService)
+    prismaService.journey.findUnique = jest.fn().mockResolvedValue(journey)
+    prismaService.block.findUnique = jest.fn().mockResolvedValue(block)
+    prismaService.action.update = jest.fn().mockResolvedValue((input) => input.data)
   })
 
   describe('NavigateToJourneyAction', () => {

@@ -2,20 +2,19 @@ import { Args, Mutation, Resolver } from '@nestjs/graphql'
 import { UseGuards } from '@nestjs/common'
 import { includes } from 'lodash'
 import { UserInputError } from 'apollo-server-errors'
+import { Action } from '.prisma/api-journeys-client'
 
 import { RoleGuard } from '../../../lib/roleGuard/roleGuard'
 import {
-  Action,
-  Block,
   NavigateToBlockActionInput,
   Role,
   UserJourneyRole
 } from '../../../__generated__/graphql'
-import { BlockService } from '../../block/block.service'
+import { PrismaService } from '../../../lib/prisma.service'
 
 @Resolver('NavigateToBlockAction')
 export class NavigateToBlockActionResolver {
-  constructor(private readonly blockService: BlockService) {}
+  constructor(private readonly prismaService: PrismaService) {}
 
   @Mutation()
   @UseGuards(
@@ -30,11 +29,9 @@ export class NavigateToBlockActionResolver {
     @Args('journeyId') journeyId: string,
     @Args('input') input: NavigateToBlockActionInput
   ): Promise<Action> {
-    const block = (await this.blockService.get(id)) as Block & {
-      __typename: string
-    }
+    const block = await this.prismaService.block.findUnique({where: {id}})
 
-    if (
+    if (block == null ||
       !includes(
         [
           'SignUpBlock',
@@ -44,7 +41,7 @@ export class NavigateToBlockActionResolver {
           'VideoTriggerBlock',
           'TextResponseBlock'
         ],
-        block.__typename
+        block.typename
       )
     ) {
       throw new UserInputError(
@@ -52,10 +49,9 @@ export class NavigateToBlockActionResolver {
       )
     }
 
-    const updatedBlock: { action: Action } = await this.blockService.update(
-      id,
-      {
-        action: {
+    return await this.prismaService.action.update({
+      where: { id },
+      data: {
           ...input,
           parentBlockId: block.id,
           journeyId: null,
@@ -63,9 +59,6 @@ export class NavigateToBlockActionResolver {
           target: null,
           email: null
         }
-      }
-    )
-
-    return updatedBlock.action
+      })
   }
 }

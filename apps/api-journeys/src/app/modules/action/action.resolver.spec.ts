@@ -1,6 +1,4 @@
 import { Test, TestingModule } from '@nestjs/testing'
-import { Database } from 'arangojs'
-import { mockDeep } from 'jest-mock-extended'
 
 import { Action, RadioOptionBlock } from '../../__generated__/graphql'
 import { BlockResolver } from '../block/block.resolver'
@@ -14,7 +12,8 @@ import { ActionResolver } from './action.resolver'
 describe('ActionResolver', () => {
   let resolver: ActionResolver,
     blockResolver: BlockResolver,
-    service: BlockService
+    service: BlockService,
+    prismaService: PrismaService
 
   const block1 = {
     id: '1',
@@ -83,10 +82,6 @@ describe('ActionResolver', () => {
           UserRoleService,
           JourneyService,
           PrismaService,
-          {
-            provide: 'DATABASE',
-            useFactory: () => mockDeep<Database>()
-          }
         ]
       }).compile()
       resolver = module.get<ActionResolver>(ActionResolver)
@@ -146,27 +141,19 @@ describe('ActionResolver', () => {
 
   describe('NavigateToBlockAction', () => {
     beforeEach(async () => {
-      const blockService = {
-        provide: BlockService,
-        useFactory: () => ({
-          get: jest.fn(() => block1)
-        })
-      }
       const module: TestingModule = await Test.createTestingModule({
         providers: [
           BlockResolver,
-          blockService,
+          BlockService,
           UserJourneyService,
           UserRoleService,
           JourneyService,
           PrismaService,
-          {
-            provide: 'DATABASE',
-            useFactory: () => mockDeep<Database>()
-          }
         ]
       }).compile()
       blockResolver = module.get<BlockResolver>(BlockResolver)
+      prismaService = module.get<PrismaService>(PrismaService)
+      prismaService.block.findUnique = jest.fn().mockReturnValue(block1)
     })
     it('returns NavigateToBlockAction', async () => {
       expect(await blockResolver.block('1')).toEqual(block1)
@@ -178,27 +165,19 @@ describe('ActionResolver', () => {
 
   describe('NavigateToJourneyAction', () => {
     beforeEach(async () => {
-      const blockService = {
-        provide: BlockService,
-        useFactory: () => ({
-          get: jest.fn(() => block2)
-        })
-      }
       const module: TestingModule = await Test.createTestingModule({
         providers: [
           BlockResolver,
-          blockService,
+          BlockService,
           UserJourneyService,
           UserRoleService,
           JourneyService,
           PrismaService,
-          {
-            provide: 'DATABASE',
-            useFactory: () => mockDeep<Database>()
-          }
         ]
       }).compile()
       blockResolver = module.get<BlockResolver>(BlockResolver)
+      prismaService = module.get<PrismaService>(PrismaService)
+      prismaService.block.findUnique = jest.fn().mockReturnValue(block2)
     })
     it('returns NavigateToBlockAction', async () => {
       expect(await blockResolver.block('1')).toEqual(block2)
@@ -209,28 +188,20 @@ describe('ActionResolver', () => {
   })
 
   describe('LinkAction', () => {
-    beforeEach(async () => {
-      const blockService = {
-        provide: BlockService,
-        useFactory: () => ({
-          get: jest.fn(() => block3)
-        })
-      }
+    beforeEach(async () => {      
       const module: TestingModule = await Test.createTestingModule({
         providers: [
           BlockResolver,
-          blockService,
+          BlockService,
           UserJourneyService,
           UserRoleService,
           JourneyService,
           PrismaService,
-          {
-            provide: 'DATABASE',
-            useFactory: () => mockDeep<Database>()
-          }
         ]
       }).compile()
       blockResolver = module.get<BlockResolver>(BlockResolver)
+      prismaService = module.get<PrismaService>(PrismaService)
+      prismaService.block.findUnique = jest.fn().mockReturnValue(block3)
     })
     it('returns LinkAction', async () => {
       expect(await blockResolver.block('1')).toEqual(block3)
@@ -242,27 +213,19 @@ describe('ActionResolver', () => {
 
   describe('EmailAction', () => {
     beforeEach(async () => {
-      const blockService = {
-        provide: BlockService,
-        useFactory: () => ({
-          get: jest.fn(() => block5)
-        })
-      }
       const module: TestingModule = await Test.createTestingModule({
         providers: [
           BlockResolver,
-          blockService,
+          BlockService,
           UserJourneyService,
           UserRoleService,
           JourneyService,
           PrismaService,
-          {
-            provide: 'DATABASE',
-            useFactory: () => mockDeep<Database>()
-          }
         ]
       }).compile()
       blockResolver = module.get<BlockResolver>(BlockResolver)
+      prismaService = module.get<PrismaService>(PrismaService)
+      prismaService.block.findUnique = jest.fn().mockReturnValue(block5)
     })
     it('returns EmailAction', async () => {
       expect(await blockResolver.block('1')).toEqual(block5)
@@ -273,28 +236,20 @@ describe('ActionResolver', () => {
   })
 
   describe('NavigateAction', () => {
-    beforeEach(async () => {
-      const blockService = {
-        provide: BlockService,
-        useFactory: () => ({
-          get: jest.fn(() => block4)
-        })
-      }
+    beforeEach(async () => {      
       const module: TestingModule = await Test.createTestingModule({
         providers: [
           BlockResolver,
-          blockService,
+          BlockService,
           UserJourneyService,
           UserRoleService,
           JourneyService,
           PrismaService,
-          {
-            provide: 'DATABASE',
-            useFactory: () => mockDeep<Database>()
-          }
         ]
       }).compile()
       blockResolver = module.get<BlockResolver>(BlockResolver)
+      prismaService = module.get<PrismaService>(PrismaService)
+      prismaService.block.findUnique = jest.fn().mockReturnValueOnce(block4)
     })
     it('returns NavigateAction', async () => {
       expect(await blockResolver.block('1')).toEqual(block4)
@@ -304,34 +259,25 @@ describe('ActionResolver', () => {
   describe('blockDeleteAction', () => {
     const emptyAction = { action: null }
     beforeEach(async () => {
-      const blockService = {
-        provide: BlockService,
-        useFactory: () => ({
-          get: jest.fn(() => block1),
-          update: jest.fn(() => emptyAction)
-        })
-      }
       const module: TestingModule = await Test.createTestingModule({
         providers: [
-          blockService,
+          BlockService,
           ActionResolver,
           UserJourneyService,
           UserRoleService,
           JourneyService,
           PrismaService,
-          {
-            provide: 'DATABASE',
-            useFactory: () => mockDeep<Database>()
-          }
         ]
       }).compile()
       resolver = module.get<ActionResolver>(ActionResolver)
-      service = await module.resolve(BlockService)
+      prismaService = module.get<PrismaService>(PrismaService)
+      prismaService.block.findUnique = jest.fn().mockReturnValueOnce(block1)
+      prismaService.action.update = jest.fn().mockReturnValueOnce(emptyAction)
     })
     it('removes the block action', async () => {
       await resolver.blockDeleteAction(block1.id, block1.journeyId)
 
-      expect(service.update).toHaveBeenCalledWith(block1.id, {
+      expect(prismaService.action.delete).toHaveBeenCalledWith(block1.id, {
         action: null
       })
     })

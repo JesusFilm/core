@@ -1,6 +1,4 @@
 import { Test, TestingModule } from '@nestjs/testing'
-import { Database } from 'arangojs'
-import { mockDeep } from 'jest-mock-extended'
 import { VideoTriggerBlock } from '../../../__generated__/graphql'
 import { JourneyService } from '../../journey/journey.service'
 import { UserJourneyService } from '../../userJourney/userJourney.service'
@@ -46,33 +44,23 @@ describe('VideoTriggerBlockResolver', () => {
     parentBlockId: block.id
   }
 
-  const blockService = {
-    provide: BlockService,
-    useFactory: () => ({
-      getAll: jest.fn(() => [block, block])
-    })
-  }
-
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         BlockResolver,
-        blockService,
+        BlockService,
         VideoTriggerResolver,
         UserJourneyService,
         UserRoleService,
         JourneyService,
-        PrismaService,
-        {
-          provide: 'DATABASE',
-          useFactory: () => mockDeep<Database>()
-        }
+        PrismaService
       ]
     }).compile()
     resolver = module.get<VideoTriggerResolver>(VideoTriggerResolver)
     blockResolver = module.get<BlockResolver>(BlockResolver)
     prisma = module.get<PrismaService>(PrismaService)
     prisma.block.findUnique = jest.fn().mockResolvedValue(blockResponse)
+    prisma.block.findMany = jest.fn().mockResolvedValue([blockResponse, blockResponse])
   })
 
   describe('VideoTriggerBlock', () => {
