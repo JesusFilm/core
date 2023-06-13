@@ -3,13 +3,12 @@ import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { gql, useMutation } from '@apollo/client'
-import TextField from '@mui/material/TextField'
-import { Formik, Form } from 'formik'
 import { object, string } from 'yup'
 import InputAdornment from '@mui/material/InputAdornment'
 import DraftsIcon from '@mui/icons-material/Drafts'
 import Box from '@mui/material/Box'
 import { GetJourney_journey_blocks_ButtonBlock as ButtonBlock } from '../../../../../../../__generated__/GetJourney'
+import { TextFieldForm } from '../../../../../TextFieldForm'
 
 export const EMAIL_ACTION_UPDATE = gql`
   mutation EmailActionUpdate(
@@ -24,10 +23,6 @@ export const EMAIL_ACTION_UPDATE = gql`
   }
 `
 
-interface EmailActionFormValues {
-  email: string
-}
-
 export function EmailAction(): ReactElement {
   const { state } = useEditor()
   const { journey } = useJourney()
@@ -41,10 +36,6 @@ export function EmailAction(): ReactElement {
     selectedBlock?.action?.__typename === 'EmailAction'
       ? selectedBlock.action
       : undefined
-
-  const initialValues: EmailActionFormValues = {
-    email: emailAction?.email ?? ''
-  }
 
   const emailActionSchema = object({
     email: string()
@@ -82,41 +73,18 @@ export function EmailAction(): ReactElement {
 
   return (
     <Box sx={{ pt: 8 }}>
-      <Formik
-        initialValues={initialValues}
+      <TextFieldForm
+        id="email"
+        label="Paste Email here..."
+        initialValues={emailAction?.email}
         validationSchema={emailActionSchema}
-        onSubmit={async (values): Promise<void> => {
-          await handleSubmit(values.email)
-        }}
-        enableReinitialize
-      >
-        {({ values, touched, errors, handleChange, handleBlur }) => (
-          <Form>
-            <TextField
-              id="email"
-              name="email"
-              variant="filled"
-              label="Paste Email here..."
-              fullWidth
-              value={values.email}
-              error={touched.email === true && Boolean(errors.email)}
-              helperText={touched.email === true && errors.email}
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <DraftsIcon />
-                  </InputAdornment>
-                )
-              }}
-              onBlur={async (e) => {
-                handleBlur(e)
-                errors.email == null && (await handleSubmit(e.target.value))
-              }}
-              onChange={handleChange}
-            />
-          </Form>
-        )}
-      </Formik>
+        handleSubmit={handleSubmit}
+        startIcon={
+          <InputAdornment position="start">
+            <DraftsIcon />
+          </InputAdornment>
+        }
+      />
     </Box>
   )
 }
