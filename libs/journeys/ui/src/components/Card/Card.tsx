@@ -57,9 +57,9 @@ export function Card({
     ))
 
   const hasFullscreenVideo =
-    children.filter(
+    children.find(
       (child) => child.__typename === 'VideoBlock' && child.id !== coverBlockId
-    ).length > 0
+    ) != null
 
   return (
     <Paper
