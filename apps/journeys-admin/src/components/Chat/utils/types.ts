@@ -13,6 +13,6 @@ export enum Platform {
 
 export interface ChatButton {
   id: string
-  chatLink: string
-  chatIcon: Platform
+  chatLink?: string
+  chatIcon?: Platform
 }

@@ -9,7 +9,7 @@ export function getChatButton(
   if (chatButton != null) {
     return {
       id: chatButton.id,
-      chatIcon: chatButton.chatIcon,
+      chatIcon: chatButton?.chatIcon,
       chatLink: chatButton.linkValue
     }
   }
