@@ -40,7 +40,7 @@ export function StepFooter({
       <Stack
         justifyContent="space-between"
         sx={{
-          px: { xs: 4, lg: 6 },
+          px: { xs: 6, lg: 6 },
           py: { xs: 2, lg: 2 },
           flexDirection: { lg: rtl ? 'row-reverse' : 'row' },
           justifyContent: 'space-between',
@@ -79,7 +79,11 @@ export function StepFooter({
                 zIndex: 1,
                 py: 3,
                 // Always dark mode on lg breakpoint
-                color: { xs: 'primary.main', lg: 'white' }
+                color: { xs: 'primary.main', lg: 'white' },
+                width: { xs: 'calc(100vw - 92px)', lg: 'calc(100vw - 200px)' },
+                whiteSpace: 'nowrap',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis'
               }}
             >
               {journey?.seoTitle ?? journey?.title}
