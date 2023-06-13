@@ -80,7 +80,7 @@ export function StepFooter({
                 py: 3,
                 // Always dark mode on lg breakpoint
                 color: { xs: 'primary.main', lg: 'white' },
-                width: { xs: 'calc(100vw - 92px)', lg: 'calc(100vw - 200px)' },
+                width: { xs: 'calc(100vw - 108px)', lg: 'calc(100vw - 200px)' },
                 whiteSpace: 'nowrap',
                 overflow: 'hidden',
                 textOverflow: 'ellipsis'
@@ -102,8 +102,8 @@ export function StepFooter({
           {/* <Stack
             data-testid="chat-widget"
             sx={{
-              width: 36,
-              height: 36,
+              width: 44,
+              height: 44,
               borderRadius: 5,
               backgroundColor: 'white'
             }}
