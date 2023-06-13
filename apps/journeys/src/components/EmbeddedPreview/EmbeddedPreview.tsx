@@ -9,6 +9,7 @@ import Close from '@mui/icons-material/Close'
 
 // Used to resolve dynamic viewport height on Safari
 import Div100vh from 'react-div-100vh'
+import { StepFooter } from '@core/journeys/ui/StepFooter'
 import useFullscreenStatus from '../../libs/useFullscreenStatus/useFullscreenStatus'
 import { Conductor } from '../Conductor'
 
@@ -111,7 +112,8 @@ export function EmbeddedPreview({
           height: '100%',
           width: '100%',
           borderRadius: '16px',
-          overflow: 'hidden'
+          overflow: 'hidden',
+          position: 'relative'
         }}
       >
         <BlockRenderer
@@ -123,6 +125,7 @@ export function EmbeddedPreview({
             VideoWrapper
           }}
         />
+        <StepFooter />
       </Box>
     </Box>
   )

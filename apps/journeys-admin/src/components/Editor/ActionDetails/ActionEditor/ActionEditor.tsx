@@ -1,7 +1,5 @@
 import { ReactElement, ReactNode } from 'react'
 import Box from '@mui/material/Box'
-import { Formik, Form } from 'formik'
-import TextField from '@mui/material/TextField'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { gql, useMutation } from '@apollo/client'
 import { object, string } from 'yup'
@@ -13,6 +11,7 @@ import Stack from '@mui/material/Stack'
 import { BlockFields_ButtonBlock as ButtonBlock } from '../../../../../__generated__/BlockFields'
 import { ActionFields_LinkAction as LinkAction } from '../../../../../__generated__/ActionFields'
 import { MultipleLinkActionUpdate } from '../../../../../__generated__/MultipleLinkActionUpdate'
+import { TextFieldForm } from '../../../TextFieldForm'
 
 export const MULTIPLE_LINK_ACTION_UPDATE = gql`
   mutation MultipleLinkActionUpdate(
@@ -118,36 +117,13 @@ export function ActionEditor({
 
   return (
     <Box sx={{ pt: 6 }} data-testid="ActionEditor">
-      <Formik
-        initialValues={{
-          link: url ?? ''
-        }}
+      <TextFieldForm
+        id="link"
+        label="Navigate to"
+        initialValues={url}
         validationSchema={linkActionSchema}
-        onSubmit={async (values): Promise<void> => {
-          await handleSubmit(values.link)
-        }}
-        enableReinitialize
-      >
-        {({ values, touched, errors, handleChange, handleBlur }) => (
-          <Form>
-            <TextField
-              id="link"
-              name="link"
-              variant="filled"
-              label="Navigate to"
-              fullWidth
-              value={values.link}
-              error={touched.link === true && Boolean(errors.link)}
-              helperText={touched.link === true && errors.link}
-              onBlur={(e) => {
-                handleBlur(e)
-                errors.link == null && handleSubmit(e.target.value)
-              }}
-              onChange={handleChange}
-            />
-          </Form>
-        )}
-      </Formik>
+        handleSubmit={handleSubmit}
+      />
       <Stack gap={2} direction="row" alignItems="center" sx={{ pt: 3 }}>
         {icon}
         <Typography variant="subtitle2">{goalLabel?.(url)}</Typography>
