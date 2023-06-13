@@ -2,7 +2,7 @@ import { ActiveJourneyEditContent } from '@core/journeys/ui/EditorProvider'
 import { Story, Meta } from '@storybook/react'
 import ThumbUpOffAltIcon from '@mui/icons-material/ThumbUpOffAlt'
 import Box from '@mui/material/Box'
-import { CustomIcon } from '@core/shared/ui/CustomIcon'
+import Target from '@core/shared/ui/icons/Target'
 import { simpleComponentConfig } from '../../../libs/storybook'
 import { NavigationCard } from '.'
 
@@ -56,7 +56,7 @@ Goals.args = {
       justifyContent="center"
       alignItems="center"
     >
-      <CustomIcon name="Target" color="error" />
+      <Target color="error" />
     </Box>
   )
 }
