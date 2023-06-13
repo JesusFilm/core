@@ -13,10 +13,11 @@ export function StepFooter(): ReactElement {
   const { rtl } = getJourneyRTL(journey)
 
   const name = 'Bartholomew & Bernadette'
-  const location = 'Karaganda'
+  const location =
+    'Karaganda asjklhdfasjkldfhjlaskfhasjkfhlask;dfjalskdjfl;askdjfal;skdjflask;djfal;sdkjfaskl;dfjasl;kdjfaskl;djfalsk;djfalsk;jfalskdfjasklfjaskl;dfj'
 
-  const src1 =  undefined
-  const src2 = undefined
+  const src1 = 'undefined'
+  const src2 = 'undefined'
   return (
     <Box
       className="swiper-no-swiping"
