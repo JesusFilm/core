@@ -142,8 +142,7 @@ export function Canvas(): ReactElement {
                     overflow: 'hidden',
                     outline: (theme) =>
                       step.parentOrder === swiper?.activeIndex
-                        ? typeof selectedBlock !== 'string' &&
-                          step.id === selectedBlock?.id
+                        ? step.id === selectedBlock?.id
                           ? `2px solid ${theme.palette.primary.main}`
                           : `2px solid ${theme.palette.background.default}`
                         : `0px solid`,

@@ -1,6 +1,6 @@
-import { useEditor } from '@core/journeys/ui/EditorProvider'
-import Lock from '@mui/icons-material/Lock'
 import { ReactElement, useEffect } from 'react'
+import { useEditor } from '@core/journeys/ui/EditorProvider'
+import UserProfileCircleIcon from '@core/shared/ui/icons/UserProfileCircle'
 
 import { Attribute } from '../..'
 
@@ -10,7 +10,6 @@ export function Footer(): ReactElement {
   // TODO:
   // Get host name from journey.hostId
   // Get description from final design
-  // Get new icon
   // Use proper HostedBy content component
 
   useEffect(() => {
@@ -29,10 +28,10 @@ export function Footer(): ReactElement {
   return (
     <Attribute
       id="hosted-by"
-      icon={<Lock />}
+      icon={<UserProfileCircleIcon />}
       name="Hosted by"
       value="None"
-      description="Description"
+      description=""
       onClick={() => {
         dispatch({
           type: 'SetDrawerPropsAction',
