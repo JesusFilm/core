@@ -1,7 +1,6 @@
 import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
-
 import { ReactElement } from 'react'
 import { useJourney } from '../../libs/JourneyProvider'
 import { getJourneyRTL } from '../../libs/rtl'
@@ -16,7 +15,6 @@ export function StepFooter(): ReactElement {
 
   return (
     <Box
-      className="swiper-no-swiping"
       sx={{
         position: { xs: 'absolute', lg: 'relative' },
         zIndex: 1,
@@ -27,7 +25,7 @@ export function StepFooter(): ReactElement {
       <Stack
         justifyContent="space-between"
         sx={{
-          px: { xs: 4, lg: 6 },
+          px: { xs: 6, lg: 6 },
           py: { xs: 2, lg: 2 },
           flexDirection: { lg: rtl ? 'row-reverse' : 'row' },
           justifyContent: 'space-between',
@@ -66,7 +64,11 @@ export function StepFooter(): ReactElement {
                 zIndex: 1,
                 py: 3,
                 // Always dark mode on lg breakpoint
-                color: { xs: 'primary.main', lg: 'white' }
+                color: { xs: 'primary.main', lg: 'white' },
+                width: { xs: 'calc(100vw - 92px)', lg: 'calc(100vw - 200px)' },
+                whiteSpace: 'nowrap',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis'
               }}
             >
               {journey?.seoTitle ?? journey?.title}
@@ -77,7 +79,6 @@ export function StepFooter(): ReactElement {
                 admin={admin}
               />
             </Typography>
-
             {/* <Stack
               data-testid="chip"
               sx={{
