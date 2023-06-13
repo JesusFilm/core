@@ -10,8 +10,7 @@ export function getByPlatform(
       (chatButton) =>
         chatButton.chatIcon !== Platform.facebook &&
         chatButton.chatIcon !== Platform.whatsApp &&
-        chatButton.chatIcon !== Platform.telegram &&
-        chatButton.chatIcon !== Platform.line
+        chatButton.chatIcon !== Platform.telegram
     )
   } else {
     res = chatButtons.find((chatButton) => chatButton.chatIcon === platform)
