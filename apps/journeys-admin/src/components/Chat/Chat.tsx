@@ -12,8 +12,7 @@ const defaultValues: PlatformDetails = {
   title: '',
   linkValue: '',
   chatIcon: undefined,
-  active: false,
-  type: 'link'
+  active: false
 }
 
 export function Chat(): ReactElement {

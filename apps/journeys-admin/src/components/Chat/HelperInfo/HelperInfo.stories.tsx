@@ -1,10 +1,10 @@
 import { Story, Meta } from '@storybook/react'
 import { ComponentProps } from 'react'
-import { journeysAdminConfig } from '../../../libs/storybook'
+import { simpleComponentConfig } from '../../../libs/storybook'
 import { HelperInfo } from '.'
 
 const HelperInfoStory = {
-  ...journeysAdminConfig,
+  ...simpleComponentConfig,
   component: HelperInfo,
   title: 'Journeys-Admin/Chat/HelperInfo'
 }

@@ -22,7 +22,6 @@ export interface PlatformDetails {
   linkValue: string
   active: boolean
   chatIcon?: Platform
-  type?: 'link' | 'script'
   enableIconSelect?: boolean
   helperInfo?: string
 }
@@ -65,13 +64,17 @@ export function ChatOption({
   }
 
   function handleChangeIcon(event: SelectChangeEvent): void {
-    setValue({
-      ...value,
-      chatIcon: findKey(
-        Platform,
-        (value) => value === event.target.value
-      ) as Platform
-    })
+    const icon = findKey(
+      Platform,
+      (value) => value === event.target.value
+    ) as Platform
+
+    if (icon != null) {
+      setValue({
+        ...value,
+        chatIcon: icon
+      })
+    }
   }
 
   return (
@@ -103,17 +106,18 @@ export function ChatOption({
             <FormControl variant="filled" fullWidth>
               <InputLabel id="icon-select">Chat Platform</InputLabel>
               <Select
+                labelId="icon-select"
                 label="Chat Platform"
-                value={chatIcon ?? ''}
+                value={chatIcon ?? 'default'}
                 displayEmpty
                 onChange={handleChangeIcon}
                 IconComponent={KeyboardArrowDownRoundedIcon}
               >
-                <MenuItem value="">Select an icon...</MenuItem>
+                <MenuItem value="default">Select an icon...</MenuItem>
                 <MenuItem value={Platform.instagram}>Instagram</MenuItem>
                 <MenuItem value={Platform.line}>LINE</MenuItem>
                 <MenuItem value={Platform.skype}>Skype</MenuItem>
-                <MenuItem value={Platform.snapchat}>Snapchat</MenuItem>
+                <MenuItem value={Platform.snapchat}>SnapChat</MenuItem>
                 <MenuItem value={Platform.tikTok}>TikTok</MenuItem>
                 <MenuItem value={Platform.viber}>Viber</MenuItem>
                 <MenuItem value={Platform.vk}>VK</MenuItem>
