@@ -20,7 +20,7 @@ import {
 } from 'apollo-server-errors'
 import { GqlAuthGuard } from '@core/nest/gqlAuthGuard/GqlAuthGuard'
 import { v4 as uuidv4 } from 'uuid'
-
+import { UserTeamRole } from '.prisma/api-journeys-client'
 import { BlockService } from '../block/block.service'
 import {
   Block,
@@ -42,7 +42,7 @@ import {
 import { UserJourneyService } from '../userJourney/userJourney.service'
 import { RoleGuard } from '../../lib/roleGuard/roleGuard'
 import { UserRoleService } from '../userRole/userRole.service'
-import { MemberService } from '../member/member.service'
+import { PrismaService } from '../../lib/prisma.service'
 import { JourneyService } from './journey.service'
 
 const ERROR_ARANGO_UNIQUE_CONSTRAINT_VIOLATED = 1210
@@ -54,7 +54,7 @@ export class JourneyResolver {
     private readonly blockService: BlockService,
     private readonly userJourneyService: UserJourneyService,
     private readonly userRoleService: UserRoleService,
-    private readonly memberService: MemberService
+    private readonly prismaService: PrismaService
   ) {}
 
   @Query()
@@ -200,21 +200,21 @@ export class JourneyResolver {
             returnNew: false
           }
         )
-        const existingMember = this.memberService.getMemberByTeamId(
-          userId,
-          team.id
-        )
-
-        if (existingMember == null) {
-          await this.memberService.save(
-            {
-              id: `${userId}:${team.id}`,
+        await this.prismaService.userTeam.upsert({
+          where: {
+            teamId_userId: {
               userId,
               teamId: team.id
-            },
-            { overwriteMode: 'ignore', returnNew: false }
-          )
-        }
+            }
+          },
+          update: {},
+          create: {
+            userId,
+            teamId: team.id,
+            role: UserTeamRole.guest
+          }
+        })
+
         retry = false
         return journey
       } catch (err) {
