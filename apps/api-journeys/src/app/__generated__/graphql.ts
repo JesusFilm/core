@@ -131,6 +131,19 @@ export enum VideoBlockObjectFit {
     zoomed = "zoomed"
 }
 
+export enum ChatPlatform {
+    facebook = "facebook",
+    telegram = "telegram",
+    whatsApp = "whatsApp",
+    instagram = "instagram",
+    viber = "viber",
+    vk = "vk",
+    snapchat = "snapchat",
+    skype = "skype",
+    line = "line",
+    tikTok = "tikTok"
+}
+
 export enum ButtonAction {
     NavigateAction = "NavigateAction",
     NavigateToBlockAction = "NavigateToBlockAction",
@@ -418,6 +431,16 @@ export class VideoBlockUpdateInput {
     objectFit?: Nullable<VideoBlockObjectFit>;
 }
 
+export class ChatButtonCreateInput {
+    link?: Nullable<string>;
+    platform?: Nullable<ChatPlatform>;
+}
+
+export class ChatButtonUpdateInput {
+    link?: Nullable<string>;
+    platform?: Nullable<ChatPlatform>;
+}
+
 export class ButtonClickEventCreateInput {
     id?: Nullable<string>;
     blockId: string;
@@ -675,6 +698,7 @@ export class Journey {
     __typename?: 'Journey';
     blocks?: Nullable<Block[]>;
     primaryImageBlock?: Nullable<ImageBlock>;
+    chatButtons: ChatButton[];
     id: string;
     title: string;
     language: Language;
@@ -867,6 +891,13 @@ export class VideoTriggerBlock implements Block {
     parentOrder?: Nullable<number>;
     triggerStart: number;
     action: Action;
+}
+
+export class ChatButton {
+    __typename?: 'ChatButton';
+    id: string;
+    link?: Nullable<string>;
+    platform?: Nullable<ChatPlatform>;
 }
 
 export class ButtonClickEvent implements Event {
@@ -1278,6 +1309,12 @@ export abstract class IMutation {
     abstract videoBlockCreate(input: VideoBlockCreateInput): VideoBlock | Promise<VideoBlock>;
 
     abstract videoBlockUpdate(id: string, journeyId: string, input: VideoBlockUpdateInput): VideoBlock | Promise<VideoBlock>;
+
+    abstract chatButtonCreate(journeyId: string, input?: Nullable<ChatButtonCreateInput>): ChatButton | Promise<ChatButton>;
+
+    abstract chatButtonUpdate(id: string, journeyId: string, input: ChatButtonUpdateInput): ChatButton | Promise<ChatButton>;
+
+    abstract chatButtonRemove(id: string): ChatButton | Promise<ChatButton>;
 
     abstract buttonClickEventCreate(input: ButtonClickEventCreateInput): ButtonClickEvent | Promise<ButtonClickEvent>;
 
