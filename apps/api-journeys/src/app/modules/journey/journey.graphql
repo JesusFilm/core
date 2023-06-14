@@ -20,7 +20,7 @@ type Journey @key(fields: "id") {
   seoTitle: String
   seoDescription: String
   template: Boolean
-  hostId: String
+  host: Host
 }
 
 enum IdType {

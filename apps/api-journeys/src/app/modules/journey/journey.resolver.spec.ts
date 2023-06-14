@@ -1008,6 +1008,7 @@ describe('JourneyResolver', () => {
         'journeyId',
         journeyUpdateHost
       )
+      console.log(journeyUpdateHost)
     })
 
     it('throws UserInputErrror', async () => {
@@ -1151,6 +1152,26 @@ describe('JourneyResolver', () => {
         chatButton,
         chatButton
       ])
+    })
+  })
+
+  describe('host', () => {
+    it('should return host', async () => {
+      const mockHost = {
+        id: 'host-id2',
+        teamId: 'geronimo-gang',
+        name: 'Edmond Shen & Nisal Cottingham',
+        location: 'New Zealand',
+        avatar1Id: 'avatar1-id',
+        avatar2Id: 'avatar2-id'
+      }
+      const journeyWithHost: Journey & { hostId: string } = {
+        ...journeyWithTeam,
+        hostId: 'host-id2'
+      }
+
+      prismaService.host.findUnique = jest.fn().mockReturnValue(mockHost)
+      expect(await resolver.host(journeyWithHost)).toEqual(mockHost)
     })
   })
 

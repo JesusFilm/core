@@ -20,7 +20,7 @@ import {
 } from 'apollo-server-errors'
 import { GqlAuthGuard } from '@core/nest/gqlAuthGuard/GqlAuthGuard'
 import { v4 as uuidv4 } from 'uuid'
-import { ChatButton, UserTeamRole } from '.prisma/api-journeys-client'
+import { ChatButton, UserTeamRole, Host } from '.prisma/api-journeys-client'
 import { BlockService } from '../block/block.service'
 import {
   Block,
@@ -530,6 +530,16 @@ export class JourneyResolver {
   async chatButtons(@Parent() journey: Journey): Promise<ChatButton[]> {
     return await this.prismaService.chatButton.findMany({
       where: { journeyId: journey.id }
+    })
+  }
+
+  @ResolveField()
+  async host(
+    @Parent() journey: Journey & { hostId?: string | null }
+  ): Promise<Host | null> {
+    if (journey.hostId == null) return null
+    return await this.prismaService.host.findUnique({
+      where: { id: journey.hostId }
     })
   }
 
