@@ -61,8 +61,6 @@ export const JOURNEY_CHAT_BUTTON_REMOVE = gql`
   mutation JourneyChatButtonRemove($id: ID!) {
     chatButtonRemove(id: $chatButtonRemoveId) {
       id
-      link
-      platform
     }
   }
 `
@@ -161,7 +159,13 @@ export function Chat({ journeyId }: Props): ReactElement {
     const toUpdate = getChatButton(id, [facebook, whatsApp, telegram, custom])
     toUpdate != null &&
       (await journeyChatButtonUpdate({
-        variables: toUpdate
+        variables: toUpdate,
+        optimisticResponse: {
+          chatButtonUpdate: {
+            __typename: 'ChatButton',
+            ...toUpdate
+          }
+        }
       }))
   }
 
@@ -174,11 +178,23 @@ export function Chat({ journeyId }: Props): ReactElement {
     ])
     if (checked && chatButtons.length < 2 && newChatButton != null) {
       await journeyChatButtonCreate({
-        variables: newChatButton
+        variables: newChatButton,
+        optimisticResponse: {
+          chatButtonCreate: {
+            __typename: 'ChatButton',
+            ...newChatButton
+          }
+        }
       })
     } else {
       await journeyChatButtonRemove({
-        variables: { id }
+        variables: { id },
+        optimisticResponse: {
+          chatButtonRemove: {
+            __typename: 'ChatButton',
+            id
+          }
+        }
       })
     }
   }
