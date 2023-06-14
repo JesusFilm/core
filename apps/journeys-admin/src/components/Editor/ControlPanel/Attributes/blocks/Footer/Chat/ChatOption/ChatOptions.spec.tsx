@@ -1,5 +1,5 @@
 import { render, fireEvent, waitFor } from '@testing-library/react'
-import { ChatPlatform } from '../../../../__generated__/globalTypes'
+import { ChatPlatform } from '../../../../../../../../../__generated__/globalTypes'
 import { ChatOption, PlatformDetails } from './ChatOption'
 
 jest.mock('react-i18next', () => ({

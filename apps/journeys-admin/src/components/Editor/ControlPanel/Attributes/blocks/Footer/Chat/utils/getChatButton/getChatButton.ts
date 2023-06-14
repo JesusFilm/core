@@ -1,4 +1,4 @@
-import { GetJourneyChatButtons_journey_chatButtons as ChatButton } from '../../../../../__generated__/GetJourneyChatButtons'
+import { GetJourneyChatButtons_journey_chatButtons as ChatButton } from '../../../../../../../../../../__generated__/GetJourneyChatButtons'
 import { PlatformDetails } from '../../ChatOption/ChatOption'
 
 export function getChatButton(

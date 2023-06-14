@@ -15,7 +15,7 @@ import Stack from '@mui/material/Stack'
 import KeyboardArrowDownRoundedIcon from '@mui/icons-material/KeyboardArrowDownRounded'
 import findKey from 'lodash/findKey'
 import ChatRoundedIcon from '@mui/icons-material/ChatRounded'
-import { ChatPlatform } from '../../../../__generated__/globalTypes'
+import { ChatPlatform } from '../../../../../../../../../__generated__/globalTypes'
 
 export interface PlatformDetails {
   id: string

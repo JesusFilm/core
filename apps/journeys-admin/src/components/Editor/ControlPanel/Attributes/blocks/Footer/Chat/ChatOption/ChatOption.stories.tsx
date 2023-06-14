@@ -3,14 +3,14 @@ import { ComponentProps } from 'react'
 import { noop } from 'lodash'
 import { screen, userEvent } from '@storybook/testing-library'
 import { waitFor } from '@testing-library/react'
-import { simpleComponentConfig } from '../../../libs/storybook'
-import { ChatPlatform } from '../../../../__generated__/globalTypes'
+import { simpleComponentConfig } from '../../../../../../../../libs/storybook'
+import { ChatPlatform } from '../../../../../../../../../__generated__/globalTypes'
 import { ChatOption } from '.'
 
 const ChatOptionStory = {
   ...simpleComponentConfig,
   component: ChatOption,
-  title: 'Journeys-Admin/Chat/ChatOption'
+  title: 'Journeys-Admin/Editor/ControlPanel/Attributes/Footer/Chat/ChatOption'
 }
 
 const Template: Story<ComponentProps<typeof ChatOption>> = (props) => (

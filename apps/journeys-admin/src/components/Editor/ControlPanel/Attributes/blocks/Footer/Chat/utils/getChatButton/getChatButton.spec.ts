@@ -1,5 +1,5 @@
 import { PlatformDetails } from '../../ChatOption/ChatOption'
-import { ChatPlatform } from '../../../../../__generated__/globalTypes'
+import { ChatPlatform } from '../../../../../../../../../../__generated__/globalTypes'
 import { getChatButton } from './getChatButton'
 
 describe('getChatButton', () => {

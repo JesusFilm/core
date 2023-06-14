@@ -1,5 +1,5 @@
-import { ChatPlatform } from '../../../../../__generated__/globalTypes'
-import { GetJourneyChatButtons_journey_chatButtons as ChatButton } from '../../../../../__generated__/GetJourneyChatButtons'
+import { ChatPlatform } from '../../../../../../../../../../__generated__/globalTypes'
+import { GetJourneyChatButtons_journey_chatButtons as ChatButton } from '../../../../../../../../../../__generated__/GetJourneyChatButtons'
 import { getByPlatform } from '.'
 
 describe('getByPlatform', () => {
