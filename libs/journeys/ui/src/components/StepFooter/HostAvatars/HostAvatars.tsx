@@ -17,7 +17,11 @@ export const HostAvatars = ({
   return (
     <>
       {(src1 != null || src2 != null) && !admin && (
-        <AvatarGroup spacing="small" data-testid="journeys-avatars">
+        <AvatarGroup
+          spacing="small"
+          data-testid="journeys-avatars"
+          sx={{ pr: 2 }}
+        >
           {src1 != null && <Avatar src={src1} />}
           {src2 != null && <Avatar src={src2} />}
         </AvatarGroup>
@@ -25,6 +29,7 @@ export const HostAvatars = ({
       {src1 == null && src2 == null && admin ? (
         <Avatar
           sx={{
+            pr: 2,
             height: '44px',
             width: '44px',
             color: 'secondary.light',
@@ -48,6 +53,7 @@ export const HostAvatars = ({
         <AvatarGroup
           spacing="small"
           data-testid="journeys-admin-render-one-avatar"
+          sx={{ pr: 2 }}
         >
           <Avatar src={src1 == null && src2 != null ? src2 : src1} />
           <Avatar
@@ -80,6 +86,7 @@ export const HostAvatars = ({
           <AvatarGroup
             spacing="small"
             data-testid="journeys-admin-render-two-avatars"
+            sx={{ pr: 2 }}
           >
             <Avatar src={src1} />
             <Avatar src={src2} />

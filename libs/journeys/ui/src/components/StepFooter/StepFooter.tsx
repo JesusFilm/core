@@ -24,8 +24,8 @@ export function StepFooter({
   const name = 'Alexander & Eliza Hamilton'
   const location = 'New York'
 
-  const src1 = undefined
-  const src2 = undefined
+  const src1 = 'undefined'
+  const src2 = 'undefined'
   return (
     <Box
       data-testid="stepFooter"
@@ -72,6 +72,7 @@ export function StepFooter({
             alignItems: 'center'
           }}
         >
+          <HostAvatars src1={src1} src2={src2} admin={admin} />
           <Stack
             sx={{
               flex: '1 1 100%',
@@ -82,7 +83,6 @@ export function StepFooter({
               justifyContent: 'space-between'
             }}
           >
-            <HostAvatars src1={src1} src2={src2} admin={admin} />
             <Typography
               sx={{
                 zIndex: 1,
