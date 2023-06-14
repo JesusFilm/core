@@ -2,7 +2,7 @@ import { Args, Mutation, Resolver } from '@nestjs/graphql'
 import { UseGuards } from '@nestjs/common'
 import { includes } from 'lodash'
 import { UserInputError } from 'apollo-server-errors'
-import {Action } from '.prisma/api-journeys-client'
+import { Action } from '.prisma/api-journeys-client'
 
 import { RoleGuard } from '../../../lib/roleGuard/roleGuard'
 import {
@@ -29,9 +29,13 @@ export class NavigateActionResolver {
     @Args('journeyId') journeyId: string,
     @Args('input') input: NavigateActionInput
   ): Promise<Action> {
-    const block = await this.prismaService.block.findUnique({ where: { id } })
+    const block = await this.prismaService.block.findUnique({
+      where: { id },
+      include: { action: true }
+    })
 
-    if (block == null ||
+    if (
+      block == null ||
       !includes(
         [
           'SignUpBlock',
@@ -48,8 +52,8 @@ export class NavigateActionResolver {
     }
 
     return await this.prismaService.action.update({
-      where: { id }, data:
-      {
+      where: { id },
+      data: {
         ...input,
         parentBlockId: block.id,
         blockId: null,

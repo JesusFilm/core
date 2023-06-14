@@ -23,8 +23,10 @@ export class EventService {
     journeyVisitor: JourneyVisitor
     journeyId: string
   }> {
-    const block =
-      await this.prismaService.block.findUnique({ where: { id: blockId } })
+    const block = await this.prismaService.block.findUnique({
+      where: { id: blockId },
+      include: { action: true }
+    })
 
     if (block == null) {
       throw new UserInputError('Block does not exist')

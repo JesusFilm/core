@@ -25,12 +25,17 @@ export class BlockResolver {
 
   @Query()
   async blocks(): Promise<Block[]> {
-    return await this.prismaService.block.findMany({})
+    return await this.prismaService.block.findMany({
+      include: { action: true }
+    })
   }
 
   @Query()
   async block(@Args('id') id: string): Promise<Block | null> {
-    return await this.prismaService.block.findUnique({ where: { id } })
+    return await this.prismaService.block.findUnique({
+      where: { id },
+      include: { action: true }
+    })
   }
 
   @Mutation()

@@ -31,7 +31,10 @@ export class LinkActionResolver {
     @Args('journeyId') journeyId: string,
     @Args('input') input: LinkActionInput
   ): Promise<Action> {
-    const block = await this.prismaService.block.findUnique({ where: { id } })
+    const block = await this.prismaService.block.findUnique({
+      where: { id },
+      include: { action: true }
+    })
 
     if (
       block == null ||

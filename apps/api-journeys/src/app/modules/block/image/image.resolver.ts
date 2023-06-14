@@ -85,7 +85,7 @@ export class ImageBlockResolver {
       { role: Role.publisher, attributes: { template: true } }
     ])
   )
-    @FromPostgresql()
+  @FromPostgresql()
   async imageBlockCreate(
     @Args('input') input: ImageBlockCreateInput
   ): Promise<ImageBlock> {
@@ -102,7 +102,8 @@ export class ImageBlockResolver {
       const parentBlock = await this.prismaService.block.findUnique({
         where: {
           id: block.parentBlockId
-        }
+        },
+        include: { action: true }
       })
 
       if (parentBlock == null) {
@@ -117,7 +118,8 @@ export class ImageBlockResolver {
         const coverBlockToDelete = await this.prismaService.block.findUnique({
           where: {
             id: parentBlock.coverBlockId
-          }
+          },
+          include: { action: true }
         })
         if (coverBlockToDelete != null) {
           await this.blockService.removeBlockAndChildren(

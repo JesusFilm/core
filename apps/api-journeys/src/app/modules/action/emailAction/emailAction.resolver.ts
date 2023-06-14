@@ -33,7 +33,10 @@ export class EmailActionResolver {
     @Args('journeyId') journeyId: string,
     @Args('input') input: EmailActionInput
   ): Promise<Action> {
-    const block = await this.prismaService.block.findUnique({ where: { id } })
+    const block = await this.prismaService.block.findUnique({
+      where: { id },
+      include: { action: true }
+    })
 
     if (
       block == null ||

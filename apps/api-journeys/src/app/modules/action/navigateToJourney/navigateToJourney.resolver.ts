@@ -15,9 +15,7 @@ import { PrismaService } from '../../../lib/prisma.service'
 
 @Resolver('NavigateToJourneyAction')
 export class NavigateToJourneyActionResolver {
-  constructor(
-    private readonly prismaService: PrismaService
-  ) {}
+  constructor(private readonly prismaService: PrismaService) {}
 
   @ResolveField()
   async journey(
@@ -41,9 +39,13 @@ export class NavigateToJourneyActionResolver {
     @Args('journeyId') journeyId: string,
     @Args('input') input: NavigateToJourneyActionInput
   ): Promise<Action> {
-    const block = (await this.prismaService.block.findUnique({ where: { id } }))
+    const block = await this.prismaService.block.findUnique({
+      where: { id },
+      include: { action: true }
+    })
 
-    if (block == null ||
+    if (
+      block == null ||
       !includes(
         [
           'SignUpBlock',
@@ -60,16 +62,15 @@ export class NavigateToJourneyActionResolver {
         'This block does not support navigate to journey actions'
       )
     }
-    return await this.prismaService.action.update(
-      { where: { id },
-      data:{
-          ...input,
-          parentBlockId: block.id,
-          blockId: null,
-          url: null,
-          target: null
-        }
+    return await this.prismaService.action.update({
+      where: { id },
+      data: {
+        ...input,
+        parentBlockId: block.id,
+        blockId: null,
+        url: null,
+        target: null
       }
-    )
+    })
   }
 }

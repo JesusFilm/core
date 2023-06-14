@@ -37,7 +37,10 @@ export class ActionResolver {
     @Args('id') id: string,
     @Args('journeyId') journeyId: string
   ): Promise<Block> {
-    const block = await this.prismaService.block.findUnique({ where: { id } })
+    const block = await this.prismaService.block.findUnique({
+      where: { id },
+      include: { action: true }
+    })
 
     if (
       block == null ||

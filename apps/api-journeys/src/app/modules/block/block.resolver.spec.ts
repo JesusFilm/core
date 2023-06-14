@@ -9,7 +9,9 @@ import { BlockResolver } from './block.resolver'
 import { BlockService } from './block.service'
 
 describe('BlockResolver', () => {
-  let resolver: BlockResolver, service: BlockService, prisma: PrismaService
+  let resolver: BlockResolver,
+    service: BlockService,
+    prismaService: PrismaService
 
   const image1 = {
     id: 'image1',
@@ -77,8 +79,8 @@ describe('BlockResolver', () => {
     }).compile()
     resolver = module.get<BlockResolver>(BlockResolver)
     service = await module.resolve(BlockService)
-    prisma = await module.resolve(PrismaService)
-    prisma.block.findUnique = jest.fn(() => image1)
+    prismaService = await module.resolve(PrismaService)
+    prismaService.block.findUnique = jest.fn().mockResolvedValue(image1)
   })
 
   describe('blockDelete', () => {

@@ -29,9 +29,13 @@ export class NavigateToBlockActionResolver {
     @Args('journeyId') journeyId: string,
     @Args('input') input: NavigateToBlockActionInput
   ): Promise<Action> {
-    const block = await this.prismaService.block.findUnique({where: {id}})
+    const block = await this.prismaService.block.findUnique({
+      where: { id },
+      include: { action: true }
+    })
 
-    if (block == null ||
+    if (
+      block == null ||
       !includes(
         [
           'SignUpBlock',
@@ -52,13 +56,13 @@ export class NavigateToBlockActionResolver {
     return await this.prismaService.action.update({
       where: { id },
       data: {
-          ...input,
-          parentBlockId: block.id,
-          journeyId: null,
-          url: null,
-          target: null,
-          email: null
-        }
-      })
+        ...input,
+        parentBlockId: block.id,
+        journeyId: null,
+        url: null,
+        target: null,
+        email: null
+      }
+    })
   }
 }

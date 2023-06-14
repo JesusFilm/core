@@ -323,7 +323,8 @@ export class JourneyResolver {
     let duplicatePrimaryImageBlock
     if (journey.primaryImageBlockId != null) {
       const original = await this.prismaService.block.findUnique({
-        where: { id: journey.primaryImageBlockId }
+        where: { id: journey.primaryImageBlockId },
+        include: { action: true }
       })
       const id = uuidv4()
       duplicatePrimaryImageBlock = {
@@ -528,17 +529,17 @@ export class JourneyResolver {
         id:
           primaryImageBlockId != null ? { not: primaryImageBlockId } : undefined
       },
-      orderBy: { parentOrder: 'asc' }
+      orderBy: { parentOrder: 'asc' },
+      include: { action: true }
     })
   }
 
   @ResolveField()
-  async primaryImageBlock(
-    @Parent() journey: Journey
-  ): Promise<Block | null> {
+  async primaryImageBlock(@Parent() journey: Journey): Promise<Block | null> {
     if (journey.primaryImageBlockId == null) return null
     const block = await this.prismaService.block.findUnique({
-      where: { id: journey.primaryImageBlockId }
+      where: { id: journey.primaryImageBlockId },
+      include: { action: true }
     })
     if (block?.journeyId !== journey.id) return null
     return block
