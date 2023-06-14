@@ -247,11 +247,30 @@ VideoYoutubeDefault.args = {
   ]
 }
 
-// Expanded - child video block displays fullscreen simulating video only card
-export const VideoContent = Template.bind({})
-VideoContent.args = {
+// Child video block displays fullscreen simulating video only card
+export const ExpandedWithVideo = Template.bind({})
+ExpandedWithVideo.args = {
   ...Default.args,
-  children: [{ ...video, autoplay: false, parentOrder: 0 }]
+  children: [...content, { ...video, autoplay: false, parentOrder: 0 }]
+}
+
+// Child video block displays fullscreen simulating video only card
+export const ContainedWithVideo = Template.bind({})
+ContainedWithVideo.args = {
+  ...Default.args,
+  coverBlockId: 'backgroundVideo',
+  children: [
+    ...content,
+    { ...video, autoplay: false, parentOrder: 0 },
+    {
+      ...video,
+      id: 'backgroundVideo',
+      video: null,
+      videoId: '5I69DCxYbBg',
+      source: VideoBlockSource.youTube,
+      startAt: 2738
+    }
+  ]
 }
 
 export default Demo as Meta
