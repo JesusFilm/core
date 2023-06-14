@@ -135,6 +135,16 @@ model Visitor {
   @@index([id, teamId, createdAt, userId, status, countryCode])
 }
 
+model Host {
+  id        String  @id @default(uuid())
+  teamId    String
+  team      Team    @relation(fields: [teamId], references: [id])
+  title     String
+  location  String?
+  avatar1Id String?
+  avatar2Id String?
+}
+
 model JourneyVisitor {
   id                        String           @id @default(uuid())
   journeyId                 String
@@ -162,6 +172,7 @@ model Team {
   userTeams UserTeam[]
   createdAt DateTime   @default(now())
   updatedAt DateTime   @updatedAt
+  hosts     Host[]
 
   @@index([title])
 }
