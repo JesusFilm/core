@@ -1,4 +1,4 @@
-import { createSvgIcon } from "@mui/material/utils";
+import { createSvgIcon } from '@mui/material/utils'
 
 export default createSvgIcon(
   <>
@@ -18,5 +18,5 @@ export default createSvgIcon(
     />
     <circle cx="18" cy="7" r="1" fill="currentColor" />
   </>,
-  "Instagram"
-);
+  'Instagram'
+)
