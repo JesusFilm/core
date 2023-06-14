@@ -42,6 +42,7 @@ export function DuplicateBlock({
   const { journey } = useJourney()
   const blockLabel =
     selectedBlock?.__typename === 'StepBlock' ? 'Card' : 'Block'
+  const disableAction = selectedBlock == null || disabled
 
   const handleDuplicateBlock = async (): Promise<void> => {
     if (selectedBlock != null && journey != null) {
@@ -124,7 +125,7 @@ export function DuplicateBlock({
         <IconButton
           id={`duplicate-${blockLabel}-actions`}
           aria-label={`Duplicate ${blockLabel} Actions`}
-          disabled={disabled}
+          disabled={disableAction}
           onClick={handleDuplicateBlock}
         >
           <ContentCopyRounded />
@@ -133,7 +134,7 @@ export function DuplicateBlock({
         <MenuItem
           label={`Duplicate ${blockLabel}`}
           icon={<ContentCopyRounded color="inherit" />}
-          disabled={selectedBlock == null || disabled}
+          disabled={disableAction}
           onClick={handleDuplicateBlock}
         />
       )}

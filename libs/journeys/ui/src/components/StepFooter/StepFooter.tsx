@@ -1,28 +1,47 @@
 import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
+import { SxProps } from '@mui/material/styles'
+
 import { ReactElement } from 'react'
 import { useJourney } from '../../libs/JourneyProvider'
 import { getJourneyRTL } from '../../libs/rtl'
 import { NameAndLocation } from './NameAndLocation'
 import { HostAvatars } from './HostAvatars/HostAvatars'
 
-export function StepFooter(): ReactElement {
+interface StepFooterProps {
+  onFooterClick?: () => void
+  sx?: SxProps
+}
+
+export function StepFooter({
+  onFooterClick,
+  sx
+}: StepFooterProps): ReactElement {
   const { journey, admin } = useJourney()
   const { rtl } = getJourneyRTL(journey)
 
-  const name = 'Bartholomew & Bernadette'
-  const location = 'Karaganda is a very long city name'
+  const name = 'Alexander & Eliza Hamilton'
+  const location = 'New York'
 
   const src1 = undefined
   const src2 = undefined
   return (
     <Box
+      data-testid="stepFooter"
+      className="swiper-no-swiping"
       sx={{
         position: { xs: 'absolute', lg: 'relative' },
         zIndex: 1,
         bottom: 0,
-        width: { xs: '100%', lg: 'auto' }
+        width: { xs: '100%', lg: 'auto' },
+        ...sx
+      }}
+      onClick={(e) => {
+        if (onFooterClick != null) {
+          e.stopPropagation()
+          onFooterClick()
+        }
       }}
     >
       <Stack
@@ -52,11 +71,12 @@ export function StepFooter(): ReactElement {
             flexDirection: rtl ? 'row-reverse' : 'row',
             alignItems: 'center'
           }}
-          gap={4}
         >
           <Stack
             sx={{
-              flexGrow: 1,
+              flex: '1 1 100%',
+              minWidth: 0,
+              width: '100%',
               flexDirection: 'row',
               alignItems: 'center',
               justifyContent: 'space-between'
@@ -69,34 +89,13 @@ export function StepFooter(): ReactElement {
                 py: 3,
                 // Always dark mode on lg breakpoint
                 color: { xs: 'primary.main', lg: 'white' },
-                width: {
-                  xs: `calc(100vw - ${
-                    !admin && (src1 == null || src2 == null)
-                      ? '102px'
-                      : !admin && src1 != null && src2 != null
-                      ? '132px'
-                      : (src1 != null || src2 != null) && admin
-                      ? '132px'
-                      : '102px'
-                  })`,
-                  lg: `calc(100vw - ${
-                    !admin && src1 != null && src2 != null ? '190px' : '160px'
-                  } )`
-                },
                 whiteSpace: 'nowrap',
                 overflow: 'hidden',
                 textOverflow: 'ellipsis'
               }}
             >
               {journey?.seoTitle ?? journey?.title}
-              <NameAndLocation
-                name={name}
-                location={location}
-                rtl={rtl}
-                src1={src1}
-                src2={src2}
-                admin={admin}
-              />
+              <NameAndLocation name={name} location={location} />
             </Typography>
             {/* <Stack
               data-testid="chip"
@@ -109,15 +108,17 @@ export function StepFooter(): ReactElement {
               }}
             /> */}
           </Stack>
-          {/* <Stack
-            data-testid="chat-widget"
-            sx={{
-              width: 36,
-              height: 36,
-              borderRadius: 5,
-              backgroundColor: 'white'
-            }}
-          /> */}
+          <Box>
+            {/* <Stack
+              data-testid="chat-widget"
+              sx={{
+                width: 44,
+                height: 44,
+                borderRadius: 10,
+                backgroundColor: 'white'
+              }}
+            /> */}
+          </Box>
         </Stack>
       </Stack>
     </Box>
