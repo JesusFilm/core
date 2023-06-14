@@ -2,11 +2,12 @@ import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 
 import { ReactElement } from 'react'
+import { useJourney } from '../../../libs/JourneyProvider'
+import { getJourneyRTL } from '../../../libs/rtl'
 
 interface NameAndLocationProps {
   name: string
   location?: string
-  rtl: boolean
   src1?: string
   src2?: string
   admin: boolean
@@ -14,16 +15,17 @@ interface NameAndLocationProps {
 
 export const NameAndLocation = ({
   name,
-  location,
-  rtl,
+  location = '',
   src1,
   src2,
   admin
 }: NameAndLocationProps): ReactElement => {
+  const { journey } = useJourney()
+  const { rtl } = getJourneyRTL(journey)
+
   const maxWidthAmount = src1 != null || src2 != null ? '190px' : '150px'
   const maxWidthAmountDesktop = src1 != null || src2 != null ? '260px' : '220px'
-  const trimmedName = name.trim()
-  const trimmedLocation = location?.trim()
+
   return (
     <Stack
       className="name-and-location"
@@ -53,18 +55,18 @@ export const NameAndLocation = ({
         }}
       >
         {rtl
-          ? `${trimmedLocation ?? ''}${
-              (trimmedLocation != null &&
-                trimmedLocation.length > 0 &&
+          ? `${location}${
+              (location !== '' &&
+                location.length > 0 &&
                 '\u00A0\u00B7\u00A0') ||
               ''
-            }${trimmedName}`
-          : `${trimmedName}${
-              (trimmedLocation != null &&
-                trimmedLocation.length > 0 &&
+            }${name}`
+          : `${name}${
+              (location !== '' &&
+                location.length > 0 &&
                 '\u00A0\u00B7\u00A0') ||
               ''
-            }${trimmedLocation ?? ''}`}
+            }${location}`}
       </Typography>
     </Stack>
   )
