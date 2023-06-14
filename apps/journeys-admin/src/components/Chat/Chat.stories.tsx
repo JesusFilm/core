@@ -1,7 +1,7 @@
 import { Story, Meta } from '@storybook/react'
 import { ComponentProps } from 'react'
 import { simpleComponentConfig } from '../../libs/storybook'
-import { Chat } from './Chat'
+import { Chat } from '.'
 
 const ChatStory = {
   ...simpleComponentConfig,
