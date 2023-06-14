@@ -81,7 +81,7 @@ export function StepFooter({
                 py: 3,
                 // Always dark mode on lg breakpoint
                 color: { xs: 'primary.main', lg: 'white' },
-                width: { xs: 'calc(100vw - 92px)', lg: 'calc(100vw - 200px)' },
+                width: { xs: 'calc(100vw - 108px)', lg: 'calc(100vw - 200px)' },
                 whiteSpace: 'nowrap',
                 overflow: 'hidden',
                 textOverflow: 'ellipsis'

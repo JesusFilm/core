@@ -142,8 +142,7 @@ export function Canvas(): ReactElement {
                     overflow: 'hidden',
                     outline: (theme) =>
                       step.parentOrder === swiper?.activeIndex
-                        ? typeof selectedBlock !== 'string' &&
-                          step.id === selectedBlock?.id
+                        ? step.id === selectedBlock?.id
                           ? `2px solid ${theme.palette.primary.main}`
                           : `2px solid ${theme.palette.background.default}`
                         : `0px solid`,
@@ -211,8 +210,8 @@ export function Canvas(): ReactElement {
                                 selectedComponent === 'Footer'
                                   ? '3px solid #C52D3A'
                                   : 'none',
-                              outlineOffset: -8,
-                              borderRadius: 5.5,
+                              outlineOffset: -6,
+                              borderRadius: 5,
                               cursor: 'pointer'
                             }}
                             onFooterClick={() => {

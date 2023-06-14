@@ -1,8 +1,9 @@
 import { Story, Meta } from '@storybook/react'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
-import { EditorProvider } from '@core/journeys/ui/EditorProvider'
+import { EditorProvider, EditorState } from '@core/journeys/ui/EditorProvider'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { MockedProvider } from '@apollo/client/testing'
+import { ComponentProps } from 'react'
 import {
   GetJourney_journey_blocks_StepBlock as StepBlock,
   GetJourney_journey as Journey
@@ -586,7 +587,12 @@ const steps: Array<TreeBlock<StepBlock>> = [
   }
 ]
 
-const Template: Story = ({ ...args }) => {
+const Template: Story<
+  ComponentProps<typeof Canvas> & {
+    journey: Partial<Journey>
+    state: Partial<EditorState>
+  }
+> = ({ journey, state }) => {
   return (
     <MockedProvider>
       <JourneyProvider
@@ -596,12 +602,25 @@ const Template: Story = ({ ...args }) => {
             themeMode: ThemeMode.light,
             themeName: ThemeName.base,
             seoTitle: 'my journey',
-            ...args
+            language: {
+              __typename: 'Language',
+              id: '529',
+              bcp47: 'en',
+              iso3: 'eng',
+              name: [
+                {
+                  __typename: 'Translation',
+                  value: 'English',
+                  primary: true
+                }
+              ]
+            },
+            ...journey
           } as unknown as Journey,
           admin: true
         }}
       >
-        <EditorProvider initialState={{ steps }}>
+        <EditorProvider initialState={{ steps, ...state }}>
           <Canvas />
         </EditorProvider>
       </JourneyProvider>
@@ -610,35 +629,30 @@ const Template: Story = ({ ...args }) => {
 }
 
 export const Default = Template.bind({})
-Default.args = {
-  language: {
-    __typename: 'Language',
-    id: '529',
-    bcp47: 'en',
-    iso3: 'eng',
-    name: [
-      {
-        __typename: 'Translation',
-        value: 'English',
-        primary: true
-      }
-    ]
-  }
-}
 
 export const RTL = Template.bind({})
 RTL.args = {
-  language: {
-    __typename: 'Language',
-    id: '529',
-    bcp47: 'ar',
-    name: [
-      {
-        __typename: 'Translation',
-        value: 'Arabic',
-        primary: true
-      }
-    ]
+  journey: {
+    language: {
+      __typename: 'Language',
+      id: '529',
+      bcp47: 'ar',
+      name: [
+        {
+          __typename: 'Translation',
+          value: 'Arabic',
+          primary: true
+        }
+      ]
+    }
+  }
+}
+
+export const FooterEdit = Template.bind({})
+FooterEdit.args = {
+  state: {
+    selectedBlock: {},
+    selectedComponent: 'Footer'
   }
 }
 
