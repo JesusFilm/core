@@ -73,8 +73,8 @@ describe('JourneyResolver', () => {
     chatButtons: []
   }
 
-  const journeyWithTeamId = {
-    id: 'journeyId',
+  const journeyWithTeam: Journey & { teamId: string } = {
+    id: 'journeyWithTeam',
     slug: 'journey-slug',
     title: 'published',
     status: JourneyStatus.published,
@@ -85,7 +85,8 @@ describe('JourneyResolver', () => {
     primaryImageBlock: null,
     publishedAt,
     createdAt,
-    teamId: 'jfp-team'
+    chatButtons: [],
+    teamId: 'geronimo-gang'
   }
 
   const primaryImageBlock: ImageBlock & { _key: string } = {
@@ -877,7 +878,8 @@ describe('JourneyResolver', () => {
         slug: `${journey.title}-copy`,
         title: `${journey.title} copy`,
         template: false,
-        hostId: null
+        hostId: null,
+        teamID: undefined
       })
     })
 
@@ -992,7 +994,7 @@ describe('JourneyResolver', () => {
     it('updates a Journey with host input', async () => {
       const mockHost = {
         id: 'host-id2',
-        teamId: 'jfp-team',
+        teamId: 'geronimo-gang',
         name: 'Edmond Shen & Nisal Cottingham',
         location: 'New Zealand',
         avatar1Id: 'avatar1-id',
@@ -1000,7 +1002,7 @@ describe('JourneyResolver', () => {
       }
 
       prismaService.host.findUnique = jest.fn().mockResolvedValueOnce(mockHost)
-      service.get = jest.fn().mockResolvedValueOnce(journeyWithTeamId)
+      service.get = jest.fn().mockResolvedValueOnce(journeyWithTeam)
       await resolver.journeyUpdate('journeyId', journeyUpdateHost)
       expect(service.update).toHaveBeenCalledWith(
         'journeyId',

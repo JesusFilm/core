@@ -273,10 +273,14 @@ export class JourneyResolver {
     @Args('id') id: string,
     @CurrentUserId() userId: string
   ): Promise<
-    (Journey & { primaryImageBlockId: string | undefined }) | undefined
+    | (Journey & { primaryImageBlockId: string | undefined; teamId?: string })
+    | undefined
   > {
-    const journey: Journey & { primaryImageBlockId: string | undefined } =
-      await this.journeyService.get(id)
+    const journey: Journey & {
+      primaryImageBlockId: string | undefined
+      teamId?: string
+    } = await this.journeyService.get(id)
+    console.log('this is my journey ', journey)
     const duplicateJourneyId = uuidv4()
     const existingDuplicateJourneys = await this.journeyService.getAllByTitle(
       journey.title,
@@ -341,7 +345,8 @@ export class JourneyResolver {
       status: JourneyStatus.draft,
       template: false,
       primaryImageBlockId: duplicatePrimaryImageBlock?._key,
-      hostId: null
+      hostId: null,
+      teamId: journey.teamId
     }
 
     let retry = true
