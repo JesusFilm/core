@@ -54,6 +54,32 @@ Complete.play = async () => {
   })
 }
 
+export const Icons = Template.bind({})
+Icons.args = {
+  value: {
+    id: '1',
+    title: 'Icons test',
+    linkValue: 'https://example.com',
+    active: true,
+    chatIcon: null,
+    enableIconSelect: true
+  },
+  disableSelection: false,
+  setValue: noop,
+  handleUpdate: noop,
+  handleToggle: noop
+}
+Icons.play = async () => {
+  const accordion = screen.getByRole('button', { name: 'Icons test' })
+  await waitFor(() => {
+    userEvent.click(accordion)
+  })
+  const select = screen.getByRole('button', { name: 'Chat Platform' })
+  await waitFor(() => {
+    userEvent.click(select)
+  })
+}
+
 export const Disabled = Template.bind({})
 Disabled.args = {
   value: {

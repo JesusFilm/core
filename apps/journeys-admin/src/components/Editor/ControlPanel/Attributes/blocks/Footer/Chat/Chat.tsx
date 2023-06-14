@@ -69,8 +69,6 @@ interface Props {
   journeyId: string
 }
 
-// TODO: add optimistic response
-
 export function Chat({ journeyId }: Props): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
 
