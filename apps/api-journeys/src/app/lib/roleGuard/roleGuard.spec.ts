@@ -58,7 +58,8 @@ describe('RoleGuard', () => {
     seoTitle: null,
     seoDescription: null,
     userJourneys: [userJourney],
-    template: true
+    template: true,
+    chatButtons: []
   }
 
   afterAll(() => {
