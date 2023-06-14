@@ -25,12 +25,15 @@ export function ControlPanel(): ReactElement {
     state: {
       steps,
       selectedBlock,
+      selectedComponent,
       selectedStep,
       activeTab,
       journeyEditContentComponent
     },
     dispatch
   } = useEditor()
+
+  const selected = selectedComponent ?? selectedBlock ?? 'none'
 
   useEffect(() => {
     if (
@@ -144,7 +147,7 @@ export function ControlPanel(): ReactElement {
             sx={{ flexGrow: 1 }}
             disabled={
               steps == null ||
-              selectedBlock == null ||
+              selected === 'none' ||
               journeyEditContentComponent !== ActiveJourneyEditContent.Canvas
             }
           />
@@ -184,8 +187,8 @@ export function ControlPanel(): ReactElement {
         />
       </TabPanel>
       <TabPanel name="control-panel" value={activeTab} index={1}>
-        {selectedBlock !== undefined && selectedStep !== undefined && (
-          <Attributes selected={selectedBlock} step={selectedStep} />
+        {selected !== 'none' && selectedStep !== undefined && (
+          <Attributes selected={selected} step={selectedStep} />
         )}
       </TabPanel>
       <TabPanel name="control-panel" value={activeTab} index={2}>
