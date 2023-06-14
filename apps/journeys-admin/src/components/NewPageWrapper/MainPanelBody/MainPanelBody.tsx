@@ -48,7 +48,7 @@ export function MainPanelBody({
             height: bottomPanel.height,
             position: 'fixed',
             bottom: 0,
-            left: { xs: 0, sm: navbar.width },
+            left: { xs: 0, md: navbar.width },
             backgroundColor: 'background.paper',
             borderTop: '1px solid',
             borderColor: 'divider'

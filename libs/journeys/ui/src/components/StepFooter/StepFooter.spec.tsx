@@ -1,4 +1,4 @@
-import { render } from '@testing-library/react'
+import { fireEvent, render } from '@testing-library/react'
 import {
   JourneyStatus,
   ThemeMode,
@@ -59,5 +59,28 @@ describe('StepFooter', () => {
     )
 
     expect(getByText('my journey')).toBeInTheDocument()
+  })
+
+  it('should render custom styles', () => {
+    const { getByTestId } = render(
+      <JourneyProvider value={{ journey }}>
+        <StepFooter sx={{ outline: '1px solid red' }} />
+      </JourneyProvider>
+    )
+
+    expect(getByTestId('stepFooter')).toHaveStyle('outline: 1px solid red')
+  })
+
+  it('should call onFooterClick on click', () => {
+    const onFooterClick = jest.fn()
+    const { getByTestId } = render(
+      <JourneyProvider value={{ journey: { ...journey, seoTitle: null } }}>
+        <StepFooter onFooterClick={onFooterClick} />
+      </JourneyProvider>
+    )
+
+    fireEvent.click(getByTestId('stepFooter'))
+
+    expect(onFooterClick).toBeCalledTimes(1)
   })
 })

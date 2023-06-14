@@ -162,6 +162,45 @@ describe('ControlPanel', () => {
     expect(getByRole('button', { name: 'Text' }))
   })
 
+  it('should render component properties if a component is selected', async () => {
+    const { getByRole } = render(
+      <MockedProvider>
+        <JourneyProvider
+          value={{
+            journey: {
+              id: 'journeyId',
+              themeMode: ThemeMode.dark,
+              themeName: ThemeName.base,
+              language: {
+                __typename: 'Language',
+                id: '529',
+                bcp47: 'en',
+                iso3: 'eng'
+              }
+            } as unknown as Journey,
+            admin: true
+          }}
+        >
+          <EditorProvider
+            initialState={{
+              steps: [step1],
+              selectedBlock: undefined,
+              selectedComponent: 'Footer'
+            }}
+          >
+            <ControlPanel />
+          </EditorProvider>
+        </JourneyProvider>
+      </MockedProvider>
+    )
+    fireEvent.click(getByRole('tab', { name: 'Properties' }))
+    expect(getByRole('tab', { name: 'Properties' })).toHaveAttribute(
+      'aria-selected',
+      'true'
+    )
+    expect(getByRole('button', { name: 'Hosted by None' })).toBeInTheDocument()
+  })
+
   it('should hide add button when clicking blocks tab', async () => {
     const { getByRole, queryByRole } = render(
       <MockedProvider>

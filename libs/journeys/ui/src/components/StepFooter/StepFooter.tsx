@@ -1,22 +1,40 @@
 import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
+import { SxProps } from '@mui/material/styles'
 
 import { ReactElement } from 'react'
 import { useJourney } from '../../libs/JourneyProvider'
 import { getJourneyRTL } from '../../libs/rtl'
 
-export function StepFooter(): ReactElement {
+interface StepFooterProps {
+  onFooterClick?: () => void
+  sx?: SxProps
+}
+
+export function StepFooter({
+  onFooterClick,
+  sx
+}: StepFooterProps): ReactElement {
   const { journey } = useJourney()
   const { rtl } = getJourneyRTL(journey)
 
   return (
     <Box
+      data-testid="stepFooter"
+      className="swiper-no-swiping"
       sx={{
         position: { xs: 'absolute', lg: 'relative' },
         zIndex: 1,
         bottom: 0,
-        width: { xs: '100%', lg: 'auto' }
+        width: { xs: '100%', lg: 'auto' },
+        ...sx
+      }}
+      onClick={(e) => {
+        if (onFooterClick != null) {
+          e.stopPropagation()
+          onFooterClick()
+        }
       }}
     >
       <Stack
@@ -46,11 +64,12 @@ export function StepFooter(): ReactElement {
             flexDirection: rtl ? 'row-reverse' : 'row',
             alignItems: 'center'
           }}
-          gap={4}
         >
           <Stack
             sx={{
-              flexGrow: 1,
+              flex: '1 1 100%',
+              minWidth: 0,
+              width: '100%',
               flexDirection: 'row',
               alignItems: 'center',
               justifyContent: 'space-between'
@@ -62,7 +81,6 @@ export function StepFooter(): ReactElement {
                 py: 3,
                 // Always dark mode on lg breakpoint
                 color: { xs: 'primary.main', lg: 'white' },
-                width: { xs: 'calc(100vw - 92px)', lg: 'calc(100vw - 200px)' },
                 whiteSpace: 'nowrap',
                 overflow: 'hidden',
                 textOverflow: 'ellipsis'
@@ -81,15 +99,17 @@ export function StepFooter(): ReactElement {
               }}
             /> */}
           </Stack>
-          {/* <Stack
-            data-testid="chat-widget"
-            sx={{
-              width: 36,
-              height: 36,
-              borderRadius: 5,
-              backgroundColor: 'white'
-            }}
-          /> */}
+          <Box>
+            {/* <Stack
+              data-testid="chat-widget"
+              sx={{
+                width: 44,
+                height: 44,
+                borderRadius: 10,
+                backgroundColor: 'white'
+              }}
+            /> */}
+          </Box>
         </Stack>
       </Stack>
     </Box>

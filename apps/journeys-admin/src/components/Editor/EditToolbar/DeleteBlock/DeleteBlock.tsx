@@ -49,6 +49,8 @@ export function DeleteBlock({
     closeMenu?.()
   }
 
+  const disableAction = selectedBlock == null || disabled
+
   const handleDeleteBlock = async (): Promise<void> => {
     if (selectedBlock == null || journey == null || steps == null) return
 
@@ -115,7 +117,7 @@ export function DeleteBlock({
           aria-controls="delete-block-actions"
           aria-haspopup="true"
           aria-expanded="true"
-          disabled={selectedBlock == null || disabled}
+          disabled={disableAction}
           onClick={label === 'Card' ? handleOpenDialog : handleDeleteBlock}
         >
           <DeleteOutlineRounded />
@@ -124,7 +126,7 @@ export function DeleteBlock({
         <MenuItem
           label={`Delete ${label}`}
           icon={<DeleteOutlineRounded />}
-          disabled={selectedBlock == null || disabled}
+          disabled={disableAction}
           onClick={label === 'Card' ? handleOpenDialog : handleDeleteBlock}
         />
       )}
