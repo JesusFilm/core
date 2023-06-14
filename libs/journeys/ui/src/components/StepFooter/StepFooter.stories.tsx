@@ -1,12 +1,14 @@
 import { ComponentProps } from 'react'
 import { Story, Meta } from '@storybook/react'
 import Stack from '@mui/material/Stack'
+import { MockedProvider } from '@apollo/client/testing'
 import { journeyUiConfig } from '../../libs/journeyUiConfig'
 
 import {
   ThemeMode,
   ThemeName,
-  JourneyStatus
+  JourneyStatus,
+  ChatPlatform
 } from '../../../__generated__/globalTypes'
 
 import { JourneyProvider } from '../../libs/JourneyProvider'
@@ -52,26 +54,29 @@ const journey: Journey = {
   userJourneys: [],
   template: null,
   seoTitle: null,
-  seoDescription: null
+  seoDescription: null,
+  chatButtons: []
 }
 
 const Template: Story<
   ComponentProps<typeof StepFooter> & { journey: Journey }
 > = ({ journey }) => {
   return (
-    <JourneyProvider value={{ journey }}>
-      <Stack
-        sx={{
-          position: 'relative',
-          width: '100%',
-          height: 64,
-          border: '1px solid black',
-          justifyContent: 'center'
-        }}
-      >
-        <StepFooter />
-      </Stack>
-    </JourneyProvider>
+    <MockedProvider>
+      <JourneyProvider value={{ journey }}>
+        <Stack
+          sx={{
+            position: 'relative',
+            width: '100%',
+            height: 64,
+            border: '1px solid black',
+            justifyContent: 'center'
+          }}
+        >
+          <StepFooter />
+        </Stack>
+      </JourneyProvider>
+    </MockedProvider>
   )
 }
 
@@ -92,7 +97,19 @@ Long.args = {
 }
 
 export const RTL = Template.bind({})
-RTL.args = { ...Default.args }
+RTL.args = {
+  journey: {
+    ...journey,
+    chatButtons: [
+      {
+        __typename: 'ChatButton',
+        id: '1',
+        link: 'https://m.me/',
+        platform: ChatPlatform.facebook
+      }
+    ]
+  }
+}
 RTL.parameters = { rtl: true }
 
 export default Demo as Meta

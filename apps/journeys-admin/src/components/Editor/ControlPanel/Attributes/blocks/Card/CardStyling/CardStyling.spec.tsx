@@ -58,7 +58,8 @@ const journey: Journey = {
   template: null,
   userJourneys: [],
   seoTitle: null,
-  seoDescription: null
+  seoDescription: null,
+  chatButtons: []
 }
 
 describe('CardStyling', () => {

@@ -76,7 +76,8 @@ const defaultJourney: Journey = {
   userJourneys: [],
   template: null,
   seoTitle: null,
-  seoDescription: null
+  seoDescription: null,
+  chatButtons: []
 }
 
 const Template: Story<

@@ -41,6 +41,7 @@ export const defaultJourney: Journey = {
   template: null,
   seoTitle: null,
   seoDescription: null,
+  chatButtons: [],
   userJourneys: [
     {
       id: 'userJourneyId1',

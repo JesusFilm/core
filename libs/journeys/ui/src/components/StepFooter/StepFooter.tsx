@@ -100,7 +100,9 @@ export function StepFooter({
               }}
             /> */}
           </Stack>
-          <ChatButtons />
+          <Box>
+            <ChatButtons />
+          </Box>
         </Stack>
       </Stack>
     </Box>

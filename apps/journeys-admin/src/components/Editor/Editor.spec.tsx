@@ -61,7 +61,8 @@ describe('Editor', () => {
     userJourneys: [],
     template: null,
     seoTitle: null,
-    seoDescription: null
+    seoDescription: null,
+    chatButtons: []
   }
 
   it('should render the element', () => {
