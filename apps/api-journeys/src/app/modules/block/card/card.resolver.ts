@@ -1,5 +1,7 @@
 import { UseGuards } from '@nestjs/common'
 import { Args, Mutation, Parent, ResolveField, Resolver } from '@nestjs/graphql'
+import { omit } from 'lodash'
+
 import {
   CardBlock,
   CardBlockCreateInput,
@@ -22,15 +24,17 @@ export class CardBlockResolver {
     ])
   )
   async cardBlockCreate(
-    @Args('input') input: CardBlockCreateInput & { __typename }
+    @Args('input') input: CardBlockCreateInput
   ): Promise<CardBlock> {
-    input.__typename = 'CardBlock'
     const siblings = await this.blockService.getSiblings(
       input.journeyId,
       input.parentBlockId
     )
     return await this.blockService.save({
-      ...input,
+      ...omit(input, ['journeyId', '__typename']),
+      id: input.id ?? undefined,
+      typename: 'CardBlock',
+      journey: { connect: { id: input.journeyId } },
       parentOrder: siblings.length
     })
   }

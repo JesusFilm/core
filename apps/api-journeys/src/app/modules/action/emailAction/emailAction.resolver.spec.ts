@@ -11,7 +11,7 @@ describe('EmailActionResolver', () => {
   const block = {
     id: '1',
     journeyId: '2',
-    __typename: 'RadioOptionBlock',
+    typename: 'RadioOptionBlock',
     parentBlockId: '3',
     parentOrder: 3,
     label: 'label',
@@ -57,8 +57,11 @@ describe('EmailActionResolver', () => {
       block.journeyId,
       emailActionInput
     )
-    expect(prismaService.action.update).toHaveBeenCalledWith(block.id, {
-      action: { ...emailActionInput, parentBlockId: block.action.parentBlockId }
+    expect(prismaService.action.update).toHaveBeenCalledWith({
+      where: { id: block.id },
+      data: {
+        ...emailActionInput, parentBlockId: block.action.parentBlockId
+      }
     })
   })
 

@@ -147,6 +147,12 @@
       "options": {
         "command": "npx tsc -b apps/api-journeys/tsconfig.json"
       }
+    },
+    "prisma-studio": {
+      "executor": "@nrwl/workspace:run-commands",
+      "options": {
+        "command": "npx prisma studio --schema apps/api-journeys/db/schema.prisma"
+      }
     }
   },
   "tags": []

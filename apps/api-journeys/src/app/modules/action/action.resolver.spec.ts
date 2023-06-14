@@ -12,13 +12,12 @@ import { ActionResolver } from './action.resolver'
 describe('ActionResolver', () => {
   let resolver: ActionResolver,
     blockResolver: BlockResolver,
-    service: BlockService,
     prismaService: PrismaService
 
   const block1 = {
     id: '1',
     journeyId: '2',
-    __typename: 'RadioOptionBlock',
+    typename: 'RadioOptionBlock',
     parentBlockId: '3',
     parentOrder: 3,
     label: 'label',
@@ -272,14 +271,12 @@ describe('ActionResolver', () => {
       resolver = module.get<ActionResolver>(ActionResolver)
       prismaService = module.get<PrismaService>(PrismaService)
       prismaService.block.findUnique = jest.fn().mockReturnValueOnce(block1)
-      prismaService.action.update = jest.fn().mockReturnValueOnce(emptyAction)
+      prismaService.action.delete = jest.fn().mockReturnValueOnce(emptyAction)
     })
     it('removes the block action', async () => {
       await resolver.blockDeleteAction(block1.id, block1.journeyId)
 
-      expect(prismaService.action.delete).toHaveBeenCalledWith(block1.id, {
-        action: null
-      })
+      expect(prismaService.action.delete).toHaveBeenCalledWith({ where: { id: block1.id } })
     })
   })
 })

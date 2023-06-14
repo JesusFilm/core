@@ -5,20 +5,14 @@ import { VisitorService } from '../visitor/visitor.service'
 import { EventService } from './event.service'
 
 describe('EventService', () => {
-  let service: EventService
+  let service: EventService, prismaService: PrismaService
 
   const blockService = {
     provide: BlockService,
     useFactory: () => ({
-      get: jest.fn((blockId) => {
-        switch (blockId) {
-          case block._key:
-            return block
-        }
-      }),
       validateBlock: jest.fn((stepId) => {
         switch (stepId) {
-          case step._key:
+          case step.id:
             return true
           default:
             return false
@@ -40,12 +34,12 @@ describe('EventService', () => {
   }
 
   const block = {
-    _key: 'block.id',
+    id: 'block.id',
     journeyId: 'journey.id'
   }
 
   const step = {
-    _key: 'step.id',
+    id: 'step.id',
     journeyId: 'journey.id'
   }
 
@@ -65,6 +59,14 @@ describe('EventService', () => {
     }).compile()
 
     service = module.get<EventService>(EventService)
+    prismaService = module.get<PrismaService>(PrismaService)
+    prismaService.block.findUnique = jest.fn().mockImplementation((input) => {
+      switch (input.where.id) {
+        case block.id:
+          return block
+        default: return null
+      }
+    })
   })
   afterAll(() => {
     jest.resetAllMocks()
@@ -87,7 +89,7 @@ describe('EventService', () => {
           await service.validateBlockEvent(
             'user.id',
             'anotherBlock.id',
-            'step.id'
+            step.id
           )
       ).rejects.toThrow('Block does not exist')
     })
@@ -97,7 +99,7 @@ describe('EventService', () => {
         async () =>
           await service.validateBlockEvent(
             'user.id',
-            'block.id',
+            block.id,
             'anotherStep.id'
           )
       ).rejects.toThrow(

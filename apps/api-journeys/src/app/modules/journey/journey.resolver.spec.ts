@@ -139,7 +139,7 @@ describe('JourneyResolver', () => {
   const block = {
     id: 'blockId',
     journeyId: 'journeyId',
-    typename: 'ImageBlock',
+    __typename: 'ImageBlock',
     parentBlockId: 'stepId',
     parentOrder: 0,
     src: 'https://source.unsplash.com/random/1920x1080',
@@ -945,7 +945,10 @@ describe('JourneyResolver', () => {
         'duplicateJourneyId',
         duplicateStepIds
       )
-      expect(bService.saveAll).toHaveBeenCalledWith([duplicatedStep])
+      expect(bService.saveAll).toHaveBeenCalledWith([{
+        ...duplicatedStep,
+        journey: { connect: { id: 'duplicateJourneyId' } }
+      }])
     })
 
     it('increments copy number on journey if multiple duplicates exist', async () => {
@@ -1001,12 +1004,14 @@ describe('JourneyResolver', () => {
         duplicateStepIds
       )
       expect(bService.saveAll).toHaveBeenCalledWith([
-        duplicatedStep,
+        {
+          ...duplicatedStep,
+          journey: { connect: { id: 'duplicateJourneyId' } }
+        },
         {
           ...primaryImageBlock,
           id: 'duplicatePrimaryImageBlock.id',
           journey: { connect: { id: 'duplicateJourneyId'}},
-          journeyId: 'duplicateJourneyId',
           parentBlockId: 'duplicateJourneyId'
         }
       ])

@@ -77,7 +77,7 @@ describe('VisitorResolver', () => {
     vService = module.get<VisitorService>(VisitorService)
     prisma = module.get<PrismaService>(PrismaService)
     prisma.event.findMany = jest.fn().mockReturnValue([event])
-    prisma.userTeam.findUnique = jest.fn().mockResolvedValueOnce(member)
+    prisma.userTeam.findUnique = jest.fn().mockResolvedValueOnce(userTeam)
     prisma.visitor.findUnique = jest.fn().mockReturnValue(visitor)
   })
 

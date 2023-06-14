@@ -13,7 +13,7 @@ describe('NavigateToBlockActionResolver', () => {
   const block = {
     id: '1',
     journeyId: '2',
-    __typename: 'RadioOptionBlock',
+    typename: 'RadioOptionBlock',
     parentBlockId: '3',
     parentOrder: 3,
     label: 'label',

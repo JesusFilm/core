@@ -6,18 +6,18 @@ import { ActionResolver } from '../action.resolver'
 import { UserJourneyService } from '../../userJourney/userJourney.service'
 import { UserRoleService } from '../../userRole/userRole.service'
 import { PrismaService } from '../../../lib/prisma.service'
+import { JourneyService } from '../../journey/journey.service'
 import { NavigateToJourneyActionResolver } from './navigateToJourney.resolver'
 
 describe('NavigateToJourneyActionResolver', () => {
   let resolver: NavigateToJourneyActionResolver,
     blockResolver: BlockResolver,
-    service: BlockService,
     prismaService: PrismaService
 
   const block = {
     id: '1',
     journeyId: '2',
-    __typename: 'RadioOptionBlock',
+    typename: 'RadioOptionBlock',
     parentBlockId: '3',
     parentOrder: 3,
     label: 'label',
@@ -54,6 +54,7 @@ describe('NavigateToJourneyActionResolver', () => {
         BlockResolver,
         NavigateToJourneyActionResolver,
         BlockService,
+        JourneyService,
         ActionResolver,
         UserJourneyService,
         UserRoleService,
@@ -64,7 +65,6 @@ describe('NavigateToJourneyActionResolver', () => {
       NavigateToJourneyActionResolver
     )
     blockResolver = module.get<BlockResolver>(BlockResolver)
-    service = await module.resolve(BlockService)
     prismaService = module.get<PrismaService>(PrismaService)
     prismaService.journey.findUnique = jest.fn().mockResolvedValue(journey)
     prismaService.block.findUnique = jest.fn().mockResolvedValue(block)
@@ -86,8 +86,10 @@ describe('NavigateToJourneyActionResolver', () => {
         block.journeyId,
         navigateToJourneyInput
       )
-      expect(service.update).toHaveBeenCalledWith(block.id, {
-        action: { ...navigateToJourneyInput, parentBlockId: block.id }
+      expect(prismaService.action.update).toHaveBeenCalledWith({
+        where: { id: block.id }, data: {
+           ...navigateToJourneyInput, parentBlockId: block.id
+        }
       })
     })
   })
@@ -97,7 +99,7 @@ describe('NavigateToJourneyActionResolver', () => {
       ...block,
       __typename: 'WrongBlock'
     }
-    service.get = jest.fn().mockResolvedValue(wrongBlock)
+    prismaService.block.findUnique = jest.fn().mockResolvedValue(wrongBlock)
     await resolver
       .blockUpdateNavigateToJourneyAction(
         wrongBlock.id,

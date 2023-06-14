@@ -23,7 +23,7 @@ export class EventService {
     journeyVisitor: JourneyVisitor
     journeyId: string
   }> {
-    const block: { journeyId: string; _key: string } | undefined =
+    const block =
       await this.prismaService.block.findUnique({ where: { id: blockId } })
 
     if (block == null) {
