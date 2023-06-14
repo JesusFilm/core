@@ -94,7 +94,8 @@ describe('UserJourneyService', () => {
     slug: 'published-slug',
     createdAt: '',
     status: JourneyStatus.published,
-    teamId: 'teamId'
+    teamId: 'teamId',
+    chatButtons: []
   }
 
   describe('forJourney', () => {
