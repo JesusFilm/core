@@ -14,7 +14,7 @@ export function StepFooter(): ReactElement {
   const name = 'Bartholomew & Bernadette'
   const location = 'Karaganda is a very long city name'
 
-  const src1 = 'undefined'
+  const src1 = undefined
   const src2 = undefined
   return (
     <Box
@@ -71,9 +71,17 @@ export function StepFooter(): ReactElement {
                 color: { xs: 'primary.main', lg: 'white' },
                 width: {
                   xs: `calc(100vw - ${
-                    src1 != null || src2 != null ? '122px' : '102px'
+                    !admin && (src1 == null || src2 == null)
+                      ? '102px'
+                      : !admin && src1 != null && src2 != null
+                      ? '132px'
+                      : (src1 != null || src2 != null) && admin
+                      ? '132px'
+                      : '102px'
                   })`,
-                  lg: 'calc(100vw - 200px)'
+                  lg: `calc(100vw - ${
+                    !admin && src1 != null && src2 != null ? '190px' : '160px'
+                  } )`
                 },
                 whiteSpace: 'nowrap',
                 overflow: 'hidden',
