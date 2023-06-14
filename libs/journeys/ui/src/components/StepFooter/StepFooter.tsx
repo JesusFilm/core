@@ -68,7 +68,9 @@ export function StepFooter({
         >
           <Stack
             sx={{
-              flexGrow: 1,
+              flex: '1 1 100%',
+              minWidth: 0,
+              width: '100%',
               flexDirection: 'row',
               alignItems: 'center',
               justifyContent: 'space-between'
@@ -80,7 +82,6 @@ export function StepFooter({
                 py: 3,
                 // Always dark mode on lg breakpoint
                 color: { xs: 'primary.main', lg: 'white' },
-                width: { xs: 'calc(100vw - 108px)', lg: 'calc(100vw - 200px)' },
                 whiteSpace: 'nowrap',
                 overflow: 'hidden',
                 textOverflow: 'ellipsis'
@@ -99,15 +100,17 @@ export function StepFooter({
               }}
             /> */}
           </Stack>
-          {/* <Stack
-            data-testid="chat-widget"
-            sx={{
-              width: 44,
-              height: 44,
-              borderRadius: 5,
-              backgroundColor: 'white'
-            }}
-          /> */}
+          <Box>
+            {/* <Stack
+              data-testid="chat-widget"
+              sx={{
+                width: 44,
+                height: 44,
+                borderRadius: 10,
+                backgroundColor: 'white'
+              }}
+            /> */}
+          </Box>
         </Stack>
       </Stack>
     </Box>
