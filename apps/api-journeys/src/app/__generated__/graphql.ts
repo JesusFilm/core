@@ -568,6 +568,20 @@ export class VideoProgressEventCreateInput {
     value?: Nullable<VideoBlockSource>;
 }
 
+export class HostUpdateInput {
+    title?: Nullable<string>;
+    location?: Nullable<string>;
+    avatar1Id?: Nullable<string>;
+    avatar2Id?: Nullable<string>;
+}
+
+export class HostCreateInput {
+    title: string;
+    location?: Nullable<string>;
+    avatar1Id?: Nullable<string>;
+    avatar2Id?: Nullable<string>;
+}
+
 export class JourneysFilter {
     featured?: Nullable<boolean>;
     template?: Nullable<boolean>;
@@ -1041,17 +1055,20 @@ export class VideoProgressEvent implements Event {
     progress: number;
 }
 
-export class PowerBiEmbed {
-    __typename?: 'PowerBiEmbed';
-    reportId: string;
-    reportName: string;
-    embedUrl: string;
-    accessToken: string;
-    expiration: string;
+export class Host {
+    __typename?: 'Host';
+    id: string;
+    teamId: string;
+    title: string;
+    location?: Nullable<string>;
+    avatar1Id?: Nullable<string>;
+    avatar2Id?: Nullable<string>;
 }
 
 export abstract class IQuery {
     __typename?: 'IQuery';
+
+    abstract hosts(teamId: string): Host[] | Promise<Host[]>;
 
     abstract adminJourneys(status?: Nullable<JourneyStatus[]>, template?: Nullable<boolean>): Journey[] | Promise<Journey[]>;
 
@@ -1076,6 +1093,15 @@ export abstract class IQuery {
     abstract visitorsConnection(teamId: string, first?: Nullable<number>, after?: Nullable<string>): VisitorsConnection | Promise<VisitorsConnection>;
 
     abstract visitor(id: string): Visitor | Promise<Visitor>;
+}
+
+export class PowerBiEmbed {
+    __typename?: 'PowerBiEmbed';
+    reportId: string;
+    reportName: string;
+    embedUrl: string;
+    accessToken: string;
+    expiration: string;
 }
 
 export class UserJourney {
@@ -1319,6 +1345,12 @@ export abstract class IMutation {
     abstract videoCollapseEventCreate(input: VideoCollapseEventCreateInput): VideoCollapseEvent | Promise<VideoCollapseEvent>;
 
     abstract videoProgressEventCreate(input: VideoProgressEventCreateInput): VideoProgressEvent | Promise<VideoProgressEvent>;
+
+    abstract hostCreate(teamId: string, input: HostCreateInput): Host | Promise<Host>;
+
+    abstract hostUpdate(id: string, teamId: string, input?: Nullable<HostUpdateInput>): Host | Promise<Host>;
+
+    abstract hostDelete(id: string, teamId: string): Host | Promise<Host>;
 
     abstract journeyCreate(input: JourneyCreateInput): Journey | Promise<Journey>;
 
