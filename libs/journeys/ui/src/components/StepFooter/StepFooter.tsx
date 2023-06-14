@@ -17,7 +17,7 @@ export function StepFooter({
   onFooterClick,
   sx
 }: StepFooterProps): ReactElement {
-  const { journey, admin } = useJourney()
+  const { journey } = useJourney()
   const { rtl } = getJourneyRTL(journey)
 
   const name = 'Alexander & Eliza Hamilton'
@@ -91,7 +91,7 @@ export function StepFooter({
               }}
             >
               {journey?.seoTitle ?? journey?.title}
-              <NameAndLocation name={name} location={location} admin={admin} />
+              <NameAndLocation name={name} location={location} />
             </Typography>
             {/* <Stack
               data-testid="chip"

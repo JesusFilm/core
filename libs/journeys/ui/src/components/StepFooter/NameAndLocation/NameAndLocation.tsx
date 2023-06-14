@@ -8,17 +8,11 @@ import { getJourneyRTL } from '../../../libs/rtl'
 interface NameAndLocationProps {
   name: string
   location?: string
-  src1?: string
-  src2?: string
-  admin: boolean
 }
 
 export const NameAndLocation = ({
   name,
-  location = '',
-  src1,
-  src2,
-  admin
+  location = ''
 }: NameAndLocationProps): ReactElement => {
   const { journey } = useJourney()
   const { rtl } = getJourneyRTL(journey)
