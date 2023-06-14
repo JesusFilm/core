@@ -23,9 +23,6 @@ export const NameAndLocation = ({
   const { journey } = useJourney()
   const { rtl } = getJourneyRTL(journey)
 
-  const maxWidthAmount = src1 != null || src2 != null ? '190px' : '150px'
-  const maxWidthAmountDesktop = src1 != null || src2 != null ? '260px' : '220px'
-
   return (
     <Stack
       className="name-and-location"
@@ -39,19 +36,10 @@ export const NameAndLocation = ({
         variant="body2"
         sx={{
           whiteSpace: 'nowrap',
-          width: {
-            xs: `calc(100vw - ${
-              !admin && src1 == null && src2 == null ? '110px' : maxWidthAmount
-            })`,
-            lg: `calc(100vw - ${
-              !admin && src1 == null && src2 == null
-                ? '180px'
-                : maxWidthAmountDesktop
-            })`
-          },
           overflow: 'clip',
           textOverflow: 'ellipsis',
-          color: 'secondary.light'
+          color: { xs: 'primary.main', lg: 'white' },
+          opacity: 0.7
         }}
       >
         {rtl
