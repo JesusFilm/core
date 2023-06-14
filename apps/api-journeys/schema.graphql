@@ -226,7 +226,7 @@ type Journey
   seoTitle: String
   seoDescription: String
   template: Boolean
-  hostId: String
+  host: Host
   userJourneys: [UserJourney!]
 }
 

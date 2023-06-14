@@ -717,7 +717,7 @@ export class Journey {
     seoTitle?: Nullable<string>;
     seoDescription?: Nullable<string>;
     template?: Nullable<boolean>;
-    hostId?: Nullable<string>;
+    host?: Nullable<Host>;
     userJourneys?: Nullable<UserJourney[]>;
 }
 
