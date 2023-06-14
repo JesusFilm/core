@@ -280,7 +280,6 @@ export class JourneyResolver {
       primaryImageBlockId: string | undefined
       teamId?: string
     } = await this.journeyService.get(id)
-    console.log('this is my journey ', journey)
     const duplicateJourneyId = uuidv4()
     const existingDuplicateJourneys = await this.journeyService.getAllByTitle(
       journey.title,
