@@ -2,6 +2,7 @@ import { ReactElement, useState, useEffect } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 import { gql, useMutation, useQuery } from '@apollo/client'
 import Box from '@mui/material/Box'
+import { useTranslation } from 'react-i18next'
 import Typography from '@mui/material/Typography'
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'
 import { ChatPlatform } from '../../../__generated__/globalTypes'
@@ -11,7 +12,6 @@ import { JourneyChatButtonUpdate } from '../../../__generated__/JourneyChatButto
 import { JourneyChatButtonRemove } from '../../../__generated__/JourneyChatButtonRemove'
 import { PlatformDetails } from './ChatOption/ChatOption'
 import { ChatOption } from './ChatOption'
-
 import { getByPlatform, getChatButton, stateSetter } from './utils'
 
 export const GET_JOURNEY_CHAT_BUTTONS = gql`
@@ -71,10 +71,11 @@ interface Props {
   journeyId: string
 }
 
-// TODO: add translation
 // TODO: add optimistic response
 
 export function Chat({ journeyId }: Props): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
+
   const defaultValues: PlatformDetails = {
     id: '',
     title: '',
@@ -85,31 +86,34 @@ export function Chat({ journeyId }: Props): ReactElement {
   const [facebook, setFacebook] = useState<PlatformDetails>({
     ...defaultValues,
     id: uuidv4(),
-    title: 'Facebook Messenger',
+    title: t('Facebook Messenger'),
     platform: ChatPlatform.facebook,
-    helperInfo:
+    helperInfo: t(
       'A text block containing a link with information on how the user can extract the correct link to Messenger chat.'
+    )
   })
   const [whatsApp, setWhatsApp] = useState<PlatformDetails>({
     ...defaultValues,
     id: uuidv4(),
-    title: 'WhatsApp',
+    title: t('WhatsApp'),
     platform: ChatPlatform.whatsApp,
-    helperInfo:
+    helperInfo: t(
       'A text block containing a link with information on how the user can extract the correct link to WhatsApp chat.'
+    )
   })
   const [telegram, setTelegram] = useState<PlatformDetails>({
     ...defaultValues,
     id: uuidv4(),
-    title: 'Telegram',
+    title: t('Telegram'),
     platform: ChatPlatform.telegram,
-    helperInfo:
+    helperInfo: t(
       'A text block containing a link with information on how the user can extract the correct link to Telegram chat.'
+    )
   })
   const [custom, setCustom] = useState<PlatformDetails>({
     ...defaultValues,
     id: uuidv4(),
-    title: 'Custom',
+    title: t('Custom'),
     enableIconSelect: true
   })
 
@@ -222,7 +226,7 @@ export function Chat({ journeyId }: Props): ReactElement {
       >
         <InfoOutlinedIcon sx={{ mr: 3 }} />
         <Typography variant="caption">
-          You can add no more than two chat platforms
+          {t('You can add no more than two chat platforms')}
         </Typography>
       </Box>
     </>

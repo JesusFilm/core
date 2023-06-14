@@ -8,11 +8,13 @@ import TextField from '@mui/material/TextField'
 import InputLabel from '@mui/material/InputLabel'
 import Select, { SelectChangeEvent } from '@mui/material/Select'
 import MenuItem from '@mui/material/MenuItem'
+import { useTranslation } from 'react-i18next'
 import FormControl from '@mui/material/FormControl'
 import Checkbox from '@mui/material/Checkbox'
 import Stack from '@mui/material/Stack'
 import KeyboardArrowDownRoundedIcon from '@mui/icons-material/KeyboardArrowDownRounded'
 import findKey from 'lodash/findKey'
+import ChatRoundedIcon from '@mui/icons-material/ChatRounded'
 import { ChatPlatform } from '../../../../__generated__/globalTypes'
 
 export interface PlatformDetails {
@@ -39,8 +41,63 @@ export function ChatOption({
   handleUpdate,
   handleToggle
 }: Props): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
   const { id, active, title, link, enableIconSelect, platform, helperInfo } =
     value
+
+  // icons equivalent to ChatPlatform from global types
+  const chatIconOptions = [
+    {
+      value: ChatPlatform.facebook,
+      label: t('Facebook'),
+      icon: <ChatRoundedIcon />
+    },
+    {
+      value: ChatPlatform.whatsApp,
+      label: t('WhatsApp'),
+      icon: <ChatRoundedIcon />
+    },
+    {
+      value: ChatPlatform.telegram,
+      label: t('Telegram'),
+      icon: <ChatRoundedIcon />
+    },
+    {
+      value: ChatPlatform.instagram,
+      label: t('Instagram'),
+      icon: <ChatRoundedIcon />
+    },
+    {
+      value: ChatPlatform.line,
+      label: t('LINE'),
+      icon: <ChatRoundedIcon />
+    },
+    {
+      value: ChatPlatform.skype,
+      label: t('Skype'),
+      icon: <ChatRoundedIcon />
+    },
+    {
+      value: ChatPlatform.snapchat,
+      label: t('Snapchat'),
+      icon: <ChatRoundedIcon />
+    },
+    {
+      value: ChatPlatform.tikTok,
+      label: t('TikTok'),
+      icon: <ChatRoundedIcon />
+    },
+    {
+      value: ChatPlatform.viber,
+      label: t('Viber'),
+      icon: <ChatRoundedIcon />
+    },
+    {
+      value: ChatPlatform.vk,
+      label: t('VK'),
+      icon: <ChatRoundedIcon />
+    }
+  ]
 
   function handleChangeActive(
     event: React.ChangeEvent<HTMLInputElement>
@@ -106,14 +163,15 @@ export function ChatOption({
                 onChange={handleChangeIcon}
                 IconComponent={KeyboardArrowDownRoundedIcon}
               >
-                <MenuItem value="default">Select an icon...</MenuItem>
-                <MenuItem value={ChatPlatform.instagram}>Instagram</MenuItem>
-                <MenuItem value={ChatPlatform.line}>LINE</MenuItem>
-                <MenuItem value={ChatPlatform.skype}>Skype</MenuItem>
-                <MenuItem value={ChatPlatform.snapchat}>SnapChat</MenuItem>
-                <MenuItem value={ChatPlatform.tikTok}>TikTok</MenuItem>
-                <MenuItem value={ChatPlatform.viber}>Viber</MenuItem>
-                <MenuItem value={ChatPlatform.vk}>VK</MenuItem>
+                <MenuItem value="default">{t('Select an icon...')}</MenuItem>
+                {chatIconOptions.map(({ value, label, icon }) => (
+                  <MenuItem key={`chat-icon-${value}`} value={value}>
+                    <Stack direction="row" spacing={5} sx={{ py: 3 }}>
+                      {icon}
+                      <Typography>{label}</Typography>
+                    </Stack>
+                  </MenuItem>
+                ))}
               </Select>
             </FormControl>
           )}
