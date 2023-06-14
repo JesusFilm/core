@@ -11,7 +11,8 @@ import {
   UserJourneyRole,
   JourneysReportType,
   Role,
-  ImageBlock
+  ImageBlock,
+  ChatPlatform
 } from '../../__generated__/graphql'
 import { BlockResolver } from '../block/block.resolver'
 import { BlockService } from '../block/block.service'
@@ -68,7 +69,8 @@ describe('JourneyResolver', () => {
     description: null,
     primaryImageBlock: null,
     publishedAt,
-    createdAt
+    createdAt,
+    chatButtons: []
   }
 
   const journeyWithTeamId = {
@@ -341,6 +343,7 @@ describe('JourneyResolver', () => {
     urService = module.get<UserRoleService>(UserRoleService)
     prismaService = module.get<PrismaService>(PrismaService)
     prismaService.userTeam.upsert = jest.fn()
+    prismaService.chatButton.findMany = jest.fn().mockReturnValue([])
   })
 
   describe('adminJourneysEmbed', () => {
@@ -1124,6 +1127,28 @@ describe('JourneyResolver', () => {
     it('updates template', async () => {
       await resolver.journeyTemplate('1', templateUpdate)
       expect(service.update).toHaveBeenCalledWith('1', templateUpdate)
+    })
+  })
+
+  describe('chatButtons', () => {
+    it('should return chatButtons', async () => {
+      const chatButton = {
+        id: '1',
+        link: 'm.me/user',
+        platform: ChatPlatform.facebook
+      }
+      const journeyWithChatButtons: Journey = {
+        ...journey,
+        chatButtons: [chatButton, chatButton]
+      }
+
+      prismaService.chatButton.findMany = jest
+        .fn()
+        .mockReturnValue([chatButton, chatButton])
+      expect(await resolver.chatButtons(journeyWithChatButtons)).toEqual([
+        chatButton,
+        chatButton
+      ])
     })
   })
 

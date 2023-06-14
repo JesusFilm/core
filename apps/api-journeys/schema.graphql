@@ -132,6 +132,9 @@ extend type Mutation {
   typographyBlockUpdate(id: ID!, journeyId: ID!, input: TypographyBlockUpdateInput!): TypographyBlock!
   videoBlockCreate(input: VideoBlockCreateInput!): VideoBlock!
   videoBlockUpdate(id: ID!, journeyId: ID!, input: VideoBlockUpdateInput!): VideoBlock!
+  chatButtonCreate(journeyId: ID!, input: ChatButtonCreateInput): ChatButton!
+  chatButtonUpdate(id: ID!, journeyId: ID!, input: ChatButtonUpdateInput!): ChatButton!
+  chatButtonRemove(id: ID!): ChatButton!
   buttonClickEventCreate(input: ButtonClickEventCreateInput!): ButtonClickEvent!
   chatOpenEventCreate(input: ChatOpenEventCreateInput!): ChatOpenEvent!
   journeyViewEventCreate(input: JourneyViewEventCreateInput!): JourneyViewEvent!
@@ -205,6 +208,7 @@ type Journey
 {
   blocks: [Block!]
   primaryImageBlock: ImageBlock
+  chatButtons: [ChatButton!]!
   id: ID!
   title: String!
   language: Language!
@@ -902,6 +906,35 @@ type VideoTriggerBlock implements Block {
   action: Action!
 }
 
+type ChatButton {
+  id: ID!
+  link: String
+  platform: ChatPlatform
+}
+
+enum ChatPlatform {
+  facebook
+  telegram
+  whatsApp
+  instagram
+  viber
+  vk
+  snapchat
+  skype
+  line
+  tikTok
+}
+
+input ChatButtonCreateInput {
+  link: String
+  platform: ChatPlatform
+}
+
+input ChatButtonUpdateInput {
+  link: String
+  platform: ChatPlatform
+}
+
 enum ButtonAction {
   NavigateAction
   NavigateToBlockAction
@@ -1534,14 +1567,17 @@ type VideoProgressEvent implements Event {
 type Host {
   id: ID!
   teamId: ID!
-  team: String!
+  title: String!
   location: String
   avatar1Id: ID
   avatar2Id: ID
 }
 
 input HostUpdateInput {
-  name: String
+  """
+  title can be undefined as to not update title, but it cannot be null as to clear the value of title
+  """
+  title: String
   location: String
   avatar1Id: ID
   avatar2Id: ID
@@ -1601,7 +1637,7 @@ extend type Query {
 }
 
 input HostCreateInput {
-  name: String!
+  title: String!
   location: String
   avatar1Id: ID
   avatar2Id: ID

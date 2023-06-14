@@ -23,14 +23,14 @@ import { HostModule } from './modules/host/host.module'
   imports: [
     ActionModule,
     BlockModule,
-    JourneyModule,
-    HostModule,
-    JourneyVisitorModule,
     EventModule,
+    HostModule,
+    JourneyModule,
+    JourneyProfileModule,
+    JourneyVisitorModule,
     UserJourneyModule,
     UserInviteModule,
     UserRoleModule,
-    JourneyProfileModule,
     VisitorModule,
     GraphQLModule.forRoot<ApolloFederationDriverConfig>({
       driver: ApolloFederationDriver,
