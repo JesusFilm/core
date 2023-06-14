@@ -464,6 +464,38 @@ enum GridJustifyContent
   center @join__enumValue(graph: JOURNEYS)
 }
 
+type Host
+  @join__type(graph: JOURNEYS)
+{
+  id: ID!
+  teamId: ID!
+  title: String!
+  location: String
+  avatar1Id: ID
+  avatar2Id: ID
+}
+
+input HostCreateInput
+  @join__type(graph: JOURNEYS)
+{
+  title: String!
+  location: String
+  avatar1Id: ID
+  avatar2Id: ID
+}
+
+input HostUpdateInput
+  @join__type(graph: JOURNEYS)
+{
+  """
+  title can be undefined as to not update title, but it cannot be null as to clear the value of title
+  """
+  title: String
+  location: String
+  avatar1Id: ID
+  avatar2Id: ID
+}
+
 type IconBlock implements Block
   @join__implements(graph: JOURNEYS, interface: "Block")
   @join__type(graph: JOURNEYS)
@@ -1031,6 +1063,9 @@ type Mutation
   videoExpandEventCreate(input: VideoExpandEventCreateInput!): VideoExpandEvent! @join__field(graph: JOURNEYS)
   videoCollapseEventCreate(input: VideoCollapseEventCreateInput!): VideoCollapseEvent! @join__field(graph: JOURNEYS)
   videoProgressEventCreate(input: VideoProgressEventCreateInput!): VideoProgressEvent! @join__field(graph: JOURNEYS)
+  hostCreate(teamId: ID!, input: HostCreateInput!): Host! @join__field(graph: JOURNEYS)
+  hostUpdate(id: ID!, teamId: ID!, input: HostUpdateInput): Host! @join__field(graph: JOURNEYS)
+  hostDelete(id: ID!, teamId: ID!): Host! @join__field(graph: JOURNEYS)
   journeyCreate(input: JourneyCreateInput!): Journey! @join__field(graph: JOURNEYS)
   journeyDuplicate(id: ID!): Journey! @join__field(graph: JOURNEYS)
   journeyUpdate(id: ID!, input: JourneyUpdateInput!): Journey! @join__field(graph: JOURNEYS)
@@ -1181,6 +1216,7 @@ type Query
   @join__type(graph: USERS)
   @join__type(graph: VIDEOS)
 {
+  hosts(teamId: ID!): [Host!]! @join__field(graph: JOURNEYS)
   adminJourneys(status: [JourneyStatus!], template: Boolean): [Journey!]! @join__field(graph: JOURNEYS)
   adminJourneysReport(reportType: JourneysReportType!): PowerBiEmbed @join__field(graph: JOURNEYS)
   adminJourney(id: ID!, idType: IdType): Journey @join__field(graph: JOURNEYS)
