@@ -1,5 +1,5 @@
 import { PlatformDetails } from '../../ChatOption/ChatOption'
-import { Platform } from '../types'
+import { ChatPlatform } from '../../../../../__generated__/globalTypes'
 import { getChatButton } from './getChatButton'
 
 describe('getChatButton', () => {
@@ -7,22 +7,22 @@ describe('getChatButton', () => {
     {
       id: '1',
       title: 'Facebook',
-      linkValue: 'https://example.com/facebook',
-      chatIcon: Platform.facebook,
+      link: 'https://example.com/facebook',
+      platform: ChatPlatform.facebook,
       active: false
     },
     {
       id: '2',
       title: 'WhatsApp',
-      linkValue: 'https://example.com/whatsapp',
-      chatIcon: Platform.whatsApp,
+      link: 'https://example.com/whatsapp',
+      platform: ChatPlatform.whatsApp,
       active: false
     },
     {
       id: '3',
       title: 'Telegram',
-      linkValue: 'https://example.com/telegram',
-      chatIcon: Platform.telegram,
+      link: 'https://example.com/telegram',
+      platform: ChatPlatform.telegram,
       active: false
     }
   ]
@@ -31,8 +31,8 @@ describe('getChatButton', () => {
     const result = getChatButton('2', chatButtons)
     expect(result).toEqual({
       id: '2',
-      chatIcon: Platform.whatsApp,
-      chatLink: 'https://example.com/whatsapp'
+      platform: ChatPlatform.whatsApp,
+      link: 'https://example.com/whatsapp'
     })
   })
 

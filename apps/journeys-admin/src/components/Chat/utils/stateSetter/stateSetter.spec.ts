@@ -1,28 +1,30 @@
 import { PlatformDetails } from '../../ChatOption/ChatOption'
-import { ChatButton, Platform } from '../types'
+import { ChatPlatform } from '../../../../../__generated__/globalTypes'
+import { GetJourneyChatButtons_journey_chatButtons as ChatButton } from '../../../../../__generated__/GetJourneyChatButtons'
 import { stateSetter } from './stateSetter'
 
 describe('stateSetter', () => {
   it('sets the state correctly when chatButton is provided', () => {
     const chatButton: ChatButton = {
+      __typename: 'ChatButton',
       id: '1',
-      chatIcon: Platform.facebook,
-      chatLink: 'https://example.com/facebook'
+      platform: ChatPlatform.facebook,
+      link: 'https://example.com/facebook'
     }
     const state: PlatformDetails = {
       id: '',
       title: '',
-      linkValue: '',
+      link: '',
       active: false,
-      chatIcon: undefined
+      platform: null
     }
 
     const updater = jest.fn()
     updater.mockReturnValue({
       ...state,
       id: chatButton.id,
-      linkValue: chatButton.chatLink,
-      chatIcon: chatButton.chatIcon,
+      link: chatButton.link,
+      platform: chatButton.platform,
       active: true
     })
     const mockSetState = jest.fn(updater)
@@ -35,9 +37,9 @@ describe('stateSetter', () => {
     const state: PlatformDetails = {
       id: '',
       title: '',
-      linkValue: '',
+      link: '',
       active: false,
-      chatIcon: undefined
+      platform: null
     }
 
     const updater = jest.fn()

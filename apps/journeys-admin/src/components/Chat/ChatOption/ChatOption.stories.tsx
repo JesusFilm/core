@@ -4,7 +4,7 @@ import { noop } from 'lodash'
 import { screen, userEvent } from '@storybook/testing-library'
 import { waitFor } from '@testing-library/react'
 import { simpleComponentConfig } from '../../../libs/storybook'
-import { Platform } from '../utils/types'
+import { ChatPlatform } from '../../../../__generated__/globalTypes'
 import { ChatOption } from '.'
 
 const ChatOptionStory = {
@@ -38,7 +38,7 @@ Complete.args = {
     title: 'Complete Option',
     linkValue: 'https://example.com',
     active: true,
-    chatIcon: Platform.tikTok,
+    chatIcon: ChatPlatform.tikTok,
     enableIconSelect: true,
     helperInfo: 'This is a helper message'
   },

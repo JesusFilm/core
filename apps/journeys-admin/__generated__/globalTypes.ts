@@ -33,6 +33,19 @@ export enum ButtonVariant {
   text = "text",
 }
 
+export enum ChatPlatform {
+  facebook = "facebook",
+  instagram = "instagram",
+  line = "line",
+  skype = "skype",
+  snapchat = "snapchat",
+  telegram = "telegram",
+  tikTok = "tikTok",
+  viber = "viber",
+  vk = "vk",
+  whatsApp = "whatsApp",
+}
+
 export enum IconColor {
   action = "action",
   disabled = "disabled",
@@ -71,6 +84,11 @@ export enum IconSize {
   md = "md",
   sm = "sm",
   xl = "xl",
+}
+
+export enum IdType {
+  databaseId = "databaseId",
+  slug = "slug",
 }
 
 export enum JourneyStatus {
@@ -228,6 +246,16 @@ export interface CardBlockUpdateInput {
   fullscreen?: boolean | null;
   themeMode?: ThemeMode | null;
   themeName?: ThemeName | null;
+}
+
+export interface ChatButtonCreateInput {
+  link?: string | null;
+  platform?: ChatPlatform | null;
+}
+
+export interface ChatButtonUpdateInput {
+  link?: string | null;
+  platform?: ChatPlatform | null;
 }
 
 export interface ChatOpenEventCreateInput {

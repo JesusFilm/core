@@ -9,8 +9,13 @@ const ChatStory = {
   title: 'Journeys-Admin/Chat'
 }
 
-const Template: Story<ComponentProps<typeof Chat>> = () => <Chat />
+const Template: Story<ComponentProps<typeof Chat>> = (props) => (
+  <Chat {...props} />
+)
 
 export const Default = Template.bind({})
+Default.args = {
+  journeyId: '1'
+}
 
 export default ChatStory as Meta

@@ -1,19 +1,20 @@
-import { ChatButton, Platform } from '../types'
+import { ChatPlatform } from '../../../../../__generated__/globalTypes'
+import { GetJourneyChatButtons_journey_chatButtons as ChatButton } from '../../../../../__generated__/GetJourneyChatButtons'
 
 export function getByPlatform(
   chatButtons: ChatButton[],
-  platform?: Platform
+  platform?: ChatPlatform
 ): ChatButton | undefined {
   let res: ChatButton | undefined
   if (platform == null) {
     res = chatButtons.find(
       (chatButton) =>
-        chatButton.chatIcon !== Platform.facebook &&
-        chatButton.chatIcon !== Platform.whatsApp &&
-        chatButton.chatIcon !== Platform.telegram
+        chatButton.platform !== ChatPlatform.facebook &&
+        chatButton.platform !== ChatPlatform.whatsApp &&
+        chatButton.platform !== ChatPlatform.telegram
     )
   } else {
-    res = chatButtons.find((chatButton) => chatButton.chatIcon === platform)
+    res = chatButtons.find((chatButton) => chatButton.platform === platform)
   }
   return res
 }

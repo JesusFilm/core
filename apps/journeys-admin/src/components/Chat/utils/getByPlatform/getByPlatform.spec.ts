@@ -1,27 +1,32 @@
-import { ChatButton, Platform } from '../types'
-import { getByPlatform } from './getByPlatform'
+import { ChatPlatform } from '../../../../../__generated__/globalTypes'
+import { GetJourneyChatButtons_journey_chatButtons as ChatButton } from '../../../../../__generated__/GetJourneyChatButtons'
+import { getByPlatform } from '.'
 
 describe('getByPlatform', () => {
   const chatButtons: ChatButton[] = [
     {
+      __typename: 'ChatButton',
       id: '1',
-      chatLink: 'https://example.com',
-      chatIcon: Platform.facebook
+      link: 'https://example.com',
+      platform: ChatPlatform.facebook
     },
     {
+      __typename: 'ChatButton',
       id: '2',
-      chatLink: 'https://example.com',
-      chatIcon: Platform.whatsApp
+      link: 'https://example.com',
+      platform: ChatPlatform.whatsApp
     },
     {
+      __typename: 'ChatButton',
       id: '3',
-      chatLink: 'https://example.com',
-      chatIcon: Platform.telegram
+      link: 'https://example.com',
+      platform: ChatPlatform.telegram
     },
     {
+      __typename: 'ChatButton',
       id: '4',
-      chatLink: 'https://example.com',
-      chatIcon: Platform.tikTok
+      link: 'https://example.com',
+      platform: ChatPlatform.tikTok
     }
   ]
 
@@ -31,7 +36,7 @@ describe('getByPlatform', () => {
   })
 
   it('returns the chat button with the specified platform when platform is provided', () => {
-    const result = getByPlatform(chatButtons, Platform.facebook)
+    const result = getByPlatform(chatButtons, ChatPlatform.facebook)
     expect(result).toEqual(chatButtons[0])
   })
 })

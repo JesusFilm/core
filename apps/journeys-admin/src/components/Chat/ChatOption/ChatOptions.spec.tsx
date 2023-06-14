@@ -1,5 +1,5 @@
 import { render, fireEvent, waitFor } from '@testing-library/react'
-import { Platform } from '../utils/types'
+import { ChatPlatform } from '../../../../__generated__/globalTypes'
 import { ChatOption, PlatformDetails } from './ChatOption'
 
 describe('ChatOption', () => {
@@ -7,9 +7,9 @@ describe('ChatOption', () => {
     id: '1',
     active: true,
     title: 'Test Option',
-    linkValue: 'https://example.com',
+    link: 'https://example.com',
     enableIconSelect: false,
-    chatIcon: Platform.facebook,
+    platform: ChatPlatform.facebook,
     helperInfo: 'This is a helper message'
   }
 
@@ -68,7 +68,7 @@ describe('ChatOption', () => {
 
     expect(setValue).toHaveBeenCalledWith({
       ...value,
-      linkValue: 'https://newexample.com'
+      link: 'https://newexample.com'
     })
   })
 
@@ -76,7 +76,7 @@ describe('ChatOption', () => {
     const customButton = {
       ...value,
       enableIconSelect: true,
-      chatIcon: Platform.snapchat
+      platform: ChatPlatform.snapchat
     }
 
     const { getByRole, getByText } = render(
@@ -96,7 +96,7 @@ describe('ChatOption', () => {
 
     expect(setValue).toHaveBeenCalledWith({
       ...customButton,
-      chatIcon: Platform.vk
+      platform: ChatPlatform.vk
     })
   })
 
@@ -105,7 +105,7 @@ describe('ChatOption', () => {
       ...value,
       active: false,
       enableIconSelect: true,
-      chatIcon: undefined
+      platform: null
     }
 
     const { getByText } = render(

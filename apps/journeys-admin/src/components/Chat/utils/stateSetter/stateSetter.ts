@@ -1,6 +1,6 @@
 import { SetStateAction } from 'react'
 import { PlatformDetails } from '../../ChatOption/ChatOption'
-import { ChatButton } from '../types'
+import { GetJourneyChatButtons_journey_chatButtons as ChatButton } from '../../../../../__generated__/GetJourneyChatButtons'
 
 export function stateSetter(
   setState: (state: SetStateAction<PlatformDetails>) => void,
@@ -10,8 +10,8 @@ export function stateSetter(
     setState((prevState) => ({
       ...prevState,
       id: chatButton.id,
-      chatIcon: chatButton.chatIcon,
-      linkValue: chatButton.chatLink,
+      chatIcon: chatButton.platform,
+      linkValue: chatButton.link,
       active: true
     }))
   } else {

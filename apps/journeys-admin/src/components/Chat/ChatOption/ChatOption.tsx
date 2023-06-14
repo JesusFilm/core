@@ -13,14 +13,14 @@ import Checkbox from '@mui/material/Checkbox'
 import Stack from '@mui/material/Stack'
 import KeyboardArrowDownRoundedIcon from '@mui/icons-material/KeyboardArrowDownRounded'
 import findKey from 'lodash/findKey'
-import { Platform } from '../utils/types' // TODO: replace with generated type
+import { ChatPlatform } from '../../../../__generated__/globalTypes'
 
 export interface PlatformDetails {
   id: string
   title: string
-  linkValue?: string
+  link: string | null
   active: boolean
-  chatIcon?: Platform
+  platform: ChatPlatform | null
   enableIconSelect?: boolean
   helperInfo?: string
 }
@@ -29,7 +29,7 @@ interface Props {
   value: PlatformDetails
   disableSelection: boolean
   setValue: (value: PlatformDetails) => void
-  handleUpdate: () => void
+  handleUpdate: (id: string) => void
   handleToggle: (id: string, checked: boolean) => void
 }
 export function ChatOption({
@@ -39,15 +39,8 @@ export function ChatOption({
   handleUpdate,
   handleToggle
 }: Props): ReactElement {
-  const {
-    id,
-    active,
-    title,
-    linkValue,
-    enableIconSelect,
-    chatIcon,
-    helperInfo
-  } = value
+  const { id, active, title, link, enableIconSelect, platform, helperInfo } =
+    value
 
   function handleChangeActive(
     event: React.ChangeEvent<HTMLInputElement>
@@ -58,20 +51,20 @@ export function ChatOption({
   function handleChangeValue(event: React.ChangeEvent<HTMLInputElement>): void {
     setValue({
       ...value,
-      linkValue: event.target.value
+      link: event.target.value
     })
   }
 
   function handleChangeIcon(event: SelectChangeEvent): void {
     const icon = findKey(
-      Platform,
+      ChatPlatform,
       (value) => value === event.target.value
-    ) as Platform
+    ) as ChatPlatform
 
     if (icon != null) {
       setValue({
         ...value,
-        chatIcon: icon
+        platform: icon
       })
     }
   }
@@ -108,19 +101,19 @@ export function ChatOption({
               <Select
                 labelId="icon-select"
                 label="Chat Platform"
-                value={chatIcon ?? 'default'}
+                value={platform ?? 'default'}
                 displayEmpty
                 onChange={handleChangeIcon}
                 IconComponent={KeyboardArrowDownRoundedIcon}
               >
                 <MenuItem value="default">Select an icon...</MenuItem>
-                <MenuItem value={Platform.instagram}>Instagram</MenuItem>
-                <MenuItem value={Platform.line}>LINE</MenuItem>
-                <MenuItem value={Platform.skype}>Skype</MenuItem>
-                <MenuItem value={Platform.snapchat}>SnapChat</MenuItem>
-                <MenuItem value={Platform.tikTok}>TikTok</MenuItem>
-                <MenuItem value={Platform.viber}>Viber</MenuItem>
-                <MenuItem value={Platform.vk}>VK</MenuItem>
+                <MenuItem value={ChatPlatform.instagram}>Instagram</MenuItem>
+                <MenuItem value={ChatPlatform.line}>LINE</MenuItem>
+                <MenuItem value={ChatPlatform.skype}>Skype</MenuItem>
+                <MenuItem value={ChatPlatform.snapchat}>SnapChat</MenuItem>
+                <MenuItem value={ChatPlatform.tikTok}>TikTok</MenuItem>
+                <MenuItem value={ChatPlatform.viber}>Viber</MenuItem>
+                <MenuItem value={ChatPlatform.vk}>VK</MenuItem>
               </Select>
             </FormControl>
           )}
@@ -128,10 +121,10 @@ export function ChatOption({
           <TextField
             variant="filled"
             placeholder="Paste URL here"
-            value={linkValue}
+            value={link}
             label="Link"
             onChange={handleChangeValue}
-            onBlur={handleUpdate}
+            onBlur={() => handleUpdate(id)}
           />
 
           {helperInfo != null && (
