@@ -1,7 +1,7 @@
 import { ReactElement } from 'react'
 import Avatar from '@mui/material/Avatar'
 import AvatarGroup from '@mui/material/AvatarGroup'
-import AccountCircleOutlinedIcon from '@mui/icons-material/AccountCircleOutlined'
+import UserProfileCircle from '@core/shared/ui/icons/UserProfileCircle'
 
 interface HostAvatarsProps {
   src1?: string
@@ -17,14 +17,14 @@ export const HostAvatars = ({
   return (
     <>
       {(src1 != null || src2 != null) && !admin && (
-        <AvatarGroup spacing="small" data-testId='journeys-avatars'>
+        <AvatarGroup spacing="small" data-testid="journeys-avatars">
           {src1 != null && <Avatar src={src1} />}
           {src2 != null && <Avatar src={src2} />}
         </AvatarGroup>
       )}
       {src1 == null && src2 == null && admin ? (
-        <AccountCircleOutlinedIcon
-        
+        <UserProfileCircle
+          data-testid="account-circled-out-icon"
           sx={{
             height: '44px',
             width: '44px',
@@ -32,17 +32,30 @@ export const HostAvatars = ({
           }}
         />
       ) : (src1 == null || src2 == null) && admin ? (
-        <AvatarGroup spacing="small" data-testId = 'journeys-admin-render-one-avatar'>
+        <AvatarGroup
+          spacing="small"
+          data-testid="journeys-admin-render-one-avatar"
+        >
           <Avatar src={src1 == null && src2 != null ? src2 : src1} />
-          <Avatar>
-            <AccountCircleOutlinedIcon  />
-          </Avatar>
+          <UserProfileCircle
+            data-testid="account-circled-out-icon"
+            sx={{
+              height: '44px',
+              width: '44px',
+              color: 'secondary.light'
+            }}
+          />
         </AvatarGroup>
       ) : (
-        admin && (<AvatarGroup spacing="small" data-testId='journeys-admin-render-two-avatars'>
-          <Avatar src={src1} />
-          <Avatar src={src2} />
-        </AvatarGroup>)
+        admin && (
+          <AvatarGroup
+            spacing="small"
+            data-testid="journeys-admin-render-two-avatars"
+          >
+            <Avatar src={src1} />
+            <Avatar src={src2} />
+          </AvatarGroup>
+        )
       )}
     </>
   )

@@ -15,7 +15,7 @@ export function StepFooter(): ReactElement {
   const location = 'Karaganda is a very long city name'
 
   const src1 = 'undefined'
-  const src2 = 'undefined'
+  const src2 = undefined
   return (
     <Box
       sx={{
@@ -54,7 +54,6 @@ export function StepFooter(): ReactElement {
           }}
           gap={4}
         >
-          <HostAvatars src1={src1} src2={src2} admin={admin} />
           <Stack
             sx={{
               flexGrow: 1,
@@ -63,13 +62,19 @@ export function StepFooter(): ReactElement {
               justifyContent: 'space-between'
             }}
           >
+            <HostAvatars src1={src1} src2={src2} admin={admin} />
             <Typography
               sx={{
                 zIndex: 1,
                 py: 3,
                 // Always dark mode on lg breakpoint
                 color: { xs: 'primary.main', lg: 'white' },
-                width: { xs: 'calc(100vw - 92px)', lg: 'calc(100vw - 200px)' },
+                width: {
+                  xs: `calc(100vw - ${
+                    src1 != null || src2 != null ? '122px' : '102px'
+                  })`,
+                  lg: 'calc(100vw - 200px)'
+                },
                 whiteSpace: 'nowrap',
                 overflow: 'hidden',
                 textOverflow: 'ellipsis'
