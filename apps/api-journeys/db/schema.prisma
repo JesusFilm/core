@@ -8,6 +8,19 @@ datasource db {
   url      = env("PG_DATABASE_URL")
 }
 
+enum ChatPlatform {
+  facebook
+  telegram
+  whatsApp
+  instagram
+  viber
+  vk
+  snapchat
+  skype
+  line
+  tikTok
+}
+
 enum MessagePlatform {
   facebook
   telegram
@@ -54,6 +67,15 @@ enum ButtonAction {
 enum VideoBlockSource {
   internal
   youTube
+}
+
+model ChatButton {
+  id        String        @id @default(uuid())
+  journeyId String
+  link      String?
+  platform  ChatPlatform?
+
+  @@index([journeyId])
 }
 
 model Event {
@@ -113,6 +135,16 @@ model Visitor {
   @@index([id, teamId, createdAt, userId, status, countryCode])
 }
 
+model Host {
+  id        String  @id @default(uuid())
+  teamId    String
+  team      Team    @relation(fields: [teamId], references: [id])
+  title     String
+  location  String?
+  avatar1Id String?
+  avatar2Id String?
+}
+
 model JourneyVisitor {
   id                        String           @id @default(uuid())
   journeyId                 String
@@ -140,6 +172,7 @@ model Team {
   userTeams UserTeam[]
   createdAt DateTime   @default(now())
   updatedAt DateTime   @updatedAt
+  hosts     Host[]
 
   @@index([title])
 }

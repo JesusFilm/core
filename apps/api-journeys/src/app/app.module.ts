@@ -17,18 +17,20 @@ import { UserRoleModule } from './modules/userRole/userRole.module'
 import { UserInviteModule } from './modules/userInvite/userInvite.module'
 import { VisitorModule } from './modules/visitor/visitor.module'
 import { JourneyVisitorModule } from './modules/journeyVisitor/journeyVisitor.module'
+import { HostModule } from './modules/host/host.module'
 
 @Module({
   imports: [
     ActionModule,
     BlockModule,
-    JourneyModule,
-    JourneyVisitorModule,
     EventModule,
+    HostModule,
+    JourneyModule,
+    JourneyProfileModule,
+    JourneyVisitorModule,
     UserJourneyModule,
     UserInviteModule,
     UserRoleModule,
-    JourneyProfileModule,
     VisitorModule,
     GraphQLModule.forRoot<ApolloFederationDriverConfig>({
       driver: ApolloFederationDriver,
