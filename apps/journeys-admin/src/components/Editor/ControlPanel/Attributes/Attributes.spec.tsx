@@ -245,4 +245,15 @@ describe('Attributes', () => {
     expect(getByTestId('move-block-buttons')).toBeInTheDocument()
     expect(getByRole('button', { name: 'Action None' })).toBeInTheDocument()
   })
+
+  it('should render Footer properties', () => {
+    const { queryByTestId, getByRole } = render(
+      <MockedProvider>
+        <Attributes selected="Footer" step={card} />
+      </MockedProvider>
+    )
+
+    expect(queryByTestId('move-block-buttons')).not.toBeInTheDocument()
+    expect(getByRole('button', { name: 'Hosted by None' })).toBeInTheDocument()
+  })
 })
