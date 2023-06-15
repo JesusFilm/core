@@ -10,7 +10,7 @@ async function bootstrap(): Promise<void> {
   const app = await NestFactory.create(AppModule, { bufferLogs: true })
   const prismaService = app.get(PrismaService)
   await prismaService.enableShutdownHooks(app)
-  app.useLogger(app.get(PinoLogger))  
+  app.useLogger(app.get(PinoLogger))
   await app.use(json({ limit: '50mb' }))
   const port = '4001'
   const server = await app.listen(port, () => {
