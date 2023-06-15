@@ -94,7 +94,11 @@ export const HostAvatars = ({ src1, src2 }: HostAvatarsProps): ReactElement => {
           <AvatarGroup
             spacing="small"
             data-testid="journeys-admin-render-two-avatars"
-            sx={{ pr: 2 }}
+            sx={{
+              pr: 4,
+              pl: rtl ? 6 : 0,
+              mr: src1 != null && src2 != null && rtl ? 4 : 0
+            }}
           >
             <Avatar src={src1} />
             <Avatar src={src2} />
