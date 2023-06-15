@@ -73,6 +73,22 @@ describe('JourneyResolver', () => {
     chatButtons: []
   }
 
+  const journeyWithTeam: Journey & { teamId: string } = {
+    id: 'journeyWithTeam',
+    slug: 'journey-slug',
+    title: 'published',
+    status: JourneyStatus.published,
+    language: { id: '529' },
+    themeMode: ThemeMode.light,
+    themeName: ThemeName.base,
+    description: null,
+    primaryImageBlock: null,
+    publishedAt,
+    createdAt,
+    chatButtons: [],
+    teamId: 'geronimo-gang'
+  }
+
   const primaryImageBlock: ImageBlock & { _key: string } = {
     _key: 'primaryImageBlock.id',
     __typename: 'ImageBlock',
@@ -153,6 +169,19 @@ describe('JourneyResolver', () => {
     slug: 'published-slug',
     seoTitle: 'Social media title',
     seoDescription: 'Social media description'
+  }
+
+  const journeyUpdateHost = {
+    title: 'published',
+    languageId: '529',
+    themeMode: ThemeMode.light,
+    themeName: ThemeName.base,
+    description: null,
+    primaryImageBlockId: null,
+    slug: 'published-slug',
+    seoTitle: 'Social media title',
+    seoDescription: 'Social media description',
+    hostId: 'host-id2'
   }
 
   const templateUpdate = {
@@ -848,7 +877,9 @@ describe('JourneyResolver', () => {
         publishedAt: undefined,
         slug: `${journey.title}-copy`,
         title: `${journey.title} copy`,
-        template: false
+        template: false,
+        hostId: null,
+        teamID: undefined
       })
     })
 
@@ -863,7 +894,8 @@ describe('JourneyResolver', () => {
         createdAt: new Date().toISOString(),
         status: JourneyStatus.draft,
         publishedAt: undefined,
-        template: false
+        template: false,
+        hostId: null
       })
     })
 
@@ -914,7 +946,8 @@ describe('JourneyResolver', () => {
         publishedAt: undefined,
         slug: `${journey.title}-copy-2`,
         title: `${journey.title} copy 2`,
-        template: false
+        template: false,
+        hostId: null
       })
     })
 
@@ -956,6 +989,25 @@ describe('JourneyResolver', () => {
     it('updates a Journey', async () => {
       await resolver.journeyUpdate('1', journeyUpdate)
       expect(service.update).toHaveBeenCalledWith('1', journeyUpdate)
+    })
+
+    it('updates a Journey with host input', async () => {
+      const mockHost = {
+        id: 'host-id2',
+        teamId: 'geronimo-gang',
+        name: 'Edmond Shen & Nisal Cottingham',
+        location: 'New Zealand',
+        avatar1Id: 'avatar1-id',
+        avatar2Id: 'avatar2-id'
+      }
+
+      prismaService.host.findUnique = jest.fn().mockResolvedValueOnce(mockHost)
+      service.get = jest.fn().mockResolvedValueOnce(journeyWithTeam)
+      await resolver.journeyUpdate('journeyId', journeyUpdateHost)
+      expect(service.update).toHaveBeenCalledWith(
+        'journeyId',
+        journeyUpdateHost
+      )
     })
 
     it('throws UserInputErrror', async () => {
@@ -1099,6 +1151,26 @@ describe('JourneyResolver', () => {
         chatButton,
         chatButton
       ])
+    })
+  })
+
+  describe('host', () => {
+    it('should return host', async () => {
+      const mockHost = {
+        id: 'host-id2',
+        teamId: 'geronimo-gang',
+        name: 'Edmond Shen & Nisal Cottingham',
+        location: 'New Zealand',
+        avatar1Id: 'avatar1-id',
+        avatar2Id: 'avatar2-id'
+      }
+      const journeyWithHost: Journey & { hostId: string } = {
+        ...journeyWithTeam,
+        hostId: 'host-id2'
+      }
+
+      prismaService.host.findUnique = jest.fn().mockReturnValue(mockHost)
+      expect(await resolver.host(journeyWithHost)).toEqual(mockHost)
     })
   })
 
