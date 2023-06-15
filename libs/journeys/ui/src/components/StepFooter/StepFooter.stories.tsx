@@ -100,6 +100,19 @@ export const RTL = Template.bind({})
 RTL.args = {
   journey: {
     ...journey,
+    language: {
+      __typename: 'Language',
+      id: '529',
+      bcp47: 'ar',
+      iso3: 'ara',
+      name: [
+        {
+          __typename: 'Translation',
+          value: 'Arabic',
+          primary: true
+        }
+      ]
+    },
     chatButtons: [
       {
         __typename: 'ChatButton',

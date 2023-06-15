@@ -73,7 +73,7 @@ export function StepFooter({
               width: '100%',
               flexDirection: 'row',
               alignItems: 'center',
-              justifyContent: 'space-between'
+              justifyContent: 'space-even'
             }}
           >
             <Typography
@@ -84,7 +84,8 @@ export function StepFooter({
                 color: { xs: 'primary.main', lg: 'white' },
                 whiteSpace: 'nowrap',
                 overflow: 'hidden',
-                textOverflow: 'ellipsis'
+                textOverflow: 'ellipsis',
+                order: 1
               }}
             >
               {journey?.seoTitle ?? journey?.title}

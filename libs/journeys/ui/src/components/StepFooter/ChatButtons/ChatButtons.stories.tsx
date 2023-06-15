@@ -23,6 +23,12 @@ const Template: Story<{ chatButtons: ChatButton[] }> = ({ chatButtons }) => {
           admin: true,
           journey: {
             id: 'journeyId',
+            language: {
+              __typename: 'Language',
+              id: '529',
+              bcp47: 'en',
+              iso3: 'eng'
+            },
             chatButtons
           } as unknown as Journey
         }}

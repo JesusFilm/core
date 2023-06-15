@@ -19,6 +19,7 @@ import { useJourney } from '../../../libs/JourneyProvider'
 import { useBlocks } from '../../../libs/block'
 import { JourneyFields_chatButtons as ChatButton } from '../../../libs/JourneyProvider/__generated__/JourneyFields'
 import { ChatPlatform } from '../../../../__generated__/globalTypes'
+import { getJourneyRTL } from '../../../libs/rtl'
 import { ChatButtonEventCreate } from './__generated__/ChatButtonEventCreate'
 
 export const CHAT_BUTTON_EVENT_CREATE = gql`
@@ -38,6 +39,7 @@ export function ChatButtons(): ReactElement {
   const { admin, journey } = useJourney()
   const { activeBlock } = useBlocks()
   const theme = useTheme()
+  const { rtl } = getJourneyRTL(journey)
   const chatButtons = journey?.chatButtons
 
   const [chatButtonEventCreate] = useMutation<ChatButtonEventCreate>(
@@ -87,7 +89,12 @@ export function ChatButtons(): ReactElement {
   }
 
   return (
-    <Stack direction="row-reverse" gap={3}>
+    <Stack
+      data-testid="chat-widget"
+      direction={rtl ? 'row' : 'row-reverse'}
+      gap={2}
+      sx={{ pr: rtl ? 8 : 0 }}
+    >
       {chatButtons?.map((chatButton, index) => (
         <IconButton
           key={chatButton?.id}
