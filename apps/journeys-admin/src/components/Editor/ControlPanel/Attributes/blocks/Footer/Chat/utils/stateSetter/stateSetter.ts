@@ -10,8 +10,8 @@ export function stateSetter(
     setState((prevState) => ({
       ...prevState,
       id: chatButton.id,
-      chatIcon: chatButton.platform,
-      linkValue: chatButton.link,
+      platform: chatButton.platform,
+      link: chatButton.link,
       active: true
     }))
   } else {

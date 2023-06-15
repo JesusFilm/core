@@ -26,7 +26,7 @@ Default.args = {
     active: false
   },
   disableSelection: false,
-  setValue: noop,
+  setButton: noop,
   handleUpdate: noop,
   handleToggle: noop
 }
@@ -43,7 +43,7 @@ Complete.args = {
     helperInfo: 'This is a helper message'
   },
   disableSelection: false,
-  setValue: noop,
+  setButton: noop,
   handleUpdate: noop,
   handleToggle: noop
 }
@@ -65,7 +65,7 @@ Icons.args = {
     enableIconSelect: true
   },
   disableSelection: false,
-  setValue: noop,
+  setButton: noop,
   handleUpdate: noop,
   handleToggle: noop
 }
@@ -89,7 +89,7 @@ Disabled.args = {
     active: false
   },
   disableSelection: true,
-  setValue: noop,
+  setButton: noop,
   handleUpdate: noop,
   handleToggle: noop
 }

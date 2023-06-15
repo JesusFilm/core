@@ -6,16 +6,19 @@ import { useTranslation } from 'react-i18next'
 import Typography from '@mui/material/Typography'
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'
 import { ChatPlatform } from '../../../../../../../../__generated__/globalTypes'
-import { GetJourneyChatButtons } from '../../../../../../../../__generated__/GetJourneyChatButtons'
+import {
+  GetJourneyChatButtons,
+  GetJourneyChatButtons_journey_chatButtons as ChatButton
+} from '../../../../../../../../__generated__/GetJourneyChatButtons'
 import { JourneyChatButtonCreate } from '../../../../../../../../__generated__/JourneyChatButtonCreate'
 import { JourneyChatButtonUpdate } from '../../../../../../../../__generated__/JourneyChatButtonUpdate'
 import { JourneyChatButtonRemove } from '../../../../../../../../__generated__/JourneyChatButtonRemove'
 import { PlatformDetails } from './ChatOption/ChatOption'
 import { ChatOption } from './ChatOption'
-import { getByPlatform, getChatButton, stateSetter } from './utils'
+import { getByPlatform, stateSetter } from './utils'
 
 export const GET_JOURNEY_CHAT_BUTTONS = gql`
-  query GetJourneyChatButtons($id: ID!, $idType: IdType) {
+  query GetJourneyChatButtons($id: ID!) {
     journey(id: $id, idType: databaseId) {
       chatButtons {
         id
@@ -128,8 +131,9 @@ export function Chat({ journeyId }: Props): ReactElement {
     JOURNEY_CHAT_BUTTON_REMOVE
   )
   const chatButtons = data?.journey?.chatButtons ?? []
+  const maxSelection = chatButtons.length >= 2
 
-  function setValues(): void {
+  function setLocalStates(): void {
     const [facebookButton, whatsAppButton, telegramButton, customButton] = [
       ChatPlatform.facebook,
       ChatPlatform.whatsApp,
@@ -145,48 +149,60 @@ export function Chat({ journeyId }: Props): ReactElement {
 
   useEffect(() => {
     //  should only run when the query and mutations run
-    setValues()
+    setLocalStates()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
+    data,
     journeyChatButtonCreate,
     journeyChatButtonUpdate,
     journeyChatButtonRemove
   ])
 
-  async function handleUpdate(id: string): Promise<void> {
-    const toUpdate = getChatButton(id, [facebook, whatsApp, telegram, custom])
-    toUpdate != null &&
-      (await journeyChatButtonUpdate({
-        variables: toUpdate,
-        optimisticResponse: {
-          chatButtonUpdate: {
-            __typename: 'ChatButton',
-            ...toUpdate
-          }
+  async function handleUpdate(
+    chatButton: Omit<ChatButton, '__typename'>
+  ): Promise<void> {
+    await journeyChatButtonUpdate({
+      variables: {
+        chatButtonUpdateId: chatButton.id,
+        journeyId,
+        input: {
+          link: chatButton.link,
+          platform: chatButton.platform
         }
-      }))
+      },
+      optimisticResponse: {
+        chatButtonUpdate: {
+          __typename: 'ChatButton',
+          ...chatButton
+        }
+      }
+    })
   }
 
-  async function handleToggle(id: string, checked: boolean): Promise<void> {
-    const newChatButton = getChatButton(id, [
-      facebook,
-      whatsApp,
-      telegram,
-      custom
-    ])
-    if (checked && chatButtons.length < 2 && newChatButton != null) {
+  async function handleToggle(
+    chatButton: Omit<ChatButton, '__typename'>,
+    checked: boolean
+  ): Promise<void> {
+    const { id, link, platform } = chatButton
+    if (checked && !maxSelection) {
       await journeyChatButtonCreate({
-        variables: newChatButton,
+        variables: {
+          journeyId,
+          input: {
+            link,
+            platform
+          }
+        },
         optimisticResponse: {
           chatButtonCreate: {
             __typename: 'ChatButton',
-            ...newChatButton
+            ...chatButton
           }
         }
       })
     } else {
       await journeyChatButtonRemove({
-        variables: { id },
+        variables: { chatButtonRemoveId: id },
         optimisticResponse: {
           chatButtonRemove: {
             __typename: 'ChatButton',
@@ -197,35 +213,33 @@ export function Chat({ journeyId }: Props): ReactElement {
     }
   }
 
-  const maxSelection = chatButtons.length >= 2
-
   return (
     <>
       <ChatOption
         value={facebook}
         disableSelection={maxSelection}
-        setValue={setFacebook}
+        setButton={setFacebook}
         handleUpdate={handleUpdate}
         handleToggle={handleToggle}
       />
       <ChatOption
         value={whatsApp}
         disableSelection={maxSelection}
-        setValue={setWhatsApp}
+        setButton={setWhatsApp}
         handleUpdate={handleUpdate}
         handleToggle={handleToggle}
       />
       <ChatOption
         value={telegram}
         disableSelection={maxSelection}
-        setValue={setTelegram}
+        setButton={setTelegram}
         handleUpdate={handleUpdate}
         handleToggle={handleToggle}
       />
       <ChatOption
         value={custom}
         disableSelection={maxSelection}
-        setValue={setCustom}
+        setButton={setCustom}
         handleUpdate={handleUpdate}
         handleToggle={handleToggle}
       />

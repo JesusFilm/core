@@ -15,6 +15,7 @@ import Stack from '@mui/material/Stack'
 import KeyboardArrowDownRoundedIcon from '@mui/icons-material/KeyboardArrowDownRounded'
 import findKey from 'lodash/findKey'
 import ChatRoundedIcon from '@mui/icons-material/ChatRounded'
+import { GetJourneyChatButtons_journey_chatButtons as ChatButton } from '../../../../../../../../../__generated__/GetJourneyChatButtons'
 import { ChatPlatform } from '../../../../../../../../../__generated__/globalTypes'
 
 export interface PlatformDetails {
@@ -30,14 +31,17 @@ export interface PlatformDetails {
 interface Props {
   value: PlatformDetails
   disableSelection: boolean
-  setValue: (value: PlatformDetails) => void
-  handleUpdate: (id: string) => void
-  handleToggle: (id: string, checked: boolean) => void
+  setButton: (value: PlatformDetails) => void
+  handleUpdate: (chatButton: Omit<ChatButton, '__typename'>) => void
+  handleToggle: (
+    chatButton: Omit<ChatButton, '__typename'>,
+    checked: boolean
+  ) => void
 }
 export function ChatOption({
   value,
   disableSelection,
-  setValue,
+  setButton,
   handleUpdate,
   handleToggle
 }: Props): ReactElement {
@@ -99,19 +103,6 @@ export function ChatOption({
     }
   ]
 
-  function handleChangeActive(
-    event: React.ChangeEvent<HTMLInputElement>
-  ): void {
-    handleToggle(id, event.target.checked)
-  }
-
-  function handleChangeValue(event: React.ChangeEvent<HTMLInputElement>): void {
-    setValue({
-      ...value,
-      link: event.target.value
-    })
-  }
-
   function handleChangeIcon(event: SelectChangeEvent): void {
     const icon = findKey(
       ChatPlatform,
@@ -119,8 +110,13 @@ export function ChatOption({
     ) as ChatPlatform
 
     if (icon != null) {
-      setValue({
+      setButton({
         ...value,
+        platform: icon
+      })
+      handleUpdate({
+        id,
+        link,
         platform: icon
       })
     }
@@ -141,11 +137,14 @@ export function ChatOption({
     >
       <AccordionSummary expandIcon={<ExpandMoreIcon />} sx={{ px: 6, py: 2 }}>
         <Checkbox
+          data-testid={`checkbox-${platform ?? 'custom'}`}
           checked={active}
           size="small"
           sx={{ p: 1, mr: 1 }}
           disabled={disableSelection && !active}
-          onChange={handleChangeActive}
+          onChange={(event) =>
+            handleToggle({ id, link, platform }, event.target.checked)
+          }
         />
         <Typography sx={{ my: 'auto' }}>{title}</Typography>
       </AccordionSummary>
@@ -181,8 +180,13 @@ export function ChatOption({
             placeholder="Paste URL here"
             value={link}
             label="Link"
-            onChange={handleChangeValue}
-            onBlur={() => handleUpdate(id)}
+            onChange={(event) =>
+              setButton({
+                ...value,
+                link: event.target.value
+              })
+            }
+            onBlur={() => handleUpdate({ id, link, platform })}
           />
 
           {helperInfo != null && (

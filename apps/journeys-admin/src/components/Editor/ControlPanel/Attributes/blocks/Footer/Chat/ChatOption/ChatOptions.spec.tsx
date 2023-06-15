@@ -22,7 +22,7 @@ describe('ChatOption', () => {
     helperInfo: 'This is a helper message'
   }
 
-  const setValue = jest.fn()
+  const setButton = jest.fn()
   const handleUpdate = jest.fn()
   const handleToggle = jest.fn()
 
@@ -31,14 +31,17 @@ describe('ChatOption', () => {
       <ChatOption
         value={value}
         disableSelection={false}
-        setValue={setValue}
+        setButton={setButton}
         handleUpdate={handleUpdate}
         handleToggle={handleToggle}
       />
     )
 
     fireEvent.click(getByRole('checkbox'))
-    expect(handleToggle).toHaveBeenCalledWith(value.id, false)
+    expect(handleToggle).toHaveBeenCalledWith(
+      { id: value.id, link: value.link, platform: value.platform },
+      false
+    )
   })
 
   it('should disable checkbox', () => {
@@ -51,7 +54,7 @@ describe('ChatOption', () => {
       <ChatOption
         value={disabledValue}
         disableSelection
-        setValue={setValue}
+        setButton={setButton}
         handleUpdate={handleUpdate}
         handleToggle={handleToggle}
       />
@@ -65,7 +68,7 @@ describe('ChatOption', () => {
       <ChatOption
         value={value}
         disableSelection={false}
-        setValue={setValue}
+        setButton={setButton}
         handleUpdate={handleUpdate}
         handleToggle={handleToggle}
       />
@@ -75,7 +78,7 @@ describe('ChatOption', () => {
       target: { value: 'https://newexample.com' }
     })
 
-    expect(setValue).toHaveBeenCalledWith({
+    expect(setButton).toHaveBeenCalledWith({
       ...value,
       link: 'https://newexample.com'
     })
@@ -92,7 +95,7 @@ describe('ChatOption', () => {
       <ChatOption
         value={customButton}
         disableSelection={false}
-        setValue={setValue}
+        setButton={setButton}
         handleUpdate={handleUpdate}
         handleToggle={handleToggle}
       />
@@ -103,7 +106,7 @@ describe('ChatOption', () => {
     fireEvent.mouseDown(getByRole('button', { name: 'Chat Platform' }))
     await waitFor(() => fireEvent.click(getByRole('option', { name: 'VK' })))
 
-    expect(setValue).toHaveBeenCalledWith({
+    expect(setButton).toHaveBeenCalledWith({
       ...customButton,
       platform: ChatPlatform.vk
     })
@@ -121,7 +124,7 @@ describe('ChatOption', () => {
       <ChatOption
         value={customButton}
         disableSelection={false}
-        setValue={setValue}
+        setButton={setButton}
         handleUpdate={handleUpdate}
         handleToggle={handleToggle}
       />
