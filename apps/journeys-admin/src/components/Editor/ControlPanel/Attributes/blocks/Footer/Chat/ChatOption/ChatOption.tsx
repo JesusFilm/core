@@ -162,7 +162,7 @@ export function ChatOption({
         <Stack direction="column" spacing={8} sx={{ pb: 4 }}>
           {enableIconSelect === true && (
             <FormControl variant="filled" fullWidth>
-              <InputLabel id="icon-select">Chat Platform</InputLabel>
+              <InputLabel id="icon-select">{t('Chat Platform')}</InputLabel>
               <Select
                 labelId="icon-select"
                 label="Chat Platform"
