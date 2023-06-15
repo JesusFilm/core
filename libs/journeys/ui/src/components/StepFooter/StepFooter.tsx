@@ -24,8 +24,8 @@ export function StepFooter({
   const name = 'Alexander & Eliza Hamilton'
   const location = 'New York'
 
-  const src1 = 'undefined'
-  const src2 = 'undefined'
+  const src1 = 'http://surl.li/iauzf'
+  const src2 = 'http://surl.li/iauzv'
   return (
     <Box
       data-testid="stepFooter"
@@ -84,6 +84,7 @@ export function StepFooter({
           >
             <Box
               sx={{
+                flexDirection: rtl ? 'row' : 'row-reverse',
                 pr: 4,
                 pl: rtl ? 6 : 0,
                 mr:

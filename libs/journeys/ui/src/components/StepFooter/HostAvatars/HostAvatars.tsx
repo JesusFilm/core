@@ -17,7 +17,11 @@ export const HostAvatars = ({ src1, src2 }: HostAvatarsProps): ReactElement => {
   const { editableStepFooter } = useFlags()
   return (
     <>
-      <AvatarGroup spacing="small" data-testid="host-avatars">
+      <AvatarGroup
+        spacing="small"
+        data-testid="host-avatars"
+        sx={{ flexDirection: rtl ? 'row' : 'row-reverse' }}
+      >
         {src1 != null && !admin && <Avatar src={src1} />}
         {src2 != null && !admin && <Avatar src={src2} />}
         {src1 != null && admin && <Avatar src={src1} />}
