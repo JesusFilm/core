@@ -1,6 +1,4 @@
-import { aql } from 'arangojs'
 import { PrismaClient } from '.prisma/api-journeys-client'
-import { ArangoDB } from '../db'
 import {
   JourneyStatus,
   ThemeMode,
@@ -8,16 +6,15 @@ import {
 } from '../../src/app/__generated__/graphql'
 
 const prisma = new PrismaClient()
-const db = ArangoDB()
 
 export async function nua2(): Promise<void> {
   const slug = 'what-about-the-resurrection'
   const existingJourney = await prisma.journey.findUnique({ where: { slug } })
   if (existingJourney != null) {
-    await db.query(aql`
-        FOR block in blocks
-            FILTER block.journeyId == ${existingJourney.id}
-            REMOVE block IN blocks`)
+    await prisma.action.deleteMany({
+      where: { block: { journeyId: existingJourney.id } }
+    })
+    await prisma.block.deleteMany({ where: { journeyId: existingJourney.id } })
     await prisma.journey.delete({ where: { slug } })
   }
 
@@ -38,152 +35,180 @@ export async function nua2(): Promise<void> {
   })
 
   // first step
-  const step1 = await db.collection('blocks').save({
-    journeyId: journey.id,
-    __typename: 'StepBlock',
-    locked: false,
-    parentOrder: 0
-  })
-
-  const card1 = await db.collection('blocks').save({
-    journeyId: journey.id,
-    __typename: 'CardBlock',
-    parentBlockId: step1._key,
-    themeMode: ThemeMode.dark,
-    themeName: ThemeName.base,
-    fullscreen: false,
-    parentOrder: 0
-  })
-
-  const coverblock = await db.collection('blocks').save({
-    journeyId: journey.id,
-    __typename: 'VideoBlock',
-    parentBlockId: card1._key,
-    videoId: '5_0-NUA0301-0-0',
-    videoVariantLanguageId: '529',
-    muted: true,
-    autoplay: true,
-    startAt: 11,
-    title: 'What about the resurrection'
-  })
-  await db
-    .collection('blocks')
-    .update(card1._key, { coverBlockId: coverblock._key })
-
-  const poster = await db.collection('blocks').save({
-    journeyId: journey.id,
-    __typename: 'ImageBlock',
-    parentBlockId: coverblock._key,
-    src: 'https://images.unsplash.com/photo-1558704164-ab7a0016c1f3?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80',
-    alt: 'Can we trust the story of Jesus?',
-    width: 1920,
-    height: 1080,
-    blurhash: 'LQEVc~^kXkI.*IyD$RnOyXTJRjjG',
-    parentOrder: 0
-  })
-  await db
-    .collection('blocks')
-    .update(coverblock._key, { posterBlockId: poster._key })
-
-  await db.collection('blocks').saveAll([
-    {
+  const step1 = await prisma.block.create({
+    data: {
       journeyId: journey.id,
-      __typename: 'TypographyBlock',
-      parentBlockId: card1._key,
-      content: 'The Resurection',
-      variant: 'h6',
-      color: 'primary',
-      align: 'left',
+      typename: 'StepBlock',
+      locked: false,
       parentOrder: 0
-    },
-    {
-      journeyId: journey.id,
-      __typename: 'TypographyBlock',
-      parentBlockId: card1._key,
-      content: 'What About It?',
-      variant: 'h2',
-      color: 'primary',
-      align: 'left',
-      parentOrder: 1
-    },
-    {
-      journeyId: journey.id,
-      __typename: 'TypographyBlock',
-      parentBlockId: card1._key,
-      content:
-        'Jesus’ tomb was found empty three days after his death-what could have happened to the body?',
-      variant: 'body1',
-      color: 'primary',
-      align: 'left',
-      parentOrder: 2
     }
-  ])
+  })
+
+  const card1 = await prisma.block.create({
+    data: {
+      journeyId: journey.id,
+      typename: 'CardBlock',
+      parentBlockId: step1.id,
+      themeMode: ThemeMode.dark,
+      themeName: ThemeName.base,
+      fullscreen: false,
+      parentOrder: 0
+    }
+  })
+
+  const coverblock = await prisma.block.create({
+    data: {
+      journeyId: journey.id,
+      typename: 'VideoBlock',
+      parentBlockId: card1.id,
+      videoId: '5_0-NUA0301-0-0',
+      videoVariantLanguageId: '529',
+      muted: true,
+      autoplay: true,
+      startAt: 11,
+      title: 'What about the resurrection'
+    }
+  })
+  await prisma.block.update({
+    where: { id: card1.id },
+    data: { coverBlockId: coverblock.id }
+  })
+
+  const poster = await prisma.block.create({
+    data: {
+      journeyId: journey.id,
+      typename: 'ImageBlock',
+      parentBlockId: coverblock.id,
+      src: 'https://images.unsplash.com/photo-1558704164-ab7a0016c1f3?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80',
+      alt: 'Can we trust the story of Jesus?',
+      width: 1920,
+      height: 1080,
+      blurhash: 'LQEVc~^kXkI.*IyD$RnOyXTJRjjG',
+      parentOrder: 0
+    }
+  })
+  await prisma.block.update({
+    where: { id: coverblock.id },
+    data: { posterBlockId: poster.id }
+  })
+
+  await prisma.block.createMany({
+    data: [
+      {
+        journeyId: journey.id,
+        typename: 'TypographyBlock',
+        parentBlockId: card1.id,
+        content: 'The Resurection',
+        variant: 'h6',
+        color: 'primary',
+        align: 'left',
+        parentOrder: 0
+      },
+      {
+        journeyId: journey.id,
+        typename: 'TypographyBlock',
+        parentBlockId: card1.id,
+        content: 'What About It?',
+        variant: 'h2',
+        color: 'primary',
+        align: 'left',
+        parentOrder: 1
+      },
+      {
+        journeyId: journey.id,
+        typename: 'TypographyBlock',
+        parentBlockId: card1.id,
+        content:
+          'Jesus’ tomb was found empty three days after his death-what could have happened to the body?',
+        variant: 'body1',
+        color: 'primary',
+        align: 'left',
+        parentOrder: 2
+      }
+    ]
+  })
 
   // second step
-  const step2 = await db.collection('blocks').save({
-    journeyId: journey.id,
-    __typename: 'StepBlock',
-    locked: false,
-    parentOrder: 1
+  const step2 = await prisma.block.create({
+    data: {
+      journeyId: journey.id,
+      typename: 'StepBlock',
+      locked: false,
+      parentOrder: 1
+    }
   })
 
-  const button1 = await db.collection('blocks').save({
-    journeyId: journey.id,
-    __typename: 'ButtonBlock',
-    parentBlockId: card1._key,
-    label: 'Find Out',
-    variant: 'contained',
-    color: 'primary',
-    size: 'large',
-    action: {
-      gtmEventName: 'click',
-      blockId: step2._key
-    },
-    parentOrder: 3
+  const button1 = await prisma.block.create({
+    data: {
+      journeyId: journey.id,
+      typename: 'ButtonBlock',
+      parentBlockId: card1.id,
+      label: 'Find Out',
+      variant: 'contained',
+      color: 'primary',
+      size: 'large',
+      action: {
+        create: {
+          gtmEventName: 'click',
+          blockId: step2.id
+        }
+      },
+      parentOrder: 3
+    }
   })
 
-  const icon1a = await db.collection('blocks').save({
-    journeyId: journey.id,
-    __typename: 'IconBlock',
-    parentBlockId: button1._key,
-    name: 'PlayArrowRounded',
-    size: 'lg',
-    parentOrder: 0
+  const icon1a = await prisma.block.create({
+    data: {
+      journeyId: journey.id,
+      typename: 'IconBlock',
+      parentBlockId: button1.id,
+      name: 'PlayArrowRounded',
+      size: 'lg',
+      parentOrder: 0
+    }
   })
-  const icon1b = await db.collection('blocks').save({
-    journeyId: journey.id,
-    __typename: 'IconBlock',
-    parentBlockId: button1._key,
-    name: null
+  const icon1b = await prisma.block.create({
+    data: {
+      journeyId: journey.id,
+      typename: 'IconBlock',
+      parentBlockId: button1.id,
+      name: null
+    }
   })
-  await db
-    .collection('blocks')
-    .update(button1._key, { startIconId: icon1a._key, endIconId: icon1b._key })
-
-  const videoCard = await db.collection('blocks').save({
-    journeyId: journey.id,
-    __typename: 'CardBlock',
-    parentBlockId: step2._key,
-    themeMode: ThemeMode.dark,
-    themeName: ThemeName.base,
-    fullscreen: false,
-    parentOrder: 0
+  await prisma.block.update({
+    where: { id: button1.id },
+    data: { startIconId: icon1a.id, endIconId: icon1b.id }
   })
 
-  const video = await db.collection('blocks').save({
-    journeyId: journey.id,
-    __typename: 'VideoBlock',
-    parentBlockId: videoCard._key,
-    videoId: '5_0-NUA0301-0-0',
-    videoVariantLanguageId: '529',
-    autoplay: true,
-    title: 'What About The Ressurection?',
-    fullsize: true,
-    parentOrder: 0
+  const videoCard = await prisma.block.create({
+    data: {
+      journeyId: journey.id,
+      typename: 'CardBlock',
+      parentBlockId: step2.id,
+      themeMode: ThemeMode.dark,
+      themeName: ThemeName.base,
+      fullscreen: false,
+      parentOrder: 0
+    }
   })
-  await db.collection('blocks').update(video._id, {
-    action: {
-      parentBlockId: video._id,
+
+  const video = await prisma.block.create({
+    data: {
+      journeyId: journey.id,
+      typename: 'VideoBlock',
+      parentBlockId: videoCard.id,
+      videoId: '5_0-NUA0301-0-0',
+      videoVariantLanguageId: '529',
+      autoplay: true,
+      title: 'What About The Ressurection?',
+      fullsize: true,
+      parentOrder: 0
+    }
+  })
+  await prisma.action.create({
+    data: {
+      id: video.id,
+      parentBlockId: video.id,
       gtmEventName: 'NavigateAction',
       blockId: null,
       journeyId: null,
@@ -193,145 +218,181 @@ export async function nua2(): Promise<void> {
   })
 
   // third step
-  const step3 = await db.collection('blocks').save({
-    journeyId: journey.id,
-    __typename: 'StepBlock',
-    locked: false,
-    parentOrder: 2
+  const step3 = await prisma.block.create({
+    data: {
+      journeyId: journey.id,
+      typename: 'StepBlock',
+      locked: false,
+      parentOrder: 2
+    }
   })
 
-  await db.collection('blocks').save({
-    journeyId: journey.id,
-    __typename: 'VideoTriggerBlock',
-    parentBlockId: video._key,
-    triggerStart: 108,
-    action: {
-      gtmEventName: 'trigger',
-      blockId: step3._key
-    },
-    parentOrder: 0
+  await prisma.block.create({
+    data: {
+      journeyId: journey.id,
+      typename: 'VideoTriggerBlock',
+      parentBlockId: video.id,
+      triggerStart: 108,
+      action: {
+        create: {
+          gtmEventName: 'trigger',
+          blockId: step3.id
+        }
+      },
+      parentOrder: 0
+    }
   })
 
-  const card3 = await db.collection('blocks').save({
-    journeyId: journey.id,
-    __typename: 'CardBlock',
-    parentBlockId: step3._key,
-    themeMode: ThemeMode.dark,
-    themeName: ThemeName.base,
-    fullscreen: false,
-    parentOrder: 0
+  const card3 = await prisma.block.create({
+    data: {
+      journeyId: journey.id,
+      typename: 'CardBlock',
+      parentBlockId: step3.id,
+      themeMode: ThemeMode.dark,
+      themeName: ThemeName.base,
+      fullscreen: false,
+      parentOrder: 0
+    }
   })
 
-  const image = await db.collection('blocks').save({
-    journeyId: journey.id,
-    __typename: 'ImageBlock',
-    parentBlockId: card3._key,
-    src: 'https://images.unsplash.com/photo-1496442226666-8d4d0e62e6e9?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80',
-    alt: 'Where did his body go?',
-    width: 1920,
-    height: 1080,
-    blurhash: 'LFC$sANy00xF_NWF8_af9[n,xtR-'
+  const image = await prisma.block.create({
+    data: {
+      journeyId: journey.id,
+      typename: 'ImageBlock',
+      parentBlockId: card3.id,
+      src: 'https://images.unsplash.com/photo-1496442226666-8d4d0e62e6e9?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80',
+      alt: 'Where did his body go?',
+      width: 1920,
+      height: 1080,
+      blurhash: 'LFC$sANy00xF_NWF8_af9[n,xtR-'
+    }
   })
-  await db.collection('blocks').update(card3._key, { coverBlockId: image._key })
-
-  await db.collection('blocks').save({
-    journeyId: journey.id,
-    __typename: 'TypographyBlock',
-    parentBlockId: card3._key,
-    content: 'HOW DO YOU THINK?',
-    variant: 'h6',
-    color: 'primary',
-    align: 'left',
-    parentOrder: 0
+  await prisma.block.update({
+    where: { id: card3.id },
+    data: { coverBlockId: image.id }
   })
 
-  await db.collection('blocks').save({
-    journeyId: journey.id,
-    __typename: 'TypographyBlock',
-    parentBlockId: card3._key,
-    content: 'Where did his body go?',
-    variant: 'h3',
-    color: 'primary',
-    align: 'left',
-    parentOrder: 1
+  await prisma.block.create({
+    data: {
+      journeyId: journey.id,
+      typename: 'TypographyBlock',
+      parentBlockId: card3.id,
+      content: 'HOW DO YOU THINK?',
+      variant: 'h6',
+      color: 'primary',
+      align: 'left',
+      parentOrder: 0
+    }
   })
 
-  const question2 = await db.collection('blocks').save({
-    journeyId: journey.id,
-    __typename: 'RadioQuestionBlock',
-    parentBlockId: card3._key,
-    parentOrder: 2
+  await prisma.block.create({
+    data: {
+      journeyId: journey.id,
+      typename: 'TypographyBlock',
+      parentBlockId: card3.id,
+      content: 'Where did his body go?',
+      variant: 'h3',
+      color: 'primary',
+      align: 'left',
+      parentOrder: 1
+    }
+  })
+
+  const question2 = await prisma.block.create({
+    data: {
+      journeyId: journey.id,
+      typename: 'RadioQuestionBlock',
+      parentBlockId: card3.id,
+      parentOrder: 2
+    }
   })
 
   // fourth step
-  const step4 = await db.collection('blocks').save({
-    journeyId: journey.id,
-    __typename: 'StepBlock',
-    locked: false,
-    parentOrder: 3
+  const step4 = await prisma.block.create({
+    data: {
+      journeyId: journey.id,
+      typename: 'StepBlock',
+      locked: false,
+      parentOrder: 3
+    }
   })
 
-  await db.collection('blocks').saveAll([
-    {
+  await prisma.block.create({
+    data: {
       journeyId: journey.id,
-      __typename: 'RadioOptionBlock',
-      parentBlockId: question2._key,
+      typename: 'RadioOptionBlock',
+      parentBlockId: question2.id,
       label: 'Someone stole it from the tomb',
       action: {
-        gtmEventName: 'click',
-        blockId: step4._key
+        create: {
+          gtmEventName: 'click',
+          blockId: step4.id
+        }
       },
       parentOrder: 1
-    },
-    {
+    }
+  })
+  await prisma.block.create({
+    data: {
       journeyId: journey.id,
-      __typename: 'RadioOptionBlock',
-      parentBlockId: question2._key,
+      typename: 'RadioOptionBlock',
+      parentBlockId: question2.id,
       label: "He didn't really die",
       action: {
-        gtmEventName: 'click',
-        blockId: step4._key
+        create: {
+          gtmEventName: 'click',
+          blockId: step4.id
+        }
       },
       parentOrder: 2
-    },
-    {
+    }
+  })
+  await prisma.block.create({
+    data: {
       journeyId: journey.id,
-      __typename: 'RadioOptionBlock',
-      parentBlockId: question2._key,
+      typename: 'RadioOptionBlock',
+      parentBlockId: question2.id,
       label: 'He actually rose from the dead',
       action: {
-        gtmEventName: 'click',
-        blockId: step4._key
+        create: {
+          gtmEventName: 'click',
+          blockId: step4.id
+        }
       },
       parentOrder: 3
     }
-  ])
-
-  const videoCard1 = await db.collection('blocks').save({
-    journeyId: journey.id,
-    __typename: 'CardBlock',
-    parentBlockId: step4._key,
-    themeMode: ThemeMode.dark,
-    themeName: ThemeName.base,
-    fullscreen: false,
-    parentOrder: 0
   })
 
-  const video1 = await db.collection('blocks').save({
-    journeyId: journey.id,
-    __typename: 'VideoBlock',
-    parentBlockId: videoCard1._key,
-    videoId: '5_0-NUA0301-0-0',
-    videoVariantLanguageId: '529',
-    autoplay: true,
-    title: 'What About The Ressurection?',
-    startAt: 109,
-    fullsize: true,
-    parentOrder: 0
+  const videoCard1 = await prisma.block.create({
+    data: {
+      journeyId: journey.id,
+      typename: 'CardBlock',
+      parentBlockId: step4.id,
+      themeMode: ThemeMode.dark,
+      themeName: ThemeName.base,
+      fullscreen: false,
+      parentOrder: 0
+    }
   })
-  await db.collection('blocks').update(video1._id, {
-    action: {
-      parentBlockId: video1._id,
+
+  const video1 = await prisma.block.create({
+    data: {
+      journeyId: journey.id,
+      typename: 'VideoBlock',
+      parentBlockId: videoCard1.id,
+      videoId: '5_0-NUA0301-0-0',
+      videoVariantLanguageId: '529',
+      autoplay: true,
+      title: 'What About The Ressurection?',
+      startAt: 109,
+      fullsize: true,
+      parentOrder: 0
+    }
+  })
+  await prisma.action.create({
+    data: {
+      id: video1.id,
+      parentBlockId: video1.id,
       gtmEventName: 'NavigateAction',
       blockId: null,
       journeyId: null,
@@ -341,149 +402,178 @@ export async function nua2(): Promise<void> {
   })
 
   // fifth step
-  const step5 = await db.collection('blocks').save({
-    journeyId: journey.id,
-    __typename: 'StepBlock',
-    locked: false,
-    parentOrder: 4
-  })
-
-  await db.collection('blocks').save({
-    journeyId: journey.id,
-    __typename: 'VideoTriggerBlock',
-    parentBlockId: video1._key,
-    triggerStart: 272,
-    action: {
-      gtmEventName: 'trigger',
-      blockId: step5._key
-    },
-    parentOrder: 0
-  })
-
-  const card5 = await db.collection('blocks').save({
-    journeyId: journey.id,
-    __typename: 'CardBlock',
-    parentBlockId: step5._key,
-    themeMode: ThemeMode.dark,
-    themeName: ThemeName.base,
-    fullscreen: false,
-    parentOrder: 0
-  })
-
-  await db.collection('blocks').saveAll([
-    {
+  const step5 = await prisma.block.create({
+    data: {
       journeyId: journey.id,
-      __typename: 'TypographyBlock',
-      parentBlockId: card5._key,
-      content: 'A QUOTE',
-      variant: 'h6',
-      color: 'primary',
-      align: 'left',
-      parentOrder: 0
-    },
-    {
-      journeyId: journey.id,
-      __typename: 'TypographyBlock',
-      parentBlockId: card5._key,
-      content:
-        "...one of the soldiers pierced Jesus' side with a spear, bringing a sudden flow of blood and water.",
-      variant: 'subtitle1',
-      color: 'primary',
-      align: 'left',
-      parentOrder: 1
-    },
-    {
-      journeyId: journey.id,
-      __typename: 'TypographyBlock',
-      parentBlockId: card5._key,
-      content: '- The Bible, John 19:34',
-      variant: 'body1',
-      color: 'primary',
-      align: 'left',
-      parentOrder: 2
+      typename: 'StepBlock',
+      locked: false,
+      parentOrder: 4
     }
-  ])
-
-  const image2 = await db.collection('blocks').save({
-    journeyId: journey.id,
-    __typename: 'ImageBlock',
-    parentBlockId: card5._key,
-    src: 'https://images.unsplash.com/photo-1616977545092-f4a423c3f22e?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=765&q=80',
-    alt: 'quote',
-    width: 1920,
-    height: 1080,
-    blurhash: 'L9Db$mOt008_}?oz58M{.8o#rqIU'
   })
-  await db
-    .collection('blocks')
-    .update(card5._key, { coverBlockId: image2._key })
+
+  await prisma.block.create({
+    data: {
+      journeyId: journey.id,
+      typename: 'VideoTriggerBlock',
+      parentBlockId: video1.id,
+      triggerStart: 272,
+      action: {
+        create: {
+          gtmEventName: 'trigger',
+          blockId: step5.id
+        }
+      },
+      parentOrder: 0
+    }
+  })
+
+  const card5 = await prisma.block.create({
+    data: {
+      journeyId: journey.id,
+      typename: 'CardBlock',
+      parentBlockId: step5.id,
+      themeMode: ThemeMode.dark,
+      themeName: ThemeName.base,
+      fullscreen: false,
+      parentOrder: 0
+    }
+  })
+
+  await prisma.block.createMany({
+    data: [
+      {
+        journeyId: journey.id,
+        typename: 'TypographyBlock',
+        parentBlockId: card5.id,
+        content: 'A QUOTE',
+        variant: 'h6',
+        color: 'primary',
+        align: 'left',
+        parentOrder: 0
+      },
+      {
+        journeyId: journey.id,
+        typename: 'TypographyBlock',
+        parentBlockId: card5.id,
+        content:
+          "...one of the soldiers pierced Jesus' side with a spear, bringing a sudden flow of blood and water.",
+        variant: 'subtitle1',
+        color: 'primary',
+        align: 'left',
+        parentOrder: 1
+      },
+      {
+        journeyId: journey.id,
+        typename: 'TypographyBlock',
+        parentBlockId: card5.id,
+        content: '- The Bible, John 19:34',
+        variant: 'body1',
+        color: 'primary',
+        align: 'left',
+        parentOrder: 2
+      }
+    ]
+  })
+
+  const image2 = await prisma.block.create({
+    data: {
+      journeyId: journey.id,
+      typename: 'ImageBlock',
+      parentBlockId: card5.id,
+      src: 'https://images.unsplash.com/photo-1616977545092-f4a423c3f22e?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=765&q=80',
+      alt: 'quote',
+      width: 1920,
+      height: 1080,
+      blurhash: 'L9Db$mOt008_}?oz58M{.8o#rqIU'
+    }
+  })
+  await prisma.block.update({
+    where: { id: card5.id },
+    data: { coverBlockId: image2.id }
+  })
 
   // sixth step
-  const step6 = await db.collection('blocks').save({
-    journeyId: journey.id,
-    __typename: 'StepBlock',
-    locked: false,
-    parentOrder: 5
+  const step6 = await prisma.block.create({
+    data: {
+      journeyId: journey.id,
+      typename: 'StepBlock',
+      locked: false,
+      parentOrder: 5
+    }
   })
 
-  const button2 = await db.collection('blocks').save({
-    journeyId: journey.id,
-    __typename: 'ButtonBlock',
-    parentBlockId: card5._key,
-    label: 'What does it mean?',
-    variant: 'contained',
-    color: 'primary',
-    size: 'medium',
-    action: {
-      gtmEventName: 'click',
-      blockId: step6._key
-    },
-    parentOrder: 4
+  const button2 = await prisma.block.create({
+    data: {
+      journeyId: journey.id,
+      typename: 'ButtonBlock',
+      parentBlockId: card5.id,
+      label: 'What does it mean?',
+      variant: 'contained',
+      color: 'primary',
+      size: 'medium',
+      action: {
+        create: {
+          gtmEventName: 'click',
+          blockId: step6.id
+        }
+      },
+      parentOrder: 4
+    }
   })
 
-  const icon2a = await db.collection('blocks').save({
-    journeyId: journey.id,
-    __typename: 'IconBlock',
-    parentBlockId: button2._key,
-    name: 'ContactSupportRounded',
-    size: 'md',
-    parentOrder: 4
+  const icon2a = await prisma.block.create({
+    data: {
+      journeyId: journey.id,
+      typename: 'IconBlock',
+      parentBlockId: button2.id,
+      name: 'ContactSupportRounded',
+      size: 'md',
+      parentOrder: 4
+    }
   })
-  const icon2b = await db.collection('blocks').save({
-    journeyId: journey.id,
-    __typename: 'IconBlock',
-    parentBlockId: button2._key,
-    name: null
+  const icon2b = await prisma.block.create({
+    data: {
+      journeyId: journey.id,
+      typename: 'IconBlock',
+      parentBlockId: button2.id,
+      name: null
+    }
   })
-  await db
-    .collection('blocks')
-    .update(button2._key, { startIconId: icon2a._key, endIconId: icon2b._key })
-
-  const videoCard2 = await db.collection('blocks').save({
-    journeyId: journey.id,
-    __typename: 'CardBlock',
-    parentBlockId: step6._key,
-    themeMode: ThemeMode.dark,
-    themeName: ThemeName.base,
-    fullscreen: false,
-    parentOrder: 0
+  await prisma.block.update({
+    where: { id: button2.id },
+    data: { startIconId: icon2a.id, endIconId: icon2b.id }
   })
 
-  const video2 = await db.collection('blocks').save({
-    journeyId: journey.id,
-    __typename: 'VideoBlock',
-    parentBlockId: videoCard2._key,
-    videoId: '5_0-NUA0301-0-0',
-    videoVariantLanguageId: '529',
-    autoplay: true,
-    title: 'What About The Ressurection?',
-    startAt: 272,
-    fullsize: true,
-    parentOrder: 0
+  const videoCard2 = await prisma.block.create({
+    data: {
+      journeyId: journey.id,
+      typename: 'CardBlock',
+      parentBlockId: step6.id,
+      themeMode: ThemeMode.dark,
+      themeName: ThemeName.base,
+      fullscreen: false,
+      parentOrder: 0
+    }
   })
-  await db.collection('blocks').update(video2._id, {
-    action: {
-      parentBlockId: video2._id,
+
+  const video2 = await prisma.block.create({
+    data: {
+      journeyId: journey.id,
+      typename: 'VideoBlock',
+      parentBlockId: videoCard2.id,
+      videoId: '5_0-NUA0301-0-0',
+      videoVariantLanguageId: '529',
+      autoplay: true,
+      title: 'What About The Ressurection?',
+      startAt: 272,
+      fullsize: true,
+      parentOrder: 0
+    }
+  })
+  await prisma.action.create({
+    data: {
+      id: video2.id,
+      parentBlockId: video2.id,
       gtmEventName: 'NavigateAction',
       blockId: null,
       journeyId: null,
@@ -493,111 +583,138 @@ export async function nua2(): Promise<void> {
   })
 
   // seventh step
-  const step7 = await db.collection('blocks').save({
-    journeyId: journey.id,
-    __typename: 'StepBlock',
-    locked: false,
-    parentOrder: 6
-  })
-
-  await db.collection('blocks').save({
-    journeyId: journey.id,
-    __typename: 'VideoTriggerBlock',
-    parentBlockId: video2._key,
-    triggerStart: 348,
-    action: {
-      gtmEventName: 'trigger',
-      blockId: step7._key
-    },
-    parentOrder: 0
-  })
-
-  const card7 = await db.collection('blocks').save({
-    journeyId: journey.id,
-    __typename: 'CardBlock',
-    parentBlockId: step7._key,
-    themeMode: ThemeMode.dark,
-    themeName: ThemeName.base,
-    fullscreen: false,
-    parentOrder: 0
-  })
-
-  const image3 = await db.collection('blocks').save({
-    journeyId: journey.id,
-    __typename: 'ImageBlock',
-    parentBlockId: card7._key,
-    src: 'https://images.unsplash.com/photo-1477936821694-ec4233a9a1a0?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1136&q=80',
-    alt: 'Who was this Jesus?',
-    width: 1920,
-    height: 1080,
-    blurhash: 'L;KH$$-Rs-kA}ot4bZj@S3R,WWj@'
-  })
-  await db
-    .collection('blocks')
-    .update(card7._key, { coverBlockId: image3._key })
-
-  await db.collection('blocks').save({
-    journeyId: journey.id,
-    __typename: 'TypographyBlock',
-    parentBlockId: card7._key,
-    content: "IF IT'S TRUE...",
-    variant: 'h6',
-    color: 'primary',
-    align: 'left',
-    parentOrder: 0
-  })
-
-  await db.collection('blocks').save({
-    journeyId: journey.id,
-    __typename: 'TypographyBlock',
-    parentBlockId: card7._key,
-    content: 'What is Christianity to you?',
-    variant: 'h3',
-    color: 'primary',
-    align: 'left',
-    parentOrder: 1
-  })
-
-  const question5 = await db.collection('blocks').save({
-    journeyId: journey.id,
-    __typename: 'RadioQuestionBlock',
-    parentBlockId: card7._key,
-    parentOrder: 2
-  })
-
-  await db.collection('blocks').saveAll([
-    {
+  const step7 = await prisma.block.create({
+    data: {
       journeyId: journey.id,
-      __typename: 'RadioOptionBlock',
-      parentBlockId: question5._key,
-      label: 'One of many ways to God',
+      typename: 'StepBlock',
+      locked: false,
+      parentOrder: 6
+    }
+  })
+
+  await prisma.block.create({
+    data: {
+      journeyId: journey.id,
+      typename: 'VideoTriggerBlock',
+      parentBlockId: video2.id,
+      triggerStart: 348,
       action: {
-        gtmEventName: 'click',
-        journeyId: '3'
+        create: {
+          gtmEventName: 'trigger',
+          blockId: step7.id
+        }
       },
       parentOrder: 0
-    },
-    {
+    }
+  })
+
+  const card7 = await prisma.block.create({
+    data: {
       journeyId: journey.id,
-      __typename: 'RadioOptionBlock',
-      parentBlockId: question5._key,
+      typename: 'CardBlock',
+      parentBlockId: step7.id,
+      themeMode: ThemeMode.dark,
+      themeName: ThemeName.base,
+      fullscreen: false,
+      parentOrder: 0
+    }
+  })
+
+  const image3 = await prisma.block.create({
+    data: {
+      journeyId: journey.id,
+      typename: 'ImageBlock',
+      parentBlockId: card7.id,
+      src: 'https://images.unsplash.com/photo-1477936821694-ec4233a9a1a0?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1136&q=80',
+      alt: 'Who was this Jesus?',
+      width: 1920,
+      height: 1080,
+      blurhash: 'L;KH$$-Rs-kA}ot4bZj@S3R,WWj@'
+    }
+  })
+  await prisma.block.update({
+    where: { id: card7.id },
+    data: { coverBlockId: image3.id }
+  })
+
+  await prisma.block.create({
+    data: {
+      journeyId: journey.id,
+      typename: 'TypographyBlock',
+      parentBlockId: card7.id,
+      content: "IF IT'S TRUE...",
+      variant: 'h6',
+      color: 'primary',
+      align: 'left',
+      parentOrder: 0
+    }
+  })
+
+  await prisma.block.create({
+    data: {
+      journeyId: journey.id,
+      typename: 'TypographyBlock',
+      parentBlockId: card7.id,
+      content: 'What is Christianity to you?',
+      variant: 'h3',
+      color: 'primary',
+      align: 'left',
+      parentOrder: 1
+    }
+  })
+
+  const question5 = await prisma.block.create({
+    data: {
+      journeyId: journey.id,
+      typename: 'RadioQuestionBlock',
+      parentBlockId: card7.id,
+      parentOrder: 2
+    }
+  })
+
+  await prisma.block.create({
+    data: {
+      journeyId: journey.id,
+      typename: 'RadioOptionBlock',
+      parentBlockId: question5.id,
+      label: 'One of many ways to God',
+      action: {
+        create: {
+          gtmEventName: 'click',
+          journeyId: '3'
+        }
+      },
+      parentOrder: 0
+    }
+  })
+  await prisma.block.create({
+    data: {
+      journeyId: journey.id,
+      typename: 'RadioOptionBlock',
+      parentBlockId: question5.id,
       label: 'One great lie...',
       action: {
-        gtmEventName: 'click',
-        journeyId: '3'
+        create: {
+          gtmEventName: 'click',
+          journeyId: '3'
+        }
       },
       parentOrder: 1
-    },
-    {
+    }
+  })
+  await prisma.block.create({
+    data: {
       journeyId: journey.id,
-      __typename: 'RadioOptionBlock',
-      parentBlockId: question5._key,
+      typename: 'RadioOptionBlock',
+      parentBlockId: question5.id,
       label: 'One true way to God',
       action: {
-        gtmEventName: 'click',
-        journeyId: '3'
+        create: {
+          gtmEventName: 'click',
+          journeyId: '3'
+        }
       },
       parentOrder: 2
     }
-  ])
+  })
 }
