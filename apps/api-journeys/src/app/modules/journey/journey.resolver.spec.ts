@@ -1008,7 +1008,6 @@ describe('JourneyResolver', () => {
         'journeyId',
         journeyUpdateHost
       )
-      console.log(journeyUpdateHost)
     })
 
     it('throws UserInputErrror', async () => {
