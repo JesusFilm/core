@@ -56,6 +56,7 @@ import Expand2 from './Expand2'
 import Expand from './Expand'
 import EyeClosed from './EyeClosed'
 import EyeOpen from './EyeOpen'
+import Facebook from './Facebook'
 import Favourite from './Favourite'
 import Flame from './Flame'
 import Globe1 from './Globe1'
@@ -70,6 +71,7 @@ import Home4 from './Home4'
 import Image3 from './Image3'
 import InformationCircleContained from './InformationCircleContained'
 import InformationSquareContained from './InformationSquareContained'
+import Instagram from './Instagram'
 import Journey from './Journey'
 import Key1 from './Key1'
 import Key2 from './Key2'
@@ -78,6 +80,7 @@ import Layers4 from './Layers4'
 import LayoutScale from './LayoutScale'
 import Lightning2 from './Lightning2'
 import LightningCircleContained from './LightningCircleContained'
+import Line from './Line'
 import LinkAngled from './LinkAngled'
 import LinkBroken from './LinkBroken'
 import LinkExternal from './LinkExternal'
@@ -112,6 +115,8 @@ import Search1 from './Search1'
 import Search2 from './Search2'
 import Send1 from './Send1'
 import Share from './Share'
+import Skype from './Skype'
+import Snapchat from './Snapchat'
 import SpaceHeight from './SpaceHeight'
 import SpaceHorizontal from './SpaceHorizontal'
 import SpaceVertical from './SpaceVertical'
@@ -119,14 +124,19 @@ import Square from './Square'
 import Star2 from './Star2'
 import Target from './Target'
 import Target2 from './Target2'
+import Telegram from './Telegram'
 import ThumbsUp from './ThumbsUp'
+import Tiktok from './Tiktok'
 import Trash2 from './Trash2'
 import UserProfile2 from './UserProfile2'
 import UserProfile3 from './UserProfile3'
 import UserProfileAdd from './UserProfileAdd'
 import UserProfileCircle from './UserProfileCircle'
 import UsersProfiles2 from './UsersProfiles2'
+import Viber from './Viber'
+import Vk from './Vk'
 import Web from './Web'
+import WhatsApp from './WhatsApp'
 import X1 from './X1'
 import X2 from './X2'
 import X3 from './X3'
@@ -190,6 +200,7 @@ type IconNames =
   | 'Expand'
   | 'EyeClosed'
   | 'EyeOpen'
+  | 'Facebook'
   | 'Favourite'
   | 'Flame'
   | 'Globe1'
@@ -204,6 +215,7 @@ type IconNames =
   | 'Image3'
   | 'InformationCircleContained'
   | 'InformationSquareContained'
+  | 'Instagram'
   | 'Journey'
   | 'Key1'
   | 'Key2'
@@ -212,6 +224,7 @@ type IconNames =
   | 'LayoutScale'
   | 'Lightning2'
   | 'LightningCircleContained'
+  | 'Line'
   | 'LinkAngled'
   | 'LinkBroken'
   | 'LinkExternal'
@@ -246,6 +259,8 @@ type IconNames =
   | 'Search2'
   | 'Send1'
   | 'Share'
+  | 'Skype'
+  | 'Snapchat'
   | 'SpaceHeight'
   | 'SpaceHorizontal'
   | 'SpaceVertical'
@@ -253,14 +268,19 @@ type IconNames =
   | 'Star2'
   | 'Target'
   | 'Target2'
+  | 'Telegram'
   | 'Trash2'
+  | 'Tiktok'
   | 'ThumbsUp'
   | 'UserProfile2'
   | 'UserProfile3'
   | 'UserProfileAdd'
   | 'UserProfileCircle'
   | 'UsersProfiles2'
+  | 'Viber'
+  | 'Vk'
   | 'Web'
+  | 'WhatsApp'
   | 'X1'
   | 'X2'
   | 'X3'
@@ -328,6 +348,7 @@ const iconComponents: IconComponents = {
   Expand,
   EyeClosed,
   EyeOpen,
+  Facebook,
   Favourite,
   Flame,
   Globe1,
@@ -342,6 +363,7 @@ const iconComponents: IconComponents = {
   Image3,
   InformationCircleContained,
   InformationSquareContained,
+  Instagram,
   Journey,
   Key1,
   Key2,
@@ -350,6 +372,7 @@ const iconComponents: IconComponents = {
   LayoutScale,
   Lightning2,
   LightningCircleContained,
+  Line,
   LinkAngled,
   LinkBroken,
   LinkExternal,
@@ -384,6 +407,8 @@ const iconComponents: IconComponents = {
   Search2,
   Send1,
   Share,
+  Skype,
+  Snapchat,
   SpaceHeight,
   SpaceHorizontal,
   SpaceVertical,
@@ -391,14 +416,19 @@ const iconComponents: IconComponents = {
   Star2,
   Target,
   Target2,
-  ThumbsUp,
+  Telegram,
   Trash2,
+  ThumbsUp,
+  Tiktok,
   UserProfile2,
   UserProfile3,
   UserProfileAdd,
   UserProfileCircle,
   UsersProfiles2,
+  Viber,
+  Vk,
   Web,
+  WhatsApp,
   X1,
   X2,
   X3,
