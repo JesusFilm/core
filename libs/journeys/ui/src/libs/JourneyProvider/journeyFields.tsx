@@ -44,5 +44,10 @@ export const JOURNEY_FIELDS = gql`
         imageUrl
       }
     }
+    chatButtons {
+      id
+      link
+      platform
+    }
   }
 `

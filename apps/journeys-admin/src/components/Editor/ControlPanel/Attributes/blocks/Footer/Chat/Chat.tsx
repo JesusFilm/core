@@ -1,247 +1,79 @@
-import { ReactElement, useState, useEffect } from 'react'
-import { v4 as uuidv4 } from 'uuid'
-import { gql, useMutation, useQuery } from '@apollo/client'
+import { ReactElement } from 'react'
 import Box from '@mui/material/Box'
 import { useTranslation } from 'react-i18next'
 import Typography from '@mui/material/Typography'
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { ChatPlatform } from '../../../../../../../../__generated__/globalTypes'
-import {
-  GetJourneyChatButtons,
-  GetJourneyChatButtons_journey_chatButtons as ChatButton
-} from '../../../../../../../../__generated__/GetJourneyChatButtons'
-import { JourneyChatButtonCreate } from '../../../../../../../../__generated__/JourneyChatButtonCreate'
-import { JourneyChatButtonUpdate } from '../../../../../../../../__generated__/JourneyChatButtonUpdate'
-import { JourneyChatButtonRemove } from '../../../../../../../../__generated__/JourneyChatButtonRemove'
-import { PlatformDetails } from './ChatOption/ChatOption'
+import { JourneyFields_chatButtons as ChatButton } from '../../../../../../../../__generated__/JourneyFields'
 import { ChatOption } from './ChatOption'
-import { getByPlatform, stateSetter } from './utils'
 
-export const GET_JOURNEY_CHAT_BUTTONS = gql`
-  query GetJourneyChatButtons($id: ID!) {
-    journey(id: $id, idType: databaseId) {
-      chatButtons {
-        id
-        link
-        platform
-      }
-    }
-  }
-`
+// TODO: remove label from icon select
+// TODO: update default icon
 
-export const JOURNEY_CHAT_BUTTON_CREATE = gql`
-  mutation JourneyChatButtonCreate(
-    $journeyId: ID!
-    $input: ChatButtonCreateInput
-  ) {
-    chatButtonCreate(journeyId: $journeyId, input: $input) {
-      id
-      link
-      platform
-    }
-  }
-`
-
-export const JOURNEY_CHAT_BUTTON_UPDATE = gql`
-  mutation JourneyChatButtonUpdate(
-    $id: ID!
-    $journeyId: ID!
-    $input: ChatButtonUpdateInput!
-  ) {
-    chatButtonUpdate(
-      id: $chatButtonUpdateId
-      journeyId: $journeyId
-      input: $input
-    ) {
-      id
-      link
-      platform
-    }
-  }
-`
-
-export const JOURNEY_CHAT_BUTTON_REMOVE = gql`
-  mutation JourneyChatButtonRemove($id: ID!) {
-    chatButtonRemove(id: $chatButtonRemoveId) {
-      id
-    }
-  }
-`
-
-interface Props {
-  journeyId: string
-}
-
-export function Chat({ journeyId }: Props): ReactElement {
+export function Chat(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
+  const { journey } = useJourney()
 
-  const defaultValues: PlatformDetails = {
-    id: '',
-    title: '',
-    link: '',
-    platform: null,
-    active: false
-  }
-  const [facebook, setFacebook] = useState<PlatformDetails>({
-    ...defaultValues,
-    id: uuidv4(),
-    title: t('Facebook Messenger'),
-    platform: ChatPlatform.facebook,
-    helperInfo: t(
-      'A text block containing a link with information on how the user can extract the correct link to Messenger chat.'
-    )
-  })
-  const [whatsApp, setWhatsApp] = useState<PlatformDetails>({
-    ...defaultValues,
-    id: uuidv4(),
-    title: t('WhatsApp'),
-    platform: ChatPlatform.whatsApp,
-    helperInfo: t(
-      'A text block containing a link with information on how the user can extract the correct link to WhatsApp chat.'
-    )
-  })
-  const [telegram, setTelegram] = useState<PlatformDetails>({
-    ...defaultValues,
-    id: uuidv4(),
-    title: t('Telegram'),
-    platform: ChatPlatform.telegram,
-    helperInfo: t(
-      'A text block containing a link with information on how the user can extract the correct link to Telegram chat.'
-    )
-  })
-  const [custom, setCustom] = useState<PlatformDetails>({
-    ...defaultValues,
-    id: uuidv4(),
-    title: t('Custom'),
-    enableIconSelect: true
-  })
-
-  const { data } = useQuery<GetJourneyChatButtons>(GET_JOURNEY_CHAT_BUTTONS, {
-    variables: {
-      id: journeyId
-    }
-  })
-  const [journeyChatButtonCreate] = useMutation<JourneyChatButtonCreate>(
-    JOURNEY_CHAT_BUTTON_CREATE
-  )
-  const [journeyChatButtonUpdate] = useMutation<JourneyChatButtonUpdate>(
-    JOURNEY_CHAT_BUTTON_UPDATE
-  )
-  const [journeyChatButtonRemove] = useMutation<JourneyChatButtonRemove>(
-    JOURNEY_CHAT_BUTTON_REMOVE
-  )
-  const chatButtons = data?.journey?.chatButtons ?? []
+  const chatButtons = journey?.chatButtons ?? []
   const maxSelection = chatButtons.length >= 2
 
-  function setLocalStates(): void {
-    const [facebookButton, whatsAppButton, telegramButton, customButton] = [
-      ChatPlatform.facebook,
-      ChatPlatform.whatsApp,
-      ChatPlatform.telegram,
-      undefined
-    ].map((platform) => getByPlatform(chatButtons, platform))
+  let facebook: ChatButton | undefined
+  let whatsApp: ChatButton | undefined
+  let telegram: ChatButton | undefined
+  let custom: ChatButton | undefined
 
-    stateSetter(setFacebook, facebookButton)
-    stateSetter(setWhatsApp, whatsAppButton)
-    stateSetter(setTelegram, telegramButton)
-    stateSetter(setCustom, customButton)
-  }
-
-  useEffect(() => {
-    //  should only run when the query and mutations run
-    setLocalStates()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [
-    data,
-    journeyChatButtonCreate,
-    journeyChatButtonUpdate,
-    journeyChatButtonRemove
-  ])
-
-  async function handleUpdate(
-    chatButton: Omit<ChatButton, '__typename'>
-  ): Promise<void> {
-    await journeyChatButtonUpdate({
-      variables: {
-        chatButtonUpdateId: chatButton.id,
-        journeyId,
-        input: {
-          link: chatButton.link,
-          platform: chatButton.platform
-        }
-      },
-      optimisticResponse: {
-        chatButtonUpdate: {
-          __typename: 'ChatButton',
-          ...chatButton
-        }
-      }
-    })
-  }
-
-  async function handleToggle(
-    chatButton: Omit<ChatButton, '__typename'>,
-    checked: boolean
-  ): Promise<void> {
-    const { id, link, platform } = chatButton
-    if (checked && !maxSelection) {
-      await journeyChatButtonCreate({
-        variables: {
-          journeyId,
-          input: {
-            link,
-            platform
-          }
-        },
-        optimisticResponse: {
-          chatButtonCreate: {
-            __typename: 'ChatButton',
-            ...chatButton
-          }
-        }
-      })
-    } else {
-      await journeyChatButtonRemove({
-        variables: { chatButtonRemoveId: id },
-        optimisticResponse: {
-          chatButtonRemove: {
-            __typename: 'ChatButton',
-            id
-          }
-        }
-      })
+  chatButtons.forEach((button) => {
+    switch (button.platform) {
+      case ChatPlatform.facebook:
+        facebook = button
+        break
+      case ChatPlatform.whatsApp:
+        whatsApp = button
+        break
+      case ChatPlatform.telegram:
+        telegram = button
+        break
+      default:
+        custom = button
     }
-  }
+  })
 
   return (
     <>
       <ChatOption
-        value={facebook}
-        disableSelection={maxSelection}
-        setButton={setFacebook}
-        handleUpdate={handleUpdate}
-        handleToggle={handleToggle}
+        title={t('Facebook Messenger')}
+        chatButton={facebook}
+        helperInfo={t(
+          'A text block containing a link with information on how the user can extract the correct link to Messenger chat.'
+        )}
+        journeyId={journey?.id}
+        maxSelection
       />
       <ChatOption
-        value={whatsApp}
-        disableSelection={maxSelection}
-        setButton={setWhatsApp}
-        handleUpdate={handleUpdate}
-        handleToggle={handleToggle}
+        chatButton={whatsApp}
+        title={t('WhatsApp')}
+        helperInfo={t(
+          'A text block containing a link with information on how the user can extract the correct link to WhatsApp chat.'
+        )}
+        journeyId={journey?.id}
+        maxSelection
       />
       <ChatOption
-        value={telegram}
-        disableSelection={maxSelection}
-        setButton={setTelegram}
-        handleUpdate={handleUpdate}
-        handleToggle={handleToggle}
+        chatButton={telegram}
+        title={t('Telegram')}
+        helperInfo={t(
+          'A text block containing a link with information on how the user can extract the correct link to Telegram chat.'
+        )}
+        journeyId={journey?.id}
+        maxSelection
       />
       <ChatOption
-        value={custom}
-        disableSelection={maxSelection}
-        setButton={setCustom}
-        handleUpdate={handleUpdate}
-        handleToggle={handleToggle}
+        chatButton={custom}
+        title={t('Custom')}
+        journeyId={journey?.id}
+        maxSelection
+        enableIconSelect
       />
       <Box
         sx={{
