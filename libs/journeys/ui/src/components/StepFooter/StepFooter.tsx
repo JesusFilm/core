@@ -24,7 +24,7 @@ export function StepFooter({
   const name = 'Alexander & Eliza Hamilton'
   const location = 'New York'
 
-  const src1 = 'undefined'
+  const src1 = undefined
   const src2 = 'undefined'
   return (
     <Box
@@ -72,7 +72,6 @@ export function StepFooter({
             alignItems: 'center'
           }}
         >
-          <HostAvatars src1={src1} src2={src2} />
           <Stack
             sx={{
               flex: '1 1 100%',
@@ -80,9 +79,12 @@ export function StepFooter({
               width: '100%',
               flexDirection: 'row',
               alignItems: 'center',
-              justifyContent: 'space-between'
+              justifyContent: 'space-even'
             }}
           >
+            <Box sx={{ flexDirection: 'row' }}>
+              <HostAvatars src1={src1} src2={src2} />
+            </Box>
             <Typography
               sx={{
                 zIndex: 1,
@@ -109,7 +111,7 @@ export function StepFooter({
             /> */}
           </Stack>
           <Box>
-            {/* <Stack
+            <Stack
               data-testid="chat-widget"
               sx={{
                 width: 44,
@@ -117,7 +119,7 @@ export function StepFooter({
                 borderRadius: 10,
                 backgroundColor: 'white'
               }}
-            /> */}
+            />
           </Box>
         </Stack>
       </Stack>
