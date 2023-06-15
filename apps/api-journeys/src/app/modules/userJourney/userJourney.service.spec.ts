@@ -70,7 +70,8 @@ describe('UserJourneyService', () => {
     slug: 'published-slug',
     createdAt: new Date(),
     status: JourneyStatus.published,
-    teamId: 'teamId'
+    teamId: 'teamId',
+    chatButtons: []
   } as unknown as Journey
 
   const userJourneyOwner = {
@@ -156,7 +157,9 @@ describe('UserJourneyService', () => {
     })
 
     it('adds user to team', async () => {
-      prisma.userJourney.findUnique = jest.fn().mockReturnValueOnce(userJourneyInvited)
+      prisma.userJourney.findUnique = jest
+        .fn()
+        .mockReturnValueOnce(userJourneyInvited)
 
       await service.approveAccess(userJourneyInvited.id, userJourney.userId)
       expect(prisma.userTeam.upsert).toHaveBeenCalledWith({

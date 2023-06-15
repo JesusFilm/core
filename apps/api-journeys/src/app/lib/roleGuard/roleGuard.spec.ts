@@ -53,7 +53,8 @@ describe('RoleGuard', () => {
     seoTitle: null,
     seoDescription: null,
     userJourneys: [userJourney],
-    template: true
+    template: true,
+    chatButtons: []
   } as unknown as Journey
 
   afterAll(() => {

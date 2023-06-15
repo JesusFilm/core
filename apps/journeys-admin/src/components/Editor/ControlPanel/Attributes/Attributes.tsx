@@ -23,78 +23,93 @@ import {
   TextResponse
 } from './blocks'
 import { MoveBlockButtons } from './MoveBlockButtons'
+import { Footer } from './blocks/Footer'
 
 function AttributesContent({ selected, step }: AttributesProps): ReactElement {
-  const withMoveButtons = (block: ReactElement): ReactElement => {
-    return (
-      <>
-        <MoveBlockButtons selectedBlock={selected} selectedStep={step} />
-        <Divider orientation="vertical" variant="middle" flexItem />
-        {block}
-      </>
-    )
-  }
-
-  switch (selected.__typename) {
-    case 'CardBlock':
-      return <Card {...selected} />
-
-    case 'StepBlock': {
-      const block = selected.children.find(
-        (block) =>
-          block.__typename === 'CardBlock' || block.__typename === 'VideoBlock'
-      )
+  if (typeof selected === 'string') {
+    switch (selected) {
+      case 'Footer': {
+        return <Footer />
+      }
+      default:
+        return <></>
+    }
+  } else {
+    const withMoveButtons = (block: ReactElement): ReactElement => {
       return (
         <>
-          <Step {...selected} />
+          <MoveBlockButtons selectedBlock={selected} selectedStep={step} />
           <Divider orientation="vertical" variant="middle" flexItem />
-          {block != null && <AttributesContent selected={block} step={step} />}
+          {block}
         </>
       )
     }
 
-    case 'VideoBlock': {
-      return step.id === selected.parentBlockId ? (
-        <Video {...selected} />
-      ) : (
-        withMoveButtons(<Video {...selected} />)
-      )
-    }
+    switch (selected.__typename) {
+      case 'CardBlock':
+        return <Card {...selected} />
 
-    case 'ImageBlock': {
-      return withMoveButtons(<Image {...selected} alt={selected.alt} />)
-    }
+      case 'StepBlock': {
+        const block = selected.children.find(
+          (block) =>
+            block.__typename === 'CardBlock' ||
+            block.__typename === 'VideoBlock'
+        )
+        return (
+          <>
+            <Step {...selected} />
+            <Divider orientation="vertical" variant="middle" flexItem />
+            {block != null && (
+              <AttributesContent selected={block} step={step} />
+            )}
+          </>
+        )
+      }
 
-    case 'TypographyBlock': {
-      return withMoveButtons(<Typography {...selected} />)
-    }
+      case 'VideoBlock': {
+        return step.id === selected.parentBlockId ? (
+          <Video {...selected} />
+        ) : (
+          withMoveButtons(<Video {...selected} />)
+        )
+      }
 
-    case 'ButtonBlock': {
-      return withMoveButtons(<Button {...selected} />)
-    }
+      case 'ImageBlock': {
+        return withMoveButtons(<Image {...selected} alt={selected.alt} />)
+      }
 
-    case 'RadioQuestionBlock': {
-      return withMoveButtons(<></>)
-    }
+      case 'TypographyBlock': {
+        return withMoveButtons(<Typography {...selected} />)
+      }
 
-    case 'RadioOptionBlock': {
-      return withMoveButtons(<RadioOption {...selected} />)
-    }
+      case 'ButtonBlock': {
+        return withMoveButtons(<Button {...selected} />)
+      }
 
-    case 'SignUpBlock': {
-      return withMoveButtons(<SignUp {...selected} />)
-    }
+      case 'RadioQuestionBlock': {
+        return withMoveButtons(<></>)
+      }
 
-    case 'TextResponseBlock': {
-      return withMoveButtons(<TextResponse {...selected} />)
+      case 'RadioOptionBlock': {
+        return withMoveButtons(<RadioOption {...selected} />)
+      }
+
+      case 'SignUpBlock': {
+        return withMoveButtons(<SignUp {...selected} />)
+      }
+
+      case 'TextResponseBlock': {
+        return withMoveButtons(<TextResponse {...selected} />)
+      }
+
+      default:
+        return <></>
     }
-    default:
-      return <></>
   }
 }
 
 interface AttributesProps {
-  selected: TreeBlock
+  selected: TreeBlock | string
   step: TreeBlock
 }
 
@@ -122,7 +137,9 @@ export function Attributes({ selected, step }: AttributesProps): ReactElement {
 
   // Map typename to labels when we have translation keys
   const blockLabel =
-    selected.__typename === 'StepBlock'
+    typeof selected === 'string'
+      ? t(selected)
+      : selected.__typename === 'StepBlock'
       ? t('Card')
       : selected.__typename === 'SignUpBlock'
       ? t('Subscribe')

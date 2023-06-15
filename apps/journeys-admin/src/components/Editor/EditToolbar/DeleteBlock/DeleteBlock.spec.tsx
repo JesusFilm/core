@@ -361,4 +361,15 @@ describe('DeleteBlock', () => {
     )
     expect(getByRole('button')).toBeDisabled()
   })
+
+  it('should be disabled if manually disabling button', () => {
+    const { getByRole } = render(
+      <SnackbarProvider>
+        <MockedProvider>
+          <DeleteBlock variant="button" disabled />
+        </MockedProvider>
+      </SnackbarProvider>
+    )
+    expect(getByRole('button')).toBeDisabled()
+  })
 })

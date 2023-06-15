@@ -5,11 +5,13 @@ import Box from '@mui/material/Box'
 interface OverlayContentProps {
   children: ReactNode
   sx: SxProps
+  hasFullscreenVideo?: boolean
 }
 
 export function OverlayContent({
   children,
-  sx
+  sx,
+  hasFullscreenVideo = false
 }: OverlayContentProps): ReactElement {
   const enableVerticalScroll: SxProps = {
     overflowY: 'scroll',
@@ -20,17 +22,22 @@ export function OverlayContent({
       display: 'none'
     }
   }
-  const topBottomEdgeFadeEffect: SxProps = {
-    WebkitMask: `linear-gradient(transparent 0%, #0000001a 4%, #000000 8%, #000000 90%, #0000001a 98%, transparent 100%)`,
-    mask: `linear-gradient(transparent 0%, #0000001a 4%, #000000 8%, #000000 90%, #0000001a 98%, transparent 100%)`
-  }
+  const topBottomEdgeFadeEffect: SxProps = !hasFullscreenVideo
+    ? {
+        WebkitMask: `linear-gradient(transparent 0%, #0000001a 4%, #000000 8%, #000000 90%, #0000001a 98%, transparent 100%)`,
+        mask: `linear-gradient(transparent 0%, #0000001a 4%, #000000 8%, #000000 90%, #0000001a 98%, transparent 100%)`
+      }
+    : {}
   // Add spacing to children so centered when scrolling to edge
-  const topBottomMarginsOnContent: SxProps = {
-    '& > *': {
-      '&:first-child': { mt: { xs: 8, lg: 12 } },
-      '&:last-child': { mb: { xs: 6, lg: 12 } }
-    }
-  }
+  const topBottomMarginsOnContent: SxProps = !hasFullscreenVideo
+    ? {
+        '& > *': {
+          '&:first-child': { mt: { xs: 8, lg: 12 } },
+          '&:last-child': { mb: { xs: 6, lg: 12 } }
+        }
+      }
+    : {}
+
   return (
     <Box
       data-testid="overlay-content"

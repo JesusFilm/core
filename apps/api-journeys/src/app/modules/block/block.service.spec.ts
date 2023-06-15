@@ -44,7 +44,8 @@ describe('BlockService', () => {
     description: null,
     primaryImageBlockId: null,
     slug: 'published-slug',
-    teamId: 'teamId'
+    teamId: 'teamId',
+    chatButtons: []
   }
 
   const block = {

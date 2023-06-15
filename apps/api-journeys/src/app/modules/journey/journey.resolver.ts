@@ -22,6 +22,8 @@ import { GqlAuthGuard } from '@core/nest/gqlAuthGuard/GqlAuthGuard'
 import { v4 as uuidv4 } from 'uuid'
 import {
   Block,
+  ChatButton,
+  Host,
   Journey,
   UserJourney,
   UserJourneyRole,
@@ -346,7 +348,8 @@ export class JourneyResolver {
       publishedAt: undefined,
       status: JourneyStatus.draft,
       template: false,
-      primaryImageBlockId: duplicatePrimaryImageBlock?.id
+      primaryImageBlockId: duplicatePrimaryImageBlock?.id,
+      hostId: null
     }
 
     let retry = true
@@ -398,6 +401,17 @@ export class JourneyResolver {
         lower: true,
         strict: true
       })
+    if (input.hostId != null) {
+      const journey = await this.journeyService.get(id)
+      const host = await this.prismaService.host.findUnique({
+        where: { id: input.hostId }
+      })
+      if (host == null || journey == null || host?.teamId !== journey.teamId) {
+        throw new UserInputError(
+          'the team id of host doest not match team id of journey'
+        )
+      }
+    }
     try {
       return await this.prismaService.journey.update({
         where: { id },
@@ -531,6 +545,23 @@ export class JourneyResolver {
       },
       orderBy: { parentOrder: 'asc' },
       include: { action: true }
+    })
+  }
+
+  @ResolveField()
+  async chatButtons(@Parent() journey: Journey): Promise<ChatButton[]> {
+    return await this.prismaService.chatButton.findMany({
+      where: { journeyId: journey.id }
+    })
+  }
+
+  @ResolveField()
+  async host(
+    @Parent() journey: Journey & { hostId?: string | null }
+  ): Promise<Host | null> {
+    if (journey.hostId == null) return null
+    return await this.prismaService.host.findUnique({
+      where: { id: journey.hostId }
     })
   }
 

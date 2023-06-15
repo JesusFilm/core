@@ -10,6 +10,7 @@ import {
   UserJourneyRole,
   JourneysReportType,
   Role,
+  ChatPlatform
 } from '../../__generated__/graphql'
 import { BlockResolver } from '../block/block.resolver'
 import { BlockService } from '../block/block.service'
@@ -52,7 +53,7 @@ describe('JourneyResolver', () => {
     service: JourneyService,
     bService: BlockService,
     urService: UserRoleService,
-    prisma: PrismaService
+    prismaService: PrismaService
 
   const publishedAt = new Date('2021-11-19T12:34:56.647Z')
   const createdAt = new Date('2021-11-19T12:34:56.647Z')
@@ -76,7 +77,24 @@ describe('JourneyResolver', () => {
     deletedAt: null,
     seoTitle: null,
     seoDescription: null,
-    template: false
+    template: false,
+    chatButtons: []
+  }
+
+  const journeyWithTeam: Journey = {
+    id: 'journeyWithTeam',
+    slug: 'journey-slug',
+    title: 'published',
+    status: JourneyStatus.published,
+    languageId: '529',
+    themeMode: ThemeMode.light,
+    themeName: ThemeName.base,
+    description: null,
+    primaryImageBlockId: null,
+    publishedAt,
+    createdAt,
+    chatButtons: [],
+    teamId: 'geronimo-gang'
   }
 
   const primaryImageBlock = {
@@ -158,6 +176,19 @@ describe('JourneyResolver', () => {
     slug: 'published-slug',
     seoTitle: 'Social media title',
     seoDescription: 'Social media description'
+  }
+
+  const journeyUpdateHost = {
+    title: 'published',
+    languageId: '529',
+    themeMode: ThemeMode.light,
+    themeName: ThemeName.base,
+    description: null,
+    primaryImageBlockId: null,
+    slug: 'published-slug',
+    seoTitle: 'Social media title',
+    seoDescription: 'Social media description',
+    hostId: 'host-id2'
   }
 
   const templateUpdate = {
@@ -263,8 +294,8 @@ describe('JourneyResolver', () => {
     service = module.get<JourneyService>(JourneyService)
     bService = module.get<BlockService>(BlockService)
     urService = module.get<UserRoleService>(UserRoleService)
-    prisma = module.get<PrismaService>(PrismaService)
-    prisma.block.findUnique = jest.fn().mockImplementation((input) => {
+    prismaService = module.get<PrismaService>(PrismaService)
+    prismaService.block.findUnique = jest.fn().mockImplementation((input) => {
       switch (input.where.id) {
         case block.id:
           return block
@@ -272,13 +303,13 @@ describe('JourneyResolver', () => {
           return primaryImageBlock
       }
     })
-    prisma.userJourney.create = jest
+    prismaService.userJourney.create = jest
       .fn()
       .mockImplementationOnce((input) => input.data)
-    prisma.journey.create = jest
+    prismaService.journey.create = jest
       .fn()
       .mockImplementationOnce((result) => result.data)
-    prisma.journey.findMany = jest.fn().mockImplementation((input) => {
+    prismaService.journey.findMany = jest.fn().mockImplementation((input) => {
       switch (input.where.id.in[0]) {
         case archivedJourney.id:
           return [archivedJourney]
@@ -290,7 +321,7 @@ describe('JourneyResolver', () => {
           return [journey, draftJourney]
       }
     })
-    prisma.journey.findUnique = jest.fn().mockImplementation((input) => {
+    prismaService.journey.findUnique = jest.fn().mockImplementation((input) => {
       switch (input.where.id) {
         case journey.id:
           return journey
@@ -312,14 +343,14 @@ describe('JourneyResolver', () => {
           return null
       }
     })
-    prisma.journey.update = jest.fn().mockImplementationOnce((input) => {
+    prismaService.journey.update = jest.fn().mockImplementationOnce((input) => {
       if (input.where.id === trashedJourney.id) return trashedJourney
       return journey
     })
-    prisma.journey.updateMany = jest
+    prismaService.journey.updateMany = jest
       .fn()
       .mockResolvedValueOnce([journey, draftJourney])
-    prisma.userJourney.findUnique = jest
+    prismaService.userJourney.findUnique = jest
       .fn()
       .mockImplementationOnce((input) => {
         if (input.where.journeyId_userId.userId === invitedUserJourney.userId)
@@ -328,13 +359,15 @@ describe('JourneyResolver', () => {
           return userJourney
         return null
       })
-    prisma.userJourney.findMany = jest
+    prismaService.userJourney.findMany = jest
       .fn()
       .mockResolvedValueOnce([userJourney, userJourney])
-    prisma.userTeam.create = jest.fn()
-    prisma.userTeam.findUnique = jest.fn().mockResolvedValueOnce(member)
-    prisma.block.findMany = jest.fn().mockResolvedValueOnce([block])
-    prisma.userTeam.upsert = jest.fn()
+    prismaService.userTeam.create = jest.fn()
+    prismaService.userTeam.findUnique = jest.fn().mockResolvedValueOnce(member)
+    prismaService.block.findMany = jest.fn().mockResolvedValueOnce([block])
+    prismaService.userTeam.upsert = jest.fn()
+    prismaService.userTeam.upsert = jest.fn()
+    prismaService.chatButton.findMany = jest.fn().mockReturnValue([])
   })
 
   describe('adminJourneysEmbed', () => {
@@ -545,7 +578,7 @@ describe('JourneyResolver', () => {
         await resolver.adminJourney('userId', 'journey-slug', IdType.slug)
       ).toEqual(journey)
       expect(service.getBySlug).toHaveBeenCalledWith('journey-slug')
-      expect(prisma.userJourney.findUnique).toHaveBeenCalledWith({
+      expect(prismaService.userJourney.findUnique).toHaveBeenCalledWith({
         where: {
           journeyId_userId: {
             journeyId: userJourney.journeyId,
@@ -559,10 +592,10 @@ describe('JourneyResolver', () => {
       expect(
         await resolver.adminJourney('userId', 'journeyId', IdType.databaseId)
       ).toEqual(journey)
-      expect(prisma.journey.findUnique).toHaveBeenCalledWith({
+      expect(prismaService.journey.findUnique).toHaveBeenCalledWith({
         where: { id: 'journeyId' }
       })
-      expect(prisma.userJourney.findUnique).toHaveBeenCalledWith({
+      expect(prismaService.userJourney.findUnique).toHaveBeenCalledWith({
         where: {
           journeyId_userId: {
             journeyId: userJourney.journeyId,
@@ -576,7 +609,7 @@ describe('JourneyResolver', () => {
       expect(
         await resolver.adminJourney('userId', '404', IdType.databaseId)
       ).toEqual(null)
-      expect(prisma.journey.findUnique).toHaveBeenCalledWith({
+      expect(prismaService.journey.findUnique).toHaveBeenCalledWith({
         where: { id: '404' }
       })
     })
@@ -592,7 +625,7 @@ describe('JourneyResolver', () => {
       ).rejects.toThrow(
         'User has not received an invitation to edit this journey.'
       )
-      expect(prisma.journey.findUnique).toHaveBeenCalledWith({
+      expect(prismaService.journey.findUnique).toHaveBeenCalledWith({
         where: { id: 'journeyId' }
       })
     })
@@ -606,7 +639,7 @@ describe('JourneyResolver', () => {
             IdType.databaseId
           )
       ).rejects.toThrow('User invitation pending.')
-      expect(prisma.journey.findUnique).toHaveBeenCalledWith({
+      expect(prismaService.journey.findUnique).toHaveBeenCalledWith({
         where: { id: 'journeyId' }
       })
     })
@@ -631,7 +664,7 @@ describe('JourneyResolver', () => {
           IdType.databaseId
         )
       ).toEqual(draftTemplate)
-      expect(prisma.journey.findUnique).toHaveBeenCalledWith({
+      expect(prismaService.journey.findUnique).toHaveBeenCalledWith({
         where: { id: 'draftTemplate' }
       })
       expect(urService.getUserRoleById).toHaveBeenCalledWith(userRole.userId)
@@ -661,14 +694,14 @@ describe('JourneyResolver', () => {
       expect(await resolver.journey('journeyId', IdType.databaseId)).toEqual(
         journey
       )
-      expect(prisma.journey.findUnique).toHaveBeenCalledWith({
+      expect(prismaService.journey.findUnique).toHaveBeenCalledWith({
         where: { id: 'journeyId' }
       })
     })
 
     it('returns null if no journey found', async () => {
       expect(await resolver.journey('404', IdType.databaseId)).toEqual(null)
-      expect(prisma.journey.findUnique).toHaveBeenCalledWith({
+      expect(prismaService.journey.findUnique).toHaveBeenCalledWith({
         where: { id: '404' }
       })
     })
@@ -734,7 +767,7 @@ describe('JourneyResolver', () => {
         { title: 'Untitled Journey', languageId: '529' },
         'userId'
       )
-      expect(prisma.userJourney.create).toHaveBeenCalledWith({
+      expect(prismaService.userJourney.create).toHaveBeenCalledWith({
         data: {
           userId: 'userId',
           journeyId: 'journeyId',
@@ -750,7 +783,7 @@ describe('JourneyResolver', () => {
         { title: 'Untitled Journey', languageId: '529' },
         'userId'
       )
-      expect(prisma.userTeam.upsert).toHaveBeenCalledWith({
+      expect(prismaService.userTeam.upsert).toHaveBeenCalledWith({
         create: {
           teamId: 'jfp-team',
           userId: 'userId',
@@ -769,7 +802,7 @@ describe('JourneyResolver', () => {
     it('adds uuid if slug already taken', async () => {
       const date = '2021-12-07T03:22:41.135Z'
       jest.useFakeTimers().setSystemTime(new Date(date).getTime())
-      prisma.journey.create = jest
+      prismaService.journey.create = jest
         .fn()
         .mockRejectedValueOnce({
           code: ERROR_PSQL_UNIQUE_CONSTRAINT_VIOLATED
@@ -794,7 +827,7 @@ describe('JourneyResolver', () => {
     })
 
     it('throws error and does not get stuck in retry loop', async () => {
-      prisma.journey.create = jest
+      prismaService.journey.create = jest
         .fn()
         .mockRejectedValueOnce(new Error('database error'))
       await expect(
@@ -896,7 +929,9 @@ describe('JourneyResolver', () => {
         slug: `${journey.title}-copy`,
         title: `${journey.title} copy`,
         template: false,
-        primaryImageBlockId: undefined
+        primaryImageBlockId: undefined,
+        hostId: null,
+        teamID: undefined
       })
     })
 
@@ -914,14 +949,15 @@ describe('JourneyResolver', () => {
         status: JourneyStatus.draft,
         publishedAt: undefined,
         template: false,
-        primaryImageBlockId: undefined
+        primaryImageBlockId: undefined,
+        hostId: null
       })
     })
 
     it('duplicates a UserJourney', async () => {
       mockUuidv4.mockReturnValueOnce('duplicateJourneyId')
       await resolver.journeyDuplicate('journeyId', 'userId')
-      expect(prisma.userJourney.create).toHaveBeenCalledWith({
+      expect(prismaService.userJourney.create).toHaveBeenCalledWith({
         data: {
           id: undefined,
           userId: 'userId',
@@ -945,10 +981,12 @@ describe('JourneyResolver', () => {
         'duplicateJourneyId',
         duplicateStepIds
       )
-      expect(bService.saveAll).toHaveBeenCalledWith([{
-        ...duplicatedStep,
-        journey: { connect: { id: 'duplicateJourneyId' } }
-      }])
+      expect(bService.saveAll).toHaveBeenCalledWith([
+        {
+          ...duplicatedStep,
+          journey: { connect: { id: 'duplicateJourneyId' } }
+        }
+      ])
     })
 
     it('increments copy number on journey if multiple duplicates exist', async () => {
@@ -975,12 +1013,13 @@ describe('JourneyResolver', () => {
         slug: `${journey.title}-copy-2`,
         title: `${journey.title} copy 2`,
         template: false,
-        primaryImageBlockId: undefined
+        primaryImageBlockId: undefined,
+        hostId: null
       })
     })
 
     it('throws error and does not get stuck in retry loop', async () => {
-      prisma.journey.create = jest
+      prismaService.journey.create = jest
         .fn()
         .mockRejectedValueOnce(new Error('database error'))
       await expect(
@@ -1011,7 +1050,7 @@ describe('JourneyResolver', () => {
         {
           ...primaryImageBlock,
           id: 'duplicatePrimaryImageBlock.id',
-          journey: { connect: { id: 'duplicateJourneyId'}},
+          journey: { connect: { id: 'duplicateJourneyId' } },
           parentBlockId: 'duplicateJourneyId'
         }
       ])
@@ -1021,14 +1060,35 @@ describe('JourneyResolver', () => {
   describe('journeyUpdate', () => {
     it('updates a Journey', async () => {
       await resolver.journeyUpdate('1', journeyUpdate)
-      expect(prisma.journey.update).toHaveBeenCalledWith({
+      expect(prismaService.journey.update).toHaveBeenCalledWith({
         where: { id: '1' },
         data: journeyUpdate
       })
     })
 
+    it('updates a Journey with host input', async () => {
+      const mockHost = {
+        id: 'host-id2',
+        teamId: 'geronimo-gang',
+        name: 'Edmond Shen & Nisal Cottingham',
+        location: 'New Zealand',
+        avatar1Id: 'avatar1-id',
+        avatar2Id: 'avatar2-id'
+      }
+
+      prismaService.host.findUnique = jest.fn().mockResolvedValueOnce(mockHost)
+      prismaService.journey.findUnique = jest
+        .fn()
+        .mockResolvedValueOnce(journey)
+      await resolver.journeyUpdate('journeyId', journeyUpdateHost)
+      expect(prismaService.journey.update).toHaveBeenCalledWith(
+        'journeyId',
+        journeyUpdateHost
+      )
+    })
+
     it('throws UserInputErrror', async () => {
-      prisma.journey.update = jest
+      prismaService.journey.update = jest
         .fn()
         .mockRejectedValueOnce({ code: ERROR_PSQL_UNIQUE_CONSTRAINT_VIOLATED })
       await expect(
@@ -1037,7 +1097,7 @@ describe('JourneyResolver', () => {
     })
 
     it('throws error gracefully', async () => {
-      prisma.journey.update = jest
+      prismaService.journey.update = jest
         .fn()
         .mockRejectedValueOnce(new Error('database error'))
       await expect(
@@ -1051,7 +1111,7 @@ describe('JourneyResolver', () => {
       const date = '2021-12-07T03:22:41.135Z'
       jest.useFakeTimers().setSystemTime(new Date(date).getTime())
       await resolver.journeyPublish('1')
-      expect(prisma.journey.update).toHaveBeenCalledWith({
+      expect(prismaService.journey.update).toHaveBeenCalledWith({
         where: { id: '1' },
         data: {
           status: JourneyStatus.published,
@@ -1066,7 +1126,7 @@ describe('JourneyResolver', () => {
       const date = '2021-12-07T03:22:41.135Z'
       jest.useFakeTimers().setSystemTime(new Date(date).getTime())
       await resolver.journeysArchive([journey.id, draftJourney.id])
-      expect(prisma.journey.updateMany).toHaveBeenCalledWith({
+      expect(prismaService.journey.updateMany).toHaveBeenCalledWith({
         where: { id: { in: [journey.id, draftJourney.id] } },
         data: { status: JourneyStatus.archived, archivedAt: new Date(date) }
       })
@@ -1078,7 +1138,7 @@ describe('JourneyResolver', () => {
       const date = '2021-12-07T03:22:41.135Z'
       jest.useFakeTimers().setSystemTime(new Date(date).getTime())
       await resolver.journeysTrash([journey.id, draftJourney.id])
-      expect(prisma.journey.updateMany).toHaveBeenCalledWith({
+      expect(prismaService.journey.updateMany).toHaveBeenCalledWith({
         where: { id: { in: [journey.id, draftJourney.id] } },
         data: { status: JourneyStatus.trashed, trashedAt: new Date(date) }
       })
@@ -1090,7 +1150,7 @@ describe('JourneyResolver', () => {
       const date = '2021-12-07T03:22:41.135Z'
       jest.useFakeTimers().setSystemTime(new Date(date).getTime())
       await resolver.journeysDelete([journey.id, draftJourney.id])
-      expect(prisma.journey.updateMany).toHaveBeenCalledWith({
+      expect(prismaService.journey.updateMany).toHaveBeenCalledWith({
         where: { id: { in: [journey.id, draftJourney.id] } },
         data: { status: JourneyStatus.deleted, deletedAt: new Date(date) }
       })
@@ -1100,7 +1160,7 @@ describe('JourneyResolver', () => {
   describe('journeysRestore', () => {
     it('resores a published Journey', async () => {
       await resolver.journeysRestore([trashedJourney.id])
-      expect(prisma.journey.update).toHaveBeenCalledWith({
+      expect(prismaService.journey.update).toHaveBeenCalledWith({
         where: { id: trashedJourney.id },
         data: { status: JourneyStatus.published }
       })
@@ -1108,7 +1168,7 @@ describe('JourneyResolver', () => {
 
     it('restores an draft Journey', async () => {
       await resolver.journeysRestore([trashedDraftJourney.id])
-      expect(prisma.journey.update).toHaveBeenCalledWith({
+      expect(prismaService.journey.update).toHaveBeenCalledWith({
         where: { id: trashedDraftJourney.id },
         data: { status: JourneyStatus.draft }
       })
@@ -1118,10 +1178,52 @@ describe('JourneyResolver', () => {
   describe('journeyTemplate', () => {
     it('updates template', async () => {
       await resolver.journeyTemplate('1', templateUpdate)
-      expect(prisma.journey.update).toHaveBeenCalledWith({
+      expect(prismaService.journey.update).toHaveBeenCalledWith({
         where: { id: '1' },
         data: templateUpdate
       })
+    })
+  })
+
+  describe('chatButtons', () => {
+    it('should return chatButtons', async () => {
+      const chatButton = {
+        id: '1',
+        link: 'm.me/user',
+        platform: ChatPlatform.facebook
+      }
+      const journeyWithChatButtons: Journey = {
+        ...journey,
+        chatButtons: [chatButton, chatButton]
+      }
+
+      prismaService.chatButton.findMany = jest
+        .fn()
+        .mockReturnValue([chatButton, chatButton])
+      expect(await resolver.chatButtons(journeyWithChatButtons)).toEqual([
+        chatButton,
+        chatButton
+      ])
+    })
+  })
+
+  describe('host', () => {
+    it('should return host', async () => {
+      const mockHost = {
+        id: 'host-id2',
+        teamId: 'geronimo-gang',
+        name: 'Edmond Shen & Nisal Cottingham',
+        location: 'New Zealand',
+        avatar1Id: 'avatar1-id',
+        avatar2Id: 'avatar2-id'
+      }
+      const journeyWithHost: Journey & { hostId: string } = {
+        ...journeyWithTeam,
+        hostId: 'host-id2'
+      }
+
+      prismaService.host.findUnique = jest.fn().mockReturnValue(mockHost)
+      expect(await resolver.host(journeyWithHost)).toEqual(mockHost)
     })
   })
 
@@ -1131,7 +1233,7 @@ describe('JourneyResolver', () => {
         userJourney,
         userJourney
       ])
-      expect(prisma.userJourney.findMany).toHaveBeenCalledWith({
+      expect(prismaService.userJourney.findMany).toHaveBeenCalledWith({
         where: { journeyId: journey.id }
       })
     })
