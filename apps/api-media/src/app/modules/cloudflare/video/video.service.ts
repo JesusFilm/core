@@ -20,7 +20,7 @@ export interface CloudflareVideoUrlUploadResponse {
 
 export interface CloudflareVideoGetResponse {
   result: {
-    readyToStream: boolean
+    duration: number
   } | null
   success: boolean
   errors: string[]

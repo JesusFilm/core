@@ -13,7 +13,7 @@ const cloudflareVideo: CloudflareVideo = {
   uploadUrl: 'https://upload.com',
   createdAt: new Date().toISOString(),
   userId: 'user_1',
-  readyToStream: false
+  duration: 1
 }
 
 describe('VideoResolver', () => {
@@ -78,7 +78,7 @@ describe('VideoResolver', () => {
         name: 'name',
         createdAt: expect.any(String),
         userId: 'userId',
-        readyToStream: false
+        duration: 1
       })
       expect(service.uploadToCloudflareByFile).toHaveBeenCalledWith(
         100,
@@ -114,7 +114,7 @@ describe('VideoResolver', () => {
         id: 'cloudflareUid',
         createdAt: expect.any(String),
         userId: user.id,
-        readyToStream: false
+        duration: 1
       })
       expect(service.uploadToCloudflareByUrl).toHaveBeenCalledWith(
         'https://example.com/video.mp4',
@@ -177,17 +177,17 @@ describe('VideoResolver', () => {
     it('updates video and returns updated video', async () => {
       service.getVideoFromCloudflare.mockResolvedValueOnce({
         result: {
-          readyToStream: true
+          duration: 1
         },
         success: true,
         errors: [],
         messages: []
       })
       expect(await resolver.getMyCloudflareVideo('videoId', user.id)).toEqual({
-        readyToStream: true
+        duration: 1
       })
       expect(service.update).toHaveBeenCalledWith('videoId', {
-        readyToStream: true
+        duration: 1
       })
     })
   })

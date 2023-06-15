@@ -38,7 +38,7 @@ export const GET_MY_CLOUDFLARE_VIDEO_QUERY = gql`
   query GetMyCloudflareVideoQuery($id: ID!) {
     getMyCloudflareVideo(id: $id) {
       id
-      readyToStream
+      duration
     }
   }
 `
@@ -78,14 +78,15 @@ export function AddByFile({
   ])
 
   useEffect(() => {
+    console.log('getMyCloudflareVideoData', getMyCloudflareVideoData)
     if (
-      getMyCloudflareVideoData?.getMyCloudflareVideo?.readyToStream === true &&
+      getMyCloudflareVideoData?.getMyCloudflareVideo?.duration !== undefined && getMyCloudflareVideoData?.getMyCloudflareVideo?.duration > -1 &&
       data?.createCloudflareVideoUploadByFile?.id != null
     ) {
       onChange(data.createCloudflareVideoUploadByFile.id)
     }
   }, [
-    getMyCloudflareVideoData?.getMyCloudflareVideo?.readyToStream,
+    getMyCloudflareVideoData,
     data?.createCloudflareVideoUploadByFile?.id,
     onChange
   ])

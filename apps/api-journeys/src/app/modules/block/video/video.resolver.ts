@@ -219,12 +219,14 @@ export class VideoBlockResolver {
         break
       case VideoBlockSource.internal:
         input = {
+          ...{
+            duration: null
+          },
           ...input,
           ...{
             title: null,
             description: null,
             image: null,
-            duration: null
           }
         }
         await videoBlockInternalSchema.validate({ ...block, ...input })

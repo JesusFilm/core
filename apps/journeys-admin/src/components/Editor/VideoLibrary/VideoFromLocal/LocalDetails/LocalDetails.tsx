@@ -74,6 +74,7 @@ export function LocalDetails({
     onSelect({
       videoId: id,
       videoVariantLanguageId: selectedLanguage.id,
+      duration: time,
       source: VideoBlockSource.internal,
       startAt: 0,
       endAt: time

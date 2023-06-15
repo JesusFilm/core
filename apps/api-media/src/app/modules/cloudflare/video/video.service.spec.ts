@@ -143,7 +143,7 @@ describe('VideoService', () => {
   describe('getVideoFromCloudflare', () => {
     it('returns true when successful', async () => {
       const result: CloudflareVideoGetResponse['result'] = {
-        readyToStream: true
+        duration: 1
       }
       const request = mockFetch.mockResolvedValueOnce({
         json: async () => {
@@ -246,14 +246,14 @@ describe('VideoService', () => {
       uploadUrl: 'https://example.com/video1.mp4',
       userId: 'userId',
       createdAt: new Date().toISOString(),
-      readyToStream: true
+      duration: 1
     }
     const video2: CloudflareVideo = {
       id: 'video2Id',
       uploadUrl: 'https://example.com/video2.mp4',
       userId: 'userId',
       createdAt: new Date().toISOString(),
-      readyToStream: true
+      duration: 1
     }
     beforeEach(() => {
       db.query.mockReturnValue(mockDbQueryResult(service.db, [video1, video2]))

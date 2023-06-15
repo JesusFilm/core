@@ -46,7 +46,7 @@ type CloudflareVideo {
   uploadUrl: String
   userId: ID!
   createdAt: String!
-  readyToStream: Boolean!
+  duration: Int!
 }
 
 type UnsplashQueryResponse {

@@ -85,7 +85,7 @@ describe('AddByFile', () => {
               data: {
                 getMyCloudflareVideo: {
                   id: 'uploadId',
-                  readyToStream: true,
+                  duration: 1,
                   __typename: 'CloudflareVideo'
                 }
               }

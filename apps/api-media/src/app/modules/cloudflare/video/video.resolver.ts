@@ -26,7 +26,7 @@ export class VideoResolver {
       userId,
       name,
       createdAt: new Date().toISOString(),
-      readyToStream: false
+      duration: -1
     })
   }
 
@@ -45,7 +45,7 @@ export class VideoResolver {
       _key: response.result.uid,
       userId,
       createdAt: new Date().toISOString(),
-      readyToStream: false
+      duration: -1
     })
   }
 
@@ -62,6 +62,7 @@ export class VideoResolver {
     @CurrentUserId() userId: string
   ): Promise<CloudflareVideo> {
     const video = await this.videoService.get(id)
+    console.log('asdf', video)
     if (video == null) {
       throw new UserInputError('Video not found')
     }
@@ -69,13 +70,20 @@ export class VideoResolver {
       throw new ForbiddenError('This video does not belong to you')
     }
     const response = await this.videoService.getVideoFromCloudflare(id)
+    console.log('asdf1', response)
+
     if (!response.success) {
       throw new Error(response.errors[0])
     }
-    return await this.videoService.update(id, {
-      readyToStream: response.result?.readyToStream ?? false
+    const yo = await this.videoService.update(id, {
+      duration: (response.result?.duration !== undefined && response.result?.duration  > -1) ? response.result?.duration : -1
     })
+    console.log('yo', yo)
+
+    return video
   }
+
+  
 
   @Mutation()
   async deleteCloudflareVideo(
