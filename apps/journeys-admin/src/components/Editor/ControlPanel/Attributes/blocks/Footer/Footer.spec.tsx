@@ -1,4 +1,4 @@
-import { render } from '@testing-library/react'
+import { fireEvent, render } from '@testing-library/react'
 import {
   ActiveFab,
   ActiveJourneyEditContent,
@@ -39,6 +39,7 @@ describe('Footer', () => {
     const { getByText } = render(<Footer />)
 
     expect(getByText('Hosted by')).toBeInTheDocument()
+    expect(getByText('Chat Widget')).toBeInTheDocument()
   })
 
   it('should open property drawer for variant', () => {
@@ -59,6 +60,24 @@ describe('Footer', () => {
       title: 'Hosted By',
       mobileOpen: true,
       children: <div>Hosted by content component</div>
+    })
+  })
+
+  it('should open property drawer for chat widget', () => {
+    const dispatch = jest.fn()
+    mockUseEditor.mockReturnValue({
+      state,
+      dispatch
+    })
+
+    const { getByText } = render(<Footer />)
+    fireEvent.click(getByText('Chat Widget'))
+
+    expect(dispatch).toHaveBeenCalledWith({
+      type: 'SetDrawerPropsAction',
+      title: 'Chat Widget',
+      mobileOpen: true,
+      children: <div>Chat Widget Component</div>
     })
   })
 })
