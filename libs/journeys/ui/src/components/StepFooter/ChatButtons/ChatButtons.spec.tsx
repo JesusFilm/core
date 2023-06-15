@@ -100,9 +100,8 @@ describe('ChatButtons', () => {
     }
   ]
 
-  // update test to be getting different icons once in
   it('renders chat buttons', () => {
-    const { getAllByRole } = render(
+    const { getAllByRole, getByTestId } = render(
       <MockedProvider>
         <JourneyProvider value={{ journey: { ...journey, chatButtons } }}>
           <ChatButtons />
@@ -112,6 +111,8 @@ describe('ChatButtons', () => {
 
     const buttons = getAllByRole('button')
     expect(buttons.length).toBe(chatButtons.length)
+    expect(getByTestId('FacebookIcon')).toBeInTheDocument()
+    expect(getByTestId('TelegramIcon')).toBeInTheDocument()
   })
 
   it('handles button click and sends a mutation', async () => {

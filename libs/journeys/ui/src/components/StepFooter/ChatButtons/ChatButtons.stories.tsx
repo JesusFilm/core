@@ -1,6 +1,5 @@
 import { Story, Meta } from '@storybook/react'
 import { MockedProvider } from '@apollo/client/testing'
-import Stack from '@mui/material/Stack'
 import {
   JourneyFields_chatButtons as ChatButton,
   JourneyFields as Journey
@@ -8,7 +7,7 @@ import {
 import { simpleComponentConfig } from '../../../libs/simpleComponentConfig'
 import { JourneyProvider } from '../../../libs/JourneyProvider'
 import { ChatPlatform } from '../../../../__generated__/globalTypes'
-import { ChatButtons } from './ChatButtons'
+import { ChatButtons } from '.'
 
 const ChatButtonsDemo = {
   ...simpleComponentConfig,
@@ -16,8 +15,32 @@ const ChatButtonsDemo = {
   title: 'Journeys-Ui/StepFooter/ChatButtons'
 }
 
-const Template: Story = () => {
-  const chatButtons: ChatButton[] = [
+const Template: Story<{ chatButtons: ChatButton[] }> = ({ chatButtons }) => {
+  return (
+    <MockedProvider>
+      <JourneyProvider
+        value={{
+          admin: true,
+          journey: {
+            id: 'journeyId',
+            chatButtons
+          } as unknown as Journey
+        }}
+      >
+        <ChatButtons />
+      </JourneyProvider>
+    </MockedProvider>
+  )
+}
+
+export const Default = Template.bind({})
+Default.args = {
+  chatButtons: []
+}
+
+export const Platform = Template.bind({})
+Platform.args = {
+  chatButtons: [
     {
       __typename: 'ChatButton',
       id: '1',
@@ -29,28 +52,56 @@ const Template: Story = () => {
       id: '2',
       link: 'https://other.messagingplatform/',
       platform: ChatPlatform.telegram
+    },
+    {
+      __typename: 'ChatButton',
+      id: '3',
+      link: 'https://whatsapp.com/',
+      platform: ChatPlatform.whatsApp
+    },
+    {
+      __typename: 'ChatButton',
+      id: '4',
+      link: 'https://instagram.com/',
+      platform: ChatPlatform.instagram
+    },
+    {
+      __typename: 'ChatButton',
+      id: '5',
+      link: 'https://viber.com/',
+      platform: ChatPlatform.viber
+    },
+    {
+      __typename: 'ChatButton',
+      id: '6',
+      link: 'https://vk.com/',
+      platform: ChatPlatform.vk
+    },
+    {
+      __typename: 'ChatButton',
+      id: '7',
+      link: 'https://snapchat.com/',
+      platform: ChatPlatform.snapchat
+    },
+    {
+      __typename: 'ChatButton',
+      id: '8',
+      link: 'https://skype.com/',
+      platform: ChatPlatform.skype
+    },
+    {
+      __typename: 'ChatButton',
+      id: '9',
+      link: 'https://line.me/',
+      platform: ChatPlatform.line
+    },
+    {
+      __typename: 'ChatButton',
+      id: '10',
+      link: 'https://tiktok.com/',
+      platform: ChatPlatform.tikTok
     }
   ]
-
-  return (
-    <MockedProvider>
-      <JourneyProvider
-        value={{
-          journey: {
-            admin: true,
-            id: 'journeyId',
-            chatButtons
-          } as unknown as Journey
-        }}
-      >
-        <Stack>
-          <ChatButtons />
-        </Stack>
-      </JourneyProvider>
-    </MockedProvider>
-  )
 }
-
-export const Default = Template.bind({})
 
 export default ChatButtonsDemo as Meta
