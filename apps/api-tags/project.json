@@ -127,7 +127,9 @@
     "prisma-studio": {
       "executor": "@nrwl/workspace:run-commands",
       "options": {
-        "commands": ["npx prisma studio --schema apps/api-tags/db/schema.prisma"]
+        "commands": [
+          "npx prisma studio --schema apps/api-tags/db/schema.prisma"
+        ]
       }
     },
     "prisma-validate": {
