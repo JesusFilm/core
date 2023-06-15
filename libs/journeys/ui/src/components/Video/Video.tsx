@@ -97,6 +97,8 @@ export function Video({
         // plays youTube videos at the start time
         if (source === VideoBlockSource.youTube && autoplay === true)
           void playerRef.current?.play()
+        if (source === VideoBlockSource.cloudflare && autoplay === true)
+          void playerRef.current?.play()
       })
 
       if (selectedBlock === undefined) {
@@ -177,7 +179,6 @@ export function Video({
         height: '100%',
         minHeight: 'inherit',
         backgroundColor: VIDEO_BACKGROUND_COLOR,
-        borderRadius: 4,
         overflow: 'hidden',
         m: 0,
         position: 'absolute',
@@ -187,7 +188,7 @@ export function Video({
           width: '100%',
           display: 'flex',
           alignSelf: 'center',
-          height: '100%',
+          height: { xs: 'calc(100vh - 185px)', lg: '100%' },
           minHeight: 'inherit',
           '> .vjs-tech': {
             objectFit: videoFit,
@@ -206,6 +207,11 @@ export function Video({
           '> .vjs-poster': {
             backgroundColor: VIDEO_BACKGROUND_COLOR,
             backgroundSize: 'cover'
+          },
+          '> .vjs-control-bar': {
+            width: { xs: '90%', lg: '100%' },
+            mx: { xs: 'auto', lg: 0 },
+            borderRadius: { xs: 4, lg: 0 }
           }
         },
         '> .MuiIconButton-root': {
@@ -249,13 +255,23 @@ export function Video({
             className="video-js vjs-big-play-centered"
             playsInline
           >
+            {source === VideoBlockSource.cloudflare && videoId != null && (
+              <source
+                src={`https://customer-${
+                  process.env.NEXT_PUBLIC_CLOUDFLARE_STREAM_CUSTOMER_CODE ?? ''
+                }.cloudflarestream.com/${videoId ?? ''}/manifest/video.m3u8`}
+                type="application/x-mpegURL"
+              />
+            )}
             {source === VideoBlockSource.internal &&
               video?.variant?.hls != null && (
                 <source src={video.variant.hls} type="application/x-mpegURL" />
               )}
             {source === VideoBlockSource.youTube && (
               <source
-                src={`https://www.youtube.com/watch?v=${videoId}`}
+                src={`https://www.youtube.com/embed/${videoId}?start=${
+                  startAt ?? 0
+                }&end=${endAt ?? 0}`}
                 type="video/youtube"
               />
             )}

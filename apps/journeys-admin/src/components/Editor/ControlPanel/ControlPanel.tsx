@@ -1,7 +1,8 @@
 import Box from '@mui/material/Box'
 import Tab from '@mui/material/Tab'
 import Tabs from '@mui/material/Tabs'
-import { ReactElement, SyntheticEvent } from 'react'
+import Tooltip from '@mui/material/Tooltip'
+import { ReactElement, SyntheticEvent, useEffect } from 'react'
 import {
   useEditor,
   ActiveTab,
@@ -9,9 +10,11 @@ import {
   ActiveJourneyEditContent
 } from '@core/journeys/ui/EditorProvider'
 import { TabPanel, tabA11yProps } from '@core/shared/ui/TabPanel'
+import { TreeBlock } from '@core/journeys/ui/block'
 import MuiFab from '@mui/material/Fab'
 import EditIcon from '@mui/icons-material/Edit'
 import { CardPreview, OnSelectProps } from '../../CardPreview'
+import { GetJourney_journey_blocks_CardBlock as CardBlock } from '../../../../__generated__/GetJourney'
 import { SocialShareAppearance } from '../Drawer/SocialShareAppearance'
 import { Attributes } from './Attributes'
 import { BlocksTab } from './BlocksTab'
@@ -22,12 +25,28 @@ export function ControlPanel(): ReactElement {
     state: {
       steps,
       selectedBlock,
+      selectedComponent,
       selectedStep,
       activeTab,
       journeyEditContentComponent
     },
     dispatch
   } = useEditor()
+
+  const selected = selectedComponent ?? selectedBlock ?? 'none'
+
+  useEffect(() => {
+    if (
+      activeTab === ActiveTab.Journey &&
+      journeyEditContentComponent === ActiveJourneyEditContent.SocialPreview
+    ) {
+      dispatch({
+        type: 'SetDrawerPropsAction',
+        title: 'Social Share Preview',
+        children: <SocialShareAppearance />
+      })
+    }
+  }, [activeTab, dispatch, journeyEditContentComponent])
 
   const handleChange = (
     _event: SyntheticEvent<Element, Event>,
@@ -63,6 +82,16 @@ export function ControlPanel(): ReactElement {
     dispatch({ type: 'SetActiveTabAction', activeTab: ActiveTab.Blocks })
   }
 
+  const cardBlock = selectedStep?.children.find(
+    (block) => block.__typename === 'CardBlock'
+  ) as TreeBlock<CardBlock>
+
+  const hasVideoBlock =
+    cardBlock?.children?.find(
+      (block) =>
+        block.__typename === 'VideoBlock' && cardBlock.coverBlockId !== block.id
+    ) != null
+
   const handleSocialEditFabClick = (): void => {
     dispatch({ type: 'SetDrawerMobileOpenAction', mobileOpen: true })
   }
@@ -86,13 +115,14 @@ export function ControlPanel(): ReactElement {
             <EditIcon />
           </MuiFab>
         )}
-        {journeyEditContentComponent === ActiveJourneyEditContent.Canvas && (
-          <Fab
-            visible={activeTab !== ActiveTab.Blocks}
-            onAddClick={handleAddFabClick}
-            disabled={steps == null}
-          />
-        )}
+        {journeyEditContentComponent === ActiveJourneyEditContent.Canvas &&
+          !hasVideoBlock && (
+            <Fab
+              visible={activeTab !== ActiveTab.Blocks}
+              onAddClick={handleAddFabClick}
+              disabled={steps == null}
+            />
+          )}
       </Box>
       <Box
         sx={{
@@ -117,19 +147,33 @@ export function ControlPanel(): ReactElement {
             sx={{ flexGrow: 1 }}
             disabled={
               steps == null ||
-              selectedBlock == null ||
+              selected === 'none' ||
               journeyEditContentComponent !== ActiveJourneyEditContent.Canvas
             }
           />
-          <Tab
-            label="Blocks"
-            {...tabA11yProps('control-panel', 2)}
-            sx={{ flexGrow: 1 }}
-            disabled={
-              steps == null ||
-              journeyEditContentComponent !== ActiveJourneyEditContent.Canvas
-            }
-          />
+          {hasVideoBlock ? (
+            <Tooltip
+              title="Blocks cannot be placed on top of Video Block"
+              arrow
+              placement="top"
+            >
+              <Box sx={{ flexGrow: 1, display: 'flex' }}>
+                <Tab label="Blocks" sx={{ flexGrow: 1 }} disabled />
+              </Box>
+            </Tooltip>
+          ) : (
+            <Tab
+              label="Blocks"
+              {...tabA11yProps('control-panel', 2)}
+              sx={{ flexGrow: 1 }}
+              disabled={
+                steps == null ||
+                journeyEditContentComponent !==
+                  ActiveJourneyEditContent.Canvas ||
+                hasVideoBlock
+              }
+            />
+          )}
         </Tabs>
       </Box>
       <TabPanel name="control-panel" value={activeTab} index={0}>
@@ -143,8 +187,8 @@ export function ControlPanel(): ReactElement {
         />
       </TabPanel>
       <TabPanel name="control-panel" value={activeTab} index={1}>
-        {selectedBlock !== undefined && selectedStep !== undefined && (
-          <Attributes selected={selectedBlock} step={selectedStep} />
+        {selected !== 'none' && selectedStep !== undefined && (
+          <Attributes selected={selected} step={selectedStep} />
         )}
       </TabPanel>
       <TabPanel name="control-panel" value={activeTab} index={2}>

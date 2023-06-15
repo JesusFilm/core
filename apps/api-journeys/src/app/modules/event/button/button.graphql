@@ -3,6 +3,7 @@ enum ButtonAction {
   NavigateToBlockAction
   NavigateToJourneyAction
   LinkAction
+  EmailAction
 }
 
 input ButtonClickEventCreateInput {

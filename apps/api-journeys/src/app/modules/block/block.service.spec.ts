@@ -63,7 +63,8 @@ describe('BlockService', () => {
     themeName: ThemeName.base,
     description: null,
     primaryImageBlock: null,
-    slug: 'published-slug'
+    slug: 'published-slug',
+    chatButtons: []
   }
 
   const block = {

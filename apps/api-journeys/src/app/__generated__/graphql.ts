@@ -121,7 +121,8 @@ export enum TypographyAlign {
 
 export enum VideoBlockSource {
     internal = "internal",
-    youTube = "youTube"
+    youTube = "youTube",
+    cloudflare = "cloudflare"
 }
 
 export enum VideoBlockObjectFit {
@@ -130,11 +131,25 @@ export enum VideoBlockObjectFit {
     zoomed = "zoomed"
 }
 
+export enum ChatPlatform {
+    facebook = "facebook",
+    telegram = "telegram",
+    whatsApp = "whatsApp",
+    instagram = "instagram",
+    viber = "viber",
+    vk = "vk",
+    snapchat = "snapchat",
+    skype = "skype",
+    line = "line",
+    tikTok = "tikTok"
+}
+
 export enum ButtonAction {
     NavigateAction = "NavigateAction",
     NavigateToBlockAction = "NavigateToBlockAction",
     NavigateToJourneyAction = "NavigateToJourneyAction",
-    LinkAction = "LinkAction"
+    LinkAction = "LinkAction",
+    EmailAction = "EmailAction"
 }
 
 export enum MessagePlatform {
@@ -168,6 +183,12 @@ export enum JourneysReportType {
     multipleSummary = "multipleSummary",
     singleFull = "singleFull",
     singleSummary = "singleSummary"
+}
+
+export enum JourneyVisitorSort {
+    date = "date",
+    duration = "duration",
+    activity = "activity"
 }
 
 export enum UserJourneyRole {
@@ -220,6 +241,11 @@ export class LinkActionInput {
     gtmEventName?: Nullable<string>;
     url: string;
     target?: Nullable<string>;
+}
+
+export class EmailActionInput {
+    gtmEventName?: Nullable<string>;
+    email: string;
 }
 
 export class ButtonBlockCreateInput {
@@ -405,6 +431,16 @@ export class VideoBlockUpdateInput {
     objectFit?: Nullable<VideoBlockObjectFit>;
 }
 
+export class ChatButtonCreateInput {
+    link?: Nullable<string>;
+    platform?: Nullable<ChatPlatform>;
+}
+
+export class ChatButtonUpdateInput {
+    link?: Nullable<string>;
+    platform?: Nullable<ChatPlatform>;
+}
+
 export class ButtonClickEventCreateInput {
     id?: Nullable<string>;
     blockId: string;
@@ -532,6 +568,20 @@ export class VideoProgressEventCreateInput {
     value?: Nullable<VideoBlockSource>;
 }
 
+export class HostUpdateInput {
+    title?: Nullable<string>;
+    location?: Nullable<string>;
+    avatar1Id?: Nullable<string>;
+    avatar2Id?: Nullable<string>;
+}
+
+export class HostCreateInput {
+    title: string;
+    location?: Nullable<string>;
+    avatar1Id?: Nullable<string>;
+    avatar2Id?: Nullable<string>;
+}
+
 export class JourneysFilter {
     featured?: Nullable<boolean>;
     template?: Nullable<boolean>;
@@ -557,10 +607,21 @@ export class JourneyUpdateInput {
     slug?: Nullable<string>;
     seoTitle?: Nullable<string>;
     seoDescription?: Nullable<string>;
+    hostId?: Nullable<string>;
 }
 
 export class JourneyTemplateInput {
     template?: Nullable<boolean>;
+}
+
+export class JourneyVisitorFilter {
+    journeyId: string;
+    hasChatStarted?: Nullable<boolean>;
+    hasPollAnswers?: Nullable<boolean>;
+    hasTextResponse?: Nullable<boolean>;
+    hasIcon?: Nullable<boolean>;
+    hideInactive?: Nullable<boolean>;
+    countryCode?: Nullable<string>;
 }
 
 export class UserInviteCreateInput {
@@ -574,6 +635,8 @@ export class VisitorUpdateInput {
     name?: Nullable<string>;
     notes?: Nullable<string>;
     status?: Nullable<VisitorStatus>;
+    countryCode?: Nullable<string>;
+    referrer?: Nullable<string>;
 }
 
 export interface Action {
@@ -625,10 +688,18 @@ export class LinkAction implements Action {
     target?: Nullable<string>;
 }
 
+export class EmailAction implements Action {
+    __typename?: 'EmailAction';
+    parentBlockId: string;
+    gtmEventName?: Nullable<string>;
+    email: string;
+}
+
 export class Journey {
     __typename?: 'Journey';
     blocks?: Nullable<Block[]>;
     primaryImageBlock?: Nullable<ImageBlock>;
+    chatButtons: ChatButton[];
     id: string;
     title: string;
     language: Language;
@@ -646,6 +717,7 @@ export class Journey {
     seoTitle?: Nullable<string>;
     seoDescription?: Nullable<string>;
     template?: Nullable<boolean>;
+    host?: Nullable<Host>;
     userJourneys?: Nullable<UserJourney[]>;
 }
 
@@ -823,6 +895,13 @@ export class VideoTriggerBlock implements Block {
     action: Action;
 }
 
+export class ChatButton {
+    __typename?: 'ChatButton';
+    id: string;
+    link?: Nullable<string>;
+    platform?: Nullable<ChatPlatform>;
+}
+
 export class ButtonClickEvent implements Event {
     __typename?: 'ButtonClickEvent';
     id: string;
@@ -978,17 +1057,20 @@ export class VideoProgressEvent implements Event {
     progress: number;
 }
 
-export class PowerBiEmbed {
-    __typename?: 'PowerBiEmbed';
-    reportId: string;
-    reportName: string;
-    embedUrl: string;
-    accessToken: string;
-    expiration: string;
+export class Host {
+    __typename?: 'Host';
+    id: string;
+    teamId: string;
+    title: string;
+    location?: Nullable<string>;
+    avatar1Id?: Nullable<string>;
+    avatar2Id?: Nullable<string>;
 }
 
 export abstract class IQuery {
     __typename?: 'IQuery';
+
+    abstract hosts(teamId: string): Host[] | Promise<Host[]>;
 
     abstract adminJourneys(status?: Nullable<JourneyStatus[]>, template?: Nullable<boolean>): Journey[] | Promise<Journey[]>;
 
@@ -1002,6 +1084,10 @@ export abstract class IQuery {
 
     abstract getJourneyProfile(): Nullable<JourneyProfile> | Promise<Nullable<JourneyProfile>>;
 
+    abstract journeyVisitorsConnection(teamId: string, filter: JourneyVisitorFilter, first?: Nullable<number>, after?: Nullable<string>, sort?: Nullable<JourneyVisitorSort>): JourneyVisitorsConnection | Promise<JourneyVisitorsConnection>;
+
+    abstract journeyVisitorCount(filter: JourneyVisitorFilter): number | Promise<number>;
+
     abstract userInvites(journeyId: string): Nullable<UserInvite[]> | Promise<Nullable<UserInvite[]>>;
 
     abstract getUserRole(): Nullable<UserRole> | Promise<Nullable<UserRole>>;
@@ -1009,6 +1095,15 @@ export abstract class IQuery {
     abstract visitorsConnection(teamId: string, first?: Nullable<number>, after?: Nullable<string>): VisitorsConnection | Promise<VisitorsConnection>;
 
     abstract visitor(id: string): Visitor | Promise<Visitor>;
+}
+
+export class PowerBiEmbed {
+    __typename?: 'PowerBiEmbed';
+    reportId: string;
+    reportName: string;
+    embedUrl: string;
+    accessToken: string;
+    expiration: string;
 }
 
 export class UserJourney {
@@ -1027,6 +1122,38 @@ export class JourneyProfile {
     id: string;
     userId: string;
     acceptedTermsAt?: Nullable<DateTime>;
+}
+
+export class JourneyVisitor {
+    __typename?: 'JourneyVisitor';
+    visitorId: string;
+    journeyId: string;
+    createdAt: DateTime;
+    duration?: Nullable<number>;
+    lastChatStartedAt?: Nullable<DateTime>;
+    lastChatPlatform?: Nullable<MessagePlatform>;
+    countryCode?: Nullable<string>;
+    messagePlatform?: Nullable<MessagePlatform>;
+    notes?: Nullable<string>;
+    lastStepViewedAt?: Nullable<DateTime>;
+    lastLinkAction?: Nullable<string>;
+    lastTextResponse?: Nullable<string>;
+    lastRadioQuestion?: Nullable<string>;
+    lastRadioOptionSubmission?: Nullable<string>;
+    events: Event[];
+    visitor: Visitor;
+}
+
+export class JourneyVisitorEdge {
+    __typename?: 'JourneyVisitorEdge';
+    cursor: string;
+    node: JourneyVisitor;
+}
+
+export class JourneyVisitorsConnection {
+    __typename?: 'JourneyVisitorsConnection';
+    edges: JourneyVisitorEdge[];
+    pageInfo: PageInfo;
 }
 
 export class UserInvite {
@@ -1076,6 +1203,7 @@ export class Visitor {
     __typename?: 'Visitor';
     id: string;
     createdAt: DateTime;
+    duration?: Nullable<number>;
     lastChatStartedAt?: Nullable<DateTime>;
     lastChatPlatform?: Nullable<MessagePlatform>;
     userAgent?: Nullable<UserAgent>;
@@ -1091,6 +1219,7 @@ export class Visitor {
     lastTextResponse?: Nullable<string>;
     lastRadioQuestion?: Nullable<string>;
     lastRadioOptionSubmission?: Nullable<string>;
+    referrer?: Nullable<string>;
     events: Event[];
 }
 
@@ -1130,6 +1259,8 @@ export abstract class IMutation {
     abstract blockUpdateNavigateToJourneyAction(id: string, journeyId: string, input: NavigateToJourneyActionInput): NavigateToJourneyAction | Promise<NavigateToJourneyAction>;
 
     abstract blockUpdateLinkAction(id: string, journeyId: string, input: LinkActionInput): LinkAction | Promise<LinkAction>;
+
+    abstract blockUpdateEmailAction(id: string, journeyId: string, input: EmailActionInput): EmailAction | Promise<EmailAction>;
 
     abstract blockDelete(id: string, journeyId: string, parentBlockId?: Nullable<string>): Block[] | Promise<Block[]>;
 
@@ -1181,6 +1312,12 @@ export abstract class IMutation {
 
     abstract videoBlockUpdate(id: string, journeyId: string, input: VideoBlockUpdateInput): VideoBlock | Promise<VideoBlock>;
 
+    abstract chatButtonCreate(journeyId: string, input?: Nullable<ChatButtonCreateInput>): ChatButton | Promise<ChatButton>;
+
+    abstract chatButtonUpdate(id: string, journeyId: string, input: ChatButtonUpdateInput): ChatButton | Promise<ChatButton>;
+
+    abstract chatButtonRemove(id: string): ChatButton | Promise<ChatButton>;
+
     abstract buttonClickEventCreate(input: ButtonClickEventCreateInput): ButtonClickEvent | Promise<ButtonClickEvent>;
 
     abstract chatOpenEventCreate(input: ChatOpenEventCreateInput): ChatOpenEvent | Promise<ChatOpenEvent>;
@@ -1210,6 +1347,12 @@ export abstract class IMutation {
     abstract videoCollapseEventCreate(input: VideoCollapseEventCreateInput): VideoCollapseEvent | Promise<VideoCollapseEvent>;
 
     abstract videoProgressEventCreate(input: VideoProgressEventCreateInput): VideoProgressEvent | Promise<VideoProgressEvent>;
+
+    abstract hostCreate(teamId: string, input: HostCreateInput): Host | Promise<Host>;
+
+    abstract hostUpdate(id: string, teamId: string, input?: Nullable<HostUpdateInput>): Host | Promise<Host>;
+
+    abstract hostDelete(id: string, teamId: string): Host | Promise<Host>;
 
     abstract journeyCreate(input: JourneyCreateInput): Journey | Promise<Journey>;
 
@@ -1250,6 +1393,8 @@ export abstract class IMutation {
     abstract userJourneyOpen(id: string): Nullable<UserJourney> | Promise<Nullable<UserJourney>>;
 
     abstract visitorUpdate(id: string, input: VisitorUpdateInput): Visitor | Promise<Visitor>;
+
+    abstract visitorUpdateForCurrentUser(input: VisitorUpdateInput): Visitor | Promise<Visitor>;
 }
 
 export class Video {

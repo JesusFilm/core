@@ -55,6 +55,12 @@ type LinkAction implements Action {
   target: String
 }
 
+type EmailAction implements Action {
+  parentBlockId: ID!
+  gtmEventName: String
+  email: String!
+}
+
 input NavigateActionInput {
   gtmEventName: String
 }
@@ -75,12 +81,18 @@ input LinkActionInput {
   target: String
 }
 
+input EmailActionInput {
+  gtmEventName: String
+  email: String!
+}
+
 extend type Mutation {
   blockDeleteAction(id: ID!, journeyId: ID!): Block!
   blockUpdateNavigateAction(id: ID!, journeyId: ID!, input: NavigateActionInput!): NavigateAction!
   blockUpdateNavigateToBlockAction(id: ID!, journeyId: ID!, input: NavigateToBlockActionInput!): NavigateToBlockAction!
   blockUpdateNavigateToJourneyAction(id: ID!, journeyId: ID!, input: NavigateToJourneyActionInput!): NavigateToJourneyAction!
   blockUpdateLinkAction(id: ID!, journeyId: ID!, input: LinkActionInput!): LinkAction!
+  blockUpdateEmailAction(id: ID!, journeyId: ID!, input: EmailActionInput!): EmailAction!
 
   """blockDelete returns the updated sibling blocks on successful delete"""
   blockDelete(id: ID!, journeyId: ID!, parentBlockId: ID): [Block!]!
@@ -120,6 +132,9 @@ extend type Mutation {
   typographyBlockUpdate(id: ID!, journeyId: ID!, input: TypographyBlockUpdateInput!): TypographyBlock!
   videoBlockCreate(input: VideoBlockCreateInput!): VideoBlock!
   videoBlockUpdate(id: ID!, journeyId: ID!, input: VideoBlockUpdateInput!): VideoBlock!
+  chatButtonCreate(journeyId: ID!, input: ChatButtonCreateInput): ChatButton!
+  chatButtonUpdate(id: ID!, journeyId: ID!, input: ChatButtonUpdateInput!): ChatButton!
+  chatButtonRemove(id: ID!): ChatButton!
   buttonClickEventCreate(input: ButtonClickEventCreateInput!): ButtonClickEvent!
   chatOpenEventCreate(input: ChatOpenEventCreateInput!): ChatOpenEvent!
   journeyViewEventCreate(input: JourneyViewEventCreateInput!): JourneyViewEvent!
@@ -135,6 +150,9 @@ extend type Mutation {
   videoExpandEventCreate(input: VideoExpandEventCreateInput!): VideoExpandEvent!
   videoCollapseEventCreate(input: VideoCollapseEventCreateInput!): VideoCollapseEvent!
   videoProgressEventCreate(input: VideoProgressEventCreateInput!): VideoProgressEvent!
+  hostCreate(teamId: ID!, input: HostCreateInput!): Host!
+  hostUpdate(id: ID!, teamId: ID!, input: HostUpdateInput): Host!
+  hostDelete(id: ID!, teamId: ID!): Host!
   journeyCreate(input: JourneyCreateInput!): Journey!
   journeyDuplicate(id: ID!): Journey!
   journeyUpdate(id: ID!, input: JourneyUpdateInput!): Journey!
@@ -171,6 +189,11 @@ extend type Mutation {
 
   """Update a visitor"""
   visitorUpdate(id: ID!, input: VisitorUpdateInput!): Visitor!
+
+  """
+  Allow current user to update specific allowable fields of their visitor record
+  """
+  visitorUpdateForCurrentUser(input: VisitorUpdateInput!): Visitor!
 }
 
 interface Block {
@@ -185,6 +208,7 @@ type Journey
 {
   blocks: [Block!]
   primaryImageBlock: ImageBlock
+  chatButtons: [ChatButton!]!
   id: ID!
   title: String!
   language: Language!
@@ -202,6 +226,7 @@ type Journey
   seoTitle: String
   seoDescription: String
   template: Boolean
+  host: Host
   userJourneys: [UserJourney!]
 }
 
@@ -657,6 +682,7 @@ extend type Video
 enum VideoBlockSource {
   internal
   youTube
+  cloudflare
 }
 
 enum VideoBlockObjectFit {
@@ -880,11 +906,41 @@ type VideoTriggerBlock implements Block {
   action: Action!
 }
 
+type ChatButton {
+  id: ID!
+  link: String
+  platform: ChatPlatform
+}
+
+enum ChatPlatform {
+  facebook
+  telegram
+  whatsApp
+  instagram
+  viber
+  vk
+  snapchat
+  skype
+  line
+  tikTok
+}
+
+input ChatButtonCreateInput {
+  link: String
+  platform: ChatPlatform
+}
+
+input ChatButtonUpdateInput {
+  link: String
+  platform: ChatPlatform
+}
+
 enum ButtonAction {
   NavigateAction
   NavigateToBlockAction
   NavigateToJourneyAction
   LinkAction
+  EmailAction
 }
 
 input ButtonClickEventCreateInput {
@@ -1508,6 +1564,85 @@ type VideoProgressEvent implements Event {
   progress: Int!
 }
 
+type Host {
+  id: ID!
+  teamId: ID!
+  title: String!
+  location: String
+  avatar1Id: ID
+  avatar2Id: ID
+}
+
+input HostUpdateInput {
+  """
+  title can be undefined as to not update title, but it cannot be null as to clear the value of title
+  """
+  title: String
+  location: String
+  avatar1Id: ID
+  avatar2Id: ID
+}
+
+type Query {
+  _entities(representations: [_Any!]!): [_Entity]!
+  _service: _Service!
+}
+
+extend type Query {
+  hosts(teamId: ID!): [Host!]!
+  adminJourneys(status: [JourneyStatus!], template: Boolean): [Journey!]!
+  adminJourneysReport(reportType: JourneysReportType!): PowerBiEmbed
+  adminJourney(id: ID!, idType: IdType): Journey
+  journeys(where: JourneysFilter): [Journey!]!
+  journey(id: ID!, idType: IdType): Journey
+  getJourneyProfile: JourneyProfile
+
+  """Get a list of Visitor Information by Journey"""
+  journeyVisitorsConnection(
+    """Returns the visitor items related to a specific team."""
+    teamId: String!
+
+    """Returns the elements in the list that match the specified filter."""
+    filter: JourneyVisitorFilter!
+
+    """Returns the first n elements from the list."""
+    first: Int
+
+    """Returns the elements in the list that come after the specified cursor."""
+    after: String
+
+    """Specifies the sort field for the list."""
+    sort: JourneyVisitorSort
+  ): JourneyVisitorsConnection!
+
+  """Get a JourneyVisitor count by JourneyVisitorFilter"""
+  journeyVisitorCount(filter: JourneyVisitorFilter!): Int!
+  userInvites(journeyId: ID!): [UserInvite!]
+  getUserRole: UserRole
+
+  """A list of visitors that are connected with a specific team."""
+  visitorsConnection(
+    """Returns the visitor items related to a specific team."""
+    teamId: String!
+
+    """Returns the first n elements from the list."""
+    first: Int
+
+    """Returns the elements in the list that come after the specified cursor."""
+    after: String
+  ): VisitorsConnection!
+
+  """Get a single visitor"""
+  visitor(id: ID!): Visitor!
+}
+
+input HostCreateInput {
+  title: String!
+  location: String
+  avatar1Id: ID
+  avatar2Id: ID
+}
+
 enum IdType {
   databaseId
   slug
@@ -1550,37 +1685,6 @@ type PowerBiEmbed {
   expiration: String!
 }
 
-type Query {
-  _entities(representations: [_Any!]!): [_Entity]!
-  _service: _Service!
-}
-
-extend type Query {
-  adminJourneys(status: [JourneyStatus!], template: Boolean): [Journey!]!
-  adminJourneysReport(reportType: JourneysReportType!): PowerBiEmbed
-  adminJourney(id: ID!, idType: IdType): Journey
-  journeys(where: JourneysFilter): [Journey!]!
-  journey(id: ID!, idType: IdType): Journey
-  getJourneyProfile: JourneyProfile
-  userInvites(journeyId: ID!): [UserInvite!]
-  getUserRole: UserRole
-
-  """A list of visitors that are connected with a specific team."""
-  visitorsConnection(
-    """Returns the visitor items related to a specific team."""
-    teamId: String!
-
-    """Returns the first n elements from the list."""
-    first: Int
-
-    """Returns the elements in the list that come after the specified cursor."""
-    after: String
-  ): VisitorsConnection!
-
-  """Get a single visitor"""
-  visitor(id: ID!): Visitor!
-}
-
 input JourneyCreateInput {
   """
   ID should be unique Response UUID
@@ -1613,6 +1717,7 @@ input JourneyUpdateInput {
   slug: String
   seoTitle: String
   seoDescription: String
+  hostId: String
 }
 
 type UserJourney
@@ -1639,6 +1744,120 @@ type JourneyProfile
   id: ID!
   userId: ID!
   acceptedTermsAt: DateTime
+}
+
+type JourneyVisitor
+  @key(fields: "visitorId journeyId")
+{
+  visitorId: ID!
+  journeyId: ID!
+
+  """
+  The time when the visitor created their first event on a journey connected
+  to the requested team.
+  """
+  createdAt: DateTime!
+
+  """Duration between createdAt and lastStepViewedAt in seconds"""
+  duration: Int
+
+  """
+  The last time the visitor called the ButtonClickEvent mutation where the url
+  is in the format of a recognized chat platform.
+  """
+  lastChatStartedAt: DateTime
+
+  """
+  The last message platform the visitor called the ButtonClickEvent where the
+  url is in the format of a recognized chat platform
+  """
+  lastChatPlatform: MessagePlatform
+
+  """
+  The country code of the visitor as poulated by visitor ip address detected in
+  the JourneyViewEventCreate mutation. This field country code is converted
+  from an IP address by the @maxmind/geoip2-node library. If this field is empty
+  it is likely that the JourneyViewEventCreate mutation was not called by the
+  visitor or that the country was not able to be determined based on the
+  visitor IP address.
+  """
+  countryCode: String
+
+  """
+  Message platform the visitor wishes to be connected to us on as populated by
+  VisitorUpdate mutation or ChatOpenEventCreate mutation.
+  """
+  messagePlatform: MessagePlatform
+
+  """
+  ID of the visitor as set by VisitorUpdate mutation. This could be a phone
+  number, user id or other unique identifier provided by the message platform.
+  """
+  notes: String
+
+  """
+  The last time the visitor called StepViewEvent mutation. It is populated when
+  the visitor is first created, and is updated by all event creation mutations.
+  """
+  lastStepViewedAt: DateTime
+
+  """
+  The label of a link action button of the last time the visitor clicked a
+  link action button. Populated by ButtonClickEvent
+  """
+  lastLinkAction: String
+
+  """
+  The response of the last text response block the visitor filled out,
+  populated by TextResponseSubmission mutation
+  """
+  lastTextResponse: String
+
+  """
+  The question of the last radio option the visitor filled out,
+  populated by RadioQuestionSubmission mutation
+  """
+  lastRadioQuestion: String
+
+  """
+  The selected option  of the last radio option the visitor filled out,
+  populated by RadioQuestionSubmission mutation
+  """
+  lastRadioOptionSubmission: String
+  events: [Event!]!
+  visitor: Visitor!
+}
+
+type JourneyVisitorEdge {
+  """A cursor for use in pagination."""
+  cursor: String!
+
+  """The item at the end of the edge."""
+  node: JourneyVisitor!
+}
+
+type JourneyVisitorsConnection {
+  """A list of edges."""
+  edges: [JourneyVisitorEdge!]!
+
+  """Information to aid in pagination."""
+  pageInfo: PageInfo!
+}
+
+input JourneyVisitorFilter {
+  journeyId: String!
+  hasChatStarted: Boolean
+  hasPollAnswers: Boolean
+  hasTextResponse: Boolean
+  hasIcon: Boolean
+  hideInactive: Boolean
+  countryCode: String
+}
+
+enum JourneyVisitorSort {
+  date
+  duration
+  activity
 }
 
 type UserInvite
@@ -1746,6 +1965,9 @@ type Visitor
   """
   createdAt: DateTime!
 
+  """Duration between createdAt and lastStepViewedAt in seconds"""
+  duration: Int
+
   """
   The last time the visitor called the ButtonClickEvent mutation where the url
   is in the format of a recognized chat platform.
@@ -1835,6 +2057,9 @@ type Visitor
   populated by RadioQuestionSubmission mutation
   """
   lastRadioOptionSubmission: String
+
+  """The url visitor was referred from"""
+  referrer: String
   events: [Event!]!
 }
 
@@ -1905,6 +2130,14 @@ input VisitorUpdateInput {
 
   """Status of the visitor."""
   status: VisitorStatus
+
+  """
+  The country code of the visitor as poulated by visitor ip address detected
+  """
+  countryCode: String
+
+  """The referring url of the visitor"""
+  referrer: String
 }
 
 type Translation {
@@ -1921,4 +2154,4 @@ type _Service {
   sdl: String
 }
 
-union _Entity = Journey | JourneyProfile | Language | User | UserInvite | UserJourney | UserRole | Video | Visitor
+union _Entity = Journey | JourneyProfile | JourneyVisitor | Language | User | UserInvite | UserJourney | UserRole | Video | Visitor

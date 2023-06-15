@@ -8,6 +8,7 @@
 //==============================================================
 
 export enum ButtonAction {
+  EmailAction = "EmailAction",
   LinkAction = "LinkAction",
   NavigateAction = "NavigateAction",
   NavigateToBlockAction = "NavigateToBlockAction",
@@ -78,6 +79,12 @@ export enum JourneyStatus {
   draft = "draft",
   published = "published",
   trashed = "trashed",
+}
+
+export enum JourneyVisitorSort {
+  activity = "activity",
+  date = "date",
+  duration = "duration",
 }
 
 export enum JourneysReportType {
@@ -153,6 +160,7 @@ export enum VideoBlockObjectFit {
 }
 
 export enum VideoBlockSource {
+  cloudflare = "cloudflare",
   internal = "internal",
   youTube = "youTube",
 }
@@ -229,6 +237,11 @@ export interface ChatOpenEventCreateInput {
   value?: MessagePlatform | null;
 }
 
+export interface EmailActionInput {
+  gtmEventName?: string | null;
+  email: string;
+}
+
 export interface IconBlockCreateInput {
   id?: string | null;
   parentBlockId: string;
@@ -279,6 +292,17 @@ export interface JourneyUpdateInput {
   slug?: string | null;
   seoTitle?: string | null;
   seoDescription?: string | null;
+  hostId?: string | null;
+}
+
+export interface JourneyVisitorFilter {
+  journeyId: string;
+  hasChatStarted?: boolean | null;
+  hasPollAnswers?: boolean | null;
+  hasTextResponse?: boolean | null;
+  hasIcon?: boolean | null;
+  hideInactive?: boolean | null;
+  countryCode?: string | null;
 }
 
 export interface LinkActionInput {
@@ -520,6 +544,8 @@ export interface VisitorUpdateInput {
   name?: string | null;
   notes?: string | null;
   status?: VisitorStatus | null;
+  countryCode?: string | null;
+  referrer?: string | null;
 }
 
 //==============================================================

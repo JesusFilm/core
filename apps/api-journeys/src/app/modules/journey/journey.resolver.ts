@@ -20,7 +20,7 @@ import {
 } from 'apollo-server-errors'
 import { GqlAuthGuard } from '@core/nest/gqlAuthGuard/GqlAuthGuard'
 import { v4 as uuidv4 } from 'uuid'
-
+import { ChatButton, UserTeamRole, Host } from '.prisma/api-journeys-client'
 import { BlockService } from '../block/block.service'
 import {
   Block,
@@ -42,7 +42,7 @@ import {
 import { UserJourneyService } from '../userJourney/userJourney.service'
 import { RoleGuard } from '../../lib/roleGuard/roleGuard'
 import { UserRoleService } from '../userRole/userRole.service'
-import { MemberService } from '../member/member.service'
+import { PrismaService } from '../../lib/prisma.service'
 import { JourneyService } from './journey.service'
 
 const ERROR_ARANGO_UNIQUE_CONSTRAINT_VIOLATED = 1210
@@ -54,7 +54,7 @@ export class JourneyResolver {
     private readonly blockService: BlockService,
     private readonly userJourneyService: UserJourneyService,
     private readonly userRoleService: UserRoleService,
-    private readonly memberService: MemberService
+    private readonly prismaService: PrismaService
   ) {}
 
   @Query()
@@ -200,21 +200,21 @@ export class JourneyResolver {
             returnNew: false
           }
         )
-        const existingMember = this.memberService.getMemberByTeamId(
-          userId,
-          team.id
-        )
-
-        if (existingMember == null) {
-          await this.memberService.save(
-            {
-              id: `${userId}:${team.id}`,
+        await this.prismaService.userTeam.upsert({
+          where: {
+            teamId_userId: {
               userId,
               teamId: team.id
-            },
-            { overwriteMode: 'ignore', returnNew: false }
-          )
-        }
+            }
+          },
+          update: {},
+          create: {
+            userId,
+            teamId: team.id,
+            role: UserTeamRole.guest
+          }
+        })
+
         retry = false
         return journey
       } catch (err) {
@@ -273,10 +273,13 @@ export class JourneyResolver {
     @Args('id') id: string,
     @CurrentUserId() userId: string
   ): Promise<
-    (Journey & { primaryImageBlockId: string | undefined }) | undefined
+    | (Journey & { primaryImageBlockId: string | undefined; teamId?: string })
+    | undefined
   > {
-    const journey: Journey & { primaryImageBlockId: string | undefined } =
-      await this.journeyService.get(id)
+    const journey: Journey & {
+      primaryImageBlockId: string | undefined
+      teamId?: string
+    } = await this.journeyService.get(id)
     const duplicateJourneyId = uuidv4()
     const existingDuplicateJourneys = await this.journeyService.getAllByTitle(
       journey.title,
@@ -340,7 +343,8 @@ export class JourneyResolver {
       publishedAt: undefined,
       status: JourneyStatus.draft,
       template: false,
-      primaryImageBlockId: duplicatePrimaryImageBlock?._key
+      primaryImageBlockId: duplicatePrimaryImageBlock?._key,
+      hostId: null
     }
 
     let retry = true
@@ -385,6 +389,17 @@ export class JourneyResolver {
         lower: true,
         strict: true
       })
+    if (input.hostId != null) {
+      const journey = await this.journeyService.get(id)
+      const host = await this.prismaService.host.findUnique({
+        where: { id: input.hostId }
+      })
+      if (host == null || journey == null || host?.teamId !== journey.teamId) {
+        throw new UserInputError(
+          'the team id of host doest not match team id of journey'
+        )
+      }
+    }
     try {
       return await this.journeyService.update(id, input)
     } catch (err) {
@@ -507,6 +522,23 @@ export class JourneyResolver {
   @ResolveField()
   async blocks(@Parent() journey: Journey): Promise<Block[]> {
     return await this.blockService.forJourney(journey)
+  }
+
+  @ResolveField()
+  async chatButtons(@Parent() journey: Journey): Promise<ChatButton[]> {
+    return await this.prismaService.chatButton.findMany({
+      where: { journeyId: journey.id }
+    })
+  }
+
+  @ResolveField()
+  async host(
+    @Parent() journey: Journey & { hostId?: string | null }
+  ): Promise<Host | null> {
+    if (journey.hostId == null) return null
+    return await this.prismaService.host.findUnique({
+      where: { id: journey.hostId }
+    })
   }
 
   @ResolveField()

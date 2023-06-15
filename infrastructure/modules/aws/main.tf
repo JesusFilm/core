@@ -24,14 +24,7 @@ module "internal_rds_security_group" {
       cidr_blocks = [var.cidr]
     }
   ]
-  egress_rules = [
-    {
-      from_port   = 0
-      to_port     = 0
-      protocol    = "-1"
-      cidr_blocks = [var.cidr]
-    }
-  ]
+  egress_rules = local.egress_rules
 }
 
 module "public_alb_security_group" {
@@ -40,6 +33,28 @@ module "public_alb_security_group" {
   vpc_id        = module.vpc.vpc_id
   ingress_rules = local.public_alb_config.ingress_rules
   egress_rules  = local.public_alb_config.egress_rules
+}
+
+module "public_bastion_security_group" {
+  source = "./security-group"
+  name   = "jfp-public-bastion-sg-${var.env}"
+  vpc_id = module.vpc.vpc_id
+  ingress_rules = [
+    {
+      from_port   = 22
+      to_port     = 22
+      protocol    = "tcp"
+      cidr_blocks = concat([var.cidr], local.google_datastream_ip_list)
+    },
+    {
+      from_port   = 22
+      to_port     = 22
+      protocol    = "tcp"
+      cidr_blocks = ["47.33.63.40/32"]
+    }
+
+  ]
+  egress_rules = local.egress_rules
 }
 
 module "internal_alb" {
@@ -82,4 +97,3 @@ module "ecs" {
   internal_alb_security_group = module.internal_alb_security_group
   public_alb_security_group   = module.public_alb_security_group
 }
-

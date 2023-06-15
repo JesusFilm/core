@@ -8,6 +8,7 @@
 //==============================================================
 
 export enum ButtonAction {
+  EmailAction = "EmailAction",
   LinkAction = "LinkAction",
   NavigateAction = "NavigateAction",
   NavigateToBlockAction = "NavigateToBlockAction",
@@ -142,6 +143,7 @@ export enum VideoBlockObjectFit {
 }
 
 export enum VideoBlockSource {
+  cloudflare = "cloudflare",
   internal = "internal",
   youTube = "youTube",
 }

@@ -6,9 +6,9 @@ import { Action, RadioOptionBlock } from '../../__generated__/graphql'
 import { BlockResolver } from '../block/block.resolver'
 import { BlockService } from '../block/block.service'
 import { JourneyService } from '../journey/journey.service'
-import { MemberService } from '../member/member.service'
 import { UserJourneyService } from '../userJourney/userJourney.service'
 import { UserRoleService } from '../userRole/userRole.service'
+import { PrismaService } from '../../lib/prisma.service'
 import { ActionResolver } from './action.resolver'
 
 describe('ActionResolver', () => {
@@ -58,6 +58,15 @@ describe('ActionResolver', () => {
     }
   }
 
+  const block5 = {
+    ...block1,
+    action: {
+      parentBlockId: '1',
+      gtmEventName: 'gtmEventName',
+      email: 'imissedmondshen@gmail.com'
+    }
+  }
+
   describe('__resolveType', () => {
     beforeEach(async () => {
       const blockService = {
@@ -73,7 +82,7 @@ describe('ActionResolver', () => {
           UserJourneyService,
           UserRoleService,
           JourneyService,
-          MemberService,
+          PrismaService,
           {
             provide: 'DATABASE',
             useFactory: () => mockDeep<Database>()
@@ -122,6 +131,17 @@ describe('ActionResolver', () => {
       } as unknown as Action
       expect(resolver.__resolveType(action)).toBe('LinkAction')
     })
+
+    it('returns EmailAction', () => {
+      const action = {
+        blockId: null,
+        journeyId: null,
+        target: null,
+        url: null,
+        email: 'imissedmondshen@gmail.com'
+      } as unknown as Action
+      expect(resolver.__resolveType(action)).toBe('EmailAction')
+    })
   })
 
   describe('NavigateToBlockAction', () => {
@@ -139,7 +159,7 @@ describe('ActionResolver', () => {
           UserJourneyService,
           UserRoleService,
           JourneyService,
-          MemberService,
+          PrismaService,
           {
             provide: 'DATABASE',
             useFactory: () => mockDeep<Database>()
@@ -171,7 +191,7 @@ describe('ActionResolver', () => {
           UserJourneyService,
           UserRoleService,
           JourneyService,
-          MemberService,
+          PrismaService,
           {
             provide: 'DATABASE',
             useFactory: () => mockDeep<Database>()
@@ -203,7 +223,7 @@ describe('ActionResolver', () => {
           UserJourneyService,
           UserRoleService,
           JourneyService,
-          MemberService,
+          PrismaService,
           {
             provide: 'DATABASE',
             useFactory: () => mockDeep<Database>()
@@ -217,6 +237,38 @@ describe('ActionResolver', () => {
       expect(
         ((await blockResolver.block('1')) as RadioOptionBlock).action
       ).toHaveProperty('url')
+    })
+  })
+
+  describe('EmailAction', () => {
+    beforeEach(async () => {
+      const blockService = {
+        provide: BlockService,
+        useFactory: () => ({
+          get: jest.fn(() => block5)
+        })
+      }
+      const module: TestingModule = await Test.createTestingModule({
+        providers: [
+          BlockResolver,
+          blockService,
+          UserJourneyService,
+          UserRoleService,
+          JourneyService,
+          PrismaService,
+          {
+            provide: 'DATABASE',
+            useFactory: () => mockDeep<Database>()
+          }
+        ]
+      }).compile()
+      blockResolver = module.get<BlockResolver>(BlockResolver)
+    })
+    it('returns EmailAction', async () => {
+      expect(await blockResolver.block('1')).toEqual(block5)
+      expect(
+        ((await blockResolver.block('1')) as RadioOptionBlock).action
+      ).toHaveProperty('email')
     })
   })
 
@@ -235,7 +287,7 @@ describe('ActionResolver', () => {
           UserJourneyService,
           UserRoleService,
           JourneyService,
-          MemberService,
+          PrismaService,
           {
             provide: 'DATABASE',
             useFactory: () => mockDeep<Database>()
@@ -266,7 +318,7 @@ describe('ActionResolver', () => {
           UserJourneyService,
           UserRoleService,
           JourneyService,
-          MemberService,
+          PrismaService,
           {
             provide: 'DATABASE',
             useFactory: () => mockDeep<Database>()

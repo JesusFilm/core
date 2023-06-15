@@ -3,12 +3,11 @@ import { Meta, Story } from '@storybook/react'
 import { noop } from 'lodash'
 import { MockedProvider } from '@apollo/client/testing'
 import { AuthUser } from 'next-firebase-auth'
-import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 import { journeysAdminConfig } from '../../../libs/storybook'
 import { Role, UserJourneyRole } from '../../../../__generated__/globalTypes'
 import { GET_USER_ROLE } from '../../JourneyView/JourneyView'
 import { GET_JOURNEYS } from '../../../libs/useJourneys/useJourneys'
-import { GET_ME } from './NavigationDrawer'
+import { GET_ME } from '../../NewPageWrapper/NavigationDrawer'
 import { NavigationDrawer } from '.'
 
 const NavigationDrawerStory = {
@@ -60,38 +59,27 @@ const Template: Story = ({ ...args }) => {
         }
       ]}
     >
-      <FlagsProvider flags={{ templates: args.templates }}>
-        <NavigationDrawer
-          open={open}
-          onClose={() => setOpen(!open)}
-          authUser={
-            {
-              id: 'user.id',
-              displayName: 'Amin One',
-              photoURL: 'https://bit.ly/3Gth4Yf',
-              email: 'amin@email.com',
-              signOut: noop
-            } as unknown as AuthUser
-          }
-        />
-      </FlagsProvider>
+      <NavigationDrawer
+        open={open}
+        onClose={() => setOpen(!open)}
+        authUser={
+          {
+            id: 'user.id',
+            displayName: 'Amin One',
+            photoURL: 'https://bit.ly/3Gth4Yf',
+            email: 'amin@email.com',
+            signOut: noop
+          } as unknown as AuthUser
+        }
+      />
     </MockedProvider>
   )
 }
 
 export const Default = Template.bind({})
-Default.args = {
-  templates: false
-}
-
-export const Complete = Template.bind({})
-Complete.args = {
-  templates: true
-}
 
 export const WithBadge = Template.bind({})
 WithBadge.args = {
-  templates: false,
   result: {
     data: {
       journeys: [

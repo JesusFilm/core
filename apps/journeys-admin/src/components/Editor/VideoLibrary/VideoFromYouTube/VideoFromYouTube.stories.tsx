@@ -1,9 +1,10 @@
 import { Story, Meta } from '@storybook/react'
 import { SWRConfig } from 'swr'
 import { journeysAdminConfig } from '../../../../libs/storybook'
+import { ApolloLoadingProvider } from '../../../../../test/ApolloLoadingProvider'
 import {
-  getVideosLoading,
-  getVideosWithOffsetAndUrl
+  getPlaylistItemsLoading,
+  getPlaylistItemsWithOffsetAndUrl
 } from './VideoFromYouTube.handlers'
 import { VideoFromYouTube } from '.'
 
@@ -15,22 +16,24 @@ const VideoFromYouTubeStory = {
 }
 
 const Template: Story = ({ onSelect }) => (
-  <SWRConfig value={{ provider: () => new Map() }}>
-    <VideoFromYouTube onSelect={onSelect} />
-  </SWRConfig>
+  <ApolloLoadingProvider>
+    <SWRConfig value={{ provider: () => new Map() }}>
+      <VideoFromYouTube onSelect={onSelect} />
+    </SWRConfig>
+  </ApolloLoadingProvider>
 )
 
 export const Default = Template.bind({})
 Default.parameters = {
   msw: {
-    handlers: [getVideosWithOffsetAndUrl]
+    handlers: [getPlaylistItemsWithOffsetAndUrl]
   }
 }
 
 export const Loading = Template.bind({})
 Loading.parameters = {
   msw: {
-    handlers: [getVideosLoading]
+    handlers: [getPlaylistItemsLoading]
   }
 }
 

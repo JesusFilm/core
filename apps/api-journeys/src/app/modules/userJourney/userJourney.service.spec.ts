@@ -9,7 +9,7 @@ import {
 } from '@core/nest/database/mock'
 import { DocumentCollection, EdgeCollection } from 'arangojs/collection'
 import { keyAsId } from '@core/nest/decorators/KeyAsId'
-
+import { UserTeamRole } from '.prisma/api-journeys-client'
 import {
   IdType,
   Journey,
@@ -19,7 +19,7 @@ import {
   UserJourneyRole
 } from '../../__generated__/graphql'
 import { JourneyService } from '../journey/journey.service'
-import { MemberService } from '../member/member.service'
+import { PrismaService } from '../../lib/prisma.service'
 import { UserJourneyRecord, UserJourneyService } from './userJourney.service'
 
 jest.mock('uuid', () => ({
@@ -31,7 +31,7 @@ const mockUuidv4 = uuidv4 as jest.MockedFunction<typeof uuidv4>
 
 describe('UserJourneyService', () => {
   let service: UserJourneyService,
-    mService: MemberService,
+    prismaService: PrismaService,
     db: DeepMockProxy<Database>,
     collectionMock: DeepMockProxy<DocumentCollection & EdgeCollection>
 
@@ -43,23 +43,13 @@ describe('UserJourneyService', () => {
     })
   }
 
-  const memberService = {
-    provide: MemberService,
-    useFactory: () => ({
-      save: jest.fn((member) => member),
-      getMemberByTeamId: jest.fn((userId, teamId) => {
-        'memberId'
-      })
-    })
-  }
-
   beforeEach(async () => {
     db = mockDeep()
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         UserJourneyService,
         journeyService,
-        memberService,
+        PrismaService,
         {
           provide: 'DATABASE',
           useFactory: () => db
@@ -70,7 +60,8 @@ describe('UserJourneyService', () => {
     service = module.get<UserJourneyService>(UserJourneyService)
     collectionMock = mockDeep()
     service.collection = collectionMock
-    mService = module.get<MemberService>(MemberService)
+    prismaService = module.get<PrismaService>(PrismaService)
+    prismaService.userTeam.upsert = jest.fn()
   })
   afterAll(() => {
     jest.resetAllMocks()
@@ -103,7 +94,8 @@ describe('UserJourneyService', () => {
     slug: 'published-slug',
     createdAt: '',
     status: JourneyStatus.published,
-    teamId: 'teamId'
+    teamId: 'teamId',
+    chatButtons: []
   }
 
   describe('forJourney', () => {
@@ -305,15 +297,21 @@ describe('UserJourneyService', () => {
         })
       )
 
-      await service.approveAccess(userJourney.id, userJourney.userId)
-      expect(mService.save).toHaveBeenCalledWith(
-        {
-          id: '1:teamId',
+      await service.approveAccess(userJourneyInvited.id, userJourney.userId)
+      expect(prismaService.userTeam.upsert).toHaveBeenCalledWith({
+        create: {
           teamId: 'teamId',
-          userId: '1'
+          userId: '2',
+          role: UserTeamRole.guest
         },
-        { overwriteMode: 'ignore' }
-      )
+        update: {},
+        where: {
+          teamId_userId: {
+            teamId: 'teamId',
+            userId: '2'
+          }
+        }
+      })
     })
   })
 })

@@ -8,7 +8,7 @@ import Tabs from '@mui/material/Tabs'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 import Stack from '@mui/material/Stack'
-import ColorizeIcon from '@mui/icons-material/Colorize'
+import EditIcon from '@mui/icons-material/Edit'
 import { HexColorPicker } from 'react-colorful'
 import { gql, useMutation } from '@apollo/client'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
@@ -170,7 +170,7 @@ export function BackgroundColor(): ReactElement {
           InputProps={{
             startAdornment: (
               <InputAdornment position="start">
-                <ColorizeIcon
+                <EditIcon
                   onClick={(e) => handleTabChange(e, 1)}
                   style={{ cursor: 'pointer' }}
                 />

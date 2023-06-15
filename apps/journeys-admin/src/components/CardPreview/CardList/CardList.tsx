@@ -19,18 +19,26 @@ import {
   ActiveJourneyEditContent,
   useEditor
 } from '@core/journeys/ui/EditorProvider'
-import { CustomIcon } from '@core/shared/ui/CustomIcon'
+import Target from '@core/shared/ui/icons/Target'
+import ThumbsUp from '@core/shared/ui/icons/ThumbsUp'
 import Divider from '@mui/material/Divider'
 import Image from 'next/image'
 
+import { useQuery } from '@apollo/client'
 import { FramePortal } from '../../FramePortal'
-import { ThemeName, ThemeMode } from '../../../../__generated__/globalTypes'
+import {
+  ThemeName,
+  ThemeMode,
+  Role
+} from '../../../../__generated__/globalTypes'
 import { HorizontalSelect } from '../../HorizontalSelect'
 import { VideoWrapper } from '../../Editor/Canvas/VideoWrapper'
 import { CardWrapper } from '../../Editor/Canvas/CardWrapper'
 import { BlockFields_StepBlock as StepBlock } from '../../../../__generated__/BlockFields'
 import { NavigationCard } from '../NavigationCard'
 import { useSocialPreview } from '../../Editor/SocialProvider'
+import { GetUserRole } from '../../../../__generated__/GetUserRole'
+import { GET_USER_ROLE } from '../../JourneyView/JourneyView'
 
 interface CardListProps {
   steps: Array<TreeBlock<StepBlock>>
@@ -55,41 +63,60 @@ export function CardList({
   isDraggable,
   showNavigationCards = false
 }: CardListProps): ReactElement {
-  const { state } = useEditor()
+  const {
+    state: { journeyEditContentComponent }
+  } = useEditor()
   const { journey } = useJourney()
   const { primaryImageBlock } = useSocialPreview()
-  const AddCardSlide = (): ReactElement => (
-    <Card
-      id="CardPreviewAddButton"
-      variant="outlined"
-      sx={{
-        display: 'flex',
-        width: 87,
-        height: 132,
-        m: 1
-      }}
-    >
-      <CardActionArea
+
+  const { data } = useQuery<GetUserRole>(GET_USER_ROLE)
+  const isPublisher = data?.getUserRole?.roles?.includes(Role.publisher)
+
+  const showNavigation =
+    showNavigationCards && (journey?.template !== true || isPublisher)
+
+  function AddCardSlide(): ReactElement {
+    return (
+      <Card
+        id="CardPreviewAddButton"
+        variant="outlined"
         sx={{
           display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center'
+          width: 87,
+          height: 132,
+          m: 1
         }}
-        onClick={handleClick}
       >
-        <AddIcon color="primary" />
-      </CardActionArea>
-    </Card>
-  )
+        <CardActionArea
+          sx={{
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center'
+          }}
+          onClick={handleClick}
+        >
+          <AddIcon color="primary" />
+        </CardActionArea>
+      </Card>
+    )
+  }
+
+  const selectedId =
+    journeyEditContentComponent === ActiveJourneyEditContent.Action
+      ? 'goals'
+      : journeyEditContentComponent === ActiveJourneyEditContent.SocialPreview
+      ? 'social'
+      : selected?.id
+
   return (
     <HorizontalSelect
       onChange={handleChange}
-      id={selected?.id}
+      id={selectedId}
       isDragging={isDragging}
       footer={showAddButton === true && <AddCardSlide />}
-      view={state.journeyEditContentComponent}
+      view={journeyEditContentComponent}
     >
-      {showNavigationCards && (
+      {showNavigation === true && (
         <NavigationCard
           key="goals"
           id="goals"
@@ -97,8 +124,7 @@ export function CardList({
           title="Goals"
           destination={ActiveJourneyEditContent.Action}
           outlined={
-            state.journeyEditContentComponent ===
-            ActiveJourneyEditContent.Action
+            journeyEditContentComponent === ActiveJourneyEditContent.Action
           }
           header={
             <Box
@@ -110,13 +136,13 @@ export function CardList({
               justifyContent="center"
               alignItems="center"
             >
-              <CustomIcon name="Target" color="error" />
+              <Target color="error" />
             </Box>
           }
           loading={journey == null}
         />
       )}
-      {showNavigationCards && (
+      {showNavigation === true && (
         <Divider
           id="cardlist-divider"
           orientation="vertical"
@@ -126,7 +152,7 @@ export function CardList({
           }}
         />
       )}
-      {showNavigationCards && (
+      {showNavigation === true && (
         <NavigationCard
           key="social"
           id="social"
@@ -134,7 +160,7 @@ export function CardList({
           title="Social Media"
           destination={ActiveJourneyEditContent.SocialPreview}
           outlined={
-            state.journeyEditContentComponent ===
+            journeyEditContentComponent ===
             ActiveJourneyEditContent.SocialPreview
           }
           header={
@@ -148,7 +174,7 @@ export function CardList({
                 justifyContent="center"
                 alignItems="center"
               >
-                <CustomIcon name="Like" color="error" />
+                <ThumbsUp color="error" />
               </Box>
             ) : (
               <Image
@@ -268,7 +294,7 @@ const CardItem = ({
             rtl={rtl}
             locale={locale}
           >
-            <Box sx={{ p: 4, height: '100%' }}>
+            <Box sx={{ p: 4, height: '100%', borderRadius: 4 }}>
               <BlockRenderer
                 block={step}
                 wrappers={{

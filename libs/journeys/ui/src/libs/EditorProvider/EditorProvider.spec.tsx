@@ -35,6 +35,38 @@ describe('EditorContext', () => {
       })
     })
 
+    describe('SetSelectedComponentAction', () => {
+      it('should set selected component', () => {
+        const block: TreeBlock = {
+          id: 'step0.id',
+          __typename: 'StepBlock',
+          parentBlockId: null,
+          parentOrder: 0,
+          locked: false,
+          nextBlockId: null,
+          children: []
+        }
+
+        const state = {
+          steps: [block],
+          drawerMobileOpen: false,
+          activeFab: ActiveFab.Edit,
+          activeTab: ActiveTab.Journey,
+          journeyEditContentComponent: ActiveJourneyEditContent.Canvas
+        }
+        expect(
+          reducer(state, {
+            type: 'SetSelectedComponentAction',
+            component: 'Footer'
+          })
+        ).toEqual({
+          ...state,
+          selectedComponent: 'Footer',
+          selectedBlock: undefined
+        })
+      })
+    })
+
     describe('SetSelectedBlockAction', () => {
       it('should set selected block', () => {
         const block: TreeBlock = {
@@ -60,7 +92,8 @@ describe('EditorContext', () => {
           })
         ).toEqual({
           ...state,
-          selectedBlock: block
+          selectedBlock: block,
+          selectedComponent: undefined
         })
       })
     })
@@ -102,7 +135,8 @@ describe('EditorContext', () => {
           })
         ).toEqual({
           ...state,
-          selectedBlock: block
+          selectedBlock: block,
+          selectedComponent: undefined
         })
       })
 

@@ -9,6 +9,7 @@ import Close from '@mui/icons-material/Close'
 
 // Used to resolve dynamic viewport height on Safari
 import Div100vh from 'react-div-100vh'
+import { StepFooter } from '@core/journeys/ui/StepFooter'
 import useFullscreenStatus from '../../libs/useFullscreenStatus/useFullscreenStatus'
 import { Conductor } from '../Conductor'
 
@@ -90,7 +91,7 @@ export function EmbeddedPreview({
           mb: 0,
           height: 6.5,
           width: '82.5%',
-          backgroundColor: '#DCDDE5',
+          backgroundColor: '#AAACBB',
           borderRadius: '16px 16px 0 0',
           opacity: 0.3
         }}
@@ -103,7 +104,7 @@ export function EmbeddedPreview({
           width: '90%',
           backgroundColor: '#AAACBB',
           borderRadius: '16px 16px 0 0',
-          opacity: 0.3
+          opacity: 0.6
         }}
       />
       <Box
@@ -111,7 +112,8 @@ export function EmbeddedPreview({
           height: '100%',
           width: '100%',
           borderRadius: '16px',
-          border: '1px solid rgba(186, 186, 187, 0.5)'
+          overflow: 'hidden',
+          position: 'relative'
         }}
       >
         <BlockRenderer
@@ -119,11 +121,11 @@ export function EmbeddedPreview({
           block={blocks?.[0]}
           wrappers={{
             ButtonWrapper,
-            ImageWrapper: NullWrapper,
             RadioOptionWrapper,
             VideoWrapper
           }}
         />
+        <StepFooter />
       </Box>
     </Box>
   )
@@ -172,8 +174,4 @@ export function EmbeddedPreview({
       </Div100vh>
     </>
   )
-}
-
-function NullWrapper({ children }): ReactElement {
-  return <fieldset disabled>{children}</fieldset>
 }
