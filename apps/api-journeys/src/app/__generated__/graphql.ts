@@ -573,6 +573,8 @@ export class HostUpdateInput {
     location?: Nullable<string>;
     avatar1Id?: Nullable<string>;
     avatar2Id?: Nullable<string>;
+    src1?: Nullable<string>;
+    src2?: Nullable<string>;
 }
 
 export class HostCreateInput {
@@ -580,6 +582,8 @@ export class HostCreateInput {
     location?: Nullable<string>;
     avatar1Id?: Nullable<string>;
     avatar2Id?: Nullable<string>;
+    src1?: Nullable<string>;
+    src2?: Nullable<string>;
 }
 
 export class JourneysFilter {
@@ -1065,6 +1069,8 @@ export class Host {
     location?: Nullable<string>;
     avatar1Id?: Nullable<string>;
     avatar2Id?: Nullable<string>;
+    src1?: Nullable<string>;
+    src2?: Nullable<string>;
 }
 
 export abstract class IQuery {

@@ -21,7 +21,9 @@ describe('HostResolver', () => {
         title: 'New Host',
         location: 'Location',
         avatar1Id: 'avatar1',
-        avatar2Id: 'avatar2'
+        avatar2Id: 'avatar2',
+        src1: 'avatar1',
+        src2: 'avatar2'
       }
       const mockHost = { teamId, ...input, id: 'hostid' }
       jest.spyOn(prismaService.host, 'create').mockResolvedValue(mockHost)
@@ -46,7 +48,9 @@ describe('HostResolver', () => {
           title: 'Edmond Shen & Nisal Cottingham',
           location: 'New Zealand',
           avatar1Id: 'avatar1-id',
-          avatar2Id: 'vatar2-id'
+          avatar2Id: 'vatar2-id',
+          src1: 'avatar1',
+          src2: 'avatar2'
         },
         {
           id: 'host-id2',
@@ -54,7 +58,9 @@ describe('HostResolver', () => {
           title: 'Edmond Shen & Nisal Cottingham',
           location: 'New Zealand',
           avatar1Id: 'avatar1-id',
-          avatar2Id: 'avatar2-id'
+          avatar2Id: 'avatar2-id',
+          src1: 'avatar1',
+          src2: 'avatar2'
         }
       ]
       jest.spyOn(prismaService.host, 'findMany').mockResolvedValue(mockHosts)
@@ -75,7 +81,9 @@ describe('HostResolver', () => {
         title: 'Edmond Shen',
         location: 'National Team Staff',
         avatar1Id: 'new-profile-pic-who-thos',
-        avatar2Id: 'new-avatar2'
+        avatar2Id: 'new-avatar2',
+        src1: 'avatar1',
+        src2: 'avatar2'
       }
       const mockHost = {
         id: 'host-id',
@@ -83,7 +91,9 @@ describe('HostResolver', () => {
         title: 'Edmond Shen & Nisal Cottingham',
         location: 'JFP Staff',
         avatar1Id: 'avatar1-id',
-        avatar2Id: 'avatar2-id'
+        avatar2Id: 'avatar2-id',
+        src1: 'avatar1',
+        src2: 'avatar2'
       }
       const mockUpdatedHost = { ...mockHost, ...input }
       jest
@@ -100,7 +110,9 @@ describe('HostResolver', () => {
           title: input.title,
           location: input.location,
           avatar1Id: input.avatar1Id,
-          avatar2Id: input.avatar2Id
+          avatar2Id: input.avatar2Id,
+          src1: input.src1,
+          src2: input.src2
         }
       })
     })
@@ -110,7 +122,9 @@ describe('HostResolver', () => {
       const input = {
         location: 'National Team Staff',
         avatar1Id: 'new-profile-pic-who-thos',
-        avatar2Id: 'new-avatar2'
+        avatar2Id: 'new-avatar2',
+        src1: 'avatar1',
+        src2: 'avatar2'
       }
       const mockHost = {
         id: 'host-id',
@@ -118,7 +132,9 @@ describe('HostResolver', () => {
         title: 'Edmond Shen & Nisal Cottingham',
         location: 'JFP Staff',
         avatar1Id: 'avatar1-id',
-        avatar2Id: 'avatar2-id'
+        avatar2Id: 'avatar2-id',
+        src1: 'avatar1',
+        src2: 'avatar2'
       }
       const mockUpdatedHost = { ...mockHost, ...input }
       jest
@@ -135,7 +151,9 @@ describe('HostResolver', () => {
           title: undefined,
           location: input.location,
           avatar1Id: input.avatar1Id,
-          avatar2Id: input.avatar2Id
+          avatar2Id: input.avatar2Id,
+          src1: input.src1,
+          src2: input.src2
         }
       })
     })
@@ -146,7 +164,9 @@ describe('HostResolver', () => {
         title: null,
         location: 'National Team Staff',
         avatar1Id: 'new-profile-pic-who-thos',
-        avatar2Id: 'new-avatar2'
+        avatar2Id: 'new-avatar2',
+        src1: 'avatar1',
+        src2: 'avatar2'
       }
 
       await expect(hostResolver.hostUpdate(hostId, input)).rejects.toThrow(
@@ -164,7 +184,9 @@ describe('HostResolver', () => {
         title: 'Edmond Shen & Nisal Cottingham',
         location: 'JFP Staff',
         avatar1Id: 'avatar1-id',
-        avatar2Id: 'avatar2-id'
+        avatar2Id: 'avatar2-id',
+        src1: 'avatar1',
+        src2: 'avatar2'
       }
       jest
         .spyOn(prismaService.host, 'delete')
