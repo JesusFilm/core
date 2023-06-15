@@ -7,6 +7,16 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import TextField from '@mui/material/TextField'
 import InputLabel from '@mui/material/InputLabel'
 import Select, { SelectChangeEvent } from '@mui/material/Select'
+import Facebook from '@core/shared/ui/icons/Facebook'
+import Telegram from '@core/shared/ui/icons/Telegram'
+import Instagram from '@core/shared/ui/icons/Instagram'
+import WhatsApp from '@core/shared/ui/icons/WhatsApp'
+import Viber from '@core/shared/ui/icons/Viber'
+import Vk from '@core/shared/ui/icons/Vk'
+import Snapchat from '@core/shared/ui/icons/Snapchat'
+import Skype from '@core/shared/ui/icons/Skype'
+import Line from '@core/shared/ui/icons/Line'
+import Tiktok from '@core/shared/ui/icons/Tiktok'
 import MenuItem from '@mui/material/MenuItem'
 import { useTranslation } from 'react-i18next'
 import FormControl from '@mui/material/FormControl'
@@ -14,7 +24,6 @@ import Checkbox from '@mui/material/Checkbox'
 import Stack from '@mui/material/Stack'
 import KeyboardArrowDownRoundedIcon from '@mui/icons-material/KeyboardArrowDownRounded'
 import findKey from 'lodash/findKey'
-import ChatRoundedIcon from '@mui/icons-material/ChatRounded'
 import { GetJourneyChatButtons_journey_chatButtons as ChatButton } from '../../../../../../../../../__generated__/GetJourneyChatButtons'
 import { ChatPlatform } from '../../../../../../../../../__generated__/globalTypes'
 
@@ -54,52 +63,52 @@ export function ChatOption({
     {
       value: ChatPlatform.facebook,
       label: t('Facebook'),
-      icon: <ChatRoundedIcon />
+      icon: <Facebook />
     },
     {
       value: ChatPlatform.whatsApp,
       label: t('WhatsApp'),
-      icon: <ChatRoundedIcon />
+      icon: <WhatsApp />
     },
     {
       value: ChatPlatform.telegram,
       label: t('Telegram'),
-      icon: <ChatRoundedIcon />
+      icon: <Telegram />
     },
     {
       value: ChatPlatform.instagram,
       label: t('Instagram'),
-      icon: <ChatRoundedIcon />
+      icon: <Instagram />
     },
     {
       value: ChatPlatform.line,
       label: t('LINE'),
-      icon: <ChatRoundedIcon />
+      icon: <Line />
     },
     {
       value: ChatPlatform.skype,
       label: t('Skype'),
-      icon: <ChatRoundedIcon />
+      icon: <Skype />
     },
     {
       value: ChatPlatform.snapchat,
       label: t('Snapchat'),
-      icon: <ChatRoundedIcon />
+      icon: <Snapchat />
     },
     {
       value: ChatPlatform.tikTok,
       label: t('TikTok'),
-      icon: <ChatRoundedIcon />
+      icon: <Tiktok />
     },
     {
       value: ChatPlatform.viber,
       label: t('Viber'),
-      icon: <ChatRoundedIcon />
+      icon: <Viber />
     },
     {
       value: ChatPlatform.vk,
       label: t('VK'),
-      icon: <ChatRoundedIcon />
+      icon: <Vk />
     }
   ]
 
