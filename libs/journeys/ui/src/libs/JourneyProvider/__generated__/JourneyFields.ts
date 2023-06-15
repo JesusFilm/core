@@ -608,6 +608,14 @@ export interface JourneyFields_userJourneys {
   user: JourneyFields_userJourneys_user | null;
 }
 
+export interface JourneyFields_host {
+  __typename: "Host";
+  id: string;
+  teamId: string;
+  title: string;
+  location: string | null;
+}
+
 export interface JourneyFields {
   __typename: "Journey";
   id: string;
@@ -626,4 +634,5 @@ export interface JourneyFields {
   blocks: JourneyFields_blocks[] | null;
   primaryImageBlock: JourneyFields_primaryImageBlock | null;
   userJourneys: JourneyFields_userJourneys[] | null;
+  host: JourneyFields_host | null;
 }

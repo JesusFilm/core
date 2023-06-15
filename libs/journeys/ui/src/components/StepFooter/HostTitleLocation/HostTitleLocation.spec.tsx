@@ -6,18 +6,9 @@ import {
   ThemeMode,
   ThemeName
 } from '../../../../__generated__/globalTypes'
-import { NameAndLocation } from './NameAndLocation'
+import { HostTitleLocation } from './HostTitleLocation'
 
-describe('NameAndLocation', () => {
-  const mockProps = {
-    name: 'Edmond Shen',
-    location: 'Student Life',
-    rtl: false,
-    src1: undefined,
-    src2: undefined,
-    admin: true
-  }
-
+describe('HostTitleLocation', () => {
   const journey = {
     __typename: 'Journey' as const,
     id: 'journeyId',
@@ -28,13 +19,13 @@ describe('NameAndLocation', () => {
     language: {
       __typename: 'Language' as const,
       id: '529',
-      bcp47: 'ar',
-      iso3: 'arb',
+      bcp47: 'en',
+      iso3: 'eng',
       name: [
         {
           __typename: 'Translation' as const,
-          value: 'Arabic',
-          primary: false
+          value: 'English',
+          primary: true
         }
       ]
     },
@@ -47,23 +38,46 @@ describe('NameAndLocation', () => {
     userJourneys: [],
     template: null,
     seoTitle: null,
-    seoDescription: null
+    seoDescription: null,
+    host: {
+      id: 'hostId',
+      __typename: 'Host' as const,
+      title: 'Edmond Shen',
+      location: 'Student Life',
+      teamId: 'teamId'
+    }
+  }
+
+  const rtlLanguage = {
+    __typename: 'Language' as const,
+    id: '529',
+    bcp47: 'ar',
+    iso3: 'arb',
+    name: [
+      {
+        __typename: 'Translation' as const,
+        value: 'Arabic',
+        primary: false
+      }
+    ]
   }
 
   it('renders the name and location correctly', () => {
-    const { getByText } = render(<NameAndLocation {...mockProps} />)
+    const { getByText } = render(
+      <JourneyProvider value={{ journey }}>
+        <HostTitleLocation />
+      </JourneyProvider>
+    )
 
     expect(getByText('Edmond Shen · Student Life')).toBeInTheDocument()
   })
 
-  it('renders RTL correctly', () => {
-    const props = {
-      ...mockProps
-    }
-
+  it('renders location then name when RTL', () => {
     const { getByText } = render(
-      <JourneyProvider value={{ journey }}>
-        <NameAndLocation {...props} />
+      <JourneyProvider
+        value={{ journey: { ...journey, language: rtlLanguage } }}
+      >
+        <HostTitleLocation />
       </JourneyProvider>
     )
 
@@ -71,12 +85,15 @@ describe('NameAndLocation', () => {
   })
 
   it('renders only the name when location is not provided', () => {
-    const props = {
-      ...mockProps,
-      location: undefined
-    }
-
-    const { getByText, queryByText } = render(<NameAndLocation {...props} />)
+    const { getByText, queryByText } = render(
+      <JourneyProvider
+        value={{
+          journey: { ...journey, host: { ...journey.host, location: null } }
+        }}
+      >
+        <HostTitleLocation />
+      </JourneyProvider>
+    )
 
     const nameElement = getByText('Edmond Shen')
     const locationElement = queryByText(' · Student Life')

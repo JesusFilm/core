@@ -44,5 +44,11 @@ export const JOURNEY_FIELDS = gql`
         imageUrl
       }
     }
+    host {
+      id
+      teamId
+      title
+      location
+    }
   }
 `
