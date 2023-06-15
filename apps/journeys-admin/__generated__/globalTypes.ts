@@ -320,6 +320,7 @@ export interface JourneyUpdateInput {
   slug?: string | null;
   seoTitle?: string | null;
   seoDescription?: string | null;
+  hostId?: string | null;
 }
 
 export interface JourneyVisitorFilter {
