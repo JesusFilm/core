@@ -106,7 +106,8 @@ describe('JourneyContext', () => {
       primaryImageBlock: null,
       userJourneys: [],
       seoTitle: null,
-      seoDescription: null
+      seoDescription: null,
+      chatButtons: []
     })
   })
 })
