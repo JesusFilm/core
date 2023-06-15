@@ -3,10 +3,12 @@ import { UseGuards } from '@nestjs/common'
 import { object, string } from 'yup'
 import fetch from 'node-fetch'
 import { UserInputError } from 'apollo-server-errors'
+import { omit } from 'lodash'
+import { Block } from '.prisma/api-journeys-client'
+
 import { BlockService } from '../block.service'
 import {
   Action,
-  CardBlock,
   Role,
   UserJourneyRole,
   VideoBlock,
@@ -15,6 +17,7 @@ import {
   VideoBlockUpdateInput
 } from '../../../__generated__/graphql'
 import { RoleGuard } from '../../../lib/roleGuard/roleGuard'
+import { PrismaService } from '../../../lib/prisma.service'
 
 const videoBlockYouTubeSchema = object().shape({
   videoId: string().matches(
@@ -89,7 +92,10 @@ function parseISO8601Duration(duration: string): number {
 
 @Resolver('VideoBlock')
 export class VideoBlockResolver {
-  constructor(private readonly blockService: BlockService) {}
+  constructor(
+    private readonly blockService: BlockService,
+    private readonly prismaService: PrismaService
+  ) {}
 
   @ResolveField()
   action(@Parent() block: VideoBlock): Action | null {
@@ -111,7 +117,7 @@ export class VideoBlockResolver {
   )
   async videoBlockCreate(
     @Args('input') input: VideoBlockCreateInput
-  ): Promise<VideoBlock> {
+  ): Promise<Block & { action?: Action }> {
     switch (input.source) {
       case VideoBlockSource.youTube:
         await videoBlockYouTubeSchema.validate(input)
@@ -135,20 +141,28 @@ export class VideoBlockResolver {
     }
 
     if (input.isCover === true) {
-      const coverBlock: VideoBlock = await this.blockService.save({
-        ...input,
-        __typename: 'VideoBlock',
+      const coverBlock = await this.blockService.save<Block>({
+        ...omit(input, '__typename', 'journeyId'),
+        id: input.id ?? undefined,
+        typename: 'VideoBlock',
+        source:
+          input.source === VideoBlockSource.internal ? 'internal' : 'youTube',
+        journey: {
+          connect: { id: input.journeyId }
+        },
         parentOrder: null
       })
-      const parentBlock: CardBlock = await this.blockService.get(
-        input.parentBlockId
-      )
+
+      const parentBlock = await this.prismaService.block.findUnique({
+        where: { id: input.parentBlockId },
+        include: { action: true }
+      })
 
       await this.blockService.update(input.parentBlockId, {
         coverBlockId: coverBlock.id
       })
 
-      if (parentBlock.coverBlockId != null) {
+      if (parentBlock?.coverBlockId != null) {
         await this.blockService.removeBlockAndChildren(
           parentBlock.coverBlockId,
           input.journeyId
@@ -163,13 +177,18 @@ export class VideoBlockResolver {
       input.parentBlockId
     )
 
-    const block: VideoBlock = await this.blockService.save({
-      ...input,
-      __typename: 'VideoBlock',
+    const block = await this.blockService.save<Block>({
+      ...omit(input, ['__typename', 'journeyId']),
+      id: input.id ?? undefined,
+      typename: 'VideoBlock',
+      source:
+        input.source === VideoBlockSource.internal ? 'internal' : 'youTube',
+      journey: { connect: { id: input.journeyId } },
       parentOrder: siblings.length
     })
 
     const action = {
+      id: block.id,
       parentBlockId: block.id,
       gtmEventName: 'NavigateAction',
       blockId: null,
@@ -178,7 +197,13 @@ export class VideoBlockResolver {
       target: null
     }
 
-    return await this.blockService.update(block.id, { ...block, action })
+    await this.prismaService.action.create({
+      data: action
+    })
+    return {
+      ...block,
+      action
+    }
   }
 
   @Mutation()
@@ -194,8 +219,11 @@ export class VideoBlockResolver {
     @Args('journeyId') journeyId: string,
     @Args('input') input: VideoBlockUpdateInput
   ): Promise<VideoBlock> {
-    const block = await this.blockService.get(id)
-    switch (input.source ?? block.source) {
+    const block = await this.prismaService.block.findUnique({
+      where: { id },
+      include: { action: true }
+    })
+    switch (input.source ?? block?.source) {
       case VideoBlockSource.youTube:
         await videoBlockYouTubeSchema.validate({ ...block, ...input })
         if (input.videoId != null) {
@@ -230,7 +258,11 @@ export class VideoBlockResolver {
         await videoBlockInternalSchema.validate({ ...block, ...input })
         break
     }
-    return await this.blockService.update(id, input)
+    return await this.blockService.update(id, {
+      ...input,
+      source:
+        input.source === VideoBlockSource.internal ? 'internal' : 'youTube'
+    })
   }
 
   @ResolveField('video')
