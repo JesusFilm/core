@@ -33,8 +33,8 @@ export const HostAvatars = ({ src1, src2 }: HostAvatarsProps): ReactElement => {
       {src1 == null && src2 == null && admin ? (
         <Avatar
           sx={{
-            pr: 2,
-            mr: rtl ? 2 : 0,
+            pr: rtl ? 2 : 0,
+            mr: 2,
             ml: rtl ? 4 : 0,
             height: '44px',
             width: '44px',
