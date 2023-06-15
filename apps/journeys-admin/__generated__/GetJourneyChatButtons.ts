@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { IdType, ChatPlatform } from "./globalTypes";
+import { ChatPlatform } from "./globalTypes";
 
 // ====================================================
 // GraphQL query operation: GetJourneyChatButtons
@@ -27,5 +27,4 @@ export interface GetJourneyChatButtons {
 
 export interface GetJourneyChatButtonsVariables {
   id: string;
-  idType?: IdType | null;
 }
