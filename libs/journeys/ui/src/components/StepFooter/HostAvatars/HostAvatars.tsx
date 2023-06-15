@@ -20,7 +20,11 @@ export const HostAvatars = ({ src1, src2 }: HostAvatarsProps): ReactElement => {
         <AvatarGroup
           spacing="small"
           data-testid="journeys-avatars"
-          sx={{ pr: 2 }}
+          sx={{
+            pr: 4,
+            pl: rtl ? 6 : 0,
+            mr: src1 != null && src2 != null && rtl ? 4 : 0
+          }}
         >
           {src1 != null && <Avatar src={src1} />}
           {src2 != null && <Avatar src={src2} />}
@@ -30,24 +34,25 @@ export const HostAvatars = ({ src1, src2 }: HostAvatarsProps): ReactElement => {
         <Avatar
           sx={{
             pr: 2,
+            mr: rtl ? 2 : 0,
+            ml: rtl ? 4 : 0,
             height: '44px',
             width: '44px',
             color: 'secondary.light',
             backgroundColor: 'rgba(0, 0, 0, 0)',
             outline: 'none',
             border: '3px dashed ',
-            borderColor: 'secondary.light'
+            borderColor: (theme) => theme.palette.grey[700]
           }}
         >
           <UserProfile3
             data-testid="account-circled-out-icon"
             sx={{
-              pl: rtl ? '0px' : '6px',
-              pr: rtl ? '6px' : '0px',
+              pl: rtl ? '3px' : '6px',
               pt: '6px',
               height: '34px',
               width: '34px',
-              color: 'secondary.light'
+              color: (theme) => theme.palette.grey[700]
             }}
           />
         </Avatar>
@@ -55,7 +60,7 @@ export const HostAvatars = ({ src1, src2 }: HostAvatarsProps): ReactElement => {
         <AvatarGroup
           spacing="small"
           data-testid="journeys-admin-render-one-avatar"
-          sx={{ pr: 2 }}
+          sx={{ pr: rtl ? 6 : 2, pl: rtl ? 4 : 0 }}
         >
           <Avatar src={src1 == null && src2 != null ? src2 : src1} />
           <Avatar
@@ -64,7 +69,7 @@ export const HostAvatars = ({ src1, src2 }: HostAvatarsProps): ReactElement => {
               backgroundColor: 'rgba(0, 0, 0, 0)',
               '&.MuiAvatar-root': {
                 border: '3px dashed',
-                borderColor: 'secondary.light',
+                borderColor: (theme) => theme.palette.grey[700],
 
                 height: '36px',
                 width: '36px'
@@ -79,7 +84,7 @@ export const HostAvatars = ({ src1, src2 }: HostAvatarsProps): ReactElement => {
                 pt: '6px',
                 height: '34px',
                 width: '34px',
-                color: 'secondary.light'
+                color: (theme) => theme.palette.grey[700]
               }}
             />
           </Avatar>

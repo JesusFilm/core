@@ -24,7 +24,7 @@ export function StepFooter({
   const name = 'Alexander & Eliza Hamilton'
   const location = 'New York'
 
-  const src1 = undefined
+  const src1 = 'undefined'
   const src2 = 'undefined'
   return (
     <Box
@@ -93,7 +93,8 @@ export function StepFooter({
                 color: { xs: 'primary.main', lg: 'white' },
                 whiteSpace: 'nowrap',
                 overflow: 'hidden',
-                textOverflow: 'ellipsis'
+                textOverflow: 'ellipsis',
+                order: 1
               }}
             >
               {journey?.seoTitle ?? journey?.title}
