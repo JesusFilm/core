@@ -18,7 +18,7 @@ export function StepFooter({
   onFooterClick,
   sx
 }: StepFooterProps): ReactElement {
-  const { journey } = useJourney()
+  const { journey, admin } = useJourney()
   const { rtl } = getJourneyRTL(journey)
 
   const name = 'Alexander & Eliza Hamilton'
@@ -82,7 +82,18 @@ export function StepFooter({
               justifyContent: 'space-even'
             }}
           >
-            <Box sx={{ flexDirection: 'row' }}>
+            <Box
+              sx={{
+                pr: 4,
+                pl: rtl ? 6 : 0,
+                mr:
+                  (src1 != null || src2 != null) && rtl && admin
+                    ? 4
+                    : src1 != null && src2 != null && rtl && !admin
+                    ? 4
+                    : 0
+              }}
+            >
               <HostAvatars src1={src1} src2={src2} />
             </Box>
             <Typography
