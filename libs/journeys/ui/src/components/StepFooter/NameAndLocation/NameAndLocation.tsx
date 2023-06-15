@@ -38,16 +38,10 @@ export const NameAndLocation = ({
       >
         {rtl
           ? `${location}${
-              (location !== '' &&
-                location.length > 0 &&
-                '\u00A0\u00B7\u00A0') ||
-              ''
+              (location !== '' && '\u00A0\u00B7\u00A0') || ''
             }${name}`
           : `${name}${
-              (location !== '' &&
-                location.length > 0 &&
-                '\u00A0\u00B7\u00A0') ||
-              ''
+              (location !== '' && '\u00A0\u00B7\u00A0') || ''
             }${location}`}
       </Typography>
     </Stack>

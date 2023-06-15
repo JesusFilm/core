@@ -6,7 +6,6 @@ import { SxProps } from '@mui/material/styles'
 import { ReactElement } from 'react'
 import { useJourney } from '../../libs/JourneyProvider'
 import { getJourneyRTL } from '../../libs/rtl'
-import { NameAndLocation } from './NameAndLocation'
 
 interface StepFooterProps {
   onFooterClick?: () => void
@@ -19,9 +18,6 @@ export function StepFooter({
 }: StepFooterProps): ReactElement {
   const { journey } = useJourney()
   const { rtl } = getJourneyRTL(journey)
-
-  const name = 'Alexander & Eliza Hamilton'
-  const location = 'New York'
 
   return (
     <Box
@@ -91,7 +87,6 @@ export function StepFooter({
               }}
             >
               {journey?.seoTitle ?? journey?.title}
-              <NameAndLocation name={name} location={location} />
             </Typography>
             {/* <Stack
               data-testid="chip"
