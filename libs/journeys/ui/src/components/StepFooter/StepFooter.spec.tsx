@@ -83,7 +83,9 @@ describe('StepFooter', () => {
     const onFooterClick = jest.fn()
     const { getByTestId } = render(
       <MockedProvider>
-        <JourneyProvider value={{ journey: { ...journey, seoTitle: null } }}>
+        <JourneyProvider
+          value={{ admin: true, journey: { ...journey, seoTitle: null } }}
+        >
           <StepFooter onFooterClick={onFooterClick} />
         </JourneyProvider>
       </MockedProvider>
@@ -92,5 +94,6 @@ describe('StepFooter', () => {
     fireEvent.click(getByTestId('stepFooter'))
 
     expect(onFooterClick).toBeCalledTimes(1)
+    expect(getByTestId('Plus2Icon')).toBeInTheDocument()
   })
 })

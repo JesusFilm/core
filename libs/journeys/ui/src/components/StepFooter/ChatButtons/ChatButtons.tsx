@@ -46,11 +46,16 @@ export function ChatButtons(): ReactElement {
     CHAT_BUTTON_EVENT_CREATE
   )
 
-  const color = (index: number, backgroundColor?: boolean): string => {
-    if (backgroundColor === true) {
-      return index === 0 ? theme.palette.grey[100] : theme.palette.grey[600]
+  const getColor = (
+    primary: boolean,
+    type: 'main' | 'background' = 'main'
+  ): string | undefined => {
+    if (type === 'background') {
+      return primary ? theme.palette.grey[100] : theme.palette.grey[600]
     }
-    return index === 0 ? theme.palette.grey[900] : theme.palette.grey[200]
+    if (type === 'main') {
+      return primary ? theme.palette.grey[900] : theme.palette.grey[200]
+    }
   }
 
   const handleClick = (chatButton: ChatButton): void => {
@@ -85,12 +90,12 @@ export function ChatButtons(): ReactElement {
 
     const IconComponent =
       platform != null ? platformComponents[platform] : MessageTyping
-    return <IconComponent sx={{ color: color(index) }} />
+    return <IconComponent sx={{ color: getColor(index === 0, 'main') }} />
   }
 
   return (
     <Stack
-      data-testid="chat-widget"
+      data-testid="chat-widgets-container"
       direction={rtl ? 'row' : 'row-reverse'}
       gap={2}
       sx={{ pr: rtl ? 8 : 0 }}
@@ -102,9 +107,9 @@ export function ChatButtons(): ReactElement {
           sx={{
             height: 44,
             width: 44,
-            backgroundColor: color(index, true),
+            backgroundColor: getColor(index === 0, 'background'),
             '&:hover': {
-              backgroundColor: color(index, true)
+              backgroundColor: getColor(index === 0, 'background')
             }
           }}
         >

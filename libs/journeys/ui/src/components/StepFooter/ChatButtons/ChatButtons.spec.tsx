@@ -100,6 +100,10 @@ describe('ChatButtons', () => {
     }
   ]
 
+  beforeEach(() => {
+    jest.clearAllMocks()
+  })
+
   it('renders chat buttons', () => {
     const { getAllByRole, getByTestId } = render(
       <MockedProvider>
@@ -129,8 +133,8 @@ describe('ChatButtons', () => {
 
     const buttons = getAllByRole('button')
     fireEvent.click(buttons[0])
-    expect(window.open).toHaveBeenCalledWith(chatButtons[0].link, '_blank')
     await waitFor(() => expect(result).toHaveBeenCalled())
+    expect(window.open).toHaveBeenCalledWith(chatButtons[0].link, '_blank')
   })
 
   it('does not open a new window or send a mutation for admin user', async () => {
@@ -150,6 +154,7 @@ describe('ChatButtons', () => {
     fireEvent.click(buttons[0])
 
     await waitFor(() => {
+      expect(result).not.toHaveBeenCalled()
       expect(window.open).not.toHaveBeenCalled()
     })
   })
