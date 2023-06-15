@@ -1,12 +1,14 @@
+import { ReactElement, useEffect, useState } from 'react'
 import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
 import Skeleton from '@mui/material/Skeleton'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { Theme } from '@mui/material/styles'
 import Fade from '@mui/material/Fade'
-import { ReactElement, useEffect, useState } from 'react'
+import { useFlags } from '@core/shared/ui/FlagsProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { StepHeader } from '@core/journeys/ui/StepHeader'
+import { StepFooter } from '@core/journeys/ui/StepFooter'
 import { BlockRenderer } from '@core/journeys/ui/BlockRenderer'
 import {
   useEditor,
@@ -36,11 +38,12 @@ export function Canvas(): ReactElement {
   const [spaceBetween, setSpaceBetween] = useState(16)
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
   const {
-    state: { steps, selectedStep, selectedBlock },
+    state: { steps, selectedStep, selectedBlock, selectedComponent },
     dispatch
   } = useEditor()
   const { journey } = useJourney()
   const { rtl, locale } = getJourneyRTL(journey)
+  const { editableStepFooter } = useFlags()
 
   useEffect(() => {
     if (swiper != null && selectedStep != null && steps != null) {
@@ -103,6 +106,10 @@ export function Canvas(): ReactElement {
           title: 'Next Card Properties',
           mobileOpen: true,
           children: <NextCard />
+        })
+        dispatch({
+          type: 'SetSelectedAttributeIdAction',
+          id: `${selectedStep?.id ?? ''}-next-block`
         })
       }}
     >
@@ -176,7 +183,11 @@ export function Canvas(): ReactElement {
                       >
                         <Stack
                           justifyContent="center"
-                          sx={{ width: '100%', height: '100%' }}
+                          sx={{
+                            width: '100%',
+                            height: '100%',
+                            borderRadius: 5
+                          }}
                         >
                           <StepHeader />
                           <BlockRenderer
@@ -191,6 +202,45 @@ export function Canvas(): ReactElement {
                               SignUpWrapper: InlineEditWrapper,
                               VideoWrapper,
                               CardWrapper
+                            }}
+                          />
+                          <StepFooter
+                            sx={{
+                              outline:
+                                selectedComponent === 'Footer'
+                                  ? '3px solid #C52D3A'
+                                  : 'none',
+                              outlineOffset: -6,
+                              borderRadius: 5,
+                              cursor: 'pointer'
+                            }}
+                            onFooterClick={() => {
+                              if (editableStepFooter) {
+                                dispatch({
+                                  type: 'SetSelectedComponentAction',
+                                  component: 'Footer'
+                                })
+                                dispatch({
+                                  type: 'SetActiveFabAction',
+                                  activeFab: ActiveFab.Add
+                                })
+                                dispatch({
+                                  type: 'SetActiveTabAction',
+                                  activeTab: ActiveTab.Properties
+                                })
+                                dispatch({
+                                  type: 'SetDrawerPropsAction',
+                                  title: 'Hosted By',
+                                  mobileOpen: true,
+                                  children: (
+                                    <div>Hosted by content component</div>
+                                  )
+                                })
+                                dispatch({
+                                  type: 'SetSelectedAttributeIdAction',
+                                  id: 'hosted-by'
+                                })
+                              }
                             }}
                           />
                         </Stack>

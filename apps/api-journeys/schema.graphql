@@ -132,6 +132,9 @@ extend type Mutation {
   typographyBlockUpdate(id: ID!, journeyId: ID!, input: TypographyBlockUpdateInput!): TypographyBlock!
   videoBlockCreate(input: VideoBlockCreateInput!): VideoBlock!
   videoBlockUpdate(id: ID!, journeyId: ID!, input: VideoBlockUpdateInput!): VideoBlock!
+  chatButtonCreate(journeyId: ID!, input: ChatButtonCreateInput): ChatButton!
+  chatButtonUpdate(id: ID!, journeyId: ID!, input: ChatButtonUpdateInput!): ChatButton!
+  chatButtonRemove(id: ID!): ChatButton!
   buttonClickEventCreate(input: ButtonClickEventCreateInput!): ButtonClickEvent!
   chatOpenEventCreate(input: ChatOpenEventCreateInput!): ChatOpenEvent!
   journeyViewEventCreate(input: JourneyViewEventCreateInput!): JourneyViewEvent!
@@ -147,6 +150,9 @@ extend type Mutation {
   videoExpandEventCreate(input: VideoExpandEventCreateInput!): VideoExpandEvent!
   videoCollapseEventCreate(input: VideoCollapseEventCreateInput!): VideoCollapseEvent!
   videoProgressEventCreate(input: VideoProgressEventCreateInput!): VideoProgressEvent!
+  hostCreate(teamId: ID!, input: HostCreateInput!): Host!
+  hostUpdate(id: ID!, teamId: ID!, input: HostUpdateInput): Host!
+  hostDelete(id: ID!, teamId: ID!): Host!
   journeyCreate(input: JourneyCreateInput!): Journey!
   journeyDuplicate(id: ID!): Journey!
   journeyUpdate(id: ID!, input: JourneyUpdateInput!): Journey!
@@ -204,6 +210,7 @@ type Journey
 {
   blocks: [Block!]
   primaryImageBlock: ImageBlock
+  chatButtons: [ChatButton!]!
   id: ID!
   title: String!
   language: Language!
@@ -221,6 +228,7 @@ type Journey
   seoTitle: String
   seoDescription: String
   template: Boolean
+  host: Host
   userJourneys: [UserJourney!]
 }
 
@@ -900,6 +908,35 @@ type VideoTriggerBlock implements Block {
   action: Action!
 }
 
+type ChatButton {
+  id: ID!
+  link: String
+  platform: ChatPlatform
+}
+
+enum ChatPlatform {
+  facebook
+  telegram
+  whatsApp
+  instagram
+  viber
+  vk
+  snapchat
+  skype
+  line
+  tikTok
+}
+
+input ChatButtonCreateInput {
+  link: String
+  platform: ChatPlatform
+}
+
+input ChatButtonUpdateInput {
+  link: String
+  platform: ChatPlatform
+}
+
 enum ButtonAction {
   NavigateAction
   NavigateToBlockAction
@@ -1529,46 +1566,23 @@ type VideoProgressEvent implements Event {
   progress: Int!
 }
 
-enum IdType {
-  databaseId
-  slug
+type Host {
+  id: ID!
+  teamId: ID!
+  title: String!
+  location: String
+  avatar1Id: ID
+  avatar2Id: ID
 }
 
-enum JourneyStatus {
-  archived
-  deleted
-  draft
-  published
-  trashed
-}
-
-input JourneysFilter {
-  featured: Boolean
-  template: Boolean
-}
-
-enum JourneysReportType {
-  multipleFull
-  multipleSummary
-  singleFull
-  singleSummary
-}
-
-type PowerBiEmbed {
-  """The report ID"""
-  reportId: String!
-
-  """The name of the report"""
-  reportName: String!
-
-  """The embed URL of the report"""
-  embedUrl: String!
-
-  """The embed token"""
-  accessToken: String!
-
-  """The date and time (UTC) of token expiration"""
-  expiration: String!
+input HostUpdateInput {
+  """
+  title can be undefined as to not update title, but it cannot be null as to clear the value of title
+  """
+  title: String
+  location: String
+  avatar1Id: ID
+  avatar2Id: ID
 }
 
 type Query {
@@ -1577,6 +1591,7 @@ type Query {
 }
 
 extend type Query {
+  hosts(teamId: ID!): [Host!]!
   adminJourneys(status: [JourneyStatus!], template: Boolean): [Journey!]!
   adminJourneysReport(reportType: JourneysReportType!): PowerBiEmbed
   adminJourney(id: ID!, idType: IdType): Journey
@@ -1625,6 +1640,55 @@ extend type Query {
   visitor(id: ID!): Visitor!
 }
 
+input HostCreateInput {
+  title: String!
+  location: String
+  avatar1Id: ID
+  avatar2Id: ID
+}
+
+enum IdType {
+  databaseId
+  slug
+}
+
+enum JourneyStatus {
+  archived
+  deleted
+  draft
+  published
+  trashed
+}
+
+input JourneysFilter {
+  featured: Boolean
+  template: Boolean
+}
+
+enum JourneysReportType {
+  multipleFull
+  multipleSummary
+  singleFull
+  singleSummary
+}
+
+type PowerBiEmbed {
+  """The report ID"""
+  reportId: String!
+
+  """The name of the report"""
+  reportName: String!
+
+  """The embed URL of the report"""
+  embedUrl: String!
+
+  """The embed token"""
+  accessToken: String!
+
+  """The date and time (UTC) of token expiration"""
+  expiration: String!
+}
+
 input JourneyCreateInput {
   """
   ID should be unique Response UUID
@@ -1657,6 +1721,7 @@ input JourneyUpdateInput {
   slug: String
   seoTitle: String
   seoDescription: String
+  hostId: String
 }
 
 type UserJourney

@@ -11,7 +11,8 @@ import {
   UserJourneyRole,
   JourneysReportType,
   Role,
-  ImageBlock
+  ImageBlock,
+  ChatPlatform
 } from '../../__generated__/graphql'
 import { BlockResolver } from '../block/block.resolver'
 import { BlockService } from '../block/block.service'
@@ -68,7 +69,24 @@ describe('JourneyResolver', () => {
     description: null,
     primaryImageBlock: null,
     publishedAt,
-    createdAt
+    createdAt,
+    chatButtons: []
+  }
+
+  const journeyWithTeam: Journey & { teamId: string } = {
+    id: 'journeyWithTeam',
+    slug: 'journey-slug',
+    title: 'published',
+    status: JourneyStatus.published,
+    language: { id: '529' },
+    themeMode: ThemeMode.light,
+    themeName: ThemeName.base,
+    description: null,
+    primaryImageBlock: null,
+    publishedAt,
+    createdAt,
+    chatButtons: [],
+    teamId: 'geronimo-gang'
   }
 
   const primaryImageBlock: ImageBlock & { _key: string } = {
@@ -151,6 +169,19 @@ describe('JourneyResolver', () => {
     slug: 'published-slug',
     seoTitle: 'Social media title',
     seoDescription: 'Social media description'
+  }
+
+  const journeyUpdateHost = {
+    title: 'published',
+    languageId: '529',
+    themeMode: ThemeMode.light,
+    themeName: ThemeName.base,
+    description: null,
+    primaryImageBlockId: null,
+    slug: 'published-slug',
+    seoTitle: 'Social media title',
+    seoDescription: 'Social media description',
+    hostId: 'host-id2'
   }
 
   const templateUpdate = {
@@ -313,6 +344,7 @@ describe('JourneyResolver', () => {
     urService = module.get<UserRoleService>(UserRoleService)
     prismaService = module.get<PrismaService>(PrismaService)
     prismaService.userTeam.upsert = jest.fn()
+    prismaService.chatButton.findMany = jest.fn().mockReturnValue([])
   })
 
   describe('adminJourneysEmbed', () => {
@@ -845,7 +877,9 @@ describe('JourneyResolver', () => {
         publishedAt: undefined,
         slug: `${journey.title}-copy`,
         title: `${journey.title} copy`,
-        template: false
+        template: false,
+        hostId: null,
+        teamID: undefined
       })
     })
 
@@ -860,7 +894,8 @@ describe('JourneyResolver', () => {
         createdAt: new Date().toISOString(),
         status: JourneyStatus.draft,
         publishedAt: undefined,
-        template: false
+        template: false,
+        hostId: null
       })
     })
 
@@ -911,7 +946,8 @@ describe('JourneyResolver', () => {
         publishedAt: undefined,
         slug: `${journey.title}-copy-2`,
         title: `${journey.title} copy 2`,
-        template: false
+        template: false,
+        hostId: null
       })
     })
 
@@ -953,6 +989,25 @@ describe('JourneyResolver', () => {
     it('updates a Journey', async () => {
       await resolver.journeyUpdate('1', journeyUpdate)
       expect(service.update).toHaveBeenCalledWith('1', journeyUpdate)
+    })
+
+    it('updates a Journey with host input', async () => {
+      const mockHost = {
+        id: 'host-id2',
+        teamId: 'geronimo-gang',
+        name: 'Edmond Shen & Nisal Cottingham',
+        location: 'New Zealand',
+        avatar1Id: 'avatar1-id',
+        avatar2Id: 'avatar2-id'
+      }
+
+      prismaService.host.findUnique = jest.fn().mockResolvedValueOnce(mockHost)
+      service.get = jest.fn().mockResolvedValueOnce(journeyWithTeam)
+      await resolver.journeyUpdate('journeyId', journeyUpdateHost)
+      expect(service.update).toHaveBeenCalledWith(
+        'journeyId',
+        journeyUpdateHost
+      )
     })
 
     it('throws UserInputErrror', async () => {
@@ -1074,6 +1129,48 @@ describe('JourneyResolver', () => {
     it('updates template', async () => {
       await resolver.journeyTemplate('1', templateUpdate)
       expect(service.update).toHaveBeenCalledWith('1', templateUpdate)
+    })
+  })
+
+  describe('chatButtons', () => {
+    it('should return chatButtons', async () => {
+      const chatButton = {
+        id: '1',
+        link: 'm.me/user',
+        platform: ChatPlatform.facebook
+      }
+      const journeyWithChatButtons: Journey = {
+        ...journey,
+        chatButtons: [chatButton, chatButton]
+      }
+
+      prismaService.chatButton.findMany = jest
+        .fn()
+        .mockReturnValue([chatButton, chatButton])
+      expect(await resolver.chatButtons(journeyWithChatButtons)).toEqual([
+        chatButton,
+        chatButton
+      ])
+    })
+  })
+
+  describe('host', () => {
+    it('should return host', async () => {
+      const mockHost = {
+        id: 'host-id2',
+        teamId: 'geronimo-gang',
+        name: 'Edmond Shen & Nisal Cottingham',
+        location: 'New Zealand',
+        avatar1Id: 'avatar1-id',
+        avatar2Id: 'avatar2-id'
+      }
+      const journeyWithHost: Journey & { hostId: string } = {
+        ...journeyWithTeam,
+        hostId: 'host-id2'
+      }
+
+      prismaService.host.findUnique = jest.fn().mockReturnValue(mockHost)
+      expect(await resolver.host(journeyWithHost)).toEqual(mockHost)
     })
   })
 
