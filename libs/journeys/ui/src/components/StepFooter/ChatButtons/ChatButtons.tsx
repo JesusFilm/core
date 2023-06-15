@@ -54,7 +54,7 @@ export function ChatButtons(): ReactElement {
       return primary ? theme.palette.grey[100] : theme.palette.grey[600]
     }
     if (type === 'main') {
-      return primary ? theme.palette.grey[900] : theme.palette.grey[200]
+      return primary ? theme.palette.grey[900] : theme.palette.grey[100]
     }
   }
 
