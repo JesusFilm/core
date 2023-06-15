@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common'
 import { PureAbility, AbilityBuilder } from '@casl/ability'
 import { UserTeamRole } from '.prisma/api-journeys-client'
-import { CaslFactory } from '@core/nest/common/AuthModule'
+import { CaslFactory } from '@core/nest/common/CaslAuthModule'
 import { createPrismaAbility, PrismaQuery } from './caslPrisma'
 import { PrismaSubjects } from './__generated__/prismaSubjects'
 

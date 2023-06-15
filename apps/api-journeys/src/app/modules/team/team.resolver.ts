@@ -11,7 +11,7 @@ import {
   CaslAccessible,
   CaslPolicy,
   CaslGuard
-} from '@core/nest/common/AuthModule'
+} from '@core/nest/common/CaslAuthModule'
 import { PrismaService } from '../../lib/prisma.service'
 import { Action, AppAbility } from '../../lib/casl/caslFactory'
 

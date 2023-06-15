@@ -1,12 +1,12 @@
 import { DynamicModule, Module, Provider, Type } from '@nestjs/common'
 
-import { CaslFactory } from './casl.factory'
+import { CaslFactory } from './caslFactory'
 
 @Module({
   imports: [],
   exports: []
 })
-export class AuthModule {
+export class CaslAuthModule {
   /**
    * @param caslFactory Class that extends CaslFactory and defines the user's abilities
    */
@@ -19,7 +19,7 @@ export class AuthModule {
     ]
 
     return {
-      module: AuthModule,
+      module: CaslAuthModule,
       providers,
       exports: providers
     }
