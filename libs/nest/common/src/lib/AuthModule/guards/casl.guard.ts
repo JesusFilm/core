@@ -1,0 +1,71 @@
+import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common'
+import { Reflector } from '@nestjs/core'
+import { GqlExecutionContext } from '@nestjs/graphql'
+
+import { CaslFactory } from '../casl.factory'
+import { ALLOW_ANONYMOUS_KEY } from '../decorators/allowAnonymous.decorator'
+import {
+  CASL_POLICY_KEY,
+  CaslPolicyHandler
+} from '../decorators/caslPolicy.decorator'
+
+/**
+ * Guard that is used in conjunction with `CaslAbility`, `CaslAccessible` and `CaslPolicy` decorators.
+ * Works with either HTTP or GraphQL requests.
+ * @example
+ * ```ts
+ * ＠UseGuards(CaslGuard)
+ * async getBlogs(
+ *   ＠CaslAbility() ability: AppAbility,
+ *   ＠CaslAccessible('Blog') accessibleBlogs: Prisma.BlogWhereInput
+ * ) { ... }
+ * ```
+ * @example
+ * ```ts
+ * ＠UseGuards(CaslGuard)
+ * ＠CaslPolicy((ability: AppAbility) => ability.can('read', 'Blog'))
+ * async getBlogs() { ... }
+ * ```
+ */
+@Injectable()
+export class CaslGuard implements CanActivate {
+  constructor(
+    private readonly reflector: Reflector,
+    private readonly caslFactory: CaslFactory
+  ) {}
+
+  async canActivate(context: ExecutionContext): Promise<boolean> {
+    const allowAnonymousHandler = this.reflector.get<boolean | undefined>(
+      ALLOW_ANONYMOUS_KEY,
+      context.getHandler()
+    )
+    if (allowAnonymousHandler === true) return true
+
+    const allowAnonymousClass = this.reflector.get<boolean | undefined>(
+      ALLOW_ANONYMOUS_KEY,
+      context.getClass()
+    )
+    if (allowAnonymousClass === true) return true
+
+    const req = GqlExecutionContext.create(context).getContext().req
+
+    if (req.userId == null) return false
+
+    if (req.ability == null)
+      req.ability = await this.caslFactory.createAbility({ id: req.userId })
+
+    const classPolicies =
+      this.reflector.get<CaslPolicyHandler[] | undefined>(
+        CASL_POLICY_KEY,
+        context.getClass()
+      ) ?? []
+    const handlerPolicies =
+      this.reflector.get<CaslPolicyHandler[] | undefined>(
+        CASL_POLICY_KEY,
+        context.getHandler()
+      ) ?? []
+    const policies = classPolicies.concat(handlerPolicies)
+
+    return policies.every((handler) => handler(req.ability))
+  }
+}

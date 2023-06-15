@@ -100,8 +100,10 @@
     "prisma-generate": {
       "executor": "@nrwl/workspace:run-commands",
       "options": {
+        "parallel": false,
         "commands": [
-          "npx prisma generate --schema apps/api-journeys/db/schema.prisma"
+          "npx prisma generate --schema apps/api-journeys/db/schema.prisma",
+          "npx ts-node apps/api-journeys/src/app/lib/casl/caslPrismaGenerator.ts"
         ]
       }
     },
