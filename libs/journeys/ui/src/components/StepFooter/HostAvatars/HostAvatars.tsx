@@ -18,14 +18,12 @@ export const HostAvatars = ({ src1, src2 }: HostAvatarsProps): ReactElement => {
   return (
     <>
       <AvatarGroup
-        spacing="small"
+        spacing={19}
         data-testid="host-avatars"
         sx={{ flexDirection: rtl ? 'row' : 'row-reverse' }}
       >
-        {src1 != null && !admin && <Avatar src={src1} />}
-        {src2 != null && !admin && <Avatar src={src2} />}
-        {src1 != null && admin && <Avatar src={src1} />}
-        {src2 != null && admin && <Avatar src={src2} />}
+        {src1 != null && <Avatar src={src1} />}
+        {src2 != null && <Avatar src={src2} />}
         {(src1 == null || src2 == null) && admin && editableStepFooter && (
           <Avatar
             sx={{
