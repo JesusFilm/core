@@ -10,7 +10,6 @@ import {
   ThemeName,
   UserJourneyRole
 } from '../../__generated__/graphql'
-import { UserJourneyService } from '../../modules/userJourney/userJourney.service'
 import { UserRoleService } from '../../modules/userRole/userRole.service'
 import { PrismaService } from '../prisma.service'
 import { RoleGuard } from './roleGuard'
@@ -79,7 +78,7 @@ describe('RoleGuard', () => {
   ): DeepMocked<ExecutionContext> => gqlMockFactory(args, contextMock)
 
   const fetchUserJourney = async (
-    _userJourneyService: UserJourneyService,
+    _prismaService: PrismaService,
     _journeyId: string,
     _userId: string
   ): Promise<UserJourney | null> => {

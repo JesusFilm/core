@@ -74,6 +74,7 @@ model ChatButton {
   journeyId String
   link      String?
   platform  ChatPlatform?
+  journey   Journey       @relation(fields: [journeyId], references: [id])
 
   @@index([journeyId])
 }
@@ -257,6 +258,7 @@ model Journey {
   team                Team          @relation(fields: [teamId], references: [id])
   userInvites         UserInvite[]
   blocks              Block[]
+  chatButtons         ChatButton[]
 
   @@index([slug])
 }
