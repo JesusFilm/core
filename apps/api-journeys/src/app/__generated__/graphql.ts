@@ -607,6 +607,7 @@ export class JourneyUpdateInput {
     slug?: Nullable<string>;
     seoTitle?: Nullable<string>;
     seoDescription?: Nullable<string>;
+    hostId?: Nullable<string>;
 }
 
 export class JourneyTemplateInput {
@@ -716,6 +717,7 @@ export class Journey {
     seoTitle?: Nullable<string>;
     seoDescription?: Nullable<string>;
     template?: Nullable<boolean>;
+    host?: Nullable<Host>;
     userJourneys?: Nullable<UserJourney[]>;
 }
 
