@@ -1,5 +1,6 @@
 import { aql } from 'arangojs'
-import { PrismaClient, JourneyStatus } from '.prisma/api-journeys-client'
+import { PrismaClient, JourneyStatus, Block } from '.prisma/api-journeys-client'
+import { omit } from 'lodash'
 import { ArangoDB } from '../db'
 
 const prisma = new PrismaClient()
@@ -63,12 +64,31 @@ export async function psMigrate(): Promise<void> {
             themeName: journey.themeName ?? undefined
           }
         })
+        console.log(`Importing blocks for journey ${journey._key as string}...`)
+        const blocks = await (
+          await db.query(aql`
+            FOR block IN blocks
+            FILTER block.journeyId == ${journey._key}
+            RETURN block
+        `)
+        ).all()
+        await prisma.block.createMany({
+          data: blocks.map(
+            (block) =>
+              ({
+                ...omit(block, ['_id', '_key', '_rev', 'action']),
+                id: block._key,
+                action:
+                  block.action != null ? { create: block.action } : undefined
+              } as unknown as Block)
+          )
+        })
+
         console.log(`Importing userJourneys at ${journey._key as string}...`)
         const userJourneys = await (
           await db.query(aql`
             FOR uj IN userJourneys
             FILTER uj.journeyId == ${journey._key}
-            LIMIT ${offset}, 50
             RETURN uj
         `)
         ).all()

@@ -394,7 +394,7 @@ export class JourneyResolver {
   )
   async journeyUpdate(
     @Args('id') id: string,
-    @Args('input') input: Partial<Journey>
+    @Args('input') input: Partial<Journey> & { hostId?: string }
   ): Promise<Journey> {
     if (input.slug != null)
       input.slug = slugify(input.slug, {
@@ -402,7 +402,9 @@ export class JourneyResolver {
         strict: true
       })
     if (input.hostId != null) {
-      const journey = await this.journeyService.get(id)
+      const journey = await this.prismaService.journey.findUnique({
+        where: { id }
+      })
       const host = await this.prismaService.host.findUnique({
         where: { id: input.hostId }
       })

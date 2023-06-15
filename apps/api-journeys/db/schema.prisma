@@ -138,13 +138,14 @@ model Visitor {
 }
 
 model Host {
-  id        String  @id @default(uuid())
+  id        String    @id @default(uuid())
   teamId    String
-  team      Team    @relation(fields: [teamId], references: [id])
+  team      Team      @relation(fields: [teamId], references: [id])
   title     String
   location  String?
   avatar1Id String?
   avatar2Id String?
+  journey   Journey[]
 }
 
 model JourneyVisitor {
@@ -252,6 +253,7 @@ model Journey {
   primaryImageBlockId String?
   template            Boolean?      @default(false)
   teamId              String
+  hostId              String?
   themeMode           ThemeMode?    @default(light)
   themeName           ThemeName?    @default(base)
   userJourneys        UserJourney[]
@@ -259,6 +261,7 @@ model Journey {
   userInvites         UserInvite[]
   blocks              Block[]
   chatButtons         ChatButton[]
+  host                Host?         @relation(fields: [hostId], references: [id])
 
   @@index([slug])
 }

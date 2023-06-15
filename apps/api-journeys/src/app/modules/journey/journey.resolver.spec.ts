@@ -58,7 +58,7 @@ describe('JourneyResolver', () => {
   const publishedAt = new Date('2021-11-19T12:34:56.647Z')
   const createdAt = new Date('2021-11-19T12:34:56.647Z')
 
-  const journey: Journey = {
+  const journey = {
     id: 'journeyId',
     slug: 'journey-slug',
     title: 'published',
@@ -81,7 +81,7 @@ describe('JourneyResolver', () => {
     chatButtons: []
   }
 
-  const journeyWithTeam: Journey = {
+  const journeyWithTeam = {
     id: 'journeyWithTeam',
     slug: 'journey-slug',
     title: 'published',
@@ -1192,7 +1192,7 @@ describe('JourneyResolver', () => {
         link: 'm.me/user',
         platform: ChatPlatform.facebook
       }
-      const journeyWithChatButtons: Journey = {
+      const journeyWithChatButtons = {
         ...journey,
         chatButtons: [chatButton, chatButton]
       }
@@ -1217,7 +1217,7 @@ describe('JourneyResolver', () => {
         avatar1Id: 'avatar1-id',
         avatar2Id: 'avatar2-id'
       }
-      const journeyWithHost: Journey & { hostId: string } = {
+      const journeyWithHost = {
         ...journeyWithTeam,
         hostId: 'host-id2'
       }
