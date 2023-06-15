@@ -84,7 +84,6 @@ export function StepFooter({
           >
             <Box
               sx={{
-                flexDirection: rtl ? 'row' : 'row-reverse',
                 pr: 4,
                 pl: rtl ? 6 : 0,
                 mr:
