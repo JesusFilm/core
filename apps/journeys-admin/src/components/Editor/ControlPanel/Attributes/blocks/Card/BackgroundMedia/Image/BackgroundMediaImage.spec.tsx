@@ -59,7 +59,8 @@ const journey: Journey = {
   userJourneys: [],
   template: null,
   seoTitle: null,
-  seoDescription: null
+  seoDescription: null,
+  host: null
 }
 
 const card: TreeBlock<CardBlock> = {
