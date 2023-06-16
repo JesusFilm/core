@@ -13,7 +13,7 @@ const cloudflareVideo: CloudflareVideo = {
   uploadUrl: 'https://upload.com',
   createdAt: new Date().toISOString(),
   userId: 'user_1',
-  readyToStream: true
+  readyToStream: false
 }
 
 describe('VideoResolver', () => {
