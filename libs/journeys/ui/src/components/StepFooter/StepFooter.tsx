@@ -25,7 +25,7 @@ export function StepFooter({
   const location = 'New York'
 
   const src1 = 'http://surl.li/iauzf'
-  const src2 = 'http://surl.li/iauzv'
+  const src2 = undefined
   return (
     <Box
       data-testid="stepFooter"
@@ -94,7 +94,7 @@ export function StepFooter({
                     : 0
               }}
             >
-              <HostAvatars src1={src1} src2={src2} />
+              <HostAvatars src1={src1} src2={src2} hasPlaceholder={admin} />
             </Box>
             <Typography
               sx={{

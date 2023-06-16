@@ -24,7 +24,7 @@ const Template: Story<
   <FlagsProvider flags={{ editableStepFooter }}>
     <JourneyProvider value={{ admin }}>
       <Stack direction="row">
-        <HostAvatars src1={src1} src2={src2} />
+        <HostAvatars src1={src1} src2={src2} hasPlaceholder />
       </Stack>
     </JourneyProvider>
   </FlagsProvider>

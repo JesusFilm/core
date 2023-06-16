@@ -4,7 +4,7 @@ import { JourneyProvider } from '../../../libs/JourneyProvider'
 import { HostAvatars } from './HostAvatars'
 
 describe('HostAvatars', () => {
-  it('renders AvatarGroup with src1 and src2 avatars when NOT admin', () => {
+  it('renders both avatars if images are set in journeys', () => {
     const { getByTestId, getAllByRole } = render(
       <HostAvatars src1="avatar1.jpg" src2="avatar2.jpg" />
     )
@@ -16,11 +16,11 @@ describe('HostAvatars', () => {
     expect(avatars).toHaveLength(2)
   })
 
-  it('renders AccountCircleOutlinedIcon when admin and no src avatars', () => {
+  it('renders placeholder in journey edit page and no images are set', () => {
     const { getByTestId } = render(
       <FlagsProvider flags={{ editableStepFooter: true }}>
         <JourneyProvider value={{ admin: true }}>
-          <HostAvatars src1={undefined} src2={undefined} />
+          <HostAvatars src1={undefined} src2={undefined} hasPlaceholder />
         </JourneyProvider>
       </FlagsProvider>
     )
@@ -29,11 +29,11 @@ describe('HostAvatars', () => {
     expect(adminPlaceholderElement).toBeInTheDocument()
   })
 
-  it('renders AvatarGroup with one avatar and AccountCircleOutlinedIcon when admin and one src avatar', () => {
+  it('renders with one avatar and placeholder in journey edit page when only one image is set', () => {
     const { getByTestId, getByRole } = render(
       <FlagsProvider flags={{ editableStepFooter: true }}>
         <JourneyProvider value={{ admin: true }}>
-          <HostAvatars src1="avatar1.jpg" src2={undefined} />
+          <HostAvatars src1="avatar1.jpg" src2={undefined} hasPlaceholder />
         </JourneyProvider>
       </FlagsProvider>
     )
@@ -45,7 +45,7 @@ describe('HostAvatars', () => {
     expect(adminPlaceholderElement).toBeInTheDocument()
   })
 
-  it('renders AvatarGroup with two src avatars when admin and both src avatars provided', () => {
+  it('renders with two avatars in journey edit page when both images are provided', () => {
     const { getByTestId, getAllByRole } = render(
       <JourneyProvider value={{ admin: true }}>
         <HostAvatars src1="avatar1.jpg" src2="avatar2.jpg" />
