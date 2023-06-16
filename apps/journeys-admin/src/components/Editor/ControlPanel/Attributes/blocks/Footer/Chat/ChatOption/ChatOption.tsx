@@ -6,15 +6,13 @@ import Typography from '@mui/material/Typography'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import InputLabel from '@mui/material/InputLabel'
 import Select from '@mui/material/Select'
-import Facebook from '@core/shared/ui/icons/Facebook'
-import Telegram from '@core/shared/ui/icons/Telegram'
 import Instagram from '@core/shared/ui/icons/Instagram'
-import WhatsApp from '@core/shared/ui/icons/WhatsApp'
 import Viber from '@core/shared/ui/icons/Viber'
 import Vk from '@core/shared/ui/icons/Vk'
 import Snapchat from '@core/shared/ui/icons/Snapchat'
 import Skype from '@core/shared/ui/icons/Skype'
 import Line from '@core/shared/ui/icons/Line'
+import { v4 as uuidv4 } from 'uuid'
 import Tiktok from '@core/shared/ui/icons/Tiktok'
 import MenuItem from '@mui/material/MenuItem'
 import { useTranslation } from 'react-i18next'
@@ -45,7 +43,7 @@ export const JOURNEY_CHAT_BUTTON_CREATE = gql`
 
 export const JOURNEY_CHAT_BUTTON_UPDATE = gql`
   mutation JourneyChatButtonUpdate(
-    $id: ID!
+    $chatButtonUpdateId: ID!
     $journeyId: ID!
     $input: ChatButtonUpdateInput!
   ) {
@@ -62,7 +60,7 @@ export const JOURNEY_CHAT_BUTTON_UPDATE = gql`
 `
 
 export const JOURNEY_CHAT_BUTTON_REMOVE = gql`
-  mutation JourneyChatButtonRemove($id: ID!) {
+  mutation JourneyChatButtonRemove($chatButtonRemoveId: ID!) {
     chatButtonRemove(id: $chatButtonRemoveId) {
       id
     }
@@ -72,17 +70,21 @@ export const JOURNEY_CHAT_BUTTON_REMOVE = gql`
 interface Props {
   title: string
   chatButton?: ChatButton
+  platform?: ChatPlatform
+  active: boolean
   helperInfo?: string
   journeyId?: string
-  maxSelection: boolean
+  disableSelection: boolean
   enableIconSelect?: boolean
 }
 export function ChatOption({
   title,
   chatButton,
+  platform,
+  active,
   helperInfo,
   journeyId,
-  maxSelection,
+  disableSelection,
   enableIconSelect = false
 }: Props): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
@@ -98,21 +100,6 @@ export function ChatOption({
 
   // icons equivalent to ChatPlatform from global types
   const chatIconOptions = [
-    {
-      value: ChatPlatform.facebook,
-      label: t('Facebook'),
-      icon: <Facebook />
-    },
-    {
-      value: ChatPlatform.whatsApp,
-      label: t('WhatsApp'),
-      icon: <WhatsApp />
-    },
-    {
-      value: ChatPlatform.telegram,
-      label: t('Telegram'),
-      icon: <Telegram />
-    },
     {
       value: ChatPlatform.instagram,
       label: t('Instagram'),
@@ -153,26 +140,22 @@ export function ChatOption({
   async function handleToggle(
     event: ChangeEvent<HTMLInputElement>
   ): Promise<void> {
-    if (event.target.checked && !maxSelection) {
+    if (event.target.checked && !disableSelection) {
+      const input = {
+        id: uuidv4(),
+        link: chatButton?.link,
+        platform: platform ?? chatButton?.platform ?? null
+      }
       await journeyChatButtonCreate({
         variables: {
           journeyId,
-          input: {
-            link: chatButton?.link,
-            platform: chatButton?.platform
-          }
+          input
         }
       })
     } else {
       if (chatButton != null) {
         await journeyChatButtonRemove({
-          variables: { chatButtonRemoveId: chatButton.id },
-          optimisticResponse: {
-            chatButtonRemove: {
-              __typename: 'ChatButton',
-              id: chatButton.id
-            }
-          }
+          variables: { chatButtonRemoveId: chatButton.id }
         })
       }
     }
@@ -227,10 +210,10 @@ export function ChatOption({
       <AccordionSummary expandIcon={<ExpandMoreIcon />} sx={{ px: 6, py: 2 }}>
         <Checkbox
           data-testid={`checkbox-${chatButton?.platform ?? 'custom'}`}
-          checked={chatButton != null}
+          checked={active}
           size="small"
           sx={{ p: 1, mr: 1 }}
-          disabled={maxSelection && chatButton == null}
+          disabled={disableSelection && !active}
           onChange={handleToggle}
         />
         <Typography sx={{ my: 'auto' }}>{title}</Typography>

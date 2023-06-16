@@ -10,6 +10,8 @@ import { ChatOption } from './ChatOption'
 
 // TODO: remove label from icon select
 // TODO: update default icon
+// TODO: catch mutation errors
+// TODO: add cache updates
 
 export function Chat(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
@@ -44,35 +46,42 @@ export function Chat(): ReactElement {
       <ChatOption
         title={t('Facebook Messenger')}
         chatButton={facebook}
+        platform={ChatPlatform.facebook}
+        active={facebook != null}
         helperInfo={t(
-          'A text block containing a link with information on how the user can extract the correct link to Messenger chat.'
+          'A text block containing a with information on how the user can extract the correct link to Messenger chat.'
         )}
         journeyId={journey?.id}
-        maxSelection
+        disableSelection={maxSelection}
       />
       <ChatOption
         chatButton={whatsApp}
         title={t('WhatsApp')}
+        platform={ChatPlatform.whatsApp}
+        active={whatsApp != null}
         helperInfo={t(
           'A text block containing a link with information on how the user can extract the correct link to WhatsApp chat.'
         )}
         journeyId={journey?.id}
-        maxSelection
+        disableSelection={maxSelection}
       />
       <ChatOption
         chatButton={telegram}
         title={t('Telegram')}
+        platform={ChatPlatform.telegram}
+        active={telegram != null}
         helperInfo={t(
           'A text block containing a link with information on how the user can extract the correct link to Telegram chat.'
         )}
         journeyId={journey?.id}
-        maxSelection
+        disableSelection={maxSelection}
       />
       <ChatOption
         chatButton={custom}
         title={t('Custom')}
+        active={custom != null}
         journeyId={journey?.id}
-        maxSelection
+        disableSelection={maxSelection}
         enableIconSelect
       />
       <Box
