@@ -145,6 +145,8 @@ model Host {
   location  String?
   avatar1Id String?
   avatar2Id String?
+  src1      String?
+  src2      String?
   journey   Journey[]
 }
 
