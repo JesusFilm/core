@@ -55,7 +55,6 @@ export function VideoBlockEditorSettings({
     validate: async (values) => {
       const convertedStartAt = timeFormatToSeconds(values.startAt)
       const convertedEndAt = timeFormatToSeconds(values.endAt)
-      console.log('selectedBlock?.duration', selectedBlock?.duration)
       if (convertedStartAt > convertedEndAt - 3) {
         errors.startAt = 'Start time has to be at least 3 seconds less than end time'
         enqueueSnackbar(errors.startAt, {
