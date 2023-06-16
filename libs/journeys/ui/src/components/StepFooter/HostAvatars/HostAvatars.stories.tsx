@@ -67,12 +67,13 @@ const Template: Story<
   ComponentProps<typeof HostAvatars> & {
     admin: boolean
     journey: Journey
+    size: string
   }
-> = ({ admin, journey }) => (
+> = ({ admin, journey, size }) => (
   <FlagsProvider flags={{ editableStepFooter: true }}>
     <JourneyProvider value={{ admin, journey }}>
       <Stack direction="row">
-        <HostAvatars hasPlaceholder={admin} />
+        <HostAvatars hasPlaceholder={admin} size={size} />
       </Stack>
     </JourneyProvider>
   </FlagsProvider>
@@ -100,6 +101,12 @@ TwoAvatars.args = {
     ...journey,
     host: { ...hostData, src2: 'https://tinyurl.com/2nxtwn8v' }
   }
+}
+
+export const Large = Template.bind({})
+Large.args = {
+  ...Default.args,
+  size: 'large'
 }
 
 export default HostAvatarsDemo as Meta

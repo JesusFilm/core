@@ -59,7 +59,7 @@ describe('HostAvatars', () => {
     host: hostData
   }
 
-  it('renders both avatars if images are set in journeys', () => {
+  it('renders both avatars if both images are set', () => {
     const { getByTestId, getAllByRole } = render(
       <JourneyProvider value={{ journey: { ...journey, host: twoAvatarHost } }}>
         <HostAvatars />
@@ -72,58 +72,76 @@ describe('HostAvatars', () => {
     expect(avatars).toHaveLength(2)
   })
 
-  it('renders placeholder in journey edit page and no images are set', () => {
-    const { getByTestId } = render(
-      <FlagsProvider
-        flags={{
-          editableStepFooter: true
-        }}
-      >
-        <JourneyProvider value={{ admin: true, journey: { ...journey } }}>
-          <HostAvatars hasPlaceholder />
-        </JourneyProvider>
-      </FlagsProvider>
-    )
-
-    const adminPlaceholderElement = getByTestId('host-avatar-placeholder')
-    expect(adminPlaceholderElement).toBeInTheDocument()
-  })
-
-  it('renders with one avatar and placeholder in journey edit page when only one image is set', () => {
-    const oneAvatarHost = {
-      ...hostData,
-      src1: 'avatar1.jpg'
-    }
-
-    const { getByTestId, getByRole } = render(
-      <FlagsProvider flags={{ editableStepFooter: true }}>
-        <JourneyProvider
-          value={{ admin: true, journey: { ...journey, host: oneAvatarHost } }}
-        >
-          <HostAvatars hasPlaceholder />
-        </JourneyProvider>
-      </FlagsProvider>
-    )
-
-    const avatars = getByRole('img')
-    expect(avatars).toBeInTheDocument()
-    expect(avatars.getAttribute('src')).toEqual('avatar1.jpg')
-    const adminPlaceholderElement = getByTestId('host-avatar-placeholder')
-    expect(adminPlaceholderElement).toBeInTheDocument()
-  })
-
-  it('renders with two avatars in journey edit page when both images are provided', () => {
-    const { getByTestId, getAllByRole } = render(
+  it('renders nothing if no images are set', () => {
+    const { queryAllByRole } = render(
       <JourneyProvider
-        value={{ admin: true, journey: { ...journey, host: twoAvatarHost } }}
+        value={{ journey: { ...journey, host: { ...hostData } } }}
       >
         <HostAvatars />
       </JourneyProvider>
     )
 
-    const avatarGroupElement = getByTestId('host-avatars')
-    expect(avatarGroupElement).toBeInTheDocument()
-    const avatars = getAllByRole('img')
-    expect(avatars).toHaveLength(2)
+    const avatars = queryAllByRole('img')
+    expect(avatars).toHaveLength(0)
+  })
+
+  it('renders with avatar if one image is set', () => {
+    const { queryAllByRole } = render(
+      <JourneyProvider
+        value={{
+          journey: { ...journey, host: { ...hostData, src1: 'avatar1.jpg' } }
+        }}
+      >
+        <HostAvatars />
+      </JourneyProvider>
+    )
+
+    const avatars = queryAllByRole('img')
+    expect(avatars).toHaveLength(1)
+  })
+
+  describe('hasPlaceholder', () => {
+    it('renders placeholder if no images are set', () => {
+      const { getByTestId } = render(
+        <FlagsProvider
+          flags={{
+            editableStepFooter: true
+          }}
+        >
+          <JourneyProvider value={{ admin: true, journey: { ...journey } }}>
+            <HostAvatars hasPlaceholder />
+          </JourneyProvider>
+        </FlagsProvider>
+      )
+
+      const adminPlaceholderElement = getByTestId('host-avatar-placeholder')
+      expect(adminPlaceholderElement).toBeInTheDocument()
+    })
+
+    it('renders with avatar and placeholder if one image is set', () => {
+      const oneAvatarHost = {
+        ...hostData,
+        src1: 'avatar1.jpg'
+      }
+
+      const { getByTestId, getByRole } = render(
+        <FlagsProvider flags={{ editableStepFooter: true }}>
+          <JourneyProvider
+            value={{
+              admin: true,
+              journey: { ...journey, host: oneAvatarHost }
+            }}
+          >
+            <HostAvatars hasPlaceholder />
+          </JourneyProvider>
+        </FlagsProvider>
+      )
+
+      const avatars = getByRole('img')
+      expect(avatars).toBeInTheDocument()
+      expect(avatars.getAttribute('src')).toEqual('avatar1.jpg')
+      const adminPlaceholderElement = getByTestId('host-avatar-placeholder')
+      expect(adminPlaceholderElement).toBeInTheDocument()
+    })
   })
 })
