@@ -54,7 +54,7 @@ const video: TreeBlock<VideoBlock> = {
   source: VideoBlockSource.internal,
   title: null,
   description: null,
-  duration: null,
+  duration: 144,
   image: null,
   objectFit: null,
   video: {
@@ -201,7 +201,8 @@ describe('BackgroundMediaVideo', () => {
                   source: VideoBlockSource.internal,
                   startAt: 0,
                   endAt: 144,
-                  isCover: true
+                  isCover: true,
+                  duration: 144
                 }
               }
             },
@@ -280,7 +281,8 @@ describe('BackgroundMediaVideo', () => {
                   source: VideoBlockSource.internal,
                   startAt: 0,
                   endAt: 144,
-                  isCover: true
+                  isCover: true,
+                  duration: 144
                 }
               }
             },
@@ -359,7 +361,8 @@ describe('BackgroundMediaVideo', () => {
                     videoVariantLanguageId: '529',
                     source: VideoBlockSource.internal,
                     startAt: 0,
-                    endAt: 144
+                    endAt: 144,
+                    duration: 144
                   }
                 }
               },
