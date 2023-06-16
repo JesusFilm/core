@@ -2,6 +2,7 @@ import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { SxProps } from '@mui/material/styles'
+
 import { ReactElement } from 'react'
 import { useJourney } from '../../libs/JourneyProvider'
 import { getJourneyRTL } from '../../libs/rtl'
@@ -71,7 +72,7 @@ export function StepFooter({
               width: '100%',
               flexDirection: 'row',
               alignItems: 'center',
-              justifyContent: 'space-even'
+              justifyContent: 'space-between'
             }}
           >
             <Typography

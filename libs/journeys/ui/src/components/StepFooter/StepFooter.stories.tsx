@@ -100,8 +100,6 @@ Long.args = {
   }
 }
 
-export const Avatars = Template.bind({})
-
 export const RTL = Template.bind({})
 RTL.args = { ...Default.args }
 RTL.parameters = { rtl: true }
