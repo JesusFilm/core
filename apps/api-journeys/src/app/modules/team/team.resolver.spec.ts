@@ -44,7 +44,7 @@ describe('TeamResolver', () => {
           }
         ]
       }
-      prismaService.team.findFirstOrThrow = jest.fn().mockResolvedValue(team)
+      prismaService.team.findFirst = jest.fn().mockResolvedValue(team)
       const ability = await new AppCaslFactory().createAbility({ id: 'userId' })
       await expect(teamResolver.team(ability, 'teamId')).resolves.toEqual(team)
     })
@@ -59,7 +59,7 @@ describe('TeamResolver', () => {
           }
         ]
       }
-      prismaService.team.findFirstOrThrow = jest.fn().mockResolvedValue(team)
+      prismaService.team.findFirst = jest.fn().mockResolvedValue(team)
       const ability = await new AppCaslFactory().createAbility({
         id: 'userId2'
       })
@@ -69,7 +69,7 @@ describe('TeamResolver', () => {
     })
 
     it('throws not found error if team is not found', async () => {
-      prismaService.team.findFirstOrThrow = jest.fn().mockResolvedValue(null)
+      prismaService.team.findFirst = jest.fn().mockResolvedValue(null)
       const ability = await new AppCaslFactory().createAbility({
         id: 'userId'
       })
@@ -119,7 +119,7 @@ describe('TeamResolver', () => {
           }
         ]
       }
-      prismaService.team.findFirstOrThrow = jest.fn().mockResolvedValue(team)
+      prismaService.team.findFirst = jest.fn().mockResolvedValue(team)
       prismaService.team.update = jest.fn().mockResolvedValue(team)
       const ability = await new AppCaslFactory().createAbility({
         id: 'userId'
@@ -145,7 +145,7 @@ describe('TeamResolver', () => {
           }
         ]
       }
-      prismaService.team.findFirstOrThrow = jest.fn().mockResolvedValue(team)
+      prismaService.team.findFirst = jest.fn().mockResolvedValue(team)
       const ability = await new AppCaslFactory().createAbility({
         id: 'userId2'
       })
@@ -155,7 +155,7 @@ describe('TeamResolver', () => {
     })
 
     it('throws not found error if team is not found', async () => {
-      prismaService.team.findFirstOrThrow = jest.fn().mockResolvedValue(null)
+      prismaService.team.findFirst = jest.fn().mockResolvedValue(null)
       const ability = await new AppCaslFactory().createAbility({
         id: 'userId'
       })
