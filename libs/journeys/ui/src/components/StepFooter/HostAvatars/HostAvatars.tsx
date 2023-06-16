@@ -6,34 +6,58 @@ import { useFlags } from '@core/shared/ui/FlagsProvider'
 import { useJourney } from '../../../libs/JourneyProvider'
 import { getJourneyRTL } from '../../../libs/rtl'
 
-export function HostAvatars(): ReactElement {
-  const { journey, admin } = useJourney()
+interface HostAvatarsProps {
+  hasPlaceholder?: boolean
+  size?: 'small' | 'large'
+}
+
+export function HostAvatars({
+  hasPlaceholder,
+  size = 'small'
+}: HostAvatarsProps): ReactElement {
+  const { journey } = useJourney()
   const { rtl } = getJourneyRTL(journey)
   const { editableStepFooter } = useFlags()
-
-  const src1 = 'http://surl.li/iauzf'
-  // const src2 = 'http://surl.li/iauzv'
-  const src2 = undefined
+  const src1 = journey?.host?.src1
+  const src2 = journey?.host?.src2
 
   return (
-    <>
-      <AvatarGroup
-        spacing={19}
-        data-testid="host-avatars"
-        sx={{ flexDirection: rtl ? 'row' : 'row-reverse' }}
-      >
-        {src1 != null && <Avatar src={src1} />}
-        {src2 != null && <Avatar src={src2} />}
-        {(src1 == null || src2 == null) && admin && editableStepFooter && (
+    <AvatarGroup
+      spacing={19}
+      data-testid="host-avatars"
+      sx={{ flexDirection: rtl ? 'row' : 'row-reverse' }}
+    >
+      {src1 != null && (
+        <Avatar
+          src={src1}
+          sx={{
+            height: size === 'small' ? '40px' : '52px',
+            width: size === 'small' ? '40px' : '52px'
+          }}
+        />
+      )}
+      {src2 != null && (
+        <Avatar
+          src={src2}
+          sx={{
+            height: size === 'small' ? '40px' : '52px',
+            width: size === 'small' ? '40px' : '52px'
+          }}
+        />
+      )}
+      {(src1 == null || src2 == null) &&
+        hasPlaceholder &&
+        editableStepFooter && (
           <Avatar
             sx={{
               color: 'secondary.light',
+              opacity: 0.5,
               backgroundColor: 'transparent',
               '&.MuiAvatar-root': {
                 border: '3px dashed',
                 borderColor: (theme) => theme.palette.grey[700],
-                height: '36px',
-                width: '36px'
+                height: size === 'small' ? '36px' : '48px',
+                width: size === 'small' ? '36px' : '48px'
               }
             }}
           >
@@ -43,14 +67,13 @@ export function HostAvatars(): ReactElement {
                 pr: rtl ? '6px' : '0px',
                 pl: rtl ? '0px' : '6px',
                 pt: '6px',
-                height: '34px',
-                width: '34px',
+                height: size === 'small' ? '34px' : '46px',
+                width: size === 'small' ? '34px' : '46px',
                 color: (theme) => theme.palette.grey[700]
               }}
             />
           </Avatar>
         )}
-      </AvatarGroup>
-    </>
+    </AvatarGroup>
   )
 }
