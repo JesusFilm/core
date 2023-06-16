@@ -20,8 +20,6 @@ describe('HostResolver', () => {
       const input = {
         title: 'New Host',
         location: 'Location',
-        avatar1Id: 'avatar1',
-        avatar2Id: 'avatar2',
         src1: 'avatar1',
         src2: 'avatar2'
       }
@@ -47,8 +45,6 @@ describe('HostResolver', () => {
           teamId: 'edmond-shen-fans',
           title: 'Edmond Shen & Nisal Cottingham',
           location: 'New Zealand',
-          avatar1Id: 'avatar1-id',
-          avatar2Id: 'vatar2-id',
           src1: 'avatar1',
           src2: 'avatar2'
         },
@@ -57,8 +53,6 @@ describe('HostResolver', () => {
           teamId: 'best-juniors-engineers-gang',
           title: 'Edmond Shen & Nisal Cottingham',
           location: 'New Zealand',
-          avatar1Id: 'avatar1-id',
-          avatar2Id: 'avatar2-id',
           src1: 'avatar1',
           src2: 'avatar2'
         }
@@ -80,9 +74,7 @@ describe('HostResolver', () => {
       const input = {
         title: 'Edmond Shen',
         location: 'National Team Staff',
-        avatar1Id: 'new-profile-pic-who-thos',
-        avatar2Id: 'new-avatar2',
-        src1: 'avatar1',
+        src1: 'new-profile-pic-who-this',
         src2: 'avatar2'
       }
       const mockHost = {
@@ -90,8 +82,6 @@ describe('HostResolver', () => {
         teamId: 'best-juniors-engineers-gang',
         title: 'Edmond Shen & Nisal Cottingham',
         location: 'JFP Staff',
-        avatar1Id: 'avatar1-id',
-        avatar2Id: 'avatar2-id',
         src1: 'avatar1',
         src2: 'avatar2'
       }
@@ -109,8 +99,6 @@ describe('HostResolver', () => {
         data: {
           title: input.title,
           location: input.location,
-          avatar1Id: input.avatar1Id,
-          avatar2Id: input.avatar2Id,
           src1: input.src1,
           src2: input.src2
         }
@@ -121,9 +109,7 @@ describe('HostResolver', () => {
       const id = 'host-id'
       const input = {
         location: 'National Team Staff',
-        avatar1Id: 'new-profile-pic-who-thos',
-        avatar2Id: 'new-avatar2',
-        src1: 'avatar1',
+        src1: 'new-profile-pic-who-this',
         src2: 'avatar2'
       }
       const mockHost = {
@@ -131,8 +117,6 @@ describe('HostResolver', () => {
         teamId: 'best-juniors-engineers-gang',
         title: 'Edmond Shen & Nisal Cottingham',
         location: 'JFP Staff',
-        avatar1Id: 'avatar1-id',
-        avatar2Id: 'avatar2-id',
         src1: 'avatar1',
         src2: 'avatar2'
       }
@@ -150,8 +134,6 @@ describe('HostResolver', () => {
         data: {
           title: undefined,
           location: input.location,
-          avatar1Id: input.avatar1Id,
-          avatar2Id: input.avatar2Id,
           src1: input.src1,
           src2: input.src2
         }
@@ -163,9 +145,7 @@ describe('HostResolver', () => {
       const input = {
         title: null,
         location: 'National Team Staff',
-        avatar1Id: 'new-profile-pic-who-thos',
-        avatar2Id: 'new-avatar2',
-        src1: 'avatar1',
+        src1: 'new-profile-pic-who-this',
         src2: 'avatar2'
       }
 
@@ -183,8 +163,6 @@ describe('HostResolver', () => {
         teamId: 'best-juniors-engineers-gang',
         title: 'Edmond Shen & Nisal Cottingham',
         location: 'JFP Staff',
-        avatar1Id: 'avatar1-id',
-        avatar2Id: 'avatar2-id',
         src1: 'avatar1',
         src2: 'avatar2'
       }

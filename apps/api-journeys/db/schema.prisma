@@ -136,15 +136,13 @@ model Visitor {
 }
 
 model Host {
-  id        String  @id @default(uuid())
-  teamId    String
-  team      Team    @relation(fields: [teamId], references: [id])
-  title     String
-  location  String?
-  avatar1Id String?
-  avatar2Id String?
-  src1      String?
-  src2      String?
+  id       String  @id @default(uuid())
+  teamId   String
+  team     Team    @relation(fields: [teamId], references: [id])
+  title    String
+  location String?
+  src1     String?
+  src2     String?
 }
 
 model JourneyVisitor {
