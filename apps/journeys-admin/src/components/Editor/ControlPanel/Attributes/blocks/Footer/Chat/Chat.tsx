@@ -5,7 +5,6 @@ import Typography from '@mui/material/Typography'
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { ChatPlatform } from '../../../../../../../../__generated__/globalTypes'
-import { JourneyFields_chatButtons as ChatButton } from '../../../../../../../../__generated__/JourneyFields'
 import { ChatOption } from './ChatOption'
 
 // TODO: catch mutation errors
@@ -17,27 +16,21 @@ export function Chat(): ReactElement {
 
   const chatButtons = journey?.chatButtons ?? []
   const maxSelection = chatButtons.length >= 2
-
-  let facebook: ChatButton | undefined
-  let whatsApp: ChatButton | undefined
-  let telegram: ChatButton | undefined
-  let custom: ChatButton | undefined
-
-  chatButtons.forEach((button) => {
-    switch (button.platform) {
-      case ChatPlatform.facebook:
-        facebook = button
-        break
-      case ChatPlatform.whatsApp:
-        whatsApp = button
-        break
-      case ChatPlatform.telegram:
-        telegram = button
-        break
-      default:
-        custom = button
-    }
-  })
+  const facebook = chatButtons.find(
+    (button) => button.platform === ChatPlatform.facebook
+  )
+  const whatsApp = chatButtons.find(
+    (button) => button.platform === ChatPlatform.whatsApp
+  )
+  const telegram = chatButtons.find(
+    (button) => button.platform === ChatPlatform.telegram
+  )
+  const custom = chatButtons.find(
+    (button) =>
+      button.platform !== ChatPlatform.facebook &&
+      button.platform !== ChatPlatform.whatsApp &&
+      button.platform !== ChatPlatform.telegram
+  )
 
   return (
     <>

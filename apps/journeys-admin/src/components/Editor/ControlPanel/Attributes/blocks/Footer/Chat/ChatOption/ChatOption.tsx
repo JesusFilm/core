@@ -139,17 +139,54 @@ export function ChatOption({
     event: ChangeEvent<HTMLInputElement>
   ): Promise<void> {
     if (event.target.checked && !disableSelection) {
+      console.log(platform)
       await journeyChatButtonCreate({
         variables: {
           journeyId,
-          link: chatButton?.link,
-          platform: platform ?? chatButton?.platform ?? null
+          input: {
+            link: chatButton?.link,
+            platform: platform ?? chatButton?.platform ?? null
+          }
+        },
+        update(cache, { data }) {
+          if (data?.chatButtonCreate != null) {
+            cache.modify({
+              id: cache.identify({ __typename: 'Journey', id: journeyId }),
+              fields: {
+                chatButtons(existingChatButtons = []) {
+                  const newChatButtonRef = cache.writeFragment({
+                    data: data.chatButtonCreate,
+                    fragment: gql`
+                      fragment NewChatButton on ChatButton {
+                        id
+                      }
+                    `
+                  })
+                  return [...existingChatButtons, newChatButtonRef]
+                }
+              }
+            })
+          }
         }
       })
     } else {
       if (chatButton != null) {
         await journeyChatButtonRemove({
-          variables: { chatButtonRemoveId: chatButton.id }
+          variables: { chatButtonRemoveId: chatButton.id },
+          update(cache, { data }) {
+            if (data?.chatButtonRemove != null) {
+              cache.modify({
+                id: cache.identify({ __typename: 'Journey', id: journeyId }),
+                fields: {
+                  chatButtons(refs, { readField }) {
+                    return refs.filter(
+                      (ref) => chatButton.id !== readField('id', ref)
+                    )
+                  }
+                }
+              })
+            }
+          }
         })
       }
     }
