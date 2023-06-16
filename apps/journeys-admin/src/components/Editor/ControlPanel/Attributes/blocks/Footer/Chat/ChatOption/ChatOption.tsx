@@ -13,6 +13,7 @@ import Skype from '@core/shared/ui/icons/Skype'
 import Line from '@core/shared/ui/icons/Line'
 import Tiktok from '@core/shared/ui/icons/Tiktok'
 import MenuItem from '@mui/material/MenuItem'
+import { useSnackbar } from 'notistack'
 import { useTranslation } from 'react-i18next'
 import FormControl from '@mui/material/FormControl'
 import Checkbox from '@mui/material/Checkbox'
@@ -86,6 +87,7 @@ export function ChatOption({
   enableIconSelect = false
 }: Props): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
+  const { enqueueSnackbar } = useSnackbar()
   const [journeyChatButtonCreate] = useMutation<JourneyChatButtonCreate>(
     JOURNEY_CHAT_BUTTON_CREATE
   )
@@ -139,55 +141,74 @@ export function ChatOption({
     event: ChangeEvent<HTMLInputElement>
   ): Promise<void> {
     if (event.target.checked && !disableSelection) {
-      console.log(platform)
-      await journeyChatButtonCreate({
-        variables: {
-          journeyId,
-          input: {
-            link: chatButton?.link,
-            platform: platform ?? chatButton?.platform ?? null
-          }
-        },
-        update(cache, { data }) {
-          if (data?.chatButtonCreate != null) {
-            cache.modify({
-              id: cache.identify({ __typename: 'Journey', id: journeyId }),
-              fields: {
-                chatButtons(existingChatButtons = []) {
-                  const newChatButtonRef = cache.writeFragment({
-                    data: data.chatButtonCreate,
-                    fragment: gql`
-                      fragment NewChatButton on ChatButton {
-                        id
-                      }
-                    `
-                  })
-                  return [...existingChatButtons, newChatButtonRef]
-                }
-              }
-            })
-          }
-        }
-      })
-    } else {
-      if (chatButton != null) {
-        await journeyChatButtonRemove({
-          variables: { chatButtonRemoveId: chatButton.id },
+      try {
+        await journeyChatButtonCreate({
+          variables: {
+            journeyId,
+            input: {
+              link: chatButton?.link,
+              platform: platform ?? chatButton?.platform ?? null
+            }
+          },
           update(cache, { data }) {
-            if (data?.chatButtonRemove != null) {
+            if (data?.chatButtonCreate != null) {
               cache.modify({
                 id: cache.identify({ __typename: 'Journey', id: journeyId }),
                 fields: {
-                  chatButtons(refs, { readField }) {
-                    return refs.filter(
-                      (ref) => chatButton.id !== readField('id', ref)
-                    )
+                  chatButtons(existingChatButtons = []) {
+                    const newChatButtonRef = cache.writeFragment({
+                      data: data.chatButtonCreate,
+                      fragment: gql`
+                        fragment NewChatButton on ChatButton {
+                          id
+                        }
+                      `
+                    })
+                    return [...existingChatButtons, newChatButtonRef]
                   }
                 }
               })
             }
           }
         })
+      } catch (error) {
+        enqueueSnackbar(
+          t('Error adding button, please reload and try again.'),
+          {
+            variant: 'error',
+            preventDuplicate: true
+          }
+        )
+      }
+    } else {
+      if (chatButton != null) {
+        try {
+          await journeyChatButtonRemove({
+            variables: { chatButtonRemoveId: chatButton.id },
+            update(cache, { data }) {
+              if (data?.chatButtonRemove != null) {
+                cache.modify({
+                  id: cache.identify({ __typename: 'Journey', id: journeyId }),
+                  fields: {
+                    chatButtons(refs, { readField }) {
+                      return refs.filter(
+                        (ref) => chatButton.id !== readField('id', ref)
+                      )
+                    }
+                  }
+                })
+              }
+            }
+          })
+        } catch (error) {
+          enqueueSnackbar(
+            t('Error removing button, please reload and try again.'),
+            {
+              variant: 'error',
+              preventDuplicate: true
+            }
+          )
+        }
       }
     }
   }
@@ -209,7 +230,7 @@ export function ChatOption({
             platform: value !== 'default' ? (value as ChatPlatform) : null
           }
 
-    await journeyChatButtonUpdate({
+    const { data } = await journeyChatButtonUpdate({
       variables: {
         chatButtonUpdateId: chatButton.id,
         journeyId,
@@ -223,6 +244,13 @@ export function ChatOption({
         }
       }
     })
+
+    if (data != null) {
+      enqueueSnackbar(t('Button updated.'), {
+        variant: 'success',
+        preventDuplicate: true
+      })
+    }
   }
 
   return (
