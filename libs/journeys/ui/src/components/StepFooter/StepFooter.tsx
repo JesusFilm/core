@@ -6,6 +6,8 @@ import { SxProps } from '@mui/material/styles'
 import { ReactElement } from 'react'
 import { useJourney } from '../../libs/JourneyProvider'
 import { getJourneyRTL } from '../../libs/rtl'
+import { HostTitleLocation } from './HostTitleLocation'
+import { HostAvatars } from './HostAvatars'
 
 interface StepFooterProps {
   onFooterClick?: () => void
@@ -64,30 +66,33 @@ export function StepFooter({
             flexDirection: rtl ? 'row-reverse' : 'row',
             alignItems: 'center'
           }}
+          gap={4}
         >
           <Stack
             sx={{
-              flex: '1 1 100%',
-              minWidth: 0,
               width: '100%',
+              minWidth: 0,
               flexDirection: 'row',
-              alignItems: 'center',
-              justifyContent: 'space-between'
+              alignItems: 'center'
             }}
+            gap={2}
           >
-            <Typography
-              sx={{
-                zIndex: 1,
-                py: 3,
-                // Always dark mode on lg breakpoint
-                color: { xs: 'primary.main', lg: 'white' },
-                whiteSpace: 'nowrap',
-                overflow: 'hidden',
-                textOverflow: 'ellipsis'
-              }}
-            >
-              {journey?.seoTitle ?? journey?.title}
-            </Typography>
+            <HostAvatars />
+            <Stack sx={{ py: 1.5, flex: '1 1 100%', minWidth: 0 }}>
+              <Typography
+                sx={{
+                  zIndex: 1,
+                  // Always dark mode on lg breakpoint
+                  color: { xs: 'primary.main', lg: 'white' },
+                  whiteSpace: 'nowrap',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis'
+                }}
+              >
+                {journey?.seoTitle ?? journey?.title}
+              </Typography>
+              <HostTitleLocation />
+            </Stack>
             {/* <Stack
               data-testid="chip"
               sx={{
@@ -100,7 +105,7 @@ export function StepFooter({
             /> */}
           </Stack>
           <Box>
-            {/* <Stack
+            <Stack
               data-testid="chat-widget"
               sx={{
                 width: 44,
@@ -108,7 +113,7 @@ export function StepFooter({
                 borderRadius: 10,
                 backgroundColor: 'white'
               }}
-            /> */}
+            />
           </Box>
         </Stack>
       </Stack>

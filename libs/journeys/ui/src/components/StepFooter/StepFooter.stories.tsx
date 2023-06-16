@@ -10,7 +10,10 @@ import {
 } from '../../../__generated__/globalTypes'
 
 import { JourneyProvider } from '../../libs/JourneyProvider'
-import { JourneyFields as Journey } from '../../libs/JourneyProvider/__generated__/JourneyFields'
+import {
+  JourneyFields as Journey,
+  JourneyFields_host as Host
+} from '../../libs/JourneyProvider/__generated__/JourneyFields'
 import { StepFooter } from './StepFooter'
 
 const Demo = {
@@ -56,29 +59,27 @@ const journey: Journey = {
   host: {
     id: 'hostId',
     __typename: 'Host',
-    teamId: 'teamId',
     title: 'Cru International',
     location: 'Florida, USA',
-    src1: null,
+    teamId: 'teamId',
+    src1: 'https://images.unsplash.com/photo-1558704164-ab7a0016c1f3?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80',
     src2: null
-  }
+  } as unknown as Host
 }
 
 const Template: Story<
-  ComponentProps<typeof StepFooter> & { journey: Journey }
-> = ({ journey }) => {
+  ComponentProps<typeof StepFooter> & { journey: Journey; admin: boolean }
+> = ({ journey, admin = false }) => {
   return (
-    <JourneyProvider value={{ journey }}>
+    <JourneyProvider value={{ journey, admin }}>
       <Stack
         sx={{
           position: 'relative',
-          width: '100%',
-          height: 64,
-          border: '1px solid black',
+          height: 80,
           justifyContent: 'center'
         }}
       >
-        <StepFooter />
+        <StepFooter sx={{ border: '1px solid black' }} />
       </Stack>
     </JourneyProvider>
   )
@@ -96,12 +97,22 @@ Long.args = {
   journey: {
     ...journey,
     seoTitle:
-      'Some really really really really incredibly absolutely humungo wungo massively very very very long beyond a shadow of a doubt, needed only for testing a very strange edge case where a title is really really long - title'
+      'Some really really really really incredibly absolutely humungo wungo massively very very very long beyond a shadow of a doubt, needed only for testing a very strange edge case where a title is really really long - title',
+    host: {
+      ...journey.host,
+      src2: 'https://images.unsplash.com/photo-1477936821694-ec4233a9a1a0?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1136&q=80'
+    } as unknown as Host
   }
 }
 
 export const RTL = Template.bind({})
 RTL.args = { ...Default.args }
 RTL.parameters = { rtl: true }
+
+export const Admin = Template.bind({})
+Admin.args = {
+  ...Default.args,
+  admin: true
+}
 
 export default Demo as Meta

@@ -45,10 +45,21 @@ describe('StepFooter', () => {
       teamId: 'teamId',
       title: 'Cru International',
       location: 'Florida, USA',
-      src1: null,
+      src1: 'https://images.unsplash.com/photo-1558704164-ab7a0016c1f3?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80',
       src2: null
     }
   }
+
+  it('should display host avatar, name and location', () => {
+    const { getByTestId } = render(
+      <JourneyProvider value={{ journey }}>
+        <StepFooter />
+      </JourneyProvider>
+    )
+
+    expect(getByTestId('host-avatars')).toBeInTheDocument()
+    expect(getByTestId('host-name-location')).toBeInTheDocument()
+  })
 
   it('should display social media journey title by default', () => {
     const { getByText } = render(
