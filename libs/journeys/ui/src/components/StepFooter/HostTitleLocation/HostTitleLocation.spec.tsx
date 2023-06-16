@@ -44,7 +44,9 @@ describe('HostTitleLocation', () => {
       __typename: 'Host' as const,
       title: 'Edmond Shen',
       location: 'Student Life',
-      teamId: 'teamId'
+      teamId: 'teamId',
+      src1: null,
+      src2: null
     }
   }
 

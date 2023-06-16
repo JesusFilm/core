@@ -7,13 +7,12 @@ import { getJourneyRTL } from '../../../libs/rtl'
 export function HostTitleLocation(): ReactElement {
   const { journey } = useJourney()
   const { rtl } = getJourneyRTL(journey)
-  const host = { title: 'Host title', location: 'Host location' }
-  // const host = journey?.host != null ? journey.host : undefined
-  const divider = host?.location != null ? '\u00A0\u00B7\u00A0' : ''
+  const host = journey?.host != null ? journey.host : undefined
+  const divider = journey?.host?.location != null ? '\u00A0\u00B7\u00A0' : ''
 
   return host != null ? (
     <Typography
-      data-testid="host-name-location"
+      data-testid="name-and-location"
       variant="body2"
       sx={{
         whiteSpace: 'nowrap',
