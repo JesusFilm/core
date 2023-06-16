@@ -3,7 +3,7 @@ type CloudflareVideo {
   uploadUrl: String
   userId: ID!
   createdAt: String!
-  duration: Int!
+readyToStream: Boolean!
 }
 
 extend type Query {

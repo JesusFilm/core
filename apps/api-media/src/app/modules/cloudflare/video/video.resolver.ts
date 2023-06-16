@@ -26,7 +26,7 @@ export class VideoResolver {
       userId,
       name,
       createdAt: new Date().toISOString(),
-      duration: -1
+      readyToStream: false
     })
   }
 
@@ -45,7 +45,7 @@ export class VideoResolver {
       _key: response.result.uid,
       userId,
       createdAt: new Date().toISOString(),
-      duration: -1
+      readyToStream: false
     })
   }
 
@@ -75,12 +75,9 @@ export class VideoResolver {
     if (!response.success) {
       throw new Error(response.errors[0])
     }
-    const yo = await this.videoService.update(id, {
-      duration: (response.result?.duration !== undefined && response.result?.duration  > -1) ? response.result?.duration : -1
+    return await this.videoService.update(id, {
+      readyToStream: response.result?.readyToStream ?? false
     })
-    console.log('yo', yo)
-
-    return video
   }
 
   

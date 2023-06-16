@@ -66,7 +66,7 @@ export class CloudflareVideo {
     uploadUrl?: Nullable<string>;
     userId: string;
     createdAt: string;
-    duration: number;
+    readyToStream: boolean;
 }
 
 export class UnsplashQueryResponse {

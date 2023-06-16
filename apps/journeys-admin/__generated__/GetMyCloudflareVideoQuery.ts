@@ -10,7 +10,7 @@
 export interface GetMyCloudflareVideoQuery_getMyCloudflareVideo {
   __typename: "CloudflareVideo";
   id: string;
-  duration: number;
+  readyToStream: boolean;
 }
 
 export interface GetMyCloudflareVideoQuery {
