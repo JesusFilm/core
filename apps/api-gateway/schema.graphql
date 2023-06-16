@@ -471,8 +471,6 @@ type Host
   teamId: ID!
   title: String!
   location: String
-  avatar1Id: ID @deprecated(reason: "Use `src1` instead.")
-  avatar2Id: ID @deprecated(reason: "Use `src2` instead.")
   src1: String
   src2: String
 }
@@ -482,8 +480,6 @@ input HostCreateInput
 {
   title: String!
   location: String
-  avatar1Id: ID
-  avatar2Id: ID
   src1: String
   src2: String
 }
@@ -496,8 +492,6 @@ input HostUpdateInput
   """
   title: String
   location: String
-  avatar1Id: ID
-  avatar2Id: ID
   src1: String
   src2: String
 }
