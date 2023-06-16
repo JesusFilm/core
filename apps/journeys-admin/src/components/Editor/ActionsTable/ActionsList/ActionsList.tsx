@@ -13,8 +13,8 @@ import IconButton from '@mui/material/IconButton'
 import Close from '@mui/icons-material/Close'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { ActionDetails } from '../../ActionDetails'
-import type { Actions } from '../ActionsTable'
 import { ActionInformation } from '../../ActionDetails/ActionInformation'
+import type { ActionType, Actions } from '../utils/getActions'
 import { ActionsListView } from './ActionsListView'
 
 interface ActionsListProps {
@@ -34,36 +34,51 @@ export function ActionsList({
   )
   const [open, setOpen] = useState(false)
 
-  const openActionDetails = (url: string): void => {
-    dispatch({
-      type: 'SetDrawerPropsAction',
-      mobileOpen: true,
-      title: 'Goal Details',
-      children: (
-        <ActionDetails
-          url={url}
-          goalLabel={goalLabel}
-          setSelectedAction={setSelectedAction}
-        />
-      )
-    })
+  const openActionDetails = (url: string, type?: ActionType): void => {
+    if (type === 'chatButton') {
+      dispatch({
+        type: 'SetDrawerPropsAction',
+        title: 'Chat Widget',
+        mobileOpen: true,
+        children: <div>Chat Widget Component</div>
+      })
+    }
+    if (type === 'block') {
+      dispatch({
+        type: 'SetDrawerPropsAction',
+        mobileOpen: true,
+        title: 'Goal Details',
+        children: (
+          <ActionDetails
+            url={url}
+            goalLabel={goalLabel}
+            setSelectedAction={setSelectedAction}
+          />
+        )
+      })
+    }
   }
 
   const handleClick = (url: string): void => {
     setSelectedAction(url)
-    if (selectedAction != null) openActionDetails(selectedAction)
+    if (window.innerWidth < 768) {
+      const clickedAction = actions.find((action) => action.url === url)
+      if (clickedAction != null) {
+        openActionDetails(url, clickedAction.actionType)
+      }
+    }
   }
 
   useEffect(() => {
-    if (window.innerWidth < 768) {
-      setSelectedAction(selectedAction)
-    }
-
     function handleResize(): void {
       if (window.innerWidth > 768 && selectedAction != null) {
-        openActionDetails(selectedAction)
+        const action = actions.find((action) => action.url === selectedAction)
+        if (action != null) {
+          openActionDetails(selectedAction, action.actionType)
+        }
       }
     }
+
     handleResize()
     window.addEventListener('resize', handleResize)
     return () => window.removeEventListener('resize', handleResize)

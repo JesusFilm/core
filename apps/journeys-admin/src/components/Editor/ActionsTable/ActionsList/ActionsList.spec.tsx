@@ -7,7 +7,7 @@ import {
   ActiveJourneyEditContent
 } from '@core/journeys/ui/EditorProvider'
 import useMediaQuery from '@mui/material/useMediaQuery'
-import { Actions } from '../ActionsTable'
+import { Actions } from '../utils/getActions'
 import { ActionsList } from './ActionsList'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
@@ -30,15 +30,18 @@ describe('ActionsList', () => {
   const actions: Actions[] = [
     {
       url: 'https://www.google.com/',
-      count: 2
+      count: 2,
+      actionType: 'block'
     },
     {
       url: 'https://www.biblegateway.com/versions/',
-      count: 1
+      count: 1,
+      actionType: 'block'
     },
     {
       url: 'https://www.messenger.com/t/',
-      count: 1
+      count: 1,
+      actionType: 'chatButton'
     }
   ]
 
@@ -83,6 +86,22 @@ describe('ActionsList', () => {
       expect(getByTestId('ActionInformation').parentElement).not.toHaveClass(
         'MuiDrawer-parentAnchorRight'
       )
+    })
+
+    it('should call the dispatch for the Chat Widget drawer', () => {
+      const { getAllByTestId } = render(
+        <ActionsList
+          actions={actions}
+          goalLabel={() => 'Start a conversation'}
+        />
+      )
+      fireEvent.click(getAllByTestId('EditRoundedIcon')[2])
+      expect(dispatch).toHaveBeenCalledWith({
+        type: 'SetDrawerPropsAction',
+        title: 'Chat Widget',
+        mobileOpen: true,
+        children: <div>Chat Widget Component</div>
+      })
     })
 
     it('should render a list of actions', () => {

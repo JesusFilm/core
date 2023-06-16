@@ -14,7 +14,7 @@ import QuestionAnswerOutlined from '@mui/icons-material/QuestionAnswerOutlined'
 import WebOutlined from '@mui/icons-material/WebOutlined'
 import MenuBookRounded from '@mui/icons-material/MenuBookRounded'
 import useMediaQuery from '@mui/material/useMediaQuery'
-import type { Actions } from '../../ActionsTable'
+import type { Actions } from '../../utils/getActions'
 
 interface ActionsListViewProps {
   actions: Actions[]

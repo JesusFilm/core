@@ -1,44 +1,19 @@
 import { ReactElement } from 'react'
 import Stack from '@mui/material/Stack'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
-import { ActionFields_LinkAction as LinkAction } from '../../../../__generated__/ActionFields'
-import { BlockFields_ButtonBlock as ButtonBlock } from '../../../../__generated__/BlockFields'
-import { GetJourney_journey as Journey } from '../../../../__generated__/GetJourney'
 import { ActionsList } from './ActionsList'
 import { ActionsBanner } from './ActionsBanner'
+import { getActions } from './utils/getActions'
 
 interface ActionsTableProps {
   hasAction?: (actions: boolean) => void
 }
 
-export interface Actions {
-  url: string
-  count: number
-}
-
 export function ActionsTable({ hasAction }: ActionsTableProps): ReactElement {
   const { journey } = useJourney()
 
-  function countUrls(journey: Journey | undefined): Actions[] {
-    const actions = (journey?.blocks ?? [])
-      .filter(
-        (block) =>
-          ((block as ButtonBlock).action as LinkAction)?.__typename ===
-          'LinkAction'
-      )
-      .map((block) => (block as ButtonBlock).action as LinkAction)
-      .reduce((counts, { url }) => {
-        counts[url] = ((counts[url] ?? 0) as number) + 1
-        return counts
-      }, {})
-
-    return Object.entries(actions).map(([url, count]) => ({
-      url,
-      count
-    })) as Actions[]
-  }
-
-  const actions = countUrls(journey)
+  const actions = getActions(journey)
+  console.log('actions', actions)
 
   actions.length >= 1 ? hasAction?.(true) : hasAction?.(false)
 
