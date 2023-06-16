@@ -94,7 +94,7 @@ export function StepFooter({
                     : 0
               }}
             >
-              <HostAvatars src1={src1} src2={src2} hasPlaceholder={admin} />
+              <HostAvatars hasPlaceholder={admin} />
             </Box>
             <Typography
               sx={{

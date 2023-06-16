@@ -7,21 +7,20 @@ import { useJourney } from '../../../libs/JourneyProvider'
 import { getJourneyRTL } from '../../../libs/rtl'
 
 interface HostAvatarsProps {
-  src1?: string
-  src2?: string
   hasPlaceholder?: boolean
   size?: 'small' | 'large'
 }
 
 export function HostAvatars({
-  src1,
-  src2,
   hasPlaceholder,
   size = 'small'
 }: HostAvatarsProps): ReactElement {
   const { journey } = useJourney()
   const { rtl } = getJourneyRTL(journey)
   const { editableStepFooter } = useFlags()
+  const src1 = journey?.host?.src1
+  const src2 = journey?.host?.src2
+
   return (
     <AvatarGroup
       spacing={19}
