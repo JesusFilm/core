@@ -70,11 +70,15 @@ export class TeamResolver {
       where: { id },
       include: { userTeams: true }
     })
+    if (team == null)
+      throw new GraphQLError('team not found', {
+        extensions: { code: 'NOT_FOUND' }
+      })
     if (ability.can(Action.Update, subject('Team', team)))
       return await this.prismaService.team.update({
         where: { id },
         data
       })
-    throw new ForbiddenError('user is not allowed to update this team')
+    throw new ForbiddenError('user is not allowed to update team')
   }
 }
