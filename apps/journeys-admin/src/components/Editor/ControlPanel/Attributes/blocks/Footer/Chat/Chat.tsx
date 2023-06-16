@@ -8,8 +8,6 @@ import { ChatPlatform } from '../../../../../../../../__generated__/globalTypes'
 import { JourneyFields_chatButtons as ChatButton } from '../../../../../../../../__generated__/JourneyFields'
 import { ChatOption } from './ChatOption'
 
-// TODO: remove label from icon select
-// TODO: update default icon
 // TODO: catch mutation errors
 // TODO: add cache updates
 

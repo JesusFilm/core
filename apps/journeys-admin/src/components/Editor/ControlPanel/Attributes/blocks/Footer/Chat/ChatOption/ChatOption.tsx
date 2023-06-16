@@ -4,7 +4,6 @@ import AccordionSummary from '@mui/material/AccordionSummary'
 import AccordionDetails from '@mui/material/AccordionDetails'
 import Typography from '@mui/material/Typography'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
-import InputLabel from '@mui/material/InputLabel'
 import Select from '@mui/material/Select'
 import Instagram from '@core/shared/ui/icons/Instagram'
 import Viber from '@core/shared/ui/icons/Viber'
@@ -12,7 +11,6 @@ import Vk from '@core/shared/ui/icons/Vk'
 import Snapchat from '@core/shared/ui/icons/Snapchat'
 import Skype from '@core/shared/ui/icons/Skype'
 import Line from '@core/shared/ui/icons/Line'
-import { v4 as uuidv4 } from 'uuid'
 import Tiktok from '@core/shared/ui/icons/Tiktok'
 import MenuItem from '@mui/material/MenuItem'
 import { useTranslation } from 'react-i18next'
@@ -141,15 +139,11 @@ export function ChatOption({
     event: ChangeEvent<HTMLInputElement>
   ): Promise<void> {
     if (event.target.checked && !disableSelection) {
-      const input = {
-        id: uuidv4(),
-        link: chatButton?.link,
-        platform: platform ?? chatButton?.platform ?? null
-      }
       await journeyChatButtonCreate({
         variables: {
           journeyId,
-          input
+          link: chatButton?.link,
+          platform: platform ?? chatButton?.platform ?? null
         }
       })
     } else {
@@ -175,7 +169,7 @@ export function ChatOption({
           }
         : {
             link: chatButton.link,
-            platform: value as ChatPlatform
+            platform: value !== 'default' ? (value as ChatPlatform) : null
           }
 
     await journeyChatButtonUpdate({
@@ -222,11 +216,9 @@ export function ChatOption({
       <AccordionDetails sx={{ px: 6 }}>
         <Stack direction="column" spacing={8} sx={{ pb: 4 }}>
           {enableIconSelect && (
-            <FormControl variant="filled" fullWidth>
-              <InputLabel id="icon-select">{t('Chat Platform')}</InputLabel>
+            <FormControl variant="filled" fullWidth hiddenLabel>
               <Select
                 labelId="icon-select"
-                label="Chat Platform"
                 value={chatButton?.platform ?? 'default'}
                 displayEmpty
                 onChange={async (event) =>
@@ -237,7 +229,7 @@ export function ChatOption({
                 <MenuItem value="default">{t('Select an icon...')}</MenuItem>
                 {chatIconOptions.map(({ value, label, icon }) => (
                   <MenuItem key={`chat-icon-${value}`} value={value}>
-                    <Stack direction="row" spacing={5} sx={{ py: 3 }}>
+                    <Stack direction="row" spacing={5}>
                       {icon}
                       <Typography>{label}</Typography>
                     </Stack>
@@ -248,7 +240,6 @@ export function ChatOption({
           )}
 
           <TextFieldForm
-            label=""
             placeholder={t('Paste URL here')}
             hiddenLabel
             handleSubmit={async (value) => await handleUpdate(value, 'link')}
