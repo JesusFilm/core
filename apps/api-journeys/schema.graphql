@@ -1619,7 +1619,7 @@ extend type Query {
 
   """Get a JourneyVisitor count by JourneyVisitorFilter"""
   journeyVisitorCount(filter: JourneyVisitorFilter!): Int!
-  teams: [Team!]
+  teams: [Team!]!
   team(id: ID!): Team!
   userInvites(journeyId: ID!): [UserInvite!]
   getUserRole: UserRole

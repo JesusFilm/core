@@ -1096,7 +1096,7 @@ export abstract class IQuery {
 
     abstract journeyVisitorCount(filter: JourneyVisitorFilter): number | Promise<number>;
 
-    abstract teams(): Nullable<Team[]> | Promise<Nullable<Team[]>>;
+    abstract teams(): Team[] | Promise<Team[]>;
 
     abstract team(id: string): Team | Promise<Team>;
 
