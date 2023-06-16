@@ -134,6 +134,14 @@
         "commands": ["npx ts-node apps/api-journeys/db/seed.ts"]
       }
     },
+    "prisma-studio": {
+      "executor": "@nrwl/workspace:run-commands",
+      "options": {
+        "commands": [
+          "npx prisma studio --schema apps/api-journeys/db/schema.prisma"
+        ]
+      }
+    },
     "prisma-validate": {
       "executor": "@nrwl/workspace:run-commands",
       "options": {

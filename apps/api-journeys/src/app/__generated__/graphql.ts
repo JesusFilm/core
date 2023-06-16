@@ -573,15 +573,15 @@ export class VideoProgressEventCreateInput {
 export class HostUpdateInput {
     title?: Nullable<string>;
     location?: Nullable<string>;
-    avatar1Id?: Nullable<string>;
-    avatar2Id?: Nullable<string>;
+    src1?: Nullable<string>;
+    src2?: Nullable<string>;
 }
 
 export class HostCreateInput {
     title: string;
     location?: Nullable<string>;
-    avatar1Id?: Nullable<string>;
-    avatar2Id?: Nullable<string>;
+    src1?: Nullable<string>;
+    src2?: Nullable<string>;
 }
 
 export class JourneysFilter {
@@ -1065,8 +1065,8 @@ export class Host {
     teamId: string;
     title: string;
     location?: Nullable<string>;
-    avatar1Id?: Nullable<string>;
-    avatar2Id?: Nullable<string>;
+    src1?: Nullable<string>;
+    src2?: Nullable<string>;
 }
 
 export abstract class IQuery {

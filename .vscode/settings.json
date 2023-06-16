@@ -65,5 +65,6 @@
     ]
   },
   "typescript.preferences.importModuleSpecifier": "project-relative",
-  "javascript.preferences.importModuleSpecifier": "project-relative"
+  "javascript.preferences.importModuleSpecifier": "project-relative",
+  "prettier.prettierPath": "./node_modules/prettier"
 }
