@@ -135,7 +135,8 @@ const defaultJourney: Journey = {
   userJourneys: [],
   template: null,
   seoTitle: null,
-  seoDescription: null
+  seoDescription: null,
+  host: null
 }
 
 describe('Conductor', () => {

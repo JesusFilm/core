@@ -49,6 +49,8 @@ export const JOURNEY_FIELDS = gql`
       teamId
       title
       location
+      src1
+      src2
     }
   }
 `

@@ -51,7 +51,8 @@ const journey: Journey = {
   userJourneys: [],
   template: null,
   seoTitle: null,
-  seoDescription: null
+  seoDescription: null,
+  host: null
 }
 
 export const NavigateToJourney: Story = () => {
