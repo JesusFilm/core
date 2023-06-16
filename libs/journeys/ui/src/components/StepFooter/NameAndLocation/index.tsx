@@ -1,1 +1,0 @@
-export { NameAndLocation } from './NameAndLocation'
