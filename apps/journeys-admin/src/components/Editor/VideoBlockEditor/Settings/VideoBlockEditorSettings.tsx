@@ -56,19 +56,30 @@ export function VideoBlockEditorSettings({
       const convertedStartAt = timeFormatToSeconds(values.startAt)
       const convertedEndAt = timeFormatToSeconds(values.endAt)
       if (convertedStartAt > convertedEndAt - 3) {
-        errors.startAt = 'Start time has to be at least 3 seconds less than end time'
+        errors.startAt =
+          'Start time has to be at least 3 seconds less than end time'
         enqueueSnackbar(errors.startAt, {
           variant: 'error',
           preventDuplicate: true
         })
-      } else if (((selectedBlock?.duration) != null) && convertedStartAt > selectedBlock?.duration - 3) {
-        errors.startAt = `Start time has to be at least 3 seconds less than video duration ${secondsToTimeFormat(selectedBlock?.duration)}`
+      } else if (
+        selectedBlock?.duration != null &&
+        convertedStartAt > selectedBlock?.duration - 3
+      ) {
+        errors.startAt = `Start time has to be at least 3 seconds less than video duration ${secondsToTimeFormat(
+          selectedBlock?.duration
+        )}`
         enqueueSnackbar(errors.startAt, {
           variant: 'error',
           preventDuplicate: true
         })
-      } else if (((selectedBlock?.duration) != null) && convertedEndAt > selectedBlock?.duration) {
-        errors.endAt = `End time has to be no more than video duration ${secondsToTimeFormat(selectedBlock?.duration)}`
+      } else if (
+        selectedBlock?.duration != null &&
+        convertedEndAt > selectedBlock?.duration
+      ) {
+        errors.endAt = `End time has to be no more than video duration ${secondsToTimeFormat(
+          selectedBlock?.duration
+        )}`
         enqueueSnackbar(errors.endAt, {
           variant: 'error',
           preventDuplicate: true

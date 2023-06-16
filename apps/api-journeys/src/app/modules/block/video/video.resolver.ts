@@ -226,7 +226,7 @@ export class VideoBlockResolver {
           ...{
             title: null,
             description: null,
-            image: null,
+            image: null
           }
         }
         await videoBlockInternalSchema.validate({ ...block, ...input })
