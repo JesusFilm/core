@@ -60,7 +60,8 @@ const journey: Journey = {
   template: null,
   userJourneys: [],
   seoTitle: null,
-  seoDescription: null
+  seoDescription: null,
+  host: null
 }
 
 const video: TreeBlock<VideoBlock> = {
