@@ -608,6 +608,16 @@ export interface GetJourney_journey_userJourneys {
   user: GetJourney_journey_userJourneys_user | null;
 }
 
+export interface GetJourney_journey_host {
+  __typename: "Host";
+  id: string;
+  teamId: string;
+  title: string;
+  location: string | null;
+  src1: string | null;
+  src2: string | null;
+}
+
 export interface GetJourney_journey {
   __typename: "Journey";
   id: string;
@@ -626,6 +636,7 @@ export interface GetJourney_journey {
   blocks: GetJourney_journey_blocks[] | null;
   primaryImageBlock: GetJourney_journey_primaryImageBlock | null;
   userJourneys: GetJourney_journey_userJourneys[] | null;
+  host: GetJourney_journey_host | null;
 }
 
 export interface GetJourney {

@@ -52,7 +52,16 @@ const journey: Journey = {
   userJourneys: [],
   template: null,
   seoTitle: null,
-  seoDescription: null
+  seoDescription: null,
+  host: {
+    id: 'hostId',
+    __typename: 'Host',
+    teamId: 'teamId',
+    title: 'Cru International',
+    location: 'Florida, USA',
+    src1: null,
+    src2: null
+  }
 }
 
 const Template: Story<

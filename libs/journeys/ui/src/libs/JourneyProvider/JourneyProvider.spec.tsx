@@ -55,7 +55,8 @@ const journey: Journey = {
   userJourneys: [],
   template: null,
   seoTitle: null,
-  seoDescription: null
+  seoDescription: null,
+  host: null
 }
 
 describe('JourneyContext', () => {
@@ -105,7 +106,8 @@ describe('JourneyContext', () => {
       primaryImageBlock: null,
       userJourneys: [],
       seoTitle: null,
-      seoDescription: null
+      seoDescription: null,
+      host: null
     })
   })
 })
