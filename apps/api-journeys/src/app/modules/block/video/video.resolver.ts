@@ -5,6 +5,7 @@ import fetch from 'node-fetch'
 import { UserInputError } from 'apollo-server-errors'
 import { omit } from 'lodash'
 import { Block } from '.prisma/api-journeys-client'
+import { FromPostgresql } from '@core/nest/decorators/FromPostgresql'
 
 import { BlockService } from '../block.service'
 import {
@@ -115,6 +116,7 @@ export class VideoBlockResolver {
       { role: Role.publisher, attributes: { template: true } }
     ])
   )
+  @FromPostgresql()
   async videoBlockCreate(
     @Args('input') input: VideoBlockCreateInput
   ): Promise<Block & { action?: Action }> {
@@ -145,8 +147,6 @@ export class VideoBlockResolver {
         ...omit(input, '__typename', 'journeyId'),
         id: input.id ?? undefined,
         typename: 'VideoBlock',
-        source:
-          input.source === VideoBlockSource.internal ? 'internal' : 'youTube',
         journey: {
           connect: { id: input.journeyId }
         },
@@ -258,11 +258,7 @@ export class VideoBlockResolver {
         await videoBlockInternalSchema.validate({ ...block, ...input })
         break
     }
-    return await this.blockService.update(id, {
-      ...input,
-      source:
-        input.source === VideoBlockSource.internal ? 'internal' : 'youTube'
-    })
+    return await this.blockService.update(id, input)
   }
 
   @ResolveField('video')

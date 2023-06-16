@@ -9,7 +9,7 @@ import { PrismaService } from '../../lib/prisma.service'
 import { JourneyService } from './journey.service'
 
 describe('JourneyService', () => {
-  let service: JourneyService, prisma: PrismaService
+  let service: JourneyService, prismaService: PrismaService
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -17,8 +17,8 @@ describe('JourneyService', () => {
     }).compile()
 
     service = module.get<JourneyService>(JourneyService)
-    prisma = module.get<PrismaService>(PrismaService)
-    prisma.journey.findMany = jest.fn().mockResolvedValue([journey])
+    prismaService = module.get<PrismaService>(PrismaService)
+    prismaService.journey.findMany = jest.fn().mockResolvedValue([journey])
   })
 
   afterAll(() => {
@@ -45,7 +45,7 @@ describe('JourneyService', () => {
 
   describe('getBySlug', () => {
     it('should return a journey', async () => {
-      prisma.journey.findFirst = jest.fn().mockResolvedValue(journey)
+      prismaService.journey.findFirst = jest.fn().mockResolvedValue(journey)
       expect(await service.getBySlug('slug')).toEqual(journey)
     })
   })
@@ -57,7 +57,7 @@ describe('JourneyService', () => {
 
     it('should filter by filter query', async () => {
       await service.getAllPublishedJourneys({ featured: true })
-      expect(prisma.journey.findMany).toHaveBeenCalledWith({
+      expect(prismaService.journey.findMany).toHaveBeenCalledWith({
         where: {
           status: JourneyStatus.published,
           featuredAt: { not: null }
@@ -79,7 +79,7 @@ describe('JourneyService', () => {
       expect(
         await service.getAllByRole(userRole, [JourneyStatus.published])
       ).toEqual([journey])
-      expect(prisma.journey.findMany).toHaveBeenCalledWith({
+      expect(prismaService.journey.findMany).toHaveBeenCalledWith({
         where: {
           status: { in: [JourneyStatus.published] },
           template: undefined,
@@ -92,7 +92,7 @@ describe('JourneyService', () => {
 
     it('should return templates for publishers', async () => {
       await service.getAllPublishedJourneys({ featured: true })
-      expect(prisma.journey.findMany).toHaveBeenCalledWith({
+      expect(prismaService.journey.findMany).toHaveBeenCalledWith({
         where: {
           status: JourneyStatus.published,
           featuredAt: { not: null }

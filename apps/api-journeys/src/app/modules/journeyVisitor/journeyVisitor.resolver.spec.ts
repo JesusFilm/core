@@ -14,7 +14,7 @@ import {
 describe('JourneyVisitorResolver', () => {
   let resolver: JourneyVisitorResolver,
     vService: JourneyVisitorService,
-    prisma: PrismaService
+    prismaService: PrismaService
 
   const jvConnection: JourneyVisitorsConnection = {
     edges: [],
@@ -74,10 +74,10 @@ describe('JourneyVisitorResolver', () => {
     }).compile()
     resolver = module.get<JourneyVisitorResolver>(JourneyVisitorResolver)
     vService = module.get<JourneyVisitorService>(JourneyVisitorService)
-    prisma = module.get<PrismaService>(PrismaService)
-    prisma.event.findMany = jest.fn().mockReturnValue([event])
-    prisma.visitor.findUnique = jest.fn().mockReturnValue(visitor)
-    prisma.userTeam.findUnique = jest.fn().mockReturnValue(userTeam)
+    prismaService = module.get<PrismaService>(PrismaService)
+    prismaService.event.findMany = jest.fn().mockReturnValue([event])
+    prismaService.visitor.findUnique = jest.fn().mockReturnValue(visitor)
+    prismaService.userTeam.findUnique = jest.fn().mockReturnValue(userTeam)
   })
 
   describe('visitor', () => {
@@ -95,7 +95,7 @@ describe('JourneyVisitorResolver', () => {
 
     it('calls event service with visitorId', async () => {
       await resolver.events({ visitorId: 'visitorId' })
-      expect(prisma.event.findMany).toHaveBeenCalledWith({
+      expect(prismaService.event.findMany).toHaveBeenCalledWith({
         where: { visitorId: 'visitorId' }
       })
     })
@@ -128,7 +128,7 @@ describe('JourneyVisitorResolver', () => {
     })
 
     it('throws error if user is not a member of the team', async () => {
-      prisma.userTeam.findUnique = jest.fn().mockReturnValue(null)
+      prismaService.userTeam.findUnique = jest.fn().mockReturnValue(null)
       await expect(
         resolver.journeyVisitorsConnection(
           'userId',

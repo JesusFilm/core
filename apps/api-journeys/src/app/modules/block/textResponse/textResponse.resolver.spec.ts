@@ -19,7 +19,7 @@ describe('TextResponseBlockResolver', () => {
   let resolver: TextResponseBlockResolver,
     blockResolver: BlockResolver,
     service: BlockService,
-    prisma: PrismaService
+    prismaService: PrismaService
 
   const block = {
     id: '1',
@@ -93,9 +93,11 @@ describe('TextResponseBlockResolver', () => {
     blockResolver = module.get<BlockResolver>(BlockResolver)
     resolver = module.get<TextResponseBlockResolver>(TextResponseBlockResolver)
     service = await module.resolve(BlockService)
-    prisma = module.get<PrismaService>(PrismaService)
-    prisma.block.findUnique = jest.fn().mockResolvedValueOnce(block)
-    prisma.block.findMany = jest.fn().mockResolvedValueOnce([block, block])
+    prismaService = module.get<PrismaService>(PrismaService)
+    prismaService.block.findUnique = jest.fn().mockResolvedValueOnce(block)
+    prismaService.block.findMany = jest
+      .fn()
+      .mockResolvedValueOnce([block, block])
   })
 
   describe('TextResponseBlock', () => {

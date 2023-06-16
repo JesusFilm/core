@@ -20,7 +20,7 @@ jest.mock('uuid', () => ({
 const mockUuidv4 = uuidv4 as jest.MockedFunction<typeof uuidv4>
 
 describe('UserJourneyService', () => {
-  let service: UserJourneyService, prisma: PrismaService
+  let service: UserJourneyService, prismaService: PrismaService
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -28,16 +28,16 @@ describe('UserJourneyService', () => {
     }).compile()
 
     service = module.get<UserJourneyService>(UserJourneyService)
-    prisma = module.get<PrismaService>(PrismaService)
-    prisma.journey.findUnique = jest.fn().mockResolvedValueOnce(journey)
-    prisma.userTeam.upsert = jest.fn()
-    prisma.userJourney.create = jest
+    prismaService = module.get<PrismaService>(PrismaService)
+    prismaService.journey.findUnique = jest.fn().mockResolvedValueOnce(journey)
+    prismaService.userTeam.upsert = jest.fn()
+    prismaService.userJourney.create = jest
       .fn()
       .mockReturnValueOnce(userJourneyInvited)
-    prisma.userJourney.findUnique = jest
+    prismaService.userJourney.findUnique = jest
       .fn()
       .mockResolvedValue(userJourneyInvited)
-    prisma.userJourney.update = jest
+    prismaService.userJourney.update = jest
       .fn()
       .mockReturnValueOnce(userJourneyInvited)
   })
@@ -81,7 +81,7 @@ describe('UserJourneyService', () => {
 
   describe('requestAccess', () => {
     it('throws UserInputError when journey does not exist', async () => {
-      prisma.journey.findUnique = jest.fn().mockResolvedValueOnce(null)
+      prismaService.journey.findUnique = jest.fn().mockResolvedValueOnce(null)
       await service
         .requestAccess('randomJourneyId', IdType.databaseId, '1')
         .catch((error) => {
@@ -97,8 +97,10 @@ describe('UserJourneyService', () => {
     })
     it('creates a UserJourney when journeyId is slug', async () => {
       mockUuidv4.mockReturnValueOnce(userJourneyInvited.id)
-      prisma.userJourney.findUnique = jest.fn().mockResolvedValueOnce(null)
-      prisma.journey.findFirst = jest.fn().mockResolvedValueOnce(journey)
+      prismaService.userJourney.findUnique = jest
+        .fn()
+        .mockResolvedValueOnce(null)
+      prismaService.journey.findFirst = jest.fn().mockResolvedValueOnce(journey)
 
       expect(
         await service.requestAccess(journey.slug, IdType.slug, '1')
@@ -112,7 +114,7 @@ describe('UserJourneyService', () => {
     })
 
     it('returns undefined if UserJourney role access already granted', async () => {
-      prisma.userJourney.findUnique = jest
+      prismaService.userJourney.findUnique = jest
         .fn()
         .mockResolvedValueOnce(userJourney)
       expect(
@@ -123,7 +125,7 @@ describe('UserJourneyService', () => {
 
   describe('approveAccess', () => {
     it('should throw UserInputError if userJourney does not exist', async () => {
-      prisma.userJourney.findUnique = jest.fn().mockReturnValueOnce(null)
+      prismaService.userJourney.findUnique = jest.fn().mockReturnValueOnce(null)
       await service.approveAccess('wrongId', '1').catch((error) => {
         expect(error.message).toEqual('userJourney does not exist')
       })
@@ -140,8 +142,10 @@ describe('UserJourneyService', () => {
     })
 
     it('updates a UserJourney to editor status', async () => {
-      prisma.userJourney.findUnique = jest.fn().mockReturnValueOnce(userJourney)
-      prisma.userJourney.update = jest.fn().mockReturnValueOnce({
+      prismaService.userJourney.findUnique = jest
+        .fn()
+        .mockReturnValueOnce(userJourney)
+      prismaService.userJourney.update = jest.fn().mockReturnValueOnce({
         ...userJourneyInvited,
         role: UserJourneyRole.editor
       })
@@ -157,12 +161,12 @@ describe('UserJourneyService', () => {
     })
 
     it('adds user to team', async () => {
-      prisma.userJourney.findUnique = jest
+      prismaService.userJourney.findUnique = jest
         .fn()
         .mockReturnValueOnce(userJourneyInvited)
 
       await service.approveAccess(userJourneyInvited.id, userJourney.userId)
-      expect(prisma.userTeam.upsert).toHaveBeenCalledWith({
+      expect(prismaService.userTeam.upsert).toHaveBeenCalledWith({
         create: {
           teamId: 'teamId',
           userId: '2',

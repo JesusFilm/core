@@ -1,5 +1,4 @@
 import { Module } from '@nestjs/common'
-import { DatabaseModule } from '@core/nest/database/DatabaseModule'
 import { PrismaService } from '../../lib/prisma.service'
 import { BlockService } from '../block/block.service'
 import { DateTimeScalar } from '../../lib/dateTime/dateTime.provider'
@@ -8,7 +7,7 @@ import { JourneyService } from './journey.service'
 import { JourneyResolver } from './journey.resolver'
 
 @Module({
-  imports: [DatabaseModule],
+  imports: [],
   providers: [
     JourneyService,
     JourneyResolver,

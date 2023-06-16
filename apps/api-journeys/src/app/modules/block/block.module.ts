@@ -1,6 +1,5 @@
 import { Module } from '@nestjs/common'
 
-import { DatabaseModule } from '@core/nest/database/DatabaseModule'
 import { PrismaService } from '../../lib/prisma.service'
 import { JourneyService } from '../journey/journey.service'
 import { BlockService } from './block.service'
@@ -21,7 +20,7 @@ import { TextResponseBlockResolver } from './textResponse/textResponse.resolver'
 import { VideoTriggerResolver } from './videoTrigger/videoTrigger.resolver'
 
 @Module({
-  imports: [DatabaseModule],
+  imports: [],
   providers: [
     BlockService,
     BlockResolver,

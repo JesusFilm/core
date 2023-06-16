@@ -19,7 +19,7 @@ describe('RadioQuestionBlockResolver', () => {
     blockResolver: BlockResolver,
     radioOptionBlockResolver: RadioOptionBlockResolver,
     service: BlockService,
-    prisma: PrismaService
+    prismaService: PrismaService
 
   const block = {
     id: '1',
@@ -117,9 +117,11 @@ describe('RadioQuestionBlockResolver', () => {
       RadioQuestionBlockResolver
     )
     service = await module.resolve(BlockService)
-    prisma = await module.resolve(PrismaService)
-    prisma.block.findUnique = jest.fn().mockResolvedValueOnce(block)
-    prisma.block.findMany = jest.fn().mockResolvedValueOnce([block, block])
+    prismaService = await module.resolve(PrismaService)
+    prismaService.block.findUnique = jest.fn().mockResolvedValueOnce(block)
+    prismaService.block.findMany = jest
+      .fn()
+      .mockResolvedValueOnce([block, block])
   })
 
   describe('RadioOptionBlock', () => {

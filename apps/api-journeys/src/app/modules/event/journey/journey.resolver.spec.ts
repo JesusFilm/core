@@ -7,7 +7,7 @@ import { PrismaService } from '../../../lib/prisma.service'
 import { JourneyViewEventResolver } from './journey.resolver'
 
 describe('JourneyViewEventResolver', () => {
-  let resolver: JourneyViewEventResolver, prisma: PrismaService
+  let resolver: JourneyViewEventResolver, prismaService: PrismaService
 
   const eventService = {
     provide: EventService,
@@ -63,15 +63,17 @@ describe('JourneyViewEventResolver', () => {
       ]
     }).compile()
     resolver = module.get<JourneyViewEventResolver>(JourneyViewEventResolver)
-    prisma = module.get<PrismaService>(PrismaService)
-    prisma.journey.findUnique = jest.fn().mockImplementationOnce((req) => {
-      if (req.where.id === input.journeyId) {
-        return { id: input.id }
-      }
-      return null
-    })
-    prisma.journeyVisitor.upsert = jest.fn().mockResolvedValueOnce(null)
-    prisma.visitor.update = jest.fn().mockResolvedValueOnce(null)
+    prismaService = module.get<PrismaService>(PrismaService)
+    prismaService.journey.findUnique = jest
+      .fn()
+      .mockImplementationOnce((req) => {
+        if (req.where.id === input.journeyId) {
+          return { id: input.id }
+        }
+        return null
+      })
+    prismaService.journeyVisitor.upsert = jest.fn().mockResolvedValueOnce(null)
+    prismaService.visitor.update = jest.fn().mockResolvedValueOnce(null)
   })
 
   describe('JourneyViewEventCreate', () => {
@@ -90,7 +92,7 @@ describe('JourneyViewEventResolver', () => {
     it('should update user agent on visitor if visitor does not have a user agent', async () => {
       await resolver.journeyViewEventCreate('newUser.id', userAgent, input)
 
-      expect(prisma.visitor.update).toHaveBeenCalledWith({
+      expect(prismaService.visitor.update).toHaveBeenCalledWith({
         where: { id: 'newVisitor.id' },
         data: {
           userAgent

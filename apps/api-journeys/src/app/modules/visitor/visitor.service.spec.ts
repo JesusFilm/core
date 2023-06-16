@@ -26,7 +26,7 @@ const visitor = {
 }
 
 describe('VisitorService', () => {
-  let service: VisitorService, prisma: PrismaService
+  let service: VisitorService, prismaService: PrismaService
 
   beforeAll(() => {
     jest.useFakeTimers('modern')
@@ -43,19 +43,19 @@ describe('VisitorService', () => {
     }).compile()
 
     service = module.get<VisitorService>(VisitorService)
-    prisma = module.get<PrismaService>(PrismaService)
-    prisma.journey.findUnique = jest.fn().mockReturnValueOnce(journey)
-    prisma.visitor.create = jest
+    prismaService = module.get<PrismaService>(PrismaService)
+    prismaService.journey.findUnique = jest.fn().mockReturnValueOnce(journey)
+    prismaService.visitor.create = jest
       .fn()
       .mockImplementationOnce((input) => input.data)
-    prisma.visitor.findMany = jest.fn().mockReturnValueOnce([])
-    prisma.journeyVisitor.findUnique = jest
+    prismaService.visitor.findMany = jest.fn().mockReturnValueOnce([])
+    prismaService.journeyVisitor.findUnique = jest
       .fn()
       .mockReturnValueOnce(journeyVisitor)
-    prisma.journeyVisitor.upsert = jest
+    prismaService.journeyVisitor.upsert = jest
       .fn()
       .mockImplementationOnce((input) => input.create)
-    prisma.journeyVisitor.findMany = jest.fn().mockReturnValueOnce([])
+    prismaService.journeyVisitor.findMany = jest.fn().mockReturnValueOnce([])
   })
 
   describe('getList', () => {
@@ -71,7 +71,7 @@ describe('VisitorService', () => {
       expect(
         await service.getList({ first: 50, filter: { teamId: 'jfp-team' } })
       ).toEqual(connection)
-      expect(prisma.visitor.findMany).toHaveBeenCalledWith({
+      expect(prismaService.visitor.findMany).toHaveBeenCalledWith({
         cursor: undefined,
         orderBy: {
           createdAt: 'desc'
@@ -88,7 +88,7 @@ describe('VisitorService', () => {
         after: '1',
         filter: { teamId: 'jfp-team' }
       })
-      expect(prisma.visitor.findMany).toHaveBeenCalledWith({
+      expect(prismaService.visitor.findMany).toHaveBeenCalledWith({
         cursor: { id: '1' },
         orderBy: {
           createdAt: 'desc'
@@ -102,18 +102,18 @@ describe('VisitorService', () => {
 
   describe('getVisitorId', () => {
     it('should return visitor id', async () => {
-      prisma.visitor.findFirst = jest.fn().mockReturnValueOnce(visitor)
+      prismaService.visitor.findFirst = jest.fn().mockReturnValueOnce(visitor)
       expect(
         await service.getByUserIdAndJourneyId('user.id', 'journey.id')
       ).toEqual({ visitor, journeyVisitor })
     })
 
     it('should create a new visitor if visitor does not exist', async () => {
-      prisma.visitor.findFirst = jest.fn().mockReturnValueOnce(null)
+      prismaService.visitor.findFirst = jest.fn().mockReturnValueOnce(null)
       mockUuidv4.mockReturnValueOnce('newVisitor.id')
 
       await service.getByUserIdAndJourneyId('user.id', 'journey.id')
-      expect(prisma.visitor.create).toHaveBeenCalledWith({
+      expect(prismaService.visitor.create).toHaveBeenCalledWith({
         data: {
           ...visitor,
           id: 'newVisitor.id',

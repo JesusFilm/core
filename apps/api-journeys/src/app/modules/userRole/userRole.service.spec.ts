@@ -5,7 +5,7 @@ import { PrismaService } from '../../lib/prisma.service'
 import { UserRoleService } from './userRole.service'
 
 describe('userRoleService', () => {
-  let service: UserRoleService, prisma: PrismaService
+  let service: UserRoleService, prismaService: PrismaService
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -13,7 +13,7 @@ describe('userRoleService', () => {
     }).compile()
 
     service = module.get<UserRoleService>(UserRoleService)
-    prisma = module.get<PrismaService>(PrismaService)
+    prismaService = module.get<PrismaService>(PrismaService)
   })
   afterAll(() => {
     jest.resetAllMocks()
@@ -27,7 +27,7 @@ describe('userRoleService', () => {
 
   describe('getUserRoleById', () => {
     it('should return a user role if exists', async () => {
-      prisma.userRole.findFirst = jest.fn().mockResolvedValue(user)
+      prismaService.userRole.findFirst = jest.fn().mockResolvedValue(user)
       expect(await service.getUserRoleById('1')).toEqual(user)
     })
 
@@ -37,8 +37,8 @@ describe('userRoleService', () => {
         userId: 'userId2',
         roles: []
       }
-      prisma.userRole.findFirst = jest.fn().mockResolvedValue(null)
-      prisma.userRole.create = jest.fn().mockResolvedValue(user2)
+      prismaService.userRole.findFirst = jest.fn().mockResolvedValue(null)
+      prismaService.userRole.create = jest.fn().mockResolvedValue(user2)
       expect(await service.getUserRoleById('2')).toEqual(user2)
     })
   })

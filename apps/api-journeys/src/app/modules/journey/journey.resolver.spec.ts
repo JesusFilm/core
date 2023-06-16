@@ -77,8 +77,8 @@ describe('JourneyResolver', () => {
     deletedAt: null,
     seoTitle: null,
     seoDescription: null,
-    template: false,
-    chatButtons: []
+    template: false
+    // chatButtons: []
   }
 
   const journeyWithTeam = {
@@ -116,7 +116,7 @@ describe('JourneyResolver', () => {
     primaryImageBlockId: 'primaryImageBlock.id'
   }
 
-  const template: Journey = {
+  const template = {
     ...journey,
     title: 'template',
     id: 'templateJourneyId',
@@ -1079,12 +1079,12 @@ describe('JourneyResolver', () => {
       prismaService.host.findUnique = jest.fn().mockResolvedValueOnce(mockHost)
       prismaService.journey.findUnique = jest
         .fn()
-        .mockResolvedValueOnce(journey)
+        .mockResolvedValueOnce(journeyWithTeam)
       await resolver.journeyUpdate('journeyId', journeyUpdateHost)
-      expect(prismaService.journey.update).toHaveBeenCalledWith(
-        'journeyId',
-        journeyUpdateHost
-      )
+      expect(prismaService.journey.update).toHaveBeenCalledWith({
+        where: { id: 'journeyId' },
+        data: journeyUpdateHost
+      })
     })
 
     it('throws UserInputErrror', async () => {

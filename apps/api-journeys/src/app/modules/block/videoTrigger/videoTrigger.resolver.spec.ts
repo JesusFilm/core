@@ -11,7 +11,7 @@ import { VideoTriggerResolver } from './videoTrigger.resolver'
 describe('VideoTriggerBlockResolver', () => {
   let resolver: VideoTriggerResolver,
     blockResolver: BlockResolver,
-    prisma: PrismaService
+    prismaService: PrismaService
 
   const block = {
     id: '1',
@@ -58,9 +58,11 @@ describe('VideoTriggerBlockResolver', () => {
     }).compile()
     resolver = module.get<VideoTriggerResolver>(VideoTriggerResolver)
     blockResolver = module.get<BlockResolver>(BlockResolver)
-    prisma = module.get<PrismaService>(PrismaService)
-    prisma.block.findUnique = jest.fn().mockResolvedValue(blockResponse)
-    prisma.block.findMany = jest.fn().mockResolvedValue([blockResponse, blockResponse])
+    prismaService = module.get<PrismaService>(PrismaService)
+    prismaService.block.findUnique = jest.fn().mockResolvedValue(blockResponse)
+    prismaService.block.findMany = jest
+      .fn()
+      .mockResolvedValue([blockResponse, blockResponse])
   })
 
   describe('VideoTriggerBlock', () => {

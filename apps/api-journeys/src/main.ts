@@ -11,8 +11,6 @@ async function bootstrap(): Promise<void> {
   const prismaService = app.get(PrismaService)
   await prismaService.enableShutdownHooks(app)
   app.useLogger(app.get(PinoLogger))
-  const prismaService = app.get(PrismaService)
-  await prismaService.enableShutdownHooks(app)
   await app.use(json({ limit: '50mb' }))
   const port = '4001'
   const server = await app.listen(port, () => {

@@ -65,6 +65,7 @@ enum ButtonAction {
 }
 
 enum VideoBlockSource {
+  cloudflare
   internal
   youTube
 }

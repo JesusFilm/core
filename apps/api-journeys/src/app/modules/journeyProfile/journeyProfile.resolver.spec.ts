@@ -4,7 +4,7 @@ import { PrismaService } from '../../lib/prisma.service'
 import { JourneyProfileResolver } from './journeyProfile.resolver'
 
 describe('JourneyProfileResolver', () => {
-  let resolver: JourneyProfileResolver, prisma: PrismaService
+  let resolver: JourneyProfileResolver, prismaService: PrismaService
 
   const profile = {
     id: '1',
@@ -22,9 +22,11 @@ describe('JourneyProfileResolver', () => {
       providers: [JourneyProfileResolver, PrismaService]
     }).compile()
     resolver = module.get<JourneyProfileResolver>(JourneyProfileResolver)
-    prisma = module.get<PrismaService>(PrismaService)
-    prisma.journeyProfile.findUnique = jest.fn().mockResolvedValueOnce(profile)
-    prisma.journeyProfile.create = jest
+    prismaService = module.get<PrismaService>(PrismaService)
+    prismaService.journeyProfile.findUnique = jest
+      .fn()
+      .mockResolvedValueOnce(profile)
+    prismaService.journeyProfile.create = jest
       .fn()
       .mockImplementationOnce((result) => result.data)
   })
@@ -37,9 +39,11 @@ describe('JourneyProfileResolver', () => {
 
   describe('journeyProfileCreate', () => {
     it('should create user profile', async () => {
-      prisma.journeyProfile.findUnique = jest.fn().mockResolvedValueOnce(null)
+      prismaService.journeyProfile.findUnique = jest
+        .fn()
+        .mockResolvedValueOnce(null)
       await resolver.journeyProfileCreate('newUserId')
-      expect(prisma.journeyProfile.create).toHaveBeenCalledWith({
+      expect(prismaService.journeyProfile.create).toHaveBeenCalledWith({
         data: {
           userId: 'newUserId',
           acceptedTermsAt: new Date('2021-02-18T00:00:00.000Z')
