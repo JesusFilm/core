@@ -608,6 +608,16 @@ export interface GetPublisherTemplate_publisherTemplate_userJourneys {
   user: GetPublisherTemplate_publisherTemplate_userJourneys_user | null;
 }
 
+export interface GetPublisherTemplate_publisherTemplate_host {
+  __typename: "Host";
+  id: string;
+  teamId: string;
+  title: string;
+  location: string | null;
+  src1: string | null;
+  src2: string | null;
+}
+
 export interface GetPublisherTemplate_publisherTemplate {
   __typename: "Journey";
   id: string;
@@ -626,6 +636,7 @@ export interface GetPublisherTemplate_publisherTemplate {
   blocks: GetPublisherTemplate_publisherTemplate_blocks[] | null;
   primaryImageBlock: GetPublisherTemplate_publisherTemplate_primaryImageBlock | null;
   userJourneys: GetPublisherTemplate_publisherTemplate_userJourneys[] | null;
+  host: GetPublisherTemplate_publisherTemplate_host | null;
 }
 
 export interface GetPublisherTemplate {
