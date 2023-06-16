@@ -18,6 +18,7 @@ import { UserInviteModule } from './modules/userInvite/userInvite.module'
 import { VisitorModule } from './modules/visitor/visitor.module'
 import { JourneyVisitorModule } from './modules/journeyVisitor/journeyVisitor.module'
 import { HostModule } from './modules/host/host.module'
+import { TeamModule } from './modules/team/team.module'
 
 @Module({
   imports: [
@@ -26,8 +27,9 @@ import { HostModule } from './modules/host/host.module'
     EventModule,
     HostModule,
     JourneyModule,
-    JourneyProfileModule,
     JourneyVisitorModule,
+    JourneyProfileModule,
+    TeamModule,
     UserJourneyModule,
     UserInviteModule,
     UserRoleModule,
@@ -50,6 +52,7 @@ import { HostModule } from './modules/host/host.module'
     }),
     LoggerModule.forRoot({
       pinoHttp: {
+        redact: ['req.headers.authorization'],
         autoLogging: {
           ignore: (req) => req.url === '/.well-known/apollo/server-health'
         },
