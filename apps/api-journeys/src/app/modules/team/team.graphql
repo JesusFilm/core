@@ -1,0 +1,24 @@
+type Team @key(fields: "id") {
+  id: ID!
+  title: String!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+extend type Query {
+  teams: [Team!]!
+  team(id: ID!): Team!
+}
+
+input TeamCreateInput {
+  title: String!
+}
+
+input TeamUpdateInput {
+  title: String!
+}
+
+extend type Mutation {
+  teamCreate(input: TeamCreateInput): Team!
+  teamUpdate(id: ID!, input: TeamUpdateInput): Team!
+}

@@ -626,6 +626,14 @@ export class JourneyVisitorFilter {
     countryCode?: Nullable<string>;
 }
 
+export class TeamCreateInput {
+    title: string;
+}
+
+export class TeamUpdateInput {
+    title: string;
+}
+
 export class UserInviteCreateInput {
     email: string;
 }
@@ -1090,6 +1098,10 @@ export abstract class IQuery {
 
     abstract journeyVisitorCount(filter: JourneyVisitorFilter): number | Promise<number>;
 
+    abstract teams(): Team[] | Promise<Team[]>;
+
+    abstract team(id: string): Team | Promise<Team>;
+
     abstract userInvites(journeyId: string): Nullable<UserInvite[]> | Promise<Nullable<UserInvite[]>>;
 
     abstract getUserRole(): Nullable<UserRole> | Promise<Nullable<UserRole>>;
@@ -1156,6 +1168,14 @@ export class JourneyVisitorsConnection {
     __typename?: 'JourneyVisitorsConnection';
     edges: JourneyVisitorEdge[];
     pageInfo: PageInfo;
+}
+
+export class Team {
+    __typename?: 'Team';
+    id: string;
+    title: string;
+    createdAt: DateTime;
+    updatedAt: DateTime;
 }
 
 export class UserInvite {
@@ -1375,6 +1395,10 @@ export abstract class IMutation {
     abstract journeyTemplate(id: string, input: JourneyTemplateInput): Journey | Promise<Journey>;
 
     abstract journeyProfileCreate(): JourneyProfile | Promise<JourneyProfile>;
+
+    abstract teamCreate(input?: Nullable<TeamCreateInput>): Team | Promise<Team>;
+
+    abstract teamUpdate(id: string, input?: Nullable<TeamUpdateInput>): Team | Promise<Team>;
 
     abstract userInviteCreate(journeyId: string, input?: Nullable<UserInviteCreateInput>): Nullable<UserInvite> | Promise<Nullable<UserInvite>>;
 
