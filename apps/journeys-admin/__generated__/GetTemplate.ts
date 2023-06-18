@@ -615,6 +615,16 @@ export interface GetTemplate_template_chatButtons {
   platform: ChatPlatform | null;
 }
 
+export interface GetTemplate_template_host {
+  __typename: "Host";
+  id: string;
+  teamId: string;
+  title: string;
+  location: string | null;
+  src1: string | null;
+  src2: string | null;
+}
+
 export interface GetTemplate_template {
   __typename: "Journey";
   id: string;
@@ -634,6 +644,7 @@ export interface GetTemplate_template {
   primaryImageBlock: GetTemplate_template_primaryImageBlock | null;
   userJourneys: GetTemplate_template_userJourneys[] | null;
   chatButtons: GetTemplate_template_chatButtons[];
+  host: GetTemplate_template_host | null;
 }
 
 export interface GetTemplate {

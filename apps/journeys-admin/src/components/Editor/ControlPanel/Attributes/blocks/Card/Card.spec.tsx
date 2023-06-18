@@ -84,7 +84,9 @@ describe('Card', () => {
       userJourneys: [],
       template: null,
       seoTitle: null,
-      seoDescription: null
+      seoDescription: null,
+      chatButtons: [],
+      host: null
     }
     it('shows background color from prop', () => {
       const { getByRole } = render(

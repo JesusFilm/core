@@ -571,15 +571,15 @@ export class VideoProgressEventCreateInput {
 export class HostUpdateInput {
     title?: Nullable<string>;
     location?: Nullable<string>;
-    avatar1Id?: Nullable<string>;
-    avatar2Id?: Nullable<string>;
+    src1?: Nullable<string>;
+    src2?: Nullable<string>;
 }
 
 export class HostCreateInput {
     title: string;
     location?: Nullable<string>;
-    avatar1Id?: Nullable<string>;
-    avatar2Id?: Nullable<string>;
+    src1?: Nullable<string>;
+    src2?: Nullable<string>;
 }
 
 export class JourneysFilter {
@@ -622,6 +622,14 @@ export class JourneyVisitorFilter {
     hasIcon?: Nullable<boolean>;
     hideInactive?: Nullable<boolean>;
     countryCode?: Nullable<string>;
+}
+
+export class TeamCreateInput {
+    title: string;
+}
+
+export class TeamUpdateInput {
+    title: string;
 }
 
 export class UserInviteCreateInput {
@@ -1063,8 +1071,8 @@ export class Host {
     teamId: string;
     title: string;
     location?: Nullable<string>;
-    avatar1Id?: Nullable<string>;
-    avatar2Id?: Nullable<string>;
+    src1?: Nullable<string>;
+    src2?: Nullable<string>;
 }
 
 export abstract class IQuery {
@@ -1087,6 +1095,10 @@ export abstract class IQuery {
     abstract journeyVisitorsConnection(teamId: string, filter: JourneyVisitorFilter, first?: Nullable<number>, after?: Nullable<string>, sort?: Nullable<JourneyVisitorSort>): JourneyVisitorsConnection | Promise<JourneyVisitorsConnection>;
 
     abstract journeyVisitorCount(filter: JourneyVisitorFilter): number | Promise<number>;
+
+    abstract teams(): Team[] | Promise<Team[]>;
+
+    abstract team(id: string): Team | Promise<Team>;
 
     abstract userInvites(journeyId: string): Nullable<UserInvite[]> | Promise<Nullable<UserInvite[]>>;
 
@@ -1154,6 +1166,14 @@ export class JourneyVisitorsConnection {
     __typename?: 'JourneyVisitorsConnection';
     edges: JourneyVisitorEdge[];
     pageInfo: PageInfo;
+}
+
+export class Team {
+    __typename?: 'Team';
+    id: string;
+    title: string;
+    createdAt: DateTime;
+    updatedAt: DateTime;
 }
 
 export class UserInvite {
@@ -1373,6 +1393,10 @@ export abstract class IMutation {
     abstract journeyTemplate(id: string, input: JourneyTemplateInput): Journey | Promise<Journey>;
 
     abstract journeyProfileCreate(): JourneyProfile | Promise<JourneyProfile>;
+
+    abstract teamCreate(input?: Nullable<TeamCreateInput>): Team | Promise<Team>;
+
+    abstract teamUpdate(id: string, input?: Nullable<TeamUpdateInput>): Team | Promise<Team>;
 
     abstract userInviteCreate(journeyId: string, input?: Nullable<UserInviteCreateInput>): Nullable<UserInvite> | Promise<Nullable<UserInvite>>;
 
