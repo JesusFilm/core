@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { JourneyStatus, ThemeName, ThemeMode, ButtonVariant, ButtonColor, ButtonSize, IconName, IconSize, IconColor, TypographyAlign, TypographyColor, TypographyVariant, VideoBlockSource, VideoBlockObjectFit, UserJourneyRole } from "./globalTypes";
+import { JourneyStatus, ThemeName, ThemeMode, ButtonVariant, ButtonColor, ButtonSize, IconName, IconSize, IconColor, TypographyAlign, TypographyColor, TypographyVariant, VideoBlockSource, VideoBlockObjectFit, UserJourneyRole, ChatPlatform } from "./globalTypes";
 
 // ====================================================
 // GraphQL query operation: GetTemplate
@@ -608,6 +608,13 @@ export interface GetTemplate_template_userJourneys {
   user: GetTemplate_template_userJourneys_user | null;
 }
 
+export interface GetTemplate_template_chatButtons {
+  __typename: "ChatButton";
+  id: string;
+  link: string | null;
+  platform: ChatPlatform | null;
+}
+
 export interface GetTemplate_template_host {
   __typename: "Host";
   id: string;
@@ -636,6 +643,7 @@ export interface GetTemplate_template {
   blocks: GetTemplate_template_blocks[] | null;
   primaryImageBlock: GetTemplate_template_primaryImageBlock | null;
   userJourneys: GetTemplate_template_userJourneys[] | null;
+  chatButtons: GetTemplate_template_chatButtons[];
   host: GetTemplate_template_host | null;
 }
 
