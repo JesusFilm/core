@@ -14,7 +14,7 @@ const ChatStory = {
 
 const Template: Story<ComponentProps<typeof Chat>> = () => (
   <MockedProvider>
-    <Chat journeyId="1" />
+    <Chat />
   </MockedProvider>
 )
 

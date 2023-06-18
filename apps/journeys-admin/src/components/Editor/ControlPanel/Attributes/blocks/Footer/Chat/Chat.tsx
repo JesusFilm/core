@@ -7,9 +7,6 @@ import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { ChatPlatform } from '../../../../../../../../__generated__/globalTypes'
 import { ChatOption } from './ChatOption'
 
-// TODO: catch mutation errors
-// TODO: add cache updates
-
 export function Chat(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { journey } = useJourney()
