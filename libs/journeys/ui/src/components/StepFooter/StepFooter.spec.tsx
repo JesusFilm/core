@@ -54,9 +54,11 @@ describe('StepFooter', () => {
 
   it('should display host avatar, name and location', () => {
     const { getByTestId } = render(
-      <JourneyProvider value={{ journey }}>
-        <StepFooter />
-      </JourneyProvider>
+      <MockedProvider>
+        <JourneyProvider value={{ journey }}>
+          <StepFooter />
+        </JourneyProvider>
+      </MockedProvider>
     )
 
     expect(getByTestId('host-avatars')).toBeInTheDocument()
