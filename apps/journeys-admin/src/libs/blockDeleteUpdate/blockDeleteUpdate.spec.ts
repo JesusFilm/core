@@ -97,7 +97,8 @@ const journey: Journey = {
   userJourneys: [],
   seoTitle: null,
   seoDescription: null,
-  chatButtons: []
+  chatButtons: [],
+  host: null
 }
 
 const response = [{ ...image, parentOrder: 0 }]

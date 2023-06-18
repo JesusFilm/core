@@ -615,6 +615,16 @@ export interface GetJourney_journey_chatButtons {
   platform: ChatPlatform | null;
 }
 
+export interface GetJourney_journey_host {
+  __typename: "Host";
+  id: string;
+  teamId: string;
+  title: string;
+  location: string | null;
+  src1: string | null;
+  src2: string | null;
+}
+
 export interface GetJourney_journey {
   __typename: "Journey";
   id: string;
@@ -634,6 +644,7 @@ export interface GetJourney_journey {
   primaryImageBlock: GetJourney_journey_primaryImageBlock | null;
   userJourneys: GetJourney_journey_userJourneys[] | null;
   chatButtons: GetJourney_journey_chatButtons[];
+  host: GetJourney_journey_host | null;
 }
 
 export interface GetJourney {

@@ -55,7 +55,8 @@ describe('JourneyView', () => {
     primaryImageBlock: null,
     template: null,
     userJourneys: [],
-    chatButtons: []
+    chatButtons: [],
+    host: null
   }
 
   it.skip('should have edit button', () => {

@@ -41,7 +41,8 @@ const journey: Journey = {
   template: null,
   seoTitle: null,
   seoDescription: null,
-  chatButtons: []
+  chatButtons: [],
+  host: null
 }
 
 describe('getJourneyRTL', () => {

@@ -40,7 +40,16 @@ describe('StepFooter', () => {
     template: null,
     seoTitle: 'My awesome journey',
     seoDescription: null,
-    chatButtons: []
+    chatButtons: [],
+    host: {
+      id: 'hostId',
+      __typename: 'Host',
+      teamId: 'teamId',
+      title: 'Cru International',
+      location: 'Florida, USA',
+      src1: null,
+      src2: null
+    }
   }
 
   it('should display social media journey title by default', () => {

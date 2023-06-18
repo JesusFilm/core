@@ -615,6 +615,16 @@ export interface GetPublisherTemplate_publisherTemplate_chatButtons {
   platform: ChatPlatform | null;
 }
 
+export interface GetPublisherTemplate_publisherTemplate_host {
+  __typename: "Host";
+  id: string;
+  teamId: string;
+  title: string;
+  location: string | null;
+  src1: string | null;
+  src2: string | null;
+}
+
 export interface GetPublisherTemplate_publisherTemplate {
   __typename: "Journey";
   id: string;
@@ -634,6 +644,7 @@ export interface GetPublisherTemplate_publisherTemplate {
   primaryImageBlock: GetPublisherTemplate_publisherTemplate_primaryImageBlock | null;
   userJourneys: GetPublisherTemplate_publisherTemplate_userJourneys[] | null;
   chatButtons: GetPublisherTemplate_publisherTemplate_chatButtons[];
+  host: GetPublisherTemplate_publisherTemplate_host | null;
 }
 
 export interface GetPublisherTemplate {

@@ -62,7 +62,8 @@ describe('Editor', () => {
     template: null,
     seoTitle: null,
     seoDescription: null,
-    chatButtons: []
+    chatButtons: [],
+    host: null
   }
 
   it('should render the element', () => {

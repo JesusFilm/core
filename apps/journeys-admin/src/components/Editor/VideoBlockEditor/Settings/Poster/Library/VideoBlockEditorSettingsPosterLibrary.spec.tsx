@@ -61,7 +61,8 @@ const journey: Journey = {
   userJourneys: [],
   seoTitle: null,
   seoDescription: null,
-  chatButtons: []
+  chatButtons: [],
+  host: null
 }
 
 const video: TreeBlock<VideoBlock> = {

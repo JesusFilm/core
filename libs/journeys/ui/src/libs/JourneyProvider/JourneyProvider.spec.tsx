@@ -56,7 +56,8 @@ const journey: Journey = {
   template: null,
   seoTitle: null,
   seoDescription: null,
-  chatButtons: []
+  chatButtons: [],
+  host: null
 }
 
 describe('JourneyContext', () => {
@@ -107,7 +108,8 @@ describe('JourneyContext', () => {
       userJourneys: [],
       seoTitle: null,
       seoDescription: null,
-      chatButtons: []
+      chatButtons: [],
+      host: null
     })
   })
 })
