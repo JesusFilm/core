@@ -136,6 +136,7 @@ const defaultJourney: Journey = {
   template: null,
   seoTitle: null,
   seoDescription: null,
+  chatButtons: [],
   host: null
 }
 

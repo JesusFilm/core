@@ -55,6 +55,7 @@ describe('JourneyView', () => {
     primaryImageBlock: null,
     template: null,
     userJourneys: [],
+    chatButtons: [],
     host: null
   }
 

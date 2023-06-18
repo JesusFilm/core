@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { JourneyStatus, ThemeName, ThemeMode, ButtonVariant, ButtonColor, ButtonSize, IconName, IconSize, IconColor, TypographyAlign, TypographyColor, TypographyVariant, VideoBlockSource, VideoBlockObjectFit, UserJourneyRole } from "./globalTypes";
+import { JourneyStatus, ThemeName, ThemeMode, ButtonVariant, ButtonColor, ButtonSize, IconName, IconSize, IconColor, TypographyAlign, TypographyColor, TypographyVariant, VideoBlockSource, VideoBlockObjectFit, UserJourneyRole, ChatPlatform } from "./globalTypes";
 
 // ====================================================
 // GraphQL query operation: GetJourney
@@ -608,6 +608,13 @@ export interface GetJourney_journey_userJourneys {
   user: GetJourney_journey_userJourneys_user | null;
 }
 
+export interface GetJourney_journey_chatButtons {
+  __typename: "ChatButton";
+  id: string;
+  link: string | null;
+  platform: ChatPlatform | null;
+}
+
 export interface GetJourney_journey_host {
   __typename: "Host";
   id: string;
@@ -636,6 +643,7 @@ export interface GetJourney_journey {
   blocks: GetJourney_journey_blocks[] | null;
   primaryImageBlock: GetJourney_journey_primaryImageBlock | null;
   userJourneys: GetJourney_journey_userJourneys[] | null;
+  chatButtons: GetJourney_journey_chatButtons[];
   host: GetJourney_journey_host | null;
 }
 

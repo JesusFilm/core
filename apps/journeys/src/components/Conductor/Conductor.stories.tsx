@@ -13,7 +13,8 @@ import { journeysConfig } from '../../libs/storybook'
 import {
   ThemeName,
   ThemeMode,
-  JourneyStatus
+  JourneyStatus,
+  ChatPlatform
 } from '../../../__generated__/globalTypes'
 import {
   basic,
@@ -77,6 +78,7 @@ const defaultJourney: Journey = {
   template: null,
   seoTitle: null,
   seoDescription: null,
+  chatButtons: [],
   host: null
 }
 
@@ -99,6 +101,23 @@ Default.args = {
 
 export const WithContent = Template.bind({})
 WithContent.args = {
+  journey: {
+    ...defaultJourney,
+    chatButtons: [
+      {
+        __typename: 'ChatButton',
+        id: '1',
+        link: 'https://m.me/',
+        platform: ChatPlatform.tikTok
+      },
+      {
+        __typename: 'ChatButton',
+        id: '1',
+        link: 'https://m.me/',
+        platform: ChatPlatform.snapchat
+      }
+    ]
+  },
   blocks: imageBlocks
 }
 WithContent.play = async () => {
