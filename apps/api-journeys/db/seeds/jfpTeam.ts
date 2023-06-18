@@ -38,6 +38,10 @@ export async function jfpTeam(): Promise<void> {
     })
   )
 
+  const journeys = await (
+    await db.query(aql` FOR journey IN journeys RETURN journey`)
+  ).all()
+
   const a = await prisma.host.create({
     data: {
       title: 'Cru International',
@@ -67,6 +71,34 @@ export async function jfpTeam(): Promise<void> {
       src2: 'https://images.unsplash.com/photo-1651069188152-bf30b5af2a0d?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1364&q=80'
     }
   })
+
+  await Promise.all(
+    journeys.map(async (journey) => {
+      switch (journey.title) {
+        case 'No Avatars Host': {
+          await db.collection('journeys').update(journey._key, {
+            hostId: b.id
+          })
+          return undefined
+        }
+        case 'One Avatar Host': {
+          await db.collection('journeys').update(journey._key, {
+            hostId: a.id
+          })
+          return undefined
+        }
+        case 'Two Avatars Host': {
+          await db.collection('journeys').update(journey._key, {
+            hostId: c.id
+          })
+          return undefined
+        }
+        default: {
+          return undefined
+        }
+      }
+    })
+  )
 
   console.log('A, B, C seeded!', a, b, c)
 }
