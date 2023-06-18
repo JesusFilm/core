@@ -56,6 +56,7 @@ describe('HostAvatars', () => {
     template: null,
     seoTitle: 'My awesome journey',
     seoDescription: null,
+    chatButtons: [],
     host: hostData
   }
 
