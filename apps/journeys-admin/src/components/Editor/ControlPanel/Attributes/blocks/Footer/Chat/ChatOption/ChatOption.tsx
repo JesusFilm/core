@@ -306,7 +306,7 @@ export function ChatOption({
 
           <TextFieldForm
             placeholder={t('Paste URL here')}
-            hiddenLabel
+            initialValues={chatButton?.link ?? ''}
             handleSubmit={async (value) => await handleUpdate(value, 'link')}
           />
 
