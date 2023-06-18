@@ -1090,6 +1090,8 @@ type Mutation
   """Updates template"""
   journeyTemplate(id: ID!, input: JourneyTemplateInput!): Journey! @join__field(graph: JOURNEYS)
   journeyProfileCreate: JourneyProfile! @join__field(graph: JOURNEYS)
+  teamCreate(input: TeamCreateInput): Team! @join__field(graph: JOURNEYS)
+  teamUpdate(id: ID!, input: TeamUpdateInput): Team! @join__field(graph: JOURNEYS)
   userInviteCreate(journeyId: ID!, input: UserInviteCreateInput): UserInvite @join__field(graph: JOURNEYS)
   userInviteRemove(id: ID!, journeyId: ID!): UserInvite! @join__field(graph: JOURNEYS)
   userInviteAcceptAll: [UserInvite!]! @join__field(graph: JOURNEYS)
@@ -1246,6 +1248,8 @@ type Query
 
   """Get a JourneyVisitor count by JourneyVisitorFilter"""
   journeyVisitorCount(filter: JourneyVisitorFilter!): Int! @join__field(graph: JOURNEYS)
+  teams: [Team!]! @join__field(graph: JOURNEYS)
+  team(id: ID!): Team! @join__field(graph: JOURNEYS)
   userInvites(journeyId: ID!): [UserInvite!] @join__field(graph: JOURNEYS)
   getUserRole: UserRole @join__field(graph: JOURNEYS)
 
@@ -1560,6 +1564,27 @@ type Tag
   id: ID!
   name: [Translation!]!
   parentId: ID
+}
+
+type Team
+  @join__type(graph: JOURNEYS, key: "id")
+{
+  id: ID!
+  title: String!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+input TeamCreateInput
+  @join__type(graph: JOURNEYS)
+{
+  title: String!
+}
+
+input TeamUpdateInput
+  @join__type(graph: JOURNEYS)
+{
+  title: String!
 }
 
 type TextResponseBlock implements Block
