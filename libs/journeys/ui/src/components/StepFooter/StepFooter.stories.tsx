@@ -1,12 +1,14 @@
 import { ComponentProps } from 'react'
 import { Story, Meta } from '@storybook/react'
 import Stack from '@mui/material/Stack'
+import { MockedProvider } from '@apollo/client/testing'
 import { journeyUiConfig } from '../../libs/journeyUiConfig'
 
 import {
   ThemeMode,
   ThemeName,
-  JourneyStatus
+  JourneyStatus,
+  ChatPlatform
 } from '../../../__generated__/globalTypes'
 
 import { JourneyProvider } from '../../libs/JourneyProvider'
@@ -56,6 +58,7 @@ const journey: Journey = {
   template: null,
   seoTitle: null,
   seoDescription: null,
+  chatButtons: [],
   host: {
     id: 'hostId',
     __typename: 'Host',
@@ -71,17 +74,19 @@ const Template: Story<
   ComponentProps<typeof StepFooter> & { journey: Journey; admin: boolean }
 > = ({ journey, admin = false }) => {
   return (
-    <JourneyProvider value={{ journey, admin }}>
-      <Stack
-        sx={{
-          position: 'relative',
-          height: 80,
-          justifyContent: 'center'
-        }}
-      >
-        <StepFooter sx={{ border: '1px solid black' }} />
-      </Stack>
-    </JourneyProvider>
+    <MockedProvider>
+      <JourneyProvider value={{ journey, admin }}>
+        <Stack
+          sx={{
+            position: 'relative',
+            height: 80,
+            justifyContent: 'center'
+          }}
+        >
+          <StepFooter sx={{ border: '1px solid black' }} />
+        </Stack>
+      </JourneyProvider>
+    </MockedProvider>
   )
 }
 
@@ -101,12 +106,51 @@ Long.args = {
     host: {
       ...journey.host,
       src2: 'https://images.unsplash.com/photo-1477936821694-ec4233a9a1a0?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1136&q=80'
-    } as unknown as Host
+    } as unknown as Host,
+    chatButtons: [
+      {
+        __typename: 'ChatButton',
+        id: '1',
+        link: 'https://m.me/',
+        platform: ChatPlatform.facebook
+      },
+      {
+        __typename: 'ChatButton',
+        id: '1',
+        link: 'https://m.me/',
+        platform: ChatPlatform.snapchat
+      }
+    ]
   }
 }
 
 export const RTL = Template.bind({})
-RTL.args = { ...Default.args }
+RTL.args = {
+  journey: {
+    ...journey,
+    language: {
+      __typename: 'Language',
+      id: '529',
+      bcp47: 'ar',
+      iso3: 'ara',
+      name: [
+        {
+          __typename: 'Translation',
+          value: 'Arabic',
+          primary: true
+        }
+      ]
+    },
+    chatButtons: [
+      {
+        __typename: 'ChatButton',
+        id: '1',
+        link: 'https://m.me/',
+        platform: ChatPlatform.facebook
+      }
+    ]
+  }
+}
 RTL.parameters = { rtl: true }
 
 export const Admin = Template.bind({})

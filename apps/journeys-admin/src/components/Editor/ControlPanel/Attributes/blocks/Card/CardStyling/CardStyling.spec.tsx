@@ -59,6 +59,7 @@ const journey: Journey = {
   userJourneys: [],
   seoTitle: null,
   seoDescription: null,
+  chatButtons: [],
   host: null
 }
 

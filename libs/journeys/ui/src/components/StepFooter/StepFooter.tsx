@@ -8,6 +8,7 @@ import { useJourney } from '../../libs/JourneyProvider'
 import { getJourneyRTL } from '../../libs/rtl'
 import { HostTitleLocation } from './HostTitleLocation'
 import { HostAvatars } from './HostAvatars'
+import { ChatButtons } from './ChatButtons'
 
 interface StepFooterProps {
   onFooterClick?: () => void
@@ -105,15 +106,7 @@ export function StepFooter({
             /> */}
           </Stack>
           <Box>
-            <Stack
-              data-testid="chat-widget"
-              sx={{
-                width: 44,
-                height: 44,
-                borderRadius: 10,
-                backgroundColor: 'white'
-              }}
-            />
+            <ChatButtons />
           </Box>
         </Stack>
       </Stack>

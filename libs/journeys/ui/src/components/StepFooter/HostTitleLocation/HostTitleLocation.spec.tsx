@@ -39,6 +39,7 @@ describe('HostTitleLocation', () => {
     template: null,
     seoTitle: null,
     seoDescription: null,
+    chatButtons: [],
     host: {
       id: 'hostId',
       __typename: 'Host' as const,
