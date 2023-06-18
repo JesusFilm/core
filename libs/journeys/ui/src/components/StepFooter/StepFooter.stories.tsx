@@ -93,7 +93,10 @@ const Template: Story<
 // StepFooter exists only on dark mode on desktop view
 export const Default = Template.bind({})
 Default.args = {
-  journey
+  journey: {
+    ...journey,
+    host: null
+  }
 }
 
 export const Long = Template.bind({})
@@ -156,7 +159,8 @@ RTL.parameters = { rtl: true }
 export const Admin = Template.bind({})
 Admin.args = {
   ...Default.args,
-  admin: true
+  admin: true,
+  journey: { ...journey, host: null }
 }
 
 export default Demo as Meta

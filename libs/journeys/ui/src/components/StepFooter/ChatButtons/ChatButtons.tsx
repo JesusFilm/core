@@ -98,7 +98,6 @@ export function ChatButtons(): ReactElement {
       data-testid="chat-widgets-container"
       direction={rtl ? 'row' : 'row-reverse'}
       gap={2}
-      sx={{ pr: rtl ? 8 : 0 }}
     >
       {chatButtons?.map((chatButton, index) => (
         <IconButton
