@@ -6,6 +6,7 @@ import { SxProps } from '@mui/material/styles'
 import { ReactElement } from 'react'
 import { useJourney } from '../../libs/JourneyProvider'
 import { getJourneyRTL } from '../../libs/rtl'
+import { ChatButtons } from './ChatButtons'
 
 interface StepFooterProps {
   onFooterClick?: () => void
@@ -72,7 +73,7 @@ export function StepFooter({
               width: '100%',
               flexDirection: 'row',
               alignItems: 'center',
-              justifyContent: 'space-between'
+              justifyContent: 'space-even'
             }}
           >
             <Typography
@@ -83,7 +84,8 @@ export function StepFooter({
                 color: { xs: 'primary.main', lg: 'white' },
                 whiteSpace: 'nowrap',
                 overflow: 'hidden',
-                textOverflow: 'ellipsis'
+                textOverflow: 'ellipsis',
+                order: 1
               }}
             >
               {journey?.seoTitle ?? journey?.title}
@@ -100,15 +102,7 @@ export function StepFooter({
             /> */}
           </Stack>
           <Box>
-            {/* <Stack
-              data-testid="chat-widget"
-              sx={{
-                width: 44,
-                height: 44,
-                borderRadius: 10,
-                backgroundColor: 'white'
-              }}
-            /> */}
+            <ChatButtons />
           </Box>
         </Stack>
       </Stack>

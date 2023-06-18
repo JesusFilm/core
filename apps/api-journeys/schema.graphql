@@ -175,6 +175,8 @@ extend type Mutation {
   """Updates template"""
   journeyTemplate(id: ID!, input: JourneyTemplateInput!): Journey!
   journeyProfileCreate: JourneyProfile!
+  teamCreate(input: TeamCreateInput): Team!
+  teamUpdate(id: ID!, input: TeamUpdateInput): Team!
   userInviteCreate(journeyId: ID!, input: UserInviteCreateInput): UserInvite
   userInviteRemove(id: ID!, journeyId: ID!): UserInvite!
   userInviteAcceptAll: [UserInvite!]!
@@ -1569,8 +1571,6 @@ type Host {
   teamId: ID!
   title: String!
   location: String
-  avatar1Id: ID @deprecated(reason: "Use `src1` instead.")
-  avatar2Id: ID @deprecated(reason: "Use `src2` instead.")
   src1: String
   src2: String
 }
@@ -1581,8 +1581,6 @@ input HostUpdateInput {
   """
   title: String
   location: String
-  avatar1Id: ID
-  avatar2Id: ID
   src1: String
   src2: String
 }
@@ -1621,6 +1619,8 @@ extend type Query {
 
   """Get a JourneyVisitor count by JourneyVisitorFilter"""
   journeyVisitorCount(filter: JourneyVisitorFilter!): Int!
+  teams: [Team!]!
+  team(id: ID!): Team!
   userInvites(journeyId: ID!): [UserInvite!]
   getUserRole: UserRole
 
@@ -1643,8 +1643,6 @@ extend type Query {
 input HostCreateInput {
   title: String!
   location: String
-  avatar1Id: ID
-  avatar2Id: ID
   src1: String
   src2: String
 }
@@ -1864,6 +1862,23 @@ enum JourneyVisitorSort {
   date
   duration
   activity
+}
+
+type Team
+  @key(fields: "id")
+{
+  id: ID!
+  title: String!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+input TeamCreateInput {
+  title: String!
+}
+
+input TeamUpdateInput {
+  title: String!
 }
 
 type UserInvite
@@ -2160,4 +2175,4 @@ type _Service {
   sdl: String
 }
 
-union _Entity = Journey | JourneyProfile | JourneyVisitor | Language | User | UserInvite | UserJourney | UserRole | Video | Visitor
+union _Entity = Journey | JourneyProfile | JourneyVisitor | Language | Team | User | UserInvite | UserJourney | UserRole | Video | Visitor

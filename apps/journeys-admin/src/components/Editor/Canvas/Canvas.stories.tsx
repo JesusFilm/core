@@ -13,6 +13,7 @@ import {
   ButtonColor,
   ButtonSize,
   ButtonVariant,
+  ChatPlatform,
   IconName,
   IconSize,
   ThemeMode,
@@ -653,6 +654,22 @@ FooterEdit.args = {
   state: {
     selectedBlock: {},
     selectedComponent: 'Footer'
+  },
+  journey: {
+    chatButtons: [
+      {
+        __typename: 'ChatButton',
+        id: '1',
+        link: 'https://m.me/',
+        platform: ChatPlatform.tikTok
+      },
+      {
+        __typename: 'ChatButton',
+        id: '1',
+        link: 'https://m.me/',
+        platform: ChatPlatform.snapchat
+      }
+    ]
   }
 }
 
