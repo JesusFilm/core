@@ -85,6 +85,7 @@ describe('Card', () => {
       template: null,
       seoTitle: null,
       seoDescription: null,
+      chatButtons: [],
       host: null
     }
     it('shows background color from prop', () => {

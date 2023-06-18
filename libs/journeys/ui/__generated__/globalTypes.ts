@@ -33,6 +33,19 @@ export enum ButtonVariant {
   text = "text",
 }
 
+export enum ChatPlatform {
+  facebook = "facebook",
+  instagram = "instagram",
+  line = "line",
+  skype = "skype",
+  snapchat = "snapchat",
+  telegram = "telegram",
+  tikTok = "tikTok",
+  viber = "viber",
+  vk = "vk",
+  whatsApp = "whatsApp",
+}
+
 export enum IconColor {
   action = "action",
   disabled = "disabled",
