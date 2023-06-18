@@ -1,4 +1,5 @@
 import { fireEvent, render } from '@testing-library/react'
+import { MockedProvider } from '@apollo/client/testing'
 import {
   JourneyStatus,
   ThemeMode,
@@ -39,6 +40,7 @@ describe('StepFooter', () => {
     template: null,
     seoTitle: 'My awesome journey',
     seoDescription: null,
+    chatButtons: [],
     host: {
       id: 'hostId',
       __typename: 'Host',
@@ -52,9 +54,11 @@ describe('StepFooter', () => {
 
   it('should display social media journey title by default', () => {
     const { getByText } = render(
-      <JourneyProvider value={{ journey }}>
-        <StepFooter />
-      </JourneyProvider>
+      <MockedProvider>
+        <JourneyProvider value={{ journey }}>
+          <StepFooter />
+        </JourneyProvider>
+      </MockedProvider>
     )
 
     expect(getByText('My awesome journey')).toBeInTheDocument()
@@ -62,9 +66,11 @@ describe('StepFooter', () => {
 
   it('should display journey title if no social media title', () => {
     const { getByText } = render(
-      <JourneyProvider value={{ journey: { ...journey, seoTitle: null } }}>
-        <StepFooter />
-      </JourneyProvider>
+      <MockedProvider>
+        <JourneyProvider value={{ journey: { ...journey, seoTitle: null } }}>
+          <StepFooter />
+        </JourneyProvider>
+      </MockedProvider>
     )
 
     expect(getByText('my journey')).toBeInTheDocument()
@@ -72,9 +78,11 @@ describe('StepFooter', () => {
 
   it('should render custom styles', () => {
     const { getByTestId } = render(
-      <JourneyProvider value={{ journey }}>
-        <StepFooter sx={{ outline: '1px solid red' }} />
-      </JourneyProvider>
+      <MockedProvider>
+        <JourneyProvider value={{ journey }}>
+          <StepFooter sx={{ outline: '1px solid red' }} />
+        </JourneyProvider>
+      </MockedProvider>
     )
 
     expect(getByTestId('stepFooter')).toHaveStyle('outline: 1px solid red')
@@ -83,13 +91,18 @@ describe('StepFooter', () => {
   it('should call onFooterClick on click', () => {
     const onFooterClick = jest.fn()
     const { getByTestId } = render(
-      <JourneyProvider value={{ journey: { ...journey, seoTitle: null } }}>
-        <StepFooter onFooterClick={onFooterClick} />
-      </JourneyProvider>
+      <MockedProvider>
+        <JourneyProvider
+          value={{ admin: true, journey: { ...journey, seoTitle: null } }}
+        >
+          <StepFooter onFooterClick={onFooterClick} />
+        </JourneyProvider>
+      </MockedProvider>
     )
 
     fireEvent.click(getByTestId('stepFooter'))
 
     expect(onFooterClick).toBeCalledTimes(1)
+    expect(getByTestId('Plus2Icon')).toBeInTheDocument()
   })
 })

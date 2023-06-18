@@ -57,6 +57,7 @@ const journey: Journey = {
   template: null,
   seoTitle: null,
   seoDescription: null,
+  chatButtons: [],
   host: null
 }
 
