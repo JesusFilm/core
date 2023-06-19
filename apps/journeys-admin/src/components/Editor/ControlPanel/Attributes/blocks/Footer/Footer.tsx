@@ -11,7 +11,7 @@ export function Footer(): ReactElement {
   const { journey } = useJourney()
 
   const platforms = (journey?.chatButtons ?? [])
-    .map((button) => button?.platform != null && capitalize(button?.platform))
+    .map((button) => capitalize(button.platform ?? 'custom'))
     .filter(Boolean)
     .join(' and ')
 
