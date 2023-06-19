@@ -167,7 +167,12 @@ Long.args = {
     seoTitle:
       'Some really really really really incredibly absolutely humungo wungo massively very very very long beyond a shadow of a doubt, needed only for testing a very strange edge case where a title is really really long - title',
     host: {
-      ...journey.host,
+      id: 'hostId',
+      __typename: 'Host',
+      title: 'Cru International is a host title which can be very long',
+      teamId: 'teamId',
+      location:
+        'Florida, USA is an example of a host location which also can be very long',
       src1: 'https://images.unsplash.com/photo-1558704164-ab7a0016c1f3?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80',
       src2: 'https://images.unsplash.com/photo-1477936821694-ec4233a9a1a0?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1136&q=80'
     } as unknown as Host,

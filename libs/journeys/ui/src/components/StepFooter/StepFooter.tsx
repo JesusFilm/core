@@ -28,6 +28,7 @@ export function StepFooter({
     journey?.host?.src2 != null
   const hasChatWidget =
     admin || (journey?.chatButtons != null && journey?.chatButtons.length > 0)
+
   return (
     <Box
       data-testid="stepFooter"
