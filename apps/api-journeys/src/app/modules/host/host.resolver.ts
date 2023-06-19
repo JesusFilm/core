@@ -19,7 +19,7 @@ export class HostResolver {
     @Args('teamId') teamId: string
   ): Promise<Host[]> {
     return await this.prismaService.host.findMany({
-      where: { teamId, team: { userTeams: { some: { userId } } } }
+      where: { teamId }
     })
   }
 
