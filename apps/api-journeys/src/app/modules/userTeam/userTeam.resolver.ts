@@ -44,7 +44,7 @@ export class UserTeamResolver {
     @CaslAbility() ability: AppAbility,
     @Args('id') id: string
   ): Promise<UserTeam> {
-    const userTeam = await this.prismaService.userTeam.findFirst({
+    const userTeam = await this.prismaService.userTeam.findUnique({
       where: { id },
       include: { team: { include: { userTeams: true } } }
     })
@@ -63,7 +63,7 @@ export class UserTeamResolver {
     @Args('id') id: string,
     @Args('input') data: UserTeamUpdateInput
   ): Promise<UserTeam> {
-    const userTeam = await this.prismaService.userTeam.findFirst({
+    const userTeam = await this.prismaService.userTeam.findUnique({
       where: { id },
       include: { team: { include: { userTeams: true } } }
     })
@@ -85,7 +85,7 @@ export class UserTeamResolver {
     @CaslAbility() ability: AppAbility,
     @Args('id') id: string
   ): Promise<UserTeam> {
-    const userTeam = await this.prismaService.userTeam.findFirst({
+    const userTeam = await this.prismaService.userTeam.findUnique({
       where: { id },
       include: { team: { include: { userTeams: true } } }
     })
