@@ -2,6 +2,7 @@ import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { SxProps } from '@mui/material/styles'
+import { gql, useQuery } from '@apollo/client'
 
 import { ReactElement } from 'react'
 import { useJourney } from '../../libs/JourneyProvider'
@@ -9,6 +10,19 @@ import { getJourneyRTL } from '../../libs/rtl'
 import { HostTitleLocation } from './HostTitleLocation'
 import { HostAvatars } from './HostAvatars'
 import { ChatButtons } from './ChatButtons'
+import { GetHosts } from './__generated__/GetHosts'
+
+export const GET_HOSTS = gql`
+  query GetHosts {
+    hosts(teamId: "jfp-team") {
+      id
+      title
+      src1
+      src2
+      location
+    }
+  }
+`
 
 interface StepFooterProps {
   onFooterClick?: () => void
@@ -21,6 +35,9 @@ export function StepFooter({
 }: StepFooterProps): ReactElement {
   const { journey } = useJourney()
   const { rtl } = getJourneyRTL(journey)
+  const { data } = useQuery<GetHosts>(GET_HOSTS)
+
+  console.log('journey', journey, data)
 
   return (
     <Box
