@@ -93,7 +93,7 @@ export function StepFooter({
   }
 
   useEffect(() => {
-    void seedHosts()
+    // void seedHosts()
   }, [])
 
   return (
