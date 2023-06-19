@@ -12,6 +12,7 @@ import { BlockFields_ButtonBlock as ButtonBlock } from '../../../../../__generat
 import { ActionFields_LinkAction as LinkAction } from '../../../../../__generated__/ActionFields'
 import { MultipleLinkActionUpdate } from '../../../../../__generated__/MultipleLinkActionUpdate'
 import { TextFieldForm } from '../../../TextFieldForm'
+import type { Action } from '../../ActionsTable/utils/getActions'
 
 export const MULTIPLE_LINK_ACTION_UPDATE = gql`
   mutation MultipleLinkActionUpdate(
@@ -29,7 +30,7 @@ export const MULTIPLE_LINK_ACTION_UPDATE = gql`
 interface ActionEditorProps {
   url: string
   goalLabel?: (url: string) => string
-  setSelectedAction?: (url: string) => void
+  setSelectedAction?: (action: Action) => void
 }
 
 export function ActionEditor({
@@ -98,7 +99,7 @@ export function ActionEditor({
         }
       })
     })
-    setSelectedAction?.(url)
+    // setSelectedAction?.(url)
     goalLabel?.(url)
   }
 

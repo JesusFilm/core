@@ -14,11 +14,11 @@ import Close from '@mui/icons-material/Close'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { ActionDetails } from '../../ActionDetails'
 import { ActionInformation } from '../../ActionDetails/ActionInformation'
-import type { ActionType, Actions } from '../utils/getActions'
+import type { ActionType, Action } from '../utils/getActions'
 import { ActionsListView } from './ActionsListView'
 
 interface ActionsListProps {
-  actions: Actions[]
+  actions: Action[]
   goalLabel: (url: string) => string
 }
 
@@ -29,9 +29,8 @@ export function ActionsList({
   const { dispatch } = useEditor()
   const mdUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('md'))
 
-  const [selectedAction, setSelectedAction] = useState<string | undefined>(
-    actions[0]?.url
-  )
+  const [selectedAction, setSelectedAction] = useState(actions[0])
+  console.log(selectedAction)
   const [open, setOpen] = useState(false)
 
   const openActionDetails = (url: string, type?: ActionType): void => {
@@ -59,11 +58,13 @@ export function ActionsList({
     }
   }
 
-  const handleClick = (url: string): void => {
-    setSelectedAction(url)
-    if (window.innerWidth < 768) {
-      const clickedAction = actions.find((action) => action.url === url)
-      if (clickedAction != null) {
+  const handleClick = (url: string, actionType: ActionType): void => {
+    const clickedAction = actions.find(
+      (action) => action.url === url && action?.actionType === actionType
+    )
+    if (clickedAction != null) {
+      setSelectedAction(clickedAction)
+      if (window.innerWidth < 768) {
         openActionDetails(url, clickedAction.actionType)
       }
     }
@@ -72,9 +73,13 @@ export function ActionsList({
   useEffect(() => {
     function handleResize(): void {
       if (window.innerWidth > 768 && selectedAction != null) {
-        const action = actions.find((action) => action.url === selectedAction)
+        const action = actions.find(
+          (action) =>
+            action.url === selectedAction?.url &&
+            action?.actionType === selectedAction?.actionType
+        )
         if (action != null) {
-          openActionDetails(selectedAction, action.actionType)
+          openActionDetails(selectedAction?.url, action.actionType)
         }
       }
     }

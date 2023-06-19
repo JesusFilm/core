@@ -4,13 +4,13 @@ import { GetJourney_journey as Journey } from '../../../../../../__generated__/G
 
 export type ActionType = 'block' | 'chatButton'
 
-export interface Actions {
+export interface Action {
   url: string
   count: number
   actionType: ActionType
 }
 
-export function getActions(journey?: Journey): Actions[] {
+export function getActions(journey?: Journey): Action[] {
   const linkActionBlocks = (journey?.blocks ?? []).filter(
     (block) => (block as ButtonBlock).action?.__typename === 'LinkAction'
   )
@@ -25,9 +25,9 @@ export function getActions(journey?: Journey): Actions[] {
     actionType: 'chatButton' as ActionType
   }))
 
-  const combinedActions = [...blockActions, ...chatButtonActions]
+  const combinedActions = [...chatButtonActions, ...blockActions]
 
-  return combinedActions.reduce<Actions[]>((actions, action) => {
+  return combinedActions.reduce<Action[]>((actions, action) => {
     if (action.url !== null) {
       const existingActionIndex = actions.findIndex(
         (count) =>

@@ -1,6 +1,7 @@
 import { ReactElement } from 'react'
 import Stack from '@mui/material/Stack'
 import Box from '@mui/material/Box'
+import type { Action } from '../ActionsTable/utils/getActions'
 import { ActionCards } from './ActionCards'
 import { ActionEditor } from './ActionEditor'
 import { ActionInformation } from './ActionInformation'
@@ -8,7 +9,7 @@ import { ActionInformation } from './ActionInformation'
 interface ActionDetailsProps {
   url?: string
   goalLabel?: (url: string) => string
-  setSelectedAction?: (url: string) => void
+  setSelectedAction?: (action: Action) => void
 }
 
 export function ActionDetails({

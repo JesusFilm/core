@@ -14,13 +14,13 @@ import QuestionAnswerOutlined from '@mui/icons-material/QuestionAnswerOutlined'
 import WebOutlined from '@mui/icons-material/WebOutlined'
 import MenuBookRounded from '@mui/icons-material/MenuBookRounded'
 import useMediaQuery from '@mui/material/useMediaQuery'
-import type { Actions } from '../../utils/getActions'
+import type { Action, ActionType } from '../../utils/getActions'
 
 interface ActionsListViewProps {
-  actions: Actions[]
-  selectedAction?: string
+  actions: Action[]
+  selectedAction?: Action
   goalLabel: (url: string) => string
-  handleClick: (url: string) => void
+  handleClick: (url: string, actionType: ActionType) => void
 }
 
 // tested in ActionList
@@ -32,8 +32,17 @@ export function ActionsListView({
 }: ActionsListViewProps): ReactElement {
   const mdUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('md'))
 
-  const GoalIcon = ({ url }: { url: string }): ReactElement => {
-    const color = selectedAction === url ? 'primary.main' : 'secondary.light'
+  const GoalIcon = ({
+    url,
+    actionType
+  }: {
+    url: string
+    actionType: ActionType
+  }): ReactElement => {
+    const color =
+      selectedAction?.url === url && selectedAction?.actionType === actionType
+        ? 'primary.main'
+        : 'secondary.light'
     switch (goalLabel(url)) {
       case 'Start a Conversation':
         return <QuestionAnswerOutlined sx={{ color }} />
@@ -74,15 +83,17 @@ export function ActionsListView({
             </TableRow>
           </TableHead>
           <TableBody>
-            {actions?.map(({ url, count }, index) => (
+            {actions?.map(({ url, count, actionType }, index) => (
               <StyledTableRow
                 key={index}
-                onClick={() => handleClick(url)}
-                selectedAction={selectedAction}
-                url={url}
+                onClick={() => handleClick(url, actionType)}
+                selectedAction={
+                  selectedAction?.url === url &&
+                  selectedAction?.actionType === actionType
+                }
               >
                 <TableCell width={0} align="center" sx={{ pr: 2, pl: 5 }}>
-                  <GoalIcon url={url} />
+                  <GoalIcon url={url} actionType={actionType} />
                 </TableCell>
                 <TableCell
                   sx={{
@@ -96,7 +107,10 @@ export function ActionsListView({
                   <Typography
                     variant="subtitle2"
                     color={
-                      selectedAction === url ? 'secondary.dark' : 'text.primary'
+                      selectedAction?.url === url &&
+                      selectedAction?.actionType === actionType
+                        ? 'secondary.dark'
+                        : 'text.primary'
                     }
                     sx={{
                       pb: 1
@@ -109,16 +123,21 @@ export function ActionsListView({
                   </Typography>
                 </TableCell>
                 <TableCell align="center" width={100}>
-                  <Typography variant="subtitle2">{count}</Typography>
+                  <Typography variant="subtitle2">
+                    {actionType === 'chatButton' ? 'All' : count}
+                  </Typography>
                   <Typography variant="body2">
-                    {count > 1 ? 'cards' : 'card'}
+                    {count > 1 || actionType === 'chatButton'
+                      ? 'cards'
+                      : 'card'}
                   </Typography>
                 </TableCell>
                 <TableCell width={40} sx={{ pl: 0, pr: 5 }}>
                   <EditRounded
                     sx={{
                       color:
-                        selectedAction === url
+                        selectedAction?.url === url &&
+                        selectedAction?.actionType === actionType
                           ? 'primary.main'
                           : 'background.default'
                     }}
@@ -149,19 +168,22 @@ export function ActionsListView({
             </TableRow>
           </TableHead>
           <TableBody>
-            {actions?.map(({ url, count }, index) => (
+            {actions?.map(({ url, count, actionType }, index) => (
               <StyledTableRow
                 key={index}
-                onClick={() => handleClick(url)}
-                selectedAction={selectedAction}
-                url={url}
+                onClick={() => handleClick(url, actionType)}
+                selectedAction={
+                  selectedAction?.url === url &&
+                  selectedAction?.actionType === actionType
+                }
               >
                 <TableCell>
                   <Stack gap={2}>
                     <Typography
                       variant="subtitle2"
                       color={
-                        selectedAction === url
+                        selectedAction?.url === url &&
+                        selectedAction?.actionType === actionType
                           ? 'secondary.dark'
                           : 'text.primary'
                       }
@@ -175,15 +197,19 @@ export function ActionsListView({
                       {url}
                     </Typography>
                     <Stack gap={2} direction="row" alignItems="center" pb={2.5}>
-                      <GoalIcon url={url} />
+                      <GoalIcon url={url} actionType={actionType} />
                       <Typography variant="subtitle2" color="secondary.light">
                         {goalLabel(url)}
                       </Typography>
                     </Stack>
                     <Typography variant="body2" color="secondary.light">
                       Appears on{' '}
-                      <span style={{ fontWeight: 'bold' }}>{count}</span>{' '}
-                      {count > 1 ? 'cards' : 'card'}
+                      <span style={{ fontWeight: 'bold' }}>
+                        {actionType === 'chatButton' ? 'All' : count}
+                      </span>{' '}
+                      {count > 1 || actionType === 'chatButton'
+                        ? 'cards'
+                        : 'card'}
                     </Typography>
                   </Stack>
                 </TableCell>
@@ -197,14 +223,13 @@ export function ActionsListView({
 }
 
 interface StyledTableRowProps extends TableRowProps {
-  selectedAction?: string
-  url: string
+  selectedAction?: boolean
 }
 
 const StyledTableRow = styled(TableRow)<StyledTableRowProps>(
-  ({ theme, selectedAction, url }) => ({
+  ({ theme, selectedAction }) => ({
     cursor: 'pointer',
-    ...(selectedAction === url
+    ...(selectedAction === true
       ? {
           borderBottom: '1.5px solid #C52D3A',
           backgroundColor: 'rgba(255, 255, 255, 0.7)',
