@@ -8,8 +8,12 @@ import {
 } from '@core/journeys/ui/EditorProvider'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
-import { ChatPlatform } from '../../../../../../../__generated__/globalTypes'
-import { JourneyFields as Journey } from '../../../../../../../__generated__/JourneyFields'
+import {
+  ChatPlatform,
+  ThemeMode,
+  ThemeName
+} from '../../../../../../../__generated__/globalTypes'
+import { GetJourney_journey as Journey } from '../../../../../../../__generated__/GetJourney'
 import { Footer } from './Footer'
 
 jest.mock('@core/journeys/ui/EditorProvider', () => {
@@ -88,6 +92,34 @@ describe('Footer', () => {
       </JourneyProvider>
     )
     expect(getByText('Facebook')).toBeInTheDocument()
+  })
+
+  it('should display Host attribute with hosts name if a name is provided', () => {
+    const { getByText } = render(
+      <JourneyProvider
+        value={{
+          journey: {
+            id: 'journeyId',
+            themeMode: ThemeMode.dark,
+            themeName: ThemeName.base,
+            language: {
+              __typename: 'Language',
+              id: '529',
+              bcp47: 'en',
+              iso3: 'eng'
+            },
+            host: {
+              title: `John Geronimo "The Rock" Johnson`
+            }
+          } as unknown as Journey
+        }}
+      >
+        <Footer />
+      </JourneyProvider>
+    )
+
+    expect(getByText('Hosted by')).toBeInTheDocument()
+    expect(getByText(`John Geronimo "The Rock" Johnson`)).toBeInTheDocument()
   })
 
   it('should open property drawer for variant', () => {
