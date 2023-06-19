@@ -21,7 +21,7 @@ export interface JourneyChatButtonUpdate {
 }
 
 export interface JourneyChatButtonUpdateVariables {
-  id: string;
+  chatButtonUpdateId: string;
   journeyId: string;
   input: ChatButtonUpdateInput;
 }

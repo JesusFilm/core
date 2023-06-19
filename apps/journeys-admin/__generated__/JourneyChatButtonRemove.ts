@@ -17,5 +17,5 @@ export interface JourneyChatButtonRemove {
 }
 
 export interface JourneyChatButtonRemoveVariables {
-  id: string;
+  chatButtonRemoveId: string;
 }
