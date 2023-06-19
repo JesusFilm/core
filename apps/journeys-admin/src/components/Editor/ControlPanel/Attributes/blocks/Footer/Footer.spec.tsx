@@ -68,6 +68,28 @@ describe('Footer', () => {
     expect(getByText('Facebook and Viber')).toBeInTheDocument()
   })
 
+  it('should return a singular platform value', () => {
+    const { getByText } = render(
+      <JourneyProvider
+        value={{
+          journey: {
+            id: 'journeyId',
+            chatButtons: [
+              {
+                id: '1',
+                link: 'https://m.me/user',
+                platform: ChatPlatform.facebook
+              }
+            ]
+          } as unknown as Journey
+        }}
+      >
+        <Footer />
+      </JourneyProvider>
+    )
+    expect(getByText('Facebook')).toBeInTheDocument()
+  })
+
   it('should open property drawer for variant', () => {
     const dispatch = jest.fn()
     mockUseEditor.mockReturnValue({
