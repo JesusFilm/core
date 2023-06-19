@@ -36,9 +36,9 @@ export function Chat(): ReactElement {
         chatButton={facebook}
         platform={ChatPlatform.facebook}
         active={facebook != null}
-        helperInfo={t(
-          'A text block containing a with information on how the user can extract the correct link to Messenger chat.'
-        )}
+        // helperInfo={t(
+        //   'A text block containing a with information on how the user can extract the correct link to Messenger chat.'
+        // )}
         journeyId={journey?.id}
         disableSelection={maxSelection}
       />
@@ -47,9 +47,9 @@ export function Chat(): ReactElement {
         title={t('WhatsApp')}
         platform={ChatPlatform.whatsApp}
         active={whatsApp != null}
-        helperInfo={t(
-          'A text block containing a link with information on how the user can extract the correct link to WhatsApp chat.'
-        )}
+        // helperInfo={t(
+        //   'A text block containing a link with information on how the user can extract the correct link to WhatsApp chat.'
+        // )}
         journeyId={journey?.id}
         disableSelection={maxSelection}
       />
@@ -58,9 +58,9 @@ export function Chat(): ReactElement {
         title={t('Telegram')}
         platform={ChatPlatform.telegram}
         active={telegram != null}
-        helperInfo={t(
-          'A text block containing a link with information on how the user can extract the correct link to Telegram chat.'
-        )}
+        // helperInfo={t(
+        //   'A text block containing a link with information on how the user can extract the correct link to Telegram chat.'
+        // )}
         journeyId={journey?.id}
         disableSelection={maxSelection}
       />
