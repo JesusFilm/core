@@ -7,9 +7,6 @@ import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { ChatPlatform } from '../../../../../../../../__generated__/globalTypes'
 import { ChatOption } from './ChatOption'
 
-// TODO: empty state shouldn't be clickable
-// TODO: custom button showing no icon when no icon selected
-
 export function Chat(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { journey } = useJourney()
