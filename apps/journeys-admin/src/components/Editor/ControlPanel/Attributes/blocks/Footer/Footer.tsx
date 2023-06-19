@@ -10,7 +10,7 @@ export function Footer(): ReactElement {
   const { dispatch } = useEditor()
   const { journey } = useJourney()
 
-  const platforms = journey?.chatButtons
+  const platforms = (journey?.chatButtons ?? [])
     .map((button) => capitalize(button?.platform ?? ''))
     .filter(Boolean)
     .join(' and ')
