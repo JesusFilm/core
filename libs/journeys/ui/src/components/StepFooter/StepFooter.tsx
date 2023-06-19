@@ -18,7 +18,7 @@ export function StepFooter({
   onFooterClick,
   sx
 }: StepFooterProps): ReactElement {
-  const { journey } = useJourney()
+  const { journey, admin } = useJourney()
   const { rtl } = getJourneyRTL(journey)
 
   return (
@@ -77,7 +77,7 @@ export function StepFooter({
             }}
             gap={2}
           >
-            <HostAvatars />
+            <HostAvatars hasPlaceholder={admin} />
             <Stack sx={{ py: 1.5, flex: '1 1 100%', minWidth: 0 }}>
               <Typography
                 sx={{
