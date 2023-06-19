@@ -8,10 +8,14 @@ import {
 } from '../../__generated__/graphql'
 
 import { PrismaService } from '../../lib/prisma.service'
+import { JourneyService } from '../journey/journey.service'
 
 @Resolver('Host')
 export class HostResolver {
-  constructor(private readonly prismaService: PrismaService) {}
+  constructor(
+    private readonly journeyService: JourneyService,
+    private readonly prismaService: PrismaService
+  ) {}
 
   @Query()
   async hosts(
@@ -52,6 +56,9 @@ export class HostResolver {
   @Mutation()
   // for future dev: use teamID prop in future once RoleGuards are in
   async hostDelete(@Args('id') id: string): Promise<Host> {
+    const journeysWithHost = await this.journeyService.getAllByHost(id)
+    if (journeysWithHost.length > 1)
+      throw new UserInputError('this host is used in other journeys')
     return await this.prismaService.host.delete({
       where: {
         id

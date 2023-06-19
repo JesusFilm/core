@@ -1,17 +1,38 @@
 import { Test, TestingModule } from '@nestjs/testing'
+import { Database } from 'arangojs'
+import { mockDeep } from 'jest-mock-extended'
 import { PrismaService } from '../../lib/prisma.service'
+import { JourneyService } from '../journey/journey.service'
+
+import {
+  Journey,
+  JourneyStatus,
+  ThemeMode,
+  ThemeName
+} from '../../__generated__/graphql'
 import { HostResolver } from './host.resolver'
 
 describe('HostResolver', () => {
-  let hostResolver: HostResolver, prismaService: PrismaService
+  let hostResolver: HostResolver,
+    prismaService: PrismaService,
+    journeyService: JourneyService
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [HostResolver, PrismaService]
+      providers: [
+        HostResolver,
+        PrismaService,
+        JourneyService,
+        {
+          provide: 'DATABASE',
+          useFactory: () => mockDeep<Database>()
+        }
+      ]
     }).compile()
 
     hostResolver = module.get<HostResolver>(HostResolver)
     prismaService = module.get<PrismaService>(PrismaService)
+    journeyService = module.get<JourneyService>(JourneyService)
   })
 
   describe('hostCreate', () => {
@@ -166,14 +187,85 @@ describe('HostResolver', () => {
         src1: 'avatar1',
         src2: 'avatar2'
       }
+      const journey: Journey = {
+        id: 'journeyId',
+        slug: 'journey-slug',
+        title: 'published',
+        status: JourneyStatus.published,
+        language: { id: '529' },
+        themeMode: ThemeMode.light,
+        themeName: ThemeName.base,
+        description: null,
+        primaryImageBlock: null,
+        publishedAt: null,
+        createdAt: null as unknown as string,
+        host: mockDeletedHost,
+        chatButtons: []
+      }
       jest
         .spyOn(prismaService.host, 'delete')
         .mockResolvedValue(mockDeletedHost)
+
+      journeyService.getAllByHost = jest.fn().mockReturnValueOnce([journey])
 
       const result = await hostResolver.hostDelete(id)
 
       expect(result).toEqual(mockDeletedHost)
       expect(prismaService.host.delete).toHaveBeenCalledWith({ where: { id } })
+    })
+
+    it('should throw an error if the host exists on other journeys', async () => {
+      const id = 'host-id'
+      const mockDeletedHost = {
+        id: 'host-id',
+        teamId: 'best-juniors-engineers-gang',
+        title: 'Edmond Shen & Nisal Cottingham',
+        location: 'JFP Staff',
+        src1: 'avatar1',
+        src2: 'avatar2'
+      }
+      const journey: Journey = {
+        id: 'journeyId',
+        slug: 'journey-slug',
+        title: 'published',
+        status: JourneyStatus.published,
+        language: { id: '529' },
+        themeMode: ThemeMode.light,
+        themeName: ThemeName.base,
+        description: null,
+        primaryImageBlock: null,
+        publishedAt: null,
+        createdAt: null as unknown as string,
+        host: mockDeletedHost,
+        chatButtons: []
+      }
+
+      const journeyTwo: Journey = {
+        id: 'journeyId2',
+        slug: 'journey-slug2',
+        title: 'published',
+        status: JourneyStatus.published,
+        language: { id: '529' },
+        themeMode: ThemeMode.light,
+        themeName: ThemeName.base,
+        description: null,
+        primaryImageBlock: null,
+        publishedAt: null,
+        createdAt: null as unknown as string,
+        host: mockDeletedHost,
+        chatButtons: []
+      }
+
+      journeyService.getAllByHost = jest
+        .fn()
+        .mockReturnValueOnce([journey, journeyTwo])
+      jest
+        .spyOn(prismaService.host, 'delete')
+        .mockResolvedValue(mockDeletedHost)
+
+      await expect(hostResolver.hostDelete(id)).rejects.toThrow(
+        'this host is used in other journeys'
+      )
     })
   })
 })
