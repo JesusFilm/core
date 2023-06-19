@@ -2,15 +2,16 @@ import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { SxProps } from '@mui/material/styles'
-import { gql, useQuery } from '@apollo/client'
+import { gql, useQuery, useMutation } from '@apollo/client'
 
-import { ReactElement } from 'react'
+import { ReactElement, useEffect } from 'react'
 import { useJourney } from '../../libs/JourneyProvider'
 import { getJourneyRTL } from '../../libs/rtl'
 import { HostTitleLocation } from './HostTitleLocation'
 import { HostAvatars } from './HostAvatars'
 import { ChatButtons } from './ChatButtons'
 import { GetHosts } from './__generated__/GetHosts'
+import { CreateHost } from './__generated__/CreateHost'
 
 export const GET_HOSTS = gql`
   query GetHosts {
@@ -20,6 +21,26 @@ export const GET_HOSTS = gql`
       src1
       src2
       location
+    }
+  }
+`
+
+export const CREATE_HOST = gql`
+  mutation CreateHost(
+    $title: String!
+    $location: String!
+    $src1: String!
+    $src2: String!
+  ) {
+    hostCreate(
+      teamId: "jfp-team"
+      input: { title: $title, location: $location, src1: $src1, src2: $src2 }
+    ) {
+      id
+      title
+      location
+      src1
+      src2
     }
   }
 `
@@ -36,8 +57,40 @@ export function StepFooter({
   const { journey } = useJourney()
   const { rtl } = getJourneyRTL(journey)
   const { data } = useQuery<GetHosts>(GET_HOSTS)
+  const [createHost] = useMutation<CreateHost>(CREATE_HOST)
 
-  console.log('journey', journey, data)
+  useEffect(() => {
+    const { data: hostData1 } = await createHost({
+      variables: {
+        title: 'Cru International',
+        location: 'Florida, USA',
+        src1: 'https://images.unsplash.com/photo-1558704164-ab7a0016c1f3?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80',
+        src2: null
+      }
+    })
+
+    const { data: hostData2 } = await createHost({
+      variables: {
+        title: 'Anonymous',
+        location: 'Bermuda Triangle',
+        teamId: 'jfp-team',
+        src1: null,
+        src2: null
+      }
+    })
+
+    const { data: hostData3 } = await createHost({
+      variables: {
+        title: 'Multiple Creators',
+        location: 'Worldwide',
+        teamId: 'jfp-team',
+        src1: 'https://images.unsplash.com/photo-1558704164-ab7a0016c1f3?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80',
+        src2: 'https://images.unsplash.com/photo-1651069188152-bf30b5af2a0d?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1364&q=80'
+      }
+    })
+
+    console.log('journey', journey, data, hostData1, hostData2, hostData3)
+  }, [])
 
   return (
     <Box
