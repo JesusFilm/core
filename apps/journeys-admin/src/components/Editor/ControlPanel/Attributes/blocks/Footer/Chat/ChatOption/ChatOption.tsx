@@ -146,7 +146,7 @@ export function ChatOption({
           variables: {
             journeyId,
             input: {
-              link: chatButton?.link,
+              link: chatButton?.link ?? '',
               platform: platform ?? chatButton?.platform ?? null
             }
           },
