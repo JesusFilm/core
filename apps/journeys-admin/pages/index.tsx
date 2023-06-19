@@ -20,6 +20,7 @@ import i18nConfig from '../next-i18next.config'
 import JourneyListMenu from '../src/components/JourneyList/JourneyListMenu/JourneyListMenu'
 import { useTermsRedirect } from '../src/libs/useTermsRedirect/useTermsRedirect'
 import { OnboardingPanelContent } from '../src/components/OnboardingPanelContent'
+import { TeamSelect } from '../src/components/TeamSelect'
 
 export const ACCEPT_USER_INVITE = gql`
   mutation UserInviteAcceptAll {
@@ -37,14 +38,6 @@ function IndexPage(): ReactElement {
   const router = useRouter()
   const [listEvent, setListEvent] = useState('')
 
-  const activeTab = router.query.tab ?? 'active'
-  const pageTitle =
-    activeTab === 'active'
-      ? t('Active Journeys')
-      : activeTab === 'archived'
-      ? t('Archived Journeys')
-      : t('Trashed Journeys')
-
   const handleClick = (event: string): void => {
     setListEvent(event)
     // remove event after component lifecycle
@@ -58,11 +51,11 @@ function IndexPage(): ReactElement {
     <>
       <NextSeo title={t('Journeys')} />
       <PageWrapper
-        title={pageTitle}
+        title={<TeamSelect />}
         authUser={AuthUser}
         menu={<JourneyListMenu router={router} onClick={handleClick} />}
         sidePanelChildren={<OnboardingPanelContent />}
-        sidePanelTitle={t('Create a new journey')}
+        sidePanelTitle={t('Create a New Journey')}
       >
         <JourneyList
           journeys={journeys}
