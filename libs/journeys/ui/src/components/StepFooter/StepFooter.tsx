@@ -28,9 +28,9 @@ export const GET_HOSTS = gql`
 export const CREATE_HOST = gql`
   mutation CreateHost(
     $title: String!
-    $location: String!
-    $src1: String!
-    $src2: String!
+    $location: String
+    $src1: String
+    $src2: String
   ) {
     hostCreate(
       teamId: "jfp-team"
