@@ -197,6 +197,7 @@ export function ChatOption({
                     }
                   }
                 })
+                cache.evict({ id: `ChatButton:${chatButton.id}` })
               }
             }
           })
@@ -261,9 +262,7 @@ export function ChatOption({
         boxShadow: 'none',
         border: '1px solid',
         borderColor: 'divider',
-        '&:not(:last-child)': {
-          borderBottom: 0
-        }
+        borderTop: 0
       }}
     >
       <AccordionSummary expandIcon={<ExpandMoreIcon />} sx={{ px: 6, py: 2 }}>

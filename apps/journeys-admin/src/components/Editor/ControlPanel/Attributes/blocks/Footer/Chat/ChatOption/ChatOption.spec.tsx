@@ -95,6 +95,12 @@ describe('Chat', () => {
             __ref: 'ChatButton:chat1.id'
           }
         ]
+      },
+      'ChatButton:chat1.id': {
+        __typename: 'ChatButton',
+        id: 'chat1.id',
+        link: 'https://example.com',
+        platform: ChatPlatform.facebook
       }
     })
 
@@ -122,6 +128,7 @@ describe('Chat', () => {
 
     const { getByRole } = render(
       <MockedProvider
+        cache={cache}
         mocks={[
           {
             request: {
@@ -143,7 +150,7 @@ describe('Chat', () => {
     expect(getByRole('checkbox')).toBeChecked()
     fireEvent.click(getByRole('checkbox'))
     await waitFor(() => expect(result).toHaveBeenCalled())
-    // expect(cache.extract()['Journey:journeyId']?.chatButtons).toEqual([])
+    expect(cache.extract()['Journey:journeyId']?.chatButtons).toEqual([])
   })
 
   it('should update link', async () => {
