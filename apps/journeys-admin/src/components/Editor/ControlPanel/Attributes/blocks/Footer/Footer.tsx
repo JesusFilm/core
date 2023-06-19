@@ -12,9 +12,6 @@ export function Footer(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const hostName = journey?.host?.title ?? t('None')
 
-  // TODO:
-  // Use proper HostedBy content component
-
   useEffect(() => {
     dispatch({
       type: 'SetSelectedAttributeIdAction',
