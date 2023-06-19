@@ -535,11 +535,6 @@ export class JourneyResolver {
   async host(
     @Parent() journey: Journey & { hostId?: string | null }
   ): Promise<Host | null> {
-    console.log(
-      '------------- hostId ----------------',
-      journey.hostId,
-      await this.prismaService.host.findMany()
-    )
     if (journey.hostId == null) return null
     return await this.prismaService.host.findUnique({
       where: { id: journey.hostId }
