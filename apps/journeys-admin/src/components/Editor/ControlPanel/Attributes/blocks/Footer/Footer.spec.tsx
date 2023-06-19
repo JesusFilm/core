@@ -7,6 +7,9 @@ import {
   useEditor
 } from '@core/journeys/ui/EditorProvider'
 
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import { ChatPlatform } from '../../../../../../../__generated__/globalTypes'
+import { JourneyFields as Journey } from '../../../../../../../__generated__/JourneyFields'
 import { Footer } from './Footer'
 
 jest.mock('@core/journeys/ui/EditorProvider', () => {
@@ -36,10 +39,33 @@ describe('Footer', () => {
     })
   })
   it('should display Footer attributes', () => {
-    const { getByText } = render(<Footer />)
+    const { getByText } = render(
+      <JourneyProvider
+        value={{
+          journey: {
+            id: 'journeyId',
+            chatButtons: [
+              {
+                id: '1',
+                link: 'https://m.me/user',
+                platform: ChatPlatform.facebook
+              },
+              {
+                id: '2',
+                link: 'viber://',
+                platform: ChatPlatform.viber
+              }
+            ]
+          } as unknown as Journey
+        }}
+      >
+        <Footer />
+      </JourneyProvider>
+    )
 
     expect(getByText('Hosted by')).toBeInTheDocument()
     expect(getByText('Chat Widget')).toBeInTheDocument()
+    expect(getByText('Facebook and Viber')).toBeInTheDocument()
   })
 
   it('should open property drawer for variant', () => {
