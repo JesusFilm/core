@@ -15,7 +15,8 @@ import {
 import { JourneyProvider } from '../../libs/JourneyProvider'
 import {
   JourneyFields as Journey,
-  JourneyFields_host as Host
+  JourneyFields_host as Host,
+  JourneyFields_language as Language
 } from '../../libs/JourneyProvider/__generated__/JourneyFields'
 import { StepFooter } from './StepFooter'
 
@@ -60,16 +61,22 @@ const journey: Journey = {
   seoTitle: null,
   seoDescription: null,
   chatButtons: [],
-  host: {
-    id: 'hostId',
-    __typename: 'Host',
-    title: 'Cru International',
-    location: 'Florida, USA',
-    teamId: 'teamId',
-    src1: 'https://images.unsplash.com/photo-1558704164-ab7a0016c1f3?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80',
-    src2: null
-  } as unknown as Host
+  host: null
 }
+
+const rtlLanguage = {
+  __typename: 'Language',
+  id: '529',
+  bcp47: 'ar',
+  iso3: 'ara',
+  name: [
+    {
+      __typename: 'Translation',
+      value: 'Arabic',
+      primary: true
+    }
+  ]
+} as unknown as Language
 
 const Template: Story<
   ComponentProps<typeof StepFooter> & { journey: Journey; admin: boolean }
@@ -95,10 +102,60 @@ const Template: Story<
 
 // StepFooter exists only on dark mode on desktop view
 export const Default = Template.bind({})
-Default.args = {
+Default.args = { journey }
+
+export const Admin = Template.bind({})
+Admin.args = {
+  ...Default.args,
+  admin: true
+}
+
+export const WithHost = Template.bind({})
+WithHost.args = {
+  ...Default.args,
   journey: {
     ...journey,
-    host: null
+    host: {
+      id: 'hostId',
+      __typename: 'Host',
+      title: 'Cru International',
+      location: 'Florida, USA',
+      teamId: 'teamId',
+      src1: null,
+      src2: null
+    } as unknown as Host
+  }
+}
+
+export const WithAvatar = Template.bind({})
+WithAvatar.args = {
+  ...WithHost.args,
+  journey: {
+    ...journey,
+    host: {
+      id: 'hostId',
+      __typename: 'Host',
+      title: 'Cru International',
+      teamId: 'teamId',
+      src1: 'https://images.unsplash.com/photo-1558704164-ab7a0016c1f3?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80',
+      src2: null
+    } as unknown as Host
+  }
+}
+
+export const WithChat = Template.bind({})
+WithChat.args = {
+  ...Default.args,
+  journey: {
+    ...journey,
+    chatButtons: [
+      {
+        __typename: 'ChatButton',
+        id: '1',
+        link: 'https://m.me/',
+        platform: ChatPlatform.facebook
+      }
+    ]
   }
 }
 
@@ -111,6 +168,7 @@ Long.args = {
       'Some really really really really incredibly absolutely humungo wungo massively very very very long beyond a shadow of a doubt, needed only for testing a very strange edge case where a title is really really long - title',
     host: {
       ...journey.host,
+      src1: 'https://images.unsplash.com/photo-1558704164-ab7a0016c1f3?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80',
       src2: 'https://images.unsplash.com/photo-1477936821694-ec4233a9a1a0?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1136&q=80'
     } as unknown as Host,
     chatButtons: [
@@ -130,40 +188,42 @@ Long.args = {
   }
 }
 
-export const RTL = Template.bind({})
+const TemplateRTL: Story<
+  ComponentProps<typeof StepFooter> & { journeys: Journey[]; admin: boolean[] }
+> = ({ journeys, admin }) => {
+  return (
+    <MockedProvider>
+      <FlagsProvider flags={{ editableStepFooter: true }}>
+        {journeys.map((journey, i) => (
+          <JourneyProvider key={i} value={{ journey, admin: admin[i] }}>
+            <Stack
+              sx={{
+                position: 'relative',
+                height: 80,
+                justifyContent: 'center'
+              }}
+            >
+              <StepFooter sx={{ border: '1px solid black' }} />
+            </Stack>
+          </JourneyProvider>
+        ))}
+      </FlagsProvider>
+    </MockedProvider>
+  )
+}
+
+export const RTL = TemplateRTL.bind({})
 RTL.args = {
-  journey: {
-    ...journey,
-    language: {
-      __typename: 'Language',
-      id: '529',
-      bcp47: 'ar',
-      iso3: 'ara',
-      name: [
-        {
-          __typename: 'Translation',
-          value: 'Arabic',
-          primary: true
-        }
-      ]
-    },
-    chatButtons: [
-      {
-        __typename: 'ChatButton',
-        id: '1',
-        link: 'https://m.me/',
-        platform: ChatPlatform.facebook
-      }
-    ]
-  }
+  journeys: [
+    { ...(Default.args.journey as Journey), language: rtlLanguage },
+    { ...(Default.args.journey as Journey), language: rtlLanguage },
+    { ...(WithChat.args.journey as Journey), language: rtlLanguage },
+    { ...(WithHost.args.journey as Journey), language: rtlLanguage },
+    { ...(WithAvatar.args.journey as Journey), language: rtlLanguage },
+    { ...(Long.args.journey as Journey), language: rtlLanguage }
+  ],
+  admin: [true, false, false, false, false, false]
 }
 RTL.parameters = { rtl: true }
-
-export const Admin = Template.bind({})
-Admin.args = {
-  ...Default.args,
-  admin: true,
-  journey: { ...journey, host: null }
-}
 
 export default Demo as Meta
