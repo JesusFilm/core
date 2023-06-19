@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { JourneyStatus, ThemeName, ThemeMode, ButtonVariant, ButtonColor, ButtonSize, IconName, IconSize, IconColor, TypographyAlign, TypographyColor, TypographyVariant, VideoBlockSource, VideoBlockObjectFit, UserJourneyRole } from "./globalTypes";
+import { JourneyStatus, ThemeName, ThemeMode, ButtonVariant, ButtonColor, ButtonSize, IconName, IconSize, IconColor, TypographyAlign, TypographyColor, TypographyVariant, VideoBlockSource, VideoBlockObjectFit, UserJourneyRole, ChatPlatform } from "./globalTypes";
 
 // ====================================================
 // GraphQL query operation: GetPublisherTemplate
@@ -608,6 +608,23 @@ export interface GetPublisherTemplate_publisherTemplate_userJourneys {
   user: GetPublisherTemplate_publisherTemplate_userJourneys_user | null;
 }
 
+export interface GetPublisherTemplate_publisherTemplate_chatButtons {
+  __typename: "ChatButton";
+  id: string;
+  link: string | null;
+  platform: ChatPlatform | null;
+}
+
+export interface GetPublisherTemplate_publisherTemplate_host {
+  __typename: "Host";
+  id: string;
+  teamId: string;
+  title: string;
+  location: string | null;
+  src1: string | null;
+  src2: string | null;
+}
+
 export interface GetPublisherTemplate_publisherTemplate {
   __typename: "Journey";
   id: string;
@@ -626,6 +643,8 @@ export interface GetPublisherTemplate_publisherTemplate {
   blocks: GetPublisherTemplate_publisherTemplate_blocks[] | null;
   primaryImageBlock: GetPublisherTemplate_publisherTemplate_primaryImageBlock | null;
   userJourneys: GetPublisherTemplate_publisherTemplate_userJourneys[] | null;
+  chatButtons: GetPublisherTemplate_publisherTemplate_chatButtons[];
+  host: GetPublisherTemplate_publisherTemplate_host | null;
 }
 
 export interface GetPublisherTemplate {

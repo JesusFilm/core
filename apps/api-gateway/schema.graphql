@@ -471,8 +471,8 @@ type Host
   teamId: ID!
   title: String!
   location: String
-  avatar1Id: ID
-  avatar2Id: ID
+  src1: String
+  src2: String
 }
 
 input HostCreateInput
@@ -480,8 +480,8 @@ input HostCreateInput
 {
   title: String!
   location: String
-  avatar1Id: ID
-  avatar2Id: ID
+  src1: String
+  src2: String
 }
 
 input HostUpdateInput
@@ -492,8 +492,8 @@ input HostUpdateInput
   """
   title: String
   location: String
-  avatar1Id: ID
-  avatar2Id: ID
+  src1: String
+  src2: String
 }
 
 type IconBlock implements Block
@@ -1250,7 +1250,7 @@ type Query
 
   """Get a JourneyVisitor count by JourneyVisitorFilter"""
   journeyVisitorCount(filter: JourneyVisitorFilter!): Int! @join__field(graph: JOURNEYS)
-  teams: [Team!] @join__field(graph: JOURNEYS)
+  teams: [Team!]! @join__field(graph: JOURNEYS)
   team(id: ID!): Team! @join__field(graph: JOURNEYS)
   userInvites(journeyId: ID!): [UserInvite!] @join__field(graph: JOURNEYS)
   getUserRole: UserRole @join__field(graph: JOURNEYS)
@@ -1961,7 +1961,6 @@ type UserTeam
 {
   id: ID!
   user: User!
-  team: Team!
   role: UserTeamRole!
   createdAt: DateTime!
   updatedAt: DateTime!

@@ -3,8 +3,8 @@ type Host {
   teamId: ID!
   title: String!
   location: String
-  avatar1Id: ID
-  avatar2Id: ID
+  src1: String
+  src2: String
 }
 
 input HostUpdateInput {
@@ -13,8 +13,8 @@ input HostUpdateInput {
   """
   title: String
   location: String
-  avatar1Id: ID
-  avatar2Id: ID
+  src1: String
+  src2: String
 }
 
 extend type Query {
@@ -24,8 +24,8 @@ extend type Query {
 input HostCreateInput {
   title: String!
   location: String
-  avatar1Id: ID
-  avatar2Id: ID
+  src1: String
+  src2: String
 }
 
 extend type Mutation {

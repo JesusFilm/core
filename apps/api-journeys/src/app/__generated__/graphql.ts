@@ -577,15 +577,15 @@ export class VideoProgressEventCreateInput {
 export class HostUpdateInput {
     title?: Nullable<string>;
     location?: Nullable<string>;
-    avatar1Id?: Nullable<string>;
-    avatar2Id?: Nullable<string>;
+    src1?: Nullable<string>;
+    src2?: Nullable<string>;
 }
 
 export class HostCreateInput {
     title: string;
     location?: Nullable<string>;
-    avatar1Id?: Nullable<string>;
-    avatar2Id?: Nullable<string>;
+    src1?: Nullable<string>;
+    src2?: Nullable<string>;
 }
 
 export class JourneysFilter {
@@ -1081,8 +1081,8 @@ export class Host {
     teamId: string;
     title: string;
     location?: Nullable<string>;
-    avatar1Id?: Nullable<string>;
-    avatar2Id?: Nullable<string>;
+    src1?: Nullable<string>;
+    src2?: Nullable<string>;
 }
 
 export abstract class IQuery {
@@ -1106,7 +1106,7 @@ export abstract class IQuery {
 
     abstract journeyVisitorCount(filter: JourneyVisitorFilter): number | Promise<number>;
 
-    abstract teams(): Nullable<Team[]> | Promise<Nullable<Team[]>>;
+    abstract teams(): Team[] | Promise<Team[]>;
 
     abstract team(id: string): Team | Promise<Team>;
 

@@ -1573,8 +1573,8 @@ type Host {
   teamId: ID!
   title: String!
   location: String
-  avatar1Id: ID
-  avatar2Id: ID
+  src1: String
+  src2: String
 }
 
 input HostUpdateInput {
@@ -1583,8 +1583,8 @@ input HostUpdateInput {
   """
   title: String
   location: String
-  avatar1Id: ID
-  avatar2Id: ID
+  src1: String
+  src2: String
 }
 
 type Query {
@@ -1621,7 +1621,7 @@ extend type Query {
 
   """Get a JourneyVisitor count by JourneyVisitorFilter"""
   journeyVisitorCount(filter: JourneyVisitorFilter!): Int!
-  teams: [Team!]
+  teams: [Team!]!
   team(id: ID!): Team!
   userInvites(journeyId: ID!): [UserInvite!]
   getUserRole: UserRole
@@ -1647,8 +1647,8 @@ extend type Query {
 input HostCreateInput {
   title: String!
   location: String
-  avatar1Id: ID
-  avatar2Id: ID
+  src1: String
+  src2: String
 }
 
 enum IdType {
@@ -1939,7 +1939,6 @@ type UserTeam
 {
   id: ID!
   user: User!
-  team: Team!
   role: UserTeamRole!
   createdAt: DateTime!
   updatedAt: DateTime!
