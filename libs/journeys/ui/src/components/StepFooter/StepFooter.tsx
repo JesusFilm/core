@@ -59,7 +59,7 @@ export function StepFooter({
   const { data } = useQuery<GetHosts>(GET_HOSTS)
   const [createHost] = useMutation<CreateHost>(CREATE_HOST)
 
-  useEffect(() => {
+  const seedHosts = async (): Promise<void> => {
     const { data: hostData1 } = await createHost({
       variables: {
         title: 'Cru International',
@@ -90,6 +90,10 @@ export function StepFooter({
     })
 
     console.log('journey', journey, data, hostData1, hostData2, hostData3)
+  }
+
+  useEffect(() => {
+    void seedHosts()
   }, [])
 
   return (
