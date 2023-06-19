@@ -215,8 +215,8 @@ export function ChatOption({
   }
 
   async function handleUpdate(
-    value: string | ChatPlatform | undefined,
-    type: 'link' | 'platform'
+    type: 'link' | 'platform',
+    value?: string | ChatPlatform
   ): Promise<void> {
     if (chatButton?.id == null) return
 
@@ -286,7 +286,7 @@ export function ChatOption({
                 value={chatButton?.platform ?? 'default'}
                 displayEmpty
                 onChange={async (event) =>
-                  await handleUpdate(event.target.value, 'platform')
+                  await handleUpdate('platform', event.target.value)
                 }
                 IconComponent={KeyboardArrowDownRoundedIcon}
               >
@@ -306,7 +306,7 @@ export function ChatOption({
           <TextFieldForm
             label={t('Paste URL here')}
             initialValues={chatButton?.link ?? ''}
-            handleSubmit={async (value) => await handleUpdate(value, 'link')}
+            handleSubmit={async (value) => await handleUpdate('link', value)}
           />
 
           {helperInfo != null && (

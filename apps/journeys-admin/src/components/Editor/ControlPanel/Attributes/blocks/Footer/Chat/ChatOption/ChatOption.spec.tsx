@@ -20,7 +20,7 @@ jest.mock('react-i18next', () => ({
   }
 }))
 
-describe('Chat', () => {
+describe('ChatOption', () => {
   const defaultProps = {
     title: 'Default Option',
     chatButton: undefined,
