@@ -45,7 +45,7 @@ describe('HostResolver', () => {
         userTeams: [
           {
             userId: 'userId',
-            role: UserTeamRole.manager
+            role: UserTeamRole.member
           }
         ]
       }
@@ -66,9 +66,9 @@ describe('HostResolver', () => {
       const result = await hostResolver.hostCreate(ability, team.id, input)
 
       expect(result).toEqual(mockHost)
-      // expect(prismaService.host.create).toHaveBeenCalledWith({
-      //   data: { teamId, ...input }
-      // })
+      expect(prismaService.host.create).toHaveBeenCalledWith({
+        data: { teamId: team.id, ...input }
+      })
     })
   })
 
