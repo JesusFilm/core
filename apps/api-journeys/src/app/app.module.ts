@@ -19,6 +19,7 @@ import { VisitorModule } from './modules/visitor/visitor.module'
 import { JourneyVisitorModule } from './modules/journeyVisitor/journeyVisitor.module'
 import { HostModule } from './modules/host/host.module'
 import { TeamModule } from './modules/team/team.module'
+import { UserTeamModule } from './modules/userTeam/userTeam.module'
 
 @Module({
   imports: [
@@ -33,6 +34,7 @@ import { TeamModule } from './modules/team/team.module'
     UserJourneyModule,
     UserInviteModule,
     UserRoleModule,
+    UserTeamModule,
     VisitorModule,
     GraphQLModule.forRoot<ApolloFederationDriverConfig>({
       driver: ApolloFederationDriver,
