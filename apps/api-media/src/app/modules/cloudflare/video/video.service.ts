@@ -46,7 +46,7 @@ export class VideoService extends BaseService {
           'Tus-Resumable': '1.0.0',
           'Upload-Length': uploadLength.toString(),
           'Upload-Creator': userId,
-          'Upload-Metadata': 'name ' + btoa(name)
+          'Upload-Metadata': 'name ' + btoa(name.replace(/\W/g, ""))
         }
       }
     )
