@@ -41,7 +41,7 @@
     "ghcr.io/devcontainers/features/python:1": {},
     "ghcr.io/devcontainers/features/terraform:1": {
       "version": "latest",
-      "tflint": "latest",
+      "tflint": "0.46.1",
       "terragrunt": "latest"
     }
   }
