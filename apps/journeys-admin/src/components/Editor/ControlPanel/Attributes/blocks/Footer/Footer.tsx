@@ -2,17 +2,16 @@ import { ReactElement, useEffect } from 'react'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import UserProfileCircleIcon from '@core/shared/ui/icons/UserProfileCircle'
 import MessageChat1 from '@core/shared/ui/icons/MessageChat1'
-
+import { useTranslation } from 'react-i18next'
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { Attribute } from '../..'
 import { Chat } from './Chat'
 
 export function Footer(): ReactElement {
   const { dispatch } = useEditor()
-
-  // TODO:
-  // Get host name from journey.hostId
-  // Get description from final design
-  // Use proper HostedBy content component
+  const { journey } = useJourney()
+  const { t } = useTranslation('apps-journeys-admin')
+  const hostName = journey?.host?.title ?? t('None')
 
   useEffect(() => {
     dispatch({
@@ -32,9 +31,9 @@ export function Footer(): ReactElement {
       <Attribute
         id="hosted-by"
         icon={<UserProfileCircleIcon />}
-        name="Hosted by"
-        value="None"
-        description=""
+        name={t('Hosted by')}
+        value={hostName as string}
+        description={t("Host's name")}
         onClick={() => {
           dispatch({
             type: 'SetDrawerPropsAction',

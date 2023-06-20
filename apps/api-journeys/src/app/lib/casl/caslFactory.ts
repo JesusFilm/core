@@ -41,17 +41,21 @@ export class AppCaslFactory extends CaslFactory {
     })
     can(Action.Manage, 'UserTeam', {
       team: {
-        userTeams: {
-          some: { userId: user.id, role: UserTeamRole.manager }
+        is: {
+          userTeams: {
+            some: { userId: user.id, role: UserTeamRole.manager }
+          }
         }
       }
     })
     can(Action.Read, 'UserTeam', {
       team: {
-        userTeams: {
-          some: {
-            userId: user.id,
-            role: { in: [UserTeamRole.manager, UserTeamRole.member] }
+        is: {
+          userTeams: {
+            some: {
+              userId: user.id,
+              role: { in: [UserTeamRole.manager, UserTeamRole.member] }
+            }
           }
         }
       }

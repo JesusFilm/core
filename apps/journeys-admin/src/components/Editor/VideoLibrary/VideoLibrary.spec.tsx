@@ -226,6 +226,7 @@ describe('VideoLibrary', () => {
     )
     fireEvent.click(getByRole('button', { name: 'Select' }))
     expect(onSelect).toHaveBeenCalledWith({
+      duration: 0,
       endAt: 0,
       startAt: 0,
       source: VideoBlockSource.internal,
