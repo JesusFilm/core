@@ -69,7 +69,7 @@ const blocks: Blocks[] = [
 ]
 
 describe('ActionsTable', () => {
-  const defaultJourney: Journey = {
+  const journey: Journey = {
     __typename: 'Journey',
     id: 'journeyId',
     themeName: ThemeName.base,
@@ -98,12 +98,13 @@ describe('ActionsTable', () => {
     userJourneys: [],
     template: null,
     seoTitle: null,
-    seoDescription: null
+    seoDescription: null,
+    host: null
   }
 
   it('should render placeholder', () => {
     const { getByText } = render(
-      <JourneyProvider value={{ journey: defaultJourney }}>
+      <JourneyProvider value={{ journey }}>
         <ActionsTable />
       </JourneyProvider>
     )
@@ -114,7 +115,7 @@ describe('ActionsTable', () => {
       <JourneyProvider
         value={{
           journey: {
-            ...defaultJourney,
+            ...journey,
             blocks
           }
         }}
