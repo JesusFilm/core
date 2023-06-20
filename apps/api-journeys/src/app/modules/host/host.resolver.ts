@@ -45,11 +45,12 @@ export class HostResolver {
       where: { id: teamId },
       include: { userTeams: true }
     })
+    console.log(team)
     if (team == null)
       throw new GraphQLError('Team not found.', {
         extensions: { code: 'NOT_FOUND' }
       })
-    if (ability.can(Action.Manage, subject('Team', team))) {
+    if (ability.can(Action.Update, subject('Team', team))) {
       const host = {
         teamId,
         ...input
@@ -61,13 +62,12 @@ export class HostResolver {
 
   @Mutation()
   @UseGuards(GqlAuthGuard, CaslGuard)
-  // for future dev:  use teamID prop in future once RoleGuards are in
   async hostUpdate(
     @CaslAbility() ability: AppAbility,
     @Args('id') id: string,
     @Args('input') input: HostUpdateInput
   ): Promise<Host> {
-    const host = this.prismaService.host.findUnique({
+    const host = await this.prismaService.host.findUnique({
       where: { id },
       include: { team: { include: { userTeams: true } } }
     })
@@ -75,7 +75,7 @@ export class HostResolver {
       throw new GraphQLError('Host not found.', {
         extensions: { code: 'NOT_FOUND' }
       })
-    if (ability.can(Action.Update, subject('Host', host))) {
+    if (ability.can(Action.Manage, subject('Host', host))) {
       if (input.title === null)
         throw new UserInputError('host title cannot be set to null')
       return await this.prismaService.host.update({
@@ -87,15 +87,29 @@ export class HostResolver {
   }
 
   @Mutation()
-  // for future dev: use teamID prop in future once RoleGuards are in
-  async hostDelete(@Args('id') id: string): Promise<Host> {
-    const journeysWithHost = await this.journeyService.getAllByHost(id)
-    if (journeysWithHost.length > 1)
-      throw new UserInputError('This host is used in other journeys.')
-    return await this.prismaService.host.delete({
-      where: {
-        id
-      }
+  @UseGuards(GqlAuthGuard, CaslGuard)
+  async hostDelete(
+    @CaslAbility() ability: AppAbility,
+    @Args('id') id: string
+  ): Promise<Host> {
+    const host = await this.prismaService.host.findUnique({
+      where: { id },
+      include: { team: { include: { userTeams: true } } }
     })
+    if (host == null)
+      throw new GraphQLError('host not found', {
+        extensions: { code: 'NOT_FOUND' }
+      })
+    if (ability.can(Action.Manage, subject('Host', host))) {
+      const journeysWithHost = await this.journeyService.getAllByHost(id)
+      if (journeysWithHost.length > 1)
+        throw new UserInputError('This host is used in other journeys.')
+      return await this.prismaService.host.delete({
+        where: {
+          id
+        }
+      })
+    }
+    throw new ForbiddenError('user is not allowed to delete userTeam')
   }
 }
