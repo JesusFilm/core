@@ -47,7 +47,8 @@ export function Footer(): ReactElement {
       mobileOpen: true,
       children: <div>Hosted by content component</div>
     })
-  }, [dispatch, t])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [dispatch])
 
   return (
     <>

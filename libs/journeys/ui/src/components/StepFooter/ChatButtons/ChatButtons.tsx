@@ -51,7 +51,7 @@ export function ChatButtons(): ReactElement {
     type: 'main' | 'background' = 'main'
   ): string | undefined => {
     if (type === 'background') {
-      return primary ? theme.palette.grey[100] : theme.palette.grey[600]
+      return primary ? theme.palette.grey[100] : '#dedfe026'
     }
     if (type === 'main') {
       return primary ? theme.palette.grey[900] : theme.palette.grey[100]
@@ -119,6 +119,7 @@ export function ChatButtons(): ReactElement {
       {admin && chatButtons?.length === 0 && (
         <IconButton
           key="default"
+          disabled
           sx={{
             height: 44,
             width: 44,
