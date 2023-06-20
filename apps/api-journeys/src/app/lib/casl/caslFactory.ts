@@ -60,6 +60,24 @@ export class AppCaslFactory extends CaslFactory {
         }
       }
     })
+    can(Action.Manage, 'Host', {
+      team: {
+        is: {
+          userTeams: {
+            some: { userId: user.id, role: UserTeamRole.manager }
+          }
+        }
+      }
+    })
+    can(Action.Read, 'Host', {
+      team: {
+        is: {
+          userTeams: {
+            some: { userId: user.id }
+          }
+        }
+      }
+    })
     return build()
   }
 }

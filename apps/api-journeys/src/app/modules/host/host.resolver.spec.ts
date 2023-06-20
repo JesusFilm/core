@@ -146,7 +146,7 @@ describe('HostResolver', () => {
         .spyOn(prismaService.host, 'update')
         .mockResolvedValue(mockUpdatedHost)
 
-      const result = await hostResolver.hostUpdate(id, input)
+      const result = await hostResolver.hostUpdate(id, u)
 
       expect(result).toEqual(mockUpdatedHost)
 
@@ -264,7 +264,7 @@ describe('HostResolver', () => {
         .mockResolvedValue(mockDeletedHost)
 
       await expect(hostResolver.hostDelete(id)).rejects.toThrow(
-        'this host is used in other journeys'
+        'This host is used in other journeys.'
       )
     })
   })
