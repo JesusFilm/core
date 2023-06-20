@@ -45,12 +45,11 @@ export class HostResolver {
       where: { id: teamId },
       include: { userTeams: true }
     })
-    console.log(team)
     if (team == null)
       throw new GraphQLError('Team not found.', {
         extensions: { code: 'NOT_FOUND' }
       })
-    if (ability.can(Action.Update, subject('Team', team))) {
+    if (ability.can(Action.Read, subject('Team', team))) {
       const host = {
         teamId,
         ...input
