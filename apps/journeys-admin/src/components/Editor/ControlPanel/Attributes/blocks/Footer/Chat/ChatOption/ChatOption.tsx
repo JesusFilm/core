@@ -12,6 +12,7 @@ import Snapchat from '@core/shared/ui/icons/Snapchat'
 import Skype from '@core/shared/ui/icons/Skype'
 import Line from '@core/shared/ui/icons/Line'
 import Tiktok from '@core/shared/ui/icons/Tiktok'
+import MessageTyping from '@core/shared/ui/icons/MessageTyping'
 import MenuItem from '@mui/material/MenuItem'
 import { useSnackbar } from 'notistack'
 import { useTranslation } from 'react-i18next'
@@ -100,6 +101,11 @@ export function ChatOption({
 
   // icons equivalent to ChatPlatform from global types
   const chatIconOptions = [
+    {
+      value: 'default',
+      label: t('Chat'),
+      icon: <MessageTyping />
+    },
     {
       value: ChatPlatform.instagram,
       label: t('Instagram'),
@@ -290,7 +296,7 @@ export function ChatOption({
                 }
                 IconComponent={KeyboardArrowDownRoundedIcon}
               >
-                <MenuItem value="default">{t('Select an icon...')}</MenuItem>
+                {/* <MenuItem value="default">{t('Chat')}</MenuItem> */}
                 {chatIconOptions.map(({ value, label, icon }) => (
                   <MenuItem key={`chat-icon-${value}`} value={value}>
                     <Stack direction="row" spacing={5}>

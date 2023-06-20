@@ -262,7 +262,7 @@ describe('ChatOption', () => {
     )
 
     fireEvent.click(getByRole('button', { name: 'Default Option' }))
-    fireEvent.mouseDown(getByRole('button', { name: 'Select an icon...' }))
+    fireEvent.mouseDown(getByRole('button', { name: 'Chat' }))
     fireEvent.click(getByText('Snapchat'))
     await waitFor(() => expect(result).toHaveBeenCalled())
   })
