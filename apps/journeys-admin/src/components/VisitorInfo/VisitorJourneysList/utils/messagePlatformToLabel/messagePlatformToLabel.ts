@@ -26,5 +26,7 @@ export function messagePlatformToLabel(
       return t('VK')
     case MessagePlatform.whatsApp:
       return t('WhatsApp')
+    case MessagePlatform.custom:
+      return t('Custom')
   }
 }
