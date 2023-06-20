@@ -31,10 +31,10 @@ export function Footer(): ReactElement {
       const platform = translatedPlatforms.find(
         (translated) => translated.value === button.platform
       )?.label
-      return platform ?? 'Custom'
+      return platform ?? t('Custom')
     })
     .filter(Boolean)
-    .join(' and ')
+    .join(t(' and '))
 
   useEffect(() => {
     dispatch({
