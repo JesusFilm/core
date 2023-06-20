@@ -201,6 +201,12 @@ export enum Role {
     publisher = "publisher"
 }
 
+export enum UserTeamRole {
+    manager = "manager",
+    member = "member",
+    guest = "guest"
+}
+
 export enum DeviceType {
     console = "console",
     mobile = "mobile",
@@ -634,6 +640,10 @@ export class TeamUpdateInput {
 
 export class UserInviteCreateInput {
     email: string;
+}
+
+export class UserTeamUpdateInput {
+    role: UserTeamRole;
 }
 
 export class VisitorUpdateInput {
@@ -1104,6 +1114,10 @@ export abstract class IQuery {
 
     abstract getUserRole(): Nullable<UserRole> | Promise<Nullable<UserRole>>;
 
+    abstract userTeams(teamId: string): UserTeam[] | Promise<UserTeam[]>;
+
+    abstract userTeam(id: string): UserTeam | Promise<UserTeam>;
+
     abstract visitorsConnection(teamId: string, first?: Nullable<number>, after?: Nullable<string>): VisitorsConnection | Promise<VisitorsConnection>;
 
     abstract visitor(id: string): Visitor | Promise<Visitor>;
@@ -1191,6 +1205,15 @@ export class UserRole {
     id: string;
     userId: string;
     roles?: Nullable<Role[]>;
+}
+
+export class UserTeam {
+    __typename?: 'UserTeam';
+    id: string;
+    user: User;
+    role: UserTeamRole;
+    createdAt: DateTime;
+    updatedAt: DateTime;
 }
 
 export class Browser {
@@ -1415,6 +1438,10 @@ export abstract class IMutation {
     abstract userJourneyRequest(journeyId: string, idType?: Nullable<IdType>): UserJourney | Promise<UserJourney>;
 
     abstract userJourneyOpen(id: string): Nullable<UserJourney> | Promise<Nullable<UserJourney>>;
+
+    abstract userTeamUpdate(id: string, input?: Nullable<TeamUpdateInput>): UserTeam | Promise<UserTeam>;
+
+    abstract userTeamDelete(id: string): UserTeam | Promise<UserTeam>;
 
     abstract visitorUpdate(id: string, input: VisitorUpdateInput): Visitor | Promise<Visitor>;
 
