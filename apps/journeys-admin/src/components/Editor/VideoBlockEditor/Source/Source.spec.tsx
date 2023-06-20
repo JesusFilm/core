@@ -94,6 +94,7 @@ describe('Source', () => {
     fireEvent.click(getByRole('button', { name: 'Select' }))
     await waitFor(() =>
       expect(onChange).toHaveBeenCalledWith({
+        duration: 144,
         videoId: '2_0-Brand_Video',
         videoVariantLanguageId: '529',
         source: VideoBlockSource.internal,

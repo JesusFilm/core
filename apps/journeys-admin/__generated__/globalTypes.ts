@@ -33,6 +33,19 @@ export enum ButtonVariant {
   text = "text",
 }
 
+export enum ChatPlatform {
+  facebook = "facebook",
+  instagram = "instagram",
+  line = "line",
+  skype = "skype",
+  snapchat = "snapchat",
+  telegram = "telegram",
+  tikTok = "tikTok",
+  viber = "viber",
+  vk = "vk",
+  whatsApp = "whatsApp",
+}
+
 export enum IconColor {
   action = "action",
   disabled = "disabled",
@@ -437,6 +450,7 @@ export interface VideoBlockCreateInput {
   parentBlockId: string;
   startAt?: number | null;
   endAt?: number | null;
+  duration?: number | null;
   description?: string | null;
   muted?: boolean | null;
   autoplay?: boolean | null;
@@ -454,6 +468,7 @@ export interface VideoBlockUpdateInput {
   endAt?: number | null;
   muted?: boolean | null;
   autoplay?: boolean | null;
+  duration?: number | null;
   videoId?: string | null;
   videoVariantLanguageId?: string | null;
   source?: VideoBlockSource | null;

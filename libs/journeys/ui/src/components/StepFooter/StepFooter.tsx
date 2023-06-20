@@ -1,11 +1,14 @@
+import { ReactElement } from 'react'
 import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { SxProps } from '@mui/material/styles'
-
-import { ReactElement } from 'react'
+import { useFlags } from '@core/shared/ui/FlagsProvider'
 import { useJourney } from '../../libs/JourneyProvider'
 import { getJourneyRTL } from '../../libs/rtl'
+import { HostTitleLocation } from './HostTitleLocation'
+import { HostAvatars } from './HostAvatars'
+import { ChatButtons } from './ChatButtons'
 
 interface StepFooterProps {
   onFooterClick?: () => void
@@ -16,8 +19,15 @@ export function StepFooter({
   onFooterClick,
   sx
 }: StepFooterProps): ReactElement {
-  const { journey } = useJourney()
+  const { journey, admin } = useJourney()
   const { rtl } = getJourneyRTL(journey)
+  const { editableStepFooter } = useFlags()
+  const hasAvatar =
+    (admin && editableStepFooter) ||
+    journey?.host?.src1 != null ||
+    journey?.host?.src2 != null
+  const hasChatWidget =
+    admin || (journey?.chatButtons != null && journey?.chatButtons.length > 0)
 
   return (
     <Box
@@ -64,30 +74,33 @@ export function StepFooter({
             flexDirection: rtl ? 'row-reverse' : 'row',
             alignItems: 'center'
           }}
+          gap={4}
         >
           <Stack
             sx={{
-              flex: '1 1 100%',
-              minWidth: 0,
               width: '100%',
+              minWidth: 0,
               flexDirection: 'row',
-              alignItems: 'center',
-              justifyContent: 'space-between'
+              alignItems: 'center'
             }}
+            gap={2}
           >
-            <Typography
-              sx={{
-                zIndex: 1,
-                py: 3,
-                // Always dark mode on lg breakpoint
-                color: { xs: 'primary.main', lg: 'white' },
-                whiteSpace: 'nowrap',
-                overflow: 'hidden',
-                textOverflow: 'ellipsis'
-              }}
-            >
-              {journey?.seoTitle ?? journey?.title}
-            </Typography>
+            {hasAvatar && <HostAvatars hasPlaceholder={admin} />}
+            <Stack sx={{ py: 1.5, flex: '1 1 100%', minWidth: 0 }}>
+              <Typography
+                sx={{
+                  zIndex: 1,
+                  // Always dark mode on lg breakpoint
+                  color: { xs: 'primary.main', lg: 'white' },
+                  whiteSpace: 'nowrap',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis'
+                }}
+              >
+                {journey?.seoTitle ?? journey?.title}
+              </Typography>
+              <HostTitleLocation />
+            </Stack>
             {/* <Stack
               data-testid="chip"
               sx={{
@@ -99,17 +112,11 @@ export function StepFooter({
               }}
             /> */}
           </Stack>
-          <Box>
-            {/* <Stack
-              data-testid="chat-widget"
-              sx={{
-                width: 44,
-                height: 44,
-                borderRadius: 10,
-                backgroundColor: 'white'
-              }}
-            /> */}
-          </Box>
+          {hasChatWidget && (
+            <Box>
+              <ChatButtons />
+            </Box>
+          )}
         </Stack>
       </Stack>
     </Box>

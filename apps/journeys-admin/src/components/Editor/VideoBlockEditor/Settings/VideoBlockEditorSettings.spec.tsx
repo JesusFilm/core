@@ -285,6 +285,8 @@ describe('VideoBlockEditorSettings', () => {
         objectFit: ObjectFit.fill
       })
     })
-    expect(getByText('Start time cannot exceed end time')).toBeInTheDocument()
+    expect(
+      getByText('Start time has to be at least 3 seconds less than end time')
+    ).toBeInTheDocument()
   })
 })
