@@ -66,7 +66,13 @@ export class AppCaslFactory extends CaslFactory {
           userTeams: {
             some: {
               userId: user.id,
-              role: { in: [UserTeamRole.manager, UserTeamRole.member] }
+              role: {
+                in: [
+                  UserTeamRole.manager,
+                  UserTeamRole.member,
+                  UserTeamRole.guest // remove UserTeamRole.guest in the future to restrict roles
+                ]
+              }
             }
           }
         }

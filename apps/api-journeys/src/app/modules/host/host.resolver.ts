@@ -49,7 +49,8 @@ export class HostResolver {
       throw new GraphQLError('Team not found.', {
         extensions: { code: 'NOT_FOUND' }
       })
-    if (ability.can(Action.Read, subject('Team', team))) {
+    // change this Action.Create in the future to Action.Read restrict the roles
+    if (ability.can(Action.Create, subject('Team', team))) {
       const host = {
         teamId,
         ...input
