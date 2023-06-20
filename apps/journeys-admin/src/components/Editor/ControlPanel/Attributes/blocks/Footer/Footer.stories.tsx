@@ -3,10 +3,12 @@ import { Story, Meta } from '@storybook/react'
 import Stack from '@mui/material/Stack'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import { JourneyFields_chatButtons as ChatButton } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
 import { simpleComponentConfig } from '../../../../../../libs/storybook'
 import { GetJourney_journey as Journey } from '../../../../../../../__generated__/GetJourney'
 
 import {
+  ChatPlatform,
   ThemeMode,
   ThemeName
 } from '../../../../../../../__generated__/globalTypes'
@@ -19,11 +21,15 @@ const Demo = {
 }
 
 const Template: Story<
-  ComponentProps<typeof Footer> & { hostTitle: string | null }
-> = ({ hostTitle }) => {
+  ComponentProps<typeof Footer> & {
+    hostTitle: string | null
+    chatButtons: ChatButton[]
+  }
+> = ({ hostTitle, chatButtons }) => {
   return (
     <JourneyProvider
       value={{
+        admin: true,
         journey: {
           id: 'journeyId',
           themeMode: ThemeMode.dark,
@@ -34,6 +40,7 @@ const Template: Story<
             bcp47: 'en',
             iso3: 'eng'
           },
+          chatButtons,
           host: {
             title: hostTitle
           }
@@ -59,6 +66,15 @@ export const Default = Template.bind({})
 Default.args = { hostTitle: null }
 
 export const Filled = Template.bind({})
-Filled.args = { hostTitle: `John Geronimo "The Rock" Johnson` }
+Filled.args = {
+  hostTitle: `John Geronimo "The Rock" Johnson`,
+  chatButtons: [
+    {
+      id: '1',
+      link: 'https://m.me/user',
+      platform: ChatPlatform.facebook
+    }
+  ]
+}
 
 export default Demo as Meta
