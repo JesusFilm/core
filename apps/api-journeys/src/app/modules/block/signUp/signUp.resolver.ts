@@ -1,7 +1,6 @@
 import { UserInputError } from 'apollo-server-errors'
 import { UseGuards } from '@nestjs/common'
 import { Args, Mutation, Resolver, ResolveField, Parent } from '@nestjs/graphql'
-import { omit } from 'lodash'
 
 import {
   Action,
@@ -44,7 +43,7 @@ export class SignUpBlockResolver {
       input.parentBlockId
     )
     return await this.blockService.save({
-      ...omit(input, ['journeyId', '__typename']),
+      ...input,
       id: input.id ?? undefined,
       typename: 'SignUpBlock',
       journey: { connect: { id: input.journeyId } },

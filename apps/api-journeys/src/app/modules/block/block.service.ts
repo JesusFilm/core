@@ -7,6 +7,8 @@ import { omit } from 'lodash'
 
 import { PrismaService } from '../../lib/prisma.service'
 
+export const OMITTED_BLOCK_FIELDS = ['__typename', 'journeyid', 'isCover']
+
 type BlockWithAction = Block & { action: Action }
 @Injectable()
 export class BlockService {
@@ -329,7 +331,7 @@ export class BlockService {
   @FromPostgresql()
   async save<T>(input: Prisma.BlockCreateInput): Promise<T> {
     return (await this.prismaService.block.create({
-      data: input
+      data: omit(input, OMITTED_BLOCK_FIELDS) as Prisma.BlockCreateInput
     })) as unknown as T
   }
 
@@ -339,7 +341,7 @@ export class BlockService {
       inputs.map(
         async (input) =>
           (await this.prismaService.block.create({
-            data: input
+            data: omit(input, OMITTED_BLOCK_FIELDS) as Prisma.BlockCreateInput
           })) as unknown as T
       )
     )
@@ -347,9 +349,10 @@ export class BlockService {
 
   @ToPostgresql()
   async update<T>(id: string, input: Prisma.BlockUpdateInput): Promise<T> {
+    console.log('update', id, input)
     return (await this.prismaService.block.update({
       where: { id },
-      data: input
+      data: omit(input, OMITTED_BLOCK_FIELDS) as Prisma.BlockUpdateInput
     })) as unknown as T
   }
 }

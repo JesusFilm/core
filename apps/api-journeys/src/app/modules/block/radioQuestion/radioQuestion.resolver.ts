@@ -1,6 +1,5 @@
 import { UseGuards } from '@nestjs/common'
 import { Args, Mutation, ResolveField, Resolver, Parent } from '@nestjs/graphql'
-import { omit } from 'lodash'
 
 import {
   Action,
@@ -46,7 +45,7 @@ export class RadioOptionBlockResolver {
       input.parentBlockId
     )
     return await this.blockService.save({
-      ...omit(input, ['journeyId', '__typename']),
+      ...input,
       id: input.id ?? undefined,
       typename: 'RadioOptionBlock',
       journey: { connect: { id: input.journeyId } },
@@ -90,7 +89,7 @@ export class RadioQuestionBlockResolver {
       input.parentBlockId
     )
     return await this.blockService.save({
-      ...omit(input, ['journeyId', '__typename']),
+      ...input,
       id: input.id ?? undefined,
       typename: 'RadioQuestionBlock',
       journey: { connect: { id: input.journeyId } },

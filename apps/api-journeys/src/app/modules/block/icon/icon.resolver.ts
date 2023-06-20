@@ -1,6 +1,6 @@
 import { UseGuards } from '@nestjs/common'
 import { Args, Mutation, Resolver } from '@nestjs/graphql'
-import { omit } from 'lodash'
+
 import {
   IconBlock,
   IconBlockCreateInput,
@@ -27,7 +27,7 @@ export class IconBlockResolver {
     @Args('input') input: IconBlockCreateInput
   ): Promise<IconBlock> {
     return await this.blockService.save({
-      ...omit(input, ['journeyId', '__typename']),
+      ...input,
       id: input.id ?? undefined,
       typename: 'IconBlock',
       journey: { connect: { id: input.journeyId } },

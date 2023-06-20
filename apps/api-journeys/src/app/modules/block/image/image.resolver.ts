@@ -4,7 +4,6 @@ import { UserInputError } from 'apollo-server-errors'
 import { encode } from 'blurhash'
 import fetch from 'node-fetch'
 import sharp from 'sharp'
-import { omit } from 'lodash'
 import { FromPostgresql } from '@core/nest/decorators/FromPostgresql'
 
 import { BlockService } from '../block.service'
@@ -93,7 +92,7 @@ export class ImageBlockResolver {
 
     if (block.isCover === true) {
       const coverBlock: ImageBlock = await this.blockService.save({
-        ...omit(block, ['journeyId', '__typename']),
+        ...block,
         id: block.id ?? undefined,
         typename: 'ImageBlock',
         journey: { connect: { id: block.journeyId } },
@@ -110,6 +109,8 @@ export class ImageBlockResolver {
         throw new Error('Parent block not found')
       }
 
+      console.log('parentBlock', parentBlock)
+      console.log('coverBlock', coverBlock)
       await this.blockService.update(parentBlock.id, {
         coverBlockId: coverBlock.id
       })
@@ -137,7 +138,7 @@ export class ImageBlockResolver {
       block.parentBlockId
     )
     return await this.blockService.save({
-      ...omit(block, ['journeyId', '__typename']),
+      ...block,
       id: block.id ?? undefined,
       typename: 'ImageBlock',
       journey: { connect: { id: block.journeyId } },

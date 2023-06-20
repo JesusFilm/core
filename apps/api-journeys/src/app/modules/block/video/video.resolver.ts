@@ -3,7 +3,6 @@ import { UseGuards } from '@nestjs/common'
 import { object, string } from 'yup'
 import fetch from 'node-fetch'
 import { UserInputError } from 'apollo-server-errors'
-import { omit } from 'lodash'
 import { Block } from '.prisma/api-journeys-client'
 import { FromPostgresql } from '@core/nest/decorators/FromPostgresql'
 
@@ -144,7 +143,7 @@ export class VideoBlockResolver {
 
     if (input.isCover === true) {
       const coverBlock = await this.blockService.save<Block>({
-        ...omit(input, '__typename', 'journeyId'),
+        ...input,
         id: input.id ?? undefined,
         typename: 'VideoBlock',
         journey: {
@@ -178,7 +177,7 @@ export class VideoBlockResolver {
     )
 
     const block = await this.blockService.save<Block>({
-      ...omit(input, ['__typename', 'journeyId']),
+      ...input,
       id: input.id ?? undefined,
       typename: 'VideoBlock',
       source:

@@ -1,6 +1,5 @@
 import { UseGuards } from '@nestjs/common'
 import { Args, Mutation, Resolver } from '@nestjs/graphql'
-import { omit } from 'lodash'
 
 import {
   Role,
@@ -32,7 +31,7 @@ export class TypographyBlockResolver {
       input.parentBlockId
     )
     return await this.blockService.save({
-      ...omit(input, ['journeyId', '__typename']),
+      ...input,
       id: input.id ?? undefined,
       typename: 'TypographyBlock',
       journey: { connect: { id: input.journeyId } },
@@ -53,8 +52,6 @@ export class TypographyBlockResolver {
     @Args('journeyId') journeyId: string,
     @Args('input') input: TypographyBlockUpdateInput
   ): Promise<TypographyBlock> {
-    return await this.blockService.update(id, {
-      ...omit(input, ['journeyId', '__typename'])
-    })
+    return await this.blockService.update(id, input)
   }
 }
