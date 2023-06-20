@@ -34,7 +34,7 @@ export function Footer(): ReactElement {
       return platform ?? t('Custom')
     })
     .filter(Boolean)
-    .join(t(' and '))
+    .join(` ${t('and')} `)
 
   useEffect(() => {
     dispatch({

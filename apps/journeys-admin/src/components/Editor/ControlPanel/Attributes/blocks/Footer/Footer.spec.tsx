@@ -27,6 +27,15 @@ jest.mock('@core/journeys/ui/EditorProvider', () => {
 
 const mockUseEditor = useEditor as jest.MockedFunction<typeof useEditor>
 
+jest.mock('react-i18next', () => ({
+  __esModule: true,
+  useTranslation: () => {
+    return {
+      t: (str: string) => str
+    }
+  }
+}))
+
 describe('Footer', () => {
   const state: EditorState = {
     steps: [],
