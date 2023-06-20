@@ -38,7 +38,6 @@ describe('RadioQuestionBlockResolver', () => {
   }
 
   const radioOptionInput = {
-    __typename: 'RadioOptionBlock',
     parentBlockId: '2',
     parentOrder: 2,
     journeyId: '2',
@@ -46,12 +45,14 @@ describe('RadioQuestionBlockResolver', () => {
   }
 
   const radioOptionResponse = {
+    id: undefined,
     typename: 'RadioOptionBlock',
     parentBlockId: '2',
     parentOrder: 2,
     journey: {
       connect: { id: '2' }
     },
+    journeyId: '2',
     label: 'label'
   }
 
@@ -68,7 +69,6 @@ describe('RadioQuestionBlockResolver', () => {
   }
 
   const radioQuestionInput = {
-    __typename: 'RadioQuestionBlock',
     parentBlockId: '2',
     parentOrder: 2,
     journeyId: '2'

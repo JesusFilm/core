@@ -62,15 +62,22 @@ export class NavigateToJourneyActionResolver {
         'This block does not support navigate to journey actions'
       )
     }
-    return await this.prismaService.action.update({
+
+    const actionData = {
+      ...input,
+      parentBlockId: block.id,
+      blockId: null,
+      url: null,
+      target: null
+    }
+
+    return await this.prismaService.action.upsert({
       where: { id },
-      data: {
-        ...input,
-        parentBlockId: block.id,
-        blockId: null,
-        url: null,
-        target: null
-      }
+      create: {
+        ...actionData,
+        block: { connect: { id: block.id } }
+      },
+      update: actionData
     })
   }
 }

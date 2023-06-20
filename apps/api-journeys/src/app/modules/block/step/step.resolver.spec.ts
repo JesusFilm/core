@@ -29,7 +29,8 @@ describe('StepBlockResolver', () => {
   const blockUpdate = omit(block, ['id', 'journeyId'])
 
   const blockCreateResponse = {
-    ...omit(block, ['id', 'journeyId', 'typename']),
+    ...omit(block, ['typename']),
+    id: undefined,
     __typename: 'StepBlock',
     parentOrder: 2
   }
@@ -78,7 +79,9 @@ describe('StepBlockResolver', () => {
       expect(service.getSiblings).toHaveBeenCalledWith(block.journeyId)
       expect(service.save).toHaveBeenCalledWith({
         ...blockUpdate,
+        id: undefined,
         journey: { connect: { id: block.journeyId } },
+        journeyId: block.journeyId,
         parentOrder: 2
       })
     })

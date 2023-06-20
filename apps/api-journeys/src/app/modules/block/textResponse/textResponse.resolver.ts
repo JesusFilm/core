@@ -36,7 +36,7 @@ export class TextResponseBlockResolver {
     ])
   )
   async textResponseBlockCreate(
-    @Args('input') input: TextResponseBlockCreateInput & { __typename }
+    @Args('input') input: TextResponseBlockCreateInput
   ): Promise<TextResponseBlock> {
     const siblings = await this.blockService.getSiblings(
       input.journeyId,

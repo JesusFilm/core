@@ -14,7 +14,7 @@ describe('CardBlockResolver', () => {
   let resolver: CardBlockResolver,
     blockResolver: BlockResolver,
     service: BlockService,
-    prismaService:PrismaService
+    prismaService: PrismaService
 
   const block = {
     id: '1',
@@ -42,6 +42,7 @@ describe('CardBlockResolver', () => {
   }
 
   const blockCreateResponse = {
+    id: undefined,
     journeyId: '2',
     typename: 'CardBlock',
     parentBlockId: '3',
@@ -97,7 +98,7 @@ describe('CardBlockResolver', () => {
         blockUpdate.parentBlockId
       )
       expect(service.save).toHaveBeenCalledWith({
-        ...omit(blockCreateResponse, ['__typename', 'journeyId']),
+        ...omit(blockCreateResponse, ['__typename']),
         typename: 'CardBlock',
         journey: { connect: { id: blockUpdate.journeyId } }
       })

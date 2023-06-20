@@ -46,7 +46,7 @@ describe('EmailActionResolver', () => {
     resolver = module.get<EmailActionResolver>(EmailActionResolver)
     prismaService = await module.resolve(PrismaService)
     prismaService.block.findUnique = jest.fn().mockResolvedValue(block)
-    prismaService.action.update = jest
+    prismaService.action.upsert = jest
       .fn()
       .mockResolvedValue((result) => result.data)
   })
@@ -57,11 +57,17 @@ describe('EmailActionResolver', () => {
       block.journeyId,
       emailActionInput
     )
-    expect(prismaService.action.update).toHaveBeenCalledWith({
+    const actionData = {
+      ...emailActionInput,
+      parentBlockId: block.action.parentBlockId
+    }
+    expect(prismaService.action.upsert).toHaveBeenCalledWith({
       where: { id: block.id },
-      data: {
-        ...emailActionInput, parentBlockId: block.action.parentBlockId
-      }
+      create: {
+        ...actionData,
+        block: { connect: { id: block.id } }
+      },
+      update: actionData
     })
   })
 

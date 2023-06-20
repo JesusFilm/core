@@ -61,16 +61,18 @@ export class EmailActionResolver {
       throw new UserInputError('must be a valid email')
     }
 
-    return await this.prismaService.action.update({
+    const actionData = {
+      ...input,
+      parentBlockId: block.id,
+      blockId: null,
+      journeyId: null,
+      url: null,
+      target: null
+    }
+    return await this.prismaService.action.upsert({
       where: { id },
-      data: {
-        ...input,
-        parentBlockId: block.id,
-        blockId: null,
-        journeyId: null,
-        url: null,
-        target: null
-      }
+      create: { ...actionData, block: { connect: { id: block.id } } },
+      update: actionData
     })
   }
 }

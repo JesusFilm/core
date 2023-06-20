@@ -45,6 +45,7 @@ describe('Icon', () => {
     journey: {
       connect: { id: '2' }
     },
+    journeyId: '2',
     typename: 'IconBlock',
     parentBlockId: '0',
     parentOrder: null,

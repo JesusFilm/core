@@ -36,7 +36,7 @@ export class ButtonBlockResolver {
     ])
   )
   async buttonBlockCreate(
-    @Args('input') input: ButtonBlockCreateInput & { __typename }
+    @Args('input') input: ButtonBlockCreateInput
   ): Promise<ButtonBlock> {
     const siblings = await this.blockService.getSiblings(
       input.journeyId,

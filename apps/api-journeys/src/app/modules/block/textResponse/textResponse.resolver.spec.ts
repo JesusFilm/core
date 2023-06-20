@@ -38,11 +38,10 @@ describe('TextResponseBlockResolver', () => {
     parentBlockId: block.id
   }
 
-  const input: TextResponseBlockCreateInput & { __typename: string } = {
+  const input: TextResponseBlockCreateInput = {
     id: '1',
     journeyId: '2',
     parentBlockId: '',
-    __typename: '',
     label: 'Your answer here...',
     submitLabel: 'Submit'
   }
@@ -51,7 +50,8 @@ describe('TextResponseBlockResolver', () => {
     ...omit(input, ['__typename', 'journeyId']),
     typename: 'TextResponseBlock',
     parentOrder: 2,
-    journey: { connect: { id: '2' } }
+    journey: { connect: { id: '2' } },
+    journeyId: '2'
   }
 
   const blockUpdate = {

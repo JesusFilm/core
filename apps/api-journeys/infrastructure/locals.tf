@@ -1,10 +1,6 @@
 locals {
   port = 4001
   environment_variables = [
-    "DATABASE_DB",
-    "DATABASE_PASS",
-    "DATABASE_URL",
-    "DATABASE_USER",
     "PG_DATABASE_URL",
     "FIREBASE_API_KEY",
     "PG_DATABASE_URL",

@@ -33,7 +33,6 @@ describe('TypographyBlockResolver', () => {
   }
 
   const blockUpdate = {
-    __typename: '',
     journeyId: '2',
     parentBlockId: '3',
     parentOrder: 1,
@@ -48,7 +47,8 @@ describe('TypographyBlockResolver', () => {
     journey: {
       connect: { id: '2' }
     },
-    __typename: 'TypographyBlock',
+    journeyId: '2',
+    typename: 'TypographyBlock',
     parentBlockId: '3',
     parentOrder: 2,
     content: 'text',
@@ -115,7 +115,7 @@ describe('TypographyBlockResolver', () => {
       )
       expect(service.update).toHaveBeenCalledWith(
         block.id,
-        omit(blockUpdate, ['journeyId', '__typename'])
+        omit(blockUpdate, ['__typename'])
       )
     })
   })

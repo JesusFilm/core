@@ -84,6 +84,7 @@ describe('VideoBlockResolver', () => {
     __typename: 'VideoBlock' as const,
     parentOrder: 0,
     journey: { connect: { id: 'journeyId' } },
+    journeyId: 'journeyId',
     parentBlockId: 'parentBlockId',
     videoId: 'videoId',
     videoVariantLanguageId: 'videoVariantLanguageId',
@@ -196,6 +197,7 @@ describe('VideoBlockResolver', () => {
         typename: 'VideoBlock',
         isCover: true,
         journey: { connect: { id: 'journeyId' } },
+        journeyId: 'journeyId',
         parentOrder: null
       })
       expect(service.removeBlockAndChildren).toHaveBeenCalledWith(

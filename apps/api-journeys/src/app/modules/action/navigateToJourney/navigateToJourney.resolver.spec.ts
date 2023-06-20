@@ -46,7 +46,7 @@ describe('NavigateToJourneyActionResolver', () => {
     blockId: null,
     url: null,
     target: null
-  }  
+  }
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -68,7 +68,9 @@ describe('NavigateToJourneyActionResolver', () => {
     prismaService = module.get<PrismaService>(PrismaService)
     prismaService.journey.findUnique = jest.fn().mockResolvedValue(journey)
     prismaService.block.findUnique = jest.fn().mockResolvedValue(block)
-    prismaService.action.update = jest.fn().mockResolvedValue((input) => input.data)
+    prismaService.action.upsert = jest
+      .fn()
+      .mockResolvedValue((input) => input.data)
   })
 
   describe('NavigateToJourneyAction', () => {
@@ -86,10 +88,14 @@ describe('NavigateToJourneyActionResolver', () => {
         block.journeyId,
         navigateToJourneyInput
       )
-      expect(prismaService.action.update).toHaveBeenCalledWith({
-        where: { id: block.id }, data: {
-           ...navigateToJourneyInput, parentBlockId: block.id
-        }
+      const actionData = {
+        ...navigateToJourneyInput,
+        parentBlockId: block.id
+      }
+      expect(prismaService.action.upsert).toHaveBeenCalledWith({
+        where: { id: block.id },
+        create: { ...actionData, block: { connect: { id: block.id } } },
+        update: actionData
       })
     })
   })

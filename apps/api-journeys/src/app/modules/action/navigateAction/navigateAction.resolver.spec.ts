@@ -49,13 +49,15 @@ describe('NavigateActionResolver', () => {
         UserJourneyService,
         UserRoleService,
         JourneyService,
-        PrismaService,
+        PrismaService
       ]
     }).compile()
     resolver = module.get<NavigateActionResolver>(NavigateActionResolver)
     prismaService = module.get<PrismaService>(PrismaService)
     prismaService.block.findUnique = jest.fn().mockResolvedValue(block)
-    prismaService.action.update = jest.fn().mockResolvedValue((result) => result.data)
+    prismaService.action.upsert = jest
+      .fn()
+      .mockResolvedValue((result) => result.data)
   })
 
   it('updates navigate action', async () => {
@@ -64,12 +66,14 @@ describe('NavigateActionResolver', () => {
       block.journeyId,
       navigateActionInput
     )
-    expect(prismaService.action.update).toHaveBeenCalledWith({
+    const actionData = {
+      ...navigateActionInput,
+      parentBlockId: block.action.parentBlockId
+    }
+    expect(prismaService.action.upsert).toHaveBeenCalledWith({
       where: { id: block.id },
-      data: {
-        ...navigateActionInput,
-        parentBlockId: block.action.parentBlockId
-      }
+      create: { ...actionData, block: { connect: { id: block.id } } },
+      update: actionData
     })
   })
 

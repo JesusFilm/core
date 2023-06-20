@@ -7,7 +7,7 @@ import { omit } from 'lodash'
 
 import { PrismaService } from '../../lib/prisma.service'
 
-export const OMITTED_BLOCK_FIELDS = ['__typename', 'journeyid', 'isCover']
+export const OMITTED_BLOCK_FIELDS = ['__typename', 'journeyId', 'isCover']
 
 type BlockWithAction = Block & { action: Action }
 @Injectable()
@@ -349,9 +349,27 @@ export class BlockService {
 
   @ToPostgresql()
   async update<T>(id: string, input: Prisma.BlockUpdateInput): Promise<T> {
+    console.log(input)
+    if (input.action != null) {
+      const data = {
+        block: { connect: { id } },
+        ...omit(input.action, 'id')
+      }
+      await this.prismaService.action.upsert({
+        where: { id },
+        create: data,
+        update: data
+      })
+    } else if (input.action === null) {
+      await this.prismaService.action.delete({ where: { id } })
+    }
     return (await this.prismaService.block.update({
       where: { id },
-      data: omit(input, OMITTED_BLOCK_FIELDS) as Prisma.BlockUpdateInput
+      data: omit(input, [
+        ...OMITTED_BLOCK_FIELDS,
+        'action'
+      ]) as Prisma.BlockUpdateInput,
+      include: { action: true }
     })) as unknown as T
   }
 }

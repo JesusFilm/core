@@ -45,10 +45,9 @@ describe('Button', () => {
     parentBlockId: block.id
   }
 
-  const blockInput: ButtonBlockCreateInput & { __typename: string } = {
+  const blockInput: ButtonBlockCreateInput = {
     id: '1',
     journeyId: '2',
-    __typename: 'ButtonBlock',
     parentBlockId: '0',
     label: 'label',
     variant: ButtonVariant.contained,
@@ -61,6 +60,7 @@ describe('Button', () => {
     journey: {
       connect: { id: '2' }
     },
+    journeyId: '2',
     typename: 'ButtonBlock',
     parentBlockId: '0',
     parentOrder: 2,
@@ -92,7 +92,7 @@ describe('Button', () => {
     provide: BlockService,
     useFactory: () => ({
       getSiblings: jest.fn(() => [block, block]),
-      save: jest.fn((input) => input.data),
+      save: jest.fn((input) => input),
       update: jest.fn((input) => input),
       validateBlock: jest.fn()
     })
@@ -107,7 +107,7 @@ describe('Button', () => {
         UserJourneyService,
         UserRoleService,
         JourneyService,
-        PrismaService,
+        PrismaService
       ]
     }).compile()
     resolver = module.get<ButtonBlockResolver>(ButtonBlockResolver)
@@ -115,7 +115,9 @@ describe('Button', () => {
     service = await module.resolve(BlockService)
     prismaService = await module.resolve(PrismaService)
     prismaService.block.findUnique = jest.fn().mockResolvedValueOnce(block)
-    prismaService.block.findMany = jest.fn().mockResolvedValueOnce([block, block])
+    prismaService.block.findMany = jest
+      .fn()
+      .mockResolvedValueOnce([block, block])
   })
 
   describe('ButtonBlock', () => {

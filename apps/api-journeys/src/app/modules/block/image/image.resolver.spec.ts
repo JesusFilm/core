@@ -61,6 +61,7 @@ describe('ImageBlockResolver', () => {
   const createdBlock = {
     id: '1',
     journey: { connect: { id: '2' } },
+    journeyId: '2',
     typename: 'ImageBlock',
     parentBlockId: 'parentBlockId',
     parentOrder: 2,
@@ -128,7 +129,7 @@ describe('ImageBlockResolver', () => {
         UserJourneyService,
         UserRoleService,
         JourneyService,
-        PrismaService,
+        PrismaService
       ]
     }).compile()
     blockResolver = module.get<BlockResolver>(BlockResolver)
@@ -151,7 +152,9 @@ describe('ImageBlockResolver', () => {
         }
       }
     })
-    prisma.block.findMany = jest.fn().mockResolvedValueOnce([createdBlock, createdBlock])
+    prisma.block.findMany = jest
+      .fn()
+      .mockResolvedValueOnce([createdBlock, createdBlock])
 
     // this kinda doesnt matter since sharp returns the data we need, but still need to mock so it doesnt run the API
     mockFetch.mockResolvedValueOnce({

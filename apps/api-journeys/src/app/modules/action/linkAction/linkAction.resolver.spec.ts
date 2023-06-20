@@ -50,7 +50,7 @@ describe('LinkActionResolver', () => {
     resolver = module.get<LinkActionResolver>(LinkActionResolver)
     prismaService = module.get<PrismaService>(PrismaService)
     prismaService.block.findUnique = jest.fn().mockResolvedValue(block)
-    prismaService.action.update = jest
+    prismaService.action.upsert = jest
       .fn()
       .mockResolvedValue((result) => result.data)
   })
@@ -61,10 +61,17 @@ describe('LinkActionResolver', () => {
       block.journeyId,
       linkActionInput
     )
-    expect(prismaService.action.update).toHaveBeenCalledWith({
-      where: { id: block.id }, data: {
-        ...linkActionInput, parentBlockId: block.action.parentBlockId
-      }
+    const actionData = {
+      ...linkActionInput,
+      parentBlockId: block.action.parentBlockId
+    }
+    expect(prismaService.action.upsert).toHaveBeenCalledWith({
+      where: { id: block.id },
+      create: {
+        ...actionData,
+        block: { connect: { id: block.id } }
+      },
+      update: actionData
     })
   })
 

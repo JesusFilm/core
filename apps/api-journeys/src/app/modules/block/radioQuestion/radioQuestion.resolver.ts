@@ -81,7 +81,7 @@ export class RadioQuestionBlockResolver {
     ])
   )
   async radioQuestionBlockCreate(
-    @Args('input') input: RadioQuestionBlockCreateInput & { __typename }
+    @Args('input') input: RadioQuestionBlockCreateInput
   ): Promise<RadioQuestionBlock> {
     const siblings = await this.blockService.getSiblings(
       input.journeyId,

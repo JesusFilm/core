@@ -53,15 +53,20 @@ export class LinkActionResolver {
       throw new UserInputError('This block does not support link actions')
     }
 
-    return await this.prismaService.action.update({
+    const actionData = {
+      ...input,
+      parentBlockId: block.id,
+      blockId: null,
+      journeyId: null,
+      email: null
+    }
+    return await this.prismaService.action.upsert({
       where: { id },
-      data: {
-        ...input,
-        parentBlockId: block.id,
-        blockId: null,
-        journeyId: null,
-        email: null
-      }
+      create: {
+        ...actionData,
+        block: { connect: { id: block.id } }
+      },
+      update: actionData
     })
   }
 }
