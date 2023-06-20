@@ -188,6 +188,8 @@ extend type Mutation {
   userJourneyRemoveAll(id: ID!): [UserJourney!]!
   userJourneyRequest(journeyId: ID!, idType: IdType): UserJourney!
   userJourneyOpen(id: ID!): UserJourney
+  userTeamUpdate(id: ID!, input: TeamUpdateInput): UserTeam!
+  userTeamDelete(id: ID!): UserTeam!
 
   """Update a visitor"""
   visitorUpdate(id: ID!, input: VisitorUpdateInput!): Visitor!
@@ -808,6 +810,7 @@ input VideoBlockCreateInput {
 
   """endAt dictates at which point of time the video should end"""
   endAt: Int
+  duration: Int
   description: String
   muted: Boolean
   autoplay: Boolean
@@ -857,6 +860,7 @@ input VideoBlockUpdateInput {
   endAt: Int
   muted: Boolean
   autoplay: Boolean
+  duration: Int
 
   """
   internal source videos: videoId and videoVariantLanguageId both need to be set
@@ -1623,6 +1627,8 @@ extend type Query {
   team(id: ID!): Team!
   userInvites(journeyId: ID!): [UserInvite!]
   getUserRole: UserRole
+  userTeams(teamId: ID!): [UserTeam!]!
+  userTeam(id: ID!): UserTeam!
 
   """A list of visitors that are connected with a specific team."""
   visitorsConnection(
@@ -1924,6 +1930,26 @@ enum Role {
   publisher
 }
 
+enum UserTeamRole {
+  manager
+  member
+  guest
+}
+
+type UserTeam
+  @key(fields: "id")
+{
+  id: ID!
+  user: User!
+  role: UserTeamRole!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+input UserTeamUpdateInput {
+  role: UserTeamRole!
+}
+
 type Browser {
   name: String
   version: String
@@ -2175,4 +2201,4 @@ type _Service {
   sdl: String
 }
 
-union _Entity = Journey | JourneyProfile | JourneyVisitor | Language | Team | User | UserInvite | UserJourney | UserRole | Video | Visitor
+union _Entity = Journey | JourneyProfile | JourneyVisitor | Language | Team | User | UserInvite | UserJourney | UserRole | UserTeam | Video | Visitor
