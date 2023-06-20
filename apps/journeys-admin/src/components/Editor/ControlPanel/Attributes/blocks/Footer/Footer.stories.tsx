@@ -63,7 +63,7 @@ const Template: Story<
 }
 
 export const Default = Template.bind({})
-Default.args = { hostTitle: null, chatButtons: [] }
+Default.args = { hostTitle: null }
 
 export const Filled = Template.bind({})
 Filled.args = {

@@ -52,7 +52,7 @@ export function Footer(): ReactElement {
         id="chat-widget"
         icon={<MessageChat1 />}
         name={t('Chat Widget')}
-        value={t(platforms ?? 'None')}
+        value={platforms ?? t('None')}
         description={t('Chat Platform')}
         onClick={() => {
           dispatch({
