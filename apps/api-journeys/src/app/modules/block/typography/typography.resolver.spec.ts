@@ -48,7 +48,7 @@ describe('TypographyBlockResolver', () => {
     journey: {
       connect: { id: '2' }
     },
-    typename: 'TypographyBlock',
+    __typename: 'TypographyBlock',
     parentBlockId: '3',
     parentOrder: 2,
     content: 'text',

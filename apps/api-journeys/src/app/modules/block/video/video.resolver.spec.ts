@@ -14,7 +14,7 @@ import { UserJourneyService } from '../../userJourney/userJourney.service'
 import { UserRoleService } from '../../userRole/userRole.service'
 import { PrismaService } from '../../../lib/prisma.service'
 import { BlockResolver } from '../block.resolver'
-import { BlockService } from '../block.service'
+import { BlockService, OMITTED_BLOCK_FIELDS } from '../block.service'
 import {
   CloudflareRetrieveVideoDetailsResponse,
   VideoBlockResolver
@@ -177,10 +177,11 @@ describe('VideoBlockResolver', () => {
         blockCreate.parentBlockId
       )
       expect(service.save).toHaveBeenCalledWith({
-        ...omit(blockCreate, 'journeyId'),
+        ...blockCreate,
         id: 'abc',
         typename: 'VideoBlock',
         journey: { connect: { id: 'journeyId' } },
+        journeyId: 'journeyId',
         source: 'youTube',
         parentOrder: 0
       })
@@ -190,7 +191,7 @@ describe('VideoBlockResolver', () => {
       await resolver.videoBlockCreate({ ...blockCreate, isCover: true })
 
       expect(service.save).toHaveBeenCalledWith({
-        ...omit(blockCreate, 'journeyId'),
+        ...omit(blockCreate, OMITTED_BLOCK_FIELDS),
         id: 'abc',
         typename: 'VideoBlock',
         isCover: true,
@@ -219,6 +220,7 @@ describe('VideoBlockResolver', () => {
           })
         ).toEqual({
           ...createdBlock,
+          journeyId: 'journeyId',
           videoId: 'videoId',
           videoVariantLanguageId: 'videoVariantLanguageId',
           source: VideoBlockSource.internal
@@ -293,6 +295,7 @@ describe('VideoBlockResolver', () => {
           })
         ).toEqual({
           ...createdBlock,
+          journeyId: 'journeyId',
           videoId: 'ak06MSETeo4',
           source: VideoBlockSource.youTube,
           description:

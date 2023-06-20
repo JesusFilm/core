@@ -349,7 +349,6 @@ export class BlockService {
 
   @ToPostgresql()
   async update<T>(id: string, input: Prisma.BlockUpdateInput): Promise<T> {
-    console.log('update', id, input)
     return (await this.prismaService.block.update({
       where: { id },
       data: omit(input, OMITTED_BLOCK_FIELDS) as Prisma.BlockUpdateInput

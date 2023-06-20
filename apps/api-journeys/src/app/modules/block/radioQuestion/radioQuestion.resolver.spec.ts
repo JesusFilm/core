@@ -1,6 +1,4 @@
 import { Test, TestingModule } from '@nestjs/testing'
-import { Database } from 'arangojs'
-import { mockDeep } from 'jest-mock-extended'
 
 import { RadioOptionBlock } from '../../../__generated__/graphql'
 import { JourneyService } from '../../journey/journey.service'
@@ -77,10 +75,12 @@ describe('RadioQuestionBlockResolver', () => {
   }
 
   const radioQuestionResponse = {
+    id: undefined,
     typename: 'RadioQuestionBlock',
     parentBlockId: '2',
     parentOrder: 2,
-    journey: { connect: { id: '2' } }
+    journey: { connect: { id: '2' } },
+    journeyId: '2'
   }
 
   const blockService = {
@@ -102,11 +102,7 @@ describe('RadioQuestionBlockResolver', () => {
         UserJourneyService,
         UserRoleService,
         JourneyService,
-        PrismaService,
-        {
-          provide: 'DATABASE',
-          useFactory: () => mockDeep<Database>()
-        }
+        PrismaService
       ]
     }).compile()
     blockResolver = module.get<BlockResolver>(BlockResolver)

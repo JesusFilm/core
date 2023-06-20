@@ -1,6 +1,4 @@
 import { Test, TestingModule } from '@nestjs/testing'
-import { Database } from 'arangojs'
-import { mockDeep } from 'jest-mock-extended'
 
 import {
   SignUpBlock,
@@ -39,8 +37,7 @@ describe('SignUpBlockResolver', () => {
     parentBlockId: block.id
   }
 
-  const input: SignUpBlockCreateInput & { __typename: string } = {
-    __typename: '',
+  const input: SignUpBlockCreateInput = {
     id: '1',
     parentBlockId: '',
     journeyId: '2',
@@ -53,6 +50,7 @@ describe('SignUpBlockResolver', () => {
     journey: {
       connect: { id: input.journeyId }
     },
+    journeyId: input.journeyId,
     typename: 'SignUpBlock',
     parentOrder: 2,
     submitLabel: input.submitLabel
@@ -84,11 +82,7 @@ describe('SignUpBlockResolver', () => {
         UserJourneyService,
         UserRoleService,
         JourneyService,
-        PrismaService,
-        {
-          provide: 'DATABASE',
-          useFactory: () => mockDeep<Database>()
-        }
+        PrismaService
       ]
     }).compile()
     blockResolver = module.get<BlockResolver>(BlockResolver)

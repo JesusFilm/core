@@ -37,9 +37,8 @@ export class RadioOptionBlockResolver {
     ])
   )
   async radioOptionBlockCreate(
-    @Args('input') input: RadioOptionBlockCreateInput & { __typename }
+    @Args('input') input: RadioOptionBlockCreateInput
   ): Promise<RadioOptionBlock> {
-    input.__typename = 'RadioOptionBlock'
     const siblings = await this.blockService.getSiblings(
       input.journeyId,
       input.parentBlockId
