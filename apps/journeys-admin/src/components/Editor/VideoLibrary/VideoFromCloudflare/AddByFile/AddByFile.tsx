@@ -1,6 +1,6 @@
 import type { ReadStream } from 'fs'
 import { ReactElement, useEffect, useState } from 'react'
-import { useDropzone } from 'react-dropzone'
+import { useDropzone, FileRejection } from 'react-dropzone'
 import Typography from '@mui/material/Typography'
 import BackupOutlinedIcon from '@mui/icons-material/BackupOutlined'
 import Button from '@mui/material/Button'
@@ -147,29 +147,29 @@ export function AddByFile({
     }
   }
 
-
-  const onDropRejected = async (fileRejections: FileRejections[]): Promise<void> => {
+  const onDropRejected = async (
+    fileRejections: FileRejection[]
+  ): Promise<void> => {
     setfileRejected(true)
     fileRejections.forEach(({ file, errors }) => {
-      errors.forEach(e => {
-        if(e.code === "file-invalid-type"){
+      errors.forEach((e) => {
+        if (e.code === 'file-invalid-type') {
           setfileInvalidType(true)
         }
-        if(e.code === "file-too-large"){
+        if (e.code === 'file-too-large') {
           setfileTooLarge(true)
         }
 
-        if(e.code === "too-many-files"){
+        if (e.code === 'too-many-files') {
           settooManyFiles(true)
         }
       })
     })
-  } 
+  }
 
-  const { getRootProps, open, getInputProps, isDragAccept} = useDropzone({
+  const { getRootProps, open, getInputProps, isDragAccept } = useDropzone({
     onDropAccepted,
-    onDropRejected, 
-    // onError,
+    onDropRejected,
     noClick: true,
     multiple: false,
     maxSize: 1000000000,
@@ -217,13 +217,19 @@ export function AddByFile({
         )}
         <Typography
           variant="body1"
-          color={error != null || fileRejected ? 'error.main' : 'secondary.main'}
+          color={
+            error != null || fileRejected ? 'error.main' : 'secondary.main'
+          }
           sx={{ pb: 4 }}
         >
           {uploading && 'Uploading...'}
           {processing && 'Processing...'}
-          {error != null || fileRejected && 'Upload Failed!'}
-          {!uploading && !processing && !fileRejected && error == null && 'Drop a video here'}
+          {error != null || (fileRejected && 'Upload Failed!')}
+          {!uploading &&
+            !processing &&
+            !fileRejected &&
+            error == null &&
+            'Drop a video here'}
         </Typography>
       </Box>
       <Stack
@@ -241,23 +247,25 @@ export function AddByFile({
           {error != null && error.name === 'InvalidCharacterError' ? 'Invalid character in file name' : null}
         </Typography> */}
         <Typography variant="caption">
-          {error != null || fileRejected 
+          {error != null || fileRejected
             ? 'Something went wrong, try again'
             : 'Max size is 1 GB'}
         </Typography>
       </Stack>
       {fileRejected ? (
         <Stack
-              direction="row"
-              spacing={1}
-              color={error != null || fileRejected ? 'error.main' : 'secondary.light'}
-            >
+          direction="row"
+          spacing={1}
+          color={
+            error != null || fileRejected ? 'error.main' : 'secondary.light'
+          }
+        >
           <WarningAmberRounded
-                fontSize="small"
-                sx={{
-                  display: error != null || fileRejected ? 'flex' : 'none'
-                }}
-              />
+            fontSize="small"
+            sx={{
+              display: error != null || fileRejected ? 'flex' : 'none'
+            }}
+          />
           {/* <Typography variant="caption">
                 {error != null && error.name === 'InvalidCharacterError' ? 'Invalid character in file name' : null}
               </Typography> */}
@@ -267,7 +275,9 @@ export function AddByFile({
             {tooManyFiles && 'Only one file upload at once.'}
           </Typography>
         </Stack>
-      ) : ''}
+      ) : (
+        ''
+      )}
 
       {uploading || processing ? (
         <Box sx={{ width: '100%', mt: 4 }}>

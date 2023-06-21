@@ -237,6 +237,4 @@ describe('AddByFile', () => {
     )
     expect(getByText('Only one file upload at once.')).toBeInTheDocument()
   })
-
-
 })
