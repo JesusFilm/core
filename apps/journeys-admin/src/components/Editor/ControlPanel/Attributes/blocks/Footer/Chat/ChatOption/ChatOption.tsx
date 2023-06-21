@@ -26,9 +26,9 @@ export function ChatOption({
   enableIconSelect = false
 }: Props): ReactElement {
   const [currentLink, setCurrentLink] = useState<string>(chatButton?.link ?? '')
-  const [currentPlatform, setCurrentPlatform] = useState<
-    ChatPlatform | 'default'
-  >(platform ?? chatButton?.platform ?? 'default')
+  const [currentPlatform, setCurrentPlatform] = useState<ChatPlatform>(
+    platform ?? chatButton?.platform ?? ChatPlatform.custom
+  )
 
   return (
     <Accordion

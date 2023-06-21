@@ -37,7 +37,7 @@ interface Props {
   disableSelection: boolean
   journeyId?: string
   currentLink: string
-  currentPlatform: ChatPlatform | 'default'
+  currentPlatform: ChatPlatform
   chatButtonId?: string
 }
 

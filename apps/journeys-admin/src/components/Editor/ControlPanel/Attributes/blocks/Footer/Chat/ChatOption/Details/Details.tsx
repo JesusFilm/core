@@ -42,12 +42,18 @@ export const JOURNEY_CHAT_BUTTON_UPDATE = gql`
 interface Props {
   journeyId?: string
   chatButtonId?: string
-  currentPlatform: ChatPlatform | 'default'
+  currentPlatform: ChatPlatform
   currentLink: string
-  setCurrentPlatform: (value: ChatPlatform | 'default') => void
+  setCurrentPlatform: (value: ChatPlatform) => void
   setCurrentLink: (value: string) => void
   helperInfo?: string
   enableIconSelect: boolean
+}
+
+interface ChatPlatformOptions {
+  value: ChatPlatform
+  label: string
+  icon: ReactElement
 }
 
 export function Details({
@@ -66,9 +72,9 @@ export function Details({
     JOURNEY_CHAT_BUTTON_UPDATE
   )
 
-  const chatIconOptions = [
+  const chatPlatformOptions: ChatPlatformOptions[] = [
     {
-      value: 'default',
+      value: ChatPlatform.custom,
       label: t('Chat'),
       icon: <MessageTyping />
     },
@@ -111,19 +117,19 @@ export function Details({
 
   async function handleUpdate(
     type: 'link' | 'platform',
-    value?: string | ChatPlatform
+    value?: string
   ): Promise<void> {
     let input
     if (type === 'link') {
       input = {
-        link: value as string,
+        link: value,
         platform: currentPlatform
       }
-      setCurrentLink(value as string)
+      setCurrentLink(value ?? '')
     } else {
       input = {
         link: currentLink,
-        platform: value !== 'default' ? (value as ChatPlatform) : null
+        platform: value as ChatPlatform
       }
       setCurrentPlatform(value as ChatPlatform)
     }
@@ -166,7 +172,7 @@ export function Details({
               }
               IconComponent={KeyboardArrowDownRoundedIcon}
             >
-              {chatIconOptions.map(({ value, label, icon }) => (
+              {chatPlatformOptions.map(({ value, label, icon }) => (
                 <MenuItem key={`chat-icon-${value}`} value={value}>
                   <Stack direction="row" spacing={5}>
                     {icon}
