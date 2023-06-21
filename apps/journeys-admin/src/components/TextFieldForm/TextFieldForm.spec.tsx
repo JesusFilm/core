@@ -1,4 +1,4 @@
-import { fireEvent, render, waitFor } from '@testing-library/react'
+import { fireEvent, render, waitFor, act } from '@testing-library/react'
 import Search from '@mui/icons-material/Search'
 import { object, string } from 'yup'
 import { TextFieldForm } from './TextFieldForm'
@@ -9,13 +9,13 @@ describe('TextFieldForm', () => {
       <TextFieldForm
         id="TextField form"
         label="Navigate to..."
-        initialValues="Default Value"
+        initialValue="Default Value"
         placeholder="Placeholder Value"
         inputProps={{
           'data-testid': 'TextField form',
           'aria-label': 'Search'
         }}
-        handleSubmit={jest.fn()}
+        onSubmit={jest.fn()}
         endIcon={<Search />}
       />
     )
@@ -29,64 +29,71 @@ describe('TextFieldForm', () => {
     expect(getByTestId('SearchIcon'))
   })
 
-  it('should show helper text if present', () => {
+  it('should show helper text', () => {
     const { getByText } = render(
       <TextFieldForm
         label="Navigate to..."
-        initialValues="Default Value"
+        initialValue="Default Value"
         helperText="Label goes here"
-        handleSubmit={jest.fn()}
+        onSubmit={jest.fn()}
       />
     )
     expect(getByText('Label goes here')).toBeInTheDocument()
   })
 
-  it('should call handleSubmit on enter keypress', async () => {
-    const handleSubmit = jest.fn()
-    const { getByRole, getByText } = render(
-      <TextFieldForm
-        label="Navigate to..."
-        initialValues="Default Value"
-        handleSubmit={handleSubmit}
-      />
-    )
-    expect(getByText('Navigate to...')).toBeInTheDocument()
-    fireEvent.change(getByRole('textbox'), {
-      target: { value: 'google.com' }
-    })
-    fireEvent.submit(getByRole('textbox'), { target: { value: 'google.com' } })
-    await waitFor(() => {
-      expect(handleSubmit).toHaveBeenCalled()
-    })
-  })
-
-  it('should show error', async () => {
+  it('should show error on change', async () => {
     const validationSchema = object({
       link: string().required('This field is required')
     })
+    const onSubmit = jest.fn()
 
-    const { getByRole, getByText } = render(
+    const { getByRole } = render(
       <TextFieldForm
         id="link"
         label="Navigate to..."
-        initialValues=""
+        initialValue="url"
         validationSchema={validationSchema}
-        handleSubmit={jest.fn()}
+        onSubmit={onSubmit}
       />
     )
 
-    fireEvent.change(getByRole('textbox'), {
+    const field = getByRole('textbox')
+
+    fireEvent.change(field, {
       target: { value: '' }
     })
-    fireEvent.blur(getByRole('textbox'), { target: { value: '' } })
+    fireEvent.submit(field)
 
     await waitFor(() => {
-      expect(getByText('This field is required')).toBeInTheDocument()
+      expect(field).toHaveAccessibleDescription('This field is required')
+      expect(onSubmit).not.toHaveBeenCalled()
     })
   })
 
-  it('should call handleSubmit on blur', async () => {
-    const handleSubmit = jest.fn()
+  it('should call onSubmit on enter keypress', async () => {
+    const onSubmit = jest.fn()
+    const { getByRole, getByText } = render(
+      <TextFieldForm
+        label="Navigate to..."
+        initialValue="Default Value"
+        onSubmit={onSubmit}
+      />
+    )
+    expect(getByText('Navigate to...')).toBeInTheDocument()
+
+    const field = getByRole('textbox')
+    fireEvent.change(field, {
+      target: { value: 'google.com' }
+    })
+    fireEvent.submit(field)
+
+    await waitFor(() => {
+      expect(onSubmit).toHaveBeenCalled()
+    })
+  })
+
+  it('should call onSubmit on blur', async () => {
+    const onSubmit = jest.fn()
     const validationSchema = object({
       link: string().required('This field is required')
     })
@@ -95,17 +102,52 @@ describe('TextFieldForm', () => {
       <TextFieldForm
         id="link"
         label="Navigate to..."
-        initialValues="https://google.com"
+        initialValue="https://google.com"
         validationSchema={validationSchema}
-        handleSubmit={handleSubmit}
+        onSubmit={onSubmit}
       />
     )
-    fireEvent.change(getByRole('textbox'), {
+    const field = getByRole('textbox')
+    fireEvent.change(field, {
       target: { value: 'google.com' }
     })
-    fireEvent.blur(getByRole('textbox'), { target: { value: 'google.com' } })
+    fireEvent.blur(field)
+
     await waitFor(() => {
-      expect(handleSubmit).toHaveBeenCalled()
+      expect(onSubmit).toHaveBeenCalled()
+    })
+  })
+
+  it('should keep initial value on blur from an empty required field', async () => {
+    const validationSchema = object({
+      link: string().required('This field is required')
+    })
+    const onSubmit = jest.fn()
+
+    const { getByRole } = render(
+      <TextFieldForm
+        id="link"
+        label="Navigate to..."
+        initialValue="url"
+        validationSchema={validationSchema}
+        onSubmit={onSubmit}
+      />
+    )
+
+    const field = getByRole('textbox')
+    await act(async () => {
+      fireEvent.change(field, {
+        target: { value: '' }
+      })
+    })
+    await act(async () => {
+      fireEvent.blur(field)
+    })
+
+    await waitFor(() => {
+      expect(field).toHaveValue('url')
+      expect(field).toHaveAccessibleDescription('')
+      expect(onSubmit).not.toHaveBeenCalled()
     })
   })
 })
