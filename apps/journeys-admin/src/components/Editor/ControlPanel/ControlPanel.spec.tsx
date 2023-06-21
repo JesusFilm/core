@@ -1130,4 +1130,53 @@ describe('ControlPanel', () => {
       children: <SocialShareAppearance />
     })
   })
+
+  it('should remove footer selection on card click', () => {
+    const state: EditorState = {
+      steps: [step1, step2, step3],
+      selectedBlock: undefined,
+      selectedComponent: 'Footer',
+      drawerMobileOpen: false,
+      activeTab: ActiveTab.Properties,
+      activeFab: ActiveFab.Add,
+      journeyEditContentComponent: ActiveJourneyEditContent.SocialPreview
+    }
+
+    const mockUseEditor = useEditor as jest.MockedFunction<typeof useEditor>
+    const dispatch = jest.fn()
+    mockUseEditor.mockReturnValue({
+      state,
+      dispatch
+    })
+
+    const { getByTestId } = render(
+      <MockedProvider>
+        <JourneyProvider
+          value={{
+            journey: {
+              id: 'journeyId',
+              themeMode: ThemeMode.dark,
+              themeName: ThemeName.base,
+              language: {
+                __typename: 'Language',
+                id: '529',
+                bcp47: 'en',
+                iso3: 'eng'
+              }
+            } as unknown as Journey,
+            admin: true
+          }}
+        >
+          <EditorProvider initialState={state}>
+            <ControlPanel />
+          </EditorProvider>
+        </JourneyProvider>
+      </MockedProvider>
+    )
+    fireEvent.click(getByTestId('preview-step3.id'))
+    expect(dispatch).toHaveBeenCalledWith({
+      type: 'SetSelectedComponentAction',
+      component: undefined
+    })
+  })
 })

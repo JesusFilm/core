@@ -13,7 +13,9 @@ import { Menu } from './Menu'
 
 export function EditToolbar(): ReactElement {
   const { journey } = useJourney()
-  const { state } = useEditor()
+  const {
+    state: { journeyEditContentComponent, selectedComponent }
+  } = useEditor()
 
   return (
     <>
@@ -28,13 +30,15 @@ export function EditToolbar(): ReactElement {
       <DeleteBlock
         variant="button"
         disabled={
-          state.journeyEditContentComponent !== ActiveJourneyEditContent.Canvas
+          journeyEditContentComponent !== ActiveJourneyEditContent.Canvas ||
+          selectedComponent === 'Footer'
         }
       />
       <DuplicateBlock
         variant="button"
         disabled={
-          state.journeyEditContentComponent !== ActiveJourneyEditContent.Canvas
+          journeyEditContentComponent !== ActiveJourneyEditContent.Canvas ||
+          selectedComponent === 'Footer'
         }
       />
       <Menu />

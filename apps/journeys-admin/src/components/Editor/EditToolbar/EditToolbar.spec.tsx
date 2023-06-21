@@ -2,6 +2,7 @@ import { MockedProvider } from '@apollo/client/testing'
 import { render } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { GetJourney_journey as Journey } from '../../../../__generated__/GetJourney'
 import { JourneyStatus } from '../../../../__generated__/globalTypes'
 import { EditToolbar } from '.'
@@ -69,5 +70,41 @@ describe('Edit Toolbar', () => {
     )
     const button = getAllByRole('link', { name: 'Preview' })[0]
     expect(button).toHaveAttribute('aria-disabled', 'true')
+  })
+
+  it('should disabled duplicate and delete button when footer is selected', () => {
+    const { getAllByRole } = render(
+      <SnackbarProvider>
+        <MockedProvider>
+          <JourneyProvider
+            value={{
+              journey: {
+                slug: 'untitled-journey',
+                status: JourneyStatus.draft
+              } as unknown as Journey,
+              admin: true
+            }}
+          >
+            <EditorProvider
+              initialState={{
+                selectedComponent: 'Footer'
+              }}
+            >
+              <EditToolbar />
+            </EditorProvider>
+          </JourneyProvider>
+        </MockedProvider>
+      </SnackbarProvider>
+    )
+    const deleteButton = getAllByRole('button')[0]
+    expect(deleteButton).toHaveAttribute('aria-label', 'Delete Block Actions')
+    expect(deleteButton).toBeDisabled()
+
+    const duplicateButton = getAllByRole('button')[1]
+    expect(duplicateButton).toHaveAttribute(
+      'aria-label',
+      'Duplicate Block Actions'
+    )
+    expect(duplicateButton).toBeDisabled()
   })
 })
