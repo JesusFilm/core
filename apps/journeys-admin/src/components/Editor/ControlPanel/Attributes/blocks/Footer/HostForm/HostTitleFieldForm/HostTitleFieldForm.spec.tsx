@@ -1,4 +1,4 @@
-import { fireEvent, render, waitFor } from '@testing-library/react'
+import { fireEvent, render, waitFor, act } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
@@ -37,7 +37,7 @@ afterEach(() => {
 })
 
 describe('HostTitleFieldForm', () => {
-  const host = {
+  const defaultHost = {
     id: 'hostId',
     __typename: 'Host',
     teamId: 'teamId',
@@ -51,7 +51,7 @@ describe('HostTitleFieldForm', () => {
     __typename: 'Journey',
     id: 'journeyId',
     seoTitle: 'My awesome journey',
-    host
+    host: defaultHost
   } as unknown as Journey
 
   it('should create a host on submit if no host exists', async () => {
@@ -118,22 +118,31 @@ describe('HostTitleFieldForm', () => {
 
     const field = getByRole('textbox', { name: 'Host Name' })
 
-    fireEvent.click(field)
     fireEvent.change(field, { target: { value: 'Host title' } })
     fireEvent.blur(field)
 
     await waitFor(() => expect(result).toHaveBeenCalled())
     await waitFor(() => expect(result2).toHaveBeenCalled())
-    expect(cache.extract()['Host:hostId']).toEqual({
-      ...host,
-      title: 'Host title'
+
+    waitFor(() => {
+      expect(cache.extract()['Host:hostId']).toEqual({
+        ...defaultHost,
+        title: 'Host title'
+      })
+      expect(cache.extract()[`Journey:${journey.id}`]).toEqual({
+        ...journey,
+        host: { ...defaultHost, title: 'Host title' }
+      })
+      expect(cache.extract()?.ROOT_QUERY?.hosts).toEqual([
+        { __ref: 'Host:hostId' }
+      ])
     })
   })
 
   it('should update host title on submit if host exists', async () => {
     const cache = new InMemoryCache()
     cache.restore({
-      'Host:hostId': host
+      'Host:hostId': defaultHost
     })
 
     const result = jest.fn(() => ({
@@ -177,14 +186,16 @@ describe('HostTitleFieldForm', () => {
 
     expect(field).toHaveValue(journey.host?.title)
 
-    fireEvent.click(field)
     fireEvent.change(field, { target: { value: 'Host title' } })
     fireEvent.blur(field)
 
     await waitFor(() => expect(result).toHaveBeenCalled())
-    expect(cache.extract()['Host:hostId']).toEqual({
-      ...host,
-      title: 'Host title'
-    })
+
+    waitFor(() =>
+      expect(cache.extract()['Host:hostId']).toEqual({
+        ...defaultHost,
+        title: 'Host title'
+      })
+    )
   })
 })
