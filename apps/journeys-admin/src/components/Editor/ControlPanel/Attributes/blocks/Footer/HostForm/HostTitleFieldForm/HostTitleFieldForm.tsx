@@ -37,23 +37,18 @@ export function HostTitleFieldForm(): ReactElement {
   const host = journey?.host
 
   const titleSchema = object({
-    title: string().required('Please enter a host name')
+    hostTitle: string().required('Please enter a host name')
   })
 
   async function handleSubmit(value: string): Promise<void> {
     if (host != null) {
       const { id, teamId } = host
-      console.log('UPDATE HOST MOCK', updateHost)
-      const a = await updateHost({ id, teamId, input: { title: value } })
-
-      console.log('a', a)
+      await updateHost({ id, teamId, input: { title: value } })
     } else {
       const { data } = await hostCreate({
         variables: { teamId: 'jfp-team', input: { title: value } },
-
         update(cache, { data }) {
           if (data?.hostCreate != null) {
-            console.log('modify cache', cache.extract()?.ROOT_QUERY, data)
             cache.modify({
               fields: {
                 hosts(existingTeamHosts = []) {
@@ -65,8 +60,6 @@ export function HostTitleFieldForm(): ReactElement {
                       }
                     `
                   })
-
-                  console.log('cache', [...existingTeamHosts, newHostRef])
                   return [...existingTeamHosts, newHostRef]
                 }
               }
@@ -84,11 +77,11 @@ export function HostTitleFieldForm(): ReactElement {
 
   return (
     <TextFieldForm
-      id="hostName"
+      id="hostTitle"
       label="Host Name"
-      initialValues={host?.title}
+      initialValue={host?.title}
       validationSchema={titleSchema}
-      handleSubmit={handleSubmit}
+      onSubmit={handleSubmit}
     />
   )
 }

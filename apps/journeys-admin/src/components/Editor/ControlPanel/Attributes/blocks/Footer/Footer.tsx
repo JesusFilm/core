@@ -4,6 +4,7 @@ import UserProfileCircleIcon from '@core/shared/ui/icons/UserProfileCircle'
 import MessageChat1 from '@core/shared/ui/icons/MessageChat1'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { useTranslation } from 'react-i18next'
+import Stack from '@mui/material/Stack'
 import { Attribute } from '../..'
 import { ChatPlatform } from '../../../../../../../__generated__/globalTypes'
 import { HostTitleFieldForm } from './HostForm/HostTitleFieldForm'
@@ -47,9 +48,9 @@ export function Footer(): ReactElement {
       title: t('Hosted By'),
       mobileOpen: true,
       children: (
-        <div>
+        <Stack>
           <HostTitleFieldForm />
-        </div>
+        </Stack>
       )
     })
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -69,9 +70,9 @@ export function Footer(): ReactElement {
             title: t('Hosted By'),
             mobileOpen: true,
             children: (
-              <div>
+              <Stack>
                 <HostTitleFieldForm />
-              </div>
+              </Stack>
             )
           })
         }}
