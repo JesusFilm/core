@@ -1,6 +1,5 @@
 import { UseGuards } from '@nestjs/common'
 import { Args, Mutation, Parent, ResolveField, Resolver } from '@nestjs/graphql'
-import { FromPostgresql } from '@core/nest/decorators/FromPostgresql'
 
 import {
   Role,
@@ -23,7 +22,6 @@ export class StepBlockResolver {
       { role: Role.publisher, attributes: { template: true } }
     ])
   )
-  @FromPostgresql()
   async stepBlockCreate(
     @Args('input') input: StepBlockCreateInput
   ): Promise<StepBlock> {

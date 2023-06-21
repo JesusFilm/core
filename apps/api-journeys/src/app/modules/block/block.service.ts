@@ -349,7 +349,6 @@ export class BlockService {
 
   @ToPostgresql()
   async update<T>(id: string, input: Prisma.BlockUpdateInput): Promise<T> {
-    console.log(input)
     if (input.action != null) {
       const data = {
         block: { connect: { id } },

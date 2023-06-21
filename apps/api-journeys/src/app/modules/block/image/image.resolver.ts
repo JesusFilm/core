@@ -4,7 +4,6 @@ import { UserInputError } from 'apollo-server-errors'
 import { encode } from 'blurhash'
 import fetch from 'node-fetch'
 import sharp from 'sharp'
-import { FromPostgresql } from '@core/nest/decorators/FromPostgresql'
 
 import { BlockService } from '../block.service'
 import {
@@ -84,7 +83,6 @@ export class ImageBlockResolver {
       { role: Role.publisher, attributes: { template: true } }
     ])
   )
-  @FromPostgresql()
   async imageBlockCreate(
     @Args('input') input: ImageBlockCreateInput
   ): Promise<ImageBlock> {
@@ -109,8 +107,6 @@ export class ImageBlockResolver {
         throw new Error('Parent block not found')
       }
 
-      console.log('parentBlock', parentBlock)
-      console.log('coverBlock', coverBlock)
       await this.blockService.update(parentBlock.id, {
         coverBlockId: coverBlock.id
       })

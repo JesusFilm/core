@@ -77,8 +77,8 @@ describe('JourneyResolver', () => {
     deletedAt: null,
     seoTitle: null,
     seoDescription: null,
-    template: false
-    // chatButtons: []
+    template: false,
+    hostId: 'hostId'
   }
 
   const journeyWithTeam = {
@@ -1223,7 +1223,9 @@ describe('JourneyResolver', () => {
       }
 
       prismaService.host.findUnique = jest.fn().mockReturnValue(mockHost)
-      expect(await resolver.host(journeyWithHost)).toEqual(mockHost)
+      expect(
+        await resolver.host(journeyWithHost as unknown as Journey)
+      ).toEqual(mockHost)
     })
   })
 

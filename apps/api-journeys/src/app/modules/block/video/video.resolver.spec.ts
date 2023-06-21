@@ -81,7 +81,7 @@ describe('VideoBlockResolver', () => {
 
   const createdBlock = {
     id: 'abc',
-    __typename: 'VideoBlock' as const,
+    typename: 'VideoBlock' as const,
     parentOrder: 0,
     journey: { connect: { id: 'journeyId' } },
     journeyId: 'journeyId',

@@ -4,7 +4,6 @@ import { object, string } from 'yup'
 import fetch from 'node-fetch'
 import { UserInputError } from 'apollo-server-errors'
 import { Block } from '.prisma/api-journeys-client'
-import { FromPostgresql } from '@core/nest/decorators/FromPostgresql'
 
 import { BlockService } from '../block.service'
 import {
@@ -115,7 +114,6 @@ export class VideoBlockResolver {
       { role: Role.publisher, attributes: { template: true } }
     ])
   )
-  @FromPostgresql()
   async videoBlockCreate(
     @Args('input') input: VideoBlockCreateInput
   ): Promise<Block & { action?: Action }> {
