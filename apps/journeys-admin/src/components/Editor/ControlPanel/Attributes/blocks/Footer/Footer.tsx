@@ -4,8 +4,10 @@ import UserProfileCircleIcon from '@core/shared/ui/icons/UserProfileCircle'
 import MessageChat1 from '@core/shared/ui/icons/MessageChat1'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { useTranslation } from 'react-i18next'
+import Stack from '@mui/material/Stack'
 import { Attribute } from '../..'
 import { ChatPlatform } from '../../../../../../../__generated__/globalTypes'
+import { HostTitleFieldForm } from './HostForm/HostTitleFieldForm'
 
 export function Footer(): ReactElement {
   const { dispatch } = useEditor()
@@ -45,7 +47,11 @@ export function Footer(): ReactElement {
       type: 'SetDrawerPropsAction',
       title: t('Hosted By'),
       mobileOpen: true,
-      children: <div>Hosted by content component</div>
+      children: (
+        <Stack>
+          <HostTitleFieldForm />
+        </Stack>
+      )
     })
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dispatch])
@@ -63,7 +69,11 @@ export function Footer(): ReactElement {
             type: 'SetDrawerPropsAction',
             title: t('Hosted By'),
             mobileOpen: true,
-            children: <div>Hosted by content component</div>
+            children: (
+              <Stack>
+                <HostTitleFieldForm />
+              </Stack>
+            )
           })
         }}
       />

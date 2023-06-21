@@ -74,7 +74,6 @@ export function StepFooter({
             flexDirection: rtl ? 'row-reverse' : 'row',
             alignItems: 'center'
           }}
-          gap={4}
         >
           <Stack
             sx={{
