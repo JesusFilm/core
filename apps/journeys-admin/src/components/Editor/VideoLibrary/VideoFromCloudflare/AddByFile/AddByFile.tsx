@@ -62,6 +62,10 @@ export function AddByFile({
     })
   const [uploading, setUploading] = useState(false)
   const [processing, setProcessing] = useState(false)
+  const [fileRejected, setfileRejected] = useState(false)
+  const [fileTooLarge, setfileTooLarge] = useState(false)
+  const [tooManyFiles, settooManyFiles] = useState(false)
+  const [fileInvalidType, setfileInvalidType] = useState(false)
   const [error, setError] = useState<Error | DetailedError>()
   const [progress, setProgress] = useState(0)
 
@@ -90,13 +94,15 @@ export function AddByFile({
     onChange
   ])
 
-  const onDrop = async (acceptedFiles: File[]): Promise<void> => {
-    if (acceptedFiles.length > 0) {
-      const file = acceptedFiles[0]
+  const onDropAccepted = async (files: File[]): Promise<void> => {
+    if (files.length > 0) {
+      const file = files[0]
+      const fileName = file.name.split('.')[0]
+      console.log(fileName)
       const { data } = await createCloudflareVideoUploadByFile({
         variables: {
           uploadLength: file.size,
-          name: file.name.split('.')[0]
+          name: fileName
         }
       })
 
@@ -141,16 +147,38 @@ export function AddByFile({
     }
   }
 
-  const { getRootProps, open, getInputProps, isDragAccept } = useDropzone({
-    onDrop,
+
+  const onDropRejected = async (fileRejections: FileRejections[]): Promise<void> => {
+    setfileRejected(true)
+    fileRejections.forEach(({ file, errors }) => {
+      errors.forEach(e => {
+        if(e.code === "file-invalid-type"){
+          setfileInvalidType(true)
+        }
+        if(e.code === "file-too-large"){
+          setfileTooLarge(true)
+        }
+
+        if(e.code === "too-many-files"){
+          settooManyFiles(true)
+        }
+      })
+    })
+  } 
+
+  const { getRootProps, open, getInputProps, isDragAccept} = useDropzone({
+    onDropAccepted,
+    onDropRejected, 
+    // onError,
     noClick: true,
-    maxSize: 10485760000,
+    multiple: false,
+    maxSize: 1000000000,
     accept: {
       'video/*': []
     }
   })
 
-  const noBorder = error != null || uploading
+  const noBorder = error != null || uploading || fileRejected
 
   return (
     <Stack alignItems="center" gap={1} sx={{ px: 6, py: 3 }}>
@@ -165,7 +193,7 @@ export function AddByFile({
           backgroundColor:
             isDragAccept || uploading
               ? 'rgba(239, 239, 239, 0.9)'
-              : error != null
+              : error != null || fileRejected
               ? 'rgba(197, 45, 58, 0.08)'
               : 'rgba(239, 239, 239, 0.35)',
           borderColor: 'divider',
@@ -178,7 +206,7 @@ export function AddByFile({
         {...getRootProps({ isDragAccept })}
       >
         <input {...getInputProps()} />
-        {error != null ? (
+        {error != null || fileRejected ? (
           <CloudOffRoundedIcon
             sx={{ fontSize: 48, color: 'primary.main', mb: 1 }}
           />
@@ -189,32 +217,57 @@ export function AddByFile({
         )}
         <Typography
           variant="body1"
-          color={error != null ? 'error.main' : 'secondary.main'}
+          color={error != null || fileRejected ? 'error.main' : 'secondary.main'}
           sx={{ pb: 4 }}
         >
           {uploading && 'Uploading...'}
           {processing && 'Processing...'}
-          {error != null && 'Upload Failed!'}
-          {!uploading && !processing && error == null && 'Drop a video here'}
+          {error != null || fileRejected && 'Upload Failed!'}
+          {!uploading && !processing && !fileRejected && error == null && 'Drop a video here'}
         </Typography>
       </Box>
       <Stack
         direction="row"
         spacing={1}
-        color={error != null ? 'error.main' : 'secondary.light'}
+        color={error != null || fileRejected ? 'error.main' : 'secondary.light'}
       >
         <WarningAmberRounded
           fontSize="small"
           sx={{
-            display: error != null ? 'flex' : 'none'
+            display: error != null || fileRejected ? 'flex' : 'none'
           }}
         />
+        {/* <Typography variant="caption">
+          {error != null && error.name === 'InvalidCharacterError' ? 'Invalid character in file name' : null}
+        </Typography> */}
         <Typography variant="caption">
-          {error != null
+          {error != null || fileRejected 
             ? 'Something went wrong, try again'
-            : 'Max length is 30 minutes'}
+            : 'Max size is 1 GB'}
         </Typography>
       </Stack>
+      {fileRejected ? (
+        <Stack
+              direction="row"
+              spacing={1}
+              color={error != null || fileRejected ? 'error.main' : 'secondary.light'}
+            >
+          <WarningAmberRounded
+                fontSize="small"
+                sx={{
+                  display: error != null || fileRejected ? 'flex' : 'none'
+                }}
+              />
+          {/* <Typography variant="caption">
+                {error != null && error.name === 'InvalidCharacterError' ? 'Invalid character in file name' : null}
+              </Typography> */}
+          <Typography variant="caption">
+            {fileInvalidType && 'File is Invalid type. '}
+            {fileTooLarge && 'File is too large. '}
+            {tooManyFiles && 'Only one file upload at once.'}
+          </Typography>
+        </Stack>
+      ) : ''}
 
       {uploading || processing ? (
         <Box sx={{ width: '100%', mt: 4 }}>
