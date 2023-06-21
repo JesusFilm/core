@@ -56,10 +56,6 @@ export function ControlPanel(): ReactElement {
   }
 
   const handleSelectStepPreview = ({ step, view }: OnSelectProps): void => {
-    if (selectedComponent === 'Footer') {
-      dispatch({ type: 'SetSelectedComponentAction', component: undefined })
-    }
-
     if (step != null) {
       dispatch({ type: 'SetSelectedStepAction', step })
       dispatch({ type: 'SetActiveFabAction', activeFab: ActiveFab.Add })
