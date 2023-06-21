@@ -13,6 +13,7 @@ import Tabs from '@mui/material/Tabs'
 import Box from '@mui/material/Box'
 import { NextRouter } from 'next/router'
 import { JourneySort, SortOrder } from '../JourneyList/JourneySort'
+import { JourneyListMenu } from '../JourneyList/JourneyListMenu'
 
 export interface StatusTabPanelProps {
   activeList: ReactElement
@@ -162,14 +163,11 @@ export function StatusTabPanel({
             )}
             disabled={!tabsLoaded}
           />
-
+          <Box sx={{ flexGrow: 1 }} />
           <Box
             sx={{
-              mr: 6,
-              ml: 'auto',
-              mt: 3,
-              mb: 2,
-              display: { xs: 'none', sm: 'block' }
+              display: { xs: 'none', sm: 'flex' },
+              alignItems: 'center'
             }}
           >
             <JourneySort
@@ -178,6 +176,7 @@ export function StatusTabPanel({
               disabled={!tabsLoaded}
             />
           </Box>
+          <JourneyListMenu onClick={setActiveEvent} />
         </Tabs>
       </Paper>
 

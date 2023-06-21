@@ -18,25 +18,19 @@ import { SortOrder } from './JourneySort'
 export interface JourneysListProps {
   journeys?: Journey[]
   router?: NextRouter
-  event: string | undefined
   authUser?: AuthUser
 }
 
 export function JourneyList({
   journeys,
   router,
-  event,
   authUser
 }: JourneysListProps): ReactElement {
   const [sortOrder, setSortOrder] = useState<SortOrder>()
   const [activeTabLoaded, setActiveTabLoaded] = useState(false)
-  const [activeEvent, setActiveEvent] = useState(event)
   const { t } = useTranslation()
   const { journeysSummaryReport, inviteRequirement } = useFlags()
-
-  useEffect(() => {
-    setActiveEvent(event)
-  }, [event])
+  const [activeEvent, setActiveEvent] = useState('')
 
   function activeTabOnLoad(): void {
     setActiveTabLoaded(true)

@@ -397,6 +397,10 @@ export interface StepViewEventCreateInput {
   value?: string | null;
 }
 
+export interface TeamCreateInput {
+  title: string;
+}
+
 export interface TextResponseBlockCreateInput {
   id?: string | null;
   journeyId: string;

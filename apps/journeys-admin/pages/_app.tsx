@@ -18,7 +18,7 @@ import { initAuth } from '../src/libs/firebaseClient/initAuth'
 import i18nConfig from '../next-i18next.config'
 import { HelpScoutBeacon } from '../src/components/HelpScoutBeacon'
 import '../public/swiper-pagination-override.css'
-import { TeamProvider } from '../src/components/TeamProvider'
+import { TeamProvider } from '../src/components/Team/TeamProvider'
 
 // your _app component
 initAuth()
