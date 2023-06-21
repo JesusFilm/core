@@ -88,9 +88,11 @@ module "api-videos" {
 }
 
 module "api-media" {
-  source        = "../../../apps/api-media/infrastructure"
-  ecs_config    = local.internal_ecs_config
-  doppler_token = data.aws_ssm_parameter.doppler_api_media_prod_token.value
+  source                = "../../../apps/api-media/infrastructure"
+  ecs_config            = local.internal_ecs_config
+  doppler_token         = data.aws_ssm_parameter.doppler_api_media_prod_token.value
+  subnet_group_name     = module.prod.vpc.db_subnet_group_name
+  vpc_security_group_id = module.prod.private_rds_security_group_id
 }
 
 module "arango-bigquery-etl" {
