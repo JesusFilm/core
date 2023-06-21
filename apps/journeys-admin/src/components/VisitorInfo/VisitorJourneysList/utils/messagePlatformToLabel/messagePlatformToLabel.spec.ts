@@ -55,4 +55,8 @@ describe('messagePlatformToLabel', () => {
       'WhatsApp'
     )
   })
+
+  it('returns Custom', () => {
+    expect(messagePlatformToLabel(MessagePlatform.custom, t)).toEqual('Custom')
+  })
 })

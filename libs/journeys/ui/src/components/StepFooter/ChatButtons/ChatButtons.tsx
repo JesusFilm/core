@@ -31,7 +31,7 @@ export const CHAT_BUTTON_EVENT_CREATE = gql`
 `
 
 interface ChatIconProps {
-  platform: ChatPlatform | 'default'
+  platform: ChatPlatform
   index: number
 }
 
@@ -86,7 +86,7 @@ export function ChatButtons(): ReactElement {
       skype: Skype,
       line: Line,
       tikTok: Tiktok,
-      default: MessageTyping
+      custom: MessageTyping
     }
 
     const IconComponent = platformComponents[platform]
@@ -112,7 +112,10 @@ export function ChatButtons(): ReactElement {
             }
           }}
         >
-          <ChatIcon platform={chatButton.platform ?? 'default'} index={index} />
+          <ChatIcon
+            platform={chatButton.platform ?? ChatPlatform.custom}
+            index={index}
+          />
         </IconButton>
       ))}
       {admin && chatButtons?.length === 0 && (
