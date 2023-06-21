@@ -929,6 +929,7 @@ enum ChatPlatform {
   skype
   line
   tikTok
+  custom
 }
 
 input ChatButtonCreateInput {
@@ -1017,6 +1018,7 @@ enum MessagePlatform {
   skype
   line
   tikTok
+  custom
 }
 
 input ChatOpenEventCreateInput {
