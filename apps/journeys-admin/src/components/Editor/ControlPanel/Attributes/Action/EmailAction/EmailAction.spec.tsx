@@ -20,15 +20,6 @@ describe('EmailAction', () => {
     }
   }))
 
-  it('defaults to place holder text', () => {
-    const { getByLabelText } = render(
-      <MockedProvider>
-        <EmailAction />
-      </MockedProvider>
-    )
-    expect(getByLabelText('Paste Email here...')).toBeInTheDocument()
-  })
-
   it('displays the action email', async () => {
     const { getByDisplayValue } = render(
       <MockedProvider>
@@ -103,10 +94,10 @@ describe('EmailAction', () => {
         </EditorProvider>
       </MockedProvider>
     )
-    fireEvent.change(getByRole('textbox'), {
+    fireEvent.change(getByRole('textbox', { name: 'Paste Email here...' }), {
       target: { value: '' }
     })
-    fireEvent.blur(getByRole('textbox'))
+    fireEvent.blur(getByRole('textbox', { name: 'Paste Email here...' }))
     await waitFor(() => expect(getByText('Invalid Email')).toBeInTheDocument())
   })
 
