@@ -141,7 +141,8 @@ export enum ChatPlatform {
     snapchat = "snapchat",
     skype = "skype",
     line = "line",
-    tikTok = "tikTok"
+    tikTok = "tikTok",
+    custom = "custom"
 }
 
 export enum ButtonAction {
@@ -162,7 +163,8 @@ export enum MessagePlatform {
     snapchat = "snapchat",
     skype = "skype",
     line = "line",
-    tikTok = "tikTok"
+    tikTok = "tikTok",
+    custom = "custom"
 }
 
 export enum IdType {

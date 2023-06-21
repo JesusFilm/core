@@ -34,6 +34,7 @@ export enum ButtonVariant {
 }
 
 export enum ChatPlatform {
+  custom = "custom",
   facebook = "facebook",
   instagram = "instagram",
   line = "line",
@@ -108,6 +109,7 @@ export enum JourneysReportType {
 }
 
 export enum MessagePlatform {
+  custom = "custom",
   facebook = "facebook",
   instagram = "instagram",
   line = "line",
