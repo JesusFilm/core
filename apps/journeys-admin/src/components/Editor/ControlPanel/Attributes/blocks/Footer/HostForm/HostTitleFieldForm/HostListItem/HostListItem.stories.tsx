@@ -13,8 +13,6 @@ const HostListItemDemo = {
   }
 }
 
-// todo: render the card component based on prop arrays.
-
 const Template: Story<ComponentProps<typeof HostListItem>> = ({
   hostTitle,
   hostLocation,
