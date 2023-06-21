@@ -141,7 +141,8 @@ export enum ChatPlatform {
     snapchat = "snapchat",
     skype = "skype",
     line = "line",
-    tikTok = "tikTok"
+    tikTok = "tikTok",
+    custom = "custom"
 }
 
 export enum ButtonAction {
@@ -162,7 +163,8 @@ export enum MessagePlatform {
     snapchat = "snapchat",
     skype = "skype",
     line = "line",
-    tikTok = "tikTok"
+    tikTok = "tikTok",
+    custom = "custom"
 }
 
 export enum IdType {
@@ -412,6 +414,7 @@ export class VideoBlockCreateInput {
     parentBlockId: string;
     startAt?: Nullable<number>;
     endAt?: Nullable<number>;
+    duration?: Nullable<number>;
     description?: Nullable<string>;
     muted?: Nullable<boolean>;
     autoplay?: Nullable<boolean>;
@@ -429,6 +432,7 @@ export class VideoBlockUpdateInput {
     endAt?: Nullable<number>;
     muted?: Nullable<boolean>;
     autoplay?: Nullable<boolean>;
+    duration?: Nullable<number>;
     videoId?: Nullable<string>;
     videoVariantLanguageId?: Nullable<string>;
     source?: Nullable<VideoBlockSource>;

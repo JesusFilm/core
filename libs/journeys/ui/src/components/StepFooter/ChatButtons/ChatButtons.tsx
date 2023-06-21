@@ -51,7 +51,7 @@ export function ChatButtons(): ReactElement {
     type: 'main' | 'background' = 'main'
   ): string | undefined => {
     if (type === 'background') {
-      return primary ? theme.palette.grey[100] : theme.palette.grey[600]
+      return primary ? theme.palette.grey[100] : '#dedfe026'
     }
     if (type === 'main') {
       return primary ? theme.palette.grey[900] : theme.palette.grey[100]
@@ -85,11 +85,11 @@ export function ChatButtons(): ReactElement {
       snapchat: Snapchat,
       skype: Skype,
       line: Line,
-      tikTok: Tiktok
+      tikTok: Tiktok,
+      custom: MessageTyping
     }
 
-    const IconComponent =
-      platform != null ? platformComponents[platform] : MessageTyping
+    const IconComponent = platformComponents[platform]
     return <IconComponent sx={{ color: getColor(index === 0, 'main') }} />
   }
 
@@ -98,7 +98,6 @@ export function ChatButtons(): ReactElement {
       data-testid="chat-widgets-container"
       direction={rtl ? 'row' : 'row-reverse'}
       gap={2}
-      sx={{ pr: rtl ? 8 : 0 }}
     >
       {chatButtons?.map((chatButton, index) => (
         <IconButton
@@ -113,19 +112,22 @@ export function ChatButtons(): ReactElement {
             }
           }}
         >
-          {chatButton?.platform != null && (
-            <ChatIcon platform={chatButton.platform} index={index} />
-          )}
+          <ChatIcon
+            platform={chatButton.platform ?? ChatPlatform.custom}
+            index={index}
+          />
         </IconButton>
       ))}
       {admin && chatButtons?.length === 0 && (
         <IconButton
           key="default"
+          disabled
           sx={{
             height: 44,
             width: 44,
             outline: 'none',
             border: '3px dashed ',
+            opacity: 0.5,
             borderColor: (theme) => theme.palette.grey[700]
           }}
         >
