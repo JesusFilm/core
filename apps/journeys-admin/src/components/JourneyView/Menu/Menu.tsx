@@ -164,6 +164,7 @@ export function Menu(): ReactElement {
             aria-controls="single-journey-actions"
             aria-haspopup="true"
             aria-expanded={openMenu ? 'true' : undefined}
+            sx={{ mr: 1 }}
             onClick={handleShowMenu}
           >
             <MoreVert />
@@ -277,7 +278,7 @@ export function Menu(): ReactElement {
           />
         </>
       ) : (
-        <IconButton disabled>
+        <IconButton disabled sx={{ mr: 1 }}>
           <MoreVert />
         </IconButton>
       )}

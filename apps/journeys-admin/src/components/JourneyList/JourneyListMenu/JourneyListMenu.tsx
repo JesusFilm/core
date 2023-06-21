@@ -1,4 +1,4 @@
-import { NextRouter } from 'next/router'
+import { useRouter } from 'next/router'
 import { ReactElement, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import MoreVert from '@mui/icons-material/MoreVert'
@@ -7,23 +7,21 @@ import DeleteForever from '@mui/icons-material/DeleteForever'
 import CheckCircle from '@mui/icons-material/CheckCircle'
 import Unarchive from '@mui/icons-material/Unarchive'
 import DeleteOutline from '@mui/icons-material/DeleteOutline'
-import MuiMenu from '@mui/material/Menu'
+import Menu from '@mui/material/Menu'
 import IconButton from '@mui/material/IconButton'
 import { MenuItem } from '../../MenuItem'
 
 interface JourneyListMenuProps {
-  router: NextRouter
   onClick: (event: string) => void
 }
 
-export default function JourneyListMenu({
-  router,
+export function JourneyListMenu({
   onClick
 }: JourneyListMenuProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
+  const router = useRouter()
 
-  const activeTab = (router.query.tab as string) ?? 'active'
-
+  const activeTab = (router.query.tab as string | undefined) ?? 'active'
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
   const handleShowMenu = (event: React.MouseEvent<HTMLButtonElement>): void => {
     setAnchorEl(event.currentTarget)
@@ -38,71 +36,74 @@ export default function JourneyListMenu({
   }
   return (
     <>
-      {['active', 'archived', 'trashed'].includes(activeTab) && (
-        <>
-          <IconButton
-            edge="start"
-            size="small"
-            color="inherit"
-            sx={{ mr: 2 }}
-            onClick={handleShowMenu}
-          >
-            <MoreVert />
-          </IconButton>
-          <MuiMenu
-            id="edit-journey-actions"
-            anchorEl={anchorEl}
-            open={Boolean(anchorEl)}
-            onClose={handleCloseMenu}
-            MenuListProps={{
-              'aria-labelledby': 'edit-journey-actions'
-            }}
-          >
-            {activeTab === 'active' && (
-              <>
-                <MenuItem
-                  label={t('Archive All')}
-                  icon={<Archive />}
-                  onClick={() => handleEvent('archiveAllActive')}
-                />
-                <MenuItem
-                  label={t('Trash All')}
-                  icon={<DeleteOutline />}
-                  onClick={() => handleEvent('trashAllActive')}
-                />
-              </>
-            )}
-            {activeTab === 'archived' && (
-              <>
-                <MenuItem
-                  label={t('Unarchive All')}
-                  icon={<Unarchive />}
-                  onClick={() => handleEvent('restoreAllArchived')}
-                />
-                <MenuItem
-                  label={t('Trash All')}
-                  icon={<DeleteOutline />}
-                  onClick={() => handleEvent('trashAllArchived')}
-                />
-              </>
-            )}
-            {activeTab === 'trashed' && (
-              <>
-                <MenuItem
-                  label={t('Restore All')}
-                  icon={<CheckCircle />}
-                  onClick={() => handleEvent('restoreAllTrashed')}
-                />
-                <MenuItem
-                  label={t('Delete All Forever')}
-                  icon={<DeleteForever />}
-                  onClick={() => handleEvent('deleteAllTrashed')}
-                />
-              </>
-            )}
-          </MuiMenu>
-        </>
-      )}
+      <IconButton
+        edge="end"
+        color="inherit"
+        sx={{ mx: 1 }}
+        onClick={handleShowMenu}
+      >
+        <MoreVert />
+      </IconButton>
+      <Menu
+        id="edit-journey-actions"
+        anchorEl={anchorEl}
+        open={Boolean(anchorEl)}
+        onClose={handleCloseMenu}
+        MenuListProps={{
+          'aria-labelledby': 'edit-journey-actions'
+        }}
+        anchorOrigin={{
+          vertical: 'bottom',
+          horizontal: 'right'
+        }}
+        transformOrigin={{
+          vertical: 'top',
+          horizontal: 'right'
+        }}
+      >
+        {activeTab === 'active' && [
+          <MenuItem
+            label={t('Archive All')}
+            icon={<Archive />}
+            onClick={() => handleEvent('archiveAllActive')}
+            key="archiveAllActive"
+          />,
+          <MenuItem
+            label={t('Trash All')}
+            icon={<DeleteOutline />}
+            onClick={() => handleEvent('trashAllActive')}
+            key="trashAllActive"
+          />
+        ]}
+        {activeTab === 'archived' && [
+          <MenuItem
+            label={t('Unarchive All')}
+            icon={<Unarchive />}
+            onClick={() => handleEvent('restoreAllArchived')}
+            key="restoreAllArchived"
+          />,
+          <MenuItem
+            label={t('Trash All')}
+            icon={<DeleteOutline />}
+            onClick={() => handleEvent('trashAllArchived')}
+            key="trashAllArchived"
+          />
+        ]}
+        {activeTab === 'trashed' && [
+          <MenuItem
+            label={t('Restore All')}
+            icon={<CheckCircle />}
+            onClick={() => handleEvent('restoreAllTrashed')}
+            key="restoreAllTrashed"
+          />,
+          <MenuItem
+            label={t('Delete All Forever')}
+            icon={<DeleteForever />}
+            onClick={() => handleEvent('deleteAllTrashed')}
+            key="deleteAllTrashed"
+          />
+        ]}
+      </Menu>
     </>
   )
 }

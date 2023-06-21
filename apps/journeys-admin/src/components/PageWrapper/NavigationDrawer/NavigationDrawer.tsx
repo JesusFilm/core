@@ -22,15 +22,15 @@ import { useQuery } from '@apollo/client'
 import ViewCarouselRoundedIcon from '@mui/icons-material/ViewCarouselRounded'
 import LeaderboardRoundedIcon from '@mui/icons-material/LeaderboardRounded'
 import { useTranslation } from 'react-i18next'
-import { Role } from '../../../../__generated__/globalTypes'
+import { JourneyStatus, Role } from '../../../../__generated__/globalTypes'
 import taskbarIcon from '../../../../public/taskbar-icon.svg'
 import nextstepsTitle from '../../../../public/nextsteps-title.svg'
 import { GetMe } from '../../../../__generated__/GetMe'
 import { GetUserRole } from '../../../../__generated__/GetUserRole'
 import { GET_USER_ROLE } from '../../JourneyView/JourneyView'
-import { useActiveJourneys } from '../../../libs/useActiveJourneys'
 import { getJourneyTooltip } from '../utils/getJourneyTooltip'
 import { GET_ME } from '../../NewPageWrapper/NavigationDrawer'
+import { useJourneys } from '../../../libs/useJourneys'
 import { UserMenu } from './UserMenu'
 import { NavigationListItem } from './NavigationListItem'
 
@@ -89,8 +89,10 @@ export function NavigationDrawer({
   onClose,
   authUser
 }: NavigationDrawerProps): ReactElement {
-  const activeJourneys = useActiveJourneys()
-  const journeys = activeJourneys?.data?.journeys
+  const { data: activeJourneys } = useJourneys({
+    status: [JourneyStatus.draft, JourneyStatus.published]
+  })
+  const journeys = activeJourneys?.journeys
   const { t } = useTranslation('apps-journeys-admin')
   const router = useRouter()
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))

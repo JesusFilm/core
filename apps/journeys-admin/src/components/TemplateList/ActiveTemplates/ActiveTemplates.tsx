@@ -17,7 +17,6 @@ import {
   GetActivePublisherTemplates_journeys as Journey
 } from '../../../../__generated__/GetActivePublisherTemplates'
 import { TemplateCard } from '../../TemplateCard'
-import { getDuplicatedJourney } from '../../JourneyList/ActiveJourneyList/utils/getDuplicatedJourney'
 
 export const GET_ACTIVE_PUBLISHER_TEMPLATES = gql`
   query GetActivePublisherTemplates {
@@ -94,8 +93,6 @@ export function ActiveTemplates({
     setOldJourneys(journeys)
     setJourneys(data?.journeys)
   }, [data, journeys, oldJourneys])
-
-  const duplicatedJourneyId = getDuplicatedJourney(oldJourneys, journeys)
 
   const [archiveActive] = useMutation(ARCHIVE_ACTIVE_JOURNEYS, {
     variables: {
@@ -188,7 +185,6 @@ export function ActiveTemplates({
               journey={journey as Journey}
               isPublisher
               refetch={refetch}
-              duplicatedJourneyId={duplicatedJourneyId}
             />
           ))}
           {sortedJourneys.length === 0 && (

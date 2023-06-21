@@ -11,19 +11,18 @@ import { TabPanel, tabA11yProps } from '@core/shared/ui/TabPanel'
 import Tab from '@mui/material/Tab'
 import Tabs from '@mui/material/Tabs'
 import Box from '@mui/material/Box'
-import { NextRouter } from 'next/router'
+import { useRouter } from 'next/router'
 import { JourneySort, SortOrder } from '../JourneyList/JourneySort'
 import { JourneyListMenu } from '../JourneyList/JourneyListMenu'
+import { JourneyListEvent } from '../JourneyList/JourneyList'
 
 export interface StatusTabPanelProps {
   activeList: ReactElement
   archivedList: ReactElement
   trashedList: ReactElement
-  activeTabLoaded: boolean
-  setActiveEvent: (event: string) => void
+  setActiveEvent: (event: JourneyListEvent) => void
   setSortOrder: Dispatch<SetStateAction<SortOrder | undefined>>
   sortOrder?: SortOrder
-  router?: NextRouter
 }
 
 interface StatusOptions {
@@ -36,12 +35,11 @@ export function StatusTabPanel({
   activeList,
   archivedList,
   trashedList,
-  activeTabLoaded,
   setActiveEvent,
   setSortOrder,
-  sortOrder,
-  router
+  sortOrder
 }: StatusTabPanelProps): ReactElement {
+  const router = useRouter()
   const journeyStatusTabs: StatusOptions[] = [
     {
       queryParam: 'active',
@@ -60,27 +58,16 @@ export function StatusTabPanel({
     }
   ]
 
-  const [tabsLoaded, setTabsLoaded] = useState(false)
-
-  useEffect(() => {
-    if (activeTabLoaded) {
-      setTabsLoaded(true)
-    }
-  }, [activeTabLoaded])
-
   const tabIndex =
-    router != null
-      ? journeyStatusTabs.find(
-          (status) => status.queryParam === router.query?.tab
-        )?.tabIndex ?? 0
-      : 0
+    journeyStatusTabs.find((status) => status.queryParam === router.query?.tab)
+      ?.tabIndex ?? 0
   const [activeTab, setActiveTab] = useState(tabIndex)
 
   const handleChange = (
     _event: SyntheticEvent<Element, Event>,
     newValue: number
   ): void => {
-    if (newValue != null && router != null) {
+    if (newValue != null) {
       setActiveTab(newValue)
       // ensure tab data is refreshed on change
       switch (newValue) {
@@ -94,15 +81,11 @@ export function StatusTabPanel({
           setActiveEvent('refetchTrashed')
           break
       }
-      setTimeout(() => {
-        setActiveEvent('')
-      }, 1000)
       const tabParam =
         journeyStatusTabs.find((status) => status.tabIndex === newValue)
           ?.queryParam ?? journeyStatusTabs[0].queryParam
       void router.push(
         {
-          href: '/',
           query: { tab: tabParam }
         },
         undefined,
@@ -114,23 +97,16 @@ export function StatusTabPanel({
   return (
     <>
       <Box sx={{ ml: 6, mb: 4, display: { xs: 'block', sm: 'none' } }}>
-        <JourneySort
-          sortOrder={sortOrder}
-          onChange={setSortOrder}
-          disabled={!tabsLoaded}
-        />
+        <JourneySort sortOrder={sortOrder} onChange={setSortOrder} />
       </Box>
 
       <Paper
         variant="outlined"
         sx={{
-          width: 'inherit',
           borderColor: 'divider',
-          borderBottom: 'none',
+          borderBottom: 0,
           borderTopLeftRadius: { xs: 0, sm: 12 },
-          borderTopRightRadius: { xs: 0, sm: 12 },
-          borderBottomLeftRadius: 0,
-          borderBottomRightRadius: 0
+          borderTopRightRadius: { xs: 0, sm: 12 }
         }}
       >
         <Tabs
@@ -145,7 +121,6 @@ export function StatusTabPanel({
               'active-status-panel',
               journeyStatusTabs[0].tabIndex
             )}
-            disabled={!tabsLoaded}
           />
           <Tab
             label={journeyStatusTabs[1].displayValue}
@@ -153,7 +128,6 @@ export function StatusTabPanel({
               'archived-status-panel',
               journeyStatusTabs[1].tabIndex
             )}
-            disabled={!tabsLoaded}
           />
           <Tab
             label={journeyStatusTabs[2].displayValue}
@@ -161,7 +135,6 @@ export function StatusTabPanel({
               'trashed-status-panel',
               journeyStatusTabs[2].tabIndex
             )}
-            disabled={!tabsLoaded}
           />
           <Box sx={{ flexGrow: 1 }} />
           <Box
@@ -170,46 +143,35 @@ export function StatusTabPanel({
               alignItems: 'center'
             }}
           >
-            <JourneySort
-              sortOrder={sortOrder}
-              onChange={setSortOrder}
-              disabled={!tabsLoaded}
-            />
+            <JourneySort sortOrder={sortOrder} onChange={setSortOrder} />
           </Box>
           <JourneyListMenu onClick={setActiveEvent} />
         </Tabs>
       </Paper>
-
-      {activeTab === 0 && (
-        <TabPanel
-          name="active-status-panel"
-          value={activeTab}
-          index={journeyStatusTabs[0].tabIndex}
-          sx={{ width: 'inherit' }}
-        >
-          {activeList}
-        </TabPanel>
-      )}
-      {activeTab === 1 && (
-        <TabPanel
-          name="archived-status-panel"
-          value={activeTab}
-          index={journeyStatusTabs[1].tabIndex}
-          sx={{ width: 'inherit' }}
-        >
-          {archivedList}
-        </TabPanel>
-      )}
-      {activeTab === 2 && (
-        <TabPanel
-          name="trashed-status-panel"
-          value={activeTab}
-          index={journeyStatusTabs[2].tabIndex}
-          sx={{ width: 'inherit' }}
-        >
-          {trashedList}
-        </TabPanel>
-      )}
+      <TabPanel
+        name="active-status-panel"
+        value={activeTab}
+        index={journeyStatusTabs[0].tabIndex}
+        unmountOnExit
+      >
+        {activeList}
+      </TabPanel>
+      <TabPanel
+        name="archived-status-panel"
+        value={activeTab}
+        index={journeyStatusTabs[1].tabIndex}
+        unmountOnExit
+      >
+        {archivedList}
+      </TabPanel>
+      <TabPanel
+        name="trashed-status-panel"
+        value={activeTab}
+        index={journeyStatusTabs[2].tabIndex}
+        unmountOnExit
+      >
+        {trashedList}
+      </TabPanel>
     </>
   )
 }

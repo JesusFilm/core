@@ -1,4 +1,4 @@
-import { ReactElement, useRef, useEffect } from 'react'
+import { ReactElement } from 'react'
 import { parseISO, isThisYear, intlFormat } from 'date-fns'
 import Card from '@mui/material/Card'
 import Stack from '@mui/material/Stack'
@@ -26,7 +26,6 @@ import { StatusChip } from '../JourneyList/JourneyCard/StatusChip'
 export interface TemplateCardProps {
   journey?: Journey
   isPublisher?: boolean
-  duplicatedJourneyId?: string
   refetch?: () => Promise<
     ApolloQueryResult<
       | GetActivePublisherTemplates
@@ -39,19 +38,8 @@ export interface TemplateCardProps {
 export function TemplateCard({
   journey,
   isPublisher,
-  duplicatedJourneyId,
   refetch
 }: TemplateCardProps): ReactElement {
-  const duplicatedJourneyRef = useRef<HTMLDivElement>(null)
-  useEffect(() => {
-    if (duplicatedJourneyId != null && duplicatedJourneyRef.current != null) {
-      duplicatedJourneyRef.current.scrollIntoView({
-        behavior: 'smooth',
-        block: 'center'
-      })
-    }
-  }, [duplicatedJourneyId, journey])
-
   const nativeLanguage =
     journey?.language.name.find(({ primary }) => primary)?.value ?? ''
   const localLanguage = journey?.language.name.find(
@@ -73,9 +61,6 @@ export function TemplateCard({
 
   return (
     <Card
-      ref={
-        journey?.id === duplicatedJourneyId ? duplicatedJourneyRef : undefined
-      }
       aria-label="template-card"
       variant="outlined"
       sx={{

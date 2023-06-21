@@ -20,7 +20,6 @@ interface Props {
   refetch?: (
     variables?: Partial<OperationVariables> | undefined
   ) => Promise<ApolloQueryResult<GetActiveJourneys>>
-  duplicatedJourneyId?: string
   authUser?: AuthUser
 }
 
@@ -28,7 +27,6 @@ export function ActivePriorityList({
   journeys,
   sortOrder,
   refetch,
-  duplicatedJourneyId,
   authUser
 }: Props): ReactElement {
   const { newJourneys, actionRequiredJourneys, activeJourneys } =
@@ -85,7 +83,6 @@ export function ActivePriorityList({
             key={journey.id}
             journey={journey}
             refetch={refetch}
-            duplicatedJourneyId={duplicatedJourneyId}
             variant={JourneyCardVariant.actionRequired}
           />
         </JourneyProvider>
@@ -100,7 +97,6 @@ export function ActivePriorityList({
             key={journey.id}
             journey={journey}
             refetch={refetch}
-            duplicatedJourneyId={duplicatedJourneyId}
             variant={JourneyCardVariant.new}
           />
         </JourneyProvider>
@@ -127,12 +123,7 @@ export function ActivePriorityList({
           key={journey.id}
           value={{ journey: journey as JourneyFields, admin: true }}
         >
-          <JourneyCard
-            key={journey.id}
-            journey={journey}
-            refetch={refetch}
-            duplicatedJourneyId={duplicatedJourneyId}
-          />
+          <JourneyCard key={journey.id} journey={journey} refetch={refetch} />
         </JourneyProvider>
       ))}
     </>

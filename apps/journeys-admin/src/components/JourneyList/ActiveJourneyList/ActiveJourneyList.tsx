@@ -1,18 +1,19 @@
 import { ReactElement, useEffect, useState } from 'react'
-import Card from '@mui/material/Card'
 import { gql, useMutation } from '@apollo/client'
+import Box from '@mui/material/Box'
+import Card from '@mui/material/Card'
+import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { Dialog } from '@core/shared/ui/Dialog'
 import { useTranslation } from 'react-i18next'
-import { AuthUser } from 'next-firebase-auth'
 import { useSnackbar } from 'notistack'
 import { GetActiveJourneys_journeys as Journeys } from '../../../../__generated__/GetActiveJourneys'
-import { useActiveJourneys } from '../../../libs/useActiveJourneys'
-import { SortOrder } from '../JourneySort'
 import { JourneyCard } from '../JourneyCard'
+import { JourneyListProps } from '../JourneyList'
 import { DiscoveryJourneys } from '../../DiscoveryJourneys'
+import { useJourneys } from '../../../libs/useJourneys'
+import { JourneyStatus } from '../../../../__generated__/globalTypes'
 import { AddJourneyButton } from './AddJourneyButton'
-import { getDuplicatedJourney } from './utils/getDuplicatedJourney'
 import { ActivePriorityList } from './ActivePriorityList'
 
 export const ARCHIVE_ACTIVE_JOURNEYS = gql`
@@ -32,23 +33,16 @@ export const TRASH_ACTIVE_JOURNEYS = gql`
     }
   }
 `
-
-interface ActiveJourneyListProps {
-  onLoad: () => void
-  sortOrder?: SortOrder
-  event: string | undefined
-  authUser?: AuthUser
-}
-
 export function ActiveJourneyList({
-  onLoad,
   sortOrder,
   event,
   authUser
-}: ActiveJourneyListProps): ReactElement {
+}: JourneyListProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { enqueueSnackbar } = useSnackbar()
-  const activeJourneys = useActiveJourneys()
+  const activeJourneys = useJourneys({
+    status: [JourneyStatus.draft, JourneyStatus.published]
+  })
 
   const [oldJourneys, setOldJourneys] = useState<Journeys[]>()
   const [journeys, setJourneys] = useState<Journeys[]>()
@@ -57,8 +51,6 @@ export function ActiveJourneyList({
     setOldJourneys(journeys)
     setJourneys(activeJourneys?.data?.journeys)
   }, [activeJourneys?.data?.journeys, journeys, oldJourneys])
-
-  const duplicatedJourneyId = getDuplicatedJourney(oldJourneys, journeys)
 
   const [archiveActive] = useMutation(ARCHIVE_ACTIVE_JOURNEYS, {
     variables: {
@@ -92,7 +84,7 @@ export function ActiveJourneyList({
         )
         .map((journey) => journey.id)
     },
-    update(cache, { data }) {
+    update(_cache, { data }) {
       if (data?.journeysTrash != null) {
         enqueueSnackbar(t('Journeys Trashed'), {
           variant: 'success'
@@ -136,15 +128,6 @@ export function ActiveJourneyList({
   }
 
   useEffect(() => {
-    if (activeJourneys != null) {
-      const { loading, error } = activeJourneys
-      if (!loading && error == null) {
-        onLoad()
-      }
-    }
-  }, [onLoad, activeJourneys])
-
-  useEffect(() => {
     switch (event) {
       case 'archiveAllActive':
         setOpenArchiveAll(true)
@@ -166,7 +149,6 @@ export function ActiveJourneyList({
             journeys={journeys}
             sortOrder={sortOrder}
             refetch={activeJourneys?.refetch}
-            duplicatedJourneyId={duplicatedJourneyId}
             authUser={authUser}
           />
           {journeys.length === 0 && (
@@ -175,8 +157,7 @@ export function ActiveJourneyList({
               sx={{
                 display: 'flex',
                 flexDirection: 'column',
-                pt: 20,
-                pb: 16,
+                py: 20,
                 borderBottomLeftRadius: { xs: 0, sm: 12 },
                 borderBottomRightRadius: { xs: 0, sm: 12 },
                 borderTopLeftRadius: 0,
@@ -200,9 +181,25 @@ export function ActiveJourneyList({
           ))}
         </>
       )}
-      <span>
+      <Box
+        sx={{
+          pt: { xs: 6, sm: 8 }
+        }}
+      >
         <DiscoveryJourneys />
-      </span>
+      </Box>
+      <Stack alignItems="center">
+        <Typography
+          variant="caption"
+          align="center"
+          component="div"
+          sx={{ py: { xs: 3, sm: 5 }, maxWidth: 290 }}
+        >
+          {t(
+            'You can archive a Journey to hide it from your active Journey list for better organization.'
+          )}
+        </Typography>
+      </Stack>
       <Dialog
         open={openArchiveAll ?? false}
         onClose={handleClose}

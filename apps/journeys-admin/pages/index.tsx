@@ -1,4 +1,4 @@
-import { ReactElement, useState } from 'react'
+import { ReactElement } from 'react'
 import {
   AuthAction,
   useAuthUser,
@@ -8,19 +8,17 @@ import {
 import { NextSeo } from 'next-seo'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import { useTranslation } from 'react-i18next'
-import { useRouter } from 'next/router'
 import { getLaunchDarklyClient } from '@core/shared/ui/getLaunchDarklyClient'
 import { gql } from '@apollo/client'
-import { useJourneys } from '../src/libs/useJourneys'
 import { UserInviteAcceptAll } from '../__generated__/UserInviteAcceptAll'
 import { JourneyList } from '../src/components/JourneyList'
 import { PageWrapper } from '../src/components/NewPageWrapper'
 import { createApolloClient } from '../src/libs/apolloClient'
 import i18nConfig from '../next-i18next.config'
-import JourneyListMenu from '../src/components/JourneyList/JourneyListMenu/JourneyListMenu'
 import { useTermsRedirect } from '../src/libs/useTermsRedirect/useTermsRedirect'
 import { OnboardingPanelContent } from '../src/components/OnboardingPanelContent'
-import { TeamSelect } from '../src/components/TeamSelect'
+import { TeamSelect } from '../src/components/Team/TeamSelect'
+import { TeamMenu } from '../src/components/Team/TeamMenu'
 
 export const ACCEPT_USER_INVITE = gql`
   mutation UserInviteAcceptAll {
@@ -33,18 +31,7 @@ export const ACCEPT_USER_INVITE = gql`
 
 function IndexPage(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-  const journeys = useJourneys()
   const AuthUser = useAuthUser()
-  const router = useRouter()
-  const [listEvent, setListEvent] = useState('')
-
-  const handleClick = (event: string): void => {
-    setListEvent(event)
-    // remove event after component lifecycle
-    setTimeout(() => {
-      setListEvent('')
-    }, 1000)
-  }
   useTermsRedirect()
 
   return (
@@ -53,16 +40,11 @@ function IndexPage(): ReactElement {
       <PageWrapper
         title={<TeamSelect />}
         authUser={AuthUser}
-        menu={<JourneyListMenu router={router} onClick={handleClick} />}
+        menu={<TeamMenu />}
         sidePanelChildren={<OnboardingPanelContent />}
         sidePanelTitle={t('Create a New Journey')}
       >
-        <JourneyList
-          journeys={journeys}
-          router={router}
-          event={listEvent}
-          authUser={AuthUser}
-        />
+        <JourneyList />
       </PageWrapper>
     </>
   )

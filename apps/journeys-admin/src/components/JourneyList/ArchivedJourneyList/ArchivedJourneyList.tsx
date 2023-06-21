@@ -1,19 +1,17 @@
 import { ReactElement, useEffect, useState } from 'react'
-import Box from '@mui/material/Box'
-import Card from '@mui/material/Card'
 import { gql, useMutation, useQuery } from '@apollo/client'
 import { Dialog } from '@core/shared/ui/Dialog'
+import Card from '@mui/material/Card'
+import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'react-i18next'
 import { useSnackbar } from 'notistack'
-import { AuthUser } from 'next-firebase-auth'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { JourneyFields } from '../../../../__generated__/JourneyFields'
 import { GetArchivedJourneys } from '../../../../__generated__/GetArchivedJourneys'
 import { JourneyCard } from '../JourneyCard'
-import { SortOrder } from '../JourneySort'
 import { sortJourneys } from '../JourneySort/utils/sortJourneys'
-import { DiscoveryJourneys } from '../../DiscoveryJourneys'
+import { JourneyListProps } from '../JourneyList'
 
 export const GET_ARCHIVED_JOURNEYS = gql`
   query GetArchivedJourneys {
@@ -69,24 +67,14 @@ export const TRASH_ARCHIVED_JOURNEYS = gql`
   }
 `
 
-interface ArchivedJourneyListProps {
-  onLoad: () => void
-  sortOrder?: SortOrder
-  event: string | undefined
-  authUser?: AuthUser
-}
-
 export function ArchivedJourneyList({
-  onLoad,
   sortOrder,
   event,
   authUser
-}: ArchivedJourneyListProps): ReactElement {
+}: JourneyListProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { enqueueSnackbar } = useSnackbar()
-  const { data, loading, error, refetch } = useQuery<GetArchivedJourneys>(
-    GET_ARCHIVED_JOURNEYS
-  )
+  const { data, refetch } = useQuery<GetArchivedJourneys>(GET_ARCHIVED_JOURNEYS)
   const journeys = data?.journeys
 
   const [restoreArchived] = useMutation(RESTORE_ARCHIVED_JOURNEYS, {
@@ -165,12 +153,6 @@ export function ArchivedJourneyList({
   }
 
   useEffect(() => {
-    if (!loading && error == null) {
-      onLoad()
-    }
-  }, [onLoad, loading, error])
-
-  useEffect(() => {
     switch (event) {
       case 'restoreAllArchived':
         setOpenRestoreAll(true)
@@ -189,7 +171,7 @@ export function ArchivedJourneyList({
 
   return (
     <>
-      {journeys != null && sortedJourneys != null ? (
+      {sortedJourneys != null ? (
         <>
           {sortedJourneys.map((journey) => (
             <JourneyProvider
@@ -199,54 +181,42 @@ export function ArchivedJourneyList({
               <JourneyCard journey={journey} refetch={refetch} />
             </JourneyProvider>
           ))}
-          {journeys.length > 0 ? (
-            <span>
-              <DiscoveryJourneys />
-              <Box width="100%" sx={{ textAlign: 'center' }}>
-                <Typography variant="caption">
-                  {t(
-                    'Archived journeys are hidden from your active journey list for better organization.'
-                  )}
-                </Typography>
-              </Box>
-            </span>
-          ) : (
+          {sortedJourneys.length === 0 && (
             <>
               <Card
                 variant="outlined"
                 sx={{
                   display: 'flex',
                   flexDirection: 'column',
-                  pt: 20,
-                  pb: 16,
+                  py: 20,
                   borderBottomLeftRadius: { xs: 0, sm: 12 },
                   borderBottomRightRadius: { xs: 0, sm: 12 },
                   borderTopLeftRadius: 0,
                   borderTopRightRadius: 0
                 }}
               >
-                <Typography variant="subtitle1" align="center" gutterBottom>
+                <Typography variant="subtitle1" align="center">
                   {t('No archived journeys.')}
                 </Typography>
               </Card>
-
-              <Box width="100%" sx={{ textAlign: 'center' }}>
-                <Typography variant="caption">
-                  {t(
-                    'You can archive a Journey to hide it from your active Journey list for better organization.'
-                  )}
-                </Typography>
-              </Box>
             </>
           )}
         </>
       ) : (
-        <>
-          {[0, 1, 2].map((index) => (
-            <JourneyCard key={`journeyCard${index}`} />
-          ))}
-        </>
+        [0, 1, 2].map((index) => <JourneyCard key={`journeyCard${index}`} />)
       )}
+      <Stack alignItems="center">
+        <Typography
+          variant="caption"
+          align="center"
+          component="div"
+          sx={{ py: { xs: 3, sm: 5 }, maxWidth: 290 }}
+        >
+          {t(
+            'You can archive a Journey to hide it from your active Journey list for better organization.'
+          )}
+        </Typography>
+      </Stack>
       <Dialog
         open={openRestoreAll ?? false}
         onClose={handleClose}

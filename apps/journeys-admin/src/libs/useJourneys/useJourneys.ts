@@ -1,13 +1,12 @@
-import { gql, useQuery } from '@apollo/client'
-import { useEffect, useState } from 'react'
+import { QueryResult, gql, useQuery } from '@apollo/client'
 import {
   GetJourneys,
-  GetJourneys_journeys as Journeys
+  GetJourneysVariables
 } from '../../../__generated__/GetJourneys'
 
 export const GET_JOURNEYS = gql`
-  query GetJourneys {
-    journeys: adminJourneys {
+  query GetJourneys($status: [JourneyStatus!], $template: Boolean) {
+    journeys: adminJourneys(status: $status, template: $template) {
       id
       title
       createdAt
@@ -41,15 +40,12 @@ export const GET_JOURNEYS = gql`
   }
 `
 
-export function useJourneys(): Journeys[] | undefined {
-  const [journeys, setJourneys] = useState<Journeys[] | undefined>(undefined)
-  const { data } = useQuery<GetJourneys>(GET_JOURNEYS)
+export function useJourneys(
+  variables?: GetJourneysVariables
+): QueryResult<GetJourneys, GetJourneysVariables> {
+  const query = useQuery<GetJourneys, GetJourneysVariables>(GET_JOURNEYS, {
+    variables
+  })
 
-  useEffect(() => {
-    if (data?.journeys != null) {
-      setJourneys(data.journeys)
-    }
-  }, [data?.journeys, setJourneys])
-
-  return journeys
+  return query
 }

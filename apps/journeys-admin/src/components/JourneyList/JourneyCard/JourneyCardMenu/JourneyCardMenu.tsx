@@ -57,6 +57,7 @@ export function JourneyCardMenu({
         aria-controls="journey-actions"
         aria-haspopup="true"
         aria-expanded={open ? 'true' : 'false'}
+        sx={{ mr: 1 }}
         onClick={handleOpenMenu}
       >
         <MoreVertIcon />

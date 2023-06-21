@@ -71,7 +71,7 @@ function LibraryIndex(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const AuthUser = useAuthUser()
   const { data } = useQuery<GetPublishedTemplates>(GET_PUBLISHED_TEMPLATES)
-  const journeys = useJourneys()
+  const { data: journeys } = useJourneys()
   const { data: userData } = useQuery<GetUserRole>(GET_USER_ROLE)
 
   const isPublisher = userData?.getUserRole?.roles?.includes(Role.publisher)
