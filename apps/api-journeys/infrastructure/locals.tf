@@ -5,7 +5,6 @@ locals {
     "DATABASE_PASS",
     "DATABASE_URL",
     "DATABASE_USER",
-    "PG_DATABASE_URL",
     "FIREBASE_API_KEY",
     "PG_DATABASE_URL",
     "POWER_BI_CLIENT_ID",
