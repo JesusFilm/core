@@ -9,17 +9,21 @@ import { getJourneyRTL } from '../../../libs/rtl'
 interface HostAvatarsProps {
   hasPlaceholder?: boolean
   size?: 'small' | 'large'
+  avatarSrc1?: string
+  avatarSrc2?: string
 }
 
 export function HostAvatars({
   hasPlaceholder,
-  size = 'small'
+  size = 'small',
+  avatarSrc1,
+  avatarSrc2
 }: HostAvatarsProps): ReactElement {
   const { journey } = useJourney()
   const { rtl } = getJourneyRTL(journey)
   const { editableStepFooter } = useFlags()
-  const src1 = journey?.host?.src1
-  const src2 = journey?.host?.src2
+  const src1 = avatarSrc1 ?? journey?.host?.src1
+  const src2 = avatarSrc2 ?? journey?.host?.src2
 
   return (
     <AvatarGroup
@@ -69,6 +73,36 @@ export function HostAvatars({
                 pt: '6px',
                 height: size === 'small' ? '34px' : '46px',
                 width: size === 'small' ? '34px' : '46px',
+                color: (theme) => theme.palette.grey[700]
+              }}
+            />
+          </Avatar>
+        )}
+      {src1 == null &&
+        src2 == null &&
+        hasPlaceholder &&
+        !editableStepFooter && (
+          <Avatar
+            sx={{
+              color: 'secondary.light',
+              opacity: 0.5,
+              backgroundColor: 'transparent',
+              '&.MuiAvatar-root': {
+                border: '3px solid',
+                borderColor: (theme) => theme.palette.grey[700],
+                height: size === 'small' ? '36px' : '48px',
+                width: size === 'small' ? '36px' : '48px'
+              }
+            }}
+          >
+            <UserProfile3
+              data-testid="host-avatar-placeholder-solid"
+              sx={{
+                pr: rtl ? '6px' : '0px',
+                pl: rtl ? '0px' : '6px',
+                pt: '6px',
+                height: '34px',
+                width: '34px',
                 color: (theme) => theme.palette.grey[700]
               }}
             />
