@@ -64,7 +64,8 @@ describe('EventService', () => {
       switch (input.where.id) {
         case block.id:
           return block
-        default: return null
+        default:
+          return null
       }
     })
   })

@@ -21,23 +21,15 @@ describe('GridContainerResolver', () => {
     alignItems: 'center'
   }
 
-  const blockService = {
-    provide: BlockService,
-    useFactory: () => ({
-      get: jest.fn(() => block),
-      getAll: jest.fn(() => [block, block])
-    })
-  }
-
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         BlockResolver,
-        blockService,
+        BlockService,
         UserJourneyService,
         UserRoleService,
         JourneyService,
-        PrismaService,
+        PrismaService
       ]
     }).compile()
     resolver = module.get<BlockResolver>(BlockResolver)

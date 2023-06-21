@@ -34,16 +34,9 @@ describe('NavigateActionResolver', () => {
   }
 
   beforeEach(async () => {
-    const blockService = {
-      provide: BlockService,
-      useFactory: () => ({
-        get: jest.fn().mockResolvedValue(block),
-        update: jest.fn((navigateActionInput) => navigateActionInput)
-      })
-    }
     const module: TestingModule = await Test.createTestingModule({
       providers: [
-        blockService,
+        BlockService,
         NavigateActionResolver,
         ActionResolver,
         UserJourneyService,

@@ -67,20 +67,14 @@ describe('ActionResolver', () => {
 
   describe('__resolveType', () => {
     beforeEach(async () => {
-      const blockService = {
-        provide: BlockService,
-        useFactory: () => ({
-          get: jest.fn(() => block1)
-        })
-      }
       const module: TestingModule = await Test.createTestingModule({
         providers: [
-          blockService,
+          BlockService,
           ActionResolver,
           UserJourneyService,
           UserRoleService,
           JourneyService,
-          PrismaService,
+          PrismaService
         ]
       }).compile()
       resolver = module.get<ActionResolver>(ActionResolver)
@@ -147,7 +141,7 @@ describe('ActionResolver', () => {
           UserJourneyService,
           UserRoleService,
           JourneyService,
-          PrismaService,
+          PrismaService
         ]
       }).compile()
       blockResolver = module.get<BlockResolver>(BlockResolver)
@@ -171,7 +165,7 @@ describe('ActionResolver', () => {
           UserJourneyService,
           UserRoleService,
           JourneyService,
-          PrismaService,
+          PrismaService
         ]
       }).compile()
       blockResolver = module.get<BlockResolver>(BlockResolver)
@@ -187,7 +181,7 @@ describe('ActionResolver', () => {
   })
 
   describe('LinkAction', () => {
-    beforeEach(async () => {      
+    beforeEach(async () => {
       const module: TestingModule = await Test.createTestingModule({
         providers: [
           BlockResolver,
@@ -195,7 +189,7 @@ describe('ActionResolver', () => {
           UserJourneyService,
           UserRoleService,
           JourneyService,
-          PrismaService,
+          PrismaService
         ]
       }).compile()
       blockResolver = module.get<BlockResolver>(BlockResolver)
@@ -219,7 +213,7 @@ describe('ActionResolver', () => {
           UserJourneyService,
           UserRoleService,
           JourneyService,
-          PrismaService,
+          PrismaService
         ]
       }).compile()
       blockResolver = module.get<BlockResolver>(BlockResolver)
@@ -235,7 +229,7 @@ describe('ActionResolver', () => {
   })
 
   describe('NavigateAction', () => {
-    beforeEach(async () => {      
+    beforeEach(async () => {
       const module: TestingModule = await Test.createTestingModule({
         providers: [
           BlockResolver,
@@ -243,7 +237,7 @@ describe('ActionResolver', () => {
           UserJourneyService,
           UserRoleService,
           JourneyService,
-          PrismaService,
+          PrismaService
         ]
       }).compile()
       blockResolver = module.get<BlockResolver>(BlockResolver)
@@ -265,7 +259,7 @@ describe('ActionResolver', () => {
           UserJourneyService,
           UserRoleService,
           JourneyService,
-          PrismaService,
+          PrismaService
         ]
       }).compile()
       resolver = module.get<ActionResolver>(ActionResolver)
@@ -276,7 +270,9 @@ describe('ActionResolver', () => {
     it('removes the block action', async () => {
       await resolver.blockDeleteAction(block1.id, block1.journeyId)
 
-      expect(prismaService.action.delete).toHaveBeenCalledWith({ where: { id: block1.id } })
+      expect(prismaService.action.delete).toHaveBeenCalledWith({
+        where: { id: block1.id }
+      })
     })
   })
 })
