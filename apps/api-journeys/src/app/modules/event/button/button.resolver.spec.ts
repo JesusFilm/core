@@ -163,6 +163,24 @@ describe('ChatOpenEventResolver', () => {
       })
     })
 
+    it('should return ChatOpenEvent with a custom value', async () => {
+      const input: ChatOpenEventCreateInput = {
+        id: '1',
+        blockId: 'block.id',
+        stepId: 'step.id',
+        value: MessagePlatform.custom
+      }
+
+      expect(await resolver.chatOpenEventCreate('userId', input)).toEqual({
+        ...input,
+        typename: 'ChatOpenEvent',
+        visitor: {
+          connect: { id: 'visitor.id' }
+        },
+        journeyId: 'journey.id'
+      })
+    })
+
     it('should update visitor messagePlatform', async () => {
       const input: ChatOpenEventCreateInput = {
         id: '1',

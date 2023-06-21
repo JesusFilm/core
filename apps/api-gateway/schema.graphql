@@ -324,6 +324,7 @@ enum ChatPlatform
   skype @join__enumValue(graph: JOURNEYS)
   line @join__enumValue(graph: JOURNEYS)
   tikTok @join__enumValue(graph: JOURNEYS)
+  custom @join__enumValue(graph: JOURNEYS)
 }
 
 type CloudflareImage
@@ -996,6 +997,7 @@ enum MessagePlatform
   skype @join__enumValue(graph: JOURNEYS)
   line @join__enumValue(graph: JOURNEYS)
   tikTok @join__enumValue(graph: JOURNEYS)
+  custom @join__enumValue(graph: JOURNEYS)
 }
 
 type Mutation
@@ -2107,6 +2109,7 @@ input VideoBlockCreateInput
 
   """endAt dictates at which point of time the video should end"""
   endAt: Int
+  duration: Int
   description: String
   muted: Boolean
   autoplay: Boolean
@@ -2195,6 +2198,7 @@ input VideoBlockUpdateInput
   endAt: Int
   muted: Boolean
   autoplay: Boolean
+  duration: Int
 
   """
   internal source videos: videoId and videoVariantLanguageId both need to be set

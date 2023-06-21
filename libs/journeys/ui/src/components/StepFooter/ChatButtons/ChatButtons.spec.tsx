@@ -181,4 +181,23 @@ describe('ChatButtons', () => {
     )
     expect(queryByTestId('Plus2Icon')).not.toBeInTheDocument()
   })
+
+  it('displays default icon when there is no platform selected', () => {
+    const { getByTestId } = render(
+      <MockedProvider>
+        <JourneyProvider
+          value={{
+            admin: true,
+            journey: {
+              ...journey,
+              chatButtons: [{ ...chatButtons[0], platform: null }]
+            }
+          }}
+        >
+          <ChatButtons />
+        </JourneyProvider>
+      </MockedProvider>
+    )
+    expect(getByTestId('MessageTypingIcon')).toBeInTheDocument()
+  })
 })
