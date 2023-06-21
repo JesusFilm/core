@@ -165,7 +165,8 @@ describe('VideoOptions', () => {
                   videoVariantLanguageId: '529',
                   source: VideoBlockSource.internal,
                   startAt: 0,
-                  endAt: 144
+                  endAt: 144,
+                  duration: 144
                 }
               }
             },
@@ -265,7 +266,8 @@ describe('VideoOptions', () => {
                   videoVariantLanguageId: '529',
                   source: VideoBlockSource.internal,
                   startAt: 0,
-                  endAt: 144
+                  endAt: 144,
+                  duration: 144
                 }
               }
             },

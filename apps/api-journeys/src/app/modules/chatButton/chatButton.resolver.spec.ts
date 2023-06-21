@@ -39,6 +39,25 @@ describe('ChatButtonResolver', () => {
     expect(result).toEqual([{ id: '1', journeyId: 'journeyId' }])
   })
 
+  it('should create a new custom ChatButton', async () => {
+    prismaService.chatButton.create = jest.fn().mockReturnValue([
+      {
+        journeyId: 'journeyId',
+        id: '1',
+        input: { platform: ChatPlatform.custom }
+      }
+    ])
+
+    const result = await resolver.chatButtonCreate('journeyId', {})
+    expect(result).toEqual([
+      {
+        id: '1',
+        journeyId: 'journeyId',
+        input: { platform: ChatPlatform.custom }
+      }
+    ])
+  })
+
   it('should not create more than two ChatButtons', async () => {
     prismaService.chatButton.findMany = jest
       .fn()
