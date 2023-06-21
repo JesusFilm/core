@@ -191,4 +191,52 @@ describe('AddByFile', () => {
     )
     expect(getByTestId('WarningAmberRoundedIcon')).toBeInTheDocument()
   })
+
+  it('should show error state on fileRejections', async () => {
+    const testStack = new TestHttpStack()
+    const onChange = jest.fn()
+    const { getByTestId, getByText } = render(
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: CREATE_CLOUDFLARE_VIDEO_UPLOAD_BY_FILE_MUTATION,
+              variables: {
+                uploadLength: 4,
+                name: 'testFile'
+              }
+            },
+            result: {
+              data: {
+                createCloudflareVideoUploadByFile: {
+                  id: 'uploadId',
+                  uploadUrl: 'https://example.com/upload',
+                  __typename: 'CloudflareVideo'
+                }
+              }
+            }
+          }
+        ]}
+      >
+        <AddByFile onChange={onChange} httpStack={testStack} />
+      </MockedProvider>
+    )
+    const input = getByTestId('drop zone')
+    const file1 = new File(['file'], 'testFile.mp4', {
+      type: 'video/mp4'
+    })
+    const file2 = new File(['file'], 'testFile.png', {
+      type: 'video/png'
+    })
+    Object.defineProperty(input, 'files', {
+      value: [file1, file2]
+    })
+    fireEvent.drop(input)
+    await waitFor(() =>
+      expect(getByText('Something went wrong, try again')).toBeInTheDocument()
+    )
+    expect(getByText('Only one file upload at once.')).toBeInTheDocument()
+  })
+
+
 })
