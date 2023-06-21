@@ -25,8 +25,8 @@ export function ChatOption({
   disableSelection,
   enableIconSelect = false
 }: Props): ReactElement {
-  const [currentLink, setCurrentLink] = useState<string>(chatButton?.link ?? '')
-  const [currentPlatform, setCurrentPlatform] = useState<ChatPlatform>(
+  const [currentLink, setCurrentLink] = useState(chatButton?.link ?? '')
+  const [currentPlatform, setCurrentPlatform] = useState(
     platform ?? chatButton?.platform ?? ChatPlatform.custom
   )
 
