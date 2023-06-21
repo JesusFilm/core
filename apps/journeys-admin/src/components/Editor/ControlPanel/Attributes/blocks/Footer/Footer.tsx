@@ -8,6 +8,8 @@ import Stack from '@mui/material/Stack'
 import { Attribute } from '../..'
 import { ChatPlatform } from '../../../../../../../__generated__/globalTypes'
 import { HostTitleFieldForm } from './HostForm/HostTitleFieldForm'
+import { HostAvatarsButton } from './HostForm/HostAvatarsButton/HostAvatarsButton'
+import { HostLocationFieldForm } from './HostForm/HostLocationFieldForm/HostLocationFieldForm'
 
 export function Footer(): ReactElement {
   const { dispatch } = useEditor()
@@ -48,8 +50,10 @@ export function Footer(): ReactElement {
       title: t('Hosted By'),
       mobileOpen: true,
       children: (
-        <Stack>
+        <Stack gap={8}>
           <HostTitleFieldForm />
+          <HostLocationFieldForm />
+          <HostAvatarsButton />
         </Stack>
       )
     })
@@ -70,8 +74,10 @@ export function Footer(): ReactElement {
             title: t('Hosted By'),
             mobileOpen: true,
             children: (
-              <Stack>
+              <Stack gap={8}>
                 <HostTitleFieldForm />
+                <HostLocationFieldForm />
+                <HostAvatarsButton />
               </Stack>
             )
           })

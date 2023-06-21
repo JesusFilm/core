@@ -124,7 +124,7 @@ describe('HostTitleFieldForm', () => {
     await waitFor(() => expect(result).toHaveBeenCalled())
     await waitFor(() => expect(result2).toHaveBeenCalled())
 
-    waitFor(() => {
+    void waitFor(() => {
       expect(cache.extract()['Host:hostId']).toEqual({
         ...defaultHost,
         title: 'Host title'
@@ -191,7 +191,7 @@ describe('HostTitleFieldForm', () => {
 
     await waitFor(() => expect(result).toHaveBeenCalled())
 
-    waitFor(() =>
+    void waitFor(() =>
       expect(cache.extract()['Host:hostId']).toEqual({
         ...defaultHost,
         title: 'Host title'
