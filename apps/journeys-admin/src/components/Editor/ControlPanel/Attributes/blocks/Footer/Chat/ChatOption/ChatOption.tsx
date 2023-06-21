@@ -38,7 +38,9 @@ export function ChatOption({
         boxShadow: 'none',
         border: '1px solid',
         borderColor: 'divider',
-        borderTop: 0
+        borderTop: 0,
+        borderLeft: 0,
+        borderRight: 0
       }}
     >
       <Summary
