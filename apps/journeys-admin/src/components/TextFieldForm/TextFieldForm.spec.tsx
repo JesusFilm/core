@@ -118,7 +118,7 @@ describe('TextFieldForm', () => {
     })
   })
 
-  it('should keep initial value onBlur from an empty required field', async () => {
+  it('should keep initial value on blur from an empty required field', async () => {
     const validationSchema = object({
       link: string().required('This field is required')
     })
