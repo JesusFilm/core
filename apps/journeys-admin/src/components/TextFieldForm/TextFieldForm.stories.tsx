@@ -17,7 +17,7 @@ const TextFieldFormStory = {
 
 const Template: Story<ComponentProps<typeof TextFieldForm>> = () => (
   <Stack spacing={4}>
-    <TextFieldForm onSubmit={noop} />
+    <TextFieldForm id="default" onSubmit={noop} />
     <TextFieldForm
       id="Initial Value"
       label="Initial Value"

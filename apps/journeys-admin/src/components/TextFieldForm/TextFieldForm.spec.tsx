@@ -32,6 +32,7 @@ describe('TextFieldForm', () => {
   it('should show helper text', () => {
     const { getByText } = render(
       <TextFieldForm
+        id="helper"
         label="Navigate to..."
         initialValue="Default Value"
         helperText="Label goes here"
@@ -74,6 +75,7 @@ describe('TextFieldForm', () => {
     const onSubmit = jest.fn()
     const { getByRole, getByText } = render(
       <TextFieldForm
+        id="enterSubmit"
         label="Navigate to..."
         initialValue="Default Value"
         onSubmit={onSubmit}
