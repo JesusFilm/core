@@ -8,6 +8,7 @@ import Stack from '@mui/material/Stack'
 import { Attribute } from '../..'
 import { ChatPlatform } from '../../../../../../../__generated__/globalTypes'
 import { HostTitleFieldForm } from './HostForm/HostTitleFieldForm'
+import { Chat } from './Chat'
 
 export function Footer(): ReactElement {
   const { dispatch } = useEditor()
@@ -88,7 +89,7 @@ export function Footer(): ReactElement {
             type: 'SetDrawerPropsAction',
             title: t('Chat Widget'),
             mobileOpen: true,
-            children: <div>Chat Widget Component</div>
+            children: <Chat />
           })
         }}
       />

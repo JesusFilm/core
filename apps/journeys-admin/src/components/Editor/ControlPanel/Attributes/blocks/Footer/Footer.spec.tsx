@@ -15,6 +15,7 @@ import {
 } from '../../../../../../../__generated__/globalTypes'
 import { GetJourney_journey as Journey } from '../../../../../../../__generated__/GetJourney'
 import { Footer } from './Footer'
+import { Chat } from './Chat'
 
 jest.mock('@core/journeys/ui/EditorProvider', () => {
   const originalModule = jest.requireActual('@core/journeys/ui/EditorProvider')
@@ -166,7 +167,7 @@ describe('Footer', () => {
       type: 'SetDrawerPropsAction',
       title: 'Chat Widget',
       mobileOpen: true,
-      children: <div>Chat Widget Component</div>
+      children: <Chat />
     })
   })
 })
