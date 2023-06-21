@@ -243,41 +243,20 @@ export function AddByFile({
             display: error != null || fileRejected ? 'flex' : 'none'
           }}
         />
-        {/* <Typography variant="caption">
-          {error != null && error.name === 'InvalidCharacterError' ? 'Invalid character in file name' : null}
-        </Typography> */}
-        <Typography variant="caption">
-          {error != null || fileRejected
-            ? 'Something went wrong, try again'
-            : 'Max size is 1 GB'}
-        </Typography>
-      </Stack>
-      {fileRejected ? (
-        <Stack
-          direction="row"
-          spacing={1}
-          color={
-            error != null || fileRejected ? 'error.main' : 'secondary.light'
-          }
-        >
-          <WarningAmberRounded
-            fontSize="small"
-            sx={{
-              display: error != null || fileRejected ? 'flex' : 'none'
-            }}
-          />
-          {/* <Typography variant="caption">
-                {error != null && error.name === 'InvalidCharacterError' ? 'Invalid character in file name' : null}
-              </Typography> */}
+        {error != null ? (
           <Typography variant="caption">
-            {fileInvalidType && 'File is Invalid type. '}
-            {fileTooLarge && 'File is too large. '}
-            {tooManyFiles && 'Only one file upload at once.'}
+            Something went wrong, try again
           </Typography>
-        </Stack>
-      ) : (
-        ''
-      )}
+        ) : fileRejected ? (
+          <Typography variant="caption">
+            {fileInvalidType && 'Invalid file type. '}
+            {tooManyFiles && 'Only one file upload at once. '}
+            {fileTooLarge && 'File is too large. Max size is 1 GB.'}
+          </Typography>
+        ) : (
+          <Typography variant="caption">Max size is 1 GB</Typography>
+        )}
+      </Stack>
 
       {uploading || processing ? (
         <Box sx={{ width: '100%', mt: 4 }}>
