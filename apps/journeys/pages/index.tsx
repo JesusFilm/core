@@ -7,6 +7,7 @@ import Link from 'next/link'
 import { GetStaticProps } from 'next'
 import { gql } from '@apollo/client'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
+import { NextSeo } from 'next-seo'
 import { createApolloClient } from '../src/libs/apolloClient'
 import {
   GetJourneys,
@@ -21,19 +22,22 @@ interface JourneysPageProps {
 
 function JourneysPage({ journeys }: JourneysPageProps): ReactElement {
   return (
-    <ThemeProvider themeName={ThemeName.base} themeMode={ThemeMode.light}>
-      <Container>
-        {journeys.map(({ id, title, slug }) => (
-          <Box key={id} my={2}>
-            <Link href={`/${slug}`} passHref>
-              <Button variant="contained" color="primary" fullWidth>
-                {title}
-              </Button>
-            </Link>
-          </Box>
-        ))}
-      </Container>
-    </ThemeProvider>
+    <>
+      <NextSeo nofollow noindex />
+      <ThemeProvider themeName={ThemeName.base} themeMode={ThemeMode.light}>
+        <Container>
+          {journeys.map(({ id, title, slug }) => (
+            <Box key={id} my={2}>
+              <Link href={`/${slug}`} passHref>
+                <Button variant="contained" color="primary" fullWidth>
+                  {title}
+                </Button>
+              </Link>
+            </Box>
+          ))}
+        </Container>
+      </ThemeProvider>
+    </>
   )
 }
 

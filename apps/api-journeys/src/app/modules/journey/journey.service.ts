@@ -83,6 +83,16 @@ export class JourneyService extends BaseService {
   }
 
   @KeyAsId()
+  async getAllByHost(hostId: string): Promise<Journey[]> {
+    const result = await this.db.query(aql`
+      FOR journey in ${this.collection}
+          FILTER journey.hostId == ${hostId}
+          RETURN journey
+    `)
+    return await result.all()
+  }
+
+  @KeyAsId()
   async getAllByRole(
     user: UserRole,
     status?: JourneyStatus[],

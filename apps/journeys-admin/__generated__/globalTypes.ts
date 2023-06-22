@@ -33,6 +33,20 @@ export enum ButtonVariant {
   text = "text",
 }
 
+export enum ChatPlatform {
+  custom = "custom",
+  facebook = "facebook",
+  instagram = "instagram",
+  line = "line",
+  skype = "skype",
+  snapchat = "snapchat",
+  telegram = "telegram",
+  tikTok = "tikTok",
+  viber = "viber",
+  vk = "vk",
+  whatsApp = "whatsApp",
+}
+
 export enum IconColor {
   action = "action",
   disabled = "disabled",
@@ -95,6 +109,7 @@ export enum JourneysReportType {
 }
 
 export enum MessagePlatform {
+  custom = "custom",
   facebook = "facebook",
   instagram = "instagram",
   line = "line",
@@ -230,6 +245,16 @@ export interface CardBlockUpdateInput {
   themeName?: ThemeName | null;
 }
 
+export interface ChatButtonCreateInput {
+  link?: string | null;
+  platform?: ChatPlatform | null;
+}
+
+export interface ChatButtonUpdateInput {
+  link?: string | null;
+  platform?: ChatPlatform | null;
+}
+
 export interface ChatOpenEventCreateInput {
   id?: string | null;
   blockId: string;
@@ -292,6 +317,7 @@ export interface JourneyUpdateInput {
   slug?: string | null;
   seoTitle?: string | null;
   seoDescription?: string | null;
+  hostId?: string | null;
 }
 
 export interface JourneyVisitorFilter {
@@ -436,6 +462,7 @@ export interface VideoBlockCreateInput {
   parentBlockId: string;
   startAt?: number | null;
   endAt?: number | null;
+  duration?: number | null;
   description?: string | null;
   muted?: boolean | null;
   autoplay?: boolean | null;
@@ -453,6 +480,7 @@ export interface VideoBlockUpdateInput {
   endAt?: number | null;
   muted?: boolean | null;
   autoplay?: boolean | null;
+  duration?: number | null;
   videoId?: string | null;
   videoVariantLanguageId?: string | null;
   source?: VideoBlockSource | null;

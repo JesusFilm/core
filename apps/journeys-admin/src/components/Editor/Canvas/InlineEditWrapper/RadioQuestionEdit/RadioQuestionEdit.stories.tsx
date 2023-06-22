@@ -124,6 +124,7 @@ const Template: Story = ({ ...args }) => {
             id: 'journeyId',
             themeMode: ThemeMode.light,
             themeName: ThemeName.base,
+            seoTitle: 'my journey',
             language: {
               __typename: 'Language',
               id: '529',

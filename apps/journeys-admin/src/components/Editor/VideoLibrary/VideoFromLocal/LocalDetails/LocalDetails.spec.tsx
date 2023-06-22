@@ -107,6 +107,7 @@ describe('LocalDetails', () => {
     )
     fireEvent.click(getByRole('button', { name: 'Select' }))
     expect(onSelect).toHaveBeenCalledWith({
+      duration: 144,
       endAt: 144,
       startAt: 0,
       source: VideoBlockSource.internal,

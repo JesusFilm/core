@@ -1,5 +1,4 @@
 import { render, waitFor } from '@testing-library/react'
-import { getTheme } from '@core/shared/ui/themes'
 import type { TreeBlock } from '../../libs/block'
 import { blurImage } from '../../libs/blurImage'
 import {
@@ -109,26 +108,12 @@ describe('CardBlock', () => {
     ]
   }
 
-  it('should render card with journey theme background color', () => {
+  it('should render card with theme background color', () => {
     const { getByTestId, getByText } = render(<Card {...block} />)
 
     expect(blurImage).not.toBeCalled()
     expect(getByTestId('card')).toHaveStyle('background-color: #FFF')
     expect(getByText('How did we get here?')).toBeInTheDocument()
-  })
-
-  it('should render card with card theme background color', () => {
-    const { getByTestId } = render(
-      <Card {...block} themeMode={ThemeMode.dark} themeName={ThemeName.base} />
-    )
-
-    expect(blurImage).not.toBeCalled()
-    expect(getByTestId('card')).toHaveStyle(
-      `background-color: ${
-        getTheme({ themeName: ThemeName.base, themeMode: ThemeMode.dark })
-          .palette.background.paper
-      }`
-    )
   })
 
   it('should render card with override background color', () => {
@@ -177,7 +162,7 @@ describe('CardBlock', () => {
     expect(blurImage).toBeCalledWith(imageBlock.blurhash, '#fff')
     expect(getByTestId('ExpandedCover')).toBeInTheDocument()
     await waitFor(() =>
-      expect(getByTestId('expandedBlurBackground')).toBeInTheDocument()
+      expect(getByTestId('ExpandedImageCover')).toBeInTheDocument()
     )
     expect(queryByText('How did we get here?')).toBeInTheDocument()
   })
@@ -193,7 +178,7 @@ describe('CardBlock', () => {
 
     expect(blurImage).toBeCalledWith(imageBlock.blurhash, '#fff')
     expect(queryByTestId('ContainedCover')).toBeInTheDocument()
-    expect(queryByTestId('ContainedCardImageCover')).toHaveAccessibleName(
+    expect(queryByTestId('background-image')).toHaveAccessibleName(
       'random image from unsplash'
     )
     expect(standaloneImageBlock).not.toBeInTheDocument()
@@ -209,10 +194,9 @@ describe('CardBlock', () => {
     )
     const standaloneVideoBlock = queryByTestId(`video-${videoBlock.id}`)
 
-    expect(blurImage).toBeCalledWith(imageBlock.blurhash, '#fff')
     expect(queryByTestId('ContainedCover')).toBeInTheDocument()
-    expect(queryByTestId('VideoPosterCover')).toHaveAccessibleName(
-      'random image from unsplash - video'
+    expect(queryByTestId('video-poster-image')).toHaveAccessibleName(
+      'card video image'
     )
     expect(standaloneVideoBlock).not.toBeInTheDocument()
     expect(queryAllByText('How did we get here?')[0]).toBeInTheDocument()

@@ -249,6 +249,28 @@ input CardBlockUpdateInput
   themeName: ThemeName
 }
 
+type ChatButton
+  @join__type(graph: JOURNEYS)
+{
+  id: ID!
+  link: String
+  platform: ChatPlatform
+}
+
+input ChatButtonCreateInput
+  @join__type(graph: JOURNEYS)
+{
+  link: String
+  platform: ChatPlatform
+}
+
+input ChatButtonUpdateInput
+  @join__type(graph: JOURNEYS)
+{
+  link: String
+  platform: ChatPlatform
+}
+
 type ChatOpenEvent implements Event
   @join__implements(graph: JOURNEYS, interface: "Event")
   @join__type(graph: JOURNEYS)
@@ -287,6 +309,22 @@ input ChatOpenEventCreateInput
 
   """messagePlatform of the link used for chat"""
   value: MessagePlatform
+}
+
+enum ChatPlatform
+  @join__type(graph: JOURNEYS)
+{
+  facebook @join__enumValue(graph: JOURNEYS)
+  telegram @join__enumValue(graph: JOURNEYS)
+  whatsApp @join__enumValue(graph: JOURNEYS)
+  instagram @join__enumValue(graph: JOURNEYS)
+  viber @join__enumValue(graph: JOURNEYS)
+  vk @join__enumValue(graph: JOURNEYS)
+  snapchat @join__enumValue(graph: JOURNEYS)
+  skype @join__enumValue(graph: JOURNEYS)
+  line @join__enumValue(graph: JOURNEYS)
+  tikTok @join__enumValue(graph: JOURNEYS)
+  custom @join__enumValue(graph: JOURNEYS)
 }
 
 type CloudflareImage
@@ -425,6 +463,38 @@ enum GridJustifyContent
   flexStart @join__enumValue(graph: JOURNEYS)
   flexEnd @join__enumValue(graph: JOURNEYS)
   center @join__enumValue(graph: JOURNEYS)
+}
+
+type Host
+  @join__type(graph: JOURNEYS)
+{
+  id: ID!
+  teamId: ID!
+  title: String!
+  location: String
+  src1: String
+  src2: String
+}
+
+input HostCreateInput
+  @join__type(graph: JOURNEYS)
+{
+  title: String!
+  location: String
+  src1: String
+  src2: String
+}
+
+input HostUpdateInput
+  @join__type(graph: JOURNEYS)
+{
+  """
+  title can be undefined as to not update title, but it cannot be null as to clear the value of title
+  """
+  title: String
+  location: String
+  src1: String
+  src2: String
 }
 
 type IconBlock implements Block
@@ -591,6 +661,7 @@ type Journey
 {
   blocks: [Block!]
   primaryImageBlock: ImageBlock
+  chatButtons: [ChatButton!]!
   id: ID!
   title: String!
   language: Language!
@@ -608,6 +679,7 @@ type Journey
   seoTitle: String
   seoDescription: String
   template: Boolean
+  host: Host
   userJourneys: [UserJourney!]
 }
 
@@ -687,6 +759,7 @@ input JourneyUpdateInput
   slug: String
   seoTitle: String
   seoDescription: String
+  hostId: String
 }
 
 type JourneyViewEvent implements Event
@@ -924,6 +997,7 @@ enum MessagePlatform
   skype @join__enumValue(graph: JOURNEYS)
   line @join__enumValue(graph: JOURNEYS)
   tikTok @join__enumValue(graph: JOURNEYS)
+  custom @join__enumValue(graph: JOURNEYS)
 }
 
 type Mutation
@@ -975,6 +1049,9 @@ type Mutation
   typographyBlockUpdate(id: ID!, journeyId: ID!, input: TypographyBlockUpdateInput!): TypographyBlock! @join__field(graph: JOURNEYS)
   videoBlockCreate(input: VideoBlockCreateInput!): VideoBlock! @join__field(graph: JOURNEYS)
   videoBlockUpdate(id: ID!, journeyId: ID!, input: VideoBlockUpdateInput!): VideoBlock! @join__field(graph: JOURNEYS)
+  chatButtonCreate(journeyId: ID!, input: ChatButtonCreateInput): ChatButton! @join__field(graph: JOURNEYS)
+  chatButtonUpdate(id: ID!, journeyId: ID!, input: ChatButtonUpdateInput!): ChatButton! @join__field(graph: JOURNEYS)
+  chatButtonRemove(id: ID!): ChatButton! @join__field(graph: JOURNEYS)
   buttonClickEventCreate(input: ButtonClickEventCreateInput!): ButtonClickEvent! @join__field(graph: JOURNEYS)
   chatOpenEventCreate(input: ChatOpenEventCreateInput!): ChatOpenEvent! @join__field(graph: JOURNEYS)
   journeyViewEventCreate(input: JourneyViewEventCreateInput!): JourneyViewEvent! @join__field(graph: JOURNEYS)
@@ -990,6 +1067,9 @@ type Mutation
   videoExpandEventCreate(input: VideoExpandEventCreateInput!): VideoExpandEvent! @join__field(graph: JOURNEYS)
   videoCollapseEventCreate(input: VideoCollapseEventCreateInput!): VideoCollapseEvent! @join__field(graph: JOURNEYS)
   videoProgressEventCreate(input: VideoProgressEventCreateInput!): VideoProgressEvent! @join__field(graph: JOURNEYS)
+  hostCreate(teamId: ID!, input: HostCreateInput!): Host! @join__field(graph: JOURNEYS)
+  hostUpdate(id: ID!, teamId: ID!, input: HostUpdateInput): Host! @join__field(graph: JOURNEYS)
+  hostDelete(id: ID!, teamId: ID!): Host! @join__field(graph: JOURNEYS)
   journeyCreate(input: JourneyCreateInput!): Journey! @join__field(graph: JOURNEYS)
   journeyDuplicate(id: ID!): Journey! @join__field(graph: JOURNEYS)
   journeyUpdate(id: ID!, input: JourneyUpdateInput!): Journey! @join__field(graph: JOURNEYS)
@@ -1012,6 +1092,8 @@ type Mutation
   """Updates template"""
   journeyTemplate(id: ID!, input: JourneyTemplateInput!): Journey! @join__field(graph: JOURNEYS)
   journeyProfileCreate: JourneyProfile! @join__field(graph: JOURNEYS)
+  teamCreate(input: TeamCreateInput): Team! @join__field(graph: JOURNEYS)
+  teamUpdate(id: ID!, input: TeamUpdateInput): Team! @join__field(graph: JOURNEYS)
   userInviteCreate(journeyId: ID!, input: UserInviteCreateInput): UserInvite @join__field(graph: JOURNEYS)
   userInviteRemove(id: ID!, journeyId: ID!): UserInvite! @join__field(graph: JOURNEYS)
   userInviteAcceptAll: [UserInvite!]! @join__field(graph: JOURNEYS)
@@ -1023,6 +1105,8 @@ type Mutation
   userJourneyRemoveAll(id: ID!): [UserJourney!]! @join__field(graph: JOURNEYS)
   userJourneyRequest(journeyId: ID!, idType: IdType): UserJourney! @join__field(graph: JOURNEYS)
   userJourneyOpen(id: ID!): UserJourney @join__field(graph: JOURNEYS)
+  userTeamUpdate(id: ID!, input: TeamUpdateInput): UserTeam! @join__field(graph: JOURNEYS)
+  userTeamDelete(id: ID!): UserTeam! @join__field(graph: JOURNEYS)
 
   """Update a visitor"""
   visitorUpdate(id: ID!, input: VisitorUpdateInput!): Visitor! @join__field(graph: JOURNEYS)
@@ -1140,6 +1224,7 @@ type Query
   @join__type(graph: USERS)
   @join__type(graph: VIDEOS)
 {
+  hosts(teamId: ID!): [Host!]! @join__field(graph: JOURNEYS)
   adminJourneys(status: [JourneyStatus!], template: Boolean): [Journey!]! @join__field(graph: JOURNEYS)
   adminJourneysReport(reportType: JourneysReportType!): PowerBiEmbed @join__field(graph: JOURNEYS)
   adminJourney(id: ID!, idType: IdType): Journey @join__field(graph: JOURNEYS)
@@ -1167,8 +1252,12 @@ type Query
 
   """Get a JourneyVisitor count by JourneyVisitorFilter"""
   journeyVisitorCount(filter: JourneyVisitorFilter!): Int! @join__field(graph: JOURNEYS)
+  teams: [Team!]! @join__field(graph: JOURNEYS)
+  team(id: ID!): Team! @join__field(graph: JOURNEYS)
   userInvites(journeyId: ID!): [UserInvite!] @join__field(graph: JOURNEYS)
   getUserRole: UserRole @join__field(graph: JOURNEYS)
+  userTeams(teamId: ID!): [UserTeam!]! @join__field(graph: JOURNEYS)
+  userTeam(id: ID!): UserTeam! @join__field(graph: JOURNEYS)
 
   """A list of visitors that are connected with a specific team."""
   visitorsConnection(
@@ -1481,6 +1570,27 @@ type Tag
   id: ID!
   name: [Translation!]!
   parentId: ID
+}
+
+type Team
+  @join__type(graph: JOURNEYS, key: "id")
+{
+  id: ID!
+  title: String!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+input TeamCreateInput
+  @join__type(graph: JOURNEYS)
+{
+  title: String!
+}
+
+input TeamUpdateInput
+  @join__type(graph: JOURNEYS)
+{
+  title: String!
 }
 
 type TextResponseBlock implements Block
@@ -1848,6 +1958,30 @@ type UserRole
   roles: [Role!]
 }
 
+type UserTeam
+  @join__type(graph: JOURNEYS, key: "id")
+{
+  id: ID!
+  user: User!
+  role: UserTeamRole!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+enum UserTeamRole
+  @join__type(graph: JOURNEYS)
+{
+  manager @join__enumValue(graph: JOURNEYS)
+  member @join__enumValue(graph: JOURNEYS)
+  guest @join__enumValue(graph: JOURNEYS)
+}
+
+input UserTeamUpdateInput
+  @join__type(graph: JOURNEYS)
+{
+  role: UserTeamRole!
+}
+
 type Video
   @join__type(graph: JOURNEYS, key: "id primaryLanguageId")
   @join__type(graph: VIDEOS, key: "id primaryLanguageId")
@@ -1975,6 +2109,7 @@ input VideoBlockCreateInput
 
   """endAt dictates at which point of time the video should end"""
   endAt: Int
+  duration: Int
   description: String
   muted: Boolean
   autoplay: Boolean
@@ -2063,6 +2198,7 @@ input VideoBlockUpdateInput
   endAt: Int
   muted: Boolean
   autoplay: Boolean
+  duration: Int
 
   """
   internal source videos: videoId and videoVariantLanguageId both need to be set

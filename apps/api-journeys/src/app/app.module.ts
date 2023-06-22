@@ -16,23 +16,25 @@ import { JourneyProfileModule } from './modules/journeyProfile/journeyProfile.mo
 import { UserRoleModule } from './modules/userRole/userRole.module'
 import { UserInviteModule } from './modules/userInvite/userInvite.module'
 import { VisitorModule } from './modules/visitor/visitor.module'
-import { MemberModule } from './modules/member/member.module'
-import { TeamModule } from './modules/team/team.module'
 import { JourneyVisitorModule } from './modules/journeyVisitor/journeyVisitor.module'
+import { HostModule } from './modules/host/host.module'
+import { TeamModule } from './modules/team/team.module'
+import { UserTeamModule } from './modules/userTeam/userTeam.module'
 
 @Module({
   imports: [
     ActionModule,
     BlockModule,
+    EventModule,
+    HostModule,
     JourneyModule,
     JourneyVisitorModule,
-    EventModule,
-    MemberModule,
+    JourneyProfileModule,
     TeamModule,
     UserJourneyModule,
     UserInviteModule,
     UserRoleModule,
-    JourneyProfileModule,
+    UserTeamModule,
     VisitorModule,
     GraphQLModule.forRoot<ApolloFederationDriverConfig>({
       driver: ApolloFederationDriver,
@@ -52,6 +54,7 @@ import { JourneyVisitorModule } from './modules/journeyVisitor/journeyVisitor.mo
     }),
     LoggerModule.forRoot({
       pinoHttp: {
+        redact: ['req.headers.authorization'],
         autoLogging: {
           ignore: (req) => req.url === '/.well-known/apollo/server-health'
         },

@@ -50,7 +50,9 @@ const journey: Journey = {
   userJourneys: [],
   template: null,
   seoTitle: null,
-  seoDescription: null
+  seoDescription: null,
+  chatButtons: [],
+  host: null
 }
 
 describe('BackgroundMedia', () => {
