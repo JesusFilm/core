@@ -120,9 +120,9 @@ export function ActionEditor({
       <TextFieldForm
         id="link"
         label="Navigate to"
-        initialValues={url}
+        initialValue={url}
         validationSchema={linkActionSchema}
-        handleSubmit={handleSubmit}
+        onSubmit={handleSubmit}
       />
       <Stack gap={2} direction="row" alignItems="center" sx={{ pt: 3 }}>
         {icon}
