@@ -148,7 +148,7 @@ model Host {
   location String?
   src1     String?
   src2     String?
-  journey  Journey[]
+  journeys Journey[]
 }
 
 model JourneyVisitor {
@@ -173,15 +173,14 @@ model JourneyVisitor {
 }
 
 model Team {
-  id           String     @id
-  title        String
-  contactEmail String?
-  createdAt    DateTime   @default(now())
-  visitors     Visitor[]
-  userTeams    UserTeam[]
-  journeys     Journey[]
-  updatedAt    DateTime   @updatedAt
-  hosts        Host[]
+  id        String     @id
+  title     String
+  createdAt DateTime   @default(now())
+  visitors  Visitor[]
+  userTeams UserTeam[]
+  journeys  Journey[]
+  updatedAt DateTime   @updatedAt
+  hosts     Host[]
 
   @@index([title])
 }
@@ -265,6 +264,7 @@ model Journey {
   blocks              Block[]
   chatButtons         ChatButton[]
   host                Host?         @relation(fields: [hostId], references: [id])
+  Action              Action[]
 
   @@index([slug])
 }
@@ -362,13 +362,13 @@ model Block {
 }
 
 model Action {
-  id            String  @id
-  parentBlockId String?
+  parentBlockId String   @id
   gtmEventName  String?
   blockId       String?
   journeyId     String?
   url           String?
   target        String?
   email         String?
-  block         Block   @relation(fields: [id], references: [id])
+  parentBlock   Block    @relation(fields: [parentBlockId], references: [id])
+  journey       Journey? @relation(fields: [journeyId], references: [id])
 }
