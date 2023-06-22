@@ -121,8 +121,14 @@ export function Details({
   ): Promise<void> {
     let input
     if (type === 'link') {
+      let link
+      if (value != null)
+        link = /^\w+:\/\//.test(value) ? value : `https://${value}`
+
+      console.log(link)
+
       input = {
-        link: value,
+        link,
         platform: currentPlatform
       }
       setCurrentLink(value ?? '')

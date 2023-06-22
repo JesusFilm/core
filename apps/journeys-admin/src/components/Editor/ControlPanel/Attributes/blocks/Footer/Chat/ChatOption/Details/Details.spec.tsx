@@ -137,4 +137,55 @@ describe('Details', () => {
     fireEvent.click(getByText('Snapchat'))
     await waitFor(() => expect(result).toHaveBeenCalled())
   })
+
+  it('should accept urls without protocols', async () => {
+    const props = {
+      ...defaultProps,
+      currentPlatform: ChatPlatform.tikTok,
+      enableIconSelect: true
+    }
+
+    const result = jest.fn(() => ({
+      data: {
+        chatButtonUpdate: {
+          __typename: 'ChatButton',
+          id: 'chat.id',
+          link: 'https://example.com',
+          platform: ChatPlatform.tikTok
+        }
+      }
+    }))
+
+    const { getByRole } = render(
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: JOURNEY_CHAT_BUTTON_UPDATE,
+              variables: {
+                chatButtonUpdateId: 'chat.id',
+                journeyId: 'journeyId',
+                input: {
+                  link: 'https://example.com',
+                  platform: ChatPlatform.tikTok
+                }
+              }
+            },
+            result
+          }
+        ]}
+      >
+        <SnackbarProvider>
+          <Details {...props} />
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    fireEvent.change(getByRole('textbox'), {
+      target: { value: 'example.com' }
+    })
+    fireEvent.blur(getByRole('textbox'))
+
+    await waitFor(() => expect(result).toHaveBeenCalled())
+  })
 })
