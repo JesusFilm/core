@@ -1,4 +1,4 @@
-import { fireEvent, render, waitFor, act } from '@testing-library/react'
+import { fireEvent, render, waitFor } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
@@ -124,7 +124,7 @@ describe('HostTitleFieldForm', () => {
     await waitFor(() => expect(result).toHaveBeenCalled())
     await waitFor(() => expect(result2).toHaveBeenCalled())
 
-    waitFor(() => {
+    void waitFor(() => {
       expect(cache.extract()['Host:hostId']).toEqual({
         ...defaultHost,
         title: 'Host title'
@@ -191,7 +191,7 @@ describe('HostTitleFieldForm', () => {
 
     await waitFor(() => expect(result).toHaveBeenCalled())
 
-    waitFor(() =>
+    void waitFor(() =>
       expect(cache.extract()['Host:hostId']).toEqual({
         ...defaultHost,
         title: 'Host title'
