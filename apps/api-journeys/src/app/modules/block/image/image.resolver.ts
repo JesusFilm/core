@@ -108,7 +108,9 @@ export class ImageBlockResolver {
       }
 
       await this.blockService.update(parentBlock.id, {
-        coverBlockId: coverBlock.id
+        coverBlock: {
+          connect: { coverBlockId: coverBlock.id }
+        }
       })
       // Delete old coverBlock
       if (parentBlock.coverBlockId != null) {

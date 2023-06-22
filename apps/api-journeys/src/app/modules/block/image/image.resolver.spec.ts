@@ -198,7 +198,9 @@ describe('ImageBlockResolver', () => {
         parentBlock.journeyId
       )
       expect(service.update).toHaveBeenCalledWith(parentBlock.id, {
-        coverBlockId: createdBlock.id
+        coverBlock: {
+          connect: { coverBlockId: createdBlock.id }
+        }
       })
     })
 
@@ -217,7 +219,9 @@ describe('ImageBlockResolver', () => {
       expect(service.update).toHaveBeenCalledWith(
         parentBlockWithDeletedCover.id,
         {
-          coverBlockId: createdBlockForDeletedCover.id
+          coverBlock: {
+            connect: { coverBlockId: createdBlockForDeletedCover.id }
+          }
         }
       )
     })

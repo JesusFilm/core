@@ -109,6 +109,8 @@ export class RadioQuestionBlockResolver {
     @Args('journeyId') journeyId: string,
     @Args('parentBlockId') parentBlockId: string
   ): Promise<RadioQuestionBlock> {
-    return await this.blockService.update(id, { parentBlockId })
+    return await this.blockService.update(id, {
+      parentBlock: { connect: { id: parentBlockId } }
+    })
   }
 }

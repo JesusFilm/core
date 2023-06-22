@@ -351,7 +351,7 @@ export class BlockService {
   async update<T>(id: string, input: Prisma.BlockUpdateInput): Promise<T> {
     if (input.action != null) {
       const data = {
-        block: { connect: { id } },
+        parentBlock: { connect: { id } },
         ...omit(input.action, 'id')
       }
       await this.prismaService.action.upsert({

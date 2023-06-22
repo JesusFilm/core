@@ -252,7 +252,7 @@ model Journey {
   status              JourneyStatus
   seoTitle            String?
   seoDescription      String?
-  primaryImageBlockId String?
+  primaryImageBlockId String?       @unique
   template            Boolean?      @default(false)
   teamId              String
   hostId              String?
@@ -265,6 +265,7 @@ model Journey {
   chatButtons         ChatButton[]
   host                Host?         @relation(fields: [hostId], references: [id])
   Action              Action[]
+  primaryImageBlock   Block?        @relation("PrimaryImageBlock", fields: [primaryImageBlockId], references: [id])
 
   @@index([slug])
 }
@@ -305,60 +306,69 @@ enum VideoBlockObjectFit {
 }
 
 model Block {
-  id                     String               @id @default(uuid())
-  typename               String
-  journeyId              String
-  parentBlockId          String?
-  parentOrder            Int?
-  label                  String?
-  variant                String?
-  color                  String?
-  size                   String?
-  startIconId            String?
-  endIconId              String?
-  action                 Action?
-  backgroundColor        String?
-  coverBlockId           String?
-  fullscreen             Boolean?
-  themeMode              String?
-  themeName              String?
-  spacing                Int?
-  direction              String?
-  justifyContent         String?
-  alignItems             String?
-  xl                     Int?
-  lg                     Int?
-  sm                     Int?
-  name                   String?
-  src                    String?
-  width                  Int?
-  height                 Int?
-  alt                    String?
-  blurhash               String?
-  submitIconId           String?
-  submitLabel            String?
-  nextBlockId            String?
-  locked                 Boolean?
-  hint                   String?
-  minRows                Int?
-  content                String?
-  align                  String?
-  startAt                Int?
-  endAt                  Int?
-  muted                  Boolean?
-  autoplay               Boolean?
-  posterBlockId          String?
-  fullsize               Boolean?
-  videoId                String?
-  videoVariantLanguageId String?
-  source                 VideoBlockSource?
-  title                  String?
-  description            String?
-  image                  String?
-  duration               Int?
-  objectFit              VideoBlockObjectFit?
-  triggerStart           Int?
-  journey                Journey              @relation(fields: [journeyId], references: [id])
+  id                      String               @id @default(uuid())
+  typename                String
+  journeyId               String
+  parentBlockId           String?
+  parentOrder             Int?
+  label                   String?
+  variant                 String?
+  color                   String?
+  size                    String?
+  startIconId             String?
+  endIconId               String?
+  action                  Action?
+  backgroundColor         String?
+  coverBlockId            String?              @unique
+  fullscreen              Boolean?
+  themeMode               String?
+  themeName               String?
+  spacing                 Int?
+  direction               String?
+  justifyContent          String?
+  alignItems              String?
+  xl                      Int?
+  lg                      Int?
+  sm                      Int?
+  name                    String?
+  src                     String?
+  width                   Int?
+  height                  Int?
+  alt                     String?
+  blurhash                String?
+  submitIconId            String?
+  submitLabel             String?
+  nextBlockId             String?              @unique
+  locked                  Boolean?
+  hint                    String?
+  minRows                 Int?
+  content                 String?
+  align                   String?
+  startAt                 Int?
+  endAt                   Int?
+  muted                   Boolean?
+  autoplay                Boolean?
+  posterBlockId           String?              @unique
+  fullsize                Boolean?
+  videoId                 String?
+  videoVariantLanguageId  String?
+  source                  VideoBlockSource?
+  title                   String?
+  description             String?
+  image                   String?
+  duration                Int?
+  objectFit               VideoBlockObjectFit?
+  triggerStart            Int?
+  journey                 Journey              @relation(fields: [journeyId], references: [id])
+  posterBlock             Block?               @relation("PosterBlock", fields: [posterBlockId], references: [id])
+  posterBlockParent       Block?               @relation("PosterBlock")
+  coverBlock              Block?               @relation("CoverBlock", fields: [coverBlockId], references: [id])
+  coverBlockParent        Block?               @relation("CoverBlock")
+  primaryImageBlockParent Journey?             @relation("PrimaryImageBlock")
+  nextBlock               Block?               @relation("NextBlock", fields: [nextBlockId], references: [id])
+  nextBlockParent         Block?               @relation("NextBlock")
+  parentBlock             Block?               @relation("ParentBlock", fields: [parentBlockId], references: [id])
+  childBlocks             Block[]              @relation("ParentBlock")
 }
 
 model Action {
@@ -369,6 +379,6 @@ model Action {
   url           String?
   target        String?
   email         String?
-  block         Block    @relation(fields: [parentBlockId], references: [id])
+  parentBlock   Block    @relation(fields: [parentBlockId], references: [id])
   journey       Journey? @relation(fields: [journeyId], references: [id])
 }

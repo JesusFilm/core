@@ -1,9 +1,3 @@
-/*
-  Warnings:
-
-  - You are about to drop the column `updatedAt` on the `Team` table. All the data in the column will be lost.
-
-*/
 -- CreateEnum
 CREATE TYPE "UserJourneyRole" AS ENUM ('inviteRequested', 'editor', 'owner');
 
@@ -21,13 +15,6 @@ CREATE TYPE "Role" AS ENUM ('publisher');
 
 -- CreateEnum
 CREATE TYPE "VideoBlockObjectFit" AS ENUM ('fill', 'fit', 'zoomed');
-
--- DropIndex
-DROP INDEX "Team_title_idx";
-
--- AlterTable
-ALTER TABLE "Team" DROP COLUMN "updatedAt",
-ADD COLUMN     "contactEmail" TEXT;
 
 -- CreateTable
 CREATE TABLE "UserJourney" (
@@ -59,6 +46,7 @@ CREATE TABLE "Journey" (
     "primaryImageBlockId" TEXT,
     "template" BOOLEAN DEFAULT false,
     "teamId" TEXT NOT NULL,
+    "hostId" TEXT,
     "themeMode" "ThemeMode" DEFAULT 'light',
     "themeName" "ThemeName" DEFAULT 'base',
 
@@ -108,7 +96,6 @@ CREATE TABLE "Block" (
     "size" TEXT,
     "startIconId" TEXT,
     "endIconId" TEXT,
-    "action" JSONB,
     "backgroundColor" TEXT,
     "coverBlockId" TEXT,
     "fullscreen" BOOLEAN,
@@ -154,11 +141,27 @@ CREATE TABLE "Block" (
     CONSTRAINT "Block_pkey" PRIMARY KEY ("id")
 );
 
+-- CreateTable
+CREATE TABLE "Action" (
+    "parentBlockId" TEXT NOT NULL,
+    "gtmEventName" TEXT,
+    "blockId" TEXT,
+    "journeyId" TEXT,
+    "url" TEXT,
+    "target" TEXT,
+    "email" TEXT,
+
+    CONSTRAINT "Action_pkey" PRIMARY KEY ("parentBlockId")
+);
+
 -- CreateIndex
 CREATE UNIQUE INDEX "UserJourney_journeyId_userId_key" ON "UserJourney"("journeyId", "userId");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Journey_slug_key" ON "Journey"("slug");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Journey_primaryImageBlockId_key" ON "Journey"("primaryImageBlockId");
 
 -- CreateIndex
 CREATE INDEX "Journey_slug_idx" ON "Journey"("slug");
@@ -172,6 +175,18 @@ CREATE INDEX "UserInvite_journeyId_email_idx" ON "UserInvite"("journeyId", "emai
 -- CreateIndex
 CREATE UNIQUE INDEX "UserInvite_journeyId_email_key" ON "UserInvite"("journeyId", "email");
 
+-- CreateIndex
+CREATE UNIQUE INDEX "Block_coverBlockId_key" ON "Block"("coverBlockId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Block_nextBlockId_key" ON "Block"("nextBlockId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Block_posterBlockId_key" ON "Block"("posterBlockId");
+
+-- AddForeignKey
+ALTER TABLE "ChatButton" ADD CONSTRAINT "ChatButton_journeyId_fkey" FOREIGN KEY ("journeyId") REFERENCES "Journey"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
 -- AddForeignKey
 ALTER TABLE "Visitor" ADD CONSTRAINT "Visitor_teamId_fkey" FOREIGN KEY ("teamId") REFERENCES "Team"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
@@ -182,7 +197,31 @@ ALTER TABLE "UserJourney" ADD CONSTRAINT "UserJourney_journeyId_fkey" FOREIGN KE
 ALTER TABLE "Journey" ADD CONSTRAINT "Journey_teamId_fkey" FOREIGN KEY ("teamId") REFERENCES "Team"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
+ALTER TABLE "Journey" ADD CONSTRAINT "Journey_hostId_fkey" FOREIGN KEY ("hostId") REFERENCES "Host"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Journey" ADD CONSTRAINT "Journey_primaryImageBlockId_fkey" FOREIGN KEY ("primaryImageBlockId") REFERENCES "Block"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
 ALTER TABLE "UserInvite" ADD CONSTRAINT "UserInvite_journeyId_fkey" FOREIGN KEY ("journeyId") REFERENCES "Journey"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Block" ADD CONSTRAINT "Block_journeyId_fkey" FOREIGN KEY ("journeyId") REFERENCES "Journey"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Block" ADD CONSTRAINT "Block_posterBlockId_fkey" FOREIGN KEY ("posterBlockId") REFERENCES "Block"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Block" ADD CONSTRAINT "Block_coverBlockId_fkey" FOREIGN KEY ("coverBlockId") REFERENCES "Block"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Block" ADD CONSTRAINT "Block_nextBlockId_fkey" FOREIGN KEY ("nextBlockId") REFERENCES "Block"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Block" ADD CONSTRAINT "Block_parentBlockId_fkey" FOREIGN KEY ("parentBlockId") REFERENCES "Block"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Action" ADD CONSTRAINT "Action_parentBlockId_fkey" FOREIGN KEY ("parentBlockId") REFERENCES "Block"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Action" ADD CONSTRAINT "Action_journeyId_fkey" FOREIGN KEY ("journeyId") REFERENCES "Journey"("id") ON DELETE SET NULL ON UPDATE CASCADE;

@@ -205,7 +205,9 @@ describe('VideoBlockResolver', () => {
         parentBlock.journeyId
       )
       expect(service.update).toHaveBeenCalledWith(parentBlock.id, {
-        coverBlockId: createdBlock.id
+        coverBlock: {
+          connect: { coverBlockId: createdBlock.id }
+        }
       })
     })
 

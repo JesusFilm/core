@@ -12,7 +12,7 @@ export async function nua2(): Promise<void> {
   const existingJourney = await prisma.journey.findUnique({ where: { slug } })
   if (existingJourney != null) {
     await prisma.action.deleteMany({
-      where: { block: { journeyId: existingJourney.id } }
+      where: { parentBlock: { journeyId: existingJourney.id } }
     })
     await prisma.block.deleteMany({ where: { journeyId: existingJourney.id } })
     await prisma.journey.delete({ where: { slug } })

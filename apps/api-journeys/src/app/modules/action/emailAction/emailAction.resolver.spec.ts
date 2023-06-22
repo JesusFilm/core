@@ -62,7 +62,7 @@ describe('EmailActionResolver', () => {
       where: { parentBlockId: block.id },
       create: {
         ...actionData,
-        block: { connect: { id: block.id } }
+        parentBlock: { connect: { id: block.id } }
       },
       update: { ...actionData, journey: { disconnect: true } }
     })

@@ -13,7 +13,7 @@ export async function nua9(): Promise<void> {
   const existingJourney = await prisma.journey.findUnique({ where: { slug } })
   if (existingJourney != null) {
     await prisma.action.deleteMany({
-      where: { block: { journeyId: existingJourney.id } }
+      where: { parentBlock: { journeyId: existingJourney.id } }
     })
     await prisma.block.deleteMany({ where: { journeyId: existingJourney.id } })
     await prisma.journey.delete({ where: { slug } })
@@ -54,7 +54,6 @@ export async function nua9(): Promise<void> {
       themeMode: ThemeMode.dark,
       themeName: ThemeName.base,
       fullscreen: false,
-      coverBlockId,
       parentOrder: 0
     }
   })
@@ -68,12 +67,15 @@ export async function nua9(): Promise<void> {
       parentBlockId: card1.id,
       videoId: '5_0-NUA1001-0-0',
       videoVariantLanguageId: '529',
-      posterBlockId,
       muted: true,
       autoplay: true,
       startAt: 11,
       title: 'Decision'
     }
+  })
+  await prisma.block.update({
+    where: { id: card1.id },
+    data: { coverBlock: { connect: { id: coverBlockId } } }
   })
 
   await prisma.block.create({
@@ -89,6 +91,10 @@ export async function nua9(): Promise<void> {
       blurhash: 'LQEVc~^kXkI.*IyD$RnOyXTJRjjG',
       parentOrder: 0
     }
+  })
+  await prisma.block.update({
+    where: { id: coverBlockId },
+    data: { posterBlock: { connect: { id: posterBlockId } } }
   })
 
   await prisma.block.create({
@@ -248,7 +254,6 @@ export async function nua9(): Promise<void> {
       parentBlockId: questionStep.id,
       themeMode: ThemeMode.dark,
       themeName: ThemeName.base,
-      coverBlockId: image1Id,
       fullscreen: true,
       parentOrder: 0
     }
@@ -266,6 +271,10 @@ export async function nua9(): Promise<void> {
       height: 1080,
       blurhash: 'L5AVCm=Z4VIW004T.Awb8w_2b_jE'
     }
+  })
+  await prisma.block.update({
+    where: { id: card2.id },
+    data: { coverBlockId: image1Id }
   })
 
   await prisma.block.create({
@@ -325,7 +334,6 @@ export async function nua9(): Promise<void> {
       parentBlockId: stepPrayer1.id,
       themeMode: ThemeMode.dark,
       themeName: ThemeName.base,
-      coverBlockId: prayerImageId1,
       fullscreen: false,
       parentOrder: 0
     }
@@ -343,6 +351,10 @@ export async function nua9(): Promise<void> {
       height: 1080,
       blurhash: 'L5AVCm=Z4VIW004T.Awb8w_2b_jE'
     }
+  })
+  await prisma.block.update({
+    where: { id: prayerCard1.id },
+    data: { coverBlockId: prayerImageId1 }
   })
 
   await prisma.block.create({
@@ -432,7 +444,6 @@ export async function nua9(): Promise<void> {
       parentBlockId: stepPrayer2.id,
       themeMode: ThemeMode.dark,
       themeName: ThemeName.base,
-      coverBlockId: prayerImageId2,
       fullscreen: false,
       parentOrder: 0
     }
@@ -450,6 +461,10 @@ export async function nua9(): Promise<void> {
       height: 1080,
       blurhash: 'L3D+P*1%00V]0H:%}+^NKHw?^0M|'
     }
+  })
+  await prisma.block.update({
+    where: { id: prayerCard2.id },
+    data: { coverBlockId: prayerImageId2 }
   })
 
   await prisma.block.create({
@@ -538,7 +553,6 @@ export async function nua9(): Promise<void> {
       parentBlockId: stepPrayer3.id,
       themeMode: ThemeMode.dark,
       themeName: ThemeName.base,
-      coverBlockId: prayerImageId3,
       fullscreen: false,
       parentOrder: 0
     }
@@ -556,6 +570,11 @@ export async function nua9(): Promise<void> {
       height: 1080,
       blurhash: 'LqJs65}=R%so$,s:R*jb58Iqs:bH'
     }
+  })
+
+  await prisma.block.update({
+    where: { id: prayerCard3.id },
+    data: { coverBlockId: prayerImageId3 }
   })
 
   await prisma.block.create({
@@ -644,7 +663,6 @@ export async function nua9(): Promise<void> {
       parentBlockId: stepPrayer4.id,
       themeMode: ThemeMode.dark,
       themeName: ThemeName.base,
-      coverBlockId: prayerImageId4,
       fullscreen: true,
       parentOrder: 0
     }
@@ -662,6 +680,11 @@ export async function nua9(): Promise<void> {
       height: 1080,
       blurhash: 'LqJs65}=R%so$,s:R*jb58Iqs:bH'
     }
+  })
+
+  await prisma.block.update({
+    where: { id: prayerCard4.id },
+    data: { coverBlockId: prayerImageId4 }
   })
 
   await prisma.block.create({
@@ -725,7 +748,6 @@ export async function nua9(): Promise<void> {
       parentBlockId: stepIAlreadyHave.id,
       themeMode: ThemeMode.dark,
       themeName: ThemeName.base,
-      coverBlockId: image2Id,
       fullscreen: false,
       parentOrder: 0
     }
@@ -782,6 +804,10 @@ export async function nua9(): Promise<void> {
       height: 1080,
       blurhash: 'LRHUFAIp5qnN~UX8IUoI00xaZ$of'
     }
+  })
+  await prisma.block.update({
+    where: { id: card3.id },
+    data: { coverBlockId: image2Id }
   })
 
   // I already have final card
@@ -843,7 +869,6 @@ export async function nua9(): Promise<void> {
       parentBlockId: stepIAlreadyHave2.id,
       themeMode: ThemeMode.dark,
       themeName: ThemeName.base,
-      coverBlockId: alreadyImageId,
       fullscreen: true,
       parentOrder: 0
     }
@@ -861,6 +886,10 @@ export async function nua9(): Promise<void> {
       height: 1080,
       blurhash: 'LqJs65}=R%so$,s:R*jb58Iqs:bH'
     }
+  })
+  await prisma.block.update({
+    where: { id: alreadyCard4.id },
+    data: { coverBlockId: alreadyImageId }
   })
 
   await prisma.block.create({
@@ -923,7 +952,6 @@ export async function nua9(): Promise<void> {
       parentBlockId: stepNoThanks.id,
       themeMode: ThemeMode.dark,
       themeName: ThemeName.base,
-      coverBlockId: noThanksImageId,
       fullscreen: false,
       parentOrder: 0
     }
@@ -980,6 +1008,10 @@ export async function nua9(): Promise<void> {
       height: 1080,
       blurhash: 'LOCP^oDjkBNF?wIUofs.%gM{ofkC'
     }
+  })
+  await prisma.block.update({
+    where: { id: noThanksCard.id },
+    data: { coverBlockId: noThanksImageId }
   })
 
   // No thanks final card
@@ -1041,7 +1073,6 @@ export async function nua9(): Promise<void> {
       parentBlockId: stepNoThanks2.id,
       themeMode: ThemeMode.dark,
       themeName: ThemeName.base,
-      coverBlockId: noThanksImageId2,
       fullscreen: true,
       parentOrder: 0
     }
@@ -1059,6 +1090,11 @@ export async function nua9(): Promise<void> {
       height: 1080,
       blurhash: 'LOCP^oDjkBNF?wIUofs.%gM{ofkC'
     }
+  })
+
+  await prisma.block.update({
+    where: { id: noThanksCard2.id },
+    data: { coverBlockId: noThanksImageId2 }
   })
 
   await prisma.block.create({
@@ -1121,7 +1157,6 @@ export async function nua9(): Promise<void> {
       parentBlockId: stepNotSure.id,
       themeMode: ThemeMode.dark,
       themeName: ThemeName.base,
-      coverBlockId: notSureImageId,
       fullscreen: false,
       parentOrder: 0
     }
@@ -1178,6 +1213,11 @@ export async function nua9(): Promise<void> {
       height: 1080,
       blurhash: 'LnIqS]tRx]%L~Vbc-o%1aJR%s,s.'
     }
+  })
+
+  await prisma.block.update({
+    where: { id: notSureCard.id },
+    data: { coverBlockId: notSureImageId }
   })
 
   // step I'm not sure final card
@@ -1239,7 +1279,6 @@ export async function nua9(): Promise<void> {
       parentBlockId: stepNotSure2.id,
       themeMode: ThemeMode.dark,
       themeName: ThemeName.base,
-      coverBlockId: notSureImageId2,
       fullscreen: true,
       parentOrder: 0
     }
@@ -1257,6 +1296,11 @@ export async function nua9(): Promise<void> {
       height: 1080,
       blurhash: 'LnIqS]tRx]%L~Vbc-o%1aJR%s,s.'
     }
+  })
+
+  await prisma.block.update({
+    where: { id: notSureCard2.id },
+    data: { coverBlockId: notSureImageId2 }
   })
 
   await prisma.block.create({
@@ -1423,7 +1467,6 @@ export async function nua9(): Promise<void> {
       parentBlockId: lastStep.id,
       themeMode: ThemeMode.dark,
       themeName: ThemeName.base,
-      coverBlockId: lastImageId,
       fullscreen: false,
       parentOrder: 0
     }
@@ -1467,6 +1510,11 @@ export async function nua9(): Promise<void> {
       height: 1080,
       blurhash: 'LnIqS]tRx]%L~Vbc-o%1aJR%s,s.'
     }
+  })
+
+  await prisma.block.update({
+    where: { id: lastCard.id },
+    data: { coverBlockId: lastImageId }
   })
 
   const button8 = await prisma.block.create({

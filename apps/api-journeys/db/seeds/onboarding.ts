@@ -23,7 +23,7 @@ export async function onboarding(action?: 'reset'): Promise<void> {
     })
     if (existingJourney != null) {
       await prisma.action.deleteMany({
-        where: { block: { journeyId: existingJourney.id } }
+        where: { parentBlock: { journeyId: existingJourney.id } }
       })
       await prisma.block.deleteMany({
         where: { journeyId: existingJourney.id }
@@ -64,8 +64,7 @@ export async function onboarding(action?: 'reset'): Promise<void> {
       width: 1152,
       height: 768,
       blurhash: 'UE9Qmr%MIpWCtmbH%Mxu_4xuWYoL-;oIWYt7',
-      parentOrder: 1,
-      parentBlockId: journey.id
+      parentOrder: 1
     }
   })
   await prisma.journey.update({

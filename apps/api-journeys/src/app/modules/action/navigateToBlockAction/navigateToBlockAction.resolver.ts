@@ -61,7 +61,7 @@ export class NavigateToBlockActionResolver {
     }
     return await this.prismaService.action.upsert({
       where: { parentBlockId: id },
-      create: { ...actionData, block: { connect: { id: block.id } } },
+      create: { ...actionData, parentBlock: { connect: { id: block.id } } },
       update: {
         ...actionData,
         journey: { disconnect: true }

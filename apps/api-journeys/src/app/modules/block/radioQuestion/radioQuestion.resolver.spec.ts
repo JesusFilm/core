@@ -178,7 +178,9 @@ describe('RadioQuestionBlockResolver', () => {
         block.parentBlockId
       )
       expect(service.update).toHaveBeenCalledWith(block.id, {
-        parentBlockId: block.parentBlockId
+        parentBlock: {
+          connect: { id: block.parentBlockId }
+        }
       })
     })
   })

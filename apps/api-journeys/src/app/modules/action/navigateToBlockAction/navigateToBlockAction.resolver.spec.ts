@@ -69,7 +69,7 @@ describe('NavigateToBlockActionResolver', () => {
       where: { parentBlockId: block.id },
       create: {
         ...omit(actionData, 'journeyId'),
-        block: { connect: { id: block.id } }
+        parentBlock: { connect: { id: block.id } }
       },
       update: { ...actionData, journey: { disconnect: true } }
     })

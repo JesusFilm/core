@@ -13,7 +13,7 @@ export async function nua1(): Promise<void> {
   const existingJourney = await prisma.journey.findUnique({ where: { slug } })
   if (existingJourney != null) {
     await prisma.action.deleteMany({
-      where: { block: { journeyId: existingJourney.id } }
+      where: { parentBlock: { journeyId: existingJourney.id } }
     })
     await prisma.block.deleteMany({ where: { journeyId: existingJourney.id } })
     await prisma.journey.delete({ where: { slug } })
@@ -49,7 +49,7 @@ export async function nua1(): Promise<void> {
     data: {
       journey: { connect: { id: journey.id } },
       typename: 'CardBlock',
-      parentBlockId: step1.id,
+      parentBlock: { connect: { id: step1.id } },
       themeMode: ThemeMode.dark,
       themeName: ThemeName.base,
       fullscreen: false,
@@ -61,7 +61,7 @@ export async function nua1(): Promise<void> {
     data: {
       journey: { connect: { id: journey.id } },
       typename: 'VideoBlock',
-      parentBlockId: card1.id,
+      parentBlock: { connect: { id: card1.id } },
       videoId: '5_0-NUA0201-0-0',
       videoVariantLanguageId: '529',
       muted: true,
@@ -74,25 +74,30 @@ export async function nua1(): Promise<void> {
   })
   await prisma.block.update({
     where: { id: card1.id },
-    data: { coverBlockId: coverblock.id }
+    data: {
+      coverBlock: { connect: { id: coverblock.id } }
+    }
   })
 
   const poster = await prisma.block.create({
     data: {
       journey: { connect: { id: journey.id } },
       typename: 'ImageBlock',
-      parentBlockId: coverblock.id,
+      parentBlock: { connect: { id: coverblock.id } },
       src: 'https://images.unsplash.com/photo-1558704164-ab7a0016c1f3?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80',
       alt: 'Can we trust the story of Jesus?',
       width: 1920,
       height: 1080,
       blurhash: 'LQEVc~^kXkI.*IyD$RnOyXTJRjjG',
-      parentOrder: 0
+      parentOrder: 0,
+      posterBlockParent: { connect: { id: coverblock.id } }
     }
   })
   await prisma.block.update({
     where: { id: coverblock.id },
-    data: { posterBlockId: poster.id }
+    data: {
+      posterBlock: { connect: { id: poster.id } }
+    }
   })
 
   await prisma.block.createMany({
@@ -145,7 +150,7 @@ export async function nua1(): Promise<void> {
     data: {
       journey: { connect: { id: journey.id } },
       typename: 'ButtonBlock',
-      parentBlockId: card1.id,
+      parentBlock: { connect: { id: card1.id } },
       label: 'Explore Now',
       variant: 'contained',
       color: 'primary',
@@ -164,7 +169,7 @@ export async function nua1(): Promise<void> {
     data: {
       journey: { connect: { id: journey.id } },
       typename: 'IconBlock',
-      parentBlockId: button1.id,
+      parentBlock: { connect: { id: button1.id } },
       name: 'PlayArrowRounded',
       size: 'lg'
     }
@@ -173,7 +178,7 @@ export async function nua1(): Promise<void> {
     data: {
       journey: { connect: { id: journey.id } },
       typename: 'IconBlock',
-      parentBlockId: button1.id,
+      parentBlock: { connect: { id: button1.id } },
       name: null
     }
   })
@@ -186,7 +191,7 @@ export async function nua1(): Promise<void> {
     data: {
       journey: { connect: { id: journey.id } },
       typename: 'CardBlock',
-      parentBlockId: step2.id,
+      parentBlock: { connect: { id: step2.id } },
       themeMode: ThemeMode.dark,
       themeName: ThemeName.base,
       fullscreen: false,
@@ -198,7 +203,7 @@ export async function nua1(): Promise<void> {
     data: {
       journey: { connect: { id: journey.id } },
       typename: 'VideoBlock',
-      parentBlockId: videoCard.id,
+      parentBlock: { connect: { id: videoCard.id } },
       videoId: '5_0-NUA0201-0-0',
       videoVariantLanguageId: '529',
       autoplay: true,
@@ -229,7 +234,7 @@ export async function nua1(): Promise<void> {
     data: {
       journey: { connect: { id: journey.id } },
       typename: 'VideoTriggerBlock',
-      parentBlockId: video.id,
+      parentBlock: { connect: { id: video.id } },
       triggerStart: 133,
       action: {
         create: {
@@ -245,7 +250,7 @@ export async function nua1(): Promise<void> {
     data: {
       journey: { connect: { id: journey.id } },
       typename: 'CardBlock',
-      parentBlockId: step3.id,
+      parentBlock: { connect: { id: step3.id } },
       themeMode: ThemeMode.dark,
       themeName: ThemeName.base,
       fullscreen: false,
@@ -257,7 +262,7 @@ export async function nua1(): Promise<void> {
     data: {
       journey: { connect: { id: journey.id } },
       typename: 'ImageBlock',
-      parentBlockId: card3.id,
+      parentBlock: { connect: { id: card3.id } },
       src: 'https://images.unsplash.com/photo-1558704164-ab7a0016c1f3?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80',
       alt: 'Can we trust the story of Jesus?',
       width: 1920,
@@ -267,14 +272,16 @@ export async function nua1(): Promise<void> {
   })
   await prisma.block.update({
     where: { id: card3.id },
-    data: { coverBlockId: image.id }
+    data: {
+      coverBlock: { connect: { id: image.id } }
+    }
   })
 
   await prisma.block.create({
     data: {
       journey: { connect: { id: journey.id } },
       typename: 'TypographyBlock',
-      parentBlockId: card3.id,
+      parentBlock: { connect: { id: card3.id } },
       content: 'What do you think?',
       variant: 'h6',
       color: 'primary',
@@ -287,7 +294,7 @@ export async function nua1(): Promise<void> {
     data: {
       journey: { connect: { id: journey.id } },
       typename: 'TypographyBlock',
-      parentBlockId: card3.id,
+      parentBlock: { connect: { id: card3.id } },
       content: 'Can we trust the story of Jesus?',
       variant: 'h3',
       color: 'primary',
@@ -300,7 +307,7 @@ export async function nua1(): Promise<void> {
     data: {
       journey: { connect: { id: journey.id } },
       typename: 'RadioQuestionBlock',
-      parentBlockId: card3.id,
+      parentBlock: { connect: { id: card3.id } },
       parentOrder: 2
     }
   })
@@ -317,9 +324,13 @@ export async function nua1(): Promise<void> {
 
   await prisma.block.create({
     data: {
-      journeyId: journey.id,
+      journey: {
+        connect: { id: journey.id }
+      },
       typename: 'RadioOptionBlock',
-      parentBlockId: question2.id,
+      parentBlock: {
+        connect: { id: question2.id }
+      },
       label: 'Yes, it’s a true story 👍',
       action: {
         create: {
@@ -333,9 +344,13 @@ export async function nua1(): Promise<void> {
 
   await prisma.block.create({
     data: {
-      journeyId: journey.id,
+      journey: {
+        connect: { id: journey.id }
+      },
       typename: 'RadioOptionBlock',
-      parentBlockId: question2.id,
+      parentBlock: {
+        connect: { id: question2.id }
+      },
       label: 'No, it’s a fake fabrication 👎',
       action: {
         create: {
@@ -351,7 +366,7 @@ export async function nua1(): Promise<void> {
     data: {
       journey: { connect: { id: journey.id } },
       typename: 'CardBlock',
-      parentBlockId: step4.id,
+      parentBlock: { connect: { id: step4.id } },
       themeMode: ThemeMode.dark,
       themeName: ThemeName.base,
       fullscreen: false,
@@ -363,7 +378,7 @@ export async function nua1(): Promise<void> {
     data: {
       journey: { connect: { id: journey.id } },
       typename: 'VideoBlock',
-      parentBlockId: videoCard1.id,
+      parentBlock: { connect: { id: videoCard1.id } },
       videoId: '5_0-NUA0201-0-0',
       videoVariantLanguageId: '529',
       autoplay: true,
@@ -393,7 +408,7 @@ export async function nua1(): Promise<void> {
     data: {
       journey: { connect: { id: journey.id } },
       typename: 'VideoTriggerBlock',
-      parentBlockId: video1.id,
+      parentBlock: { connect: { id: video1.id } },
       triggerStart: 306,
       action: {
         create: {
@@ -409,7 +424,7 @@ export async function nua1(): Promise<void> {
     data: {
       journey: { connect: { id: journey.id } },
       typename: 'CardBlock',
-      parentBlockId: step5.id,
+      parentBlock: { connect: { id: step5.id } },
       themeMode: ThemeMode.dark,
       themeName: ThemeName.base,
       fullscreen: false,
@@ -457,7 +472,7 @@ export async function nua1(): Promise<void> {
     data: {
       journey: { connect: { id: journey.id } },
       typename: 'ImageBlock',
-      parentBlockId: card5.id,
+      parentBlock: { connect: { id: card5.id } },
       src: 'https://images.unsplash.com/photo-1447023029226-ef8f6b52e3ea?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1171&q=80',
       alt: 'Jesus In History',
       width: 1920,
@@ -467,7 +482,9 @@ export async function nua1(): Promise<void> {
   })
   await prisma.block.update({
     where: { id: card5.id },
-    data: { coverBlockId: image2.id }
+    data: {
+      coverBlock: { connect: { id: image2.id } }
+    }
   })
 
   // sixth step
@@ -484,7 +501,7 @@ export async function nua1(): Promise<void> {
     data: {
       journey: { connect: { id: journey.id } },
       typename: 'ButtonBlock',
-      parentBlockId: card5.id,
+      parentBlock: { connect: { id: card5.id } },
       label: 'One question remains...',
       variant: 'contained',
       color: 'primary',
@@ -503,7 +520,9 @@ export async function nua1(): Promise<void> {
     data: {
       journey: { connect: { id: journey.id } },
       typename: 'IconBlock',
-      parentBlockId: button2.id,
+      parentBlock: {
+        connect: { id: button2.id }
+      },
       name: 'ContactSupportRounded',
       size: 'md'
     }
@@ -512,7 +531,9 @@ export async function nua1(): Promise<void> {
     data: {
       journey: { connect: { id: journey.id } },
       typename: 'IconBlock',
-      parentBlockId: button2.id,
+      parentBlock: {
+        connect: { id: button2.id }
+      },
       name: null
     }
   })
@@ -525,7 +546,9 @@ export async function nua1(): Promise<void> {
     data: {
       journey: { connect: { id: journey.id } },
       typename: 'CardBlock',
-      parentBlockId: step6.id,
+      parentBlock: {
+        connect: { id: step6.id }
+      },
       themeMode: ThemeMode.dark,
       themeName: ThemeName.base,
       fullscreen: true,
@@ -537,7 +560,9 @@ export async function nua1(): Promise<void> {
     data: {
       journey: { connect: { id: journey.id } },
       typename: 'ImageBlock',
-      parentBlockId: card6.id,
+      parentBlock: {
+        connect: { id: card6.id }
+      },
       src: 'https://images.unsplash.com/photo-1447023029226-ef8f6b52e3ea?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1171&q=80',
       alt: 'Who was this Jesus?',
       width: 1920,
@@ -547,7 +572,9 @@ export async function nua1(): Promise<void> {
   })
   await prisma.block.update({
     where: { id: card6.id },
-    data: { coverBlockId: image3.id }
+    data: {
+      coverBlock: { connect: { id: image3.id } }
+    }
   })
 
   await prisma.block.createMany({
@@ -579,21 +606,29 @@ export async function nua1(): Promise<void> {
     data: {
       journey: { connect: { id: journey.id } },
       typename: 'RadioQuestionBlock',
-      parentBlockId: card6.id,
+      parentBlock: {
+        connect: { id: card6.id }
+      },
       parentOrder: 2
     }
   })
 
   await prisma.block.create({
     data: {
-      journeyId: journey.id,
+      journey: {
+        connect: { id: journey.id }
+      },
       typename: 'RadioOptionBlock',
-      parentBlockId: question4.id,
+      parentBlock: {
+        connect: { id: question4.id }
+      },
       label: 'A great influencer',
       action: {
         create: {
           gtmEventName: 'click',
-          journeyId: '2'
+          journey: {
+            connect: { id: '2' }
+          }
         }
       },
       parentOrder: 0
@@ -603,12 +638,16 @@ export async function nua1(): Promise<void> {
     data: {
       journey: { connect: { id: journey.id } },
       typename: 'RadioOptionBlock',
-      parentBlockId: question4.id,
+      parentBlock: {
+        connect: { id: question4.id }
+      },
       label: 'The Son of God',
       action: {
         create: {
           gtmEventName: 'click',
-          journeyId: '2'
+          journey: {
+            connect: { id: '2' }
+          }
         }
       },
       parentOrder: 1
@@ -618,12 +657,16 @@ export async function nua1(): Promise<void> {
     data: {
       journey: { connect: { id: journey.id } },
       typename: 'RadioOptionBlock',
-      parentBlockId: question4.id,
+      parentBlock: {
+        connect: {
+          id: question4.id
+        }
+      },
       label: 'A popular prophet',
       action: {
         create: {
           gtmEventName: 'click',
-          journeyId: '2'
+          journey: { connect: { id: '2' } }
         }
       },
       parentOrder: 2
@@ -633,12 +676,16 @@ export async function nua1(): Promise<void> {
     data: {
       journey: { connect: { id: journey.id } },
       typename: 'RadioOptionBlock',
-      parentBlockId: question4.id,
+      parentBlock: {
+        connect: { id: question4.id }
+      },
       label: 'A fake historical figure',
       action: {
         create: {
           gtmEventName: 'click',
-          journeyId: '2'
+          journey: {
+            connect: { id: '2' }
+          }
         }
       },
       parentOrder: 3

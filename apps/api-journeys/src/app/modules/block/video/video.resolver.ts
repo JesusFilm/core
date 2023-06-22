@@ -156,7 +156,9 @@ export class VideoBlockResolver {
       })
 
       await this.blockService.update(input.parentBlockId, {
-        coverBlockId: coverBlock.id
+        coverBlock: {
+          connect: { coverBlockId: coverBlock.id }
+        }
       })
 
       if (parentBlock?.coverBlockId != null) {

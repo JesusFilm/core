@@ -64,7 +64,7 @@ describe('NavigateActionResolver', () => {
     const actionData = omit(navigateActionInput)
     expect(prismaService.action.upsert).toHaveBeenCalledWith({
       where: { parentBlockId: block.id },
-      create: { ...actionData, block: { connect: { id: block.id } } },
+      create: { ...actionData, parentBlock: { connect: { id: block.id } } },
       update: { ...actionData, journey: { disconnect: true } }
     })
   })
