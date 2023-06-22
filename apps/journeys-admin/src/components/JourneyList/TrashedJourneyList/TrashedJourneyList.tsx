@@ -12,7 +12,7 @@ import { useAuthUser } from 'next-firebase-auth'
 import { JourneyFields } from '../../../../__generated__/JourneyFields'
 import { JourneyCard } from '../JourneyCard'
 import { sortJourneys } from '../JourneySort/utils/sortJourneys'
-import { JourneyListProps } from '../JourneyList'
+import type { JourneyListProps } from '../JourneyList'
 import { useJourneys } from '../../../libs/useJourneys'
 import { JourneyStatus } from '../../../../__generated__/globalTypes'
 

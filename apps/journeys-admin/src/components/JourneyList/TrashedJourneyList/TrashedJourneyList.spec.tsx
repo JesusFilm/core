@@ -4,13 +4,13 @@ import { SnackbarProvider } from 'notistack'
 import { defaultJourney, oldJourney } from '../journeyListData'
 import { ThemeProvider } from '../../ThemeProvider'
 import { SortOrder } from '../JourneySort'
+import { GET_JOURNEYS } from '../../../libs/useJourneys/useJourneys'
+import { JourneyStatus } from '../../../../__generated__/globalTypes'
 import {
-  TrashedJourneyList,
   RESTORE_TRASHED_JOURNEYS,
   DELETE_TRASHED_JOURNEYS
 } from './TrashedJourneyList'
-import { GET_JOURNEYS } from '../../../libs/useJourneys/useJourneys'
-import { JourneyStatus } from '../../../../__generated__/globalTypes'
+import { TrashedJourneyList } from '.'
 
 jest.mock('next/router', () => ({
   __esModule: true,

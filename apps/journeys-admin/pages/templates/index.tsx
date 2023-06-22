@@ -1,7 +1,7 @@
 import { NextSeo } from 'next-seo'
 import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
-import { gql, useQuery } from '@apollo/client'
+import { useQuery } from '@apollo/client'
 import {
   AuthAction,
   useAuthUser,
@@ -12,7 +12,6 @@ import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import { getLaunchDarklyClient } from '@core/shared/ui/getLaunchDarklyClient'
 import { PageWrapper } from '../../src/components/PageWrapper'
 import i18nConfig from '../../next-i18next.config'
-import { GetPublishedTemplates } from '../../__generated__/GetPublishedTemplates'
 import { useJourneys } from '../../src/libs/useJourneys'
 import { TemplateLibrary } from '../../src/components/TemplateLibrary'
 import { GetUserRole } from '../../__generated__/GetUserRole'
@@ -20,58 +19,10 @@ import { Role } from '../../__generated__/globalTypes'
 import { GET_USER_ROLE } from '../../src/components/JourneyView/JourneyView'
 import { useTermsRedirect } from '../../src/libs/useTermsRedirect/useTermsRedirect'
 
-const GET_PUBLISHED_TEMPLATES = gql`
-  query GetPublishedTemplates {
-    journeys(where: { template: true }) {
-      id
-      title
-      createdAt
-      publishedAt
-      description
-      slug
-      themeName
-      themeMode
-      status
-      seoTitle
-      seoDescription
-      template
-      userJourneys {
-        id
-        role
-        openedAt
-        user {
-          id
-          firstName
-          lastName
-          imageUrl
-        }
-      }
-      language {
-        id
-        name(primary: true) {
-          value
-          primary
-        }
-      }
-      primaryImageBlock {
-        id
-        parentBlockId
-        parentOrder
-        src
-        alt
-        width
-        height
-        blurhash
-      }
-    }
-  }
-`
-
 function LibraryIndex(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const AuthUser = useAuthUser()
-  const { data } = useQuery<GetPublishedTemplates>(GET_PUBLISHED_TEMPLATES)
-  const { data: journeys } = useJourneys()
+  const { data } = useJourneys({ template: true })
   const { data: userData } = useQuery<GetUserRole>(GET_USER_ROLE)
 
   const isPublisher = userData?.getUserRole?.roles?.includes(Role.publisher)
@@ -82,11 +33,7 @@ function LibraryIndex(): ReactElement {
     <>
       <NextSeo title={t('Journey Templates')} />
       <PageWrapper title={t('Journey Templates')} authUser={AuthUser}>
-        <TemplateLibrary
-          isPublisher={isPublisher}
-          journeys={journeys}
-          templates={data?.journeys}
-        />
+        <TemplateLibrary isPublisher={isPublisher} templates={data?.journeys} />
       </PageWrapper>
     </>
   )

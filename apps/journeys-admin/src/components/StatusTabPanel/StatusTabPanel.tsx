@@ -13,7 +13,7 @@ import Box from '@mui/material/Box'
 import { useRouter } from 'next/router'
 import { JourneySort, SortOrder } from '../JourneyList/JourneySort'
 import { JourneyListMenu } from '../JourneyList/JourneyListMenu'
-import { JourneyListEvent } from '../JourneyList/JourneyList'
+import type { JourneyListEvent } from '../JourneyList/JourneyList'
 
 export interface StatusTabPanelProps {
   activeList: ReactElement

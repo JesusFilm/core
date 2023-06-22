@@ -40,6 +40,22 @@ export interface GetJourneys_journeys_userJourneys {
   user: GetJourneys_journeys_userJourneys_user | null;
 }
 
+export interface GetJourneys_journeys_primaryImageBlock {
+  __typename: "ImageBlock";
+  id: string;
+  parentBlockId: string | null;
+  parentOrder: number | null;
+  src: string | null;
+  alt: string;
+  width: number;
+  height: number;
+  /**
+   * blurhash is a compact representation of a placeholder for an image.
+   * Find a frontend implementation at https: // github.com/woltapp/blurhash
+   */
+  blurhash: string;
+}
+
 export interface GetJourneys_journeys {
   __typename: "Journey";
   id: string;
@@ -55,7 +71,9 @@ export interface GetJourneys_journeys {
   status: JourneyStatus;
   seoTitle: string | null;
   seoDescription: string | null;
+  template: boolean | null;
   userJourneys: GetJourneys_journeys_userJourneys[] | null;
+  primaryImageBlock: GetJourneys_journeys_primaryImageBlock | null;
 }
 
 export interface GetJourneys {

@@ -16,23 +16,15 @@ import IconButton from '@mui/material/IconButton'
 import MoreVertIcon from '@mui/icons-material/MoreVert'
 import { ApolloQueryResult } from '@apollo/client'
 import Link from 'next/link'
-import { GetActivePublisherTemplates } from '../../../__generated__/GetActivePublisherTemplates'
-import { GetArchivedPublisherTemplates } from '../../../__generated__/GetArchivedPublisherTemplates'
-import { GetTrashedPublisherTemplates } from '../../../__generated__/GetTrashedPublisherTemplates'
 import { GetPublishedTemplates_journeys as Journey } from '../../../__generated__/GetPublishedTemplates'
 import { JourneyCardMenu } from '../JourneyList/JourneyCard/JourneyCardMenu'
 import { StatusChip } from '../JourneyList/JourneyCard/StatusChip'
+import { GetJourneys } from '../../../__generated__/GetJourneys'
 
 export interface TemplateCardProps {
   journey?: Journey
   isPublisher?: boolean
-  refetch?: () => Promise<
-    ApolloQueryResult<
-      | GetActivePublisherTemplates
-      | GetArchivedPublisherTemplates
-      | GetTrashedPublisherTemplates
-    >
-  >
+  refetch?: () => Promise<ApolloQueryResult<GetJourneys>>
 }
 
 export function TemplateCard({

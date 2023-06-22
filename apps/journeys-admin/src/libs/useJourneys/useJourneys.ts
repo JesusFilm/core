@@ -26,6 +26,7 @@ export const GET_JOURNEYS = gql`
       status
       seoTitle
       seoDescription
+      template
       userJourneys {
         id
         role
@@ -36,6 +37,23 @@ export const GET_JOURNEYS = gql`
           lastName
           imageUrl
         }
+      }
+      language {
+        id
+        name(primary: true) {
+          value
+          primary
+        }
+      }
+      primaryImageBlock {
+        id
+        parentBlockId
+        parentOrder
+        src
+        alt
+        width
+        height
+        blurhash
       }
     }
   }
