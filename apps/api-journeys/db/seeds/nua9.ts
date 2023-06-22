@@ -205,18 +205,12 @@ export async function nua9(): Promise<void> {
       autoplay: true,
       title: "What' Jesus Got to Do With Me?",
       parentOrder: 0,
-      fullsize: true
-    }
-  })
-  await prisma.action.create({
-    data: {
-      id: video.id,
-      parentBlockId: video.id,
-      gtmEventName: 'NavigateAction',
-      blockId: null,
-      journeyId: null,
-      url: null,
-      target: null
+      fullsize: true,
+      action: {
+        create: {
+          gtmEventName: 'NavigateAction'
+        }
+      }
     }
   })
 

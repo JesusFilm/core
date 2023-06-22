@@ -202,18 +202,12 @@ export async function nua2(): Promise<void> {
       autoplay: true,
       title: 'What About The Ressurection?',
       fullsize: true,
-      parentOrder: 0
-    }
-  })
-  await prisma.action.create({
-    data: {
-      id: video.id,
-      parentBlockId: video.id,
-      gtmEventName: 'NavigateAction',
-      blockId: null,
-      journeyId: null,
-      url: null,
-      target: null
+      parentOrder: 0,
+      action: {
+        create: {
+          gtmEventName: 'NavigateAction'
+        }
+      }
     }
   })
 
@@ -386,18 +380,12 @@ export async function nua2(): Promise<void> {
       title: 'What About The Ressurection?',
       startAt: 109,
       fullsize: true,
-      parentOrder: 0
-    }
-  })
-  await prisma.action.create({
-    data: {
-      id: video1.id,
-      parentBlockId: video1.id,
-      gtmEventName: 'NavigateAction',
-      blockId: null,
-      journeyId: null,
-      url: null,
-      target: null
+      parentOrder: 0,
+      action: {
+        create: {
+          gtmEventName: 'NavigateAction'
+        }
+      }
     }
   })
 
@@ -567,18 +555,12 @@ export async function nua2(): Promise<void> {
       title: 'What About The Ressurection?',
       startAt: 272,
       fullsize: true,
-      parentOrder: 0
-    }
-  })
-  await prisma.action.create({
-    data: {
-      id: video2.id,
-      parentBlockId: video2.id,
-      gtmEventName: 'NavigateAction',
-      blockId: null,
-      journeyId: null,
-      url: null,
-      target: null
+      parentOrder: 0,
+      action: {
+        create: {
+          gtmEventName: 'NavigateAction'
+        }
+      }
     }
   })
 

@@ -284,7 +284,7 @@ export class BlockService {
       ...blocks
     ])
     await this.prismaService.action.deleteMany({
-      where: { id: { in: blockIds } }
+      where: { parentBlockId: { in: blockIds } }
     })
     await this.prismaService.block.deleteMany({
       where: { id: { in: blockIds } }
@@ -299,7 +299,7 @@ export class BlockService {
     parentBlockId?: string
   ): Promise<Block[]> {
     await this.prismaService.action.delete({
-      where: { id: blockId }
+      where: { parentBlockId: blockId }
     })
     const res: Block = await this.prismaService.block.delete({
       where: { id: blockId }
@@ -355,12 +355,12 @@ export class BlockService {
         ...omit(input.action, 'id')
       }
       await this.prismaService.action.upsert({
-        where: { id },
+        where: { parentBlockId: id },
         create: data,
         update: data
       })
     } else if (input.action === null) {
-      await this.prismaService.action.delete({ where: { id } })
+      await this.prismaService.action.delete({ where: { parentBlockId: id } })
     }
     return (await this.prismaService.block.update({
       where: { id },

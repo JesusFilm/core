@@ -206,18 +206,12 @@ export async function nua1(): Promise<void> {
       description:
         'Watch this viral (4 minute) video about LIFE, DEATH, and the LOVE of a Savior. By the end of this short film, your faith will grow stronger. Afterward, you will receive a free special resource for continuing your spiritual journey. Watch it. Share it.',
       fullsize: true,
-      parentOrder: 0
-    }
-  })
-  await prisma.action.create({
-    data: {
-      block: { connect: { id: video.id } },
-      parentBlockId: video.id,
-      gtmEventName: 'NavigateAction',
-      blockId: null,
-      journeyId: null,
-      url: null,
-      target: null
+      parentOrder: 0,
+      action: {
+        create: {
+          gtmEventName: 'NavigateAction'
+        }
+      }
     }
   })
 
@@ -376,18 +370,12 @@ export async function nua1(): Promise<void> {
       title: 'Fact or fiction',
       startAt: 134,
       fullsize: true,
-      parentOrder: 0
-    }
-  })
-  await prisma.action.create({
-    data: {
-      id: video1.id,
-      parentBlockId: video1.id,
-      gtmEventName: 'NavigateAction',
-      blockId: null,
-      journeyId: null,
-      url: null,
-      target: null
+      parentOrder: 0,
+      action: {
+        create: {
+          gtmEventName: 'NavigateAction'
+        }
+      }
     }
   })
 

@@ -1,6 +1,6 @@
 import { Args, Mutation, Parent, ResolveField, Resolver } from '@nestjs/graphql'
 import { UseGuards } from '@nestjs/common'
-import { includes } from 'lodash'
+import { includes, omit } from 'lodash'
 import { UserInputError } from 'apollo-server-errors'
 import { Journey, Action } from '.prisma/api-journeys-client'
 
@@ -64,15 +64,15 @@ export class NavigateToJourneyActionResolver {
     }
 
     const actionData = {
-      ...input,
-      parentBlockId: block.id,
+      ...omit(input, 'journeyId'),
+      journey: { connect: { id: journeyId } },
       blockId: null,
       url: null,
       target: null
     }
 
     return await this.prismaService.action.upsert({
-      where: { id },
+      where: { parentBlockId: id },
       create: {
         ...actionData,
         block: { connect: { id: block.id } }

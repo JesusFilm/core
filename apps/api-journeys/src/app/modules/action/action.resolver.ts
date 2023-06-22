@@ -58,7 +58,7 @@ export class ActionResolver {
       throw new UserInputError('This block does not support actions')
     }
 
-    await this.prismaService.action.delete({ where: { id } })
+    await this.prismaService.action.delete({ where: { parentBlockId: id } })
     return block
   }
 }

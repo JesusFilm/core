@@ -61,17 +61,14 @@ describe('LinkActionResolver', () => {
       block.journeyId,
       linkActionInput
     )
-    const actionData = {
-      ...linkActionInput,
-      parentBlockId: block.action.parentBlockId
-    }
+    const actionData = linkActionInput
     expect(prismaService.action.upsert).toHaveBeenCalledWith({
-      where: { id: block.id },
+      where: { parentBlockId: block.id },
       create: {
         ...actionData,
         block: { connect: { id: block.id } }
       },
-      update: actionData
+      update: { ...actionData, journey: { disconnect: true } }
     })
   })
 

@@ -271,7 +271,7 @@ describe('ActionResolver', () => {
       await resolver.blockDeleteAction(block1.id, block1.journeyId)
 
       expect(prismaService.action.delete).toHaveBeenCalledWith({
-        where: { id: block1.id }
+        where: { parentBlockId: block1.id }
       })
     })
   })

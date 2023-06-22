@@ -63,16 +63,14 @@ export class EmailActionResolver {
 
     const actionData = {
       ...input,
-      parentBlockId: block.id,
       blockId: null,
-      journeyId: null,
       url: null,
       target: null
     }
     return await this.prismaService.action.upsert({
-      where: { id },
+      where: { parentBlockId: id },
       create: { ...actionData, block: { connect: { id: block.id } } },
-      update: actionData
+      update: { ...actionData, journey: { disconnect: true } }
     })
   }
 }

@@ -369,6 +369,6 @@ model Action {
   url           String?
   target        String?
   email         String?
-  parentBlock   Block    @relation(fields: [parentBlockId], references: [id])
+  block         Block    @relation(fields: [parentBlockId], references: [id])
   journey       Journey? @relation(fields: [journeyId], references: [id])
 }

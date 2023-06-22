@@ -1,4 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing'
+import { omit } from 'lodash'
+
 import { BlockService } from '../../block/block.service'
 import { JourneyService } from '../../journey/journey.service'
 import { UserJourneyService } from '../../userJourney/userJourney.service'
@@ -62,17 +64,14 @@ describe('NavigateToBlockActionResolver', () => {
       block.journeyId,
       navigateToBlockInput
     )
-    const actionData = {
-      ...navigateToBlockInput,
-      parentBlockId: block.action.parentBlockId
-    }
+    const actionData = omit(navigateToBlockInput, 'journeyId')
     expect(prismaService.action.upsert).toHaveBeenCalledWith({
-      where: { id: block.id },
+      where: { parentBlockId: block.id },
       create: {
-        ...actionData,
+        ...omit(actionData, 'journeyId'),
         block: { connect: { id: block.id } }
       },
-      update: actionData
+      update: { ...actionData, journey: { disconnect: true } }
     })
   })
 

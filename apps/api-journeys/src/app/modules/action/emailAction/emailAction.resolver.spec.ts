@@ -57,17 +57,14 @@ describe('EmailActionResolver', () => {
       block.journeyId,
       emailActionInput
     )
-    const actionData = {
-      ...emailActionInput,
-      parentBlockId: block.action.parentBlockId
-    }
+    const actionData = emailActionInput
     expect(prismaService.action.upsert).toHaveBeenCalledWith({
-      where: { id: block.id },
+      where: { parentBlockId: block.id },
       create: {
         ...actionData,
         block: { connect: { id: block.id } }
       },
-      update: actionData
+      update: { ...actionData, journey: { disconnect: true } }
     })
   })
 
