@@ -6,7 +6,6 @@ import {
   EditorState,
   useEditor
 } from '@core/journeys/ui/EditorProvider'
-import Stack from '@mui/material/Stack'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import {
@@ -17,7 +16,6 @@ import {
 import { GetJourney_journey as Journey } from '../../../../../../../__generated__/GetJourney'
 import { Footer } from './Footer'
 import { Chat } from './Chat'
-import { HostTitleFieldForm } from './HostForm/HostTitleFieldForm'
 
 jest.mock('@core/journeys/ui/EditorProvider', () => {
   const originalModule = jest.requireActual('@core/journeys/ui/EditorProvider')
@@ -151,11 +149,7 @@ describe('Footer', () => {
       type: 'SetDrawerPropsAction',
       title: 'Hosted By',
       mobileOpen: true,
-      children: (
-        <Stack>
-          <HostTitleFieldForm />
-        </Stack>
-      )
+      children: <div>Hosted by content component</div>
     })
   })
 
