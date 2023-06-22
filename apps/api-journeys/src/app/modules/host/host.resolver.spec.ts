@@ -1,43 +1,79 @@
 import { Test, TestingModule } from '@nestjs/testing'
+import { Database } from 'arangojs'
+import { mockDeep } from 'jest-mock-extended'
+import { CaslAuthModule } from '@core/nest/common/CaslAuthModule'
+import { UserTeamRole } from '.prisma/api-journeys-client'
 import { PrismaService } from '../../lib/prisma.service'
+import { JourneyService } from '../journey/journey.service'
+import {
+  Journey,
+  JourneyStatus,
+  ThemeMode,
+  ThemeName
+} from '../../__generated__/graphql'
+import { AppCaslFactory } from '../../lib/casl/caslFactory'
 import { HostResolver } from './host.resolver'
 
 describe('HostResolver', () => {
-  let hostResolver: HostResolver, prismaService: PrismaService
+  let hostResolver: HostResolver,
+    prismaService: PrismaService,
+    journeyService: JourneyService
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [HostResolver, PrismaService]
+      imports: [CaslAuthModule.register(AppCaslFactory)],
+      providers: [
+        HostResolver,
+        PrismaService,
+        JourneyService,
+        {
+          provide: 'DATABASE',
+          useFactory: () => mockDeep<Database>()
+        }
+      ]
     }).compile()
 
     hostResolver = module.get<HostResolver>(HostResolver)
     prismaService = module.get<PrismaService>(PrismaService)
+    journeyService = module.get<JourneyService>(JourneyService)
   })
 
   describe('hostCreate', () => {
     it('should create a new host', async () => {
-      const teamId = 'team-id'
+      const team = {
+        id: 'teamId',
+        userTeams: [
+          {
+            userId: 'userId',
+            role: UserTeamRole.member
+          }
+        ]
+      }
       const input = {
         title: 'New Host',
         location: 'Location',
         src1: 'avatar1',
         src2: 'avatar2'
       }
-      const mockHost = { teamId, ...input, id: 'hostid' }
-      jest.spyOn(prismaService.host, 'create').mockResolvedValue(mockHost)
+      const ability = await new AppCaslFactory().createAbility({
+        id: 'userId'
+      })
 
-      const result = await hostResolver.hostCreate(teamId, input)
+      const mockHost = { teamId: team.id, ...input, id: 'hostid' }
+      prismaService.team.findUnique = jest.fn().mockResolvedValue(team)
+      prismaService.host.create = jest.fn().mockResolvedValue(mockHost)
+
+      const result = await hostResolver.hostCreate(ability, team.id, input)
 
       expect(result).toEqual(mockHost)
       expect(prismaService.host.create).toHaveBeenCalledWith({
-        data: { teamId, ...input }
+        data: { teamId: team.id, ...input }
       })
     })
   })
 
   describe('hostResolver', () => {
     it('should return an array of hosts', async () => {
-      const userId = 'user-1'
       const teamId = 'edmondshen'
       const mockHosts = [
         {
@@ -59,11 +95,13 @@ describe('HostResolver', () => {
       ]
       jest.spyOn(prismaService.host, 'findMany').mockResolvedValue(mockHosts)
 
-      const result = await hostResolver.hosts(userId, teamId)
+      const result = await hostResolver.hosts({ teamId }, teamId)
 
       expect(result).toEqual(mockHosts)
       expect(prismaService.host.findMany).toHaveBeenCalledWith({
-        where: { teamId, team: { userTeams: { some: { userId } } } }
+        where: {
+          AND: [{ teamId: 'edmondshen' }, { teamId: 'edmondshen' }]
+        }
       })
     })
   })
@@ -77,6 +115,7 @@ describe('HostResolver', () => {
         src1: 'new-profile-pic-who-this',
         src2: 'avatar2'
       }
+
       const mockHost = {
         id: 'host-id',
         teamId: 'best-juniors-engineers-gang',
@@ -85,12 +124,27 @@ describe('HostResolver', () => {
         src1: 'avatar1',
         src2: 'avatar2'
       }
-      const mockUpdatedHost = { ...mockHost, ...input }
-      jest
-        .spyOn(prismaService.host, 'update')
-        .mockResolvedValue(mockUpdatedHost)
 
-      const result = await hostResolver.hostUpdate(id, input)
+      const mockUpdatedHost = { ...mockHost, ...input }
+      const ability = await new AppCaslFactory().createAbility({
+        id: 'userId'
+      })
+      const hostFindUnique = {
+        mockHost,
+        team: {
+          userTeams: [
+            {
+              userId: 'userId',
+              role: UserTeamRole.manager
+            }
+          ]
+        }
+      }
+      prismaService.host.update = jest.fn().mockResolvedValue(mockUpdatedHost)
+      prismaService.host.findUnique = jest
+        .fn()
+        .mockResolvedValue(hostFindUnique)
+      const result = await hostResolver.hostUpdate(ability, id, input)
 
       expect(result).toEqual(mockUpdatedHost)
 
@@ -120,12 +174,26 @@ describe('HostResolver', () => {
         src1: 'avatar1',
         src2: 'avatar2'
       }
+      const hostFindUnique = {
+        mockHost,
+        team: {
+          userTeams: [
+            {
+              userId: 'userId',
+              role: UserTeamRole.manager
+            }
+          ]
+        }
+      }
+      const ability = await new AppCaslFactory().createAbility({
+        id: 'userId'
+      })
       const mockUpdatedHost = { ...mockHost, ...input }
-      jest
-        .spyOn(prismaService.host, 'update')
-        .mockResolvedValue(mockUpdatedHost)
-
-      const result = await hostResolver.hostUpdate(id, input)
+      prismaService.host.update = jest.fn().mockResolvedValue(mockUpdatedHost)
+      prismaService.host.findUnique = jest
+        .fn()
+        .mockResolvedValue(hostFindUnique)
+      const result = await hostResolver.hostUpdate(ability, id, input)
 
       expect(result).toEqual(mockUpdatedHost)
 
@@ -148,15 +216,88 @@ describe('HostResolver', () => {
         src1: 'new-profile-pic-who-this',
         src2: 'avatar2'
       }
+      const hostFindUnique = {
+        hostId,
+        team: {
+          userTeams: [
+            {
+              userId: 'userId',
+              role: UserTeamRole.manager
+            }
+          ]
+        }
+      }
+      prismaService.host.findUnique = jest
+        .fn()
+        .mockResolvedValue(hostFindUnique)
 
-      await expect(hostResolver.hostUpdate(hostId, input)).rejects.toThrow(
-        'host title cannot be set to null'
-      )
+      const ability = await new AppCaslFactory().createAbility({
+        id: 'userId'
+      })
+      await expect(
+        hostResolver.hostUpdate(ability, hostId, input)
+      ).rejects.toThrow('host title cannot be set to null')
     })
   })
 
   describe('hostDelete', () => {
     it('should delete an existing host', async () => {
+      const id = 'host-id'
+      const ability = await new AppCaslFactory().createAbility({
+        id: 'userId'
+      })
+      const mockDeletedHost = {
+        id: 'host-id',
+        teamId: 'best-juniors-engineers-gang',
+        title: 'Edmond Shen & Nisal Cottingham',
+        location: 'JFP Staff',
+        src1: 'avatar1',
+        src2: 'avatar2'
+      }
+      const journey: Journey = {
+        id: 'journeyId',
+        slug: 'journey-slug',
+        title: 'published',
+        status: JourneyStatus.published,
+        language: { id: '529' },
+        themeMode: ThemeMode.light,
+        themeName: ThemeName.base,
+        description: null,
+        primaryImageBlock: null,
+        publishedAt: null,
+        createdAt: null as unknown as string,
+        host: mockDeletedHost,
+        chatButtons: []
+      }
+
+      const hostFindUnique = {
+        mockDeletedHost,
+        team: {
+          userTeams: [
+            {
+              userId: 'userId',
+              role: UserTeamRole.manager
+            }
+          ]
+        }
+      }
+      prismaService.host.findUnique = jest
+        .fn()
+        .mockResolvedValue(hostFindUnique)
+      prismaService.host.delete = jest.fn().mockResolvedValue(mockDeletedHost)
+
+      journeyService.getAllByHost = jest.fn().mockReturnValueOnce([journey])
+
+      const result = await hostResolver.hostDelete(ability, id)
+
+      expect(result).toEqual(mockDeletedHost)
+      expect(prismaService.host.delete).toHaveBeenCalledWith({ where: { id } })
+    })
+
+    it('should throw an error if the host exists on other journeys', async () => {
+      const ability = await new AppCaslFactory().createAbility({
+        id: 'userId'
+      })
       const id = 'host-id'
       const mockDeletedHost = {
         id: 'host-id',
@@ -166,14 +307,61 @@ describe('HostResolver', () => {
         src1: 'avatar1',
         src2: 'avatar2'
       }
-      jest
-        .spyOn(prismaService.host, 'delete')
-        .mockResolvedValue(mockDeletedHost)
+      const journey: Journey = {
+        id: 'journeyId',
+        slug: 'journey-slug',
+        title: 'published',
+        status: JourneyStatus.published,
+        language: { id: '529' },
+        themeMode: ThemeMode.light,
+        themeName: ThemeName.base,
+        description: null,
+        primaryImageBlock: null,
+        publishedAt: null,
+        createdAt: null as unknown as string,
+        host: mockDeletedHost,
+        chatButtons: []
+      }
 
-      const result = await hostResolver.hostDelete(id)
+      const journeyTwo: Journey = {
+        id: 'journeyId2',
+        slug: 'journey-slug2',
+        title: 'published',
+        status: JourneyStatus.published,
+        language: { id: '529' },
+        themeMode: ThemeMode.light,
+        themeName: ThemeName.base,
+        description: null,
+        primaryImageBlock: null,
+        publishedAt: null,
+        createdAt: null as unknown as string,
+        host: mockDeletedHost,
+        chatButtons: []
+      }
 
-      expect(result).toEqual(mockDeletedHost)
-      expect(prismaService.host.delete).toHaveBeenCalledWith({ where: { id } })
+      const hostFindUnique = {
+        mockDeletedHost,
+        team: {
+          userTeams: [
+            {
+              userId: 'userId',
+              role: UserTeamRole.manager
+            }
+          ]
+        }
+      }
+      prismaService.host.findUnique = jest
+        .fn()
+        .mockResolvedValue(hostFindUnique)
+
+      journeyService.getAllByHost = jest
+        .fn()
+        .mockReturnValueOnce([journey, journeyTwo])
+      prismaService.host.delete = jest.fn().mockResolvedValue(mockDeletedHost)
+
+      await expect(hostResolver.hostDelete(ability, id)).rejects.toThrow(
+        'This host is used in other journeys.'
+      )
     })
   })
 })
