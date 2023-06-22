@@ -60,6 +60,7 @@ export function Summary({
   async function handleToggle(
     event: ChangeEvent<HTMLInputElement>
   ): Promise<void> {
+    // Restricts mutations from running if loading for spam click protection, must be QA'd
     if (createLoading || removeLoading) return
     if (event.target.checked && !disableSelection) {
       try {
