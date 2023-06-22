@@ -195,7 +195,7 @@ describe('AddByFile', () => {
   it('should show error state on fileRejections', async () => {
     const testStack = new TestHttpStack()
     const onChange = jest.fn()
-    const { getByTestId, getByText } = render(
+    const { getByTestId } = render(
       <MockedProvider
         mocks={[
           {
@@ -234,6 +234,5 @@ describe('AddByFile', () => {
 
     fireEvent.drop(input)
     expect(getByTestId('WarningAmberRoundedIcon')).toBeInTheDocument()
-
   })
 })
