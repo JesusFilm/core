@@ -8,6 +8,7 @@ import { getJourneyRTL } from '../../../libs/rtl'
 
 interface HostAvatarsProps {
   hasPlaceholder?: boolean
+
   size?: 'small' | 'large'
   avatarSrc1?: string
   avatarSrc2?: string

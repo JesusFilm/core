@@ -6,6 +6,7 @@ import { CreateHost } from '../../../../../../../../../__generated__/CreateHost'
 import { UpdateJourneyHost } from '../../../../../../../../../__generated__/UpdateJourneyHost'
 import { useHostUpdate } from '../../../../../../../../libs/useHostUpdate/useHostUpdate'
 import { TextFieldForm } from '../../../../../../../TextFieldForm'
+import { HostList } from './HostList/HostList'
 
 export const CREATE_HOST = gql`
   mutation CreateHost($id: ID!, $teamId: ID!, $input: HostCreateInput) {
@@ -83,12 +84,15 @@ export function HostTitleFieldForm(): ReactElement {
   }
 
   return (
-    <TextFieldForm
-      id="hostName"
-      label="Host Name"
-      initialValues={host?.title}
-      validationSchema={titleSchema}
-      handleSubmit={handleSubmit}
-    />
+    <>
+      <TextFieldForm
+        id="hostName"
+        label="Host Name"
+        initialValues={host?.title}
+        validationSchema={titleSchema}
+        handleSubmit={handleSubmit}
+      />
+      <HostList />
+    </>
   )
 }
