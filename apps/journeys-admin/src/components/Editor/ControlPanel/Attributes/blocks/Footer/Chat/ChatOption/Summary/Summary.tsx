@@ -50,18 +50,17 @@ export function Summary({
   currentPlatform,
   chatButtonId
 }: Props): ReactElement {
-  const [journeyChatButtonCreate] = useMutation<JourneyChatButtonCreate>(
-    JOURNEY_CHAT_BUTTON_CREATE
-  )
-  const [journeyChatButtonRemove] = useMutation<JourneyChatButtonRemove>(
-    JOURNEY_CHAT_BUTTON_REMOVE
-  )
+  const [journeyChatButtonCreate, { loading: createLoading }] =
+    useMutation<JourneyChatButtonCreate>(JOURNEY_CHAT_BUTTON_CREATE)
+  const [journeyChatButtonRemove, { loading: removeLoading }] =
+    useMutation<JourneyChatButtonRemove>(JOURNEY_CHAT_BUTTON_REMOVE)
   const { enqueueSnackbar } = useSnackbar()
   const { t } = useTranslation('apps-journeys-admin')
 
   async function handleToggle(
     event: ChangeEvent<HTMLInputElement>
   ): Promise<void> {
+    if (createLoading || removeLoading) return
     if (event.target.checked && !disableSelection) {
       try {
         await journeyChatButtonCreate({
