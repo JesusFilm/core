@@ -26,30 +26,30 @@ const mocks = [
           {
             id: '1',
             location: '',
-            src1: 'https://tinyurl.com/3bxusmyb',
+            src1: null,
             src2: null,
             title: `John "The Rock" Geronimo`
           },
           {
             id: '2',
-            location: 'Tokyo, Japan',
-            src1: 'https://tinyurl.com/3bxusmyb',
-            src2: 'https://tinyurl.com/mr4a78kb',
-            title: 'John G & Siyang C'
-          },
-          {
-            id: '3',
             location: 'Auckland, New Zealand',
             src1: null,
             src2: null,
             title: 'Jian Wei'
           },
           {
-            id: '4',
+            id: '3',
             location: 'Auckland, New Zealand',
             src1: null,
             src2: 'https://tinyurl.com/4b3327yn',
             title: 'Nisal Cottingham'
+          },
+          {
+            id: '4',
+            location: 'Tokyo, Japan',
+            src1: 'https://tinyurl.com/3bxusmyb',
+            src2: 'https://tinyurl.com/mr4a78kb',
+            title: 'John G & Siyang C'
           }
         ]
       }
