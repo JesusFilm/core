@@ -39,6 +39,7 @@ interface Props {
   currentLink: string
   currentPlatform: ChatPlatform
   chatButtonId?: string
+  openAccordion: () => void
 }
 
 export function Summary({
@@ -48,7 +49,8 @@ export function Summary({
   journeyId,
   currentLink,
   currentPlatform,
-  chatButtonId
+  chatButtonId,
+  openAccordion
 }: Props): ReactElement {
   const [journeyChatButtonCreate] = useMutation<JourneyChatButtonCreate>(
     JOURNEY_CHAT_BUTTON_CREATE
@@ -62,6 +64,7 @@ export function Summary({
   async function handleToggle(
     event: ChangeEvent<HTMLInputElement>
   ): Promise<void> {
+    openAccordion()
     if (event.target.checked && !disableSelection) {
       try {
         await journeyChatButtonCreate({
