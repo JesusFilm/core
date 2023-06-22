@@ -39,6 +39,7 @@ interface Props {
   currentLink: string
   currentPlatform: ChatPlatform
   chatButtonId?: string
+  openAccordion: () => void
 }
 
 export function Summary({
@@ -48,7 +49,8 @@ export function Summary({
   journeyId,
   currentLink,
   currentPlatform,
-  chatButtonId
+  chatButtonId,
+  openAccordion
 }: Props): ReactElement {
   const [journeyChatButtonCreate, { loading: createLoading }] =
     useMutation<JourneyChatButtonCreate>(JOURNEY_CHAT_BUTTON_CREATE)
@@ -60,6 +62,7 @@ export function Summary({
   async function handleToggle(
     event: ChangeEvent<HTMLInputElement>
   ): Promise<void> {
+    openAccordion()
     // Restricts mutations from running if loading for spam click protection, must be QA'd
     if (createLoading || removeLoading) return
     if (event.target.checked && !disableSelection) {

@@ -92,4 +92,28 @@ describe('ChatOption', () => {
     fireEvent.click(getByText('Snapchat'))
     expect(getByRole('button', { name: 'Snapchat' })).toBeInTheDocument()
   })
+
+  it('should not close accordion when clicking on the checkbox', () => {
+    const props = {
+      title: 'title',
+      chatButton: undefined,
+      platform: ChatPlatform.tikTok,
+      active: false,
+      journeyId: 'journeyId',
+      disableSelection: false
+    }
+
+    const { getByRole, queryByRole } = render(
+      <MockedProvider>
+        <SnackbarProvider>
+          <ChatOption {...props} />
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    expect(queryByRole('textbox')).not.toBeInTheDocument()
+    fireEvent.click(getByRole('button', { name: 'title' }))
+    fireEvent.click(getByRole('checkbox'))
+    expect(getByRole('textbox')).toBeInTheDocument()
+  })
 })
