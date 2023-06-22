@@ -34,6 +34,7 @@ export enum ButtonVariant {
 }
 
 export enum ChatPlatform {
+  custom = "custom",
   facebook = "facebook",
   instagram = "instagram",
   line = "line",
@@ -108,6 +109,7 @@ export enum JourneysReportType {
 }
 
 export enum MessagePlatform {
+  custom = "custom",
   facebook = "facebook",
   instagram = "instagram",
   line = "line",
@@ -241,6 +243,16 @@ export interface CardBlockUpdateInput {
   fullscreen?: boolean | null;
   themeMode?: ThemeMode | null;
   themeName?: ThemeName | null;
+}
+
+export interface ChatButtonCreateInput {
+  link?: string | null;
+  platform?: ChatPlatform | null;
+}
+
+export interface ChatButtonUpdateInput {
+  link?: string | null;
+  platform?: ChatPlatform | null;
 }
 
 export interface ChatOpenEventCreateInput {
@@ -454,6 +466,7 @@ export interface VideoBlockCreateInput {
   parentBlockId: string;
   startAt?: number | null;
   endAt?: number | null;
+  duration?: number | null;
   description?: string | null;
   muted?: boolean | null;
   autoplay?: boolean | null;
@@ -471,6 +484,7 @@ export interface VideoBlockUpdateInput {
   endAt?: number | null;
   muted?: boolean | null;
   autoplay?: boolean | null;
+  duration?: number | null;
   videoId?: string | null;
   videoVariantLanguageId?: string | null;
   source?: VideoBlockSource | null;
