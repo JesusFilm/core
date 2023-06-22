@@ -1,4 +1,4 @@
-import { fireEvent, render, waitFor, act } from '@testing-library/react'
+import { fireEvent, render, waitFor } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
