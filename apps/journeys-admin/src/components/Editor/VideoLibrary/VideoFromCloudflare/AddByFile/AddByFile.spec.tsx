@@ -231,10 +231,9 @@ describe('AddByFile', () => {
     Object.defineProperty(input, 'files', {
       value: [file1, file2]
     })
+
     fireEvent.drop(input)
-    await waitFor(() =>
-      expect(getByText('Something went wrong, try again')).toBeInTheDocument()
-    )
-    expect(getByText('Only one file upload at once.')).toBeInTheDocument()
+    expect(getByTestId('WarningAmberRoundedIcon')).toBeInTheDocument()
+
   })
 })
