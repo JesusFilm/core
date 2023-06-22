@@ -69,7 +69,6 @@ export function TextFieldForm({
             variant="filled"
             fullWidth
             label={label}
-            required={isRequired}
             value={values[id]}
             error={Boolean(errors[id])}
             helperText={errors[id] != null ? errors[id] : helperText}
