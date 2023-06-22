@@ -8,7 +8,7 @@ import { useHostUpdate } from '../../../../../../../../libs/useHostUpdate/useHos
 import { TextFieldForm } from '../../../../../../../TextFieldForm'
 
 export const CREATE_HOST = gql`
-  mutation CreateHost($id: ID!, $teamId: ID!, $input: HostCreateInput) {
+  mutation CreateHost($teamId: ID!, $input: HostCreateInput!) {
     hostCreate(teamId: $teamId, input: $input) {
       id
       title
