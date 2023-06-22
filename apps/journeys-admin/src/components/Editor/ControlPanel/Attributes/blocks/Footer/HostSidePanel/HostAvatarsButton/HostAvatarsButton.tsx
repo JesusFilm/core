@@ -19,8 +19,17 @@ export function HostAvatarsButton(): ReactElement {
     setOpen(true)
     setAvatarNumber(avatar)
   }
-  function handleClose(): void {
+
+  async function handleClose(): Promise<void> {
     setOpen(false)
+    if (host != null && host.src1 == null && host.src2 != null) {
+      const { id, teamId, src2 } = host
+      await updateHost({
+        id,
+        teamId,
+        input: { src1: src2, src2: null }
+      })
+    }
   }
 
   async function handleChange(avatarImage: ImageBlock): Promise<void> {
@@ -36,20 +45,12 @@ export function HostAvatarsButton(): ReactElement {
 
   async function handleDelete(): Promise<void> {
     if (host != null) {
-      const { id, teamId, src2 } = host
-      if (avatarNumber === 1) {
-        await updateHost({
-          id,
-          teamId,
-          input: { src1: src2, src2: null }
-        })
-      } else {
-        await updateHost({
-          id,
-          teamId,
-          input: { src2: null }
-        })
-      }
+      const { id, teamId } = host
+      await updateHost({
+        id,
+        teamId,
+        input: { [`src${avatarNumber}`]: null }
+      })
     }
   }
 

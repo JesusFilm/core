@@ -71,6 +71,7 @@ describe('HostLocationFieldForm', () => {
 
     const { getByRole } = render(
       <MockedProvider
+        cache={cache}
         mocks={[
           {
             request: {
