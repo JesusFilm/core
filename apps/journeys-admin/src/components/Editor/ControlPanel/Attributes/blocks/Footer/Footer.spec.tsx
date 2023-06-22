@@ -17,9 +17,9 @@ import {
 import { GetJourney_journey as Journey } from '../../../../../../../__generated__/GetJourney'
 import { Footer } from './Footer'
 import { Chat } from './Chat'
-import { HostTitleFieldForm } from './HostSidePanel/HostTitleFieldForm'
-import { HostLocationFieldForm } from './HostSidePanel/HostLocationFieldForm/HostLocationFieldForm'
-import { HostAvatarsButton } from './HostSidePanel/HostAvatarsButton'
+import { HostTitleFieldForm } from './HostSidePanel/HostForm/HostTitleFieldForm'
+import { HostLocationFieldForm } from './HostSidePanel/HostForm/HostLocationFieldForm/HostLocationFieldForm'
+import { HostAvatarsButton } from './HostSidePanel/HostForm/HostAvatarsButton'
 
 jest.mock('@core/journeys/ui/EditorProvider', () => {
   const originalModule = jest.requireActual('@core/journeys/ui/EditorProvider')

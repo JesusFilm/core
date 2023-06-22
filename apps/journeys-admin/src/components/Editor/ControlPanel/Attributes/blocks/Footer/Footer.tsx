@@ -7,9 +7,9 @@ import { useTranslation } from 'react-i18next'
 import Stack from '@mui/material/Stack'
 import { Attribute } from '../..'
 import { ChatPlatform } from '../../../../../../../__generated__/globalTypes'
-import { HostTitleFieldForm } from './HostSidePanel/HostTitleFieldForm'
-import { HostAvatarsButton } from './HostSidePanel/HostAvatarsButton/HostAvatarsButton'
-import { HostLocationFieldForm } from './HostSidePanel/HostLocationFieldForm/HostLocationFieldForm'
+import { HostTitleFieldForm } from './HostSidePanel/HostForm/HostTitleFieldForm'
+import { HostAvatarsButton } from './HostSidePanel/HostForm/HostAvatarsButton'
+import { HostLocationFieldForm } from './HostSidePanel/HostForm/HostLocationFieldForm'
 import { Chat } from './Chat'
 
 export function Footer(): ReactElement {
