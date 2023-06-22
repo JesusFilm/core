@@ -190,9 +190,10 @@ export function Details({
         )}
 
         <TextFieldForm
+          id={currentPlatform as string}
           label={t('Paste URL here')}
-          initialValues={currentLink}
-          handleSubmit={async (value) => await handleUpdate('link', value)}
+          initialValue={currentLink}
+          onSubmit={async (value) => await handleUpdate('link', value)}
         />
 
         {helperInfo != null && (

@@ -6,9 +6,9 @@ import { ObjectShape } from 'yup/lib/object'
 
 type FieldProps = Pick<
   TextFieldProps,
-  | 'id'
   | 'label'
   | 'placeholder'
+  | 'focused'
   | 'disabled'
   | 'helperText'
   | 'hiddenLabel'
@@ -17,64 +17,72 @@ type FieldProps = Pick<
 >
 
 interface TextFieldFormProps extends FieldProps {
-  initialValues?: string
+  id: string
+  initialValue?: string
   validationSchema?: ObjectSchema<ObjectShape>
-  handleSubmit: (value?: string) => void
+  onSubmit: (value?: string) => void
   startIcon?: ReactNode
   endIcon?: ReactNode
 }
 
+interface ValidationSchema {
+  tests: Array<{ name: string; params: unknown }>
+}
+
 export function TextFieldForm({
-  id = 'textFieldValue',
+  id,
   label = 'Label',
-  initialValues,
+  initialValue,
   validationSchema,
-  helperText,
-  inputProps,
-  hiddenLabel,
-  placeholder,
-  disabled,
-  handleSubmit,
+  onSubmit,
   startIcon,
-  endIcon
+  endIcon,
+  helperText,
+  ...muiFieldProps
 }: TextFieldFormProps): ReactElement {
+  const isRequired =
+    validationSchema != null
+      ? Boolean(
+          (
+            validationSchema.fields[id].describe() as ValidationSchema
+          ).tests.find((test) => test.name === 'required')
+        )
+      : false
+
   return (
     <Formik
       initialValues={{
-        [id]: initialValues
+        [id]: initialValue
       }}
       validationSchema={validationSchema}
       onSubmit={async (values): Promise<void> => {
-        await handleSubmit(values[id])
+        await onSubmit(values[id])
       }}
       enableReinitialize
     >
-      {({ values, touched, errors, handleChange, handleBlur }) => (
+      {({ values, errors, handleChange, handleBlur, setFieldValue }) => (
         <Form>
           <TextField
+            {...muiFieldProps}
             id={id}
             name={id}
             variant="filled"
             fullWidth
             label={label}
-            placeholder={placeholder}
-            hiddenLabel={hiddenLabel}
-            disabled={disabled}
-            inputProps={inputProps}
             value={values[id]}
-            error={touched[id] === true && Boolean(errors[id])}
-            helperText={
-              touched[id] === true && errors[id] != null
-                ? errors[id]
-                : helperText
-            }
+            error={Boolean(errors[id])}
+            helperText={errors[id] != null ? errors[id] : helperText}
             InputProps={{
               startAdornment: startIcon,
               endAdornment: endIcon
             }}
             onBlur={(e) => {
               handleBlur(e)
-              errors[id] == null && handleSubmit(e.target.value)
+              if (errors[id] == null) {
+                onSubmit(e.target.value)
+              } else if (isRequired) {
+                setFieldValue(id, initialValue)
+              }
             }}
             onChange={(e) => {
               handleChange(e)

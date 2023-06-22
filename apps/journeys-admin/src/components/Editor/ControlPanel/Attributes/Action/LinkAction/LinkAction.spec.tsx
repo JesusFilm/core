@@ -35,15 +35,6 @@ describe('LinkAction', () => {
     }
   ]
 
-  it('defaults to place holder text', () => {
-    const { getByLabelText } = render(
-      <MockedProvider>
-        <LinkAction />
-      </MockedProvider>
-    )
-    expect(getByLabelText('Paste URL here...')).toBeInTheDocument()
-  })
-
   it('displays the action url', async () => {
     const { getByDisplayValue } = render(
       <MockedProvider>
@@ -102,10 +93,10 @@ describe('LinkAction', () => {
         </EditorProvider>
       </MockedProvider>
     )
-    fireEvent.change(getByRole('textbox'), {
+    fireEvent.change(getByRole('textbox', { name: 'Paste URL here...' }), {
       target: { value: '' }
     })
-    fireEvent.blur(getByRole('textbox'))
+    fireEvent.blur(getByRole('textbox', { name: 'Paste URL here...' }))
     await waitFor(() => expect(getByText('Required')).toBeInTheDocument())
   })
 
