@@ -94,6 +94,13 @@ export function AddByFile({
     onChange
   ])
 
+  const onDrop = async (): Promise<void> => {
+    setfileTooLarge(false)
+    settooManyFiles(false)
+    setfileInvalidType(false)
+    setfileRejected(false)
+  }
+
   const onDropAccepted = async (files: File[]): Promise<void> => {
     if (files.length > 0) {
       const file = files[0]
@@ -168,6 +175,7 @@ export function AddByFile({
   }
 
   const { getRootProps, open, getInputProps, isDragAccept } = useDropzone({
+    onDrop,
     onDropAccepted,
     onDropRejected,
     noClick: true,
@@ -236,6 +244,7 @@ export function AddByFile({
         direction="row"
         spacing={1}
         color={error != null || fileRejected ? 'error.main' : 'secondary.light'}
+        sx={{ justifyContent: 'center', alignItems: 'center' }}
       >
         <WarningAmberRounded
           fontSize="small"
