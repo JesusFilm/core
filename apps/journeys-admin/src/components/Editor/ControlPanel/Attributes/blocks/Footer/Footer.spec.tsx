@@ -17,7 +17,9 @@ import {
 import { GetJourney_journey as Journey } from '../../../../../../../__generated__/GetJourney'
 import { Footer } from './Footer'
 import { Chat } from './Chat'
-import { HostTitleFieldForm } from './HostForm/HostTitleFieldForm'
+import { HostTitleFieldForm } from './HostSidePanel/HostTitleFieldForm'
+import { HostLocationFieldForm } from './HostSidePanel/HostLocationFieldForm/HostLocationFieldForm'
+import { HostAvatarsButton } from './HostSidePanel/HostAvatarsButton'
 
 jest.mock('@core/journeys/ui/EditorProvider', () => {
   const originalModule = jest.requireActual('@core/journeys/ui/EditorProvider')
@@ -152,8 +154,10 @@ describe('Footer', () => {
       title: 'Hosted By',
       mobileOpen: true,
       children: (
-        <Stack>
+        <Stack gap={8}>
           <HostTitleFieldForm />
+          <HostLocationFieldForm />
+          <HostAvatarsButton />
         </Stack>
       )
     })
