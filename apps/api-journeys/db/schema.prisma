@@ -369,6 +369,7 @@ model Block {
   nextBlockParent         Block?               @relation("NextBlock")
   parentBlock             Block?               @relation("ParentBlock", fields: [parentBlockId], references: [id])
   childBlocks             Block[]              @relation("ParentBlock")
+  targetAction            Action[]             @relation("Block")
 }
 
 model Action {
@@ -381,4 +382,5 @@ model Action {
   email         String?
   parentBlock   Block    @relation(fields: [parentBlockId], references: [id])
   journey       Journey? @relation(fields: [journeyId], references: [id])
+  block         Block?   @relation("Block", fields: [blockId], references: [id])
 }

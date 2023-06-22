@@ -68,7 +68,11 @@ describe('LinkActionResolver', () => {
         ...actionData,
         parentBlock: { connect: { id: block.id } }
       },
-      update: { ...actionData, journey: { disconnect: true } }
+      update: {
+        ...actionData,
+        journey: { disconnect: true },
+        block: { disconnect: true }
+      }
     })
   })
 

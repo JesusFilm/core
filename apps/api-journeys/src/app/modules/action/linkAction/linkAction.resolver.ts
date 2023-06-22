@@ -55,7 +55,6 @@ export class LinkActionResolver {
 
     const actionData = {
       ...input,
-      blockId: null,
       email: null
     }
     return await this.prismaService.action.upsert({
@@ -64,7 +63,11 @@ export class LinkActionResolver {
         ...actionData,
         parentBlock: { connect: { id: block.id } }
       },
-      update: { ...actionData, journey: { disconnect: true } }
+      update: {
+        ...actionData,
+        journey: { disconnect: true },
+        block: { disconnect: true }
+      }
     })
   }
 }

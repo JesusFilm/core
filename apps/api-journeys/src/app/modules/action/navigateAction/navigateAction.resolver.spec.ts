@@ -65,7 +65,11 @@ describe('NavigateActionResolver', () => {
     expect(prismaService.action.upsert).toHaveBeenCalledWith({
       where: { parentBlockId: block.id },
       create: { ...actionData, parentBlock: { connect: { id: block.id } } },
-      update: { ...actionData, journey: { disconnect: true } }
+      update: {
+        ...actionData,
+        journey: { disconnect: true },
+        block: { disconnect: true }
+      }
     })
   })
 

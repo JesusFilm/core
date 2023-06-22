@@ -66,7 +66,6 @@ export class NavigateToJourneyActionResolver {
     const actionData = {
       ...omit(input, 'journeyId'),
       journey: { connect: { id: journeyId } },
-      blockId: null,
       url: null,
       target: null
     }
@@ -77,7 +76,10 @@ export class NavigateToJourneyActionResolver {
         ...actionData,
         parentBlock: { connect: { id: block.id } }
       },
-      update: actionData
+      update: {
+        ...actionData,
+        block: { disconnect: true }
+      }
     })
   }
 }

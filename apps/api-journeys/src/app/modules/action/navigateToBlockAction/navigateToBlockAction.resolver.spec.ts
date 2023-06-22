@@ -64,7 +64,10 @@ describe('NavigateToBlockActionResolver', () => {
       block.journeyId,
       navigateToBlockInput
     )
-    const actionData = omit(navigateToBlockInput, 'journeyId')
+    const actionData = {
+      ...omit(navigateToBlockInput, ['journeyId', 'blockId']),
+      block: { connect: { id: navigateToBlockInput.blockId } }
+    }
     expect(prismaService.action.upsert).toHaveBeenCalledWith({
       where: { parentBlockId: block.id },
       create: {
