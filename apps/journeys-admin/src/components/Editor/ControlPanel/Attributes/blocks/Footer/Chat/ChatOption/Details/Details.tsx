@@ -122,16 +122,15 @@ export function Details({
     let input
     if (type === 'link') {
       let link
-      if (value != null)
-        link = /^\w+:\/\//.test(value) ? value : `https://${value}`
 
-      console.log(link)
+      if (value !== '' && value != null)
+        link = /^\w+:\/\//.test(value) ? value : `https://${value}`
 
       input = {
         link,
         platform: currentPlatform
       }
-      setCurrentLink(value ?? '')
+      setCurrentLink(link ?? '')
     } else {
       input = {
         link: currentLink,

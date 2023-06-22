@@ -188,4 +188,54 @@ describe('Details', () => {
 
     await waitFor(() => expect(result).toHaveBeenCalled())
   })
+
+  it('should accept deep links', async () => {
+    const props = {
+      ...defaultProps,
+      currentPlatform: ChatPlatform.tikTok,
+      enableIconSelect: true
+    }
+
+    const result = jest.fn(() => ({
+      data: {
+        chatButtonUpdate: {
+          __typename: 'ChatButton',
+          id: 'chat.id',
+          link: 'viber://',
+          platform: ChatPlatform.tikTok
+        }
+      }
+    }))
+
+    const { getByRole } = render(
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: JOURNEY_CHAT_BUTTON_UPDATE,
+              variables: {
+                chatButtonUpdateId: 'chat.id',
+                journeyId: 'journeyId',
+                input: {
+                  link: 'viber://',
+                  platform: ChatPlatform.tikTok
+                }
+              }
+            },
+            result
+          }
+        ]}
+      >
+        <SnackbarProvider>
+          <Details {...props} />
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    fireEvent.change(getByRole('textbox'), {
+      target: { value: 'viber://' }
+    })
+    fireEvent.blur(getByRole('textbox'))
+    await waitFor(() => expect(result).toHaveBeenCalled())
+  })
 })
