@@ -15,6 +15,7 @@ enum ChatPlatform {
   skype
   line
   tikTok
+  custom
 }
 
 extend type Journey {

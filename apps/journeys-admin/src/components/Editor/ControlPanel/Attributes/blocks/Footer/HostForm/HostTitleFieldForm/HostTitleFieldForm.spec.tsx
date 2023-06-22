@@ -3,8 +3,7 @@ import { MockedProvider } from '@apollo/client/testing'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { JourneyFields as Journey } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
-// import { InMemoryCache } from '@apollo/client'
-import { v4 as uuidv4 } from 'uuid'
+import { InMemoryCache } from '@apollo/client'
 import { useHostUpdate } from '../../../../../../../../libs/useHostUpdate'
 import { UPDATE_HOST } from '../../../../../../../../libs/useHostUpdate/useHostUpdate'
 import {
@@ -23,8 +22,6 @@ jest.mock('../../../../../../../../libs/useHostUpdate', () => ({
   useHostUpdate: jest.fn()
 }))
 
-const mockUuidv4 = uuidv4 as jest.MockedFunction<typeof uuidv4>
-
 const mockUseHostUpdate = useHostUpdate as jest.MockedFunction<
   typeof useHostUpdate
 >
@@ -40,31 +37,26 @@ afterEach(() => {
 })
 
 describe('HostTitleFieldForm', () => {
+  const defaultHost = {
+    id: 'hostId',
+    __typename: 'Host',
+    teamId: 'teamId',
+    title: 'Cru International',
+    location: null,
+    src1: null,
+    src2: null
+  }
+
   const journey = {
     __typename: 'Journey',
     id: 'journeyId',
     seoTitle: 'My awesome journey',
-    host: {
-      id: 'hostId',
-      __typename: 'Host',
-      teamId: 'teamId',
-      title: 'Cru International',
-      location: null,
-      src1: null,
-      src2: null
-    }
+    host: defaultHost
   } as unknown as Journey
 
   it('should create a host on submit if no host exists', async () => {
-    mockUuidv4.mockReturnValueOnce('hostId')
-
-    // const cache = new InMemoryCache()
-    // cache.restore({
-    //   ROOT_QUERY: {
-    //     __typename: 'Query',
-    //     hosts: []
-    //   }
-    // })
+    const cache = new InMemoryCache()
+    cache.restore({})
 
     const host = {
       id: 'hostId',
@@ -79,7 +71,7 @@ describe('HostTitleFieldForm', () => {
 
     const result2 = jest.fn(() => ({
       data: {
-        journeyHostUpdate: {
+        journeyUpdate: {
           id: journey.id,
           host: {
             id: host.id
@@ -90,7 +82,7 @@ describe('HostTitleFieldForm', () => {
 
     const { getByRole } = render(
       <MockedProvider
-        // cache={cache}
+        cache={cache}
         mocks={[
           {
             request: {
@@ -126,20 +118,46 @@ describe('HostTitleFieldForm', () => {
 
     const field = getByRole('textbox', { name: 'Host Name' })
 
-    fireEvent.click(field)
     fireEvent.change(field, { target: { value: 'Host title' } })
     fireEvent.blur(field)
 
     await waitFor(() => expect(result).toHaveBeenCalled())
     await waitFor(() => expect(result2).toHaveBeenCalled())
-    // await waitFor(async () => {
-    //   expect(cache.extract()?.ROOT_QUERY?.hosts).toEqual([
-    //     { __ref: 'Host:hostId' }
-    //   ])
-    // })
+
+    void waitFor(() => {
+      expect(cache.extract()['Host:hostId']).toEqual({
+        ...defaultHost,
+        title: 'Host title'
+      })
+      expect(cache.extract()[`Journey:${journey.id}`]).toEqual({
+        ...journey,
+        host: { ...defaultHost, title: 'Host title' }
+      })
+      expect(cache.extract()?.ROOT_QUERY?.hosts).toEqual([
+        { __ref: 'Host:hostId' }
+      ])
+    })
   })
 
   it('should update host title on submit if host exists', async () => {
+    const cache = new InMemoryCache()
+    cache.restore({
+      'Host:hostId': defaultHost
+    })
+
+    const result = jest.fn(() => ({
+      data: {
+        hostUpdate: {
+          __typename: 'Host',
+          id: 'hostId',
+          title: 'Host title',
+          location: null,
+          src1: null,
+          src2: null
+        }
+      }
+    }))
+
     const { getByRole } = render(
       <MockedProvider
         mocks={[
@@ -154,18 +172,7 @@ describe('HostTitleFieldForm', () => {
                 }
               }
             },
-            result: {
-              data: {
-                hostUpdate: {
-                  __typename: 'Host',
-                  id: 'hostId',
-                  title: 'Host title',
-                  location: null,
-                  src1: null,
-                  src2: null
-                }
-              }
-            }
+            result
           }
         ]}
       >
@@ -179,11 +186,16 @@ describe('HostTitleFieldForm', () => {
 
     expect(field).toHaveValue(journey.host?.title)
 
-    fireEvent.click(field)
     fireEvent.change(field, { target: { value: 'Host title' } })
     fireEvent.blur(field)
 
-    // TODO: Assertion broken but link works
-    // await waitFor(() => expect(updateHost).toHaveBeenCalled())
+    await waitFor(() => expect(result).toHaveBeenCalled())
+
+    void waitFor(() =>
+      expect(cache.extract()['Host:hostId']).toEqual({
+        ...defaultHost,
+        title: 'Host title'
+      })
+    )
   })
 })

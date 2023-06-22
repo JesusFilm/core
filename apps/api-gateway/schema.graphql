@@ -324,6 +324,7 @@ enum ChatPlatform
   skype @join__enumValue(graph: JOURNEYS)
   line @join__enumValue(graph: JOURNEYS)
   tikTok @join__enumValue(graph: JOURNEYS)
+  custom @join__enumValue(graph: JOURNEYS)
 }
 
 type CloudflareImage
@@ -996,6 +997,7 @@ enum MessagePlatform
   skype @join__enumValue(graph: JOURNEYS)
   line @join__enumValue(graph: JOURNEYS)
   tikTok @join__enumValue(graph: JOURNEYS)
+  custom @join__enumValue(graph: JOURNEYS)
 }
 
 type Mutation
