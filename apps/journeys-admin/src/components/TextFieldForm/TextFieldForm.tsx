@@ -6,7 +6,6 @@ import { ObjectShape } from 'yup/lib/object'
 
 type FieldProps = Pick<
   TextFieldProps,
-  | 'id'
   | 'label'
   | 'placeholder'
   | 'focused'
@@ -18,6 +17,7 @@ type FieldProps = Pick<
 >
 
 interface TextFieldFormProps extends FieldProps {
+  id: string
   initialValue?: string
   validationSchema?: ObjectSchema<ObjectShape>
   onSubmit: (value?: string) => void
@@ -30,7 +30,7 @@ interface ValidationSchema {
 }
 
 export function TextFieldForm({
-  id = 'textFieldValue',
+  id,
   label = 'Label',
   initialValue,
   validationSchema,
