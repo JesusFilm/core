@@ -1,6 +1,5 @@
 import { ReactElement, useState } from 'react'
 import { useRouter } from 'next/router'
-import { AuthUser } from 'next-firebase-auth'
 import { useFlags } from '@core/shared/ui/FlagsProvider'
 import Box from '@mui/material/Box'
 import Container from '@mui/material/Container'
@@ -15,13 +14,11 @@ import { SortOrder } from './JourneySort'
 
 export interface JourneysListProps {
   journeys?: Journey[]
-  authUser?: AuthUser
 }
 
 export interface JourneyListProps {
   sortOrder?: SortOrder
   event?: JourneyListEvent
-  authUser?: AuthUser
 }
 
 export type JourneyListEvent =
@@ -35,7 +32,7 @@ export type JourneyListEvent =
   | 'deleteAllTrashed'
   | 'refetchTrashed'
 
-export function JourneyList({ authUser }: JourneysListProps): ReactElement {
+export function JourneyList(): ReactElement {
   const [sortOrder, setSortOrder] = useState<SortOrder>()
   const router = useRouter()
   const { journeysSummaryReport } = useFlags()
@@ -49,10 +46,9 @@ export function JourneyList({ authUser }: JourneysListProps): ReactElement {
     }, 1000)
   }
 
-  const journeyListProps = {
+  const journeyListProps: JourneyListProps = {
     sortOrder,
-    event,
-    authUser
+    event
   }
 
   return (

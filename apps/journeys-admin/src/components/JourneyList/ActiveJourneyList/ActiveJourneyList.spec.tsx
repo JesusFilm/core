@@ -1,18 +1,15 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
-import noop from 'lodash/noop'
 import { SnackbarProvider } from 'notistack'
-import { AuthUser } from 'next-firebase-auth'
-import { useRouter } from 'next/router'
 import { defaultJourney, oldJourney } from '../journeyListData'
 import { ThemeProvider } from '../../ThemeProvider'
 import { GET_JOURNEYS } from '../../../libs/useJourneys/useJourneys'
 import { JourneyStatus } from '../../../../__generated__/globalTypes'
 import {
-  ActiveJourneyList,
   ARCHIVE_ACTIVE_JOURNEYS,
   TRASH_ACTIVE_JOURNEYS
 } from './ActiveJourneyList'
+import { ActiveJourneyList } from '.'
 
 jest.mock('react-i18next', () => ({
   __esModule: true,
@@ -28,7 +25,10 @@ jest.mock('next/router', () => ({
   useRouter: jest.fn(() => ({ query: { tab: 'active' } }))
 }))
 
-const mockUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
+jest.mock('next-firebase-auth', () => ({
+  __esModule: true,
+  useAuthUser: jest.fn(() => ({ id: 'user-id1' }))
+}))
 
 const activeJourneysMock: MockedResponse = {
   request: {
@@ -58,15 +58,13 @@ const noJourneysMock = {
   }
 }
 
-const authUser = { id: 'user-id1' } as unknown as AuthUser
-
 describe('ActiveJourneyList', () => {
   it('should ask users to add a new journey', async () => {
     const { getByRole, getByText } = render(
       <MockedProvider mocks={[noJourneysMock]}>
         <ThemeProvider>
           <SnackbarProvider>
-            <ActiveJourneyList onLoad={noop} event="" />
+            <ActiveJourneyList />
           </SnackbarProvider>
         </ThemeProvider>
       </MockedProvider>
@@ -132,10 +130,13 @@ describe('ActiveJourneyList', () => {
         >
           <ThemeProvider>
             <SnackbarProvider>
-              <ActiveJourneyList event="archiveAllActive" authUser={authUser} />
+              <ActiveJourneyList event="archiveAllActive" />
             </SnackbarProvider>
           </ThemeProvider>
         </MockedProvider>
+      )
+      await waitFor(() =>
+        expect(getByText('Default Journey Heading')).toBeInTheDocument()
       )
       fireEvent.click(getByText('Archive'))
       await waitFor(() => expect(result).toHaveBeenCalled())
@@ -151,10 +152,13 @@ describe('ActiveJourneyList', () => {
         >
           <ThemeProvider>
             <SnackbarProvider>
-              <ActiveJourneyList event="archiveAllActive" authUser={authUser} />
+              <ActiveJourneyList event="archiveAllActive" />
             </SnackbarProvider>
           </ThemeProvider>
         </MockedProvider>
+      )
+      await waitFor(() =>
+        expect(getByText('Default Journey Heading')).toBeInTheDocument()
       )
       fireEvent.click(getByRole('button', { name: 'Archive' }))
       await waitFor(() => expect(getByText('error')).toBeInTheDocument())
@@ -196,10 +200,13 @@ describe('ActiveJourneyList', () => {
         >
           <ThemeProvider>
             <SnackbarProvider>
-              <ActiveJourneyList event="trashAllActive" authUser={authUser} />
+              <ActiveJourneyList event="trashAllActive" />
             </SnackbarProvider>
           </ThemeProvider>
         </MockedProvider>
+      )
+      await waitFor(() =>
+        expect(getByText('Default Journey Heading')).toBeInTheDocument()
       )
       fireEvent.click(getByText('Trash'))
       await waitFor(() => expect(result).toHaveBeenCalled())
@@ -216,11 +223,14 @@ describe('ActiveJourneyList', () => {
           <SnackbarProvider>
             <ThemeProvider>
               <SnackbarProvider>
-                <ActiveJourneyList event="trashAllActive" authUser={authUser} />
+                <ActiveJourneyList event="trashAllActive" />
               </SnackbarProvider>
             </ThemeProvider>
           </SnackbarProvider>
         </MockedProvider>
+      )
+      await waitFor(() =>
+        expect(getByText('Default Journey Heading')).toBeInTheDocument()
       )
       fireEvent.click(getByText('Trash'))
       await waitFor(() => expect(getByText('error')).toBeInTheDocument())

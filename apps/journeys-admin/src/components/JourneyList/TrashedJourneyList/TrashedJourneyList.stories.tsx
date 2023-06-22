@@ -1,6 +1,5 @@
 import { Story, Meta } from '@storybook/react'
 import { MockedProvider } from '@apollo/client/testing'
-import noop from 'lodash/noop'
 import { journeysAdminConfig } from '../../../libs/storybook'
 import {
   defaultJourney,
@@ -29,10 +28,6 @@ const Template: Story = ({ ...args }) => (
 
 export const Default = Template.bind({})
 Default.args = {
-  props: {
-    onLoad: noop,
-    event: ''
-  },
   mocks: [
     {
       request: {
@@ -54,10 +49,6 @@ Default.args = {
 
 export const NoJourneys = Template.bind({})
 NoJourneys.args = {
-  props: {
-    onLoad: noop,
-    event: ''
-  },
   mocks: [
     {
       request: {
@@ -74,17 +65,12 @@ NoJourneys.args = {
 
 export const Loading = Template.bind({})
 Loading.args = {
-  props: {
-    onLoad: noop,
-    event: ''
-  },
   mocks: []
 }
 
 export const RestoreAll = Template.bind({})
 RestoreAll.args = {
   props: {
-    onLoad: noop,
     event: 'restoreAllTrashed'
   },
   mocks: []
@@ -93,7 +79,6 @@ RestoreAll.args = {
 export const DeleteAll = Template.bind({})
 DeleteAll.args = {
   props: {
-    onLoad: noop,
     event: 'deleteAllTrashed'
   },
   mocks: []

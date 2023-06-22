@@ -3,7 +3,6 @@ import {
   ReactElement,
   SetStateAction,
   SyntheticEvent,
-  useEffect,
   useState
 } from 'react'
 import Paper from '@mui/material/Paper'
