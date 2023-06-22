@@ -6,7 +6,7 @@ import { HostListItem } from './HostListItem'
 const HostListItemDemo = {
   ...journeysAdminConfig,
   component: HostListItem,
-  title: 'Journeys-Admin/Editor/ControlPanel/Attributes/HostedBy/HostOptions',
+  title: 'Journeys-Admin/Editor/ControlPanel/Attributes/HostedBy/HostListItem',
   parameters: {
     ...journeysAdminConfig.parameters,
     layout: 'fullscreen'
