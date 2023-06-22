@@ -8,7 +8,15 @@ import { ImageLibrary } from '../../../../../../../ImageLibrary'
 import { GetJourney_journey_blocks_ImageBlock as ImageBlock } from '../../../../../../../../../../__generated__/GetJourney'
 import { useHostUpdate } from '../../../../../../../../../libs/useHostUpdate'
 
-export function HostAvatarsButton(): ReactElement {
+interface HostAvatarsButtonProps {
+  empty?: boolean
+  disabled?: boolean
+}
+
+export function HostAvatarsButton({
+  empty = false,
+  disabled = false
+}: HostAvatarsButtonProps): ReactElement {
   const [open, setOpen] = useState(false)
   const { journey } = useJourney()
   const host = journey?.host
@@ -16,8 +24,10 @@ export function HostAvatarsButton(): ReactElement {
   const [avatarNumber, setAvatarNumber] = useState<number>(1)
 
   function handleOpen(avatar: 1 | 2): void {
-    setOpen(true)
-    setAvatarNumber(avatar)
+    if (!disabled) {
+      setOpen(true)
+      setAvatarNumber(avatar)
+    }
   }
 
   async function handleClose(): Promise<void> {
@@ -71,9 +81,11 @@ export function HostAvatarsButton(): ReactElement {
             color: (theme) => theme.palette.grey[400],
             bgcolor: 'background.paper'
           }}
-          src={host?.src1 ?? host?.src2 ?? undefined}
+          src={empty ? undefined : host?.src1 ?? host?.src2 ?? undefined}
         >
-          {host?.src1 == null && host?.src2 == null && <UserProfiledAddIcon />}
+          {(empty || (host?.src1 == null && host?.src2 == null)) && (
+            <UserProfiledAddIcon />
+          )}
         </Avatar>
         <Avatar
           data-testid="avatar2"
@@ -83,9 +95,9 @@ export function HostAvatarsButton(): ReactElement {
             color: (theme) => theme.palette.grey[400],
             bgcolor: 'background.paper'
           }}
-          src={host?.src2 ?? undefined}
+          src={empty ? undefined : host?.src2 ?? undefined}
         >
-          {host?.src2 == null && <UserProfiledAddIcon />}
+          {(empty || host?.src2 == null) && <UserProfiledAddIcon />}
         </Avatar>
       </AvatarGroup>
       <ImageLibrary

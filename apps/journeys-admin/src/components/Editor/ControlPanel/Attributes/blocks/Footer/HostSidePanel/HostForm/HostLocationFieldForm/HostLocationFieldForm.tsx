@@ -3,7 +3,15 @@ import { ReactElement } from 'react'
 import { useHostUpdate } from '../../../../../../../../../libs/useHostUpdate/useHostUpdate'
 import { TextFieldForm } from '../../../../../../../../TextFieldForm'
 
-export function HostLocationFieldForm(): ReactElement {
+interface HostLocationFieldFormProps {
+  empty?: boolean
+  disabled?: boolean
+}
+
+export function HostLocationFieldForm({
+  empty = false,
+  disabled
+}: HostLocationFieldFormProps): ReactElement {
   const { updateHost } = useHostUpdate()
   const { journey } = useJourney()
   const host = journey?.host
@@ -19,7 +27,8 @@ export function HostLocationFieldForm(): ReactElement {
     <TextFieldForm
       id="hostLocation"
       label="Location"
-      initialValue={host?.location ?? ''}
+      disabled={disabled}
+      initialValue={empty ? undefined : host?.location ?? ''}
       onSubmit={handleSubmit}
     />
   )

@@ -88,6 +88,53 @@ describe('HostAvatarsButton', () => {
     expect(getByAltText('avatar2')).toHaveAttribute('src', 'avatar2Src')
   })
 
+  it('should clear avatar images if empty', () => {
+    const { getByTestId } = render(
+      <MockedProvider>
+        <ThemeProvider>
+          <JourneyProvider
+            value={{
+              journey: {
+                ...journey,
+                host: {
+                  ...defaultHost,
+                  src1: 'avatar1Src',
+                  src2: 'avatar2Src'
+                }
+              }
+            }}
+          >
+            <HostAvatarsButton empty />
+          </JourneyProvider>
+        </ThemeProvider>
+      </MockedProvider>
+    )
+
+    expect(getByTestId('avatar1').firstChild).toHaveAttribute(
+      'data-testid',
+      'UserProfileAddIcon'
+    )
+    expect(getByTestId('avatar2').firstChild).toHaveAttribute(
+      'data-testid',
+      'UserProfileAddIcon'
+    )
+  })
+
+  it('should disable avatar click', () => {
+    const { getByTestId } = render(
+      <MockedProvider>
+        <ThemeProvider>
+          <JourneyProvider value={{ journey }}>
+            <HostAvatarsButton disabled />
+          </JourneyProvider>
+        </ThemeProvider>
+      </MockedProvider>
+    )
+
+    fireEvent.click(getByTestId('avatar1'))
+    expect(getByTestId('imageSrcStack')).not.toBeInTheDocument()
+  })
+
   it('should open image edit library on avatar click', () => {
     const { getByRole, getByTestId } = render(
       <MockedProvider>

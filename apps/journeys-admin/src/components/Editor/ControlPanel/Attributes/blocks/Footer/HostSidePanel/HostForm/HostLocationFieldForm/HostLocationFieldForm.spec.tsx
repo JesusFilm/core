@@ -38,7 +38,7 @@ describe('HostLocationFieldForm', () => {
     __typename: 'Host',
     teamId: 'teamId',
     title: 'Cru International',
-    location: null,
+    location: 'Florida, USA',
     src1: null,
     src2: null
   }
@@ -50,7 +50,49 @@ describe('HostLocationFieldForm', () => {
     host: defaultHost
   } as unknown as Journey
 
-  it('should update host location on submit', async () => {
+  it('should populate the field with host location', () => {
+    const { getByRole } = render(
+      <MockedProvider>
+        <JourneyProvider value={{ journey }}>
+          <HostLocationFieldForm />
+        </JourneyProvider>
+      </MockedProvider>
+    )
+
+    expect(getByRole('textbox', { name: 'Location' })).toHaveAttribute(
+      'value',
+      'Florida, USA'
+    )
+  })
+
+  it('should clear the field', () => {
+    const { getByRole } = render(
+      <MockedProvider>
+        <JourneyProvider value={{ journey }}>
+          <HostLocationFieldForm empty />
+        </JourneyProvider>
+      </MockedProvider>
+    )
+
+    expect(getByRole('textbox', { name: 'Location' })).toHaveAttribute(
+      'value',
+      ''
+    )
+  })
+
+  it('should disable the field', () => {
+    const { getByRole } = render(
+      <MockedProvider>
+        <JourneyProvider value={{ journey }}>
+          <HostLocationFieldForm disabled />
+        </JourneyProvider>
+      </MockedProvider>
+    )
+
+    expect(getByRole('textbox', { name: 'Location' })).toBeDisabled()
+  })
+
+  it('should update host location on submit', () => {
     const cache = new InMemoryCache()
     cache.restore({
       'Host:hostId': defaultHost
@@ -62,7 +104,7 @@ describe('HostLocationFieldForm', () => {
           __typename: 'Host',
           id: 'hostId',
           title: 'Cru International',
-          location: null,
+          location: '',
           src1: null,
           src2: null
         }
@@ -80,7 +122,7 @@ describe('HostLocationFieldForm', () => {
                 id: 'hostId',
                 teamId: 'teamId',
                 input: {
-                  location: 'Florida, USA'
+                  location: ''
                 }
               }
             },
@@ -96,13 +138,12 @@ describe('HostLocationFieldForm', () => {
 
     const field = getByRole('textbox', { name: 'Location' })
 
-    expect(field).toHaveValue('')
+    expect(field).toHaveValue('Florida, USA')
 
-    fireEvent.change(field, { target: { value: 'Florida, USA' } })
+    fireEvent.change(field, { target: { value: '' } })
     fireEvent.blur(field)
 
-    await waitFor(() => expect(result).toHaveBeenCalled())
-
+    void waitFor(() => expect(result).toHaveBeenCalled())
     void waitFor(() =>
       expect(cache.extract()['Host:hostId']).toEqual({
         ...defaultHost,
