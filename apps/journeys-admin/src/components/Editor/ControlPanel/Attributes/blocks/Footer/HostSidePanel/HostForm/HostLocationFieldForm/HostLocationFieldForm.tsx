@@ -1,7 +1,7 @@
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { ReactElement } from 'react'
-import { useHostUpdate } from '../../../../../../../../libs/useHostUpdate/useHostUpdate'
-import { TextFieldForm } from '../../../../../../../TextFieldForm'
+import { useHostUpdate } from '../../../../../../../../../libs/useHostUpdate/useHostUpdate'
+import { TextFieldForm } from '../../../../../../../../TextFieldForm'
 
 export function HostLocationFieldForm(): ReactElement {
   const { updateHost } = useHostUpdate()

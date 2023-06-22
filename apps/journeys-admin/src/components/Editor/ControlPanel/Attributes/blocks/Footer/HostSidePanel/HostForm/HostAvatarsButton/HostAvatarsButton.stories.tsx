@@ -5,7 +5,7 @@ import { screen, userEvent } from '@storybook/testing-library'
 import { MockedProvider } from '@apollo/client/testing'
 import { JourneyFields as Journey } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
-import { simpleComponentConfig } from '../../../../../../../../libs/storybook'
+import { simpleComponentConfig } from '../../../../../../../../../libs/storybook'
 
 import { HostAvatarsButton } from './HostAvatarsButton'
 

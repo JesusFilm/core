@@ -1,1 +1,1 @@
-export { HostTitleFieldForm } from './HostLocationFieldForm'
+export { HostLocationFieldForm } from './HostLocationFieldForm'

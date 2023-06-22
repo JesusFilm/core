@@ -4,9 +4,9 @@ import AvatarGroup from '@mui/material/AvatarGroup'
 import Stack from '@mui/material/Stack'
 import UserProfiledAddIcon from '@core/shared/ui/icons/UserProfileAdd'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
-import { ImageLibrary } from '../../../../../../ImageLibrary'
-import { GetJourney_journey_blocks_ImageBlock as ImageBlock } from '../../../../../../../../../__generated__/GetJourney'
-import { useHostUpdate } from '../../../../../../../../libs/useHostUpdate'
+import { ImageLibrary } from '../../../../../../../ImageLibrary'
+import { GetJourney_journey_blocks_ImageBlock as ImageBlock } from '../../../../../../../../../../__generated__/GetJourney'
+import { useHostUpdate } from '../../../../../../../../../libs/useHostUpdate'
 
 export function HostAvatarsButton(): ReactElement {
   const [open, setOpen] = useState(false)

@@ -4,8 +4,8 @@ import { MockedProvider } from '@apollo/client/testing'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { JourneyFields as Journey } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
 import { InMemoryCache } from '@apollo/client'
-import { useHostUpdate } from '../../../../../../../../libs/useHostUpdate'
-import { UPDATE_HOST } from '../../../../../../../../libs/useHostUpdate/useHostUpdate'
+import { useHostUpdate } from '../../../../../../../../../libs/useHostUpdate'
+import { UPDATE_HOST } from '../../../../../../../../../libs/useHostUpdate/useHostUpdate'
 import {
   CREATE_HOST,
   HostTitleFieldForm,
@@ -17,7 +17,7 @@ jest.mock('uuid', () => ({
   v4: jest.fn()
 }))
 
-jest.mock('../../../../../../../../libs/useHostUpdate', () => ({
+jest.mock('../../../../../../../../../libs/useHostUpdate', () => ({
   __esModule: true,
   useHostUpdate: jest.fn()
 }))
