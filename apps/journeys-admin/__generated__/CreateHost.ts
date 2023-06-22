@@ -20,7 +20,6 @@ export interface CreateHost {
 }
 
 export interface CreateHostVariables {
-  id: string;
   teamId: string;
-  input?: HostCreateInput | null;
+  input: HostCreateInput;
 }

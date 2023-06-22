@@ -66,6 +66,7 @@ const Template: Story<ComponentProps<typeof TextFieldForm>> = () => (
     <TextFieldForm
       id="Required"
       label="Required"
+      initialValue="Required value"
       validationSchema={object({
         Required: string().required('Please fill in this field.')
       })}
