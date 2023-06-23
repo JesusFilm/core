@@ -7,7 +7,6 @@ import { useTranslation } from 'react-i18next'
 import { Attribute } from '../..'
 import { ChatPlatform } from '../../../../../../../__generated__/globalTypes'
 import { Chat } from './Chat'
-import { HostTitleFieldForm } from './HostSidePanel/HostForm/HostTitleFieldForm'
 
 export function Footer(): ReactElement {
   const { dispatch } = useEditor()
@@ -47,11 +46,7 @@ export function Footer(): ReactElement {
       type: 'SetDrawerPropsAction',
       title: t('Hosted By'),
       mobileOpen: true,
-      children: (
-        <div>
-          <HostTitleFieldForm />
-        </div>
-      )
+      children: <div>Hosted by content component</div>
     })
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dispatch])
