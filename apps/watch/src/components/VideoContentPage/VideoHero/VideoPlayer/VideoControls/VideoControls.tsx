@@ -47,13 +47,24 @@ function isMobile(): boolean {
   return /windows phone/i.test(userAgent) || /iPad|iPhone|iPod/.test(userAgent)
 }
 
-function evtToDataLayer(eventType, title, language, percent): void {
+function evtToDataLayer(
+  eventType,
+  mcId,
+  langId,
+  title,
+  language,
+  seconds,
+  percent
+): void {
   TagManager.dataLayer({
     dataLayer: {
       event: eventType,
+      mcId,
+      langId,
       title,
       language,
-      percent
+      percent,
+      seconds
     }
   })
 }
@@ -78,7 +89,7 @@ export function VideoControls({
 
   const duration = secondsToTimeFormat(player.duration(), { trimZeroes: true })
   const durationSeconds = Math.round(player.duration())
-  const { title, variant } = useVideo()
+  const { id, title, variant } = useVideo()
   const visible = !play || active || loading
 
   useEffect(() => {
@@ -89,14 +100,25 @@ export function VideoControls({
     if ((progress / durationSeconds) * 100 > progressPercentNotYetEmitted[0]) {
       eventToDataLayer(
         `video_time_update_${progressPercentNotYetEmitted[0]}`,
+        id,
+        variant?.language.id,
         title[0].value,
         variant?.language.name[0].value,
+        Math.round(player.currentTime()),
         Math.round((progress / durationSeconds) * 100)
       )
       const [, ...rest] = progressPercentNotYetEmitted
       setProgressPercentNotYetEmitted(rest)
     }
-  }, [progress, durationSeconds, progressPercentNotYetEmitted, title, variant])
+  }, [
+    id,
+    progress,
+    durationSeconds,
+    progressPercentNotYetEmitted,
+    title,
+    variant,
+    player
+  ])
 
   useEffect(() => {
     setVolume(player.volume() * 100)
@@ -104,15 +126,21 @@ export function VideoControls({
       if (player.currentTime() < 0.02) {
         eventToDataLayer(
           'video_start',
+          id,
+          variant?.language.id,
           title[0].value,
           variant?.language.name[0].value,
+          Math.round(player.currentTime()),
           Math.round((player.currentTime() / player.duration()) * 100)
         )
       } else {
         eventToDataLayer(
           'video_play',
+          id,
+          variant?.language.id,
           title[0].value,
           variant?.language.name[0].value,
+          Math.round(player.currentTime()),
           Math.round((player.currentTime() / player.duration()) * 100)
         )
       }
@@ -122,8 +150,11 @@ export function VideoControls({
       if (player.currentTime() > 0.02) {
         eventToDataLayer(
           'video_pause',
+          id,
+          variant?.language.id,
           title[0].value,
           variant?.language.name[0].value,
+          Math.round(player.currentTime()),
           Math.round((player.currentTime() / player.duration()) * 100)
         )
       }
@@ -150,8 +181,11 @@ export function VideoControls({
       setLoading(false)
       eventToDataLayer(
         'video_ended',
+        id,
+        variant?.language.id,
         title[0].value,
         variant?.language.name[0].value,
+        Math.round(player.currentTime()),
         Math.round((player.currentTime() / player.duration()) * 100)
       )
     })
@@ -161,21 +195,27 @@ export function VideoControls({
       if (fscreen.fullscreenElement != null) {
         eventToDataLayer(
           'video_enter_full_screen',
+          id,
+          variant?.language.id,
           title[0].value,
           variant?.language.name[0].value,
+          Math.round(player.currentTime()),
           Math.round((player.currentTime() / player.duration()) * 100)
         )
       } else {
         eventToDataLayer(
           'video_exit_full_screen',
+          id,
+          variant?.language.id,
           title[0].value,
           variant?.language.name[0].value,
+          Math.round(player.currentTime()),
           Math.round((player.currentTime() / player.duration()) * 100)
         )
       }
       setFullscreen(fscreen.fullscreenElement != null)
     })
-  }, [player, setFullscreen, loading, title, variant])
+  }, [id, player, setFullscreen, loading, title, variant])
 
   function handlePlay(): void {
     if (!play) {
