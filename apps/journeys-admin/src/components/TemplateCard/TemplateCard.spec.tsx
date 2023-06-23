@@ -6,7 +6,7 @@ import {
   oldTemplate,
   descriptiveTemplate
 } from '../TemplateLibrary/TemplateListData'
-import { GetJourneys_journeys as Journey } from '../../../__generated__/GetJourneys'
+import { GetAdminJourneys_journeys as Journey } from '../../../__generated__/GetAdminJourneys'
 import { TemplateCard } from '.'
 
 jest.mock('@mui/material/useMediaQuery', () => ({

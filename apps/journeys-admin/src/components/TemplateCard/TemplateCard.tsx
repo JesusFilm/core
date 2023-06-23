@@ -19,14 +19,14 @@ import Link from 'next/link'
 import { JourneyCardMenu } from '../JourneyList/JourneyCard/JourneyCardMenu'
 import { StatusChip } from '../JourneyList/JourneyCard/StatusChip'
 import {
-  GetJourneys,
-  GetJourneys_journeys as Journey
-} from '../../../__generated__/GetJourneys'
+  GetAdminJourneys,
+  GetAdminJourneys_journeys as Journey
+} from '../../../__generated__/GetAdminJourneys'
 
 export interface TemplateCardProps {
   journey?: Journey
   isPublisher?: boolean
-  refetch?: () => Promise<ApolloQueryResult<GetJourneys>>
+  refetch?: () => Promise<ApolloQueryResult<GetAdminJourneys>>
 }
 
 export function TemplateCard({

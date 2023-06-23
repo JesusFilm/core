@@ -12,12 +12,12 @@ import {
   DELETE_TRASHED_JOURNEYS
 } from '../../JourneyList/TrashedJourneyList/TrashedJourneyList'
 import { JourneyStatus } from '../../../../__generated__/globalTypes'
-import { GET_JOURNEYS } from '../../../libs/useJourneys/useJourneys'
+import { GET_ADMIN_JOURNEYS } from '../../../libs/useAdminJourneysQuery/useAdminJourneysQuery'
 import { TrashedTemplates } from '.'
 
 const trashedJourneysMock = {
   request: {
-    query: GET_JOURNEYS,
+    query: GET_ADMIN_JOURNEYS,
     variables: {
       status: [JourneyStatus.trashed],
       template: true
@@ -35,7 +35,7 @@ const trashedJourneysMock = {
 
 const noJourneysMock = {
   request: {
-    query: GET_JOURNEYS,
+    query: GET_ADMIN_JOURNEYS,
     variables: {
       status: [JourneyStatus.trashed],
       template: true
@@ -89,7 +89,7 @@ describe('TrashedTemplatesTab', () => {
         mocks={[
           {
             request: {
-              query: GET_JOURNEYS,
+              query: GET_ADMIN_JOURNEYS,
               variables: {
                 status: [JourneyStatus.trashed],
                 template: true
@@ -126,7 +126,7 @@ describe('TrashedTemplatesTab', () => {
         mocks={[
           {
             request: {
-              query: GET_JOURNEYS,
+              query: GET_ADMIN_JOURNEYS,
               variables: {
                 status: [JourneyStatus.trashed],
                 template: true

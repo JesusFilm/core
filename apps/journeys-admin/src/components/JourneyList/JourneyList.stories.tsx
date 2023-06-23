@@ -3,7 +3,7 @@ import { MockedProvider } from '@apollo/client/testing'
 import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 import { journeysAdminConfig } from '../../libs/storybook'
 import { PageWrapper } from '../NewPageWrapper'
-import { GET_JOURNEYS } from '../../libs/useJourneys/useJourneys'
+import { GET_ADMIN_JOURNEYS } from '../../libs/useAdminJourneysQuery/useAdminJourneysQuery'
 import { JourneyStatus } from '../../../__generated__/globalTypes'
 import {
   defaultJourney,
@@ -28,7 +28,7 @@ const Template: Story = ({ ...args }) => (
     mocks={[
       {
         request: {
-          query: GET_JOURNEYS,
+          query: GET_ADMIN_JOURNEYS,
           variables: {
             status: [JourneyStatus.draft, JourneyStatus.published]
           }

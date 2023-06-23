@@ -5,7 +5,7 @@ import MoreVertIcon from '@mui/icons-material/MoreVert'
 import { ApolloQueryResult } from '@apollo/client'
 import { JourneyStatus } from '../../../../../__generated__/globalTypes'
 import { AccessDialog } from '../../../AccessDialog'
-import { GetJourneys } from '../../../../../__generated__/GetJourneys'
+import { GetAdminJourneys } from '../../../../../__generated__/GetAdminJourneys'
 import { TrashJourneyDialog } from './TrashJourneyDialog'
 import { RestoreJourneyDialog } from './RestoreJourneyDialog'
 import { DeleteJourneyDialog } from './DeleteJourneyDialog'
@@ -18,7 +18,7 @@ export interface JourneyCardMenuProps {
   slug: string
   published: boolean
   template?: boolean
-  refetch?: () => Promise<ApolloQueryResult<GetJourneys>>
+  refetch?: () => Promise<ApolloQueryResult<GetAdminJourneys>>
 }
 
 export function JourneyCardMenu({

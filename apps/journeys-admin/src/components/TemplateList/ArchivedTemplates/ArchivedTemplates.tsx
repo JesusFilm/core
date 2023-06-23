@@ -13,7 +13,7 @@ import {
   TRASH_ARCHIVED_JOURNEYS
 } from '../../JourneyList/ArchivedJourneyList/ArchivedJourneyList'
 import { TemplateCard } from '../../TemplateCard'
-import { useJourneys } from '../../../libs/useJourneys'
+import { useAdminJourneysQuery } from '../../../libs/useAdminJourneysQuery'
 import { JourneyStatus } from '../../../../__generated__/globalTypes'
 import { JourneyListProps } from '../../JourneyList/JourneyList'
 
@@ -23,7 +23,7 @@ export function ArchivedTemplates({
 }: JourneyListProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { enqueueSnackbar } = useSnackbar()
-  const { data, refetch } = useJourneys({
+  const { data, refetch } = useAdminJourneysQuery({
     status: [JourneyStatus.archived],
     template: true
   })

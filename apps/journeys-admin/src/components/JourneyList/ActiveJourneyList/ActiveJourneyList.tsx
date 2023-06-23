@@ -11,7 +11,7 @@ import { useAuthUser } from 'next-firebase-auth'
 import { JourneyCard } from '../JourneyCard'
 import type { JourneyListProps } from '../JourneyList'
 import { DiscoveryJourneys } from '../../DiscoveryJourneys'
-import { useJourneys } from '../../../libs/useJourneys'
+import { useAdminJourneysQuery } from '../../../libs/useAdminJourneysQuery'
 import { JourneyStatus } from '../../../../__generated__/globalTypes'
 import { AddJourneyButton } from './AddJourneyButton'
 import { ActivePriorityList } from './ActivePriorityList'
@@ -39,7 +39,7 @@ export function ActiveJourneyList({
 }: JourneyListProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { enqueueSnackbar } = useSnackbar()
-  const { data, refetch } = useJourneys({
+  const { data, refetch } = useAdminJourneysQuery({
     status: [JourneyStatus.draft, JourneyStatus.published]
   })
   const authUser = useAuthUser()

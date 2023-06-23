@@ -11,13 +11,13 @@ import {
   ARCHIVE_ACTIVE_JOURNEYS,
   TRASH_ACTIVE_JOURNEYS
 } from '../../JourneyList/ActiveJourneyList/ActiveJourneyList'
-import { GET_JOURNEYS } from '../../../libs/useJourneys/useJourneys'
+import { GET_ADMIN_JOURNEYS } from '../../../libs/useAdminJourneysQuery/useAdminJourneysQuery'
 import { JourneyStatus } from '../../../../__generated__/globalTypes'
 import { ActiveTemplates } from '.'
 
 const activeTemplatesMock = {
   request: {
-    query: GET_JOURNEYS,
+    query: GET_ADMIN_JOURNEYS,
     variables: {
       status: [JourneyStatus.draft, JourneyStatus.published],
       template: true
@@ -32,7 +32,7 @@ const activeTemplatesMock = {
 
 const noTemplatesMock = {
   request: {
-    query: GET_JOURNEYS,
+    query: GET_ADMIN_JOURNEYS,
     variables: {
       status: [JourneyStatus.draft, JourneyStatus.published],
       template: true
@@ -77,7 +77,7 @@ describe('ActiveTemplates', () => {
         mocks={[
           {
             request: {
-              query: GET_JOURNEYS,
+              query: GET_ADMIN_JOURNEYS,
               variables: {
                 status: [JourneyStatus.draft, JourneyStatus.published],
                 template: true
@@ -114,7 +114,7 @@ describe('ActiveTemplates', () => {
         mocks={[
           {
             request: {
-              query: GET_JOURNEYS,
+              query: GET_ADMIN_JOURNEYS,
               variables: {
                 status: [JourneyStatus.draft, JourneyStatus.published],
                 template: true

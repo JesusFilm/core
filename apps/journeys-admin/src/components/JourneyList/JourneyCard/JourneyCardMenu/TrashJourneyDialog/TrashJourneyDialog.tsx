@@ -5,7 +5,7 @@ import { Dialog } from '@core/shared/ui/Dialog'
 import { useSnackbar } from 'notistack'
 import { JourneyTrash } from '../../../../../../__generated__/JourneyTrash'
 import { JourneyStatus } from '../../../../../../__generated__/globalTypes'
-import { GetJourneys } from '../../../../../../__generated__/GetJourneys'
+import { GetAdminJourneys } from '../../../../../../__generated__/GetAdminJourneys'
 
 export const JOURNEY_TRASH = gql`
   mutation JourneyTrash($ids: [ID!]!) {
@@ -20,7 +20,7 @@ export interface TrashJourneyDialogProps {
   id: string
   open: boolean
   handleClose: () => void
-  refetch?: () => Promise<ApolloQueryResult<GetJourneys>>
+  refetch?: () => Promise<ApolloQueryResult<GetAdminJourneys>>
 }
 
 export function TrashJourneyDialog({

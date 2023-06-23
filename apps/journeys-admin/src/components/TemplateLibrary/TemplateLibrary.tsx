@@ -1,22 +1,18 @@
 import { ReactElement } from 'react'
 import Box from '@mui/material/Box'
 import Container from '@mui/material/Container'
-import { GetJourneys_journeys as Journey } from '../../../__generated__/GetJourneys'
 import { TemplateCard } from '../TemplateCard'
+import { useAdminJourneysQuery } from '../../libs/useAdminJourneysQuery'
 
-interface TemplateLibraryProps {
-  templates?: Journey[]
-}
+export function TemplateLibrary(): ReactElement {
+  const { data } = useAdminJourneysQuery({ template: true })
 
-export function TemplateLibrary({
-  templates
-}: TemplateLibraryProps): ReactElement {
   return (
     <Box sx={{ mx: { xs: -6, sm: 0 } }}>
       <Container disableGutters>
-        {templates != null ? (
+        {data?.journeys != null ? (
           <>
-            {templates.map((template) => (
+            {data?.journeys.map((template) => (
               <TemplateCard key={template.id} journey={template} />
             ))}
           </>

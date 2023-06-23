@@ -6,22 +6,22 @@
 import { JourneyStatus, ThemeName, ThemeMode, UserJourneyRole } from "./globalTypes";
 
 // ====================================================
-// GraphQL query operation: GetJourneys
+// GraphQL query operation: GetAdminJourneys
 // ====================================================
 
-export interface GetJourneys_journeys_language_name {
+export interface GetAdminJourneys_journeys_language_name {
   __typename: "Translation";
   value: string;
   primary: boolean;
 }
 
-export interface GetJourneys_journeys_language {
+export interface GetAdminJourneys_journeys_language {
   __typename: "Language";
   id: string;
-  name: GetJourneys_journeys_language_name[];
+  name: GetAdminJourneys_journeys_language_name[];
 }
 
-export interface GetJourneys_journeys_userJourneys_user {
+export interface GetAdminJourneys_journeys_userJourneys_user {
   __typename: "User";
   id: string;
   firstName: string;
@@ -29,7 +29,7 @@ export interface GetJourneys_journeys_userJourneys_user {
   imageUrl: string | null;
 }
 
-export interface GetJourneys_journeys_userJourneys {
+export interface GetAdminJourneys_journeys_userJourneys {
   __typename: "UserJourney";
   id: string;
   role: UserJourneyRole;
@@ -37,10 +37,10 @@ export interface GetJourneys_journeys_userJourneys {
    * Date time of when the journey was first opened
    */
   openedAt: any | null;
-  user: GetJourneys_journeys_userJourneys_user | null;
+  user: GetAdminJourneys_journeys_userJourneys_user | null;
 }
 
-export interface GetJourneys_journeys_primaryImageBlock {
+export interface GetAdminJourneys_journeys_primaryImageBlock {
   __typename: "ImageBlock";
   id: string;
   parentBlockId: string | null;
@@ -56,7 +56,7 @@ export interface GetJourneys_journeys_primaryImageBlock {
   blurhash: string;
 }
 
-export interface GetJourneys_journeys {
+export interface GetAdminJourneys_journeys {
   __typename: "Journey";
   id: string;
   title: string;
@@ -67,20 +67,20 @@ export interface GetJourneys_journeys {
   slug: string;
   themeName: ThemeName;
   themeMode: ThemeMode;
-  language: GetJourneys_journeys_language;
+  language: GetAdminJourneys_journeys_language;
   status: JourneyStatus;
   seoTitle: string | null;
   seoDescription: string | null;
   template: boolean | null;
-  userJourneys: GetJourneys_journeys_userJourneys[] | null;
-  primaryImageBlock: GetJourneys_journeys_primaryImageBlock | null;
+  userJourneys: GetAdminJourneys_journeys_userJourneys[] | null;
+  primaryImageBlock: GetAdminJourneys_journeys_primaryImageBlock | null;
 }
 
-export interface GetJourneys {
-  journeys: GetJourneys_journeys[];
+export interface GetAdminJourneys {
+  journeys: GetAdminJourneys_journeys[];
 }
 
-export interface GetJourneysVariables {
+export interface GetAdminJourneysVariables {
   status?: JourneyStatus[] | null;
   template?: boolean | null;
 }

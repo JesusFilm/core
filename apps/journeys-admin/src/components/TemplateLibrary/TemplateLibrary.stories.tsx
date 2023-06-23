@@ -1,10 +1,12 @@
 import { Meta, Story } from '@storybook/react'
-import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
+import { MockedProvider } from '@apollo/client/testing'
 import { journeysAdminConfig } from '../../libs/storybook'
+import { GET_ADMIN_JOURNEYS } from '../../libs/useAdminJourneysQuery/useAdminJourneysQuery'
 import {
   oldTemplate,
   publishedTemplate,
-  descriptiveTemplate
+  descriptiveTemplate,
+  defaultTemplate
 } from './TemplateListData'
 import { TemplateLibrary } from '.'
 
@@ -15,37 +17,38 @@ const TemplateLibraryStory = {
 }
 
 const Template: Story = ({ ...args }) => (
-  <FlagsProvider flags={args.flags}>
+  <MockedProvider mocks={args.mocks}>
     <TemplateLibrary {...args.props} />
-  </FlagsProvider>
+  </MockedProvider>
 )
 
 export const Default = Template.bind({})
 Default.args = {
-  props: {
-    journeys: [oldTemplate],
-    templates: [oldTemplate, publishedTemplate, descriptiveTemplate]
-  },
-  flags: {
-    inviteRequirement: false
-  }
+  mocks: [
+    {
+      request: {
+        query: GET_ADMIN_JOURNEYS,
+        variables: {
+          template: true
+        }
+      },
+      result: {
+        data: {
+          journeys: [
+            defaultTemplate,
+            oldTemplate,
+            descriptiveTemplate,
+            publishedTemplate
+          ]
+        }
+      }
+    }
+  ]
 }
 
 export const Loading = Template.bind({})
 Loading.args = {
-  journeys: null,
-  templates: null
-}
-
-export const InviteRequirement = Template.bind({})
-InviteRequirement.args = {
-  props: {
-    journeys: [],
-    templates: []
-  },
-  flags: {
-    inviteRequirement: true
-  }
+  mocks: []
 }
 
 export default TemplateLibraryStory as Meta

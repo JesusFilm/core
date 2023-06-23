@@ -30,7 +30,7 @@ import { GetUserRole } from '../../../../__generated__/GetUserRole'
 import { GET_USER_ROLE } from '../../JourneyView/JourneyView'
 import { getJourneyTooltip } from '../utils/getJourneyTooltip'
 import { GET_ME } from '../../NewPageWrapper/NavigationDrawer'
-import { useJourneys } from '../../../libs/useJourneys'
+import { useAdminJourneysQuery } from '../../../libs/useAdminJourneysQuery'
 import { UserMenu } from './UserMenu'
 import { NavigationListItem } from './NavigationListItem'
 
@@ -89,7 +89,7 @@ export function NavigationDrawer({
   onClose,
   authUser
 }: NavigationDrawerProps): ReactElement {
-  const { data: activeJourneys } = useJourneys({
+  const { data: activeJourneys } = useAdminJourneysQuery({
     status: [JourneyStatus.draft, JourneyStatus.published]
   })
   const journeys = activeJourneys?.journeys

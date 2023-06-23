@@ -13,7 +13,7 @@ import { JourneyFields } from '../../../../__generated__/JourneyFields'
 import { JourneyCard } from '../JourneyCard'
 import { sortJourneys } from '../JourneySort/utils/sortJourneys'
 import type { JourneyListProps } from '../JourneyList'
-import { useJourneys } from '../../../libs/useJourneys'
+import { useAdminJourneysQuery } from '../../../libs/useAdminJourneysQuery'
 import { JourneyStatus } from '../../../../__generated__/globalTypes'
 
 export const RESTORE_TRASHED_JOURNEYS = gql`
@@ -39,7 +39,9 @@ export function TrashedJourneyList({
 }: JourneyListProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { enqueueSnackbar } = useSnackbar()
-  const { data, refetch } = useJourneys({ status: [JourneyStatus.trashed] })
+  const { data, refetch } = useAdminJourneysQuery({
+    status: [JourneyStatus.trashed]
+  })
   const authUser = useAuthUser()
   const [restoreTrashed] = useMutation(RESTORE_TRASHED_JOURNEYS, {
     update(_cache, { data }) {

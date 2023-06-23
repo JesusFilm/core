@@ -11,21 +11,19 @@ import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import { getLaunchDarklyClient } from '@core/shared/ui/getLaunchDarklyClient'
 import { PageWrapper } from '../../src/components/NewPageWrapper'
 import i18nConfig from '../../next-i18next.config'
-import { useJourneys } from '../../src/libs/useJourneys'
 import { TemplateLibrary } from '../../src/components/TemplateLibrary'
 import { useTermsRedirect } from '../../src/libs/useTermsRedirect/useTermsRedirect'
 
 function LibraryIndex(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const AuthUser = useAuthUser()
-  const { data } = useJourneys({ template: true })
   useTermsRedirect()
 
   return (
     <>
       <NextSeo title={t('Journey Templates')} />
       <PageWrapper title={t('Journey Templates')} authUser={AuthUser}>
-        <TemplateLibrary templates={data?.journeys} />
+        <TemplateLibrary />
       </PageWrapper>
     </>
   )

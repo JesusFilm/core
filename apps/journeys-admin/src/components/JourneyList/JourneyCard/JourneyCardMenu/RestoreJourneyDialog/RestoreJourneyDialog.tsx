@@ -5,7 +5,7 @@ import Typography from '@mui/material/Typography'
 import { Dialog } from '@core/shared/ui/Dialog'
 import { JourneyRestore } from '../../../../../../__generated__/JourneyRestore'
 import { JourneyStatus } from '../../../../../../__generated__/globalTypes'
-import { GetJourneys } from '../../../../../../__generated__/GetJourneys'
+import { GetAdminJourneys } from '../../../../../../__generated__/GetAdminJourneys'
 
 export const JOURNEY_RESTORE = gql`
   mutation JourneyRestore($ids: [ID!]!) {
@@ -21,7 +21,7 @@ export interface RestoreJourneyDialogProps {
   published: boolean
   open: boolean
   handleClose: () => void
-  refetch?: () => Promise<ApolloQueryResult<GetJourneys>>
+  refetch?: () => Promise<ApolloQueryResult<GetAdminJourneys>>
 }
 
 export function RestoreJourneyDialog({

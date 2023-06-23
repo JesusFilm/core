@@ -11,7 +11,7 @@ import { useAuthUser } from 'next-firebase-auth'
 import { JourneyCard } from '../JourneyCard'
 import { sortJourneys } from '../JourneySort/utils/sortJourneys'
 import type { JourneyListProps } from '../JourneyList'
-import { useJourneys } from '../../../libs/useJourneys'
+import { useAdminJourneysQuery } from '../../../libs/useAdminJourneysQuery'
 import { JourneyStatus } from '../../../../__generated__/globalTypes'
 
 export const RESTORE_ARCHIVED_JOURNEYS = gql`
@@ -38,7 +38,9 @@ export function ArchivedJourneyList({
 }: JourneyListProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { enqueueSnackbar } = useSnackbar()
-  const { data, refetch } = useJourneys({ status: [JourneyStatus.archived] })
+  const { data, refetch } = useAdminJourneysQuery({
+    status: [JourneyStatus.archived]
+  })
   const authUser = useAuthUser()
   const [restore] = useMutation(RESTORE_ARCHIVED_JOURNEYS, {
     update(_cache, { data }) {

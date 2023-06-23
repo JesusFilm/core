@@ -5,7 +5,7 @@ import {
   JourneyStatus
 } from '../../../__generated__/globalTypes'
 import { ImageFields } from '../../../__generated__/ImageFields'
-import { GetJourneys_journeys as Journey } from '../../../__generated__/GetJourneys'
+import { GetAdminJourneys_journeys as Journey } from '../../../__generated__/GetAdminJourneys'
 
 const imageBlock: ImageFields = {
   __typename: 'ImageBlock',

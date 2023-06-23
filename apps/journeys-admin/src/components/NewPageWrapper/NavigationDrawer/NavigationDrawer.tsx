@@ -29,7 +29,7 @@ import { GetMe } from '../../../../__generated__/GetMe'
 import { GetUserRole } from '../../../../__generated__/GetUserRole'
 import { GET_USER_ROLE } from '../../JourneyView/JourneyView'
 import { getJourneyTooltip } from '../utils/getJourneyTooltip'
-import { useJourneys } from '../../../libs/useJourneys'
+import { useAdminJourneysQuery } from '../../../libs/useAdminJourneysQuery'
 import { UserMenu } from './UserMenu'
 import { NavigationListItem } from './NavigationListItem'
 
@@ -102,7 +102,7 @@ export function NavigationDrawer({
   authUser,
   router
 }: NavigationDrawerProps): ReactElement {
-  const { data: activeJourneys } = useJourneys({
+  const { data: activeJourneys } = useAdminJourneysQuery({
     status: [JourneyStatus.draft, JourneyStatus.published]
   })
   const journeys = activeJourneys?.journeys

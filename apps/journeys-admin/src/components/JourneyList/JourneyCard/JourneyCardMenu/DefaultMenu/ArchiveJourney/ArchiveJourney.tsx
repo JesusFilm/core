@@ -7,7 +7,7 @@ import { MenuItem } from '../../../../../MenuItem'
 import { JourneyStatus } from '../../../../../../../__generated__/globalTypes'
 import { JourneyArchive } from '../../../../../../../__generated__/JourneyArchive'
 import { JourneyUnarchive } from '../../../../../../../__generated__/JourneyUnarchive'
-import { GetJourneys } from '../../../../../../../__generated__/GetJourneys'
+import { GetAdminJourneys } from '../../../../../../../__generated__/GetAdminJourneys'
 
 export const JOURNEY_ARCHIVE = gql`
   mutation JourneyArchive($ids: [ID!]!) {
@@ -32,7 +32,7 @@ export interface ArchiveJourneyProps {
   id: string
   published: boolean
   handleClose: () => void
-  refetch?: () => Promise<ApolloQueryResult<GetJourneys>>
+  refetch?: () => Promise<ApolloQueryResult<GetAdminJourneys>>
 }
 
 export function ArchiveJourney({

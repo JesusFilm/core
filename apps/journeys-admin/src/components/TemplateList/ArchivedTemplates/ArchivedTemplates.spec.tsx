@@ -12,12 +12,12 @@ import {
   TRASH_ARCHIVED_JOURNEYS
 } from '../../JourneyList/ArchivedJourneyList/ArchivedJourneyList'
 import { JourneyStatus } from '../../../../__generated__/globalTypes'
-import { GET_JOURNEYS } from '../../../libs/useJourneys/useJourneys'
+import { GET_ADMIN_JOURNEYS } from '../../../libs/useAdminJourneysQuery/useAdminJourneysQuery'
 import { ArchivedTemplates } from '.'
 
 const archivedJourneysMock = {
   request: {
-    query: GET_JOURNEYS,
+    query: GET_ADMIN_JOURNEYS,
     variables: {
       status: [JourneyStatus.archived],
       template: true
@@ -32,7 +32,7 @@ const archivedJourneysMock = {
 
 const noJourneysMock = {
   request: {
-    query: GET_JOURNEYS,
+    query: GET_ADMIN_JOURNEYS,
     variables: {
       status: [JourneyStatus.archived],
       template: true
@@ -76,7 +76,7 @@ describe('ArchivedTemplates', () => {
         mocks={[
           {
             request: {
-              query: GET_JOURNEYS,
+              query: GET_ADMIN_JOURNEYS,
               variables: {
                 status: [JourneyStatus.archived],
                 template: true

@@ -8,16 +8,16 @@ import { SortOrder } from '../../JourneySort'
 import { sortJourneys } from '../../JourneySort/utils/sortJourneys'
 import { JourneyCardVariant } from '../../JourneyCard/journeyCardVariant'
 import {
-  GetJourneys,
-  GetJourneys_journeys as Journey
-} from '../../../../../__generated__/GetJourneys'
+  GetAdminJourneys,
+  GetAdminJourneys_journeys as Journey
+} from '../../../../../__generated__/GetAdminJourneys'
 
 interface Props {
   journeys: Journey[]
   sortOrder?: SortOrder
   refetch?: (
     variables?: Partial<OperationVariables> | undefined
-  ) => Promise<ApolloQueryResult<GetJourneys>>
+  ) => Promise<ApolloQueryResult<GetAdminJourneys>>
   authUser?: AuthUser
 }
 

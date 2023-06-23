@@ -4,7 +4,7 @@ import { SnackbarProvider } from 'notistack'
 import { defaultJourney, oldJourney } from '../journeyListData'
 import { ThemeProvider } from '../../ThemeProvider'
 import { SortOrder } from '../JourneySort'
-import { GET_JOURNEYS } from '../../../libs/useJourneys/useJourneys'
+import { GET_ADMIN_JOURNEYS } from '../../../libs/useAdminJourneysQuery/useAdminJourneysQuery'
 import { JourneyStatus } from '../../../../__generated__/globalTypes'
 import {
   RESTORE_TRASHED_JOURNEYS,
@@ -24,7 +24,7 @@ jest.mock('next-firebase-auth', () => ({
 
 const trashedJourneysMock = {
   request: {
-    query: GET_JOURNEYS,
+    query: GET_ADMIN_JOURNEYS,
     variables: {
       status: [JourneyStatus.trashed]
     }
@@ -41,7 +41,7 @@ const trashedJourneysMock = {
 
 const noJourneysMock = {
   request: {
-    query: GET_JOURNEYS,
+    query: GET_ADMIN_JOURNEYS,
     variables: {
       status: [JourneyStatus.trashed]
     }
@@ -95,7 +95,7 @@ describe('TrashedJourneyList', () => {
         mocks={[
           {
             request: {
-              query: GET_JOURNEYS,
+              query: GET_ADMIN_JOURNEYS,
               variables: {
                 status: [JourneyStatus.trashed]
               }
@@ -132,7 +132,7 @@ describe('TrashedJourneyList', () => {
         mocks={[
           {
             request: {
-              query: GET_JOURNEYS,
+              query: GET_ADMIN_JOURNEYS,
               variables: {
                 status: [JourneyStatus.trashed]
               }

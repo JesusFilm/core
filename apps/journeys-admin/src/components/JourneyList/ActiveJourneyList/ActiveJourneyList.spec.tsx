@@ -3,7 +3,7 @@ import { fireEvent, render, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 import { defaultJourney, oldJourney } from '../journeyListData'
 import { ThemeProvider } from '../../ThemeProvider'
-import { GET_JOURNEYS } from '../../../libs/useJourneys/useJourneys'
+import { GET_ADMIN_JOURNEYS } from '../../../libs/useAdminJourneysQuery/useAdminJourneysQuery'
 import { JourneyStatus } from '../../../../__generated__/globalTypes'
 import {
   ARCHIVE_ACTIVE_JOURNEYS,
@@ -32,7 +32,7 @@ jest.mock('next-firebase-auth', () => ({
 
 const activeJourneysMock: MockedResponse = {
   request: {
-    query: GET_JOURNEYS,
+    query: GET_ADMIN_JOURNEYS,
     variables: {
       status: [JourneyStatus.draft, JourneyStatus.published]
     }
@@ -46,7 +46,7 @@ const activeJourneysMock: MockedResponse = {
 
 const noJourneysMock = {
   request: {
-    query: GET_JOURNEYS,
+    query: GET_ADMIN_JOURNEYS,
     variables: {
       status: [JourneyStatus.draft, JourneyStatus.published]
     }

@@ -13,7 +13,7 @@ import {
   DELETE_TRASHED_JOURNEYS
 } from '../../JourneyList/TrashedJourneyList/TrashedJourneyList'
 import { TemplateCard } from '../../TemplateCard'
-import { useJourneys } from '../../../libs/useJourneys'
+import { useAdminJourneysQuery } from '../../../libs/useAdminJourneysQuery'
 import { JourneyListProps } from '../../JourneyList/JourneyList'
 import { JourneyStatus } from '../../../../__generated__/globalTypes'
 
@@ -23,7 +23,7 @@ export function TrashedTemplates({
 }: JourneyListProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { enqueueSnackbar } = useSnackbar()
-  const { data, refetch } = useJourneys({
+  const { data, refetch } = useAdminJourneysQuery({
     status: [JourneyStatus.trashed],
     template: true
   })

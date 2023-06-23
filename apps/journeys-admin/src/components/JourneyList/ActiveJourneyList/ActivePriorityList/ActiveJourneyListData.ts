@@ -1,7 +1,7 @@
 import {
-  GetJourneys_journeys_userJourneys as UserJourney,
-  GetJourneys_journeys as Journey
-} from '../../../../../__generated__/GetJourneys'
+  GetAdminJourneys_journeys_userJourneys as UserJourney,
+  GetAdminJourneys_journeys as Journey
+} from '../../../../../__generated__/GetAdminJourneys'
 import {
   ThemeName,
   ThemeMode,
