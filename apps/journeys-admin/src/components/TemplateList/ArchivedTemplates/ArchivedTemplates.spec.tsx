@@ -11,9 +11,9 @@ import {
   RESTORE_ARCHIVED_JOURNEYS,
   TRASH_ARCHIVED_JOURNEYS
 } from '../../JourneyList/ArchivedJourneyList/ArchivedJourneyList'
-import { ArchivedTemplates } from '.'
 import { JourneyStatus } from '../../../../__generated__/globalTypes'
 import { GET_JOURNEYS } from '../../../libs/useJourneys/useJourneys'
+import { ArchivedTemplates } from '.'
 
 const archivedJourneysMock = {
   request: {

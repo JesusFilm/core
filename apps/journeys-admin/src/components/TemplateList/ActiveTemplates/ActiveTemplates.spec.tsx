@@ -11,9 +11,9 @@ import {
   ARCHIVE_ACTIVE_JOURNEYS,
   TRASH_ACTIVE_JOURNEYS
 } from '../../JourneyList/ActiveJourneyList/ActiveJourneyList'
-import { ActiveTemplates } from '.'
 import { GET_JOURNEYS } from '../../../libs/useJourneys/useJourneys'
 import { JourneyStatus } from '../../../../__generated__/globalTypes'
+import { ActiveTemplates } from '.'
 
 const activeTemplatesMock = {
   request: {
@@ -242,7 +242,6 @@ describe('ActiveTemplates', () => {
       },
       result
     }
-    const onLoad = jest.fn()
 
     it('should display the trash all dialog', () => {
       const { getByText } = render(
