@@ -70,15 +70,4 @@ NoJourneys.args = {
   }
 }
 
-export const InviteRequirement = Template.bind({})
-InviteRequirement.args = {
-  props: {
-    journeys: [],
-    event: ''
-  },
-  flags: {
-    inviteRequirement: true
-  }
-}
-
 export default JourneyListStory as Meta

@@ -1,6 +1,7 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
+import { AuthUser } from 'next-firebase-auth'
 import { defaultJourney, oldJourney } from '../journeyListData'
 import { ThemeProvider } from '../../ThemeProvider'
 import { SortOrder } from '../JourneySort'
@@ -15,11 +16,6 @@ import { TrashedJourneyList } from '.'
 jest.mock('next/router', () => ({
   __esModule: true,
   useRouter: jest.fn(() => ({ query: { tab: 'active' } }))
-}))
-
-jest.mock('next-firebase-auth', () => ({
-  __esModule: true,
-  useAuthUser: jest.fn(() => ({ id: 'user-id1' }))
 }))
 
 const trashedJourneysMock = {
@@ -214,7 +210,10 @@ describe('TrashedJourneyList', () => {
         >
           <ThemeProvider>
             <SnackbarProvider>
-              <TrashedJourneyList event="restoreAllTrashed" />
+              <TrashedJourneyList
+                event="restoreAllTrashed"
+                authUser={{ id: 'user-id1' } as unknown as AuthUser}
+              />
             </SnackbarProvider>
           </ThemeProvider>
         </MockedProvider>
@@ -237,7 +236,10 @@ describe('TrashedJourneyList', () => {
           <SnackbarProvider>
             <ThemeProvider>
               <SnackbarProvider>
-                <TrashedJourneyList event="restoreAllTrashed" />
+                <TrashedJourneyList
+                  event="restoreAllTrashed"
+                  authUser={{ id: 'user-id1' } as unknown as AuthUser}
+                />
               </SnackbarProvider>
             </ThemeProvider>
           </SnackbarProvider>
@@ -285,7 +287,10 @@ describe('TrashedJourneyList', () => {
         >
           <ThemeProvider>
             <SnackbarProvider>
-              <TrashedJourneyList event="deleteAllTrashed" />
+              <TrashedJourneyList
+                event="deleteAllTrashed"
+                authUser={{ id: 'user-id1' } as unknown as AuthUser}
+              />
             </SnackbarProvider>
           </ThemeProvider>
         </MockedProvider>
@@ -308,7 +313,10 @@ describe('TrashedJourneyList', () => {
           <SnackbarProvider>
             <ThemeProvider>
               <SnackbarProvider>
-                <TrashedJourneyList event="deleteAllTrashed" />
+                <TrashedJourneyList
+                  event="deleteAllTrashed"
+                  authUser={{ id: 'user-id1' } as unknown as AuthUser}
+                />
               </SnackbarProvider>
             </ThemeProvider>
           </SnackbarProvider>

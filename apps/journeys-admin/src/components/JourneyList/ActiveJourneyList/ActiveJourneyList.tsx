@@ -7,7 +7,6 @@ import Typography from '@mui/material/Typography'
 import { Dialog } from '@core/shared/ui/Dialog'
 import { useTranslation } from 'react-i18next'
 import { useSnackbar } from 'notistack'
-import { useAuthUser } from 'next-firebase-auth'
 import { JourneyCard } from '../JourneyCard'
 import type { JourneyListProps } from '../JourneyList'
 import { DiscoveryJourneys } from '../../DiscoveryJourneys'
@@ -34,6 +33,7 @@ export const TRASH_ACTIVE_JOURNEYS = gql`
   }
 `
 export function ActiveJourneyList({
+  authUser,
   sortOrder,
   event
 }: JourneyListProps): ReactElement {
@@ -42,7 +42,6 @@ export function ActiveJourneyList({
   const { data, refetch } = useAdminJourneysQuery({
     status: [JourneyStatus.draft, JourneyStatus.published]
   })
-  const authUser = useAuthUser()
   const [archive] = useMutation(ARCHIVE_ACTIVE_JOURNEYS, {
     update(_cache, { data }) {
       if (data?.journeysArchive != null) {

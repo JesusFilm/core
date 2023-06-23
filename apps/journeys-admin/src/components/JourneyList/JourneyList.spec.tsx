@@ -29,11 +29,6 @@ jest.mock('react-i18next', () => ({
   }
 }))
 
-jest.mock('next-firebase-auth', () => ({
-  __esModule: true,
-  useAuthUser: jest.fn(() => ({ id: 'user-id1' }))
-}))
-
 describe('JourneyList', () => {
   it('should render tab panel', () => {
     const { getByRole } = render(

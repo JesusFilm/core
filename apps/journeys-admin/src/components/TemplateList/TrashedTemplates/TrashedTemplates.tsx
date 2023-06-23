@@ -20,7 +20,7 @@ import { JourneyStatus } from '../../../../__generated__/globalTypes'
 export function TrashedTemplates({
   sortOrder,
   event
-}: JourneyListProps): ReactElement {
+}: Omit<JourneyListProps, 'authUser'>): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { enqueueSnackbar } = useSnackbar()
   const { data, refetch } = useAdminJourneysQuery({

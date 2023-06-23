@@ -7,7 +7,6 @@ import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'react-i18next'
 import { useSnackbar } from 'notistack'
-import { useAuthUser } from 'next-firebase-auth'
 import { JourneyCard } from '../JourneyCard'
 import { sortJourneys } from '../JourneySort/utils/sortJourneys'
 import type { JourneyListProps } from '../JourneyList'
@@ -33,6 +32,7 @@ export const TRASH_ARCHIVED_JOURNEYS = gql`
 `
 
 export function ArchivedJourneyList({
+  authUser,
   sortOrder,
   event
 }: JourneyListProps): ReactElement {
@@ -41,7 +41,6 @@ export function ArchivedJourneyList({
   const { data, refetch } = useAdminJourneysQuery({
     status: [JourneyStatus.archived]
   })
-  const authUser = useAuthUser()
   const [restore] = useMutation(RESTORE_ARCHIVED_JOURNEYS, {
     update(_cache, { data }) {
       if (data?.journeysRestore != null) {

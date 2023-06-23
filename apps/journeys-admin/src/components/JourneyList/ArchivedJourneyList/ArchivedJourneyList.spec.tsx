@@ -1,6 +1,7 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
+import { AuthUser } from 'next-firebase-auth'
 import { defaultJourney, oldJourney } from '../journeyListData'
 import { ThemeProvider } from '../../ThemeProvider'
 import { SortOrder } from '../JourneySort'
@@ -15,11 +16,6 @@ import { ArchivedJourneyList } from '.'
 jest.mock('next/router', () => ({
   __esModule: true,
   useRouter: jest.fn(() => ({ query: { tab: 'active' } }))
-}))
-
-jest.mock('next-firebase-auth', () => ({
-  __esModule: true,
-  useAuthUser: jest.fn(() => ({ id: 'user-id1' }))
 }))
 
 const archivedJourneysMock = {
@@ -163,7 +159,10 @@ describe('ArchivedJourneyList', () => {
         >
           <ThemeProvider>
             <SnackbarProvider>
-              <ArchivedJourneyList event="restoreAllArchived" />
+              <ArchivedJourneyList
+                event="restoreAllArchived"
+                authUser={{ id: 'user-id1' } as unknown as AuthUser}
+              />
             </SnackbarProvider>
           </ThemeProvider>
         </MockedProvider>
@@ -186,7 +185,10 @@ describe('ArchivedJourneyList', () => {
           <SnackbarProvider>
             <ThemeProvider>
               <SnackbarProvider>
-                <ArchivedJourneyList event="restoreAllArchived" />
+                <ArchivedJourneyList
+                  event="restoreAllArchived"
+                  authUser={{ id: 'user-id1' } as unknown as AuthUser}
+                />
               </SnackbarProvider>
             </ThemeProvider>
           </SnackbarProvider>
@@ -235,7 +237,10 @@ describe('ArchivedJourneyList', () => {
         >
           <ThemeProvider>
             <SnackbarProvider>
-              <ArchivedJourneyList event="trashAllArchived" />
+              <ArchivedJourneyList
+                event="trashAllArchived"
+                authUser={{ id: 'user-id1' } as unknown as AuthUser}
+              />
             </SnackbarProvider>
           </ThemeProvider>
         </MockedProvider>
@@ -258,7 +263,10 @@ describe('ArchivedJourneyList', () => {
           <SnackbarProvider>
             <ThemeProvider>
               <SnackbarProvider>
-                <ArchivedJourneyList event="trashAllArchived" />
+                <ArchivedJourneyList
+                  event="trashAllArchived"
+                  authUser={{ id: 'user-id1' } as unknown as AuthUser}
+                />
               </SnackbarProvider>
             </ThemeProvider>
           </SnackbarProvider>

@@ -8,7 +8,6 @@ import { Dialog } from '@core/shared/ui/Dialog'
 import { useTranslation } from 'react-i18next'
 import { useSnackbar } from 'notistack'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
-import { useAuthUser } from 'next-firebase-auth'
 import { JourneyFields } from '../../../../__generated__/JourneyFields'
 import { JourneyCard } from '../JourneyCard'
 import { sortJourneys } from '../JourneySort/utils/sortJourneys'
@@ -34,6 +33,7 @@ export const DELETE_TRASHED_JOURNEYS = gql`
   }
 `
 export function TrashedJourneyList({
+  authUser,
   sortOrder,
   event
 }: JourneyListProps): ReactElement {
@@ -42,7 +42,6 @@ export function TrashedJourneyList({
   const { data, refetch } = useAdminJourneysQuery({
     status: [JourneyStatus.trashed]
   })
-  const authUser = useAuthUser()
   const [restoreTrashed] = useMutation(RESTORE_TRASHED_JOURNEYS, {
     update(_cache, { data }) {
       if (data?.journeysRestore != null) {

@@ -20,7 +20,7 @@ import { JourneyListProps } from '../../JourneyList/JourneyList'
 export function ArchivedTemplates({
   sortOrder,
   event
-}: JourneyListProps): ReactElement {
+}: Omit<JourneyListProps, 'authUser'>): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { enqueueSnackbar } = useSnackbar()
   const { data, refetch } = useAdminJourneysQuery({

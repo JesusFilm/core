@@ -1,6 +1,7 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
+import { AuthUser } from 'next-firebase-auth'
 import { defaultJourney, oldJourney } from '../journeyListData'
 import { ThemeProvider } from '../../ThemeProvider'
 import { GET_ADMIN_JOURNEYS } from '../../../libs/useAdminJourneysQuery/useAdminJourneysQuery'
@@ -23,11 +24,6 @@ jest.mock('react-i18next', () => ({
 jest.mock('next/router', () => ({
   __esModule: true,
   useRouter: jest.fn(() => ({ query: { tab: 'active' } }))
-}))
-
-jest.mock('next-firebase-auth', () => ({
-  __esModule: true,
-  useAuthUser: jest.fn(() => ({ id: 'user-id1' }))
 }))
 
 const activeJourneysMock: MockedResponse = {
@@ -130,7 +126,10 @@ describe('ActiveJourneyList', () => {
         >
           <ThemeProvider>
             <SnackbarProvider>
-              <ActiveJourneyList event="archiveAllActive" />
+              <ActiveJourneyList
+                event="archiveAllActive"
+                authUser={{ id: 'user-id1' } as unknown as AuthUser}
+              />
             </SnackbarProvider>
           </ThemeProvider>
         </MockedProvider>
@@ -152,7 +151,10 @@ describe('ActiveJourneyList', () => {
         >
           <ThemeProvider>
             <SnackbarProvider>
-              <ActiveJourneyList event="archiveAllActive" />
+              <ActiveJourneyList
+                event="archiveAllActive"
+                authUser={{ id: 'user-id1' } as unknown as AuthUser}
+              />
             </SnackbarProvider>
           </ThemeProvider>
         </MockedProvider>
@@ -184,7 +186,10 @@ describe('ActiveJourneyList', () => {
         <MockedProvider mocks={[activeJourneysMock]}>
           <ThemeProvider>
             <SnackbarProvider>
-              <ActiveJourneyList event="trashAllActive" />
+              <ActiveJourneyList
+                event="trashAllActive"
+                authUser={{ id: 'user-id1' } as unknown as AuthUser}
+              />
             </SnackbarProvider>
           </ThemeProvider>
         </MockedProvider>
@@ -200,7 +205,10 @@ describe('ActiveJourneyList', () => {
         >
           <ThemeProvider>
             <SnackbarProvider>
-              <ActiveJourneyList event="trashAllActive" />
+              <ActiveJourneyList
+                event="trashAllActive"
+                authUser={{ id: 'user-id1' } as unknown as AuthUser}
+              />
             </SnackbarProvider>
           </ThemeProvider>
         </MockedProvider>
@@ -223,7 +231,10 @@ describe('ActiveJourneyList', () => {
           <SnackbarProvider>
             <ThemeProvider>
               <SnackbarProvider>
-                <ActiveJourneyList event="trashAllActive" />
+                <ActiveJourneyList
+                  event="trashAllActive"
+                  authUser={{ id: 'user-id1' } as unknown as AuthUser}
+                />
               </SnackbarProvider>
             </ThemeProvider>
           </SnackbarProvider>
