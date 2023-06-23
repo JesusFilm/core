@@ -7,7 +7,7 @@ import { useTranslation } from 'react-i18next'
 import { Attribute } from '../..'
 import { ChatPlatform } from '../../../../../../../__generated__/globalTypes'
 import { Chat } from './Chat'
-import { HostTitleFieldForm } from './HostForm/HostTitleFieldForm'
+import { HostTitleFieldForm } from './HostSidePanel/HostForm/HostTitleFieldForm'
 
 export function Footer(): ReactElement {
   const { dispatch } = useEditor()
