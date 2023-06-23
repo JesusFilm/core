@@ -27,7 +27,14 @@ export function HostAvatars({
 
   return (
     <AvatarGroup
-      spacing={19}
+      spacing={
+        (src1 == null || src2 == null) &&
+        hasPlaceholder != null &&
+        editableStepFooter &&
+        size === 'small'
+          ? 16
+          : 19
+      }
       data-testid="host-avatars"
       sx={{ flexDirection: rtl ? 'row' : 'row-reverse' }}
     >
@@ -35,8 +42,11 @@ export function HostAvatars({
         <Avatar
           src={src1}
           sx={{
-            height: size === 'small' ? '40px' : '48px',
-            width: size === 'small' ? '40px' : '48px'
+            height: size === 'small' ? '30px' : '48px',
+            width: size === 'small' ? '30px' : '48px',
+            '&.MuiAvatar-root': {
+              borderWidth: '1px'
+            }
           }}
         />
       )}
@@ -44,8 +54,11 @@ export function HostAvatars({
         <Avatar
           src={src2}
           sx={{
-            height: size === 'small' ? '40px' : '48px',
-            width: size === 'small' ? '40px' : '48px'
+            height: size === 'small' ? '30px' : '48px',
+            width: size === 'small' ? '30px' : '48px',
+            '&.MuiAvatar-root': {
+              borderWidth: '1px'
+            }
           }}
         />
       )}
@@ -61,19 +74,18 @@ export function HostAvatars({
               '&.MuiAvatar-root': {
                 border: '2px dashed',
                 borderColor: (theme) => theme.palette.grey[700],
-                height: '36px',
-                width: '36px'
+                height: '27px',
+                width: '27px'
               }
             }}
           >
             <UserProfile3
               data-testid="host-avatar-placeholder"
               sx={{
-                pr: rtl ? '6px' : '0px',
-                pl: rtl ? '0px' : '6px',
-                pt: '6px',
-                height: size === 'small' ? '34px' : '42px',
-                width: size === 'small' ? '34px' : '42px',
+                pr: rtl ? '4px' : '0px',
+                pl: rtl ? '0px' : '4px',
+                pt: '4px',
+
                 color: (theme) => theme.palette.grey[700]
               }}
             />
@@ -86,10 +98,10 @@ export function HostAvatars({
             opacity: 0.5,
             backgroundColor: 'transparent',
             '&.MuiAvatar-root': {
-              border: '3px solid',
+              border: '2px solid',
               borderColor: (theme) => theme.palette.grey[700],
-              height: '44px',
-              width: '44px'
+              height: '46px',
+              width: '46px'
             }
           }}
         >
@@ -98,7 +110,7 @@ export function HostAvatars({
             sx={{
               pr: rtl ? '4px' : '0px',
               pl: rtl ? '0px' : '4px',
-              pt: '6px',
+              pt: '4px',
               color: (theme) => theme.palette.grey[700]
             }}
           />

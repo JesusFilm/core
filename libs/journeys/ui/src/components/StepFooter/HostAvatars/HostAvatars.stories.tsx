@@ -97,8 +97,8 @@ WithPlaceholder.args = {
   journey
 }
 
-export const PlaceholderVariant = Template.bind({})
-PlaceholderVariant.args = {
+export const Placeholder = Template.bind({})
+Placeholder.args = {
   ...Empty.args,
   editableStepFooter: false
 }

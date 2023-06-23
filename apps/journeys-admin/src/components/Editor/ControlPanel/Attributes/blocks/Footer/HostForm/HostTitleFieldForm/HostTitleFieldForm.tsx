@@ -6,7 +6,6 @@ import { CreateHost } from '../../../../../../../../../__generated__/CreateHost'
 import { UpdateJourneyHost } from '../../../../../../../../../__generated__/UpdateJourneyHost'
 import { useHostUpdate } from '../../../../../../../../libs/useHostUpdate/useHostUpdate'
 import { TextFieldForm } from '../../../../../../../TextFieldForm'
-import { HostListItem } from './HostListItem'
 
 export const CREATE_HOST = gql`
   mutation CreateHost($teamId: ID!, $input: HostCreateInput!) {
@@ -76,37 +75,13 @@ export function HostTitleFieldForm(): ReactElement {
     }
   }
 
-  async function handleSelectedHost(hostId): Promise<void> {
-    // await journeyHostUpdate({
-    //   variables: { id: journey?.id, input: { hostId } }
-    // })
-  }
-
   return (
-    <>
-      <TextFieldForm
-        id="hostTitle"
-        label="Host Name"
-        initialValue={host?.title}
-        validationSchema={titleSchema}
-        onSubmit={handleSubmit}
-      />
-      <HostListItem
-        id="hostId"
-        title="Josuke Higashikata"
-        location="Morioh"
-        src1="pic"
-        src2="pic"
-        onClick={handleSelectedHost}
-      />
-      <HostListItem
-        id="hostId2"
-        title="Nisal"
-        location="Auckland"
-        src1="pic"
-        src2={null}
-        onClick={handleSelectedHost}
-      />
-    </>
+    <TextFieldForm
+      id="hostTitle"
+      label="Host Name"
+      initialValue={host?.title}
+      validationSchema={titleSchema}
+      onSubmit={handleSubmit}
+    />
   )
 }

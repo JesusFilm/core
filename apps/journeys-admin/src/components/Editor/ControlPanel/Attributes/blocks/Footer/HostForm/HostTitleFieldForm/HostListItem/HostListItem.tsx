@@ -8,7 +8,7 @@ import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { UpdateHost_hostUpdate as Host } from '../../../../../../../../../../__generated__/UpdateHost'
 
 interface HostListItemProps extends Omit<Host, 'teamId' | '__typename'> {
-  onClick: (host) => void
+  onClick: (hostId: string) => void
 }
 
 export function HostListItem({
@@ -26,9 +26,7 @@ export function HostListItem({
       sx={{ px: 6, py: 5 }}
       divider
       selected={journey?.host?.id === hostId}
-      onClick={async (): Promise<void> => {
-        await onClick(hostId)
-      }}
+      onClick={(): void => onClick(hostId)}
     >
       <Stack direction="row" sx={{ width: '100%' }}>
         <Box
