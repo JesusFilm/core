@@ -1,4 +1,4 @@
-import { render } from '@testing-library/react'
+import { fireEvent, render } from '@testing-library/react'
 import { HostListItem } from './HostListItem'
 
 describe('HostListItem', () => {
@@ -49,5 +49,36 @@ describe('HostListItem', () => {
       'host-avatar-placeholder-solid'
     )
     expect(adminPlaceholderElement).toBeInTheDocument()
+  })
+
+  it('it passes the correct host data when clicked', () => {
+    const handleClick = jest.fn()
+    const hostTitle = 'Edmond Shen'
+    const hostTitleTwo = 'Siyang Diesel'
+
+    const { getByText } = render(
+      <>
+        <HostListItem
+          id="hostId"
+          title={hostTitle}
+          location={null}
+          src1={null}
+          src2={null}
+          onClick={handleClick}
+        />
+        <HostListItem
+          id="hostIdTwo"
+          title={hostTitleTwo}
+          location={null}
+          src1={null}
+          src2={null}
+          onClick={handleClick}
+        />
+      </>
+    )
+
+    fireEvent.click(getByText('Edmond Shen'))
+    expect(handleClick).toHaveBeenCalledWith('hostId')
+    expect(handleClick).not.toHaveBeenCalledWith('hostIdTwo')
   })
 })
