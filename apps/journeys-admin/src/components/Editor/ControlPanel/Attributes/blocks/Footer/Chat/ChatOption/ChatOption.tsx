@@ -29,9 +29,15 @@ export function ChatOption({
   const [currentPlatform, setCurrentPlatform] = useState(
     platform ?? chatButton?.platform ?? ChatPlatform.custom
   )
+  const [expanded, setExpanded] = useState(false)
+  function handleChange(): void {
+    setExpanded(!expanded)
+  }
 
   return (
     <Accordion
+      expanded={expanded}
+      onChange={handleChange}
       disableGutters
       square
       sx={{
@@ -51,6 +57,7 @@ export function ChatOption({
         currentLink={currentLink}
         currentPlatform={currentPlatform}
         chatButtonId={chatButton?.id}
+        openAccordion={() => setExpanded(true)}
       />
       <Details
         journeyId={journeyId}
