@@ -67,7 +67,12 @@ export function HostAvatarsButton({
       <AvatarGroup
         sx={{
           '.MuiAvatar-root': {
-            borderColor: (theme) => theme.palette.grey[400]
+            borderColor: (theme) => theme.palette.grey[400],
+            ml: -4,
+            color: (theme) => theme.palette.grey[400],
+            bgcolor: 'background.paper',
+            width: '52px',
+            height: '52px'
           }
         }}
       >
@@ -75,10 +80,6 @@ export function HostAvatarsButton({
           data-testid="avatar1"
           alt="avatar1"
           onClick={() => handleOpen(1)}
-          sx={{
-            color: (theme) => theme.palette.grey[400],
-            bgcolor: 'background.paper'
-          }}
           src={host?.src1 ?? host?.src2 ?? undefined}
         >
           {host?.src1 == null && host?.src2 == null && <UserProfiledAddIcon />}
@@ -87,10 +88,6 @@ export function HostAvatarsButton({
           data-testid="avatar2"
           alt="avatar2"
           onClick={() => handleOpen(2)}
-          sx={{
-            color: (theme) => theme.palette.grey[400],
-            bgcolor: 'background.paper'
-          }}
           src={host?.src2 ?? undefined}
         >
           {host?.src2 == null && <UserProfiledAddIcon />}
@@ -108,8 +105,8 @@ export function HostAvatarsButton({
                 __typename: 'ImageBlock',
                 src: host[`src${avatarNumber}`],
                 alt: `host avatar ${avatarNumber}`,
-                width: 44,
-                height: 44,
+                width: 52,
+                height: 52,
                 blurhash: '',
                 parentBlockId: null,
                 parentOrder: 0
