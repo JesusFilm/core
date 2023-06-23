@@ -22,6 +22,7 @@ import { gql, useQuery } from '@apollo/client'
 import ViewCarouselRoundedIcon from '@mui/icons-material/ViewCarouselRounded'
 import LeaderboardRoundedIcon from '@mui/icons-material/LeaderboardRounded'
 import { useTranslation } from 'react-i18next'
+import { useFlags } from '@core/shared/ui/FlagsProvider'
 import { JourneyStatus, Role } from '../../../../__generated__/globalTypes'
 import taskbarIcon from '../../../../public/taskbar-icon.svg'
 import nextstepsTitle from '../../../../public/nextsteps-title.svg'
@@ -109,6 +110,7 @@ export function NavigationDrawer({
   const { t } = useTranslation('apps-journeys-admin')
   const mdUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('md'))
   const [profileAnchorEl, setProfileAnchorEl] = useState(null)
+  const { globalReports } = useFlags()
 
   const selectedPage = router?.pathname?.split('/')[1]
 
@@ -168,12 +170,14 @@ export function NavigationDrawer({
           link="/templates"
         />
 
-        <NavigationListItem
-          icon={<LeaderboardRoundedIcon />}
-          label="Reports"
-          selected={selectedPage === 'reports'}
-          link="/reports"
-        />
+        {globalReports != null && (
+          <NavigationListItem
+            icon={<LeaderboardRoundedIcon />}
+            label="Reports"
+            selected={selectedPage === 'reports'}
+            link="/reports"
+          />
+        )}
 
         {authUser != null && data?.me != null && (
           <>

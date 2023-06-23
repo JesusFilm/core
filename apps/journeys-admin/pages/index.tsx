@@ -10,6 +10,7 @@ import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import { useTranslation } from 'react-i18next'
 import { getLaunchDarklyClient } from '@core/shared/ui/getLaunchDarklyClient'
 import { gql } from '@apollo/client'
+import { useFlags } from '@core/shared/ui/FlagsProvider'
 import { UserInviteAcceptAll } from '../__generated__/UserInviteAcceptAll'
 import { JourneyList } from '../src/components/JourneyList'
 import { PageWrapper } from '../src/components/NewPageWrapper'
@@ -32,15 +33,16 @@ export const ACCEPT_USER_INVITE = gql`
 function IndexPage(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const AuthUser = useAuthUser()
+  const { teams } = useFlags()
   useTermsRedirect()
 
   return (
     <>
       <NextSeo title={t('Journeys')} />
       <PageWrapper
-        title={<TeamSelect />}
+        title={teams ? <TeamSelect /> : t('Journeys')}
         authUser={AuthUser}
-        menu={<TeamMenu />}
+        menu={teams && <TeamMenu />}
         sidePanelChildren={<OnboardingPanelContent />}
         sidePanelTitle={t('Create a New Journey')}
       >
