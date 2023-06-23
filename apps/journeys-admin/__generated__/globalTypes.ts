@@ -432,6 +432,10 @@ export interface TeamCreateInput {
   title: string;
 }
 
+export interface TeamUpdateInput {
+  title: string;
+}
+
 export interface TextResponseBlockCreateInput {
   id?: string | null;
   journeyId: string;

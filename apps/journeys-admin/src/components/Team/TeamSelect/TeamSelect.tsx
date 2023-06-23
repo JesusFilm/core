@@ -3,6 +3,7 @@ import Autocomplete from '@mui/material/Autocomplete'
 import PeopleOutlineRoundedIcon from '@mui/icons-material/PeopleOutlineRounded'
 import TextField from '@mui/material/TextField'
 import Stack from '@mui/material/Stack'
+import { sortBy } from 'lodash'
 import { useTeam } from '../TeamProvider'
 
 export function TeamSelect(): ReactElement {
@@ -15,8 +16,11 @@ export function TeamSelect(): ReactElement {
         loading={query?.loading}
         onChange={(_event, value) => setActiveTeam(value)}
         value={activeTeam}
-        options={query.data?.teams ?? []}
+        options={
+          query.data?.teams != null ? sortBy(query.data?.teams, 'title') : []
+        }
         getOptionLabel={(option) => option?.title ?? ''}
+        isOptionEqualToValue={(option, value) => option?.id === value?.id}
         renderInput={(params) => (
           <TextField
             {...params}

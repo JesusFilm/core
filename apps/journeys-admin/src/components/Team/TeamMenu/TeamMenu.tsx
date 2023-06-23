@@ -7,10 +7,12 @@ import Menu from '@mui/material/Menu'
 import MoreVert from '@mui/icons-material/MoreVert'
 import { MenuItem } from '../../MenuItem'
 import { TeamCreateDialog } from '../TeamCreateDialog'
+import { TeamUpdateDialog } from '../TeamUpdateDialog'
 
 export function TeamMenu(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const [teamCreateOpen, setTeamCreateOpen] = useState(false)
+  const [teamUpdateOpen, setTeamUpdateOpen] = useState(false)
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
   const handleShowMenu = (event: React.MouseEvent<HTMLButtonElement>): void => {
     setAnchorEl(event.currentTarget)
@@ -26,6 +28,12 @@ export function TeamMenu(): ReactElement {
         open={teamCreateOpen}
         onClose={() => {
           setTeamCreateOpen(false)
+        }}
+      />
+      <TeamUpdateDialog
+        open={teamUpdateOpen}
+        onClose={() => {
+          setTeamUpdateOpen(false)
         }}
       />
       <IconButton
@@ -59,6 +67,7 @@ export function TeamMenu(): ReactElement {
           icon={<AddIcon />}
           onClick={() => {
             setTeamCreateOpen(true)
+            setAnchorEl(null)
           }}
         />
         <MenuItem
@@ -66,7 +75,8 @@ export function TeamMenu(): ReactElement {
           label={t('Rename Team')}
           icon={<EditIcon />}
           onClick={() => {
-            setTeamCreateOpen(true)
+            setTeamUpdateOpen(true)
+            setAnchorEl(null)
           }}
         />
       </Menu>
