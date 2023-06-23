@@ -9,12 +9,10 @@ import { GetJourney_journey_blocks_ImageBlock as ImageBlock } from '../../../../
 import { useHostUpdate } from '../../../../../../../../../libs/useHostUpdate'
 
 interface HostAvatarsButtonProps {
-  empty?: boolean
   disabled?: boolean
 }
 
 export function HostAvatarsButton({
-  empty = false,
   disabled = false
 }: HostAvatarsButtonProps): ReactElement {
   const [open, setOpen] = useState(false)
@@ -81,11 +79,9 @@ export function HostAvatarsButton({
             color: (theme) => theme.palette.grey[400],
             bgcolor: 'background.paper'
           }}
-          src={empty ? undefined : host?.src1 ?? host?.src2 ?? undefined}
+          src={host?.src1 ?? host?.src2 ?? undefined}
         >
-          {(empty || (host?.src1 == null && host?.src2 == null)) && (
-            <UserProfiledAddIcon />
-          )}
+          {host?.src1 == null && host?.src2 == null && <UserProfiledAddIcon />}
         </Avatar>
         <Avatar
           data-testid="avatar2"
@@ -95,9 +91,9 @@ export function HostAvatarsButton({
             color: (theme) => theme.palette.grey[400],
             bgcolor: 'background.paper'
           }}
-          src={empty ? undefined : host?.src2 ?? undefined}
+          src={host?.src2 ?? undefined}
         >
-          {(empty || host?.src2 == null) && <UserProfiledAddIcon />}
+          {host?.src2 == null && <UserProfiledAddIcon />}
         </Avatar>
       </AvatarGroup>
       <ImageLibrary

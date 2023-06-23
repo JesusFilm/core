@@ -51,6 +51,7 @@ export function TextFieldForm({
 
   return (
     <Formik
+      key={`field-${id}-${initialValue ?? ''}`}
       initialValues={{
         [id]: initialValue
       }}
