@@ -100,7 +100,7 @@ WithPlaceholder.args = {
 export const Placeholder = Template.bind({})
 Placeholder.args = {
   ...Empty.args,
-  editableStepFooter: false
+  size: 'large'
 }
 
 export const TwoAvatars = Template.bind({})
