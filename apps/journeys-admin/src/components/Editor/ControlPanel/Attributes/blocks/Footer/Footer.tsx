@@ -69,11 +69,7 @@ export function Footer(): ReactElement {
             type: 'SetDrawerPropsAction',
             title: t('Hosted By'),
             mobileOpen: true,
-            children: (
-              <div>
-                <HostTitleFieldForm />
-              </div>
-            )
+            children: <div>Hosted by content component</div>
           })
         }}
       />
