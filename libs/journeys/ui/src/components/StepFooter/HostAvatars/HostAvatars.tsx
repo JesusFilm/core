@@ -9,8 +9,8 @@ import { getJourneyRTL } from '../../../libs/rtl'
 interface HostAvatarsProps {
   hasPlaceholder?: boolean
   size?: 'small' | 'large'
-  avatarSrc1?: string
-  avatarSrc2?: string
+  avatarSrc1?: string | null
+  avatarSrc2?: string | null
 }
 
 export function HostAvatars({
@@ -35,8 +35,8 @@ export function HostAvatars({
         <Avatar
           src={src1}
           sx={{
-            height: size === 'small' ? '40px' : '52px',
-            width: size === 'small' ? '40px' : '52px'
+            height: size === 'small' ? '40px' : '48px',
+            width: size === 'small' ? '40px' : '48px'
           }}
         />
       )}
@@ -44,24 +44,25 @@ export function HostAvatars({
         <Avatar
           src={src2}
           sx={{
-            height: size === 'small' ? '40px' : '52px',
-            width: size === 'small' ? '40px' : '52px'
+            height: size === 'small' ? '40px' : '48px',
+            width: size === 'small' ? '40px' : '48px'
           }}
         />
       )}
       {(src1 == null || src2 == null) &&
         hasPlaceholder &&
-        editableStepFooter && (
+        editableStepFooter &&
+        size === 'small' && (
           <Avatar
             sx={{
               color: 'secondary.light',
               opacity: 0.5,
               backgroundColor: 'transparent',
               '&.MuiAvatar-root': {
-                border: '3px dashed',
+                border: '2px dashed',
                 borderColor: (theme) => theme.palette.grey[700],
-                height: size === 'small' ? '36px' : '48px',
-                width: size === 'small' ? '36px' : '48px'
+                height: '36px',
+                width: '36px'
               }
             }}
           >
@@ -71,43 +72,38 @@ export function HostAvatars({
                 pr: rtl ? '6px' : '0px',
                 pl: rtl ? '0px' : '6px',
                 pt: '6px',
-                height: size === 'small' ? '34px' : '46px',
-                width: size === 'small' ? '34px' : '46px',
+                height: size === 'small' ? '34px' : '42px',
+                width: size === 'small' ? '34px' : '42px',
                 color: (theme) => theme.palette.grey[700]
               }}
             />
           </Avatar>
         )}
-      {src1 == null &&
-        src2 == null &&
-        hasPlaceholder &&
-        !editableStepFooter && (
-          <Avatar
+      {src1 == null && src2 == null && hasPlaceholder && size === 'large' && (
+        <Avatar
+          sx={{
+            color: 'secondary.light',
+            opacity: 0.5,
+            backgroundColor: 'transparent',
+            '&.MuiAvatar-root': {
+              border: '3px solid',
+              borderColor: (theme) => theme.palette.grey[700],
+              height: '44px',
+              width: '44px'
+            }
+          }}
+        >
+          <UserProfile3
+            data-testid="host-avatar-placeholder-solid"
             sx={{
-              color: 'secondary.light',
-              opacity: 0.5,
-              backgroundColor: 'transparent',
-              '&.MuiAvatar-root': {
-                border: '3px solid',
-                borderColor: (theme) => theme.palette.grey[700],
-                height: size === 'small' ? '36px' : '48px',
-                width: size === 'small' ? '36px' : '48px'
-              }
+              pr: rtl ? '4px' : '0px',
+              pl: rtl ? '0px' : '4px',
+              pt: '6px',
+              color: (theme) => theme.palette.grey[700]
             }}
-          >
-            <UserProfile3
-              data-testid="host-avatar-placeholder-solid"
-              sx={{
-                pr: rtl ? '6px' : '0px',
-                pl: rtl ? '0px' : '6px',
-                pt: '6px',
-                height: '34px',
-                width: '34px',
-                color: (theme) => theme.palette.grey[700]
-              }}
-            />
-          </Avatar>
-        )}
+          />
+        </Avatar>
+      )}
     </AvatarGroup>
   )
 }

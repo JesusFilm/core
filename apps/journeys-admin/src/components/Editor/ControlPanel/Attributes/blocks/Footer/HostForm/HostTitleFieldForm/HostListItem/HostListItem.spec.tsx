@@ -1,50 +1,28 @@
 import { render } from '@testing-library/react'
 import { HostListItem } from './HostListItem'
 
-describe('HostListCard', () => {
-  it('renders host title and location', () => {
+describe('HostListItem', () => {
+  it('renders list item with title, location and avatars with proper data', () => {
     const hostTitle = 'Edmond Shen'
     const hostLocation = 'National Team'
 
-    const { getByText } = render(
-      <HostListItem hostTitle={hostTitle} hostLocation={hostLocation} />
+    const { getByText, getAllByRole, queryByTestId } = render(
+      <HostListItem
+        id="hostId"
+        title={hostTitle}
+        location={hostLocation}
+        src1="pic"
+        src2="image"
+        onClick={jest.fn}
+      />
     )
 
     expect(getByText(hostTitle)).toBeInTheDocument()
     expect(getByText(hostLocation)).toBeInTheDocument()
-  })
-
-  it('renders host title without location', () => {
-    const hostTitle = 'Edmond Shen'
-    const hostLocation = 'National Team'
-
-    const { getByText, queryByText } = render(
-      <HostListItem hostTitle={hostTitle} />
-    )
-
-    expect(getByText(hostTitle)).toBeInTheDocument()
-    expect(queryByText(hostLocation)).not.toBeInTheDocument()
-  })
-
-  it('renders both host avatars ', () => {
-    const hostTitle = 'Edmond Shen'
-
-    const { getAllByRole } = render(
-      <HostListItem hostTitle={hostTitle} avatarSrc1="pic" avatarSrc2="pic" />
-    )
-
     const avatars = getAllByRole('img')
     expect(avatars).toHaveLength(2)
-  })
-  it('renders only one host avatar with no placeholders', () => {
-    const hostTitle = 'Edmond Shen'
-
-    const { getAllByRole, queryByTestId } = render(
-      <HostListItem hostTitle={hostTitle} avatarSrc1="pic" />
-    )
-
-    const avatars = getAllByRole('img')
-    expect(avatars).toHaveLength(1)
+    expect(avatars[0]).toHaveAttribute('src', 'image')
+    expect(avatars[1]).toHaveAttribute('src', 'pic')
     const adminPlaceholderElement = queryByTestId(
       'host-avatar-placeholder-solid'
     )
@@ -55,7 +33,14 @@ describe('HostListCard', () => {
     const hostTitle = 'Edmond Shen'
 
     const { queryAllByRole, queryByTestId } = render(
-      <HostListItem hostTitle={hostTitle} />
+      <HostListItem
+        id="hostId"
+        title={hostTitle}
+        location={null}
+        src1={null}
+        src2={null}
+        onClick={jest.fn}
+      />
     )
 
     const avatars = queryAllByRole('img')
