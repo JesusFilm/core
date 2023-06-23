@@ -1,6 +1,6 @@
 import { render, waitFor } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
-import { GET_ADMIN_JOURNEYS } from '../../libs/useAdminJourneysQuery/useAdminJourneysQuery'
+import { GET_JOURNEYS } from '../../libs/useJourneysQuery/useJourneysQuery'
 import { defaultTemplate } from './TemplateListData'
 import { TemplateLibrary } from '.'
 
@@ -15,7 +15,7 @@ jest.mock('react-i18next', () => ({
 
 const activeTemplatesMock = {
   request: {
-    query: GET_ADMIN_JOURNEYS,
+    query: GET_JOURNEYS,
     variables: {
       template: true
     }

@@ -2,10 +2,10 @@ import { ReactElement } from 'react'
 import Box from '@mui/material/Box'
 import Container from '@mui/material/Container'
 import { TemplateCard } from '../TemplateCard'
-import { useAdminJourneysQuery } from '../../libs/useAdminJourneysQuery'
+import { useJourneysQuery } from '../../libs/useJourneysQuery'
 
 export function TemplateLibrary(): ReactElement {
-  const { data } = useAdminJourneysQuery({ template: true })
+  const { data } = useJourneysQuery({ template: true })
 
   return (
     <Box sx={{ mx: { xs: -6, sm: 0 } }}>

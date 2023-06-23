@@ -18,13 +18,14 @@ import { ApolloQueryResult } from '@apollo/client'
 import Link from 'next/link'
 import { JourneyCardMenu } from '../JourneyList/JourneyCard/JourneyCardMenu'
 import { StatusChip } from '../JourneyList/JourneyCard/StatusChip'
+import { GetJourneys_journeys as Journey } from '../../../__generated__/GetJourneys'
 import {
   GetAdminJourneys,
-  GetAdminJourneys_journeys as Journey
+  GetAdminJourneys_journeys as AdminJourney
 } from '../../../__generated__/GetAdminJourneys'
 
 export interface TemplateCardProps {
-  journey?: Journey
+  journey?: AdminJourney | Journey
   isPublisher?: boolean
   refetch?: () => Promise<ApolloQueryResult<GetAdminJourneys>>
 }

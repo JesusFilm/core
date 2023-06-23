@@ -1,7 +1,7 @@
 import { Meta, Story } from '@storybook/react'
 import { MockedProvider } from '@apollo/client/testing'
 import { journeysAdminConfig } from '../../libs/storybook'
-import { GET_ADMIN_JOURNEYS } from '../../libs/useAdminJourneysQuery/useAdminJourneysQuery'
+import { GET_JOURNEYS } from '../../libs/useJourneysQuery/useJourneysQuery'
 import {
   oldTemplate,
   publishedTemplate,
@@ -27,7 +27,7 @@ Default.args = {
   mocks: [
     {
       request: {
-        query: GET_ADMIN_JOURNEYS,
+        query: GET_JOURNEYS,
         variables: {
           template: true
         }
