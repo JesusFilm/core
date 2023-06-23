@@ -5,7 +5,7 @@ import { TemplateCard } from '../TemplateCard'
 import { useJourneysQuery } from '../../libs/useJourneysQuery'
 
 export function TemplateLibrary(): ReactElement {
-  const { data } = useJourneysQuery({ template: true })
+  const { data } = useJourneysQuery({ where: { template: true } })
 
   return (
     <Box sx={{ mx: { xs: -6, sm: 0 } }}>

@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { JourneyStatus, ThemeName, ThemeMode, UserJourneyRole } from "./globalTypes";
+import { JourneysFilter, ThemeName, ThemeMode, JourneyStatus, UserJourneyRole } from "./globalTypes";
 
 // ====================================================
 // GraphQL query operation: GetJourneys
@@ -81,6 +81,5 @@ export interface GetJourneys {
 }
 
 export interface GetJourneysVariables {
-  status?: JourneyStatus[] | null;
-  template?: boolean | null;
+  where?: JourneysFilter | null;
 }

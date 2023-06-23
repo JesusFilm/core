@@ -17,7 +17,9 @@ const activeTemplatesMock = {
   request: {
     query: GET_JOURNEYS,
     variables: {
-      template: true
+      where: {
+        template: true
+      }
     }
   },
   result: {

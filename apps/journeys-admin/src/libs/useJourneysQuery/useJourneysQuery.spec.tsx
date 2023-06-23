@@ -61,8 +61,9 @@ describe('useJourneysQuery', () => {
     renderHook(
       () =>
         useJourneysQuery({
-          status: [JourneyStatus.draft],
-          template: true
+          where: {
+            template: true
+          }
         }),
       {
         wrapper: ({ children }) => (
@@ -72,8 +73,9 @@ describe('useJourneysQuery', () => {
                 request: {
                   query: GET_JOURNEYS,
                   variables: {
-                    status: [JourneyStatus.draft],
-                    template: true
+                    where: {
+                      template: true
+                    }
                   }
                 },
                 result

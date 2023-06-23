@@ -5,8 +5,8 @@ import {
 } from '../../../__generated__/GetJourneys'
 
 export const GET_JOURNEYS = gql`
-  query GetJourneys($status: [JourneyStatus!], $template: Boolean) {
-    journeys(status: $status, template: $template) {
+  query GetJourneys($where: JourneysFilter) {
+    journeys(where: $where) {
       id
       title
       createdAt
