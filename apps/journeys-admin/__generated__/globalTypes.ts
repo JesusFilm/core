@@ -267,6 +267,20 @@ export interface EmailActionInput {
   email: string;
 }
 
+export interface HostCreateInput {
+  title: string;
+  location?: string | null;
+  src1?: string | null;
+  src2?: string | null;
+}
+
+export interface HostUpdateInput {
+  title?: string | null;
+  location?: string | null;
+  src1?: string | null;
+  src2?: string | null;
+}
+
 export interface IconBlockCreateInput {
   id?: string | null;
   parentBlockId: string;
