@@ -11,7 +11,7 @@ import {
 import {
   GetTeams,
   GetTeams_teams as Team
-} from '../../../__generated__/GetTeams'
+} from '../../../../__generated__/GetTeams'
 
 interface Context {
   query: QueryResult<GetTeams, OperationVariables>

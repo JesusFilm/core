@@ -41,7 +41,6 @@ export function TrashedJourneyList({
   const { enqueueSnackbar } = useSnackbar()
   const { data, refetch } = useJourneys({ status: [JourneyStatus.trashed] })
   const authUser = useAuthUser()
-
   const [restoreTrashed] = useMutation(RESTORE_TRASHED_JOURNEYS, {
     update(_cache, { data }) {
       if (data?.journeysRestore != null) {
@@ -105,7 +104,7 @@ export function TrashedJourneyList({
     handleClose()
   }
 
-  const handleClose = (): void => {
+  function handleClose(): void {
     setRestoreDialogOpen(false)
     setDeleteDialogOpen(false)
   }

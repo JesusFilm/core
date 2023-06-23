@@ -7,7 +7,8 @@ import {
   descriptiveJourney,
   publishedJourney
 } from '../journeyListData'
-import { GET_TRASHED_JOURNEYS } from './TrashedJourneyList'
+import { GET_JOURNEYS } from '../../../libs/useJourneys/useJourneys'
+import { JourneyStatus } from '../../../../__generated__/globalTypes'
 import { TrashedJourneyList } from '.'
 
 const TrashedJourneyListStory = {
@@ -31,7 +32,10 @@ Default.args = {
   mocks: [
     {
       request: {
-        query: GET_TRASHED_JOURNEYS
+        query: GET_JOURNEYS,
+        variables: {
+          status: [JourneyStatus.trashed]
+        }
       },
       result: {
         data: {
@@ -52,7 +56,10 @@ NoJourneys.args = {
   mocks: [
     {
       request: {
-        query: GET_TRASHED_JOURNEYS
+        query: GET_JOURNEYS,
+        variables: {
+          status: [JourneyStatus.trashed]
+        }
       },
       result: {
         data: {

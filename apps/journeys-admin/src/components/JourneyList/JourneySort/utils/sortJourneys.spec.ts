@@ -1,6 +1,6 @@
+import { GetJourneys_journeys as ActiveJourney } from '../../../../../__generated__/GetJourneys'
 import { defaultJourney, oldJourney } from '../../journeyListData'
 import { SortOrder } from '../JourneySort'
-import { GetActiveJourneys_journeys as ActiveJourney } from '../../../../../__generated__/GetActiveJourneys'
 import { sortJourneys } from './sortJourneys'
 
 describe('sortJourneys', () => {

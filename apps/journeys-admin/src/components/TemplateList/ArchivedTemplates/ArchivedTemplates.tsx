@@ -1,100 +1,34 @@
 import { ReactElement, useState, useEffect } from 'react'
-import { AuthUser } from 'next-firebase-auth'
-import Typography from '@mui/material/Typography'
-import { gql, useMutation, useQuery } from '@apollo/client'
+import { useMutation } from '@apollo/client'
 import { useSnackbar } from 'notistack'
 import { useTranslation } from 'react-i18next'
 import Box from '@mui/material/Box'
 import Card from '@mui/material/Card'
+import Stack from '@mui/material/Stack'
+import Typography from '@mui/material/Typography'
 import { Dialog } from '@core/shared/ui/Dialog'
-import { SortOrder } from '../../JourneyList/JourneySort'
 import { sortJourneys } from '../../JourneyList/JourneySort/utils/sortJourneys'
 import {
   RESTORE_ARCHIVED_JOURNEYS,
   TRASH_ARCHIVED_JOURNEYS
 } from '../../JourneyList/ArchivedJourneyList/ArchivedJourneyList'
-import {
-  GetArchivedPublisherTemplates,
-  GetArchivedPublisherTemplates_journeys as Journey
-} from '../../../../__generated__/GetArchivedPublisherTemplates'
 import { TemplateCard } from '../../TemplateCard'
-
-export const GET_ARCHIVED_PUBLISHER_TEMPLATES = gql`
-  query GetArchivedPublisherTemplates {
-    journeys: adminJourneys(status: [archived], template: true) {
-      id
-      title
-      createdAt
-      publishedAt
-      description
-      slug
-      themeName
-      themeMode
-      status
-      seoTitle
-      seoDescription
-      template
-      userJourneys {
-        id
-        role
-        openedAt
-        user {
-          id
-          firstName
-          lastName
-          imageUrl
-        }
-      }
-      language {
-        id
-        name(primary: true) {
-          value
-          primary
-        }
-      }
-      primaryImageBlock {
-        id
-        parentBlockId
-        parentOrder
-        src
-        alt
-        width
-        height
-        blurhash
-      }
-    }
-  }
-`
-
-interface ArchivedTemplateProps {
-  onLoad: () => void
-  event: string | undefined
-  sortOrder?: SortOrder
-  authUser?: AuthUser
-}
+import { useJourneys } from '../../../libs/useJourneys'
+import { JourneyStatus } from '../../../../__generated__/globalTypes'
+import { JourneyListProps } from '../../JourneyList/JourneyList'
 
 export function ArchivedTemplates({
-  onLoad,
-  event,
   sortOrder,
-  authUser
-}: ArchivedTemplateProps): ReactElement {
+  event
+}: JourneyListProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-
-  const { data, loading, error, refetch } =
-    useQuery<GetArchivedPublisherTemplates>(GET_ARCHIVED_PUBLISHER_TEMPLATES)
-
   const { enqueueSnackbar } = useSnackbar()
-  const [openRestoreAll, setOpenRestoreAll] = useState(false)
-  const [openTrashAll, setOpenTrashAll] = useState(false)
-
-  const journeys = data?.journeys
-
-  const [restoreArchived] = useMutation(RESTORE_ARCHIVED_JOURNEYS, {
-    variables: {
-      ids: journeys?.map((journey) => journey.id)
-    },
-    update(cache, { data }) {
+  const { data, refetch } = useJourneys({
+    status: [JourneyStatus.archived],
+    template: true
+  })
+  const [restore] = useMutation(RESTORE_ARCHIVED_JOURNEYS, {
+    update(_cache, { data }) {
       if (data?.journeysRestore != null) {
         enqueueSnackbar(t('Journeys Restored'), {
           variant: 'success'
@@ -103,12 +37,8 @@ export function ArchivedTemplates({
       }
     }
   })
-
-  const [trashArchived] = useMutation(TRASH_ARCHIVED_JOURNEYS, {
-    variables: {
-      ids: journeys?.map((journey) => journey.id)
-    },
-    update(cache, { data }) {
+  const [trash] = useMutation(TRASH_ARCHIVED_JOURNEYS, {
+    update(_cache, { data }) {
       if (data?.journeysTrash != null) {
         enqueueSnackbar(t('Journeys Trashed'), {
           variant: 'success'
@@ -117,50 +47,53 @@ export function ArchivedTemplates({
       }
     }
   })
+  const [openRestoreDialog, setOpenRestoreDialog] = useState(false)
+  const [openTrashDialog, setOpenTrashDialog] = useState(false)
 
-  const snackbarError = (error: Error): void => {
-    enqueueSnackbar(error.message, {
-      variant: 'error',
-      preventDuplicate: true
-    })
-  }
-
-  const restoreAll = async (): Promise<void> => {
+  async function handleRestoreSubmit(): Promise<void> {
     try {
-      await restoreArchived()
+      await restore({
+        variables: {
+          ids: data?.journeys?.map((journey) => journey.id)
+        }
+      })
     } catch (error) {
-      snackbarError(error)
+      enqueueSnackbar(error.message, {
+        variant: 'error',
+        preventDuplicate: true
+      })
     }
     handleClose()
   }
 
-  const trashAll = async (): Promise<void> => {
+  async function handleTrashSubmit(): Promise<void> {
     try {
-      await trashArchived()
+      await trash({
+        variables: {
+          ids: data?.journeys?.map((journey) => journey.id)
+        }
+      })
     } catch (error) {
-      snackbarError(error)
+      enqueueSnackbar(error.message, {
+        variant: 'error',
+        preventDuplicate: true
+      })
     }
     handleClose()
   }
 
-  const handleClose = (): void => {
-    setOpenRestoreAll(false)
-    setOpenTrashAll(false)
+  function handleClose(): void {
+    setOpenRestoreDialog(false)
+    setOpenTrashDialog(false)
   }
-
-  useEffect(() => {
-    if (!loading && error == null) {
-      onLoad()
-    }
-  }, [onLoad, loading, error])
 
   useEffect(() => {
     switch (event) {
       case 'restoreAllArchived':
-        setOpenRestoreAll(true)
+        setOpenRestoreDialog(true)
         break
       case 'trashAllArchived':
-        setOpenTrashAll(true)
+        setOpenTrashDialog(true)
         break
       case 'refetchArchived':
         void refetch()
@@ -169,76 +102,82 @@ export function ArchivedTemplates({
   }, [event, refetch])
 
   const sortedJourneys =
-    journeys != null ? sortJourneys(journeys, sortOrder) : undefined
+    data?.journeys != null ? sortJourneys(data?.journeys, sortOrder) : undefined
 
   return (
     <>
-      {sortedJourneys != null ? (
-        <>
-          {sortedJourneys.map((journey) => (
-            <TemplateCard
-              key={journey.id}
-              journey={journey as Journey}
-              isPublisher
-              refetch={refetch}
-            />
-          ))}
-          {sortedJourneys.length > 0 ? (
-            <span>
-              <Box width="100%" sx={{ textAlign: 'center' }}>
-                <Typography variant="caption">
-                  {t(
-                    'Archived templates are delisted from the Template Library.'
-                  )}
-                </Typography>
-              </Box>
-            </span>
-          ) : (
-            <>
-              <Card
-                variant="outlined"
-                sx={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  pt: 20,
-                  pb: 16,
-                  borderBottomLeftRadius: { xs: 0, sm: 12 },
-                  borderBottomRightRadius: { xs: 0, sm: 12 },
-                  borderTopLeftRadius: 0,
-                  borderTopRightRadius: 0
-                }}
-              >
-                <Typography variant="subtitle1" align="center" gutterBottom>
-                  {t('No archived templates.')}
-                </Typography>
-              </Card>
-              <Box width="100%" sx={{ textAlign: 'center' }}>
-                <Typography variant="caption">
-                  {t(
-                    'You can archive a template to to delist it from the Template Library.'
-                  )}
-                </Typography>
-              </Box>
-            </>
+      <Box>
+        {sortedJourneys != null ? (
+          <>
+            {sortedJourneys.map((journey) => (
+              <TemplateCard
+                key={journey.id}
+                journey={journey}
+                isPublisher
+                refetch={refetch}
+              />
+            ))}
+            {sortedJourneys.length > 0 ? (
+              <span>
+                <Box width="100%" sx={{ textAlign: 'center' }}>
+                  <Typography variant="caption">
+                    {t(
+                      'Archived templates are delisted from the Template Library.'
+                    )}
+                  </Typography>
+                </Box>
+              </span>
+            ) : (
+              <>
+                <Card
+                  variant="outlined"
+                  sx={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    pt: 20,
+                    pb: 16,
+                    borderBottomLeftRadius: { xs: 0, sm: 12 },
+                    borderBottomRightRadius: { xs: 0, sm: 12 },
+                    borderTopLeftRadius: 0,
+                    borderTopRightRadius: 0
+                  }}
+                >
+                  <Typography variant="subtitle1" align="center" gutterBottom>
+                    {t('No archived templates.')}
+                  </Typography>
+                </Card>
+              </>
+            )}
+          </>
+        ) : (
+          <>
+            {[0, 1, 2].map((index) => (
+              <TemplateCard key={`templateCard${index}`} isPublisher />
+            ))}
+          </>
+        )}
+      </Box>
+      <Stack alignItems="center">
+        <Typography
+          variant="caption"
+          align="center"
+          component="div"
+          sx={{ py: { xs: 3, sm: 5 }, maxWidth: 290 }}
+        >
+          {t(
+            'You can archive a template to to delist it from the Template Library.'
           )}
-        </>
-      ) : (
-        <>
-          {[0, 1, 2].map((index) => (
-            <TemplateCard key={`templateCard${index}`} isPublisher />
-          ))}
-        </>
-      )}
-
+        </Typography>
+      </Stack>
       <Dialog
-        open={openRestoreAll ?? false}
+        open={openRestoreDialog}
         onClose={handleClose}
         dialogTitle={{
           title: t('Unarchive Templates'),
           closeButton: true
         }}
         dialogAction={{
-          onSubmit: restoreAll,
+          onSubmit: handleRestoreSubmit,
           submitLabel: t('Unarchive'),
           closeLabel: t('Cancel')
         }}
@@ -250,14 +189,14 @@ export function ArchivedTemplates({
         </Typography>
       </Dialog>
       <Dialog
-        open={openTrashAll ?? false}
+        open={openTrashDialog}
         onClose={handleClose}
         dialogTitle={{
           title: t('Trash Templates'),
           closeButton: true
         }}
         dialogAction={{
-          onSubmit: trashAll,
+          onSubmit: handleTrashSubmit,
           submitLabel: t('Trash'),
           closeLabel: t('Cancel')
         }}

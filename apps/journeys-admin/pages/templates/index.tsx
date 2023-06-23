@@ -1,7 +1,6 @@
 import { NextSeo } from 'next-seo'
 import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
-import { useQuery } from '@apollo/client'
 import {
   AuthAction,
   useAuthUser,
@@ -10,30 +9,23 @@ import {
 } from 'next-firebase-auth'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import { getLaunchDarklyClient } from '@core/shared/ui/getLaunchDarklyClient'
-import { PageWrapper } from '../../src/components/PageWrapper'
+import { PageWrapper } from '../../src/components/NewPageWrapper'
 import i18nConfig from '../../next-i18next.config'
 import { useJourneys } from '../../src/libs/useJourneys'
 import { TemplateLibrary } from '../../src/components/TemplateLibrary'
-import { GetUserRole } from '../../__generated__/GetUserRole'
-import { Role } from '../../__generated__/globalTypes'
-import { GET_USER_ROLE } from '../../src/components/JourneyView/JourneyView'
 import { useTermsRedirect } from '../../src/libs/useTermsRedirect/useTermsRedirect'
 
 function LibraryIndex(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const AuthUser = useAuthUser()
   const { data } = useJourneys({ template: true })
-  const { data: userData } = useQuery<GetUserRole>(GET_USER_ROLE)
-
-  const isPublisher = userData?.getUserRole?.roles?.includes(Role.publisher)
-
   useTermsRedirect()
 
   return (
     <>
       <NextSeo title={t('Journey Templates')} />
       <PageWrapper title={t('Journey Templates')} authUser={AuthUser}>
-        <TemplateLibrary isPublisher={isPublisher} templates={data?.journeys} />
+        <TemplateLibrary templates={data?.journeys} />
       </PageWrapper>
     </>
   )

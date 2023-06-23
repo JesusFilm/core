@@ -7,7 +7,8 @@ import {
   descriptiveTemplate,
   publishedTemplate
 } from '../TemplateLibrary/TemplateListData'
-import { GET_ACTIVE_PUBLISHER_TEMPLATES } from './ActiveTemplates/ActiveTemplates'
+import { GET_JOURNEYS } from '../../libs/useJourneys/useJourneys'
+import { JourneyStatus } from '../../../__generated__/globalTypes'
 import { TemplateList } from '.'
 
 const TemplateListStory = {
@@ -25,7 +26,11 @@ const Template: Story = ({ ...args }) => (
     mocks={[
       {
         request: {
-          query: GET_ACTIVE_PUBLISHER_TEMPLATES
+          query: GET_JOURNEYS,
+          variables: {
+            status: [JourneyStatus.draft, JourneyStatus.published],
+            template: true
+          }
         },
         result: {
           data: {

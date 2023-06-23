@@ -1,7 +1,7 @@
 import { render, waitFor } from '@testing-library/react'
 import { ReactElement } from 'react'
 import { MockedProvider } from '@apollo/client/testing'
-import { GetTeams_teams as Team } from '../../../__generated__/GetTeams'
+import { GetTeams_teams as Team } from '../../../../__generated__/GetTeams'
 import { GET_TEAMS } from './TeamProvider'
 import { TeamProvider, useTeam } from '.'
 

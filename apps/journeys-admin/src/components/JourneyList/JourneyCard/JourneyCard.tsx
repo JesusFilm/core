@@ -5,10 +5,10 @@ import CardContent from '@mui/material/CardContent'
 import CardActions from '@mui/material/CardActions'
 import Link from 'next/link'
 import { ApolloQueryResult } from '@apollo/client'
-import { GetActiveJourneys } from '../../../../__generated__/GetActiveJourneys'
-import { GetArchivedJourneys } from '../../../../__generated__/GetArchivedJourneys'
-import { GetTrashedJourneys } from '../../../../__generated__/GetTrashedJourneys'
-import { GetJourneys_journeys as Journey } from '../../../../__generated__/GetJourneys'
+import {
+  GetJourneys,
+  GetJourneys_journeys as Journey
+} from '../../../../__generated__/GetJourneys'
 import { JourneyCardMenu } from './JourneyCardMenu'
 import { JourneyCardText } from './JourneyCardText'
 import { JourneyCardInfo } from './JourneyCardInfo'
@@ -18,11 +18,7 @@ interface JourneyCardProps {
   journey?: Journey
   duplicatedJourneyId?: string
   variant?: JourneyCardVariant
-  refetch?: () => Promise<
-    ApolloQueryResult<
-      GetActiveJourneys | GetArchivedJourneys | GetTrashedJourneys
-    >
-  >
+  refetch?: () => Promise<ApolloQueryResult<GetJourneys>>
 }
 
 export function JourneyCard({

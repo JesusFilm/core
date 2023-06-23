@@ -1,11 +1,11 @@
 import { formatISO, startOfYear } from 'date-fns'
-import { GetPublishedTemplates_journeys as Journey } from '../../../__generated__/GetPublishedTemplates'
 import {
   ThemeName,
   ThemeMode,
   JourneyStatus
 } from '../../../__generated__/globalTypes'
 import { ImageFields } from '../../../__generated__/ImageFields'
+import { GetJourneys_journeys as Journey } from '../../../__generated__/GetJourneys'
 
 const imageBlock: ImageFields = {
   __typename: 'ImageBlock',
@@ -45,7 +45,8 @@ export const defaultTemplate: Journey = {
       }
     ]
   },
-  primaryImageBlock: null
+  primaryImageBlock: null,
+  trashedAt: null
 }
 
 export const oldTemplate: Journey = {

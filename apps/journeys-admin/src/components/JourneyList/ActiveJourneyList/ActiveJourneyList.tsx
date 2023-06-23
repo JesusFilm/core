@@ -106,7 +106,7 @@ export function ActiveJourneyList({
     handleClose()
   }
 
-  const handleClose = (): void => {
+  function handleClose(): void {
     setArchiveDialogOpen(false)
     setTrashDialogOpen(false)
   }

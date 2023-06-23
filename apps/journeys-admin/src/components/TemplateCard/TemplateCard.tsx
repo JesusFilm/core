@@ -16,10 +16,12 @@ import IconButton from '@mui/material/IconButton'
 import MoreVertIcon from '@mui/icons-material/MoreVert'
 import { ApolloQueryResult } from '@apollo/client'
 import Link from 'next/link'
-import { GetPublishedTemplates_journeys as Journey } from '../../../__generated__/GetPublishedTemplates'
 import { JourneyCardMenu } from '../JourneyList/JourneyCard/JourneyCardMenu'
 import { StatusChip } from '../JourneyList/JourneyCard/StatusChip'
-import { GetJourneys } from '../../../__generated__/GetJourneys'
+import {
+  GetJourneys,
+  GetJourneys_journeys as Journey
+} from '../../../__generated__/GetJourneys'
 
 export interface TemplateCardProps {
   journey?: Journey

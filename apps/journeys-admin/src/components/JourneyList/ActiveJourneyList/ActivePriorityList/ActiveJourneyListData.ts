@@ -1,7 +1,7 @@
 import {
-  GetActiveJourneys_journeys as Journey,
-  GetActiveJourneys_journeys_userJourneys as UserJourney
-} from '../../../../../__generated__/GetActiveJourneys'
+  GetJourneys_journeys_userJourneys as UserJourney,
+  GetJourneys_journeys as Journey
+} from '../../../../../__generated__/GetJourneys'
 import {
   ThemeName,
   ThemeMode,
@@ -75,7 +75,10 @@ export const defaultJourney: Journey = {
   status: JourneyStatus.draft,
   seoTitle: null,
   seoDescription: null,
-  userJourneys: [ownerUserJourney, editorUserJourney]
+  userJourneys: [ownerUserJourney, editorUserJourney],
+  trashedAt: null,
+  template: false,
+  primaryImageBlock: null
 }
 
 export const journey: Journey = {

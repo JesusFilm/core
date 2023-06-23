@@ -3,7 +3,6 @@ import { useRouter } from 'next/router'
 import { useFlags } from '@core/shared/ui/FlagsProvider'
 import Box from '@mui/material/Box'
 import Container from '@mui/material/Container'
-import { GetJourneys_journeys as Journey } from '../../../__generated__/GetJourneys'
 import { MultipleSummaryReport } from '../MultipleSummaryReport'
 import { StatusTabPanel } from '../StatusTabPanel'
 import { AddJourneyFab } from './AddJourneyFab'
@@ -11,10 +10,6 @@ import { ActiveJourneyList } from './ActiveJourneyList'
 import { ArchivedJourneyList } from './ArchivedJourneyList'
 import { TrashedJourneyList } from './TrashedJourneyList'
 import { SortOrder } from './JourneySort'
-
-export interface JourneysListProps {
-  journeys?: Journey[]
-}
 
 export interface JourneyListProps {
   sortOrder?: SortOrder

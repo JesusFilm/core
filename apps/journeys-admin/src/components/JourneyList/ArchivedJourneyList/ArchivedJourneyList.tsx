@@ -7,9 +7,7 @@ import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'react-i18next'
 import { useSnackbar } from 'notistack'
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { useAuthUser } from 'next-firebase-auth'
-import { JourneyFields } from '../../../../__generated__/JourneyFields'
 import { JourneyCard } from '../JourneyCard'
 import { sortJourneys } from '../JourneySort/utils/sortJourneys'
 import type { JourneyListProps } from '../JourneyList'
@@ -105,7 +103,7 @@ export function ArchivedJourneyList({
     handleClose()
   }
 
-  const handleClose = (): void => {
+  function handleClose(): void {
     setOpenRestoreDialog(false)
     setOpenTrashDialog(false)
   }
@@ -133,12 +131,11 @@ export function ArchivedJourneyList({
         {sortedJourneys != null ? (
           <>
             {sortedJourneys.map((journey) => (
-              <JourneyProvider
+              <JourneyCard
                 key={journey.id}
-                value={{ journey: journey as JourneyFields, admin: true }}
-              >
-                <JourneyCard journey={journey} refetch={refetch} />
-              </JourneyProvider>
+                journey={journey}
+                refetch={refetch}
+              />
             ))}
             {sortedJourneys.length === 0 && (
               <>

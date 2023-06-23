@@ -15,34 +15,16 @@ describe('TemplateLibrary', () => {
   it('should render templates', () => {
     const { getByText } = render(
       <FlagsProvider>
-        <TemplateLibrary
-          journeys={[defaultTemplate]}
-          templates={[defaultTemplate]}
-        />
+        <TemplateLibrary templates={[defaultTemplate]} />
       </FlagsProvider>
     )
     expect(getByText('Default Template Heading')).toBeInTheDocument()
   })
 
-  it('should show access denied message to new user', () => {
-    const { getByText } = render(
-      <FlagsProvider flags={{ inviteRequirement: true }}>
-        <TemplateLibrary journeys={[]} templates={[defaultTemplate]} />
-      </FlagsProvider>
-    )
-    expect(
-      getByText('You need to be invited to use your first template')
-    ).toBeInTheDocument()
-  })
-
   it('should show templates to new publishers', () => {
     const { getByText } = render(
       <FlagsProvider>
-        <TemplateLibrary
-          isPublisher
-          journeys={[]}
-          templates={[defaultTemplate]}
-        />
+        <TemplateLibrary templates={[defaultTemplate]} />
       </FlagsProvider>
     )
     expect(getByText('Default Template Heading')).toBeInTheDocument()

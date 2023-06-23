@@ -5,6 +5,18 @@ import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 import { ThemeProvider } from '../ThemeProvider'
 import { TemplateList } from '.'
 
+jest.mock('next/router', () => ({
+  __esModule: true,
+  useRouter: jest.fn(() => {
+    return {
+      query: {
+        tab: 'active'
+      },
+      push: jest.fn()
+    }
+  })
+}))
+
 describe('TemplatesList', () => {
   it('should render tab panel', () => {
     const { getByRole } = render(
@@ -12,7 +24,7 @@ describe('TemplatesList', () => {
         <MockedProvider>
           <FlagsProvider>
             <ThemeProvider>
-              <TemplateList event="" />
+              <TemplateList />
             </ThemeProvider>
           </FlagsProvider>
         </MockedProvider>

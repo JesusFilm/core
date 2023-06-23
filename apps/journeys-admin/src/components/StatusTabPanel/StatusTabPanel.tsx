@@ -95,7 +95,7 @@ export function StatusTabPanel({
 
   return (
     <>
-      <Box sx={{ ml: 6, mb: 4, display: { xs: 'block', sm: 'none' } }}>
+      <Box sx={{ mx: 6, mb: 4, mt: -2, display: { xs: 'block', sm: 'none' } }}>
         <JourneySort sortOrder={sortOrder} onChange={setSortOrder} />
       </Box>
 

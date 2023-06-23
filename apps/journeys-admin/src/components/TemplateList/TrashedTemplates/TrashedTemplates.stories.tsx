@@ -1,7 +1,6 @@
 import { Story, Meta } from '@storybook/react'
 import { MockedProvider } from '@apollo/client/testing'
 import { formatISO } from 'date-fns'
-import noop from 'lodash/noop'
 import { SnackbarProvider } from 'notistack'
 import { JourneyStatus } from '../../../../__generated__/globalTypes'
 import { journeysAdminConfig } from '../../../libs/storybook'
@@ -12,7 +11,7 @@ import {
   publishedTemplate
 } from '../../TemplateLibrary/TemplateListData'
 import { ThemeProvider } from '../../ThemeProvider'
-import { GET_TRASHED_PUBLISHER_TEMPLATES } from './TrashedTemplates'
+import { GET_JOURNEYS } from '../../../libs/useJourneys/useJourneys'
 import { TrashedTemplates } from '.'
 
 const TrashedTemplatesStory = {
@@ -64,14 +63,14 @@ const Template: Story = ({ ...args }) => (
 
 export const Default = Template.bind({})
 Default.args = {
-  props: {
-    onLoad: noop,
-    event: ''
-  },
   mocks: [
     {
       request: {
-        query: GET_TRASHED_PUBLISHER_TEMPLATES
+        query: GET_JOURNEYS,
+        variables: {
+          status: [JourneyStatus.trashed],
+          template: true
+        }
       },
       result: {
         data: {
@@ -89,14 +88,14 @@ Default.args = {
 
 export const NoTemplates = Template.bind({})
 NoTemplates.args = {
-  props: {
-    onLoad: noop,
-    event: ''
-  },
   mocks: [
     {
       request: {
-        query: GET_TRASHED_PUBLISHER_TEMPLATES
+        query: GET_JOURNEYS,
+        variables: {
+          status: [JourneyStatus.trashed],
+          template: true
+        }
       },
       result: {
         data: {
@@ -109,17 +108,12 @@ NoTemplates.args = {
 
 export const Loading = Template.bind({})
 Loading.args = {
-  props: {
-    onLoad: noop,
-    event: ''
-  },
   mocks: []
 }
 
 export const RestoreDialog = Template.bind({})
 RestoreDialog.args = {
   props: {
-    onLoad: noop,
     event: 'restoreAllTrashed'
   },
   mocks: []
@@ -128,7 +122,6 @@ RestoreDialog.args = {
 export const DeleteDialog = Template.bind({})
 DeleteDialog.args = {
   props: {
-    onLoad: noop,
     event: 'deleteAllTrashed'
   },
   mocks: []

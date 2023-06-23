@@ -77,7 +77,10 @@ export const defaultJourney: Journey = {
   status: JourneyStatus.draft,
   seoTitle: null,
   seoDescription: null,
-  userJourneys
+  userJourneys,
+  trashedAt: null,
+  template: false,
+  primaryImageBlock: null
 }
 
 export const oldJourney: Journey = {

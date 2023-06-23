@@ -1,8 +1,6 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
-import noop from 'lodash/noop'
 import { SnackbarProvider } from 'notistack'
-import { AuthUser } from 'next-firebase-auth'
 import {
   defaultTemplate,
   oldTemplate
@@ -13,14 +11,17 @@ import {
   ARCHIVE_ACTIVE_JOURNEYS,
   TRASH_ACTIVE_JOURNEYS
 } from '../../JourneyList/ActiveJourneyList/ActiveJourneyList'
-import {
-  ActiveTemplates,
-  GET_ACTIVE_PUBLISHER_TEMPLATES
-} from './ActiveTemplates'
+import { ActiveTemplates } from '.'
+import { GET_JOURNEYS } from '../../../libs/useJourneys/useJourneys'
+import { JourneyStatus } from '../../../../__generated__/globalTypes'
 
 const activeTemplatesMock = {
   request: {
-    query: GET_ACTIVE_PUBLISHER_TEMPLATES
+    query: GET_JOURNEYS,
+    variables: {
+      status: [JourneyStatus.draft, JourneyStatus.published],
+      template: true
+    }
   },
   result: {
     data: {
@@ -31,7 +32,11 @@ const activeTemplatesMock = {
 
 const noTemplatesMock = {
   request: {
-    query: GET_ACTIVE_PUBLISHER_TEMPLATES
+    query: GET_JOURNEYS,
+    variables: {
+      status: [JourneyStatus.draft, JourneyStatus.published],
+      template: true
+    }
   },
   result: {
     data: {
@@ -40,15 +45,13 @@ const noTemplatesMock = {
   }
 }
 
-const authUser = { id: 'user-id1' } as unknown as AuthUser
-
 describe('ActiveTemplates', () => {
   it('should render templates in descending createdAt date by default', async () => {
     const { getAllByLabelText } = render(
       <MockedProvider mocks={[activeTemplatesMock]}>
         <ThemeProvider>
           <SnackbarProvider>
-            <ActiveTemplates onLoad={noop} event="" />
+            <ActiveTemplates />
           </SnackbarProvider>
         </ThemeProvider>
       </MockedProvider>
@@ -74,7 +77,11 @@ describe('ActiveTemplates', () => {
         mocks={[
           {
             request: {
-              query: GET_ACTIVE_PUBLISHER_TEMPLATES
+              query: GET_JOURNEYS,
+              variables: {
+                status: [JourneyStatus.draft, JourneyStatus.published],
+                template: true
+              }
             },
             result: {
               data: {
@@ -86,11 +93,7 @@ describe('ActiveTemplates', () => {
       >
         <ThemeProvider>
           <SnackbarProvider>
-            <ActiveTemplates
-              onLoad={noop}
-              sortOrder={SortOrder.TITLE}
-              event=""
-            />
+            <ActiveTemplates sortOrder={SortOrder.TITLE} />
           </SnackbarProvider>
         </ThemeProvider>
       </MockedProvider>
@@ -111,7 +114,11 @@ describe('ActiveTemplates', () => {
         mocks={[
           {
             request: {
-              query: GET_ACTIVE_PUBLISHER_TEMPLATES
+              query: GET_JOURNEYS,
+              variables: {
+                status: [JourneyStatus.draft, JourneyStatus.published],
+                template: true
+              }
             },
             result: {
               data: {
@@ -123,11 +130,7 @@ describe('ActiveTemplates', () => {
       >
         <ThemeProvider>
           <SnackbarProvider>
-            <ActiveTemplates
-              onLoad={noop}
-              sortOrder={SortOrder.TITLE}
-              event=""
-            />
+            <ActiveTemplates sortOrder={SortOrder.TITLE} />
           </SnackbarProvider>
         </ThemeProvider>
       </MockedProvider>
@@ -142,7 +145,7 @@ describe('ActiveTemplates', () => {
       <MockedProvider mocks={[]}>
         <ThemeProvider>
           <SnackbarProvider>
-            <ActiveTemplates onLoad={noop} event="" />
+            <ActiveTemplates />
           </SnackbarProvider>
         </ThemeProvider>
       </MockedProvider>
@@ -150,20 +153,6 @@ describe('ActiveTemplates', () => {
     await waitFor(() =>
       expect(getAllByLabelText('template-card')).toHaveLength(3)
     )
-  })
-
-  it('should call onLoad when query is loaded', async () => {
-    const onLoad = jest.fn()
-    render(
-      <MockedProvider mocks={[noTemplatesMock]}>
-        <ThemeProvider>
-          <SnackbarProvider>
-            <ActiveTemplates onLoad={onLoad} event="" />
-          </SnackbarProvider>
-        </ThemeProvider>
-      </MockedProvider>
-    )
-    await waitFor(() => expect(onLoad).toHaveBeenCalled())
   })
 
   describe('Archive All', () => {
@@ -181,14 +170,13 @@ describe('ActiveTemplates', () => {
       },
       result
     }
-    const onLoad = jest.fn()
 
     it('should display the archive all dialog', () => {
       const { getByText } = render(
         <MockedProvider mocks={[activeTemplatesMock]}>
           <ThemeProvider>
             <SnackbarProvider>
-              <ActiveTemplates onLoad={noop} event="archiveAllActive" />
+              <ActiveTemplates event="archiveAllActive" />
             </SnackbarProvider>
           </ThemeProvider>
         </MockedProvider>
@@ -202,16 +190,14 @@ describe('ActiveTemplates', () => {
         <MockedProvider mocks={[activeTemplatesMock, archiveJourneysMock]}>
           <ThemeProvider>
             <SnackbarProvider>
-              <ActiveTemplates
-                onLoad={onLoad}
-                event="archiveAllActive"
-                authUser={authUser}
-              />
+              <ActiveTemplates event="archiveAllActive" />
             </SnackbarProvider>
           </ThemeProvider>
         </MockedProvider>
       )
-      await waitFor(() => expect(onLoad).toHaveBeenCalled())
+      await waitFor(() =>
+        expect(getByText('Default Template Heading')).toBeInTheDocument()
+      )
       fireEvent.click(getByText('Archive'))
       await waitFor(() => expect(result).toHaveBeenCalled())
     })
@@ -227,17 +213,15 @@ describe('ActiveTemplates', () => {
           <SnackbarProvider>
             <ThemeProvider>
               <SnackbarProvider>
-                <ActiveTemplates
-                  onLoad={onLoad}
-                  event="archiveAllActive"
-                  authUser={authUser}
-                />
+                <ActiveTemplates event="archiveAllActive" />
               </SnackbarProvider>
             </ThemeProvider>
           </SnackbarProvider>
         </MockedProvider>
       )
-      await waitFor(() => expect(onLoad).toHaveBeenCalled())
+      await waitFor(() =>
+        expect(getByText('Default Template Heading')).toBeInTheDocument()
+      )
       fireEvent.click(getByText('Archive'))
       await waitFor(() => expect(getByText('error')).toBeInTheDocument())
     })
@@ -265,7 +249,7 @@ describe('ActiveTemplates', () => {
         <MockedProvider mocks={[activeTemplatesMock]}>
           <ThemeProvider>
             <SnackbarProvider>
-              <ActiveTemplates onLoad={noop} event="trashAllActive" />
+              <ActiveTemplates event="trashAllActive" />
             </SnackbarProvider>
           </ThemeProvider>
         </MockedProvider>
@@ -281,16 +265,14 @@ describe('ActiveTemplates', () => {
         >
           <ThemeProvider>
             <SnackbarProvider>
-              <ActiveTemplates
-                onLoad={onLoad}
-                event="trashAllActive"
-                authUser={authUser}
-              />
+              <ActiveTemplates event="trashAllActive" />
             </SnackbarProvider>
           </ThemeProvider>
         </MockedProvider>
       )
-      await waitFor(() => expect(onLoad).toHaveBeenCalled())
+      await waitFor(() =>
+        expect(getByText('Default Template Heading')).toBeInTheDocument()
+      )
       fireEvent.click(getByText('Trash'))
       await waitFor(() => expect(result).toHaveBeenCalled())
     })
@@ -306,17 +288,15 @@ describe('ActiveTemplates', () => {
           <SnackbarProvider>
             <ThemeProvider>
               <SnackbarProvider>
-                <ActiveTemplates
-                  onLoad={onLoad}
-                  event="trashAllActive"
-                  authUser={authUser}
-                />
+                <ActiveTemplates event="trashAllActive" />
               </SnackbarProvider>
             </ThemeProvider>
           </SnackbarProvider>
         </MockedProvider>
       )
-      await waitFor(() => expect(onLoad).toHaveBeenCalled())
+      await waitFor(() =>
+        expect(getByText('Default Template Heading')).toBeInTheDocument()
+      )
       fireEvent.click(getByText('Trash'))
       await waitFor(() => expect(getByText('error')).toBeInTheDocument())
     })
