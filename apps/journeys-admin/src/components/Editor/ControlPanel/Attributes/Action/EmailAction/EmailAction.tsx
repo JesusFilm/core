@@ -76,9 +76,9 @@ export function EmailAction(): ReactElement {
       <TextFieldForm
         id="email"
         label="Paste Email here..."
-        initialValues={emailAction?.email}
+        initialValue={emailAction?.email}
         validationSchema={emailActionSchema}
-        handleSubmit={handleSubmit}
+        onSubmit={handleSubmit}
         startIcon={
           <InputAdornment position="start">
             <DraftsIcon />

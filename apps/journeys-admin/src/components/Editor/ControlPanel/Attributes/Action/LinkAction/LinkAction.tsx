@@ -94,9 +94,9 @@ export function LinkAction(): ReactElement {
       <TextFieldForm
         id="link"
         label="Paste URL here..."
-        initialValues={linkAction?.url}
+        initialValue={linkAction?.url}
         validationSchema={linkActionSchema}
-        handleSubmit={handleSubmit}
+        onSubmit={handleSubmit}
         startIcon={
           <InputAdornment position="start">
             <InsertLinkRoundedIcon />

@@ -30,7 +30,8 @@ describe('EditorContext', () => {
         ).toEqual({
           ...state,
           selectedStep: step,
-          selectedBlock: step
+          selectedBlock: step,
+          selectedComponent: undefined
         })
       })
     })
