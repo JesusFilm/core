@@ -198,7 +198,9 @@ describe('ControlPanel', () => {
       'aria-selected',
       'true'
     )
-    expect(getByRole('button', { name: 'Hosted by None' })).toBeInTheDocument()
+    expect(
+      getByRole('button', { name: 'Chat Widget None' })
+    ).toBeInTheDocument()
   })
 
   it('should hide add button when clicking blocks tab', async () => {
