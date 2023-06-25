@@ -31,7 +31,7 @@ export function HostListItem({
       <Stack direction="row" sx={{ width: '100%' }}>
         <Box
           sx={{
-            width: '92px',
+            width: '85.2px',
             height: '48px',
             display: 'flex',
             justifyContent: 'flex-start',

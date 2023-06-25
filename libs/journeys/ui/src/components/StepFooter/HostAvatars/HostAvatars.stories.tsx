@@ -3,21 +3,21 @@ import { Story, Meta } from '@storybook/react'
 import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 import Stack from '@mui/material/Stack'
 import { JourneyProvider } from '../../../libs/JourneyProvider'
-import { journeyUiConfig } from '../../../libs/journeyUiConfig'
 import {
   JourneyStatus,
   ThemeMode,
   ThemeName
 } from '../../../../__generated__/globalTypes'
 import { JourneyFields as Journey } from '../../../libs/JourneyProvider/__generated__/JourneyFields'
+import { simpleComponentConfig } from '../../../libs/simpleComponentConfig'
 import { HostAvatars } from './HostAvatars'
 
 const HostAvatarsDemo = {
-  ...journeyUiConfig,
+  ...simpleComponentConfig,
   component: HostAvatars,
   title: 'Journeys-Ui/StepFooter/HostAvatars',
   parameters: {
-    ...journeyUiConfig.parameters
+    ...simpleComponentConfig.parameters
   }
 }
 const hostData = {
