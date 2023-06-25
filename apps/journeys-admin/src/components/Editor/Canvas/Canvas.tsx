@@ -228,18 +228,6 @@ export function Canvas(): ReactElement {
                                   type: 'SetActiveTabAction',
                                   activeTab: ActiveTab.Properties
                                 })
-                                dispatch({
-                                  type: 'SetDrawerPropsAction',
-                                  title: 'Hosted By',
-                                  mobileOpen: true,
-                                  children: (
-                                    <div>Hosted by content component</div>
-                                  )
-                                })
-                                dispatch({
-                                  type: 'SetSelectedAttributeIdAction',
-                                  id: 'hosted-by'
-                                })
                               }
                             }}
                           />
