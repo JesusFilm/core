@@ -5,7 +5,7 @@ import Typography from '@mui/material/Typography'
 import { ReactElement } from 'react'
 import ListItemButton from '@mui/material/ListItemButton'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
-import { UpdateHost_hostUpdate as Host } from '../../../../../../../../../../__generated__/UpdateHost'
+import { UpdateHost_hostUpdate as Host } from '../../../../../../../../../__generated__/UpdateHost'
 
 interface HostListItemProps extends Omit<Host, 'teamId' | '__typename'> {
   onClick: (hostId: string) => void

@@ -1,7 +1,7 @@
 import { Story, Meta } from '@storybook/react'
 import { ComponentProps } from 'react'
 import { noop } from 'lodash'
-import { journeysAdminConfig } from '../../../../../../../../../libs/storybook'
+import { journeysAdminConfig } from '../../../../../../../../libs/storybook'
 import { HostListItem } from './HostListItem'
 
 const HostListItemDemo = {
