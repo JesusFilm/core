@@ -196,12 +196,12 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
         sx={{
           ...alignSx,
           position: 'absolute',
-          top: '8%',
+          top: '20%',
           bottom: 0,
           zIndex: 2,
           display: slideTransitioning ? 'none' : 'flex',
           width: { xs: 82, lg: 114 },
-          height: '74%'
+          height: '50%'
         }}
       >
         <IconButton
