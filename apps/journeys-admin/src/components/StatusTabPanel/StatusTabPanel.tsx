@@ -58,7 +58,7 @@ export function StatusTabPanel({
   ]
 
   const tabIndex =
-    journeyStatusTabs.find((status) => status.queryParam === router.query?.tab)
+    journeyStatusTabs.find((status) => status.queryParam === router?.query?.tab)
       ?.tabIndex ?? 0
   const [activeTab, setActiveTab] = useState(tabIndex)
 

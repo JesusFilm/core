@@ -21,7 +21,7 @@ export function JourneyListMenu({
   const { t } = useTranslation('apps-journeys-admin')
   const router = useRouter()
 
-  const activeTab = router.query.tab?.toString() ?? 'active'
+  const activeTab = router?.query.tab?.toString() ?? 'active'
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
   const handleShowMenu = (event: React.MouseEvent<HTMLButtonElement>): void => {
     setAnchorEl(event.currentTarget)

@@ -67,7 +67,7 @@ export function JourneyList({
         </Container>
       </Box>
       {!['archived', 'trashed'].includes(
-        router.query?.tab?.toString() ?? ''
+        router?.query?.tab?.toString() ?? ''
       ) && <AddJourneyFab />}
     </>
   )
