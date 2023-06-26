@@ -85,7 +85,7 @@ export function StepFooter({
             }}
             gap={2}
           >
-            {hasAvatar && <HostAvatars hasPlaceholder={admin} />}
+            {hasAvatar && <HostAvatars />}
             <Stack sx={{ py: 1.5, flex: '1 1 100%', minWidth: 0 }}>
               <Typography
                 sx={{
