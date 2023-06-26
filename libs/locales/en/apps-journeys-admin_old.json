@@ -3,5 +3,8 @@
   "A text block containing a with information on how the user can extract the correct link to Messenger chat.": "A text block containing a with information on how the user can extract the correct link to Messenger chat.",
   "A text block containing a link with information on how the user can extract the correct link to WhatsApp chat.": "A text block containing a link with information on how the user can extract the correct link to WhatsApp chat.",
   "A text block containing a link with information on how the user can extract the correct link to Telegram chat.": "A text block containing a link with information on how the user can extract the correct link to Telegram chat.",
-  "Select an icon...": "Select an icon..."
+  "Select an icon...": "Select an icon...",
+  "Hosted By": "Hosted By",
+  "Hosted by": "Hosted by",
+  "Host's name": "Host's name"
 }
