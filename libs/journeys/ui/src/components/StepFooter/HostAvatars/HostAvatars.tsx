@@ -27,9 +27,9 @@ export function HostAvatars({
 
   return (
     <AvatarGroup
-      spacing={size === 'small' ? 16 : 14}
+      spacing={size === 'small' ? 16 : 24}
       data-testid="host-avatars"
-      sx={{ flexDirection: rtl ? 'row' : 'row-reverse' }}
+      sx={{ pr: rtl && src1 != null && src2 != null ? 4 : 0 }}
     >
       {src1 != null && (
         <Avatar
