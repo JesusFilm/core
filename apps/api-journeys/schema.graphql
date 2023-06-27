@@ -190,6 +190,8 @@ extend type Mutation {
   userJourneyOpen(id: ID!): UserJourney
   userTeamUpdate(id: ID!, input: TeamUpdateInput): UserTeam!
   userTeamDelete(id: ID!): UserTeam!
+  userTeamInviteCreate(teamId: ID!, input: UserTeamInviteCreateInput): UserTeamInvite
+  userTeamInviteDelete(id: ID!, teamId: ID!): UserTeamInvite!
 
   """Update a visitor"""
   visitorUpdate(id: ID!, input: VisitorUpdateInput!): Visitor!
@@ -1631,6 +1633,7 @@ extend type Query {
   getUserRole: UserRole
   userTeams(teamId: ID!): [UserTeam!]!
   userTeam(id: ID!): UserTeam!
+  userTeamInvites(teamId: ID!): [UserTeamInvite!]
 
   """A list of visitors that are connected with a specific team."""
   visitorsConnection(
@@ -1950,6 +1953,18 @@ type UserTeam
 
 input UserTeamUpdateInput {
   role: UserTeamRole!
+}
+
+type UserTeamInvite {
+  id: ID!
+  teamId: ID!
+  email: String!
+  acceptedAt: DateTime
+  role: UserTeamRole
+}
+
+input UserTeamInviteCreateInput {
+  email: String!
 }
 
 type Browser {

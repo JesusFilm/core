@@ -650,6 +650,10 @@ export class UserTeamUpdateInput {
     role: UserTeamRole;
 }
 
+export class UserTeamInviteCreateInput {
+    email: string;
+}
+
 export class VisitorUpdateInput {
     email?: Nullable<string>;
     messagePlatformId?: Nullable<string>;
@@ -1122,6 +1126,8 @@ export abstract class IQuery {
 
     abstract userTeam(id: string): UserTeam | Promise<UserTeam>;
 
+    abstract userTeamInvites(teamId: string): Nullable<UserTeamInvite[]> | Promise<Nullable<UserTeamInvite[]>>;
+
     abstract visitorsConnection(teamId: string, first?: Nullable<number>, after?: Nullable<string>): VisitorsConnection | Promise<VisitorsConnection>;
 
     abstract visitor(id: string): Visitor | Promise<Visitor>;
@@ -1218,6 +1224,15 @@ export class UserTeam {
     role: UserTeamRole;
     createdAt: DateTime;
     updatedAt: DateTime;
+}
+
+export class UserTeamInvite {
+    __typename?: 'UserTeamInvite';
+    id: string;
+    teamId: string;
+    email: string;
+    acceptedAt?: Nullable<DateTime>;
+    role?: Nullable<UserTeamRole>;
 }
 
 export class Browser {
@@ -1446,6 +1461,10 @@ export abstract class IMutation {
     abstract userTeamUpdate(id: string, input?: Nullable<TeamUpdateInput>): UserTeam | Promise<UserTeam>;
 
     abstract userTeamDelete(id: string): UserTeam | Promise<UserTeam>;
+
+    abstract userTeamInviteCreate(teamId: string, input?: Nullable<UserTeamInviteCreateInput>): Nullable<UserTeamInvite> | Promise<Nullable<UserTeamInvite>>;
+
+    abstract userTeamInviteDelete(id: string, teamId: string): UserTeamInvite | Promise<UserTeamInvite>;
 
     abstract visitorUpdate(id: string, input: VisitorUpdateInput): Visitor | Promise<Visitor>;
 

@@ -8,7 +8,8 @@ import {
   Host, 
   JourneyVisitor, 
   Team, 
-  UserTeam
+  UserTeam, 
+  UserTeamInvite
 } from '.prisma/api-journeys-client'
 
 export type PrismaSubjects = Subjects<{
@@ -18,5 +19,6 @@ export type PrismaSubjects = Subjects<{
   Host: Host, 
   JourneyVisitor: JourneyVisitor, 
   Team: Team, 
-  UserTeam: UserTeam
+  UserTeam: UserTeam, 
+  UserTeamInvite: UserTeamInvite
 }>
