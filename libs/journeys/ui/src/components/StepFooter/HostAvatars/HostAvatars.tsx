@@ -38,7 +38,8 @@ export function HostAvatars({
             height: size === 'small' ? '30px' : '48px',
             width: size === 'small' ? '30px' : '48px',
             '&.MuiAvatar-root': {
-              borderWidth: '1px'
+              borderWidth: '1px',
+              marginRight: rtl ? '-8px' : 0
             }
           }}
         />
@@ -50,7 +51,8 @@ export function HostAvatars({
             height: size === 'small' ? '30px' : '48px',
             width: size === 'small' ? '30px' : '48px',
             '&.MuiAvatar-root': {
-              borderWidth: '1px'
+              borderWidth: '1px',
+              marginRight: rtl ? '-8px' : 0
             }
           }}
         />
