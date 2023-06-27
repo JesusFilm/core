@@ -10,7 +10,14 @@ import { TeamMenu } from '.'
 const TeamMenuStory = {
   ...journeysAdminConfig,
   component: TeamMenu,
-  title: 'Journeys-Admin/Team/TeamMenu'
+  title: 'Journeys-Admin/Team/TeamMenu',
+  parameters: {
+    ...journeysAdminConfig.parameters,
+    chromatic: {
+      ...journeysAdminConfig.parameters?.chromatic,
+      viewports: [360]
+    }
+  }
 }
 
 const getTeamsMock: MockedResponse<GetTeams> = {

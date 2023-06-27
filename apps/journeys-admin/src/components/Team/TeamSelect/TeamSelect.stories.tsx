@@ -8,7 +8,14 @@ import { TeamSelect } from '.'
 const TeamSelectStory = {
   ...journeysAdminConfig,
   component: TeamSelect,
-  title: 'Journeys-Admin/Team/TeamSelect'
+  title: 'Journeys-Admin/Team/TeamSelect',
+  parameters: {
+    ...journeysAdminConfig.parameters,
+    chromatic: {
+      ...journeysAdminConfig.parameters?.chromatic,
+      viewports: [360]
+    }
+  }
 }
 
 const getTeamsMock: MockedResponse<GetTeams> = {
