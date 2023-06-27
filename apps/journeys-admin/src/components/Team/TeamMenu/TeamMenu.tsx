@@ -8,9 +8,11 @@ import MoreVert from '@mui/icons-material/MoreVert'
 import { MenuItem } from '../../MenuItem'
 import { TeamCreateDialog } from '../TeamCreateDialog'
 import { TeamUpdateDialog } from '../TeamUpdateDialog'
+import { useTeam } from '../TeamProvider'
 
 export function TeamMenu(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
+  const { activeTeam } = useTeam()
   const [teamCreateOpen, setTeamCreateOpen] = useState(false)
   const [teamUpdateOpen, setTeamUpdateOpen] = useState(false)
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
@@ -71,6 +73,7 @@ export function TeamMenu(): ReactElement {
           }}
         />
         <MenuItem
+          disabled={activeTeam == null}
           key="rename-team"
           label={t('Rename Team')}
           icon={<EditIcon />}

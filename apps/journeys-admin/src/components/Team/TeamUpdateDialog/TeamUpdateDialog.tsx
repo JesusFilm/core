@@ -3,7 +3,7 @@ import { useMutation, gql, ApolloError } from '@apollo/client'
 import TextField from '@mui/material/TextField'
 import { Dialog } from '@core/shared/ui/Dialog'
 import { useSnackbar } from 'notistack'
-import { Formik, Form, FormikValues } from 'formik'
+import { Formik, Form, FormikValues, FormikHelpers } from 'formik'
 import { useTranslation } from 'react-i18next'
 import { object, string } from 'yup'
 import { TeamUpdate } from '../../../../__generated__/TeamUpdate'
@@ -35,17 +35,24 @@ export function TeamUpdateDialog({
     title: string().required('Team Name must be at least one character.')
   })
 
-  async function handleSubmit(values: FormikValues): Promise<void> {
+  async function handleSubmit(
+    values: FormikValues,
+    { resetForm }: FormikHelpers<FormikValues>
+  ): Promise<void> {
     try {
-      await teamUpdate({
+      const { data } = await teamUpdate({
         variables: { id: activeTeam?.id, input: { title: values.title } }
       })
-      onClose()
+      handleClose(resetForm)()
+      enqueueSnackbar(t(`${data?.teamUpdate.title ?? 'Team'} updated.`), {
+        variant: 'success',
+        preventDuplicate: true
+      })
     } catch (error) {
       if (error instanceof ApolloError) {
         if (error.networkError != null) {
           enqueueSnackbar(
-            t('Field update failed. Reload the page or try again.'),
+            t('Failed to update the team. Reload the page or try again.'),
             {
               variant: 'error',
               preventDuplicate: true

@@ -3,7 +3,7 @@ import { useMutation, gql, ApolloError } from '@apollo/client'
 import TextField from '@mui/material/TextField'
 import { Dialog } from '@core/shared/ui/Dialog'
 import { useSnackbar } from 'notistack'
-import { Formik, Form, FormikValues } from 'formik'
+import { Formik, Form, FormikValues, FormikHelpers } from 'formik'
 import { useTranslation } from 'react-i18next'
 import { object, string } from 'yup'
 import Typography from '@mui/material/Typography'
@@ -61,17 +61,24 @@ export function TeamCreateDialog({
     title: string().required('Team Name must be at least one character.')
   })
 
-  async function handleSubmit(values: FormikValues): Promise<void> {
+  async function handleSubmit(
+    values: FormikValues,
+    { resetForm }: FormikHelpers<FormikValues>
+  ): Promise<void> {
     try {
-      await teamCreate({
+      const { data } = await teamCreate({
         variables: { input: { title: values.title } }
       })
-      onClose()
+      handleClose(resetForm)()
+      enqueueSnackbar(t(`${data?.teamCreate.title ?? 'Team'} created.`), {
+        variant: 'success',
+        preventDuplicate: true
+      })
     } catch (error) {
       if (error instanceof ApolloError) {
         if (error.networkError != null) {
           enqueueSnackbar(
-            t('Field update failed. Reload the page or try again.'),
+            t('Failed to update the team. Reload the page or try again.'),
             {
               variant: 'error',
               preventDuplicate: true
@@ -87,7 +94,9 @@ export function TeamCreateDialog({
     }
   }
 
-  function handleClose(resetForm: (values: FormikValues) => void): () => void {
+  function handleClose(
+    resetForm: FormikHelpers<FormikValues>['resetForm']
+  ): () => void {
     return () => {
       onClose()
       // wait for dialog animation to complete
@@ -123,6 +132,7 @@ export function TeamCreateDialog({
               onChange={handleChange}
               helperText={errors.title}
               label="Team Name"
+              autoFocus
             />
             <Typography pt={5}>
               {t(
