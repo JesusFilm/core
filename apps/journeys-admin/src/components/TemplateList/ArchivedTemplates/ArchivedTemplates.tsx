@@ -117,36 +117,24 @@ export function ArchivedTemplates({
                 refetch={refetch}
               />
             ))}
-            {sortedJourneys.length > 0 ? (
-              <span>
-                <Box width="100%" sx={{ textAlign: 'center' }}>
-                  <Typography variant="caption">
-                    {t(
-                      'Archived templates are delisted from the Template Library.'
-                    )}
-                  </Typography>
-                </Box>
-              </span>
-            ) : (
-              <>
-                <Card
-                  variant="outlined"
-                  sx={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    pt: 20,
-                    pb: 16,
-                    borderBottomLeftRadius: { xs: 0, sm: 12 },
-                    borderBottomRightRadius: { xs: 0, sm: 12 },
-                    borderTopLeftRadius: 0,
-                    borderTopRightRadius: 0
-                  }}
-                >
-                  <Typography variant="subtitle1" align="center" gutterBottom>
-                    {t('No archived templates.')}
-                  </Typography>
-                </Card>
-              </>
+            {sortedJourneys.length === 0 && (
+              <Card
+                variant="outlined"
+                sx={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  pt: 20,
+                  pb: 16,
+                  borderBottomLeftRadius: { xs: 0, sm: 12 },
+                  borderBottomRightRadius: { xs: 0, sm: 12 },
+                  borderTopLeftRadius: 0,
+                  borderTopRightRadius: 0
+                }}
+              >
+                <Typography variant="subtitle1" align="center" gutterBottom>
+                  {t('No archived templates.')}
+                </Typography>
+              </Card>
             )}
           </>
         ) : (
@@ -164,9 +152,7 @@ export function ArchivedTemplates({
           component="div"
           sx={{ py: { xs: 3, sm: 5 }, maxWidth: 290 }}
         >
-          {t(
-            'You can archive a template to to delist it from the Template Library.'
-          )}
+          {t('Archived templates are delisted from the Template Library.')}
         </Typography>
       </Stack>
       <Dialog
