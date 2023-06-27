@@ -121,7 +121,6 @@ export function Menu(): ReactElement {
         aria-controls="edit-journey-actions"
         aria-haspopup="true"
         aria-expanded={anchorEl != null ? 'true' : undefined}
-        sx={{ mr: 1 }}
         onClick={handleShowMenu}
         disabled={journey == null}
       >
