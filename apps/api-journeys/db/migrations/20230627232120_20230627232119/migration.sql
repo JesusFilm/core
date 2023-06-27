@@ -3,8 +3,10 @@ CREATE TABLE "UserTeamInvite" (
     "id" TEXT NOT NULL,
     "teamId" TEXT NOT NULL,
     "email" TEXT NOT NULL,
-    "role" "UserTeamRole" NOT NULL,
+    "role" "UserTeamRole" NOT NULL DEFAULT 'member',
+    "senderId" TEXT NOT NULL,
     "acceptedAt" TIMESTAMP(3),
+    "removedAt" TIMESTAMP(3),
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
