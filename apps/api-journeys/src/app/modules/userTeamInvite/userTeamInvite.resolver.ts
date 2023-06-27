@@ -16,6 +16,8 @@ import {
 import { UserTeamInvite, Prisma } from '.prisma/api-journeys-client'
 import { GraphQLError } from 'graphql'
 import { Action, AppAbility } from '../../lib/casl/caslFactory'
+import { CurrentUser } from '@core/nest/decorators/CurrentUser'
+import { CurrentUserId } from '@core/nest/decorators/CurrentUserId'
 
 @Resolver('userTeamInvite')
 export class TeamResolver {
@@ -37,6 +39,7 @@ export class TeamResolver {
   @Mutation()
   async userTeamInviteCreate(
     @CaslAbility() ability: AppAbility,
+    @CurrentUserId() senderId: string,
     @Args('teamId') teamId: string,
     @Args('input') input: UserTeamInviteCreateInput
   ): Promise<UserTeamInvite> {
@@ -53,6 +56,7 @@ export class TeamResolver {
         data: {
           teamId,
           email: input.email,
+          senderId,
           role: UserTeamRole.member
         }
       })
