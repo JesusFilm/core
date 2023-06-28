@@ -4,6 +4,7 @@ import PeopleOutlineRoundedIcon from '@mui/icons-material/PeopleOutlineRounded'
 import TextField from '@mui/material/TextField'
 import Stack from '@mui/material/Stack'
 import { sortBy } from 'lodash'
+import CircularProgress from '@mui/material/CircularProgress'
 import { useTeam } from '../TeamProvider'
 
 export function TeamSelect(): ReactElement {
@@ -17,7 +18,7 @@ export function TeamSelect(): ReactElement {
         onChange={(_event, value) => setActiveTeam(value)}
         value={activeTeam}
         options={
-          query.data?.teams != null ? sortBy(query.data?.teams, 'title') : []
+          query?.data?.teams != null ? sortBy(query.data?.teams, 'title') : []
         }
         getOptionLabel={(option) => option?.title ?? ''}
         isOptionEqualToValue={(option, value) => option?.id === value?.id}
@@ -28,7 +29,13 @@ export function TeamSelect(): ReactElement {
             name="Team"
             InputProps={{
               ...params.InputProps,
-              sx: { fontWeight: 'bold' }
+              sx: { fontWeight: 'bold' },
+              endAdornment: (
+                <>
+                  {query?.loading ? <CircularProgress size={20} /> : null}
+                  {params.InputProps.endAdornment}
+                </>
+              )
             }}
           />
         )}

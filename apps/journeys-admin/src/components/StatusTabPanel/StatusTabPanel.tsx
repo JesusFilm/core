@@ -58,7 +58,7 @@ export function StatusTabPanel({
   ]
 
   const tabIndex =
-    journeyStatusTabs.find((status) => status.queryParam === router.query?.tab)
+    journeyStatusTabs.find((status) => status.queryParam === router?.query?.tab)
       ?.tabIndex ?? 0
   const [activeTab, setActiveTab] = useState(tabIndex)
 
@@ -143,6 +143,14 @@ export function StatusTabPanel({
             }}
           >
             <JourneySort sortOrder={sortOrder} onChange={setSortOrder} />
+          </Box>
+          <Box
+            sx={{
+              display: 'flex',
+              alignItems: 'center'
+            }}
+          >
+            <JourneyListMenu onClick={setActiveEvent} />
           </Box>
           <JourneyListMenu onClick={setActiveEvent} />
         </Tabs>

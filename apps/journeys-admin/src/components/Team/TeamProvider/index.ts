@@ -1,1 +1,1 @@
-export { TeamProvider, useTeam } from './TeamProvider'
+export { TeamProvider, useTeam, GET_TEAMS } from './TeamProvider'

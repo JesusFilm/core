@@ -2,20 +2,19 @@ import { useTranslation } from 'react-i18next'
 import { ReactElement, useState } from 'react'
 import AddIcon from '@mui/icons-material/Add'
 import EditIcon from '@mui/icons-material/Edit'
-import GroupsIcon from '@mui/icons-material/Groups'
 import IconButton from '@mui/material/IconButton'
 import Menu from '@mui/material/Menu'
 import MoreVert from '@mui/icons-material/MoreVert'
 import { MenuItem } from '../../MenuItem'
 import { TeamCreateDialog } from '../TeamCreateDialog'
 import { TeamUpdateDialog } from '../TeamUpdateDialog'
-import { TeamManageDialog } from '../TeamManageDialog/TeamManageDialog'
+import { useTeam } from '../TeamProvider'
 
 export function TeamMenu(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
+  const { activeTeam } = useTeam()
   const [teamCreateOpen, setTeamCreateOpen] = useState(false)
   const [teamUpdateOpen, setTeamUpdateOpen] = useState(false)
-  const [teamManageOpen, setTeamManageOpen] = useState(false)
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
   const handleShowMenu = (event: React.MouseEvent<HTMLButtonElement>): void => {
     setAnchorEl(event.currentTarget)
@@ -37,12 +36,6 @@ export function TeamMenu(): ReactElement {
         open={teamUpdateOpen}
         onClose={() => {
           setTeamUpdateOpen(false)
-        }}
-      />
-      <TeamManageDialog
-        open={teamManageOpen}
-        onClose={() => {
-          setTeamManageOpen(false)
         }}
       />
       <IconButton
@@ -80,20 +73,12 @@ export function TeamMenu(): ReactElement {
           }}
         />
         <MenuItem
+          disabled={activeTeam == null}
           key="rename-team"
           label={t('Rename Team')}
           icon={<EditIcon />}
           onClick={() => {
             setTeamUpdateOpen(true)
-            setAnchorEl(null)
-          }}
-        />
-        <MenuItem
-          key="manage-members"
-          label={t('Manage Members')}
-          icon={<GroupsIcon />}
-          onClick={() => {
-            setTeamManageOpen(true)
             setAnchorEl(null)
           }}
         />
