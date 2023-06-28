@@ -1261,7 +1261,7 @@ type Query
   getUserRole: UserRole @join__field(graph: JOURNEYS)
   userTeams(teamId: ID!): [UserTeam!]! @join__field(graph: JOURNEYS)
   userTeam(id: ID!): UserTeam! @join__field(graph: JOURNEYS)
-  userTeamInvites(teamId: ID!): [UserTeamInvite!] @join__field(graph: JOURNEYS)
+  userTeamInvites(teamId: ID!): [UserTeamInvite!]! @join__field(graph: JOURNEYS)
 
   """A list of visitors that are connected with a specific team."""
   visitorsConnection(

@@ -1634,7 +1634,7 @@ extend type Query {
   getUserRole: UserRole
   userTeams(teamId: ID!): [UserTeam!]!
   userTeam(id: ID!): UserTeam!
-  userTeamInvites(teamId: ID!): [UserTeamInvite!]
+  userTeamInvites(teamId: ID!): [UserTeamInvite!]!
 
   """A list of visitors that are connected with a specific team."""
   visitorsConnection(

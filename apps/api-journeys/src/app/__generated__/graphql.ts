@@ -1126,7 +1126,7 @@ export abstract class IQuery {
 
     abstract userTeam(id: string): UserTeam | Promise<UserTeam>;
 
-    abstract userTeamInvites(teamId: string): Nullable<UserTeamInvite[]> | Promise<Nullable<UserTeamInvite[]>>;
+    abstract userTeamInvites(teamId: string): UserTeamInvite[] | Promise<UserTeamInvite[]>;
 
     abstract visitorsConnection(teamId: string, first?: Nullable<number>, after?: Nullable<string>): VisitorsConnection | Promise<VisitorsConnection>;
 

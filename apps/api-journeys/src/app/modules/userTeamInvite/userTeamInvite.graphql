@@ -9,7 +9,7 @@ type UserTeamInvite {
 }
 
 extend type Query {
-  userTeamInvites(teamId: ID!): [UserTeamInvite!]
+  userTeamInvites(teamId: ID!): [UserTeamInvite!]!
 }
 
 input UserTeamInviteCreateInput {
