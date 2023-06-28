@@ -144,7 +144,14 @@ export function StatusTabPanel({
           >
             <JourneySort sortOrder={sortOrder} onChange={setSortOrder} />
           </Box>
-          <JourneyListMenu onClick={setActiveEvent} />
+          <Box
+            sx={{
+              display: 'flex',
+              alignItems: 'center'
+            }}
+          >
+            <JourneyListMenu onClick={setActiveEvent} />
+          </Box>
         </Tabs>
       </Paper>
       <TabPanel
