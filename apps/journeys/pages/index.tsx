@@ -82,7 +82,7 @@ function JourneysPage({ journeys }: JourneysPageProps): ReactElement {
             </Box>
             <Stack
               direction={{ xs: 'column', sm: 'row' }}
-              spacing={2}
+              spacing={4}
               justifyContent="center"
               alignItems="center"
             >
@@ -95,6 +95,7 @@ function JourneysPage({ journeys }: JourneysPageProps): ReactElement {
                   underline="none"
                   target="_blank"
                   rel="noopener"
+                  sx={{ p: 0 }}
                 >
                   {t('Terms & Conditions')}
                 </Link>
@@ -108,6 +109,7 @@ function JourneysPage({ journeys }: JourneysPageProps): ReactElement {
                   underline="none"
                   target="_blank"
                   rel="noopener"
+                  sx={{ p: 0 }}
                 >
                   {t('Privacy Policy')}
                 </Link>
