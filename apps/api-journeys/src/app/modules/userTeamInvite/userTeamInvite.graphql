@@ -21,5 +21,6 @@ extend type Mutation {
     teamId: ID!
     input: UserTeamInviteCreateInput
   ): UserTeamInvite
-  userTeamInviteDelete(id: ID!, teamId: ID!): UserTeamInvite!
+  userTeamInviteRemove(id: ID!): UserTeamInvite!
+  userTeamInviteAcceptAll: [UserTeamInvite!]!
 }
