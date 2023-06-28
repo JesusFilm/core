@@ -123,6 +123,7 @@ export const reducer = (
         ...state,
         selectedStep: action.step,
         selectedBlock: action.step,
+        selectedComponent: undefined,
         journeyEditContentComponent: ActiveJourneyEditContent.Canvas
       }
     case 'SetSelectedComponentAction':

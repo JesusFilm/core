@@ -10,7 +10,7 @@ import Box from '@mui/system/Box'
 import { useRouter } from 'next/router'
 import { usePageWrapperStyles } from '../utils/usePageWrapperStyles'
 
-export interface MainBodyContainerProps {
+export interface MainPanelHeaderProps {
   title: string | ReactNode
   backHref?: string
   menu?: ReactNode
@@ -22,7 +22,7 @@ export function MainPanelHeader({
   backHref,
   menu,
   backHrefHistory
-}: MainBodyContainerProps): ReactElement {
+}: MainPanelHeaderProps): ReactElement {
   const { toolbar } = usePageWrapperStyles()
   const router = useRouter()
 

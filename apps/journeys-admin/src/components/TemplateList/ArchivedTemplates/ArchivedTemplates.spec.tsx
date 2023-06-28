@@ -1,8 +1,6 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
-import noop from 'lodash/noop'
 import { SnackbarProvider } from 'notistack'
-import { AuthUser } from 'next-firebase-auth'
 import {
   defaultTemplate,
   oldTemplate
@@ -13,14 +11,17 @@ import {
   RESTORE_ARCHIVED_JOURNEYS,
   TRASH_ARCHIVED_JOURNEYS
 } from '../../JourneyList/ArchivedJourneyList/ArchivedJourneyList'
-import {
-  ArchivedTemplates,
-  GET_ARCHIVED_PUBLISHER_TEMPLATES
-} from './ArchivedTemplates'
+import { JourneyStatus } from '../../../../__generated__/globalTypes'
+import { GET_ADMIN_JOURNEYS } from '../../../libs/useAdminJourneysQuery/useAdminJourneysQuery'
+import { ArchivedTemplates } from '.'
 
 const archivedJourneysMock = {
   request: {
-    query: GET_ARCHIVED_PUBLISHER_TEMPLATES
+    query: GET_ADMIN_JOURNEYS,
+    variables: {
+      status: [JourneyStatus.archived],
+      template: true
+    }
   },
   result: {
     data: {
@@ -31,7 +32,11 @@ const archivedJourneysMock = {
 
 const noJourneysMock = {
   request: {
-    query: GET_ARCHIVED_PUBLISHER_TEMPLATES
+    query: GET_ADMIN_JOURNEYS,
+    variables: {
+      status: [JourneyStatus.archived],
+      template: true
+    }
   },
   result: {
     data: {
@@ -40,15 +45,13 @@ const noJourneysMock = {
   }
 }
 
-const authUser = { id: 'user-id1' } as unknown as AuthUser
-
 describe('ArchivedTemplates', () => {
   it('should render templates in descending createdAt date by default', async () => {
     const { getAllByLabelText } = render(
       <MockedProvider mocks={[archivedJourneysMock]}>
         <ThemeProvider>
           <SnackbarProvider>
-            <ArchivedTemplates onLoad={noop} event="" />
+            <ArchivedTemplates />
           </SnackbarProvider>
         </ThemeProvider>
       </MockedProvider>
@@ -73,7 +76,11 @@ describe('ArchivedTemplates', () => {
         mocks={[
           {
             request: {
-              query: GET_ARCHIVED_PUBLISHER_TEMPLATES
+              query: GET_ADMIN_JOURNEYS,
+              variables: {
+                status: [JourneyStatus.archived],
+                template: true
+              }
             },
             result: {
               data: {
@@ -85,11 +92,7 @@ describe('ArchivedTemplates', () => {
       >
         <ThemeProvider>
           <SnackbarProvider>
-            <ArchivedTemplates
-              onLoad={noop}
-              sortOrder={SortOrder.TITLE}
-              event=""
-            />
+            <ArchivedTemplates sortOrder={SortOrder.TITLE} />
           </SnackbarProvider>
         </ThemeProvider>
       </MockedProvider>
@@ -109,7 +112,7 @@ describe('ArchivedTemplates', () => {
       <MockedProvider mocks={[]}>
         <ThemeProvider>
           <SnackbarProvider>
-            <ArchivedTemplates onLoad={noop} event="" />
+            <ArchivedTemplates />
           </SnackbarProvider>
         </ThemeProvider>
       </MockedProvider>
@@ -117,20 +120,6 @@ describe('ArchivedTemplates', () => {
     await waitFor(() =>
       expect(getAllByLabelText('template-card')).toHaveLength(3)
     )
-  })
-
-  it('should call onLoad when query is loaded', async () => {
-    const onLoad = jest.fn()
-    render(
-      <MockedProvider mocks={[noJourneysMock]}>
-        <ThemeProvider>
-          <SnackbarProvider>
-            <ArchivedTemplates onLoad={onLoad} event="" />
-          </SnackbarProvider>
-        </ThemeProvider>
-      </MockedProvider>
-    )
-    await waitFor(() => expect(onLoad).toHaveBeenCalled())
   })
 
   describe('Unarchive All', () => {
@@ -146,19 +135,17 @@ describe('ArchivedTemplates', () => {
       },
       result
     }
-    const onLoad = jest.fn()
 
     it('should display the unarchive all dialog', () => {
       const { getByText } = render(
         <MockedProvider mocks={[archivedJourneysMock]}>
           <ThemeProvider>
             <SnackbarProvider>
-              <ArchivedTemplates onLoad={noop} event="restoreAllArchived" />
+              <ArchivedTemplates event="restoreAllArchived" />
             </SnackbarProvider>
           </ThemeProvider>
         </MockedProvider>
       )
-
       expect(getByText('Unarchive Templates')).toBeInTheDocument()
     })
 
@@ -169,16 +156,14 @@ describe('ArchivedTemplates', () => {
         >
           <ThemeProvider>
             <SnackbarProvider>
-              <ArchivedTemplates
-                onLoad={onLoad}
-                event="restoreAllArchived"
-                authUser={authUser}
-              />
+              <ArchivedTemplates event="restoreAllArchived" />
             </SnackbarProvider>
           </ThemeProvider>
         </MockedProvider>
       )
-      await waitFor(() => expect(onLoad).toHaveBeenCalled())
+      await waitFor(() =>
+        expect(getByText('Default Template Heading')).toBeInTheDocument()
+      )
       fireEvent.click(getByText('Unarchive'))
       await waitFor(() => expect(result).toHaveBeenCalled())
     })
@@ -194,17 +179,15 @@ describe('ArchivedTemplates', () => {
           <SnackbarProvider>
             <ThemeProvider>
               <SnackbarProvider>
-                <ArchivedTemplates
-                  onLoad={onLoad}
-                  event="restoreAllArchived"
-                  authUser={authUser}
-                />
+                <ArchivedTemplates event="restoreAllArchived" />
               </SnackbarProvider>
             </ThemeProvider>
           </SnackbarProvider>
         </MockedProvider>
       )
-      await waitFor(() => expect(onLoad).toHaveBeenCalled())
+      await waitFor(() =>
+        expect(getByText('Default Template Heading')).toBeInTheDocument()
+      )
       fireEvent.click(getByText('Unarchive'))
       await waitFor(() => expect(getByText('error')).toBeInTheDocument())
     })
@@ -225,19 +208,17 @@ describe('ArchivedTemplates', () => {
       },
       result
     }
-    const onLoad = jest.fn()
 
     it('should display the trash all dialog', () => {
       const { getByText } = render(
         <MockedProvider mocks={[archivedJourneysMock]}>
           <ThemeProvider>
             <SnackbarProvider>
-              <ArchivedTemplates onLoad={noop} event="trashAllArchived" />
+              <ArchivedTemplates event="trashAllArchived" />
             </SnackbarProvider>
           </ThemeProvider>
         </MockedProvider>
       )
-
       expect(getByText('Trash Templates')).toBeInTheDocument()
     })
 
@@ -248,16 +229,14 @@ describe('ArchivedTemplates', () => {
         >
           <ThemeProvider>
             <SnackbarProvider>
-              <ArchivedTemplates
-                onLoad={onLoad}
-                event="trashAllArchived"
-                authUser={authUser}
-              />
+              <ArchivedTemplates event="trashAllArchived" />
             </SnackbarProvider>
           </ThemeProvider>
         </MockedProvider>
       )
-      await waitFor(() => expect(onLoad).toHaveBeenCalled())
+      await waitFor(() =>
+        expect(getByText('Default Template Heading')).toBeInTheDocument()
+      )
       fireEvent.click(getByText('Trash'))
       await waitFor(() => expect(result).toHaveBeenCalled())
     })
@@ -273,17 +252,15 @@ describe('ArchivedTemplates', () => {
           <SnackbarProvider>
             <ThemeProvider>
               <SnackbarProvider>
-                <ArchivedTemplates
-                  onLoad={onLoad}
-                  event="trashAllArchived"
-                  authUser={authUser}
-                />
+                <ArchivedTemplates event="trashAllArchived" />
               </SnackbarProvider>
             </ThemeProvider>
           </SnackbarProvider>
         </MockedProvider>
       )
-      await waitFor(() => expect(onLoad).toHaveBeenCalled())
+      await waitFor(() =>
+        expect(getByText('Default Template Heading')).toBeInTheDocument()
+      )
       fireEvent.click(getByText('Trash'))
       await waitFor(() => expect(getByText('error')).toBeInTheDocument())
     })

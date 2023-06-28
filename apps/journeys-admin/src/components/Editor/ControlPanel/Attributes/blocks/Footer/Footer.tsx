@@ -1,17 +1,18 @@
 import { ReactElement, useEffect } from 'react'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
-import UserProfileCircleIcon from '@core/shared/ui/icons/UserProfileCircle'
+// import UserProfileCircleIcon from '@core/shared/ui/icons/UserProfileCircle'
 import MessageChat1 from '@core/shared/ui/icons/MessageChat1'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { useTranslation } from 'react-i18next'
 import { Attribute } from '../..'
 import { ChatPlatform } from '../../../../../../../__generated__/globalTypes'
+import { Chat } from './Chat'
 
 export function Footer(): ReactElement {
   const { dispatch } = useEditor()
   const { journey } = useJourney()
   const { t } = useTranslation('apps-journeys-admin')
-  const hostName = journey?.host?.title ?? t('None')
+  // const hostName = journey?.host?.title ?? t('None')
 
   const translatedPlatforms = [
     { value: ChatPlatform.facebook, label: t('Facebook') },
@@ -39,20 +40,20 @@ export function Footer(): ReactElement {
   useEffect(() => {
     dispatch({
       type: 'SetSelectedAttributeIdAction',
-      id: 'hosted-by'
+      id: 'chat-widget'
     })
     dispatch({
       type: 'SetDrawerPropsAction',
-      title: t('Hosted By'),
+      title: t('Chat Widget'),
       mobileOpen: true,
-      children: <div>Hosted by content component</div>
+      children: <Chat />
     })
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dispatch])
 
   return (
     <>
-      <Attribute
+      {/* <Attribute
         id="hosted-by"
         icon={<UserProfileCircleIcon />}
         name={t('Hosted by')}
@@ -66,7 +67,7 @@ export function Footer(): ReactElement {
             children: <div>Hosted by content component</div>
           })
         }}
-      />
+      /> */}
       <Attribute
         id="chat-widget"
         icon={<MessageChat1 />}
@@ -78,7 +79,7 @@ export function Footer(): ReactElement {
             type: 'SetDrawerPropsAction',
             title: t('Chat Widget'),
             mobileOpen: true,
-            children: <div>Chat Widget Component</div>
+            children: <Chat />
           })
         }}
       />

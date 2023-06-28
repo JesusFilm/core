@@ -65,6 +65,7 @@ export function ImageLibrary({
             Image
           </Typography>
           <IconButton
+            aria-label="close-image-library"
             onClick={onClose}
             sx={{ display: 'inline-flex' }}
             edge="end"

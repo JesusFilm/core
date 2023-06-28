@@ -1,6 +1,5 @@
 import { Story, Meta } from '@storybook/react'
 import { MockedProvider } from '@apollo/client/testing'
-import noop from 'lodash/noop'
 import { SnackbarProvider } from 'notistack'
 import { journeysAdminConfig } from '../../../libs/storybook'
 import {
@@ -11,7 +10,7 @@ import {
 } from '../../TemplateLibrary/TemplateListData'
 import { JourneyStatus } from '../../../../__generated__/globalTypes'
 import { ThemeProvider } from '../../ThemeProvider'
-import { GET_ARCHIVED_PUBLISHER_TEMPLATES } from './ArchivedTemplates'
+import { GET_ADMIN_JOURNEYS } from '../../../libs/useAdminJourneysQuery/useAdminJourneysQuery'
 import { ArchivedTemplates } from '.'
 
 const ArchivedTemplatesStory = {
@@ -59,14 +58,14 @@ const Template: Story = ({ ...args }) => (
 
 export const Default = Template.bind({})
 Default.args = {
-  props: {
-    onLoad: noop,
-    event: ''
-  },
   mocks: [
     {
       request: {
-        query: GET_ARCHIVED_PUBLISHER_TEMPLATES
+        query: GET_ADMIN_JOURNEYS,
+        variables: {
+          status: [JourneyStatus.archived],
+          template: true
+        }
       },
       result: {
         data: {
@@ -84,14 +83,14 @@ Default.args = {
 
 export const NoTemplates = Template.bind({})
 NoTemplates.args = {
-  props: {
-    onLoad: noop,
-    event: ''
-  },
   mocks: [
     {
       request: {
-        query: GET_ARCHIVED_PUBLISHER_TEMPLATES
+        query: GET_ADMIN_JOURNEYS,
+        variables: {
+          status: [JourneyStatus.archived],
+          template: true
+        }
       },
       result: {
         data: {
@@ -104,17 +103,12 @@ NoTemplates.args = {
 
 export const Loading = Template.bind({})
 Loading.args = {
-  props: {
-    onLoad: noop,
-    event: ''
-  },
   mocks: []
 }
 
 export const UnarchiveDialog = Template.bind({})
 UnarchiveDialog.args = {
   props: {
-    onLoad: noop,
     event: 'restoreAllArchived'
   },
   mocks: []
@@ -123,7 +117,6 @@ UnarchiveDialog.args = {
 export const TrashDialog = Template.bind({})
 TrashDialog.args = {
   props: {
-    onLoad: noop,
     event: 'trashAllArchived'
   },
   mocks: []

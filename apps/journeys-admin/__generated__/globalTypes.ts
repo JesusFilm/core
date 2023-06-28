@@ -245,6 +245,16 @@ export interface CardBlockUpdateInput {
   themeName?: ThemeName | null;
 }
 
+export interface ChatButtonCreateInput {
+  link?: string | null;
+  platform?: ChatPlatform | null;
+}
+
+export interface ChatButtonUpdateInput {
+  link?: string | null;
+  platform?: ChatPlatform | null;
+}
+
 export interface ChatOpenEventCreateInput {
   id?: string | null;
   blockId: string;
@@ -255,6 +265,20 @@ export interface ChatOpenEventCreateInput {
 export interface EmailActionInput {
   gtmEventName?: string | null;
   email: string;
+}
+
+export interface HostCreateInput {
+  title: string;
+  location?: string | null;
+  src1?: string | null;
+  src2?: string | null;
+}
+
+export interface HostUpdateInput {
+  title?: string | null;
+  location?: string | null;
+  src1?: string | null;
+  src2?: string | null;
 }
 
 export interface IconBlockCreateInput {
@@ -318,6 +342,11 @@ export interface JourneyVisitorFilter {
   hasIcon?: boolean | null;
   hideInactive?: boolean | null;
   countryCode?: string | null;
+}
+
+export interface JourneysFilter {
+  featured?: boolean | null;
+  template?: boolean | null;
 }
 
 export interface LinkActionInput {
@@ -397,6 +426,14 @@ export interface StepViewEventCreateInput {
   id?: string | null;
   blockId: string;
   value?: string | null;
+}
+
+export interface TeamCreateInput {
+  title: string;
+}
+
+export interface TeamUpdateInput {
+  title: string;
 }
 
 export interface TextResponseBlockCreateInput {
