@@ -6,7 +6,7 @@ import Badge from '@mui/material/Badge'
 import CircleRoundedIcon from '@mui/icons-material/CircleRounded'
 import { styled } from '@mui/material/styles'
 import Tooltip from '@mui/material/Tooltip'
-import { GetJourneys_journeys as Journey } from '../../../../../__generated__/GetJourneys'
+import { GetAdminJourneys_journeys as Journey } from '../../../../../__generated__/GetAdminJourneys'
 import { JourneyCardVariant } from '../journeyCardVariant'
 
 interface Props {

@@ -344,6 +344,11 @@ export interface JourneyVisitorFilter {
   countryCode?: string | null;
 }
 
+export interface JourneysFilter {
+  featured?: boolean | null;
+  template?: boolean | null;
+}
+
 export interface LinkActionInput {
   gtmEventName?: string | null;
   url: string;
@@ -421,6 +426,14 @@ export interface StepViewEventCreateInput {
   id?: string | null;
   blockId: string;
   value?: string | null;
+}
+
+export interface TeamCreateInput {
+  title: string;
+}
+
+export interface TeamUpdateInput {
+  title: string;
 }
 
 export interface TextResponseBlockCreateInput {

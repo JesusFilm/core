@@ -18,6 +18,7 @@ import { initAuth } from '../src/libs/firebaseClient/initAuth'
 import i18nConfig from '../next-i18next.config'
 import { HelpScoutBeacon } from '../src/components/HelpScoutBeacon'
 import '../public/swiper-pagination-override.css'
+import { TeamProvider } from '../src/components/Team/TeamProvider'
 
 // your _app component
 initAuth()
@@ -88,14 +89,16 @@ function JourneysAdminApp({
           </Head>
 
           <ApolloProvider client={apolloClient}>
-            <SnackbarProvider
-              anchorOrigin={{
-                vertical: 'bottom',
-                horizontal: 'right'
-              }}
-            >
-              <Component {...pageProps} />
-            </SnackbarProvider>
+            <TeamProvider>
+              <SnackbarProvider
+                anchorOrigin={{
+                  vertical: 'bottom',
+                  horizontal: 'right'
+                }}
+              >
+                <Component {...pageProps} />
+              </SnackbarProvider>
+            </TeamProvider>
           </ApolloProvider>
         </ThemeProvider>
       </CacheProvider>

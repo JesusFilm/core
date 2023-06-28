@@ -5,9 +5,9 @@ import Typography from '@mui/material/Typography'
 import { simpleComponentConfig } from '../../libs/storybook'
 import { GET_JOURNEY_WITH_USER_JOURNEYS } from '../AccessDialog/AccessDialog'
 import {
-  GetJourneys_journeys_userJourneys as UserJourney,
-  GetJourneys_journeys_userJourneys_user as User
-} from '../../../__generated__/GetJourneys'
+  GetAdminJourneys_journeys_userJourneys as UserJourney,
+  GetAdminJourneys_journeys_userJourneys_user as User
+} from '../../../__generated__/GetAdminJourneys'
 import { GET_CURRENT_USER } from '../../libs/useCurrentUser'
 import { UserJourneyRole } from '../../../__generated__/globalTypes'
 import { AccessAvatarsProps } from './AccessAvatars'
