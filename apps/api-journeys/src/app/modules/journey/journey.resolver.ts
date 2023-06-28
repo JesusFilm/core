@@ -30,6 +30,7 @@ import {
   UserTeamRole
 } from '.prisma/api-journeys-client'
 import { FromPostgresql } from '@core/nest/decorators/FromPostgresql'
+import { isEmpty, omit } from 'lodash'
 
 import { BlockService } from '../block/block.service'
 import {
@@ -283,9 +284,14 @@ export class JourneyResolver {
     })
     if (journey == null) throw new NotFoundException('Journey not found')
     const duplicateJourneyId = uuidv4()
-    const existingDuplicateJourneys = await this.journeyService.getAllByTitle(
-      journey.title,
-      userId
+    const existingDuplicateJourneys = await this.prismaService.journey.findMany(
+      {
+        where: {
+          title: {
+            contains: journey.title
+          }
+        }
+      }
     )
     const duplicates = this.getJourneyDuplicateNumbers(
       existingDuplicateJourneys,
@@ -328,40 +334,31 @@ export class JourneyResolver {
         where: { id: journey.primaryImageBlockId },
         include: { action: true }
       })
-      const id = uuidv4()
-      duplicatePrimaryImageBlock = {
-        ...original,
-        id,
-        journey: { connect: { id: duplicateJourneyId } },
-        parentBlockId: duplicateJourneyId
-      }
-      duplicatePrimaryImageBlock != null &&
+      if (original != null) {
+        const id = uuidv4()
+        duplicatePrimaryImageBlock = {
+          ...omit(original, ['id', 'journeyId', 'action']),
+          id
+        }
+
         duplicateBlocks.push(duplicatePrimaryImageBlock)
+      }
     }
 
     const input = {
-      ...journey,
+      ...omit(journey, ['primaryImageBlockId', 'publishedAt', 'hostId']),
       id: duplicateJourneyId,
       slug,
       title: duplicateTitle,
       createdAt: new Date(),
-      publishedAt: undefined,
       status: JourneyStatus.draft,
-      template: false,
-      primaryImageBlockId: duplicatePrimaryImageBlock?.id,
-      hostId: null
+      template: false
     }
 
     let retry = true
     while (retry) {
       try {
         const journey = await this.prismaService.journey.create({ data: input })
-        await this.blockService.saveAll(
-          duplicateBlocks.map((block) => ({
-            ...block,
-            journey: { connect: { id: duplicateJourneyId } }
-          }))
-        )
         await this.prismaService.userJourney.create({
           data: {
             id: uuidv4(),
@@ -371,6 +368,54 @@ export class JourneyResolver {
             openedAt: new Date()
           }
         })
+        // save base blocks
+        await this.blockService.saveAll(
+          duplicateBlocks.map((block) => ({
+            ...omit(block, [
+              'parentBlockId',
+              'posterBlockId',
+              'coverBlockId',
+              'nextBlockId',
+              'action'
+            ]),
+            typename: block.typename,
+            journey: {
+              connect: { id: duplicateJourneyId }
+            }
+          }))
+        )
+        // update block references after import
+        for (const block of duplicateBlocks) {
+          if (
+            block.parentBlockId != null ||
+            block.posterBlockId != null ||
+            block.coverBlockId != null ||
+            block.nextBlockId != null
+          ) {
+            await this.blockService.update(block.id, {
+              parentBlockId: block.parentBlockId ?? undefined,
+              posterBlockId: block.posterBlockId ?? undefined,
+              coverBlockId: block.coverBlockId ?? undefined,
+              nextBlockId: block.nextBlockId ?? undefined
+            })
+          }
+          if (block.action != null && !isEmpty(block.action)) {
+            await this.prismaService.action.create({
+              data: {
+                ...block.action,
+                parentBlockId: block.id,
+                blockId: block.id
+              }
+            })
+          }
+        }
+
+        if (duplicatePrimaryImageBlock != null) {
+          await this.prismaService.journey.update({
+            where: { id: duplicateJourneyId },
+            data: { primaryImageBlockId: duplicatePrimaryImageBlock.id }
+          })
+        }
         retry = false
         return journey
       } catch (err) {

@@ -267,7 +267,7 @@ model Journey {
   Action              Action[]
   primaryImageBlock   Block?        @relation("PrimaryImageBlock", fields: [primaryImageBlockId], references: [id])
 
-  @@index([slug])
+  @@index([title])
 }
 
 enum Role {

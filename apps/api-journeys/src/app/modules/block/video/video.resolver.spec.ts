@@ -198,6 +198,8 @@ describe('VideoBlockResolver', () => {
         isCover: true,
         journey: { connect: { id: 'journeyId' } },
         journeyId: 'journeyId',
+        parentBlockId: 'parentBlockId',
+        parentBlock: { connect: { id: 'parentBlockId' } },
         parentOrder: null
       })
       expect(service.removeBlockAndChildren).toHaveBeenCalledWith(

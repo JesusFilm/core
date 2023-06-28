@@ -1,6 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { v4 as uuidv4 } from 'uuid'
-import { Block } from '.prisma/api-journeys-client'
 import { omit } from 'lodash'
 
 import { PrismaService } from '../../lib/prisma.service'
@@ -9,7 +8,7 @@ import {
   ThemeMode,
   ThemeName
 } from '../../__generated__/graphql'
-import { BlockService } from './block.service'
+import { BlockService, BlockWithAction } from './block.service'
 
 jest.mock('uuid', () => ({
   __esModule: true,
@@ -156,8 +155,8 @@ describe('BlockService', () => {
 
       expect(
         await service.reorderSiblings([
-          { ...block, parentOrder: 2 } as unknown as Block,
-          { ...block, parentOrder: 3 } as unknown as Block
+          { ...block, parentOrder: 2 } as unknown as BlockWithAction,
+          { ...block, parentOrder: 3 } as unknown as BlockWithAction
         ])
       ).toEqual([
         { ...block, parentOrder: 0 },
@@ -165,11 +164,13 @@ describe('BlockService', () => {
       ])
       expect(prismaService.block.update).toHaveBeenCalledWith({
         where: { id: block.id },
-        data: { parentOrder: 0 }
+        data: { parentOrder: 0 },
+        include: { action: true }
       })
       expect(prismaService.block.update).toHaveBeenCalledWith({
         where: { id: block.id },
-        data: { parentOrder: 1 }
+        data: { parentOrder: 1 },
+        include: { action: true }
       })
     })
   })
@@ -181,8 +182,8 @@ describe('BlockService', () => {
       service.reorderSiblings = jest.fn(
         async () =>
           await Promise.resolve([
-            { id: '2', parentOrder: 0 } as unknown as Block,
-            { id: block.id, parentOrder: 1 } as unknown as Block
+            { id: '2', parentOrder: 0 } as unknown as BlockWithAction,
+            { id: block.id, parentOrder: 1 } as unknown as BlockWithAction
           ])
       )
     })
@@ -315,7 +316,7 @@ describe('BlockService', () => {
 
   describe('getDuplicateBlockAndChildren', () => {
     beforeEach(() => {
-      service.getBlocksForParentId = jest.fn().mockReturnValue([])
+      prismaService.block.findMany = jest.fn().mockReturnValue([])
     })
 
     it('should return block with randomised id', async () => {
@@ -336,7 +337,7 @@ describe('BlockService', () => {
           parentBlockId: cardBlock.id
         }
       ])
-      expect(service.getBlocksForParentId).toBeCalledTimes(1)
+      expect(prismaService.block.findMany).toBeCalledTimes(1)
     })
 
     it('should return block with specific id', async () => {
@@ -354,7 +355,7 @@ describe('BlockService', () => {
         .mockReturnValueOnce(`${buttonBlock.id}Copy`)
         .mockReturnValueOnce(`${imageBlock.id}Copy`)
         .mockReturnValue(`${iconBlock.id}Copy`)
-      service.getBlocksForParentId = jest
+      prismaService.block.findMany = jest
         .fn()
         .mockReturnValueOnce([cardBlock])
         .mockReturnValueOnce([videoBlock, buttonBlock])
@@ -373,49 +374,43 @@ describe('BlockService', () => {
         )
       ).toEqual([
         {
-          ...omit(stepBlock, 'typename'),
-          __typename: stepBlock.typename,
+          ...stepBlock,
           id: 'specificStepId',
           parentBlockId: null,
           nextBlockId: null
         },
         {
-          ...omit(cardBlock, 'typename'),
-          __typename: cardBlock.typename,
+          ...cardBlock,
           id: `${cardBlock.id}Copy`,
           parentBlockId: 'specificStepId',
           coverBlockId: `${videoBlock.id}Copy`
         },
         {
-          ...omit(videoBlock, 'typename'),
-          __typename: videoBlock.typename,
+          ...videoBlock,
           id: `${videoBlock.id}Copy`,
           parentBlockId: `${cardBlock.id}Copy`,
           posterBlockId: `${imageBlock.id}Copy`
         },
         {
-          ...omit(imageBlock, 'typename'),
-          __typename: imageBlock.typename,
+          ...imageBlock,
           id: `${imageBlock.id}Copy`,
           parentBlockId: `${videoBlock.id}Copy`
         },
         {
-          ...omit(buttonBlock, 'typename'),
-          __typename: buttonBlock.typename,
+          ...buttonBlock,
           id: `${buttonBlock.id}Copy`,
           parentBlockId: `${cardBlock.id}Copy`,
           endIconId: `${iconBlock.id}Copy`,
-          action: { create: buttonBlock.action }
+          action: omit(buttonBlock.action, 'parentBlockId')
         },
         {
-          ...omit(iconBlock, 'typename'),
-          __typename: iconBlock.typename,
+          ...iconBlock,
           id: `${iconBlock.id}Copy`,
           parentBlockId: `${buttonBlock.id}Copy`
         }
       ])
 
-      expect(service.getBlocksForParentId).toBeCalledTimes(6)
+      expect(prismaService.block.findMany).toBeCalledTimes(6)
     })
 
     it('should return block with updated journeyId & nextBlockId', async () => {
@@ -435,8 +430,7 @@ describe('BlockService', () => {
         )
       ).toEqual([
         {
-          ...omit(stepBlock, 'typename'),
-          __typename: stepBlock.typename,
+          ...stepBlock,
           id: `${stepBlock.id}Copy`,
           journeyId: 'journey2',
           parentBlockId: cardBlock.id,
@@ -444,7 +438,7 @@ describe('BlockService', () => {
         }
       ])
 
-      expect(service.getBlocksForParentId).toBeCalledTimes(1)
+      expect(prismaService.block.findMany).toBeCalledTimes(1)
     })
   })
 
@@ -464,7 +458,7 @@ describe('BlockService', () => {
 
       expect(
         await service.getDuplicateChildren(
-          [stepBlock as Block],
+          [stepBlock as BlockWithAction],
           '1',
           null,
           duplicateStepIds,
@@ -531,12 +525,12 @@ describe('BlockService', () => {
     service.reorderSiblings = jest.fn(
       async () =>
         await Promise.resolve([
-          { id: block.id, parentOrder: 0 } as unknown as Block,
-          { id: block.id, parentOrder: 1 } as unknown as Block
+          { id: block.id, parentOrder: 0 } as unknown as BlockWithAction,
+          { id: block.id, parentOrder: 1 } as unknown as BlockWithAction
         ])
     )
     prismaService.block.update = jest.fn().mockReturnValue(block)
-    const siblings = [block as Block, block as Block]
+    const siblings = [block as BlockWithAction, block as BlockWithAction]
 
     service.getSiblingsInternal = jest.fn().mockResolvedValue(siblings)
     expect(await service.reorderSiblings(siblings)).toEqual([

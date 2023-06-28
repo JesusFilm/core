@@ -94,6 +94,10 @@ export class ImageBlockResolver {
         id: block.id ?? undefined,
         typename: 'ImageBlock',
         journey: { connect: { id: block.journeyId } },
+        parentBlock:
+          input.parentBlockId != null
+            ? { connect: { id: block.parentBlockId } }
+            : undefined,
         parentOrder: null
       })
       const parentBlock = await this.prismaService.block.findUnique({

@@ -191,6 +191,7 @@ describe('ImageBlockResolver', () => {
       expect(service.save).toHaveBeenCalledWith({
         ...createdBlock,
         isCover: true,
+        parentBlock: { connect: { id: parentBlock.id } },
         parentOrder: null
       })
       expect(service.removeBlockAndChildren).toHaveBeenCalledWith(
@@ -213,6 +214,7 @@ describe('ImageBlockResolver', () => {
       expect(service.save).toHaveBeenCalledWith({
         ...createdBlockForDeletedCover,
         isCover: true,
+        parentBlock: { connect: { id: parentBlockWithDeletedCover.id } },
         parentOrder: null
       })
       expect(service.removeBlockAndChildren).not.toHaveBeenCalled()

@@ -147,6 +147,7 @@ export class VideoBlockResolver {
         journey: {
           connect: { id: input.journeyId }
         },
+        parentBlock: { connect: { id: input.parentBlockId } },
         parentOrder: null
       })
 

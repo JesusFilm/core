@@ -2,6 +2,8 @@ import { Test, TestingModule } from '@nestjs/testing'
 import { v4 as uuidv4 } from 'uuid'
 import { getPowerBiEmbed } from '@core/nest/powerBi/getPowerBiEmbed'
 import { Journey, UserTeamRole } from '.prisma/api-journeys-client'
+import { omit } from 'lodash'
+
 import {
   IdType,
   JourneyStatus,
@@ -100,7 +102,6 @@ describe('JourneyResolver', () => {
   const primaryImageBlock = {
     typename: 'ImageBlock',
     id: 'primaryImageBlock.id',
-    journeyId: 'socialJourney.id',
     parentBlockId: 'socialJourney.id',
     parentOrder: 1,
     src: 'image.src',
@@ -225,9 +226,7 @@ describe('JourneyResolver', () => {
     id: 'stepId',
     journeyId: 'journeyId',
     typename: 'StepBlock',
-    parentBlockId: null,
-    parentOrder: 0,
-    nextBlockId: null
+    parentOrder: 0
   }
 
   const duplicatedStep = {
@@ -257,7 +256,8 @@ describe('JourneyResolver', () => {
     useFactory: () => ({
       getBlocksByType: jest.fn(() => [stepBlock]),
       getDuplicateChildren: jest.fn(() => [duplicatedStep]),
-      saveAll: jest.fn(() => [duplicatedStep])
+      saveAll: jest.fn(() => [duplicatedStep]),
+      update: jest.fn((id, input) => input)
     })
   }
 
@@ -310,15 +310,19 @@ describe('JourneyResolver', () => {
       .fn()
       .mockImplementationOnce((result) => result.data)
     prismaService.journey.findMany = jest.fn().mockImplementation((input) => {
-      switch (input.where.id.in[0]) {
-        case archivedJourney.id:
-          return [archivedJourney]
-        case trashedJourney.id:
-          return [trashedJourney]
-        case trashedDraftJourney.id:
-          return [trashedDraftJourney]
-        default:
-          return [journey, draftJourney]
+      if (input.where.id != null) {
+        switch (input.where.id.in[0]) {
+          case archivedJourney.id:
+            return [archivedJourney]
+          case trashedJourney.id:
+            return [trashedJourney]
+          case trashedDraftJourney.id:
+            return [trashedDraftJourney]
+          default:
+            return [journey, draftJourney]
+        }
+      } else if (input.where.title != null) {
+        return []
       }
     })
     prismaService.journey.findUnique = jest.fn().mockImplementation((input) => {
@@ -917,20 +921,26 @@ describe('JourneyResolver', () => {
 
   describe('journeyDuplicate', () => {
     it('duplicates your journey', async () => {
+      prismaService.journey.findMany = jest
+        .fn()
+        .mockResolvedValueOnce([journey])
       const date = '2021-12-07T03:22:41.135Z'
       jest.useFakeTimers().setSystemTime(new Date(date).getTime())
       mockUuidv4.mockReturnValueOnce('duplicateJourneyId')
       expect(await resolver.journeyDuplicate('journeyId', 'userId')).toEqual({
-        ...journey,
+        ...omit(journey, [
+          'parentBlockId',
+          'nextBlockId',
+          'hostId',
+          'primaryImageBlockId',
+          'publishedAt'
+        ]),
         id: 'duplicateJourneyId',
         createdAt: new Date(date),
         status: JourneyStatus.draft,
-        publishedAt: undefined,
         slug: `${journey.title}-copy`,
         title: `${journey.title} copy`,
         template: false,
-        primaryImageBlockId: undefined,
-        hostId: null,
         teamID: undefined
       })
     })
@@ -942,15 +952,14 @@ describe('JourneyResolver', () => {
       expect(
         await resolver.journeyDuplicate('templateJourneyId', 'userId')
       ).toEqual({
-        ...template,
+        ...omit(template, ['hostId']),
         title: 'template',
         slug: 'template',
         createdAt: new Date(date),
         status: JourneyStatus.draft,
         publishedAt: undefined,
         template: false,
-        primaryImageBlockId: undefined,
-        hostId: null
+        primaryImageBlockId: undefined
       })
     })
 
@@ -990,31 +999,25 @@ describe('JourneyResolver', () => {
     })
 
     it('increments copy number on journey if multiple duplicates exist', async () => {
+      prismaService.journey.findMany = jest
+        .fn()
+        .mockResolvedValueOnce([
+          journey,
+          { ...journey, title: `${journey.title} copy` },
+          { ...journey, title: `${journey.title} copy other` }
+        ])
       const date = '2021-12-07T03:22:41.135Z'
       jest.useFakeTimers().setSystemTime(new Date(date).getTime())
       mockUuidv4.mockReturnValueOnce('duplicateJourneyId2')
-      const mockGetAllByTitle = service.getAllByTitle as jest.MockedFunction<
-        typeof service.getAllByTitle
-      >
-      mockGetAllByTitle.mockImplementationOnce(
-        async () =>
-          await Promise.resolve([
-            journey,
-            { ...journey, title: `${journey.title} copy` },
-            { ...journey, title: `${journey.title} copy other` }
-          ])
-      )
+
       expect(await resolver.journeyDuplicate('journeyId', 'userId')).toEqual({
-        ...journey,
+        ...omit(journey, ['hostId', 'primaryImageBlockId', 'publishedAt']),
         id: 'duplicateJourneyId2',
         createdAt: new Date(date),
         status: JourneyStatus.draft,
-        publishedAt: undefined,
         slug: `${journey.title}-copy-2`,
         title: `${journey.title} copy 2`,
-        template: false,
-        primaryImageBlockId: undefined,
-        hostId: null
+        template: false
       })
     })
 
@@ -1048,10 +1051,9 @@ describe('JourneyResolver', () => {
           journey: { connect: { id: 'duplicateJourneyId' } }
         },
         {
-          ...primaryImageBlock,
+          ...omit(primaryImageBlock, 'parentBlockId'),
           id: 'duplicatePrimaryImageBlock.id',
-          journey: { connect: { id: 'duplicateJourneyId' } },
-          parentBlockId: 'duplicateJourneyId'
+          journey: { connect: { id: 'duplicateJourneyId' } }
         }
       ])
     })
