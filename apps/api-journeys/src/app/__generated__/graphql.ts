@@ -1466,7 +1466,9 @@ export abstract class IMutation {
 
     abstract userTeamInviteCreate(teamId: string, input?: Nullable<UserTeamInviteCreateInput>): Nullable<UserTeamInvite> | Promise<Nullable<UserTeamInvite>>;
 
-    abstract userTeamInviteDelete(id: string, teamId: string): UserTeamInvite | Promise<UserTeamInvite>;
+    abstract userTeamInviteRemove(id: string): UserTeamInvite | Promise<UserTeamInvite>;
+
+    abstract userTeamInviteAcceptAll(): UserTeamInvite[] | Promise<UserTeamInvite[]>;
 
     abstract visitorUpdate(id: string, input: VisitorUpdateInput): Visitor | Promise<Visitor>;
 

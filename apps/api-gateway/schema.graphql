@@ -1108,7 +1108,8 @@ type Mutation
   userTeamUpdate(id: ID!, input: TeamUpdateInput): UserTeam! @join__field(graph: JOURNEYS)
   userTeamDelete(id: ID!): UserTeam! @join__field(graph: JOURNEYS)
   userTeamInviteCreate(teamId: ID!, input: UserTeamInviteCreateInput): UserTeamInvite @join__field(graph: JOURNEYS)
-  userTeamInviteDelete(id: ID!, teamId: ID!): UserTeamInvite! @join__field(graph: JOURNEYS)
+  userTeamInviteRemove(id: ID!): UserTeamInvite! @join__field(graph: JOURNEYS)
+  userTeamInviteAcceptAll: [UserTeamInvite!]! @join__field(graph: JOURNEYS)
 
   """Update a visitor"""
   visitorUpdate(id: ID!, input: VisitorUpdateInput!): Visitor! @join__field(graph: JOURNEYS)

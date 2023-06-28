@@ -191,7 +191,8 @@ extend type Mutation {
   userTeamUpdate(id: ID!, input: TeamUpdateInput): UserTeam!
   userTeamDelete(id: ID!): UserTeam!
   userTeamInviteCreate(teamId: ID!, input: UserTeamInviteCreateInput): UserTeamInvite
-  userTeamInviteDelete(id: ID!, teamId: ID!): UserTeamInvite!
+  userTeamInviteRemove(id: ID!): UserTeamInvite!
+  userTeamInviteAcceptAll: [UserTeamInvite!]!
 
   """Update a visitor"""
   visitorUpdate(id: ID!, input: VisitorUpdateInput!): Visitor!
