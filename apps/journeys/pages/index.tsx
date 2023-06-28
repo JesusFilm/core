@@ -42,47 +42,50 @@ function JourneysPage({ journeys }: JourneysPageProps): ReactElement {
             <Image src={logo} alt="Next Steps" height={68} width={152} />
             <Box>
               <Grid container spacing={{ xs: 2, sm: 4 }}>
-                {journeys.map(({ id, title, slug }, index) => (
-                  <Grid
-                    item
-                    key={id}
-                    xs={12}
-                    sm={6}
-                    md={4}
-                    lg={3}
-                    sx={{ position: 'relative' }}
-                  >
-                    <Fade in timeout={(index + 1) * 1000}>
-                      <StyledIframe
-                        src={`/embed/${slug}`}
-                        sx={{
-                          width: 'calc(100% + 64px)',
-                          height: 600,
-                          border: 'none',
-                          margin: '-32px'
-                        }}
-                      />
-                    </Fade>
-                    <NextLink href={`/${slug}`} passHref>
+                {journeys.map(({ id, slug }, index) => (
+                  <Grid item key={id} xs={12} sm={6} md={4} lg={3}>
+                    <Box sx={{ position: 'relative' }}>
                       <Box
-                        component="a"
                         sx={{
-                          display: 'block',
                           position: 'absolute',
                           top: 0,
                           right: 0,
                           bottom: 0,
-                          left: 0
+                          left: 0,
+                          zIndex: -1,
+                          overflow: 'hidden'
                         }}
-                      />
-                    </NextLink>
+                      >
+                        <Fade in timeout={(index + 1) * 1000}>
+                          <StyledIframe
+                            src={`/embed/${slug}`}
+                            sx={{
+                              width: 'calc(100% + 64px)',
+                              height: 664,
+                              border: 'none',
+                              margin: '-32px'
+                            }}
+                          />
+                        </Fade>
+                      </Box>
+                      <NextLink href={`/${slug}`} passHref>
+                        <Box
+                          component="a"
+                          sx={{
+                            display: 'block',
+                            width: '100%',
+                            height: 600
+                          }}
+                        />
+                      </NextLink>
+                    </Box>
                   </Grid>
                 ))}
               </Grid>
             </Box>
             <Stack
               direction={{ xs: 'column', sm: 'row' }}
-              spacing={4}
+              spacing={2}
               justifyContent="center"
               alignItems="center"
             >
