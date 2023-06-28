@@ -12,6 +12,15 @@ import {
 } from '../../../../../__generated__/globalTypes'
 import { Attributes } from '.'
 
+jest.mock('react-i18next', () => ({
+  __esModule: true,
+  useTranslation: () => {
+    return {
+      t: (str: string) => str
+    }
+  }
+}))
+
 describe('Attributes', () => {
   const card: TreeBlock<CardBlock> = {
     id: 'card0.id',
@@ -254,6 +263,8 @@ describe('Attributes', () => {
     )
 
     expect(queryByTestId('move-block-buttons')).not.toBeInTheDocument()
-    expect(getByRole('button', { name: 'Hosted by None' })).toBeInTheDocument()
+    expect(
+      getByRole('button', { name: 'Chat Widget None' })
+    ).toBeInTheDocument()
   })
 })

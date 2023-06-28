@@ -3,7 +3,7 @@ import MuiAvatar from '@mui/material/Avatar'
 import Badge from '@mui/material/Badge'
 import Tooltip from '@mui/material/Tooltip'
 import { compact } from 'lodash'
-import { GetJourneys_journeys_userJourneys_user as User } from '../../../__generated__/GetJourneys'
+import { GetAdminJourneys_journeys_userJourneys_user as User } from '../../../__generated__/GetAdminJourneys'
 
 export interface AvatarProps {
   user: User

@@ -1,9 +1,9 @@
 import { formatISO, startOfYear } from 'date-fns'
 
 import {
-  GetJourneys_journeys as Journey,
-  GetJourneys_journeys_userJourneys as User
-} from '../../../__generated__/GetJourneys'
+  GetAdminJourneys_journeys as Journey,
+  GetAdminJourneys_journeys_userJourneys as User
+} from '../../../__generated__/GetAdminJourneys'
 import {
   ThemeName,
   ThemeMode,
@@ -77,7 +77,10 @@ export const defaultJourney: Journey = {
   status: JourneyStatus.draft,
   seoTitle: null,
   seoDescription: null,
-  userJourneys
+  userJourneys,
+  trashedAt: null,
+  template: false,
+  primaryImageBlock: null
 }
 
 export const oldJourney: Journey = {

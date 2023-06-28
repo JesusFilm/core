@@ -6,23 +6,26 @@ interface TabPanelProps extends BoxProps {
   children?: ReactNode
   value: number
   index: number
+  unmountOnExit?: boolean
 }
 export function TabPanel({
   name,
   children,
   value,
   index,
+  unmountOnExit,
   ...other
 }: TabPanelProps): ReactElement {
+  const hidden = value !== index
   return (
     <Box
       role="tabpanel"
-      hidden={value !== index}
+      hidden={hidden}
       id={`${name}-tabpanel-${index}`}
       aria-labelledby={`${name}-tab-${index}`}
       {...other}
     >
-      {children}
+      {(unmountOnExit !== true || !hidden) && children}
     </Box>
   )
 }

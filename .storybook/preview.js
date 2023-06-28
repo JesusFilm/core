@@ -4,6 +4,7 @@ const {
   initialize: mswInitialize,
   mswDecorator
 } = require('msw-storybook-addon')
+const { MockedProvider } = require('@apollo/client/testing')
 
 const OriginalNextImage = NextImage.default
 
@@ -57,6 +58,9 @@ module.exports = {
     controls: { disable: true },
     viewport: {
       viewports: customViewports
+    },
+    apolloClient: {
+      MockedProvider
     }
   },
   globalTypes: {

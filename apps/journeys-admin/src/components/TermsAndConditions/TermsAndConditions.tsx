@@ -17,7 +17,6 @@ import ListItemIcon from '@mui/material/ListItemIcon'
 import ListItemText from '@mui/material/ListItemText'
 import Button from '@mui/material/Button'
 import Box from '@mui/system/Box'
-import { useFlags } from '@core/shared/ui/FlagsProvider'
 import taskbarIcon from '../../../public/taskbar-icon.svg'
 import { JourneyProfileCreate } from '../../../__generated__/JourneyProfileCreate'
 import { useJourneyDuplicate } from '../../libs/useJourneyDuplicate'
@@ -42,12 +41,10 @@ export function TermsAndConditions(): ReactElement {
   )
   const { duplicateJourney } = useJourneyDuplicate()
   const router = useRouter()
-  const { inviteRequirement } = useFlags()
 
   const handleJourneyProfileCreate = async (): Promise<void> => {
     await journeyProfileCreate()
-    if (!inviteRequirement)
-      await duplicateJourney({ id: ONBOARDING_TEMPLATE_ID })
+    await duplicateJourney({ id: ONBOARDING_TEMPLATE_ID })
     await router.push('/')
   }
 
