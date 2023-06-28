@@ -33,7 +33,7 @@ export class TeamResolver {
   ): Promise<UserTeamInvite[]> {
     return this.prismaService.userTeamInvite.findMany({
       where: {
-        AND: [accessibleUserTeamInvites, { teamId, removedAt: null }]
+        AND: [accessibleUserTeamInvites, { teamId }]
       }
     })
   }

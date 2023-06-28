@@ -1232,9 +1232,6 @@ export class UserTeamInvite {
     teamId: string;
     email: string;
     senderId: string;
-    acceptedAt?: Nullable<DateTime>;
-    removedAt?: Nullable<DateTime>;
-    role?: Nullable<UserTeamRole>;
 }
 
 export class Browser {
