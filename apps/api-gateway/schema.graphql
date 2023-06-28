@@ -1978,10 +1978,6 @@ type UserTeamInvite
   id: ID!
   teamId: ID!
   email: String!
-  senderId: ID!
-  acceptedAt: DateTime
-  removedAt: DateTime
-  role: UserTeamRole
 }
 
 input UserTeamInviteCreateInput

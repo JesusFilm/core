@@ -2,7 +2,6 @@ type UserTeamInvite {
   id: ID!
   teamId: ID!
   email: String!
-  senderId: ID!
 }
 
 extend type Query {

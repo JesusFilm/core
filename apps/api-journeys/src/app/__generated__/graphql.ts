@@ -1231,7 +1231,6 @@ export class UserTeamInvite {
     id: string;
     teamId: string;
     email: string;
-    senderId: string;
 }
 
 export class Browser {
