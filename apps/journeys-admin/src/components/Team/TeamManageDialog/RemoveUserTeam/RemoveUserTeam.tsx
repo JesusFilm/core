@@ -7,9 +7,6 @@ export const USER_TEAM_REMOVE = gql`
   mutation UserTeamDelete($id: ID!) {
     userTeamDelete(id: $id) {
       id
-      user {
-        id
-      }
     }
   }
 `
@@ -28,7 +25,7 @@ export function RemoveUserTeam({
   const [userTeamDelete] = useMutation(USER_TEAM_REMOVE, {
     variables: { id },
     update(cache, { data }) {
-      if (data?.userTeamDelete.user != null)
+      if (data?.userTeamDelete.id != null)
         cache.evict({
           id: cache.identify({
             __typename: 'UserTeam',
