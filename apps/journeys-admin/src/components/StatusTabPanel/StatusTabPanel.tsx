@@ -152,7 +152,6 @@ export function StatusTabPanel({
           >
             <JourneyListMenu onClick={setActiveEvent} />
           </Box>
-          <JourneyListMenu onClick={setActiveEvent} />
         </Tabs>
       </Paper>
       <TabPanel

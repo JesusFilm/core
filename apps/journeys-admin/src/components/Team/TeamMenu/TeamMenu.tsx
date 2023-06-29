@@ -5,16 +5,19 @@ import EditIcon from '@mui/icons-material/Edit'
 import IconButton from '@mui/material/IconButton'
 import Menu from '@mui/material/Menu'
 import MoreVert from '@mui/icons-material/MoreVert'
+import GroupIcon from '@mui/icons-material/Group'
 import { MenuItem } from '../../MenuItem'
 import { TeamCreateDialog } from '../TeamCreateDialog'
 import { TeamUpdateDialog } from '../TeamUpdateDialog'
 import { useTeam } from '../TeamProvider'
+import { TeamManageDialog } from '../TeamManageDialog'
 
 export function TeamMenu(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { activeTeam } = useTeam()
   const [teamCreateOpen, setTeamCreateOpen] = useState(false)
   const [teamUpdateOpen, setTeamUpdateOpen] = useState(false)
+  const [teamManageMembers, setTeamManageMembers] = useState(false)
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
   const handleShowMenu = (event: React.MouseEvent<HTMLButtonElement>): void => {
     setAnchorEl(event.currentTarget)
@@ -36,6 +39,12 @@ export function TeamMenu(): ReactElement {
         open={teamUpdateOpen}
         onClose={() => {
           setTeamUpdateOpen(false)
+        }}
+      />
+      <TeamManageDialog
+        open={teamManageMembers}
+        onClose={() => {
+          setTeamManageMembers(false)
         }}
       />
       <IconButton
@@ -79,6 +88,16 @@ export function TeamMenu(): ReactElement {
           icon={<EditIcon />}
           onClick={() => {
             setTeamUpdateOpen(true)
+            setAnchorEl(null)
+          }}
+        />
+        <MenuItem
+          disabled={activeTeam == null}
+          key="rename-team"
+          label={t('Manage Team')}
+          icon={<GroupIcon />}
+          onClick={() => {
+            setTeamManageMembers(true)
             setAnchorEl(null)
           }}
         />

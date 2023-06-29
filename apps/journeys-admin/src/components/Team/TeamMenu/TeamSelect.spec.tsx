@@ -1,11 +1,18 @@
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { SnackbarProvider } from 'notistack'
+import useMediaQuery from '@mui/material/useMediaQuery'
 import { GET_TEAMS, TeamProvider } from '../TeamProvider'
 import { GetTeams } from '../../../../__generated__/GetTeams'
 import { TeamMenu } from '.'
 
+jest.mock('@mui/material/useMediaQuery', () => ({
+  __esModule: true,
+  default: jest.fn()
+}))
+
 describe('TeamMenu', () => {
+  beforeEach(() => (useMediaQuery as jest.Mock).mockImplementation(() => true))
   const getTeamsMock: MockedResponse<GetTeams> = {
     request: {
       query: GET_TEAMS
