@@ -442,7 +442,7 @@ describe('arclight', () => {
           usedSlugs
         )
       ).toEqual(video)
-      expect(usedSlugs).toEqual(['title'])
+      expect(usedSlugs).toEqual({ title: 'mediaComponentId' })
     })
 
     it('transforms media component to video when slug exists', () => {
@@ -465,7 +465,7 @@ describe('arclight', () => {
           }
         ]
       })
-      expect(usedSlugs).toEqual(['title', 'title-2'])
+      expect(usedSlugs).toEqual({ title: 'id', 'title-2': 'mediaComponentId' })
     })
 
     it('transforms media component to video without languages', () => {
@@ -479,7 +479,7 @@ describe('arclight', () => {
           usedSlugs
         )
       ).toEqual({ ...video, variants: [] })
-      expect(usedSlugs).toEqual(['title'])
+      expect(usedSlugs).toEqual({ title: 'mediaComponentId' })
     })
 
     it('transforms media component to video with study questions', () => {
@@ -502,7 +502,7 @@ describe('arclight', () => {
           }
         ]
       })
-      expect(usedSlugs).toEqual(['title'])
+      expect(usedSlugs).toEqual({ title: 'mediaComponentId' })
     })
 
     it('transforms media component to video with long title', () => {
@@ -553,9 +553,10 @@ describe('arclight', () => {
           }
         ]
       })
-      expect(usedSlugs).toEqual([
-        'the-quick-brown-fox-jumps-over-the-lazy-dog-many-times-over-and-over-until-it-gets-cut-off-when-over-100-characters'
-      ])
+      expect(usedSlugs).toEqual({
+        'the-quick-brown-fox-jumps-over-the-lazy-dog-many-times-over-and-over-until-it-gets-cut-off-when-over-100-characters':
+          'mediaComponentId'
+      })
     })
   })
 
