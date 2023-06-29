@@ -4,7 +4,6 @@ import { useFlags } from '@core/shared/ui/FlagsProvider'
 import Box from '@mui/material/Box'
 import Container from '@mui/material/Container'
 import { AuthUser } from 'next-firebase-auth'
-import Button from '@mui/material/Button'
 import { MultipleSummaryReport } from '../MultipleSummaryReport'
 import { StatusTabPanel } from '../StatusTabPanel'
 import { AddJourneyFab } from './AddJourneyFab'
@@ -52,23 +51,8 @@ export function JourneyList({
     event
   }
 
-  async function handleShare(): Promise<void> {
-    const shareDetails = {
-      url: 'https://google.com',
-      title: 'Share test',
-      text: 'Testing hpw this displays on different platforms and devices'
-    }
-
-    try {
-      await navigator.share(shareDetails)
-    } catch (error) {
-      console.log(error.message)
-    }
-  }
-
   return (
     <>
-      <Button onClick={handleShare}>Share Test</Button>
       {journeysSummaryReport && <MultipleSummaryReport />}
       <Box sx={{ mx: { xs: -6, sm: 0 } }}>
         <Container disableGutters>
