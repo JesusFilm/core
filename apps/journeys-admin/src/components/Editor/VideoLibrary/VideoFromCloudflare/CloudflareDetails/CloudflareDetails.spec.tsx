@@ -19,9 +19,9 @@ describe('CloudflareDetails', () => {
       'https://customer-.cloudflarestream.com/videoId/manifest/video.m3u8'
     )
     expect(sourceTag?.getAttribute('type')).toEqual('application/x-mpegURL')
-    const imageTag = videoPlayer.querySelector('.vjs-poster')
-    expect(imageTag).toHaveStyle(
-      "background-image: url('https://customer-.cloudflarestream.com/videoId/thumbnails/thumbnail.jpg?time=2s')"
+    const imageTag = videoPlayer.querySelector('.vjs-poster > picture > img')
+    expect(imageTag?.getAttribute('src')).toEqual(
+      'https://customer-.cloudflarestream.com/videoId/thumbnails/thumbnail.jpg?time=2s'
     )
   })
 })
