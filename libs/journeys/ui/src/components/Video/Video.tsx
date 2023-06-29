@@ -122,6 +122,17 @@ export function Video({
   const progressEndTime =
     player != null ? Math.min(...triggerTimes, endOfVideo) : 0
 
+  useEffect(() => {
+    if (player != null) {
+      if (selectedBlock === undefined) {
+        if (autoplay === true) {
+          player.autoplay(true)
+          void player.play()
+        }
+      }
+    }
+  })
+
   // Initiate video player listeners
   useEffect(() => {
     if (player != null) {
@@ -188,32 +199,6 @@ export function Video({
     }
   }
 
-  //  Set video src
-  useEffect(() => {
-    if (player != null) {
-      if (source === VideoBlockSource.internal && video?.variant?.hls != null) {
-        player.src({
-          src: video.variant?.hls ?? '',
-          type: 'application/x-mpegURL'
-        })
-      } else if (source === VideoBlockSource.youTube && videoId != null) {
-        player.src({
-          src: `https://www.youtube.com/embed/${videoId}?start=${
-            startAt ?? 0
-          }&end=${endAt ?? 0}`,
-          type: 'video/youtube'
-        })
-      } else if (source === VideoBlockSource.cloudflare && videoId != null) {
-        player.src({
-          src: `https://customer-${
-            process.env.NEXT_PUBLIC_CLOUDFLARE_STREAM_CUSTOMER_CODE ?? ''
-          }.cloudflarestream.com/${videoId ?? ''}/manifest/video.m3u8`,
-          type: 'application/x-mpegURL'
-        })
-      }
-    }
-  }, [player, video, videoId, source, startAt, endAt])
-
   return (
     <Box
       data-testid={`video-${blockId}`}
@@ -274,7 +259,28 @@ export function Video({
                 backgroundSize: 'cover'
               }
             }}
-          />
+          >
+            {source === VideoBlockSource.cloudflare && videoId != null && (
+              <source
+                src={`https://customer-${
+                  process.env.NEXT_PUBLIC_CLOUDFLARE_STREAM_CUSTOMER_CODE ?? ''
+                }.cloudflarestream.com/${videoId ?? ''}/manifest/video.m3u8`}
+                type="application/x-mpegURL"
+              />
+            )}
+            {source === VideoBlockSource.internal &&
+              video?.variant?.hls != null && (
+                <source src={video.variant.hls} type="application/x-mpegURL" />
+              )}
+            {source === VideoBlockSource.youTube && (
+              <source
+                src={`https://www.youtube.com/embed/${videoId}?start=${
+                  startAt ?? 0
+                }&end=${endAt ?? 0}`}
+                type="video/youtube"
+              />
+            )}
+          </StyledVideo>
           {player != null && (
             <ThemeProvider theme={{ ...theme, direction: 'ltr' }}>
               <VideoControls

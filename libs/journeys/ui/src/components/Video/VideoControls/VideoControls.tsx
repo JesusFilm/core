@@ -23,8 +23,8 @@ interface VideoControlProps {
   player: videojs.Player
   startAt: number
   endAt: number
-  isYoutube: boolean
-  loading: boolean
+  isYoutube?: boolean
+  loading?: boolean
 }
 
 function isMobile(): boolean {
@@ -36,8 +36,8 @@ export function VideoControls({
   player,
   startAt,
   endAt,
-  isYoutube,
-  loading
+  isYoutube = false,
+  loading = false
 }: VideoControlProps): ReactElement {
   const [playing, setPlaying] = useState(false)
   const [active, setActive] = useState(true)
@@ -123,6 +123,7 @@ export function VideoControls({
   }
 
   async function handleFullscreen(): Promise<void> {
+    console.log(fullscreen, isMobile())
     if (fullscreen) {
       fscreen.exitFullscreen()
       setFullscreen(false)
@@ -136,7 +137,7 @@ export function VideoControls({
     }
   }
 
-  function handleSeek(event: Event, value: number | number[]): void {
+  function handleSeek(e: Event, value: number | number[]): void {
     if (!Array.isArray(value)) {
       setProgress(value)
       player.currentTime(value)
@@ -147,7 +148,7 @@ export function VideoControls({
     player.muted(!player.muted())
   }
 
-  function handleVolume(_event: Event, value: number | number[]): void {
+  function handleVolume(e: Event, value: number | number[]): void {
     if (!Array.isArray(value)) {
       player.muted(false)
       setVolume(value)
@@ -177,7 +178,8 @@ export function VideoControls({
 
   return (
     <Box
-      id="video-controls"
+      aria-label="video-controls"
+      role="region"
       dir="ltr"
       sx={{
         position: 'absolute',
@@ -196,7 +198,7 @@ export function VideoControls({
       <Fade
         in={visible}
         style={{ transitionDuration: '500ms' }}
-        timeout={{ exit: 2225 }}
+        timeout={{ exit: 3000 }}
       >
         <Stack justifyContent="flex-end" sx={{ height: '100%' }}>
           {/* Mute / Unmute */}
@@ -217,7 +219,6 @@ export function VideoControls({
               }}
               onClick={(e) => {
                 e.stopPropagation()
-                void player.play()
                 handleMute()
               }}
             >
@@ -228,6 +229,9 @@ export function VideoControls({
           <Stack flexGrow={1} alignItems="center" justifyContent="center">
             {!loading ? (
               <IconButton
+                aria-label={
+                  playing ? 'center-pause-button' : 'center-play-button'
+                }
                 sx={{
                   fontSize: 100,
                   display: { xs: 'flex', lg: 'none' }
@@ -287,7 +291,7 @@ export function VideoControls({
               alignItems="center"
             >
               <IconButton
-                id={playing ? 'pause-button' : 'play-button'}
+                aria-label={playing ? 'bar-pause-button' : 'bar-play-button'}
                 onClick={handlePlay}
                 sx={{
                   display: { xs: 'none', lg: 'flex' },
@@ -357,7 +361,13 @@ export function VideoControls({
                     }
                   }}
                 >
-                  <IconButton onClick={handleMute} sx={{ p: 0 }}>
+                  <IconButton
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      handleMute()
+                    }}
+                    sx={{ p: 0 }}
+                  >
                     {player.muted() || volume === 0 ? (
                       <VolumeOffOutlined />
                     ) : volume > 60 ? (
@@ -390,7 +400,11 @@ export function VideoControls({
                     }}
                   />
                 </Stack>
-                <IconButton onClick={handleFullscreen} sx={{ py: 0, px: 2 }}>
+                <IconButton
+                  aria-label="fullscreen"
+                  onClick={handleFullscreen}
+                  sx={{ py: 0, px: 2 }}
+                >
                   {fullscreen ? (
                     <FullscreenExitRounded />
                   ) : (
