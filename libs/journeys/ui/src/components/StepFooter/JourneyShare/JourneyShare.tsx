@@ -56,7 +56,7 @@ export function JourneyShare(): ReactElement {
             <IconButton
               size="large"
               sx={{
-                backgroundColor: 'secondary.main',
+                backgroundColor: '#6D6F81',
                 width: '40px',
                 height: '40px',
                 m: 2
