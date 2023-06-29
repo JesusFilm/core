@@ -9,6 +9,7 @@ import { getJourneyRTL } from '../../libs/rtl'
 import { HostTitleLocation } from './HostTitleLocation'
 import { HostAvatars } from './HostAvatars'
 import { ChatButtons } from './ChatButtons'
+import { JourneyShare } from './JourneyShare'
 
 interface StepFooterProps {
   onFooterClick?: () => void
@@ -101,6 +102,7 @@ export function StepFooter({
               </Typography>
               <HostTitleLocation />
             </Stack>
+            <JourneyShare />
             {/* <Stack
               data-testid="chip"
               sx={{

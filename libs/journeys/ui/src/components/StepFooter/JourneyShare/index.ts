@@ -1,0 +1,1 @@
+export { JourneyShare } from './JourneyShare'
