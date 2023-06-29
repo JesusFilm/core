@@ -1105,7 +1105,7 @@ type Mutation
   userJourneyRemoveAll(id: ID!): [UserJourney!]! @join__field(graph: JOURNEYS)
   userJourneyRequest(journeyId: ID!, idType: IdType): UserJourney! @join__field(graph: JOURNEYS)
   userJourneyOpen(id: ID!): UserJourney @join__field(graph: JOURNEYS)
-  userTeamUpdate(id: ID!, input: TeamUpdateInput): UserTeam! @join__field(graph: JOURNEYS)
+  userTeamUpdate(id: ID!, input: UserTeamUpdateInput): UserTeam! @join__field(graph: JOURNEYS)
   userTeamDelete(id: ID!): UserTeam! @join__field(graph: JOURNEYS)
   userTeamInviteCreate(teamId: ID!, input: UserTeamInviteCreateInput): UserTeamInvite @join__field(graph: JOURNEYS)
   userTeamInviteDelete(id: ID!, teamId: ID!): UserTeamInvite! @join__field(graph: JOURNEYS)
