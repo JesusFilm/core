@@ -1,6 +1,5 @@
 import { Story, Meta } from '@storybook/react'
 import { MockedProvider } from '@apollo/client/testing'
-import noop from 'lodash/noop'
 import { SnackbarProvider } from 'notistack'
 import { journeysAdminConfig } from '../../../libs/storybook'
 import {
@@ -10,7 +9,8 @@ import {
   publishedTemplate
 } from '../../TemplateLibrary/TemplateListData'
 import { ThemeProvider } from '../../ThemeProvider'
-import { GET_ACTIVE_PUBLISHER_TEMPLATES } from './ActiveTemplates'
+import { GET_ADMIN_JOURNEYS } from '../../../libs/useAdminJourneysQuery/useAdminJourneysQuery'
+import { JourneyStatus } from '../../../../__generated__/globalTypes'
 import { ActiveTemplates } from '.'
 
 const ActiveTemplatesStory = {
@@ -41,14 +41,14 @@ const Template: Story = ({ ...args }) => (
 
 export const Default = Template.bind({})
 Default.args = {
-  props: {
-    onLoad: noop,
-    event: ''
-  },
   mocks: [
     {
       request: {
-        query: GET_ACTIVE_PUBLISHER_TEMPLATES
+        query: GET_ADMIN_JOURNEYS,
+        variables: {
+          status: [JourneyStatus.draft, JourneyStatus.published],
+          template: true
+        }
       },
       result: {
         data: {
@@ -66,14 +66,14 @@ Default.args = {
 
 export const NoTemplates = Template.bind({})
 NoTemplates.args = {
-  props: {
-    onLoad: noop,
-    event: ''
-  },
   mocks: [
     {
       request: {
-        query: GET_ACTIVE_PUBLISHER_TEMPLATES
+        query: GET_ADMIN_JOURNEYS,
+        variables: {
+          status: [JourneyStatus.draft, JourneyStatus.published],
+          template: true
+        }
       },
       result: {
         data: {
@@ -86,17 +86,12 @@ NoTemplates.args = {
 
 export const Loading = Template.bind({})
 Loading.args = {
-  props: {
-    onLoad: noop,
-    event: ''
-  },
   mocks: []
 }
 
 export const ArchiveDialog = Template.bind({})
 ArchiveDialog.args = {
   props: {
-    onLoad: noop,
     event: 'archiveAllActive'
   },
   mocks: []
@@ -105,7 +100,6 @@ ArchiveDialog.args = {
 export const TrashDialog = Template.bind({})
 TrashDialog.args = {
   props: {
-    onLoad: noop,
     event: 'trashAllActive'
   },
   mocks: []

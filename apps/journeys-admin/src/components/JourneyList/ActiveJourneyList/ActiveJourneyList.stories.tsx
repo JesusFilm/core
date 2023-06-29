@@ -1,6 +1,5 @@
 import { Story, Meta } from '@storybook/react'
 import { MockedProvider } from '@apollo/client/testing'
-import noop from 'lodash/noop'
 import { journeysAdminConfig } from '../../../libs/storybook'
 import {
   defaultJourney,
@@ -8,7 +7,8 @@ import {
   descriptiveJourney,
   publishedJourney
 } from '../journeyListData'
-import { GET_ACTIVE_JOURNEYS } from '../../../libs/useActiveJourneys/useActiveJourneys'
+import { GET_ADMIN_JOURNEYS } from '../../../libs/useAdminJourneysQuery/useAdminJourneysQuery'
+import { JourneyStatus } from '../../../../__generated__/globalTypes'
 import { ActiveJourneyList } from '.'
 
 const ActiveJourneyListStory = {
@@ -29,14 +29,13 @@ const Template: Story = ({ ...args }) => (
 
 export const Default = Template.bind({})
 Default.args = {
-  props: {
-    onLoad: noop,
-    event: ''
-  },
   mocks: [
     {
       request: {
-        query: GET_ACTIVE_JOURNEYS
+        query: GET_ADMIN_JOURNEYS,
+        variables: {
+          status: [JourneyStatus.draft, JourneyStatus.published]
+        }
       },
       result: {
         data: {
@@ -54,14 +53,13 @@ Default.args = {
 
 export const NoJourneys = Template.bind({})
 NoJourneys.args = {
-  props: {
-    onLoad: noop,
-    event: ''
-  },
   mocks: [
     {
       request: {
-        query: GET_ACTIVE_JOURNEYS
+        query: GET_ADMIN_JOURNEYS,
+        variables: {
+          status: [JourneyStatus.draft, JourneyStatus.published]
+        }
       },
       result: {
         data: {
@@ -74,17 +72,12 @@ NoJourneys.args = {
 
 export const Loading = Template.bind({})
 Loading.args = {
-  props: {
-    onLoad: noop,
-    event: ''
-  },
   mocks: []
 }
 
 export const ArchiveAll = Template.bind({})
 ArchiveAll.args = {
   props: {
-    onLoad: noop,
     event: 'archiveAllActive'
   },
   mocks: []
@@ -93,7 +86,6 @@ ArchiveAll.args = {
 export const TrashAll = Template.bind({})
 TrashAll.args = {
   props: {
-    onLoad: noop,
     event: 'trashAllActive'
   },
   mocks: []

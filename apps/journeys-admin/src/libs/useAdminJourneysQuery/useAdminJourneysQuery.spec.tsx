@@ -8,9 +8,12 @@ import {
   ThemeName,
   UserJourneyRole
 } from '../../../__generated__/globalTypes'
-import { GET_JOURNEYS, useJourneys } from './useJourneys'
+import {
+  GET_ADMIN_JOURNEYS,
+  useAdminJourneysQuery
+} from './useAdminJourneysQuery'
 
-describe('useJourneys', () => {
+describe('useAdminJourneysQuery', () => {
   it('should get journeys', async () => {
     const result = jest.fn(() => ({
       data: {
@@ -58,22 +61,33 @@ describe('useJourneys', () => {
       }
     }))
 
-    renderHook(() => useJourneys(), {
-      wrapper: ({ children }) => (
-        <MockedProvider
-          mocks={[
-            {
-              request: {
-                query: GET_JOURNEYS
-              },
-              result
-            }
-          ]}
-        >
-          {children}
-        </MockedProvider>
-      )
-    })
+    renderHook(
+      () =>
+        useAdminJourneysQuery({
+          status: [JourneyStatus.draft],
+          template: true
+        }),
+      {
+        wrapper: ({ children }) => (
+          <MockedProvider
+            mocks={[
+              {
+                request: {
+                  query: GET_ADMIN_JOURNEYS,
+                  variables: {
+                    status: [JourneyStatus.draft],
+                    template: true
+                  }
+                },
+                result
+              }
+            ]}
+          >
+            {children}
+          </MockedProvider>
+        )
+      }
+    )
 
     await act(
       async () => await waitFor(() => expect(result).toHaveBeenCalled())

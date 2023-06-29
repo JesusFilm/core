@@ -7,9 +7,9 @@ import { useTranslation } from 'react-i18next'
 import { AccessAvatars } from '../../../AccessAvatars'
 import { StatusChip } from '../StatusChip'
 import {
-  GetJourneys_journeys as Journey,
-  GetJourneys_journeys_userJourneys as UserJourney
-} from '../../../../../__generated__/GetJourneys'
+  GetAdminJourneys_journeys as Journey,
+  GetAdminJourneys_journeys_userJourneys as UserJourney
+} from '../../../../../__generated__/GetAdminJourneys'
 import { JourneyCardVariant } from '../journeyCardVariant'
 import { UserJourneyRole } from '../../../../../__generated__/globalTypes'
 

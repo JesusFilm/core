@@ -1,18 +1,17 @@
-import { formatISO, startOfYear } from 'date-fns'
-import { renderHook, act } from '@testing-library/react-hooks'
 import { MockedProvider } from '@apollo/client/testing'
+import { formatISO, startOfYear } from 'date-fns'
 import { waitFor } from '@testing-library/react'
+import { renderHook, act } from '@testing-library/react-hooks'
 import {
   JourneyStatus,
   ThemeMode,
   ThemeName,
   UserJourneyRole
 } from '../../../__generated__/globalTypes'
-import { GET_ACTIVE_JOURNEYS } from './useActiveJourneys'
-import { useActiveJourneys } from '.'
+import { GET_JOURNEYS, useJourneysQuery } from './useJourneysQuery'
 
-describe('useActiveJourneys', () => {
-  it('should get activeJourneys', async () => {
+describe('useJourneysQuery', () => {
+  it('should get journeys', async () => {
     const result = jest.fn(() => ({
       data: {
         journeys: [
@@ -59,22 +58,35 @@ describe('useActiveJourneys', () => {
       }
     }))
 
-    renderHook(() => useActiveJourneys(), {
-      wrapper: ({ children }) => (
-        <MockedProvider
-          mocks={[
-            {
-              request: {
-                query: GET_ACTIVE_JOURNEYS
-              },
-              result
-            }
-          ]}
-        >
-          {children}
-        </MockedProvider>
-      )
-    })
+    renderHook(
+      () =>
+        useJourneysQuery({
+          where: {
+            template: true
+          }
+        }),
+      {
+        wrapper: ({ children }) => (
+          <MockedProvider
+            mocks={[
+              {
+                request: {
+                  query: GET_JOURNEYS,
+                  variables: {
+                    where: {
+                      template: true
+                    }
+                  }
+                },
+                result
+              }
+            ]}
+          >
+            {children}
+          </MockedProvider>
+        )
+      }
+    )
 
     await act(
       async () => await waitFor(() => expect(result).toHaveBeenCalled())
