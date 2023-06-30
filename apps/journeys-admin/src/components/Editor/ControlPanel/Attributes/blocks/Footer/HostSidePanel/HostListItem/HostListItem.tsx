@@ -58,7 +58,7 @@ export function HostListItem({
             {hostTitle}
           </Typography>
           <Typography
-            variant="body2"
+            variant="caption"
             sx={{
               whiteSpace: 'nowrap',
               overflow: 'hidden',
