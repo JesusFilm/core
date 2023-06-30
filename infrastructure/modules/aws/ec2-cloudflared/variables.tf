@@ -21,3 +21,7 @@ variable "dns_name" {
 variable "zone_id" {
   type = string
 }
+
+variable "cloudflared_token" {
+  type = string
+}

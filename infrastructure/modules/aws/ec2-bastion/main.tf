@@ -9,15 +9,12 @@ resource "aws_key_pair" "default" {
 }
 
 resource "aws_instance" "bastion" {
-  ami                         = "ami-02af4904e34687a9e"
+  ami                         = "ami-08333bccc35d71140"
   instance_type               = "t2.micro"
   associate_public_ip_address = true
   subnet_id                   = var.subnet_id
   vpc_security_group_ids      = var.security_group_ids
   key_name                    = aws_key_pair.default.key_name
-  user_data = templatefile("${path.module}/startup.sh", {
-    cloudflared_token = var.cloudflared_token
-  })
 }
 
 resource "aws_route53_record" "record" {

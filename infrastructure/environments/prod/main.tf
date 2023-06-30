@@ -111,3 +111,13 @@ module "bastion" {
   security_group_ids = [module.prod.public_bastion_security_group_id]
   cloudflared_token  = data.aws_ssm_parameter.cloudflared_prod_token.value
 }
+
+
+module "cloudflared" {
+  source             = "../../modules/aws/ec2-cloudflared"
+  name               = "cloudflared"
+  env                = "prod"
+  subnet_id          = module.prod.vpc.public_subnets[0]
+  security_group_ids = [module.prod.public_bastion_security_group_id]
+  cloudflared_token  = data.aws_ssm_parameter.cloudflared_prod_token.value
+}
