@@ -7,6 +7,7 @@ import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import IconButton from '@mui/material/IconButton'
 import Image from 'next/image'
+import { useSnackbar } from 'notistack'
 import { useJourney } from '../../../libs/JourneyProvider'
 import facebookLogo from '../../../../public/facebook_logo.svg'
 import twitterLogo from '../../../../public/twitter_logo.svg'
@@ -14,17 +15,20 @@ import twitterLogo from '../../../../public/twitter_logo.svg'
 export function JourneyShare(): ReactElement {
   const { journey } = useJourney()
   const [shareDialogOpen, setShareDialogOpen] = useState(true)
+  const { enqueueSnackbar } = useSnackbar()
+
+  const url =
+    journey?.slug != null
+      ? `${
+          process.env.NEXT_PUBLIC_JOURNEYS_URL ?? 'https://your.nextstep.is'
+        }/${journey.slug}`
+      : undefined
 
   async function handleShare(): Promise<void> {
-    if (journey?.slug == null) return
-
-    const url = `${
-      process.env.NEXT_PUBLIC_JOURNEYS_URL ?? 'https://your.nextstep.is'
-    }/${journey.slug}`
-
+    if (url == null) return
     const shareDetails = {
       url,
-      title: journey?.seoTitle ?? 'Untitled Journey',
+      title: journey?.seoTitle ?? journey?.title ?? 'Journey',
       text: journey?.seoDescription ?? ''
     }
 
@@ -37,6 +41,13 @@ export function JourneyShare(): ReactElement {
     } else {
       setShareDialogOpen(true)
     }
+  }
+
+  async function handleCopyLink(): Promise<void> {
+    if (url == null) return
+    await navigator.clipboard.writeText(url).then(() => {
+      enqueueSnackbar('Copied to clipboard', { variant: 'success' })
+    })
   }
 
   return (
@@ -54,6 +65,7 @@ export function JourneyShare(): ReactElement {
         <Stack direction="row" spacing={2} justifyContent="space-around">
           <Stack direction="column">
             <IconButton
+              onClick={handleCopyLink}
               size="large"
               sx={{
                 backgroundColor: '#6D6F81',
@@ -68,26 +80,41 @@ export function JourneyShare(): ReactElement {
           </Stack>
 
           <Stack direction="column">
-            <IconButton>
-              <Image
-                src={facebookLogo}
-                alt="facebook-logo"
-                height={40}
-                width={40}
-              />
-            </IconButton>
+            <span>
+              <IconButton
+                href={`https://www.facebook.com/sharer/sharer.php?u=${
+                  url ?? ''
+                }`}
+                target="_blank"
+                rel="noopener"
+              >
+                <Image
+                  src={facebookLogo}
+                  alt="facebook-logo"
+                  height={40}
+                  width={40}
+                />
+              </IconButton>
+            </span>
+
             <Typography>Facebook</Typography>
           </Stack>
 
           <Stack direction="column">
-            <IconButton>
-              <Image
-                src={twitterLogo}
-                alt="twitter-logo"
-                height={40}
-                width={40}
-              />
-            </IconButton>
+            <span>
+              <IconButton
+                href={`https://twitter.com/intent/tweet?url=${url ?? ''}`}
+                target="_blank"
+              >
+                <Image
+                  src={twitterLogo}
+                  alt="twitter-logo"
+                  height={40}
+                  width={40}
+                />
+              </IconButton>
+            </span>
+
             <Typography>Twitter</Typography>
           </Stack>
         </Stack>
