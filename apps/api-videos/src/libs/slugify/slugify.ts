@@ -1,8 +1,12 @@
-function ensureSlugUnique(slug: string, usedSlugs: string[]): string {
-  const exists = usedSlugs.find((t) => t === slug)
-  if (exists == null) return slug
+function ensureSlugUnique(
+  id: string,
+  slug: string,
+  usedSlugs: Record<string, string>
+): string {
+  const exists = usedSlugs[slug] === id || usedSlugs[slug] == null
+  if (exists) return slug
   let suffix = 2
-  while (usedSlugs.find((t) => t === `${slug}-${suffix}`) != null) {
+  while (usedSlugs[`${slug}-${suffix}`] != null) {
     suffix++
   }
   return `${slug}-${suffix}`
@@ -22,8 +26,12 @@ function convertToSlug(name: string): string {
     .toLowerCase()
 }
 
-export function slugify(title: string, usedSlugs: string[] = []): string {
-  const slug = ensureSlugUnique(convertToSlug(title), usedSlugs)
-  usedSlugs.push(slug)
+export function slugify(
+  id: string,
+  title: string,
+  usedSlugs: Record<string, string> = {}
+): string {
+  const slug = ensureSlugUnique(id, convertToSlug(title), usedSlugs)
+  usedSlugs[slug] = id
   return slug
 }

@@ -1,6 +1,6 @@
 import { gql, useMutation } from '@apollo/client'
 import { ReactElement, useEffect } from 'react'
-import videojs from 'video.js'
+import Player from 'video.js/dist/types/player'
 import TagManager from 'react-gtm-module'
 import { v4 as uuidv4 } from 'uuid'
 import { useBlocks } from '../../libs/block'
@@ -66,7 +66,7 @@ export const VIDEO_PROGRESS_EVENT_CREATE = gql`
 `
 
 export interface VideoEventsProps {
-  player: videojs.Player
+  player: Player
   blockId: string
   videoTitle: string
   source: VideoBlockSource

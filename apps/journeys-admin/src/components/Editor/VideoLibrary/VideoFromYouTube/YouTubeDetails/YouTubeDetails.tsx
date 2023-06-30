@@ -9,6 +9,7 @@ import Skeleton from '@mui/material/Skeleton'
 import 'video.js/dist/video-js.css'
 import useSWR from 'swr'
 import fetch from 'node-fetch'
+import Player from 'video.js/dist/types/player'
 import {
   parseISO8601Duration,
   YoutubeVideo,
@@ -36,7 +37,7 @@ export function YouTubeDetails({
   onSelect
 }: Pick<VideoDetailsProps, 'open' | 'id' | 'onSelect'>): ReactElement {
   const videoRef = useRef<HTMLVideoElement>(null)
-  const playerRef = useRef<videojs.Player>()
+  const playerRef = useRef<Player>()
   const [playing, setPlaying] = useState(false)
   const { data, error } = useSWR<YoutubeVideo>(
     () => (open ? id : null),
