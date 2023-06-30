@@ -1,6 +1,6 @@
 import { ReactElement, useState, useEffect, MouseEventHandler } from 'react'
 import Container from '@mui/material/Container'
-import { VideoJsPlayer } from 'video.js'
+import Player from 'video.js/dist/types/player'
 import Box from '@mui/material/Box'
 import Fade from '@mui/material/Fade'
 import Stack from '@mui/material/Stack'
@@ -27,7 +27,7 @@ import { AudioLanguageButton } from '../../../AudioLanguageButton'
 
 const DynamicSubtitleDialog = dynamic<{
   open: boolean
-  player: VideoJsPlayer
+  player: Player
   onClose: () => void
 }>(
   async () =>
@@ -38,7 +38,7 @@ const DynamicSubtitleDialog = dynamic<{
 )
 
 interface VideoControlProps {
-  player: VideoJsPlayer
+  player: Player
   onVisibleChanged?: (active: boolean) => void
 }
 
@@ -231,7 +231,7 @@ export function VideoControls({
       setFullscreen(false)
     } else {
       if (isMobile()) {
-        player.requestFullscreen()
+        void player.requestFullscreen()
       } else {
         await fscreen.requestFullscreen(document.documentElement)
         setFullscreen(true)

@@ -8,7 +8,7 @@ import {
   LanguageAutocomplete
 } from '@core/shared/ui/LanguageAutocomplete'
 import { gql, useQuery } from '@apollo/client'
-import { VideoJsPlayer } from 'video.js'
+import Player from 'video.js/dist/types/player'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import { ThemeName, ThemeMode } from '@core/shared/ui/themes'
 import { GetSubtitles } from '../../../__generated__/GetSubtitles'
@@ -36,7 +36,7 @@ export const GET_SUBTITLES = gql`
 
 interface SubtitleDialogProps
   extends Pick<ComponentProps<typeof Dialog>, 'open' | 'onClose'> {
-  player: VideoJsPlayer
+  player: Player & { textTracks: () => TextTrackList }
 }
 
 export function SubtitleDialog({

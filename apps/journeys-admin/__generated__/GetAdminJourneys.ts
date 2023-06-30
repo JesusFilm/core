@@ -3,13 +3,25 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { ThemeName, ThemeMode, JourneyStatus, UserJourneyRole } from "./globalTypes";
+import { JourneyStatus, ThemeName, ThemeMode, UserJourneyRole } from "./globalTypes";
 
 // ====================================================
-// GraphQL query operation: GetPublishedTemplates
+// GraphQL query operation: GetAdminJourneys
 // ====================================================
 
-export interface GetPublishedTemplates_journeys_userJourneys_user {
+export interface GetAdminJourneys_journeys_language_name {
+  __typename: "Translation";
+  value: string;
+  primary: boolean;
+}
+
+export interface GetAdminJourneys_journeys_language {
+  __typename: "Language";
+  id: string;
+  name: GetAdminJourneys_journeys_language_name[];
+}
+
+export interface GetAdminJourneys_journeys_userJourneys_user {
   __typename: "User";
   id: string;
   firstName: string;
@@ -17,7 +29,7 @@ export interface GetPublishedTemplates_journeys_userJourneys_user {
   imageUrl: string | null;
 }
 
-export interface GetPublishedTemplates_journeys_userJourneys {
+export interface GetAdminJourneys_journeys_userJourneys {
   __typename: "UserJourney";
   id: string;
   role: UserJourneyRole;
@@ -25,22 +37,10 @@ export interface GetPublishedTemplates_journeys_userJourneys {
    * Date time of when the journey was first opened
    */
   openedAt: any | null;
-  user: GetPublishedTemplates_journeys_userJourneys_user | null;
+  user: GetAdminJourneys_journeys_userJourneys_user | null;
 }
 
-export interface GetPublishedTemplates_journeys_language_name {
-  __typename: "Translation";
-  value: string;
-  primary: boolean;
-}
-
-export interface GetPublishedTemplates_journeys_language {
-  __typename: "Language";
-  id: string;
-  name: GetPublishedTemplates_journeys_language_name[];
-}
-
-export interface GetPublishedTemplates_journeys_primaryImageBlock {
+export interface GetAdminJourneys_journeys_primaryImageBlock {
   __typename: "ImageBlock";
   id: string;
   parentBlockId: string | null;
@@ -56,25 +56,31 @@ export interface GetPublishedTemplates_journeys_primaryImageBlock {
   blurhash: string;
 }
 
-export interface GetPublishedTemplates_journeys {
+export interface GetAdminJourneys_journeys {
   __typename: "Journey";
   id: string;
   title: string;
   createdAt: any;
   publishedAt: any | null;
+  trashedAt: any | null;
   description: string | null;
   slug: string;
   themeName: ThemeName;
   themeMode: ThemeMode;
+  language: GetAdminJourneys_journeys_language;
   status: JourneyStatus;
   seoTitle: string | null;
   seoDescription: string | null;
   template: boolean | null;
-  userJourneys: GetPublishedTemplates_journeys_userJourneys[] | null;
-  language: GetPublishedTemplates_journeys_language;
-  primaryImageBlock: GetPublishedTemplates_journeys_primaryImageBlock | null;
+  userJourneys: GetAdminJourneys_journeys_userJourneys[] | null;
+  primaryImageBlock: GetAdminJourneys_journeys_primaryImageBlock | null;
 }
 
-export interface GetPublishedTemplates {
-  journeys: GetPublishedTemplates_journeys[];
+export interface GetAdminJourneys {
+  journeys: GetAdminJourneys_journeys[];
+}
+
+export interface GetAdminJourneysVariables {
+  status?: JourneyStatus[] | null;
+  template?: boolean | null;
 }

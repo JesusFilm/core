@@ -481,7 +481,7 @@ describe('VideoEvents', () => {
     act(() => {
       props.player.currentTime(0.78)
       props.player.enterFullWindow()
-      props.player.exitFullscreen()
+      void props.player.exitFullscreen()
     })
     await waitFor(() => expect(result).toHaveBeenCalled())
   })
@@ -537,7 +537,7 @@ describe('VideoEvents', () => {
     act(() => {
       props.player.currentTime(0.78)
       props.player.enterFullWindow()
-      props.player.exitFullscreen()
+      void props.player.exitFullscreen()
     })
     await waitFor(() =>
       expect(mockedDataLayer).toHaveBeenCalledWith({
