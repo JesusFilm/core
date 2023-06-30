@@ -145,4 +145,45 @@ describe('UserTeamInviteResolver', () => {
       ).rejects.toThrow(ForbiddenError)
     })
   })
+
+  describe('userTeamInviteAcceptAll', () => {
+    it('should accept pending team invites for current user', async () => {
+      const userMock = {
+        id: 'userId',
+        firstName: 'Siyang',
+        email: 'SiyangDiesel@example.com'
+      }
+      const userTeamInviteMock1 = {
+        id: 'inviteId1',
+        teamId: 'teamId1',
+        email: 'SiyangDiesel@example.com',
+        senderId: 'senderId1',
+        receipientId: null,
+        acceptedAt: null,
+        removedAt: null,
+        createdAt: '2021-02-18T00:00:00.000Z',
+        updatedAt: '2021-02-18T00:00:00.000Z'
+      }
+
+      const redeemedUserTeamInviteMock1 = {
+        ...userTeamInviteMock1,
+        acceptedAt: expect.any(Date)
+      }
+
+      prismaService.userTeamInvite.findMany = jest
+        .fn()
+        .mockResolvedValue([userTeamInviteMock1, userTeamInviteMock1])
+      prismaService.userTeam.upsert = jest.fn()
+      prismaService.$transaction = jest
+        .fn()
+        .mockResolvedValue([null, redeemedUserTeamInviteMock1])
+      prismaService.userTeamInvite.update = jest.fn()
+
+      await userTeamInviteResolver.userTeamInviteAcceptAll(userMock)
+      expect(prismaService.userTeamInvite.update).toHaveBeenCalledWith({
+        where: { id: 'inviteId1' },
+        data: { acceptedAt: expect.any(Date), receipientId: 'userId' }
+      })
+    })
+  })
 })
