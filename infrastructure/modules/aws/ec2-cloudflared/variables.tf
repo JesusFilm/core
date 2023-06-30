@@ -14,14 +14,6 @@ variable "env" {
   type = string
 }
 
-variable "dns_name" {
-  type = string
-}
-
-variable "zone_id" {
-  type = string
-}
-
 variable "cloudflared_token" {
   type = string
 }
