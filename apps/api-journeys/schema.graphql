@@ -188,7 +188,7 @@ extend type Mutation {
   userJourneyRemoveAll(id: ID!): [UserJourney!]!
   userJourneyRequest(journeyId: ID!, idType: IdType): UserJourney!
   userJourneyOpen(id: ID!): UserJourney
-  userTeamUpdate(id: ID!, input: TeamUpdateInput): UserTeam!
+  userTeamUpdate(id: ID!, input: UserTeamUpdateInput): UserTeam!
   userTeamDelete(id: ID!): UserTeam!
 
   """Update a visitor"""

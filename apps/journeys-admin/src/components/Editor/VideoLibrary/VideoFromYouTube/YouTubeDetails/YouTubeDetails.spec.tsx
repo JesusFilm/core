@@ -31,9 +31,9 @@ describe('YouTubeDetails', () => {
       'https://www.youtube.com/watch?v=jQaeIJOA6J0'
     )
     expect(sourceTag?.getAttribute('type')).toEqual('video/youtube')
-    const imageTag = videoPlayer.querySelector('.vjs-poster')
-    expect(imageTag).toHaveStyle(
-      "background-image: url('https://i.ytimg.com/vi/jQaeIJOA6J0/default.jpg')"
+    const imageTag = videoPlayer.querySelector('.vjs-poster > picture > img')
+    expect(imageTag?.getAttribute('src')).toEqual(
+      'https://i.ytimg.com/vi/jQaeIJOA6J0/default.jpg'
     )
   })
 
