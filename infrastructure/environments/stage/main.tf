@@ -143,8 +143,8 @@ module "cloudflared" {
   source             = "../../modules/aws/ec2-cloudflared"
   name               = "cloudflared"
   env                = "stage"
-  subnet_id          = module.prod.vpc.public_subnets[0]
-  security_group_ids = [module.prod.public_bastion_security_group_id]
+  subnet_id          = module.stage.vpc.public_subnets[0]
+  security_group_ids = [module.stage.public_bastion_security_group_id]
   cloudflared_token  = data.aws_ssm_parameter.cloudflared_stage_token.value
 }
 
