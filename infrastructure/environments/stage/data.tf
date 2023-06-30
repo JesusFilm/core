@@ -45,5 +45,5 @@ data "aws_ssm_parameter" "doppler_api_videos_stage_token" {
 }
 
 data "aws_ssm_parameter" "cloudflared_stage_token" {
-  name = "/terraform/stg/CLOUDFLARED_STAGE_TOKEN"
+  name = "/terraform/prd/CLOUDFLARED_STAGE_TOKEN"
 }
