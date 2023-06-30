@@ -31,7 +31,7 @@ export class TeamResolver {
     accessibleUserTeamInvites: Prisma.UserTeamInviteWhereInput,
     @Args('teamId') teamId: string
   ): Promise<UserTeamInvite[]> {
-    return this.prismaService.userTeamInvite.findMany({
+    return await this.prismaService.userTeamInvite.findMany({
       where: {
         AND: [accessibleUserTeamInvites, { teamId }]
       }
@@ -55,7 +55,7 @@ export class TeamResolver {
         extensions: { code: 'NOT_FOUND' }
       })
     if (ability.can(Action.Manage, subject('Team', team))) {
-      return this.prismaService.userTeamInvite.upsert({
+      return await this.prismaService.userTeamInvite.upsert({
         where: {
           teamId_email: {
             teamId,
@@ -92,7 +92,7 @@ export class TeamResolver {
         extensions: { code: 'NOT_FOUND' }
       })
     if (ability.can(Action.Manage, subject('UserTeamInvite', userTeamInvite))) {
-      return this.prismaService.userTeamInvite.update({
+      return await this.prismaService.userTeamInvite.update({
         where: {
           id
         },
