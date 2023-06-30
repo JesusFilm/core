@@ -1,7 +1,3 @@
-resource "aws_cloudwatch_log_group" "ecs_cw_log_group" {
-  name = "${var.name}-${var.env}-logs"
-}
-
 resource "aws_instance" "bastion" {
   ami                         = "ami-02af4904e34687a9e"
   instance_type               = "t2.nano"
