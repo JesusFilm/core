@@ -1,4 +1,4 @@
-import videojs from 'video.js'
+import Player from 'video.js/dist/types/player'
 import { useRouter } from 'next/router'
 import { ReactElement, useEffect, useState } from 'react'
 import type { TreeBlock } from '../../libs/block'
@@ -9,7 +9,7 @@ type VideoTriggerProps = (
   | TreeBlock<VideoTriggerFields>
   | Pick<TreeBlock<VideoTriggerFields>, 'triggerAction' | 'triggerStart'>
 ) & {
-  player?: videojs.Player
+  player?: Player
 }
 
 export function VideoTrigger({
@@ -23,12 +23,13 @@ export function VideoTrigger({
   useEffect(() => {
     if (player != null && !triggered) {
       const timeUpdate = (): void => {
-        if (player.currentTime() >= triggerStart - 1 && !player.seeking()) {
+        if (player.currentTime() >= triggerStart - 1 && !player.scrubbing()) {
           setTriggered(true)
           player.pause()
           if (player.isFullscreen()) {
-            player.exitFullscreen()
-            setTimeout(() => handleAction(router, triggerAction), 1000)
+            void player
+              .exitFullscreen()
+              .then(() => handleAction(router, triggerAction))
           } else {
             handleAction(router, triggerAction)
           }

@@ -1,4 +1,5 @@
 import videojs from 'video.js'
+import Player from 'video.js/dist/types/player'
 import {
   ReactElement,
   useEffect,
@@ -52,7 +53,7 @@ export function Video({
   } = useEditor()
 
   const videoRef = useRef<HTMLVideoElement>(null)
-  const playerRef = useRef<videojs.Player>()
+  const playerRef = useRef<Player>()
 
   const posterBlock = children.find(
     (block) => block.id === posterBlockId && block.__typename === 'ImageBlock'
@@ -111,7 +112,7 @@ export function Video({
         })
         playerRef.current.on('ended', () => {
           if (playerRef?.current?.isFullscreen() === true)
-            playerRef.current?.exitFullscreen()
+            void playerRef.current?.exitFullscreen()
         })
         playerRef.current.on('timeupdate', () => {
           if (playerRef.current != null) {
