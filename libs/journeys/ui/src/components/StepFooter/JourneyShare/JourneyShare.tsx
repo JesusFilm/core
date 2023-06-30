@@ -14,7 +14,7 @@ import twitterLogo from '../../../../public/twitter_logo.svg'
 
 export function JourneyShare(): ReactElement {
   const { journey } = useJourney()
-  const [shareDialogOpen, setShareDialogOpen] = useState(true)
+  const [shareDialogOpen, setShareDialogOpen] = useState(false)
   const { enqueueSnackbar } = useSnackbar()
 
   const url =
@@ -52,7 +52,12 @@ export function JourneyShare(): ReactElement {
 
   return (
     <>
-      <Chip label="Share" icon={<Share />} onClick={handleShare} />
+      <Chip
+        label="Share"
+        variant="filled"
+        icon={<Share />}
+        onClick={handleShare}
+      />
 
       <Dialog
         open={shareDialogOpen}
