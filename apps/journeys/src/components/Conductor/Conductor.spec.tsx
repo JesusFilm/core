@@ -9,6 +9,7 @@ import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { v4 as uuidv4 } from 'uuid'
 import TagManager from 'react-gtm-module'
+import { SnackbarProvider } from 'notistack'
 import {
   GetJourney_journey as Journey,
   GetJourney_journey_language as Language
@@ -173,9 +174,11 @@ describe('Conductor', () => {
           visitorUpdateMock
         ]}
       >
-        <JourneyProvider value={{ journey: defaultJourney }}>
-          <Conductor blocks={[]} />
-        </JourneyProvider>
+        <SnackbarProvider>
+          <JourneyProvider value={{ journey: defaultJourney }}>
+            <Conductor blocks={[]} />
+          </JourneyProvider>
+        </SnackbarProvider>
       </MockedProvider>
     )
     await waitFor(() => expect(result).toHaveBeenCalled())
@@ -211,9 +214,11 @@ describe('Conductor', () => {
           visitorUpdateMock
         ]}
       >
-        <JourneyProvider value={{ journey: defaultJourney }}>
-          <Conductor blocks={[]} />
-        </JourneyProvider>
+        <SnackbarProvider>
+          <JourneyProvider value={{ journey: defaultJourney }}>
+            <Conductor blocks={[]} />
+          </JourneyProvider>
+        </SnackbarProvider>
       </MockedProvider>
     )
     await waitFor(() =>
@@ -232,7 +237,9 @@ describe('Conductor', () => {
     const blocks: TreeBlock[] = []
     render(
       <MockedProvider>
-        <Conductor blocks={blocks} />
+        <SnackbarProvider>
+          <Conductor blocks={blocks} />
+        </SnackbarProvider>
       </MockedProvider>
     )
     expect(treeBlocksVar()).toBe(blocks)
@@ -243,9 +250,11 @@ describe('Conductor', () => {
     it('should navigate to next block on right button click', () => {
       const { getByTestId, queryByTestId } = render(
         <MockedProvider mocks={[]}>
-          <JourneyProvider value={{ journey: defaultJourney }}>
-            <Conductor blocks={basic} />
-          </JourneyProvider>
+          <SnackbarProvider>
+            <JourneyProvider value={{ journey: defaultJourney }}>
+              <Conductor blocks={basic} />
+            </JourneyProvider>
+          </SnackbarProvider>
         </MockedProvider>
       )
       const leftButton = queryByTestId('conductorLeftButton')
@@ -265,9 +274,11 @@ describe('Conductor', () => {
     it('should disable navigating to previous step by default', () => {
       const { getByTestId } = render(
         <MockedProvider mocks={[]}>
-          <JourneyProvider value={{ journey: defaultJourney }}>
-            <Conductor blocks={basic} />
-          </JourneyProvider>
+          <SnackbarProvider>
+            <JourneyProvider value={{ journey: defaultJourney }}>
+              <Conductor blocks={basic} />
+            </JourneyProvider>
+          </SnackbarProvider>
         </MockedProvider>
       )
 
@@ -283,9 +294,11 @@ describe('Conductor', () => {
     it('should disable right button if next step is locked', () => {
       const { getByTestId } = render(
         <MockedProvider mocks={[]}>
-          <JourneyProvider value={{ journey: defaultJourney }}>
-            <Conductor blocks={basic} />
-          </JourneyProvider>
+          <SnackbarProvider>
+            <JourneyProvider value={{ journey: defaultJourney }}>
+              <Conductor blocks={basic} />
+            </JourneyProvider>
+          </SnackbarProvider>
         </MockedProvider>
       )
 
@@ -298,9 +311,11 @@ describe('Conductor', () => {
     it('should not show right button if on last card', () => {
       const { getByTestId, getAllByRole, queryByTestId } = render(
         <MockedProvider mocks={[]}>
-          <JourneyProvider value={{ journey: defaultJourney }}>
-            <Conductor blocks={basic} />
-          </JourneyProvider>
+          <SnackbarProvider>
+            <JourneyProvider value={{ journey: defaultJourney }}>
+              <Conductor blocks={basic} />
+            </JourneyProvider>
+          </SnackbarProvider>
         </MockedProvider>
       )
 
@@ -323,11 +338,13 @@ describe('Conductor', () => {
     it('should navigate to next block on left button click', () => {
       const { getByTestId, queryByTestId } = render(
         <MockedProvider mocks={[]}>
-          <JourneyProvider
-            value={{ journey: { ...defaultJourney, language: rtlLanguage } }}
-          >
-            <Conductor blocks={basic} />
-          </JourneyProvider>
+          <SnackbarProvider>
+            <JourneyProvider
+              value={{ journey: { ...defaultJourney, language: rtlLanguage } }}
+            >
+              <Conductor blocks={basic} />
+            </JourneyProvider>
+          </SnackbarProvider>
         </MockedProvider>
       )
       const leftButton = getByTestId('conductorLeftButton')
@@ -347,11 +364,13 @@ describe('Conductor', () => {
     it('should disable navigating to previous step by default', () => {
       const { getByTestId } = render(
         <MockedProvider mocks={[]}>
-          <JourneyProvider
-            value={{ journey: { ...defaultJourney, language: rtlLanguage } }}
-          >
-            <Conductor blocks={basic} />
-          </JourneyProvider>
+          <SnackbarProvider>
+            <JourneyProvider
+              value={{ journey: { ...defaultJourney, language: rtlLanguage } }}
+            >
+              <Conductor blocks={basic} />
+            </JourneyProvider>
+          </SnackbarProvider>
         </MockedProvider>
       )
 
@@ -367,11 +386,13 @@ describe('Conductor', () => {
     it('should disable left button if next step is locked', () => {
       const { getByTestId } = render(
         <MockedProvider mocks={[]}>
-          <JourneyProvider
-            value={{ journey: { ...defaultJourney, language: rtlLanguage } }}
-          >
-            <Conductor blocks={basic} />
-          </JourneyProvider>
+          <SnackbarProvider>
+            <JourneyProvider
+              value={{ journey: { ...defaultJourney, language: rtlLanguage } }}
+            >
+              <Conductor blocks={basic} />
+            </JourneyProvider>
+          </SnackbarProvider>
         </MockedProvider>
       )
 
@@ -384,11 +405,13 @@ describe('Conductor', () => {
     it('should not show left button if on last card', () => {
       const { getByTestId, getAllByRole, queryByTestId } = render(
         <MockedProvider mocks={[]}>
-          <JourneyProvider
-            value={{ journey: { ...defaultJourney, language: rtlLanguage } }}
-          >
-            <Conductor blocks={basic} />
-          </JourneyProvider>
+          <SnackbarProvider>
+            <JourneyProvider
+              value={{ journey: { ...defaultJourney, language: rtlLanguage } }}
+            >
+              <Conductor blocks={basic} />
+            </JourneyProvider>
+          </SnackbarProvider>
         </MockedProvider>
       )
 
