@@ -94,6 +94,37 @@ describe('UserTeamInviteResolver', () => {
         }
       })
     })
+
+    it('should throw a ForbiddenError when the user does not have the required permissions', async () => {
+      const ability = await new AppCaslFactory().createAbility({
+        id: 'userId'
+      })
+
+      const team = {
+        id: 'teamId',
+        userTeams: [
+          {
+            userId: 'userId',
+            role: UserTeamRole.member
+          }
+        ]
+      }
+
+      const input = {
+        email: 'siyangthemanthestan@gmail.com'
+      }
+
+      prismaService.team.findUnique = jest.fn().mockResolvedValueOnce(team)
+
+      await expect(
+        userTeamInviteResolver.userTeamInviteCreate(
+          ability,
+          'userId',
+          'teamId',
+          input
+        )
+      ).rejects.toThrow(ForbiddenError)
+    })
   })
 
   describe('userTeamnInviteRemove', () => {
@@ -172,7 +203,7 @@ describe('UserTeamInviteResolver', () => {
 
       prismaService.userTeamInvite.findMany = jest
         .fn()
-        .mockResolvedValue([userTeamInviteMock1, userTeamInviteMock1])
+        .mockResolvedValue([userTeamInviteMock1])
       prismaService.userTeam.upsert = jest.fn()
       prismaService.$transaction = jest
         .fn()
