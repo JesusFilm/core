@@ -6,11 +6,13 @@ import Chip from '@mui/material/Chip'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import IconButton from '@mui/material/IconButton'
-import Image from 'next/image'
+// import Image from 'next/image'
 import { useSnackbar } from 'notistack'
+// import facebookLogo from '../../../../public/facebook_logo.svg'
+// import twitterLogo from '../../../../public/twitter_logo.svg'
+import FacebookIcon from '@mui/icons-material/Facebook'
+import TwitterIcon from '@mui/icons-material/Twitter'
 import { useJourney } from '../../../libs/JourneyProvider'
-import facebookLogo from '../../../../public/facebook_logo.svg'
-import twitterLogo from '../../../../public/twitter_logo.svg'
 
 export function JourneyShare(): ReactElement {
   const { journey } = useJourney()
@@ -92,13 +94,21 @@ export function JourneyShare(): ReactElement {
                 }`}
                 target="_blank"
                 rel="noopener"
+                size="large"
+                sx={{
+                  backgroundColor: '#6D6F81',
+                  width: '40px',
+                  height: '40px',
+                  m: 2
+                }}
               >
-                <Image
+                <FacebookIcon />
+                {/* <Image
                   src={facebookLogo}
                   alt="facebook-logo"
                   height={40}
                   width={40}
-                />
+                /> */}
               </IconButton>
             </span>
 
@@ -110,13 +120,22 @@ export function JourneyShare(): ReactElement {
               <IconButton
                 href={`https://twitter.com/intent/tweet?url=${url ?? ''}`}
                 target="_blank"
+                rel="noopener"
+                size="large"
+                sx={{
+                  backgroundColor: '#6D6F81',
+                  width: '40px',
+                  height: '40px',
+                  m: 2
+                }}
               >
-                <Image
+                <TwitterIcon />
+                {/* <Image
                   src={twitterLogo}
                   alt="twitter-logo"
                   height={40}
                   width={40}
-                />
+                /> */}
               </IconButton>
             </span>
 
