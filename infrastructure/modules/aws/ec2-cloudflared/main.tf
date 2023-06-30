@@ -10,5 +10,6 @@ resource "aws_instance" "bastion" {
   vpc_security_group_ids      = var.security_group_ids
   user_data = templatefile("${path.module}/startup.sh", {
     cloudflared_token = var.cloudflared_token
+    datadog_api_key   = data.aws_ssm_parameter.datadog_api_key
   })
 }
