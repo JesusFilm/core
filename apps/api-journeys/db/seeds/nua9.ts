@@ -16,23 +16,26 @@ export async function nua9(): Promise<void> {
       where: { parentBlock: { journeyId: existingJourney.id } }
     })
     await prisma.block.deleteMany({ where: { journeyId: existingJourney.id } })
-    await prisma.journey.delete({ where: { slug } })
   }
 
-  const journey = await prisma.journey.create({
-    data: {
-      id: '4',
-      title: 'Decision',
-      languageId: '529',
-      themeMode: ThemeMode.light,
-      themeName: ThemeName.base,
-      slug,
-      status: JourneyStatus.published,
-      createdAt: new Date(),
-      publishedAt: new Date(),
-      featuredAt: new Date(),
-      teamId: 'jfp-team'
-    }
+  const journeyData = {
+    id: '4',
+    title: 'Decision',
+    languageId: '529',
+    themeMode: ThemeMode.light,
+    themeName: ThemeName.base,
+    slug,
+    status: JourneyStatus.published,
+    createdAt: new Date(),
+    publishedAt: new Date(),
+    featuredAt: new Date(),
+    teamId: 'jfp-team'
+  }
+
+  const journey = await prisma.journey.upsert({
+    where: { id: journeyData.id },
+    create: journeyData,
+    update: journeyData
   })
 
   //   first step
