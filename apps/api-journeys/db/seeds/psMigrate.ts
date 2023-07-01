@@ -1,6 +1,6 @@
 import { aql } from 'arangojs'
 import { PrismaClient, JourneyStatus, Block } from '.prisma/api-journeys-client'
-import { omit } from 'lodash'
+import { isEmpty, omit } from 'lodash'
 import { ArangoDB } from '../db'
 
 const prisma = new PrismaClient()
@@ -12,8 +12,6 @@ export async function psMigrate(): Promise<void> {
   let end = true
 
   // import journeys from arangodb
-  offset = 0
-  end = true
   do {
     console.log(`Importing journeys at ${offset}...`)
     const journeys = await (
@@ -23,86 +21,177 @@ export async function psMigrate(): Promise<void> {
       RETURN journey
   `)
     ).all()
+    await prisma.journey.createMany({
+      data: journeys.map((journey) => ({
+        id: journey._key,
+        title: journey.title,
+        languageId: journey.languageId.toString(),
+        description: journey.description ?? undefined,
+        slug: journey.slug,
+        archivedAt:
+          journey.archivedAt != null ? new Date(journey.archivedAt) : undefined,
+        createdAt: new Date(journey.createdAt),
+        deletedAt:
+          journey.deletedAt != null ? new Date(journey.deletedAt) : undefined,
+        publishedAt:
+          journey.publishedAt != null
+            ? new Date(journey.publishedAt)
+            : undefined,
+        trashedAt:
+          journey.trashedAt != null ? new Date(journey.trashedAt) : undefined,
+        featuredAt:
+          journey.trashedAt != null ? new Date(journey.trashedAt) : undefined,
+        status: journey.status ?? JourneyStatus.draft,
+        seoTitle: journey.seoTitle ?? undefined,
+        seoDescription: journey.seoDescription ?? undefined,
+        template: journey.template ?? false,
+        teamId: journey.teamId ?? 'jfp-team',
+        themeMode: journey.themeMode ?? undefined,
+        themeName: journey.themeName ?? undefined
+      }))
+    })
+    offset += 50
+    end = journeys.length > 49
+  } while (end)
+  console.log('journeys imported')
+
+  offset = 0
+  end = true
+
+  do {
+    const journeys = await (
+      await db.query(aql`
+      FOR journey IN journeys
+      LIMIT ${offset}, 50
+      RETURN journey
+      `)
+    ).all()
     for (const journey of journeys) {
-      console.log(`Importing journey ${journey._key as string}...`)
-      try {
-        await prisma.journey.create({
-          data: {
-            id: journey._key,
-            title: journey.title,
-            languageId: journey.languageId.toString(),
-            description: journey.description ?? undefined,
-            slug: journey.slug,
-            archivedAt:
-              journey.archivedAt != null
-                ? new Date(journey.archivedAt)
-                : undefined,
-            createdAt: new Date(journey.createdAt),
-            deletedAt:
-              journey.deletedAt != null
-                ? new Date(journey.deletedAt)
-                : undefined,
-            publishedAt:
-              journey.publishedAt != null
-                ? new Date(journey.publishedAt)
-                : undefined,
-            trashedAt:
-              journey.trashedAt != null
-                ? new Date(journey.trashedAt)
-                : undefined,
-            featuredAt:
-              journey.trashedAt != null
-                ? new Date(journey.trashedAt)
-                : undefined,
-            status: journey.status ?? JourneyStatus.draft,
-            seoTitle: journey.seoTitle ?? undefined,
-            seoDescription: journey.seoDescription ?? undefined,
-            primaryImageBlockId: journey.primaryImageBlockId ?? undefined,
-            template: journey.template ?? false,
-            teamId: journey.teamId ?? 'jfp-team',
-            themeMode: journey.themeMode ?? undefined,
-            themeName: journey.themeName ?? undefined
-          }
-        })
-        console.log(`Importing blocks for journey ${journey._key as string}...`)
-        const blocks = await (
-          await db.query(aql`
+      console.log(`Importing blocks for journey ${journey._key as string}...`)
+      const blocks = await (
+        await db.query(aql`
             FOR block IN blocks
             FILTER block.journeyId == ${journey._key}
             RETURN block
         `)
-        ).all()
-        await prisma.block.createMany({
-          data: blocks.map(
-            (block) =>
-              ({
-                ...omit(block, ['_id', '_key', '_rev', 'action']),
-                id: block._key,
-                action:
-                  block.action != null ? { create: block.action } : undefined
-              } as unknown as Block)
-          )
-        })
+      ).all()
+      await prisma.block.createMany({
+        data: blocks.map(
+          (block) =>
+            ({
+              ...omit(block, [
+                '_id',
+                '_key',
+                '_rev',
+                'action',
+                'parentBlockId',
+                'posterBlockId',
+                'coverBlockId',
+                'nextBlockId',
+                '__typename',
+                'fullScreen',
+                'isCover'
+              ]),
+              typename: block.__typename,
+              fullscreen: block.fullscreen ?? block.fullScreen ?? false,
+              id: block._key
+            } as unknown as Block)
+        )
+      })
+    }
+    offset += 50
+    end = journeys.length > 49
+  } while (end)
+  console.log('blocks imported')
 
-        console.log(`Importing userJourneys at ${journey._key as string}...`)
-        const userJourneys = await (
-          await db.query(aql`
+  offset = 0
+  end = true
+
+  do {
+    const journeys = await (
+      await db.query(aql`
+      FOR journey IN journeys
+      LIMIT ${offset}, 50
+      RETURN journey
+  `)
+    ).all()
+    for (const journey of journeys) {
+      console.log(
+        `Updating references for blocks for journey ${
+          journey._key as string
+        }...`
+      )
+      const blocks = await (
+        await db.query(aql`
+            FOR block IN blocks
+            FILTER block.journeyId == ${journey._key}
+            RETURN block
+        `)
+      ).all()
+      for (const block of blocks) {
+        // test parentBlockId separately since some blocks parents point at journeys
+        if (block.parentBlockId != null) {
+          try {
+            await prisma.block.update({
+              where: { id: block._key },
+              data: {
+                parentBlockId: block.parentBlockId
+              }
+            })
+          } catch {}
+        }
+        if (
+          block.posterBlockId != null ||
+          block.coverBlockId != null ||
+          block.nextBlockId != null
+        ) {
+          try {
+            await prisma.block.update({
+              where: { id: block._key },
+              data: {
+                posterBlockId: block.posterBlockId ?? undefined,
+                coverBlockId: block.coverBlockId ?? undefined,
+                nextBlockId: block.nextBlockId ?? undefined
+              }
+            })
+          } catch {}
+        }
+        if (block.action != null && !isEmpty(block.action)) {
+          try {
+            await prisma.action.create({
+              data: {
+                ...block.action,
+                parentBlockId: block._key
+              }
+            })
+          } catch {}
+        }
+      }
+      if (journey.primaryImageBlockId != null) {
+        await prisma.journey.update({
+          where: { id: journey._key },
+          data: { primaryImageBlockId: journey.primaryImageBlockId }
+        })
+      }
+
+      console.log(`Importing userJourneys at ${journey._key as string}...`)
+      const userJourneys = await (
+        await db.query(aql`
             FOR uj IN userJourneys
             FILTER uj.journeyId == ${journey._key}
             RETURN uj
         `)
-        ).all()
-        await prisma.userJourney.createMany({
-          data: userJourneys.map((uj) => ({
-            id: uj._key,
-            userId: uj.userId,
-            openedAt: new Date(uj.openedAt),
-            role: uj.role,
-            journeyId: uj.journeyId
-          })),
-          skipDuplicates: true
-        })
-      } catch {}
+      ).all()
+      await prisma.userJourney.createMany({
+        data: userJourneys.map((uj) => ({
+          id: uj._key,
+          userId: uj.userId,
+          openedAt: uj.openedAt != null ? new Date(uj.openedAt) : undefined,
+          role: uj.role,
+          journeyId: uj.journeyId
+        })),
+        skipDuplicates: true
+      })
     }
     offset += 50
     end = journeys.length > 49
@@ -115,10 +204,10 @@ export async function psMigrate(): Promise<void> {
     console.log(`Importing userRoles at ${offset}...`)
     const userRoles = await (
       await db.query(aql`
-          FOR ur IN userRoles
-          LIMIT ${offset}, 50
-          RETURN ur
-      `)
+            FOR ur IN userRoles
+            LIMIT ${offset}, 50
+            RETURN ur
+        `)
     ).all()
     await prisma.userRole.createMany({
       data: userRoles.map((ur) => ({
@@ -139,10 +228,10 @@ export async function psMigrate(): Promise<void> {
     console.log(`Importing journeyProfiles at ${offset}...`)
     const journeyProfiles = await (
       await db.query(aql`
-          FOR jp IN journeyProfiles
-          LIMIT ${offset}, 50
-          RETURN jp
-      `)
+            FOR jp IN journeyProfiles
+            LIMIT ${offset}, 50
+            RETURN jp
+        `)
     ).all()
     await prisma.journeyProfile.createMany({
       data: journeyProfiles.map((jp) => ({
@@ -163,10 +252,10 @@ export async function psMigrate(): Promise<void> {
     console.log(`Importing userInvites at ${offset}...`)
     const userInvites = await (
       await db.query(aql`
-          FOR ui IN userInvites
-          LIMIT ${offset}, 50
-          RETURN ui
-      `)
+            FOR ui IN userInvites
+            LIMIT ${offset}, 50
+            RETURN ui
+        `)
     ).all()
     await prisma.userInvite.createMany({
       data: userInvites.map((ui) => ({
