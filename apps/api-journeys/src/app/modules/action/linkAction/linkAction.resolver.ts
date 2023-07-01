@@ -2,20 +2,20 @@ import { Args, Mutation, Resolver } from '@nestjs/graphql'
 import { UseGuards } from '@nestjs/common'
 import { includes } from 'lodash'
 import { UserInputError } from 'apollo-server-errors'
-import { RoleGuard } from '../../../lib/roleGuard/roleGuard'
+import { Action } from '.prisma/api-journeys-client'
+import { FromPostgresql } from '@core/nest/decorators/FromPostgresql'
 
+import { RoleGuard } from '../../../lib/roleGuard/roleGuard'
 import {
-  Action,
-  Block,
   LinkActionInput,
   Role,
   UserJourneyRole
 } from '../../../__generated__/graphql'
-import { BlockService } from '../../block/block.service'
+import { PrismaService } from '../../../lib/prisma.service'
 
 @Resolver('LinkAction')
 export class LinkActionResolver {
-  constructor(private readonly blockService: BlockService) {}
+  constructor(private readonly prismaService: PrismaService) {}
 
   @Mutation()
   @UseGuards(
@@ -25,16 +25,19 @@ export class LinkActionResolver {
       { role: Role.publisher, attributes: { template: true } }
     ])
   )
+  @FromPostgresql()
   async blockUpdateLinkAction(
     @Args('id') id: string,
     @Args('journeyId') journeyId: string,
     @Args('input') input: LinkActionInput
   ): Promise<Action> {
-    const block = (await this.blockService.get(id)) as Block & {
-      __typename: string
-    }
+    const block = await this.prismaService.block.findUnique({
+      where: { id },
+      include: { action: true }
+    })
 
     if (
+      block == null ||
       !includes(
         [
           'SignUpBlock',
@@ -44,25 +47,27 @@ export class LinkActionResolver {
           'VideoTriggerBlock',
           'TextResponseBlock'
         ],
-        block.__typename
+        block.typename
       )
     ) {
       throw new UserInputError('This block does not support link actions')
     }
 
-    const updatedBlock: { action: Action } = await this.blockService.update(
-      id,
-      {
-        action: {
-          ...input,
-          parentBlockId: block.id,
-          blockId: null,
-          journeyId: null,
-          email: null
-        }
+    const actionData = {
+      ...input,
+      email: null
+    }
+    return await this.prismaService.action.upsert({
+      where: { parentBlockId: id },
+      create: {
+        ...actionData,
+        parentBlock: { connect: { id: block.id } }
+      },
+      update: {
+        ...actionData,
+        journey: { disconnect: true },
+        block: { disconnect: true }
       }
-    )
-
-    return updatedBlock.action
+    })
   }
 }

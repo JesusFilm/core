@@ -1,12 +1,11 @@
-import { aql } from 'arangojs'
-import { ArangoDB } from '../db'
+import { PrismaClient } from '.prisma/api-journeys-client'
 import {
   JourneyStatus,
   ThemeMode,
   ThemeName
 } from '../../src/app/__generated__/graphql'
 
-const db = ArangoDB()
+const prisma = new PrismaClient()
 
 interface Template {
   id: string
@@ -42,108 +41,116 @@ export async function onboardingTemplates(action?: 'reset'): Promise<void> {
   ]
 
   async function deleteTemplate(template: Template): Promise<void> {
-    await db.query(aql`
-      FOR journey in journeys
-        FILTER journey.slug == ${template.slug}
-        FOR block in blocks
-          FILTER block.journeyId == journey._key
-          REMOVE block IN blocks
-    `)
-
-    await db.query(aql`
-      FOR journey in journeys
-        FILTER journey.slug == ${template.slug}
-        REMOVE journey in journeys
-    `)
+    const existingJourney = await prisma.journey.findUnique({
+      where: { slug: template.slug }
+    })
+    if (existingJourney != null) {
+      await prisma.action.deleteMany({
+        where: { parentBlock: { journeyId: existingJourney.id } }
+      })
+      await prisma.block.deleteMany({
+        where: { journeyId: existingJourney.id }
+      })
+      await prisma.journey.delete({ where: { slug: template.slug } })
+    }
   }
 
   async function createTemplate(template: Template): Promise<void> {
-    const existingJourney = await (
-      await db.query(aql`
-      FOR journey in journeys
-        FILTER journey.slug == ${template.slug}
-          LIMIT 1
-          return journey
-    `)
-    ).next()
+    const existingJourney = await prisma.journey.findUnique({
+      where: { slug: template.slug }
+    })
     if (existingJourney != null) return
 
-    const journey = await db.collection('journeys').save({
-      _key: template.id,
-      title: `${template.slug.replace('-', ' ')}`,
-      description: template.id,
-      languageId: 529,
-      themeMode: ThemeMode.dark,
-      themeName: ThemeName.base,
-      slug: template.slug,
-      status: JourneyStatus.published,
-      template: true,
-      createdAt: new Date(),
-      publishedAt: new Date()
+    const journey = await prisma.journey.create({
+      data: {
+        id: template.id,
+        title: `${template.slug.replace('-', ' ')}`,
+        description: template.id,
+        languageId: '529',
+        themeMode: ThemeMode.dark,
+        themeName: ThemeName.base,
+        slug: template.slug,
+        status: JourneyStatus.published,
+        template: true,
+        createdAt: new Date(),
+        publishedAt: new Date(),
+        teamId: 'jfp-team'
+      }
     })
 
-    const primaryImageBlock = await db.collection('blocks').save({
-      journeyId: journey._key,
-      __typename: 'ImageBlock',
-      src: 'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/e8692352-21c7-4f66-cb57-0298e86a3300/public',
-      alt: 'onboarding primary',
-      width: 1152,
-      height: 768,
-      blurhash: 'UE9Qmr%MIpWCtmbH%Mxu_4xuWYoL-;oIWYt7',
-      parentOrder: 1,
-      parentBlockId: journey._key
-    })
-    await db
-      .collection('journeys')
-      .update(journey._key, { primaryImageBlockId: primaryImageBlock._key })
-
-    const step = await db.collection('blocks').save({
-      journeyId: journey._key,
-      __typename: 'StepBlock',
-      locked: false,
-      parentOrder: 0
-    })
-
-    const card = await db.collection('blocks').save({
-      journeyId: journey._key,
-      __typename: 'CardBlock',
-      parentBlockId: step._key,
-      fullScreen: false,
-      parentOrder: 0
-    })
-
-    const coverBlock = await db.collection('blocks').save({
-      journeyId: journey._key,
-      __typename: 'ImageBlock',
-      src: 'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/ae95a856-1401-41e1-6f3e-7b4e6f707f00/public',
-      alt: 'onboarding card 1 cover',
-      width: 1152,
-      height: 768,
-      blurhash: 'UbLX6?~p9FtRkX.8ogD%IUj@M{adxaM_ofkW',
-      parentBlockId: card._key
-    })
-    await db
-      .collection('blocks')
-      .update(card._key, { coverBlockId: coverBlock._key })
-
-    await db.collection('blocks').saveAll([
-      {
-        journeyId: journey._key,
-        __typename: 'TypographyBlock',
-        parentBlockId: card._key,
-        content: 'Onboarding template',
-        variant: 'h3',
-        parentOrder: 0
-      },
-      {
-        journeyId: journey._key,
-        __typename: 'TypographyBlock',
-        parentBlockId: card._key,
-        content: template.id,
-        variant: 'body1',
+    const primaryImageBlock = await prisma.block.create({
+      data: {
+        journeyId: journey.id,
+        typename: 'ImageBlock',
+        src: 'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/e8692352-21c7-4f66-cb57-0298e86a3300/public',
+        alt: 'onboarding primary',
+        width: 1152,
+        height: 768,
+        blurhash: 'UE9Qmr%MIpWCtmbH%Mxu_4xuWYoL-;oIWYt7',
         parentOrder: 1
       }
-    ])
+    })
+    await prisma.journey.update({
+      where: { id: journey.id },
+      data: { primaryImageBlockId: primaryImageBlock.id }
+    })
+
+    const step = await prisma.block.create({
+      data: {
+        journeyId: journey.id,
+        typename: 'StepBlock',
+        locked: false,
+        parentOrder: 0
+      }
+    })
+
+    const card = await prisma.block.create({
+      data: {
+        journeyId: journey.id,
+        typename: 'CardBlock',
+        parentBlockId: step.id,
+        fullscreen: false,
+        parentOrder: 0
+      }
+    })
+
+    const coverBlock = await prisma.block.create({
+      data: {
+        journeyId: journey.id,
+        typename: 'ImageBlock',
+        src: 'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/ae95a856-1401-41e1-6f3e-7b4e6f707f00/public',
+        alt: 'onboarding card 1 cover',
+        width: 1152,
+        height: 768,
+        blurhash: 'UbLX6?~p9FtRkX.8ogD%IUj@M{adxaM_ofkW',
+        parentBlockId: card.id
+      }
+    })
+    await prisma.block.update({
+      where: { id: card.id },
+      data: { coverBlockId: coverBlock.id }
+    })
+
+    await prisma.block.createMany({
+      data: [
+        {
+          journeyId: journey.id,
+          typename: 'TypographyBlock',
+          parentBlockId: card.id,
+          content: 'Onboarding template',
+          variant: 'h3',
+          parentOrder: 0
+        },
+        {
+          journeyId: journey.id,
+          typename: 'TypographyBlock',
+          parentBlockId: card.id,
+          content: template.id,
+          variant: 'body1',
+          parentOrder: 1
+        }
+      ]
+    })
   }
 
   if (action === 'reset') {

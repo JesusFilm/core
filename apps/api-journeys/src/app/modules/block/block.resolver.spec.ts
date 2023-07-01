@@ -1,6 +1,4 @@
 import { Test, TestingModule } from '@nestjs/testing'
-import { Database } from 'arangojs'
-import { mockDeep } from 'jest-mock-extended'
 import { JourneyService } from '../journey/journey.service'
 import { UserJourneyService } from '../userJourney/userJourney.service'
 import { UserRoleService } from '../userRole/userRole.service'
@@ -9,7 +7,9 @@ import { BlockResolver } from './block.resolver'
 import { BlockService } from './block.service'
 
 describe('BlockResolver', () => {
-  let resolver: BlockResolver, service: BlockService
+  let resolver: BlockResolver,
+    service: BlockService,
+    prismaService: PrismaService
 
   const image1 = {
     id: 'image1',
@@ -49,8 +49,8 @@ describe('BlockResolver', () => {
 
   const blockService = {
     provide: BlockService,
+    PrismaService,
     useFactory: () => ({
-      get: jest.fn(() => image1),
       duplicateBlock: jest.fn(() => [image1, image1, image2, image3]),
       removeBlockAndChildren: jest.fn(() => [image1, image2, image3]),
       reorderBlock: jest.fn(() => [
@@ -68,15 +68,13 @@ describe('BlockResolver', () => {
         blockService,
         UserRoleService,
         JourneyService,
-        PrismaService,
-        {
-          provide: 'DATABASE',
-          useFactory: () => mockDeep<Database>()
-        }
+        PrismaService
       ]
     }).compile()
     resolver = module.get<BlockResolver>(BlockResolver)
     service = await module.resolve(BlockService)
+    prismaService = await module.resolve(PrismaService)
+    prismaService.block.findUnique = jest.fn().mockResolvedValue(image1)
   })
 
   describe('blockDelete', () => {

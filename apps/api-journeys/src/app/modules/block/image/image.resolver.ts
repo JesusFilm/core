@@ -7,7 +7,6 @@ import sharp from 'sharp'
 
 import { BlockService } from '../block.service'
 import {
-  CardBlock,
   ImageBlock,
   ImageBlockCreateInput,
   ImageBlockUpdateInput,
@@ -15,6 +14,7 @@ import {
   UserJourneyRole
 } from '../../../__generated__/graphql'
 import { RoleGuard } from '../../../lib/roleGuard/roleGuard'
+import { PrismaService } from '../../../lib/prisma.service'
 
 export async function handleImage(
   input
@@ -70,7 +70,11 @@ export async function handleImage(
 
 @Resolver('ImageBlock')
 export class ImageBlockResolver {
-  constructor(private readonly blockService: BlockService) {}
+  constructor(
+    private readonly blockService: BlockService,
+    private readonly prismaService: PrismaService
+  ) {}
+
   @Mutation()
   @UseGuards(
     RoleGuard('input.journeyId', [
@@ -87,21 +91,39 @@ export class ImageBlockResolver {
     if (block.isCover === true) {
       const coverBlock: ImageBlock = await this.blockService.save({
         ...block,
-        __typename: 'ImageBlock',
+        id: block.id ?? undefined,
+        typename: 'ImageBlock',
+        journey: { connect: { id: block.journeyId } },
+        parentBlock:
+          input.parentBlockId != null
+            ? { connect: { id: block.parentBlockId } }
+            : undefined,
         parentOrder: null
       })
-      const parentBlock: CardBlock = await this.blockService.get(
-        block.parentBlockId
-      )
+      const parentBlock = await this.prismaService.block.findUnique({
+        where: {
+          id: block.parentBlockId
+        },
+        include: { action: true }
+      })
+
+      if (parentBlock == null) {
+        throw new Error('Parent block not found')
+      }
 
       await this.blockService.update(parentBlock.id, {
-        coverBlockId: coverBlock.id
+        coverBlock: {
+          connect: { coverBlockId: coverBlock.id }
+        }
       })
       // Delete old coverBlock
       if (parentBlock.coverBlockId != null) {
-        const coverBlockToDelete = await this.blockService.get(
-          parentBlock.coverBlockId
-        )
+        const coverBlockToDelete = await this.prismaService.block.findUnique({
+          where: {
+            id: parentBlock.coverBlockId
+          },
+          include: { action: true }
+        })
         if (coverBlockToDelete != null) {
           await this.blockService.removeBlockAndChildren(
             parentBlock.coverBlockId,
@@ -119,7 +141,9 @@ export class ImageBlockResolver {
     )
     return await this.blockService.save({
       ...block,
-      __typename: 'ImageBlock',
+      id: block.id ?? undefined,
+      typename: 'ImageBlock',
+      journey: { connect: { id: block.journeyId } },
       parentOrder: siblings.length
     })
   }
@@ -138,6 +162,6 @@ export class ImageBlockResolver {
     @Args('input') input: ImageBlockUpdateInput
   ): Promise<ImageBlock> {
     const block = await handleImage(input)
-    return await this.blockService.update(id, block)
+    return await this.blockService.update(id, { ...block, id })
   }
 }

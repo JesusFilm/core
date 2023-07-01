@@ -1,6 +1,7 @@
 import { UserInputError } from 'apollo-server-errors'
 import { UseGuards } from '@nestjs/common'
 import { Args, Mutation, ResolveField, Resolver, Parent } from '@nestjs/graphql'
+
 import {
   Action,
   ButtonBlock,
@@ -35,15 +36,17 @@ export class ButtonBlockResolver {
     ])
   )
   async buttonBlockCreate(
-    @Args('input') input: ButtonBlockCreateInput & { __typename }
+    @Args('input') input: ButtonBlockCreateInput
   ): Promise<ButtonBlock> {
-    input.__typename = 'ButtonBlock'
     const siblings = await this.blockService.getSiblings(
       input.journeyId,
       input.parentBlockId
     )
     return await this.blockService.save({
       ...input,
+      id: input.id ?? undefined,
+      typename: 'ButtonBlock',
+      journey: { connect: { id: input.journeyId } },
       parentOrder: siblings.length
     })
   }

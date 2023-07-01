@@ -1,6 +1,4 @@
 import { Test, TestingModule } from '@nestjs/testing'
-import { Database } from 'arangojs'
-import { mockDeep } from 'jest-mock-extended'
 
 import { BlockResolver } from '../block.resolver'
 import { BlockService } from '../block.service'
@@ -19,12 +17,13 @@ import { IconBlockResolver } from './icon.resolver'
 describe('Icon', () => {
   let resolver: BlockResolver,
     iconBlockResolver: IconBlockResolver,
-    service: BlockService
+    service: BlockService,
+    prisma: PrismaService
 
   const block = {
     id: '1',
     journeyId: '2',
-    __typename: 'IconBlock',
+    typename: 'IconBlock',
     parentBlockId: '0',
     parentOrder: 0,
     name: 'ArrowForwardRounded',
@@ -32,8 +31,7 @@ describe('Icon', () => {
     size: 'lg'
   }
 
-  const input: IconBlockCreateInput & { __typename: string } = {
-    __typename: 'IconBlock',
+  const input: IconBlockCreateInput = {
     id: '1',
     parentBlockId: '0',
     journeyId: '2',
@@ -43,8 +41,17 @@ describe('Icon', () => {
   }
 
   const create = {
-    ...block,
-    parentOrder: null
+    id: '1',
+    journey: {
+      connect: { id: '2' }
+    },
+    journeyId: '2',
+    typename: 'IconBlock',
+    parentBlockId: '0',
+    parentOrder: null,
+    name: 'ArrowForwardRounded',
+    color: 'secondary',
+    size: 'lg'
   }
 
   const inputUpdate = {
@@ -66,8 +73,6 @@ describe('Icon', () => {
   const blockService = {
     provide: BlockService,
     useFactory: () => ({
-      get: jest.fn(() => block),
-      getAll: jest.fn(() => [block, block]),
       save: jest.fn((input) => input),
       update: jest.fn((input) => input)
     })
@@ -82,17 +87,16 @@ describe('Icon', () => {
         UserJourneyService,
         UserRoleService,
         JourneyService,
-        PrismaService,
-        {
-          provide: 'DATABASE',
-          useFactory: () => mockDeep<Database>()
-        }
+        PrismaService
       ]
     }).compile()
     resolver = module.get<BlockResolver>(BlockResolver)
     iconBlockResolver = module.get<IconBlockResolver>(IconBlockResolver)
     resolver = module.get<BlockResolver>(BlockResolver)
     service = await module.resolve(BlockService)
+    prisma = await module.resolve(PrismaService)
+    prisma.block.findUnique = jest.fn().mockResolvedValue(block)
+    prisma.block.findMany = jest.fn().mockResolvedValue([block, block])
   })
 
   describe('IconBlock', () => {

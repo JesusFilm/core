@@ -1,24 +1,20 @@
-import { BaseService } from '@core/nest/database/BaseService'
-import { KeyAsId } from '@core/nest/decorators/KeyAsId'
 import { Injectable } from '@nestjs/common'
-import { aql } from 'arangojs'
-import { UserRole } from '../../__generated__/graphql'
+import { UserRole } from '.prisma/api-journeys-client'
+import { PrismaService } from '../../lib/prisma.service'
 
 @Injectable()
-export class UserRoleService extends BaseService {
-  collection = this.db.collection('userRoles')
+export class UserRoleService {
+  constructor(private readonly prismaService: PrismaService) {}
 
-  @KeyAsId()
   async getUserRoleById(userId: string): Promise<UserRole> {
-    const response = await this.db.query(aql`
-      FOR user in ${this.collection}
-        FILTER user.userId == ${userId}
-        LIMIT 1
-        RETURN user
-    `)
+    const response = await this.prismaService.userRole.findFirst({
+      where: { userId }
+    })
 
-    return response.hasNext
-      ? await response.next()
-      : await this.save({ userId })
+    return response != null
+      ? response
+      : await this.prismaService.userRole.create({
+          data: { userId }
+        })
   }
 }

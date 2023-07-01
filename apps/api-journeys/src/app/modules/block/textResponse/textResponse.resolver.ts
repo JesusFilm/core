@@ -36,15 +36,17 @@ export class TextResponseBlockResolver {
     ])
   )
   async textResponseBlockCreate(
-    @Args('input') input: TextResponseBlockCreateInput & { __typename }
+    @Args('input') input: TextResponseBlockCreateInput
   ): Promise<TextResponseBlock> {
-    input.__typename = 'TextResponseBlock'
     const siblings = await this.blockService.getSiblings(
       input.journeyId,
       input.parentBlockId
     )
     return await this.blockService.save({
       ...input,
+      id: input.id ?? undefined,
+      typename: 'TextResponseBlock',
+      journey: { connect: { id: input.journeyId } },
       parentOrder: siblings.length
     })
   }

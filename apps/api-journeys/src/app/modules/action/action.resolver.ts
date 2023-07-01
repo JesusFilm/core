@@ -2,6 +2,7 @@ import { Args, Mutation, ResolveField, Resolver } from '@nestjs/graphql'
 import { UseGuards } from '@nestjs/common'
 import { get, includes } from 'lodash'
 import { UserInputError } from 'apollo-server-errors'
+
 import { RoleGuard } from '../../lib/roleGuard/roleGuard'
 import {
   Action,
@@ -9,11 +10,11 @@ import {
   Role,
   UserJourneyRole
 } from '../../__generated__/graphql'
-import { BlockService } from '../block/block.service'
+import { PrismaService } from '../../lib/prisma.service'
 
 @Resolver('Action')
 export class ActionResolver {
-  constructor(private readonly blockService: BlockService) {}
+  constructor(private readonly prismaService: PrismaService) {}
 
   @ResolveField()
   __resolveType(obj: Action): string {
@@ -36,11 +37,13 @@ export class ActionResolver {
     @Args('id') id: string,
     @Args('journeyId') journeyId: string
   ): Promise<Block> {
-    const block = (await this.blockService.get(id)) as Block & {
-      __typename: string
-    }
+    const block = await this.prismaService.block.findUnique({
+      where: { id },
+      include: { action: true }
+    })
 
     if (
+      block == null ||
       !includes(
         [
           'SignUpBlock',
@@ -49,14 +52,13 @@ export class ActionResolver {
           'VideoBlock',
           'VideoTriggerBlock'
         ],
-        block.__typename
+        block.typename
       )
     ) {
       throw new UserInputError('This block does not support actions')
     }
 
-    return await this.blockService.update(id, {
-      action: null
-    })
+    await this.prismaService.action.delete({ where: { parentBlockId: id } })
+    return block
   }
 }

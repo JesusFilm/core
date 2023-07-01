@@ -67,6 +67,7 @@ enum ButtonAction {
 }
 
 enum VideoBlockSource {
+  cloudflare
   internal
   youTube
 }
@@ -76,6 +77,7 @@ model ChatButton {
   journeyId String
   link      String?
   platform  ChatPlatform?
+  journey   Journey       @relation(fields: [journeyId], references: [id])
 
   @@index([journeyId])
 }
@@ -133,18 +135,20 @@ model Visitor {
   userId                    String
   userAgent                 Json?
   journeyVisitor            JourneyVisitor[]
+  team                      Team             @relation(fields: [teamId], references: [id])
 
   @@index([id, teamId, createdAt, userId, status, countryCode])
 }
 
 model Host {
-  id       String  @id @default(uuid())
+  id       String    @id @default(uuid())
   teamId   String
-  team     Team    @relation(fields: [teamId], references: [id])
+  team     Team      @relation(fields: [teamId], references: [id])
   title    String
   location String?
   src1     String?
   src2     String?
+  journeys Journey[]
 }
 
 model JourneyVisitor {
@@ -169,10 +173,12 @@ model JourneyVisitor {
 }
 
 model Team {
-  id        String     @id @default(uuid())
+  id        String     @id
   title     String
-  userTeams UserTeam[]
   createdAt DateTime   @default(now())
+  visitors  Visitor[]
+  userTeams UserTeam[]
+  journeys  Journey[]
   updatedAt DateTime   @updatedAt
   hosts     Host[]
 
@@ -195,4 +201,186 @@ enum UserTeamRole {
   manager
   member
   guest
+}
+
+enum UserJourneyRole {
+  inviteRequested
+  editor
+  owner
+}
+
+model UserJourney {
+  id        String          @id @default(uuid())
+  userId    String
+  journeyId String
+  journey   Journey         @relation(fields: [journeyId], references: [id])
+  role      UserJourneyRole
+  openedAt  DateTime?       @default(now())
+
+  @@unique([journeyId, userId])
+}
+
+enum JourneyStatus {
+  archived
+  deleted
+  draft
+  published
+  trashed
+}
+
+enum ThemeMode {
+  dark
+  light
+}
+
+enum ThemeName {
+  base
+}
+
+model Journey {
+  id                  String        @id @default(uuid())
+  title               String
+  languageId          String
+  description         String?
+  slug                String        @unique
+  archivedAt          DateTime?
+  createdAt           DateTime      @default(now())
+  deletedAt           DateTime?
+  publishedAt         DateTime?
+  trashedAt           DateTime?
+  featuredAt          DateTime?
+  status              JourneyStatus
+  seoTitle            String?
+  seoDescription      String?
+  primaryImageBlockId String?       @unique
+  template            Boolean?      @default(false)
+  teamId              String
+  hostId              String?
+  themeMode           ThemeMode?    @default(light)
+  themeName           ThemeName?    @default(base)
+  userJourneys        UserJourney[]
+  team                Team          @relation(fields: [teamId], references: [id])
+  userInvites         UserInvite[]
+  blocks              Block[]
+  chatButtons         ChatButton[]
+  host                Host?         @relation(fields: [hostId], references: [id])
+  Action              Action[]
+  primaryImageBlock   Block?        @relation("PrimaryImageBlock", fields: [primaryImageBlockId], references: [id])
+
+  @@index([title])
+}
+
+enum Role {
+  publisher
+}
+
+model UserRole {
+  id     String @id @default(uuid())
+  userId String
+  roles  Role[]
+}
+
+model JourneyProfile {
+  id              String   @id @default(uuid())
+  userId          String   @unique
+  acceptedTermsAt DateTime @default(now())
+}
+
+model UserInvite {
+  id         String    @id @default(uuid())
+  journeyId  String
+  senderId   String
+  email      String
+  acceptedAt DateTime?
+  removedAt  DateTime?
+  journey    Journey   @relation(fields: [journeyId], references: [id])
+
+  @@unique([journeyId, email])
+  @@index([journeyId, email])
+}
+
+enum VideoBlockObjectFit {
+  fill
+  fit
+  zoomed
+}
+
+model Block {
+  id                      String               @id @default(uuid())
+  typename                String
+  journeyId               String
+  parentBlockId           String?
+  parentOrder             Int?
+  label                   String?
+  variant                 String?
+  color                   String?
+  size                    String?
+  startIconId             String?
+  endIconId               String?
+  action                  Action?
+  backgroundColor         String?
+  coverBlockId            String?              @unique
+  fullscreen              Boolean?
+  themeMode               String?
+  themeName               String?
+  spacing                 Int?
+  direction               String?
+  justifyContent          String?
+  alignItems              String?
+  xl                      Int?
+  lg                      Int?
+  sm                      Int?
+  name                    String?
+  src                     String?
+  width                   Int?
+  height                  Int?
+  alt                     String?
+  blurhash                String?
+  submitIconId            String?
+  submitLabel             String?
+  nextBlockId             String?              @unique
+  locked                  Boolean?
+  hint                    String?
+  minRows                 Int?
+  content                 String?
+  align                   String?
+  startAt                 Int?
+  endAt                   Int?
+  muted                   Boolean?
+  autoplay                Boolean?
+  posterBlockId           String?              @unique
+  fullsize                Boolean?
+  videoId                 String?
+  videoVariantLanguageId  String?
+  source                  VideoBlockSource?
+  title                   String?
+  description             String?
+  image                   String?
+  duration                Int?
+  objectFit               VideoBlockObjectFit?
+  triggerStart            Int?
+  journey                 Journey              @relation(fields: [journeyId], references: [id])
+  posterBlock             Block?               @relation("PosterBlock", fields: [posterBlockId], references: [id])
+  posterBlockParent       Block?               @relation("PosterBlock")
+  coverBlock              Block?               @relation("CoverBlock", fields: [coverBlockId], references: [id])
+  coverBlockParent        Block?               @relation("CoverBlock")
+  primaryImageBlockParent Journey?             @relation("PrimaryImageBlock")
+  nextBlock               Block?               @relation("NextBlock", fields: [nextBlockId], references: [id])
+  nextBlockParent         Block?               @relation("NextBlock")
+  parentBlock             Block?               @relation("ParentBlock", fields: [parentBlockId], references: [id])
+  childBlocks             Block[]              @relation("ParentBlock")
+  targetAction            Action[]             @relation("Block")
+}
+
+model Action {
+  parentBlockId String   @id
+  gtmEventName  String?
+  blockId       String?
+  journeyId     String?
+  url           String?
+  target        String?
+  email         String?
+  parentBlock   Block    @relation(fields: [parentBlockId], references: [id])
+  journey       Journey? @relation(fields: [journeyId], references: [id])
+  block         Block?   @relation("Block", fields: [blockId], references: [id])
 }

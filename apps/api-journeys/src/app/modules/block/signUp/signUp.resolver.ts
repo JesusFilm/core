@@ -36,15 +36,17 @@ export class SignUpBlockResolver {
     ])
   )
   async signUpBlockCreate(
-    @Args('input') input: SignUpBlockCreateInput & { __typename }
+    @Args('input') input: SignUpBlockCreateInput
   ): Promise<SignUpBlock> {
-    input.__typename = 'SignUpBlock'
     const siblings = await this.blockService.getSiblings(
       input.journeyId,
       input.parentBlockId
     )
     return await this.blockService.save({
       ...input,
+      id: input.id ?? undefined,
+      typename: 'SignUpBlock',
+      journey: { connect: { id: input.journeyId } },
       parentOrder: siblings.length
     })
   }

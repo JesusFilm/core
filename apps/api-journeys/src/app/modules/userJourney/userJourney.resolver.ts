@@ -9,27 +9,29 @@ import {
 import { CurrentUserId } from '@core/nest/decorators/CurrentUserId'
 import { UseGuards } from '@nestjs/common'
 import { GqlAuthGuard } from '@core/nest/gqlAuthGuard/GqlAuthGuard'
-import { AuthenticationError, UserInputError } from 'apollo-server-errors'
 import {
-  IdType,
+  UserJourney,
   Journey,
-  Role,
   UserJourneyRole
-} from '../../__generated__/graphql'
-import { JourneyService } from '../journey/journey.service'
+} from '.prisma/api-journeys-client'
+import { AuthenticationError, UserInputError } from 'apollo-server-errors'
+import { IdType, Role } from '../../__generated__/graphql'
 import { RoleGuard } from '../../lib/roleGuard/roleGuard'
-import { UserJourneyRecord, UserJourneyService } from './userJourney.service'
+import { PrismaService } from '../../lib/prisma.service'
+import { UserJourneyService } from './userJourney.service'
 
 @Resolver('UserJourney')
 export class UserJourneyResolver {
   constructor(
     private readonly userJourneyService: UserJourneyService,
-    private readonly journeyService: JourneyService
+    private readonly prismaService: PrismaService
   ) {}
 
   @Query()
-  async userJourneys(@Parent() journey: Journey): Promise<UserJourneyRecord[]> {
-    return await this.userJourneyService.forJourney(journey)
+  async userJourneys(@Parent() journey: Journey): Promise<UserJourney[]> {
+    return await this.prismaService.userJourney.findMany({
+      where: { journeyId: journey.id }
+    })
   }
 
   @Mutation()
@@ -38,7 +40,7 @@ export class UserJourneyResolver {
     @Args('journeyId') journeyId: string,
     @Args('idType') idType: IdType = IdType.slug,
     @CurrentUserId() userId: string
-  ): Promise<UserJourneyRecord | undefined> {
+  ): Promise<UserJourney | undefined> {
     return await this.userJourneyService.requestAccess(
       journeyId,
       idType,
@@ -46,10 +48,13 @@ export class UserJourneyResolver {
     )
   }
 
-  async checkOwnership(id: string, userId: string): Promise<UserJourneyRecord> {
+  async checkOwnership(id: string, userId: string): Promise<UserJourney> {
     // can only update user journey roles if you are the journey's owner.
-    const actor = await this.userJourneyService.forJourneyUser(id, userId)
-
+    const actor = await this.prismaService.userJourney.findUnique({
+      where: {
+        journeyId_userId: { journeyId: id, userId }
+      }
+    })
     if (actor?.role !== UserJourneyRole.owner)
       throw new AuthenticationError(
         'You do not own this journey, so you cannot make changes to it'
@@ -58,8 +63,10 @@ export class UserJourneyResolver {
     return actor
   }
 
-  async getUserJourney(id: string): Promise<UserJourneyRecord | undefined> {
-    const userJourney = await this.userJourneyService.get(id)
+  async getUserJourney(id: string): Promise<UserJourney | undefined> {
+    const userJourney = await this.prismaService.userJourney.findUnique({
+      where: { id }
+    })
     if (userJourney === null) throw new UserInputError('User journey not found')
     return userJourney
   }
@@ -69,7 +76,7 @@ export class UserJourneyResolver {
   async userJourneyApprove(
     @Args('id') id: string,
     @CurrentUserId() userId: string
-  ): Promise<UserJourneyRecord | undefined> {
+  ): Promise<UserJourney | null> {
     return await this.userJourneyService.approveAccess(id, userId)
   }
 
@@ -78,7 +85,7 @@ export class UserJourneyResolver {
   async userJourneyPromote(
     @Args('id') id: string,
     @CurrentUserId() userId: string
-  ): Promise<UserJourneyRecord | undefined> {
+  ): Promise<UserJourney | null> {
     const userJourney = await this.getUserJourney(id)
 
     if (userJourney == null)
@@ -87,14 +94,15 @@ export class UserJourneyResolver {
     const actor = await this.checkOwnership(userJourney.journeyId, userId)
     if (actor.userId === userJourney.userId) return actor
 
-    const newOwner = await this.userJourneyService.update(id, {
-      role: UserJourneyRole.owner
+    const newOwner = await this.prismaService.userJourney.update({
+      where: { id },
+      data: { role: UserJourneyRole.owner }
     })
 
-    await this.userJourneyService.update(actor.id, {
-      role: UserJourneyRole.editor
+    await this.prismaService.userJourney.update({
+      where: { id: actor.id },
+      data: { role: UserJourneyRole.editor }
     })
-
     return newOwner
   }
 
@@ -103,7 +111,7 @@ export class UserJourneyResolver {
   async userJourneyRemove(
     @Args('id') id: string,
     @CurrentUserId() userId: string
-  ): Promise<UserJourneyRecord | undefined> {
+  ): Promise<UserJourney | undefined> {
     const userJourney = await this.getUserJourney(id)
 
     if (userJourney == null)
@@ -113,7 +121,7 @@ export class UserJourneyResolver {
       await this.checkOwnership(userJourney.journeyId, userId)
     }
 
-    return await this.userJourneyService.remove(id)
+    return await this.prismaService.userJourney.delete({ where: { id } })
   }
 
   @Mutation()
@@ -123,14 +131,26 @@ export class UserJourneyResolver {
   )
   async userJourneyRemoveAll(
     @Args('id') id: string
-  ): Promise<Array<UserJourneyRecord | undefined>> {
-    const journey: Journey = await this.journeyService.get(id)
-    const userJourneys = await this.userJourneyService.forJourney(journey)
+  ): Promise<UserJourney[] | undefined> {
+    const journey = await this.prismaService.journey.findUnique({
+      where: { id }
+    })
+    if (journey == null) throw new UserInputError('Journey does not exist')
+
+    const userJourneys = await this.prismaService.userJourney.findMany({
+      where: { journeyId: journey.id }
+    })
     const userJourneyIds: string[] = userJourneys.map(
       (userJourney) => userJourney.id
     )
 
-    return await this.userJourneyService.removeAll(userJourneyIds)
+    const result = await Promise.all(
+      userJourneyIds.map(
+        async (id) =>
+          await this.prismaService.userJourney.delete({ where: { id } })
+      )
+    )
+    return result != null ? userJourneys : undefined
   }
 
   @Mutation()
@@ -138,25 +158,32 @@ export class UserJourneyResolver {
   async userJourneyOpen(
     @Args('id') id: string,
     @CurrentUserId() userId: string
-  ): Promise<UserJourneyRecord | undefined> {
-    const userJourney = await this.userJourneyService.forJourneyUser(id, userId)
+  ): Promise<UserJourney | null> {
+    const userJourney = await this.prismaService.userJourney.findUnique({
+      where: { journeyId_userId: { journeyId: id, userId } }
+    })
 
     if (userJourney != null && userJourney.openedAt == null) {
-      const input = { openedAt: new Date().toISOString() }
-      return await this.userJourneyService.update(userJourney.id, input)
+      const input = { openedAt: new Date() }
+      return await this.prismaService.userJourney.update({
+        where: { id: userJourney.id },
+        data: input
+      })
     }
 
     return userJourney
   }
 
   @ResolveField()
-  async journey(@Parent() userJourney: UserJourneyRecord): Promise<Journey> {
-    return await this.journeyService.get(userJourney.journeyId)
+  async journey(@Parent() userJourney: UserJourney): Promise<Journey | null> {
+    return await this.prismaService.journey.findUnique({
+      where: { id: userJourney.journeyId }
+    })
   }
 
   @ResolveField('user')
   async user(
-    @Parent() userJourney: UserJourneyRecord
+    @Parent() userJourney: UserJourney
   ): Promise<{ __typename: string; id: string }> {
     return { __typename: 'User', id: userJourney.userId }
   }

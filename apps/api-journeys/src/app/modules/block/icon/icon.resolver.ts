@@ -1,5 +1,6 @@
 import { UseGuards } from '@nestjs/common'
 import { Args, Mutation, Resolver } from '@nestjs/graphql'
+
 import {
   IconBlock,
   IconBlockCreateInput,
@@ -23,11 +24,13 @@ export class IconBlockResolver {
     ])
   )
   async iconBlockCreate(
-    @Args('input') input: IconBlockCreateInput & { __typename }
+    @Args('input') input: IconBlockCreateInput
   ): Promise<IconBlock> {
-    input.__typename = 'IconBlock'
     return await this.blockService.save({
       ...input,
+      id: input.id ?? undefined,
+      typename: 'IconBlock',
+      journey: { connect: { id: input.journeyId } },
       // Icons positions are set via parent block props, cannot be ordered.
       parentOrder: null
     })

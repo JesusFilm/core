@@ -5,25 +5,22 @@ import { CurrentUser } from '@core/nest/decorators/CurrentUser'
 import { GqlAuthGuard } from '@core/nest/gqlAuthGuard/GqlAuthGuard'
 import { UserInputError } from 'apollo-server-errors'
 import { User } from '@core/nest/common/firebaseClient'
+import { UserInvite } from '.prisma/api-journeys-client'
 
 import {
   IdType,
-  Journey,
-  UserInvite,
   UserInviteCreateInput,
   UserJourneyRole
 } from '../../__generated__/graphql'
 import { RoleGuard } from '../../lib/roleGuard/roleGuard'
-import { JourneyService } from '../journey/journey.service'
+import { PrismaService } from '../../lib/prisma.service'
 import { UserJourneyService } from '../userJourney/userJourney.service'
-import { UserInviteService } from './userInvite.service'
 
 @Resolver('UserInvite')
 export class UserInviteResolver {
   constructor(
-    private readonly userInviteService: UserInviteService,
     private readonly userJourneyService: UserJourneyService,
-    private readonly journeyService: JourneyService
+    private readonly prismaService: PrismaService
   ) {}
 
   @Query()
@@ -34,7 +31,9 @@ export class UserInviteResolver {
   async userInvites(
     @Args('journeyId') journeyId: string
   ): Promise<UserInvite[]> {
-    return await this.userInviteService.getAllUserInvitesByJourney(journeyId)
+    return await this.prismaService.userInvite.findMany({
+      where: { journeyId }
+    })
   }
 
   @Mutation()
@@ -47,33 +46,38 @@ export class UserInviteResolver {
     @Args('journeyId') journeyId: string,
     @Args('input') input: UserInviteCreateInput
   ): Promise<UserInvite | null> {
-    const userInvite: UserInvite =
-      await this.userInviteService.getUserInviteByJourneyAndEmail(
-        journeyId,
-        input.email
-      )
+    const userInvite = await await this.prismaService.userInvite.findUnique({
+      where: { journeyId_email: { journeyId, email: input.email } }
+    })
 
     // Create invite if doesn't exist.
     if (userInvite == null) {
-      const journey: Journey = await this.journeyService.get(journeyId)
+      const journey = await this.prismaService.journey.findUnique({
+        where: { id: journeyId }
+      })
 
       if (journey == null) throw new UserInputError('journey does not exist')
 
-      return await this.userInviteService.save({
-        journeyId: journey.id,
-        senderId,
-        email: input.email,
-        acceptedAt: null,
-        removedAt: null
+      return await this.prismaService.userInvite.create({
+        data: {
+          journeyId: journey.id,
+          senderId,
+          email: input.email,
+          acceptedAt: null,
+          removedAt: null
+        }
       })
     }
 
     // Else re-activate removed invite
     if (userInvite.removedAt != null) {
-      return await this.userInviteService.update(userInvite.id, {
-        senderId,
-        acceptedAt: null,
-        removedAt: null
+      return await this.prismaService.userInvite.update({
+        where: { id: userInvite.id },
+        data: {
+          senderId,
+          acceptedAt: null,
+          removedAt: null
+        }
       })
     }
 
@@ -90,10 +94,13 @@ export class UserInviteResolver {
     // journeyId needed for RoleGuard
     @Args('journeyId') journeyId: string
   ): Promise<UserInvite> {
-    return await this.userInviteService.update(id, {
-      // Remove called on pending invites and on deleting userJourneys. Both need to reset acceptedAt.
-      acceptedAt: null,
-      removedAt: new Date().toISOString()
+    return await this.prismaService.userInvite.update({
+      where: { id },
+      data: {
+        // Remove called on pending invites and on deleting userJourneys. Both need to reset acceptedAt.
+        acceptedAt: null,
+        removedAt: new Date()
+      }
     })
   }
 
@@ -111,8 +118,11 @@ export class UserInviteResolver {
 
       // User already has access to journey, remove invalid invite
       if (userJourney == null) {
-        return await this.userInviteService.update(userInvite.id, {
-          removedAt: new Date().toISOString()
+        return await this.prismaService.userInvite.update({
+          where: { id: userInvite.id },
+          data: {
+            removedAt: new Date()
+          }
         })
       }
 
@@ -121,8 +131,11 @@ export class UserInviteResolver {
         userInvite.senderId
       )
 
-      return await this.userInviteService.update(userInvite.id, {
-        acceptedAt: new Date().toISOString()
+      return await this.prismaService.userInvite.update({
+        where: { id: userInvite.id },
+        data: {
+          acceptedAt: new Date()
+        }
       })
     }
 
@@ -134,9 +147,9 @@ export class UserInviteResolver {
   async userInviteAcceptAll(
     @CurrentUser() user: User
   ): Promise<Array<Promise<UserInvite>>> {
-    const userInvites = await this.userInviteService.getAllUserInvitesByEmail(
-      user.email
-    )
+    const userInvites = await this.prismaService.userInvite.findMany({
+      where: { email: user.email }
+    })
 
     if (userInvites.length === 0) return []
 

@@ -1,108 +1,185 @@
-// import { aql } from 'arangojs'
-import { PrismaClient } from '.prisma/api-journeys-client'
-// import { ArangoDB } from '../db'
+import { aql } from 'arangojs'
+import { PrismaClient, JourneyStatus, Block } from '.prisma/api-journeys-client'
+import { omit } from 'lodash'
+import { ArangoDB } from '../db'
 
 const prisma = new PrismaClient()
-// const db = ArangoDB()
+const db = ArangoDB()
 
 // TODO: REMOVE once converted to postgresql
 export async function psMigrate(): Promise<void> {
-  // set max durations to 1200 seconds
-  await prisma.visitor.updateMany({
-    where: { duration: { gt: 1200 } },
-    data: { duration: 1200 }
-  })
-  await prisma.journeyVisitor.updateMany({
-    where: { duration: { gt: 1200 } },
-    data: { duration: 1200 }
-  })
+  let offset = 0
+  let end = true
 
-  // let offset = 0
-  // let end = true
+  // import journeys from arangodb
+  offset = 0
+  end = true
+  do {
+    console.log(`Importing journeys at ${offset}...`)
+    const journeys = await (
+      await db.query(aql`
+      FOR journey IN journeys
+      LIMIT ${offset}, 50
+      RETURN journey
+  `)
+    ).all()
+    for (const journey of journeys) {
+      console.log(`Importing journey ${journey._key as string}...`)
+      try {
+        await prisma.journey.create({
+          data: {
+            id: journey._key,
+            title: journey.title,
+            languageId: journey.languageId.toString(),
+            description: journey.description ?? undefined,
+            slug: journey.slug,
+            archivedAt:
+              journey.archivedAt != null
+                ? new Date(journey.archivedAt)
+                : undefined,
+            createdAt: new Date(journey.createdAt),
+            deletedAt:
+              journey.deletedAt != null
+                ? new Date(journey.deletedAt)
+                : undefined,
+            publishedAt:
+              journey.publishedAt != null
+                ? new Date(journey.publishedAt)
+                : undefined,
+            trashedAt:
+              journey.trashedAt != null
+                ? new Date(journey.trashedAt)
+                : undefined,
+            featuredAt:
+              journey.trashedAt != null
+                ? new Date(journey.trashedAt)
+                : undefined,
+            status: journey.status ?? JourneyStatus.draft,
+            seoTitle: journey.seoTitle ?? undefined,
+            seoDescription: journey.seoDescription ?? undefined,
+            primaryImageBlockId: journey.primaryImageBlockId ?? undefined,
+            template: journey.template ?? false,
+            teamId: journey.teamId ?? 'jfp-team',
+            themeMode: journey.themeMode ?? undefined,
+            themeName: journey.themeName ?? undefined
+          }
+        })
+        console.log(`Importing blocks for journey ${journey._key as string}...`)
+        const blocks = await (
+          await db.query(aql`
+            FOR block IN blocks
+            FILTER block.journeyId == ${journey._key}
+            RETURN block
+        `)
+        ).all()
+        await prisma.block.createMany({
+          data: blocks.map(
+            (block) =>
+              ({
+                ...omit(block, ['_id', '_key', '_rev', 'action']),
+                id: block._key,
+                action:
+                  block.action != null ? { create: block.action } : undefined
+              } as unknown as Block)
+          )
+        })
 
-  // // import visitors from arangodb
-  // offset = 0
-  // end = true
-  // do {
-  //   const visitors = await (
-  //     await db.query(aql`
-  //       FOR visitor IN visitors
-  //       FILTER visitor.userId != null
-  //       LIMIT ${offset}, 50
-  //       RETURN visitor
-  //     `)
-  //   ).all()
-  //   // get events for visitors
-  //   for (const visitor of visitors) {
-  //     console.log(`Importing visitor ${visitor._key as string}...`)
-  //     try {
-  //       await prisma.visitor.create({
-  //         data: {
-  //           id: visitor._key,
-  //           createdAt: new Date(visitor.createdAt),
-  //           countryCode: visitor.countryCode,
-  //           email: visitor.email ?? undefined,
-  //           lastChatStartedAt:
-  //             visitor.lastChatStartedAt != null
-  //               ? new Date(visitor.lastChatStartedAt)
-  //               : undefined,
-  //           lastChatPlatform: visitor.lastChatPlatform ?? undefined,
-  //           lastStepViewedAt:
-  //             visitor.lastStepViewedAt != null
-  //               ? new Date(visitor.lastStepViewedAt)
-  //               : undefined,
-  //           lastLinkAction: visitor.lastLinkAction ?? undefined,
-  //           lastTextResponse: visitor.lastTextResponse ?? undefined,
-  //           lastRadioQuestion: visitor.lastRadioQuestion ?? undefined,
-  //           messagePlatform: visitor.messagePlatform ?? undefined,
-  //           messagePlatformId: visitor.messagePlatformId ?? undefined,
-  //           name: visitor.name ?? undefined,
-  //           notes: visitor.notes ?? undefined,
-  //           status: visitor.status ?? undefined,
-  //           teamId: visitor.teamId,
-  //           userId: visitor.userId != null ? visitor.userId : null,
-  //           userAgent: visitor.userAgent ?? undefined
-  //         }
-  //       })
-  //     } catch {}
-  //     console.log(`Importing events for visitor ${visitor._key as string}...`)
-  //     const events = await (
-  //       await db.query(aql`
-  //         FOR event IN events
-  //         FILTER event.userId == ${visitor.userId}
-  //         RETURN event
-  //     `)
-  //     ).all()
-  //     if (events.length === 0) continue
-  //     try {
-  //       await prisma.event.createMany({
-  //         data: events.map((event) => ({
-  //           id: event._key,
-  //           typename: event.__typename,
-  //           createdAt:
-  //             event.createdAt != null ? new Date(event.createdAt) : new Date(),
-  //           journeyId: event.journeyId ?? undefined,
-  //           blockId: event.blockId ?? undefined,
-  //           stepId: event.stepId ?? undefined,
-  //           label: event.label ?? undefined,
-  //           value: event.value ?? undefined,
-  //           visitorId: visitor._key,
-  //           actionValue: event.actionValue ?? undefined,
-  //           messagePlatform: event.messagePlatform ?? undefined,
-  //           languageId: event.languageId ?? undefined,
-  //           radioOptionBlockId: event.radioOptionBlockId ?? undefined,
-  //           email: event.email ?? undefined,
-  //           nextStepId: event.nextStepId ?? undefined,
-  //           position: event.position ?? undefined,
-  //           source: event.source ?? undefined,
-  //           progress: event.progress ?? undefined,
-  //           userId: event.userId ?? undefined
-  //         })),
-  //         skipDuplicates: true
-  //       })
-  //     } catch {}
-  //   }
-  //   offset += 50
-  //   end = visitors.length > 49
-  // } while (end)
+        console.log(`Importing userJourneys at ${journey._key as string}...`)
+        const userJourneys = await (
+          await db.query(aql`
+            FOR uj IN userJourneys
+            FILTER uj.journeyId == ${journey._key}
+            RETURN uj
+        `)
+        ).all()
+        await prisma.userJourney.createMany({
+          data: userJourneys.map((uj) => ({
+            id: uj._key,
+            userId: uj.userId,
+            openedAt: new Date(uj.openedAt),
+            role: uj.role,
+            journeyId: uj.journeyId
+          })),
+          skipDuplicates: true
+        })
+      } catch {}
+    }
+    offset += 50
+    end = journeys.length > 49
+  } while (end)
+
+  // import userRoles from arangodb
+  offset = 0
+  end = true
+  do {
+    console.log(`Importing userRoles at ${offset}...`)
+    const userRoles = await (
+      await db.query(aql`
+          FOR ur IN userRoles
+          LIMIT ${offset}, 50
+          RETURN ur
+      `)
+    ).all()
+    await prisma.userRole.createMany({
+      data: userRoles.map((ur) => ({
+        id: ur._key,
+        userId: ur.userId,
+        roles: ur.roles
+      })),
+      skipDuplicates: true
+    })
+    offset += 50
+    end = userRoles.length > 49
+  } while (end)
+
+  // import journeyProfiles from arangodb
+  offset = 0
+  end = true
+  do {
+    console.log(`Importing journeyProfiles at ${offset}...`)
+    const journeyProfiles = await (
+      await db.query(aql`
+          FOR jp IN journeyProfiles
+          LIMIT ${offset}, 50
+          RETURN jp
+      `)
+    ).all()
+    await prisma.journeyProfile.createMany({
+      data: journeyProfiles.map((jp) => ({
+        id: jp._key,
+        userId: jp.userId,
+        acceptedTermsAt: new Date(jp.acceptedTermsAt)
+      })),
+      skipDuplicates: true
+    })
+    offset += 50
+    end = journeyProfiles.length > 49
+  } while (end)
+
+  // import userInvites from arangodb
+  offset = 0
+  end = true
+  do {
+    console.log(`Importing userInvites at ${offset}...`)
+    const userInvites = await (
+      await db.query(aql`
+          FOR ui IN userInvites
+          LIMIT ${offset}, 50
+          RETURN ui
+      `)
+    ).all()
+    await prisma.userInvite.createMany({
+      data: userInvites.map((ui) => ({
+        id: ui._key,
+        journeyId: ui.journeyId,
+        senderId: ui.senderId,
+        email: ui.email,
+        acceptedAt: ui.acceptedAt != null ? new Date(ui.acceptedAt) : undefined,
+        removedAt: ui.removedAt != null ? new Date(ui.removedAt) : undefined
+      })),
+      skipDuplicates: true
+    })
+    offset += 50
+    end = userInvites.length > 49
+  } while (end)
 }
