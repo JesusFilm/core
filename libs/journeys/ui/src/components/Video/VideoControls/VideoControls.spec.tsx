@@ -6,6 +6,7 @@ import {
   waitFor
 } from '@testing-library/react'
 import videojs from 'video.js'
+import Player from 'video.js/dist/types/player'
 import fscreen from 'fscreen'
 import { MockedProvider } from '@apollo/client/testing'
 import { VideoControls } from './VideoControls'
@@ -20,7 +21,7 @@ jest.mock('fscreen', () => ({
 }))
 
 describe('VideoControls', () => {
-  let player: videojs.Player
+  let player: Player
   beforeEach(() => {
     const video = document.createElement('video')
     document.body.appendChild(video)
@@ -92,15 +93,14 @@ describe('VideoControls', () => {
   })
 
   it('pauses the video via video region click', async () => {
-    jest
-      .spyOn(player, 'on')
-      .mockImplementation((type, listener?: () => void) => {
-        if (type === 'play') listener?.()
-      })
-
-    const pauseStub = jest.spyOn(player, 'pause').mockImplementationOnce(() => {
-      return { ...player, paused: () => true }
+    jest.spyOn(player, 'on').mockImplementation((type, fn) => {
+      if (type === 'play') fn()
     })
+
+    const pauseStub = jest
+      .spyOn(player, 'pause')
+      .mockImplementationOnce(() => player)
+
     const { getByRole } = render(
       <MockedProvider>
         <VideoControls player={player} startAt={0} endAt={10} />
@@ -117,15 +117,13 @@ describe('VideoControls', () => {
   })
 
   it('pauses the video via control bar pause button', async () => {
-    jest
-      .spyOn(player, 'on')
-      .mockImplementation((type, listener?: () => void) => {
-        if (type === 'play') listener?.()
-      })
-
-    const pauseStub = jest.spyOn(player, 'pause').mockImplementationOnce(() => {
-      return { ...player, paused: () => true }
+    jest.spyOn(player, 'on').mockImplementation((type, fn) => {
+      if (type === 'play') fn()
     })
+
+    const pauseStub = jest
+      .spyOn(player, 'pause')
+      .mockImplementationOnce(() => player)
     const { getByRole } = render(
       <MockedProvider>
         <VideoControls player={player} startAt={0} endAt={10} />
@@ -182,7 +180,7 @@ describe('VideoControls', () => {
 
     const fullscreenStub = jest
       .spyOn(player, 'requestFullscreen')
-      .mockImplementationOnce(() => player)
+      .mockImplementationOnce(async () => player)
 
     const { getByRole } = render(
       <MockedProvider>

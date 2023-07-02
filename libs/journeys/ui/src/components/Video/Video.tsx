@@ -1,4 +1,5 @@
-import videojs, { VideoJsPlayer } from 'video.js'
+import videojs from 'video.js'
+import Player from 'video.js/dist/types/player'
 import {
   ReactElement,
   useEffect,
@@ -67,7 +68,7 @@ export function Video({
   const [loading, setLoading] = useState(true)
   const theme = useTheme()
   const videoRef = useRef<HTMLVideoElement>(null)
-  const [player, setPlayer] = useState<VideoJsPlayer>()
+  const [player, setPlayer] = useState<Player>()
   const {
     state: { selectedBlock }
   } = useEditor()
@@ -135,30 +136,34 @@ export function Video({
 
   // Initiate video player listeners
   useEffect(() => {
+    const handleStopLoading = (): void => setLoading(false)
+    const handleStopLoadingOnAutoplay = (): void => {
+      if (autoplay === true) handleStopLoading()
+    }
+    const handleVideoEnd = (): void => {
+      setLoading(false)
+      if (player?.isFullscreen() === true && player != null) {
+        void player.exitFullscreen()
+      }
+    }
+
     if (player != null) {
       if (selectedBlock === undefined) {
         // Video jumps to new time and finishes loading - occurs on autoplay
-        player.on('seeked', () => {
-          if (autoplay === true) setLoading(false)
-        })
-        player.on('playing', () => {
-          setLoading(false)
-        })
-        player.on('canplay', () => setLoading(false))
-        player.on('canplaythrough', () => setLoading(false))
-        player.on('ended', () => {
-          setLoading(false)
-          if (player.isFullscreen()) player.exitFullscreen()
-        })
+        player.on('seeked', handleStopLoadingOnAutoplay)
+        player.on('playing', handleStopLoading)
+        player.on('canplay', handleStopLoading)
+        player.on('canplaythrough', handleStopLoading)
+        player.on('ended', handleVideoEnd)
       }
     }
     return () => {
       if (player != null) {
-        player.off('seeked')
-        player.off('playing')
-        player.off('canplay')
-        player.off('canplaythrough')
-        player.off('ended')
+        player.off('seeked', handleStopLoadingOnAutoplay)
+        player.off('playing', handleStopLoading)
+        player.off('canplay', handleStopLoading)
+        player.off('canplaythrough', handleStopLoading)
+        player.off('ended', handleVideoEnd)
       }
     }
   }, [

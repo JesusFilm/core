@@ -1,5 +1,5 @@
 import { ReactElement, useState, useEffect, MouseEventHandler } from 'react'
-import videojs from 'video.js'
+import Player from 'video.js/dist/types/player'
 import Container from '@mui/material/Container'
 import Box from '@mui/material/Box'
 import Fade from '@mui/material/Fade'
@@ -20,7 +20,7 @@ import VolumeOffOutlined from '@mui/icons-material/VolumeOffOutlined'
 import { secondsToTimeFormat } from '@core/shared/ui/timeFormat'
 
 interface VideoControlProps {
-  player: videojs.Player
+  player: Player
   startAt: number
   endAt: number
   isYoutube?: boolean
@@ -52,19 +52,18 @@ export function VideoControls({
   const visible = !playing || active || loading
 
   useEffect(() => {
-    setVolume(player.volume() * 100)
-    player.on('ready', () => {
+    const handleVideoReady = (): void => {
       player.currentTime(startAt)
-    })
-    player.on('play', () => {
+    }
+    const handleVideoPlay = (): void => {
       setPlaying(true)
 
       if (startAt > 0 && player.currentTime() < startAt) {
         player.currentTime(startAt)
         setProgress(startAt)
       }
-    })
-    player.on('pause', () => {
+    }
+    const handleVideoPause = (): void => {
       setPlaying(false)
 
       // 2) Loop video if at end
@@ -73,9 +72,9 @@ export function VideoControls({
         setProgress(startAt)
         void player.play()
       }
-    })
+    }
     // Recalculate for startAt/endAt snippet
-    player.on('timeupdate', () => {
+    const handleVideoTimeChange = (): void => {
       if (endAt > 0 && player.currentTime() > endAt) {
         // 1) Trigger pause, we get an error if trying to update time here
         player.pause()
@@ -86,28 +85,39 @@ export function VideoControls({
         })
       )
       setProgress(Math.round(player.currentTime()))
-    })
-    player.on('fullscreenchange', () => {
+    }
+    const handleMobileFullscreenChange = (): void =>
       setFullscreen(player.isFullscreen())
-    })
-    player.on('useractive', () => setActive(true))
-    player.on('userinactive', () => setActive(false))
-    player.on('volumechange', () => {
-      setVolume(player.volume() * 100)
-    })
-    fscreen.addEventListener('fullscreenchange', () => {
+    const handleUserActive = (): void => setActive(true)
+    const handleUserInactive = (): void => setActive(false)
+    const handleVideoVolumeChange = (): void => setVolume(player.volume() * 100)
+    const handleDesktopFullscreenChange = (): void =>
       setFullscreen(fscreen.fullscreenElement != null)
-    })
+
+    setVolume(player.volume() * 100)
+    player.on('ready', handleVideoReady)
+    player.on('play', handleVideoPlay)
+    player.on('pause', handleVideoPause)
+    player.on('timeupdate', handleVideoTimeChange)
+    player.on('fullscreenchange', handleMobileFullscreenChange)
+    player.on('useractive', handleUserActive)
+    player.on('userinactive', handleUserInactive)
+    player.on('volumechange', handleVideoVolumeChange)
+    fscreen.addEventListener('fullscreenchange', handleDesktopFullscreenChange)
 
     return () => {
-      player.off('ready')
-      player.off('play')
-      player.off('pause')
-      player.off('timeupdate')
-      player.off('fullscreenchange')
-      player.off('useractive')
-      player.off('userinactive')
-      player.off('volumechange')
+      player.off('ready', handleVideoReady)
+      player.off('play', handleVideoPlay)
+      player.off('pause', handleVideoPause)
+      player.off('timeupdate', handleVideoTimeChange)
+      player.off('fullscreenchange', handleMobileFullscreenChange)
+      player.off('useractive', handleUserActive)
+      player.off('userinactive', handleUserInactive)
+      player.off('volumechange', handleVideoVolumeChange)
+      fscreen.removeEventListener(
+        'fullscreenchange',
+        handleDesktopFullscreenChange
+      )
     }
   }, [player, setFullscreen, startAt, endAt])
 
@@ -129,7 +139,7 @@ export function VideoControls({
       setFullscreen(false)
     } else {
       if (isMobile()) {
-        player.requestFullscreen()
+        void player.requestFullscreen()
       } else {
         await fscreen.requestFullscreen(document.documentElement)
         setFullscreen(true)
