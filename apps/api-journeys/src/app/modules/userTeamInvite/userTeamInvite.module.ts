@@ -8,6 +8,6 @@ import { TeamResolver as UserTeamInviteResolver } from './userTeamInvite.resolve
 @Module({
   imports: [CaslAuthModule.register(AppCaslFactory)],
   providers: [UserTeamInviteResolver, PrismaService],
-  exports: []
+  exports: [UserTeamInviteResolver]
 })
 export class UserTeamModule {}
