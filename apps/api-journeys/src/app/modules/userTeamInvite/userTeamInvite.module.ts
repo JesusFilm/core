@@ -10,4 +10,4 @@ import { TeamResolver as UserTeamInviteResolver } from './userTeamInvite.resolve
   providers: [UserTeamInviteResolver, PrismaService],
   exports: [UserTeamInviteResolver]
 })
-export class UserTeamModule {}
+export class UserTeamInviteModule {}
