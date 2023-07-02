@@ -35,6 +35,7 @@ import { UserTeamModule } from './modules/userTeam/userTeam.module'
     UserInviteModule,
     UserRoleModule,
     UserTeamModule,
+    UserTeamModule,
     VisitorModule,
     GraphQLModule.forRoot<ApolloFederationDriverConfig>({
       driver: ApolloFederationDriver,
