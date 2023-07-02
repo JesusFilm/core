@@ -137,3 +137,14 @@ module "bastion" {
   zone_id            = data.aws_route53_zone.route53_stage_central_jesusfilm_org.zone_id
   security_group_ids = [module.stage.public_bastion_security_group_id]
 }
+
+
+module "cloudflared" {
+  source             = "../../modules/aws/ec2-cloudflared"
+  name               = "cloudflared"
+  env                = "stage"
+  subnet_id          = module.stage.vpc.public_subnets[0]
+  security_group_ids = [module.stage.public_bastion_security_group_id]
+  cloudflared_token  = data.aws_ssm_parameter.cloudflared_stage_token.value
+}
+

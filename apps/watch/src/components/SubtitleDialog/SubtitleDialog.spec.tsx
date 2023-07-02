@@ -1,5 +1,5 @@
 import { waitFor, fireEvent, render } from '@testing-library/react'
-import { VideoJsPlayer } from 'video.js'
+import Player from 'video.js/dist/types/player'
 import { MockedProvider } from '@apollo/client/testing'
 import { VideoProvider } from '../../libs/videoContext'
 import { VideoContentFields } from '../../../__generated__/VideoContentFields'
@@ -14,7 +14,7 @@ describe('SubtitleDialog', () => {
   const player = {
     addRemoteTextTrack: (textTrack: TextTrack) => textTracks.push(textTrack),
     textTracks: () => textTracks
-  } as unknown as VideoJsPlayer
+  } as unknown as Player & { textTracks: () => TextTrackList }
   let textTracks: TextTrack[] = []
 
   beforeEach(() => {
