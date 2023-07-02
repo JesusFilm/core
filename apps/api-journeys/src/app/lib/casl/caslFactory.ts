@@ -61,6 +61,8 @@ export class AppCaslFactory extends CaslFactory {
       }
     })
     can(Action.Manage, 'UserTeamInvite', {
+      removedAt: null,
+      acceptedAt: null,
       team: {
         is: {
           userTeams: {
@@ -70,6 +72,8 @@ export class AppCaslFactory extends CaslFactory {
       }
     })
     can(Action.Read, 'UserTeamInvite', {
+      removedAt: null,
+      acceptedAt: null,
       team: {
         is: {
           userTeams: {

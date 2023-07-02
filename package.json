@@ -130,8 +130,8 @@
     "ua-parser-js": "^1.0.33",
     "util": "^0.12.4",
     "vercel": "^28.18.5",
-    "video.js": "^7.14.3",
-    "videojs-youtube": "^2.6.1",
+    "video.js": "^8.3.0",
+    "videojs-youtube": "^3.0.1",
     "yup": "^0.32.9"
   },
   "devDependencies": {
@@ -188,7 +188,6 @@
     "@types/stylis": "^4.0.2",
     "@types/ua-parser-js": "^0.7.36",
     "@types/uuid": "^8.3.3",
-    "@types/video.js": "^7.3.26",
     "@typescript-eslint/eslint-plugin": "5.10.2",
     "@typescript-eslint/parser": "5.10.2",
     "@vidavidorra/commitlint-config": "^4.0.4",

@@ -191,7 +191,8 @@ extend type Mutation {
   userTeamUpdate(id: ID!, input: UserTeamUpdateInput): UserTeam!
   userTeamDelete(id: ID!): UserTeam!
   userTeamInviteCreate(teamId: ID!, input: UserTeamInviteCreateInput): UserTeamInvite
-  userTeamInviteDelete(id: ID!, teamId: ID!): UserTeamInvite!
+  userTeamInviteRemove(id: ID!): UserTeamInvite!
+  userTeamInviteAcceptAll: [UserTeamInvite!]!
 
   """Update a visitor"""
   visitorUpdate(id: ID!, input: VisitorUpdateInput!): Visitor!
@@ -1633,7 +1634,7 @@ extend type Query {
   getUserRole: UserRole
   userTeams(teamId: ID!): [UserTeam!]!
   userTeam(id: ID!): UserTeam!
-  userTeamInvites(teamId: ID!): [UserTeamInvite!]
+  userTeamInvites(teamId: ID!): [UserTeamInvite!]!
 
   """A list of visitors that are connected with a specific team."""
   visitorsConnection(
@@ -1959,10 +1960,6 @@ type UserTeamInvite {
   id: ID!
   teamId: ID!
   email: String!
-  senderId: ID!
-  acceptedAt: DateTime
-  removedAt: DateTime
-  role: UserTeamRole
 }
 
 input UserTeamInviteCreateInput {

@@ -2,14 +2,10 @@ type UserTeamInvite {
   id: ID!
   teamId: ID!
   email: String!
-  senderId: ID!
-  acceptedAt: DateTime
-  removedAt: DateTime
-  role: UserTeamRole
 }
 
 extend type Query {
-  userTeamInvites(teamId: ID!): [UserTeamInvite!]
+  userTeamInvites(teamId: ID!): [UserTeamInvite!]!
 }
 
 input UserTeamInviteCreateInput {
@@ -21,5 +17,6 @@ extend type Mutation {
     teamId: ID!
     input: UserTeamInviteCreateInput
   ): UserTeamInvite
-  userTeamInviteDelete(id: ID!, teamId: ID!): UserTeamInvite!
+  userTeamInviteRemove(id: ID!): UserTeamInvite!
+  userTeamInviteAcceptAll: [UserTeamInvite!]!
 }
