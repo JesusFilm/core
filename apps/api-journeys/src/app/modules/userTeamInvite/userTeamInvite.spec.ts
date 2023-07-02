@@ -198,23 +198,23 @@ describe('UserTeamInviteResolver', () => {
 
       const redeemedUserTeamInviteMock1 = {
         ...userTeamInviteMock1,
-        acceptedAt: expect.any(Date)
+        acceptedAt: expect.any(Date),
+        receipientId: userMock.id
       }
 
       prismaService.userTeamInvite.findMany = jest
         .fn()
         .mockResolvedValue([userTeamInviteMock1])
-      prismaService.userTeam.upsert = jest.fn()
       prismaService.$transaction = jest
         .fn()
-        .mockResolvedValue([null, redeemedUserTeamInviteMock1])
-      prismaService.userTeamInvite.update = jest.fn()
-
-      await userTeamInviteResolver.userTeamInviteAcceptAll(userMock)
-      expect(prismaService.userTeamInvite.update).toHaveBeenCalledWith({
-        where: { id: 'inviteId1' },
-        data: { acceptedAt: expect.any(Date), receipientId: 'userId' }
-      })
+        .mockImplementation(async (promises) => await Promise.all(promises))
+      prismaService.userTeam.upsert = jest.fn()
+      prismaService.userTeamInvite.update = jest
+        .fn()
+        .mockImplementation(({ data }) => ({ ...userTeamInviteMock1, ...data }))
+      expect(
+        (await userTeamInviteResolver.userTeamInviteAcceptAll(userMock))[0]
+      ).toEqual(redeemedUserTeamInviteMock1)
     })
   })
 })
