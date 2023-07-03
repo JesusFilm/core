@@ -47,7 +47,7 @@ describe('Icon', () => {
     },
     journeyId: '2',
     typename: 'IconBlock',
-    parentBlockId: '0',
+    parentBlock: { connect: { id: '0' } },
     parentOrder: null,
     name: 'ArrowForwardRounded',
     color: 'secondary',

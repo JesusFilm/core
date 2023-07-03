@@ -85,7 +85,9 @@ describe('VideoBlockResolver', () => {
     parentOrder: 0,
     journey: { connect: { id: 'journeyId' } },
     journeyId: 'journeyId',
-    parentBlockId: 'parentBlockId',
+    parentBlock: {
+      connect: { id: 'parentBlockId' }
+    },
     videoId: 'videoId',
     videoVariantLanguageId: 'videoVariantLanguageId',
     posterBlockId: 'posterBlockId',
@@ -178,12 +180,13 @@ describe('VideoBlockResolver', () => {
         blockCreate.parentBlockId
       )
       expect(service.save).toHaveBeenCalledWith({
-        ...blockCreate,
+        ...omit(blockCreate, 'parentBlockId'),
         id: 'abc',
         typename: 'VideoBlock',
         journey: { connect: { id: 'journeyId' } },
         journeyId: 'journeyId',
         source: 'youTube',
+        parentBlock: { connect: { id: 'parentBlockId' } },
         parentOrder: 0
       })
     })
@@ -192,25 +195,20 @@ describe('VideoBlockResolver', () => {
       await resolver.videoBlockCreate({ ...blockCreate, isCover: true })
 
       expect(service.save).toHaveBeenCalledWith({
-        ...omit(blockCreate, OMITTED_BLOCK_FIELDS),
+        ...omit(blockCreate, [...OMITTED_BLOCK_FIELDS, 'parentBlockId']),
         id: 'abc',
         typename: 'VideoBlock',
         isCover: true,
         journey: { connect: { id: 'journeyId' } },
         journeyId: 'journeyId',
-        parentBlockId: 'parentBlockId',
         parentBlock: { connect: { id: 'parentBlockId' } },
+        coverBlockParent: { connect: { id: 'parentBlockId' } },
         parentOrder: null
       })
       expect(service.removeBlockAndChildren).toHaveBeenCalledWith(
         parentBlock.coverBlockId,
         parentBlock.journeyId
       )
-      expect(service.update).toHaveBeenCalledWith(parentBlock.id, {
-        coverBlock: {
-          connect: { coverBlockId: createdBlock.id }
-        }
-      })
     })
 
     describe('Internal Source', () => {
@@ -229,6 +227,7 @@ describe('VideoBlockResolver', () => {
           journeyId: 'journeyId',
           videoId: 'videoId',
           videoVariantLanguageId: 'videoVariantLanguageId',
+          parentBlock: { connect: { id: 'parentBlockId' } },
           source: VideoBlockSource.internal
         })
       })
@@ -304,6 +303,7 @@ describe('VideoBlockResolver', () => {
           journeyId: 'journeyId',
           videoId: 'ak06MSETeo4',
           source: VideoBlockSource.youTube,
+          parentBlock: { connect: { id: 'parentBlockId' } },
           description:
             'This is episode 1 of an ongoing series that explores the origins, content, and purpose of the Bible.',
           duration: 1167,

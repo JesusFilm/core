@@ -46,7 +46,7 @@ describe('SignUpBlockResolver', () => {
 
   const signUpBlockResponse = {
     id: input.id,
-    parentBlockId: input.parentBlockId,
+    parentBlock: { connect: { id: input.parentBlockId } },
     journey: {
       connect: { id: input.journeyId }
     },

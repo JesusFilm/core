@@ -4,6 +4,7 @@ import { object, string } from 'yup'
 import fetch from 'node-fetch'
 import { UserInputError } from 'apollo-server-errors'
 import { Block } from '.prisma/api-journeys-client'
+import { omit } from 'lodash'
 
 import { BlockService } from '../block.service'
 import {
@@ -140,26 +141,21 @@ export class VideoBlockResolver {
     }
 
     if (input.isCover === true) {
+      const parentBlock = await this.prismaService.block.findUnique({
+        where: { id: input.parentBlockId },
+        include: { action: true }
+      })
+
       const coverBlock = await this.blockService.save<Block>({
-        ...input,
+        ...omit(input, 'parentBlockId'),
         id: input.id ?? undefined,
         typename: 'VideoBlock',
         journey: {
           connect: { id: input.journeyId }
         },
         parentBlock: { connect: { id: input.parentBlockId } },
+        coverBlockParent: { connect: { id: input.parentBlockId } },
         parentOrder: null
-      })
-
-      const parentBlock = await this.prismaService.block.findUnique({
-        where: { id: input.parentBlockId },
-        include: { action: true }
-      })
-
-      await this.blockService.update(input.parentBlockId, {
-        coverBlock: {
-          connect: { coverBlockId: coverBlock.id }
-        }
       })
 
       if (parentBlock?.coverBlockId != null) {
@@ -178,12 +174,13 @@ export class VideoBlockResolver {
     )
 
     const block = await this.blockService.save<Block>({
-      ...input,
+      ...omit(input, 'parentBlockId'),
       id: input.id ?? undefined,
       typename: 'VideoBlock',
       source:
         input.source === VideoBlockSource.internal ? 'internal' : 'youTube',
       journey: { connect: { id: input.journeyId } },
+      parentBlock: { connect: { id: input.parentBlockId } },
       parentOrder: siblings.length
     })
 

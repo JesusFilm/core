@@ -4,6 +4,7 @@ import { UserInputError } from 'apollo-server-errors'
 import { encode } from 'blurhash'
 import fetch from 'node-fetch'
 import sharp from 'sharp'
+import { omit } from 'lodash'
 
 import { BlockService } from '../block.service'
 import {
@@ -89,17 +90,6 @@ export class ImageBlockResolver {
     const block = (await handleImage(input)) as ImageBlockCreateInput
 
     if (block.isCover === true) {
-      const coverBlock: ImageBlock = await this.blockService.save({
-        ...block,
-        id: block.id ?? undefined,
-        typename: 'ImageBlock',
-        journey: { connect: { id: block.journeyId } },
-        parentBlock:
-          input.parentBlockId != null
-            ? { connect: { id: block.parentBlockId } }
-            : undefined,
-        parentOrder: null
-      })
       const parentBlock = await this.prismaService.block.findUnique({
         where: {
           id: block.parentBlockId
@@ -111,10 +101,17 @@ export class ImageBlockResolver {
         throw new Error('Parent block not found')
       }
 
-      await this.blockService.update(parentBlock.id, {
-        coverBlock: {
-          connect: { coverBlockId: coverBlock.id }
-        }
+      const coverBlock: ImageBlock = await this.blockService.save({
+        ...omit(block, 'parentBlockId'),
+        id: block.id ?? undefined,
+        typename: 'ImageBlock',
+        journey: { connect: { id: block.journeyId } },
+        parentBlock:
+          input.parentBlockId != null
+            ? { connect: { id: block.parentBlockId } }
+            : undefined,
+        parentOrder: null,
+        coverBlockParent: { connect: { id: block.parentBlockId } }
       })
       // Delete old coverBlock
       if (parentBlock.coverBlockId != null) {
@@ -140,10 +137,11 @@ export class ImageBlockResolver {
       block.parentBlockId
     )
     return await this.blockService.save({
-      ...block,
+      ...omit(block, 'parentBlockId'),
       id: block.id ?? undefined,
       typename: 'ImageBlock',
       journey: { connect: { id: block.journeyId } },
+      parentBlock: { connect: { id: block.parentBlockId } },
       parentOrder: siblings.length
     })
   }
