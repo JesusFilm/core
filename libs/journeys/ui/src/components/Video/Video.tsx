@@ -94,10 +94,10 @@ export function Video({
     if (videoRef.current != null) {
       setPlayer(
         videojs(videoRef.current, {
+          nativeControlsForTouch: true,
           controls: false,
           controlBar: false,
           bigPlayButton: false,
-          loadingSpinner: false,
           // Make video fill container instead of set aspect ratio
           fill: true,
           userActions: {
@@ -108,7 +108,10 @@ export function Video({
           muted: muted === true,
           loop: true,
           // VideoJS blur background persists so we cover video when using png poster on non-autoplay videos
-          poster: blurBackground
+          poster: blurBackground,
+          children: {
+            loadingSpinner: false
+          }
         })
       )
     }
@@ -181,8 +184,8 @@ export function Video({
 
   // Pause video if admin
   useEffect(() => {
-    if (selectedBlock !== undefined && player != null) {
-      player.pause()
+    if (selectedBlock !== undefined) {
+      player?.pause()
     }
   }, [selectedBlock, player])
 
