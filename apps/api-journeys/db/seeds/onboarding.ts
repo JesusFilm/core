@@ -22,12 +22,6 @@ export async function onboarding(action?: 'reset'): Promise<void> {
       where: { slug: onboardingJourney.slug }
     })
     if (existingJourney != null) {
-      await prisma.action.deleteMany({
-        where: { parentBlock: { journeyId: existingJourney.id } }
-      })
-      await prisma.block.deleteMany({
-        where: { journeyId: existingJourney.id }
-      })
       await prisma.journey.delete({ where: { id: existingJourney.id } })
     }
   }

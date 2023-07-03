@@ -489,8 +489,6 @@ describe('BlockService', () => {
         .mockResolvedValueOnce([block, block])
         .mockResolvedValueOnce([])
       prismaService.block.deleteMany = jest.fn().mockResolvedValue(null)
-      prismaService.action.deleteMany = jest.fn().mockResolvedValue(null)
-      prismaService.action.delete = jest.fn().mockResolvedValue(null)
       prismaService.block.delete = jest.fn().mockResolvedValue(block)
     })
 
