@@ -6,6 +6,7 @@ import { SxProps } from '@mui/material/styles'
 import { useFlags } from '@core/shared/ui/FlagsProvider'
 import { useJourney } from '../../libs/JourneyProvider'
 import { getJourneyRTL } from '../../libs/rtl'
+import { ReactionButton } from '../ReactionButton'
 import { HostTitleLocation } from './HostTitleLocation'
 import { HostAvatars } from './HostAvatars'
 import { ChatButtons } from './ChatButtons'
@@ -57,16 +58,16 @@ export function StepFooter({
           alignItems: { xs: 'flex-start', lg: 'center' }
         }}
       >
-        {/* <Stack
-          data-testid="chip"
+        <Stack
+          direction="row"
+          gap={2}
           sx={{
-            display: { xs: 'flex', lg: 'none' },
-            width: 24,
-            height: 16,
-            borderRadius: 5,
-            backgroundColor: 'white'
+            display: { xs: 'flex', sm: 'none' }
           }}
-        /> */}
+        >
+          <ReactionButton variant="thumbsup" />
+          <ReactionButton variant="thumbsdown" />
+        </Stack>
         <Stack
           sx={{
             flexGrow: 1,
@@ -101,16 +102,15 @@ export function StepFooter({
               </Typography>
               <HostTitleLocation />
             </Stack>
-            {/* <Stack
-              data-testid="chip"
-              sx={{
-                display: { xs: 'none', lg: 'flex' },
-                width: 24,
-                height: 16,
-                borderRadius: 5,
-                backgroundColor: 'white'
-              }}
-            /> */}
+
+            <Stack
+              direction="row"
+              gap={2}
+              sx={{ display: { xs: 'none', sm: 'flex' } }}
+            >
+              <ReactionButton variant="thumbsup" />
+              <ReactionButton variant="thumbsdown" />
+            </Stack>
           </Stack>
           {hasChatWidget && (
             <Box>

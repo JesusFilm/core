@@ -8,7 +8,7 @@ import { ReactionButton } from './ReactionButton'
 const ReactionButtonDemo = {
   ...simpleComponentConfig,
   component: ReactionButton,
-  title: 'Journeys-Ui/ReactionButton'
+  title: 'Journeys-Ui/StepFooter/ReactionButton'
 }
 
 const Template: Story<ComponentProps<typeof ReactionButton>> = () => (

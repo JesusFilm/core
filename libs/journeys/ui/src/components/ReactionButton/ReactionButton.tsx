@@ -14,7 +14,16 @@ const StyledButton = styled(Button)<{ clicked: boolean }>(
   ({ theme, clicked }) => ({
     minWidth: 56,
     borderRadius: 20,
-    backgroundColor: theme.palette.mode === 'dark' ? '#DCDDE526' : '#DCDDE54D',
+    backgroundColor:
+      theme.palette.mode === 'dark'
+        ? `${theme.palette.grey[200]}26`
+        : `${theme.palette.grey[200]}4D`,
+    '&:hover': {
+      backgroundColor:
+        theme.palette.mode === 'dark'
+          ? `${theme.palette.grey[200]}26`
+          : `${theme.palette.grey[200]}4D`
+    },
     ...(clicked && {
       animation: 'bounce 0.5s',
       '@keyframes bounce': {
