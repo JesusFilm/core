@@ -18,15 +18,22 @@ export async function psMigrate(): Promise<void> {
         RETURN cloudflareImage
       `)
     ).all()
-    await prisma.cloudflareImage.createMany({
-      data: cloudflareImages.map((cloudflareImage) => ({
-        id: cloudflareImage._key,
-        uploadUrl: cloudflareImage.uploadUrl,
-        userId: cloudflareImage.userId,
-        createdAt: new Date(cloudflareImage.createdAt),
-        uploaded: cloudflareImage.uploaded
-      }))
-    })
+    for (const cloudflareImage of cloudflareImages) {
+      console.log(
+        `Importing cloudflareImage ${cloudflareImage._key as string}...`
+      )
+      await prisma.cloudflareImage.upsert({
+        where: { id: cloudflareImage._key },
+        update: {},
+        create: {
+          id: cloudflareImage._key,
+          uploadUrl: cloudflareImage.uploadUrl,
+          userId: cloudflareImage.userId,
+          createdAt: new Date(cloudflareImage.createdAt),
+          uploaded: cloudflareImage.uploaded
+        }
+      })
+    }
     offset += 50
     end = cloudflareImages.length > 49
   } while (end)
@@ -42,16 +49,23 @@ export async function psMigrate(): Promise<void> {
         RETURN cloudflareVideo
       `)
     ).all()
-    await prisma.cloudflareVideo.createMany({
-      data: cloudflareVideos.map((cloudflareVideo) => ({
-        id: cloudflareVideo._key,
-        uploadUrl: cloudflareVideo.uploadUrl,
-        userId: cloudflareVideo.userId,
-        name: cloudflareVideo.name,
-        createdAt: new Date(cloudflareVideo.createdAt),
-        readyToStream: cloudflareVideo.readyToStream
-      }))
-    })
+    for (const cloudflareVideo of cloudflareVideos) {
+      console.log(
+        `Importing cloudflareVideo ${cloudflareVideo._key as string}...`
+      )
+      await prisma.cloudflareVideo.upsert({
+        where: { id: cloudflareVideo._key },
+        update: {},
+        create: {
+          id: cloudflareVideo._key,
+          uploadUrl: cloudflareVideo.uploadUrl,
+          userId: cloudflareVideo.userId,
+          name: cloudflareVideo.name,
+          createdAt: new Date(cloudflareVideo.createdAt),
+          readyToStream: cloudflareVideo.readyToStream
+        }
+      })
+    }
     offset += 50
     end = cloudflareVideos.length > 49
   } while (end)

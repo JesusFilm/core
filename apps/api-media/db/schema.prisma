@@ -14,6 +14,7 @@ model CloudflareImage {
   userId    String
   createdAt DateTime @default(now())
   uploaded  Boolean  @default(false)
+  updatedAt DateTime @default(now()) @updatedAt
 
   @@index([userId])
 }
@@ -25,6 +26,7 @@ model CloudflareVideo {
   name          String?
   createdAt     DateTime @default(now())
   readyToStream Boolean  @default(false)
+  updatedAt     DateTime @default(now()) @updatedAt
 
   @@index([userId])
 }
