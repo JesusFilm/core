@@ -259,6 +259,9 @@ export function Video({
                     ? 'scale(1.33)'
                     : undefined
               },
+              '> .vjs-waiting.vjs-loading-spinner': {
+                display: 'none'
+              },
               '> .vjs-poster': {
                 backgroundColor: VIDEO_BACKGROUND_COLOR,
                 backgroundSize: 'cover'

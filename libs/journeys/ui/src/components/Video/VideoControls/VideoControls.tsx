@@ -135,15 +135,19 @@ export function VideoControls({
   async function handleFullscreen(): Promise<void> {
     console.log(fullscreen, isMobile())
     if (fullscreen) {
-      fscreen.exitFullscreen()
+      if (isMobile()) {
+        await player.exitFullscreen()
+      } else {
+        await fscreen.exitFullscreen()
+      }
       setFullscreen(false)
     } else {
       if (isMobile()) {
         await player.requestFullscreen()
       } else {
         await fscreen.requestFullscreen(document.documentElement)
-        setFullscreen(true)
       }
+      setFullscreen(true)
     }
   }
 
