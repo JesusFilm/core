@@ -259,46 +259,16 @@ export class BlockService {
     return [duplicateBlock as BlockWithAction, ...duplicateChildren]
   }
 
-  protected async removeAllBlocksForParentId(
-    parentIds: string[],
-    blockArray: BlockWithAction[] = []
-  ): Promise<BlockWithAction[]> {
-    if (parentIds.length === 0) {
-      return blockArray
-    }
-    const blocks = await this.prismaService.block.findMany({
-      where: { parentBlockId: { in: parentIds } },
-      include: { action: true }
-    })
-    const blockIds = blocks.map((block) => block.id)
-
-    const result = await this.removeAllBlocksForParentId(blockIds, [
-      ...blockArray,
-      ...blocks
-    ])
-    await this.prismaService.action.deleteMany({
-      where: { parentBlockId: { in: blockIds } }
-    })
-    await this.prismaService.block.deleteMany({
-      where: { id: { in: blockIds } }
-    })
-    return result
-  }
-
   @FromPostgresql()
   async removeBlockAndChildren(
     blockId: string,
     journeyId: string,
     parentBlockId?: string
   ): Promise<BlockWithAction[]> {
-    await this.prismaService.action.delete({
-      where: { parentBlockId: blockId }
+    await this.prismaService.block.delete({
+      where: { id: blockId }
     })
-    const res = await this.prismaService.block.delete({
-      where: { id: blockId },
-      include: { action: true }
-    })
-    await this.removeAllBlocksForParentId([blockId], [res])
+
     const result = await this.reorderSiblings(
       await this.getSiblingsInternal(journeyId, parentBlockId)
     )

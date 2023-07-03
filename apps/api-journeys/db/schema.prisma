@@ -77,7 +77,7 @@ model ChatButton {
   journeyId String
   link      String?
   platform  ChatPlatform?
-  journey   Journey       @relation(fields: [journeyId], references: [id])
+  journey   Journey       @relation(fields: [journeyId], references: [id], onDelete: Cascade)
 
   @@index([journeyId])
 }
@@ -105,7 +105,7 @@ model Event {
   userId                  String?
   journeyVisitorJourneyId String?
   journeyVisitorVisitorId String?
-  visitor                 Visitor           @relation(fields: [visitorId], references: [id])
+  visitor                 Visitor           @relation(fields: [visitorId], references: [id], onDelete: Cascade)
   journeyVisitor          JourneyVisitor?   @relation(fields: [journeyVisitorJourneyId, journeyVisitorVisitorId], references: [journeyId, visitorId])
 
   @@index([id, journeyId, visitorId, blockId, userId])
@@ -165,7 +165,7 @@ model JourneyVisitor {
   lastRadioQuestion         String?
   lastRadioOptionSubmission String?
   activityCount             Int              @default(0)
-  visitor                   Visitor          @relation(fields: [visitorId], references: [id])
+  visitor                   Visitor          @relation(fields: [visitorId], references: [id], onDelete: Cascade)
   events                    Event[]
 
   @@unique([journeyId, visitorId])
@@ -188,7 +188,7 @@ model Team {
 model UserTeam {
   id        String       @id @default(uuid())
   teamId    String
-  team      Team         @relation(fields: [teamId], references: [id])
+  team      Team         @relation(fields: [teamId], references: [id], onDelete: Cascade)
   userId    String
   role      UserTeamRole @default(guest)
   createdAt DateTime     @default(now())
@@ -213,7 +213,7 @@ model UserJourney {
   id        String          @id @default(uuid())
   userId    String
   journeyId String
-  journey   Journey         @relation(fields: [journeyId], references: [id])
+  journey   Journey         @relation(fields: [journeyId], references: [id], onDelete: Cascade)
   role      UserJourneyRole
   openedAt  DateTime?       @default(now())
 
@@ -293,7 +293,7 @@ model UserInvite {
   email      String
   acceptedAt DateTime?
   removedAt  DateTime?
-  journey    Journey   @relation(fields: [journeyId], references: [id])
+  journey    Journey   @relation(fields: [journeyId], references: [id], onDelete: Cascade)
 
   @@unique([journeyId, email])
   @@index([journeyId, email])
@@ -359,7 +359,7 @@ model Block {
   duration                Int?
   objectFit               VideoBlockObjectFit?
   triggerStart            Int?
-  journey                 Journey              @relation(fields: [journeyId], references: [id])
+  journey                 Journey              @relation(fields: [journeyId], references: [id], onDelete: Cascade)
   posterBlock             Block?               @relation("PosterBlock", fields: [posterBlockId], references: [id])
   posterBlockParent       Block?               @relation("PosterBlock")
   coverBlock              Block?               @relation("CoverBlock", fields: [coverBlockId], references: [id])
@@ -367,7 +367,7 @@ model Block {
   primaryImageBlockParent Journey?             @relation("PrimaryImageBlock")
   nextBlock               Block?               @relation("NextBlock", fields: [nextBlockId], references: [id])
   nextBlockParent         Block?               @relation("NextBlock")
-  parentBlock             Block?               @relation("ParentBlock", fields: [parentBlockId], references: [id])
+  parentBlock             Block?               @relation("ParentBlock", fields: [parentBlockId], references: [id], onDelete: Cascade)
   childBlocks             Block[]              @relation("ParentBlock")
   targetAction            Action[]             @relation("Block")
 }
@@ -380,7 +380,7 @@ model Action {
   url           String?
   target        String?
   email         String?
-  parentBlock   Block    @relation(fields: [parentBlockId], references: [id])
+  parentBlock   Block    @relation(fields: [parentBlockId], references: [id], onDelete: Cascade)
   journey       Journey? @relation(fields: [journeyId], references: [id])
   block         Block?   @relation("Block", fields: [blockId], references: [id])
 }
