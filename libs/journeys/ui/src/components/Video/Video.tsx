@@ -138,6 +138,7 @@ export function Video({
   useEffect(() => {
     const handleStopLoading = (): void => setLoading(false)
     const handleStopLoadingOnAutoplay = (): void => {
+      console.log('seeked', autoplay)
       if (autoplay === true) handleStopLoading()
     }
     const handleVideoEnd = (): void => {
@@ -159,6 +160,7 @@ export function Video({
     }
     return () => {
       if (player != null) {
+        console.log('turn off event listeners')
         player.off('seeked', handleStopLoadingOnAutoplay)
         player.off('playing', handleStopLoading)
         player.off('canplay', handleStopLoading)
@@ -259,7 +261,7 @@ export function Video({
                     ? 'scale(1.33)'
                     : undefined
               },
-              '> .vjs-waiting.vjs-loading-spinner': {
+              '> .vjs-waiting .vjs-loading-spinner': {
                 display: 'none'
               },
               '> .vjs-poster': {

@@ -41,7 +41,7 @@ export function VideoControls({
 }: VideoControlProps): ReactElement {
   const [playing, setPlaying] = useState(false)
   const [active, setActive] = useState(true)
-  const [displayTime, setDisplayTime] = useState<string>()
+  const [displayTime, setDisplayTime] = useState('0:00')
   const [progress, setProgress] = useState(0)
   const [volume, setVolume] = useState(0)
   const [fullscreen, setFullscreen] = useState(false)
@@ -86,8 +86,10 @@ export function VideoControls({
       )
       setProgress(Math.round(player.currentTime()))
     }
-    const handleMobileFullscreenChange = (): void =>
+    const handleMobileFullscreenChange = (): void => {
       setFullscreen(player.isFullscreen())
+      console.log('player', player)
+    }
     const handleUserActive = (): void => setActive(true)
     const handleUserInactive = (): void => setActive(false)
     const handleVideoVolumeChange = (): void => setVolume(player.volume() * 100)
