@@ -1443,7 +1443,7 @@ export abstract class IMutation {
 
     abstract userJourneyOpen(id: string): Nullable<UserJourney> | Promise<Nullable<UserJourney>>;
 
-    abstract userTeamUpdate(id: string, input?: Nullable<TeamUpdateInput>): UserTeam | Promise<UserTeam>;
+    abstract userTeamUpdate(id: string, input?: Nullable<UserTeamUpdateInput>): UserTeam | Promise<UserTeam>;
 
     abstract userTeamDelete(id: string): UserTeam | Promise<UserTeam>;
 
