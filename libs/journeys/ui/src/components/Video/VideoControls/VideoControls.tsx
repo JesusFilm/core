@@ -86,10 +86,8 @@ export function VideoControls({
       )
       setProgress(Math.round(player.currentTime()))
     }
-    const handleMobileFullscreenChange = (): void => {
+    const handleMobileFullscreenChange = (): void =>
       setFullscreen(player.isFullscreen())
-      console.log('player', player)
-    }
     const handleUserActive = (): void => setActive(true)
     const handleUserInactive = (): void => setActive(false)
     const handleVideoVolumeChange = (): void => setVolume(player.volume() * 100)
@@ -135,7 +133,7 @@ export function VideoControls({
   }
 
   async function handleFullscreen(): Promise<void> {
-    console.log(fullscreen, isMobile())
+    console.log(fullscreen, isMobile(), player, player.supportsFullScreen())
     if (fullscreen) {
       if (isMobile()) {
         await player.exitFullscreen()
@@ -204,7 +202,9 @@ export function VideoControls({
         right: 0,
         bottom: { xs: 50, lg: 4 },
         left: 0,
-        cursor: visible ? undefined : 'none'
+        cursor: visible ? undefined : 'none',
+        userSelect: 'none',
+        WebkitUserSelect: 'none'
       }}
       onClick={getClickHandler(handlePlay, () => {
         void handleFullscreen()

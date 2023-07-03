@@ -97,6 +97,7 @@ export function Video({
           controls: false,
           controlBar: false,
           bigPlayButton: false,
+          loadingSpinner: false,
           // Make video fill container instead of set aspect ratio
           fill: true,
           userActions: {
@@ -251,7 +252,7 @@ export function Video({
             playsInline
             sx={{
               '&.video-js.vjs-youtube.vjs-fill': {
-                height: { xs: 'calc(100% - 110px)', lg: 'calc(100% - 46px)' },
+                height: { xs: 'calc(100% - 120px)', lg: 'calc(100% - 46px)' },
                 mt: { xs: 5, lg: 1 }
               },
               '> .vjs-tech': {
@@ -260,9 +261,6 @@ export function Video({
                   objectFit === VideoBlockObjectFit.zoomed
                     ? 'scale(1.33)'
                     : undefined
-              },
-              '> .vjs-waiting .vjs-loading-spinner': {
-                display: 'none'
               },
               '> .vjs-poster': {
                 backgroundColor: VIDEO_BACKGROUND_COLOR,
