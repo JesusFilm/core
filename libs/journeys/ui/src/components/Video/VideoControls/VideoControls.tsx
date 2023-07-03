@@ -23,7 +23,7 @@ interface VideoControlProps {
   player: Player
   startAt: number
   endAt: number
-  isYoutube?: boolean
+  hasYoutubeLoader?: boolean
   loading?: boolean
 }
 
@@ -36,7 +36,7 @@ export function VideoControls({
   player,
   startAt,
   endAt,
-  isYoutube = false,
+  hasYoutubeLoader = false,
   loading = false
 }: VideoControlProps): ReactElement {
   const [playing, setPlaying] = useState(false)
@@ -139,7 +139,7 @@ export function VideoControls({
       setFullscreen(false)
     } else {
       if (isMobile()) {
-        void player.requestFullscreen()
+        await player.requestFullscreen()
       } else {
         await fscreen.requestFullscreen(document.documentElement)
         setFullscreen(true)
@@ -193,7 +193,7 @@ export function VideoControls({
       dir="ltr"
       sx={{
         position: 'absolute',
-        zIndex: 4,
+        zIndex: 1000,
         top: 0,
         right: 0,
         bottom: { xs: 50, lg: 4 },
@@ -254,7 +254,7 @@ export function VideoControls({
                 )}
               </IconButton>
             ) : (
-              !isYoutube && <CircularProgress size={65} />
+              !hasYoutubeLoader && <CircularProgress size={65} />
             )}
           </Stack>
           {/* Progress Bar */}

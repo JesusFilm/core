@@ -292,7 +292,9 @@ export function Video({
                 player={player}
                 startAt={startAt ?? 0}
                 endAt={progressEndTime}
-                isYoutube={source === VideoBlockSource.youTube}
+                hasYoutubeLoader={
+                  source === VideoBlockSource.youTube && posterBlock == null
+                }
                 loading={loading}
               />
             </ThemeProvider>
