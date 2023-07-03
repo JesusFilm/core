@@ -7,12 +7,12 @@ import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import IconButton from '@mui/material/IconButton'
 import { useTranslation } from 'react-i18next'
-// import Image from 'next/image'
+import Image from 'next/image'
 import { useSnackbar } from 'notistack'
-// import facebookLogo from '../../../../public/facebook_logo.svg'
-// import twitterLogo from '../../../../public/twitter_logo.svg'
-import FacebookIcon from '@mui/icons-material/Facebook'
-import TwitterIcon from '@mui/icons-material/Twitter'
+import facebookLogo from '../../../../public/facebook_logo.svg'
+import twitterLogo from '../../../../public/twitter_logo.svg'
+// import FacebookIcon from '@mui/icons-material/Facebook'
+// import TwitterIcon from '@mui/icons-material/Twitter'
 import { useJourney } from '../../../libs/JourneyProvider'
 
 export function JourneyShare(): ReactElement {
@@ -37,11 +37,11 @@ export function JourneyShare(): ReactElement {
     }
 
     if (navigator.share != null) {
-      try {
-        await navigator.share(shareDetails)
-      } catch {
-        setShareDialogOpen(true)
-      }
+      // try {
+      await navigator.share(shareDetails)
+      // } catch {
+      //   setShareDialogOpen(true)
+      // }
     } else {
       setShareDialogOpen(true)
     }
@@ -77,7 +77,7 @@ export function JourneyShare(): ReactElement {
               onClick={handleCopyLink}
               size="large"
               sx={{
-                backgroundColor: '#6D6F81',
+                // backgroundColor: '#6D6F81',
                 width: '40px',
                 height: '40px',
                 m: 2
@@ -98,19 +98,18 @@ export function JourneyShare(): ReactElement {
                 rel="noopener"
                 size="large"
                 sx={{
-                  backgroundColor: '#6D6F81',
                   width: '40px',
                   height: '40px',
                   m: 2
                 }}
               >
-                <FacebookIcon />
-                {/* <Image
+                {/* <FacebookIcon /> */}
+                <Image
                   src={facebookLogo}
                   alt="facebook-logo"
                   height={40}
                   width={40}
-                /> */}
+                />
               </IconButton>
             </span>
 
@@ -125,19 +124,18 @@ export function JourneyShare(): ReactElement {
                 rel="noopener"
                 size="large"
                 sx={{
-                  backgroundColor: '#6D6F81',
                   width: '40px',
                   height: '40px',
                   m: 2
                 }}
               >
-                <TwitterIcon />
-                {/* <Image
+                {/* <TwitterIcon /> */}
+                <Image
                   src={twitterLogo}
                   alt="twitter-logo"
                   height={40}
                   width={40}
-                /> */}
+                />
               </IconButton>
             </span>
 
