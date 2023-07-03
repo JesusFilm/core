@@ -76,6 +76,7 @@ model ChatButton {
   id        String        @id @default(uuid())
   journeyId String
   link      String?
+  updatedAt DateTime      @default(now()) @updatedAt
   platform  ChatPlatform?
   journey   Journey       @relation(fields: [journeyId], references: [id], onDelete: Cascade)
 
@@ -105,6 +106,7 @@ model Event {
   userId                  String?
   journeyVisitorJourneyId String?
   journeyVisitorVisitorId String?
+  updatedAt               DateTime          @default(now()) @updatedAt
   visitor                 Visitor           @relation(fields: [visitorId], references: [id], onDelete: Cascade)
   journeyVisitor          JourneyVisitor?   @relation(fields: [journeyVisitorJourneyId, journeyVisitorVisitorId], references: [journeyId, visitorId])
 
@@ -134,6 +136,7 @@ model Visitor {
   teamId                    String
   userId                    String
   userAgent                 Json?
+  updatedAt                 DateTime         @default(now()) @updatedAt
   journeyVisitor            JourneyVisitor[]
   team                      Team             @relation(fields: [teamId], references: [id])
 
@@ -141,14 +144,15 @@ model Visitor {
 }
 
 model Host {
-  id       String    @id @default(uuid())
-  teamId   String
-  team     Team      @relation(fields: [teamId], references: [id])
-  title    String
-  location String?
-  src1     String?
-  src2     String?
-  journeys Journey[]
+  id        String    @id @default(uuid())
+  teamId    String
+  team      Team      @relation(fields: [teamId], references: [id])
+  title     String
+  location  String?
+  src1      String?
+  src2      String?
+  updatedAt DateTime  @default(now()) @updatedAt
+  journeys  Journey[]
 }
 
 model JourneyVisitor {
@@ -165,6 +169,7 @@ model JourneyVisitor {
   lastRadioQuestion         String?
   lastRadioOptionSubmission String?
   activityCount             Int              @default(0)
+  updatedAt                 DateTime         @default(now()) @updatedAt
   visitor                   Visitor          @relation(fields: [visitorId], references: [id], onDelete: Cascade)
   events                    Event[]
 
@@ -213,6 +218,7 @@ model UserJourney {
   id        String          @id @default(uuid())
   userId    String
   journeyId String
+  updatedAt DateTime        @default(now()) @updatedAt
   journey   Journey         @relation(fields: [journeyId], references: [id], onDelete: Cascade)
   role      UserJourneyRole
   openedAt  DateTime?       @default(now())
@@ -258,6 +264,7 @@ model Journey {
   hostId              String?
   themeMode           ThemeMode?    @default(light)
   themeName           ThemeName?    @default(base)
+  updatedAt           DateTime      @default(now()) @updatedAt
   userJourneys        UserJourney[]
   team                Team          @relation(fields: [teamId], references: [id])
   userInvites         UserInvite[]
@@ -293,6 +300,7 @@ model UserInvite {
   email      String
   acceptedAt DateTime?
   removedAt  DateTime?
+  updatedAt  DateTime  @default(now()) @updatedAt
   journey    Journey   @relation(fields: [journeyId], references: [id], onDelete: Cascade)
 
   @@unique([journeyId, email])
@@ -359,6 +367,7 @@ model Block {
   duration                Int?
   objectFit               VideoBlockObjectFit?
   triggerStart            Int?
+  updatedAt               DateTime             @default(now()) @updatedAt
   journey                 Journey              @relation(fields: [journeyId], references: [id], onDelete: Cascade)
   posterBlock             Block?               @relation("PosterBlock", fields: [posterBlockId], references: [id])
   posterBlockParent       Block?               @relation("PosterBlock")
@@ -380,6 +389,7 @@ model Action {
   url           String?
   target        String?
   email         String?
+  updatedAt     DateTime @default(now()) @updatedAt
   parentBlock   Block    @relation(fields: [parentBlockId], references: [id], onDelete: Cascade)
   journey       Journey? @relation(fields: [journeyId], references: [id])
   block         Block?   @relation("Block", fields: [blockId], references: [id])

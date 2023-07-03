@@ -47,9 +47,10 @@ describe('TextResponseBlockResolver', () => {
   }
 
   const textResponseBlockResponse = {
-    ...omit(input, ['__typename', 'journeyId']),
+    ...omit(input, ['__typename', 'journeyId', 'parentBlockId']),
     typename: 'TextResponseBlock',
     parentOrder: 2,
+    parentBlock: { connect: { id: input.parentBlockId } },
     journey: { connect: { id: '2' } },
     journeyId: '2'
   }
