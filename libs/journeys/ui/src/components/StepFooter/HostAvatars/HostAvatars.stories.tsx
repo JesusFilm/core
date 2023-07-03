@@ -3,21 +3,21 @@ import { Story, Meta } from '@storybook/react'
 import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 import Stack from '@mui/material/Stack'
 import { JourneyProvider } from '../../../libs/JourneyProvider'
-import { journeyUiConfig } from '../../../libs/journeyUiConfig'
 import {
   JourneyStatus,
   ThemeMode,
   ThemeName
 } from '../../../../__generated__/globalTypes'
 import { JourneyFields as Journey } from '../../../libs/JourneyProvider/__generated__/JourneyFields'
+import { simpleComponentConfig } from '../../../libs/simpleComponentConfig'
 import { HostAvatars } from './HostAvatars'
 
 const HostAvatarsDemo = {
-  ...journeyUiConfig,
+  ...simpleComponentConfig,
   component: HostAvatars,
   title: 'Journeys-Ui/StepFooter/HostAvatars',
   parameters: {
-    ...journeyUiConfig.parameters
+    ...simpleComponentConfig.parameters
   }
 }
 const hostData = {
@@ -26,7 +26,7 @@ const hostData = {
   teamId: 'teamId',
   title: 'Cru International',
   location: 'Florida, USA',
-  src1: 'http://surl.li/iauzf',
+  src1: 'https://tinyurl.com/3bxusmyb',
   src2: null
 }
 
@@ -69,9 +69,10 @@ const Template: Story<
     admin: boolean
     journey: Journey
     size: string
+    editableStepFooter: boolean
   }
-> = ({ admin, journey, size }) => (
-  <FlagsProvider flags={{ editableStepFooter: true }}>
+> = ({ admin, journey, size, editableStepFooter }) => (
+  <FlagsProvider flags={{ editableStepFooter }}>
     <JourneyProvider value={{ admin, journey }}>
       <Stack direction="row">
         <HostAvatars hasPlaceholder={admin} size={size} />
@@ -81,10 +82,11 @@ const Template: Story<
 )
 
 export const Default = Template.bind({})
-Default.args = { admin: false, journey }
+Default.args = { admin: false, journey, editableStepFooter: true }
 
 export const Empty = Template.bind({})
 Empty.args = {
+  editableStepFooter: true,
   admin: true,
   journey: { ...journey, host: { ...hostData, src1: null } }
 }
@@ -93,6 +95,12 @@ export const WithPlaceholder = Template.bind({})
 WithPlaceholder.args = {
   ...Empty.args,
   journey
+}
+
+export const Placeholder = Template.bind({})
+Placeholder.args = {
+  ...Empty.args,
+  size: 'large'
 }
 
 export const TwoAvatars = Template.bind({})
