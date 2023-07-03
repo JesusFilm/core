@@ -1,12 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing'
-import { Database } from 'arangojs'
-import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
-import { mockDbQueryResult } from '@core/nest/database/mock'
-
-import { DocumentCollection, EdgeCollection } from 'arangojs/collection'
 import fetch, { Response } from 'node-fetch'
 
-import { CloudflareVideo } from '../../../__generated__/graphql'
 import {
   CloudflareVideoGetResponse,
   CloudflareVideoUrlUploadResponse,
@@ -24,25 +18,14 @@ jest.mock('node-fetch', () => {
 const mockFetch = fetch as jest.MockedFunction<typeof fetch>
 
 describe('VideoService', () => {
-  let service: VideoService,
-    db: DeepMockProxy<Database>,
-    collectionMock: DeepMockProxy<DocumentCollection & EdgeCollection>
+  let service: VideoService
 
   beforeEach(async () => {
-    db = mockDeep()
     const module: TestingModule = await Test.createTestingModule({
-      providers: [
-        VideoService,
-        {
-          provide: 'DATABASE',
-          useFactory: () => db
-        }
-      ]
+      providers: [VideoService]
     }).compile()
 
     service = module.get<VideoService>(VideoService)
-    collectionMock = mockDeep()
-    service.collection = collectionMock
     mockFetch.mockClear()
   })
   afterAll(() => {
@@ -238,32 +221,6 @@ describe('VideoService', () => {
           })
         }
       )
-    })
-  })
-  describe('getCloudflareVideosForUserId', () => {
-    const video1: CloudflareVideo = {
-      id: 'video1Id',
-      uploadUrl: 'https://example.com/video1.mp4',
-      userId: 'userId',
-      createdAt: new Date().toISOString(),
-      readyToStream: true
-    }
-    const video2: CloudflareVideo = {
-      id: 'video2Id',
-      uploadUrl: 'https://example.com/video2.mp4',
-      userId: 'userId',
-      createdAt: new Date().toISOString(),
-      readyToStream: true
-    }
-    beforeEach(() => {
-      db.query.mockReturnValue(mockDbQueryResult(service.db, [video1, video2]))
-    })
-
-    it('should return an updated result', async () => {
-      expect(await service.getCloudflareVideosForUserId('userId')).toEqual([
-        video1,
-        video2
-      ])
     })
   })
 })
