@@ -7,13 +7,10 @@ import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import IconButton from '@mui/material/IconButton'
 import { useTranslation } from 'react-i18next'
-import Image from 'next/image'
 import { useSnackbar } from 'notistack'
-import facebookLogo from '../../../../public/facebook_logo.svg'
-import twitterLogo from '../../../../public/twitter_logo.svg'
-// import FacebookIcon from '@mui/icons-material/Facebook'
-// import TwitterIcon from '@mui/icons-material/Twitter'
 import { useJourney } from '../../../libs/JourneyProvider'
+import facebookLogo from './images/facebook_logo.svg'
+import twitterLogo from './images/twitter_logo.svg'
 
 export function JourneyShare(): ReactElement {
   const { journey, admin } = useJourney()
@@ -37,11 +34,7 @@ export function JourneyShare(): ReactElement {
     }
 
     if (navigator.share != null) {
-      // try {
       await navigator.share(shareDetails)
-      // } catch {
-      //   setShareDialogOpen(true)
-      // }
     } else {
       setShareDialogOpen(true)
     }
@@ -103,10 +96,11 @@ export function JourneyShare(): ReactElement {
                   m: 2
                 }}
               >
-                {/* <FacebookIcon /> */}
-                <Image
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
                   src={facebookLogo}
                   alt="facebook-logo"
+                  data-testId="facebook-logo"
                   height={40}
                   width={40}
                 />
@@ -129,10 +123,11 @@ export function JourneyShare(): ReactElement {
                   m: 2
                 }}
               >
-                {/* <TwitterIcon /> */}
-                <Image
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
                   src={twitterLogo}
                   alt="twitter-logo"
+                  data-testId="twitter-logo"
                   height={40}
                   width={40}
                 />
