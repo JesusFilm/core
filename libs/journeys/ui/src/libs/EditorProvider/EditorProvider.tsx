@@ -33,6 +33,7 @@ export enum ActiveJourneyEditContent {
 export interface EditorState {
   steps?: Array<TreeBlock<StepBlock>>
   selectedStep?: TreeBlock<StepBlock>
+  selectedComponent?: string
   selectedBlock?: TreeBlock
   selectedAttributeId?: string
   drawerTitle?: string
@@ -46,6 +47,10 @@ export interface EditorState {
 export interface SetSelectedStepAction {
   type: 'SetSelectedStepAction'
   step?: TreeBlock<StepBlock>
+}
+interface SetSelectedComponentAction {
+  type: 'SetSelectedComponentAction'
+  component?: string
 }
 
 interface SetSelectedBlockAction {
@@ -97,6 +102,7 @@ interface SetStepsAction {
 
 type EditorAction =
   | SetSelectedStepAction
+  | SetSelectedComponentAction
   | SetSelectedBlockAction
   | SetSelectedBlockByIdAction
   | SetSelectedAttributeIdAction
@@ -117,12 +123,21 @@ export const reducer = (
         ...state,
         selectedStep: action.step,
         selectedBlock: action.step,
+        selectedComponent: undefined,
+        journeyEditContentComponent: ActiveJourneyEditContent.Canvas
+      }
+    case 'SetSelectedComponentAction':
+      return {
+        ...state,
+        selectedComponent: action.component,
+        selectedBlock: undefined,
         journeyEditContentComponent: ActiveJourneyEditContent.Canvas
       }
     case 'SetSelectedBlockAction':
       return {
         ...state,
         selectedBlock: action.block,
+        selectedComponent: undefined,
         journeyEditContentComponent: ActiveJourneyEditContent.Canvas
       }
     case 'SetSelectedBlockByIdAction':
@@ -132,6 +147,7 @@ export const reducer = (
           action.id != null
             ? searchBlocks(state.steps ?? [], action.id)
             : undefined,
+        selectedComponent: undefined,
         journeyEditContentComponent: ActiveJourneyEditContent.Canvas
       }
     case 'SetSelectedAttributeIdAction':

@@ -132,6 +132,9 @@ extend type Mutation {
   typographyBlockUpdate(id: ID!, journeyId: ID!, input: TypographyBlockUpdateInput!): TypographyBlock!
   videoBlockCreate(input: VideoBlockCreateInput!): VideoBlock!
   videoBlockUpdate(id: ID!, journeyId: ID!, input: VideoBlockUpdateInput!): VideoBlock!
+  chatButtonCreate(journeyId: ID!, input: ChatButtonCreateInput): ChatButton!
+  chatButtonUpdate(id: ID!, journeyId: ID!, input: ChatButtonUpdateInput!): ChatButton!
+  chatButtonRemove(id: ID!): ChatButton!
   buttonClickEventCreate(input: ButtonClickEventCreateInput!): ButtonClickEvent!
   chatOpenEventCreate(input: ChatOpenEventCreateInput!): ChatOpenEvent!
   journeyViewEventCreate(input: JourneyViewEventCreateInput!): JourneyViewEvent!
@@ -147,6 +150,9 @@ extend type Mutation {
   videoExpandEventCreate(input: VideoExpandEventCreateInput!): VideoExpandEvent!
   videoCollapseEventCreate(input: VideoCollapseEventCreateInput!): VideoCollapseEvent!
   videoProgressEventCreate(input: VideoProgressEventCreateInput!): VideoProgressEvent!
+  hostCreate(teamId: ID!, input: HostCreateInput!): Host!
+  hostUpdate(id: ID!, teamId: ID!, input: HostUpdateInput): Host!
+  hostDelete(id: ID!, teamId: ID!): Host!
   journeyCreate(input: JourneyCreateInput!): Journey!
   journeyDuplicate(id: ID!): Journey!
   journeyUpdate(id: ID!, input: JourneyUpdateInput!): Journey!
@@ -169,6 +175,8 @@ extend type Mutation {
   """Updates template"""
   journeyTemplate(id: ID!, input: JourneyTemplateInput!): Journey!
   journeyProfileCreate: JourneyProfile!
+  teamCreate(input: TeamCreateInput): Team!
+  teamUpdate(id: ID!, input: TeamUpdateInput): Team!
   userInviteCreate(journeyId: ID!, input: UserInviteCreateInput): UserInvite
   userInviteRemove(id: ID!, journeyId: ID!): UserInvite!
   userInviteAcceptAll: [UserInvite!]!
@@ -180,6 +188,8 @@ extend type Mutation {
   userJourneyRemoveAll(id: ID!): [UserJourney!]!
   userJourneyRequest(journeyId: ID!, idType: IdType): UserJourney!
   userJourneyOpen(id: ID!): UserJourney
+  userTeamUpdate(id: ID!, input: UserTeamUpdateInput): UserTeam!
+  userTeamDelete(id: ID!): UserTeam!
 
   """Update a visitor"""
   visitorUpdate(id: ID!, input: VisitorUpdateInput!): Visitor!
@@ -202,6 +212,7 @@ type Journey
 {
   blocks: [Block!]
   primaryImageBlock: ImageBlock
+  chatButtons: [ChatButton!]!
   id: ID!
   title: String!
   language: Language!
@@ -219,6 +230,7 @@ type Journey
   seoTitle: String
   seoDescription: String
   template: Boolean
+  host: Host
   userJourneys: [UserJourney!]
 }
 
@@ -798,6 +810,7 @@ input VideoBlockCreateInput {
 
   """endAt dictates at which point of time the video should end"""
   endAt: Int
+  duration: Int
   description: String
   muted: Boolean
   autoplay: Boolean
@@ -847,6 +860,7 @@ input VideoBlockUpdateInput {
   endAt: Int
   muted: Boolean
   autoplay: Boolean
+  duration: Int
 
   """
   internal source videos: videoId and videoVariantLanguageId both need to be set
@@ -896,6 +910,36 @@ type VideoTriggerBlock implements Block {
   """
   triggerStart: Int!
   action: Action!
+}
+
+type ChatButton {
+  id: ID!
+  link: String
+  platform: ChatPlatform
+}
+
+enum ChatPlatform {
+  facebook
+  telegram
+  whatsApp
+  instagram
+  viber
+  vk
+  snapchat
+  skype
+  line
+  tikTok
+  custom
+}
+
+input ChatButtonCreateInput {
+  link: String
+  platform: ChatPlatform
+}
+
+input ChatButtonUpdateInput {
+  link: String
+  platform: ChatPlatform
 }
 
 enum ButtonAction {
@@ -974,6 +1018,7 @@ enum MessagePlatform {
   skype
   line
   tikTok
+  custom
 }
 
 input ChatOpenEventCreateInput {
@@ -1527,6 +1572,89 @@ type VideoProgressEvent implements Event {
   progress: Int!
 }
 
+type Host {
+  id: ID!
+  teamId: ID!
+  title: String!
+  location: String
+  src1: String
+  src2: String
+}
+
+input HostUpdateInput {
+  """
+  title can be undefined as to not update title, but it cannot be null as to clear the value of title
+  """
+  title: String
+  location: String
+  src1: String
+  src2: String
+}
+
+type Query {
+  _entities(representations: [_Any!]!): [_Entity]!
+  _service: _Service!
+}
+
+extend type Query {
+  hosts(teamId: ID!): [Host!]!
+  adminJourneys(status: [JourneyStatus!], template: Boolean): [Journey!]!
+  adminJourneysReport(reportType: JourneysReportType!): PowerBiEmbed
+  adminJourney(id: ID!, idType: IdType): Journey
+  journeys(where: JourneysFilter): [Journey!]!
+  journey(id: ID!, idType: IdType): Journey
+  getJourneyProfile: JourneyProfile
+
+  """Get a list of Visitor Information by Journey"""
+  journeyVisitorsConnection(
+    """Returns the visitor items related to a specific team."""
+    teamId: String!
+
+    """Returns the elements in the list that match the specified filter."""
+    filter: JourneyVisitorFilter!
+
+    """Returns the first n elements from the list."""
+    first: Int
+
+    """Returns the elements in the list that come after the specified cursor."""
+    after: String
+
+    """Specifies the sort field for the list."""
+    sort: JourneyVisitorSort
+  ): JourneyVisitorsConnection!
+
+  """Get a JourneyVisitor count by JourneyVisitorFilter"""
+  journeyVisitorCount(filter: JourneyVisitorFilter!): Int!
+  teams: [Team!]!
+  team(id: ID!): Team!
+  userInvites(journeyId: ID!): [UserInvite!]
+  getUserRole: UserRole
+  userTeams(teamId: ID!): [UserTeam!]!
+  userTeam(id: ID!): UserTeam!
+
+  """A list of visitors that are connected with a specific team."""
+  visitorsConnection(
+    """Returns the visitor items related to a specific team."""
+    teamId: String!
+
+    """Returns the first n elements from the list."""
+    first: Int
+
+    """Returns the elements in the list that come after the specified cursor."""
+    after: String
+  ): VisitorsConnection!
+
+  """Get a single visitor"""
+  visitor(id: ID!): Visitor!
+}
+
+input HostCreateInput {
+  title: String!
+  location: String
+  src1: String
+  src2: String
+}
+
 enum IdType {
   databaseId
   slug
@@ -1569,58 +1697,6 @@ type PowerBiEmbed {
   expiration: String!
 }
 
-type Query {
-  _entities(representations: [_Any!]!): [_Entity]!
-  _service: _Service!
-}
-
-extend type Query {
-  adminJourneys(status: [JourneyStatus!], template: Boolean): [Journey!]!
-  adminJourneysReport(reportType: JourneysReportType!): PowerBiEmbed
-  adminJourney(id: ID!, idType: IdType): Journey
-  journeys(where: JourneysFilter): [Journey!]!
-  journey(id: ID!, idType: IdType): Journey
-  getJourneyProfile: JourneyProfile
-
-  """Get a list of Visitor Information by Journey"""
-  journeyVisitorsConnection(
-    """Returns the visitor items related to a specific team."""
-    teamId: String!
-
-    """Returns the elements in the list that match the specified filter."""
-    filter: JourneyVisitorFilter!
-
-    """Returns the first n elements from the list."""
-    first: Int
-
-    """Returns the elements in the list that come after the specified cursor."""
-    after: String
-
-    """Specifies the sort field for the list."""
-    sort: JourneyVisitorSort
-  ): JourneyVisitorsConnection!
-
-  """Get a JourneyVisitor count by JourneyVisitorFilter"""
-  journeyVisitorCount(filter: JourneyVisitorFilter!): Int!
-  userInvites(journeyId: ID!): [UserInvite!]
-  getUserRole: UserRole
-
-  """A list of visitors that are connected with a specific team."""
-  visitorsConnection(
-    """Returns the visitor items related to a specific team."""
-    teamId: String!
-
-    """Returns the first n elements from the list."""
-    first: Int
-
-    """Returns the elements in the list that come after the specified cursor."""
-    after: String
-  ): VisitorsConnection!
-
-  """Get a single visitor"""
-  visitor(id: ID!): Visitor!
-}
-
 input JourneyCreateInput {
   """
   ID should be unique Response UUID
@@ -1653,6 +1729,7 @@ input JourneyUpdateInput {
   slug: String
   seoTitle: String
   seoDescription: String
+  hostId: String
 }
 
 type UserJourney
@@ -1795,6 +1872,23 @@ enum JourneyVisitorSort {
   activity
 }
 
+type Team
+  @key(fields: "id")
+{
+  id: ID!
+  title: String!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+input TeamCreateInput {
+  title: String!
+}
+
+input TeamUpdateInput {
+  title: String!
+}
+
 type UserInvite
   @key(fields: "id")
 {
@@ -1836,6 +1930,26 @@ enum Role {
   add them to template library
   """
   publisher
+}
+
+enum UserTeamRole {
+  manager
+  member
+  guest
+}
+
+type UserTeam
+  @key(fields: "id")
+{
+  id: ID!
+  user: User!
+  role: UserTeamRole!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+input UserTeamUpdateInput {
+  role: UserTeamRole!
 }
 
 type Browser {
@@ -2089,4 +2203,4 @@ type _Service {
   sdl: String
 }
 
-union _Entity = Journey | JourneyProfile | JourneyVisitor | Language | User | UserInvite | UserJourney | UserRole | Video | Visitor
+union _Entity = Journey | JourneyProfile | JourneyVisitor | Language | Team | User | UserInvite | UserJourney | UserRole | UserTeam | Video | Visitor

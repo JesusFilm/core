@@ -1,7 +1,6 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { NextRouter, useRouter } from 'next/router'
-import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 import { useJourneyDuplicate } from '../../libs/useJourneyDuplicate'
 import {
   JOURNEY_PROFILE_CREATE,
@@ -37,11 +36,9 @@ afterEach(() => {
 describe('TermsAndConditions', () => {
   it('should enable next button when box is checked', async () => {
     const { getByRole } = render(
-      <FlagsProvider flags={{ inviteRequirement: true }}>
-        <MockedProvider>
-          <TermsAndConditions />
-        </MockedProvider>
-      </FlagsProvider>
+      <MockedProvider>
+        <TermsAndConditions />
+      </MockedProvider>
     )
     expect(getByRole('button', { name: 'Next' })).toBeDisabled()
     fireEvent.click(getByRole('checkbox'))
@@ -56,11 +53,9 @@ describe('TermsAndConditions', () => {
 
   it('should link to terms of use page', () => {
     const { getByRole } = render(
-      <FlagsProvider flags={{ inviteRequirement: true }}>
-        <MockedProvider>
-          <TermsAndConditions />
-        </MockedProvider>
-      </FlagsProvider>
+      <MockedProvider>
+        <TermsAndConditions />
+      </MockedProvider>
     )
     expect(getByRole('link', { name: 'Terms of Use' })).toHaveAttribute(
       'href',
@@ -70,11 +65,9 @@ describe('TermsAndConditions', () => {
 
   it('should link to EULA page', () => {
     const { getByRole } = render(
-      <FlagsProvider flags={{ inviteRequirement: true }}>
-        <MockedProvider>
-          <TermsAndConditions />
-        </MockedProvider>
-      </FlagsProvider>
+      <MockedProvider>
+        <TermsAndConditions />
+      </MockedProvider>
     )
     expect(
       getByRole('link', { name: 'End User License Agreement' })
@@ -86,11 +79,9 @@ describe('TermsAndConditions', () => {
 
   it('should link to EULA page', () => {
     const { getByRole } = render(
-      <FlagsProvider flags={{ inviteRequirement: true }}>
-        <MockedProvider>
-          <TermsAndConditions />
-        </MockedProvider>
-      </FlagsProvider>
+      <MockedProvider>
+        <TermsAndConditions />
+      </MockedProvider>
     )
     expect(getByRole('link', { name: 'Community Guidelines' })).toHaveAttribute(
       'href',
@@ -98,72 +89,31 @@ describe('TermsAndConditions', () => {
     )
   })
 
-  it('should create profile and redirect on button click', async () => {
-    const result = jest.fn(() => ({
-      data: {
-        journeyProfileCreate: {
-          id: 'journeyProfile.id',
-          userId: 'user.id',
-          acceptedTermsAt: '1970-01-01T00:00:00.000Z'
-        }
-      }
-    }))
-    const push = jest.fn()
-    mockUseRouter.mockReturnValue({ push } as unknown as NextRouter)
-
-    const { getByRole } = render(
-      <FlagsProvider flags={{ inviteRequirement: true }}>
-        <MockedProvider
-          mocks={[
-            {
-              request: {
-                query: JOURNEY_PROFILE_CREATE
-              },
-              result
-            }
-          ]}
-        >
-          <TermsAndConditions />
-        </MockedProvider>
-      </FlagsProvider>
-    )
-
-    fireEvent.click(getByRole('checkbox'))
-    const nextButton = getByRole('button', { name: 'Next' })
-    fireEvent.click(nextButton)
-
-    await waitFor(() => expect(result).toHaveBeenCalled())
-    await waitFor(() => expect(duplicateJourney).not.toHaveBeenCalled())
-    await waitFor(() => expect(push).toHaveBeenCalledWith('/'))
-  })
-
   it('should create onboarding journey on button click', async () => {
     const push = jest.fn()
     mockUseRouter.mockReturnValue({ push } as unknown as NextRouter)
 
     const { getByRole } = render(
-      <FlagsProvider flags={{ inviteRequirement: false }}>
-        <MockedProvider
-          mocks={[
-            {
-              request: {
-                query: JOURNEY_PROFILE_CREATE
-              },
-              result: {
-                data: {
-                  journeyProfileCreate: {
-                    id: 'journeyProfile.id',
-                    userId: 'user.id',
-                    acceptedTermsAt: '1970-01-01T00:00:00.000Z'
-                  }
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: JOURNEY_PROFILE_CREATE
+            },
+            result: {
+              data: {
+                journeyProfileCreate: {
+                  id: 'journeyProfile.id',
+                  userId: 'user.id',
+                  acceptedTermsAt: '1970-01-01T00:00:00.000Z'
                 }
               }
             }
-          ]}
-        >
-          <TermsAndConditions />
-        </MockedProvider>
-      </FlagsProvider>
+          }
+        ]}
+      >
+        <TermsAndConditions />
+      </MockedProvider>
     )
 
     fireEvent.click(getByRole('checkbox'))

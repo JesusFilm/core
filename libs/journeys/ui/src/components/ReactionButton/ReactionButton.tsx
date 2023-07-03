@@ -1,10 +1,10 @@
 import { ReactElement, useState } from 'react'
-import Like from '@core/shared/ui/CustomIcon/outlined/Like'
-import ThumbsDown from '@core/shared/ui/CustomIcon/outlined/ThumbsDown'
+import ThumbsUp from '@core/shared/ui/icons/ThumbsUp'
+import ThumbsDown from '@core/shared/ui/icons/ThumbsDown'
 import Button from '@mui/material/Button'
 import { styled } from '@mui/material/styles'
 
-type ReactionVariant = 'like' | 'thumbsdown'
+type ReactionVariant = 'thumbsup' | 'thumbsdown'
 
 interface ReactionButtonProps {
   variant: ReactionVariant
@@ -40,7 +40,7 @@ export function ReactionButton({ variant }: ReactionButtonProps): ReactElement {
 
   return (
     <StyledButton onClick={handleClick} clicked={clicked}>
-      {variant === 'like' && <Like />}
+      {variant === 'thumbsup' && <ThumbsUp />}
       {variant === 'thumbsdown' && <ThumbsDown />}
     </StyledButton>
   )

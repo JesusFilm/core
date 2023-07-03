@@ -9,6 +9,7 @@ import {
 } from '@core/journeys/ui/EditorProvider'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { MockedProvider } from '@apollo/client/testing'
+import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 import {
   GetJourney_journey_blocks_StepBlock as StepBlock,
   GetJourney_journey as Journey
@@ -26,6 +27,15 @@ jest.mock('@core/journeys/ui/EditorProvider', () => {
     useEditor: jest.fn()
   }
 })
+
+jest.mock('react-i18next', () => ({
+  __esModule: true,
+  useTranslation: () => {
+    return {
+      t: (str: string) => str
+    }
+  }
+}))
 
 const mockUseEditor = useEditor as jest.MockedFunction<typeof useEditor>
 
@@ -67,7 +77,7 @@ describe('Canvas', () => {
     })
   })
 
-  it('should show border around selected', () => {
+  it('should show border around selected step', () => {
     const { getByTestId } = render(
       <MockedProvider>
         <ThemeProvider>
@@ -94,12 +104,11 @@ describe('Canvas', () => {
     )
 
     expect(getByTestId('step-step0.id')).toHaveStyle({
-      outline: '2px solid #C52D3A',
-      'outline-offset': '4px'
+      outline: '2px solid #C52D3A'
     })
   })
 
-  it('should dispatch on click', () => {
+  it('should select step on click', () => {
     const { getByTestId } = render(
       <MockedProvider>
         <ThemeProvider>
@@ -143,6 +152,77 @@ describe('Canvas', () => {
       title: 'Next Card Properties',
       mobileOpen: true,
       children: <NextCard />
+    })
+    expect(dispatch).toHaveBeenCalledWith({
+      type: 'SetSelectedAttributeIdAction',
+      id: 'step0.id-next-block'
+    })
+  })
+
+  // TODO: Add to E2E tests when complete. Can't test in unit test as iframe doesn't render
+  it.skip('should selected footer on click', () => {
+    const { getByTestId } = render(
+      <MockedProvider>
+        <FlagsProvider flags={{ editableStepFooter: true }}>
+          <ThemeProvider>
+            <JourneyProvider
+              value={{
+                journey: {
+                  id: 'journeyId',
+                  themeMode: ThemeMode.dark,
+                  themeName: ThemeName.base,
+                  language: {
+                    __typename: 'Language',
+                    id: '529',
+                    bcp47: 'en',
+                    iso3: 'eng'
+                  }
+                } as unknown as Journey,
+                admin: true
+              }}
+            >
+              <Canvas />
+            </JourneyProvider>
+          </ThemeProvider>
+        </FlagsProvider>
+      </MockedProvider>
+    )
+
+    expect(getByTestId('stepFooter')).toHaveStyle({
+      outline: 'none'
+    })
+
+    fireEvent.click(getByTestId('stepFooter'))
+
+    expect(dispatch).toHaveBeenCalledWith({
+      type: 'SetSelectedComponentAction',
+      component: 'Footer'
+    })
+    expect(dispatch).toHaveBeenCalledWith({
+      type: 'SetActiveFabAction',
+      activeFab: ActiveFab.Add
+    })
+    expect(dispatch).toHaveBeenCalledWith({
+      type: 'SetActiveTabAction',
+      activeTab: ActiveTab.Properties
+    })
+    expect(dispatch).toHaveBeenCalledWith({
+      type: 'SetDrawerPropsAction',
+      title: 'Hosted By',
+      mobileOpen: true,
+      children: <div>Hosted by content component</div>
+    })
+    expect(dispatch).toHaveBeenCalledWith({
+      type: 'SetSelectedAttributeIdAction',
+      id: 'hosted-by'
+    })
+
+    expect(getByTestId('stepFooter')).toHaveStyle({
+      outline: '3px solid #C52D3A'
+    })
+
+    expect(getByTestId('step-step0.id')).toHaveStyle({
+      outline: '0px solid'
     })
   })
 })

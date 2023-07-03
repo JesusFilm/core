@@ -33,6 +33,20 @@ export enum ButtonVariant {
   text = "text",
 }
 
+export enum ChatPlatform {
+  custom = "custom",
+  facebook = "facebook",
+  instagram = "instagram",
+  line = "line",
+  skype = "skype",
+  snapchat = "snapchat",
+  telegram = "telegram",
+  tikTok = "tikTok",
+  viber = "viber",
+  vk = "vk",
+  whatsApp = "whatsApp",
+}
+
 export enum IconColor {
   action = "action",
   disabled = "disabled",
@@ -95,6 +109,7 @@ export enum JourneysReportType {
 }
 
 export enum MessagePlatform {
+  custom = "custom",
   facebook = "facebook",
   instagram = "instagram",
   line = "line",
@@ -230,6 +245,16 @@ export interface CardBlockUpdateInput {
   themeName?: ThemeName | null;
 }
 
+export interface ChatButtonCreateInput {
+  link?: string | null;
+  platform?: ChatPlatform | null;
+}
+
+export interface ChatButtonUpdateInput {
+  link?: string | null;
+  platform?: ChatPlatform | null;
+}
+
 export interface ChatOpenEventCreateInput {
   id?: string | null;
   blockId: string;
@@ -240,6 +265,20 @@ export interface ChatOpenEventCreateInput {
 export interface EmailActionInput {
   gtmEventName?: string | null;
   email: string;
+}
+
+export interface HostCreateInput {
+  title: string;
+  location?: string | null;
+  src1?: string | null;
+  src2?: string | null;
+}
+
+export interface HostUpdateInput {
+  title?: string | null;
+  location?: string | null;
+  src1?: string | null;
+  src2?: string | null;
 }
 
 export interface IconBlockCreateInput {
@@ -292,6 +331,7 @@ export interface JourneyUpdateInput {
   slug?: string | null;
   seoTitle?: string | null;
   seoDescription?: string | null;
+  hostId?: string | null;
 }
 
 export interface JourneyVisitorFilter {
@@ -302,6 +342,11 @@ export interface JourneyVisitorFilter {
   hasIcon?: boolean | null;
   hideInactive?: boolean | null;
   countryCode?: string | null;
+}
+
+export interface JourneysFilter {
+  featured?: boolean | null;
+  template?: boolean | null;
 }
 
 export interface LinkActionInput {
@@ -383,6 +428,14 @@ export interface StepViewEventCreateInput {
   value?: string | null;
 }
 
+export interface TeamCreateInput {
+  title: string;
+}
+
+export interface TeamUpdateInput {
+  title: string;
+}
+
 export interface TextResponseBlockCreateInput {
   id?: string | null;
   journeyId: string;
@@ -436,6 +489,7 @@ export interface VideoBlockCreateInput {
   parentBlockId: string;
   startAt?: number | null;
   endAt?: number | null;
+  duration?: number | null;
   description?: string | null;
   muted?: boolean | null;
   autoplay?: boolean | null;
@@ -453,6 +507,7 @@ export interface VideoBlockUpdateInput {
   endAt?: number | null;
   muted?: boolean | null;
   autoplay?: boolean | null;
+  duration?: number | null;
   videoId?: string | null;
   videoVariantLanguageId?: string | null;
   source?: VideoBlockSource | null;

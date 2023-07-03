@@ -23,7 +23,7 @@ const Template: Story<ComponentProps<typeof ReactionButton>> = () => (
       <Typography>Thumbsdown Icon</Typography>
     </Stack>
     <Stack direction="column" gap={4} alignItems="center">
-      <ReactionButton variant="like" />
+      <ReactionButton variant="thumbsup" />
       <ReactionButton variant="thumbsdown" />
     </Stack>
   </Stack>

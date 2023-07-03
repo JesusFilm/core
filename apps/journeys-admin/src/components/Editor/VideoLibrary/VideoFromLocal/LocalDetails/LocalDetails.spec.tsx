@@ -79,9 +79,9 @@ describe('LocalDetails', () => {
     const sourceTag = videoPlayer.querySelector('.vjs-tech source')
     expect(sourceTag?.getAttribute('src')).toEqual('https://arc.gt/opsgn')
     expect(sourceTag?.getAttribute('type')).toEqual('application/x-mpegURL')
-    const imageTag = videoPlayer.querySelector('.vjs-poster')
-    expect(imageTag).toHaveStyle(
-      "background-image: url('https://d1wl257kev7hsz.cloudfront.net/cinematics/2_Acts7302-0-0.mobileCinematicHigh.jpg')"
+    const imageTag = videoPlayer.querySelector('.vjs-poster > picture > img')
+    expect(imageTag?.getAttribute('src')).toEqual(
+      'https://d1wl257kev7hsz.cloudfront.net/cinematics/2_Acts7302-0-0.mobileCinematicHigh.jpg'
     )
   })
 
@@ -107,6 +107,7 @@ describe('LocalDetails', () => {
     )
     fireEvent.click(getByRole('button', { name: 'Select' }))
     expect(onSelect).toHaveBeenCalledWith({
+      duration: 144,
       endAt: 144,
       startAt: 0,
       source: VideoBlockSource.internal,

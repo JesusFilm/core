@@ -1,4 +1,5 @@
 import videojs from 'video.js'
+import Player from 'video.js/dist/types/player'
 import {
   ReactElement,
   useEffect,
@@ -52,7 +53,7 @@ export function Video({
   } = useEditor()
 
   const videoRef = useRef<HTMLVideoElement>(null)
-  const playerRef = useRef<videojs.Player>()
+  const playerRef = useRef<Player>()
 
   const posterBlock = children.find(
     (block) => block.id === posterBlockId && block.__typename === 'ImageBlock'
@@ -111,7 +112,7 @@ export function Video({
         })
         playerRef.current.on('ended', () => {
           if (playerRef?.current?.isFullscreen() === true)
-            playerRef.current?.exitFullscreen()
+            void playerRef.current?.exitFullscreen()
         })
         playerRef.current.on('timeupdate', () => {
           if (playerRef.current != null) {
@@ -188,7 +189,7 @@ export function Video({
           width: '100%',
           display: 'flex',
           alignSelf: 'center',
-          height: '100%',
+          height: { xs: 'calc(100vh - 185px)', lg: '100%' },
           minHeight: 'inherit',
           '> .vjs-tech': {
             objectFit: videoFit,
@@ -207,6 +208,11 @@ export function Video({
           '> .vjs-poster': {
             backgroundColor: VIDEO_BACKGROUND_COLOR,
             backgroundSize: 'cover'
+          },
+          '> .vjs-control-bar': {
+            width: { xs: '90%', lg: '100%' },
+            mx: { xs: 'auto', lg: 0 },
+            borderRadius: { xs: 4, lg: 0 }
           }
         },
         '> .MuiIconButton-root': {

@@ -1,4 +1,5 @@
 import videojs from 'video.js'
+import Player from 'video.js/dist/types/player'
 import { ReactElement, useEffect, useRef } from 'react'
 import Box from '@mui/system/Box'
 import Stack from '@mui/material/Stack'
@@ -9,7 +10,7 @@ export function CloudflareDetails({
   id
 }: Pick<VideoDetailsProps, 'open' | 'id' | 'onSelect'>): ReactElement {
   const videoRef = useRef<HTMLVideoElement>(null)
-  const playerRef = useRef<videojs.Player>()
+  const playerRef = useRef<Player>()
 
   useEffect(() => {
     if (videoRef.current != null && id != null) {

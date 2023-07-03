@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { JourneyStatus, ThemeName, ThemeMode, ButtonVariant, ButtonColor, ButtonSize, IconName, IconSize, IconColor, TypographyAlign, TypographyColor, TypographyVariant, VideoBlockSource, VideoBlockObjectFit, UserJourneyRole } from "./../../../../__generated__/globalTypes";
+import { JourneyStatus, ThemeName, ThemeMode, ButtonVariant, ButtonColor, ButtonSize, IconName, IconSize, IconColor, TypographyAlign, TypographyColor, TypographyVariant, VideoBlockSource, VideoBlockObjectFit, UserJourneyRole, ChatPlatform } from "./../../../../__generated__/globalTypes";
 
 // ====================================================
 // GraphQL fragment: JourneyFields
@@ -608,6 +608,23 @@ export interface JourneyFields_userJourneys {
   user: JourneyFields_userJourneys_user | null;
 }
 
+export interface JourneyFields_chatButtons {
+  __typename: "ChatButton";
+  id: string;
+  link: string | null;
+  platform: ChatPlatform | null;
+}
+
+export interface JourneyFields_host {
+  __typename: "Host";
+  id: string;
+  teamId: string;
+  title: string;
+  location: string | null;
+  src1: string | null;
+  src2: string | null;
+}
+
 export interface JourneyFields {
   __typename: "Journey";
   id: string;
@@ -626,4 +643,6 @@ export interface JourneyFields {
   blocks: JourneyFields_blocks[] | null;
   primaryImageBlock: JourneyFields_primaryImageBlock | null;
   userJourneys: JourneyFields_userJourneys[] | null;
+  chatButtons: JourneyFields_chatButtons[];
+  host: JourneyFields_host | null;
 }

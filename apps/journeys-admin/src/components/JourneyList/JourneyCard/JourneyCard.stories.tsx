@@ -4,9 +4,9 @@ import { userEvent, waitFor, within } from '@storybook/testing-library'
 import { UserJourneyRole } from '../../../../__generated__/globalTypes'
 import { journeysAdminConfig } from '../../../libs/storybook'
 import {
-  GetJourneys_journeys as Journey,
-  GetJourneys_journeys_userJourneys as UserJourney
-} from '../../../../__generated__/GetJourneys'
+  GetAdminJourneys_journeys as Journey,
+  GetAdminJourneys_journeys_userJourneys as UserJourney
+} from '../../../../__generated__/GetAdminJourneys'
 import {
   defaultJourney,
   descriptiveJourney,

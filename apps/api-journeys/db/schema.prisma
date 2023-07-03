@@ -8,6 +8,20 @@ datasource db {
   url      = env("PG_DATABASE_URL")
 }
 
+enum ChatPlatform {
+  facebook
+  telegram
+  whatsApp
+  instagram
+  viber
+  vk
+  snapchat
+  skype
+  line
+  tikTok
+  custom
+}
+
 enum MessagePlatform {
   facebook
   telegram
@@ -19,6 +33,7 @@ enum MessagePlatform {
   skype
   line
   tikTok
+  custom
 }
 
 enum VisitorStatus {
@@ -54,6 +69,15 @@ enum ButtonAction {
 enum VideoBlockSource {
   internal
   youTube
+}
+
+model ChatButton {
+  id        String        @id @default(uuid())
+  journeyId String
+  link      String?
+  platform  ChatPlatform?
+
+  @@index([journeyId])
 }
 
 model Event {
@@ -113,6 +137,16 @@ model Visitor {
   @@index([id, teamId, createdAt, userId, status, countryCode])
 }
 
+model Host {
+  id       String  @id @default(uuid())
+  teamId   String
+  team     Team    @relation(fields: [teamId], references: [id])
+  title    String
+  location String?
+  src1     String?
+  src2     String?
+}
+
 model JourneyVisitor {
   id                        String           @id @default(uuid())
   journeyId                 String
@@ -132,4 +166,33 @@ model JourneyVisitor {
 
   @@unique([journeyId, visitorId])
   @@index([journeyId, visitorId, createdAt, lastChatStartedAt, lastRadioQuestion, lastTextResponse, activityCount, duration])
+}
+
+model Team {
+  id        String     @id @default(uuid())
+  title     String
+  userTeams UserTeam[]
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  hosts     Host[]
+
+  @@index([title])
+}
+
+model UserTeam {
+  id        String       @id @default(uuid())
+  teamId    String
+  team      Team         @relation(fields: [teamId], references: [id])
+  userId    String
+  role      UserTeamRole @default(guest)
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+
+  @@unique([teamId, userId])
+}
+
+enum UserTeamRole {
+  manager
+  member
+  guest
 }

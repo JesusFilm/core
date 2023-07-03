@@ -3,14 +3,13 @@ import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { gql, useMutation } from '@apollo/client'
-import TextField from '@mui/material/TextField'
-import { Formik, Form } from 'formik'
 import { object, string } from 'yup'
-import InputAdornment from '@mui/material/InputAdornment'
 import InsertLinkRoundedIcon from '@mui/icons-material/InsertLinkRounded'
 import Box from '@mui/material/Box'
+import InputAdornment from '@mui/material/InputAdornment'
 import { GetJourney_journey_blocks_ButtonBlock as ButtonBlock } from '../../../../../../../__generated__/GetJourney'
 import { LinkActionUpdate } from '../../../../../../../__generated__/LinkActionUpdate'
+import { TextFieldForm } from '../../../../../TextFieldForm'
 
 export const LINK_ACTION_UPDATE = gql`
   mutation LinkActionUpdate(
@@ -25,10 +24,6 @@ export const LINK_ACTION_UPDATE = gql`
   }
 `
 
-interface LinkActionFormValues {
-  link: string
-}
-
 export function LinkAction(): ReactElement {
   const { state } = useEditor()
   const { journey } = useJourney()
@@ -42,8 +37,6 @@ export function LinkAction(): ReactElement {
     selectedBlock?.action?.__typename === 'LinkAction'
       ? selectedBlock.action
       : undefined
-
-  const initialValues: LinkActionFormValues = { link: linkAction?.url ?? '' }
 
   // check for valid URL
   function checkURL(value?: string): boolean {
@@ -98,41 +91,18 @@ export function LinkAction(): ReactElement {
 
   return (
     <Box sx={{ pt: 8 }}>
-      <Formik
-        initialValues={initialValues}
+      <TextFieldForm
+        id="link"
+        label="Paste URL here..."
+        initialValue={linkAction?.url}
         validationSchema={linkActionSchema}
-        onSubmit={async (values): Promise<void> => {
-          await handleSubmit(values.link)
-        }}
-        enableReinitialize
-      >
-        {({ values, touched, errors, handleChange, handleBlur }) => (
-          <Form>
-            <TextField
-              id="link"
-              name="link"
-              variant="filled"
-              label="Paste URL here..."
-              fullWidth
-              value={values.link}
-              error={touched.link === true && Boolean(errors.link)}
-              helperText={touched.link === true && errors.link}
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <InsertLinkRoundedIcon />
-                  </InputAdornment>
-                )
-              }}
-              onBlur={(e) => {
-                handleBlur(e)
-                errors.link == null && handleSubmit(e.target.value)
-              }}
-              onChange={handleChange}
-            />
-          </Form>
-        )}
-      </Formik>
+        onSubmit={handleSubmit}
+        startIcon={
+          <InputAdornment position="start">
+            <InsertLinkRoundedIcon />
+          </InputAdornment>
+        }
+      />
     </Box>
   )
 }

@@ -7,6 +7,7 @@ import { blurImage } from '@core/journeys/ui/blurImage'
 import VideocamRounded from '@mui/icons-material/VideocamRounded'
 import { NextImage } from '@core/shared/ui/NextImage'
 import videojs from 'video.js'
+import Player from 'video.js/dist/types/player'
 
 import {
   GetJourney_journey_blocks_VideoBlock as VideoBlock,
@@ -23,7 +24,7 @@ export function VideoWrapper({
 }): ReactElement {
   const theme = useTheme()
   const videoRef = useRef<HTMLVideoElement>(null)
-  const playerRef = useRef<videojs.Player>()
+  const playerRef = useRef<Player>()
 
   const posterBlock = block.children.find(
     (child) =>

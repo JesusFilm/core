@@ -1,4 +1,5 @@
 import videojs from 'video.js'
+import Player from 'video.js/dist/types/player'
 import { ReactElement, useEffect, useRef, useState } from 'react'
 import Typography from '@mui/material/Typography'
 import Box from '@mui/system/Box'
@@ -53,7 +54,7 @@ export function LocalDetails({
   onSelect
 }: Pick<VideoDetailsProps, 'open' | 'id' | 'onSelect'>): ReactElement {
   const videoRef = useRef<HTMLVideoElement>(null)
-  const playerRef = useRef<videojs.Player>()
+  const playerRef = useRef<Player>()
   const [playing, setPlaying] = useState(false)
 
   const [openLanguage, setOpenLanguage] = useState(false)
@@ -74,6 +75,7 @@ export function LocalDetails({
     onSelect({
       videoId: id,
       videoVariantLanguageId: selectedLanguage.id,
+      duration: time,
       source: VideoBlockSource.internal,
       startAt: 0,
       endAt: time

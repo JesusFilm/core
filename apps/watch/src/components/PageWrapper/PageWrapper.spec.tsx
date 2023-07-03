@@ -19,7 +19,7 @@ describe('PageWrapper', () => {
 
   it('should render hero', () => {
     const { getByTestId } = render(
-      <PageWrapper hero={<Box data-testId="hero" />} />
+      <PageWrapper hero={<Box data-testid="hero" />} />
     )
     expect(getByTestId('hero')).toBeInTheDocument()
   })
@@ -27,7 +27,7 @@ describe('PageWrapper', () => {
   it('should render children', () => {
     const { getByTestId } = render(
       <PageWrapper>
-        <Box data-testId="content" />
+        <Box data-testid="content" />
       </PageWrapper>
     )
     expect(getByTestId('content')).toBeInTheDocument()
