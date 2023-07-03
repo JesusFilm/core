@@ -185,7 +185,6 @@ export class VideoBlockResolver {
     })
 
     const action = {
-      id: block.id,
       parentBlockId: block.id,
       gtmEventName: 'NavigateAction',
       blockId: null,

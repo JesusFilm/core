@@ -48,7 +48,7 @@ describe('VideoBlockResolver', () => {
     posterBlockId: 'posterBlockId',
     fullsize: true,
     action: {
-      id: 'abc',
+      parentBlockId: 'abc',
       gtmEventName: 'gtmEventName',
       url: 'https://jesusfilm.org',
       target: 'target'
@@ -56,10 +56,7 @@ describe('VideoBlockResolver', () => {
     objectFit: 'fill'
   }
 
-  const actionResponse = {
-    ...block.action,
-    parentBlockId: block.id
-  }
+  const actionResponse = block.action
 
   const blockCreate = {
     id: 'abc',
@@ -70,7 +67,6 @@ describe('VideoBlockResolver', () => {
   }
 
   const navigateAction = {
-    id: 'abc',
     parentBlockId: 'abc',
     gtmEventName: 'NavigateAction',
     blockId: null,
