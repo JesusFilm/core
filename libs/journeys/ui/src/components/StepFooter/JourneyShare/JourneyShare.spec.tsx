@@ -4,6 +4,15 @@ import { JourneyFields as Journey } from '../../../libs/JourneyProvider/__genera
 import { JourneyProvider } from '../../../libs/JourneyProvider'
 import { JourneyShare } from '.'
 
+jest.mock('react-i18next', () => ({
+  __esModule: true,
+  useTranslation: () => {
+    return {
+      t: (str: string) => str
+    }
+  }
+}))
+
 describe('JourneyShare', () => {
   const originalNavigator = { ...global.navigator }
   const originalEnv = process.env

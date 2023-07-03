@@ -6,6 +6,7 @@ import Chip from '@mui/material/Chip'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import IconButton from '@mui/material/IconButton'
+import { useTranslation } from 'react-i18next'
 // import Image from 'next/image'
 import { useSnackbar } from 'notistack'
 // import facebookLogo from '../../../../public/facebook_logo.svg'
@@ -18,6 +19,7 @@ export function JourneyShare(): ReactElement {
   const { journey, admin } = useJourney()
   const [shareDialogOpen, setShareDialogOpen] = useState(false)
   const { enqueueSnackbar } = useSnackbar()
+  const { t } = useTranslation('libs-journeys-ui')
 
   const url =
     journey?.slug != null
@@ -48,14 +50,14 @@ export function JourneyShare(): ReactElement {
   async function handleCopyLink(): Promise<void> {
     if (url == null) return
     await navigator.clipboard.writeText(url).then(() => {
-      enqueueSnackbar('Copied to clipboard', { variant: 'success' })
+      enqueueSnackbar(t('Copied to clipboard'), { variant: 'success' })
     })
   }
 
   return (
     <>
       <Chip
-        label="Share"
+        label={t('Share')}
         variant="filled"
         icon={<Share />}
         onClick={handleShare}
@@ -83,7 +85,7 @@ export function JourneyShare(): ReactElement {
             >
               <LinkAngled />
             </IconButton>
-            <Typography>Custom</Typography>
+            <Typography>{t('Custom')}</Typography>
           </Stack>
 
           <Stack direction="column">
@@ -112,7 +114,7 @@ export function JourneyShare(): ReactElement {
               </IconButton>
             </span>
 
-            <Typography>Facebook</Typography>
+            <Typography>{t('Facebook')}</Typography>
           </Stack>
 
           <Stack direction="column">
@@ -139,7 +141,7 @@ export function JourneyShare(): ReactElement {
               </IconButton>
             </span>
 
-            <Typography>Twitter</Typography>
+            <Typography>{t('Twitter')}</Typography>
           </Stack>
         </Stack>
       </Dialog>
