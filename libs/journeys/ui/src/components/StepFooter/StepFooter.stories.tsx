@@ -3,6 +3,7 @@ import { Story, Meta } from '@storybook/react'
 import Stack from '@mui/material/Stack'
 import { MockedProvider } from '@apollo/client/testing'
 import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
+import { SnackbarProvider } from 'notistack'
 import { journeyUiConfig } from '../../libs/journeyUiConfig'
 
 import {
@@ -198,21 +199,23 @@ const TemplateRTL: Story<
 > = ({ journeys, admin }) => {
   return (
     <MockedProvider>
-      <FlagsProvider flags={{ editableStepFooter: true }}>
-        {journeys.map((journey, i) => (
-          <JourneyProvider key={i} value={{ journey, admin: admin[i] }}>
-            <Stack
-              sx={{
-                position: 'relative',
-                height: 80,
-                justifyContent: 'center'
-              }}
-            >
-              <StepFooter sx={{ border: '1px solid black' }} />
-            </Stack>
-          </JourneyProvider>
-        ))}
-      </FlagsProvider>
+      <SnackbarProvider>
+        <FlagsProvider flags={{ editableStepFooter: true }}>
+          {journeys.map((journey, i) => (
+            <JourneyProvider key={i} value={{ journey, admin: admin[i] }}>
+              <Stack
+                sx={{
+                  position: 'relative',
+                  height: 80,
+                  justifyContent: 'center'
+                }}
+              >
+                <StepFooter sx={{ border: '1px solid black' }} />
+              </Stack>
+            </JourneyProvider>
+          ))}
+        </FlagsProvider>
+      </SnackbarProvider>
     </MockedProvider>
   )
 }
