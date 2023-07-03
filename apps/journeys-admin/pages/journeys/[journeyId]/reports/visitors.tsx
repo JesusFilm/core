@@ -14,7 +14,6 @@ import { getLaunchDarklyClient } from '@core/shared/ui/getLaunchDarklyClient'
 import Typography from '@mui/material/Typography'
 import Stack from '@mui/material/Stack'
 import { PageWrapper } from '../../../../src/components/NewPageWrapper'
-import { useTermsRedirect } from '../../../../src/libs/useTermsRedirect'
 import { GetJourney } from '../../../../__generated__/GetJourney'
 import { GET_JOURNEY, USER_JOURNEY_OPEN } from '../../[journeyId]'
 import { UserInviteAcceptAll } from '../../../../__generated__/UserInviteAcceptAll'
@@ -31,6 +30,7 @@ import { GetJourneyVisitorsCount } from '../../../../__generated__/GetJourneyVis
 import { FilterDrawer } from '../../../../src/components/JourneyVisitorsList/FilterDrawer/FilterDrawer'
 import { VisitorToolbar } from '../../../../src/components/JourneyVisitorsList/VisitorToolbar/VisitorToolbar'
 import { ClearAllButton } from '../../../../src/components/JourneyVisitorsList/FilterDrawer/ClearAllButton'
+import { checkConditionalRedirect } from '../../../../src/libs/checkConditionalRedirect'
 
 export const GET_JOURNEY_VISITORS = gql`
   query GetJourneyVisitors(
@@ -86,8 +86,6 @@ function JourneyVisitorsPage(): ReactElement {
   const AuthUser = useAuthUser()
   const router = useRouter()
   const journeyId = router.query.journeyId as string
-
-  useTermsRedirect()
 
   const { data } = useQuery<GetJourneyVisitorsCount>(
     GET_JOURNEY_VISITORS_COUNT,
@@ -294,6 +292,9 @@ export const getServerSideProps = withAuthUserTokenSSR({
 
   const token = await AuthUser.getIdToken()
   const apolloClient = createApolloClient(token != null ? token : '')
+
+  const redirect = await checkConditionalRedirect(apolloClient)
+  if (redirect != null) return { redirect }
 
   await apolloClient.mutate<UserInviteAcceptAll>({
     mutation: ACCEPT_USER_INVITE

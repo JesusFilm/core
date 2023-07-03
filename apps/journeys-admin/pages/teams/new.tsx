@@ -1,39 +1,25 @@
+import { NextSeo } from 'next-seo'
 import { ReactElement } from 'react'
+import { useTranslation } from 'react-i18next'
 import {
   AuthAction,
-  useAuthUser,
   withAuthUser,
   withAuthUserTokenSSR
 } from 'next-firebase-auth'
-import { NextSeo } from 'next-seo'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
-import { useTranslation } from 'react-i18next'
 import { getLaunchDarklyClient } from '@core/shared/ui/getLaunchDarklyClient'
-import Box from '@mui/material/Box'
-import { PageWrapper } from '../../src/components/NewPageWrapper'
 import i18nConfig from '../../next-i18next.config'
-import { MemoizedDynamicReport } from '../../src/components/DynamicPowerBiReport'
-import { JourneysReportType } from '../../__generated__/globalTypes'
-import { ReportsNavigation } from '../../src/components/ReportsNavigation'
 import { createApolloClient } from '../../src/libs/apolloClient'
 import { checkConditionalRedirect } from '../../src/libs/checkConditionalRedirect'
+import { TeamOnboarding } from '../../src/components/Team/TeamOnboarding'
 
-function ReportsJourneysPage(): ReactElement {
+function TeamsNewPage(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-  const AuthUser = useAuthUser()
 
   return (
     <>
-      <NextSeo title={t('Journeys Report')} />
-      <PageWrapper title={t('Journeys Report')} authUser={AuthUser}>
-        <Box sx={{ height: 'calc(100vh - 48px)' }}>
-          <ReportsNavigation
-            reportType={JourneysReportType.multipleFull}
-            selected="journeys"
-          />
-          <MemoizedDynamicReport reportType={JourneysReportType.multipleFull} />
-        </Box>
-      </PageWrapper>
+      <NextSeo title={t('New Team')} />
+      <TeamOnboarding />
     </>
   )
 }
@@ -54,8 +40,9 @@ export const getServerSideProps = withAuthUserTokenSSR({
   const token = await AuthUser.getIdToken()
   const apolloClient = createApolloClient(token != null ? token : '')
 
-  const redirect = await checkConditionalRedirect(apolloClient)
+  const redirect = await checkConditionalRedirect(apolloClient, { teams: true })
   if (redirect != null) return { redirect }
+
   return {
     props: {
       flags,
@@ -70,4 +57,4 @@ export const getServerSideProps = withAuthUserTokenSSR({
 
 export default withAuthUser({
   whenUnauthedAfterInit: AuthAction.REDIRECT_TO_LOGIN
-})(ReportsJourneysPage)
+})(TeamsNewPage)

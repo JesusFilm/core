@@ -17,7 +17,8 @@ import { PageWrapper } from '../../src/components/NewPageWrapper'
 import { TemplateList } from '../../src/components/TemplateList'
 import i18nConfig from '../../next-i18next.config'
 import { GET_USER_ROLE } from '../../src/components/JourneyView/JourneyView'
-import { useTermsRedirect } from '../../src/libs/useTermsRedirect/useTermsRedirect'
+import { createApolloClient } from '../../src/libs/apolloClient'
+import { checkConditionalRedirect } from '../../src/libs/checkConditionalRedirect'
 
 function TemplateIndex(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
@@ -33,8 +34,6 @@ function TemplateIndex(): ReactElement {
       void router.push('/templates')
     }
   }, [data, router])
-
-  useTermsRedirect()
 
   return (
     <>
@@ -58,6 +57,13 @@ export const getServerSideProps = withAuthUserTokenSSR({
   const flags = (await launchDarklyClient.allFlagsState(ldUser)).toJSON() as {
     [key: string]: boolean | undefined
   }
+
+  const token = await AuthUser.getIdToken()
+  const apolloClient = createApolloClient(token != null ? token : '')
+
+  const redirect = await checkConditionalRedirect(apolloClient)
+  if (redirect != null) return { redirect }
+
   return {
     props: {
       flags,

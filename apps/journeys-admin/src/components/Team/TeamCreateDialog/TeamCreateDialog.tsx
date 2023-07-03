@@ -58,7 +58,7 @@ export function TeamCreateDialog({
   })
   const { enqueueSnackbar } = useSnackbar()
   const teamSchema = object().shape({
-    title: string().required('Team Name must be at least one character.')
+    title: string().required(t('Team Name must be at least one character.'))
   })
 
   async function handleSubmit(
@@ -70,15 +70,20 @@ export function TeamCreateDialog({
         variables: { input: { title: values.title } }
       })
       handleClose(resetForm)()
-      enqueueSnackbar(t(`${data?.teamCreate.title ?? 'Team'} created.`), {
-        variant: 'success',
-        preventDuplicate: true
-      })
+      enqueueSnackbar(
+        t('{{ teamName }} created.', {
+          teamName: data?.teamCreate.title ?? 'Team'
+        }),
+        {
+          variant: 'success',
+          preventDuplicate: true
+        }
+      )
     } catch (error) {
       if (error instanceof ApolloError) {
         if (error.networkError != null) {
           enqueueSnackbar(
-            t('Failed to update the team. Reload the page or try again.'),
+            t('Failed to create the team. Reload the page or try again.'),
             {
               variant: 'error',
               preventDuplicate: true

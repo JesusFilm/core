@@ -23,8 +23,8 @@ import { Menu } from '../../src/components/JourneyView/Menu'
 import i18nConfig from '../../next-i18next.config'
 import { ACCEPT_USER_INVITE } from '..'
 import { UserJourneyOpen } from '../../__generated__/UserJourneyOpen'
-import { useTermsRedirect } from '../../src/libs/useTermsRedirect/useTermsRedirect'
 import { useInvalidJourneyRedirect } from '../../src/libs/useInvalidJourneyRedirect/useInvalidJourneyRedirect'
+import { checkConditionalRedirect } from '../../src/libs/checkConditionalRedirect'
 
 export const GET_JOURNEY = gql`
   ${JOURNEY_FIELDS}
@@ -51,7 +51,6 @@ function JourneyIdPage(): ReactElement {
     variables: { id: router.query.journeyId }
   })
 
-  useTermsRedirect()
   useInvalidJourneyRedirect(data)
 
   return (
@@ -112,6 +111,9 @@ export const getServerSideProps = withAuthUserTokenSSR({
 
   const token = await AuthUser.getIdToken()
   const apolloClient = createApolloClient(token != null ? token : '')
+
+  const redirect = await checkConditionalRedirect(apolloClient)
+  if (redirect != null) return { redirect }
 
   await apolloClient.mutate<UserInviteAcceptAll>({
     mutation: ACCEPT_USER_INVITE

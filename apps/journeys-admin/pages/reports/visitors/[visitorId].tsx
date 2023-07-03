@@ -13,15 +13,14 @@ import { getLaunchDarklyClient } from '@core/shared/ui/getLaunchDarklyClient'
 import { VisitorInfo } from '../../../src/components/VisitorInfo'
 import { PageWrapper } from '../../../src/components/NewPageWrapper'
 import i18nConfig from '../../../next-i18next.config'
-import { useTermsRedirect } from '../../../src/libs/useTermsRedirect/useTermsRedirect'
 import { DetailsForm } from '../../../src/components/VisitorInfo/DetailsForm'
+import { createApolloClient } from '../../../src/libs/apolloClient'
+import { checkConditionalRedirect } from '../../../src/libs/checkConditionalRedirect'
 
 function SingleVisitorReportsPage(): ReactElement {
   const router = useRouter()
   const { t } = useTranslation('apps-journeys-admin')
   const AuthUser = useAuthUser()
-
-  useTermsRedirect()
 
   const id = router.query.visitorId as string
 
@@ -54,6 +53,13 @@ export const getServerSideProps = withAuthUserTokenSSR({
   const flags = (await launchDarklyClient.allFlagsState(ldUser)).toJSON() as {
     [key: string]: boolean | undefined
   }
+
+  const token = await AuthUser.getIdToken()
+  const apolloClient = createApolloClient(token != null ? token : '')
+
+  const redirect = await checkConditionalRedirect(apolloClient)
+  if (redirect != null) return { redirect }
+
   return {
     props: {
       flags,
