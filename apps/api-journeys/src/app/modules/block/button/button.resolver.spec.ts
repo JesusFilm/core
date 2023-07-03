@@ -62,7 +62,9 @@ describe('Button', () => {
     },
     journeyId: '2',
     typename: 'ButtonBlock',
-    parentBlockId: '0',
+    parentBlock: {
+      connect: { id: '0' }
+    },
     parentOrder: 2,
     label: 'label',
     variant: ButtonVariant.contained,

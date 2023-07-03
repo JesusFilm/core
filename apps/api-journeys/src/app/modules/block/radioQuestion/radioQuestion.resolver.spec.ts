@@ -47,7 +47,7 @@ describe('RadioQuestionBlockResolver', () => {
   const radioOptionResponse = {
     id: undefined,
     typename: 'RadioOptionBlock',
-    parentBlockId: '2',
+    parentBlock: { connect: { id: '2' } },
     parentOrder: 2,
     journey: {
       connect: { id: '2' }
@@ -77,7 +77,7 @@ describe('RadioQuestionBlockResolver', () => {
   const radioQuestionResponse = {
     id: undefined,
     typename: 'RadioQuestionBlock',
-    parentBlockId: '2',
+    parentBlock: { connect: { id: '2' } },
     parentOrder: 2,
     journey: { connect: { id: '2' } },
     journeyId: '2'

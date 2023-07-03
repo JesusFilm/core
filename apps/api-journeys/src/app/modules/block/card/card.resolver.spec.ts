@@ -45,7 +45,9 @@ describe('CardBlockResolver', () => {
     id: undefined,
     journeyId: '2',
     typename: 'CardBlock',
-    parentBlockId: '3',
+    parentBlock: {
+      connect: { id: '3' }
+    },
     parentOrder: 2,
     backgroundColor: '#FFF',
     coverBlockId: '4',

@@ -1,5 +1,6 @@
 import { UseGuards } from '@nestjs/common'
 import { Args, Mutation, Resolver } from '@nestjs/graphql'
+import { omit } from 'lodash'
 
 import {
   IconBlock,
@@ -27,10 +28,11 @@ export class IconBlockResolver {
     @Args('input') input: IconBlockCreateInput
   ): Promise<IconBlock> {
     return await this.blockService.save({
-      ...input,
+      ...omit(input, 'parentBlockId'),
       id: input.id ?? undefined,
       typename: 'IconBlock',
       journey: { connect: { id: input.journeyId } },
+      parentBlock: { connect: { id: input.parentBlockId } },
       // Icons positions are set via parent block props, cannot be ordered.
       parentOrder: null
     })

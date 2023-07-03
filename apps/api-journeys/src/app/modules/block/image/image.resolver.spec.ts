@@ -63,7 +63,7 @@ describe('ImageBlockResolver', () => {
     journey: { connect: { id: '2' } },
     journeyId: '2',
     typename: 'ImageBlock',
-    parentBlockId: 'parentBlockId',
+    parentBlock: { connect: { id: 'parentBlockId' } },
     parentOrder: 2,
     src: 'https://unsplash.it/640/425?image=42',
     alt: 'grid image',
@@ -89,7 +89,9 @@ describe('ImageBlockResolver', () => {
 
   const createdBlockForDeletedCover = {
     ...createdBlock,
-    parentBlockId: 'parentBlockWithDeletedCoverId'
+    parentBlock: {
+      connect: { id: 'parentBlockWithDeletedCoverId' }
+    }
   }
 
   const parentBlockWithDeletedCover: CardBlock = {
@@ -192,17 +194,13 @@ describe('ImageBlockResolver', () => {
         ...createdBlock,
         isCover: true,
         parentBlock: { connect: { id: parentBlock.id } },
+        coverBlockParent: { connect: { id: parentBlock.id } },
         parentOrder: null
       })
       expect(service.removeBlockAndChildren).toHaveBeenCalledWith(
         parentBlock.coverBlockId,
         parentBlock.journeyId
       )
-      expect(service.update).toHaveBeenCalledWith(parentBlock.id, {
-        coverBlock: {
-          connect: { coverBlockId: createdBlock.id }
-        }
-      })
     })
 
     it('checks of cover image block needs to be deleted before creating new coverImage block', async () => {
@@ -215,17 +213,10 @@ describe('ImageBlockResolver', () => {
         ...createdBlockForDeletedCover,
         isCover: true,
         parentBlock: { connect: { id: parentBlockWithDeletedCover.id } },
-        parentOrder: null
+        parentOrder: null,
+        coverBlockParent: { connect: { id: parentBlockWithDeletedCover.id } }
       })
       expect(service.removeBlockAndChildren).not.toHaveBeenCalled()
-      expect(service.update).toHaveBeenCalledWith(
-        parentBlockWithDeletedCover.id,
-        {
-          coverBlock: {
-            connect: { coverBlockId: createdBlockForDeletedCover.id }
-          }
-        }
-      )
     })
   })
 
