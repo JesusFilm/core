@@ -94,7 +94,6 @@ export function Video({
     if (videoRef.current != null) {
       setPlayer(
         videojs(videoRef.current, {
-          nativeControlsForTouch: true,
           controls: false,
           controlBar: false,
           bigPlayButton: false,
