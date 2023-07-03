@@ -98,6 +98,7 @@ export function Video({
           controls: false,
           controlBar: false,
           bigPlayButton: false,
+          loadingSpinner: false,
           // Make video fill container instead of set aspect ratio
           fill: true,
           userActions: {
@@ -108,10 +109,7 @@ export function Video({
           muted: muted === true,
           loop: true,
           // VideoJS blur background persists so we cover video when using png poster on non-autoplay videos
-          poster: blurBackground,
-          children: {
-            loadingSpinner: false
-          }
+          poster: blurBackground
         })
       )
     }
