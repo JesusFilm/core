@@ -15,7 +15,7 @@ import TwitterIcon from '@mui/icons-material/Twitter'
 import { useJourney } from '../../../libs/JourneyProvider'
 
 export function JourneyShare(): ReactElement {
-  const { journey } = useJourney()
+  const { journey, admin } = useJourney()
   const [shareDialogOpen, setShareDialogOpen] = useState(false)
   const { enqueueSnackbar } = useSnackbar()
 
@@ -27,7 +27,7 @@ export function JourneyShare(): ReactElement {
       : undefined
 
   async function handleShare(): Promise<void> {
-    if (url == null) return
+    if (admin || url == null) return
     const shareDetails = {
       url,
       title: journey?.seoTitle ?? journey?.title ?? 'Journey',

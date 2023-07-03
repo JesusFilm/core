@@ -58,16 +58,14 @@ export function StepFooter({
           alignItems: { xs: 'flex-start', lg: 'center' }
         }}
       >
-        {/* <Stack
-          data-testid="chip"
+        <Stack
+          direction="row"
           sx={{
-            display: { xs: 'flex', lg: 'none' },
-            width: 24,
-            height: 16,
-            borderRadius: 5,
-            backgroundColor: 'white'
+            display: { xs: 'flex', sm: 'none' }
           }}
-        /> */}
+        >
+          <JourneyShare />
+        </Stack>
         <Stack
           sx={{
             flexGrow: 1,
@@ -102,17 +100,10 @@ export function StepFooter({
               </Typography>
               <HostTitleLocation />
             </Stack>
-            <JourneyShare />
-            {/* <Stack
-              data-testid="chip"
-              sx={{
-                display: { xs: 'none', lg: 'flex' },
-                width: 24,
-                height: 16,
-                borderRadius: 5,
-                backgroundColor: 'white'
-              }}
-            /> */}
+
+            <Stack direction="row" sx={{ display: { xs: 'none', sm: 'flex' } }}>
+              <JourneyShare />
+            </Stack>
           </Stack>
           {hasChatWidget && (
             <Box>
