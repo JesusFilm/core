@@ -84,19 +84,21 @@ const Template: Story<
 > = ({ journey, admin = false }) => {
   return (
     <MockedProvider>
-      <FlagsProvider flags={{ editableStepFooter: true }}>
-        <JourneyProvider value={{ journey, admin }}>
-          <Stack
-            sx={{
-              position: 'relative',
-              height: 80,
-              justifyContent: 'center'
-            }}
-          >
-            <StepFooter sx={{ border: '1px solid black' }} />
-          </Stack>
-        </JourneyProvider>
-      </FlagsProvider>
+      <SnackbarProvider>
+        <FlagsProvider flags={{ editableStepFooter: true }}>
+          <JourneyProvider value={{ journey, admin }}>
+            <Stack
+              sx={{
+                position: 'relative',
+                height: 80,
+                justifyContent: 'center'
+              }}
+            >
+              <StepFooter sx={{ border: '1px solid black' }} />
+            </Stack>
+          </JourneyProvider>
+        </FlagsProvider>
+      </SnackbarProvider>
     </MockedProvider>
   )
 }
