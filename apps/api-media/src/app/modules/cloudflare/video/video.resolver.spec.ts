@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing'
-import { CloudflareVideo } from '../../../__generated__/graphql'
 
+import { PrismaService } from '../../../lib/prisma.service'
 import { VideoResolver } from './video.resolver'
 import {
   CloudflareVideoUploadUrl,
@@ -8,17 +8,18 @@ import {
   VideoService
 } from './video.service'
 
-const cloudflareVideo: CloudflareVideo = {
+const cloudflareVideo = {
   id: '1',
   uploadUrl: 'https://upload.com',
-  createdAt: new Date().toISOString(),
+  createdAt: new Date(),
   userId: 'user_1',
   readyToStream: false
 }
 
 describe('VideoResolver', () => {
-  let resolver: VideoResolver
-  let service: jest.Mocked<VideoService>
+  let resolver: VideoResolver,
+    service: jest.Mocked<VideoService>,
+    prismaService: PrismaService
 
   const user = {
     id: 'user_1',
@@ -44,29 +45,35 @@ describe('VideoResolver', () => {
     const videoService = {
       provide: VideoService,
       useFactory: () => ({
-        get: jest.fn(() => cloudflareVideo),
-        getAll: jest.fn(() => [cloudflareVideo, cloudflareVideo]),
-        save: jest.fn((input) => {
-          const response = { ...input, id: input._key }
-          delete response._key
-          return response
-        }),
-        update: jest.fn((id, input) => input),
         uploadToCloudflareByFile: jest.fn(() => cloudflareVideoUploadUrl),
         deleteVideoFromCloudflare: jest.fn(() => cloudflareVideo),
         uploadToCloudflareByUrl: jest.fn(
           () => cloudflareVideoUrlUploadResponse
         ),
-        getCloudflareVideosForUserId: jest.fn(() => [cloudflareVideo]),
-        getVideoFromCloudflare: jest.fn(() => cloudflareVideo),
-        remove: jest.fn(() => cloudflareVideo)
+        getVideoFromCloudflare: jest.fn(() => cloudflareVideo)
       })
     }
     const module: TestingModule = await Test.createTestingModule({
-      providers: [VideoResolver, videoService]
+      providers: [VideoResolver, videoService, PrismaService]
     }).compile()
     resolver = module.get<VideoResolver>(VideoResolver)
     service = await module.resolve(VideoService)
+    prismaService = await module.resolve(PrismaService)
+    prismaService.cloudflareVideo.findUnique = jest
+      .fn()
+      .mockResolvedValue(cloudflareVideo)
+    prismaService.cloudflareVideo.findMany = jest
+      .fn()
+      .mockResolvedValue([cloudflareVideo, cloudflareVideo])
+    prismaService.cloudflareVideo.create = jest
+      .fn()
+      .mockImplementationOnce((input) => input.data)
+    prismaService.cloudflareVideo.update = jest
+      .fn()
+      .mockImplementationOnce((input) => input.data)
+    prismaService.cloudflareVideo.delete = jest
+      .fn()
+      .mockResolvedValue(cloudflareVideo)
   })
 
   describe('createCloudflareUploadByFile ', () => {
@@ -76,9 +83,7 @@ describe('VideoResolver', () => {
       ).toEqual({
         ...cloudflareVideoUploadUrl,
         name: 'name',
-        createdAt: expect.any(String),
-        userId: 'userId',
-        readyToStream: false
+        userId: 'userId'
       })
       expect(service.uploadToCloudflareByFile).toHaveBeenCalledWith(
         100,
@@ -112,9 +117,7 @@ describe('VideoResolver', () => {
         )
       ).toEqual({
         id: 'cloudflareUid',
-        createdAt: expect.any(String),
-        userId: user.id,
-        readyToStream: false
+        userId: user.id
       })
       expect(service.uploadToCloudflareByUrl).toHaveBeenCalledWith(
         'https://example.com/video.mp4',
@@ -144,16 +147,19 @@ describe('VideoResolver', () => {
   describe('getMyCloudflareVideos', () => {
     it('returns cloudflare response information', async () => {
       expect(await resolver.getMyCloudflareVideos('userId')).toEqual([
+        cloudflareVideo,
         cloudflareVideo
       ])
-      expect(service.getCloudflareVideosForUserId).toHaveBeenCalledWith(
-        'userId'
-      )
+      expect(prismaService.cloudflareVideo.findMany).toHaveBeenCalledWith({
+        where: { userId: 'userId' }
+      })
     })
   })
   describe('getMyCloudflareVideo', () => {
     it('throws an error if not found', async () => {
-      service.get.mockResolvedValueOnce(undefined)
+      prismaService.cloudflareVideo.findUnique = jest
+        .fn()
+        .mockResolvedValueOnce(null)
       await expect(
         async () => await resolver.getMyCloudflareVideo('videoId', user.id)
       ).rejects.toThrow('Video not found')
@@ -186,14 +192,19 @@ describe('VideoResolver', () => {
       expect(await resolver.getMyCloudflareVideo('videoId', user.id)).toEqual({
         readyToStream: true
       })
-      expect(service.update).toHaveBeenCalledWith('videoId', {
-        readyToStream: true
+      expect(prismaService.cloudflareVideo.update).toHaveBeenCalledWith({
+        where: { id: 'videoId' },
+        data: {
+          readyToStream: true
+        }
       })
     })
   })
   describe('deleteCloudflareVideo', () => {
     it('throws an error if not found', async () => {
-      service.get.mockResolvedValueOnce(undefined)
+      prismaService.cloudflareVideo.findUnique = jest
+        .fn()
+        .mockResolvedValueOnce(null)
       await expect(
         async () => await resolver.deleteCloudflareVideo('videoId', user.id)
       ).rejects.toThrow('Video not found')
@@ -217,7 +228,9 @@ describe('VideoResolver', () => {
     })
     it('calls service.remove', async () => {
       expect(await resolver.deleteCloudflareVideo('1', user.id)).toEqual(true)
-      expect(service.remove).toHaveBeenCalledWith('1')
+      expect(prismaService.cloudflareVideo.delete).toHaveBeenCalledWith({
+        where: { id: '1' }
+      })
     })
   })
 })

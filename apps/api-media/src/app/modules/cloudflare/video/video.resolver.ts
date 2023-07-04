@@ -1,12 +1,17 @@
 import { Resolver, Query, Mutation, Args } from '@nestjs/graphql'
 import { ForbiddenError, UserInputError } from 'apollo-server-errors'
 import { CurrentUserId } from '@core/nest/decorators/CurrentUserId'
-import { CloudflareVideo } from '../../../__generated__/graphql'
+import { CloudflareVideo } from '.prisma/api-media-client'
+
+import { PrismaService } from '../../../lib/prisma.service'
 import { VideoService } from './video.service'
 
 @Resolver('Video')
 export class VideoResolver {
-  constructor(private readonly videoService: VideoService) {}
+  constructor(
+    private readonly videoService: VideoService,
+    private readonly prismaService: PrismaService
+  ) {}
 
   @Mutation()
   async createCloudflareVideoUploadByFile(
@@ -20,13 +25,13 @@ export class VideoResolver {
       userId
     )
     if (response == null) throw new Error('unable to connect to cloudflare')
-    return await this.videoService.save({
-      _key: response.id,
-      uploadUrl: response.uploadUrl,
-      userId,
-      name,
-      createdAt: new Date().toISOString(),
-      readyToStream: false
+    return await this.prismaService.cloudflareVideo.create({
+      data: {
+        id: response.id,
+        uploadUrl: response.uploadUrl,
+        userId,
+        name
+      }
     })
   }
 
@@ -41,11 +46,11 @@ export class VideoResolver {
     )
     if (!response.success || response.result == null)
       throw new Error(response.errors[0])
-    return await this.videoService.save({
-      _key: response.result.uid,
-      userId,
-      createdAt: new Date().toISOString(),
-      readyToStream: false
+    return await this.prismaService.cloudflareVideo.create({
+      data: {
+        id: response.result.uid,
+        userId
+      }
     })
   }
 
@@ -53,7 +58,9 @@ export class VideoResolver {
   async getMyCloudflareVideos(
     @CurrentUserId() userId: string
   ): Promise<CloudflareVideo[]> {
-    return await this.videoService.getCloudflareVideosForUserId(userId)
+    return await this.prismaService.cloudflareVideo.findMany({
+      where: { userId }
+    })
   }
 
   @Query()
@@ -61,7 +68,9 @@ export class VideoResolver {
     @Args('id') id: string,
     @CurrentUserId() userId: string
   ): Promise<CloudflareVideo> {
-    const video = await this.videoService.get(id)
+    const video = await this.prismaService.cloudflareVideo.findUnique({
+      where: { id }
+    })
     if (video == null) {
       throw new UserInputError('Video not found')
     }
@@ -73,8 +82,11 @@ export class VideoResolver {
     if (!response.success) {
       throw new Error(response.errors[0])
     }
-    return await this.videoService.update(id, {
-      readyToStream: response.result?.readyToStream ?? false
+    return await this.prismaService.cloudflareVideo.update({
+      where: { id },
+      data: {
+        readyToStream: response.result?.readyToStream ?? false
+      }
     })
   }
 
@@ -83,7 +95,9 @@ export class VideoResolver {
     @Args('id') id: string,
     @CurrentUserId() userId: string
   ): Promise<boolean> {
-    const video = await this.videoService.get(id)
+    const video = await this.prismaService.cloudflareVideo.findUnique({
+      where: { id }
+    })
     if (video == null) {
       throw new UserInputError('Video not found')
     }
@@ -94,7 +108,7 @@ export class VideoResolver {
     if (!response) {
       throw new UserInputError('Video could not be deleted from cloudflare')
     }
-    await this.videoService.remove(id)
+    await this.prismaService.cloudflareVideo.delete({ where: { id } })
     return true
   }
 }
