@@ -235,7 +235,11 @@ describe('BlockService', () => {
         .mockReturnValueOnce(blockChild)
       prismaService.block.findMany = jest.fn().mockReturnValue([block, block2])
       prismaService.block.findUnique = jest.fn().mockReturnValue(block)
-      prismaService.block.update = jest.fn().mockReturnValue(duplicatedBlock)
+      prismaService.block.update = jest
+        .fn()
+        .mockReturnValueOnce(duplicatedBlock)
+        .mockReturnValueOnce(blockChild)
+        .mockReturnValueOnce(block2)
       service.getSiblingsInternal = jest
         .fn()
         .mockReturnValue([block, duplicatedBlock, block2])
