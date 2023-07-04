@@ -138,7 +138,10 @@ export function Video({
 
   // Initiate video player listeners
   useEffect(() => {
-    const handleStopLoading = (): void => setLoading(false)
+    const handleStopLoading = (): void => {
+      console.log('playing, canplay or canplaythrough triggered')
+      setLoading(false)
+    }
     const handleStopLoadingOnAutoplay = (): void => {
       console.log('seeked', autoplay)
       if (autoplay === true) handleStopLoading()
@@ -249,7 +252,7 @@ export function Video({
           <StyledVideoGradient />
           <StyledVideo
             ref={videoRef}
-            className="video-js"
+            className="video-js vjs-tech"
             playsInline
             sx={{
               '&.video-js.vjs-youtube.vjs-fill': {
@@ -257,7 +260,7 @@ export function Video({
                   xs: 'calc(100% - 120px)',
                   lg: 'calc(100% - 46px)'
                 },
-                mt: { xs: showHeaderFooter ? 5 : 0, lg: 1 }
+                mt: { xs: showHeaderFooter ? 5 : '0px', lg: 1 }
               },
               '> .vjs-tech': {
                 objectFit: videoFit,
