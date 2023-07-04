@@ -155,6 +155,7 @@ export function Video({
 
     if (player != null) {
       if (selectedBlock === undefined) {
+        console.log('turn on event listeners', video?.title)
         // Video jumps to new time and finishes loading - occurs on autoplay
         player.on('seeked', handleStopLoadingOnAutoplay)
         player.on('playing', handleStopLoading)
@@ -165,11 +166,11 @@ export function Video({
     }
     return () => {
       if (player != null) {
-        console.log('turn off event listeners')
+        console.log('turn off event listeners', video?.title)
         player.off('seeked', handleStopLoadingOnAutoplay)
         player.off('playing', handleStopLoading)
-        player.off('canplay', handleStopLoading)
-        player.off('canplaythrough', handleStopLoading)
+        // player.off('canplay', handleStopLoading)
+        // player.off('canplaythrough', handleStopLoading)
         player.off('ended', handleVideoEnd)
       }
     }
@@ -210,6 +211,8 @@ export function Video({
         break
     }
   }
+
+  console.log('headerFooter', showHeaderFooter)
 
   return (
     <Box
@@ -302,9 +305,7 @@ export function Video({
                 player={player}
                 startAt={startAt ?? 0}
                 endAt={progressEndTime}
-                hasYoutubeLoader={
-                  source === VideoBlockSource.youTube && posterBlock == null
-                }
+                isYoutube={source === VideoBlockSource.youTube}
                 loading={loading}
               />
             </ThemeProvider>
