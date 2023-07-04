@@ -121,20 +121,46 @@ export class BlockService {
         journeyId,
         block.parentBlockId ?? null
       )
+      await this.saveAll(
+        blockAndChildrenData.map((block) => ({
+          ...omit(block, [
+            'parentBlockId',
+            'posterBlockId',
+            'coverBlockId',
+            'nextBlockId',
+            'action'
+          ]),
+          journey: {
+            connect: { id: journeyId }
+          }
+        }))
+      )
       const duplicateBlockAndChildren = await Promise.all(
-        blockAndChildrenData.map(
-          async (newBlock) =>
-            await this.prismaService.block.create({
+        blockAndChildrenData.map(async (newBlock) => {
+          if (
+            newBlock.parentBlockId != null ||
+            newBlock.posterBlockId != null ||
+            newBlock.coverBlockId != null ||
+            newBlock.nextBlockId != null ||
+            newBlock.action != null
+          ) {
+            return await this.prismaService.block.update({
+              where: { id: newBlock.id },
+              include: { action: true },
               data: {
-                ...omit(newBlock, 'action'),
+                parentBlockId: newBlock.parentBlockId ?? undefined,
+                posterBlockId: newBlock.posterBlockId ?? undefined,
+                coverBlockId: newBlock.coverBlockId ?? undefined,
+                nextBlockId: newBlock.nextBlockId ?? undefined,
                 action:
                   newBlock.action != null
                     ? { create: newBlock.action }
                     : undefined
-              },
-              include: { action: true }
+              }
             })
-        )
+          }
+          return newBlock
+        })
       )
       const duplicatedBlock = duplicateBlockAndChildren[0]
       const duplicatedChildren = duplicateBlockAndChildren.slice(1)
