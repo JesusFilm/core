@@ -146,14 +146,14 @@ export function VideoControls({
       } else {
         await fscreen.exitFullscreen()
       }
-      setFullscreen(false)
+      setShowHeaderFooter(true)
     } else {
       if (isMobile()) {
         await player.requestFullscreen()
       } else {
         await fscreen.requestFullscreen(document.documentElement)
       }
-      setFullscreen(true)
+      setShowHeaderFooter(false)
     }
   }
 
@@ -206,7 +206,7 @@ export function VideoControls({
         zIndex: 1000,
         top: 0,
         right: 0,
-        bottom: { xs: 50, lg: 4 },
+        bottom: { xs: showHeaderFooter ? 50 : 0, lg: 4 },
         left: 0,
         cursor: visible ? undefined : 'none',
         userSelect: 'none',
@@ -292,6 +292,7 @@ export function VideoControls({
                 width: 'initial',
                 height: 5,
                 mx: 2.5,
+                py: 2,
                 display: { xs: 'flex', lg: 'none' },
                 '& .MuiSlider-thumb': {
                   width: 10,

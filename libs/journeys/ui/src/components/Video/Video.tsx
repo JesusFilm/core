@@ -17,7 +17,7 @@ import {
   VideoBlockObjectFit,
   VideoBlockSource
 } from '../../../__generated__/globalTypes'
-import { TreeBlock } from '../../libs/block'
+import { TreeBlock, useBlocks } from '../../libs/block'
 import { useEditor } from '../../libs/EditorProvider'
 import { blurImage } from '../../libs/blurImage'
 import { ImageFields } from '../Image/__generated__/ImageFields'
@@ -72,6 +72,7 @@ export function Video({
   const {
     state: { selectedBlock }
   } = useEditor()
+  const { showHeaderFooter } = useBlocks()
 
   const eventVideoTitle = video?.title[0].value ?? title
   const eventVideoId = video?.id ?? videoId
@@ -252,8 +253,11 @@ export function Video({
             playsInline
             sx={{
               '&.video-js.vjs-youtube.vjs-fill': {
-                height: { xs: 'calc(100% - 120px)', lg: 'calc(100% - 46px)' },
-                mt: { xs: 5, lg: 1 }
+                height: {
+                  xs: 'calc(100% - 120px)',
+                  lg: 'calc(100% - 46px)'
+                },
+                mt: { xs: showHeaderFooter ? 5 : 0, lg: 1 }
               },
               '> .vjs-tech': {
                 objectFit: videoFit,
