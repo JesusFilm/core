@@ -78,7 +78,6 @@ export function Video({
     state: { selectedBlock }
   } = useEditor()
   const { showHeaderFooter } = useBlocks()
-  const [fullscreen, setFullscreen] = useState(showHeaderFooter)
 
   const eventVideoTitle = video?.title[0].value ?? title
   const eventVideoId = video?.id ?? videoId
@@ -234,10 +233,6 @@ export function Video({
     }
   }
 
-  useEffect(() => {
-    setFullscreen(!showHeaderFooter)
-  }, [showHeaderFooter])
-
   console.log('headerFooter', showHeaderFooter)
 
   return (
@@ -285,11 +280,8 @@ export function Video({
             playsInline
             sx={{
               '&.video-js.vjs-youtube.vjs-fill': {
-                height: {
-                  xs: fullscreen ? '100%' : 'calc(100% - 120px)',
-                  lg: 'calc(100% - 46px)'
-                },
-                mt: { xs: fullscreen ? 0 : 5, lg: 1 }
+                height: { xs: '100%', lg: 'calc(100% - 46px)' },
+                mt: { xs: 0, lg: 1 }
               },
               '> .vjs-tech': {
                 objectFit: videoFit,
