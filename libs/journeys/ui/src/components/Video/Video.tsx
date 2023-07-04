@@ -49,6 +49,11 @@ const StyledVideoGradient = styled(Box)`
   );
 `
 
+function isIOS(): boolean {
+  const userAgent = navigator.userAgent
+  return /iPad|iPhone|iPod/.test(userAgent)
+}
+
 export function Video({
   id: blockId,
   video,
@@ -147,8 +152,15 @@ export function Video({
       if (autoplay === true) handleStopLoading()
     }
     const handleVideoReady = (): void => {
-      console.log('video ready', player?.src)
+      console.log('video ready', player)
       player?.currentTime(startAt ?? 0)
+      // iOS blocks youtube videos from loading or autoplaying properly
+      if (isIOS() && source === VideoBlockSource.youTube) {
+        handleStopLoading()
+        if (autoplay === true) {
+          void player?.play()
+        }
+      }
     }
     const handleVideoEnd = (): void => {
       setLoading(false)
