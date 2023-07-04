@@ -144,7 +144,7 @@ export function Video({
   // Initiate video player listeners
   useEffect(() => {
     const handleStopLoading = (): void => {
-      console.log('playing, canplay or canplaythrough triggered')
+      console.log('playing, canplay triggered')
       setLoading(false)
     }
     const handleStopLoadingOnAutoplay = (): void => {
@@ -152,16 +152,21 @@ export function Video({
       if (autoplay === true) handleStopLoading()
     }
     const handleVideoReady = (): void => {
-      console.log('video ready', player)
+      console.log('video ready', player, isIOS())
       player?.currentTime(startAt ?? 0)
+    }
+
+    const handleVideoCanPlayThrough = (): void => {
+      console.log('can play through')
       // iOS blocks youtube videos from loading or autoplaying properly
-      if (isIOS() && source === VideoBlockSource.youTube) {
-        handleStopLoading()
+      if (source === VideoBlockSource.youTube) {
+        void handleStopLoading()
         if (autoplay === true) {
           void player?.play()
         }
       }
     }
+
     const handleVideoEnd = (): void => {
       setLoading(false)
       if (player?.isFullscreen() === true && player != null) {
@@ -176,7 +181,7 @@ export function Video({
         player.on('seeked', handleStopLoadingOnAutoplay)
         player.on('playing', handleStopLoading)
         player.on('canplay', handleStopLoading)
-        player.on('canplaythrough', handleStopLoading)
+        player.on('canplaythrough', handleVideoCanPlayThrough)
         player.on('ready', handleVideoReady)
         player.on('ended', handleVideoEnd)
       }
@@ -187,7 +192,7 @@ export function Video({
         player.off('seeked', handleStopLoadingOnAutoplay)
         player.off('playing', handleStopLoading)
         player.off('canplay', handleStopLoading)
-        player.off('canplaythrough', handleStopLoading)
+        player.off('canplaythrough', handleVideoCanPlayThrough)
         player.off('ready', handleVideoReady)
         player.off('ended', handleVideoEnd)
       }
