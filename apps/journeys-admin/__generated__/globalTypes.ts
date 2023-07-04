@@ -489,6 +489,14 @@ export interface UserInviteCreateInput {
   email: string;
 }
 
+export interface UserTeamInviteCreateInput {
+  email: string;
+}
+
+export interface UserTeamUpdateInput {
+  role: UserTeamRole;
+}
+
 export interface VideoBlockCreateInput {
   id?: string | null;
   journeyId: string;

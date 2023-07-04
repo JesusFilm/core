@@ -2,18 +2,21 @@ import { ReactElement, useMemo } from 'react'
 import Box from '@mui/material/Box'
 import List from '@mui/material/List'
 import Typography from '@mui/material/Typography'
-import { UserTeams_userTeams as UserTeam } from '../../../../../__generated__/UserTeams'
+import { GetUserTeams_userTeams as UserTeam } from '../../../../../__generated__/GetUserTeams'
 import { TeamMemberListItem } from '../TeamMemberListItem'
+import { GetUserTeamInvites_userTeamInvites as UserTeamInvites } from '../../../../../__generated__/GetUserTeamInvites'
 
 interface TeamMemberListProps {
   title: string
-  users?: UserTeam[]
+  users: UserTeam[]
+  invites?: UserTeamInvites[]
   currentUser?: UserTeam
 }
 
 export function TeamMemberList({
   title,
-  users = [],
+  users,
+  invites = [],
   currentUser
 }: TeamMemberListProps): ReactElement {
   const sortedUsers: UserTeam[] = useMemo(() => {
@@ -38,6 +41,15 @@ export function TeamMemberList({
                 <TeamMemberListItem
                   key={user.id}
                   user={user}
+                  currentUser={currentUser}
+                />
+              )
+            })}
+            {invites?.map((invite) => {
+              return (
+                <TeamMemberListItem
+                  key={invite.id}
+                  user={invite}
                   currentUser={currentUser}
                 />
               )

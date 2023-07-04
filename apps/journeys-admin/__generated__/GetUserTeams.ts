@@ -6,10 +6,10 @@
 import { UserTeamRole } from "./globalTypes";
 
 // ====================================================
-// GraphQL query operation: UserTeams
+// GraphQL query operation: GetUserTeams
 // ====================================================
 
-export interface UserTeams_userTeams_user {
+export interface GetUserTeams_userTeams_user {
   __typename: "User";
   email: string;
   firstName: string;
@@ -18,17 +18,17 @@ export interface UserTeams_userTeams_user {
   lastName: string | null;
 }
 
-export interface UserTeams_userTeams {
+export interface GetUserTeams_userTeams {
   __typename: "UserTeam";
   id: string;
   role: UserTeamRole;
-  user: UserTeams_userTeams_user;
+  user: GetUserTeams_userTeams_user;
 }
 
-export interface UserTeams {
-  userTeams: UserTeams_userTeams[];
+export interface GetUserTeams {
+  userTeams: GetUserTeams_userTeams[];
 }
 
-export interface UserTeamsVariables {
+export interface GetUserTeamsVariables {
   teamId: string;
 }

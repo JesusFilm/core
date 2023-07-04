@@ -14,17 +14,18 @@ import GroupIcon from '@mui/icons-material/Group'
 import PersonIcon from '@mui/icons-material/Person'
 import { gql, useMutation } from '@apollo/client'
 import { UserTeamRole } from '../../../../../__generated__/globalTypes'
-import { UserTeams_userTeams as UserTeam } from '../../../../../__generated__/UserTeams'
-// import { RemoveUser } from '../../../AccessDialog/UserList/UserListItem/RemoveUser'
+import { GetUserTeams_userTeams as UserTeam } from '../../../../../__generated__/GetUserTeams'
+import { GetUserTeamInvites_userTeamInvites as UserTeamInvite } from '../../../../../__generated__/GetUserTeamInvites'
 import { MenuItem } from '../../../MenuItem'
 import { RemoveUserTeam } from '../RemoveUserTeam'
+import { UserTeamUpdate } from '../../../../../__generated__/UserTeamUpdate'
 
 interface TeamMemberListItemProps {
-  user: UserTeam
+  user: UserTeam | UserTeamInvite
   currentUser: UserTeam
 }
 
-export const USER_TEAM_ROLE_MANAGE = gql`
+export const USER_TEAM_UPDATE = gql`
   mutation UserTeamUpdate($userTeamUpdateId: ID!, $input: UserTeamUpdateInput) {
     userTeamUpdate(id: $userTeamUpdateId, input: $input) {
       role
@@ -37,25 +38,30 @@ export const USER_TEAM_ROLE_MANAGE = gql`
 `
 
 export function TeamMemberListItem({
-  user: userTeam,
+  user: listItem,
   currentUser
 }: TeamMemberListItemProps): ReactElement {
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
   const open = Boolean(anchorEl)
-  const [userTeamUpdate] = useMutation(USER_TEAM_ROLE_MANAGE)
+  const [userTeamUpdate] = useMutation<UserTeamUpdate>(USER_TEAM_UPDATE)
 
   const { id, email, displayName, imageUrl, role } = useMemo(() => {
-    return {
-      id: userTeam.id,
-      email: userTeam.user.email,
-      displayName: compact([
-        userTeam.user.firstName,
-        userTeam.user.lastName
-      ]).join(' '),
-      imageUrl: userTeam.user.imageUrl,
-      role: userTeam.role
+    if (listItem.__typename === 'UserTeamInvite') {
+      return {
+        ...listItem
+      }
     }
-  }, [userTeam])
+    return {
+      id: listItem.id,
+      email: listItem?.user?.email,
+      displayName: compact([
+        listItem?.user?.firstName,
+        listItem?.user?.lastName
+      ]).join(' '),
+      imageUrl: listItem?.user?.imageUrl,
+      role: listItem.role
+    }
+  }, [listItem])
 
   const menuLabel = useMemo((): string => {
     switch (role) {
@@ -65,12 +71,19 @@ export function TeamMemberListItem({
         return 'Member'
       case UserTeamRole.guest:
         return 'Guest'
+      case undefined:
+        return 'Pending'
     }
   }, [role])
 
   const { role: userRole } = currentUser
 
   const disableAction = useMemo((): boolean => {
+    if (
+      listItem.__typename !== 'UserTeamInvite' &&
+      currentUser.user.id === listItem?.user?.id
+    )
+      return true
     switch (userRole) {
       case UserTeamRole.guest: {
         return true
@@ -82,7 +95,7 @@ export function TeamMemberListItem({
         return false
       }
     }
-  }, [userRole])
+  }, [currentUser.user.id, listItem, userRole])
 
   const handleClick = (event: MouseEvent<HTMLElement>): void => {
     setAnchorEl(event.currentTarget)
@@ -96,6 +109,8 @@ export function TeamMemberListItem({
       setAnchorEl(null)
     }
   }, [])
+
+  const isInvite = listItem.__typename === 'UserTeamInvite'
 
   return (
     <>
@@ -112,7 +127,7 @@ export function TeamMemberListItem({
             aria-haspopup="true"
             aria-expanded={open ? 'true' : undefined}
             onClick={handleClick}
-            disabled={disableAction || currentUser.user.id === userTeam.user.id}
+            disabled={disableAction}
             endIcon={<ArrowDropDownIcon />}
             sx={{
               color: 'text.primary',
@@ -148,48 +163,51 @@ export function TeamMemberListItem({
         }}
       >
         <Stack divider={<Divider />}>
-          <MenuItem
-            label="Manager"
-            icon={<GroupIcon />}
-            onClick={async () => {
-              handleClose()
-              await userTeamUpdate({
-                variables: {
-                  userTeamUpdateId: id,
-                  input: { role: UserTeamRole.manager }
-                }
-              })
-            }}
-          />
-          <MenuItem
-            label="Member"
-            icon={<PersonIcon />}
-            onClick={async () => {
-              handleClose()
-              await userTeamUpdate({
-                variables: {
-                  userTeamUpdateId: id,
-                  input: { role: UserTeamRole.member }
-                }
-              })
-            }}
-          />
-          <MenuItem
-            label="Guest"
-            icon={<PersonOutlineIcon />}
-            onClick={async () => {
-              handleClose()
-              await userTeamUpdate({
-                variables: {
-                  userTeamUpdateId: id,
-                  input: { role: UserTeamRole.guest }
-                }
-              })
-            }}
-          />
-
+          {!isInvite && (
+            <Stack>
+              <MenuItem
+                label="Manager"
+                icon={<GroupIcon />}
+                onClick={async () => {
+                  handleClose()
+                  await userTeamUpdate({
+                    variables: {
+                      userTeamUpdateId: id,
+                      input: { role: UserTeamRole.manager }
+                    }
+                  })
+                }}
+              />
+              <MenuItem
+                label="Member"
+                icon={<PersonIcon />}
+                onClick={async () => {
+                  handleClose()
+                  await userTeamUpdate({
+                    variables: {
+                      userTeamUpdateId: id,
+                      input: { role: UserTeamRole.member }
+                    }
+                  })
+                }}
+              />
+              <MenuItem
+                label="Guest"
+                icon={<PersonOutlineIcon />}
+                onClick={async () => {
+                  handleClose()
+                  await userTeamUpdate({
+                    variables: {
+                      userTeamUpdateId: id,
+                      input: { role: UserTeamRole.guest }
+                    }
+                  })
+                }}
+              />
+            </Stack>
+          )}
           {!disableAction && (
-            <RemoveUserTeam id={id} email={email} onClick={handleClose} /> // finish this component once UserInvites is ready
+            <RemoveUserTeam id={id} isInvite={isInvite} onClick={handleClose} />
           )}
         </Stack>
       </Menu>

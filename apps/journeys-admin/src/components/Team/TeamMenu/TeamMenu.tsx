@@ -17,7 +17,7 @@ export function TeamMenu(): ReactElement {
   const { activeTeam } = useTeam()
   const [teamCreateOpen, setTeamCreateOpen] = useState(false)
   const [teamUpdateOpen, setTeamUpdateOpen] = useState(false)
-  const [teamManageMembers, setTeamManageMembers] = useState(false)
+  const [teamManageOpen, setTeamManageOpen] = useState(false)
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
   const handleShowMenu = (event: React.MouseEvent<HTMLButtonElement>): void => {
     setAnchorEl(event.currentTarget)
@@ -42,9 +42,9 @@ export function TeamMenu(): ReactElement {
         }}
       />
       <TeamManageDialog
-        open={teamManageMembers}
+        open={teamManageOpen}
         onClose={() => {
-          setTeamManageMembers(false)
+          setTeamManageOpen(false)
         }}
       />
       <IconButton
@@ -97,7 +97,7 @@ export function TeamMenu(): ReactElement {
           label={t('Manage Team')}
           icon={<GroupIcon />}
           onClick={() => {
-            setTeamManageMembers(true)
+            setTeamManageOpen(true)
             setAnchorEl(null)
           }}
         />
