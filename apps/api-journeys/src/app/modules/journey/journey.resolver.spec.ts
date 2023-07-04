@@ -59,6 +59,7 @@ describe('JourneyResolver', () => {
 
   const publishedAt = new Date('2021-11-19T12:34:56.647Z')
   const createdAt = new Date('2021-11-19T12:34:56.647Z')
+  const updatedAt = new Date('2021-11-19T12:34:56.647Z')
 
   const journey = {
     id: 'journeyId',
@@ -73,6 +74,7 @@ describe('JourneyResolver', () => {
     teamId: 'teamId',
     publishedAt,
     createdAt,
+    updatedAt,
     archivedAt: null,
     trashedAt: null,
     featuredAt: null,
