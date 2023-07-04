@@ -164,7 +164,7 @@ export function Video({
       if (source === VideoBlockSource.youTube) {
         void handleStopLoading()
         if (autoplay === true) {
-          player.autoplay(true)
+          player?.autoplay(true)
           void player?.play()
         }
       }
