@@ -144,7 +144,7 @@ export function Video({
   // Initiate video player listeners
   useEffect(() => {
     const handleStopLoading = (): void => {
-      console.log('playing, canplay triggered')
+      console.log('playing, canplay, canplaythrough triggered')
       setLoading(false)
     }
     const handleStopLoadingOnAutoplay = (): void => {
@@ -154,10 +154,7 @@ export function Video({
     const handleVideoReady = (): void => {
       console.log('video ready', player, isIOS())
       player?.currentTime(startAt ?? 0)
-    }
 
-    const handleVideoCanPlayThrough = (): void => {
-      console.log('can play through')
       // iOS blocks youtube videos from loading or autoplaying properly
       if (source === VideoBlockSource.youTube) {
         void handleStopLoading()
@@ -166,7 +163,6 @@ export function Video({
         }
       }
     }
-
     const handleVideoEnd = (): void => {
       setLoading(false)
       if (player?.isFullscreen() === true && player != null) {
@@ -179,10 +175,10 @@ export function Video({
         console.log('turn on event listeners', video)
         // Video jumps to new time and finishes loading - occurs on autoplay
         player.on('seeked', handleStopLoadingOnAutoplay)
+        player.on('ready', handleVideoReady)
         player.on('playing', handleStopLoading)
         player.on('canplay', handleStopLoading)
-        player.on('canplaythrough', handleVideoCanPlayThrough)
-        player.on('ready', handleVideoReady)
+        player.on('canplaythrough', handleStopLoading)
         player.on('ended', handleVideoEnd)
       }
     }
@@ -190,10 +186,10 @@ export function Video({
       if (player != null) {
         console.log('turn off event listeners', video)
         player.off('seeked', handleStopLoadingOnAutoplay)
+        player.off('ready', handleVideoReady)
         player.off('playing', handleStopLoading)
         player.off('canplay', handleStopLoading)
-        player.off('canplaythrough', handleVideoCanPlayThrough)
-        player.off('ready', handleVideoReady)
+        player.off('canplaythrough', handleStopLoading)
         player.off('ended', handleVideoEnd)
       }
     }
