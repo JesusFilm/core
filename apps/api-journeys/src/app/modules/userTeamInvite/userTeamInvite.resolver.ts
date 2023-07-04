@@ -70,6 +70,7 @@ export class TeamResolver {
         update: {
           senderId,
           acceptedAt: null,
+          receipientId: null,
           removedAt: null
         }
       })
