@@ -115,11 +115,7 @@ export function Video({
           muted: muted === true,
           loop: true,
           // This poster is displayed on an autoplay YT video on iOS. Video is no longer loading, but does not play due to YT device limitations.
-          poster: posterBlock?.src,
-          children: {
-            bigPlayButton: false,
-            loadingSpinner: false
-          }
+          poster: posterBlock?.src
         })
       )
     }
@@ -163,6 +159,10 @@ export function Video({
       // iOS blocks youtube videos from autoplaying so loading hangs
       if (source === VideoBlockSource.youTube) {
         void handleStopLoading()
+        if (autoplay === true) {
+          player?.autoplay(true)
+          void player?.play()
+        }
       }
     }
     const handleVideoEnd = (): void => {
