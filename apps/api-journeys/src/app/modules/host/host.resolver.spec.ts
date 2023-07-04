@@ -82,7 +82,8 @@ describe('HostResolver', () => {
           title: 'Edmond Shen & Nisal Cottingham',
           location: 'New Zealand',
           src1: 'avatar1',
-          src2: 'avatar2'
+          src2: 'avatar2',
+          updatedAt: new Date()
         },
         {
           id: 'host-id2',
@@ -90,7 +91,8 @@ describe('HostResolver', () => {
           title: 'Edmond Shen & Nisal Cottingham',
           location: 'New Zealand',
           src1: 'avatar1',
-          src2: 'avatar2'
+          src2: 'avatar2',
+          updatedAt: new Date()
         }
       ]
       jest.spyOn(prismaService.host, 'findMany').mockResolvedValue(mockHosts)
