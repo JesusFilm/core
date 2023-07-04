@@ -160,13 +160,9 @@ export function Video({
       console.log('video ready', player, isIOS())
       player?.currentTime(startAt ?? 0)
 
-      // iOS blocks youtube videos from loading or autoplaying properly
+      // iOS blocks youtube videos from autoplaying so loading hangs
       if (source === VideoBlockSource.youTube) {
         void handleStopLoading()
-        if (autoplay === true) {
-          player?.autoplay(true)
-          void player?.play()
-        }
       }
     }
     const handleVideoEnd = (): void => {
