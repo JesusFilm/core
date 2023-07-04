@@ -78,6 +78,7 @@ export function Video({
     state: { selectedBlock }
   } = useEditor()
   const { showHeaderFooter } = useBlocks()
+  const [fullscreen, setFullscreen] = useState(showHeaderFooter)
 
   const eventVideoTitle = video?.title[0].value ?? title
   const eventVideoId = video?.id ?? videoId
@@ -113,12 +114,16 @@ export function Video({
           responsive: true,
           muted: muted === true,
           loop: true,
-          // VideoJS blur background persists so we cover video when using png poster on non-autoplay videos
-          poster: blurBackground
+          // This poster is displayed on an autoplay YT video on iOS. Video is no longer loading, but does not play due to YT device limitations.
+          poster: posterBlock?.src,
+          children: {
+            bigPlayButton: false,
+            loadingSpinner: false
+          }
         })
       )
     }
-  }, [startAt, endAt, muted, blurBackground])
+  }, [startAt, endAt, muted, posterBlock])
 
   const triggerTimes = useMemo(() => {
     return children
@@ -159,6 +164,7 @@ export function Video({
       if (source === VideoBlockSource.youTube) {
         void handleStopLoading()
         if (autoplay === true) {
+          player.autoplay(true)
           void player?.play()
         }
       }
@@ -232,6 +238,10 @@ export function Video({
     }
   }
 
+  useEffect(() => {
+    setFullscreen(!showHeaderFooter)
+  }, [showHeaderFooter])
+
   console.log('headerFooter', showHeaderFooter)
 
   return (
@@ -280,10 +290,10 @@ export function Video({
             sx={{
               '&.video-js.vjs-youtube.vjs-fill': {
                 height: {
-                  xs: showHeaderFooter ? 'calc(100% - 120px)' : '100%',
+                  xs: fullscreen ? '100%' : 'calc(100% - 120px)',
                   lg: 'calc(100% - 46px)'
                 },
-                mt: { xs: showHeaderFooter ? 5 : '0px', lg: 1 }
+                mt: { xs: fullscreen ? 0 : 5, lg: 1 }
               },
               '> .vjs-tech': {
                 objectFit: videoFit,
