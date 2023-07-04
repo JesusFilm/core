@@ -146,6 +146,10 @@ export function Video({
       console.log('seeked', autoplay)
       if (autoplay === true) handleStopLoading()
     }
+    const handleVideoReady = (): void => {
+      console.log('video ready', player?.src)
+      player?.currentTime(startAt ?? 0)
+    }
     const handleVideoEnd = (): void => {
       setLoading(false)
       if (player?.isFullscreen() === true && player != null) {
@@ -155,26 +159,29 @@ export function Video({
 
     if (player != null) {
       if (selectedBlock === undefined) {
-        console.log('turn on event listeners', video?.title)
+        console.log('turn on event listeners', video)
         // Video jumps to new time and finishes loading - occurs on autoplay
         player.on('seeked', handleStopLoadingOnAutoplay)
         player.on('playing', handleStopLoading)
         player.on('canplay', handleStopLoading)
         player.on('canplaythrough', handleStopLoading)
+        player.on('ready', handleVideoReady)
         player.on('ended', handleVideoEnd)
       }
     }
     return () => {
       if (player != null) {
-        console.log('turn off event listeners', video?.title)
+        console.log('turn off event listeners', video)
         player.off('seeked', handleStopLoadingOnAutoplay)
         player.off('playing', handleStopLoading)
-        // player.off('canplay', handleStopLoading)
-        // player.off('canplaythrough', handleStopLoading)
+        player.off('canplay', handleStopLoading)
+        player.off('canplaythrough', handleStopLoading)
+        player.off('ready', handleVideoReady)
         player.off('ended', handleVideoEnd)
       }
     }
   }, [
+    video,
     player,
     selectedBlock,
     startAt,
@@ -260,7 +267,7 @@ export function Video({
             sx={{
               '&.video-js.vjs-youtube.vjs-fill': {
                 height: {
-                  xs: 'calc(100% - 120px)',
+                  xs: showHeaderFooter ? 'calc(100% - 120px)' : '100%',
                   lg: 'calc(100% - 46px)'
                 },
                 mt: { xs: showHeaderFooter ? 5 : '0px', lg: 1 }

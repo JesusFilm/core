@@ -52,9 +52,6 @@ export function VideoControls({
   const visible = !playing || active || loading
 
   useEffect(() => {
-    const handleVideoReady = (): void => {
-      player.currentTime(startAt)
-    }
     const handleVideoPlay = (): void => {
       setPlaying(true)
 
@@ -95,7 +92,7 @@ export function VideoControls({
       setShowHeaderFooter(fscreen.fullscreenElement == null)
 
     setVolume(player.volume() * 100)
-    player.on('ready', handleVideoReady)
+
     player.on('play', handleVideoPlay)
     player.on('pause', handleVideoPause)
     player.on('timeupdate', handleVideoTimeChange)
@@ -106,7 +103,6 @@ export function VideoControls({
     fscreen.addEventListener('fullscreenchange', handleDesktopFullscreenChange)
 
     return () => {
-      player.off('ready', handleVideoReady)
       player.off('play', handleVideoPlay)
       player.off('pause', handleVideoPause)
       player.off('timeupdate', handleVideoTimeChange)
