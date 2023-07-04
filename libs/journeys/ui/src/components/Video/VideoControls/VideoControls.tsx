@@ -18,6 +18,7 @@ import VolumeDownOutlined from '@mui/icons-material/VolumeDownOutlined'
 import VolumeMuteOutlined from '@mui/icons-material/VolumeMuteOutlined'
 import VolumeOffOutlined from '@mui/icons-material/VolumeOffOutlined'
 import { secondsToTimeFormat } from '@core/shared/ui/timeFormat'
+import { useBlocks } from '../../../libs/block'
 
 interface VideoControlProps {
   player: Player
@@ -44,7 +45,7 @@ export function VideoControls({
   const [displayTime, setDisplayTime] = useState('0:00')
   const [progress, setProgress] = useState(0)
   const [volume, setVolume] = useState(0)
-  const [fullscreen, setFullscreen] = useState(false)
+  const { showHeaderFooter, setShowHeaderFooter } = useBlocks()
 
   const durationSeconds = endAt - startAt
   const duration = secondsToTimeFormat(durationSeconds, { trimZeroes: true })
@@ -87,12 +88,12 @@ export function VideoControls({
       setProgress(Math.round(player.currentTime()))
     }
     const handleMobileFullscreenChange = (): void =>
-      setFullscreen(player.isFullscreen())
+      setShowHeaderFooter(!player.isFullscreen())
     const handleUserActive = (): void => setActive(true)
     const handleUserInactive = (): void => setActive(false)
     const handleVideoVolumeChange = (): void => setVolume(player.volume() * 100)
     const handleDesktopFullscreenChange = (): void =>
-      setFullscreen(fscreen.fullscreenElement != null)
+      setShowHeaderFooter(fscreen.fullscreenElement == null)
 
     setVolume(player.volume() * 100)
     player.on('ready', handleVideoReady)
@@ -119,7 +120,7 @@ export function VideoControls({
         handleDesktopFullscreenChange
       )
     }
-  }, [player, setFullscreen, startAt, endAt])
+  }, [player, setShowHeaderFooter, startAt, endAt])
 
   function handlePlay(): void {
     if (!playing) {
@@ -133,8 +134,13 @@ export function VideoControls({
   }
 
   async function handleFullscreen(): Promise<void> {
-    console.log(fullscreen, isMobile(), player, player.supportsFullScreen())
-    if (fullscreen) {
+    console.log(
+      showHeaderFooter,
+      isMobile(),
+      player,
+      player.supportsFullScreen()
+    )
+    if (!showHeaderFooter) {
       if (isMobile()) {
         await player.exitFullscreen()
       } else {
@@ -421,10 +427,10 @@ export function VideoControls({
                   onClick={handleFullscreen}
                   sx={{ py: 0, px: 2 }}
                 >
-                  {fullscreen ? (
-                    <FullscreenExitRounded />
-                  ) : (
+                  {showHeaderFooter ? (
                     <FullscreenRounded />
+                  ) : (
+                    <FullscreenExitRounded />
                   )}
                 </IconButton>
               </Stack>

@@ -77,8 +77,13 @@ interface ConductorProps {
 }
 
 export function Conductor({ blocks }: ConductorProps): ReactElement {
-  const { setTreeBlocks, nextActiveBlock, treeBlocks, activeBlock } =
-    useBlocks()
+  const {
+    setTreeBlocks,
+    nextActiveBlock,
+    treeBlocks,
+    activeBlock,
+    showHeaderFooter
+  } = useBlocks()
   const [swiper, setSwiper] = useState<SwiperCore>()
   const [slideTransitioning, setSlideTransitioning] = useState(false)
   const theme = useTheme()
@@ -242,6 +247,11 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
             onSlideChangeTransitionStart={() => setSlideTransitioning(true)}
             onSlideChangeTransitionEnd={() => setSlideTransitioning(false)}
             allowTouchMove={false}
+            sx={{
+              '.swiper-pagination': {
+                display: showHeaderFooter ? 'block' : 'none'
+              }
+            }}
           >
             {treeBlocks.map((block) => {
               const theme = getStepTheme(
@@ -267,9 +277,9 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
                           px: { lg: 6 }
                         }}
                       >
-                        <StepHeader />
+                        {showHeaderFooter && <StepHeader />}
                         <BlockRenderer block={block} />
-                        <StepFooter />
+                        {showHeaderFooter && <StepFooter />}
                       </Stack>
                     </Fade>
                   </ThemeProvider>
