@@ -68,6 +68,20 @@ describe('StepFooter', () => {
     expect(getByTestId('host-name-location')).toBeInTheDocument()
   })
 
+  it('should show footer buttons', () => {
+    const { getAllByTestId } = render(
+      <MockedProvider>
+        <SnackbarProvider>
+          <JourneyProvider value={{ journey }}>
+            <StepFooter />
+          </JourneyProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    expect(getAllByTestId('footer-buttons')).toHaveLength(2)
+  })
+
   it('should display social media journey title by default', () => {
     const { getByText } = render(
       <MockedProvider>

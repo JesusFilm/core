@@ -2,17 +2,17 @@ import { ComponentProps } from 'react'
 import { Meta, Story } from '@storybook/react'
 import Typography from '@mui/material/Typography'
 import { noop } from 'lodash'
-import { journeyUiConfig } from '../../../libs/journeyUiConfig'
-import { CustomChip } from './CustomChip'
+import { journeyUiConfig } from '../../../../libs/journeyUiConfig'
+import { FooterButton } from './FooterButton'
 
 const Demo = {
   ...journeyUiConfig,
-  component: CustomChip,
-  title: 'Journeys-Ui/StepFooter/CustomChip'
+  component: FooterButton,
+  title: 'Journeys-Ui/StepFooter/FooterButtons/FooterButton'
 }
 
-const Template: Story<ComponentProps<typeof CustomChip>> = ({ ...args }) => (
-  <CustomChip {...args} />
+const Template: Story<ComponentProps<typeof FooterButton>> = ({ ...args }) => (
+  <FooterButton {...args} />
 )
 
 export const Default = Template.bind({})

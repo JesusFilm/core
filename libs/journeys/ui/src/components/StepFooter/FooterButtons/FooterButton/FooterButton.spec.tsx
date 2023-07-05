@@ -1,15 +1,15 @@
 import Typography from '@mui/material/Typography'
 import { fireEvent, render } from '@testing-library/react'
-import { CustomChip } from '.'
+import { FooterButton } from '.'
 
-describe('CustomChip', () => {
+describe('FooterButton', () => {
   it('should handle click', () => {
     const handleClick = jest.fn()
 
     const { getByRole } = render(
-      <CustomChip handleClick={handleClick}>
+      <FooterButton handleClick={handleClick}>
         <Typography>Test</Typography>
-      </CustomChip>
+      </FooterButton>
     )
 
     fireEvent.click(getByRole('button', { name: 'Test' }))

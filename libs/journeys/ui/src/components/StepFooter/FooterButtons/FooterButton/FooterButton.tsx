@@ -31,6 +31,6 @@ interface Props {
   children: ReactNode
 }
 
-export function CustomChip({ handleClick, children }: Props): ReactElement {
+export function FooterButton({ handleClick, children }: Props): ReactElement {
   return <StyledButton onClick={handleClick}>{children}</StyledButton>
 }
