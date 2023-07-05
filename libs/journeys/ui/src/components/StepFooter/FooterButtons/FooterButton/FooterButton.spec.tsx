@@ -6,13 +6,13 @@ describe('FooterButton', () => {
   it('should handle click', () => {
     const handleClick = jest.fn()
 
-    const { getByRole } = render(
+    const { getAllByRole } = render(
       <FooterButton onClick={handleClick}>
         <Typography>Test</Typography>
       </FooterButton>
     )
 
-    fireEvent.click(getByRole('button', { name: 'Test' }))
+    fireEvent.click(getAllByRole('button', { name: 'Test' })[0])
     expect(handleClick).toHaveBeenCalled()
   })
 })

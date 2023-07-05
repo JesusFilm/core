@@ -4,11 +4,11 @@ import { FooterButtons } from './FooterButtons'
 
 describe('FooterButtons', () => {
   it('should show share button', () => {
-    const { getByTestId } = render(
+    const { getAllByTestId } = render(
       <SnackbarProvider>
         <FooterButtons />
       </SnackbarProvider>
     )
-    expect(getByTestId('ShareIcon')).toBeInTheDocument()
+    expect(getAllByTestId('ShareIcon')).toHaveLength(2)
   })
 })

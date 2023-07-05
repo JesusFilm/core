@@ -29,7 +29,7 @@ describe('ShareButton', () => {
       share: navigatorMock
     })
 
-    const { getByRole } = render(
+    const { getAllByRole } = render(
       <SnackbarProvider>
         <JourneyProvider
           value={{
@@ -42,12 +42,12 @@ describe('ShareButton', () => {
       </SnackbarProvider>
     )
 
-    fireEvent.click(getByRole('button'))
+    fireEvent.click(getAllByRole('button')[0])
     expect(navigatorMock).toHaveBeenCalled()
   })
 
   it('should open share dialog on desktop', () => {
-    const { getByRole } = render(
+    const { getByRole, getAllByRole } = render(
       <SnackbarProvider>
         <JourneyProvider
           value={{
@@ -60,12 +60,12 @@ describe('ShareButton', () => {
       </SnackbarProvider>
     )
 
-    fireEvent.click(getByRole('button'))
+    fireEvent.click(getAllByRole('button')[0])
     expect(getByRole('dialog', { name: 'Share' })).toBeInTheDocument()
   })
 
   it('should disable click on admin', () => {
-    const { getByRole, queryByRole } = render(
+    const { getAllByRole, queryByRole } = render(
       <SnackbarProvider>
         <JourneyProvider
           value={{
@@ -78,7 +78,7 @@ describe('ShareButton', () => {
       </SnackbarProvider>
     )
 
-    fireEvent.click(getByRole('button'))
+    fireEvent.click(getAllByRole('button')[0])
     expect(queryByRole('dialog', { name: 'Share' })).not.toBeInTheDocument()
   })
 })
