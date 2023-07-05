@@ -48,7 +48,7 @@ describe('JourneyShare', () => {
       </SnackbarProvider>
     )
 
-    fireEvent.click(getByRole('button', { name: 'Share' }))
+    fireEvent.click(getByRole('button'))
     expect(navigatorMock).toHaveBeenCalled()
   })
 
@@ -66,7 +66,7 @@ describe('JourneyShare', () => {
       </SnackbarProvider>
     )
 
-    fireEvent.click(getByRole('button', { name: 'Share' }))
+    fireEvent.click(getByRole('button'))
     expect(getByRole('dialog', { name: 'Share' })).toBeInTheDocument()
   })
 
@@ -84,7 +84,7 @@ describe('JourneyShare', () => {
       </SnackbarProvider>
     )
 
-    fireEvent.click(getByRole('button', { name: 'Share' }))
+    fireEvent.click(getByRole('button'))
     expect(queryByRole('dialog', { name: 'Share' })).not.toBeInTheDocument()
   })
 
@@ -112,7 +112,7 @@ describe('JourneyShare', () => {
       </SnackbarProvider>
     )
 
-    fireEvent.click(getByRole('button', { name: 'Share' }))
+    fireEvent.click(getByRole('button'))
     fireEvent.click(getByTestId('LinkAngledIcon'))
     expect(writeTextMock).toHaveBeenCalled()
   })
@@ -131,7 +131,7 @@ describe('JourneyShare', () => {
       </SnackbarProvider>
     )
 
-    fireEvent.click(getByRole('button', { name: 'Share' }))
+    fireEvent.click(getByRole('button'))
     expect(getAllByRole('link')[0]).toHaveAttribute(
       'href',
       'https://www.facebook.com/sharer/sharer.php?u=http://localhost:4100/test-slug'
@@ -152,7 +152,7 @@ describe('JourneyShare', () => {
       </SnackbarProvider>
     )
 
-    fireEvent.click(getByRole('button', { name: 'Share' }))
+    fireEvent.click(getByRole('button'))
     expect(getAllByRole('link')[1]).toHaveAttribute(
       'href',
       'https://twitter.com/intent/tweet?url=http://localhost:4100/test-slug'

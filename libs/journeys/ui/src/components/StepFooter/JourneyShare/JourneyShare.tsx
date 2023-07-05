@@ -2,15 +2,43 @@ import { ReactElement, useState } from 'react'
 import { Dialog } from '@core/shared/ui/Dialog'
 import Share from '@core/shared/ui/icons/Share'
 import LinkAngled from '@core/shared/ui/icons/LinkAngled'
-import Chip from '@mui/material/Chip'
+import Button, { ButtonProps } from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import IconButton from '@mui/material/IconButton'
 import { useTranslation } from 'react-i18next'
 import { useSnackbar } from 'notistack'
+import { styled } from '@mui/material/styles'
 import { useJourney } from '../../../libs/JourneyProvider'
 import facebookLogo from './images/facebook_logo.svg'
 import twitterLogo from './images/twitter_logo.svg'
+
+const StyledButton = styled(Button)<ButtonProps>(({ theme }) => ({
+  minWidth: 56,
+  borderRadius: 20,
+  backgroundColor: theme.palette.grey[800],
+  '&.hover': {
+    backgroundColor: theme.palette.grey[800]
+  },
+  color: theme.palette.grey[100],
+  [theme.breakpoints.down('sm')]: {
+    backgroundColor:
+      theme.palette.mode === 'dark'
+        ? `${theme.palette.grey[200]}26`
+        : `${theme.palette.grey[200]}4D`,
+    '&.hover': {
+      backgroundColor:
+        theme.palette.mode === 'dark'
+          ? `${theme.palette.grey[200]}26`
+          : `${theme.palette.grey[200]}4D`
+    },
+    border: theme.palette.mode === 'dark' ? 'none' : '0.8px solid #0000000D',
+    color:
+      theme.palette.mode === 'dark'
+        ? `${theme.palette.grey[200]}FF`
+        : `${theme.palette.grey[800]}FF`
+  }
+}))
 
 export function JourneyShare(): ReactElement {
   const { journey, admin } = useJourney()
@@ -49,12 +77,9 @@ export function JourneyShare(): ReactElement {
 
   return (
     <>
-      <Chip
-        label={t('Share')}
-        variant="filled"
-        icon={<Share />}
-        onClick={handleShare}
-      />
+      <StyledButton onClick={handleShare}>
+        <Share />
+      </StyledButton>
 
       <Dialog
         open={shareDialogOpen}
@@ -70,18 +95,21 @@ export function JourneyShare(): ReactElement {
               onClick={handleCopyLink}
               size="large"
               sx={{
-                // backgroundColor: '#6D6F81',
+                backgroundColor: '#6D7080FF',
                 width: '40px',
                 height: '40px',
-                m: 2
+                m: 2,
+                '&:hover': {
+                  backgroundColor: '#6D7080FF'
+                }
               }}
             >
-              <LinkAngled />
+              <LinkAngled sx={{ color: 'white' }} />
             </IconButton>
             <Typography>{t('Custom')}</Typography>
           </Stack>
 
-          <Stack direction="column">
+          <Stack direction="column" alignItems="center">
             <span>
               <IconButton
                 href={`https://www.facebook.com/sharer/sharer.php?u=${
@@ -110,7 +138,7 @@ export function JourneyShare(): ReactElement {
             <Typography>{t('Facebook')}</Typography>
           </Stack>
 
-          <Stack direction="column">
+          <Stack direction="column" alignItems="center">
             <span>
               <IconButton
                 href={`https://twitter.com/intent/tweet?url=${url ?? ''}`}
