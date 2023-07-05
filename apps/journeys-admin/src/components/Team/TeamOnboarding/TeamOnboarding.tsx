@@ -18,10 +18,10 @@ import { TeamCreateForm } from '../TeamCreateForm'
 
 export function TeamOnboarding(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-  const { push } = useRouter()
+  const router = useRouter()
 
   async function handleSubmit(): Promise<void> {
-    await push('/')
+    await router?.push('/')
   }
 
   return (

@@ -17,8 +17,7 @@ jest.mock('next/router', () => ({
 const mockUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
 
 describe('TeamOnboarding', () => {
-  const push = jest.fn()
-  mockUseRouter.mockReturnValue({ push } as unknown as NextRouter)
+  let push: jest.Mock
 
   const teamCreateMock: MockedResponse<TeamCreate> = {
     request: {
@@ -55,6 +54,11 @@ describe('TeamOnboarding', () => {
 
     return <div data-testid="active-team-title">{activeTeam?.title}</div>
   }
+
+  beforeEach(() => {
+    push = jest.fn()
+    mockUseRouter.mockReturnValue({ push } as unknown as NextRouter)
+  })
 
   it('creates new team and sets it as active', async () => {
     const cache = new InMemoryCache()
