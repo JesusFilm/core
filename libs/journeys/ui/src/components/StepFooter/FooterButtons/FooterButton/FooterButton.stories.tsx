@@ -17,7 +17,7 @@ const Template: Story<ComponentProps<typeof FooterButton>> = ({ ...args }) => (
 
 export const Default = Template.bind({})
 Default.args = {
-  handleClick: noop,
+  onClick: noop,
   children: <Typography>Test</Typography>
 }
 

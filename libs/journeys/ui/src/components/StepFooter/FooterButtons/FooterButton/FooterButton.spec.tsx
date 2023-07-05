@@ -7,7 +7,7 @@ describe('FooterButton', () => {
     const handleClick = jest.fn()
 
     const { getByRole } = render(
-      <FooterButton handleClick={handleClick}>
+      <FooterButton onClick={handleClick}>
         <Typography>Test</Typography>
       </FooterButton>
     )

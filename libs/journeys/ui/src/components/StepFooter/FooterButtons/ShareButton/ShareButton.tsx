@@ -32,7 +32,7 @@ export function ShareButton(): ReactElement {
 
   return (
     <>
-      <FooterButton handleClick={handleShare}>
+      <FooterButton onClick={handleShare}>
         <Share />
       </FooterButton>
       <ShareDialog

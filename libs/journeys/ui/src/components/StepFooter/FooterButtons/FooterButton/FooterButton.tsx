@@ -27,10 +27,10 @@ const StyledButton = styled(Button)<ButtonProps>(({ theme }) => ({
 }))
 
 interface Props {
-  handleClick: () => void
+  onClick: () => void
   children: ReactNode
 }
 
-export function FooterButton({ handleClick, children }: Props): ReactElement {
-  return <StyledButton onClick={handleClick}>{children}</StyledButton>
+export function FooterButton({ onClick, children }: Props): ReactElement {
+  return <StyledButton onClick={onClick}>{children}</StyledButton>
 }
