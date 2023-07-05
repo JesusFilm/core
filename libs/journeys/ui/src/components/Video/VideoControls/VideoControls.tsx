@@ -1,4 +1,10 @@
-import { ReactElement, useState, useEffect, MouseEventHandler } from 'react'
+import {
+  ReactElement,
+  useState,
+  useEffect,
+  MouseEventHandler,
+  Event
+} from 'react'
 import Player from 'video.js/dist/types/player'
 import Container from '@mui/material/Container'
 import Box from '@mui/material/Box'
@@ -26,6 +32,7 @@ interface VideoControlProps {
   endAt: number
   isYoutube?: boolean
   loading?: boolean
+  autoplay?: boolean
 }
 
 function isMobile(): boolean {
@@ -37,7 +44,8 @@ export function VideoControls({
   player,
   startAt,
   endAt,
-  loading = false
+  loading = false,
+  autoplay = false
 }: VideoControlProps): ReactElement {
   const [playing, setPlaying] = useState(false)
   const [active, setActive] = useState(true)
@@ -52,7 +60,8 @@ export function VideoControls({
   const visible = !playing || active || loading
 
   useEffect(() => {
-    const handleVideoPlay = (): void => {
+    const handleVideoPlay = (e: Event): void => {
+      console.log(e)
       setPlaying(true)
 
       if (startAt > 0 && player.currentTime() < startAt) {
@@ -76,7 +85,7 @@ export function VideoControls({
         // 1) Trigger pause, we get an error if trying to update time here
         player.pause()
       }
-      console.log('timeChange', player.currentTime(), startAt)
+
       setDisplayTime(
         secondsToTimeFormat(player.currentTime() - startAt, {
           trimZeroes: true
@@ -84,13 +93,26 @@ export function VideoControls({
       )
       setProgress(Math.round(player.currentTime()))
     }
-    const handleMobileFullscreenChange = (): void =>
+    const handleMobileFullscreenChange = (e: Event): void => {
+      console.log(e, 'mobile', player, autoplay)
       setShowHeaderFooter(!player.isFullscreen())
+
+      // On autoplay videos, videos will play after fullscreen change.
+      // Keep paused state if changing screen while paused
+      if (autoplay && player.paused()) {
+        if (player.paused()) {
+          console.log('try to prevent default pause on autoplay')
+          void player.pause()
+        }
+      }
+    }
     const handleUserActive = (): void => setActive(true)
     const handleUserInactive = (): void => setActive(false)
     const handleVideoVolumeChange = (): void => setVolume(player.volume() * 100)
-    const handleDesktopFullscreenChange = (): void =>
+    const handleDesktopFullscreenChange = (e: Event): void => {
+      console.log(e, 'desktop')
       setShowHeaderFooter(fscreen.fullscreenElement == null)
+    }
 
     setVolume(player.volume() * 100)
 
@@ -192,8 +214,6 @@ export function VideoControls({
       }
     }
   }
-
-  console.log('loading', loading)
 
   return (
     <Box

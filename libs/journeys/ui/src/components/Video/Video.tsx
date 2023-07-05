@@ -130,37 +130,41 @@ export function Video({
   const progressEndTime =
     player != null ? Math.min(...triggerTimes, endOfVideo) : 0
 
-  useEffect(() => {
-    if (player != null) {
-      if (selectedBlock === undefined) {
-        if (autoplay === true) {
-          player.autoplay(true)
-          void player.play()
-        }
-      }
-    }
-  })
+  // useEffect(() => {
+  //   if (player != null) {
+  //     if (selectedBlock === undefined) {
+  //       if (autoplay === true) {
+  //         player.autoplay(true)
+  //         void player.play()
+  //       }
+  //     }
+  //   }
+  // })
 
   // Initiate video player listeners
   useEffect(() => {
-    const handleStopLoading = (): void => {
-      console.log('playing, canplay, canplaythrough triggered')
+    const startTime = startAt ?? 0
+
+    const handleStopLoading = (e?): void => {
+      console.log(e)
+      if (player != null && player.currentTime() < startTime) {
+        player.currentTime(startTime)
+      }
       setLoading(false)
     }
     const handleStopLoadingOnAutoplay = (): void => {
-      console.log('seeked', autoplay)
       if (autoplay === true) handleStopLoading()
     }
     const handleVideoReady = (): void => {
-      console.log('video ready', player, isIOS())
-      player?.currentTime(startAt ?? 0)
+      if (player != null) {
+        player.currentTime(startTime)
+        console.log('video ready', player, isIOS(), player.currentTime())
 
-      // iOS blocks youtube videos from autoplaying so loading hangs
-      if (source === VideoBlockSource.youTube) {
+        // iOS blocks videos from autoplaying so loading hangs
         void handleStopLoading()
         if (autoplay === true) {
-          player?.autoplay(true)
-          void player?.play()
+          player.autoplay(true)
+          void player.play()
         }
       }
     }
@@ -173,7 +177,6 @@ export function Video({
 
     if (player != null) {
       if (selectedBlock === undefined) {
-        console.log('turn on event listeners', video)
         // Video jumps to new time and finishes loading - occurs on autoplay
         player.on('seeked', handleStopLoadingOnAutoplay)
         player.on('ready', handleVideoReady)
@@ -185,7 +188,6 @@ export function Video({
     }
     return () => {
       if (player != null) {
-        console.log('turn off event listeners', video)
         player.off('seeked', handleStopLoadingOnAutoplay)
         player.off('ready', handleVideoReady)
         player.off('playing', handleStopLoading)
@@ -232,8 +234,6 @@ export function Video({
         break
     }
   }
-
-  console.log('headerFooter', showHeaderFooter)
 
   return (
     <Box
@@ -325,6 +325,7 @@ export function Video({
                 endAt={progressEndTime}
                 isYoutube={source === VideoBlockSource.youTube}
                 loading={loading}
+                autoplay={autoplay ?? false}
               />
             </ThemeProvider>
           )}
