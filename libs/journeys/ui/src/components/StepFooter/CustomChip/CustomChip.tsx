@@ -10,7 +10,7 @@ const StyledButton = styled(Button)<ButtonProps>(({ theme }) => ({
     backgroundColor: theme.palette.grey[800]
   },
   color: theme.palette.grey[100],
-  [theme.breakpoints.down('sm')]: {
+  [theme.breakpoints.down('lg')]: {
     backgroundColor:
       theme.palette.mode === 'dark'
         ? `${theme.palette.grey[200]}26`

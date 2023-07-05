@@ -43,7 +43,10 @@ export function JourneyShare(): ReactElement {
   async function handleCopyLink(): Promise<void> {
     if (url == null) return
     await navigator.clipboard.writeText(url).then(() => {
-      enqueueSnackbar(t('Copied to clipboard'), { variant: 'success' })
+      enqueueSnackbar(t('Copied to clipboard'), {
+        variant: 'success',
+        preventDuplicate: true
+      })
     })
   }
 
@@ -78,7 +81,7 @@ export function JourneyShare(): ReactElement {
             >
               <LinkAngled sx={{ color: 'white' }} />
             </IconButton>
-            <Typography>{t('Custom')}</Typography>
+            <Typography>{t('Copy Link')}</Typography>
           </Stack>
 
           <Stack direction="column" alignItems="center">
