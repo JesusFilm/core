@@ -9,6 +9,7 @@ import {
   JourneyVisitor, 
   Team, 
   UserTeam, 
+  UserTeamInvite,
   UserJourney, 
   Journey, 
   UserRole, 
@@ -25,6 +26,8 @@ export type PrismaSubjects = Subjects<{
   Host: Host, 
   JourneyVisitor: JourneyVisitor, 
   Team: Team, 
+  UserTeam: UserTeam, 
+  UserTeamInvite: UserTeamInvite
   UserTeam: UserTeam, 
   UserJourney: UserJourney, 
   Journey: Journey, 

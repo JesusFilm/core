@@ -24,14 +24,24 @@ describe('UserTeamResolver', () => {
     it('fetches accessible userTeams', async () => {
       const userTeams = await userTeamResolver.userTeams(
         {
-          userTeams: { some: { userId: 'userId' } }
+          team: {
+            is: {
+              userTeams: { some: { userId: 'userId' } }
+            }
+          }
         },
         'teamId'
       )
       expect(prismaService.userTeam.findMany).toHaveBeenCalledWith({
         where: {
           AND: [
-            { userTeams: { some: { userId: 'userId' } } },
+            {
+              team: {
+                is: {
+                  userTeams: { some: { userId: 'userId' } }
+                }
+              }
+            },
             { teamId: 'teamId' }
           ]
         }

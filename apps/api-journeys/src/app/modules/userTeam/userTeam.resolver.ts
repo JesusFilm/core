@@ -28,7 +28,7 @@ export class UserTeamResolver {
   @Query()
   @UseGuards(GqlAuthGuard, CaslGuard)
   async userTeams(
-    @CaslAccessible('UserTeam') accessibleUserTeams: Prisma.TeamWhereInput,
+    @CaslAccessible('UserTeam') accessibleUserTeams: Prisma.UserTeamWhereInput,
     @Args('teamId') teamId: string
   ): Promise<UserTeam[]> {
     return await this.prismaService.userTeam.findMany({
