@@ -7,13 +7,21 @@ import Typography from '@mui/material/Typography'
 import { Dialog } from '@core/shared/ui/Dialog'
 import { useTranslation } from 'react-i18next'
 import { useSnackbar } from 'notistack'
+import dynamic from 'next/dynamic'
 import { JourneyCard } from '../JourneyCard'
 import type { JourneyListProps } from '../JourneyList'
-import { DiscoveryJourneys } from '../../DiscoveryJourneys'
 import { useAdminJourneysQuery } from '../../../libs/useAdminJourneysQuery'
 import { JourneyStatus } from '../../../../__generated__/globalTypes'
 import { AddJourneyButton } from './AddJourneyButton'
 import { ActivePriorityList } from './ActivePriorityList'
+
+const DynamicDiscoveryJourneys = dynamic(
+  async () =>
+    await import(
+      /* webpackChunkName: "DiscoveryJourneys" */
+      '../../DiscoveryJourneys'
+    ).then((mod) => mod.DiscoveryJourneys)
+)
 
 export const ARCHIVE_ACTIVE_JOURNEYS = gql`
   mutation ArchiveActiveJourneys($ids: [ID!]!) {
@@ -166,13 +174,15 @@ export function ActiveJourneyList({
           </>
         )}
       </Box>
-      <Box
-        sx={{
-          pt: { xs: 6, sm: 8 }
-        }}
-      >
-        <DiscoveryJourneys />
-      </Box>
+      {data?.journeys != null && (
+        <Box
+          sx={{
+            pt: { xs: 6, sm: 8 }
+          }}
+        >
+          <DynamicDiscoveryJourneys />
+        </Box>
+      )}
       <Stack alignItems="center">
         <Typography
           variant="caption"
