@@ -32,5 +32,9 @@ interface Props {
 }
 
 export function FooterButton({ onClick, children }: Props): ReactElement {
-  return <StyledButton onClick={onClick}>{children}</StyledButton>
+  return (
+    <StyledButton onClick={onClick} disableRipple={false}>
+      {children}
+    </StyledButton>
+  )
 }
