@@ -1,9 +1,5 @@
-import { BaseService } from '@core/nest/database/BaseService'
 import { Injectable } from '@nestjs/common'
-import { aql } from 'arangojs'
 import fetch from 'node-fetch'
-import { KeyAsId } from '@core/nest/decorators/KeyAsId'
-import { CloudflareVideo } from '../../../__generated__/graphql'
 
 export interface CloudflareVideoUploadUrl {
   id: string
@@ -28,8 +24,7 @@ export interface CloudflareVideoGetResponse {
 }
 
 @Injectable()
-export class VideoService extends BaseService {
-  collection = this.db.collection('cloudflareVideos')
+export class VideoService {
   async uploadToCloudflareByFile(
     uploadLength: number,
     name: string,
@@ -110,17 +105,5 @@ export class VideoService extends BaseService {
       }
     )
     return await response.json()
-  }
-
-  @KeyAsId()
-  async getCloudflareVideosForUserId(
-    userId: string
-  ): Promise<CloudflareVideo[]> {
-    const res = await this.db.query(aql`
-      FOR item in ${this.collection}
-        FILTER item.userId == ${userId} && item.uploaded == true        
-        RETURN item
-    `)
-    return await res.all()
   }
 }
