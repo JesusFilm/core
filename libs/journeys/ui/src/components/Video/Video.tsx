@@ -17,7 +17,7 @@ import {
   VideoBlockObjectFit,
   VideoBlockSource
 } from '../../../__generated__/globalTypes'
-import { TreeBlock, useBlocks } from '../../libs/block'
+import { TreeBlock } from '../../libs/block'
 import { useEditor } from '../../libs/EditorProvider'
 import { blurImage } from '../../libs/blurImage'
 import { ImageFields } from '../Image/__generated__/ImageFields'
@@ -77,7 +77,6 @@ export function Video({
   const {
     state: { selectedBlock }
   } = useEditor()
-  const { showHeaderFooter } = useBlocks()
 
   const eventVideoTitle = video?.title[0].value ?? title
   const eventVideoId = video?.id ?? videoId

@@ -138,7 +138,7 @@ export function VideoControls({
         handleDesktopFullscreenChange
       )
     }
-  }, [player, setShowHeaderFooter, startAt, endAt])
+  }, [player, setShowHeaderFooter, startAt, endAt, autoplay])
 
   function handlePlay(): void {
     if (!playing) {
