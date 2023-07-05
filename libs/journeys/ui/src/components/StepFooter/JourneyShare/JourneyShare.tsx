@@ -4,13 +4,26 @@ import Share from '@core/shared/ui/icons/Share'
 import LinkAngled from '@core/shared/ui/icons/LinkAngled'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
-import IconButton from '@mui/material/IconButton'
+import IconButton, { IconButtonProps } from '@mui/material/IconButton'
+import { styled } from '@mui/material/styles'
 import { useTranslation } from 'react-i18next'
 import { useSnackbar } from 'notistack'
 import { useJourney } from '../../../libs/JourneyProvider'
 import { CustomChip } from '../CustomChip'
 import facebookLogo from './images/facebook_logo.svg'
 import twitterLogo from './images/twitter_logo.svg'
+
+const StyledIconButton = styled(IconButton)<
+  IconButtonProps & { href?: string; target?: string; rel?: string }
+>(({ theme }) => ({
+  width: '40px',
+  height: '40px',
+  backgroundColor: `${theme.palette.grey[700]}FF`,
+  '&:hover': {
+    backgroundColor: `${theme.palette.grey[700]}FF`
+  },
+  m: 2
+}))
 
 export function JourneyShare(): ReactElement {
   const { journey, admin } = useJourney()
@@ -65,39 +78,22 @@ export function JourneyShare(): ReactElement {
         }}
       >
         <Stack direction="row" spacing={2} justifyContent="space-around">
-          <Stack direction="column">
-            <IconButton
-              onClick={handleCopyLink}
-              size="large"
-              sx={{
-                backgroundColor: '#6D7080FF',
-                width: '40px',
-                height: '40px',
-                m: 2,
-                '&:hover': {
-                  backgroundColor: '#6D7080FF'
-                }
-              }}
-            >
+          <Stack direction="column" alignItems="center" spacing={2}>
+            <StyledIconButton onClick={handleCopyLink} size="large">
               <LinkAngled sx={{ color: 'white' }} />
-            </IconButton>
+            </StyledIconButton>
             <Typography>{t('Copy Link')}</Typography>
           </Stack>
 
-          <Stack direction="column" alignItems="center">
+          <Stack direction="column" alignItems="center" spacing={2}>
             <span>
-              <IconButton
+              <StyledIconButton
                 href={`https://www.facebook.com/sharer/sharer.php?u=${
                   url ?? ''
                 }`}
                 target="_blank"
                 rel="noopener"
                 size="large"
-                sx={{
-                  width: '40px',
-                  height: '40px',
-                  m: 2
-                }}
               >
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
@@ -107,24 +103,19 @@ export function JourneyShare(): ReactElement {
                   height={40}
                   width={40}
                 />
-              </IconButton>
+              </StyledIconButton>
             </span>
 
             <Typography>{t('Facebook')}</Typography>
           </Stack>
 
-          <Stack direction="column" alignItems="center">
+          <Stack direction="column" alignItems="center" spacing={2}>
             <span>
-              <IconButton
+              <StyledIconButton
                 href={`https://twitter.com/intent/tweet?url=${url ?? ''}`}
                 target="_blank"
                 rel="noopener"
                 size="large"
-                sx={{
-                  width: '40px',
-                  height: '40px',
-                  m: 2
-                }}
               >
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
@@ -134,7 +125,7 @@ export function JourneyShare(): ReactElement {
                   height={40}
                   width={40}
                 />
-              </IconButton>
+              </StyledIconButton>
             </span>
 
             <Typography>{t('Twitter')}</Typography>
