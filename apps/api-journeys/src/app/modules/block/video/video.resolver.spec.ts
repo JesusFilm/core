@@ -181,7 +181,6 @@ describe('VideoBlockResolver', () => {
         typename: 'VideoBlock',
         journey: { connect: { id: 'journeyId' } },
         journeyId: 'journeyId',
-        source: 'youTube',
         parentBlock: { connect: { id: 'parentBlockId' } },
         parentOrder: 0
       })

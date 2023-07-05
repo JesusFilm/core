@@ -3,7 +3,7 @@ import { UseGuards } from '@nestjs/common'
 import { object, string } from 'yup'
 import fetch from 'node-fetch'
 import { UserInputError } from 'apollo-server-errors'
-import { Block } from '.prisma/api-journeys-client'
+import { Block, VideoBlockSource } from '.prisma/api-journeys-client'
 import { omit } from 'lodash'
 
 import { BlockService } from '../block.service'
@@ -13,7 +13,6 @@ import {
   UserJourneyRole,
   VideoBlock,
   VideoBlockCreateInput,
-  VideoBlockSource,
   VideoBlockUpdateInput
 } from '../../../__generated__/graphql'
 import { RoleGuard } from '../../../lib/roleGuard/roleGuard'
@@ -177,8 +176,6 @@ export class VideoBlockResolver {
       ...omit(input, 'parentBlockId'),
       id: input.id ?? undefined,
       typename: 'VideoBlock',
-      source:
-        input.source === VideoBlockSource.internal ? 'internal' : 'youTube',
       journey: { connect: { id: input.journeyId } },
       parentBlock: { connect: { id: input.parentBlockId } },
       parentOrder: siblings.length
