@@ -76,6 +76,7 @@ export function VideoControls({
         // 1) Trigger pause, we get an error if trying to update time here
         player.pause()
       }
+      console.log('timeChange', player.currentTime(), startAt)
       setDisplayTime(
         secondsToTimeFormat(player.currentTime() - startAt, {
           trimZeroes: true
@@ -179,6 +180,7 @@ export function VideoControls({
     let timeoutID: NodeJS.Timeout | undefined
     return function (event) {
       if (timeoutID == null) {
+        console.log('click play triggered', event)
         timeoutID = setTimeout(function () {
           onClick(event)
           timeoutID = undefined
