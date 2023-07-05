@@ -174,7 +174,7 @@ export function ActiveJourneyList({
           </>
         )}
       </Box>
-      {data?.journeys != null && (
+      {data?.journeys != null && data?.journeys.length !== 0 && (
         <Box
           sx={{
             pt: { xs: 6, sm: 8 }
