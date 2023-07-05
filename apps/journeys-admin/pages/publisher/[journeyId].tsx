@@ -21,8 +21,9 @@ import { JourneyView } from '../../src/components/JourneyView'
 import { Role } from '../../__generated__/globalTypes'
 import { PublisherInvite } from '../../src/components/PublisherInvite'
 import { Menu } from '../../src/components/JourneyView/Menu'
-import { useTermsRedirect } from '../../src/libs/useTermsRedirect/useTermsRedirect'
 import { useInvalidJourneyRedirect } from '../../src/libs/useInvalidJourneyRedirect'
+import { checkConditionalRedirect } from '../../src/libs/checkConditionalRedirect'
+import { createApolloClient } from '../../src/libs/apolloClient'
 
 export const GET_PUBLISHER_TEMPLATE = gql`
   ${JOURNEY_FIELDS}
@@ -54,7 +55,6 @@ function TemplateDetailsAdmin(): ReactElement {
     Role.publisher
   )
 
-  useTermsRedirect()
   useInvalidJourneyRedirect(data)
   return (
     <>
@@ -104,6 +104,11 @@ export const getServerSideProps = withAuthUserTokenSSR({
   const flags = (await launchDarklyClient.allFlagsState(ldUser)).toJSON() as {
     [key: string]: boolean | undefined
   }
+  const token = await AuthUser.getIdToken()
+  const apolloClient = createApolloClient(token != null ? token : '')
+
+  const redirect = await checkConditionalRedirect(apolloClient, flags)
+  if (redirect != null) return { redirect }
   return {
     props: {
       flags,

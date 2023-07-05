@@ -13,6 +13,7 @@ import Divider from '@mui/material/Divider'
 import { gql, useMutation } from '@apollo/client'
 import Link from '@mui/material/Link'
 import { useRouter } from 'next/router'
+import ListItemButton from '@mui/material/ListItemButton'
 import ListItemIcon from '@mui/material/ListItemIcon'
 import ListItemText from '@mui/material/ListItemText'
 import Button from '@mui/material/Button'
@@ -69,7 +70,8 @@ export function TermsAndConditions(): ReactElement {
           sx={{
             bgcolor: 'background.paper',
             borderRadius: '6px',
-            mt: 6
+            mt: 6,
+            overflow: 'hidden'
           }}
           disablePadding
         >
@@ -78,7 +80,7 @@ export function TermsAndConditions(): ReactElement {
             icon={<NewReleasesRoundedIcon sx={{ color: 'secondary.light' }} />}
             text="Terms of Use"
           />
-          <Divider />
+          <Divider component="li" />
           <TermsListItem
             link="https://your.nextstep.is/end-user-license-agreement"
             icon={
@@ -86,25 +88,33 @@ export function TermsAndConditions(): ReactElement {
             }
             text="End User License Agreement"
           />
-          <Divider />
+          <Divider component="li" />
           <TermsListItem
             link="https://your.nextstep.is/community-guidelines"
             icon={<BeenhereRoundedIcon sx={{ color: 'secondary.light' }} />}
             text="Community Guidelines"
           />
-          <Divider />
-          <ListItem sx={{ pl: 2 }}>
-            <ListItemIcon sx={{ minWidth: '52px' }}>
-              <Checkbox onChange={() => setAccepted(!accepted)} />
+          <Divider component="li" />
+          <ListItemButton onClick={() => setAccepted(!accepted)}>
+            <ListItemIcon sx={{ minWidth: 44 }}>
+              <Checkbox
+                edge="start"
+                checked={accepted}
+                tabIndex={-1}
+                disableRipple
+                inputProps={{ 'aria-labelledby': 'i-agree-label' }}
+                sx={{ p: 0, ml: 0 }}
+              />
             </ListItemIcon>
             <ListItemText
+              id="i-agree-label"
               primary={
                 <Typography variant="body1" color="secondary.dark">
                   I agree with listed above conditions and requirements
                 </Typography>
               }
             />
-          </ListItem>
+          </ListItemButton>
         </List>
         <Button
           variant="contained"
