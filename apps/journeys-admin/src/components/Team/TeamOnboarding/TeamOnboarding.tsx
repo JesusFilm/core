@@ -11,84 +11,17 @@ import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'react-i18next'
-import { object, string } from 'yup'
-import { Formik, Form, FormikValues, FormikHelpers } from 'formik'
-import { ApolloError, gql, useMutation } from '@apollo/client'
-import { useSnackbar } from 'notistack'
+import { Form } from 'formik'
+import { useRouter } from 'next/router'
 import taskbarIcon from '../../../../public/taskbar-icon.svg'
-import { TEAM_CREATE } from '../TeamCreateDialog/TeamCreateDialog'
-import { TeamCreate } from '../../../../__generated__/TeamCreate'
-import { useTeam } from '../TeamProvider'
+import { TeamCreateForm } from '../TeamCreateForm'
 
 export function TeamOnboarding(): ReactElement {
-  const { setActiveTeam } = useTeam()
   const { t } = useTranslation('apps-journeys-admin')
-  const teamSchema = object().shape({
-    title: string().required(t('Team Name must be at least one character.'))
-  })
-  const [teamCreate] = useMutation<TeamCreate>(TEAM_CREATE, {
-    update(cache, { data }) {
-      if (data?.teamCreate != null) {
-        cache.modify({
-          fields: {
-            teams(existingTeams = []) {
-              const newTeamRef = cache.writeFragment({
-                data: data.teamCreate,
-                fragment: gql`
-                  fragment NewTeam on Team {
-                    id
-                  }
-                `
-              })
-              return [...existingTeams, newTeamRef]
-            }
-          }
-        })
-      }
-    },
-    onCompleted(data) {
-      if (data?.teamCreate != null) {
-        setActiveTeam(data.teamCreate)
-      }
-    }
-  })
-  const { enqueueSnackbar } = useSnackbar()
+  const { push } = useRouter()
 
-  async function handleSubmit(
-    values: FormikValues,
-    { resetForm }: FormikHelpers<FormikValues>
-  ): Promise<void> {
-    try {
-      const { data } = await teamCreate({
-        variables: { input: { title: values.title } }
-      })
-      enqueueSnackbar(
-        t('{{ teamName }} created.', {
-          teamName: data?.teamCreate.title ?? 'Team'
-        }),
-        {
-          variant: 'success',
-          preventDuplicate: true
-        }
-      )
-    } catch (error) {
-      if (error instanceof ApolloError) {
-        if (error.networkError != null) {
-          enqueueSnackbar(
-            t('Failed to create the team. Reload the page or try again.'),
-            {
-              variant: 'error',
-              preventDuplicate: true
-            }
-          )
-          return
-        }
-      }
-      enqueueSnackbar(error.message, {
-        variant: 'error',
-        preventDuplicate: true
-      })
-    }
+  async function handleSubmit(): Promise<void> {
+    await push('/')
   }
 
   return (
@@ -101,11 +34,7 @@ export function TeamOnboarding(): ReactElement {
         <Box sx={{ mb: 10, flexShrink: 0 }}>
           <Image src={taskbarIcon} alt="Next Steps" height={43} width={43} />
         </Box>
-        <Formik
-          initialValues={{ title: '' }}
-          onSubmit={handleSubmit}
-          validationSchema={teamSchema}
-        >
+        <TeamCreateForm onSubmit={handleSubmit}>
           {({
             values,
             errors,
@@ -143,6 +72,7 @@ export function TeamOnboarding(): ReactElement {
                   </Stack>
                 </CardContent>
                 <CardActions sx={{ justifyContent: 'flex-end', px: 4 }}>
+                  {console.log(!isValid || isSubmitting)}
                   <Button
                     onClick={() => handleSubmit()}
                     disabled={!isValid || isSubmitting}
@@ -153,7 +83,7 @@ export function TeamOnboarding(): ReactElement {
               </Card>
             </Form>
           )}
-        </Formik>
+        </TeamCreateForm>
       </Stack>
       <Link
         variant="body2"

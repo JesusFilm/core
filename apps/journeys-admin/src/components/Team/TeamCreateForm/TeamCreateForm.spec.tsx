@@ -3,23 +3,15 @@ import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { SnackbarProvider } from 'notistack'
 import { ReactElement } from 'react'
 import { InMemoryCache } from '@apollo/client'
-import { NextRouter, useRouter } from 'next/router'
+import { Form } from 'formik'
+import Button from '@mui/material/Button'
+import TextField from '@mui/material/TextField'
 import { TeamProvider, useTeam } from '../TeamProvider'
 import { TeamCreate } from '../../../../__generated__/TeamCreate'
 import { TEAM_CREATE } from '../../../libs/useTeamCreateMutation/useTeamCreateMutation'
-import { TeamOnboarding } from '.'
+import { TeamCreateForm } from '.'
 
-jest.mock('next/router', () => ({
-  __esModule: true,
-  useRouter: jest.fn()
-}))
-
-const mockUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
-
-describe('TeamOnboarding', () => {
-  const push = jest.fn()
-  mockUseRouter.mockReturnValue({ push } as unknown as NextRouter)
-
+describe('TeamCreateForm', () => {
   const teamCreateMock: MockedResponse<TeamCreate> = {
     request: {
       query: TEAM_CREATE,
@@ -64,11 +56,26 @@ describe('TeamOnboarding', () => {
         teams: [{ __ref: 'Team:teamId1' }]
       }
     })
+    const handleSubmit = jest.fn()
     const { getByRole, getByTestId, getByText } = render(
       <MockedProvider mocks={[teamCreateMock]} cache={cache}>
         <SnackbarProvider>
           <TeamProvider>
-            <TeamOnboarding />
+            <TeamCreateForm onSubmit={handleSubmit}>
+              {({ values, errors, handleChange, handleSubmit }) => (
+                <Form>
+                  <TextField
+                    id="title"
+                    name="title"
+                    value={values.title}
+                    error={Boolean(errors.title)}
+                    onChange={handleChange}
+                    helperText={errors.title}
+                  />
+                  <Button onClick={() => handleSubmit()}>Create</Button>
+                </Form>
+              )}
+            </TeamCreateForm>
             <TestComponent />
           </TeamProvider>
         </SnackbarProvider>
@@ -79,7 +86,12 @@ describe('TeamOnboarding', () => {
     await waitFor(() =>
       expect(getByTestId('active-team-title')).toHaveTextContent('Team Title')
     )
-    await waitFor(() => expect(push).toHaveBeenCalledWith('/'))
+    await waitFor(() =>
+      expect(handleSubmit).toHaveBeenCalledWith(
+        { title: 'Team Title' },
+        expect.any(Object)
+      )
+    )
     expect(cache.extract()?.ROOT_QUERY?.teams).toEqual([
       { __ref: 'Team:teamId1' },
       { __ref: 'Team:teamId' }
@@ -88,11 +100,26 @@ describe('TeamOnboarding', () => {
   })
 
   it('validates form', async () => {
+    const handleSubmit = jest.fn()
     const { getByText, getByRole } = render(
       <MockedProvider mocks={[teamCreateErrorMock]}>
         <SnackbarProvider>
           <TeamProvider>
-            <TeamOnboarding />
+            <TeamCreateForm onSubmit={handleSubmit}>
+              {({ values, errors, handleChange, handleSubmit }) => (
+                <Form>
+                  <TextField
+                    id="title"
+                    name="title"
+                    value={values.title}
+                    error={Boolean(errors.title)}
+                    onChange={handleChange}
+                    helperText={errors.title}
+                  />
+                  <Button onClick={() => handleSubmit()}>Create</Button>
+                </Form>
+              )}
+            </TeamCreateForm>
           </TeamProvider>
         </SnackbarProvider>
       </MockedProvider>
@@ -105,15 +132,12 @@ describe('TeamOnboarding', () => {
       ).toBeInTheDocument()
     )
     fireEvent.change(getByRole('textbox'), { target: { value: 'Team Title' } })
-    await waitFor(() =>
-      expect(getByRole('button', { name: 'Create' })).not.toBeDisabled()
-    )
     fireEvent.click(getByRole('button', { name: 'Create' }))
     await waitFor(() =>
       expect(
         getByText('Failed to create the team. Reload the page or try again.')
       ).toBeInTheDocument()
     )
-    expect(push).not.toHaveBeenCalled()
+    expect(handleSubmit).not.toHaveBeenCalled()
   })
 })
