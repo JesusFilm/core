@@ -6,20 +6,17 @@ const StyledButton = styled(Button)<ButtonProps>(({ theme }) => ({
   minWidth: 56,
   borderRadius: 20,
   backgroundColor: theme.palette.grey[800],
-  '&.hover': {
-    backgroundColor: theme.palette.grey[800]
-  },
   color: theme.palette.grey[100],
   [theme.breakpoints.down('lg')]: {
     backgroundColor:
       theme.palette.mode === 'dark'
         ? `${theme.palette.grey[200]}26`
         : `${theme.palette.grey[200]}4D`,
-    '&.hover': {
+    '&:hover': {
       backgroundColor:
         theme.palette.mode === 'dark'
-          ? `${theme.palette.grey[200]}26`
-          : `${theme.palette.grey[200]}4D`
+          ? `${theme.palette.grey[200]}4D`
+          : `${theme.palette.grey[200]}8F`
     },
     border: theme.palette.mode === 'dark' ? 'none' : '0.8px solid #0000000D',
     color:
