@@ -54,7 +54,7 @@ export const getServerSideProps = withAuthUserTokenSSR({
   const token = await AuthUser.getIdToken()
   const apolloClient = createApolloClient(token != null ? token : '')
 
-  const redirect = await checkConditionalRedirect(apolloClient)
+  const redirect = await checkConditionalRedirect(apolloClient, flags)
   if (redirect != null) return { redirect }
   return {
     props: {

@@ -17,18 +17,20 @@ export const GET_JOURNEY_PROFILE_AND_TEAMS = gql`
 
 export async function checkConditionalRedirect(
   client: ApolloClient<NormalizedCacheObject>,
-  ignore: { acceptedTermsAt?: boolean; teams?: boolean } = {}
+  flags: {
+    [key: string]: boolean | undefined
+  } = {}
 ): Promise<Redirect | undefined> {
   const { data } = await client.query<GetJourneyProfileAndTeams>({
     query: GET_JOURNEY_PROFILE_AND_TEAMS
   })
 
   if (
-    data.getJourneyProfile?.acceptedTermsAt == null &&
-    ignore.acceptedTermsAt !== true
+    flags.termsAndConditions === true &&
+    data.getJourneyProfile?.acceptedTermsAt == null
   ) {
     return { destination: '/users/terms-and-conditions', permanent: false }
-  } else if (data.teams.length === 0 && ignore.teams !== true) {
+  } else if (flags.teams === true && data.teams.length === 0) {
     return { destination: '/teams/new', permanent: false }
   }
 }

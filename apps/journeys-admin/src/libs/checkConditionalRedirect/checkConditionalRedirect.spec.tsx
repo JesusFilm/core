@@ -8,7 +8,12 @@ describe('checkConditionalRedirect', () => {
     const client = {
       query: jest.fn().mockResolvedValue({ data: {} })
     } as unknown as ApolloClient<NormalizedCacheObject>
-    expect(await checkConditionalRedirect(client)).not.toBeUndefined()
+    expect(
+      await checkConditionalRedirect(client, {
+        termsAndConditions: true,
+        teams: true
+      })
+    ).not.toBeUndefined()
     expect(client.query).toHaveBeenCalledWith({
       query: GET_JOURNEY_PROFILE_AND_TEAMS
     })
@@ -24,8 +29,8 @@ describe('checkConditionalRedirect', () => {
     } as unknown as ApolloClient<NormalizedCacheObject>
     expect(
       await checkConditionalRedirect(client, {
-        acceptedTermsAt: true,
-        teams: true
+        termsAndConditions: false,
+        teams: false
       })
     ).toBeUndefined()
   })
@@ -38,13 +43,18 @@ describe('checkConditionalRedirect', () => {
     const client = {
       query: jest.fn().mockResolvedValue({ data })
     } as unknown as ApolloClient<NormalizedCacheObject>
-    expect(await checkConditionalRedirect(client)).toEqual({
+    expect(
+      await checkConditionalRedirect(client, {
+        termsAndConditions: true,
+        teams: true
+      })
+    ).toEqual({
       destination: '/users/terms-and-conditions',
       permanent: false
     })
   })
 
-  it('redirect if acceptedTermsAt is null', async () => {
+  it('redirect if termsAndConditions is null', async () => {
     const data: GetJourneyProfileAndTeams = {
       getJourneyProfile: {
         id: 'profile.id',
@@ -57,7 +67,12 @@ describe('checkConditionalRedirect', () => {
     const client = {
       query: jest.fn().mockResolvedValue({ data })
     } as unknown as ApolloClient<NormalizedCacheObject>
-    expect(await checkConditionalRedirect(client)).toEqual({
+    expect(
+      await checkConditionalRedirect(client, {
+        termsAndConditions: true,
+        teams: true
+      })
+    ).toEqual({
       destination: '/users/terms-and-conditions',
       permanent: false
     })
@@ -76,7 +91,12 @@ describe('checkConditionalRedirect', () => {
     const client = {
       query: jest.fn().mockResolvedValue({ data })
     } as unknown as ApolloClient<NormalizedCacheObject>
-    expect(await checkConditionalRedirect(client)).toEqual({
+    expect(
+      await checkConditionalRedirect(client, {
+        termsAndConditions: true,
+        teams: true
+      })
+    ).toEqual({
       destination: '/teams/new',
       permanent: false
     })
@@ -100,6 +120,11 @@ describe('checkConditionalRedirect', () => {
     const client = {
       query: jest.fn().mockResolvedValue({ data })
     } as unknown as ApolloClient<NormalizedCacheObject>
-    expect(await checkConditionalRedirect(client)).toBeUndefined()
+    expect(
+      await checkConditionalRedirect(client, {
+        termsAndConditions: true,
+        teams: true
+      })
+    ).toBeUndefined()
   })
 })
