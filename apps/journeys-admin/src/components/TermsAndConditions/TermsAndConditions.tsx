@@ -8,7 +8,6 @@ import SupervisorAccountRoundedIcon from '@mui/icons-material/SupervisorAccountR
 import BeenhereRoundedIcon from '@mui/icons-material/BeenhereRounded'
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward'
 import Image from 'next/image'
-import ListItem from '@mui/material/ListItem'
 import Divider from '@mui/material/Divider'
 import { gql, useMutation } from '@apollo/client'
 import Link from '@mui/material/Link'
