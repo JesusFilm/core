@@ -20,7 +20,7 @@ const StyledIconButton = styled(IconButton)<
   height: '40px',
   backgroundColor: `${theme.palette.grey[700]}FF`,
   '&:hover': {
-    backgroundColor: `${theme.palette.grey[700]}FF`
+    backgroundColor: `${theme.palette.grey[700]}BF`
   },
   m: 2
 }))
