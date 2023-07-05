@@ -178,14 +178,15 @@ model JourneyVisitor {
 }
 
 model Team {
-  id        String     @id
-  title     String
-  createdAt DateTime   @default(now())
-  visitors  Visitor[]
-  userTeams UserTeam[]
-  journeys  Journey[]
-  updatedAt DateTime   @updatedAt
-  hosts     Host[]
+  id              String           @id @default(uuid())
+  title           String
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  visitors        Visitor[]
+  userTeams       UserTeam[]
+  journeys        Journey[]
+  hosts           Host[]
+  UserTeamInvites UserTeamInvite[]
 
   @@index([title])
 }
@@ -200,6 +201,22 @@ model UserTeam {
   updatedAt DateTime     @updatedAt
 
   @@unique([teamId, userId])
+}
+
+model UserTeamInvite {
+  id           String    @id @default(uuid())
+  teamId       String
+  team         Team      @relation(fields: [teamId], references: [id])
+  email        String
+  senderId     String
+  receipientId String?
+  acceptedAt   DateTime?
+  removedAt    DateTime?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  @@unique([teamId, email])
+  @@index([email])
 }
 
 enum UserTeamRole {
