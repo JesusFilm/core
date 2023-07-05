@@ -2,6 +2,7 @@
 // increment to trigger re-seed (ie: files other than seed.ts are changed)
 
 import { ArangoDB } from './db'
+import { psMigrate } from './seeds/psMigrate'
 
 const db = ArangoDB()
 
@@ -16,6 +17,7 @@ async function main(): Promise<void> {
       keyOptions: { type: 'uuid' }
     })
   }
+  await psMigrate()
 }
 main().catch((e) => {
   console.error(e)

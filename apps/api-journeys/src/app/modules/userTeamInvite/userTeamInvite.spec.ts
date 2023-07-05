@@ -85,7 +85,12 @@ describe('UserTeamInviteResolver', () => {
           senderId: 'userId',
           teamId: 'teamId'
         },
-        update: { acceptedAt: null, removedAt: null, senderId: 'userId' },
+        update: {
+          acceptedAt: null,
+          receipientId: null,
+          removedAt: null,
+          senderId: 'userId'
+        },
         where: {
           teamId_email: {
             email: 'siyangthemanthestan@gmail.com',
