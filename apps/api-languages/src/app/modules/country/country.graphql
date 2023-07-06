@@ -8,10 +8,7 @@ type Country @key(fields: "id") @cacheControl(maxAge: 86400) {
   name(languageId: ID, primary: Boolean): [Translation!]!
   population: Int!
   continent(languageId: ID, primary: Boolean): [Translation!]!
-  """
-  slug is a permanent link to the country. It should only be appended, not edited or deleted
-  """
-  slug(languageId: ID, primary: Boolean): [Translation!]!
+  slug: String!
   languages: [Language!]!
   latitude: Float!
   longitude: Float!
