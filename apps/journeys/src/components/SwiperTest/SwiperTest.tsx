@@ -1,11 +1,13 @@
-import { ReactElement } from 'react'
+import { ReactElement, useEffect } from 'react'
 import { styled } from '@mui/material/styles'
 import { Swiper, SwiperSlide } from 'swiper/react'
 import SwiperCore, { Pagination } from 'swiper'
 import Div100vh from 'react-div-100vh'
-import Typography from '@mui/material/Typography'
+import type { TreeBlock } from '@core/journeys/ui/block'
 import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
+import { useBlocks } from '@core/journeys/ui/block'
+import { BlockRenderer } from '@core/journeys/ui/BlockRenderer'
 
 import 'swiper/swiper.min.css'
 import 'swiper/components/pagination/pagination.min.css'
@@ -28,7 +30,17 @@ const StyledSwiperContainer = styled(Swiper)(({ theme }) => ({
   }
 }))
 
-export function SwiperTest(): ReactElement {
+interface Props {
+  blocks: TreeBlock[]
+}
+
+export function SwiperTest({ blocks }: Props): ReactElement {
+  const { treeBlocks, setTreeBlocks } = useBlocks()
+
+  useEffect(() => {
+    setTreeBlocks(blocks)
+  }, [setTreeBlocks, blocks])
+
   return (
     <Div100vh style={{ overflow: 'hidden' }}>
       <Stack
@@ -47,24 +59,27 @@ export function SwiperTest(): ReactElement {
             resizeObserver
             allowTouchMove
           >
-            {[1, 2, 3, 4, 5, 6].map((item) => (
-              <SwiperSlide key={item}>
-                <Stack
-                  justifyContent="center"
-                  alignItems="center"
-                  sx={{
-                    maxHeight: { xs: '100vh', lg: 'calc(100vh - 80px)' },
-                    height: {
-                      xs: 'inherit',
-                      lg: 'calc(54.25vw + 102px)'
-                    },
-                    px: { lg: 6 }
-                  }}
-                >
-                  <Typography>{`Slide ${item}`}</Typography>
-                </Stack>
-              </SwiperSlide>
-            ))}
+            {treeBlocks.map((block) => {
+              return (
+                <SwiperSlide key={block.id}>
+                  <Stack
+                    justifyContent="center"
+                    alignItems="center"
+                    sx={{
+                      maxHeight: { xs: '100vh', lg: 'calc(100vh - 80px)' },
+
+                      height: {
+                        xs: 'inherit',
+                        lg: 'calc(54.25vw + 102px)'
+                      },
+                      px: { lg: 6 }
+                    }}
+                  >
+                    <BlockRenderer block={block} />
+                  </Stack>
+                </SwiperSlide>
+              )
+            })}
           </StyledSwiperContainer>
         </Box>
       </Stack>
