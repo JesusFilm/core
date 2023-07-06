@@ -179,16 +179,6 @@ describe('UserTeamInviteForm', () => {
 
   it('should create a user team invite on click ', async () => {
     const cache = new InMemoryCache()
-    cache.restore({
-      'UserTeam:userTeamId': {
-        __typename: 'UserTeam',
-        id: 'userTeamId'
-      },
-      'UserTeamInvite:userTeamInviteId': {
-        __typename: 'UserTeamInvite',
-        id: 'userTeamInviteId'
-      }
-    })
     const { getByRole, getByText } = render(
       <MockedProvider
         mocks={[getTeams, getUserTeamMock1, userTeamInviteCreateMock]}
