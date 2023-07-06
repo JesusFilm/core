@@ -140,6 +140,17 @@ describe('NavigationDrawer', () => {
     )
   })
 
+  it('should hide the reports button', () => {
+    const { queryByText } = render(
+      <MockedProvider mocks={[]}>
+        <FlagsProvider flags={{ globalReports: false }}>
+          <NavigationDrawer open onClose={onClose} />
+        </FlagsProvider>
+      </MockedProvider>
+    )
+    expect(queryByText('Reports')).not.toBeInTheDocument()
+  })
+
   it('should select publisher button', async () => {
     const { getByTestId } = render(
       <MockedProvider
