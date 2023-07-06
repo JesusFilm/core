@@ -158,7 +158,7 @@ export function NavigationDrawer({
           link="/templates"
         />
 
-        {globalReports != null && (
+        {globalReports && (
           <NavigationListItem
             icon={<LeaderboardRoundedIcon />}
             label="Reports"
