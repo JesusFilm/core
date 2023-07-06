@@ -19,20 +19,6 @@ describe('TeamMemberListItem', () => {
     }
   }
 
-  // const mockCurrentUser: UserTeam = {
-  //   id: 'userTeamId2',
-  //   role: UserTeamRole.member,
-  //   __typename: 'UserTeam',
-  //   user: {
-  //     __typename: 'User',
-  //     id: 'userId2',
-  //     email: 'tatai@gmail.com',
-  //     firstName: 'Tatai',
-  //     lastName: 'Nikora',
-  //     imageUrl: 'imagetwo'
-  //   }
-  // }
-
   const result = jest.fn(() => ({
     data: {
       userTeamUpdate: {

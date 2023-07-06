@@ -15,12 +15,12 @@ import { UserTeamInviteForm } from '../../Team/TeamManageDialog/UserTeamInviteFo
 import { EmailInviteForm } from './EmailInviteForm'
 
 interface AddUserSectionProps {
-  users: string[]
+  users?: string[]
   addTeamMembers?: boolean
 }
 
 export function AddUserSection({
-  users,
+  users = [],
   addTeamMembers = false
 }: AddUserSectionProps): ReactElement {
   const { journey } = useJourney()
@@ -112,7 +112,7 @@ export function AddUserSection({
           helperText={t('Users invited by link will request approval.')}
         />
       )}
-      {addTeamMembers && <UserTeamInviteForm users={users} />}
+      {addTeamMembers && <UserTeamInviteForm />}
     </Stack>
   )
 }

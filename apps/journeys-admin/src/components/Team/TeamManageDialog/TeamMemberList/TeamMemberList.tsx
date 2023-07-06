@@ -23,8 +23,6 @@ export function TeamMemberList({ title }: { title?: string }): ReactElement {
   )
   const currentUserTeam: UserTeam | undefined = useMemo(() => {
     return data?.userTeams?.find(({ user: { email } }) => {
-      console.log('UserTeams User id', email)
-      console.log('CurrentUser Id', currentUser.id)
       return email === currentUser?.email
     })
   }, [data, currentUser])

@@ -4,9 +4,13 @@ import { SnackbarProvider } from 'notistack'
 import { ReactElement } from 'react'
 import { InMemoryCache } from '@apollo/client'
 import { NextRouter, useRouter } from 'next/router'
-import { TeamProvider, useTeam } from '../TeamProvider'
+import { GET_TEAMS, TeamProvider, useTeam } from '../TeamProvider'
 import { TeamCreate } from '../../../../__generated__/TeamCreate'
 import { TEAM_CREATE } from '../../../libs/useTeamCreateMutation/useTeamCreateMutation'
+import { GetTeams } from '../../../../__generated__/GetTeams'
+import { GET_USER_TEAMS_AND_INVITES } from '../../../libs/useUserTeamsAndInvitesQuery/useUserTeamsAndInvitesQuery'
+import { UserTeamRole } from '../../../../__generated__/globalTypes'
+import { GetUserTeamsAndInvites } from '../../../../__generated__/GetUserTeamsAndInvites'
 import { TeamOnboarding } from '.'
 
 jest.mock('next/router', () => ({
@@ -18,6 +22,33 @@ const mockUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
 
 describe('TeamOnboarding', () => {
   let push: jest.Mock
+
+  const getUserTeamMock1: MockedResponse<GetUserTeamsAndInvites> = {
+    request: {
+      query: GET_USER_TEAMS_AND_INVITES,
+      variables: { teamId: 'jfp-team' }
+    },
+    result: {
+      data: {
+        userTeams: [
+          {
+            id: 'userTeamId',
+            __typename: 'UserTeam',
+            role: UserTeamRole.manager,
+            user: {
+              __typename: 'User',
+              email: 'siyangguccigang@gmail.com',
+              firstName: 'Siyang',
+              id: 'userId',
+              imageUrl: 'imageURL',
+              lastName: 'Gang'
+            }
+          }
+        ],
+        userTeamInvites: []
+      }
+    }
+  }
 
   const teamCreateMock: MockedResponse<TeamCreate> = {
     request: {
@@ -48,6 +79,16 @@ describe('TeamOnboarding', () => {
       }
     },
     error: new Error('Team Title already exists.')
+  }
+  const getTeams: MockedResponse<GetTeams> = {
+    request: {
+      query: GET_TEAMS
+    },
+    result: {
+      data: {
+        teams: [{ id: 'jfp-team', title: 'Team Title', __typename: 'Team' }]
+      }
+    }
   }
   function TestComponent(): ReactElement {
     const { activeTeam } = useTeam()
@@ -83,12 +124,27 @@ describe('TeamOnboarding', () => {
     await waitFor(() =>
       expect(getByTestId('active-team-title')).toHaveTextContent('Team Title')
     )
-    await waitFor(() => expect(push).toHaveBeenCalledWith('/'))
     expect(cache.extract()?.ROOT_QUERY?.teams).toEqual([
       { __ref: 'Team:teamId1' },
       { __ref: 'Team:teamId' }
     ])
     expect(getByText('{{ teamName }} created.')).toBeInTheDocument()
+  })
+
+  it('shows team invites form once team has been created', async () => {
+    const { getByRole, getByText } = render(
+      <MockedProvider mocks={[getTeams, getUserTeamMock1]}>
+        <SnackbarProvider>
+          <TeamProvider>
+            <TeamOnboarding />
+            <TestComponent />
+          </TeamProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+    await waitFor(() => expect(getByText('Team Title')).toBeInTheDocument())
+    await waitFor(() => expect(getByText('Siyang Gang')).toBeInTheDocument())
+    expect(getByRole('button', { name: 'Skip' })).toBeInTheDocument()
   })
 
   it('validates form', async () => {

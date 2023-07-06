@@ -9,6 +9,7 @@ import InputAdornment from '@mui/material/InputAdornment'
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline'
 import { useTeam } from '../../TeamProvider'
 import { UserTeamInviteCreate } from '../../../../../__generated__/UserTeamInviteCreate'
+import { useUserTeamsAndInvitesQuery } from '../../../../libs/useUserTeamsAndInvitesQuery'
 
 export const USER_TEAM_INVITE_CREATE = gql`
   mutation UserTeamInviteCreate(
@@ -23,18 +24,19 @@ export const USER_TEAM_INVITE_CREATE = gql`
   }
 `
 
-interface UserTeamInviteFormProps {
-  users: string[]
-}
-
-export function UserTeamInviteForm({
-  users
-}: UserTeamInviteFormProps): ReactElement {
+export function UserTeamInviteForm(): ReactElement {
   const [userTeamInviteCreate] = useMutation<UserTeamInviteCreate>(
     USER_TEAM_INVITE_CREATE
   )
   const { t } = useTranslation('apps-journeys-admin')
   const { activeTeam } = useTeam()
+  const { emails } = useUserTeamsAndInvitesQuery(
+    activeTeam != null
+      ? {
+          teamId: activeTeam.id
+        }
+      : undefined
+  )
 
   const handleAddUser = async (
     values: FormikValues,
@@ -77,7 +79,7 @@ export function UserTeamInviteForm({
     }
   }
 
-  const usersToLowerCase = users?.map((user) => user.toLowerCase())
+  const usersToLowerCase = emails?.map((email) => email.toLowerCase())
   const validationSchema = object().shape({
     email: string()
       .lowercase()
