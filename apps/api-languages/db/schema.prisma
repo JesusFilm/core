@@ -9,22 +9,26 @@ datasource db {
 }
 
 model Country {
-  id         String   @id
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
-  name       Json[]
-  population Int
-  slug       String   @unique
-  latitude   Float
-  longitude  Float
-  image      String
+  id          String     @id
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  name        Json[]
+  population  Int
+  slug        String     @unique
+  latitude    Float
+  longitude   Float
+  image       String
+  continent   Json[]
+  languageIds String[]
+  languages   Language[]
 }
 
 model Language {
-  id        String   @id
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id        String    @id
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
   name      Json[]
-  bcp47     String?  @unique
-  iso3166   String?  @unique
+  bcp47     String?
+  iso3      String?
+  Countries Country[]
 }

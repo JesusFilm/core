@@ -34,7 +34,7 @@ export class LanguageResolver {
   ): Promise<Language | null> {
     return idType === LanguageIdType.databaseId
       ? await this.prismaService.language.findUnique({ where: { id } })
-      : await this.prismaService.language.findUnique({ where: { bcp47: id } })
+      : await this.prismaService.language.findFirst({ where: { bcp47: id } })
   }
 
   @ResolveField()

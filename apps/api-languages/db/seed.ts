@@ -5,16 +5,13 @@ import { float } from 'aws-sdk/clients/lightsail'
 import { isEmpty } from 'lodash'
 import fetch from 'node-fetch'
 import slugify from 'slugify'
-import { PrismaClient } from '.prisma/api-languages-client'
-import { Translation } from '@core/nest/common/TranslationModule'
-
-import { ArangoDB } from './db'
+import { PrismaClient, Prisma } from '.prisma/api-languages-client'
 
 const prismaService = new PrismaClient()
 
 interface Language {
   id: string
-  name: Translation[]
+  name: Prisma.JsonObject[]
   bcp47?: string
   iso3?: string
 }
@@ -30,13 +27,14 @@ interface MediaLanguage {
 
 interface Country {
   id: string
-  name: Translation[]
+  name: Prisma.JsonObject[]
   population: number
-  continent: Translation[]
+  continent: Prisma.JsonObject[]
   slug: string
   languageIds: string[]
   latitude: float
   longitude: float
+  image: string
 }
 
 interface MediaCountry {
@@ -67,14 +65,17 @@ interface MetadataLanguageTag {
   tag: string
 }
 
-const db = ArangoDB()
-
 async function getLanguage(languageId: string): Promise<Language | null> {
-  return await prismaService.language.findUnique({ where: { id: languageId } })
+  const result = await prismaService.language.findUnique({
+    where: { id: languageId }
+  })
+
+  return result as unknown as Language
 }
 
 async function getLanguageByBcp47(bcp47: string): Promise<Language | null> {
-  return await prismaService.language.findUnique({ where: { bcp47 } })
+  const result = await prismaService.language.findFirst({ where: { bcp47 } })
+  return result as unknown as Language
 }
 
 async function getMediaLanguages(): Promise<MediaLanguage[]> {
@@ -130,17 +131,19 @@ async function digestMediaLanguageMetadata(
   )
     return
 
-  const body = {
-    name: [
-      ...language.name,
-      {
-        value: name,
-        languageId: metadataLanguage.id,
-        primary: false
-      }
-    ]
-  }
-  await db.collection('languages').update(languageId.toString(), body)
+  await prismaService.language.update({
+    where: { id: languageId.toString() },
+    data: {
+      name: [
+        ...language.name,
+        {
+          value: name,
+          languageId: metadataLanguage.id,
+          primary: false
+        }
+      ]
+    }
+  })
 }
 
 async function getCountries(language = 'en'): Promise<MediaCountry[]> {
@@ -202,31 +205,29 @@ function digestTranslatedCountries(
 ): Country[] {
   if (languageId === '529') return mappedCountries
   console.log('countries:', languageId)
-  const transformedCountries: Array<Partial<Country>> = countries.map(
-    (country) => ({
-      id: country.countryId.toString(),
-      name: [
-        {
-          value: isEmpty(country.name) ? '' : country.name,
-          languageId,
-          primary: false
-        }
-      ],
-      population: country.counts.population.value,
-      continent: [
-        {
-          value: isEmpty(country.continentName) ? '' : country.continentName,
-          languageId,
-          primary: false
-        }
-      ],
-      slug: isEmpty(country.name) ? '' : getSeoSlug(country.name, usedTitles),
-      languageIds: country.languageIds.map((l) => l.toString()),
-      latitude: country.latitude,
-      longitude: country.longitude,
-      image: country.assets.flagUrls.png8
-    })
-  )
+  const transformedCountries: Country[] = countries.map((country) => ({
+    id: country.countryId.toString(),
+    name: [
+      {
+        value: isEmpty(country.name) ? '' : country.name,
+        languageId,
+        primary: false
+      }
+    ],
+    population: country.counts.population.value,
+    continent: [
+      {
+        value: isEmpty(country.continentName) ? '' : country.continentName,
+        languageId,
+        primary: false
+      }
+    ],
+    slug: isEmpty(country.name) ? '' : getSeoSlug(country.name, usedTitles),
+    languageIds: country.languageIds.map((l) => l.toString()),
+    latitude: country.latitude,
+    longitude: country.longitude,
+    image: country.assets.flagUrls.png8
+  }))
   transformedCountries.forEach((country) => {
     const existing = mappedCountries.find((c) => c.id === country.id)
     if (existing == null) mappedCountries.push(country)
@@ -254,20 +255,6 @@ async function getMetadataLanguageTags(): Promise<MetadataLanguageTag[]> {
 }
 
 async function main(): Promise<void> {
-  if (!(await db.collection('languages').exists())) {
-    await db.createCollection('languages', { keyOptions: { type: 'uuid' } })
-  }
-  if (!(await db.collection('countries').exists())) {
-    await db.createCollection('countries', { keyOptions: { type: 'uuid' } })
-  }
-
-  await db.collection('countries').ensureIndex({
-    name: 'slug',
-    type: 'persistent',
-    fields: ['slug[*].value'],
-    unique: true
-  })
-
   const mediaLanguages = await getMediaLanguages()
 
   for (const mediaLanguage of mediaLanguages) {
@@ -295,9 +282,13 @@ async function main(): Promise<void> {
       languageId.toString()
     )
   }
-  await db
-    .collection('countries')
-    .saveAll(mappedCountries, { overwriteMode: 'replace' })
+  for (const country of mappedCountries) {
+    await prismaService.country.upsert({
+      where: { id: country.id },
+      create: country,
+      update: country
+    })
+  }
 }
 main().catch((e) => {
   console.error(e)
