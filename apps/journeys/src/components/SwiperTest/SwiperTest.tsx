@@ -1,14 +1,14 @@
-import { ReactElement, useState } from 'react'
-import { useTheme, styled } from '@mui/material/styles'
+import { ReactElement } from 'react'
+import { styled } from '@mui/material/styles'
 import { Swiper, SwiperSlide } from 'swiper/react'
 import SwiperCore, { Pagination } from 'swiper'
 import Div100vh from 'react-div-100vh'
+import Typography from '@mui/material/Typography'
 import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
 
 import 'swiper/swiper.min.css'
 import 'swiper/components/pagination/pagination.min.css'
-import { Typography } from '@mui/material'
 
 SwiperCore.use([Pagination])
 
@@ -71,13 +71,3 @@ export function SwiperTest(): ReactElement {
     </Div100vh>
   )
 }
-
-// {
-//   /* <Box sx={{ height: '100px', width: '100px', color: 'red' }} /> */
-// }
-// {
-//   /* <Box sx={{ height: '100px', width: '100px', color: 'blue' }} /> */
-// }
-// {
-//   /* <Box sx={{ height: '100px', width: '100px', color: 'green' }} /> */
-// }
