@@ -36,6 +36,16 @@ export function TeamSelect(): ReactElement {
               wordWrap: 'break-word'
             }
           }}
+          MenuProps={{
+            anchorOrigin: {
+              vertical: 'bottom',
+              horizontal: 'left'
+            },
+            transformOrigin: {
+              vertical: 'top',
+              horizontal: 'left'
+            }
+          }}
         >
           {(query?.data?.teams != null
             ? sortBy(query.data?.teams, 'title')
