@@ -1,9 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing'
+import { PrismaService } from '../../lib/prisma.service'
 import { LanguageResolver } from './language.resolver'
-import { LanguageService } from './language.service'
 
 describe('LangaugeResolver', () => {
-  let resolver: LanguageResolver, service: LanguageService
+  let resolver: LanguageResolver, prismaService: PrismaService
 
   const language = {
     id: '20615',
@@ -19,28 +19,30 @@ describe('LangaugeResolver', () => {
         primary: false,
         languageId: '529'
       }
-    ]
+    ],
+    createdAt: new Date('2021-01-01T00:00:00.000Z'),
+    updatedAt: new Date('2021-01-01T00:00:00.000Z')
   }
 
   beforeEach(async () => {
-    const languageService = {
-      provide: LanguageService,
-      useFactory: () => ({
-        load: jest.fn(() => language),
-        getAll: jest.fn(() => [language, language])
-      })
-    }
     const module: TestingModule = await Test.createTestingModule({
-      providers: [LanguageResolver, languageService]
+      providers: [LanguageResolver, PrismaService]
     }).compile()
     resolver = module.get<LanguageResolver>(LanguageResolver)
-    service = await module.resolve(LanguageService)
+    prismaService = module.get<PrismaService>(PrismaService)
+    prismaService.language.findUnique = jest.fn().mockResolvedValue(language)
+    prismaService.language.findMany = jest
+      .fn()
+      .mockResolvedValue([language, language])
   })
 
   describe('languages', () => {
     it('returns Languages', async () => {
       expect(await resolver.languages(1, 2)).toEqual([language, language])
-      expect(service.getAll).toHaveBeenCalledWith(1, 2)
+      expect(prismaService.language.findMany).toHaveBeenCalledWith({
+        skip: 1,
+        take: 2
+      })
     })
   })
 

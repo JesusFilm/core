@@ -1,13 +1,10 @@
 import { Test, TestingModule } from '@nestjs/testing'
-import { Database } from 'arangojs'
-import { mockDeep } from 'jest-mock-extended'
 import { IdType } from '../../__generated__/graphql'
-import { LanguageService } from '../language/language.service'
+import { PrismaService } from '../../lib/prisma.service'
 import { CountryResolver } from './country.resolver'
-import { CountryService } from './country.service'
 
 describe('LangaugeResolver', () => {
-  let resolver: CountryResolver, service: CountryService
+  let resolver: CountryResolver, prismaService: PrismaService
 
   const country = {
     id: 'US',
@@ -21,42 +18,37 @@ describe('LangaugeResolver', () => {
   }
 
   beforeEach(async () => {
-    const countryService = {
-      provide: CountryService,
-      useFactory: () => ({
-        load: jest.fn(() => country),
-        getCountryBySlug: jest.fn(() => country),
-        getAll: jest.fn(() => [country, country])
-      })
-    }
     const module: TestingModule = await Test.createTestingModule({
-      providers: [
-        CountryResolver,
-        countryService,
-        LanguageService,
-        { provide: 'DATABASE', useFactory: () => mockDeep<Database>() }
-      ]
+      providers: [CountryResolver, PrismaService]
     }).compile()
     resolver = module.get<CountryResolver>(CountryResolver)
-    service = await module.resolve(CountryService)
+    prismaService = module.get<PrismaService>(PrismaService)
+    prismaService.country.findUnique = jest.fn().mockResolvedValue(country)
+    prismaService.country.findMany = jest
+      .fn()
+      .mockResolvedValue([country, country])
   })
 
   describe('countries', () => {
     it('returns Countries', async () => {
       expect(await resolver.countries()).toEqual([country, country])
-      expect(service.getAll).toHaveBeenCalledWith()
+      expect(prismaService.country.findMany).toHaveBeenCalledWith()
     })
   })
 
   describe('country', () => {
     it('should return country', async () => {
       expect(await resolver.country(country.id)).toEqual(country)
-      expect(service.load).toHaveBeenCalledWith(country.id)
+      expect(prismaService.country.findUnique).toHaveBeenCalledWith({
+        where: { id: country.id }
+      })
     })
 
     it('should return country by slug', async () => {
       expect(await resolver.country(country.id, IdType.slug)).toEqual(country)
-      expect(service.getCountryBySlug).toHaveBeenCalledWith(country.id)
+      expect(prismaService.country.findUnique).toHaveBeenCalledWith({
+        where: { slug: country.id }
+      })
     })
   })
 

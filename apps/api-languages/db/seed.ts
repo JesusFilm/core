@@ -1,17 +1,20 @@
 // version 2
 // increment to trigger re-seed (ie: files other than seed.ts are changed)
 
-import { Translation } from '@core/nest/common/TranslationModule'
-import { aql } from 'arangojs'
 import { float } from 'aws-sdk/clients/lightsail'
 import { isEmpty } from 'lodash'
 import fetch from 'node-fetch'
 import slugify from 'slugify'
+import { PrismaClient } from '.prisma/api-languages-client'
+import { Translation } from '@core/nest/common/TranslationModule'
+
 import { ArangoDB } from './db'
 
+const prismaService = new PrismaClient()
+
 interface Language {
-  _key: string
-  name: Array<{ value: string; languageId: string; primary: boolean }>
+  id: string
+  name: Translation[]
   bcp47?: string
   iso3?: string
 }
@@ -26,11 +29,11 @@ interface MediaLanguage {
 }
 
 interface Country {
-  _key: string
+  id: string
   name: Translation[]
   population: number
   continent: Translation[]
-  slug: Translation[]
+  slug: string
   languageIds: string[]
   latitude: float
   longitude: float
@@ -66,24 +69,12 @@ interface MetadataLanguageTag {
 
 const db = ArangoDB()
 
-async function getLanguage(languageId: string): Promise<Language | undefined> {
-  const rst = await db.query(aql`
-  FOR item IN ${db.collection('languages')}
-    FILTER item._key == ${languageId}
-    LIMIT 1
-    RETURN item`)
-  return await rst.next()
+async function getLanguage(languageId: string): Promise<Language | null> {
+  return await prismaService.language.findUnique({ where: { id: languageId } })
 }
 
-async function getLanguageByBcp47(
-  bcp47: string
-): Promise<Language | undefined> {
-  const rst = await db.query(aql`
-  FOR item IN ${db.collection('languages')}
-    FILTER item.bcp47 == ${bcp47}
-    LIMIT 1
-    RETURN item`)
-  return await rst.next()
+async function getLanguageByBcp47(bcp47: string): Promise<Language | null> {
+  return await prismaService.language.findUnique({ where: { bcp47 } })
 }
 
 async function getMediaLanguages(): Promise<MediaLanguage[]> {
@@ -103,7 +94,7 @@ async function digestMediaLanguage(
   mediaLanguage: MediaLanguage
 ): Promise<void> {
   const { languageId, bcp47, iso3, nameNative } = mediaLanguage
-  const body: Omit<Language, '_key'> = {
+  const body = {
     bcp47: isEmpty(bcp47) ? undefined : bcp47,
     iso3: isEmpty(iso3) ? undefined : iso3,
     name: [
@@ -114,15 +105,12 @@ async function digestMediaLanguage(
       }
     ]
   }
-  const language = await getLanguage(languageId.toString())
 
-  if (language != null) {
-    await db.collection('languages').update(languageId.toString(), body)
-  } else {
-    await db
-      .collection('languages')
-      .save({ _key: languageId.toString(), ...body })
-  }
+  await prismaService.language.upsert({
+    where: { id: languageId.toString() },
+    update: body,
+    create: { id: languageId.toString(), ...body }
+  })
 }
 
 async function digestMediaLanguageMetadata(
@@ -137,17 +125,17 @@ async function digestMediaLanguageMetadata(
 
   if (
     language.name.find(
-      ({ languageId }) => languageId === metadataLanguage._key
+      ({ languageId }) => languageId === metadataLanguage.id
     ) != null
   )
     return
 
-  const body: Omit<Language, '_key'> = {
+  const body = {
     name: [
       ...language.name,
       {
         value: name,
-        languageId: metadataLanguage._key,
+        languageId: metadataLanguage.id,
         primary: false
       }
     ]
@@ -192,19 +180,13 @@ export function getSeoSlug(title: string, collection: string[]): string {
 function digestCountries(countries: MediaCountry[]): Country[] {
   console.log('countries:', '529')
   const transformedCountries: Country[] = countries.map((country) => ({
-    _key: country.countryId.toString(),
+    id: country.countryId.toString(),
     name: [{ value: country.name, languageId: '529', primary: true }],
     population: country.counts.population.value,
     continent: [
       { value: country.continentName, languageId: '529', primary: true }
     ],
-    slug: [
-      {
-        value: getSeoSlug(country.name, usedTitles),
-        languageId: '529',
-        primary: true
-      }
-    ],
+    slug: getSeoSlug(country.name, usedTitles),
     languageIds: country.languageIds.map((l) => l.toString()),
     latitude: country.latitude,
     longitude: country.longitude,
@@ -220,45 +202,38 @@ function digestTranslatedCountries(
 ): Country[] {
   if (languageId === '529') return mappedCountries
   console.log('countries:', languageId)
-  const transformedCountries: Country[] = countries.map((country) => ({
-    _key: country.countryId.toString(),
-    name: [
-      {
-        value: isEmpty(country.name) ? '' : country.name,
-        languageId,
-        primary: false
-      }
-    ],
-    population: country.counts.population.value,
-    continent: [
-      {
-        value: isEmpty(country.continentName) ? '' : country.continentName,
-        languageId,
-        primary: false
-      }
-    ],
-    slug: [
-      {
-        value: isEmpty(country.name)
-          ? ''
-          : getSeoSlug(country.name, usedTitles),
-        languageId,
-        primary: false
-      }
-    ],
-    languageIds: country.languageIds.map((l) => l.toString()),
-    latitude: country.latitude,
-    longitude: country.longitude,
-    image: country.assets.flagUrls.png8
-  }))
+  const transformedCountries: Array<Partial<Country>> = countries.map(
+    (country) => ({
+      id: country.countryId.toString(),
+      name: [
+        {
+          value: isEmpty(country.name) ? '' : country.name,
+          languageId,
+          primary: false
+        }
+      ],
+      population: country.counts.population.value,
+      continent: [
+        {
+          value: isEmpty(country.continentName) ? '' : country.continentName,
+          languageId,
+          primary: false
+        }
+      ],
+      slug: isEmpty(country.name) ? '' : getSeoSlug(country.name, usedTitles),
+      languageIds: country.languageIds.map((l) => l.toString()),
+      latitude: country.latitude,
+      longitude: country.longitude,
+      image: country.assets.flagUrls.png8
+    })
+  )
   transformedCountries.forEach((country) => {
-    const existing = mappedCountries.find((c) => c._key === country._key)
+    const existing = mappedCountries.find((c) => c.id === country.id)
     if (existing == null) mappedCountries.push(country)
     else {
       if (country.name[0].value !== '') existing.name.push(country.name[0])
       if (country.continent[0].value !== '')
         existing.continent.push(country.continent[0])
-      if (country.slug[0].value !== '') existing.slug.push(country.slug[0])
     }
   })
 

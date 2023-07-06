@@ -7,30 +7,28 @@ import {
   ResolveField,
   Parent
 } from '@nestjs/graphql'
-import { Country, IdType } from '../../__generated__/graphql'
-import { LanguageRecord, LanguageService } from '../language/language.service'
-import { CountryService } from './country.service'
+import { Country, Language } from '.prisma/api-languages-client'
+
+import { IdType } from '../../__generated__/graphql'
+import { PrismaService } from '../../lib/prisma.service'
 
 @Resolver('Country')
 export class CountryResolver {
-  constructor(
-    private readonly countryService: CountryService,
-    private readonly languageService: LanguageService
-  ) {}
+  constructor(private readonly prismaService: PrismaService) {}
 
   @Query()
   async countries(): Promise<Country[]> {
-    return await this.countryService.getAll()
+    return await this.prismaService.country.findMany()
   }
 
   @Query()
   async country(
     @Args('id') id: string,
     @Args('idType') idType: IdType = IdType.databaseId
-  ): Promise<Country | Error> {
+  ): Promise<Country | null> {
     return idType === IdType.databaseId
-      ? await this.countryService.load(id)
-      : await this.countryService.getCountryBySlug(id)
+      ? await this.prismaService.country.findUnique({ where: { id } })
+      : await this.prismaService.country.findUnique({ where: { slug: id } })
   }
 
   @ResolveField()
@@ -60,15 +58,19 @@ export class CountryResolver {
   @ResolveField()
   async languages(
     @Parent() country: Country & { languageIds: string[] }
-  ): Promise<LanguageRecord[]> {
-    return await this.languageService.getByIds(country.languageIds)
+  ): Promise<Language[]> {
+    return await this.prismaService.language.findMany({
+      where: { id: { in: country.languageIds } }
+    })
   }
 
   @ResolveReference()
   async resolveReference(reference: {
     __typename: 'Country'
     id: string
-  }): Promise<Country | Error> {
-    return await this.countryService.load(reference.id)
+  }): Promise<Country | null> {
+    return await this.prismaService.country.findUnique({
+      where: { id: reference.id }
+    })
   }
 }

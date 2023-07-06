@@ -1,0 +1,30 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = env("PRISMA_LOCATION")
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("PG_DATABASE_URL")
+}
+
+model Country {
+  id         String   @id
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  name       Json[]
+  population Int
+  slug       String   @unique
+  latitude   Float
+  longitude  Float
+  image      String
+}
+
+model Language {
+  id        String   @id
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  name      Json[]
+  bcp47     String?  @unique
+  iso3166   String?  @unique
+}
