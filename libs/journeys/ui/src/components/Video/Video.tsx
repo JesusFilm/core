@@ -129,23 +129,11 @@ export function Video({
   const progressEndTime =
     player != null ? Math.min(...triggerTimes, endOfVideo) : 0
 
-  // useEffect(() => {
-  //   if (player != null) {
-  //     if (selectedBlock === undefined) {
-  //       if (autoplay === true) {
-  //         player.autoplay(true)
-  //         void player.play()
-  //       }
-  //     }
-  //   }
-  // })
-
   // Initiate video player listeners
   useEffect(() => {
     const startTime = startAt ?? 0
 
-    const handleStopLoading = (e?): void => {
-      console.log(e)
+    const handleStopLoading = (): void => {
       if (player != null && player.currentTime() < startTime) {
         player.currentTime(startTime)
       }
@@ -157,7 +145,6 @@ export function Video({
     const handleVideoReady = (): void => {
       if (player != null) {
         player.currentTime(startTime)
-        console.log('video ready', player, isIOS(), player.currentTime())
 
         // iOS blocks videos from autoplaying so loading hangs
         void handleStopLoading()

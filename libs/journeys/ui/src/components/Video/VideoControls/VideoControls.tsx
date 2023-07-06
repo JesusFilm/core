@@ -1,10 +1,4 @@
-import {
-  ReactElement,
-  useState,
-  useEffect,
-  MouseEventHandler,
-  Event
-} from 'react'
+import { ReactElement, useState, useEffect, MouseEventHandler } from 'react'
 import Player from 'video.js/dist/types/player'
 import Container from '@mui/material/Container'
 import Box from '@mui/material/Box'
@@ -60,8 +54,7 @@ export function VideoControls({
   const visible = !playing || active || loading
 
   useEffect(() => {
-    const handleVideoPlay = (e: Event): void => {
-      console.log(e)
+    const handleVideoPlay = (): void => {
       setPlaying(true)
 
       if (startAt > 0 && player.currentTime() < startAt) {
@@ -93,15 +86,13 @@ export function VideoControls({
       )
       setProgress(Math.round(player.currentTime()))
     }
-    const handleMobileFullscreenChange = (e: Event): void => {
-      console.log(e, 'mobile', player, autoplay)
+    const handleMobileFullscreenChange = (): void => {
       setShowHeaderFooter(!player.isFullscreen())
 
       // On autoplay videos, videos will play after fullscreen change.
       // Keep paused state if changing screen while paused
       if (autoplay && player.paused()) {
         if (player.paused()) {
-          console.log('try to prevent default pause on autoplay')
           void player.pause()
         }
       }
@@ -109,8 +100,7 @@ export function VideoControls({
     const handleUserActive = (): void => setActive(true)
     const handleUserInactive = (): void => setActive(false)
     const handleVideoVolumeChange = (): void => setVolume(player.volume() * 100)
-    const handleDesktopFullscreenChange = (e: Event): void => {
-      console.log(e, 'desktop')
+    const handleDesktopFullscreenChange = (): void => {
       setShowHeaderFooter(fscreen.fullscreenElement == null)
     }
 
@@ -152,12 +142,6 @@ export function VideoControls({
   }
 
   async function handleFullscreen(): Promise<void> {
-    console.log(
-      showHeaderFooter,
-      isMobile(),
-      player,
-      player.supportsFullScreen()
-    )
     if (!showHeaderFooter) {
       if (isMobile()) {
         await player.exitFullscreen()
@@ -202,7 +186,6 @@ export function VideoControls({
     let timeoutID: NodeJS.Timeout | undefined
     return function (event) {
       if (timeoutID == null) {
-        console.log('click play triggered', event)
         timeoutID = setTimeout(function () {
           onClick(event)
           timeoutID = undefined
@@ -444,10 +427,7 @@ export function VideoControls({
                 </Stack>
                 <IconButton
                   aria-label="fullscreen"
-                  onClick={(e) => {
-                    e.stopPropagation()
-                    void handleFullscreen()
-                  }}
+                  onClick={handleFullscreen}
                   sx={{ py: 0, px: 2 }}
                 >
                   {showHeaderFooter ? (
