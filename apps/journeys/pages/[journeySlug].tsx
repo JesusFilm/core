@@ -2,14 +2,14 @@ import { ReactElement } from 'react'
 import { GetStaticPaths, GetStaticProps } from 'next'
 import { gql } from '@apollo/client'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
-import { transformer } from '@core/journeys/ui/transformer'
+// import { transformer } from '@core/journeys/ui/transformer'
 import { JOURNEY_FIELDS } from '@core/journeys/ui/JourneyProvider/journeyFields'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { getJourneyRTL } from '@core/journeys/ui/rtl'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import { NextSeo } from 'next-seo'
 import { useRouter } from 'next/router'
-import { Conductor } from '../src/components/Conductor'
+// import { Conductor } from '../src/components/Conductor'
 import { createApolloClient } from '../src/libs/apolloClient'
 import {
   GetJourney,
@@ -17,6 +17,7 @@ import {
 } from '../__generated__/GetJourney'
 import { GetJourneySlugs } from '../__generated__/GetJourneySlugs'
 import i18nConfig from '../next-i18next.config'
+import { SwiperTest } from '../src/components/SwiperTest/SwiperTest'
 
 interface JourneyPageProps {
   journey: Journey
@@ -76,9 +77,10 @@ function JourneyPage({ journey, locale, rtl }: JourneyPageProps): ReactElement {
           rtl={rtl}
           locale={locale}
         >
-          {journey.blocks != null && (
+          <SwiperTest />
+          {/* {journey.blocks != null && (
             <Conductor blocks={transformer(journey.blocks)} />
-          )}
+          )} */}
         </ThemeProvider>
       </JourneyProvider>
     </>
