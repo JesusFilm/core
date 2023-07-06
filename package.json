@@ -142,6 +142,7 @@
     "@commitlint/lint": "^17.4.2",
     "@docusaurus/module-type-aliases": "^2.2.0",
     "@emotion/babel-plugin": "11.7.2",
+    "@lhci/cli": "^0.12.0",
     "@nestjs/schematics": "^8.0.6",
     "@nestjs/testing": "^9.2.1",
     "@nrwl/cli": "13.9.7",

@@ -159,6 +159,16 @@
           }
         ]
       }
+    },
+    "lighthouse": {
+      "executor": "@nrwl/workspace:run-commands",
+      "options": {
+        "commands": [
+          {
+            "command": "npx lhci autorun --config apps/journeys/lighthouserc.json || echo 'LHCI failed!'"
+          }
+        ]
+      }
     }
   },
   "tags": []

@@ -112,6 +112,9 @@ jobs:
           state: ${{ job.status }}
           environment-url: ${{ steps.deployment-url.outputs.deployment-url }}
           deployment-id: ${{ steps.deployment.outputs.deployment_id }}
+      - run: npx nx run-many --target=lighthouse --projects=${{ matrix.app }}
+        env:
+          DEPLOYMENT_URL: ${{ steps.deployment-url.outputs.deployment-url }}
   deploy-production:
     name: Deploy Production
     # main branch and not a pull request
@@ -183,3 +186,6 @@ jobs:
           state: ${{ job.status }}
           environment-url: ${{ steps.deployment-url.outputs.deployment-url }}
           deployment-id: ${{ steps.deployment.outputs.deployment_id }}
+      - run: npx nx run-many --target=lighthouse --projects=${{ matrix.app }}
+        env:
+          DEPLOYMENT_URL: ${{ steps.deployment-url.outputs.deployment-url }}
