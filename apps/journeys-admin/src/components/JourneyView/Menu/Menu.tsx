@@ -277,7 +277,7 @@ export function Menu(): ReactElement {
           />
         </>
       ) : (
-        <IconButton disabled>
+        <IconButton edge="end" disabled>
           <MoreVert />
         </IconButton>
       )}
