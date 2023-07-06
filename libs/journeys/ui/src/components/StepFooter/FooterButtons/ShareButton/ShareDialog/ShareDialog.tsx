@@ -51,15 +51,25 @@ export function ShareDialog({ url, open, closeDialog }: Props): ReactElement {
         closeButton: true
       }}
     >
-      <Stack direction="row" spacing={2} justifyContent="space-around">
-        <Stack direction="column" alignItems="center" spacing={2}>
+      <Stack direction="row" justifyContent="space-around">
+        <Stack
+          direction="column"
+          alignItems="center"
+          spacing={2}
+          sx={{ minWidth: '55px' }}
+        >
           <StyledIconButton onClick={handleCopyLink} size="large">
             <LinkAngled sx={{ color: 'white' }} />
           </StyledIconButton>
-          <Typography>{t('Copy Link')}</Typography>
+          <Typography variant="caption">{t('Copy Link')}</Typography>
         </Stack>
 
-        <Stack direction="column" alignItems="center" spacing={2}>
+        <Stack
+          direction="column"
+          alignItems="center"
+          spacing={2}
+          sx={{ minWidth: '55px' }}
+        >
           <span>
             <StyledIconButton
               href={`https://www.facebook.com/sharer/sharer.php?u=${url ?? ''}`}
@@ -78,10 +88,15 @@ export function ShareDialog({ url, open, closeDialog }: Props): ReactElement {
             </StyledIconButton>
           </span>
 
-          <Typography>{t('Facebook')}</Typography>
+          <Typography variant="caption">{t('Facebook')}</Typography>
         </Stack>
 
-        <Stack direction="column" alignItems="center" spacing={2}>
+        <Stack
+          direction="column"
+          alignItems="center"
+          spacing={2}
+          sx={{ minWidth: '55px' }}
+        >
           <span>
             <StyledIconButton
               href={`https://twitter.com/intent/tweet?url=${url ?? ''}`}
@@ -100,7 +115,7 @@ export function ShareDialog({ url, open, closeDialog }: Props): ReactElement {
             </StyledIconButton>
           </span>
 
-          <Typography>{t('Twitter')}</Typography>
+          <Typography variant="caption">{t('Twitter')}</Typography>
         </Stack>
       </Stack>
     </Dialog>

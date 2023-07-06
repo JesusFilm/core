@@ -37,13 +37,13 @@ export function FooterButton({ onClick, children }: Props): ReactElement {
       <StyledButton
         onClick={onClick}
         disableRipple={false}
-        sx={{ display: { xs: 'none', sm: 'none', md: 'none', lg: 'block' } }}
+        sx={{ display: { xs: 'none', sm: 'none', md: 'none', lg: 'flex' } }}
       >
         {children}
       </StyledButton>
       <StyledButton
         onClick={onClick}
-        sx={{ display: { md: 'block', lg: 'none' } }}
+        sx={{ display: { md: 'flex', lg: 'none' } }}
       >
         {children}
       </StyledButton>
