@@ -14,15 +14,17 @@ import GroupIcon from '@mui/icons-material/Group'
 import PersonIcon from '@mui/icons-material/Person'
 import { gql, useMutation } from '@apollo/client'
 import { UserTeamRole } from '../../../../../__generated__/globalTypes'
-import { GetUserTeams_userTeams as UserTeam } from '../../../../../__generated__/GetUserTeams'
-import { GetUserTeamInvites_userTeamInvites as UserTeamInvite } from '../../../../../__generated__/GetUserTeamInvites'
+import {
+  GetUserTeamsAndInvites_userTeams as UserTeam,
+  GetUserTeamsAndInvites_userTeamInvites as UserTeamInvite
+} from '../../../../../__generated__/GetUserTeamsAndInvites'
 import { MenuItem } from '../../../MenuItem'
 import { RemoveUserTeam } from '../RemoveUserTeam'
 import { UserTeamUpdate } from '../../../../../__generated__/UserTeamUpdate'
 
 interface TeamMemberListItemProps {
   user: UserTeam | UserTeamInvite
-  currentUser: UserTeam
+  disabled: boolean
 }
 
 export const USER_TEAM_UPDATE = gql`
@@ -39,7 +41,7 @@ export const USER_TEAM_UPDATE = gql`
 
 export function TeamMemberListItem({
   user: listItem,
-  currentUser
+  disabled
 }: TeamMemberListItemProps): ReactElement {
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
   const open = Boolean(anchorEl)
@@ -76,27 +78,6 @@ export function TeamMemberListItem({
     }
   }, [role])
 
-  const { role: userRole } = currentUser
-
-  const disableAction = useMemo((): boolean => {
-    if (
-      listItem.__typename !== 'UserTeamInvite' &&
-      currentUser.user.id === listItem?.user?.id
-    )
-      return true
-    switch (userRole) {
-      case UserTeamRole.guest: {
-        return true
-      }
-      case UserTeamRole.member: {
-        return true
-      }
-      default: {
-        return false
-      }
-    }
-  }, [currentUser.user.id, listItem, userRole])
-
   const handleClick = (event: MouseEvent<HTMLElement>): void => {
     setAnchorEl(event.currentTarget)
   }
@@ -127,7 +108,7 @@ export function TeamMemberListItem({
             aria-haspopup="true"
             aria-expanded={open ? 'true' : undefined}
             onClick={handleClick}
-            disabled={disableAction}
+            disabled={disabled}
             endIcon={<ArrowDropDownIcon />}
             sx={{
               color: 'text.primary',
@@ -206,7 +187,7 @@ export function TeamMemberListItem({
               />
             </Stack>
           )}
-          {!disableAction && (
+          {!disabled && (
             <RemoveUserTeam id={id} isInvite={isInvite} onClick={handleClose} />
           )}
         </Stack>

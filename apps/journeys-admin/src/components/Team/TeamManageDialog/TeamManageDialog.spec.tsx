@@ -3,14 +3,10 @@ import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { UserTeamRole } from '../../../../__generated__/globalTypes'
 import { TeamProvider, GET_TEAMS } from '../TeamProvider'
-import { GetUserTeams } from '../../../../__generated__/GetUserTeams'
-import { GetUserTeamInvites } from '../../../../__generated__/GetUserTeamInvites'
 import { GetTeams } from '../../../../__generated__/GetTeams'
-import {
-  TeamManageDialog,
-  GET_USER_TEAMS,
-  GET_USER_TEAM_INVITES
-} from './TeamManageDialog'
+import { GET_USER_TEAMS_AND_INVITES } from '../../../libs/useUserTeamsAndInvitesQuery/useUserTeamsAndInvitesQuery'
+import { GetUserTeamsAndInvites } from '../../../../__generated__/GetUserTeamsAndInvites'
+import { TeamManageDialog } from './TeamManageDialog'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
@@ -44,9 +40,9 @@ beforeEach(() => {
 })
 
 describe('TeamManageDialog', () => {
-  const getUserTeamMock1: MockedResponse<GetUserTeams> = {
+  const getUserTeamMock1: MockedResponse<GetUserTeamsAndInvites> = {
     request: {
-      query: GET_USER_TEAMS,
+      query: GET_USER_TEAMS_AND_INVITES,
       variables: { teamId: 'jfp-team' }
     },
     result: {
@@ -65,30 +61,18 @@ describe('TeamManageDialog', () => {
               lastName: 'Gang'
             }
           }
+        ],
+        userTeamInvites: [
+          {
+            id: 'inviteId',
+            email: 'edmond@gmail.com',
+            teamId: 'teamId',
+            __typename: 'UserTeamInvite'
+          }
         ]
       }
     }
   }
-
-  const getUserTeamInvitesMockedResponse1: MockedResponse<GetUserTeamInvites> =
-    {
-      request: {
-        query: GET_USER_TEAM_INVITES,
-        variables: { teamId: 'jfp-team' }
-      },
-      result: {
-        data: {
-          userTeamInvites: [
-            {
-              id: 'inviteId',
-              email: 'edmond@gmail.com',
-              teamId: 'teamId',
-              __typename: 'UserTeamInvite'
-            }
-          ]
-        }
-      }
-    }
 
   const getTeams: MockedResponse<GetTeams> = {
     request: {
@@ -101,7 +85,7 @@ describe('TeamManageDialog', () => {
     }
   }
 
-  const mocks = [getUserTeamMock1, getUserTeamInvitesMockedResponse1, getTeams]
+  const mocks = [getUserTeamMock1, getTeams]
   it('renders without error', async () => {
     const { getByText } = render(
       <MockedProvider mocks={mocks}>

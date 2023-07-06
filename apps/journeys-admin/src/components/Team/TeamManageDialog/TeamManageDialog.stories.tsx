@@ -5,11 +5,8 @@ import { journeysAdminConfig } from '../../../libs/storybook'
 import { TeamProvider, GET_TEAMS } from '../TeamProvider'
 import { UserTeamRole } from '../../../../__generated__/globalTypes'
 import { GET_CURRENT_USER } from '../../../libs/useCurrentUser'
-import {
-  GET_USER_TEAMS,
-  GET_USER_TEAM_INVITES,
-  TeamManageDialog
-} from './TeamManageDialog'
+import { GET_USER_TEAMS_AND_INVITES } from '../../../libs/useUserTeamsAndInvitesQuery/useUserTeamsAndInvitesQuery'
+import { TeamManageDialog } from './TeamManageDialog'
 
 const Demo = {
   ...journeysAdminConfig,
@@ -19,7 +16,7 @@ const Demo = {
 const mocks = [
   {
     request: {
-      query: GET_USER_TEAMS,
+      query: GET_USER_TEAMS_AND_INVITES,
       variables: { teamId: 'jfp-team' }
     },
     result: {
@@ -37,31 +34,8 @@ const mocks = [
               imageUrl: 'imageURL',
               lastName: 'Gang'
             }
-          },
-          {
-            id: 'userTeamId2',
-            __typename: 'UserTeam',
-            role: UserTeamRole.member,
-            user: {
-              __typename: 'User',
-              email: 'john@gmail.com',
-              firstName: 'John "The Rock"',
-              id: 'userId2',
-              imageUrl: 'imageURL',
-              lastName: 'Johnson'
-            }
           }
-        ]
-      }
-    }
-  },
-  {
-    request: {
-      query: GET_USER_TEAM_INVITES,
-      variables: { teamId: 'jfp-team' }
-    },
-    result: {
-      data: {
+        ],
         userTeamInvites: [
           {
             id: 'inviteId',
