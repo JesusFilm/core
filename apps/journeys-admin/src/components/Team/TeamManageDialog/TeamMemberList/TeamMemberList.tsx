@@ -4,6 +4,10 @@ import List from '@mui/material/List'
 import Typography from '@mui/material/Typography'
 
 import { sortBy } from 'lodash'
+import ListItem from '@mui/material/ListItem'
+import ListItemAvatar from '@mui/material/ListItemAvatar'
+import Skeleton from '@mui/material/Skeleton'
+import ListItemText from '@mui/material/ListItemText'
 import { TeamMemberListItem } from '../TeamMemberListItem'
 import { useUserTeamsAndInvitesQuery } from '../../../../libs/useUserTeamsAndInvitesQuery'
 import { useTeam } from '../../TeamProvider'
@@ -14,7 +18,7 @@ import { UserTeamRole } from '../../../../../__generated__/globalTypes'
 export function TeamMemberList({ title }: { title?: string }): ReactElement {
   const { activeTeam } = useTeam()
   const { loadUser, data: currentUser } = useCurrentUser()
-  const { data } = useUserTeamsAndInvitesQuery(
+  const { data, loading } = useUserTeamsAndInvitesQuery(
     activeTeam != null
       ? {
           teamId: activeTeam.id
@@ -41,33 +45,60 @@ export function TeamMemberList({ title }: { title?: string }): ReactElement {
 
   return (
     <>
-      {sortedUserTeams.length > 0 && currentUser != null && (
+      {loading ? (
         <Box>
-          <Typography variant="subtitle1"> {title}</Typography>
-          <List sx={{ py: 0 }}>
-            {sortedUserTeams.map((userTeam) => {
-              return (
-                <TeamMemberListItem
-                  key={userTeam.id}
-                  user={userTeam}
-                  disabled={
-                    currentUserTeam?.role !== UserTeamRole.manager ||
-                    currentUser.email === userTeam.user.email
-                  }
+          <Typography variant="subtitle1">{title}</Typography>
+          <List>
+            {[0, 1, 2].map((i) => (
+              <ListItem key={i} sx={{ px: 0 }}>
+                <ListItemAvatar>
+                  <Skeleton
+                    variant="circular"
+                    width={40}
+                    height={40}
+                    sx={{ alignSelf: 'center' }}
+                  />
+                </ListItemAvatar>
+
+                <ListItemText
+                  primary={<Skeleton variant="text" width="60%" />}
+                  secondary={<Skeleton variant="text" width="30%" />}
                 />
-              )
-            })}
-            {data?.userTeamInvites?.map((userTeamInvite) => {
-              return (
-                <TeamMemberListItem
-                  key={userTeamInvite.id}
-                  user={userTeamInvite}
-                  disabled={currentUserTeam?.role !== UserTeamRole.manager}
-                />
-              )
-            })}
+              </ListItem>
+            ))}
           </List>
         </Box>
+      ) : (
+        <>
+          {sortedUserTeams.length > 0 && currentUser != null && (
+            <Box>
+              <Typography variant="subtitle1"> {title}</Typography>
+              <List sx={{ py: 0 }}>
+                {sortedUserTeams.map((userTeam) => {
+                  return (
+                    <TeamMemberListItem
+                      key={userTeam.id}
+                      user={userTeam}
+                      disabled={
+                        currentUserTeam?.role !== UserTeamRole.manager ||
+                        currentUser.email === userTeam.user.email
+                      }
+                    />
+                  )
+                })}
+                {data?.userTeamInvites?.map((userTeamInvite) => {
+                  return (
+                    <TeamMemberListItem
+                      key={userTeamInvite.id}
+                      user={userTeamInvite}
+                      disabled={currentUserTeam?.role !== UserTeamRole.manager}
+                    />
+                  )
+                })}
+              </List>
+            </Box>
+          )}
+        </>
       )}
     </>
   )

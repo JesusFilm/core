@@ -110,7 +110,6 @@ export function TeamOnboarding(): ReactElement {
                     </Stack>
                   </CardContent>
                   <CardActions sx={{ justifyContent: 'flex-end', px: 4 }}>
-                    {console.log(!isValid || isSubmitting)}
                     <Button
                       onClick={() => handleSubmit()}
                       disabled={!isValid || isSubmitting}
