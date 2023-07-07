@@ -55,7 +55,7 @@
       "options": {
         "commands": [
           "npx vercel alias set $(cat apps/watch/.vercel-url) watch-$PR_NUMBER-jesusfilm.vercel.app --token=$VERCEL_TOKEN --scope=jesusfilm",
-          "echo 'watch-$PR_NUMBER-jesusfilm.vercel.app' > apps/watch/.vercel-url"
+          "echo 'https://watch-$PR_NUMBER-jesusfilm.vercel.app' > apps/watch/.vercel-url"
         ],
         "parallel": false
       }
