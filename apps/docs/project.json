@@ -33,7 +33,7 @@
       "executor": "@nrwl/workspace:run-commands",
       "options": {
         "commands": [
-          "npx vercel alias set $(echo apps/docs/.vercel-url) docs-$PR_NUMBER-jesusfilm.vercel.app --token=$VERCEL_TOKEN --scope=jesusfilm",
+          "npx vercel alias set $(cat apps/docs/.vercel-url) docs-$PR_NUMBER-jesusfilm.vercel.app --token=$VERCEL_TOKEN --scope=jesusfilm",
           "echo 'docs-$PR_NUMBER-jesusfilm.vercel.app' > apps/docs/.vercel-url"
         ],
         "parallel": false
