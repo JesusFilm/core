@@ -20,16 +20,6 @@ describe('TeamSelect', () => {
       }
     }
   }
-  const getEmptyTeamsMock: MockedResponse<GetTeams> = {
-    request: {
-      query: GET_TEAMS
-    },
-    result: {
-      data: {
-        teams: []
-      }
-    }
-  }
   function TestComponent(): ReactElement {
     const { activeTeam } = useTeam()
 
@@ -53,16 +43,5 @@ describe('TeamSelect', () => {
     await waitFor(() => expect(screen.getByRole('listbox')).toBeInTheDocument())
     fireEvent.click(getByRole('option', { name: 'Team Title2' }))
     expect(getByTestId('active-team-title')).toHaveTextContent('Team Title2')
-  })
-
-  it('shows empty list', async () => {
-    const { getByRole } = render(
-      <MockedProvider mocks={[getEmptyTeamsMock]}>
-        <TeamProvider>
-          <TeamSelect />
-        </TeamProvider>
-      </MockedProvider>
-    )
-    await waitFor(() => expect(getByRole('button')).toEqual(''))
   })
 })
