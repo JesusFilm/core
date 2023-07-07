@@ -178,7 +178,7 @@ describe('UserTeamInviteForm', () => {
 
   it('should create a user team invite on click ', async () => {
     const cache = new InMemoryCache()
-    const { getByRole, getByText } = render(
+    const { getByRole } = render(
       <MockedProvider
         mocks={[getTeams, getUserTeamMock1, userTeamInviteCreateMock]}
         cache={cache}
