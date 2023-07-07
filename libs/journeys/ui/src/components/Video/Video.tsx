@@ -172,71 +172,72 @@ export function Video({
   }
 
   return (
-    <Box
-      data-testid={`video-${blockId}`}
-      sx={{
-        display: 'flex',
-        width: '100%',
-        height: '100%',
-        minHeight: 'inherit',
-        backgroundColor: VIDEO_BACKGROUND_COLOR,
-        overflow: 'hidden',
-        m: 0,
-        position: 'absolute',
-        top: 0,
-        right: 0,
-        '> .video-js': {
-          width: '100%',
-          display: 'flex',
-          alignSelf: 'center',
-          height: { xs: 'calc(100vh - 185px)', lg: '100%' },
-          minHeight: 'inherit',
-          '> .vjs-tech': {
-            objectFit: videoFit,
-            transform:
-              objectFit === VideoBlockObjectFit.zoomed
-                ? 'scale(1.33)'
-                : undefined
-          },
-          '> .vjs-loading-spinner': {
-            zIndex: 1,
-            display: source === VideoBlockSource.youTube ? 'none' : 'block'
-          },
-          '> .vjs-big-play-button': {
-            zIndex: 1
-          },
-          '> .vjs-poster': {
-            backgroundColor: VIDEO_BACKGROUND_COLOR,
-            backgroundSize: 'cover'
-          },
-          '> .vjs-control-bar': {
-            width: { xs: '90%', lg: '100%' },
-            mx: { xs: 'auto', lg: 0 },
-            borderRadius: { xs: 4, lg: 0 }
-          }
-        },
-        '> .MuiIconButton-root': {
-          color: VIDEO_FOREGROUND_COLOR,
-          position: 'absolute',
-          bottom: 12,
-          zIndex: 1,
-          '&:hover': {
-            color: VIDEO_FOREGROUND_COLOR
-          }
-        },
-        // renders big play button for youtube videos on iOS devices
-        'video::-webkit-media-controls-start-playback-button': {
-          display: 'none'
-        },
-        '> .video-js.vjs-controls-enabled .vjs-big-play-button': {
-          display: 'none'
-        },
-        '> .video-js.vjs-controls-enabled.vjs-paused .vjs-big-play-button': {
-          display: 'block'
-        }
-      }}
-    >
-      {playerRef.current != null &&
+    // <Box
+    //   data-testid={`video-${blockId}`}
+    //   sx={{
+    //     display: 'flex',
+    //     width: '100%',
+    //     height: '100%',
+    //     minHeight: 'inherit',
+    //     backgroundColor: VIDEO_BACKGROUND_COLOR,
+    //     overflow: 'hidden',
+    //     m: 0,
+    //     position: 'absolute',
+    //     top: 0,
+    //     right: 0,
+    //     '> .video-js': {
+    //       width: '100%',
+    //       display: 'flex',
+    //       alignSelf: 'center',
+    //       height: { xs: 'calc(100vh - 185px)', lg: '100%' },
+    //       minHeight: 'inherit',
+    //       '> .vjs-tech': {
+    //         objectFit: videoFit,
+    //         transform:
+    //           objectFit === VideoBlockObjectFit.zoomed
+    //             ? 'scale(1.33)'
+    //             : undefined
+    //       },
+    //       '> .vjs-loading-spinner': {
+    //         zIndex: 1,
+    //         display: source === VideoBlockSource.youTube ? 'none' : 'block'
+    //       },
+    //       '> .vjs-big-play-button': {
+    //         zIndex: 1
+    //       },
+    //       '> .vjs-poster': {
+    //         backgroundColor: VIDEO_BACKGROUND_COLOR,
+    //         backgroundSize: 'cover'
+    //       },
+    //       '> .vjs-control-bar': {
+    //         width: { xs: '90%', lg: '100%' },
+    //         mx: { xs: 'auto', lg: 0 },
+    //         borderRadius: { xs: 4, lg: 0 }
+    //       }
+    //     },
+    //     '> .MuiIconButton-root': {
+    //       color: VIDEO_FOREGROUND_COLOR,
+    //       position: 'absolute',
+    //       bottom: 12,
+    //       zIndex: 1,
+    //       '&:hover': {
+    //         color: VIDEO_FOREGROUND_COLOR
+    //       }
+    //     },
+    //     // renders big play button for youtube videos on iOS devices
+    //     'video::-webkit-media-controls-start-playback-button': {
+    //       display: 'none'
+    //     },
+    //     '> .video-js.vjs-controls-enabled .vjs-big-play-button': {
+    //       display: 'none'
+    //     },
+    //     '> .video-js.vjs-controls-enabled.vjs-paused .vjs-big-play-button': {
+    //       display: 'block'
+    //     }
+    //   }}
+    // >
+    <>
+      {/* {playerRef.current != null &&
         eventVideoTitle != null &&
         eventVideoId != null && (
           <VideoEvents
@@ -248,7 +249,7 @@ export function Video({
             startAt={startAt}
             endAt={endAt}
           />
-        )}
+        )} */}
       {videoId != null ? (
         <>
           <video
@@ -340,6 +341,7 @@ export function Video({
           objectFit="cover"
         />
       )}
-    </Box>
+    </>
+    // </Box>
   )
 }
