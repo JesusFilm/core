@@ -225,8 +225,35 @@ describe('TypographyEdit', () => {
   })
 
   it('persists selection state on outside click', async () => {
+    const result = jest.fn(() => ({
+      data: {
+        typographyBlockUpdate: [
+          {
+            __typename: 'TypographyBlock',
+            id: 'typography.id',
+            content: 'updated content'
+          }
+        ]
+      }
+    }))
     render(
-      <MockedProvider>
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: TYPOGRAPHY_BLOCK_UPDATE_CONTENT,
+              variables: {
+                id: 'typography.id',
+                journeyId: 'journeyId',
+                input: {
+                  content: 'new'
+                }
+              }
+            },
+            result
+          }
+        ]}
+      >
         <JourneyProvider
           value={{
             journey: { id: 'journeyId' } as unknown as Journey,
@@ -243,7 +270,7 @@ describe('TypographyEdit', () => {
     await userEvent.click(input)
     // All text selected on first focus
     expect(input).toHaveValue(props.content)
-    await userEvent.type(input, '{backspace}')
+    await userEvent.clear(input)
     expect(input).toHaveValue('')
 
     // Cursor remains at end of input after outside click
