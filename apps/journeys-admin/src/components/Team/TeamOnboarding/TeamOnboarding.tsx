@@ -29,7 +29,7 @@ export function TeamOnboarding(): ReactElement {
   async function handleSubmit(): Promise<void> {
     await router?.push('/')
   }
-  const { data, emails } = useUserTeamsAndInvitesQuery(
+  const { data } = useUserTeamsAndInvitesQuery(
     activeTeam != null
       ? {
           teamId: activeTeam.id

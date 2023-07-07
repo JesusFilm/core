@@ -1,15 +1,14 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
-import { UserTeamInviteForm } from '.'
+import { InMemoryCache } from '@apollo/client'
 import { GET_TEAMS, TeamProvider } from '../../TeamProvider'
 import { GetTeams } from '../../../../../__generated__/GetTeams'
 import { GetUserTeamsAndInvites } from '../../../../../__generated__/GetUserTeamsAndInvites'
 import { GET_USER_TEAMS_AND_INVITES } from '../../../../libs/useUserTeamsAndInvitesQuery/useUserTeamsAndInvitesQuery'
 import { UserTeamRole } from '../../../../../__generated__/globalTypes'
-import { USER_TEAM_INVITE_CREATE } from './UserTeamInviteForm'
-import { values } from 'lodash'
 import { UserTeamInviteCreate } from '../../../../../__generated__/UserTeamInviteCreate'
-import { InMemoryCache } from '@apollo/client'
+import { USER_TEAM_INVITE_CREATE } from './UserTeamInviteForm'
+import { UserTeamInviteForm } from '.'
 
 jest.mock('react-i18next', () => ({
   __esModule: true,
