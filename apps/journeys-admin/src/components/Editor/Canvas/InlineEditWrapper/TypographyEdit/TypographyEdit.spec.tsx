@@ -240,16 +240,16 @@ describe('TypographyEdit', () => {
     )
     const input = screen.getByRole('textbox')
 
-    userEvent.click(input)
+    await userEvent.click(input)
     // All text selected on first focus
     expect(input).toHaveValue(props.content)
-    userEvent.type(input, '{backspace}')
+    await userEvent.type(input, '{backspace}')
     expect(input).toHaveValue('')
 
     // Cursor remains at end of input after outside click
-    userEvent.type(input, 'new')
-    userEvent.click(screen.getByRole('heading', { level: 1 }))
-    userEvent.type(input, '{backspace}')
+    await userEvent.type(input, 'new')
+    await userEvent.click(screen.getByRole('heading', { level: 1 }))
+    await userEvent.type(input, '{backspace}')
     expect(input).toHaveValue('ne')
   })
 })
