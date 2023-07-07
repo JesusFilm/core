@@ -165,7 +165,7 @@
       "options": {
         "commands": [
           {
-            "command": "npx lhci autorun --config apps/journeys/lighthouserc.json || echo 'LHCI failed!'"
+            "command": "npx lhci autorun --collect.url={args.url} --config apps/journeys/lighthouserc.json"
           }
         ]
       }

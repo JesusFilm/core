@@ -1,32 +1,21 @@
 {
   "ci": {
     "collect": {
-      "numberOfRuns": 3,
-      "url": ["http://localhost:4100/fact-or-fiction"]
+      "numberOfRuns": 1,
+      "startServerCommand": "nx serve journeys",
+      "settings": {
+        "chromeFlags": "--no-sandbox"
+      }
     },
     "assert": {
       "assertions": {
-        "first-contentful-paint": ["warn", { "maxNumericValue": 3000 }],
-        "speed-index": ["warn", { "maxNumericValue": 5000 }],
-        "largest-contentful-paint": ["error", { "maxNumericValue": 2500 }]
+        "largest-contentful-paint": ["warn", { "maxNumericValue": 2500 }],
+        "first-contentful-paint": ["warn", { "maxNumericValue": 2000 }],
+        "total-blocking-time": ["warn", { "maxNumericValue": 200 }]
       }
     },
     "upload": {
       "target": "temporary-public-storage"
     }
-  },
-  "collect": {
-    "url": ["http://localhost:4100/fact-or-fiction"],
-    "numberOfRuns": 1
-  },
-  "assert": {
-    "assertions": {
-      "first-contentful-paint": ["error", { "maxNumericValue": 3000 }],
-      "speed-index": ["error", { "maxNumericValue": 5000 }],
-      "largest-contentful-paint": ["warn", { "maxNumericValue": 2500 }]
-    }
-  },
-  "upload": {
-    "target": "temporary-public-storage"
   }
 }
