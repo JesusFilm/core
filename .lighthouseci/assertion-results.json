@@ -2,9 +2,9 @@
   {
     "name": "maxNumericValue",
     "expected": 2500,
-    "actual": 40411.97900000002,
+    "actual": 43066.977000000035,
     "values": [
-      40411.97900000002
+      43066.977000000035
     ],
     "operator": "<=",
     "passed": false,
@@ -17,9 +17,9 @@
   {
     "name": "maxNumericValue",
     "expected": 200,
-    "actual": 4863.495500000001,
+    "actual": 5304.000000000022,
     "values": [
-      4863.495500000001
+      5304.000000000022
     ],
     "operator": "<=",
     "passed": false,

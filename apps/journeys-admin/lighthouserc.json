@@ -1,0 +1,21 @@
+{
+  "ci": {
+    "collect": {
+      "numberOfRuns": 1,
+      "startServerCommand": "nx serve journeys-admin",
+      "settings": {
+        "chromeFlags": "--no-sandbox"
+      }
+    },
+    "assert": {
+      "assertions": {
+        "largest-contentful-paint": ["warn", { "maxNumericValue": 2500 }],
+        "first-contentful-paint": ["warn", { "maxNumericValue": 2000 }],
+        "total-blocking-time": ["warn", { "maxNumericValue": 200 }]
+      }
+    },
+    "upload": {
+      "target": "temporary-public-storage"
+    }
+  }
+}
