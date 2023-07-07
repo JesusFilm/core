@@ -27,8 +27,14 @@ export class CountryResolver {
     @Args('idType') idType: IdType = IdType.databaseId
   ): Promise<Country | null> {
     return idType === IdType.databaseId
-      ? await this.prismaService.country.findUnique({ where: { id } })
-      : await this.prismaService.country.findUnique({ where: { slug: id } })
+      ? await this.prismaService.country.findUnique({
+          where: { id },
+          include: { continents: true }
+        })
+      : await this.prismaService.country.findUnique({
+          where: { slug: id },
+          include: { continents: true }
+        })
   }
 
   @ResolveField()
@@ -53,7 +59,9 @@ export class CountryResolver {
     @Parent() country,
     @Args('languageId') languageId?: string,
     @Args('primary') primary?: boolean
-  ): void {}
+  ): void {
+    return country.continents
+  }
 
   @ResolveField()
   async languages(

@@ -25,17 +25,17 @@ interface MediaLanguage {
   name: string
 }
 
-interface Country {
-  id: string
-  name: Prisma.JsonObject[]
-  population: number
-  continent: Prisma.JsonObject[]
-  slug: string
-  languageIds: string[]
-  latitude: float
-  longitude: float
-  image: string
-}
+// interface Country {
+//   id: string
+//   name: Prisma.JsonObject[]
+//   population: number
+//   continentId: string
+//   slug: string
+//   languageIds: string[]
+//   latitude: float
+//   longitude: float
+//   image: string
+// }
 
 interface MediaCountry {
   countryId: number
@@ -180,61 +180,97 @@ export function getSeoSlug(title: string, collection: string[]): string {
   return newSlug
 }
 
-function digestCountries(countries: MediaCountry[]): Country[] {
+async function digestCountries(
+  countries: MediaCountry[]
+): Promise<Prisma.CountryCreateInput[]> {
   console.log('countries:', '529')
-  const transformedCountries: Country[] = countries.map((country) => ({
-    id: country.countryId.toString(),
-    name: [{ value: country.name, languageId: '529', primary: true }],
-    population: country.counts.population.value,
-    continent: [
-      { value: country.continentName, languageId: '529', primary: true }
-    ],
-    slug: getSeoSlug(country.name, usedTitles),
-    languageIds: country.languageIds.map((l) => l.toString()),
-    latitude: country.latitude,
-    longitude: country.longitude,
-    image: country.assets.flagUrls.png8
-  }))
+  const transformedCountries: Prisma.CountryCreateInput[] = []
+  for (const country of countries) {
+    const continentData = {
+      value: country.continentName,
+      languageId: '529',
+      primary: true
+    }
+    const continent = await prismaService.continent.upsert({
+      where: {
+        value_languageId: { value: country.continentName, languageId: '529' }
+      },
+      update: continentData,
+      create: continentData
+    })
+    transformedCountries.push({
+      id: country.countryId.toString(),
+      name: [{ value: country.name, languageId: '529', primary: true }],
+      population: country.counts.population.value,
+      continents: {
+        connect: [{ id: continent.id }]
+      },
+      slug: getSeoSlug(country.name, usedTitles),
+      languages: {
+        connect: country.languageIds.map((l) => ({ id: l.toString() }))
+      },
+      latitude: country.latitude,
+      longitude: country.longitude,
+      image: country.assets.flagUrls.png8
+    })
+  }
+
   return transformedCountries
 }
 
-function digestTranslatedCountries(
+async function digestTranslatedCountries(
   countries: MediaCountry[],
-  mappedCountries: Country[],
+  mappedCountries: Prisma.CountryCreateInput[],
   languageId: string
-): Country[] {
+): Promise<Prisma.CountryCreateInput[]> {
   if (languageId === '529') return mappedCountries
   console.log('countries:', languageId)
-  const transformedCountries: Country[] = countries.map((country) => ({
-    id: country.countryId.toString(),
-    name: [
-      {
-        value: isEmpty(country.name) ? '' : country.name,
-        languageId,
-        primary: false
-      }
-    ],
-    population: country.counts.population.value,
-    continent: [
-      {
-        value: isEmpty(country.continentName) ? '' : country.continentName,
-        languageId,
-        primary: false
-      }
-    ],
-    slug: isEmpty(country.name) ? '' : getSeoSlug(country.name, usedTitles),
-    languageIds: country.languageIds.map((l) => l.toString()),
-    latitude: country.latitude,
-    longitude: country.longitude,
-    image: country.assets.flagUrls.png8
-  }))
+  const transformedCountries: Prisma.CountryCreateInput[] = []
+  for (const country of countries) {
+    const continentData = {
+      value: country.continentName,
+      languageId,
+      primary: false
+    }
+    const continent = await prismaService.continent.upsert({
+      where: { value_languageId: { value: country.continentName, languageId } },
+      update: continentData,
+      create: continentData
+    })
+    transformedCountries.push({
+      id: country.countryId.toString(),
+      name: [
+        {
+          value: isEmpty(country.name) ? '' : country.name,
+          languageId,
+          primary: false
+        }
+      ],
+      population: country.counts.population.value,
+      continents: { connect: [{ id: continent.id }] },
+      slug: isEmpty(country.name) ? '' : getSeoSlug(country.name, usedTitles),
+      languages: {
+        connect: country.languageIds.map((l) => ({ id: l.toString() }))
+      },
+      latitude: country.latitude,
+      longitude: country.longitude,
+      image: country.assets.flagUrls.png8
+    })
+  }
+
   transformedCountries.forEach((country) => {
     const existing = mappedCountries.find((c) => c.id === country.id)
     if (existing == null) mappedCountries.push(country)
     else {
-      if (country.name[0].value !== '') existing.name.push(country.name[0])
-      if (country.continent[0].value !== '')
-        existing.continent.push(country.continent[0])
+      if (country.name != null && country.name?.[0].value !== '')
+        (existing.name as Prisma.JsonObject[]).push(country.name[0])
+      if (
+        country.continents?.connect != null &&
+        country.continents?.connect?.[0].value !== ''
+      )
+        (existing.continents?.connect as Prisma.JsonObject[]).push(
+          country.continents.connect[0]
+        )
     }
   })
 
@@ -267,7 +303,8 @@ async function main(): Promise<void> {
   }
 
   const countries = await getCountries()
-  let mappedCountries = digestCountries(countries)
+
+  let mappedCountries = await digestCountries(countries)
 
   const metadataLanguages = await getMetadataLanguageTags()
   for (const metaDataLanguage of metadataLanguages) {
@@ -276,7 +313,7 @@ async function main(): Promise<void> {
     )?.languageId
     if (languageId == null) continue
     const translatedCountries = await getCountries(metaDataLanguage.tag)
-    mappedCountries = digestTranslatedCountries(
+    mappedCountries = await digestTranslatedCountries(
       translatedCountries,
       mappedCountries,
       languageId.toString()

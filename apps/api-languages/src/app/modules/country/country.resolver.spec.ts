@@ -40,14 +40,16 @@ describe('LangaugeResolver', () => {
     it('should return country', async () => {
       expect(await resolver.country(country.id)).toEqual(country)
       expect(prismaService.country.findUnique).toHaveBeenCalledWith({
-        where: { id: country.id }
+        where: { id: country.id },
+        include: { continents: true }
       })
     })
 
     it('should return country by slug', async () => {
       expect(await resolver.country(country.id, IdType.slug)).toEqual(country)
       expect(prismaService.country.findUnique).toHaveBeenCalledWith({
-        where: { slug: country.id }
+        where: { slug: country.id },
+        include: { continents: true }
       })
     })
   })
