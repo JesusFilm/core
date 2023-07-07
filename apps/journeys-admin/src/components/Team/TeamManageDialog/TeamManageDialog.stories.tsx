@@ -6,6 +6,7 @@ import { TeamProvider, GET_TEAMS } from '../TeamProvider'
 import { UserTeamRole } from '../../../../__generated__/globalTypes'
 import { GET_CURRENT_USER } from '../../../libs/useCurrentUser'
 import { GET_USER_TEAMS_AND_INVITES } from '../../../libs/useUserTeamsAndInvitesQuery/useUserTeamsAndInvitesQuery'
+import { ApolloLoadingProvider } from '../../../../test/ApolloLoadingProvider'
 import { TeamManageDialog } from './TeamManageDialog'
 
 const Demo = {
@@ -72,14 +73,22 @@ const mocks = [
   }
 ]
 
-const Template: Story<ComponentProps<typeof TeamManageDialog>> = () => (
-  <MockedProvider mocks={mocks}>
-    <TeamProvider>
-      <TeamManageDialog open onClose={() => undefined} />
-    </TeamProvider>
-  </MockedProvider>
-)
+export const Default: Story = () => {
+  return (
+    <MockedProvider mocks={mocks}>
+      <TeamProvider>
+        <TeamManageDialog open onClose={() => undefined} />
+      </TeamProvider>
+    </MockedProvider>
+  )
+}
 
-export const Default = Template.bind({})
+export const Loading: Story = () => {
+  return (
+    <ApolloLoadingProvider>
+      <TeamManageDialog open onClose={() => undefined} />
+    </ApolloLoadingProvider>
+  )
+}
 
 export default Demo as Meta
