@@ -53,6 +53,16 @@
         }
       }
     },
+    "vercel-alias": {
+      "executor": "@nrwl/workspace:run-commands",
+      "options": {
+        "commands": [
+          "npx vercel alias set $(echo apps/journeys/.vercel-url) journeys-$PR_NUMBER-jesusfilm.vercel.app --token=$VERCEL_TOKEN --scope=jesusfilm",
+          "echo 'journeys-$PR_NUMBER-jesusfilm.vercel.app' > apps/journeys/.vercel-url"
+        ],
+        "parallel": false
+      }
+    },
     "serve": {
       "executor": "@nrwl/next:server",
       "options": {

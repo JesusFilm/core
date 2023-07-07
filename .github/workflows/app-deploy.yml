@@ -80,7 +80,14 @@ jobs:
           JOURNEYS_VERCEL_PROJECT_ID: ${{ secrets.JOURNEYS_VERCEL_PROJECT_ID }}
           JOURNEYS_ADMIN_VERCEL_PROJECT_ID: ${{ secrets.JOURNEYS_ADMIN_VERCEL_PROJECT_ID }}
           WATCH_VERCEL_PROJECT_ID: ${{ secrets.WATCH_VERCEL_PROJECT_ID }}
+        # use run-namy to avoid case where deploy command doesn't exist for a project
         run: npx nx run-many --target=deploy --projects=${{ matrix.app }}
+      - name: vercel set alias
+        if: ${{ github.event_name == 'pull_request' }}
+        env:
+          PR_NUMBER: ${{ github.event.number  }}
+        # use run-namy to avoid case where deploy command doesn't exist for a project
+        run: npx nx run-many --target=vercel-alias --projects=${{ matrix.app }}
       - name: Generate GitHub deployment comment
         id: deployment-url
         env:
@@ -157,6 +164,7 @@ jobs:
           JOURNEYS_VERCEL_PROJECT_ID: ${{ secrets.JOURNEYS_VERCEL_PROJECT_ID }}
           JOURNEYS_ADMIN_VERCEL_PROJECT_ID: ${{ secrets.JOURNEYS_ADMIN_VERCEL_PROJECT_ID }}
           WATCH_VERCEL_PROJECT_ID: ${{ secrets.WATCH_VERCEL_PROJECT_ID }}
+        # use run-namy to avoid case where deploy command doesn't exist for a project
         run: npx nx run-many --target=deploy --projects=${{ matrix.app }} --prod
       - name: Generate GitHub comment
         id: deployment-url
