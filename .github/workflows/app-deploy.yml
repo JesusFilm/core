@@ -85,7 +85,8 @@ jobs:
       - name: vercel set alias
         if: ${{ github.event_name == 'pull_request' }}
         env:
-          PR_NUMBER: ${{ github.event.number  }}
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          PR_NUMBER: ${{ github.event.number }}
         # use run-namy to avoid case where deploy command doesn't exist for a project
         run: npx nx run-many --target=vercel-alias --projects=${{ matrix.app }}
       - name: Generate GitHub deployment comment
