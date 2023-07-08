@@ -47,7 +47,7 @@ export function TeamOnboarding(): ReactElement {
           <Image src={taskbarIcon} alt="Next Steps" height={43} width={43} />
         </Box>
         {activeTeam != null ? (
-          <Card sx={{ width: '444px' }}>
+          <Card sx={{ width: { sm: '444px' } }}>
             <CardHeader
               title={t(`Invite teammates to ${activeTeam.title}`)}
               titleTypographyProps={{ variant: 'h6' }}

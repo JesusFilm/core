@@ -127,7 +127,18 @@ export function TeamMemberListItem({
           </Avatar>
         </ListItemAvatar>
 
-        <ListItemText primary={displayName} secondary={email} />
+        <ListItemText
+          primary={displayName}
+          secondary={email}
+          sx={{
+            '& > .MuiListItemText-secondary': {
+              width: { xs: isInvite ? '110px' : '90%', sm: '90%' },
+              whiteSpace: 'nowrap',
+              overflow: 'clip',
+              textOverflow: 'ellipsis'
+            }
+          }}
+        />
       </ListItem>
 
       <Menu
