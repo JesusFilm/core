@@ -1,0 +1,70 @@
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["fullTextSearch"]
+  output          = env("PRISMA_LOCATION")
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("PG_DATABASE_URL")
+}
+
+enum IdType {
+  databaseId
+  slug
+}
+
+enum VideoLabel {
+  collection
+  episode
+  featureFilm
+  segment
+  series
+  shortFilm
+}
+
+model Video {
+  id                String         @id @default(uuid())
+  label             VideoLabel
+  primaryLanguageId String
+  title             Json[]
+  seoTitle          Json[]
+  snippet           Json[]
+  description       Json[]
+  studyQuestions    Json[]
+  image             String?
+  imageAlt          Json[]
+  slug              String?
+  noIndex           Boolean?
+  children          Video[]        @relation("ParentChild")
+  parentId          String?
+  parent            Video?         @relation("ParentChild", fields: [parentId], references: [id])
+  childrenCount     Int
+  videoVariants     VideoVariant[]
+}
+
+enum VideoVariantDownloadQuality {
+  low
+  high
+}
+
+model VideoVariantDownload {
+  id             String                      @id @default(uuid())
+  quality        VideoVariantDownloadQuality
+  size           Float?
+  url            String
+  videoVariantId String?
+  videoVariant   VideoVariant?               @relation(fields: [videoVariantId], references: [id])
+}
+
+model VideoVariant {
+  id         String                 @id @default(uuid())
+  hls        String?
+  downloads  VideoVariantDownload[]
+  duration   Int?
+  languageId String
+  subtitle   Json[]
+  slug       String
+  Video      Video?                 @relation(fields: [videoId], references: [id])
+  videoId    String?
+}

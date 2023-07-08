@@ -10,8 +10,9 @@ import {
 } from '@nestjs/graphql'
 import { FieldNode, GraphQLResolveInfo, Kind } from 'graphql'
 import { compact } from 'lodash'
+import { Video } from '.prisma/api-videos-client'
 
-import { IdType, Video, VideosFilter } from '../../__generated__/graphql'
+import { IdType, VideosFilter } from '../../__generated__/graphql'
 import { VideoService } from './video.service'
 
 @Resolver('Video')
@@ -60,7 +61,7 @@ export class VideoResolver {
     __typename: 'Video'
     id: string
     primaryLanguageId?: string | null
-  }): Promise<Video> {
+  }): Promise<Video | null> {
     return await this.videoService.getVideo(
       reference.id,
       reference.primaryLanguageId ?? undefined
