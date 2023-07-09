@@ -131,6 +131,12 @@ describe('TeamCreateForm', () => {
         getByText('Team Name must be at least one character.')
       ).toBeInTheDocument()
     )
+    fireEvent.change(getByRole('textbox'), {
+      target: { value: '12345678901234567890123456789012345678901' }
+    })
+    await waitFor(() =>
+      expect(getByText('Max {{ count }} Characters')).toBeInTheDocument()
+    )
     fireEvent.change(getByRole('textbox'), { target: { value: 'Team Title' } })
     fireEvent.click(getByRole('button', { name: 'Create' }))
     await waitFor(() =>

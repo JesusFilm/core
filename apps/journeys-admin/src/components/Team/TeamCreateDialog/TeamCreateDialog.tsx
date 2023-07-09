@@ -57,7 +57,7 @@ export function TeamCreateDialog({
               error={Boolean(errors.title)}
               onChange={handleChange}
               helperText={errors.title}
-              label="Team Name"
+              label={t('Team Name')}
               autoFocus
             />
             <Typography pt={5}>

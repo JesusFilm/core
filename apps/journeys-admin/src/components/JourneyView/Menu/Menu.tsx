@@ -278,7 +278,7 @@ export function Menu(): ReactElement {
           />
         </>
       ) : (
-        <IconButton disabled sx={{ mr: 1 }}>
+        <IconButton edge="end" disabled sx={{ mr: 1 }}>
           <MoreVert />
         </IconButton>
       )}

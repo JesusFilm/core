@@ -18,7 +18,9 @@ export function TeamCreateForm({
 }: TeamCreateFormProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const teamSchema = object({
-    title: string().required(t('Team Name must be at least one character.'))
+    title: string()
+      .required(t('Team Name must be at least one character.'))
+      .max(40, t('Max {{ count }} Characters', { count: 40 }))
   })
   const [teamCreate] = useTeamCreateMutation()
   const { enqueueSnackbar } = useSnackbar()
