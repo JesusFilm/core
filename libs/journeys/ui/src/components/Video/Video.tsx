@@ -204,16 +204,16 @@ export function Video({
           //       },
           '> .vjs-big-play-button': {
             zIndex: 1
-          },
+          }
           //       '> .vjs-poster': {
           //         backgroundColor: VIDEO_BACKGROUND_COLOR,
           //         backgroundSize: 'cover'
           //       },
-          '> .vjs-control-bar': {
-            width: { xs: '90%', lg: '100%' },
-            mx: { xs: 'auto', lg: 0 },
-            borderRadius: { xs: 4, lg: 0 }
-          }
+          // '> .vjs-control-bar': {
+          //   width: { xs: '90%', lg: '100%' },
+          //   mx: { xs: 'auto', lg: 0 },
+          //   borderRadius: { xs: 4, lg: 0 }
+          // }
         },
         //     '> .MuiIconButton-root': {
         //       color: VIDEO_FOREGROUND_COLOR,
