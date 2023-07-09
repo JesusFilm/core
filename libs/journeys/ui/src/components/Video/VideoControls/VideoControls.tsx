@@ -120,15 +120,19 @@ export function VideoControls({
     }
   }
 
-  async function handleFullscreen(): Promise<void> {
+  function handleFullscreen(): void {
     if (!showHeaderFooter) {
-      await fscreen.exitFullscreen()
+      void fscreen.exitFullscreen()
       setShowHeaderFooter(true)
     } else {
-      await fscreen.requestFullscreen(
-        document.querySelectorAll('.swiper-slide-active .MuiPaper-root')[0]
-      )
-      setShowHeaderFooter(false)
+      const activeCard = document.querySelectorAll(
+        '.swiper-slide-active .MuiPaper-root'
+      )[0]
+      console.log('activeCard', activeCard, fscreen.fullscreenEnabled)
+      if (activeCard != null) {
+        void fscreen.requestFullscreen(activeCard)
+        setShowHeaderFooter(false)
+      }
     }
   }
 
@@ -187,9 +191,7 @@ export function VideoControls({
         userSelect: 'none',
         WebkitUserSelect: 'none'
       }}
-      onClick={getClickHandler(handlePlay, () => {
-        void handleFullscreen()
-      })}
+      onClick={getClickHandler(handlePlay, handleFullscreen)}
       onMouseMove={() => player.userActive(true)}
     >
       <Fade
