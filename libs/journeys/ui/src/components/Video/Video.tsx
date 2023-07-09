@@ -71,23 +71,23 @@ export function Video({
         autoplay: autoplay === true,
         controls: true,
         nativeControlsForTouch: true,
-        userActions: {
-          hotkeys: true,
-          doubleClick: true
-        },
-        controlBar: {
-          playToggle: true,
-          captionsButton: true,
-          subtitlesButton: true,
-          remainingTimeDisplay: true,
-          progressControl: {
-            seekBar: true
-          },
-          fullscreenToggle: true,
-          volumePanel: {
-            inline: true
-          }
-        },
+        // userActions: {
+        //   hotkeys: true,
+        //   doubleClick: true
+        // },
+        // controlBar: {
+        //   playToggle: true,
+        //   captionsButton: true,
+        //   subtitlesButton: true,
+        //   remainingTimeDisplay: true,
+        //   progressControl: {
+        //     seekBar: true
+        //   },
+        //   fullscreenToggle: true,
+        //   volumePanel: {
+        //     inline: true
+        //   }
+        // },
         responsive: true,
         muted: muted === true,
         // VideoJS blur background persists so we cover video when using png poster on non-autoplay videos
