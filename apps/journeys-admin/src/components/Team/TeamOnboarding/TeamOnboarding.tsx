@@ -55,13 +55,13 @@ export function TeamOnboarding(): ReactElement {
                     <TextField
                       fullWidth
                       variant="filled"
-                      hiddenLabel
                       id="title"
                       name="title"
                       value={values.title}
                       error={Boolean(errors.title)}
                       onChange={handleChange}
                       helperText={errors.title}
+                      label={t('Team Name')}
                       autoFocus
                     />
                     <Typography gutterBottom>
@@ -72,7 +72,6 @@ export function TeamOnboarding(): ReactElement {
                   </Stack>
                 </CardContent>
                 <CardActions sx={{ justifyContent: 'flex-end', px: 4 }}>
-                  {console.log(!isValid || isSubmitting)}
                   <Button
                     onClick={() => handleSubmit()}
                     disabled={!isValid || isSubmitting}
