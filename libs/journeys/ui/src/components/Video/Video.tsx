@@ -322,16 +322,16 @@ export function Video({
         </>
       )}
       {/* Video Image  */}
-      {videoImage != null && posterBlock?.src == null && loading && (
+      {/* {videoImage != null && posterBlock?.src == null && loading && (
         <NextImage
           src={videoImage}
           alt="video image"
           layout="fill"
           objectFit="cover"
         />
-      )}
+      )} */}
       {/* Lazy load higher res poster */}
-      {posterBlock?.src != null && loading && (
+      {/* {posterBlock?.src != null && loading && (
         <NextImage
           src={posterBlock.src}
           alt={posterBlock.alt}
@@ -340,7 +340,7 @@ export function Video({
           layout="fill"
           objectFit="cover"
         />
-      )}
+      )} */}
     </>
     // </Box>
   )
