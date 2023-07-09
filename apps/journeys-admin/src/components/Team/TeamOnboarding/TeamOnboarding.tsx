@@ -126,55 +126,6 @@ export function TeamOnboarding(): ReactElement {
             )}
           </TeamCreateForm>
         )}
-        <TeamCreateForm onSubmit={handleSubmit}>
-          {({
-            values,
-            errors,
-            handleChange,
-            handleSubmit,
-            isValid,
-            isSubmitting
-          }) => (
-            <Form>
-              <Card>
-                <CardHeader
-                  title={t('Create Team')}
-                  titleTypographyProps={{ variant: 'h6' }}
-                  sx={{ py: 5, px: 6 }}
-                />
-                <CardContent sx={{ p: 6 }}>
-                  <Stack spacing={4}>
-                    <TextField
-                      fullWidth
-                      variant="filled"
-                      id="title"
-                      name="title"
-                      value={values.title}
-                      error={Boolean(errors.title)}
-                      onChange={handleChange}
-                      helperText={errors.title}
-                      label={t('Team Name')}
-                      autoFocus
-                    />
-                    <Typography gutterBottom>
-                      {t(
-                        'Create a team to hold your NextStep journeys and collaborate with others.'
-                      )}
-                    </Typography>
-                  </Stack>
-                </CardContent>
-                <CardActions sx={{ justifyContent: 'flex-end', px: 4 }}>
-                  <Button
-                    onClick={() => handleSubmit()}
-                    disabled={!isValid || isSubmitting}
-                  >
-                    {t('Create')}
-                  </Button>
-                </CardActions>
-              </Card>
-            </Form>
-          )}
-        </TeamCreateForm>
       </Stack>
       <Link
         variant="body2"
