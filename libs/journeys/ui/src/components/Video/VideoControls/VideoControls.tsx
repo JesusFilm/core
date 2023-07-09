@@ -29,11 +29,6 @@ interface VideoControlProps {
   autoplay?: boolean
 }
 
-function isMobile(): boolean {
-  const userAgent = navigator.userAgent
-  return /windows phone/i.test(userAgent) || /iPad|iPhone|iPod/.test(userAgent)
-}
-
 export function VideoControls({
   player,
   startAt,
@@ -58,7 +53,7 @@ export function VideoControls({
       setPlaying(true)
 
       if (startAt > 0 && player.currentTime() < startAt) {
-        player.currentTime(startAt)
+        // player.currentTime(startAt)
         setProgress(startAt)
       }
     }
@@ -86,21 +81,10 @@ export function VideoControls({
       )
       setProgress(Math.round(player.currentTime()))
     }
-    const handleMobileFullscreenChange = (): void => {
-      setShowHeaderFooter(!player.isFullscreen())
-
-      // On autoplay videos, videos will play after fullscreen change.
-      // Keep paused state if changing screen while paused
-      if (autoplay && player.paused()) {
-        if (player.paused()) {
-          void player.pause()
-        }
-      }
-    }
     const handleUserActive = (): void => setActive(true)
     const handleUserInactive = (): void => setActive(false)
     const handleVideoVolumeChange = (): void => setVolume(player.volume() * 100)
-    const handleDesktopFullscreenChange = (): void => {
+    const handleFullscreenChange = (): void => {
       setShowHeaderFooter(fscreen.fullscreenElement == null)
     }
 
@@ -109,24 +93,19 @@ export function VideoControls({
     player.on('play', handleVideoPlay)
     player.on('pause', handleVideoPause)
     player.on('timeupdate', handleVideoTimeChange)
-    player.on('fullscreenchange', handleMobileFullscreenChange)
     player.on('useractive', handleUserActive)
     player.on('userinactive', handleUserInactive)
     player.on('volumechange', handleVideoVolumeChange)
-    fscreen.addEventListener('fullscreenchange', handleDesktopFullscreenChange)
+    fscreen.addEventListener('fullscreenchange', handleFullscreenChange)
 
     return () => {
       player.off('play', handleVideoPlay)
       player.off('pause', handleVideoPause)
       player.off('timeupdate', handleVideoTimeChange)
-      player.off('fullscreenchange', handleMobileFullscreenChange)
       player.off('useractive', handleUserActive)
       player.off('userinactive', handleUserInactive)
       player.off('volumechange', handleVideoVolumeChange)
-      fscreen.removeEventListener(
-        'fullscreenchange',
-        handleDesktopFullscreenChange
-      )
+      fscreen.removeEventListener('fullscreenchange', handleFullscreenChange)
     }
   }, [player, setShowHeaderFooter, startAt, endAt, autoplay])
 
@@ -143,18 +122,12 @@ export function VideoControls({
 
   async function handleFullscreen(): Promise<void> {
     if (!showHeaderFooter) {
-      if (isMobile()) {
-        await player.exitFullscreen()
-      } else {
-        await fscreen.exitFullscreen()
-      }
+      await fscreen.exitFullscreen()
       setShowHeaderFooter(true)
     } else {
-      if (isMobile()) {
-        await player.requestFullscreen()
-      } else {
-        await fscreen.requestFullscreen(document.documentElement)
-      }
+      await fscreen.requestFullscreen(
+        document.querySelectorAll('.swiper-slide-active .MuiPaper-root')[0]
+      )
       setShowHeaderFooter(false)
     }
   }
@@ -278,37 +251,11 @@ export function VideoControls({
             maxWidth="xxl"
             sx={{
               zIndex: 1,
-              transitionDelay: visible ? undefined : '0.5s'
+              transitionDelay: visible ? undefined : '0.5s',
+              pb: 2
             }}
             onClick={(event) => event.stopPropagation()}
           >
-            <Slider
-              aria-label="mobile-progress-control"
-              min={startAt}
-              max={endAt}
-              value={progress}
-              valueLabelFormat={displayTime}
-              valueLabelDisplay="auto"
-              onChange={handleSeek}
-              sx={{
-                width: 'initial',
-                height: 5,
-                mx: 2.5,
-                py: 2,
-                display: { xs: 'flex', lg: 'none' },
-                '& .MuiSlider-thumb': {
-                  width: 10,
-                  height: 10,
-                  mr: -3
-                },
-                '& .MuiSlider-rail': {
-                  backgroundColor: 'secondary.main'
-                },
-                '& .MuiSlider-track': {
-                  border: 'none'
-                }
-              }}
-            />
             <Stack
               direction="row"
               gap={5}
@@ -438,6 +385,33 @@ export function VideoControls({
                 </IconButton>
               </Stack>
             </Stack>
+            <Slider
+              aria-label="mobile-progress-control"
+              min={startAt}
+              max={endAt}
+              value={progress}
+              valueLabelFormat={displayTime}
+              valueLabelDisplay="auto"
+              onChange={handleSeek}
+              sx={{
+                width: 'initial',
+                height: 5,
+                mx: 2.5,
+                py: 2,
+                display: { xs: 'flex', lg: 'none' },
+                '& .MuiSlider-thumb': {
+                  width: 10,
+                  height: 10,
+                  mr: -3
+                },
+                '& .MuiSlider-rail': {
+                  backgroundColor: 'secondary.main'
+                },
+                '& .MuiSlider-track': {
+                  border: 'none'
+                }
+              }}
+            />
           </Container>
         </Stack>
       </Fade>

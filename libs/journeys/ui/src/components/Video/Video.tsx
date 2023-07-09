@@ -49,11 +49,6 @@ const StyledVideoGradient = styled(Box)`
   );
 `
 
-function isIOS(): boolean {
-  const userAgent = navigator.userAgent
-  return /iPad|iPhone|iPod/.test(userAgent)
-}
-
 export function Video({
   id: blockId,
   video,
