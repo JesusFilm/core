@@ -255,6 +255,7 @@ export function Video({
           <video
             ref={videoRef}
             className="video-js vjs-big-play-centered"
+            controls
             playsInline
           >
             {source === VideoBlockSource.cloudflare && videoId != null && (
