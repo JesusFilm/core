@@ -61,12 +61,13 @@ export function UserTeamListItem({
   const menuLabel = useMemo((): string => {
     switch (role) {
       case UserTeamRole.manager:
-        return 'Manager'
+        return t('Manager')
       case UserTeamRole.member:
-        return 'Member'
+        return t('Member')
       case UserTeamRole.guest:
-        return 'Guest'
+        return t('Guest')
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [role])
 
   const handleClick = (event: MouseEvent<HTMLElement>): void => {
