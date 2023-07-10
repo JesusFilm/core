@@ -20,9 +20,9 @@ import { MemoizedDynamicReport } from '../../../src/components/DynamicPowerBiRep
 import { createApolloClient } from '../../../src/libs/apolloClient'
 import { JourneysReportType } from '../../../__generated__/globalTypes'
 import { ACCEPT_USER_INVITE } from '../..'
-import { useTermsRedirect } from '../../../src/libs/useTermsRedirect/useTermsRedirect'
 import { UserJourneyOpen } from '../../../__generated__/UserJourneyOpen'
 import { ReportsNavigation } from '../../../src/components/ReportsNavigation'
+import { checkConditionalRedirect } from '../../../src/libs/checkConditionalRedirect'
 
 function JourneyReportsPage(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
@@ -30,8 +30,6 @@ function JourneyReportsPage(): ReactElement {
   const router = useRouter()
 
   const journeyId = router.query.journeyId as string
-
-  useTermsRedirect()
 
   return (
     <>
@@ -72,6 +70,9 @@ export const getServerSideProps = withAuthUserTokenSSR({
 
   const token = await AuthUser.getIdToken()
   const apolloClient = createApolloClient(token != null ? token : '')
+
+  const redirect = await checkConditionalRedirect(apolloClient, flags)
+  if (redirect != null) return { redirect }
 
   await apolloClient.mutate<UserInviteAcceptAll>({
     mutation: ACCEPT_USER_INVITE
