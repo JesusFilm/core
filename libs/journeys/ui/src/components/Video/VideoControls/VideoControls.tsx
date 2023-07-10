@@ -85,7 +85,19 @@ export function VideoControls({
     const handleUserInactive = (): void => setActive(false)
     const handleVideoVolumeChange = (): void => setVolume(player.volume() * 100)
     const handleFullscreenChange = (): void => {
-      setShowHeaderFooter(fscreen.fullscreenElement == null)
+      if (fscreen.fullscreenEnabled) {
+        setShowHeaderFooter(fscreen.fullscreenElement == null)
+      } else {
+        setShowHeaderFooter(!player.isFullscreen())
+
+        // On autoplay videos, videos will play after fullscreen change.
+        // Keep paused state if changing screen while paused
+        if (autoplay && player.paused()) {
+          if (player.paused()) {
+            void player.pause()
+          }
+        }
+      }
     }
 
     setVolume(player.volume() * 100)
@@ -96,7 +108,11 @@ export function VideoControls({
     player.on('useractive', handleUserActive)
     player.on('userinactive', handleUserInactive)
     player.on('volumechange', handleVideoVolumeChange)
-    fscreen.addEventListener('fullscreenchange', handleFullscreenChange)
+    if (fscreen.fullscreenEnabled) {
+      fscreen.addEventListener('fullscreenchange', handleFullscreenChange)
+    } else {
+      player.on('fullscreenchange', handleFullscreenChange)
+    }
 
     return () => {
       player.off('play', handleVideoPlay)
@@ -105,7 +121,11 @@ export function VideoControls({
       player.off('useractive', handleUserActive)
       player.off('userinactive', handleUserInactive)
       player.off('volumechange', handleVideoVolumeChange)
-      fscreen.removeEventListener('fullscreenchange', handleFullscreenChange)
+      if (fscreen.fullscreenEnabled) {
+        fscreen.removeEventListener('fullscreenchange', handleFullscreenChange)
+      } else {
+        player.off('fullscreenchange', handleFullscreenChange)
+      }
     }
   }, [player, setShowHeaderFooter, startAt, endAt, autoplay])
 
@@ -122,7 +142,11 @@ export function VideoControls({
 
   function handleFullscreen(): void {
     if (!showHeaderFooter) {
-      void fscreen.exitFullscreen()
+      if (fscreen.fullscreenEnabled) {
+        void fscreen.exitFullscreen()
+      } else {
+        void player.exitFullscreen()
+      }
       setShowHeaderFooter(true)
     } else {
       const activeCard = document.querySelectorAll(
@@ -170,6 +194,7 @@ export function VideoControls({
       } else {
         clearTimeout(timeoutID)
         timeoutID = undefined
+        console.log('triggered double click', event)
         onDblClick(event)
       }
     }

@@ -261,8 +261,7 @@ export function Video({
             playsInline
             sx={{
               '&.video-js.vjs-youtube.vjs-fill': {
-                height: { xs: '100%', lg: 'calc(100% - 46px)' },
-                mt: { xs: 0, lg: 1 }
+                transform: 'scale(1.01)'
               },
               '> .vjs-tech': {
                 objectFit: videoFit,
