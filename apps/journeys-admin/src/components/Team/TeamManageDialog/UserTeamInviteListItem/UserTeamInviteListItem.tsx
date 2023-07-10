@@ -1,4 +1,4 @@
-import { ReactElement, useState, useMemo, MouseEvent } from 'react'
+import { ReactElement, useState, MouseEvent } from 'react'
 import ListItem from '@mui/material/ListItem'
 import Button from '@mui/material/Button'
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown'
@@ -23,11 +23,7 @@ export function UserTeamInviteListItem({
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
   const open = Boolean(anchorEl)
 
-  const { id, email } = useMemo(() => {
-    return {
-      ...listItem
-    }
-  }, [listItem])
+  const { id, email } = listItem
 
   const handleClick = (event: MouseEvent<HTMLElement>): void => {
     setAnchorEl(event.currentTarget)
