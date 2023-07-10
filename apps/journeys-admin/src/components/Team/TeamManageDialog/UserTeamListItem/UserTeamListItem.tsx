@@ -1,4 +1,4 @@
-import { ReactElement, useState, useMemo, useEffect, MouseEvent } from 'react'
+import { ReactElement, useState, useMemo, MouseEvent } from 'react'
 import ListItem from '@mui/material/ListItem'
 import { compact } from 'lodash'
 import Button from '@mui/material/Button'
@@ -74,12 +74,6 @@ export function UserTeamListItem({
   const handleClose = (): void => {
     setAnchorEl(null)
   }
-
-  useEffect(() => {
-    return () => {
-      setAnchorEl(null)
-    }
-  }, [])
 
   return (
     <>

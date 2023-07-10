@@ -4,9 +4,9 @@ import Stack from '@mui/material/Stack'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { Theme } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
+import { useTranslation } from 'react-i18next'
 import { AddUserSection } from '../../AccessDialog/AddUserSection'
-import { UserTeamList } from './UserTeamList'
-import { UserTeamInvitesList } from './UserTeamInvitesList'
+import { TeamMembersList } from './TeamMembersList/TeamMembersList'
 
 interface TeamManageDialogProps {
   open: boolean
@@ -18,6 +18,7 @@ export function TeamManageDialog({
   onClose
 }: TeamManageDialogProps): ReactElement {
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
+  const { t } = useTranslation('apps-journeys-admin')
   return (
     <Dialog
       open={open ?? false}
@@ -31,9 +32,8 @@ export function TeamManageDialog({
       fullscreen={!smUp}
     >
       <Stack spacing={4}>
-        <Typography variant="subtitle1">Members</Typography>
-        <UserTeamList />
-        <UserTeamInvitesList />
+        <Typography variant="subtitle1">{t('Members')}</Typography>
+        <TeamMembersList />
       </Stack>
     </Dialog>
   )

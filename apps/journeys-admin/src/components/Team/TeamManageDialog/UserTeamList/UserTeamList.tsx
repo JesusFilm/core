@@ -7,24 +7,31 @@ import ListItem from '@mui/material/ListItem'
 import ListItemAvatar from '@mui/material/ListItemAvatar'
 import Skeleton from '@mui/material/Skeleton'
 import ListItemText from '@mui/material/ListItemText'
+import { LazyQueryExecFunction, OperationVariables } from '@apollo/client'
 import { UserTeamListItem } from '../UserTeamListItem'
-import { useUserTeamsAndInvitesQuery } from '../../../../libs/useUserTeamsAndInvitesQuery'
-import { useTeam } from '../../TeamProvider'
-import { useCurrentUser } from '../../../../libs/useCurrentUser'
-import { GetUserTeamsAndInvites_userTeams as UserTeam } from '../../../../../__generated__/GetUserTeamsAndInvites'
+import {
+  GetUserTeamsAndInvites,
+  GetUserTeamsAndInvites_userTeams as UserTeam
+} from '../../../../../__generated__/GetUserTeamsAndInvites'
 import { UserTeamRole } from '../../../../../__generated__/globalTypes'
+import {
+  GetCurrentUser,
+  GetCurrentUser_me
+} from '../../../../../__generated__/GetCurrentUser'
 
-export function UserTeamList(): ReactElement {
-  const { activeTeam } = useTeam()
-  const { loadUser, data: currentUser } = useCurrentUser()
-  const { data, loading } = useUserTeamsAndInvitesQuery(
-    activeTeam != null
-      ? {
-          teamId: activeTeam.id
-        }
-      : undefined
-  )
+interface UserTeamListProps {
+  data: GetUserTeamsAndInvites | undefined
+  currentUser: GetCurrentUser_me
+  loadUser: LazyQueryExecFunction<GetCurrentUser, OperationVariables>
+  loading: boolean
+}
 
+export function UserTeamList({
+  data,
+  currentUser,
+  loadUser,
+  loading
+}: UserTeamListProps): ReactElement {
   const currentUserTeam: UserTeam | undefined = useMemo(() => {
     return data?.userTeams?.find(({ user: { email } }) => {
       return email === currentUser?.email

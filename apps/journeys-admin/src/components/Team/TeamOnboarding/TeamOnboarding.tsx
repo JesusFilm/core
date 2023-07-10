@@ -20,15 +20,13 @@ import { TeamCreateForm } from '../TeamCreateForm'
 import { useTeam } from '../TeamProvider'
 import { UserTeamInviteForm } from '../UserTeamInviteForm'
 import { useUserTeamsAndInvitesQuery } from '../../../libs/useUserTeamsAndInvitesQuery'
-import { UserTeamList } from '../TeamManageDialog/UserTeamList'
-import { UserTeamInvitesList } from '../TeamManageDialog/UserTeamInvitesList'
+import { TeamMembersList } from '../TeamManageDialog/TeamMembersList'
 
 export function TeamOnboarding(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
 
   const router = useRouter()
   const { activeTeam } = useTeam()
-
   const { data } = useUserTeamsAndInvitesQuery(
     activeTeam != null
       ? {
@@ -58,8 +56,7 @@ export function TeamOnboarding(): ReactElement {
             <CardContent
               sx={{ padding: 6, maxHeight: '300px', overflowY: 'auto' }}
             >
-              <UserTeamList />
-              <UserTeamInvitesList />
+              <TeamMembersList />
             </CardContent>
 
             <Divider />
