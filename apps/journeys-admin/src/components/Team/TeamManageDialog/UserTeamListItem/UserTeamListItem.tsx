@@ -13,6 +13,7 @@ import PersonOutlineIcon from '@mui/icons-material/PersonOutline'
 import GroupIcon from '@mui/icons-material/Group'
 import PersonIcon from '@mui/icons-material/Person'
 import { gql, useMutation } from '@apollo/client'
+import { useTranslation } from 'react-i18next'
 import { UserTeamRole } from '../../../../../__generated__/globalTypes'
 import { GetUserTeamsAndInvites_userTeams as UserTeam } from '../../../../../__generated__/GetUserTeamsAndInvites'
 import { MenuItem } from '../../../MenuItem'
@@ -41,7 +42,7 @@ export function UserTeamListItem({
 }: UserTeamListItemProps): ReactElement {
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
   const open = Boolean(anchorEl)
-
+  const { t } = useTranslation('apps-journeys-admin')
   const [userTeamUpdate] = useMutation<UserTeamUpdate>(USER_TEAM_UPDATE)
 
   const { id, email, displayName, imageUrl, role } = useMemo(() => {
@@ -137,47 +138,45 @@ export function UserTeamListItem({
         }}
       >
         <Stack divider={<Divider />}>
-          <Stack>
-            <MenuItem
-              label="Manager"
-              icon={<GroupIcon />}
-              onClick={async () => {
-                handleClose()
-                await userTeamUpdate({
-                  variables: {
-                    userTeamUpdateId: id,
-                    input: { role: UserTeamRole.manager }
-                  }
-                })
-              }}
-            />
-            <MenuItem
-              label="Member"
-              icon={<PersonIcon />}
-              onClick={async () => {
-                handleClose()
-                await userTeamUpdate({
-                  variables: {
-                    userTeamUpdateId: id,
-                    input: { role: UserTeamRole.member }
-                  }
-                })
-              }}
-            />
-            <MenuItem
-              label="Guest"
-              icon={<PersonOutlineIcon />}
-              onClick={async () => {
-                handleClose()
-                await userTeamUpdate({
-                  variables: {
-                    userTeamUpdateId: id,
-                    input: { role: UserTeamRole.guest }
-                  }
-                })
-              }}
-            />
-          </Stack>
+          <MenuItem
+            label={t('Manager')}
+            icon={<GroupIcon />}
+            onClick={async () => {
+              handleClose()
+              await userTeamUpdate({
+                variables: {
+                  userTeamUpdateId: id,
+                  input: { role: UserTeamRole.manager }
+                }
+              })
+            }}
+          />
+          <MenuItem
+            label={t('Member')}
+            icon={<PersonIcon />}
+            onClick={async () => {
+              handleClose()
+              await userTeamUpdate({
+                variables: {
+                  userTeamUpdateId: id,
+                  input: { role: UserTeamRole.member }
+                }
+              })
+            }}
+          />
+          <MenuItem
+            label={t('Guest')}
+            icon={<PersonOutlineIcon />}
+            onClick={async () => {
+              handleClose()
+              await userTeamUpdate({
+                variables: {
+                  userTeamUpdateId: id,
+                  input: { role: UserTeamRole.guest }
+                }
+              })
+            }}
+          />
 
           <UserTeamDeleteMenuItem
             id={id}
