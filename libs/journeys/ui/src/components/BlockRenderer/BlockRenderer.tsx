@@ -1,4 +1,5 @@
 import { ReactElement } from 'react'
+import dynamic from 'next/dynamic'
 import { Button } from '../Button'
 import { Card } from '../Card'
 import { Image } from '../Image'
@@ -8,8 +9,9 @@ import { SignUp } from '../SignUp'
 import { Step } from '../Step'
 import { TextResponse } from '../TextResponse'
 import { Typography } from '../Typography'
-import { Video } from '../Video'
 import type { TreeBlock } from '../../libs/block'
+import { useBlocks } from '../../libs/block'
+
 import {
   BlockFields as Block,
   BlockFields_ButtonBlock as ButtonBlock,
@@ -23,6 +25,14 @@ import {
   BlockFields_TypographyBlock as TypographyBlock,
   BlockFields_VideoBlock as VideoBlock
 } from '../../libs/block/__generated__/BlockFields'
+
+const DynamicVideo = dynamic(
+  async () =>
+    await import(
+      /* webpackChunkName: "Video" */
+      '../Video'
+    ).then((mod) => mod.Video)
+)
 
 export interface WrapperProps<T = Block> {
   block: TreeBlock<T>
@@ -67,6 +77,15 @@ export function BlockRenderer({
   const TextResponseWrapper = wrappers?.TextResponseWrapper ?? DefaultWrapper
   const TypographyWrapper = wrappers?.TypographyWrapper ?? DefaultWrapper
   const VideoWrapper = wrappers?.VideoWrapper ?? DefaultWrapper
+
+  const { activeBlock } = useBlocks()
+  const cardBlock = activeBlock?.children[0] as TreeBlock<CardBlock>
+
+  const coverBlockId = Boolean(cardBlock?.coverBlockId)
+  const videoBlock = cardBlock?.children?.find(
+    (child) => child.__typename === 'VideoBlock'
+  )
+  const hasVideo = coverBlockId ?? videoBlock
 
   if (block.parentOrder === null) {
     return <></>
@@ -147,11 +166,15 @@ export function BlockRenderer({
       )
     case 'VideoBlock':
       return (
-        <Wrapper block={block}>
-          <VideoWrapper block={block}>
-            <Video {...block} />
-          </VideoWrapper>
-        </Wrapper>
+        <>
+          {hasVideo != null && (
+            <Wrapper block={block}>
+              <VideoWrapper block={block}>
+                <DynamicVideo {...block} />
+              </VideoWrapper>
+            </Wrapper>
+          )}
+        </>
       )
     default:
       return (
