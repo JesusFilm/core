@@ -1,18 +1,17 @@
-import { Story, Meta } from '@storybook/react'
-import { useState } from 'react'
+import { MockedResponse } from '@apollo/client/testing'
+import { Meta, Story } from '@storybook/react'
 import { SnackbarProvider } from 'notistack'
 import { screen, userEvent } from '@storybook/testing-library'
-import { MockedResponse } from '@apollo/client/testing'
-import { TeamProvider } from '../TeamProvider'
 import { journeysAdminConfig } from '../../../libs/storybook'
+import { TeamProvider } from '../TeamProvider'
 import { TeamCreate } from '../../../../__generated__/TeamCreate'
 import { TEAM_CREATE } from '../../../libs/useTeamCreateMutation/useTeamCreateMutation'
-import { TeamCreateDialog } from '.'
+import { TeamOnboarding } from '.'
 
-const TeamCreateDialogStory = {
+const TeamOnboardingStory = {
   ...journeysAdminConfig,
-  component: TeamCreateDialog,
-  title: 'Journeys-Admin/Team/TeamCreateDialog'
+  component: TeamOnboarding,
+  title: 'Journeys-Admin/Team/TeamOnboarding'
 }
 
 const teamCreateMock: MockedResponse<TeamCreate> = {
@@ -36,11 +35,10 @@ const teamCreateMock: MockedResponse<TeamCreate> = {
 }
 
 const Template: Story = () => {
-  const [open, setOpen] = useState(true)
   return (
     <TeamProvider>
       <SnackbarProvider>
-        <TeamCreateDialog open={open} onClose={() => setOpen(false)} />
+        <TeamOnboarding />
       </SnackbarProvider>
     </TeamProvider>
   )
@@ -56,4 +54,4 @@ Default.play = async () => {
   userEvent.type(screen.getByRole('textbox'), 'Jesus Film Project')
 }
 
-export default TeamCreateDialogStory as Meta
+export default TeamOnboardingStory as Meta
