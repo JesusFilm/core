@@ -54,7 +54,7 @@ describe('TeamManageDialog', () => {
             role: UserTeamRole.manager,
             user: {
               __typename: 'User',
-              email: 'siyangguccigang@gmail.com',
+              email: 'siyangguccigang@example.com',
               firstName: 'Siyang',
               id: 'userId',
               imageUrl: 'imageURL',
@@ -65,7 +65,7 @@ describe('TeamManageDialog', () => {
         userTeamInvites: [
           {
             id: 'inviteId',
-            email: 'edmond@gmail.com',
+            email: 'edmond@example.com',
             teamId: 'teamId',
             __typename: 'UserTeamInvite'
           }
@@ -98,7 +98,7 @@ describe('TeamManageDialog', () => {
     await waitFor(() => {
       expect(getByText('Members')).toBeInTheDocument()
       expect(getByText('Siyang Gang')).toBeInTheDocument()
-      expect(getByText('edmond@gmail.com')).toBeInTheDocument()
+      expect(getByText('edmond@example.com')).toBeInTheDocument()
       expect(getByText('Invite others to your team')).toBeInTheDocument()
     })
   })

@@ -28,7 +28,7 @@ const mocks = [
             role: UserTeamRole.manager,
             user: {
               __typename: 'User',
-              email: 'siyangguccigang@gmail.com',
+              email: 'siyangguccigang@example.com',
               firstName: 'Siyang',
               id: 'userId',
               imageUrl: 'imageURL',
@@ -39,7 +39,7 @@ const mocks = [
         userTeamInvites: [
           {
             id: 'inviteId',
-            email: 'edmond@gmail.com',
+            email: 'edmond@example.com',
             teamId: 'teamId',
             __typename: 'UserTeamInvite'
           }

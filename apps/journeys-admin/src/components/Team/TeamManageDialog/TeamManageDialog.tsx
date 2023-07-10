@@ -1,12 +1,12 @@
 import { ReactElement } from 'react'
 import { Dialog } from '@core/shared/ui/Dialog'
-
 import Stack from '@mui/material/Stack'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { Theme } from '@mui/material/styles'
-
+import Typography from '@mui/material/Typography'
 import { AddUserSection } from '../../AccessDialog/AddUserSection'
-import { TeamMemberList } from './TeamMemberList'
+import { UserTeamList } from './UserTeamList'
+import { UserTeamInvitesList } from './UserTeamInvitesList'
 
 interface TeamManageDialogProps {
   open: boolean
@@ -18,7 +18,6 @@ export function TeamManageDialog({
   onClose
 }: TeamManageDialogProps): ReactElement {
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
-  const emails = []
   return (
     <Dialog
       open={open ?? false}
@@ -28,11 +27,13 @@ export function TeamManageDialog({
         title: 'Invite others to your team',
         closeButton: true
       }}
-      dialogActionChildren={<AddUserSection users={emails} addTeamMembers />} // create new component for AddUserSection //emails variable is used to validate
+      dialogActionChildren={<AddUserSection addTeamMembers />}
       fullscreen={!smUp}
     >
       <Stack spacing={4}>
-        <TeamMemberList title="Members" />
+        <Typography variant="subtitle1">Members</Typography>
+        <UserTeamList />
+        <UserTeamInvitesList />
       </Stack>
     </Dialog>
   )

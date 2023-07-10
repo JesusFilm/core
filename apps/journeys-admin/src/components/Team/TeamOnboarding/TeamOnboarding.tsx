@@ -16,19 +16,19 @@ import { useRouter } from 'next/router'
 import Divider from '@mui/material/Divider'
 import taskbarIcon from '../../../../public/taskbar-icon.svg'
 import { TeamCreateForm } from '../TeamCreateForm'
-import { TeamMemberList } from '../TeamManageDialog/TeamMemberList'
+
 import { useTeam } from '../TeamProvider'
-import { UserTeamInviteForm } from '../TeamManageDialog/UserTeamInviteForm'
+import { UserTeamInviteForm } from '../UserTeamInviteForm'
 import { useUserTeamsAndInvitesQuery } from '../../../libs/useUserTeamsAndInvitesQuery'
+import { UserTeamList } from '../TeamManageDialog/UserTeamList'
+import { UserTeamInvitesList } from '../TeamManageDialog/UserTeamInvitesList'
 
 export function TeamOnboarding(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
 
   const router = useRouter()
   const { activeTeam } = useTeam()
-  async function handleSubmit(): Promise<void> {
-    await router?.push('/')
-  }
+
   const { data } = useUserTeamsAndInvitesQuery(
     activeTeam != null
       ? {
@@ -58,7 +58,8 @@ export function TeamOnboarding(): ReactElement {
             <CardContent
               sx={{ padding: 6, maxHeight: '300px', overflowY: 'auto' }}
             >
-              <TeamMemberList />
+              <UserTeamList />
+              <UserTeamInvitesList />
             </CardContent>
 
             <Divider />
@@ -68,7 +69,7 @@ export function TeamOnboarding(): ReactElement {
             <CardContent
               sx={{ padding: 2, display: 'flex', justifyContent: 'flex-end' }}
             >
-              <Button onClick={async () => await handleSubmit()}>
+              <Button onClick={async () => await router?.push('/')}>
                 {(data?.userTeamInvites ?? []).length > 0
                   ? t('Continue')
                   : t('Skip')}

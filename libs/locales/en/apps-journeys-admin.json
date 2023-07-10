@@ -152,6 +152,8 @@
   "Max {{ count }} Characters_other": "Max {{ count }} Characters",
   "{{ teamName }} created.": "{{ teamName }} created.",
   "Failed to create the team. Reload the page or try again.": "Failed to create the team. Reload the page or try again.",
+  "Members": "Members",
+  "Pending": "Pending",
   "Create New Team": "Create New Team",
   "Rename Team": "Rename Team",
   "Manage Team": "Manage Team",

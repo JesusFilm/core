@@ -11,7 +11,7 @@ import { CopyTextField } from '@core/shared/ui/CopyTextField'
 import Typography from '@mui/material/Typography'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { MenuItem } from '../../MenuItem'
-import { UserTeamInviteForm } from '../../Team/TeamManageDialog/UserTeamInviteForm'
+import { UserTeamInviteForm } from '../../Team/UserTeamInviteForm'
 import { EmailInviteForm } from './EmailInviteForm'
 
 interface AddUserSectionProps {

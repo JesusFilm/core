@@ -7,9 +7,9 @@ import { useTranslation } from 'react-i18next'
 import IconButton from '@mui/material/IconButton'
 import InputAdornment from '@mui/material/InputAdornment'
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline'
-import { useTeam } from '../../TeamProvider'
-import { UserTeamInviteCreate } from '../../../../../__generated__/UserTeamInviteCreate'
-import { useUserTeamsAndInvitesQuery } from '../../../../libs/useUserTeamsAndInvitesQuery'
+import { useTeam } from '../TeamProvider'
+import { UserTeamInviteCreate } from '../../../../__generated__/UserTeamInviteCreate'
+import { useUserTeamsAndInvitesQuery } from '../../../libs/useUserTeamsAndInvitesQuery'
 
 export const USER_TEAM_INVITE_CREATE = gql`
   mutation UserTeamInviteCreate(

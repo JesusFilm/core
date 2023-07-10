@@ -14,16 +14,13 @@ import GroupIcon from '@mui/icons-material/Group'
 import PersonIcon from '@mui/icons-material/Person'
 import { gql, useMutation } from '@apollo/client'
 import { UserTeamRole } from '../../../../../__generated__/globalTypes'
-import {
-  GetUserTeamsAndInvites_userTeams as UserTeam,
-  GetUserTeamsAndInvites_userTeamInvites as UserTeamInvite
-} from '../../../../../__generated__/GetUserTeamsAndInvites'
+import { GetUserTeamsAndInvites_userTeams as UserTeam } from '../../../../../__generated__/GetUserTeamsAndInvites'
 import { MenuItem } from '../../../MenuItem'
-import { RemoveUserTeam } from '../RemoveUserTeam'
 import { UserTeamUpdate } from '../../../../../__generated__/UserTeamUpdate'
+import { UserTeamDeleteMenuItem } from '../UserTeamDeleteMenuItem'
 
-interface TeamMemberListItemProps {
-  user: UserTeam | UserTeamInvite
+interface UserTeamListItemProps {
+  user: UserTeam
   disabled: boolean
 }
 
@@ -38,21 +35,16 @@ export const USER_TEAM_UPDATE = gql`
     }
   }
 `
-
-export function TeamMemberListItem({
+export function UserTeamListItem({
   user: listItem,
   disabled
-}: TeamMemberListItemProps): ReactElement {
+}: UserTeamListItemProps): ReactElement {
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
   const open = Boolean(anchorEl)
+
   const [userTeamUpdate] = useMutation<UserTeamUpdate>(USER_TEAM_UPDATE)
 
   const { id, email, displayName, imageUrl, role } = useMemo(() => {
-    if (listItem.__typename === 'UserTeamInvite') {
-      return {
-        ...listItem
-      }
-    }
     return {
       id: listItem.id,
       email: listItem?.user?.email,
@@ -73,8 +65,6 @@ export function TeamMemberListItem({
         return 'Member'
       case UserTeamRole.guest:
         return 'Guest'
-      case undefined:
-        return 'Pending'
     }
   }, [role])
 
@@ -90,8 +80,6 @@ export function TeamMemberListItem({
       setAnchorEl(null)
     }
   }, [])
-
-  const isInvite = listItem.__typename === 'UserTeamInvite'
 
   return (
     <>
@@ -132,7 +120,7 @@ export function TeamMemberListItem({
           secondary={email}
           sx={{
             '& > .MuiListItemText-secondary': {
-              width: { xs: isInvite ? '110px' : '90%', sm: '90%' },
+              width: { xs: '90%', sm: '90%' },
               whiteSpace: 'nowrap',
               overflow: 'clip',
               textOverflow: 'ellipsis'
@@ -155,51 +143,49 @@ export function TeamMemberListItem({
         }}
       >
         <Stack divider={<Divider />}>
-          {!isInvite && (
-            <Stack>
-              <MenuItem
-                label="Manager"
-                icon={<GroupIcon />}
-                onClick={async () => {
-                  handleClose()
-                  await userTeamUpdate({
-                    variables: {
-                      userTeamUpdateId: id,
-                      input: { role: UserTeamRole.manager }
-                    }
-                  })
-                }}
-              />
-              <MenuItem
-                label="Member"
-                icon={<PersonIcon />}
-                onClick={async () => {
-                  handleClose()
-                  await userTeamUpdate({
-                    variables: {
-                      userTeamUpdateId: id,
-                      input: { role: UserTeamRole.member }
-                    }
-                  })
-                }}
-              />
-              <MenuItem
-                label="Guest"
-                icon={<PersonOutlineIcon />}
-                onClick={async () => {
-                  handleClose()
-                  await userTeamUpdate({
-                    variables: {
-                      userTeamUpdateId: id,
-                      input: { role: UserTeamRole.guest }
-                    }
-                  })
-                }}
-              />
-            </Stack>
-          )}
+          <Stack>
+            <MenuItem
+              label="Manager"
+              icon={<GroupIcon />}
+              onClick={async () => {
+                handleClose()
+                await userTeamUpdate({
+                  variables: {
+                    userTeamUpdateId: id,
+                    input: { role: UserTeamRole.manager }
+                  }
+                })
+              }}
+            />
+            <MenuItem
+              label="Member"
+              icon={<PersonIcon />}
+              onClick={async () => {
+                handleClose()
+                await userTeamUpdate({
+                  variables: {
+                    userTeamUpdateId: id,
+                    input: { role: UserTeamRole.member }
+                  }
+                })
+              }}
+            />
+            <MenuItem
+              label="Guest"
+              icon={<PersonOutlineIcon />}
+              onClick={async () => {
+                handleClose()
+                await userTeamUpdate({
+                  variables: {
+                    userTeamUpdateId: id,
+                    input: { role: UserTeamRole.guest }
+                  }
+                })
+              }}
+            />
+          </Stack>
           {!disabled && (
-            <RemoveUserTeam id={id} isInvite={isInvite} onClick={handleClose} />
+            <UserTeamDeleteMenuItem id={id} onClick={handleClose} />
           )}
         </Stack>
       </Menu>

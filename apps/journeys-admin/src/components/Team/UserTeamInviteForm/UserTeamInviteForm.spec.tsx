@@ -1,12 +1,12 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { InMemoryCache } from '@apollo/client'
-import { GET_TEAMS, TeamProvider } from '../../TeamProvider'
-import { GetTeams } from '../../../../../__generated__/GetTeams'
-import { GetUserTeamsAndInvites } from '../../../../../__generated__/GetUserTeamsAndInvites'
-import { GET_USER_TEAMS_AND_INVITES } from '../../../../libs/useUserTeamsAndInvitesQuery/useUserTeamsAndInvitesQuery'
-import { UserTeamRole } from '../../../../../__generated__/globalTypes'
-import { UserTeamInviteCreate } from '../../../../../__generated__/UserTeamInviteCreate'
+import { GET_TEAMS, TeamProvider } from '../TeamProvider'
+import { GetTeams } from '../../../../__generated__/GetTeams'
+import { GetUserTeamsAndInvites } from '../../../../__generated__/GetUserTeamsAndInvites'
+import { GET_USER_TEAMS_AND_INVITES } from '../../../libs/useUserTeamsAndInvitesQuery/useUserTeamsAndInvitesQuery'
+import { UserTeamRole } from '../../../../__generated__/globalTypes'
+import { UserTeamInviteCreate } from '../../../../__generated__/UserTeamInviteCreate'
 import { USER_TEAM_INVITE_CREATE } from './UserTeamInviteForm'
 import { UserTeamInviteForm } from '.'
 
@@ -36,7 +36,7 @@ describe('UserTeamInviteForm', () => {
       variables: {
         teamId: 'jfp-team',
         input: {
-          email: 'johnTHEgeronimo@gmail.com'
+          email: 'johnTHEgeronimo@example.com'
         }
       }
     },
@@ -44,7 +44,7 @@ describe('UserTeamInviteForm', () => {
       data: {
         userTeamInviteCreate: {
           __typename: 'UserTeamInvite',
-          email: 'johnTHEgeronimo@gmail.com',
+          email: 'johnTHEgeronimo@example.com',
           id: 'inviteId2',
           teamId: 'jfp-team'
         }
@@ -66,7 +66,7 @@ describe('UserTeamInviteForm', () => {
             role: UserTeamRole.manager,
             user: {
               __typename: 'User',
-              email: 'siyangguccigang@gmail.com',
+              email: 'siyangguccigang@example.com',
               firstName: 'Siyang',
               id: 'userId',
               imageUrl: 'imageURL',
@@ -77,7 +77,7 @@ describe('UserTeamInviteForm', () => {
         userTeamInvites: [
           {
             id: 'inviteId',
-            email: 'edmondshen@gmail.com',
+            email: 'edmondshen@example.com',
             teamId: 'jfp-team',
             __typename: 'UserTeamInvite'
           }
@@ -138,7 +138,7 @@ describe('UserTeamInviteForm', () => {
 
     await waitFor(() => {
       fireEvent.change(email, {
-        target: { value: 'siyangguccigang@gmail.com' }
+        target: { value: 'siyangguccigang@example.com' }
       })
     })
     await waitFor(() => {
@@ -163,7 +163,7 @@ describe('UserTeamInviteForm', () => {
 
     await waitFor(() => {
       fireEvent.change(email, {
-        target: { value: 'EDMONDSHEN@gmail.com' }
+        target: { value: 'EDMONDSHEN@example.com' }
       })
     })
     await waitFor(() => {
@@ -191,7 +191,7 @@ describe('UserTeamInviteForm', () => {
     const email = getByRole('textbox', { name: 'Email' })
     await waitFor(() => {
       fireEvent.change(email, {
-        target: { value: 'johnTHEgeronimo@gmail.com' }
+        target: { value: 'johnTHEgeronimo@example.com' }
       })
     })
     await waitFor(() => {
@@ -200,7 +200,7 @@ describe('UserTeamInviteForm', () => {
     await waitFor(() => {
       expect(cache.extract()['UserTeamInvite:inviteId2']).toEqual({
         __typename: 'UserTeamInvite',
-        email: 'johnTHEgeronimo@gmail.com',
+        email: 'johnTHEgeronimo@example.com',
         id: 'inviteId2',
         teamId: 'jfp-team'
       })

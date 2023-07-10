@@ -2,9 +2,9 @@ import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { UserTeamRole } from '../../../../../__generated__/globalTypes'
 import { GetUserTeamsAndInvites_userTeams as UserTeam } from '../../../../../__generated__/GetUserTeamsAndInvites'
-import { TeamMemberListItem, USER_TEAM_UPDATE } from './TeamMemberListItem'
+import { UserTeamListItem, USER_TEAM_UPDATE } from './UserTeamListItem'
 
-describe('TeamMemberListItem', () => {
+describe('UserTeamListItem', () => {
   const mockUser: UserTeam = {
     id: 'userTeamId',
     role: UserTeamRole.member,
@@ -12,7 +12,7 @@ describe('TeamMemberListItem', () => {
     user: {
       __typename: 'User',
       id: 'userId',
-      email: 'edmondshen@gmail.com',
+      email: 'edmondshen@example.com',
       firstName: 'Edmond',
       lastName: 'Shen',
       imageUrl: 'image'
@@ -47,7 +47,7 @@ describe('TeamMemberListItem', () => {
   it('it should change the team member permissions correctly', async () => {
     const { getByText, getByRole } = render(
       <MockedProvider mocks={mocks}>
-        <TeamMemberListItem user={mockUser} disabled={false} />
+        <UserTeamListItem user={mockUser} disabled={false} />
       </MockedProvider>
     )
     fireEvent.click(getByRole('button'))

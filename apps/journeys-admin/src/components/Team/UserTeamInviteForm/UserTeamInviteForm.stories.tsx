@@ -1,8 +1,8 @@
 import { Meta, Story } from '@storybook/react'
 import { ComponentProps } from 'react'
 import { MockedProvider } from '@apollo/client/testing'
-import { journeysAdminConfig } from '../../../../libs/storybook'
-import { AddUserSection } from '../../../AccessDialog/AddUserSection'
+import { journeysAdminConfig } from '../../../libs/storybook'
+import { AddUserSection } from '../../AccessDialog/AddUserSection'
 import { UserTeamInviteForm } from './UserTeamInviteForm'
 
 const Demo = {
