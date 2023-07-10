@@ -12,12 +12,12 @@ import { getLaunchDarklyClient } from '@core/shared/ui/getLaunchDarklyClient'
 import { PageWrapper } from '../../src/components/NewPageWrapper'
 import i18nConfig from '../../next-i18next.config'
 import { TemplateLibrary } from '../../src/components/TemplateLibrary'
-import { useTermsRedirect } from '../../src/libs/useTermsRedirect/useTermsRedirect'
+import { createApolloClient } from '../../src/libs/apolloClient'
+import { checkConditionalRedirect } from '../../src/libs/checkConditionalRedirect'
 
 function LibraryIndex(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const AuthUser = useAuthUser()
-  useTermsRedirect()
 
   return (
     <>
@@ -41,6 +41,13 @@ export const getServerSideProps = withAuthUserTokenSSR({
   const flags = (await launchDarklyClient.allFlagsState(ldUser)).toJSON() as {
     [key: string]: boolean | undefined
   }
+
+  const token = await AuthUser.getIdToken()
+  const apolloClient = createApolloClient(token != null ? token : '')
+
+  const redirect = await checkConditionalRedirect(apolloClient, flags)
+  if (redirect != null) return { redirect }
+
   return {
     props: {
       flags,
