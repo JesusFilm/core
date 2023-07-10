@@ -45,7 +45,7 @@ export function UserTeamList(): ReactElement {
 
   return (
     <>
-      {loading ? (
+      {loading || data?.userTeams == null ? (
         <Box>
           <List>
             {[0, 1, 2].map((i) => (
