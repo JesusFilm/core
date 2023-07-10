@@ -79,7 +79,7 @@ export function EmailInviteForm({ users }: EmailInviteFormProps): ReactElement {
     }
   }
 
-  const usersToLowerCase = users?.map((user) => user.toLowerCase())
+  const usersToLowerCase = users.map((user) => user.toLowerCase())
   const validationSchema = object().shape({
     email: string()
       .lowercase()
