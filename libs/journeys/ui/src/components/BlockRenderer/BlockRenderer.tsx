@@ -81,7 +81,7 @@ export function BlockRenderer({
   const { activeBlock } = useBlocks()
   const cardBlock = activeBlock?.children[0] as TreeBlock<CardBlock>
 
-  const coverBlockId = Boolean(cardBlock?.coverBlockId)
+  const coverBlockId = cardBlock?.coverBlockId
   const videoBlock = cardBlock?.children?.find(
     (child) => child.__typename === 'VideoBlock'
   )
