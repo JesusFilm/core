@@ -28,12 +28,6 @@ export const GET_DISCOVERY_JOURNEY = gql`
 `
 
 export function EmbedJourney({ slug }: Props): ReactElement {
-  const dimensions = {
-    xs: 'calc(250% + 64px)',
-    sm: 'calc(166% + 64px)',
-    md: 'calc(125% + 64px)'
-  }
-
   const { data } = useQuery<GetDiscoveryJourney>(GET_DISCOVERY_JOURNEY, {
     variables: { id: 'with-primaryimage-copy' }
   })
@@ -48,19 +42,35 @@ export function EmbedJourney({ slug }: Props): ReactElement {
     <Box
       aria-label={`${slug}-embedded`}
       sx={{
-        transform: {
-          xs: 'scale(0.4)',
-          sm: 'scale(0.6)',
-          md: 'scale(0.8)'
-        },
-        transformOrigin: 'top left',
-        width: dimensions,
-        height: dimensions
+        width: '100%',
+        height: '100%'
       }}
       onClick={handleClick}
     >
       {block != null && (
-        <Box sx={{ height: '100%', width: '100%', border: 0, margin: '-32px' }}>
+        <Box sx={{ height: '100%' }}>
+          <Box
+            sx={{
+              mx: 'auto',
+              mb: 0,
+              height: 4.5,
+              width: '82.5%',
+              backgroundColor: '#AAACBB',
+              borderRadius: '16px 16px 0 0',
+              opacity: 0.3
+            }}
+          />
+          <Box
+            sx={{
+              mx: 'auto',
+              mb: 0,
+              height: 4.5,
+              width: '90%',
+              backgroundColor: '#AAACBB',
+              borderRadius: '16px 16px 0 0',
+              opacity: 0.6
+            }}
+          />
           <ThemeProvider
             themeName={discoveryJourney?.themeName ?? ThemeName.base}
             themeMode={discoveryJourney?.themeMode ?? ThemeMode.light}
