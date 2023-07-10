@@ -165,7 +165,7 @@
       "options": {
         "commands": [
           {
-            "command": "npx lhci autorun --collect.url={args.url} --config apps/journeys/lighthouserc.json"
+            "command": "npx lhci autorun --collect.url=${DEPLOYMENT_URL:args.url} --config apps/journeys/lighthouserc.json"
           }
         ]
       }
