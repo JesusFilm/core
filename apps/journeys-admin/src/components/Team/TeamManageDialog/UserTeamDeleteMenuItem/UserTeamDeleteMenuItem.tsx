@@ -15,11 +15,13 @@ export const USER_TEAM_DELETE = gql`
 interface UserTeamDeleteMenuItemProps {
   id: string
   onClick?: () => void
+  disabled?: boolean
 }
 
 export function UserTeamDeleteMenuItem({
   id,
-  onClick
+  onClick,
+  disabled
 }: UserTeamDeleteMenuItemProps): ReactElement {
   const [userTeamDelete] = useMutation<UserTeamDelete>(USER_TEAM_DELETE, {
     variables: { id },
@@ -44,6 +46,7 @@ export function UserTeamDeleteMenuItem({
       label="Remove"
       icon={<RemoveCircleRoundedIcon />}
       onClick={handleClick}
+      disabled={disabled}
     />
   )
 }

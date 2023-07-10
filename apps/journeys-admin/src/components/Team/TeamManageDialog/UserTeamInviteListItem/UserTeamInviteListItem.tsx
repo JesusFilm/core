@@ -13,7 +13,7 @@ import { UserTeamInviteRemoveMenuItem } from '../UserTeamInviteRemoveMenuItem'
 
 interface UserTeamInviteListItemProps {
   user: UserTeamInvite
-  disabled: boolean
+  disabled?: boolean
 }
 
 export function UserTeamInviteListItem({
@@ -96,9 +96,11 @@ export function UserTeamInviteListItem({
         }}
       >
         <Stack divider={<Divider />}>
-          {!disabled && (
-            <UserTeamInviteRemoveMenuItem id={id} onClick={handleClose} />
-          )}
+          <UserTeamInviteRemoveMenuItem
+            id={id}
+            onClick={handleClose}
+            disabled={disabled}
+          />
         </Stack>
       </Menu>
     </>

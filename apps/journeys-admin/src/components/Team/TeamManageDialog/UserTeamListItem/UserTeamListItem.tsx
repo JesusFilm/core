@@ -21,7 +21,7 @@ import { UserTeamDeleteMenuItem } from '../UserTeamDeleteMenuItem'
 
 interface UserTeamListItemProps {
   user: UserTeam
-  disabled: boolean
+  disabled?: boolean
 }
 
 export const USER_TEAM_UPDATE = gql`
@@ -178,9 +178,12 @@ export function UserTeamListItem({
               }}
             />
           </Stack>
-          {!disabled && (
-            <UserTeamDeleteMenuItem id={id} onClick={handleClose} />
-          )}
+
+          <UserTeamDeleteMenuItem
+            id={id}
+            onClick={handleClose}
+            disabled={disabled}
+          />
         </Stack>
       </Menu>
     </>

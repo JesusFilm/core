@@ -15,11 +15,13 @@ export const USER_TEAM_INVITE_REMOVE = gql`
 interface UserTeamInviteRemoveMenuItemProps {
   id: string
   onClick?: () => void
+  disabled?: boolean
 }
 
 export function UserTeamInviteRemoveMenuItem({
   id,
-  onClick
+  onClick,
+  disabled
 }: UserTeamInviteRemoveMenuItemProps): ReactElement {
   const [userInviteRemove] = useMutation<UserTeamInviteRemove>(
     USER_TEAM_INVITE_REMOVE,
@@ -47,6 +49,7 @@ export function UserTeamInviteRemoveMenuItem({
       label="Remove"
       icon={<RemoveCircleRoundedIcon />}
       onClick={handleClick}
+      disabled={disabled}
     />
   )
 }
