@@ -3,12 +3,22 @@ import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { SnackbarProvider } from 'notistack'
 import { ReactElement } from 'react'
 import { InMemoryCache } from '@apollo/client'
+import { NextRouter, useRouter } from 'next/router'
 import { TeamProvider, useTeam } from '../TeamProvider'
 import { TeamCreate } from '../../../../__generated__/TeamCreate'
 import { TEAM_CREATE } from '../../../libs/useTeamCreateMutation/useTeamCreateMutation'
-import { TeamCreateDialog } from '.'
+import { TeamOnboarding } from '.'
 
-describe('TeamCreateDialog', () => {
+jest.mock('next/router', () => ({
+  __esModule: true,
+  useRouter: jest.fn()
+}))
+
+const mockUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
+
+describe('TeamOnboarding', () => {
+  let push: jest.Mock
+
   const teamCreateMock: MockedResponse<TeamCreate> = {
     request: {
       query: TEAM_CREATE,
@@ -45,8 +55,12 @@ describe('TeamCreateDialog', () => {
     return <div data-testid="active-team-title">{activeTeam?.title}</div>
   }
 
+  beforeEach(() => {
+    push = jest.fn()
+    mockUseRouter.mockReturnValue({ push } as unknown as NextRouter)
+  })
+
   it('creates new team and sets it as active', async () => {
-    const handleClose = jest.fn()
     const cache = new InMemoryCache()
     cache.restore({
       ROOT_QUERY: {
@@ -58,7 +72,7 @@ describe('TeamCreateDialog', () => {
       <MockedProvider mocks={[teamCreateMock]} cache={cache}>
         <SnackbarProvider>
           <TeamProvider>
-            <TeamCreateDialog open onClose={handleClose} />
+            <TeamOnboarding />
             <TestComponent />
           </TeamProvider>
         </SnackbarProvider>
@@ -69,7 +83,7 @@ describe('TeamCreateDialog', () => {
     await waitFor(() =>
       expect(getByTestId('active-team-title')).toHaveTextContent('Team Title')
     )
-    await waitFor(() => expect(handleClose).toHaveBeenCalled())
+    await waitFor(() => expect(push).toHaveBeenCalledWith('/'))
     expect(cache.extract()?.ROOT_QUERY?.teams).toEqual([
       { __ref: 'Team:teamId1' },
       { __ref: 'Team:teamId' }
@@ -82,7 +96,7 @@ describe('TeamCreateDialog', () => {
       <MockedProvider mocks={[teamCreateErrorMock]}>
         <SnackbarProvider>
           <TeamProvider>
-            <TeamCreateDialog open onClose={jest.fn()} />
+            <TeamOnboarding />
           </TeamProvider>
         </SnackbarProvider>
       </MockedProvider>
@@ -104,5 +118,6 @@ describe('TeamCreateDialog', () => {
         getByText('Failed to create the team. Reload the page or try again.')
       ).toBeInTheDocument()
     )
+    expect(push).not.toHaveBeenCalled()
   })
 })

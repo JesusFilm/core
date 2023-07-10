@@ -3,7 +3,6 @@ import Link from 'next/link'
 import AppBar from '@mui/material/AppBar'
 import ChevronLeftRounded from '@mui/icons-material/ChevronLeftRounded'
 import IconButton from '@mui/material/IconButton'
-import Stack from '@mui/material/Stack'
 import Toolbar from '@mui/material/Toolbar'
 import Typography from '@mui/material/Typography'
 import Box from '@mui/system/Box'
@@ -36,11 +35,22 @@ export function MainPanelHeader({
         }}
       >
         <Toolbar variant={toolbar.variant}>
-          <Stack direction="row" flexGrow={1} alignItems="center">
-            {backHrefHistory === true ? (
-              <Box onClick={() => router.back()}>
+          {backHrefHistory === true ? (
+            <Box onClick={() => router.back()}>
+              <IconButton
+                data-testid="backHref-history-button"
+                edge="start"
+                size="small"
+                color="inherit"
+                sx={{ mr: 2 }}
+              >
+                <ChevronLeftRounded />
+              </IconButton>
+            </Box>
+          ) : (
+            backHref != null && (
+              <Link href={backHref} passHref>
                 <IconButton
-                  data-testid="backHref-history-button"
                   edge="start"
                   size="small"
                   color="inherit"
@@ -48,21 +58,10 @@ export function MainPanelHeader({
                 >
                   <ChevronLeftRounded />
                 </IconButton>
-              </Box>
-            ) : (
-              backHref != null && (
-                <Link href={backHref} passHref>
-                  <IconButton
-                    edge="start"
-                    size="small"
-                    color="inherit"
-                    sx={{ mr: 2 }}
-                  >
-                    <ChevronLeftRounded />
-                  </IconButton>
-                </Link>
-              )
-            )}
+              </Link>
+            )
+          )}
+          {typeof title === 'string' ? (
             <Typography
               variant="subtitle1"
               component="div"
@@ -71,8 +70,10 @@ export function MainPanelHeader({
             >
               {title}
             </Typography>
-            {menu}
-          </Stack>
+          ) : (
+            title
+          )}
+          {menu}
         </Toolbar>
       </AppBar>
       {/* Reserves space beneath MainHeader on mobile - allows us to export MainPanel */}
