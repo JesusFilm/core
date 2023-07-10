@@ -50,6 +50,7 @@ export function StepFooter({
     >
       <Stack
         justifyContent="space-between"
+        spacing={2}
         sx={{
           px: { xs: 6, lg: 6 },
           py: { xs: 2, lg: 2 },
