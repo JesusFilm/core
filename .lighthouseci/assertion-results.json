@@ -2,8 +2,10 @@
   {
     "name": "maxNumericValue",
     "expected": 2500,
-    "actual": 43170.60299999997,
-    "values": [43170.60299999997],
+    "actual": 43245.38000000002,
+    "values": [
+      43245.38000000002
+    ],
     "operator": "<=",
     "passed": false,
     "auditId": "largest-contentful-paint",
@@ -15,8 +17,10 @@
   {
     "name": "maxNumericValue",
     "expected": 200,
-    "actual": 5294.848499999982,
-    "values": [5294.848499999982],
+    "actual": 5407.789500000018,
+    "values": [
+      5407.789500000018
+    ],
     "operator": "<=",
     "passed": false,
     "auditId": "total-blocking-time",
