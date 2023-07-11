@@ -1,7 +1,6 @@
 import { ReactElement } from 'react'
 import dynamic from 'next/dynamic'
 import { Button } from '../Button'
-import { Card } from '../Card'
 import { Image } from '../Image'
 import { RadioOption } from '../RadioOption'
 import { RadioQuestion } from '../RadioQuestion'
@@ -10,7 +9,6 @@ import { Step } from '../Step'
 import { TextResponse } from '../TextResponse'
 import { Typography } from '../Typography'
 import type { TreeBlock } from '../../libs/block'
-import { useBlocks } from '../../libs/block'
 
 import {
   BlockFields as Block,
@@ -25,6 +23,14 @@ import {
   BlockFields_TypographyBlock as TypographyBlock,
   BlockFields_VideoBlock as VideoBlock
 } from '../../libs/block/__generated__/BlockFields'
+
+const DynamicCard = dynamic(
+  async () =>
+    await import(
+      /* webpackChunkName: "Card" */
+      '../Card'
+    ).then((mod) => mod.Card)
+)
 
 const DynamicVideo = dynamic(
   async () =>
@@ -78,15 +84,6 @@ export function BlockRenderer({
   const TypographyWrapper = wrappers?.TypographyWrapper ?? DefaultWrapper
   const VideoWrapper = wrappers?.VideoWrapper ?? DefaultWrapper
 
-  const { activeBlock } = useBlocks()
-  const cardBlock = activeBlock?.children[0] as TreeBlock<CardBlock>
-
-  const coverBlockId = cardBlock?.coverBlockId
-  const videoBlock = cardBlock?.children?.find(
-    (child) => child.__typename === 'VideoBlock'
-  )
-  const hasVideo = coverBlockId ?? videoBlock
-
   if (block.parentOrder === null) {
     return <></>
   }
@@ -104,7 +101,7 @@ export function BlockRenderer({
       return (
         <Wrapper block={block}>
           <CardWrapper block={block}>
-            <Card {...block} wrappers={wrappers} />
+            <DynamicCard {...block} wrappers={wrappers} />
           </CardWrapper>
         </Wrapper>
       )
@@ -166,15 +163,11 @@ export function BlockRenderer({
       )
     case 'VideoBlock':
       return (
-        <>
-          {hasVideo != null && (
-            <Wrapper block={block}>
-              <VideoWrapper block={block}>
-                <DynamicVideo {...block} />
-              </VideoWrapper>
-            </Wrapper>
-          )}
-        </>
+        <Wrapper block={block}>
+          <VideoWrapper block={block}>
+            <DynamicVideo {...block} />
+          </VideoWrapper>
+        </Wrapper>
       )
     default:
       return (
