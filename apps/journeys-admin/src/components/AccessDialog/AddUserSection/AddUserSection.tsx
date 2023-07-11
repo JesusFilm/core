@@ -14,12 +14,10 @@ import { MenuItem } from '../../MenuItem'
 import { EmailInviteForm } from './EmailInviteForm'
 
 interface AddUserSectionProps {
-  users?: string[]
+  users: string[]
 }
 
-export function AddUserSection({
-  users = []
-}: AddUserSectionProps): ReactElement {
+export function AddUserSection({ users }: AddUserSectionProps): ReactElement {
   const { journey } = useJourney()
   const { t } = useTranslation('apps-journeys-admin')
   const [selectedInviteMethod, setSelectedInviteMethod] = useState('Email')
@@ -44,53 +42,52 @@ export function AddUserSection({
         <Typography variant="subtitle1" sx={{ marginLeft: 3 }}>
           {t('Add editor by')}
         </Typography>
-        <Stack>
-          <Button
-            variant="outlined"
-            size="small"
-            startIcon={
-              selectedInviteMethod === 'Email' ? <DraftsIcon /> : <LinkIcon />
+        <Button
+          variant="outlined"
+          size="small"
+          startIcon={
+            selectedInviteMethod === 'Email' ? <DraftsIcon /> : <LinkIcon />
+          }
+          endIcon={<KeyboardArrowDownIcon />}
+          aria-controls={menuOpen ? 'menu' : undefined}
+          sx={{
+            borderRadius: '16px',
+            width: '124px',
+            height: '32px',
+            color: 'secondary.dark',
+            borderWidth: '1px',
+            borderColor: 'divider',
+            padding: 1,
+            marginLeft: 2,
+            '&:hover': {
+              borderColor: 'divider'
             }
-            endIcon={<KeyboardArrowDownIcon />}
-            aria-controls={menuOpen ? 'menu' : undefined}
-            sx={{
-              borderRadius: '16px',
-              width: '124px',
-              height: '32px',
-              color: 'secondary.dark',
-              borderWidth: '1px',
-              borderColor: 'divider',
-              padding: 1,
-              marginLeft: 2,
-              '&:hover': {
-                borderColor: 'divider'
-              }
-            }}
-            onClick={handleClick}
-          >
-            <Typography variant="body2">{selectedInviteMethod}</Typography>
-          </Button>
-          <Menu
-            id="menu"
-            anchorEl={anchorEl}
-            open={menuOpen}
-            onClose={handleClose}
-          >
-            <MenuItem
-              icon={<DraftsIcon fontSize="small" />}
-              label="Email"
-              onClick={() => handleMenuItemClick('Email')}
-            />
-            <MenuItem
-              icon={<LinkIcon fontSize="small" />}
-              label="Link"
-              onClick={() => handleMenuItemClick('Link')}
-            />
-          </Menu>
-        </Stack>
+          }}
+          onClick={handleClick}
+        >
+          <Typography variant="body2">{selectedInviteMethod}</Typography>
+        </Button>
+        <Menu
+          id="menu"
+          anchorEl={anchorEl}
+          open={menuOpen}
+          onClose={handleClose}
+        >
+          <MenuItem
+            icon={<DraftsIcon fontSize="small" />}
+            label="Email"
+            onClick={() => handleMenuItemClick('Email')}
+          />
+          <MenuItem
+            icon={<LinkIcon fontSize="small" />}
+            label="Link"
+            onClick={() => handleMenuItemClick('Link')}
+          />
+        </Menu>
       </Stack>
-      {selectedInviteMethod === 'Email' && <EmailInviteForm users={users} />}
-      {selectedInviteMethod === 'Link' && (
+      {selectedInviteMethod === 'Email' ? (
+        <EmailInviteForm users={users} />
+      ) : (
         <CopyTextField
           value={
             typeof window !== 'undefined'
