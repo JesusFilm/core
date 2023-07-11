@@ -60,6 +60,13 @@ describe('TeamMenu', () => {
     fireEvent.click(getByRole('button'))
     fireEvent.click(getByRole('menuitem', { name: 'Rename Team' }))
     expect(getByText('Change Team Name')).toBeInTheDocument()
+    fireEvent.click(getByRole('button', { name: 'Cancel' }))
+    await waitFor(() =>
+      expect(queryByRole('button', { name: 'Cancel' })).not.toBeInTheDocument()
+    )
+    fireEvent.click(getByRole('button'))
+    fireEvent.click(getByRole('menuitem', { name: 'Manage Team' }))
+    expect(getByText('Invite others to your team')).toBeInTheDocument()
   })
 
   it('disables rename team button', async () => {
