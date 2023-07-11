@@ -18,8 +18,9 @@ import { GetTemplate } from '../../__generated__/GetTemplate'
 import { PageWrapper } from '../../src/components/PageWrapper'
 import i18nConfig from '../../next-i18next.config'
 import { Menu } from '../../src/components/JourneyView/Menu'
-import { useTermsRedirect } from '../../src/libs/useTermsRedirect/useTermsRedirect'
 import { useInvalidJourneyRedirect } from '../../src/libs/useInvalidJourneyRedirect'
+import { createApolloClient } from '../../src/libs/apolloClient'
+import { checkConditionalRedirect } from '../../src/libs/checkConditionalRedirect'
 
 export const GET_TEMPLATE = gql`
   ${JOURNEY_FIELDS}
@@ -37,7 +38,6 @@ function TemplateDetails(): ReactElement {
   const { data } = useQuery<GetTemplate>(GET_TEMPLATE, {
     variables: { id: router.query.journeyId }
   })
-  useTermsRedirect()
   useInvalidJourneyRedirect(data)
 
   return (
@@ -75,6 +75,13 @@ export const getServerSideProps = withAuthUserTokenSSR({
   const flags = (await launchDarklyClient.allFlagsState(ldUser)).toJSON() as {
     [key: string]: boolean | undefined
   }
+
+  const token = await AuthUser.getIdToken()
+  const apolloClient = createApolloClient(token != null ? token : '')
+
+  const redirect = await checkConditionalRedirect(apolloClient, flags)
+  if (redirect != null) return { redirect }
+
   return {
     props: {
       flags,
