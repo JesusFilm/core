@@ -10,14 +10,18 @@ import {
 } from '@nestjs/graphql'
 import { FieldNode, GraphQLResolveInfo, Kind } from 'graphql'
 import { compact } from 'lodash'
-import { Video } from '.prisma/api-videos-client'
+import { Video, VideoVariant } from '.prisma/api-videos-client'
 
 import { IdType, VideosFilter } from '../../__generated__/graphql'
+import { PrismaService } from '../../lib/prisma.service'
 import { VideoService } from './video.service'
 
 @Resolver('Video')
 export class VideoResolver {
-  constructor(private readonly videoService: VideoService) {}
+  constructor(
+    private readonly videoService: VideoService,
+    private readonly prismaService: PrismaService
+  ) {}
 
   @Query()
   async videos(
@@ -44,7 +48,7 @@ export class VideoResolver {
     @Info() info: GraphQLResolveInfo,
     @Args('id') id: string,
     @Args('idType') idType: IdType = IdType.databaseId
-  ): Promise<Video> {
+  ): Promise<Video | null> {
     switch (idType) {
       case IdType.databaseId:
         return await this.videoService.getVideo(
@@ -140,6 +144,22 @@ export class VideoResolver {
   @ResolveField('variantLanguagesCount')
   variantLanguagesCount(@Parent() video): number {
     return compact(video.variantLanguages).length
+  }
+
+  @ResolveField('variant')
+  async variant(
+    @Parent() video,
+    @Args('languageId') languageId?: string
+  ): Promise<VideoVariant | null> {
+    return await this.prismaService.videoVariant.findUnique({
+      where: {
+        languageId_videoId: {
+          videoId: video.id,
+          languageId: languageId ?? '529'
+        }
+      },
+      include: { downloads: true }
+    })
   }
 
   private extractVariantLanguageId(

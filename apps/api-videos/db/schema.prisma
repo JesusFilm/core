@@ -27,7 +27,7 @@ model Video {
   id                String         @id @default(uuid())
   label             VideoLabel
   primaryLanguageId String
-  title             Json[]
+  title             VideoTitle[]
   seoTitle          Json[]
   snippet           Json[]
   description       Json[]
@@ -39,8 +39,18 @@ model Video {
   children          Video[]        @relation("ParentChild")
   parentId          String?
   parent            Video?         @relation("ParentChild", fields: [parentId], references: [id])
-  childrenCount     Int
-  videoVariants     VideoVariant[]
+  variants          VideoVariant[]
+
+  @@unique([slug])
+}
+
+model VideoTitle {
+  id         String  @id @default(uuid())
+  value      String
+  languageId String
+  primary    Boolean
+  videoId    String?
+  Video      Video?  @relation(fields: [videoId], references: [id], onDelete: Cascade)
 }
 
 enum VideoVariantDownloadQuality {
@@ -54,17 +64,22 @@ model VideoVariantDownload {
   size           Float?
   url            String
   videoVariantId String?
-  videoVariant   VideoVariant?               @relation(fields: [videoVariantId], references: [id])
+  videoVariant   VideoVariant?               @relation(fields: [videoVariantId], references: [id], onDelete: Cascade)
+
+  @@unique([quality, videoVariantId])
 }
 
 model VideoVariant {
-  id         String                 @id @default(uuid())
+  id         String                 @id
   hls        String?
   downloads  VideoVariantDownload[]
   duration   Int?
   languageId String
   subtitle   Json[]
   slug       String
-  Video      Video?                 @relation(fields: [videoId], references: [id])
+  Video      Video?                 @relation(fields: [videoId], references: [id], onDelete: Cascade)
   videoId    String?
+
+  @@unique([languageId, videoId])
+  @@unique([slug])
 }

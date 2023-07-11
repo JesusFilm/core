@@ -52,6 +52,15 @@
       "name": "journeys",
       "database": "journeys",
       "username": "postgres"
+    },
+    {
+      "previewLimit": 50,
+      "server": "db",
+      "port": 5432,
+      "driver": "PostgreSQL",
+      "name": "videos",
+      "database": "videos",
+      "username": "postgres"
     }
   ],
   "editor.codeActionsOnSave": {

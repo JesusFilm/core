@@ -45,17 +45,24 @@ export class VideoService {
     } = filter
 
     return {
-      title: title != null ? { search: title } : undefined,
+      title: title != null ? { some: { value: { search: title } } } : undefined,
       variants:
-        availableVariantLanguageIds != null
-          ? { languageId: { in: availableVariantLanguageIds } }
+        availableVariantLanguageIds != null || subtitleLanguageIds != null
+          ? {
+              some: {
+                subtitle:
+                  subtitleLanguageIds != null
+                    ? { has: { path: ['languageId'], in: subtitleLanguageIds } }
+                    : undefined,
+                languageId:
+                  availableVariantLanguageIds != null
+                    ? { in: availableVariantLanguageIds }
+                    : undefined
+              }
+            }
           : undefined,
       label: labels != null ? { in: labels } : undefined,
-      id: ids != null ? { in: ids } : undefined,
-      subtitle:
-        subtitleLanguageIds != null
-          ? { languageId: { in: subtitleLanguageIds } }
-          : undefined
+      id: ids != null ? { in: ids } : undefined
     }
   }
 
@@ -64,28 +71,14 @@ export class VideoService {
     const cache = await this.cacheManager.get<Video[]>(key)
     if (cache != null) return cache
 
-    const { variantLanguageId, offset = 0, limit = 100 } = filter ?? {}
+    const { offset = 0, limit = 100 } = filter ?? {}
     const search = this.videoFilter(filter)
-
-    // const query = aql`
-    // FOR item IN ${this.videosView}
-    //   ${search}
-    //   LIMIT ${offset}, ${limit}
-    //   RETURN {
-    //     ${aql.join(this.baseVideo)}
-    //     variant: NTH(item.variants[*
-    //       FILTER CURRENT.languageId == NOT_NULL(${
-    //         variantLanguageId ?? null
-    //       }, item.primaryLanguageId)
-    //       LIMIT 1 RETURN CURRENT
-    //     ], 0)
-    //   }
-    // `
 
     const result = await this.prismaService.video.findMany({
       where: search,
       skip: offset,
-      take: limit
+      take: limit,
+      include: { title: true }
     })
     await this.cacheManager.set(key, result, 86400000)
     return result
@@ -115,7 +108,10 @@ export class VideoService {
     const cache = await this.cacheManager.get<Video>(key)
     if (cache != null) return cache
 
-    const result = await this.prismaService.video.findUnique({ where: { id } })
+    const result = await this.prismaService.video.findUnique({
+      where: { id },
+      include: { title: true }
+    })
 
     if (result != null) await this.cacheManager.set(key, result, 86400000)
     return result
@@ -126,8 +122,9 @@ export class VideoService {
     const cache = await this.cacheManager.get<Video>(key)
     if (cache != null) return cache
 
-    const result = await this.prismaService.video.findUnique({
-      where: { variant: { slug } }
+    const result = await this.prismaService.video.findFirst({
+      where: { variants: { some: { slug } } },
+      include: { title: true }
     })
     // const res = await this.db.query(aql`
     // FOR item IN ${this.collection}
@@ -164,7 +161,7 @@ export class VideoService {
         where: { id: ids[i] }
       })
       await this.cacheManager.set(key, next, 86400000)
-      result.push(next)
+      if (next != null) result.push(next)
     }
     return result
   }
