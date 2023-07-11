@@ -96,6 +96,10 @@ describe('UserTeamInvitesList', () => {
     )
 
     const button = getAllByRole('button')[0]
+    const button1 = getAllByRole('button')[1]
+    const button2 = getAllByRole('button')[2]
     expect(button).toBeDisabled()
+    expect(button1).toBeDisabled()
+    expect(button2).toBeDisabled()
   })
 })
