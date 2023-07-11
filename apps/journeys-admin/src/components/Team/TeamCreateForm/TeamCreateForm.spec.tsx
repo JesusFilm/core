@@ -3,12 +3,15 @@ import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { SnackbarProvider } from 'notistack'
 import { ReactElement } from 'react'
 import { InMemoryCache } from '@apollo/client'
+import { Form } from 'formik'
+import Button from '@mui/material/Button'
+import TextField from '@mui/material/TextField'
 import { TeamProvider, useTeam } from '../TeamProvider'
 import { TeamCreate } from '../../../../__generated__/TeamCreate'
 import { TEAM_CREATE } from '../../../libs/useTeamCreateMutation/useTeamCreateMutation'
-import { TeamCreateDialog } from '.'
+import { TeamCreateForm } from '.'
 
-describe('TeamCreateDialog', () => {
+describe('TeamCreateForm', () => {
   const teamCreateMock: MockedResponse<TeamCreate> = {
     request: {
       query: TEAM_CREATE,
@@ -46,7 +49,6 @@ describe('TeamCreateDialog', () => {
   }
 
   it('creates new team and sets it as active', async () => {
-    const handleClose = jest.fn()
     const cache = new InMemoryCache()
     cache.restore({
       ROOT_QUERY: {
@@ -54,11 +56,26 @@ describe('TeamCreateDialog', () => {
         teams: [{ __ref: 'Team:teamId1' }]
       }
     })
+    const handleSubmit = jest.fn()
     const { getByRole, getByTestId, getByText } = render(
       <MockedProvider mocks={[teamCreateMock]} cache={cache}>
         <SnackbarProvider>
           <TeamProvider>
-            <TeamCreateDialog open onClose={handleClose} />
+            <TeamCreateForm onSubmit={handleSubmit}>
+              {({ values, errors, handleChange, handleSubmit }) => (
+                <Form>
+                  <TextField
+                    id="title"
+                    name="title"
+                    value={values.title}
+                    error={Boolean(errors.title)}
+                    onChange={handleChange}
+                    helperText={errors.title}
+                  />
+                  <Button onClick={() => handleSubmit()}>Create</Button>
+                </Form>
+              )}
+            </TeamCreateForm>
             <TestComponent />
           </TeamProvider>
         </SnackbarProvider>
@@ -69,7 +86,12 @@ describe('TeamCreateDialog', () => {
     await waitFor(() =>
       expect(getByTestId('active-team-title')).toHaveTextContent('Team Title')
     )
-    await waitFor(() => expect(handleClose).toHaveBeenCalled())
+    await waitFor(() =>
+      expect(handleSubmit).toHaveBeenCalledWith(
+        { title: 'Team Title' },
+        expect.any(Object)
+      )
+    )
     expect(cache.extract()?.ROOT_QUERY?.teams).toEqual([
       { __ref: 'Team:teamId1' },
       { __ref: 'Team:teamId' }
@@ -78,11 +100,26 @@ describe('TeamCreateDialog', () => {
   })
 
   it('validates form', async () => {
+    const handleSubmit = jest.fn()
     const { getByText, getByRole } = render(
       <MockedProvider mocks={[teamCreateErrorMock]}>
         <SnackbarProvider>
           <TeamProvider>
-            <TeamCreateDialog open onClose={jest.fn()} />
+            <TeamCreateForm onSubmit={handleSubmit}>
+              {({ values, errors, handleChange, handleSubmit }) => (
+                <Form>
+                  <TextField
+                    id="title"
+                    name="title"
+                    value={values.title}
+                    error={Boolean(errors.title)}
+                    onChange={handleChange}
+                    helperText={errors.title}
+                  />
+                  <Button onClick={() => handleSubmit()}>Create</Button>
+                </Form>
+              )}
+            </TeamCreateForm>
           </TeamProvider>
         </SnackbarProvider>
       </MockedProvider>
@@ -94,15 +131,19 @@ describe('TeamCreateDialog', () => {
         getByText('Team Name must be at least one character.')
       ).toBeInTheDocument()
     )
-    fireEvent.change(getByRole('textbox'), { target: { value: 'Team Title' } })
+    fireEvent.change(getByRole('textbox'), {
+      target: { value: '12345678901234567890123456789012345678901' }
+    })
     await waitFor(() =>
-      expect(getByRole('button', { name: 'Create' })).not.toBeDisabled()
+      expect(getByText('Max {{ count }} Characters')).toBeInTheDocument()
     )
+    fireEvent.change(getByRole('textbox'), { target: { value: 'Team Title' } })
     fireEvent.click(getByRole('button', { name: 'Create' }))
     await waitFor(() =>
       expect(
         getByText('Failed to create the team. Reload the page or try again.')
       ).toBeInTheDocument()
     )
+    expect(handleSubmit).not.toHaveBeenCalled()
   })
 })
