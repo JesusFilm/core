@@ -16,85 +16,6 @@ import {
   BlockFields_VideoBlock as VideoBlock
 } from '../../libs/block/__generated__/BlockFields'
 
-const DynamicButton = dynamic(
-  async () =>
-    await import(
-      /* webpackChunkName: "Button" */
-      '../Button'
-    ).then((mod) => mod.Button)
-)
-
-const DynamicCard = dynamic(
-  async () =>
-    await import(
-      /* webpackChunkName: "Card" */
-      '../Card'
-    ).then((mod) => mod.Card)
-)
-
-const DynamicImage = dynamic(
-  async () =>
-    await import(
-      /* webpackChunkName: "Image" */
-      '../Image'
-    ).then((mod) => mod.Image)
-)
-
-const DynamicRadioOption = dynamic(
-  async () =>
-    await import(
-      /* webpackChunkName: "RadioOption" */
-      '../RadioOption'
-    ).then((mod) => mod.RadioOption)
-)
-
-const DynamicRadioQuestion = dynamic(
-  async () =>
-    await import(
-      /* webpackChunkName: "RadioQuestion" */
-      '../RadioQuestion'
-    ).then((mod) => mod.RadioQuestion)
-)
-
-const DynamicSignUp = dynamic(
-  async () =>
-    await import(
-      /* webpackChunkName: "SignUp" */
-      '../SignUp'
-    ).then((mod) => mod.SignUp)
-)
-
-const DynamicStep = dynamic(
-  async () =>
-    await import(
-      /* webpackChunkName: "Step" */
-      '../Step'
-    ).then((mod) => mod.Step)
-)
-const DynamicTextResponse = dynamic(
-  async () =>
-    await import(
-      /* webpackChunkName: "TextResponse" */
-      '../TextResponse'
-    ).then((mod) => mod.TextResponse)
-)
-
-const DynamicTypography = dynamic(
-  async () =>
-    await import(
-      /* webpackChunkName: "Typography" */
-      '../Typography'
-    ).then((mod) => mod.Typography)
-)
-
-const DynamicVideo = dynamic(
-  async () =>
-    await import(
-      /* webpackChunkName: "Video" */
-      '../Video'
-    ).then((mod) => mod.Video)
-)
-
 export interface WrapperProps<T = Block> {
   block: TreeBlock<T>
   children: ReactElement
@@ -115,6 +36,91 @@ export interface WrappersProps {
   TypographyWrapper?: WrapperFn<TypographyBlock>
   VideoWrapper?: WrapperFn<VideoBlock>
 }
+
+const DynamicButton = dynamic<TreeBlock<ButtonBlock>>(
+  async () =>
+    await import(
+      /* webpackChunkName: "Button" */
+      '../Button'
+    ).then((mod) => mod.Button)
+)
+
+const DynamicCard = dynamic<
+  TreeBlock<CardBlock> & { wrappers?: WrappersProps }
+>(
+  async () =>
+    await import(
+      /* webpackChunkName: "Card" */
+      '../Card'
+    ).then((mod) => mod.Card)
+)
+
+const DynamicImage = dynamic<TreeBlock<ImageBlock>>(
+  async () =>
+    await import(
+      /* webpackChunkName: "Image" */
+      '../Image'
+    ).then((mod) => mod.Image)
+)
+
+const DynamicRadioOption = dynamic<TreeBlock<RadioOptionBlock>>(
+  async () =>
+    await import(
+      /* webpackChunkName: "RadioOption" */
+      '../RadioOption'
+    ).then((mod) => mod.RadioOption)
+)
+
+const DynamicRadioQuestion = dynamic<
+  TreeBlock<RadioQuestionBlock> & { wrappers?: WrappersProps }
+>(
+  async () =>
+    await import(
+      /* webpackChunkName: "RadioQuestion" */
+      '../RadioQuestion'
+    ).then((mod) => mod.RadioQuestion)
+)
+
+const DynamicSignUp = dynamic<TreeBlock<SignUpBlock>>(
+  async () =>
+    await import(
+      /* webpackChunkName: "SignUp" */
+      '../SignUp'
+    ).then((mod) => mod.SignUp)
+)
+
+const DynamicStep = dynamic<
+  TreeBlock<StepBlock> & { wrappers?: WrappersProps }
+>(
+  async () =>
+    await import(
+      /* webpackChunkName: "Step" */
+      '../Step'
+    ).then((mod) => mod.Step)
+)
+const DynamicTextResponse = dynamic<TreeBlock<TextResponseBlock>>(
+  async () =>
+    await import(
+      /* webpackChunkName: "TextResponse" */
+      '../TextResponse'
+    ).then((mod) => mod.TextResponse)
+)
+
+const DynamicTypography = dynamic<TreeBlock<TypographyBlock>>(
+  async () =>
+    await import(
+      /* webpackChunkName: "Typography" */
+      '../Typography'
+    ).then((mod) => mod.Typography)
+)
+
+const DynamicVideo = dynamic<TreeBlock<VideoBlock>>(
+  async () =>
+    await import(
+      /* webpackChunkName: "Video" */
+      '../Video'
+    ).then((mod) => mod.Video)
+)
 
 interface BlockRenderProps {
   block: TreeBlock
