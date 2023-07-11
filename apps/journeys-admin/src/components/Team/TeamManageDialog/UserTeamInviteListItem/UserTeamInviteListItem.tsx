@@ -17,13 +17,13 @@ interface UserTeamInviteListItemProps {
 }
 
 export function UserTeamInviteListItem({
-  user: listItem,
+  user,
   disabled
 }: UserTeamInviteListItemProps): ReactElement {
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
   const open = Boolean(anchorEl)
 
-  const { id, email } = listItem
+  const { id, email } = user
 
   const handleClick = (event: MouseEvent<HTMLElement>): void => {
     setAnchorEl(event.currentTarget)
