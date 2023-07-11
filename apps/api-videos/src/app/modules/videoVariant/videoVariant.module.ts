@@ -1,10 +1,9 @@
 import { Module } from '@nestjs/common'
-import { DatabaseModule } from '@core/nest/database/DatabaseModule'
 import { VideoVariantResolver } from './videoVariant.resolver'
 
 @Module({
-  imports: [DatabaseModule],
+  imports: [],
   providers: [VideoVariantResolver],
-  exports: [VideoVariantResolver]
+  exports: []
 })
 export class VideoVariantModule {}
