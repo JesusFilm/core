@@ -1,6 +1,6 @@
 import { ComponentProps } from 'react'
 import { Story, Meta } from '@storybook/react'
-import { noop } from 'lodash'
+import noop from 'lodash/noop'
 import Button from '@mui/material/Button'
 import Typography from '@mui/material/Typography'
 import TextField from '@mui/material/TextField'

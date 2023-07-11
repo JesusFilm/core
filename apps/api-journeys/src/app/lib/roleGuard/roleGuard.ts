@@ -6,7 +6,9 @@ import {
   Type,
   Inject
 } from '@nestjs/common'
-import { get, includes, reduce } from 'lodash'
+import get from 'lodash/get'
+import includes from 'lodash/includes'
+import reduce from 'lodash/reduce'
 import { AuthenticationError } from 'apollo-server-errors'
 import { contextToUserId } from '@core/nest/common/firebaseClient'
 import {
