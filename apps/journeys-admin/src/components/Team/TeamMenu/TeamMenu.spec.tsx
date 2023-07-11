@@ -85,4 +85,20 @@ describe('TeamMenu', () => {
       'true'
     )
   })
+  it('disables manage team button', async () => {
+    const { getByRole } = render(
+      <MockedProvider mocks={[getEmptyTeamsMock]}>
+        <SnackbarProvider>
+          <TeamProvider>
+            <TeamMenu />
+          </TeamProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+    fireEvent.click(getByRole('button'))
+    expect(getByRole('menuitem', { name: 'Manage Team' })).toHaveAttribute(
+      'aria-disabled',
+      'true'
+    )
+  })
 })
