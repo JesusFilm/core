@@ -1,6 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { GraphQLResolveInfo, Kind } from 'graphql'
 import { IdType } from '../../__generated__/graphql'
+import { PrismaService } from '../../lib/prisma.service'
 import { LanguageWithSlugResolver, VideoResolver } from './video.resolver'
 import { VideoService } from './video.service'
 
@@ -41,7 +42,7 @@ describe('VideoResolver', () => {
       })
     }
     const module: TestingModule = await Test.createTestingModule({
-      providers: [VideoResolver, videoService]
+      providers: [VideoResolver, videoService, PrismaService]
     }).compile()
     resolver = module.get<VideoResolver>(VideoResolver)
     service = await module.resolve(VideoService)
