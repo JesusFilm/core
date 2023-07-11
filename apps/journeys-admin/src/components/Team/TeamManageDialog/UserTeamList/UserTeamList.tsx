@@ -52,13 +52,14 @@ export function UserTeamList({
 
   return (
     <>
-      {loading || data?.userTeams == null ? (
+      {loading || (data?.userTeams == null && data?.userTeamInvites == null) ? (
         <Box>
           <List>
             {[0, 1, 2].map((i) => (
               <ListItem key={i} sx={{ px: 0 }}>
                 <ListItemAvatar>
                   <Skeleton
+                    data-testid="loading-skeleton"
                     variant="circular"
                     width={40}
                     height={40}
