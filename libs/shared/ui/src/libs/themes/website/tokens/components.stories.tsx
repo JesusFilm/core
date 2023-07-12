@@ -11,7 +11,7 @@ import MenuItem from '@mui/material/MenuItem'
 import Tab from '@mui/material/Tab'
 import Tabs from '@mui/material/Tabs'
 
-import { noop } from 'lodash'
+import noop from 'lodash/noop'
 import {
   LanguageAutocomplete,
   Language

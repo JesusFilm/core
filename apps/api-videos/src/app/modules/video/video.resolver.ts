@@ -9,7 +9,7 @@ import {
   Parent
 } from '@nestjs/graphql'
 import { FieldNode, GraphQLResolveInfo, Kind } from 'graphql'
-import { compact } from 'lodash'
+import compact from 'lodash/compact'
 
 import { IdType, Video, VideosFilter } from '../../__generated__/graphql'
 import { VideoService } from './video.service'
