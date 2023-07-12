@@ -1,5 +1,5 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
-import { noop } from 'lodash'
+import noop from 'lodash/noop'
 import { VideoProvider } from '../../../libs/videoContext'
 import { watchConfig } from '../../../libs/storybook'
 import { videos } from '../../Videos/__generated__/testData'

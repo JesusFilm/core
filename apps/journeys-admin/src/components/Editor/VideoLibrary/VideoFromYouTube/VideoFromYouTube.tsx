@@ -1,7 +1,7 @@
 import { ReactElement, useState } from 'react'
 import Box from '@mui/material/Box'
 import useSWRInfinite from 'swr/infinite'
-import { reduce } from 'lodash'
+import reduce from 'lodash/reduce'
 import Typography from '@mui/material/Typography'
 import fetch from 'node-fetch'
 import {

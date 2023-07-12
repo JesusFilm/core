@@ -1,4 +1,4 @@
-import { noop } from 'lodash'
+import noop from 'lodash/noop'
 import { Story, Meta } from '@storybook/react'
 import { ActiveFab, EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { simpleComponentConfig } from '../../../../libs/storybook'

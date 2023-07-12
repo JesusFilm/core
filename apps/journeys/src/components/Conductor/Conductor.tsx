@@ -1,7 +1,7 @@
 import { createElement, ReactElement, useEffect, useState } from 'react'
 import SwiperCore, { Pagination } from 'swiper'
 import { Swiper, SwiperSlide } from 'swiper/react'
-import { findIndex } from 'lodash'
+import findIndex from 'lodash/findIndex'
 import Box from '@mui/material/Box'
 import Fade from '@mui/material/Fade'
 import Stack from '@mui/material/Stack'
