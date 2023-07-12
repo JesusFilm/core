@@ -5,7 +5,7 @@ import {
   InMemoryCache,
   Observable
 } from '@apollo/client'
-import { noop } from 'lodash'
+import noop from 'lodash/noop'
 import { ReactElement, ReactNode } from 'react'
 
 interface ApolloLoadingProviderProps {

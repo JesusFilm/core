@@ -1,6 +1,6 @@
 import { Args, Mutation, Resolver } from '@nestjs/graphql'
 import { UseGuards } from '@nestjs/common'
-import { includes } from 'lodash'
+import includes from 'lodash/includes'
 import { UserInputError } from 'apollo-server-errors'
 
 import { RoleGuard } from '../../../lib/roleGuard/roleGuard'
