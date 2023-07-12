@@ -5,7 +5,7 @@ import { GET_USER_TEAMS_AND_INVITES } from '../../../../libs/useUserTeamsAndInvi
 import { GetUserTeamsAndInvites } from '../../../../../__generated__/GetUserTeamsAndInvites'
 import { GET_TEAMS, TeamProvider } from '../../TeamProvider'
 import { GetTeams } from '../../../../../__generated__/GetTeams'
-import { TeamMembersList } from './TeamMembersList'
+import { TeamMembersList } from './TeamManageWrapper'
 
 jest.mock('react-i18next', () => ({
   __esModule: true,

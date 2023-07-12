@@ -40,8 +40,11 @@ export function useUserTeamsAndInvitesQuery(
 
   const emails = useMemo(() => {
     return [
-      ...(query.data?.userTeams.map(({ user: { email } }) => email) ?? []),
-      ...(query.data?.userTeamInvites.map(({ email }) => email) ?? [])
+      ...(query.data?.userTeams.map(({ user: { email } }) =>
+        email.toLowerCase()
+      ) ?? []),
+      ...(query.data?.userTeamInvites.map(({ email }) => email.toLowerCase()) ??
+        [])
     ]
   }, [query])
 

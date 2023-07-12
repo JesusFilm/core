@@ -18,22 +18,14 @@ import taskbarIcon from '../../../../public/taskbar-icon.svg'
 import { TeamCreateForm } from '../TeamCreateForm'
 
 import { useTeam } from '../TeamProvider'
-import { UserTeamInviteForm } from '../UserTeamInviteForm'
-import { useUserTeamsAndInvitesQuery } from '../../../libs/useUserTeamsAndInvitesQuery'
-import { TeamMembersList } from '../TeamManageDialog/TeamMembersList'
+import { TeamManageWrapper } from '../TeamManageDialog/TeamManageWrapper'
 
 export function TeamOnboarding(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
 
   const router = useRouter()
   const { activeTeam } = useTeam()
-  const { data } = useUserTeamsAndInvitesQuery(
-    activeTeam != null
-      ? {
-          teamId: activeTeam.id
-        }
-      : undefined
-  )
+
   return (
     <Stack
       justifyContent="space-evenly"
@@ -45,34 +37,48 @@ export function TeamOnboarding(): ReactElement {
           <Image src={taskbarIcon} alt="Next Steps" height={43} width={43} />
         </Box>
         {activeTeam != null ? (
-          <Card sx={{ width: { sm: '444px' } }}>
-            <CardHeader
-              title={t(`Invite teammates to ${activeTeam.title}`)}
-              titleTypographyProps={{ variant: 'h6' }}
-              sx={{ py: 5, px: 6 }}
-            />
-            <Divider />
+          <TeamManageWrapper>
+            {({
+              data,
+              UserTeamList,
+              UserTeamInviteList,
+              UserTeamInviteForm
+            }) => (
+              <Card sx={{ width: { sm: '444px' } }}>
+                <CardHeader
+                  title={t(`Invite teammates to ${activeTeam.title}`)}
+                  titleTypographyProps={{ variant: 'h6' }}
+                  sx={{ py: 5, px: 6 }}
+                />
+                <Divider />
 
-            <CardContent
-              sx={{ padding: 6, maxHeight: '300px', overflowY: 'auto' }}
-            >
-              <TeamMembersList />
-            </CardContent>
+                <CardContent
+                  sx={{ padding: 6, maxHeight: '300px', overflowY: 'auto' }}
+                >
+                  <UserTeamList />
+                  <UserTeamInviteList />
+                </CardContent>
 
-            <Divider />
-            <CardContent sx={{ px: 6, py: 4, width: '75%' }}>
-              <UserTeamInviteForm />
-            </CardContent>
-            <CardContent
-              sx={{ padding: 2, display: 'flex', justifyContent: 'flex-end' }}
-            >
-              <Button onClick={async () => await router?.push('/')}>
-                {(data?.userTeamInvites ?? []).length > 0
-                  ? t('Continue')
-                  : t('Skip')}
-              </Button>
-            </CardContent>
-          </Card>
+                <Divider />
+                <CardContent sx={{ px: 6, py: 4, width: '75%' }}>
+                  <UserTeamInviteForm />
+                </CardContent>
+                <CardContent
+                  sx={{
+                    padding: 2,
+                    display: 'flex',
+                    justifyContent: 'flex-end'
+                  }}
+                >
+                  <Button onClick={async () => await router?.push('/')}>
+                    {(data?.userTeamInvites ?? []).length > 0
+                      ? t('Continue')
+                      : t('Skip')}
+                  </Button>
+                </CardContent>
+              </Card>
+            )}
+          </TeamManageWrapper>
         ) : (
           <TeamCreateForm>
             {({

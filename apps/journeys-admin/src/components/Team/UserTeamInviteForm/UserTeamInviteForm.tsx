@@ -9,7 +9,6 @@ import InputAdornment from '@mui/material/InputAdornment'
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline'
 import { useTeam } from '../TeamProvider'
 import { UserTeamInviteCreate } from '../../../../__generated__/UserTeamInviteCreate'
-import { useUserTeamsAndInvitesQuery } from '../../../libs/useUserTeamsAndInvitesQuery'
 import { UserTeamInviteCreateInput } from '../../../../__generated__/globalTypes'
 
 export const USER_TEAM_INVITE_CREATE = gql`
@@ -25,19 +24,18 @@ export const USER_TEAM_INVITE_CREATE = gql`
   }
 `
 
-export function UserTeamInviteForm(): ReactElement {
+interface UserTeamInviteFormProps {
+  emails: string[]
+}
+
+export function UserTeamInviteForm({
+  emails
+}: UserTeamInviteFormProps): ReactElement {
   const [userTeamInviteCreate] = useMutation<UserTeamInviteCreate>(
     USER_TEAM_INVITE_CREATE
   )
   const { t } = useTranslation('apps-journeys-admin')
   const { activeTeam } = useTeam()
-  const { emails } = useUserTeamsAndInvitesQuery(
-    activeTeam != null
-      ? {
-          teamId: activeTeam.id
-        }
-      : undefined
-  )
 
   async function handleSubmit(
     input: UserTeamInviteCreateInput,
@@ -78,14 +76,13 @@ export function UserTeamInviteForm(): ReactElement {
     }
   }
 
-  const lowercaseEmails = emails?.map((email) => email.toLowerCase())
   const userTeamInviteCreateSchema: ObjectSchema<UserTeamInviteCreateInput> =
     object({
       email: string()
         .lowercase()
         .email(t('Please enter a valid email address'))
         .required(t('Required'))
-        .notOneOf(lowercaseEmails, t('This email is already on the list'))
+        .notOneOf(emails, t('This email is already on the list'))
     })
 
   const initialValues: UserTeamInviteCreateInput = { email: '' }

@@ -6,9 +6,7 @@ import { Theme } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'react-i18next'
 import GroupAddIcon from '@mui/icons-material/GroupAdd'
-// import { AddUserSection } from '../../AccessDialog/AddUserSection'
-import { UserTeamInviteForm } from '../UserTeamInviteForm'
-import { TeamMembersList } from './TeamMembersList/TeamMembersList'
+import { TeamManageWrapper } from './TeamManageWrapper'
 
 interface TeamManageDialogProps {
   open: boolean
@@ -22,31 +20,36 @@ export function TeamManageDialog({
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
   const { t } = useTranslation('apps-journeys-admin')
   return (
-    <Dialog
-      open={open ?? false}
-      onClose={onClose}
-      divider
-      dialogTitle={{
-        title: 'Invite others to your team',
-        closeButton: true
-      }}
-      dialogActionChildren={
-        <Stack flexGrow={1} sx={{ m: 4, mt: 2 }}>
-          <Stack direction="row" alignItems="center" sx={{ mb: 4 }}>
-            <GroupAddIcon />
-            <Typography variant="subtitle1" sx={{ marginLeft: 3 }}>
-              {t('Add team member by Email')}
-            </Typography>
+    <TeamManageWrapper>
+      {({ UserTeamList, UserTeamInviteList, UserTeamInviteForm }) => (
+        <Dialog
+          open={open ?? false}
+          onClose={onClose}
+          divider
+          dialogTitle={{
+            title: 'Invite others to your team',
+            closeButton: true
+          }}
+          dialogActionChildren={
+            <Stack flexGrow={1} sx={{ m: 4, mt: 2 }}>
+              <Stack direction="row" alignItems="center" sx={{ mb: 4 }}>
+                <GroupAddIcon />
+                <Typography variant="subtitle1" sx={{ marginLeft: 3 }}>
+                  {t('Add team member by Email')}
+                </Typography>
+                <UserTeamInviteForm />
+              </Stack>
+            </Stack>
+          }
+          fullscreen={!smUp}
+        >
+          <Stack spacing={4}>
+            <Typography variant="subtitle1">{t('Members')}</Typography>
+            <UserTeamList />
+            <UserTeamInviteList />
           </Stack>
-          <UserTeamInviteForm />
-        </Stack>
-      }
-      fullscreen={!smUp}
-    >
-      <Stack spacing={4}>
-        <Typography variant="subtitle1">{t('Members')}</Typography>
-        <TeamMembersList />
-      </Stack>
-    </Dialog>
+        </Dialog>
+      )}
+    </TeamManageWrapper>
   )
 }
