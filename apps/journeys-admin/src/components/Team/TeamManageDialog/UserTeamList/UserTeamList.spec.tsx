@@ -5,9 +5,8 @@ import { UserTeamRole } from '../../../../../__generated__/globalTypes'
 import {
   GetUserTeamsAndInvites,
   GetUserTeamsAndInvites_userTeamInvites,
-  GetUserTeamsAndInvites_userTeams
+  GetUserTeamsAndInvites_userTeams as UserTeam
 } from '../../../../../__generated__/GetUserTeamsAndInvites'
-import { GetCurrentUser_me } from '../../../../../__generated__/GetCurrentUser'
 import { UserTeamList } from './UserTeamList'
 
 jest.mock('react-i18next', () => ({
@@ -19,7 +18,6 @@ jest.mock('react-i18next', () => ({
   }
 }))
 describe('UserTeamList', () => {
-  const loadUser = jest.fn()
   const mockData: GetUserTeamsAndInvites = {
     userTeams: [
       {
@@ -66,21 +64,37 @@ describe('UserTeamList', () => {
   }
 
   const emptyMockData: GetUserTeamsAndInvites | undefined = {
-    userTeams: undefined as unknown as GetUserTeamsAndInvites_userTeams[],
+    userTeams: undefined as unknown as UserTeam[],
     userTeamInvites:
       undefined as unknown as GetUserTeamsAndInvites_userTeamInvites[]
   }
 
-  const mockCurrentUser: GetCurrentUser_me = {
-    __typename: 'User',
-    id: 'userId',
-    email: 'tatainikora@example.com'
+  const mockCurrentUserTeam: UserTeam = {
+    __typename: 'UserTeam',
+    id: 'userTeamId',
+    role: UserTeamRole.manager,
+    user: {
+      __typename: 'User',
+      email: 'tatainikora@example.com',
+      firstName: 'Tatai',
+      id: 'userId',
+      imageUrl: 'https://example.com/image.jpg',
+      lastName: 'Nikora'
+    }
   }
 
-  const mockCurrentUser2: GetCurrentUser_me = {
-    __typename: 'User',
-    id: 'userId2',
-    email: 'SiyangTheManMyStan@example.com'
+  const mockCurrentUserTeam2: UserTeam = {
+    __typename: 'UserTeam',
+    id: 'userTeamId2',
+    role: UserTeamRole.member,
+    user: {
+      __typename: 'User',
+      email: 'SiyangTheManMyStan@example.com',
+      firstName: 'Siyang',
+      id: 'userId2',
+      imageUrl: 'https://example.com/image.jpg',
+      lastName: 'Cao'
+    }
   }
 
   it('should show users in the team if present', () => {
@@ -88,8 +102,7 @@ describe('UserTeamList', () => {
       <MockedProvider>
         <UserTeamList
           data={mockData}
-          loadUser={loadUser}
-          currentUser={mockCurrentUser}
+          currentUserTeam={mockCurrentUserTeam}
           loading={false}
         />
       </MockedProvider>
@@ -109,8 +122,7 @@ describe('UserTeamList', () => {
       <MockedProvider>
         <UserTeamList
           data={emptyMockData}
-          loadUser={loadUser}
-          currentUser={mockCurrentUser}
+          currentUserTeam={mockCurrentUserTeam}
           loading={false}
         />
       </MockedProvider>
@@ -124,8 +136,7 @@ describe('UserTeamList', () => {
       <MockedProvider>
         <UserTeamList
           data={mockData}
-          loadUser={loadUser}
-          currentUser={mockCurrentUser2}
+          currentUserTeam={mockCurrentUserTeam2}
           loading={false}
         />
       </MockedProvider>

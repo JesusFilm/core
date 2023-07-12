@@ -36,7 +36,7 @@ describe('UserTeamListItem', () => {
       request: {
         query: USER_TEAM_UPDATE,
         variables: {
-          userTeamUpdateId: 'userTeamId',
+          id: 'userTeamId',
           input: { role: UserTeamRole.guest }
         }
       },

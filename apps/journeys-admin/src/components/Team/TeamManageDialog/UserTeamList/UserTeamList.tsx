@@ -1,7 +1,7 @@
 import { ReactElement, useMemo } from 'react'
 import Box from '@mui/material/Box'
 import List from '@mui/material/List'
-import { sortBy } from 'lodash'
+import sortBy from 'lodash/sortBy'
 import ListItem from '@mui/material/ListItem'
 import ListItemAvatar from '@mui/material/ListItemAvatar'
 import Skeleton from '@mui/material/Skeleton'

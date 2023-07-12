@@ -1,6 +1,6 @@
 import { ReactElement, useState, useMemo, MouseEvent } from 'react'
 import ListItem from '@mui/material/ListItem'
-import { compact } from 'lodash'
+import compact from 'lodash/compact'
 import Button from '@mui/material/Button'
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown'
 import ListItemAvatar from '@mui/material/ListItemAvatar'

@@ -18,6 +18,19 @@ jest.mock('next/router', () => ({
   useRouter: jest.fn()
 }))
 
+jest.mock('../../libs/useCurrentUser', () => ({
+  __esModule: true,
+  useCurrentUser: jest.fn().mockReturnValue({
+    loadUser: jest.fn(),
+    data: {
+      __typename: 'User',
+      ...user1
+    }
+  })
+}))
+
+const user1 = { id: 'userId', email: 'siyangguccigang@example.com' }
+
 const mockUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
 
 describe('TeamOnboarding', () => {
@@ -37,7 +50,7 @@ describe('TeamOnboarding', () => {
             role: UserTeamRole.manager,
             user: {
               __typename: 'User',
-              email: 'siyangguccigang@gmail.com',
+              email: 'siyangguccigang@example.com',
               firstName: 'Siyang',
               id: 'userId',
               imageUrl: 'imageURL',
