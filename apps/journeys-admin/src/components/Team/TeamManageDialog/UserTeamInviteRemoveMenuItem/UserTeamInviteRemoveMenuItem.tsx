@@ -23,7 +23,7 @@ export function UserTeamInviteRemoveMenuItem({
   onClick,
   disabled
 }: UserTeamInviteRemoveMenuItemProps): ReactElement {
-  const [userInviteRemove] = useMutation<UserTeamInviteRemove>(
+  const [userInviteRemove, { loading }] = useMutation<UserTeamInviteRemove>(
     USER_TEAM_INVITE_REMOVE,
     {
       variables: { id },
@@ -49,7 +49,7 @@ export function UserTeamInviteRemoveMenuItem({
       label="Remove"
       icon={<RemoveCircleRoundedIcon />}
       onClick={handleClick}
-      disabled={disabled}
+      disabled={disabled === true || loading}
     />
   )
 }

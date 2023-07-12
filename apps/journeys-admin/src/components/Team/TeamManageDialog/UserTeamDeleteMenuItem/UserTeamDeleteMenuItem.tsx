@@ -23,19 +23,22 @@ export function UserTeamDeleteMenuItem({
   onClick,
   disabled
 }: UserTeamDeleteMenuItemProps): ReactElement {
-  const [userTeamDelete] = useMutation<UserTeamDelete>(USER_TEAM_DELETE, {
-    variables: { id },
-    update(cache, { data }) {
-      if (data?.userTeamDelete.id != null)
-        cache.evict({
-          id: cache.identify({
-            __typename: 'UserTeam',
-            id: data.userTeamDelete.id
+  const [userTeamDelete, { loading }] = useMutation<UserTeamDelete>(
+    USER_TEAM_DELETE,
+    {
+      variables: { id },
+      update(cache, { data }) {
+        if (data?.userTeamDelete.id != null)
+          cache.evict({
+            id: cache.identify({
+              __typename: 'UserTeam',
+              id: data.userTeamDelete.id
+            })
           })
-        })
-      cache.gc()
+        cache.gc()
+      }
     }
-  })
+  )
 
   const handleClick = async (): Promise<void> => {
     await userTeamDelete()
@@ -46,7 +49,7 @@ export function UserTeamDeleteMenuItem({
       label="Remove"
       icon={<RemoveCircleRoundedIcon />}
       onClick={handleClick}
-      disabled={disabled}
+      disabled={disabled === true || loading}
     />
   )
 }
