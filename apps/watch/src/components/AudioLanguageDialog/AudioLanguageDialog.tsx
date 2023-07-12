@@ -7,7 +7,7 @@ import TextField from '@mui/material/TextField'
 import CircularProgress from '@mui/material/CircularProgress'
 import LanguageIcon from '@mui/icons-material/Language'
 import { useRouter } from 'next/router'
-import { compact } from 'lodash'
+import compact from 'lodash/compact'
 import { GetLanguagesSlug } from '../../../__generated__/GetLanguagesSlug'
 import { useVideo } from '../../libs/videoContext'
 

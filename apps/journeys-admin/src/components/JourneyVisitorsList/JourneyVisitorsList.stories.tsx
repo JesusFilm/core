@@ -1,6 +1,6 @@
 import { Meta, Story } from '@storybook/react'
 import { ComponentProps } from 'react'
-import { noop } from 'lodash'
+import noop from 'lodash/noop'
 import { journeysAdminConfig } from '../../libs/storybook'
 import { VisitorStatus } from '../../../__generated__/globalTypes'
 import { JourneyVisitorsList } from '.'
