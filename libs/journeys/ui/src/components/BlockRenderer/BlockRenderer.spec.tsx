@@ -18,6 +18,31 @@ jest.mock('uuid', () => ({
 const mockUuidv4 = uuidv4 as jest.MockedFunction<typeof uuidv4>
 
 describe('BlockRenderer', () => {
+  const result = jest.fn(() => ({
+    data: {
+      stepViewEventCreate: {
+        id: 'uuid',
+        __typename: 'StepViewEvent'
+      }
+    }
+  }))
+
+  const mocks = [
+    {
+      request: {
+        query: STEP_VIEW_EVENT_CREATE,
+        variables: {
+          input: {
+            id: 'uuid',
+            blockId: 'step',
+            value: 'Untitled'
+          }
+        }
+      },
+      result
+    }
+  ]
+
   it('should render Button', async () => {
     const block: TreeBlock = {
       __typename: 'ButtonBlock',
@@ -431,32 +456,8 @@ describe('BlockRenderer', () => {
         }
       ]
     }
-    const result = jest.fn(() => ({
-      data: {
-        stepViewEventCreate: {
-          id: 'uuid',
-          __typename: 'StepViewEvent'
-        }
-      }
-    }))
     const { getByText } = render(
-      <MockedProvider
-        mocks={[
-          {
-            request: {
-              query: STEP_VIEW_EVENT_CREATE,
-              variables: {
-                input: {
-                  id: 'uuid',
-                  blockId: 'step',
-                  value: 'Untitled'
-                }
-              }
-            },
-            result
-          }
-        ]}
-      >
+      <MockedProvider mocks={mocks}>
         <BlockRenderer block={block} />
       </MockedProvider>
     )
@@ -490,32 +491,8 @@ describe('BlockRenderer', () => {
         }
       ]
     }
-    const result = jest.fn(() => ({
-      data: {
-        stepViewEventCreate: {
-          id: 'uuid',
-          __typename: 'StepViewEvent'
-        }
-      }
-    }))
     const { getByTestId, getByText } = render(
-      <MockedProvider
-        mocks={[
-          {
-            request: {
-              query: STEP_VIEW_EVENT_CREATE,
-              variables: {
-                input: {
-                  id: 'uuid',
-                  blockId: 'step',
-                  value: 'Untitled'
-                }
-              }
-            },
-            result
-          }
-        ]}
-      >
+      <MockedProvider mocks={mocks}>
         <BlockRenderer
           block={block}
           wrappers={{
