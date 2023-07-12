@@ -86,6 +86,15 @@ export function VideoControls({
       if (startAt > 0 && player.currentTime() < startAt) {
         setProgress(startAt)
       }
+
+      if (isYoutube) {
+        if (player.hasStarted_) {
+          setShowHeaderFooter(!fullscreen)
+        } else {
+          setShowHeaderFooter(false)
+          setTimeout(() => setShowHeaderFooter(!fullscreen), 3500)
+        }
+      }
     }
     const handleVideoPause = (): void => {
       setPlaying(false)
@@ -96,6 +105,8 @@ export function VideoControls({
         setProgress(startAt)
         void player.play()
       }
+
+      if (isYoutube) setShowHeaderFooter(false)
     }
     // Recalculate for startAt/endAt snippet
     const handleVideoTimeChange = (): void => {
@@ -161,18 +172,9 @@ export function VideoControls({
       void player.play()
       // Youtube breaks when this is gone
       setPlaying(true)
-      if (isYoutube) {
-        if (player.hasStarted_) {
-          setShowHeaderFooter(!fullscreen)
-        } else {
-          setShowHeaderFooter(false)
-          setTimeout(() => setShowHeaderFooter(!fullscreen), 3500)
-        }
-      }
     } else {
       void player.pause()
       setPlaying(false)
-      if (isYoutube) setShowHeaderFooter(false)
     }
   }
 
@@ -282,7 +284,7 @@ export function VideoControls({
           <Stack
             flexDirection="row"
             justifyContent="flex-end"
-            sx={{ mt: '54px', display: { lg: 'none' } }}
+            sx={{ mt: 15, display: { lg: 'none' } }}
           >
             <IconButton
               aria-label="mute"
@@ -311,7 +313,8 @@ export function VideoControls({
                 }
                 sx={{
                   fontSize: 50,
-                  display: { xs: 'flex', lg: 'none' }
+                  display: { xs: 'flex', lg: 'none' },
+                  p: { xs: 2, sm: 0, md: 2 }
                 }}
               >
                 {playing ? (

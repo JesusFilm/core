@@ -46,7 +46,8 @@ const StyledSwiperContainer = styled(Swiper)(({ theme }) => ({
   height: 'inherit',
   '.swiper-pagination': {
     height: 16,
-    top: 16
+    top: 16,
+    width: '84px !important'
   },
   '.swiper-pagination-bullet': {
     background: theme.palette.common.white,
@@ -207,7 +208,7 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
           zIndex: 2,
           display: slideTransitioning ? 'none' : 'flex',
           width: { xs: 82, lg: 114 },
-          height: { xs: '50%', sm: '25%', md: '50%' }
+          height: { xs: '50%', sm: '20%', md: '50%' }
         }}
       >
         <IconButton
