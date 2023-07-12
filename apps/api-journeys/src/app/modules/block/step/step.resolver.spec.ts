@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { Database } from 'arangojs'
 import { mockDeep } from 'jest-mock-extended'
-import { omit } from 'lodash'
+import omit from 'lodash/omit'
 
 import { UserJourneyService } from '../../userJourney/userJourney.service'
 import { BlockResolver } from '../block.resolver'

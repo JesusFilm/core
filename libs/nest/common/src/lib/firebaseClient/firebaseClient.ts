@@ -1,7 +1,7 @@
 import { initializeApp, credential } from 'firebase-admin'
 import { ExecutionContext } from '@nestjs/common'
 import { GqlExecutionContext } from '@nestjs/graphql'
-import { get } from 'lodash'
+import get from 'lodash/get'
 
 export interface User {
   id: string

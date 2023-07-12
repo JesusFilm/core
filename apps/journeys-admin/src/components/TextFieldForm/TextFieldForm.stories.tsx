@@ -1,7 +1,7 @@
 import { Story, Meta } from '@storybook/react'
 import { screen, userEvent, waitFor } from '@storybook/testing-library'
 import { ComponentProps } from 'react'
-import { noop } from 'lodash'
+import noop from 'lodash/noop'
 import { object, string } from 'yup'
 import EditRounded from '@mui/icons-material/EditRounded'
 import Stack from '@mui/material/Stack'
