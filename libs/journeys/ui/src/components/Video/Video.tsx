@@ -301,7 +301,8 @@ export function Video({
               },
               '> .vjs-poster': {
                 backgroundColor: VIDEO_BACKGROUND_COLOR,
-                backgroundSize: 'cover'
+                backgroundSize: 'cover',
+                transform: 'scale(1.1)'
               }
             }}
           >

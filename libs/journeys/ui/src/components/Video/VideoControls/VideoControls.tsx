@@ -56,7 +56,8 @@ export function VideoControls({
   const [fullscreen, setFullscreen] = useState(
     fscreen.fullscreenElement != null || player.isFullscreen()
   )
-  const { showHeaderFooter, setShowHeaderFooter } = useBlocks()
+  const { showHeaderFooter, setShowHeaderFooter, setShowNavigation } =
+    useBlocks()
 
   // EndAt could be 0 if player not yet initialised
   const durationSeconds = endAt - startAt
@@ -122,6 +123,7 @@ export function VideoControls({
       const fullscreen =
         fscreen.fullscreenElement != null || player.isFullscreen()
       setFullscreen(fullscreen)
+      setShowNavigation(!fullscreen)
       handleShowHideFooter(fullscreen)
     }
 

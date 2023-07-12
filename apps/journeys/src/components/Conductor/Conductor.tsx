@@ -82,7 +82,8 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
     nextActiveBlock,
     treeBlocks,
     activeBlock,
-    showHeaderFooter
+    showHeaderFooter,
+    showNavigation
   } = useBlocks()
   const [swiper, setSwiper] = useState<SwiperCore>()
   const [slideTransitioning, setSlideTransitioning] = useState(false)
@@ -290,10 +291,8 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
                 </SwiperSlide>
               )
             })}
-            {showLeftButton && showHeaderFooter && (
-              <Navigation variant="Left" />
-            )}
-            {showRightButton && showHeaderFooter && (
+            {showLeftButton && showNavigation && <Navigation variant="Left" />}
+            {showRightButton && showNavigation && (
               <Navigation variant="Right" />
             )}
           </StyledSwiperContainer>
