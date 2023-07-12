@@ -18,7 +18,7 @@ jest.mock('uuid', () => ({
 const mockUuidv4 = uuidv4 as jest.MockedFunction<typeof uuidv4>
 
 describe('BlockRenderer', () => {
-  const result = jest.fn(() => ({
+  const stepViewEventResult = jest.fn(() => ({
     data: {
       stepViewEventCreate: {
         id: 'uuid',
@@ -39,7 +39,7 @@ describe('BlockRenderer', () => {
           }
         }
       },
-      result
+      result: stepViewEventResult
     }
   ]
 
@@ -461,7 +461,7 @@ describe('BlockRenderer', () => {
         <BlockRenderer block={block} />
       </MockedProvider>
     )
-    await waitFor(() => expect(result).toHaveBeenCalled())
+    await waitFor(() => expect(stepViewEventResult).toHaveBeenCalled())
     expect(getByText('Click to continue')).toBeInTheDocument()
   })
 
@@ -513,7 +513,7 @@ describe('BlockRenderer', () => {
         'data-testid'
       )
     ).toEqual('step-wrapper')
-    await waitFor(() => expect(result).toHaveBeenCalled())
+    await waitFor(() => expect(stepViewEventResult).toHaveBeenCalled())
     expect(getByTestId('step-wrapper')).toContainElement(
       getByText('Click to continue')
     )
