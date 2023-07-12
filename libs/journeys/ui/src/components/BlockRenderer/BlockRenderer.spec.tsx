@@ -1,14 +1,24 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { render, waitFor } from '@testing-library/react'
+import { cleanup, render, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
+import { v4 as uuidv4 } from 'uuid'
 
 import { VideoBlockSource } from '../../../__generated__/globalTypes'
 import type { TreeBlock } from '../../libs/block'
 import { RadioOptionFields } from '../RadioOption/__generated__/RadioOptionFields'
 import { RadioQuestionFields } from '../RadioQuestion/__generated__/RadioQuestionFields'
+import { STEP_VIEW_EVENT_CREATE } from '../Step/Step'
 import { BlockRenderer } from '.'
 
+jest.mock('uuid', () => ({
+  __esModule: true,
+  v4: jest.fn()
+}))
+
+const mockUuidv4 = uuidv4 as jest.MockedFunction<typeof uuidv4>
+
 describe('BlockRenderer', () => {
+  afterEach(cleanup)
   it('should render Button', async () => {
     const block: TreeBlock = {
       __typename: 'ButtonBlock',
@@ -397,6 +407,7 @@ describe('BlockRenderer', () => {
   })
 
   it('should render Step', async () => {
+    mockUuidv4.mockReturnValueOnce('uuid')
     const block: TreeBlock = {
       __typename: 'StepBlock',
       id: 'step',
@@ -422,7 +433,30 @@ describe('BlockRenderer', () => {
       ]
     }
     const { getByText } = render(
-      <MockedProvider>
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: STEP_VIEW_EVENT_CREATE,
+              variables: {
+                input: {
+                  id: 'uuid',
+                  blockId: 'step',
+                  value: 'Untitled'
+                }
+              }
+            },
+            result: {
+              data: {
+                stepViewEventCreate: {
+                  id: 'uuid',
+                  __typename: 'StepViewEvent'
+                }
+              }
+            }
+          }
+        ]}
+      >
         <BlockRenderer block={block} />
       </MockedProvider>
     )
@@ -565,7 +599,7 @@ describe('BlockRenderer', () => {
       muted: false,
       endAt: null,
       startAt: null,
-      parentBlockId: null,
+      parentBlockId: 'step',
       posterBlockId: null,
       parentOrder: 0,
       fullsize: null,
