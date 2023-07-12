@@ -17,7 +17,7 @@ import {
   VideoBlockObjectFit,
   VideoBlockSource
 } from '../../../__generated__/globalTypes'
-import { TreeBlock } from '../../libs/block'
+import { TreeBlock, useBlocks } from '../../libs/block'
 import { useEditor } from '../../libs/EditorProvider'
 import { blurImage } from '../../libs/blurImage'
 import { ImageFields } from '../Image/__generated__/ImageFields'
@@ -69,6 +69,7 @@ export function Video({
   const theme = useTheme()
   const videoRef = useRef<HTMLVideoElement>(null)
   const [player, setPlayer] = useState<Player>()
+  const { activeBlock } = useBlocks()
   const {
     state: { selectedBlock }
   } = useEditor()
@@ -107,12 +108,13 @@ export function Video({
           responsive: true,
           muted: muted === true,
           loop: true,
+          autoplay,
           // This poster is displayed on an autoplay YT video on iOS. Video is no longer loading, but does not play due to YT device limitations.
           poster: posterBlock?.src
         })
       )
     }
-  }, [startAt, endAt, muted, posterBlock])
+  }, [startAt, endAt, muted, posterBlock, autoplay])
 
   const triggerTimes = useMemo(() => {
     return children
@@ -120,9 +122,9 @@ export function Video({
       .map((block) => (block as VideoTriggerFields).triggerStart)
   }, [children])
 
-  const endOfVideo = endAt ?? player?.duration() ?? 0
-  const progressEndTime =
-    player != null ? Math.min(...triggerTimes, endOfVideo) : 0
+  const [videoEndTime, setVideoEndTime] = useState(
+    Math.min(...triggerTimes, endAt ?? 10000)
+  )
 
   // Initiate video player listeners
   useEffect(() => {
@@ -134,17 +136,41 @@ export function Video({
       }
       setLoading(false)
     }
-    const handleStopLoadingOnAutoplay = (): void => {
-      if (autoplay === true) handleStopLoading()
+
+    const handleCanPlay = (): void => {
+      if (player != null) {
+        setVideoEndTime(
+          Math.min(
+            ...triggerTimes,
+            endAt ?? player.cache_.duration ?? player.duration()
+          )
+        )
+
+        void handleStopLoading()
+        // iOS - autoplay doesn't work if prev card locked, force play
+        // if (autoplay === true && isIOS()) {
+        //   player.muted(true)
+        //   void player.play()
+        // }
+      }
     }
+
     const handleVideoReady = (): void => {
       if (player != null) {
         player.currentTime(startTime)
 
-        // iOS blocks videos from autoplaying so loading hangs
+        // iOS blocks videos from calling seeked so loading hangs
         void handleStopLoading()
         if (autoplay === true) {
-          player.autoplay(true)
+          const onFirstStep = activeBlock?.parentOrder === 0
+          if (
+            onFirstStep &&
+            activeBlock?.children[0]?.children.find(
+              (child: TreeBlock) => child.id === blockId
+            ) != null
+          ) {
+            player.muted(true)
+          }
           void player.play()
         }
       }
@@ -158,22 +184,22 @@ export function Video({
 
     if (player != null) {
       if (selectedBlock === undefined) {
-        // Video jumps to new time and finishes loading - occurs on autoplay
-        player.on('seeked', handleStopLoadingOnAutoplay)
         player.on('ready', handleVideoReady)
-        player.on('playing', handleStopLoading)
-        player.on('canplay', handleStopLoading)
+        // Video jumps to new time and finishes loading - occurs on autoplay
+        player.on('seeked', handleCanPlay)
+        player.on('canplay', handleCanPlay)
         player.on('canplaythrough', handleStopLoading)
+        player.on('playing', handleStopLoading)
         player.on('ended', handleVideoEnd)
       }
     }
     return () => {
       if (player != null) {
-        player.off('seeked', handleStopLoadingOnAutoplay)
         player.off('ready', handleVideoReady)
-        player.off('playing', handleStopLoading)
-        player.off('canplay', handleStopLoading)
+        player.off('seeked', handleCanPlay)
+        player.off('canplay', handleCanPlay)
         player.off('canplaythrough', handleStopLoading)
+        player.off('playing', handleStopLoading)
         player.off('ended', handleVideoEnd)
       }
     }
@@ -182,10 +208,13 @@ export function Video({
     player,
     selectedBlock,
     startAt,
-    progressEndTime,
     autoplay,
     action,
-    source
+    source,
+    endAt,
+    triggerTimes,
+    activeBlock,
+    blockId
   ])
 
   // Pause video if admin
@@ -302,10 +331,11 @@ export function Video({
               <VideoControls
                 player={player}
                 startAt={startAt ?? 0}
-                endAt={progressEndTime}
+                endAt={videoEndTime}
                 isYoutube={source === VideoBlockSource.youTube}
                 loading={loading}
                 autoplay={autoplay ?? false}
+                muted={muted ?? false}
               />
             </ThemeProvider>
           )}
@@ -314,7 +344,7 @@ export function Video({
           {action != null && (
             <VideoTrigger
               player={player}
-              triggerStart={progressEndTime}
+              triggerStart={videoEndTime}
               triggerAction={action}
             />
           )}

@@ -1,6 +1,7 @@
 import Player from 'video.js/dist/types/player'
 import { useRouter } from 'next/router'
 import { ReactElement, useEffect, useState } from 'react'
+import fscreen from 'fscreen'
 import type { TreeBlock } from '../../libs/block'
 import { handleAction } from '../../libs/action'
 import { VideoTriggerFields } from './__generated__/VideoTriggerFields'
@@ -31,6 +32,7 @@ export function VideoTrigger({
               .exitFullscreen()
               .then(() => handleAction(router, triggerAction))
           } else {
+            if (fscreen.fullscreenElement != null) void fscreen.exitFullscreen()
             handleAction(router, triggerAction)
           }
         }

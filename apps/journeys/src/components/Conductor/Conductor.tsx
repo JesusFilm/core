@@ -201,12 +201,12 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
         sx={{
           ...alignSx,
           position: 'absolute',
-          top: '20%',
+          top: { xs: '20%', sm: '32%', md: '20%' },
           bottom: 0,
           zIndex: 2,
           display: slideTransitioning ? 'none' : 'flex',
           width: { xs: 82, lg: 114 },
-          height: '50%'
+          height: { xs: '50%', sm: '25%', md: '50%' }
         }}
       >
         <IconButton
@@ -286,8 +286,12 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
                 </SwiperSlide>
               )
             })}
-            {showLeftButton && <Navigation variant="Left" />}
-            {showRightButton && <Navigation variant="Right" />}
+            {showLeftButton && showHeaderFooter && (
+              <Navigation variant="Left" />
+            )}
+            {showRightButton && showHeaderFooter && (
+              <Navigation variant="Right" />
+            )}
           </StyledSwiperContainer>
         </Box>
       </Stack>

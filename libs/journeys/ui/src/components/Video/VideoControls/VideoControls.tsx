@@ -27,24 +27,33 @@ interface VideoControlProps {
   isYoutube?: boolean
   loading?: boolean
   autoplay?: boolean
+  muted?: boolean
 }
 
 export function VideoControls({
   player,
   startAt,
   endAt,
+  isYoutube = false,
   loading = false,
-  autoplay = false
+  autoplay = false,
+  muted: mute = false
 }: VideoControlProps): ReactElement {
   const [playing, setPlaying] = useState(false)
   const [active, setActive] = useState(true)
   const [displayTime, setDisplayTime] = useState('0:00')
   const [progress, setProgress] = useState(0)
   const [volume, setVolume] = useState(0)
+  // Explicit muted state since player.muted state lags when video paused
+  const [muted, setMuted] = useState(mute)
   const { showHeaderFooter, setShowHeaderFooter } = useBlocks()
 
+  // EndAt could be 0 if player not yet initialised
   const durationSeconds = endAt - startAt
-  const duration = secondsToTimeFormat(durationSeconds, { trimZeroes: true })
+  const duration =
+    durationSeconds < 0
+      ? null
+      : secondsToTimeFormat(durationSeconds, { trimZeroes: true })
 
   const visible = !playing || active || loading
 
@@ -53,7 +62,6 @@ export function VideoControls({
       setPlaying(true)
 
       if (startAt > 0 && player.currentTime() < startAt) {
-        // player.currentTime(startAt)
         setProgress(startAt)
       }
     }
@@ -74,13 +82,18 @@ export function VideoControls({
         player.pause()
       }
 
-      setDisplayTime(
-        secondsToTimeFormat(player.currentTime() - startAt, {
-          trimZeroes: true
-        })
-      )
+      if (player.currentTime() >= startAt) {
+        setDisplayTime(
+          secondsToTimeFormat(player.currentTime() - startAt, {
+            trimZeroes: true
+          })
+        )
+      }
+
       setProgress(Math.round(player.currentTime()))
     }
+
+    // Triggers when video is playing / controls faded and screen is clicked
     const handleUserActive = (): void => setActive(true)
     const handleUserInactive = (): void => setActive(false)
     const handleVideoVolumeChange = (): void => setVolume(player.volume() * 100)
@@ -89,14 +102,6 @@ export function VideoControls({
         setShowHeaderFooter(fscreen.fullscreenElement == null)
       } else {
         setShowHeaderFooter(!player.isFullscreen())
-
-        // On autoplay videos, videos will play after fullscreen change.
-        // Keep paused state if changing screen while paused
-        if (autoplay && player.paused()) {
-          if (player.paused()) {
-            void player.pause()
-          }
-        }
       }
     }
 
@@ -149,13 +154,16 @@ export function VideoControls({
       }
       setShowHeaderFooter(true)
     } else {
-      const activeCard = document.querySelectorAll(
-        '.swiper-slide-active .MuiPaper-root'
-      )[0]
-      console.log('activeCard', activeCard, fscreen.fullscreenEnabled)
-      if (activeCard != null) {
-        void fscreen.requestFullscreen(activeCard)
-        setShowHeaderFooter(false)
+      if (fscreen.fullscreenEnabled) {
+        const activeCard = document.querySelectorAll(
+          '.swiper-slide-active .MuiPaper-root'
+        )[0]
+        if (activeCard != null) {
+          void fscreen.requestFullscreen(activeCard)
+          setShowHeaderFooter(false)
+        }
+      } else {
+        void player.requestFullscreen()
       }
     }
   }
@@ -168,7 +176,8 @@ export function VideoControls({
   }
 
   function handleMute(): void {
-    player.muted(!player.muted())
+    setMuted(!muted)
+    player.muted(!muted)
   }
 
   function handleVolume(e: Event, value: number | number[]): void {
@@ -194,7 +203,6 @@ export function VideoControls({
       } else {
         clearTimeout(timeoutID)
         timeoutID = undefined
-        console.log('triggered double click', event)
         onDblClick(event)
       }
     }
@@ -218,6 +226,22 @@ export function VideoControls({
       }}
       onClick={getClickHandler(handlePlay, handleFullscreen)}
       onMouseMove={() => player.userActive(true)}
+      onTouchEnd={(e) => {
+        const target = e.target as Element
+        const controlsHidden = !player.userActive()
+        const videoControlsNotClicked =
+          !target.classList.contains('MuiSlider-root') &&
+          !target.classList.contains('MuiSlider-rail') &&
+          !target.classList.contains('MuiSlider-track') &&
+          !target.classList.contains('MuiSvgIcon-root') &&
+          target.nodeName !== 'path'
+        // iOS: pause video on first click, default just shows controls.
+        if (controlsHidden && videoControlsNotClicked) {
+          void player.pause()
+          setPlaying(false)
+        }
+        player.userActive(true)
+      }}
     >
       <Fade
         in={visible}
@@ -229,7 +253,7 @@ export function VideoControls({
           <Stack
             flexDirection="row"
             justifyContent="flex-end"
-            sx={{ mt: 16, display: { lg: 'none' } }}
+            sx={{ mt: '50px', display: { lg: 'none' } }}
           >
             <IconButton
               aria-label="mute"
@@ -246,7 +270,7 @@ export function VideoControls({
                 handleMute()
               }}
             >
-              {player.muted() ? <VolumeOffOutlined /> : <VolumeUpOutlined />}
+              {muted ? <VolumeOffOutlined /> : <VolumeUpOutlined />}
             </IconButton>
           </Stack>
           {/* Play/Pause */}
@@ -257,7 +281,7 @@ export function VideoControls({
                   playing ? 'center-pause-button' : 'center-play-button'
                 }
                 sx={{
-                  fontSize: 100,
+                  fontSize: 50,
                   display: { xs: 'flex', lg: 'none' }
                 }}
               >
@@ -323,7 +347,7 @@ export function VideoControls({
                   }
                 }}
               />
-              {player != null && (
+              {player != null && duration != null && (
                 <Typography
                   variant="caption"
                   color="secondary.main"
