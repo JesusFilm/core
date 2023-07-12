@@ -1,5 +1,5 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { cleanup, render, waitFor } from '@testing-library/react'
+import { render, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 import { v4 as uuidv4 } from 'uuid'
 
@@ -18,7 +18,6 @@ jest.mock('uuid', () => ({
 const mockUuidv4 = uuidv4 as jest.MockedFunction<typeof uuidv4>
 
 describe('BlockRenderer', () => {
-  afterEach(cleanup)
   it('should render Button', async () => {
     const block: TreeBlock = {
       __typename: 'ButtonBlock',
@@ -432,6 +431,14 @@ describe('BlockRenderer', () => {
         }
       ]
     }
+    const result = jest.fn(() => ({
+      data: {
+        stepViewEventCreate: {
+          id: 'uuid',
+          __typename: 'StepViewEvent'
+        }
+      }
+    }))
     const { getByText } = render(
       <MockedProvider
         mocks={[
@@ -446,26 +453,19 @@ describe('BlockRenderer', () => {
                 }
               }
             },
-            result: {
-              data: {
-                stepViewEventCreate: {
-                  id: 'uuid',
-                  __typename: 'StepViewEvent'
-                }
-              }
-            }
+            result
           }
         ]}
       >
         <BlockRenderer block={block} />
       </MockedProvider>
     )
-    await waitFor(() =>
-      expect(getByText('Click to continue')).toBeInTheDocument()
-    )
+    await waitFor(() => expect(result).toHaveBeenCalled())
+    expect(getByText('Click to continue')).toBeInTheDocument()
   })
 
-  it('should render Step with general wrapper and specific wrapper', () => {
+  it('should render Step with general wrapper and specific wrapper', async () => {
+    mockUuidv4.mockReturnValueOnce('uuid')
     const block: TreeBlock = {
       __typename: 'StepBlock',
       id: 'step',
@@ -490,8 +490,32 @@ describe('BlockRenderer', () => {
         }
       ]
     }
+    const result = jest.fn(() => ({
+      data: {
+        stepViewEventCreate: {
+          id: 'uuid',
+          __typename: 'StepViewEvent'
+        }
+      }
+    }))
     const { getByTestId, getByText } = render(
-      <MockedProvider mocks={[]} addTypename={false}>
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: STEP_VIEW_EVENT_CREATE,
+              variables: {
+                input: {
+                  id: 'uuid',
+                  blockId: 'step',
+                  value: 'Untitled'
+                }
+              }
+            },
+            result
+          }
+        ]}
+      >
         <BlockRenderer
           block={block}
           wrappers={{
@@ -512,6 +536,7 @@ describe('BlockRenderer', () => {
         'data-testid'
       )
     ).toEqual('step-wrapper')
+    await waitFor(() => expect(result).toHaveBeenCalled())
     expect(getByTestId('step-wrapper')).toContainElement(
       getByText('Click to continue')
     )
