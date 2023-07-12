@@ -1,6 +1,6 @@
 import { ReactElement, useState } from 'react'
-import Share from '@core/shared/ui/icons/Share'
-import { FooterButton } from '../FooterButton'
+import ShareIcon from '@core/shared/ui/icons/Share'
+import { StyledFooterButton } from '../StyledFooterButton'
 import { useJourney } from '../../../../libs/JourneyProvider'
 import { ShareDialog } from './ShareDialog'
 
@@ -8,33 +8,30 @@ export function ShareButton(): ReactElement {
   const { journey, admin } = useJourney()
   const [shareDialogOpen, setShareDialogOpen] = useState(false)
 
+  console.log(process.env.NEXT_PUBLIC_JOURNEYS_URL)
+
   const url =
     journey?.slug != null
-      ? `${
-          process.env.NEXT_PUBLIC_JOURNEYS_URL ?? 'https://your.nextstep.is'
-        }/${journey.slug}`
+      ? `https://your.nextstep.is/${journey.slug}`
       : undefined
 
   async function handleShare(): Promise<void> {
     if (admin || url == null) return
+    if (navigator.share == null) return setShareDialogOpen(true)
+
     const shareDetails = {
       url,
       title: journey?.seoTitle ?? journey?.title ?? 'Journey',
       text: journey?.seoDescription ?? ''
     }
-
-    if (navigator.share != null) {
-      await navigator.share(shareDetails)
-    } else {
-      setShareDialogOpen(true)
-    }
+    await navigator.share(shareDetails)
   }
 
   return (
     <>
-      <FooterButton onClick={handleShare}>
-        <Share />
-      </FooterButton>
+      <StyledFooterButton onClick={handleShare}>
+        <ShareIcon />
+      </StyledFooterButton>
       <ShareDialog
         url={url}
         open={shareDialogOpen}

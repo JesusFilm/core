@@ -13,6 +13,11 @@ jest.mock('react-i18next', () => ({
   }
 }))
 
+jest.mock('@mui/material/useMediaQuery', () => ({
+  __esModule: true,
+  default: () => true
+}))
+
 describe('ShareButton', () => {
   const originalNavigator = { ...global.navigator }
   beforeEach(() => {

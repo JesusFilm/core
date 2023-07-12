@@ -1,6 +1,7 @@
 import { ReactElement, ReactNode } from 'react'
-import { styled } from '@mui/material/styles'
+import { styled, Theme } from '@mui/material/styles'
 import Button, { ButtonProps } from '@mui/material/Button'
+import useMediaQuery from '@mui/material/useMediaQuery'
 
 const StyledButton = styled(Button)<ButtonProps>(({ theme }) => ({
   minWidth: 56,
@@ -31,22 +32,11 @@ interface Props {
   children: ReactNode
 }
 
-export function FooterButton({ onClick, children }: Props): ReactElement {
+export function StyledFooterButton({ onClick, children }: Props): ReactElement {
+  const lgUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('lg'))
   return (
-    <>
-      <StyledButton
-        onClick={onClick}
-        disableRipple={false}
-        sx={{ display: { xs: 'none', sm: 'none', md: 'none', lg: 'flex' } }}
-      >
-        {children}
-      </StyledButton>
-      <StyledButton
-        onClick={onClick}
-        sx={{ display: { md: 'flex', lg: 'none' } }}
-      >
-        {children}
-      </StyledButton>
-    </>
+    <StyledButton onClick={onClick} disableRipple={lgUp}>
+      {children}
+    </StyledButton>
   )
 }

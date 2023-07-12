@@ -12,7 +12,7 @@ jest.mock('react-i18next', () => ({
   }
 }))
 
-describe('ShareDiloag', () => {
+describe('ShareDialog', () => {
   it('should copy link', () => {
     const mockPromise = Promise.resolve()
     const writeTextMock = jest.fn().mockReturnValue(mockPromise)

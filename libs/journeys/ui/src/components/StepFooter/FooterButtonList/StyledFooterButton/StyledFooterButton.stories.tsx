@@ -3,17 +3,17 @@ import { Meta, Story } from '@storybook/react'
 import Typography from '@mui/material/Typography'
 import { noop } from 'lodash'
 import { journeyUiConfig } from '../../../../libs/journeyUiConfig'
-import { FooterButton } from './FooterButton'
+import { StyledFooterButton } from './StyledFooterButton'
 
 const Demo = {
   ...journeyUiConfig,
-  component: FooterButton,
-  title: 'Journeys-Ui/StepFooter/FooterButtons/FooterButton'
+  component: StyledFooterButton,
+  title: 'Journeys-Ui/StepFooter/FooterButtonList/StyledFooterButton'
 }
 
-const Template: Story<ComponentProps<typeof FooterButton>> = ({ ...args }) => (
-  <FooterButton {...args} />
-)
+const Template: Story<ComponentProps<typeof StyledFooterButton>> = ({
+  ...args
+}) => <StyledFooterButton {...args} />
 
 export const Default = Template.bind({})
 Default.args = {

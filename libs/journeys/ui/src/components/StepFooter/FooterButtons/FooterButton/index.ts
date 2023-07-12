@@ -1,1 +1,0 @@
-export { FooterButton } from './FooterButton'

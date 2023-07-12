@@ -1,15 +1,20 @@
 import Typography from '@mui/material/Typography'
 import { fireEvent, render } from '@testing-library/react'
-import { FooterButton } from '.'
+import { StyledFooterButton } from '.'
 
-describe('FooterButton', () => {
+jest.mock('@mui/material/useMediaQuery', () => ({
+  __esModule: true,
+  default: () => true
+}))
+
+describe('StyledFooterButton', () => {
   it('should handle click', () => {
     const handleClick = jest.fn()
 
     const { getAllByRole } = render(
-      <FooterButton onClick={handleClick}>
+      <StyledFooterButton onClick={handleClick}>
         <Typography>Test</Typography>
-      </FooterButton>
+      </StyledFooterButton>
     )
 
     fireEvent.click(getAllByRole('button', { name: 'Test' })[0])

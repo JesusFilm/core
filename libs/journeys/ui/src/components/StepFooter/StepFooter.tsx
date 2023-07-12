@@ -9,7 +9,7 @@ import { getJourneyRTL } from '../../libs/rtl'
 import { HostTitleLocation } from './HostTitleLocation'
 import { HostAvatars } from './HostAvatars'
 import { ChatButtons } from './ChatButtons'
-import { FooterButtons } from './FooterButtons'
+import { FooterButtonList } from './FooterButtonList'
 
 interface StepFooterProps {
   onFooterClick?: () => void
@@ -60,7 +60,7 @@ export function StepFooter({
         }}
       >
         <Box sx={{ display: { xs: 'flex', sm: 'none' } }}>
-          <FooterButtons />
+          <FooterButtonList />
         </Box>
 
         <Stack
@@ -99,7 +99,7 @@ export function StepFooter({
             </Stack>
 
             <Box sx={{ display: { xs: 'none', sm: 'flex' } }}>
-              <FooterButtons />
+              <FooterButtonList />
             </Box>
           </Stack>
           {hasChatWidget && (

@@ -8,7 +8,7 @@ import { ShareDialog } from './ShareDialog'
 const Demo = {
   ...journeyUiConfig,
   component: ShareDialog,
-  title: 'Journeys-Ui/StepFooter/FooterButtons/ShareButton/ShareDialog',
+  title: 'Journeys-Ui/StepFooter/FooterButtonList/ShareButton/ShareDialog',
   parameters: {
     ...journeyUiConfig.parameters,
     layout: 'fullscreen'

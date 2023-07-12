@@ -1,17 +1,17 @@
 import { Story, Meta } from '@storybook/react'
 import { SnackbarProvider } from 'notistack'
 import { journeyUiConfig } from '../../../libs/journeyUiConfig'
-import { FooterButtons } from './FooterButtons'
+import { FooterButtonList } from './FooterButtonList'
 
 const Demo = {
   ...journeyUiConfig,
-  component: FooterButtons,
-  title: 'Journeys-Ui/StepFooter/FooterButtons'
+  component: FooterButtonList,
+  title: 'Journeys-Ui/StepFooter/FooterButtonList'
 }
 
 const Template: Story = () => (
   <SnackbarProvider>
-    <FooterButtons />
+    <FooterButtonList />
   </SnackbarProvider>
 )
 
