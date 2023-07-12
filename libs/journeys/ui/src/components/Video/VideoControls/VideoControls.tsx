@@ -476,6 +476,7 @@ export function VideoControls({
               valueLabelFormat={displayTime}
               valueLabelDisplay="auto"
               onChange={handleSeek}
+              disabled={!player.hasStarted_}
               sx={{
                 width: 'initial',
                 height: 5,
