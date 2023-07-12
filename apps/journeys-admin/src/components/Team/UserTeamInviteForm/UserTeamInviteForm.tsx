@@ -1,8 +1,8 @@
 import { ReactElement } from 'react'
 import TextField from '@mui/material/TextField'
 import { gql, useMutation } from '@apollo/client'
-import { Form, Formik, FormikHelpers, FormikValues } from 'formik'
-import { object, string } from 'yup'
+import { Form, Formik, FormikHelpers } from 'formik'
+import { ObjectSchema, object, string } from 'yup'
 import { useTranslation } from 'react-i18next'
 import IconButton from '@mui/material/IconButton'
 import InputAdornment from '@mui/material/InputAdornment'
@@ -10,6 +10,7 @@ import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline'
 import { useTeam } from '../TeamProvider'
 import { UserTeamInviteCreate } from '../../../../__generated__/UserTeamInviteCreate'
 import { useUserTeamsAndInvitesQuery } from '../../../libs/useUserTeamsAndInvitesQuery'
+import { UserTeamInviteCreateInput } from '../../../../__generated__/globalTypes'
 
 export const USER_TEAM_INVITE_CREATE = gql`
   mutation UserTeamInviteCreate(
@@ -38,17 +39,15 @@ export function UserTeamInviteForm(): ReactElement {
       : undefined
   )
 
-  const handleAddUser = async (
-    values: FormikValues,
-    actions: FormikHelpers<{ email: string }>
-  ): Promise<void> => {
+  async function handleSubmit(
+    input: UserTeamInviteCreateInput,
+    { resetForm }: FormikHelpers<UserTeamInviteCreateInput>
+  ): Promise<void> {
     if (activeTeam != null) {
       await userTeamInviteCreate({
         variables: {
           teamId: activeTeam?.id,
-          input: {
-            email: values.email
-          }
+          input
         },
         update(cache, { data }) {
           if (data?.userTeamInviteCreate != null) {
@@ -63,7 +62,6 @@ export function UserTeamInviteForm(): ReactElement {
                       }
                     `
                   })
-                  actions.resetForm()
                   return [
                     ...existingUserTeamInviteRefs.filter(
                       (ref) => ref.__ref !== newUserTeamInvite?.__ref
@@ -76,23 +74,27 @@ export function UserTeamInviteForm(): ReactElement {
           }
         }
       })
+      resetForm()
     }
   }
 
-  const usersToLowerCase = emails?.map((email) => email.toLowerCase())
-  const validationSchema = object().shape({
-    email: string()
-      .lowercase()
-      .email(t('Please enter a valid email address'))
-      .required(t('Required'))
-      .notOneOf(usersToLowerCase, t('This email is already on the list'))
-  })
+  const lowercaseEmails = emails?.map((email) => email.toLowerCase())
+  const userTeamInviteCreateSchema: ObjectSchema<UserTeamInviteCreateInput> =
+    object({
+      email: string()
+        .lowercase()
+        .email(t('Please enter a valid email address'))
+        .required(t('Required'))
+        .notOneOf(lowercaseEmails, t('This email is already on the list'))
+    })
+
+  const initialValues: UserTeamInviteCreateInput = { email: '' }
 
   return (
     <Formik
-      initialValues={{ email: '' }}
-      onSubmit={handleAddUser}
-      validationSchema={validationSchema}
+      initialValues={initialValues}
+      onSubmit={handleSubmit}
+      validationSchema={userTeamInviteCreateSchema}
     >
       {({ values, handleChange, handleBlur, errors, touched }) => (
         <Form noValidate>
