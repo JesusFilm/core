@@ -82,9 +82,9 @@ describe('TeamMembersList', () => {
           <TeamManageWrapper>
             {({ UserTeamList, UserTeamInviteList, UserTeamInviteForm }) => (
               <>
-                {UserTeamList()}
-                {UserTeamInviteList()}
-                {UserTeamInviteForm()}
+                {UserTeamList}
+                {UserTeamInviteList}
+                {UserTeamInviteForm}
               </>
             )}
           </TeamManageWrapper>

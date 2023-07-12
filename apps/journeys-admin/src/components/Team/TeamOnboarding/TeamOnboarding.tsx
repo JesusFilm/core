@@ -55,13 +55,13 @@ export function TeamOnboarding(): ReactElement {
                 <CardContent
                   sx={{ padding: 6, maxHeight: '300px', overflowY: 'auto' }}
                 >
-                  <UserTeamList />
-                  <UserTeamInviteList />
+                  {UserTeamList}
+                  {UserTeamInviteList}
                 </CardContent>
 
                 <Divider />
                 <CardContent sx={{ px: 6, py: 4, width: '75%' }}>
-                  <UserTeamInviteForm />
+                  {UserTeamInviteForm}
                 </CardContent>
                 <CardContent
                   sx={{

@@ -37,16 +37,16 @@ export function TeamManageDialog({
                 <Typography variant="subtitle1" sx={{ marginLeft: 3 }}>
                   {t('Add team member by Email')}
                 </Typography>
-                <UserTeamInviteForm />
               </Stack>
+              {UserTeamInviteForm}
             </Stack>
           }
           fullscreen={!smUp}
         >
           <Stack spacing={4}>
             <Typography variant="subtitle1">{t('Members')}</Typography>
-            <UserTeamList />
-            <UserTeamInviteList />
+            {UserTeamList}
+            {UserTeamInviteList}
           </Stack>
         </Dialog>
       )}

@@ -1,8 +1,7 @@
 import { ReactElement, ReactNode } from 'react'
 import { Formik, Form } from 'formik'
 import TextField, { TextFieldProps } from '@mui/material/TextField'
-import { ObjectSchema } from 'yup'
-import { ObjectShape } from 'yup/lib/object'
+import { ObjectSchema, ObjectShape } from 'yup'
 
 type FieldProps = Pick<
   TextFieldProps,

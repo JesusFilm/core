@@ -10,9 +10,9 @@ import { GetUserTeamsAndInvites } from '../../../../../__generated__/GetUserTeam
 interface TeamManageWrapperProps {
   children: (props: {
     data?: GetUserTeamsAndInvites
-    UserTeamList: () => ReactElement
-    UserTeamInviteList: () => ReactElement
-    UserTeamInviteForm: () => ReactElement
+    UserTeamList: ReactElement
+    UserTeamInviteList: ReactElement
+    UserTeamInviteForm: ReactElement
   }) => ReactNode
 }
 
@@ -33,7 +33,7 @@ export function TeamManageWrapper({
     <>
       {children({
         data,
-        UserTeamList: () => (
+        UserTeamList: (
           <UserTeamList
             data={data}
             currentUser={currentUser}
@@ -41,14 +41,14 @@ export function TeamManageWrapper({
             loading={loading}
           />
         ),
-        UserTeamInviteList: () => (
+        UserTeamInviteList: (
           <UserTeamInvitesList
             data={data}
             currentUser={currentUser}
             loadUser={loadUser}
           />
         ),
-        UserTeamInviteForm: () => <UserTeamInviteForm emails={emails} />
+        UserTeamInviteForm: <UserTeamInviteForm emails={emails} />
       })}
     </>
   )
