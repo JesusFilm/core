@@ -3,11 +3,10 @@ import {
   CanActivate,
   ExecutionContext,
   mixin,
-  Type,
-  Inject
+  Type
 } from '@nestjs/common'
 import { get, includes, reduce } from 'lodash'
-import { AuthenticationError } from 'apollo-server-errors'
+import { GraphQLError } from 'graphql'
 import { contextToUserId } from '@core/nest/common/firebaseClient'
 import {
   Journey,
@@ -65,9 +64,7 @@ export const RoleGuard = (
   @Injectable()
   class RolesGuard implements CanActivate {
     constructor(
-      @Inject(UserRoleService)
       private readonly userRoleService: UserRoleService,
-      @Inject(PrismaService)
       private readonly prismaService: PrismaService
     ) {}
 
@@ -154,7 +151,9 @@ export const RoleGuard = (
       const args = context.getArgByIndex(1)
       const journeyId = get(args, journeyIdArgName)
       if (journeyId == null)
-        throw new AuthenticationError('No journeyId provided')
+        throw new GraphQLError('No journeyId provided', {
+          extensions: { code: 'BAD_USER_INPUT' }
+        })
 
       const userRole = await fur(this.userRoleService, userId)
 
@@ -170,8 +169,9 @@ export const RoleGuard = (
       }
 
       if (!result)
-        throw new AuthenticationError(
-          'User does not have the role to perform this action'
+        throw new GraphQLError(
+          'User does not have the role to perform this action',
+          { extensions: { code: 'FORBIDDEN' } }
         )
       return result
     }

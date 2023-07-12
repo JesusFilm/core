@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common'
-import { UserInputError } from 'apollo-server-errors'
+import { GraphQLError } from 'graphql'
 import { FromPostgresql } from '@core/nest/decorators/FromPostgresql'
 import { Prisma, Visitor, JourneyVisitor } from '.prisma/api-journeys-client'
 import { BlockService } from '../block/block.service'
@@ -29,7 +29,9 @@ export class EventService {
     })
 
     if (block == null) {
-      throw new UserInputError('Block does not exist')
+      throw new GraphQLError('Block does not exist', {
+        extensions: { code: 'NOT_FOUND' }
+      })
     }
     const journeyId = block.journeyId
 
@@ -43,10 +45,11 @@ export class EventService {
     )
 
     if (!validStep) {
-      throw new UserInputError(
+      throw new GraphQLError(
         `Step ID ${
           stepId as string
-        } does not exist on Journey with ID ${journeyId}`
+        } does not exist on Journey with ID ${journeyId}`,
+        { extensions: { code: 'NOT_FOUND' } }
       )
     }
 

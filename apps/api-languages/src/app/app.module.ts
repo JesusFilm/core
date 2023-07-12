@@ -8,7 +8,7 @@ import {
 import { LoggerModule } from 'nestjs-pino'
 import { DatadogTraceModule } from 'nestjs-ddtrace'
 import TranslationModule from '@core/nest/common/TranslationModule'
-import responseCachePlugin from 'apollo-server-plugin-response-cache'
+import responseCachePlugin from '@apollo/server-plugin-response-cache'
 import { LanguageModule } from './modules/language/language.module'
 import { CountryModule } from './modules/country/country.module'
 
@@ -32,7 +32,6 @@ import { CountryModule } from './modules/country/country.module'
                */
             ]
           : [join(process.cwd(), 'assets/**/*.graphql')],
-      cors: true,
       context: ({ req }) => ({ headers: req.headers }),
       cache: 'bounded',
       plugins: [responseCachePlugin()]

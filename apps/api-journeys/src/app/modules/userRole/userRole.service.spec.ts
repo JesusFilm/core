@@ -27,17 +27,17 @@ describe('userRoleService', () => {
 
   describe('getUserRoleById', () => {
     it('should return a user role if exists', async () => {
-      prismaService.userRole.findFirst = jest.fn().mockResolvedValue(user)
+      prismaService.userRole.findUnique = jest.fn().mockResolvedValue(user)
       expect(await service.getUserRoleById('1')).toEqual(user)
     })
 
     it('should return a newly created user role', async () => {
       const user2 = {
-        _key: '2',
+        id: '2',
         userId: 'userId2',
         roles: []
       }
-      prismaService.userRole.findFirst = jest.fn().mockResolvedValue(null)
+      prismaService.userRole.findUnique = jest.fn().mockResolvedValue(null)
       prismaService.userRole.create = jest.fn().mockResolvedValue(user2)
       expect(await service.getUserRoleById('2')).toEqual(user2)
     })

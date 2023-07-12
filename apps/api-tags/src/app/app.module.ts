@@ -26,7 +26,6 @@ import { TagModule } from './modules/tag/tag.module'
               )
             ]
           : [join(process.cwd(), 'assets/**/*.graphql')],
-      cors: true,
       context: ({ req }) => ({ headers: req.headers })
     }),
     LoggerModule.forRoot({

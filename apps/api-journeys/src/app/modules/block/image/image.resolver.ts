@@ -1,6 +1,6 @@
 import { UseGuards } from '@nestjs/common'
 import { Args, Mutation, Resolver } from '@nestjs/graphql'
-import { UserInputError } from 'apollo-server-errors'
+import { GraphQLError } from 'graphql'
 import { encode } from 'blurhash'
 import fetch from 'node-fetch'
 import sharp from 'sharp'
@@ -54,8 +54,8 @@ export async function handleImage(
       4
     )
   } catch (ex) {
-    throw new UserInputError(ex.message, {
-      argumentName: 'src'
+    throw new GraphQLError(ex.message, {
+      extensions: { code: 'BAD_USER_INPUT' }
     })
   }
 

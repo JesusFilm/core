@@ -1,5 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common'
-import { AuthenticationError, UserInputError } from 'apollo-server-errors'
+import { GraphQLError } from 'graphql'
 import {
   UserJourney,
   UserJourneyRole,
@@ -28,7 +28,10 @@ export class UserJourneyService {
             where: { id: journeyId }
           })
 
-    if (journey == null) throw new UserInputError('journey does not exist')
+    if (journey == null)
+      throw new GraphQLError('journey does not exist', {
+        extensions: { code: 'NOT_FOUND' }
+      })
 
     const existingUserJourney = await this.prismaService.userJourney.findUnique(
       {
@@ -62,7 +65,9 @@ export class UserJourneyService {
     })
 
     if (userJourney == null)
-      throw new UserInputError('userJourney does not exist')
+      throw new GraphQLError('userJourney does not exist', {
+        extensions: { code: 'NOT_FOUND' }
+      })
 
     const actor = await this.prismaService.userJourney.findUnique({
       where: { journeyId_userId: { journeyId: id, userId: approverUserId } }
@@ -70,15 +75,18 @@ export class UserJourneyService {
     const requesterUserId = userJourney.userId
 
     if (actor?.role === UserJourneyRole.inviteRequested)
-      throw new AuthenticationError(
-        'You do not have permission to approve access'
-      )
+      throw new GraphQLError('You do not have permission to approve access', {
+        extensions: { code: 'FORBIDDEN' }
+      })
 
     const journey = await this.prismaService.journey.findUnique({
       where: { id: userJourney.journeyId }
     })
 
-    if (journey == null) throw new UserInputError('journey does not exist')
+    if (journey == null)
+      throw new GraphQLError('journey does not exist', {
+        extensions: { code: 'NOT_FOUND' }
+      })
 
     if (journey.teamId != null) {
       await this.prismaService.userTeam.upsert({

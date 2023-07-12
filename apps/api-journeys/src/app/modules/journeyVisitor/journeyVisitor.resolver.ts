@@ -1,7 +1,7 @@
 import { Args, Parent, Query, ResolveField, Resolver } from '@nestjs/graphql'
 import { FromPostgresql } from '@core/nest/decorators/FromPostgresql'
 import { CurrentUserId } from '@core/nest/decorators/CurrentUserId'
-import { ForbiddenError } from 'apollo-server-errors'
+import { GraphQLError } from 'graphql'
 import { Visitor, Event } from '.prisma/api-journeys-client'
 import { PrismaService } from '../../lib/prisma.service'
 import {
@@ -41,7 +41,9 @@ export class JourneyVisitorResolver {
     })
 
     if (memberResult == null)
-      throw new ForbiddenError('User is not a member of the team.')
+      throw new GraphQLError('User is not a member of the team.', {
+        extensions: { code: 'FORBIDDEN' }
+      })
 
     return await this.journeyVisitorService.getJourneyVisitorList({
       filter,

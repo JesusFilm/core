@@ -1,7 +1,7 @@
 import { Args, Mutation, Resolver } from '@nestjs/graphql'
 import { UseGuards } from '@nestjs/common'
 import { includes } from 'lodash'
-import { UserInputError } from 'apollo-server-errors'
+import { GraphQLError } from 'graphql'
 import { object, string } from 'yup'
 import { Action } from '.prisma/api-journeys-client'
 import { RoleGuard } from '../../../lib/roleGuard/roleGuard'
@@ -52,13 +52,17 @@ export class EmailActionResolver {
         block.typename
       )
     ) {
-      throw new UserInputError('This block does not support email actions')
+      throw new GraphQLError('This block does not support email actions', {
+        extensions: { code: 'BAD_USER_INPUT' }
+      })
     }
 
     try {
       await emailActionSchema.validate({ email: input.email })
     } catch (err) {
-      throw new UserInputError('must be a valid email')
+      throw new GraphQLError('must be a valid email', {
+        extensions: { code: 'BAD_USER_INPUT' }
+      })
     }
 
     const actionData = {

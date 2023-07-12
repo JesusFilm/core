@@ -14,7 +14,7 @@ import {
   Journey,
   UserJourneyRole
 } from '.prisma/api-journeys-client'
-import { AuthenticationError, UserInputError } from 'apollo-server-errors'
+import { GraphQLError } from 'graphql'
 import { IdType, Role } from '../../__generated__/graphql'
 import { RoleGuard } from '../../lib/roleGuard/roleGuard'
 import { PrismaService } from '../../lib/prisma.service'
@@ -56,8 +56,9 @@ export class UserJourneyResolver {
       }
     })
     if (actor?.role !== UserJourneyRole.owner)
-      throw new AuthenticationError(
-        'You do not own this journey, so you cannot make changes to it'
+      throw new GraphQLError(
+        'You do not own this journey, so you cannot make changes to it',
+        { extensions: { code: 'FORBIDDEN' } }
       )
 
     return actor
@@ -67,7 +68,10 @@ export class UserJourneyResolver {
     const userJourney = await this.prismaService.userJourney.findUnique({
       where: { id }
     })
-    if (userJourney === null) throw new UserInputError('User journey not found')
+    if (userJourney === null)
+      throw new GraphQLError('User journey not found', {
+        extensions: { code: 'NOT_FOUND' }
+      })
     return userJourney
   }
 
@@ -89,7 +93,9 @@ export class UserJourneyResolver {
     const userJourney = await this.getUserJourney(id)
 
     if (userJourney == null)
-      throw new UserInputError('userJourney does not exist')
+      throw new GraphQLError('userJourney does not exist', {
+        extensions: { code: 'NOT_FOUND' }
+      })
 
     const actor = await this.checkOwnership(userJourney.journeyId, userId)
     if (actor.userId === userJourney.userId) return actor
@@ -115,7 +121,9 @@ export class UserJourneyResolver {
     const userJourney = await this.getUserJourney(id)
 
     if (userJourney == null)
-      throw new UserInputError('userJourney does not exist')
+      throw new GraphQLError('userJourney does not exist', {
+        extensions: { code: 'NOT_FOUND' }
+      })
 
     if (userJourney.role !== UserJourneyRole.inviteRequested) {
       await this.checkOwnership(userJourney.journeyId, userId)
@@ -135,7 +143,10 @@ export class UserJourneyResolver {
     const journey = await this.prismaService.journey.findUnique({
       where: { id }
     })
-    if (journey == null) throw new UserInputError('Journey does not exist')
+    if (journey == null)
+      throw new GraphQLError('Journey does not exist', {
+        extensions: { code: 'NOT_FOUND' }
+      })
 
     const userJourneys = await this.prismaService.userJourney.findMany({
       where: { journeyId: journey.id }

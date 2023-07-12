@@ -26,10 +26,10 @@ export enum LanguageIdType {
 export class Country {
     __typename?: 'Country';
     id: string;
-    name: Translation[];
+    name?: Translation[];
     population: number;
-    continent: Translation[];
-    slug: Translation[];
+    continent?: Translation[];
+    slug?: Translation[];
     languages: Language[];
     latitude: number;
     longitude: number;
@@ -53,7 +53,7 @@ export class Language {
     id: string;
     bcp47?: Nullable<string>;
     iso3?: Nullable<string>;
-    name: Translation[];
+    name?: Translation[];
 }
 
 export class Translation {

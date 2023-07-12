@@ -8,7 +8,7 @@ import { GraphQLModule } from '@nestjs/graphql'
 import { LoggerModule } from 'nestjs-pino'
 import { DatadogTraceModule } from 'nestjs-ddtrace'
 import TranslationModule from '@core/nest/common/TranslationModule'
-import responseCachePlugin from 'apollo-server-plugin-response-cache'
+import responseCachePlugin from '@apollo/server-plugin-response-cache'
 import { VideoModule } from './modules/video/video.module'
 import { VideoVariantModule } from './modules/videoVariant/videoVariant.module'
 
@@ -29,7 +29,6 @@ import { VideoVariantModule } from './modules/videoVariant/videoVariant.module'
               )
             ]
           : [join(process.cwd(), 'assets/**/*.graphql')],
-      cors: true,
       context: ({ req }) => ({ headers: req.headers }),
       cache: 'bounded',
       plugins: [responseCachePlugin()]

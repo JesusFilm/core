@@ -50,7 +50,6 @@ import { UserTeamInviteModule } from './modules/userTeamInvite/userTeamInvite.mo
               )
             ]
           : [join(process.cwd(), 'assets/**/*.graphql')],
-      cors: true,
       context: ({ req }) => ({ headers: req.headers }),
       cache: 'bounded'
     }),

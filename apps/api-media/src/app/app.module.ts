@@ -28,7 +28,6 @@ import { CloudflareVideoModule } from './modules/cloudflare/video/video.module'
               )
             ]
           : [join(process.cwd(), 'assets/**/*.graphql')],
-      cors: true,
       context: ({ req }) => ({ headers: req.headers }),
       cache: 'bounded'
     }),

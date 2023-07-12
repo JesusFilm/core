@@ -7,7 +7,7 @@ export class UserRoleService {
   constructor(private readonly prismaService: PrismaService) {}
 
   async getUserRoleById(userId: string): Promise<UserRole> {
-    const response = await this.prismaService.userRole.findFirst({
+    const response = await this.prismaService.userRole.findUnique({
       where: { userId }
     })
 

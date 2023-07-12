@@ -3,7 +3,7 @@ import { UseGuards } from '@nestjs/common'
 import { CurrentUserId } from '@core/nest/decorators/CurrentUserId'
 import { CurrentUser } from '@core/nest/decorators/CurrentUser'
 import { GqlAuthGuard } from '@core/nest/gqlAuthGuard/GqlAuthGuard'
-import { UserInputError } from 'apollo-server-errors'
+import { GraphQLError } from 'graphql'
 import { User } from '@core/nest/common/firebaseClient'
 import { UserInvite } from '.prisma/api-journeys-client'
 
@@ -56,7 +56,10 @@ export class UserInviteResolver {
         where: { id: journeyId }
       })
 
-      if (journey == null) throw new UserInputError('journey does not exist')
+      if (journey == null)
+        throw new GraphQLError('journey does not exist', {
+          extensions: { code: 'NOT_FOUND' }
+        })
 
       return await this.prismaService.userInvite.create({
         data: {

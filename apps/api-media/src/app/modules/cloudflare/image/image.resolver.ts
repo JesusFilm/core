@@ -1,5 +1,5 @@
 import { Resolver, Query, Mutation, Args } from '@nestjs/graphql'
-import { ForbiddenError, UserInputError } from 'apollo-server-errors'
+import { GraphQLError } from 'graphql'
 import { CurrentUserId } from '@core/nest/decorators/CurrentUserId'
 import { CloudflareImage } from '.prisma/api-media-client'
 import { PrismaService } from '../../../lib/prisma.service'
@@ -65,10 +65,14 @@ export class ImageResolver {
       where: { id }
     })
     if (image == null) {
-      throw new UserInputError('Image not found')
+      throw new GraphQLError('Image not found', {
+        extensions: { code: 'NOT_FOUND' }
+      })
     }
     if (image.userId !== userId) {
-      throw new ForbiddenError('This image does not belong to you')
+      throw new GraphQLError('This image does not belong to you', {
+        extensions: { code: 'FORBIDDEN' }
+      })
     }
     const result = await this.imageService.deleteImageFromCloudflare(id)
     if (!result.success) {
@@ -87,10 +91,14 @@ export class ImageResolver {
       where: { id }
     })
     if (image == null) {
-      throw new UserInputError('Image not found')
+      throw new GraphQLError('Image not found', {
+        extensions: { code: 'NOT_FOUND' }
+      })
     }
     if (image.userId !== userId) {
-      throw new ForbiddenError('This image does not belong to you')
+      throw new GraphQLError('This image does not belong to you', {
+        extensions: { code: 'FORBIDDEN' }
+      })
     }
     await this.prismaService.cloudflareImage.update({
       where: { id },

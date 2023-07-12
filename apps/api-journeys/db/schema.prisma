@@ -300,7 +300,7 @@ enum Role {
 
 model UserRole {
   id     String @id @default(uuid())
-  userId String
+  userId String @unique
   roles  Role[]
 }
 

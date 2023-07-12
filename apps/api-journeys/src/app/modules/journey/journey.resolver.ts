@@ -13,11 +13,7 @@ import {
   getPowerBiEmbed,
   PowerBiEmbed
 } from '@core/nest/powerBi/getPowerBiEmbed'
-import {
-  ApolloError,
-  ForbiddenError,
-  UserInputError
-} from 'apollo-server-errors'
+import { GraphQLError } from 'graphql'
 import { GqlAuthGuard } from '@core/nest/gqlAuthGuard/GqlAuthGuard'
 import { v4 as uuidv4 } from 'uuid'
 import {
@@ -85,7 +81,9 @@ export class JourneyResolver {
       process.env.POWER_BI_WORKSPACE_ID == null ||
       reportId == null
     ) {
-      throw new ApolloError('server environment variables missing')
+      throw new GraphQLError('server environment variables missing', {
+        extensions: { code: 'INTERNAL_SERVER_ERROR' }
+      })
     }
 
     const config = {
@@ -98,7 +96,9 @@ export class JourneyResolver {
     try {
       return await getPowerBiEmbed(config, reportId, userId)
     } catch (err) {
-      throw new ApolloError(err.message)
+      throw new GraphQLError(err.message, {
+        extensions: { code: 'BAD_REQUEST' }
+      })
     }
   }
 
@@ -130,18 +130,22 @@ export class JourneyResolver {
         where: { journeyId_userId: { journeyId: result.id, userId } }
       })
       if (ujResult == null)
-        throw new ForbiddenError(
-          'User has not received an invitation to edit this journey.'
+        throw new GraphQLError(
+          'User has not received an invitation to edit this journey.',
+          { extensions: { code: 'FORBIDDEN' } }
         )
       if (ujResult.role === UserJourneyRole.inviteRequested)
-        throw new ForbiddenError('User invitation pending.')
+        throw new GraphQLError('User invitation pending.', {
+          extensions: { code: 'FORBIDDEN' }
+        })
     } else {
       if (result.status !== JourneyStatus.published) {
         const urResult = await this.userRoleService.getUserRoleById(userId)
         const isPublisher = urResult.roles?.includes(Role.publisher)
         if (!isPublisher)
-          throw new ForbiddenError(
-            'You do not have access to unpublished templates'
+          throw new GraphQLError(
+            'You do not have access to unpublished templates',
+            { extensions: { code: 'FORBIDDEN' } }
           )
       }
     }
@@ -454,8 +458,8 @@ export class JourneyResolver {
         where: { id: input.hostId }
       })
       if (host == null || journey == null || host?.teamId !== journey.teamId) {
-        throw new UserInputError(
-          'the team id of host doest not match team id of journey'
+        throw new GraphQLError(
+          'the team id of host doest not match team id of journey', { extensions: { code: 'FORBIDDEN' } }
         )
       }
     }
@@ -466,7 +470,7 @@ export class JourneyResolver {
       })
     } catch (err) {
       if (err.code === ERROR_PSQL_UNIQUE_CONSTRAINT_VIOLATED) {
-        throw new UserInputError('Slug is not unique')
+        throw new GraphQLError('Slug is not unique')
       } else {
         throw err
       }

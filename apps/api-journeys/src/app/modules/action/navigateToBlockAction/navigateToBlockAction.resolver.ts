@@ -1,7 +1,7 @@
 import { Args, Mutation, Resolver } from '@nestjs/graphql'
 import { UseGuards } from '@nestjs/common'
 import { includes, omit } from 'lodash'
-import { UserInputError } from 'apollo-server-errors'
+import { GraphQLError } from 'graphql'
 import { Action } from '.prisma/api-journeys-client'
 
 import { RoleGuard } from '../../../lib/roleGuard/roleGuard'
@@ -48,8 +48,9 @@ export class NavigateToBlockActionResolver {
         block.typename
       )
     ) {
-      throw new UserInputError(
-        'This block does not support navigate to block actions'
+      throw new GraphQLError(
+        'This block does not support navigate to block actions',
+        { extensions: { code: 'BAD_USER_INPUT' } }
       )
     }
 

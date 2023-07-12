@@ -1,7 +1,7 @@
 import { Args, Mutation, Resolver } from '@nestjs/graphql'
 import { UseGuards } from '@nestjs/common'
 import { includes } from 'lodash'
-import { UserInputError } from 'apollo-server-errors'
+import { GraphQLError } from 'graphql'
 import { Action } from '.prisma/api-journeys-client'
 import { FromPostgresql } from '@core/nest/decorators/FromPostgresql'
 
@@ -50,7 +50,9 @@ export class LinkActionResolver {
         block.typename
       )
     ) {
-      throw new UserInputError('This block does not support link actions')
+      throw new GraphQLError('This block does not support link actions', {
+        extensions: { code: 'BAD_USER_INPUT' }
+      })
     }
 
     const actionData = {
