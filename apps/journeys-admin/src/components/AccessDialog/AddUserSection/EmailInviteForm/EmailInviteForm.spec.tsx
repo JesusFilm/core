@@ -30,9 +30,12 @@ describe('EmailInviteForm', () => {
     fireEvent.click(email)
     expect(getByRole('button', { name: 'add user' })).toBeDisabled()
     fireEvent.change(email, { target: { value: '123abc@' } })
-    fireEvent.click(getByRole('button', { name: 'add user' }))
-    fireEvent.change(email, { target: { value: '' } })
-
+    await waitFor(() => {
+      fireEvent.click(getByRole('button', { name: 'add user' }))
+    })
+    await waitFor(() => {
+      fireEvent.change(email, { target: { value: '' } })
+    })
     await waitFor(() => {
       const inlineErrors = getAllByText('Required')
       expect(inlineErrors[0]).toHaveProperty('id', 'email-helper-text')

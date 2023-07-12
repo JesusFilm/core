@@ -7,6 +7,7 @@ import { GetUserTeamsAndInvites } from '../../../../__generated__/GetUserTeamsAn
 import { GET_USER_TEAMS_AND_INVITES } from '../../../libs/useUserTeamsAndInvitesQuery/useUserTeamsAndInvitesQuery'
 import { UserTeamRole } from '../../../../__generated__/globalTypes'
 import { UserTeamInviteCreate } from '../../../../__generated__/UserTeamInviteCreate'
+import { TeamManageWrapper } from '../TeamManageDialog/TeamManageWrapper'
 import { USER_TEAM_INVITE_CREATE } from './UserTeamInviteForm'
 import { UserTeamInviteForm } from '.'
 
@@ -89,7 +90,7 @@ describe('UserTeamInviteForm', () => {
     const { getByRole, getAllByText } = render(
       <MockedProvider>
         <TeamProvider>
-          <UserTeamInviteForm />
+          <UserTeamInviteForm emails={[]} />
         </TeamProvider>
       </MockedProvider>
     )
@@ -97,8 +98,13 @@ describe('UserTeamInviteForm', () => {
     fireEvent.click(email)
     expect(getByRole('button', { name: 'add user' })).toBeDisabled()
     fireEvent.change(email, { target: { value: '123abc@' } })
-    fireEvent.click(getByRole('button', { name: 'add user' }))
-    fireEvent.change(email, { target: { value: '' } })
+    await waitFor(() => {
+      fireEvent.click(getByRole('button', { name: 'add user' }))
+    })
+    await waitFor(() => {
+      fireEvent.change(email, { target: { value: ' ' } })
+    })
+
     await waitFor(() => {
       const inlineErrors = getAllByText('Required')
       expect(inlineErrors[0]).toHaveProperty('id', 'email-helper-text')
@@ -109,7 +115,7 @@ describe('UserTeamInviteForm', () => {
     const { getByRole, getByText } = render(
       <MockedProvider>
         <TeamProvider>
-          <UserTeamInviteForm />
+          <UserTeamInviteForm emails={[]} />
         </TeamProvider>
       </MockedProvider>
     )
@@ -130,7 +136,9 @@ describe('UserTeamInviteForm', () => {
     const { getByRole, getByText } = render(
       <MockedProvider mocks={[getTeams, getUserTeamMock1]}>
         <TeamProvider>
-          <UserTeamInviteForm />
+          <UserTeamInviteForm
+            emails={['siyangguccigang@example.com', 'edmondshen@example.com']}
+          />
         </TeamProvider>
       </MockedProvider>
     )
@@ -155,7 +163,9 @@ describe('UserTeamInviteForm', () => {
     const { getByRole, getByText } = render(
       <MockedProvider mocks={[getTeams, getUserTeamMock1]}>
         <TeamProvider>
-          <UserTeamInviteForm />
+          <UserTeamInviteForm
+            emails={['siyangguccigang@example.com', 'edmondshen@example.com']}
+          />
         </TeamProvider>
       </MockedProvider>
     )
@@ -184,7 +194,15 @@ describe('UserTeamInviteForm', () => {
         cache={cache}
       >
         <TeamProvider>
-          <UserTeamInviteForm />
+          <TeamManageWrapper>
+            {({ UserTeamList, UserTeamInviteList, UserTeamInviteForm }) => (
+              <>
+                {UserTeamList}
+                {UserTeamInviteList}
+                {UserTeamInviteForm}
+              </>
+            )}
+          </TeamManageWrapper>
         </TeamProvider>
       </MockedProvider>
     )
