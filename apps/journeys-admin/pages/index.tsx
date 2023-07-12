@@ -30,6 +30,18 @@ export const ACCEPT_USER_INVITE = gql`
   }
 `
 
+export const ACCEPT_ALL_INVITES = gql`
+  mutation AcceptAllInvites {
+    userTeamInviteAcceptAll {
+      id
+    }
+    userInviteAcceptAll {
+      id
+      acceptedAt
+    }
+  }
+`
+
 function IndexPage(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const AuthUser = useAuthUser()
