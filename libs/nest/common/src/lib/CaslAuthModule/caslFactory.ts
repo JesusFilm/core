@@ -11,6 +11,9 @@ import { PureAbility } from '@casl/ability'
  * Where `AppCaslFactory` is a class that extends `CaslFactory` and implements the `createAbility` method.
  */
 @Injectable()
-export abstract class CaslFactory {
-  abstract createAbility(user: { id: string }): Promise<PureAbility>
+export abstract class CaslFactory<Role = string> {
+  abstract createAbility(user: {
+    id: string
+    roles?: Role[]
+  }): Promise<PureAbility>
 }

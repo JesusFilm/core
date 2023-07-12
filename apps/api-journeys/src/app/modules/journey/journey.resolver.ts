@@ -120,7 +120,9 @@ export class JourneyResolver {
   ): Promise<Journey | null> {
     const result =
       idType === IdType.slug
-        ? await this.journeyService.getBySlug(id)
+        ? await this.prismaService.journey.findUnique({
+            where: { slug: id }
+          })
         : await this.prismaService.journey.findUnique({
             where: { id }
           })

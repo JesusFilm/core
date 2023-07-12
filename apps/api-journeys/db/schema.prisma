@@ -302,6 +302,8 @@ model UserRole {
   id     String @id @default(uuid())
   userId String
   roles  Role[]
+
+  @@unique([userId])
 }
 
 model JourneyProfile {

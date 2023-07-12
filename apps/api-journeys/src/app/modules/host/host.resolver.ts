@@ -1,13 +1,7 @@
 import { Args, Mutation, Resolver, Query } from '@nestjs/graphql'
 import { UserInputError, ForbiddenError } from 'apollo-server-errors'
 import { GraphQLError } from 'graphql'
-
-import { GqlAuthGuard } from '@core/nest/gqlAuthGuard/GqlAuthGuard'
-import {
-  CaslAbility,
-  CaslAccessible,
-  CaslGuard
-} from '@core/nest/common/CaslAuthModule'
+import { CaslAbility, CaslAccessible } from '@core/nest/common/CaslAuthModule'
 import { UseGuards } from '@nestjs/common'
 import { subject } from '@casl/ability'
 import { Host, Prisma } from '.prisma/api-journeys-client'
@@ -15,6 +9,7 @@ import { Action, AppAbility } from '../../lib/casl/caslFactory'
 import { HostUpdateInput, HostCreateInput } from '../../__generated__/graphql'
 import { PrismaService } from '../../lib/prisma.service'
 import { JourneyService } from '../journey/journey.service'
+import { AppCaslGuard } from '../../lib/casl/caslGuard'
 
 @Resolver('Host')
 export class HostResolver {
@@ -24,7 +19,7 @@ export class HostResolver {
   ) {}
 
   @Query()
-  @UseGuards(GqlAuthGuard, CaslGuard)
+  @UseGuards(AppCaslGuard)
   async hosts(
     @CaslAccessible('Host') accessibleHosts: Prisma.HostWhereInput,
     @Args('teamId') teamId: string
@@ -35,7 +30,7 @@ export class HostResolver {
   }
 
   @Mutation()
-  @UseGuards(GqlAuthGuard, CaslGuard)
+  @UseGuards(AppCaslGuard)
   async hostCreate(
     @CaslAbility() ability: AppAbility,
     @Args('teamId') teamId: string,
@@ -61,7 +56,7 @@ export class HostResolver {
   }
 
   @Mutation()
-  @UseGuards(GqlAuthGuard, CaslGuard)
+  @UseGuards(AppCaslGuard)
   async hostUpdate(
     @CaslAbility() ability: AppAbility,
     @Args('id') id: string,
@@ -87,7 +82,7 @@ export class HostResolver {
   }
 
   @Mutation()
-  @UseGuards(GqlAuthGuard, CaslGuard)
+  @UseGuards(AppCaslGuard)
   async hostDelete(
     @CaslAbility() ability: AppAbility,
     @Args('id') id: string

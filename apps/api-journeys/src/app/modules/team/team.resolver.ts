@@ -1,6 +1,5 @@
 import { Resolver, Query, Mutation, Args } from '@nestjs/graphql'
 import { UseGuards } from '@nestjs/common'
-import { GqlAuthGuard } from '@core/nest/gqlAuthGuard/GqlAuthGuard'
 import { Team, Prisma } from '.prisma/api-journeys-client'
 import { subject } from '@casl/ability'
 import { ForbiddenError } from 'apollo-server-errors'
@@ -9,18 +8,18 @@ import { CurrentUserId } from '@core/nest/decorators/CurrentUserId'
 import {
   CaslAbility,
   CaslAccessible,
-  CaslPolicy,
-  CaslGuard
+  CaslPolicy
 } from '@core/nest/common/CaslAuthModule'
 import { PrismaService } from '../../lib/prisma.service'
 import { Action, AppAbility } from '../../lib/casl/caslFactory'
+import { AppCaslGuard } from '../../lib/casl/caslGuard'
 
 @Resolver('Team')
 export class TeamResolver {
   constructor(private readonly prismaService: PrismaService) {}
 
   @Query()
-  @UseGuards(GqlAuthGuard, CaslGuard)
+  @UseGuards(AppCaslGuard)
   async teams(
     @CaslAccessible('Team') accessibleTeams: Prisma.TeamWhereInput
   ): Promise<Team[]> {
@@ -30,7 +29,7 @@ export class TeamResolver {
   }
 
   @Query()
-  @UseGuards(GqlAuthGuard, CaslGuard)
+  @UseGuards(AppCaslGuard)
   async team(
     @CaslAbility() ability: AppAbility,
     @Args('id') id: string
@@ -48,7 +47,7 @@ export class TeamResolver {
   }
 
   @Mutation()
-  @UseGuards(GqlAuthGuard, CaslGuard)
+  @UseGuards(AppCaslGuard)
   @CaslPolicy((ability) => ability.can(Action.Create, 'Team'))
   async teamCreate(
     @CurrentUserId() userId: string,
@@ -60,7 +59,7 @@ export class TeamResolver {
   }
 
   @Mutation()
-  @UseGuards(GqlAuthGuard, CaslGuard)
+  @UseGuards(AppCaslGuard)
   async teamUpdate(
     @CaslAbility() ability: AppAbility,
     @Args('id') id: string,

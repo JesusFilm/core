@@ -1,13 +1,8 @@
 import { Resolver, Query, Mutation, Args } from '@nestjs/graphql'
 import { UseGuards } from '@nestjs/common'
-import { GqlAuthGuard } from '@core/nest/gqlAuthGuard/GqlAuthGuard'
 import { subject } from '@casl/ability'
 import { ForbiddenError } from 'apollo-server-errors'
-import {
-  CaslGuard,
-  CaslAccessible,
-  CaslAbility
-} from '@core/nest/common/CaslAuthModule'
+import { CaslAccessible, CaslAbility } from '@core/nest/common/CaslAuthModule'
 import { UserTeamInvite, Prisma } from '.prisma/api-journeys-client'
 import { GraphQLError } from 'graphql'
 import { CurrentUserId } from '@core/nest/decorators/CurrentUserId'
@@ -19,13 +14,14 @@ import {
   UserTeamRole
 } from '../../__generated__/graphql'
 import { PrismaService } from '../../lib/prisma.service'
+import { AppCaslGuard } from '../../lib/casl/caslGuard'
 
 @Resolver('userTeamInvite')
 export class TeamResolver {
   constructor(private readonly prismaService: PrismaService) {}
 
   @Query()
-  @UseGuards(GqlAuthGuard, CaslGuard)
+  @UseGuards(AppCaslGuard)
   async userTeamInvites(
     @CaslAccessible('UserTeamInvite')
     accessibleUserTeamInvites: Prisma.UserTeamInviteWhereInput,
@@ -39,7 +35,7 @@ export class TeamResolver {
   }
 
   @Mutation()
-  @UseGuards(GqlAuthGuard, CaslGuard)
+  @UseGuards(AppCaslGuard)
   async userTeamInviteCreate(
     @CaslAbility() ability: AppAbility,
     @CurrentUserId() senderId: string,
@@ -79,7 +75,7 @@ export class TeamResolver {
   }
 
   @Mutation()
-  @UseGuards(GqlAuthGuard, CaslGuard)
+  @UseGuards(AppCaslGuard)
   async userTeamInviteRemove(
     @CaslAbility() ability: AppAbility,
     @Args('id') id: string
@@ -106,7 +102,7 @@ export class TeamResolver {
   }
 
   @Mutation()
-  @UseGuards(GqlAuthGuard, CaslGuard)
+  @UseGuards(AppCaslGuard)
   async userTeamInviteAcceptAll(
     @CurrentUser()
     user: User

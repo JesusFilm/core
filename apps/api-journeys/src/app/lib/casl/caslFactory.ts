@@ -1,6 +1,10 @@
 import { Injectable } from '@nestjs/common'
 import { PureAbility, AbilityBuilder } from '@casl/ability'
-import { UserTeamRole } from '.prisma/api-journeys-client'
+import {
+  UserTeamRole,
+  UserJourneyRole,
+  Role
+} from '.prisma/api-journeys-client'
 import { CaslFactory } from '@core/nest/common/CaslAuthModule'
 import { createPrismaAbility, PrismaQuery } from './caslPrisma'
 import { PrismaSubjects } from './__generated__/prismaSubjects'
@@ -18,9 +22,13 @@ export type AppSubjects = PrismaSubjects | ExtendedSubjects
 export type AppAbility = PureAbility<[Action, AppSubjects], PrismaQuery>
 
 @Injectable()
-export class AppCaslFactory extends CaslFactory {
-  async createAbility(user: { id: string }): Promise<AppAbility> {
+export class AppCaslFactory extends CaslFactory<Role> {
+  async createAbility(user: {
+    id: string
+    roles?: Role[]
+  }): Promise<AppAbility> {
     const { can, build } = new AbilityBuilder<AppAbility>(createPrismaAbility)
+    console.log('roles', user.roles)
 
     can(Action.Create, 'Team')
     can(Action.Read, 'Team', {
@@ -109,6 +117,26 @@ export class AppCaslFactory extends CaslFactory {
           userTeams: {
             some: { userId: user.id }
           }
+        }
+      }
+    })
+    can(Action.Manage, 'Journey', {
+      team: {
+        is: {
+          userTeams: {
+            some: {
+              userId: user.id,
+              role: { in: [UserTeamRole.manager, UserTeamRole.member] }
+            }
+          }
+        }
+      }
+    })
+    can(Action.Manage, 'Journey', {
+      userJourneys: {
+        some: {
+          userId: user.id,
+          role: { in: [UserJourneyRole.owner, UserJourneyRole.editor] }
         }
       }
     })
