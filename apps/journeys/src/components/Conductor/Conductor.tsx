@@ -279,7 +279,11 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
                       >
                         {showHeaderFooter && <StepHeader />}
                         <BlockRenderer block={block} />
-                        {showHeaderFooter && <StepFooter />}
+                        <StepFooter
+                          sx={{
+                            visibility: showHeaderFooter ? 'visible' : 'hidden'
+                          }}
+                        />
                       </Stack>
                     </Fade>
                   </ThemeProvider>

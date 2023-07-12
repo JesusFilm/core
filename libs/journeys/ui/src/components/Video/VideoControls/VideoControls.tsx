@@ -1,4 +1,10 @@
-import { ReactElement, useState, useEffect, MouseEventHandler } from 'react'
+import {
+  ReactElement,
+  useState,
+  useEffect,
+  MouseEventHandler,
+  useCallback
+} from 'react'
 import Player from 'video.js/dist/types/player'
 import Container from '@mui/material/Container'
 import Box from '@mui/material/Box'
@@ -46,6 +52,10 @@ export function VideoControls({
   const [volume, setVolume] = useState(0)
   // Explicit muted state since player.muted state lags when video paused
   const [muted, setMuted] = useState(mute)
+  // Explicit fullscreen state since player.fullscreen state lags when video paused
+  const [fullscreen, setFullscreen] = useState(
+    fscreen.fullscreenElement != null || player.isFullscreen()
+  )
   const { showHeaderFooter, setShowHeaderFooter } = useBlocks()
 
   // EndAt could be 0 if player not yet initialised
@@ -56,6 +66,17 @@ export function VideoControls({
       : secondsToTimeFormat(durationSeconds, { trimZeroes: true })
 
   const visible = !playing || active || loading
+
+  const handleShowHideFooter = useCallback(
+    (fullscreen: boolean): void => {
+      if (isYoutube && !playing) {
+        setShowHeaderFooter(false)
+      } else {
+        setShowHeaderFooter(!fullscreen)
+      }
+    },
+    [isYoutube, playing, setShowHeaderFooter]
+  )
 
   useEffect(() => {
     const handleVideoPlay = (): void => {
@@ -98,11 +119,10 @@ export function VideoControls({
     const handleUserInactive = (): void => setActive(false)
     const handleVideoVolumeChange = (): void => setVolume(player.volume() * 100)
     const handleFullscreenChange = (): void => {
-      if (fscreen.fullscreenEnabled) {
-        setShowHeaderFooter(fscreen.fullscreenElement == null)
-      } else {
-        setShowHeaderFooter(!player.isFullscreen())
-      }
+      const fullscreen =
+        fscreen.fullscreenElement != null || player.isFullscreen()
+      setFullscreen(fullscreen)
+      handleShowHideFooter(fullscreen)
     }
 
     setVolume(player.volume() * 100)
@@ -132,27 +152,35 @@ export function VideoControls({
         player.off('fullscreenchange', handleFullscreenChange)
       }
     }
-  }, [player, setShowHeaderFooter, startAt, endAt, autoplay])
+  }, [player, handleShowHideFooter, startAt, endAt, autoplay])
 
   function handlePlay(): void {
     if (!playing) {
       void player.play()
       // Youtube breaks when this is gone
       setPlaying(true)
+      if (isYoutube) {
+        if (player.hasStarted_) {
+          setShowHeaderFooter(!fullscreen)
+        } else {
+          setShowHeaderFooter(false)
+          setTimeout(() => setShowHeaderFooter(!fullscreen), 3500)
+        }
+      }
     } else {
       void player.pause()
       setPlaying(false)
+      if (isYoutube) setShowHeaderFooter(false)
     }
   }
 
   function handleFullscreen(): void {
-    if (!showHeaderFooter) {
+    if (fullscreen) {
       if (fscreen.fullscreenEnabled) {
         void fscreen.exitFullscreen()
       } else {
         void player.exitFullscreen()
       }
-      setShowHeaderFooter(true)
     } else {
       if (fscreen.fullscreenEnabled) {
         const activeCard = document.querySelectorAll(
@@ -160,7 +188,6 @@ export function VideoControls({
         )[0]
         if (activeCard != null) {
           void fscreen.requestFullscreen(activeCard)
-          setShowHeaderFooter(false)
         }
       } else {
         void player.requestFullscreen()
@@ -218,7 +245,7 @@ export function VideoControls({
         zIndex: 1000,
         top: 0,
         right: 0,
-        bottom: { xs: showHeaderFooter ? 50 : 0, lg: 4 },
+        bottom: { xs: 0, lg: 4 },
         left: 0,
         cursor: visible ? undefined : 'none',
         userSelect: 'none',
@@ -253,7 +280,7 @@ export function VideoControls({
           <Stack
             flexDirection="row"
             justifyContent="flex-end"
-            sx={{ mt: '50px', display: { lg: 'none' } }}
+            sx={{ mt: '54px', display: { lg: 'none' } }}
           >
             <IconButton
               aria-label="mute"
@@ -303,7 +330,10 @@ export function VideoControls({
             sx={{
               zIndex: 1,
               transitionDelay: visible ? undefined : '0.5s',
-              pb: 2
+              pb: {
+                xs: showHeaderFooter || isYoutube ? 15 : 2,
+                lg: 2
+              }
             }}
             onClick={(event) => event.stopPropagation()}
           >
@@ -428,10 +458,10 @@ export function VideoControls({
                   onClick={handleFullscreen}
                   sx={{ py: 0, px: 2 }}
                 >
-                  {showHeaderFooter ? (
-                    <FullscreenRounded />
-                  ) : (
+                  {fullscreen ? (
                     <FullscreenExitRounded />
+                  ) : (
+                    <FullscreenRounded />
                   )}
                 </IconButton>
               </Stack>
