@@ -8,7 +8,7 @@ import { UserTeamInviteForm } from '../../UserTeamInviteForm'
 import { GetUserTeamsAndInvites } from '../../../../../__generated__/GetUserTeamsAndInvites'
 
 interface TeamManageWrapperProps {
-  children: (bag: {
+  children: (props: {
     data?: GetUserTeamsAndInvites
     UserTeamList: () => ReactElement
     UserTeamInviteList: () => ReactElement

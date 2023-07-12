@@ -5,7 +5,7 @@ import { GET_USER_TEAMS_AND_INVITES } from '../../../../libs/useUserTeamsAndInvi
 import { GetUserTeamsAndInvites } from '../../../../../__generated__/GetUserTeamsAndInvites'
 import { GET_TEAMS, TeamProvider } from '../../TeamProvider'
 import { GetTeams } from '../../../../../__generated__/GetTeams'
-import { TeamMembersList } from './TeamManageWrapper'
+import { TeamManageWrapper } from './TeamManageWrapper'
 
 jest.mock('react-i18next', () => ({
   __esModule: true,
@@ -79,7 +79,15 @@ describe('TeamMembersList', () => {
     const { getByText } = render(
       <MockedProvider mocks={mocks}>
         <TeamProvider>
-          <TeamMembersList />
+          <TeamManageWrapper>
+            {({ UserTeamList, UserTeamInviteList, UserTeamInviteForm }) => (
+              <>
+                {UserTeamList()}
+                {UserTeamInviteList()}
+                {UserTeamInviteForm()}
+              </>
+            )}
+          </TeamManageWrapper>
         </TeamProvider>
       </MockedProvider>
     )
