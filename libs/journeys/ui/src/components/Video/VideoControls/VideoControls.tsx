@@ -1,10 +1,4 @@
-import {
-  ReactElement,
-  useState,
-  useEffect,
-  MouseEventHandler,
-  useCallback
-} from 'react'
+import { ReactElement, useState, useEffect, MouseEventHandler } from 'react'
 import Player from 'video.js/dist/types/player'
 import Container from '@mui/material/Container'
 import Box from '@mui/material/Box'
