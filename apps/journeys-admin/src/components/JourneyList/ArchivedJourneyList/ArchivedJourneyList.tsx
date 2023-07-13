@@ -66,6 +66,7 @@ export function ArchivedJourneyList({
 
   async function handleRestoreSubmit(): Promise<void> {
     try {
+      console.log(authUser)
       const journeyIds = data?.journeys
         ?.filter(
           (journey) =>
