@@ -943,7 +943,14 @@ describe('JourneyResolver', () => {
         slug: `${journey.title}-copy`,
         title: `${journey.title} copy`,
         template: false,
-        teamID: undefined
+        teamID: undefined,
+        userJourneys: {
+          create: {
+            userId: 'userId',
+            role: UserJourneyRole.owner,
+            openedAt: new Date()
+          }
+        }
       })
     })
 
@@ -961,20 +968,13 @@ describe('JourneyResolver', () => {
         status: JourneyStatus.draft,
         publishedAt: undefined,
         template: false,
-        primaryImageBlockId: undefined
-      })
-    })
-
-    it('duplicates a UserJourney', async () => {
-      mockUuidv4.mockReturnValueOnce('duplicateJourneyId')
-      await resolver.journeyDuplicate('journeyId', 'userId')
-      expect(prismaService.userJourney.create).toHaveBeenCalledWith({
-        data: {
-          id: undefined,
-          userId: 'userId',
-          journeyId: 'duplicateJourneyId',
-          role: UserJourneyRole.owner,
-          openedAt: new Date()
+        primaryImageBlockId: undefined,
+        userJourneys: {
+          create: {
+            userId: 'userId',
+            role: UserJourneyRole.owner,
+            openedAt: new Date()
+          }
         }
       })
     })
@@ -1019,7 +1019,14 @@ describe('JourneyResolver', () => {
         status: JourneyStatus.draft,
         slug: `${journey.title}-copy-2`,
         title: `${journey.title} copy 2`,
-        template: false
+        template: false,
+        userJourneys: {
+          create: {
+            userId: 'userId',
+            role: UserJourneyRole.owner,
+            openedAt: new Date()
+          }
+        }
       })
     })
 

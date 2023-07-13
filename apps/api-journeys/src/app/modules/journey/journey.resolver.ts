@@ -363,14 +363,16 @@ export class JourneyResolver {
     let retry = true
     while (retry) {
       try {
-        const journey = await this.prismaService.journey.create({ data: input })
-        await this.prismaService.userJourney.create({
+        const journey = await this.prismaService.journey.create({
           data: {
-            id: uuidv4(),
-            userId,
-            journeyId: journey.id,
-            role: UserJourneyRole.owner,
-            openedAt: new Date()
+            ...input,
+            userJourneys: {
+              create: {
+                userId,
+                role: UserJourneyRole.owner,
+                openedAt: new Date()
+              }
+            }
           }
         })
         // save base blocks
