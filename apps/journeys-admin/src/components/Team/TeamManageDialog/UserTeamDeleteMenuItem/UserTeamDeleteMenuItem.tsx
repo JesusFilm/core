@@ -40,10 +40,11 @@ export function UserTeamDeleteMenuItem({
     }
   )
 
-  const handleClick = async (): Promise<void> => {
+  async function handleClick(): Promise<void> {
     await userTeamDelete()
     onClick?.()
   }
+
   return (
     <MenuItem
       label="Remove"

@@ -67,8 +67,7 @@ export function UserTeamListItem({
       case UserTeamRole.guest:
         return t('Guest')
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [role])
+  }, [role, t])
 
   const handleClick = (event: MouseEvent<HTMLElement>): void => {
     setAnchorEl(event.currentTarget)

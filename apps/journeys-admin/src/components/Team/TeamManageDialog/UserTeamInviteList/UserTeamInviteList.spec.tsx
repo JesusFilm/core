@@ -4,9 +4,9 @@ import {
   GetUserTeamsAndInvites_userTeams as UserTeam
 } from '../../../../../__generated__/GetUserTeamsAndInvites'
 import { UserTeamRole } from '../../../../../__generated__/globalTypes'
-import { UserTeamInvitesList } from './UserTeamInvitesList'
+import { UserTeamInviteList } from './UserTeamInviteList'
 
-describe('UserTeamInvitesList', () => {
+describe('UserTeamInviteList', () => {
   const mockData: GetUserTeamsAndInvites = {
     userTeams: [
       {
@@ -15,11 +15,11 @@ describe('UserTeamInvitesList', () => {
         role: UserTeamRole.manager,
         user: {
           __typename: 'User',
-          email: 'tatainikora@example.com',
-          firstName: 'Tatai',
+          email: 'miguelohara@example.com',
+          firstName: 'Miguel',
           id: 'userId',
           imageUrl: 'https://example.com/image.jpg',
-          lastName: 'Nikora'
+          lastName: "O'Hara"
         }
       },
       {
@@ -28,11 +28,11 @@ describe('UserTeamInvitesList', () => {
         role: UserTeamRole.member,
         user: {
           __typename: 'User',
-          email: 'SiyangTheManMyStan@example.com',
-          firstName: 'Siyang',
+          email: 'hobiebrown@example.com',
+          firstName: 'Hobie',
           id: 'userId2',
           imageUrl: 'https://example.com/image.jpg',
-          lastName: 'Cao'
+          lastName: 'Brown'
         }
       }
     ],
@@ -64,11 +64,11 @@ describe('UserTeamInvitesList', () => {
     role: UserTeamRole.manager,
     user: {
       __typename: 'User',
-      email: 'tatainikora@example.com',
-      firstName: 'Tatai',
+      email: 'miguelohara@example.com',
+      firstName: 'Miguel',
       id: 'userId',
       imageUrl: 'https://example.com/image.jpg',
-      lastName: 'Nikora'
+      lastName: "O'Hara"
     }
   }
 
@@ -78,16 +78,16 @@ describe('UserTeamInvitesList', () => {
     role: UserTeamRole.member,
     user: {
       __typename: 'User',
-      email: 'SiyangTheManMyStan@example.com',
-      firstName: 'Siyang',
+      email: 'hobiebrown@example.com',
+      firstName: 'Hobie',
       id: 'userId2',
       imageUrl: 'https://example.com/image.jpg',
-      lastName: 'Cao'
+      lastName: 'Brown'
     }
   }
   it('shows the emails of everyone invited to team', () => {
     const { getByText, getAllByText, getAllByRole } = render(
-      <UserTeamInvitesList data={mockData} currentUserTeam={mockCurrentUser} />
+      <UserTeamInviteList data={mockData} currentUserTeam={mockCurrentUser} />
     )
 
     const button = getAllByRole('button')[0]
@@ -101,7 +101,7 @@ describe('UserTeamInvitesList', () => {
 
   it('disabled pending button if user does not have correct permissions', () => {
     const { getAllByRole } = render(
-      <UserTeamInvitesList data={mockData} currentUserTeam={mockCurrentUser2} />
+      <UserTeamInviteList data={mockData} currentUserTeam={mockCurrentUser2} />
     )
 
     const button = getAllByRole('button')[0]

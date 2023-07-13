@@ -1,1 +1,0 @@
-export { UserTeamInvitesList } from './UserTeamInvitesList'
