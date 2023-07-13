@@ -13,9 +13,6 @@ import { BlockFields_VideoBlock as VideoBlock } from '../../../libs/block/__gene
 import { getJourneyRTL } from '../../../libs/rtl'
 import { OverlayContent } from '../OverlayContent'
 
-import 'videojs-youtube'
-import 'video.js/dist/video-js.css'
-
 const DynamicBackgroundVideo = dynamic<
   TreeBlock<VideoBlock & { setLoading: (loading: boolean) => void }>
 >(
