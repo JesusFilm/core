@@ -26,7 +26,7 @@ jest.mock('../../../../libs/useCurrentUser', () => ({
     }
   })
 }))
-const user1 = { id: 'userId', email: 'siyangguccigang@example.com' }
+const user1 = { id: 'userId', email: 'miguelohara@example.com' }
 
 describe('TeamMembersList', () => {
   const getUserTeamMock1: MockedResponse<GetUserTeamsAndInvites> = {
@@ -38,16 +38,16 @@ describe('TeamMembersList', () => {
       data: {
         userTeams: [
           {
-            id: 'userTeamId',
             __typename: 'UserTeam',
+            id: 'userTeamId',
             role: UserTeamRole.manager,
             user: {
               __typename: 'User',
-              email: 'siyangguccigang@example.com',
-              firstName: 'Siyang',
+              email: 'miguelohara@example.com',
+              firstName: 'Miguel',
               id: 'userId',
-              imageUrl: 'imageURL',
-              lastName: 'Gang'
+              imageUrl: 'https://example.com/image.jpg',
+              lastName: "O'Hara"
             }
           }
         ],
@@ -92,7 +92,7 @@ describe('TeamMembersList', () => {
       </MockedProvider>
     )
     await waitFor(() => {
-      expect(getByText('siyangguccigang@example.com')).toBeInTheDocument()
+      expect(getByText('miguelohara@example.com')).toBeInTheDocument()
       expect(getByText('edmond@example.com')).toBeInTheDocument()
     })
   })

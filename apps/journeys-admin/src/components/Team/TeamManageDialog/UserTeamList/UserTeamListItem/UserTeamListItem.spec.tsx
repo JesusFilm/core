@@ -6,16 +6,16 @@ import { UserTeamListItem, USER_TEAM_UPDATE } from './UserTeamListItem'
 
 describe('UserTeamListItem', () => {
   const mockUser: UserTeam = {
-    id: 'userTeamId',
-    role: UserTeamRole.member,
     __typename: 'UserTeam',
+    id: 'userTeamId',
+    role: UserTeamRole.manager,
     user: {
       __typename: 'User',
+      email: 'miguelohara@example.com',
+      firstName: 'Miguel',
       id: 'userId',
-      email: 'edmondshen@example.com',
-      firstName: 'Edmond',
-      lastName: 'Shen',
-      imageUrl: 'image'
+      imageUrl: 'https://example.com/image.jpg',
+      lastName: "O'Hara"
     }
   }
 
