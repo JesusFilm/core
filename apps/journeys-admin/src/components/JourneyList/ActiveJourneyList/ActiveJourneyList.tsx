@@ -149,10 +149,10 @@ export function ActiveJourneyList({
                 }}
               >
                 <Typography variant="subtitle1" align="center" gutterBottom>
-                  No journeys to display.
+                  {t('No journeys to display.')}
                 </Typography>
                 <Typography variant="caption" align="center" gutterBottom>
-                  Create a journey, then find it here.
+                  {t('Create a journey, then find it here.')}
                 </Typography>
                 <AddJourneyButton />
               </Card>
