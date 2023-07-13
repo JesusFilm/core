@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing'
 import { v4 as uuidv4 } from 'uuid'
 import { getPowerBiEmbed } from '@core/nest/powerBi/getPowerBiEmbed'
 import { Journey, UserTeamRole } from '.prisma/api-journeys-client'
-import { omit } from 'lodash'
+import omit from 'lodash/omit'
 
 import {
   IdType,

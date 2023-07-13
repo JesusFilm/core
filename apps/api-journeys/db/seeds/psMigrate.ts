@@ -1,6 +1,8 @@
 import { aql } from 'arangojs'
 import { PrismaClient, JourneyStatus, Block } from '.prisma/api-journeys-client'
-import { isEmpty, omit } from 'lodash'
+import omit from 'lodash/omit'
+import isEmpty from 'lodash/isEmpty'
+
 import { ArangoDB } from '../db'
 
 const prisma = new PrismaClient()

@@ -1,7 +1,7 @@
 import { GraphQLError } from 'graphql'
 import { UseGuards } from '@nestjs/common'
 import { Args, Mutation, Resolver, ResolveField, Parent } from '@nestjs/graphql'
-import { omit } from 'lodash'
+import omit from 'lodash/omit'
 
 import {
   Action,

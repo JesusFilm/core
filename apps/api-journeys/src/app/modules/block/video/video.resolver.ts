@@ -4,7 +4,7 @@ import { object, string } from 'yup'
 import fetch from 'node-fetch'
 import { GraphQLError } from 'graphql'
 import { Block, VideoBlockSource } from '.prisma/api-journeys-client'
-import { omit } from 'lodash'
+import omit from 'lodash/omit'
 
 import { BlockService } from '../block.service'
 import {

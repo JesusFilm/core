@@ -1,6 +1,6 @@
 import { UseGuards } from '@nestjs/common'
 import { Args, Mutation, Resolver } from '@nestjs/graphql'
-import { omit } from 'lodash'
+import omit from 'lodash/omit'
 
 import {
   IconBlock,

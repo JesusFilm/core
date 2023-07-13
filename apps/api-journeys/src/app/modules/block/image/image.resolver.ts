@@ -4,7 +4,7 @@ import { GraphQLError } from 'graphql'
 import { encode } from 'blurhash'
 import fetch from 'node-fetch'
 import sharp from 'sharp'
-import { omit } from 'lodash'
+import omit from 'lodash/omit'
 
 import { BlockService } from '../block.service'
 import {

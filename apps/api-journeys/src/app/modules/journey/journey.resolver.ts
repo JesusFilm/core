@@ -26,7 +26,8 @@ import {
   UserTeamRole
 } from '.prisma/api-journeys-client'
 import { FromPostgresql } from '@core/nest/decorators/FromPostgresql'
-import { isEmpty, omit } from 'lodash'
+import isEmpty from 'lodash/isEmpty'
+import omit from 'lodash/omit'
 
 import { BlockService } from '../block/block.service'
 import {
@@ -459,7 +460,8 @@ export class JourneyResolver {
       })
       if (host == null || journey == null || host?.teamId !== journey.teamId) {
         throw new GraphQLError(
-          'the team id of host doest not match team id of journey', { extensions: { code: 'FORBIDDEN' } }
+          'the team id of host doest not match team id of journey',
+          { extensions: { code: 'FORBIDDEN' } }
         )
       }
     }

@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing'
-import { omit } from 'lodash'
+import omit from 'lodash/omit'
 
 import { BlockService } from '../../block/block.service'
 import { JourneyService } from '../../journey/journey.service'

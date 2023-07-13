@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing'
-import { omit } from 'lodash'
+import omit from 'lodash/omit'
 
 import { JourneyStatus } from '../../../__generated__/graphql'
 import { BlockResolver } from '../../block/block.resolver'
