@@ -18,7 +18,7 @@ const Template: Story<ComponentProps<typeof UserTeamInviteForm>> = () => (
     <Stack flexGrow={1} sx={{ m: 4, mt: 2 }}>
       <Stack direction="row" alignItems="center" sx={{ mb: 4 }}>
         <GroupAddIcon />
-        <Typography variant="subtitle1" sx={{ marginLeft: 3 }}>
+        <Typography variant="subtitle1" sx={{ ml: 3 }}>
           Add team member by Email
         </Typography>
       </Stack>

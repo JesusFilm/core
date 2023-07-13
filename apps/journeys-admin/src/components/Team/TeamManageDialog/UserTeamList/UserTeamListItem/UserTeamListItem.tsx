@@ -1,6 +1,6 @@
 import { ReactElement, useState, useMemo, MouseEvent } from 'react'
 import ListItem from '@mui/material/ListItem'
-import { compact } from 'lodash'
+import compact from 'lodash/compact'
 import Button from '@mui/material/Button'
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown'
 import ListItemAvatar from '@mui/material/ListItemAvatar'
@@ -14,11 +14,11 @@ import GroupIcon from '@mui/icons-material/Group'
 import PersonIcon from '@mui/icons-material/Person'
 import { gql, useMutation } from '@apollo/client'
 import { useTranslation } from 'react-i18next'
-import { UserTeamRole } from '../../../../../__generated__/globalTypes'
-import { GetUserTeamsAndInvites_userTeams as UserTeam } from '../../../../../__generated__/GetUserTeamsAndInvites'
-import { MenuItem } from '../../../MenuItem'
-import { UserTeamUpdate } from '../../../../../__generated__/UserTeamUpdate'
-import { UserTeamDeleteMenuItem } from '../UserTeamDeleteMenuItem'
+import { UserTeamRole } from '../../../../../../__generated__/globalTypes'
+import { GetUserTeamsAndInvites_userTeams as UserTeam } from '../../../../../../__generated__/GetUserTeamsAndInvites'
+import { MenuItem } from '../../../../MenuItem'
+import { UserTeamUpdate } from '../../../../../../__generated__/UserTeamUpdate'
+import { UserTeamDeleteMenuItem } from '../../UserTeamDeleteMenuItem'
 
 interface UserTeamListItemProps {
   user: UserTeam
@@ -26,8 +26,8 @@ interface UserTeamListItemProps {
 }
 
 export const USER_TEAM_UPDATE = gql`
-  mutation UserTeamUpdate($userTeamUpdateId: ID!, $input: UserTeamUpdateInput) {
-    userTeamUpdate(id: $userTeamUpdateId, input: $input) {
+  mutation UserTeamUpdate($id: ID!, $input: UserTeamUpdateInput) {
+    userTeamUpdate(id: $id, input: $input) {
       role
       id
       user {
@@ -146,7 +146,7 @@ export function UserTeamListItem({
               handleClose()
               await userTeamUpdate({
                 variables: {
-                  userTeamUpdateId: id,
+                  id,
                   input: { role: UserTeamRole.manager }
                 }
               })
@@ -159,7 +159,7 @@ export function UserTeamListItem({
               handleClose()
               await userTeamUpdate({
                 variables: {
-                  userTeamUpdateId: id,
+                  id,
                   input: { role: UserTeamRole.member }
                 }
               })
@@ -172,7 +172,7 @@ export function UserTeamListItem({
               handleClose()
               await userTeamUpdate({
                 variables: {
-                  userTeamUpdateId: id,
+                  id,
                   input: { role: UserTeamRole.guest }
                 }
               })

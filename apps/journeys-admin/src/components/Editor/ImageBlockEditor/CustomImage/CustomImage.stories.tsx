@@ -1,7 +1,7 @@
 import { Story, Meta } from '@storybook/react'
 import Box from '@mui/material/Box'
 import { MockedProvider } from '@apollo/client/testing'
-import { noop } from 'lodash'
+import noop from 'lodash/noop'
 import { simpleComponentConfig } from '../../../../libs/storybook'
 import { CustomImage } from '.'
 

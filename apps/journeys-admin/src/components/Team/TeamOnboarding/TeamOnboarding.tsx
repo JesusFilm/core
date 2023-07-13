@@ -40,13 +40,15 @@ export function TeamOnboarding(): ReactElement {
           <TeamManageWrapper>
             {({
               data,
-              UserTeamList,
-              UserTeamInviteList,
-              UserTeamInviteForm
+              userTeamList,
+              userTeamInviteList,
+              userTeamInviteForm
             }) => (
               <Card sx={{ width: { sm: '444px' } }}>
                 <CardHeader
-                  title={t(`Invite teammates to ${activeTeam.title}`)}
+                  title={t('Invite teammates to {{ title }}', {
+                    title: activeTeam.title
+                  })}
                   titleTypographyProps={{ variant: 'h6' }}
                   sx={{ py: 5, px: 6 }}
                 />
@@ -55,13 +57,13 @@ export function TeamOnboarding(): ReactElement {
                 <CardContent
                   sx={{ padding: 6, maxHeight: '300px', overflowY: 'auto' }}
                 >
-                  {UserTeamList}
-                  {UserTeamInviteList}
+                  {userTeamList}
+                  {userTeamInviteList}
                 </CardContent>
 
                 <Divider />
                 <CardContent sx={{ px: 6, py: 4, width: '75%' }}>
-                  {UserTeamInviteForm}
+                  {userTeamInviteForm}
                 </CardContent>
                 <CardContent
                   sx={{

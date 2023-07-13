@@ -1,18 +1,21 @@
-import { ReactElement, ReactNode } from 'react'
+import { ReactElement, ReactNode, useEffect, useMemo } from 'react'
 import { UserTeamList } from '../UserTeamList'
 import { UserTeamInvitesList } from '../UserTeamInvitesList'
 import { useTeam } from '../../TeamProvider'
 import { useCurrentUser } from '../../../../libs/useCurrentUser'
 import { useUserTeamsAndInvitesQuery } from '../../../../libs/useUserTeamsAndInvitesQuery'
 import { UserTeamInviteForm } from '../../UserTeamInviteForm'
-import { GetUserTeamsAndInvites } from '../../../../../__generated__/GetUserTeamsAndInvites'
+import {
+  GetUserTeamsAndInvites,
+  GetUserTeamsAndInvites_userTeams as UserTeam
+} from '../../../../../__generated__/GetUserTeamsAndInvites'
 
 interface TeamManageWrapperProps {
   children: (props: {
     data?: GetUserTeamsAndInvites
-    UserTeamList: ReactElement
-    UserTeamInviteList: ReactElement
-    UserTeamInviteForm: ReactElement
+    userTeamList: ReactElement
+    userTeamInviteList: ReactElement
+    userTeamInviteForm: ReactElement
   }) => ReactNode
 }
 
@@ -29,26 +32,31 @@ export function TeamManageWrapper({
       : undefined
   )
 
+  useEffect(() => {
+    void loadUser()
+  }, [loadUser])
+
+  const currentUserTeam: UserTeam | undefined = useMemo(() => {
+    return data?.userTeams?.find(({ user: { email } }) => {
+      return email === currentUser?.email
+    })
+  }, [data, currentUser])
+
   return (
     <>
       {children({
         data,
-        UserTeamList: (
+        userTeamList: (
           <UserTeamList
             data={data}
-            currentUser={currentUser}
-            loadUser={loadUser}
+            currentUserTeam={currentUserTeam}
             loading={loading}
           />
         ),
-        UserTeamInviteList: (
-          <UserTeamInvitesList
-            data={data}
-            currentUser={currentUser}
-            loadUser={loadUser}
-          />
+        userTeamInviteList: (
+          <UserTeamInvitesList data={data} currentUserTeam={currentUserTeam} />
         ),
-        UserTeamInviteForm: <UserTeamInviteForm emails={emails} />
+        userTeamInviteForm: <UserTeamInviteForm emails={emails} />
       })}
     </>
   )

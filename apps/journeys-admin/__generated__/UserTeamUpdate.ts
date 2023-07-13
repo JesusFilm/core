@@ -26,6 +26,6 @@ export interface UserTeamUpdate {
 }
 
 export interface UserTeamUpdateVariables {
-  userTeamUpdateId: string;
+  id: string;
   input?: UserTeamUpdateInput | null;
 }

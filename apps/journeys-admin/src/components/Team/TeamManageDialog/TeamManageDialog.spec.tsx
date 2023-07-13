@@ -31,7 +31,7 @@ jest.mock('react-i18next', () => ({
     }
   }
 }))
-const user1 = { id: 'userId', email: 'siyangguccigang@gmail.com' }
+const user1 = { id: 'userId', email: 'siyangguccigang@example.com' }
 
 const handleClose = jest.fn()
 beforeEach(() => {
@@ -94,7 +94,6 @@ describe('TeamManageDialog', () => {
         </TeamProvider>
       </MockedProvider>
     )
-
     await waitFor(() => {
       expect(getByText('Members')).toBeInTheDocument()
       expect(getByText('Siyang Gang')).toBeInTheDocument()

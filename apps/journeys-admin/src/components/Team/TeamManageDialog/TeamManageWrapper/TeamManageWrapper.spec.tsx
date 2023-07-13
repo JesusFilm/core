@@ -26,7 +26,7 @@ jest.mock('../../../../libs/useCurrentUser', () => ({
     }
   })
 }))
-const user1 = { id: 'userId', email: 'siyangguccigang@gmail.com' }
+const user1 = { id: 'userId', email: 'siyangguccigang@example.com' }
 
 describe('TeamMembersList', () => {
   const getUserTeamMock1: MockedResponse<GetUserTeamsAndInvites> = {
@@ -80,11 +80,11 @@ describe('TeamMembersList', () => {
       <MockedProvider mocks={mocks}>
         <TeamProvider>
           <TeamManageWrapper>
-            {({ UserTeamList, UserTeamInviteList, UserTeamInviteForm }) => (
+            {({ userTeamList, userTeamInviteList, userTeamInviteForm }) => (
               <>
-                {UserTeamList}
-                {UserTeamInviteList}
-                {UserTeamInviteForm}
+                {userTeamList}
+                {userTeamInviteList}
+                {userTeamInviteForm}
               </>
             )}
           </TeamManageWrapper>

@@ -1,11 +1,12 @@
 import { render } from '@testing-library/react'
-import { GetUserTeamsAndInvites } from '../../../../../__generated__/GetUserTeamsAndInvites'
-import { GetCurrentUser_me } from '../../../../../__generated__/GetCurrentUser'
+import {
+  GetUserTeamsAndInvites,
+  GetUserTeamsAndInvites_userTeams as UserTeam
+} from '../../../../../__generated__/GetUserTeamsAndInvites'
 import { UserTeamRole } from '../../../../../__generated__/globalTypes'
 import { UserTeamInvitesList } from './UserTeamInvitesList'
 
 describe('UserTeamInvitesList', () => {
-  const loadUser = jest.fn()
   const mockData: GetUserTeamsAndInvites = {
     userTeams: [
       {
@@ -57,24 +58,36 @@ describe('UserTeamInvitesList', () => {
     ]
   }
 
-  const mockCurrentUser: GetCurrentUser_me = {
-    __typename: 'User',
-    id: 'userId',
-    email: 'tatainikora@example.com'
+  const mockCurrentUser: UserTeam = {
+    __typename: 'UserTeam',
+    id: 'userTeamId',
+    role: UserTeamRole.manager,
+    user: {
+      __typename: 'User',
+      email: 'tatainikora@example.com',
+      firstName: 'Tatai',
+      id: 'userId',
+      imageUrl: 'https://example.com/image.jpg',
+      lastName: 'Nikora'
+    }
   }
 
-  const mockCurrentUser2: GetCurrentUser_me = {
-    __typename: 'User',
-    id: 'userId2',
-    email: 'SiyangTheManMyStan@example.com'
+  const mockCurrentUser2: UserTeam = {
+    __typename: 'UserTeam',
+    id: 'userTeamId2',
+    role: UserTeamRole.member,
+    user: {
+      __typename: 'User',
+      email: 'SiyangTheManMyStan@example.com',
+      firstName: 'Siyang',
+      id: 'userId2',
+      imageUrl: 'https://example.com/image.jpg',
+      lastName: 'Cao'
+    }
   }
   it('shows the emails of everyone invited to team', () => {
     const { getByText, getAllByText, getAllByRole } = render(
-      <UserTeamInvitesList
-        loadUser={loadUser}
-        data={mockData}
-        currentUser={mockCurrentUser}
-      />
+      <UserTeamInvitesList data={mockData} currentUserTeam={mockCurrentUser} />
     )
 
     const button = getAllByRole('button')[0]
@@ -88,11 +101,7 @@ describe('UserTeamInvitesList', () => {
 
   it('disabled pending button if user does not have correct permissions', () => {
     const { getAllByRole } = render(
-      <UserTeamInvitesList
-        loadUser={loadUser}
-        data={mockData}
-        currentUser={mockCurrentUser2}
-      />
+      <UserTeamInvitesList data={mockData} currentUserTeam={mockCurrentUser2} />
     )
 
     const button = getAllByRole('button')[0]

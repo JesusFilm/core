@@ -1,7 +1,7 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
-import { UserTeamRole } from '../../../../../__generated__/globalTypes'
-import { GetUserTeamsAndInvites_userTeams as UserTeam } from '../../../../../__generated__/GetUserTeamsAndInvites'
+import { UserTeamRole } from '../../../../../../__generated__/globalTypes'
+import { GetUserTeamsAndInvites_userTeams as UserTeam } from '../../../../../../__generated__/GetUserTeamsAndInvites'
 import { UserTeamListItem, USER_TEAM_UPDATE } from './UserTeamListItem'
 
 describe('UserTeamListItem', () => {
@@ -36,7 +36,7 @@ describe('UserTeamListItem', () => {
       request: {
         query: USER_TEAM_UPDATE,
         variables: {
-          userTeamUpdateId: 'userTeamId',
+          id: 'userTeamId',
           input: { role: UserTeamRole.guest }
         }
       },

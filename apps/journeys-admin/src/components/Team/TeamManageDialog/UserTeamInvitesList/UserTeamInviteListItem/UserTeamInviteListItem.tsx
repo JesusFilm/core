@@ -8,8 +8,8 @@ import ListItemText from '@mui/material/ListItemText'
 import Divider from '@mui/material/Divider'
 import Stack from '@mui/material/Stack'
 import Menu from '@mui/material/Menu'
-import { GetUserTeamsAndInvites_userTeamInvites as UserTeamInvite } from '../../../../../__generated__/GetUserTeamsAndInvites'
-import { UserTeamInviteRemoveMenuItem } from '../UserTeamInviteRemoveMenuItem'
+import { GetUserTeamsAndInvites_userTeamInvites as UserTeamInvite } from '../../../../../../__generated__/GetUserTeamsAndInvites'
+import { UserTeamInviteRemoveMenuItem } from '../../UserTeamInviteRemoveMenuItem'
 
 interface UserTeamInviteListItemProps {
   user: UserTeamInvite

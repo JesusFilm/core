@@ -1,5 +1,5 @@
 import { ReactElement, MouseEvent, useState, useEffect, useMemo } from 'react'
-import { compact } from 'lodash'
+import compact from 'lodash/compact'
 import Button from '@mui/material/Button'
 import Avatar from '@mui/material/Avatar'
 import Divider from '@mui/material/Divider'
