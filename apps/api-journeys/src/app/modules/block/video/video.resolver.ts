@@ -212,6 +212,7 @@ export class VideoBlockResolver {
     @Args('journeyId') journeyId: string,
     @Args('input') input: VideoBlockUpdateInput
   ): Promise<VideoBlock> {
+    console.log('input', input)
     const block = await this.prismaService.block.findUnique({
       where: { id },
       include: { action: true }
@@ -240,9 +241,7 @@ export class VideoBlockResolver {
         break
       case VideoBlockSource.internal:
         input = {
-          ...{
-            duration: null
-          },
+          duration: null,
           ...input,
           ...{
             title: null,
