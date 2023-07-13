@@ -6,11 +6,13 @@ import {
 } from '@nestjs/apollo'
 import { GraphQLModule } from '@nestjs/graphql'
 import { LoggerModule } from 'nestjs-pino'
+import { NestHealthModule } from '@core/nest/health'
 import { DatadogTraceModule } from 'nestjs-ddtrace'
 import { UserModule } from './modules/user/user.module'
 
 @Module({
   imports: [
+    NestHealthModule,
     UserModule,
     GraphQLModule.forRoot<ApolloFederationDriverConfig>({
       driver: ApolloFederationDriver,

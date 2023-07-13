@@ -1,0 +1,22 @@
+{
+  "root": "libs/nest/health",
+  "sourceRoot": "libs/nest/health/src",
+  "targets": {
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": ["libs/nest/health/**/*.ts"]
+      }
+    },
+    "test": {
+      "executor": "@nrwl/jest:jest",
+      "outputs": ["coverage/libs/nest/health"],
+      "options": {
+        "jestConfig": "libs/nest/health/jest.config.js",
+        "passWithNoTests": true
+      }
+    }
+  },
+  "tags": []
+}
