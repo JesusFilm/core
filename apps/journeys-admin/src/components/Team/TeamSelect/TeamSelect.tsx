@@ -5,10 +5,13 @@ import sortBy from 'lodash/sortBy'
 import Select from '@mui/material/Select'
 import FormControl from '@mui/material/FormControl'
 import MenuItem from '@mui/material/MenuItem'
+import { useTranslation } from 'react-i18next'
 import { useTeam } from '../TeamProvider'
 
 export function TeamSelect(): ReactElement {
   const { query, activeTeam, setActiveTeam } = useTeam()
+  const { t } = useTranslation('apps-journeys-admin')
+  console.log(activeTeam)
 
   return (
     <Stack
@@ -21,14 +24,17 @@ export function TeamSelect(): ReactElement {
       <FormControl variant="standard" sx={{ minWidth: 100 }}>
         <Select
           disabled={query.loading}
-          value={activeTeam?.id ?? ''}
-          onChange={(event) =>
-            setActiveTeam(
-              query?.data?.teams.find(
-                (team) => team.id === event.target.value
-              ) ?? null
-            )
-          }
+          value={activeTeam?.id ?? Date.now()}
+          onChange={(event) => {
+            console.log(event)
+            event.target.value === '23094579023457902347'
+              ? setActiveTeam(null)
+              : setActiveTeam(
+                  query?.data?.teams.find(
+                    (team) => team.id === event.target.value
+                  ) ?? null
+                )
+          }}
           autoWidth
           sx={{
             '> .MuiSelect-select': {
@@ -47,6 +53,16 @@ export function TeamSelect(): ReactElement {
             }
           }}
         >
+          <MenuItem
+            value={Date.now()}
+            sx={{
+              display: 'block',
+              whiteSpace: 'normal',
+              wordWrap: 'break-word'
+            }}
+          >
+            {t('Shared With Me')}
+          </MenuItem>
           {(query?.data?.teams != null
             ? sortBy(query.data?.teams, 'title')
             : []

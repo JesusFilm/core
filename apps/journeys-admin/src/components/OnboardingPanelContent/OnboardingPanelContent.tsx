@@ -15,6 +15,7 @@ import { MediaListItem } from '../MediaListItem'
 import { GetOnboardingTemplate } from '../../../__generated__/GetOnboardingTemplate'
 import { ContainedIconButton } from '../ContainedIconButton'
 import { useJourneyCreate } from '../../libs/useJourneyCreate/useJourneyCreate'
+import { useTeam } from '../Team/TeamProvider'
 
 export const GET_ONBOARDING_TEMPLATE = gql`
   query GetOnboardingTemplate($id: ID!) {
@@ -31,6 +32,7 @@ export const GET_ONBOARDING_TEMPLATE = gql`
 
 export function OnboardingPanelContent(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
+  const { activeTeam } = useTeam()
   const router = useRouter()
 
   const { createJourney, loading } = useJourneyCreate()
@@ -73,14 +75,16 @@ export function OnboardingPanelContent(): ReactElement {
 
   return (
     <>
-      <SidePanelContainer>
-        <ContainedIconButton
-          label={t('Create Custom Journey')}
-          thumbnailIcon={<ViewCarouselIcon />}
-          onClick={handleCreateJourneyClick}
-          loading={loading}
-        />
-      </SidePanelContainer>
+      {activeTeam != null && (
+        <SidePanelContainer>
+          <ContainedIconButton
+            label={t('Create Custom Journey')}
+            thumbnailIcon={<ViewCarouselIcon />}
+            onClick={handleCreateJourneyClick}
+            loading={loading}
+          />
+        </SidePanelContainer>
+      )}
       <SidePanelContainer border={false}>
         <Stack direction="row" justifyContent="space-between">
           <Typography variant="subtitle1">{t('Use Template')}</Typography>
