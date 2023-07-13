@@ -20,18 +20,18 @@ jest.mock('react-i18next', () => ({
   }
 }))
 
-// jest.mock('../../../libs/useCurrentUser', () => ({
-//   __esModule: true,
-//   useCurrentUser: jest.fn().mockReturnValue({
-//     loadUser: jest.fn(),
-//     data: {
-//       __typename: 'User',
-//       ...user1
-//     }
-//   })
-// }))
+jest.mock('../../../libs/useCurrentUser', () => ({
+  __esModule: true,
+  useCurrentUser: jest.fn().mockReturnValue({
+    loadUser: jest.fn(),
+    data: {
+      __typename: 'User',
+      ...user1
+    }
+  })
+}))
 
-// const user1 = { id: 'userId', email: 'siyangguccigang@example.com' }
+const user1 = { id: 'userId', email: 'siyangguccigang@example.com' }
 
 describe('UserTeamInviteForm', () => {
   const getTeams: MockedResponse<GetTeams> = {
