@@ -49,7 +49,7 @@ export function VideoControls({
   const [active, setActive] = useState(true)
   const [displayTime, setDisplayTime] = useState('0:00')
   const [progress, setProgress] = useState(0)
-  const [volume, setVolume] = useState(0)
+  const [volume, setVolume] = useState(player.volume() * 100)
   // Explicit muted state since player.muted state lags when video paused
   const [muted, setMuted] = useState(mute)
   // Explicit fullscreen state since player.fullscreen state lags when video paused
@@ -68,25 +68,13 @@ export function VideoControls({
 
   const visible = !playing || active || loading
 
-  const handleShowHideFooter = useCallback(
-    (fullscreen: boolean): void => {
-      if (isYoutube && !playing) {
-        setShowHeaderFooter(false)
-      } else {
-        setShowHeaderFooter(!fullscreen)
-      }
-    },
-    [isYoutube, playing, setShowHeaderFooter]
-  )
-
+  // Handle play event
   useEffect(() => {
     const handleVideoPlay = (): void => {
       setPlaying(true)
-
       if (startAt > 0 && player.currentTime() < startAt) {
         setProgress(startAt)
       }
-
       if (isYoutube) {
         if (player.hasStarted_) {
           setShowHeaderFooter(!fullscreen)
@@ -96,6 +84,14 @@ export function VideoControls({
         }
       }
     }
+    player.on('play', handleVideoPlay)
+    return () => {
+      player.off('play', handleVideoPlay)
+    }
+  }, [player, isYoutube, fullscreen, startAt, setShowHeaderFooter])
+
+  // Handle pause event
+  useEffect(() => {
     const handleVideoPause = (): void => {
       setPlaying(false)
 
@@ -108,13 +104,20 @@ export function VideoControls({
 
       if (isYoutube) setShowHeaderFooter(false)
     }
+    player.on('pause', handleVideoPause)
+    return () => {
+      player.off('pause', handleVideoPause)
+    }
+  }, [player, startAt, endAt, isYoutube, setShowHeaderFooter])
+
+  // Handle time update event
+  useEffect(() => {
     // Recalculate for startAt/endAt snippet
     const handleVideoTimeChange = (): void => {
       if (endAt > 0 && player.currentTime() > endAt) {
         // 1) Trigger pause, we get an error if trying to update time here
         player.pause()
       }
-
       if (player.currentTime() >= startAt) {
         setDisplayTime(
           secondsToTimeFormat(player.currentTime() - startAt, {
@@ -122,50 +125,68 @@ export function VideoControls({
           })
         )
       }
-
       setProgress(Math.round(player.currentTime()))
     }
+    player.on('timeupdate', handleVideoTimeChange)
+    return () => {
+      player.off('timeupdate', handleVideoTimeChange)
+    }
+  }, [player, startAt, endAt])
 
+  // Handle user active event
+  useEffect(() => {
     // Triggers when video is playing / controls faded and screen is clicked
     const handleUserActive = (): void => setActive(true)
     const handleUserInactive = (): void => setActive(false)
+
+    player.on('useractive', handleUserActive)
+    player.on('userinactive', handleUserInactive)
+    return () => {
+      player.off('useractive', handleUserActive)
+      player.off('userinactive', handleUserInactive)
+    }
+  }, [player])
+
+  // Handle volume change event
+  useEffect(() => {
+    // Initialise volume
+    // setVolume(player.volume() * 100)
     const handleVideoVolumeChange = (): void => setVolume(player.volume() * 100)
+
+    player.on('volumechange', handleVideoVolumeChange)
+    return () => {
+      player.off('volumechange', handleVideoVolumeChange)
+    }
+  }, [player])
+
+  // Handle fullscreen change event
+  useEffect(() => {
     const handleFullscreenChange = (): void => {
       const fullscreen =
         fscreen.fullscreenElement != null || player.isFullscreen()
       setFullscreen(fullscreen)
       setShowNavigation(!fullscreen)
-      handleShowHideFooter(fullscreen)
+
+      if (isYoutube && !playing) {
+        setShowHeaderFooter(false)
+      } else {
+        setShowHeaderFooter(!fullscreen)
+      }
     }
 
-    setVolume(player.volume() * 100)
-
-    player.on('play', handleVideoPlay)
-    player.on('pause', handleVideoPause)
-    player.on('timeupdate', handleVideoTimeChange)
-    player.on('useractive', handleUserActive)
-    player.on('userinactive', handleUserInactive)
-    player.on('volumechange', handleVideoVolumeChange)
     if (fscreen.fullscreenEnabled) {
       fscreen.addEventListener('fullscreenchange', handleFullscreenChange)
     } else {
       player.on('fullscreenchange', handleFullscreenChange)
     }
-
     return () => {
-      player.off('play', handleVideoPlay)
-      player.off('pause', handleVideoPause)
-      player.off('timeupdate', handleVideoTimeChange)
-      player.off('useractive', handleUserActive)
-      player.off('userinactive', handleUserInactive)
-      player.off('volumechange', handleVideoVolumeChange)
       if (fscreen.fullscreenEnabled) {
         fscreen.removeEventListener('fullscreenchange', handleFullscreenChange)
       } else {
         player.off('fullscreenchange', handleFullscreenChange)
       }
     }
-  }, [player, handleShowHideFooter, startAt, endAt, autoplay])
+  }, [player, isYoutube, playing, setShowHeaderFooter, setShowNavigation])
 
   function handlePlay(): void {
     if (!playing) {
