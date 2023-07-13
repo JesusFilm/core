@@ -90,6 +90,11 @@ export class ImageBlockResolver {
     const block = (await handleImage(input)) as ImageBlockCreateInput
 
     if (block.isCover === true) {
+      if (block.parentBlockId == null) {
+        throw new GraphQLError('Parent block id is required for cover blocks', {
+          extensions: { code: 'BAD_USER_INPUT' }
+        })
+      }
       const parentBlock = await this.prismaService.block.findUnique({
         where: {
           id: block.parentBlockId
@@ -141,7 +146,10 @@ export class ImageBlockResolver {
       id: block.id ?? undefined,
       typename: 'ImageBlock',
       journey: { connect: { id: block.journeyId } },
-      parentBlock: { connect: { id: block.parentBlockId } },
+      parentBlock:
+        block.parentBlockId != null
+          ? { connect: { id: block.parentBlockId } }
+          : undefined,
       parentOrder: siblings.length
     })
   }
