@@ -220,7 +220,7 @@ describe('UserTeamInviteForm', () => {
         </TeamProvider>
       </MockedProvider>
     )
-    getByRole('textbox', { name: 'Email' })
+    const email = getByRole('textbox', { name: 'Email' })
     await waitFor(() => {
       fireEvent.change(email, {
         target: { value: 'johnTHEgeronimo@example.com' }
