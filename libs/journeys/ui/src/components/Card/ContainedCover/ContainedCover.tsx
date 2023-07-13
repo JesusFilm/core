@@ -3,17 +3,28 @@ import { NextImage } from '@core/shared/ui/NextImage'
 import { styled } from '@mui/material/styles'
 import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
+import dynamic from 'next/dynamic'
 import { TreeBlock } from '../../../libs/block'
 import { VideoBlockSource } from '../../../../__generated__/globalTypes'
 import { ImageFields } from '../../Image/__generated__/ImageFields'
 import { VideoFields } from '../../Video/__generated__/VideoFields'
 import { useJourney } from '../../../libs/JourneyProvider'
+import { BlockFields_VideoBlock as VideoBlock } from '../../../libs/block/__generated__/BlockFields'
 import { getJourneyRTL } from '../../../libs/rtl'
 import { OverlayContent } from '../OverlayContent'
-import { BackgroundVideo } from './BackgroundVideo'
 
 import 'videojs-youtube'
 import 'video.js/dist/video-js.css'
+
+const DynamicBackgroundVideo = dynamic<
+  TreeBlock<VideoBlock & { setLoading: (loading: boolean) => void }>
+>(
+  async () =>
+    await import(
+      /* webpackChunkName: "BackgroundVideo" */
+      './BackgroundVideo'
+    ).then((mod) => mod.BackgroundVideo)
+)
 
 interface ContainedCoverProps {
   children: ReactNode[]
@@ -106,7 +117,7 @@ export function ContainedCover({
         }}
       >
         {videoBlock?.videoId != null && (
-          <BackgroundVideo {...videoBlock} setLoading={setLoading} />
+          <DynamicBackgroundVideo {...videoBlock} setLoading={setLoading} />
         )}
         {/* NextImage poster image causes longer LCP loading times, but still faster since using optimized image */}
         {posterImage != null && videoBlock != null && loading && (
