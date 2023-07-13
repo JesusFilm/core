@@ -67,7 +67,7 @@ export class NavigateToJourneyActionResolver {
 
     const actionData = {
       ...omit(input, 'journeyId'),
-      journey: { connect: { id: journeyId } },
+      journey: { connect: { id: input.journeyId } },
       url: null,
       target: null
     }

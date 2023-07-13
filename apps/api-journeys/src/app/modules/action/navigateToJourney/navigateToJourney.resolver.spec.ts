@@ -92,7 +92,7 @@ describe('NavigateToJourneyActionResolver', () => {
       )
       const actionData = {
         ...omit(navigateToJourneyInput, 'journeyId'),
-        journey: { connect: { id: block.journeyId } }
+        journey: { connect: { id: navigateToJourneyInput.journeyId } }
       }
       expect(prismaService.action.upsert).toHaveBeenCalledWith({
         where: { parentBlockId: block.id },
