@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing'
-import { omit } from 'lodash'
+import omit from 'lodash/omit'
 
 import { UserJourneyService } from '../../userJourney/userJourney.service'
 import { PrismaService } from '../../../lib/prisma.service'

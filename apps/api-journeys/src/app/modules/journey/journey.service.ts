@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common'
-import { includes } from 'lodash'
 import { Journey, UserRole } from '.prisma/api-journeys-client'
+import includes from 'lodash/includes'
+
 import {
   JourneyStatus,
   UserJourneyRole,

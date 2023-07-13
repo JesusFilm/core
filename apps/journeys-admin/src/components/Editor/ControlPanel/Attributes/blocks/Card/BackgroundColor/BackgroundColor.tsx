@@ -1,5 +1,5 @@
 import { ReactElement, useState, useEffect, useRef } from 'react'
-import { debounce } from 'lodash'
+import debounce from 'lodash/debounce'
 import Box from '@mui/material/Box'
 import Divider from '@mui/material/Divider'
 import InputAdornment from '@mui/material/InputAdornment'

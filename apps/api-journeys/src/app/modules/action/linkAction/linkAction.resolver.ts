@@ -1,9 +1,9 @@
 import { Args, Mutation, Resolver } from '@nestjs/graphql'
 import { UseGuards } from '@nestjs/common'
-import { includes } from 'lodash'
 import { GraphQLError } from 'graphql'
 import { Action } from '.prisma/api-journeys-client'
 import { FromPostgresql } from '@core/nest/decorators/FromPostgresql'
+import includes from 'lodash/includes'
 
 import { RoleGuard } from '../../../lib/roleGuard/roleGuard'
 import {

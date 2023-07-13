@@ -11,7 +11,7 @@ import { GraphQLError } from 'graphql'
 import { IResult, UAParser } from 'ua-parser-js'
 import { Event, Visitor } from '.prisma/api-journeys-client'
 import { FromPostgresql } from '@core/nest/decorators/FromPostgresql'
-import { pick } from 'lodash'
+import pick from 'lodash/pick'
 import { PrismaService } from '../../lib/prisma.service'
 import { VisitorService, VisitorsConnection } from './visitor.service'
 

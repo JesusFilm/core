@@ -1,5 +1,5 @@
 import { render, fireEvent } from '@testing-library/react'
-import { noop } from 'lodash'
+import noop from 'lodash/noop'
 import { ContainedIconButton } from './ContainedIconButton'
 
 describe('ContainedIconButton', () => {

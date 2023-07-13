@@ -1,8 +1,9 @@
 import { Args, Mutation, ResolveField, Resolver } from '@nestjs/graphql'
 import { UseGuards } from '@nestjs/common'
-import { get, includes } from 'lodash'
 import { GraphQLError } from 'graphql'
 import { FromPostgresql } from '@core/nest/decorators/FromPostgresql'
+import get from 'lodash/get'
+import includes from 'lodash/includes'
 
 import { RoleGuard } from '../../lib/roleGuard/roleGuard'
 import {

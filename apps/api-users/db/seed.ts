@@ -4,7 +4,7 @@
 // Please note, this seed transfers existing arangodb users to postgresql
 
 import { aql } from 'arangojs'
-import { pick } from 'lodash'
+import pick from 'lodash/pick'
 import { PrismaClient } from '.prisma/api-users-client'
 import { ArangoDB } from './db'
 

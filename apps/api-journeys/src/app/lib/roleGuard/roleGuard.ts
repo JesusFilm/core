@@ -5,8 +5,10 @@ import {
   mixin,
   Type
 } from '@nestjs/common'
-import { get, includes, reduce } from 'lodash'
 import { GraphQLError } from 'graphql'
+import get from 'lodash/get'
+import includes from 'lodash/includes'
+import reduce from 'lodash/reduce'
 import { contextToUserId } from '@core/nest/common/firebaseClient'
 import {
   Journey,
@@ -15,6 +17,7 @@ import {
   UserJourneyRole,
   UserRole
 } from '.prisma/api-journeys-client'
+
 import { UserRoleService } from '../../modules/userRole/userRole.service'
 import { PrismaService } from '../prisma.service'
 

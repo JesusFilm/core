@@ -1,8 +1,9 @@
 import { Args, Mutation, Parent, ResolveField, Resolver } from '@nestjs/graphql'
 import { UseGuards } from '@nestjs/common'
-import { includes, omit } from 'lodash'
 import { GraphQLError } from 'graphql'
 import { Journey, Action } from '.prisma/api-journeys-client'
+import includes from 'lodash/includes'
+import omit from 'lodash/omit'
 
 import { RoleGuard } from '../../../lib/roleGuard/roleGuard'
 import {

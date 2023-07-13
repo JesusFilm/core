@@ -1,7 +1,7 @@
 import { ComponentProps } from 'react'
 import { Story, Meta } from '@storybook/react'
 import { screen, userEvent } from '@storybook/testing-library'
-import { noop } from 'lodash'
+import noop from 'lodash/noop'
 import { VideoContentFields } from '../../../__generated__/VideoContentFields'
 import { watchConfig } from '../../libs/storybook'
 import { VideoProvider } from '../../libs/videoContext'
