@@ -109,7 +109,9 @@ export function UserTeamInviteForm({
             helperText={
               touched?.email != null && errors.email != null
                 ? errors.email
-                : t('No email notifications. New users get access instantly.')
+                : t(
+                    'No email notifications. New users get access instantly. Team members can see all analytics, edit any journey, delete and copy journeys and invite new team members'
+                  )
             }
             InputProps={{
               endAdornment: (
