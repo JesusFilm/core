@@ -1,10 +1,4 @@
-import {
-  ReactElement,
-  useState,
-  useEffect,
-  MouseEventHandler,
-  useCallback
-} from 'react'
+import { ReactElement, useState, useEffect, MouseEventHandler } from 'react'
 import Player from 'video.js/dist/types/player'
 import Container from '@mui/material/Container'
 import Box from '@mui/material/Box'
@@ -34,6 +28,11 @@ interface VideoControlProps {
   loading?: boolean
   autoplay?: boolean
   muted?: boolean
+}
+
+function isIOS(): boolean {
+  const userAgent = navigator.userAgent
+  return /iPad|iPhone|Macintosh|iPod/.test(userAgent)
 }
 
 export function VideoControls({
@@ -288,7 +287,7 @@ export function VideoControls({
           !target.classList.contains('MuiSvgIcon-root') &&
           target.nodeName !== 'path'
         // iOS: pause video on first click, default just shows controls.
-        if (controlsHidden && videoControlsNotClicked) {
+        if (controlsHidden && videoControlsNotClicked && isIOS()) {
           void player.pause()
           setPlaying(false)
         }
