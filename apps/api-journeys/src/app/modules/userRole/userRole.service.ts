@@ -7,14 +7,10 @@ export class UserRoleService {
   constructor(private readonly prismaService: PrismaService) {}
 
   async getUserRoleById(userId: string): Promise<UserRole> {
-    const response = await this.prismaService.userRole.findUnique({
-      where: { userId }
+    return await this.prismaService.userRole.upsert({
+      where: { userId },
+      update: {},
+      create: { userId }
     })
-
-    return response != null
-      ? response
-      : await this.prismaService.userRole.create({
-          data: { userId }
-        })
   }
 }

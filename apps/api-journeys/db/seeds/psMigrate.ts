@@ -170,10 +170,15 @@ export async function psMigrate(): Promise<void> {
         }
       }
       if (journey.primaryImageBlockId != null) {
-        await prisma.journey.update({
-          where: { id: journey._key },
-          data: { primaryImageBlockId: journey.primaryImageBlockId }
+        const block = await prisma.block.findUnique({
+          where: { id: journey.primaryImageBlockId }
         })
+        if (block != null && block.journeyId === journey._key) {
+          await prisma.journey.update({
+            where: { id: journey._key },
+            data: { primaryImageBlockId: journey.primaryImageBlockId }
+          })
+        }
       }
 
       console.log(`Importing userJourneys at ${journey._key as string}...`)

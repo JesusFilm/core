@@ -194,23 +194,31 @@ export class JourneyResolver {
         const team = { id: 'jfp-team' }
         const journey = await this.prismaService.journey.create({
           data: {
-            ...input,
+            ...omit(input, ['primaryImageBlockId', 'teamId', 'hostId']),
             slug,
             id,
             createdAt: new Date(),
             status: JourneyStatus.draft,
-            teamId: team.id
+            team: {
+              connect: { id: team.id }
+            },
+            userJourneys: {
+              create: {
+                id: uuidv4(),
+                userId,
+                role: UserJourneyRole.owner,
+                openedAt: new Date()
+              }
+            },
+            host:
+              input.hostId != null
+                ? {
+                    connect: { id: input.hostId }
+                  }
+                : undefined
           }
         })
-        await this.prismaService.userJourney.create({
-          data: {
-            id: uuidv4(),
-            userId,
-            journeyId: journey.id,
-            role: UserJourneyRole.owner,
-            openedAt: new Date()
-          }
-        })
+
         await this.prismaService.userTeam.upsert({
           where: {
             teamId_userId: {
@@ -284,6 +292,7 @@ export class JourneyResolver {
     @Args('id') id: string,
     @CurrentUserId() userId: string
   ): Promise<Journey | undefined> {
+    console.log('hi')
     const journey = await this.prismaService.journey.findUnique({
       where: { id }
     })

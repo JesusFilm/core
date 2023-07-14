@@ -763,22 +763,16 @@ describe('JourneyResolver', () => {
         status: JourneyStatus.draft,
         slug: 'untitled-journey',
         title: 'Untitled Journey',
-        teamId: 'jfp-team'
-      })
-    })
-
-    it('creates a UserJourney', async () => {
-      mockUuidv4.mockReturnValueOnce('journeyId')
-      await resolver.journeyCreate(
-        { title: 'Untitled Journey', languageId: '529' },
-        'userId'
-      )
-      expect(prismaService.userJourney.create).toHaveBeenCalledWith({
-        data: {
-          userId: 'userId',
-          journeyId: 'journeyId',
-          role: UserJourneyRole.owner,
-          openedAt: new Date()
+        team: {
+          connect: { id: 'jfp-team' }
+        },
+        host: undefined,
+        userJourneys: {
+          create: {
+            userId: 'userId',
+            role: UserJourneyRole.owner,
+            openedAt: new Date()
+          }
         }
       })
     })
@@ -828,7 +822,15 @@ describe('JourneyResolver', () => {
         status: JourneyStatus.draft,
         slug: 'untitled-journey-journeyId',
         title: 'Untitled Journey',
-        teamId: 'jfp-team'
+        team: { connect: { id: 'jfp-team' } },
+        host: undefined,
+        userJourneys: {
+          create: {
+            userId: 'userId',
+            role: UserJourneyRole.owner,
+            openedAt: new Date()
+          }
+        }
       })
     })
 
