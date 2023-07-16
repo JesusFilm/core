@@ -650,6 +650,10 @@ export class UserTeamUpdateInput {
     role: UserTeamRole;
 }
 
+export class UserTeamFilterInput {
+    role?: Nullable<UserTeamRole>;
+}
+
 export class UserTeamInviteCreateInput {
     email: string;
 }
@@ -1122,7 +1126,7 @@ export abstract class IQuery {
 
     abstract getUserRole(): Nullable<UserRole> | Promise<Nullable<UserRole>>;
 
-    abstract userTeams(teamId: string): UserTeam[] | Promise<UserTeam[]>;
+    abstract userTeams(teamId: string, filter?: Nullable<UserTeamFilterInput>): UserTeam[] | Promise<UserTeam[]>;
 
     abstract userTeam(id: string): UserTeam | Promise<UserTeam>;
 

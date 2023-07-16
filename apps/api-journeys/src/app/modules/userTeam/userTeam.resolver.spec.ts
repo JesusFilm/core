@@ -30,7 +30,8 @@ describe('UserTeamResolver', () => {
             }
           }
         },
-        'teamId'
+        'teamId',
+        false
       )
       expect(prismaService.userTeam.findMany).toHaveBeenCalledWith({
         where: {
@@ -44,6 +45,37 @@ describe('UserTeamResolver', () => {
             },
             { teamId: 'teamId' }
           ]
+        }
+      })
+      expect(userTeams).toEqual([{ id: 'userTeamId' }])
+    })
+    it('fetches accessible userTeams without guests', async () => {
+      const userTeams = await userTeamResolver.userTeams(
+        {
+          team: {
+            is: {
+              userTeams: { some: { userId: 'userId' } }
+            }
+          }
+        },
+        'teamId',
+        true
+      )
+      expect(prismaService.userTeam.findMany).toHaveBeenCalledWith({
+        where: {
+          AND: [
+            {
+              team: {
+                is: {
+                  userTeams: { some: { userId: 'userId' } }
+                }
+              }
+            },
+            { teamId: 'teamId' }
+          ],
+          role: {
+            not: 'guest'
+          }
         }
       })
       expect(userTeams).toEqual([{ id: 'userTeamId' }])
