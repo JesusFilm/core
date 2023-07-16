@@ -17,7 +17,7 @@ describe('UserTeamInviteListItem', () => {
     )
 
     expect(getByText('milesmorales@example.com')).toBeInTheDocument()
-    expect(getByText('Pending')).toBeInTheDocument()
+    expect(getByText('Invited')).toBeInTheDocument()
   })
   it('disables button if disabled condition is true', async () => {
     const { getByRole } = render(

@@ -95,7 +95,7 @@ describe('UserTeamInviteList', () => {
     expect(getByText('peterparker@example.com')).toBeInTheDocument()
     expect(getByText('gwenstacy@example.com')).toBeInTheDocument()
     expect(getByText('milesmorales@example.com')).toBeInTheDocument()
-    expect(getAllByText('Pending')).toHaveLength(3)
+    expect(getAllByText('Invited')).toHaveLength(3)
     expect(button).not.toBeDisabled()
   })
 

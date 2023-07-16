@@ -28,6 +28,7 @@ export function TeamManageWrapper({
     activeTeam != null
       ? {
           teamId: activeTeam.id
+          // filter: { includeGuests: false }
         }
       : undefined
   )
