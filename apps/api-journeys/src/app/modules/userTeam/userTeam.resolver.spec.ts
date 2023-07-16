@@ -21,7 +21,7 @@ describe('UserTeamResolver', () => {
       .mockResolvedValue([{ id: 'userTeamId' }])
   })
   describe('userTeams', () => {
-    it('fetches accessible userTeams', async () => {
+    it('fetches accessible userTeams without guests', async () => {
       const userTeams = await userTeamResolver.userTeams(
         {
           team: {
@@ -44,12 +44,15 @@ describe('UserTeamResolver', () => {
               }
             },
             { teamId: 'teamId' }
-          ]
+          ],
+          role: {
+            not: 'guest'
+          }
         }
       })
       expect(userTeams).toEqual([{ id: 'userTeamId' }])
     })
-    it('fetches accessible userTeams without guests', async () => {
+    it('fetches accessible userTeams with guests', async () => {
       const userTeams = await userTeamResolver.userTeams(
         {
           team: {
@@ -72,10 +75,7 @@ describe('UserTeamResolver', () => {
               }
             },
             { teamId: 'teamId' }
-          ],
-          role: {
-            not: 'guest'
-          }
+          ]
         }
       })
       expect(userTeams).toEqual([{ id: 'userTeamId' }])
