@@ -55,7 +55,7 @@ export function UserTeamInviteListItem({
               typography: 'body2'
             }}
           >
-            Pending
+            Invited
           </Button>
         }
       >
