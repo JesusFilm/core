@@ -111,7 +111,6 @@ export function UserTeamInviteForm({
               onChange={handleChange}
               onBlur={handleBlur}
               error={errors.email != null && touched.email != null}
-              // FormHelperTextProps={{ sx: { pt: 8, pb: 4 } }}
               helperText={
                 touched?.email != null && errors.email != null && errors.email
               }
