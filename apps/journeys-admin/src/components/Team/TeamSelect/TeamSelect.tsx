@@ -27,14 +27,11 @@ export function TeamSelect(): ReactElement {
           disabled={query.loading}
           value={activeTeam?.id ?? Date.now()}
           onChange={(event) => {
-            console.log(event)
-            event.target.value === '23094579023457902347'
-              ? setActiveTeam(null)
-              : setActiveTeam(
-                  query?.data?.teams.find(
-                    (team) => team.id === event.target.value
-                  ) ?? null
-                )
+            setActiveTeam(
+              query?.data?.teams.find(
+                (team) => team.id === event.target.value
+              ) ?? null
+            )
           }}
           autoWidth
           sx={{
