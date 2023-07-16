@@ -6,6 +6,7 @@ import Select from '@mui/material/Select'
 import FormControl from '@mui/material/FormControl'
 import MenuItem from '@mui/material/MenuItem'
 import { useTranslation } from 'react-i18next'
+import Divider from '@mui/material/Divider'
 import { useTeam } from '../TeamProvider'
 
 export function TeamSelect(): ReactElement {
@@ -53,16 +54,6 @@ export function TeamSelect(): ReactElement {
             }
           }}
         >
-          <MenuItem
-            value={Date.now()}
-            sx={{
-              display: 'block',
-              whiteSpace: 'normal',
-              wordWrap: 'break-word'
-            }}
-          >
-            {t('Shared With Me')}
-          </MenuItem>
           {(query?.data?.teams != null
             ? sortBy(query.data?.teams, 'title')
             : []
@@ -79,6 +70,17 @@ export function TeamSelect(): ReactElement {
               {team.title}
             </MenuItem>
           ))}
+          <Divider />
+          <MenuItem
+            value={Date.now()}
+            sx={{
+              display: 'block',
+              whiteSpace: 'normal',
+              wordWrap: 'break-word'
+            }}
+          >
+            {t('Shared With Me')}
+          </MenuItem>
         </Select>
       </FormControl>
     </Stack>
