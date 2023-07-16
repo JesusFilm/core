@@ -32,7 +32,7 @@ export class UserTeamResolver {
     @Args('teamId') teamId: string,
     @Args('includeGuests') includeGuests: boolean
   ): Promise<UserTeam[]> {
-    if (includeGuests) {
+    if (!includeGuests) {
       return await this.prismaService.userTeam.findMany({
         where: {
           role: { not: UserTeamRole.guest },
