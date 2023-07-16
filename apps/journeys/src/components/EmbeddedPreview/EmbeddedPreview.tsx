@@ -14,7 +14,6 @@ import useFullscreenStatus from '../../libs/useFullscreenStatus/useFullscreenSta
 import { Conductor } from '../Conductor'
 
 import { ButtonWrapper } from './ButtonWrapper/ButtonWrapper'
-import { VideoWrapper } from './VideoWrapper/VideoWrapper'
 import { RadioOptionWrapper } from './RadioOptionWrapper/RadioOptionWrapper'
 
 interface EmbeddedPreviewProps {
@@ -121,8 +120,7 @@ export function EmbeddedPreview({
           block={blocks?.[0]}
           wrappers={{
             ButtonWrapper,
-            RadioOptionWrapper,
-            VideoWrapper
+            RadioOptionWrapper
           }}
         />
         <StepFooter />
