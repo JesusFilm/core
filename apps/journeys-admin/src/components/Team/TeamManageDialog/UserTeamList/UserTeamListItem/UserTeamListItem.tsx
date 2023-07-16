@@ -9,7 +9,6 @@ import ListItemText from '@mui/material/ListItemText'
 import Divider from '@mui/material/Divider'
 import Stack from '@mui/material/Stack'
 import Menu from '@mui/material/Menu'
-// import PersonOutlineIcon from '@mui/icons-material/PersonOutline'
 import GroupIcon from '@mui/icons-material/Group'
 import PersonIcon from '@mui/icons-material/Person'
 import { gql, useMutation } from '@apollo/client'
@@ -58,14 +57,12 @@ export function UserTeamListItem({
     }
   }, [listItem])
 
-  const menuLabel = useMemo((): string => {
+  const menuLabel = useMemo((): string | undefined => {
     switch (role) {
       case UserTeamRole.manager:
         return t('Manager')
       case UserTeamRole.member:
         return t('Member')
-      case UserTeamRole.guest:
-        return t('Guest')
     }
   }, [role, t])
 
@@ -168,20 +165,6 @@ export function UserTeamListItem({
               }}
             />
           )}
-          {/* <MenuItem
-            label={t('Guest')}
-            icon={<PersonOutlineIcon />}
-            onClick={async () => {
-              handleClose()
-              await userTeamUpdate({
-                variables: {
-                  id,
-                  input: { role: UserTeamRole.guest }
-                }
-              })
-            }}
-          /> */}
-
           <UserTeamDeleteMenuItem
             id={id}
             onClick={handleClose}

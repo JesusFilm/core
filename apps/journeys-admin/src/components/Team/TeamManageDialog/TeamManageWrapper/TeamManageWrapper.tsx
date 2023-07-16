@@ -27,8 +27,8 @@ export function TeamManageWrapper({
   const { data, loading, emails } = useUserTeamsAndInvitesQuery(
     activeTeam != null
       ? {
-          teamId: activeTeam.id
-          // filter: { includeGuests: false }
+          teamId: activeTeam.id,
+          filter: { includeGuests: false }
         }
       : undefined
   )

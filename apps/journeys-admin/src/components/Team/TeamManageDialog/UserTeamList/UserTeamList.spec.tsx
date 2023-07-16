@@ -1,4 +1,4 @@
-import { fireEvent, render } from '@testing-library/react'
+import { render } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
 import { UserTeamRole } from '../../../../../__generated__/globalTypes'
 
@@ -44,19 +44,6 @@ describe('UserTeamList', () => {
           id: 'userId2',
           imageUrl: 'https://example.com/image.jpg',
           lastName: 'Brown'
-        }
-      },
-      {
-        __typename: 'UserTeam',
-        id: 'userTeamId3',
-        role: UserTeamRole.guest,
-        user: {
-          __typename: 'User',
-          email: 'john@example.com',
-          firstName: 'John',
-          id: 'userId3',
-          imageUrl: 'https://example.com/image.jpg',
-          lastName: 'Jameson'
         }
       }
     ],
@@ -110,10 +97,8 @@ describe('UserTeamList', () => {
 
     expect(getByText("Miguel O'Hara")).toBeInTheDocument()
     expect(getByText('Hobie Brown')).toBeInTheDocument()
-    expect(getByText('John Jameson')).toBeInTheDocument()
     expect(getByText('miguelohara@example.com')).toBeInTheDocument()
     expect(getByText('hobiebrown@example.com')).toBeInTheDocument()
-    expect(getByText('john@example.com')).toBeInTheDocument()
     expect(getByRole('button', { name: 'Manager' })).toBeDisabled()
   })
 
@@ -141,8 +126,6 @@ describe('UserTeamList', () => {
         />
       </MockedProvider>
     )
-    fireEvent.click(getByRole('button', { name: 'Guest' }))
-    expect(getByRole('button', { name: 'Guest' })).toBeDisabled()
     expect(getByRole('button', { name: 'Member' })).toBeDisabled()
     expect(getByRole('button', { name: 'Manager' })).toBeDisabled()
   })

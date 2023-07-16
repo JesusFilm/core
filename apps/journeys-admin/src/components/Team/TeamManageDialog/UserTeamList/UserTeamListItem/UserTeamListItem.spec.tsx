@@ -4,6 +4,14 @@ import { UserTeamRole } from '../../../../../../__generated__/globalTypes'
 import { GetUserTeamsAndInvites_userTeams as UserTeam } from '../../../../../../__generated__/GetUserTeamsAndInvites'
 import { UserTeamListItem, USER_TEAM_UPDATE } from './UserTeamListItem'
 
+jest.mock('react-i18next', () => ({
+  __esModule: true,
+  useTranslation: () => {
+    return {
+      t: (str: string) => str
+    }
+  }
+}))
 describe('UserTeamListItem', () => {
   const mockUser: UserTeam = {
     __typename: 'UserTeam',
@@ -23,7 +31,7 @@ describe('UserTeamListItem', () => {
     data: {
       userTeamUpdate: {
         id: 'userTeamId',
-        role: UserTeamRole.guest,
+        role: UserTeamRole.member,
         user: {
           id: 'userId'
         }
@@ -37,7 +45,7 @@ describe('UserTeamListItem', () => {
         query: USER_TEAM_UPDATE,
         variables: {
           id: 'userTeamId',
-          input: { role: UserTeamRole.guest }
+          input: { role: UserTeamRole.member }
         }
       },
       result
@@ -51,7 +59,7 @@ describe('UserTeamListItem', () => {
       </MockedProvider>
     )
     fireEvent.click(getByRole('button'))
-    fireEvent.click(getByText('Guest'))
+    fireEvent.click(getByText('Member'))
     await waitFor(() => {
       expect(result).toHaveBeenCalled()
     })
