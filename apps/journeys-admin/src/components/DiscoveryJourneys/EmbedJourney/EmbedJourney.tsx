@@ -8,6 +8,7 @@ import { TreeBlock } from '@core/journeys/ui/block'
 import { transformer } from '@core/journeys/ui/transformer'
 import { GetDiscoveryJourney } from '../../../../__generated__/GetDiscoveryJourney'
 import { ThemeMode, ThemeName } from '../../../../__generated__/globalTypes'
+import { FramePortal } from '../../FramePortal'
 
 interface Props {
   slug: 'admin-left' | 'admin-right' | 'admin-center'
@@ -28,6 +29,7 @@ export const GET_DISCOVERY_JOURNEY = gql`
 `
 
 export function EmbedJourney({ slug }: Props): ReactElement {
+  // need to update to be calling the right journeys
   const { data } = useQuery<GetDiscoveryJourney>(GET_DISCOVERY_JOURNEY, {
     variables: { id: 'with-primaryimage-copy' }
   })
@@ -41,14 +43,13 @@ export function EmbedJourney({ slug }: Props): ReactElement {
   return (
     <Box
       aria-label={`${slug}-embedded`}
+      onClick={handleClick}
       sx={{
-        width: '100%',
         height: '100%'
       }}
-      onClick={handleClick}
     >
       {block != null && (
-        <Box sx={{ height: '100%' }}>
+        <>
           <Box
             sx={{
               mx: 'auto',
@@ -71,24 +72,26 @@ export function EmbedJourney({ slug }: Props): ReactElement {
               opacity: 0.6
             }}
           />
-          <ThemeProvider
-            themeName={discoveryJourney?.themeName ?? ThemeName.base}
-            themeMode={discoveryJourney?.themeMode ?? ThemeMode.light}
-          >
-            <BlockRenderer
-              block={block}
-              wrappers={{
-                ImageWrapper: NullWrapper,
-                VideoWrapper: NullWrapper
-              }}
-            />
-          </ThemeProvider>
-        </Box>
+          <FramePortal height="100%" width="100%">
+            <ThemeProvider
+              themeName={discoveryJourney?.themeName ?? ThemeName.base}
+              themeMode={discoveryJourney?.themeMode ?? ThemeMode.light}
+            >
+              <Box
+                sx={{
+                  height: '100%',
+                  width: '100%',
+                  borderRadius: 2,
+                  overflow: 'hidden',
+                  position: 'relative'
+                }}
+              >
+                <BlockRenderer block={block} />
+              </Box>
+            </ThemeProvider>
+          </FramePortal>
+        </>
       )}
     </Box>
   )
-}
-
-function NullWrapper({ children }): ReactElement {
-  return <fieldset disabled>{children}</fieldset>
 }
