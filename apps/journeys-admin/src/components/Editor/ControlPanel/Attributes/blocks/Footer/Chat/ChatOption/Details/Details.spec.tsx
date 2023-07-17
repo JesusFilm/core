@@ -1,7 +1,7 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
-import { noop } from 'lodash'
+import noop from 'lodash/noop'
 import { ChatPlatform } from '../../../../../../../../../../__generated__/globalTypes'
 import { JOURNEY_CHAT_BUTTON_UPDATE } from './Details'
 import { Details } from '.'

@@ -1,7 +1,7 @@
 import { ReactElement } from 'react'
 import PeopleOutlineRoundedIcon from '@mui/icons-material/PeopleOutlineRounded'
 import Stack from '@mui/material/Stack'
-import { sortBy } from 'lodash'
+import sortBy from 'lodash/sortBy'
 import Select from '@mui/material/Select'
 import FormControl from '@mui/material/FormControl'
 import MenuItem from '@mui/material/MenuItem'
