@@ -39,7 +39,7 @@ export class AppCaslFactory extends CaslFactory<Role> {
     const { can, cannot, build } = new AbilityBuilder<AppAbility>(
       createPrismaAbility
     )
-    const acls = [teamAcl, userTeamAcl, journeyAcl, hostAcl]
+    const acls = [hostAcl, journeyAcl, teamAcl, userTeamAcl]
     acls.forEach((acl) => acl({ can, cannot, user }))
 
     return build()
