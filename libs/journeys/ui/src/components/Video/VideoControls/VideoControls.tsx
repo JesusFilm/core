@@ -101,7 +101,10 @@ export function VideoControls({
         void player.play()
       }
 
-      if (isYoutube) setShowHeaderFooter(false)
+      const videoHasClashingUI = isYoutube && player.userActive()
+      if (videoHasClashingUI) {
+        setShowHeaderFooter(false)
+      }
     }
     player.on('pause', handleVideoPause)
     return () => {
@@ -166,7 +169,8 @@ export function VideoControls({
       setFullscreen(fullscreen)
       setShowNavigation(!fullscreen)
 
-      if (isYoutube && !playing) {
+      const videoHasClashingUI = isYoutube && !playing && player.userActive()
+      if (videoHasClashingUI) {
         setShowHeaderFooter(false)
       } else {
         setShowHeaderFooter(!fullscreen)

@@ -173,6 +173,7 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
         swiper.slideTo(index)
       }
     }
+    setSlideTransitioning(false)
   }, [swiper, activeBlock, treeBlocks])
 
   function handleNext(): void {
