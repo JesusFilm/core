@@ -12,7 +12,6 @@ import { useTeam } from '../TeamProvider'
 export function TeamSelect(): ReactElement {
   const { query, activeTeam, setActiveTeam } = useTeam()
   const { t } = useTranslation('apps-journeys-admin')
-  console.log(activeTeam)
 
   return (
     <Stack
@@ -25,7 +24,7 @@ export function TeamSelect(): ReactElement {
       <FormControl variant="standard" sx={{ minWidth: 100 }}>
         <Select
           disabled={query.loading}
-          value={activeTeam?.id ?? Date.now()}
+          value={activeTeam?.id ?? 'Shared With Me'}
           onChange={(event) => {
             setActiveTeam(
               query?.data?.teams.find(
@@ -69,7 +68,7 @@ export function TeamSelect(): ReactElement {
           ))}
           <Divider />
           <MenuItem
-            value={Date.now()}
+            value="Shared With Me"
             sx={{
               display: 'block',
               whiteSpace: 'normal',

@@ -1,5 +1,5 @@
 import { fireEvent, render, waitFor } from '@testing-library/react'
-import { MockedProvider } from '@apollo/client/testing'
+import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { v4 as uuidv4 } from 'uuid'
 import { NextRouter, useRouter } from 'next/router'
 import {
@@ -7,6 +7,8 @@ import {
   variables
 } from '../../../../libs/useJourneyCreate/useJourneyCreate.spec'
 import { CREATE_JOURNEY } from '../../../../libs/useJourneyCreate'
+import { GetTeams } from '../../../../../__generated__/GetTeams'
+import { GET_TEAMS, TeamProvider } from '../../../Team/TeamProvider'
 import { AddJourneyButton } from '.'
 
 jest.mock('uuid', () => ({
@@ -23,6 +25,17 @@ const mockUuidv4 = uuidv4 as jest.MockedFunction<typeof uuidv4>
 const mockUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
 
 describe('AddJourneyButton', () => {
+  const getTeams: MockedResponse<GetTeams> = {
+    request: {
+      query: GET_TEAMS
+    },
+    result: {
+      data: {
+        teams: [{ id: 'jfp-team', title: 'Team Title', __typename: 'Team' }]
+      }
+    }
+  }
+
   it('should create a journey and redirect to edit page on click', async () => {
     mockUuidv4.mockReturnValueOnce(variables.journeyId)
     mockUuidv4.mockReturnValueOnce(variables.stepId)
@@ -42,16 +55,20 @@ describe('AddJourneyButton', () => {
               variables
             },
             result
-          }
+          },
+          getTeams
         ]}
       >
-        <AddJourneyButton />
+        <TeamProvider>
+          <AddJourneyButton />
+        </TeamProvider>
       </MockedProvider>
     )
-
-    expect(
-      getByRole('button', { name: 'Create a Journey' })
-    ).toBeInTheDocument()
+    await waitFor(() =>
+      expect(
+        getByRole('button', { name: 'Create a Journey' })
+      ).toBeInTheDocument()
+    )
 
     fireEvent.click(getByRole('button', { name: 'Create a Journey' }))
 

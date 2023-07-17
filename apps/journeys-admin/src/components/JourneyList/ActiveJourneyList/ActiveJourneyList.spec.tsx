@@ -6,6 +6,8 @@ import { defaultJourney, oldJourney } from '../journeyListData'
 import { ThemeProvider } from '../../ThemeProvider'
 import { GET_ADMIN_JOURNEYS } from '../../../libs/useAdminJourneysQuery/useAdminJourneysQuery'
 import { JourneyStatus } from '../../../../__generated__/globalTypes'
+import { GET_TEAMS, TeamProvider } from '../../Team/TeamProvider'
+import { GetTeams } from '../../../../__generated__/GetTeams'
 import {
   ARCHIVE_ACTIVE_JOURNEYS,
   TRASH_ACTIVE_JOURNEYS
@@ -54,15 +56,28 @@ const noJourneysMock = {
   }
 }
 
+const getTeams: MockedResponse<GetTeams> = {
+  request: {
+    query: GET_TEAMS
+  },
+  result: {
+    data: {
+      teams: [{ id: 'jfp-team', title: 'Team Title', __typename: 'Team' }]
+    }
+  }
+}
+
 describe('ActiveJourneyList', () => {
   it('should ask users to add a new journey', async () => {
     const { getByRole, getByText } = render(
-      <MockedProvider mocks={[noJourneysMock]}>
-        <ThemeProvider>
-          <SnackbarProvider>
-            <ActiveJourneyList />
-          </SnackbarProvider>
-        </ThemeProvider>
+      <MockedProvider mocks={[noJourneysMock, getTeams]}>
+        <TeamProvider>
+          <ThemeProvider>
+            <SnackbarProvider>
+              <ActiveJourneyList />
+            </SnackbarProvider>
+          </ThemeProvider>
+        </TeamProvider>
       </MockedProvider>
     )
     await waitFor(() =>

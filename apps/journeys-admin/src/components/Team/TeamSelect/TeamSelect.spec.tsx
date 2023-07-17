@@ -27,7 +27,7 @@ describe('TeamSelect', () => {
   }
 
   it('shows list of teams', async () => {
-    const { getByRole, getByTestId } = render(
+    const { getByRole, getByTestId, getByText } = render(
       <MockedProvider mocks={[getMultipleTeamsMock]}>
         <TeamProvider>
           <TeamSelect />
@@ -41,6 +41,7 @@ describe('TeamSelect', () => {
     expect(getByTestId('active-team-title')).toHaveTextContent('Team Title')
     await userEvent.click(getByRole('button'))
     await waitFor(() => expect(screen.getByRole('listbox')).toBeInTheDocument())
+    expect(getByText('Shared With Me')).toBeInTheDocument()
     fireEvent.click(getByRole('option', { name: 'Team Title2' }))
     expect(getByTestId('active-team-title')).toHaveTextContent('Team Title2')
   })

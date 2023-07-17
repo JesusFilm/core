@@ -1,4 +1,4 @@
-import { MockedProvider } from '@apollo/client/testing'
+import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { NextRouter, useRouter } from 'next/router'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { v4 as uuidv4 } from 'uuid'
@@ -7,6 +7,8 @@ import {
   data
 } from '../../libs/useJourneyCreate/useJourneyCreate.spec'
 import { CREATE_JOURNEY } from '../../libs/useJourneyCreate'
+import { GET_TEAMS, TeamProvider } from '../Team/TeamProvider'
+import { GetTeams } from '../../../__generated__/GetTeams'
 import { getOnboardingTemplateMock } from './data'
 import { OnboardingPanelContent } from '.'
 
@@ -31,6 +33,16 @@ jest.mock('uuid', () => ({
 
 const mockUuidv4 = uuidv4 as jest.MockedFunction<typeof uuidv4>
 const mockUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
+const getTeams: MockedResponse<GetTeams> = {
+  request: {
+    query: GET_TEAMS
+  },
+  result: {
+    data: {
+      teams: [{ id: 'jfp-team', title: 'Team Title', __typename: 'Team' }]
+    }
+  }
+}
 
 const mocks = [
   getOnboardingTemplateMock('014c7add-288b-4f84-ac85-ccefef7a07d3', '1'),
@@ -44,7 +56,8 @@ const mocks = [
       variables
     },
     result: { data }
-  }
+  },
+  getTeams
 ]
 
 describe('OnboardingPanelContent', () => {
@@ -58,11 +71,15 @@ describe('OnboardingPanelContent', () => {
 
     const { getByRole } = render(
       <MockedProvider mocks={mocks}>
-        <OnboardingPanelContent />
+        <TeamProvider>
+          <OnboardingPanelContent />
+        </TeamProvider>
       </MockedProvider>
     )
 
-    fireEvent.click(getByRole('button', { name: 'Create Custom Journey' }))
+    await waitFor(() =>
+      fireEvent.click(getByRole('button', { name: 'Create Custom Journey' }))
+    )
 
     await waitFor(() => {
       expect(push).toHaveBeenCalledWith(
