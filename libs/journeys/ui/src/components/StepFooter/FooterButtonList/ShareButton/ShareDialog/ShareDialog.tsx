@@ -76,7 +76,7 @@ export function ShareDialog({ url, open, closeDialog }: Props): ReactElement {
             rel="noopener"
             size="large"
           >
-            <FacebookLogo sx={{ width: '48px', height: '48px' }} />
+            <FacebookLogo sx={{ fontSize: '48px' }} />
           </StyledIconButton>
           <Typography variant="caption">{t('Facebook')}</Typography>
         </Stack>
@@ -93,7 +93,7 @@ export function ShareDialog({ url, open, closeDialog }: Props): ReactElement {
             rel="noopener"
             size="large"
           >
-            <TwitterLogo sx={{ width: '48px', height: '48px' }} />
+            <TwitterLogo sx={{ fontSize: '48px' }} />
           </StyledIconButton>
           <Typography variant="caption">{t('Twitter')}</Typography>
         </Stack>
