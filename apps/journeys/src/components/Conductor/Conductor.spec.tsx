@@ -67,6 +67,11 @@ global.fetch = jest.fn(
     })
 ) as jest.Mock
 
+jest.mock('@mui/material/useMediaQuery', () => ({
+  __esModule: true,
+  default: () => true
+}))
+
 beforeEach(() => {
   const useBreakpointsMock = useBreakpoints as jest.Mock
   useBreakpointsMock.mockReturnValue({

@@ -1,7 +1,7 @@
 import { ComponentProps } from 'react'
 import { Meta, Story } from '@storybook/react'
 import Typography from '@mui/material/Typography'
-import { noop } from 'lodash'
+import noop from 'lodash/noop'
 import { journeyUiConfig } from '../../../../libs/journeyUiConfig'
 import { StyledFooterButton } from './StyledFooterButton'
 

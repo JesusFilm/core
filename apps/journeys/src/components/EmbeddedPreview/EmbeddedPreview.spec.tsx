@@ -5,6 +5,11 @@ import { GetJourney_journey_blocks_TypographyBlock as TypographyBlock } from '..
 import { basic } from '../../libs/testData/storyData'
 import { EmbeddedPreview } from './EmbeddedPreview'
 
+jest.mock('@mui/material/useMediaQuery', () => ({
+  __esModule: true,
+  default: () => true
+}))
+
 describe('EmbeddedPreview', () => {
   it('renders first block', () => {
     const { getByText } = render(
