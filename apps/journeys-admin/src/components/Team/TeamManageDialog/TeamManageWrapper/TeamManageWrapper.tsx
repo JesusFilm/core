@@ -9,6 +9,7 @@ import {
   GetUserTeamsAndInvites,
   GetUserTeamsAndInvites_userTeams as UserTeam
 } from '../../../../../__generated__/GetUserTeamsAndInvites'
+import { UserTeamRole } from '../../../../../__generated__/globalTypes'
 
 interface TeamManageWrapperProps {
   children: (props: {
@@ -28,7 +29,7 @@ export function TeamManageWrapper({
     activeTeam != null
       ? {
           teamId: activeTeam.id,
-          filter: { includeGuests: false }
+          filter: { role: [UserTeamRole.manager, UserTeamRole.member] }
         }
       : undefined
   )

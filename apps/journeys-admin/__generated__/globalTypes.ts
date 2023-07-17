@@ -490,7 +490,7 @@ export interface UserInviteCreateInput {
 }
 
 export interface UserTeamFilterInput {
-  includeGuests?: boolean | null;
+  role?: UserTeamRole[] | null;
 }
 
 export interface UserTeamInviteCreateInput {
