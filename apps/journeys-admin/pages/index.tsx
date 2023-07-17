@@ -28,7 +28,6 @@ export const ACCEPT_ALL_INVITES = gql`
     }
     userInviteAcceptAll {
       id
-      acceptedAt
     }
   }
 `
