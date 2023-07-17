@@ -172,6 +172,11 @@ jobs:
         with:
           targets: test
           args: --ci
+      - uses: mansagroup/nrwl-nx-action@v3
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+        with:
+          targets: codecov
   visual-test:
     runs-on: ubuntu-latest
     services:
