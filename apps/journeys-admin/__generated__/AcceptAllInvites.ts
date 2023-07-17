@@ -15,7 +15,6 @@ export interface AcceptAllInvites_userTeamInviteAcceptAll {
 export interface AcceptAllInvites_userInviteAcceptAll {
   __typename: "UserInvite";
   id: string;
-  acceptedAt: any | null;
 }
 
 export interface AcceptAllInvites {
