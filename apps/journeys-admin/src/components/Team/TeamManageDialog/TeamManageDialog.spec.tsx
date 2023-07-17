@@ -43,7 +43,10 @@ describe('TeamManageDialog', () => {
   const getUserTeamMock1: MockedResponse<GetUserTeamsAndInvites> = {
     request: {
       query: GET_USER_TEAMS_AND_INVITES,
-      variables: { teamId: 'jfp-team', filter: { includeGuests: false } }
+      variables: {
+        teamId: 'jfp-team',
+        filter: { role: [UserTeamRole.manager, UserTeamRole.member] }
+      }
     },
     result: {
       data: {
