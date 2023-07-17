@@ -7,8 +7,8 @@ import Typography from '@mui/material/Typography'
 import { styled } from '@mui/material/styles'
 import IconButton, { IconButtonProps } from '@mui/material/IconButton'
 import { useTranslation } from 'react-i18next'
-import facebookLogo from './images/facebook_logo.svg'
-import twitterLogo from './images/twitter_logo.svg'
+import FacebookLogo from '@core/shared/ui/icons/FacebookLogo'
+import TwitterLogo from '@core/shared/ui/icons/TwitterLogo'
 
 const StyledIconButton = styled(IconButton)<
   IconButtonProps & { href?: string; target?: string; rel?: string }
@@ -70,24 +70,14 @@ export function ShareDialog({ url, open, closeDialog }: Props): ReactElement {
           spacing={2}
           sx={{ minWidth: '55px' }}
         >
-          <span>
-            <StyledIconButton
-              href={`https://www.facebook.com/sharer/sharer.php?u=${url ?? ''}`}
-              target="_blank"
-              rel="noopener"
-              size="large"
-            >
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={facebookLogo}
-                alt="facebook-logo"
-                data-testId="facebook-logo"
-                height={40}
-                width={40}
-              />
-            </StyledIconButton>
-          </span>
-
+          <StyledIconButton
+            href={`https://www.facebook.com/sharer/sharer.php?u=${url ?? ''}`}
+            target="_blank"
+            rel="noopener"
+            size="large"
+          >
+            <FacebookLogo sx={{ width: '48px', height: '48px' }} />
+          </StyledIconButton>
           <Typography variant="caption">{t('Facebook')}</Typography>
         </Stack>
 
@@ -97,24 +87,14 @@ export function ShareDialog({ url, open, closeDialog }: Props): ReactElement {
           spacing={2}
           sx={{ minWidth: '55px' }}
         >
-          <span>
-            <StyledIconButton
-              href={`https://twitter.com/intent/tweet?url=${url ?? ''}`}
-              target="_blank"
-              rel="noopener"
-              size="large"
-            >
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={twitterLogo}
-                alt="twitter-logo"
-                data-testId="twitter-logo"
-                height={40}
-                width={40}
-              />
-            </StyledIconButton>
-          </span>
-
+          <StyledIconButton
+            href={`https://twitter.com/intent/tweet?url=${url ?? ''}`}
+            target="_blank"
+            rel="noopener"
+            size="large"
+          >
+            <TwitterLogo sx={{ width: '48px', height: '48px' }} />
+          </StyledIconButton>
           <Typography variant="caption">{t('Twitter')}</Typography>
         </Stack>
       </Stack>
