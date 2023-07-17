@@ -2,7 +2,6 @@ import { Resolver, Query, Mutation, Args } from '@nestjs/graphql'
 import { UseGuards } from '@nestjs/common'
 import { Team, Prisma } from '.prisma/api-journeys-client'
 import { subject } from '@casl/ability'
-import { ForbiddenError } from 'apollo-server-errors'
 import { GraphQLError } from 'graphql'
 import { CurrentUserId } from '@core/nest/decorators/CurrentUserId'
 import {
@@ -43,7 +42,9 @@ export class TeamResolver {
         extensions: { code: 'NOT_FOUND' }
       })
     if (ability.can(Action.Read, subject('Team', team))) return team
-    throw new ForbiddenError('user is not allowed to view team')
+    throw new GraphQLError('user is not allowed to view team', {
+      extensions: { code: 'FORBIDDEN' }
+    })
   }
 
   @Mutation()
@@ -78,6 +79,8 @@ export class TeamResolver {
         where: { id },
         data
       })
-    throw new ForbiddenError('user is not allowed to update team')
+    throw new GraphQLError('user is not allowed to update team', {
+      extensions: { code: 'FORBIDDEN' }
+    })
   }
 }

@@ -64,7 +64,8 @@ function evtToDataLayer(
       title,
       language,
       percent,
-      seconds
+      seconds,
+      dateTimeUTC: new Date().toISOString()
     }
   })
 }
@@ -103,7 +104,8 @@ export function VideoControls({
         id,
         variant?.language.id,
         title[0].value,
-        variant?.language.name[0].value,
+        variant?.language?.name.find(({ primary }) => !primary)?.value ??
+          variant?.language?.name[0]?.value,
         Math.round(player.currentTime()),
         Math.round((progress / durationSeconds) * 100)
       )
@@ -129,7 +131,8 @@ export function VideoControls({
           id,
           variant?.language.id,
           title[0].value,
-          variant?.language.name[0].value,
+          variant?.language?.name.find(({ primary }) => !primary)?.value ??
+            variant?.language?.name[0]?.value,
           Math.round(player.currentTime()),
           Math.round((player.currentTime() / player.duration()) * 100)
         )
@@ -139,7 +142,8 @@ export function VideoControls({
           id,
           variant?.language.id,
           title[0].value,
-          variant?.language.name[0].value,
+          variant?.language?.name.find(({ primary }) => !primary)?.value ??
+            variant?.language?.name[0]?.value,
           Math.round(player.currentTime()),
           Math.round((player.currentTime() / player.duration()) * 100)
         )
@@ -153,7 +157,8 @@ export function VideoControls({
           id,
           variant?.language.id,
           title[0].value,
-          variant?.language.name[0].value,
+          variant?.language?.name.find(({ primary }) => !primary)?.value ??
+            variant?.language?.name[0]?.value,
           Math.round(player.currentTime()),
           Math.round((player.currentTime() / player.duration()) * 100)
         )
@@ -184,7 +189,8 @@ export function VideoControls({
         id,
         variant?.language.id,
         title[0].value,
-        variant?.language.name[0].value,
+        variant?.language?.name.find(({ primary }) => !primary)?.value ??
+          variant?.language?.name[0]?.value,
         Math.round(player.currentTime()),
         Math.round((player.currentTime() / player.duration()) * 100)
       )
@@ -198,7 +204,8 @@ export function VideoControls({
           id,
           variant?.language.id,
           title[0].value,
-          variant?.language.name[0].value,
+          variant?.language?.name.find(({ primary }) => !primary)?.value ??
+            variant?.language?.name[0]?.value,
           Math.round(player.currentTime()),
           Math.round((player.currentTime() / player.duration()) * 100)
         )
@@ -208,7 +215,8 @@ export function VideoControls({
           id,
           variant?.language.id,
           title[0].value,
-          variant?.language.name[0].value,
+          variant?.language?.name.find(({ primary }) => !primary)?.value ??
+            variant?.language?.name[0]?.value,
           Math.round(player.currentTime()),
           Math.round((player.currentTime() / player.duration()) * 100)
         )

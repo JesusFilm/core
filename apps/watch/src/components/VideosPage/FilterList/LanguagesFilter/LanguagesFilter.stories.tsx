@@ -1,5 +1,5 @@
 import { Meta, Story } from '@storybook/react'
-import { noop } from 'lodash'
+import noop from 'lodash/noop'
 import { screen, userEvent } from '@storybook/testing-library'
 import { watchConfig } from '../../../../libs/storybook'
 import { LanguagesFilter } from '.'

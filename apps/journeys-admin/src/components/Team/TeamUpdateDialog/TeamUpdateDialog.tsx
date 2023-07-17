@@ -31,8 +31,10 @@ export function TeamUpdateDialog({
   const { t } = useTranslation('apps-journeys-admin')
   const [teamUpdate] = useMutation<TeamUpdate>(TEAM_UPDATE)
   const { enqueueSnackbar } = useSnackbar()
-  const teamSchema = object().shape({
-    title: string().required('Team Name must be at least one character.')
+  const teamSchema = object({
+    title: string()
+      .required(t('Team Name must be at least one character.'))
+      .max(40, t('Max {{ count }} Characters', { count: 40 }))
   })
 
   async function handleSubmit(

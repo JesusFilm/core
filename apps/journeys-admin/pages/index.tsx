@@ -16,10 +16,10 @@ import { JourneyList } from '../src/components/JourneyList'
 import { PageWrapper } from '../src/components/NewPageWrapper'
 import { createApolloClient } from '../src/libs/apolloClient'
 import i18nConfig from '../next-i18next.config'
-import { useTermsRedirect } from '../src/libs/useTermsRedirect/useTermsRedirect'
 import { OnboardingPanelContent } from '../src/components/OnboardingPanelContent'
 import { TeamSelect } from '../src/components/Team/TeamSelect'
 import { TeamMenu } from '../src/components/Team/TeamMenu'
+import { checkConditionalRedirect } from '../src/libs/checkConditionalRedirect'
 
 export const ACCEPT_USER_INVITE = gql`
   mutation UserInviteAcceptAll {
@@ -34,7 +34,6 @@ function IndexPage(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const AuthUser = useAuthUser()
   const { teams } = useFlags()
-  useTermsRedirect()
 
   return (
     <>
@@ -46,7 +45,7 @@ function IndexPage(): ReactElement {
         sidePanelChildren={<OnboardingPanelContent />}
         sidePanelTitle={t('Create a New Journey')}
       >
-        <JourneyList />
+        <JourneyList authUser={AuthUser} />
       </PageWrapper>
     </>
   )
@@ -67,6 +66,9 @@ export const getServerSideProps = withAuthUserTokenSSR({
 
   const token = await AuthUser.getIdToken()
   const apolloClient = createApolloClient(token != null ? token : '')
+
+  const redirect = await checkConditionalRedirect(apolloClient, flags)
+  if (redirect != null) return { redirect }
 
   await apolloClient.mutate<UserInviteAcceptAll>({
     mutation: ACCEPT_USER_INVITE

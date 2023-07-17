@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing'
-import { omit } from 'lodash'
+import omit from 'lodash/omit'
 
 import { JourneyStatus } from '../../../__generated__/graphql'
 import { BlockResolver } from '../../block/block.resolver'
@@ -92,7 +92,7 @@ describe('NavigateToJourneyActionResolver', () => {
       )
       const actionData = {
         ...omit(navigateToJourneyInput, 'journeyId'),
-        journey: { connect: { id: block.journeyId } }
+        journey: { connect: { id: navigateToJourneyInput.journeyId } }
       }
       expect(prismaService.action.upsert).toHaveBeenCalledWith({
         where: { parentBlockId: block.id },

@@ -1,7 +1,6 @@
 import { Resolver, Query, Mutation, Args } from '@nestjs/graphql'
 import { UseGuards } from '@nestjs/common'
 import { subject } from '@casl/ability'
-import { ForbiddenError } from 'apollo-server-errors'
 import { CaslAccessible, CaslAbility } from '@core/nest/common/CaslAuthModule'
 import { UserTeamInvite, Prisma } from '.prisma/api-journeys-client'
 import { GraphQLError } from 'graphql'
@@ -71,7 +70,9 @@ export class TeamResolver {
         }
       })
     }
-    throw new ForbiddenError('user is not allowed to create userTeamInvite')
+    throw new GraphQLError('user is not allowed to create userTeamInvite', {
+      extensions: { code: 'FORBIDDEN' }
+    })
   }
 
   @Mutation()
@@ -98,7 +99,9 @@ export class TeamResolver {
         }
       })
     }
-    throw new ForbiddenError('user is not allowed to remove userTeamInvite')
+    throw new GraphQLError('user is not allowed to remove userTeamInvite', {
+      extensions: { code: 'FORBIDDEN' }
+    })
   }
 
   @Mutation()

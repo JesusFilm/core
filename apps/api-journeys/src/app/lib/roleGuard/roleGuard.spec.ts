@@ -1,6 +1,6 @@
 import { ExecutionContext } from '@nestjs/common'
 import { createMock, DeepMocked } from '@golevelup/ts-jest'
-import { AuthenticationError } from 'apollo-server-errors'
+import { GraphQLError } from 'graphql'
 import { contextToUserId } from '@core/nest/common/firebaseClient'
 import { UserJourney, Journey, UserRole } from '.prisma/api-journeys-client'
 import {
@@ -159,9 +159,9 @@ describe('RoleGuard', () => {
       )
       const roleGuard = new RoleGuardClass(gqlContext)
       await expect(roleGuard.canActivate(gqlContext)).rejects.toThrow(
-        new AuthenticationError(
-          'User does not have the role to perform this action'
-        )
+        new GraphQLError('User does not have the role to perform this action', {
+          extensions: { code: 'FORBIDDEN' }
+        })
       )
     })
   })
@@ -269,9 +269,9 @@ describe('RoleGuard', () => {
       const roleGuard = new RoleGuardClass(gqlContext)
 
       await expect(roleGuard.canActivate(gqlContext)).rejects.toThrow(
-        new AuthenticationError(
-          'User does not have the role to perform this action'
-        )
+        new GraphQLError('User does not have the role to perform this action', {
+          extensions: { code: 'FORBIDDEN' }
+        })
       )
     })
   })

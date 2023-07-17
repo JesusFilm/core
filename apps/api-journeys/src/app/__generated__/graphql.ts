@@ -311,7 +311,7 @@ export class IconBlockUpdateInput {
 
 export class ImageBlockCreateInput {
     id?: Nullable<string>;
-    parentBlockId: string;
+    parentBlockId?: Nullable<string>;
     journeyId: string;
     src?: Nullable<string>;
     alt: string;

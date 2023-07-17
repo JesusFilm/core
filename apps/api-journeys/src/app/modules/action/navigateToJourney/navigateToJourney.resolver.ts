@@ -1,8 +1,9 @@
 import { Args, Mutation, Parent, ResolveField, Resolver } from '@nestjs/graphql'
 import { UseGuards } from '@nestjs/common'
-import { includes, omit } from 'lodash'
-import { UserInputError } from 'apollo-server-errors'
+import { GraphQLError } from 'graphql'
 import { Journey, Action } from '.prisma/api-journeys-client'
+import includes from 'lodash/includes'
+import omit from 'lodash/omit'
 
 import { RoleGuard } from '../../../lib/roleGuard/roleGuard'
 import {
@@ -58,14 +59,15 @@ export class NavigateToJourneyActionResolver {
         block.typename
       )
     ) {
-      throw new UserInputError(
-        'This block does not support navigate to journey actions'
+      throw new GraphQLError(
+        'This block does not support navigate to journey actions',
+        { extensions: { code: 'BAD_USER_INPUT' } }
       )
     }
 
     const actionData = {
       ...omit(input, 'journeyId'),
-      journey: { connect: { id: journeyId } },
+      journey: { connect: { id: input.journeyId } },
       url: null,
       target: null
     }

@@ -1,4 +1,5 @@
-import { isObject, omit } from 'lodash'
+import isObject from 'lodash/isObject'
+import omit from 'lodash/omit'
 import { fromPostgresql } from '../FromPostgresql'
 
 interface TransformObject {

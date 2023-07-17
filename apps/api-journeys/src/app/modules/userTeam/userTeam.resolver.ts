@@ -9,7 +9,6 @@ import {
 import { UseGuards } from '@nestjs/common'
 import { UserTeam, Prisma } from '.prisma/api-journeys-client'
 import { subject } from '@casl/ability'
-import { ForbiddenError } from 'apollo-server-errors'
 import { GraphQLError } from 'graphql'
 import { CaslAbility, CaslAccessible } from '@core/nest/common/CaslAuthModule'
 import { PrismaService } from '../../lib/prisma.service'
@@ -49,7 +48,9 @@ export class UserTeamResolver {
         extensions: { code: 'NOT_FOUND' }
       })
     if (ability.can(Action.Read, subject('UserTeam', userTeam))) return userTeam
-    throw new ForbiddenError('user is not allowed to view userTeam')
+    throw new GraphQLError('user is not allowed to view userTeam', {
+      extensions: { code: 'FORBIDDEN' }
+    })
   }
 
   @Mutation()
@@ -72,7 +73,9 @@ export class UserTeamResolver {
         where: { id },
         data
       })
-    throw new ForbiddenError('user is not allowed to update userTeam')
+    throw new GraphQLError('user is not allowed to update userTeam', {
+      extensions: { code: 'FORBIDDEN' }
+    })
   }
 
   @Mutation()
@@ -93,7 +96,9 @@ export class UserTeamResolver {
       return await this.prismaService.userTeam.delete({
         where: { id }
       })
-    throw new ForbiddenError('user is not allowed to delete userTeam')
+    throw new GraphQLError('user is not allowed to delete userTeam', {
+      extensions: { code: 'FORBIDDEN' }
+    })
   }
 
   @ResolveField('user')

@@ -1,7 +1,9 @@
 import { Args, Mutation, ResolveField, Resolver } from '@nestjs/graphql'
 import { UseGuards } from '@nestjs/common'
-import { get, includes } from 'lodash'
-import { UserInputError } from 'apollo-server-errors'
+import { GraphQLError } from 'graphql'
+import { FromPostgresql } from '@core/nest/decorators/FromPostgresql'
+import get from 'lodash/get'
+import includes from 'lodash/includes'
 
 import { RoleGuard } from '../../lib/roleGuard/roleGuard'
 import {
@@ -33,6 +35,7 @@ export class ActionResolver {
       { role: Role.publisher, attributes: { template: true } }
     ])
   )
+  @FromPostgresql()
   async blockDeleteAction(
     @Args('id') id: string,
     @Args('journeyId') journeyId: string
@@ -55,7 +58,9 @@ export class ActionResolver {
         block.typename
       )
     ) {
-      throw new UserInputError('This block does not support actions')
+      throw new GraphQLError('This block does not support actions', {
+        extensions: { code: 'BAD_USER_INPUT' }
+      })
     }
 
     await this.prismaService.action.delete({ where: { parentBlockId: id } })

@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import fetch, { Response } from 'node-fetch'
-import { omit } from 'lodash'
+import omit from 'lodash/omit'
 
 import {
   CardBlock,

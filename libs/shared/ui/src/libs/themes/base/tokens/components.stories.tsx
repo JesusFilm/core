@@ -1,6 +1,6 @@
 import Stack from '@mui/material/Stack'
 import { Meta, Story } from '@storybook/react'
-import { noop } from 'lodash'
+import noop from 'lodash/noop'
 import { simpleComponentConfig } from '../../../simpleComponentConfig'
 import { ThemeName } from '../..'
 import {

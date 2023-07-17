@@ -6,7 +6,7 @@ import { MockedResponse } from '@apollo/client/testing'
 import { TeamProvider } from '../TeamProvider'
 import { journeysAdminConfig } from '../../../libs/storybook'
 import { TeamCreate } from '../../../../__generated__/TeamCreate'
-import { TEAM_CREATE } from './TeamCreateDialog'
+import { TEAM_CREATE } from '../../../libs/useTeamCreateMutation/useTeamCreateMutation'
 import { TeamCreateDialog } from '.'
 
 const TeamCreateDialogStory = {

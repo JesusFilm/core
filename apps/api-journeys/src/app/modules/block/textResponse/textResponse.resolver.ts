@@ -1,7 +1,7 @@
-import { UserInputError } from 'apollo-server-errors'
+import { GraphQLError } from 'graphql'
 import { UseGuards } from '@nestjs/common'
 import { Args, Mutation, Resolver, ResolveField, Parent } from '@nestjs/graphql'
-import { omit } from 'lodash'
+import omit from 'lodash/omit'
 
 import {
   Action,
@@ -72,7 +72,9 @@ export class TextResponseBlockResolver {
         id
       )
       if (!submitIcon) {
-        throw new UserInputError('Submit icon does not exist')
+        throw new GraphQLError('Submit icon does not exist', {
+          extensions: { code: 'NOT_FOUND' }
+        })
       }
     }
 

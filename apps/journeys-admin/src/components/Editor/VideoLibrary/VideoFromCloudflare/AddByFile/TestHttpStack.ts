@@ -1,4 +1,4 @@
-import { noop } from 'lodash'
+import noop from 'lodash/noop'
 import { HttpStack, HttpRequest, HttpResponse } from 'tus-js-client'
 
 // extracted from:

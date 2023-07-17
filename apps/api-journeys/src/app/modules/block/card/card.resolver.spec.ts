@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing'
-import { omit } from 'lodash'
+import omit from 'lodash/omit'
 
 import { CardBlock, ThemeMode, ThemeName } from '../../../__generated__/graphql'
 import { JourneyService } from '../../journey/journey.service'

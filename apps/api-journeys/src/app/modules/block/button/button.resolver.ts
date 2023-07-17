@@ -1,7 +1,7 @@
-import { UserInputError } from 'apollo-server-errors'
+import { GraphQLError } from 'graphql'
 import { UseGuards } from '@nestjs/common'
 import { Args, Mutation, ResolveField, Resolver, Parent } from '@nestjs/graphql'
-import { omit } from 'lodash'
+import omit from 'lodash/omit'
 
 import {
   Action,
@@ -72,14 +72,18 @@ export class ButtonBlockResolver {
         id
       )
       if (!startIcon) {
-        throw new UserInputError('Start icon does not exist')
+        throw new GraphQLError('Start icon does not exist', {
+          extensions: { code: 'BAD_USER_INPUT' }
+        })
       }
     }
 
     if (input.endIconId != null) {
       const endIcon = await this.blockService.validateBlock(input.endIconId, id)
       if (!endIcon) {
-        throw new UserInputError('End icon does not exist')
+        throw new GraphQLError('End icon does not exist', {
+          extensions: { code: 'BAD_USER_INPUT' }
+        })
       }
     }
 

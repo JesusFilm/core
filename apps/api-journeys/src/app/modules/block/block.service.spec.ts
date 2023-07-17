@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { v4 as uuidv4 } from 'uuid'
-import { omit } from 'lodash'
+import omit from 'lodash/omit'
 
 import { PrismaService } from '../../lib/prisma.service'
 import {

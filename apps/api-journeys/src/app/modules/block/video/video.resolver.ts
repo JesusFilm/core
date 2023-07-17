@@ -2,9 +2,9 @@ import { Args, Mutation, Parent, ResolveField, Resolver } from '@nestjs/graphql'
 import { UseGuards } from '@nestjs/common'
 import { object, string } from 'yup'
 import fetch from 'node-fetch'
-import { UserInputError } from 'apollo-server-errors'
+import { GraphQLError } from 'graphql'
 import { Block, VideoBlockSource } from '.prisma/api-journeys-client'
-import { omit } from 'lodash'
+import omit from 'lodash/omit'
 
 import { BlockService } from '../block.service'
 import {
@@ -212,6 +212,7 @@ export class VideoBlockResolver {
     @Args('journeyId') journeyId: string,
     @Args('input') input: VideoBlockUpdateInput
   ): Promise<VideoBlock> {
+    console.log('input', input)
     const block = await this.prismaService.block.findUnique({
       where: { id },
       include: { action: true }
@@ -240,9 +241,7 @@ export class VideoBlockResolver {
         break
       case VideoBlockSource.internal:
         input = {
-          ...{
-            duration: null
-          },
+          duration: null,
           ...input,
           ...{
             title: null,
@@ -299,8 +298,8 @@ export class VideoBlockResolver {
       await fetch(`https://www.googleapis.com/youtube/v3/videos?${query}`)
     ).json()
     if (videosData.items[0] == null) {
-      throw new UserInputError('videoId cannot be found on YouTube', {
-        videoId: ['videoId cannot be found on YouTube']
+      throw new GraphQLError('videoId cannot be found on YouTube', {
+        extensions: { code: 'NOT_FOUND' }
       })
     }
     return {
@@ -330,8 +329,8 @@ export class VideoBlockResolver {
     ).json()
 
     if (response.result == null) {
-      throw new UserInputError('videoId cannot be found on Cloudflare', {
-        videoId: ['videoId cannot be found on Cloudflare']
+      throw new GraphQLError('videoId cannot be found on Cloudflare', {
+        extensions: { code: 'NOT_FOUND' }
       })
     }
     return {

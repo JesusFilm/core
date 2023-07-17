@@ -14,7 +14,6 @@ import {
   PowerBiEmbed
 } from '@core/nest/powerBi/getPowerBiEmbed'
 import {
-  ApolloError,
   ForbiddenError,
   UserInputError
 } from 'apollo-server-errors'
@@ -30,7 +29,8 @@ import {
   Prisma
 } from '.prisma/api-journeys-client'
 import { FromPostgresql } from '@core/nest/decorators/FromPostgresql'
-import { isEmpty, omit } from 'lodash'
+import isEmpty from 'lodash/isEmpty'
+import omit from 'lodash/omit'
 
 import { CaslAbility, CaslAccessible } from '@core/nest/common/CaslAuthModule'
 import { subject } from '@casl/ability'
@@ -86,7 +86,9 @@ export class JourneyResolver {
       process.env.POWER_BI_WORKSPACE_ID == null ||
       reportId == null
     ) {
-      throw new ApolloError('server environment variables missing')
+      throw new GraphQLError('server environment variables missing', {
+        extensions: { code: 'INTERNAL_SERVER_ERROR' }
+      })
     }
 
     const config = {
@@ -99,7 +101,9 @@ export class JourneyResolver {
     try {
       return await getPowerBiEmbed(config, reportId, userId)
     } catch (err) {
-      throw new ApolloError(err.message)
+      throw new GraphQLError(err.message, {
+        extensions: { code: 'BAD_REQUEST' }
+      })
     }
   }
 
@@ -262,6 +266,7 @@ export class JourneyResolver {
     // TODO: remove when teams is released
     @Args('teamId') teamId = 'jfp-team'
   ): Promise<Journey | undefined> {
+    console.log('hi')
     const journey = await this.prismaService.journey.findUnique({
       where: { id },
       include: {
@@ -483,7 +488,7 @@ export class JourneyResolver {
       })
     } catch (err) {
       if (err.code === ERROR_PSQL_UNIQUE_CONSTRAINT_VIOLATED) {
-        throw new UserInputError('Slug is not unique')
+        throw new GraphQLError('Slug is not unique')
       } else {
         throw err
       }
