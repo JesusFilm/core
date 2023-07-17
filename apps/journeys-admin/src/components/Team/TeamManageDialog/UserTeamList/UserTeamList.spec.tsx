@@ -1,4 +1,4 @@
-import { fireEvent, render } from '@testing-library/react'
+import { render } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
 import { UserTeamRole } from '../../../../../__generated__/globalTypes'
 
@@ -26,11 +26,11 @@ describe('UserTeamList', () => {
         role: UserTeamRole.manager,
         user: {
           __typename: 'User',
-          email: 'tatainikora@example.com',
-          firstName: 'Tatai',
+          email: 'miguelohara@example.com',
+          firstName: 'Miguel',
           id: 'userId',
           imageUrl: 'https://example.com/image.jpg',
-          lastName: 'Nikora'
+          lastName: "O'Hara"
         }
       },
       {
@@ -39,24 +39,11 @@ describe('UserTeamList', () => {
         role: UserTeamRole.member,
         user: {
           __typename: 'User',
-          email: 'SiyangTheManMyStan@example.com',
-          firstName: 'Siyang',
+          email: 'hobiebrown@example.com',
+          firstName: 'Hobie',
           id: 'userId2',
           imageUrl: 'https://example.com/image.jpg',
-          lastName: 'Cao'
-        }
-      },
-      {
-        __typename: 'UserTeam',
-        id: 'userTeamId3',
-        role: UserTeamRole.guest,
-        user: {
-          __typename: 'User',
-          email: 'john@example.com',
-          firstName: 'John',
-          id: 'userId3',
-          imageUrl: 'https://example.com/image.jpg',
-          lastName: 'Geronimo'
+          lastName: 'Brown'
         }
       }
     ],
@@ -75,11 +62,11 @@ describe('UserTeamList', () => {
     role: UserTeamRole.manager,
     user: {
       __typename: 'User',
-      email: 'tatainikora@example.com',
-      firstName: 'Tatai',
+      email: 'miguelohara@example.com',
+      firstName: 'Miguel',
       id: 'userId',
       imageUrl: 'https://example.com/image.jpg',
-      lastName: 'Nikora'
+      lastName: "O'Hara"
     }
   }
 
@@ -89,11 +76,11 @@ describe('UserTeamList', () => {
     role: UserTeamRole.member,
     user: {
       __typename: 'User',
-      email: 'SiyangTheManMyStan@example.com',
-      firstName: 'Siyang',
+      email: 'hobiebrown@example.com',
+      firstName: 'Hobie',
       id: 'userId2',
       imageUrl: 'https://example.com/image.jpg',
-      lastName: 'Cao'
+      lastName: 'Brown'
     }
   }
 
@@ -108,12 +95,10 @@ describe('UserTeamList', () => {
       </MockedProvider>
     )
 
-    expect(getByText('Tatai Nikora')).toBeInTheDocument()
-    expect(getByText('Siyang Cao')).toBeInTheDocument()
-    expect(getByText('John Geronimo')).toBeInTheDocument()
-    expect(getByText('tatainikora@example.com')).toBeInTheDocument()
-    expect(getByText('SiyangTheManMyStan@example.com')).toBeInTheDocument()
-    expect(getByText('john@example.com')).toBeInTheDocument()
+    expect(getByText("Miguel O'Hara")).toBeInTheDocument()
+    expect(getByText('Hobie Brown')).toBeInTheDocument()
+    expect(getByText('miguelohara@example.com')).toBeInTheDocument()
+    expect(getByText('hobiebrown@example.com')).toBeInTheDocument()
     expect(getByRole('button', { name: 'Manager' })).toBeDisabled()
   })
 
@@ -141,8 +126,6 @@ describe('UserTeamList', () => {
         />
       </MockedProvider>
     )
-    fireEvent.click(getByRole('button', { name: 'Guest' }))
-    expect(getByRole('button', { name: 'Guest' })).toBeDisabled()
     expect(getByRole('button', { name: 'Member' })).toBeDisabled()
     expect(getByRole('button', { name: 'Manager' })).toBeDisabled()
   })

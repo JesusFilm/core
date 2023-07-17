@@ -11,7 +11,7 @@ interface UserTeamInvitesListProps {
   currentUserTeam: UserTeam | undefined
 }
 
-export function UserTeamInvitesList({
+export function UserTeamInviteList({
   data,
   currentUserTeam
 }: UserTeamInvitesListProps): ReactElement {

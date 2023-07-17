@@ -11,7 +11,6 @@ import { useTranslation } from 'react-i18next'
 import { getLaunchDarklyClient } from '@core/shared/ui/getLaunchDarklyClient'
 import { gql } from '@apollo/client'
 import { useFlags } from '@core/shared/ui/FlagsProvider'
-import { UserInviteAcceptAll } from '../__generated__/UserInviteAcceptAll'
 import { JourneyList } from '../src/components/JourneyList'
 import { PageWrapper } from '../src/components/NewPageWrapper'
 import { createApolloClient } from '../src/libs/apolloClient'
@@ -20,12 +19,15 @@ import { OnboardingPanelContent } from '../src/components/OnboardingPanelContent
 import { TeamSelect } from '../src/components/Team/TeamSelect'
 import { TeamMenu } from '../src/components/Team/TeamMenu'
 import { checkConditionalRedirect } from '../src/libs/checkConditionalRedirect'
+import { AcceptAllInvites } from '../__generated__/AcceptAllInvites'
 
-export const ACCEPT_USER_INVITE = gql`
-  mutation UserInviteAcceptAll {
+export const ACCEPT_ALL_INVITES = gql`
+  mutation AcceptAllInvites {
+    userTeamInviteAcceptAll {
+      id
+    }
     userInviteAcceptAll {
       id
-      acceptedAt
     }
   }
 `
@@ -70,8 +72,8 @@ export const getServerSideProps = withAuthUserTokenSSR({
   const redirect = await checkConditionalRedirect(apolloClient, flags)
   if (redirect != null) return { redirect }
 
-  await apolloClient.mutate<UserInviteAcceptAll>({
-    mutation: ACCEPT_USER_INVITE
+  await apolloClient.mutate<AcceptAllInvites>({
+    mutation: ACCEPT_ALL_INVITES
   })
 
   return {

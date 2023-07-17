@@ -21,6 +21,34 @@ describe('UserTeamResolver', () => {
       .mockResolvedValue([{ id: 'userTeamId' }])
   })
   describe('userTeams', () => {
+    it('fetches accessible userTeams with filter', async () => {
+      const userTeams = await userTeamResolver.userTeams(
+        {
+          team: {
+            is: {
+              userTeams: { some: { userId: 'userId' } }
+            }
+          }
+        },
+        'teamId',
+        { role: [GraphQlUserTeamRole.member, GraphQlUserTeamRole.manager] }
+      )
+      expect(prismaService.userTeam.findMany).toHaveBeenCalledWith({
+        where: {
+          AND: [
+            {
+              team: {
+                is: {
+                  userTeams: { some: { userId: 'userId' } }
+                }
+              }
+            },
+            { teamId: 'teamId', role: { in: ['member', 'manager'] } }
+          ]
+        }
+      })
+      expect(userTeams).toEqual([{ id: 'userTeamId' }])
+    })
     it('fetches accessible userTeams', async () => {
       const userTeams = await userTeamResolver.userTeams(
         {
@@ -30,7 +58,8 @@ describe('UserTeamResolver', () => {
             }
           }
         },
-        'teamId'
+        'teamId',
+        {}
       )
       expect(prismaService.userTeam.findMany).toHaveBeenCalledWith({
         where: {

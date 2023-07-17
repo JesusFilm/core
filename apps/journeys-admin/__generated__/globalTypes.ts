@@ -489,6 +489,10 @@ export interface UserInviteCreateInput {
   email: string;
 }
 
+export interface UserTeamFilterInput {
+  role?: UserTeamRole[] | null;
+}
+
 export interface UserTeamInviteCreateInput {
   email: string;
 }

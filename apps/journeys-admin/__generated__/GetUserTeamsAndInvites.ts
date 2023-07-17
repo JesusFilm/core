@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { UserTeamRole } from "./globalTypes";
+import { UserTeamFilterInput, UserTeamRole } from "./globalTypes";
 
 // ====================================================
 // GraphQL query operation: GetUserTeamsAndInvites
@@ -39,4 +39,5 @@ export interface GetUserTeamsAndInvites {
 
 export interface GetUserTeamsAndInvitesVariables {
   teamId: string;
+  filter: UserTeamFilterInput;
 }
