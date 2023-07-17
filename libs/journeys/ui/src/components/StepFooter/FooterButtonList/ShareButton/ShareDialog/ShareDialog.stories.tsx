@@ -1,7 +1,7 @@
 import { ComponentProps } from 'react'
 import { Story, Meta } from '@storybook/react'
 import { SnackbarProvider } from 'notistack'
-import noop  from 'lodash/noop'
+import noop from 'lodash/noop'
 import { journeyUiConfig } from '../../../../../libs/journeyUiConfig'
 import { ShareDialog } from './ShareDialog'
 
