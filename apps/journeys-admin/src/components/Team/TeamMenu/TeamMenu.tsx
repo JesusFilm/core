@@ -38,12 +38,7 @@ export function TeamMenu(): ReactElement {
           setTeamUpdateOpen(false)
         }}
       />
-      <IconButton
-        edge="end"
-        color="inherit"
-        sx={{ mx: 1 }}
-        onClick={handleShowMenu}
-      >
+      <IconButton edge="end" color="inherit" onClick={handleShowMenu}>
         <MoreVert />
       </IconButton>
       <Menu

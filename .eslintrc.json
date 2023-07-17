@@ -34,7 +34,12 @@
     "no-restricted-imports": [
       "error",
       {
-        "paths": ["@mui/material", "@mui/system", "@mui/icons-material"],
+        "paths": [
+          "lodash",
+          "@mui/material",
+          "@mui/system",
+          "@mui/icons-material"
+        ],
         "patterns": ["@mui/*/*/*", "!@mui/material/test-utils/*"]
       }
     ]

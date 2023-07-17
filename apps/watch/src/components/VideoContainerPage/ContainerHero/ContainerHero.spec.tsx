@@ -1,5 +1,5 @@
 import { fireEvent, render } from '@testing-library/react'
-import { noop } from 'lodash'
+import noop from 'lodash/noop'
 import { VideoProvider } from '../../../libs/videoContext'
 import { VideoLabel } from '../../../../__generated__/globalTypes'
 import { VideoContentFields } from '../../../../__generated__/VideoContentFields'

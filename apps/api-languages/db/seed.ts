@@ -4,7 +4,7 @@
 import { Translation } from '@core/nest/common/TranslationModule'
 import { aql } from 'arangojs'
 import { float } from 'aws-sdk/clients/lightsail'
-import { isEmpty } from 'lodash'
+import isEmpty from 'lodash/isEmpty'
 import fetch from 'node-fetch'
 import slugify from 'slugify'
 import { ArangoDB } from './db'

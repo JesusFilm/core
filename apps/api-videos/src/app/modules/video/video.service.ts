@@ -4,7 +4,7 @@ import { Cache } from 'cache-manager'
 import { Database, aql } from 'arangojs'
 import { KeyAsId } from '@core/nest/decorators/KeyAsId'
 import { AqlQuery, GeneratedAqlQuery } from 'arangojs/aql'
-import { compact } from 'lodash'
+import compact from 'lodash/compact'
 import { DeepMockProxy } from 'jest-mock-extended'
 import { VideosFilter } from '../../__generated__/graphql'
 
