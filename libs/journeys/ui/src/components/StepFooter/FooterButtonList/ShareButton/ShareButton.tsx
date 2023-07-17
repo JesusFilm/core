@@ -8,8 +8,6 @@ export function ShareButton(): ReactElement {
   const { journey, admin } = useJourney()
   const [shareDialogOpen, setShareDialogOpen] = useState(false)
 
-  console.log(process.env.NEXT_PUBLIC_JOURNEYS_URL)
-
   const url =
     journey?.slug != null
       ? `https://your.nextstep.is/${journey.slug}`
