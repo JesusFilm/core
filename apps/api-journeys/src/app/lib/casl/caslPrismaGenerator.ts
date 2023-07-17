@@ -1,7 +1,7 @@
 import { existsSync, mkdirSync, writeFileSync } from 'fs'
 import { join } from 'path'
 import { Prisma } from '.prisma/api-journeys-client'
-import { keys } from 'lodash'
+import keys from 'lodash/keys'
 import chalk from 'chalk'
 
 // this script is run automatically on `nx generate-prisma api-journeys`

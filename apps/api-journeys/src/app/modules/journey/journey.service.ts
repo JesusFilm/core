@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common'
 import { aql } from 'arangojs'
 import { BaseService } from '@core/nest/database/BaseService'
 import { KeyAsId } from '@core/nest/decorators/KeyAsId'
-import { includes } from 'lodash'
+import includes from 'lodash/includes'
 import { AqlQuery } from 'arangojs/aql'
 import {
   Journey,

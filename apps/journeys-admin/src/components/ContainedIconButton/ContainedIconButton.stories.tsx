@@ -4,7 +4,7 @@ import { ComponentProps } from 'react'
 import NoteAddIcon from '@mui/icons-material/NoteAdd'
 import AddIcon from '@mui/icons-material/Add'
 import EditIcon from '@mui/icons-material/Edit'
-import { noop } from 'lodash'
+import noop from 'lodash/noop'
 import { simpleComponentConfig } from '../../libs/storybook'
 import { ContainedIconButton } from '.'
 

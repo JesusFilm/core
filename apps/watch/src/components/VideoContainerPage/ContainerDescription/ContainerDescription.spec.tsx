@@ -1,5 +1,5 @@
 import { render } from '@testing-library/react'
-import { noop } from 'lodash'
+import noop from 'lodash/noop'
 import { ContainerDescription } from './ContainerDescription'
 
 describe('ContainerDescription', () => {
