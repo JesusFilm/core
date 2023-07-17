@@ -80,4 +80,18 @@ describe('AddJourneyButton', () => {
       )
     )
   })
+  it('should not show add journey button when no active team', async () => {
+    const { queryByRole } = render(
+      <MockedProvider mocks={[]}>
+        <TeamProvider>
+          <AddJourneyButton />
+        </TeamProvider>
+      </MockedProvider>
+    )
+    await waitFor(() =>
+      expect(
+        queryByRole('button', { name: 'Create a Journey' })
+      ).not.toBeInTheDocument()
+    )
+  })
 })

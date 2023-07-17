@@ -4,6 +4,8 @@ import { ReactElement } from 'react'
 import userEvent from '@testing-library/user-event'
 import { GET_TEAMS, TeamProvider, useTeam } from '../TeamProvider'
 import { GetTeams } from '../../../../__generated__/GetTeams'
+import { OnboardingPanelContent } from '../../OnboardingPanelContent'
+import { AddJourneyButton } from '../../JourneyList/ActiveJourneyList/AddJourneyButton'
 import { TeamSelect } from '.'
 
 describe('TeamSelect', () => {
@@ -44,5 +46,30 @@ describe('TeamSelect', () => {
     expect(getByText('Shared With Me')).toBeInTheDocument()
     fireEvent.click(getByRole('option', { name: 'Team Title2' }))
     expect(getByTestId('active-team-title')).toHaveTextContent('Team Title2')
+  })
+
+  it('removes create journey buttons when on Shared With Me team', async () => {
+    const { getByRole, queryByRole } = render(
+      <MockedProvider mocks={[getMultipleTeamsMock]}>
+        <TeamProvider>
+          <TeamSelect />
+          <OnboardingPanelContent />
+          <AddJourneyButton />
+        </TeamProvider>
+      </MockedProvider>
+    )
+    await waitFor(() =>
+      expect(
+        getByRole('button', { name: 'Shared With Me' })
+      ).toBeInTheDocument()
+    )
+
+    await fireEvent.click(getByRole('button', { name: 'Shared With Me' }))
+    expect(
+      queryByRole('button', { name: 'Create Custom Journey' })
+    ).not.toBeInTheDocument()
+    expect(
+      queryByRole('button', { name: 'Create a Journey' })
+    ).not.toBeInTheDocument()
   })
 })

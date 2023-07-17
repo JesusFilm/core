@@ -92,6 +92,20 @@ describe('OnboardingPanelContent', () => {
     })
   })
 
+  it('should not show create journey button when on shared with me ', async () => {
+    const { queryByRole } = render(
+      <MockedProvider mocks={mocks}>
+        <OnboardingPanelContent />
+      </MockedProvider>
+    )
+
+    await waitFor(() =>
+      expect(
+        queryByRole('button', { name: 'Create Custom Journey' })
+      ).not.toBeInTheDocument()
+    )
+  })
+
   it('should display onboarding templates', async () => {
     const { getByText } = render(
       <MockedProvider mocks={mocks}>
