@@ -59,14 +59,23 @@ export const getServerSideProps = withAuthUserTokenSSR({
     firstName: AuthUser.displayName ?? undefined,
     email: AuthUser.email ?? undefined
   }
-  const launchDarklyClient = await getLaunchDarklyClient(ldUser)
+
+  // run independent tasks (getting LaunchDarkly client, user's ID token, and server-side translations) concurrently
+  const [translations, launchDarklyClient, token] = await Promise.all([
+    serverSideTranslations(
+      locale ?? 'en',
+      ['apps-journeys-admin', 'libs-journeys-ui'],
+      i18nConfig
+    ),
+    getLaunchDarklyClient(ldUser),
+    AuthUser.getIdToken()
+  ])
+
   const flags = (await launchDarklyClient.allFlagsState(ldUser)).toJSON() as {
     [key: string]: boolean | undefined
   }
 
-  const token = await AuthUser.getIdToken()
   const apolloClient = createApolloClient(token != null ? token : '')
-
   const redirect = await checkConditionalRedirect(apolloClient, flags)
   if (redirect != null) return { redirect }
 
@@ -77,11 +86,7 @@ export const getServerSideProps = withAuthUserTokenSSR({
   return {
     props: {
       flags,
-      ...(await serverSideTranslations(
-        locale ?? 'en',
-        ['apps-journeys-admin', 'libs-journeys-ui'],
-        i18nConfig
-      ))
+      ...translations
     }
   }
 })
