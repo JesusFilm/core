@@ -7,5 +7,7 @@ module.exports = {
   },
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx'],
   coverageDirectory: '../../coverage/apps/journeys',
-  setupFilesAfterEnv: ['<rootDir>setupTests.ts']
+  setupFilesAfterEnv: ['<rootDir>setupTests.ts'],
+  collectCoverage: true,
+  coverageReporters: ['cobertura']
 }
