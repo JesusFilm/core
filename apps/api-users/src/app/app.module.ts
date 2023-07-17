@@ -30,6 +30,7 @@ import { UserModule } from './modules/user/user.module'
     }),
     LoggerModule.forRoot({
       pinoHttp: {
+        redact: ['req.headers.authorization'],
         autoLogging: {
           ignore: (req) => req.url === '/.well-known/apollo/server-health'
         },

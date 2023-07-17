@@ -1098,7 +1098,7 @@ export abstract class IQuery {
 
     abstract hosts(teamId: string): Host[] | Promise<Host[]>;
 
-    abstract adminJourneys(status?: Nullable<JourneyStatus[]>, template?: Nullable<boolean>): Journey[] | Promise<Journey[]>;
+    abstract adminJourneys(status?: Nullable<JourneyStatus[]>, template?: Nullable<boolean>, teamId?: Nullable<string>): Journey[] | Promise<Journey[]>;
 
     abstract adminJourneysReport(reportType: JourneysReportType): Nullable<PowerBiEmbed> | Promise<Nullable<PowerBiEmbed>>;
 
@@ -1414,9 +1414,9 @@ export abstract class IMutation {
 
     abstract hostDelete(id: string, teamId: string): Host | Promise<Host>;
 
-    abstract journeyCreate(input: JourneyCreateInput): Journey | Promise<Journey>;
+    abstract journeyCreate(input: JourneyCreateInput, teamId?: Nullable<string>): Journey | Promise<Journey>;
 
-    abstract journeyDuplicate(id: string): Journey | Promise<Journey>;
+    abstract journeyDuplicate(id: string, teamId?: Nullable<string>): Journey | Promise<Journey>;
 
     abstract journeyUpdate(id: string, input: JourneyUpdateInput): Journey | Promise<Journey>;
 
