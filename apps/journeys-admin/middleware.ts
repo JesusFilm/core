@@ -3,14 +3,7 @@ import { get } from '@vercel/edge-config'
 
 export const config = {
   matcher: [
-    /*
-     * Match all paths except for:
-     * 1. /api routes
-     * 2. /_next (Next.js internals)
-     * 3. /_static (Next static content)
-     * 5. all root files inside /public (e.g. /favicon.ico)
-     */
-    '/((?!api/|_next/|_static/|[\\w-]+\\.\\w+).*)',
+    '/((?!api/|_next/static|_next/image|[\\w-]+\\.\\w+).*)',
     // Ensure the root path is matched.
     '/'
   ]
