@@ -651,7 +651,7 @@ export class UserTeamUpdateInput {
 }
 
 export class UserTeamFilterInput {
-    role?: Nullable<UserTeamRole>;
+    role?: Nullable<UserTeamRole[]>;
 }
 
 export class UserTeamInviteCreateInput {
