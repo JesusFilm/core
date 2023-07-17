@@ -27,41 +27,70 @@ interface VideoControlProps {
   isYoutube?: boolean
   loading?: boolean
   autoplay?: boolean
+  muted?: boolean
 }
 
-function isMobile(): boolean {
+function isIOS(): boolean {
   const userAgent = navigator.userAgent
-  return /windows phone/i.test(userAgent) || /iPad|iPhone|iPod/.test(userAgent)
+  return /iPad|iPhone|Macintosh|iPod/.test(userAgent)
 }
 
 export function VideoControls({
   player,
   startAt,
   endAt,
+  isYoutube = false,
   loading = false,
-  autoplay = false
+  autoplay = false,
+  muted: mute = false
 }: VideoControlProps): ReactElement {
   const [playing, setPlaying] = useState(false)
   const [active, setActive] = useState(true)
   const [displayTime, setDisplayTime] = useState('0:00')
   const [progress, setProgress] = useState(0)
-  const [volume, setVolume] = useState(0)
-  const { showHeaderFooter, setShowHeaderFooter } = useBlocks()
+  const [volume, setVolume] = useState(player.volume() * 100)
+  // Explicit muted state since player.muted state lags when video paused
+  const [muted, setMuted] = useState(mute)
+  // Explicit fullscreen state since player.fullscreen state lags when video paused
+  const [fullscreen, setFullscreen] = useState(
+    fscreen.fullscreenElement != null || player.isFullscreen()
+  )
+  const { showHeaderFooter, setShowHeaderFooter, setShowNavigation } =
+    useBlocks()
 
+  // EndAt could be 0 if player not yet initialised
   const durationSeconds = endAt - startAt
-  const duration = secondsToTimeFormat(durationSeconds, { trimZeroes: true })
+  const duration =
+    durationSeconds < 0
+      ? null
+      : secondsToTimeFormat(durationSeconds, { trimZeroes: true })
 
   const visible = !playing || active || loading
 
+  // Handle play event
   useEffect(() => {
     const handleVideoPlay = (): void => {
       setPlaying(true)
-
       if (startAt > 0 && player.currentTime() < startAt) {
-        player.currentTime(startAt)
         setProgress(startAt)
       }
+      if (isYoutube) {
+        if (player.hasStarted_) {
+          setShowHeaderFooter(!fullscreen)
+        } else {
+          setShowHeaderFooter(false)
+          setTimeout(() => setShowHeaderFooter(!fullscreen), 3500)
+        }
+      }
     }
+    player.on('play', handleVideoPlay)
+    return () => {
+      player.off('play', handleVideoPlay)
+    }
+  }, [player, isYoutube, fullscreen, startAt, setShowHeaderFooter])
+
+  // Handle pause event
+  useEffect(() => {
     const handleVideoPause = (): void => {
       setPlaying(false)
 
@@ -71,64 +100,92 @@ export function VideoControls({
         setProgress(startAt)
         void player.play()
       }
+
+      if (isYoutube) setShowHeaderFooter(false)
     }
+    player.on('pause', handleVideoPause)
+    return () => {
+      player.off('pause', handleVideoPause)
+    }
+  }, [player, startAt, endAt, isYoutube, setShowHeaderFooter])
+
+  // Handle time update event
+  useEffect(() => {
     // Recalculate for startAt/endAt snippet
     const handleVideoTimeChange = (): void => {
       if (endAt > 0 && player.currentTime() > endAt) {
         // 1) Trigger pause, we get an error if trying to update time here
         player.pause()
       }
-
-      setDisplayTime(
-        secondsToTimeFormat(player.currentTime() - startAt, {
-          trimZeroes: true
-        })
-      )
+      if (player.currentTime() >= startAt) {
+        setDisplayTime(
+          secondsToTimeFormat(player.currentTime() - startAt, {
+            trimZeroes: true
+          })
+        )
+      }
       setProgress(Math.round(player.currentTime()))
     }
-    const handleMobileFullscreenChange = (): void => {
-      setShowHeaderFooter(!player.isFullscreen())
-
-      // On autoplay videos, videos will play after fullscreen change.
-      // Keep paused state if changing screen while paused
-      if (autoplay && player.paused()) {
-        if (player.paused()) {
-          void player.pause()
-        }
-      }
+    player.on('timeupdate', handleVideoTimeChange)
+    return () => {
+      player.off('timeupdate', handleVideoTimeChange)
     }
+  }, [player, startAt, endAt])
+
+  // Handle user active event
+  useEffect(() => {
+    // Triggers when video is playing / controls faded and screen is clicked
     const handleUserActive = (): void => setActive(true)
     const handleUserInactive = (): void => setActive(false)
-    const handleVideoVolumeChange = (): void => setVolume(player.volume() * 100)
-    const handleDesktopFullscreenChange = (): void => {
-      setShowHeaderFooter(fscreen.fullscreenElement == null)
-    }
 
-    setVolume(player.volume() * 100)
-
-    player.on('play', handleVideoPlay)
-    player.on('pause', handleVideoPause)
-    player.on('timeupdate', handleVideoTimeChange)
-    player.on('fullscreenchange', handleMobileFullscreenChange)
     player.on('useractive', handleUserActive)
     player.on('userinactive', handleUserInactive)
-    player.on('volumechange', handleVideoVolumeChange)
-    fscreen.addEventListener('fullscreenchange', handleDesktopFullscreenChange)
-
     return () => {
-      player.off('play', handleVideoPlay)
-      player.off('pause', handleVideoPause)
-      player.off('timeupdate', handleVideoTimeChange)
-      player.off('fullscreenchange', handleMobileFullscreenChange)
       player.off('useractive', handleUserActive)
       player.off('userinactive', handleUserInactive)
-      player.off('volumechange', handleVideoVolumeChange)
-      fscreen.removeEventListener(
-        'fullscreenchange',
-        handleDesktopFullscreenChange
-      )
     }
-  }, [player, setShowHeaderFooter, startAt, endAt, autoplay])
+  }, [player])
+
+  // Handle volume change event
+  useEffect(() => {
+    // Initialise volume
+    // setVolume(player.volume() * 100)
+    const handleVideoVolumeChange = (): void => setVolume(player.volume() * 100)
+
+    player.on('volumechange', handleVideoVolumeChange)
+    return () => {
+      player.off('volumechange', handleVideoVolumeChange)
+    }
+  }, [player])
+
+  // Handle fullscreen change event
+  useEffect(() => {
+    const handleFullscreenChange = (): void => {
+      const fullscreen =
+        fscreen.fullscreenElement != null || player.isFullscreen()
+      setFullscreen(fullscreen)
+      setShowNavigation(!fullscreen)
+
+      if (isYoutube && !playing) {
+        setShowHeaderFooter(false)
+      } else {
+        setShowHeaderFooter(!fullscreen)
+      }
+    }
+
+    if (fscreen.fullscreenEnabled) {
+      fscreen.addEventListener('fullscreenchange', handleFullscreenChange)
+    } else {
+      player.on('fullscreenchange', handleFullscreenChange)
+    }
+    return () => {
+      if (fscreen.fullscreenEnabled) {
+        fscreen.removeEventListener('fullscreenchange', handleFullscreenChange)
+      } else {
+        player.off('fullscreenchange', handleFullscreenChange)
+      }
+    }
+  }, [player, isYoutube, playing, setShowHeaderFooter, setShowNavigation])
 
   function handlePlay(): void {
     if (!playing) {
@@ -141,21 +198,24 @@ export function VideoControls({
     }
   }
 
-  async function handleFullscreen(): Promise<void> {
-    if (!showHeaderFooter) {
-      if (isMobile()) {
-        await player.exitFullscreen()
+  function handleFullscreen(): void {
+    if (fullscreen) {
+      if (fscreen.fullscreenEnabled) {
+        void fscreen.exitFullscreen()
       } else {
-        await fscreen.exitFullscreen()
+        void player.exitFullscreen()
       }
-      setShowHeaderFooter(true)
     } else {
-      if (isMobile()) {
-        await player.requestFullscreen()
+      if (fscreen.fullscreenEnabled) {
+        const activeCard = document.querySelectorAll(
+          '.swiper-slide-active .MuiPaper-root'
+        )[0]
+        if (activeCard != null) {
+          void fscreen.requestFullscreen(activeCard)
+        }
       } else {
-        await fscreen.requestFullscreen(document.documentElement)
+        void player.requestFullscreen()
       }
-      setShowHeaderFooter(false)
     }
   }
 
@@ -167,7 +227,8 @@ export function VideoControls({
   }
 
   function handleMute(): void {
-    player.muted(!player.muted())
+    setMuted(!muted)
+    player.muted(!muted)
   }
 
   function handleVolume(e: Event, value: number | number[]): void {
@@ -208,16 +269,30 @@ export function VideoControls({
         zIndex: 1000,
         top: 0,
         right: 0,
-        bottom: { xs: showHeaderFooter ? 50 : 0, lg: 4 },
+        bottom: { xs: 0, lg: 4 },
         left: 0,
         cursor: visible ? undefined : 'none',
         userSelect: 'none',
         WebkitUserSelect: 'none'
       }}
-      onClick={getClickHandler(handlePlay, () => {
-        void handleFullscreen()
-      })}
+      onClick={getClickHandler(handlePlay, handleFullscreen)}
       onMouseMove={() => player.userActive(true)}
+      onTouchEnd={(e) => {
+        const target = e.target as Element
+        const controlsHidden = !player.userActive()
+        const videoControlsNotClicked =
+          !target.classList.contains('MuiSlider-root') &&
+          !target.classList.contains('MuiSlider-rail') &&
+          !target.classList.contains('MuiSlider-track') &&
+          !target.classList.contains('MuiSvgIcon-root') &&
+          target.nodeName !== 'path'
+        // iOS: pause video on first click, default just shows controls.
+        if (controlsHidden && videoControlsNotClicked && isIOS()) {
+          void player.pause()
+          setPlaying(false)
+        }
+        player.userActive(true)
+      }}
     >
       <Fade
         in={visible}
@@ -229,7 +304,7 @@ export function VideoControls({
           <Stack
             flexDirection="row"
             justifyContent="flex-end"
-            sx={{ mt: 16, display: { lg: 'none' } }}
+            sx={{ mt: 15, display: { lg: 'none' } }}
           >
             <IconButton
               aria-label="mute"
@@ -246,7 +321,7 @@ export function VideoControls({
                 handleMute()
               }}
             >
-              {player.muted() ? <VolumeOffOutlined /> : <VolumeUpOutlined />}
+              {muted ? <VolumeOffOutlined /> : <VolumeUpOutlined />}
             </IconButton>
           </Stack>
           {/* Play/Pause */}
@@ -257,8 +332,9 @@ export function VideoControls({
                   playing ? 'center-pause-button' : 'center-play-button'
                 }
                 sx={{
-                  fontSize: 100,
-                  display: { xs: 'flex', lg: 'none' }
+                  fontSize: 50,
+                  display: { xs: 'flex', lg: 'none' },
+                  p: { xs: 2, sm: 0, md: 2 }
                 }}
               >
                 {playing ? (
@@ -278,37 +354,14 @@ export function VideoControls({
             maxWidth="xxl"
             sx={{
               zIndex: 1,
-              transitionDelay: visible ? undefined : '0.5s'
+              transitionDelay: visible ? undefined : '0.5s',
+              pb: {
+                xs: showHeaderFooter || isYoutube ? 15 : 2,
+                lg: 2
+              }
             }}
             onClick={(event) => event.stopPropagation()}
           >
-            <Slider
-              aria-label="mobile-progress-control"
-              min={startAt}
-              max={endAt}
-              value={progress}
-              valueLabelFormat={displayTime}
-              valueLabelDisplay="auto"
-              onChange={handleSeek}
-              sx={{
-                width: 'initial',
-                height: 5,
-                mx: 2.5,
-                py: 2,
-                display: { xs: 'flex', lg: 'none' },
-                '& .MuiSlider-thumb': {
-                  width: 10,
-                  height: 10,
-                  mr: -3
-                },
-                '& .MuiSlider-rail': {
-                  backgroundColor: 'secondary.main'
-                },
-                '& .MuiSlider-track': {
-                  border: 'none'
-                }
-              }}
-            />
             <Stack
               direction="row"
               gap={5}
@@ -349,7 +402,7 @@ export function VideoControls({
                   }
                 }}
               />
-              {player != null && (
+              {player != null && duration != null && (
                 <Typography
                   variant="caption"
                   color="secondary.main"
@@ -430,14 +483,42 @@ export function VideoControls({
                   onClick={handleFullscreen}
                   sx={{ py: 0, px: 2 }}
                 >
-                  {showHeaderFooter ? (
-                    <FullscreenRounded />
-                  ) : (
+                  {fullscreen ? (
                     <FullscreenExitRounded />
+                  ) : (
+                    <FullscreenRounded />
                   )}
                 </IconButton>
               </Stack>
             </Stack>
+            <Slider
+              aria-label="mobile-progress-control"
+              min={startAt}
+              max={endAt}
+              value={progress}
+              valueLabelFormat={displayTime}
+              valueLabelDisplay="auto"
+              onChange={handleSeek}
+              disabled={!player.hasStarted_}
+              sx={{
+                width: 'initial',
+                height: 5,
+                mx: 2.5,
+                py: 2,
+                display: { xs: 'flex', lg: 'none' },
+                '& .MuiSlider-thumb': {
+                  width: 10,
+                  height: 10,
+                  mr: -3
+                },
+                '& .MuiSlider-rail': {
+                  backgroundColor: 'secondary.main'
+                },
+                '& .MuiSlider-track': {
+                  border: 'none'
+                }
+              }}
+            />
           </Container>
         </Stack>
       </Fade>

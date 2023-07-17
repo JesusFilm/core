@@ -7,6 +7,7 @@ export const activeBlockVar = makeVar<TreeBlock<StepFields> | null>(null)
 export const previousBlocksVar = makeVar<TreeBlock[]>([])
 export const treeBlocksVar = makeVar<TreeBlock[]>([])
 export const showHeaderFooterVar = makeVar<boolean>(true)
+export const showNavigationVar = makeVar<boolean>(true)
 
 interface NextActiveBlockArgs {
   /** StepBlock id to set as activeBlock. If no id is set, block will be set to
@@ -21,6 +22,8 @@ interface UseBlocksHook {
   previousBlocks: TreeBlock[]
   showHeaderFooter: boolean
   setShowHeaderFooter: (value: boolean) => void
+  showNavigation: boolean
+  setShowNavigation: (value: boolean) => void
 }
 
 export function nextActiveBlock(args?: NextActiveBlockArgs): void {
@@ -76,6 +79,7 @@ export function useBlocks(): UseBlocksHook {
   const treeBlocks = useReactiveVar(treeBlocksVar)
   const previousBlocks = useReactiveVar(previousBlocksVar)
   const showHeaderFooter = useReactiveVar(showHeaderFooterVar)
+  const showNavigation = useReactiveVar(showNavigationVar)
 
   const setTreeBlocks = useCallback((blocks: TreeBlock[]): void => {
     treeBlocksVar(blocks)
@@ -86,6 +90,9 @@ export function useBlocks(): UseBlocksHook {
   const setShowHeaderFooter = useCallback((value: boolean): void => {
     showHeaderFooterVar(value)
   }, [])
+  const setShowNavigation = useCallback((value: boolean): void => {
+    showNavigationVar(value)
+  }, [])
 
   return {
     nextActiveBlock,
@@ -94,6 +101,8 @@ export function useBlocks(): UseBlocksHook {
     treeBlocks,
     previousBlocks,
     showHeaderFooter,
-    setShowHeaderFooter
+    setShowHeaderFooter,
+    showNavigation,
+    setShowNavigation
   }
 }

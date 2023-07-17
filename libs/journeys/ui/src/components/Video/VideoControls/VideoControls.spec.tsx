@@ -11,15 +11,6 @@ import fscreen from 'fscreen'
 import { MockedProvider } from '@apollo/client/testing'
 import { VideoControls } from './VideoControls'
 
-jest.mock('fscreen', () => ({
-  __esModule: true,
-  default: {
-    requestFullscreen: jest.fn(),
-    exitFullscreen: jest.fn(),
-    addEventListener: jest.fn()
-  }
-}))
-
 describe('VideoControls', () => {
   let player: Player
   beforeEach(() => {
@@ -134,7 +125,7 @@ describe('VideoControls', () => {
     await waitFor(() => expect(pauseStub).toHaveBeenCalled())
     await waitFor(() =>
       expect(
-        getByRole('button', { name: 'center-play-button' })
+        getByRole('button', { name: 'bar-play-button' })
       ).toBeInTheDocument()
     )
   })
@@ -158,50 +149,123 @@ describe('VideoControls', () => {
     expect(muteStub).toHaveReturnedWith(false)
   })
 
-  it('maximises and minimises the video on video region double tap', async () => {
-    const { getByRole } = render(
-      <MockedProvider>
-        <VideoControls player={player} startAt={0} endAt={10} />
-      </MockedProvider>
-    )
-    expect(getByRole('region', { name: 'video-controls' })).toBeInTheDocument()
+  describe('fullscreen video', () => {
+    it('maximises the video on video region double tap', async () => {
+      const fullscreenStub = jest
+        .spyOn(player, 'requestFullscreen')
+        .mockImplementationOnce(async () => player)
 
-    fireEvent.click(getByRole('region', { name: 'video-controls' }))
-    fireEvent.click(getByRole('region', { name: 'video-controls' }))
-    await waitFor(() => expect(fscreen.requestFullscreen).toHaveBeenCalled())
+      const { getByRole } = render(
+        <MockedProvider>
+          <VideoControls player={player} startAt={0} endAt={10} />
+        </MockedProvider>
+      )
 
-    fireEvent.click(getByRole('region', { name: 'video-controls' }))
-    fireEvent.click(getByRole('region', { name: 'video-controls' }))
-    await waitFor(() => expect(fscreen.exitFullscreen).toHaveBeenCalled())
+      expect(
+        getByRole('region', { name: 'video-controls' })
+      ).toBeInTheDocument()
+
+      fireEvent.click(getByRole('region', { name: 'video-controls' }))
+      fireEvent.click(getByRole('region', { name: 'video-controls' }))
+      await waitFor(() => expect(fullscreenStub).toHaveBeenCalled())
+    })
+
+    it('minimises the video on video region double tap', async () => {
+      jest.spyOn(player, 'isFullscreen').mockImplementation(() => true)
+      const fullscreenStub = jest
+        .spyOn(player, 'exitFullscreen')
+        .mockImplementationOnce(async () => player)
+
+      const { getByRole } = render(
+        <MockedProvider>
+          <VideoControls player={player} startAt={0} endAt={10} />
+        </MockedProvider>
+      )
+
+      expect(
+        getByRole('region', { name: 'video-controls' })
+      ).toBeInTheDocument()
+
+      fireEvent.click(getByRole('region', { name: 'video-controls' }))
+      fireEvent.click(getByRole('region', { name: 'video-controls' }))
+      await waitFor(() => expect(fullscreenStub).toHaveBeenCalled())
+    })
+
+    it('maximises the video on fullscreen icon click', async () => {
+      jest.spyOn(navigator, 'userAgent', 'get').mockReturnValue('iPhone')
+      const fullscreenStub = jest
+        .spyOn(player, 'requestFullscreen')
+        .mockImplementationOnce(async () => player)
+
+      const { getByRole } = render(
+        <MockedProvider>
+          <VideoControls player={player} startAt={0} endAt={10} />
+        </MockedProvider>
+      )
+
+      fireEvent.click(getByRole('button', { name: 'fullscreen' }))
+      expect(fullscreenStub).toHaveBeenCalled()
+    })
+
+    it('minimises the video on fullscreen icon click', async () => {
+      jest.spyOn(navigator, 'userAgent', 'get').mockReturnValue('iPhone')
+      jest.spyOn(player, 'isFullscreen').mockImplementation(() => true)
+      const fullscreenStub = jest
+        .spyOn(player, 'exitFullscreen')
+        .mockImplementationOnce(async () => player)
+
+      const { getByRole } = render(
+        <MockedProvider>
+          <VideoControls player={player} startAt={0} endAt={10} />
+        </MockedProvider>
+      )
+
+      fireEvent.click(getByRole('button', { name: 'fullscreen' }))
+      expect(fullscreenStub).toHaveBeenCalled()
+    })
   })
 
-  it('maximises and minimises the video on mobile fullscreen icon click', async () => {
-    jest.spyOn(navigator, 'userAgent', 'get').mockReturnValue('iPhone')
+  describe('fullscreen card', () => {
+    beforeEach(() => {
+      jest
+        .spyOn(fscreen, 'fullscreenEnabled', 'get')
+        .mockImplementation(() => true)
+      jest
+        .spyOn(fscreen, 'requestFullscreen')
+        .mockImplementation(() => jest.fn())
+    })
 
-    const fullscreenStub = jest
-      .spyOn(player, 'requestFullscreen')
-      .mockImplementationOnce(async () => player)
+    it('maximises the entire card on fullscreen icon click', async () => {
+      const { getByRole } = render(
+        <MockedProvider>
+          <div className="step swiper-slide-active">
+            <div className="card MuiPaper-root">
+              <VideoControls player={player} startAt={0} endAt={10} />
+            </div>
+          </div>
+        </MockedProvider>
+      )
 
-    const { getByRole } = render(
-      <MockedProvider>
-        <VideoControls player={player} startAt={0} endAt={10} />
-      </MockedProvider>
-    )
+      fireEvent.click(getByRole('button', { name: 'fullscreen' }))
+      await waitFor(() => expect(fscreen.requestFullscreen).toHaveBeenCalled())
+    })
 
-    fireEvent.click(getByRole('button', { name: 'fullscreen' }))
-    expect(fullscreenStub).toHaveBeenCalled()
-  })
+    it('minimises the entire card on fullscreen icon click', async () => {
+      jest.spyOn(player, 'isFullscreen').mockImplementation(() => true)
+      const exitMock = jest
+        // @ts-expect-error: jest mock type conflicts with fscreen type
+        .spyOn(fscreen, 'exitFullscreen', 'get')
+        // @ts-expect-error: jest mock type conflicts with fscreen type
+        .mockImplementation(() => jest.fn())
 
-  it('maximises and minimises the video on desktop fullscreen icon click', async () => {
-    const { getByRole } = render(
-      <MockedProvider>
-        <VideoControls player={player} startAt={0} endAt={10} />
-      </MockedProvider>
-    )
-    fireEvent.click(getByRole('button', { name: 'fullscreen' }))
-    await waitFor(() => expect(fscreen.requestFullscreen).toHaveBeenCalled())
+      const { getByRole } = render(
+        <MockedProvider>
+          <VideoControls player={player} startAt={0} endAt={10} />
+        </MockedProvider>
+      )
 
-    fireEvent.click(getByRole('button', { name: 'fullscreen' }))
-    await waitFor(() => expect(fscreen.exitFullscreen).toHaveBeenCalled())
+      fireEvent.click(getByRole('button', { name: 'fullscreen' }))
+      await waitFor(() => expect(exitMock).toHaveBeenCalled())
+    })
   })
 })
