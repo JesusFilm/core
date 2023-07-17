@@ -31,7 +31,7 @@ jest.mock('react-i18next', () => ({
     }
   }
 }))
-const user1 = { id: 'userId', email: 'siyangguccigang@example.com' }
+const user1 = { id: 'userId', email: 'miguelohara@example.com' }
 
 const handleClose = jest.fn()
 beforeEach(() => {
@@ -43,22 +43,22 @@ describe('TeamManageDialog', () => {
   const getUserTeamMock1: MockedResponse<GetUserTeamsAndInvites> = {
     request: {
       query: GET_USER_TEAMS_AND_INVITES,
-      variables: { teamId: 'jfp-team' }
+      variables: { teamId: 'jfp-team', filter: { includeGuests: false } }
     },
     result: {
       data: {
         userTeams: [
           {
-            id: 'userTeamId',
             __typename: 'UserTeam',
+            id: 'userTeamId',
             role: UserTeamRole.manager,
             user: {
               __typename: 'User',
-              email: 'siyangguccigang@example.com',
-              firstName: 'Siyang',
+              email: 'miguelohara@example.com',
+              firstName: 'Miguel',
               id: 'userId',
-              imageUrl: 'imageURL',
-              lastName: 'Gang'
+              imageUrl: 'https://example.com/image.jpg',
+              lastName: "O'Hara"
             }
           }
         ],
@@ -96,7 +96,7 @@ describe('TeamManageDialog', () => {
     )
     await waitFor(() => {
       expect(getByText('Members')).toBeInTheDocument()
-      expect(getByText('Siyang Gang')).toBeInTheDocument()
+      expect(getByText("Miguel O'Hara")).toBeInTheDocument()
       expect(getByText('edmond@example.com')).toBeInTheDocument()
       expect(getByText('Invite others to your team')).toBeInTheDocument()
     })

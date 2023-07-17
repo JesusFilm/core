@@ -1,6 +1,6 @@
 import { ReactElement, ReactNode, useEffect, useMemo } from 'react'
 import { UserTeamList } from '../UserTeamList'
-import { UserTeamInvitesList } from '../UserTeamInvitesList'
+import { UserTeamInviteList } from '../UserTeamInviteList'
 import { useTeam } from '../../TeamProvider'
 import { useCurrentUser } from '../../../../libs/useCurrentUser'
 import { useUserTeamsAndInvitesQuery } from '../../../../libs/useUserTeamsAndInvitesQuery'
@@ -27,7 +27,8 @@ export function TeamManageWrapper({
   const { data, loading, emails } = useUserTeamsAndInvitesQuery(
     activeTeam != null
       ? {
-          teamId: activeTeam.id
+          teamId: activeTeam.id,
+          filter: { includeGuests: false }
         }
       : undefined
   )
@@ -54,7 +55,7 @@ export function TeamManageWrapper({
           />
         ),
         userTeamInviteList: (
-          <UserTeamInvitesList data={data} currentUserTeam={currentUserTeam} />
+          <UserTeamInviteList data={data} currentUserTeam={currentUserTeam} />
         ),
         userTeamInviteForm: <UserTeamInviteForm emails={emails} />
       })}

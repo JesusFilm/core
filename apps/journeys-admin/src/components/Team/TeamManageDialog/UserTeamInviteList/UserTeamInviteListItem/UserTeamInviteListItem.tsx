@@ -25,11 +25,11 @@ export function UserTeamInviteListItem({
 
   const { id, email } = user
 
-  const handleClick = (event: MouseEvent<HTMLElement>): void => {
+  function handleClick(event: MouseEvent<HTMLElement>): void {
     setAnchorEl(event.currentTarget)
   }
 
-  const handleClose = (): void => {
+  function handleClose(): void {
     setAnchorEl(null)
   }
 
@@ -55,7 +55,7 @@ export function UserTeamInviteListItem({
               typography: 'body2'
             }}
           >
-            Pending
+            Invited
           </Button>
         }
       >

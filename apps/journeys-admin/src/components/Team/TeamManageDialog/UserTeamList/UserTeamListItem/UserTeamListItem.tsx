@@ -9,7 +9,6 @@ import ListItemText from '@mui/material/ListItemText'
 import Divider from '@mui/material/Divider'
 import Stack from '@mui/material/Stack'
 import Menu from '@mui/material/Menu'
-import PersonOutlineIcon from '@mui/icons-material/PersonOutline'
 import GroupIcon from '@mui/icons-material/Group'
 import PersonIcon from '@mui/icons-material/Person'
 import { gql, useMutation } from '@apollo/client'
@@ -58,22 +57,19 @@ export function UserTeamListItem({
     }
   }, [listItem])
 
-  const menuLabel = useMemo((): string => {
+  const menuLabel = useMemo((): string | undefined => {
     switch (role) {
       case UserTeamRole.manager:
         return t('Manager')
       case UserTeamRole.member:
         return t('Member')
-      case UserTeamRole.guest:
-        return t('Guest')
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [role])
+  }, [role, t])
 
-  const handleClick = (event: MouseEvent<HTMLElement>): void => {
+  function handleClick(event: MouseEvent<HTMLElement>): void {
     setAnchorEl(event.currentTarget)
   }
-  const handleClose = (): void => {
+  function handleClose(): void {
     setAnchorEl(null)
   }
 
@@ -139,46 +135,36 @@ export function UserTeamListItem({
         }}
       >
         <Stack divider={<Divider />}>
-          <MenuItem
-            label={t('Manager')}
-            icon={<GroupIcon />}
-            onClick={async () => {
-              handleClose()
-              await userTeamUpdate({
-                variables: {
-                  id,
-                  input: { role: UserTeamRole.manager }
-                }
-              })
-            }}
-          />
-          <MenuItem
-            label={t('Member')}
-            icon={<PersonIcon />}
-            onClick={async () => {
-              handleClose()
-              await userTeamUpdate({
-                variables: {
-                  id,
-                  input: { role: UserTeamRole.member }
-                }
-              })
-            }}
-          />
-          <MenuItem
-            label={t('Guest')}
-            icon={<PersonOutlineIcon />}
-            onClick={async () => {
-              handleClose()
-              await userTeamUpdate({
-                variables: {
-                  id,
-                  input: { role: UserTeamRole.guest }
-                }
-              })
-            }}
-          />
-
+          {role === UserTeamRole.member && (
+            <MenuItem
+              label={t('Manager')}
+              icon={<GroupIcon />}
+              onClick={async () => {
+                handleClose()
+                await userTeamUpdate({
+                  variables: {
+                    id,
+                    input: { role: UserTeamRole.manager }
+                  }
+                })
+              }}
+            />
+          )}
+          {role === UserTeamRole.manager && (
+            <MenuItem
+              label={t('Member')}
+              icon={<PersonIcon />}
+              onClick={async () => {
+                handleClose()
+                await userTeamUpdate({
+                  variables: {
+                    id,
+                    input: { role: UserTeamRole.member }
+                  }
+                })
+              }}
+            />
+          )}
           <UserTeamDeleteMenuItem
             id={id}
             onClick={handleClose}

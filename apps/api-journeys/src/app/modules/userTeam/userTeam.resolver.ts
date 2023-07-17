@@ -19,7 +19,7 @@ import {
 } from '@core/nest/common/CaslAuthModule'
 import { PrismaService } from '../../lib/prisma.service'
 import { Action, AppAbility } from '../../lib/casl/caslFactory'
-import { UserTeamUpdateInput } from '../../__generated__/graphql'
+import { UserTeamRole, UserTeamUpdateInput } from '../../__generated__/graphql'
 
 @Resolver('UserTeam')
 export class UserTeamResolver {
@@ -29,8 +29,17 @@ export class UserTeamResolver {
   @UseGuards(GqlAuthGuard, CaslGuard)
   async userTeams(
     @CaslAccessible('UserTeam') accessibleUserTeams: Prisma.UserTeamWhereInput,
-    @Args('teamId') teamId: string
+    @Args('teamId') teamId: string,
+    @Args('includeGuests') includeGuests: boolean
   ): Promise<UserTeam[]> {
+    if (!includeGuests) {
+      return await this.prismaService.userTeam.findMany({
+        where: {
+          role: { not: UserTeamRole.guest },
+          AND: [accessibleUserTeams, { teamId }]
+        }
+      })
+    }
     return await this.prismaService.userTeam.findMany({
       where: {
         AND: [accessibleUserTeams, { teamId }]

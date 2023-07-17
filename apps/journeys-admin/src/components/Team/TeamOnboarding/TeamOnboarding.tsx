@@ -62,7 +62,7 @@ export function TeamOnboarding(): ReactElement {
                 </CardContent>
 
                 <Divider />
-                <CardContent sx={{ px: 6, py: 4, width: '75%' }}>
+                <CardContent sx={{ px: 6, py: 4 }}>
                   {userTeamInviteForm}
                 </CardContent>
                 <CardContent

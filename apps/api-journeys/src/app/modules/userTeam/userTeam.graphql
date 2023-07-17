@@ -17,12 +17,16 @@ type UserTeam @key(fields: "id") {
 }
 
 extend type Query {
-  userTeams(teamId: ID!): [UserTeam!]!
+  userTeams(teamId: ID!, filter: UserTeamFilterInput!): [UserTeam!]!
   userTeam(id: ID!): UserTeam!
 }
 
 input UserTeamUpdateInput {
   role: UserTeamRole!
+}
+
+input UserTeamFilterInput {
+  includeGuests: Boolean
 }
 
 extend type Mutation {

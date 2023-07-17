@@ -39,7 +39,7 @@ export function UserTeamInviteRemoveMenuItem({
       }
     }
   )
-  const handleClick = async (): Promise<void> => {
+  async function handleClick(): Promise<void> {
     await userInviteRemove()
     onClick?.()
   }
