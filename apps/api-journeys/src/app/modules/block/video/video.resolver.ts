@@ -2,19 +2,21 @@ import { Args, Mutation, Parent, ResolveField, Resolver } from '@nestjs/graphql'
 import { UseGuards } from '@nestjs/common'
 import { object, string } from 'yup'
 import fetch from 'node-fetch'
-import { UserInputError } from 'apollo-server-errors'
+import { GraphQLError } from 'graphql'
+import { Block, VideoBlockSource } from '.prisma/api-journeys-client'
+import omit from 'lodash/omit'
+
 import { BlockService } from '../block.service'
 import {
   Action,
-  CardBlock,
   Role,
   UserJourneyRole,
   VideoBlock,
   VideoBlockCreateInput,
-  VideoBlockSource,
   VideoBlockUpdateInput
 } from '../../../__generated__/graphql'
 import { RoleGuard } from '../../../lib/roleGuard/roleGuard'
+import { PrismaService } from '../../../lib/prisma.service'
 
 const videoBlockYouTubeSchema = object().shape({
   videoId: string().matches(
@@ -89,7 +91,10 @@ function parseISO8601Duration(duration: string): number {
 
 @Resolver('VideoBlock')
 export class VideoBlockResolver {
-  constructor(private readonly blockService: BlockService) {}
+  constructor(
+    private readonly blockService: BlockService,
+    private readonly prismaService: PrismaService
+  ) {}
 
   @ResolveField()
   action(@Parent() block: VideoBlock): Action | null {
@@ -111,7 +116,7 @@ export class VideoBlockResolver {
   )
   async videoBlockCreate(
     @Args('input') input: VideoBlockCreateInput
-  ): Promise<VideoBlock> {
+  ): Promise<Block & { action?: Action }> {
     switch (input.source) {
       case VideoBlockSource.youTube:
         await videoBlockYouTubeSchema.validate(input)
@@ -135,20 +140,24 @@ export class VideoBlockResolver {
     }
 
     if (input.isCover === true) {
-      const coverBlock: VideoBlock = await this.blockService.save({
-        ...input,
-        __typename: 'VideoBlock',
+      const parentBlock = await this.prismaService.block.findUnique({
+        where: { id: input.parentBlockId },
+        include: { action: true }
+      })
+
+      const coverBlock = await this.blockService.save<Block>({
+        ...omit(input, 'parentBlockId'),
+        id: input.id ?? undefined,
+        typename: 'VideoBlock',
+        journey: {
+          connect: { id: input.journeyId }
+        },
+        parentBlock: { connect: { id: input.parentBlockId } },
+        coverBlockParent: { connect: { id: input.parentBlockId } },
         parentOrder: null
       })
-      const parentBlock: CardBlock = await this.blockService.get(
-        input.parentBlockId
-      )
 
-      await this.blockService.update(input.parentBlockId, {
-        coverBlockId: coverBlock.id
-      })
-
-      if (parentBlock.coverBlockId != null) {
+      if (parentBlock?.coverBlockId != null) {
         await this.blockService.removeBlockAndChildren(
           parentBlock.coverBlockId,
           input.journeyId
@@ -163,9 +172,12 @@ export class VideoBlockResolver {
       input.parentBlockId
     )
 
-    const block: VideoBlock = await this.blockService.save({
-      ...input,
-      __typename: 'VideoBlock',
+    const block = await this.blockService.save<Block>({
+      ...omit(input, 'parentBlockId'),
+      id: input.id ?? undefined,
+      typename: 'VideoBlock',
+      journey: { connect: { id: input.journeyId } },
+      parentBlock: { connect: { id: input.parentBlockId } },
       parentOrder: siblings.length
     })
 
@@ -178,7 +190,13 @@ export class VideoBlockResolver {
       target: null
     }
 
-    return await this.blockService.update(block.id, { ...block, action })
+    await this.prismaService.action.create({
+      data: action
+    })
+    return {
+      ...block,
+      action
+    }
   }
 
   @Mutation()
@@ -194,8 +212,12 @@ export class VideoBlockResolver {
     @Args('journeyId') journeyId: string,
     @Args('input') input: VideoBlockUpdateInput
   ): Promise<VideoBlock> {
-    const block = await this.blockService.get(id)
-    switch (input.source ?? block.source) {
+    console.log('input', input)
+    const block = await this.prismaService.block.findUnique({
+      where: { id },
+      include: { action: true }
+    })
+    switch (input.source ?? block?.source) {
       case VideoBlockSource.youTube:
         await videoBlockYouTubeSchema.validate({ ...block, ...input })
         if (input.videoId != null) {
@@ -219,9 +241,7 @@ export class VideoBlockResolver {
         break
       case VideoBlockSource.internal:
         input = {
-          ...{
-            duration: null
-          },
+          duration: null,
           ...input,
           ...{
             title: null,
@@ -278,8 +298,8 @@ export class VideoBlockResolver {
       await fetch(`https://www.googleapis.com/youtube/v3/videos?${query}`)
     ).json()
     if (videosData.items[0] == null) {
-      throw new UserInputError('videoId cannot be found on YouTube', {
-        videoId: ['videoId cannot be found on YouTube']
+      throw new GraphQLError('videoId cannot be found on YouTube', {
+        extensions: { code: 'NOT_FOUND' }
       })
     }
     return {
@@ -309,8 +329,8 @@ export class VideoBlockResolver {
     ).json()
 
     if (response.result == null) {
-      throw new UserInputError('videoId cannot be found on Cloudflare', {
-        videoId: ['videoId cannot be found on Cloudflare']
+      throw new GraphQLError('videoId cannot be found on Cloudflare', {
+        extensions: { code: 'NOT_FOUND' }
       })
     }
     return {

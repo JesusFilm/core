@@ -8,12 +8,14 @@ import {
   UserJourneyRole
 } from '../../__generated__/graphql'
 import { UserJourneyService } from '../userJourney/userJourney.service'
-import { JourneyService } from '../journey/journey.service'
 import { UserRoleService } from '../userRole/userRole.service'
+import { PrismaService } from '../../lib/prisma.service'
 import { UserJourneyResolver } from './userJourney.resolver'
 
 describe('UserJourneyResolver', () => {
-  let resolver: UserJourneyResolver, service: UserJourneyService
+  let resolver: UserJourneyResolver,
+    service: UserJourneyService,
+    prismaService: PrismaService
 
   const userJourney = {
     id: '1',
@@ -61,41 +63,9 @@ describe('UserJourneyResolver', () => {
     teamId: 'jfp-team'
   }
 
-  const journeyService = {
-    provide: JourneyService,
-    useFactory: () => ({
-      get: jest.fn((id) => (id === journey.id ? journey : undefined)),
-      getBySlug: jest.fn((slug) =>
-        slug === journey.slug ? journey : undefined
-      )
-    })
-  }
-
   const userJourneyService = {
     provide: UserJourneyService,
     useFactory: () => ({
-      get: jest.fn((key) => {
-        if (key === actorUserJourney.id) return actorUserJourney
-        return userJourney
-      }),
-      getAll: jest.fn(() => [userJourney, userJourney]),
-      remove: jest.fn((input) => input),
-      removeAll: jest.fn(() => [userJourney, userJourney]),
-      save: jest.fn((input) => input),
-      update: jest.fn((input) => input),
-      forJourneyUser: jest.fn((key, userId) => {
-        switch (userId) {
-          case userJourney.userId:
-            return userJourney
-          case actorUserJourney.userId:
-            return actorUserJourney
-          case openedUserJourney.userId:
-            return openedUserJourney
-          default:
-            return null
-        }
-      }),
-      forJourney: jest.fn(() => [userJourney, userJourney]),
       requestAccess: jest.fn(),
       approveAccess: jest.fn()
     })
@@ -122,12 +92,41 @@ describe('UserJourneyResolver', () => {
       providers: [
         UserJourneyResolver,
         userJourneyService,
-        journeyService,
+        PrismaService,
         userRoleService
       ]
     }).compile()
     resolver = module.get<UserJourneyResolver>(UserJourneyResolver)
     service = await module.resolve(UserJourneyService)
+    prismaService = module.get<PrismaService>(PrismaService)
+    prismaService.journey.findUnique = jest.fn().mockResolvedValueOnce(journey)
+    prismaService.userJourney.findUnique = jest
+      .fn()
+      .mockImplementation((input) => {
+        if (input.where.id != null) {
+          if (input.where.id === actorUserJourney.id) return actorUserJourney
+          return userJourney
+        }
+        switch (input.where.journeyId_userId.userId) {
+          case userJourney.userId:
+            return userJourney
+          case actorUserJourney.userId:
+            return actorUserJourney
+          case openedUserJourney.userId:
+            return openedUserJourney
+          default:
+            return null
+        }
+      })
+    prismaService.userJourney.findMany = jest
+      .fn()
+      .mockResolvedValueOnce([userJourney, userJourney])
+    prismaService.userJourney.update = jest
+      .fn()
+      .mockImplementation((input) => input.data)
+    prismaService.userJourney.delete = jest
+      .fn()
+      .mockImplementation((input) => input.data)
   })
 
   describe('userJourneyRequest', () => {
@@ -155,11 +154,17 @@ describe('UserJourneyResolver', () => {
   describe('userJourneyPromote', () => {
     it('updates a UserJourney to owner status', async () => {
       await resolver.userJourneyPromote(userJourney.id, actorUserJourney.userId)
-      expect(service.update).toHaveBeenCalledWith('1', {
-        role: UserJourneyRole.owner
+      expect(prismaService.userJourney.update).toHaveBeenCalledWith({
+        where: { id: '1' },
+        data: {
+          role: UserJourneyRole.owner
+        }
       })
-      expect(service.update).toHaveBeenCalledWith('2', {
-        role: UserJourneyRole.editor
+      expect(prismaService.userJourney.update).toHaveBeenCalledWith({
+        where: { id: '2' },
+        data: {
+          role: UserJourneyRole.editor
+        }
       })
     })
     it('should not update a UserJourney', async () => {
@@ -169,14 +174,14 @@ describe('UserJourneyResolver', () => {
       ).rejects.toThrow(
         'You do not own this journey, so you cannot make changes to it'
       )
-      expect(service.update).not.toHaveBeenCalled()
+      expect(prismaService.userJourney.update).not.toHaveBeenCalled()
     })
     it('should not update a UserJourney scenario 2', async () => {
       await resolver.userJourneyPromote(
         actorUserJourney.id,
         actorUserJourney.userId
       )
-      expect(service.update).not.toHaveBeenCalled()
+      expect(prismaService.userJourney.update).not.toHaveBeenCalled()
     })
   })
 
@@ -186,31 +191,36 @@ describe('UserJourneyResolver', () => {
         actorUserJourney.id,
         actorUserJourney.userId
       )
-      expect(service.remove).toHaveBeenCalledWith(actorUserJourney.id)
+      expect(prismaService.userJourney.delete).toHaveBeenCalledWith({
+        where: { id: actorUserJourney.id }
+      })
     })
   })
 
   describe('userJourneyRemoveAll', () => {
     it('removes all userJourneys', async () => {
       await resolver.userJourneyRemoveAll(journey.id)
-      expect(service.removeAll).toHaveBeenCalledWith([
-        userJourney.id,
-        userJourney.id
-      ])
+      expect(prismaService.userJourney.delete).toHaveBeenCalledWith({
+        where: { id: userJourney.id }
+      })
+      expect(prismaService.userJourney.delete).toHaveBeenCalledTimes(2)
     })
   })
 
   describe('UserJourneyOpen', () => {
     it('should update openedAt for userJourney', async () => {
       await resolver.userJourneyOpen(userJourney.id, userJourney.userId)
-      expect(service.update).toHaveBeenCalledWith(userJourney.id, {
-        openedAt: new Date().toISOString()
+      expect(prismaService.userJourney.update).toHaveBeenCalledWith({
+        where: { id: userJourney.id },
+        data: {
+          openedAt: new Date()
+        }
       })
     })
 
     it('should note update openedAt if current user is not userJourney user', async () => {
       await resolver.userJourneyOpen(userJourney.id, 'another.id')
-      expect(service.update).not.toHaveBeenCalled()
+      expect(prismaService.userJourney.update).not.toHaveBeenCalled()
     })
 
     it('should note update openedAt if current user has already opened the userJourney', async () => {
@@ -218,7 +228,7 @@ describe('UserJourneyResolver', () => {
         openedUserJourney.id,
         openedUserJourney.userId
       )
-      expect(service.update).not.toHaveBeenCalled()
+      expect(prismaService.userJourney.update).not.toHaveBeenCalled()
     })
   })
 })
