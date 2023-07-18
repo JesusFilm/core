@@ -292,7 +292,6 @@ export class JourneyResolver {
     @Args('id') id: string,
     @CurrentUserId() userId: string
   ): Promise<Journey | undefined> {
-    console.log('hi')
     const journey = await this.prismaService.journey.findUnique({
       where: { id }
     })
