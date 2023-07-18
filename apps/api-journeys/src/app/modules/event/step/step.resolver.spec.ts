@@ -8,7 +8,7 @@ import { PrismaService } from '../../../lib/prisma.service'
 import { StepNextEventResolver, StepViewEventResolver } from './step.resolver'
 
 describe('Step', () => {
-  let prisma: PrismaService, eService: EventService
+  let prismaService: PrismaService, eService: EventService
   beforeAll(() => {
     jest.useFakeTimers('modern')
     jest.setSystemTime(new Date('2021-02-18'))
@@ -47,9 +47,11 @@ describe('Step', () => {
       }).compile()
       resolver = module.get<StepViewEventResolver>(StepViewEventResolver)
       eService = module.get<EventService>(EventService)
-      prisma = module.get<PrismaService>(PrismaService)
-      prisma.visitor.update = jest.fn().mockResolvedValueOnce(null)
-      prisma.journeyVisitor.update = jest.fn().mockResolvedValueOnce(null)
+      prismaService = module.get<PrismaService>(PrismaService)
+      prismaService.visitor.update = jest.fn().mockResolvedValueOnce(null)
+      prismaService.journeyVisitor.update = jest
+        .fn()
+        .mockResolvedValueOnce(null)
     })
 
     it('returns StepViewEvent', async () => {
@@ -78,7 +80,7 @@ describe('Step', () => {
       }
       await resolver.stepViewEventCreate('userId', input)
 
-      expect(prisma.visitor.update).toHaveBeenCalledWith({
+      expect(prismaService.visitor.update).toHaveBeenCalledWith({
         where: { id: 'visitor.id' },
         data: {
           duration: 300,
@@ -93,7 +95,7 @@ describe('Step', () => {
         blockId: 'block.id',
         value: 'stepName'
       }
-      prisma.visitor.update = jest.fn().mockResolvedValueOnce(null)
+      prismaService.visitor.update = jest.fn().mockResolvedValueOnce(null)
       eService.validateBlockEvent = jest.fn().mockResolvedValueOnce({
         ...response,
         visitor: {
@@ -107,7 +109,7 @@ describe('Step', () => {
       })
       await resolver.stepViewEventCreate('userId', input)
 
-      expect(prisma.visitor.update).toHaveBeenCalledWith({
+      expect(prismaService.visitor.update).toHaveBeenCalledWith({
         where: { id: 'visitor.id' },
         data: {
           duration: 1200,
