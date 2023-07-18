@@ -8,6 +8,15 @@ import { OnboardingPanelContent } from '../../OnboardingPanelContent'
 import { AddJourneyButton } from '../../JourneyList/ActiveJourneyList/AddJourneyButton'
 import { TeamSelect } from '.'
 
+jest.mock('react-i18next', () => ({
+  __esModule: true,
+  useTranslation: () => {
+    return {
+      t: (str: string) => str
+    }
+  }
+}))
+
 describe('TeamSelect', () => {
   const getMultipleTeamsMock: MockedResponse<GetTeams> = {
     request: {
@@ -50,7 +59,7 @@ describe('TeamSelect', () => {
 
   it('removes create journey buttons when on Shared With Me team', async () => {
     const { getByRole, queryByRole } = render(
-      <MockedProvider mocks={[getMultipleTeamsMock]}>
+      <MockedProvider mocks={[]}>
         <TeamProvider>
           <TeamSelect />
           <OnboardingPanelContent />
@@ -63,8 +72,7 @@ describe('TeamSelect', () => {
         getByRole('button', { name: 'Shared With Me' })
       ).toBeInTheDocument()
     )
-
-    await fireEvent.click(getByRole('button', { name: 'Shared With Me' }))
+    fireEvent.click(getByRole('button', { name: 'Shared With Me' }))
     expect(
       queryByRole('button', { name: 'Create Custom Journey' })
     ).not.toBeInTheDocument()

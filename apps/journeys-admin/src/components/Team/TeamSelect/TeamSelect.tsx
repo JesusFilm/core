@@ -24,7 +24,8 @@ export function TeamSelect(): ReactElement {
       <FormControl variant="standard" sx={{ minWidth: 100 }}>
         <Select
           disabled={query.loading}
-          value={activeTeam?.id ?? 'Shared With Me'}
+          displayEmpty
+          value={activeTeam?.id ?? ''}
           onChange={(event) => {
             setActiveTeam(
               query?.data?.teams.find(
@@ -68,7 +69,7 @@ export function TeamSelect(): ReactElement {
           ))}
           <Divider />
           <MenuItem
-            value="Shared With Me"
+            value=""
             sx={{
               display: 'block',
               whiteSpace: 'normal',
