@@ -1,12 +1,11 @@
 import { Test, TestingModule } from '@nestjs/testing'
-import { Database } from 'arangojs'
-import { mockDeep } from 'jest-mock-extended'
+import omit from 'lodash/omit'
 
 import { CardBlock, ThemeMode, ThemeName } from '../../../__generated__/graphql'
 import { JourneyService } from '../../journey/journey.service'
-import { PrismaService } from '../../../lib/prisma.service'
 import { UserJourneyService } from '../../userJourney/userJourney.service'
 import { UserRoleService } from '../../userRole/userRole.service'
+import { PrismaService } from '../../../lib/prisma.service'
 import { BlockResolver } from '../block.resolver'
 import { BlockService } from '../block.service'
 import { CardBlockResolver } from './card.resolver'
@@ -14,7 +13,8 @@ import { CardBlockResolver } from './card.resolver'
 describe('CardBlockResolver', () => {
   let resolver: CardBlockResolver,
     blockResolver: BlockResolver,
-    service: BlockService
+    service: BlockService,
+    prismaService: PrismaService
 
   const block = {
     id: '1',
@@ -30,7 +30,7 @@ describe('CardBlockResolver', () => {
   }
 
   const blockUpdate = {
-    __typename: '',
+    typename: '',
     journeyId: '2',
     parentBlockId: '3',
     parentOrder: 0,
@@ -42,9 +42,12 @@ describe('CardBlockResolver', () => {
   }
 
   const blockCreateResponse = {
+    id: undefined,
     journeyId: '2',
-    __typename: 'CardBlock',
-    parentBlockId: '3',
+    typename: 'CardBlock',
+    parentBlock: {
+      connect: { id: '3' }
+    },
     parentOrder: 2,
     backgroundColor: '#FFF',
     coverBlockId: '4',
@@ -56,8 +59,6 @@ describe('CardBlockResolver', () => {
   const blockService = {
     provide: BlockService,
     useFactory: () => ({
-      get: jest.fn(() => block),
-      getAll: jest.fn(() => [block, block]),
       getSiblings: jest.fn(() => [block, block]),
       save: jest.fn((input) => input),
       update: jest.fn((input) => input)
@@ -73,16 +74,15 @@ describe('CardBlockResolver', () => {
         UserJourneyService,
         UserRoleService,
         JourneyService,
-        PrismaService,
-        {
-          provide: 'DATABASE',
-          useFactory: () => mockDeep<Database>()
-        }
+        PrismaService
       ]
     }).compile()
     blockResolver = module.get<BlockResolver>(BlockResolver)
     resolver = module.get<CardBlockResolver>(CardBlockResolver)
     service = await module.resolve(BlockService)
+    prismaService = module.get<PrismaService>(PrismaService)
+    prismaService.block.findUnique = jest.fn().mockResolvedValue(block)
+    prismaService.block.findMany = jest.fn().mockResolvedValue([block, block])
   })
 
   describe('CardBlock', () => {
@@ -99,7 +99,11 @@ describe('CardBlockResolver', () => {
         blockUpdate.journeyId,
         blockUpdate.parentBlockId
       )
-      expect(service.save).toHaveBeenCalledWith(blockCreateResponse)
+      expect(service.save).toHaveBeenCalledWith({
+        ...omit(blockCreateResponse, ['__typename']),
+        typename: 'CardBlock',
+        journey: { connect: { id: blockUpdate.journeyId } }
+      })
     })
   })
 
