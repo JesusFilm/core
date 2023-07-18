@@ -94,13 +94,6 @@ export function VideoControls({
     const handleVideoPause = (): void => {
       setPlaying(false)
 
-      // 2) Loop video if at end
-      if (endAt > 0 && player.currentTime() > endAt) {
-        player.currentTime(startAt)
-        setProgress(startAt)
-        void player.play()
-      }
-
       const videoHasClashingUI = isYoutube && player.userActive()
       if (videoHasClashingUI) {
         setShowHeaderFooter(false)

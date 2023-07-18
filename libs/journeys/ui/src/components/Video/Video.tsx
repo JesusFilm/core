@@ -109,9 +109,7 @@ export function Video({
           responsive: true,
           muted: muted === true,
           loop: true,
-          autoplay,
-          // This poster is displayed on an autoplay YT video on iOS. Video is no longer loading, but does not play due to YT device limitations.
-          poster: posterBlock?.src
+          autoplay
         })
       )
     }
