@@ -10,5 +10,7 @@ module.exports = {
     '^.+\\.[tj]sx?$': 'ts-jest'
   },
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx'],
-  coverageDirectory: '../../../coverage/libs/nest/decorators'
+  coverageDirectory: '../../../coverage/libs/nest/decorators',
+  collectCoverage: true,
+  coverageReporters: ['cobertura']
 }
