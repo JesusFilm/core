@@ -6,6 +6,7 @@ import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import { BlockRenderer } from '@core/journeys/ui/BlockRenderer'
 import { TreeBlock } from '@core/journeys/ui/block'
 import { transformer } from '@core/journeys/ui/transformer'
+import { StepFooter } from '@core/journeys/ui/StepFooter'
 import { GetDiscoveryJourney } from '../../../../__generated__/GetDiscoveryJourney'
 import { ThemeMode, ThemeName } from '../../../../__generated__/globalTypes'
 import { FramePortal } from '../../FramePortal'
@@ -87,6 +88,7 @@ export function EmbedJourney({ slug }: Props): ReactElement {
                 }}
               >
                 <BlockRenderer block={block} />
+                <StepFooter />
               </Box>
             </ThemeProvider>
           </FramePortal>

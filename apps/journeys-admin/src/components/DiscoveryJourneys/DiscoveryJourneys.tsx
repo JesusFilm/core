@@ -15,7 +15,7 @@ export const DiscoveryJourneys = memo(
           sx={{ height: { xs: 200, sm: 340, md: 450 } }}
         >
           <Fade in timeout={1000}>
-            <Box data-testid="left" flexGrow={1} height="100%">
+            <Box flexGrow={1} height="100%">
               <EmbedJourney slug="admin-left" />
             </Box>
           </Fade>
