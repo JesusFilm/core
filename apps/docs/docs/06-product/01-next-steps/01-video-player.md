@@ -120,4 +120,4 @@ This uses both the `fscreen` library (built on the native browser fullscreen [AP
 
 - This occurs when the broken autoplay arclight video has sound and the previous card has a video.
 
-- This breaks because the first video is watched to the end and autotriggers navigation to the autoplay arclight video. Since no user interaction was registered, the video does not autoplay (iPhone considers this as spam). In this case, manually set the autoplay video to `mute`.
+- This breaks because the first video is watched to the end and autotriggers navigation to the autoplay arclight video. Since no user interaction was registered, the video does not autoplay (iPhone considers this as spam). In this case, manually set the autoplay video to `mute` or don't stack videos back to back if you want autoplay to occur.
