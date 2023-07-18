@@ -140,7 +140,8 @@ export function Video({
         setVideoEndTime(
           Math.min(
             ...triggerTimes,
-            endAt ?? player.cache_.duration ?? player.duration()
+            endAt ?? player.cache_.duration ?? player.duration(),
+            player.duration()
           )
         )
         void handleStopLoading()
