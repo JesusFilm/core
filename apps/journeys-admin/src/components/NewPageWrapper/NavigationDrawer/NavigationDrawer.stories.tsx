@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Meta, Story } from '@storybook/react'
-import { noop } from 'lodash'
+import noop from 'lodash/noop'
 import { MockedProvider } from '@apollo/client/testing'
 import { AuthUser } from 'next-firebase-auth'
 import { NextRouter } from 'next/router'

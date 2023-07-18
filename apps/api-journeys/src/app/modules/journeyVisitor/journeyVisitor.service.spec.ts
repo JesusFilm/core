@@ -9,7 +9,7 @@ const journeyVisitor = {
 }
 
 describe('JourneyVisitorService', () => {
-  let service: JourneyVisitorService, prisma: PrismaService
+  let service: JourneyVisitorService, prismaService: PrismaService
 
   beforeAll(() => {
     jest.useFakeTimers('modern')
@@ -26,19 +26,19 @@ describe('JourneyVisitorService', () => {
     }).compile()
 
     service = module.get<JourneyVisitorService>(JourneyVisitorService)
-    prisma = module.get<PrismaService>(PrismaService)
-    prisma.journeyVisitor.findUnique = jest
+    prismaService = module.get<PrismaService>(PrismaService)
+    prismaService.journeyVisitor.findUnique = jest
       .fn()
       .mockReturnValueOnce(journeyVisitor)
-    prisma.journeyVisitor.upsert = jest
+    prismaService.journeyVisitor.upsert = jest
       .fn()
       .mockImplementationOnce((input) => input.create)
-    prisma.journeyVisitor.findMany = jest.fn().mockReturnValueOnce([])
+    prismaService.journeyVisitor.findMany = jest.fn().mockReturnValueOnce([])
   })
 
   describe('getJourneyVisitorCount', () => {
     it('should return the number of visitors for a journey', async () => {
-      prisma.journeyVisitor.count = jest.fn().mockReturnValueOnce(2)
+      prismaService.journeyVisitor.count = jest.fn().mockReturnValueOnce(2)
       expect(
         await service.getJourneyVisitorCount({
           journeyId: 'journey.id'
@@ -66,7 +66,7 @@ describe('JourneyVisitorService', () => {
           sort: JourneyVisitorSort.date
         })
       ).toEqual(connection)
-      expect(prisma.journeyVisitor.findMany).toHaveBeenCalledWith({
+      expect(prismaService.journeyVisitor.findMany).toHaveBeenCalledWith({
         cursor: undefined,
         orderBy: {
           createdAt: 'desc'
@@ -84,7 +84,7 @@ describe('JourneyVisitorService', () => {
         filter: { journeyId: 'journey.id' },
         sort: JourneyVisitorSort.date
       })
-      expect(prisma.journeyVisitor.findMany).toHaveBeenCalledWith({
+      expect(prismaService.journeyVisitor.findMany).toHaveBeenCalledWith({
         cursor: { id: 'journey.id' },
         orderBy: {
           createdAt: 'desc'

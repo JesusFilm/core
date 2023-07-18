@@ -5,14 +5,13 @@ import { Args, Mutation, Parent, ResolveField, Resolver } from '@nestjs/graphql'
 import { GqlAuthGuard } from '@core/nest/gqlAuthGuard/GqlAuthGuard'
 import { CurrentUserId } from '@core/nest/decorators/CurrentUserId'
 import { CurrentUserAgent } from '@core/nest/decorators/CurrentUserAgent'
-import { UserInputError } from 'apollo-server-errors'
+import { GraphQLError } from 'graphql'
 import {
   JourneyViewEvent,
   JourneyViewEventCreateInput
 } from '../../../__generated__/graphql'
 import { EventService } from '../event.service'
 import { VisitorService } from '../../visitor/visitor.service'
-import { JourneyService } from '../../journey/journey.service'
 import { PrismaService } from '../../../lib/prisma.service'
 
 @Resolver('JourneyViewEvent')
@@ -20,7 +19,6 @@ export class JourneyViewEventResolver {
   constructor(
     private readonly eventService: EventService,
     private readonly visitorService: VisitorService,
-    private readonly journeyService: JourneyService,
     private readonly prismaService: PrismaService
   ) {}
 
@@ -31,9 +29,13 @@ export class JourneyViewEventResolver {
     @CurrentUserAgent() userAgent: string,
     @Args('input') input: JourneyViewEventCreateInput
   ): Promise<JourneyViewEvent> {
-    const journey = await this.journeyService.get(input.journeyId)
+    const journey = await this.prismaService.journey.findUnique({
+      where: { id: input.journeyId }
+    })
     if (journey == null) {
-      throw new UserInputError('Journey does not exist')
+      throw new GraphQLError('Journey does not exist', {
+        extensions: { code: 'NOT_FOUND' }
+      })
     }
     const { visitor } = await this.visitorService.getByUserIdAndJourneyId(
       userId,

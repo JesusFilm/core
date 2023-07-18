@@ -48,7 +48,7 @@ jobs:
           targets: prisma-generate
           all: true
       - name: NPM apollo and graphql for codegen
-        run: npm i -g apollo graphql @apollo/rover@0.10.0
+        run: npm i -g apollo graphql @apollo/rover@0.16.2
       - name: Codegen
         uses: mansagroup/nrwl-nx-action@v3
         with:

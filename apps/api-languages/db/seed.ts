@@ -2,7 +2,7 @@
 // increment to trigger re-seed (ie: files other than seed.ts are changed)
 
 import { float } from 'aws-sdk/clients/lightsail'
-import { isEmpty } from 'lodash'
+import isEmpty from 'lodash/isEmpty'
 import fetch from 'node-fetch'
 import slugify from 'slugify'
 import { PrismaClient, Prisma } from '.prisma/api-languages-client'

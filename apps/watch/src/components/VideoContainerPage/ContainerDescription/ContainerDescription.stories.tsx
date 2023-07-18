@@ -1,5 +1,5 @@
 import { ComponentStory, Meta } from '@storybook/react'
-import { noop } from 'lodash'
+import noop from 'lodash/noop'
 import { watchConfig } from '../../../libs/storybook/config'
 import { ContainerDescription } from './ContainerDescription'
 
