@@ -25,18 +25,6 @@ interface MediaLanguage {
   name: string
 }
 
-// interface Country {
-//   id: string
-//   name: Prisma.JsonObject[]
-//   population: number
-//   continentId: string
-//   slug: string
-//   languageIds: string[]
-//   latitude: float
-//   longitude: float
-//   image: string
-// }
-
 interface MediaCountry {
   countryId: number
   name: string
