@@ -138,6 +138,12 @@
       "options": {
         "command": "npx tsc -b apps/api-media/tsconfig.json"
       }
+    },
+    "codecov": {
+      "executor": "@nrwl/workspace:run-commands",
+      "options": {
+        "command": "codecov -f coverage/apps/api-media/cobertura-coverage.xml -F apps.api-media"
+      }
     }
   },
   "tags": []

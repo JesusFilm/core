@@ -17,6 +17,12 @@
         "jestConfig": "libs/nest/decorators/jest.config.js",
         "passWithNoTests": true
       }
+    },
+    "codecov": {
+      "executor": "@nrwl/workspace:run-commands",
+      "options": {
+        "command": "codecov -f coverage/libs/nest/decorators/cobertura-coverage.xml -F libs.nest.decorators"
+      }
     }
   },
   "tags": []
