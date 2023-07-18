@@ -10,7 +10,6 @@ import Close from '@mui/icons-material/Close'
 // Used to resolve dynamic viewport height on Safari
 import Div100vh from 'react-div-100vh'
 import { StepFooter } from '@core/journeys/ui/StepFooter'
-import useFullscreenStatus from '../../libs/useFullscreenStatus/useFullscreenStatus'
 import { Conductor } from '../Conductor'
 
 import { ButtonWrapper } from './ButtonWrapper/ButtonWrapper'
@@ -26,29 +25,15 @@ export function EmbeddedPreview({
 }: EmbeddedPreviewProps): ReactElement {
   const maximizableElement = useRef(null)
   const [allowFullscreen, setAllowFullscreen] = useState(true)
-  let isFullscreen: boolean, setIsFullscreen
-  // Safari / iPhone fullscreen check
+  // Use full container / fullWindow mode over fullScreen to avoid video playback issues
   const [isFullContainer, setIsFullContainer] = useState(false)
-  let canFullscreen = true
-  try {
-    // Chrome / Firefox fullscreen check
-    ;[isFullscreen, setIsFullscreen] = useFullscreenStatus(maximizableElement)
-  } catch {
-    isFullscreen = false
-    canFullscreen = false
-  }
 
   const maximizeView = useCallback(
     (value: boolean) => {
-      if (canFullscreen) {
-        setIsFullscreen(value)
-        // TODO: Remove this check once allow="fullscreen" works with Safari 16+
-      } else {
-        setIsFullContainer(value)
-        window.parent.postMessage(value, '*')
-      }
+      setIsFullContainer(value)
+      window.parent.postMessage(value, '*')
     },
-    [canFullscreen, setIsFullscreen, setIsFullContainer]
+    [setIsFullContainer]
   )
 
   // use router internally on this component as it does not function properly when passed as prop
@@ -143,7 +128,7 @@ export function EmbeddedPreview({
         }
       `}</style>
       <Div100vh data-testid="embedded-preview">
-        {!(isFullscreen || isFullContainer) && <ClickableCard />}
+        {!isFullContainer && <ClickableCard />}
         <Box
           ref={maximizableElement}
           sx={{
@@ -151,7 +136,7 @@ export function EmbeddedPreview({
             overflow: 'hidden'
           }}
         >
-          {(isFullscreen || isFullContainer) && (
+          {isFullContainer && (
             <>
               <IconButton
                 sx={{
