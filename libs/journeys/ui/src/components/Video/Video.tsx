@@ -108,7 +108,6 @@ export function Video({
           },
           responsive: true,
           muted: muted === true,
-          loop: true,
           autoplay
         })
       )
