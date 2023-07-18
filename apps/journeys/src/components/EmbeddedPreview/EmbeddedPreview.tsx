@@ -24,16 +24,16 @@ export function EmbeddedPreview({
   blocks
 }: EmbeddedPreviewProps): ReactElement {
   const maximizableElement = useRef(null)
-  const [allowFullscreen, setAllowFullscreen] = useState(true)
+  const [allowFullWindow, setAllowFullWindow] = useState(true)
   // Use full container / fullWindow mode over fullScreen to avoid video playback issues
-  const [isFullContainer, setIsFullContainer] = useState(false)
+  const [isFullWindow, setIsFullWindow] = useState(false)
 
   const maximizeView = useCallback(
     (value: boolean) => {
-      setIsFullContainer(value)
+      setIsFullWindow(value)
       window.parent.postMessage(value, '*')
     },
-    [setIsFullContainer]
+    [setIsFullWindow]
   )
 
   // use router internally on this component as it does not function properly when passed as prop
@@ -41,13 +41,13 @@ export function EmbeddedPreview({
   const once = useRef(false)
 
   const handleClick = useCallback((): void => {
-    if (allowFullscreen) maximizeView(true)
-  }, [allowFullscreen, maximizeView])
+    if (allowFullWindow) maximizeView(true)
+  }, [allowFullWindow, maximizeView])
 
   useEffect(() => {
     if (!once.current) {
       if (router?.query?.preview === 'true') {
-        setAllowFullscreen(false)
+        setAllowFullWindow(false)
         once.current = true
       }
       if (router?.query?.autoexpand === 'true') {
@@ -55,7 +55,7 @@ export function EmbeddedPreview({
         once.current = true
       }
     }
-  }, [setAllowFullscreen, handleClick, router?.query])
+  }, [setAllowFullWindow, handleClick, router?.query])
 
   const ClickableCard = (): ReactElement => (
     <Box
@@ -64,7 +64,7 @@ export function EmbeddedPreview({
         flexGrow: 1,
         display: 'flex',
         flexDirection: 'column',
-        cursor: allowFullscreen ? 'pointer' : 'default',
+        cursor: allowFullWindow ? 'pointer' : 'default',
         zindex: 10,
         height: '100%'
       }}
@@ -128,7 +128,7 @@ export function EmbeddedPreview({
         }
       `}</style>
       <Div100vh data-testid="embedded-preview">
-        {!isFullContainer && <ClickableCard />}
+        {!isFullWindow && <ClickableCard />}
         <Box
           ref={maximizableElement}
           sx={{
@@ -136,7 +136,7 @@ export function EmbeddedPreview({
             overflow: 'hidden'
           }}
         >
-          {isFullContainer && (
+          {isFullWindow && (
             <>
               <IconButton
                 sx={{
