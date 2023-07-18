@@ -2,7 +2,6 @@ import { Resolver, Query, Mutation, Args } from '@nestjs/graphql'
 import { UseGuards } from '@nestjs/common'
 import { GqlAuthGuard } from '@core/nest/gqlAuthGuard/GqlAuthGuard'
 import { subject } from '@casl/ability'
-import { ForbiddenError } from 'apollo-server-errors'
 import {
   CaslGuard,
   CaslAccessible,
@@ -75,7 +74,9 @@ export class TeamResolver {
         }
       })
     }
-    throw new ForbiddenError('user is not allowed to create userTeamInvite')
+    throw new GraphQLError('user is not allowed to create userTeamInvite', {
+      extensions: { code: 'FORBIDDEN' }
+    })
   }
 
   @Mutation()
@@ -102,7 +103,9 @@ export class TeamResolver {
         }
       })
     }
-    throw new ForbiddenError('user is not allowed to remove userTeamInvite')
+    throw new GraphQLError('user is not allowed to remove userTeamInvite', {
+      extensions: { code: 'FORBIDDEN' }
+    })
   }
 
   @Mutation()
