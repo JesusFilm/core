@@ -11,5 +11,7 @@ module.exports = {
     '^.+\\.[tj]s$': 'ts-jest'
   },
   moduleFileExtensions: ['ts', 'js', 'html'],
-  coverageDirectory: '../../coverage/apps/api-journeys'
+  coverageDirectory: '../../coverage/apps/api-journeys',
+  collectCoverage: true,
+  coverageReporters: ['cobertura']
 }
