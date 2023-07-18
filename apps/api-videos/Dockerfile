@@ -4,5 +4,5 @@ COPY ./dist/apps/api-videos .
 EXPOSE 4004
 # dependencies that nestjs needs
 RUN npm install --production --silent
-RUN npm install tslib @nestjs/mapped-types pino-pretty@9.1.1
+RUN npm install tslib apollo-server-express @nestjs/mapped-types pino-pretty@9.1.1
 CMD node ./main.js
