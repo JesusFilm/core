@@ -116,12 +116,6 @@
         ]
       }
     },
-    "prisma-seed": {
-      "executor": "@nrwl/workspace:run-commands",
-      "options": {
-        "commands": ["npx ts-node apps/api-users/db/seed.ts"]
-      }
-    },
     "prisma-studio": {
       "executor": "@nrwl/workspace:run-commands",
       "options": {
