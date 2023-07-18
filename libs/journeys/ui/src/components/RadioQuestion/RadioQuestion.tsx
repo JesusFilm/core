@@ -48,8 +48,9 @@ export function RadioQuestion({
     )
   const { admin } = useJourney()
   const [selectedId, setSelectedId] = useState<string | null>(null)
-  const { activeBlock, treeBlocks } = useBlocks()
+  const { blockHistory, treeBlocks } = useBlocks()
   const { t } = useTranslation('libs-journeys-ui')
+  const activeBlock = blockHistory[blockHistory.length - 1]
 
   const heading =
     activeBlock != null

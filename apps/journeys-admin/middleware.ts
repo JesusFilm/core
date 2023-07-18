@@ -13,7 +13,7 @@ export async function middleware(
   req: NextRequest
 ): Promise<NextResponse | undefined> {
   if (req.nextUrl.pathname.startsWith('/_next')) return
-  let maintenanceMode = true
+  let maintenanceMode = false
   try {
     maintenanceMode = (await get('maintenanceMode')) ?? maintenanceMode
   } catch {}

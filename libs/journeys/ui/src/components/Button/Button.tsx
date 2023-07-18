@@ -60,8 +60,9 @@ export function Button({
   )
 
   const { admin } = useJourney()
-  const { treeBlocks, activeBlock } = useBlocks()
+  const { treeBlocks, blockHistory } = useBlocks()
   const { t } = useTranslation('libs-journeys-ui')
+  const activeBlock = blockHistory[blockHistory.length - 1]
 
   const heading =
     activeBlock != null

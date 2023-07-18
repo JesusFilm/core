@@ -62,7 +62,8 @@ export const SignUp = ({
 
   const { admin } = useJourney()
   const { enqueueSnackbar } = useSnackbar()
-  const { activeBlock, treeBlocks } = useBlocks()
+  const { blockHistory, treeBlocks } = useBlocks()
+  const activeBlock = blockHistory[blockHistory.length - 1]
 
   const heading =
     activeBlock != null
