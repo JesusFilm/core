@@ -66,6 +66,7 @@ export function Video({
   objectFit
 }: TreeBlock<VideoFields>): ReactElement {
   const [loading, setLoading] = useState(true)
+  const [showPoster, setShowPoster] = useState(true)
   const theme = useTheme()
   const videoRef = useRef<HTMLVideoElement>(null)
   const [player, setPlayer] = useState<Player>()
@@ -107,10 +108,7 @@ export function Video({
           },
           responsive: true,
           muted: muted === true,
-          loop: true,
-          autoplay,
-          // This poster is displayed on an autoplay YT video on iOS. Video is no longer loading, but does not play due to YT device limitations.
-          poster: posterBlock?.src
+          autoplay
         })
       )
     }
@@ -145,13 +143,7 @@ export function Video({
             endAt ?? player.cache_.duration ?? player.duration()
           )
         )
-
         void handleStopLoading()
-        // iOS - autoplay doesn't work if prev card locked, force play
-        // if (autoplay === true && isIOS()) {
-        //   player.muted(true)
-        //   void player.play()
-        // }
       }
     }
 
@@ -163,11 +155,10 @@ export function Video({
         void handleStopLoading()
         if (autoplay === true) {
           const onFirstStep = activeBlock?.parentOrder === 0
+          const activeCard = activeBlock?.children[0]?.children
           if (
             onFirstStep &&
-            activeBlock?.children[0]?.children.find(
-              (child: TreeBlock) => child.id === blockId
-            ) != null
+            activeCard?.find((child: TreeBlock) => child.id === blockId) != null
           ) {
             player.muted(true)
           }
@@ -175,6 +166,11 @@ export function Video({
         }
       }
     }
+    const handlePlaying = (): void => {
+      handleStopLoading()
+      setShowPoster(false)
+    }
+
     const handleVideoEnd = (): void => {
       setLoading(false)
       if (player?.isFullscreen() === true && player != null) {
@@ -188,8 +184,7 @@ export function Video({
         // Video jumps to new time and finishes loading - occurs on autoplay
         player.on('seeked', handleCanPlay)
         player.on('canplay', handleCanPlay)
-        player.on('canplaythrough', handleStopLoading)
-        player.on('playing', handleStopLoading)
+        player.on('playing', handlePlaying)
         player.on('ended', handleVideoEnd)
       }
     }
@@ -198,8 +193,7 @@ export function Video({
         player.off('ready', handleVideoReady)
         player.off('seeked', handleCanPlay)
         player.off('canplay', handleCanPlay)
-        player.off('canplaythrough', handleStopLoading)
-        player.off('playing', handleStopLoading)
+        player.off('playing', handlePlaying)
         player.off('ended', handleVideoEnd)
       }
     }
@@ -379,7 +373,7 @@ export function Video({
         </>
       )}
       {/* Video Image  */}
-      {videoImage != null && posterBlock?.src == null && loading && (
+      {videoImage != null && posterBlock?.src == null && showPoster && (
         <NextImage
           src={videoImage}
           alt="video image"
@@ -388,7 +382,7 @@ export function Video({
         />
       )}
       {/* Lazy load higher res poster */}
-      {posterBlock?.src != null && loading && (
+      {posterBlock?.src != null && showPoster && (
         <NextImage
           src={posterBlock.src}
           alt={posterBlock.alt}

@@ -94,14 +94,10 @@ export function VideoControls({
     const handleVideoPause = (): void => {
       setPlaying(false)
 
-      // 2) Loop video if at end
-      if (endAt > 0 && player.currentTime() > endAt) {
-        player.currentTime(startAt)
-        setProgress(startAt)
-        void player.play()
+      const videoHasClashingUI = isYoutube && player.userActive()
+      if (videoHasClashingUI) {
+        setShowHeaderFooter(false)
       }
-
-      if (isYoutube) setShowHeaderFooter(false)
     }
     player.on('pause', handleVideoPause)
     return () => {
@@ -166,7 +162,8 @@ export function VideoControls({
       setFullscreen(fullscreen)
       setShowNavigation(!fullscreen)
 
-      if (isYoutube && !playing) {
+      const videoHasClashingUI = isYoutube && !playing && player.userActive()
+      if (videoHasClashingUI) {
         setShowHeaderFooter(false)
       } else {
         setShowHeaderFooter(!fullscreen)

@@ -23,22 +23,25 @@ export function VideoTrigger({
 
   useEffect(() => {
     if (player != null && !triggered) {
-      const timeUpdate = (): void => {
+      const handleTimeUpdate = (): void => {
         if (player.currentTime() >= triggerStart - 1 && !player.scrubbing()) {
           setTriggered(true)
           player.pause()
+
           if (player.isFullscreen()) {
             void player
               .exitFullscreen()
               .then(() => handleAction(router, triggerAction))
           } else {
-            if (fscreen.fullscreenElement != null) void fscreen.exitFullscreen()
+            if (fscreen.fullscreenElement != null) {
+              void fscreen.exitFullscreen()
+            }
             handleAction(router, triggerAction)
           }
         }
       }
-      player.on('timeupdate', timeUpdate)
-      return () => player.off('timeupdate', timeUpdate)
+      player.on('timeupdate', handleTimeUpdate)
+      return () => player.off('timeupdate', handleTimeUpdate)
     }
   }, [player, triggerStart, router, triggerAction, triggered])
 
