@@ -14,7 +14,8 @@ describe('TextResponseEventResolver', () => {
     jest.useRealTimers()
   })
 
-  let resolver: TextResponseSubmissionEventResolver, prisma: PrismaService
+  let resolver: TextResponseSubmissionEventResolver,
+    prismaService: PrismaService
 
   const eventService = {
     provide: EventService,
@@ -45,9 +46,9 @@ describe('TextResponseEventResolver', () => {
     resolver = module.get<TextResponseSubmissionEventResolver>(
       TextResponseSubmissionEventResolver
     )
-    prisma = module.get<PrismaService>(PrismaService)
-    prisma.visitor.update = jest.fn().mockResolvedValueOnce(null)
-    prisma.journeyVisitor.update = jest.fn().mockResolvedValueOnce(null)
+    prismaService = module.get<PrismaService>(PrismaService)
+    prismaService.visitor.update = jest.fn().mockResolvedValueOnce(null)
+    prismaService.journeyVisitor.update = jest.fn().mockResolvedValueOnce(null)
   })
 
   describe('textResponseSubmissionEventCreate', () => {
@@ -75,7 +76,7 @@ describe('TextResponseEventResolver', () => {
     it('should update visitor', async () => {
       await resolver.textResponseSubmissionEventCreate('userId', input)
 
-      expect(prisma.visitor.update).toHaveBeenCalledWith({
+      expect(prismaService.visitor.update).toHaveBeenCalledWith({
         where: { id: 'visitor.id' },
         data: {
           lastTextResponse: input.value
