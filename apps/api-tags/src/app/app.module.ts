@@ -5,6 +5,7 @@ import {
   ApolloFederationDriverConfig
 } from '@nestjs/apollo'
 import { GraphQLModule } from '@nestjs/graphql'
+import { NestHealthModule } from '@core/nest/health'
 import { LoggerModule } from 'nestjs-pino'
 import { DatadogTraceModule } from 'nestjs-ddtrace'
 import TranslationModule from '@core/nest/common/TranslationModule'
@@ -12,6 +13,7 @@ import { TagModule } from './modules/tag/tag.module'
 
 @Module({
   imports: [
+    NestHealthModule,
     TagModule,
     TranslationModule,
     GraphQLModule.forRoot<ApolloFederationDriverConfig>({
@@ -26,7 +28,6 @@ import { TagModule } from './modules/tag/tag.module'
               )
             ]
           : [join(process.cwd(), 'assets/**/*.graphql')],
-      cors: true,
       context: ({ req }) => ({ headers: req.headers })
     }),
     LoggerModule.forRoot({

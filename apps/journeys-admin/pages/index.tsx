@@ -41,7 +41,7 @@ function IndexPage(): ReactElement {
         sidePanelChildren={<OnboardingPanelContent />}
         sidePanelTitle={t('Create a New Journey')}
       >
-        <JourneyList />
+        <JourneyList authUser={AuthUser} />
       </PageWrapper>
     </>
   )
