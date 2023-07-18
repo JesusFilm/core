@@ -103,7 +103,6 @@ describe('ImageEdit', () => {
           id: image.id,
           src: image.src,
           alt: image.alt,
-          parentBlockId: image.parentBlockId,
           width: image.width,
           height: image.height,
           parentOrder: image.parentOrder,
@@ -135,7 +134,6 @@ describe('ImageEdit', () => {
               variables: {
                 input: {
                   journeyId: 'journey.id',
-                  parentBlockId: 'journey.id',
                   src: image.src,
                   alt: image.alt
                 }
@@ -229,7 +227,6 @@ describe('ImageEdit', () => {
               query: BLOCK_DELETE_PRIMARY_IMAGE,
               variables: {
                 id: image.id,
-                parentBlockId: null,
                 journeyId: 'journey.id'
               }
             },

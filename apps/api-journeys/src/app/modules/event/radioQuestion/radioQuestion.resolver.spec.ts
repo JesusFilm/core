@@ -14,7 +14,8 @@ describe('RadioQuestionSubmissionEventResolver', () => {
     jest.useRealTimers()
   })
 
-  let resolver: RadioQuestionSubmissionEventResolver, prisma: PrismaService
+  let resolver: RadioQuestionSubmissionEventResolver,
+    prismaService: PrismaService
 
   const eventService = {
     provide: EventService,
@@ -54,9 +55,9 @@ describe('RadioQuestionSubmissionEventResolver', () => {
     resolver = module.get<RadioQuestionSubmissionEventResolver>(
       RadioQuestionSubmissionEventResolver
     )
-    prisma = module.get<PrismaService>(PrismaService)
-    prisma.visitor.update = jest.fn().mockResolvedValueOnce(null)
-    prisma.journeyVisitor.update = jest.fn().mockResolvedValueOnce(null)
+    prismaService = module.get<PrismaService>(PrismaService)
+    prismaService.visitor.update = jest.fn().mockResolvedValueOnce(null)
+    prismaService.journeyVisitor.update = jest.fn().mockResolvedValueOnce(null)
   })
 
   describe('radioQuestionSubmissionEventCreate', () => {
@@ -76,7 +77,7 @@ describe('RadioQuestionSubmissionEventResolver', () => {
     it('should update visitor last event at', async () => {
       await resolver.radioQuestionSubmissionEventCreate('userId', input)
 
-      expect(prisma.visitor.update).toHaveBeenCalledWith({
+      expect(prismaService.visitor.update).toHaveBeenCalledWith({
         where: { id: 'visitor.id' },
         data: {
           lastRadioQuestion: input.label,

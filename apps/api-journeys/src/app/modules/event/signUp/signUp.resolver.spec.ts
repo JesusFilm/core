@@ -13,7 +13,7 @@ describe('SignUpEventResolver', () => {
     jest.useRealTimers()
   })
 
-  let resolver: SignUpSubmissionEventResolver, prisma: PrismaService
+  let resolver: SignUpSubmissionEventResolver, prismaService: PrismaService
 
   const eventService = {
     provide: EventService,
@@ -81,9 +81,9 @@ describe('SignUpEventResolver', () => {
     resolver = module.get<SignUpSubmissionEventResolver>(
       SignUpSubmissionEventResolver
     )
-    prisma = module.get<PrismaService>(PrismaService)
-    prisma.visitor.update = jest.fn().mockResolvedValueOnce(null)
-    prisma.journeyVisitor.update = jest.fn().mockResolvedValueOnce(null)
+    prismaService = module.get<PrismaService>(PrismaService)
+    prismaService.visitor.update = jest.fn().mockResolvedValueOnce(null)
+    prismaService.journeyVisitor.update = jest.fn().mockResolvedValueOnce(null)
   })
 
   describe('signUpSubmissionEventCreate', () => {
@@ -117,7 +117,7 @@ describe('SignUpEventResolver', () => {
     it('should update visitor', async () => {
       await resolver.signUpSubmissionEventCreate('newVisitor.id', input)
 
-      expect(prisma.visitor.update).toHaveBeenCalledWith({
+      expect(prismaService.visitor.update).toHaveBeenCalledWith({
         where: { id: 'newVisitor.id' },
         data: {
           name: input.name,
@@ -129,7 +129,7 @@ describe('SignUpEventResolver', () => {
     it('should update visitor name with input if visitor does not have name', async () => {
       await resolver.signUpSubmissionEventCreate('withEmail.id', input)
 
-      expect(prisma.visitor.update).toHaveBeenCalledWith({
+      expect(prismaService.visitor.update).toHaveBeenCalledWith({
         where: { id: 'withEmail.id' },
         data: {
           name: input.name
@@ -140,7 +140,7 @@ describe('SignUpEventResolver', () => {
     it('should update visitor email with input if visitor does not have email', async () => {
       await resolver.signUpSubmissionEventCreate('withName.id', input)
 
-      expect(prisma.visitor.update).toHaveBeenCalledWith({
+      expect(prismaService.visitor.update).toHaveBeenCalledWith({
         where: { id: 'withName.id' },
         data: {
           email: input.email

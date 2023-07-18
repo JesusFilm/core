@@ -23,12 +23,14 @@ export class StepBlockResolver {
     ])
   )
   async stepBlockCreate(
-    @Args('input') input: StepBlockCreateInput & { __typename }
+    @Args('input') input: StepBlockCreateInput
   ): Promise<StepBlock> {
-    input.__typename = 'StepBlock'
     const siblings = await this.blockService.getSiblings(input.journeyId)
     return await this.blockService.save({
       ...input,
+      id: input.id ?? undefined,
+      typename: 'StepBlock',
+      journey: { connect: { id: input.journeyId } },
       parentOrder: siblings.length
     })
   }
