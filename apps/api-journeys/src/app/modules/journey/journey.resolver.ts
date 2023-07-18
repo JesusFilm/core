@@ -419,8 +419,7 @@ export class JourneyResolver {
             await this.prismaService.action.create({
               data: {
                 ...block.action,
-                parentBlockId: block.id,
-                blockId: block.id
+                parentBlockId: block.id
               }
             })
           }

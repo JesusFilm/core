@@ -297,6 +297,7 @@ describe('JourneyResolver', () => {
     bService = module.get<BlockService>(BlockService)
     urService = module.get<UserRoleService>(UserRoleService)
     prismaService = module.get<PrismaService>(PrismaService)
+    prismaService.action.create = jest.fn().mockReturnValue({})
     prismaService.block.findUnique = jest.fn().mockImplementation((input) => {
       switch (input.where.id) {
         case block.id:
