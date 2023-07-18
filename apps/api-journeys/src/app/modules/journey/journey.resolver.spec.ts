@@ -1062,7 +1062,7 @@ describe('JourneyResolver', () => {
         ])
       const date = '2021-12-07T03:22:41.135Z'
       jest.useFakeTimers().setSystemTime(new Date(date).getTime())
-      mockUuidv4.mockReturnValueOnce('duplicateJourneyId2')
+      mockUuidv4.mockReturnValue('duplicateJourneyId2')
 
       expect(await resolver.journeyDuplicate('journeyId', 'userId')).toEqual({
         ...omit(journey, ['hostId', 'primaryImageBlockId', 'publishedAt']),
