@@ -3,34 +3,33 @@ import {
   CanActivate,
   ExecutionContext,
   mixin,
-  Type,
-  Inject
+  Type
 } from '@nestjs/common'
+import { GraphQLError } from 'graphql'
 import get from 'lodash/get'
 import includes from 'lodash/includes'
 import reduce from 'lodash/reduce'
-import { AuthenticationError } from 'apollo-server-errors'
 import { contextToUserId } from '@core/nest/common/firebaseClient'
-import {
-  UserJourneyRecord,
-  UserJourneyService
-} from '../../modules/userJourney/userJourney.service'
 import {
   Journey,
   Role,
+  UserJourney,
   UserJourneyRole,
   UserRole
-} from '../../__generated__/graphql'
+} from '.prisma/api-journeys-client'
+
 import { UserRoleService } from '../../modules/userRole/userRole.service'
-import { JourneyService } from '../../modules/journey/journey.service'
+import { PrismaService } from '../prisma.service'
 
 // broken out into function for test injection
 export const fetchUserJourney = async (
-  userJourneyService: UserJourneyService,
+  prismaService: PrismaService,
   journeyId: string,
   userId: string
-): Promise<UserJourneyRecord | undefined> => {
-  return await userJourneyService.forJourneyUser(journeyId, userId)
+): Promise<UserJourney | null> => {
+  return await prismaService.userJourney.findUnique({
+    where: { journeyId_userId: { journeyId, userId } }
+  })
 }
 
 export const fetchUserRole = async (
@@ -41,10 +40,10 @@ export const fetchUserRole = async (
 }
 
 export const fetchJourney = async (
-  journeyService: JourneyService,
-  userId: string
-): Promise<Journey> => {
-  return await journeyService.get(userId)
+  prismaService: PrismaService,
+  id: string
+): Promise<Journey | null> => {
+  return await prismaService.journey.findUnique({ where: { id } })
 }
 
 type DefinedRole = UserJourneyRole | Role | PublicRole
@@ -68,12 +67,8 @@ export const RoleGuard = (
   @Injectable()
   class RolesGuard implements CanActivate {
     constructor(
-      @Inject(UserJourneyService)
-      private readonly userJourneyService: UserJourneyService,
-      @Inject(UserRoleService)
       private readonly userRoleService: UserRoleService,
-      @Inject(JourneyService)
-      private readonly journeyService: JourneyService
+      private readonly prismaService: PrismaService
     ) {}
 
     checkAttributes(journey: Journey, attributes?: Partial<Journey>): boolean {
@@ -88,10 +83,7 @@ export const RoleGuard = (
       return permission === 'public'
     }
 
-    userJourneyRole(
-      permission: Permission,
-      userJourney: UserJourneyRecord
-    ): boolean {
+    userJourneyRole(permission: Permission, userJourney: UserJourney): boolean {
       return (
         permission !== UserJourneyRole.inviteRequested &&
         permission === userJourney.role
@@ -104,8 +96,8 @@ export const RoleGuard = (
 
     checkAllowedAccess(
       permissions: Permission[],
-      journey: Journey,
-      userJourney: UserJourneyRecord | undefined,
+      journey: Journey | null,
+      userJourney: UserJourney | null,
       userRole: UserRole,
       attributes?: Partial<Journey>
     ): boolean {
@@ -116,6 +108,7 @@ export const RoleGuard = (
 
           if (
             this.publicRole(permission) &&
+            journey != null &&
             this.checkAttributes(journey, attributes)
           )
             return true
@@ -123,12 +116,14 @@ export const RoleGuard = (
           if (
             userJourney != null &&
             this.userJourneyRole(permission, userJourney) &&
+            journey != null &&
             this.checkAttributes(journey, attributes)
           )
             return true
 
           if (
             this.userRole(permission, userRole) &&
+            journey != null &&
             this.checkAttributes(journey, attributes)
           )
             return true
@@ -159,7 +154,9 @@ export const RoleGuard = (
       const args = context.getArgByIndex(1)
       const journeyId = get(args, journeyIdArgName)
       if (journeyId == null)
-        throw new AuthenticationError('No journeyId provided')
+        throw new GraphQLError('No journeyId provided', {
+          extensions: { code: 'BAD_USER_INPUT' }
+        })
 
       const userRole = await fur(this.userRoleService, userId)
 
@@ -168,19 +165,16 @@ export const RoleGuard = (
 
       let result = false
       for (const journeyId of journeyIds) {
-        const journey = await fj(this.journeyService, journeyId)
-        const userJourney = await fuj(
-          this.userJourneyService,
-          journeyId,
-          userId
-        )
+        const journey = await fj(this.prismaService, journeyId)
+        const userJourney = await fuj(this.prismaService, journeyId, userId)
 
         result = this.checkAllowedAccess(access, journey, userJourney, userRole)
       }
 
       if (!result)
-        throw new AuthenticationError(
-          'User does not have the role to perform this action'
+        throw new GraphQLError(
+          'User does not have the role to perform this action',
+          { extensions: { code: 'FORBIDDEN' } }
         )
       return result
     }
