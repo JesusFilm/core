@@ -90,6 +90,12 @@
       "options": {
         "command": "DOPPLER_TOKEN=$DOPPLER_API_VIDEOS_TOKEN doppler secrets download --no-file --format=env-no-quotes --project api-videos > apps/api-videos/.env"
       }
+    },
+    "codecov": {
+      "executor": "@nrwl/workspace:run-commands",
+      "options": {
+        "command": "codecov -f coverage/apps/api-videos/cobertura-coverage.xml -F apps.api-videos"
+      }
     }
   },
   "tags": []

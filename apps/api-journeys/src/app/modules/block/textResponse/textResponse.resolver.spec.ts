@@ -1,15 +1,14 @@
 import { Test, TestingModule } from '@nestjs/testing'
-import { Database } from 'arangojs'
-import { mockDeep } from 'jest-mock-extended'
+import omit from 'lodash/omit'
 
 import {
   TextResponseBlock,
   TextResponseBlockCreateInput
 } from '../../../__generated__/graphql'
 import { JourneyService } from '../../journey/journey.service'
-import { PrismaService } from '../../../lib/prisma.service'
 import { UserJourneyService } from '../../userJourney/userJourney.service'
 import { UserRoleService } from '../../userRole/userRole.service'
+import { PrismaService } from '../../../lib/prisma.service'
 import { BlockResolver } from '../block.resolver'
 import { BlockService } from '../block.service'
 import { TextResponseBlockResolver } from './textResponse.resolver'
@@ -17,7 +16,8 @@ import { TextResponseBlockResolver } from './textResponse.resolver'
 describe('TextResponseBlockResolver', () => {
   let resolver: TextResponseBlockResolver,
     blockResolver: BlockResolver,
-    service: BlockService
+    service: BlockService,
+    prismaService: PrismaService
 
   const block = {
     id: '1',
@@ -38,19 +38,21 @@ describe('TextResponseBlockResolver', () => {
     parentBlockId: block.id
   }
 
-  const input: TextResponseBlockCreateInput & { __typename: string } = {
+  const input: TextResponseBlockCreateInput = {
     id: '1',
     journeyId: '2',
     parentBlockId: '',
-    __typename: '',
     label: 'Your answer here...',
     submitLabel: 'Submit'
   }
 
   const textResponseBlockResponse = {
-    ...input,
-    __typename: 'TextResponseBlock',
-    parentOrder: 2
+    ...omit(input, ['__typename', 'journeyId', 'parentBlockId']),
+    typename: 'TextResponseBlock',
+    parentOrder: 2,
+    parentBlock: { connect: { id: input.parentBlockId } },
+    journey: { connect: { id: '2' } },
+    journeyId: '2'
   }
 
   const blockUpdate = {
@@ -64,8 +66,6 @@ describe('TextResponseBlockResolver', () => {
   const blockService = {
     provide: BlockService,
     useFactory: () => ({
-      get: jest.fn(() => block),
-      getAll: jest.fn(() => [block, block]),
       getSiblings: jest.fn(() => [block, block]),
       save: jest.fn((input) => input),
       update: jest.fn((input) => input),
@@ -82,16 +82,17 @@ describe('TextResponseBlockResolver', () => {
         UserJourneyService,
         UserRoleService,
         JourneyService,
-        PrismaService,
-        {
-          provide: 'DATABASE',
-          useFactory: () => mockDeep<Database>()
-        }
+        PrismaService
       ]
     }).compile()
     blockResolver = module.get<BlockResolver>(BlockResolver)
     resolver = module.get<TextResponseBlockResolver>(TextResponseBlockResolver)
     service = await module.resolve(BlockService)
+    prismaService = module.get<PrismaService>(PrismaService)
+    prismaService.block.findUnique = jest.fn().mockResolvedValueOnce(block)
+    prismaService.block.findMany = jest
+      .fn()
+      .mockResolvedValueOnce([block, block])
   })
 
   describe('TextResponseBlock', () => {
