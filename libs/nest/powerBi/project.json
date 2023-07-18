@@ -17,6 +17,12 @@
         "jestConfig": "libs/nest/powerBi/jest.config.js",
         "passWithNoTests": true
       }
+    },
+    "codecov": {
+      "executor": "@nrwl/workspace:run-commands",
+      "options": {
+        "command": "codecov -f coverage/libs/nest/powerBi/cobertura-coverage.xml -F libs.nest.powerBi"
+      }
     }
   },
   "tags": []
