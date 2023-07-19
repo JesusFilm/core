@@ -160,7 +160,8 @@ export function ContainedCover({
           flexGrow: 1,
           zIndex: 1,
           top: 0,
-          position: { xs: 'relative', lg: 'absolute' },
+          // position: { xs: 'relative', lg: 'absolute' },
+          position: 'absolute',
           WebkitMask: { xs: overlayImageMask, lg: 'unset' },
           mask: { xs: overlayImageMask, lg: 'unset' }
         }}
@@ -183,9 +184,12 @@ export function ContainedCover({
           position: 'relative',
           zIndex: 1,
           width: '100%',
-          height: { xs: hasFullscreenVideo ? '100%' : undefined, lg: '100%' },
-          justifyContent: { xs: 'flex-end', lg: 'center' },
-          alignItems: { lg: rtl ? 'flex-start' : 'flex-end' }
+          height: '100%',
+          // height: { xs: hasFullscreenVideo ? '100%' : undefined, lg: '100%' },
+          justifyContent: 'center',
+          alignItems: rtl ? 'flex-start' : 'flex-end'
+          // justifyContent: { xs: 'flex-end', lg: 'center' }
+          // alignItems: { lg: rtl ? 'flex-start' : 'flex-end' }
         }}
       >
         {children.length !== 0 ? (
@@ -193,35 +197,38 @@ export function ContainedCover({
             <Stack
               data-testid="overlay-blur"
               sx={{
-                width: { xs: videoBlock != null ? '100%' : '0%', lg: 380 },
-                height: { xs: videoBlock != null ? '85%' : '0%', lg: '100%' },
-                flexDirection: {
-                  xs: 'column-reverse',
-                  lg: rtl ? 'row' : 'row-reverse'
-                },
+                width: 380,
+                height: '100%',
+                // width: { xs: videoBlock != null ? '100%' : '0%', lg: 380 },
+                // height: { xs: videoBlock != null ? '85%' : '0%', lg: '100%' },
+                flexDirection: rtl ? 'row' : 'row-reverse',
+                // flexDirection: {
+                //   xs: 'column-reverse',
+                //   lg: rtl ? 'row' : 'row-reverse'
+                // },
                 position: 'absolute'
               }}
             >
               <StyledSoftBlurBackground
-                sx={{ width: { lg: 500 }, height: contentHeight - 40 }}
+                sx={{ width: 500, height: contentHeight - 40 }}
               />
               <StyledSoftBlurBackground
-                sx={{ width: { lg: 450 }, height: contentHeight - 80 }}
+                sx={{ width: 450, height: contentHeight - 80 }}
               />
               <StyledSoftBlurBackground
-                sx={{ width: { lg: 400 }, height: contentHeight * 0.9 - 80 }}
+                sx={{ width: 400, height: contentHeight * 0.9 - 80 }}
               />
               <StyledBlurBackground
-                sx={{ width: { lg: 350 }, height: contentHeight * 0.8 - 80 }}
+                sx={{ width: 350, height: contentHeight * 0.8 - 80 }}
               />
               <StyledBlurBackground
-                sx={{ width: { lg: 325 }, height: contentHeight * 0.7 - 80 }}
+                sx={{ width: 325, height: contentHeight * 0.7 - 80 }}
               />
               <StyledBlurBackground
-                sx={{ width: { lg: 275 }, height: contentHeight * 0.6 - 80 }}
+                sx={{ width: 275, height: contentHeight * 0.6 - 80 }}
               />
               <StyledBlurBackground
-                sx={{ width: { lg: 250 }, height: contentHeight * 0.5 - 80 }}
+                sx={{ width: 250, height: contentHeight * 0.5 - 80 }}
               />
             </Stack>
 
@@ -233,19 +240,26 @@ export function ContainedCover({
               sx={{
                 position: 'absolute',
                 width: '100%',
-                height: { xs: '100%', lg: '100%' },
-                maxWidth: { xs: '100%', lg: '380px' },
-                pt: { xs: videoBlock != null ? 40 : 5, lg: 0 },
-                pb: { xs: 10, lg: 0 },
-                pl: { lg: 50 },
-                WebkitMask: {
-                  xs: overlayGradient('bottom'),
-                  lg: overlayGradient(rtl ? 'left' : 'right')
-                },
-                mask: {
-                  xs: overlayGradient('bottom'),
-                  lg: overlayGradient(rtl ? 'left' : 'right')
-                },
+                height: '100%',
+                // height: { xs: '100%', lg: '100%' },
+                maxWidth: '380px',
+                // maxWidth: { xs: '100%', lg: '380px' },
+                pt: 0,
+                // pt: { xs: videoBlock != null ? 40 : 5, lg: 0 },
+                pb: 0,
+                // pb: { xs: 10, lg: 0 },
+                pl: 50,
+                // pl: { lg: 50 },
+                WebkitMask: overlayGradient(rtl ? 'left' : 'right'),
+                // WebkitMask: {
+                //   xs: overlayGradient('bottom'),
+                //   lg: overlayGradient(rtl ? 'left' : 'right')
+                // },
+                mask: overlayGradient(rtl ? 'left' : 'right'),
+                // mask: {
+                //   xs: overlayGradient('bottom'),
+                //   lg: overlayGradient(rtl ? 'left' : 'right')
+                // },
                 backgroundColor: `${backgroundColor}d9`
               }}
             />
@@ -253,10 +267,14 @@ export function ContainedCover({
               hasFullscreenVideo={hasFullscreenVideo}
               sx={{
                 // This should match width of journey card content in admin
-                width: { lg: '312px' },
-                maxHeight: { xs: '55vh', lg: '100%' },
-                px: { xs: 6, lg: 10 },
-                mb: { xs: 16, lg: 0 }
+                width: '312px',
+                maxHeight: '100%',
+                px: 10,
+                mb: 0
+                // width: { lg: '312px' },
+                // maxHeight: { xs: '55vh', lg: '100%' },
+                // px: { xs: 6, lg: 10 },
+                // mb: { xs: 16, lg: 0 }
               }}
             >
               {children}
@@ -266,10 +284,11 @@ export function ContainedCover({
           <StyledGradientBackground
             className="overlay-gradient"
             sx={{
-              background: {
-                xs: `linear-gradient(to top,  ${backgroundColor}ff 0%, ${backgroundColor}33 60%, ${backgroundColor}00 100%)`,
-                lg: 'unset'
-              }
+              background: 'unset'
+              // background: {
+              //   xs: `linear-gradient(to top,  ${backgroundColor}ff 0%, ${backgroundColor}33 60%, ${backgroundColor}00 100%)`,
+              //   lg: 'unset'
+              // }
             }}
           />
         )}
