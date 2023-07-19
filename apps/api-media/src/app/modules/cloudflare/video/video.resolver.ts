@@ -1,5 +1,5 @@
 import { Resolver, Query, Mutation, Args } from '@nestjs/graphql'
-import { ForbiddenError, UserInputError } from 'apollo-server-errors'
+import { GraphQLError } from 'graphql'
 import { CurrentUserId } from '@core/nest/decorators/CurrentUserId'
 import { CloudflareVideo } from '.prisma/api-media-client'
 
@@ -72,10 +72,14 @@ export class VideoResolver {
       where: { id }
     })
     if (video == null) {
-      throw new UserInputError('Video not found')
+      throw new GraphQLError('Video not found', {
+        extensions: { code: 'NOT_FOUND' }
+      })
     }
     if (video.userId !== userId) {
-      throw new ForbiddenError('This video does not belong to you')
+      throw new GraphQLError('This video does not belong to you', {
+        extensions: { code: 'FORBIDDEN' }
+      })
     }
     const response = await this.videoService.getVideoFromCloudflare(id)
 
@@ -99,14 +103,20 @@ export class VideoResolver {
       where: { id }
     })
     if (video == null) {
-      throw new UserInputError('Video not found')
+      throw new GraphQLError('Video not found', {
+        extensions: { code: 'NOT_FOUND' }
+      })
     }
     if (video.userId !== userId) {
-      throw new ForbiddenError('This video does not belong to you')
+      throw new GraphQLError('This video does not belong to you', {
+        extensions: { code: 'FORBIDDEN' }
+      })
     }
     const response = await this.videoService.deleteVideoFromCloudflare(id)
     if (!response) {
-      throw new UserInputError('Video could not be deleted from cloudflare')
+      throw new GraphQLError('Video could not be deleted from cloudflare', {
+        extensions: { code: 'INTERNAL_SERVER_ERROR' }
+      })
     }
     await this.prismaService.cloudflareVideo.delete({ where: { id } })
     return true

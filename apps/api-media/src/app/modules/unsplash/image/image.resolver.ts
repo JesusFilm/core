@@ -20,7 +20,6 @@ export class UnsplashImageResolver {
     @Args('perPage') perPage?: number,
     @Args('orientation') orientation?: UnsplashPhotoOrientation
   ): Promise<UnsplashPhoto[]> {
-    console.log('collectionId', collectionId)
     return await this.unsplashImageService.listUnsplashCollectionPhotos(
       collectionId,
       page,

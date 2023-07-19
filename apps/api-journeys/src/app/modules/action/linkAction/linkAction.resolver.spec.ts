@@ -1,22 +1,20 @@
 import { Test, TestingModule } from '@nestjs/testing'
-import { Database } from 'arangojs'
-import { mockDeep } from 'jest-mock-extended'
 import { BlockResolver } from '../../block/block.resolver'
-import { BlockService } from '../../block/block.service'
 import { JourneyService } from '../../journey/journey.service'
-import { PrismaService } from '../../../lib/prisma.service'
 import { UserJourneyService } from '../../userJourney/userJourney.service'
 import { UserRoleService } from '../../userRole/userRole.service'
+import { PrismaService } from '../../../lib/prisma.service'
+import { BlockService } from '../../block/block.service'
 import { ActionResolver } from '../action.resolver'
 import { LinkActionResolver } from './linkAction.resolver'
 
 describe('LinkActionResolver', () => {
-  let resolver: LinkActionResolver, service: BlockService
+  let resolver: LinkActionResolver, prismaService: PrismaService
 
   const block = {
     id: '1',
     journeyId: '2',
-    __typename: 'RadioOptionBlock',
+    typename: 'RadioOptionBlock',
     parentBlockId: '3',
     parentOrder: 3,
     label: 'label',
@@ -37,31 +35,24 @@ describe('LinkActionResolver', () => {
   }
 
   beforeEach(async () => {
-    const blockService = {
-      provide: BlockService,
-      useFactory: () => ({
-        get: jest.fn().mockResolvedValue(block),
-        update: jest.fn((navigateToBlockInput) => navigateToBlockInput)
-      })
-    }
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         BlockResolver,
-        blockService,
+        BlockService,
         LinkActionResolver,
         ActionResolver,
         UserJourneyService,
         UserRoleService,
         JourneyService,
-        PrismaService,
-        {
-          provide: 'DATABASE',
-          useFactory: () => mockDeep<Database>()
-        }
+        PrismaService
       ]
     }).compile()
     resolver = module.get<LinkActionResolver>(LinkActionResolver)
-    service = await module.resolve(BlockService)
+    prismaService = module.get<PrismaService>(PrismaService)
+    prismaService.block.findUnique = jest.fn().mockResolvedValue(block)
+    prismaService.action.upsert = jest
+      .fn()
+      .mockResolvedValue((result) => result.data)
   })
 
   it('updates link action', async () => {
@@ -70,17 +61,27 @@ describe('LinkActionResolver', () => {
       block.journeyId,
       linkActionInput
     )
-    expect(service.update).toHaveBeenCalledWith(block.id, {
-      action: { ...linkActionInput, parentBlockId: block.action.parentBlockId }
+    const actionData = linkActionInput
+    expect(prismaService.action.upsert).toHaveBeenCalledWith({
+      where: { parentBlockId: block.id },
+      create: {
+        ...actionData,
+        parentBlock: { connect: { id: block.id } }
+      },
+      update: {
+        ...actionData,
+        journey: { disconnect: true },
+        block: { disconnect: true }
+      }
     })
   })
 
   it('throws an error if typename is wrong', async () => {
     const wrongBlock = {
       ...block,
-      __typename: 'WrongBlock'
+      typename: 'WrongBlock'
     }
-    service.get = jest.fn().mockResolvedValue(wrongBlock)
+    prismaService.block.findUnique = jest.fn().mockResolvedValue(wrongBlock)
     await resolver
       .blockUpdateLinkAction(
         wrongBlock.id,

@@ -1,13 +1,13 @@
 import { UseGuards } from '@nestjs/common'
 import { Args, Mutation, Resolver } from '@nestjs/graphql'
-import { UserInputError } from 'apollo-server-errors'
+import { GraphQLError } from 'graphql'
 import { encode } from 'blurhash'
 import fetch from 'node-fetch'
 import sharp from 'sharp'
+import omit from 'lodash/omit'
 
 import { BlockService } from '../block.service'
 import {
-  CardBlock,
   ImageBlock,
   ImageBlockCreateInput,
   ImageBlockUpdateInput,
@@ -15,6 +15,7 @@ import {
   UserJourneyRole
 } from '../../../__generated__/graphql'
 import { RoleGuard } from '../../../lib/roleGuard/roleGuard'
+import { PrismaService } from '../../../lib/prisma.service'
 
 export async function handleImage(
   input
@@ -53,8 +54,8 @@ export async function handleImage(
       4
     )
   } catch (ex) {
-    throw new UserInputError(ex.message, {
-      argumentName: 'src'
+    throw new GraphQLError(ex.message, {
+      extensions: { code: 'BAD_USER_INPUT' }
     })
   }
 
@@ -70,7 +71,11 @@ export async function handleImage(
 
 @Resolver('ImageBlock')
 export class ImageBlockResolver {
-  constructor(private readonly blockService: BlockService) {}
+  constructor(
+    private readonly blockService: BlockService,
+    private readonly prismaService: PrismaService
+  ) {}
+
   @Mutation()
   @UseGuards(
     RoleGuard('input.journeyId', [
@@ -85,23 +90,42 @@ export class ImageBlockResolver {
     const block = (await handleImage(input)) as ImageBlockCreateInput
 
     if (block.isCover === true) {
-      const coverBlock: ImageBlock = await this.blockService.save({
-        ...block,
-        __typename: 'ImageBlock',
-        parentOrder: null
+      if (block.parentBlockId == null) {
+        throw new GraphQLError('Parent block id is required for cover blocks', {
+          extensions: { code: 'BAD_USER_INPUT' }
+        })
+      }
+      const parentBlock = await this.prismaService.block.findUnique({
+        where: {
+          id: block.parentBlockId
+        },
+        include: { action: true }
       })
-      const parentBlock: CardBlock = await this.blockService.get(
-        block.parentBlockId
-      )
 
-      await this.blockService.update(parentBlock.id, {
-        coverBlockId: coverBlock.id
+      if (parentBlock == null) {
+        throw new Error('Parent block not found')
+      }
+
+      const coverBlock: ImageBlock = await this.blockService.save({
+        ...omit(block, 'parentBlockId'),
+        id: block.id ?? undefined,
+        typename: 'ImageBlock',
+        journey: { connect: { id: block.journeyId } },
+        parentBlock:
+          input.parentBlockId != null
+            ? { connect: { id: block.parentBlockId } }
+            : undefined,
+        parentOrder: null,
+        coverBlockParent: { connect: { id: block.parentBlockId } }
       })
       // Delete old coverBlock
       if (parentBlock.coverBlockId != null) {
-        const coverBlockToDelete = await this.blockService.get(
-          parentBlock.coverBlockId
-        )
+        const coverBlockToDelete = await this.prismaService.block.findUnique({
+          where: {
+            id: parentBlock.coverBlockId
+          },
+          include: { action: true }
+        })
         if (coverBlockToDelete != null) {
           await this.blockService.removeBlockAndChildren(
             parentBlock.coverBlockId,
@@ -118,8 +142,14 @@ export class ImageBlockResolver {
       block.parentBlockId
     )
     return await this.blockService.save({
-      ...block,
-      __typename: 'ImageBlock',
+      ...omit(block, 'parentBlockId'),
+      id: block.id ?? undefined,
+      typename: 'ImageBlock',
+      journey: { connect: { id: block.journeyId } },
+      parentBlock:
+        block.parentBlockId != null
+          ? { connect: { id: block.parentBlockId } }
+          : undefined,
       parentOrder: siblings.length
     })
   }
@@ -138,6 +168,6 @@ export class ImageBlockResolver {
     @Args('input') input: ImageBlockUpdateInput
   ): Promise<ImageBlock> {
     const block = await handleImage(input)
-    return await this.blockService.update(id, block)
+    return await this.blockService.update(id, { ...block, id })
   }
 }
