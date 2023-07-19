@@ -39,5 +39,5 @@ export interface GetUserTeamsAndInvites {
 
 export interface GetUserTeamsAndInvitesVariables {
   teamId: string;
-  filter: UserTeamFilterInput;
+  where: UserTeamFilterInput;
 }
