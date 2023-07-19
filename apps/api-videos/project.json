@@ -150,6 +150,12 @@
       "options": {
         "command": "npx tsc -b apps/api-videos/tsconfig.json"
       }
+    },
+    "codecov": {
+      "executor": "@nrwl/workspace:run-commands",
+      "options": {
+        "command": "codecov -f coverage/apps/api-videos/cobertura-coverage.xml -F apps.api-videos"
+      }
     }
   },
   "tags": []

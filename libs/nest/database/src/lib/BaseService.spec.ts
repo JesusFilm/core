@@ -3,7 +3,7 @@ import { Database } from 'arangojs'
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 import { DocumentCollection, EdgeCollection } from 'arangojs/collection'
 import { Injectable } from '@nestjs/common'
-import { omit } from 'lodash'
+import omit from 'lodash/omit'
 import { AqlQuery } from 'arangojs/aql'
 import { ArrayCursor } from 'arangojs/cursor'
 

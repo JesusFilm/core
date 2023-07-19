@@ -7,11 +7,11 @@ import {
   Parent,
   Mutation
 } from '@nestjs/graphql'
-import { ForbiddenError, UserInputError } from 'apollo-server-errors'
+import { GraphQLError } from 'graphql'
 import { IResult, UAParser } from 'ua-parser-js'
 import { Event, Visitor } from '.prisma/api-journeys-client'
 import { FromPostgresql } from '@core/nest/decorators/FromPostgresql'
-import { pick } from 'lodash'
+import pick from 'lodash/pick'
 import { PrismaService } from '../../lib/prisma.service'
 import { VisitorService, VisitorsConnection } from './visitor.service'
 
@@ -34,7 +34,9 @@ export class VisitorResolver {
     })
 
     if (memberResult == null)
-      throw new ForbiddenError('User is not a member of the team.')
+      throw new GraphQLError('User is not a member of the team.', {
+        extensions: { code: 'FORBIDDEN' }
+      })
 
     return await this.visitorService.getList({
       filter: { teamId },
@@ -53,15 +55,18 @@ export class VisitorResolver {
     })
 
     if (visitor == null)
-      throw new UserInputError(`Visitor with ID "${id}" does not exist`)
+      throw new GraphQLError(`Visitor with ID "${id}" does not exist`, {
+        extensions: { code: 'NOT_FOUND' }
+      })
 
     const memberResult = await this.prismaService.userTeam.findUnique({
       where: { teamId_userId: { userId, teamId: visitor.teamId } }
     })
 
     if (memberResult == null)
-      throw new ForbiddenError(
-        'User is not a member of the team the visitor belongs to'
+      throw new GraphQLError(
+        'User is not a member of the team the visitor belongs to',
+        { extensions: { code: 'FORBIDDEN' } }
       )
 
     return visitor
@@ -78,15 +83,18 @@ export class VisitorResolver {
     })
 
     if (visitor == null)
-      throw new UserInputError(`Visitor with ID "${id}" does not exist`)
+      throw new GraphQLError(`Visitor with ID "${id}" does not exist`, {
+        extensions: { code: 'NOT_FOUND' }
+      })
 
     const memberResult = await this.prismaService.userTeam.findUnique({
       where: { teamId_userId: { userId, teamId: visitor.teamId } }
     })
 
     if (memberResult == null)
-      throw new ForbiddenError(
-        'User is not a member of the team the visitor belongs to'
+      throw new GraphQLError(
+        'User is not a member of the team the visitor belongs to',
+        { extensions: { code: 'FORBIDDEN' } }
       )
 
     return await this.prismaService.visitor.update({
@@ -105,7 +113,9 @@ export class VisitorResolver {
     })
 
     if (visitor == null)
-      throw new UserInputError(`No visitor record found for user "${userId}"`)
+      throw new GraphQLError(`No visitor record found for user "${userId}"`, {
+        extensions: { code: 'NOT_FOUND' }
+      })
 
     return await this.prismaService.visitor.update({
       where: { id: visitor.id },

@@ -38,6 +38,12 @@
           "quiet": true
         }
       }
+    },
+    "codecov": {
+      "executor": "@nrwl/workspace:run-commands",
+      "options": {
+        "command": "codecov -f coverage/libs/shared/ui/cobertura-coverage.xml -F libs.shared.ui"
+      }
     }
   },
   "tags": []

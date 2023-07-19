@@ -311,7 +311,7 @@ export class IconBlockUpdateInput {
 
 export class ImageBlockCreateInput {
     id?: Nullable<string>;
-    parentBlockId: string;
+    parentBlockId?: Nullable<string>;
     journeyId: string;
     src?: Nullable<string>;
     alt: string;
@@ -648,6 +648,10 @@ export class UserInviteCreateInput {
 
 export class UserTeamUpdateInput {
     role: UserTeamRole;
+}
+
+export class UserTeamFilterInput {
+    role?: Nullable<UserTeamRole[]>;
 }
 
 export class UserTeamInviteCreateInput {
@@ -1122,7 +1126,7 @@ export abstract class IQuery {
 
     abstract getUserRole(): Nullable<UserRole> | Promise<Nullable<UserRole>>;
 
-    abstract userTeams(teamId: string): UserTeam[] | Promise<UserTeam[]>;
+    abstract userTeams(teamId: string, where?: Nullable<UserTeamFilterInput>): UserTeam[] | Promise<UserTeam[]>;
 
     abstract userTeam(id: string): UserTeam | Promise<UserTeam>;
 

@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common'
-import { isNil, omitBy } from 'lodash'
+import isNil from 'lodash/isNil'
+import omitBy from 'lodash/omitBy'
 import { JourneyVisitor, Prisma } from '.prisma/api-journeys-client'
 import {
   PageInfo,

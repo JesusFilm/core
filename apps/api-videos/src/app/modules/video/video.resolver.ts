@@ -9,8 +9,8 @@ import {
   Parent
 } from '@nestjs/graphql'
 import { FieldNode, GraphQLResolveInfo, Kind } from 'graphql'
-import { compact } from 'lodash'
 import { Video, VideoVariant } from '.prisma/api-videos-client'
+import compact from 'lodash/compact'
 
 import { IdType, VideosFilter } from '../../__generated__/graphql'
 import { PrismaService } from '../../lib/prisma.service'
