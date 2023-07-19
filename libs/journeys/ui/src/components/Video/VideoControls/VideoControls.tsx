@@ -144,8 +144,6 @@ export function VideoControls({
 
   // Handle volume change event
   useEffect(() => {
-    // Initialise volume
-    // setVolume(player.volume() * 100)
     const handleVideoVolumeChange = (): void => setVolume(player.volume() * 100)
 
     player.on('volumechange', handleVideoVolumeChange)

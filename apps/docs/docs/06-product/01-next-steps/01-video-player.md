@@ -35,7 +35,7 @@ As a result, we see the following quirks in autoplay behaviour:
 - iPhones and iPads block autoplay for Youtube videos. This is due to a `videojs-youtube` limitation.
 - On iPhone, arclight / cloudflare videos will usually autoplay unless `user interaction` limitations prevent so. Most commonly we have found this occuring in 2 scenarios:
 
-1. [Video on first card autoplays but is muted]()
+1. [Video on first card autoplays but is muted](#the-autoplay-video-on-the-first-card-has-no-sound)
 2. [Video on a middle card does not autoplay](#the-arclight-video-does-not-autoplay-on-iphone)
 
 Desktop and Android devices are able to autoplay videos successfully.
@@ -98,9 +98,9 @@ This uses both the `fscreen` library (built on the native browser fullscreen [AP
 - Disappear when fullscreen along with the navigation arrows
 - Disappears when a YT video is paused, so it doesn't clash with the youtube title and logo that appear on pause.
 
-### FAQs
+### Frequently encountered bugs
 
-#### **The video just shows a black screen and no image**
+#### **The video shows a black screen and no image**
 
 - This is most likely because there is no poster image selected for this video. We default to displaying the first frame of the video which can be a black screen. Change the `startAt` time to test that the video correctly displays.
 
@@ -118,6 +118,4 @@ This uses both the `fscreen` library (built on the native browser fullscreen [AP
 
 #### **The arclight video does not autoplay on iPhone**
 
-- This occurs when the broken autoplay arclight video has sound and the previous card has a video.
-
-- This breaks because the first video is watched to the end and autotriggers navigation to the autoplay arclight video. Since no user interaction was registered, the video does not autoplay (iPhone considers this as spam). In this case, manually set the autoplay video to `mute` or don't stack videos back to back if you want autoplay to occur.
+- Is there a video on the card before the broken autoplay video? If so, this breaks because the first video is watched to the end and autotriggers navigation to the autoplay arclight video. Since no user interaction was registered, the video does not autoplay (iPhone considers this as spam). In this case, manually set the autoplay video to `mute` or don't stack videos back to back if you want autoplay to occur. Else, raise a bug report.
