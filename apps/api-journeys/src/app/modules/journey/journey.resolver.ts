@@ -292,7 +292,6 @@ export class JourneyResolver {
     @Args('id') id: string,
     @CurrentUserId() userId: string
   ): Promise<Journey | undefined> {
-    console.log('hi')
     const journey = await this.prismaService.journey.findUnique({
       where: { id }
     })
@@ -419,8 +418,7 @@ export class JourneyResolver {
             await this.prismaService.action.create({
               data: {
                 ...block.action,
-                parentBlockId: block.id,
-                blockId: block.id
+                parentBlockId: block.id
               }
             })
           }

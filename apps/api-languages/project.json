@@ -132,6 +132,12 @@
           "npx prisma validate --schema apps/api-languages/db/schema.prisma"
         ]
       }
+    },
+    "codecov": {
+      "executor": "@nrwl/workspace:run-commands",
+      "options": {
+        "command": "codecov -f coverage/apps/api-languages/cobertura-coverage.xml -F apps.api-languages"
+      }
     }
   },
   "tags": []

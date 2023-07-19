@@ -11,5 +11,7 @@ module.exports = {
     '^.+\\.[tj]sx?$': 'ts-jest'
   },
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx'],
-  coverageDirectory: '../../../coverage/libs/nest/database'
+  coverageDirectory: '../../../coverage/libs/nest/database',
+  collectCoverage: true,
+  coverageReporters: ['cobertura']
 }

@@ -114,7 +114,8 @@ jobs:
           curl -sLf --retry 3 --tlsv1.2 --proto "=https" 'https://packages.doppler.com/public/cli/gpg.DE2A7741A397C129.key' | sudo apt-key add -
           echo "deb https://packages.doppler.com/public/cli/deb/debian any-version main" | sudo tee /etc/apt/sources.list.d/doppler-cli.list
           sudo apt-get update && sudo apt-get -y install doppler
-      - uses: mansagroup/nrwl-nx-action@v3
+      - name: fetch-secrets and build
+        uses: mansagroup/nrwl-nx-action@v3
         env:
           DOPPLER_API_GATEWAY_TOKEN: ${{ secrets.DOPPLER_API_GATEWAY_TOKEN }}
           DOPPLER_API_JOURNEYS_TOKEN: ${{ secrets.DOPPLER_API_JOURNEYS_TOKEN }}
@@ -168,10 +169,21 @@ jobs:
         with:
           targets: prisma-generate
           all: true
-      - uses: mansagroup/nrwl-nx-action@v3
+      - name: run tests
+        uses: mansagroup/nrwl-nx-action@v3
         with:
           targets: test
           args: --ci
+      - name: download codecov
+        run: |
+          curl -o /usr/local/bin/codecov https://uploader.codecov.io/latest/linux/codecov
+          chmod +x /usr/local/bin/codecov
+      - name: upload coverage to codecov
+        uses: mansagroup/nrwl-nx-action@v3
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+        with:
+          targets: codecov
   visual-test:
     runs-on: ubuntu-latest
     services:
