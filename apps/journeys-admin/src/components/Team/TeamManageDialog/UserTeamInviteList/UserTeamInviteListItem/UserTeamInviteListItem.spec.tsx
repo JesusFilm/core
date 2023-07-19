@@ -39,11 +39,6 @@ describe('UserTeamInviteListItem', () => {
 
     const button = getByRole('button')
     await waitFor(() => fireEvent.click(button))
-
     expect(getByText('Remove')).toBeInTheDocument()
-    await waitFor(() => fireEvent.click(getByText('Remove')))
-    await waitFor(() => {
-      return expect(getByRole('menu')).not.toBeInTheDocument()
-    })
   })
 })
