@@ -153,8 +153,8 @@ extend type Mutation {
   hostCreate(teamId: ID!, input: HostCreateInput!): Host!
   hostUpdate(id: ID!, teamId: ID!, input: HostUpdateInput): Host!
   hostDelete(id: ID!, teamId: ID!): Host!
-  journeyCreate(input: JourneyCreateInput!): Journey!
-  journeyDuplicate(id: ID!): Journey!
+  journeyCreate(input: JourneyCreateInput!, teamId: ID): Journey!
+  journeyDuplicate(id: ID!, teamId: ID): Journey!
   journeyUpdate(id: ID!, input: JourneyUpdateInput!): Journey!
 
   """Sets journey status to published"""
@@ -1601,7 +1601,7 @@ type Query {
 
 extend type Query {
   hosts(teamId: ID!): [Host!]!
-  adminJourneys(status: [JourneyStatus!], template: Boolean): [Journey!]!
+  adminJourneys(status: [JourneyStatus!], template: Boolean, teamId: ID): [Journey!]!
   adminJourneysReport(reportType: JourneysReportType!): PowerBiEmbed
   adminJourney(id: ID!, idType: IdType): Journey
   journeys(where: JourneysFilter): [Journey!]!

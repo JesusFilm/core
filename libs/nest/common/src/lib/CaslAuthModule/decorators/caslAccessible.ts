@@ -6,7 +6,7 @@ import {
   createParamDecorator
 } from '@nestjs/common'
 import { GqlExecutionContext } from '@nestjs/graphql'
-import { isArray } from 'lodash'
+import isArray from 'lodash/isArray'
 
 const accessibleBy = createAccessibleByFactory()
 
@@ -27,7 +27,7 @@ export const CaslAccessible = createParamDecorator(
   (data: string | [string, string | undefined], context: ExecutionContext) => {
     if (
       (isArray(data) && typeof data[0] !== 'string') ||
-      typeof data !== 'string'
+      (!isArray(data) && typeof data !== 'string')
     )
       throw new Error(
         'CaslAccessible decorator requires a subject name for a parameter'
