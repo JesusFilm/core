@@ -6,21 +6,24 @@
     "e2e": {
       "executor": "@nrwl/workspace:run-commands",
       "options": {
-        "commands": [
-          {
-            "command": "start-server-and-test \"nx serve journeys:serve-all\" 4100 \"nx _e2e journeys-e2e\""
-          }
-        ]
+        "commands": ["playwright test"],
+        "cwd": "apps/journeys-e2e"
       }
     },
-    "_e2e": {
-      "executor": "@nrwl/cypress:cypress",
+    "debug": {
+      "executor": "@nrwl/workspace:run-commands",
       "options": {
-        "cypressConfig": "apps/journeys-e2e/cypress.json",
-        "tsConfig": "apps/journeys-e2e/tsconfig.e2e.json",
-        "baseUrl": "http://localhost:4100"
+        "commands": ["PWDEBUG=1 xvfb-run playwright test --project=chromium --timeout=0"],
+        "cwd": "apps/journeys-e2e"
       }
-    },
+    },    
+    "show-report": {
+      "executor": "@nrwl/workspace:run-commands",
+      "options": {
+        "commands": ["playwright show-report"],
+        "cwd": "apps/journeys-e2e"
+      }
+    },    
     "lint": {
       "executor": "@nrwl/linter:eslint",
       "options": {
