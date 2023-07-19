@@ -135,19 +135,6 @@ export function Video({
       setLoading(false)
     }
 
-    const handleCanPlay = (): void => {
-      if (player != null) {
-        setVideoEndTime(
-          Math.min(
-            ...triggerTimes,
-            endAt ?? player.cache_.duration ?? player.duration(),
-            player.duration()
-          )
-        )
-        void handleStopLoading()
-      }
-    }
-
     const handleVideoReady = (): void => {
       if (player != null) {
         player.currentTime(startTime)
@@ -183,8 +170,8 @@ export function Video({
       if (selectedBlock === undefined) {
         player.on('ready', handleVideoReady)
         // Video jumps to new time and finishes loading - occurs on autoplay
-        player.on('seeked', handleCanPlay)
-        player.on('canplay', handleCanPlay)
+        player.on('seeked', handleStopLoading)
+        player.on('canplay', handleStopLoading)
         player.on('playing', handlePlaying)
         player.on('ended', handleVideoEnd)
       }
@@ -192,25 +179,38 @@ export function Video({
     return () => {
       if (player != null) {
         player.off('ready', handleVideoReady)
-        player.off('seeked', handleCanPlay)
-        player.off('canplay', handleCanPlay)
+        player.off('seeked', handleStopLoading)
+        player.off('canplay', handleStopLoading)
         player.off('playing', handlePlaying)
         player.off('ended', handleVideoEnd)
       }
     }
-  }, [
-    video,
-    player,
-    selectedBlock,
-    startAt,
-    autoplay,
-    action,
-    source,
-    endAt,
-    triggerTimes,
-    activeBlock,
-    blockId
-  ])
+  }, [player, selectedBlock, startAt, autoplay, activeBlock, blockId])
+
+  // player.duration() can change after play
+  useEffect(() => {
+    if (player != null) {
+      const handleDurationChange = (): void => {
+        if (player != null) {
+          const playerDuration =
+            player.duration() > 0 ? player.duration() : null
+
+          if (playerDuration != null) {
+            setVideoEndTime(Math.min(videoEndTime, playerDuration))
+          }
+        }
+      }
+
+      if (selectedBlock === undefined) {
+        player.on('durationchange', handleDurationChange)
+      }
+      return () => {
+        if (player != null) {
+          player.off('durationchange', handleDurationChange)
+        }
+      }
+    }
+  }, [endAt, player, selectedBlock, triggerTimes, videoEndTime])
 
   // Pause video if admin
   useEffect(() => {
