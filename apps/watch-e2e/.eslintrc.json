@@ -9,7 +9,7 @@
     {
       "files": ["*.ts", "*.tsx"],
       "parserOptions": {
-        "project": ["apps/journeys-e2e/tsconfig.*?.json"]
+        "project": ["apps/watch-e2e/tsconfig.*?.json"]
       },
       "rules": {}
     },
