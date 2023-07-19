@@ -21,6 +21,64 @@ describe('UserTeamResolver', () => {
       .mockResolvedValue([{ id: 'userTeamId' }])
   })
   describe('userTeams', () => {
+    it('fetches accessible userTeams with filter', async () => {
+      const userTeams = await userTeamResolver.userTeams(
+        {
+          team: {
+            is: {
+              userTeams: { some: { userId: 'userId' } }
+            }
+          }
+        },
+        'teamId',
+        { role: [GraphQlUserTeamRole.member, GraphQlUserTeamRole.manager] }
+      )
+      expect(prismaService.userTeam.findMany).toHaveBeenCalledWith({
+        where: {
+          AND: [
+            {
+              team: {
+                is: {
+                  userTeams: { some: { userId: 'userId' } }
+                }
+              }
+            },
+            { teamId: 'teamId', role: { in: ['member', 'manager'] } }
+          ]
+        }
+      })
+      expect(userTeams).toEqual([{ id: 'userTeamId' }])
+    })
+
+    it('should not apply role filter if filter is empty object', async () => {
+      const userTeams = await userTeamResolver.userTeams(
+        {
+          team: {
+            is: {
+              userTeams: { some: { userId: 'userId' } }
+            }
+          }
+        },
+        'teamId',
+        {}
+      )
+      expect(prismaService.userTeam.findMany).toHaveBeenCalledWith({
+        where: {
+          AND: [
+            {
+              team: {
+                is: {
+                  userTeams: { some: { userId: 'userId' } }
+                }
+              }
+            },
+            { teamId: 'teamId' }
+          ]
+        }
+      })
+      expect(userTeams).toEqual([{ id: 'userTeamId' }])
+    })
+
     it('fetches accessible userTeams', async () => {
       const userTeams = await userTeamResolver.userTeams(
         {

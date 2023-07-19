@@ -8,6 +8,7 @@ import { Action, AppAclFn, AppAclParameters } from '../../lib/casl/caslFactory'
 export const journeyAcl: AppAclFn = ({ can, user }: AppAclParameters) => {
   // REMOVE WHEN TEAMS IS RELEASED
   can(Action.Read, 'Journey', { teamId: 'jfp-team' })
+  can(Action.Create, 'Journey', { teamId: 'jfp-team' })
 
   // create journey as a team manager or member
   can(Action.Create, 'Journey', {
@@ -57,7 +58,6 @@ export const journeyAcl: AppAclFn = ({ can, user }: AppAclParameters) => {
       }
     }
   })
-  // read and update journey as a journey editor
   can([Action.Read, Action.Update], 'Journey', {
     userJourneys: {
       some: {

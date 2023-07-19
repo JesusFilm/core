@@ -229,7 +229,15 @@ export class JourneyResolver {
             }
           })
           journey =
-            (await tx.journey.findUnique({ where: { id } })) ?? undefined
+            (await tx.journey.findUnique({
+              where: { id },
+              include: {
+                userJourneys: true,
+                team: {
+                  include: { userTeams: true }
+                }
+              }
+            })) ?? undefined
           if (journey == null)
             throw new GraphQLError('journey not found', {
               extensions: { code: 'NOT_FOUND' }

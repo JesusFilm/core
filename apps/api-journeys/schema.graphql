@@ -1639,7 +1639,7 @@ extend type Query {
   team(id: ID!): Team!
   userInvites(journeyId: ID!): [UserInvite!]
   getUserRole: UserRole
-  userTeams(teamId: ID!): [UserTeam!]!
+  userTeams(teamId: ID!, where: UserTeamFilterInput): [UserTeam!]!
   userTeam(id: ID!): UserTeam!
   userTeamInvites(teamId: ID!): [UserTeamInvite!]!
 
@@ -1960,6 +1960,10 @@ type UserTeam
 
 input UserTeamUpdateInput {
   role: UserTeamRole!
+}
+
+input UserTeamFilterInput {
+  role: [UserTeamRole!]
 }
 
 type UserTeamInvite {
