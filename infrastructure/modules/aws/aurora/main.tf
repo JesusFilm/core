@@ -37,7 +37,7 @@ resource "aws_rds_cluster_instance" "default" {
 resource "aws_ssm_parameter" "parameter" {
   name      = "/ecs/${var.name}/${var.env}/PG_DATABASE_URL"
   type      = "SecureString"
-  value     = "postgresql://${aws_rds_cluster.default.master_username}:${random_password.password.result}@${aws_rds_cluster.default.endpoint}:${aws_rds_cluster.default.port}/${var.env}?schema=public"
+  value     = "postgresql://${aws_rds_cluster.default.master_username}:${urlencode(random_password.password.result)}@${aws_rds_cluster.default.endpoint}:${aws_rds_cluster.default.port}/${var.env}?schema=public"
   overwrite = true
   tags = {
     name = "PG_DATABASE_URL"
@@ -55,5 +55,5 @@ resource "doppler_secret" "rds_url" {
   name    = "PG_DATABASE_URL"
   config  = var.env == "prod" ? "prd" : "stg"
   project = var.doppler_project
-  value   = "postgresql://${aws_rds_cluster.default.master_username}:${random_password.password.result}@${aws_rds_cluster.default.endpoint}:${aws_rds_cluster.default.port}/${var.env}?schema=public"
+  value   = "postgresql://${aws_rds_cluster.default.master_username}:${urlencode(random_password.password.result)}@${aws_rds_cluster.default.endpoint}:${aws_rds_cluster.default.port}/${var.env}?schema=public"
 }

@@ -229,7 +229,6 @@ export class JourneyResolver {
     // TODO: remove when teams is released
     @Args('teamId') teamId = 'jfp-team'
   ): Promise<Journey | undefined> {
-    console.log('hi')
     const journey = await this.prismaService.journey.findUnique({
       where: { id },
       include: {
@@ -380,8 +379,7 @@ export class JourneyResolver {
             await this.prismaService.action.create({
               data: {
                 ...block.action,
-                parentBlockId: block.id,
-                blockId: block.id
+                parentBlockId: block.id
               }
             })
           }
