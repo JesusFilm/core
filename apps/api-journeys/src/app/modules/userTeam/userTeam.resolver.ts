@@ -32,11 +32,11 @@ export class UserTeamResolver {
   async userTeams(
     @CaslAccessible('UserTeam') accessibleUserTeams: Prisma.UserTeamWhereInput,
     @Args('teamId') teamId: string,
-    @Args('filter') filter: UserTeamFilterInput
+    @Args('where') where: UserTeamFilterInput
   ): Promise<UserTeam[]> {
     const roleFilter =
-      filter?.role != null && filter.role.length > 0
-        ? { role: { in: filter.role } }
+      where?.role != null && where.role.length > 0
+        ? { role: { in: where.role } }
         : {}
     return await this.prismaService.userTeam.findMany({
       where: {

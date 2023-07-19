@@ -3,7 +3,10 @@ import { CaslAuthModule } from '@core/nest/common/CaslAuthModule'
 import { UserTeamRole, UserTeam } from '.prisma/api-journeys-client'
 import { PrismaService } from '../../lib/prisma.service'
 import { AppCaslFactory } from '../../lib/casl/caslFactory'
-import { UserTeamRole as GraphQlUserTeamRole } from '../../__generated__/graphql'
+import {
+  UserTeamRole as GraphQlUserTeamRole,
+  UserTeamFilterInput
+} from '../../__generated__/graphql'
 import { UserTeamResolver } from './userTeam.resolver'
 
 describe('UserTeamResolver', () => {
@@ -49,6 +52,65 @@ describe('UserTeamResolver', () => {
       })
       expect(userTeams).toEqual([{ id: 'userTeamId' }])
     })
+
+    it('should not apply role filter if filter is empty', async () => {
+      const userTeams = await userTeamResolver.userTeams(
+        {
+          team: {
+            is: {
+              userTeams: { some: { userId: 'userId' } }
+            }
+          }
+        },
+        'teamId',
+        null as unknown as UserTeamFilterInput
+      )
+      expect(prismaService.userTeam.findMany).toHaveBeenCalledWith({
+        where: {
+          AND: [
+            {
+              team: {
+                is: {
+                  userTeams: { some: { userId: 'userId' } }
+                }
+              }
+            },
+            { teamId: 'teamId' }
+          ]
+        }
+      })
+      expect(userTeams).toEqual([{ id: 'userTeamId' }])
+    })
+
+    it('should not apply role filter if filter has empty roles', async () => {
+      const userTeams = await userTeamResolver.userTeams(
+        {
+          team: {
+            is: {
+              userTeams: { some: { userId: 'userId' } }
+            }
+          }
+        },
+        'teamId',
+        { role: [] }
+      )
+      expect(prismaService.userTeam.findMany).toHaveBeenCalledWith({
+        where: {
+          AND: [
+            {
+              team: {
+                is: {
+                  userTeams: { some: { userId: 'userId' } }
+                }
+              }
+            },
+            { teamId: 'teamId' }
+          ]
+        }
+      })
+      expect(userTeams).toEqual([{ id: 'userTeamId' }])
+    })
+
     it('fetches accessible userTeams', async () => {
       const userTeams = await userTeamResolver.userTeams(
         {

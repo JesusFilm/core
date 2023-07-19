@@ -17,7 +17,7 @@ type UserTeam @key(fields: "id") {
 }
 
 extend type Query {
-  userTeams(teamId: ID!, filter: UserTeamFilterInput): [UserTeam!]!
+  userTeams(teamId: ID!, where: UserTeamFilterInput): [UserTeam!]!
   userTeam(id: ID!): UserTeam!
 }
 
