@@ -231,9 +231,41 @@ describe('JourneyResolver', () => {
     parentOrder: 0
   }
 
+  const buttonBlock = {
+    id: 'buttonId',
+    journeyId: 'journeyId',
+    typename: 'ButtonBlock',
+    action: {
+      parentBlockId: 'stepId',
+      blockId: 'nextStepId'
+    }
+  }
+
+  const nextStepBlock = {
+    id: 'nextStepId',
+    journeyId: 'journeyId',
+    typename: 'StepBlock',
+    parentOrder: 1
+  }
+
   const duplicatedStep = {
     ...stepBlock,
     id: 'duplicateStepId',
+    journeyId: 'duplicateJourneyId'
+  }
+
+  const duplicatedButtonBlock = {
+    ...buttonBlock,
+    id: 'duplicateButtonId',
+    action: {
+      ...buttonBlock.action,
+      blockId: 'duplicateNextStepId'
+    }
+  }
+
+  const duplicatedNextStep = {
+    ...nextStepBlock,
+    id: 'duplicateNextStepId',
     journeyId: 'duplicateJourneyId'
   }
 
@@ -256,8 +288,12 @@ describe('JourneyResolver', () => {
   const blockService = {
     provide: BlockService,
     useFactory: () => ({
-      getBlocksByType: jest.fn(() => [stepBlock]),
-      getDuplicateChildren: jest.fn(() => [duplicatedStep]),
+      getBlocksByType: jest.fn(() => [stepBlock, nextStepBlock]),
+      getDuplicateChildren: jest.fn(() => [
+        duplicatedStep,
+        duplicatedButtonBlock,
+        duplicatedNextStep
+      ]),
       saveAll: jest.fn(() => [duplicatedStep]),
       update: jest.fn((id, input) => input)
     })
@@ -297,6 +333,7 @@ describe('JourneyResolver', () => {
     bService = module.get<BlockService>(BlockService)
     urService = module.get<UserRoleService>(UserRoleService)
     prismaService = module.get<PrismaService>(PrismaService)
+    prismaService.action.create = jest.fn().mockReturnValue({})
     prismaService.block.findUnique = jest.fn().mockImplementation((input) => {
       switch (input.where.id) {
         case block.id:
@@ -925,12 +962,12 @@ describe('JourneyResolver', () => {
 
   describe('journeyDuplicate', () => {
     it('duplicates your journey', async () => {
+      mockUuidv4.mockReturnValueOnce('duplicateJourneyId')
       prismaService.journey.findMany = jest
         .fn()
         .mockResolvedValueOnce([journey])
       const date = '2021-12-07T03:22:41.135Z'
       jest.useFakeTimers().setSystemTime(new Date(date).getTime())
-      mockUuidv4.mockReturnValueOnce('duplicateJourneyId')
       expect(await resolver.journeyDuplicate('journeyId', 'userId')).toEqual({
         ...omit(journey, [
           'parentBlockId',
@@ -983,11 +1020,15 @@ describe('JourneyResolver', () => {
 
     it('duplicates blocks in journey', async () => {
       mockUuidv4.mockReturnValueOnce('duplicateJourneyId')
-      mockUuidv4.mockReturnValueOnce('duplicateStepId')
-      const duplicateStepIds = new Map([[stepBlock.id, duplicatedStep.id]])
+      mockUuidv4.mockReturnValueOnce(duplicatedStep.id)
+      mockUuidv4.mockReturnValueOnce(duplicatedNextStep.id)
+      const duplicateStepIds = new Map([
+        [stepBlock.id, duplicatedStep.id],
+        [nextStepBlock.id, duplicatedNextStep.id]
+      ])
       await resolver.journeyDuplicate('journeyId', 'userId')
       expect(bService.getDuplicateChildren).toHaveBeenCalledWith(
-        [stepBlock],
+        [stepBlock, nextStepBlock],
         'journeyId',
         null,
         duplicateStepIds,
@@ -998,11 +1039,20 @@ describe('JourneyResolver', () => {
         {
           ...duplicatedStep,
           journey: { connect: { id: 'duplicateJourneyId' } }
+        },
+        {
+          ...omit(duplicatedButtonBlock, 'action'),
+          journey: { connect: { id: 'duplicateJourneyId' } }
+        },
+        {
+          ...duplicatedNextStep,
+          journey: { connect: { id: 'duplicateJourneyId' } }
         }
       ])
     })
 
     it('increments copy number on journey if multiple duplicates exist', async () => {
+      mockUuidv4.mockReturnValueOnce('duplicateJourneyId2')
       prismaService.journey.findMany = jest
         .fn()
         .mockResolvedValueOnce([
@@ -1012,7 +1062,6 @@ describe('JourneyResolver', () => {
         ])
       const date = '2021-12-07T03:22:41.135Z'
       jest.useFakeTimers().setSystemTime(new Date(date).getTime())
-      mockUuidv4.mockReturnValueOnce('duplicateJourneyId2')
 
       expect(await resolver.journeyDuplicate('journeyId', 'userId')).toEqual({
         ...omit(journey, ['hostId', 'primaryImageBlockId', 'publishedAt']),
@@ -1042,14 +1091,18 @@ describe('JourneyResolver', () => {
     })
 
     it('should duplicate the primaryImageBlock and add it to the duplicated journey', async () => {
-      mockUuidv4
-        .mockReturnValueOnce('duplicateJourneyId')
-        .mockReturnValueOnce('duplicateStepId')
-        .mockReturnValueOnce('duplicatePrimaryImageBlock.id')
-      const duplicateStepIds = new Map([[stepBlock.id, duplicatedStep.id]])
+      mockUuidv4.mockReturnValueOnce('duplicateJourneyId')
+      mockUuidv4.mockReturnValueOnce(duplicatedStep.id)
+      mockUuidv4.mockReturnValueOnce(duplicatedNextStep.id)
+      mockUuidv4.mockReturnValueOnce('duplicatePrimaryImageBlock.id')
+      const duplicateStepIds = new Map([
+        [stepBlock.id, duplicatedStep.id],
+        [nextStepBlock.id, duplicatedNextStep.id]
+      ])
+
       await resolver.journeyDuplicate('socialJourney.id', 'userId')
       expect(bService.getDuplicateChildren).toHaveBeenCalledWith(
-        [stepBlock],
+        [stepBlock, nextStepBlock],
         'socialJourney.id',
         null,
         duplicateStepIds,
@@ -1062,11 +1115,45 @@ describe('JourneyResolver', () => {
           journey: { connect: { id: 'duplicateJourneyId' } }
         },
         {
+          ...omit(duplicatedButtonBlock, 'action'),
+          journey: { connect: { id: 'duplicateJourneyId' } }
+        },
+        {
+          ...duplicatedNextStep,
+          journey: { connect: { id: 'duplicateJourneyId' } }
+        },
+        {
           ...omit(primaryImageBlock, 'parentBlockId'),
           id: 'duplicatePrimaryImageBlock.id',
           journey: { connect: { id: 'duplicateJourneyId' } }
         }
       ])
+    })
+
+    it('should duplicate actions', async () => {
+      mockUuidv4.mockReturnValueOnce('duplicateJourneyId')
+      mockUuidv4.mockReturnValueOnce(duplicatedStep.id)
+      mockUuidv4.mockReturnValueOnce(duplicatedNextStep.id)
+      mockUuidv4.mockReturnValueOnce(duplicatedButtonBlock.id)
+      const duplicateStepIds = new Map([
+        [stepBlock.id, duplicatedStep.id],
+        [nextStepBlock.id, duplicatedNextStep.id]
+      ])
+      await resolver.journeyDuplicate('socialJourney.id', 'userId')
+      expect(bService.getDuplicateChildren).toHaveBeenCalledWith(
+        [stepBlock, nextStepBlock],
+        'socialJourney.id',
+        null,
+        duplicateStepIds,
+        'duplicateJourneyId',
+        duplicateStepIds
+      )
+      expect(prismaService.action.create).toHaveBeenCalledWith({
+        data: {
+          blockId: duplicatedNextStep.id,
+          parentBlockId: duplicatedButtonBlock.id
+        }
+      })
     })
   })
 
