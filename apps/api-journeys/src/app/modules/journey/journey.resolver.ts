@@ -8,15 +8,12 @@ import {
 } from '@nestjs/graphql'
 import { CurrentUserId } from '@core/nest/decorators/CurrentUserId'
 import slugify from 'slugify'
-import { NotFoundException, UseGuards } from '@nestjs/common'
+import { UseGuards } from '@nestjs/common'
 import {
   getPowerBiEmbed,
   PowerBiEmbed
 } from '@core/nest/powerBi/getPowerBiEmbed'
-import {
-  ForbiddenError,
-  UserInputError
-} from 'apollo-server-errors'
+import { ForbiddenError, UserInputError } from 'apollo-server-errors'
 import { GraphQLError } from 'graphql'
 import { v4 as uuidv4 } from 'uuid'
 import {
@@ -31,9 +28,9 @@ import {
 import { FromPostgresql } from '@core/nest/decorators/FromPostgresql'
 import isEmpty from 'lodash/isEmpty'
 import omit from 'lodash/omit'
-
 import { CaslAbility, CaslAccessible } from '@core/nest/common/CaslAuthModule'
 import { subject } from '@casl/ability'
+
 import { BlockService } from '../block/block.service'
 import {
   IdType,
@@ -112,9 +109,8 @@ export class JourneyResolver {
   async adminJourneys(
     @CaslAccessible('Journey') accessibleJourneys: Prisma.JourneyWhereInput,
     @Args('status') status: JourneyStatus[],
-    @Args('template') template = false,
-    // TODO: remove when teams is released
-    @Args('teamId') teamId
+    @Args('template') template?: boolean,
+    @Args('teamId') teamId?: string
   ): Promise<Journey[]> {
     return await this.prismaService.journey.findMany({
       where: {
@@ -191,13 +187,16 @@ export class JourneyResolver {
         await this.prismaService.$transaction(async (tx) => {
           await tx.journey.create({
             data: {
-              ...input,
+              ...omit(input, ['id', 'primaryImageBlockId', 'teamId', 'hostId']),
+              title: input.title,
+              languageId: input.languageId,
               id,
               slug,
               status: JourneyStatus.draft,
               team: { connect: { id: teamId } },
               userJourneys: {
                 create: {
+                  userId,
                   role: UserJourneyRole.owner
                 }
               }
@@ -207,6 +206,42 @@ export class JourneyResolver {
             (await tx.journey.findUnique({ where: { id } })) ?? undefined
           if (journey == null)
             throw new GraphQLError('journey not found', {
+              extensions: { code: 'NOT_FOUND' }
+            })
+          if (!ability.can(Action.Create, subject('Journey', journey)))
+            throw new ForbiddenError('user is not allowed to create journey')
+        })
+
+        retry = false
+        return journey
+      } catch (err) {
+        if (err.code === ERROR_PSQL_UNIQUE_CONSTRAINT_VIOLATED) {
+          slug = slugify(`${slug}-${id}`)
+        } else {
+          retry = false
+          throw err
+        }
+      }
+    }
+  }
+
+  getFirstMissingNumber(@Args('arr') arr: number[]): number {
+    // May contain duplicate numbers in array so can't use binary search
+    arr.sort((a, b) => a - b)
+    let duplicateNumber = 0
+    arr.forEach((num, i) => {
+      if (arr[i] === duplicateNumber) duplicateNumber++
+    })
+    return duplicateNumber
+  }
+
+  getJourneyDuplicateNumbers(
+    @Args('journeys') journeys: Journey[],
+    @Args('title') title: string
+  ): number[] {
+    return journeys.map((journey, i) => {
+      if (journey.title === title) {
+        return 0
       } else if (journey.title === `${title} copy`) {
         return 1
       } else {
