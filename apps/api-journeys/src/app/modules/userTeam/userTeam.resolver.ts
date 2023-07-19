@@ -34,10 +34,7 @@ export class UserTeamResolver {
     @Args('teamId') teamId: string,
     @Args('where') where?: UserTeamFilterInput
   ): Promise<UserTeam[]> {
-    const roleFilter =
-      where?.role != null && where.role.length > 0
-        ? { role: { in: where.role } }
-        : {}
+    const roleFilter = where?.role != null ? { role: { in: where.role } } : {}
     return await this.prismaService.userTeam.findMany({
       where: {
         AND: [accessibleUserTeams, { teamId, ...roleFilter }]

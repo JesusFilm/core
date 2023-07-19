@@ -79,35 +79,6 @@ describe('UserTeamResolver', () => {
       expect(userTeams).toEqual([{ id: 'userTeamId' }])
     })
 
-    it('should not apply role filter if filter has empty roles', async () => {
-      const userTeams = await userTeamResolver.userTeams(
-        {
-          team: {
-            is: {
-              userTeams: { some: { userId: 'userId' } }
-            }
-          }
-        },
-        'teamId',
-        { role: [] }
-      )
-      expect(prismaService.userTeam.findMany).toHaveBeenCalledWith({
-        where: {
-          AND: [
-            {
-              team: {
-                is: {
-                  userTeams: { some: { userId: 'userId' } }
-                }
-              }
-            },
-            { teamId: 'teamId' }
-          ]
-        }
-      })
-      expect(userTeams).toEqual([{ id: 'userTeamId' }])
-    })
-
     it('fetches accessible userTeams', async () => {
       const userTeams = await userTeamResolver.userTeams(
         {
