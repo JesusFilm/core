@@ -13,7 +13,10 @@ import { GraphQLError } from 'graphql'
 import { CaslAbility, CaslAccessible } from '@core/nest/common/CaslAuthModule'
 import { PrismaService } from '../../lib/prisma.service'
 import { Action, AppAbility } from '../../lib/casl/caslFactory'
-import { UserTeamUpdateInput } from '../../__generated__/graphql'
+import {
+  UserTeamFilterInput,
+  UserTeamUpdateInput
+} from '../../__generated__/graphql'
 import { AppCaslGuard } from '../../lib/casl/caslGuard'
 
 @Resolver('UserTeam')
@@ -24,11 +27,13 @@ export class UserTeamResolver {
   @UseGuards(AppCaslGuard)
   async userTeams(
     @CaslAccessible('UserTeam') accessibleUserTeams: Prisma.UserTeamWhereInput,
-    @Args('teamId') teamId: string
+    @Args('teamId') teamId: string,
+    @Args('where') where?: UserTeamFilterInput
   ): Promise<UserTeam[]> {
+    const roleFilter = where?.role != null ? { role: { in: where.role } } : {}
     return await this.prismaService.userTeam.findMany({
       where: {
-        AND: [accessibleUserTeams, { teamId }]
+        AND: [accessibleUserTeams, { teamId, ...roleFilter }]
       }
     })
   }
