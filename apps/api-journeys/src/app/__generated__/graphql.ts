@@ -1126,7 +1126,7 @@ export abstract class IQuery {
 
     abstract getUserRole(): Nullable<UserRole> | Promise<Nullable<UserRole>>;
 
-    abstract userTeams(teamId: string, filter?: Nullable<UserTeamFilterInput>): UserTeam[] | Promise<UserTeam[]>;
+    abstract userTeams(teamId: string, where?: Nullable<UserTeamFilterInput>): UserTeam[] | Promise<UserTeam[]>;
 
     abstract userTeam(id: string): UserTeam | Promise<UserTeam>;
 
