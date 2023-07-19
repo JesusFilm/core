@@ -57,7 +57,6 @@ export class CountryResolver {
     @Args('languageId') languageId?: string,
     @Args('primary') primary?: boolean
   ): Promise<Continent[]> {
-    console.log(country)
     const result = await this.prismaService.continent.findMany({
       where: {
         languageId: languageId ?? undefined,
