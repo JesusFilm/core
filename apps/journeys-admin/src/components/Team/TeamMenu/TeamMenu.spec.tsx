@@ -41,15 +41,16 @@ describe('TeamMenu', () => {
   }
 
   it('opens dialogs', async () => {
-    const { getByRole, getByText, queryByRole } = render(
-      <MockedProvider mocks={[getTeamsMock]}>
-        <SnackbarProvider>
-          <TeamProvider>
-            <TeamMenu />
-          </TeamProvider>
-        </SnackbarProvider>
-      </MockedProvider>
-    )
+    const { getByRole, getByText, queryByRole, getByTestId, queryByTestId } =
+      render(
+        <MockedProvider mocks={[getTeamsMock]}>
+          <SnackbarProvider>
+            <TeamProvider>
+              <TeamMenu />
+            </TeamProvider>
+          </SnackbarProvider>
+        </MockedProvider>
+      )
     fireEvent.click(getByRole('button'))
     fireEvent.click(getByRole('menuitem', { name: 'Create New Team' }))
     expect(getByText('Create Team')).toBeInTheDocument()
@@ -67,6 +68,10 @@ describe('TeamMenu', () => {
     fireEvent.click(getByRole('button'))
     fireEvent.click(getByRole('menuitem', { name: 'Manage Team' }))
     expect(getByText('Invite others to your team')).toBeInTheDocument()
+    fireEvent.click(getByTestId('dialog-close-button'))
+    await waitFor(() =>
+      expect(queryByTestId('dialog-close-button')).not.toBeInTheDocument()
+    )
   })
 
   it('disables rename team button', async () => {

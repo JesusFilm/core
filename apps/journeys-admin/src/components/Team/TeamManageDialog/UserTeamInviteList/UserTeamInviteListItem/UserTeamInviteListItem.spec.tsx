@@ -1,4 +1,4 @@
-import { render } from '@testing-library/react'
+import { fireEvent, render, waitFor } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
 import { GetUserTeamsAndInvites_userTeamInvites as UserTeamInvite } from '../../../../../../__generated__/GetUserTeamsAndInvites'
 import { UserTeamInviteListItem } from './UserTeamInviteListItem'
@@ -28,5 +28,22 @@ describe('UserTeamInviteListItem', () => {
 
     const button = getByRole('button')
     expect(button).toBeDisabled()
+  })
+
+  it('opens remove item menu', async () => {
+    const { getByRole, getByText } = render(
+      <MockedProvider>
+        <UserTeamInviteListItem user={userTeamInvite} disabled={false} />
+      </MockedProvider>
+    )
+
+    const button = getByRole('button')
+    await waitFor(() => fireEvent.click(button))
+
+    expect(getByText('Remove')).toBeInTheDocument()
+    await waitFor(() => fireEvent.click(getByText('Remove')))
+    await waitFor(() => {
+      return expect(getByRole('menu')).not.toBeInTheDocument()
+    })
   })
 })
