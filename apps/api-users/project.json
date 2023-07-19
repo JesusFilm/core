@@ -116,12 +116,6 @@
         ]
       }
     },
-    "prisma-seed": {
-      "executor": "@nrwl/workspace:run-commands",
-      "options": {
-        "commands": ["npx ts-node apps/api-users/db/seed.ts"]
-      }
-    },
     "prisma-studio": {
       "executor": "@nrwl/workspace:run-commands",
       "options": {
@@ -137,12 +131,18 @@
           "npx prisma validate --schema apps/api-users/db/schema.prisma"
         ]
       }
-    }
-  },
-  "type-check": {
-    "executor": "@nrwl/workspace:run-commands",
-    "options": {
-      "command": "npx tsc -b apps/api-users/tsconfig.json"
+    },
+    "type-check": {
+      "executor": "@nrwl/workspace:run-commands",
+      "options": {
+        "command": "npx tsc -b apps/api-users/tsconfig.json"
+      }
+    },
+    "codecov": {
+      "executor": "@nrwl/workspace:run-commands",
+      "options": {
+        "command": "codecov -f coverage/apps/api-users/cobertura-coverage.xml -F apps.api-users"
+      }
     }
   },
   "tags": []
