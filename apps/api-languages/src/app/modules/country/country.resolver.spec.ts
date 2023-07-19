@@ -1,5 +1,4 @@
 import { Test, TestingModule } from '@nestjs/testing'
-import { Country } from '.prisma/api-languages-client'
 import { IdType } from '../../__generated__/graphql'
 import { PrismaService } from '../../lib/prisma.service'
 import { CountryResolver } from './country.resolver'
@@ -11,12 +10,14 @@ describe('LangaugeResolver', () => {
     id: 'US',
     name: [{ value: 'United States', languageId: '529', primary: true }],
     population: 500000000,
-    continent: [{ value: 'North America', languageId: '529', primary: true }],
     slug: [{ value: 'United-States', languageId: '529', primary: true }],
     languageIds: ['529'],
     latitude: 10,
     longitude: -20.1
   }
+  const continent = [
+    { value: 'North America', languageId: '529', primary: true }
+  ]
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -29,6 +30,14 @@ describe('LangaugeResolver', () => {
       .fn()
       .mockResolvedValue([country, country])
     prismaService.language.findMany = jest.fn().mockResolvedValue([])
+    prismaService.continent.findMany = jest
+      .fn()
+      .mockImplementation((country, languageId: string, primary: boolean) => {
+        if (languageId === '529' || primary) {
+          return [continent[0]]
+        }
+        return continent
+      })
   })
 
   describe('countries', () => {
@@ -42,16 +51,14 @@ describe('LangaugeResolver', () => {
     it('should return country', async () => {
       expect(await resolver.country(country.id)).toEqual(country)
       expect(prismaService.country.findUnique).toHaveBeenCalledWith({
-        where: { id: country.id },
-        include: { continents: true }
+        where: { id: country.id }
       })
     })
 
     it('should return country by slug', async () => {
       expect(await resolver.country(country.id, IdType.slug)).toEqual(country)
       expect(prismaService.country.findUnique).toHaveBeenCalledWith({
-        where: { slug: country.id },
-        include: { continents: true }
+        where: { slug: country.id }
       })
     })
   })
@@ -85,18 +92,42 @@ describe('LangaugeResolver', () => {
   })
 
   describe('continent', () => {
-    it('should return translations', () => {
-      expect(resolver.continent(country)).toEqual(country.continent)
+    it('should return translations', async () => {
+      expect(await resolver.continent(country)).toEqual(continent)
+      expect(prismaService.continent.findMany).toHaveBeenCalledWith({
+        where: {
+          languageId: undefined,
+          primary: undefined,
+          countries: { some: { id: country.id } },
+          value: { not: '' }
+        }
+      })
     })
 
-    it('should return translations filtered by countryId', () => {
-      expect(resolver.continent(country, '529')).toEqual([country.continent[0]])
+    it('should return translations filtered by countryId', async () => {
+      expect(await resolver.continent(country, '529')).toEqual([continent[0]])
+      expect(prismaService.continent.findMany).toHaveBeenCalledWith({
+        where: {
+          languageId: '529',
+          primary: undefined,
+          countries: { some: { id: country.id } },
+          value: { not: '' }
+        }
+      })
     })
 
-    it('should return translations filtered by primary', () => {
-      expect(resolver.continent(country, undefined, true)).toEqual([
-        country.continent[0]
+    it('should return translations filtered by primary', async () => {
+      expect(await resolver.continent(country, undefined, true)).toEqual([
+        continent[0]
       ])
+      expect(prismaService.continent.findMany).toHaveBeenCalledWith({
+        where: {
+          languageId: undefined,
+          primary: true,
+          countries: { some: { id: country.id } },
+          value: { not: '' }
+        }
+      })
     })
   })
 
@@ -113,11 +144,9 @@ describe('LangaugeResolver', () => {
 
   describe('languages', () => {
     it('should return languages', async () => {
-      await resolver.languages(
-        country as unknown as Country & { languageIds: string[] }
-      )
+      expect(await resolver.languages(country)).toEqual([])
       expect(prismaService.language.findMany).toHaveBeenCalledWith({
-        where: { id: { in: ['529'] } }
+        where: { countries: { some: { id: country.id } } }
       })
     })
   })

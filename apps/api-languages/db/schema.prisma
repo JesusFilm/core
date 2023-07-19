@@ -37,7 +37,7 @@ model Continent {
   id         String    @id @default(uuid())
   value      String
   languageId String
-  country    Country[]
+  countries  Country[]
   primary    Boolean   @default(false)
   language   Language  @relation(fields: [languageId], references: [id])
 

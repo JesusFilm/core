@@ -7,7 +7,7 @@ import {
   ResolveField,
   Parent
 } from '@nestjs/graphql'
-import { Country, Language } from '.prisma/api-languages-client'
+import { Country, Language, Continent } from '.prisma/api-languages-client'
 
 import { IdType } from '../../__generated__/graphql'
 import { PrismaService } from '../../lib/prisma.service'
@@ -28,12 +28,10 @@ export class CountryResolver {
   ): Promise<Country | null> {
     return idType === IdType.databaseId
       ? await this.prismaService.country.findUnique({
-          where: { id },
-          include: { continents: true }
+          where: { id }
         })
       : await this.prismaService.country.findUnique({
-          where: { slug: id },
-          include: { continents: true }
+          where: { slug: id }
         })
   }
 
@@ -54,22 +52,31 @@ export class CountryResolver {
   ): void {}
 
   @ResolveField()
-  @TranslationField('continent')
-  continent(
+  async continent(
     @Parent() country,
     @Args('languageId') languageId?: string,
     @Args('primary') primary?: boolean
-  ): void {
-    return country.continents
+  ): Promise<Continent[]> {
+    console.log(country)
+    const result = await this.prismaService.continent.findMany({
+      where: {
+        languageId: languageId ?? undefined,
+        primary,
+        countries: { some: { id: country.id } },
+        value: { not: '' }
+      }
+    })
+    return result ?? []
   }
 
   @ResolveField()
-  async languages(
-    @Parent() country: Country & { languageIds: string[] }
-  ): Promise<Language[]> {
-    return await this.prismaService.language.findMany({
-      where: { id: { in: country.languageIds } }
+  async languages(@Parent() country): Promise<Language[]> {
+    const result = await this.prismaService.language.findMany({
+      where: {
+        countries: { some: { id: country.id } }
+      }
     })
+    return result ?? []
   }
 
   @ResolveReference()
