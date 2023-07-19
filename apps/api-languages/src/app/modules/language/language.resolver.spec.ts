@@ -1,5 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { PrismaService } from '../../lib/prisma.service'
+import { LanguageIdType } from '../../__generated__/graphql'
 import { LanguageResolver } from './language.resolver'
 
 describe('LangaugeResolver', () => {
@@ -34,6 +35,7 @@ describe('LangaugeResolver', () => {
     prismaService.language.findMany = jest
       .fn()
       .mockResolvedValue([language, language])
+    prismaService.language.findFirst = jest.fn().mockResolvedValue(language)
   })
 
   describe('languages', () => {
@@ -49,6 +51,17 @@ describe('LangaugeResolver', () => {
   describe('language', () => {
     it('should return language', async () => {
       expect(await resolver.language(language.id)).toEqual(language)
+      expect(prismaService.language.findUnique).toHaveBeenCalledWith({
+        where: { id: language.id }
+      })
+    })
+    it('should return language', async () => {
+      expect(
+        await resolver.language(language.id, LanguageIdType.bcp47)
+      ).toEqual(language)
+      expect(prismaService.language.findFirst).toHaveBeenCalledWith({
+        where: { bcp47: language.id }
+      })
     })
   })
 

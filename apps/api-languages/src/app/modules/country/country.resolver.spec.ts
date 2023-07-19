@@ -1,4 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing'
+import { Country } from '.prisma/api-languages-client'
 import { IdType } from '../../__generated__/graphql'
 import { PrismaService } from '../../lib/prisma.service'
 import { CountryResolver } from './country.resolver'
@@ -27,6 +28,7 @@ describe('LangaugeResolver', () => {
     prismaService.country.findMany = jest
       .fn()
       .mockResolvedValue([country, country])
+    prismaService.language.findMany = jest.fn().mockResolvedValue([])
   })
 
   describe('countries', () => {
@@ -106,6 +108,17 @@ describe('LangaugeResolver', () => {
           id: country.id
         })
       ).toEqual(country)
+    })
+  })
+
+  describe('languages', () => {
+    it('should return languages', async () => {
+      await resolver.languages(
+        country as unknown as Country & { languageIds: string[] }
+      )
+      expect(prismaService.language.findMany).toHaveBeenCalledWith({
+        where: { id: { in: ['529'] } }
+      })
     })
   })
 })
