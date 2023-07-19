@@ -69,28 +69,6 @@ describe('AppCaslFactory', () => {
         )
       ).toEqual(false)
     })
-    it('should not allow read when matching userTeam guest', () => {
-      expect(
-        ability.can(
-          Action.Read,
-          subject('Team', {
-            id: 'teamId',
-            userTeams: [{ userId: user.id, role: UserTeamRole.guest }]
-          } as unknown as Team)
-        )
-      ).toEqual(false)
-    })
-    it('should not allow manage when matching userTeam guest', () => {
-      expect(
-        ability.can(
-          Action.Manage,
-          subject('Team', {
-            id: 'teamId',
-            userTeams: [{ userId: user.id, role: UserTeamRole.guest }]
-          } as unknown as Team)
-        )
-      ).toEqual(false)
-    })
   })
   describe('UserTeam', () => {
     it('should not allow read when no matching userTeam', () => {
@@ -150,34 +128,6 @@ describe('AppCaslFactory', () => {
             id: 'userTeamId',
             team: {
               userTeams: [{ userId: user.id, role: UserTeamRole.member }]
-            }
-          } as unknown as UserTeam)
-        )
-      ).toEqual(false)
-    })
-
-    it('should not allow read when matching userTeam guest', () => {
-      expect(
-        ability.can(
-          Action.Read,
-          subject('UserTeam', {
-            id: 'userTeamId',
-            team: {
-              userTeams: [{ userId: user.id, role: UserTeamRole.guest }]
-            }
-          } as unknown as UserTeam)
-        )
-      ).toEqual(false)
-    })
-
-    it('should not allow manage when matching userTeam guest', () => {
-      expect(
-        ability.can(
-          Action.Manage,
-          subject('UserTeam', {
-            id: 'userTeamId',
-            team: {
-              userTeams: [{ userId: user.id, role: UserTeamRole.guest }]
             }
           } as unknown as UserTeam)
         )

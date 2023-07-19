@@ -38,7 +38,8 @@ import {
   JourneysFilter,
   JourneyTemplateInput,
   JourneysReportType,
-  JourneyCreateInput
+  JourneyCreateInput,
+  JourneyUpdateInput
 } from '../../__generated__/graphql'
 import { PrismaService } from '../../lib/prisma.service'
 import { AppCaslGuard } from '../../lib/casl/caslGuard'
@@ -107,14 +108,39 @@ export class JourneyResolver {
   @Query()
   @UseGuards(AppCaslGuard)
   async adminJourneys(
+    @CurrentUserId() userId: string,
     @CaslAccessible('Journey') accessibleJourneys: Prisma.JourneyWhereInput,
-    @Args('status') status: JourneyStatus[],
+    @Args('status') status?: JourneyStatus[],
     @Args('template') template?: boolean,
     @Args('teamId') teamId?: string
   ): Promise<Journey[]> {
+    const where: Prisma.JourneyWhereInput = {}
+    if (teamId != null) {
+      where.teamId = teamId
+    } else if (template !== true) {
+      // if not looking for templates then only return journeys where:
+      //   1. the user is an owner or editor
+      //   2. not a member of the team
+      where.userJourneys = {
+        some: {
+          userId,
+          role: { in: [UserJourneyRole.owner, UserJourneyRole.editor] }
+        }
+      }
+      where.team = {
+        userTeams: {
+          none: {
+            userId
+          }
+        }
+      }
+    }
+    if (template != null) where.template = template
+    if (status != null) where.status = { in: status }
+
     return await this.prismaService.journey.findMany({
       where: {
-        AND: [accessibleJourneys, { template, status: { in: status }, teamId }]
+        AND: [accessibleJourneys, where]
       }
     })
   }
@@ -444,7 +470,7 @@ export class JourneyResolver {
   async journeyUpdate(
     @CaslAbility() ability: AppAbility,
     @Args('id') id: string,
-    @Args('input') input: Partial<Journey> & { hostId?: string }
+    @Args('input') input: JourneyUpdateInput
   ): Promise<Journey> {
     const journey = await this.prismaService.journey.findUnique({
       where: { id },
@@ -480,7 +506,12 @@ export class JourneyResolver {
     try {
       return await this.prismaService.journey.update({
         where: { id },
-        data: input
+        data: {
+          ...input,
+          title: input.title ?? undefined,
+          languageId: input.languageId ?? undefined,
+          slug: input.slug ?? undefined
+        }
       })
     } catch (err) {
       if (err.code === ERROR_PSQL_UNIQUE_CONSTRAINT_VIOLATED) {

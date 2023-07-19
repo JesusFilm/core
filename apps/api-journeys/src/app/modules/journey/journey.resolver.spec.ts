@@ -814,28 +814,6 @@ describe('JourneyResolver', () => {
       })
     })
 
-    it('upserts a userTeam', async () => {
-      mockUuidv4.mockReturnValueOnce('journeyId')
-      await resolver.journeyCreate(
-        { title: 'Untitled Journey', languageId: '529' },
-        'userId'
-      )
-      expect(prismaService.userTeam.upsert).toHaveBeenCalledWith({
-        create: {
-          teamId: 'jfp-team',
-          userId: 'userId',
-          role: UserTeamRole.guest
-        },
-        update: {},
-        where: {
-          teamId_userId: {
-            teamId: 'jfp-team',
-            userId: 'userId'
-          }
-        }
-      })
-    })
-
     it('adds uuid if slug already taken', async () => {
       const date = '2021-12-07T03:22:41.135Z'
       jest.useFakeTimers().setSystemTime(new Date(date).getTime())

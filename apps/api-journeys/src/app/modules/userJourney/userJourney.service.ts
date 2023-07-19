@@ -88,23 +88,6 @@ export class UserJourneyService {
         extensions: { code: 'NOT_FOUND' }
       })
 
-    if (journey.teamId != null) {
-      await this.prismaService.userTeam.upsert({
-        where: {
-          teamId_userId: {
-            userId: requesterUserId,
-            teamId: journey.teamId
-          }
-        },
-        update: {},
-        create: {
-          userId: requesterUserId,
-          teamId: journey.teamId,
-          role: UserTeamRole.guest
-        }
-      })
-    }
-
     return await this.prismaService.userJourney.update({
       where: { id },
       data: { role: UserJourneyRole.editor }

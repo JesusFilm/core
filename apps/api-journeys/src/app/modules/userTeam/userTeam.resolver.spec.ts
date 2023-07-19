@@ -121,13 +121,13 @@ describe('UserTeamResolver', () => {
       })
       await expect(
         userTeamResolver.userTeamUpdate(ability, 'userTeamId', {
-          role: GraphQlUserTeamRole.guest
+          role: GraphQlUserTeamRole.manager
         })
       ).resolves.toEqual(userTeam)
       expect(prismaService.userTeam.update).toHaveBeenCalledWith({
         where: { id: 'userTeamId' },
         data: {
-          role: 'guest'
+          role: 'manager'
         }
       })
     })
@@ -150,7 +150,7 @@ describe('UserTeamResolver', () => {
       })
       await expect(
         userTeamResolver.userTeamUpdate(ability, 'userTeamId', {
-          role: GraphQlUserTeamRole.guest
+          role: GraphQlUserTeamRole.manager
         })
       ).rejects.toThrow('user is not allowed to update userTeam')
     })
@@ -162,7 +162,7 @@ describe('UserTeamResolver', () => {
       })
       await expect(
         userTeamResolver.userTeamUpdate(ability, 'userTeamId', {
-          role: GraphQlUserTeamRole.guest
+          role: GraphQlUserTeamRole.manager
         })
       ).rejects.toThrow('userTeam not found')
     })

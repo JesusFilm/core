@@ -1070,8 +1070,8 @@ type Mutation
   hostCreate(teamId: ID!, input: HostCreateInput!): Host! @join__field(graph: JOURNEYS)
   hostUpdate(id: ID!, teamId: ID!, input: HostUpdateInput): Host! @join__field(graph: JOURNEYS)
   hostDelete(id: ID!, teamId: ID!): Host! @join__field(graph: JOURNEYS)
-  journeyCreate(input: JourneyCreateInput!): Journey! @join__field(graph: JOURNEYS)
-  journeyDuplicate(id: ID!): Journey! @join__field(graph: JOURNEYS)
+  journeyCreate(input: JourneyCreateInput!, teamId: ID): Journey! @join__field(graph: JOURNEYS)
+  journeyDuplicate(id: ID!, teamId: ID): Journey! @join__field(graph: JOURNEYS)
   journeyUpdate(id: ID!, input: JourneyUpdateInput!): Journey! @join__field(graph: JOURNEYS)
 
   """Sets journey status to published"""
@@ -1228,7 +1228,14 @@ type Query
   @join__type(graph: VIDEOS)
 {
   hosts(teamId: ID!): [Host!]! @join__field(graph: JOURNEYS)
-  adminJourneys(status: [JourneyStatus!], template: Boolean): [Journey!]! @join__field(graph: JOURNEYS)
+
+  """
+  returns all journeys that match the provided filters
+  If no team id is provided and template is not true then only returns journeys
+  where the user is not a member of a team but is an editor or owner of the
+  journey
+  """
+  adminJourneys(status: [JourneyStatus!], template: Boolean, teamId: ID): [Journey!]! @join__field(graph: JOURNEYS)
   adminJourneysReport(reportType: JourneysReportType!): PowerBiEmbed @join__field(graph: JOURNEYS)
   adminJourney(id: ID!, idType: IdType): Journey @join__field(graph: JOURNEYS)
   journeys(where: JourneysFilter): [Journey!]! @join__field(graph: JOURNEYS)
@@ -1991,7 +1998,6 @@ enum UserTeamRole
 {
   manager @join__enumValue(graph: JOURNEYS)
   member @join__enumValue(graph: JOURNEYS)
-  guest @join__enumValue(graph: JOURNEYS)
 }
 
 input UserTeamUpdateInput

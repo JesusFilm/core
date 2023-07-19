@@ -159,27 +159,5 @@ describe('UserJourneyService', () => {
         role: UserJourneyRole.editor
       })
     })
-
-    it('adds user to team', async () => {
-      prismaService.userJourney.findUnique = jest
-        .fn()
-        .mockReturnValueOnce(userJourneyInvited)
-
-      await service.approveAccess(userJourneyInvited.id, userJourney.userId)
-      expect(prismaService.userTeam.upsert).toHaveBeenCalledWith({
-        create: {
-          teamId: 'teamId',
-          userId: '2',
-          role: UserTeamRole.guest
-        },
-        update: {},
-        where: {
-          teamId_userId: {
-            teamId: 'teamId',
-            userId: '2'
-          }
-        }
-      })
-    })
   })
 })
