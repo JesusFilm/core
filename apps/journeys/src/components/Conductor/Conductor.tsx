@@ -46,7 +46,8 @@ const StyledSwiperContainer = styled(Swiper)(({ theme }) => ({
   height: 'inherit',
   '.swiper-pagination': {
     height: 16,
-    top: 16
+    top: 16,
+    width: '84px !important'
   },
   '.swiper-pagination-bullet': {
     background: theme.palette.common.white,
@@ -77,8 +78,14 @@ interface ConductorProps {
 }
 
 export function Conductor({ blocks }: ConductorProps): ReactElement {
-  const { setTreeBlocks, nextActiveBlock, treeBlocks, activeBlock } =
-    useBlocks()
+  const {
+    setTreeBlocks,
+    nextActiveBlock,
+    treeBlocks,
+    activeBlock,
+    showHeaderFooter,
+    showNavigation
+  } = useBlocks()
   const [swiper, setSwiper] = useState<SwiperCore>()
   const [slideTransitioning, setSlideTransitioning] = useState(false)
   const theme = useTheme()
@@ -166,6 +173,7 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
         swiper.slideTo(index)
       }
     }
+    setSlideTransitioning(false)
   }, [swiper, activeBlock, treeBlocks])
 
   function handleNext(): void {
@@ -196,12 +204,12 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
         sx={{
           ...alignSx,
           position: 'absolute',
-          top: '8%',
+          top: { xs: '20%', sm: '32%', md: '20%' },
           bottom: 0,
           zIndex: 2,
           display: slideTransitioning ? 'none' : 'flex',
           width: { xs: 82, lg: 114 },
-          height: '74%'
+          height: { xs: '50%', sm: '20%', md: '50%' }
         }}
       >
         <IconButton
@@ -242,6 +250,11 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
             onSlideChangeTransitionStart={() => setSlideTransitioning(true)}
             onSlideChangeTransitionEnd={() => setSlideTransitioning(false)}
             allowTouchMove={false}
+            sx={{
+              '.swiper-pagination': {
+                display: showHeaderFooter ? 'block' : 'none'
+              }
+            }}
           >
             {treeBlocks.map((block) => {
               const theme = getStepTheme(
@@ -267,17 +280,23 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
                           px: { lg: 6 }
                         }}
                       >
-                        <StepHeader />
+                        {showHeaderFooter && <StepHeader />}
                         <BlockRenderer block={block} />
-                        <StepFooter />
+                        <StepFooter
+                          sx={{
+                            visibility: showHeaderFooter ? 'visible' : 'hidden'
+                          }}
+                        />
                       </Stack>
                     </Fade>
                   </ThemeProvider>
                 </SwiperSlide>
               )
             })}
-            {showLeftButton && <Navigation variant="Left" />}
-            {showRightButton && <Navigation variant="Right" />}
+            {showLeftButton && showNavigation && <Navigation variant="Left" />}
+            {showRightButton && showNavigation && (
+              <Navigation variant="Right" />
+            )}
           </StyledSwiperContainer>
         </Box>
       </Stack>

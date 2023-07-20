@@ -1259,7 +1259,7 @@ type Query
   team(id: ID!): Team! @join__field(graph: JOURNEYS)
   userInvites(journeyId: ID!): [UserInvite!] @join__field(graph: JOURNEYS)
   getUserRole: UserRole @join__field(graph: JOURNEYS)
-  userTeams(teamId: ID!): [UserTeam!]! @join__field(graph: JOURNEYS)
+  userTeams(teamId: ID!, where: UserTeamFilterInput): [UserTeam!]! @join__field(graph: JOURNEYS)
   userTeam(id: ID!): UserTeam! @join__field(graph: JOURNEYS)
   userTeamInvites(teamId: ID!): [UserTeamInvite!]! @join__field(graph: JOURNEYS)
 
@@ -1970,6 +1970,12 @@ type UserTeam
   role: UserTeamRole!
   createdAt: DateTime!
   updatedAt: DateTime!
+}
+
+input UserTeamFilterInput
+  @join__type(graph: JOURNEYS)
+{
+  role: [UserTeamRole!]
 }
 
 type UserTeamInvite
