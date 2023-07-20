@@ -8,13 +8,13 @@ import {
 } from '@nestjs/graphql'
 import { CurrentUserId } from '@core/nest/decorators/CurrentUserId'
 import slugify from 'slugify'
-import { NotFoundException, UseGuards } from '@nestjs/common'
+import { UseGuards } from '@nestjs/common'
 import {
   getPowerBiEmbed,
   PowerBiEmbed
 } from '@core/nest/powerBi/getPowerBiEmbed'
+import { ForbiddenError, UserInputError } from 'apollo-server-errors'
 import { GraphQLError } from 'graphql'
-import { GqlAuthGuard } from '@core/nest/gqlAuthGuard/GqlAuthGuard'
 import { v4 as uuidv4 } from 'uuid'
 import {
   Block,
@@ -23,11 +23,13 @@ import {
   Journey,
   UserJourney,
   UserJourneyRole,
-  UserTeamRole
+  Prisma
 } from '.prisma/api-journeys-client'
 import { FromPostgresql } from '@core/nest/decorators/FromPostgresql'
 import isEmpty from 'lodash/isEmpty'
 import omit from 'lodash/omit'
+import { CaslAbility, CaslAccessible } from '@core/nest/common/CaslAuthModule'
+import { subject } from '@casl/ability'
 
 import { BlockService } from '../block/block.service'
 import {
@@ -36,11 +38,12 @@ import {
   JourneysFilter,
   JourneyTemplateInput,
   JourneysReportType,
-  Role
+  JourneyCreateInput,
+  JourneyUpdateInput
 } from '../../__generated__/graphql'
-import { RoleGuard } from '../../lib/roleGuard/roleGuard'
 import { PrismaService } from '../../lib/prisma.service'
-import { UserRoleService } from '../userRole/userRole.service'
+import { AppCaslGuard } from '../../lib/casl/caslGuard'
+import { Action, AppAbility } from '../../lib/casl/caslFactory'
 import { JourneyService } from './journey.service'
 
 export const ERROR_PSQL_UNIQUE_CONSTRAINT_VIOLATED = 'P2002'
@@ -50,7 +53,6 @@ export class JourneyResolver {
   constructor(
     private readonly journeyService: JourneyService,
     private readonly blockService: BlockService,
-    private readonly userRoleService: UserRoleService,
     private readonly prismaService: PrismaService
   ) {}
 
@@ -104,54 +106,71 @@ export class JourneyResolver {
   }
 
   @Query()
+  @UseGuards(AppCaslGuard)
   async adminJourneys(
     @CurrentUserId() userId: string,
-    @Args('status') status: JourneyStatus[],
-    @Args('template') template?: boolean
+    @CaslAccessible('Journey') accessibleJourneys: Prisma.JourneyWhereInput,
+    @Args('status') status?: JourneyStatus[],
+    @Args('template') template?: boolean,
+    @Args('teamId') teamId?: string
   ): Promise<Journey[]> {
-    const user = await this.userRoleService.getUserRoleById(userId)
-    return await this.journeyService.getAllByRole(user, status, template)
+    const where: Prisma.JourneyWhereInput = {}
+    if (teamId != null) {
+      where.teamId = teamId
+    } else if (template !== true) {
+      // if not looking for templates then only return journeys where:
+      //   1. the user is an owner or editor
+      //   2. not a member of the team
+      where.userJourneys = {
+        some: {
+          userId,
+          role: { in: [UserJourneyRole.owner, UserJourneyRole.editor] }
+        }
+      }
+      where.team = {
+        userTeams: {
+          none: {
+            userId
+          }
+        }
+      }
+    }
+    if (template != null) where.template = template
+    if (status != null) where.status = { in: status }
+
+    return await this.prismaService.journey.findMany({
+      where: {
+        AND: [accessibleJourneys, where]
+      }
+    })
   }
 
   @Query()
+  @UseGuards(AppCaslGuard)
   async adminJourney(
-    @CurrentUserId() userId: string,
+    @CaslAbility() ability: AppAbility,
     @Args('id') id: string,
     @Args('idType') idType: IdType = IdType.slug
   ): Promise<Journey | null> {
-    const result =
-      idType === IdType.slug
-        ? await this.journeyService.getBySlug(id)
-        : await this.prismaService.journey.findUnique({
-            where: { id }
-          })
-    if (result == null) return null
-    if (result.template !== true) {
-      const ujResult = await this.prismaService.userJourney.findUnique({
-        where: { journeyId_userId: { journeyId: result.id, userId } }
-      })
-      if (ujResult == null)
-        throw new GraphQLError(
-          'User has not received an invitation to edit this journey.',
-          { extensions: { code: 'FORBIDDEN' } }
-        )
-      if (ujResult.role === UserJourneyRole.inviteRequested)
-        throw new GraphQLError('User invitation pending.', {
-          extensions: { code: 'FORBIDDEN' }
-        })
-    } else {
-      if (result.status !== JourneyStatus.published) {
-        const urResult = await this.userRoleService.getUserRoleById(userId)
-        const isPublisher = urResult.roles?.includes(Role.publisher)
-        if (!isPublisher)
-          throw new GraphQLError(
-            'You do not have access to unpublished templates',
-            { extensions: { code: 'FORBIDDEN' } }
-          )
-      }
-    }
+    const where: Prisma.JourneyWhereUniqueInput =
+      idType === IdType.slug ? { slug: id } : { id }
 
-    return result
+    const journey = await this.prismaService.journey.findUnique({
+      where,
+      include: {
+        userJourneys: true,
+        team: {
+          include: { userTeams: true }
+        }
+      }
+    })
+
+    if (journey == null)
+      throw new GraphQLError('journey not found', {
+        extensions: { code: 'NOT_FOUND' }
+      })
+    if (ability.can(Action.Read, subject('Journey', journey))) return journey
+    throw new ForbiddenError('user is not allowed to view journey')
   }
 
   @Query()
@@ -174,13 +193,13 @@ export class JourneyResolver {
   }
 
   @Mutation()
-  @UseGuards(GqlAuthGuard)
+  @UseGuards(AppCaslGuard)
   async journeyCreate(
-    @Args('input')
-    input: Pick<Journey, 'title' | 'languageId'> &
-      Partial<Journey> &
-      ({ slug: string; title?: string } | { slug?: string; title: string }),
-    @CurrentUserId() userId: string
+    @CaslAbility() ability: AppAbility,
+    @Args('input') input: JourneyCreateInput,
+    @CurrentUserId() userId: string,
+    // TODO: remove when teams is released
+    @Args('teamId') teamId = 'jfp-team'
   ): Promise<Journey | undefined> {
     let retry = true
     let slug = slugify(input.slug ?? input.title, {
@@ -190,48 +209,41 @@ export class JourneyResolver {
     const id = input.id ?? uuidv4()
     while (retry) {
       try {
-        // this should be removed when the UI can support team management
-        const team = { id: 'jfp-team' }
-        const journey = await this.prismaService.journey.create({
-          data: {
-            ...omit(input, ['primaryImageBlockId', 'teamId', 'hostId']),
-            slug,
-            id,
-            createdAt: new Date(),
-            status: JourneyStatus.draft,
-            team: {
-              connect: { id: team.id }
-            },
-            userJourneys: {
-              create: {
-                id: uuidv4(),
-                userId,
-                role: UserJourneyRole.owner,
-                openedAt: new Date()
+        let journey: Journey | undefined
+        await this.prismaService.$transaction(async (tx) => {
+          await tx.journey.create({
+            data: {
+              ...omit(input, ['id', 'primaryImageBlockId', 'teamId', 'hostId']),
+              title: input.title,
+              languageId: input.languageId,
+              id,
+              slug,
+              status: JourneyStatus.draft,
+              team: { connect: { id: teamId } },
+              userJourneys: {
+                create: {
+                  userId,
+                  role: UserJourneyRole.owner
+                }
               }
-            },
-            host:
-              input.hostId != null
-                ? {
-                    connect: { id: input.hostId }
-                  }
-                : undefined
-          }
-        })
-
-        await this.prismaService.userTeam.upsert({
-          where: {
-            teamId_userId: {
-              userId,
-              teamId: team.id
             }
-          },
-          update: {},
-          create: {
-            userId,
-            teamId: team.id,
-            role: UserTeamRole.guest
-          }
+          })
+          journey =
+            (await tx.journey.findUnique({
+              where: { id },
+              include: {
+                userJourneys: true,
+                team: {
+                  include: { userTeams: true }
+                }
+              }
+            })) ?? undefined
+          if (journey == null)
+            throw new GraphQLError('journey not found', {
+              extensions: { code: 'NOT_FOUND' }
+            })
+          if (!ability.can(Action.Create, subject('Journey', journey)))
+            throw new ForbiddenError('user is not allowed to create journey')
         })
 
         retry = false
@@ -278,24 +290,30 @@ export class JourneyResolver {
   }
 
   @Mutation()
-  @UseGuards(
-    RoleGuard('id', [
-      UserJourneyRole.owner,
-      UserJourneyRole.editor,
-      {
-        role: 'public',
-        attributes: { template: true, status: JourneyStatus.published }
-      }
-    ])
-  )
+  @UseGuards(AppCaslGuard)
   async journeyDuplicate(
+    @CaslAbility() ability: AppAbility,
     @Args('id') id: string,
-    @CurrentUserId() userId: string
+    @CurrentUserId() userId: string,
+    // TODO: remove when teams is released
+    @Args('teamId') teamId = 'jfp-team'
   ): Promise<Journey | undefined> {
     const journey = await this.prismaService.journey.findUnique({
-      where: { id }
+      where: { id },
+      include: {
+        userJourneys: true,
+        team: {
+          include: { userTeams: true }
+        }
+      }
     })
-    if (journey == null) throw new NotFoundException('Journey not found')
+    if (journey == null)
+      throw new GraphQLError('journey not found', {
+        extensions: { code: 'NOT_FOUND' }
+      })
+    if (ability.cannot(Action.Read, subject('Journey', journey)))
+      throw new ForbiddenError('user is not allowed to duplicate journey')
+
     const duplicateJourneyId = uuidv4()
     const existingDuplicateJourneys = await this.prismaService.journey.findMany(
       {
@@ -319,7 +337,7 @@ export class JourneyResolver {
         : ` copy ${duplicateNumber}`
     }`.trimEnd()
 
-    const slug = slugify(duplicateTitle, {
+    let slug = slugify(duplicateTitle, {
       lower: true,
       strict: true
     })
@@ -358,30 +376,42 @@ export class JourneyResolver {
       }
     }
 
-    const input = {
-      ...omit(journey, ['primaryImageBlockId', 'publishedAt', 'hostId']),
-      id: duplicateJourneyId,
-      slug,
-      title: duplicateTitle,
-      createdAt: new Date(),
-      status: JourneyStatus.draft,
-      template: false
-    }
-
     let retry = true
     while (retry) {
       try {
-        const journey = await this.prismaService.journey.create({
-          data: {
-            ...input,
-            userJourneys: {
-              create: {
-                userId,
-                role: UserJourneyRole.owner,
-                openedAt: new Date()
+        let duplicateJourney: Journey | undefined
+        await this.prismaService.$transaction(async (tx) => {
+          await tx.journey.create({
+            data: {
+              ...omit(journey, [
+                'primaryImageBlockId',
+                'publishedAt',
+                'hostId',
+                'teamId'
+              ]),
+              id: duplicateJourneyId,
+              slug,
+              title: duplicateTitle,
+              status: JourneyStatus.draft,
+              template: false,
+              team: { connect: { id: teamId } },
+              userJourneys: {
+                create: {
+                  userId,
+                  role: UserJourneyRole.owner,
+                  openedAt: new Date()
+                }
               }
             }
-          }
+          })
+          duplicateJourney =
+            (await tx.journey.findUnique({ where: { id } })) ?? undefined
+          if (journey == null)
+            throw new GraphQLError('journey not found', {
+              extensions: { code: 'NOT_FOUND' }
+            })
+          if (!ability.can(Action.Create, subject('Journey', journey)))
+            throw new ForbiddenError('user is not allowed to duplicate journey')
         })
         // save base blocks
         await this.blockService.saveAll(
@@ -431,10 +461,10 @@ export class JourneyResolver {
           })
         }
         retry = false
-        return journey
+        return duplicateJourney
       } catch (err) {
         if (err.code === ERROR_PSQL_UNIQUE_CONSTRAINT_VIOLATED) {
-          input.slug = slugify(`${input.slug}-${input.id}`)
+          slug = slugify(`${slug}-${duplicateJourneyId}`)
         } else {
           retry = false
           throw err
@@ -444,40 +474,52 @@ export class JourneyResolver {
   }
 
   @Mutation()
-  @UseGuards(
-    RoleGuard('id', [
-      UserJourneyRole.owner,
-      UserJourneyRole.editor,
-      { role: Role.publisher, attributes: { template: true } }
-    ])
-  )
+  @UseGuards(AppCaslGuard)
   async journeyUpdate(
+    @CaslAbility() ability: AppAbility,
     @Args('id') id: string,
-    @Args('input') input: Partial<Journey> & { hostId?: string }
+    @Args('input') input: JourneyUpdateInput
   ): Promise<Journey> {
+    const journey = await this.prismaService.journey.findUnique({
+      where: { id },
+      include: {
+        userJourneys: true,
+        team: {
+          include: { userTeams: true }
+        }
+      }
+    })
+    if (journey == null)
+      throw new GraphQLError('journey not found', {
+        extensions: { code: 'NOT_FOUND' }
+      })
+    if (ability.cannot(Action.Update, subject('Journey', journey)))
+      throw new ForbiddenError('user is not allowed to update journey')
+
     if (input.slug != null)
       input.slug = slugify(input.slug, {
         lower: true,
         strict: true
       })
     if (input.hostId != null) {
-      const journey = await this.prismaService.journey.findUnique({
-        where: { id }
-      })
       const host = await this.prismaService.host.findUnique({
         where: { id: input.hostId }
       })
       if (host == null || journey == null || host?.teamId !== journey.teamId) {
-        throw new GraphQLError(
-          'the team id of host doest not match team id of journey',
-          { extensions: { code: 'FORBIDDEN' } }
+        throw new UserInputError(
+          'the team id of host does not not match team id of journey'
         )
       }
     }
     try {
       return await this.prismaService.journey.update({
         where: { id },
-        data: input
+        data: {
+          ...input,
+          title: input.title ?? undefined,
+          languageId: input.languageId ?? undefined,
+          slug: input.slug ?? undefined
+        }
       })
     } catch (err) {
       if (err.code === ERROR_PSQL_UNIQUE_CONSTRAINT_VIOLATED) {
@@ -489,13 +531,21 @@ export class JourneyResolver {
   }
 
   @Mutation()
-  @UseGuards(
-    RoleGuard('id', [
-      UserJourneyRole.owner,
-      { role: Role.publisher, attributes: { template: true } }
-    ])
-  )
-  async journeyPublish(@Args('id') id: string): Promise<Journey> {
+  @UseGuards(AppCaslGuard)
+  async journeyPublish(
+    @CaslAbility() ability: AppAbility,
+    @Args('id') id: string
+  ): Promise<Journey> {
+    const journey = await this.prismaService.journey.findUnique({
+      where: { id }
+    })
+    if (journey == null)
+      throw new GraphQLError('journey not found', {
+        extensions: { code: 'NOT_FOUND' }
+      })
+    if (ability.cannot(Action.Manage, subject('Journey', journey)))
+      throw new ForbiddenError('user is not allowed to publish journey')
+
     return await this.prismaService.journey.update({
       where: { id },
       data: {
@@ -506,66 +556,62 @@ export class JourneyResolver {
   }
 
   @Mutation()
-  @UseGuards(
-    RoleGuard('ids', [
-      UserJourneyRole.owner,
-      { role: Role.publisher, attributes: { template: true } }
-    ])
-  )
-  async journeysArchive(@Args('ids') ids: string[]): Promise<Journey[]> {
+  @UseGuards(AppCaslGuard)
+  async journeysArchive(
+    @CaslAccessible(['Journey', Action.Manage])
+    accessibleJourneys: Prisma.JourneyWhereInput,
+    @Args('ids') ids: string[]
+  ): Promise<Journey[]> {
     await this.prismaService.journey.updateMany({
-      where: { id: { in: ids } },
+      where: { AND: [accessibleJourneys, { id: { in: ids } }] },
       data: { status: JourneyStatus.archived, archivedAt: new Date() }
     })
     return await this.prismaService.journey.findMany({
-      where: { id: { in: ids } }
+      where: { AND: [accessibleJourneys, { id: { in: ids } }] }
     })
   }
 
   @Mutation()
-  @UseGuards(
-    RoleGuard('ids', [
-      UserJourneyRole.owner,
-      { role: Role.publisher, attributes: { template: true } }
-    ])
-  )
-  async journeysDelete(@Args('ids') ids: string[]): Promise<Journey[]> {
+  @UseGuards(AppCaslGuard)
+  async journeysDelete(
+    @CaslAccessible(['Journey', Action.Manage])
+    accessibleJourneys: Prisma.JourneyWhereInput,
+    @Args('ids') ids: string[]
+  ): Promise<Journey[]> {
     await this.prismaService.journey.updateMany({
-      where: { id: { in: ids } },
+      where: { AND: [accessibleJourneys, { id: { in: ids } }] },
       data: { status: JourneyStatus.deleted, deletedAt: new Date() }
     })
     return await this.prismaService.journey.findMany({
-      where: { id: { in: ids } }
+      where: { AND: [accessibleJourneys, { id: { in: ids } }] }
     })
   }
 
   @Mutation()
-  @UseGuards(
-    RoleGuard('ids', [
-      UserJourneyRole.owner,
-      { role: Role.publisher, attributes: { template: true } }
-    ])
-  )
-  async journeysTrash(@Args('ids') ids: string[]): Promise<Journey[]> {
+  @UseGuards(AppCaslGuard)
+  async journeysTrash(
+    @CaslAccessible(['Journey', Action.Manage])
+    accessibleJourneys: Prisma.JourneyWhereInput,
+    @Args('ids') ids: string[]
+  ): Promise<Journey[]> {
     await this.prismaService.journey.updateMany({
-      where: { id: { in: ids } },
+      where: { AND: [accessibleJourneys, { id: { in: ids } }] },
       data: { status: JourneyStatus.trashed, trashedAt: new Date() }
     })
     return await this.prismaService.journey.findMany({
-      where: { id: { in: ids } }
+      where: { AND: [accessibleJourneys, { id: { in: ids } }] }
     })
   }
 
   @Mutation()
-  @UseGuards(
-    RoleGuard('ids', [
-      UserJourneyRole.owner,
-      { role: Role.publisher, attributes: { template: true } }
-    ])
-  )
-  async journeysRestore(@Args('ids') ids: string[]): Promise<Journey[]> {
+  @UseGuards(AppCaslGuard)
+  async journeysRestore(
+    @CaslAccessible(['Journey', Action.Manage])
+    accessibleJourneys: Prisma.JourneyWhereInput,
+    @Args('ids') ids: string[]
+  ): Promise<Journey[]> {
     const results = await this.prismaService.journey.findMany({
-      where: { id: { in: ids } }
+      where: { AND: [accessibleJourneys, { id: { in: ids } }] }
     })
 
     return await Promise.all(
@@ -584,11 +630,24 @@ export class JourneyResolver {
   }
 
   @Mutation()
-  @UseGuards(RoleGuard('id', { role: Role.publisher }))
+  @UseGuards(AppCaslGuard)
   async journeyTemplate(
+    @CaslAbility() ability: AppAbility,
     @Args('id') id: string,
     @Args('input') input: JourneyTemplateInput
   ): Promise<Journey> {
+    const journey = await this.prismaService.journey.findUnique({
+      where: { id }
+    })
+    if (journey == null)
+      throw new GraphQLError('journey not found', {
+        extensions: { code: 'NOT_FOUND' }
+      })
+    if (ability.cannot(Action.Manage, subject('Journey', journey), 'template'))
+      throw new ForbiddenError(
+        'user is not allowed to change journey to or from a template'
+      )
+
     return await this.prismaService.journey.update({
       where: { id },
       data: input

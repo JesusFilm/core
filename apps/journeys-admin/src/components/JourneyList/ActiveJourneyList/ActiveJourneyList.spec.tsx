@@ -32,7 +32,8 @@ const activeJourneysMock: MockedResponse = {
   request: {
     query: GET_ADMIN_JOURNEYS,
     variables: {
-      status: [JourneyStatus.draft, JourneyStatus.published]
+      status: [JourneyStatus.draft, JourneyStatus.published],
+      teamId: 'jfp-team'
     }
   },
   result: {
@@ -46,7 +47,8 @@ const noJourneysMock = {
   request: {
     query: GET_ADMIN_JOURNEYS,
     variables: {
-      status: [JourneyStatus.draft, JourneyStatus.published]
+      status: [JourneyStatus.draft, JourneyStatus.published],
+      teamId: 'jfp-team'
     }
   },
   result: {
@@ -56,7 +58,7 @@ const noJourneysMock = {
   }
 }
 
-const getTeams: MockedResponse<GetTeams> = {
+const getTeamsMock: MockedResponse<GetTeams> = {
   request: {
     query: GET_TEAMS
   },
@@ -70,14 +72,14 @@ const getTeams: MockedResponse<GetTeams> = {
 describe('ActiveJourneyList', () => {
   it('should ask users to add a new journey', async () => {
     const { getByRole, getByText } = render(
-      <MockedProvider mocks={[noJourneysMock, getTeams]}>
-        <TeamProvider>
-          <ThemeProvider>
+      <MockedProvider mocks={[noJourneysMock, getTeamsMock]}>
+        <ThemeProvider>
+          <TeamProvider>
             <SnackbarProvider>
               <ActiveJourneyList />
             </SnackbarProvider>
-          </ThemeProvider>
-        </TeamProvider>
+          </TeamProvider>
+        </ThemeProvider>
       </MockedProvider>
     )
     await waitFor(() =>
@@ -137,15 +139,22 @@ describe('ActiveJourneyList', () => {
     it('should archive all journeys', async () => {
       const { getByText } = render(
         <MockedProvider
-          mocks={[activeJourneysMock, archiveJourneysMock, noJourneysMock]}
+          mocks={[
+            activeJourneysMock,
+            archiveJourneysMock,
+            noJourneysMock,
+            getTeamsMock
+          ]}
         >
           <ThemeProvider>
-            <SnackbarProvider>
-              <ActiveJourneyList
-                event="archiveAllActive"
-                authUser={{ id: 'user-id1' } as unknown as AuthUser}
-              />
-            </SnackbarProvider>
+            <TeamProvider>
+              <SnackbarProvider>
+                <ActiveJourneyList
+                  event="archiveAllActive"
+                  authUser={{ id: 'user-id1' } as unknown as AuthUser}
+                />
+              </SnackbarProvider>
+            </TeamProvider>
           </ThemeProvider>
         </MockedProvider>
       )
@@ -160,17 +169,20 @@ describe('ActiveJourneyList', () => {
       const { getByRole, getByText } = render(
         <MockedProvider
           mocks={[
+            getTeamsMock,
             activeJourneysMock,
             { ...archiveJourneysMock, error: new Error('error') }
           ]}
         >
           <ThemeProvider>
-            <SnackbarProvider>
-              <ActiveJourneyList
-                event="archiveAllActive"
-                authUser={{ id: 'user-id1' } as unknown as AuthUser}
-              />
-            </SnackbarProvider>
+            <TeamProvider>
+              <SnackbarProvider>
+                <ActiveJourneyList
+                  event="archiveAllActive"
+                  authUser={{ id: 'user-id1' } as unknown as AuthUser}
+                />
+              </SnackbarProvider>
+            </TeamProvider>
           </ThemeProvider>
         </MockedProvider>
       )
@@ -216,15 +228,22 @@ describe('ActiveJourneyList', () => {
     it('should trash all journeys', async () => {
       const { getByText } = render(
         <MockedProvider
-          mocks={[activeJourneysMock, trashJourneysMock, noJourneysMock]}
+          mocks={[
+            activeJourneysMock,
+            trashJourneysMock,
+            noJourneysMock,
+            getTeamsMock
+          ]}
         >
           <ThemeProvider>
-            <SnackbarProvider>
-              <ActiveJourneyList
-                event="trashAllActive"
-                authUser={{ id: 'user-id1' } as unknown as AuthUser}
-              />
-            </SnackbarProvider>
+            <TeamProvider>
+              <SnackbarProvider>
+                <ActiveJourneyList
+                  event="trashAllActive"
+                  authUser={{ id: 'user-id1' } as unknown as AuthUser}
+                />
+              </SnackbarProvider>
+            </TeamProvider>
           </ThemeProvider>
         </MockedProvider>
       )
@@ -239,19 +258,22 @@ describe('ActiveJourneyList', () => {
       const { getByText } = render(
         <MockedProvider
           mocks={[
+            getTeamsMock,
             activeJourneysMock,
             { ...trashJourneysMock, error: new Error('error') }
           ]}
         >
           <SnackbarProvider>
-            <ThemeProvider>
-              <SnackbarProvider>
-                <ActiveJourneyList
-                  event="trashAllActive"
-                  authUser={{ id: 'user-id1' } as unknown as AuthUser}
-                />
-              </SnackbarProvider>
-            </ThemeProvider>
+            <TeamProvider>
+              <ThemeProvider>
+                <SnackbarProvider>
+                  <ActiveJourneyList
+                    event="trashAllActive"
+                    authUser={{ id: 'user-id1' } as unknown as AuthUser}
+                  />
+                </SnackbarProvider>
+              </ThemeProvider>
+            </TeamProvider>
           </SnackbarProvider>
         </MockedProvider>
       )

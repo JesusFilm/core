@@ -76,13 +76,15 @@ describe('Video', () => {
 
   it('should render cloudflare video', () => {
     const { getByTestId } = render(
-      <Video
-        {...{
-          ...block,
-          source: VideoBlockSource.cloudflare,
-          videoId: 'videoId'
-        }}
-      />
+      <MockedProvider>
+        <Video
+          {...{
+            ...block,
+            source: VideoBlockSource.cloudflare,
+            videoId: 'videoId'
+          }}
+        />
+      </MockedProvider>
     )
     const sourceTag =
       getByTestId('video-video0.id').querySelector('.vjs-tech source')
