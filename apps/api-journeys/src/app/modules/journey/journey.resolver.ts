@@ -305,7 +305,7 @@ export class JourneyResolver {
     @CaslAbility() ability: AppAbility,
     @Args('id') id: string,
     @CurrentUserId() userId: string,
-    // TODO: remove when teams is released
+    // TODO: remove default value when teams is released
     @Args('teamId') teamId = 'jfp-team'
   ): Promise<Journey | undefined> {
     const journey = await this.prismaService.journey.findUnique({
