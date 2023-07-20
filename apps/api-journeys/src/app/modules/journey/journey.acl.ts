@@ -7,9 +7,7 @@ import { Action, AppAclFn, AppAclParameters } from '../../lib/casl/caslFactory'
 
 export const journeyAcl: AppAclFn = ({ can, user }: AppAclParameters) => {
   // TODO: remove when teams is released
-  can(Action.Read, 'Journey', { teamId: 'jfp-team' })
   can(Action.Create, 'Journey', { teamId: 'jfp-team' })
-
   // create journey as a team member
   can(Action.Create, 'Journey', {
     team: {

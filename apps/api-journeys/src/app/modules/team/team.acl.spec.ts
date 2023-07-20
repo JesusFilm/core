@@ -3,7 +3,7 @@ import { subject } from '@casl/ability'
 import { UserTeamRole, Team } from '.prisma/api-journeys-client'
 import { Action, AppAbility, AppCaslFactory } from '../../lib/casl/caslFactory'
 
-describe('TeamAcl', () => {
+describe('teamAcl', () => {
   let factory: AppCaslFactory, ability: AppAbility
   const user = { id: 'userId' }
   beforeEach(async () => {
@@ -13,59 +13,40 @@ describe('TeamAcl', () => {
     factory = module.get<AppCaslFactory>(AppCaslFactory)
     ability = await factory.createAbility(user)
   })
-  it('should allow create', () => {
-    expect(ability.can(Action.Create, 'Team')).toEqual(true)
+  const teamUserTeamManager = subject('Team', {
+    id: 'teamId',
+    userTeams: [{ userId: user.id, role: UserTeamRole.manager }]
+  } as unknown as Team)
+  const teamUserTeamMember = subject('Team', {
+    id: 'teamId',
+    userTeams: [{ userId: user.id, role: UserTeamRole.member }]
+  } as unknown as Team)
+  const teamEmpty = subject('Team', { id: 'teamId' } as unknown as Team)
+  describe('create', () => {
+    it('allow for all users', () => {
+      expect(ability.can(Action.Create, 'Team')).toEqual(true)
+    })
   })
-  it('should not allow read when no matching userTeam', () => {
-    expect(
-      ability.can(
-        Action.Read,
-        subject('Team', { id: 'teamId' } as unknown as Team)
-      )
-    ).toEqual(false)
+  describe('read', () => {
+    it('allow when user is team manager', () => {
+      expect(ability.can(Action.Read, teamUserTeamManager)).toEqual(true)
+    })
+    it('allow when user is team member', () => {
+      expect(ability.can(Action.Read, teamUserTeamMember)).toEqual(true)
+    })
+    it('deny when user has no userTeam', () => {
+      expect(ability.can(Action.Read, teamEmpty)).toEqual(false)
+    })
   })
-  it('should allow read when matching userTeam manager', () => {
-    expect(
-      ability.can(
-        Action.Read,
-        subject('Team', {
-          id: 'teamId',
-          userTeams: [{ userId: user.id, role: UserTeamRole.manager }]
-        } as unknown as Team)
-      )
-    ).toEqual(true)
-  })
-  it('should allow manage when matching userTeam member', () => {
-    expect(
-      ability.can(
-        Action.Manage,
-        subject('Team', {
-          id: 'teamId',
-          userTeams: [{ userId: user.id, role: UserTeamRole.manager }]
-        } as unknown as Team)
-      )
-    ).toEqual(true)
-  })
-  it('should allow read when matching userTeam member', () => {
-    expect(
-      ability.can(
-        Action.Read,
-        subject('Team', {
-          id: 'teamId',
-          userTeams: [{ userId: user.id, role: UserTeamRole.member }]
-        } as unknown as Team)
-      )
-    ).toEqual(true)
-  })
-  it('should not allow manage when matching userTeam member', () => {
-    expect(
-      ability.can(
-        Action.Manage,
-        subject('Team', {
-          id: 'teamId',
-          userTeams: [{ userId: user.id, role: UserTeamRole.member }]
-        } as unknown as Team)
-      )
-    ).toEqual(false)
+  describe('manage', () => {
+    it('allow when user is team manager', () => {
+      expect(ability.can(Action.Manage, teamUserTeamManager)).toEqual(true)
+    })
+    it('deny when user is team member', () => {
+      expect(ability.can(Action.Manage, teamUserTeamMember)).toEqual(false)
+    })
+    it('deny when user has no userTeam', () => {
+      expect(ability.can(Action.Manage, teamEmpty)).toEqual(false)
+    })
   })
 })
