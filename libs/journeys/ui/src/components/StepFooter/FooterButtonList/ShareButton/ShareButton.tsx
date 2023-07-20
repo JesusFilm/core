@@ -1,4 +1,5 @@
 import { ReactElement, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import ShareIcon from '@core/shared/ui/icons/Share'
 import { StyledFooterButton } from '../StyledFooterButton'
 import { useJourney } from '../../../../libs/JourneyProvider'
@@ -6,6 +7,7 @@ import { ShareDialog } from './ShareDialog'
 
 export function ShareButton(): ReactElement {
   const { journey, admin } = useJourney()
+  const { t } = useTranslation('libs-journeys-ui')
   const [shareDialogOpen, setShareDialogOpen] = useState(false)
 
   const url =
@@ -19,7 +21,7 @@ export function ShareButton(): ReactElement {
 
     const shareDetails = {
       url,
-      title: journey?.seoTitle ?? journey?.title ?? 'Journey',
+      title: journey?.seoTitle ?? journey?.title ?? t('Journey'),
       text: journey?.seoDescription ?? ''
     }
     await navigator.share(shareDetails)

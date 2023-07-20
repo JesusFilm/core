@@ -47,7 +47,7 @@ export function ShareDialog({ url, open, closeDialog }: Props): ReactElement {
       open={open}
       onClose={closeDialog}
       dialogTitle={{
-        title: 'Share',
+        title: t('Share'),
         closeButton: true
       }}
     >
