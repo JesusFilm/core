@@ -15,6 +15,7 @@ import { Conductor } from '../Conductor'
 
 import { ButtonWrapper } from './ButtonWrapper/ButtonWrapper'
 import { RadioOptionWrapper } from './RadioOptionWrapper/RadioOptionWrapper'
+import { VideoWrapper } from './VideoWrapper/VideoWrapper'
 
 interface EmbeddedPreviewProps {
   blocks: TreeBlock[]
@@ -120,7 +121,8 @@ export function EmbeddedPreview({
           block={blocks?.[0]}
           wrappers={{
             ButtonWrapper,
-            RadioOptionWrapper
+            RadioOptionWrapper,
+            VideoWrapper
           }}
         />
         <StepFooter />
