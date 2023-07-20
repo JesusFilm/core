@@ -6,11 +6,9 @@ import {
 import { Action, AppAclFn, AppAclParameters } from '../../lib/casl/caslFactory'
 
 export const journeyAcl: AppAclFn = ({ can, user }: AppAclParameters) => {
-  // REMOVE WHEN TEAMS IS RELEASED
-  can(Action.Read, 'Journey', { teamId: 'jfp-team' })
+  // TODO: remove when teams is released
   can(Action.Create, 'Journey', { teamId: 'jfp-team' })
-
-  // create journey as a team manager or member
+  // create journey as a team member
   can(Action.Create, 'Journey', {
     team: {
       is: {
@@ -30,7 +28,7 @@ export const journeyAcl: AppAclFn = ({ can, user }: AppAclParameters) => {
         userTeams: {
           some: {
             userId: user.id,
-            role: { in: [UserTeamRole.manager] }
+            role: UserTeamRole.manager
           }
         }
       }
@@ -41,7 +39,7 @@ export const journeyAcl: AppAclFn = ({ can, user }: AppAclParameters) => {
     userJourneys: {
       some: {
         userId: user.id,
-        role: { in: [UserJourneyRole.owner] }
+        role: UserJourneyRole.owner
       }
     }
   })
@@ -52,21 +50,22 @@ export const journeyAcl: AppAclFn = ({ can, user }: AppAclParameters) => {
         userTeams: {
           some: {
             userId: user.id,
-            role: { in: [UserTeamRole.member] }
+            role: UserTeamRole.member
           }
         }
       }
     }
   })
+  // read and update journey as a journey editor
   can([Action.Read, Action.Update], 'Journey', {
     userJourneys: {
       some: {
         userId: user.id,
-        role: { in: [UserJourneyRole.editor] }
+        role: UserJourneyRole.editor
       }
     }
   })
-  // can read any published journey template
+  // read published journey template
   can(Action.Read, 'Journey', {
     template: true,
     status: JourneyStatus.published

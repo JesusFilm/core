@@ -1,9 +1,10 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { v4 as uuidv4 } from 'uuid'
 import { getPowerBiEmbed } from '@core/nest/powerBi/getPowerBiEmbed'
-import { Journey, UserTeamRole } from '.prisma/api-journeys-client'
+import { Journey } from '.prisma/api-journeys-client'
 import omit from 'lodash/omit'
 
+import { CaslAuthModule } from '@core/nest/common/CaslAuthModule'
 import {
   IdType,
   JourneyStatus,
@@ -19,6 +20,7 @@ import { BlockService } from '../block/block.service'
 import { UserRoleService } from '../userRole/userRole.service'
 import { UserRoleResolver } from '../userRole/userRole.resolver'
 import { PrismaService } from '../../lib/prisma.service'
+import { AppCaslFactory } from '../../lib/casl/caslFactory'
 import {
   ERROR_PSQL_UNIQUE_CONSTRAINT_VIOLATED,
   JourneyResolver
@@ -318,6 +320,7 @@ describe('JourneyResolver', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
+      imports: [CaslAuthModule.register(AppCaslFactory)],
       providers: [
         JourneyResolver,
         journeyService,
@@ -584,7 +587,8 @@ describe('JourneyResolver', () => {
     it('should get published journeys', async () => {
       expect(
         await resolver.adminJourneys(
-          'user.id',
+          'userId',
+          { OR: [{}] },
           [JourneyStatus.draft, JourneyStatus.published],
           undefined
         )
