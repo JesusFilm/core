@@ -13,8 +13,8 @@ import { StepFooter } from '@core/journeys/ui/StepFooter'
 import { Conductor } from '../Conductor'
 
 import { ButtonWrapper } from './ButtonWrapper/ButtonWrapper'
-import { VideoWrapper } from './VideoWrapper/VideoWrapper'
 import { RadioOptionWrapper } from './RadioOptionWrapper/RadioOptionWrapper'
+import { VideoWrapper } from './VideoWrapper/VideoWrapper'
 
 interface EmbeddedPreviewProps {
   blocks: TreeBlock[]
