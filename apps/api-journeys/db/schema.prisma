@@ -363,7 +363,7 @@ model Block {
   blurhash                String?
   submitIconId            String?
   submitLabel             String?
-  nextBlockId             String?              @unique
+  nextBlockId             String?
   locked                  Boolean?
   hint                    String?
   minRows                 Int?
@@ -392,7 +392,7 @@ model Block {
   coverBlockParent        Block?               @relation("CoverBlock")
   primaryImageBlockParent Journey?             @relation("PrimaryImageBlock")
   nextBlock               Block?               @relation("NextBlock", fields: [nextBlockId], references: [id])
-  nextBlockParent         Block?               @relation("NextBlock")
+  nextBlockParents        Block[]              @relation("NextBlock")
   parentBlock             Block?               @relation("ParentBlock", fields: [parentBlockId], references: [id], onDelete: Cascade)
   childBlocks             Block[]              @relation("ParentBlock")
   targetAction            Action[]             @relation("Block")

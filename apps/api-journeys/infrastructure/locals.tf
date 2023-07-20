@@ -1,10 +1,6 @@
 locals {
   port = 4001
   environment_variables = [
-    "DATABASE_DB",
-    "DATABASE_PASS",
-    "DATABASE_URL",
-    "DATABASE_USER",
     "FIREBASE_API_KEY",
     "PG_DATABASE_URL",
     "POWER_BI_CLIENT_ID",
