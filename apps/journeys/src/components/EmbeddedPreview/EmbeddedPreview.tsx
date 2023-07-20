@@ -142,7 +142,7 @@ export function EmbeddedPreview({
                 sx={{
                   position: 'absolute',
                   top: 0,
-                  right: 0,
+                  left: 0,
                   zIndex: 1000,
                   color: 'text.primary'
                 }}
