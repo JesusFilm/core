@@ -74,12 +74,9 @@ export class VideoResolver {
 
   @ResolveField()
   async children(@Parent() video): Promise<Video[] | null> {
-    return video.childIds != null
-      ? await this.videoService.getVideosByIds(
-          video.childIds,
-          video.variant?.languageId
-        )
-      : null
+    return await this.prismaService.video.findMany({
+      where: { parent: { id: video.id } }
+    })
   }
 
   @ResolveField()
@@ -138,13 +135,17 @@ export class VideoResolver {
   ): void {}
 
   @ResolveField()
-  childrenCount(@Parent() video): number {
-    return compact(video.childIds).length
+  async childrenCount(@Parent() video): Promise<number> {
+    return await this.prismaService.video.count({
+      where: { parent: { id: video.id } }
+    })
   }
 
   @ResolveField('variantLanguagesCount')
-  variantLanguagesCount(@Parent() video): number {
-    return compact(video.variantLanguages).length
+  async variantLanguagesCount(@Parent() video): Promise<number> {
+    return await this.prismaService.videoVariant.count({
+      where: { videoId: video.id }
+    })
   }
 
   @ResolveField('variant')

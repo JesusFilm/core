@@ -53,7 +53,7 @@
     "@mui/system": "5.8.7",
     "@mui/x-data-grid": "^6.0.1",
     "@nestjs/apollo": "^10.1.7",
-    "@nestjs/cache-manager": "^1.0.0",
+    "@nestjs/cache-manager": "^2.1.0",
     "@nestjs/common": "^9.2.1",
     "@nestjs/core": "^9.2.1",
     "@nestjs/graphql": "^10.1.7",
