@@ -1,6 +1,7 @@
-import { UserInputError } from 'apollo-server-errors'
+import { GraphQLError } from 'graphql'
 import { UseGuards } from '@nestjs/common'
 import { Args, Mutation, Resolver, ResolveField, Parent } from '@nestjs/graphql'
+import omit from 'lodash/omit'
 
 import {
   Action,
@@ -36,15 +37,18 @@ export class SignUpBlockResolver {
     ])
   )
   async signUpBlockCreate(
-    @Args('input') input: SignUpBlockCreateInput & { __typename }
+    @Args('input') input: SignUpBlockCreateInput
   ): Promise<SignUpBlock> {
-    input.__typename = 'SignUpBlock'
     const siblings = await this.blockService.getSiblings(
       input.journeyId,
       input.parentBlockId
     )
     return await this.blockService.save({
-      ...input,
+      ...omit(input, 'parentBlockId'),
+      id: input.id ?? undefined,
+      typename: 'SignUpBlock',
+      journey: { connect: { id: input.journeyId } },
+      parentBlock: { connect: { id: input.parentBlockId } },
       parentOrder: siblings.length
     })
   }
@@ -68,7 +72,9 @@ export class SignUpBlockResolver {
         id
       )
       if (!submitIcon) {
-        throw new UserInputError('Submit icon does not exist')
+        throw new GraphQLError('Submit icon does not exist', {
+          extensions: { code: 'NOT_FOUND' }
+        })
       }
     }
 

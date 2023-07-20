@@ -65,7 +65,7 @@ jobs:
         run: npm install -g nx --silent
 
       - name: rover Install
-        run: npm install -g @apollo/rover@0.10.0
+        run: npm install -g @apollo/rover@0.16.2
 
       - name: Get affected apps
         run: echo "apps=$(nx affected:apps --plain --base=HEAD~1 --head=HEAD)" >> $GITHUB_OUTPUT

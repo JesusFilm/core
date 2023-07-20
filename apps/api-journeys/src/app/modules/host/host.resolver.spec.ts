@@ -1,6 +1,4 @@
 import { Test, TestingModule } from '@nestjs/testing'
-import { Database } from 'arangojs'
-import { mockDeep } from 'jest-mock-extended'
 import { CaslAuthModule } from '@core/nest/common/CaslAuthModule'
 import { UserTeamRole } from '.prisma/api-journeys-client'
 import { PrismaService } from '../../lib/prisma.service'
@@ -22,15 +20,7 @@ describe('HostResolver', () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [CaslAuthModule.register(AppCaslFactory)],
-      providers: [
-        HostResolver,
-        PrismaService,
-        JourneyService,
-        {
-          provide: 'DATABASE',
-          useFactory: () => mockDeep<Database>()
-        }
-      ]
+      providers: [HostResolver, PrismaService, JourneyService]
     }).compile()
 
     hostResolver = module.get<HostResolver>(HostResolver)
@@ -82,7 +72,8 @@ describe('HostResolver', () => {
           title: 'Edmond Shen & Nisal Cottingham',
           location: 'New Zealand',
           src1: 'avatar1',
-          src2: 'avatar2'
+          src2: 'avatar2',
+          updatedAt: new Date()
         },
         {
           id: 'host-id2',
@@ -90,7 +81,8 @@ describe('HostResolver', () => {
           title: 'Edmond Shen & Nisal Cottingham',
           location: 'New Zealand',
           src1: 'avatar1',
-          src2: 'avatar2'
+          src2: 'avatar2',
+          updatedAt: new Date()
         }
       ]
       jest.spyOn(prismaService.host, 'findMany').mockResolvedValue(mockHosts)

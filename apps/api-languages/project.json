@@ -85,6 +85,12 @@
       "options": {
         "command": "DOPPLER_TOKEN=$DOPPLER_API_LANGUAGES_TOKEN doppler secrets download --no-file --format=env-no-quotes --project api-languages > apps/api-languages/.env"
       }
+    },
+    "codecov": {
+      "executor": "@nrwl/workspace:run-commands",
+      "options": {
+        "command": "codecov -f coverage/apps/api-languages/cobertura-coverage.xml -F apps.api-languages"
+      }
     }
   },
   "tags": []

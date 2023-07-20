@@ -7,6 +7,7 @@ import {
 } from '@nestjs/apollo'
 import { LoggerModule } from 'nestjs-pino'
 import { DatadogTraceModule } from 'nestjs-ddtrace'
+import { NestHealthModule } from '@core/nest/health'
 import { ActionModule } from './modules/action/action.module'
 import { BlockModule } from './modules/block/block.module'
 import { JourneyModule } from './modules/journey/journey.module'
@@ -31,6 +32,7 @@ import { UserTeamInviteModule } from './modules/userTeamInvite/userTeamInvite.mo
     JourneyModule,
     JourneyVisitorModule,
     JourneyProfileModule,
+    NestHealthModule,
     TeamModule,
     UserJourneyModule,
     UserInviteModule,
@@ -50,7 +52,6 @@ import { UserTeamInviteModule } from './modules/userTeamInvite/userTeamInvite.mo
               )
             ]
           : [join(process.cwd(), 'assets/**/*.graphql')],
-      cors: true,
       context: ({ req }) => ({ headers: req.headers }),
       cache: 'bounded'
     }),

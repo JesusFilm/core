@@ -226,6 +226,12 @@ describe('BackgroundMediaImage', () => {
       },
       [`CardBlock:${card.id}`]: { ...card, coverBlockId: video.id }
     })
+    const videoBlockDeleteResult = jest.fn(() => ({
+      data: {
+        blockDelete: []
+      }
+    }))
+
     const imageBlockResult = jest.fn(() => ({
       data: {
         imageBlockCreate: {
@@ -246,6 +252,17 @@ describe('BackgroundMediaImage', () => {
         cache={cache}
         mocks={[
           createCloudflareUploadByUrlMock,
+          {
+            request: {
+              query: BLOCK_DELETE_FOR_BACKGROUND_IMAGE,
+              variables: {
+                id: video.id,
+                parentBlockId: card.parentBlockId,
+                journeyId: journey.id
+              }
+            },
+            result: videoBlockDeleteResult
+          },
           {
             request: {
               query: CARD_BLOCK_COVER_IMAGE_BLOCK_CREATE,
@@ -278,10 +295,11 @@ describe('BackgroundMediaImage', () => {
       target: { value: 'https://example.com/image.jpg' }
     })
     fireEvent.blur(textBox)
+
+    await waitFor(() => expect(videoBlockDeleteResult).toHaveBeenCalled())
     await waitFor(() => expect(imageBlockResult).toHaveBeenCalled())
     expect(cache.extract()[`Journey:${journey.id}`]?.blocks).toEqual([
       { __ref: `CardBlock:${card.id}` },
-      { __ref: `VideoBlock:${video.id}` },
       { __ref: `ImageBlock:${image.id}` }
     ])
     expect(cache.extract()[`CardBlock:${card.id}`]?.coverBlockId).toEqual(

@@ -71,6 +71,7 @@
     "canvas": "^2.8.0",
     "clsx": "^1.2.1",
     "core-js": "^3.23.3",
+    "cors": "^2.8.5",
     "cross-fetch": "^3.1.5",
     "dataloader": "^2.1.0",
     "date-fns": "^2.27.0",
