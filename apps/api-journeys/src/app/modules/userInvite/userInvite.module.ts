@@ -6,12 +6,7 @@ import { UserInviteResolver } from './userInvite.resolver'
 @Global()
 @Module({
   imports: [],
-  providers: [
-    UserInviteResolver,
-    UserJourneyResolver,
-    PrismaService,
-    JourneyService
-  ],
+  providers: [UserInviteResolver, UserJourneyResolver, PrismaService],
   exports: []
 })
 export class UserInviteModule {}

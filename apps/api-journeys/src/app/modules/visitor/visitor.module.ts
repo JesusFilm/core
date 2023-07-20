@@ -7,13 +7,7 @@ import { VisitorResolver } from './visitor.resolver'
 @Global()
 @Module({
   imports: [],
-  providers: [
-    VisitorService,
-    VisitorResolver,
-    BlockService,
-    PrismaService,
-    JourneyService
-  ],
+  providers: [VisitorService, VisitorResolver, BlockService, PrismaService],
   exports: [VisitorService]
 })
 export class VisitorModule {}

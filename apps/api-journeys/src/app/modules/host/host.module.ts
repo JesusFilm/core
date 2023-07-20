@@ -8,7 +8,7 @@ import { HostResolver } from './host.resolver'
 @Global()
 @Module({
   imports: [DatabaseModule, CaslAuthModule.register(AppCaslFactory)],
-  providers: [HostResolver, PrismaService, JourneyService],
+  providers: [HostResolver, PrismaService],
   exports: [HostResolver]
 })
 export class HostModule {}

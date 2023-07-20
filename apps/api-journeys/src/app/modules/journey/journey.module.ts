@@ -15,7 +15,6 @@ import { JourneyResolver } from './journey.resolver'
     DateTimeScalar,
     ChatButtonResolver,
     PrismaService
-  ],
-  exports: [JourneyService]
+  ]
 })
 export class JourneyModule {}
