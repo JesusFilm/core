@@ -8,9 +8,7 @@ import {
 } from 'next-firebase-auth'
 import { useRouter } from 'next/router'
 import { NextSeo } from 'next-seo'
-import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import { useTranslation } from 'react-i18next'
-import { getLaunchDarklyClient } from '@core/shared/ui/getLaunchDarklyClient'
 import { ActiveJourneyEditContent } from '@core/journeys/ui/EditorProvider'
 import {
   GetJourney,
@@ -22,12 +20,10 @@ import { PageWrapper } from '../../../src/components/PageWrapper'
 import { GET_JOURNEY, USER_JOURNEY_OPEN } from '../[journeyId]'
 import { JourneyEdit } from '../../../src/components/Editor/JourneyEdit'
 import { EditToolbar } from '../../../src/components/Editor/EditToolbar'
-import { createApolloClient } from '../../../src/libs/apolloClient'
-import i18nConfig from '../../../next-i18next.config'
 import { ACCEPT_USER_INVITE } from '../..'
 import { useInvalidJourneyRedirect } from '../../../src/libs/useInvalidJourneyRedirect/useInvalidJourneyRedirect'
 import { UserJourneyOpen } from '../../../__generated__/UserJourneyOpen'
-import { checkConditionalRedirect } from '../../../src/libs/checkConditionalRedirect'
+import { initAndAuthApp } from '../../../src/libs/initAndAuthApp'
 
 function JourneyEditPage(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
@@ -70,20 +66,11 @@ function JourneyEditPage(): ReactElement {
 export const getServerSideProps = withAuthUserTokenSSR({
   whenUnauthed: AuthAction.REDIRECT_TO_LOGIN
 })(async ({ AuthUser, locale, query }) => {
-  const ldUser = {
-    key: AuthUser.id as string,
-    firstName: AuthUser.displayName ?? undefined,
-    email: AuthUser.email ?? undefined
-  }
-  const launchDarklyClient = await getLaunchDarklyClient(ldUser)
-  const flags = (await launchDarklyClient.allFlagsState(ldUser)).toJSON() as {
-    [key: string]: boolean | undefined
-  }
+  const { apolloClient, flags, redirect, translations } = await initAndAuthApp({
+    AuthUser,
+    locale
+  })
 
-  const token = await AuthUser.getIdToken()
-  const apolloClient = createApolloClient(token != null ? token : '')
-
-  const redirect = await checkConditionalRedirect(apolloClient, flags)
   if (redirect != null) return { redirect }
 
   await apolloClient.mutate<UserInviteAcceptAll>({
@@ -126,11 +113,7 @@ export const getServerSideProps = withAuthUserTokenSSR({
   return {
     props: {
       flags,
-      ...(await serverSideTranslations(
-        locale ?? 'en',
-        ['apps-journeys-admin', 'libs-journeys-ui'],
-        i18nConfig
-      ))
+      ...translations
     }
   }
 })
