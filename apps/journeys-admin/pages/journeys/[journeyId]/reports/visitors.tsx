@@ -170,7 +170,6 @@ function JourneyVisitorsPage(): ReactElement {
         setSortSetting('duration')
         break
     }
-    // await handleRefetchOnChange()
   }
 
   const handleClearAll = (): void => {
