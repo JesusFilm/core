@@ -17,6 +17,12 @@
         "jestConfig": "libs/nest/gqlAuthGuard/jest.config.js",
         "passWithNoTests": true
       }
+    },
+    "codecov": {
+      "executor": "@nrwl/workspace:run-commands",
+      "options": {
+        "command": "codecov -f coverage/libs/nest/gqlAuthGuard/cobertura-coverage.xml -F libs.nest.gqlAuthGuard"
+      }
     }
   },
   "tags": []

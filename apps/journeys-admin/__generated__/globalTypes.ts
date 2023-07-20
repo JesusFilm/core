@@ -298,7 +298,7 @@ export interface IconBlockUpdateInput {
 
 export interface ImageBlockCreateInput {
   id?: string | null;
-  parentBlockId: string;
+  parentBlockId?: string | null;
   journeyId: string;
   src?: string | null;
   alt: string;
