@@ -205,8 +205,7 @@ export enum Role {
 
 export enum UserTeamRole {
     manager = "manager",
-    member = "member",
-    guest = "guest"
+    member = "member"
 }
 
 export enum DeviceType {

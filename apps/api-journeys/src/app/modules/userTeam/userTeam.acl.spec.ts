@@ -75,32 +75,4 @@ describe('UserTeamAcl', () => {
       )
     ).toEqual(false)
   })
-
-  it('should not allow read when matching userTeam guest', () => {
-    expect(
-      ability.can(
-        Action.Read,
-        subject('UserTeam', {
-          id: 'userTeamId',
-          team: {
-            userTeams: [{ userId: user.id, role: UserTeamRole.guest }]
-          }
-        } as unknown as UserTeam)
-      )
-    ).toEqual(false)
-  })
-
-  it('should not allow manage when matching userTeam guest', () => {
-    expect(
-      ability.can(
-        Action.Manage,
-        subject('UserTeam', {
-          id: 'userTeamId',
-          team: {
-            userTeams: [{ userId: user.id, role: UserTeamRole.guest }]
-          }
-        } as unknown as UserTeam)
-      )
-    ).toEqual(false)
-  })
 })
