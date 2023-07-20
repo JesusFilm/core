@@ -7,6 +7,11 @@ import { GetJourney_journey_blocks_TypographyBlock as TypographyBlock } from '..
 import { basic } from '../../libs/testData/storyData'
 import { EmbeddedPreview } from './EmbeddedPreview'
 
+jest.mock('@mui/material/useMediaQuery', () => ({
+  __esModule: true,
+  default: () => true
+}))
+
 jest.mock('uuid', () => ({
   __esModule: true,
   v4: jest.fn()
