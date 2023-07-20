@@ -9,6 +9,7 @@ import { getJourneyRTL } from '../../libs/rtl'
 import { HostTitleLocation } from './HostTitleLocation'
 import { HostAvatars } from './HostAvatars'
 import { ChatButtons } from './ChatButtons'
+import { FooterButtonList } from './FooterButtonList'
 
 interface StepFooterProps {
   onFooterClick?: () => void
@@ -49,6 +50,7 @@ export function StepFooter({
     >
       <Stack
         justifyContent="space-between"
+        spacing={2}
         sx={{
           px: { xs: 6, lg: 6 },
           py: { xs: 2, lg: 2 },
@@ -57,16 +59,10 @@ export function StepFooter({
           alignItems: { xs: 'flex-start', lg: 'center' }
         }}
       >
-        {/* <Stack
-          data-testid="chip"
-          sx={{
-            display: { xs: 'flex', lg: 'none' },
-            width: 24,
-            height: 16,
-            borderRadius: 5,
-            backgroundColor: 'white'
-          }}
-        /> */}
+        <Box sx={{ display: { xs: 'flex', sm: 'none' } }}>
+          <FooterButtonList />
+        </Box>
+
         <Stack
           sx={{
             flexGrow: 1,
@@ -101,16 +97,10 @@ export function StepFooter({
               </Typography>
               <HostTitleLocation />
             </Stack>
-            {/* <Stack
-              data-testid="chip"
-              sx={{
-                display: { xs: 'none', lg: 'flex' },
-                width: 24,
-                height: 16,
-                borderRadius: 5,
-                backgroundColor: 'white'
-              }}
-            /> */}
+
+            <Box sx={{ display: { xs: 'none', sm: 'flex' } }}>
+              <FooterButtonList />
+            </Box>
           </Stack>
           {hasChatWidget && (
             <Box>

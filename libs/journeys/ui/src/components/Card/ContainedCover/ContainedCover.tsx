@@ -264,7 +264,7 @@ export function ContainedCover({
                 width: { lg: '312px' },
                 maxHeight: { xs: '55vh', lg: '100%' },
                 px: { xs: 6, lg: 10 },
-                mb: { xs: 16, lg: 0 }
+                mb: { xs: 21, lg: 0 }
               }}
             >
               {children}
