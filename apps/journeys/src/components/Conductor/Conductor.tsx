@@ -16,8 +16,8 @@ import {
   useBlocks
 } from '@core/journeys/ui/block'
 import { BlockRenderer } from '@core/journeys/ui/BlockRenderer'
-import ChevronLeftIcon from '@mui/icons-material/ChevronLeft'
-import ChevronRightIcon from '@mui/icons-material/ChevronRight'
+import ChevronLeftIcon from '@core/shared/ui/icons/ChevronLeft'
+import ChevronRightIcon from '@core/shared/ui/icons/ChevronRight'
 import { gql, useMutation } from '@apollo/client'
 import { getJourneyRTL } from '@core/journeys/ui/rtl'
 import { StepHeader } from '@core/journeys/ui/StepHeader'
@@ -234,7 +234,8 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
           zIndex: 2,
           display: slideTransitioning ? 'none' : 'flex',
           width: { xs: 82, lg: 114 },
-          height: { xs: '50%', sm: '20%', md: '50%' }
+          height: { xs: '55%', sm: '25%', md: '60%', lg: '59%' },
+          alignItems: 'center'
         }}
       >
         <IconButton
@@ -245,9 +246,12 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
           }
           disableRipple
           sx={{
-            px: 13,
-            color: 'primary.contrastText',
-            '&:hover': { color: 'primary.contrastText' }
+            mx: { xs: 4, lg: 13 },
+            color: 'primary',
+            backgroundColor: (theme) => `${theme.palette.grey[50]}26`,
+            '&:hover': {
+              backgroundColor: (theme) => `${theme.palette.grey[50]}0d`
+            }
           }}
         >
           {icon}
