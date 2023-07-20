@@ -1,4 +1,4 @@
-import { render } from '@testing-library/react'
+import { render, waitFor } from '@testing-library/react'
 import type { TreeBlock } from '../../../libs/block'
 import { ImageFields } from '../../Image/__generated__/ImageFields'
 import { VideoFields } from '../../Video/__generated__/VideoFields'
@@ -113,7 +113,7 @@ describe('ContainedCover', () => {
     expect(imageCover).toHaveStyle(`background-image: url(${blurUrl})`)
   })
 
-  it('should render background video with custom poster image', () => {
+  it('should render background video with custom poster image', async () => {
     const { getByTestId, getByRole } = render(
       <ContainedCover
         backgroundColor="#DDD"
@@ -128,8 +128,10 @@ describe('ContainedCover', () => {
       </ContainedCover>
     )
 
-    const source = getByRole('region', { name: 'Video Player' }).querySelector(
-      '.vjs-tech source'
+    const source = await waitFor(() =>
+      getByRole('region', { name: 'Video Player' }).querySelector(
+        '.vjs-tech source'
+      )
     )
     expect(source).toHaveAttribute(
       'src',
