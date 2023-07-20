@@ -13,7 +13,7 @@ describe('AddUserSection', () => {
       >
         <SnackbarProvider>
           <MockedProvider>
-            <AddUserSection users={[]} />
+            <AddUserSection users={[]} journeyId="journeyId" />
           </MockedProvider>
         </SnackbarProvider>
       </JourneyProvider>
@@ -59,7 +59,7 @@ describe('AddUserSection', () => {
         >
           <SnackbarProvider>
             <MockedProvider>
-              <AddUserSection users={[]} />
+              <AddUserSection users={[]} journeyId="journeyId" />
             </MockedProvider>
           </SnackbarProvider>
         </JourneyProvider>

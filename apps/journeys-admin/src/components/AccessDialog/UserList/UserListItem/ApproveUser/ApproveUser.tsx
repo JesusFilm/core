@@ -1,7 +1,6 @@
 import { ReactElement } from 'react'
 import { useMutation, gql, useLazyQuery } from '@apollo/client'
 import BeenhereRoundedIcon from '@mui/icons-material/BeenhereRounded'
-import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { MenuItem } from '../../../../MenuItem'
 import { UserJourneyApprove } from '../../../../../../__generated__/UserJourneyApprove'
 import { UserInviteRemove } from '../../../../../../__generated__/UserInviteRemove'
@@ -14,6 +13,7 @@ interface ApproveUserProps {
   id: string
   email: string
   onClick?: () => void
+  journeyId: string
 }
 
 export const USER_JOURNEY_APPROVE = gql`
@@ -28,9 +28,9 @@ export const USER_JOURNEY_APPROVE = gql`
 export function ApproveUser({
   id,
   email,
-  onClick
+  onClick,
+  journeyId
 }: ApproveUserProps): ReactElement {
-  const { journey } = useJourney()
   const [userJourneyApprove] = useMutation<UserJourneyApprove>(
     USER_JOURNEY_APPROVE,
     { variables: { id } }
@@ -39,11 +39,11 @@ export function ApproveUser({
   const [userInviteRemove] = useMutation<UserInviteRemove>(USER_INVITE_REMOVE)
 
   const handleRemoveUserInvite = async (id: string): Promise<void> => {
-    if (journey != null) {
+    if (journeyId != null) {
       await userInviteRemove({
         variables: {
           id,
-          journeyId: journey.id
+          journeyId
         },
         update(cache, { data }) {
           if (data?.userInviteRemove != null)
@@ -60,7 +60,7 @@ export function ApproveUser({
   }
 
   const [loadUserInvites] = useLazyQuery<GetUserInvites>(GET_USER_INVITES, {
-    variables: { journeyId: journey?.id ?? '' }
+    variables: { journeyId: journeyId ?? '' }
   })
 
   const handleClick = async (): Promise<void> => {

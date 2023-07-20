@@ -1,7 +1,6 @@
 import { ReactElement } from 'react'
 import { useMutation, gql, useLazyQuery } from '@apollo/client'
 import RemoveCircleRoundedIcon from '@mui/icons-material/RemoveCircleRounded'
-import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { MenuItem } from '../../../../MenuItem'
 import { GetUserInvites } from '../../../../../../__generated__/GetUserInvites'
 import { UserJourneyRemove } from '../../../../../../__generated__/UserJourneyRemove'
@@ -12,6 +11,7 @@ interface RemoveUserProps {
   id: string
   email?: string
   onClick?: () => void
+  journeyId: string
 }
 
 export const USER_JOURNEY_REMOVE = gql`
@@ -38,9 +38,9 @@ export const USER_INVITE_REMOVE = gql`
 export function RemoveUser({
   id,
   email,
-  onClick
+  onClick,
+  journeyId
 }: RemoveUserProps): ReactElement {
-  const { journey } = useJourney()
   const [userJourneyRemove] = useMutation<UserJourneyRemove>(
     USER_JOURNEY_REMOVE,
     {
@@ -62,11 +62,11 @@ export function RemoveUser({
   const [userInviteRemove] = useMutation<UserInviteRemove>(USER_INVITE_REMOVE)
 
   const handleRemoveUserInvite = async (id: string): Promise<void> => {
-    if (journey != null) {
+    if (journeyId != null) {
       await userInviteRemove({
         variables: {
           id,
-          journeyId: journey.id
+          journeyId
         },
         update(cache, { data }) {
           if (data?.userInviteRemove != null)
@@ -83,7 +83,7 @@ export function RemoveUser({
   }
 
   const [loadUserInvites] = useLazyQuery<GetUserInvites>(GET_USER_INVITES, {
-    variables: { journeyId: journey?.id ?? '' }
+    variables: { journeyId: journeyId ?? '' }
   })
 
   const handleClick = async (): Promise<void> => {

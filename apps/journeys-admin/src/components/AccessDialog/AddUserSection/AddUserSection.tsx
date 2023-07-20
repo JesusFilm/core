@@ -15,9 +15,13 @@ import { EmailInviteForm } from './EmailInviteForm'
 
 interface AddUserSectionProps {
   users: string[]
+  journeyId: string
 }
 
-export function AddUserSection({ users }: AddUserSectionProps): ReactElement {
+export function AddUserSection({
+  users,
+  journeyId
+}: AddUserSectionProps): ReactElement {
   const { journey } = useJourney()
   const { t } = useTranslation('apps-journeys-admin')
   const [selectedInviteMethod, setSelectedInviteMethod] = useState('Email')
@@ -86,7 +90,7 @@ export function AddUserSection({ users }: AddUserSectionProps): ReactElement {
         </Menu>
       </Stack>
       {selectedInviteMethod === 'Email' ? (
-        <EmailInviteForm users={users} />
+        <EmailInviteForm users={users} journeyId={journeyId} />
       ) : (
         <CopyTextField
           value={
