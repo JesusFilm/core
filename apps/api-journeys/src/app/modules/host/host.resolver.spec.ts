@@ -2,7 +2,6 @@ import { Test, TestingModule } from '@nestjs/testing'
 import { CaslAuthModule } from '@core/nest/common/CaslAuthModule'
 import { UserTeamRole } from '.prisma/api-journeys-client'
 import { PrismaService } from '../../lib/prisma.service'
-import { JourneyService } from '../journey/journey.service'
 import {
   Journey,
   JourneyStatus,
@@ -13,19 +12,16 @@ import { AppCaslFactory } from '../../lib/casl/caslFactory'
 import { HostResolver } from './host.resolver'
 
 describe('HostResolver', () => {
-  let hostResolver: HostResolver,
-    prismaService: PrismaService,
-    journeyService: JourneyService
+  let hostResolver: HostResolver, prismaService: PrismaService
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [CaslAuthModule.register(AppCaslFactory)],
-      providers: [HostResolver, PrismaService, JourneyService]
+      providers: [HostResolver, PrismaService]
     }).compile()
 
     hostResolver = module.get<HostResolver>(HostResolver)
     prismaService = module.get<PrismaService>(PrismaService)
-    journeyService = module.get<JourneyService>(JourneyService)
   })
 
   describe('hostCreate', () => {
@@ -278,7 +274,7 @@ describe('HostResolver', () => {
         .mockResolvedValue(hostFindUnique)
       prismaService.host.delete = jest.fn().mockResolvedValue(mockDeletedHost)
 
-      journeyService.getAllByHost = jest.fn().mockReturnValueOnce([journey])
+      prismaService.journey.findMany = jest.fn().mockReturnValueOnce([journey])
 
       const result = await hostResolver.hostDelete(ability, id)
 
@@ -346,7 +342,7 @@ describe('HostResolver', () => {
         .fn()
         .mockResolvedValue(hostFindUnique)
 
-      journeyService.getAllByHost = jest
+      prismaService.journey.findMany = jest
         .fn()
         .mockReturnValueOnce([journey, journeyTwo])
       prismaService.host.delete = jest.fn().mockResolvedValue(mockDeletedHost)

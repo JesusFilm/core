@@ -180,7 +180,7 @@ describe('RadioQuestion', () => {
     expect(buttons[1]).toBeDisabled()
   })
 
-  it('should display options with wrappers', () => {
+  it('should display options with wrappers', async () => {
     const { getByText, getAllByTestId } = render(
       <MockedProvider mocks={[]} addTypename={false}>
         <RadioQuestion
@@ -193,8 +193,10 @@ describe('RadioQuestion', () => {
         />
       </MockedProvider>
     )
-    expect(getAllByTestId('radioOptionWrapper')[0]).toContainElement(
-      getByText('Option 1')
+    await waitFor(() =>
+      expect(getAllByTestId('radioOptionWrapper')[0]).toContainElement(
+        getByText('Option 1')
+      )
     )
     expect(getAllByTestId('radioOptionWrapper')[1]).toContainElement(
       getByText('Option 2')

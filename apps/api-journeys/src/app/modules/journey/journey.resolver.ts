@@ -44,14 +44,12 @@ import {
 import { PrismaService } from '../../lib/prisma.service'
 import { AppCaslGuard } from '../../lib/casl/caslGuard'
 import { Action, AppAbility } from '../../lib/casl/caslFactory'
-import { JourneyService } from './journey.service'
 
 export const ERROR_PSQL_UNIQUE_CONSTRAINT_VIOLATED = 'P2002'
 
 @Resolver('Journey')
 export class JourneyResolver {
   constructor(
-    private readonly journeyService: JourneyService,
     private readonly blockService: BlockService,
     private readonly prismaService: PrismaService
   ) {}
@@ -114,20 +112,20 @@ export class JourneyResolver {
     @Args('template') template?: boolean,
     @Args('teamId') teamId?: string
   ): Promise<Journey[]> {
-    const where: Prisma.JourneyWhereInput = {}
+    const filter: Prisma.JourneyWhereInput = {}
     if (teamId != null) {
-      where.teamId = teamId
+      filter.teamId = teamId
     } else if (template !== true) {
       // if not looking for templates then only return journeys where:
       //   1. the user is an owner or editor
       //   2. not a member of the team
-      where.userJourneys = {
+      filter.userJourneys = {
         some: {
           userId,
           role: { in: [UserJourneyRole.owner, UserJourneyRole.editor] }
         }
       }
-      where.team = {
+      filter.team = {
         userTeams: {
           none: {
             userId
@@ -135,12 +133,12 @@ export class JourneyResolver {
         }
       }
     }
-    if (template != null) where.template = template
-    if (status != null) where.status = { in: status }
+    if (template != null) filter.template = template
+    if (status != null) filter.status = { in: status }
 
     return await this.prismaService.journey.findMany({
       where: {
-        AND: [accessibleJourneys, where]
+        AND: [accessibleJourneys, filter]
       }
     })
   }
@@ -151,12 +149,12 @@ export class JourneyResolver {
     @CaslAbility() ability: AppAbility,
     @Args('id') id: string,
     @Args('idType') idType: IdType = IdType.slug
-  ): Promise<Journey | null> {
-    const where: Prisma.JourneyWhereUniqueInput =
+  ): Promise<Journey> {
+    const filter: Prisma.JourneyWhereUniqueInput =
       idType === IdType.slug ? { slug: id } : { id }
 
     const journey = await this.prismaService.journey.findUnique({
-      where,
+      where: filter,
       include: {
         userJourneys: true,
         team: {
@@ -175,7 +173,14 @@ export class JourneyResolver {
 
   @Query()
   async journeys(@Args('where') where?: JourneysFilter): Promise<Journey[]> {
-    return await this.journeyService.getAllPublishedJourneys(where)
+    const filter: Prisma.JourneyWhereInput = { status: JourneyStatus.published }
+
+    if (where?.template === true) filter.template = true
+    if (where?.featured === true) filter.featuredAt = { not: null }
+
+    return await this.prismaService.journey.findMany({
+      where: filter
+    })
   }
 
   @Query()
@@ -183,13 +188,19 @@ export class JourneyResolver {
     @Args('id') id: string,
     @Args('idType') idType: IdType = IdType.slug
   ): Promise<Journey | null> {
-    const result =
-      idType === IdType.slug
-        ? await this.journeyService.getBySlug(id)
-        : await this.prismaService.journey.findUnique({
-            where: { id }
-          })
-    return result
+    const filter: Prisma.JourneyWhereUniqueInput =
+      idType === IdType.slug ? { slug: id } : { id }
+
+    const journey = await this.prismaService.journey.findUnique({
+      where: filter
+    })
+
+    if (journey == null)
+      throw new GraphQLError('journey not found', {
+        extensions: { code: 'NOT_FOUND' }
+      })
+
+    return journey
   }
 
   @Mutation()
@@ -198,7 +209,7 @@ export class JourneyResolver {
     @CaslAbility() ability: AppAbility,
     @Args('input') input: JourneyCreateInput,
     @CurrentUserId() userId: string,
-    // TODO: remove when teams is released
+    // TODO: remove default value when teams is released
     @Args('teamId') teamId = 'jfp-team'
   ): Promise<Journey | undefined> {
     let retry = true
@@ -209,8 +220,7 @@ export class JourneyResolver {
     const id = input.id ?? uuidv4()
     while (retry) {
       try {
-        let journey: Journey | undefined
-        await this.prismaService.$transaction(async (tx) => {
+        const journey = await this.prismaService.$transaction(async (tx) => {
           await tx.journey.create({
             data: {
               ...omit(input, ['id', 'primaryImageBlockId', 'teamId', 'hostId']),
@@ -228,24 +238,23 @@ export class JourneyResolver {
               }
             }
           })
-          journey =
-            (await tx.journey.findUnique({
-              where: { id },
-              include: {
-                userJourneys: true,
-                team: {
-                  include: { userTeams: true }
-                }
+          const journey = await tx.journey.findUnique({
+            where: { id },
+            include: {
+              userJourneys: true,
+              team: {
+                include: { userTeams: true }
               }
-            })) ?? undefined
+            }
+          })
           if (journey == null)
             throw new GraphQLError('journey not found', {
               extensions: { code: 'NOT_FOUND' }
             })
           if (!ability.can(Action.Create, subject('Journey', journey)))
             throw new ForbiddenError('user is not allowed to create journey')
+          return journey
         })
-
         retry = false
         return journey
       } catch (err) {
@@ -273,13 +282,14 @@ export class JourneyResolver {
     @Args('journeys') journeys: Journey[],
     @Args('title') title: string
   ): number[] {
-    return journeys.map((journey, i) => {
+    return journeys.map((journey) => {
       if (journey.title === title) {
         return 0
       } else if (journey.title === `${title} copy`) {
         return 1
       } else {
-        // Find the difference between duplicated journey and journey in list titles, remove the "copy" to find duplicate number
+        // Find the difference between duplicated journey and journey in list
+        // titles, remove the "copy" to find duplicate number
         const modifier = journey.title.split(title)[1]?.split(' copy')
         const duplicate = modifier[1]?.trim() ?? ''
         const numbers = duplicate.match(/^\d+$/)
@@ -295,7 +305,7 @@ export class JourneyResolver {
     @CaslAbility() ability: AppAbility,
     @Args('id') id: string,
     @CurrentUserId() userId: string,
-    // TODO: remove when teams is released
+    // TODO: remove default value when teams is released
     @Args('teamId') teamId = 'jfp-team'
   ): Promise<Journey | undefined> {
     const journey = await this.prismaService.journey.findUnique({
@@ -341,11 +351,11 @@ export class JourneyResolver {
       lower: true,
       strict: true
     })
-
-    const originalBlocks = await this.blockService.getBlocksByType(
-      journey,
-      'StepBlock'
-    )
+    const originalBlocks = await this.prismaService.block.findMany({
+      where: { journeyId: journey.id, typename: 'StepBlock' },
+      orderBy: { parentOrder: 'asc' },
+      include: { action: true }
+    })
     const duplicateStepIds = new Map()
     originalBlocks.forEach((block) => {
       duplicateStepIds.set(block.id, uuidv4())
@@ -361,14 +371,14 @@ export class JourneyResolver {
 
     let duplicatePrimaryImageBlock
     if (journey.primaryImageBlockId != null) {
-      const original = await this.prismaService.block.findUnique({
+      const primaryImageBlock = await this.prismaService.block.findUnique({
         where: { id: journey.primaryImageBlockId },
         include: { action: true }
       })
-      if (original != null) {
+      if (primaryImageBlock != null) {
         const id = uuidv4()
         duplicatePrimaryImageBlock = {
-          ...omit(original, ['id', 'journeyId', 'action']),
+          ...omit(primaryImageBlock, ['id', 'journeyId', 'action']),
           id
         }
 
@@ -379,44 +389,52 @@ export class JourneyResolver {
     let retry = true
     while (retry) {
       try {
-        let duplicateJourney: Journey | undefined
-        await this.prismaService.$transaction(async (tx) => {
-          await tx.journey.create({
-            data: {
-              ...omit(journey, [
-                'primaryImageBlockId',
-                'publishedAt',
-                'hostId',
-                'teamId'
-              ]),
-              id: duplicateJourneyId,
-              slug,
-              title: duplicateTitle,
-              status: JourneyStatus.draft,
-              template: false,
-              team: { connect: { id: teamId } },
-              userJourneys: {
-                create: {
-                  userId,
-                  role: UserJourneyRole.owner,
-                  openedAt: new Date()
+        const duplicateJourney = await this.prismaService.$transaction(
+          async (tx) => {
+            await tx.journey.create({
+              data: {
+                ...omit(journey, [
+                  'primaryImageBlockId',
+                  'publishedAt',
+                  'hostId',
+                  'teamId',
+                  'createdAt'
+                ]),
+                id: duplicateJourneyId,
+                slug,
+                title: duplicateTitle,
+                status: JourneyStatus.draft,
+                template: false,
+                team: { connect: { id: teamId } },
+                userJourneys: {
+                  create: {
+                    userId,
+                    role: UserJourneyRole.owner
+                  }
                 }
               }
-            }
-          })
-          duplicateJourney =
-            (await tx.journey.findUnique({ where: { id } })) ?? undefined
-          if (journey == null)
-            throw new GraphQLError('journey not found', {
-              extensions: { code: 'NOT_FOUND' }
             })
-          if (!ability.can(Action.Create, subject('Journey', journey)))
-            throw new ForbiddenError('user is not allowed to duplicate journey')
-        })
+            const duplicateJourney = await tx.journey.findUnique({
+              where: { id: duplicateJourneyId }
+            })
+            if (duplicateJourney == null)
+              throw new GraphQLError('journey not found', {
+                extensions: { code: 'NOT_FOUND' }
+              })
+            if (
+              !ability.can(Action.Create, subject('Journey', duplicateJourney))
+            )
+              throw new ForbiddenError(
+                'user is not allowed to duplicate journey'
+              )
+            return duplicateJourney
+          }
+        )
         // save base blocks
         await this.blockService.saveAll(
           duplicateBlocks.map((block) => ({
             ...omit(block, [
+              'journeyId',
               'parentBlockId',
               'posterBlockId',
               'coverBlockId',
@@ -437,11 +455,14 @@ export class JourneyResolver {
             block.coverBlockId != null ||
             block.nextBlockId != null
           ) {
-            await this.blockService.update(block.id, {
-              parentBlockId: block.parentBlockId ?? undefined,
-              posterBlockId: block.posterBlockId ?? undefined,
-              coverBlockId: block.coverBlockId ?? undefined,
-              nextBlockId: block.nextBlockId ?? undefined
+            await this.prismaService.block.update({
+              where: { id: block.id },
+              data: {
+                parentBlockId: block.parentBlockId ?? undefined,
+                posterBlockId: block.posterBlockId ?? undefined,
+                coverBlockId: block.coverBlockId ?? undefined,
+                nextBlockId: block.nextBlockId ?? undefined
+              }
             })
           }
           if (block.action != null && !isEmpty(block.action)) {
@@ -495,7 +516,6 @@ export class JourneyResolver {
       })
     if (ability.cannot(Action.Update, subject('Journey', journey)))
       throw new ForbiddenError('user is not allowed to update journey')
-
     if (input.slug != null)
       input.slug = slugify(input.slug, {
         lower: true,
@@ -505,11 +525,14 @@ export class JourneyResolver {
       const host = await this.prismaService.host.findUnique({
         where: { id: input.hostId }
       })
-      if (host == null || journey == null || host?.teamId !== journey.teamId) {
+      if (host == null)
+        throw new GraphQLError('host not found', {
+          extensions: { code: 'NOT_FOUND' }
+        })
+      if (host.teamId !== journey.teamId)
         throw new UserInputError(
           'the team id of host does not not match team id of journey'
         )
-      }
     }
     try {
       return await this.prismaService.journey.update({
@@ -522,11 +545,9 @@ export class JourneyResolver {
         }
       })
     } catch (err) {
-      if (err.code === ERROR_PSQL_UNIQUE_CONSTRAINT_VIOLATED) {
-        throw new GraphQLError('Slug is not unique')
-      } else {
-        throw err
-      }
+      if (err.code === ERROR_PSQL_UNIQUE_CONSTRAINT_VIOLATED)
+        throw new UserInputError('slug is not unique')
+      throw err
     }
   }
 
@@ -545,7 +566,6 @@ export class JourneyResolver {
       })
     if (ability.cannot(Action.Manage, subject('Journey', journey)))
       throw new ForbiddenError('user is not allowed to publish journey')
-
     return await this.prismaService.journey.update({
       where: { id },
       data: {
@@ -613,7 +633,6 @@ export class JourneyResolver {
     const results = await this.prismaService.journey.findMany({
       where: { AND: [accessibleJourneys, { id: { in: ids } }] }
     })
-
     return await Promise.all(
       results.map((journey) =>
         this.prismaService.journey.update({
@@ -647,7 +666,6 @@ export class JourneyResolver {
       throw new ForbiddenError(
         'user is not allowed to change journey to or from a template'
       )
-
     return await this.prismaService.journey.update({
       where: { id },
       data: input
@@ -657,13 +675,11 @@ export class JourneyResolver {
   @ResolveField()
   @FromPostgresql()
   async blocks(@Parent() journey: Journey): Promise<Block[]> {
-    const primaryImageBlockId = journey.primaryImageBlockId ?? null
+    const filter: Prisma.BlockWhereInput = { journeyId: journey.id }
+    if (journey.primaryImageBlockId != null)
+      filter.id = { not: journey.primaryImageBlockId }
     return await this.prismaService.block.findMany({
-      where: {
-        journeyId: journey.id,
-        id:
-          primaryImageBlockId != null ? { not: primaryImageBlockId } : undefined
-      },
+      where: filter,
       orderBy: { parentOrder: 'asc' },
       include: { action: true }
     })
