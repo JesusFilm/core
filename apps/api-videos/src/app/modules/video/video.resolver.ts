@@ -9,7 +9,7 @@ import {
   Parent
 } from '@nestjs/graphql'
 import { FieldNode, GraphQLResolveInfo, Kind } from 'graphql'
-import { Video, VideoVariant } from '.prisma/api-videos-client'
+import { Video, VideoVariant, VideoTitle } from '.prisma/api-videos-client'
 import compact from 'lodash/compact'
 
 import { IdType, VideosFilter } from '../../__generated__/graphql'
@@ -73,13 +73,7 @@ export class VideoResolver {
   }
 
   @ResolveField()
-  async children(
-    @Parent()
-    video: {
-      childIds?: string[]
-      variant?: { languageId: string }
-    }
-  ): Promise<Video[] | null> {
+  async children(@Parent() video): Promise<Video[] | null> {
     return video.childIds != null
       ? await this.videoService.getVideosByIds(
           video.childIds,
@@ -89,12 +83,19 @@ export class VideoResolver {
   }
 
   @ResolveField()
-  @TranslationField('title')
-  title(
-    @Parent() language,
+  async title(
+    @Parent() video,
     @Args('languageId') languageId?: string,
     @Args('primary') primary?: boolean
-  ): void {}
+  ): Promise<VideoTitle[]> {
+    return await this.prismaService.videoTitle.findMany({
+      where: {
+        videoId: video.id,
+        languageId: languageId ?? undefined,
+        primary: primary ?? undefined
+      }
+    })
+  }
 
   @ResolveField()
   @TranslationField('seoTitle')
@@ -157,8 +158,7 @@ export class VideoResolver {
           videoId: video.id,
           languageId: languageId ?? '529'
         }
-      },
-      include: { downloads: true }
+      }
     })
   }
 

@@ -5,6 +5,7 @@ locals {
     "DATABASE_PASS",
     "DATABASE_URL",
     "DATABASE_USER",
+    "PG_DATABASE_URL",
     "ARCLIGHT_API_KEY",
     "ARCLIGHT_V3_URL",
     "CROWDIN_API_KEY"

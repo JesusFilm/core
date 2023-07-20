@@ -1,17 +1,17 @@
-import { Module, CacheModule, Global } from '@nestjs/common'
+import { Module } from '@nestjs/common'
+import { CacheModule } from '@nestjs/cache-manager'
 import { PrismaService } from '../../lib/prisma.service'
 import { VideoResolver, LanguageWithSlugResolver } from './video.resolver'
 import { VideoService } from './video.service'
 
-@Global()
 @Module({
   imports: [CacheModule.register()],
   providers: [
-    PrismaService,
     VideoResolver,
     VideoService,
-    LanguageWithSlugResolver
+    LanguageWithSlugResolver,
+    PrismaService
   ],
-  exports: [VideoService]
+  exports: []
 })
 export class VideoModule {}

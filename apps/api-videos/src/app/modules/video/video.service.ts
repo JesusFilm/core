@@ -59,8 +59,7 @@ export class VideoService {
     const result = await this.prismaService.video.findMany({
       where: search,
       skip: offset,
-      take: limit,
-      include: { title: true }
+      take: limit
     })
     await this.cacheManager.set(key, result, 86400000)
     return result
@@ -75,8 +74,7 @@ export class VideoService {
     if (cache != null) return cache
 
     const result = await this.prismaService.video.findUnique({
-      where: { id },
-      include: { title: true }
+      where: { id }
     })
 
     if (result != null) await this.cacheManager.set(key, result, 86400000)
@@ -89,8 +87,7 @@ export class VideoService {
     if (cache != null) return cache
 
     const result = await this.prismaService.video.findFirst({
-      where: { variants: { some: { slug } } },
-      include: { title: true }
+      where: { variants: { some: { slug } } }
     })
 
     if (result != null) await this.cacheManager.set(key, result, 86400000)

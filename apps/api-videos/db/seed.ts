@@ -2,7 +2,7 @@
 // increment to trigger re-seed (ie: files other than seed.ts are changed)
 
 import { PrismaClient, Prisma } from '.prisma/api-videos-client'
-import { omit } from 'lodash'
+import omit from 'lodash/omit'
 import { fetchMediaComponentsAndTransformToVideos } from '../src/libs/arclight'
 import { fetchMediaLanguagesAndTransformToLanguages } from '../src/libs/arclight/arclight'
 
