@@ -44,14 +44,12 @@ import {
 import { PrismaService } from '../../lib/prisma.service'
 import { AppCaslGuard } from '../../lib/casl/caslGuard'
 import { Action, AppAbility } from '../../lib/casl/caslFactory'
-import { JourneyService } from './journey.service'
 
 export const ERROR_PSQL_UNIQUE_CONSTRAINT_VIOLATED = 'P2002'
 
 @Resolver('Journey')
 export class JourneyResolver {
   constructor(
-    private readonly journeyService: JourneyService,
     private readonly blockService: BlockService,
     private readonly prismaService: PrismaService
   ) {}
@@ -151,7 +149,7 @@ export class JourneyResolver {
     @CaslAbility() ability: AppAbility,
     @Args('id') id: string,
     @Args('idType') idType: IdType = IdType.slug
-  ): Promise<Journey | null> {
+  ): Promise<Journey> {
     const where: Prisma.JourneyWhereUniqueInput =
       idType === IdType.slug ? { slug: id } : { id }
 
@@ -175,7 +173,14 @@ export class JourneyResolver {
 
   @Query()
   async journeys(@Args('where') where?: JourneysFilter): Promise<Journey[]> {
-    return await this.journeyService.getAllPublishedJourneys(where)
+    const filter: Prisma.JourneyWhereInput = { status: JourneyStatus.published }
+
+    if (where?.template === true) filter.template = true
+    if (where?.featured === true) filter.featuredAt = { not: null }
+
+    return await this.prismaService.journey.findMany({
+      where: filter
+    })
   }
 
   @Query()
@@ -183,13 +188,19 @@ export class JourneyResolver {
     @Args('id') id: string,
     @Args('idType') idType: IdType = IdType.slug
   ): Promise<Journey | null> {
-    const result =
-      idType === IdType.slug
-        ? await this.journeyService.getBySlug(id)
-        : await this.prismaService.journey.findUnique({
-            where: { id }
-          })
-    return result
+    const where: Prisma.JourneyWhereUniqueInput =
+      idType === IdType.slug ? { slug: id } : { id }
+
+    const journey = await this.prismaService.journey.findUnique({
+      where
+    })
+
+    if (journey == null)
+      throw new GraphQLError('journey not found', {
+        extensions: { code: 'NOT_FOUND' }
+      })
+
+    return journey
   }
 
   @Mutation()
@@ -495,7 +506,6 @@ export class JourneyResolver {
       })
     if (ability.cannot(Action.Update, subject('Journey', journey)))
       throw new ForbiddenError('user is not allowed to update journey')
-
     if (input.slug != null)
       input.slug = slugify(input.slug, {
         lower: true,
@@ -505,11 +515,14 @@ export class JourneyResolver {
       const host = await this.prismaService.host.findUnique({
         where: { id: input.hostId }
       })
-      if (host == null || journey == null || host?.teamId !== journey.teamId) {
+      if (host == null)
+        throw new GraphQLError('host not found', {
+          extensions: { code: 'NOT_FOUND' }
+        })
+      if (host.teamId !== journey.teamId)
         throw new UserInputError(
           'the team id of host does not not match team id of journey'
         )
-      }
     }
     try {
       return await this.prismaService.journey.update({
@@ -522,11 +535,9 @@ export class JourneyResolver {
         }
       })
     } catch (err) {
-      if (err.code === ERROR_PSQL_UNIQUE_CONSTRAINT_VIOLATED) {
-        throw new GraphQLError('Slug is not unique')
-      } else {
-        throw err
-      }
+      if (err.code === ERROR_PSQL_UNIQUE_CONSTRAINT_VIOLATED)
+        throw new UserInputError('slug is not unique')
+      throw err
     }
   }
 
@@ -545,7 +556,6 @@ export class JourneyResolver {
       })
     if (ability.cannot(Action.Manage, subject('Journey', journey)))
       throw new ForbiddenError('user is not allowed to publish journey')
-
     return await this.prismaService.journey.update({
       where: { id },
       data: {
@@ -613,7 +623,6 @@ export class JourneyResolver {
     const results = await this.prismaService.journey.findMany({
       where: { AND: [accessibleJourneys, { id: { in: ids } }] }
     })
-
     return await Promise.all(
       results.map((journey) =>
         this.prismaService.journey.update({
@@ -647,7 +656,6 @@ export class JourneyResolver {
       throw new ForbiddenError(
         'user is not allowed to change journey to or from a template'
       )
-
     return await this.prismaService.journey.update({
       where: { id },
       data: input
@@ -657,13 +665,11 @@ export class JourneyResolver {
   @ResolveField()
   @FromPostgresql()
   async blocks(@Parent() journey: Journey): Promise<Block[]> {
-    const primaryImageBlockId = journey.primaryImageBlockId ?? null
+    const where: Prisma.BlockWhereInput = { journeyId: journey.id }
+    if (journey.primaryImageBlockId != null)
+      where.id = { not: journey.primaryImageBlockId }
     return await this.prismaService.block.findMany({
-      where: {
-        journeyId: journey.id,
-        id:
-          primaryImageBlockId != null ? { not: primaryImageBlockId } : undefined
-      },
+      where,
       orderBy: { parentOrder: 'asc' },
       include: { action: true }
     })

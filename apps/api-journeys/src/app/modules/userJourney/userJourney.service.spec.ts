@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { v4 as uuidv4 } from 'uuid'
-import { Journey, UserTeamRole } from '.prisma/api-journeys-client'
+import { Journey } from '.prisma/api-journeys-client'
 import {
   IdType,
   JourneyStatus,
@@ -9,7 +9,6 @@ import {
   UserJourneyRole
 } from '../../__generated__/graphql'
 import { PrismaService } from '../../lib/prisma.service'
-import { JourneyService } from '../journey/journey.service'
 import { UserJourneyService } from './userJourney.service'
 
 jest.mock('uuid', () => ({
@@ -24,7 +23,7 @@ describe('UserJourneyService', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [UserJourneyService, JourneyService, PrismaService]
+      providers: [UserJourneyService, PrismaService]
     }).compile()
 
     service = module.get<UserJourneyService>(UserJourneyService)

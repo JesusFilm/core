@@ -1,6 +1,5 @@
 import { Module } from '@nestjs/common'
 import { DateTimeScalar } from '../../lib/dateTime/dateTime.provider'
-import { JourneyService } from '../journey/journey.service'
 import { PrismaService } from '../../lib/prisma.service'
 import { ActionResolver } from './action.resolver'
 import { NavigateToJourneyActionResolver } from './navigateToJourney/navigateToJourney.resolver'
@@ -14,7 +13,6 @@ import { EmailActionResolver } from './emailAction/emailAction.resolver'
   providers: [
     ActionResolver,
     DateTimeScalar,
-    JourneyService,
     PrismaService,
     LinkActionResolver,
     EmailActionResolver,

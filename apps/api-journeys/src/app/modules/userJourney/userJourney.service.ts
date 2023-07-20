@@ -3,30 +3,27 @@ import { GraphQLError } from 'graphql'
 import {
   UserJourney,
   UserJourneyRole,
-  UserTeamRole
+  Prisma
 } from '.prisma/api-journeys-client'
 import { v4 as uuidv4 } from 'uuid'
 import { PrismaService } from '../../lib/prisma.service'
-import { JourneyService } from '../journey/journey.service'
 import { IdType } from '../../__generated__/graphql'
 
 @Injectable()
 export class UserJourneyService {
   @Inject(PrismaService) private readonly prismaService: PrismaService
-  @Inject(JourneyService)
-  private readonly journeyService: JourneyService
 
   async requestAccess(
     journeyId: string,
     idType: IdType,
     userId: string
   ): Promise<UserJourney | undefined> {
-    const journey =
-      idType === IdType.slug
-        ? await this.journeyService.getBySlug(journeyId)
-        : await this.prismaService.journey.findUnique({
-            where: { id: journeyId }
-          })
+    const where: Prisma.JourneyWhereUniqueInput =
+      idType === IdType.slug ? { slug: journeyId } : { id: journeyId }
+
+    const journey = await this.prismaService.journey.findUnique({
+      where
+    })
 
     if (journey == null)
       throw new GraphQLError('journey does not exist', {
@@ -72,8 +69,6 @@ export class UserJourneyService {
     const actor = await this.prismaService.userJourney.findUnique({
       where: { journeyId_userId: { journeyId: id, userId: approverUserId } }
     })
-    const requesterUserId = userJourney.userId
-
     if (actor?.role === UserJourneyRole.inviteRequested)
       throw new GraphQLError('You do not have permission to approve access', {
         extensions: { code: 'FORBIDDEN' }

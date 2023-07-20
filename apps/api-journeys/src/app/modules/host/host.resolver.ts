@@ -7,15 +7,11 @@ import { Host, Prisma } from '.prisma/api-journeys-client'
 import { Action, AppAbility } from '../../lib/casl/caslFactory'
 import { HostUpdateInput, HostCreateInput } from '../../__generated__/graphql'
 import { PrismaService } from '../../lib/prisma.service'
-import { JourneyService } from '../journey/journey.service'
 import { AppCaslGuard } from '../../lib/casl/caslGuard'
 
 @Resolver('Host')
 export class HostResolver {
-  constructor(
-    private readonly journeyService: JourneyService,
-    private readonly prismaService: PrismaService
-  ) {}
+  constructor(private readonly prismaService: PrismaService) {}
 
   @Query()
   @UseGuards(AppCaslGuard)
@@ -101,7 +97,11 @@ export class HostResolver {
         extensions: { code: 'NOT_FOUND' }
       })
     if (ability.can(Action.Manage, subject('Host', host))) {
-      const journeysWithHost = await this.journeyService.getAllByHost(id)
+      const journeysWithHost = await this.prismaService.journey.findMany({
+        where: {
+          hostId: id
+        }
+      })
       if (journeysWithHost.length > 1)
         throw new GraphQLError('This host is used in other journeys.', {
           extensions: { code: 'BAD_USER_INPUT' }

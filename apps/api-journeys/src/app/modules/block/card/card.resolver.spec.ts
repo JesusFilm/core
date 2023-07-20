@@ -2,7 +2,6 @@ import { Test, TestingModule } from '@nestjs/testing'
 import omit from 'lodash/omit'
 
 import { CardBlock, ThemeMode, ThemeName } from '../../../__generated__/graphql'
-import { JourneyService } from '../../journey/journey.service'
 import { UserJourneyService } from '../../userJourney/userJourney.service'
 import { UserRoleService } from '../../userRole/userRole.service'
 import { PrismaService } from '../../../lib/prisma.service'
@@ -73,7 +72,6 @@ describe('CardBlockResolver', () => {
         CardBlockResolver,
         UserJourneyService,
         UserRoleService,
-        JourneyService,
         PrismaService
       ]
     }).compile()

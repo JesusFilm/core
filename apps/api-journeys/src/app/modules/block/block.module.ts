@@ -1,7 +1,6 @@
 import { Module } from '@nestjs/common'
 
 import { PrismaService } from '../../lib/prisma.service'
-import { JourneyService } from '../journey/journey.service'
 import { BlockService } from './block.service'
 import { BlockResolver } from './block.resolver'
 import { CardBlockResolver } from './card/card.resolver'
@@ -28,7 +27,6 @@ import { VideoTriggerResolver } from './videoTrigger/videoTrigger.resolver'
     CardBlockResolver,
     IconBlockResolver,
     ImageBlockResolver,
-    JourneyService,
     PrismaService,
     RadioOptionBlockResolver,
     RadioQuestionBlockResolver,
