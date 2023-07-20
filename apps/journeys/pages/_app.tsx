@@ -86,7 +86,12 @@ function JourneysApp({
         />
       </Head>
       <ApolloProvider client={apolloClient}>
-        <SnackbarProvider>
+        <SnackbarProvider
+          anchorOrigin={{
+            vertical: 'bottom',
+            horizontal: 'right'
+          }}
+        >
           <Component {...pageProps} />
         </SnackbarProvider>
       </ApolloProvider>
