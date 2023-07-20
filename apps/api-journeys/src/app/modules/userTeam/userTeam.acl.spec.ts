@@ -21,20 +21,7 @@ describe('UserTeamAcl', () => {
       )
     ).toEqual(false)
   })
-  it('should allow read when matching userTeam manager', () => {
-    expect(
-      ability.can(
-        Action.Read,
-        subject('UserTeam', {
-          id: 'userTeamId',
-          team: {
-            userTeams: [{ userId: user.id, role: UserTeamRole.manager }]
-          }
-        } as unknown as UserTeam)
-      )
-    ).toEqual(true)
-  })
-  it('should allow manage when matching userTeam member', () => {
+  it('should allow manage when matching userTeam manager', () => {
     expect(
       ability.can(
         Action.Manage,
@@ -47,21 +34,6 @@ describe('UserTeamAcl', () => {
       )
     ).toEqual(true)
   })
-
-  it('should allow read when matching userTeam member', () => {
-    expect(
-      ability.can(
-        Action.Read,
-        subject('UserTeam', {
-          id: 'userTeamId',
-          team: {
-            userTeams: [{ userId: user.id, role: UserTeamRole.member }]
-          }
-        } as unknown as UserTeam)
-      )
-    ).toEqual(true)
-  })
-
   it('should not allow manage when matching userTeam member', () => {
     expect(
       ability.can(
@@ -74,5 +46,18 @@ describe('UserTeamAcl', () => {
         } as unknown as UserTeam)
       )
     ).toEqual(false)
+  })
+  it('should allow read when matching userTeam member', () => {
+    expect(
+      ability.can(
+        Action.Read,
+        subject('UserTeam', {
+          id: 'userTeamId',
+          team: {
+            userTeams: [{ userId: user.id, role: UserTeamRole.member }]
+          }
+        } as unknown as UserTeam)
+      )
+    ).toEqual(true)
   })
 })

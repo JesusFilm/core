@@ -6,18 +6,17 @@ import {
 import { Action, AppAclFn, AppAclParameters } from '../../lib/casl/caslFactory'
 
 export const journeyAcl: AppAclFn = ({ can, user }: AppAclParameters) => {
-  // REMOVE WHEN TEAMS IS RELEASED
+  // TODO: remove when teams is released
   can(Action.Read, 'Journey', { teamId: 'jfp-team' })
   can(Action.Create, 'Journey', { teamId: 'jfp-team' })
 
-  // create journey as a team manager or member
+  // create journey as a team member
   can(Action.Create, 'Journey', {
     team: {
       is: {
         userTeams: {
           some: {
-            userId: user.id,
-            role: { in: [UserTeamRole.manager, UserTeamRole.member] }
+            userId: user.id
           }
         }
       }
@@ -58,6 +57,7 @@ export const journeyAcl: AppAclFn = ({ can, user }: AppAclParameters) => {
       }
     }
   })
+  // read and update journey as a journey editor
   can([Action.Read, Action.Update], 'Journey', {
     userJourneys: {
       some: {
@@ -66,7 +66,7 @@ export const journeyAcl: AppAclFn = ({ can, user }: AppAclParameters) => {
       }
     }
   })
-  // can read any published journey template
+  // read published journey template
   can(Action.Read, 'Journey', {
     template: true,
     status: JourneyStatus.published
