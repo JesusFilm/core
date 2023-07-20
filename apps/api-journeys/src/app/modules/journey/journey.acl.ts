@@ -14,7 +14,8 @@ export const journeyAcl: AppAclFn = ({ can, user }: AppAclParameters) => {
       is: {
         userTeams: {
           some: {
-            userId: user.id
+            userId: user.id,
+            role: { in: [UserTeamRole.manager, UserTeamRole.member] }
           }
         }
       }
@@ -27,7 +28,7 @@ export const journeyAcl: AppAclFn = ({ can, user }: AppAclParameters) => {
         userTeams: {
           some: {
             userId: user.id,
-            role: { in: [UserTeamRole.manager] }
+            role: UserTeamRole.manager
           }
         }
       }
@@ -38,7 +39,7 @@ export const journeyAcl: AppAclFn = ({ can, user }: AppAclParameters) => {
     userJourneys: {
       some: {
         userId: user.id,
-        role: { in: [UserJourneyRole.owner] }
+        role: UserJourneyRole.owner
       }
     }
   })
@@ -49,7 +50,7 @@ export const journeyAcl: AppAclFn = ({ can, user }: AppAclParameters) => {
         userTeams: {
           some: {
             userId: user.id,
-            role: { in: [UserTeamRole.member] }
+            role: UserTeamRole.member
           }
         }
       }
@@ -60,7 +61,7 @@ export const journeyAcl: AppAclFn = ({ can, user }: AppAclParameters) => {
     userJourneys: {
       some: {
         userId: user.id,
-        role: { in: [UserJourneyRole.editor] }
+        role: UserJourneyRole.editor
       }
     }
   })

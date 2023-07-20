@@ -6,7 +6,10 @@ export const userTeamAcl: AppAclFn = ({ can, user }: AppAclParameters) => {
     team: {
       is: {
         userTeams: {
-          some: { userId: user.id, role: UserTeamRole.manager }
+          some: {
+            userId: user.id,
+            role: UserTeamRole.manager
+          }
         }
       }
     }
@@ -16,7 +19,8 @@ export const userTeamAcl: AppAclFn = ({ can, user }: AppAclParameters) => {
       is: {
         userTeams: {
           some: {
-            userId: user.id
+            userId: user.id,
+            role: UserTeamRole.member
           }
         }
       }

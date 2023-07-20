@@ -14,7 +14,8 @@ export const teamAcl: AppAclFn = ({ can, user }: AppAclParameters) => {
   can(Action.Read, 'Team', {
     userTeams: {
       some: {
-        userId: user.id
+        userId: user.id,
+        role: { in: [UserTeamRole.manager, UserTeamRole.member] }
       }
     }
   })

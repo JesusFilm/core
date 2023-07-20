@@ -1,3 +1,4 @@
+import { UserTeamRole } from '.prisma/api-journeys-client'
 import { Action, AppAclFn, AppAclParameters } from '../../lib/casl/caslFactory'
 
 export const hostAcl: AppAclFn = ({ can, user }: AppAclParameters) => {
@@ -9,7 +10,8 @@ export const hostAcl: AppAclFn = ({ can, user }: AppAclParameters) => {
       is: {
         userTeams: {
           some: {
-            userId: user.id
+            userId: user.id,
+            role: { in: [UserTeamRole.manager, UserTeamRole.member] }
           }
         }
       }
