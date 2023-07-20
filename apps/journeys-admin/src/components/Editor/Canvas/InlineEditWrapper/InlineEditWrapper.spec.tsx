@@ -279,15 +279,12 @@ describe('InlineEditWrapper', () => {
       )
 
       // Select RadioQuestion
-      fireEvent.click(getByText('option'))
+      await waitFor(() => fireEvent.click(getByText('option')))
       expect(getByTestId(`selected-${block.id}`)).toHaveStyle({
         outline: '3px solid #C52D3A',
         zIndex: '1'
       })
-
-      await waitFor(() =>
-        expect(getByTestId(`${block.id}-add-option`)).toBeInTheDocument()
-      )
+      expect(getByTestId(`${block.id}-add-option`)).toBeInTheDocument()
     })
 
     it('should show add option when radio option selected', async () => {
