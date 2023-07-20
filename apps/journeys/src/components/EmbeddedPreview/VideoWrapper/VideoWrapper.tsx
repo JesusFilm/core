@@ -13,6 +13,7 @@ import {
   GetJourney_journey_blocks_VideoBlock as VideoBlock,
   GetJourney_journey_blocks_ImageBlock as ImageBlock
 } from '../../../../__generated__/GetJourney'
+import { VideoBlockSource } from '../../../../__generated__/globalTypes'
 
 const VIDEO_BACKGROUND_COLOR = '#000'
 const VIDEO_FOREGROUND_COLOR = '#FFF'
@@ -78,7 +79,10 @@ export function VideoWrapper({
             objectFit: 'cover'
           },
           '> .vjs-loading-spinner': {
-            zIndex: 1
+            zIndex: 1,
+            ...(block.source === VideoBlockSource.youTube && {
+              display: 'none'
+            })
           },
           '> .vjs-big-play-button': {
             zIndex: 1
@@ -109,14 +113,42 @@ export function VideoWrapper({
           layout="fill"
           objectFit="cover"
         />
-      ) : block.video?.variant?.hls != null ? (
-        <video
-          ref={videoRef}
-          className="video-js vjs-big-play-centered"
-          playsInline
-        >
-          <source src={block.video.variant.hls} type="application/x-mpegURL" />
-        </video>
+      ) : block.videoId != null ? (
+        <>
+          <video
+            ref={videoRef}
+            className="video-js vjs-big-play-centered"
+            playsInline
+          >
+            {block.source === VideoBlockSource.cloudflare &&
+              block.videoId != null && (
+                <source
+                  src={`https://customer-${
+                    process.env.NEXT_PUBLIC_CLOUDFLARE_STREAM_CUSTOMER_CODE ??
+                    ''
+                  }.cloudflarestream.com/${
+                    block.videoId ?? ''
+                  }/manifest/video.m3u8`}
+                  type="application/x-mpegURL"
+                />
+              )}
+            {block.source === VideoBlockSource.internal &&
+              block.video?.variant?.hls != null && (
+                <source
+                  src={block.video.variant.hls}
+                  type="application/x-mpegURL"
+                />
+              )}
+            {block.source === VideoBlockSource.youTube && (
+              <source
+                src={`https://www.youtube.com/embed/${block.videoId}?start=${
+                  block.startAt ?? 0
+                }&end=${block.endAt ?? 0}`}
+                type="video/youtube"
+              />
+            )}
+          </video>
+        </>
       ) : (
         <Paper
           sx={{
