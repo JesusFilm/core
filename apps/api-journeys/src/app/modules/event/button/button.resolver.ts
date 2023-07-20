@@ -111,6 +111,7 @@ export class ChatOpenEventResolver {
         journeyId
       })
     ]
+
     const data = {
       lastChatStartedAt: new Date(),
       lastChatPlatform: input.value ?? undefined

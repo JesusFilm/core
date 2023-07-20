@@ -45,7 +45,7 @@ describe('TeamManageDialog', () => {
       query: GET_USER_TEAMS_AND_INVITES,
       variables: {
         teamId: 'jfp-team',
-        filter: { role: [UserTeamRole.manager, UserTeamRole.member] }
+        where: { role: [UserTeamRole.manager, UserTeamRole.member] }
       }
     },
     result: {

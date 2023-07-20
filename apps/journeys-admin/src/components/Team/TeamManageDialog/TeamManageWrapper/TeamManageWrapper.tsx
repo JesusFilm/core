@@ -29,7 +29,7 @@ export function TeamManageWrapper({
     activeTeam != null
       ? {
           teamId: activeTeam.id,
-          filter: { role: [UserTeamRole.manager, UserTeamRole.member] }
+          where: { role: [UserTeamRole.manager, UserTeamRole.member] }
         }
       : undefined
   )

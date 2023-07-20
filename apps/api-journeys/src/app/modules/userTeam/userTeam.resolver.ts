@@ -10,7 +10,6 @@ import { UseGuards } from '@nestjs/common'
 import { GqlAuthGuard } from '@core/nest/gqlAuthGuard/GqlAuthGuard'
 import { UserTeam, Prisma } from '.prisma/api-journeys-client'
 import { subject } from '@casl/ability'
-import { ForbiddenError } from 'apollo-server-errors'
 import { GraphQLError } from 'graphql'
 import {
   CaslAbility,
@@ -33,12 +32,9 @@ export class UserTeamResolver {
   async userTeams(
     @CaslAccessible('UserTeam') accessibleUserTeams: Prisma.UserTeamWhereInput,
     @Args('teamId') teamId: string,
-    @Args('filter') filter: UserTeamFilterInput
+    @Args('where') where?: UserTeamFilterInput
   ): Promise<UserTeam[]> {
-    const roleFilter =
-      filter?.role != null && filter.role.length > 0
-        ? { role: { in: filter.role } }
-        : {}
+    const roleFilter = where?.role != null ? { role: { in: where.role } } : {}
     return await this.prismaService.userTeam.findMany({
       where: {
         AND: [accessibleUserTeams, { teamId, ...roleFilter }]
@@ -61,7 +57,9 @@ export class UserTeamResolver {
         extensions: { code: 'NOT_FOUND' }
       })
     if (ability.can(Action.Read, subject('UserTeam', userTeam))) return userTeam
-    throw new ForbiddenError('user is not allowed to view userTeam')
+    throw new GraphQLError('user is not allowed to view userTeam', {
+      extensions: { code: 'FORBIDDEN' }
+    })
   }
 
   @Mutation()
@@ -84,7 +82,9 @@ export class UserTeamResolver {
         where: { id },
         data
       })
-    throw new ForbiddenError('user is not allowed to update userTeam')
+    throw new GraphQLError('user is not allowed to update userTeam', {
+      extensions: { code: 'FORBIDDEN' }
+    })
   }
 
   @Mutation()
@@ -105,7 +105,9 @@ export class UserTeamResolver {
       return await this.prismaService.userTeam.delete({
         where: { id }
       })
-    throw new ForbiddenError('user is not allowed to delete userTeam')
+    throw new GraphQLError('user is not allowed to delete userTeam', {
+      extensions: { code: 'FORBIDDEN' }
+    })
   }
 
   @ResolveField('user')

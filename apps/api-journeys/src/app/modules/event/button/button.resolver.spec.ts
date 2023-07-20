@@ -13,7 +13,7 @@ import {
 } from './button.resolver'
 
 describe('ButtonClickEventResolver', () => {
-  let resolver: ButtonClickEventResolver, prisma: PrismaService
+  let resolver: ButtonClickEventResolver, prismaService: PrismaService
 
   const response = {
     visitor: { id: 'visitor.id' },
@@ -38,9 +38,9 @@ describe('ButtonClickEventResolver', () => {
       providers: [ButtonClickEventResolver, eventService, PrismaService]
     }).compile()
     resolver = module.get<ButtonClickEventResolver>(ButtonClickEventResolver)
-    prisma = module.get<PrismaService>(PrismaService)
-    prisma.visitor.update = jest.fn().mockResolvedValueOnce(null)
-    prisma.journeyVisitor.update = jest.fn().mockResolvedValueOnce(null)
+    prismaService = module.get<PrismaService>(PrismaService)
+    prismaService.visitor.update = jest.fn().mockResolvedValueOnce(null)
+    prismaService.journeyVisitor.update = jest.fn().mockResolvedValueOnce(null)
   })
 
   describe('buttonClickEventCreate', () => {
@@ -77,7 +77,7 @@ describe('ButtonClickEventResolver', () => {
       }
       await resolver.buttonClickEventCreate('userId', input)
 
-      expect(prisma.visitor.update).toHaveBeenCalledWith({
+      expect(prismaService.visitor.update).toHaveBeenCalledWith({
         where: { id: 'visitor.id' },
         data: {
           lastLinkAction: 'https://test.com/some-link'
@@ -88,7 +88,7 @@ describe('ButtonClickEventResolver', () => {
 })
 
 describe('ChatOpenEventResolver', () => {
-  let resolver: ChatOpenEventResolver, prisma: PrismaService
+  let resolver: ChatOpenEventResolver, prismaService: PrismaService
 
   beforeAll(() => {
     jest.useFakeTimers('modern')
@@ -139,9 +139,9 @@ describe('ChatOpenEventResolver', () => {
       providers: [ChatOpenEventResolver, eventService, PrismaService]
     }).compile()
     resolver = module.get<ChatOpenEventResolver>(ChatOpenEventResolver)
-    prisma = module.get<PrismaService>(PrismaService)
-    prisma.visitor.update = jest.fn().mockResolvedValueOnce(null)
-    prisma.journeyVisitor.update = jest.fn().mockResolvedValueOnce(null)
+    prismaService = module.get<PrismaService>(PrismaService)
+    prismaService.visitor.update = jest.fn().mockResolvedValueOnce(null)
+    prismaService.journeyVisitor.update = jest.fn().mockResolvedValueOnce(null)
   })
 
   describe('chatOpenEventCreate', () => {
@@ -191,7 +191,7 @@ describe('ChatOpenEventResolver', () => {
 
       await resolver.chatOpenEventCreate('newUserId', input)
 
-      expect(prisma.visitor.update).toHaveBeenCalledWith({
+      expect(prismaService.visitor.update).toHaveBeenCalledWith({
         where: { id: 'newVisitor.id' },
         data: {
           messagePlatform: MessagePlatform.facebook,
@@ -210,7 +210,7 @@ describe('ChatOpenEventResolver', () => {
       }
       await resolver.chatOpenEventCreate('userId', input)
 
-      expect(prisma.visitor.update).toHaveBeenCalledWith({
+      expect(prismaService.visitor.update).toHaveBeenCalledWith({
         where: { id: 'visitor.id' },
         data: {
           lastChatStartedAt: new Date(),
@@ -218,7 +218,7 @@ describe('ChatOpenEventResolver', () => {
           messagePlatform: MessagePlatform.facebook
         }
       })
-      expect(prisma.journeyVisitor.update).toHaveBeenCalledWith({
+      expect(prismaService.journeyVisitor.update).toHaveBeenCalledWith({
         where: {
           journeyId_visitorId: {
             journeyId: 'journey.id',

@@ -3,8 +3,8 @@ import {
   MessagePlatform,
   VisitorsConnection
 } from '../../__generated__/graphql'
-import { PrismaService } from '../../lib/prisma.service'
 import { EventService } from '../event/event.service'
+import { PrismaService } from '../../lib/prisma.service'
 import { VisitorResolver } from './visitor.resolver'
 import { VisitorService } from './visitor.service'
 
@@ -79,8 +79,10 @@ describe('VisitorResolver', () => {
     vService = module.get<VisitorService>(VisitorService)
     prismaService = module.get<PrismaService>(PrismaService)
     prismaService.event.findMany = jest.fn().mockReturnValue([event])
+    prismaService.userTeam.findUnique = jest
+      .fn()
+      .mockResolvedValueOnce(userTeam)
     prismaService.visitor.findUnique = jest.fn().mockReturnValue(visitor)
-    prismaService.userTeam.findUnique = jest.fn().mockReturnValue(userTeam)
   })
 
   describe('visitorsConnection', () => {

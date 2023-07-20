@@ -139,6 +139,12 @@
           "npx prisma validate --schema apps/api-tags/db/schema.prisma"
         ]
       }
+    },
+    "codecov": {
+      "executor": "@nrwl/workspace:run-commands",
+      "options": {
+        "command": "codecov -f coverage/apps/api-tags/cobertura-coverage.xml -F apps.api-tags"
+      }
     }
   },
   "tags": []

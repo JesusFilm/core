@@ -104,7 +104,6 @@ export function ImageEdit(): ReactElement {
       variables: {
         input: {
           journeyId: journey?.id,
-          parentBlockId: journey?.id,
           src: imageBlock.src,
           alt: imageBlock.alt,
           blurhash: imageBlock.blurhash,
@@ -170,7 +169,6 @@ export function ImageEdit(): ReactElement {
     const { data } = await blockDeletePrimaryImage({
       variables: {
         id: primaryImageBlock.id,
-        parentBlockId: primaryImageBlock.parentBlockId,
         journeyId: journey.id
       },
       update(cache, { data }) {

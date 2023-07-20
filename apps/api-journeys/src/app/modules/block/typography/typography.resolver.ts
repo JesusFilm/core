@@ -1,5 +1,6 @@
 import { UseGuards } from '@nestjs/common'
 import { Args, Mutation, Resolver } from '@nestjs/graphql'
+import omit from 'lodash/omit'
 
 import {
   Role,
@@ -14,6 +15,7 @@ import { RoleGuard } from '../../../lib/roleGuard/roleGuard'
 @Resolver('TypographyBlock')
 export class TypographyBlockResolver {
   constructor(private readonly blockService: BlockService) {}
+
   @Mutation()
   @UseGuards(
     RoleGuard('input.journeyId', [
@@ -23,15 +25,18 @@ export class TypographyBlockResolver {
     ])
   )
   async typographyBlockCreate(
-    @Args('input') input: TypographyBlockCreateInput & { __typename }
+    @Args('input') input: TypographyBlockCreateInput
   ): Promise<TypographyBlock> {
-    input.__typename = 'TypographyBlock'
     const siblings = await this.blockService.getSiblings(
       input.journeyId,
       input.parentBlockId
     )
     return await this.blockService.save({
-      ...input,
+      ...omit(input, 'parentBlockId'),
+      id: input.id ?? undefined,
+      typename: 'TypographyBlock',
+      journey: { connect: { id: input.journeyId } },
+      parentBlock: { connect: { id: input.parentBlockId } },
       parentOrder: siblings.length
     })
   }

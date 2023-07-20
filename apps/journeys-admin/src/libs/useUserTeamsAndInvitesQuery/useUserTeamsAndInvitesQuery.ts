@@ -6,8 +6,8 @@ import {
 } from '../../../__generated__/GetUserTeamsAndInvites'
 
 export const GET_USER_TEAMS_AND_INVITES = gql`
-  query GetUserTeamsAndInvites($teamId: ID!, $filter: UserTeamFilterInput!) {
-    userTeams(teamId: $teamId, filter: $filter) {
+  query GetUserTeamsAndInvites($teamId: ID!, $where: UserTeamFilterInput!) {
+    userTeams(teamId: $teamId, where: $where) {
       id
       role
       user {
