@@ -1,5 +1,4 @@
 import { Args, Mutation, Resolver, Query } from '@nestjs/graphql'
-import { UserInputError, ForbiddenError } from 'apollo-server-errors'
 import { GraphQLError } from 'graphql'
 
 import { GqlAuthGuard } from '@core/nest/gqlAuthGuard/GqlAuthGuard'
@@ -57,7 +56,9 @@ export class HostResolver {
       }
       return await this.prismaService.host.create({ data: host })
     }
-    throw new ForbiddenError('User is not allowed to create host.')
+    throw new GraphQLError('User is not allowed to create host.', {
+      extensions: { code: 'FORBIDDEN' }
+    })
   }
 
   @Mutation()
@@ -77,13 +78,17 @@ export class HostResolver {
       })
     if (ability.can(Action.Manage, subject('Host', host))) {
       if (input.title === null)
-        throw new UserInputError('host title cannot be set to null')
+        throw new GraphQLError('host title cannot be set to null', {
+          extensions: { code: 'BAD_USER_INPUT' }
+        })
       return await this.prismaService.host.update({
         where: { id },
         data: { ...input, title: input.title ?? undefined }
       })
     }
-    throw new ForbiddenError('User is not allowed to update userTeam.')
+    throw new GraphQLError('User is not allowed to update userTeam.', {
+      extensions: { code: 'FORBIDDEN' }
+    })
   }
 
   @Mutation()
@@ -103,13 +108,17 @@ export class HostResolver {
     if (ability.can(Action.Manage, subject('Host', host))) {
       const journeysWithHost = await this.journeyService.getAllByHost(id)
       if (journeysWithHost.length > 1)
-        throw new UserInputError('This host is used in other journeys.')
+        throw new GraphQLError('This host is used in other journeys.', {
+          extensions: { code: 'BAD_USER_INPUT' }
+        })
       return await this.prismaService.host.delete({
         where: {
           id
         }
       })
     }
-    throw new ForbiddenError('user is not allowed to delete userTeam')
+    throw new GraphQLError('user is not allowed to delete userTeam', {
+      extensions: { code: 'FORBIDDEN' }
+    })
   }
 }

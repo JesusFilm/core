@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { CaslAuthModule } from '@core/nest/common/CaslAuthModule'
-import { ForbiddenError } from 'apollo-server-errors'
+import { GraphQLError } from 'graphql'
 import { PrismaService } from '../../lib/prisma.service'
 import { AppCaslFactory } from '../../lib/casl/caslFactory'
 import { UserTeamRole } from '../../__generated__/graphql'
@@ -128,7 +128,7 @@ describe('UserTeamInviteResolver', () => {
           'teamId',
           input
         )
-      ).rejects.toThrow(ForbiddenError)
+      ).rejects.toThrow(GraphQLError)
     })
   })
 
@@ -178,7 +178,7 @@ describe('UserTeamInviteResolver', () => {
       })
       await expect(
         userTeamInviteResolver.userTeamInviteRemove(ability, userTeamInviteId)
-      ).rejects.toThrow(ForbiddenError)
+      ).rejects.toThrow(GraphQLError)
     })
   })
 

@@ -40,8 +40,9 @@ export class StepViewEventResolver {
         typename: 'StepViewEvent',
         visitor: { connect: { id: visitor.id } },
         journeyId,
-        stepId: input.blockId
+        stepId: input.blockId ?? undefined
       }),
+
       this.prismaService.visitor.update({
         where: { id: visitor.id },
         data: {

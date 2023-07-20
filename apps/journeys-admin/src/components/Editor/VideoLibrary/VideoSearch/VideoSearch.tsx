@@ -3,7 +3,7 @@ import TextField from '@mui/material/TextField'
 import InputAdornment from '@mui/material/InputAdornment'
 import Search from '@mui/icons-material/Search'
 import LinkRounded from '@mui/icons-material/LinkRounded'
-import { debounce } from 'lodash'
+import debounce from 'lodash/debounce'
 import Box from '@mui/material/Box'
 
 interface VideoSearchProps {

@@ -169,6 +169,12 @@
           }
         ]
       }
+    },
+    "codecov": {
+      "executor": "@nrwl/workspace:run-commands",
+      "options": {
+        "command": "codecov -f coverage/apps/journeys-admin/cobertura-coverage.xml -F apps.journeys-admin"
+      }
     }
   },
   "tags": []

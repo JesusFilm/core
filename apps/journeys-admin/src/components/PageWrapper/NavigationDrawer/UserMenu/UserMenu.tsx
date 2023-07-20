@@ -7,7 +7,7 @@ import Menu from '@mui/material/Menu'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { AuthUser } from 'next-firebase-auth'
-import { compact } from 'lodash'
+import compact from 'lodash/compact'
 import { GetMe_me as User } from '../../../../../__generated__/GetMe'
 import { MenuItem } from '../../../MenuItem'
 
