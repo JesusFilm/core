@@ -13,7 +13,6 @@ import {
   getPowerBiEmbed,
   PowerBiEmbed
 } from '@core/nest/powerBi/getPowerBiEmbed'
-import { ForbiddenError, UserInputError } from 'apollo-server-errors'
 import { GraphQLError } from 'graphql'
 import { v4 as uuidv4 } from 'uuid'
 import {
@@ -135,7 +134,6 @@ export class JourneyResolver {
     }
     if (template != null) filter.template = template
     if (status != null) filter.status = { in: status }
-
     return await this.prismaService.journey.findMany({
       where: {
         AND: [accessibleJourneys, filter]
@@ -152,7 +150,6 @@ export class JourneyResolver {
   ): Promise<Journey> {
     const filter: Prisma.JourneyWhereUniqueInput =
       idType === IdType.slug ? { slug: id } : { id }
-
     const journey = await this.prismaService.journey.findUnique({
       where: filter,
       include: {
@@ -162,22 +159,22 @@ export class JourneyResolver {
         }
       }
     })
-
     if (journey == null)
       throw new GraphQLError('journey not found', {
         extensions: { code: 'NOT_FOUND' }
       })
-    if (ability.can(Action.Read, subject('Journey', journey))) return journey
-    throw new ForbiddenError('user is not allowed to view journey')
+    if (!ability.can(Action.Read, subject('Journey', journey)))
+      throw new GraphQLError('user is not allowed to view journey', {
+        extensions: { code: 'FORBIDDEN' }
+      })
+    return journey
   }
 
   @Query()
   async journeys(@Args('where') where?: JourneysFilter): Promise<Journey[]> {
     const filter: Prisma.JourneyWhereInput = { status: JourneyStatus.published }
-
     if (where?.template === true) filter.template = true
     if (where?.featured === true) filter.featuredAt = { not: null }
-
     return await this.prismaService.journey.findMany({
       where: filter
     })
@@ -190,16 +187,13 @@ export class JourneyResolver {
   ): Promise<Journey | null> {
     const filter: Prisma.JourneyWhereUniqueInput =
       idType === IdType.slug ? { slug: id } : { id }
-
     const journey = await this.prismaService.journey.findUnique({
       where: filter
     })
-
     if (journey == null)
       throw new GraphQLError('journey not found', {
         extensions: { code: 'NOT_FOUND' }
       })
-
     return journey
   }
 
@@ -252,7 +246,9 @@ export class JourneyResolver {
               extensions: { code: 'NOT_FOUND' }
             })
           if (!ability.can(Action.Create, subject('Journey', journey)))
-            throw new ForbiddenError('user is not allowed to create journey')
+            throw new GraphQLError('user is not allowed to create journey', {
+              extensions: { code: 'FORBIDDEN' }
+            })
           return journey
         })
         retry = false
@@ -322,7 +318,9 @@ export class JourneyResolver {
         extensions: { code: 'NOT_FOUND' }
       })
     if (ability.cannot(Action.Read, subject('Journey', journey)))
-      throw new ForbiddenError('user is not allowed to duplicate journey')
+      throw new GraphQLError('user is not allowed to duplicate journey', {
+        extensions: { code: 'FORBIDDEN' }
+      })
 
     const duplicateJourneyId = uuidv4()
     const existingDuplicateJourneys = await this.prismaService.journey.findMany(
@@ -424,8 +422,11 @@ export class JourneyResolver {
             if (
               !ability.can(Action.Create, subject('Journey', duplicateJourney))
             )
-              throw new ForbiddenError(
-                'user is not allowed to duplicate journey'
+              throw new GraphQLError(
+                'user is not allowed to duplicate journey',
+                {
+                  extensions: { code: 'FORBIDDEN' }
+                }
               )
             return duplicateJourney
           }
@@ -515,7 +516,9 @@ export class JourneyResolver {
         extensions: { code: 'NOT_FOUND' }
       })
     if (ability.cannot(Action.Update, subject('Journey', journey)))
-      throw new ForbiddenError('user is not allowed to update journey')
+      throw new GraphQLError('user is not allowed to update journey', {
+        extensions: { code: 'FORBIDDEN' }
+      })
     if (input.slug != null)
       input.slug = slugify(input.slug, {
         lower: true,
@@ -530,8 +533,11 @@ export class JourneyResolver {
           extensions: { code: 'NOT_FOUND' }
         })
       if (host.teamId !== journey.teamId)
-        throw new UserInputError(
-          'the team id of host does not not match team id of journey'
+        throw new GraphQLError(
+          'the team id of host does not not match team id of journey',
+          {
+            extensions: { code: 'BAD_USER_INPUT' }
+          }
         )
     }
     try {
@@ -546,7 +552,9 @@ export class JourneyResolver {
       })
     } catch (err) {
       if (err.code === ERROR_PSQL_UNIQUE_CONSTRAINT_VIOLATED)
-        throw new UserInputError('slug is not unique')
+        throw new GraphQLError('slug is not unique', {
+          extensions: { code: 'BAD_USER_INPUT' }
+        })
       throw err
     }
   }
@@ -565,7 +573,9 @@ export class JourneyResolver {
         extensions: { code: 'NOT_FOUND' }
       })
     if (ability.cannot(Action.Manage, subject('Journey', journey)))
-      throw new ForbiddenError('user is not allowed to publish journey')
+      throw new GraphQLError('user is not allowed to publish journey', {
+        extensions: { code: 'FORBIDDEN' }
+      })
     return await this.prismaService.journey.update({
       where: { id },
       data: {
@@ -663,8 +673,11 @@ export class JourneyResolver {
         extensions: { code: 'NOT_FOUND' }
       })
     if (ability.cannot(Action.Manage, subject('Journey', journey), 'template'))
-      throw new ForbiddenError(
-        'user is not allowed to change journey to or from a template'
+      throw new GraphQLError(
+        'user is not allowed to change journey to or from a template',
+        {
+          extensions: { code: 'FORBIDDEN' }
+        }
       )
     return await this.prismaService.journey.update({
       where: { id },
