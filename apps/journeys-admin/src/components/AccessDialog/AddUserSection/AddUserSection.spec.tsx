@@ -1,22 +1,16 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
-import { JourneyFields as Journey } from '../../../../__generated__/JourneyFields'
 import { AddUserSection } from '.'
 
 describe('AddUserSection', () => {
   it('opens email invite form on click', async () => {
     const { getByRole, queryByRole } = render(
-      <JourneyProvider
-        value={{ journey: { id: 'journeyId' } as unknown as Journey }}
-      >
-        <SnackbarProvider>
-          <MockedProvider>
-            <AddUserSection users={[]} journeyId="journeyId" />
-          </MockedProvider>
-        </SnackbarProvider>
-      </JourneyProvider>
+      <SnackbarProvider>
+        <MockedProvider>
+          <AddUserSection users={[]} journeyId="journeyId" />
+        </MockedProvider>
+      </SnackbarProvider>
     )
 
     const button = getByRole('button', { name: 'Email' })
@@ -54,15 +48,11 @@ describe('AddUserSection', () => {
 
     it('copies link to clipboard', async () => {
       const { getByRole, getByText } = render(
-        <JourneyProvider
-          value={{ journey: { id: 'journeyId' } as unknown as Journey }}
-        >
-          <SnackbarProvider>
-            <MockedProvider>
-              <AddUserSection users={[]} journeyId="journeyId" />
-            </MockedProvider>
-          </SnackbarProvider>
-        </JourneyProvider>
+        <SnackbarProvider>
+          <MockedProvider>
+            <AddUserSection users={[]} journeyId="journeyId" />
+          </MockedProvider>
+        </SnackbarProvider>
       )
       const button = getByRole('button', { name: 'Email' })
       fireEvent.click(button)

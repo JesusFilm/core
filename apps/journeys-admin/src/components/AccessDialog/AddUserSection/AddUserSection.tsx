@@ -9,7 +9,6 @@ import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
 import GroupAddIcon from '@mui/icons-material/GroupAdd'
 import { CopyTextField } from '@core/shared/ui/CopyTextField'
 import Typography from '@mui/material/Typography'
-import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { MenuItem } from '../../MenuItem'
 import { EmailInviteForm } from './EmailInviteForm'
 
@@ -22,7 +21,6 @@ export function AddUserSection({
   users,
   journeyId
 }: AddUserSectionProps): ReactElement {
-  const { journey } = useJourney()
   const { t } = useTranslation('apps-journeys-admin')
   const [selectedInviteMethod, setSelectedInviteMethod] = useState('Email')
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
@@ -99,7 +97,7 @@ export function AddUserSection({
                   window.location.host.endsWith('.chromatic.com')
                     ? 'https://admin.nextstep.is'
                     : window.location.origin
-                }/journeys/${journey != null ? journey.id : ''}`
+                }/journeys/${journeyId}`
               : undefined
           }
           messageText={t('Editor invite link copied')}

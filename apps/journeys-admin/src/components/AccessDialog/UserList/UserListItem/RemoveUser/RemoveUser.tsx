@@ -62,28 +62,26 @@ export function RemoveUser({
   const [userInviteRemove] = useMutation<UserInviteRemove>(USER_INVITE_REMOVE)
 
   const handleRemoveUserInvite = async (id: string): Promise<void> => {
-    if (journeyId != null) {
-      await userInviteRemove({
-        variables: {
-          id,
-          journeyId
-        },
-        update(cache, { data }) {
-          if (data?.userInviteRemove != null)
-            cache.modify({
-              fields: {
-                userInvites(refs, { readField }) {
-                  return refs.filter((ref) => id !== readField('id', ref))
-                }
+    await userInviteRemove({
+      variables: {
+        id,
+        journeyId
+      },
+      update(cache, { data }) {
+        if (data?.userInviteRemove != null)
+          cache.modify({
+            fields: {
+              userInvites(refs, { readField }) {
+                return refs.filter((ref) => id !== readField('id', ref))
               }
-            })
-        }
-      })
-    }
+            }
+          })
+      }
+    })
   }
 
   const [loadUserInvites] = useLazyQuery<GetUserInvites>(GET_USER_INVITES, {
-    variables: { journeyId: journeyId ?? '' }
+    variables: { journeyId }
   })
 
   const handleClick = async (): Promise<void> => {

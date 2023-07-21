@@ -1,8 +1,6 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { Story, Meta } from '@storybook/react'
 import { screen, userEvent, waitFor } from '@storybook/testing-library'
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
-import { JourneyFields as Journey } from '../../../../__generated__/JourneyFields'
 import { journeysAdminConfig } from '../../../libs/storybook'
 import { AddUserSection } from '.'
 
@@ -18,13 +16,9 @@ const AddUsersSectionStory = {
 
 const Template: Story = () => {
   return (
-    <JourneyProvider
-      value={{ journey: { id: 'journeyId' } as unknown as Journey }}
-    >
-      <MockedProvider>
-        <AddUserSection users={[]} journeyId="journeyId" />
-      </MockedProvider>
-    </JourneyProvider>
+    <MockedProvider>
+      <AddUserSection users={[]} journeyId="journeyId" />
+    </MockedProvider>
   )
 }
 
