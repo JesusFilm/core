@@ -1,13 +1,20 @@
 import { Args, Parent, Query, ResolveField, Resolver } from '@nestjs/graphql'
 import { FromPostgresql } from '@core/nest/decorators/FromPostgresql'
-import { CurrentUserId } from '@core/nest/decorators/CurrentUserId'
+import {
+  Prisma,
+  Event,
+  Visitor,
+  JourneyVisitor
+} from '.prisma/api-journeys-client'
+import { UseGuards } from '@nestjs/common'
+import { CaslAccessible } from '@core/nest/common/CaslAuthModule'
 import { GraphQLError } from 'graphql'
-import { Visitor, Event } from '.prisma/api-journeys-client'
 import { PrismaService } from '../../lib/prisma.service'
 import {
   JourneyVisitorFilter,
   JourneyVisitorSort
 } from '../../__generated__/graphql'
+import { AppCaslGuard } from '../../lib/casl/caslGuard'
 import {
   JourneyVisitorService,
   JourneyVisitorsConnection
@@ -21,32 +28,37 @@ export class JourneyVisitorResolver {
   ) {}
 
   @Query()
+  @UseGuards(AppCaslGuard)
   async journeyVisitorCount(
+    @CaslAccessible('JourneyVisitor')
+    accessibleJourneyVisitors: Prisma.VisitorWhereInput,
     @Args('filter') filter: JourneyVisitorFilter
   ): Promise<number> {
-    return await this.journeyVisitorService.getJourneyVisitorCount(filter)
+    return await this.journeyVisitorService.getJourneyVisitorCount({
+      AND: [
+        accessibleJourneyVisitors,
+        this.journeyVisitorService.generateWhere(filter)
+      ]
+    })
   }
 
   @Query()
+  @UseGuards(AppCaslGuard)
   async journeyVisitorsConnection(
-    @CurrentUserId() userId: string,
-    @Args('teamId') teamId: string,
+    @CaslAccessible('JourneyVisitor')
+    accessibleJourneyVisitors: Prisma.VisitorWhereInput,
     @Args('filter') filter: JourneyVisitorFilter,
     @Args('sort') sort = JourneyVisitorSort.date,
     @Args('first') first = 50,
     @Args('after') after?: string | null
   ): Promise<JourneyVisitorsConnection> {
-    const memberResult = await this.prismaService.userTeam.findUnique({
-      where: { teamId_userId: { userId, teamId } }
-    })
-
-    if (memberResult == null)
-      throw new GraphQLError('User is not a member of the team.', {
-        extensions: { code: 'FORBIDDEN' }
-      })
-
     return await this.journeyVisitorService.getJourneyVisitorList({
-      filter,
+      filter: {
+        AND: [
+          accessibleJourneyVisitors,
+          this.journeyVisitorService.generateWhere(filter)
+        ]
+      },
       sort,
       first,
       after
@@ -54,15 +66,23 @@ export class JourneyVisitorResolver {
   }
 
   @ResolveField()
-  async visitor(@Parent() journeyVisitor): Promise<Visitor | null> {
-    return await this.prismaService.visitor.findUnique({
+  async visitor(@Parent() journeyVisitor: JourneyVisitor): Promise<Visitor> {
+    const visitor = await this.prismaService.visitor.findUnique({
       where: { id: journeyVisitor.visitorId }
     })
+    if (visitor == null)
+      throw new GraphQLError(
+        `visitor with id "${journeyVisitor.visitorId}" not found`,
+        {
+          extensions: { code: 'NOT_FOUND' }
+        }
+      )
+    return visitor
   }
 
   @ResolveField()
   @FromPostgresql()
-  async events(@Parent() journeyVisitor): Promise<Event[]> {
+  async events(@Parent() journeyVisitor: JourneyVisitor): Promise<Event[]> {
     return await this.prismaService.event.findMany({
       where: {
         visitorId: journeyVisitor.visitorId,

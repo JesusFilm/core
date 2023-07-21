@@ -1,10 +1,13 @@
 import { Test, TestingModule } from '@nestjs/testing'
+import { JourneyVisitor, Visitor, Event } from '.prisma/api-journeys-client'
+import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
+import { CaslAuthModule } from '@core/nest/common/CaslAuthModule'
 import {
   JourneyVisitorSort,
   MessagePlatform
 } from '../../__generated__/graphql'
 import { PrismaService } from '../../lib/prisma.service'
-import { EventService } from '../event/event.service'
+import { AppCaslFactory } from '../../lib/casl/caslFactory'
 import { JourneyVisitorResolver } from './journeyVisitor.resolver'
 import {
   JourneyVisitorsConnection,
@@ -14,7 +17,7 @@ import {
 describe('JourneyVisitorResolver', () => {
   let resolver: JourneyVisitorResolver,
     vService: JourneyVisitorService,
-    prismaService: PrismaService
+    prismaService: DeepMockProxy<PrismaService>
 
   const jvConnection: JourneyVisitorsConnection = {
     edges: [],
@@ -25,7 +28,7 @@ describe('JourneyVisitorResolver', () => {
     }
   }
 
-  const visitor = {
+  const visitor: Visitor = {
     id: 'visitorId',
     countryCode: null,
     email: 'bob@example.com',
@@ -36,84 +39,63 @@ describe('JourneyVisitorResolver', () => {
     notes: 'Bob called this afternoon to arrange a meet-up.',
     status: 'star',
     teamId: 'teamId',
-    userAgent: null
+    userAgent: null,
+    createdAt: new Date(),
+    duration: 0,
+    lastChatPlatform: null,
+    lastStepViewedAt: null,
+    lastLinkAction: null,
+    lastTextResponse: null,
+    lastRadioQuestion: null,
+    lastRadioOptionSubmission: null,
+    referrer: null,
+    userId: 'visitorUserId',
+    updatedAt: new Date()
   }
 
   const journeyVisitorService = {
     provide: JourneyVisitorService,
     useFactory: () => ({
-      getJourneyVisitorList: jest.fn(() => jvConnection)
-    })
-  }
-
-  const userTeam = {
-    id: 'userTeamId',
-    userId: 'userId',
-    teamId: 'teamId'
-  }
-
-  const event = {
-    id: 'eventId'
-  }
-
-  const eventService = {
-    provide: EventService,
-    useFactory: () => ({
-      getAllByVisitorId: jest.fn(() => [event])
+      getJourneyVisitorList: jest.fn(() => jvConnection),
+      generateWhere: jest.fn((filter) => filter)
     })
   }
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
+      imports: [CaslAuthModule.register(AppCaslFactory)],
       providers: [
         JourneyVisitorResolver,
         journeyVisitorService,
-        eventService,
-        PrismaService
+        {
+          provide: PrismaService,
+          useValue: mockDeep<PrismaService>()
+        }
       ]
     }).compile()
     resolver = module.get<JourneyVisitorResolver>(JourneyVisitorResolver)
     vService = module.get<JourneyVisitorService>(JourneyVisitorService)
-    prismaService = module.get<PrismaService>(PrismaService)
-    prismaService.event.findMany = jest.fn().mockReturnValue([event])
-    prismaService.visitor.findUnique = jest.fn().mockReturnValue(visitor)
-    prismaService.userTeam.findUnique = jest.fn().mockReturnValue(userTeam)
-  })
-
-  describe('visitor', () => {
-    it('returns visitor', async () => {
-      expect(await resolver.visitor({ visitorId: 'visitorId' })).toEqual({
-        ...visitor
-      })
-    })
-  })
-
-  describe('events', () => {
-    it('returns visitor events', async () => {
-      expect(await resolver.events({ visitorId: 'visitorId' })).toEqual([event])
-    })
-
-    it('calls event service with visitorId', async () => {
-      await resolver.events({ visitorId: 'visitorId' })
-      expect(prismaService.event.findMany).toHaveBeenCalledWith({
-        where: { visitorId: 'visitorId' }
-      })
-    })
+    prismaService = module.get<PrismaService>(
+      PrismaService
+    ) as DeepMockProxy<PrismaService>
+    // prismaService.event.findMany = jest.fn().mockReturnValue([event])
+    // prismaService.visitor.findUnique = jest.fn().mockReturnValue(visitor)
+    // prismaService.userTeam.findUnique = jest.fn().mockReturnValue(userTeam)
   })
 
   describe('journeyVisitorsConnection', () => {
     it('returns connection', async () => {
       expect(
-        await resolver.journeyVisitorsConnection('userId', 'teamId', {
-          journeyId: 'journeyId'
-        })
+        await resolver.journeyVisitorsConnection(
+          { OR: [] },
+          { journeyId: 'journeyId' }
+        )
       ).toEqual(jvConnection)
     })
 
     it('calls service with first, after and filter', async () => {
       await resolver.journeyVisitorsConnection(
-        'userId',
-        'teamId',
+        { OR: [] },
         { journeyId: 'journeyId' },
         JourneyVisitorSort.activity,
         50,
@@ -121,24 +103,68 @@ describe('JourneyVisitorResolver', () => {
       )
       expect(vService.getJourneyVisitorList).toHaveBeenCalledWith({
         after: 'cursorId',
-        filter: { journeyId: 'journeyId' },
+        filter: {
+          AND: [{ OR: [] }, { journeyId: 'journeyId' }]
+        },
         first: 50,
         sort: JourneyVisitorSort.activity
       })
     })
+  })
 
-    it('throws error if user is not a member of the team', async () => {
-      prismaService.userTeam.findUnique = jest.fn().mockReturnValue(null)
+  describe('visitor', () => {
+    it('returns visitor', async () => {
+      prismaService.visitor.findUnique.mockResolvedValueOnce(visitor)
+      expect(
+        await resolver.visitor({
+          visitorId: 'visitorId'
+        } as unknown as JourneyVisitor)
+      ).toEqual(visitor)
+    })
+
+    it('throws error if not found', async () => {
+      prismaService.visitor.findUnique.mockResolvedValueOnce(null)
       await expect(
-        resolver.journeyVisitorsConnection(
-          'userId',
-          'teamId',
-          { journeyId: 'journeyId' },
-          JourneyVisitorSort.activity,
-          50,
-          'cursorId'
-        )
-      ).rejects.toThrowError('User is not a member of the team')
+        resolver.visitor({
+          visitorId: 'visitorId'
+        } as unknown as JourneyVisitor)
+      ).rejects.toThrow('visitor with id "visitorId" not found')
+    })
+  })
+
+  describe('events', () => {
+    const event: Event = {
+      id: 'eventId',
+      typename: 'event',
+      visitorId: 'visitorId',
+      journeyId: null,
+      blockId: null,
+      stepId: null,
+      label: null,
+      value: null,
+      action: null,
+      actionValue: null,
+      messagePlatform: null,
+      languageId: null,
+      radioOptionBlockId: null,
+      email: null,
+      nextStepId: null,
+      position: null,
+      source: null,
+      progress: null,
+      userId: null,
+      journeyVisitorJourneyId: null,
+      journeyVisitorVisitorId: null,
+      createdAt: new Date(),
+      updatedAt: new Date()
+    }
+    it('returns visitor events', async () => {
+      prismaService.event.findMany.mockResolvedValueOnce([event])
+      expect(
+        await resolver.events({
+          visitorId: 'visitorId'
+        } as unknown as JourneyVisitor)
+      ).toEqual([{ ...event, typename: undefined, __typename: 'event' }])
     })
   })
 })

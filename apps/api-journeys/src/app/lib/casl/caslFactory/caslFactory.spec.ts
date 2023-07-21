@@ -6,6 +6,7 @@ import {
   UserTeamInvite,
   Host,
   Journey,
+  JourneyVisitor,
   Visitor
 } from '.prisma/api-journeys-client'
 import { Action, AppAbility, AppCaslFactory } from '.'
@@ -46,6 +47,20 @@ describe('AppCaslFactory', () => {
               userTeams: [{ userId: user.id, role: UserTeamRole.manager }]
             }
           } as unknown as Journey)
+        )
+      ).toEqual(true)
+    })
+  })
+  describe('JourneyVisitor', () => {
+    it('should allow manage when visitor is user', () => {
+      expect(
+        ability.can(
+          Action.Manage,
+          subject('JourneyVisitor', {
+            visitor: {
+              userId: 'userId'
+            }
+          } as unknown as JourneyVisitor)
         )
       ).toEqual(true)
     })

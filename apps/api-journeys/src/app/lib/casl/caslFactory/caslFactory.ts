@@ -10,6 +10,7 @@ import { journeyAcl } from '../../../modules/journey/journey.acl'
 import { hostAcl } from '../../../modules/host/host.acl'
 import { userTeamInviteAcl } from '../../../modules/userTeamInvite/userTeamInvite.acl'
 import { visitorAcl } from '../../../modules/visitor/visitor.acl'
+import { journeyVisitorAcl } from '../../../modules/journeyVisitor/journeyVisitor.acl'
 
 export enum Action {
   Manage = 'manage',
@@ -44,6 +45,7 @@ export class AppCaslFactory extends CaslFactory<Role> {
     const acls = [
       hostAcl,
       journeyAcl,
+      journeyVisitorAcl,
       teamAcl,
       userTeamAcl,
       userTeamInviteAcl,
