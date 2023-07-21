@@ -32,7 +32,7 @@ export const GET_DISCOVERY_JOURNEY = gql`
 export function EmbedJourney({ slug }: Props): ReactElement {
   // need to update to be calling the right journeys
   const { data } = useQuery<GetDiscoveryJourney>(GET_DISCOVERY_JOURNEY, {
-    variables: { id: 'with-primaryimage-copy' }
+    variables: { id: `discovery-${slug}` }
   })
   const discoveryJourney = data?.discoveryJourney
   const block = transformer(discoveryJourney?.blocks as TreeBlock[])?.[0]
@@ -75,8 +75,8 @@ export function EmbedJourney({ slug }: Props): ReactElement {
           />
           <FramePortal height="100%" width="100%">
             <ThemeProvider
-              themeName={discoveryJourney?.themeName ?? ThemeName.base}
-              themeMode={discoveryJourney?.themeMode ?? ThemeMode.light}
+              themeName={ThemeName.base}
+              themeMode={ThemeMode.light}
             >
               <Box
                 sx={{
