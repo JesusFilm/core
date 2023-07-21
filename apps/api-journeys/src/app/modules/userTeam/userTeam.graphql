@@ -5,7 +5,6 @@ extend type User @key(fields: "id") {
 enum UserTeamRole {
   manager
   member
-  guest
 }
 
 type UserTeam @key(fields: "id") {

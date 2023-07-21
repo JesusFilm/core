@@ -69,7 +69,7 @@ describe('VisitorService', () => {
     }
     it('returns a visitors connection', async () => {
       expect(
-        await service.getList({ first: 50, filter: { teamId: 'jfp-team' } })
+        await service.getList({ first: 50, filter: { teamId: 'teamId' } })
       ).toEqual(connection)
       expect(prismaService.visitor.findMany).toHaveBeenCalledWith({
         cursor: undefined,
@@ -78,7 +78,7 @@ describe('VisitorService', () => {
         },
         skip: 0,
         take: 51,
-        where: { teamId: 'jfp-team' }
+        where: { teamId: 'teamId' }
       })
     })
 
@@ -86,7 +86,7 @@ describe('VisitorService', () => {
       await service.getList({
         first: 50,
         after: '1',
-        filter: { teamId: 'jfp-team' }
+        filter: { teamId: 'teamId' }
       })
       expect(prismaService.visitor.findMany).toHaveBeenCalledWith({
         cursor: { id: '1' },
@@ -95,7 +95,7 @@ describe('VisitorService', () => {
         },
         skip: 1,
         take: 51,
-        where: { teamId: 'jfp-team' }
+        where: { teamId: 'teamId' }
       })
     })
   })
