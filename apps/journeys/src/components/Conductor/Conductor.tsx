@@ -240,17 +240,20 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
       >
         <IconButton
           data-testid={`conductor${variant}Button`}
+          size="small"
           onClick={() => handleNav(activeBlock.parentOrder ?? 0, variant)}
           disabled={
             alignment === 'left' ? disableLeftButton : disableRightButton
           }
           disableRipple
           sx={{
-            mx: { xs: 4, lg: 13 },
-            color: 'primary',
-            backgroundColor: (theme) => `${theme.palette.grey[50]}26`,
+            mx: { xs: 2, lg: 8 },
+            p: 1,
+            color: (theme) => theme.palette.common.white,
+            backgroundColor: (theme) => `${theme.palette.grey[700]}33`,
             '&:hover': {
-              backgroundColor: (theme) => `${theme.palette.grey[50]}0d`
+              color: (theme) => theme.palette.common.white,
+              backgroundColor: (theme) => `${theme.palette.grey[700]}4d`
             }
           }}
         >
