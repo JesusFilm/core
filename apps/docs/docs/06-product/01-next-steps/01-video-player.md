@@ -119,3 +119,7 @@ This uses both the `fscreen` library (built on the native browser fullscreen [AP
 #### **The arclight video does not autoplay on iPhone**
 
 - Is there a video on the card before the broken autoplay video? If so, this breaks because the first video is watched to the end and autotriggers navigation to the autoplay arclight video. Since no user interaction was registered, the video does not autoplay (iPhone considers this as spam). In this case, manually set the autoplay video to `mute` or don't stack videos back to back if you want autoplay to occur. Else, raise a bug report.
+
+#### **The youtube video does not play in the embedded journey on Chrome browser**
+
+- There is a security feature on Chrome which prevents iframe youtube videos (like the one in our video player) from playing. This is a browser feature we cannot bypass. For the best embedded journey experience, favour usage of arclight and custom uploaded videos.

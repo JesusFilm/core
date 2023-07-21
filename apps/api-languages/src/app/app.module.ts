@@ -11,11 +11,9 @@ import { NestHealthModule } from '@core/nest/health'
 import TranslationModule from '@core/nest/common/TranslationModule'
 import responseCachePlugin from 'apollo-server-plugin-response-cache'
 import { LanguageModule } from './modules/language/language.module'
-import { CountryModule } from './modules/country/country.module'
 
 @Module({
   imports: [
-    CountryModule,
     LanguageModule,
     NestHealthModule,
     TranslationModule,

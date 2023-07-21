@@ -79,7 +79,7 @@ describe('UserJourneyService', () => {
   }
 
   describe('requestAccess', () => {
-    it('throws UserInputError when journey does not exist', async () => {
+    it('throws error when journey does not exist', async () => {
       prismaService.journey.findUnique = jest.fn().mockResolvedValueOnce(null)
       await service
         .requestAccess('randomJourneyId', IdType.databaseId, '1')
@@ -123,7 +123,7 @@ describe('UserJourneyService', () => {
   })
 
   describe('approveAccess', () => {
-    it('should throw UserInputError if userJourney does not exist', async () => {
+    it('should throw error if userJourney does not exist', async () => {
       prismaService.userJourney.findUnique = jest.fn().mockReturnValueOnce(null)
       await service.approveAccess('wrongId', '1').catch((error) => {
         expect(error.message).toEqual('userJourney does not exist')
