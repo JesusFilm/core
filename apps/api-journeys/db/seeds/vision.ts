@@ -10,25 +10,32 @@ const prisma = new PrismaClient()
 
 export async function vision(): Promise<void> {
   const slug = 'discovery-admin-left'
+  const existingJourney = await prisma.journey.findUnique({ where: { slug } })
+  if (existingJourney != null) {
+    await prisma.action.deleteMany({
+      where: { parentBlock: { journeyId: existingJourney.id } }
+    })
+    await prisma.block.deleteMany({ where: { journeyId: existingJourney.id } })
+  }
 
-  const existingJourney = await prisma.journey.findUnique({
-    where: { slug }
-  })
-  if (existingJourney != null) return
+  const journeyData = {
+    id: uuidv4(),
+    title: 'Discovery Journey - Vision',
+    languageId: '529',
+    themeMode: ThemeMode.dark,
+    themeName: ThemeName.base,
+    slug,
+    status: JourneyStatus.published,
+    teamId: 'jfp-team',
+    createdAt: new Date(),
+    publishedAt: new Date(),
+    featuredAt: new Date()
+  }
 
-  const journey = await prisma.journey.create({
-    data: {
-      id: uuidv4(),
-      title: 'Discovery Journey - Vision',
-      languageId: '529',
-      themeMode: ThemeMode.dark,
-      themeName: ThemeName.base,
-      slug,
-      status: JourneyStatus.published,
-      teamId: 'jfp-team',
-      createdAt: new Date(),
-      publishedAt: new Date()
-    }
+  const journey = await prisma.journey.upsert({
+    where: { id: journeyData.id },
+    create: journeyData,
+    update: journeyData
   })
 
   const step = await prisma.block.create({
