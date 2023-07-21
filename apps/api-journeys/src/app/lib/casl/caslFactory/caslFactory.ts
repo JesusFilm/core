@@ -9,6 +9,7 @@ import { userTeamAcl } from '../../../modules/userTeam/userTeam.acl'
 import { journeyAcl } from '../../../modules/journey/journey.acl'
 import { hostAcl } from '../../../modules/host/host.acl'
 import { userTeamInviteAcl } from '../../../modules/userTeamInvite/userTeamInvite.acl'
+import { visitorAcl } from '../../../modules/visitor/visitor.acl'
 
 export enum Action {
   Manage = 'manage',
@@ -40,7 +41,14 @@ export class AppCaslFactory extends CaslFactory<Role> {
     const { can, cannot, build } = new AbilityBuilder<AppAbility>(
       createPrismaAbility
     )
-    const acls = [hostAcl, journeyAcl, teamAcl, userTeamAcl, userTeamInviteAcl]
+    const acls = [
+      hostAcl,
+      journeyAcl,
+      teamAcl,
+      userTeamAcl,
+      userTeamInviteAcl,
+      visitorAcl
+    ]
     acls.forEach((acl) => acl({ can, cannot, user }))
 
     return build()
