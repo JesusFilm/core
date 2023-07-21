@@ -78,9 +78,6 @@ describe('JourneyVisitorResolver', () => {
     prismaService = module.get<PrismaService>(
       PrismaService
     ) as DeepMockProxy<PrismaService>
-    // prismaService.event.findMany = jest.fn().mockReturnValue([event])
-    // prismaService.visitor.findUnique = jest.fn().mockReturnValue(visitor)
-    // prismaService.userTeam.findUnique = jest.fn().mockReturnValue(userTeam)
   })
 
   describe('journeyVisitorsConnection', () => {
