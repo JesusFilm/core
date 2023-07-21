@@ -33,7 +33,7 @@ const activeJourneysMock: MockedResponse = {
     query: GET_ADMIN_JOURNEYS,
     variables: {
       status: [JourneyStatus.draft, JourneyStatus.published],
-      teamId: 'jfp-team'
+      teamId: 'teamId'
     }
   },
   result: {
@@ -48,7 +48,7 @@ const noJourneysMock = {
     query: GET_ADMIN_JOURNEYS,
     variables: {
       status: [JourneyStatus.draft, JourneyStatus.published],
-      teamId: 'jfp-team'
+      teamId: 'teamId'
     }
   },
   result: {
@@ -64,7 +64,7 @@ const getTeamsMock: MockedResponse<GetTeams> = {
   },
   result: {
     data: {
-      teams: [{ id: 'jfp-team', title: 'Team Title', __typename: 'Team' }]
+      teams: [{ id: 'teamId', title: 'Team Title', __typename: 'Team' }]
     }
   }
 }
