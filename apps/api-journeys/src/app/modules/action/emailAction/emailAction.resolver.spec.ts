@@ -1,7 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { PrismaService } from '../../../lib/prisma.service'
-import { JourneyService } from '../../journey/journey.service'
-import { UserJourneyService } from '../../userJourney/userJourney.service'
 import { UserRoleService } from '../../userRole/userRole.service'
 import { ActionResolver } from '../action.resolver'
 import { EmailActionResolver } from './emailAction.resolver'
@@ -37,9 +35,7 @@ describe('EmailActionResolver', () => {
       providers: [
         EmailActionResolver,
         ActionResolver,
-        UserJourneyService,
         UserRoleService,
-        JourneyService,
         PrismaService
       ]
     }).compile()
