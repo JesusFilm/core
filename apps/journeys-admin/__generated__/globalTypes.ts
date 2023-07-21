@@ -169,7 +169,6 @@ export enum UserJourneyRole {
 }
 
 export enum UserTeamRole {
-  guest = "guest",
   manager = "manager",
   member = "member",
 }
