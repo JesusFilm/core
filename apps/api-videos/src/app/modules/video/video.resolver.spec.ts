@@ -203,7 +203,7 @@ describe('VideoResolver', () => {
       prismaService.video.count = jest.fn().mockResolvedValue(2)
       expect(await resolver.childrenCount(video)).toEqual(2)
       expect(prismaService.video.count).toHaveBeenCalledWith({
-        where: { parent: { id: video.id } }
+        where: { parent: { some: { id: video.id } } }
       })
     })
   })
@@ -218,7 +218,7 @@ describe('VideoResolver', () => {
     it('returns videos by childIds without languageId', async () => {
       expect(await resolver.children(video)).toEqual([video, video])
       expect(prismaService.video.findMany).toHaveBeenCalledWith({
-        where: { parent: { id: video.id } }
+        where: { parent: { some: { id: video.id } } }
       })
     })
   })

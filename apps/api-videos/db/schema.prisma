@@ -37,8 +37,7 @@ model Video {
   slug              String?
   noIndex           Boolean?
   children          Video[]        @relation("ParentChild")
-  parentId          String?
-  parent            Video?         @relation("ParentChild", fields: [parentId], references: [id])
+  parent            Video[]        @relation("ParentChild")
   variants          VideoVariant[]
 
   @@unique([slug])

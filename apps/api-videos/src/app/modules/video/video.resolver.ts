@@ -74,7 +74,7 @@ export class VideoResolver {
   @ResolveField()
   async children(@Parent() video): Promise<Video[] | null> {
     return await this.prismaService.video.findMany({
-      where: { parent: { id: video.id } }
+      where: { parent: { some: { id: video.id } } }
     })
   }
 
@@ -136,7 +136,7 @@ export class VideoResolver {
   @ResolveField()
   async childrenCount(@Parent() video): Promise<number> {
     return await this.prismaService.video.count({
-      where: { parent: { id: video.id } }
+      where: { parent: { some: { id: video.id } } }
     })
   }
 

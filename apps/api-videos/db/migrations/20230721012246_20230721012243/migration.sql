@@ -20,7 +20,6 @@ CREATE TABLE "Video" (
     "imageAlt" JSONB[],
     "slug" TEXT,
     "noIndex" BOOLEAN,
-    "parentId" TEXT,
 
     CONSTRAINT "Video_pkey" PRIMARY KEY ("id")
 );
@@ -60,6 +59,12 @@ CREATE TABLE "VideoVariant" (
     CONSTRAINT "VideoVariant_pkey" PRIMARY KEY ("id")
 );
 
+-- CreateTable
+CREATE TABLE "_ParentChild" (
+    "A" TEXT NOT NULL,
+    "B" TEXT NOT NULL
+);
+
 -- CreateIndex
 CREATE UNIQUE INDEX "Video_slug_key" ON "Video"("slug");
 
@@ -72,8 +77,11 @@ CREATE UNIQUE INDEX "VideoVariant_languageId_videoId_key" ON "VideoVariant"("lan
 -- CreateIndex
 CREATE UNIQUE INDEX "VideoVariant_slug_key" ON "VideoVariant"("slug");
 
--- AddForeignKey
-ALTER TABLE "Video" ADD CONSTRAINT "Video_parentId_fkey" FOREIGN KEY ("parentId") REFERENCES "Video"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+-- CreateIndex
+CREATE UNIQUE INDEX "_ParentChild_AB_unique" ON "_ParentChild"("A", "B");
+
+-- CreateIndex
+CREATE INDEX "_ParentChild_B_index" ON "_ParentChild"("B");
 
 -- AddForeignKey
 ALTER TABLE "VideoTitle" ADD CONSTRAINT "VideoTitle_videoId_fkey" FOREIGN KEY ("videoId") REFERENCES "Video"("id") ON DELETE CASCADE ON UPDATE CASCADE;
@@ -83,3 +91,9 @@ ALTER TABLE "VideoVariantDownload" ADD CONSTRAINT "VideoVariantDownload_videoVar
 
 -- AddForeignKey
 ALTER TABLE "VideoVariant" ADD CONSTRAINT "VideoVariant_videoId_fkey" FOREIGN KEY ("videoId") REFERENCES "Video"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "_ParentChild" ADD CONSTRAINT "_ParentChild_A_fkey" FOREIGN KEY ("A") REFERENCES "Video"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "_ParentChild" ADD CONSTRAINT "_ParentChild_B_fkey" FOREIGN KEY ("B") REFERENCES "Video"("id") ON DELETE CASCADE ON UPDATE CASCADE;
