@@ -238,4 +238,27 @@ describe('AddJourneyButton', () => {
       ).toBeInTheDocument()
     )
   })
+
+  it('should not show add journey button when there is an active team and flags is false', async () => {
+    const result = jest.fn().mockReturnValueOnce({
+      data: {
+        teams: [{ id: 'teamId', title: 'Team Title', __typename: 'Team' }]
+      }
+    })
+    const { queryByRole } = render(
+      <MockedProvider mocks={[{ ...getTeams, result }]}>
+        <FlagsProvider flags={{ teams: false }}>
+          <TeamProvider>
+            <AddJourneyButton />
+          </TeamProvider>
+        </FlagsProvider>
+      </MockedProvider>
+    )
+    await waitFor(() => expect(result).toHaveBeenCalled())
+    await waitFor(() =>
+      expect(
+        queryByRole('button', { name: 'Create a Journey' })
+      ).toBeInTheDocument()
+    )
+  })
 })
