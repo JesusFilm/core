@@ -3,6 +3,7 @@ import { subject } from '@casl/ability'
 import {
   UserTeamRole,
   UserTeam,
+  UserTeamInvite,
   Host,
   Journey
 } from '.prisma/api-journeys-client'
@@ -19,14 +20,14 @@ describe('AppCaslFactory', () => {
     ability = await factory.createAbility(user)
   })
   describe('Host', () => {
-    it('should allow manage', () => {
+    it('allow manage when user is team mananger', () => {
       expect(
         ability.can(
           Action.Manage,
           subject('Host', {
             id: 'hostId',
             team: {
-              userTeams: [{ userId: user.id }]
+              userTeams: [{ userId: user.id, role: UserTeamRole.manager }]
             }
           } as unknown as Host)
         )
@@ -34,14 +35,14 @@ describe('AppCaslFactory', () => {
     })
   })
   describe('Journey', () => {
-    it('should allow create', () => {
+    it('allow create when user is team mananger', () => {
       expect(
         ability.can(
           Action.Create,
           subject('Journey', {
             id: 'hostId',
             team: {
-              userTeams: [{ userId: user.id }]
+              userTeams: [{ userId: user.id, role: UserTeamRole.manager }]
             }
           } as unknown as Journey)
         )
@@ -54,7 +55,7 @@ describe('AppCaslFactory', () => {
     })
   })
   describe('UserTeam', () => {
-    it('should allow manage', () => {
+    it('should allow manage when user is team mananger', () => {
       expect(
         ability.can(
           Action.Manage,
@@ -64,6 +65,23 @@ describe('AppCaslFactory', () => {
               userTeams: [{ userId: user.id, role: UserTeamRole.manager }]
             }
           } as unknown as UserTeam)
+        )
+      ).toEqual(true)
+    })
+  })
+  describe('UserTeamInvite', () => {
+    it('should allow manage when user is team mananger', () => {
+      expect(
+        ability.can(
+          Action.Manage,
+          subject('UserTeamInvite', {
+            removedAt: null,
+            acceptedAt: null,
+            id: 'userTeamInviteId',
+            team: {
+              userTeams: [{ userId: user.id, role: UserTeamRole.manager }]
+            }
+          } as unknown as UserTeamInvite)
         )
       ).toEqual(true)
     })
