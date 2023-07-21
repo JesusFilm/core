@@ -4,7 +4,6 @@ import {
   SignUpBlock,
   SignUpBlockCreateInput
 } from '../../../__generated__/graphql'
-import { JourneyService } from '../../journey/journey.service'
 import { UserJourneyService } from '../../userJourney/userJourney.service'
 import { UserRoleService } from '../../userRole/userRole.service'
 import { PrismaService } from '../../../lib/prisma.service'
@@ -81,7 +80,6 @@ describe('SignUpBlockResolver', () => {
         SignUpBlockResolver,
         UserJourneyService,
         UserRoleService,
-        JourneyService,
         PrismaService
       ]
     }).compile()

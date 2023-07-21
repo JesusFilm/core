@@ -7,28 +7,24 @@ import {
   Parent
 } from '@nestjs/graphql'
 import { UseGuards } from '@nestjs/common'
-import { GqlAuthGuard } from '@core/nest/gqlAuthGuard/GqlAuthGuard'
 import { UserTeam, Prisma } from '.prisma/api-journeys-client'
 import { subject } from '@casl/ability'
 import { GraphQLError } from 'graphql'
-import {
-  CaslAbility,
-  CaslAccessible,
-  CaslGuard
-} from '@core/nest/common/CaslAuthModule'
+import { CaslAbility, CaslAccessible } from '@core/nest/common/CaslAuthModule'
 import { PrismaService } from '../../lib/prisma.service'
 import { Action, AppAbility } from '../../lib/casl/caslFactory'
 import {
   UserTeamFilterInput,
   UserTeamUpdateInput
 } from '../../__generated__/graphql'
+import { AppCaslGuard } from '../../lib/casl/caslGuard'
 
 @Resolver('UserTeam')
 export class UserTeamResolver {
   constructor(private readonly prismaService: PrismaService) {}
 
   @Query()
-  @UseGuards(GqlAuthGuard, CaslGuard)
+  @UseGuards(AppCaslGuard)
   async userTeams(
     @CaslAccessible('UserTeam') accessibleUserTeams: Prisma.UserTeamWhereInput,
     @Args('teamId') teamId: string,
@@ -43,7 +39,7 @@ export class UserTeamResolver {
   }
 
   @Query()
-  @UseGuards(GqlAuthGuard, CaslGuard)
+  @UseGuards(AppCaslGuard)
   async userTeam(
     @CaslAbility() ability: AppAbility,
     @Args('id') id: string
@@ -63,7 +59,7 @@ export class UserTeamResolver {
   }
 
   @Mutation()
-  @UseGuards(GqlAuthGuard, CaslGuard)
+  @UseGuards(AppCaslGuard)
   async userTeamUpdate(
     @CaslAbility() ability: AppAbility,
     @Args('id') id: string,
@@ -88,7 +84,7 @@ export class UserTeamResolver {
   }
 
   @Mutation()
-  @UseGuards(GqlAuthGuard, CaslGuard)
+  @UseGuards(AppCaslGuard)
   async userTeamDelete(
     @CaslAbility() ability: AppAbility,
     @Args('id') id: string

@@ -3,6 +3,7 @@ import { MockedProvider } from '@apollo/client/testing'
 import { Story, Meta } from '@storybook/react'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { JourneyFields as Journey } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
+import { SnackbarProvider } from 'notistack'
 import { journeysConfig } from '../../libs/storybook'
 import {
   basic,
@@ -30,31 +31,33 @@ const Template: Story<ComponentProps<typeof EmbeddedPreview>> = ({
   ...args
 }): ReactElement => (
   <MockedProvider>
-    <JourneyProvider
-      value={{
-        journey: {
-          id: 'journeyId',
-          themeMode: ThemeMode.light,
-          themeName: ThemeName.base,
-          seoTitle: 'my journey',
-          language: {
-            __typename: 'Language',
-            id: '529',
-            bcp47: 'en',
-            iso3: 'eng',
-            name: [
-              {
-                __typename: 'Translation',
-                value: 'English',
-                primary: true
-              }
-            ]
-          }
-        } as unknown as Journey
-      }}
-    >
-      <EmbeddedPreview {...args} />
-    </JourneyProvider>
+    <SnackbarProvider>
+      <JourneyProvider
+        value={{
+          journey: {
+            id: 'journeyId',
+            themeMode: ThemeMode.light,
+            themeName: ThemeName.base,
+            seoTitle: 'my journey',
+            language: {
+              __typename: 'Language',
+              id: '529',
+              bcp47: 'en',
+              iso3: 'eng',
+              name: [
+                {
+                  __typename: 'Translation',
+                  value: 'English',
+                  primary: true
+                }
+              ]
+            }
+          } as unknown as Journey
+        }}
+      >
+        <EmbeddedPreview {...args} />
+      </JourneyProvider>
+    </SnackbarProvider>
   </MockedProvider>
 )
 
