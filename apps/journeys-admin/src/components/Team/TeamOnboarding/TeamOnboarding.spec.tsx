@@ -40,7 +40,7 @@ describe('TeamOnboarding', () => {
     request: {
       query: GET_USER_TEAMS_AND_INVITES,
       variables: {
-        teamId: 'jfp-team',
+        teamId: 'teamId',
         where: { role: [UserTeamRole.manager, UserTeamRole.member] }
       }
     },
@@ -102,7 +102,7 @@ describe('TeamOnboarding', () => {
     },
     result: {
       data: {
-        teams: [{ id: 'jfp-team', title: 'Team Title', __typename: 'Team' }]
+        teams: [{ id: 'teamId', title: 'Team Title', __typename: 'Team' }]
       }
     }
   }

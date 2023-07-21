@@ -3,6 +3,7 @@ import Button from '@mui/material/Button'
 import AddIcon from '@mui/icons-material/Add'
 import { useRouter } from 'next/router'
 import { useTranslation } from 'react-i18next'
+import { useFlags } from '@core/shared/ui/FlagsProvider'
 import { useJourneyCreate } from '../../../../libs/useJourneyCreate'
 import { useTeam } from '../../../Team/TeamProvider'
 
@@ -11,6 +12,7 @@ export function AddJourneyButton(): ReactElement {
   const router = useRouter()
   const { activeTeam } = useTeam()
   const { t } = useTranslation('apps-journeys-admin')
+  const { teams } = useFlags()
 
   const handleClick = async (): Promise<void> => {
     const journey = await createJourney()
@@ -23,7 +25,7 @@ export function AddJourneyButton(): ReactElement {
 
   return (
     <>
-      {activeTeam != null && (
+      {(!teams || activeTeam != null) && (
         <Button
           variant="contained"
           startIcon={<AddIcon />}

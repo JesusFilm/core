@@ -40,7 +40,7 @@ describe('UserTeamInviteForm', () => {
     },
     result: {
       data: {
-        teams: [{ id: 'jfp-team', title: 'Team Title', __typename: 'Team' }]
+        teams: [{ id: 'teamId', title: 'Team Title', __typename: 'Team' }]
       }
     }
   }
@@ -49,7 +49,7 @@ describe('UserTeamInviteForm', () => {
     request: {
       query: USER_TEAM_INVITE_CREATE,
       variables: {
-        teamId: 'jfp-team',
+        teamId: 'teamId',
         input: {
           email: 'johnTHEgeronimo@example.com'
         }
@@ -61,7 +61,7 @@ describe('UserTeamInviteForm', () => {
           __typename: 'UserTeamInvite',
           email: 'johnTHEgeronimo@example.com',
           id: 'inviteId2',
-          teamId: 'jfp-team'
+          teamId: 'teamId'
         }
       }
     }
@@ -70,7 +70,7 @@ describe('UserTeamInviteForm', () => {
   const getUserTeamMock1: MockedResponse<GetUserTeamsAndInvites> = {
     request: {
       query: GET_USER_TEAMS_AND_INVITES,
-      variables: { teamId: 'jfp-team' }
+      variables: { teamId: 'teamId' }
     },
     result: {
       data: {
@@ -93,7 +93,7 @@ describe('UserTeamInviteForm', () => {
           {
             id: 'inviteId',
             email: 'edmondshen@example.com',
-            teamId: 'jfp-team',
+            teamId: 'teamId',
             __typename: 'UserTeamInvite'
           }
         ]
@@ -234,7 +234,7 @@ describe('UserTeamInviteForm', () => {
         __typename: 'UserTeamInvite',
         email: 'johnTHEgeronimo@example.com',
         id: 'inviteId2',
-        teamId: 'jfp-team'
+        teamId: 'teamId'
       })
     })
   })

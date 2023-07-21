@@ -10,6 +10,7 @@ import Button from '@mui/material/Button'
 import DashboardRounded from '@mui/icons-material/DashboardRounded'
 import { useRouter } from 'next/router'
 import ViewCarouselIcon from '@mui/icons-material/ViewCarousel'
+import { useFlags } from '@core/shared/ui/FlagsProvider'
 import { SidePanelContainer } from '../NewPageWrapper/SidePanelContainer'
 import { MediaListItem } from '../MediaListItem'
 import { GetOnboardingTemplate } from '../../../__generated__/GetOnboardingTemplate'
@@ -34,6 +35,7 @@ export function OnboardingPanelContent(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { activeTeam } = useTeam()
   const router = useRouter()
+  const { teams } = useFlags()
 
   const { createJourney, loading } = useJourneyCreate()
 
@@ -75,7 +77,7 @@ export function OnboardingPanelContent(): ReactElement {
 
   return (
     <>
-      {activeTeam != null && (
+      {(!teams || activeTeam != null) && (
         <SidePanelContainer>
           <ContainedIconButton
             label={t('Create Custom Journey')}

@@ -44,7 +44,7 @@ const getTeams: MockedResponse<GetTeams> = {
   },
   result: {
     data: {
-      teams: [{ id: 'jfp-team', title: 'Team Title', __typename: 'Team' }]
+      teams: [{ id: 'teamId', title: 'Team Title', __typename: 'Team' }]
     }
   }
 }
@@ -52,7 +52,7 @@ const getTeams: MockedResponse<GetTeams> = {
 const getUserTeamMock1: MockedResponse<GetUserTeamsAndInvites> = {
   request: {
     query: GET_USER_TEAMS_AND_INVITES,
-    variables: { teamId: 'jfp-team' }
+    variables: { teamId: 'teamId' }
   },
   result: {
     data: {

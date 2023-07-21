@@ -17,7 +17,7 @@ const mocks = [
   {
     request: {
       query: GET_USER_TEAMS_AND_INVITES,
-      variables: { teamId: 'jfp-team' }
+      variables: { teamId: 'teamId' }
     },
     result: {
       data: {
@@ -53,7 +53,7 @@ const mocks = [
     },
     result: {
       data: {
-        teams: [{ id: 'jfp-team', title: 'Team Title', __typename: 'Team' }]
+        teams: [{ id: 'teamId', title: 'Team Title', __typename: 'Team' }]
       }
     }
   },
