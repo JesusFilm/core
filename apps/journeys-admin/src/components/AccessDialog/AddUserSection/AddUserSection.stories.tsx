@@ -22,7 +22,7 @@ const Template: Story = () => {
       value={{ journey: { id: 'journeyId' } as unknown as Journey }}
     >
       <MockedProvider>
-        <AddUserSection users={[]} />
+        <AddUserSection users={[]} journeyId="journeyId" />
       </MockedProvider>
     </JourneyProvider>
   )
