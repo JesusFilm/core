@@ -346,24 +346,6 @@ type CloudflareVideo
   readyToStream: Boolean!
 }
 
-type Country
-  @join__type(graph: LANGUAGES, key: "id")
-{
-  id: ID!
-  name(languageId: ID, primary: Boolean): [Translation!]!
-  population: Int!
-  continent(languageId: ID, primary: Boolean): [Translation!]!
-
-  """
-  slug is a permanent link to the country. It should only be appended, not edited or deleted
-  """
-  slug(languageId: ID, primary: Boolean): [Translation!]!
-  languages: [Language!]!
-  latitude: Float!
-  longitude: Float!
-  image: String
-}
-
 scalar DateTime
   @join__type(graph: JOURNEYS)
 
@@ -578,11 +560,10 @@ enum IconSize
 
 enum IdType
   @join__type(graph: JOURNEYS)
-  @join__type(graph: LANGUAGES)
   @join__type(graph: VIDEOS)
 {
-  databaseId @join__enumValue(graph: JOURNEYS) @join__enumValue(graph: LANGUAGES) @join__enumValue(graph: VIDEOS)
-  slug @join__enumValue(graph: JOURNEYS) @join__enumValue(graph: LANGUAGES) @join__enumValue(graph: VIDEOS)
+  databaseId @join__enumValue(graph: JOURNEYS) @join__enumValue(graph: VIDEOS)
+  slug @join__enumValue(graph: JOURNEYS) @join__enumValue(graph: VIDEOS)
 }
 
 type ImageBlock implements Block
@@ -1277,8 +1258,6 @@ type Query
 
   """Get a single visitor"""
   visitor(id: ID!): Visitor! @join__field(graph: JOURNEYS)
-  countries: [Country!]! @join__field(graph: LANGUAGES)
-  country(id: ID!, idType: IdType): Country! @join__field(graph: LANGUAGES)
   languages(offset: Int, limit: Int): [Language!]! @join__field(graph: LANGUAGES)
   language(id: ID!, idType: LanguageIdType): Language @join__field(graph: LANGUAGES)
   getMyCloudflareImages: [CloudflareImage] @join__field(graph: MEDIA)

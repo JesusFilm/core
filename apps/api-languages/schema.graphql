@@ -17,39 +17,6 @@ enum CacheControlScope {
   PRIVATE
 }
 
-enum IdType {
-  databaseId
-  slug
-}
-
-type Country
-  @key(fields: "id")
-  @cacheControl(maxAge: 86400)
-{
-  id: ID!
-  name(languageId: ID, primary: Boolean): [Translation!]!
-  population: Int!
-  continent(languageId: ID, primary: Boolean): [Translation!]!
-
-  """
-  slug is a permanent link to the country. It should only be appended, not edited or deleted
-  """
-  slug(languageId: ID, primary: Boolean): [Translation!]!
-  languages: [Language!]!
-  latitude: Float!
-  longitude: Float!
-  image: String
-}
-
-type Query {
-  countries: [Country!]! @cacheControl(maxAge: 86400)
-  country(id: ID!, idType: IdType): Country! @cacheControl(maxAge: 86400)
-  languages(offset: Int, limit: Int): [Language!]! @cacheControl(maxAge: 86400)
-  language(id: ID!, idType: LanguageIdType): Language @cacheControl(maxAge: 86400)
-  _entities(representations: [_Any!]!): [_Entity]!
-  _service: _Service!
-}
-
 type Language
   @key(fields: "id")
   @cacheControl(maxAge: 86400)
@@ -63,6 +30,13 @@ type Language
 enum LanguageIdType {
   databaseId
   bcp47
+}
+
+type Query {
+  languages(offset: Int, limit: Int): [Language!]! @cacheControl(maxAge: 86400)
+  language(id: ID!, idType: LanguageIdType): Language @cacheControl(maxAge: 86400)
+  _entities(representations: [_Any!]!): [_Entity]!
+  _service: _Service!
 }
 
 type Translation {
@@ -79,4 +53,4 @@ type _Service {
   sdl: String
 }
 
-union _Entity = Country | Language
+union _Entity = Language

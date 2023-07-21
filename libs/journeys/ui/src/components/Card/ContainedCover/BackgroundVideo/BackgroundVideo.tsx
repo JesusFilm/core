@@ -9,6 +9,9 @@ import {
 import { TreeBlock } from '../../../../libs/block'
 import { VideoFields } from '../../../Video/__generated__/VideoFields'
 
+import 'videojs-youtube'
+import 'video.js/dist/video-js.css'
+
 interface BackgroundVideoProps extends TreeBlock<VideoFields> {
   setLoading: (loading: boolean) => void
 }
