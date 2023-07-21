@@ -2,6 +2,7 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { ReactElement } from 'react'
 import userEvent from '@testing-library/user-event'
+import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 import { GET_TEAMS, TeamProvider, useTeam } from '../TeamProvider'
 import { GetTeams } from '../../../../__generated__/GetTeams'
 import { OnboardingPanelContent } from '../../OnboardingPanelContent'
@@ -60,11 +61,13 @@ describe('TeamSelect', () => {
   it('removes create journey buttons when on Shared With Me team', async () => {
     const { getByRole, queryByRole } = render(
       <MockedProvider mocks={[]}>
-        <TeamProvider>
-          <TeamSelect />
-          <OnboardingPanelContent />
-          <AddJourneyButton />
-        </TeamProvider>
+        <FlagsProvider flags={{ teams: true }}>
+          <TeamProvider>
+            <TeamSelect />
+            <OnboardingPanelContent />
+            <AddJourneyButton />
+          </TeamProvider>
+        </FlagsProvider>
       </MockedProvider>
     )
     await waitFor(() =>
