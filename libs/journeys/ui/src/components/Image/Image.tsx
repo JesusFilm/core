@@ -40,6 +40,7 @@ export function Image({
           blurDataURL={placeholderSrc ?? src}
           layout="responsive"
           objectFit="cover"
+          loading="eager"
         />
       ) : (
         <Paper
