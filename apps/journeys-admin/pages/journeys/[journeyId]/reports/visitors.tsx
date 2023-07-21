@@ -5,7 +5,7 @@ import {
   withAuthUserTokenSSR
 } from 'next-firebase-auth'
 import { useRouter } from 'next/router'
-import { ReactElement, useEffect, useState } from 'react'
+import { ReactElement, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { NextSeo } from 'next-seo'
 import { gql, useQuery } from '@apollo/client'
@@ -102,7 +102,7 @@ function JourneyVisitorsPage(): ReactElement {
   const [hideInteractive, setHideInterActive] = useState(false)
   const [sortSetting, setSortSetting] = useState<'date' | 'duration'>('date')
 
-  const { fetchMore, loading, refetch } = useQuery<GetJourneyVisitors>(
+  const { fetchMore, loading } = useQuery<GetJourneyVisitors>(
     GET_JOURNEY_VISITORS,
     {
       variables: {
@@ -126,7 +126,7 @@ function JourneyVisitorsPage(): ReactElement {
   )
 
   async function handleFetchNext(): Promise<void> {
-    if (hasNextPage) {
+    if (visitorEdges != null && hasNextPage) {
       const response = await fetchMore({
         variables: {
           filter: { journeyId },
@@ -142,45 +142,7 @@ function JourneyVisitorsPage(): ReactElement {
     }
   }
 
-  useEffect(() => {
-    const handleRefetchOnChange = async (): Promise<void> => {
-      const response = await refetch({
-        variables: {
-          filter: {
-            journeyId,
-            hasChatStarted: chatStarted,
-            hasPollAnswers: withPollAnswers,
-            hasTextResponse: withSubmittedText,
-            hasIcon: withIcon,
-            hideInactive: hideInteractive
-          },
-          first: 100,
-          after: endCursor,
-          sort: sortSetting
-        }
-      })
-
-      if (response.data.visitors.edges != null) {
-        setVisitorEdges([...response.data.visitors.edges])
-        setHasNextPage(response.data.visitors.pageInfo.hasNextPage)
-        setEndCursor(response.data.visitors.pageInfo.endCursor)
-      }
-    }
-    void handleRefetchOnChange()
-  }, [
-    chatStarted,
-    withPollAnswers,
-    withSubmittedText,
-    withIcon,
-    hideInteractive,
-    journeyId,
-    endCursor,
-    sortSetting,
-    refetch,
-    hasNextPage
-  ])
-
-  const handleChange = (e): void => {
+  const handleChange = async (e): Promise<void> => {
     switch (e.target.value) {
       case 'Chat Started':
         setChatStarted(e.target.checked as boolean)
