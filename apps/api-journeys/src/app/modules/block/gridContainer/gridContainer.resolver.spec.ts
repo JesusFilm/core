@@ -1,5 +1,4 @@
 import { Test, TestingModule } from '@nestjs/testing'
-import { JourneyService } from '../../journey/journey.service'
 import { UserJourneyService } from '../../userJourney/userJourney.service'
 import { UserRoleService } from '../../userRole/userRole.service'
 import { BlockResolver } from '../block.resolver'
@@ -28,7 +27,6 @@ describe('GridContainerResolver', () => {
         BlockService,
         UserJourneyService,
         UserRoleService,
-        JourneyService,
         PrismaService
       ]
     }).compile()

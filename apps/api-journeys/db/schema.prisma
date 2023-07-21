@@ -196,7 +196,7 @@ model UserTeam {
   teamId    String
   team      Team         @relation(fields: [teamId], references: [id], onDelete: Cascade)
   userId    String
-  role      UserTeamRole @default(guest)
+  role      UserTeamRole @default(member)
   createdAt DateTime     @default(now())
   updatedAt DateTime     @updatedAt
 
@@ -222,7 +222,6 @@ model UserTeamInvite {
 enum UserTeamRole {
   manager
   member
-  guest
 }
 
 enum UserJourneyRole {
