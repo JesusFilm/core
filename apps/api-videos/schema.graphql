@@ -96,9 +96,7 @@ type VideoVariantDownload {
   url: String!
 }
 
-type VideoVariant
-  @key(fields: "id")
-{
+type VideoVariant {
   id: String!
   hls: String
   downloads: [VideoVariantDownload!]!
@@ -125,4 +123,4 @@ type _Service {
   sdl: String
 }
 
-union _Entity = Language | Video | VideoVariant
+union _Entity = Language | Video

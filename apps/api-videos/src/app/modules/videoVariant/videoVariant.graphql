@@ -9,7 +9,7 @@ type VideoVariantDownload {
   url: String!
 }
 
-type VideoVariant @key(fields: "id") {
+type VideoVariant {
   id: String!
   hls: String
   downloads: [VideoVariantDownload!]!
