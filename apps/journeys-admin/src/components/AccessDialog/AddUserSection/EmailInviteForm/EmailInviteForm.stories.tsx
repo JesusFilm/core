@@ -21,7 +21,7 @@ const Template: Story = ({ ...args }) => {
             <Typography variant="body2" gutterBottom>
               {state}
             </Typography>
-            <EmailInviteForm users={[]} />
+            <EmailInviteForm users={[]} journeyId="journeyId" />
           </Stack>
         ))}
       </>

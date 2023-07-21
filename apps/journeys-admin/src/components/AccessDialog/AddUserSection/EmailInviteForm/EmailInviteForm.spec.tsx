@@ -20,7 +20,7 @@ describe('EmailInviteForm', () => {
     const { getByRole, getAllByText } = render(
       <SnackbarProvider>
         <MockedProvider>
-          <EmailInviteForm users={[]} />
+          <EmailInviteForm users={[]} journeyId="journeyId" />
         </MockedProvider>
       </SnackbarProvider>
     )
@@ -46,7 +46,7 @@ describe('EmailInviteForm', () => {
     const { getByRole, getByText } = render(
       <SnackbarProvider>
         <MockedProvider>
-          <EmailInviteForm users={[]} />
+          <EmailInviteForm users={[]} journeyId="journeyId" />
         </MockedProvider>
       </SnackbarProvider>
     )
@@ -67,7 +67,10 @@ describe('EmailInviteForm', () => {
     const { getByRole, getByText } = render(
       <SnackbarProvider>
         <MockedProvider>
-          <EmailInviteForm users={['edmondshenwashere@gmail.com']} />
+          <EmailInviteForm
+            users={['edmondshenwashere@gmail.com']}
+            journeyId="journeyId"
+          />
         </MockedProvider>
       </SnackbarProvider>
     )
@@ -86,7 +89,7 @@ describe('EmailInviteForm', () => {
     const { getByRole, getByText } = render(
       <SnackbarProvider>
         <MockedProvider>
-          <EmailInviteForm users={['admin@email.com']} />
+          <EmailInviteForm users={['admin@email.com']} journeyId="journeyId" />
         </MockedProvider>
       </SnackbarProvider>
     )
@@ -145,7 +148,7 @@ describe('EmailInviteForm', () => {
               }
             ]}
           >
-            <EmailInviteForm users={[]} />
+            <EmailInviteForm users={[]} journeyId="journeyId" />
           </MockedProvider>
         </SnackbarProvider>
       </JourneyProvider>
