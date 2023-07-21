@@ -10,7 +10,6 @@ import {
 } from '@nestjs/graphql'
 import { FieldNode, GraphQLResolveInfo, Kind } from 'graphql'
 import { Video, VideoVariant, VideoTitle } from '.prisma/api-videos-client'
-import compact from 'lodash/compact'
 
 import { IdType, VideosFilter } from '../../__generated__/graphql'
 import { PrismaService } from '../../lib/prisma.service'
@@ -51,12 +50,14 @@ export class VideoResolver {
   ): Promise<Video | null> {
     switch (idType) {
       case IdType.databaseId:
-        return await this.videoService.getVideo(
-          id,
-          this.extractVariantLanguageId(info)
-        )
+        return await this.prismaService.video.findUnique({
+          where: { id }
+        })
       case IdType.slug:
-        return await this.videoService.getVideoBySlug(id)
+        console.log('hi')
+        return await this.prismaService.video.findFirst({
+          where: { variants: { some: { slug: id } } }
+        })
     }
   }
 
@@ -64,12 +65,10 @@ export class VideoResolver {
   async resolveReference(reference: {
     __typename: 'Video'
     id: string
-    primaryLanguageId?: string | null
   }): Promise<Video | null> {
-    return await this.videoService.getVideo(
-      reference.id,
-      reference.primaryLanguageId ?? undefined
-    )
+    return await this.prismaService.video.findUnique({
+      where: { id: reference.id }
+    })
   }
 
   @ResolveField()
@@ -161,6 +160,26 @@ export class VideoResolver {
         }
       }
     })
+  }
+
+  @ResolveField('variantLanguages')
+  async variantLanguages(@Parent() video): Promise<Array<{ id: string }>> {
+    const result = await this.prismaService.videoVariant.findMany({
+      where: { videoId: video.id },
+      select: { languageId: true }
+    })
+    return result.map(({ languageId }) => ({ id: languageId }))
+  }
+
+  @ResolveField('variantLanguagesWithSlug')
+  async variantLanguagesWithSlug(
+    @Parent() video
+  ): Promise<Array<{ slug: string; languageId: string }>> {
+    const result = await this.prismaService.videoVariant.findMany({
+      where: { videoId: video.id },
+      select: { languageId: true, slug: true }
+    })
+    return result.map(({ slug, languageId }) => ({ slug, languageId }))
   }
 
   private extractVariantLanguageId(

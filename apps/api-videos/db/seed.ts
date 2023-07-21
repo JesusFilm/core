@@ -42,26 +42,54 @@ async function importMediaComponents(): Promise<void> {
       page
     )
     for (const video of videos) {
+      console.log('processing video:', video.id)
       if (video.id == null) continue
       // way too slow/clumsy to handle upserts of video variants and downloads individually
-      await prisma.video.deleteMany({ where: { id: video.id } })
-      await prisma.video.create({
-        data: omit(video, ['childIds', 'variants'])
+      await prisma.video.upsert({
+        where: { id: video.id },
+        create: omit(video, ['childIds', 'variants']),
+        update: {
+          ...omit(video, ['childIds', 'variants']),
+          variants: { deleteMany: {} },
+          title: { deleteMany: {}, create: video.title?.create ?? undefined }
+        }
       })
 
       // nested limit can be reached if too much variant data
-      for (const variant of video.variants) {
-        const variantData = omit(variant, ['downloads'])
-        await prisma.videoVariant.create({
-          data: {
-            ...variantData,
-            videoId: video.id,
-            downloads: {
-              create: variant.downloads
-            }
-          }
+      let i = 0
+      const numberToProcessSimultaneously = 500
+      do {
+        console.log(
+          'processing video variants:',
+          `${i} to ${i + numberToProcessSimultaneously}`
+        )
+        const variants = video.variants.slice(
+          i,
+          i + numberToProcessSimultaneously
+        )
+
+        await prisma.videoVariant.createMany({
+          data: variants.map((variant) => ({
+            ...omit(variant, ['downloads']),
+            videoId: video.id
+          }))
         })
-      }
+
+        const downloads = variants
+          .map((variant) =>
+            variant.downloads?.map((download) => ({
+              videoVariantId: variant.id,
+              ...download
+            }))
+          )
+          .flat()
+          .filter((download) => download != null)
+        if (downloads.length > 0)
+          await prisma.videoVariantDownload.createMany({
+            data: downloads as unknown as Prisma.VideoVariantDownloadCreateManyInput[]
+          })
+        i += numberToProcessSimultaneously
+      } while (i < video.variants.length)
       videoChildIds[video.id] = video.childIds
     }
     const duration = new Date().getTime() - startTime
@@ -70,6 +98,7 @@ async function importMediaComponents(): Promise<void> {
     page++
   } while (videos.length > 0)
   for (const [key, value] of Object.entries(videoChildIds)) {
+    if (value.length === 0) continue
     await prisma.video.update({
       where: { id: key },
       data: {

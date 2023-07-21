@@ -2638,7 +2638,7 @@ type VideoTriggerBlock implements Block
 }
 
 type VideoVariant
-  @join__type(graph: VIDEOS)
+  @join__type(graph: VIDEOS, key: "id")
 {
   id: String!
   hls: String

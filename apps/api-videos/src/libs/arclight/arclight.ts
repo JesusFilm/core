@@ -62,39 +62,6 @@ export interface ArclightMediaComponentLanguage {
   }
 }
 
-// interface Download {
-//   quality: string
-//   size: number
-//   url: string
-// }
-
-// interface VideoVariant {
-//   id: string
-//   subtitle: Translation[]
-//   hls?: string
-//   languageId: string
-//   duration: number
-//   downloads: Download[]
-//   slug: string
-// }
-
-// export interface Video {
-//   _key: string
-//   label: string
-//   primaryLanguageId: string
-//   title: Translation[]
-//   seoTitle: Translation[]
-//   snippet: Translation[]
-//   description: Translation[]
-//   studyQuestions: Translation[]
-//   image: string
-//   imageAlt: Translation[]
-//   variants: VideoVariant[]
-//   slug: string
-//   childIds: string[]
-//   noIndex: boolean
-// }
-
 async function fetchPlus(
   url: RequestInfo,
   init?: RequestInit,

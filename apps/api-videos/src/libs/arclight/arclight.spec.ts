@@ -13,7 +13,6 @@ import {
   Language,
   transformArclightMediaLanguageToLanguage,
   MediaComponent,
-  Video,
   fetchMediaComponentsAndTransformToVideos,
   fetchMediaLanguagesAndTransformToLanguages
 } from './arclight'
@@ -262,7 +261,7 @@ describe('arclight', () => {
           language
         )
       ).toEqual({
-        ...videoVariant,
+        ...omit(videoVariant, 'downloads'),
         subtitle: [],
         hls: null,
         videoId: mediaComponent.mediaComponentId
@@ -278,7 +277,7 @@ describe('arclight', () => {
           language
         )
       ).toEqual({
-        ...videoVariant,
+        ...omit(videoVariant, 'downloads'),
         duration: 0,
         hls: null,
         subtitle: [],
@@ -378,7 +377,7 @@ describe('arclight', () => {
         slug: 'english'
       }
     ]
-    const video: Video = {
+    const video = {
       id: 'mediaComponentId',
       childIds: [],
       description: [
