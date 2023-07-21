@@ -413,7 +413,13 @@ export class JourneyResolver {
               }
             })
             const duplicateJourney = await tx.journey.findUnique({
-              where: { id: duplicateJourneyId }
+              where: { id: duplicateJourneyId },
+              include: {
+                userJourneys: true,
+                team: {
+                  include: { userTeams: true }
+                }
+              }
             })
             if (duplicateJourney == null)
               throw new GraphQLError('journey not found', {
@@ -566,7 +572,13 @@ export class JourneyResolver {
     @Args('id') id: string
   ): Promise<Journey> {
     const journey = await this.prismaService.journey.findUnique({
-      where: { id }
+      where: { id },
+      include: {
+        userJourneys: true,
+        team: {
+          include: { userTeams: true }
+        }
+      }
     })
     if (journey == null)
       throw new GraphQLError('journey not found', {
@@ -666,7 +678,13 @@ export class JourneyResolver {
     @Args('input') input: JourneyTemplateInput
   ): Promise<Journey> {
     const journey = await this.prismaService.journey.findUnique({
-      where: { id }
+      where: { id },
+      include: {
+        userJourneys: true,
+        team: {
+          include: { userTeams: true }
+        }
+      }
     })
     if (journey == null)
       throw new GraphQLError('journey not found', {
