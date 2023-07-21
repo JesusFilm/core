@@ -42,6 +42,11 @@ export function ShareDialog({ url, open, closeDialog }: Props): ReactElement {
     })
   }
 
+  let element: HTMLElement | undefined
+  if (typeof window !== 'undefined') {
+    element = document.getElementById('embedded-preview') ?? document.body
+  }
+
   return (
     <Dialog
       open={open}
@@ -50,6 +55,7 @@ export function ShareDialog({ url, open, closeDialog }: Props): ReactElement {
         title: t('Share'),
         closeButton: true
       }}
+      container={element}
     >
       <Stack direction="row" justifyContent="space-around">
         <Stack
