@@ -96,6 +96,7 @@ describe('ApproveUser', () => {
             id="userId"
             email="invite@email.com"
             onClick={handleClick}
+            journeyId="journeyId"
           />
         </MockedProvider>
       </JourneyProvider>
