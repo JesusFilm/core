@@ -18,12 +18,12 @@ describe('FooterButtonList', () => {
   })
 
   it('should show like and dislike button', () => {
-    const { getAllByTestId } = render(
+    const { getByTestId } = render(
       <SnackbarProvider>
         <FooterButtonList />
       </SnackbarProvider>
     )
-    expect(getAllByTestId('ThumbsUpIcon')).toHaveLength(1)
-    expect(getAllByTestId('ThumbsDownIcon')).toHaveLength(1)
+    expect(getByTestId('ThumbsUpIcon')).toBeInTheDocument()
+    expect(getByTestId('ThumbsDownIcon')).toBeInTheDocument()
   })
 })

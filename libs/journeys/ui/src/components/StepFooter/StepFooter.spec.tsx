@@ -1,4 +1,4 @@
-import { fireEvent, render, waitFor } from '@testing-library/react'
+import { fireEvent, render } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
 import { SnackbarProvider } from 'notistack'
 import {
@@ -147,21 +147,5 @@ describe('StepFooter', () => {
 
     expect(onFooterClick).toBeCalledTimes(1)
     expect(getByTestId('Plus2Icon')).toBeInTheDocument()
-  })
-
-  it('should render the like and dislike button', async () => {
-    const { getAllByTestId } = render(
-      <MockedProvider>
-        <SnackbarProvider>
-          <JourneyProvider value={{ journey }}>
-            <StepFooter onFooterClick={jest.fn()} />
-          </JourneyProvider>
-        </SnackbarProvider>
-      </MockedProvider>
-    )
-    await waitFor(() => {
-      expect(getAllByTestId('ThumbsUpIcon')[0]).toBeInTheDocument()
-      expect(getAllByTestId('ThumbsDownIcon')[0]).toBeInTheDocument()
-    })
   })
 })

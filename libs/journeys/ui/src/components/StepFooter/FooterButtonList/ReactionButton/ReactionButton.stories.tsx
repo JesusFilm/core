@@ -19,8 +19,8 @@ const Template: Story<ComponentProps<typeof ReactionButton>> = () => (
     justifyContent="start"
   >
     <Stack direction="column" gap={4} justifyContent="center">
-      <Typography>Like Icon</Typography>
-      <Typography>Thumbsdown Icon</Typography>
+      <Typography>ThumbsUp Icon</Typography>
+      <Typography>ThumbsDown Icon</Typography>
     </Stack>
     <Stack direction="column" gap={4} alignItems="center">
       <ReactionButton variant="thumbsup" />

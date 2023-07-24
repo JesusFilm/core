@@ -7,12 +7,12 @@ jest.mock('@mui/material/useMediaQuery', () => ({
 }))
 
 describe('ReactionButton', () => {
-  it('should render thumbs up or like button', () => {
+  it('should render thumbs up button', () => {
     const { getByTestId } = render(<ReactionButton variant="thumbsup" />)
     expect(getByTestId('ThumbsUpIcon')).toBeInTheDocument()
   })
 
-  it('should render thumbs down or dislike button', () => {
+  it('should render thumbs down button', () => {
     const { getByTestId } = render(<ReactionButton variant="thumbsdown" />)
     expect(getByTestId('ThumbsDownIcon')).toBeInTheDocument()
   })

@@ -3,10 +3,8 @@ import ThumbsUp from '@core/shared/ui/icons/ThumbsUp'
 import ThumbsDown from '@core/shared/ui/icons/ThumbsDown'
 import { StyledFooterButton } from '../StyledFooterButton'
 
-type ReactionVariant = 'thumbsup' | 'thumbsdown'
-
 interface ReactionButtonProps {
-  variant: ReactionVariant
+  variant: 'thumbsup' | 'thumbsdown'
 }
 
 export function ReactionButton({ variant }: ReactionButtonProps): ReactElement {
