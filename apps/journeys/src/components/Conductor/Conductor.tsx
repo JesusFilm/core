@@ -1,23 +1,16 @@
-import { createElement, ReactElement, useEffect, useState } from 'react'
+import { ReactElement, useEffect, useState } from 'react'
 import SwiperCore, { Pagination } from 'swiper'
 import { Swiper, SwiperSlide } from 'swiper/react'
 import Box from '@mui/material/Box'
 import Fade from '@mui/material/Fade'
 import Stack from '@mui/material/Stack'
-import IconButton from '@mui/material/IconButton'
 import { useTheme, styled } from '@mui/material/styles'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { getStepTheme } from '@core/journeys/ui/getStepTheme'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
-import {
-  nextActiveBlock,
-  prevActiveBlock,
-  useBlocks
-} from '@core/journeys/ui/block'
+import { useBlocks } from '@core/journeys/ui/block'
 import { BlockRenderer } from '@core/journeys/ui/BlockRenderer'
-import ChevronLeftIcon from '@core/shared/ui/icons/ChevronLeft'
-import ChevronRightIcon from '@core/shared/ui/icons/ChevronRight'
 import { gql, useMutation } from '@apollo/client'
 import { getJourneyRTL } from '@core/journeys/ui/rtl'
 import { StepHeader } from '@core/journeys/ui/StepHeader'
@@ -26,13 +19,13 @@ import { StepFooter } from '@core/journeys/ui/StepFooter'
 import Div100vh from 'react-div-100vh'
 import { v4 as uuidv4 } from 'uuid'
 import TagManager from 'react-gtm-module'
-import last from 'lodash/last'
 import { JourneyViewEventCreate } from '../../../__generated__/JourneyViewEventCreate'
 import { StepFields } from '../../../__generated__/StepFields'
 import { VisitorUpdateInput } from '../../../__generated__/globalTypes'
 
 import 'swiper/swiper.min.css'
 import 'swiper/components/pagination/pagination.min.css'
+import { NavigationButton } from './NavigationButton'
 
 SwiperCore.use([Pagination])
 
@@ -67,15 +60,6 @@ export const JOURNEY_VISITOR_UPDATE = gql`
     }
   }
 `
-
-const LeftNavigationContainer = styled(Box)`
-  /* @noflip */
-  left: 0;
-`
-const RightNavigationContainer = styled(Box)`
-  /* @noflip */
-  right: 0;
-`
 interface ConductorProps {
   blocks: TreeBlock[]
 }
@@ -84,26 +68,18 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
   const {
     setTreeBlocks,
     setBlockHistory,
+    setShowNavigation,
     treeBlocks,
     blockHistory,
-    showHeaderFooter,
-    showNavigation
+    showHeaderFooter
   } = useBlocks()
   const [swiper, setSwiper] = useState<SwiperCore>()
-  const [slideTransitioning, setSlideTransitioning] = useState(false)
   const theme = useTheme()
   const { journey, admin } = useJourney()
   const { locale, rtl } = getJourneyRTL(journey)
   const activeBlock = blockHistory[
     blockHistory.length - 1
   ] as TreeBlock<StepFields>
-
-  const onFirstStep = activeBlock === treeBlocks[0]
-  const onLastStep = activeBlock === last(treeBlocks)
-  const showLeftButton = (!rtl && !onFirstStep) || (rtl && !onLastStep)
-  const showRightButton = (!rtl && !onLastStep) || (rtl && !onFirstStep)
-  const disableLeftButton = rtl && activeBlock?.locked
-  const disableRightButton = !rtl && activeBlock?.locked
 
   const [journeyViewEventCreate] = useMutation<JourneyViewEventCreate>(
     JOURNEY_VIEW_EVENT_CREATE
@@ -114,9 +90,6 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
   )
 
   useEffect(() => {
-    setTreeBlocks(blocks)
-    setBlockHistory([blocks[0]])
-
     if (!admin && journey != null) {
       const id = uuidv4()
       void journeyViewEventCreate({
@@ -170,98 +143,23 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
 
   useEffect(() => {
     setTreeBlocks(blocks)
-  }, [setTreeBlocks, blocks])
+    setBlockHistory([blocks[0]])
+  }, [setTreeBlocks, setBlockHistory, blocks])
 
   // Update Swiper - navigate to activeBlock after NavigateBlockAction & going back to node of a branch
   useEffect(() => {
-    if (swiper != null && blockHistory.length > 0) {
+    if (
+      swiper != null &&
+      blockHistory.length > 0 &&
+      blockHistory[blockHistory.length - 1] != null
+    ) {
       const activeIndex = blockHistory[blockHistory.length - 1].parentOrder
       if (activeIndex != null && swiper.activeIndex !== activeIndex) {
         const allowFurtherOnSlideChange = false
-        swiper.slideTo(activeIndex, 0, allowFurtherOnSlideChange)
+        swiper.slideTo(activeIndex, 300, allowFurtherOnSlideChange)
       }
     }
-    setSlideTransitioning(false)
   }, [swiper, blockHistory])
-
-  // Update activeBlock after Swiper swipe/tap navigation
-  function handleNav(activeIndex: number, direction: 'next' | 'prev'): void {
-    const activeBlock = treeBlocks[activeIndex] as TreeBlock<StepFields>
-
-    if (direction === 'next' && !activeBlock.locked) {
-      const targetBlockId =
-        activeBlock.nextBlockId ??
-        (activeIndex < treeBlocks.length - 1
-          ? treeBlocks[activeIndex + 1].id
-          : null)
-      if (targetBlockId != null) nextActiveBlock({ id: targetBlockId })
-    } else {
-      const targetBlockId = activeIndex >= 0 ? treeBlocks[activeIndex].id : null
-      if (targetBlockId != null) prevActiveBlock({ id: targetBlockId })
-    }
-  }
-
-  const Navigation = ({
-    variant
-  }: {
-    variant: 'prev' | 'next'
-  }): ReactElement => {
-    // Issue using https://mui.com/material-ui/guides/right-to-left/#emotion-amp-styled-components for justifyContent
-    const alignment =
-      (rtl && variant === 'next') || (!rtl && variant === 'prev')
-        ? 'left'
-        : 'right'
-    const alignSx =
-      alignment === 'left'
-        ? { justifyContent: 'flex-start' }
-        : { justifyContent: 'flex-end' }
-
-    const iconName = alignment === 'left' ? ChevronLeftIcon : ChevronRightIcon
-    const icon = createElement(iconName, {
-      fontSize: 'large'
-    })
-    const NavigationContainer =
-      alignment === 'left' ? LeftNavigationContainer : RightNavigationContainer
-
-    return (
-      <NavigationContainer
-        data-testid={`${variant.toLowerCase()}NavContainer`}
-        sx={{
-          ...alignSx,
-          position: 'absolute',
-          top: { xs: '20%', sm: '32%', md: '20%' },
-          bottom: 0,
-          zIndex: 2,
-          display: slideTransitioning ? 'none' : 'flex',
-          width: { xs: 82, lg: 114 },
-          height: { xs: '55%', sm: '25%', md: '60%', lg: '59%' },
-          alignItems: 'center'
-        }}
-      >
-        <IconButton
-          data-testid={`conductor${variant}Button`}
-          size="small"
-          onClick={() => handleNav(activeBlock.parentOrder ?? 0, variant)}
-          disabled={
-            alignment === 'left' ? disableLeftButton : disableRightButton
-          }
-          disableRipple
-          sx={{
-            mx: { xs: 2, lg: 8 },
-            p: 1,
-            color: (theme) => theme.palette.common.white,
-            backgroundColor: (theme) => `${theme.palette.grey[700]}33`,
-            '&:hover': {
-              color: (theme) => theme.palette.common.white,
-              backgroundColor: (theme) => `${theme.palette.grey[700]}4d`
-            }
-          }}
-        >
-          {icon}
-        </IconButton>
-      </NavigationContainer>
-    )
-  }
 
   console.log('blockHistory', blockHistory)
 
@@ -283,8 +181,6 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
             centeredSlidesBounds
             resizeObserver
             onSwiper={(swiper) => setSwiper(swiper)}
-            onSlideChangeTransitionStart={() => setSlideTransitioning(true)}
-            onSlideChangeTransitionEnd={() => setSlideTransitioning(false)}
             allowTouchMove={false}
             sx={{
               '.swiper-pagination': {
@@ -298,7 +194,10 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
                 journey
               )
               return (
-                <SwiperSlide key={block.id}>
+                <SwiperSlide
+                  key={block.id}
+                  onClick={() => setShowNavigation(true)}
+                >
                   <ThemeProvider {...theme} locale={locale} rtl={rtl} nested>
                     <Fade
                       in={activeBlock?.id === block.id}
@@ -329,12 +228,14 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
                 </SwiperSlide>
               )
             })}
-            {showLeftButton && showNavigation && (
-              <Navigation variant={rtl ? 'next' : 'prev'} />
-            )}
-            {showRightButton && showNavigation && (
-              <Navigation variant={rtl ? 'prev' : 'next'} />
-            )}
+            <NavigationButton
+              variant={rtl ? 'next' : 'prev'}
+              alignment="left"
+            />
+            <NavigationButton
+              variant={rtl ? 'prev' : 'next'}
+              alignment="right"
+            />
           </StyledSwiperContainer>
         </Box>
       </Stack>

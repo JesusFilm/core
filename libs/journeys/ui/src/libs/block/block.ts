@@ -26,17 +26,11 @@ interface UseBlocksHook {
   showNavigation: boolean
 }
 
-export function prevActiveBlock(args?: ActiveBlockArgs): void {
+export function prevActiveBlock(): void {
   const blockHistory = blockHistoryVar()
 
-  const lastBlock = blockHistory[
-    blockHistory.length - 1
-  ] as TreeBlock<StepFields>
-
   const updatedBlocks =
-    lastBlock.id === args?.id && blockHistory.length > 1
-      ? [...blockHistory.slice(0, -1)]
-      : blockHistory
+    blockHistory.length > 1 ? [...blockHistory.slice(0, -1)] : blockHistory
 
   blockHistoryVar(updatedBlocks)
 }
@@ -108,7 +102,7 @@ export function useBlocks(): UseBlocksHook {
   }, [])
 
   const setBlockHistory = useCallback((blocks: TreeBlock[]): void => {
-    blockHistoryVar([blocks[0]])
+    if (blocks[0] != null) blockHistoryVar([blocks[0]])
   }, [])
 
   const setShowHeaderFooter = useCallback((value: boolean): void => {
