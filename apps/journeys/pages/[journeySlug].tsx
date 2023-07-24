@@ -1,7 +1,6 @@
 import { ReactElement } from 'react'
 import { GetStaticPaths, GetStaticProps } from 'next'
 import { gql } from '@apollo/client'
-import Box from '@mui/material/Box'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import { transformer } from '@core/journeys/ui/transformer'
 import { JOURNEY_FIELDS } from '@core/journeys/ui/JourneyProvider/journeyFields'
@@ -77,11 +76,9 @@ function JourneyPage({ journey, locale, rtl }: JourneyPageProps): ReactElement {
           rtl={rtl}
           locale={locale}
         >
-          <Box sx={{ backgroundColor: 'red' }}>
-            {journey.blocks != null && (
-              <Conductor blocks={transformer(journey.blocks)} />
-            )}
-          </Box>
+          {journey.blocks != null && (
+            <Conductor blocks={transformer(journey.blocks)} />
+          )}
         </ThemeProvider>
       </JourneyProvider>
     </>

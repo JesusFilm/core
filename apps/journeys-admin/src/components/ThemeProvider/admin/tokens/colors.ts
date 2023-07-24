@@ -15,8 +15,7 @@ export const palette = {
 export const adminColorsLight: Required<Pick<ThemeOptions, 'palette'>> = {
   palette: {
     mode: 'light',
-    background: { default: 'red', paper: 'blue' },
-    // background: { default: '#EFEFEF', paper: '#FFFFFF' },
+    background: { default: '#EFEFEF', paper: '#FFFFFF' },
     primary: {
       light: '#E43343',
       main: '#C52D3A',
