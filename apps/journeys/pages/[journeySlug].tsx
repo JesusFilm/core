@@ -78,7 +78,7 @@ function JourneyPage({ journey, locale, rtl }: JourneyPageProps): ReactElement {
           rtl={rtl}
           locale={locale}
         >
-          <AppBar>
+          <AppBar role="banner" position="fixed">
             <Toolbar>
               <p>test</p>
             </Toolbar>
