@@ -1,15 +1,13 @@
 import { Injectable } from '@nestjs/common'
 import { v4 as uuidv4 } from 'uuid'
-import { Visitor, JourneyVisitor } from '.prisma/api-journeys-client'
+import { Visitor, JourneyVisitor, Prisma } from '.prisma/api-journeys-client'
 import { PageInfo } from '../../__generated__/graphql'
 import { PrismaService } from '../../lib/prisma.service'
 
 interface ListParams {
   after?: string | null
   first: number
-  filter: {
-    teamId: string | undefined
-  }
+  filter: Prisma.VisitorWhereInput
   sortOrder?: 'ASC' | 'DESC'
 }
 

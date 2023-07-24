@@ -5,9 +5,8 @@ interface IFrameTestProps {
 }
 
 export function IFrameTest({ journeySlug }: IFrameTestProps): ReactElement {
-  // TODO: Remove this check once allow="fullscreen" works with Safari 16+
   useEffect(() => {
-    const makeIframeFullscreenOnSafari = (event: MessageEvent): void => {
+    const makeIframeFullWindow = (event: MessageEvent): void => {
       // Use this page for basic local testing
       // More accurate testing with stage should use embed script on a webpage.
       if (event.origin === 'http://localhost:4100') {
@@ -23,9 +22,9 @@ export function IFrameTest({ journeySlug }: IFrameTestProps): ReactElement {
         }
       }
     }
-    window.addEventListener('message', makeIframeFullscreenOnSafari)
+    window.addEventListener('message', makeIframeFullWindow)
     return () => {
-      window.removeEventListener('message', makeIframeFullscreenOnSafari)
+      window.removeEventListener('message', makeIframeFullWindow)
     }
   }, [])
 

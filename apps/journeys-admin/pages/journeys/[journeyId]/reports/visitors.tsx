@@ -14,8 +14,7 @@ import Stack from '@mui/material/Stack'
 import { PageWrapper } from '../../../../src/components/NewPageWrapper'
 import { GetJourney } from '../../../../__generated__/GetJourney'
 import { GET_JOURNEY, USER_JOURNEY_OPEN } from '../../[journeyId]'
-import { UserInviteAcceptAll } from '../../../../__generated__/UserInviteAcceptAll'
-import { ACCEPT_USER_INVITE } from '../../..'
+import { ACCEPT_ALL_INVITES } from '../../..'
 import { UserJourneyOpen } from '../../../../__generated__/UserJourneyOpen'
 import { JourneyVisitorsList } from '../../../../src/components/JourneyVisitorsList'
 import {
@@ -27,6 +26,7 @@ import { FilterDrawer } from '../../../../src/components/JourneyVisitorsList/Fil
 import { VisitorToolbar } from '../../../../src/components/JourneyVisitorsList/VisitorToolbar/VisitorToolbar'
 import { ClearAllButton } from '../../../../src/components/JourneyVisitorsList/FilterDrawer/ClearAllButton'
 import { initAndAuthApp } from '../../../../src/libs/initAndAuthApp'
+import { AcceptAllInvites } from '../../../../__generated__/AcceptAllInvites'
 
 export const GET_JOURNEY_VISITORS = gql`
   query GetJourneyVisitors(
@@ -245,8 +245,8 @@ export const getServerSideProps = withAuthUserTokenSSR({
 
   if (redirect != null) return { redirect }
 
-  await apolloClient.mutate<UserInviteAcceptAll>({
-    mutation: ACCEPT_USER_INVITE
+  await apolloClient.mutate<AcceptAllInvites>({
+    mutation: ACCEPT_ALL_INVITES
   })
 
   try {

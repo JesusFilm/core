@@ -98,6 +98,7 @@ describe('RemoveUser', () => {
             id="userJourneyId"
             email="invite@email.com"
             onClick={handleClick}
+            journeyId="journeyId"
           />
         </MockedProvider>
       </JourneyProvider>
@@ -155,7 +156,11 @@ describe('RemoveUser', () => {
             }
           ]}
         >
-          <RemoveUser id="userInviteId" onClick={handleClick} />
+          <RemoveUser
+            id="userInviteId"
+            onClick={handleClick}
+            journeyId="journeyId"
+          />
         </MockedProvider>
       </JourneyProvider>
     )
