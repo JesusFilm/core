@@ -1,6 +1,6 @@
 import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
-import { object, string } from 'yup'
+import { ObjectSchema, object, string } from 'yup'
 import { Formik, FormikHelpers, FormikConfig } from 'formik'
 import { ApolloError } from '@apollo/client'
 import { useSnackbar } from 'notistack'
@@ -17,7 +17,7 @@ export function TeamCreateForm({
   children
 }: TeamCreateFormProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-  const teamSchema = object({
+  const teamCreateSchema: ObjectSchema<TeamCreateInput> = object({
     title: string()
       .required(t('Team Name must be at least one character.'))
       .max(40, t('Max {{ count }} Characters', { count: 40 }))
@@ -26,12 +26,12 @@ export function TeamCreateForm({
   const { enqueueSnackbar } = useSnackbar()
 
   async function handleSubmit(
-    values: TeamCreateInput,
+    input: TeamCreateInput,
     helpers: FormikHelpers<TeamCreateInput>
   ): Promise<void> {
     try {
       const { data } = await teamCreate({
-        variables: { input: { title: values.title } }
+        variables: { input }
       })
       enqueueSnackbar(
         t('{{ teamName }} created.', {
@@ -60,7 +60,7 @@ export function TeamCreateForm({
         preventDuplicate: true
       })
     }
-    await onSubmit?.(values, helpers)
+    await onSubmit?.(input, helpers)
   }
   const initialValues: TeamCreateInput = { title: '' }
 
@@ -68,7 +68,7 @@ export function TeamCreateForm({
     <Formik
       initialValues={initialValues}
       onSubmit={handleSubmit}
-      validationSchema={teamSchema}
+      validationSchema={teamCreateSchema}
     >
       {children}
     </Formik>

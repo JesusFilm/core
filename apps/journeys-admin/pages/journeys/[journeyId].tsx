@@ -13,14 +13,14 @@ import { NextSeo } from 'next-seo'
 import { useTranslation } from 'react-i18next'
 import { JourneyInvite } from '../../src/components/JourneyInvite/JourneyInvite'
 import { GetJourney } from '../../__generated__/GetJourney'
-import { UserInviteAcceptAll } from '../../__generated__/UserInviteAcceptAll'
 import { JourneyView } from '../../src/components/JourneyView'
 import { PageWrapper } from '../../src/components/PageWrapper'
 import { Menu } from '../../src/components/JourneyView/Menu'
-import { ACCEPT_USER_INVITE } from '..'
+import { ACCEPT_ALL_INVITES } from '..'
 import { UserJourneyOpen } from '../../__generated__/UserJourneyOpen'
 import { useInvalidJourneyRedirect } from '../../src/libs/useInvalidJourneyRedirect/useInvalidJourneyRedirect'
 import { initAndAuthApp } from '../../src/libs/initAndAuthApp'
+import { AcceptAllInvites } from '../../__generated__/AcceptAllInvites'
 
 export const GET_JOURNEY = gql`
   ${JOURNEY_FIELDS}
@@ -102,14 +102,15 @@ export const getServerSideProps = withAuthUserTokenSSR({
 
   if (redirect != null) return { redirect }
 
-  await apolloClient.mutate<UserInviteAcceptAll>({
-    mutation: ACCEPT_USER_INVITE
-  })
-
-  await apolloClient.mutate<UserJourneyOpen>({
-    mutation: USER_JOURNEY_OPEN,
-    variables: { id: query?.journeyId }
-  })
+  await Promise.all([
+    apolloClient.mutate<AcceptAllInvites>({
+      mutation: ACCEPT_ALL_INVITES
+    }),
+    apolloClient.mutate<UserJourneyOpen>({
+      mutation: USER_JOURNEY_OPEN,
+      variables: { id: query?.journeyId }
+    })
+  ])
 
   return {
     props: {

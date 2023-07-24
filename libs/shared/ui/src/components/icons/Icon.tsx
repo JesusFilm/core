@@ -126,6 +126,7 @@ import Star2 from './Star2'
 import Target from './Target'
 import Target2 from './Target2'
 import Telegram from './Telegram'
+import ThumbsDown from './ThumbsDown'
 import ThumbsUp from './ThumbsUp'
 import Tiktok from './Tiktok'
 import Trash2 from './Trash2'
@@ -274,6 +275,7 @@ type IconNames =
   | 'Telegram'
   | 'Trash2'
   | 'Tiktok'
+  | 'ThumbsDown'
   | 'ThumbsUp'
   | 'TwitterLogo'
   | 'UserProfile2'
@@ -423,6 +425,7 @@ const iconComponents: IconComponents = {
   Target2,
   Telegram,
   Trash2,
+  ThumbsDown,
   ThumbsUp,
   Tiktok,
   TwitterLogo,
