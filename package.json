@@ -64,7 +64,6 @@
     "apollo-datasource": "^3.3.1",
     "apollo-server-express": "^3.11.1",
     "apollo-server-plugin-response-cache": "^3.8.2",
-    "arangojs": "^7.6.1",
     "blurhash": "^1.1.4",
     "cache-manager": "^5.2.0",
     "canvas": "^2.8.0",

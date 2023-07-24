@@ -117,10 +117,12 @@ module "api-users" {
 }
 
 module "api-videos" {
-  source        = "../../../apps/api-videos/infrastructure"
-  ecs_config    = local.internal_ecs_config
-  env           = "stage"
-  doppler_token = data.aws_ssm_parameter.doppler_api_videos_stage_token.value
+  source                = "../../../apps/api-videos/infrastructure"
+  ecs_config            = local.internal_ecs_config
+  env                   = "stage"
+  doppler_token         = data.aws_ssm_parameter.doppler_api_videos_stage_token.value
+  subnet_group_name     = module.stage.vpc.db_subnet_group_name
+  vpc_security_group_id = module.stage.private_rds_security_group_id
 }
 
 module "api-media" {
