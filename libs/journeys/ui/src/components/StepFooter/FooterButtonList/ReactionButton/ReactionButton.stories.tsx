@@ -2,13 +2,13 @@ import { Story, Meta } from '@storybook/react'
 import { ComponentProps } from 'react'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
-import { simpleComponentConfig } from '../../libs/simpleComponentConfig'
+import { simpleComponentConfig } from '../../../../libs/simpleComponentConfig'
 import { ReactionButton } from './ReactionButton'
 
 const ReactionButtonDemo = {
   ...simpleComponentConfig,
   component: ReactionButton,
-  title: 'Journeys-Ui/StepFooter/ReactionButton'
+  title: 'Journeys-Ui/StepFooter/FooterButtonList/ReactionButton'
 }
 
 const Template: Story<ComponentProps<typeof ReactionButton>> = () => (

@@ -152,9 +152,11 @@ describe('StepFooter', () => {
   it('should render the like and dislike button', async () => {
     const { getAllByTestId } = render(
       <MockedProvider>
-        <JourneyProvider value={{ journey }}>
-          <StepFooter onFooterClick={jest.fn()} />
-        </JourneyProvider>
+        <SnackbarProvider>
+          <JourneyProvider value={{ journey }}>
+            <StepFooter onFooterClick={jest.fn()} />
+          </JourneyProvider>
+        </SnackbarProvider>
       </MockedProvider>
     )
     await waitFor(() => {
