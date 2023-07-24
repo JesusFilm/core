@@ -10,6 +10,7 @@ import {
 } from '@nestjs/graphql'
 import { FieldNode, GraphQLResolveInfo, Kind } from 'graphql'
 import { Video, VideoVariant, VideoTitle } from '.prisma/api-videos-client'
+import compact from 'lodash/compact'
 
 import { IdType, VideosFilter } from '../../__generated__/graphql'
 import { PrismaService } from '../../lib/prisma.service'
@@ -87,8 +88,16 @@ export class VideoResolver {
     return await this.prismaService.videoTitle.findMany({
       where: {
         videoId: video.id,
-        languageId: languageId ?? undefined,
-        primary: primary ?? undefined
+        OR: compact([
+          primary != null
+            ? {
+                primary
+              }
+            : undefined,
+          {
+            languageId: languageId ?? '529'
+          }
+        ])
       }
     })
   }

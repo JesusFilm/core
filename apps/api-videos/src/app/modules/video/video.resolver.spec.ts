@@ -236,7 +236,10 @@ describe('VideoResolver', () => {
     it('returns titles', async () => {
       expect(await resolver.title(video)).toEqual([{ value: '普通話' }])
       expect(prismaService.videoTitle.findMany).toHaveBeenCalledWith({
-        where: { videoId: video.id }
+        where: {
+          videoId: video.id,
+          OR: [{ languageId: '529' }]
+        }
       })
     })
 
@@ -245,7 +248,10 @@ describe('VideoResolver', () => {
         { value: '普通話' }
       ])
       expect(prismaService.videoTitle.findMany).toHaveBeenCalledWith({
-        where: { videoId: video.id, languageId: '529', primary: true }
+        where: {
+          videoId: video.id,
+          OR: [{ primary: true }, { languageId: '529' }]
+        }
       })
     })
   })
