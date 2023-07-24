@@ -7,6 +7,10 @@ import { InMemoryCache } from '@apollo/client'
 import { useHostUpdate } from '../../../../../../../../../libs/useHostUpdate'
 import { UPDATE_HOST } from '../../../../../../../../../libs/useHostUpdate/useHostUpdate'
 import {
+  GET_TEAMS,
+  TeamProvider
+} from '../../../../../../../../Team/TeamProvider'
+import {
   CREATE_HOST,
   HostTitleFieldForm,
   UPDATE_JOURNEY_HOST
@@ -80,6 +84,12 @@ describe('HostTitleFieldForm', () => {
       }
     }))
 
+    const result3 = jest.fn(() => ({
+      data: {
+        teams: [{ id: 'teamId', title: 'Team Title', __typename: 'Team' }]
+      }
+    }))
+
     const { getByRole } = render(
       <MockedProvider
         cache={cache}
@@ -88,7 +98,7 @@ describe('HostTitleFieldForm', () => {
             request: {
               query: CREATE_HOST,
               variables: {
-                teamId: 'jfp-team',
+                teamId: 'teamId',
                 input: {
                   title: 'Host title'
                 }
@@ -107,15 +117,24 @@ describe('HostTitleFieldForm', () => {
               }
             },
             result: result2
+          },
+          {
+            request: {
+              query: GET_TEAMS
+            },
+            result: result3
           }
         ]}
       >
         <JourneyProvider value={{ journey: { ...journey, host: null } }}>
-          <HostTitleFieldForm />
+          <TeamProvider>
+            <HostTitleFieldForm />
+          </TeamProvider>
         </JourneyProvider>
       </MockedProvider>
     )
 
+    await waitFor(() => expect(result3).toBeCalled())
     const field = getByRole('textbox', { name: 'Host Name' })
 
     fireEvent.change(field, { target: { value: 'Host title' } })
@@ -137,6 +156,88 @@ describe('HostTitleFieldForm', () => {
         { __ref: 'Host:hostId' }
       ])
     })
+  })
+
+  it('should not create if active team id is null', async () => {
+    const host = {
+      id: 'hostId',
+      title: 'host title'
+    }
+
+    const result = jest.fn(() => ({
+      data: {
+        hostCreate: host
+      }
+    }))
+
+    const result2 = jest.fn(() => ({
+      data: {
+        journeyUpdate: {
+          id: journey.id,
+          host: {
+            id: host.id
+          }
+        }
+      }
+    }))
+
+    const result3 = jest.fn(() => ({
+      data: {
+        teams: []
+      }
+    }))
+
+    const { getByRole } = render(
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: CREATE_HOST,
+              variables: {
+                teamId: undefined,
+                input: {
+                  title: 'Host title'
+                }
+              }
+            },
+            result
+          },
+          {
+            request: {
+              query: UPDATE_JOURNEY_HOST,
+              variables: {
+                id: journey.id,
+                input: {
+                  hostId: host.id
+                }
+              }
+            },
+            result: result2
+          },
+          {
+            request: {
+              query: GET_TEAMS
+            },
+            result: result3
+          }
+        ]}
+      >
+        <JourneyProvider value={{ journey: { ...journey, host: null } }}>
+          <TeamProvider>
+            <HostTitleFieldForm />
+          </TeamProvider>
+        </JourneyProvider>
+      </MockedProvider>
+    )
+
+    await waitFor(() => expect(result3).toBeCalled())
+    const field = getByRole('textbox', { name: 'Host Name' })
+
+    fireEvent.change(field, { target: { value: 'Host title' } })
+    fireEvent.blur(field)
+
+    await waitFor(() => expect(result).not.toHaveBeenCalled())
+    await waitFor(() => expect(result2).not.toHaveBeenCalled())
   })
 
   it('should update host title on submit if host exists', async () => {

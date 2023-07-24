@@ -11,6 +11,7 @@ import {
   GetVisitors,
   GetVisitors_visitors_edges as Visitor
 } from '../../../__generated__/GetVisitors'
+import { useTeam } from '../Team/TeamProvider'
 import { getColDefs } from './utils/getColDefs'
 import { getVisitorRows } from './utils/getVisitorRows'
 
@@ -63,6 +64,8 @@ const StyledDataGrid = styled(DataGrid)(({ theme }) => ({
 
 export function VisitorsList(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
+  const { activeTeam } = useTeam()
+  console.log(activeTeam)
   const router = useRouter()
   const [visitors, setVisitors] = useState<Visitor[]>([])
   const [hasNextPage, setHasNextPage] = useState(true)
@@ -71,7 +74,8 @@ export function VisitorsList(): ReactElement {
 
   const { fetchMore, loading } = useQuery<GetVisitors>(GET_VISITORS, {
     variables: {
-      first: 100
+      first: 100,
+      teamId: activeTeam?.id
     },
     onCompleted: (data) => {
       setVisitors(data.visitors.edges)

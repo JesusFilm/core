@@ -27,6 +27,7 @@ import { VisitorToolbar } from '../../../../src/components/JourneyVisitorsList/V
 import { ClearAllButton } from '../../../../src/components/JourneyVisitorsList/FilterDrawer/ClearAllButton'
 import { initAndAuthApp } from '../../../../src/libs/initAndAuthApp'
 import { AcceptAllInvites } from '../../../../__generated__/AcceptAllInvites'
+import { useTeam } from '../../../../src/components/Team/TeamProvider'
 
 export const GET_JOURNEY_VISITORS = gql`
   query GetJourneyVisitors(
@@ -36,7 +37,7 @@ export const GET_JOURNEY_VISITORS = gql`
     $after: String
   ) {
     visitors: journeyVisitorsConnection(
-      teamId: "jfp-team"
+      teamId: $teamId
       filter: $filter
       sort: $sort
       first: $first
@@ -81,6 +82,7 @@ function JourneyVisitorsPage(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const AuthUser = useAuthUser()
   const router = useRouter()
+  const { activeTeam } = useTeam()
   const journeyId = router.query.journeyId as string
 
   const { data } = useQuery<GetJourneyVisitorsCount>(
@@ -115,7 +117,8 @@ function JourneyVisitorsPage(): ReactElement {
           hideInactive: hideInteractive
         },
         first: 100,
-        sort: sortSetting
+        sort: sortSetting,
+        teamId: activeTeam?.id
       },
       onCompleted: (data) => {
         setVisitorEdges(data.visitors.edges)

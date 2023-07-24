@@ -6,6 +6,7 @@ import { CreateHost } from '../../../../../../../../../../__generated__/CreateHo
 import { UpdateJourneyHost } from '../../../../../../../../../../__generated__/UpdateJourneyHost'
 import { useHostUpdate } from '../../../../../../../../../libs/useHostUpdate/useHostUpdate'
 import { TextFieldForm } from '../../../../../../../../TextFieldForm'
+import { useTeam } from '../../../../../../../../Team/TeamProvider'
 
 export const CREATE_HOST = gql`
   mutation CreateHost($teamId: ID!, $input: HostCreateInput!) {
@@ -31,7 +32,8 @@ export function HostTitleFieldForm(): ReactElement {
   const [hostCreate] = useMutation<CreateHost>(CREATE_HOST)
   const [journeyHostUpdate] =
     useMutation<UpdateJourneyHost>(UPDATE_JOURNEY_HOST)
-
+  const { activeTeam } = useTeam()
+  console.log(activeTeam)
   const { updateHost } = useHostUpdate()
   const { journey } = useJourney()
   const host = journey?.host
@@ -44,9 +46,9 @@ export function HostTitleFieldForm(): ReactElement {
     if (host != null) {
       const { id, teamId } = host
       await updateHost({ id, teamId, input: { title: value } })
-    } else {
+    } else if (activeTeam != null) {
       const { data } = await hostCreate({
-        variables: { teamId: 'jfp-team', input: { title: value } },
+        variables: { teamId: activeTeam?.id, input: { title: value } },
         update(cache, { data }) {
           if (data?.hostCreate != null) {
             cache.modify({
