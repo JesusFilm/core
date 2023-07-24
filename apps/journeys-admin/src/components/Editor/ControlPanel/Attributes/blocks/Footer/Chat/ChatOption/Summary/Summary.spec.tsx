@@ -2,6 +2,7 @@ import { fireEvent, render, waitFor } from '@testing-library/react'
 import { InMemoryCache } from '@apollo/client'
 import { MockedProvider } from '@apollo/client/testing'
 import { SnackbarProvider } from 'notistack'
+import noop from 'lodash/noop'
 import { ChatPlatform } from '../../../../../../../../../../__generated__/globalTypes'
 import {
   JOURNEY_CHAT_BUTTON_CREATE,
@@ -27,7 +28,8 @@ describe('Summary', () => {
       journeyId: 'journeyId',
       currentLink: 'https://example.com',
       currentPlatform: ChatPlatform.facebook,
-      chatButtonId: 'chat.id'
+      chatButtonId: 'chat.id',
+      openAccordion: noop
     }
 
     const { getByRole, getByText } = render(
@@ -41,6 +43,28 @@ describe('Summary', () => {
     expect(getByText('title')).toBeInTheDocument()
   })
 
+  it('should open accordion', () => {
+    const props = {
+      title: 'title',
+      active: true,
+      disableSelection: false,
+      journeyId: 'journeyId',
+      currentLink: 'https://example.com',
+      currentPlatform: ChatPlatform.facebook,
+      chatButtonId: 'chat.id',
+      openAccordion: jest.fn()
+    }
+    const { getByRole } = render(
+      <MockedProvider>
+        <SnackbarProvider>
+          <Summary {...props} />
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+    fireEvent.click(getByRole('checkbox'))
+    expect(props.openAccordion).toHaveBeenCalledWith()
+  })
+
   it('should disable if not selected and not active', () => {
     const props = {
       title: 'title',
@@ -49,7 +73,8 @@ describe('Summary', () => {
       journeyId: 'journeyId',
       currentLink: 'https://example.com',
       currentPlatform: ChatPlatform.facebook,
-      chatButtonId: 'chat.id'
+      chatButtonId: 'chat.id',
+      openAccordion: noop
     }
 
     const { getByRole } = render(
@@ -90,7 +115,8 @@ describe('Summary', () => {
       journeyId: 'journeyId',
       currentLink: '',
       currentPlatform: ChatPlatform.facebook,
-      chatButtonId: 'chat.id'
+      chatButtonId: 'chat.id',
+      openAccordion: noop
     }
 
     const { getByRole } = render(
@@ -162,7 +188,8 @@ describe('Summary', () => {
       journeyId: 'journeyId',
       currentLink: 'https://example.com',
       currentPlatform: ChatPlatform.facebook,
-      chatButtonId: 'chat.id'
+      chatButtonId: 'chat.id',
+      openAccordion: noop
     }
 
     const { getByRole } = render(

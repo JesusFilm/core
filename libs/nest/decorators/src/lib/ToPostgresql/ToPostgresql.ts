@@ -1,4 +1,5 @@
-import { omit } from 'lodash'
+import isObject from 'lodash/isObject'
+import omit from 'lodash/omit'
 import { fromPostgresql } from '../FromPostgresql'
 
 interface TransformObject {
@@ -19,12 +20,18 @@ export function ToPostgresql() {
   ) => {
     const childFunction = descriptor.value
     descriptor.value = async function (
-      obj: TransformObject[] | TransformObject
+      ...args: Array<TransformObject[] | TransformObject>
     ) {
-      const newArg = Array.isArray(obj)
-        ? obj.map((result) => toPostgresql(result))
-        : toPostgresql(obj)
-      const result = await childFunction.apply(this, newArg)
+      const newArgs = args.map((obj) =>
+        Array.isArray(obj)
+          ? obj.map((result) =>
+              isObject(result) ? toPostgresql(result) : result
+            )
+          : isObject(obj)
+          ? toPostgresql(obj)
+          : obj
+      )
+      const result = await childFunction.apply(this, newArgs)
       return Array.isArray(result)
         ? result.map(fromPostgresql)
         : fromPostgresql(result)

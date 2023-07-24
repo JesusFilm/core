@@ -1,4 +1,5 @@
 import { ReactElement, useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
 import Skeleton from '@mui/material/Skeleton'
@@ -24,6 +25,7 @@ import { FramePortal } from '../../FramePortal'
 import { DRAWER_WIDTH } from '../Drawer'
 import 'swiper/swiper.min.css'
 import { NextCard } from '../ControlPanel/Attributes/blocks/Step/NextCard'
+import { Chat } from '../ControlPanel/Attributes/blocks/Footer/Chat'
 import { InlineEditWrapper } from './InlineEditWrapper'
 import { SelectableWrapper } from './SelectableWrapper'
 import { VideoWrapper } from './VideoWrapper'
@@ -44,6 +46,7 @@ export function Canvas(): ReactElement {
   const { journey } = useJourney()
   const { rtl, locale } = getJourneyRTL(journey)
   const { editableStepFooter } = useFlags()
+  const { t } = useTranslation('apps-journeys-admin')
 
   useEffect(() => {
     if (swiper != null && selectedStep != null && steps != null) {
@@ -230,15 +233,13 @@ export function Canvas(): ReactElement {
                                 })
                                 dispatch({
                                   type: 'SetDrawerPropsAction',
-                                  title: 'Hosted By',
+                                  title: t('Chat Widget'),
                                   mobileOpen: true,
-                                  children: (
-                                    <div>Hosted by content component</div>
-                                  )
+                                  children: <Chat />
                                 })
                                 dispatch({
                                   type: 'SetSelectedAttributeIdAction',
-                                  id: 'hosted-by'
+                                  id: 'chat-widget'
                                 })
                               }
                             }}

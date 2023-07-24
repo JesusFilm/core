@@ -168,6 +168,11 @@ export enum UserJourneyRole {
   owner = "owner",
 }
 
+export enum UserTeamRole {
+  manager = "manager",
+  member = "member",
+}
+
 export enum VideoBlockObjectFit {
   fill = "fill",
   fit = "fit",
@@ -267,6 +272,20 @@ export interface EmailActionInput {
   email: string;
 }
 
+export interface HostCreateInput {
+  title: string;
+  location?: string | null;
+  src1?: string | null;
+  src2?: string | null;
+}
+
+export interface HostUpdateInput {
+  title?: string | null;
+  location?: string | null;
+  src1?: string | null;
+  src2?: string | null;
+}
+
 export interface IconBlockCreateInput {
   id?: string | null;
   parentBlockId: string;
@@ -284,7 +303,7 @@ export interface IconBlockUpdateInput {
 
 export interface ImageBlockCreateInput {
   id?: string | null;
-  parentBlockId: string;
+  parentBlockId?: string | null;
   journeyId: string;
   src?: string | null;
   alt: string;
@@ -328,6 +347,11 @@ export interface JourneyVisitorFilter {
   hasIcon?: boolean | null;
   hideInactive?: boolean | null;
   countryCode?: string | null;
+}
+
+export interface JourneysFilter {
+  featured?: boolean | null;
+  template?: boolean | null;
 }
 
 export interface LinkActionInput {
@@ -409,6 +433,14 @@ export interface StepViewEventCreateInput {
   value?: string | null;
 }
 
+export interface TeamCreateInput {
+  title: string;
+}
+
+export interface TeamUpdateInput {
+  title: string;
+}
+
 export interface TextResponseBlockCreateInput {
   id?: string | null;
   journeyId: string;
@@ -454,6 +486,18 @@ export interface TypographyBlockUpdateInput {
 
 export interface UserInviteCreateInput {
   email: string;
+}
+
+export interface UserTeamFilterInput {
+  role?: UserTeamRole[] | null;
+}
+
+export interface UserTeamInviteCreateInput {
+  email: string;
+}
+
+export interface UserTeamUpdateInput {
+  role: UserTeamRole;
 }
 
 export interface VideoBlockCreateInput {

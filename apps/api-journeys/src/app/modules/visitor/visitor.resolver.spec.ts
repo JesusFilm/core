@@ -1,17 +1,23 @@
 import { Test, TestingModule } from '@nestjs/testing'
+import { CaslAuthModule } from '@core/nest/common/CaslAuthModule'
+import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
+import { Visitor, Event } from '.prisma/api-journeys-client'
 import {
   MessagePlatform,
+  VisitorStatus,
+  VisitorUpdateInput,
   VisitorsConnection
 } from '../../__generated__/graphql'
 import { PrismaService } from '../../lib/prisma.service'
-import { EventService } from '../event/event.service'
+import { AppAbility, AppCaslFactory } from '../../lib/casl/caslFactory'
 import { VisitorResolver } from './visitor.resolver'
 import { VisitorService } from './visitor.service'
 
 describe('VisitorResolver', () => {
   let resolver: VisitorResolver,
     vService: VisitorService,
-    prismaService: PrismaService
+    prismaService: DeepMockProxy<PrismaService>,
+    ability: AppAbility
 
   const connection: VisitorsConnection = {
     edges: [],
@@ -22,7 +28,7 @@ describe('VisitorResolver', () => {
     }
   }
 
-  const visitor = {
+  const visitor: Visitor = {
     id: 'visitorId',
     countryCode: null,
     email: 'bob@example.com',
@@ -33,164 +39,201 @@ describe('VisitorResolver', () => {
     notes: 'Bob called this afternoon to arrange a meet-up.',
     status: 'star',
     teamId: 'teamId',
-    userAgent: null
+    userAgent: null,
+    createdAt: new Date(),
+    duration: 0,
+    lastChatPlatform: null,
+    lastStepViewedAt: null,
+    lastLinkAction: null,
+    lastTextResponse: null,
+    lastRadioQuestion: null,
+    lastRadioOptionSubmission: null,
+    referrer: null,
+    userId: 'visitorUserId',
+    updatedAt: new Date()
+  }
+
+  const visitorWithUser = {
+    ...visitor,
+    userId: 'userId'
   }
 
   const visitorService = {
     provide: VisitorService,
     useFactory: () => ({
-      getList: jest.fn(() => connection),
-      get: jest.fn((id) => {
-        switch (id) {
-          case 'visitorId':
-            return { ...visitor, id, teamId: 'teamId' }
-          case 'unknownVisitorId':
-            return undefined
-          case 'visitorWithDifferentTeamId':
-            return { ...visitor, id, teamId: 'differentTeamId' }
-        }
-      }),
-      update: jest.fn((_id, input) => ({ ...visitor, ...input }))
-    })
-  }
-
-  const userTeam = {
-    id: 'userTeamId',
-    userId: 'userId',
-    teamId: 'teamId'
-  }
-
-  const event = {
-    id: 'eventId'
-  }
-
-  const eventService = {
-    provide: EventService,
-    useFactory: () => ({
-      getAllByVisitorId: jest.fn(() => [event])
+      getList: jest.fn(() => connection)
     })
   }
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [VisitorResolver, visitorService, eventService, PrismaService]
+      imports: [CaslAuthModule.register(AppCaslFactory)],
+      providers: [
+        VisitorResolver,
+        visitorService,
+        {
+          provide: PrismaService,
+          useValue: mockDeep<PrismaService>()
+        }
+      ]
     }).compile()
     resolver = module.get<VisitorResolver>(VisitorResolver)
     vService = module.get<VisitorService>(VisitorService)
-    prismaService = module.get<PrismaService>(PrismaService)
-    prismaService.event.findMany = jest.fn().mockReturnValue([event])
-    prismaService.visitor.findUnique = jest.fn().mockReturnValue(visitor)
-    prismaService.userTeam.findUnique = jest.fn().mockReturnValue(userTeam)
+    prismaService = module.get<PrismaService>(
+      PrismaService
+    ) as DeepMockProxy<PrismaService>
+    ability = await new AppCaslFactory().createAbility({ id: 'userId' })
   })
 
   describe('visitorsConnection', () => {
     it('returns connection', async () => {
-      expect(await resolver.visitorsConnection('userId', 'teamId')).toEqual(
+      expect(await resolver.visitorsConnection({ OR: [] }, 'teamId')).toEqual(
         connection
       )
     })
 
     it('calls service with first, after and filter', async () => {
-      await resolver.visitorsConnection('userId', 'teamId', 50, 'cursorId')
+      await resolver.visitorsConnection({ OR: [] }, 'teamId', 50, 'cursorId')
       expect(vService.getList).toHaveBeenCalledWith({
         after: 'cursorId',
-        filter: { teamId: 'teamId' },
+        filter: { AND: [{ OR: [] }, { teamId: 'teamId' }] },
         first: 50
       })
-    })
-
-    it('throws error when user is not a team member', async () => {
-      prismaService.userTeam.findUnique = jest.fn().mockReturnValue(null)
-      await expect(
-        async () =>
-          await resolver.visitorsConnection('userId', 'differentTeamId')
-      ).rejects.toThrow('User is not a member of the team.')
     })
   })
 
   describe('visitor', () => {
     it('returns visitor', async () => {
-      prismaService.event.findMany = jest.fn().mockReturnValue([])
-      expect(await resolver.visitor('userId', 'visitorId')).toEqual({
-        ...visitor
-      })
+      prismaService.visitor.findUnique.mockResolvedValueOnce(visitorWithUser)
+      expect(await resolver.visitor(ability, 'visitorId')).toEqual(
+        visitorWithUser
+      )
     })
-
-    it('throws error when invalid visitor ID', async () => {
-      prismaService.visitor.findUnique = jest.fn().mockReturnValue(null)
-      await expect(
-        async () => await resolver.visitor('userId', 'unknownVisitorId')
-      ).rejects.toThrow('Visitor with ID "unknownVisitorId" does not exist')
+    it('throws error if not found', async () => {
+      prismaService.visitor.findUnique.mockResolvedValueOnce(null)
+      await expect(resolver.visitor(ability, 'visitorId')).rejects.toThrow(
+        'visitor with id "visitorId" not found'
+      )
     })
-
-    it('throws error when user is not member of visitors team', async () => {
-      prismaService.visitor.findUnique = jest
-        .fn()
-        .mockReturnValue({ ...visitor, teamId: 'junk' })
-      prismaService.userTeam.findUnique = jest.fn().mockReturnValue(null)
-      await expect(
-        async () =>
-          await resolver.visitor('userId', 'visitorWithDifferentTeamId')
-      ).rejects.toThrow(
-        'User is not a member of the team the visitor belongs to'
+    it('throws error if not authorized', async () => {
+      prismaService.visitor.findUnique.mockResolvedValueOnce(visitor)
+      await expect(resolver.visitor(ability, 'visitorId')).rejects.toThrow(
+        'user is not allowed to view visitor'
       )
     })
   })
 
   describe('visitorUpdate', () => {
-    const input = {
+    const input: VisitorUpdateInput = {
       email: 'sarah@example.com',
       messagePlatformId: '0800838383',
       messagePlatform: MessagePlatform.whatsApp,
       name: 'Sarah',
       notes: 'this is a test',
-      status: 'star'
+      status: VisitorStatus.star
     }
-    it('returns updated visitor', async () => {
-      prismaService.visitor.update = jest
-        .fn()
-        .mockReturnValueOnce({ ...visitor, ...input })
-      expect(
-        await resolver.visitorUpdate('userId', 'visitorId', input)
-      ).toEqual({ ...visitor, ...input })
-    })
-
-    it('throws error when invalid visitor ID', async () => {
-      prismaService.visitor.findUnique = jest.fn().mockReturnValueOnce(null)
-      await expect(
-        async () =>
-          await resolver.visitorUpdate('userId', 'unknownVisitorId', input)
-      ).rejects.toThrow('Visitor with ID "unknownVisitorId" does not exist')
-    })
-
-    it('throws error when user is not member of visitors team', async () => {
-      prismaService.visitor.findUnique = jest
-        .fn()
-        .mockReturnValueOnce({ ...visitor, teamId: 'junk' })
-      prismaService.userTeam.findUnique = jest.fn().mockReturnValue(null)
-      await expect(
-        async () =>
-          await resolver.visitorUpdate(
-            'userId',
-            'visitorWithDifferentTeamId',
-            input
-          )
-      ).rejects.toThrow(
-        'User is not a member of the team the visitor belongs to'
+    it('updates visitor', async () => {
+      prismaService.visitor.findUnique.mockResolvedValueOnce(visitorWithUser)
+      prismaService.visitor.update.mockResolvedValueOnce({
+        ...visitorWithUser,
+        ...input
+      })
+      expect(await resolver.visitorUpdate(ability, 'visitorId', input)).toEqual(
+        { ...visitorWithUser, ...input }
       )
+    })
+    it('throws error if not found', async () => {
+      prismaService.visitor.findUnique.mockResolvedValueOnce(null)
+      await expect(
+        resolver.visitorUpdate(ability, 'visitorId', input)
+      ).rejects.toThrow('visitor with id "visitorId" not found')
+    })
+    it('throws error if not authorized', async () => {
+      prismaService.visitor.findUnique.mockResolvedValueOnce(visitor)
+      await expect(
+        resolver.visitorUpdate(ability, 'visitorId', input)
+      ).rejects.toThrow('user is not allowed to update visitor')
+    })
+  })
+
+  describe('visitorUpdateForCurrentUser', () => {
+    const input: VisitorUpdateInput = {
+      email: 'sarah@example.com',
+      messagePlatformId: '0800838383',
+      messagePlatform: MessagePlatform.whatsApp,
+      name: 'Sarah',
+      notes: 'this is a test',
+      status: VisitorStatus.star,
+      countryCode: 'South Lake Tahoe, CA, USA',
+      referrer: 'https://example.com'
+    }
+    it('updates visitor', async () => {
+      prismaService.visitor.findFirst.mockResolvedValueOnce(visitorWithUser)
+      prismaService.visitor.update.mockResolvedValueOnce({
+        ...visitorWithUser,
+        countryCode: 'South Lake Tahoe, CA, USA',
+        referrer: 'https://example.com'
+      })
+      expect(
+        await resolver.visitorUpdateForCurrentUser(ability, 'userId', input)
+      ).toEqual({
+        ...visitorWithUser,
+        countryCode: 'South Lake Tahoe, CA, USA',
+        referrer: 'https://example.com'
+      })
+      expect(prismaService.visitor.update).toHaveBeenCalledWith({
+        where: { id: 'visitorId' },
+        data: {
+          countryCode: 'South Lake Tahoe, CA, USA',
+          referrer: 'https://example.com'
+        }
+      })
+    })
+    it('throws error if not found', async () => {
+      prismaService.visitor.findFirst.mockResolvedValueOnce(null)
+      await expect(
+        resolver.visitorUpdateForCurrentUser(ability, 'userId', input)
+      ).rejects.toThrow('visitor with userId "userId" not found')
+    })
+    it('throws error if not authorized', async () => {
+      prismaService.visitor.findFirst.mockResolvedValueOnce(visitor)
+      await expect(
+        resolver.visitorUpdateForCurrentUser(ability, 'userId', input)
+      ).rejects.toThrow('user is not allowed to update visitor')
     })
   })
 
   describe('events', () => {
+    const event: Event = {
+      id: 'eventId',
+      typename: 'event',
+      visitorId: 'visitorId',
+      journeyId: null,
+      blockId: null,
+      stepId: null,
+      label: null,
+      value: null,
+      action: null,
+      actionValue: null,
+      messagePlatform: null,
+      languageId: null,
+      radioOptionBlockId: null,
+      email: null,
+      nextStepId: null,
+      position: null,
+      source: null,
+      progress: null,
+      userId: null,
+      journeyVisitorJourneyId: null,
+      journeyVisitorVisitorId: null,
+      createdAt: new Date(),
+      updatedAt: new Date()
+    }
     it('returns visitor events', async () => {
-      expect(await resolver.events({ id: 'visitorId' })).toEqual([event])
-    })
-
-    it('calls event service with visitorId', async () => {
-      await resolver.events({ id: 'visitorId' })
-      expect(prismaService.event.findMany).toHaveBeenCalledWith({
-        where: { visitorId: 'visitorId' }
-      })
+      prismaService.event.findMany.mockResolvedValueOnce([event])
+      expect(await resolver.events({ id: 'visitorId' })).toEqual([
+        { ...event, typename: undefined, __typename: 'event' }
+      ])
     })
   })
 
@@ -223,31 +266,6 @@ describe('VisitorResolver', () => {
         device: { model: 'iPhone', type: 'mobile', vendor: 'Apple' },
         os: { name: 'iOS', version: '5.1.1' }
       })
-    })
-  })
-
-  describe('visitorUpdateForCurrentUser', () => {
-    it('returns updated visitor', async () => {
-      prismaService.visitor.findFirst = jest.fn().mockReturnValueOnce(visitor)
-      prismaService.visitor.update = jest.fn().mockReturnValueOnce({
-        ...visitor,
-        countryCode: 'South Lake Tahoe, CA, USA'
-      })
-      expect(
-        await resolver.visitorUpdateForCurrentUser('userId', {
-          countryCode: 'South Lake Tahoe, CA, USA'
-        })
-      ).toEqual({ ...visitor, countryCode: 'South Lake Tahoe, CA, USA' })
-    })
-
-    it('throws error when invalid visitor ID', async () => {
-      prismaService.visitor.findFirst = jest.fn().mockReturnValueOnce(null)
-      await expect(
-        async () =>
-          await resolver.visitorUpdateForCurrentUser('unknownVisitorId', {
-            countryCode: 'South Lake Tahoe, CA, USA'
-          })
-      ).rejects.toThrow('No visitor record found for user "unknownVisitorId"')
     })
   })
 })

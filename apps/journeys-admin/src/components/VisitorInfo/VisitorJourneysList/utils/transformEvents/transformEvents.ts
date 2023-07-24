@@ -1,4 +1,4 @@
-import { forEachRight } from 'lodash'
+import forEachRight from 'lodash/forEachRight'
 import parseISO from 'date-fns/parseISO'
 import differenceInMilliseconds from 'date-fns/differenceInMilliseconds'
 import { GetVisitorEvents_visitor_events as Event } from '../../../../../../__generated__/GetVisitorEvents'

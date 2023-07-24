@@ -108,12 +108,14 @@ describe('CardBlock', () => {
     ]
   }
 
-  it('should render card with theme background color', () => {
+  it('should render card with theme background color', async () => {
     const { getByTestId, getByText } = render(<Card {...block} />)
 
     expect(blurImage).not.toBeCalled()
     expect(getByTestId('card')).toHaveStyle('background-color: #FFF')
-    expect(getByText('How did we get here?')).toBeInTheDocument()
+    await waitFor(() =>
+      expect(getByText('How did we get here?')).toBeInTheDocument()
+    )
   })
 
   it('should render card with override background color', () => {

@@ -6,11 +6,13 @@ import {
 } from '@nestjs/apollo'
 import { GraphQLModule } from '@nestjs/graphql'
 import { LoggerModule } from 'nestjs-pino'
+import { NestHealthModule } from '@core/nest/health'
 import { DatadogTraceModule } from 'nestjs-ddtrace'
 import { UserModule } from './modules/user/user.module'
 
 @Module({
   imports: [
+    NestHealthModule,
     UserModule,
     GraphQLModule.forRoot<ApolloFederationDriverConfig>({
       driver: ApolloFederationDriver,
@@ -24,12 +26,12 @@ import { UserModule } from './modules/user/user.module'
               )
             ]
           : [join(process.cwd(), 'assets/**/*.graphql')],
-      cors: true,
       context: ({ req }) => ({ headers: req.headers }),
       cache: 'bounded'
     }),
     LoggerModule.forRoot({
       pinoHttp: {
+        redact: ['req.headers.authorization'],
         autoLogging: {
           ignore: (req) => req.url === '/.well-known/apollo/server-health'
         },

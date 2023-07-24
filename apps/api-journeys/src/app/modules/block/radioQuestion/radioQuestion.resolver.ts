@@ -1,5 +1,7 @@
 import { UseGuards } from '@nestjs/common'
 import { Args, Mutation, ResolveField, Resolver, Parent } from '@nestjs/graphql'
+import omit from 'lodash/omit'
+
 import {
   Action,
   RadioOptionBlock,
@@ -36,15 +38,18 @@ export class RadioOptionBlockResolver {
     ])
   )
   async radioOptionBlockCreate(
-    @Args('input') input: RadioOptionBlockCreateInput & { __typename }
+    @Args('input') input: RadioOptionBlockCreateInput
   ): Promise<RadioOptionBlock> {
-    input.__typename = 'RadioOptionBlock'
     const siblings = await this.blockService.getSiblings(
       input.journeyId,
       input.parentBlockId
     )
     return await this.blockService.save({
-      ...input,
+      ...omit(input, 'parentBlockId'),
+      id: input.id ?? undefined,
+      typename: 'RadioOptionBlock',
+      journey: { connect: { id: input.journeyId } },
+      parentBlock: { connect: { id: input.parentBlockId } },
       parentOrder: siblings.length
     })
   }
@@ -78,15 +83,18 @@ export class RadioQuestionBlockResolver {
     ])
   )
   async radioQuestionBlockCreate(
-    @Args('input') input: RadioQuestionBlockCreateInput & { __typename }
+    @Args('input') input: RadioQuestionBlockCreateInput
   ): Promise<RadioQuestionBlock> {
-    input.__typename = 'RadioQuestionBlock'
     const siblings = await this.blockService.getSiblings(
       input.journeyId,
       input.parentBlockId
     )
     return await this.blockService.save({
-      ...input,
+      ...omit(input, 'parentBlockId'),
+      id: input.id ?? undefined,
+      typename: 'RadioQuestionBlock',
+      journey: { connect: { id: input.journeyId } },
+      parentBlock: { connect: { id: input.parentBlockId } },
       parentOrder: siblings.length
     })
   }
@@ -104,6 +112,8 @@ export class RadioQuestionBlockResolver {
     @Args('journeyId') journeyId: string,
     @Args('parentBlockId') parentBlockId: string
   ): Promise<RadioQuestionBlock> {
-    return await this.blockService.update(id, { parentBlockId })
+    return await this.blockService.update(id, {
+      parentBlock: { connect: { id: parentBlockId } }
+    })
   }
 }

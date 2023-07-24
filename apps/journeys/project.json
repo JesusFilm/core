@@ -53,6 +53,16 @@
         }
       }
     },
+    "vercel-alias": {
+      "executor": "@nrwl/workspace:run-commands",
+      "options": {
+        "commands": [
+          "npx vercel alias set $(cat apps/journeys/.vercel-url) journeys-$PR_NUMBER-jesusfilm.vercel.app --token=$VERCEL_TOKEN --scope=jesusfilm",
+          "echo \"https://journeys-$PR_NUMBER-jesusfilm.vercel.app\" > apps/journeys/.vercel-url"
+        ],
+        "parallel": false
+      }
+    },
     "serve": {
       "executor": "@nrwl/next:server",
       "options": {
@@ -158,6 +168,12 @@
             "command": "npx i18next --config apps/journeys/i18next-parser.config.js"
           }
         ]
+      }
+    },
+    "codecov": {
+      "executor": "@nrwl/workspace:run-commands",
+      "options": {
+        "command": "codecov -f coverage/apps/journeys/cobertura-coverage.xml -F apps.journeys"
       }
     }
   },

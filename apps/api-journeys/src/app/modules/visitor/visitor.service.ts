@@ -1,16 +1,13 @@
 import { Injectable } from '@nestjs/common'
 import { v4 as uuidv4 } from 'uuid'
-import { Visitor, JourneyVisitor } from '.prisma/api-journeys-client'
+import { Visitor, JourneyVisitor, Prisma } from '.prisma/api-journeys-client'
 import { PageInfo } from '../../__generated__/graphql'
 import { PrismaService } from '../../lib/prisma.service'
-import { JourneyService } from '../journey/journey.service'
 
 interface ListParams {
   after?: string | null
   first: number
-  filter: {
-    teamId: string
-  }
+  filter: Prisma.VisitorWhereInput
   sortOrder?: 'ASC' | 'DESC'
 }
 
@@ -24,10 +21,7 @@ export interface VisitorsConnection {
 
 @Injectable()
 export class VisitorService {
-  constructor(
-    private readonly prismaService: PrismaService,
-    private readonly journeyService: JourneyService
-  ) {}
+  constructor(private readonly prismaService: PrismaService) {}
 
   async getList({
     after,
@@ -64,7 +58,12 @@ export class VisitorService {
     visitor: Visitor
     journeyVisitor: JourneyVisitor
   }> {
-    const journey = await this.journeyService.get(journeyId)
+    const journey = await this.prismaService.journey.findUnique({
+      where: {
+        id: journeyId
+      }
+    })
+
     if (journey == null) throw new Error('Journey not found')
 
     let visitor = await this.prismaService.visitor.findFirst({
@@ -96,5 +95,17 @@ export class VisitorService {
     }
 
     return { visitor, journeyVisitor }
+  }
+
+  async update(id: string, data: Partial<Visitor>): Promise<Visitor> {
+    return await this.prismaService.visitor.update({
+      where: { id },
+      data: {
+        ...data,
+        createdAt:
+          data.createdAt != null ? new Date(data.createdAt) : undefined,
+        userAgent: data.userAgent ?? undefined
+      }
+    })
   }
 }

@@ -50,6 +50,16 @@
         }
       }
     },
+    "vercel-alias": {
+      "executor": "@nrwl/workspace:run-commands",
+      "options": {
+        "commands": [
+          "npx vercel alias set $(cat apps/watch/.vercel-url) watch-$PR_NUMBER-jesusfilm.vercel.app --token=$VERCEL_TOKEN --scope=jesusfilm",
+          "echo \"https://watch-$PR_NUMBER-jesusfilm.vercel.app\" > apps/watch/.vercel-url"
+        ],
+        "parallel": false
+      }
+    },
     "serve": {
       "executor": "@nrwl/next:server",
       "options": {
@@ -151,6 +161,12 @@
             "command": "DOPPLER_TOKEN=$DOPPLER_WATCH_TOKEN doppler secrets download --no-file --format=env-no-quotes --project watch > apps/watch/.env"
           }
         ]
+      }
+    },
+    "codecov": {
+      "executor": "@nrwl/workspace:run-commands",
+      "options": {
+        "command": "codecov -f coverage/apps/watch/cobertura-coverage.xml -F apps.watch"
       }
     }
   },

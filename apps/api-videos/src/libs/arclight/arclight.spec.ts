@@ -1,4 +1,4 @@
-import { omit } from 'lodash'
+import omit from 'lodash/omit'
 import fetch, { Response } from 'node-fetch'
 import {
   getArclightMediaLanguages,
@@ -432,7 +432,7 @@ describe('arclight', () => {
     }
 
     it('transforms media component to video', () => {
-      const usedSlugs = []
+      const usedSlugs = {}
       expect(
         transformArclightMediaComponentToVideo(
           mediaComponent,
@@ -442,11 +442,11 @@ describe('arclight', () => {
           usedSlugs
         )
       ).toEqual(video)
-      expect(usedSlugs).toEqual(['title'])
+      expect(usedSlugs).toEqual({ title: 'mediaComponentId' })
     })
 
     it('transforms media component to video when slug exists', () => {
-      const usedSlugs = ['title']
+      const usedSlugs = { title: 'id' }
       expect(
         transformArclightMediaComponentToVideo(
           mediaComponent,
@@ -465,11 +465,11 @@ describe('arclight', () => {
           }
         ]
       })
-      expect(usedSlugs).toEqual(['title', 'title-2'])
+      expect(usedSlugs).toEqual({ title: 'id', 'title-2': 'mediaComponentId' })
     })
 
     it('transforms media component to video without languages', () => {
-      const usedSlugs = []
+      const usedSlugs = {}
       expect(
         transformArclightMediaComponentToVideo(
           mediaComponent,
@@ -479,11 +479,11 @@ describe('arclight', () => {
           usedSlugs
         )
       ).toEqual({ ...video, variants: [] })
-      expect(usedSlugs).toEqual(['title'])
+      expect(usedSlugs).toEqual({ title: 'mediaComponentId' })
     })
 
     it('transforms media component to video with study questions', () => {
-      const usedSlugs = []
+      const usedSlugs = {}
       expect(
         transformArclightMediaComponentToVideo(
           { ...mediaComponent, studyQuestions: ['How can I know Jesus?'] },
@@ -502,11 +502,11 @@ describe('arclight', () => {
           }
         ]
       })
-      expect(usedSlugs).toEqual(['title'])
+      expect(usedSlugs).toEqual({ title: 'mediaComponentId' })
     })
 
     it('transforms media component to video with long title', () => {
-      const usedSlugs = []
+      const usedSlugs = {}
       expect(
         transformArclightMediaComponentToVideo(
           {
@@ -553,9 +553,10 @@ describe('arclight', () => {
           }
         ]
       })
-      expect(usedSlugs).toEqual([
-        'the-quick-brown-fox-jumps-over-the-lazy-dog-many-times-over-and-over-until-it-gets-cut-off-when-over-100-characters'
-      ])
+      expect(usedSlugs).toEqual({
+        'the-quick-brown-fox-jumps-over-the-lazy-dog-many-times-over-and-over-until-it-gets-cut-off-when-over-100-characters':
+          'mediaComponentId'
+      })
     })
   })
 
@@ -568,15 +569,15 @@ describe('arclight', () => {
 
     it('adds slug', () => {
       expect(
-        transformArclightMediaLanguageToLanguage(mediaLanguage, []).slug
+        transformArclightMediaLanguageToLanguage(mediaLanguage, {}).slug
       ).toEqual('english-new-zealand')
     })
 
     it('when slug already used then slug value will have number following', () => {
       expect(
-        transformArclightMediaLanguageToLanguage(mediaLanguage, [
-          'english-new-zealand'
-        ]).slug
+        transformArclightMediaLanguageToLanguage(mediaLanguage, {
+          'english-new-zealand': 'id'
+        }).slug
       ).toEqual('english-new-zealand-2')
     })
   })
@@ -701,7 +702,7 @@ describe('arclight', () => {
         }
       ]
       await expect(
-        fetchMediaComponentsAndTransformToVideos(languages, [], 1)
+        fetchMediaComponentsAndTransformToVideos(languages, {}, 1)
       ).resolves.toEqual([
         {
           _key: 'mediaComponentId',

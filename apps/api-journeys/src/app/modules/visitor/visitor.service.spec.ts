@@ -1,7 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { v4 as uuidv4 } from 'uuid'
 import { PrismaService } from '../../lib/prisma.service'
-import { JourneyService } from '../journey/journey.service'
 import { VisitorService } from './visitor.service'
 
 jest.mock('uuid', () => ({
@@ -26,14 +25,8 @@ const visitor = {
   teamId: 'team.id'
 }
 
-const journeyService = {
-  provide: JourneyService,
-  useFactory: () => ({
-    get: jest.fn(() => journey)
-  })
-}
 describe('VisitorService', () => {
-  let service: VisitorService, prisma: PrismaService
+  let service: VisitorService, prismaService: PrismaService
 
   beforeAll(() => {
     jest.useFakeTimers('modern')
@@ -46,22 +39,23 @@ describe('VisitorService', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [VisitorService, PrismaService, journeyService]
+      providers: [VisitorService, PrismaService]
     }).compile()
 
     service = module.get<VisitorService>(VisitorService)
-    prisma = module.get<PrismaService>(PrismaService)
-    prisma.visitor.create = jest
+    prismaService = module.get<PrismaService>(PrismaService)
+    prismaService.journey.findUnique = jest.fn().mockReturnValueOnce(journey)
+    prismaService.visitor.create = jest
       .fn()
       .mockImplementationOnce((input) => input.data)
-    prisma.visitor.findMany = jest.fn().mockReturnValueOnce([])
-    prisma.journeyVisitor.findUnique = jest
+    prismaService.visitor.findMany = jest.fn().mockReturnValueOnce([])
+    prismaService.journeyVisitor.findUnique = jest
       .fn()
       .mockReturnValueOnce(journeyVisitor)
-    prisma.journeyVisitor.upsert = jest
+    prismaService.journeyVisitor.upsert = jest
       .fn()
       .mockImplementationOnce((input) => input.create)
-    prisma.journeyVisitor.findMany = jest.fn().mockReturnValueOnce([])
+    prismaService.journeyVisitor.findMany = jest.fn().mockReturnValueOnce([])
   })
 
   describe('getList', () => {
@@ -75,16 +69,16 @@ describe('VisitorService', () => {
     }
     it('returns a visitors connection', async () => {
       expect(
-        await service.getList({ first: 50, filter: { teamId: 'jfp-team' } })
+        await service.getList({ first: 50, filter: { teamId: 'teamId' } })
       ).toEqual(connection)
-      expect(prisma.visitor.findMany).toHaveBeenCalledWith({
+      expect(prismaService.visitor.findMany).toHaveBeenCalledWith({
         cursor: undefined,
         orderBy: {
           createdAt: 'desc'
         },
         skip: 0,
         take: 51,
-        where: { teamId: 'jfp-team' }
+        where: { teamId: 'teamId' }
       })
     })
 
@@ -92,34 +86,34 @@ describe('VisitorService', () => {
       await service.getList({
         first: 50,
         after: '1',
-        filter: { teamId: 'jfp-team' }
+        filter: { teamId: 'teamId' }
       })
-      expect(prisma.visitor.findMany).toHaveBeenCalledWith({
+      expect(prismaService.visitor.findMany).toHaveBeenCalledWith({
         cursor: { id: '1' },
         orderBy: {
           createdAt: 'desc'
         },
         skip: 1,
         take: 51,
-        where: { teamId: 'jfp-team' }
+        where: { teamId: 'teamId' }
       })
     })
   })
 
   describe('getVisitorId', () => {
     it('should return visitor id', async () => {
-      prisma.visitor.findFirst = jest.fn().mockReturnValueOnce(visitor)
+      prismaService.visitor.findFirst = jest.fn().mockReturnValueOnce(visitor)
       expect(
         await service.getByUserIdAndJourneyId('user.id', 'journey.id')
       ).toEqual({ visitor, journeyVisitor })
     })
 
     it('should create a new visitor if visitor does not exist', async () => {
-      prisma.visitor.findFirst = jest.fn().mockReturnValueOnce(null)
+      prismaService.visitor.findFirst = jest.fn().mockReturnValueOnce(null)
       mockUuidv4.mockReturnValueOnce('newVisitor.id')
 
       await service.getByUserIdAndJourneyId('user.id', 'journey.id')
-      expect(prisma.visitor.create).toHaveBeenCalledWith({
+      expect(prismaService.visitor.create).toHaveBeenCalledWith({
         data: {
           ...visitor,
           id: 'newVisitor.id',

@@ -1,5 +1,4 @@
 import { Test, TestingModule } from '@nestjs/testing'
-import { ChatButton } from '.prisma/api-journeys-client'
 import { PrismaService } from '../../lib/prisma.service'
 import { ChatPlatform } from '../../__generated__/graphql'
 import { ChatButtonResolver } from './chatButton.resolver'
@@ -7,14 +6,14 @@ import { ChatButtonResolver } from './chatButton.resolver'
 describe('ChatButtonResolver', () => {
   let resolver: ChatButtonResolver, prismaService: PrismaService
 
-  const chatButton: ChatButton = {
+  const chatButton = {
     journeyId: 'journeyId',
     id: '1',
     link: 'm.me./user',
     platform: 'facebook'
   }
 
-  const chatButton2: ChatButton = {
+  const chatButton2 = {
     journeyId: 'journeyId',
     id: '2',
     link: 'm.me./user2',

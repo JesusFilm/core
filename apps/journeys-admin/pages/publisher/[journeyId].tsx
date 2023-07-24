@@ -6,8 +6,6 @@ import {
   withAuthUser,
   withAuthUserTokenSSR
 } from 'next-firebase-auth'
-import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
-import { getLaunchDarklyClient } from '@core/shared/ui/getLaunchDarklyClient'
 import { JOURNEY_FIELDS } from '@core/journeys/ui/JourneyProvider/journeyFields'
 import { gql, useQuery } from '@apollo/client'
 import { useTranslation } from 'react-i18next'
@@ -16,13 +14,12 @@ import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { PageWrapper } from '../../src/components/PageWrapper'
 import { GetPublisherTemplate } from '../../__generated__/GetPublisherTemplate'
 import { GetPublisher } from '../../__generated__/GetPublisher'
-import i18nConfig from '../../next-i18next.config'
 import { JourneyView } from '../../src/components/JourneyView'
 import { Role } from '../../__generated__/globalTypes'
 import { PublisherInvite } from '../../src/components/PublisherInvite'
 import { Menu } from '../../src/components/JourneyView/Menu'
-import { useTermsRedirect } from '../../src/libs/useTermsRedirect/useTermsRedirect'
 import { useInvalidJourneyRedirect } from '../../src/libs/useInvalidJourneyRedirect'
+import { initAndAuthApp } from '../../src/libs/initAndAuthApp'
 
 export const GET_PUBLISHER_TEMPLATE = gql`
   ${JOURNEY_FIELDS}
@@ -54,7 +51,6 @@ function TemplateDetailsAdmin(): ReactElement {
     Role.publisher
   )
 
-  useTermsRedirect()
   useInvalidJourneyRedirect(data)
   return (
     <>
@@ -95,23 +91,17 @@ function TemplateDetailsAdmin(): ReactElement {
 export const getServerSideProps = withAuthUserTokenSSR({
   whenUnauthed: AuthAction.REDIRECT_TO_LOGIN
 })(async ({ AuthUser, locale }) => {
-  const ldUser = {
-    key: AuthUser.id as string,
-    firstName: AuthUser.displayName ?? undefined,
-    email: AuthUser.email ?? undefined
-  }
-  const launchDarklyClient = await getLaunchDarklyClient(ldUser)
-  const flags = (await launchDarklyClient.allFlagsState(ldUser)).toJSON() as {
-    [key: string]: boolean | undefined
-  }
+  const { flags, redirect, translations } = await initAndAuthApp({
+    AuthUser,
+    locale
+  })
+
+  if (redirect != null) return { redirect }
+
   return {
     props: {
       flags,
-      ...(await serverSideTranslations(
-        locale ?? 'en',
-        ['apps-journeys-admin', 'libs-journeys-ui'],
-        i18nConfig
-      ))
+      ...translations
     }
   }
 })

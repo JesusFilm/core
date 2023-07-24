@@ -1,7 +1,7 @@
 import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common'
 import { Reflector } from '@nestjs/core'
 import { GqlExecutionContext } from '@nestjs/graphql'
-
+import { contextToUserId } from '../firebaseClient'
 import { CaslFactory } from './caslFactory'
 import { CASL_POLICY_KEY, CaslPolicyHandler } from './decorators/caslPolicy'
 
@@ -33,10 +33,18 @@ export class CaslGuard implements CanActivate {
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const req = GqlExecutionContext.create(context).getContext().req
 
-    if (req.userId == null) return false
+    if (req.userId == null) {
+      req.userId = await contextToUserId(context)
+      if (req.userId == null) return false
+    }
+
+    if (req.roles == null) req.roles = await this.loadRoles(req.userId)
 
     if (req.ability == null)
-      req.ability = await this.caslFactory.createAbility({ id: req.userId })
+      req.ability = await this.caslFactory.createAbility({
+        id: req.userId,
+        roles: req.roles
+      })
 
     const classPolicies =
       this.reflector.get<CaslPolicyHandler[] | undefined>(
@@ -51,5 +59,9 @@ export class CaslGuard implements CanActivate {
     const policies = classPolicies.concat(handlerPolicies)
 
     return policies.every((handler) => handler(req.ability))
+  }
+
+  protected async loadRoles(_userId: string): Promise<string[]> {
+    return []
   }
 }

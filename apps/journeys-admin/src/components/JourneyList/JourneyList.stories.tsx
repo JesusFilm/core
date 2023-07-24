@@ -3,7 +3,8 @@ import { MockedProvider } from '@apollo/client/testing'
 import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 import { journeysAdminConfig } from '../../libs/storybook'
 import { PageWrapper } from '../NewPageWrapper'
-import { GET_ACTIVE_JOURNEYS } from '../../libs/useActiveJourneys/useActiveJourneys'
+import { GET_ADMIN_JOURNEYS } from '../../libs/useAdminJourneysQuery/useAdminJourneysQuery'
+import { JourneyStatus } from '../../../__generated__/globalTypes'
 import {
   defaultJourney,
   oldJourney,
@@ -27,7 +28,10 @@ const Template: Story = ({ ...args }) => (
     mocks={[
       {
         request: {
-          query: GET_ACTIVE_JOURNEYS
+          query: GET_ADMIN_JOURNEYS,
+          variables: {
+            status: [JourneyStatus.draft, JourneyStatus.published]
+          }
         },
         result: {
           data: {
@@ -63,17 +67,6 @@ NoJourneys.args = {
   props: {
     journeys: [],
     event: ''
-  }
-}
-
-export const InviteRequirement = Template.bind({})
-InviteRequirement.args = {
-  props: {
-    journeys: [],
-    event: ''
-  },
-  flags: {
-    inviteRequirement: true
   }
 }
 

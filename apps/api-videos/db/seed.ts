@@ -23,8 +23,23 @@ async function getVideo(
   return await rst.next()
 }
 
+async function getVideoSlugs(): Promise<Record<string, string>> {
+  const result = await db.query(aql`
+    FOR video IN videos
+    RETURN {
+      slug: video.slug,
+      _key: video._key
+    }
+  `)
+  const results = await result.all()
+  const slugs: Record<string, string> = {}
+  for await (const video of results) {
+    slugs[video.slug] = video._key
+  }
+  return slugs
+}
 async function importMediaComponents(): Promise<void> {
-  const usedVideoSlugs = []
+  const usedVideoSlugs: Record<string, string> = await getVideoSlugs()
   const languages = await fetchMediaLanguagesAndTransformToLanguages()
   let videos: Video[]
   let page = 1

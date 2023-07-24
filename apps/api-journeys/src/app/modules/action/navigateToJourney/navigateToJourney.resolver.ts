@@ -1,31 +1,30 @@
 import { Args, Mutation, Parent, ResolveField, Resolver } from '@nestjs/graphql'
 import { UseGuards } from '@nestjs/common'
-import { includes } from 'lodash'
-import { UserInputError } from 'apollo-server-errors'
+import { GraphQLError } from 'graphql'
+import { Journey, Action } from '.prisma/api-journeys-client'
+import includes from 'lodash/includes'
+import omit from 'lodash/omit'
 
 import { RoleGuard } from '../../../lib/roleGuard/roleGuard'
 import {
-  Action,
-  Block,
-  Journey,
   NavigateToJourneyAction,
   NavigateToJourneyActionInput,
   Role,
   UserJourneyRole
 } from '../../../__generated__/graphql'
-import { JourneyService } from '../../journey/journey.service'
-import { BlockService } from '../../block/block.service'
+import { PrismaService } from '../../../lib/prisma.service'
 
 @Resolver('NavigateToJourneyAction')
 export class NavigateToJourneyActionResolver {
-  constructor(
-    private readonly journeyService: JourneyService,
-    private readonly blockService: BlockService
-  ) {}
+  constructor(private readonly prismaService: PrismaService) {}
 
   @ResolveField()
-  async journey(@Parent() action: NavigateToJourneyAction): Promise<Journey> {
-    return await this.journeyService.get(action.journeyId)
+  async journey(
+    @Parent() action: NavigateToJourneyAction
+  ): Promise<Journey | null> {
+    return await this.prismaService.journey.findUnique({
+      where: { id: action.journeyId }
+    })
   }
 
   @Mutation()
@@ -41,11 +40,13 @@ export class NavigateToJourneyActionResolver {
     @Args('journeyId') journeyId: string,
     @Args('input') input: NavigateToJourneyActionInput
   ): Promise<Action> {
-    const block = (await this.blockService.get(id)) as Block & {
-      __typename: string
-    }
+    const block = await this.prismaService.block.findUnique({
+      where: { id },
+      include: { action: true }
+    })
 
     if (
+      block == null ||
       !includes(
         [
           'SignUpBlock',
@@ -55,26 +56,32 @@ export class NavigateToJourneyActionResolver {
           'VideoTriggerBlock',
           'TextResponseBlock'
         ],
-        block.__typename
+        block.typename
       )
     ) {
-      throw new UserInputError(
-        'This block does not support navigate to journey actions'
+      throw new GraphQLError(
+        'This block does not support navigate to journey actions',
+        { extensions: { code: 'BAD_USER_INPUT' } }
       )
     }
-    const updatedBlock: { action: Action } = await this.blockService.update(
-      id,
-      {
-        action: {
-          ...input,
-          parentBlockId: block.id,
-          blockId: null,
-          url: null,
-          target: null
-        }
-      }
-    )
 
-    return updatedBlock.action
+    const actionData = {
+      ...omit(input, 'journeyId'),
+      journey: { connect: { id: input.journeyId } },
+      url: null,
+      target: null
+    }
+
+    return await this.prismaService.action.upsert({
+      where: { parentBlockId: id },
+      create: {
+        ...actionData,
+        parentBlock: { connect: { id: block.id } }
+      },
+      update: {
+        ...actionData,
+        block: { disconnect: true }
+      }
+    })
   }
 }

@@ -223,14 +223,18 @@ export function transformArclightMediaComponentToVideo(
   mediaComponentLanguages: ArclightMediaComponentLanguage[],
   mediaComponentLinks: string[],
   languages: Language[],
-  usedSlugs: string[]
+  usedSlugs: Record<string, string>
 ): Video {
   const metadataLanguageId =
     languages
       .find(({ bcp47 }) => bcp47 === mediaComponent.metadataLanguageTag)
       ?.languageId.toString() ?? '529' // english by default
 
-  const slug = slugify(mediaComponent.title, usedSlugs)
+  const slug = slugify(
+    mediaComponent.mediaComponentId,
+    mediaComponent.title,
+    usedSlugs
+  )
 
   const variants: VideoVariant[] = []
   for (const mediaComponentLanguage of mediaComponentLanguages) {
@@ -307,9 +311,13 @@ export function transformArclightMediaComponentToVideo(
 
 export function transformArclightMediaLanguageToLanguage(
   mediaLanguage: ArclightMediaLanguage,
-  usedSlugs: string[]
+  usedSlugs: Record<string, string>
 ): Language {
-  const slug = slugify(mediaLanguage.name, usedSlugs)
+  const slug = slugify(
+    mediaLanguage.languageId.toString(),
+    mediaLanguage.name,
+    usedSlugs
+  )
   return {
     ...mediaLanguage,
     slug
@@ -319,7 +327,7 @@ export function transformArclightMediaLanguageToLanguage(
 export async function fetchMediaLanguagesAndTransformToLanguages(): Promise<
   Language[]
 > {
-  const usedLanguageSlugs = []
+  const usedLanguageSlugs: Record<string, string> = {}
   const mediaLanguages = await getArclightMediaLanguages()
   return mediaLanguages.map((mediaLanguage) =>
     transformArclightMediaLanguageToLanguage(mediaLanguage, usedLanguageSlugs)
@@ -328,7 +336,7 @@ export async function fetchMediaLanguagesAndTransformToLanguages(): Promise<
 
 export async function fetchMediaComponentsAndTransformToVideos(
   languages: Language[],
-  usedVideoSlugs: string[],
+  usedVideoSlugs: Record<string, string>,
   page: number
 ): Promise<Video[]> {
   const mediaComponents = await getArclightMediaComponents(page)

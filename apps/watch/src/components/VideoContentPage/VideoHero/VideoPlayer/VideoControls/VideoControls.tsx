@@ -1,6 +1,6 @@
 import { ReactElement, useState, useEffect, MouseEventHandler } from 'react'
 import Container from '@mui/material/Container'
-import { VideoJsPlayer } from 'video.js'
+import Player from 'video.js/dist/types/player'
 import Box from '@mui/material/Box'
 import Fade from '@mui/material/Fade'
 import Stack from '@mui/material/Stack'
@@ -27,7 +27,7 @@ import { AudioLanguageButton } from '../../../AudioLanguageButton'
 
 const DynamicSubtitleDialog = dynamic<{
   open: boolean
-  player: VideoJsPlayer
+  player: Player
   onClose: () => void
 }>(
   async () =>
@@ -38,7 +38,7 @@ const DynamicSubtitleDialog = dynamic<{
 )
 
 interface VideoControlProps {
-  player: VideoJsPlayer
+  player: Player
   onVisibleChanged?: (active: boolean) => void
 }
 
@@ -47,13 +47,25 @@ function isMobile(): boolean {
   return /windows phone/i.test(userAgent) || /iPad|iPhone|iPod/.test(userAgent)
 }
 
-function evtToDataLayer(eventType, title, language, percent): void {
+function evtToDataLayer(
+  eventType,
+  mcId,
+  langId,
+  title,
+  language,
+  seconds,
+  percent
+): void {
   TagManager.dataLayer({
     dataLayer: {
       event: eventType,
+      mcId,
+      langId,
       title,
       language,
-      percent
+      percent,
+      seconds,
+      dateTimeUTC: new Date().toISOString()
     }
   })
 }
@@ -78,7 +90,7 @@ export function VideoControls({
 
   const duration = secondsToTimeFormat(player.duration(), { trimZeroes: true })
   const durationSeconds = Math.round(player.duration())
-  const { title, variant } = useVideo()
+  const { id, title, variant } = useVideo()
   const visible = !play || active || loading
 
   useEffect(() => {
@@ -89,14 +101,26 @@ export function VideoControls({
     if ((progress / durationSeconds) * 100 > progressPercentNotYetEmitted[0]) {
       eventToDataLayer(
         `video_time_update_${progressPercentNotYetEmitted[0]}`,
+        id,
+        variant?.language.id,
         title[0].value,
-        variant?.language.name[0].value,
+        variant?.language?.name.find(({ primary }) => !primary)?.value ??
+          variant?.language?.name[0]?.value,
+        Math.round(player.currentTime()),
         Math.round((progress / durationSeconds) * 100)
       )
       const [, ...rest] = progressPercentNotYetEmitted
       setProgressPercentNotYetEmitted(rest)
     }
-  }, [progress, durationSeconds, progressPercentNotYetEmitted, title, variant])
+  }, [
+    id,
+    progress,
+    durationSeconds,
+    progressPercentNotYetEmitted,
+    title,
+    variant,
+    player
+  ])
 
   useEffect(() => {
     setVolume(player.volume() * 100)
@@ -104,15 +128,23 @@ export function VideoControls({
       if (player.currentTime() < 0.02) {
         eventToDataLayer(
           'video_start',
+          id,
+          variant?.language.id,
           title[0].value,
-          variant?.language.name[0].value,
+          variant?.language?.name.find(({ primary }) => !primary)?.value ??
+            variant?.language?.name[0]?.value,
+          Math.round(player.currentTime()),
           Math.round((player.currentTime() / player.duration()) * 100)
         )
       } else {
         eventToDataLayer(
           'video_play',
+          id,
+          variant?.language.id,
           title[0].value,
-          variant?.language.name[0].value,
+          variant?.language?.name.find(({ primary }) => !primary)?.value ??
+            variant?.language?.name[0]?.value,
+          Math.round(player.currentTime()),
           Math.round((player.currentTime() / player.duration()) * 100)
         )
       }
@@ -122,8 +154,12 @@ export function VideoControls({
       if (player.currentTime() > 0.02) {
         eventToDataLayer(
           'video_pause',
+          id,
+          variant?.language.id,
           title[0].value,
-          variant?.language.name[0].value,
+          variant?.language?.name.find(({ primary }) => !primary)?.value ??
+            variant?.language?.name[0]?.value,
+          Math.round(player.currentTime()),
           Math.round((player.currentTime() / player.duration()) * 100)
         )
       }
@@ -150,8 +186,12 @@ export function VideoControls({
       setLoading(false)
       eventToDataLayer(
         'video_ended',
+        id,
+        variant?.language.id,
         title[0].value,
-        variant?.language.name[0].value,
+        variant?.language?.name.find(({ primary }) => !primary)?.value ??
+          variant?.language?.name[0]?.value,
+        Math.round(player.currentTime()),
         Math.round((player.currentTime() / player.duration()) * 100)
       )
     })
@@ -161,21 +201,29 @@ export function VideoControls({
       if (fscreen.fullscreenElement != null) {
         eventToDataLayer(
           'video_enter_full_screen',
+          id,
+          variant?.language.id,
           title[0].value,
-          variant?.language.name[0].value,
+          variant?.language?.name.find(({ primary }) => !primary)?.value ??
+            variant?.language?.name[0]?.value,
+          Math.round(player.currentTime()),
           Math.round((player.currentTime() / player.duration()) * 100)
         )
       } else {
         eventToDataLayer(
           'video_exit_full_screen',
+          id,
+          variant?.language.id,
           title[0].value,
-          variant?.language.name[0].value,
+          variant?.language?.name.find(({ primary }) => !primary)?.value ??
+            variant?.language?.name[0]?.value,
+          Math.round(player.currentTime()),
           Math.round((player.currentTime() / player.duration()) * 100)
         )
       }
       setFullscreen(fscreen.fullscreenElement != null)
     })
-  }, [player, setFullscreen, loading, title, variant])
+  }, [id, player, setFullscreen, loading, title, variant])
 
   function handlePlay(): void {
     if (!play) {
@@ -191,7 +239,7 @@ export function VideoControls({
       setFullscreen(false)
     } else {
       if (isMobile()) {
-        player.requestFullscreen()
+        void player.requestFullscreen()
       } else {
         await fscreen.requestFullscreen(document.documentElement)
         setFullscreen(true)
