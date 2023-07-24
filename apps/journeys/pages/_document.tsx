@@ -56,7 +56,7 @@ export default class MyDocument extends Document<{
           <link rel="manifest" href="/site.webmanifest" />
           {/* Inject MUI styles first to match with the prepend: true configuration. */}
           {this.props.emotionStyleTags}
-          <meta name="theme-color" content="#26262E" />
+          {/* <meta name="theme-color" content="#26262E" /> */}
         </Head>
         <body>
           {/* <body style={{ backgroundColor: '#26262E' }}> */}
