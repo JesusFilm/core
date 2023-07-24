@@ -14,9 +14,9 @@ import { useTranslation } from 'react-i18next'
 import { Form } from 'formik'
 import { useRouter } from 'next/router'
 import Divider from '@mui/material/Divider'
+import GroupAddIcon from '@mui/icons-material/GroupAdd'
 import taskbarIcon from '../../../../public/taskbar-icon.svg'
 import { TeamCreateForm } from '../TeamCreateForm'
-
 import { useTeam } from '../TeamProvider'
 import { TeamManageWrapper } from '../TeamManageDialog/TeamManageWrapper'
 
@@ -46,7 +46,7 @@ export function TeamOnboarding(): ReactElement {
             }) => (
               <Card sx={{ width: { sm: '444px' } }}>
                 <CardHeader
-                  title={t('Invite teammates to {{ title }}', {
+                  title={t('Invite Teammates', {
                     title: activeTeam.title
                   })}
                   titleTypographyProps={{ variant: 'h6' }}
@@ -63,6 +63,12 @@ export function TeamOnboarding(): ReactElement {
 
                 <Divider />
                 <CardContent sx={{ px: 6, py: 4 }}>
+                  <Stack direction="row" alignItems="center" sx={{ mb: 4 }}>
+                    <GroupAddIcon />
+                    <Typography variant="subtitle1" sx={{ marginLeft: 3 }}>
+                      Invite team members
+                    </Typography>
+                  </Stack>
                   {userTeamInviteForm}
                 </CardContent>
                 <CardContent

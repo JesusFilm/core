@@ -5,7 +5,7 @@ import useMediaQuery from '@mui/material/useMediaQuery'
 import { Theme } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'react-i18next'
-import GroupAddIcon from '@mui/icons-material/GroupAdd'
+import UserProfileAdd from '@core/shared/ui/icons/UserProfileAdd'
 import { TeamManageWrapper } from './TeamManageWrapper'
 
 interface TeamManageDialogProps {
@@ -28,15 +28,15 @@ export function TeamManageDialog({
           onClose={onClose}
           divider
           dialogTitle={{
-            title: 'Invite others to your team',
+            title: 'Manage Members',
             closeButton: true
           }}
           dialogActionChildren={
             <Stack flexGrow={1} sx={{ m: 4, mt: 2 }}>
               <Stack direction="row" alignItems="center" sx={{ mb: 4 }}>
-                <GroupAddIcon />
+                <UserProfileAdd />
                 <Typography variant="subtitle1" sx={{ ml: 3 }}>
-                  {t('Add team member by Email')}
+                  {t('Invite team member')}
                 </Typography>
               </Stack>
               {userTeamInviteForm}

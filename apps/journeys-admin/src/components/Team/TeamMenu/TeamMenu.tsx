@@ -89,7 +89,7 @@ export function TeamMenu(): ReactElement {
         <MenuItem
           disabled={activeTeam == null}
           key="manage-team"
-          label={t('Manage Team')}
+          label={t('Members')}
           icon={<GroupIcon />}
           onClick={() => {
             setTeamManageOpen(true)

@@ -149,7 +149,7 @@ export function UserTeamInviteForm({
             </Box>
             <Typography sx={{ color: 'secondary.light' }} variant="body2">
               {t(
-                'No email notifications. New users get access instantly. Team members can see all analytics, edit journeys and copy journeys.'
+                'No email notifications. New members get access instantly. Team members can see all analytics, edit any journey, and delete and copy journey.'
               )}
             </Typography>
           </Stack>
