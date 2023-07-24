@@ -16,4 +16,14 @@ describe('FooterButtonList', () => {
     )
     expect(getByTestId('ShareIcon')).toBeInTheDocument()
   })
+
+  it('should show like and dislike button', () => {
+    const { getByTestId } = render(
+      <SnackbarProvider>
+        <FooterButtonList />
+      </SnackbarProvider>
+    )
+    expect(getByTestId('ThumbsUpIcon')).toBeInTheDocument()
+    expect(getByTestId('ThumbsDownIcon')).toBeInTheDocument()
+  })
 })
