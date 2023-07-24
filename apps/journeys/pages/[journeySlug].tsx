@@ -9,8 +9,6 @@ import { getJourneyRTL } from '@core/journeys/ui/rtl'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import { NextSeo } from 'next-seo'
 import { useRouter } from 'next/router'
-import AppBar from '@mui/material/AppBar'
-import Toolbar from '@mui/material/Toolbar'
 import { Conductor } from '../src/components/Conductor'
 import { createApolloClient } from '../src/libs/apolloClient'
 import {
@@ -78,11 +76,6 @@ function JourneyPage({ journey, locale, rtl }: JourneyPageProps): ReactElement {
           rtl={rtl}
           locale={locale}
         >
-          <AppBar role="banner" position="fixed">
-            <Toolbar>
-              <p>test</p>
-            </Toolbar>
-          </AppBar>
           {journey.blocks != null && (
             <Conductor blocks={transformer(journey.blocks)} />
           )}
