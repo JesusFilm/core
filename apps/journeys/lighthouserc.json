@@ -1,6 +1,10 @@
 {
   "ci": {
     "collect": {
+      "url": [
+        "http://localhost:4100/",
+        "http://localhost:4100/fact-or-fiction"
+      ],
       "numberOfRuns": 1,
       "startServerCommand": "nx serve journeys",
       "settings": {
@@ -9,9 +13,24 @@
     },
     "assert": {
       "assertions": {
-        "largest-contentful-paint": ["warn", { "maxNumericValue": 2500 }],
-        "first-contentful-paint": ["warn", { "maxNumericValue": 2000 }],
-        "total-blocking-time": ["warn", { "maxNumericValue": 200 }]
+        "largest-contentful-paint": [
+          "warn",
+          {
+            "maxNumericValue": 2500
+          }
+        ],
+        "first-contentful-paint": [
+          "warn",
+          {
+            "maxNumericValue": 2000
+          }
+        ],
+        "total-blocking-time": [
+          "warn",
+          {
+            "maxNumericValue": 200
+          }
+        ]
       }
     },
     "upload": {

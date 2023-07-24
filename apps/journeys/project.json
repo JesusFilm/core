@@ -181,7 +181,7 @@
       "options": {
         "commands": [
           {
-            "command": "npx lhci autorun --collect.url=${DEPLOYMENT_URL:-{args.url}} --collect.url=${DEPLOYMENT_URL:-{args.url}/fact-or-fiction} --config apps/journeys/lighthouserc.json"
+            "command": "node apps/journeys/lighthouse.config.js && npx lhci autorun --config apps/journeys/lighthouserc.json"
           }
         ]
       }
