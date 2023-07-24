@@ -37,7 +37,7 @@ export const baseColorsLight = (): Required<
     palette: {
       grey: palette,
       mode: 'light',
-      background: { default: palette[0], paper: palette[100] },
+      background: { default: palette[900], paper: palette[100] },
       primary,
       secondary,
       error,
