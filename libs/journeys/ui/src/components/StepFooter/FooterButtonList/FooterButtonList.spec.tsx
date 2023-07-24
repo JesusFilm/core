@@ -9,11 +9,11 @@ jest.mock('@mui/material/useMediaQuery', () => ({
 
 describe('FooterButtonList', () => {
   it('should show share button', () => {
-    const { getAllByTestId } = render(
+    const { getByTestId } = render(
       <SnackbarProvider>
         <FooterButtonList />
       </SnackbarProvider>
     )
-    expect(getAllByTestId('ShareIcon')).toHaveLength(1)
+    expect(getByTestId('ShareIcon')).toBeInTheDocument()
   })
 })
