@@ -134,6 +134,7 @@ const iconNames = [
   'Target2',
   'Telegram',
   'Trash2',
+  'ThumbsDown',
   'ThumbsUp',
   'Tiktok',
   'TwitterLogo',
