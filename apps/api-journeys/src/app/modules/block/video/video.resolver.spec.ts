@@ -9,7 +9,6 @@ import {
   VideoBlockSource,
   VideoBlockUpdateInput
 } from '../../../__generated__/graphql'
-import { JourneyService } from '../../journey/journey.service'
 import { UserJourneyService } from '../../userJourney/userJourney.service'
 import { UserRoleService } from '../../userRole/userRole.service'
 import { PrismaService } from '../../../lib/prisma.service'
@@ -153,7 +152,6 @@ describe('VideoBlockResolver', () => {
         VideoBlockResolver,
         UserJourneyService,
         UserRoleService,
-        JourneyService,
         PrismaService
       ]
     }).compile()

@@ -10,7 +10,6 @@ import { UserJourneyService } from '../../userJourney/userJourney.service'
 import { BlockResolver } from '../block.resolver'
 import { BlockService } from '../block.service'
 import { UserRoleService } from '../../userRole/userRole.service'
-import { JourneyService } from '../../journey/journey.service'
 import { PrismaService } from '../../../lib/prisma.service'
 import { handleImage, ImageBlockResolver } from './image.resolver'
 
@@ -130,7 +129,6 @@ describe('ImageBlockResolver', () => {
         ImageBlockResolver,
         UserJourneyService,
         UserRoleService,
-        JourneyService,
         PrismaService
       ]
     }).compile()

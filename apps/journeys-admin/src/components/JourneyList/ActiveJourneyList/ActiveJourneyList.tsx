@@ -12,6 +12,7 @@ import type { JourneyListProps } from '../JourneyList'
 import { DiscoveryJourneys } from '../../DiscoveryJourneys'
 import { useAdminJourneysQuery } from '../../../libs/useAdminJourneysQuery'
 import { JourneyStatus } from '../../../../__generated__/globalTypes'
+import { useTeam } from '../../Team/TeamProvider'
 import { AddJourneyButton } from './AddJourneyButton'
 import { ActivePriorityList } from './ActivePriorityList'
 
@@ -39,8 +40,10 @@ export function ActiveJourneyList({
 }: JourneyListProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { enqueueSnackbar } = useSnackbar()
+  const { activeTeam } = useTeam()
   const { data, refetch } = useAdminJourneysQuery({
-    status: [JourneyStatus.draft, JourneyStatus.published]
+    status: [JourneyStatus.draft, JourneyStatus.published],
+    teamId: activeTeam?.id
   })
   const [archive] = useMutation(ARCHIVE_ACTIVE_JOURNEYS, {
     update(_cache, { data }) {
@@ -149,10 +152,10 @@ export function ActiveJourneyList({
                 }}
               >
                 <Typography variant="subtitle1" align="center" gutterBottom>
-                  No journeys to display.
+                  {t('No journeys to display.')}
                 </Typography>
                 <Typography variant="caption" align="center" gutterBottom>
-                  Create a journey, then find it here.
+                  {t('Create a journey, then find it here.')}
                 </Typography>
                 <AddJourneyButton />
               </Card>

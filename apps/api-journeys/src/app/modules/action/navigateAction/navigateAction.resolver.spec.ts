@@ -2,7 +2,6 @@ import { Test, TestingModule } from '@nestjs/testing'
 import omit from 'lodash/omit'
 
 import { BlockService } from '../../block/block.service'
-import { JourneyService } from '../../journey/journey.service'
 import { UserJourneyService } from '../../userJourney/userJourney.service'
 import { UserRoleService } from '../../userRole/userRole.service'
 import { PrismaService } from '../../../lib/prisma.service'
@@ -43,7 +42,6 @@ describe('NavigateActionResolver', () => {
         ActionResolver,
         UserJourneyService,
         UserRoleService,
-        JourneyService,
         PrismaService
       ]
     }).compile()

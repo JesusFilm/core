@@ -14,16 +14,16 @@ import {
   GetJourney,
   GetJourney_journey as Journey
 } from '../../../__generated__/GetJourney'
-import { UserInviteAcceptAll } from '../../../__generated__/UserInviteAcceptAll'
 import { Editor } from '../../../src/components/Editor'
 import { PageWrapper } from '../../../src/components/PageWrapper'
 import { GET_JOURNEY, USER_JOURNEY_OPEN } from '../[journeyId]'
 import { JourneyEdit } from '../../../src/components/Editor/JourneyEdit'
 import { EditToolbar } from '../../../src/components/Editor/EditToolbar'
-import { ACCEPT_USER_INVITE } from '../..'
+import { ACCEPT_ALL_INVITES } from '../..'
 import { useInvalidJourneyRedirect } from '../../../src/libs/useInvalidJourneyRedirect/useInvalidJourneyRedirect'
 import { UserJourneyOpen } from '../../../__generated__/UserJourneyOpen'
 import { initAndAuthApp } from '../../../src/libs/initAndAuthApp'
+import { AcceptAllInvites } from '../../../__generated__/AcceptAllInvites'
 
 function JourneyEditPage(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
@@ -73,8 +73,8 @@ export const getServerSideProps = withAuthUserTokenSSR({
 
   if (redirect != null) return { redirect }
 
-  await apolloClient.mutate<UserInviteAcceptAll>({
-    mutation: ACCEPT_USER_INVITE
+  await apolloClient.mutate<AcceptAllInvites>({
+    mutation: ACCEPT_ALL_INVITES
   })
 
   let journey: Journey | null

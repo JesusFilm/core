@@ -9,10 +9,16 @@ import {
 } from '@nestjs/graphql'
 import { GraphQLError } from 'graphql'
 import { IResult, UAParser } from 'ua-parser-js'
-import { Event, Visitor } from '.prisma/api-journeys-client'
+import { Event, Visitor, Prisma } from '.prisma/api-journeys-client'
 import { FromPostgresql } from '@core/nest/decorators/FromPostgresql'
 import pick from 'lodash/pick'
+import { CaslAbility, CaslAccessible } from '@core/nest/common/CaslAuthModule'
+import { subject } from '@casl/ability'
+import { UseGuards } from '@nestjs/common'
 import { PrismaService } from '../../lib/prisma.service'
+import { AppCaslGuard } from '../../lib/casl/caslGuard'
+import { Action, AppAbility } from '../../lib/casl/caslFactory'
+import { VisitorUpdateInput } from '../../__generated__/graphql'
 import { VisitorService, VisitorsConnection } from './visitor.service'
 
 @Resolver('Visitor')
@@ -23,80 +29,76 @@ export class VisitorResolver {
   ) {}
 
   @Query()
+  @UseGuards(AppCaslGuard)
   async visitorsConnection(
-    @CurrentUserId() userId: string,
+    @CaslAccessible('Visitor') accessibleVisitors: Prisma.VisitorWhereInput,
     @Args('teamId') teamId: string,
     @Args('first') first?: number | null,
     @Args('after') after?: string | null
   ): Promise<VisitorsConnection> {
-    const memberResult = await this.prismaService.userTeam.findUnique({
-      where: { teamId_userId: { userId, teamId } }
-    })
-
-    if (memberResult == null)
-      throw new GraphQLError('User is not a member of the team.', {
-        extensions: { code: 'FORBIDDEN' }
-      })
-
     return await this.visitorService.getList({
-      filter: { teamId },
+      filter: {
+        AND: [accessibleVisitors, { teamId }]
+      },
       first: first ?? 50,
       after
     })
   }
 
   @Query()
+  @UseGuards(AppCaslGuard)
   async visitor(
-    @CurrentUserId() userId: string,
+    @CaslAbility() ability: AppAbility,
     @Args('id') id: string
   ): Promise<Visitor> {
     const visitor = await this.prismaService.visitor.findUnique({
-      where: { id }
+      where: { id },
+      include: {
+        team: {
+          include: { userTeams: true }
+        },
+        journeyVisitors: {
+          include: { journey: { include: { userJourneys: true } } }
+        }
+      }
     })
-
     if (visitor == null)
-      throw new GraphQLError(`Visitor with ID "${id}" does not exist`, {
+      throw new GraphQLError(`visitor with id "${id}" not found`, {
         extensions: { code: 'NOT_FOUND' }
       })
-
-    const memberResult = await this.prismaService.userTeam.findUnique({
-      where: { teamId_userId: { userId, teamId: visitor.teamId } }
-    })
-
-    if (memberResult == null)
-      throw new GraphQLError(
-        'User is not a member of the team the visitor belongs to',
-        { extensions: { code: 'FORBIDDEN' } }
-      )
-
+    if (ability.cannot(Action.Read, subject('Visitor', visitor)))
+      throw new GraphQLError('user is not allowed to view visitor', {
+        extensions: { code: 'FORBIDDEN' }
+      })
     return visitor
   }
 
   @Mutation()
+  @UseGuards(AppCaslGuard)
   async visitorUpdate(
-    @CurrentUserId() userId: string,
+    @CaslAbility() ability: AppAbility,
     @Args('id') id: string,
-    @Args('input') input
-  ): Promise<Visitor | undefined> {
+    @Args('input') input: VisitorUpdateInput
+  ): Promise<Visitor> {
     const visitor = await this.prismaService.visitor.findUnique({
-      where: { id }
+      where: { id },
+      include: {
+        team: {
+          include: { userTeams: true }
+        },
+        journeyVisitors: {
+          include: { journey: { include: { userJourneys: true } } }
+        }
+      }
     })
-
     if (visitor == null)
-      throw new GraphQLError(`Visitor with ID "${id}" does not exist`, {
+      throw new GraphQLError(`visitor with id "${id}" not found`, {
         extensions: { code: 'NOT_FOUND' }
       })
-
-    const memberResult = await this.prismaService.userTeam.findUnique({
-      where: { teamId_userId: { userId, teamId: visitor.teamId } }
-    })
-
-    if (memberResult == null)
-      throw new GraphQLError(
-        'User is not a member of the team the visitor belongs to',
-        { extensions: { code: 'FORBIDDEN' } }
-      )
-
+    if (ability.cannot(Action.Update, subject('Visitor', visitor)))
+      throw new GraphQLError('user is not allowed to update visitor', {
+        extensions: { code: 'FORBIDDEN' }
+      })
     return await this.prismaService.visitor.update({
       where: { id: visitor.id },
       data: input
@@ -104,19 +106,23 @@ export class VisitorResolver {
   }
 
   @Mutation()
+  @UseGuards(AppCaslGuard)
   async visitorUpdateForCurrentUser(
+    @CaslAbility() ability: AppAbility,
     @CurrentUserId() userId: string,
-    @Args('input') input
+    @Args('input') input: VisitorUpdateInput
   ): Promise<Visitor | undefined> {
     const visitor = await this.prismaService.visitor.findFirst({
       where: { userId }
     })
-
     if (visitor == null)
-      throw new GraphQLError(`No visitor record found for user "${userId}"`, {
+      throw new GraphQLError(`visitor with userId "${userId}" not found`, {
         extensions: { code: 'NOT_FOUND' }
       })
-
+    if (ability.cannot(Action.Update, subject('Visitor', visitor)))
+      throw new GraphQLError('user is not allowed to update visitor', {
+        extensions: { code: 'FORBIDDEN' }
+      })
     return await this.prismaService.visitor.update({
       where: { id: visitor.id },
       data: pick(input, ['countryCode', 'referrer'])
