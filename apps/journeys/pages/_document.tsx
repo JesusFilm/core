@@ -58,7 +58,8 @@ export default class MyDocument extends Document<{
           {this.props.emotionStyleTags}
           <meta name="theme-color" content="#26262E" />
         </Head>
-        <body style={{ backgroundColor: '#26262E' }}>
+        <body>
+          {/* <body style={{ backgroundColor: '#26262E' }}> */}
           <Main />
           <NextScript />
         </body>
