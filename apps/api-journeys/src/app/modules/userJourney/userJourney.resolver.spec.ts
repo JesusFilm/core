@@ -60,7 +60,7 @@ describe('UserJourneyResolver', () => {
     slug: 'published-slug',
     publishedAt,
     createdAt,
-    teamId: 'jfp-team'
+    teamId: 'teamId'
   }
 
   const userJourneyService = {

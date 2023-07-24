@@ -30,11 +30,13 @@ interface UserItem {
 interface UserListItemProps {
   listItem: UserJourney | UserInvite
   currentUser: UserJourney
+  journeyId: string
 }
 
 export function UserListItem({
   listItem,
-  currentUser
+  currentUser,
+  journeyId: journeyIdFromParent
 }: UserListItemProps): ReactElement {
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
   const open = Boolean(anchorEl)
@@ -152,7 +154,12 @@ export function UserListItem({
       >
         <Stack divider={<Divider />}>
           {role === 'inviteRequested' && !isInvite && (
-            <ApproveUser id={id} email={email} onClick={handleClose} />
+            <ApproveUser
+              id={id}
+              email={email}
+              onClick={handleClose}
+              journeyId={journeyIdFromParent}
+            />
           )}
           {role === 'editor' && userRole === 'owner' && (
             <PromoteUser id={id} onClick={handleClose} />
@@ -162,6 +169,7 @@ export function UserListItem({
               id={id}
               email={isInvite ? undefined : email}
               onClick={handleClose}
+              journeyId={journeyIdFromParent}
             />
           )}
         </Stack>

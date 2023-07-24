@@ -49,6 +49,7 @@ describe('UserList', () => {
         users={[userJourney1, userJourney2]}
         invites={[userInvite]}
         currentUser={userJourney1}
+        journeyId="journey.id"
       />
     )
     expect(
@@ -71,6 +72,7 @@ describe('UserList', () => {
         users={[userJourney1]}
         invites={[{ ...userInvite, removedAt: 'dateTime' }]}
         currentUser={userJourney1}
+        journeyId="journey.id"
       />
     )
     expect(
@@ -89,6 +91,7 @@ describe('UserList', () => {
         users={[userJourney1]}
         invites={[{ ...userInvite, acceptedAt: 'dateTime' }]}
         currentUser={userJourney1}
+        journeyId="journey.id"
       />
     )
     expect(

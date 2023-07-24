@@ -11,7 +11,6 @@ import {
 } from '../../../__generated__/graphql'
 import { UserJourneyService } from '../../userJourney/userJourney.service'
 import { UserRoleService } from '../../userRole/userRole.service'
-import { JourneyService } from '../../journey/journey.service'
 import { PrismaService } from '../../../lib/prisma.service'
 import { ButtonBlockResolver } from './button.resolver'
 
@@ -108,7 +107,6 @@ describe('Button', () => {
         ButtonBlockResolver,
         UserJourneyService,
         UserRoleService,
-        JourneyService,
         PrismaService
       ]
     }).compile()

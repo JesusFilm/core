@@ -1,6 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { BlockResolver } from '../../block/block.resolver'
-import { JourneyService } from '../../journey/journey.service'
 import { UserJourneyService } from '../../userJourney/userJourney.service'
 import { UserRoleService } from '../../userRole/userRole.service'
 import { PrismaService } from '../../../lib/prisma.service'
@@ -43,7 +42,6 @@ describe('LinkActionResolver', () => {
         ActionResolver,
         UserJourneyService,
         UserRoleService,
-        JourneyService,
         PrismaService
       ]
     }).compile()

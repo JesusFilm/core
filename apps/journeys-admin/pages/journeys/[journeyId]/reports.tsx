@@ -12,13 +12,14 @@ import { useRouter } from 'next/router'
 import { GetJourney } from '../../../__generated__/GetJourney'
 import { PageWrapper } from '../../../src/components/NewPageWrapper'
 import { GET_JOURNEY, USER_JOURNEY_OPEN } from '../[journeyId]'
-import { UserInviteAcceptAll } from '../../../__generated__/UserInviteAcceptAll'
+
 import { MemoizedDynamicReport } from '../../../src/components/DynamicPowerBiReport'
 import { JourneysReportType } from '../../../__generated__/globalTypes'
-import { ACCEPT_USER_INVITE } from '../..'
+import { ACCEPT_ALL_INVITES } from '../..'
 import { UserJourneyOpen } from '../../../__generated__/UserJourneyOpen'
 import { ReportsNavigation } from '../../../src/components/ReportsNavigation'
 import { initAndAuthApp } from '../../../src/libs/initAndAuthApp'
+import { AcceptAllInvites } from '../../../__generated__/AcceptAllInvites'
 
 function JourneyReportsPage(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
@@ -61,8 +62,8 @@ export const getServerSideProps = withAuthUserTokenSSR({
 
   if (redirect != null) return { redirect }
 
-  await apolloClient.mutate<UserInviteAcceptAll>({
-    mutation: ACCEPT_USER_INVITE
+  await apolloClient.mutate<AcceptAllInvites>({
+    mutation: ACCEPT_ALL_INVITES
   })
 
   try {

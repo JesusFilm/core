@@ -229,7 +229,7 @@ describe('UserInviteResolver', () => {
       expect(invite).toEqual(null)
     })
 
-    it('throws UserInputError when journey does not exist', async () => {
+    it('throws error when journey does not exist', async () => {
       await resolver
         .userInviteCreate('senderId', 'randomJourneyId', createInput)
         .catch((error) => {
