@@ -1,9 +1,7 @@
 import { Module } from '@nestjs/common'
-import { DatabaseModule } from '@core/nest/database/DatabaseModule'
-import { BlockService } from '../block/block.service'
-import { JourneyService } from '../journey/journey.service'
-import { VisitorService } from '../visitor/visitor.service'
 import { PrismaService } from '../../lib/prisma.service'
+import { BlockService } from '../block/block.service'
+import { VisitorService } from '../visitor/visitor.service'
 import { EventService } from './event.service'
 import { EventResolver } from './event.resolver'
 import {
@@ -29,10 +27,9 @@ import {
 } from './step/step.resolver'
 
 @Module({
-  imports: [DatabaseModule],
+  imports: [],
   providers: [
     BlockService,
-    JourneyService,
     VisitorService,
     EventService,
     EventResolver,

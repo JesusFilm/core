@@ -1,16 +1,14 @@
 import { Test, TestingModule } from '@nestjs/testing'
-import { Database } from 'arangojs'
-import { mockDeep } from 'jest-mock-extended'
+import omit from 'lodash/omit'
 
 import {
   TypographyAlign,
   TypographyColor,
   TypographyVariant
 } from '../../../__generated__/graphql'
-import { JourneyService } from '../../journey/journey.service'
-import { PrismaService } from '../../../lib/prisma.service'
 import { UserJourneyService } from '../../userJourney/userJourney.service'
 import { UserRoleService } from '../../userRole/userRole.service'
+import { PrismaService } from '../../../lib/prisma.service'
 import { BlockResolver } from '../block.resolver'
 import { BlockService } from '../block.service'
 import { TypographyBlockResolver } from './typography.resolver'
@@ -18,7 +16,8 @@ import { TypographyBlockResolver } from './typography.resolver'
 describe('TypographyBlockResolver', () => {
   let resolver: TypographyBlockResolver,
     blockResolver: BlockResolver,
-    service: BlockService
+    service: BlockService,
+    prismaService: PrismaService
 
   const block = {
     id: '1',
@@ -33,7 +32,6 @@ describe('TypographyBlockResolver', () => {
   }
 
   const blockUpdate = {
-    __typename: '',
     journeyId: '2',
     parentBlockId: '3',
     parentOrder: 1,
@@ -44,9 +42,15 @@ describe('TypographyBlockResolver', () => {
   }
 
   const blockCreateResponse = {
+    id: undefined,
+    journey: {
+      connect: { id: '2' }
+    },
     journeyId: '2',
-    __typename: 'TypographyBlock',
-    parentBlockId: '3',
+    typename: 'TypographyBlock',
+    parentBlock: {
+      connect: { id: '3' }
+    },
     parentOrder: 2,
     content: 'text',
     variant: TypographyVariant.h2,
@@ -57,8 +61,6 @@ describe('TypographyBlockResolver', () => {
   const blockService = {
     provide: BlockService,
     useFactory: () => ({
-      get: jest.fn(() => block),
-      getAll: jest.fn(() => [block, block]),
       getSiblings: jest.fn(() => [block, block]),
       save: jest.fn((input) => input),
       update: jest.fn((input) => input)
@@ -73,17 +75,17 @@ describe('TypographyBlockResolver', () => {
         TypographyBlockResolver,
         UserJourneyService,
         UserRoleService,
-        JourneyService,
-        PrismaService,
-        {
-          provide: 'DATABASE',
-          useFactory: () => mockDeep<Database>()
-        }
+        PrismaService
       ]
     }).compile()
     blockResolver = module.get<BlockResolver>(BlockResolver)
     resolver = module.get<TypographyBlockResolver>(TypographyBlockResolver)
     service = await module.resolve(BlockService)
+    prismaService = await module.resolve(PrismaService)
+    prismaService.block.findUnique = jest.fn().mockResolvedValueOnce(block)
+    prismaService.block.findMany = jest
+      .fn()
+      .mockResolvedValueOnce([block, block])
   })
 
   describe('TypographyBlock', () => {
@@ -111,7 +113,10 @@ describe('TypographyBlockResolver', () => {
         block.journeyId,
         blockUpdate
       )
-      expect(service.update).toHaveBeenCalledWith(block.id, blockUpdate)
+      expect(service.update).toHaveBeenCalledWith(
+        block.id,
+        omit(blockUpdate, ['__typename'])
+      )
     })
   })
 })

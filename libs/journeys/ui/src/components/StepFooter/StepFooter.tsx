@@ -6,10 +6,10 @@ import { SxProps } from '@mui/material/styles'
 import { useFlags } from '@core/shared/ui/FlagsProvider'
 import { useJourney } from '../../libs/JourneyProvider'
 import { getJourneyRTL } from '../../libs/rtl'
-import { ReactionButton } from '../ReactionButton'
 import { HostTitleLocation } from './HostTitleLocation'
 import { HostAvatars } from './HostAvatars'
 import { ChatButtons } from './ChatButtons'
+import { FooterButtonList } from './FooterButtonList'
 
 interface StepFooterProps {
   onFooterClick?: () => void
@@ -50,6 +50,7 @@ export function StepFooter({
     >
       <Stack
         justifyContent="space-between"
+        spacing={2}
         sx={{
           px: { xs: 6, lg: 6 },
           py: { xs: 2, lg: 2 },
@@ -58,16 +59,10 @@ export function StepFooter({
           alignItems: { xs: 'flex-start', lg: 'center' }
         }}
       >
-        <Stack
-          direction="row"
-          gap={2}
-          sx={{
-            display: { xs: 'flex', sm: 'none' }
-          }}
-        >
-          <ReactionButton variant="thumbsup" />
-          <ReactionButton variant="thumbsdown" />
-        </Stack>
+        <Box sx={{ display: { xs: 'flex', sm: 'none' } }}>
+          <FooterButtonList />
+        </Box>
+
         <Stack
           sx={{
             flexGrow: 1,
@@ -103,14 +98,9 @@ export function StepFooter({
               <HostTitleLocation />
             </Stack>
 
-            <Stack
-              direction="row"
-              gap={2}
-              sx={{ display: { xs: 'none', sm: 'flex' } }}
-            >
-              <ReactionButton variant="thumbsup" />
-              <ReactionButton variant="thumbsdown" />
-            </Stack>
+            <Box sx={{ display: { xs: 'none', sm: 'flex' } }}>
+              <FooterButtonList />
+            </Box>
           </Stack>
           {hasChatWidget && (
             <Box>

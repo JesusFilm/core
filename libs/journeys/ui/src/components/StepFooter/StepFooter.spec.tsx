@@ -1,5 +1,6 @@
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
+import { SnackbarProvider } from 'notistack'
 import {
   JourneyStatus,
   ThemeMode,
@@ -8,6 +9,11 @@ import {
 import { JourneyProvider } from '../../libs/JourneyProvider'
 import { JourneyFields as Journey } from '../../libs/JourneyProvider/__generated__/JourneyFields'
 import { StepFooter } from './StepFooter'
+
+jest.mock('@mui/material/useMediaQuery', () => ({
+  __esModule: true,
+  default: () => true
+}))
 
 describe('StepFooter', () => {
   const journey: Journey = {
@@ -55,9 +61,11 @@ describe('StepFooter', () => {
   it('should display host avatar, name and location', () => {
     const { getByTestId } = render(
       <MockedProvider>
-        <JourneyProvider value={{ journey }}>
-          <StepFooter />
-        </JourneyProvider>
+        <SnackbarProvider>
+          <JourneyProvider value={{ journey }}>
+            <StepFooter />
+          </JourneyProvider>
+        </SnackbarProvider>
       </MockedProvider>
     )
 
@@ -65,12 +73,28 @@ describe('StepFooter', () => {
     expect(getByTestId('host-name-location')).toBeInTheDocument()
   })
 
+  it('should show footer buttons', () => {
+    const { getAllByTestId } = render(
+      <MockedProvider>
+        <SnackbarProvider>
+          <JourneyProvider value={{ journey }}>
+            <StepFooter />
+          </JourneyProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    expect(getAllByTestId('footer-buttons')).toHaveLength(2)
+  })
+
   it('should display social media journey title by default', () => {
     const { getByText } = render(
       <MockedProvider>
-        <JourneyProvider value={{ journey }}>
-          <StepFooter />
-        </JourneyProvider>
+        <SnackbarProvider>
+          <JourneyProvider value={{ journey }}>
+            <StepFooter />
+          </JourneyProvider>
+        </SnackbarProvider>
       </MockedProvider>
     )
 
@@ -80,9 +104,11 @@ describe('StepFooter', () => {
   it('should display journey title if no social media title', () => {
     const { getByText } = render(
       <MockedProvider>
-        <JourneyProvider value={{ journey: { ...journey, seoTitle: null } }}>
-          <StepFooter />
-        </JourneyProvider>
+        <SnackbarProvider>
+          <JourneyProvider value={{ journey: { ...journey, seoTitle: null } }}>
+            <StepFooter />
+          </JourneyProvider>
+        </SnackbarProvider>
       </MockedProvider>
     )
 
@@ -92,9 +118,11 @@ describe('StepFooter', () => {
   it('should render custom styles', () => {
     const { getByTestId } = render(
       <MockedProvider>
-        <JourneyProvider value={{ journey }}>
-          <StepFooter sx={{ outline: '1px solid red' }} />
-        </JourneyProvider>
+        <SnackbarProvider>
+          <JourneyProvider value={{ journey }}>
+            <StepFooter sx={{ outline: '1px solid red' }} />
+          </JourneyProvider>
+        </SnackbarProvider>
       </MockedProvider>
     )
 
@@ -105,11 +133,13 @@ describe('StepFooter', () => {
     const onFooterClick = jest.fn()
     const { getByTestId } = render(
       <MockedProvider>
-        <JourneyProvider
-          value={{ admin: true, journey: { ...journey, seoTitle: null } }}
-        >
-          <StepFooter onFooterClick={onFooterClick} />
-        </JourneyProvider>
+        <SnackbarProvider>
+          <JourneyProvider
+            value={{ admin: true, journey: { ...journey, seoTitle: null } }}
+          >
+            <StepFooter onFooterClick={onFooterClick} />
+          </JourneyProvider>
+        </SnackbarProvider>
       </MockedProvider>
     )
 

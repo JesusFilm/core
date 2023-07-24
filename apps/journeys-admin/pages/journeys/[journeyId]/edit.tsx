@@ -8,26 +8,22 @@ import {
 } from 'next-firebase-auth'
 import { useRouter } from 'next/router'
 import { NextSeo } from 'next-seo'
-import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import { useTranslation } from 'react-i18next'
-import { getLaunchDarklyClient } from '@core/shared/ui/getLaunchDarklyClient'
 import { ActiveJourneyEditContent } from '@core/journeys/ui/EditorProvider'
 import {
   GetJourney,
   GetJourney_journey as Journey
 } from '../../../__generated__/GetJourney'
-import { UserInviteAcceptAll } from '../../../__generated__/UserInviteAcceptAll'
 import { Editor } from '../../../src/components/Editor'
 import { PageWrapper } from '../../../src/components/PageWrapper'
 import { GET_JOURNEY, USER_JOURNEY_OPEN } from '../[journeyId]'
 import { JourneyEdit } from '../../../src/components/Editor/JourneyEdit'
 import { EditToolbar } from '../../../src/components/Editor/EditToolbar'
-import { createApolloClient } from '../../../src/libs/apolloClient'
-import i18nConfig from '../../../next-i18next.config'
-import { ACCEPT_USER_INVITE } from '../..'
-import { useTermsRedirect } from '../../../src/libs/useTermsRedirect/useTermsRedirect'
+import { ACCEPT_ALL_INVITES } from '../..'
 import { useInvalidJourneyRedirect } from '../../../src/libs/useInvalidJourneyRedirect/useInvalidJourneyRedirect'
 import { UserJourneyOpen } from '../../../__generated__/UserJourneyOpen'
+import { initAndAuthApp } from '../../../src/libs/initAndAuthApp'
+import { AcceptAllInvites } from '../../../__generated__/AcceptAllInvites'
 
 function JourneyEditPage(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
@@ -36,7 +32,6 @@ function JourneyEditPage(): ReactElement {
   const { data } = useQuery<GetJourney>(GET_JOURNEY, {
     variables: { id: router.query.journeyId }
   })
-  useTermsRedirect()
   useInvalidJourneyRedirect(data)
 
   return (
@@ -71,21 +66,15 @@ function JourneyEditPage(): ReactElement {
 export const getServerSideProps = withAuthUserTokenSSR({
   whenUnauthed: AuthAction.REDIRECT_TO_LOGIN
 })(async ({ AuthUser, locale, query }) => {
-  const ldUser = {
-    key: AuthUser.id as string,
-    firstName: AuthUser.displayName ?? undefined,
-    email: AuthUser.email ?? undefined
-  }
-  const launchDarklyClient = await getLaunchDarklyClient(ldUser)
-  const flags = (await launchDarklyClient.allFlagsState(ldUser)).toJSON() as {
-    [key: string]: boolean | undefined
-  }
+  const { apolloClient, flags, redirect, translations } = await initAndAuthApp({
+    AuthUser,
+    locale
+  })
 
-  const token = await AuthUser.getIdToken()
-  const apolloClient = createApolloClient(token != null ? token : '')
+  if (redirect != null) return { redirect }
 
-  await apolloClient.mutate<UserInviteAcceptAll>({
-    mutation: ACCEPT_USER_INVITE
+  await apolloClient.mutate<AcceptAllInvites>({
+    mutation: ACCEPT_ALL_INVITES
   })
 
   let journey: Journey | null
@@ -124,11 +113,7 @@ export const getServerSideProps = withAuthUserTokenSSR({
   return {
     props: {
       flags,
-      ...(await serverSideTranslations(
-        locale ?? 'en',
-        ['apps-journeys-admin', 'libs-journeys-ui'],
-        i18nConfig
-      ))
+      ...translations
     }
   }
 })

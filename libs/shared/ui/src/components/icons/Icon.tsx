@@ -57,6 +57,7 @@ import Expand from './Expand'
 import EyeClosed from './EyeClosed'
 import EyeOpen from './EyeOpen'
 import Facebook from './Facebook'
+import FacebookLogo from './FacebookLogo'
 import Favourite from './Favourite'
 import Flame from './Flame'
 import Globe1 from './Globe1'
@@ -129,6 +130,7 @@ import ThumbsDown from './ThumbsDown'
 import ThumbsUp from './ThumbsUp'
 import Tiktok from './Tiktok'
 import Trash2 from './Trash2'
+import TwitterLogo from './TwitterLogo'
 import UserProfile2 from './UserProfile2'
 import UserProfile3 from './UserProfile3'
 import UserProfileAdd from './UserProfileAdd'
@@ -202,6 +204,7 @@ type IconNames =
   | 'EyeClosed'
   | 'EyeOpen'
   | 'Facebook'
+  | 'FacebookLogo'
   | 'Favourite'
   | 'Flame'
   | 'Globe1'
@@ -274,6 +277,7 @@ type IconNames =
   | 'Tiktok'
   | 'ThumbsDown'
   | 'ThumbsUp'
+  | 'TwitterLogo'
   | 'UserProfile2'
   | 'UserProfile3'
   | 'UserProfileAdd'
@@ -351,6 +355,7 @@ const iconComponents: IconComponents = {
   EyeClosed,
   EyeOpen,
   Facebook,
+  FacebookLogo,
   Favourite,
   Flame,
   Globe1,
@@ -423,6 +428,7 @@ const iconComponents: IconComponents = {
   ThumbsDown,
   ThumbsUp,
   Tiktok,
+  TwitterLogo,
   UserProfile2,
   UserProfile3,
   UserProfileAdd,

@@ -12,6 +12,7 @@ import { sortJourneys } from '../JourneySort/utils/sortJourneys'
 import type { JourneyListProps } from '../JourneyList'
 import { useAdminJourneysQuery } from '../../../libs/useAdminJourneysQuery'
 import { JourneyStatus } from '../../../../__generated__/globalTypes'
+import { useTeam } from '../../Team/TeamProvider'
 
 export const RESTORE_ARCHIVED_JOURNEYS = gql`
   mutation RestoreArchivedJourneys($ids: [ID!]!) {
@@ -38,9 +39,12 @@ export function ArchivedJourneyList({
 }: JourneyListProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { enqueueSnackbar } = useSnackbar()
+  const { activeTeam } = useTeam()
   const { data, refetch } = useAdminJourneysQuery({
-    status: [JourneyStatus.archived]
+    status: [JourneyStatus.archived],
+    teamId: activeTeam?.id
   })
+
   const [restore] = useMutation(RESTORE_ARCHIVED_JOURNEYS, {
     update(_cache, { data }) {
       if (data?.journeysRestore != null) {

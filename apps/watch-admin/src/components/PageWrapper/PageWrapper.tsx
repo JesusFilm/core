@@ -21,7 +21,7 @@ import LogoutRoundedIcon from '@mui/icons-material/LogoutRounded'
 import Image from 'next/image'
 import { AuthUser } from 'next-firebase-auth'
 import { gql, useQuery } from '@apollo/client'
-import { compact } from 'lodash'
+import compact from 'lodash/compact'
 import taskbarIcon from '../../../public/taskbar-icon.svg'
 import { GetMe } from '../../../__generated__/GetMe'
 

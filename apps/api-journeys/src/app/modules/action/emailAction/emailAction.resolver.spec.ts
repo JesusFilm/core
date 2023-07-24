@@ -1,22 +1,15 @@
 import { Test, TestingModule } from '@nestjs/testing'
-import { Database } from 'arangojs'
-import { mockDeep } from 'jest-mock-extended'
-import { BlockResolver } from '../../block/block.resolver'
-import { BlockService } from '../../block/block.service'
-import { JourneyService } from '../../journey/journey.service'
-import { UserJourneyService } from '../../userJourney/userJourney.service'
+import { PrismaService } from '../../../lib/prisma.service'
 import { UserRoleService } from '../../userRole/userRole.service'
 import { ActionResolver } from '../action.resolver'
-import { PrismaService } from '../../../lib/prisma.service'
 import { EmailActionResolver } from './emailAction.resolver'
 
 describe('EmailActionResolver', () => {
-  let resolver: EmailActionResolver, service: BlockService
-
+  let resolver: EmailActionResolver, prismaService: PrismaService
   const block = {
     id: '1',
     journeyId: '2',
-    __typename: 'RadioOptionBlock',
+    typename: 'RadioOptionBlock',
     parentBlockId: '3',
     parentOrder: 3,
     label: 'label',
@@ -38,31 +31,20 @@ describe('EmailActionResolver', () => {
   }
 
   beforeEach(async () => {
-    const blockService = {
-      provide: BlockService,
-      useFactory: () => ({
-        get: jest.fn().mockResolvedValue(block),
-        update: jest.fn((navigateToBlockInput) => navigateToBlockInput)
-      })
-    }
     const module: TestingModule = await Test.createTestingModule({
       providers: [
-        BlockResolver,
-        blockService,
         EmailActionResolver,
         ActionResolver,
-        UserJourneyService,
         UserRoleService,
-        JourneyService,
-        PrismaService,
-        {
-          provide: 'DATABASE',
-          useFactory: () => mockDeep<Database>()
-        }
+        PrismaService
       ]
     }).compile()
     resolver = module.get<EmailActionResolver>(EmailActionResolver)
-    service = await module.resolve(BlockService)
+    prismaService = await module.resolve(PrismaService)
+    prismaService.block.findUnique = jest.fn().mockResolvedValue(block)
+    prismaService.action.upsert = jest
+      .fn()
+      .mockResolvedValue((result) => result.data)
   })
 
   it('updates email action', async () => {
@@ -71,8 +53,18 @@ describe('EmailActionResolver', () => {
       block.journeyId,
       emailActionInput
     )
-    expect(service.update).toHaveBeenCalledWith(block.id, {
-      action: { ...emailActionInput, parentBlockId: block.action.parentBlockId }
+    const actionData = emailActionInput
+    expect(prismaService.action.upsert).toHaveBeenCalledWith({
+      where: { parentBlockId: block.id },
+      create: {
+        ...actionData,
+        parentBlock: { connect: { id: block.id } }
+      },
+      update: {
+        ...actionData,
+        journey: { disconnect: true },
+        block: { disconnect: true }
+      }
     })
   })
 
@@ -81,7 +73,7 @@ describe('EmailActionResolver', () => {
       ...block,
       __typename: 'WrongBlock'
     }
-    service.get = jest.fn().mockResolvedValue(wrongBlock)
+    prismaService.block.findUnique = jest.fn().mockResolvedValue(wrongBlock)
     await resolver
       .blockUpdateEmailAction(
         wrongBlock.id,
@@ -100,7 +92,7 @@ describe('EmailActionResolver', () => {
       ...emailActionInput,
       email: 'tataiwashere.com'
     }
-    service.get = jest.fn().mockResolvedValue(block)
+    prismaService.block.findUnique = jest.fn().mockResolvedValue(block)
     await resolver
       .blockUpdateEmailAction(block.id, block.journeyId, wrongEmailInput)
       .catch((error) => {

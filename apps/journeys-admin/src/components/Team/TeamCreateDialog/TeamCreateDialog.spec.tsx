@@ -5,7 +5,7 @@ import { ReactElement } from 'react'
 import { InMemoryCache } from '@apollo/client'
 import { TeamProvider, useTeam } from '../TeamProvider'
 import { TeamCreate } from '../../../../__generated__/TeamCreate'
-import { TEAM_CREATE } from './TeamCreateDialog'
+import { TEAM_CREATE } from '../../../libs/useTeamCreateMutation/useTeamCreateMutation'
 import { TeamCreateDialog } from '.'
 
 describe('TeamCreateDialog', () => {
@@ -74,7 +74,7 @@ describe('TeamCreateDialog', () => {
       { __ref: 'Team:teamId1' },
       { __ref: 'Team:teamId' }
     ])
-    expect(getByText('Team Title created.')).toBeInTheDocument()
+    expect(getByText('{{ teamName }} created.')).toBeInTheDocument()
   })
 
   it('validates form', async () => {
@@ -95,10 +95,13 @@ describe('TeamCreateDialog', () => {
       ).toBeInTheDocument()
     )
     fireEvent.change(getByRole('textbox'), { target: { value: 'Team Title' } })
+    await waitFor(() =>
+      expect(getByRole('button', { name: 'Create' })).not.toBeDisabled()
+    )
     fireEvent.click(getByRole('button', { name: 'Create' }))
     await waitFor(() =>
       expect(
-        getByText('Failed to update the team. Reload the page or try again.')
+        getByText('Failed to create the team. Reload the page or try again.')
       ).toBeInTheDocument()
     )
   })

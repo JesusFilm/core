@@ -346,24 +346,6 @@ type CloudflareVideo
   readyToStream: Boolean!
 }
 
-type Country
-  @join__type(graph: LANGUAGES, key: "id")
-{
-  id: ID!
-  name(languageId: ID, primary: Boolean): [Translation!]!
-  population: Int!
-  continent(languageId: ID, primary: Boolean): [Translation!]!
-
-  """
-  slug is a permanent link to the country. It should only be appended, not edited or deleted
-  """
-  slug(languageId: ID, primary: Boolean): [Translation!]!
-  languages: [Language!]!
-  latitude: Float!
-  longitude: Float!
-  image: String
-}
-
 scalar DateTime
   @join__type(graph: JOURNEYS)
 
@@ -578,11 +560,10 @@ enum IconSize
 
 enum IdType
   @join__type(graph: JOURNEYS)
-  @join__type(graph: LANGUAGES)
   @join__type(graph: VIDEOS)
 {
-  databaseId @join__enumValue(graph: JOURNEYS) @join__enumValue(graph: LANGUAGES) @join__enumValue(graph: VIDEOS)
-  slug @join__enumValue(graph: JOURNEYS) @join__enumValue(graph: LANGUAGES) @join__enumValue(graph: VIDEOS)
+  databaseId @join__enumValue(graph: JOURNEYS) @join__enumValue(graph: VIDEOS)
+  slug @join__enumValue(graph: JOURNEYS) @join__enumValue(graph: VIDEOS)
 }
 
 type ImageBlock implements Block
@@ -612,7 +593,7 @@ input ImageBlockCreateInput
   ID should be unique Response UUID (Provided for optimistic mutation result matching)
   """
   id: ID
-  parentBlockId: ID!
+  parentBlockId: ID
   journeyId: ID!
   src: String
   alt: String!
@@ -1070,8 +1051,8 @@ type Mutation
   hostCreate(teamId: ID!, input: HostCreateInput!): Host! @join__field(graph: JOURNEYS)
   hostUpdate(id: ID!, teamId: ID!, input: HostUpdateInput): Host! @join__field(graph: JOURNEYS)
   hostDelete(id: ID!, teamId: ID!): Host! @join__field(graph: JOURNEYS)
-  journeyCreate(input: JourneyCreateInput!): Journey! @join__field(graph: JOURNEYS)
-  journeyDuplicate(id: ID!): Journey! @join__field(graph: JOURNEYS)
+  journeyCreate(input: JourneyCreateInput!, teamId: ID): Journey! @join__field(graph: JOURNEYS)
+  journeyDuplicate(id: ID!, teamId: ID): Journey! @join__field(graph: JOURNEYS)
   journeyUpdate(id: ID!, input: JourneyUpdateInput!): Journey! @join__field(graph: JOURNEYS)
 
   """Sets journey status to published"""
@@ -1107,6 +1088,9 @@ type Mutation
   userJourneyOpen(id: ID!): UserJourney @join__field(graph: JOURNEYS)
   userTeamUpdate(id: ID!, input: UserTeamUpdateInput): UserTeam! @join__field(graph: JOURNEYS)
   userTeamDelete(id: ID!): UserTeam! @join__field(graph: JOURNEYS)
+  userTeamInviteCreate(teamId: ID!, input: UserTeamInviteCreateInput): UserTeamInvite @join__field(graph: JOURNEYS)
+  userTeamInviteRemove(id: ID!): UserTeamInvite! @join__field(graph: JOURNEYS)
+  userTeamInviteAcceptAll: [UserTeamInvite!]! @join__field(graph: JOURNEYS)
 
   """Update a visitor"""
   visitorUpdate(id: ID!, input: VisitorUpdateInput!): Visitor! @join__field(graph: JOURNEYS)
@@ -1225,7 +1209,14 @@ type Query
   @join__type(graph: VIDEOS)
 {
   hosts(teamId: ID!): [Host!]! @join__field(graph: JOURNEYS)
-  adminJourneys(status: [JourneyStatus!], template: Boolean): [Journey!]! @join__field(graph: JOURNEYS)
+
+  """
+  returns all journeys that match the provided filters
+  If no team id is provided and template is not true then only returns journeys
+  where the user is not a member of a team but is an editor or owner of the
+  journey
+  """
+  adminJourneys(status: [JourneyStatus!], template: Boolean, teamId: ID): [Journey!]! @join__field(graph: JOURNEYS)
   adminJourneysReport(reportType: JourneysReportType!): PowerBiEmbed @join__field(graph: JOURNEYS)
   adminJourney(id: ID!, idType: IdType): Journey @join__field(graph: JOURNEYS)
   journeys(where: JourneysFilter): [Journey!]! @join__field(graph: JOURNEYS)
@@ -1256,8 +1247,9 @@ type Query
   team(id: ID!): Team! @join__field(graph: JOURNEYS)
   userInvites(journeyId: ID!): [UserInvite!] @join__field(graph: JOURNEYS)
   getUserRole: UserRole @join__field(graph: JOURNEYS)
-  userTeams(teamId: ID!): [UserTeam!]! @join__field(graph: JOURNEYS)
+  userTeams(teamId: ID!, where: UserTeamFilterInput): [UserTeam!]! @join__field(graph: JOURNEYS)
   userTeam(id: ID!): UserTeam! @join__field(graph: JOURNEYS)
+  userTeamInvites(teamId: ID!): [UserTeamInvite!]! @join__field(graph: JOURNEYS)
 
   """A list of visitors that are connected with a specific team."""
   visitorsConnection(
@@ -1273,8 +1265,6 @@ type Query
 
   """Get a single visitor"""
   visitor(id: ID!): Visitor! @join__field(graph: JOURNEYS)
-  countries: [Country!]! @join__field(graph: LANGUAGES)
-  country(id: ID!, idType: IdType): Country! @join__field(graph: LANGUAGES)
   languages(offset: Int, limit: Int): [Language!]! @join__field(graph: LANGUAGES)
   language(id: ID!, idType: LanguageIdType): Language @join__field(graph: LANGUAGES)
   getMyCloudflareImages: [CloudflareImage] @join__field(graph: MEDIA)
@@ -1968,12 +1958,31 @@ type UserTeam
   updatedAt: DateTime!
 }
 
+input UserTeamFilterInput
+  @join__type(graph: JOURNEYS)
+{
+  role: [UserTeamRole!]
+}
+
+type UserTeamInvite
+  @join__type(graph: JOURNEYS)
+{
+  id: ID!
+  teamId: ID!
+  email: String!
+}
+
+input UserTeamInviteCreateInput
+  @join__type(graph: JOURNEYS)
+{
+  email: String!
+}
+
 enum UserTeamRole
   @join__type(graph: JOURNEYS)
 {
   manager @join__enumValue(graph: JOURNEYS)
   member @join__enumValue(graph: JOURNEYS)
-  guest @join__enumValue(graph: JOURNEYS)
 }
 
 input UserTeamUpdateInput

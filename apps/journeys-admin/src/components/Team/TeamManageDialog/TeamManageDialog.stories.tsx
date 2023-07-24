@@ -1,0 +1,93 @@
+import { Meta, Story } from '@storybook/react'
+import { MockedProvider } from '@apollo/client/testing'
+import { journeysAdminConfig } from '../../../libs/storybook'
+import { TeamProvider, GET_TEAMS } from '../TeamProvider'
+import { UserTeamRole } from '../../../../__generated__/globalTypes'
+import { GET_CURRENT_USER } from '../../../libs/useCurrentUser'
+import { GET_USER_TEAMS_AND_INVITES } from '../../../libs/useUserTeamsAndInvitesQuery/useUserTeamsAndInvitesQuery'
+import { ApolloLoadingProvider } from '../../../../test/ApolloLoadingProvider'
+import { TeamManageDialog } from './TeamManageDialog'
+
+const Demo = {
+  ...journeysAdminConfig,
+  component: TeamManageDialog,
+  title: 'Journeys-Admin/Team/TeamManageDialog'
+}
+const mocks = [
+  {
+    request: {
+      query: GET_USER_TEAMS_AND_INVITES,
+      variables: { teamId: 'teamId' }
+    },
+    result: {
+      data: {
+        userTeams: [
+          {
+            id: 'userTeamId',
+            __typename: 'UserTeam',
+            role: UserTeamRole.manager,
+            user: {
+              __typename: 'User',
+              email: 'siyangguccigang@example.com',
+              firstName: 'Siyang',
+              id: 'userId',
+              imageUrl: 'imageURL',
+              lastName: 'Gang'
+            }
+          }
+        ],
+        userTeamInvites: [
+          {
+            id: 'inviteId',
+            email: 'edmond@example.com',
+            teamId: 'teamId',
+            __typename: 'UserTeamInvite'
+          }
+        ]
+      }
+    }
+  },
+  {
+    request: {
+      query: GET_TEAMS
+    },
+    result: {
+      data: {
+        teams: [{ id: 'teamId', title: 'Team Title', __typename: 'Team' }]
+      }
+    }
+  },
+  {
+    request: {
+      query: GET_CURRENT_USER
+    },
+    result: {
+      data: {
+        me: {
+          id: 'userId',
+          email: 'siyangguccigang@gmail.com'
+        }
+      }
+    }
+  }
+]
+
+export const Default: Story = () => {
+  return (
+    <MockedProvider mocks={mocks}>
+      <TeamProvider>
+        <TeamManageDialog open onClose={() => undefined} />
+      </TeamProvider>
+    </MockedProvider>
+  )
+}
+
+export const Loading: Story = () => {
+  return (
+    <ApolloLoadingProvider>
+      <TeamManageDialog open onClose={() => undefined} />
+    </ApolloLoadingProvider>
+  )
+}
+
+export default Demo as Meta

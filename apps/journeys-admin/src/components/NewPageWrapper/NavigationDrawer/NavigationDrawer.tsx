@@ -17,7 +17,7 @@ import ShopTwoRoundedIcon from '@mui/icons-material/ShopTwoRounded'
 import Backdrop from '@mui/material/Backdrop'
 import Image from 'next/image'
 import { NextRouter } from 'next/router'
-import { compact } from 'lodash'
+import compact from 'lodash/compact'
 import { gql, useQuery } from '@apollo/client'
 import ViewCarouselRoundedIcon from '@mui/icons-material/ViewCarouselRounded'
 import LeaderboardRoundedIcon from '@mui/icons-material/LeaderboardRounded'
@@ -170,7 +170,7 @@ export function NavigationDrawer({
           link="/templates"
         />
 
-        {globalReports != null && (
+        {globalReports && (
           <NavigationListItem
             icon={<LeaderboardRoundedIcon />}
             label="Reports"

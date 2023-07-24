@@ -5,8 +5,16 @@ import {
 } from '../../../__generated__/GetAdminJourneys'
 
 export const GET_ADMIN_JOURNEYS = gql`
-  query GetAdminJourneys($status: [JourneyStatus!], $template: Boolean) {
-    journeys: adminJourneys(status: $status, template: $template) {
+  query GetAdminJourneys(
+    $status: [JourneyStatus!]
+    $template: Boolean
+    $teamId: ID
+  ) {
+    journeys: adminJourneys(
+      status: $status
+      template: $template
+      teamId: $teamId
+    ) {
       id
       title
       createdAt

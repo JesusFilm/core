@@ -1,12 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing'
-import { Database } from 'arangojs'
-import { mockDeep } from 'jest-mock-extended'
 
 import { RadioOptionBlock } from '../../../__generated__/graphql'
-import { JourneyService } from '../../journey/journey.service'
-import { PrismaService } from '../../../lib/prisma.service'
 import { UserJourneyService } from '../../userJourney/userJourney.service'
 import { UserRoleService } from '../../userRole/userRole.service'
+import { PrismaService } from '../../../lib/prisma.service'
 import { BlockResolver } from '../block.resolver'
 import { BlockService } from '../block.service'
 import {
@@ -18,7 +15,8 @@ describe('RadioQuestionBlockResolver', () => {
   let resolver: RadioQuestionBlockResolver,
     blockResolver: BlockResolver,
     radioOptionBlockResolver: RadioOptionBlockResolver,
-    service: BlockService
+    service: BlockService,
+    prismaService: PrismaService
 
   const block = {
     id: '1',
@@ -39,9 +37,20 @@ describe('RadioQuestionBlockResolver', () => {
   }
 
   const radioOptionInput = {
-    __typename: 'RadioOptionBlock',
     parentBlockId: '2',
     parentOrder: 2,
+    journeyId: '2',
+    label: 'label'
+  }
+
+  const radioOptionResponse = {
+    id: undefined,
+    typename: 'RadioOptionBlock',
+    parentBlock: { connect: { id: '2' } },
+    parentOrder: 2,
+    journey: {
+      connect: { id: '2' }
+    },
     journeyId: '2',
     label: 'label'
   }
@@ -59,17 +68,23 @@ describe('RadioQuestionBlockResolver', () => {
   }
 
   const radioQuestionInput = {
-    __typename: 'RadioQuestionBlock',
     parentBlockId: '2',
     parentOrder: 2,
+    journeyId: '2'
+  }
+
+  const radioQuestionResponse = {
+    id: undefined,
+    typename: 'RadioQuestionBlock',
+    parentBlock: { connect: { id: '2' } },
+    parentOrder: 2,
+    journey: { connect: { id: '2' } },
     journeyId: '2'
   }
 
   const blockService = {
     provide: BlockService,
     useFactory: () => ({
-      get: jest.fn(() => block),
-      getAll: jest.fn(() => [block, block]),
       getSiblings: jest.fn(() => [block, block]),
       save: jest.fn((input) => input),
       update: jest.fn((input) => input)
@@ -85,12 +100,7 @@ describe('RadioQuestionBlockResolver', () => {
         RadioOptionBlockResolver,
         UserJourneyService,
         UserRoleService,
-        JourneyService,
-        PrismaService,
-        {
-          provide: 'DATABASE',
-          useFactory: () => mockDeep<Database>()
-        }
+        PrismaService
       ]
     }).compile()
     blockResolver = module.get<BlockResolver>(BlockResolver)
@@ -101,6 +111,11 @@ describe('RadioQuestionBlockResolver', () => {
       RadioQuestionBlockResolver
     )
     service = await module.resolve(BlockService)
+    prismaService = await module.resolve(PrismaService)
+    prismaService.block.findUnique = jest.fn().mockResolvedValueOnce(block)
+    prismaService.block.findMany = jest
+      .fn()
+      .mockResolvedValueOnce([block, block])
   })
 
   describe('RadioOptionBlock', () => {
@@ -127,7 +142,7 @@ describe('RadioQuestionBlockResolver', () => {
         radioOptionInput.journeyId,
         radioOptionInput.parentBlockId
       )
-      expect(service.save).toHaveBeenCalledWith(radioOptionInput)
+      expect(service.save).toHaveBeenCalledWith(radioOptionResponse)
     })
   })
 
@@ -138,7 +153,7 @@ describe('RadioQuestionBlockResolver', () => {
         radioQuestionInput.journeyId,
         radioQuestionInput.parentBlockId
       )
-      expect(service.save).toHaveBeenCalledWith(radioQuestionInput)
+      expect(service.save).toHaveBeenCalledWith(radioQuestionResponse)
     })
   })
 
@@ -161,7 +176,9 @@ describe('RadioQuestionBlockResolver', () => {
         block.parentBlockId
       )
       expect(service.update).toHaveBeenCalledWith(block.id, {
-        parentBlockId: block.parentBlockId
+        parentBlock: {
+          connect: { id: block.parentBlockId }
+        }
       })
     })
   })

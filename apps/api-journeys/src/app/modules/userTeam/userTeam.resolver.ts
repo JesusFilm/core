@@ -7,39 +7,39 @@ import {
   Parent
 } from '@nestjs/graphql'
 import { UseGuards } from '@nestjs/common'
-import { GqlAuthGuard } from '@core/nest/gqlAuthGuard/GqlAuthGuard'
 import { UserTeam, Prisma } from '.prisma/api-journeys-client'
 import { subject } from '@casl/ability'
-import { ForbiddenError } from 'apollo-server-errors'
 import { GraphQLError } from 'graphql'
-import {
-  CaslAbility,
-  CaslAccessible,
-  CaslGuard
-} from '@core/nest/common/CaslAuthModule'
+import { CaslAbility, CaslAccessible } from '@core/nest/common/CaslAuthModule'
 import { PrismaService } from '../../lib/prisma.service'
 import { Action, AppAbility } from '../../lib/casl/caslFactory'
-import { UserTeamUpdateInput } from '../../__generated__/graphql'
+import {
+  UserTeamFilterInput,
+  UserTeamUpdateInput
+} from '../../__generated__/graphql'
+import { AppCaslGuard } from '../../lib/casl/caslGuard'
 
 @Resolver('UserTeam')
 export class UserTeamResolver {
   constructor(private readonly prismaService: PrismaService) {}
 
   @Query()
-  @UseGuards(GqlAuthGuard, CaslGuard)
+  @UseGuards(AppCaslGuard)
   async userTeams(
-    @CaslAccessible('UserTeam') accessibleUserTeams: Prisma.TeamWhereInput,
-    @Args('teamId') teamId: string
+    @CaslAccessible('UserTeam') accessibleUserTeams: Prisma.UserTeamWhereInput,
+    @Args('teamId') teamId: string,
+    @Args('where') where?: UserTeamFilterInput
   ): Promise<UserTeam[]> {
+    const roleFilter = where?.role != null ? { role: { in: where.role } } : {}
     return await this.prismaService.userTeam.findMany({
       where: {
-        AND: [accessibleUserTeams, { teamId }]
+        AND: [accessibleUserTeams, { teamId, ...roleFilter }]
       }
     })
   }
 
   @Query()
-  @UseGuards(GqlAuthGuard, CaslGuard)
+  @UseGuards(AppCaslGuard)
   async userTeam(
     @CaslAbility() ability: AppAbility,
     @Args('id') id: string
@@ -53,11 +53,13 @@ export class UserTeamResolver {
         extensions: { code: 'NOT_FOUND' }
       })
     if (ability.can(Action.Read, subject('UserTeam', userTeam))) return userTeam
-    throw new ForbiddenError('user is not allowed to view userTeam')
+    throw new GraphQLError('user is not allowed to view userTeam', {
+      extensions: { code: 'FORBIDDEN' }
+    })
   }
 
   @Mutation()
-  @UseGuards(GqlAuthGuard, CaslGuard)
+  @UseGuards(AppCaslGuard)
   async userTeamUpdate(
     @CaslAbility() ability: AppAbility,
     @Args('id') id: string,
@@ -76,11 +78,13 @@ export class UserTeamResolver {
         where: { id },
         data
       })
-    throw new ForbiddenError('user is not allowed to update userTeam')
+    throw new GraphQLError('user is not allowed to update userTeam', {
+      extensions: { code: 'FORBIDDEN' }
+    })
   }
 
   @Mutation()
-  @UseGuards(GqlAuthGuard, CaslGuard)
+  @UseGuards(AppCaslGuard)
   async userTeamDelete(
     @CaslAbility() ability: AppAbility,
     @Args('id') id: string
@@ -97,7 +101,9 @@ export class UserTeamResolver {
       return await this.prismaService.userTeam.delete({
         where: { id }
       })
-    throw new ForbiddenError('user is not allowed to delete userTeam')
+    throw new GraphQLError('user is not allowed to delete userTeam', {
+      extensions: { code: 'FORBIDDEN' }
+    })
   }
 
   @ResolveField('user')

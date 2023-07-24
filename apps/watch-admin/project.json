@@ -111,6 +111,12 @@
           }
         ]
       }
+    },
+    "codecov": {
+      "executor": "@nrwl/workspace:run-commands",
+      "options": {
+        "command": "codecov -f coverage/apps/watch-admin/cobertura-coverage.xml -F apps.watch-admin"
+      }
     }
   },
   "tags": []

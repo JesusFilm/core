@@ -1,23 +1,10 @@
 import { ReactElement } from 'react'
-import { useMutation, gql, ApolloError } from '@apollo/client'
 import TextField from '@mui/material/TextField'
 import { Dialog } from '@core/shared/ui/Dialog'
-import { useSnackbar } from 'notistack'
-import { Formik, Form, FormikValues, FormikHelpers } from 'formik'
+import { Form, FormikValues, FormikHelpers } from 'formik'
 import { useTranslation } from 'react-i18next'
-import { object, string } from 'yup'
 import Typography from '@mui/material/Typography'
-import { TeamCreate } from '../../../../__generated__/TeamCreate'
-import { useTeam } from '../TeamProvider'
-
-export const TEAM_CREATE = gql`
-  mutation TeamCreate($input: TeamCreateInput!) {
-    teamCreate(input: $input) {
-      id
-      title
-    }
-  }
-`
+import { TeamCreateForm } from '../TeamCreateForm'
 
 interface TeamCreateDialogProps {
   open: boolean
@@ -28,70 +15,13 @@ export function TeamCreateDialog({
   open,
   onClose
 }: TeamCreateDialogProps): ReactElement {
-  const { setActiveTeam } = useTeam()
   const { t } = useTranslation('apps-journeys-admin')
-  const [teamCreate] = useMutation<TeamCreate>(TEAM_CREATE, {
-    update(cache, { data }) {
-      if (data?.teamCreate != null) {
-        cache.modify({
-          fields: {
-            teams(existingTeams = []) {
-              const newTeamRef = cache.writeFragment({
-                data: data.teamCreate,
-                fragment: gql`
-                  fragment NewTeam on Team {
-                    id
-                  }
-                `
-              })
-              return [...existingTeams, newTeamRef]
-            }
-          }
-        })
-      }
-    },
-    onCompleted(data) {
-      if (data?.teamCreate != null) {
-        setActiveTeam(data.teamCreate)
-      }
-    }
-  })
-  const { enqueueSnackbar } = useSnackbar()
-  const teamSchema = object().shape({
-    title: string().required('Team Name must be at least one character.')
-  })
 
   async function handleSubmit(
     values: FormikValues,
     { resetForm }: FormikHelpers<FormikValues>
   ): Promise<void> {
-    try {
-      const { data } = await teamCreate({
-        variables: { input: { title: values.title } }
-      })
-      handleClose(resetForm)()
-      enqueueSnackbar(t(`${data?.teamCreate.title ?? 'Team'} created.`), {
-        variant: 'success',
-        preventDuplicate: true
-      })
-    } catch (error) {
-      if (error instanceof ApolloError) {
-        if (error.networkError != null) {
-          enqueueSnackbar(
-            t('Failed to update the team. Reload the page or try again.'),
-            {
-              variant: 'error',
-              preventDuplicate: true
-            }
-          )
-          return
-        }
-      }
-      enqueueSnackbar(error.message, {
-        variant: 'error',
-        preventDuplicate: true
-      })
-    }
+    handleClose(resetForm)()
   }
 
   function handleClose(
@@ -105,11 +35,7 @@ export function TeamCreateDialog({
   }
 
   return (
-    <Formik
-      initialValues={{ title: '' }}
-      onSubmit={handleSubmit}
-      validationSchema={teamSchema}
-    >
+    <TeamCreateForm onSubmit={handleSubmit}>
       {({ values, errors, handleChange, handleSubmit, resetForm }) => (
         <Dialog
           open={open}
@@ -131,7 +57,7 @@ export function TeamCreateDialog({
               error={Boolean(errors.title)}
               onChange={handleChange}
               helperText={errors.title}
-              label="Team Name"
+              label={t('Team Name')}
               autoFocus
             />
             <Typography pt={5}>
@@ -142,6 +68,6 @@ export function TeamCreateDialog({
           </Form>
         </Dialog>
       )}
-    </Formik>
+    </TeamCreateForm>
   )
 }

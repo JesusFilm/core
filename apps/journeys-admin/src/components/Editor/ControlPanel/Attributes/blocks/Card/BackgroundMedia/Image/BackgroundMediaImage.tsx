@@ -112,6 +112,9 @@ export function BackgroundMediaImage({
   const createImageBlock = async (block): Promise<void> => {
     if (journey == null) return
 
+    if (coverBlock != null && coverBlock.__typename === 'VideoBlock')
+      await deleteCoverBlock()
+
     await imageBlockCreate({
       variables: {
         input: {

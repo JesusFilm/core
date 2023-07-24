@@ -1,6 +1,6 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render } from '@testing-library/react'
-import { noop } from 'lodash'
+import noop from 'lodash/noop'
 import { SnackbarProvider } from 'notistack'
 import { TrashMenu } from '.'
 
