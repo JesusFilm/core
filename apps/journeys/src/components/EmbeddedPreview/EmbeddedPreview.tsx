@@ -130,6 +130,7 @@ export function EmbeddedPreview({
       <Div100vh data-testid="embedded-preview">
         {!isFullWindow && <ClickableCard />}
         <Box
+          id="embed-fullscreen-container"
           ref={maximizableElement}
           sx={{
             backgroundColor: 'background.default',
