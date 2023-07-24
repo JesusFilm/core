@@ -5,7 +5,7 @@ const DEPLOYMENT_URL = process.env.DEPLOYMENT_URL || 'http://localhost:4100/'
 const config = {
   ci: {
     collect: {
-      url: [DEPLOYMENT_URL, `${DEPLOYMENT_URL}fact-or-fiction`],
+      url: [DEPLOYMENT_URL, `${DEPLOYMENT_URL}/fact-or-fiction`],
       numberOfRuns: 1,
       startServerCommand: 'nx serve journeys',
       settings: {
