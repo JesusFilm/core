@@ -44,7 +44,8 @@ export function ShareDialog({ url, open, closeDialog }: Props): ReactElement {
 
   let element: HTMLElement | undefined
   if (typeof window !== 'undefined') {
-    element = document.getElementById('embedded-preview') ?? document.body
+    element =
+      document.getElementById('embed-fullscreen-container') ?? document.body
   }
 
   return (
