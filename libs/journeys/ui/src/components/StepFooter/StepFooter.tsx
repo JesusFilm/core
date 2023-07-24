@@ -14,11 +14,13 @@ import { FooterButtonList } from './FooterButtonList'
 interface StepFooterProps {
   onFooterClick?: () => void
   sx?: SxProps
+  title?: string
 }
 
 export function StepFooter({
   onFooterClick,
-  sx
+  sx,
+  title
 }: StepFooterProps): ReactElement {
   const { journey, admin } = useJourney()
   const { rtl } = getJourneyRTL(journey)
@@ -27,6 +29,7 @@ export function StepFooter({
     (admin && editableStepFooter) ||
     journey?.host?.src1 != null ||
     journey?.host?.src2 != null
+
   const hasChatWidget =
     admin || (journey?.chatButtons != null && journey?.chatButtons.length > 0)
 
@@ -93,7 +96,7 @@ export function StepFooter({
                   textOverflow: 'ellipsis'
                 }}
               >
-                {journey?.seoTitle ?? journey?.title}
+                {title != null ? title : journey?.seoTitle ?? journey?.title}
               </Typography>
               <HostTitleLocation />
             </Stack>

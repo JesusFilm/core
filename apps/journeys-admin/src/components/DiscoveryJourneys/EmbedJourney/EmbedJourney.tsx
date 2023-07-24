@@ -20,8 +20,8 @@ export const GET_DISCOVERY_JOURNEY = gql`
   query GetDiscoveryJourney($id: ID!) {
     discoveryJourney: journey(id: $id, idType: slug) {
       id
-      themeName
-      themeMode
+      title
+      seoTitle
       blocks {
         ...BlockFields
       }
@@ -30,7 +30,12 @@ export const GET_DISCOVERY_JOURNEY = gql`
 `
 
 export function EmbedJourney({ slug }: Props): ReactElement {
-  // need to update to be calling the right journeys
+  const dimensions = {
+    xs: 'calc(250% + 64px)',
+    sm: 'calc(166% + 64px)',
+    md: 'calc(125% + 64px)'
+  }
+
   const { data } = useQuery<GetDiscoveryJourney>(GET_DISCOVERY_JOURNEY, {
     variables: { id: `discovery-${slug}` }
   })
@@ -46,7 +51,14 @@ export function EmbedJourney({ slug }: Props): ReactElement {
       aria-label={`${slug}-embedded`}
       onClick={handleClick}
       sx={{
-        height: '100%'
+        transform: {
+          xs: 'scale(0.35)',
+          sm: 'scale(0.5)',
+          md: 'scale(0.7)'
+        },
+        transformOrigin: 'top left',
+        height: dimensions,
+        width: dimensions
       }}
     >
       {block != null && (
@@ -55,7 +67,10 @@ export function EmbedJourney({ slug }: Props): ReactElement {
             sx={{
               mx: 'auto',
               mb: 0,
-              height: 4.5,
+              height: {
+                xs: 8.5,
+                md: 6.5
+              },
               width: '82.5%',
               backgroundColor: '#AAACBB',
               borderRadius: '16px 16px 0 0',
@@ -66,7 +81,10 @@ export function EmbedJourney({ slug }: Props): ReactElement {
             sx={{
               mx: 'auto',
               mb: 0,
-              height: 4.5,
+              height: {
+                xs: 8.5,
+                md: 6.5
+              },
               width: '90%',
               backgroundColor: '#AAACBB',
               borderRadius: '16px 16px 0 0',
@@ -82,13 +100,15 @@ export function EmbedJourney({ slug }: Props): ReactElement {
                 sx={{
                   height: '100%',
                   width: '100%',
-                  borderRadius: 2,
+                  borderRadius: 4,
                   overflow: 'hidden',
                   position: 'relative'
                 }}
               >
                 <BlockRenderer block={block} />
-                <StepFooter />
+                <StepFooter
+                  title={discoveryJourney?.seoTitle ?? discoveryJourney?.title}
+                />
               </Box>
             </ThemeProvider>
           </FramePortal>

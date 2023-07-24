@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { ThemeName, ThemeMode, ButtonVariant, ButtonColor, ButtonSize, IconName, IconSize, IconColor, TypographyAlign, TypographyColor, TypographyVariant, VideoBlockSource, VideoBlockObjectFit } from "./globalTypes";
+import { ButtonVariant, ButtonColor, ButtonSize, ThemeMode, ThemeName, IconName, IconSize, IconColor, TypographyAlign, TypographyColor, TypographyVariant, VideoBlockSource, VideoBlockObjectFit } from "./globalTypes";
 
 // ====================================================
 // GraphQL query operation: GetDiscoveryJourney
@@ -562,8 +562,8 @@ export type GetDiscoveryJourney_discoveryJourney_blocks = GetDiscoveryJourney_di
 export interface GetDiscoveryJourney_discoveryJourney {
   __typename: "Journey";
   id: string;
-  themeName: ThemeName;
-  themeMode: ThemeMode;
+  title: string;
+  seoTitle: string | null;
   blocks: GetDiscoveryJourney_discoveryJourney_blocks[] | null;
 }
 
