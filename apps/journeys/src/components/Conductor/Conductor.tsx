@@ -156,7 +156,7 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
       const activeIndex = blockHistory[blockHistory.length - 1].parentOrder
       if (activeIndex != null && swiper.activeIndex !== activeIndex) {
         const allowFurtherOnSlideChange = false
-        swiper.slideTo(activeIndex, 300, allowFurtherOnSlideChange)
+        swiper.slideTo(activeIndex, 0, allowFurtherOnSlideChange)
       }
     }
   }, [swiper, blockHistory])
