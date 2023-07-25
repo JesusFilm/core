@@ -93,9 +93,6 @@ export function VideoControls({
   useEffect(() => {
     const handleVideoPause = (): void => {
       setPlaying(false)
-      if (!fullscreen) {
-        setShowNavigation(true)
-      }
 
       const videoHasClashingUI = isYoutube && player.userActive()
       if (videoHasClashingUI) {
