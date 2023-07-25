@@ -136,6 +136,18 @@ export function Button({
     handleAction(router, action)
   }
 
+  const hoverStyling =
+    editableLabel != null
+      ? {
+          '&:hover': {
+            backgroundColor:
+              buttonVariant === ButtonVariant.text
+                ? 'transparent'
+                : `${buttonColor ?? 'primary'}.main`
+          }
+        }
+      : {}
+
   return (
     // Margin added via Box so it's ignored by admin selection border outline
     <Box
@@ -159,18 +171,10 @@ export function Button({
         endIcon={endIcon != null ? <Icon {...endIcon} /> : undefined}
         onClick={handleClick}
         fullWidth
-        sx={
-          editableLabel != null
-            ? {
-                '&:hover': {
-                  backgroundColor:
-                    buttonVariant === ButtonVariant.text
-                      ? 'transparent'
-                      : `${buttonColor ?? 'primary'}.main`
-                }
-              }
-            : undefined
-        }
+        sx={{
+          pointerEvents: 'all',
+          ...hoverStyling
+        }}
       >
         {editableLabel ?? label}
       </MuiButton>

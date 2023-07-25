@@ -41,7 +41,11 @@ export function OverlayContent({
   return (
     <Box
       data-testid="overlay-content"
+      onMouseMove={() => console.log('mousemove')}
+      onMouseOver={() => console.log('mouseOver')}
       sx={{
+        pointerEvents: 'none',
+        // pointerEvents: 'bounding-box',
         ...enableVerticalScroll,
         ...topBottomEdgeFadeEffect,
         ...topBottomMarginsOnContent,

@@ -12,6 +12,7 @@ import { useJourney } from '../../../libs/JourneyProvider'
 import { BlockFields_VideoBlock as VideoBlock } from '../../../libs/block/__generated__/BlockFields'
 import { getJourneyRTL } from '../../../libs/rtl'
 import { OverlayContent } from '../OverlayContent'
+import { NavigationOverlay } from '../NavigationOverlay/NavigationOverlay'
 
 const DynamicBackgroundVideo = dynamic<
   TreeBlock<VideoBlock & { setLoading: (loading: boolean) => void }>
@@ -160,20 +161,21 @@ export function ContainedCover({
         )}
       </Box>
       {/* Background image, after overlay-content-container temp fix embed render bug */}
-      <Box
-        data-testid="overlay-image-container"
-        sx={{
-          width: '100%',
-          height: hasFullscreenVideo ? undefined : '100%',
-          flexGrow: 1,
-          zIndex: 1,
-          top: 0,
-          position: { xs: 'relative', lg: 'absolute' },
-          WebkitMask: { xs: overlayImageMask, lg: 'unset' },
-          mask: { xs: overlayImageMask, lg: 'unset' }
-        }}
-      >
-        {imageBlock != null && backgroundBlur != null && (
+      {imageBlock != null && backgroundBlur != null && (
+        <Box
+          data-testid="overlay-image-container"
+          sx={{
+            width: '100%',
+            height: hasFullscreenVideo ? undefined : '100%',
+            flexGrow: 1,
+            zIndex: 1,
+            top: 0,
+            position: { xs: 'relative', lg: 'absolute' },
+            WebkitMask: { xs: overlayImageMask, lg: 'unset' },
+            mask: { xs: overlayImageMask, lg: 'unset' },
+            pointerEvents: 'none'
+          }}
+        >
           <NextImage
             data-testid="background-image"
             src={imageBlock?.src ?? backgroundBlur}
@@ -183,8 +185,9 @@ export function ContainedCover({
             layout="fill"
             objectFit="cover"
           />
-        )}
-      </Box>
+        </Box>
+      )}
+      <NavigationOverlay />
       <Stack
         data-testid="overlay-content-container"
         sx={{
@@ -193,7 +196,8 @@ export function ContainedCover({
           width: '100%',
           height: { xs: hasFullscreenVideo ? '100%' : undefined, lg: '100%' },
           justifyContent: { xs: 'flex-end', lg: 'center' },
-          alignItems: { lg: rtl ? 'flex-start' : 'flex-end' }
+          alignItems: { lg: rtl ? 'flex-start' : 'flex-end' },
+          pointerEvents: 'none'
         }}
       >
         {children.length !== 0 ? (
@@ -263,7 +267,7 @@ export function ContainedCover({
                 // This should match width of journey card content in admin
                 width: { lg: '312px' },
                 maxHeight: { xs: '55vh', lg: '100%' },
-                px: { xs: 6, lg: 10 },
+                mx: { xs: 6, lg: 10 },
                 mb: { xs: 21, lg: 0 }
               }}
             >

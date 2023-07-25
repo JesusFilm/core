@@ -42,6 +42,15 @@ export function RadioOption({
     handleAction(router, action)
   }
 
+  const hoverStyling =
+    editableLabel != null
+      ? {
+          '&:hover': {
+            backgroundColor: 'primary.main'
+          }
+        }
+      : {}
+
   return (
     <StyledRadioOption
       variant="contained"
@@ -56,15 +65,10 @@ export function RadioOption({
           <RadioButtonUncheckedIcon data-testid="RadioOptionRadioButtonUncheckedIcon" />
         )
       }
-      sx={
-        editableLabel != null
-          ? {
-              '&:hover': {
-                backgroundColor: 'primary.main'
-              }
-            }
-          : undefined
-      }
+      sx={{
+        pointerEvents: 'all',
+        ...hoverStyling
+      }}
     >
       {editableLabel ?? label}
     </StyledRadioOption>
