@@ -69,18 +69,16 @@ export function Card({
   const handleNavigation = (e: MouseEvent): void => {
     const view = e.view as unknown as Window
     if (rtl) {
-      const divide = view.innerWidth * 0.66
-      if (e.clientX <= divide) {
+      if (e.clientX <= view.innerWidth * 0.25) {
         nextActiveBlock()
-      } else {
+      } else if (e.clientX >= view.innerWidth * 0.75) {
         prevActiveBlock()
       }
     } else {
-      const divide = view.innerWidth * 0.33
-      if (e.clientX >= divide) {
-        nextActiveBlock()
-      } else {
+      if (e.clientX <= view.innerWidth * 0.25) {
         prevActiveBlock()
+      } else if (e.clientX >= view.innerWidth * 0.75) {
+        nextActiveBlock()
       }
     }
   }
