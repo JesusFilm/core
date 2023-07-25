@@ -84,7 +84,8 @@ export function NavigationButton({
         display: 'flex',
         width: { xs: 82, lg: 114 },
         height: { xs: '55%', sm: '25%', md: '59%' },
-        alignItems: 'center'
+        alignItems: 'center',
+        pointerEvents: { xs: 'none', lg: 'all' }
       }}
     >
       <Fade
@@ -99,6 +100,7 @@ export function NavigationButton({
           onClick={() => handleNav(variant)}
           disableRipple
           sx={{
+            pointerEvents: 'all',
             mx: { xs: 2, lg: 8 },
             p: 2,
             color: (theme) => theme.palette.common.white,

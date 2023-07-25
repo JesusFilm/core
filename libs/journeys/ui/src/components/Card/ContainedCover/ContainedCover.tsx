@@ -193,7 +193,8 @@ export function ContainedCover({
           zIndex: 1,
           width: '100%',
           height: { xs: hasFullscreenVideo ? '100%' : undefined, lg: '100%' },
-          justifyContent: { xs: 'flex-end', lg: 'center' }
+          justifyContent: { xs: 'flex-end', lg: 'center' },
+          alignItems: { lg: rtl ? 'flex-start' : 'flex-end' }
         }}
       >
         {children.length !== 0 ? (

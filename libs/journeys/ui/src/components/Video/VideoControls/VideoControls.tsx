@@ -183,6 +183,8 @@ export function VideoControls({
   }, [player, isYoutube, playing, setShowHeaderFooter, setShowNavigation])
 
   function handlePlay(): void {
+    setShowNavigation(true)
+
     if (!playing) {
       void player.play()
       // Youtube breaks when this is gone
