@@ -121,7 +121,7 @@ describe('block', () => {
       expect(blockHistoryVar()[1].id).toEqual('step2.id')
     })
 
-    it('should not navigate if no next block exists in tree', () => {
+    it('should not navigate to next step if it does not exist', () => {
       treeBlocksVar([
         { ...step, id: 'step1.id' },
         { ...step, id: 'step2.id', parentOrder: 1 },
@@ -133,6 +133,21 @@ describe('block', () => {
 
       expect(blockHistoryVar()).toHaveLength(1)
       expect(blockHistoryVar()[0].id).toEqual('step3.id')
+    })
+
+    // If passed in id or nextBlockId exists, will navigate
+    it('should not navigate to next step if active block is locked', () => {
+      treeBlocksVar([
+        { ...step, id: 'step1.id', locked: true },
+        { ...step, id: 'step2.id', parentOrder: 1 },
+        { ...step, id: 'step3.id', parentOrder: 2 }
+      ])
+      blockHistoryVar([{ ...step, id: 'step1.id', locked: true }])
+
+      nextActiveBlock()
+
+      expect(blockHistoryVar()).toHaveLength(1)
+      expect(blockHistoryVar()[0].id).toEqual('step1.id')
     })
   })
 
