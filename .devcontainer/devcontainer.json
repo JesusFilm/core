@@ -11,7 +11,6 @@
       "extensions": [
         "dbaeumer.vscode-eslint",
         "nrwl.angular-console",
-        "monotykamary.vscode-aql",
         "eamodio.gitlens",
         "graphql.vscode-graphql",
         "esbenp.prettier-vscode",
@@ -26,8 +25,7 @@
   },
 
   // Use 'forwardPorts' to make a list of ports inside the container available locally.
-  // 8529 is Arangodb
-  "forwardPorts": [8529],
+  // "forwardPorts": [],
 
   // Use 'postCreateCommand' to run commands after the container is created.
   "postCreateCommand": "bash /workspaces/core/.devcontainer/post-create-command.sh",
