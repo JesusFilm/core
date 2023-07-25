@@ -143,6 +143,7 @@ export const TextResponse = ({
                 helperText={hint}
                 multiline
                 minRows={minRows ?? 3}
+                onClick={(e) => e.stopPropagation()}
                 onChange={handleChange}
                 onBlur={handleBlur}
                 disabled={selectedBlock !== undefined}
@@ -156,6 +157,7 @@ export const TextResponse = ({
                 startIcon={
                   submitIcon != null ? <Icon {...submitIcon} /> : undefined
                 }
+                onClick={(e) => e.stopPropagation()}
                 sx={{ ...sx, mb: 0 }}
               >
                 {editableSubmitLabel ?? submitLabel ?? t('Submit')}

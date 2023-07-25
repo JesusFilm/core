@@ -1,4 +1,4 @@
-import { ReactElement } from 'react'
+import { ReactElement, MouseEvent } from 'react'
 import { styled } from '@mui/material/styles'
 import Button, { ButtonProps } from '@mui/material/Button'
 import RadioButtonUncheckedIcon from '@mui/icons-material/RadioButtonUnchecked'
@@ -37,19 +37,11 @@ export function RadioOption({
 }: RadioOptionProps): ReactElement {
   const router = useRouter()
 
-  const handleClick = (): void => {
+  const handleClick = (e: MouseEvent): void => {
+    e.stopPropagation()
     onClick?.(id, label)
     handleAction(router, action)
   }
-
-  const hoverStyling =
-    editableLabel != null
-      ? {
-          '&:hover': {
-            backgroundColor: 'primary.main'
-          }
-        }
-      : {}
 
   return (
     <StyledRadioOption
@@ -65,10 +57,15 @@ export function RadioOption({
           <RadioButtonUncheckedIcon data-testid="RadioOptionRadioButtonUncheckedIcon" />
         )
       }
-      sx={{
-        pointerEvents: 'all',
-        ...hoverStyling
-      }}
+      sx={
+        editableLabel != null
+          ? {
+              '&:hover': {
+                backgroundColor: 'primary.main'
+              }
+            }
+          : undefined
+      }
     >
       {editableLabel ?? label}
     </StyledRadioOption>

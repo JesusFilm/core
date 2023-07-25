@@ -93,6 +93,9 @@ export function VideoControls({
   useEffect(() => {
     const handleVideoPause = (): void => {
       setPlaying(false)
+      if (!fullscreen) {
+        setShowNavigation(true)
+      }
 
       const videoHasClashingUI = isYoutube && player.userActive()
       if (videoHasClashingUI) {
@@ -241,6 +244,7 @@ export function VideoControls({
   ): MouseEventHandler {
     let timeoutID: NodeJS.Timeout | undefined
     return function (event) {
+      event.stopPropagation()
       if (timeoutID == null) {
         timeoutID = setTimeout(function () {
           onClick(event)
@@ -311,10 +315,7 @@ export function VideoControls({
                   background: '#ffffff3d'
                 }
               }}
-              onClick={(e) => {
-                e.stopPropagation()
-                handleMute()
-              }}
+              onClick={handleMute}
             >
               {muted ? <VolumeOffOutlined /> : <VolumeUpOutlined />}
             </IconButton>
@@ -434,13 +435,7 @@ export function VideoControls({
                     }
                   }}
                 >
-                  <IconButton
-                    onClick={(e) => {
-                      e.stopPropagation()
-                      handleMute()
-                    }}
-                    sx={{ p: 0 }}
-                  >
+                  <IconButton onClick={handleMute} sx={{ p: 0 }}>
                     {player.muted() || volume === 0 ? (
                       <VolumeOffOutlined />
                     ) : volume > 60 ? (

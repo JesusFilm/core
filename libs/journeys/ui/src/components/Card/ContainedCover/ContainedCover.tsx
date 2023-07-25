@@ -12,7 +12,6 @@ import { useJourney } from '../../../libs/JourneyProvider'
 import { BlockFields_VideoBlock as VideoBlock } from '../../../libs/block/__generated__/BlockFields'
 import { getJourneyRTL } from '../../../libs/rtl'
 import { OverlayContent } from '../OverlayContent'
-import { NavigationOverlay } from '../NavigationOverlay/NavigationOverlay'
 
 const DynamicBackgroundVideo = dynamic<
   TreeBlock<VideoBlock & { setLoading: (loading: boolean) => void }>
@@ -187,7 +186,6 @@ export function ContainedCover({
           />
         </Box>
       )}
-      <NavigationOverlay />
       <Stack
         data-testid="overlay-content-container"
         sx={{
@@ -195,9 +193,7 @@ export function ContainedCover({
           zIndex: 1,
           width: '100%',
           height: { xs: hasFullscreenVideo ? '100%' : undefined, lg: '100%' },
-          justifyContent: { xs: 'flex-end', lg: 'center' },
-          alignItems: { lg: rtl ? 'flex-start' : 'flex-end' },
-          pointerEvents: 'none'
+          justifyContent: { xs: 'flex-end', lg: 'center' }
         }}
       >
         {children.length !== 0 ? (

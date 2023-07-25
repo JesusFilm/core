@@ -1,4 +1,4 @@
-import { ReactElement, useMemo } from 'react'
+import { ReactElement, useMemo, MouseEvent } from 'react'
 import { useRouter } from 'next/router'
 import MuiButton from '@mui/material/Button'
 import Box from '@mui/material/Box'
@@ -127,7 +127,8 @@ export function Button({
   }
 
   const router = useRouter()
-  const handleClick = async (): Promise<void> => {
+  const handleClick = async (e: MouseEvent): Promise<void> => {
+    e.stopPropagation()
     if (chatPlatform == null) {
       void createClickEvent()
     } else {
@@ -135,18 +136,6 @@ export function Button({
     }
     handleAction(router, action)
   }
-
-  const hoverStyling =
-    editableLabel != null
-      ? {
-          '&:hover': {
-            backgroundColor:
-              buttonVariant === ButtonVariant.text
-                ? 'transparent'
-                : `${buttonColor ?? 'primary'}.main`
-          }
-        }
-      : {}
 
   return (
     // Margin added via Box so it's ignored by admin selection border outline
@@ -171,10 +160,18 @@ export function Button({
         endIcon={endIcon != null ? <Icon {...endIcon} /> : undefined}
         onClick={handleClick}
         fullWidth
-        sx={{
-          pointerEvents: 'all',
-          ...hoverStyling
-        }}
+        sx={
+          editableLabel != null
+            ? {
+                '&:hover': {
+                  backgroundColor:
+                    buttonVariant === ButtonVariant.text
+                      ? 'transparent'
+                      : `${buttonColor ?? 'primary'}.main`
+                }
+              }
+            : undefined
+        }
       >
         {editableLabel ?? label}
       </MuiButton>

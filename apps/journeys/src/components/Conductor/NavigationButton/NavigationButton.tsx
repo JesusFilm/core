@@ -50,7 +50,7 @@ export function NavigationButton({
     if (showNavigation) {
       setTimeout(() => {
         setShowNavigation(false)
-      }, 1000)
+      }, 3000)
     }
   }, [showNavigation, setShowNavigation])
 
@@ -75,18 +75,17 @@ export function NavigationButton({
     <NavigationContainer
       data-testid={`${variant}NavContainer`}
       onMouseOver={() => setShowNavigation(true)}
-      // sx={{
-      //   ...alignSx,
-      //   position: 'absolute',
-      //   top: { xs: '20%', sm: '32%', md: '20%' },
-      //   bottom: 0,
-      //   zIndex: 2,
-      //   display: 'flex',
-      //   width: { xs: 82, lg: 114 },
-      //   height: { xs: '55%', sm: '25%', md: '60%', lg: '59%' },
-      //   alignItems: 'center',
-      //   backgroundColor: 'yellow',
-      // }}
+      sx={{
+        ...alignSx,
+        position: 'absolute',
+        top: { xs: '20%', sm: '32%', md: '19.5%' },
+        bottom: 0,
+        zIndex: 2,
+        display: 'flex',
+        width: { xs: 82, lg: 114 },
+        height: { xs: '55%', sm: '25%', md: '59%' },
+        alignItems: 'center'
+      }}
     >
       <Fade
         in={canNavigate && showNavigation && !disabled}
@@ -100,13 +99,6 @@ export function NavigationButton({
           onClick={() => handleNav(variant)}
           disableRipple
           sx={{
-            ...alignSx,
-            position: 'absolute',
-            top: { xs: 'calc(50% - 50px)', lg: 'calc(50% - 28px)' },
-            zIndex: 2,
-            display: 'flex',
-            left: alignment === 'left' ? 0 : 'unset',
-            right: alignment === 'right' ? 0 : 'unset',
             mx: { xs: 2, lg: 8 },
             p: 2,
             color: (theme) => theme.palette.common.white,

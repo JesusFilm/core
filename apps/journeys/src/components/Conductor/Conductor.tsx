@@ -161,8 +161,6 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
     }
   }, [swiper, blockHistory])
 
-  console.log('blockHistory', blockHistory)
-
   return (
     <Div100vh style={{ overflow: 'hidden' }}>
       <Stack

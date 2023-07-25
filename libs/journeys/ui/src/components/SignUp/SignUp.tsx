@@ -152,6 +152,7 @@ export const SignUp = ({
               name="name"
               label={t('Name')}
               value={values.name}
+              onClick={(e) => e.stopPropagation()}
               onChange={handleChange}
               onBlur={handleBlur}
               disabled={selectedBlock !== undefined}
@@ -163,6 +164,7 @@ export const SignUp = ({
               id="email"
               name="email"
               label={t('Email')}
+              onClick={(e) => e.stopPropagation()}
               disabled={selectedBlock !== undefined}
             />
             <LoadingButton
@@ -173,6 +175,7 @@ export const SignUp = ({
               startIcon={
                 submitIcon != null ? <Icon {...submitIcon} /> : undefined
               }
+              onClick={(e) => e.stopPropagation()}
               sx={{
                 ...sx,
                 mb: 0
