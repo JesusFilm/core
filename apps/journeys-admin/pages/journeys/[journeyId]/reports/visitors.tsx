@@ -5,21 +5,16 @@ import {
   withAuthUserTokenSSR
 } from 'next-firebase-auth'
 import { useRouter } from 'next/router'
-import { ReactElement, useEffect, useState } from 'react'
+import { ReactElement, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { NextSeo } from 'next-seo'
 import { gql, useQuery } from '@apollo/client'
-import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
-import { getLaunchDarklyClient } from '@core/shared/ui/getLaunchDarklyClient'
 import Typography from '@mui/material/Typography'
 import Stack from '@mui/material/Stack'
 import { PageWrapper } from '../../../../src/components/NewPageWrapper'
 import { GetJourney } from '../../../../__generated__/GetJourney'
 import { GET_JOURNEY, USER_JOURNEY_OPEN } from '../../[journeyId]'
-import { UserInviteAcceptAll } from '../../../../__generated__/UserInviteAcceptAll'
-import i18nConfig from '../../../../next-i18next.config'
-import { createApolloClient } from '../../../../src/libs/apolloClient'
-import { ACCEPT_USER_INVITE } from '../../..'
+import { ACCEPT_ALL_INVITES } from '../../..'
 import { UserJourneyOpen } from '../../../../__generated__/UserJourneyOpen'
 import { JourneyVisitorsList } from '../../../../src/components/JourneyVisitorsList'
 import {
@@ -30,7 +25,8 @@ import { GetJourneyVisitorsCount } from '../../../../__generated__/GetJourneyVis
 import { FilterDrawer } from '../../../../src/components/JourneyVisitorsList/FilterDrawer/FilterDrawer'
 import { VisitorToolbar } from '../../../../src/components/JourneyVisitorsList/VisitorToolbar/VisitorToolbar'
 import { ClearAllButton } from '../../../../src/components/JourneyVisitorsList/FilterDrawer/ClearAllButton'
-import { checkConditionalRedirect } from '../../../../src/libs/checkConditionalRedirect'
+import { initAndAuthApp } from '../../../../src/libs/initAndAuthApp'
+import { AcceptAllInvites } from '../../../../__generated__/AcceptAllInvites'
 
 export const GET_JOURNEY_VISITORS = gql`
   query GetJourneyVisitors(
@@ -106,7 +102,7 @@ function JourneyVisitorsPage(): ReactElement {
   const [hideInteractive, setHideInterActive] = useState(false)
   const [sortSetting, setSortSetting] = useState<'date' | 'duration'>('date')
 
-  const { fetchMore, loading, refetch } = useQuery<GetJourneyVisitors>(
+  const { fetchMore, loading } = useQuery<GetJourneyVisitors>(
     GET_JOURNEY_VISITORS,
     {
       variables: {
@@ -130,7 +126,7 @@ function JourneyVisitorsPage(): ReactElement {
   )
 
   async function handleFetchNext(): Promise<void> {
-    if (hasNextPage) {
+    if (visitorEdges != null && hasNextPage) {
       const response = await fetchMore({
         variables: {
           filter: { journeyId },
@@ -146,45 +142,7 @@ function JourneyVisitorsPage(): ReactElement {
     }
   }
 
-  useEffect(() => {
-    const handleRefetchOnChange = async (): Promise<void> => {
-      const response = await refetch({
-        variables: {
-          filter: {
-            journeyId,
-            hasChatStarted: chatStarted,
-            hasPollAnswers: withPollAnswers,
-            hasTextResponse: withSubmittedText,
-            hasIcon: withIcon,
-            hideInactive: hideInteractive
-          },
-          first: 100,
-          after: endCursor,
-          sort: sortSetting
-        }
-      })
-
-      if (response.data.visitors.edges != null) {
-        setVisitorEdges([...response.data.visitors.edges])
-        setHasNextPage(response.data.visitors.pageInfo.hasNextPage)
-        setEndCursor(response.data.visitors.pageInfo.endCursor)
-      }
-    }
-    void handleRefetchOnChange()
-  }, [
-    chatStarted,
-    withPollAnswers,
-    withSubmittedText,
-    withIcon,
-    hideInteractive,
-    journeyId,
-    endCursor,
-    sortSetting,
-    refetch,
-    hasNextPage
-  ])
-
-  const handleChange = (e): void => {
+  const handleChange = async (e): Promise<void> => {
     switch (e.target.value) {
       case 'Chat Started':
         setChatStarted(e.target.checked as boolean)
@@ -280,24 +238,15 @@ function JourneyVisitorsPage(): ReactElement {
 export const getServerSideProps = withAuthUserTokenSSR({
   whenUnauthed: AuthAction.REDIRECT_TO_LOGIN
 })(async ({ AuthUser, locale, query }) => {
-  const ldUser = {
-    key: AuthUser.id as string,
-    firstName: AuthUser.displayName ?? undefined,
-    email: AuthUser.email ?? undefined
-  }
-  const launchDarklyClient = await getLaunchDarklyClient(ldUser)
-  const flags = (await launchDarklyClient.allFlagsState(ldUser)).toJSON() as {
-    [key: string]: boolean | undefined
-  }
+  const { apolloClient, flags, redirect, translations } = await initAndAuthApp({
+    AuthUser,
+    locale
+  })
 
-  const token = await AuthUser.getIdToken()
-  const apolloClient = createApolloClient(token != null ? token : '')
-
-  const redirect = await checkConditionalRedirect(apolloClient, flags)
   if (redirect != null) return { redirect }
 
-  await apolloClient.mutate<UserInviteAcceptAll>({
-    mutation: ACCEPT_USER_INVITE
+  await apolloClient.mutate<AcceptAllInvites>({
+    mutation: ACCEPT_ALL_INVITES
   })
 
   try {
@@ -324,11 +273,7 @@ export const getServerSideProps = withAuthUserTokenSSR({
   return {
     props: {
       flags,
-      ...(await serverSideTranslations(
-        locale ?? 'en',
-        ['apps-journeys-admin', 'libs-journeys-ui'],
-        i18nConfig
-      ))
+      ...translations
     }
   }
 })

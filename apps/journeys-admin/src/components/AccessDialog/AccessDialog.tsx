@@ -118,7 +118,9 @@ export function AccessDialog({
         title: 'Manage Editors',
         closeButton: true
       }}
-      dialogActionChildren={<AddUserSection users={emails} />}
+      dialogActionChildren={
+        <AddUserSection users={emails} journeyId={journeyId} />
+      }
       fullscreen={!smUp}
     >
       <Stack spacing={4}>
@@ -126,6 +128,7 @@ export function AccessDialog({
           title="Requested Access"
           users={requests}
           currentUser={currentUser}
+          journeyId={journeyId}
         />
         <UserList
           title="Editors"
@@ -133,6 +136,7 @@ export function AccessDialog({
           users={users}
           invites={invites}
           currentUser={currentUser}
+          journeyId={journeyId}
         />
       </Stack>
     </Dialog>

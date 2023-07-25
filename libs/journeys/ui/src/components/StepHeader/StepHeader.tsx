@@ -26,6 +26,7 @@ export function StepHeader(): ReactElement {
 
   return (
     <Stack
+      data-testid="stepHeader"
       sx={{
         width: { xs: '100%', lg: 'unset' },
         mt: { xs: 1, lg: 0 },

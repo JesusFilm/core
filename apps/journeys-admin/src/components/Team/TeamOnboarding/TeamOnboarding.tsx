@@ -13,16 +13,18 @@ import Typography from '@mui/material/Typography'
 import { useTranslation } from 'react-i18next'
 import { Form } from 'formik'
 import { useRouter } from 'next/router'
+import Divider from '@mui/material/Divider'
 import taskbarIcon from '../../../../public/taskbar-icon.svg'
 import { TeamCreateForm } from '../TeamCreateForm'
 
+import { useTeam } from '../TeamProvider'
+import { TeamManageWrapper } from '../TeamManageDialog/TeamManageWrapper'
+
 export function TeamOnboarding(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-  const router = useRouter()
 
-  async function handleSubmit(): Promise<void> {
-    await router?.push('/')
-  }
+  const router = useRouter()
+  const { activeTeam } = useTeam()
 
   return (
     <Stack
@@ -34,55 +36,102 @@ export function TeamOnboarding(): ReactElement {
         <Box sx={{ mb: 10, flexShrink: 0 }}>
           <Image src={taskbarIcon} alt="Next Steps" height={43} width={43} />
         </Box>
-        <TeamCreateForm onSubmit={handleSubmit}>
-          {({
-            values,
-            errors,
-            handleChange,
-            handleSubmit,
-            isValid,
-            isSubmitting
-          }) => (
-            <Form>
-              <Card>
+        {activeTeam != null ? (
+          <TeamManageWrapper>
+            {({
+              data,
+              userTeamList,
+              userTeamInviteList,
+              userTeamInviteForm
+            }) => (
+              <Card sx={{ width: { sm: '444px' } }}>
                 <CardHeader
-                  title={t('Create Team')}
+                  title={t('Invite teammates to {{ title }}', {
+                    title: activeTeam.title
+                  })}
                   titleTypographyProps={{ variant: 'h6' }}
                   sx={{ py: 5, px: 6 }}
                 />
-                <CardContent sx={{ p: 6 }}>
-                  <Stack spacing={4}>
-                    <TextField
-                      fullWidth
-                      variant="filled"
-                      id="title"
-                      name="title"
-                      value={values.title}
-                      error={Boolean(errors.title)}
-                      onChange={handleChange}
-                      helperText={errors.title}
-                      label={t('Team Name')}
-                      autoFocus
-                    />
-                    <Typography gutterBottom>
-                      {t(
-                        'Create a team to hold your NextStep journeys and collaborate with others.'
-                      )}
-                    </Typography>
-                  </Stack>
+                <Divider />
+
+                <CardContent
+                  sx={{ padding: 6, maxHeight: '300px', overflowY: 'auto' }}
+                >
+                  {userTeamList}
+                  {userTeamInviteList}
                 </CardContent>
-                <CardActions sx={{ justifyContent: 'flex-end', px: 4 }}>
-                  <Button
-                    onClick={() => handleSubmit()}
-                    disabled={!isValid || isSubmitting}
-                  >
-                    {t('Create')}
+
+                <Divider />
+                <CardContent sx={{ px: 6, py: 4 }}>
+                  {userTeamInviteForm}
+                </CardContent>
+                <CardContent
+                  sx={{
+                    padding: 2,
+                    display: 'flex',
+                    justifyContent: 'flex-end'
+                  }}
+                >
+                  <Button onClick={async () => await router?.push('/')}>
+                    {(data?.userTeamInvites ?? []).length > 0
+                      ? t('Continue')
+                      : t('Skip')}
                   </Button>
-                </CardActions>
+                </CardContent>
               </Card>
-            </Form>
-          )}
-        </TeamCreateForm>
+            )}
+          </TeamManageWrapper>
+        ) : (
+          <TeamCreateForm>
+            {({
+              values,
+              errors,
+              handleChange,
+              handleSubmit,
+              isValid,
+              isSubmitting
+            }) => (
+              <Form>
+                <Card>
+                  <CardHeader
+                    title={t('Create Team')}
+                    titleTypographyProps={{ variant: 'h6' }}
+                    sx={{ py: 5, px: 6 }}
+                  />
+                  <CardContent sx={{ p: 6 }}>
+                    <Stack spacing={4}>
+                      <TextField
+                        fullWidth
+                        variant="filled"
+                        hiddenLabel
+                        id="title"
+                        name="title"
+                        value={values.title}
+                        error={Boolean(errors.title)}
+                        onChange={handleChange}
+                        helperText={errors.title}
+                        autoFocus
+                      />
+                      <Typography gutterBottom>
+                        {t(
+                          'Create a team to hold your NextStep journeys and collaborate with others.'
+                        )}
+                      </Typography>
+                    </Stack>
+                  </CardContent>
+                  <CardActions sx={{ justifyContent: 'flex-end', px: 4 }}>
+                    <Button
+                      onClick={() => handleSubmit()}
+                      disabled={!isValid || isSubmitting}
+                    >
+                      {t('Create')}
+                    </Button>
+                  </CardActions>
+                </Card>
+              </Form>
+            )}
+          </TeamCreateForm>
+        )}
       </Stack>
       <Link
         variant="body2"

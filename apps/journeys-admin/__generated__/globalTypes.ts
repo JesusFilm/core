@@ -168,6 +168,11 @@ export enum UserJourneyRole {
   owner = "owner",
 }
 
+export enum UserTeamRole {
+  manager = "manager",
+  member = "member",
+}
+
 export enum VideoBlockObjectFit {
   fill = "fill",
   fit = "fit",
@@ -298,7 +303,7 @@ export interface IconBlockUpdateInput {
 
 export interface ImageBlockCreateInput {
   id?: string | null;
-  parentBlockId: string;
+  parentBlockId?: string | null;
   journeyId: string;
   src?: string | null;
   alt: string;
@@ -481,6 +486,18 @@ export interface TypographyBlockUpdateInput {
 
 export interface UserInviteCreateInput {
   email: string;
+}
+
+export interface UserTeamFilterInput {
+  role?: UserTeamRole[] | null;
+}
+
+export interface UserTeamInviteCreateInput {
+  email: string;
+}
+
+export interface UserTeamUpdateInput {
+  role: UserTeamRole;
 }
 
 export interface VideoBlockCreateInput {

@@ -10,12 +10,11 @@ import Close from '@mui/icons-material/Close'
 // Used to resolve dynamic viewport height on Safari
 import Div100vh from 'react-div-100vh'
 import { StepFooter } from '@core/journeys/ui/StepFooter'
-import useFullscreenStatus from '../../libs/useFullscreenStatus/useFullscreenStatus'
 import { Conductor } from '../Conductor'
 
 import { ButtonWrapper } from './ButtonWrapper/ButtonWrapper'
-import { VideoWrapper } from './VideoWrapper/VideoWrapper'
 import { RadioOptionWrapper } from './RadioOptionWrapper/RadioOptionWrapper'
+import { VideoWrapper } from './VideoWrapper/VideoWrapper'
 
 interface EmbeddedPreviewProps {
   blocks: TreeBlock[]
@@ -25,30 +24,16 @@ export function EmbeddedPreview({
   blocks
 }: EmbeddedPreviewProps): ReactElement {
   const maximizableElement = useRef(null)
-  const [allowFullscreen, setAllowFullscreen] = useState(true)
-  let isFullscreen: boolean, setIsFullscreen
-  // Safari / iPhone fullscreen check
-  const [isFullContainer, setIsFullContainer] = useState(false)
-  let canFullscreen = true
-  try {
-    // Chrome / Firefox fullscreen check
-    ;[isFullscreen, setIsFullscreen] = useFullscreenStatus(maximizableElement)
-  } catch {
-    isFullscreen = false
-    canFullscreen = false
-  }
+  const [allowFullWindow, setAllowFullWindow] = useState(true)
+  // Use full container / fullWindow mode over fullScreen to avoid video playback issues
+  const [isFullWindow, setIsFullWindow] = useState(false)
 
   const maximizeView = useCallback(
     (value: boolean) => {
-      if (canFullscreen) {
-        setIsFullscreen(value)
-        // TODO: Remove this check once allow="fullscreen" works with Safari 16+
-      } else {
-        setIsFullContainer(value)
-        window.parent.postMessage(value, '*')
-      }
+      setIsFullWindow(value)
+      window.parent.postMessage(value, '*')
     },
-    [canFullscreen, setIsFullscreen, setIsFullContainer]
+    [setIsFullWindow]
   )
 
   // use router internally on this component as it does not function properly when passed as prop
@@ -56,13 +41,13 @@ export function EmbeddedPreview({
   const once = useRef(false)
 
   const handleClick = useCallback((): void => {
-    if (allowFullscreen) maximizeView(true)
-  }, [allowFullscreen, maximizeView])
+    if (allowFullWindow) maximizeView(true)
+  }, [allowFullWindow, maximizeView])
 
   useEffect(() => {
     if (!once.current) {
       if (router?.query?.preview === 'true') {
-        setAllowFullscreen(false)
+        setAllowFullWindow(false)
         once.current = true
       }
       if (router?.query?.autoexpand === 'true') {
@@ -70,7 +55,7 @@ export function EmbeddedPreview({
         once.current = true
       }
     }
-  }, [setAllowFullscreen, handleClick, router?.query])
+  }, [setAllowFullWindow, handleClick, router?.query])
 
   const ClickableCard = (): ReactElement => (
     <Box
@@ -79,7 +64,7 @@ export function EmbeddedPreview({
         flexGrow: 1,
         display: 'flex',
         flexDirection: 'column',
-        cursor: allowFullscreen ? 'pointer' : 'default',
+        cursor: allowFullWindow ? 'pointer' : 'default',
         zindex: 10,
         height: '100%'
       }}
@@ -143,21 +128,22 @@ export function EmbeddedPreview({
         }
       `}</style>
       <Div100vh data-testid="embedded-preview">
-        {!(isFullscreen || isFullContainer) && <ClickableCard />}
+        {!isFullWindow && <ClickableCard />}
         <Box
+          id="embed-fullscreen-container"
           ref={maximizableElement}
           sx={{
             backgroundColor: 'background.default',
             overflow: 'hidden'
           }}
         >
-          {(isFullscreen || isFullContainer) && (
+          {isFullWindow && (
             <>
               <IconButton
                 sx={{
                   position: 'absolute',
                   top: 0,
-                  right: 0,
+                  left: 0,
                   zIndex: 1000,
                   color: 'text.primary'
                 }}

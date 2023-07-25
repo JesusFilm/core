@@ -39,12 +39,6 @@
         }
       }
     },
-    "seed": {
-      "executor": "@nrwl/workspace:run-commands",
-      "options": {
-        "command": "npx ts-node apps/api-journeys/db/seed.ts"
-      }
-    },
     "serve": {
       "executor": "@nrwl/node:node",
       "options": {
@@ -152,10 +146,24 @@
         ]
       }
     },
+    "prisma-resolve": {
+      "executor": "@nrwl/workspace:run-commands",
+      "options": {
+        "commands": [
+          "npx prisma migrate resolve --schema apps/api-journeys/db/schema.prisma --applied 20230711193802_20230711193801"
+        ]
+      }
+    },
     "type-check": {
       "executor": "@nrwl/workspace:run-commands",
       "options": {
         "command": "npx tsc -b apps/api-journeys/tsconfig.json"
+      }
+    },
+    "codecov": {
+      "executor": "@nrwl/workspace:run-commands",
+      "options": {
+        "command": "codecov -f coverage/apps/api-journeys/cobertura-coverage.xml -F apps.api-journeys"
       }
     }
   },

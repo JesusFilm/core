@@ -1,8 +1,6 @@
-import { ReactElement, ReactNode } from 'react'
+import { ComponentProps, ReactElement, ReactNode } from 'react'
 import { Formik, Form } from 'formik'
 import TextField, { TextFieldProps } from '@mui/material/TextField'
-import { ObjectSchema } from 'yup'
-import { ObjectShape } from 'yup/lib/object'
 
 type FieldProps = Pick<
   TextFieldProps,
@@ -19,7 +17,7 @@ type FieldProps = Pick<
 interface TextFieldFormProps extends FieldProps {
   id: string
   initialValue?: string
-  validationSchema?: ObjectSchema<ObjectShape>
+  validationSchema?: ComponentProps<typeof Formik>['validationSchema']
   onSubmit: (value?: string) => void
   startIcon?: ReactNode
   endIcon?: ReactNode

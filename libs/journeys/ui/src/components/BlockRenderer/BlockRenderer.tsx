@@ -1,15 +1,7 @@
 import { ReactElement } from 'react'
-import { Button } from '../Button'
-import { Card } from '../Card'
-import { Image } from '../Image'
-import { RadioOption } from '../RadioOption'
-import { RadioQuestion } from '../RadioQuestion'
-import { SignUp } from '../SignUp'
-import { Step } from '../Step'
-import { TextResponse } from '../TextResponse'
-import { Typography } from '../Typography'
-import { Video } from '../Video'
+import dynamic from 'next/dynamic'
 import type { TreeBlock } from '../../libs/block'
+
 import {
   BlockFields as Block,
   BlockFields_ButtonBlock as ButtonBlock,
@@ -45,6 +37,91 @@ export interface WrappersProps {
   VideoWrapper?: WrapperFn<VideoBlock>
 }
 
+const DynamicButton = dynamic<TreeBlock<ButtonBlock>>(
+  async () =>
+    await import(
+      /* webpackChunkName: "Button" */
+      '../Button'
+    ).then((mod) => mod.Button)
+)
+
+const DynamicCard = dynamic<
+  TreeBlock<CardBlock> & { wrappers?: WrappersProps }
+>(
+  async () =>
+    await import(
+      /* webpackChunkName: "Card" */
+      '../Card'
+    ).then((mod) => mod.Card)
+)
+
+const DynamicImage = dynamic<TreeBlock<ImageBlock>>(
+  async () =>
+    await import(
+      /* webpackChunkName: "Image" */
+      '../Image'
+    ).then((mod) => mod.Image)
+)
+
+const DynamicRadioOption = dynamic<TreeBlock<RadioOptionBlock>>(
+  async () =>
+    await import(
+      /* webpackChunkName: "RadioOption" */
+      '../RadioOption'
+    ).then((mod) => mod.RadioOption)
+)
+
+const DynamicRadioQuestion = dynamic<
+  TreeBlock<RadioQuestionBlock> & { wrappers?: WrappersProps }
+>(
+  async () =>
+    await import(
+      /* webpackChunkName: "RadioQuestion" */
+      '../RadioQuestion'
+    ).then((mod) => mod.RadioQuestion)
+)
+
+const DynamicSignUp = dynamic<TreeBlock<SignUpBlock>>(
+  async () =>
+    await import(
+      /* webpackChunkName: "SignUp" */
+      '../SignUp'
+    ).then((mod) => mod.SignUp)
+)
+
+const DynamicStep = dynamic<
+  TreeBlock<StepBlock> & { wrappers?: WrappersProps }
+>(
+  async () =>
+    await import(
+      /* webpackChunkName: "Step" */
+      '../Step'
+    ).then((mod) => mod.Step)
+)
+const DynamicTextResponse = dynamic<TreeBlock<TextResponseBlock>>(
+  async () =>
+    await import(
+      /* webpackChunkName: "TextResponse" */
+      '../TextResponse'
+    ).then((mod) => mod.TextResponse)
+)
+
+const DynamicTypography = dynamic<TreeBlock<TypographyBlock>>(
+  async () =>
+    await import(
+      /* webpackChunkName: "Typography" */
+      '../Typography'
+    ).then((mod) => mod.Typography)
+)
+
+const DynamicVideo = dynamic<TreeBlock<VideoBlock>>(
+  async () =>
+    await import(
+      /* webpackChunkName: "Video" */
+      '../Video'
+    ).then((mod) => mod.Video)
+)
+
 interface BlockRenderProps {
   block: TreeBlock
   wrappers?: WrappersProps
@@ -77,7 +154,7 @@ export function BlockRenderer({
       return (
         <Wrapper block={block}>
           <ButtonWrapper block={block}>
-            <Button {...block} />
+            <DynamicButton {...block} />
           </ButtonWrapper>
         </Wrapper>
       )
@@ -85,7 +162,7 @@ export function BlockRenderer({
       return (
         <Wrapper block={block}>
           <CardWrapper block={block}>
-            <Card {...block} wrappers={wrappers} />
+            <DynamicCard {...block} wrappers={wrappers} />
           </CardWrapper>
         </Wrapper>
       )
@@ -93,7 +170,7 @@ export function BlockRenderer({
       return (
         <Wrapper block={block}>
           <ImageWrapper block={block}>
-            <Image {...block} alt={block.alt} />
+            <DynamicImage {...block} alt={block.alt} />
           </ImageWrapper>
         </Wrapper>
       )
@@ -101,7 +178,7 @@ export function BlockRenderer({
       return (
         <Wrapper block={block}>
           <RadioOptionWrapper block={block}>
-            <RadioOption {...block} />
+            <DynamicRadioOption {...block} />
           </RadioOptionWrapper>
         </Wrapper>
       )
@@ -109,7 +186,7 @@ export function BlockRenderer({
       return (
         <Wrapper block={block}>
           <RadioQuestionWrapper block={block}>
-            <RadioQuestion {...block} wrappers={wrappers} />
+            <DynamicRadioQuestion {...block} wrappers={wrappers} />
           </RadioQuestionWrapper>
         </Wrapper>
       )
@@ -117,7 +194,7 @@ export function BlockRenderer({
       return (
         <Wrapper block={block}>
           <SignUpWrapper block={block}>
-            <SignUp {...block} />
+            <DynamicSignUp {...block} />
           </SignUpWrapper>
         </Wrapper>
       )
@@ -125,7 +202,7 @@ export function BlockRenderer({
       return (
         <Wrapper block={block}>
           <StepWrapper block={block}>
-            <Step {...block} wrappers={wrappers} />
+            <DynamicStep {...block} wrappers={wrappers} />
           </StepWrapper>
         </Wrapper>
       )
@@ -133,7 +210,7 @@ export function BlockRenderer({
       return (
         <Wrapper block={block}>
           <TextResponseWrapper block={block}>
-            <TextResponse {...block} />
+            <DynamicTextResponse {...block} />
           </TextResponseWrapper>
         </Wrapper>
       )
@@ -141,7 +218,7 @@ export function BlockRenderer({
       return (
         <Wrapper block={block}>
           <TypographyWrapper block={block}>
-            <Typography {...block} />
+            <DynamicTypography {...block} />
           </TypographyWrapper>
         </Wrapper>
       )
@@ -149,7 +226,7 @@ export function BlockRenderer({
       return (
         <Wrapper block={block}>
           <VideoWrapper block={block}>
-            <Video {...block} />
+            <DynamicVideo {...block} />
           </VideoWrapper>
         </Wrapper>
       )

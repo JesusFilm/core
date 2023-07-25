@@ -1,6 +1,4 @@
 import { Test, TestingModule } from '@nestjs/testing'
-import { Database } from 'arangojs'
-import { mockDeep } from 'jest-mock-extended'
 
 import { BlockResolver } from '../block.resolver'
 import { BlockService } from '../block.service'
@@ -13,14 +11,14 @@ import {
 } from '../../../__generated__/graphql'
 import { UserJourneyService } from '../../userJourney/userJourney.service'
 import { UserRoleService } from '../../userRole/userRole.service'
-import { JourneyService } from '../../journey/journey.service'
 import { PrismaService } from '../../../lib/prisma.service'
 import { ButtonBlockResolver } from './button.resolver'
 
 describe('Button', () => {
   let resolver: ButtonBlockResolver,
     blockResolver: BlockResolver,
-    service: BlockService
+    service: BlockService,
+    prismaService: PrismaService
 
   const block = {
     id: '1',
@@ -46,10 +44,9 @@ describe('Button', () => {
     parentBlockId: block.id
   }
 
-  const blockInput: ButtonBlockCreateInput & { __typename: string } = {
+  const blockInput: ButtonBlockCreateInput = {
     id: '1',
     journeyId: '2',
-    __typename: 'ButtonBlock',
     parentBlockId: '0',
     label: 'label',
     variant: ButtonVariant.contained,
@@ -59,9 +56,14 @@ describe('Button', () => {
 
   const blockCreateResponse = {
     id: '1',
+    journey: {
+      connect: { id: '2' }
+    },
     journeyId: '2',
-    __typename: 'ButtonBlock',
-    parentBlockId: '0',
+    typename: 'ButtonBlock',
+    parentBlock: {
+      connect: { id: '0' }
+    },
     parentOrder: 2,
     label: 'label',
     variant: ButtonVariant.contained,
@@ -90,8 +92,6 @@ describe('Button', () => {
   const blockService = {
     provide: BlockService,
     useFactory: () => ({
-      get: jest.fn(() => block),
-      getAll: jest.fn(() => [block, block]),
       getSiblings: jest.fn(() => [block, block]),
       save: jest.fn((input) => input),
       update: jest.fn((input) => input),
@@ -107,17 +107,17 @@ describe('Button', () => {
         ButtonBlockResolver,
         UserJourneyService,
         UserRoleService,
-        JourneyService,
-        PrismaService,
-        {
-          provide: 'DATABASE',
-          useFactory: () => mockDeep<Database>()
-        }
+        PrismaService
       ]
     }).compile()
     resolver = module.get<ButtonBlockResolver>(ButtonBlockResolver)
     blockResolver = module.get<BlockResolver>(BlockResolver)
     service = await module.resolve(BlockService)
+    prismaService = await module.resolve(PrismaService)
+    prismaService.block.findUnique = jest.fn().mockResolvedValueOnce(block)
+    prismaService.block.findMany = jest
+      .fn()
+      .mockResolvedValueOnce([block, block])
   })
 
   describe('ButtonBlock', () => {

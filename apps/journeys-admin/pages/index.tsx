@@ -6,26 +6,24 @@ import {
   withAuthUserTokenSSR
 } from 'next-firebase-auth'
 import { NextSeo } from 'next-seo'
-import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import { useTranslation } from 'react-i18next'
-import { getLaunchDarklyClient } from '@core/shared/ui/getLaunchDarklyClient'
 import { gql } from '@apollo/client'
 import { useFlags } from '@core/shared/ui/FlagsProvider'
-import { UserInviteAcceptAll } from '../__generated__/UserInviteAcceptAll'
 import { JourneyList } from '../src/components/JourneyList'
 import { PageWrapper } from '../src/components/NewPageWrapper'
-import { createApolloClient } from '../src/libs/apolloClient'
-import i18nConfig from '../next-i18next.config'
 import { OnboardingPanelContent } from '../src/components/OnboardingPanelContent'
 import { TeamSelect } from '../src/components/Team/TeamSelect'
 import { TeamMenu } from '../src/components/Team/TeamMenu'
-import { checkConditionalRedirect } from '../src/libs/checkConditionalRedirect'
+import { initAndAuthApp } from '../src/libs/initAndAuthApp'
+import { AcceptAllInvites } from '../__generated__/AcceptAllInvites'
 
-export const ACCEPT_USER_INVITE = gql`
-  mutation UserInviteAcceptAll {
+export const ACCEPT_ALL_INVITES = gql`
+  mutation AcceptAllInvites {
+    userTeamInviteAcceptAll {
+      id
+    }
     userInviteAcceptAll {
       id
-      acceptedAt
     }
   }
 `
@@ -45,7 +43,7 @@ function IndexPage(): ReactElement {
         sidePanelChildren={<OnboardingPanelContent />}
         sidePanelTitle={t('Create a New Journey')}
       >
-        <JourneyList />
+        <JourneyList authUser={AuthUser} />
       </PageWrapper>
     </>
   )
@@ -54,34 +52,21 @@ function IndexPage(): ReactElement {
 export const getServerSideProps = withAuthUserTokenSSR({
   whenUnauthed: AuthAction.REDIRECT_TO_LOGIN
 })(async ({ AuthUser, locale }) => {
-  const ldUser = {
-    key: AuthUser.id as string,
-    firstName: AuthUser.displayName ?? undefined,
-    email: AuthUser.email ?? undefined
-  }
-  const launchDarklyClient = await getLaunchDarklyClient(ldUser)
-  const flags = (await launchDarklyClient.allFlagsState(ldUser)).toJSON() as {
-    [key: string]: boolean | undefined
-  }
+  const { apolloClient, flags, redirect, translations } = await initAndAuthApp({
+    AuthUser,
+    locale
+  })
 
-  const token = await AuthUser.getIdToken()
-  const apolloClient = createApolloClient(token != null ? token : '')
-
-  const redirect = await checkConditionalRedirect(apolloClient, flags)
   if (redirect != null) return { redirect }
 
-  await apolloClient.mutate<UserInviteAcceptAll>({
-    mutation: ACCEPT_USER_INVITE
+  await apolloClient.mutate<AcceptAllInvites>({
+    mutation: ACCEPT_ALL_INVITES
   })
 
   return {
     props: {
       flags,
-      ...(await serverSideTranslations(
-        locale ?? 'en',
-        ['apps-journeys-admin', 'libs-journeys-ui'],
-        i18nConfig
-      ))
+      ...translations
     }
   }
 })

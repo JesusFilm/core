@@ -1,15 +1,12 @@
 import { Test, TestingModule } from '@nestjs/testing'
-import { Database } from 'arangojs'
-import { mockDeep } from 'jest-mock-extended'
 
 import {
   SignUpBlock,
   SignUpBlockCreateInput
 } from '../../../__generated__/graphql'
-import { JourneyService } from '../../journey/journey.service'
-import { PrismaService } from '../../../lib/prisma.service'
 import { UserJourneyService } from '../../userJourney/userJourney.service'
 import { UserRoleService } from '../../userRole/userRole.service'
+import { PrismaService } from '../../../lib/prisma.service'
 import { BlockResolver } from '../block.resolver'
 import { BlockService } from '../block.service'
 import { SignUpBlockResolver } from './signUp.resolver'
@@ -17,7 +14,8 @@ import { SignUpBlockResolver } from './signUp.resolver'
 describe('SignUpBlockResolver', () => {
   let resolver: SignUpBlockResolver,
     blockResolver: BlockResolver,
-    service: BlockService
+    service: BlockService,
+    prismaService: PrismaService
 
   const block = {
     id: '1',
@@ -38,8 +36,7 @@ describe('SignUpBlockResolver', () => {
     parentBlockId: block.id
   }
 
-  const input: SignUpBlockCreateInput & { __typename: string } = {
-    __typename: '',
+  const input: SignUpBlockCreateInput = {
     id: '1',
     parentBlockId: '',
     journeyId: '2',
@@ -48,9 +45,12 @@ describe('SignUpBlockResolver', () => {
 
   const signUpBlockResponse = {
     id: input.id,
-    parentBlockId: input.parentBlockId,
+    parentBlock: { connect: { id: input.parentBlockId } },
+    journey: {
+      connect: { id: input.journeyId }
+    },
     journeyId: input.journeyId,
-    __typename: 'SignUpBlock',
+    typename: 'SignUpBlock',
     parentOrder: 2,
     submitLabel: input.submitLabel
   }
@@ -65,8 +65,6 @@ describe('SignUpBlockResolver', () => {
   const blockService = {
     provide: BlockService,
     useFactory: () => ({
-      get: jest.fn(() => block),
-      getAll: jest.fn(() => [block, block]),
       getSiblings: jest.fn(() => [block, block]),
       save: jest.fn((input) => input),
       update: jest.fn((input) => input),
@@ -82,17 +80,17 @@ describe('SignUpBlockResolver', () => {
         SignUpBlockResolver,
         UserJourneyService,
         UserRoleService,
-        JourneyService,
-        PrismaService,
-        {
-          provide: 'DATABASE',
-          useFactory: () => mockDeep<Database>()
-        }
+        PrismaService
       ]
     }).compile()
     blockResolver = module.get<BlockResolver>(BlockResolver)
     resolver = module.get<SignUpBlockResolver>(SignUpBlockResolver)
     service = await module.resolve(BlockService)
+    prismaService = await module.resolve(PrismaService)
+    prismaService.block.findUnique = jest.fn().mockResolvedValueOnce(block)
+    prismaService.block.findMany = jest
+      .fn()
+      .mockResolvedValueOnce([block, block])
   })
 
   describe('SignUpBlock', () => {

@@ -1,12 +1,11 @@
 import { fireEvent, render, waitFor } from '@testing-library/react'
-import { MockedProvider } from '@apollo/client/testing'
+import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { v4 as uuidv4 } from 'uuid'
 import { NextRouter, useRouter } from 'next/router'
-import {
-  data,
-  variables
-} from '../../../../libs/useJourneyCreate/useJourneyCreate.spec'
+import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 import { CREATE_JOURNEY } from '../../../../libs/useJourneyCreate'
+import { GetTeams } from '../../../../../__generated__/GetTeams'
+import { GET_TEAMS, TeamProvider } from '../../../Team/TeamProvider'
 import { AddJourneyButton } from '.'
 
 jest.mock('uuid', () => ({
@@ -19,10 +18,104 @@ jest.mock('next/router', () => ({
   useRouter: jest.fn()
 }))
 
+jest.mock('react-i18next', () => ({
+  __esModule: true,
+  useTranslation: () => {
+    return {
+      t: (str: string) => str
+    }
+  }
+}))
+
 const mockUuidv4 = uuidv4 as jest.MockedFunction<typeof uuidv4>
 const mockUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
 
 describe('AddJourneyButton', () => {
+  const variables = {
+    journeyId: 'createdJourneyId',
+    title: 'Untitled Journey',
+    description:
+      'Use journey description for notes about the audience, topic, traffic source, etc. Only you and other editors can see it.',
+    stepId: 'stepId',
+    cardId: 'cardId',
+    imageId: 'imageId',
+    alt: 'two hot air balloons in the sky',
+    headlineTypographyContent: 'The Journey Is On',
+    bodyTypographyContent: '"Go, and lead the people on their way..."',
+    captionTypographyContent: 'Deutoronomy 10:11',
+    teamId: 'teamId'
+  }
+
+  const data = {
+    journeyCreate: {
+      createdAt: '2022-02-17T21:47:32.004Z',
+      description: variables.description,
+      id: variables.journeyId,
+      language: {
+        id: '529',
+        name: {
+          value: 'English',
+          primary: true
+        }
+      },
+      publishedAt: null,
+      slug: 'untitled-journey-journeyId',
+      status: 'draft',
+      themeMode: 'dark',
+      themeName: 'base',
+      title: variables.title,
+      __typename: 'Journey',
+      userJourneys: [
+        {
+          __typename: 'UserJourney',
+          id: 'user-journey-id',
+          user: {
+            __typename: 'User',
+            id: 'user-id1',
+            firstName: 'Admin',
+            lastName: 'One',
+            imageUrl: 'https://bit.ly/3Gth4Yf'
+          }
+        }
+      ]
+    },
+    stepBlockCreate: {
+      id: variables.stepId,
+      __typename: 'StepBlock'
+    },
+    cardBlockCreate: {
+      id: variables.cardId,
+      __typename: 'CardBlock'
+    },
+    imageBlockCreate: {
+      id: variables.imageId,
+      __typename: 'ImageBlock'
+    },
+    headlineTypographyBlockCreate: {
+      id: 'headlineTypographyId',
+      __typename: 'TypographyBlock'
+    },
+    bodyTypographyBlockCreate: {
+      id: 'bodyTypographyId',
+      __typename: 'TypographyBlock'
+    },
+    captionTypographyBlockCreate: {
+      id: 'captionTypographyId',
+      __typename: 'TypographyBlock'
+    }
+  }
+
+  const getTeams: MockedResponse<GetTeams> = {
+    request: {
+      query: GET_TEAMS
+    },
+    result: {
+      data: {
+        teams: []
+      }
+    }
+  }
+
   it('should create a journey and redirect to edit page on click', async () => {
     mockUuidv4.mockReturnValueOnce(variables.journeyId)
     mockUuidv4.mockReturnValueOnce(variables.stepId)
@@ -42,16 +135,32 @@ describe('AddJourneyButton', () => {
               variables
             },
             result
+          },
+          {
+            ...getTeams,
+            result: {
+              data: {
+                teams: [
+                  { id: 'teamId', title: 'Team Title', __typename: 'Team' }
+                ]
+              }
+            }
           }
         ]}
       >
-        <AddJourneyButton />
+        <FlagsProvider flags={{ teams: true }}>
+          <TeamProvider>
+            <AddJourneyButton />
+          </TeamProvider>
+        </FlagsProvider>
       </MockedProvider>
     )
 
-    expect(
-      getByRole('button', { name: 'Create a Journey' })
-    ).toBeInTheDocument()
+    await waitFor(() =>
+      expect(
+        getByRole('button', { name: 'Create a Journey' })
+      ).toBeInTheDocument()
+    )
 
     fireEvent.click(getByRole('button', { name: 'Create a Journey' }))
 
@@ -61,6 +170,95 @@ describe('AddJourneyButton', () => {
         undefined,
         { shallow: true }
       )
+    )
+  })
+  it('should not show add journey button when no active team and flag is true', async () => {
+    const result = jest.fn().mockReturnValueOnce({
+      data: {
+        teams: []
+      }
+    })
+    const { queryByRole } = render(
+      <MockedProvider mocks={[{ ...getTeams, result }]}>
+        <FlagsProvider flags={{ teams: true }}>
+          <TeamProvider>
+            <AddJourneyButton />
+          </TeamProvider>
+        </FlagsProvider>
+      </MockedProvider>
+    )
+    await waitFor(() => expect(result).toHaveBeenCalled())
+    expect(
+      queryByRole('button', { name: 'Create a Journey' })
+    ).not.toBeInTheDocument()
+  })
+
+  it('should show add journey button when active team and flags is true', async () => {
+    const result = jest.fn().mockReturnValueOnce({
+      data: {
+        teams: [{ id: 'teamId', title: 'Team Title', __typename: 'Team' }]
+      }
+    })
+    const { queryByRole } = render(
+      <MockedProvider mocks={[{ ...getTeams, result }]}>
+        <FlagsProvider flags={{ teams: true }}>
+          <TeamProvider>
+            <AddJourneyButton />
+          </TeamProvider>
+        </FlagsProvider>
+      </MockedProvider>
+    )
+    await waitFor(() => expect(result).toHaveBeenCalled())
+    await waitFor(() =>
+      expect(
+        queryByRole('button', { name: 'Create a Journey' })
+      ).toBeInTheDocument()
+    )
+  })
+
+  it('should show add journey button when no active team and flags is false', async () => {
+    const result = jest.fn().mockReturnValueOnce({
+      data: {
+        teams: []
+      }
+    })
+    const { queryByRole } = render(
+      <MockedProvider mocks={[{ ...getTeams, result }]}>
+        <FlagsProvider flags={{ teams: false }}>
+          <TeamProvider>
+            <AddJourneyButton />
+          </TeamProvider>
+        </FlagsProvider>
+      </MockedProvider>
+    )
+    await waitFor(() => expect(result).toHaveBeenCalled())
+    await waitFor(() =>
+      expect(
+        queryByRole('button', { name: 'Create a Journey' })
+      ).toBeInTheDocument()
+    )
+  })
+
+  it('should not show add journey button when there is an active team and flags is false', async () => {
+    const result = jest.fn().mockReturnValueOnce({
+      data: {
+        teams: [{ id: 'teamId', title: 'Team Title', __typename: 'Team' }]
+      }
+    })
+    const { queryByRole } = render(
+      <MockedProvider mocks={[{ ...getTeams, result }]}>
+        <FlagsProvider flags={{ teams: false }}>
+          <TeamProvider>
+            <AddJourneyButton />
+          </TeamProvider>
+        </FlagsProvider>
+      </MockedProvider>
+    )
+    await waitFor(() => expect(result).toHaveBeenCalled())
+    await waitFor(() =>
+      expect(
+        queryByRole('button', { name: 'Create a Journey' })
+      ).toBeInTheDocument()
     )
   })
 })

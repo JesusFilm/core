@@ -18,6 +18,7 @@ interface UserListProps {
   invites?: UserInvite[]
   loading?: boolean
   currentUser?: UserJourney
+  journeyId: string
 }
 
 export function UserList({
@@ -25,7 +26,8 @@ export function UserList({
   users,
   invites = [],
   loading,
-  currentUser
+  currentUser,
+  journeyId
 }: UserListProps): ReactElement {
   const sortedUsers: UserJourney[] = useMemo(() => {
     const ownerIndex = users.findIndex(
@@ -74,6 +76,7 @@ export function UserList({
               <List sx={{ py: 0 }}>
                 {sortedUsers.map((user) => (
                   <UserListItem
+                    journeyId={journeyId}
                     key={user.id}
                     listItem={user}
                     currentUser={currentUser}
@@ -84,6 +87,7 @@ export function UserList({
                     invite.removedAt == null &&
                     invite.acceptedAt == null && (
                       <UserListItem
+                        journeyId={journeyId}
                         key={invite.id}
                         listItem={invite}
                         currentUser={currentUser}
