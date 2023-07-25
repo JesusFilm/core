@@ -5,10 +5,7 @@ module.exports = {
     collect: {
       url: [DEPLOYMENT_URL, `${DEPLOYMENT_URL}/fact-or-fiction`],
       numberOfRuns: 1,
-      startServerCommand: 'nx serve journeys',
-      settings: {
-        chromeFlags: '--no-sandbox'
-      }
+      startServerCommand: 'nx serve journeys'
     },
     assert: {
       assertions: {

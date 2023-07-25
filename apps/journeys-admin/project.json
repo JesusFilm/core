@@ -175,6 +175,16 @@
       "options": {
         "command": "codecov -f coverage/apps/journeys-admin/cobertura-coverage.xml -F apps.journeys-admin"
       }
+    },
+    "lighthouse": {
+      "executor": "@nrwl/workspace:run-commands",
+      "options": {
+        "commands": [
+          {
+            "command": "npx lhci autorun --config apps/journeys-admin/lighthouserc.js"
+          }
+        ]
+      }
     }
   },
   "tags": []
