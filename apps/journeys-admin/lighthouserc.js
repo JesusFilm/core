@@ -5,8 +5,8 @@ module.exports = {
     collect: {
       url: [
         DEPLOYMENT_URL,
-        `${DEPLOYMENT_URL}journeys/a1f4148d-d5ca-4a77-af31-6227b786fc23`,
-        `'${DEPLOYMENT_URL}journeys/a1f4148d-d5ca-4a77-af31-6227b786fc23/edit?stepId=8dd7cf0a-1b61-4f2f-9c85-34a18c4eb5a7`
+        `${DEPLOYMENT_URL}/journeys/e08ef53a-be61-4758-8d1f-a461d6e34e7a`,
+        `'${DEPLOYMENT_URL}/journeys/e08ef53a-be61-4758-8d1f-a461d6e34e7a/edit?stepId=728f91b2-57a0-4e0e-b753-a5bc07af02b3`
       ],
       numberOfRuns: 1,
       startServerCommand: 'nx serve journeys-admin'
