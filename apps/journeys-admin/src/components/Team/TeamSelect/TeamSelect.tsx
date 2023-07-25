@@ -5,10 +5,13 @@ import sortBy from 'lodash/sortBy'
 import Select from '@mui/material/Select'
 import FormControl from '@mui/material/FormControl'
 import MenuItem from '@mui/material/MenuItem'
+import { useTranslation } from 'react-i18next'
+import Divider from '@mui/material/Divider'
 import { useTeam } from '../TeamProvider'
 
 export function TeamSelect(): ReactElement {
   const { query, activeTeam, setActiveTeam } = useTeam()
+  const { t } = useTranslation('apps-journeys-admin')
 
   return (
     <Stack
@@ -21,14 +24,15 @@ export function TeamSelect(): ReactElement {
       <FormControl variant="standard" sx={{ minWidth: 100 }}>
         <Select
           disabled={query.loading}
+          displayEmpty
           value={activeTeam?.id ?? ''}
-          onChange={(event) =>
+          onChange={(event) => {
             setActiveTeam(
               query?.data?.teams.find(
                 (team) => team.id === event.target.value
               ) ?? null
             )
-          }
+          }}
           autoWidth
           sx={{
             '> .MuiSelect-select': {
@@ -63,6 +67,17 @@ export function TeamSelect(): ReactElement {
               {team.title}
             </MenuItem>
           ))}
+          <Divider />
+          <MenuItem
+            value=""
+            sx={{
+              display: 'block',
+              whiteSpace: 'normal',
+              wordWrap: 'break-word'
+            }}
+          >
+            {t('Shared With Me')}
+          </MenuItem>
         </Select>
       </FormControl>
     </Stack>

@@ -5,6 +5,7 @@ import {
   CreateJourney,
   CreateJourney_journeyCreate as Journey
 } from '../../../__generated__/CreateJourney'
+import { useTeam } from '../../components/Team/TeamProvider'
 
 export const CREATE_JOURNEY = gql`
   mutation CreateJourney(
@@ -18,6 +19,7 @@ export const CREATE_JOURNEY = gql`
     $headlineTypographyContent: String!
     $bodyTypographyContent: String!
     $captionTypographyContent: String!
+    $teamId: ID
   ) {
     journeyCreate(
       input: {
@@ -27,6 +29,7 @@ export const CREATE_JOURNEY = gql`
         languageId: "529"
         themeMode: dark
       }
+      teamId: $teamId
     ) {
       id
       title
@@ -114,6 +117,7 @@ export function useJourneyCreate(): {
 } {
   const [createJourney, { loading }] =
     useMutation<CreateJourney>(CREATE_JOURNEY)
+  const { activeTeam } = useTeam()
 
   return {
     createJourney: async (): Promise<Journey | undefined> => {
@@ -122,7 +126,6 @@ export function useJourneyCreate(): {
         const stepId = uuidv4()
         const cardId = uuidv4()
         const imageId = uuidv4()
-
         const { data } = await createJourney({
           variables: {
             journeyId,
@@ -135,7 +138,8 @@ export function useJourneyCreate(): {
             alt: 'two hot air balloons in the sky',
             headlineTypographyContent: 'The Journey Is On',
             bodyTypographyContent: '"Go, and lead the people on their way..."',
-            captionTypographyContent: 'Deutoronomy 10:11'
+            captionTypographyContent: 'Deutoronomy 10:11',
+            teamId: activeTeam?.id
           },
           update(cache, { data }) {
             if (data?.journeyCreate != null) {

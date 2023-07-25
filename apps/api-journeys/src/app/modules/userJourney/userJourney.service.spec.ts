@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { v4 as uuidv4 } from 'uuid'
-import { Journey, UserTeamRole } from '.prisma/api-journeys-client'
+import { Journey } from '.prisma/api-journeys-client'
 import {
   IdType,
   JourneyStatus,
@@ -9,7 +9,6 @@ import {
   UserJourneyRole
 } from '../../__generated__/graphql'
 import { PrismaService } from '../../lib/prisma.service'
-import { JourneyService } from '../journey/journey.service'
 import { UserJourneyService } from './userJourney.service'
 
 jest.mock('uuid', () => ({
@@ -24,7 +23,7 @@ describe('UserJourneyService', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [UserJourneyService, JourneyService, PrismaService]
+      providers: [UserJourneyService, PrismaService]
     }).compile()
 
     service = module.get<UserJourneyService>(UserJourneyService)
@@ -80,7 +79,7 @@ describe('UserJourneyService', () => {
   }
 
   describe('requestAccess', () => {
-    it('throws UserInputError when journey does not exist', async () => {
+    it('throws error when journey does not exist', async () => {
       prismaService.journey.findUnique = jest.fn().mockResolvedValueOnce(null)
       await service
         .requestAccess('randomJourneyId', IdType.databaseId, '1')
@@ -124,7 +123,7 @@ describe('UserJourneyService', () => {
   })
 
   describe('approveAccess', () => {
-    it('should throw UserInputError if userJourney does not exist', async () => {
+    it('should throw error if userJourney does not exist', async () => {
       prismaService.userJourney.findUnique = jest.fn().mockReturnValueOnce(null)
       await service.approveAccess('wrongId', '1').catch((error) => {
         expect(error.message).toEqual('userJourney does not exist')
@@ -157,28 +156,6 @@ describe('UserJourneyService', () => {
       ).toEqual({
         ...userJourneyInvited,
         role: UserJourneyRole.editor
-      })
-    })
-
-    it('adds user to team', async () => {
-      prismaService.userJourney.findUnique = jest
-        .fn()
-        .mockReturnValueOnce(userJourneyInvited)
-
-      await service.approveAccess(userJourneyInvited.id, userJourney.userId)
-      expect(prismaService.userTeam.upsert).toHaveBeenCalledWith({
-        create: {
-          teamId: 'teamId',
-          userId: '2',
-          role: UserTeamRole.guest
-        },
-        update: {},
-        where: {
-          teamId_userId: {
-            teamId: 'teamId',
-            userId: '2'
-          }
-        }
       })
     })
   })

@@ -137,7 +137,7 @@ model Visitor {
   userId                    String
   userAgent                 Json?
   updatedAt                 DateTime         @default(now()) @updatedAt
-  journeyVisitor            JourneyVisitor[]
+  journeyVisitors           JourneyVisitor[]
   team                      Team             @relation(fields: [teamId], references: [id])
 
   @@index([id, teamId, createdAt, userId, status, countryCode])
@@ -170,6 +170,7 @@ model JourneyVisitor {
   lastRadioOptionSubmission String?
   activityCount             Int              @default(0)
   updatedAt                 DateTime         @default(now()) @updatedAt
+  journey                   Journey          @relation(fields: [journeyId], references: [id], onDelete: Cascade)
   visitor                   Visitor          @relation(fields: [visitorId], references: [id], onDelete: Cascade)
   events                    Event[]
 
@@ -196,7 +197,7 @@ model UserTeam {
   teamId    String
   team      Team         @relation(fields: [teamId], references: [id], onDelete: Cascade)
   userId    String
-  role      UserTeamRole @default(guest)
+  role      UserTeamRole @default(member)
   createdAt DateTime     @default(now())
   updatedAt DateTime     @updatedAt
 
@@ -222,7 +223,6 @@ model UserTeamInvite {
 enum UserTeamRole {
   manager
   member
-  guest
 }
 
 enum UserJourneyRole {
@@ -261,13 +261,13 @@ enum ThemeName {
 }
 
 model Journey {
-  id                  String        @id @default(uuid())
+  id                  String           @id @default(uuid())
   title               String
   languageId          String
   description         String?
-  slug                String        @unique
+  slug                String           @unique
   archivedAt          DateTime?
-  createdAt           DateTime      @default(now())
+  createdAt           DateTime         @default(now())
   deletedAt           DateTime?
   publishedAt         DateTime?
   trashedAt           DateTime?
@@ -275,21 +275,22 @@ model Journey {
   status              JourneyStatus
   seoTitle            String?
   seoDescription      String?
-  primaryImageBlockId String?       @unique
-  template            Boolean?      @default(false)
+  primaryImageBlockId String?          @unique
+  template            Boolean?         @default(false)
   teamId              String
   hostId              String?
-  themeMode           ThemeMode?    @default(light)
-  themeName           ThemeName?    @default(base)
-  updatedAt           DateTime      @default(now()) @updatedAt
+  themeMode           ThemeMode?       @default(light)
+  themeName           ThemeName?       @default(base)
+  updatedAt           DateTime         @default(now()) @updatedAt
   userJourneys        UserJourney[]
-  team                Team          @relation(fields: [teamId], references: [id])
+  team                Team             @relation(fields: [teamId], references: [id])
   userInvites         UserInvite[]
   blocks              Block[]
   chatButtons         ChatButton[]
-  host                Host?         @relation(fields: [hostId], references: [id])
-  Action              Action[]
-  primaryImageBlock   Block?        @relation("PrimaryImageBlock", fields: [primaryImageBlockId], references: [id])
+  host                Host?            @relation(fields: [hostId], references: [id])
+  actions             Action[]
+  primaryImageBlock   Block?           @relation("PrimaryImageBlock", fields: [primaryImageBlockId], references: [id])
+  journeyVisitors     JourneyVisitor[]
 
   @@index([title])
 }
@@ -395,7 +396,7 @@ model Block {
   nextBlockParents        Block[]              @relation("NextBlock")
   parentBlock             Block?               @relation("ParentBlock", fields: [parentBlockId], references: [id], onDelete: Cascade)
   childBlocks             Block[]              @relation("ParentBlock")
-  targetAction            Action[]             @relation("Block")
+  targetActions           Action[]             @relation("Block")
 }
 
 model Action {

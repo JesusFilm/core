@@ -14,6 +14,7 @@ import { sortJourneys } from '../JourneySort/utils/sortJourneys'
 import type { JourneyListProps } from '../JourneyList'
 import { useAdminJourneysQuery } from '../../../libs/useAdminJourneysQuery'
 import { JourneyStatus } from '../../../../__generated__/globalTypes'
+import { useTeam } from '../../Team/TeamProvider'
 
 export const RESTORE_TRASHED_JOURNEYS = gql`
   mutation RestoreTrashedJourneys($ids: [ID!]!) {
@@ -39,8 +40,10 @@ export function TrashedJourneyList({
 }: JourneyListProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { enqueueSnackbar } = useSnackbar()
+  const { activeTeam } = useTeam()
   const { data, refetch } = useAdminJourneysQuery({
-    status: [JourneyStatus.trashed]
+    status: [JourneyStatus.trashed],
+    teamId: activeTeam?.id
   })
   const [restoreTrashed] = useMutation(RESTORE_TRASHED_JOURNEYS, {
     update(_cache, { data }) {
