@@ -160,21 +160,21 @@ export function ContainedCover({
         )}
       </Box>
       {/* Background image, after overlay-content-container temp fix embed render bug */}
-      {imageBlock != null && backgroundBlur != null && (
-        <Box
-          data-testid="overlay-image-container"
-          sx={{
-            width: '100%',
-            height: hasFullscreenVideo ? undefined : '100%',
-            flexGrow: 1,
-            zIndex: 1,
-            top: 0,
-            position: { xs: 'relative', lg: 'absolute' },
-            WebkitMask: { xs: overlayImageMask, lg: 'unset' },
-            mask: { xs: overlayImageMask, lg: 'unset' },
-            pointerEvents: 'none'
-          }}
-        >
+      <Box
+        data-testid="overlay-image-container"
+        sx={{
+          width: '100%',
+          height: hasFullscreenVideo ? undefined : '100%',
+          flexGrow: 1,
+          zIndex: 1,
+          top: 0,
+          position: { xs: 'relative', lg: 'absolute' },
+          WebkitMask: { xs: overlayImageMask, lg: 'unset' },
+          mask: { xs: overlayImageMask, lg: 'unset' },
+          pointerEvents: 'none'
+        }}
+      >
+        {imageBlock != null && backgroundBlur != null && (
           <NextImage
             data-testid="background-image"
             src={imageBlock?.src ?? backgroundBlur}
@@ -184,8 +184,8 @@ export function ContainedCover({
             layout="fill"
             objectFit="cover"
           />
-        </Box>
-      )}
+        )}
+      </Box>
       <Stack
         data-testid="overlay-content-container"
         sx={{
@@ -264,7 +264,7 @@ export function ContainedCover({
                 // This should match width of journey card content in admin
                 width: { lg: '312px' },
                 maxHeight: { xs: '55vh', lg: '100%' },
-                mx: { xs: 6, lg: 10 },
+                px: { xs: 6, lg: 10 },
                 mb: { xs: 21, lg: 0 }
               }}
             >
