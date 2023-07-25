@@ -170,8 +170,7 @@ export function ContainedCover({
           top: 0,
           position: { xs: 'relative', lg: 'absolute' },
           WebkitMask: { xs: overlayImageMask, lg: 'unset' },
-          mask: { xs: overlayImageMask, lg: 'unset' },
-          pointerEvents: 'none'
+          mask: { xs: overlayImageMask, lg: 'unset' }
         }}
       >
         {imageBlock != null && backgroundBlur != null && (
