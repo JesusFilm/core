@@ -181,7 +181,7 @@
       "options": {
         "commands": [
           {
-            "command": "node apps/journeys/lighthouse.config.js && npx lhci autorun --config apps/journeys/lighthouserc.json"
+            "command": "npx lhci autorun --config apps/journeys/lighthouserc.js"
           }
         ]
       }

@@ -1,8 +1,6 @@
-const fs = require('fs')
-
 const DEPLOYMENT_URL = process.env.DEPLOYMENT_URL || 'http://localhost:4100/'
 
-const config = {
+module.exports = {
   ci: {
     collect: {
       url: [DEPLOYMENT_URL, `${DEPLOYMENT_URL}/fact-or-fiction`],
@@ -24,8 +22,3 @@ const config = {
     }
   }
 }
-
-fs.writeFileSync(
-  'apps/journeys/lighthouserc.json',
-  JSON.stringify(config, null, 2)
-)
