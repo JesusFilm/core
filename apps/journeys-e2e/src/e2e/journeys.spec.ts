@@ -3,7 +3,7 @@ import { test, expect } from '@playwright/test'
 test('journeys e2e test', async ({ page }) => {
   // 10 mins timeout for this test as it got videos (later we can use 10 seconds videos)
   test.setTimeout(600000)
-  await page.goto('https://your.nextstep.is/')
+  await page.goto('/')
 
   await page.click('a[href="/fact-or-fiction"]')
 
