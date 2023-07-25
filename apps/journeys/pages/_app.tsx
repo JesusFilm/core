@@ -73,6 +73,8 @@ function JourneysApp({
   }, [])
   const apolloClient = useApollo()
 
+  // console.log('PAGE PROPS: ', pageProps.journey)
+
   return (
     <CacheProvider value={emotionCache}>
       <DefaultSeo
@@ -83,6 +85,10 @@ function JourneysApp({
         <meta
           name="viewport"
           content="minimum-scale=1, initial-scale=1, width=device-width"
+        />
+        <meta
+          name="theme-color"
+          content={pageProps.journey == null ? '#26262E' : '#FEFEFE'}
         />
       </Head>
       <ApolloProvider client={apolloClient}>
