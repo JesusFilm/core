@@ -16,7 +16,7 @@ export default defineConfig({
   /* Fail the build on CI if you accidentally left test.only in the source code. */
   forbidOnly: !!process.env.CI,
   /* Retry on CI only */
-  retries: process.env.CI ? 2 : 0,
+  retries: process.env.CI ? 1 : 0,
   /* Opt out of parallel tests on CI. */
   workers: process.env.CI ? 3 : undefined,
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
@@ -47,14 +47,14 @@ export default defineConfig({
 
     /* Test against mobile viewports. */
     // By default it's using chromium channel, changed it to chrome so it can play the video
-    // {
-    //   name: 'Mobile Chrome',
-    //   use: { ...devices['Pixel 5'], channel: 'chrome' },
-    // },
     {
-      name: 'Mobile Safari',
-      use: { ...devices['iPhone 12'] },
+      name: 'Mobile Chrome',
+      use: { ...devices['Pixel 5'], channel: 'chrome' },
     },
+    // {
+    //   name: 'Mobile Safari',
+    //   use: { ...devices['iPhone 12'] },
+    // },
 
     /* Others. */
     // {
