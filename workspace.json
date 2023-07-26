@@ -11,7 +11,6 @@
     "docs": "apps/docs",
     "journeys": "apps/journeys",
     "journeys-admin": "apps/journeys-admin",
-    "journeys-admin-e2e": "apps/journeys-admin-e2e",
     "journeys-e2e": "apps/journeys-e2e",
     "journeys-ui": "libs/journeys/ui",
     "locales": {
@@ -30,8 +29,6 @@
     "shared-storybook": "libs/shared/storybook",
     "shared-ui": "libs/shared/ui",
     "watch": "apps/watch",
-    "watch-admin": "apps/watch-admin",
-    "watch-admin-e2e": "apps/watch-admin-e2e",
-    "watch-e2e": "apps/watch-e2e"
+    "watch-admin": "apps/watch-admin"
   }
 }

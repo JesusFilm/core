@@ -23,13 +23,6 @@
         "commands": ["playwright show-report"],
         "cwd": "apps/journeys-e2e"
       }
-    },    
-    "lint": {
-      "executor": "@nrwl/linter:eslint",
-      "options": {
-        "lintFilePatterns": ["apps/journeys-e2e/**/*.{js,ts}"]
-      },
-      "outputs": ["{options.outputFile}"]
     },
     "type-check": {
       "executor": "@nrwl/workspace:run-commands",
