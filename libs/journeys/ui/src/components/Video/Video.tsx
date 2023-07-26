@@ -106,9 +106,11 @@ export function Video({
             hotkeys: true,
             doubleClick: true
           },
-          hls: {
-            limitRenditionByPlayerDimensions: true,
-            useDevicePixelRatio: true
+          html5: {
+            hls: {
+              limitRenditionByPlayerDimensions: true,
+              useDevicePixelRatio: true
+            }
           },
           useNetworkInformationApi: true,
           responsive: true,
