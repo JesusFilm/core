@@ -48,6 +48,7 @@ export function NavigationButton({
   // Handle fade navigation after 3 seconds inactive
   useEffect(() => {
     const isVideoOnlyBlock =
+      activeBlock?.children.length > 0 &&
       activeBlock?.children[0].children.length === 1 &&
       activeBlock?.children[0].children[0].__typename === 'VideoBlock'
 
@@ -83,11 +84,15 @@ export function NavigationButton({
         ...alignSx,
         position: 'absolute',
         // StepFooter heights
-        bottom: { xs: '170px', lg: '60.5px' },
+        bottom: { xs: '170px', sm: '133px', lg: '60.5px' },
         zIndex: 2,
         display: 'flex',
         width: { xs: 82, lg: 114 },
-        height: { xs: 'calc(100vh - 282px)', lg: 'calc(100% - 105px)' },
+        height: {
+          xs: 'calc(100vh - 275px)',
+          sm: 'calc(100vh - 238px)',
+          lg: 'calc(100% - 105px)'
+        },
         alignItems: 'center',
         pointerEvents: { xs: 'none', lg: 'all' }
       }}
