@@ -52,6 +52,7 @@ export function BackgroundVideo({
           limitRenditionByPlayerDimensions: true,
           useDevicePixelRatio: true
         },
+        useNetworkInformationApi: true,
         muted: true,
         loop: true,
         responsive: true
