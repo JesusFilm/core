@@ -13,10 +13,12 @@
     "debug": {
       "executor": "@nrwl/workspace:run-commands",
       "options": {
-        "commands": ["PWDEBUG=1 xvfb-run playwright test --project=chromium --timeout=0"],
+        "commands": [
+          "PWDEBUG=1 xvfb-run playwright test --project=chromium --timeout=0"
+        ],
         "cwd": "apps/journeys-e2e"
       }
-    },    
+    },
     "show-report": {
       "executor": "@nrwl/workspace:run-commands",
       "options": {
