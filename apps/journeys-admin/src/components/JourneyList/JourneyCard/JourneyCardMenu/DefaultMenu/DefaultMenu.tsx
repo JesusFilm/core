@@ -9,9 +9,7 @@ import { ApolloQueryResult } from '@apollo/client'
 import { MenuItem } from '../../../../MenuItem'
 import { DuplicateJourneyMenuItem } from '../DuplicateJourneyMenuItem'
 import { JourneyStatus } from '../../../../../../__generated__/globalTypes'
-import { GetActiveJourneys } from '../../../../../../__generated__/GetActiveJourneys'
-import { GetArchivedJourneys } from '../../../../../../__generated__/GetArchivedJourneys'
-import { GetTrashedJourneys } from '../../../../../../__generated__/GetTrashedJourneys'
+import { GetAdminJourneys } from '../../../../../../__generated__/GetAdminJourneys'
 import { ArchiveJourney } from './ArchiveJourney'
 
 interface DefaultMenuProps {
@@ -24,11 +22,7 @@ interface DefaultMenuProps {
   handleCloseMenu: () => void
   setOpenTrashDialog: () => void
   template?: boolean
-  refetch?: () => Promise<
-    ApolloQueryResult<
-      GetActiveJourneys | GetArchivedJourneys | GetTrashedJourneys
-    >
-  >
+  refetch?: () => Promise<ApolloQueryResult<GetAdminJourneys>>
 }
 
 export function DefaultMenu({

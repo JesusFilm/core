@@ -1,21 +1,19 @@
 import { Test, TestingModule } from '@nestjs/testing'
-import { Database } from 'arangojs'
-import { mockDeep } from 'jest-mock-extended'
 import fetch, { Response } from 'node-fetch'
+import omit from 'lodash/omit'
+
 import {
   CardBlock,
   VideoBlock,
-  VideoBlockCreateInput,
   VideoBlockObjectFit as ObjectFit,
   VideoBlockSource,
   VideoBlockUpdateInput
 } from '../../../__generated__/graphql'
-import { JourneyService } from '../../journey/journey.service'
-import { PrismaService } from '../../../lib/prisma.service'
 import { UserJourneyService } from '../../userJourney/userJourney.service'
 import { UserRoleService } from '../../userRole/userRole.service'
+import { PrismaService } from '../../../lib/prisma.service'
 import { BlockResolver } from '../block.resolver'
-import { BlockService } from '../block.service'
+import { BlockService, OMITTED_BLOCK_FIELDS } from '../block.service'
 import {
   CloudflareRetrieveVideoDetailsResponse,
   VideoBlockResolver
@@ -32,7 +30,9 @@ jest.mock('node-fetch', () => {
 const mockFetch = fetch as jest.MockedFunction<typeof fetch>
 
 describe('VideoBlockResolver', () => {
-  let resolver: VideoBlockResolver, service: jest.Mocked<BlockService>
+  let resolver: VideoBlockResolver,
+    service: jest.Mocked<BlockService>,
+    prismaService: PrismaService
 
   const block = {
     id: 'abc',
@@ -47,6 +47,7 @@ describe('VideoBlockResolver', () => {
     posterBlockId: 'posterBlockId',
     fullsize: true,
     action: {
+      parentBlockId: 'abc',
       gtmEventName: 'gtmEventName',
       url: 'https://jesusfilm.org',
       target: 'target'
@@ -54,12 +55,9 @@ describe('VideoBlockResolver', () => {
     objectFit: 'fill'
   }
 
-  const actionResponse = {
-    ...block.action,
-    parentBlockId: block.id
-  }
+  const actionResponse = block.action
 
-  const blockCreate: VideoBlockCreateInput = {
+  const blockCreate = {
     id: 'abc',
     journeyId: 'journeyId',
     parentBlockId: 'parentBlockId',
@@ -78,13 +76,17 @@ describe('VideoBlockResolver', () => {
 
   const createdBlock = {
     id: 'abc',
-    __typename: 'VideoBlock' as const,
+    typename: 'VideoBlock' as const,
     parentOrder: 0,
+    journey: { connect: { id: 'journeyId' } },
     journeyId: 'journeyId',
-    parentBlockId: 'parentBlockId',
+    parentBlock: {
+      connect: { id: 'parentBlockId' }
+    },
     videoId: 'videoId',
     videoVariantLanguageId: 'videoVariantLanguageId',
     posterBlockId: 'posterBlockId',
+    source: 'youTube',
     startAt: 5,
     endAt: 10,
     muted: true,
@@ -96,7 +98,7 @@ describe('VideoBlockResolver', () => {
 
   const parentBlock: CardBlock = {
     id: 'parentBlockId',
-    journeyId: createdBlock.journeyId,
+    journeyId: 'journeyId',
     __typename: 'CardBlock',
     parentBlockId: '0',
     parentOrder: 0,
@@ -136,9 +138,6 @@ describe('VideoBlockResolver', () => {
     const blockService = {
       provide: BlockService,
       useFactory: () => ({
-        get: jest.fn((id) =>
-          id === createdBlock.id ? createdBlock : parentBlock
-        ),
         removeBlockAndChildren: jest.fn((input) => input),
         save: jest.fn((input) => ({ ...createdBlock, ...input })),
         update: jest.fn((id, input) => ({ ...updatedBlock, ...input })),
@@ -153,55 +152,63 @@ describe('VideoBlockResolver', () => {
         VideoBlockResolver,
         UserJourneyService,
         UserRoleService,
-        JourneyService,
-        PrismaService,
-        {
-          provide: 'DATABASE',
-          useFactory: () => mockDeep<Database>()
-        }
+        PrismaService
       ]
     }).compile()
     resolver = module.get<VideoBlockResolver>(VideoBlockResolver)
     service = await module.resolve(BlockService)
+    prismaService = await module.resolve(PrismaService)
+    prismaService.block.findUnique = jest
+      .fn()
+      .mockImplementationOnce((id) =>
+        id === createdBlock.id ? createdBlock : parentBlock
+      )
+    prismaService.action.create = jest.fn().mockResolvedValue(actionResponse)
   })
 
   describe('videoBlockCreate', () => {
     it('creates a VideoBlock', async () => {
       expect(await resolver.videoBlockCreate(blockCreate)).toEqual(createdBlock)
       expect(service.getSiblings).toHaveBeenCalledWith(
-        blockCreate.journeyId,
+        'journeyId',
         blockCreate.parentBlockId
       )
       expect(service.save).toHaveBeenCalledWith({
-        ...blockCreate,
-        __typename: 'VideoBlock',
+        ...omit(blockCreate, 'parentBlockId'),
+        id: 'abc',
+        typename: 'VideoBlock',
+        journey: { connect: { id: 'journeyId' } },
+        journeyId: 'journeyId',
+        parentBlock: { connect: { id: 'parentBlockId' } },
         parentOrder: 0
       })
-      expect(service.update).toHaveBeenCalledWith(createdBlock.id, createdBlock)
     })
 
     it('creates a cover VideoBlock', async () => {
       await resolver.videoBlockCreate({ ...blockCreate, isCover: true })
 
       expect(service.save).toHaveBeenCalledWith({
-        ...blockCreate,
-        __typename: 'VideoBlock',
+        ...omit(blockCreate, [...OMITTED_BLOCK_FIELDS, 'parentBlockId']),
+        id: 'abc',
+        typename: 'VideoBlock',
         isCover: true,
+        journey: { connect: { id: 'journeyId' } },
+        journeyId: 'journeyId',
+        parentBlock: { connect: { id: 'parentBlockId' } },
+        coverBlockParent: { connect: { id: 'parentBlockId' } },
         parentOrder: null
       })
       expect(service.removeBlockAndChildren).toHaveBeenCalledWith(
         parentBlock.coverBlockId,
         parentBlock.journeyId
       )
-      expect(service.update).toHaveBeenCalledWith(parentBlock.id, {
-        coverBlockId: createdBlock.id
-      })
     })
 
     describe('Internal Source', () => {
       it('creates a VideoBlock', async () => {
         expect(
           await resolver.videoBlockCreate({
+            id: 'abc',
             journeyId: 'journeyId',
             parentBlockId: 'parentBlockId',
             videoId: 'videoId',
@@ -210,8 +217,10 @@ describe('VideoBlockResolver', () => {
           })
         ).toEqual({
           ...createdBlock,
+          journeyId: 'journeyId',
           videoId: 'videoId',
           videoVariantLanguageId: 'videoVariantLanguageId',
+          parentBlock: { connect: { id: 'parentBlockId' } },
           source: VideoBlockSource.internal
         })
       })
@@ -276,6 +285,7 @@ describe('VideoBlockResolver', () => {
         } as unknown as Response)
         expect(
           await resolver.videoBlockCreate({
+            id: 'abc',
             journeyId: 'journeyId',
             parentBlockId: 'parentBlockId',
             videoId: 'ak06MSETeo4',
@@ -283,8 +293,10 @@ describe('VideoBlockResolver', () => {
           })
         ).toEqual({
           ...createdBlock,
+          journeyId: 'journeyId',
           videoId: 'ak06MSETeo4',
           source: VideoBlockSource.youTube,
+          parentBlock: { connect: { id: 'parentBlockId' } },
           description:
             'This is episode 1 of an ongoing series that explores the origins, content, and purpose of the Bible.',
           duration: 1167,
@@ -430,7 +442,7 @@ describe('VideoBlockResolver', () => {
       })
 
       it('updates videoId', async () => {
-        service.get.mockResolvedValueOnce({
+        prismaService.block.findUnique = jest.fn().mockResolvedValueOnce({
           ...updatedBlock,
           videoId: undefined
         })
@@ -558,7 +570,7 @@ describe('VideoBlockResolver', () => {
     it('returns video for external resolution', async () => {
       expect(
         await resolver.video({
-          ...createdBlock,
+          ...blockCreate,
           source: VideoBlockSource.internal
         })
       ).toEqual({
@@ -571,7 +583,7 @@ describe('VideoBlockResolver', () => {
     it('returns null if videoId is not set', async () => {
       expect(
         await resolver.video({
-          ...createdBlock,
+          ...blockCreate,
           videoId: undefined,
           source: VideoBlockSource.internal
         })
@@ -581,7 +593,7 @@ describe('VideoBlockResolver', () => {
     it('returns null if videoVariantLanguageId is not set', async () => {
       expect(
         await resolver.video({
-          ...createdBlock,
+          ...blockCreate,
           videoVariantLanguageId: undefined,
           source: VideoBlockSource.internal
         })
@@ -591,7 +603,7 @@ describe('VideoBlockResolver', () => {
     it('returns null if source is not internal', async () => {
       expect(
         await resolver.video({
-          ...createdBlock,
+          ...blockCreate,
           source: VideoBlockSource.youTube
         })
       ).toEqual(null)

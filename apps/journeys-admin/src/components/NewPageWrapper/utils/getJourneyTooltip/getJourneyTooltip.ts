@@ -1,4 +1,4 @@
-import { GetJourneys_journeys as Journey } from '../../../../../__generated__/GetJourneys'
+import { GetAdminJourneys_journeys as Journey } from '../../../../../__generated__/GetAdminJourneys'
 import { UserJourneyRole } from '../../../../../__generated__/globalTypes'
 
 export function getJourneyTooltip(

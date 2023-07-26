@@ -10,6 +10,7 @@ import {
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { MockedProvider } from '@apollo/client/testing'
 import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
+import { SnackbarProvider } from 'notistack'
 import {
   GetJourney_journey_blocks_StepBlock as StepBlock,
   GetJourney_journey as Journey
@@ -27,6 +28,15 @@ jest.mock('@core/journeys/ui/EditorProvider', () => {
     useEditor: jest.fn()
   }
 })
+
+jest.mock('react-i18next', () => ({
+  __esModule: true,
+  useTranslation: () => {
+    return {
+      t: (str: string) => str
+    }
+  }
+}))
 
 const mockUseEditor = useEditor as jest.MockedFunction<typeof useEditor>
 
@@ -71,26 +81,28 @@ describe('Canvas', () => {
   it('should show border around selected step', () => {
     const { getByTestId } = render(
       <MockedProvider>
-        <ThemeProvider>
-          <JourneyProvider
-            value={{
-              journey: {
-                id: 'journeyId',
-                themeMode: ThemeMode.dark,
-                themeName: ThemeName.base,
-                language: {
-                  __typename: 'Language',
-                  id: '529',
-                  bcp47: 'en',
-                  iso3: 'eng'
-                }
-              } as unknown as Journey,
-              admin: true
-            }}
-          >
-            <Canvas />
-          </JourneyProvider>
-        </ThemeProvider>
+        <SnackbarProvider>
+          <ThemeProvider>
+            <JourneyProvider
+              value={{
+                journey: {
+                  id: 'journeyId',
+                  themeMode: ThemeMode.dark,
+                  themeName: ThemeName.base,
+                  language: {
+                    __typename: 'Language',
+                    id: '529',
+                    bcp47: 'en',
+                    iso3: 'eng'
+                  }
+                } as unknown as Journey,
+                admin: true
+              }}
+            >
+              <Canvas />
+            </JourneyProvider>
+          </ThemeProvider>
+        </SnackbarProvider>
       </MockedProvider>
     )
 
@@ -102,26 +114,28 @@ describe('Canvas', () => {
   it('should select step on click', () => {
     const { getByTestId } = render(
       <MockedProvider>
-        <ThemeProvider>
-          <JourneyProvider
-            value={{
-              journey: {
-                id: 'journeyId',
-                themeMode: ThemeMode.dark,
-                themeName: ThemeName.base,
-                language: {
-                  __typename: 'Language',
-                  id: '529',
-                  bcp47: 'en',
-                  iso3: 'eng'
-                }
-              } as unknown as Journey,
-              admin: true
-            }}
-          >
-            <Canvas />
-          </JourneyProvider>
-        </ThemeProvider>
+        <SnackbarProvider>
+          <ThemeProvider>
+            <JourneyProvider
+              value={{
+                journey: {
+                  id: 'journeyId',
+                  themeMode: ThemeMode.dark,
+                  themeName: ThemeName.base,
+                  language: {
+                    __typename: 'Language',
+                    id: '529',
+                    bcp47: 'en',
+                    iso3: 'eng'
+                  }
+                } as unknown as Journey,
+                admin: true
+              }}
+            >
+              <Canvas />
+            </JourneyProvider>
+          </ThemeProvider>
+        </SnackbarProvider>
       </MockedProvider>
     )
     fireEvent.click(getByTestId('step-step0.id'))

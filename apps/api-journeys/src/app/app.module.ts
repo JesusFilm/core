@@ -7,6 +7,7 @@ import {
 } from '@nestjs/apollo'
 import { LoggerModule } from 'nestjs-pino'
 import { DatadogTraceModule } from 'nestjs-ddtrace'
+import { NestHealthModule } from '@core/nest/health'
 import { ActionModule } from './modules/action/action.module'
 import { BlockModule } from './modules/block/block.module'
 import { JourneyModule } from './modules/journey/journey.module'
@@ -20,6 +21,7 @@ import { JourneyVisitorModule } from './modules/journeyVisitor/journeyVisitor.mo
 import { HostModule } from './modules/host/host.module'
 import { TeamModule } from './modules/team/team.module'
 import { UserTeamModule } from './modules/userTeam/userTeam.module'
+import { UserTeamInviteModule } from './modules/userTeamInvite/userTeamInvite.module'
 
 @Module({
   imports: [
@@ -30,11 +32,13 @@ import { UserTeamModule } from './modules/userTeam/userTeam.module'
     JourneyModule,
     JourneyVisitorModule,
     JourneyProfileModule,
+    NestHealthModule,
     TeamModule,
     UserJourneyModule,
     UserInviteModule,
     UserRoleModule,
     UserTeamModule,
+    UserTeamInviteModule,
     VisitorModule,
     GraphQLModule.forRoot<ApolloFederationDriverConfig>({
       driver: ApolloFederationDriver,
@@ -48,7 +52,6 @@ import { UserTeamModule } from './modules/userTeam/userTeam.module'
               )
             ]
           : [join(process.cwd(), 'assets/**/*.graphql')],
-      cors: true,
       context: ({ req }) => ({ headers: req.headers }),
       cache: 'bounded'
     }),

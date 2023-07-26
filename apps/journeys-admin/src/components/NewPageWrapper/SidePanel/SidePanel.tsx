@@ -82,7 +82,7 @@ export function SidePanel({ children, title }: SidePanelProps): ReactElement {
         variant="persistent"
         open
         hideBackdrop
-        data-testId="side-drawer"
+        data-testid="side-drawer"
         sx={{
           display: { xs: 'none', md: 'flex' },
           width: sidePanel.width,
@@ -103,7 +103,7 @@ export function SidePanel({ children, title }: SidePanelProps): ReactElement {
         open={mobileDrawerOpen}
         hideBackdrop
         transitionDuration={300}
-        data-testId="mobile-side-drawer"
+        data-testid="mobile-side-drawer"
         sx={{
           display: { xs: 'flex', md: 'none' },
           width: '100%',

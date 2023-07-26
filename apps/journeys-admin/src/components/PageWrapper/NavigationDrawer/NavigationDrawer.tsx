@@ -17,20 +17,21 @@ import ShopTwoRoundedIcon from '@mui/icons-material/ShopTwoRounded'
 import Backdrop from '@mui/material/Backdrop'
 import Image from 'next/image'
 import { useRouter } from 'next/router'
-import { compact } from 'lodash'
+import compact from 'lodash/compact'
 import { useQuery } from '@apollo/client'
 import ViewCarouselRoundedIcon from '@mui/icons-material/ViewCarouselRounded'
 import LeaderboardRoundedIcon from '@mui/icons-material/LeaderboardRounded'
 import { useTranslation } from 'react-i18next'
-import { Role } from '../../../../__generated__/globalTypes'
+import { useFlags } from '@core/shared/ui/FlagsProvider'
+import { JourneyStatus, Role } from '../../../../__generated__/globalTypes'
 import taskbarIcon from '../../../../public/taskbar-icon.svg'
 import nextstepsTitle from '../../../../public/nextsteps-title.svg'
 import { GetMe } from '../../../../__generated__/GetMe'
 import { GetUserRole } from '../../../../__generated__/GetUserRole'
 import { GET_USER_ROLE } from '../../JourneyView/JourneyView'
-import { useActiveJourneys } from '../../../libs/useActiveJourneys'
 import { getJourneyTooltip } from '../utils/getJourneyTooltip'
 import { GET_ME } from '../../NewPageWrapper/NavigationDrawer'
+import { useAdminJourneysQuery } from '../../../libs/useAdminJourneysQuery'
 import { UserMenu } from './UserMenu'
 import { NavigationListItem } from './NavigationListItem'
 
@@ -89,10 +90,13 @@ export function NavigationDrawer({
   onClose,
   authUser
 }: NavigationDrawerProps): ReactElement {
-  const activeJourneys = useActiveJourneys()
-  const journeys = activeJourneys?.data?.journeys
+  const { data: activeJourneys } = useAdminJourneysQuery({
+    status: [JourneyStatus.draft, JourneyStatus.published]
+  })
+  const journeys = activeJourneys?.journeys
   const { t } = useTranslation('apps-journeys-admin')
   const router = useRouter()
+  const { globalReports } = useFlags()
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
   const [profileAnchorEl, setProfileAnchorEl] = useState(null)
 
@@ -154,12 +158,14 @@ export function NavigationDrawer({
           link="/templates"
         />
 
-        <NavigationListItem
-          icon={<LeaderboardRoundedIcon />}
-          label="Reports"
-          selected={selectedPage === 'reports'}
-          link="/reports"
-        />
+        {globalReports && (
+          <NavigationListItem
+            icon={<LeaderboardRoundedIcon />}
+            label="Reports"
+            selected={selectedPage === 'reports'}
+            link="/reports"
+          />
+        )}
 
         {authUser != null && data?.me != null && (
           <>

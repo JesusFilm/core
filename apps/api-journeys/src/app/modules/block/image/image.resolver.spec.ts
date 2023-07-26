@@ -1,10 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing'
-import { Database } from 'arangojs'
-import { mockDeep } from 'jest-mock-extended'
 import fetch, { Response } from 'node-fetch'
+
 import {
   CardBlock,
-  ImageBlock,
   ImageBlockCreateInput,
   ImageBlockUpdateInput
 } from '../../../__generated__/graphql'
@@ -12,7 +10,6 @@ import { UserJourneyService } from '../../userJourney/userJourney.service'
 import { BlockResolver } from '../block.resolver'
 import { BlockService } from '../block.service'
 import { UserRoleService } from '../../userRole/userRole.service'
-import { JourneyService } from '../../journey/journey.service'
 import { PrismaService } from '../../../lib/prisma.service'
 import { handleImage, ImageBlockResolver } from './image.resolver'
 
@@ -49,7 +46,8 @@ jest.mock('blurhash', () => {
 describe('ImageBlockResolver', () => {
   let resolver: ImageBlockResolver,
     blockResolver: BlockResolver,
-    service: BlockService
+    service: BlockService,
+    prisma: PrismaService
 
   const blockCreate: ImageBlockCreateInput = {
     id: '1',
@@ -59,11 +57,12 @@ describe('ImageBlockResolver', () => {
     alt: 'grid image'
   }
 
-  const createdBlock: ImageBlock = {
+  const createdBlock = {
     id: '1',
+    journey: { connect: { id: '2' } },
     journeyId: '2',
-    __typename: 'ImageBlock',
-    parentBlockId: 'parentBlockId',
+    typename: 'ImageBlock',
+    parentBlock: { connect: { id: 'parentBlockId' } },
     parentOrder: 2,
     src: 'https://unsplash.it/640/425?image=42',
     alt: 'grid image',
@@ -74,7 +73,7 @@ describe('ImageBlockResolver', () => {
 
   const parentBlock: CardBlock = {
     id: 'parentBlockId',
-    journeyId: createdBlock.journeyId,
+    journeyId: blockCreate.journeyId,
     __typename: 'CardBlock',
     parentBlockId: '0',
     parentOrder: 0,
@@ -87,9 +86,11 @@ describe('ImageBlockResolver', () => {
     parentBlockId: 'parentBlockWithDeletedCoverId'
   }
 
-  const createdBlockForDeletedCover: ImageBlock = {
+  const createdBlockForDeletedCover = {
     ...createdBlock,
-    parentBlockId: 'parentBlockWithDeletedCoverId'
+    parentBlock: {
+      connect: { id: 'parentBlockWithDeletedCoverId' }
+    }
   }
 
   const parentBlockWithDeletedCover: CardBlock = {
@@ -103,7 +104,7 @@ describe('ImageBlockResolver', () => {
     alt: 'placeholder image from unsplash'
   }
 
-  const updatedBlock: ImageBlock = {
+  const updatedBlock = {
     ...createdBlock,
     src: 'https://unsplash.it/640/425?image=42',
     alt: 'placeholder image from unsplash',
@@ -114,23 +115,6 @@ describe('ImageBlockResolver', () => {
   const blockService = {
     provide: BlockService,
     useFactory: () => ({
-      get: jest.fn((id) => {
-        switch (id) {
-          case blockCreate.id: {
-            return createdBlock
-          }
-          case parentBlock.id: {
-            return parentBlock
-          }
-          case parentBlockWithDeletedCover.id: {
-            return parentBlockWithDeletedCover
-          }
-          default: {
-            return undefined
-          }
-        }
-      }),
-      getAll: jest.fn(() => [createdBlock, createdBlock]),
       getSiblings: jest.fn(() => [createdBlock, createdBlock]),
       removeBlockAndChildren: jest.fn((input) => input),
       save: jest.fn((input) => createdBlock),
@@ -145,17 +129,32 @@ describe('ImageBlockResolver', () => {
         ImageBlockResolver,
         UserJourneyService,
         UserRoleService,
-        JourneyService,
-        PrismaService,
-        {
-          provide: 'DATABASE',
-          useFactory: () => mockDeep<Database>()
-        }
+        PrismaService
       ]
     }).compile()
     blockResolver = module.get<BlockResolver>(BlockResolver)
     resolver = module.get<ImageBlockResolver>(ImageBlockResolver)
     service = await module.resolve(BlockService)
+    prisma = await module.resolve(PrismaService)
+    prisma.block.findUnique = jest.fn().mockImplementation((input) => {
+      switch (input.where.id) {
+        case blockCreate.id: {
+          return createdBlock
+        }
+        case parentBlock.id: {
+          return parentBlock
+        }
+        case parentBlockWithDeletedCover.id: {
+          return parentBlockWithDeletedCover
+        }
+        default: {
+          return undefined
+        }
+      }
+    })
+    prisma.block.findMany = jest
+      .fn()
+      .mockResolvedValueOnce([createdBlock, createdBlock])
 
     // this kinda doesnt matter since sharp returns the data we need, but still need to mock so it doesnt run the API
     mockFetch.mockResolvedValueOnce({
@@ -192,15 +191,14 @@ describe('ImageBlockResolver', () => {
       expect(service.save).toHaveBeenCalledWith({
         ...createdBlock,
         isCover: true,
+        parentBlock: { connect: { id: parentBlock.id } },
+        coverBlockParent: { connect: { id: parentBlock.id } },
         parentOrder: null
       })
       expect(service.removeBlockAndChildren).toHaveBeenCalledWith(
         parentBlock.coverBlockId,
         parentBlock.journeyId
       )
-      expect(service.update).toHaveBeenCalledWith(parentBlock.id, {
-        coverBlockId: createdBlock.id
-      })
     })
 
     it('checks of cover image block needs to be deleted before creating new coverImage block', async () => {
@@ -212,15 +210,11 @@ describe('ImageBlockResolver', () => {
       expect(service.save).toHaveBeenCalledWith({
         ...createdBlockForDeletedCover,
         isCover: true,
-        parentOrder: null
+        parentBlock: { connect: { id: parentBlockWithDeletedCover.id } },
+        parentOrder: null,
+        coverBlockParent: { connect: { id: parentBlockWithDeletedCover.id } }
       })
       expect(service.removeBlockAndChildren).not.toHaveBeenCalled()
-      expect(service.update).toHaveBeenCalledWith(
-        parentBlockWithDeletedCover.id,
-        {
-          coverBlockId: createdBlockForDeletedCover.id
-        }
-      )
     })
   })
 

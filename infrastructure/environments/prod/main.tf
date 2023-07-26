@@ -60,9 +60,11 @@ module "api-journeys" {
 }
 
 module "api-languages" {
-  source        = "../../../apps/api-languages/infrastructure"
-  ecs_config    = local.internal_ecs_config
-  doppler_token = data.aws_ssm_parameter.doppler_api_languages_prod_token.value
+  source                = "../../../apps/api-languages/infrastructure"
+  ecs_config            = local.internal_ecs_config
+  doppler_token         = data.aws_ssm_parameter.doppler_api_languages_prod_token.value
+  subnet_group_name     = module.prod.vpc.db_subnet_group_name
+  vpc_security_group_id = module.prod.private_rds_security_group_id
 }
 
 module "api-tags" {
@@ -88,9 +90,11 @@ module "api-videos" {
 }
 
 module "api-media" {
-  source        = "../../../apps/api-media/infrastructure"
-  ecs_config    = local.internal_ecs_config
-  doppler_token = data.aws_ssm_parameter.doppler_api_media_prod_token.value
+  source                = "../../../apps/api-media/infrastructure"
+  ecs_config            = local.internal_ecs_config
+  doppler_token         = data.aws_ssm_parameter.doppler_api_media_prod_token.value
+  subnet_group_name     = module.prod.vpc.db_subnet_group_name
+  vpc_security_group_id = module.prod.private_rds_security_group_id
 }
 
 module "arango-bigquery-etl" {
@@ -109,4 +113,14 @@ module "bastion" {
   subnet_id          = module.prod.vpc.public_subnets[0]
   zone_id            = data.aws_route53_zone.route53_central_jesusfilm_org.zone_id
   security_group_ids = [module.prod.public_bastion_security_group_id]
+}
+
+
+module "cloudflared" {
+  source             = "../../modules/aws/ec2-cloudflared"
+  name               = "cloudflared"
+  env                = "prod"
+  subnet_id          = module.prod.vpc.public_subnets[0]
+  security_group_ids = [module.prod.public_bastion_security_group_id]
+  cloudflared_token  = data.aws_ssm_parameter.cloudflared_prod_token.value
 }

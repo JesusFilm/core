@@ -1,4 +1,4 @@
-import { ReactElement, useRef, useEffect } from 'react'
+import { ReactElement } from 'react'
 import { parseISO, isThisYear, intlFormat } from 'date-fns'
 import Card from '@mui/material/Card'
 import Stack from '@mui/material/Stack'
@@ -16,42 +16,25 @@ import IconButton from '@mui/material/IconButton'
 import MoreVertIcon from '@mui/icons-material/MoreVert'
 import { ApolloQueryResult } from '@apollo/client'
 import Link from 'next/link'
-import { GetActivePublisherTemplates } from '../../../__generated__/GetActivePublisherTemplates'
-import { GetArchivedPublisherTemplates } from '../../../__generated__/GetArchivedPublisherTemplates'
-import { GetTrashedPublisherTemplates } from '../../../__generated__/GetTrashedPublisherTemplates'
-import { GetPublishedTemplates_journeys as Journey } from '../../../__generated__/GetPublishedTemplates'
 import { JourneyCardMenu } from '../JourneyList/JourneyCard/JourneyCardMenu'
 import { StatusChip } from '../JourneyList/JourneyCard/StatusChip'
+import { GetJourneys_journeys as Journey } from '../../../__generated__/GetJourneys'
+import {
+  GetAdminJourneys,
+  GetAdminJourneys_journeys as AdminJourney
+} from '../../../__generated__/GetAdminJourneys'
 
 export interface TemplateCardProps {
-  journey?: Journey
+  journey?: AdminJourney | Journey
   isPublisher?: boolean
-  duplicatedJourneyId?: string
-  refetch?: () => Promise<
-    ApolloQueryResult<
-      | GetActivePublisherTemplates
-      | GetArchivedPublisherTemplates
-      | GetTrashedPublisherTemplates
-    >
-  >
+  refetch?: () => Promise<ApolloQueryResult<GetAdminJourneys>>
 }
 
 export function TemplateCard({
   journey,
   isPublisher,
-  duplicatedJourneyId,
   refetch
 }: TemplateCardProps): ReactElement {
-  const duplicatedJourneyRef = useRef<HTMLDivElement>(null)
-  useEffect(() => {
-    if (duplicatedJourneyId != null && duplicatedJourneyRef.current != null) {
-      duplicatedJourneyRef.current.scrollIntoView({
-        behavior: 'smooth',
-        block: 'center'
-      })
-    }
-  }, [duplicatedJourneyId, journey])
-
   const nativeLanguage =
     journey?.language.name.find(({ primary }) => primary)?.value ?? ''
   const localLanguage = journey?.language.name.find(
@@ -73,9 +56,6 @@ export function TemplateCard({
 
   return (
     <Card
-      ref={
-        journey?.id === duplicatedJourneyId ? duplicatedJourneyRef : undefined
-      }
       aria-label="template-card"
       variant="outlined"
       sx={{

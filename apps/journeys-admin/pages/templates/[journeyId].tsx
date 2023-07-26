@@ -6,8 +6,6 @@ import {
   withAuthUser,
   withAuthUserTokenSSR
 } from 'next-firebase-auth'
-import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
-import { getLaunchDarklyClient } from '@core/shared/ui/getLaunchDarklyClient'
 import { gql, useQuery } from '@apollo/client'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { useTranslation } from 'react-i18next'
@@ -16,10 +14,9 @@ import { JOURNEY_FIELDS } from '@core/journeys/ui/JourneyProvider/journeyFields'
 import { JourneyView } from '../../src/components/JourneyView'
 import { GetTemplate } from '../../__generated__/GetTemplate'
 import { PageWrapper } from '../../src/components/PageWrapper'
-import i18nConfig from '../../next-i18next.config'
 import { Menu } from '../../src/components/JourneyView/Menu'
-import { useTermsRedirect } from '../../src/libs/useTermsRedirect/useTermsRedirect'
 import { useInvalidJourneyRedirect } from '../../src/libs/useInvalidJourneyRedirect'
+import { initAndAuthApp } from '../../src/libs/initAndAuthApp'
 
 export const GET_TEMPLATE = gql`
   ${JOURNEY_FIELDS}
@@ -37,7 +34,6 @@ function TemplateDetails(): ReactElement {
   const { data } = useQuery<GetTemplate>(GET_TEMPLATE, {
     variables: { id: router.query.journeyId }
   })
-  useTermsRedirect()
   useInvalidJourneyRedirect(data)
 
   return (
@@ -66,23 +62,17 @@ function TemplateDetails(): ReactElement {
 export const getServerSideProps = withAuthUserTokenSSR({
   whenUnauthed: AuthAction.REDIRECT_TO_LOGIN
 })(async ({ AuthUser, locale }) => {
-  const ldUser = {
-    key: AuthUser.id as string,
-    firstName: AuthUser.displayName ?? undefined,
-    email: AuthUser.email ?? undefined
-  }
-  const launchDarklyClient = await getLaunchDarklyClient(ldUser)
-  const flags = (await launchDarklyClient.allFlagsState(ldUser)).toJSON() as {
-    [key: string]: boolean | undefined
-  }
+  const { flags, redirect, translations } = await initAndAuthApp({
+    AuthUser,
+    locale
+  })
+
+  if (redirect != null) return { redirect }
+
   return {
     props: {
       flags,
-      ...(await serverSideTranslations(
-        locale ?? 'en',
-        ['apps-journeys-admin', 'libs-journeys-ui'],
-        i18nConfig
-      ))
+      ...translations
     }
   }
 })

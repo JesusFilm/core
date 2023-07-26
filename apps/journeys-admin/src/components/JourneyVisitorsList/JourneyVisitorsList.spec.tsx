@@ -1,5 +1,5 @@
 import { fireEvent, render, waitFor } from '@testing-library/react'
-import { noop } from 'lodash'
+import noop from 'lodash/noop'
 import { GetJourneyVisitors_visitors_edges as VisitorEdge } from '../../../__generated__/GetJourneyVisitors'
 import { JourneyVisitorsList } from '.'
 

@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common'
-import { isNil, omitBy } from 'lodash'
+import isNil from 'lodash/isNil'
+import omitBy from 'lodash/omitBy'
 import { JourneyVisitor, Prisma } from '.prisma/api-journeys-client'
 import {
   PageInfo,
@@ -20,12 +21,10 @@ export interface JourneyVisitorsConnection {
 export class JourneyVisitorService {
   constructor(private readonly prismaService: PrismaService) {}
 
-  generateWhere(
-    filter?: JourneyVisitorFilter
-  ): Prisma.JourneyVisitorWhereInput {
+  generateWhere(filter: JourneyVisitorFilter): Prisma.JourneyVisitorWhereInput {
     return omitBy(
       {
-        journeyId: filter?.journeyId ?? undefined,
+        journeyId: filter.journeyId,
         lastChatStartedAt:
           filter?.hasChatStarted === true ? { not: null } : undefined,
         lastRadioQuestion:
@@ -59,11 +58,11 @@ export class JourneyVisitorService {
   }: {
     after?: string | null
     first: number
-    filter: JourneyVisitorFilter
+    filter: Prisma.JourneyVisitorWhereInput
     sort?: JourneyVisitorSort
   }): Promise<JourneyVisitorsConnection> {
     const result = await this.prismaService.journeyVisitor.findMany({
-      where: this.generateWhere(filter),
+      where: filter,
       cursor: after != null ? { id: after } : undefined,
       orderBy: omitBy(
         {
@@ -93,9 +92,11 @@ export class JourneyVisitorService {
     }
   }
 
-  async getJourneyVisitorCount(filter: JourneyVisitorFilter): Promise<number> {
+  async getJourneyVisitorCount(
+    filter: Prisma.JourneyVisitorWhereInput
+  ): Promise<number> {
     return await this.prismaService.journeyVisitor.count({
-      where: this.generateWhere(filter)
+      where: filter
     })
   }
 }

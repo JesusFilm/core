@@ -39,12 +39,6 @@
         }
       }
     },
-    "seed": {
-      "executor": "@nrwl/workspace:run-commands",
-      "options": {
-        "command": "npx ts-node apps/api-media/db/seed.ts"
-      }
-    },
     "serve": {
       "executor": "@nrwl/node:node",
       "options": {
@@ -89,6 +83,66 @@
       "executor": "@nrwl/workspace:run-commands",
       "options": {
         "command": "DOPPLER_TOKEN=$DOPPLER_API_MEDIA_TOKEN doppler secrets download --no-file --format=env-no-quotes --project api-media > apps/api-media/.env"
+      }
+    },
+    "prisma-generate": {
+      "executor": "@nrwl/workspace:run-commands",
+      "options": {
+        "parallel": false,
+        "commands": [
+          "npx prisma generate --schema apps/api-media/db/schema.prisma"
+        ]
+      }
+    },
+    "prisma-migrate": {
+      "executor": "@nrwl/workspace:run-commands",
+      "options": {
+        "commands": [
+          "bash -c 'npx prisma migrate dev --schema apps/api-media/db/schema.prisma --name `date +\"%Y%m%d%H%M%S\"`'"
+        ]
+      },
+      "configurations": {
+        "production": {
+          "commands": [
+            "npx prisma migrate deploy --schema apps/api-media/db/schema.prisma"
+          ]
+        }
+      }
+    },
+    "prisma-reset": {
+      "executor": "@nrwl/workspace:run-commands",
+      "options": {
+        "commands": [
+          "npx prisma migrate reset --schema apps/api-media/db/schema.prisma --force"
+        ]
+      }
+    },
+    "prisma-studio": {
+      "executor": "@nrwl/workspace:run-commands",
+      "options": {
+        "commands": [
+          "npx prisma studio --schema apps/api-media/db/schema.prisma"
+        ]
+      }
+    },
+    "prisma-validate": {
+      "executor": "@nrwl/workspace:run-commands",
+      "options": {
+        "commands": [
+          "npx prisma validate --schema apps/api-media/db/schema.prisma"
+        ]
+      }
+    },
+    "type-check": {
+      "executor": "@nrwl/workspace:run-commands",
+      "options": {
+        "command": "npx tsc -b apps/api-media/tsconfig.json"
+      }
+    },
+    "codecov": {
+      "executor": "@nrwl/workspace:run-commands",
+      "options": {
+        "command": "codecov -f coverage/apps/api-media/cobertura-coverage.xml -F apps.api-media"
       }
     }
   },

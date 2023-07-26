@@ -85,7 +85,7 @@ describe('NavigationDrawer', () => {
           }
         ]}
       >
-        <FlagsProvider flags={{ reports: true }}>
+        <FlagsProvider flags={{ globalReports: true }}>
           <NavigationDrawer
             open
             onClose={onClose}
@@ -125,17 +125,30 @@ describe('NavigationDrawer', () => {
   it('should select the reports button', () => {
     const { getByTestId } = render(
       <MockedProvider>
-        <NavigationDrawer
-          open
-          onClose={onClose}
-          router={getRouter('/reports')}
-        />
+        <FlagsProvider flags={{ globalReports: true }}>
+          <NavigationDrawer
+            open
+            onClose={onClose}
+            router={getRouter('/reports')}
+          />
+        </FlagsProvider>
       </MockedProvider>
     )
     expect(getByTestId('Reports-list-item')).toHaveAttribute(
       'aria-selected',
       'true'
     )
+  })
+
+  it('should hide the reports button', () => {
+    const { queryByText } = render(
+      <MockedProvider mocks={[]}>
+        <FlagsProvider flags={{ globalReports: false }}>
+          <NavigationDrawer open onClose={onClose} />
+        </FlagsProvider>
+      </MockedProvider>
+    )
+    expect(queryByText('Reports')).not.toBeInTheDocument()
   })
 
   it('should select publisher button', async () => {

@@ -1,12 +1,16 @@
 import { ReactElement, useRef, useEffect, CSSProperties } from 'react'
 import { styled } from '@mui/material/styles'
 import videojs from 'video.js'
+import Player from 'video.js/dist/types/player'
 import {
   VideoBlockObjectFit,
   VideoBlockSource
 } from '../../../../../__generated__/globalTypes'
 import { TreeBlock } from '../../../../libs/block'
 import { VideoFields } from '../../../Video/__generated__/VideoFields'
+
+import 'videojs-youtube'
+import 'video.js/dist/video-js.css'
 
 interface BackgroundVideoProps extends TreeBlock<VideoFields> {
   setLoading: (loading: boolean) => void
@@ -25,7 +29,7 @@ export function BackgroundVideo({
   setLoading
 }: BackgroundVideoProps): ReactElement {
   const videoRef = useRef<HTMLVideoElement>(null)
-  const playerRef = useRef<videojs.Player>()
+  const playerRef = useRef<Player>()
 
   const isYouTube = source === VideoBlockSource.youTube
 

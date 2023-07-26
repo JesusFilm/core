@@ -3,6 +3,7 @@ import { fireEvent, render, waitFor } from '@testing-library/react'
 import { NextRouter, useRouter } from 'next/router'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { AuthUser } from 'next-firebase-auth'
+import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 import { Role } from '../../../../__generated__/globalTypes'
 import { GET_USER_ROLE } from '../../JourneyView/JourneyView'
 import { GET_ME } from '../../NewPageWrapper/NavigationDrawer'
@@ -81,18 +82,20 @@ describe('NavigationDrawer', () => {
           }
         ]}
       >
-        <NavigationDrawer
-          open
-          onClose={onClose}
-          authUser={
-            {
-              displayName: 'Amin One',
-              photoURL: 'https://bit.ly/3Gth4Yf',
-              email: 'amin@email.com',
-              signOut
-            } as unknown as AuthUser
-          }
-        />
+        <FlagsProvider flags={{ globalReports: true }}>
+          <NavigationDrawer
+            open
+            onClose={onClose}
+            authUser={
+              {
+                displayName: 'Amin One',
+                photoURL: 'https://bit.ly/3Gth4Yf',
+                email: 'amin@email.com',
+                signOut
+              } as unknown as AuthUser
+            }
+          />
+        </FlagsProvider>
       </MockedProvider>
     )
     expect(getByText('Templates')).toBeInTheDocument()
@@ -123,13 +126,26 @@ describe('NavigationDrawer', () => {
 
     const { getByTestId } = render(
       <MockedProvider>
-        <NavigationDrawer open onClose={onClose} />
+        <FlagsProvider flags={{ globalReports: true }}>
+          <NavigationDrawer open onClose={onClose} />
+        </FlagsProvider>
       </MockedProvider>
     )
     expect(getByTestId('Reports-list-item')).toHaveAttribute(
       'aria-selected',
       'true'
     )
+  })
+
+  it('should hide the reports button', () => {
+    const { queryByText } = render(
+      <MockedProvider mocks={[]}>
+        <FlagsProvider flags={{ globalReports: false }}>
+          <NavigationDrawer open onClose={onClose} />
+        </FlagsProvider>
+      </MockedProvider>
+    )
+    expect(queryByText('Reports')).not.toBeInTheDocument()
   })
 
   it('should select publisher button', async () => {

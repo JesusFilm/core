@@ -1,0 +1,32 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = env("PRISMA_LOCATION")
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("PG_DATABASE_URL")
+}
+
+model CloudflareImage {
+  id        String   @id @default(uuid())
+  uploadUrl String?
+  userId    String
+  createdAt DateTime @default(now())
+  uploaded  Boolean  @default(false)
+  updatedAt DateTime @default(now()) @updatedAt
+
+  @@index([userId])
+}
+
+model CloudflareVideo {
+  id            String   @id @default(uuid())
+  uploadUrl     String?
+  userId        String
+  name          String?
+  createdAt     DateTime @default(now())
+  readyToStream Boolean  @default(false)
+  updatedAt     DateTime @default(now()) @updatedAt
+
+  @@index([userId])
+}

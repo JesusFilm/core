@@ -50,9 +50,15 @@ module "public_bastion_security_group" {
       from_port   = 22
       to_port     = 22
       protocol    = "tcp"
-      cidr_blocks = ["47.33.63.40/32"]
+      cidr_blocks = ["172.221.20.111/32"]
+    },
+    // EC2_INSTANCE_CONNECT
+    {
+      from_port   = 22
+      to_port     = 22
+      protocol    = "tcp"
+      cidr_blocks = ["3.16.146.0/29"]
     }
-
   ]
   egress_rules = local.egress_rules
 }

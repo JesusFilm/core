@@ -11,7 +11,7 @@ import ExpandLess from '@mui/icons-material/ExpandLess'
 import ExpandMore from '@mui/icons-material/ExpandMore'
 import { gql, useMutation } from '@apollo/client'
 import { useFormik } from 'formik'
-import { noop } from 'lodash'
+import noop from 'lodash/noop'
 import { CreateCloudflareUploadByUrl } from '../../../../../../__generated__/CreateCloudflareUploadByUrl'
 
 export const CREATE_CLOUDFLARE_UPLOAD_BY_URL = gql`

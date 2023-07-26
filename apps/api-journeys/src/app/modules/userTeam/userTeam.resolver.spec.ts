@@ -21,17 +21,85 @@ describe('UserTeamResolver', () => {
       .mockResolvedValue([{ id: 'userTeamId' }])
   })
   describe('userTeams', () => {
+    it('fetches accessible userTeams with filter', async () => {
+      const userTeams = await userTeamResolver.userTeams(
+        {
+          team: {
+            is: {
+              userTeams: { some: { userId: 'userId' } }
+            }
+          }
+        },
+        'teamId',
+        { role: [GraphQlUserTeamRole.member, GraphQlUserTeamRole.manager] }
+      )
+      expect(prismaService.userTeam.findMany).toHaveBeenCalledWith({
+        where: {
+          AND: [
+            {
+              team: {
+                is: {
+                  userTeams: { some: { userId: 'userId' } }
+                }
+              }
+            },
+            { teamId: 'teamId', role: { in: ['member', 'manager'] } }
+          ]
+        }
+      })
+      expect(userTeams).toEqual([{ id: 'userTeamId' }])
+    })
+
+    it('should not apply role filter if filter is empty object', async () => {
+      const userTeams = await userTeamResolver.userTeams(
+        {
+          team: {
+            is: {
+              userTeams: { some: { userId: 'userId' } }
+            }
+          }
+        },
+        'teamId',
+        {}
+      )
+      expect(prismaService.userTeam.findMany).toHaveBeenCalledWith({
+        where: {
+          AND: [
+            {
+              team: {
+                is: {
+                  userTeams: { some: { userId: 'userId' } }
+                }
+              }
+            },
+            { teamId: 'teamId' }
+          ]
+        }
+      })
+      expect(userTeams).toEqual([{ id: 'userTeamId' }])
+    })
+
     it('fetches accessible userTeams', async () => {
       const userTeams = await userTeamResolver.userTeams(
         {
-          userTeams: { some: { userId: 'userId' } }
+          team: {
+            is: {
+              userTeams: { some: { userId: 'userId' } }
+            }
+          }
         },
         'teamId'
       )
       expect(prismaService.userTeam.findMany).toHaveBeenCalledWith({
         where: {
           AND: [
-            { userTeams: { some: { userId: 'userId' } } },
+            {
+              team: {
+                is: {
+                  userTeams: { some: { userId: 'userId' } }
+                }
+              }
+            },
             { teamId: 'teamId' }
           ]
         }
@@ -111,13 +179,13 @@ describe('UserTeamResolver', () => {
       })
       await expect(
         userTeamResolver.userTeamUpdate(ability, 'userTeamId', {
-          role: GraphQlUserTeamRole.guest
+          role: GraphQlUserTeamRole.manager
         })
       ).resolves.toEqual(userTeam)
       expect(prismaService.userTeam.update).toHaveBeenCalledWith({
         where: { id: 'userTeamId' },
         data: {
-          role: 'guest'
+          role: 'manager'
         }
       })
     })
@@ -140,7 +208,7 @@ describe('UserTeamResolver', () => {
       })
       await expect(
         userTeamResolver.userTeamUpdate(ability, 'userTeamId', {
-          role: GraphQlUserTeamRole.guest
+          role: GraphQlUserTeamRole.manager
         })
       ).rejects.toThrow('user is not allowed to update userTeam')
     })
@@ -152,7 +220,7 @@ describe('UserTeamResolver', () => {
       })
       await expect(
         userTeamResolver.userTeamUpdate(ability, 'userTeamId', {
-          role: GraphQlUserTeamRole.guest
+          role: GraphQlUserTeamRole.manager
         })
       ).rejects.toThrow('userTeam not found')
     })
