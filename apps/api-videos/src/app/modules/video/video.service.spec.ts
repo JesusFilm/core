@@ -1,41 +1,46 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { CacheModule } from '@nestjs/common'
+import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
+import { Video } from '.prisma/api-videos-client'
 import { VideoLabel } from '../../__generated__/graphql'
 import { PrismaService } from '../../lib/prisma.service'
 
 import { VideoService } from './video.service'
 
-const video = {
+const video: Video = {
   id: '20615',
-  bcp47: 'zh',
-  name: [
-    {
-      value: '普通話',
-      primary: true,
-      videoId: '20615'
-    },
-    {
-      value: 'Chinese, Mandarin',
-      primary: false,
-      videoId: '529'
-    }
-  ]
+  slug: 'video-slug',
+  label: 'featureFilm',
+  primaryLanguageId: '529',
+  seoTitle: [],
+  snippet: [],
+  description: [],
+  studyQuestions: [],
+  image: '',
+  imageAlt: [],
+  noIndex: false
 }
 
 describe('VideoService', () => {
-  let service: VideoService, prismaService: PrismaService
+  let service: VideoService, prismaService: DeepMockProxy<PrismaService>
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [CacheModule.register()],
-      providers: [VideoService, PrismaService]
+      providers: [
+        VideoService,
+        {
+          provide: PrismaService,
+          useValue: mockDeep<PrismaService>()
+        }
+      ]
     }).compile()
 
     service = module.get<VideoService>(VideoService)
     prismaService = await module.resolve(PrismaService)
-    prismaService.video.findFirst = jest.fn().mockResolvedValue(video)
-    prismaService.video.findUnique = jest.fn().mockResolvedValue(video)
-    prismaService.video.findMany = jest.fn().mockResolvedValue([video, video])
+    prismaService.video.findFirst.mockResolvedValue(video)
+    prismaService.video.findUnique.mockResolvedValue(video)
+    prismaService.video.findMany.mockResolvedValue([video, video])
   })
 
   describe('videoFilter', () => {

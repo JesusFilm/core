@@ -1,5 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { GraphQLResolveInfo, Kind } from 'graphql'
+import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
+import { Video, VideoVariant, VideoTitle } from '.prisma/api-videos-client'
 import { IdType } from '../../__generated__/graphql'
 import { PrismaService } from '../../lib/prisma.service'
 import { LanguageWithSlugResolver, VideoResolver } from './video.resolver'
@@ -8,30 +10,40 @@ import { VideoService } from './video.service'
 describe('VideoResolver', () => {
   let resolver: VideoResolver,
     service: VideoService,
-    prismaService: PrismaService
+    prismaService: DeepMockProxy<PrismaService>
 
-  const video = {
+  const video: Video = {
     id: '20615',
-    bcp47: 'zh',
-    name: [
-      {
-        value: '普通話',
-        primary: true,
-        videoId: '20615'
-      },
-      {
-        value: 'Chinese, Mandarin',
-        primary: false,
-        videoId: '529'
-      }
-    ],
     slug: 'video-slug',
-    variant: [
-      {
-        slug: 'jesus/english',
-        languageId: '529'
-      }
-    ]
+    label: 'featureFilm',
+    primaryLanguageId: '529',
+    seoTitle: [],
+    snippet: [],
+    description: [],
+    studyQuestions: [],
+    image: '',
+    imageAlt: [],
+    noIndex: false
+  }
+
+  const videoVariant: VideoVariant[] = [
+    {
+      id: '1',
+      videoId: video.id,
+      hls: '',
+      slug: 'jesus/english',
+      languageId: '529',
+      duration: 0,
+      subtitle: []
+    }
+  ]
+
+  const videoTitle: VideoTitle = {
+    value: '普通話',
+    primary: false,
+    languageId: '529',
+    id: '1',
+    videoId: '20615'
   }
 
   beforeEach(async () => {
@@ -42,23 +54,26 @@ describe('VideoResolver', () => {
       })
     }
     const module: TestingModule = await Test.createTestingModule({
-      providers: [VideoResolver, videoService, PrismaService]
+      providers: [
+        VideoResolver,
+        videoService,
+        {
+          provide: PrismaService,
+          useValue: mockDeep<PrismaService>()
+        }
+      ]
     }).compile()
     resolver = module.get<VideoResolver>(VideoResolver)
     service = await module.resolve(VideoService)
-    prismaService = await module.resolve(PrismaService)
-    prismaService.videoVariant.count = jest.fn().mockResolvedValue(1)
-    prismaService.video.findUnique = jest.fn().mockResolvedValue(video)
-    prismaService.video.findFirst = jest.fn().mockResolvedValue(video)
-    prismaService.videoTitle.findMany = jest
-      .fn()
-      .mockResolvedValue([{ value: '普通話' }])
-    prismaService.videoVariant.findUnique = jest
-      .fn()
-      .mockResolvedValue(video.variant[0])
-    prismaService.videoVariant.findMany = jest
-      .fn()
-      .mockResolvedValue(video.variant)
+    prismaService = module.get<PrismaService>(
+      PrismaService
+    ) as DeepMockProxy<PrismaService>
+    prismaService.videoVariant.count.mockResolvedValue(1)
+    prismaService.video.findUnique.mockResolvedValue(video)
+    prismaService.video.findFirst.mockResolvedValue(video)
+    prismaService.videoTitle.findMany.mockResolvedValue([videoTitle])
+    prismaService.videoVariant.findUnique.mockResolvedValue(videoVariant[0])
+    prismaService.videoVariant.findMany.mockResolvedValue(videoVariant)
   })
 
   describe('videos', () => {
@@ -186,7 +201,7 @@ describe('VideoResolver', () => {
     })
 
     it('should error on not found', async () => {
-      prismaService.video.findUnique = jest.fn().mockResolvedValue(null)
+      prismaService.video.findUnique.mockResolvedValue(null)
       await expect(resolver.video(info, '20615')).rejects.toThrowError(
         'Video not found'
       )
@@ -207,7 +222,7 @@ describe('VideoResolver', () => {
     })
 
     it('returns children count', async () => {
-      prismaService.video.count = jest.fn().mockResolvedValue(2)
+      prismaService.video.count.mockResolvedValue(2)
       expect(await resolver.childrenCount(video)).toEqual(2)
       expect(prismaService.video.count).toHaveBeenCalledWith({
         where: { parent: { some: { id: video.id } } }
@@ -217,9 +232,7 @@ describe('VideoResolver', () => {
 
   describe('children', () => {
     beforeEach(() => {
-      prismaService.video.findMany = jest
-        .fn()
-        .mockResolvedValueOnce([video, video])
+      prismaService.video.findMany.mockResolvedValueOnce([video, video])
     })
 
     it('returns videos by childIds without languageId', async () => {
@@ -241,7 +254,7 @@ describe('VideoResolver', () => {
 
   describe('title', () => {
     it('returns titles', async () => {
-      expect(await resolver.title(video)).toEqual([{ value: '普通話' }])
+      expect(await resolver.title(video)).toEqual([videoTitle])
       expect(prismaService.videoTitle.findMany).toHaveBeenCalledWith({
         where: {
           videoId: video.id,
@@ -251,9 +264,7 @@ describe('VideoResolver', () => {
     })
 
     it('returns filtered titles', async () => {
-      expect(await resolver.title(video, '529', true)).toEqual([
-        { value: '普通話' }
-      ])
+      expect(await resolver.title(video, '529', true)).toEqual([videoTitle])
       expect(prismaService.videoTitle.findMany).toHaveBeenCalledWith({
         where: {
           videoId: video.id,
@@ -265,10 +276,7 @@ describe('VideoResolver', () => {
 
   describe('variant', () => {
     it('returns variant with languageId', async () => {
-      expect(await resolver.variant(video, '529')).toEqual({
-        slug: 'jesus/english',
-        languageId: '529'
-      })
+      expect(await resolver.variant(video, '529')).toEqual(videoVariant[0])
       expect(prismaService.videoVariant.findUnique).toHaveBeenCalledWith({
         where: {
           languageId_videoId: {
@@ -280,10 +288,7 @@ describe('VideoResolver', () => {
     })
 
     it('returns variant without languageId', async () => {
-      expect(await resolver.variant(video)).toEqual({
-        slug: 'jesus/english',
-        languageId: '529'
-      })
+      expect(await resolver.variant(video)).toEqual(videoVariant[0])
       expect(prismaService.videoVariant.findUnique).toHaveBeenCalledWith({
         where: {
           languageId_videoId: {
