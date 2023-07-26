@@ -16,10 +16,10 @@ variable "env" {
 
 variable "rds_instances" {
   type = list(object({
-    host     = string
-    port     = number
-    username = string
-    password = string
-    db_name  = string
+    host             = string
+    port             = number
+    username         = string
+    password         = string
+    db_instance_name = string
   }))
 }

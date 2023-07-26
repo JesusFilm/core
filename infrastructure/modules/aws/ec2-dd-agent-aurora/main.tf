@@ -13,9 +13,9 @@ resource "aws_instance" "datadog_aurora" {
     port: ${v.port}
     username: ${v.username}
     password: ${v.password}
-    dbname: ${v.db_name}
+    dbname: ${var.env}
     tags:
-      - 'dbinstanceidentifier:${v.db_name}'
+      - 'dbinstanceidentifier:${v.db_instance_name}'
 %{endfor~}
 EOT
   })
