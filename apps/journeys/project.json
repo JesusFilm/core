@@ -175,12 +175,6 @@
       "options": {
         "command": "codecov -f coverage/apps/journeys/cobertura-coverage.xml -F apps.journeys"
       }
-    },
-    "lighthouse": {
-      "executor": "@nrwl/workspace:run-commands",
-      "options": {
-        "command": "lighthouse --config apps/journeys/playwright-lighthouse.config.js"
-      }
     }
   },
   "tags": []
