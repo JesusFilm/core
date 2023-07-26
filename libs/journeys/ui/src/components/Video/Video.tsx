@@ -106,6 +106,10 @@ export function Video({
             hotkeys: true,
             doubleClick: true
           },
+          hls: {
+            limitRenditionByPlayerDimensions: true,
+            useDevicePixelRatio: true
+          },
           responsive: true,
           muted: muted === true,
           autoplay
