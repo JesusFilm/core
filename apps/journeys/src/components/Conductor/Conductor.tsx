@@ -138,7 +138,7 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
         }
       })
     }
-    // eslint-disable-next-line
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [journey])
 
   useEffect(() => {
