@@ -1,9 +1,9 @@
 name: journeys-e2e-tests
 on:
   workflow_run:
-    workflows: ["App Deploy"]
+    workflows: ['App Deploy']
     types:
-      - completed    
+      - completed
   push:
     branches: [main, master]
   pull_request:
@@ -24,7 +24,7 @@ jobs:
       - name: Run Playwright tests
         run: npx nx run journeys-e2e:e2e
         env:
-          PR_NUMBER: ${{github.event.number}}        
+          PR_NUMBER: ${{github.event.number}}
       - uses: actions/upload-artifact@v3
         if: always()
         with:
