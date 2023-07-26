@@ -45,6 +45,7 @@ export class VideoResolver {
 
   @Query()
   async video(
+    @Info() info: GraphQLResolveInfo,
     @Args('id') id: string,
     @Args('idType') idType: IdType = IdType.databaseId
   ): Promise<Video> {
