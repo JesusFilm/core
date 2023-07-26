@@ -48,6 +48,10 @@ export function BackgroundVideo({
           hotkeys: false,
           doubleClick: false
         },
+        hls: {
+          limitRenditionByPlayerDimensions: true,
+          useDevicePixelRatio: true
+        },
         muted: true,
         loop: true,
         responsive: true
