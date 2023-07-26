@@ -67,7 +67,6 @@ interface ConductorProps {
 export function Conductor({ blocks }: ConductorProps): ReactElement {
   const {
     setTreeBlocks,
-    setBlockHistory,
     setShowNavigation,
     treeBlocks,
     blockHistory,
@@ -143,8 +142,7 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
 
   useEffect(() => {
     setTreeBlocks(blocks)
-    setBlockHistory([blocks[0]])
-  }, [setTreeBlocks, setBlockHistory, blocks])
+  }, [setTreeBlocks, blocks])
 
   // Update Swiper - navigate to activeBlock after NavigateBlockAction & going back to node of a branch
   useEffect(() => {

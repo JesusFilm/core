@@ -17,7 +17,6 @@ interface UseBlocksHook {
   prevActiveBlock: (args?: ActiveBlockArgs) => void
   nextActiveBlock: (args?: ActiveBlockArgs) => void
   setTreeBlocks: (blocks: TreeBlock[]) => void
-  setBlockHistory: (blocks: TreeBlock[]) => void
   setShowHeaderFooter: (value: boolean) => void
   setShowNavigation: (value: boolean) => void
   treeBlocks: TreeBlock[]
@@ -102,10 +101,6 @@ export function useBlocks(): UseBlocksHook {
     nextActiveBlock({ id: blocks[0]?.id })
   }, [])
 
-  const setBlockHistory = useCallback((blocks: TreeBlock[]): void => {
-    if (blocks[0] != null) blockHistoryVar([blocks[0]])
-  }, [])
-
   const setShowHeaderFooter = useCallback((value: boolean): void => {
     showHeaderFooterVar(value)
   }, [])
@@ -117,7 +112,6 @@ export function useBlocks(): UseBlocksHook {
     prevActiveBlock,
     nextActiveBlock,
     setTreeBlocks,
-    setBlockHistory,
     setShowHeaderFooter,
     setShowNavigation,
     treeBlocks,
