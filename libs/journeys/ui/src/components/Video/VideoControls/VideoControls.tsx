@@ -55,8 +55,12 @@ export function VideoControls({
   const [fullscreen, setFullscreen] = useState(
     fscreen.fullscreenElement != null || player.isFullscreen()
   )
-  const { showHeaderFooter, setShowHeaderFooter, setShowNavigation } =
-    useBlocks()
+  const {
+    showHeaderFooter,
+    setShowHeaderFooter,
+    showNavigation,
+    setShowNavigation
+  } = useBlocks()
 
   // EndAt could be 0 if player not yet initialised
   const durationSeconds = endAt - startAt
@@ -66,6 +70,13 @@ export function VideoControls({
       : secondsToTimeFormat(durationSeconds, { trimZeroes: true })
 
   const visible = !playing || active || loading
+
+  // Hide navigation when invisible, show navigation when paused or active
+  useEffect(() => {
+    if (showNavigation && !visible) {
+      setShowNavigation(false)
+    }
+  }, [showNavigation, setShowNavigation, visible])
 
   // Handle play event
   useEffect(() => {
@@ -131,7 +142,10 @@ export function VideoControls({
   // Handle user active event
   useEffect(() => {
     // Triggers when video is playing / controls faded and screen is clicked
-    const handleUserActive = (): void => setActive(true)
+    const handleUserActive = (): void => {
+      setShowNavigation(true)
+      setActive(true)
+    }
     const handleUserInactive = (): void => setActive(false)
 
     player.on('useractive', handleUserActive)
@@ -140,7 +154,7 @@ export function VideoControls({
       player.off('useractive', handleUserActive)
       player.off('userinactive', handleUserInactive)
     }
-  }, [player])
+  }, [player, setShowNavigation])
 
   // Handle volume change event
   useEffect(() => {
@@ -158,7 +172,6 @@ export function VideoControls({
       const fullscreen =
         fscreen.fullscreenElement != null || player.isFullscreen()
       setFullscreen(fullscreen)
-      setShowNavigation(!fullscreen)
 
       const videoHasClashingUI = isYoutube && !playing && player.userActive()
       if (videoHasClashingUI) {
@@ -183,8 +196,6 @@ export function VideoControls({
   }, [player, isYoutube, playing, setShowHeaderFooter, setShowNavigation])
 
   function handlePlay(): void {
-    setShowNavigation(true)
-
     if (!playing) {
       void player.play()
       // Youtube breaks when this is gone
@@ -192,6 +203,7 @@ export function VideoControls({
     } else {
       void player.pause()
       setPlaying(false)
+      setShowNavigation(true)
     }
   }
 
@@ -351,7 +363,7 @@ export function VideoControls({
               zIndex: 1,
               transitionDelay: visible ? undefined : '0.5s',
               pb: {
-                xs: showHeaderFooter || isYoutube ? 22 : 2,
+                xs: showHeaderFooter || isYoutube ? 26 : 2,
                 lg: 2
               }
             }}

@@ -47,12 +47,16 @@ export function NavigationButton({
 
   // Handle fade navigation after 3 seconds inactive
   useEffect(() => {
-    if (showNavigation) {
+    const isVideoOnlyBlock =
+      activeBlock?.children[0].children.length === 1 &&
+      activeBlock?.children[0].children[0].__typename === 'VideoBlock'
+
+    if (showNavigation && !isVideoOnlyBlock) {
       setTimeout(() => {
         setShowNavigation(false)
       }, 3000)
     }
-  }, [showNavigation, setShowNavigation])
+  }, [showNavigation, setShowNavigation, activeBlock])
 
   function handleNav(direction: 'next' | 'prev'): void {
     if (direction === 'next') {
@@ -64,7 +68,7 @@ export function NavigationButton({
 
   // Issue using https://mui.com/material-ui/guides/right-to-left/#emotion-amp-styled-components for justifyContent
   const alignSx =
-    alignment === 'left'
+    variant === 'prev'
       ? { justifyContent: 'flex-start' }
       : { justifyContent: 'flex-end' }
 
@@ -78,12 +82,12 @@ export function NavigationButton({
       sx={{
         ...alignSx,
         position: 'absolute',
-        top: { xs: '20%', sm: '32%', md: '19.5%' },
-        bottom: 0,
+        // StepFooter heights
+        bottom: { xs: '170px', lg: '60.5px' },
         zIndex: 2,
         display: 'flex',
         width: { xs: 82, lg: 114 },
-        height: { xs: '55%', sm: '25%', md: '59%' },
+        height: { xs: 'calc(100vh - 282px)', lg: 'calc(100% - 105px)' },
         alignItems: 'center',
         pointerEvents: { xs: 'none', lg: 'all' }
       }}
