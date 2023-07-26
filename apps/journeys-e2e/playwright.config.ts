@@ -28,13 +28,13 @@ export default defineConfig({
 
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: 'on-first-retry',
-    screenshot: "only-on-failure",
-    video: "retain-on-failure",
+    screenshot: 'only-on-failure',
+    video: 'retain-on-failure'
     // video: 'on',
   },
 
   /* Configure projects for major browsers */
-  projects: [ 
+  projects: [
     /* Test against branded browsers. */
     // {
     //   name: 'Microsoft Edge',
@@ -42,14 +42,14 @@ export default defineConfig({
     // },
     {
       name: 'Google Chrome',
-      use: { ...devices['Desktop Chrome'], channel: 'chrome' },
+      use: { ...devices['Desktop Chrome'], channel: 'chrome' }
     },
 
     /* Test against mobile viewports. */
     // By default it's using chromium channel, changed it to chrome so it can play the video
     {
       name: 'Mobile Chrome',
-      use: { ...devices['Pixel 5'], channel: 'chrome' },
+      use: { ...devices['Pixel 5'], channel: 'chrome' }
     },
     // {
     //   name: 'Mobile Safari',
@@ -57,10 +57,10 @@ export default defineConfig({
     // },
 
     /* Others. */
-    // {
-    //   name: 'firefox',
-    //   use: { ...devices['Desktop Firefox'] },
-    // },
+    {
+      name: 'firefox',
+      use: { ...devices['Desktop Firefox'] }
+    }
 
     // {
     //   name: 'webkit',
@@ -70,8 +70,8 @@ export default defineConfig({
     // {
     //   name: 'chromium',
     //   use: { ...devices['Desktop Chrome'] },
-    // },    
-  ],
+    // },
+  ]
 
   /* Run your local dev server before starting the tests */
   // webServer: {
@@ -79,4 +79,4 @@ export default defineConfig({
   //   url: 'http://127.0.0.1:3000',
   //   reuseExistingServer: !process.env.CI,
   // },
-});
+})
