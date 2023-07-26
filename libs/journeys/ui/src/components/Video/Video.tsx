@@ -112,7 +112,6 @@ export function Video({
               useDevicePixelRatio: true
             }
           },
-          useNetworkInformationApi: true,
           responsive: true,
           muted: muted === true,
           autoplay

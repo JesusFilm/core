@@ -54,7 +54,6 @@ export function BackgroundVideo({
             useDevicePixelRatio: true
           }
         },
-        useNetworkInformationApi: true,
         muted: true,
         loop: true,
         responsive: true
