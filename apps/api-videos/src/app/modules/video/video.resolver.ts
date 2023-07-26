@@ -8,7 +8,7 @@ import {
   ResolveField,
   Parent
 } from '@nestjs/graphql'
-import { FieldNode, GraphQLResolveInfo, Kind } from 'graphql'
+import { FieldNode, GraphQLError, GraphQLResolveInfo, Kind } from 'graphql'
 import { Video, VideoVariant, VideoTitle } from '.prisma/api-videos-client'
 import compact from 'lodash/compact'
 
@@ -45,21 +45,27 @@ export class VideoResolver {
 
   @Query()
   async video(
-    @Info() info: GraphQLResolveInfo,
     @Args('id') id: string,
     @Args('idType') idType: IdType = IdType.databaseId
-  ): Promise<Video | null> {
+  ): Promise<Video> {
+    let result: Video | null
     switch (idType) {
       case IdType.databaseId:
-        return await this.prismaService.video.findUnique({
+        result = await this.prismaService.video.findUnique({
           where: { id }
         })
+        break
       case IdType.slug:
-        console.log('hi')
-        return await this.prismaService.video.findFirst({
+        result = await this.prismaService.video.findFirst({
           where: { variants: { some: { slug: id } } }
         })
+        break
     }
+    if (result == null)
+      throw new GraphQLError('Video not found', {
+        extensions: { code: 'NOT_FOUND' }
+      })
+    return result
   }
 
   @ResolveReference()

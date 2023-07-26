@@ -49,7 +49,7 @@ model VideoTitle {
   languageId String
   primary    Boolean
   videoId    String?
-  Video      Video?  @relation(fields: [videoId], references: [id], onDelete: Cascade)
+  video      Video?  @relation(fields: [videoId], references: [id], onDelete: Cascade)
 }
 
 enum VideoVariantDownloadQuality {
@@ -76,7 +76,7 @@ model VideoVariant {
   languageId String
   subtitle   Json[]
   slug       String
-  Video      Video?                 @relation(fields: [videoId], references: [id], onDelete: Cascade)
+  video      Video?                 @relation(fields: [videoId], references: [id], onDelete: Cascade)
   videoId    String?
 
   @@unique([languageId, videoId])

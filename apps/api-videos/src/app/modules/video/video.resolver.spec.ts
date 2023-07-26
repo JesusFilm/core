@@ -164,25 +164,27 @@ describe('VideoResolver', () => {
   })
 
   describe('video', () => {
-    const info = {
-      fieldNodes: [{ selectionSet: { selections: [] } }]
-    } as unknown as GraphQLResolveInfo
     it('return a video', async () => {
-      expect(await resolver.video(info, '20615')).toEqual(video)
+      expect(await resolver.video('20615')).toEqual(video)
       expect(prismaService.video.findUnique).toHaveBeenCalledWith({
         where: { id: video.id }
       })
     })
 
     it('should return video with slug as idtype', async () => {
-      expect(await resolver.video(info, 'jesus/english', IdType.slug)).toEqual(
-        video
-      )
+      expect(await resolver.video('jesus/english', IdType.slug)).toEqual(video)
       expect(prismaService.video.findFirst).toHaveBeenCalledWith({
         where: {
           variants: { some: { slug: 'jesus/english' } }
         }
       })
+    })
+
+    it('should error on not found', async () => {
+      prismaService.video.findUnique = jest.fn().mockResolvedValue(null)
+      await expect(resolver.video('20615')).rejects.toThrowError(
+        'Video not found'
+      )
     })
   })
 
