@@ -32,7 +32,10 @@ import { DescriptionDialog } from './DescriptionDialog'
 import { TitleDialog } from './TitleDialog'
 import { CreateTemplateMenuItem } from './CreateTemplateMenuItem'
 
-const DynamicLanguageDialog = dynamic(
+const DynamicLanguageDialog = dynamic<{
+  open: boolean
+  onClose: () => void
+}>(
   async () =>
     await import(
       /* webpackChunkName: "LanguageDialog" */
@@ -279,10 +282,12 @@ export function Menu(): ReactElement {
             open={showDescriptionDialog}
             onClose={() => setShowDescriptionDialog(false)}
           />
-          <DynamicLanguageDialog
-            open={showLanguageDialog}
-            onClose={() => setShowLanguageDialog(false)}
-          />
+          {showLanguageDialog && (
+            <DynamicLanguageDialog
+              open={showLanguageDialog}
+              onClose={() => setShowLanguageDialog(false)}
+            />
+          )}
         </>
       ) : (
         <IconButton edge="end" disabled>
