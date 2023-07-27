@@ -201,7 +201,7 @@ jobs:
   journeys-e2e:
     name: Run journeys E2E tests
     needs: [affected, deploy-preview]
-    if: always() && (${{ needs.affected.outputs.matrix.app == 'journeys' }} || ${{ needs.affected.outputs.matrix.app == 'journeys-admin' }})
+    if: ${{ needs.affected.outputs.matrix.app == 'journeys' }} || ${{ needs.affected.outputs.matrix.app == 'journeys-admin' }}
     uses: ./.github/workflows/journeys-e2e-worker.yml
     with:
       url: ${{ needs.deploy-preview.outputs.url }}
@@ -209,7 +209,7 @@ jobs:
   journeys-e2e-production:
     name: Run journeys E2E tests
     needs: [affected, deploy-production]
-    if: always() && (${{ needs.affected.outputs.matrix.app == 'journeys' }} || ${{ needs.affected.outputs.matrix.app == 'journeys-admin' }})
+    if: ${{ needs.affected.outputs.matrix.app == 'journeys' }} || ${{ needs.affected.outputs.matrix.app == 'journeys-admin' }}
     uses: ./.github/workflows/journeys-e2e-worker.yml
     with:
       url: ${{ needs.deploy-production.outputs.url }}
