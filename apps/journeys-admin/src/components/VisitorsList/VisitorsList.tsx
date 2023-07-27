@@ -73,8 +73,7 @@ export function VisitorsList(): ReactElement {
 
   const { fetchMore, loading } = useQuery<GetVisitors>(GET_VISITORS, {
     variables: {
-      first: 100,
-      teamId: activeTeam?.id
+      first: 100
     },
     onCompleted: (data) => {
       setVisitors(data.visitors.edges)
@@ -88,7 +87,8 @@ export function VisitorsList(): ReactElement {
       const response = await fetchMore({
         variables: {
           first: 100,
-          after: endCursor
+          after: endCursor,
+          teamId: activeTeam.id
         }
       })
       if (response.data.visitors.edges != null) {

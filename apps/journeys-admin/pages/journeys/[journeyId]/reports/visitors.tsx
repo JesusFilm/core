@@ -118,8 +118,7 @@ function JourneyVisitorsPage(): ReactElement {
           hideInactive: hideInteractive
         },
         first: 100,
-        sort: sortSetting,
-        teamId: activeTeam?.id
+        sort: sortSetting
       },
       onCompleted: (data) => {
         setVisitorEdges(data.visitors.edges)

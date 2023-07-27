@@ -26,8 +26,7 @@ describe('VisitorList', () => {
   const request = {
     query: GET_VISITORS,
     variables: {
-      first: 100,
-      teamId: 'teamId'
+      first: 100
     }
   }
   const result = jest.fn(() => ({
