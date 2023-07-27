@@ -120,9 +120,12 @@ jobs:
           state: ${{ job.status }}
           environment-url: ${{ steps.deployment-url.outputs.deployment-url }}
           deployment-id: ${{ steps.deployment.outputs.deployment_id }}
-      - name: Set deploy-preview-completed flag
-        id: deploy_preview_flag
-        run: echo "completed=true" >> $GITHUB_OUTPUT
+      - name: Run journeys E2E tests
+        if: ${{ matrix.app == 'journeys' }} || ${{ matrix.app == 'journeys-admin' }}
+        uses: JesusFilm/core/.github/workflows/journeys-e2e-worker.yml
+        with:
+          url: ${{ steps.deployment-url.outputs.deployment-url }}
+
   deploy-production:
     name: Deploy Production
     # main branch and not a pull request
@@ -195,6 +198,9 @@ jobs:
           state: ${{ job.status }}
           environment-url: ${{ steps.deployment-url.outputs.deployment-url }}
           deployment-id: ${{ steps.deployment.outputs.deployment_id }}
-      - name: Set deploy-production-completed flag
-        id: deploy_production_flag
-        run: echo "completed=true" >> $GITHUB_OUTPUT
+
+      - name: Run journeys E2E tests
+        if: ${{ matrix.app == 'journeys' }} || ${{ matrix.app == 'journeys-admin' }}
+        uses: JesusFilm/core/.github/workflows/journeys-e2e-worker.yml@main
+        with:
+          url: ${{ steps.deployment-url.outputs.deployment-url }}
