@@ -124,7 +124,7 @@ jobs:
           deployment-id: ${{ steps.deployment.outputs.deployment_id }}
       - name: Run journeys E2E tests
         if: always() && (${{ matrix.app == 'journeys' }} || ${{ matrix.app == 'journeys-admin' }})
-        uses: ../.github/workflows/journeys-e2e-worker.yml
+        uses: ./../.github/workflows/journeys-e2e-worker.yml
         with:
           url: ${{ steps.deployment-url.outputs.deployment-url }}
 
