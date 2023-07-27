@@ -103,7 +103,9 @@ describe('AddByFile', () => {
     Object.defineProperty(input, 'files', {
       value: [file]
     })
+
     fireEvent.drop(input)
+
     await waitFor(() => expect(getByText('Uploading...')).toBeInTheDocument())
     expect(getByTestId('BackupOutlinedIcon')).toBeInTheDocument()
     let req = await testStack.nextRequest()

@@ -56,9 +56,18 @@ export function AddByFile({
     useMutation<CreateCloudflareVideoUploadByFileMutation>(
       CREATE_CLOUDFLARE_VIDEO_UPLOAD_BY_FILE_MUTATION
     )
-  const [getMyCloudflareVideo, { data: getMyCloudflareVideoData }] =
+  const [getMyCloudflareVideo, { stopPolling }] =
     useLazyQuery<GetMyCloudflareVideoQuery>(GET_MY_CLOUDFLARE_VIDEO_QUERY, {
-      pollInterval: 1000
+      pollInterval: 1000,
+      onCompleted: (data) => {
+        if (
+          data.getMyCloudflareVideo?.readyToStream === true &&
+          data.getMyCloudflareVideo.id != null
+        ) {
+          stopPolling()
+          onChange(data.getMyCloudflareVideo.id)
+        }
+      }
     })
   const [uploading, setUploading] = useState(false)
   const [processing, setProcessing] = useState(false)
@@ -81,19 +90,6 @@ export function AddByFile({
     data?.createCloudflareVideoUploadByFile?.id
   ])
 
-  useEffect(() => {
-    if (
-      getMyCloudflareVideoData?.getMyCloudflareVideo?.readyToStream === true &&
-      data?.createCloudflareVideoUploadByFile?.id != null
-    ) {
-      onChange(data.createCloudflareVideoUploadByFile.id)
-    }
-  }, [
-    getMyCloudflareVideoData?.getMyCloudflareVideo?.readyToStream,
-    data?.createCloudflareVideoUploadByFile?.id,
-    onChange
-  ])
-
   const onDrop = async (): Promise<void> => {
     setfileTooLarge(false)
     settooManyFiles(false)
@@ -105,7 +101,6 @@ export function AddByFile({
     if (files.length > 0) {
       const file = files[0]
       const fileName = file.name.split('.')[0]
-      console.log(fileName)
       const { data } = await createCloudflareVideoUploadByFile({
         variables: {
           uploadLength: file.size,
