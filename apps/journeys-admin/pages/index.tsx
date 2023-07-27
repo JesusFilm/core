@@ -16,7 +16,10 @@ import { TeamSelect } from '../src/components/Team/TeamSelect'
 import { TeamMenu } from '../src/components/Team/TeamMenu'
 import { initAndAuthApp } from '../src/libs/initAndAuthApp'
 import { AcceptAllInvites } from '../__generated__/AcceptAllInvites'
-import { GetOnboardingJourneys } from '../__generated__/GetOnboardingJourneys'
+import {
+  GetOnboardingJourneys,
+  GetOnboardingJourneys_onboardingJourneys as OnboardingJourneys
+} from '../__generated__/GetOnboardingJourneys'
 
 export const ACCEPT_ALL_INVITES = gql`
   mutation AcceptAllInvites {
@@ -44,7 +47,7 @@ export const GET_ONBOARDING_JOURNEYS = gql`
 `
 
 interface IndexPageProps {
-  onboardingJourneys: GetOnboardingJourneys[]
+  onboardingJourneys: OnboardingJourneys[]
 }
 
 function IndexPage({ onboardingJourneys }: IndexPageProps): ReactElement {
@@ -84,7 +87,7 @@ export const getServerSideProps = withAuthUserTokenSSR({
     mutation: ACCEPT_ALL_INVITES
   })
 
-  const { data, loading } = await apolloClient.query<GetOnboardingJourneys>({
+  const { data } = await apolloClient.query<GetOnboardingJourneys>({
     query: GET_ONBOARDING_JOURNEYS,
     variables: {
       where: {
@@ -98,8 +101,6 @@ export const getServerSideProps = withAuthUserTokenSSR({
       }
     }
   })
-
-  console.log(loading)
 
   return {
     props: {

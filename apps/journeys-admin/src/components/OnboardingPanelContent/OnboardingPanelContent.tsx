@@ -26,7 +26,7 @@ const onboardingIds = [
 ]
 
 interface OnboardingPanelContentProps {
-  onboardingJourneys
+  onboardingJourneys: OnboardingJourneys[]
 }
 
 export function OnboardingPanelContent({
@@ -40,8 +40,8 @@ export function OnboardingPanelContent({
   const { createJourney, loading } = useJourneyCreate()
 
   const templates: OnboardingJourneys[] = []
-  onboardingJourneys.forEach((oj) => {
-    templates[onboardingIds.indexOf(oj.id)] = oj
+  onboardingJourneys.forEach((onboardingJourney) => {
+    templates[onboardingIds.indexOf(onboardingJourney.id)] = onboardingJourney
   })
   const loadingTemplates = onboardingJourneys == null
 
@@ -86,7 +86,7 @@ export function OnboardingPanelContent({
         </Stack>
       </SidePanelContainer>
       {templates.map(
-        (template, index) =>
+        (template) =>
           template != null && (
             <MediaListItem
               key={template.id}
