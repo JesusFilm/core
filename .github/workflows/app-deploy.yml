@@ -122,7 +122,7 @@ jobs:
           deployment-id: ${{ steps.deployment.outputs.deployment_id }}
       - name: Run journeys E2E tests
         if: ${{ matrix.app == 'journeys' }} || ${{ matrix.app == 'journeys-admin' }}
-        uses: JesusFilm/core/.github/workflows/journeys-e2e-worker.yml
+        uses: JesusFilm/core/.github/workflows/journeys-e2e-worker.yml@${{ github.head_ref || github.ref_name }}
         with:
           url: ${{ steps.deployment-url.outputs.deployment-url }}
 
