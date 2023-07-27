@@ -38,7 +38,7 @@ const DynamicLanguageDialog = dynamic<{
 }>(
   async () =>
     await import(
-      /* webpackChunkName: "LanguageDialog" */
+      /* webpackChunkName: "MenuLanguageDialog" */
       './LanguageDialog'
     ).then((mod) => mod.LanguageDialog)
 )
