@@ -37,7 +37,7 @@ describe('JourneyInvite', () => {
   it('should render invite request received', () => {
     const { getAllByText, queryAllByRole } = render(
       <MockedProvider mocks={[]}>
-        <JourneyInvite journeyId="journeyId" requestReceived />
+        <JourneyInvite journeyId="journeyId" />
       </MockedProvider>
     )
     expect(queryAllByRole('button', { name: 'Request Access' })).toHaveLength(0)
