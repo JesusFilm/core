@@ -4,8 +4,6 @@ on:
     workflows: ['App Deploy']
     types:
       - completed
-  push:
-    branches: [main, master]
   pull_request:
     branches: [main, master]
 jobs:
@@ -13,6 +11,12 @@ jobs:
     timeout-minutes: 60
     runs-on: ubuntu-latest
     steps:
+      - name: Wait for deploy-preview to complete
+        id: wait_for_deploy_preview
+        run: echo "Waiting for deploy-preview to complete..."
+      - name: Run after deploy-preview completion
+        if: ${{ needs.deploy-preview.outputs.completed == 'true' }}
+        run: echo "deploy-preview has completed, and now e2e tests are running..."
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
         with:
