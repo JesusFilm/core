@@ -33,7 +33,6 @@ export function HostTitleFieldForm(): ReactElement {
   const [journeyHostUpdate] =
     useMutation<UpdateJourneyHost>(UPDATE_JOURNEY_HOST)
   const { activeTeam } = useTeam()
-  console.log(activeTeam)
   const { updateHost } = useHostUpdate()
   const { journey } = useJourney()
   const host = journey?.host
