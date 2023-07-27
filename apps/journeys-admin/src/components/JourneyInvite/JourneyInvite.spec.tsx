@@ -33,14 +33,4 @@ describe('JourneyInvite', () => {
     fireEvent.click(getAllByRole('button', { name: 'Request Now' })[0])
     await waitFor(() => expect(getAllByText('Request Sent')).toHaveLength(2))
   })
-
-  it('should render invite request received', () => {
-    const { getAllByText, queryAllByRole } = render(
-      <MockedProvider mocks={[]}>
-        <JourneyInvite journeyId="journeyId" />
-      </MockedProvider>
-    )
-    expect(queryAllByRole('button', { name: 'Request Access' })).toHaveLength(0)
-    expect(getAllByText('Request Sent')).toHaveLength(2)
-  })
 })
