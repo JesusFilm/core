@@ -227,7 +227,7 @@ export function AddByFile({
         >
           {uploading && 'Uploading...'}
           {processing && 'Processing...'}
-          {error != null || (fileRejected && 'Upload Failed!')}
+          {(error != null || fileRejected) && 'Upload Failed!'}
           {!uploading &&
             !processing &&
             !fileRejected &&

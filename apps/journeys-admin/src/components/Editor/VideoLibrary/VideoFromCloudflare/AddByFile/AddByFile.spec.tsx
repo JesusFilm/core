@@ -1,5 +1,5 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { fireEvent, render, waitFor } from '@testing-library/react'
+import { act, fireEvent, render, waitFor } from '@testing-library/react'
 import {
   CREATE_CLOUDFLARE_VIDEO_UPLOAD_BY_FILE_MUTATION,
   GET_MY_CLOUDFLARE_VIDEO_QUERY
@@ -118,7 +118,11 @@ describe('AddByFile', () => {
         'Upload-Offset': '0'
       }
     })
-    req = await testStack.nextRequest()
+
+    await act(async () => {
+      req = await testStack.nextRequest()
+    })
+
     expect(req.getURL()).toEqual('https://example.com/upload')
     expect(req.getMethod()).toEqual('PATCH')
     req.respondWith({
@@ -234,7 +238,10 @@ describe('AddByFile', () => {
       value: [file1, file2]
     })
 
-    fireEvent.drop(input)
+    await act(async () => {
+      fireEvent.drop(input)
+    })
+
     expect(getByTestId('WarningAmberRoundedIcon')).toBeInTheDocument()
   })
 })
