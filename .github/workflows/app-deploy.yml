@@ -122,7 +122,7 @@ jobs:
           deployment-id: ${{ steps.deployment.outputs.deployment_id }}
       - name: Set deploy-preview-completed flag
         id: deploy_preview_flag
-        run: echo "##[set-output name=completed;]true"
+        run: echo "completed=true" >> $GITHUB_OUTPUT
   deploy-production:
     name: Deploy Production
     # main branch and not a pull request
@@ -197,4 +197,4 @@ jobs:
           deployment-id: ${{ steps.deployment.outputs.deployment_id }}
       - name: Set deploy-production-completed flag
         id: deploy_production_flag
-        run: echo "##[set-output name=completed;]true"
+        run: echo "completed=true" >> $GITHUB_OUTPUT
