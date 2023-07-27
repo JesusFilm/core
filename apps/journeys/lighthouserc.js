@@ -13,6 +13,22 @@ module.exports = {
     },
     assert: {
       assertions: {
+        'categories:performance': [
+          'warning',
+          { minScore: 0.7, aggregationMethod: 'median-run' }
+        ],
+        'categories:accessibility': [
+          'warning',
+          { minScore: 0.8, aggregationMethod: 'pessimistic' }
+        ],
+        'categories:best-practices': [
+          'warning',
+          { minScore: 1, aggregationMethod: 'pessimistic' }
+        ],
+        'categories:seo': [
+          'warning',
+          { minScore: 0.7, aggregationMethod: 'pessimistic' }
+        ],
         'largest-contentful-paint': ['warn', { maxNumericValue: 2500 }],
         'first-contentful-paint': ['warn', { maxNumericValue: 2000 }],
         'total-blocking-time': ['warn', { maxNumericValue: 200 }]
