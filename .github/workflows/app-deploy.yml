@@ -202,6 +202,6 @@ jobs:
     name: Run journeys E2E tests
     needs: [affected, deploy-production, deploy-preview]
     if: ${{ needs.affected.outputs.matrix.app == 'journeys' }} || ${{ needs.affected.outputs.matrix.app == 'journeys-admin' }}
-    uses: .github/workflows/journeys-e2e-worker.yml
+    uses: ./.github/workflows/journeys-e2e-worker.yml
     with:
       url: ${{ needs.deploy-production.outputs.url || needs.deploy-preview.outputs.url }}
