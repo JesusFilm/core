@@ -701,6 +701,7 @@ input JourneysFilter
 {
   featured: Boolean
   template: Boolean
+  ids: [ID!]
 }
 
 enum JourneysReportType

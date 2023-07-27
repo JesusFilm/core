@@ -175,6 +175,7 @@ export class JourneyResolver {
     const filter: Prisma.JourneyWhereInput = { status: JourneyStatus.published }
     if (where?.template === true) filter.template = true
     if (where?.featured === true) filter.featuredAt = { not: null }
+    if (where?.ids != null) filter.id = { in: where?.ids }
     return await this.prismaService.journey.findMany({
       where: filter
     })
