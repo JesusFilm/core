@@ -79,15 +79,6 @@ function JourneyIdPage(): ReactElement {
           <JourneyInvite journeyId={router.query.journeyId as string} />
         </>
       )}
-      {error?.graphQLErrors[0].message === 'User invitation pending.' && (
-        <>
-          <NextSeo title={t('Access Denied')} />
-          <JourneyInvite
-            journeyId={router.query.journeyId as string}
-            requestReceived
-          />
-        </>
-      )}
     </>
   )
 }
