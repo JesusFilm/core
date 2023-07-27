@@ -44,6 +44,8 @@ jobs:
       matrix:
         app: ${{fromJson(needs.affected.outputs.matrix)}}
     runs-on: ubuntu-latest
+    outputs:
+      url: ${{ steps.deployment-url.outputs.deployment-url }}
     permissions:
       pull-requests: write
       deployments: write
@@ -120,11 +122,6 @@ jobs:
           state: ${{ job.status }}
           environment-url: ${{ steps.deployment-url.outputs.deployment-url }}
           deployment-id: ${{ steps.deployment.outputs.deployment_id }}
-      - name: Run journeys E2E tests
-        if: ${{ matrix.app == 'journeys' }} || ${{ matrix.app == 'journeys-admin' }}
-        uses: JesusFilm/core/.github/workflows/journeys-e2e-worker.yml@${{ github.head_ref || github.ref_name }}
-        with:
-          url: ${{ steps.deployment-url.outputs.deployment-url }}
 
   deploy-production:
     name: Deploy Production
@@ -139,6 +136,8 @@ jobs:
     permissions:
       deployments: write
       contents: write
+    outputs:
+      url: ${{ steps.deployment-url.outputs.deployment-url }}
     steps:
       - name: start deployment
         uses: chrnorm/deployment-action@v2
@@ -199,8 +198,12 @@ jobs:
           environment-url: ${{ steps.deployment-url.outputs.deployment-url }}
           deployment-id: ${{ steps.deployment.outputs.deployment_id }}
 
-      - name: Run journeys E2E tests
-        if: ${{ matrix.app == 'journeys' }} || ${{ matrix.app == 'journeys-admin' }}
-        uses: JesusFilm/core/.github/workflows/journeys-e2e-worker.yml@main
+  journeys-e2e:
+    name: Run journeys E2E tests
+    needs: [affected, deploy-production, deploy-preview]
+    runs-on: ubuntu-latest
+    if: ${{ needs.affected.outputs.matrix.app == 'journeys' }} || ${{ needs.affected.outputs.matrix.app == 'journeys-admin' }}
+    steps:
+      - uses: JesusFilm/core/.github/workflows/journeys-e2e-worker.yml@${{ github.head_ref || github.ref_name }}
         with:
-          url: ${{ steps.deployment-url.outputs.deployment-url }}
+          url: ${{ needs.deploy-production.outputs.url || needs.deploy-preview.outputs.url }}
