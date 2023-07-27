@@ -13,18 +13,12 @@ export const USER_JOURNEY_REQUEST = gql`
 
 export interface JourneyInviteProps {
   journeyId: string
-  requestReceived?: boolean
 }
 
-export function JourneyInvite({
-  journeyId,
-  requestReceived: initialRequestReceived
-}: JourneyInviteProps): ReactElement {
+export function JourneyInvite({ journeyId }: JourneyInviteProps): ReactElement {
   const [userJourneyRequest] =
     useMutation<UserJourneyRequest>(USER_JOURNEY_REQUEST)
-  const [requestReceived, setRequestReceived] = useState(
-    Boolean(initialRequestReceived)
-  )
+  const [requestReceived, setRequestReceived] = useState(false)
 
   const handleClick = async (): Promise<void> => {
     await userJourneyRequest({
