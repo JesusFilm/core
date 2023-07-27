@@ -201,9 +201,7 @@ jobs:
   journeys-e2e:
     name: Run journeys E2E tests
     needs: [affected, deploy-production, deploy-preview]
-    runs-on: ubuntu-latest
     if: ${{ needs.affected.outputs.matrix.app == 'journeys' }} || ${{ needs.affected.outputs.matrix.app == 'journeys-admin' }}
-    steps:
-      - uses: JesusFilm/core/.github/workflows/journeys-e2e-worker.yml@${{ github.head_ref || github.ref_name }}
-        with:
-          url: ${{ needs.deploy-production.outputs.url || needs.deploy-preview.outputs.url }}
+    uses: JesusFilm/core/.github/workflows/journeys-e2e-worker.yml@${{ github.head_ref || github.ref_name }}
+    with:
+      url: ${{ needs.deploy-production.outputs.url || needs.deploy-preview.outputs.url }}
