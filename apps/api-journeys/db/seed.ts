@@ -16,10 +16,10 @@ async function main(): Promise<void> {
   // this should be removed when the UI can support team management
   await jfpTeam()
 
-  await nua1()
-  await nua2()
-  await nua8()
   await nua9()
+  await nua8()
+  await nua2()
+  await nua1()
   await onboarding()
   await onboardingTemplates()
   await vision()
