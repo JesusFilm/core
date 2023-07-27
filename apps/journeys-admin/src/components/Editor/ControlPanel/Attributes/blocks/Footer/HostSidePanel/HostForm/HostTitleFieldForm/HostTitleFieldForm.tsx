@@ -47,7 +47,7 @@ export function HostTitleFieldForm(): ReactElement {
       await updateHost({ id, teamId, input: { title: value } })
     } else if (activeTeam != null) {
       const { data } = await hostCreate({
-        variables: { teamId: activeTeam?.id, input: { title: value } },
+        variables: { teamId: activeTeam.id, input: { title: value } },
         update(cache, { data }) {
           if (data?.hostCreate != null) {
             cache.modify({
