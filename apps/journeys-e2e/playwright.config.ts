@@ -24,7 +24,9 @@ export default defineConfig({
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
     /* Use PR_NUMBER to create environments URL */
-    baseURL: process.env.PR_NUMBER ? `https://journeys-${process.env.PR_NUMBER}-jesusfilm.vercel.app` : 'http://localhost:4100',
+    baseURL: process.env.PR_NUMBER
+      ? `https://journeys-${process.env.PR_NUMBER}-jesusfilm.vercel.app`
+      : 'http://localhost:4100',
 
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: 'on-first-retry',
