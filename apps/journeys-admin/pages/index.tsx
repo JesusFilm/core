@@ -111,6 +111,6 @@ export const getServerSideProps = withAuthUserTokenSSR({
   }
 })
 
-export default withAuthUser({
+export default withAuthUser<IndexPageProps>({
   whenUnauthedAfterInit: AuthAction.REDIRECT_TO_LOGIN
 })(IndexPage)
