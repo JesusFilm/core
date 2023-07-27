@@ -18,6 +18,11 @@ export class VideoService {
     private readonly prismaService: PrismaService
   ) {}
 
+  public parseFullTextSearch(value: string): string {
+    const re = /(\s|\s+)/g
+    return value.replace(re, ' & ')
+  }
+
   public videoFilter(filter: VideosFilter = {}): Prisma.VideoWhereInput {
     const {
       title,
@@ -28,7 +33,10 @@ export class VideoService {
     } = filter
 
     return {
-      title: title != null ? { some: { value: { search: title } } } : undefined,
+      title:
+        title != null
+          ? { some: { value: { search: this.parseFullTextSearch(title) } } }
+          : undefined,
       variants:
         availableVariantLanguageIds != null || subtitleLanguageIds != null
           ? {

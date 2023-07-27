@@ -104,7 +104,7 @@ describe('VideoService', () => {
     it('should filter and search by all', () => {
       expect(
         service.videoFilter({
-          title: 'abc',
+          title: 'abc 123',
           availableVariantLanguageIds: ['en'],
           labels: [VideoLabel.collection],
           ids: ['videoId']
@@ -112,7 +112,7 @@ describe('VideoService', () => {
       ).toEqual({
         id: { in: ['videoId'] },
         label: { in: ['collection'] },
-        title: { some: { value: { search: 'abc' } } },
+        title: { some: { value: { search: 'abc & 123' } } },
         variants: {
           some: {
             languageId: { in: ['en'] },
