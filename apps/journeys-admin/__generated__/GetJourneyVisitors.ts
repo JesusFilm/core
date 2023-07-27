@@ -111,4 +111,5 @@ export interface GetJourneyVisitorsVariables {
   sort?: JourneyVisitorSort | null;
   first?: number | null;
   after?: string | null;
+  teamId: string;
 }

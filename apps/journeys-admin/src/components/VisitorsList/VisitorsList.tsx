@@ -16,9 +16,9 @@ import { getColDefs } from './utils/getColDefs'
 import { getVisitorRows } from './utils/getVisitorRows'
 
 export const GET_VISITORS = gql`
-  query GetVisitors($first: Int, $after: String) {
+  query GetVisitors($first: Int, $after: String, $teamId: String!) {
     visitors: visitorsConnection(
-      teamId: "jfp-team"
+      teamId: $teamId
       first: $first
       after: $after
     ) {
@@ -65,7 +65,6 @@ const StyledDataGrid = styled(DataGrid)(({ theme }) => ({
 export function VisitorsList(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { activeTeam } = useTeam()
-  console.log(activeTeam)
   const router = useRouter()
   const [visitors, setVisitors] = useState<Visitor[]>([])
   const [hasNextPage, setHasNextPage] = useState(true)
@@ -85,7 +84,7 @@ export function VisitorsList(): ReactElement {
   })
 
   async function handleFetchNext(): Promise<void> {
-    if (hasNextPage) {
+    if (hasNextPage && activeTeam != null) {
       const response = await fetchMore({
         variables: {
           first: 100,

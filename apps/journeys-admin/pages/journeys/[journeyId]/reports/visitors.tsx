@@ -35,6 +35,7 @@ export const GET_JOURNEY_VISITORS = gql`
     $sort: JourneyVisitorSort
     $first: Int
     $after: String
+    $teamId: String!
   ) {
     visitors: journeyVisitorsConnection(
       teamId: $teamId
@@ -129,12 +130,13 @@ function JourneyVisitorsPage(): ReactElement {
   )
 
   async function handleFetchNext(): Promise<void> {
-    if (visitorEdges != null && hasNextPage) {
+    if (visitorEdges != null && hasNextPage && activeTeam != null) {
       const response = await fetchMore({
         variables: {
           filter: { journeyId },
           first: 100,
-          after: endCursor
+          after: endCursor,
+          teamId: activeTeam.id
         }
       })
       if (response.data.visitors.edges != null) {

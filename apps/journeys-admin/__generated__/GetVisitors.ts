@@ -94,4 +94,5 @@ export interface GetVisitors {
 export interface GetVisitorsVariables {
   first?: number | null;
   after?: string | null;
+  teamId: string;
 }
