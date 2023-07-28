@@ -352,6 +352,7 @@ export interface JourneyVisitorFilter {
 export interface JourneysFilter {
   featured?: boolean | null;
   template?: boolean | null;
+  ids?: string[] | null;
 }
 
 export interface LinkActionInput {
