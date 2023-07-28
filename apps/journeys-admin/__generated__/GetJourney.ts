@@ -625,6 +625,14 @@ export interface GetJourney_journey_host {
   src2: string | null;
 }
 
+export interface GetJourney_journey_team {
+  __typename: "Team";
+  id: string;
+  title: string;
+  createdAt: any;
+  updatedAt: any;
+}
+
 export interface GetJourney_journey {
   __typename: "Journey";
   id: string;
@@ -645,6 +653,7 @@ export interface GetJourney_journey {
   userJourneys: GetJourney_journey_userJourneys[] | null;
   chatButtons: GetJourney_journey_chatButtons[];
   host: GetJourney_journey_host | null;
+  team: GetJourney_journey_team | null;
 }
 
 export interface GetJourney {

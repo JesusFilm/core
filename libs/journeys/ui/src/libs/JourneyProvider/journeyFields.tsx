@@ -57,5 +57,11 @@ export const JOURNEY_FIELDS = gql`
       src1
       src2
     }
+    team {
+      id
+      title
+      createdAt
+      updatedAt
+    }
   }
 `

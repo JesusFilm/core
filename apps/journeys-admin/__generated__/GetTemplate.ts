@@ -625,6 +625,14 @@ export interface GetTemplate_template_host {
   src2: string | null;
 }
 
+export interface GetTemplate_template_team {
+  __typename: "Team";
+  id: string;
+  title: string;
+  createdAt: any;
+  updatedAt: any;
+}
+
 export interface GetTemplate_template {
   __typename: "Journey";
   id: string;
@@ -645,6 +653,7 @@ export interface GetTemplate_template {
   userJourneys: GetTemplate_template_userJourneys[] | null;
   chatButtons: GetTemplate_template_chatButtons[];
   host: GetTemplate_template_host | null;
+  team: GetTemplate_template_team | null;
 }
 
 export interface GetTemplate {
