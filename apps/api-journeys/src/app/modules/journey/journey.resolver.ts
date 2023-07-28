@@ -22,7 +22,8 @@ import {
   Journey,
   UserJourney,
   UserJourneyRole,
-  Prisma
+  Prisma,
+  Team
 } from '.prisma/api-journeys-client'
 import { FromPostgresql } from '@core/nest/decorators/FromPostgresql'
 import isEmpty from 'lodash/isEmpty'
@@ -728,6 +729,14 @@ export class JourneyResolver {
     if (journey.hostId == null) return null
     return await this.prismaService.host.findUnique({
       where: { id: journey.hostId }
+    })
+  }
+
+  @ResolveField()
+  async team(@Parent() journey: Journey): Promise<Team | null> {
+    if (journey.teamId == null) return null
+    return await this.prismaService.team.findUnique({
+      where: { id: journey.teamId }
     })
   }
 
