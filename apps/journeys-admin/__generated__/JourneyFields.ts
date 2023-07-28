@@ -625,6 +625,11 @@ export interface JourneyFields_host {
   src2: string | null;
 }
 
+export interface JourneyFields_team {
+  __typename: "Team";
+  id: string;
+}
+
 export interface JourneyFields {
   __typename: "Journey";
   id: string;
@@ -645,4 +650,5 @@ export interface JourneyFields {
   userJourneys: JourneyFields_userJourneys[] | null;
   chatButtons: JourneyFields_chatButtons[];
   host: JourneyFields_host | null;
+  team: JourneyFields_team | null;
 }

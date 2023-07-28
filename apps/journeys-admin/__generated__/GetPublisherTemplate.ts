@@ -625,6 +625,11 @@ export interface GetPublisherTemplate_publisherTemplate_host {
   src2: string | null;
 }
 
+export interface GetPublisherTemplate_publisherTemplate_team {
+  __typename: "Team";
+  id: string;
+}
+
 export interface GetPublisherTemplate_publisherTemplate {
   __typename: "Journey";
   id: string;
@@ -645,6 +650,7 @@ export interface GetPublisherTemplate_publisherTemplate {
   userJourneys: GetPublisherTemplate_publisherTemplate_userJourneys[] | null;
   chatButtons: GetPublisherTemplate_publisherTemplate_chatButtons[];
   host: GetPublisherTemplate_publisherTemplate_host | null;
+  team: GetPublisherTemplate_publisherTemplate_team | null;
 }
 
 export interface GetPublisherTemplate {
