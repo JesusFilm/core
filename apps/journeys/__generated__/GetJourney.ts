@@ -629,8 +629,6 @@ export interface GetJourney_journey_team {
   __typename: "Team";
   id: string;
   title: string;
-  createdAt: any;
-  updatedAt: any;
 }
 
 export interface GetJourney_journey {

@@ -629,8 +629,6 @@ export interface GetTemplate_template_team {
   __typename: "Team";
   id: string;
   title: string;
-  createdAt: any;
-  updatedAt: any;
 }
 
 export interface GetTemplate_template {

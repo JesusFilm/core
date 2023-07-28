@@ -60,8 +60,6 @@ export const JOURNEY_FIELDS = gql`
     team {
       id
       title
-      createdAt
-      updatedAt
     }
   }
 `
