@@ -16,6 +16,7 @@ import {
   Upload
 } from 'tus-js-client'
 import LinearProgress from '@mui/material/LinearProgress'
+import { useTranslation } from 'react-i18next'
 import { CreateCloudflareVideoUploadByFileMutation } from '../../../../../../__generated__/CreateCloudflareVideoUploadByFileMutation'
 import { GetMyCloudflareVideoQuery } from '../../../../../../__generated__/GetMyCloudflareVideoQuery'
 
@@ -52,6 +53,7 @@ export function AddByFile({
   onChange,
   httpStack
 }: AddByFileProps): ReactElement {
+  const { t } = useTranslation('journeys-admin')
   const [createCloudflareVideoUploadByFile, { data }] =
     useMutation<CreateCloudflareVideoUploadByFileMutation>(
       CREATE_CLOUDFLARE_VIDEO_UPLOAD_BY_FILE_MUTATION
@@ -225,14 +227,14 @@ export function AddByFile({
           }
           sx={{ pb: 4 }}
         >
-          {uploading && 'Uploading...'}
-          {processing && 'Processing...'}
-          {(error != null || fileRejected) && 'Upload Failed!'}
+          {uploading && t('Uploading...')}
+          {processing && t('Processing...')}
+          {(error != null || fileRejected) && t('Upload Failed!')}
           {!uploading &&
             !processing &&
             !fileRejected &&
             error == null &&
-            'Drop a video here'}
+            t('Drop a video here')}
         </Typography>
       </Box>
       <Stack
@@ -253,12 +255,12 @@ export function AddByFile({
           </Typography>
         ) : fileRejected ? (
           <Typography variant="caption">
-            {fileInvalidType && 'Invalid file type. '}
-            {tooManyFiles && 'Only one file upload at once. '}
-            {fileTooLarge && 'File is too large. Max size is 1 GB.'}
+            {fileInvalidType && t('Invalid file type. ')}
+            {tooManyFiles && t('Only one file upload at once. ')}
+            {fileTooLarge && t('File is too large. Max size is 1 GB.')}
           </Typography>
         ) : (
-          <Typography variant="caption">Max size is 1 GB</Typography>
+          <Typography variant="caption">{t('Max size is 1 GB')}</Typography>
         )}
       </Stack>
 
@@ -288,7 +290,7 @@ export function AddByFile({
             fontSize={14}
             sx={{ color: 'secondary.main' }}
           >
-            Upload file
+            {t('Upload file')}
           </Typography>
         </Button>
       )}
