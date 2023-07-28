@@ -62,7 +62,8 @@ export const TextResponse = ({
 
   const { admin } = useJourney()
   const { enqueueSnackbar } = useSnackbar()
-  const { activeBlock, treeBlocks } = useBlocks()
+  const { blockHistory, treeBlocks } = useBlocks()
+  const activeBlock = blockHistory[blockHistory.length - 1]
 
   const heading =
     activeBlock != null
@@ -142,6 +143,7 @@ export const TextResponse = ({
                 helperText={hint}
                 multiline
                 minRows={minRows ?? 3}
+                onClick={(e) => e.stopPropagation()}
                 onChange={handleChange}
                 onBlur={handleBlur}
                 disabled={selectedBlock !== undefined}
@@ -155,6 +157,7 @@ export const TextResponse = ({
                 startIcon={
                   submitIcon != null ? <Icon {...submitIcon} /> : undefined
                 }
+                onClick={(e) => e.stopPropagation()}
                 sx={{ ...sx, mb: 0 }}
               >
                 {editableSubmitLabel ?? submitLabel ?? t('Submit')}
