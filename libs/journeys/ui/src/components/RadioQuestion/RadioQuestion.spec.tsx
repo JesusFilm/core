@@ -2,7 +2,7 @@ import { MockedProvider } from '@apollo/client/testing'
 import { render, fireEvent, waitFor } from '@testing-library/react'
 import TagManager from 'react-gtm-module'
 import type { TreeBlock } from '../../libs/block'
-import { activeBlockVar, treeBlocksVar } from '../../libs/block'
+import { blockHistoryVar, treeBlocksVar } from '../../libs/block'
 import { JourneyProvider } from '../../libs/JourneyProvider'
 import { BlockFields_StepBlock as StepBlock } from '../../libs/block/__generated__/BlockFields'
 import { RadioQuestionFields } from './__generated__/RadioQuestionFields'
@@ -87,7 +87,7 @@ describe('RadioQuestion', () => {
   })
 
   it('should select an option onClick', async () => {
-    activeBlockVar(activeBlock)
+    blockHistoryVar([activeBlock])
 
     const result = jest.fn(() => ({
       data: {
@@ -133,7 +133,7 @@ describe('RadioQuestion', () => {
   })
 
   it('should disable unselected options', async () => {
-    activeBlockVar(activeBlock)
+    blockHistoryVar([activeBlock])
 
     const { getByTestId, getAllByRole } = render(
       <MockedProvider
@@ -204,7 +204,7 @@ describe('RadioQuestion', () => {
   })
 
   it('should add radio submission to dataLayer', async () => {
-    activeBlockVar(activeBlock)
+    blockHistoryVar([activeBlock])
     treeBlocksVar([activeBlock])
 
     const { getAllByRole } = render(
