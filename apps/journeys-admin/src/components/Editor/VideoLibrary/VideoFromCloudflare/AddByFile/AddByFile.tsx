@@ -53,7 +53,7 @@ export function AddByFile({
   onChange,
   httpStack
 }: AddByFileProps): ReactElement {
-  const { t } = useTranslation('journeys-admin')
+  const { t } = useTranslation('apps-journeys-admin')
   const [createCloudflareVideoUploadByFile, { data }] =
     useMutation<CreateCloudflareVideoUploadByFileMutation>(
       CREATE_CLOUDFLARE_VIDEO_UPLOAD_BY_FILE_MUTATION
