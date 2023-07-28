@@ -230,6 +230,7 @@ export function VideoBlockEditorSettingsPosterLibrary({
       onClose={onClose}
       onChange={handleChange}
       onDelete={deleteCoverBlock}
+      loading={createLoading || updateLoading}
       selectedBlock={selectedBlock}
       error={createError != null ?? updateError != null}
     />
