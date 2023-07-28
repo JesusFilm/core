@@ -2,8 +2,8 @@ import { useBreakpoints } from '@core/shared/ui/useBreakpoints'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import {
   TreeBlock,
-  activeBlockVar,
-  treeBlocksVar
+  treeBlocksVar,
+  blockHistoryVar
 } from '@core/journeys/ui/block'
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
@@ -249,12 +249,12 @@ describe('Conductor', () => {
       </MockedProvider>
     )
     expect(treeBlocksVar()).toBe(blocks)
-    expect(activeBlockVar()).toBe(null)
+    expect(blockHistoryVar()).toStrictEqual([])
   })
 
   describe('ltr journey', () => {
-    it('should navigate to next block on right button click', () => {
-      const { getByTestId, queryByTestId } = render(
+    it('should navigate back and forth', () => {
+      const { getByTestId } = render(
         <MockedProvider mocks={[]}>
           <SnackbarProvider>
             <JourneyProvider value={{ journey: defaultJourney }}>
@@ -263,86 +263,30 @@ describe('Conductor', () => {
           </SnackbarProvider>
         </MockedProvider>
       )
-      const leftButton = queryByTestId('conductorLeftButton')
-      const rightButton = getByTestId('conductorRightButton')
+      const leftButton = getByTestId('conductorPrevButton')
+      const rightButton = getByTestId('conductorNextButton')
 
       expect(treeBlocksVar()).toBe(basic)
-      expect(activeBlockVar()?.id).toBe('step1.id')
-      expect(leftButton).not.toBeInTheDocument()
-      expect(rightButton).not.toBeDisabled()
+      expect(blockHistoryVar()[0].id).toBe('step1.id')
+      expect(rightButton).toBeVisible()
       expect(rightButton).toHaveStyle('cursor: pointer;')
 
       fireEvent.click(rightButton)
 
-      expect(activeBlockVar()?.id).toBe('step2.id')
-    })
+      expect(blockHistoryVar()).toHaveLength(2)
+      expect(blockHistoryVar()[1].id).toBe('step2.id')
+      expect(leftButton).toBeVisible()
 
-    it('should disable navigating to previous step by default', () => {
-      const { getByTestId } = render(
-        <MockedProvider mocks={[]}>
-          <SnackbarProvider>
-            <JourneyProvider value={{ journey: defaultJourney }}>
-              <Conductor blocks={basic} />
-            </JourneyProvider>
-          </SnackbarProvider>
-        </MockedProvider>
-      )
+      fireEvent.click(leftButton)
 
-      const rightButton = getByTestId('conductorRightButton')
-      fireEvent.click(rightButton)
-      expect(activeBlockVar()?.id).toBe('step2.id')
-      const leftButton = getByTestId('conductorLeftButton')
-
-      expect(leftButton).toBeInTheDocument()
-      expect(leftButton).toBeDisabled()
-    })
-
-    it('should disable right button if next step is locked', () => {
-      const { getByTestId } = render(
-        <MockedProvider mocks={[]}>
-          <SnackbarProvider>
-            <JourneyProvider value={{ journey: defaultJourney }}>
-              <Conductor blocks={basic} />
-            </JourneyProvider>
-          </SnackbarProvider>
-        </MockedProvider>
-      )
-
-      fireEvent.click(getByTestId('conductorRightButton'))
-      expect(activeBlockVar()?.id).toBe('step2.id')
-
-      expect(getByTestId('conductorRightButton')).toBeDisabled()
-    })
-
-    it('should not show right button if on last card', () => {
-      const { getByTestId, getAllByRole, queryByTestId } = render(
-        <MockedProvider mocks={[]}>
-          <SnackbarProvider>
-            <JourneyProvider value={{ journey: defaultJourney }}>
-              <Conductor blocks={basic} />
-            </JourneyProvider>
-          </SnackbarProvider>
-        </MockedProvider>
-      )
-
-      fireEvent.click(getByTestId('conductorRightButton'))
-      expect(activeBlockVar()?.id).toBe('step2.id')
-
-      fireEvent.click(
-        getAllByRole('button', { name: 'Step 3 (No nextBlockId)' })[0]
-      )
-      expect(activeBlockVar()?.id).toBe('step3.id')
-
-      fireEvent.click(getByTestId('conductorRightButton'))
-      expect(activeBlockVar()?.id).toBe('step4.id')
-
-      expect(queryByTestId('conductorRightButton')).not.toBeInTheDocument()
+      expect(blockHistoryVar()).toHaveLength(1)
+      expect(blockHistoryVar()[0].id).toBe('step1.id')
     })
   })
 
   describe('rtl journey', () => {
-    it('should navigate to next block on left button click', () => {
-      const { getByTestId, queryByTestId } = render(
+    it('should navigate back and forth', () => {
+      const { getByTestId } = render(
         <MockedProvider mocks={[]}>
           <SnackbarProvider>
             <JourneyProvider
@@ -353,86 +297,24 @@ describe('Conductor', () => {
           </SnackbarProvider>
         </MockedProvider>
       )
-      const leftButton = getByTestId('conductorLeftButton')
-      const rightButton = queryByTestId('conductorRightButton')
+      const leftButton = getByTestId('conductorNextButton')
+      const rightButton = getByTestId('conductorPrevButton')
 
       expect(treeBlocksVar()).toBe(basic)
-      expect(activeBlockVar()?.id).toBe('step1.id')
-      expect(rightButton).not.toBeInTheDocument()
-      expect(leftButton).not.toBeDisabled()
+      expect(blockHistoryVar()[0].id).toBe('step1.id')
+      expect(leftButton).toBeVisible()
       expect(leftButton).toHaveStyle('cursor: pointer;')
 
       fireEvent.click(leftButton)
 
-      expect(activeBlockVar()?.id).toBe('step2.id')
-    })
+      expect(blockHistoryVar()).toHaveLength(2)
+      expect(blockHistoryVar()[1].id).toBe('step2.id')
+      expect(rightButton).toBeVisible()
 
-    it('should disable navigating to previous step by default', () => {
-      const { getByTestId } = render(
-        <MockedProvider mocks={[]}>
-          <SnackbarProvider>
-            <JourneyProvider
-              value={{ journey: { ...defaultJourney, language: rtlLanguage } }}
-            >
-              <Conductor blocks={basic} />
-            </JourneyProvider>
-          </SnackbarProvider>
-        </MockedProvider>
-      )
+      fireEvent.click(rightButton)
 
-      const leftButton = getByTestId('conductorLeftButton')
-      fireEvent.click(leftButton)
-      expect(activeBlockVar()?.id).toBe('step2.id')
-      const rightButton = getByTestId('conductorRightButton')
-
-      expect(rightButton).toBeInTheDocument()
-      expect(rightButton).toBeDisabled()
-    })
-
-    it('should disable left button if next step is locked', () => {
-      const { getByTestId } = render(
-        <MockedProvider mocks={[]}>
-          <SnackbarProvider>
-            <JourneyProvider
-              value={{ journey: { ...defaultJourney, language: rtlLanguage } }}
-            >
-              <Conductor blocks={basic} />
-            </JourneyProvider>
-          </SnackbarProvider>
-        </MockedProvider>
-      )
-
-      fireEvent.click(getByTestId('conductorLeftButton'))
-      expect(activeBlockVar()?.id).toBe('step2.id')
-
-      expect(getByTestId('conductorLeftButton')).toBeDisabled()
-    })
-
-    it('should not show left button if on last card', () => {
-      const { getByTestId, getAllByRole, queryByTestId } = render(
-        <MockedProvider mocks={[]}>
-          <SnackbarProvider>
-            <JourneyProvider
-              value={{ journey: { ...defaultJourney, language: rtlLanguage } }}
-            >
-              <Conductor blocks={basic} />
-            </JourneyProvider>
-          </SnackbarProvider>
-        </MockedProvider>
-      )
-
-      fireEvent.click(getByTestId('conductorLeftButton'))
-      expect(activeBlockVar()?.id).toBe('step2.id')
-
-      fireEvent.click(
-        getAllByRole('button', { name: 'Step 3 (No nextBlockId)' })[0]
-      )
-      expect(activeBlockVar()?.id).toBe('step3.id')
-
-      fireEvent.click(getByTestId('conductorLeftButton'))
-      expect(activeBlockVar()?.id).toBe('step4.id')
-
-      expect(queryByTestId('conductorLeftButton')).not.toBeInTheDocument()
+      expect(blockHistoryVar()).toHaveLength(1)
+      expect(blockHistoryVar()[0].id).toBe('step1.id')
     })
   })
 })
