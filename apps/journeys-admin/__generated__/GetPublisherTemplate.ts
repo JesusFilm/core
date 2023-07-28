@@ -628,6 +628,7 @@ export interface GetPublisherTemplate_publisherTemplate_host {
 export interface GetPublisherTemplate_publisherTemplate_team {
   __typename: "Team";
   id: string;
+  title: string;
 }
 
 export interface GetPublisherTemplate_publisherTemplate {

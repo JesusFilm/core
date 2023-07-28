@@ -628,6 +628,7 @@ export interface GetTemplate_template_host {
 export interface GetTemplate_template_team {
   __typename: "Team";
   id: string;
+  title: string;
 }
 
 export interface GetTemplate_template {

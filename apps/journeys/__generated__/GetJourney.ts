@@ -628,6 +628,7 @@ export interface GetJourney_journey_host {
 export interface GetJourney_journey_team {
   __typename: "Team";
   id: string;
+  title: string;
 }
 
 export interface GetJourney_journey {

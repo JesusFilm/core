@@ -628,6 +628,7 @@ export interface JourneyFields_host {
 export interface JourneyFields_team {
   __typename: "Team";
   id: string;
+  title: string;
 }
 
 export interface JourneyFields {
