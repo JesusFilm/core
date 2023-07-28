@@ -363,7 +363,7 @@ describe('JourneyView/Menu', () => {
     expect(menu).not.toHaveAttribute('aria-expanded')
   })
 
-  it('should handle edit journey language', () => {
+  it('should handle edit journey language', async () => {
     const { getByRole, getByText } = render(
       <SnackbarProvider>
         <MockedProvider mocks={[]}>
@@ -377,7 +377,7 @@ describe('JourneyView/Menu', () => {
     const menu = getByRole('button')
     fireEvent.click(menu)
     fireEvent.click(getByRole('menuitem', { name: 'Language' }))
-    expect(getByRole('dialog')).toBeInTheDocument()
+    await waitFor(() => expect(getByRole('dialog')).toBeInTheDocument())
     expect(getByText('Edit Language')).toBeInTheDocument()
     expect(menu).not.toHaveAttribute('aria-expanded')
   })
