@@ -122,10 +122,17 @@ jobs:
           state: ${{ job.status }}
           environment-url: ${{ steps.deployment-url.outputs.deployment-url }}
           deployment-id: ${{ steps.deployment.outputs.deployment_id }}
-      - name: playwright tests deploy-preview
-        uses: ./.github/workflows/journeys-e2e-worker.yml
+      - name: Install Playwright Browsers
+        run: npx playwright install --with-deps
+      - name: Run Playwright tests
+        run: npx nx run ${{ matrix.app }}-e2e:e2e
+        env:
+          DEPLOYMENT_URL: ${{ steps.deployment-url.outputs.deployment-url }}
+      - uses: actions/upload-artifact@v3
         with:
-          url: ${{ steps.deployment-url.outputs.deployment-url }}
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 30
 
   deploy-production:
     name: Deploy Production
@@ -201,7 +208,3 @@ jobs:
           state: ${{ job.status }}
           environment-url: ${{ steps.deployment-url.outputs.deployment-url }}
           deployment-id: ${{ steps.deployment.outputs.deployment_id }}
-      - name: playwright tests deploy-production
-        uses: ./.github/workflows/journeys-e2e-worker.yml
-        with:
-          url: ${{ steps.deployment-url.outputs.deployment-url }}
