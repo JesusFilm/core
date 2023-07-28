@@ -1,5 +1,5 @@
 import { ReactElement } from 'react'
-import { gql, useQuery } from '@apollo/client'
+import { ApolloError, gql } from '@apollo/client'
 import { JOURNEY_FIELDS } from '@core/journeys/ui/JourneyProvider/journeyFields'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { useRouter } from 'next/router'
@@ -39,13 +39,15 @@ export const USER_JOURNEY_OPEN = gql`
   }
 `
 
-function JourneyIdPage(): ReactElement {
+interface JourneyIdPageProps {
+  data?: GetJourney
+  error: ApolloError
+}
+
+function JourneyIdPage({ data, error }: JourneyIdPageProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const router = useRouter()
   const AuthUser = useAuthUser()
-  const { data, error } = useQuery<GetJourney>(GET_JOURNEY, {
-    variables: { id: router.query.journeyId }
-  })
 
   useInvalidJourneyRedirect(data)
 
@@ -73,19 +75,10 @@ function JourneyIdPage(): ReactElement {
         </>
       )}
       {error?.graphQLErrors[0].message ===
-        'User has not received an invitation to edit this journey.' && (
+        'user is not allowed to view journey' && (
         <>
           <NextSeo title={t('Access Denied')} />
           <JourneyInvite journeyId={router.query.journeyId as string} />
-        </>
-      )}
-      {error?.graphQLErrors[0].message === 'User invitation pending.' && (
-        <>
-          <NextSeo title={t('Access Denied')} />
-          <JourneyInvite
-            journeyId={router.query.journeyId as string}
-            requestReceived
-          />
         </>
       )}
     </>
@@ -112,14 +105,23 @@ export const getServerSideProps = withAuthUserTokenSSR({
     })
   ])
 
+  const { data, error } = await apolloClient.query<GetJourney>({
+    query: GET_JOURNEY,
+    variables: {
+      id: query?.journeyId
+    }
+  })
+
   return {
     props: {
       flags,
+      data,
+      error: error ?? null,
       ...translations
     }
   }
 })
 
-export default withAuthUser({
+export default withAuthUser<JourneyIdPageProps>({
   whenUnauthedAfterInit: AuthAction.REDIRECT_TO_LOGIN
 })(JourneyIdPage)

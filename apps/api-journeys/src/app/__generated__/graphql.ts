@@ -594,6 +594,7 @@ export class HostCreateInput {
 export class JourneysFilter {
     featured?: Nullable<boolean>;
     template?: Nullable<boolean>;
+    ids?: Nullable<string[]>;
 }
 
 export class JourneyCreateInput {
@@ -747,6 +748,7 @@ export class Journey {
     seoDescription?: Nullable<string>;
     template?: Nullable<boolean>;
     host?: Nullable<Host>;
+    team?: Nullable<Team>;
     userJourneys?: Nullable<UserJourney[]>;
 }
 

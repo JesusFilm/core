@@ -70,7 +70,9 @@ export function Video({
   const theme = useTheme()
   const videoRef = useRef<HTMLVideoElement>(null)
   const [player, setPlayer] = useState<Player>()
-  const { activeBlock } = useBlocks()
+  const { blockHistory } = useBlocks()
+  const activeBlock = blockHistory[blockHistory.length - 1]
+
   const {
     state: { selectedBlock }
   } = useEditor()
