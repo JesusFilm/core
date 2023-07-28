@@ -398,13 +398,7 @@ export function Video({
           placeholder={blurBackground != null ? 'blur' : 'empty'}
           blurDataURL={blurBackground}
           layout="fill"
-          objectFit={videoFit}
-          style={{
-            transform:
-              objectFit === VideoBlockObjectFit.zoomed
-                ? 'scale(1.33)'
-                : undefined
-          }}
+          objectFit="cover"
         />
       )}
     </Box>
