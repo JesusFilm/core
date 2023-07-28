@@ -524,6 +524,15 @@ describe('JourneyResolver', () => {
         }
       })
     })
+    it('returns a list of journeys', async () => {
+      prismaService.journey.findMany.mockResolvedValueOnce([journey, journey])
+      expect(
+        await resolver.journeys({ ids: [journey.id, journey.id] })
+      ).toEqual([journey, journey])
+      expect(prismaService.journey.findMany).toHaveBeenCalledWith({
+        where: { id: { in: ['journeyId', 'journeyId'] }, status: 'published' }
+      })
+    })
   })
   describe('journey', () => {
     it('returns journey by slug', async () => {
