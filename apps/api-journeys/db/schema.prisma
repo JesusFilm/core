@@ -238,7 +238,7 @@ model UserJourney {
   updatedAt DateTime        @default(now()) @updatedAt
   journey   Journey         @relation(fields: [journeyId], references: [id], onDelete: Cascade)
   role      UserJourneyRole
-  openedAt  DateTime?       @default(now())
+  openedAt  DateTime?
 
   @@unique([journeyId, userId])
 }
