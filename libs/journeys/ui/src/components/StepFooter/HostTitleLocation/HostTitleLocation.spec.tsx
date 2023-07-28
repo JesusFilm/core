@@ -48,7 +48,8 @@ describe('HostTitleLocation', () => {
       teamId: 'teamId',
       src1: null,
       src2: null
-    }
+    },
+    team: null
   }
 
   const rtlLanguage = {

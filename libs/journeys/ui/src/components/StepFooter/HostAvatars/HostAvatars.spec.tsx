@@ -57,7 +57,8 @@ describe('HostAvatars', () => {
     seoTitle: 'My awesome journey',
     seoDescription: null,
     chatButtons: [],
-    host: hostData
+    host: hostData,
+    team: null
   }
 
   it('renders both avatars if both images are set', () => {
