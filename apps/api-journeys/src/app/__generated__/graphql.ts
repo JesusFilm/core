@@ -748,6 +748,7 @@ export class Journey {
     seoDescription?: Nullable<string>;
     template?: Nullable<boolean>;
     host?: Nullable<Host>;
+    team?: Nullable<Team>;
     userJourneys?: Nullable<UserJourney[]>;
 }
 

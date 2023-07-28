@@ -234,6 +234,7 @@ type Journey
   seoDescription: String
   template: Boolean
   host: Host
+  team: Team
   userJourneys: [UserJourney!]
 }
 
