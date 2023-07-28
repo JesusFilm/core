@@ -53,7 +53,8 @@ const journey: Journey = {
   seoTitle: null,
   seoDescription: null,
   chatButtons: [],
-  host: null
+  host: null,
+  team: null
 }
 
 export const NavigateToJourney: Story = () => {
