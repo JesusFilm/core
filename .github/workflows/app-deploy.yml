@@ -1,7 +1,7 @@
 name: App Deploy
 on:
   push:
-    branches: [main, stage, feature/23-05-KC-test-setup-playwright-nx]
+    branches: [main, stage, feature/*]
   pull_request:
     branches: [main, feature/*]
 concurrency:
