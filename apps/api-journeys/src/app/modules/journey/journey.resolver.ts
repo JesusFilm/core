@@ -733,6 +733,14 @@ export class JourneyResolver {
   }
 
   @ResolveField()
+  async team(@Parent() journey: Journey): Promise<Team | null> {
+    if (journey.teamId == null) return null
+    return await this.prismaService.team.findUnique({
+      where: { id: journey.teamId }
+    })
+  }
+
+  @ResolveField()
   async primaryImageBlock(@Parent() journey: Journey): Promise<Block | null> {
     if (journey.primaryImageBlockId == null) return null
     const block = await this.prismaService.block.findUnique({
@@ -747,14 +755,6 @@ export class JourneyResolver {
   async userJourneys(@Parent() journey: Journey): Promise<UserJourney[]> {
     return await this.prismaService.userJourney.findMany({
       where: { journeyId: journey.id }
-    })
-  }
-
-  @ResolveField()
-  async team(@Parent() journey: Journey): Promise<Team | null> {
-    if (journey.teamId == null) return null
-    return await this.prismaService.team.findUnique({
-      where: { id: journey.teamId }
     })
   }
 
