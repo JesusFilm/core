@@ -42,10 +42,4 @@ Default.args = {
   journeyId: 'journeyId'
 }
 
-export const Sent = Template.bind({})
-Sent.args = {
-  journeyId: 'journeyId',
-  requestReceived: true
-}
-
 export default Demo as Meta

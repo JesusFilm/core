@@ -17,6 +17,7 @@ import NextLink from 'next/link'
 import { useSnackbar } from 'notistack'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { useRouter } from 'next/router'
+import dynamic from 'next/dynamic'
 import {
   JourneyStatus,
   Role,
@@ -29,8 +30,18 @@ import { TitleDescriptionDialog } from '../TitleDescription/TitleDescriptionDial
 import { useJourneyDuplicate } from '../../../libs/useJourneyDuplicate'
 import { DescriptionDialog } from './DescriptionDialog'
 import { TitleDialog } from './TitleDialog'
-import { LanguageDialog } from './LanguageDialog'
 import { CreateTemplateMenuItem } from './CreateTemplateMenuItem'
+
+const DynamicLanguageDialog = dynamic<{
+  open: boolean
+  onClose: () => void
+}>(
+  async () =>
+    await import(
+      /* webpackChunkName: "MenuLanguageDialog" */
+      './LanguageDialog'
+    ).then((mod) => mod.LanguageDialog)
+)
 
 export const JOURNEY_PUBLISH = gql`
   mutation JourneyPublish($id: ID!) {
@@ -271,10 +282,12 @@ export function Menu(): ReactElement {
             open={showDescriptionDialog}
             onClose={() => setShowDescriptionDialog(false)}
           />
-          <LanguageDialog
-            open={showLanguageDialog}
-            onClose={() => setShowLanguageDialog(false)}
-          />
+          {showLanguageDialog && (
+            <DynamicLanguageDialog
+              open={showLanguageDialog}
+              onClose={() => setShowLanguageDialog(false)}
+            />
+          )}
         </>
       ) : (
         <IconButton edge="end" disabled>

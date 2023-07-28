@@ -6,7 +6,18 @@ import IconButton from '@mui/material/IconButton'
 import CreateRoundedIcon from '@mui/icons-material/CreateRounded'
 import Box from '@mui/material/Box'
 import { useTheme } from '@mui/material/styles'
-import { LanguageDialog } from '../../../Menu/LanguageDialog'
+import dynamic from 'next/dynamic'
+
+const DynamicLanguageDialog = dynamic<{
+  open: boolean
+  onClose: () => void
+}>(
+  async () =>
+    await import(
+      /* webpackChunkName: "PropertiesLanguageDialog" */
+      '../../../Menu/LanguageDialog'
+    ).then((mod) => mod.LanguageDialog)
+)
 
 interface LanguageProps {
   isPublisher?: boolean
@@ -61,10 +72,12 @@ export function Language({ isPublisher }: LanguageProps): ReactElement {
           </IconButton>
         )}
       </Box>
-      <LanguageDialog
-        open={showLanguageDialog}
-        onClose={() => setShowLanguageDialog(false)}
-      />
+      {showLanguageDialog && (
+        <DynamicLanguageDialog
+          open={showLanguageDialog}
+          onClose={() => setShowLanguageDialog(false)}
+        />
+      )}
     </>
   )
 }
