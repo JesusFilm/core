@@ -1,5 +1,5 @@
 import { ReactElement } from 'react'
-import { ApolloError, gql } from '@apollo/client'
+import { gql, useQuery } from '@apollo/client'
 import { JOURNEY_FIELDS } from '@core/journeys/ui/JourneyProvider/journeyFields'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { useRouter } from 'next/router'
@@ -39,15 +39,13 @@ export const USER_JOURNEY_OPEN = gql`
   }
 `
 
-interface JourneyIdPageProps {
-  data?: GetJourney
-  error: ApolloError
-}
-
-function JourneyIdPage({ data, error }: JourneyIdPageProps): ReactElement {
+function JourneyIdPage(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const router = useRouter()
   const AuthUser = useAuthUser()
+  const { data, error } = useQuery<GetJourney>(GET_JOURNEY, {
+    variables: { id: router.query.journeyId }
+  })
 
   useInvalidJourneyRedirect(data)
 
@@ -105,23 +103,14 @@ export const getServerSideProps = withAuthUserTokenSSR({
     })
   ])
 
-  const { data, error } = await apolloClient.query<GetJourney>({
-    query: GET_JOURNEY,
-    variables: {
-      id: query?.journeyId
-    }
-  })
-
   return {
     props: {
       flags,
-      data,
-      error: error ?? null,
       ...translations
     }
   }
 })
 
-export default withAuthUser<JourneyIdPageProps>({
+export default withAuthUser({
   whenUnauthedAfterInit: AuthAction.REDIRECT_TO_LOGIN
 })(JourneyIdPage)
