@@ -3,7 +3,7 @@ name: journeys-e2e-tests
 on:
   workflow_call:
     inputs:
-      url:
+      deployment-url:
         required: true
         type: string
 
@@ -37,7 +37,7 @@ jobs:
       - name: Run Playwright tests
         run: npx nx run journeys-e2e:e2e
         env:
-          DEPLOYMENT_URL: ${{inputs.url}}
+          DEPLOYMENT_URL: ${{inputs.deployment-url}}
 
       - uses: actions/upload-artifact@v3
         with:

@@ -1,7 +1,7 @@
 name: App Deploy
 on:
   push:
-    branches: [main, stage, feature/*]
+    branches: [main, stage, feature/23-05-KC-test-setup-playwright-nx]
   pull_request:
     branches: [main, feature/*]
 concurrency:
@@ -122,6 +122,10 @@ jobs:
           state: ${{ job.status }}
           environment-url: ${{ steps.deployment-url.outputs.deployment-url }}
           deployment-id: ${{ steps.deployment.outputs.deployment_id }}
+      - name: playwright tests deploy-preview
+        uses: ./.github/workflows/journeys-e2e-worker.yml
+        with:
+          url: ${{ steps.deployment-url.outputs.deployment-url }}
 
   deploy-production:
     name: Deploy Production
@@ -197,19 +201,7 @@ jobs:
           state: ${{ job.status }}
           environment-url: ${{ steps.deployment-url.outputs.deployment-url }}
           deployment-id: ${{ steps.deployment.outputs.deployment_id }}
-
-  journeys-e2e:
-    name: Run journeys E2E tests - non prod
-    needs: [affected, deploy-preview]
-    if: ${{ needs.affected.outputs.matrix.app == 'journeys' }} || ${{ needs.affected.outputs.matrix.app == 'journeys-admin' }}
-    uses: ./.github/workflows/journeys-e2e-worker.yml
-    with:
-      url: ${{ needs.deploy-preview.outputs.url }}
-
-  journeys-e2e-production:
-    name: Run journeys E2E tests - prod
-    needs: [affected, deploy-production]
-    if: ${{ needs.affected.outputs.matrix.app == 'journeys' }} || ${{ needs.affected.outputs.matrix.app == 'journeys-admin' }}
-    uses: ./.github/workflows/journeys-e2e-worker.yml
-    with:
-      url: ${{ needs.deploy-production.outputs.url }}
+      - name: playwright tests deploy-production
+        uses: ./.github/workflows/journeys-e2e-worker.yml
+        with:
+          url: ${{ steps.deployment-url.outputs.deployment-url }}
