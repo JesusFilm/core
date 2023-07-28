@@ -23,7 +23,6 @@ import { useInvalidJourneyRedirect } from '../../../src/libs/useInvalidJourneyRe
 import { UserJourneyOpen } from '../../../__generated__/UserJourneyOpen'
 import { initAndAuthApp } from '../../../src/libs/initAndAuthApp'
 import { AcceptAllInvites } from '../../../__generated__/AcceptAllInvites'
-import { data } from '../../../src/libs/useJourneyCreate/useJourneyCreate.spec'
 
 interface JourneyEditPageProps {
   data: GetJourney
@@ -80,6 +79,7 @@ export const getServerSideProps = withAuthUserTokenSSR({
   })
 
   let journey: Journey | null
+  let result: GetJourney
   try {
     const { data } = await apolloClient.query<GetJourney>({
       query: GET_JOURNEY,
@@ -89,6 +89,7 @@ export const getServerSideProps = withAuthUserTokenSSR({
     })
 
     journey = data?.journey
+    result = data
   } catch (error) {
     return {
       redirect: {
@@ -115,7 +116,7 @@ export const getServerSideProps = withAuthUserTokenSSR({
   return {
     props: {
       flags,
-      data,
+      data: result,
       ...translations
     }
   }
