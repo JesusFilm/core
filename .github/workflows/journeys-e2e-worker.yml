@@ -35,9 +35,7 @@ jobs:
         run: npx playwright install --with-deps
 
       - name: Run Playwright tests
-        run: 
-          echo 'Starting tests on ${{inputs.url}}'
-          npx nx run journeys-e2e:e2e
+        run: npx nx run journeys-e2e:e2e
         env:
           DEPLOYMENT_URL: ${{inputs.url}}
 
