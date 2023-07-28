@@ -199,7 +199,7 @@ jobs:
           deployment-id: ${{ steps.deployment.outputs.deployment_id }}
 
   journeys-e2e:
-    name: Run journeys E2E tests
+    name: Run journeys E2E tests - non prod
     needs: [affected, deploy-preview]
     if: ${{ needs.affected.outputs.matrix.app == 'journeys' }} || ${{ needs.affected.outputs.matrix.app == 'journeys-admin' }}
     uses: ./.github/workflows/journeys-e2e-worker.yml
@@ -207,7 +207,7 @@ jobs:
       url: ${{ needs.deploy-preview.outputs.url }}
 
   journeys-e2e-production:
-    name: Run journeys E2E tests
+    name: Run journeys E2E tests - prod
     needs: [affected, deploy-production]
     if: ${{ needs.affected.outputs.matrix.app == 'journeys' }} || ${{ needs.affected.outputs.matrix.app == 'journeys-admin' }}
     uses: ./.github/workflows/journeys-e2e-worker.yml
