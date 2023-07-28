@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test'
 
-test('sample watch e2e test', async ({ page }) => {
+test('sample docs e2e test', async ({ page }) => {
   await page.goto('/')
 
   // Get and log the current URL
@@ -8,5 +8,5 @@ test('sample watch e2e test', async ({ page }) => {
   console.log('Current URL:', url);
 
   // Test the URL
-  await expect(page).toHaveURL('watch')
+  await expect(page).toHaveURL(/.*docs/);
 })
