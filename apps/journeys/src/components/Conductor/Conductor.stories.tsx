@@ -121,10 +121,10 @@ WithContent.args = {
   blocks: imageBlocks
 }
 WithContent.play = async () => {
-  const nextButton = screen.getAllByTestId('conductorRightButton')[0]
+  const nextButton = screen.getAllByTestId('conductorNextButton')[0]
   await waitFor(() => {
     userEvent.click(nextButton)
-    expect(screen.getAllByTestId('leftNavContainer')[1]).toBeInTheDocument()
+    expect(screen.getAllByTestId('prevNavContainer')[1]).toBeInTheDocument()
   })
 }
 

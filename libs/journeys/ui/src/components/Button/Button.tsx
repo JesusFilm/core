@@ -1,4 +1,4 @@
-import { ReactElement, useMemo } from 'react'
+import { ReactElement, useMemo, MouseEvent } from 'react'
 import { useRouter } from 'next/router'
 import MuiButton from '@mui/material/Button'
 import Box from '@mui/material/Box'
@@ -60,8 +60,9 @@ export function Button({
   )
 
   const { admin } = useJourney()
-  const { treeBlocks, activeBlock } = useBlocks()
+  const { treeBlocks, blockHistory } = useBlocks()
   const { t } = useTranslation('libs-journeys-ui')
+  const activeBlock = blockHistory[blockHistory.length - 1]
 
   const heading =
     activeBlock != null
@@ -126,7 +127,8 @@ export function Button({
   }
 
   const router = useRouter()
-  const handleClick = async (): Promise<void> => {
+  const handleClick = async (e: MouseEvent): Promise<void> => {
+    e.stopPropagation()
     if (chatPlatform == null) {
       void createClickEvent()
     } else {
