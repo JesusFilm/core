@@ -13,7 +13,7 @@ import {
 } from '../../../__generated__/globalTypes'
 import { handleAction } from '../../libs/action'
 import { JourneyProvider } from '../../libs/JourneyProvider'
-import { TreeBlock, activeBlockVar, treeBlocksVar } from '../../libs/block'
+import { TreeBlock, treeBlocksVar, blockHistoryVar } from '../../libs/block'
 import { BlockFields_StepBlock as StepBlock } from '../../libs/block/__generated__/BlockFields'
 import {
   ButtonFields_action,
@@ -121,7 +121,7 @@ describe('Button', () => {
   it('should create a buttonClickEvent onClick', async () => {
     mockUuidv4.mockReturnValueOnce('uuid')
 
-    activeBlockVar(activeBlock)
+    blockHistoryVar([activeBlock])
     treeBlocksVar([activeBlock])
 
     const action: LinkAction = {
@@ -202,7 +202,7 @@ describe('Button', () => {
         }
       ]
     }
-    activeBlockVar(activeBlock)
+    blockHistoryVar([activeBlock])
     treeBlocksVar([activeBlock])
 
     const { getByRole } = render(
@@ -269,7 +269,7 @@ describe('Button', () => {
       action
     }
 
-    activeBlockVar(activeBlock)
+    blockHistoryVar([activeBlock])
     treeBlocksVar([activeBlock])
 
     const result = jest.fn(() => ({

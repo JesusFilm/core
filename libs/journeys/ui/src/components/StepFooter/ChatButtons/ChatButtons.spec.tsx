@@ -11,7 +11,7 @@ import {
   ThemeName
 } from '../../../../__generated__/globalTypes'
 import { JourneyProvider } from '../../../libs/JourneyProvider'
-import { TreeBlock, activeBlockVar } from '../../../libs/block'
+import { TreeBlock, blockHistoryVar } from '../../../libs/block'
 import { BlockFields_StepBlock as StepBlock } from '../../../libs/block/__generated__/BlockFields'
 import { ChatButtons, CHAT_BUTTON_EVENT_CREATE } from './ChatButtons'
 
@@ -122,7 +122,7 @@ describe('ChatButtons', () => {
 
   it('handles button click and sends a mutation', async () => {
     window.open = jest.fn()
-    activeBlockVar(stepBlock)
+    blockHistoryVar([stepBlock])
 
     const { getAllByRole } = render(
       <MockedProvider mocks={mocks}>
