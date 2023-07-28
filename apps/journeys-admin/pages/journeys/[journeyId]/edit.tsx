@@ -1,4 +1,5 @@
 import { ReactElement } from 'react'
+import { useQuery } from '@apollo/client'
 import {
   AuthAction,
   useAuthUser,
@@ -24,15 +25,13 @@ import { UserJourneyOpen } from '../../../__generated__/UserJourneyOpen'
 import { initAndAuthApp } from '../../../src/libs/initAndAuthApp'
 import { AcceptAllInvites } from '../../../__generated__/AcceptAllInvites'
 
-interface JourneyEditPageProps {
-  data: GetJourney
-}
-
-function JourneyEditPage({ data }: JourneyEditPageProps): ReactElement {
+function JourneyEditPage(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const router = useRouter()
   const AuthUser = useAuthUser()
-
+  const { data } = useQuery<GetJourney>(GET_JOURNEY, {
+    variables: { id: router.query.journeyId }
+  })
   useInvalidJourneyRedirect(data)
 
   return (
@@ -79,7 +78,6 @@ export const getServerSideProps = withAuthUserTokenSSR({
   })
 
   let journey: Journey | null
-  let result: GetJourney
   try {
     const { data } = await apolloClient.query<GetJourney>({
       query: GET_JOURNEY,
@@ -89,7 +87,6 @@ export const getServerSideProps = withAuthUserTokenSSR({
     })
 
     journey = data?.journey
-    result = data
   } catch (error) {
     return {
       redirect: {
@@ -116,12 +113,11 @@ export const getServerSideProps = withAuthUserTokenSSR({
   return {
     props: {
       flags,
-      data: result,
       ...translations
     }
   }
 })
 
-export default withAuthUser<JourneyEditPageProps>({
+export default withAuthUser({
   whenUnauthedAfterInit: AuthAction.REDIRECT_TO_LOGIN
 })(JourneyEditPage)
