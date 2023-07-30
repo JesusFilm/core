@@ -44,9 +44,7 @@ describe('StepHeader', () => {
     team: {
       __typename: 'Team',
       id: 'teamId',
-      title: 'My Cool Team',
-      createdAt: new Date(),
-      updatedAt: new Date()
+      title: 'My Cool Team'
     }
   }
   it('should have report contact button', () => {

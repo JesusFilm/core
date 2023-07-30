@@ -101,7 +101,10 @@ export function StepHeader(): ReactElement {
           </Link>
         </NextLink>
         <Box sx={{ px: 4, py: 1, maxWidth: '204px' }}>
-          <Typography color="#6D6F81" variant="caption">
+          <Typography
+            color={(theme) => theme.palette.action.disabled}
+            variant="caption"
+          >
             {t(`All personal identifiable data registered on this website will be
             processed by journey creator: "${journey?.team?.title ?? ''}".`)}
           </Typography>
