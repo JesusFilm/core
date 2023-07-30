@@ -25,7 +25,7 @@ describe('StepHeader', () => {
         {
           __typename: 'Translation',
           value: 'English',
-          primary: true
+          primary: false
         }
       ]
     },
