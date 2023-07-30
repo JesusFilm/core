@@ -1,12 +1,12 @@
 import { fireEvent, render } from '@testing-library/react'
-import { StepHeader } from './StepHeader'
-import { JourneyProvider } from '../../libs/JourneyProvider'
 import {
   JourneyStatus,
   ThemeMode,
   ThemeName
 } from '../../../__generated__/globalTypes'
-import { JourneyFields as Journey } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
+import { JourneyProvider } from '../../libs/JourneyProvider'
+import { JourneyFields as Journey } from '../../libs/JourneyProvider/__generated__/JourneyFields'
+import { StepHeader } from './StepHeader'
 
 describe('StepHeader', () => {
   const defaultJourneyWithTeam: Journey = {

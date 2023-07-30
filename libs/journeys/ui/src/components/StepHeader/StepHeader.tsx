@@ -11,7 +11,6 @@ import { useTranslation } from 'react-i18next'
 import Link from '@mui/material/Link'
 import Box from '@mui/material/Box'
 import { useJourney } from '../../libs/JourneyProvider'
-import { ThemeMode } from '@core/shared/ui/themes'
 
 export function StepHeader(): ReactElement {
   const { journey, admin } = useJourney()
