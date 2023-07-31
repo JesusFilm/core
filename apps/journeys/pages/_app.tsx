@@ -86,7 +86,7 @@ function JourneysApp({
         />
         <meta
           name="theme-color"
-          content={pageProps.journey == null ? '#26262E' : '#FEFEFE'}
+          content={pageProps.journey == null ? '#FEFEFE' : '#26262E'}
         />
       </Head>
       <ApolloProvider client={apolloClient}>
