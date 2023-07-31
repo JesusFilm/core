@@ -61,7 +61,8 @@ const journey: Journey = {
   seoTitle: 'My awesome journey',
   seoDescription: null,
   chatButtons: [],
-  host: hostData
+  host: hostData,
+  team: null
 }
 
 const Template: Story<
