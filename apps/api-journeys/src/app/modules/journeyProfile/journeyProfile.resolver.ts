@@ -48,9 +48,7 @@ export class JourneyProfileResolver {
   ): Promise<JourneyProfile> {
     return await this.prismaService.journeyProfile.update({
       where: { id },
-      data: {
-        ...input
-      }
+      data: input
     })
   }
 }
