@@ -1,4 +1,4 @@
-// version 8
+// version 9
 // increment to trigger re-seed (ie: files other than seed.ts are changed)
 
 import { nua1 } from './seeds/nua1'
@@ -8,9 +8,9 @@ import { nua9 } from './seeds/nua9'
 import { jfpTeam } from './seeds/jfpTeam'
 import { onboarding } from './seeds/onboarding'
 import { onboardingTemplates } from './seeds/onboardingTemplates'
-import { vision } from './seeds/vision'
-import { howTo } from './seeds/howTo'
-import { feedback } from './seeds/feedback'
+import { adminLeft } from './seeds/adminLeft'
+import { adminCenter } from './seeds/adminCenter'
+import { adminRight } from './seeds/adminRight'
 
 async function main(): Promise<void> {
   // this should be removed when the UI can support team management
@@ -22,9 +22,9 @@ async function main(): Promise<void> {
   await nua1()
   await onboarding()
   await onboardingTemplates()
-  await vision()
-  await howTo()
-  await feedback()
+  await adminLeft('reset')
+  await adminCenter('reset')
+  await adminRight('reset')
 }
 main().catch((e) => {
   console.error(e)

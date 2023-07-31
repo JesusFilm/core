@@ -1,4 +1,3 @@
-import { v4 as uuidv4 } from 'uuid'
 import { PrismaClient } from '.prisma/api-journeys-client'
 import {
   JourneyStatus,
@@ -8,19 +7,29 @@ import {
 
 const prisma = new PrismaClient()
 
-export async function feedback(): Promise<void> {
-  const slug = 'discovery-admin-right'
-  const existingJourney = await prisma.journey.findUnique({ where: { slug } })
-  if (existingJourney != null) {
-    await prisma.action.deleteMany({
-      where: { parentBlock: { journeyId: existingJourney.id } }
+export async function adminCenter(action?: 'reset'): Promise<void> {
+  // reset should only be used for dev and stage, using it on production will overwrite the existing discovery journey
+
+  const slug = 'discovery-admin-center'
+
+  if (action === 'reset') {
+    const existingJourney = await prisma.journey.findUnique({
+      where: { slug }
     })
-    await prisma.block.deleteMany({ where: { journeyId: existingJourney.id } })
+    if (existingJourney != null) {
+      await prisma.journey.delete({ where: { id: existingJourney.id } })
+    }
   }
 
+  const existingJourney = await prisma.journey.findUnique({
+    where: { slug }
+  })
+  if (existingJourney != null) return
+
   const journeyData = {
-    id: uuidv4(),
-    title: 'Discovery Journey - Feedback',
+    id: '2a845973-2ff9-49da-aeae-e6bf344ec350',
+    title: 'Discovery Journey - Tutorials',
+    seoTitle: 'Tutorials',
     languageId: '529',
     themeMode: ThemeMode.dark,
     themeName: ThemeName.base,
@@ -51,31 +60,11 @@ export async function feedback(): Promise<void> {
       journey: { connect: { id: journey.id } },
       typename: 'CardBlock',
       parentBlock: { connect: { id: step.id } },
-      backgroundColor: null,
+      backgroundColor: '#FFFFFF',
+      themeMode: ThemeMode.light,
+      themeName: ThemeName.base,
       fullscreen: false,
-      themeMode: 'light',
-      themeName: 'base',
       parentOrder: 0
-    }
-  })
-
-  const image = await prisma.block.create({
-    data: {
-      journey: { connect: { id: journey.id } },
-      typename: 'ImageBlock',
-      parentBlock: { connect: { id: card.id } },
-      src: 'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/83f612f9-6b75-466f-9b63-5e042f554600/public',
-      width: 1152,
-      height: 768,
-      alt: 'public',
-      blurhash: 'UDNcya_NELV@^*%2s:NG01D$$hR*?G%Nf+t7'
-    }
-  })
-
-  await prisma.block.update({
-    where: { id: card.id },
-    data: {
-      coverBlock: { connect: { id: image.id } }
     }
   })
 
@@ -84,8 +73,9 @@ export async function feedback(): Promise<void> {
       journey: { connect: { id: journey.id } },
       typename: 'TypographyBlock',
       parentBlock: { connect: { id: card.id } },
-      content: 'Feedback',
-      variant: 'h6',
+      content: '🧭',
+      variant: 'h1',
+      color: null,
       align: 'center',
       parentOrder: 0
     }
@@ -96,11 +86,37 @@ export async function feedback(): Promise<void> {
       journey: { connect: { id: journey.id } },
       typename: 'TypographyBlock',
       parentBlock: { connect: { id: card.id } },
-      parentOrder: 1,
-      content: 'We Want to Hear From You!',
-      variant: 'h1',
+      content: 'HELP CENTER',
+      variant: 'h6',
       color: null,
-      align: 'center'
+      align: 'center',
+      parentOrder: 1
+    }
+  })
+
+  await prisma.block.create({
+    data: {
+      journey: { connect: { id: journey.id } },
+      typename: 'TypographyBlock',
+      parentBlock: { connect: { id: card.id } },
+      content: 'TUTORIALS',
+      variant: 'h2',
+      color: null,
+      align: 'center',
+      parentOrder: 2
+    }
+  })
+
+  await prisma.block.create({
+    data: {
+      journey: { connect: { id: journey.id } },
+      typename: 'TypographyBlock',
+      parentBlock: { connect: { id: card.id } },
+      content: 'Watch our video tutorials\nor ask a question',
+      variant: 'body1',
+      color: null,
+      align: 'center',
+      parentOrder: 3
     }
   })
 
@@ -109,11 +125,11 @@ export async function feedback(): Promise<void> {
       journey: { connect: { id: journey.id } },
       typename: 'ButtonBlock',
       parentBlock: { connect: { id: card.id } },
-      parentOrder: 2,
-      label: 'Make a suggestion',
+      label: 'Learn More',
       variant: 'text',
       color: 'primary',
-      size: 'large'
+      size: 'large',
+      parentOrder: 4
     }
   })
 

@@ -1,4 +1,3 @@
-import { v4 as uuidv4 } from 'uuid'
 import { PrismaClient } from '.prisma/api-journeys-client'
 import {
   JourneyStatus,
@@ -8,19 +7,29 @@ import {
 
 const prisma = new PrismaClient()
 
-export async function vision(): Promise<void> {
+export async function adminLeft(action?: 'reset'): Promise<void> {
+  // reset should only be used for dev and stage, using it on production will overwrite the existing discovery journey
+
   const slug = 'discovery-admin-left'
-  const existingJourney = await prisma.journey.findUnique({ where: { slug } })
-  if (existingJourney != null) {
-    await prisma.action.deleteMany({
-      where: { parentBlock: { journeyId: existingJourney.id } }
+
+  if (action === 'reset') {
+    const existingJourney = await prisma.journey.findUnique({
+      where: { slug }
     })
-    await prisma.block.deleteMany({ where: { journeyId: existingJourney.id } })
+    if (existingJourney != null) {
+      await prisma.journey.delete({ where: { id: existingJourney.id } })
+    }
   }
 
+  const existingJourney = await prisma.journey.findUnique({
+    where: { slug }
+  })
+  if (existingJourney != null) return
+
   const journeyData = {
-    id: uuidv4(),
-    title: 'Discovery Journey - Vision',
+    id: '621c60a3-298a-424b-ac83-0e925dc9e06f',
+    title: 'Discovery Journey - Beta Version ',
+    seoTitle: 'Beta Version ',
     languageId: '529',
     themeMode: ThemeMode.dark,
     themeName: ThemeName.base,
@@ -59,33 +68,13 @@ export async function vision(): Promise<void> {
     }
   })
 
-  const image = await prisma.block.create({
-    data: {
-      journey: { connect: { id: journey.id } },
-      typename: 'ImageBlock',
-      parentBlock: { connect: { id: card.id } },
-      src: 'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/0faecc7a-1749-4e2c-66a0-4dde6d5cbc00/public',
-      width: 6000,
-      height: 4000,
-      alt: 'public',
-      blurhash: 'LZECIr~Xxtxb?K?I%LocIUWCxubD'
-    }
-  })
-
-  await prisma.block.update({
-    where: { id: card.id },
-    data: {
-      coverBlock: { connect: { id: image.id } }
-    }
-  })
-
   await prisma.block.create({
     data: {
       journey: { connect: { id: journey.id } },
       typename: 'TypographyBlock',
       parentBlock: { connect: { id: card.id } },
-      content: 'Vision',
-      variant: 'h6',
+      content: '⚠️',
+      variant: 'h1',
       color: null,
       align: 'center',
       parentOrder: 0
@@ -97,8 +86,8 @@ export async function vision(): Promise<void> {
       journey: { connect: { id: journey.id } },
       typename: 'TypographyBlock',
       parentBlock: { connect: { id: card.id } },
-      content: 'Innovation in Digital Missions',
-      variant: 'h1',
+      content: 'BETA VERSION',
+      variant: 'h6',
       color: null,
       align: 'center',
       parentOrder: 1
@@ -108,13 +97,56 @@ export async function vision(): Promise<void> {
   await prisma.block.create({
     data: {
       journey: { connect: { id: journey.id } },
-      typename: 'ButtonBlock',
+      typename: 'TypographyBlock',
       parentBlock: { connect: { id: card.id } },
-      label: 'Learn how NextSteps can be instrumental in reaching the lost.',
-      variant: 'text',
-      color: 'primary',
-      size: 'medium',
+      content: 'NEW HERE?',
+      variant: 'h2',
+      color: null,
+      align: 'center',
       parentOrder: 2
     }
+  })
+
+  await prisma.block.create({
+    data: {
+      journey: { connect: { id: journey.id } },
+      typename: 'TypographyBlock',
+      parentBlock: { connect: { id: card.id } },
+      content:
+        'You are one of the first users to test our product. Learn about limitations.',
+      variant: 'body1',
+      color: null,
+      align: 'center',
+      parentOrder: 3
+    }
+  })
+
+  const button = await prisma.block.create({
+    data: {
+      journey: { connect: { id: journey.id } },
+      typename: 'ButtonBlock',
+      parentBlock: { connect: { id: card.id } },
+      label: 'Start Here',
+      variant: 'text',
+      color: 'secondary',
+      size: 'large',
+      parentOrder: 4
+    }
+  })
+
+  const endIcon = await prisma.block.create({
+    data: {
+      journey: { connect: { id: journey.id } },
+      typename: 'IconBlock',
+      parentBlock: { connect: { id: button.id } },
+      name: 'ArrowForwardRounded',
+      color: null,
+      size: null
+    }
+  })
+
+  await prisma.block.update({
+    where: { id: button.id },
+    data: { endIconId: endIcon.id }
   })
 }
