@@ -2,7 +2,7 @@ type JourneyProfile @key(fields: "id") {
   id: ID!
   userId: ID!
   acceptedTermsAt: DateTime
-  lastActiveTeam: String
+  lastActiveTeamId: String
 }
 
 extend type Query {
@@ -10,7 +10,7 @@ extend type Query {
 }
 
 input JourneyProfileUpdateInput {
-  lastActiveTeam: String
+  lastActiveTeamId: String
 }
 
 extend type Mutation {

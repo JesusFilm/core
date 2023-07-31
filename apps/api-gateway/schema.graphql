@@ -695,13 +695,13 @@ type JourneyProfile
   id: ID!
   userId: ID!
   acceptedTermsAt: DateTime
-  lastActiveTeam: String
+  lastActiveTeamId: String
 }
 
 input JourneyProfileUpdateInput
   @join__type(graph: JOURNEYS)
 {
-  lastActiveTeam: String
+  lastActiveTeamId: String
 }
 
 input JourneysFilter

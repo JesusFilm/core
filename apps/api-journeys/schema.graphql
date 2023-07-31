@@ -1770,11 +1770,11 @@ type JourneyProfile
   id: ID!
   userId: ID!
   acceptedTermsAt: DateTime
-  lastActiveTeam: String
+  lastActiveTeamId: String
 }
 
 input JourneyProfileUpdateInput {
-  lastActiveTeam: String
+  lastActiveTeamId: String
 }
 
 type JourneyVisitor

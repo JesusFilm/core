@@ -4,6 +4,7 @@ import { UseGuards } from '@nestjs/common'
 import { GqlAuthGuard } from '@core/nest/gqlAuthGuard/GqlAuthGuard'
 import { JourneyProfile } from '.prisma/api-journeys-client'
 import { PrismaService } from '../../lib/prisma.service'
+import { JourneyProfileUpdateInput } from '../../__generated__/graphql'
 
 @Resolver('JourneyProfile')
 export class JourneyProfileResolver {
@@ -38,4 +39,13 @@ export class JourneyProfileResolver {
 
     return profile
   }
+
+  // @Mutation()
+  // @UseGuards(GqlAuthGuard)
+  // async journeyProfileUpdate(
+  //   @CurrentUserId() userId: string,
+  //   input: JourneyProfileUpdateInput
+  // ): Promise<JourneyProfile> {
+  //   const team = await this.prismaService.team.findUnique
+  // }
 }
