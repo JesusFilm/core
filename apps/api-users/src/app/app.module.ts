@@ -6,8 +6,8 @@ import {
 } from '@nestjs/apollo'
 import { GraphQLModule } from '@nestjs/graphql'
 import { LoggerModule } from 'nestjs-pino'
-import { NestHealthModule } from '@core/nest/health'
 import { DatadogTraceModule } from 'nestjs-ddtrace'
+import { NestHealthModule } from './modules/health/health.module'
 import { UserModule } from './modules/user/user.module'
 
 @Module({

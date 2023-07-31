@@ -5,10 +5,10 @@ import {
   ApolloFederationDriverConfig
 } from '@nestjs/apollo'
 import { GraphQLModule } from '@nestjs/graphql'
-import { NestHealthModule } from '@core/nest/health'
 import { LoggerModule } from 'nestjs-pino'
 import { DatadogTraceModule } from 'nestjs-ddtrace'
 import TranslationModule from '@core/nest/common/TranslationModule'
+import { NestHealthModule } from './modules/health/health.module'
 import { TagModule } from './modules/tag/tag.module'
 
 @Module({

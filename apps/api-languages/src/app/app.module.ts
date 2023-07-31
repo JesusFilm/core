@@ -7,9 +7,9 @@ import {
 } from '@nestjs/apollo'
 import { LoggerModule } from 'nestjs-pino'
 import { DatadogTraceModule } from 'nestjs-ddtrace'
-import { NestHealthModule } from '@core/nest/health'
 import TranslationModule from '@core/nest/common/TranslationModule'
 import responseCachePlugin from 'apollo-server-plugin-response-cache'
+import { NestHealthModule } from './modules/health/health.module'
 import { LanguageModule } from './modules/language/language.module'
 
 @Module({

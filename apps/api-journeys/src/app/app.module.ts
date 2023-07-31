@@ -7,7 +7,7 @@ import {
 } from '@nestjs/apollo'
 import { LoggerModule } from 'nestjs-pino'
 import { DatadogTraceModule } from 'nestjs-ddtrace'
-import { NestHealthModule } from '@core/nest/health'
+import { NestHealthModule } from './modules/health/health.module'
 import { ActionModule } from './modules/action/action.module'
 import { BlockModule } from './modules/block/block.module'
 import { JourneyModule } from './modules/journey/journey.module'
