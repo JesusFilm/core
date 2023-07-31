@@ -43,8 +43,8 @@ export function NavigationButton({
   const onFirstStep = activeBlock === treeBlocks[0]
   const onLastStep = activeBlock === last(treeBlocks)
   const navigateToAnotherBlock =
-    activeBlock.nextBlockId != null &&
-    activeBlock.nextBlockId !== activeBlock.id
+    activeBlock?.nextBlockId != null &&
+    activeBlock?.nextBlockId !== activeBlock.id
   const canNavigate =
     variant === 'prev'
       ? !onFirstStep
