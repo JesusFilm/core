@@ -122,6 +122,16 @@ describe('NavigationButton', () => {
 
       expect(getByTestId('conductorNextButton')).not.toBeVisible()
     })
+
+    it('should show right button if on last card but set to navigate to another card', () => {
+      treeBlocksVar([step1, step2, { ...step3, nextBlockId: step1.id }])
+      blockHistoryVar([step1, step2, { ...step3, nextBlockId: step1.id }])
+      const { getByTestId } = render(
+        <NavigationButton variant="next" alignment="right" />
+      )
+
+      expect(getByTestId('conductorNextButton')).toBeVisible()
+    })
   })
 
   describe('rtl', () => {
@@ -177,6 +187,16 @@ describe('NavigationButton', () => {
       )
 
       expect(getByTestId('conductorNextButton')).not.toBeVisible()
+    })
+
+    it('should show left button if on last card but set to navigate to another card', () => {
+      treeBlocksVar([step1, step2, { ...step3, nextBlockId: step1.id }])
+      blockHistoryVar([step1, step2, { ...step3, nextBlockId: step1.id }])
+      const { getByTestId } = render(
+        <NavigationButton variant="next" alignment="left" />
+      )
+
+      expect(getByTestId('conductorNextButton')).toBeVisible()
     })
   })
 })
