@@ -56,8 +56,7 @@ export function nextActiveBlock(args?: ActiveBlockArgs): void {
       ) as TreeBlock<StepFields> | undefined
     } else if (
       activeBlock.parentOrder != null &&
-      activeBlock.nextBlockId == null &&
-      !activeBlock.locked
+      activeBlock.nextBlockId == null
     ) {
       block = blocks[activeBlock.parentOrder + 1] as
         | TreeBlock<StepFields>
