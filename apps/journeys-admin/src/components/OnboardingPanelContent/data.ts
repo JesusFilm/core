@@ -5,7 +5,7 @@ export const onboardingJourneys: OnboardingJourneys[] = [
     __typename: 'Journey',
     id: '014c7add-288b-4f84-ac85-ccefef7a07d3',
     title: 'template 1 title',
-    description: 'template 2 description',
+    description: 'template 1 description',
     template: true,
     primaryImageBlock: {
       __typename: 'ImageBlock',
