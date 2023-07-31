@@ -73,8 +73,6 @@ function JourneysApp({
   }, [])
   const apolloClient = useApollo()
 
-  // console.log('PAGE PROPS: ', pageProps.journey)
-
   return (
     <CacheProvider value={emotionCache}>
       <DefaultSeo

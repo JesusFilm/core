@@ -17,7 +17,6 @@ import {
 } from '../__generated__/GetJourney'
 import { GetJourneySlugs } from '../__generated__/GetJourneySlugs'
 import i18nConfig from '../next-i18next.config'
-import { ThemeMode } from '../__generated__/globalTypes'
 
 interface JourneyPageProps {
   journey: Journey
@@ -73,8 +72,7 @@ function JourneyPage({ journey, locale, rtl }: JourneyPageProps): ReactElement {
       <JourneyProvider value={{ journey }}>
         <ThemeProvider
           themeName={journey.themeName}
-          themeMode={ThemeMode.dark}
-          // themeMode={journey.themeMode}
+          themeMode={journey.themeMode}
           rtl={rtl}
           locale={locale}
         >
