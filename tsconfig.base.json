@@ -22,7 +22,6 @@
         "libs/journeys/ui/src/libs/*"
       ],
       "@core/nest/common/*": ["libs/nest/common/src/lib/*"],
-      "@core/nest/database/*": ["libs/nest/database/src/lib/*"],
       "@core/nest/decorators/*": ["libs/nest/decorators/src/lib/*"],
       "@core/nest/gqlAuthGuard/*": ["libs/nest/gqlAuthGuard/src/lib/*"],
       "@core/nest/health": ["libs/nest/health/src/index.ts"],

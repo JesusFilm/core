@@ -13,7 +13,6 @@ import {
   Language,
   transformArclightMediaLanguageToLanguage,
   MediaComponent,
-  Video,
   fetchMediaComponentsAndTransformToVideos,
   fetchMediaLanguagesAndTransformToLanguages
 } from './arclight'
@@ -203,7 +202,7 @@ describe('arclight', () => {
         mobileCinematicHigh: 'mobileCinematicHigh'
       },
       studyQuestions: [],
-      subType: 'video',
+      subType: 'episode',
       slug: 'title'
     }
     const language: Language = {
@@ -262,10 +261,10 @@ describe('arclight', () => {
           language
         )
       ).toEqual({
-        ...videoVariant,
-        downloads: [],
+        ...omit(videoVariant, 'downloads'),
         subtitle: [],
-        hls: undefined
+        hls: null,
+        videoId: mediaComponent.mediaComponentId
       })
     })
     it('handles null duration when media component is series', () => {
@@ -278,11 +277,11 @@ describe('arclight', () => {
           language
         )
       ).toEqual({
-        ...videoVariant,
+        ...omit(videoVariant, 'downloads'),
         duration: 0,
-        hls: undefined,
-        downloads: [],
-        subtitle: []
+        hls: null,
+        subtitle: [],
+        videoId: mediaComponent.mediaComponentId
       })
     })
 
@@ -303,7 +302,7 @@ describe('arclight', () => {
           mediaComponent,
           language
         )
-      ).toEqual({ ...videoVariant, hls: undefined })
+      ).toEqual({ ...videoVariant, hls: null })
     })
     it('handles null duration', () => {
       expect(
@@ -315,7 +314,7 @@ describe('arclight', () => {
           mediaComponent,
           language
         )
-      ).toEqual({ ...videoVariant, duration: 0, hls: undefined })
+      ).toEqual({ ...videoVariant, duration: 0, hls: null })
     })
   })
 
@@ -331,7 +330,7 @@ describe('arclight', () => {
         mobileCinematicHigh: 'mobileCinematicHigh'
       },
       studyQuestions: [],
-      subType: 'video'
+      subType: 'episode'
     }
     const mediaComponentLanguages: ArclightMediaComponentLanguage[] = [
       {
@@ -378,15 +377,15 @@ describe('arclight', () => {
         slug: 'english'
       }
     ]
-    const video: Video = {
-      _key: 'mediaComponentId',
+    const video = {
+      id: 'mediaComponentId',
       childIds: [],
       description: [
         { languageId: '529', primary: true, value: 'longDescription' }
       ],
       image: 'mobileCinematicHigh',
       imageAlt: [{ languageId: '529', primary: true, value: 'title' }],
-      label: 'video',
+      label: 'episode',
       noIndex: false,
       primaryLanguageId: '529',
       seoTitle: [{ languageId: '529', primary: true, value: 'title' }],
@@ -395,7 +394,7 @@ describe('arclight', () => {
         { languageId: '529', primary: true, value: 'shortDescription' }
       ],
       studyQuestions: [],
-      title: [{ languageId: '529', primary: true, value: 'title' }],
+      title: { create: { languageId: '529', primary: true, value: 'title' } },
       variants: [
         {
           id: 'refId',
@@ -521,14 +520,14 @@ describe('arclight', () => {
         )
       ).toEqual({
         ...video,
-        title: [
-          {
+        title: {
+          create: {
             languageId: '529',
             primary: true,
             value:
               'The Quick Brown Fox Jumps Over The Lazy Dog Many Times Over And Over Until It Gets Cut Off When Over 100 Characters'
           }
-        ],
+        },
         seoTitle: [
           {
             languageId: '529',
@@ -632,7 +631,7 @@ describe('arclight', () => {
                       mobileCinematicHigh: 'mobileCinematicHigh'
                     },
                     studyQuestions: [],
-                    subType: 'video'
+                    subType: 'episode'
                   }
                 ]
               }
@@ -705,14 +704,14 @@ describe('arclight', () => {
         fetchMediaComponentsAndTransformToVideos(languages, {}, 1)
       ).resolves.toEqual([
         {
-          _key: 'mediaComponentId',
+          id: 'mediaComponentId',
           childIds: ['otherMediaComponentId'],
           description: [
             { languageId: '529', primary: true, value: 'longDescription' }
           ],
           image: 'mobileCinematicHigh',
           imageAlt: [{ languageId: '529', primary: true, value: 'title' }],
-          label: 'video',
+          label: 'episode',
           noIndex: false,
           primaryLanguageId: '529',
           seoTitle: [{ languageId: '529', primary: true, value: 'title' }],
@@ -721,7 +720,9 @@ describe('arclight', () => {
             { languageId: '529', primary: true, value: 'shortDescription' }
           ],
           studyQuestions: [],
-          title: [{ languageId: '529', primary: true, value: 'title' }],
+          title: {
+            create: { languageId: '529', primary: true, value: 'title' }
+          },
           variants: [
             {
               downloads: [

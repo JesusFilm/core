@@ -1,4 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing'
+import { PrismaService } from '../../lib/prisma.service'
 import { VideoVariantResolver } from './videoVariant.resolver'
 
 describe('VideoVariantResolver', () => {
@@ -6,7 +7,7 @@ describe('VideoVariantResolver', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [VideoVariantResolver]
+      providers: [VideoVariantResolver, PrismaService]
     }).compile()
     resolver = module.get<VideoVariantResolver>(VideoVariantResolver)
   })

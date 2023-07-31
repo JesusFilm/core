@@ -6,9 +6,12 @@ import { Logger as PinoLogger } from 'nestjs-pino'
 import { json } from 'body-parser'
 import cors from 'cors'
 import { AppModule } from './app/app.module'
+import { PrismaService } from './app/lib/prisma.service'
 
 async function bootstrap(): Promise<void> {
   const app = await NestFactory.create(AppModule, { bufferLogs: true })
+  const prismaService = app.get(PrismaService)
+  await prismaService.enableShutdownHooks(app)
   app.useLogger(app.get(PinoLogger))
   await app.use(
     cors<cors.CorsRequest>({ origin: true }),

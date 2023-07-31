@@ -66,7 +66,7 @@ export const cache = (): InMemoryCache =>
       }
       switch (responseObject.__typename) {
         case 'Video':
-          return `Video:${videoVariant.id ?? responseObject.id}`
+          return `Video:${videoVariant?.id ?? responseObject.id}`
         case 'Person':
         default:
           return defaultDataIdFromObject(responseObject)

@@ -13,4 +13,3 @@
 | Journeys Admin | `nx serve journeys-admin`  | [4200](http://localhost:4200) | [admin.nextstep.is](https://admin.nextstep.is/)                                 |
 | Watch          | `nx serve watch`           | [4300](http://localhost:4300) | [watch.jesusfilm.org](https://watch.jesusfilm.org/)                             |
 | Storybook      | `nx demo shared-storybook` | [4400](http://localhost:4400) | [storybook.core.jesusfilm.org](https://storybook.core.jesusfilm.org)            |
-| ArangoDB       |                            | [8529](http://localhost:8529) | [arangodb.cloud](https://35d055613c5a.arangodb.cloud:8529/)                     |
