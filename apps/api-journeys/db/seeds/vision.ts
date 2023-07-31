@@ -1,4 +1,3 @@
-import { v4 as uuidv4 } from 'uuid'
 import { PrismaClient } from '.prisma/api-journeys-client'
 import {
   JourneyStatus,
@@ -19,7 +18,7 @@ export async function vision(): Promise<void> {
   }
 
   const journeyData = {
-    id: uuidv4(),
+    id: '336ea06f-c08a-4d27-9bb7-16336d1a1f98',
     title: 'Discovery Journey - Vision',
     languageId: '529',
     themeMode: ThemeMode.dark,
