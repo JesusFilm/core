@@ -36,7 +36,7 @@
         "commands": [
           "VERCEL_PROJECT_ID=$WATCH_VERCEL_PROJECT_ID npx vercel pull --environment=preview --token=$VERCEL_TOKEN",
           "npx vercel build",
-          "VERCEL_PROJECT_ID=$WATCH_VERCEL_PROJECT_ID npx vercel deploy --prebuilt --token=$VERCEL_TOKEN > apps/watch/.vercel-url"
+          "VERCEL_PROJECT_ID=$WATCH_VERCEL_PROJECT_ID npx vercel deploy --prebuilt --token=$VERCEL_TOKEN --archive=tgz > apps/watch/.vercel-url"
         ],
         "parallel": false
       },
@@ -45,7 +45,7 @@
           "commands": [
             "VERCEL_PROJECT_ID=$WATCH_VERCEL_PROJECT_ID npx vercel pull --environment=production --token=$VERCEL_TOKEN",
             "npx vercel build --prod",
-            "VERCEL_PROJECT_ID=$WATCH_VERCEL_PROJECT_ID npx vercel deploy --prebuilt --prod --token=$VERCEL_TOKEN > apps/watch/.vercel-url"
+            "VERCEL_PROJECT_ID=$WATCH_VERCEL_PROJECT_ID npx vercel deploy --prebuilt --prod --token=$VERCEL_TOKEN --archive=tgz > apps/watch/.vercel-url"
           ]
         }
       }
