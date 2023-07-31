@@ -17,7 +17,12 @@ export async function adminCenter(action?: 'reset'): Promise<void> {
       where: { slug }
     })
     if (existingJourney != null) {
-      await prisma.journey.delete({ where: { id: existingJourney.id } })
+      await prisma.action.deleteMany({
+        where: { parentBlock: { journeyId: existingJourney.id } }
+      })
+      await prisma.block.deleteMany({
+        where: { journeyId: existingJourney.id }
+      })
     }
   }
 

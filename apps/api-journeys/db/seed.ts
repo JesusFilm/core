@@ -22,9 +22,9 @@ async function main(): Promise<void> {
   await nua1()
   await onboarding()
   await onboardingTemplates()
-  await adminLeft()
-  await adminCenter()
-  await adminRight()
+  await adminLeft('reset')
+  await adminCenter('reset')
+  await adminRight('reset')
 }
 main().catch((e) => {
   console.error(e)
