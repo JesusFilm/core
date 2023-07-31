@@ -7,15 +7,24 @@ import {
 
 const prisma = new PrismaClient()
 
-export async function adminRight(): Promise<void> {
+export async function adminRight(action?: 'reset'): Promise<void> {
+  // reset should only be used for dev and stage, using it on production will overwrite the existing discovery journey
+
   const slug = 'discovery-admin-right'
-  const existingJourney = await prisma.journey.findUnique({ where: { slug } })
-  if (existingJourney != null) {
-    await prisma.action.deleteMany({
-      where: { parentBlock: { journeyId: existingJourney.id } }
+
+  if (action === 'reset') {
+    const existingJourney = await prisma.journey.findUnique({
+      where: { slug }
     })
-    await prisma.block.deleteMany({ where: { journeyId: existingJourney.id } })
+    if (existingJourney != null) {
+      await prisma.journey.delete({ where: { id: existingJourney.id } })
+    }
   }
+
+  const existingJourney = await prisma.journey.findUnique({
+    where: { slug }
+  })
+  if (existingJourney != null) return
 
   const journeyData = {
     id: '3bd23f0c-4ac3-47f1-8ae4-d02f6ffd3fda',
