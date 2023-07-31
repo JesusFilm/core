@@ -1,6 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing'
-
+import { CaslAuthModule } from '@core/nest/common/CaslAuthModule'
 import { PrismaService } from '../../lib/prisma.service'
+import { AppCaslFactory } from '../../lib/casl/caslFactory'
 import { JourneyProfileResolver } from './journeyProfile.resolver'
 
 describe('JourneyProfileResolver', () => {
@@ -19,6 +20,7 @@ describe('JourneyProfileResolver', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
+      imports: [CaslAuthModule.register(AppCaslFactory)],
       providers: [JourneyProfileResolver, PrismaService]
     }).compile()
     resolver = module.get<JourneyProfileResolver>(JourneyProfileResolver)
