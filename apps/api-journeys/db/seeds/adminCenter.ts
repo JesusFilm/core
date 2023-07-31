@@ -29,8 +29,7 @@ export async function adminCenter(): Promise<void> {
     status: JourneyStatus.published,
     teamId: 'jfp-team',
     createdAt: new Date(),
-    publishedAt: new Date(),
-    featuredAt: new Date()
+    publishedAt: new Date()
   }
 
   const journey = await prisma.journey.upsert({
