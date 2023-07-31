@@ -7,6 +7,7 @@ import { GET_TEAMS, TeamProvider, useTeam } from '../TeamProvider'
 import { GetTeams } from '../../../../__generated__/GetTeams'
 import { OnboardingPanelContent } from '../../OnboardingPanelContent'
 import { AddJourneyButton } from '../../JourneyList/ActiveJourneyList/AddJourneyButton'
+import { onboardingJourneys } from '../../OnboardingPanelContent/data'
 import { TeamSelect } from '.'
 
 jest.mock('react-i18next', () => ({
@@ -64,7 +65,7 @@ describe('TeamSelect', () => {
         <FlagsProvider flags={{ teams: true }}>
           <TeamProvider>
             <TeamSelect />
-            <OnboardingPanelContent />
+            <OnboardingPanelContent onboardingJourneys={onboardingJourneys} />
             <AddJourneyButton />
           </TeamProvider>
         </FlagsProvider>
