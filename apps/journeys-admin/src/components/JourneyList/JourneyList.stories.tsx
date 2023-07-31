@@ -5,6 +5,7 @@ import { journeysAdminConfig } from '../../libs/storybook'
 import { PageWrapper } from '../NewPageWrapper'
 import { GET_ADMIN_JOURNEYS } from '../../libs/useAdminJourneysQuery/useAdminJourneysQuery'
 import { JourneyStatus } from '../../../__generated__/globalTypes'
+import { mocks } from '../DiscoveryJourneys/data'
 import {
   defaultJourney,
   oldJourney,
@@ -38,7 +39,8 @@ const Template: Story = ({ ...args }) => (
             journeys: [...args.props.journeys]
           }
         }
-      }
+      },
+      ...mocks
     ]}
   >
     <FlagsProvider flags={args.flags}>

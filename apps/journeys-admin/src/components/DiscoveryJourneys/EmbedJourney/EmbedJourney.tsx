@@ -31,7 +31,7 @@ export const GET_DISCOVERY_JOURNEY = gql`
 
 export function EmbedJourney({ slug }: Props): ReactElement {
   const dimensions = {
-    xs: 'calc(250% + 64px)',
+    xs: 'calc(210% + 64px)',
     sm: 'calc(166% + 64px)',
     md: 'calc(125% + 64px)'
   }
@@ -40,6 +40,7 @@ export function EmbedJourney({ slug }: Props): ReactElement {
     variables: { id: `discovery-${slug}` }
   })
   const discoveryJourney = data?.discoveryJourney
+
   const block = transformer(discoveryJourney?.blocks as TreeBlock[])?.[0]
 
   function handleClick(): void {
@@ -102,7 +103,8 @@ export function EmbedJourney({ slug }: Props): ReactElement {
                   width: '100%',
                   borderRadius: 4,
                   overflow: 'hidden',
-                  position: 'relative'
+                  position: 'relative',
+                  cursor: 'pointer'
                 }}
               >
                 <BlockRenderer block={block} />
