@@ -8,6 +8,7 @@ import { ImageFields } from '../Image/__generated__/ImageFields'
 import { VideoFields } from '../Video/__generated__/VideoFields'
 import { useJourney } from '../../libs/JourneyProvider'
 import { getJourneyRTL } from '../../libs/rtl'
+import { StepFields } from '../Step/__generated__/StepFields'
 import { CardFields } from './__generated__/CardFields'
 import { ContainedCover } from './ContainedCover'
 import { ExpandedCover } from './ExpandedCover'
@@ -25,9 +26,12 @@ export function Card({
   wrappers
 }: CardProps): ReactElement {
   const theme = useTheme()
-  const { nextActiveBlock, prevActiveBlock } = useBlocks()
+  const { nextActiveBlock, prevActiveBlock, blockHistory } = useBlocks()
   const { journey } = useJourney()
   const { rtl } = getJourneyRTL(journey)
+  const activeBlock = blockHistory[
+    blockHistory.length - 1
+  ] as TreeBlock<StepFields>
 
   const cardColor =
     backgroundColor != null
@@ -71,14 +75,14 @@ export function Card({
     if (rtl) {
       const divide = view.innerWidth * 0.66
       if (e.clientX <= divide) {
-        nextActiveBlock()
+        if (!activeBlock.locked) nextActiveBlock()
       } else {
         prevActiveBlock()
       }
     } else {
       const divide = view.innerWidth * 0.33
       if (e.clientX >= divide) {
-        nextActiveBlock()
+        if (!activeBlock.locked) nextActiveBlock()
       } else {
         prevActiveBlock()
       }
