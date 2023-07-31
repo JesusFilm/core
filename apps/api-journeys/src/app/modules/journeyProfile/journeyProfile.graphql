@@ -2,12 +2,18 @@ type JourneyProfile @key(fields: "id") {
   id: ID!
   userId: ID!
   acceptedTermsAt: DateTime
+  lastActiveTeam: String
 }
 
 extend type Query {
   getJourneyProfile: JourneyProfile
 }
 
+input JourneyProfileUpdateInput {
+  lastActiveTeam: String
+}
+
 extend type Mutation {
   journeyProfileCreate: JourneyProfile!
+  journeyProfileUpdate(input: JourneyProfileUpdateInput!): JourneyProfile!
 }
