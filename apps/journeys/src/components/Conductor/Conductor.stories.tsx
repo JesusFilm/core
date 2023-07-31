@@ -79,7 +79,8 @@ const defaultJourney: Journey = {
   seoTitle: null,
   seoDescription: null,
   chatButtons: [],
-  host: null
+  host: null,
+  team: null
 }
 
 const Template: Story<
@@ -121,10 +122,10 @@ WithContent.args = {
   blocks: imageBlocks
 }
 WithContent.play = async () => {
-  const nextButton = screen.getAllByTestId('conductorRightButton')[0]
+  const nextButton = screen.getAllByTestId('conductorNextButton')[0]
   await waitFor(() => {
     userEvent.click(nextButton)
-    expect(screen.getAllByTestId('leftNavContainer')[1]).toBeInTheDocument()
+    expect(screen.getAllByTestId('prevNavContainer')[1]).toBeInTheDocument()
   })
 }
 

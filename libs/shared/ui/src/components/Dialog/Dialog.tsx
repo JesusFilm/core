@@ -18,6 +18,7 @@ interface DialogProps {
   divider?: boolean
   fullscreen?: boolean
   children?: ReactChild
+  container?: HTMLElement
 }
 
 interface DialogAction {
@@ -73,7 +74,8 @@ export function Dialog({
   dialogActionChildren,
   divider,
   fullscreen,
-  children
+  children,
+  container
 }: DialogProps): ReactElement {
   return (
     <StyledDialog
@@ -82,6 +84,7 @@ export function Dialog({
       maxWidth="sm"
       fullWidth
       onClose={onClose}
+      container={container}
     >
       {dialogTitle != null && (
         <MuiDialogTitle>

@@ -6,6 +6,7 @@ import {
   Prisma,
   UserTeamRole,
   Host,
+  Team,
   Block,
   UserJourney,
   ChatButton,
@@ -521,6 +522,15 @@ describe('JourneyResolver', () => {
           status: 'published',
           template: true
         }
+      })
+    })
+    it('returns a list of journeys', async () => {
+      prismaService.journey.findMany.mockResolvedValueOnce([journey, journey])
+      expect(
+        await resolver.journeys({ ids: [journey.id, journey.id] })
+      ).toEqual([journey, journey])
+      expect(prismaService.journey.findMany).toHaveBeenCalledWith({
+        where: { id: { in: ['journeyId', 'journeyId'] }, status: 'published' }
       })
     })
   })
@@ -1479,6 +1489,26 @@ describe('JourneyResolver', () => {
     })
     it('returns null if no hostId', async () => {
       expect(await resolver.host(journey)).toEqual(null)
+    })
+  })
+
+  describe('team', () => {
+    it('returns team', async () => {
+      const team: Team = {
+        id: 'teamId',
+        title: 'My Cool Team',
+        createdAt: new Date(),
+        updatedAt: new Date()
+      }
+      const journeyWithTeam = {
+        ...journeyWithUserTeam,
+        teamId: 'teamId'
+      }
+      prismaService.team.findUnique.mockResolvedValueOnce(team)
+      expect(await resolver.team(journeyWithTeam)).toEqual(team)
+      expect(prismaService.team.findUnique).toHaveBeenCalledWith({
+        where: { id: journeyWithTeam.teamId }
+      })
     })
   })
   describe('primaryImageBlock', () => {

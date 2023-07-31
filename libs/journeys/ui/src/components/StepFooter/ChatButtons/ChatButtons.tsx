@@ -37,7 +37,8 @@ interface ChatIconProps {
 
 export function ChatButtons(): ReactElement {
   const { admin, journey } = useJourney()
-  const { activeBlock } = useBlocks()
+  const { blockHistory } = useBlocks()
+  const activeBlock = blockHistory[blockHistory.length - 1]
   const theme = useTheme()
   const { rtl } = getJourneyRTL(journey)
   const chatButtons = journey?.chatButtons
