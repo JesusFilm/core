@@ -7,12 +7,12 @@ import {
 
 const prisma = new PrismaClient()
 
-export async function adminCenter(action?: 'reset'): Promise<void> {
+export async function discoveryAdminRight(action?: 'reset'): Promise<void> {
   // reset should only be used for dev and stage, using it on production will overwrite the existing discovery journey
 
-  const slug = 'discovery-admin-center'
+  const slug = 'discovery-admin-right'
 
-  console.log('adminCenter started')
+  console.log('adminRight started')
 
   const existingJourney = await prisma.journey.findUnique({
     where: { slug }
@@ -29,9 +29,9 @@ export async function adminCenter(action?: 'reset'): Promise<void> {
       }
 
       const journeyData = {
-        id: '2a845973-2ff9-49da-aeae-e6bf344ec350',
-        title: 'Discovery Journey - Tutorials',
-        seoTitle: 'Tutorials',
+        id: '22ff40a2-b3a3-48af-b48a-6f9ee600bf33',
+        title: 'Discovery Journey - Onboarding',
+        seoTitle: 'Onboarding',
         languageId: '529',
         themeMode: ThemeMode.dark,
         themeName: ThemeName.base,
@@ -66,10 +66,10 @@ export async function adminCenter(action?: 'reset'): Promise<void> {
           journey: { connect: { id: journey.id } },
           typename: 'CardBlock',
           parentBlock: { connect: { id: step.id } },
-          backgroundColor: '#FFFFFF',
-          themeMode: ThemeMode.light,
-          themeName: ThemeName.base,
+          backgroundColor: null,
           fullscreen: false,
+          themeMode: 'light',
+          themeName: 'base',
           parentOrder: 0
         }
       })
@@ -79,7 +79,7 @@ export async function adminCenter(action?: 'reset'): Promise<void> {
           journey: { connect: { id: journey.id } },
           typename: 'TypographyBlock',
           parentBlock: { connect: { id: card.id } },
-          content: '🧭',
+          content: '💬',
           variant: 'h1',
           color: null,
           align: 'center',
@@ -92,11 +92,11 @@ export async function adminCenter(action?: 'reset'): Promise<void> {
           journey: { connect: { id: journey.id } },
           typename: 'TypographyBlock',
           parentBlock: { connect: { id: card.id } },
-          content: 'HELP CENTER',
+          parentOrder: 1,
+          content: 'Free one-on-one',
           variant: 'h6',
           color: null,
-          align: 'center',
-          parentOrder: 1
+          align: 'center'
         }
       })
 
@@ -105,11 +105,11 @@ export async function adminCenter(action?: 'reset'): Promise<void> {
           journey: { connect: { id: journey.id } },
           typename: 'TypographyBlock',
           parentBlock: { connect: { id: card.id } },
-          content: 'TUTORIALS',
+          parentOrder: 2,
+          content: 'ONBOARDING',
           variant: 'h2',
           color: null,
-          align: 'center',
-          parentOrder: 2
+          align: 'center'
         }
       })
 
@@ -118,11 +118,12 @@ export async function adminCenter(action?: 'reset'): Promise<void> {
           journey: { connect: { id: journey.id } },
           typename: 'TypographyBlock',
           parentBlock: { connect: { id: card.id } },
-          content: 'Watch our video tutorials\nor ask a question',
+          parentOrder: 3,
+          content:
+            'Get hands-on guidance and personalized support or share your feedback',
           variant: 'body1',
           color: null,
-          align: 'center',
-          parentOrder: 3
+          align: 'center'
         }
       })
 
@@ -131,11 +132,11 @@ export async function adminCenter(action?: 'reset'): Promise<void> {
           journey: { connect: { id: journey.id } },
           typename: 'ButtonBlock',
           parentBlock: { connect: { id: card.id } },
-          label: 'Learn More',
+          parentOrder: 4,
+          label: 'Request Now',
           variant: 'text',
           color: 'primary',
-          size: 'large',
-          parentOrder: 4
+          size: 'large'
         }
       })
 
@@ -159,5 +160,5 @@ export async function adminCenter(action?: 'reset'): Promise<void> {
       timeout: 10000
     }
   )
-  console.log('adminCenter ended')
+  console.log('adminRight ended')
 }

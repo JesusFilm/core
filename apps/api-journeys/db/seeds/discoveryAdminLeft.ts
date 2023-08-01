@@ -7,7 +7,7 @@ import {
 
 const prisma = new PrismaClient()
 
-export async function adminLeft(action?: 'reset'): Promise<void> {
+export async function discoveryAdminLeft(action?: 'reset'): Promise<void> {
   // reset should only be used for dev and stage, using it on production will overwrite the existing discovery journey
 
   console.log('adminLeft started')
@@ -29,7 +29,7 @@ export async function adminLeft(action?: 'reset'): Promise<void> {
       }
 
       const journeyData = {
-        id: '621c60a3-298a-424b-ac83-0e925dc9e06f',
+        id: '336ea06f-c08a-4d27-9bb7-16336d1a1f98',
         title: 'Discovery Journey - Beta Version ',
         seoTitle: 'Beta Version ',
         languageId: '529',
