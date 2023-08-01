@@ -7,8 +7,20 @@ import { SnackbarProvider } from 'notistack'
 import TagManager from 'react-gtm-module'
 import { defaultJourney } from '../data'
 import { JOURNEY_DUPLICATE } from '../../../libs/useJourneyDuplicateMutation'
-import { GET_TEAMS, TeamProvider } from '../../Team/TeamProvider'
+import {
+  GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS,
+  TeamProvider
+} from '../../Team/TeamProvider'
 import { JourneyViewFab } from './JourneyViewFab'
+
+jest.mock('react-i18next', () => ({
+  __esModule: true,
+  useTranslation: () => {
+    return {
+      t: (str: string) => str
+    }
+  }
+}))
 
 jest.mock('next/router', () => ({
   __esModule: true,
@@ -90,7 +102,11 @@ describe('JourneyViewFab', () => {
 
     const result2 = jest.fn(() => ({
       data: {
-        teams: [{ id: 'teamId', title: 'Team Name', __typename: 'Team' }]
+        teams: [{ id: 'teamId', title: 'Team Name', __typename: 'Team' }],
+        getJourneyProfile: {
+          __typename: 'JourneyProfile',
+          lastActiveTeamId: 'teamId'
+        }
       }
     }))
 
@@ -109,7 +125,7 @@ describe('JourneyViewFab', () => {
           },
           {
             request: {
-              query: GET_TEAMS
+              query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
             },
             result: result2
           }
@@ -155,7 +171,11 @@ describe('JourneyViewFab', () => {
 
     const result2 = jest.fn(() => ({
       data: {
-        teams: [{ id: 'teamId', title: 'Team Name', __typename: 'Team' }]
+        teams: [{ id: 'teamId', title: 'Team Name', __typename: 'Team' }],
+        getJourneyProfile: {
+          __typename: 'JourneyProfile',
+          lastActiveTeamId: 'teamId'
+        }
       }
     }))
 
@@ -180,7 +200,7 @@ describe('JourneyViewFab', () => {
           },
           {
             request: {
-              query: GET_TEAMS
+              query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
             },
             result: result2
           }

@@ -118,7 +118,7 @@ describe('TeamOnboarding', () => {
         teams: [{ id: 'teamId', title: 'Team Title', __typename: 'Team' }],
         getJourneyProfile: {
           __typename: 'JourneyProfile',
-          lastActiveTeamId: null
+          lastActiveTeamId: 'teamId'
         }
       }
     }
@@ -157,6 +157,7 @@ describe('TeamOnboarding', () => {
     await waitFor(() =>
       expect(getByTestId('active-team-title')).toHaveTextContent('Team Title')
     )
+    console.log(cache.extract()?.ROOT_QUERY?.teams)
     expect(cache.extract()?.ROOT_QUERY?.teams).toEqual([
       { __ref: 'Team:teamId' },
       { __ref: 'Team:teamId1' }

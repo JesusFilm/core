@@ -51,7 +51,7 @@ export function TeamProvider({ children }: TeamProviderProps): ReactElement {
         const lastActiveTeam = data.teams.find(
           (team) => team.id === data.getJourneyProfile?.lastActiveTeamId
         )
-        setActiveTeam(lastActiveTeam ?? data.teams[0])
+        setActiveTeam(lastActiveTeam ?? null)
       }
     }
   )
@@ -63,7 +63,6 @@ export function TeamProvider({ children }: TeamProviderProps): ReactElement {
       setActiveTeamId(team.id)
     }
   }
-
   const activeTeam =
     query.data?.teams.find((team) => team.id === activeTeamId) ?? null
 

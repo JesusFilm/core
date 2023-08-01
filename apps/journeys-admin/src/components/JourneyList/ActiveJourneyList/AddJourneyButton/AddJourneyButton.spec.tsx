@@ -149,7 +149,11 @@ describe('AddJourneyButton', () => {
               data: {
                 teams: [
                   { id: 'teamId', title: 'Team Title', __typename: 'Team' }
-                ]
+                ],
+                getJourneyProfile: {
+                  __typename: 'JourneyProfile',
+                  lastActiveTeamId: 'teamId'
+                }
               }
             }
           }
@@ -203,7 +207,11 @@ describe('AddJourneyButton', () => {
   it('should show add journey button when active team and flags is true', async () => {
     const result = jest.fn().mockReturnValueOnce({
       data: {
-        teams: [{ id: 'teamId', title: 'Team Title', __typename: 'Team' }]
+        teams: [{ id: 'teamId', title: 'Team Title', __typename: 'Team' }],
+        getJourneyProfile: {
+          __typename: 'JourneyProfile',
+          lastActiveTeamId: 'teamId'
+        }
       }
     })
     const { queryByRole } = render(

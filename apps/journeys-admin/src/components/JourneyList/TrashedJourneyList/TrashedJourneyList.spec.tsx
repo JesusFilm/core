@@ -80,7 +80,11 @@ describe('TrashedJourneyList', () => {
   it('should render journeys in descending createdAt date by default', async () => {
     const result = jest.fn().mockReturnValueOnce({
       data: {
-        teams: [{ id: 'teamId', title: 'Team Title', __typename: 'Team' }]
+        teams: [{ id: 'teamId', title: 'Team Title', __typename: 'Team' }],
+        getJourneyProfile: {
+          __typename: 'JourneyProfile',
+          lastActiveTeamId: 'teamId'
+        }
       }
     })
     const { getAllByLabelText } = render(
@@ -108,7 +112,11 @@ describe('TrashedJourneyList', () => {
   it('should order journeys in alphabetical order', async () => {
     const result = jest.fn().mockReturnValueOnce({
       data: {
-        teams: [{ id: 'teamId', title: 'Team Title', __typename: 'Team' }]
+        teams: [{ id: 'teamId', title: 'Team Title', __typename: 'Team' }],
+        getJourneyProfile: {
+          __typename: 'JourneyProfile',
+          lastActiveTeamId: 'teamId'
+        }
       }
     })
     const trashedLowerCaseJourneyTitle = {
@@ -244,7 +252,11 @@ describe('TrashedJourneyList', () => {
     it('should restore all journeys', async () => {
       const result = jest.fn().mockReturnValueOnce({
         data: {
-          teams: [{ id: 'teamId', title: 'Team Title', __typename: 'Team' }]
+          teams: [{ id: 'teamId', title: 'Team Title', __typename: 'Team' }],
+          getJourneyProfile: {
+            __typename: 'JourneyProfile',
+            lastActiveTeamId: 'teamId'
+          }
         }
       })
       const { getByText } = render(
@@ -279,7 +291,11 @@ describe('TrashedJourneyList', () => {
     it('should show error', async () => {
       const result = jest.fn().mockReturnValueOnce({
         data: {
-          teams: [{ id: 'teamId', title: 'Team Title', __typename: 'Team' }]
+          teams: [{ id: 'teamId', title: 'Team Title', __typename: 'Team' }],
+          getJourneyProfile: {
+            __typename: 'JourneyProfile',
+            lastActiveTeamId: 'teamId'
+          }
         }
       })
       const { getByText } = render(
@@ -342,7 +358,11 @@ describe('TrashedJourneyList', () => {
     it('should trash all journeys', async () => {
       const result = jest.fn().mockReturnValueOnce({
         data: {
-          teams: [{ id: 'teamId', title: 'Team Title', __typename: 'Team' }]
+          teams: [{ id: 'teamId', title: 'Team Title', __typename: 'Team' }],
+          getJourneyProfile: {
+            __typename: 'JourneyProfile',
+            lastActiveTeamId: 'teamId'
+          }
         }
       })
       const { getByText } = render(
@@ -377,7 +397,11 @@ describe('TrashedJourneyList', () => {
     it('should show error', async () => {
       const result = jest.fn().mockReturnValueOnce({
         data: {
-          teams: [{ id: 'teamId', title: 'Team Title', __typename: 'Team' }]
+          teams: [{ id: 'teamId', title: 'Team Title', __typename: 'Team' }],
+          getJourneyProfile: {
+            __typename: 'JourneyProfile',
+            lastActiveTeamId: 'teamId'
+          }
         }
       })
       const { getByText } = render(

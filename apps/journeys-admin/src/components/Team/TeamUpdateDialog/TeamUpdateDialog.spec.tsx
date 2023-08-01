@@ -27,7 +27,7 @@ describe('TeamUpdateDialog', () => {
         ],
         getJourneyProfile: {
           __typename: 'JourneyProfile',
-          lastActiveTeamId: null
+          lastActiveTeamId: 'teamId'
         }
       }
     }

@@ -37,7 +37,7 @@ describe('TeamSelect', () => {
         ],
         getJourneyProfile: {
           __typename: 'JourneyProfile',
-          lastActiveTeamId: null
+          lastActiveTeamId: 'teamId1'
         }
       }
     }
@@ -48,7 +48,7 @@ describe('TeamSelect', () => {
     return <div data-testid="active-team-title">{activeTeam?.title}</div>
   }
 
-  it('shows list of teams', async () => {
+  it('shows and updates list of teams', async () => {
     const updateLastActiveTeamIdMock = {
       request: {
         query: UPDATE_LAST_ACTIVE_TEAM_ID,

@@ -1,4 +1,5 @@
 import { ReactElement } from 'react'
+import { useMutation } from '@apollo/client'
 import Image from 'next/image'
 import Box from '@mui/system/Box'
 import Button from '@mui/material/Button'
@@ -20,6 +21,8 @@ import { TeamCreateForm } from '../TeamCreateForm'
 import { useTeam } from '../TeamProvider'
 import { TeamManageWrapper } from '../TeamManageDialog/TeamManageWrapper'
 import { useJourneyDuplicateMutation } from '../../../libs/useJourneyDuplicateMutation'
+import { UpdateLastActiveTeamId } from '../../../../__generated__/UpdateLastActiveTeamId'
+import { UPDATE_LAST_ACTIVE_TEAM_ID } from '../TeamSelect/TeamSelect'
 
 export const ONBOARDING_TEMPLATE_ID = '9d9ca229-9fb5-4d06-a18c-2d1a4ceba457'
 
@@ -28,6 +31,9 @@ export function TeamOnboarding(): ReactElement {
   const [journeyDuplicate, { loading }] = useJourneyDuplicateMutation()
   const router = useRouter()
   const { activeTeam } = useTeam()
+  const [updateLastActiveTeamId] = useMutation<UpdateLastActiveTeamId>(
+    UPDATE_LAST_ACTIVE_TEAM_ID
+  )
 
   return (
     <Stack
@@ -101,14 +107,21 @@ export function TeamOnboarding(): ReactElement {
           </TeamManageWrapper>
         ) : (
           <TeamCreateForm
-            onSubmit={async (_, __, data) =>
+            onSubmit={async (_, __, data) => {
               await journeyDuplicate({
                 variables: {
                   id: ONBOARDING_TEMPLATE_ID,
                   teamId: data?.teamCreate.id
                 }
               })
-            }
+              await updateLastActiveTeamId({
+                variables: {
+                  input: {
+                    lastActiveTeamId: data?.teamCreate.id
+                  }
+                }
+              })
+            }}
           >
             {({
               values,

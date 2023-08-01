@@ -6,7 +6,10 @@ import { NextRouter, useRouter } from 'next/router'
 import { defaultJourney, publishedJourney } from '../data'
 import { JourneyStatus, Role } from '../../../../__generated__/globalTypes'
 import { JOURNEY_DUPLICATE } from '../../../libs/useJourneyDuplicateMutation'
-import { GET_TEAMS, TeamProvider } from '../../Team/TeamProvider'
+import {
+  GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS,
+  TeamProvider
+} from '../../Team/TeamProvider'
 import { GET_ROLE } from './Menu'
 import { Menu, JOURNEY_PUBLISH } from '.'
 
@@ -265,7 +268,11 @@ describe('JourneyView/Menu', () => {
 
     const result2 = jest.fn(() => ({
       data: {
-        teams: [{ id: 'teamId', title: 'Team Name', __typename: 'Team' }]
+        teams: [{ id: 'teamId', title: 'Team Name', __typename: 'Team' }],
+        getJourneyProfile: {
+          __typename: 'JourneyProfile',
+          lastActiveTeamId: 'teamId'
+        }
       }
     }))
 
@@ -285,7 +292,7 @@ describe('JourneyView/Menu', () => {
             },
             {
               request: {
-                query: GET_TEAMS
+                query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
               },
               result: result2
             }
@@ -602,7 +609,11 @@ describe('JourneyView/Menu', () => {
 
     const result2 = jest.fn(() => ({
       data: {
-        teams: [{ id: 'teamId', title: 'Team Name', __typename: 'Team' }]
+        teams: [{ id: 'teamId', title: 'Team Name', __typename: 'Team' }],
+        getJourneyProfile: {
+          __typename: 'JourneyProfile',
+          lastActiveTeamId: 'teamId'
+        }
       }
     }))
 
@@ -636,7 +647,7 @@ describe('JourneyView/Menu', () => {
             },
             {
               request: {
-                query: GET_TEAMS
+                query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
               },
               result: result2
             }

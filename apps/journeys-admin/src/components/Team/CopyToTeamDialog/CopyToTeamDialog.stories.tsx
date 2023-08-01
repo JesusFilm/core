@@ -1,9 +1,12 @@
 import { Story, Meta } from '@storybook/react'
 import { MockedResponse } from '@apollo/client/testing'
 import { SnackbarProvider } from 'notistack'
-import { GET_TEAMS, TeamProvider } from '../TeamProvider'
+import {
+  GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS,
+  TeamProvider
+} from '../TeamProvider'
 import { journeysAdminConfig } from '../../../libs/storybook'
-import { GetTeams } from '../../../../__generated__/GetTeams'
+import { GetLastActiveTeamIdAndTeams } from '../../../../__generated__/GetLastActiveTeamIdAndTeams'
 import { CopyToTeamDialog } from './CopyToTeamDialog'
 
 const CopyToTeamDialogStory = {
@@ -16,13 +19,17 @@ const CopyToTeamDialogStory = {
   }
 }
 
-const getTeamsMock: MockedResponse<GetTeams> = {
+const getTeamsMock: MockedResponse<GetLastActiveTeamIdAndTeams> = {
   request: {
-    query: GET_TEAMS
+    query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
   },
   result: {
     data: {
-      teams: [{ id: 'teamId', title: 'Spider Society', __typename: 'Team' }]
+      teams: [{ id: 'teamId', title: 'Spider Society', __typename: 'Team' }],
+      getJourneyProfile: {
+        __typename: 'JourneyProfile',
+        lastActiveTeamId: 'teamId'
+      }
     }
   }
 }

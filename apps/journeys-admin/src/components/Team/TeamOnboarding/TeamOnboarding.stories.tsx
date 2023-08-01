@@ -50,7 +50,7 @@ const getTeams: MockedResponse<GetLastActiveTeamIdAndTeams> = {
       teams: [{ id: 'teamId', title: 'Team Title', __typename: 'Team' }],
       getJourneyProfile: {
         __typename: 'JourneyProfile',
-        lastActiveTeamId: null
+        lastActiveTeamId: 'teamId'
       }
     }
   }

@@ -50,7 +50,7 @@ const getTeamsMock: MockedResponse<GetLastActiveTeamIdAndTeams> = {
       teams,
       getJourneyProfile: {
         __typename: 'JourneyProfile',
-        lastActiveTeamId: null
+        lastActiveTeamId: 'teamId1'
       }
     }
   }
@@ -69,21 +69,7 @@ describe('TeamProvider', () => {
     await waitFor(() => expect(getByText('my second team')).toBeInTheDocument())
   })
 
-  it('should show active team as first team in array by default', async () => {
-    const { getByText } = render(
-      <MockedProvider mocks={[getTeamsMock]}>
-        <TeamProvider>
-          <TestComponent />
-        </TeamProvider>
-      </MockedProvider>
-    )
-
-    await waitFor(() =>
-      expect(getByText('activeTeam: my first team')).toBeInTheDocument()
-    )
-  })
-
-  it('should show active team as the last viewed team', async () => {
+  it('should show last viewed team as the active team', async () => {
     const getLastViewedTeamMock: MockedResponse<GetLastActiveTeamIdAndTeams> = {
       ...getTeamsMock,
       result: {
