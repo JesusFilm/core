@@ -91,7 +91,7 @@ describe('TeamOnboarding', () => {
     result: {
       data: {
         teamCreate: {
-          id: 'teamId',
+          id: 'teamId1',
           title: 'Team Title',
           __typename: 'Team'
         }
@@ -139,30 +139,11 @@ describe('TeamOnboarding', () => {
     cache.restore({
       ROOT_QUERY: {
         __typename: 'Query',
-        teams: [{ __ref: 'Team:teamId1' }]
+        teams: [{ __ref: 'Team:teamId' }]
       }
     })
-    const result = jest.fn(() => ({
-      data: {
-        teams: [{ id: 'teamId', title: 'Team Title', __typename: 'Team' }],
-        getJourneyProfile: {
-          __typename: 'JourneyProfile',
-          lastActiveTeamId: 'teamId'
-        }
-      }
-    }))
     const { getByRole, getByTestId, getByText } = render(
-      <MockedProvider
-        mocks={[
-          {
-            request: {
-              query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
-            },
-            result
-          }
-        ]}
-        cache={cache}
-      >
+      <MockedProvider mocks={[teamCreateMock, getTeams]} cache={cache}>
         <SnackbarProvider>
           <TeamProvider>
             <TeamOnboarding />
@@ -173,11 +154,12 @@ describe('TeamOnboarding', () => {
     )
     fireEvent.change(getByRole('textbox'), { target: { value: 'Team Title' } })
     fireEvent.click(getByRole('button', { name: 'Create' }))
-    await waitFor(() => expect(result).toHaveBeenCalled())
-    expect(getByTestId('active-team-title')).toHaveTextContent('Team Title')
+    await waitFor(() =>
+      expect(getByTestId('active-team-title')).toHaveTextContent('Team Title')
+    )
     expect(cache.extract()?.ROOT_QUERY?.teams).toEqual([
-      { __ref: 'Team:teamId1' },
-      { __ref: 'Team:teamId' }
+      { __ref: 'Team:teamId' },
+      { __ref: 'Team:teamId1' }
     ])
     expect(getByText('{{ teamName }} created.')).toBeInTheDocument()
   })

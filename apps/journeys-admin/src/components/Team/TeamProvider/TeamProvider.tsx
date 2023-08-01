@@ -28,15 +28,7 @@ export function useTeam(): Context {
 interface TeamProviderProps {
   children: ReactNode
 }
-// GET_TEAMS
-/*
-,
-        getJourneyProfile: {
-          __typename: 'JourneyProfile',
-          lastActiveTeamId: null
-        }
 
-*/
 export const GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS = gql`
   query GetLastActiveTeamIdAndTeams {
     getJourneyProfile {
@@ -74,8 +66,6 @@ export function TeamProvider({ children }: TeamProviderProps): ReactElement {
 
   const activeTeam =
     query.data?.teams.find((team) => team.id === activeTeamId) ?? null
-  console.log('TEAMS: ', query.data?.teams)
-  console.log('ID: ', activeTeamId)
 
   return (
     <TeamContext.Provider value={{ query, activeTeam, setActiveTeam }}>
