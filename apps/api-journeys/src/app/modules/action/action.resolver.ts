@@ -4,15 +4,12 @@ import { GraphQLError } from 'graphql'
 import { FromPostgresql } from '@core/nest/decorators/FromPostgresql'
 import get from 'lodash/get'
 import includes from 'lodash/includes'
-
-import { RoleGuard } from '../../lib/roleGuard/roleGuard'
-import {
-  Action,
-  Block,
-  Role,
-  UserJourneyRole
-} from '../../__generated__/graphql'
+import { CaslAbility } from '@core/nest/common/CaslAuthModule'
+import { subject } from '@casl/ability'
+import { Action, Block } from '.prisma/api-journeys-client'
 import { PrismaService } from '../../lib/prisma.service'
+import { AppCaslGuard } from '../../lib/casl/caslGuard'
+import { Action as CaslAction, AppAbility } from '../../lib/casl/caslFactory'
 
 @Resolver('Action')
 export class ActionResolver {
@@ -28,23 +25,34 @@ export class ActionResolver {
   }
 
   @Mutation()
-  @UseGuards(
-    RoleGuard('journeyId', [
-      UserJourneyRole.owner,
-      UserJourneyRole.editor,
-      { role: Role.publisher, attributes: { template: true } }
-    ])
-  )
+  @UseGuards(AppCaslGuard)
   @FromPostgresql()
   async blockDeleteAction(
-    @Args('id') id: string,
-    @Args('journeyId') journeyId: string
+    @CaslAbility() ability: AppAbility,
+    @Args('id') id: string
   ): Promise<Block> {
     const block = await this.prismaService.block.findUnique({
       where: { id },
-      include: { action: true }
+      include: {
+        action: true,
+        journey: {
+          include: {
+            userJourneys: true,
+            team: {
+              include: { userTeams: true }
+            }
+          }
+        }
+      }
     })
-
+    if (block == null)
+      throw new GraphQLError('block not found', {
+        extensions: { code: 'NOT_FOUND' }
+      })
+    if (!ability.can(CaslAction.Update, subject('Journey', block.journey)))
+      throw new GraphQLError('user is not allowed to update block', {
+        extensions: { code: 'FORBIDDEN' }
+      })
     if (
       block == null ||
       !includes(
