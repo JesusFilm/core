@@ -1,13 +1,13 @@
 {
-  "root": "apps/journeys-admin-e2e",
-  "sourceRoot": "apps/journeys-admin-e2e/src",
+  "root": "apps/docs-e2e",
+  "sourceRoot": "apps/docs-e2e/src",
   "projectType": "application",
   "targets": {
     "e2e": {
       "executor": "@nrwl/workspace:run-commands",
       "options": {
         "commands": ["playwright test"],
-        "cwd": "apps/journeys-admin-e2e"
+        "cwd": "apps/docs-e2e"
       }
     },
     "debug": {
@@ -16,23 +16,23 @@
         "commands": [
           "PWDEBUG=1 xvfb-run playwright test --project=chromium --timeout=0"
         ],
-        "cwd": "apps/journeys-admin-e2e"
+        "cwd": "apps/docs-e2e"
       }
     },
     "show-report": {
       "executor": "@nrwl/workspace:run-commands",
       "options": {
         "commands": ["playwright show-report"],
-        "cwd": "apps/journeys-admin-e2e"
+        "cwd": "apps/docs-e2e"
       }
     },
     "type-check": {
       "executor": "@nrwl/workspace:run-commands",
       "options": {
-        "command": "npx tsc -b apps/journeys-admin-e2e/tsconfig.json"
+        "command": "npx tsc -b apps/docs-e2e/tsconfig.json"
       }
     }
   },
   "tags": [],
-  "implicitDependencies": ["journeys-admin"]
+  "implicitDependencies": ["docs"]
 }
