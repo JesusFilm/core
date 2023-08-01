@@ -1,11 +1,11 @@
 import { Story, Meta } from '@storybook/react'
-import { MockedProvider } from '@apollo/client/testing'
 import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 import { journeysAdminConfig } from '../../libs/storybook'
 import { PageWrapper } from '../NewPageWrapper'
 import { GET_ADMIN_JOURNEYS } from '../../libs/useAdminJourneysQuery/useAdminJourneysQuery'
 import { JourneyStatus } from '../../../__generated__/globalTypes'
-import { mocks } from '../DiscoveryJourneys/data'
+import { getDiscoveryJourneysMock } from '../DiscoveryJourneys/data'
+import { cache } from '../../libs/apolloClient/cache'
 import {
   defaultJourney,
   oldJourney,
@@ -25,30 +25,11 @@ const JourneyListStory = {
 }
 
 const Template: Story = ({ ...args }) => (
-  <MockedProvider
-    mocks={[
-      {
-        request: {
-          query: GET_ADMIN_JOURNEYS,
-          variables: {
-            status: [JourneyStatus.draft, JourneyStatus.published]
-          }
-        },
-        result: {
-          data: {
-            journeys: [...args.props.journeys]
-          }
-        }
-      },
-      ...mocks
-    ]}
-  >
-    <FlagsProvider flags={args.flags}>
-      <PageWrapper title="Active Journeys">
-        <JourneyList {...args.props} />
-      </PageWrapper>
-    </FlagsProvider>
-  </MockedProvider>
+  <FlagsProvider flags={args.flags}>
+    <PageWrapper title="Active Journeys">
+      <JourneyList {...args.props} />
+    </PageWrapper>
+  </FlagsProvider>
 )
 
 export const Default = Template.bind({})
@@ -63,12 +44,44 @@ Default.args = {
     event: ''
   }
 }
+Default.parameters = {
+  apolloClient: {
+    cache: cache(),
+    mocks: [
+      {
+        request: {
+          query: GET_ADMIN_JOURNEYS,
+          variables: {
+            status: [JourneyStatus.draft, JourneyStatus.published]
+          }
+        },
+        result: {
+          data: {
+            journeys: [
+              defaultJourney,
+              publishedJourney,
+              oldJourney,
+              descriptiveJourney
+            ]
+          }
+        }
+      },
+      getDiscoveryJourneysMock
+    ]
+  }
+}
 
 export const NoJourneys = Template.bind({})
 NoJourneys.args = {
   props: {
     journeys: [],
     event: ''
+  }
+}
+NoJourneys.parameters = {
+  apolloClient: {
+    cache: cache(),
+    mocks: [getDiscoveryJourneysMock]
   }
 }
 

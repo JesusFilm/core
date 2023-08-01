@@ -1,282 +1,305 @@
-import { GET_DISCOVERY_JOURNEY } from './EmbedJourney/EmbedJourney'
+import { MockedResponse } from '@apollo/client/testing'
+import {
+  GetDiscoveryJourneys_discoveryJourneys as DiscoveryJourneys,
+  GetDiscoveryJourneys
+} from '../../../__generated__/GetDiscoveryJourneys'
+import {
+  ButtonColor,
+  ButtonSize,
+  ButtonVariant,
+  IconName,
+  ThemeMode,
+  ThemeName,
+  TypographyAlign,
+  TypographyVariant
+} from '../../../__generated__/globalTypes'
+import { GET_DISCOVERY_JOURNEYS } from './DiscoveryJourneys'
 
-export const mocks = [
+export const discoveryJourneys: DiscoveryJourneys[] = [
   {
-    request: {
-      query: GET_DISCOVERY_JOURNEY,
-      variables: {
-        id: 'discovery-admin-left'
+    id: '336ea06f-c08a-4d27-9bb7-16336d1a1f98',
+    seoTitle: 'Beta Version ',
+    blocks: [
+      {
+        id: '3724621a-7539-4946-950c-d5b764b767f9',
+        parentBlockId: null,
+        parentOrder: 0,
+        locked: false,
+        nextBlockId: null,
+        __typename: 'StepBlock'
+      },
+      {
+        id: 'bbd6b8ac-39f1-4e1a-820f-b7414918fab0',
+        parentBlockId: '3724621a-7539-4946-950c-d5b764b767f9',
+        parentOrder: 0,
+        backgroundColor: '#FFFFFF',
+        coverBlockId: null,
+        themeMode: ThemeMode.light,
+        themeName: ThemeName.base,
+        fullscreen: false,
+        __typename: 'CardBlock'
+      },
+      {
+        id: '8b724278-1a1d-484b-86db-52b79ac2da2d',
+        parentBlockId: 'bbd6b8ac-39f1-4e1a-820f-b7414918fab0',
+        parentOrder: 0,
+        align: TypographyAlign.center,
+        color: null,
+        content: '⚠️',
+        variant: TypographyVariant.h1,
+        __typename: 'TypographyBlock'
+      },
+      {
+        id: '10482a9c-06cf-4584-98a9-b2b108c03121',
+        parentBlockId: 'bbd6b8ac-39f1-4e1a-820f-b7414918fab0',
+        parentOrder: 1,
+        align: TypographyAlign.center,
+        color: null,
+        content: 'BETA VERSION',
+        variant: TypographyVariant.h6,
+        __typename: 'TypographyBlock'
+      },
+      {
+        id: 'c8a4ee5b-f23d-4ffc-ab89-397b36636c58',
+        parentBlockId: 'bbd6b8ac-39f1-4e1a-820f-b7414918fab0',
+        parentOrder: 2,
+        align: TypographyAlign.center,
+        color: null,
+        content: 'NEW HERE?',
+        variant: TypographyVariant.h2,
+        __typename: 'TypographyBlock'
+      },
+      {
+        id: '27d4e497-f830-4cf8-87d1-58c8671a80ca',
+        parentBlockId: 'bbd6b8ac-39f1-4e1a-820f-b7414918fab0',
+        parentOrder: 3,
+        align: TypographyAlign.center,
+        color: null,
+        content:
+          'You are one of the first users to test our product. Learn about limitations.',
+        variant: TypographyVariant.body1,
+        __typename: 'TypographyBlock'
+      },
+      {
+        id: '465c7a41-38f4-4ea3-95ea-b3c3db6b66ad',
+        parentBlockId: 'bbd6b8ac-39f1-4e1a-820f-b7414918fab0',
+        parentOrder: 4,
+        label: 'Start Here',
+        buttonVariant: ButtonVariant.text,
+        buttonColor: ButtonColor.secondary,
+        size: ButtonSize.large,
+        startIconId: null,
+        endIconId: 'e7fb67f3-6bf9-4e71-83ef-6b0bc2f9a790',
+        action: null,
+        __typename: 'ButtonBlock'
+      },
+      {
+        id: 'e7fb67f3-6bf9-4e71-83ef-6b0bc2f9a790',
+        parentBlockId: '465c7a41-38f4-4ea3-95ea-b3c3db6b66ad',
+        parentOrder: null,
+        iconName: IconName.ArrowForwardRounded,
+        iconSize: null,
+        iconColor: null,
+        __typename: 'IconBlock'
       }
-    },
-    result: {
-      data: {
-        discoveryJourney: {
-          id: 'd3ec8a9a-51e8-4977-a4da-750245cc22d2',
-          title: 'Discovery Journey - Vision',
-          seoTitle: null,
-          blocks: [
-            {
-              id: '3250f2c3-082f-4373-b46d-d2e4df899789',
-              parentBlockId: null,
-              parentOrder: 0,
-              locked: false,
-              nextBlockId: null,
-              __typename: 'StepBlock'
-            },
-            {
-              id: '89bd305e-3662-4d1e-913a-066f2f55d9c0',
-              parentBlockId: '3250f2c3-082f-4373-b46d-d2e4df899789',
-              parentOrder: 0,
-              backgroundColor: '#FFFFFF',
-              coverBlockId: '8c1a1509-685c-4c5e-9bbf-f3b9dd0e7aff',
-              themeMode: 'light',
-              themeName: 'base',
-              fullscreen: false,
-              __typename: 'CardBlock'
-            },
-            {
-              id: 'aee42424-97bb-4a60-b459-8123b97868a6',
-              parentBlockId: '89bd305e-3662-4d1e-913a-066f2f55d9c0',
-              parentOrder: 0,
-              align: 'center',
-              color: null,
-              content: 'Vision',
-              variant: 'h6',
-              __typename: 'TypographyBlock'
-            },
-            {
-              id: '74bf83db-292b-47e9-b465-7044f12c0bc4',
-              parentBlockId: '89bd305e-3662-4d1e-913a-066f2f55d9c0',
-              parentOrder: 1,
-              align: 'center',
-              color: null,
-              content: 'Innovation in Digital Missions',
-              variant: 'h1',
-              __typename: 'TypographyBlock'
-            },
-            {
-              id: '65862251-8e65-4430-9e98-cd909b85bb4f',
-              parentBlockId: '89bd305e-3662-4d1e-913a-066f2f55d9c0',
-              parentOrder: 2,
-              label:
-                'Learn how NextSteps can be instrumental in reaching the lost.',
-              buttonVariant: 'text',
-              buttonColor: 'primary',
-              size: 'medium',
-              startIconId: null,
-              endIconId: null,
-              action: null,
-              __typename: 'ButtonBlock'
-            },
-            {
-              id: '8c1a1509-685c-4c5e-9bbf-f3b9dd0e7aff',
-              parentBlockId: '89bd305e-3662-4d1e-913a-066f2f55d9c0',
-              parentOrder: null,
-              src: 'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/0faecc7a-1749-4e2c-66a0-4dde6d5cbc00/public',
-              alt: 'public',
-              width: 6000,
-              height: 4000,
-              blurhash: 'LZECIr~Xxtxb?K?I%LocIUWCxubD',
-              __typename: 'ImageBlock'
-            }
-          ],
-          __typename: 'Journey'
-        }
-      }
-    }
+    ],
+    __typename: 'Journey'
   },
   {
-    request: {
-      query: GET_DISCOVERY_JOURNEY,
-      variables: {
-        id: 'discovery-admin-center'
+    id: 'f76713ff-1ec0-499c-87fa-5aa394ca66cf',
+    seoTitle: 'Tutorials',
+    blocks: [
+      {
+        id: 'ed3d2e81-c2dd-4573-9e1f-745351c5b1ea',
+        parentBlockId: null,
+        parentOrder: 0,
+        locked: false,
+        nextBlockId: null,
+        __typename: 'StepBlock'
+      },
+      {
+        id: 'a1aa5824-6017-4ce4-98d4-1b66343dbe87',
+        parentBlockId: 'ed3d2e81-c2dd-4573-9e1f-745351c5b1ea',
+        parentOrder: 0,
+        backgroundColor: '#FFFFFF',
+        coverBlockId: null,
+        themeMode: ThemeMode.light,
+        themeName: ThemeName.base,
+        fullscreen: false,
+        __typename: 'CardBlock'
+      },
+      {
+        id: 'ec48faab-2ecd-429c-b1b3-81204fad3ced',
+        parentBlockId: 'a1aa5824-6017-4ce4-98d4-1b66343dbe87',
+        parentOrder: 0,
+        align: TypographyAlign.center,
+        color: null,
+        content: '🧭',
+        variant: TypographyVariant.h1,
+        __typename: 'TypographyBlock'
+      },
+      {
+        id: '98711407-d4e6-44b3-a710-2f960b567697',
+        parentBlockId: 'a1aa5824-6017-4ce4-98d4-1b66343dbe87',
+        parentOrder: 1,
+        align: TypographyAlign.center,
+        color: null,
+        content: 'HELP CENTER',
+        variant: TypographyVariant.h6,
+        __typename: 'TypographyBlock'
+      },
+      {
+        id: '65ff04a1-a034-424b-8c0d-69a566ee6ef0',
+        parentBlockId: 'a1aa5824-6017-4ce4-98d4-1b66343dbe87',
+        parentOrder: 2,
+        align: TypographyAlign.center,
+        color: null,
+        content: 'TUTORIALS',
+        variant: TypographyVariant.h2,
+        __typename: 'TypographyBlock'
+      },
+      {
+        id: '69ef9d88-4e99-484c-acf1-3b66a5159162',
+        parentBlockId: 'a1aa5824-6017-4ce4-98d4-1b66343dbe87',
+        parentOrder: 3,
+        align: TypographyAlign.center,
+        color: null,
+        content: 'Watch our video tutorials\nor ask a question',
+        variant: TypographyVariant.body1,
+        __typename: 'TypographyBlock'
+      },
+      {
+        id: '91505e5e-4f5c-4f16-8e3e-b73ad794211f',
+        parentBlockId: 'a1aa5824-6017-4ce4-98d4-1b66343dbe87',
+        parentOrder: 4,
+        label: 'Learn More',
+        buttonVariant: ButtonVariant.text,
+        buttonColor: ButtonColor.primary,
+        size: ButtonSize.large,
+        startIconId: null,
+        endIconId: 'b0439cf7-4521-4b84-9883-569b455f2ea7',
+        action: null,
+        __typename: 'ButtonBlock'
+      },
+      {
+        id: 'b0439cf7-4521-4b84-9883-569b455f2ea7',
+        parentBlockId: '91505e5e-4f5c-4f16-8e3e-b73ad794211f',
+        parentOrder: null,
+        iconName: IconName.ArrowForwardRounded,
+        iconSize: null,
+        iconColor: null,
+        __typename: 'IconBlock'
       }
-    },
-    result: {
-      data: {
-        discoveryJourney: {
-          id: 'b6cf2b79-31f2-46f2-8ffe-aa9190f88905',
-          title: 'Discovery Journey - How To',
-          seoTitle: null,
-          blocks: [
-            {
-              id: 'fcd8c212-71a2-4a36-a8cd-4790adf379ca',
-              parentBlockId: '099e8cd9-5f1f-4717-89a5-2e30bc2b2b91',
-              parentOrder: 0,
-              align: 'center',
-              color: null,
-              content: 'How To',
-              variant: 'h6',
-              __typename: 'TypographyBlock'
-            },
-            {
-              id: '74eabb3f-0477-4829-bb8f-3ab0ff5bf0f7',
-              parentBlockId: null,
-              parentOrder: 0,
-              locked: false,
-              nextBlockId: null,
-              __typename: 'StepBlock'
-            },
-            {
-              id: '099e8cd9-5f1f-4717-89a5-2e30bc2b2b91',
-              parentBlockId: '74eabb3f-0477-4829-bb8f-3ab0ff5bf0f7',
-              parentOrder: 0,
-              backgroundColor: '#FFFFFF',
-              coverBlockId: '8aa78d0c-10c1-4266-9c30-e7125f607cb6',
-              themeMode: 'light',
-              themeName: 'base',
-              fullscreen: false,
-              __typename: 'CardBlock'
-            },
-            {
-              id: '7465565f-d8f7-4a83-9456-eb34f43a4240',
-              parentBlockId: '099e8cd9-5f1f-4717-89a5-2e30bc2b2b91',
-              parentOrder: 1,
-              align: 'center',
-              color: null,
-              content: 'Making Journeys',
-              variant: 'h1',
-              __typename: 'TypographyBlock'
-            },
-            {
-              id: 'eba86e89-4d0e-4d92-80ab-47222a3b7c62',
-              parentBlockId: '099e8cd9-5f1f-4717-89a5-2e30bc2b2b91',
-              parentOrder: 2,
-              align: 'center',
-              color: null,
-              content: 'Need more instruction? \nClick below to find help.',
-              variant: 'body1',
-              __typename: 'TypographyBlock'
-            },
-            {
-              id: '06518d87-c12e-40fa-a5df-083c2528b6ab',
-              parentBlockId: '099e8cd9-5f1f-4717-89a5-2e30bc2b2b91',
-              parentOrder: 3,
-              label: 'Open Help Site',
-              buttonVariant: 'text',
-              buttonColor: 'primary',
-              size: 'large',
-              startIconId: null,
-              endIconId: '4371f1a9-9e10-4a54-bc1c-15338f8656b1',
-              action: null,
-              __typename: 'ButtonBlock'
-            },
-            {
-              id: '8aa78d0c-10c1-4266-9c30-e7125f607cb6',
-              parentBlockId: '099e8cd9-5f1f-4717-89a5-2e30bc2b2b91',
-              parentOrder: null,
-              src: 'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/bd04bbd5-7882-486e-cfe9-fe29868b1900/public',
-              alt: 'public',
-              width: 1303,
-              height: 768,
-              blurhash: 'UdKUcvR+oyM{~qt7M_j@-;Rjogt7D%RPs:t6',
-              __typename: 'ImageBlock'
-            },
-            {
-              id: '4371f1a9-9e10-4a54-bc1c-15338f8656b1',
-              parentBlockId: '06518d87-c12e-40fa-a5df-083c2528b6ab',
-              parentOrder: null,
-              iconName: 'ContactSupportRounded',
-              iconSize: null,
-              iconColor: null,
-              __typename: 'IconBlock'
-            }
-          ],
-          __typename: 'Journey'
-        }
-      }
-    }
+    ],
+    __typename: 'Journey'
   },
   {
-    request: {
-      query: GET_DISCOVERY_JOURNEY,
-      variables: {
-        id: 'discovery-admin-right'
+    id: '22ff40a2-b3a3-48af-b48a-6f9ee600bf33',
+    seoTitle: 'Onboarding',
+    blocks: [
+      {
+        id: 'e3b3196a-02d8-4a23-881e-9151ac0afef7',
+        parentBlockId: null,
+        parentOrder: 0,
+        locked: false,
+        nextBlockId: null,
+        __typename: 'StepBlock'
+      },
+      {
+        id: '9e178a41-ce1e-4091-9310-33e247780311',
+        parentBlockId: 'e3b3196a-02d8-4a23-881e-9151ac0afef7',
+        parentOrder: 0,
+        backgroundColor: null,
+        coverBlockId: null,
+        themeMode: ThemeMode.light,
+        themeName: ThemeName.base,
+        fullscreen: false,
+        __typename: 'CardBlock'
+      },
+      {
+        id: 'da8c8f8c-a9b9-4058-9ccf-6757835a6c8b',
+        parentBlockId: '9e178a41-ce1e-4091-9310-33e247780311',
+        parentOrder: 0,
+        align: TypographyAlign.center,
+        color: null,
+        content: '💬',
+        variant: TypographyVariant.h1,
+        __typename: 'TypographyBlock'
+      },
+      {
+        id: 'd9de5dca-8eb2-4e19-bbde-2ced5d1d5eb7',
+        parentBlockId: '9e178a41-ce1e-4091-9310-33e247780311',
+        parentOrder: 1,
+        align: TypographyAlign.center,
+        color: null,
+        content: 'Free one-on-one',
+        variant: TypographyVariant.h6,
+        __typename: 'TypographyBlock'
+      },
+      {
+        id: '13d47b1b-d0b6-4af0-8e23-832b438d9a1c',
+        parentBlockId: '9e178a41-ce1e-4091-9310-33e247780311',
+        parentOrder: 2,
+        align: TypographyAlign.center,
+        color: null,
+        content: 'ONBOARDING',
+        variant: TypographyVariant.h2,
+        __typename: 'TypographyBlock'
+      },
+      {
+        id: '1e9d5926-ea58-44c9-8288-cb843d7bb098',
+        parentBlockId: '9e178a41-ce1e-4091-9310-33e247780311',
+        parentOrder: 3,
+        align: TypographyAlign.center,
+        color: null,
+        content:
+          'Get hands-on guidance and personalized support or share your feedback',
+        variant: TypographyVariant.body1,
+        __typename: 'TypographyBlock'
+      },
+      {
+        id: 'b35c9995-328e-456b-a260-302eddda803d',
+        parentBlockId: '9e178a41-ce1e-4091-9310-33e247780311',
+        parentOrder: 4,
+        label: 'Request Now',
+        buttonVariant: ButtonVariant.text,
+        buttonColor: ButtonColor.primary,
+        size: ButtonSize.large,
+        startIconId: null,
+        endIconId: '4c9033bb-25cb-4456-a95b-443a30c914d9',
+        action: null,
+        __typename: 'ButtonBlock'
+      },
+      {
+        id: '4c9033bb-25cb-4456-a95b-443a30c914d9',
+        parentBlockId: 'b35c9995-328e-456b-a260-302eddda803d',
+        parentOrder: null,
+        iconName: IconName.ArrowForwardRounded,
+        iconSize: null,
+        iconColor: null,
+        __typename: 'IconBlock'
       }
-    },
-    result: {
-      data: {
-        discoveryJourney: {
-          id: 'b4e65885-4da2-4441-b23f-0a167d411f17',
-          title: 'Discovery Journey - Feedback',
-          seoTitle: null,
-          blocks: [
-            {
-              id: 'd7b268c7-e05f-4b84-b7b9-8de3aa754e3f',
-              parentBlockId: 'e1347399-b88d-40a6-b2b2-b75ca16e66c4',
-              parentOrder: 0,
-              align: 'center',
-              color: null,
-              content: 'Feedback',
-              variant: 'h6',
-              __typename: 'TypographyBlock'
-            },
-            {
-              id: 'e1347399-b88d-40a6-b2b2-b75ca16e66c4',
-              parentBlockId: '53c06a04-f4f2-4ac1-92e6-a12d575f8832',
-              parentOrder: 0,
-              backgroundColor: null,
-              coverBlockId: 'c04ceca9-811a-4993-b5de-d4992c158336',
-              themeMode: 'light',
-              themeName: 'base',
-              fullscreen: false,
-              __typename: 'CardBlock'
-            },
-            {
-              id: '53c06a04-f4f2-4ac1-92e6-a12d575f8832',
-              parentBlockId: null,
-              parentOrder: 0,
-              locked: false,
-              nextBlockId: null,
-              __typename: 'StepBlock'
-            },
-            {
-              id: '5d8aa750-b639-45a3-a207-49a89349e377',
-              parentBlockId: 'e1347399-b88d-40a6-b2b2-b75ca16e66c4',
-              parentOrder: 1,
-              align: 'center',
-              color: null,
-              content: 'We Want to Hear From You!',
-              variant: 'h1',
-              __typename: 'TypographyBlock'
-            },
-            {
-              id: '113d3144-971c-49c3-ab82-83c04aadf9bd',
-              parentBlockId: 'e1347399-b88d-40a6-b2b2-b75ca16e66c4',
-              parentOrder: 2,
-              label: 'Make a suggestion',
-              buttonVariant: 'text',
-              buttonColor: 'primary',
-              size: 'large',
-              startIconId: null,
-              endIconId: '74f4af70-dcb7-4689-a4d1-d97089e7d8bc',
-              action: null,
-              __typename: 'ButtonBlock'
-            },
-            {
-              id: 'c04ceca9-811a-4993-b5de-d4992c158336',
-              parentBlockId: 'e1347399-b88d-40a6-b2b2-b75ca16e66c4',
-              parentOrder: null,
-              src: 'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/83f612f9-6b75-466f-9b63-5e042f554600/public',
-              alt: 'public',
-              width: 1152,
-              height: 768,
-              blurhash: 'UDNcya_NELV@^*%2s:NG01D$$hR*?G%Nf+t7',
-              __typename: 'ImageBlock'
-            },
-            {
-              id: '74f4af70-dcb7-4689-a4d1-d97089e7d8bc',
-              parentBlockId: '113d3144-971c-49c3-ab82-83c04aadf9bd',
-              parentOrder: null,
-              iconName: 'ArrowForwardRounded',
-              iconSize: null,
-              iconColor: null,
-              __typename: 'IconBlock'
-            }
-          ],
-          __typename: 'Journey'
-        }
-      }
-    }
+    ],
+    __typename: 'Journey'
   }
 ]
+
+export const getDiscoveryJourneysMock: MockedResponse<GetDiscoveryJourneys> = {
+  request: {
+    query: GET_DISCOVERY_JOURNEYS,
+    variables: {
+      where: {
+        ids: [
+          '336ea06f-c08a-4d27-9bb7-16336d1a1f98',
+          'f76713ff-1ec0-499c-87fa-5aa394ca66cf',
+          '22ff40a2-b3a3-48af-b48a-6f9ee600bf33'
+        ]
+      }
+    }
+  },
+  result: {
+    data: {
+      discoveryJourneys
+    }
+  }
+}

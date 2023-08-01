@@ -1,8 +1,8 @@
 import { Meta, Story } from '@storybook/react'
-import { MockedProvider } from '@apollo/client/testing'
 import { journeysAdminConfig } from '../../libs/storybook'
+import { cache } from '../../libs/apolloClient/cache'
 import { DiscoveryJourneys } from './DiscoveryJourneys'
-import { mocks } from './data'
+import { getDiscoveryJourneysMock } from './data'
 
 const DiscoveryJourneysStory = {
   ...journeysAdminConfig,
@@ -10,12 +10,14 @@ const DiscoveryJourneysStory = {
   title: 'Journeys-Admin/JourneyList/DiscoveryJourneys'
 }
 
-const Template: Story = () => (
-  <MockedProvider mocks={mocks}>
-    <DiscoveryJourneys />
-  </MockedProvider>
-)
+const Template: Story = () => <DiscoveryJourneys />
 
 export const Default = Template.bind({})
+Default.parameters = {
+  apolloClient: {
+    cache: cache(),
+    mocks: [getDiscoveryJourneysMock]
+  }
+}
 
 export default DiscoveryJourneysStory as Meta

@@ -1,45 +1,25 @@
 import Box from '@mui/material/Box'
 import { ReactElement } from 'react'
-import { gql, useQuery } from '@apollo/client'
-import { BLOCK_FIELDS } from '@core/journeys/ui/block/blockFields'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import { BlockRenderer } from '@core/journeys/ui/BlockRenderer'
 import { TreeBlock } from '@core/journeys/ui/block'
 import { transformer } from '@core/journeys/ui/transformer'
 import { StepFooter } from '@core/journeys/ui/StepFooter'
-import { GetDiscoveryJourney } from '../../../../__generated__/GetDiscoveryJourney'
 import { ThemeMode, ThemeName } from '../../../../__generated__/globalTypes'
 import { FramePortal } from '../../FramePortal'
+import { GetDiscoveryJourneys_discoveryJourneys as DiscoveryJourney } from '../../../../__generated__/GetDiscoveryJourneys'
 
 interface Props {
   slug: 'admin-left' | 'admin-right' | 'admin-center'
+  discoveryJourney: DiscoveryJourney
 }
 
-export const GET_DISCOVERY_JOURNEY = gql`
-  ${BLOCK_FIELDS}
-  query GetDiscoveryJourney($id: ID!) {
-    discoveryJourney: journey(id: $id, idType: slug) {
-      id
-      title
-      seoTitle
-      blocks {
-        ...BlockFields
-      }
-    }
-  }
-`
-
-export function EmbedJourney({ slug }: Props): ReactElement {
+export function EmbedJourney({ slug, discoveryJourney }: Props): ReactElement {
   const dimensions = {
     xs: 'calc(210% + 64px)',
     sm: 'calc(166% + 64px)',
     md: 'calc(125% + 64px)'
   }
-
-  const { data } = useQuery<GetDiscoveryJourney>(GET_DISCOVERY_JOURNEY, {
-    variables: { id: `discovery-${slug}` }
-  })
-  const discoveryJourney = data?.discoveryJourney
 
   const block = transformer(discoveryJourney?.blocks as TreeBlock[])?.[0]
 
@@ -108,9 +88,7 @@ export function EmbedJourney({ slug }: Props): ReactElement {
                 }}
               >
                 <BlockRenderer block={block} />
-                <StepFooter
-                  title={discoveryJourney?.seoTitle ?? discoveryJourney?.title}
-                />
+                <StepFooter title={discoveryJourney?.seoTitle ?? ''} />
               </Box>
             </ThemeProvider>
           </FramePortal>
