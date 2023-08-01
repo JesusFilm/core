@@ -10,6 +10,7 @@ import {
   GetTeams,
   GetTeams_teams as Team
 } from '../../../../__generated__/GetTeams'
+import { GetLastActiveTeamId } from '../../../../__generated__/GetLastActiveTeamId'
 
 interface Context {
   query: QueryResult<GetTeams, OperationVariables>

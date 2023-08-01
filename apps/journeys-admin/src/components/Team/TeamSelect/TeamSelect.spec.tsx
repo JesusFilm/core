@@ -8,6 +8,7 @@ import { GetTeams } from '../../../../__generated__/GetTeams'
 import { OnboardingPanelContent } from '../../OnboardingPanelContent'
 import { AddJourneyButton } from '../../JourneyList/ActiveJourneyList/AddJourneyButton'
 import { onboardingJourneys } from '../../OnboardingPanelContent/data'
+import { UPDATE_LAST_ACTIVE_TEAM_ID } from './TeamSelect'
 import { TeamSelect } from '.'
 
 jest.mock('react-i18next', () => ({
@@ -40,8 +41,26 @@ describe('TeamSelect', () => {
   }
 
   it('shows list of teams', async () => {
+    const getLastActiveTeamIdMock = {
+      request: {
+        query: UPDATE_LAST_ACTIVE_TEAM_ID,
+        variables: {
+          input: {
+            lastActiveTeamId: 'teamId2'
+          }
+        }
+      },
+      result: {
+        data: {
+          journeyProfileUpdate: {
+            id: 'teamId2'
+          }
+        }
+      }
+    }
+
     const { getByRole, getByTestId, getByText } = render(
-      <MockedProvider mocks={[getMultipleTeamsMock]}>
+      <MockedProvider mocks={[getMultipleTeamsMock, getLastActiveTeamIdMock]}>
         <TeamProvider>
           <TeamSelect />
           <TestComponent />

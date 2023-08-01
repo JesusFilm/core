@@ -1,22 +1,44 @@
 import { ReactElement } from 'react'
+import { useMutation, gql } from '@apollo/client'
 import PeopleOutlineRoundedIcon from '@mui/icons-material/PeopleOutlineRounded'
 import Stack from '@mui/material/Stack'
 import sortBy from 'lodash/sortBy'
-import Select from '@mui/material/Select'
+import Select, { SelectChangeEvent } from '@mui/material/Select'
 import FormControl from '@mui/material/FormControl'
 import MenuItem from '@mui/material/MenuItem'
 import { useTranslation } from 'react-i18next'
 import Divider from '@mui/material/Divider'
 import { useTeam } from '../TeamProvider'
+import { UpdateLastActiveTeamId } from '../../../../__generated__/UpdateLastActiveTeamId'
+
+export const UPDATE_LAST_ACTIVE_TEAM_ID = gql`
+  mutation UpdateLastActiveTeamId($input: JourneyProfileUpdateInput!) {
+    journeyProfileUpdate(input: $input) {
+      id
+    }
+  }
+`
 
 export function TeamSelect(): ReactElement {
   const { query, activeTeam, setActiveTeam } = useTeam()
   const { t } = useTranslation('apps-journeys-admin')
 
-  async function handleChange(event: React.ChangeEvent): Promise<Void> {
-    setActiveTeam(
-      query?.data?.teams.find((team) => team.id === event.target.value) ?? null
+  const [updateLastActiveTeamId] = useMutation<UpdateLastActiveTeamId>(
+    UPDATE_LAST_ACTIVE_TEAM_ID
+  )
+
+  function handleChange(event: SelectChangeEvent): void {
+    const team = query?.data?.teams.find(
+      (team) => team.id === event.target.value
     )
+    void updateLastActiveTeamId({
+      variables: {
+        input: {
+          lastActiveTeamId: team?.id ?? null
+        }
+      }
+    })
+    setActiveTeam(team ?? null)
   }
 
   return (
