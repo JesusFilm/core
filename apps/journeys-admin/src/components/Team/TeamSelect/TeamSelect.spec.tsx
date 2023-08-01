@@ -49,7 +49,7 @@ describe('TeamSelect', () => {
   }
 
   it('shows list of teams', async () => {
-    const getLastActiveTeamIdMock = {
+    const updateLastActiveTeamIdMock = {
       request: {
         query: UPDATE_LAST_ACTIVE_TEAM_ID,
         variables: {
@@ -68,7 +68,9 @@ describe('TeamSelect', () => {
     }
 
     const { getByRole, getByTestId, getByText } = render(
-      <MockedProvider mocks={[getMultipleTeamsMock, getLastActiveTeamIdMock]}>
+      <MockedProvider
+        mocks={[getMultipleTeamsMock, updateLastActiveTeamIdMock]}
+      >
         <TeamProvider>
           <TeamSelect />
           <TestComponent />

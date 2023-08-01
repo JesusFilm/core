@@ -1,7 +1,10 @@
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { ReactElement } from 'react'
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
-import { GetLastActiveTeamIdAndTeams } from '../../../../__generated__/GetLastActiveTeamIdAndTeams'
+import {
+  GetLastActiveTeamIdAndTeams,
+  GetLastActiveTeamIdAndTeams_teams as Team
+} from '../../../../__generated__/GetLastActiveTeamIdAndTeams'
 import { GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS } from './TeamProvider'
 import { TeamProvider, useTeam } from '.'
 
@@ -25,24 +28,26 @@ const TestComponent = (): ReactElement => {
   )
 }
 
+const teams: Team[] = [
+  {
+    __typename: 'Team',
+    id: 'teamId1',
+    title: 'my first team'
+  },
+  {
+    __typename: 'Team',
+    id: 'teamId2',
+    title: 'my second team'
+  }
+]
+
 const getTeamsMock: MockedResponse<GetLastActiveTeamIdAndTeams> = {
   request: {
     query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
   },
   result: {
     data: {
-      teams: [
-        {
-          __typename: 'Team',
-          id: 'teamId1',
-          title: 'my first team'
-        },
-        {
-          __typename: 'Team',
-          id: 'teamId2',
-          title: 'my second team'
-        }
-      ],
+      teams,
       getJourneyProfile: {
         __typename: 'JourneyProfile',
         lastActiveTeamId: null
@@ -64,7 +69,7 @@ describe('TeamProvider', () => {
     await waitFor(() => expect(getByText('my second team')).toBeInTheDocument())
   })
 
-  it('should show active team as first team in array', async () => {
+  it('should show active team as first team in array by default', async () => {
     const { getByText } = render(
       <MockedProvider mocks={[getTeamsMock]}>
         <TeamProvider>
@@ -75,6 +80,31 @@ describe('TeamProvider', () => {
 
     await waitFor(() =>
       expect(getByText('activeTeam: my first team')).toBeInTheDocument()
+    )
+  })
+
+  it('should show active team as the last viewed team', async () => {
+    const getLastViewedTeamMock: MockedResponse<GetLastActiveTeamIdAndTeams> = {
+      ...getTeamsMock,
+      result: {
+        data: {
+          teams,
+          getJourneyProfile: {
+            __typename: 'JourneyProfile',
+            lastActiveTeamId: 'teamId2'
+          }
+        }
+      }
+    }
+    const { getByText } = render(
+      <MockedProvider mocks={[getLastViewedTeamMock]}>
+        <TeamProvider>
+          <TestComponent />
+        </TeamProvider>
+      </MockedProvider>
+    )
+    await waitFor(() =>
+      expect(getByText('activeTeam: my second team')).toBeInTheDocument()
     )
   })
 
