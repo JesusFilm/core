@@ -12,7 +12,9 @@ export function NavigateAction(): ReactElement {
     state: { steps, selectedStep }
   } = useEditor()
 
-  const nextStep = getNextStep(selectedStep, steps)
+  const nextStep =
+    steps?.find((step) => step.id === selectedStep?.nextBlockId) ??
+    getNextStep(selectedStep, steps)
 
   return (
     <>
