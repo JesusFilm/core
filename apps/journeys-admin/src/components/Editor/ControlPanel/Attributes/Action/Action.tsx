@@ -14,8 +14,7 @@ import {
   GetJourney_journey_blocks_TextResponseBlock as TextResponseBlock,
   GetJourney_journey_blocks_ButtonBlock as ButtonBlock,
   GetJourney_journey_blocks_SignUpBlock as SignUpBlock,
-  GetJourney_journey_blocks_VideoBlock as VideoBlock,
-  GetJourney_journey_blocks_StepBlock as StepBlock
+  GetJourney_journey_blocks_VideoBlock as VideoBlock
 } from '../../../../../../__generated__/GetJourney'
 import { NavigateActionUpdate } from '../../../../../../__generated__/NavigateActionUpdate'
 import { ActionDelete } from '../../../../../../__generated__/ActionDelete'
@@ -24,6 +23,7 @@ import { NavigateToBlockAction } from './NavigateToBlockAction'
 import { NavigateToJourneyAction } from './NavigateToJourneyAction'
 import { LinkAction } from './LinkAction'
 import { EmailAction } from './EmailAction'
+import { getNextStep } from './utils'
 
 export const NAVIGATE_ACTION_UPDATE = gql`
   mutation NavigateActionUpdate(
@@ -93,6 +93,7 @@ export function Action(): ReactElement {
   )
 
   const [action, setAction] = useState(selectedAction?.value ?? 'none')
+  const nextStep = getNextStep(state?.selectedStep, state?.steps)
 
   useEffect(() => {
     if (selectedAction != null) {
@@ -105,7 +106,7 @@ export function Action(): ReactElement {
   async function navigateAction(): Promise<void> {
     if (
       selectedBlock != null &&
-      (state.selectedStep?.nextBlockId != null || getNextStep() != null) &&
+      (state.selectedStep?.nextBlockId != null || nextStep != null) &&
       journey != null
     ) {
       const { id, __typename: typeName } = selectedBlock
@@ -166,15 +167,6 @@ export function Action(): ReactElement {
     setAction(event.target.value)
   }
 
-  const getNextStep = (): TreeBlock<StepBlock> | undefined => {
-    const currentParentOrder = state.selectedStep?.parentOrder
-    return state.steps?.find(
-      (step) =>
-        currentParentOrder != null &&
-        currentParentOrder + 1 === step.parentOrder
-    )
-  }
-
   return (
     <>
       <Stack sx={{ pt: 4, px: 6 }}>
@@ -194,7 +186,7 @@ export function Action(): ReactElement {
                   key={`button-action-${action.value}`}
                   value={action.value}
                   disabled={
-                    getNextStep() == null && action.value === 'NavigateAction'
+                    nextStep == null && action.value === 'NavigateAction'
                   }
                 >
                   {action.label}

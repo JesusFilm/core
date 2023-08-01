@@ -5,13 +5,14 @@ import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'
 import { CardPreview } from '../../../../../CardPreview'
+import { getNextStep } from '../utils'
 
 export function NavigateAction(): ReactElement {
   const {
     state: { steps, selectedStep }
   } = useEditor()
 
-  const nextStep = steps?.find((step) => step.id === selectedStep?.nextBlockId)
+  const nextStep = getNextStep(selectedStep, steps)
 
   return (
     <>
