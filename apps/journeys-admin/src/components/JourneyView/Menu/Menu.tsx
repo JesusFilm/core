@@ -7,6 +7,8 @@ import MoreVert from '@mui/icons-material/MoreVert'
 import BeenHereRoundedIcon from '@mui/icons-material/BeenhereRounded'
 import VisibilityIcon from '@mui/icons-material/Visibility'
 import EditIcon from '@mui/icons-material/Edit'
+// TODO: remove when teams is released
+import { useFlags } from '@core/shared/ui/FlagsProvider'
 import DescriptionIcon from '@mui/icons-material/Description'
 import AssessmentRoundedIcon from '@mui/icons-material/AssessmentRounded'
 import TranslateIcon from '@mui/icons-material/Translate'
@@ -32,8 +34,6 @@ import { CopyToTeamDialog } from '../../Team/CopyToTeamDialog'
 import { DescriptionDialog } from './DescriptionDialog'
 import { TitleDialog } from './TitleDialog'
 import { CreateTemplateMenuItem } from './CreateTemplateMenuItem'
-// TODO: remove when teams is released
-import { useFlags } from '@core/shared/ui/FlagsProvider'
 
 const DynamicLanguageDialog = dynamic<{
   open: boolean

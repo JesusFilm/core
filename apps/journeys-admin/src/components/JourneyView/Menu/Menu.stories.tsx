@@ -1,4 +1,6 @@
 import { Story, Meta } from '@storybook/react'
+// TODO: remove when teams is released
+import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 import { screen, userEvent } from '@storybook/testing-library'
 import { MockedProvider } from '@apollo/client/testing'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
@@ -8,8 +10,6 @@ import { defaultJourney } from '../data'
 import { TeamProvider } from '../../Team/TeamProvider'
 import { GET_LANGUAGES } from './LanguageDialog'
 import { Menu, JOURNEY_PUBLISH, GET_ROLE } from './Menu'
-// TODO: remove when teams is released
-import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 
 const MenuStory = {
   ...simpleComponentConfig,
