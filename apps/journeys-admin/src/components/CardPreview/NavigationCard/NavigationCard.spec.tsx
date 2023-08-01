@@ -9,7 +9,6 @@ describe('NavigationCard', () => {
         id="social"
         title="Test"
         destination={ActiveJourneyEditContent.Canvas}
-        outlined={false}
         header={<div />}
       />
     )
@@ -21,26 +20,9 @@ describe('NavigationCard', () => {
         id="social"
         title="Test"
         destination={ActiveJourneyEditContent.Canvas}
-        outlined={false}
         header={<div data-testid="header" />}
       />
     )
     expect(getByTestId('header')).toBeInTheDocument()
-  })
-
-  it('should display outline when outlined is true', () => {
-    const { getByTestId } = render(
-      <NavigationCard
-        id="social"
-        testId="test-id"
-        title="Test"
-        destination={ActiveJourneyEditContent.Canvas}
-        outlined
-        header={<div />}
-      />
-    )
-    expect(getByTestId('test-id')).toHaveStyle({
-      outline: '2px solid #1976d2'
-    })
   })
 })

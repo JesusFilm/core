@@ -1,4 +1,4 @@
-import { render, fireEvent, waitFor } from '@testing-library/react'
+import { render, fireEvent, waitFor, within } from '@testing-library/react'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { MockedProvider } from '@apollo/client/testing'
 import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
@@ -6,8 +6,21 @@ import { NextRouter, useRouter } from 'next/router'
 import { SnackbarProvider } from 'notistack'
 import TagManager from 'react-gtm-module'
 import { defaultJourney } from '../data'
-import { DUPLICATE_JOURNEY } from '../../../libs/useJourneyDuplicate'
+import { JOURNEY_DUPLICATE } from '../../../libs/useJourneyDuplicateMutation'
+import {
+  GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS,
+  TeamProvider
+} from '../../Team/TeamProvider'
 import { JourneyViewFab } from './JourneyViewFab'
+
+jest.mock('react-i18next', () => ({
+  __esModule: true,
+  useTranslation: () => {
+    return {
+      t: (str: string) => str
+    }
+  }
+}))
 
 jest.mock('next/router', () => ({
   __esModule: true,
@@ -33,9 +46,11 @@ describe('JourneyViewFab', () => {
       <MockedProvider>
         <FlagsProvider>
           <SnackbarProvider>
-            <JourneyProvider value={{ journey: defaultJourney, admin: true }}>
-              <JourneyViewFab />
-            </JourneyProvider>
+            <TeamProvider>
+              <JourneyProvider value={{ journey: defaultJourney, admin: true }}>
+                <JourneyViewFab />
+              </JourneyProvider>
+            </TeamProvider>
           </SnackbarProvider>
         </FlagsProvider>
       </MockedProvider>
@@ -51,14 +66,16 @@ describe('JourneyViewFab', () => {
       <MockedProvider>
         <FlagsProvider>
           <SnackbarProvider>
-            <JourneyProvider
-              value={{
-                journey: { ...defaultJourney, template: true },
-                admin: true
-              }}
-            >
-              <JourneyViewFab isPublisher />
-            </JourneyProvider>
+            <TeamProvider>
+              <JourneyProvider
+                value={{
+                  journey: { ...defaultJourney, template: true },
+                  admin: true
+                }}
+              >
+                <JourneyViewFab isPublisher />
+              </JourneyProvider>
+            </TeamProvider>
           </SnackbarProvider>
         </FlagsProvider>
       </MockedProvider>
@@ -83,35 +100,61 @@ describe('JourneyViewFab', () => {
       }
     })
 
-    const { getByRole, getByText } = render(
+    const result2 = jest.fn(() => ({
+      data: {
+        teams: [{ id: 'teamId', title: 'Team Name', __typename: 'Team' }],
+        getJourneyProfile: {
+          __typename: 'JourneyProfile',
+          lastActiveTeamId: 'teamId'
+        }
+      }
+    }))
+
+    const { getByRole, getByText, getByTestId } = render(
       <MockedProvider
         mocks={[
           {
             request: {
-              query: DUPLICATE_JOURNEY,
+              query: JOURNEY_DUPLICATE,
               variables: {
-                id: 'journey-id'
+                id: 'journey-id',
+                teamId: 'teamId'
               }
             },
             result
+          },
+          {
+            request: {
+              query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
+            },
+            result: result2
           }
         ]}
       >
         <SnackbarProvider>
-          <FlagsProvider>
-            <JourneyProvider
-              value={{ journey: { ...defaultJourney, template: true } }}
-            >
-              <JourneyViewFab />
-            </JourneyProvider>
-          </FlagsProvider>
+          <TeamProvider>
+            <FlagsProvider flags={{ teams: true }}>
+              <JourneyProvider
+                value={{ journey: { ...defaultJourney, template: true } }}
+              >
+                <JourneyViewFab />
+              </JourneyProvider>
+            </FlagsProvider>
+          </TeamProvider>
         </SnackbarProvider>
       </MockedProvider>
     )
+    await waitFor(() => expect(result2).toHaveBeenCalled())
     expect(getByText('Use Template')).toBeInTheDocument()
-
     fireEvent.click(getByRole('button', { name: 'Use Template Use It' }))
-
+    const muiSelect = getByTestId('team-duplicate-select')
+    const muiSelectDropDownButton = await within(muiSelect).getByRole('button')
+    await fireEvent.mouseDown(muiSelectDropDownButton)
+    const muiSelectOptions = await getByRole('option', {
+      name: 'Team Name'
+    })
+    fireEvent.click(muiSelectOptions)
+    await waitFor(() => fireEvent.click(getByText('Add')))
     await waitFor(() => expect(result).toHaveBeenCalled())
     await waitFor(() => {
       expect(push).toHaveBeenCalledWith(
@@ -126,14 +169,25 @@ describe('JourneyViewFab', () => {
     const push = jest.fn()
     mockUseRouter.mockReturnValue({ push } as unknown as NextRouter)
 
+    const result2 = jest.fn(() => ({
+      data: {
+        teams: [{ id: 'teamId', title: 'Team Name', __typename: 'Team' }],
+        getJourneyProfile: {
+          __typename: 'JourneyProfile',
+          lastActiveTeamId: 'teamId'
+        }
+      }
+    }))
+
     const { getByRole } = render(
       <MockedProvider
         mocks={[
           {
             request: {
-              query: DUPLICATE_JOURNEY,
+              query: JOURNEY_DUPLICATE,
               variables: {
-                id: 'journey-id'
+                id: 'journey-id',
+                teamId: 'teamId'
               }
             },
             result: {
@@ -143,17 +197,25 @@ describe('JourneyViewFab', () => {
                 }
               }
             }
+          },
+          {
+            request: {
+              query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
+            },
+            result: result2
           }
         ]}
       >
         <SnackbarProvider>
-          <FlagsProvider>
-            <JourneyProvider
-              value={{ journey: { ...defaultJourney, template: true } }}
-            >
-              <JourneyViewFab />
-            </JourneyProvider>
-          </FlagsProvider>
+          <TeamProvider>
+            <FlagsProvider flags={{ teams: true }}>
+              <JourneyProvider
+                value={{ journey: { ...defaultJourney, template: true } }}
+              >
+                <JourneyViewFab />
+              </JourneyProvider>
+            </FlagsProvider>
+          </TeamProvider>
         </SnackbarProvider>
       </MockedProvider>
     )

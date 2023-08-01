@@ -18,6 +18,7 @@ import {
 import { ThemeProvider } from '../../ThemeProvider'
 import { ThemeMode, ThemeName } from '../../../../__generated__/globalTypes'
 import { NextCard } from '../ControlPanel/Attributes/blocks/Step/NextCard'
+import { HostSidePanel } from '../ControlPanel/Attributes/blocks/Footer/HostSidePanel'
 import { Canvas } from '.'
 
 jest.mock('@core/journeys/ui/EditorProvider', () => {
@@ -215,7 +216,7 @@ describe('Canvas', () => {
       type: 'SetDrawerPropsAction',
       title: 'Hosted By',
       mobileOpen: true,
-      children: <div>Hosted by content component</div>
+      children: <HostSidePanel />
     })
     expect(dispatch).toHaveBeenCalledWith({
       type: 'SetSelectedAttributeIdAction',

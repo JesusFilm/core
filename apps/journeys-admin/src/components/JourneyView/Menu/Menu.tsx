@@ -7,6 +7,8 @@ import MoreVert from '@mui/icons-material/MoreVert'
 import BeenHereRoundedIcon from '@mui/icons-material/BeenhereRounded'
 import VisibilityIcon from '@mui/icons-material/Visibility'
 import EditIcon from '@mui/icons-material/Edit'
+// TODO: remove when teams is released
+import { useFlags } from '@core/shared/ui/FlagsProvider'
 import DescriptionIcon from '@mui/icons-material/Description'
 import AssessmentRoundedIcon from '@mui/icons-material/AssessmentRounded'
 import TranslateIcon from '@mui/icons-material/Translate'
@@ -17,6 +19,7 @@ import NextLink from 'next/link'
 import { useSnackbar } from 'notistack'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { useRouter } from 'next/router'
+import dynamic from 'next/dynamic'
 import {
   JourneyStatus,
   Role,
@@ -26,11 +29,22 @@ import { JourneyPublish } from '../../../../__generated__/JourneyPublish'
 import { GetRole } from '../../../../__generated__/GetRole'
 import { MenuItem } from '../../MenuItem'
 import { TitleDescriptionDialog } from '../TitleDescription/TitleDescriptionDialog'
-import { useJourneyDuplicate } from '../../../libs/useJourneyDuplicate'
+import { useJourneyDuplicateMutation } from '../../../libs/useJourneyDuplicateMutation'
+import { CopyToTeamDialog } from '../../Team/CopyToTeamDialog'
 import { DescriptionDialog } from './DescriptionDialog'
 import { TitleDialog } from './TitleDialog'
-import { LanguageDialog } from './LanguageDialog'
 import { CreateTemplateMenuItem } from './CreateTemplateMenuItem'
+
+const DynamicLanguageDialog = dynamic<{
+  open: boolean
+  onClose: () => void
+}>(
+  async () =>
+    await import(
+      /* webpackChunkName: "MenuLanguageDialog" */
+      './LanguageDialog'
+    ).then((mod) => mod.LanguageDialog)
+)
 
 export const JOURNEY_PUBLISH = gql`
   mutation JourneyPublish($id: ID!) {
@@ -55,7 +69,7 @@ export function Menu(): ReactElement {
   const { journey } = useJourney()
   const router = useRouter()
   const [journeyPublish] = useMutation<JourneyPublish>(JOURNEY_PUBLISH)
-  const { duplicateJourney } = useJourneyDuplicate()
+  const [journeyDuplicate] = useJourneyDuplicateMutation()
 
   const { data } = useQuery<GetRole>(GET_ROLE)
   const isPublisher = data?.getUserRole?.roles?.includes(Role.publisher)
@@ -69,6 +83,11 @@ export function Menu(): ReactElement {
   const [showTitleDialog, setShowTitleDialog] = useState(false)
   const [showDescriptionDialog, setShowDescriptionDialog] = useState(false)
   const [showLanguageDialog, setShowLanguageDialog] = useState(false)
+  const [duplicateTeamDialogOpen, setDuplicateTeamDialogOpen] = useState(false)
+
+  // TODO: remove when teams is released
+  const { teams } = useFlags()
+
   const { enqueueSnackbar } = useSnackbar()
 
   const openMenu = Boolean(anchorEl)
@@ -103,13 +122,15 @@ export function Menu(): ReactElement {
           preventDuplicate: true
         })
   }
-  const handleTemplate = async (): Promise<void> => {
+  const handleTemplate = async (teamId: string | undefined): Promise<void> => {
     if (journey == null) return
 
-    const data = await duplicateJourney({ id: journey.id })
+    const { data } = await journeyDuplicate({
+      variables: { id: journey.id, teamId }
+    })
 
     if (data != null) {
-      void router.push(`/journeys/${data.id}`, undefined, {
+      void router.push(`/journeys/${data.journeyDuplicate.id}`, undefined, {
         shallow: true
       })
     }
@@ -201,7 +222,13 @@ export function Menu(): ReactElement {
               <MenuItem
                 label="Use Template"
                 icon={<CheckRounded />}
-                onClick={handleTemplate}
+                onClick={() =>
+                  // TODO: remove when teams is released
+                  teams
+                    ? setDuplicateTeamDialogOpen(true)
+                    : // TODO: remove when teams is released
+                      handleTemplate(undefined)
+                }
               />
             )}
             {journey.template === true && isPublisher && (
@@ -271,9 +298,19 @@ export function Menu(): ReactElement {
             open={showDescriptionDialog}
             onClose={() => setShowDescriptionDialog(false)}
           />
-          <LanguageDialog
-            open={showLanguageDialog}
-            onClose={() => setShowLanguageDialog(false)}
+          {showLanguageDialog && (
+            <DynamicLanguageDialog
+              open={showLanguageDialog}
+              onClose={() => setShowLanguageDialog(false)}
+            />
+          )}
+
+          <CopyToTeamDialog
+            submitLabel="Add"
+            title="Add Journey to Team"
+            open={duplicateTeamDialogOpen}
+            onClose={() => setDuplicateTeamDialogOpen(false)}
+            submitAction={handleTemplate}
           />
         </>
       ) : (

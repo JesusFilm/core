@@ -3,10 +3,13 @@ import { Meta, Story } from '@storybook/react'
 import { SnackbarProvider } from 'notistack'
 import { screen, userEvent } from '@storybook/testing-library'
 import { journeysAdminConfig } from '../../../libs/storybook'
-import { GET_TEAMS, TeamProvider } from '../TeamProvider'
+import {
+  GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS,
+  TeamProvider
+} from '../TeamProvider'
 import { TeamCreate } from '../../../../__generated__/TeamCreate'
 import { TEAM_CREATE } from '../../../libs/useTeamCreateMutation/useTeamCreateMutation'
-import { GetTeams } from '../../../../__generated__/GetTeams'
+import { GetLastActiveTeamIdAndTeams } from '../../../../__generated__/GetLastActiveTeamIdAndTeams'
 import { GET_USER_TEAMS_AND_INVITES } from '../../../libs/useUserTeamsAndInvitesQuery/useUserTeamsAndInvitesQuery'
 import { GetUserTeamsAndInvites } from '../../../../__generated__/GetUserTeamsAndInvites'
 import { UserTeamRole } from '../../../../__generated__/globalTypes'
@@ -38,13 +41,17 @@ const teamCreateMock: MockedResponse<TeamCreate> = {
   }
 }
 
-const getTeams: MockedResponse<GetTeams> = {
+const getTeams: MockedResponse<GetLastActiveTeamIdAndTeams> = {
   request: {
-    query: GET_TEAMS
+    query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
   },
   result: {
     data: {
-      teams: [{ id: 'teamId', title: 'Team Title', __typename: 'Team' }]
+      teams: [{ id: 'teamId', title: 'Team Title', __typename: 'Team' }],
+      getJourneyProfile: {
+        __typename: 'JourneyProfile',
+        lastActiveTeamId: 'teamId'
+      }
     }
   }
 }

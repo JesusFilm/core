@@ -322,6 +322,10 @@ export interface ImageBlockUpdateInput {
   height?: number | null;
 }
 
+export interface JourneyProfileUpdateInput {
+  lastActiveTeamId?: string | null;
+}
+
 export interface JourneyTemplateInput {
   template?: boolean | null;
 }
@@ -352,6 +356,7 @@ export interface JourneyVisitorFilter {
 export interface JourneysFilter {
   featured?: boolean | null;
   template?: boolean | null;
+  ids?: string[] | null;
 }
 
 export interface LinkActionInput {

@@ -26,7 +26,7 @@ export function HostListItem({
       sx={{ px: 6, py: 5 }}
       divider
       selected={journey?.host?.id === hostId}
-      onClick={(): void => onClick(hostId)}
+      onClick={() => onClick(hostId)}
     >
       <Stack direction="row" sx={{ width: '100%' }}>
         <Box

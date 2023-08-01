@@ -44,6 +44,8 @@ jobs:
       matrix:
         app: ${{fromJson(needs.affected.outputs.matrix)}}
     runs-on: ubuntu-latest
+    outputs:
+      url: ${{ steps.deployment-url.outputs.deployment-url }}
     permissions:
       pull-requests: write
       deployments: write
@@ -120,7 +122,19 @@ jobs:
           state: ${{ job.status }}
           environment-url: ${{ steps.deployment-url.outputs.deployment-url }}
           deployment-id: ${{ steps.deployment.outputs.deployment_id }}
-      - run: npx nx run-many --target=lighthouse --projects=${{ matrix.app }}
+      - name: Install Playwright Browsers
+        run: npx playwright install --with-deps
+      - name: Run Playwright tests
+        run: npx nx run ${{ matrix.app }}-e2e:e2e
+        env:
+          DEPLOYMENT_URL: ${{ steps.deployment-url.outputs.deployment-url }}
+      - uses: actions/upload-artifact@v3
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 30
+      - name: lighthouse scores
+        run: npx nx run-many --target=lighthouse --projects=${{ matrix.app }}
         env:
           DEPLOYMENT_URL: ${{ steps.deployment-url.outputs.deployment-url }}
   deploy-production:
@@ -136,6 +150,8 @@ jobs:
     permissions:
       deployments: write
       contents: write
+    outputs:
+      url: ${{ steps.deployment-url.outputs.deployment-url }}
     steps:
       - name: start deployment
         uses: chrnorm/deployment-action@v2
@@ -195,6 +211,7 @@ jobs:
           state: ${{ job.status }}
           environment-url: ${{ steps.deployment-url.outputs.deployment-url }}
           deployment-id: ${{ steps.deployment.outputs.deployment_id }}
-      - run: npx nx run-many --target=lighthouse --projects=${{ matrix.app }}
+      - name: lighthouse scores
+        run: npx nx run-many --target=lighthouse --projects=${{ matrix.app }}
         env:
           DEPLOYMENT_URL: ${{ steps.deployment-url.outputs.deployment-url }}

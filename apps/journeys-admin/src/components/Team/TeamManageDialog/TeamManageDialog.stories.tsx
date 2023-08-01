@@ -1,7 +1,10 @@
 import { Meta, Story } from '@storybook/react'
 import { MockedProvider } from '@apollo/client/testing'
 import { journeysAdminConfig } from '../../../libs/storybook'
-import { TeamProvider, GET_TEAMS } from '../TeamProvider'
+import {
+  TeamProvider,
+  GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
+} from '../TeamProvider'
 import { UserTeamRole } from '../../../../__generated__/globalTypes'
 import { GET_CURRENT_USER } from '../../../libs/useCurrentUser'
 import { GET_USER_TEAMS_AND_INVITES } from '../../../libs/useUserTeamsAndInvitesQuery/useUserTeamsAndInvitesQuery'
@@ -17,7 +20,10 @@ const mocks = [
   {
     request: {
       query: GET_USER_TEAMS_AND_INVITES,
-      variables: { teamId: 'teamId' }
+      variables: {
+        teamId: 'teamId',
+        where: { role: [UserTeamRole.manager, UserTeamRole.member] }
+      }
     },
     result: {
       data: {
@@ -49,11 +55,15 @@ const mocks = [
   },
   {
     request: {
-      query: GET_TEAMS
+      query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
     },
     result: {
       data: {
-        teams: [{ id: 'teamId', title: 'Team Title', __typename: 'Team' }]
+        teams: [{ id: 'teamId', title: 'Team Title', __typename: 'Team' }],
+        getJourneyProfile: {
+          __typename: 'JourneyProfile',
+          lastActiveTeamId: null
+        }
       }
     }
   },
@@ -65,7 +75,7 @@ const mocks = [
       data: {
         me: {
           id: 'userId',
-          email: 'siyangguccigang@gmail.com'
+          email: 'siyangguccigang@example.com'
         }
       }
     }

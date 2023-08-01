@@ -6,6 +6,7 @@ import {
   Prisma,
   UserTeamRole,
   Host,
+  Team,
   Block,
   UserJourney,
   ChatButton,
@@ -82,61 +83,11 @@ describe('JourneyResolver', () => {
     ...journey,
     team: { userTeams: [{ userId: 'userId', role: UserTeamRole.manager }] }
   }
-  const block: Block = {
+  const block = {
     id: 'blockId',
     typename: 'ImageBlock',
-    journeyId: 'journeyId',
-    parentBlockId: null,
-    parentOrder: null,
-    label: null,
-    variant: null,
-    color: null,
-    size: null,
-    startIconId: null,
-    endIconId: null,
-    backgroundColor: null,
-    coverBlockId: null,
-    fullscreen: null,
-    themeMode: null,
-    themeName: null,
-    spacing: null,
-    direction: null,
-    justifyContent: null,
-    alignItems: null,
-    xl: null,
-    lg: null,
-    sm: null,
-    name: null,
-    src: null,
-    width: null,
-    height: null,
-    alt: null,
-    blurhash: null,
-    submitIconId: null,
-    submitLabel: null,
-    nextBlockId: null,
-    locked: null,
-    hint: null,
-    minRows: null,
-    content: null,
-    align: null,
-    startAt: null,
-    endAt: null,
-    muted: null,
-    autoplay: null,
-    posterBlockId: null,
-    fullsize: null,
-    videoId: null,
-    videoVariantLanguageId: null,
-    source: null,
-    title: null,
-    description: null,
-    image: null,
-    duration: null,
-    objectFit: null,
-    triggerStart: null,
-    updatedAt: new Date()
-  }
+    journeyId: 'journeyId'
+  } as unknown as Block
   const accessibleJourneys: Prisma.JourneyWhereInput = { OR: [{}] }
   beforeAll(() => {
     jest.useFakeTimers('modern')
@@ -521,6 +472,15 @@ describe('JourneyResolver', () => {
           status: 'published',
           template: true
         }
+      })
+    })
+    it('returns a list of journeys', async () => {
+      prismaService.journey.findMany.mockResolvedValueOnce([journey, journey])
+      expect(
+        await resolver.journeys({ ids: [journey.id, journey.id] })
+      ).toEqual([journey, journey])
+      expect(prismaService.journey.findMany).toHaveBeenCalledWith({
+        where: { id: { in: ['journeyId', 'journeyId'] }, status: 'published' }
       })
     })
   })
@@ -1479,6 +1439,26 @@ describe('JourneyResolver', () => {
     })
     it('returns null if no hostId', async () => {
       expect(await resolver.host(journey)).toEqual(null)
+    })
+  })
+
+  describe('team', () => {
+    it('returns team', async () => {
+      const team: Team = {
+        id: 'teamId',
+        title: 'My Cool Team',
+        createdAt: new Date(),
+        updatedAt: new Date()
+      }
+      const journeyWithTeam = {
+        ...journeyWithUserTeam,
+        teamId: 'teamId'
+      }
+      prismaService.team.findUnique.mockResolvedValueOnce(team)
+      expect(await resolver.team(journeyWithTeam)).toEqual(team)
+      expect(prismaService.team.findUnique).toHaveBeenCalledWith({
+        where: { id: journeyWithTeam.teamId }
+      })
     })
   })
   describe('primaryImageBlock', () => {

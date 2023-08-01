@@ -13,7 +13,7 @@ const Demo = {
   ...simpleComponentConfig,
   component: HostAvatarsButton,
   title:
-    'Journeys-Admin/Editor/ControlPanel/Attributes/Footer/HostForm/HostAvatarsButton'
+    'Journeys-Admin/Editor/ControlPanel/Attributes/Footer/HostSidePanel/HostAvatarsButton'
 }
 
 const defaultHost = {
