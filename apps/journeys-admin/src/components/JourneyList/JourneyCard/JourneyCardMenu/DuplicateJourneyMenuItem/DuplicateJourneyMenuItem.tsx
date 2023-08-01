@@ -1,6 +1,7 @@
 import { ReactElement } from 'react'
 import ContentCopyRounded from '@mui/icons-material/ContentCopyRounded'
 import { useSnackbar } from 'notistack'
+import { useFlags } from '@core/shared/ui/FlagsProvider'
 import { MenuItem } from '../../../../MenuItem'
 import { useJourneyDuplicateMutation } from '../../../../../libs/useJourneyDuplicateMutation'
 import { useTeam } from '../../../../Team/TeamProvider'
@@ -17,6 +18,7 @@ export function DuplicateJourneyMenuItem({
   const [journeyDuplicate] = useJourneyDuplicateMutation()
   const { enqueueSnackbar } = useSnackbar()
   const { activeTeam } = useTeam()
+  const { teams } = useFlags()
 
   const handleDuplicateJourney = async (): Promise<void> => {
     if (id == null || activeTeam?.id == null) return
@@ -35,7 +37,7 @@ export function DuplicateJourneyMenuItem({
 
   return (
     <MenuItem
-      disabled={activeTeam?.id == null}
+      disabled={activeTeam?.id == null && teams}
       label="Duplicate"
       icon={<ContentCopyRounded color="secondary" />}
       onClick={handleDuplicateJourney}
