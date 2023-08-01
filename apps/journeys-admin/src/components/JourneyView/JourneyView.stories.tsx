@@ -6,6 +6,7 @@ import { journeysAdminConfig } from '../../libs/storybook'
 import { PageWrapper } from '../PageWrapper'
 import { ApolloLoadingProvider } from '../../../test/ApolloLoadingProvider'
 import { Role } from '../../../__generated__/globalTypes'
+import { TeamProvider } from '../Team/TeamProvider'
 import { JourneyView, GET_USER_ROLE } from './JourneyView'
 import { publishedJourney } from './data'
 import { Menu } from './Menu'
@@ -23,16 +24,18 @@ const JourneyViewStory = {
 const Template: Story = ({ ...args }) => (
   <ApolloLoadingProvider>
     <FlagsProvider>
-      <JourneyProvider value={{ journey: args.journey }}>
-        <PageWrapper
-          title="Journey Details"
-          showDrawer
-          backHref="/"
-          menu={<Menu />}
-        >
-          <JourneyView journeyType="Journey" />
-        </PageWrapper>
-      </JourneyProvider>
+      <TeamProvider>
+        <JourneyProvider value={{ journey: args.journey }}>
+          <PageWrapper
+            title="Journey Details"
+            showDrawer
+            backHref="/"
+            menu={<Menu />}
+          >
+            <JourneyView journeyType="Journey" />
+          </PageWrapper>
+        </JourneyProvider>
+      </TeamProvider>
     </FlagsProvider>
   </ApolloLoadingProvider>
 )
@@ -51,16 +54,18 @@ const JourneyTemplate: Story = ({ ...args }) => (
   <ApolloLoadingProvider>
     <FlagsProvider>
       <MockedProvider mocks={args.mocks}>
-        <JourneyProvider value={{ journey: args.journey }}>
-          <PageWrapper
-            title="Journey Template"
-            showDrawer
-            backHref="/"
-            menu={<Menu />}
-          >
-            <JourneyView journeyType="Template" />
-          </PageWrapper>
-        </JourneyProvider>
+        <TeamProvider>
+          <JourneyProvider value={{ journey: args.journey }}>
+            <PageWrapper
+              title="Journey Template"
+              showDrawer
+              backHref="/"
+              menu={<Menu />}
+            >
+              <JourneyView journeyType="Template" />
+            </PageWrapper>
+          </JourneyProvider>
+        </TeamProvider>
       </MockedProvider>
     </FlagsProvider>
   </ApolloLoadingProvider>

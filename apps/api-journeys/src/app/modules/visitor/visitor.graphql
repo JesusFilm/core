@@ -204,7 +204,7 @@ extend type Query {
     """
     Returns the visitor items related to a specific team.
     """
-    teamId: String!
+    teamId: String
     """
     Returns the first n elements from the list.
     """

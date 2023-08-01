@@ -16,7 +16,7 @@ export function HostTitleLocation(): ReactElement {
   return host != null ? (
     <Typography
       data-testid="host-name-location"
-      variant="body2"
+      variant="caption"
       sx={{
         whiteSpace: 'nowrap',
         overflow: 'clip',

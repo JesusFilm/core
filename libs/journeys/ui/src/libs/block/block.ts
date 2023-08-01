@@ -3,33 +3,46 @@ import { useCallback } from 'react'
 import { BlockFields_StepBlock as StepFields } from './__generated__/BlockFields'
 import type { TreeBlock } from './TreeBlock'
 
-export const activeBlockVar = makeVar<TreeBlock<StepFields> | null>(null)
-export const previousBlocksVar = makeVar<TreeBlock[]>([])
+export const blockHistoryVar = makeVar<TreeBlock[]>([])
 export const treeBlocksVar = makeVar<TreeBlock[]>([])
 export const showHeaderFooterVar = makeVar<boolean>(true)
 export const showNavigationVar = makeVar<boolean>(true)
 
-interface NextActiveBlockArgs {
+interface ActiveBlockArgs {
   /** StepBlock id to set as activeBlock. If no id is set, block will be set to
    *  activeBlock.nextBlockId */
   id?: string
 }
 interface UseBlocksHook {
-  nextActiveBlock: (args?: NextActiveBlockArgs) => void
+  prevActiveBlock: (args?: ActiveBlockArgs) => void
+  nextActiveBlock: (args?: ActiveBlockArgs) => void
   setTreeBlocks: (blocks: TreeBlock[]) => void
-  activeBlock: TreeBlock<StepFields> | null
-  treeBlocks: TreeBlock[]
-  previousBlocks: TreeBlock[]
-  showHeaderFooter: boolean
   setShowHeaderFooter: (value: boolean) => void
-  showNavigation: boolean
   setShowNavigation: (value: boolean) => void
+  treeBlocks: TreeBlock[]
+  blockHistory: TreeBlock[]
+  showHeaderFooter: boolean
+  showNavigation: boolean
 }
 
-export function nextActiveBlock(args?: NextActiveBlockArgs): void {
+export function prevActiveBlock(): void {
+  const blockHistory = blockHistoryVar()
+
+  const updatedBlocks =
+    blockHistory.length > 1 ? [...blockHistory.slice(0, -1)] : blockHistory
+
+  blockHistoryVar(updatedBlocks)
+}
+
+export function nextActiveBlock(args?: ActiveBlockArgs): void {
   const blocks = treeBlocksVar()
-  const activeBlock = activeBlockVar()
+  const blockHistory = blockHistoryVar()
+  const activeBlock = blockHistory[
+    blockHistory.length - 1
+  ] as TreeBlock<StepFields>
   let block: TreeBlock<StepFields> | undefined
+
+  // Set next block from id, nextBlockId or next block in treeBlocks
   if (args?.id != null) {
     block = blocks.find(
       (block) => block.__typename === 'StepBlock' && block.id === args.id
@@ -50,11 +63,9 @@ export function nextActiveBlock(args?: NextActiveBlockArgs): void {
         | undefined
     }
   }
-  if (block != null) {
-    if (activeBlock != null) {
-      previousBlocksVar([...previousBlocksVar(), activeBlock])
-    }
-    activeBlockVar(block)
+
+  if (block != null && block !== activeBlock) {
+    blockHistoryVar([...blockHistory, block])
   }
 }
 
@@ -66,7 +77,11 @@ function flatten(children: TreeBlock[]): TreeBlock[] {
 }
 
 export function isActiveBlockOrDescendant(blockId: string): boolean {
-  const activeBlock = activeBlockVar()
+  const blockHistory = blockHistoryVar()
+  const activeBlock = blockHistory[
+    blockHistory.length - 1
+  ] as TreeBlock<StepFields>
+
   if (activeBlock == null) return false
   if (activeBlock.id === blockId) return true
 
@@ -75,15 +90,13 @@ export function isActiveBlockOrDescendant(blockId: string): boolean {
 }
 
 export function useBlocks(): UseBlocksHook {
-  const activeBlock = useReactiveVar(activeBlockVar)
   const treeBlocks = useReactiveVar(treeBlocksVar)
-  const previousBlocks = useReactiveVar(previousBlocksVar)
+  const blockHistory = useReactiveVar(blockHistoryVar)
   const showHeaderFooter = useReactiveVar(showHeaderFooterVar)
   const showNavigation = useReactiveVar(showNavigationVar)
 
   const setTreeBlocks = useCallback((blocks: TreeBlock[]): void => {
     treeBlocksVar(blocks)
-    activeBlockVar(null)
     nextActiveBlock({ id: blocks[0]?.id })
   }, [])
 
@@ -95,14 +108,14 @@ export function useBlocks(): UseBlocksHook {
   }, [])
 
   return {
+    prevActiveBlock,
     nextActiveBlock,
     setTreeBlocks,
-    activeBlock,
-    treeBlocks,
-    previousBlocks,
-    showHeaderFooter,
     setShowHeaderFooter,
-    showNavigation,
-    setShowNavigation
+    setShowNavigation,
+    treeBlocks,
+    blockHistory,
+    showHeaderFooter,
+    showNavigation
   }
 }

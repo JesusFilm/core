@@ -8,6 +8,7 @@ import {
   ThemeName,
   ThemeMode
 } from '../../../__generated__/globalTypes'
+import { TeamProvider } from '../Team/TeamProvider'
 import { JourneyView } from '.'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
@@ -56,16 +57,19 @@ describe('JourneyView', () => {
     template: null,
     userJourneys: [],
     chatButtons: [],
-    host: null
+    host: null,
+    team: null
   }
 
   it.skip('should have edit button', () => {
     const { getByRole } = render(
       <MockedProvider>
         <SnackbarProvider>
-          <JourneyProvider value={{ journey, admin: true }}>
-            <JourneyView journeyType="Journey" />
-          </JourneyProvider>
+          <TeamProvider>
+            <JourneyProvider value={{ journey, admin: true }}>
+              <JourneyView journeyType="Journey" />
+            </JourneyProvider>
+          </TeamProvider>
         </SnackbarProvider>
       </MockedProvider>
     )
@@ -78,9 +82,11 @@ describe('JourneyView', () => {
     const { getByTestId } = render(
       <MockedProvider>
         <SnackbarProvider>
-          <JourneyProvider value={{ journey, admin: true }}>
-            <JourneyView journeyType="Journey" />
-          </JourneyProvider>
+          <TeamProvider>
+            <JourneyProvider value={{ journey, admin: true }}>
+              <JourneyView journeyType="Journey" />
+            </JourneyProvider>
+          </TeamProvider>
         </SnackbarProvider>
       </MockedProvider>
     )

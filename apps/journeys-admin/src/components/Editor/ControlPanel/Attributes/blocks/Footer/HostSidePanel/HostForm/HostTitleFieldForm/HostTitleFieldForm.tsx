@@ -27,7 +27,13 @@ export const UPDATE_JOURNEY_HOST = gql`
   }
 `
 
-export function HostTitleFieldForm(): ReactElement {
+interface HostTitleFieldFormProps {
+  empty?: boolean
+}
+
+export function HostTitleFieldForm({
+  empty = false
+}: HostTitleFieldFormProps): ReactElement {
   const [hostCreate] = useMutation<CreateHost>(CREATE_HOST)
   const [journeyHostUpdate] =
     useMutation<UpdateJourneyHost>(UPDATE_JOURNEY_HOST)
@@ -44,9 +50,9 @@ export function HostTitleFieldForm(): ReactElement {
     if (host != null) {
       const { id, teamId } = host
       await updateHost({ id, teamId, input: { title: value } })
-    } else {
+    } else if (journey?.team != null) {
       const { data } = await hostCreate({
-        variables: { teamId: 'jfp-team', input: { title: value } },
+        variables: { teamId: journey.team.id, input: { title: value } },
         update(cache, { data }) {
           if (data?.hostCreate != null) {
             cache.modify({
@@ -79,7 +85,7 @@ export function HostTitleFieldForm(): ReactElement {
     <TextFieldForm
       id="hostTitle"
       label="Host Name"
-      initialValue={host?.title}
+      initialValue={empty ? '' : host?.title}
       validationSchema={titleSchema}
       onSubmit={handleSubmit}
     />
