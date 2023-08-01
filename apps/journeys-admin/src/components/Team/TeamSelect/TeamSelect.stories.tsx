@@ -42,9 +42,9 @@ const getEmptyTeamsMock: MockedResponse<GetTeams> = {
   }
 }
 
-const Template: Story = () => (
+const Template: Story = (args) => (
   <TeamProvider>
-    <TeamSelect />
+    <TeamSelect {...args} />
   </TeamProvider>
 )
 
@@ -53,6 +53,16 @@ Default.parameters = {
   apolloClient: {
     mocks: [getTeamsMock]
   }
+}
+
+export const Onboarding = Template.bind({})
+Onboarding.parameters = {
+  apolloClient: {
+    mocks: [getTeamsMock]
+  }
+}
+Onboarding.args = {
+  onboarding: true
 }
 
 export const Loading = Template.bind({})
