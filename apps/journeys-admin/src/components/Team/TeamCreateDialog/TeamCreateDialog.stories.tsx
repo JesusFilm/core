@@ -40,7 +40,11 @@ const Template: Story = () => {
   return (
     <TeamProvider>
       <SnackbarProvider>
-        <TeamCreateDialog open={open} onClose={() => setOpen(false)} />
+        <TeamCreateDialog
+          open={open}
+          onClose={() => setOpen(false)}
+          onCreate={() => setOpen(false)}
+        />
       </SnackbarProvider>
     </TeamProvider>
   )

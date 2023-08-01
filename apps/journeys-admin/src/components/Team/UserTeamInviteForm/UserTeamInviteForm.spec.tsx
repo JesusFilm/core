@@ -111,7 +111,7 @@ describe('UserTeamInviteForm', () => {
     const { getByRole, getAllByText } = render(
       <MockedProvider>
         <TeamProvider>
-          <UserTeamInviteForm emails={[]} />
+          <UserTeamInviteForm emails={[]} role={UserTeamRole.manager} />
         </TeamProvider>
       </MockedProvider>
     )
@@ -136,7 +136,7 @@ describe('UserTeamInviteForm', () => {
     const { getByRole, getByText } = render(
       <MockedProvider>
         <TeamProvider>
-          <UserTeamInviteForm emails={[]} />
+          <UserTeamInviteForm emails={[]} role={UserTeamRole.manager} />
         </TeamProvider>
       </MockedProvider>
     )
@@ -153,12 +153,32 @@ describe('UserTeamInviteForm', () => {
     })
   })
 
+  it('should not allow a team member to invite others', async () => {
+    const { getByRole, getByText } = render(
+      <MockedProvider>
+        <TeamProvider>
+          <UserTeamInviteForm emails={[]} role={UserTeamRole.member} />
+        </TeamProvider>
+      </MockedProvider>
+    )
+    const email = getByRole('textbox', { name: 'Email' })
+
+    await waitFor(() => {
+      const inlineError = getByText(
+        'Only a manager can invite new members to the team'
+      )
+      expect(inlineError).toBeInTheDocument()
+    })
+    expect(email).toBeDisabled()
+  })
+
   it('should validate if email already exists', async () => {
     const { getByRole, getByText } = render(
       <MockedProvider mocks={[getTeams, getUserTeamMock1]}>
         <TeamProvider>
           <UserTeamInviteForm
             emails={['siyangguccigang@example.com', 'edmondshen@example.com']}
+            role={UserTeamRole.manager}
           />
         </TeamProvider>
       </MockedProvider>
@@ -186,6 +206,7 @@ describe('UserTeamInviteForm', () => {
         <TeamProvider>
           <UserTeamInviteForm
             emails={['siyangguccigang@example.com', 'edmondshen@example.com']}
+            role={UserTeamRole.manager}
           />
         </TeamProvider>
       </MockedProvider>
