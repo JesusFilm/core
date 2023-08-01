@@ -1,21 +1,21 @@
-import { GraphQLError } from 'graphql'
 import { UseGuards } from '@nestjs/common'
 import { Args, Mutation, Resolver } from '@nestjs/graphql'
 import omit from 'lodash/omit'
 import { CaslAbility } from '@core/nest/common/CaslAuthModule'
 import { subject } from '@casl/ability'
+import { GraphQLError } from 'graphql'
 import { Block } from '.prisma/api-journeys-client'
 import {
-  ButtonBlockCreateInput,
-  ButtonBlockUpdateInput
+  RadioOptionBlockCreateInput,
+  RadioOptionBlockUpdateInput
 } from '../../../__generated__/graphql'
 import { BlockService } from '../block.service'
-import { PrismaService } from '../../../lib/prisma.service'
 import { AppCaslGuard } from '../../../lib/casl/caslGuard'
 import { Action, AppAbility } from '../../../lib/casl/caslFactory'
+import { PrismaService } from '../../../lib/prisma.service'
 
-@Resolver('ButtonBlock')
-export class ButtonBlockResolver {
+@Resolver('RadioOptionBlock')
+export class RadioOptionBlockResolver {
   constructor(
     private readonly blockService: BlockService,
     private readonly prismaService: PrismaService
@@ -23,9 +23,9 @@ export class ButtonBlockResolver {
 
   @Mutation()
   @UseGuards(AppCaslGuard)
-  async buttonBlockCreate(
+  async radioOptionBlockCreate(
     @CaslAbility() ability: AppAbility,
-    @Args('input') input: ButtonBlockCreateInput
+    @Args('input') input: RadioOptionBlockCreateInput
   ): Promise<Block> {
     const parentOrder = (
       await this.blockService.getSiblings(input.journeyId, input.parentBlockId)
@@ -35,7 +35,7 @@ export class ButtonBlockResolver {
         data: {
           ...omit(input, 'parentBlockId', 'journeyId'),
           id: input.id ?? undefined,
-          typename: 'ButtonBlock',
+          typename: 'RadioOptionBlock',
           journey: { connect: { id: input.journeyId } },
           parentBlock: { connect: { id: input.parentBlockId } },
           parentOrder
@@ -60,30 +60,11 @@ export class ButtonBlockResolver {
 
   @Mutation()
   @UseGuards(AppCaslGuard)
-  async buttonBlockUpdate(
+  async radioOptionBlockUpdate(
     @CaslAbility() ability: AppAbility,
     @Args('id') id: string,
-    @Args('input') input: ButtonBlockUpdateInput
+    @Args('input') input: RadioOptionBlockUpdateInput
   ): Promise<Block> {
-    if (input.startIconId != null) {
-      const startIcon = await this.blockService.validateBlock(
-        input.startIconId,
-        id
-      )
-      if (!startIcon) {
-        throw new GraphQLError('Start icon does not exist', {
-          extensions: { code: 'BAD_USER_INPUT' }
-        })
-      }
-    }
-    if (input.endIconId != null) {
-      const endIcon = await this.blockService.validateBlock(input.endIconId, id)
-      if (!endIcon) {
-        throw new GraphQLError('End icon does not exist', {
-          extensions: { code: 'BAD_USER_INPUT' }
-        })
-      }
-    }
     const block = await this.prismaService.block.findUnique({
       where: { id },
       include: {
