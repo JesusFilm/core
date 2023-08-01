@@ -40,7 +40,7 @@ export function TermsAndConditions(): ReactElement {
 
   const handleJourneyProfileCreate = async (): Promise<void> => {
     await journeyProfileCreate()
-    await router.push('/')
+    await router.push('/?onboarding=true')
   }
 
   return (
