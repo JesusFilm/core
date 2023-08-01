@@ -59,6 +59,24 @@ describe('TeamSelect', () => {
     expect(getByTestId('active-team-title')).toHaveTextContent('Team Title2')
   })
 
+  it('shows onboarding popover', async () => {
+    const { getByRole, queryByRole } = render(
+      <MockedProvider mocks={[getMultipleTeamsMock]}>
+        <TeamProvider>
+          <TeamSelect onboarding />
+          <TestComponent />
+        </TeamProvider>
+      </MockedProvider>
+    )
+    await waitFor(() =>
+      expect(getByRole('button', { name: 'Dismiss' })).toBeInTheDocument()
+    )
+    await userEvent.click(getByRole('button', { name: 'Dismiss' }))
+    await waitFor(() =>
+      expect(queryByRole('button', { name: 'Dismiss' })).not.toBeInTheDocument()
+    )
+  })
+
   it('removes create journey buttons when on Shared With Me team', async () => {
     const { getByRole, queryByRole } = render(
       <MockedProvider mocks={[]}>
