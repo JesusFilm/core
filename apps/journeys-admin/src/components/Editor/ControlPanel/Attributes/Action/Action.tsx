@@ -14,7 +14,8 @@ import {
   GetJourney_journey_blocks_TextResponseBlock as TextResponseBlock,
   GetJourney_journey_blocks_ButtonBlock as ButtonBlock,
   GetJourney_journey_blocks_SignUpBlock as SignUpBlock,
-  GetJourney_journey_blocks_VideoBlock as VideoBlock
+  GetJourney_journey_blocks_VideoBlock as VideoBlock,
+  GetJourney_journey_blocks_StepBlock as StepBlock
 } from '../../../../../../__generated__/GetJourney'
 import { NavigateActionUpdate } from '../../../../../../__generated__/NavigateActionUpdate'
 import { ActionDelete } from '../../../../../../__generated__/ActionDelete'
@@ -104,7 +105,7 @@ export function Action(): ReactElement {
   async function navigateAction(): Promise<void> {
     if (
       selectedBlock != null &&
-      state.selectedStep?.nextBlockId != null &&
+      (state.selectedStep?.nextBlockId != null || getNextStep() != null) &&
       journey != null
     ) {
       const { id, __typename: typeName } = selectedBlock
@@ -165,14 +166,13 @@ export function Action(): ReactElement {
     setAction(event.target.value)
   }
 
-  const noNextStepAvailable = (): boolean => {
+  const getNextStep = (): TreeBlock<StepBlock> | undefined => {
     const currentParentOrder = state.selectedStep?.parentOrder
-    const nextStep = state.steps?.find(
+    return state.steps?.find(
       (step) =>
         currentParentOrder != null &&
         currentParentOrder + 1 === step.parentOrder
     )
-    return nextStep == null
   }
 
   return (
@@ -194,7 +194,7 @@ export function Action(): ReactElement {
                   key={`button-action-${action.value}`}
                   value={action.value}
                   disabled={
-                    noNextStepAvailable() && action.value === 'NavigateAction'
+                    getNextStep() == null && action.value === 'NavigateAction'
                   }
                 >
                   {action.label}

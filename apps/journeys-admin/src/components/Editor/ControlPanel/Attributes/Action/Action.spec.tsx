@@ -25,7 +25,10 @@ describe('Action', () => {
   })
 
   it('enables Next Step option if there is a next step', async () => {
-    const selectedStep = steps[1]
+    const selectedStep = {
+      ...steps[1],
+      nextBlockId: null
+    }
     const { getByRole } = render(
       <MockedProvider>
         <EditorProvider initialState={{ selectedStep, steps }}>
