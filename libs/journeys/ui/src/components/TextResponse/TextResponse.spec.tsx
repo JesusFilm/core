@@ -5,7 +5,7 @@ import { SnackbarProvider } from 'notistack'
 import TagManager from 'react-gtm-module'
 import { ApolloLoadingProvider } from '../../../test/ApolloLoadingProvider'
 import type { TreeBlock } from '../../libs/block'
-import { activeBlockVar, treeBlocksVar } from '../../libs/block'
+import { blockHistoryVar, treeBlocksVar } from '../../libs/block'
 import { JourneyProvider } from '../../libs/JourneyProvider'
 import { handleAction } from '../../libs/action'
 import { BlockFields_StepBlock as StepBlock } from '../../libs/block/__generated__/BlockFields'
@@ -201,7 +201,7 @@ describe('TextResponse', () => {
   })
 
   it('should create submission event on click', async () => {
-    activeBlockVar(activeBlock)
+    blockHistoryVar([activeBlock])
     treeBlocksVar([activeBlock])
 
     const result = jest.fn(() => ({
@@ -228,7 +228,7 @@ describe('TextResponse', () => {
   })
 
   it('should add submission event to dataLayer', async () => {
-    activeBlockVar(activeBlock)
+    blockHistoryVar([activeBlock])
     treeBlocksVar([activeBlock])
 
     const { getByLabelText, getByRole } = render(

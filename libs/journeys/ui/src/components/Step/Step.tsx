@@ -5,7 +5,7 @@ import TagManager from 'react-gtm-module'
 import { NextSeo } from 'next-seo'
 import { useTranslation } from 'react-i18next'
 import type { TreeBlock } from '../../libs/block'
-import { useBlocks } from '../../libs/block'
+import { useBlocks, isActiveBlockOrDescendant } from '../../libs/block'
 import { getStepHeading } from '../../libs/getStepHeading'
 import { BlockRenderer, WrappersProps } from '../BlockRenderer'
 import { useJourney } from '../../libs/JourneyProvider/JourneyProvider'
@@ -40,7 +40,7 @@ export function Step({
   const heading = getStepHeading(blockId, children, treeBlocks, t)
 
   useEffect(() => {
-    if (!admin) {
+    if (!admin && isActiveBlockOrDescendant(blockId)) {
       const id = uuidv4()
       void stepViewEventCreate({
         variables: { input: { id, blockId, value: heading } }
