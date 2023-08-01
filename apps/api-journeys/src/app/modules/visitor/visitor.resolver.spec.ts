@@ -92,7 +92,7 @@ describe('VisitorResolver', () => {
       )
     })
 
-    it('returns accessible connections without teamId', async () => {
+    it('returns connections without teamId', async () => {
       expect(await resolver.visitorsConnection({ OR: [] })).toEqual(connection)
     })
 
