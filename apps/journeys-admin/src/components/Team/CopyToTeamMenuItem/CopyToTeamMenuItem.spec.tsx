@@ -1,11 +1,11 @@
-import { render, fireEvent, waitFor } from '@testing-library/react'
+import { render, fireEvent, waitFor, within } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
 import { SnackbarProvider } from 'notistack'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
-import { GetJourney_journey as Journey } from '../../../../../../__generated__/GetJourney'
-import { JOURNEY_DUPLICATE } from '../../../../../libs/useJourneyDuplicateMutation'
-import { GET_TEAMS, TeamProvider } from '../../../../Team/TeamProvider'
-import { DuplicateJourneyMenuItem } from './DuplicateJourneyMenuItem'
+import { GetJourney_journey as Journey } from '../../../../__generated__/GetJourney'
+import { JOURNEY_DUPLICATE } from '../../../libs/useJourneyDuplicateMutation'
+import { TeamProvider, GET_TEAMS } from '../TeamProvider'
+import { CopyToTeamMenuItem } from './CopyToTeamMenuItem'
 
 describe('DuplicateJourneys', () => {
   const handleCloseMenu = jest.fn()
@@ -27,7 +27,7 @@ describe('DuplicateJourneys', () => {
       }
     }))
 
-    const { getByRole, getByText } = render(
+    const { getByRole, getByText, getByTestId } = render(
       <MockedProvider
         mocks={[
           {
@@ -56,7 +56,7 @@ describe('DuplicateJourneys', () => {
             }}
           >
             <TeamProvider>
-              <DuplicateJourneyMenuItem
+              <CopyToTeamMenuItem
                 id="journeyId"
                 handleCloseMenu={handleCloseMenu}
               />
@@ -66,9 +66,17 @@ describe('DuplicateJourneys', () => {
       </MockedProvider>
     )
     await waitFor(() => expect(result2).toHaveBeenCalled())
-    await fireEvent.click(getByRole('menuitem', { name: 'Duplicate' }))
+    await fireEvent.click(getByRole('menuitem', { name: 'Copy to ...' }))
+    const muiSelect = getByTestId('team-duplicate-select')
+    const muiSelectDropDownButton = await within(muiSelect).getByRole('button')
+    await fireEvent.mouseDown(muiSelectDropDownButton)
+    const muiSelectOptions = await getByRole('option', {
+      name: 'Team Name'
+    })
+    fireEvent.click(muiSelectOptions)
+    await waitFor(() => fireEvent.click(getByText('Copy')))
     await waitFor(() => expect(result).toHaveBeenCalled())
     expect(handleCloseMenu).toHaveBeenCalled()
-    expect(getByText('Journey Duplicated')).toBeInTheDocument()
+    expect(getByText('Journey Copied')).toBeInTheDocument()
   })
 })
