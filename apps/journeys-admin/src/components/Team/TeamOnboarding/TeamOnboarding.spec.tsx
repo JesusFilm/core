@@ -192,4 +192,25 @@ describe('TeamOnboarding', () => {
     )
     expect(push).not.toHaveBeenCalled()
   })
+
+  it('submits team invite form correctly', async () => {
+    const { getByText, getByRole } = render(
+      <MockedProvider mocks={[getTeams, getUserTeamMock1]}>
+        <SnackbarProvider>
+          <TeamProvider>
+            <TeamOnboarding />
+            <TestComponent />
+          </TeamProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    await waitFor(() => expect(getByText('Team Title')).toBeInTheDocument())
+    await waitFor(() => expect(getByText('Siyang Gang')).toBeInTheDocument())
+    expect(getByRole('button', { name: 'Skip' })).toBeInTheDocument()
+    await waitFor(() => fireEvent.click(getByRole('button', { name: 'Skip' })))
+    expect(push).toHaveBeenCalled()
+
+    jest.resetAllMocks()
+  })
 })

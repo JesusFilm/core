@@ -1,12 +1,13 @@
 import { Global, Module } from '@nestjs/common'
+import { CaslAuthModule } from '@core/nest/common/CaslAuthModule'
 import { PrismaService } from '../../lib/prisma.service'
-import { UserJourneyService } from './userJourney.service'
+import { AppCaslFactory } from '../../lib/casl/caslFactory'
 import { UserJourneyResolver } from './userJourney.resolver'
 
 @Global()
 @Module({
-  imports: [],
-  providers: [UserJourneyService, UserJourneyResolver, PrismaService],
-  exports: [UserJourneyService]
+  imports: [CaslAuthModule.register(AppCaslFactory)],
+  providers: [UserJourneyResolver, PrismaService],
+  exports: []
 })
 export class UserJourneyModule {}

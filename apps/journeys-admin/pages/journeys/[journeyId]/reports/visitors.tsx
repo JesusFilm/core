@@ -36,7 +36,6 @@ export const GET_JOURNEY_VISITORS = gql`
     $after: String
   ) {
     visitors: journeyVisitorsConnection(
-      teamId: "jfp-team"
       filter: $filter
       sort: $sort
       first: $first

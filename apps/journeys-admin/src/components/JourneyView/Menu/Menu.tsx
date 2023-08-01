@@ -27,7 +27,8 @@ import { JourneyPublish } from '../../../../__generated__/JourneyPublish'
 import { GetRole } from '../../../../__generated__/GetRole'
 import { MenuItem } from '../../MenuItem'
 import { TitleDescriptionDialog } from '../TitleDescription/TitleDescriptionDialog'
-import { useJourneyDuplicate } from '../../../libs/useJourneyDuplicate'
+import { useJourneyDuplicateMutation } from '../../../libs/useJourneyDuplicateMutation'
+import { CopyToTeamDialog } from '../../Team/CopyToTeamDialog'
 import { DescriptionDialog } from './DescriptionDialog'
 import { TitleDialog } from './TitleDialog'
 import { CreateTemplateMenuItem } from './CreateTemplateMenuItem'
@@ -66,7 +67,7 @@ export function Menu(): ReactElement {
   const { journey } = useJourney()
   const router = useRouter()
   const [journeyPublish] = useMutation<JourneyPublish>(JOURNEY_PUBLISH)
-  const { duplicateJourney } = useJourneyDuplicate()
+  const [journeyDuplicate] = useJourneyDuplicateMutation()
 
   const { data } = useQuery<GetRole>(GET_ROLE)
   const isPublisher = data?.getUserRole?.roles?.includes(Role.publisher)
@@ -80,6 +81,7 @@ export function Menu(): ReactElement {
   const [showTitleDialog, setShowTitleDialog] = useState(false)
   const [showDescriptionDialog, setShowDescriptionDialog] = useState(false)
   const [showLanguageDialog, setShowLanguageDialog] = useState(false)
+  const [duplicateTeamDialogOpen, setDuplicateTeamDialogOpen] = useState(false)
   const { enqueueSnackbar } = useSnackbar()
 
   const openMenu = Boolean(anchorEl)
@@ -114,13 +116,15 @@ export function Menu(): ReactElement {
           preventDuplicate: true
         })
   }
-  const handleTemplate = async (): Promise<void> => {
+  const handleTemplate = async (teamId: string): Promise<void> => {
     if (journey == null) return
 
-    const data = await duplicateJourney({ id: journey.id })
+    const { data } = await journeyDuplicate({
+      variables: { id: journey.id, teamId }
+    })
 
     if (data != null) {
-      void router.push(`/journeys/${data.id}`, undefined, {
+      void router.push(`/journeys/${data.journeyDuplicate.id}`, undefined, {
         shallow: true
       })
     }
@@ -212,7 +216,7 @@ export function Menu(): ReactElement {
               <MenuItem
                 label="Use Template"
                 icon={<CheckRounded />}
-                onClick={handleTemplate}
+                onClick={() => setDuplicateTeamDialogOpen(true)}
               />
             )}
             {journey.template === true && isPublisher && (
@@ -288,6 +292,14 @@ export function Menu(): ReactElement {
               onClose={() => setShowLanguageDialog(false)}
             />
           )}
+
+          <CopyToTeamDialog
+            submitLabel="Add"
+            title="Add Journey to Team"
+            open={duplicateTeamDialogOpen}
+            onClose={() => setDuplicateTeamDialogOpen(false)}
+            submitAction={handleTemplate}
+          />
         </>
       ) : (
         <IconButton edge="end" disabled>

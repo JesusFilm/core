@@ -4,18 +4,19 @@
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL mutation operation: DuplicateJourney
+// GraphQL mutation operation: DeleteHost
 // ====================================================
 
-export interface DuplicateJourney_journeyDuplicate {
-  __typename: "Journey";
+export interface DeleteHost_hostDelete {
+  __typename: "Host";
   id: string;
 }
 
-export interface DuplicateJourney {
-  journeyDuplicate: DuplicateJourney_journeyDuplicate;
+export interface DeleteHost {
+  hostDelete: DeleteHost_hostDelete;
 }
 
-export interface DuplicateJourneyVariables {
+export interface DeleteHostVariables {
   id: string;
+  teamId: string;
 }

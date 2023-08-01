@@ -3,7 +3,7 @@ import { MockedProvider } from '@apollo/client/testing'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { NextRouter, useRouter } from 'next/router'
 import { GetJourney_journey as Journey } from '../../../../../__generated__/GetJourney'
-import { DUPLICATE_JOURNEY } from '../../../../libs/useJourneyDuplicate'
+import { JOURNEY_DUPLICATE } from '../../../../libs/useJourneyDuplicateMutation'
 import {
   CreateTemplateMenuItem,
   REMOVE_USER_JOURNEY,
@@ -36,9 +36,10 @@ describe('CreateTemplateMenuItem', () => {
         mocks={[
           {
             request: {
-              query: DUPLICATE_JOURNEY,
+              query: JOURNEY_DUPLICATE,
               variables: {
-                id: 'journeyId'
+                id: 'journeyId',
+                teamId: 'jfp-team'
               }
             },
             result: {

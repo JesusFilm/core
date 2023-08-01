@@ -16,11 +16,7 @@ import { getVisitorRows } from './utils/getVisitorRows'
 
 export const GET_VISITORS = gql`
   query GetVisitors($first: Int, $after: String) {
-    visitors: visitorsConnection(
-      teamId: "jfp-team"
-      first: $first
-      after: $after
-    ) {
+    visitors: visitorsConnection(first: $first, after: $after) {
       edges {
         node {
           id

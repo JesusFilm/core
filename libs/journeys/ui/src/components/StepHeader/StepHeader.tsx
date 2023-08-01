@@ -9,6 +9,7 @@ import Typography from '@mui/material/Typography'
 import Divider from '@mui/material/Divider'
 import { useTranslation } from 'react-i18next'
 import Link from '@mui/material/Link'
+import Box from '@mui/material/Box'
 import { useJourney } from '../../libs/JourneyProvider'
 
 export function StepHeader(): ReactElement {
@@ -98,8 +99,19 @@ export function StepHeader(): ReactElement {
             <MuiMenuItem>{t('Privacy Policy')}</MuiMenuItem>
           </Link>
         </NextLink>
+        <Box sx={{ px: 4, py: 1, maxWidth: '204px' }}>
+          <Typography
+            color={(theme) => theme.palette.action.disabled}
+            variant="caption"
+          >
+            {t(
+              'All personal identifiable data registered on this website will be processed by journey creator: "{{ teamTitle }}".',
+              { teamTitle: journey?.team?.title ?? '' }
+            )}
+          </Typography>
+        </Box>
         <MuiMenuItem disabled>
-          <Typography variant="caption">
+          <Typography variant="caption" color="primary.light">
             {t('NextSteps © {{year}}', { year: new Date().getFullYear() })}
           </Typography>
         </MuiMenuItem>

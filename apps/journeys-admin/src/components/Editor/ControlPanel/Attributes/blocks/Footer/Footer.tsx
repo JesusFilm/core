@@ -1,18 +1,19 @@
 import { ReactElement, useEffect } from 'react'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
-// import UserProfileCircleIcon from '@core/shared/ui/icons/UserProfileCircle'
+import UserProfileCircleIcon from '@core/shared/ui/icons/UserProfileCircle'
 import MessageChat1 from '@core/shared/ui/icons/MessageChat1'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { useTranslation } from 'react-i18next'
 import { Attribute } from '../..'
 import { ChatPlatform } from '../../../../../../../__generated__/globalTypes'
+import { HostSidePanel } from './HostSidePanel'
 import { Chat } from './Chat'
 
 export function Footer(): ReactElement {
   const { dispatch } = useEditor()
   const { journey } = useJourney()
   const { t } = useTranslation('apps-journeys-admin')
-  // const hostName = journey?.host?.title ?? t('None')
+  const hostName = journey?.host?.title ?? t('None')
 
   const translatedPlatforms = [
     { value: ChatPlatform.facebook, label: t('Facebook') },
@@ -40,23 +41,23 @@ export function Footer(): ReactElement {
   useEffect(() => {
     dispatch({
       type: 'SetSelectedAttributeIdAction',
-      id: 'chat-widget'
+      id: 'hosted-by'
     })
     dispatch({
       type: 'SetDrawerPropsAction',
-      title: t('Chat Widget'),
+      title: t('Hosted By'),
       mobileOpen: true,
-      children: <Chat />
+      children: <HostSidePanel />
     })
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dispatch])
 
   return (
     <>
-      {/* <Attribute
+      <Attribute
         id="hosted-by"
         icon={<UserProfileCircleIcon />}
-        name={t('Hosted by')}
+        name={t('Hosted By')}
         value={hostName as string}
         description={t("Host's name")}
         onClick={() => {
@@ -64,10 +65,10 @@ export function Footer(): ReactElement {
             type: 'SetDrawerPropsAction',
             title: t('Hosted By'),
             mobileOpen: true,
-            children: <div>Hosted by content component</div>
+            children: <HostSidePanel />
           })
         }}
-      /> */}
+      />
       <Attribute
         id="chat-widget"
         icon={<MessageChat1 />}

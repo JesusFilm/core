@@ -36,13 +36,22 @@ export function TeamCreateDialog({
 
   return (
     <TeamCreateForm onSubmit={handleSubmit}>
-      {({ values, errors, handleChange, handleSubmit, resetForm }) => (
+      {({
+        values,
+        errors,
+        handleChange,
+        handleSubmit,
+        resetForm,
+        isSubmitting
+      }) => (
         <Dialog
           open={open}
           onClose={handleClose(resetForm)}
           dialogTitle={{ title: t('Create Team') }}
           dialogAction={{
-            onSubmit: handleSubmit,
+            onSubmit: () => {
+              if (!isSubmitting) handleSubmit()
+            },
             closeLabel: t('Cancel'),
             submitLabel: t('Create')
           }}
