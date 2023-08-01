@@ -4,18 +4,19 @@
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL mutation operation: DuplicateJourney
+// GraphQL mutation operation: JourneyDuplicate
 // ====================================================
 
-export interface DuplicateJourney_journeyDuplicate {
+export interface JourneyDuplicate_journeyDuplicate {
   __typename: "Journey";
   id: string;
 }
 
-export interface DuplicateJourney {
-  journeyDuplicate: DuplicateJourney_journeyDuplicate;
+export interface JourneyDuplicate {
+  journeyDuplicate: JourneyDuplicate_journeyDuplicate;
 }
 
-export interface DuplicateJourneyVariables {
+export interface JourneyDuplicateVariables {
   id: string;
+  teamId?: string | null;
 }

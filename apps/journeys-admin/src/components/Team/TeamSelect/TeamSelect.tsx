@@ -34,6 +34,7 @@ export function TeamSelect({ onboarding }: TeamSelectProps): ReactElement {
         <PeopleOutlineRoundedIcon sx={{ mr: 3, ml: '3px' }} />
         <FormControl variant="standard" sx={{ minWidth: 100 }}>
           <Select
+            defaultValue={activeTeam?.id}
             disabled={query.loading}
             displayEmpty
             value={activeTeam?.id ?? ''}

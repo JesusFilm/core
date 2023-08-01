@@ -3,6 +3,7 @@ import { MockedProvider } from '@apollo/client/testing'
 import { SnackbarProvider } from 'notistack'
 import noop from 'lodash/noop'
 import { simpleComponentConfig } from '../../../../../libs/storybook'
+import { TeamProvider } from '../../../../Team/TeamProvider'
 import { DeleteJourneyDialogProps } from './DeleteJourneyDialog'
 import { DeleteJourneyDialog } from '.'
 
@@ -14,9 +15,11 @@ const DeleteJourneyDialogDemo = {
 
 const Template: Story<DeleteJourneyDialogProps> = ({ ...args }) => (
   <MockedProvider>
-    <SnackbarProvider>
-      <DeleteJourneyDialog {...args} />
-    </SnackbarProvider>
+    <TeamProvider>
+      <SnackbarProvider>
+        <DeleteJourneyDialog {...args} />
+      </SnackbarProvider>
+    </TeamProvider>
   </MockedProvider>
 )
 

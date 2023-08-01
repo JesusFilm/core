@@ -10,6 +10,7 @@ import { MenuItem } from '../../../../MenuItem'
 import { DuplicateJourneyMenuItem } from '../DuplicateJourneyMenuItem'
 import { JourneyStatus } from '../../../../../../__generated__/globalTypes'
 import { GetAdminJourneys } from '../../../../../../__generated__/GetAdminJourneys'
+import { CopyToTeamMenuItem } from '../../../../Team/CopyToTeamMenuItem/CopyToTeamMenuItem'
 import { ArchiveJourney } from './ArchiveJourney'
 
 interface DefaultMenuProps {
@@ -49,7 +50,6 @@ export function DefaultMenu({
       >
         <MenuItem label="Edit" icon={<EditIcon color="secondary" />} />
       </NextLink>
-
       {template !== true && (
         <MenuItem
           label="Access"
@@ -68,13 +68,11 @@ export function DefaultMenu({
           openInNew
         />
       </NextLink>
-
       {template !== true && (
         <DuplicateJourneyMenuItem id={id} handleCloseMenu={handleCloseMenu} />
       )}
-
       <Divider />
-
+      <CopyToTeamMenuItem id={id} handleCloseMenu={handleCloseMenu} />
       <ArchiveJourney
         status={status}
         id={journeyId}
@@ -82,7 +80,6 @@ export function DefaultMenu({
         handleClose={handleCloseMenu}
         refetch={refetch}
       />
-
       <MenuItem
         label="Trash"
         icon={<DeleteOutlineRoundedIcon color="secondary" />}

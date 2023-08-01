@@ -14,15 +14,18 @@ import { useTranslation } from 'react-i18next'
 import { Form } from 'formik'
 import { useRouter } from 'next/router'
 import Divider from '@mui/material/Divider'
+import GroupAddIcon from '@mui/icons-material/GroupAdd'
 import taskbarIcon from '../../../../public/taskbar-icon.svg'
 import { TeamCreateForm } from '../TeamCreateForm'
-
 import { useTeam } from '../TeamProvider'
 import { TeamManageWrapper } from '../TeamManageDialog/TeamManageWrapper'
+import { useJourneyDuplicateMutation } from '../../../libs/useJourneyDuplicateMutation'
+
+export const ONBOARDING_TEMPLATE_ID = '9d9ca229-9fb5-4d06-a18c-2d1a4ceba457'
 
 export function TeamOnboarding(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-
+  const [journeyDuplicate, { loading }] = useJourneyDuplicateMutation()
   const router = useRouter()
   const { activeTeam } = useTeam()
 
@@ -46,7 +49,7 @@ export function TeamOnboarding(): ReactElement {
             }) => (
               <Card sx={{ width: { sm: '444px' } }}>
                 <CardHeader
-                  title={t('Invite teammates to {{ title }}', {
+                  title={t('Invite Teammates', {
                     title: activeTeam.title
                   })}
                   titleTypographyProps={{ variant: 'h6' }}
@@ -62,6 +65,16 @@ export function TeamOnboarding(): ReactElement {
                 </CardContent>
 
                 <Divider />
+                <Stack
+                  direction="row"
+                  alignItems="center"
+                  sx={{ mt: 4, mx: 6 }}
+                >
+                  <GroupAddIcon />
+                  <Typography variant="subtitle1" sx={{ ml: 3 }}>
+                    {t('Invite team members')}
+                  </Typography>
+                </Stack>
                 <CardContent sx={{ px: 6, py: 4 }}>
                   {userTeamInviteForm}
                 </CardContent>
@@ -76,6 +89,7 @@ export function TeamOnboarding(): ReactElement {
                     onClick={async () =>
                       await router?.push('/?onboarding=true')
                     }
+                    disabled={loading}
                   >
                     {(data?.userTeamInvites ?? []).length > 0
                       ? t('Continue')
@@ -86,7 +100,16 @@ export function TeamOnboarding(): ReactElement {
             )}
           </TeamManageWrapper>
         ) : (
-          <TeamCreateForm>
+          <TeamCreateForm
+            onSubmit={async (_, __, data) =>
+              await journeyDuplicate({
+                variables: {
+                  id: ONBOARDING_TEMPLATE_ID,
+                  teamId: data?.teamCreate.id
+                }
+              })
+            }
+          >
             {({
               values,
               errors,

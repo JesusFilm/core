@@ -98,10 +98,10 @@ describe('TeamManageDialog', () => {
       </MockedProvider>
     )
     await waitFor(() => {
-      expect(getByText('Members')).toBeInTheDocument()
+      expect(getByText('Manage Members')).toBeInTheDocument()
       expect(getByText("Miguel O'Hara")).toBeInTheDocument()
       expect(getByText('edmond@example.com')).toBeInTheDocument()
-      expect(getByText('Invite others to your team')).toBeInTheDocument()
+      expect(getByText('Invite team member')).toBeInTheDocument()
     })
   })
   it('should call on close', async () => {

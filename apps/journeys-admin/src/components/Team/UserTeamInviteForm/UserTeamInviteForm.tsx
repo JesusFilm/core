@@ -99,12 +99,10 @@ export function UserTeamInviteForm({
     >
       {({ values, handleChange, handleBlur, errors, touched }) => (
         <>
-          <Form noValidate>
+          <Form noValidate autoComplete="off">
             <TextField
-              id="email"
               label={t('Email')}
               name="email"
-              type="email"
               fullWidth
               variant="filled"
               value={values.email}
@@ -114,6 +112,7 @@ export function UserTeamInviteForm({
               helperText={
                 touched?.email != null && errors.email != null && errors.email
               }
+              autoComplete="off"
               InputProps={{
                 endAdornment: (
                   <InputAdornment position="end">
@@ -149,7 +148,7 @@ export function UserTeamInviteForm({
             </Box>
             <Typography sx={{ color: 'secondary.light' }} variant="body2">
               {t(
-                'No email notifications. New users get access instantly. Team members can see all analytics, edit journeys and copy journeys.'
+                'No email notifications. New members get access instantly. Team members can see all analytics, edit any journey, and delete and copy journey.'
               )}
             </Typography>
           </Stack>

@@ -97,15 +97,14 @@ export function EmailInviteForm({
       validationSchema={validationSchema}
     >
       {({ values, handleChange, handleBlur, errors, touched }) => (
-        <Form noValidate>
+        <Form noValidate autoComplete="off">
           <TextField
-            id="email"
             label={t('Email')}
             name="email"
-            type="email"
             fullWidth
             variant="filled"
             value={values.email}
+            autoComplete="off"
             onChange={handleChange}
             onBlur={handleBlur}
             error={errors.email != null && touched.email != null}
