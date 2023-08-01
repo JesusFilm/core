@@ -1705,8 +1705,11 @@ extend type Query {
 
   """Get a list of Visitor Information by Journey"""
   journeyVisitorsConnection(
-    """Returns the visitor items related to a specific team."""
-    teamId: String!
+    """
+    Returns the visitor items related to a specific team.
+    TODO: remove when teams is released
+    """
+    teamId: String
 
     """Returns the elements in the list that match the specified filter."""
     filter: JourneyVisitorFilter!
@@ -1734,7 +1737,7 @@ extend type Query {
   """A list of visitors that are connected with a specific team."""
   visitorsConnection(
     """Returns the visitor items related to a specific team."""
-    teamId: String!
+    teamId: String
 
     """Returns the first n elements from the list."""
     first: Int

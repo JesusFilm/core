@@ -72,7 +72,11 @@ export function TeamOnboarding(): ReactElement {
                     justifyContent: 'flex-end'
                   }}
                 >
-                  <Button onClick={async () => await router?.push('/')}>
+                  <Button
+                    onClick={async () =>
+                      await router?.push('/?onboarding=true')
+                    }
+                  >
                     {(data?.userTeamInvites ?? []).length > 0
                       ? t('Continue')
                       : t('Skip')}

@@ -113,8 +113,9 @@ extend type Query {
   journeyVisitorsConnection(
     """
     Returns the visitor items related to a specific team.
+    TODO: remove when teams is released
     """
-    teamId: String!
+    teamId: String
     """
     Returns the elements in the list that match the specified filter.
     """
