@@ -8,6 +8,8 @@ import { defaultJourney } from '../data'
 import { TeamProvider } from '../../Team/TeamProvider'
 import { GET_LANGUAGES } from './LanguageDialog'
 import { Menu, JOURNEY_PUBLISH, GET_ROLE } from './Menu'
+// TODO: remove when teams is released
+import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 
 const MenuStory = {
   ...simpleComponentConfig,
@@ -93,9 +95,13 @@ const journeyMocks = [
 const Template: Story = ({ ...args }) => (
   <MockedProvider mocks={args.mocks}>
     <TeamProvider>
-      <JourneyProvider value={{ journey: args.journey, admin: true }}>
-        <Menu {...args} />
-      </JourneyProvider>
+      {/* TODO: remove when teams is released */}
+      <FlagsProvider flags={{ teams: true }}>
+        <JourneyProvider value={{ journey: args.journey, admin: true }}>
+          <Menu {...args} />
+        </JourneyProvider>
+        {/* TODO: remove when teams is released */}
+      </FlagsProvider>
     </TeamProvider>
   </MockedProvider>
 )
