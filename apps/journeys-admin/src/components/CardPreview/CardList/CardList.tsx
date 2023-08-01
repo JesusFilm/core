@@ -246,10 +246,9 @@ const CardItem = ({
       sx={{
         display: 'flex',
         flexDirection: 'column',
-        gap: 0.75,
         width: 95,
         position: 'relative',
-        height: isDraggable === true ? 166 : 140,
+        height: isDraggable === true ? 164 : 140,
         top: isDraggable === true ? '-24px' : undefined,
         mb: isDraggable === true ? '-24px' : undefined,
         overflow: isDraggable === true ? 'hidden' : undefined

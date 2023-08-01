@@ -28,12 +28,11 @@ export function NavigationCard({
     <Box
       id={id}
       data-testid={testId}
-      height={150}
+      height={140}
       width={100}
       borderRadius={2}
       py={1.5}
       px={1.25}
-      mt={-0.5}
       sx={{
         outline: (theme) =>
           outlined
@@ -45,10 +44,12 @@ export function NavigationCard({
         variant="outlined"
         sx={{
           width: 90,
-          height: 135,
+          height: '100%',
           m: 0,
           p: 0,
-          border: id === 'goals' ? 'none' : '1px solid grey.300',
+          borderWidth: id === 'goals' ? 0 : 1,
+          borderColor: 'grey.300',
+          borderStyle: 'solid',
           backgroundColor:
             id === 'goals' ? 'background.default' : 'background.paper',
           '&:hover': { backgroundColor: id === 'goals' ? '#e3e3e3' : '#f8f8f8' }
