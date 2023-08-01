@@ -15,6 +15,7 @@ import {
   archiveddJourney,
   trashedJourney
 } from '../journeyListData'
+import { TeamProvider } from '../../Team/TeamProvider'
 import { JourneyCard } from './JourneyCard'
 import { JourneyCardVariant } from './journeyCardVariant'
 
@@ -26,7 +27,9 @@ const TestStory = {
 
 const Template: Story = ({ ...args }) => (
   <MockedProvider>
-    <JourneyCard {...args} />
+    <TeamProvider>
+      <JourneyCard {...args} />
+    </TeamProvider>
   </MockedProvider>
 )
 

@@ -1,16 +1,17 @@
-import { Resolver, Query, Mutation } from '@nestjs/graphql'
+import { Resolver, Query, Mutation, Args } from '@nestjs/graphql'
 import { CurrentUserId } from '@core/nest/decorators/CurrentUserId'
 import { UseGuards } from '@nestjs/common'
-import { GqlAuthGuard } from '@core/nest/gqlAuthGuard/GqlAuthGuard'
 import { JourneyProfile } from '.prisma/api-journeys-client'
+import { AppCaslGuard } from '../../lib/casl/caslGuard'
 import { PrismaService } from '../../lib/prisma.service'
+import { JourneyProfileUpdateInput } from '../../__generated__/graphql'
 
 @Resolver('JourneyProfile')
 export class JourneyProfileResolver {
   constructor(private readonly prismaService: PrismaService) {}
 
   @Query()
-  @UseGuards(GqlAuthGuard)
+  @UseGuards(AppCaslGuard)
   async getJourneyProfile(
     @CurrentUserId() userId: string
   ): Promise<JourneyProfile | null> {
@@ -20,7 +21,7 @@ export class JourneyProfileResolver {
   }
 
   @Mutation()
-  @UseGuards(GqlAuthGuard)
+  @UseGuards(AppCaslGuard)
   async journeyProfileCreate(
     @CurrentUserId() userId: string
   ): Promise<JourneyProfile> {
@@ -37,5 +38,19 @@ export class JourneyProfileResolver {
     }
 
     return profile
+  }
+
+  @Mutation()
+  @UseGuards(AppCaslGuard)
+  async journeyProfileUpdate(
+    @CurrentUserId() userId: string,
+    @Args('input') input: JourneyProfileUpdateInput
+  ): Promise<JourneyProfile> {
+    const profile = await this.getJourneyProfile(userId)
+
+    return await this.prismaService.journeyProfile.update({
+      where: { id: profile?.id },
+      data: input
+    })
   }
 }

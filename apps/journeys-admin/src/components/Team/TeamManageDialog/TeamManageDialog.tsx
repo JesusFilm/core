@@ -28,7 +28,7 @@ export function TeamManageDialog({
           onClose={onClose}
           divider
           dialogTitle={{
-            title: 'Invite others to your team',
+            title: t('Manage Members'),
             closeButton: true
           }}
           dialogActionChildren={
@@ -36,7 +36,7 @@ export function TeamManageDialog({
               <Stack direction="row" alignItems="center" sx={{ mb: 4 }}>
                 <GroupAddIcon />
                 <Typography variant="subtitle1" sx={{ ml: 3 }}>
-                  {t('Add team member by Email')}
+                  {t('Invite team member')}
                 </Typography>
               </Stack>
               {userTeamInviteForm}
@@ -45,7 +45,6 @@ export function TeamManageDialog({
           fullscreen={!smUp}
         >
           <Stack spacing={4}>
-            <Typography variant="subtitle1">{t('Members')}</Typography>
             {userTeamList}
             {userTeamInviteList}
           </Stack>

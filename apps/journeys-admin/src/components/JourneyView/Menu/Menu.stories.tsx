@@ -5,6 +5,7 @@ import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { simpleComponentConfig } from '../../../libs/storybook'
 import { JourneyStatus, Role } from '../../../../__generated__/globalTypes'
 import { defaultJourney } from '../data'
+import { TeamProvider } from '../../Team/TeamProvider'
 import { GET_LANGUAGES } from './LanguageDialog'
 import { Menu, JOURNEY_PUBLISH, GET_ROLE } from './Menu'
 
@@ -91,9 +92,11 @@ const journeyMocks = [
 
 const Template: Story = ({ ...args }) => (
   <MockedProvider mocks={args.mocks}>
-    <JourneyProvider value={{ journey: args.journey, admin: true }}>
-      <Menu {...args} />
-    </JourneyProvider>
+    <TeamProvider>
+      <JourneyProvider value={{ journey: args.journey, admin: true }}>
+        <Menu {...args} />
+      </JourneyProvider>
+    </TeamProvider>
   </MockedProvider>
 )
 

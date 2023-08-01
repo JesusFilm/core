@@ -55,8 +55,9 @@ export function StepFooter({
         justifyContent="space-between"
         spacing={2}
         sx={{
-          px: { xs: 6, lg: 6 },
-          py: { xs: 2, lg: 2 },
+          px: { xs: 6, lg: 0 },
+          py: { xs: 2, lg: 0 },
+          pt: { xs: 3, sm: 0 },
           flexDirection: { lg: rtl ? 'row-reverse' : 'row' },
           justifyContent: 'space-between',
           alignItems: { xs: 'flex-start', lg: 'center' }
@@ -68,8 +69,8 @@ export function StepFooter({
 
         <Stack
           sx={{
-            flexGrow: 1,
             width: '100%',
+            height: 52,
             flexDirection: rtl ? 'row-reverse' : 'row',
             alignItems: 'center'
           }}
@@ -84,8 +85,11 @@ export function StepFooter({
             }}
             gap={2}
           >
-            {hasAvatar && <HostAvatars />}
-            <Stack sx={{ py: 1.5, flex: '1 1 100%', minWidth: 0 }}>
+            {hasAvatar && <HostAvatars hasPlaceholder={admin} />}
+            <Stack
+              sx={{ py: 1.5, flex: '1 1 100%', minWidth: 0 }}
+              spacing={-1.5}
+            >
               <Typography
                 sx={{
                   zIndex: 1,

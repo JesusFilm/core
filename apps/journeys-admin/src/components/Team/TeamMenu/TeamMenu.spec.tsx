@@ -52,22 +52,22 @@ describe('TeamMenu', () => {
         </MockedProvider>
       )
     fireEvent.click(getByRole('button'))
-    fireEvent.click(getByRole('menuitem', { name: 'Create New Team' }))
+    fireEvent.click(getByRole('menuitem', { name: 'New Team' }))
     expect(getByText('Create Team')).toBeInTheDocument()
     fireEvent.click(getByRole('button', { name: 'Cancel' }))
     await waitFor(() =>
       expect(queryByRole('button', { name: 'Cancel' })).not.toBeInTheDocument()
     )
     fireEvent.click(getByRole('button'))
-    fireEvent.click(getByRole('menuitem', { name: 'Rename Team' }))
+    fireEvent.click(getByRole('menuitem', { name: 'Rename' }))
     expect(getByText('Change Team Name')).toBeInTheDocument()
     fireEvent.click(getByRole('button', { name: 'Cancel' }))
     await waitFor(() =>
       expect(queryByRole('button', { name: 'Cancel' })).not.toBeInTheDocument()
     )
     fireEvent.click(getByRole('button'))
-    fireEvent.click(getByRole('menuitem', { name: 'Manage Team' }))
-    expect(getByText('Invite others to your team')).toBeInTheDocument()
+    fireEvent.click(getByRole('menuitem', { name: 'Members' }))
+    expect(getByText('Invite team member')).toBeInTheDocument()
     fireEvent.click(getByTestId('dialog-close-button'))
     await waitFor(() =>
       expect(queryByTestId('dialog-close-button')).not.toBeInTheDocument()
@@ -85,7 +85,7 @@ describe('TeamMenu', () => {
       </MockedProvider>
     )
     fireEvent.click(getByRole('button'))
-    expect(getByRole('menuitem', { name: 'Rename Team' })).toHaveAttribute(
+    expect(getByRole('menuitem', { name: 'Rename' })).toHaveAttribute(
       'aria-disabled',
       'true'
     )
@@ -101,7 +101,7 @@ describe('TeamMenu', () => {
       </MockedProvider>
     )
     fireEvent.click(getByRole('button'))
-    expect(getByRole('menuitem', { name: 'Manage Team' })).toHaveAttribute(
+    expect(getByRole('menuitem', { name: 'Members' })).toHaveAttribute(
       'aria-disabled',
       'true'
     )
