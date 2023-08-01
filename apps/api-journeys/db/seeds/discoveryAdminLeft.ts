@@ -42,7 +42,7 @@ export async function discoveryAdminLeft(action?: 'reset'): Promise<void> {
         publishedAt: new Date()
       }
 
-      if (existingJourney?.id !== journeyData.id) {
+      if (existingJourney != null && existingJourney?.id !== journeyData.id) {
         await tx.journey.delete({ where: { id: existingJourney?.id } })
       }
 
