@@ -32,6 +32,8 @@ import { CopyToTeamDialog } from '../../Team/CopyToTeamDialog'
 import { DescriptionDialog } from './DescriptionDialog'
 import { TitleDialog } from './TitleDialog'
 import { CreateTemplateMenuItem } from './CreateTemplateMenuItem'
+// TODO: remove when teams is released
+import { useFlags } from '@core/shared/ui/FlagsProvider'
 
 const DynamicLanguageDialog = dynamic<{
   open: boolean
@@ -82,6 +84,10 @@ export function Menu(): ReactElement {
   const [showDescriptionDialog, setShowDescriptionDialog] = useState(false)
   const [showLanguageDialog, setShowLanguageDialog] = useState(false)
   const [duplicateTeamDialogOpen, setDuplicateTeamDialogOpen] = useState(false)
+
+  // TODO: remove when teams is released
+  const { teams } = useFlags()
+
   const { enqueueSnackbar } = useSnackbar()
 
   const openMenu = Boolean(anchorEl)
@@ -116,7 +122,7 @@ export function Menu(): ReactElement {
           preventDuplicate: true
         })
   }
-  const handleTemplate = async (teamId: string): Promise<void> => {
+  const handleTemplate = async (teamId: string | undefined): Promise<void> => {
     if (journey == null) return
 
     const { data } = await journeyDuplicate({
@@ -216,7 +222,13 @@ export function Menu(): ReactElement {
               <MenuItem
                 label="Use Template"
                 icon={<CheckRounded />}
-                onClick={() => setDuplicateTeamDialogOpen(true)}
+                onClick={() =>
+                  // TODO: remove when teams is released
+                  teams
+                    ? setDuplicateTeamDialogOpen(true)
+                    : // TODO: remove when teams is released
+                      handleTemplate(undefined)
+                }
               />
             )}
             {journey.template === true && isPublisher && (

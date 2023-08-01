@@ -12,6 +12,7 @@ import {
 } from '../../Team/TeamProvider'
 import { GET_ROLE } from './Menu'
 import { Menu, JOURNEY_PUBLISH } from '.'
+import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 
 Object.assign(navigator, {
   clipboard: {
@@ -299,14 +300,16 @@ describe('JourneyView/Menu', () => {
           ]}
         >
           <TeamProvider>
-            <JourneyProvider
-              value={{
-                journey: { ...defaultJourney, template: true },
-                admin: true
-              }}
-            >
-              <Menu />
-            </JourneyProvider>
+            <FlagsProvider flags={{ teams: true }}>
+              <JourneyProvider
+                value={{
+                  journey: { ...defaultJourney, template: true },
+                  admin: true
+                }}
+              >
+                <Menu />
+              </JourneyProvider>
+            </FlagsProvider>
           </TeamProvider>
         </MockedProvider>
       </SnackbarProvider>
@@ -654,14 +657,16 @@ describe('JourneyView/Menu', () => {
           ]}
         >
           <TeamProvider>
-            <JourneyProvider
-              value={{
-                journey: { ...defaultJourney, template: true },
-                admin: true
-              }}
-            >
-              <Menu />
-            </JourneyProvider>
+            <FlagsProvider flags={{ teams: true }}>
+              <JourneyProvider
+                value={{
+                  journey: { ...defaultJourney, template: true },
+                  admin: true
+                }}
+              >
+                <Menu />
+              </JourneyProvider>
+            </FlagsProvider>
           </TeamProvider>
         </MockedProvider>
       </SnackbarProvider>
