@@ -149,4 +149,20 @@ describe('StepFooter', () => {
     expect(onFooterClick).toBeCalledTimes(1)
     expect(getByTestId('Plus2Icon')).toBeInTheDocument()
   })
+
+  it('should render custom title', () => {
+    const { getByText } = render(
+      <MockedProvider>
+        <SnackbarProvider>
+          <JourneyProvider value={{ admin: true, journey: undefined }}>
+            <StepFooter
+              onFooterClick={jest.fn()}
+              title="discovery journey title"
+            />
+          </JourneyProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+    expect(getByText('discovery journey title')).toBeInTheDocument()
+  })
 })
