@@ -108,19 +108,21 @@ export function TeamOnboarding(): ReactElement {
         ) : (
           <TeamCreateForm
             onSubmit={async (_, __, data) => {
-              await journeyDuplicate({
-                variables: {
-                  id: ONBOARDING_TEMPLATE_ID,
-                  teamId: data?.teamCreate.id
-                }
-              })
-              await updateLastActiveTeamId({
-                variables: {
-                  input: {
-                    lastActiveTeamId: data?.teamCreate.id
+              await Promise.all([
+                journeyDuplicate({
+                  variables: {
+                    id: ONBOARDING_TEMPLATE_ID,
+                    teamId: data?.teamCreate.id
                   }
-                }
-              })
+                }),
+                updateLastActiveTeamId({
+                  variables: {
+                    input: {
+                      lastActiveTeamId: data?.teamCreate.id
+                    }
+                  }
+                })
+              ])
             }}
           >
             {({
