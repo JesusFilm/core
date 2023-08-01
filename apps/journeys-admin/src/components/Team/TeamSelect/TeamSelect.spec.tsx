@@ -3,8 +3,12 @@ import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { ReactElement } from 'react'
 import userEvent from '@testing-library/user-event'
 import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
-import { GET_TEAMS, TeamProvider, useTeam } from '../TeamProvider'
-import { GetTeams } from '../../../../__generated__/GetTeams'
+import {
+  GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS,
+  TeamProvider,
+  useTeam
+} from '../TeamProvider'
+import { GetLastActiveTeamIdAndTeams } from '../../../../__generated__/GetLastActiveTeamIdAndTeams'
 import { OnboardingPanelContent } from '../../OnboardingPanelContent'
 import { AddJourneyButton } from '../../JourneyList/ActiveJourneyList/AddJourneyButton'
 import { onboardingJourneys } from '../../OnboardingPanelContent/data'
@@ -21,16 +25,20 @@ jest.mock('react-i18next', () => ({
 }))
 
 describe('TeamSelect', () => {
-  const getMultipleTeamsMock: MockedResponse<GetTeams> = {
+  const getMultipleTeamsMock: MockedResponse<GetLastActiveTeamIdAndTeams> = {
     request: {
-      query: GET_TEAMS
+      query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
     },
     result: {
       data: {
         teams: [
           { id: 'teamId1', title: 'Team Title', __typename: 'Team' },
           { id: 'teamId2', title: 'Team Title2', __typename: 'Team' }
-        ]
+        ],
+        getJourneyProfile: {
+          __typename: 'JourneyProfile',
+          lastActiveTeamId: null
+        }
       }
     }
   }

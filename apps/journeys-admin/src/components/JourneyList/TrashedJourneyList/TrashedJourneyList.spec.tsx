@@ -7,8 +7,11 @@ import { ThemeProvider } from '../../ThemeProvider'
 import { SortOrder } from '../JourneySort'
 import { GET_ADMIN_JOURNEYS } from '../../../libs/useAdminJourneysQuery/useAdminJourneysQuery'
 import { JourneyStatus } from '../../../../__generated__/globalTypes'
-import { GetTeams } from '../../../../__generated__/GetTeams'
-import { GET_TEAMS, TeamProvider } from '../../Team/TeamProvider'
+import { GetLastActiveTeamIdAndTeams } from '../../../../__generated__/GetLastActiveTeamIdAndTeams'
+import {
+  GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS,
+  TeamProvider
+} from '../../Team/TeamProvider'
 import {
   RESTORE_TRASHED_JOURNEYS,
   DELETE_TRASHED_JOURNEYS
@@ -53,13 +56,17 @@ const noJourneysMock = {
   }
 }
 
-const getTeams: MockedResponse<GetTeams> = {
+const getTeams: MockedResponse<GetLastActiveTeamIdAndTeams> = {
   request: {
-    query: GET_TEAMS
+    query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
   },
   result: {
     data: {
-      teams: []
+      teams: [],
+      getJourneyProfile: {
+        __typename: 'JourneyProfile',
+        lastActiveTeamId: null
+      }
     }
   }
 }

@@ -7,13 +7,12 @@ import {
   useState
 } from 'react'
 import {
-  GetTeams,
-  GetTeams_teams as Team
-} from '../../../../__generated__/GetTeams'
-import { GetLastActiveTeamId } from '../../../../__generated__/GetLastActiveTeamId'
+  GetLastActiveTeamIdAndTeams,
+  GetLastActiveTeamIdAndTeams_teams as Team
+} from '../../../../__generated__/GetLastActiveTeamIdAndTeams'
 
 interface Context {
-  query: QueryResult<GetTeams, OperationVariables>
+  query: QueryResult<GetLastActiveTeamIdAndTeams, OperationVariables>
   activeTeam: Team | null
   setActiveTeam: (team: Team | null) => void
 }
@@ -29,37 +28,41 @@ export function useTeam(): Context {
 interface TeamProviderProps {
   children: ReactNode
 }
+// GET_TEAMS
+/*
+,
+        getJourneyProfile: {
+          __typename: 'JourneyProfile',
+          lastActiveTeamId: null
+        }
 
-export const GET_TEAMS = gql`
-  query GetTeams {
+*/
+export const GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS = gql`
+  query GetLastActiveTeamIdAndTeams {
+    getJourneyProfile {
+      lastActiveTeamId
+    }
     teams {
       id
       title
     }
   }
 `
-export const GET_LAST_ACTIVE_TEAM_ID = gql`
-  query GetLastActiveTeamId {
-    getJourneyProfile {
-      lastActiveTeamId
-    }
-  }
-`
 
 export function TeamProvider({ children }: TeamProviderProps): ReactElement {
   const [activeTeamId, setActiveTeamId] = useState<string | null>(null)
-  const { data } = useQuery<GetLastActiveTeamId>(GET_LAST_ACTIVE_TEAM_ID)
-  const lastActiveTeamId = data?.getJourneyProfile?.lastActiveTeamId
-
-  const query = useQuery<GetTeams>(GET_TEAMS, {
-    onCompleted: (data) => {
-      if (activeTeam != null || data.teams == null) return
-      const lastActiveTeam = data.teams.find(
-        (team) => team.id === lastActiveTeamId
-      )
-      setActiveTeam(lastActiveTeam ?? data.teams[0])
+  const query = useQuery<GetLastActiveTeamIdAndTeams>(
+    GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS,
+    {
+      onCompleted: (data) => {
+        if (activeTeam != null || data.teams == null) return
+        const lastActiveTeam = data.teams.find(
+          (team) => team.id === data.getJourneyProfile?.lastActiveTeamId
+        )
+        setActiveTeam(lastActiveTeam ?? data.teams[0])
+      }
     }
-  })
+  )
 
   function setActiveTeam(team: Team | null): void {
     if (team == null) {
@@ -71,6 +74,8 @@ export function TeamProvider({ children }: TeamProviderProps): ReactElement {
 
   const activeTeam =
     query.data?.teams.find((team) => team.id === activeTeamId) ?? null
+  console.log('TEAMS: ', query.data?.teams)
+  console.log('ID: ', activeTeamId)
 
   return (
     <TeamContext.Provider value={{ query, activeTeam, setActiveTeam }}>

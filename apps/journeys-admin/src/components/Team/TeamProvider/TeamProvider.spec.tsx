@@ -1,8 +1,8 @@
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { ReactElement } from 'react'
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
-import { GetTeams } from '../../../../__generated__/GetTeams'
-import { GET_TEAMS } from './TeamProvider'
+import { GetLastActiveTeamIdAndTeams } from '../../../../__generated__/GetLastActiveTeamIdAndTeams'
+import { GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS } from './TeamProvider'
 import { TeamProvider, useTeam } from '.'
 
 const TestComponent = (): ReactElement => {
@@ -25,9 +25,9 @@ const TestComponent = (): ReactElement => {
   )
 }
 
-const getTeamsMock: MockedResponse<GetTeams> = {
+const getTeamsMock: MockedResponse<GetLastActiveTeamIdAndTeams> = {
   request: {
-    query: GET_TEAMS
+    query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
   },
   result: {
     data: {
@@ -42,7 +42,11 @@ const getTeamsMock: MockedResponse<GetTeams> = {
           id: 'teamId2',
           title: 'my second team'
         }
-      ]
+      ],
+      getJourneyProfile: {
+        __typename: 'JourneyProfile',
+        lastActiveTeamId: null
+      }
     }
   }
 }

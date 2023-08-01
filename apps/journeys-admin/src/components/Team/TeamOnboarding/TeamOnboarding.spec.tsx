@@ -4,14 +4,27 @@ import { SnackbarProvider } from 'notistack'
 import { ReactElement } from 'react'
 import { InMemoryCache } from '@apollo/client'
 import { NextRouter, useRouter } from 'next/router'
-import { GET_TEAMS, TeamProvider, useTeam } from '../TeamProvider'
+import {
+  GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS,
+  TeamProvider,
+  useTeam
+} from '../TeamProvider'
 import { TeamCreate } from '../../../../__generated__/TeamCreate'
 import { TEAM_CREATE } from '../../../libs/useTeamCreateMutation/useTeamCreateMutation'
-import { GetTeams } from '../../../../__generated__/GetTeams'
+import { GetLastActiveTeamIdAndTeams } from '../../../../__generated__/GetLastActiveTeamIdAndTeams'
 import { GET_USER_TEAMS_AND_INVITES } from '../../../libs/useUserTeamsAndInvitesQuery/useUserTeamsAndInvitesQuery'
 import { UserTeamRole } from '../../../../__generated__/globalTypes'
 import { GetUserTeamsAndInvites } from '../../../../__generated__/GetUserTeamsAndInvites'
 import { TeamOnboarding } from '.'
+
+jest.mock('react-i18next', () => ({
+  __esModule: true,
+  useTranslation: () => {
+    return {
+      t: (str: string) => str
+    }
+  }
+}))
 
 jest.mock('next/router', () => ({
   __esModule: true,
@@ -96,13 +109,17 @@ describe('TeamOnboarding', () => {
     },
     error: new Error('Team Title already exists.')
   }
-  const getTeams: MockedResponse<GetTeams> = {
+  const getTeams: MockedResponse<GetLastActiveTeamIdAndTeams> = {
     request: {
-      query: GET_TEAMS
+      query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
     },
     result: {
       data: {
-        teams: [{ id: 'teamId', title: 'Team Title', __typename: 'Team' }]
+        teams: [{ id: 'teamId', title: 'Team Title', __typename: 'Team' }],
+        getJourneyProfile: {
+          __typename: 'JourneyProfile',
+          lastActiveTeamId: null
+        }
       }
     }
   }
@@ -125,8 +142,27 @@ describe('TeamOnboarding', () => {
         teams: [{ __ref: 'Team:teamId1' }]
       }
     })
+    const result = jest.fn(() => ({
+      data: {
+        teams: [{ id: 'teamId', title: 'Team Title', __typename: 'Team' }],
+        getJourneyProfile: {
+          __typename: 'JourneyProfile',
+          lastActiveTeamId: 'teamId'
+        }
+      }
+    }))
     const { getByRole, getByTestId, getByText } = render(
-      <MockedProvider mocks={[teamCreateMock]} cache={cache}>
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
+            },
+            result
+          }
+        ]}
+        cache={cache}
+      >
         <SnackbarProvider>
           <TeamProvider>
             <TeamOnboarding />
@@ -137,9 +173,8 @@ describe('TeamOnboarding', () => {
     )
     fireEvent.change(getByRole('textbox'), { target: { value: 'Team Title' } })
     fireEvent.click(getByRole('button', { name: 'Create' }))
-    await waitFor(() =>
-      expect(getByTestId('active-team-title')).toHaveTextContent('Team Title')
-    )
+    await waitFor(() => expect(result).toHaveBeenCalled())
+    expect(getByTestId('active-team-title')).toHaveTextContent('Team Title')
     expect(cache.extract()?.ROOT_QUERY?.teams).toEqual([
       { __ref: 'Team:teamId1' },
       { __ref: 'Team:teamId' }

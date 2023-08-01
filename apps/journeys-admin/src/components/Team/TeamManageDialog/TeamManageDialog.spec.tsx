@@ -2,8 +2,11 @@ import { act, fireEvent, render, waitFor } from '@testing-library/react'
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { UserTeamRole } from '../../../../__generated__/globalTypes'
-import { TeamProvider, GET_TEAMS } from '../TeamProvider'
-import { GetTeams } from '../../../../__generated__/GetTeams'
+import {
+  TeamProvider,
+  GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
+} from '../TeamProvider'
+import { GetLastActiveTeamIdAndTeams } from '../../../../__generated__/GetLastActiveTeamIdAndTeams'
 import { GET_USER_TEAMS_AND_INVITES } from '../../../libs/useUserTeamsAndInvitesQuery/useUserTeamsAndInvitesQuery'
 import { GetUserTeamsAndInvites } from '../../../../__generated__/GetUserTeamsAndInvites'
 import { TeamManageDialog } from './TeamManageDialog'
@@ -77,13 +80,17 @@ describe('TeamManageDialog', () => {
     }
   }
 
-  const getTeams: MockedResponse<GetTeams> = {
+  const getTeams: MockedResponse<GetLastActiveTeamIdAndTeams> = {
     request: {
-      query: GET_TEAMS
+      query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
     },
     result: {
       data: {
-        teams: [{ id: 'teamId', title: 'Team Title', __typename: 'Team' }]
+        teams: [{ id: 'teamId', title: 'Team Title', __typename: 'Team' }],
+        getJourneyProfile: {
+          __typename: 'JourneyProfile',
+          lastActiveTeamId: null
+        }
       }
     }
   }
