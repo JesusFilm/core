@@ -5,7 +5,7 @@ import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'
 import { CardPreview } from '../../../../../CardPreview'
-import { getNextStep } from '../utils'
+import { getNextStep } from '../utils/getNextStep'
 
 export function NavigateAction(): ReactElement {
   const {

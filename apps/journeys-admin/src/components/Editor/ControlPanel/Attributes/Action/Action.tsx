@@ -23,7 +23,7 @@ import { NavigateToBlockAction } from './NavigateToBlockAction'
 import { NavigateToJourneyAction } from './NavigateToJourneyAction'
 import { LinkAction } from './LinkAction'
 import { EmailAction } from './EmailAction'
-import { getNextStep } from './utils'
+import { getNextStep } from './utils/getNextStep'
 
 export const NAVIGATE_ACTION_UPDATE = gql`
   mutation NavigateActionUpdate(
