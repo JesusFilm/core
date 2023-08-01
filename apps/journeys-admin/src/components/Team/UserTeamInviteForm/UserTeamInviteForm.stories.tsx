@@ -22,7 +22,7 @@ const Template: Story<ComponentProps<typeof UserTeamInviteForm>> = () => (
           Add team member by Email
         </Typography>
       </Stack>
-      <UserTeamInviteForm emails={[]} />
+      <UserTeamInviteForm emails={[]} role="manager" />
     </Stack>
   </MockedProvider>
 )

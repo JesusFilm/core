@@ -30,10 +30,12 @@ export const USER_TEAM_INVITE_CREATE = gql`
 
 interface UserTeamInviteFormProps {
   emails: string[]
+  role: string | undefined
 }
 
 export function UserTeamInviteForm({
-  emails
+  emails,
+  role
 }: UserTeamInviteFormProps): ReactElement {
   const [userTeamInviteCreate] = useMutation<UserTeamInviteCreate>(
     USER_TEAM_INVITE_CREATE
@@ -104,13 +106,18 @@ export function UserTeamInviteForm({
               label={t('Email')}
               name="email"
               fullWidth
+              disabled={role !== 'manager'}
               variant="filled"
               value={values.email}
               onChange={handleChange}
               onBlur={handleBlur}
               error={errors.email != null && touched.email != null}
               helperText={
-                touched?.email != null && errors.email != null && errors.email
+                role !== 'manager'
+                  ? t('Only a Manager can invite new members to the team')
+                  : touched?.email != null && errors.email != null
+                  ? errors.email
+                  : null
               }
               autoComplete="off"
               InputProps={{
