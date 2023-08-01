@@ -8,9 +8,9 @@ import { nua9 } from './seeds/nua9'
 import { jfpTeam } from './seeds/jfpTeam'
 import { onboarding } from './seeds/onboarding'
 import { onboardingTemplates } from './seeds/onboardingTemplates'
-import { adminLeft } from './seeds/adminLeft'
-import { adminCenter } from './seeds/adminCenter'
-import { adminRight } from './seeds/adminRight'
+import { discoveryAdminLeft } from './seeds/discoveryAdminLeft'
+import { discoveryAdminCenter } from './seeds/discoveryAdminCenter'
+import { discoveryAdminRight } from './seeds/discoveryAdminRight'
 
 async function main(): Promise<void> {
   // this should be removed when the UI can support team management
@@ -22,9 +22,9 @@ async function main(): Promise<void> {
   await nua1()
   await onboarding()
   await onboardingTemplates()
-  await adminLeft('reset')
-  await adminCenter('reset')
-  await adminRight('reset')
+  await discoveryAdminLeft('reset')
+  await discoveryAdminCenter('reset')
+  await discoveryAdminRight('reset')
 }
 main().catch((e) => {
   console.error(e)
