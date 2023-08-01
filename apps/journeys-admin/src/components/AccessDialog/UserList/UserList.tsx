@@ -69,7 +69,7 @@ export function UserList({
         </Box>
       ) : (
         <>
-          {users.length > 0 && currentUser != null && (
+          {users.length > 0 && (
             <Box>
               <Typography variant="subtitle1">{title}</Typography>
 
