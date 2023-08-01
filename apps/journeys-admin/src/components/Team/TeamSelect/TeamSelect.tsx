@@ -1,8 +1,9 @@
 import { ReactElement, useRef, useState } from 'react'
+import { useMutation, gql } from '@apollo/client'
 import PeopleOutlineRoundedIcon from '@mui/icons-material/PeopleOutlineRounded'
 import Stack from '@mui/material/Stack'
 import sortBy from 'lodash/sortBy'
-import Select from '@mui/material/Select'
+import Select, { SelectChangeEvent } from '@mui/material/Select'
 import FormControl from '@mui/material/FormControl'
 import MenuItem from '@mui/material/MenuItem'
 import { useTranslation } from 'react-i18next'
@@ -12,6 +13,15 @@ import Divider from '@mui/material/Divider'
 import Popover from '@mui/material/Popover'
 import Typography from '@mui/material/Typography'
 import { useTeam } from '../TeamProvider'
+import { UpdateLastActiveTeamId } from '../../../../__generated__/UpdateLastActiveTeamId'
+
+export const UPDATE_LAST_ACTIVE_TEAM_ID = gql`
+  mutation UpdateLastActiveTeamId($input: JourneyProfileUpdateInput!) {
+    journeyProfileUpdate(input: $input) {
+      id
+    }
+  }
+`
 
 interface TeamSelectProps {
   onboarding?: boolean
@@ -21,6 +31,24 @@ export function TeamSelect({ onboarding }: TeamSelectProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const anchorRef = useRef(null)
   const [open, setOpen] = useState(onboarding ?? false)
+
+  const [updateLastActiveTeamId] = useMutation<UpdateLastActiveTeamId>(
+    UPDATE_LAST_ACTIVE_TEAM_ID
+  )
+
+  function handleChange(event: SelectChangeEvent): void {
+    const team = query?.data?.teams.find(
+      (team) => team.id === event.target.value
+    )
+    void updateLastActiveTeamId({
+      variables: {
+        input: {
+          lastActiveTeamId: team?.id ?? null
+        }
+      }
+    })
+    setActiveTeam(team ?? null)
+  }
 
   return (
     <>
@@ -38,13 +66,7 @@ export function TeamSelect({ onboarding }: TeamSelectProps): ReactElement {
             disabled={query.loading}
             displayEmpty
             value={activeTeam?.id ?? ''}
-            onChange={(event) => {
-              setActiveTeam(
-                query?.data?.teams.find(
-                  (team) => team.id === event.target.value
-                ) ?? null
-              )
-            }}
+            onChange={handleChange}
             autoWidth
             sx={{
               '> .MuiSelect-select': {

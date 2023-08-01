@@ -4,8 +4,20 @@ import { SnackbarProvider } from 'notistack'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { GetJourney_journey as Journey } from '../../../../__generated__/GetJourney'
 import { JOURNEY_DUPLICATE } from '../../../libs/useJourneyDuplicateMutation'
-import { TeamProvider, GET_TEAMS } from '../TeamProvider'
+import {
+  TeamProvider,
+  GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
+} from '../TeamProvider'
 import { CopyToTeamMenuItem } from './CopyToTeamMenuItem'
+
+jest.mock('react-i18next', () => ({
+  __esModule: true,
+  useTranslation: () => {
+    return {
+      t: (str: string) => str
+    }
+  }
+}))
 
 describe('DuplicateJourneys', () => {
   const handleCloseMenu = jest.fn()
@@ -23,7 +35,11 @@ describe('DuplicateJourneys', () => {
 
     const result2 = jest.fn(() => ({
       data: {
-        teams: [{ id: 'teamId', title: 'Team Name', __typename: 'Team' }]
+        teams: [{ id: 'teamId', title: 'Team Name', __typename: 'Team' }],
+        getJourneyProfile: {
+          __typename: 'JourneyProfile',
+          lastActiveTeamId: 'teamId'
+        }
       }
     }))
 
@@ -42,7 +58,7 @@ describe('DuplicateJourneys', () => {
           },
           {
             request: {
-              query: GET_TEAMS
+              query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
             },
             result: result2
           }
