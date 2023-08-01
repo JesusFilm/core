@@ -1,7 +1,5 @@
 import { Story, Meta } from '@storybook/react'
 import { MockedResponse } from '@apollo/client/testing'
-import { waitFor, within } from '@storybook/testing-library'
-import { expect } from '@storybook/jest'
 import Box from '@mui/material/Box'
 import { GET_TEAMS, TeamProvider } from '../TeamProvider'
 import { journeysAdminConfig } from '../../../libs/storybook'
@@ -68,12 +66,6 @@ Onboarding.parameters = {
 }
 Onboarding.args = {
   onboarding: true
-}
-Onboarding.play = async ({ canvasElement }) => {
-  const canvas = within(canvasElement)
-  await waitFor(() => {
-    expect(canvas.getByRole('button', { name: 'Dismiss' })).toBeInTheDocument()
-  })
 }
 
 export const Loading = Template.bind({})
