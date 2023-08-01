@@ -75,14 +75,14 @@ export function Card({
     if (rtl) {
       const divide = view.innerWidth * 0.66
       if (e.clientX <= divide) {
-        if (!activeBlock.locked) nextActiveBlock()
+        if (!activeBlock?.locked) nextActiveBlock()
       } else {
         prevActiveBlock()
       }
     } else {
       const divide = view.innerWidth * 0.33
       if (e.clientX >= divide) {
-        if (!activeBlock.locked) nextActiveBlock()
+        if (!activeBlock?.locked) nextActiveBlock()
       } else {
         prevActiveBlock()
       }
