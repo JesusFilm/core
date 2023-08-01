@@ -33,10 +33,10 @@ export function UserList({
     const ownerIndex = users.findIndex(
       (user) => user.role === UserJourneyRole.owner
     )
-
     if (ownerIndex > 0) {
-      const owner = users.splice(ownerIndex, 1)
-      return [...owner, ...users]
+      const copiedArr = users.map((user) => user)
+      const owner = copiedArr.splice(ownerIndex, 1)
+      return [...owner, ...copiedArr]
     }
 
     return users
