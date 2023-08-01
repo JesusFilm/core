@@ -9,6 +9,7 @@ import { useTranslation } from 'react-i18next'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Divider from '@mui/material/Divider'
+import Paper from '@mui/material/Paper'
 import Popover from '@mui/material/Popover'
 import Typography from '@mui/material/Typography'
 import { useTeam } from '../TeamProvider'
@@ -96,17 +97,31 @@ export function TeamSelect({ onboarding }: TeamSelectProps): ReactElement {
         open={open}
         anchorEl={anchorRef.current}
         anchorOrigin={{
-          vertical: 50,
+          vertical: 35,
           horizontal: 'left'
         }}
         PaperProps={{
           sx: {
-            p: 4,
-            maxWidth: { xs: 'calc(100% - 30px)', sm: 300 }
+            maxWidth: { xs: 'calc(100% - 30px)', sm: 300 },
+            mt: 4,
+            position: 'relative',
+            overflow: 'visible',
+            '&::before': {
+              backgroundColor: 'white',
+              content: '""',
+              display: 'block',
+              position: 'absolute',
+              width: 12,
+              height: 12,
+              top: -6,
+              transform: 'rotate(45deg)',
+              left: { xs: 20, sm: 10 },
+              zIndex: 1
+            }
           }
         }}
       >
-        <Stack spacing={2}>
+        <Stack spacing={2} p={4}>
           <Typography variant="h6" gutterBottom>
             {t('More journeys here')}
           </Typography>
