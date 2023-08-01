@@ -4,10 +4,13 @@ import { SnackbarProvider } from 'notistack'
 import { screen, userEvent, waitFor } from '@storybook/testing-library'
 import { MockedResponse } from '@apollo/client/testing'
 import { expect } from '@storybook/jest'
-import { GET_TEAMS, TeamProvider } from '../TeamProvider'
+import {
+  GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS,
+  TeamProvider
+} from '../TeamProvider'
 import { journeysAdminConfig } from '../../../libs/storybook'
 import { TeamUpdate } from '../../../../__generated__/TeamUpdate'
-import { GetTeams } from '../../../../__generated__/GetTeams'
+import { GetLastActiveTeamIdAndTeams } from '../../../../__generated__/GetLastActiveTeamIdAndTeams'
 import { TEAM_UPDATE } from './TeamUpdateDialog'
 import { TeamUpdateDialog } from '.'
 
@@ -17,9 +20,9 @@ const TeamUpdateDialogStory = {
   title: 'Journeys-Admin/Team/TeamUpdateDialog'
 }
 
-const getTeamsMock: MockedResponse<GetTeams> = {
+const getTeamsMock: MockedResponse<GetLastActiveTeamIdAndTeams> = {
   request: {
-    query: GET_TEAMS
+    query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
   },
   result: {
     data: {
@@ -29,7 +32,11 @@ const getTeamsMock: MockedResponse<GetTeams> = {
           title: 'My Team',
           __typename: 'Team'
         }
-      ]
+      ],
+      getJourneyProfile: {
+        __typename: 'JourneyProfile',
+        lastActiveTeamId: 'teamId'
+      }
     }
   }
 }

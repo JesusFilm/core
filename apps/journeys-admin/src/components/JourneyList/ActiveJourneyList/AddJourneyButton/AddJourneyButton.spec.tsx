@@ -4,8 +4,11 @@ import { v4 as uuidv4 } from 'uuid'
 import { NextRouter, useRouter } from 'next/router'
 import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 import { CREATE_JOURNEY } from '../../../../libs/useJourneyCreate'
-import { GetTeams } from '../../../../../__generated__/GetTeams'
-import { GET_TEAMS, TeamProvider } from '../../../Team/TeamProvider'
+import { GetLastActiveTeamIdAndTeams } from '../../../../../__generated__/GetLastActiveTeamIdAndTeams'
+import {
+  GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS,
+  TeamProvider
+} from '../../../Team/TeamProvider'
 import { AddJourneyButton } from '.'
 
 jest.mock('uuid', () => ({
@@ -105,13 +108,17 @@ describe('AddJourneyButton', () => {
     }
   }
 
-  const getTeams: MockedResponse<GetTeams> = {
+  const getTeams: MockedResponse<GetLastActiveTeamIdAndTeams> = {
     request: {
-      query: GET_TEAMS
+      query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
     },
     result: {
       data: {
-        teams: []
+        teams: [],
+        getJourneyProfile: {
+          __typename: 'JourneyProfile',
+          lastActiveTeamId: null
+        }
       }
     }
   }
@@ -142,7 +149,11 @@ describe('AddJourneyButton', () => {
               data: {
                 teams: [
                   { id: 'teamId', title: 'Team Title', __typename: 'Team' }
-                ]
+                ],
+                getJourneyProfile: {
+                  __typename: 'JourneyProfile',
+                  lastActiveTeamId: 'teamId'
+                }
               }
             }
           }
@@ -196,7 +207,11 @@ describe('AddJourneyButton', () => {
   it('should show add journey button when active team and flags is true', async () => {
     const result = jest.fn().mockReturnValueOnce({
       data: {
-        teams: [{ id: 'teamId', title: 'Team Title', __typename: 'Team' }]
+        teams: [{ id: 'teamId', title: 'Team Title', __typename: 'Team' }],
+        getJourneyProfile: {
+          __typename: 'JourneyProfile',
+          lastActiveTeamId: 'teamId'
+        }
       }
     })
     const { queryByRole } = render(

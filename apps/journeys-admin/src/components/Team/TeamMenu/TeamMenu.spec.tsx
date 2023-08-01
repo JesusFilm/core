@@ -2,8 +2,11 @@ import { fireEvent, render, waitFor } from '@testing-library/react'
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { SnackbarProvider } from 'notistack'
 import useMediaQuery from '@mui/material/useMediaQuery'
-import { GET_TEAMS, TeamProvider } from '../TeamProvider'
-import { GetTeams } from '../../../../__generated__/GetTeams'
+import {
+  GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS,
+  TeamProvider
+} from '../TeamProvider'
+import { GetLastActiveTeamIdAndTeams } from '../../../../__generated__/GetLastActiveTeamIdAndTeams'
 import { TeamMenu } from '.'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
@@ -13,29 +16,37 @@ jest.mock('@mui/material/useMediaQuery', () => ({
 
 describe('TeamMenu', () => {
   beforeEach(() => (useMediaQuery as jest.Mock).mockImplementation(() => true))
-  const getTeamsMock: MockedResponse<GetTeams> = {
+  const getTeamsMock: MockedResponse<GetLastActiveTeamIdAndTeams> = {
     request: {
-      query: GET_TEAMS
+      query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
     },
     result: {
       data: {
         teams: [
           { id: 'teamId1', title: 'Team Title', __typename: 'Team' },
           { id: 'teamId2', title: 'Team Title2', __typename: 'Team' }
-        ]
+        ],
+        getJourneyProfile: {
+          __typename: 'JourneyProfile',
+          lastActiveTeamId: null
+        }
       }
     }
   }
-  const getEmptyTeamsMock: MockedResponse<GetTeams> = {
+  const getEmptyTeamsMock: MockedResponse<GetLastActiveTeamIdAndTeams> = {
     request: {
-      query: GET_TEAMS
+      query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
     },
     result: {
       data: {
         teams: [
           { id: 'teamId1', title: 'Team Title', __typename: 'Team' },
           { id: 'teamId2', title: 'Team Title2', __typename: 'Team' }
-        ]
+        ],
+        getJourneyProfile: {
+          __typename: 'JourneyProfile',
+          lastActiveTeamId: null
+        }
       }
     }
   }
