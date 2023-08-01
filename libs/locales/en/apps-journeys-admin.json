@@ -202,6 +202,7 @@
   "Failed to update the team. Reload the page or try again.": "Failed to update the team. Reload the page or try again.",
   "Change Team Name": "Change Team Name",
   "Save": "Save",
+  "Only a manager can invite new members to the team": "Only a manager can invite new members to the team",
   "No email notifications. New members get access instantly. Team members can see all analytics, edit any journey, and delete and copy journey.": "No email notifications. New members get access instantly. Team members can see all analytics, edit any journey, and delete and copy journey.",
   "No templates to display.": "No templates to display.",
   "You can archive a template to to delist it from the Template Library.": "You can archive a template to to delist it from the Template Library.",
