@@ -13,7 +13,10 @@ import Box from '@mui/material/Box'
 import AlertCircle from '@core/shared/ui/icons/AlertCircle'
 import { useTeam } from '../TeamProvider'
 import { UserTeamInviteCreate } from '../../../../__generated__/UserTeamInviteCreate'
-import { UserTeamInviteCreateInput } from '../../../../__generated__/globalTypes'
+import {
+  UserTeamInviteCreateInput,
+  UserTeamRole
+} from '../../../../__generated__/globalTypes'
 
 export const USER_TEAM_INVITE_CREATE = gql`
   mutation UserTeamInviteCreate(
@@ -30,7 +33,7 @@ export const USER_TEAM_INVITE_CREATE = gql`
 
 interface UserTeamInviteFormProps {
   emails: string[]
-  role: string | undefined
+  role: UserTeamRole | undefined
 }
 
 export function UserTeamInviteForm({
@@ -113,8 +116,8 @@ export function UserTeamInviteForm({
               onBlur={handleBlur}
               error={errors.email != null && touched.email != null}
               helperText={
-                role !== 'manager'
-                  ? t('Only a Manager can invite new members to the team')
+                role !== UserTeamRole.manager
+                  ? t('Only a manager can invite new members to the team')
                   : touched?.email != null && errors.email != null
                   ? errors.email
                   : null

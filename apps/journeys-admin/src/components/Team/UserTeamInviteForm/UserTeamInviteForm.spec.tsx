@@ -111,7 +111,7 @@ describe('UserTeamInviteForm', () => {
     const { getByRole, getAllByText } = render(
       <MockedProvider>
         <TeamProvider>
-          <UserTeamInviteForm emails={[]} role="manager" />
+          <UserTeamInviteForm emails={[]} role={UserTeamRole.manager} />
         </TeamProvider>
       </MockedProvider>
     )
@@ -136,7 +136,7 @@ describe('UserTeamInviteForm', () => {
     const { getByRole, getByText } = render(
       <MockedProvider>
         <TeamProvider>
-          <UserTeamInviteForm emails={[]} role="manager" />
+          <UserTeamInviteForm emails={[]} role={UserTeamRole.manager} />
         </TeamProvider>
       </MockedProvider>
     )
@@ -157,7 +157,7 @@ describe('UserTeamInviteForm', () => {
     const { getByRole, getByText } = render(
       <MockedProvider>
         <TeamProvider>
-          <UserTeamInviteForm emails={[]} role="member" />
+          <UserTeamInviteForm emails={[]} role={UserTeamRole.member} />
         </TeamProvider>
       </MockedProvider>
     )
@@ -165,7 +165,7 @@ describe('UserTeamInviteForm', () => {
 
     await waitFor(() => {
       const inlineError = getByText(
-        'Only a Manager can invite new members to the team'
+        'Only a manager can invite new members to the team'
       )
       expect(inlineError).toBeInTheDocument()
     })
@@ -178,7 +178,7 @@ describe('UserTeamInviteForm', () => {
         <TeamProvider>
           <UserTeamInviteForm
             emails={['siyangguccigang@example.com', 'edmondshen@example.com']}
-            role="manager"
+            role={UserTeamRole.manager}
           />
         </TeamProvider>
       </MockedProvider>
@@ -206,7 +206,7 @@ describe('UserTeamInviteForm', () => {
         <TeamProvider>
           <UserTeamInviteForm
             emails={['siyangguccigang@example.com', 'edmondshen@example.com']}
-            role="manager"
+            role={UserTeamRole.manager}
           />
         </TeamProvider>
       </MockedProvider>
