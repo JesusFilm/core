@@ -1,5 +1,6 @@
 import { Story, Meta } from '@storybook/react'
 import { MockedResponse } from '@apollo/client/testing'
+import Box from '@mui/material/Box'
 import {
   GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS,
   TeamProvider
@@ -53,9 +54,11 @@ const getEmptyTeamsMock: MockedResponse<GetLastActiveTeamIdAndTeams> = {
   }
 }
 
-const Template: Story = () => (
+const Template: Story = (args) => (
   <TeamProvider>
-    <TeamSelect />
+    <Box sx={{ height: 300 }}>
+      <TeamSelect {...args} />
+    </Box>
   </TeamProvider>
 )
 
@@ -64,6 +67,16 @@ Default.parameters = {
   apolloClient: {
     mocks: [getTeamsMock]
   }
+}
+
+export const Onboarding = Template.bind({})
+Onboarding.parameters = {
+  apolloClient: {
+    mocks: [getTeamsMock]
+  }
+}
+Onboarding.args = {
+  onboarding: true
 }
 
 export const Loading = Template.bind({})

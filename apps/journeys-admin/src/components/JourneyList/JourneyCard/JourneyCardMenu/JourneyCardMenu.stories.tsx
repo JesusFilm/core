@@ -5,6 +5,7 @@ import { SnackbarProvider } from 'notistack'
 import { journeysAdminConfig } from '../../../../libs/storybook'
 import { JourneyStatus } from '../../../../../__generated__/globalTypes'
 import { ThemeProvider } from '../../../ThemeProvider'
+import { TeamProvider } from '../../../Team/TeamProvider'
 import { JourneyCardMenu, JourneyCardMenuProps } from './JourneyCardMenu'
 
 const JoruneyCardMenuDemo = {
@@ -16,9 +17,11 @@ const JoruneyCardMenuDemo = {
 const StoryTemplate: Story<JourneyCardMenuProps> = ({ ...args }) => (
   <MockedProvider>
     <SnackbarProvider>
-      <ThemeProvider>
-        <JourneyCardMenu {...args} />
-      </ThemeProvider>
+      <TeamProvider>
+        <ThemeProvider>
+          <JourneyCardMenu {...args} />
+        </ThemeProvider>
+      </TeamProvider>
     </SnackbarProvider>
   </MockedProvider>
 )

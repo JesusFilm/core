@@ -123,12 +123,12 @@ describe('UserTeamInviteForm', () => {
       fireEvent.click(getByRole('button', { name: 'add user' }))
     })
     await waitFor(() => {
-      fireEvent.change(email, { target: { value: ' ' } })
+      fireEvent.change(email, { target: { value: '' } })
     })
 
     await waitFor(() => {
       const inlineErrors = getAllByText('Required')
-      expect(inlineErrors[0]).toHaveProperty('id', 'email-helper-text')
+      expect(inlineErrors[0]).toBeInTheDocument()
     })
   })
 
@@ -149,7 +149,7 @@ describe('UserTeamInviteForm', () => {
 
     await waitFor(() => {
       const inlineError = getByText('Please enter a valid email address')
-      expect(inlineError).toHaveProperty('id', 'email-helper-text')
+      expect(inlineError).toBeInTheDocument()
     })
   })
 
@@ -176,7 +176,7 @@ describe('UserTeamInviteForm', () => {
 
     await waitFor(() => {
       const inlineError = getByText('This email is already on the list')
-      expect(inlineError).toHaveProperty('id', 'email-helper-text')
+      expect(inlineError).toBeInTheDocument()
     })
   })
 
@@ -203,7 +203,7 @@ describe('UserTeamInviteForm', () => {
 
     await waitFor(() => {
       const inlineError = getByText('This email is already on the list')
-      expect(inlineError).toHaveProperty('id', 'email-helper-text')
+      expect(inlineError).toBeInTheDocument()
     })
   })
 

@@ -3,6 +3,7 @@ import { MockedProvider } from '@apollo/client/testing'
 import { SnackbarProvider } from 'notistack'
 import noop from 'lodash/noop'
 import { simpleComponentConfig } from '../../../../../libs/storybook'
+import { TeamProvider } from '../../../../Team/TeamProvider'
 import { RestoreJourneyDialogProps } from './RestoreJourneyDialog'
 import { RestoreJourneyDialog } from '.'
 
@@ -15,7 +16,9 @@ const RestoreJourneyDialogDemo = {
 const Template: Story<RestoreJourneyDialogProps> = ({ ...args }) => (
   <MockedProvider>
     <SnackbarProvider>
-      <RestoreJourneyDialog {...args} />
+      <TeamProvider>
+        <RestoreJourneyDialog {...args} />
+      </TeamProvider>
     </SnackbarProvider>
   </MockedProvider>
 )

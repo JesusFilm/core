@@ -106,7 +106,10 @@ describe('TeamCreateForm', () => {
     await waitFor(() =>
       expect(handleSubmit).toHaveBeenCalledWith(
         { title: 'Team Title' },
-        expect.any(Object)
+        expect.any(Object),
+        {
+          teamCreate: { __typename: 'Team', id: 'teamId', title: 'Team Title' }
+        }
       )
     )
     expect(cache.extract()?.ROOT_QUERY?.teams).toEqual([

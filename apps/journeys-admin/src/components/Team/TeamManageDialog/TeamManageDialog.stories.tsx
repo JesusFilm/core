@@ -20,7 +20,10 @@ const mocks = [
   {
     request: {
       query: GET_USER_TEAMS_AND_INVITES,
-      variables: { teamId: 'teamId' }
+      variables: {
+        teamId: 'teamId',
+        where: { role: [UserTeamRole.manager, UserTeamRole.member] }
+      }
     },
     result: {
       data: {
@@ -72,7 +75,7 @@ const mocks = [
       data: {
         me: {
           id: 'userId',
-          email: 'siyangguccigang@gmail.com'
+          email: 'siyangguccigang@example.com'
         }
       }
     }

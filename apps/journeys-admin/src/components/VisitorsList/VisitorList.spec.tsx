@@ -1,6 +1,8 @@
-import { MockedProvider } from '@apollo/client/testing'
+import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { NextRouter, useRouter } from 'next/router'
 import { fireEvent, render, waitFor } from '@testing-library/react'
+import { GET_TEAMS, TeamProvider } from '../Team/TeamProvider'
+import { GetTeams } from '../../../__generated__/GetTeams'
 import { GET_VISITORS } from './VisitorsList'
 import { VisitorsList } from '.'
 
@@ -57,6 +59,17 @@ describe('VisitorList', () => {
     }
   }))
 
+  const getTeams: MockedResponse<GetTeams> = {
+    request: {
+      query: GET_TEAMS
+    },
+    result: {
+      data: {
+        teams: [{ id: 'teamId', title: 'Team Title', __typename: 'Team' }]
+      }
+    }
+  }
+
   const mocks = [
     {
       request,
@@ -65,10 +78,13 @@ describe('VisitorList', () => {
   ]
   it('should fetch visitors', async () => {
     render(
-      <MockedProvider mocks={mocks}>
-        <VisitorsList />
+      <MockedProvider mocks={[...mocks, getTeams]}>
+        <TeamProvider>
+          <VisitorsList />
+        </TeamProvider>
       </MockedProvider>
     )
+
     await waitFor(() => expect(result).toHaveBeenCalled())
   })
 
@@ -147,10 +163,13 @@ describe('VisitorList', () => {
               }
             },
             result: fetchResult
-          }
+          },
+          getTeams
         ]}
       >
-        <VisitorsList />
+        <TeamProvider>
+          <VisitorsList />
+        </TeamProvider>
       </MockedProvider>
     )
     await waitFor(() =>
@@ -165,8 +184,10 @@ describe('VisitorList', () => {
     mockUseRouter.mockReturnValue({ push } as unknown as NextRouter)
 
     const { getAllByRole } = render(
-      <MockedProvider mocks={mocks}>
-        <VisitorsList />
+      <MockedProvider mocks={[...mocks, getTeams]}>
+        <TeamProvider>
+          <VisitorsList />
+        </TeamProvider>
       </MockedProvider>
     )
     await waitFor(() =>
@@ -189,8 +210,10 @@ describe('VisitorList', () => {
 
   it('should show grid column titles', async () => {
     const { getAllByRole } = render(
-      <MockedProvider mocks={mocks}>
-        <VisitorsList />
+      <MockedProvider mocks={[...mocks, getTeams]}>
+        <TeamProvider>
+          <VisitorsList />
+        </TeamProvider>
       </MockedProvider>
     )
 
@@ -207,8 +230,10 @@ describe('VisitorList', () => {
 
   it('should show response in cell text field', async () => {
     const { getByText } = render(
-      <MockedProvider mocks={mocks}>
-        <VisitorsList />
+      <MockedProvider mocks={[...mocks, getTeams]}>
+        <TeamProvider>
+          <VisitorsList />
+        </TeamProvider>
       </MockedProvider>
     )
     await waitFor(() => expect(result).toHaveBeenCalled())

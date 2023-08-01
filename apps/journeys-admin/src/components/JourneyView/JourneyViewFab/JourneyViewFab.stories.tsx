@@ -5,6 +5,7 @@ import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 import { SnackbarProvider } from 'notistack'
 import { simpleComponentConfig } from '../../../libs/storybook'
 import { defaultJourney } from '../data'
+import { TeamProvider } from '../../Team/TeamProvider'
 import { JourneyViewFab } from './JourneyViewFab'
 
 const JourneyViewFabStory = {
@@ -16,11 +17,13 @@ const JourneyViewFabStory = {
 const Template: Story = ({ ...args }) => (
   <MockedProvider mocks={args.mocks}>
     <FlagsProvider>
-      <SnackbarProvider>
-        <JourneyProvider value={{ journey: args.journey }}>
-          <JourneyViewFab isPublisher={args.isPublisher} />
-        </JourneyProvider>
-      </SnackbarProvider>
+      <TeamProvider>
+        <SnackbarProvider>
+          <JourneyProvider value={{ journey: args.journey }}>
+            <JourneyViewFab isPublisher={args.isPublisher} />
+          </JourneyProvider>
+        </SnackbarProvider>
+      </TeamProvider>
     </FlagsProvider>
   </MockedProvider>
 )
