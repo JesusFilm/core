@@ -5,7 +5,7 @@ import {
   GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS,
   TeamProvider
 } from '../Team/TeamProvider'
-import { GetTeams } from '../../../__generated__/GetTeams'
+import { GetLastActiveTeamIdAndTeams } from '../../../__generated__/GetLastActiveTeamIdAndTeams'
 import { GET_VISITORS } from './VisitorsList'
 import { VisitorsList } from '.'
 
@@ -62,7 +62,7 @@ describe('VisitorList', () => {
     }
   }))
 
-  const getTeams: MockedResponse<GetTeams> = {
+  const getTeams: MockedResponse<GetLastActiveTeamIdAndTeams> = {
     request: {
       query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
     },
