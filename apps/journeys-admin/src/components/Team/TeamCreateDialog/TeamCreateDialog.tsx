@@ -9,11 +9,13 @@ import { TeamCreateForm } from '../TeamCreateForm'
 interface TeamCreateDialogProps {
   open: boolean
   onClose: () => void
+  onCreate: () => void
 }
 
 export function TeamCreateDialog({
   open,
-  onClose
+  onClose,
+  onCreate
 }: TeamCreateDialogProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
 
@@ -22,6 +24,7 @@ export function TeamCreateDialog({
     { resetForm }: FormikHelpers<FormikValues>
   ): Promise<void> {
     handleClose(resetForm)()
+    onCreate()
   }
 
   function handleClose(
