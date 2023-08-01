@@ -29,11 +29,10 @@ export function NavigationCard({
       id={id}
       data-testid={testId}
       height={140}
-      width={100}
+      width={95}
       borderRadius={2}
-      py={1.5}
-      px={1.25}
       sx={{
+        py: 1,
         outline: (theme) =>
           outlined
             ? `2px solid ${theme.palette.primary.main} `
@@ -43,10 +42,7 @@ export function NavigationCard({
       <Card
         variant="outlined"
         sx={{
-          width: 90,
           height: '100%',
-          m: 0,
-          p: 0,
           borderWidth: id === 'goals' ? 0 : 1,
           borderColor: 'grey.300',
           borderStyle: 'solid',
