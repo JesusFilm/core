@@ -49,7 +49,6 @@
     "@mui/icons-material": "5.8.4",
     "@mui/lab": "5.0.0-alpha.87",
     "@mui/material": "5.8.7",
-    "@mui/styles": "5.8.7",
     "@mui/system": "5.8.7",
     "@mui/x-data-grid": "^6.0.1",
     "@nestjs/apollo": "^10.1.7",
