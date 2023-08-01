@@ -1,6 +1,7 @@
 import { Story, Meta } from '@storybook/react'
 import { MockedResponse } from '@apollo/client/testing'
 import { waitFor, within } from '@storybook/testing-library'
+import { expect } from '@storybook/jest'
 import { GET_TEAMS, TeamProvider } from '../TeamProvider'
 import { journeysAdminConfig } from '../../../libs/storybook'
 import { GetTeams } from '../../../../__generated__/GetTeams'
