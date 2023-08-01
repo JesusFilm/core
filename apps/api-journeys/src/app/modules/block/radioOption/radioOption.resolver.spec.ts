@@ -2,14 +2,17 @@ import { Test, TestingModule } from '@nestjs/testing'
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 import { Block, Journey, UserTeamRole } from '.prisma/api-journeys-client'
 import { CaslAuthModule } from '@core/nest/common/CaslAuthModule'
-import { RadioQuestionBlockCreateInput } from '../../../__generated__/graphql'
+import {
+  RadioOptionBlockCreateInput,
+  RadioOptionBlockUpdateInput
+} from '../../../__generated__/graphql'
 import { PrismaService } from '../../../lib/prisma.service'
 import { BlockService } from '../block.service'
 import { AppAbility, AppCaslFactory } from '../../../lib/casl/caslFactory'
-import { RadioQuestionBlockResolver } from './radioQuestion.resolver'
+import { RadioOptionBlockResolver } from './radioOption.resolver'
 
 describe('RadioQuestionBlockResolver', () => {
-  let resolver: RadioQuestionBlockResolver,
+  let resolver: RadioOptionBlockResolver,
     service: BlockService,
     prismaService: DeepMockProxy<PrismaService>,
     ability: AppAbility
@@ -21,7 +24,7 @@ describe('RadioQuestionBlockResolver', () => {
     id: 'blockId',
     journeyId: 'journeyId',
     __typename: 'RadioOptionBlock',
-    parentBlockId: '3',
+    parentBlockId: 'parentBlockId',
     parentOrder: 3,
     label: 'label'
   } as unknown as Block
@@ -29,10 +32,17 @@ describe('RadioQuestionBlockResolver', () => {
     ...block,
     journey
   }
-  const blockCreateInput: RadioQuestionBlockCreateInput = {
+
+  const blockCreateInput: RadioOptionBlockCreateInput = {
     id: 'blockId',
+    parentBlockId: 'parentBlockId',
     journeyId: 'journeyId',
-    parentBlockId: 'parentBlockId'
+    label: 'label'
+  }
+
+  const blockUpdateInput: RadioOptionBlockUpdateInput = {
+    parentBlockId: 'parentBlockId',
+    label: 'label'
   }
 
   const blockService = {
@@ -48,33 +58,30 @@ describe('RadioQuestionBlockResolver', () => {
       imports: [CaslAuthModule.register(AppCaslFactory)],
       providers: [
         blockService,
-        RadioQuestionBlockResolver,
+        RadioOptionBlockResolver,
         {
           provide: PrismaService,
           useValue: mockDeep<PrismaService>()
         }
       ]
     }).compile()
-    resolver = module.get<RadioQuestionBlockResolver>(
-      RadioQuestionBlockResolver
-    )
+    resolver = module.get<RadioOptionBlockResolver>(RadioOptionBlockResolver)
     service = await module.resolve(BlockService)
     prismaService = module.get<PrismaService>(
       PrismaService
     ) as DeepMockProxy<PrismaService>
     ability = await new AppCaslFactory().createAbility({ id: 'userId' })
   })
-
-  describe('radioQuestionBlockCreate', () => {
+  describe('radioOptionBlockCreate', () => {
     beforeEach(() => {
       prismaService.$transaction.mockImplementation(
         async (callback) => await callback(prismaService)
       )
     })
-    it('creates a RadioQuestionBlock', async () => {
+    it('creates a RadioOptionBlock', async () => {
       prismaService.block.create.mockResolvedValueOnce(blockWithUserTeam)
       expect(
-        await resolver.radioQuestionBlockCreate(ability, blockCreateInput)
+        await resolver.radioOptionBlockCreate(ability, blockCreateInput)
       ).toEqual(blockWithUserTeam)
       expect(prismaService.block.create).toHaveBeenCalledWith({
         data: {
@@ -82,7 +89,8 @@ describe('RadioQuestionBlockResolver', () => {
           journey: { connect: { id: 'journeyId' } },
           parentBlock: { connect: { id: 'parentBlockId' } },
           parentOrder: 2,
-          typename: 'RadioQuestionBlock'
+          typename: 'RadioOptionBlock',
+          label: 'label'
         },
         include: {
           action: true,
@@ -102,32 +110,30 @@ describe('RadioQuestionBlockResolver', () => {
     it('throws error if not authorized', async () => {
       prismaService.block.create.mockResolvedValueOnce(block)
       await expect(
-        resolver.radioQuestionBlockCreate(ability, blockCreateInput)
+        resolver.radioOptionBlockCreate(ability, blockCreateInput)
       ).rejects.toThrow('user is not allowed to create block')
     })
   })
-  describe('radioQuestionBlockUpdate', () => {
-    it('updates a TypographyBlock', async () => {
+  describe('radioOptionBlockUpdate', () => {
+    it('updates a RadioOptionBlock', async () => {
       prismaService.block.findUnique.mockResolvedValueOnce(blockWithUserTeam)
-      await resolver.radioQuestionBlockUpdate(
+      await resolver.radioOptionBlockUpdate(
         ability,
         'blockId',
-        'parentBlockId'
+        blockUpdateInput
       )
-      expect(service.update).toHaveBeenCalledWith('blockId', {
-        parentBlockId: 'parentBlockId'
-      })
+      expect(service.update).toHaveBeenCalledWith('blockId', blockUpdateInput)
     })
     it('throws error if not found', async () => {
       prismaService.block.findUnique.mockResolvedValueOnce(null)
       await expect(
-        resolver.radioQuestionBlockUpdate(ability, 'blockId', 'parentBlockId')
+        resolver.radioOptionBlockUpdate(ability, 'blockId', blockUpdateInput)
       ).rejects.toThrow('block not found')
     })
     it('throws error if not authorized', async () => {
       prismaService.block.findUnique.mockResolvedValueOnce(block)
       await expect(
-        resolver.radioQuestionBlockUpdate(ability, 'blockId', 'parentBlockId')
+        resolver.radioOptionBlockUpdate(ability, 'blockId', blockUpdateInput)
       ).rejects.toThrow('user is not allowed to update block')
     })
   })
