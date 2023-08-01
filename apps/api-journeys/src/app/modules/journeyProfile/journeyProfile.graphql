@@ -15,8 +15,5 @@ input JourneyProfileUpdateInput {
 
 extend type Mutation {
   journeyProfileCreate: JourneyProfile!
-  journeyProfileUpdate(
-    id: ID!
-    input: JourneyProfileUpdateInput!
-  ): JourneyProfile!
+  journeyProfileUpdate(input: JourneyProfileUpdateInput!): JourneyProfile!
 }

@@ -63,11 +63,15 @@ describe('JourneyProfileResolver', () => {
 
   describe('journeyProfileUpdate', () => {
     it('should update journeyProfile', async () => {
-      await resolver.journeyProfileUpdate('1', {
+      await resolver.journeyProfileUpdate('userId', {
         lastActiveTeamId: 'lastTeamId'
       })
+      prismaService.journeyProfile.findUnique = jest
+        .fn()
+        .mockResolvedValueOnce(profile)
+
       expect(prismaService.journeyProfile.update).toHaveBeenCalledWith({
-        where: { id: '1' },
+        where: { id: profile.id },
         data: {
           lastActiveTeamId: 'lastTeamId'
         }
