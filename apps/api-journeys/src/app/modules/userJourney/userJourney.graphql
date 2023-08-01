@@ -36,6 +36,12 @@ extend type Mutation {
   Removes all userJourneys associated with a journeyId
   """
   userJourneyRemoveAll(id: ID!): [UserJourney!]!
-  userJourneyRequest(journeyId: ID!, idType: IdType): UserJourney!
+  userJourneyRequest(
+    journeyId: ID!
+    """
+    drop this parameter after merging teams
+    """
+    idType: IdType
+  ): UserJourney!
   userJourneyOpen(id: ID!): UserJourney
 }
