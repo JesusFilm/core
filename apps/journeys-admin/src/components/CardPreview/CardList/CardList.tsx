@@ -114,7 +114,6 @@ export function CardList({
       id={selectedId}
       isDragging={isDragging}
       footer={showAddButton === true && <AddCardSlide />}
-      view={journeyEditContentComponent}
     >
       {showNavigation === true && (
         <NavigationCard
@@ -123,9 +122,6 @@ export function CardList({
           testId="goals-navigation-card"
           title="Goals"
           destination={ActiveJourneyEditContent.Action}
-          outlined={
-            journeyEditContentComponent === ActiveJourneyEditContent.Action
-          }
           header={
             <Box
               bgcolor={(theme) => theme.palette.background.paper}
@@ -159,10 +155,6 @@ export function CardList({
           testId="social-preview-navigation-card"
           title="Social Media"
           destination={ActiveJourneyEditContent.SocialPreview}
-          outlined={
-            journeyEditContentComponent ===
-            ActiveJourneyEditContent.SocialPreview
-          }
           header={
             primaryImageBlock?.src == null ? (
               <Box

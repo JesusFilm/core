@@ -10,7 +10,6 @@ interface NavigationCardProps {
   id: string
   title: string
   destination: ActiveJourneyEditContent
-  outlined?: boolean
   header?: ReactElement
   loading?: boolean
   testId?: string
@@ -19,7 +18,6 @@ interface NavigationCardProps {
 export function NavigationCard({
   id,
   title,
-  outlined = false,
   header,
   loading = false,
   testId
@@ -28,15 +26,15 @@ export function NavigationCard({
     <Box
       id={id}
       data-testid={testId}
-      height={140}
+      height={164}
       width={95}
       borderRadius={2}
       sx={{
-        py: 1,
-        outline: (theme) =>
-          outlined
-            ? `2px solid ${theme.palette.primary.main} `
-            : '2px solid transparent'
+        top: -24,
+        p: 1,
+        pt: 7,
+        mb: -6,
+        position: 'relative'
       }}
     >
       <Card
