@@ -159,8 +159,7 @@ describe('VisitorList', () => {
               query: GET_VISITORS,
               variables: {
                 first: 100,
-                after: 'cursor1',
-                teamId: 'teamId'
+                after: 'cursor1'
               }
             },
             result: fetchResult
