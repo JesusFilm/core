@@ -93,7 +93,12 @@ describe('VisitorResolver', () => {
     })
 
     it('returns connections without teamId', async () => {
-      expect(await resolver.visitorsConnection({ OR: [] })).toEqual(connection)
+      await resolver.visitorsConnection({ OR: [] }, undefined, 50, 'cursorId')
+      expect(vService.getList).toHaveBeenCalledWith({
+        after: 'cursorId',
+        filter: { AND: [{ OR: [] }] },
+        first: 50
+      })
     })
 
     it('calls service with first, after and filter', async () => {
