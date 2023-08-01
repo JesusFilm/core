@@ -15,6 +15,7 @@ import pick from 'lodash/pick'
 import { CaslAbility, CaslAccessible } from '@core/nest/common/CaslAuthModule'
 import { subject } from '@casl/ability'
 import { UseGuards } from '@nestjs/common'
+import compact from 'lodash/compact'
 import { PrismaService } from '../../lib/prisma.service'
 import { AppCaslGuard } from '../../lib/casl/caslGuard'
 import { Action, AppAbility } from '../../lib/casl/caslFactory'
@@ -32,13 +33,16 @@ export class VisitorResolver {
   @UseGuards(AppCaslGuard)
   async visitorsConnection(
     @CaslAccessible('Visitor') accessibleVisitors: Prisma.VisitorWhereInput,
-    @Args('teamId') teamId: string,
+    @Args('teamId') teamId?: string,
     @Args('first') first?: number | null,
     @Args('after') after?: string | null
   ): Promise<VisitorsConnection> {
     return await this.visitorService.getList({
       filter: {
-        AND: [accessibleVisitors, { teamId }]
+        AND: compact([
+          accessibleVisitors,
+          teamId != null ? { teamId } : undefined
+        ])
       },
       first: first ?? 50,
       after
