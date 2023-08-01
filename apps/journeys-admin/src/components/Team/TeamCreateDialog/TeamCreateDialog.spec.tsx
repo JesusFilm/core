@@ -1,13 +1,12 @@
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { SnackbarProvider } from 'notistack'
-import { Dispatch, ReactElement, SetStateAction } from 'react'
+import { ReactElement } from 'react'
 import { InMemoryCache } from '@apollo/client'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { TeamProvider, useTeam } from '../TeamProvider'
 import { TeamCreate } from '../../../../__generated__/TeamCreate'
 import { TEAM_CREATE } from '../../../libs/useTeamCreateMutation/useTeamCreateMutation'
-import { TeamManageDialog } from '../TeamManageDialog'
 import { TeamCreateDialog } from '.'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
@@ -57,6 +56,7 @@ describe('TeamCreateDialog', () => {
 
   it('creates new team and sets it as active', async () => {
     const handleClose = jest.fn()
+    const handleCreate = jest.fn()
     const cache = new InMemoryCache()
     cache.restore({
       ROOT_QUERY: {
@@ -71,7 +71,7 @@ describe('TeamCreateDialog', () => {
             <TeamCreateDialog
               open
               onClose={handleClose}
-              setTeamManageOpen={jest.fn()}
+              onCreate={handleCreate}
             />
             <TestComponent />
           </TeamProvider>
@@ -89,45 +89,11 @@ describe('TeamCreateDialog', () => {
       { __ref: 'Team:teamId' }
     ])
     expect(getByText('{{ teamName }} created.')).toBeInTheDocument()
-  })
-
-  it('opens team manage dialog after creating a new team', async () => {
-    const handleClose = jest.fn()
-    let open = false
-    const setOpen = (): void => {
-      open = true
-    }
-    const cache = new InMemoryCache()
-    cache.restore({
-      ROOT_QUERY: {
-        __typename: 'Query',
-        teams: [{ __ref: 'Team:teamId1' }]
-      }
-    })
-    const { getByRole, getByText } = render(
-      <MockedProvider mocks={[teamCreateMock]} cache={cache}>
-        <SnackbarProvider>
-          <TeamProvider>
-            <TeamCreateDialog
-              open
-              onClose={handleClose}
-              setTeamManageOpen={
-                setOpen() as unknown as Dispatch<SetStateAction<boolean>>
-              }
-            />
-            <TeamManageDialog open={open} onClose={handleClose} />
-            <TestComponent />
-          </TeamProvider>
-        </SnackbarProvider>
-      </MockedProvider>
-    )
-    fireEvent.change(getByRole('textbox'), { target: { value: 'Team Title' } })
-    await waitFor(() => fireEvent.click(getByText('Create')))
-    expect(getByText('Manage Members')).toBeInTheDocument()
-    expect(getByText('Invite team member')).toBeInTheDocument()
+    await waitFor(() => expect(handleCreate).toBeCalled())
   })
 
   it('validates form', async () => {
+    const handleCreate = jest.fn()
     const { getByText, getByRole } = render(
       <MockedProvider mocks={[teamCreateErrorMock]}>
         <SnackbarProvider>
@@ -135,7 +101,7 @@ describe('TeamCreateDialog', () => {
             <TeamCreateDialog
               open
               onClose={jest.fn()}
-              setTeamManageOpen={jest.fn()}
+              onCreate={handleCreate}
             />
           </TeamProvider>
         </SnackbarProvider>

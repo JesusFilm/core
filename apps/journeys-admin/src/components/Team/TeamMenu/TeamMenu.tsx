@@ -31,7 +31,9 @@ export function TeamMenu(): ReactElement {
     <>
       <TeamCreateDialog
         open={teamCreateOpen}
-        setTeamManageOpen={setTeamManageOpen}
+        onCreate={() => {
+          setTeamManageOpen(true)
+        }}
         onClose={() => {
           setTeamCreateOpen(false)
         }}
