@@ -104,8 +104,10 @@ export function StepHeader(): ReactElement {
             color={(theme) => theme.palette.action.disabled}
             variant="caption"
           >
-            {t(`All personal identifiable data registered on this website will be
-            processed by journey creator: "${journey?.team?.title ?? ''}".`)}
+            {t(
+              'All personal identifiable data registered on this website will be processed by journey creator: "{{ teamTitle }}".',
+              { teamTitle: journey?.team?.title ?? '' }
+            )}
           </Typography>
         </Box>
         <MuiMenuItem disabled>
