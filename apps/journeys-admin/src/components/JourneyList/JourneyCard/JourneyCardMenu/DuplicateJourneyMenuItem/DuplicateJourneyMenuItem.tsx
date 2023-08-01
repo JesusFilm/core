@@ -4,6 +4,7 @@ import { useSnackbar } from 'notistack'
 import { useFlags } from '@core/shared/ui/FlagsProvider'
 import { MenuItem } from '../../../../MenuItem'
 import { useJourneyDuplicateMutation } from '../../../../../libs/useJourneyDuplicateMutation'
+// TODO: remove when teams is released
 import { useTeam } from '../../../../Team/TeamProvider'
 
 interface DuplicateJourneyMenuItemProps {
@@ -18,6 +19,8 @@ export function DuplicateJourneyMenuItem({
   const [journeyDuplicate] = useJourneyDuplicateMutation()
   const { enqueueSnackbar } = useSnackbar()
   const { activeTeam } = useTeam()
+
+  // TODO: remove when teams is released
   const { teams } = useFlags()
 
   const handleDuplicateJourney = async (): Promise<void> => {
