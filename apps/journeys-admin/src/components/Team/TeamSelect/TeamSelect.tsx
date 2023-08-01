@@ -13,6 +13,12 @@ export function TeamSelect(): ReactElement {
   const { query, activeTeam, setActiveTeam } = useTeam()
   const { t } = useTranslation('apps-journeys-admin')
 
+  async function handleChange(event: React.ChangeEvent): Promise<Void> {
+    setActiveTeam(
+      query?.data?.teams.find((team) => team.id === event.target.value) ?? null
+    )
+  }
+
   return (
     <Stack
       direction="row"
@@ -26,13 +32,7 @@ export function TeamSelect(): ReactElement {
           disabled={query.loading}
           displayEmpty
           value={activeTeam?.id ?? ''}
-          onChange={(event) => {
-            setActiveTeam(
-              query?.data?.teams.find(
-                (team) => team.id === event.target.value
-              ) ?? null
-            )
-          }}
+          onChange={handleChange}
           autoWidth
           sx={{
             '> .MuiSelect-select': {
