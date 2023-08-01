@@ -10,148 +10,155 @@ const prisma = new PrismaClient()
 export async function adminLeft(action?: 'reset'): Promise<void> {
   // reset should only be used for dev and stage, using it on production will overwrite the existing discovery journey
 
-  const slug = 'discovery-admin-left'
+  console.log('adminLeft started')
 
-  if (action === 'reset') {
-    const existingJourney = await prisma.journey.findUnique({
-      where: { slug }
-    })
-    if (existingJourney != null) {
-      await prisma.action.deleteMany({
-        where: { parentBlock: { journeyId: existingJourney.id } }
-      })
-      await prisma.block.deleteMany({
-        where: { journeyId: existingJourney.id }
-      })
-    }
-  }
+  const slug = 'discovery-admin-left'
 
   const existingJourney = await prisma.journey.findUnique({
     where: { slug }
   })
-  if (existingJourney != null) return
 
-  const journeyData = {
-    id: '621c60a3-298a-424b-ac83-0e925dc9e06f',
-    title: 'Discovery Journey - Beta Version ',
-    seoTitle: 'Beta Version ',
-    languageId: '529',
-    themeMode: ThemeMode.dark,
-    themeName: ThemeName.base,
-    slug,
-    status: JourneyStatus.published,
-    teamId: 'jfp-team',
-    createdAt: new Date(),
-    publishedAt: new Date()
-  }
+  if (existingJourney != null && action !== 'reset') return
 
-  const journey = await prisma.journey.upsert({
-    where: { id: journeyData.id },
-    create: journeyData,
-    update: journeyData
-  })
+  await prisma.$transaction(
+    async (tx) => {
+      if (action === 'reset' && existingJourney != null) {
+        await tx.block.deleteMany({
+          where: { journeyId: existingJourney.id }
+        })
+      }
 
-  const step = await prisma.block.create({
-    data: {
-      journey: { connect: { id: journey.id } },
-      typename: 'StepBlock',
-      locked: false,
-      parentOrder: 0
+      const journeyData = {
+        id: '621c60a3-298a-424b-ac83-0e925dc9e06f',
+        title: 'Discovery Journey - Beta Version ',
+        seoTitle: 'Beta Version ',
+        languageId: '529',
+        themeMode: ThemeMode.dark,
+        themeName: ThemeName.base,
+        slug,
+        status: JourneyStatus.published,
+        teamId: 'jfp-team',
+        createdAt: new Date(),
+        publishedAt: new Date()
+      }
+
+      if (existingJourney?.id !== journeyData.id) {
+        await tx.journey.delete({ where: { id: existingJourney?.id } })
+      }
+
+      const journey = await tx.journey.upsert({
+        where: { id: journeyData.id },
+        create: journeyData,
+        update: journeyData
+      })
+
+      const step = await tx.block.create({
+        data: {
+          journey: { connect: { id: journey.id } },
+          typename: 'StepBlock',
+          locked: false,
+          parentOrder: 0
+        }
+      })
+
+      const card = await tx.block.create({
+        data: {
+          journey: { connect: { id: journey.id } },
+          typename: 'CardBlock',
+          parentBlock: { connect: { id: step.id } },
+          backgroundColor: '#FFFFFF',
+          themeMode: ThemeMode.light,
+          themeName: ThemeName.base,
+          fullscreen: false,
+          parentOrder: 0
+        }
+      })
+
+      await tx.block.create({
+        data: {
+          journey: { connect: { id: journey.id } },
+          typename: 'TypographyBlock',
+          parentBlock: { connect: { id: card.id } },
+          content: '⚠️',
+          variant: 'h1',
+          color: null,
+          align: 'center',
+          parentOrder: 0
+        }
+      })
+
+      await tx.block.create({
+        data: {
+          journey: { connect: { id: journey.id } },
+          typename: 'TypographyBlock',
+          parentBlock: { connect: { id: card.id } },
+          content: 'BETA VERSION',
+          variant: 'h6',
+          color: null,
+          align: 'center',
+          parentOrder: 1
+        }
+      })
+
+      await tx.block.create({
+        data: {
+          journey: { connect: { id: journey.id } },
+          typename: 'TypographyBlock',
+          parentBlock: { connect: { id: card.id } },
+          content: 'NEW HERE?',
+          variant: 'h2',
+          color: null,
+          align: 'center',
+          parentOrder: 2
+        }
+      })
+
+      await tx.block.create({
+        data: {
+          journey: { connect: { id: journey.id } },
+          typename: 'TypographyBlock',
+          parentBlock: { connect: { id: card.id } },
+          content:
+            'You are one of the first users to test our product. Learn about limitations.',
+          variant: 'body1',
+          color: null,
+          align: 'center',
+          parentOrder: 3
+        }
+      })
+
+      const button = await tx.block.create({
+        data: {
+          journey: { connect: { id: journey.id } },
+          typename: 'ButtonBlock',
+          parentBlock: { connect: { id: card.id } },
+          label: 'Start Here',
+          variant: 'text',
+          color: 'secondary',
+          size: 'large',
+          parentOrder: 4
+        }
+      })
+
+      const endIcon = await tx.block.create({
+        data: {
+          journey: { connect: { id: journey.id } },
+          typename: 'IconBlock',
+          parentBlock: { connect: { id: button.id } },
+          name: 'ArrowForwardRounded',
+          color: null,
+          size: null
+        }
+      })
+
+      await tx.block.update({
+        where: { id: button.id },
+        data: { endIconId: endIcon.id }
+      })
+    },
+    {
+      timeout: 10000
     }
-  })
-
-  const card = await prisma.block.create({
-    data: {
-      journey: { connect: { id: journey.id } },
-      typename: 'CardBlock',
-      parentBlock: { connect: { id: step.id } },
-      backgroundColor: '#FFFFFF',
-      themeMode: ThemeMode.light,
-      themeName: ThemeName.base,
-      fullscreen: false,
-      parentOrder: 0
-    }
-  })
-
-  await prisma.block.create({
-    data: {
-      journey: { connect: { id: journey.id } },
-      typename: 'TypographyBlock',
-      parentBlock: { connect: { id: card.id } },
-      content: '⚠️',
-      variant: 'h1',
-      color: null,
-      align: 'center',
-      parentOrder: 0
-    }
-  })
-
-  await prisma.block.create({
-    data: {
-      journey: { connect: { id: journey.id } },
-      typename: 'TypographyBlock',
-      parentBlock: { connect: { id: card.id } },
-      content: 'BETA VERSION',
-      variant: 'h6',
-      color: null,
-      align: 'center',
-      parentOrder: 1
-    }
-  })
-
-  await prisma.block.create({
-    data: {
-      journey: { connect: { id: journey.id } },
-      typename: 'TypographyBlock',
-      parentBlock: { connect: { id: card.id } },
-      content: 'NEW HERE?',
-      variant: 'h2',
-      color: null,
-      align: 'center',
-      parentOrder: 2
-    }
-  })
-
-  await prisma.block.create({
-    data: {
-      journey: { connect: { id: journey.id } },
-      typename: 'TypographyBlock',
-      parentBlock: { connect: { id: card.id } },
-      content:
-        'You are one of the first users to test our product. Learn about limitations.',
-      variant: 'body1',
-      color: null,
-      align: 'center',
-      parentOrder: 3
-    }
-  })
-
-  const button = await prisma.block.create({
-    data: {
-      journey: { connect: { id: journey.id } },
-      typename: 'ButtonBlock',
-      parentBlock: { connect: { id: card.id } },
-      label: 'Start Here',
-      variant: 'text',
-      color: 'secondary',
-      size: 'large',
-      parentOrder: 4
-    }
-  })
-
-  const endIcon = await prisma.block.create({
-    data: {
-      journey: { connect: { id: journey.id } },
-      typename: 'IconBlock',
-      parentBlock: { connect: { id: button.id } },
-      name: 'ArrowForwardRounded',
-      color: null,
-      size: null
-    }
-  })
-
-  await prisma.block.update({
-    where: { id: button.id },
-    data: { endIconId: endIcon.id }
-  })
+  )
+  console.log('adminLeft ended')
 }
