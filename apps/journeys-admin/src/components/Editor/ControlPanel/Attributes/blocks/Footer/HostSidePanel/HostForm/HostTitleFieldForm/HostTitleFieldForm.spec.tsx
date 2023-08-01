@@ -51,7 +51,8 @@ describe('HostTitleFieldForm', () => {
     __typename: 'Journey',
     id: 'journeyId',
     seoTitle: 'My awesome journey',
-    host: defaultHost
+    host: defaultHost,
+    team: { id: 'teamId' }
   } as unknown as Journey
 
   it('should create a host on submit if no host exists', async () => {
@@ -69,7 +70,7 @@ describe('HostTitleFieldForm', () => {
       }
     }))
 
-    const result2 = jest.fn(() => ({
+    const journeyUpdate = jest.fn(() => ({
       data: {
         journeyUpdate: {
           id: journey.id,
@@ -88,7 +89,7 @@ describe('HostTitleFieldForm', () => {
             request: {
               query: CREATE_HOST,
               variables: {
-                teamId: 'jfp-team',
+                teamId: journey?.team?.id,
                 input: {
                   title: 'Host title'
                 }
@@ -106,7 +107,7 @@ describe('HostTitleFieldForm', () => {
                 }
               }
             },
-            result: result2
+            result: journeyUpdate
           }
         ]}
       >
@@ -122,7 +123,7 @@ describe('HostTitleFieldForm', () => {
     fireEvent.blur(field)
 
     await waitFor(() => expect(result).toHaveBeenCalled())
-    await waitFor(() => expect(result2).toHaveBeenCalled())
+    await waitFor(() => expect(journeyUpdate).toHaveBeenCalled())
 
     void waitFor(() => {
       expect(cache.extract()['Host:hostId']).toEqual({

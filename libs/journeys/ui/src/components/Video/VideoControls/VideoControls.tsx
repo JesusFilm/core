@@ -363,8 +363,8 @@ export function VideoControls({
               zIndex: 1,
               transitionDelay: visible ? undefined : '0.5s',
               pb: {
-                xs: showHeaderFooter || isYoutube ? 22 : 2,
-                sm: showHeaderFooter || isYoutube ? 13 : 2,
+                xs: showHeaderFooter || isYoutube ? 28 : 2,
+                sm: showHeaderFooter || isYoutube ? 15 : 2,
                 lg: 2
               }
             }}
