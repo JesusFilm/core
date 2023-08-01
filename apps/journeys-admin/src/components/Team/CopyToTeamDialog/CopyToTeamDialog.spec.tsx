@@ -2,7 +2,10 @@ import { render, fireEvent, waitFor, within } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
 import { SnackbarProvider } from 'notistack'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
-import { GET_TEAMS, TeamProvider } from '../TeamProvider'
+import {
+  GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS,
+  TeamProvider
+} from '../TeamProvider'
 import { GetJourney_journey as Journey } from '../../../../__generated__/GetJourney'
 import { CopyToTeamDialog } from './CopyToTeamDialog'
 
@@ -17,7 +20,11 @@ describe('DuplicateJourneys', () => {
   it('should call submit action on dialog submit', async () => {
     const result = jest.fn(() => ({
       data: {
-        teams: [{ id: 'teamId', title: 'Team Name', __typename: 'Team' }]
+        teams: [{ id: 'teamId', title: 'Team Name', __typename: 'Team' }],
+        getJourneyProfile: {
+          __typename: 'JourneyProfile',
+          lastActiveTeamId: 'teamId'
+        }
       }
     }))
 
@@ -26,7 +33,7 @@ describe('DuplicateJourneys', () => {
         mocks={[
           {
             request: {
-              query: GET_TEAMS
+              query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
             },
             result
           }
@@ -94,7 +101,11 @@ describe('DuplicateJourneys', () => {
   it('should call on close action on dialog close', async () => {
     const result = jest.fn(() => ({
       data: {
-        teams: [{ id: 'teamId', title: 'Team Name', __typename: 'Team' }]
+        teams: [{ id: 'teamId', title: 'Team Name', __typename: 'Team' }],
+        getJourneyProfile: {
+          __typename: 'JourneyProfile',
+          lastActiveTeamId: 'teamId'
+        }
       }
     }))
 
@@ -103,7 +114,7 @@ describe('DuplicateJourneys', () => {
         mocks={[
           {
             request: {
-              query: GET_TEAMS
+              query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
             },
             result
           }
