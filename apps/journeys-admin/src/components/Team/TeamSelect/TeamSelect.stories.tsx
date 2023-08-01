@@ -2,6 +2,7 @@ import { Story, Meta } from '@storybook/react'
 import { MockedResponse } from '@apollo/client/testing'
 import { waitFor, within } from '@storybook/testing-library'
 import { expect } from '@storybook/jest'
+import Box from '@mui/material/Box'
 import { GET_TEAMS, TeamProvider } from '../TeamProvider'
 import { journeysAdminConfig } from '../../../libs/storybook'
 import { GetTeams } from '../../../../__generated__/GetTeams'
@@ -46,7 +47,9 @@ const getEmptyTeamsMock: MockedResponse<GetTeams> = {
 
 const Template: Story = (args) => (
   <TeamProvider>
-    <TeamSelect {...args} />
+    <Box sx={{ height: 300 }}>
+      <TeamSelect {...args} />
+    </Box>
   </TeamProvider>
 )
 
