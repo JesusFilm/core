@@ -1444,7 +1444,7 @@ export abstract class IMutation {
 
     abstract journeyProfileCreate(): JourneyProfile | Promise<JourneyProfile>;
 
-    abstract journeyProfileUpdate(id: string, input: JourneyProfileUpdateInput): JourneyProfile | Promise<JourneyProfile>;
+    abstract journeyProfileUpdate(input: JourneyProfileUpdateInput): JourneyProfile | Promise<JourneyProfile>;
 
     abstract teamCreate(input?: Nullable<TeamCreateInput>): Team | Promise<Team>;
 

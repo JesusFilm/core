@@ -43,11 +43,13 @@ export class JourneyProfileResolver {
   @Mutation()
   @UseGuards(AppCaslGuard)
   async journeyProfileUpdate(
-    @Args('id') id: string,
+    @CurrentUserId() userId: string,
     @Args('input') input: JourneyProfileUpdateInput
   ): Promise<JourneyProfile> {
+    const profile = await this.getJourneyProfile(userId)
+
     return await this.prismaService.journeyProfile.update({
-      where: { id },
+      where: { id: profile?.id },
       data: input
     })
   }
