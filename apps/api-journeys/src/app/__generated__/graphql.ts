@@ -624,6 +624,10 @@ export class JourneyTemplateInput {
     template?: Nullable<boolean>;
 }
 
+export class JourneyProfileUpdateInput {
+    lastActiveTeamId?: Nullable<string>;
+}
+
 export class JourneyVisitorFilter {
     journeyId: string;
     hasChatStarted?: Nullable<boolean>;
@@ -1163,6 +1167,7 @@ export class JourneyProfile {
     id: string;
     userId: string;
     acceptedTermsAt?: Nullable<DateTime>;
+    lastActiveTeamId?: Nullable<string>;
 }
 
 export class JourneyVisitor {
@@ -1438,6 +1443,8 @@ export abstract class IMutation {
     abstract journeyTemplate(id: string, input: JourneyTemplateInput): Journey | Promise<Journey>;
 
     abstract journeyProfileCreate(): JourneyProfile | Promise<JourneyProfile>;
+
+    abstract journeyProfileUpdate(id: string, input: JourneyProfileUpdateInput): JourneyProfile | Promise<JourneyProfile>;
 
     abstract teamCreate(input?: Nullable<TeamCreateInput>): Team | Promise<Team>;
 
