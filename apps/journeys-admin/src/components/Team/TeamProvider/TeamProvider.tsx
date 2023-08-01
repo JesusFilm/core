@@ -37,12 +37,26 @@ export const GET_TEAMS = gql`
     }
   }
 `
+export const GET_LAST_ACTIVE_TEAM_ID = gql`
+  query GetLastActiveTeamId {
+    getJourneyProfile {
+      lastActiveTeamId
+    }
+  }
+`
 
 export function TeamProvider({ children }: TeamProviderProps): ReactElement {
   const [activeTeamId, setActiveTeamId] = useState<string | null>(null)
+  const { data } = useQuery<GetLastActiveTeamId>(GET_LAST_ACTIVE_TEAM_ID)
+  const lastActiveTeamId = data?.getJourneyProfile?.lastActiveTeamId
+
   const query = useQuery<GetTeams>(GET_TEAMS, {
     onCompleted: (data) => {
-      if (data.teams != null && activeTeam == null) setActiveTeam(data.teams[0])
+      if (activeTeam != null || data.teams == null) return
+      const lastActiveTeam = data.teams.find(
+        (team) => team.id === lastActiveTeamId
+      )
+      setActiveTeam(lastActiveTeam ?? data.teams[0])
     }
   })
 
