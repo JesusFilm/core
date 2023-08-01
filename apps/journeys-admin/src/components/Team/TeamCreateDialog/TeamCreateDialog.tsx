@@ -1,4 +1,4 @@
-import { ReactElement } from 'react'
+import { Dispatch, ReactElement, SetStateAction } from 'react'
 import TextField from '@mui/material/TextField'
 import { Dialog } from '@core/shared/ui/Dialog'
 import { Form, FormikValues, FormikHelpers } from 'formik'
@@ -9,11 +9,13 @@ import { TeamCreateForm } from '../TeamCreateForm'
 interface TeamCreateDialogProps {
   open: boolean
   onClose: () => void
+  setTeamManageOpen: Dispatch<SetStateAction<boolean>>
 }
 
 export function TeamCreateDialog({
   open,
-  onClose
+  onClose,
+  setTeamManageOpen
 }: TeamCreateDialogProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
 
@@ -22,6 +24,7 @@ export function TeamCreateDialog({
     { resetForm }: FormikHelpers<FormikValues>
   ): Promise<void> {
     handleClose(resetForm)()
+    setTeamManageOpen(true)
   }
 
   function handleClose(
