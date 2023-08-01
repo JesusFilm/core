@@ -7,6 +7,8 @@ import MoreVert from '@mui/icons-material/MoreVert'
 import BeenHereRoundedIcon from '@mui/icons-material/BeenhereRounded'
 import VisibilityIcon from '@mui/icons-material/Visibility'
 import EditIcon from '@mui/icons-material/Edit'
+// TODO: remove when teams is released
+import { useFlags } from '@core/shared/ui/FlagsProvider'
 import DescriptionIcon from '@mui/icons-material/Description'
 import AssessmentRoundedIcon from '@mui/icons-material/AssessmentRounded'
 import TranslateIcon from '@mui/icons-material/Translate'
@@ -82,6 +84,10 @@ export function Menu(): ReactElement {
   const [showDescriptionDialog, setShowDescriptionDialog] = useState(false)
   const [showLanguageDialog, setShowLanguageDialog] = useState(false)
   const [duplicateTeamDialogOpen, setDuplicateTeamDialogOpen] = useState(false)
+
+  // TODO: remove when teams is released
+  const { teams } = useFlags()
+
   const { enqueueSnackbar } = useSnackbar()
 
   const openMenu = Boolean(anchorEl)
@@ -116,7 +122,7 @@ export function Menu(): ReactElement {
           preventDuplicate: true
         })
   }
-  const handleTemplate = async (teamId: string): Promise<void> => {
+  const handleTemplate = async (teamId: string | undefined): Promise<void> => {
     if (journey == null) return
 
     const { data } = await journeyDuplicate({
@@ -216,7 +222,13 @@ export function Menu(): ReactElement {
               <MenuItem
                 label="Use Template"
                 icon={<CheckRounded />}
-                onClick={() => setDuplicateTeamDialogOpen(true)}
+                onClick={() =>
+                  // TODO: remove when teams is released
+                  teams
+                    ? setDuplicateTeamDialogOpen(true)
+                    : // TODO: remove when teams is released
+                      handleTemplate(undefined)
+                }
               />
             )}
             {journey.template === true && isPublisher && (

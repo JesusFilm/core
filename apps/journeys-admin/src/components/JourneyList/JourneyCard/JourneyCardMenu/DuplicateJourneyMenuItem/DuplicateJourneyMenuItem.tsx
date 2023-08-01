@@ -1,8 +1,10 @@
 import { ReactElement } from 'react'
 import ContentCopyRounded from '@mui/icons-material/ContentCopyRounded'
 import { useSnackbar } from 'notistack'
+import { useFlags } from '@core/shared/ui/FlagsProvider'
 import { MenuItem } from '../../../../MenuItem'
 import { useJourneyDuplicateMutation } from '../../../../../libs/useJourneyDuplicateMutation'
+// TODO: remove when teams is released
 import { useTeam } from '../../../../Team/TeamProvider'
 
 interface DuplicateJourneyMenuItemProps {
@@ -18,11 +20,15 @@ export function DuplicateJourneyMenuItem({
   const { enqueueSnackbar } = useSnackbar()
   const { activeTeam } = useTeam()
 
+  // TODO: remove when teams is released
+  const { teams } = useFlags()
+
   const handleDuplicateJourney = async (): Promise<void> => {
-    if (id == null || activeTeam?.id == null) return
+    // TODO: add activeteam.id not null check when teams is released
+    if (id == null) return
 
     const data = await journeyDuplicate({
-      variables: { id, teamId: activeTeam.id }
+      variables: { id, teamId: activeTeam?.id }
     })
     if (data != null) {
       handleCloseMenu()
@@ -35,7 +41,7 @@ export function DuplicateJourneyMenuItem({
 
   return (
     <MenuItem
-      disabled={activeTeam?.id == null}
+      disabled={activeTeam?.id == null && teams}
       label="Duplicate"
       icon={<ContentCopyRounded color="secondary" />}
       onClick={handleDuplicateJourney}

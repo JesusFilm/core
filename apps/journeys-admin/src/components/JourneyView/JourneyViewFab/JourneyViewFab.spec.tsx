@@ -133,7 +133,7 @@ describe('JourneyViewFab', () => {
       >
         <SnackbarProvider>
           <TeamProvider>
-            <FlagsProvider>
+            <FlagsProvider flags={{ teams: true }}>
               <JourneyProvider
                 value={{ journey: { ...defaultJourney, template: true } }}
               >
@@ -208,7 +208,7 @@ describe('JourneyViewFab', () => {
       >
         <SnackbarProvider>
           <TeamProvider>
-            <FlagsProvider>
+            <FlagsProvider flags={{ teams: true }}>
               <JourneyProvider
                 value={{ journey: { ...defaultJourney, template: true } }}
               >

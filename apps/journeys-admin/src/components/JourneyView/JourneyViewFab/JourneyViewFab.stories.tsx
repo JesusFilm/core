@@ -19,9 +19,13 @@ const Template: Story = ({ ...args }) => (
     <FlagsProvider>
       <TeamProvider>
         <SnackbarProvider>
-          <JourneyProvider value={{ journey: args.journey }}>
-            <JourneyViewFab isPublisher={args.isPublisher} />
-          </JourneyProvider>
+          {/* TODO: remove when teams is released */}
+          <FlagsProvider flags={{ teams: true }}>
+            <JourneyProvider value={{ journey: args.journey }}>
+              <JourneyViewFab isPublisher={args.isPublisher} />
+            </JourneyProvider>
+            {/* TODO: remove when teams is released */}
+          </FlagsProvider>
         </SnackbarProvider>
       </TeamProvider>
     </FlagsProvider>
