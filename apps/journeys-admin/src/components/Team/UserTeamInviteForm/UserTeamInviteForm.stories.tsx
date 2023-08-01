@@ -5,6 +5,7 @@ import Stack from '@mui/material/Stack'
 import GroupAddIcon from '@mui/icons-material/GroupAdd'
 import Typography from '@mui/material/Typography'
 import { journeysAdminConfig } from '../../../libs/storybook'
+import { UserTeamRole } from '../../../../__generated__/globalTypes'
 import { UserTeamInviteForm } from './UserTeamInviteForm'
 
 const Demo = {
@@ -22,7 +23,7 @@ const Template: Story<ComponentProps<typeof UserTeamInviteForm>> = () => (
           Add team member by Email
         </Typography>
       </Stack>
-      <UserTeamInviteForm emails={[]} role="manager" />
+      <UserTeamInviteForm emails={[]} role={UserTeamRole.manager} />
     </Stack>
   </MockedProvider>
 )
