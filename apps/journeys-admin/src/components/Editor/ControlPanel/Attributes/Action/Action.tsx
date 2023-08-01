@@ -23,6 +23,7 @@ import { NavigateToBlockAction } from './NavigateToBlockAction'
 import { NavigateToJourneyAction } from './NavigateToJourneyAction'
 import { LinkAction } from './LinkAction'
 import { EmailAction } from './EmailAction'
+import { getNextStep } from './utils/getNextStep'
 
 export const NAVIGATE_ACTION_UPDATE = gql`
   mutation NavigateActionUpdate(
@@ -92,6 +93,7 @@ export function Action(): ReactElement {
   )
 
   const [action, setAction] = useState(selectedAction?.value ?? 'none')
+  const nextStep = getNextStep(state?.selectedStep, state?.steps)
 
   useEffect(() => {
     if (selectedAction != null) {
@@ -104,7 +106,7 @@ export function Action(): ReactElement {
   async function navigateAction(): Promise<void> {
     if (
       selectedBlock != null &&
-      state.selectedStep?.nextBlockId != null &&
+      (state.selectedStep?.nextBlockId != null || nextStep != null) &&
       journey != null
     ) {
       const { id, __typename: typeName } = selectedBlock
@@ -165,16 +167,6 @@ export function Action(): ReactElement {
     setAction(event.target.value)
   }
 
-  const noNextStepAvailable = (): boolean => {
-    const currentParentOrder = state.selectedStep?.parentOrder
-    const nextStep = state.steps?.find(
-      (step) =>
-        currentParentOrder != null &&
-        currentParentOrder + 1 === step.parentOrder
-    )
-    return nextStep == null
-  }
-
   return (
     <>
       <Stack sx={{ pt: 4, px: 6 }}>
@@ -194,7 +186,7 @@ export function Action(): ReactElement {
                   key={`button-action-${action.value}`}
                   value={action.value}
                   disabled={
-                    noNextStepAvailable() && action.value === 'NavigateAction'
+                    nextStep == null && action.value === 'NavigateAction'
                   }
                 >
                   {action.label}
