@@ -15,6 +15,8 @@ import { GetLastActiveTeamIdAndTeams } from '../../../../__generated__/GetLastAc
 import { GET_USER_TEAMS_AND_INVITES } from '../../../libs/useUserTeamsAndInvitesQuery/useUserTeamsAndInvitesQuery'
 import { UserTeamRole } from '../../../../__generated__/globalTypes'
 import { GetUserTeamsAndInvites } from '../../../../__generated__/GetUserTeamsAndInvites'
+import { UpdateLastActiveTeamId } from '../../../../__generated__/UpdateLastActiveTeamId'
+import { UPDATE_LAST_ACTIVE_TEAM_ID } from '../TeamSelect/TeamSelect'
 import { TeamOnboarding } from '.'
 
 jest.mock('react-i18next', () => ({
@@ -142,6 +144,7 @@ describe('TeamOnboarding', () => {
         teams: [{ __ref: 'Team:teamId' }]
       }
     })
+
     const { getByRole, getByTestId, getByText } = render(
       <MockedProvider mocks={[teamCreateMock, getTeams]} cache={cache}>
         <SnackbarProvider>
@@ -157,12 +160,66 @@ describe('TeamOnboarding', () => {
     await waitFor(() =>
       expect(getByTestId('active-team-title')).toHaveTextContent('Team Title')
     )
-    console.log(cache.extract()?.ROOT_QUERY?.teams)
     expect(cache.extract()?.ROOT_QUERY?.teams).toEqual([
       { __ref: 'Team:teamId' },
       { __ref: 'Team:teamId1' }
     ])
     expect(getByText('{{ teamName }} created.')).toBeInTheDocument()
+  })
+
+  it('should update last active team id', async () => {
+    const result = jest.fn(() => ({
+      data: {
+        journeyProfileUpdate: {
+          __typename: 'JourneyProfile' as const,
+          id: 'teamId1'
+        }
+      }
+    }))
+
+    const updateLastActiveTeamIdMock: MockedResponse<UpdateLastActiveTeamId> = {
+      request: {
+        query: UPDATE_LAST_ACTIVE_TEAM_ID,
+        variables: {
+          input: {
+            lastActiveTeamId: 'teamId1'
+          }
+        }
+      },
+      result
+    }
+
+    const { getByRole } = render(
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
+            },
+            result: {
+              data: {
+                teams: [],
+                getJourneyProfile: {
+                  __typename: 'JourneyProfile',
+                  lastActiveTeamId: null
+                }
+              }
+            }
+          },
+          updateLastActiveTeamIdMock
+        ]}
+      >
+        <SnackbarProvider>
+          <TeamProvider>
+            <TeamOnboarding />
+            <TestComponent />
+          </TeamProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    fireEvent.change(getByRole('textbox'), { target: { value: 'Team Title' } })
+    fireEvent.click(getByRole('button', { name: 'Create' }))
   })
 
   it('shows team invites form once team has been created', async () => {
