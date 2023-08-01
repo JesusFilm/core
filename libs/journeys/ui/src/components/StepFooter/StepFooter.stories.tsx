@@ -63,7 +63,7 @@ const journey: Journey = {
   seoDescription: null,
   chatButtons: [],
   host: null,
-  team: null
+  team: { __typename: 'Team', id: 'teamId', title: 'My Team' }
 }
 
 const rtlLanguage = {
@@ -91,7 +91,7 @@ const Template: Story<
             <Stack
               sx={{
                 position: 'relative',
-                height: 80,
+                height: { xs: 119, sm: 70, lg: 78 },
                 justifyContent: 'center'
               }}
             >
@@ -145,6 +145,12 @@ WithAvatar.args = {
       src2: null
     } as unknown as Host
   }
+}
+
+export const WithAdminAvatar = Template.bind({})
+WithAdminAvatar.args = {
+  ...Admin.args,
+  ...WithAvatar.args
 }
 
 export const WithChat = Template.bind({})
@@ -209,7 +215,7 @@ const TemplateRTL: Story<
               <Stack
                 sx={{
                   position: 'relative',
-                  height: 80,
+                  height: { xs: 118, sm: 69, lg: 77 },
                   justifyContent: 'center'
                 }}
               >
@@ -231,9 +237,10 @@ RTL.args = {
     { ...(WithChat.args.journey as Journey), language: rtlLanguage },
     { ...(WithHost.args.journey as Journey), language: rtlLanguage },
     { ...(WithAvatar.args.journey as Journey), language: rtlLanguage },
+    { ...(WithAdminAvatar.args.journey as Journey), language: rtlLanguage },
     { ...(Long.args.journey as Journey), language: rtlLanguage }
   ],
-  admin: [true, false, false, false, false, false]
+  admin: [true, false, false, false, false, true, false]
 }
 RTL.parameters = { rtl: true }
 

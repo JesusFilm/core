@@ -25,7 +25,7 @@ import { FramePortal } from '../../FramePortal'
 import { DRAWER_WIDTH } from '../Drawer'
 import 'swiper/swiper.min.css'
 import { NextCard } from '../ControlPanel/Attributes/blocks/Step/NextCard'
-import { Chat } from '../ControlPanel/Attributes/blocks/Footer/Chat'
+import { HostSidePanel } from '../ControlPanel/Attributes/blocks/Footer/HostSidePanel'
 import { InlineEditWrapper } from './InlineEditWrapper'
 import { SelectableWrapper } from './SelectableWrapper'
 import { VideoWrapper } from './VideoWrapper'
@@ -213,7 +213,7 @@ export function Canvas(): ReactElement {
                                 selectedComponent === 'Footer'
                                   ? '3px solid #C52D3A'
                                   : 'none',
-                              outlineOffset: -6,
+                              outlineOffset: -4,
                               borderRadius: 5,
                               cursor: 'pointer'
                             }}
@@ -233,13 +233,13 @@ export function Canvas(): ReactElement {
                                 })
                                 dispatch({
                                   type: 'SetDrawerPropsAction',
-                                  title: t('Chat Widget'),
+                                  title: t('Hosted By'),
                                   mobileOpen: true,
-                                  children: <Chat />
+                                  children: <HostSidePanel />
                                 })
                                 dispatch({
                                   type: 'SetSelectedAttributeIdAction',
-                                  id: 'chat-widget'
+                                  id: 'hosted-by'
                                 })
                               }
                             }}
