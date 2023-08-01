@@ -1119,7 +1119,7 @@ export abstract class IQuery {
 
     abstract getJourneyProfile(): Nullable<JourneyProfile> | Promise<Nullable<JourneyProfile>>;
 
-    abstract journeyVisitorsConnection(teamId: string, filter: JourneyVisitorFilter, first?: Nullable<number>, after?: Nullable<string>, sort?: Nullable<JourneyVisitorSort>): JourneyVisitorsConnection | Promise<JourneyVisitorsConnection>;
+    abstract journeyVisitorsConnection(filter: JourneyVisitorFilter, teamId?: Nullable<string>, first?: Nullable<number>, after?: Nullable<string>, sort?: Nullable<JourneyVisitorSort>): JourneyVisitorsConnection | Promise<JourneyVisitorsConnection>;
 
     abstract journeyVisitorCount(filter: JourneyVisitorFilter): number | Promise<number>;
 
@@ -1137,7 +1137,7 @@ export abstract class IQuery {
 
     abstract userTeamInvites(teamId: string): UserTeamInvite[] | Promise<UserTeamInvite[]>;
 
-    abstract visitorsConnection(teamId: string, first?: Nullable<number>, after?: Nullable<string>): VisitorsConnection | Promise<VisitorsConnection>;
+    abstract visitorsConnection(teamId?: Nullable<string>, first?: Nullable<number>, after?: Nullable<string>): VisitorsConnection | Promise<VisitorsConnection>;
 
     abstract visitor(id: string): Visitor | Promise<Visitor>;
 }

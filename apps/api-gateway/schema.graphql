@@ -1322,14 +1322,14 @@ type Query
 
   """Get a list of Visitor Information by Journey"""
   journeyVisitorsConnection(
+    """Returns the elements in the list that match the specified filter."""
+    filter: JourneyVisitorFilter!
+
     """
     Returns the visitor items related to a specific team.
     TODO: remove when teams is released
     """
     teamId: String
-
-    """Returns the elements in the list that match the specified filter."""
-    filter: JourneyVisitorFilter!
 
     """Returns the first n elements from the list."""
     first: Int
