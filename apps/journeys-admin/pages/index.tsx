@@ -9,6 +9,7 @@ import { NextSeo } from 'next-seo'
 import { useTranslation } from 'react-i18next'
 import { gql } from '@apollo/client'
 import { useFlags } from '@core/shared/ui/FlagsProvider'
+import { useRouter } from 'next/router'
 import { JourneyList } from '../src/components/JourneyList'
 import { PageWrapper } from '../src/components/NewPageWrapper'
 import { OnboardingPanelContent } from '../src/components/OnboardingPanelContent'
@@ -54,12 +55,19 @@ function IndexPage({ onboardingJourneys }: IndexPageProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const AuthUser = useAuthUser()
   const { teams } = useFlags()
+  const router = useRouter()
 
   return (
     <>
       <NextSeo title={t('Journeys')} />
       <PageWrapper
-        title={teams ? <TeamSelect /> : t('Journeys')}
+        title={
+          teams ? (
+            <TeamSelect onboarding={router.query.onboarding === 'true'} />
+          ) : (
+            t('Journeys')
+          )
+        }
         authUser={AuthUser}
         menu={teams && <TeamMenu />}
         sidePanelChildren={
