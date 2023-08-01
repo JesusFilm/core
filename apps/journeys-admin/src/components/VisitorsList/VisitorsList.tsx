@@ -11,17 +11,12 @@ import {
   GetVisitors,
   GetVisitors_visitors_edges as Visitor
 } from '../../../__generated__/GetVisitors'
-import { useTeam } from '../Team/TeamProvider'
 import { getColDefs } from './utils/getColDefs'
 import { getVisitorRows } from './utils/getVisitorRows'
 
 export const GET_VISITORS = gql`
-  query GetVisitors($first: Int, $after: String, $teamId: String!) {
-    visitors: visitorsConnection(
-      teamId: $teamId
-      first: $first
-      after: $after
-    ) {
+  query GetVisitors($first: Int, $after: String) {
+    visitors: visitorsConnection(first: $first, after: $after) {
       edges {
         node {
           id
@@ -64,7 +59,6 @@ const StyledDataGrid = styled(DataGrid)(({ theme }) => ({
 
 export function VisitorsList(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-  const { activeTeam } = useTeam()
   const router = useRouter()
   const [visitors, setVisitors] = useState<Visitor[]>([])
   const [hasNextPage, setHasNextPage] = useState(true)
@@ -83,12 +77,11 @@ export function VisitorsList(): ReactElement {
   })
 
   async function handleFetchNext(): Promise<void> {
-    if (hasNextPage && activeTeam != null) {
+    if (hasNextPage) {
       const response = await fetchMore({
         variables: {
           first: 100,
-          after: endCursor,
-          teamId: activeTeam.id
+          after: endCursor
         }
       })
       if (response.data.visitors.edges != null) {

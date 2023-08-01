@@ -27,7 +27,6 @@ import { VisitorToolbar } from '../../../../src/components/JourneyVisitorsList/V
 import { ClearAllButton } from '../../../../src/components/JourneyVisitorsList/FilterDrawer/ClearAllButton'
 import { initAndAuthApp } from '../../../../src/libs/initAndAuthApp'
 import { AcceptAllInvites } from '../../../../__generated__/AcceptAllInvites'
-import { useTeam } from '../../../../src/components/Team/TeamProvider'
 
 export const GET_JOURNEY_VISITORS = gql`
   query GetJourneyVisitors(
@@ -35,10 +34,8 @@ export const GET_JOURNEY_VISITORS = gql`
     $sort: JourneyVisitorSort
     $first: Int
     $after: String
-    $teamId: String!
   ) {
     visitors: journeyVisitorsConnection(
-      teamId: $teamId
       filter: $filter
       sort: $sort
       first: $first
@@ -83,7 +80,6 @@ function JourneyVisitorsPage(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const AuthUser = useAuthUser()
   const router = useRouter()
-  const { activeTeam } = useTeam()
   const journeyId = router.query.journeyId as string
 
   const { data } = useQuery<GetJourneyVisitorsCount>(
@@ -129,13 +125,12 @@ function JourneyVisitorsPage(): ReactElement {
   )
 
   async function handleFetchNext(): Promise<void> {
-    if (visitorEdges != null && hasNextPage && activeTeam != null) {
+    if (visitorEdges != null && hasNextPage) {
       const response = await fetchMore({
         variables: {
           filter: { journeyId },
           first: 100,
-          after: endCursor,
-          teamId: activeTeam.id
+          after: endCursor
         }
       })
       if (response.data.visitors.edges != null) {
