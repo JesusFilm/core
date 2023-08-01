@@ -165,17 +165,24 @@ export class VideoResolver {
 
   @ResolveField('variant')
   async variant(
+    @Info() info: GraphQLResolveInfo,
     @Parent() video,
     @Args('languageId') languageId?: string
   ): Promise<VideoVariant | null> {
-    return await this.prismaService.videoVariant.findUnique({
-      where: {
-        languageId_videoId: {
-          videoId: video.id,
-          languageId: languageId ?? '529'
-        }
-      }
-    })
+    return info.variableValues.idType !== IdType.databaseId
+      ? await this.prismaService.videoVariant.findUnique({
+          where: {
+            slug: info.variableValues.id as string
+          }
+        })
+      : await this.prismaService.videoVariant.findUnique({
+          where: {
+            languageId_videoId: {
+              videoId: video.id,
+              languageId: languageId ?? '529'
+            }
+          }
+        })
   }
 
   @ResolveField('variantLanguages')
