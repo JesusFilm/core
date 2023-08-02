@@ -30,7 +30,7 @@ export class TeamResolver {
     @CaslAccessible('Team') accessibleTeams: Prisma.TeamWhereInput
   ): Promise<Team[]> {
     return await this.prismaService.team.findMany({
-      where: accessibleTeams
+      where: { AND: [accessibleTeams] }
     })
   }
 
