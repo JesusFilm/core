@@ -169,19 +169,8 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
         sx={{
           justifyContent: 'center',
           height: '100%',
-          background: theme.palette.grey[900],
-          pt: 'env(safe-area-inset-top)',
-          pl: 'env(safe-area-inset-left)',
-          pr: 'env(safe-area-inset-right)',
-          pb: 'env(safe-area-inset-bottom)'
+          background: theme.palette.grey[900]
         }}
-        data-testid="conductor-cover-box"
-        // sx={{
-        //   pt: 'env(safe-area-inset-top)',
-        //   pl: 'env(safe-area-inset-left)',
-        //   pr: 'env(safe-area-inset-right)',
-        //   pb: 'env(safe-area-inset-bottom)'
-        // }}
       >
         <Box sx={{ height: { xs: '100%', lg: 'unset' } }}>
           <StyledSwiperContainer
@@ -197,7 +186,9 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
             sx={{
               '.swiper-pagination': {
                 display: showHeaderFooter ? 'block' : 'none'
-              }
+              },
+              pl: 'env(safe-area-inset-left)',
+              pr: 'env(safe-area-inset-right)'
             }}
           >
             {treeBlocks.map((block) => {
