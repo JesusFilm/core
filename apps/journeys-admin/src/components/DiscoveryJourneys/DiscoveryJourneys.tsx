@@ -53,30 +53,30 @@ export const DiscoveryJourneys = memo(
           spacing={{ xs: 2, sm: 8 }}
           sx={{ height: { xs: 200, sm: 340, md: 450 } }}
         >
-          <Fade in timeout={1000}>
-            <Box flexGrow={1} height="100%">
-              <EmbedJourney
-                slug="admin-left"
-                discoveryJourney={discoveryJourneys[0]}
-              />
-            </Box>
-          </Fade>
-          <Fade in timeout={2000}>
-            <Box flexGrow={1} height="100%">
-              <EmbedJourney
-                slug="admin-center"
-                discoveryJourney={discoveryJourneys[1]}
-              />
-            </Box>
-          </Fade>
-          <Fade in timeout={3000}>
-            <Box flexGrow={1} height="100%">
-              <EmbedJourney
-                slug="admin-right"
-                discoveryJourney={discoveryJourneys[2]}
-              />
-            </Box>
-          </Fade>
+          {/* <Fade in timeout={1000}> */}
+          <Box flexGrow={1} height="100%">
+            <EmbedJourney
+              slug="admin-left"
+              discoveryJourney={discoveryJourneys[0]}
+            />
+          </Box>
+          {/* </Fade> */}
+          {/* <Fade in timeout={2000}> */}
+          <Box flexGrow={1} height="100%">
+            <EmbedJourney
+              slug="admin-center"
+              discoveryJourney={discoveryJourneys[1]}
+            />
+          </Box>
+          {/* </Fade> */}
+          {/* <Fade in timeout={3000}> */}
+          <Box flexGrow={1} height="100%">
+            <EmbedJourney
+              slug="admin-right"
+              discoveryJourney={discoveryJourneys[2]}
+            />
+          </Box>
+          {/* </Fade> */}
         </Stack>
       </Container>
     )
