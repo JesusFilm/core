@@ -3,6 +3,7 @@ type Team @key(fields: "id") {
   title: String!
   createdAt: DateTime!
   updatedAt: DateTime!
+  userTeams: [UserTeam!]!
 }
 
 extend type Query {
