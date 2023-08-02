@@ -219,7 +219,8 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
                       >
                         {showHeaderFooter && <StepHeader />}
                         <Typography variant="h1" sx={{ color: 'red' }}>
-                          {`HAS SIDE NOTCH: ${hasSideNotch ? 'TRUE' : 'FALSE'}`}
+                          {`HAS SIDE NOTCH: ${hasSideNotch}`}
+                          {/* {`HAS SIDE NOTCH: ${hasSideNotch ? 'TRUE' : 'FALSE'}`} */}
                         </Typography>
                         <BlockRenderer block={block} />
                         <StepFooter

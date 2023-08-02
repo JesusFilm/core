@@ -1,18 +1,27 @@
 import { useEffect, useState } from 'react'
 
-export function useHasNotch(): boolean {
-  const [hasNotch, setHasNotch] = useState(false)
+export function useHasNotch(): string {
+  // const [hasNotch, setHasNotch] = useState(false)
+  const [returnString, setReturnString] = useState('')
 
   useEffect(() => {
     const handleResize = (): void => {
-      // console.log(document.documentElement.clientHeight)
       const windowWidth = window.innerWidth
       const documentWidth = document.documentElement.clientWidth
-      const hasTopNotch = window.matchMedia('(display-mode: standalone)')
-        .matches
-        ? false
-        : windowWidth - documentWidth > 0
-      setHasNotch(hasTopNotch)
+      // const hasTopNotch = window.matchMedia('(display-mode: standalone)')
+      //   .matches
+      //   ? false
+      //   : windowWidth - documentWidth > 0
+      // setHasNotch(hasTopNotch)
+      setReturnString(
+        `windowWidth: ${windowWidth},
+         documentWidth: ${documentWidth},
+          standAlone: ${
+            window.matchMedia('(display-mode: standalone)').matches
+              ? 'true'
+              : 'false'
+          }`
+      )
     }
 
     handleResize()
@@ -20,5 +29,5 @@ export function useHasNotch(): boolean {
     return () => window.removeEventListener('resize', handleResize)
   }, [])
 
-  return hasNotch
+  return returnString
 }
