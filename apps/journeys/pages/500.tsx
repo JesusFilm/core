@@ -103,7 +103,7 @@ const blocks: Block[] = [
   }
 ]
 
-export function Custom404(): ReactElement {
+export function Custom500(): ReactElement {
   return (
     <ThemeProvider themeName={ThemeName.base} themeMode={ThemeMode.dark}>
       <Conductor blocks={transformer(blocks)} />
@@ -111,4 +111,4 @@ export function Custom404(): ReactElement {
   )
 }
 
-export default Custom404
+export default Custom500
