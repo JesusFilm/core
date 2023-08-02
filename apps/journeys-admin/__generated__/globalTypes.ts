@@ -322,6 +322,10 @@ export interface ImageBlockUpdateInput {
   height?: number | null;
 }
 
+export interface JourneyProfileUpdateInput {
+  lastActiveTeamId?: string | null;
+}
+
 export interface JourneyTemplateInput {
   template?: boolean | null;
 }

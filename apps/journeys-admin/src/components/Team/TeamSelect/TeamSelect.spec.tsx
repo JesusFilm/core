@@ -3,11 +3,16 @@ import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { ReactElement } from 'react'
 import userEvent from '@testing-library/user-event'
 import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
-import { GET_TEAMS, TeamProvider, useTeam } from '../TeamProvider'
-import { GetTeams } from '../../../../__generated__/GetTeams'
+import {
+  GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS,
+  TeamProvider,
+  useTeam
+} from '../TeamProvider'
+import { GetLastActiveTeamIdAndTeams } from '../../../../__generated__/GetLastActiveTeamIdAndTeams'
 import { OnboardingPanelContent } from '../../OnboardingPanelContent'
 import { AddJourneyButton } from '../../JourneyList/ActiveJourneyList/AddJourneyButton'
 import { onboardingJourneys } from '../../OnboardingPanelContent/data'
+import { UPDATE_LAST_ACTIVE_TEAM_ID } from './TeamSelect'
 import { TeamSelect } from '.'
 
 jest.mock('react-i18next', () => ({
@@ -20,16 +25,20 @@ jest.mock('react-i18next', () => ({
 }))
 
 describe('TeamSelect', () => {
-  const getMultipleTeamsMock: MockedResponse<GetTeams> = {
+  const getMultipleTeamsMock: MockedResponse<GetLastActiveTeamIdAndTeams> = {
     request: {
-      query: GET_TEAMS
+      query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
     },
     result: {
       data: {
         teams: [
           { id: 'teamId1', title: 'Team Title', __typename: 'Team' },
           { id: 'teamId2', title: 'Team Title2', __typename: 'Team' }
-        ]
+        ],
+        getJourneyProfile: {
+          __typename: 'JourneyProfile',
+          lastActiveTeamId: 'teamId1'
+        }
       }
     }
   }
@@ -39,9 +48,29 @@ describe('TeamSelect', () => {
     return <div data-testid="active-team-title">{activeTeam?.title}</div>
   }
 
-  it('shows list of teams', async () => {
+  it('shows and updates list of teams', async () => {
+    const updateLastActiveTeamIdMock = {
+      request: {
+        query: UPDATE_LAST_ACTIVE_TEAM_ID,
+        variables: {
+          input: {
+            lastActiveTeamId: 'teamId2'
+          }
+        }
+      },
+      result: {
+        data: {
+          journeyProfileUpdate: {
+            id: 'teamId2'
+          }
+        }
+      }
+    }
+
     const { getByRole, getByTestId, getByText } = render(
-      <MockedProvider mocks={[getMultipleTeamsMock]}>
+      <MockedProvider
+        mocks={[getMultipleTeamsMock, updateLastActiveTeamIdMock]}
+      >
         <TeamProvider>
           <TeamSelect />
           <TestComponent />
@@ -57,6 +86,24 @@ describe('TeamSelect', () => {
     expect(getByText('Shared With Me')).toBeInTheDocument()
     fireEvent.click(getByRole('option', { name: 'Team Title2' }))
     expect(getByTestId('active-team-title')).toHaveTextContent('Team Title2')
+  })
+
+  it('shows onboarding popover', async () => {
+    const { getByRole, queryByRole } = render(
+      <MockedProvider mocks={[getMultipleTeamsMock]}>
+        <TeamProvider>
+          <TeamSelect onboarding />
+          <TestComponent />
+        </TeamProvider>
+      </MockedProvider>
+    )
+    await waitFor(() =>
+      expect(getByRole('button', { name: 'Dismiss' })).toBeInTheDocument()
+    )
+    await userEvent.click(getByRole('button', { name: 'Dismiss' }))
+    await waitFor(() =>
+      expect(queryByRole('button', { name: 'Dismiss' })).not.toBeInTheDocument()
+    )
   })
 
   it('removes create journey buttons when on Shared With Me team', async () => {

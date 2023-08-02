@@ -6,9 +6,14 @@ import { ApolloError } from '@apollo/client'
 import { useSnackbar } from 'notistack'
 import { useTeamCreateMutation } from '../../../libs/useTeamCreateMutation'
 import { TeamCreateInput } from '../../../../__generated__/globalTypes'
+import { TeamCreate } from '../../../../__generated__/TeamCreate'
 
 interface TeamCreateFormProps {
-  onSubmit?: FormikConfig<TeamCreateInput>['onSubmit']
+  onSubmit?: (
+    values: TeamCreateInput,
+    formikHelpers: FormikHelpers<TeamCreateInput>,
+    data?: TeamCreate | null
+  ) => void
   children?: FormikConfig<TeamCreateInput>['children']
 }
 
@@ -42,6 +47,7 @@ export function TeamCreateForm({
           preventDuplicate: true
         }
       )
+      await onSubmit?.(input, helpers, data)
     } catch (error) {
       if (error instanceof ApolloError) {
         if (error.networkError != null) {
@@ -60,7 +66,6 @@ export function TeamCreateForm({
         preventDuplicate: true
       })
     }
-    await onSubmit?.(input, helpers)
   }
   const initialValues: TeamCreateInput = { title: '' }
 

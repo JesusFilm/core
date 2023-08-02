@@ -6,7 +6,6 @@ import {
   EditorState,
   useEditor
 } from '@core/journeys/ui/EditorProvider'
-
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import {
   ChatPlatform,
@@ -16,6 +15,7 @@ import {
 import { GetJourney_journey as Journey } from '../../../../../../../__generated__/GetJourney'
 import { Footer } from './Footer'
 import { Chat } from './Chat'
+import { HostSidePanel } from './HostSidePanel'
 
 jest.mock('@core/journeys/ui/EditorProvider', () => {
   const originalModule = jest.requireActual('@core/journeys/ui/EditorProvider')
@@ -147,9 +147,8 @@ describe('Footer', () => {
     })
     expect(dispatch).toHaveBeenCalledWith({
       type: 'SetDrawerPropsAction',
-      title: 'Hosted By',
       mobileOpen: true,
-      children: <div>Hosted by content component</div>
+      children: <HostSidePanel />
     })
   })
 

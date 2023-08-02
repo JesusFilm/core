@@ -9,11 +9,13 @@ import { TeamCreateForm } from '../TeamCreateForm'
 interface TeamCreateDialogProps {
   open: boolean
   onClose: () => void
+  onCreate: () => void
 }
 
 export function TeamCreateDialog({
   open,
-  onClose
+  onClose,
+  onCreate
 }: TeamCreateDialogProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
 
@@ -22,6 +24,7 @@ export function TeamCreateDialog({
     { resetForm }: FormikHelpers<FormikValues>
   ): Promise<void> {
     handleClose(resetForm)()
+    onCreate()
   }
 
   function handleClose(
@@ -36,13 +39,22 @@ export function TeamCreateDialog({
 
   return (
     <TeamCreateForm onSubmit={handleSubmit}>
-      {({ values, errors, handleChange, handleSubmit, resetForm }) => (
+      {({
+        values,
+        errors,
+        handleChange,
+        handleSubmit,
+        resetForm,
+        isSubmitting
+      }) => (
         <Dialog
           open={open}
           onClose={handleClose(resetForm)}
           dialogTitle={{ title: t('Create Team') }}
           dialogAction={{
-            onSubmit: handleSubmit,
+            onSubmit: () => {
+              if (!isSubmitting) handleSubmit()
+            },
             closeLabel: t('Cancel'),
             submitLabel: t('Create')
           }}
