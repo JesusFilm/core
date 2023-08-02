@@ -84,8 +84,8 @@ export function LocalDetails({
       videoVariantLanguageId: selectedLanguage.id,
       duration: time,
       source: VideoBlockSource.internal,
-      startAt: videoBlock?.startAt ?? 0,
-      endAt: videoBlock?.endAt ?? time
+      startAt: videoBlock?.videoId === id ? videoBlock?.startAt : 0,
+      endAt: videoBlock?.videoId === id ? videoBlock?.endAt : time
     })
   }
 

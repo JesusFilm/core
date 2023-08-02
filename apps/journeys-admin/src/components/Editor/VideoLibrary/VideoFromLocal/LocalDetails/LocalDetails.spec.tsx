@@ -1,6 +1,9 @@
 import { render, fireEvent, waitFor } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
+import { EditorProvider } from '@core/journeys/ui/EditorProvider'
+import { TreeBlock } from '@core/journeys/ui/block'
 import { VideoBlockSource } from '../../../../../../__generated__/globalTypes'
+import { GetJourney_journey_blocks_VideoBlock as VideoBlock } from '../../../../../../__generated__/GetJourney'
 import { GET_VIDEO, LocalDetails } from './LocalDetails'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
@@ -110,6 +113,40 @@ describe('LocalDetails', () => {
       duration: 144,
       endAt: 144,
       startAt: 0,
+      source: VideoBlockSource.internal,
+      videoId: '2_Acts7302-0-0',
+      videoVariantLanguageId: '529'
+    })
+  })
+
+  it('should keep startAt and endAt values if already exist on select click', async () => {
+    const onSelect = jest.fn()
+    const { getByRole } = render(
+      <MockedProvider mocks={mocks}>
+        <EditorProvider
+          initialState={{
+            selectedBlock: {
+              id: 'videoId',
+              videoId: '2_Acts7302-0-0',
+              source: VideoBlockSource.internal,
+              startAt: 5,
+              endAt: 41,
+              videoVariantLanguageId: '10241'
+            } as unknown as TreeBlock<VideoBlock>
+          }}
+        >
+          <LocalDetails id="2_Acts7302-0-0" open onSelect={onSelect} />
+        </EditorProvider>
+      </MockedProvider>
+    )
+    await waitFor(() =>
+      expect(getByRole('button', { name: 'Select' })).toBeEnabled()
+    )
+    fireEvent.click(getByRole('button', { name: 'Select' }))
+    expect(onSelect).toHaveBeenCalledWith({
+      duration: 144,
+      endAt: 41,
+      startAt: 5,
       source: VideoBlockSource.internal,
       videoId: '2_Acts7302-0-0',
       videoVariantLanguageId: '529'
