@@ -76,8 +76,14 @@ export function NavigationButton({
   // Issue using https://mui.com/material-ui/guides/right-to-left/#emotion-amp-styled-components for justifyContent
   const alignSx =
     variant === 'prev'
-      ? { justifyContent: 'flex-start' }
-      : { justifyContent: 'flex-end' }
+      ? {
+          justifyContent: 'flex-start',
+          ml: 'env(safe-area-inset-left)'
+        }
+      : {
+          justifyContent: 'flex-end',
+          mr: 'env(safe-area-inset-right)'
+        }
 
   const NavigationContainer =
     alignment === 'left' ? LeftNavigationContainer : RightNavigationContainer
