@@ -1,7 +1,6 @@
 import { ReactElement } from 'react'
 import { transformer } from '@core/journeys/ui/transformer'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
-import { NextSeo } from 'next-seo'
 import { Conductor } from '../src/components/Conductor'
 import { GetJourney_journey_blocks as Block } from '../__generated__/GetJourney'
 import {
@@ -106,12 +105,9 @@ const blocks: Block[] = [
 
 export function Custom500(): ReactElement {
   return (
-    <>
-      <NextSeo title="500" description="Journey not found." />
-      <ThemeProvider themeName={ThemeName.base} themeMode={ThemeMode.dark}>
-        <Conductor blocks={transformer(blocks)} />
-      </ThemeProvider>
-    </>
+    <ThemeProvider themeName={ThemeName.base} themeMode={ThemeMode.dark}>
+      <Conductor blocks={transformer(blocks)} />
+    </ThemeProvider>
   )
 }
 
