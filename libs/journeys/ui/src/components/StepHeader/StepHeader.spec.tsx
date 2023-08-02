@@ -31,4 +31,15 @@ describe('StepHeader', () => {
       'https://www.cru.org/us/en/about/privacy.html'
     )
   })
+
+  it('should have the journey creator privacy policy', () => {
+    const { getByText, getByRole } = render(<StepHeader />)
+    fireEvent.click(getByRole('button'))
+
+    expect(
+      getByText(
+        'All personal identifiable data registered on this website will be processed by journey creator: "{{ teamTitle }}".'
+      )
+    ).toBeInTheDocument()
+  })
 })

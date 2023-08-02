@@ -1,6 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { subject } from '@casl/ability'
 import {
+  UserInvite,
   UserTeamRole,
   UserTeam,
   UserTeamInvite,
@@ -22,7 +23,7 @@ describe('AppCaslFactory', () => {
     ability = await factory.createAbility(user)
   })
   describe('Host', () => {
-    it('allow manage when user is team mananger', () => {
+    it('allow manage when user is team manager', () => {
       expect(
         ability.can(
           Action.Manage,
@@ -37,7 +38,7 @@ describe('AppCaslFactory', () => {
     })
   })
   describe('Journey', () => {
-    it('allow create when user is team mananger', () => {
+    it('allow create when user is team manager', () => {
       expect(
         ability.can(
           Action.Create,
@@ -52,7 +53,7 @@ describe('AppCaslFactory', () => {
     })
   })
   describe('JourneyVisitor', () => {
-    it('should allow manage when visitor is user', () => {
+    it('allow manage when visitor is user', () => {
       expect(
         ability.can(
           Action.Manage,
@@ -66,12 +67,31 @@ describe('AppCaslFactory', () => {
     })
   })
   describe('Team', () => {
-    it('should allow create', () => {
+    it('allow create', () => {
       expect(ability.can(Action.Create, 'Team')).toEqual(true)
     })
   })
+  describe('UserInvite', () => {
+    it('allow manage when user is team manager', () => {
+      expect(
+        ability.can(
+          Action.Manage,
+          subject('UserInvite', {
+            removedAt: null,
+            acceptedAt: null,
+            id: 'userInviteId',
+            journey: {
+              team: {
+                userTeams: [{ userId: user.id, role: UserTeamRole.member }]
+              }
+            }
+          } as unknown as UserInvite)
+        )
+      ).toEqual(true)
+    })
+  })
   describe('UserTeam', () => {
-    it('should allow manage when user is team mananger', () => {
+    it('allow manage when user is team manager', () => {
       expect(
         ability.can(
           Action.Manage,
@@ -86,7 +106,7 @@ describe('AppCaslFactory', () => {
     })
   })
   describe('UserTeamInvite', () => {
-    it('should allow manage when user is team mananger', () => {
+    it('allow manage when user is team manager', () => {
       expect(
         ability.can(
           Action.Manage,
@@ -103,7 +123,7 @@ describe('AppCaslFactory', () => {
     })
   })
   describe('Visitor', () => {
-    it('should allow manage when visitor is user', () => {
+    it('allow manage when visitor is user', () => {
       expect(
         ability.can(
           Action.Manage,

@@ -18,7 +18,6 @@ const Template: Story = ({ ...args }) => {
       id={args.id}
       title={args.title}
       destination={ActiveJourneyEditContent.Canvas}
-      outlined={args.outlined ?? false}
       header={args.header ?? <ThumbUpOffAltIcon />}
       loading={args.loading ?? false}
     />
@@ -29,12 +28,6 @@ export const Default = Template.bind({})
 Default.args = {
   id: 'goals',
   title: 'goals'
-}
-
-export const Outlined = Template.bind({})
-Outlined.args = {
-  outlined: true,
-  title: 'Outlined'
 }
 
 export const Loading = Template.bind({})

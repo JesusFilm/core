@@ -31,6 +31,9 @@ export function TeamMenu(): ReactElement {
     <>
       <TeamCreateDialog
         open={teamCreateOpen}
+        onCreate={() => {
+          setTeamManageOpen(true)
+        }}
         onClose={() => {
           setTeamCreateOpen(false)
         }}
@@ -68,18 +71,19 @@ export function TeamMenu(): ReactElement {
         }}
       >
         <MenuItem
-          key="create-new-team"
-          label={t('Create New Team')}
-          icon={<AddIcon />}
+          disabled={activeTeam == null}
+          key="manage-team"
+          label={t('Members')}
+          icon={<GroupIcon />}
           onClick={() => {
-            setTeamCreateOpen(true)
+            setTeamManageOpen(true)
             setAnchorEl(null)
           }}
         />
         <MenuItem
           disabled={activeTeam == null}
           key="rename-team"
-          label={t('Rename Team')}
+          label={t('Rename')}
           icon={<EditIcon />}
           onClick={() => {
             setTeamUpdateOpen(true)
@@ -87,12 +91,11 @@ export function TeamMenu(): ReactElement {
           }}
         />
         <MenuItem
-          disabled={activeTeam == null}
-          key="manage-team"
-          label={t('Manage Team')}
-          icon={<GroupIcon />}
+          key="create-new-team"
+          label={t('New Team')}
+          icon={<AddIcon />}
           onClick={() => {
-            setTeamManageOpen(true)
+            setTeamCreateOpen(true)
             setAnchorEl(null)
           }}
         />

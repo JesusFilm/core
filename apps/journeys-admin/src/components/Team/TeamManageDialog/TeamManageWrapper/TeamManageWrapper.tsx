@@ -58,7 +58,9 @@ export function TeamManageWrapper({
         userTeamInviteList: (
           <UserTeamInviteList data={data} currentUserTeam={currentUserTeam} />
         ),
-        userTeamInviteForm: <UserTeamInviteForm emails={emails} />
+        userTeamInviteForm: (
+          <UserTeamInviteForm emails={emails} role={currentUserTeam?.role} />
+        )
       })}
     </>
   )

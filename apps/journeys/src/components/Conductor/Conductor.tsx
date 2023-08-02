@@ -70,6 +70,7 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
   const {
     setTreeBlocks,
     setShowNavigation,
+    setShowHeaderFooter,
     treeBlocks,
     blockHistory,
     showHeaderFooter
@@ -182,6 +183,7 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
             resizeObserver
             onSwiper={(swiper) => setSwiper(swiper)}
             allowTouchMove={false}
+            onSlideChange={() => setShowHeaderFooter(true)}
             sx={{
               '.swiper-pagination': {
                 display: showHeaderFooter ? 'block' : 'none'

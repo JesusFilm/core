@@ -10,7 +10,6 @@ interface NavigationCardProps {
   id: string
   title: string
   destination: ActiveJourneyEditContent
-  outlined?: boolean
   header?: ReactElement
   loading?: boolean
   testId?: string
@@ -19,7 +18,6 @@ interface NavigationCardProps {
 export function NavigationCard({
   id,
   title,
-  outlined = false,
   header,
   loading = false,
   testId
@@ -28,27 +26,24 @@ export function NavigationCard({
     <Box
       id={id}
       data-testid={testId}
-      height={150}
-      width={100}
+      height={164}
+      width={95}
       borderRadius={2}
-      py={1.5}
-      px={1.25}
-      mt={-0.5}
       sx={{
-        outline: (theme) =>
-          outlined
-            ? `2px solid ${theme.palette.primary.main} `
-            : '2px solid transparent'
+        top: -24,
+        p: 1,
+        pt: 7,
+        mb: -6,
+        position: 'relative'
       }}
     >
       <Card
         variant="outlined"
         sx={{
-          width: 90,
-          height: 135,
-          m: 0,
-          p: 0,
-          border: id === 'goals' ? 'none' : '1px solid grey.300',
+          height: '100%',
+          borderWidth: id === 'goals' ? 0 : 1,
+          borderColor: 'grey.300',
+          borderStyle: 'solid',
           backgroundColor:
             id === 'goals' ? 'background.default' : 'background.paper',
           '&:hover': { backgroundColor: id === 'goals' ? '#e3e3e3' : '#f8f8f8' }

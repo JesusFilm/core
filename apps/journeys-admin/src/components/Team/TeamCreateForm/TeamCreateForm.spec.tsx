@@ -6,9 +6,14 @@ import { InMemoryCache } from '@apollo/client'
 import { Form } from 'formik'
 import Button from '@mui/material/Button'
 import TextField from '@mui/material/TextField'
-import { TeamProvider, useTeam } from '../TeamProvider'
+import {
+  GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS,
+  TeamProvider,
+  useTeam
+} from '../TeamProvider'
 import { TeamCreate } from '../../../../__generated__/TeamCreate'
 import { TEAM_CREATE } from '../../../libs/useTeamCreateMutation/useTeamCreateMutation'
+import { GetLastActiveTeamIdAndTeams } from '../../../../__generated__/GetLastActiveTeamIdAndTeams'
 import { TeamCreateForm } from '.'
 
 describe('TeamCreateForm', () => {
@@ -42,6 +47,18 @@ describe('TeamCreateForm', () => {
     },
     error: new Error('Team Title already exists.')
   }
+  const getTeamsMock: MockedResponse<GetLastActiveTeamIdAndTeams> = {
+    request: { query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS },
+    result: {
+      data: {
+        teams: [{ id: 'teamId1', title: 'Team 1 Title', __typename: 'Team' }],
+        getJourneyProfile: {
+          __typename: 'JourneyProfile',
+          lastActiveTeamId: null
+        }
+      }
+    }
+  }
   function TestComponent(): ReactElement {
     const { activeTeam } = useTeam()
 
@@ -58,7 +75,7 @@ describe('TeamCreateForm', () => {
     })
     const handleSubmit = jest.fn()
     const { getByRole, getByTestId, getByText } = render(
-      <MockedProvider mocks={[teamCreateMock]} cache={cache}>
+      <MockedProvider mocks={[teamCreateMock, getTeamsMock]} cache={cache}>
         <SnackbarProvider>
           <TeamProvider>
             <TeamCreateForm onSubmit={handleSubmit}>
@@ -89,7 +106,10 @@ describe('TeamCreateForm', () => {
     await waitFor(() =>
       expect(handleSubmit).toHaveBeenCalledWith(
         { title: 'Team Title' },
-        expect.any(Object)
+        expect.any(Object),
+        {
+          teamCreate: { __typename: 'Team', id: 'teamId', title: 'Team Title' }
+        }
       )
     )
     expect(cache.extract()?.ROOT_QUERY?.teams).toEqual([

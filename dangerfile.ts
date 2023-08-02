@@ -33,7 +33,9 @@ export default async () => {
   }
 
   // check PR has well-formed title
-  const commitlintReport = await lintPrTitle(danger.github.pr.title)
+  const commitlintReport = await lintPrTitle(
+    `${danger.github.pr.title} #(${danger.github.pr.number})`
+  )
   if (!commitlintReport.valid) {
     fail('Please ensure your PR title matches commitlint convention.')
     let errors = ''

@@ -29,7 +29,7 @@ interface UserItem {
 
 interface UserListItemProps {
   listItem: UserJourney | UserInvite
-  currentUser: UserJourney
+  currentUser?: UserJourney
   journeyId: string
 }
 
@@ -73,21 +73,17 @@ export function UserListItem({
     }
   }, [role])
 
-  const { role: userRole } = currentUser
-
   const disableAction = useMemo((): boolean => {
-    switch (userRole) {
-      case UserJourneyRole.owner: {
-        return role === UserJourneyRole.owner
-      }
-      case UserJourneyRole.editor: {
-        return role !== UserJourneyRole.inviteRequested
-      }
-      default: {
-        return true
-      }
-    }
-  }, [userRole, role])
+    if (listItem.__typename === 'UserInvite') return false
+    if (listItem.user?.id === currentUser?.user?.id) return true
+    if (currentUser?.role === UserJourneyRole.owner) return false
+    if (
+      currentUser?.role === UserJourneyRole.editor &&
+      role === UserJourneyRole.inviteRequested
+    )
+      return false
+    return true
+  }, [currentUser, listItem, role])
 
   const handleClick = (event: MouseEvent<HTMLElement>): void => {
     setAnchorEl(event.currentTarget)
@@ -161,7 +157,7 @@ export function UserListItem({
               journeyId={journeyIdFromParent}
             />
           )}
-          {role === 'editor' && userRole === 'owner' && (
+          {role === 'editor' && currentUser?.role === 'owner' && (
             <PromoteUser id={id} onClick={handleClose} />
           )}
           {!disableAction && (
