@@ -1208,6 +1208,7 @@ export class Team {
     title: string;
     createdAt: DateTime;
     updatedAt: DateTime;
+    userTeamsConnection: UserTeamsConnection;
 }
 
 export class UserInvite {
@@ -1234,6 +1235,26 @@ export class UserTeam {
     role: UserTeamRole;
     createdAt: DateTime;
     updatedAt: DateTime;
+}
+
+export class UserTeamEdge {
+    __typename?: 'UserTeamEdge';
+    cursor: string;
+    node: UserTeam;
+}
+
+export class PageInfo {
+    __typename?: 'PageInfo';
+    hasNextPage: boolean;
+    startCursor?: Nullable<string>;
+    endCursor?: Nullable<string>;
+}
+
+export class UserTeamsConnection {
+    __typename?: 'UserTeamsConnection';
+    totalCount: number;
+    edges: UserTeamEdge[];
+    pageInfo: PageInfo;
 }
 
 export class UserTeamInvite {
@@ -1297,13 +1318,6 @@ export class VisitorEdge {
     __typename?: 'VisitorEdge';
     cursor: string;
     node: Visitor;
-}
-
-export class PageInfo {
-    __typename?: 'PageInfo';
-    hasNextPage: boolean;
-    startCursor?: Nullable<string>;
-    endCursor?: Nullable<string>;
 }
 
 export class VisitorsConnection {

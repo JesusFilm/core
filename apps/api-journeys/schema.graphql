@@ -1988,6 +1988,7 @@ type Team
   title: String!
   createdAt: DateTime!
   updatedAt: DateTime!
+  userTeamsConnection(first: Int, after: String): UserTeamsConnection!
 }
 
 input TeamCreateInput {
@@ -2054,6 +2055,39 @@ type UserTeam
   role: UserTeamRole!
   createdAt: DateTime!
   updatedAt: DateTime!
+}
+
+"""An edge in a connection."""
+type UserTeamEdge {
+  """A cursor for use in pagination."""
+  cursor: String!
+
+  """The item at the end of the edge."""
+  node: UserTeam!
+}
+
+"""Information about pagination in a connection."""
+type PageInfo {
+  """When paginating forwards, are there more items?"""
+  hasNextPage: Boolean!
+
+  """When paginating backwards, the cursor to continue."""
+  startCursor: String
+
+  """When paginating forwards, the cursor to continue."""
+  endCursor: String
+}
+
+"""A list of userTeams connected with a team."""
+type UserTeamsConnection {
+  """Count of user teams"""
+  totalCount: Int!
+
+  """A list of edges."""
+  edges: [UserTeamEdge!]!
+
+  """Information to aid in pagination."""
+  pageInfo: PageInfo!
 }
 
 input UserTeamUpdateInput {
@@ -2241,18 +2275,6 @@ type VisitorEdge {
 
   """The item at the end of the edge."""
   node: Visitor!
-}
-
-"""Information about pagination in a connection."""
-type PageInfo {
-  """When paginating forwards, are there more items?"""
-  hasNextPage: Boolean!
-
-  """When paginating backwards, the cursor to continue."""
-  startCursor: String
-
-  """When paginating forwards, the cursor to continue."""
-  endCursor: String
 }
 
 """A list of visitors connected with a team."""
