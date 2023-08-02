@@ -28,6 +28,7 @@ import { useHasNotch } from '../../libs/useHasNotch/useHasNotch'
 import 'swiper/swiper.min.css'
 import 'swiper/components/pagination/pagination.min.css'
 import { NavigationButton } from './NavigationButton'
+import { env } from 'process'
 
 SwiperCore.use([Pagination])
 
@@ -162,16 +163,25 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
     }
   }, [swiper, blockHistory])
 
-  const hasSideNotch = useHasNotch()
-
   return (
     <Div100vh style={{ overflow: 'hidden' }}>
       <Stack
         sx={{
           justifyContent: 'center',
           height: '100%',
-          background: theme.palette.grey[900]
+          background: theme.palette.grey[900],
+          pt: 'env(safe-area-inset-top)',
+          pl: 'env(safe-area-inset-left)',
+          pr: 'env(safe-area-inset-right)',
+          pb: 'env(safe-area-inset-bottom)'
         }}
+        data-testid="conductor-cover-box"
+        // sx={{
+        //   pt: 'env(safe-area-inset-top)',
+        //   pl: 'env(safe-area-inset-left)',
+        //   pr: 'env(safe-area-inset-right)',
+        //   pb: 'env(safe-area-inset-bottom)'
+        // }}
       >
         <Box sx={{ height: { xs: '100%', lg: 'unset' } }}>
           <StyledSwiperContainer
@@ -197,8 +207,8 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
               )
               return (
                 <SwiperSlide
-                  key={block.id}
                   onClick={() => setShowNavigation(true)}
+                  key={block.id}
                 >
                   <ThemeProvider {...theme} locale={locale} rtl={rtl} nested>
                     <Fade
@@ -209,7 +219,10 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
                       <Stack
                         justifyContent="center"
                         sx={{
-                          maxHeight: { xs: '100vh', lg: 'calc(100vh - 80px)' },
+                          maxHeight: {
+                            xs: '100vh',
+                            lg: 'calc(100vh - 80px)'
+                          },
                           height: {
                             xs: 'inherit',
                             lg: 'calc(54.25vw + 102px)'
@@ -218,10 +231,6 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
                         }}
                       >
                         {showHeaderFooter && <StepHeader />}
-                        <Typography variant="h1" sx={{ color: 'red' }}>
-                          {`HAS SIDE NOTCH: ${hasSideNotch}`}
-                          {/* {`HAS SIDE NOTCH: ${hasSideNotch ? 'TRUE' : 'FALSE'}`} */}
-                        </Typography>
                         <BlockRenderer block={block} />
                         <StepFooter
                           sx={{
