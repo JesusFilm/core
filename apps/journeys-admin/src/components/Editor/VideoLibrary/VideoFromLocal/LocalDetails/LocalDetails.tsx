@@ -11,12 +11,14 @@ import Chip from '@mui/material/Chip'
 import Skeleton from '@mui/material/Skeleton'
 import { LanguageOption } from '@core/shared/ui/LanguageAutocomplete'
 import { gql, useLazyQuery } from '@apollo/client'
+import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { GetVideo } from '../../../../../../__generated__/GetVideo'
 import { VideoBlockSource } from '../../../../../../__generated__/globalTypes'
 import { VideoLanguage } from '../../VideoLanguage'
 import 'video.js/dist/video-js.css'
 import type { VideoDetailsProps } from '../../VideoDetails/VideoDetails'
 import { VideoDescription } from '../../VideoDescription'
+import { GetJourney_journey_blocks_VideoBlock as VideoBlock } from '../../../../../../__generated__/GetJourney'
 
 export const GET_VIDEO = gql`
   query GetVideo($id: ID!, $languageId: ID!) {
@@ -56,6 +58,11 @@ export function LocalDetails({
   const videoRef = useRef<HTMLVideoElement>(null)
   const playerRef = useRef<Player>()
   const [playing, setPlaying] = useState(false)
+  const {
+    state: { selectedBlock }
+  } = useEditor()
+
+  const videoBlock = selectedBlock as VideoBlock
 
   const [openLanguage, setOpenLanguage] = useState(false)
   const [selectedLanguage, setSelectedLanguage] = useState<LanguageOption>({
@@ -77,8 +84,8 @@ export function LocalDetails({
       videoVariantLanguageId: selectedLanguage.id,
       duration: time,
       source: VideoBlockSource.internal,
-      startAt: 0,
-      endAt: time
+      startAt: videoBlock?.startAt ?? 0,
+      endAt: videoBlock?.endAt ?? time
     })
   }
 
