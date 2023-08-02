@@ -19,16 +19,13 @@ import { StepFooter } from '@core/journeys/ui/StepFooter'
 import Div100vh from 'react-div-100vh'
 import { v4 as uuidv4 } from 'uuid'
 import TagManager from 'react-gtm-module'
-import Typography from '@mui/material/Typography'
 import { JourneyViewEventCreate } from '../../../__generated__/JourneyViewEventCreate'
 import { StepFields } from '../../../__generated__/StepFields'
 import { VisitorUpdateInput } from '../../../__generated__/globalTypes'
-import { useHasNotch } from '../../libs/useHasNotch/useHasNotch'
 
 import 'swiper/swiper.min.css'
 import 'swiper/components/pagination/pagination.min.css'
 import { NavigationButton } from './NavigationButton'
-import { env } from 'process'
 
 SwiperCore.use([Pagination])
 
@@ -186,9 +183,7 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
             sx={{
               '.swiper-pagination': {
                 display: showHeaderFooter ? 'block' : 'none'
-              },
-              pl: 'env(safe-area-inset-left)',
-              pr: 'env(safe-area-inset-right)'
+              }
             }}
           >
             {treeBlocks.map((block) => {

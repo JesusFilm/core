@@ -72,7 +72,9 @@ export function ExpandedCover({
               margin: 'auto',
               width: '100%',
               maxWidth: { xs: 'calc(100% - 48px)', lg: 500 },
-              p: { xs: 4, lg: 'auto' }
+              py: { xs: 4 },
+              pl: { xs: 'calc(16px + env(safe-area-inset-left))' },
+              pr: { xs: 'calc(16px + env(safe-area-inset-right))' }
             }}
           >
             {children}
