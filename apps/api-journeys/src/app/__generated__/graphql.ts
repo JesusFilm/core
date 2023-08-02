@@ -1208,6 +1208,7 @@ export class Team {
     title: string;
     createdAt: DateTime;
     updatedAt: DateTime;
+    userTeams: UserTeam[];
 }
 
 export class UserInvite {
