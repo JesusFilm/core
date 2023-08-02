@@ -4,9 +4,10 @@
   "sourceRoot": "apps/docs/src",
   "targets": {
     "build": {
-      "executor": "@nx-plus/docusaurus:browser",
+      "executor": "@nrwl/workspace:run-commands",
       "options": {
-        "outputPath": "dist/apps/docs"
+        "command": "docusaurus build --out-dir ../../dist/apps/docs",
+        "cwd": "apps/docs"
       }
     },
     "deploy": {
@@ -40,9 +41,10 @@
       }
     },
     "serve": {
-      "executor": "@nx-plus/docusaurus:dev-server",
+      "executor": "@nrwl/workspace:run-commands",
       "options": {
-        "port": 3000
+        "command": "docusaurus start --port 3000",
+        "cwd": "apps/docs"
       }
     },
     "lint": {

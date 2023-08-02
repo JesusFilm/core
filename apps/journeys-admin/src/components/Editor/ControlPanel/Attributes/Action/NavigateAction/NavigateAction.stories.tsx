@@ -5,20 +5,25 @@ import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import Stack from '@mui/material/Stack'
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
+import type { TreeBlock } from '@core/journeys/ui/block'
 import { simpleComponentConfig } from '../../../../../../libs/storybook'
 
 import {
   ThemeName,
   ThemeMode
 } from '../../../../../../../__generated__/globalTypes'
-import { GetJourney_journey as Journey } from '../../../../../../../__generated__/GetJourney'
+import {
+  GetJourney_journey as Journey,
+  GetJourney_journey_blocks_StepBlock as StepBlock
+} from '../../../../../../../__generated__/GetJourney'
 import { steps } from '../data'
 import { NavigateAction } from '.'
 
 const NavigateNextStory = {
   ...simpleComponentConfig,
   component: NavigateAction,
-  title: 'Journeys-Admin/Editor/ControlPanel/Attributes/Action/ActionStates'
+  title:
+    'Journeys-Admin/Editor/ControlPanel/Attributes/Action/ActionStates/NavigateAction'
 }
 
 const journeyTheme = {
@@ -33,9 +38,7 @@ const journeyTheme = {
   }
 } as unknown as Journey
 
-export const Navigate: Story = () => {
-  const selectedStep = steps[3]
-
+const Template: Story = (selectedStep: TreeBlock<StepBlock>) => {
   return (
     <Stack spacing={10}>
       <Box>
@@ -55,6 +58,18 @@ export const Navigate: Story = () => {
       </Box>
     </Stack>
   )
+}
+
+export const Default = Template.bind({})
+Default.args = {
+  ...steps[0],
+  nextBlockId: null
+}
+
+export const SelectedNextStep = Template.bind({})
+SelectedNextStep.args = {
+  ...steps[0],
+  nextBlockId: steps[4].id
 }
 
 export default NavigateNextStory as Meta

@@ -42,7 +42,13 @@ export function NavigationButton({
 
   const onFirstStep = activeBlock === treeBlocks[0]
   const onLastStep = activeBlock === last(treeBlocks)
-  const canNavigate = variant === 'prev' ? !onFirstStep : !onLastStep
+  const navigateToAnotherBlock =
+    activeBlock?.nextBlockId != null &&
+    activeBlock?.nextBlockId !== activeBlock.id
+  const canNavigate =
+    variant === 'prev'
+      ? !onFirstStep
+      : !onLastStep || (onLastStep && navigateToAnotherBlock)
   const disabled = variant === 'next' && activeBlock?.locked
 
   // Handle fade navigation after 3 seconds inactive
@@ -94,7 +100,7 @@ export function NavigationButton({
           lg: 'calc(100% - 105px)'
         },
         alignItems: 'center',
-        pointerEvents: { xs: 'none', lg: 'all' }
+        pointerEvents: 'none'
       }}
     >
       <Fade

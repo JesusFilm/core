@@ -92,7 +92,6 @@ export function AccessDialog({
 
     const invites =
       userInviteData?.userInvites != null ? userInviteData.userInvites : []
-
     invites.forEach((invite) => {
       if (invite.removedAt == null && invite.acceptedAt == null) {
         emails.push(invite.email)

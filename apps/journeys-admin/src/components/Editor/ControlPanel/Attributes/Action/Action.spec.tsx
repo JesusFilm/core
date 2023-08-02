@@ -11,6 +11,15 @@ import {
 import { Action, NAVIGATE_ACTION_UPDATE, ACTION_DELETE } from './Action'
 import { steps } from './data'
 
+jest.mock('react-i18next', () => ({
+  __esModule: true,
+  useTranslation: () => {
+    return {
+      t: (str: string) => str
+    }
+  }
+}))
+
 describe('Action', () => {
   const selectedStep = steps[1]
   const selectedBlock = selectedStep?.children[0].children[3]
@@ -25,7 +34,10 @@ describe('Action', () => {
   })
 
   it('enables Next Step option if there is a next step', async () => {
-    const selectedStep = steps[1]
+    const selectedStep = {
+      ...steps[1],
+      nextBlockId: null
+    }
     const { getByRole } = render(
       <MockedProvider>
         <EditorProvider initialState={{ selectedStep, steps }}>
