@@ -32,7 +32,14 @@ const teams: Team[] = [
   {
     __typename: 'Team',
     id: 'teamId1',
-    title: 'my first team'
+    title: 'my first team',
+    userTeams: {
+      user: {
+        firstName: 'john',
+        lastName
+        imageUrl
+      }
+    }
   },
   {
     __typename: 'Team',

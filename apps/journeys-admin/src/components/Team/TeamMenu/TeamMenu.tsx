@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next'
-import { ReactElement, useState } from 'react'
+import { ReactElement, useMemo, useState } from 'react'
 import AddIcon from '@mui/icons-material/Add'
 import EditIcon from '@mui/icons-material/Edit'
 import IconButton from '@mui/material/IconButton'
@@ -11,10 +11,12 @@ import { TeamCreateDialog } from '../TeamCreateDialog'
 import { TeamUpdateDialog } from '../TeamUpdateDialog'
 import { useTeam } from '../TeamProvider'
 import { TeamManageDialog } from '../TeamManageDialog'
+import { TeamAvatars } from '../TeamAvatars'
+import { GetLastActiveTeamIdAndTeams_teams as ActiveTeamUserTeams } from '../../../../__generated__/GetLastActiveTeamIdAndTeams'
 
 export function TeamMenu(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-  const { activeTeam } = useTeam()
+  const { activeTeam, query } = useTeam()
   const [teamCreateOpen, setTeamCreateOpen] = useState(false)
   const [teamUpdateOpen, setTeamUpdateOpen] = useState(false)
   const [teamManageOpen, setTeamManageOpen] = useState(false)
@@ -50,6 +52,14 @@ export function TeamMenu(): ReactElement {
           setTeamManageOpen(false)
         }}
       />
+
+      {activeTeam != null && (
+        <TeamAvatars
+          onClick={() => setTeamManageOpen(true)}
+          userTeams={activeTeam.userTeams}
+          size="large"
+        />
+      )}
       <IconButton edge="end" color="inherit" onClick={handleShowMenu}>
         <MoreVert />
       </IconButton>

@@ -3,16 +3,19 @@ import MuiAvatar from '@mui/material/Avatar'
 import Badge from '@mui/material/Badge'
 import Tooltip from '@mui/material/Tooltip'
 import compact from 'lodash/compact'
+import { SxProps } from '@mui/material/styles'
 import { GetAdminJourneys_journeys_userJourneys_user as User } from '../../../__generated__/GetAdminJourneys'
 
 export interface AvatarProps {
   user: User
   notification?: boolean
+  sx?: SxProps
 }
 
 export function Avatar({
   user,
-  notification = false
+  notification = false,
+  sx
 }: AvatarProps): ReactElement {
   const displayName = compact([user.firstName, user.lastName]).join(' ')
 
@@ -35,6 +38,7 @@ export function Avatar({
           src={user.imageUrl ?? undefined}
           data-testid="avatar"
           sx={{
+            ...sx,
             filter: notification
               ? 'grayscale(80%) brightness(1.2) sepia(0.1)'
               : ''
