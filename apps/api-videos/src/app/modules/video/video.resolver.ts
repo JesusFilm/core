@@ -169,7 +169,8 @@ export class VideoResolver {
     @Parent() video,
     @Args('languageId') languageId?: string
   ): Promise<VideoVariant | null> {
-    return info.variableValues.idType !== IdType.databaseId
+    return info.variableValues.idType !== IdType.databaseId &&
+      info.variableValues.id != null
       ? await this.prismaService.videoVariant.findUnique({
           where: {
             slug: info.variableValues.id as string
