@@ -74,6 +74,6 @@ export const journeyAcl: AppAclFn = ({ can, user }: AppAclParameters) => {
     // publisher can manage template
     can(Action.Manage, 'Journey', { template: true })
     // publisher can convert a journey to a template
-    can(Action.Manage, 'Journey', 'template')
+    can(Action.Create, 'Journey', 'template')
   }
 }
