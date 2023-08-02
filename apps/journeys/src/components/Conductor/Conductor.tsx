@@ -19,9 +19,11 @@ import { StepFooter } from '@core/journeys/ui/StepFooter'
 import Div100vh from 'react-div-100vh'
 import { v4 as uuidv4 } from 'uuid'
 import TagManager from 'react-gtm-module'
+import Typography from '@mui/material/Typography'
 import { JourneyViewEventCreate } from '../../../__generated__/JourneyViewEventCreate'
 import { StepFields } from '../../../__generated__/StepFields'
 import { VisitorUpdateInput } from '../../../__generated__/globalTypes'
+import { useHasNotch } from '../../libs/useHasNotch/useHasNotch'
 
 import 'swiper/swiper.min.css'
 import 'swiper/components/pagination/pagination.min.css'
@@ -159,6 +161,8 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
     }
   }, [swiper, blockHistory])
 
+  const hasSideNotch = useHasNotch()
+
   return (
     <Div100vh style={{ overflow: 'hidden' }}>
       <Stack
@@ -212,6 +216,9 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
                         }}
                       >
                         {showHeaderFooter && <StepHeader />}
+                        <Typography variant="h1" sx={{ color: 'red' }}>
+                          {`HAS SIDE NOTCH: ${hasSideNotch ? 'TRUE' : 'FALSE'}`}
+                        </Typography>
                         <BlockRenderer block={block} />
                         <StepFooter
                           sx={{
