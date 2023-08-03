@@ -7,7 +7,10 @@ import Typography from '@mui/material/Typography'
 import { Dialog } from '@core/shared/ui/Dialog'
 import { useTranslation } from 'react-i18next'
 import { useSnackbar } from 'notistack'
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import {
+  JourneyProvider,
+  RenderLocation
+} from '@core/journeys/ui/JourneyProvider'
 import { JourneyFields } from '../../../../__generated__/JourneyFields'
 import { JourneyCard } from '../JourneyCard'
 import { sortJourneys } from '../JourneySort/utils/sortJourneys'
@@ -151,7 +154,7 @@ export function TrashedJourneyList({
                 key={journey.id}
                 value={{
                   journey: journey as unknown as JourneyFields,
-                  admin: true
+                  renderLocation: RenderLocation.Admin
                 }}
               >
                 <JourneyCard

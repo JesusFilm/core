@@ -1,7 +1,10 @@
 import { ReactElement, ReactNode } from 'react'
 import { transformer } from '@core/journeys/ui/transformer'
 import type { TreeBlock } from '@core/journeys/ui/block'
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import {
+  JourneyProvider,
+  RenderLocation
+} from '@core/journeys/ui/JourneyProvider'
 import {
   ActiveJourneyEditContent,
   EditorProvider
@@ -39,7 +42,7 @@ export function Editor({
   // }, [journey, setValue])
 
   return (
-    <JourneyProvider value={{ journey, admin: true }}>
+    <JourneyProvider value={{ journey, renderLocation: RenderLocation.Admin }}>
       <SocialProvider>
         <EditorProvider
           initialState={{

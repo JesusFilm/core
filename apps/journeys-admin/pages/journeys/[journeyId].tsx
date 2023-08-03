@@ -1,7 +1,10 @@
 import { ReactElement } from 'react'
 import { gql, useQuery } from '@apollo/client'
 import { JOURNEY_FIELDS } from '@core/journeys/ui/JourneyProvider/journeyFields'
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import {
+  JourneyProvider,
+  RenderLocation
+} from '@core/journeys/ui/JourneyProvider'
 import { useRouter } from 'next/router'
 import {
   AuthAction,
@@ -58,7 +61,10 @@ function JourneyIdPage(): ReactElement {
             description={data?.journey?.description ?? undefined}
           />
           <JourneyProvider
-            value={{ journey: data?.journey ?? undefined, admin: true }}
+            value={{
+              journey: data?.journey ?? undefined,
+              renderLocation: RenderLocation.Admin
+            }}
           >
             <PageWrapper
               title={t('Journey Details')}
