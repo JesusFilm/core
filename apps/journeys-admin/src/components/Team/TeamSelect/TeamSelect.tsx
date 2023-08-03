@@ -14,6 +14,7 @@ import Popover from '@mui/material/Popover'
 import Typography from '@mui/material/Typography'
 import { useTeam } from '../TeamProvider'
 import { UpdateLastActiveTeamId } from '../../../../__generated__/UpdateLastActiveTeamId'
+import { TeamAvatars } from '../TeamAvatars'
 
 export const UPDATE_LAST_ACTIVE_TEAM_ID = gql`
   mutation UpdateLastActiveTeamId($input: JourneyProfileUpdateInput!) {
@@ -67,6 +68,7 @@ export function TeamSelect({ onboarding }: TeamSelectProps): ReactElement {
             displayEmpty
             value={activeTeam?.id ?? ''}
             onChange={handleChange}
+            renderValue={() => activeTeam?.title ?? 'Shared With Me'}
             autoWidth
             sx={{
               '> .MuiSelect-select': {
@@ -93,12 +95,16 @@ export function TeamSelect({ onboarding }: TeamSelectProps): ReactElement {
                 key={team.id}
                 value={team.id}
                 sx={{
-                  display: 'block',
+                  minWidth: '300px',
+                  display: 'flex',
+                  flexDirection: 'row',
+                  justifyContent: 'space-between',
                   whiteSpace: 'normal',
                   wordWrap: 'break-word'
                 }}
               >
-                {team.title}
+                <Typography>{team.title}</Typography>
+                <TeamAvatars userTeams={team.userTeams}></TeamAvatars>
               </MenuItem>
             ))}
             <Divider />

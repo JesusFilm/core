@@ -26,7 +26,7 @@ export function TeamAvatars({
       }}
     >
       <AvatarGroup
-        total={userTeams.length + 1}
+        total={onClick != null ? userTeams.length + 1 : userTeams.length}
         spacing={8}
         sx={{
           '.MuiAvatar-root': {
