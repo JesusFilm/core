@@ -135,7 +135,7 @@ describe('VideoService', () => {
       variants: {
         some: {
           languageId: undefined,
-          subtitle: { has: { in: ['529'], path: ['languageId'] } }
+          subtitle: { some: { languageId: { in: ['529'] } } }
         }
       }
     })

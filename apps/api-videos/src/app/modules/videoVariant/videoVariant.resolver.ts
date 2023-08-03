@@ -1,4 +1,4 @@
-import { Resolver, ResolveField, Parent } from '@nestjs/graphql'
+import { Resolver, ResolveField, Parent, Args } from '@nestjs/graphql'
 import compact from 'lodash/compact'
 import { PrismaService } from '../../lib/prisma.service'
 
@@ -22,6 +22,21 @@ export class VideoVariantResolver {
   async downloads(@Parent() videoVariant): Promise<unknown[]> {
     return await this.prismaService.videoVariantDownload.findMany({
       where: { videoVariantId: videoVariant.id }
+    })
+  }
+
+  @ResolveField('subtitle')
+  async subtitle(
+    @Parent() videoVariant,
+    @Args('languageId') languageId?: string,
+    @Args('primary') primary?: boolean
+  ): Promise<unknown[]> {
+    return await this.prismaService.videoVariantSubtitle.findMany({
+      where: {
+        videoVariantId: videoVariant.id,
+        languageId: languageId ?? undefined,
+        primary: primary ?? undefined
+      }
     })
   }
 }

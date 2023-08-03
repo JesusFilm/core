@@ -218,11 +218,13 @@ describe('arclight', () => {
       hls: 'hlsUrl',
       subtitle: [
         {
+          videoVariantId: 'refId',
           languageId: '529',
           primary: true,
           value: 'subtitleUrl529'
         },
         {
+          videoVariantId: 'refId',
           languageId: '2048',
           primary: false,
           value: 'subtitleUrl2048'
@@ -403,11 +405,13 @@ describe('arclight', () => {
           hls: 'hlsUrl',
           subtitle: [
             {
+              videoVariantId: 'refId',
               languageId: '529',
               primary: true,
               value: 'subtitleUrl529'
             },
             {
+              videoVariantId: 'refId',
               languageId: '2048',
               primary: false,
               value: 'subtitleUrl2048'
@@ -735,8 +739,14 @@ describe('arclight', () => {
               languageId: '529',
               slug: 'title/english',
               subtitle: [
-                { languageId: '529', primary: true, value: 'subtitleUrl529' },
                 {
+                  videoVariantId: 'refId',
+                  languageId: '529',
+                  primary: true,
+                  value: 'subtitleUrl529'
+                },
+                {
+                  videoVariantId: 'refId',
                   languageId: '2048',
                   primary: false,
                   value: 'subtitleUrl2048'

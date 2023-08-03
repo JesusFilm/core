@@ -43,7 +43,7 @@ export class VideoService {
               some: {
                 subtitle:
                   subtitleLanguageIds != null
-                    ? { has: { path: ['languageId'], in: subtitleLanguageIds } }
+                    ? { some: { languageId: { in: subtitleLanguageIds } } }
                     : undefined,
                 languageId:
                   availableVariantLanguageIds != null

@@ -74,11 +74,23 @@ model VideoVariant {
   downloads  VideoVariantDownload[]
   duration   Int?
   languageId String
-  subtitle   Json[]
+  subtitle   VideoVariantSubtitle[]
   slug       String
   video      Video?                 @relation(fields: [videoId], references: [id], onDelete: Cascade)
   videoId    String?
 
   @@unique([languageId, videoId])
   @@unique([slug])
+}
+
+model VideoVariantSubtitle {
+  id             String  @id @default(uuid())
+  value          String
+  primary        Boolean
+  languageId     String
+  videoVariantId String
+
+  variant VideoVariant @relation(fields: [videoVariantId], references: [id], onDelete: Cascade)
+
+  @@unique([videoVariantId, languageId])
 }
