@@ -1,6 +1,9 @@
 import { render, fireEvent } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import {
+  JourneyProvider,
+  RenderLocation
+} from '@core/journeys/ui/JourneyProvider'
 import { SnackbarProvider } from 'notistack'
 import { defaultJourney } from '../data'
 import { TitleDescription } from './TitleDescription'
@@ -11,7 +14,12 @@ describe('TitleDescription', () => {
       const { getByText, queryByTestId } = render(
         <MockedProvider>
           <SnackbarProvider>
-            <JourneyProvider value={{ journey: defaultJourney, admin: true }}>
+            <JourneyProvider
+              value={{
+                journey: defaultJourney,
+                renderLocation: RenderLocation.Admin
+              }}
+            >
               <TitleDescription />
             </JourneyProvider>
           </SnackbarProvider>
@@ -33,7 +41,12 @@ describe('TitleDescription', () => {
       const { getByText, getByTestId } = render(
         <MockedProvider>
           <SnackbarProvider>
-            <JourneyProvider value={{ journey: template, admin: true }}>
+            <JourneyProvider
+              value={{
+                journey: template,
+                renderLocation: RenderLocation.Admin
+              }}
+            >
               <TitleDescription isPublisher />
             </JourneyProvider>
           </SnackbarProvider>
@@ -49,7 +62,12 @@ describe('TitleDescription', () => {
       const { getByRole, getByText } = render(
         <MockedProvider>
           <SnackbarProvider>
-            <JourneyProvider value={{ journey: template, admin: true }}>
+            <JourneyProvider
+              value={{
+                journey: template,
+                renderLocation: RenderLocation.Admin
+              }}
+            >
               <TitleDescription isPublisher />
             </JourneyProvider>
           </SnackbarProvider>

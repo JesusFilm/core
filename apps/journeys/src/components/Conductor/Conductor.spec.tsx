@@ -308,7 +308,10 @@ describe('Conductor', () => {
         <MockedProvider mocks={[]}>
           <SnackbarProvider>
             <JourneyProvider
-              value={{ journey: { ...defaultJourney, language: rtlLanguage } }}
+              value={{
+                journey: { ...defaultJourney, language: rtlLanguage },
+                renderLocation: RenderLocation.Journey
+              }}
             >
               <Conductor blocks={basic} />
             </JourneyProvider>
