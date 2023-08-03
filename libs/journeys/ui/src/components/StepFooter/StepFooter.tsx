@@ -4,7 +4,7 @@ import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { SxProps } from '@mui/material/styles'
 import { useFlags } from '@core/shared/ui/FlagsProvider'
-import { useJourney } from '../../libs/JourneyProvider'
+import { RenderLocation, useJourney } from '../../libs/JourneyProvider'
 import { getJourneyRTL } from '../../libs/rtl'
 import { HostTitleLocation } from './HostTitleLocation'
 import { HostAvatars } from './HostAvatars'
@@ -22,16 +22,17 @@ export function StepFooter({
   sx,
   title
 }: StepFooterProps): ReactElement {
-  const { journey, admin } = useJourney()
+  const { journey, renderLocation } = useJourney()
   const { rtl } = getJourneyRTL(journey)
   const { editableStepFooter } = useFlags()
   const hasAvatar =
-    (admin && editableStepFooter) ||
+    (renderLocation === RenderLocation.Admin && editableStepFooter) ||
     journey?.host?.src1 != null ||
     journey?.host?.src2 != null
 
   const hasChatWidget =
-    admin || (journey?.chatButtons != null && journey?.chatButtons.length > 0)
+    renderLocation === RenderLocation.Admin ||
+    (journey?.chatButtons != null && journey?.chatButtons.length > 0)
 
   return (
     <Box

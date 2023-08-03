@@ -15,7 +15,7 @@ import Tiktok from '@core/shared/ui/icons/Tiktok'
 import Plus2 from '@core/shared/ui/icons/Plus2'
 import { gql, useMutation } from '@apollo/client'
 import { useTheme } from '@mui/material/styles'
-import { useJourney } from '../../../libs/JourneyProvider'
+import { RenderLocation, useJourney } from '../../../libs/JourneyProvider'
 import { useBlocks } from '../../../libs/block'
 import { JourneyFields_chatButtons as ChatButton } from '../../../libs/JourneyProvider/__generated__/JourneyFields'
 import { ChatPlatform } from '../../../../__generated__/globalTypes'
@@ -36,7 +36,7 @@ interface ChatIconProps {
 }
 
 export function ChatButtons(): ReactElement {
-  const { admin, journey } = useJourney()
+  const { renderLocation, journey } = useJourney()
   const { blockHistory } = useBlocks()
   const activeBlock = blockHistory[blockHistory.length - 1]
   const theme = useTheme()
@@ -60,7 +60,11 @@ export function ChatButtons(): ReactElement {
   }
 
   const handleClick = (chatButton: ChatButton): void => {
-    if (!admin && chatButton.link != null) {
+    if (
+      (renderLocation === RenderLocation.Journey ||
+        renderLocation === RenderLocation.Embed) &&
+      chatButton.link != null
+    ) {
       window.open(chatButton.link, '_blank')
       void chatButtonEventCreate({
         variables: {
@@ -119,7 +123,7 @@ export function ChatButtons(): ReactElement {
           />
         </IconButton>
       ))}
-      {admin && chatButtons?.length === 0 && (
+      {renderLocation === RenderLocation.Admin && chatButtons?.length === 0 && (
         <IconButton
           key="default"
           disabled

@@ -2,11 +2,11 @@ import { ReactElement, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import ShareIcon from '@core/shared/ui/icons/Share'
 import { StyledFooterButton } from '../StyledFooterButton'
-import { useJourney } from '../../../../libs/JourneyProvider'
+import { RenderLocation, useJourney } from '../../../../libs/JourneyProvider'
 import { ShareDialog } from './ShareDialog'
 
 export function ShareButton(): ReactElement {
-  const { journey, admin } = useJourney()
+  const { journey, renderLocation } = useJourney()
   const { t } = useTranslation('libs-journeys-ui')
   const [shareDialogOpen, setShareDialogOpen] = useState(false)
 
@@ -16,7 +16,7 @@ export function ShareButton(): ReactElement {
       : undefined
 
   async function handleShare(): Promise<void> {
-    if (admin || url == null) return
+    if (renderLocation === RenderLocation.Admin || url == null) return
     if (navigator.share == null) return setShareDialogOpen(true)
 
     const shareDetails = {

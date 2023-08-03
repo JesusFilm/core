@@ -8,7 +8,7 @@ import TagManager from 'react-gtm-module'
 import { useTranslation } from 'react-i18next'
 import { handleAction } from '../../libs/action'
 import type { TreeBlock } from '../../libs/block'
-import { useJourney } from '../../libs/JourneyProvider'
+import { RenderLocation, useJourney } from '../../libs/JourneyProvider'
 import { useBlocks } from '../../libs/block'
 import { getStepHeading } from '../../libs/getStepHeading'
 import { ButtonVariant } from '../../../__generated__/globalTypes'
@@ -59,7 +59,7 @@ export function Button({
     CHAT_OPEN_EVENT_CREATE
   )
 
-  const { admin } = useJourney()
+  const { renderLocation } = useJourney()
   const { treeBlocks, blockHistory } = useBlocks()
   const { t } = useTranslation('libs-journeys-ui')
   const activeBlock = blockHistory[blockHistory.length - 1]
@@ -84,7 +84,10 @@ export function Button({
   )
 
   function createClickEvent(): void {
-    if (!admin) {
+    if (
+      renderLocation === RenderLocation.Journey ||
+      renderLocation === RenderLocation.Embed
+    ) {
       const id = uuidv4()
       void buttonClickEventCreate({
         variables: {
@@ -111,7 +114,10 @@ export function Button({
   }
 
   function createChatEvent(): void {
-    if (!admin) {
+    if (
+      renderLocation === RenderLocation.Journey ||
+      renderLocation === RenderLocation.Embed
+    ) {
       const id = uuidv4()
       void chatOpenEventCreate({
         variables: {
