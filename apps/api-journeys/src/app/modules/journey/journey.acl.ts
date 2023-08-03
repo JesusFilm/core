@@ -6,8 +6,6 @@ import {
 import { Action, AppAclFn, AppAclParameters } from '../../lib/casl/caslFactory'
 
 export const journeyAcl: AppAclFn = ({ can, user }: AppAclParameters) => {
-  // TODO: remove when teams is released
-  can(Action.Create, 'Journey', { teamId: 'jfp-team' })
   // create journey as a team member
   can(Action.Create, 'Journey', {
     team: {
@@ -71,6 +69,8 @@ export const journeyAcl: AppAclFn = ({ can, user }: AppAclParameters) => {
     status: JourneyStatus.published
   })
   if (user.roles?.includes('publisher') === true) {
+    can(Action.Create, 'Journey', { teamId: 'jfp-team' })
+
     // publisher can manage template
     can(Action.Manage, 'Journey', { template: true })
     // publisher can convert a journey to a template
