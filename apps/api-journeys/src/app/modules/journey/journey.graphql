@@ -21,6 +21,7 @@ type Journey @key(fields: "id") {
   seoDescription: String
   template: Boolean
   host: Host
+  team: Team
 }
 
 enum IdType {
@@ -39,6 +40,7 @@ enum JourneyStatus {
 input JourneysFilter {
   featured: Boolean
   template: Boolean
+  ids: [ID!]
 }
 
 enum JourneysReportType {

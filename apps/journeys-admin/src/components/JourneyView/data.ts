@@ -43,6 +43,7 @@ export const defaultJourney: Journey = {
   seoDescription: null,
   chatButtons: [],
   host: null,
+  team: null,
   userJourneys: [
     {
       id: 'userJourneyId1',

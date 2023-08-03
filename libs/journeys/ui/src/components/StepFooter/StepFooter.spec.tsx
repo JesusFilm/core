@@ -55,7 +55,8 @@ describe('StepFooter', () => {
       location: 'Florida, USA',
       src1: 'https://images.unsplash.com/photo-1558704164-ab7a0016c1f3?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80',
       src2: null
-    }
+    },
+    team: null
   }
 
   it('should display host avatar, name and location', () => {
@@ -147,5 +148,21 @@ describe('StepFooter', () => {
 
     expect(onFooterClick).toBeCalledTimes(1)
     expect(getByTestId('Plus2Icon')).toBeInTheDocument()
+  })
+
+  it('should render custom title', () => {
+    const { getByText } = render(
+      <MockedProvider>
+        <SnackbarProvider>
+          <JourneyProvider value={{ admin: true, journey: undefined }}>
+            <StepFooter
+              onFooterClick={jest.fn()}
+              title="discovery journey title"
+            />
+          </JourneyProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+    expect(getByText('discovery journey title')).toBeInTheDocument()
   })
 })

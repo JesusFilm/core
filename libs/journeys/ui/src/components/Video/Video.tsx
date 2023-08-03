@@ -70,7 +70,9 @@ export function Video({
   const theme = useTheme()
   const videoRef = useRef<HTMLVideoElement>(null)
   const [player, setPlayer] = useState<Player>()
-  const { activeBlock } = useBlocks()
+  const { blockHistory } = useBlocks()
+  const activeBlock = blockHistory[blockHistory.length - 1]
+
   const {
     state: { selectedBlock }
   } = useEditor()
@@ -379,7 +381,13 @@ export function Video({
           src={videoImage}
           alt="video image"
           layout="fill"
-          objectFit="cover"
+          objectFit={videoFit}
+          style={{
+            transform:
+              objectFit === VideoBlockObjectFit.zoomed
+                ? 'scale(1.33)'
+                : undefined
+          }}
         />
       )}
       {/* Lazy load higher res poster */}

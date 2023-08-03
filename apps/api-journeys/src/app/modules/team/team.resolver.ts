@@ -1,6 +1,13 @@
-import { Resolver, Query, Mutation, Args } from '@nestjs/graphql'
+import {
+  Resolver,
+  Query,
+  Mutation,
+  Args,
+  ResolveField,
+  Parent
+} from '@nestjs/graphql'
 import { UseGuards } from '@nestjs/common'
-import { Team, Prisma } from '.prisma/api-journeys-client'
+import { Team, Prisma, UserTeam } from '.prisma/api-journeys-client'
 import { subject } from '@casl/ability'
 import { GraphQLError } from 'graphql'
 import { CurrentUserId } from '@core/nest/decorators/CurrentUserId'
@@ -23,7 +30,7 @@ export class TeamResolver {
     @CaslAccessible('Team') accessibleTeams: Prisma.TeamWhereInput
   ): Promise<Team[]> {
     return await this.prismaService.team.findMany({
-      where: accessibleTeams
+      where: { AND: [accessibleTeams] }
     })
   }
 
@@ -82,5 +89,20 @@ export class TeamResolver {
     throw new GraphQLError('user is not allowed to update team', {
       extensions: { code: 'FORBIDDEN' }
     })
+  }
+
+  @ResolveField()
+  async userTeams(
+    @Parent() team: Team & { userTeams?: UserTeam[] }
+  ): Promise<UserTeam[]> {
+    if (team.userTeams != null) return team.userTeams
+
+    return (
+      (await this.prismaService.team
+        .findUnique({
+          where: { id: team.id }
+        })
+        .userTeams()) ?? []
+    )
   }
 }
