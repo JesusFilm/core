@@ -12,7 +12,7 @@ export function getErrorJourneyBlocks(errorCode: '404' | '500'): Block[] {
   return [
     {
       __typename: 'StepBlock',
-      id: 'stepBlock1.id',
+      id: `${errorCode}-stepBlock-id`,
       locked: false,
       nextBlockId: null,
       parentBlockId: null,
@@ -21,10 +21,10 @@ export function getErrorJourneyBlocks(errorCode: '404' | '500'): Block[] {
     {
       __typename: 'CardBlock',
       backgroundColor: '#30313D',
-      coverBlockId: 'imageBlock1.id',
+      coverBlockId: `${errorCode}-imageBlock-id`,
       fullscreen: false,
-      id: 'cardBlock1.id',
-      parentBlockId: 'stepBlock1.id',
+      id: `${errorCode}-cardBlock-id`,
+      parentBlockId: `${errorCode}-stepBlock-id`,
       parentOrder: 0,
       themeMode: null,
       themeName: null
@@ -34,8 +34,8 @@ export function getErrorJourneyBlocks(errorCode: '404' | '500'): Block[] {
       alt: `error-${errorCode}-image`,
       blurhash: 'U05OKJ0300sq5O?Y~VM|0M-.%1%K~o9HEKxu',
       height: 2230,
-      id: 'imageBlock1.id',
-      parentBlockId: 'cardBlock1.id',
+      id: `${errorCode}-imageBlock-id`,
+      parentBlockId: `${errorCode}-cardBlock-id`,
       parentOrder: null,
       src: 'https://images.unsplash.com/photo-1522030865324-4062412a2023?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=3244&q=80',
       width: 3244
@@ -45,8 +45,8 @@ export function getErrorJourneyBlocks(errorCode: '404' | '500'): Block[] {
       align: TypographyAlign.center,
       color: null,
       content: errorCode,
-      id: 'typog1.id',
-      parentBlockId: 'cardBlock1.id',
+      id: `${errorCode}-typog-id`,
+      parentBlockId: `${errorCode}-cardBlock-id`,
       parentOrder: 0,
       variant: TypographyVariant.h2
     },
@@ -54,9 +54,12 @@ export function getErrorJourneyBlocks(errorCode: '404' | '500'): Block[] {
       __typename: 'TypographyBlock',
       align: TypographyAlign.center,
       color: null,
-      content: 'This journey is not available.',
-      id: 'typog2.id',
-      parentBlockId: 'cardBlock1.id',
+      content:
+        errorCode === '404'
+          ? 'This journey is not available.'
+          : ' Oops! Something went wrong.',
+      id: 'typog2-id',
+      parentBlockId: `${errorCode}-cardBlock-id`,
       parentOrder: 1,
       variant: TypographyVariant.h5
     },
@@ -64,16 +67,16 @@ export function getErrorJourneyBlocks(errorCode: '404' | '500'): Block[] {
       __typename: 'ButtonBlock',
       buttonColor: ButtonColor.primary,
       buttonVariant: ButtonVariant.contained,
-      endIconId: 'icon2.id',
-      id: 'button1.id',
+      endIconId: `${errorCode}-icon-id`,
+      id: `${errorCode}-button-id`,
       label: 'See Other Journeys',
-      parentBlockId: 'cardBlock1.id',
+      parentBlockId: `${errorCode}-cardBlock-id`,
       parentOrder: 2,
       size: ButtonSize.large,
-      startIconId: 'icon1,id',
+      startIconId: `${errorCode}-icon-id`,
       action: {
         gtmEventName: null,
-        parentBlockId: 'button1.id',
+        parentBlockId: `${errorCode}-button-id`,
         url: '/',
         __typename: 'LinkAction'
       }
@@ -83,8 +86,8 @@ export function getErrorJourneyBlocks(errorCode: '404' | '500'): Block[] {
       iconColor: null,
       iconName: IconName.SubscriptionsRounded,
       iconSize: null,
-      id: 'icon1,id',
-      parentBlockId: 'button1.id',
+      id: `${errorCode}-icon,id`,
+      parentBlockId: `${errorCode}-button-id`,
       parentOrder: null
     },
     {
@@ -92,8 +95,8 @@ export function getErrorJourneyBlocks(errorCode: '404' | '500'): Block[] {
       iconColor: null,
       iconName: null,
       iconSize: null,
-      id: 'icon2.id',
-      parentBlockId: 'button1.id',
+      id: `${errorCode}-icon-id`,
+      parentBlockId: `${errorCode}-button-id`,
       parentOrder: null
     }
   ]
