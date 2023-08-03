@@ -8,11 +8,14 @@ import {
   ButtonSize
 } from '../../__generated__/globalTypes'
 
-export function getErrorJourneyBlocks(errorCode: '404' | '500'): Block[] {
+export function getErrorJourneyBlocks(
+  title: string,
+  description: string
+): Block[] {
   return [
     {
       __typename: 'StepBlock',
-      id: `${errorCode}-stepBlock-id`,
+      id: `${title}-stepBlock-id`,
       locked: false,
       nextBlockId: null,
       parentBlockId: null,
@@ -21,21 +24,21 @@ export function getErrorJourneyBlocks(errorCode: '404' | '500'): Block[] {
     {
       __typename: 'CardBlock',
       backgroundColor: '#30313D',
-      coverBlockId: `${errorCode}-imageBlock-id`,
+      coverBlockId: `${title}-imageBlock-id`,
       fullscreen: false,
-      id: `${errorCode}-cardBlock-id`,
-      parentBlockId: `${errorCode}-stepBlock-id`,
+      id: `${title}-cardBlock-id`,
+      parentBlockId: `${title}-stepBlock-id`,
       parentOrder: 0,
       themeMode: null,
       themeName: null
     },
     {
       __typename: 'ImageBlock',
-      alt: `error-${errorCode}-image`,
+      alt: `error-${title}-image`,
       blurhash: 'U05OKJ0300sq5O?Y~VM|0M-.%1%K~o9HEKxu',
       height: 2230,
-      id: `${errorCode}-imageBlock-id`,
-      parentBlockId: `${errorCode}-cardBlock-id`,
+      id: `${title}-imageBlock-id`,
+      parentBlockId: `${title}-cardBlock-id`,
       parentOrder: null,
       src: 'https://images.unsplash.com/photo-1522030865324-4062412a2023?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=3244&q=80',
       width: 3244
@@ -44,9 +47,9 @@ export function getErrorJourneyBlocks(errorCode: '404' | '500'): Block[] {
       __typename: 'TypographyBlock',
       align: TypographyAlign.center,
       color: null,
-      content: errorCode,
-      id: `${errorCode}-typog-id`,
-      parentBlockId: `${errorCode}-cardBlock-id`,
+      content: title,
+      id: `${title}-typog-id`,
+      parentBlockId: `${title}-cardBlock-id`,
       parentOrder: 0,
       variant: TypographyVariant.h2
     },
@@ -54,12 +57,9 @@ export function getErrorJourneyBlocks(errorCode: '404' | '500'): Block[] {
       __typename: 'TypographyBlock',
       align: TypographyAlign.center,
       color: null,
-      content:
-        errorCode === '404'
-          ? 'This journey is not available.'
-          : ' Oops! Something went wrong.',
+      content: description,
       id: 'typog2-id',
-      parentBlockId: `${errorCode}-cardBlock-id`,
+      parentBlockId: `${title}-cardBlock-id`,
       parentOrder: 1,
       variant: TypographyVariant.h5
     },
@@ -68,15 +68,15 @@ export function getErrorJourneyBlocks(errorCode: '404' | '500'): Block[] {
       buttonColor: ButtonColor.primary,
       buttonVariant: ButtonVariant.contained,
       endIconId: null,
-      id: `${errorCode}-button-id`,
+      id: `${title}-button-id`,
       label: 'See Other Journeys',
-      parentBlockId: `${errorCode}-cardBlock-id`,
+      parentBlockId: `${title}-cardBlock-id`,
       parentOrder: 2,
       size: ButtonSize.large,
-      startIconId: `${errorCode}-icon-id`,
+      startIconId: `${title}-icon-id`,
       action: {
         gtmEventName: null,
-        parentBlockId: `${errorCode}-button-id`,
+        parentBlockId: `${title}-button-id`,
         url: '/',
         __typename: 'LinkAction'
       }
@@ -86,8 +86,8 @@ export function getErrorJourneyBlocks(errorCode: '404' | '500'): Block[] {
       iconColor: null,
       iconName: IconName.SubscriptionsRounded,
       iconSize: null,
-      id: `${errorCode}-icon-id`,
-      parentBlockId: `${errorCode}-button-id`,
+      id: `${title}-icon-id`,
+      parentBlockId: `${title}-button-id`,
       parentOrder: null
     }
   ]
