@@ -56,17 +56,6 @@ describe('LocalDetails', () => {
                     __typename: 'Translation'
                   }
                 ]
-              },
-              {
-                __typename: 'Language',
-                id: '525',
-                name: [
-                  {
-                    value: 'Algerian',
-                    primary: true,
-                    __typename: 'Translation'
-                  }
-                ]
               }
             ]
           }
