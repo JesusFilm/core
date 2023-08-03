@@ -1,1 +1,1 @@
-export { useJourney, JourneyProvider } from './JourneyProvider'
+export { useJourney, JourneyProvider, RenderLocation } from './JourneyProvider'
