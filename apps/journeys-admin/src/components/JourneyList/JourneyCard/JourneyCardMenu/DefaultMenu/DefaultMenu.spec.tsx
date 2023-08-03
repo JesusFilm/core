@@ -1,5 +1,4 @@
 import { fireEvent, render } from '@testing-library/react'
-import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 import noop from 'lodash/noop'
 import { MockedProvider } from '@apollo/client/testing'
 import { SnackbarProvider } from 'notistack'
@@ -12,20 +11,18 @@ describe('DefaultMenu', () => {
     const { getByRole } = render(
       <MockedProvider>
         <SnackbarProvider>
-          <FlagsProvider flags={{ teams: true }}>
-            <TeamProvider>
-              <DefaultMenu
-                id="journeyId"
-                slug="journey-slug"
-                status={JourneyStatus.draft}
-                journeyId="journey-id"
-                published={false}
-                setOpenAccessDialog={noop}
-                handleCloseMenu={noop}
-                setOpenTrashDialog={noop}
-              />
-            </TeamProvider>
-          </FlagsProvider>
+          <TeamProvider>
+            <DefaultMenu
+              id="journeyId"
+              slug="journey-slug"
+              status={JourneyStatus.draft}
+              journeyId="journey-id"
+              published={false}
+              setOpenAccessDialog={noop}
+              handleCloseMenu={noop}
+              setOpenTrashDialog={noop}
+            />
+          </TeamProvider>
         </SnackbarProvider>
       </MockedProvider>
     )
