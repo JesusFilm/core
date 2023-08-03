@@ -2,7 +2,7 @@ import { ComponentProps } from 'react'
 import { Story, Meta } from '@storybook/react'
 import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 import Stack from '@mui/material/Stack'
-import { JourneyProvider } from '../../../libs/JourneyProvider'
+import { JourneyProvider, RenderLocation } from '../../../libs/JourneyProvider'
 import {
   JourneyStatus,
   ThemeMode,
@@ -67,28 +67,35 @@ const journey: Journey = {
 
 const Template: Story<
   ComponentProps<typeof HostAvatars> & {
-    admin: boolean
+    renderLocation: RenderLocation
     journey: Journey
     size: string
     editableStepFooter: boolean
   }
-> = ({ admin, journey, size, editableStepFooter }) => (
+> = ({ renderLocation, journey, size, editableStepFooter }) => (
   <FlagsProvider flags={{ editableStepFooter }}>
-    <JourneyProvider value={{ admin, journey }}>
+    <JourneyProvider value={{ renderLocation, journey }}>
       <Stack direction="row">
-        <HostAvatars hasPlaceholder={admin} size={size} />
+        <HostAvatars
+          hasPlaceholder={renderLocation === RenderLocation.Admin}
+          size={size}
+        />
       </Stack>
     </JourneyProvider>
   </FlagsProvider>
 )
 
 export const Default = Template.bind({})
-Default.args = { admin: false, journey, editableStepFooter: true }
+Default.args = {
+  renderLocation: RenderLocation.Journey,
+  journey,
+  editableStepFooter: true
+}
 
 export const Empty = Template.bind({})
 Empty.args = {
   editableStepFooter: true,
-  admin: true,
+  renderLocation: RenderLocation.Admin,
   journey: { ...journey, host: { ...hostData, src1: null } }
 }
 
