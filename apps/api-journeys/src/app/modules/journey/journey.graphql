@@ -86,9 +86,9 @@ extend type Query {
     teamId: ID
   ): [Journey!]!
   adminJourneysReport(reportType: JourneysReportType!): PowerBiEmbed
-  adminJourney(id: ID!, idType: IdType): Journey
+  adminJourney(id: ID!, idType: IdType): Journey!
   journeys(where: JourneysFilter): [Journey!]!
-  journey(id: ID!, idType: IdType): Journey
+  journey(id: ID!, idType: IdType): Journey!
 }
 
 input JourneyCreateInput {

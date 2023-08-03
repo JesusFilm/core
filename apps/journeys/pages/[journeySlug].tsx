@@ -98,28 +98,14 @@ export const getStaticProps: GetStaticProps<JourneyPageProps> = async (
   context
 ) => {
   const apolloClient = createApolloClient()
-  const { data } = await apolloClient.query<GetJourney>({
-    query: GET_JOURNEY,
-    variables: {
-      id: context.params?.journeySlug
-    }
-  })
-
-  if (data.journey === null) {
-    return {
-      props: {
-        ...(await serverSideTranslations(
-          context.locale ?? 'en',
-          ['apps-journeys', 'libs-journeys-ui'],
-          i18nConfig
-        ))
-      },
-      notFound: true,
-      revalidate: 60
-    }
-  } else {
+  try {
+    const { data } = await apolloClient.query<GetJourney>({
+      query: GET_JOURNEY,
+      variables: {
+        id: context.params?.journeySlug
+      }
+    })
     const { rtl, locale } = getJourneyRTL(data.journey)
-
     return {
       props: {
         ...(await serverSideTranslations(
@@ -133,6 +119,20 @@ export const getStaticProps: GetStaticProps<JourneyPageProps> = async (
       },
       revalidate: 60
     }
+  } catch (e) {
+    if (e.message === 'journey not found') {
+      return {
+        props: {
+          ...(await serverSideTranslations(
+            context.locale ?? 'en',
+            ['apps-journeys', 'libs-journeys-ui'],
+            i18nConfig
+          ))
+        },
+        notFound: true
+      }
+    }
+    throw e
   }
 }
 
