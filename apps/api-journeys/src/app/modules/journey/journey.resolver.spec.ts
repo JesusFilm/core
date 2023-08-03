@@ -1353,7 +1353,9 @@ describe('JourneyResolver', () => {
         })
       })
       it('updates template', async () => {
-        prismaService.journey.findUnique.mockResolvedValueOnce(journey)
+        prismaService.journey.findUnique.mockResolvedValueOnce(
+          journeyWithUserTeam
+        )
         await resolver.journeyTemplate(ability, 'journeyId', { template: true })
         expect(prismaService.journey.update).toHaveBeenCalledWith({
           where: { id: 'journeyId' },
