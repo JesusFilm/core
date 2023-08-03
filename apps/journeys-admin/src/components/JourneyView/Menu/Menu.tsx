@@ -267,6 +267,7 @@ export function Menu(): ReactElement {
             {journey.template !== true && isPublisher === true && (
               <CreateTemplateMenuItem />
             )}
+            {/* TODO: remove before pushing branch */}
             <CreateTemplateMenuItem />
             {(journey.template !== true || isPublisher) && (
               <>
