@@ -5,10 +5,15 @@ import {
 } from '.prisma/api-journeys-client'
 import { Action, AppAclFn, AppAclParameters } from '../../lib/casl/caslFactory'
 
-export const journeyAcl: AppAclFn = ({ can, user }: AppAclParameters) => {
+export const journeyAcl: AppAclFn = ({
+  can,
+  cannot,
+  user
+}: AppAclParameters) => {
   // TODO: remove when teams is released
   can(Action.Create, 'Journey', { teamId: 'jfp-team' })
   // create journey as a team member
+
   can(Action.Create, 'Journey', {
     team: {
       is: {
@@ -70,6 +75,9 @@ export const journeyAcl: AppAclFn = ({ can, user }: AppAclParameters) => {
     template: true,
     status: JourneyStatus.published
   })
+
+  cannot(Action.Manage, 'Journey', 'template')
+
   if (user.roles?.includes('publisher') === true) {
     // publisher can manage template
     can(Action.Manage, 'Journey', { template: true })
