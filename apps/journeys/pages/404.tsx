@@ -13,3 +13,5 @@ export function Custom404(): ReactElement {
     </ThemeProvider>
   )
 }
+
+export default Custom404
