@@ -1,6 +1,9 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { render, fireEvent, waitFor } from '@testing-library/react'
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import {
+  JourneyProvider,
+  RenderLocation
+} from '@core/journeys/ui/JourneyProvider'
 import { GetJourney_journey as Journey } from '../../../../../../__generated__/GetJourney'
 import { SocialProvider } from '../../../SocialProvider'
 import { TitleEdit, JOURNEY_SEO_TITLE_UPDATE } from './TitleEdit'
@@ -26,7 +29,7 @@ describe('TitleEdit', () => {
                 title: 'journey title',
                 seoTitle: 'Social share title'
               } as unknown as Journey,
-              admin: true
+              renderLocation: RenderLocation.Admin
             }}
           >
             <TitleEdit />
@@ -47,7 +50,7 @@ describe('TitleEdit', () => {
                 title: 'journey title',
                 seoTitle: null
               } as unknown as Journey,
-              admin: true
+              renderLocation: RenderLocation.Admin
             }}
           >
             <TitleEdit />
@@ -90,7 +93,7 @@ describe('TitleEdit', () => {
           <JourneyProvider
             value={{
               journey: { id: 'journey.id' } as unknown as Journey,
-              admin: true
+              renderLocation: RenderLocation.Admin
             }}
           >
             <TitleEdit />
@@ -113,7 +116,7 @@ describe('TitleEdit', () => {
         <JourneyProvider
           value={{
             journey: { id: 'journey.id' } as unknown as Journey,
-            admin: true
+            renderLocation: RenderLocation.Admin
           }}
         >
           <TitleEdit />

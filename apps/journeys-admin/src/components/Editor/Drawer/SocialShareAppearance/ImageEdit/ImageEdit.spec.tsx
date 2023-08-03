@@ -1,6 +1,9 @@
 import { render, fireEvent, waitFor } from '@testing-library/react'
 import { InMemoryCache } from '@apollo/client'
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import {
+  JourneyProvider,
+  RenderLocation
+} from '@core/journeys/ui/JourneyProvider'
 import { MockedProvider } from '@apollo/client/testing'
 import {
   GetJourney_journey as Journey,
@@ -52,7 +55,7 @@ describe('ImageEdit', () => {
           <JourneyProvider
             value={{
               journey: { primaryImageBlockId: null } as unknown as Journey,
-              admin: true
+              renderLocation: RenderLocation.Admin
             }}
           >
             <ImageEdit />
@@ -75,7 +78,7 @@ describe('ImageEdit', () => {
                   alt: 'image.alt'
                 }
               } as unknown as Journey,
-              admin: true
+              renderLocation: RenderLocation.Admin
             }}
           >
             <ImageEdit />
@@ -159,7 +162,7 @@ describe('ImageEdit', () => {
           <JourneyProvider
             value={{
               journey: { id: 'journey.id' } as unknown as Journey,
-              admin: true
+              renderLocation: RenderLocation.Admin
             }}
           >
             <ImageEdit />
@@ -253,7 +256,7 @@ describe('ImageEdit', () => {
                 id: 'journey.id',
                 primaryImageBlock: { ...image }
               } as unknown as Journey,
-              admin: true
+              renderLocation: RenderLocation.Admin
             }}
           >
             <ImageEdit />

@@ -1,5 +1,8 @@
 import { Story, Meta } from '@storybook/react'
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import {
+  JourneyProvider,
+  RenderLocation
+} from '@core/journeys/ui/JourneyProvider'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { screen, userEvent } from '@storybook/testing-library'
@@ -73,7 +76,9 @@ const image: ImageBlock = {
 const Template: Story = ({ ...args }) => {
   return (
     <MockedProvider>
-      <JourneyProvider value={{ journey: args.journey, admin: true }}>
+      <JourneyProvider
+        value={{ journey: args.journey, renderLocation: RenderLocation.Admin }}
+      >
         <EditorProvider
           initialState={{
             drawerTitle: 'Social Share Preview',

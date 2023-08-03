@@ -1,6 +1,9 @@
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import {
+  JourneyProvider,
+  RenderLocation
+} from '@core/journeys/ui/JourneyProvider'
 import { JourneyFields as Journey } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
 import { ThemeProvider } from '../../../../../../../ThemeProvider'
 import { UPDATE_JOURNEY_HOST } from '../HostForm/HostTitleFieldForm/HostTitleFieldForm'
@@ -54,7 +57,9 @@ describe('HostList', () => {
     const { getByRole } = render(
       <MockedProvider>
         <ThemeProvider>
-          <JourneyProvider value={{ journey }}>
+          <JourneyProvider
+            value={{ journey, renderLocation: RenderLocation.Admin }}
+          >
             <HostList hosts={[defaultHost, host2]} onItemClick={jest.fn()} />
           </JourneyProvider>
         </ThemeProvider>
@@ -106,7 +111,9 @@ describe('HostList', () => {
         ]}
       >
         <ThemeProvider>
-          <JourneyProvider value={{ journey }}>
+          <JourneyProvider
+            value={{ journey, renderLocation: RenderLocation.Admin }}
+          >
             <HostList hosts={[defaultHost, host2]} onItemClick={onItemClick} />
           </JourneyProvider>
         </ThemeProvider>

@@ -4,7 +4,10 @@ import { screen, userEvent } from '@storybook/testing-library'
 
 import { MockedProvider } from '@apollo/client/testing'
 import { JourneyFields as Journey } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import {
+  JourneyProvider,
+  RenderLocation
+} from '@core/journeys/ui/JourneyProvider'
 import { simpleComponentConfig } from '../../../../../../../../../libs/storybook'
 
 import { HostAvatarsButton } from './HostAvatarsButton'
@@ -39,7 +42,10 @@ const Template: Story<ComponentProps<typeof HostAvatarsButton>> = ({
   return (
     <MockedProvider>
       <JourneyProvider
-        value={{ journey: { ...journey, host: { ...defaultHost, ...args } } }}
+        value={{
+          journey: { ...journey, host: { ...defaultHost, ...args } },
+          renderLocation: RenderLocation.Admin
+        }}
       >
         <HostAvatarsButton />
       </JourneyProvider>

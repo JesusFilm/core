@@ -1,7 +1,10 @@
 import { render, fireEvent, waitFor, within } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
 import { SnackbarProvider } from 'notistack'
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import {
+  JourneyProvider,
+  RenderLocation
+} from '@core/journeys/ui/JourneyProvider'
 import {
   GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS,
   TeamProvider
@@ -43,7 +46,7 @@ describe('DuplicateJourneys', () => {
           <JourneyProvider
             value={{
               journey: { id: 'journeyId' } as unknown as Journey,
-              admin: true
+              renderLocation: RenderLocation.Admin
             }}
           >
             <TeamProvider>
@@ -77,7 +80,7 @@ describe('DuplicateJourneys', () => {
           <JourneyProvider
             value={{
               journey: { id: 'journeyId' } as unknown as Journey,
-              admin: true
+              renderLocation: RenderLocation.Admin
             }}
           >
             <TeamProvider>
@@ -124,7 +127,7 @@ describe('DuplicateJourneys', () => {
           <JourneyProvider
             value={{
               journey: { id: 'journeyId' } as unknown as Journey,
-              admin: true
+              renderLocation: RenderLocation.Admin
             }}
           >
             <TeamProvider>

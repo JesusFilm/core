@@ -1,7 +1,10 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { render, fireEvent, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import {
+  JourneyProvider,
+  RenderLocation
+} from '@core/journeys/ui/JourneyProvider'
 import { defaultJourney } from '../../data'
 import { DescriptionDialog, JOURNEY_DESC_UPDATE } from '.'
 
@@ -12,7 +15,12 @@ describe('JourneyView/Menu/DescriptionDialog', () => {
     const { getByRole } = render(
       <MockedProvider mocks={[]}>
         <SnackbarProvider>
-          <JourneyProvider value={{ journey: defaultJourney, admin: true }}>
+          <JourneyProvider
+            value={{
+              journey: defaultJourney,
+              renderLocation: RenderLocation.Admin
+            }}
+          >
             <DescriptionDialog open onClose={onClose} />
           </JourneyProvider>
         </SnackbarProvider>
@@ -58,7 +66,12 @@ describe('JourneyView/Menu/DescriptionDialog', () => {
         ]}
       >
         <SnackbarProvider>
-          <JourneyProvider value={{ journey: defaultJourney, admin: true }}>
+          <JourneyProvider
+            value={{
+              journey: defaultJourney,
+              renderLocation: RenderLocation.Admin
+            }}
+          >
             <DescriptionDialog open onClose={onClose} />
           </JourneyProvider>
         </SnackbarProvider>
@@ -93,7 +106,12 @@ describe('JourneyView/Menu/DescriptionDialog', () => {
         ]}
       >
         <SnackbarProvider>
-          <JourneyProvider value={{ journey: defaultJourney, admin: true }}>
+          <JourneyProvider
+            value={{
+              journey: defaultJourney,
+              renderLocation: RenderLocation.Admin
+            }}
+          >
             <DescriptionDialog open onClose={onClose} />
           </JourneyProvider>
         </SnackbarProvider>

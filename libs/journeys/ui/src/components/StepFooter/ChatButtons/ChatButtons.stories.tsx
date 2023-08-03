@@ -5,7 +5,7 @@ import {
   JourneyFields as Journey
 } from '../../../libs/JourneyProvider/__generated__/JourneyFields'
 import { simpleComponentConfig } from '../../../libs/simpleComponentConfig'
-import { JourneyProvider } from '../../../libs/JourneyProvider'
+import { JourneyProvider, RenderLocation } from '../../../libs/JourneyProvider'
 import { ChatPlatform } from '../../../../__generated__/globalTypes'
 import { ChatButtons } from '.'
 
@@ -20,7 +20,6 @@ const Template: Story<{ chatButtons: ChatButton[] }> = ({ chatButtons }) => {
     <MockedProvider>
       <JourneyProvider
         value={{
-          admin: true,
           journey: {
             id: 'journeyId',
             language: {
@@ -30,7 +29,8 @@ const Template: Story<{ chatButtons: ChatButton[] }> = ({ chatButtons }) => {
               iso3: 'eng'
             },
             chatButtons
-          } as unknown as Journey
+          } as unknown as Journey,
+          renderLocation: RenderLocation.Admin
         }}
       >
         <ChatButtons />

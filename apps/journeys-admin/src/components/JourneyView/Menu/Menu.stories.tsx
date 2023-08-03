@@ -3,7 +3,10 @@ import { Story, Meta } from '@storybook/react'
 import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 import { screen, userEvent } from '@storybook/testing-library'
 import { MockedProvider } from '@apollo/client/testing'
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import {
+  JourneyProvider,
+  RenderLocation
+} from '@core/journeys/ui/JourneyProvider'
 import { simpleComponentConfig } from '../../../libs/storybook'
 import { JourneyStatus, Role } from '../../../../__generated__/globalTypes'
 import { defaultJourney } from '../data'
@@ -97,7 +100,12 @@ const Template: Story = ({ ...args }) => (
     <TeamProvider>
       {/* TODO: remove when teams is released */}
       <FlagsProvider flags={{ teams: true }}>
-        <JourneyProvider value={{ journey: args.journey, admin: true }}>
+        <JourneyProvider
+          value={{
+            journey: args.journey,
+            renderLocation: RenderLocation.Admin
+          }}
+        >
           <Menu {...args} />
         </JourneyProvider>
         {/* TODO: remove when teams is released */}

@@ -4,7 +4,10 @@ import { userEvent, waitFor, within } from '@storybook/testing-library'
 
 import { MockedProvider } from '@apollo/client/testing'
 import { JourneyFields as Journey } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import {
+  JourneyProvider,
+  RenderLocation
+} from '@core/journeys/ui/JourneyProvider'
 import { expect } from '@storybook/jest'
 import { journeysAdminConfig } from '../../../../../../../libs/storybook'
 import { ThemeProvider } from '../../../../../../ThemeProvider'
@@ -92,7 +95,9 @@ const Template: Story<ComponentProps<typeof HostSidePanel>> = ({ ...args }) => {
       ]}
     >
       <ThemeProvider>
-        <JourneyProvider value={{ ...args }}>
+        <JourneyProvider
+          value={{ ...args, renderLocation: RenderLocation.Admin }}
+        >
           <HostSidePanel />
         </JourneyProvider>
       </ThemeProvider>

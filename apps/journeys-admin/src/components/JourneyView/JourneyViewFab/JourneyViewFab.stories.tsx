@@ -1,5 +1,8 @@
 import { Story, Meta } from '@storybook/react'
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import {
+  JourneyProvider,
+  RenderLocation
+} from '@core/journeys/ui/JourneyProvider'
 import { MockedProvider } from '@apollo/client/testing'
 import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 import { SnackbarProvider } from 'notistack'
@@ -21,7 +24,12 @@ const Template: Story = ({ ...args }) => (
         <SnackbarProvider>
           {/* TODO: remove when teams is released */}
           <FlagsProvider flags={{ teams: true }}>
-            <JourneyProvider value={{ journey: args.journey }}>
+            <JourneyProvider
+              value={{
+                journey: args.journey,
+                renderLocation: RenderLocation.Admin
+              }}
+            >
               <JourneyViewFab isPublisher={args.isPublisher} />
             </JourneyProvider>
             {/* TODO: remove when teams is released */}

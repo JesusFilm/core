@@ -1,6 +1,9 @@
 import { Story, Meta } from '@storybook/react'
 import { MockedProvider } from '@apollo/client/testing'
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import {
+  JourneyProvider,
+  RenderLocation
+} from '@core/journeys/ui/JourneyProvider'
 import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 import { journeysAdminConfig } from '../../../libs/storybook'
 import { publishedJourney } from '../data'
@@ -19,7 +22,9 @@ const PropertiesStory = {
 const Template: Story = ({ ...args }) => (
   <MockedProvider mocks={[]}>
     <FlagsProvider>
-      <JourneyProvider value={{ journey: args.journey, admin: true }}>
+      <JourneyProvider
+        value={{ journey: args.journey, renderLocation: RenderLocation.Admin }}
+      >
         <Properties {...args} journeyType="Template" />
       </JourneyProvider>
     </FlagsProvider>

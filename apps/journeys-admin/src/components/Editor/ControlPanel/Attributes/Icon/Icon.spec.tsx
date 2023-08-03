@@ -1,6 +1,9 @@
 import { render, fireEvent, waitFor } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import {
+  JourneyProvider,
+  RenderLocation
+} from '@core/journeys/ui/JourneyProvider'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { IconName } from '../../../../../../__generated__/globalTypes'
@@ -116,7 +119,7 @@ describe('Icon', () => {
         <JourneyProvider
           value={{
             journey: { id: 'journeyId' } as unknown as Journey,
-            admin: true
+            renderLocation: RenderLocation.Admin
           }}
         >
           <EditorProvider initialState={{ selectedBlock: testSelectedBlock }}>
@@ -166,7 +169,7 @@ describe('Icon', () => {
         <JourneyProvider
           value={{
             journey: { id: 'journeyId' } as unknown as Journey,
-            admin: true
+            renderLocation: RenderLocation.Admin
           }}
         >
           <EditorProvider initialState={{ selectedBlock }}>
@@ -215,7 +218,7 @@ describe('Icon', () => {
         <JourneyProvider
           value={{
             journey: { id: 'journeyId' } as unknown as Journey,
-            admin: true
+            renderLocation: RenderLocation.Admin
           }}
         >
           <EditorProvider initialState={{ selectedBlock }}>

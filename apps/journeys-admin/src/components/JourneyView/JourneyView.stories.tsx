@@ -1,5 +1,8 @@
 import { Story, Meta } from '@storybook/react'
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import {
+  JourneyProvider,
+  RenderLocation
+} from '@core/journeys/ui/JourneyProvider'
 import { MockedProvider } from '@apollo/client/testing'
 import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 import { journeysAdminConfig } from '../../libs/storybook'
@@ -25,7 +28,12 @@ const Template: Story = ({ ...args }) => (
   <ApolloLoadingProvider>
     <FlagsProvider>
       <TeamProvider>
-        <JourneyProvider value={{ journey: args.journey }}>
+        <JourneyProvider
+          value={{
+            journey: args.journey,
+            renderLocation: RenderLocation.Admin
+          }}
+        >
           <PageWrapper
             title="Journey Details"
             showDrawer
@@ -55,7 +63,12 @@ const JourneyTemplate: Story = ({ ...args }) => (
     <FlagsProvider>
       <MockedProvider mocks={args.mocks}>
         <TeamProvider>
-          <JourneyProvider value={{ journey: args.journey }}>
+          <JourneyProvider
+            value={{
+              journey: args.journey,
+              renderLocation: RenderLocation.Admin
+            }}
+          >
             <PageWrapper
               title="Journey Template"
               showDrawer

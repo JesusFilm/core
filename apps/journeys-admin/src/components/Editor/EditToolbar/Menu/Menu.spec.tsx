@@ -1,7 +1,10 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { render, fireEvent } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import {
+  JourneyProvider,
+  RenderLocation
+} from '@core/journeys/ui/JourneyProvider'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import useMediaQuery from '@mui/material/useMediaQuery'
@@ -46,7 +49,7 @@ describe('EditToolbar Menu', () => {
                 journey: {
                   status: JourneyStatus.draft
                 } as unknown as Journey,
-                admin: true
+                renderLocation: RenderLocation.Admin
               }}
             >
               <EditorProvider initialState={{ selectedBlock }}>
@@ -87,7 +90,7 @@ describe('EditToolbar Menu', () => {
                 journey: {
                   status: JourneyStatus.draft
                 } as unknown as Journey,
-                admin: true
+                renderLocation: RenderLocation.Admin
               }}
             >
               <EditorProvider initialState={{ selectedBlock }}>
@@ -126,7 +129,7 @@ describe('EditToolbar Menu', () => {
                   id: 'journeyId',
                   slug: 'my-journey'
                 } as unknown as Journey,
-                admin: true
+                renderLocation: RenderLocation.Admin
               }}
             >
               <EditorProvider initialState={{ selectedBlock }}>
@@ -164,7 +167,7 @@ describe('EditToolbar Menu', () => {
                   slug: 'my-journey',
                   template: true
                 } as unknown as Journey,
-                admin: true
+                renderLocation: RenderLocation.Admin
               }}
             >
               <EditorProvider initialState={{ selectedBlock }}>
@@ -205,7 +208,7 @@ describe('EditToolbar Menu', () => {
                 journey: {
                   status: JourneyStatus.draft
                 } as unknown as Journey,
-                admin: true
+                renderLocation: RenderLocation.Admin
               }}
             >
               <EditorProvider initialState={{ selectedBlock }}>
@@ -247,7 +250,7 @@ describe('EditToolbar Menu', () => {
                 journey: {
                   status: JourneyStatus.draft
                 } as unknown as Journey,
-                admin: true
+                renderLocation: RenderLocation.Admin
               }}
             >
               <EditorProvider initialState={{ selectedBlock }}>

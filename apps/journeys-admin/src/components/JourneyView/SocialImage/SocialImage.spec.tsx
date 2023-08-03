@@ -1,5 +1,8 @@
 import { render } from '@testing-library/react'
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import {
+  JourneyProvider,
+  RenderLocation
+} from '@core/journeys/ui/JourneyProvider'
 import { publishedJourney } from '../data'
 import { SocialImage } from './SocialImage'
 
@@ -21,7 +24,8 @@ describe('SocialImage', () => {
               height: 1080,
               blurhash: ''
             }
-          }
+          },
+          renderLocation: RenderLocation.Admin
         }}
       >
         <SocialImage />
@@ -41,7 +45,8 @@ describe('SocialImage', () => {
     const { getByTestId } = render(
       <JourneyProvider
         value={{
-          journey: publishedJourney
+          journey: publishedJourney,
+          renderLocation: RenderLocation.Admin
         }}
       >
         <SocialImage />

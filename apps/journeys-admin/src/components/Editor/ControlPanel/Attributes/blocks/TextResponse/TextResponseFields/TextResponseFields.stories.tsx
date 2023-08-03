@@ -1,6 +1,9 @@
 import { Story, Meta } from '@storybook/react'
 import { MockedProvider } from '@apollo/client/testing'
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import {
+  JourneyProvider,
+  RenderLocation
+} from '@core/journeys/ui/JourneyProvider'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { journeysAdminConfig } from '../../../../../../../libs/storybook'
 import { GetJourney_journey as Journey } from '../../../../../../../../__generated__/GetJourney'
@@ -17,7 +20,10 @@ const Template: Story = ({ ...args }) => {
   return (
     <MockedProvider>
       <JourneyProvider
-        value={{ journey: { id: 'journey.id' } as unknown as Journey }}
+        value={{
+          journey: { id: 'journey.id' } as unknown as Journey,
+          renderLocation: RenderLocation.Admin
+        }}
       >
         <EditorProvider
           initialState={{

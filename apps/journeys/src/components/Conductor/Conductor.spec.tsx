@@ -1,5 +1,8 @@
 import { useBreakpoints } from '@core/shared/ui/useBreakpoints'
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import {
+  JourneyProvider,
+  RenderLocation
+} from '@core/journeys/ui/JourneyProvider'
 import {
   TreeBlock,
   treeBlocksVar,
@@ -181,7 +184,12 @@ describe('Conductor', () => {
         ]}
       >
         <SnackbarProvider>
-          <JourneyProvider value={{ journey: defaultJourney }}>
+          <JourneyProvider
+            value={{
+              journey: defaultJourney,
+              renderLocation: RenderLocation.Journey
+            }}
+          >
             <Conductor blocks={[]} />
           </JourneyProvider>
         </SnackbarProvider>
@@ -221,7 +229,12 @@ describe('Conductor', () => {
         ]}
       >
         <SnackbarProvider>
-          <JourneyProvider value={{ journey: defaultJourney }}>
+          <JourneyProvider
+            value={{
+              journey: defaultJourney,
+              renderLocation: RenderLocation.Journey
+            }}
+          >
             <Conductor blocks={[]} />
           </JourneyProvider>
         </SnackbarProvider>
@@ -257,7 +270,12 @@ describe('Conductor', () => {
       const { getByTestId } = render(
         <MockedProvider mocks={[]}>
           <SnackbarProvider>
-            <JourneyProvider value={{ journey: defaultJourney }}>
+            <JourneyProvider
+              value={{
+                journey: defaultJourney,
+                renderLocation: RenderLocation.Journey
+              }}
+            >
               <Conductor blocks={basic} />
             </JourneyProvider>
           </SnackbarProvider>

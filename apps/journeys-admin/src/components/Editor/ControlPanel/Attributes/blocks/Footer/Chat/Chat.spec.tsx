@@ -1,5 +1,8 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import {
+  JourneyProvider,
+  RenderLocation
+} from '@core/journeys/ui/JourneyProvider'
 import { render } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 import { JourneyFields as Journey } from '../../../../../../../../__generated__/JourneyFields'
@@ -37,7 +40,9 @@ describe('Chat', () => {
     const { getByTestId } = render(
       <MockedProvider>
         <SnackbarProvider>
-          <JourneyProvider value={{ journey }}>
+          <JourneyProvider
+            value={{ journey, renderLocation: RenderLocation.Admin }}
+          >
             <Chat />
           </JourneyProvider>
         </SnackbarProvider>

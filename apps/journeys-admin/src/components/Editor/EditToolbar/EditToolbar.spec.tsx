@@ -1,7 +1,10 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { render } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import {
+  JourneyProvider,
+  RenderLocation
+} from '@core/journeys/ui/JourneyProvider'
 import { GetJourney_journey as Journey } from '../../../../__generated__/GetJourney'
 import { JourneyStatus } from '../../../../__generated__/globalTypes'
 import { EditToolbar } from '.'
@@ -34,7 +37,7 @@ describe('Edit Toolbar', () => {
           <JourneyProvider
             value={{
               journey: { slug: 'untitled-journey' } as unknown as Journey,
-              admin: true
+              renderLocation: RenderLocation.Admin
             }}
           >
             <EditToolbar />
@@ -59,7 +62,7 @@ describe('Edit Toolbar', () => {
                 slug: 'untitled-journey',
                 status: JourneyStatus.draft
               } as unknown as Journey,
-              admin: true
+              renderLocation: RenderLocation.Admin
             }}
           >
             <EditToolbar />

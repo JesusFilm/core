@@ -6,7 +6,10 @@ import {
   EditorState,
   useEditor
 } from '@core/journeys/ui/EditorProvider'
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import {
+  JourneyProvider,
+  RenderLocation
+} from '@core/journeys/ui/JourneyProvider'
 import {
   ChatPlatform,
   ThemeMode,
@@ -70,7 +73,8 @@ describe('Footer', () => {
                 platform: ChatPlatform.viber
               }
             ]
-          } as unknown as Journey
+          } as unknown as Journey,
+          renderLocation: RenderLocation.Admin
         }}
       >
         <Footer />
@@ -95,7 +99,8 @@ describe('Footer', () => {
                 platform: ChatPlatform.facebook
               }
             ]
-          } as unknown as Journey
+          } as unknown as Journey,
+          renderLocation: RenderLocation.Admin
         }}
       >
         <Footer />
@@ -121,7 +126,8 @@ describe('Footer', () => {
             host: {
               title: `John Geronimo "The Rock" Johnson`
             }
-          } as unknown as Journey
+          } as unknown as Journey,
+          renderLocation: RenderLocation.Admin
         }}
       >
         <Footer />

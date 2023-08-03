@@ -1,7 +1,10 @@
 import { render, fireEvent, waitFor } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
 import type { TreeBlock } from '@core/journeys/ui/block'
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import {
+  JourneyProvider,
+  RenderLocation
+} from '@core/journeys/ui/JourneyProvider'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { RadioOptionFields } from '../../../../../../__generated__/RadioOptionFields'
 import { GetJourney_journey as Journey } from '../../../../../../__generated__/GetJourney'
@@ -64,7 +67,7 @@ describe('RadioOptionEdit', () => {
         <JourneyProvider
           value={{
             journey: { id: 'journeyId' } as unknown as Journey,
-            admin: true
+            renderLocation: RenderLocation.Admin
           }}
         >
           <EditorProvider>
@@ -115,7 +118,7 @@ describe('RadioOptionEdit', () => {
         <JourneyProvider
           value={{
             journey: { id: 'journeyId' } as unknown as Journey,
-            admin: true
+            renderLocation: RenderLocation.Admin
           }}
         >
           <EditorProvider>
@@ -166,7 +169,7 @@ describe('RadioOptionEdit', () => {
         <JourneyProvider
           value={{
             journey: { id: 'journeyId' } as unknown as Journey,
-            admin: true
+            renderLocation: RenderLocation.Admin
           }}
         >
           <EditorProvider>

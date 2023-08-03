@@ -1,6 +1,9 @@
 import { render, fireEvent, waitFor } from '@testing-library/react'
 import type { TreeBlock } from '@core/journeys/ui/block'
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import {
+  JourneyProvider,
+  RenderLocation
+} from '@core/journeys/ui/JourneyProvider'
 import { MockedProvider } from '@apollo/client/testing'
 import { v4 as uuidv4 } from 'uuid'
 import { InMemoryCache } from '@apollo/client'
@@ -82,7 +85,7 @@ describe('CardPreview', () => {
                 iso3: 'eng'
               }
             } as unknown as Journey,
-            admin: true
+            renderLocation: RenderLocation.Admin
           }}
         >
           <CardPreview onSelect={onSelect} steps={[step]} />
@@ -107,7 +110,7 @@ describe('CardPreview', () => {
               themeMode: ThemeMode.light,
               themeName: ThemeName.base
             } as unknown as Journey,
-            admin: true
+            renderLocation: RenderLocation.Admin
           }}
         >
           <CardPreview steps={[]} onSelect={onSelect} showAddButton />
@@ -166,7 +169,7 @@ describe('CardPreview', () => {
               themeMode: ThemeMode.light,
               themeName: ThemeName.base
             } as unknown as Journey,
-            admin: true
+            renderLocation: RenderLocation.Admin
           }}
         >
           <CardPreview steps={[]} onSelect={onSelect} showAddButton />
@@ -196,7 +199,7 @@ describe('CardPreview', () => {
               themeMode: ThemeMode.light,
               themeName: ThemeName.base
             } as unknown as Journey,
-            admin: true
+            renderLocation: RenderLocation.Admin
           }}
         >
           <CardPreview steps={[]} onSelect={onSelect} showAddButton />
@@ -243,7 +246,7 @@ describe('CardPreview', () => {
               themeMode: ThemeMode.light,
               themeName: ThemeName.base
             } as unknown as Journey,
-            admin: true
+            renderLocation: RenderLocation.Admin
           }}
         >
           <CardPreview
@@ -273,7 +276,7 @@ describe('CardPreview', () => {
               themeMode: ThemeMode.light,
               themeName: ThemeName.base
             } as unknown as Journey,
-            admin: true
+            renderLocation: RenderLocation.Admin
           }}
         >
           <CardPreview

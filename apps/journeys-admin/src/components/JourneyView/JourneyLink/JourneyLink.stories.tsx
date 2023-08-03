@@ -1,6 +1,9 @@
 import { Story, Meta } from '@storybook/react'
 import { MockedProvider } from '@apollo/client/testing'
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import {
+  JourneyProvider,
+  RenderLocation
+} from '@core/journeys/ui/JourneyProvider'
 import Box from '@mui/material/Box'
 import { ApolloLoadingProvider } from '../../../../test/ApolloLoadingProvider'
 import { simpleComponentConfig } from '../../../libs/storybook'
@@ -16,7 +19,9 @@ const JourneyLinkStory = {
 const Template: Story = ({ ...args }) => (
   <ApolloLoadingProvider>
     <MockedProvider>
-      <JourneyProvider value={{ journey: args.journey }}>
+      <JourneyProvider
+        value={{ journey: args.journey, renderLocation: RenderLocation.Admin }}
+      >
         <Box
           sx={{
             p: 6,

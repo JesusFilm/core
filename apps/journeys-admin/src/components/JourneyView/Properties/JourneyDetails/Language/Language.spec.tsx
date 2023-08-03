@@ -1,6 +1,9 @@
 import { render, fireEvent, waitFor } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import {
+  JourneyProvider,
+  RenderLocation
+} from '@core/journeys/ui/JourneyProvider'
 import { SnackbarProvider } from 'notistack'
 import { GetJourney_journey as Journey } from '../../../../../../__generated__/GetJourney'
 import { defaultJourney } from '../../../data'
@@ -31,7 +34,8 @@ describe('Language', () => {
                     }
                   ]
                 }
-              } as unknown as Journey
+              } as unknown as Journey,
+              renderLocation: RenderLocation.Admin
             }}
           >
             <Language />
@@ -61,7 +65,8 @@ describe('Language', () => {
                     }
                   ]
                 }
-              } as unknown as Journey
+              } as unknown as Journey,
+              renderLocation: RenderLocation.Admin
             }}
           >
             <Language />
@@ -91,7 +96,8 @@ describe('Language', () => {
                     }
                   ]
                 }
-              } as unknown as Journey
+              } as unknown as Journey,
+              renderLocation: RenderLocation.Admin
             }}
           >
             <Language />
@@ -126,7 +132,8 @@ describe('Language', () => {
                     }
                   ]
                 }
-              } as unknown as Journey
+              } as unknown as Journey,
+              renderLocation: RenderLocation.Admin
             }}
           >
             <Language />
@@ -161,7 +168,8 @@ describe('Language', () => {
                     }
                   ]
                 }
-              } as unknown as Journey
+              } as unknown as Journey,
+              renderLocation: RenderLocation.Admin
             }}
           >
             <Language />
@@ -199,7 +207,7 @@ describe('Language', () => {
                   ]
                 }
               },
-              admin: true
+              renderLocation: RenderLocation.Admin
             }}
           >
             <Language isPublisher />

@@ -1,4 +1,7 @@
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import {
+  JourneyProvider,
+  RenderLocation
+} from '@core/journeys/ui/JourneyProvider'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { render, fireEvent, waitFor } from '@testing-library/react'
@@ -72,7 +75,9 @@ describe('BackgroundColor', () => {
     const { getByTestId, getByRole, getAllByTestId } = render(
       <MockedProvider>
         <ThemeProvider>
-          <JourneyProvider value={{ journey, admin: true }}>
+          <JourneyProvider
+            value={{ journey, renderLocation: RenderLocation.Admin }}
+          >
             <EditorProvider initialState={{ selectedBlock: card }}>
               <BackgroundColor />
             </EditorProvider>
@@ -133,7 +138,9 @@ describe('BackgroundColor', () => {
         ]}
       >
         <ThemeProvider>
-          <JourneyProvider value={{ journey, admin: true }}>
+          <JourneyProvider
+            value={{ journey, renderLocation: RenderLocation.Admin }}
+          >
             <EditorProvider initialState={{ selectedBlock: card }}>
               <BackgroundColor />
             </EditorProvider>

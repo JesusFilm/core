@@ -1,6 +1,9 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import {
+  JourneyProvider,
+  RenderLocation
+} from '@core/journeys/ui/JourneyProvider'
 import { journey } from '../data'
 import { MULTIPLE_LINK_ACTION_UPDATE } from './ActionEditor'
 import { ActionEditor } from '.'
@@ -64,7 +67,9 @@ describe('ActionDetails', () => {
   it('should call the mutation for all the affected blocks', async () => {
     const { getByRole } = render(
       <MockedProvider mocks={mocks}>
-        <JourneyProvider value={{ journey }}>
+        <JourneyProvider
+          value={{ journey, renderLocation: RenderLocation.Admin }}
+        >
           <ActionEditor url="https://www.google.com/" goalLabel={jest.fn()} />
         </JourneyProvider>
       </MockedProvider>
@@ -80,7 +85,9 @@ describe('ActionDetails', () => {
   it('accept links without protocol as a URL', async () => {
     const { getByRole, queryByText } = render(
       <MockedProvider mocks={mocks}>
-        <JourneyProvider value={{ journey }}>
+        <JourneyProvider
+          value={{ journey, renderLocation: RenderLocation.Admin }}
+        >
           <ActionEditor url={url} goalLabel={jest.fn()} />
         </JourneyProvider>
       </MockedProvider>
@@ -97,7 +104,9 @@ describe('ActionDetails', () => {
   it('accept deep links as a URL', async () => {
     const { getByRole, queryByText } = render(
       <MockedProvider mocks={mocks}>
-        <JourneyProvider value={{ journey }}>
+        <JourneyProvider
+          value={{ journey, renderLocation: RenderLocation.Admin }}
+        >
           <ActionEditor url={url} goalLabel={jest.fn()} />
         </JourneyProvider>
       </MockedProvider>
@@ -116,7 +125,9 @@ describe('ActionDetails', () => {
   it('rejects mailto links as a URL', async () => {
     const { getByRole, queryByText } = render(
       <MockedProvider mocks={mocks}>
-        <JourneyProvider value={{ journey }}>
+        <JourneyProvider
+          value={{ journey, renderLocation: RenderLocation.Admin }}
+        >
           <ActionEditor url={url} goalLabel={jest.fn()} />
         </JourneyProvider>
       </MockedProvider>
@@ -135,7 +146,9 @@ describe('ActionDetails', () => {
   it('should submit when enter is pressed', async () => {
     const { getByRole, queryByText } = render(
       <MockedProvider mocks={mocks}>
-        <JourneyProvider value={{ journey }}>
+        <JourneyProvider
+          value={{ journey, renderLocation: RenderLocation.Admin }}
+        >
           <ActionEditor url="https://www.google.com/" goalLabel={jest.fn()} />
         </JourneyProvider>
       </MockedProvider>

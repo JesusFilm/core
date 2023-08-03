@@ -1,7 +1,10 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { render, fireEvent, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import {
+  JourneyProvider,
+  RenderLocation
+} from '@core/journeys/ui/JourneyProvider'
 import { defaultJourney } from '../../data'
 import { JOURNEY_LANGUAGE_UPDATE, GET_LANGUAGES } from './LanguageDialog'
 import { LanguageDialog } from '.'
@@ -71,7 +74,12 @@ describe('JourneyView/Menu/LanguageDialog', () => {
     const { getByRole } = render(
       <MockedProvider mocks={[getLanguagesMock]}>
         <SnackbarProvider>
-          <JourneyProvider value={{ journey: defaultJourney, admin: true }}>
+          <JourneyProvider
+            value={{
+              journey: defaultJourney,
+              renderLocation: RenderLocation.Admin
+            }}
+          >
             <LanguageDialog open onClose={onClose} />
           </JourneyProvider>
         </SnackbarProvider>
@@ -134,7 +142,12 @@ describe('JourneyView/Menu/LanguageDialog', () => {
         ]}
       >
         <SnackbarProvider>
-          <JourneyProvider value={{ journey: defaultJourney, admin: true }}>
+          <JourneyProvider
+            value={{
+              journey: defaultJourney,
+              renderLocation: RenderLocation.Admin
+            }}
+          >
             <LanguageDialog open onClose={onClose} />
           </JourneyProvider>
         </SnackbarProvider>
@@ -154,7 +167,12 @@ describe('JourneyView/Menu/LanguageDialog', () => {
     const { getByRole, getByText } = render(
       <MockedProvider mocks={[getLanguagesMock]}>
         <SnackbarProvider>
-          <JourneyProvider value={{ journey: defaultJourney, admin: true }}>
+          <JourneyProvider
+            value={{
+              journey: defaultJourney,
+              renderLocation: RenderLocation.Admin
+            }}
+          >
             <LanguageDialog open onClose={onClose} />
           </JourneyProvider>
         </SnackbarProvider>

@@ -86,7 +86,11 @@ export function StepFooter({
             }}
             gap={2}
           >
-            {hasAvatar && <HostAvatars hasPlaceholder={admin} />}
+            {hasAvatar && (
+              <HostAvatars
+                hasPlaceholder={renderLocation === RenderLocation.Admin}
+              />
+            )}
             <Stack
               sx={{ py: 1.5, flex: '1 1 100%', minWidth: 0 }}
               spacing={-1.5}

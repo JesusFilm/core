@@ -1,6 +1,9 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { render } from '@testing-library/react'
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import {
+  JourneyProvider,
+  RenderLocation
+} from '@core/journeys/ui/JourneyProvider'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import {
   ThemeName,
@@ -29,7 +32,7 @@ describe('NavigateAction', () => {
                 iso3: 'eng'
               }
             } as unknown as Journey,
-            admin: true
+            renderLocation: RenderLocation.Admin
           }}
         >
           <EditorProvider initialState={{ steps, selectedStep }}>

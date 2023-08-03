@@ -1,5 +1,8 @@
 import { Story, Meta } from '@storybook/react'
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import {
+  JourneyProvider,
+  RenderLocation
+} from '@core/journeys/ui/JourneyProvider'
 import { simpleComponentConfig } from '../../../libs/storybook'
 import { defaultJourney } from '../data'
 import { DatePreview } from './DatePreview'
@@ -11,7 +14,9 @@ const DatePreviewStory = {
 }
 
 const Template: Story = ({ ...args }) => (
-  <JourneyProvider value={{ journey: args.journey }}>
+  <JourneyProvider
+    value={{ journey: args.journey, renderLocation: RenderLocation.Admin }}
+  >
     <DatePreview />
   </JourneyProvider>
 )

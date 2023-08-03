@@ -2,7 +2,10 @@ import { ReactElement } from 'react'
 import { render, fireEvent, waitFor } from '@testing-library/react'
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import {
+  JourneyProvider,
+  RenderLocation
+} from '@core/journeys/ui/JourneyProvider'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import {
   GetJourney_journey as Journey,
@@ -39,7 +42,10 @@ const block: TreeBlock<TextResponseBlock> = {
   children: []
 }
 
-const pageData = { journey: { id: 'journey.id' } as unknown as Journey }
+const pageData = {
+  journey: { id: 'journey.id' } as unknown as Journey,
+  renderLocation: RenderLocation.Admin
+}
 
 interface HintMockProps {
   mocks?: Array<MockedResponse<Record<string, unknown>>>

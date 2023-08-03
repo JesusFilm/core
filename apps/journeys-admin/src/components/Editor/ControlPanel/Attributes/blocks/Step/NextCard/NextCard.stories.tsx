@@ -1,6 +1,9 @@
 import { Story, Meta } from '@storybook/react'
 import { screen, userEvent } from '@storybook/testing-library'
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import {
+  JourneyProvider,
+  RenderLocation
+} from '@core/journeys/ui/JourneyProvider'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { MockedProvider } from '@apollo/client/testing'
@@ -107,7 +110,9 @@ const journeyTheme = {
 const Template: Story = ({ ...args }) => {
   return (
     <MockedProvider>
-      <JourneyProvider value={{ journey: journeyTheme, admin: true }}>
+      <JourneyProvider
+        value={{ journey: journeyTheme, renderLocation: RenderLocation.Admin }}
+      >
         <EditorProvider
           initialState={{
             ...args,

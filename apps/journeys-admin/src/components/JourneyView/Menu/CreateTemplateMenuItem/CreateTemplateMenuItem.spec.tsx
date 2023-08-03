@@ -1,6 +1,9 @@
 import { render, fireEvent, waitFor } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import {
+  JourneyProvider,
+  RenderLocation
+} from '@core/journeys/ui/JourneyProvider'
 import { NextRouter, useRouter } from 'next/router'
 import { GetJourney_journey as Journey } from '../../../../../__generated__/GetJourney'
 import { JOURNEY_DUPLICATE } from '../../../../libs/useJourneyDuplicateMutation'
@@ -82,7 +85,7 @@ describe('CreateTemplateMenuItem', () => {
         <JourneyProvider
           value={{
             journey: { id: 'journeyId' } as unknown as Journey,
-            admin: true
+            renderLocation: RenderLocation.Admin
           }}
         >
           <CreateTemplateMenuItem />

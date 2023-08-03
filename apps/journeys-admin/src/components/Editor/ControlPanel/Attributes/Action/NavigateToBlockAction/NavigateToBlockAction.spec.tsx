@@ -1,6 +1,9 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { render, waitFor, fireEvent } from '@testing-library/react'
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import {
+  JourneyProvider,
+  RenderLocation
+} from '@core/journeys/ui/JourneyProvider'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { InMemoryCache } from '@apollo/client'
 import { GetJourney_journey as Journey } from '../../../../../../../__generated__/GetJourney'
@@ -72,7 +75,7 @@ describe('NavigateToBlockAction', () => {
                 iso3: 'eng'
               }
             } as unknown as Journey,
-            admin: true
+            renderLocation: RenderLocation.Admin
           }}
         >
           <EditorProvider initialState={{ steps, selectedBlock }}>

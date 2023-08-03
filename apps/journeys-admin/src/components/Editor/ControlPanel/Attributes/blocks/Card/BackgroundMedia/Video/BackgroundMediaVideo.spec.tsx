@@ -1,5 +1,8 @@
 import type { TreeBlock } from '@core/journeys/ui/block'
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import {
+  JourneyProvider,
+  RenderLocation
+} from '@core/journeys/ui/JourneyProvider'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
 import { InMemoryCache } from '@apollo/client'
@@ -213,7 +216,7 @@ describe('BackgroundMediaVideo', () => {
         <JourneyProvider
           value={{
             journey: { id: 'journeyId' } as unknown as Journey,
-            admin: true
+            renderLocation: RenderLocation.Admin
           }}
         >
           <ThemeProvider>
@@ -293,7 +296,7 @@ describe('BackgroundMediaVideo', () => {
         <JourneyProvider
           value={{
             journey: { id: 'journeyId' } as unknown as Journey,
-            admin: true
+            renderLocation: RenderLocation.Admin
           }}
         >
           <ThemeProvider>
@@ -373,7 +376,7 @@ describe('BackgroundMediaVideo', () => {
           <JourneyProvider
             value={{
               journey: { id: 'journeyId' } as unknown as Journey,
-              admin: true
+              renderLocation: RenderLocation.Admin
             }}
           >
             <ThemeProvider>
@@ -412,7 +415,7 @@ describe('BackgroundMediaVideo', () => {
             <JourneyProvider
               value={{
                 journey: { id: 'journeyId' } as unknown as Journey,
-                admin: true
+                renderLocation: RenderLocation.Admin
               }}
             >
               <ThemeProvider>
@@ -479,7 +482,7 @@ describe('BackgroundMediaVideo', () => {
             <JourneyProvider
               value={{
                 journey: { id: 'journeyId' } as unknown as Journey,
-                admin: true
+                renderLocation: RenderLocation.Admin
               }}
             >
               <ThemeProvider>
@@ -538,7 +541,7 @@ describe('BackgroundMediaVideo', () => {
             <JourneyProvider
               value={{
                 journey: { id: 'journeyId' } as unknown as Journey,
-                admin: true
+                renderLocation: RenderLocation.Admin
               }}
             >
               <ThemeProvider>
@@ -597,7 +600,7 @@ describe('BackgroundMediaVideo', () => {
             <JourneyProvider
               value={{
                 journey: { id: 'journeyId' } as unknown as Journey,
-                admin: true
+                renderLocation: RenderLocation.Admin
               }}
             >
               <ThemeProvider>
@@ -658,7 +661,7 @@ describe('BackgroundMediaVideo', () => {
               <JourneyProvider
                 value={{
                   journey: { id: 'journeyId' } as unknown as Journey,
-                  admin: true
+                  renderLocation: RenderLocation.Admin
                 }}
               >
                 <SnackbarProvider>

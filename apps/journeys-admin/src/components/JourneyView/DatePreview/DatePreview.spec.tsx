@@ -1,6 +1,9 @@
 import { render } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import {
+  JourneyProvider,
+  RenderLocation
+} from '@core/journeys/ui/JourneyProvider'
 import { publishedJourney } from '../data'
 import { DatePreview } from './DatePreview'
 
@@ -19,7 +22,8 @@ describe('DatePreview', () => {
               ...publishedJourney,
               slug: 'template-slug',
               template: true
-            }
+            },
+            renderLocation: RenderLocation.Admin
           }}
         >
           <DatePreview />
@@ -39,7 +43,8 @@ describe('DatePreview', () => {
               ...publishedJourney,
               slug: 'template-slug',
               template: true
-            }
+            },
+            renderLocation: RenderLocation.Admin
           }}
         >
           <DatePreview />

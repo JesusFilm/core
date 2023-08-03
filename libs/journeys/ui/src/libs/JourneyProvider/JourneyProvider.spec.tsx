@@ -8,7 +8,7 @@ import {
   ThemeName
 } from '../../../__generated__/globalTypes'
 import { JourneyFields as Journey } from './__generated__/JourneyFields'
-import { JourneyProvider, useJourney } from '.'
+import { JourneyProvider, RenderLocation, useJourney } from '.'
 
 const checkJourney = jest.fn()
 
@@ -64,7 +64,9 @@ const journey: Journey = {
 describe('JourneyContext', () => {
   it('should pass through the journey props', () => {
     const { getByRole } = render(
-      <JourneyProvider value={{ journey }}>
+      <JourneyProvider
+        value={{ journey, renderLocation: RenderLocation.Journey }}
+      >
         <TestComponent />
       </JourneyProvider>
     )

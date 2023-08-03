@@ -1,5 +1,8 @@
 import { Story, Meta } from '@storybook/react'
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import {
+  JourneyProvider,
+  RenderLocation
+} from '@core/journeys/ui/JourneyProvider'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { MockedProvider } from '@apollo/client/testing'
@@ -78,7 +81,9 @@ export const Default: Story = () => {
 
   return (
     <MockedProvider>
-      <JourneyProvider value={{ journey, admin: true }}>
+      <JourneyProvider
+        value={{ journey, renderLocation: RenderLocation.Admin }}
+      >
         <EditorProvider
           initialState={{
             selectedBlock: block,
@@ -110,7 +115,9 @@ export const FullScreen: Story = () => {
 
   return (
     <MockedProvider>
-      <JourneyProvider value={{ journey, admin: true }}>
+      <JourneyProvider
+        value={{ journey, renderLocation: RenderLocation.Admin }}
+      >
         <EditorProvider
           initialState={{
             selectedBlock: block,

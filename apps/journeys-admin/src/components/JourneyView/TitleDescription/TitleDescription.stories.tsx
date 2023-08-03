@@ -1,6 +1,9 @@
 import { Story, Meta } from '@storybook/react'
 import { MockedProvider } from '@apollo/client/testing'
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import {
+  JourneyProvider,
+  RenderLocation
+} from '@core/journeys/ui/JourneyProvider'
 import { SnackbarProvider } from 'notistack'
 import { ApolloLoadingProvider } from '../../../../test/ApolloLoadingProvider'
 import { simpleComponentConfig } from '../../../libs/storybook'
@@ -21,7 +24,12 @@ const Template: Story = ({ ...args }) => (
   <ApolloLoadingProvider>
     <MockedProvider>
       <SnackbarProvider>
-        <JourneyProvider value={{ journey: args.journey, admin: true }}>
+        <JourneyProvider
+          value={{
+            journey: args.journey,
+            renderLocation: RenderLocation.Admin
+          }}
+        >
           <TitleDescription isPublisher={args.isPublisher} />
         </JourneyProvider>
       </SnackbarProvider>

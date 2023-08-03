@@ -1,6 +1,9 @@
 import { Story, Meta } from '@storybook/react'
 import { useState } from 'react'
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import {
+  JourneyProvider,
+  RenderLocation
+} from '@core/journeys/ui/JourneyProvider'
 import { MockedProvider } from '@apollo/client/testing'
 import { journeysAdminConfig } from '../../../../libs/storybook'
 import { publishedJourney } from '../../data'
@@ -24,7 +27,7 @@ const Template: Story = ({ ...args }) => {
       <JourneyProvider
         value={{
           journey: args.journey,
-          admin: true
+          renderLocation: RenderLocation.Admin
         }}
       >
         <EmbedJourneyDialog

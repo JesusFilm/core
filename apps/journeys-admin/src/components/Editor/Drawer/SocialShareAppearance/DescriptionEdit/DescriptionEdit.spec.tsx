@@ -1,6 +1,9 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { render, fireEvent, waitFor } from '@testing-library/react'
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import {
+  JourneyProvider,
+  RenderLocation
+} from '@core/journeys/ui/JourneyProvider'
 import { GetJourney_journey as Journey } from '../../../../../../__generated__/GetJourney'
 import {
   DescriptionEdit,
@@ -25,7 +28,7 @@ describe('DescriptionEdit', () => {
               description: 'journey description',
               seoDescription: 'social description'
             } as unknown as Journey,
-            admin: true
+            renderLocation: RenderLocation.Admin
           }}
         >
           <DescriptionEdit />
@@ -43,7 +46,7 @@ describe('DescriptionEdit', () => {
               description: 'journey description',
               seoDescription: null
             } as unknown as Journey,
-            admin: true
+            renderLocation: RenderLocation.Admin
           }}
         >
           <DescriptionEdit />
@@ -61,7 +64,7 @@ describe('DescriptionEdit', () => {
               description: null,
               seoDescription: null
             } as unknown as Journey,
-            admin: true
+            renderLocation: RenderLocation.Admin
           }}
         >
           <DescriptionEdit />
@@ -101,7 +104,7 @@ describe('DescriptionEdit', () => {
         <JourneyProvider
           value={{
             journey: { id: 'journey.id' } as unknown as Journey,
-            admin: true
+            renderLocation: RenderLocation.Admin
           }}
         >
           <DescriptionEdit />
@@ -124,7 +127,7 @@ describe('DescriptionEdit', () => {
         <JourneyProvider
           value={{
             journey: { id: 'journey.id' } as unknown as Journey,
-            admin: true
+            renderLocation: RenderLocation.Admin
           }}
         >
           <DescriptionEdit />

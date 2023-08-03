@@ -1,7 +1,10 @@
 import { render, fireEvent, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import {
+  JourneyProvider,
+  RenderLocation
+} from '@core/journeys/ui/JourneyProvider'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { MockedProvider } from '@apollo/client/testing'
 import {
@@ -83,7 +86,7 @@ describe('DuplicateBlock', () => {
           <JourneyProvider
             value={{
               journey: { id: 'journeyId' } as unknown as Journey,
-              admin: true
+              renderLocation: RenderLocation.Admin
             }}
           >
             <EditorProvider initialState={{ selectedBlock: block }}>
@@ -128,7 +131,7 @@ describe('DuplicateBlock', () => {
           <JourneyProvider
             value={{
               journey: { id: 'journeyId' } as unknown as Journey,
-              admin: true
+              renderLocation: RenderLocation.Admin
             }}
           >
             <EditorProvider initialState={{ selectedBlock: block }}>
@@ -171,7 +174,7 @@ describe('DuplicateBlock', () => {
           <JourneyProvider
             value={{
               journey: { id: 'journeyId' } as unknown as Journey,
-              admin: true
+              renderLocation: RenderLocation.Admin
             }}
           >
             <EditorProvider initialState={{ selectedBlock: step }}>
@@ -216,7 +219,7 @@ describe('DuplicateBlock', () => {
           <JourneyProvider
             value={{
               journey: { id: 'journeyId' } as unknown as Journey,
-              admin: true
+              renderLocation: RenderLocation.Admin
             }}
           >
             <EditorProvider initialState={{ selectedBlock: step }}>

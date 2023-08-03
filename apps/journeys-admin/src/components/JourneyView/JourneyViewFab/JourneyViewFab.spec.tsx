@@ -1,5 +1,8 @@
 import { render, fireEvent, waitFor, within } from '@testing-library/react'
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import {
+  JourneyProvider,
+  RenderLocation
+} from '@core/journeys/ui/JourneyProvider'
 import { MockedProvider } from '@apollo/client/testing'
 import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 import { NextRouter, useRouter } from 'next/router'
@@ -47,7 +50,12 @@ describe('JourneyViewFab', () => {
         <FlagsProvider>
           <SnackbarProvider>
             <TeamProvider>
-              <JourneyProvider value={{ journey: defaultJourney, admin: true }}>
+              <JourneyProvider
+                value={{
+                  journey: defaultJourney,
+                  renderLocation: RenderLocation.Admin
+                }}
+              >
                 <JourneyViewFab />
               </JourneyProvider>
             </TeamProvider>
@@ -70,7 +78,7 @@ describe('JourneyViewFab', () => {
               <JourneyProvider
                 value={{
                   journey: { ...defaultJourney, template: true },
-                  admin: true
+                  renderLocation: RenderLocation.Admin
                 }}
               >
                 <JourneyViewFab isPublisher />
@@ -135,7 +143,10 @@ describe('JourneyViewFab', () => {
           <TeamProvider>
             <FlagsProvider flags={{ teams: true }}>
               <JourneyProvider
-                value={{ journey: { ...defaultJourney, template: true } }}
+                value={{
+                  journey: { ...defaultJourney, template: true },
+                  renderLocation: RenderLocation.Admin
+                }}
               >
                 <JourneyViewFab />
               </JourneyProvider>
@@ -210,7 +221,10 @@ describe('JourneyViewFab', () => {
           <TeamProvider>
             <FlagsProvider flags={{ teams: true }}>
               <JourneyProvider
-                value={{ journey: { ...defaultJourney, template: true } }}
+                value={{
+                  journey: { ...defaultJourney, template: true },
+                  renderLocation: RenderLocation.Admin
+                }}
               >
                 <JourneyViewFab />
               </JourneyProvider>

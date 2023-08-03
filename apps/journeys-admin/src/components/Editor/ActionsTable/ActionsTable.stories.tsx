@@ -1,5 +1,8 @@
 import { Story, Meta } from '@storybook/react'
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import {
+  JourneyProvider,
+  RenderLocation
+} from '@core/journeys/ui/JourneyProvider'
 import { journeysAdminConfig } from '../../../libs/storybook'
 import { journey } from '../ActionDetails/data'
 import {
@@ -16,7 +19,9 @@ const ActionsTableStory = {
 }
 
 const Template: Story = (args) => (
-  <JourneyProvider value={{ journey: args.journey }}>
+  <JourneyProvider
+    value={{ journey: args.journey, renderLocation: RenderLocation.Admin }}
+  >
     <ActionsTable />
   </JourneyProvider>
 )

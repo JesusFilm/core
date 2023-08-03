@@ -1,6 +1,6 @@
 import { render } from '@testing-library/react'
 
-import { JourneyProvider } from '../../../libs/JourneyProvider'
+import { JourneyProvider, RenderLocation } from '../../../libs/JourneyProvider'
 import {
   JourneyStatus,
   ThemeMode,
@@ -68,7 +68,9 @@ describe('HostTitleLocation', () => {
 
   it('renders the name and location correctly', () => {
     const { getByText } = render(
-      <JourneyProvider value={{ journey }}>
+      <JourneyProvider
+        value={{ journey, renderLocation: RenderLocation.Journey }}
+      >
         <HostTitleLocation />
       </JourneyProvider>
     )
@@ -79,7 +81,10 @@ describe('HostTitleLocation', () => {
   it('renders location then name when RTL', () => {
     const { getByText } = render(
       <JourneyProvider
-        value={{ journey: { ...journey, language: rtlLanguage } }}
+        value={{
+          journey: { ...journey, language: rtlLanguage },
+          renderLocation: RenderLocation.Journey
+        }}
       >
         <HostTitleLocation />
       </JourneyProvider>
@@ -92,7 +97,8 @@ describe('HostTitleLocation', () => {
     const { getByText, queryByText } = render(
       <JourneyProvider
         value={{
-          journey: { ...journey, host: { ...journey.host, location: null } }
+          journey: { ...journey, host: { ...journey.host, location: null } },
+          renderLocation: RenderLocation.Journey
         }}
       >
         <HostTitleLocation />

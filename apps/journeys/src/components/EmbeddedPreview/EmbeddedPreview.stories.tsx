@@ -1,7 +1,10 @@
 import { ComponentProps, ReactElement } from 'react'
 import { MockedProvider } from '@apollo/client/testing'
 import { Story, Meta } from '@storybook/react'
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import {
+  JourneyProvider,
+  RenderLocation
+} from '@core/journeys/ui/JourneyProvider'
 import { JourneyFields as Journey } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
 import { SnackbarProvider } from 'notistack'
 import { journeysConfig } from '../../libs/storybook'
@@ -52,7 +55,8 @@ const Template: Story<ComponentProps<typeof EmbeddedPreview>> = ({
                 }
               ]
             }
-          } as unknown as Journey
+          } as unknown as Journey,
+          renderLocation: RenderLocation.Embed
         }}
       >
         <EmbeddedPreview {...args} />

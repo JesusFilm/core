@@ -2,7 +2,10 @@ import { ComponentProps } from 'react'
 import { render, fireEvent, waitFor, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MockedProvider } from '@apollo/client/testing'
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import {
+  JourneyProvider,
+  RenderLocation
+} from '@core/journeys/ui/JourneyProvider'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { TypographyVariant } from '../../../../../../__generated__/globalTypes'
 import { GetJourney_journey as Journey } from '../../../../../../__generated__/GetJourney'
@@ -77,7 +80,7 @@ describe('TypographyEdit', () => {
         <JourneyProvider
           value={{
             journey: { id: 'journeyId' } as unknown as Journey,
-            admin: true
+            renderLocation: RenderLocation.Admin
           }}
         >
           <EditorProvider>
@@ -131,7 +134,7 @@ describe('TypographyEdit', () => {
         <JourneyProvider
           value={{
             journey: { id: 'journeyId' } as unknown as Journey,
-            admin: true
+            renderLocation: RenderLocation.Admin
           }}
         >
           <EditorProvider>
@@ -183,7 +186,7 @@ describe('TypographyEdit', () => {
         <JourneyProvider
           value={{
             journey: { id: 'journeyId' } as unknown as Journey,
-            admin: true
+            renderLocation: RenderLocation.Admin
           }}
         >
           <EditorProvider>
@@ -207,7 +210,7 @@ describe('TypographyEdit', () => {
         <JourneyProvider
           value={{
             journey: { id: 'journeyId' } as unknown as Journey,
-            admin: true
+            renderLocation: RenderLocation.Admin
           }}
         >
           <h1 className="swiper-container">Other content</h1>
@@ -257,7 +260,7 @@ describe('TypographyEdit', () => {
         <JourneyProvider
           value={{
             journey: { id: 'journeyId' } as unknown as Journey,
-            admin: true
+            renderLocation: RenderLocation.Admin
           }}
         >
           <h1>Other content</h1>

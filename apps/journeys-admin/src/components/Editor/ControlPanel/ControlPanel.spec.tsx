@@ -1,4 +1,7 @@
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import {
+  JourneyProvider,
+  RenderLocation
+} from '@core/journeys/ui/JourneyProvider'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { render, fireEvent, waitFor } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
@@ -141,7 +144,7 @@ describe('ControlPanel', () => {
                 iso3: 'eng'
               }
             } as unknown as Journey,
-            admin: true
+            renderLocation: RenderLocation.Admin
           }}
         >
           <EditorProvider initialState={{ steps: [step1, step2] }}>
@@ -178,7 +181,7 @@ describe('ControlPanel', () => {
                 iso3: 'eng'
               }
             } as unknown as Journey,
-            admin: true
+            renderLocation: RenderLocation.Admin
           }}
         >
           <EditorProvider
@@ -219,7 +222,7 @@ describe('ControlPanel', () => {
                 iso3: 'eng'
               }
             } as unknown as Journey,
-            admin: true
+            renderLocation: RenderLocation.Admin
           }}
         >
           <EditorProvider initialState={{ steps: [step1, step2] }}>
@@ -250,7 +253,7 @@ describe('ControlPanel', () => {
                 iso3: 'eng'
               }
             } as unknown as Journey,
-            admin: true
+            renderLocation: RenderLocation.Admin
           }}
         >
           <EditorProvider initialState={{ steps: [step1, step2] }}>
@@ -313,7 +316,7 @@ describe('ControlPanel', () => {
                 iso3: 'eng'
               }
             } as unknown as Journey,
-            admin: true
+            renderLocation: RenderLocation.Admin
           }}
         >
           <EditorProvider initialState={{ steps: [step1, step2, step3] }}>
@@ -410,7 +413,7 @@ describe('ControlPanel', () => {
                 iso3: 'eng'
               }
             } as unknown as Journey,
-            admin: true
+            renderLocation: RenderLocation.Admin
           }}
         >
           <EditorProvider initialState={{ steps: [step1, step2, step3] }}>
@@ -569,7 +572,7 @@ describe('ControlPanel', () => {
                 iso3: 'eng'
               }
             } as unknown as Journey,
-            admin: true
+            renderLocation: RenderLocation.Admin
           }}
         >
           <EditorProvider initialState={{ steps: [step1, step2, step3] }}>
@@ -638,7 +641,7 @@ describe('ControlPanel', () => {
                 iso3: 'eng'
               }
             } as unknown as Journey,
-            admin: true
+            renderLocation: RenderLocation.Admin
           }}
         >
           <EditorProvider initialState={{ steps: [step1, step2, step3] }}>
@@ -710,7 +713,7 @@ describe('ControlPanel', () => {
                 iso3: 'eng'
               }
             } as unknown as Journey,
-            admin: true
+            renderLocation: RenderLocation.Admin
           }}
         >
           <EditorProvider initialState={{ steps: [step1, step2, step3] }}>
@@ -824,7 +827,7 @@ describe('ControlPanel', () => {
                 iso3: 'eng'
               }
             } as unknown as Journey,
-            admin: true
+            renderLocation: RenderLocation.Admin
           }}
         >
           <EditorProvider initialState={{ steps: [step1, step2, step3] }}>
@@ -862,7 +865,7 @@ describe('ControlPanel', () => {
                 iso3: 'eng'
               }
             } as unknown as Journey,
-            admin: true
+            renderLocation: RenderLocation.Admin
           }}
         >
           <EditorProvider initialState={{ steps: [step1, step2, step3] }}>
@@ -934,7 +937,7 @@ describe('ControlPanel', () => {
                 iso3: 'eng'
               }
             } as unknown as Journey,
-            admin: true
+            renderLocation: RenderLocation.Admin
           }}
         >
           <EditorProvider initialState={{ steps: [step1] }}>
@@ -974,7 +977,7 @@ describe('ControlPanel', () => {
                 iso3: 'eng'
               }
             } as unknown as Journey,
-            admin: true
+            renderLocation: RenderLocation.Admin
           }}
         >
           <EditorProvider initialState={{ steps: [step4] }}>
@@ -1006,7 +1009,7 @@ describe('ControlPanel', () => {
                 iso3: 'eng'
               }
             } as unknown as Journey,
-            admin: true
+            renderLocation: RenderLocation.Admin
           }}
         >
           <EditorProvider initialState={{ steps: [step4] }}>
@@ -1061,7 +1064,7 @@ describe('ControlPanel', () => {
                 iso3: 'eng'
               }
             } as unknown as Journey,
-            admin: true
+            renderLocation: RenderLocation.Admin
           }}
         >
           <EditorProvider initialState={state}>
@@ -1111,7 +1114,7 @@ describe('ControlPanel', () => {
                 iso3: 'eng'
               }
             } as unknown as Journey,
-            admin: true
+            renderLocation: RenderLocation.Admin
           }}
         >
           <EditorProvider initialState={state}>

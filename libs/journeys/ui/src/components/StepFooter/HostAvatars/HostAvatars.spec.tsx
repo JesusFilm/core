@@ -1,6 +1,6 @@
 import { render } from '@testing-library/react'
 import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
-import { JourneyProvider } from '../../../libs/JourneyProvider'
+import { JourneyProvider, RenderLocation } from '../../../libs/JourneyProvider'
 import {
   JourneyStatus,
   ThemeMode,
@@ -63,7 +63,12 @@ describe('HostAvatars', () => {
 
   it('renders both avatars if both images are set', () => {
     const { getByTestId, getAllByRole } = render(
-      <JourneyProvider value={{ journey: { ...journey, host: twoAvatarHost } }}>
+      <JourneyProvider
+        value={{
+          journey: { ...journey, host: twoAvatarHost },
+          renderLocation: RenderLocation.Journey
+        }}
+      >
         <HostAvatars />
       </JourneyProvider>
     )
@@ -77,7 +82,13 @@ describe('HostAvatars', () => {
   it('renders nothing if no images are set', () => {
     const { queryAllByRole } = render(
       <JourneyProvider
-        value={{ journey: { ...journey, host: { ...hostData } } }}
+        value={{
+          journey: {
+            ...journey,
+            host: { ...hostData }
+          },
+          renderLocation: RenderLocation.Journey
+        }}
       >
         <HostAvatars />
       </JourneyProvider>
@@ -91,7 +102,8 @@ describe('HostAvatars', () => {
     const { queryAllByRole } = render(
       <JourneyProvider
         value={{
-          journey: { ...journey, host: { ...hostData, src1: 'avatar1.jpg' } }
+          journey: { ...journey, host: { ...hostData, src1: 'avatar1.jpg' } },
+          renderLocation: RenderLocation.Journey
         }}
       >
         <HostAvatars />
@@ -110,7 +122,12 @@ describe('HostAvatars', () => {
             editableStepFooter: true
           }}
         >
-          <JourneyProvider value={{ admin: true, journey: { ...journey } }}>
+          <JourneyProvider
+            value={{
+              journey: { ...journey },
+              renderLocation: RenderLocation.Admin
+            }}
+          >
             <HostAvatars hasPlaceholder />
           </JourneyProvider>
         </FlagsProvider>
@@ -130,8 +147,8 @@ describe('HostAvatars', () => {
         <FlagsProvider flags={{ editableStepFooter: true }}>
           <JourneyProvider
             value={{
-              admin: true,
-              journey: { ...journey, host: oneAvatarHost }
+              journey: { ...journey, host: oneAvatarHost },
+              renderLocation: RenderLocation.Journey
             }}
           >
             <HostAvatars hasPlaceholder />

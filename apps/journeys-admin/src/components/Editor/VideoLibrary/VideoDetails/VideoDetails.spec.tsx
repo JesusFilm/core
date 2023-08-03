@@ -1,7 +1,10 @@
 import { render, fireEvent, waitFor } from '@testing-library/react'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { MockedProvider } from '@apollo/client/testing'
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import {
+  JourneyProvider,
+  RenderLocation
+} from '@core/journeys/ui/JourneyProvider'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { TreeBlock } from '@core/journeys/ui/block'
 import { GET_VIDEO } from '../VideoFromLocal/LocalDetails/LocalDetails'
@@ -248,7 +251,7 @@ describe('VideoDetails', () => {
         <JourneyProvider
           value={{
             journey: { id: 'journeyId' } as unknown as Journey,
-            admin: true
+            renderLocation: RenderLocation.Admin
           }}
         >
           <EditorProvider

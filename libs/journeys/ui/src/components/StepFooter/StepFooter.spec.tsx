@@ -6,7 +6,7 @@ import {
   ThemeMode,
   ThemeName
 } from '../../../__generated__/globalTypes'
-import { JourneyProvider } from '../../libs/JourneyProvider'
+import { JourneyProvider, RenderLocation } from '../../libs/JourneyProvider'
 import { JourneyFields as Journey } from '../../libs/JourneyProvider/__generated__/JourneyFields'
 import { StepFooter } from './StepFooter'
 
@@ -63,7 +63,9 @@ describe('StepFooter', () => {
     const { getByTestId } = render(
       <MockedProvider>
         <SnackbarProvider>
-          <JourneyProvider value={{ journey }}>
+          <JourneyProvider
+            value={{ journey, renderLocation: RenderLocation.Journey }}
+          >
             <StepFooter />
           </JourneyProvider>
         </SnackbarProvider>
@@ -78,7 +80,9 @@ describe('StepFooter', () => {
     const { getAllByTestId } = render(
       <MockedProvider>
         <SnackbarProvider>
-          <JourneyProvider value={{ journey }}>
+          <JourneyProvider
+            value={{ journey, renderLocation: RenderLocation.Journey }}
+          >
             <StepFooter />
           </JourneyProvider>
         </SnackbarProvider>
@@ -92,7 +96,9 @@ describe('StepFooter', () => {
     const { getByText } = render(
       <MockedProvider>
         <SnackbarProvider>
-          <JourneyProvider value={{ journey }}>
+          <JourneyProvider
+            value={{ journey, renderLocation: RenderLocation.Journey }}
+          >
             <StepFooter />
           </JourneyProvider>
         </SnackbarProvider>
@@ -106,7 +112,12 @@ describe('StepFooter', () => {
     const { getByText } = render(
       <MockedProvider>
         <SnackbarProvider>
-          <JourneyProvider value={{ journey: { ...journey, seoTitle: null } }}>
+          <JourneyProvider
+            value={{
+              journey: { ...journey, seoTitle: null },
+              renderLocation: RenderLocation.Journey
+            }}
+          >
             <StepFooter />
           </JourneyProvider>
         </SnackbarProvider>
@@ -120,7 +131,9 @@ describe('StepFooter', () => {
     const { getByTestId } = render(
       <MockedProvider>
         <SnackbarProvider>
-          <JourneyProvider value={{ journey }}>
+          <JourneyProvider
+            value={{ journey, renderLocation: RenderLocation.Journey }}
+          >
             <StepFooter sx={{ outline: '1px solid red' }} />
           </JourneyProvider>
         </SnackbarProvider>
@@ -136,7 +149,10 @@ describe('StepFooter', () => {
       <MockedProvider>
         <SnackbarProvider>
           <JourneyProvider
-            value={{ admin: true, journey: { ...journey, seoTitle: null } }}
+            value={{
+              journey: { ...journey, seoTitle: null },
+              renderLocation: RenderLocation.Admin
+            }}
           >
             <StepFooter onFooterClick={onFooterClick} />
           </JourneyProvider>
@@ -154,7 +170,12 @@ describe('StepFooter', () => {
     const { getByText } = render(
       <MockedProvider>
         <SnackbarProvider>
-          <JourneyProvider value={{ admin: true, journey: undefined }}>
+          <JourneyProvider
+            value={{
+              renderLocation: RenderLocation.Journey,
+              journey: undefined
+            }}
+          >
             <StepFooter
               onFooterClick={jest.fn()}
               title="discovery journey title"

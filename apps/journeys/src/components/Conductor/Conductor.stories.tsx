@@ -4,7 +4,10 @@ import { Story, Meta } from '@storybook/react'
 import { screen, userEvent, waitFor } from '@storybook/testing-library'
 import { expect } from '@storybook/jest'
 import { SnackbarProvider } from 'notistack'
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import {
+  JourneyProvider,
+  RenderLocation
+} from '@core/journeys/ui/JourneyProvider'
 import {
   JourneyFields as Journey,
   JourneyFields_language as Language
@@ -87,7 +90,9 @@ const Template: Story<
   ComponentProps<typeof Conductor> & { journey?: Journey }
 > = ({ journey = defaultJourney, ...args }) => (
   <MockedProvider mocks={[]}>
-    <JourneyProvider value={{ journey }}>
+    <JourneyProvider
+      value={{ journey, renderLocation: RenderLocation.Journey }}
+    >
       <SnackbarProvider>
         <Conductor {...args} />
       </SnackbarProvider>

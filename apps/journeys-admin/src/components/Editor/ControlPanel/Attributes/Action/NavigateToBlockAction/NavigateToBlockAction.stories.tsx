@@ -1,6 +1,9 @@
 import { Story, Meta } from '@storybook/react'
 import { MockedProvider } from '@apollo/client/testing'
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import {
+  JourneyProvider,
+  RenderLocation
+} from '@core/journeys/ui/JourneyProvider'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import Stack from '@mui/material/Stack'
 import Box from '@mui/material/Box'
@@ -40,7 +43,12 @@ export const NavigateToBlock: Story = () => {
       <Box>
         <Typography>Default</Typography>
         <MockedProvider>
-          <JourneyProvider value={{ journey: journeyTheme, admin: true }}>
+          <JourneyProvider
+            value={{
+              journey: journeyTheme,
+              renderLocation: RenderLocation.Admin
+            }}
+          >
             <EditorProvider initialState={{ steps }}>
               <NavigateToBlockAction />
             </EditorProvider>
@@ -51,7 +59,12 @@ export const NavigateToBlock: Story = () => {
       <Box>
         <Typography>Selected card</Typography>
         <MockedProvider>
-          <JourneyProvider value={{ journey: journeyTheme, admin: true }}>
+          <JourneyProvider
+            value={{
+              journey: journeyTheme,
+              renderLocation: RenderLocation.Admin
+            }}
+          >
             <EditorProvider initialState={{ selectedBlock, steps }}>
               <NavigateToBlockAction />
             </EditorProvider>

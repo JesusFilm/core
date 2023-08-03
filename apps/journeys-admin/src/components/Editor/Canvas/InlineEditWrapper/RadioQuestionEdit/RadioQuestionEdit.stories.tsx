@@ -1,5 +1,8 @@
 import { Story, Meta } from '@storybook/react'
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import {
+  JourneyProvider,
+  RenderLocation
+} from '@core/journeys/ui/JourneyProvider'
 import { EditorProvider, ActiveFab } from '@core/journeys/ui/EditorProvider'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { MockedProvider } from '@apollo/client/testing'
@@ -132,7 +135,7 @@ const Template: Story = ({ ...args }) => {
               iso3: 'eng'
             }
           } as unknown as Journey,
-          admin: true
+          renderLocation: RenderLocation.Admin
         }}
       >
         <EditorProvider

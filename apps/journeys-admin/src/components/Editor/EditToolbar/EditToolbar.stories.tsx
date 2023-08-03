@@ -1,6 +1,9 @@
 import { Story, Meta } from '@storybook/react'
 import { MockedProvider } from '@apollo/client/testing'
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import {
+  JourneyProvider,
+  RenderLocation
+} from '@core/journeys/ui/JourneyProvider'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { simpleComponentConfig } from '../../../libs/storybook'
@@ -34,7 +37,8 @@ export const Default: Story = () => {
     <MockedProvider>
       <JourneyProvider
         value={{
-          journey: { status: JourneyStatus.published } as unknown as Journey
+          journey: { status: JourneyStatus.published } as unknown as Journey,
+          renderLocation: RenderLocation.Admin
         }}
       >
         <EditorProvider initialState={{ selectedBlock }}>

@@ -1,5 +1,8 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import {
+  JourneyProvider,
+  RenderLocation
+} from '@core/journeys/ui/JourneyProvider'
 import { render } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 import { GetJourney_journey as Journey } from '../../../../../__generated__/GetJourney'
@@ -30,7 +33,8 @@ describe('journeyDetails', () => {
                     }
                   ]
                 }
-              } as unknown as Journey
+              } as unknown as Journey,
+              renderLocation: RenderLocation.Admin
             }}
           >
             <JourneyDetails journeyType="Journey" />

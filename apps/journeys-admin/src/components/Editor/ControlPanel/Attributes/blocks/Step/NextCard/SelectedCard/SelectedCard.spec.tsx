@@ -1,5 +1,8 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import {
+  JourneyProvider,
+  RenderLocation
+} from '@core/journeys/ui/JourneyProvider'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { fireEvent, render, waitFor } from '@testing-library/react'
@@ -88,7 +91,7 @@ describe('Selected Card', () => {
                 iso3: 'eng'
               }
             } as unknown as Journey,
-            admin: true
+            renderLocation: RenderLocation.Admin
           }}
         >
           <EditorProvider initialState={{ steps, selectedBlock }}>
@@ -105,7 +108,7 @@ describe('Selected Card', () => {
   it('selects the card after through parentOrder if no nextBlockId', () => {
     const { getByText } = render(
       <MockedProvider>
-        <JourneyProvider>
+        <JourneyProvider value={{ renderLocation: RenderLocation.Admin }}>
           <EditorProvider
             initialState={{
               steps,
@@ -123,7 +126,7 @@ describe('Selected Card', () => {
   it('does not select a next step if last', () => {
     const { getByText } = render(
       <MockedProvider>
-        <JourneyProvider>
+        <JourneyProvider value={{ renderLocation: RenderLocation.Admin }}>
           <EditorProvider
             initialState={{
               steps,

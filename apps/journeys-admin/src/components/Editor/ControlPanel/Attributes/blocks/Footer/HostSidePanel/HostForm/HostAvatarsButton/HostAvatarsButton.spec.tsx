@@ -1,7 +1,10 @@
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
 
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import {
+  JourneyProvider,
+  RenderLocation
+} from '@core/journeys/ui/JourneyProvider'
 import { JourneyFields as Journey } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
 import { ThemeProvider } from '../../../../../../../../ThemeProvider'
 import { useHostUpdate } from '../../../../../../../../../libs/useHostUpdate'
@@ -49,7 +52,12 @@ describe('HostAvatarsButton', () => {
     const { getByTestId } = render(
       <MockedProvider>
         <ThemeProvider>
-          <JourneyProvider value={{ journey: { ...journey, host: null } }}>
+          <JourneyProvider
+            value={{
+              journey: { ...journey, host: null },
+              renderLocation: RenderLocation.Admin
+            }}
+          >
             <HostAvatarsButton />
           </JourneyProvider>
         </ThemeProvider>
@@ -75,7 +83,8 @@ describe('HostAvatarsButton', () => {
               journey: {
                 ...journey,
                 host: { ...defaultHost, src1: 'avatar1Src', src2: 'avatar2Src' }
-              }
+              },
+              renderLocation: RenderLocation.Admin
             }}
           >
             <HostAvatarsButton />
@@ -92,7 +101,9 @@ describe('HostAvatarsButton', () => {
     const { getByTestId, queryByTestId } = render(
       <MockedProvider>
         <ThemeProvider>
-          <JourneyProvider value={{ journey }}>
+          <JourneyProvider
+            value={{ journey, renderLocation: RenderLocation.Admin }}
+          >
             <HostAvatarsButton disabled />
           </JourneyProvider>
         </ThemeProvider>
@@ -112,7 +123,8 @@ describe('HostAvatarsButton', () => {
               journey: {
                 ...journey,
                 host: { ...defaultHost, src1: 'avatar1Src' }
-              }
+              },
+              renderLocation: RenderLocation.Admin
             }}
           >
             <HostAvatarsButton />
@@ -177,7 +189,8 @@ describe('HostAvatarsButton', () => {
 
                   src1: 'avatar1Src'
                 }
-              }
+              },
+              renderLocation: RenderLocation.Admin
             }}
           >
             <HostAvatarsButton />
@@ -270,7 +283,8 @@ describe('HostAvatarsButton', () => {
                   src1: 'avatar1Src',
                   src2: 'avatar2Src'
                 }
-              }
+              },
+              renderLocation: RenderLocation.Admin
             }}
           >
             <HostAvatarsButton />

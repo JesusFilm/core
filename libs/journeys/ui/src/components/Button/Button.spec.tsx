@@ -12,7 +12,7 @@ import {
   MessagePlatform
 } from '../../../__generated__/globalTypes'
 import { handleAction } from '../../libs/action'
-import { JourneyProvider } from '../../libs/JourneyProvider'
+import { JourneyProvider, RenderLocation } from '../../libs/JourneyProvider'
 import { TreeBlock, treeBlocksVar, blockHistoryVar } from '../../libs/block'
 import { BlockFields_StepBlock as StepBlock } from '../../libs/block/__generated__/BlockFields'
 import {
@@ -169,7 +169,7 @@ describe('Button', () => {
           }
         ]}
       >
-        <JourneyProvider>
+        <JourneyProvider value={{ renderLocation: RenderLocation.Journey }}>
           <Button {...buttonWithAction} />
         </JourneyProvider>
       </MockedProvider>
@@ -236,7 +236,7 @@ describe('Button', () => {
           }
         ]}
       >
-        <JourneyProvider>
+        <JourneyProvider value={{ renderLocation: RenderLocation.Journey }}>
           <Button {...block} />
         </JourneyProvider>
       </MockedProvider>
@@ -300,7 +300,7 @@ describe('Button', () => {
           }
         ]}
       >
-        <JourneyProvider>
+        <JourneyProvider value={{ renderLocation: RenderLocation.Journey }}>
           <Button {...buttonBlock} />
         </JourneyProvider>
       </MockedProvider>
