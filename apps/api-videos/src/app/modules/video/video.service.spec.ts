@@ -18,7 +18,8 @@ const video: Video = {
   studyQuestions: [],
   image: '',
   imageAlt: [],
-  noIndex: false
+  noIndex: false,
+  sortOrder: null
 }
 
 describe('VideoService', () => {

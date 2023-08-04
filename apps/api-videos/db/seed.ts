@@ -132,6 +132,12 @@ async function importMediaComponents(): Promise<void> {
         children: { connect: value.map((id) => ({ id })) }
       }
     })
+    for (let index = 0; index < value.length; index++) {
+      await prisma.video.update({
+        where: { id: value[index] },
+        data: { sortOrder: index }
+      })
+    }
   }
 }
 

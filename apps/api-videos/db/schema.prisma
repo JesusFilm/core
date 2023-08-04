@@ -36,11 +36,13 @@ model Video {
   imageAlt          Json[]
   slug              String?
   noIndex           Boolean?
+  sortOrder         Int?
   children          Video[]        @relation("ParentChild")
   parent            Video[]        @relation("ParentChild")
   variants          VideoVariant[]
 
   @@unique([slug])
+  @@index([sortOrder])
 }
 
 model VideoTitle {

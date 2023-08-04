@@ -23,7 +23,8 @@ describe('VideoResolver', () => {
     studyQuestions: [],
     image: '',
     imageAlt: [],
-    noIndex: false
+    noIndex: false,
+    sortOrder: null
   }
 
   const videoVariant: VideoVariant[] = [
@@ -237,7 +238,8 @@ describe('VideoResolver', () => {
     it('returns videos by childIds without languageId', async () => {
       expect(await resolver.children(video)).toEqual([video, video])
       expect(prismaService.video.findMany).toHaveBeenCalledWith({
-        where: { parent: { some: { id: video.id } } }
+        where: { parent: { some: { id: video.id } } },
+        orderBy: { sortOrder: 'asc' }
       })
     })
   })
