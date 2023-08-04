@@ -11,6 +11,7 @@ import {
 import { FieldNode, GraphQLError, GraphQLResolveInfo, Kind } from 'graphql'
 import { Video, VideoVariant, VideoTitle } from '.prisma/api-videos-client'
 import compact from 'lodash/compact'
+import isEmpty from 'lodash/isEmpty'
 
 import { IdType, VideosFilter } from '../../__generated__/graphql'
 import { PrismaService } from '../../lib/prisma.service'
@@ -169,11 +170,17 @@ export class VideoResolver {
     @Parent() video,
     @Args('languageId') languageId?: string
   ): Promise<VideoVariant | null> {
+    const variableValueId = (info.variableValues.id as string) ?? ''
+    const requestedLanguage = variableValueId.includes('/')
+      ? variableValueId.substring(variableValueId.lastIndexOf('/') + 1)
+      : ''
+
     return info.variableValues.idType !== IdType.databaseId &&
-      info.variableValues.id != null
+      !isEmpty(variableValueId) &&
+      !isEmpty(requestedLanguage)
       ? await this.prismaService.videoVariant.findUnique({
           where: {
-            slug: info.variableValues.id as string
+            slug: `${video.slug as string}/${requestedLanguage}`
           }
         })
       : await this.prismaService.videoVariant.findUnique({

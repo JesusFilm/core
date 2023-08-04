@@ -310,7 +310,7 @@ describe('VideoResolver', () => {
     it('returns variant with slug', async () => {
       const info = {
         variableValues: {
-          id: video.slug
+          id: `${video.slug as string}/english`
         }
       } as unknown as GraphQLResolveInfo
       expect(await resolver.variant(info, video, '529')).toEqual(
@@ -318,7 +318,7 @@ describe('VideoResolver', () => {
       )
       expect(prismaService.videoVariant.findUnique).toHaveBeenCalledWith({
         where: {
-          slug: video.slug
+          slug: `${video.slug as string}/english`
         }
       })
     })
