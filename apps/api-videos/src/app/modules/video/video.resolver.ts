@@ -170,7 +170,10 @@ export class VideoResolver {
     @Parent() video,
     @Args('languageId') languageId?: string
   ): Promise<VideoVariant | null> {
-    const variableValueId = (info.variableValues.id as string) ?? ''
+    const variableValueId =
+      (info.variableValues.id as string) ??
+      (info.variableValues.contentId as string) ??
+      ''
     const requestedLanguage = variableValueId.includes('/')
       ? variableValueId.substring(variableValueId.lastIndexOf('/') + 1)
       : ''
