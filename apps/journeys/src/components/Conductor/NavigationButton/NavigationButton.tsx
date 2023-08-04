@@ -100,7 +100,7 @@ export function NavigationButton({
           lg: 'calc(100% - 105px)'
         },
         alignItems: 'center',
-        pointerEvents: { xs: 'none', lg: 'all' }
+        pointerEvents: 'none'
       }}
     >
       <Fade

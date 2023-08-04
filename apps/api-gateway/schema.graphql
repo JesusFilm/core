@@ -1669,6 +1669,7 @@ type Team
   title: String!
   createdAt: DateTime!
   updatedAt: DateTime!
+  userTeams: [UserTeam!]!
 }
 
 input TeamCreateInput
