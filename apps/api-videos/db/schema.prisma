@@ -52,6 +52,8 @@ model VideoTitle {
   primary    Boolean
   videoId    String?
   video      Video?  @relation(fields: [videoId], references: [id], onDelete: Cascade)
+
+  @@unique([videoId, languageId])
 }
 
 enum VideoVariantDownloadQuality {

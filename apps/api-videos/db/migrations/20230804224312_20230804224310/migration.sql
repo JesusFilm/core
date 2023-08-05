@@ -20,6 +20,7 @@ CREATE TABLE "Video" (
     "imageAlt" JSONB[],
     "slug" TEXT,
     "noIndex" BOOLEAN,
+    "sortOrder" INTEGER,
 
     CONSTRAINT "Video_pkey" PRIMARY KEY ("id")
 );
@@ -52,11 +53,21 @@ CREATE TABLE "VideoVariant" (
     "hls" TEXT,
     "duration" INTEGER,
     "languageId" TEXT NOT NULL,
-    "subtitle" JSONB[],
     "slug" TEXT NOT NULL,
     "videoId" TEXT,
 
     CONSTRAINT "VideoVariant_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "VideoVariantSubtitle" (
+    "id" TEXT NOT NULL,
+    "value" TEXT NOT NULL,
+    "primary" BOOLEAN NOT NULL,
+    "languageId" TEXT NOT NULL,
+    "videoVariantId" TEXT NOT NULL,
+
+    CONSTRAINT "VideoVariantSubtitle_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -66,7 +77,13 @@ CREATE TABLE "_ParentChild" (
 );
 
 -- CreateIndex
+CREATE INDEX "Video_sortOrder_idx" ON "Video"("sortOrder");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "Video_slug_key" ON "Video"("slug");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "VideoTitle_videoId_languageId_key" ON "VideoTitle"("videoId", "languageId");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "VideoVariantDownload_quality_videoVariantId_key" ON "VideoVariantDownload"("quality", "videoVariantId");
@@ -76,6 +93,9 @@ CREATE UNIQUE INDEX "VideoVariant_languageId_videoId_key" ON "VideoVariant"("lan
 
 -- CreateIndex
 CREATE UNIQUE INDEX "VideoVariant_slug_key" ON "VideoVariant"("slug");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "VideoVariantSubtitle_videoVariantId_languageId_key" ON "VideoVariantSubtitle"("videoVariantId", "languageId");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "_ParentChild_AB_unique" ON "_ParentChild"("A", "B");
@@ -91,6 +111,9 @@ ALTER TABLE "VideoVariantDownload" ADD CONSTRAINT "VideoVariantDownload_videoVar
 
 -- AddForeignKey
 ALTER TABLE "VideoVariant" ADD CONSTRAINT "VideoVariant_videoId_fkey" FOREIGN KEY ("videoId") REFERENCES "Video"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "VideoVariantSubtitle" ADD CONSTRAINT "VideoVariantSubtitle_videoVariantId_fkey" FOREIGN KEY ("videoVariantId") REFERENCES "VideoVariant"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "_ParentChild" ADD CONSTRAINT "_ParentChild_A_fkey" FOREIGN KEY ("A") REFERENCES "Video"("id") ON DELETE CASCADE ON UPDATE CASCADE;

@@ -396,7 +396,7 @@ describe('arclight', () => {
         { languageId: '529', primary: true, value: 'shortDescription' }
       ],
       studyQuestions: [],
-      title: { create: { languageId: '529', primary: true, value: 'title' } },
+      title: [{ languageId: '529', primary: true, value: 'title' }],
       variants: [
         {
           id: 'refId',
@@ -524,14 +524,14 @@ describe('arclight', () => {
         )
       ).toEqual({
         ...video,
-        title: {
-          create: {
+        title: [
+          {
             languageId: '529',
             primary: true,
             value:
               'The Quick Brown Fox Jumps Over The Lazy Dog Many Times Over And Over Until It Gets Cut Off When Over 100 Characters'
           }
-        },
+        ],
         seoTitle: [
           {
             languageId: '529',
@@ -724,9 +724,13 @@ describe('arclight', () => {
             { languageId: '529', primary: true, value: 'shortDescription' }
           ],
           studyQuestions: [],
-          title: {
-            create: { languageId: '529', primary: true, value: 'title' }
-          },
+          title: [
+            {
+              languageId: '529',
+              primary: true,
+              value: 'title'
+            }
+          ],
           variants: [
             {
               downloads: [

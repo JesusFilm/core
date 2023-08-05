@@ -23,7 +23,8 @@ async function importMediaComponents(): Promise<void> {
   const usedVideoSlugs: Record<string, string> = await getVideoSlugs()
   const languages = await fetchMediaLanguagesAndTransformToLanguages()
   let videos: Array<
-    Omit<Prisma.VideoUncheckedCreateInput, 'variants'> & {
+    Omit<Prisma.VideoUncheckedCreateInput, 'variants' | 'title'> & {
+      title: Prisma.VideoTitleUncheckedCreateInput[]
       variants: Array<
         Omit<
           Prisma.VideoVariantUncheckedCreateInput,
@@ -48,74 +49,126 @@ async function importMediaComponents(): Promise<void> {
     for (const video of videos) {
       console.log('processing video:', video.id)
 
-      // way too slow/clumsy to handle upserts of video variants and downloads individually
       await prisma.$transaction(
         async (tx) => {
           if (video.id == null) return
           await tx.video.upsert({
             where: { id: video.id },
-            create: omit(video, ['childIds', 'variants']),
+            create: omit(video, ['childIds', 'variants', 'title']),
             update: {
-              ...omit(video, ['childIds', 'variants']),
-              variants: { deleteMany: {} },
-              title: { deleteMany: {} }
+              ...omit(video, ['childIds', 'variants', 'title'])
             }
           })
 
-          // nested limit can be reached if too much variant data
-          let i = 0
-          const numberToProcessSimultaneously = 500
-          do {
-            console.log(
-              'processing video variants:',
-              `${i} to ${i + numberToProcessSimultaneously}`
-            )
-            const variants = video.variants.slice(
-              i,
-              i + numberToProcessSimultaneously
-            )
+          // clean up any dead languages
+          await tx.videoTitle.deleteMany({
+            where: {
+              videoId: video.id,
+              languageId: {
+                notIn: video.title.map((title) => title.languageId)
+              }
+            }
+          })
 
-            await tx.videoVariant.createMany({
-              data: variants.map((variant) => ({
-                ...omit(variant, ['downloads', 'subtitle']),
-                videoId: video.id
-              }))
+          for (let index = 0; index < video.title.length; index++) {
+            const title = video.title[index]
+            await tx.videoTitle.upsert({
+              where: {
+                videoId_languageId: {
+                  videoId: video.id,
+                  languageId: title.languageId
+                }
+              },
+              update: {
+                value: title.value,
+                primary: title.primary
+              },
+              create: {
+                videoId: video.id,
+                ...title
+              }
+            })
+          }
+
+          // clean up dead variants
+          await tx.videoVariant.deleteMany({
+            where: {
+              videoId: video.id,
+              id: { notIn: video.variants.map(({ id }) => id) }
+            }
+          })
+
+          console.log('processing video variants')
+          for (let index = 0; index < video.variants.length; index++) {
+            const variant = video.variants[index]
+            await tx.videoVariant.upsert({
+              where: { id: variant.id },
+              update: omit(variant, ['downloads', 'subtitle']),
+              create: omit(variant, ['downloads', 'subtitle'])
             })
 
-            const downloads = variants
-              .map((variant) =>
-                variant.downloads?.map((download) => ({
+            if (variant.downloads != null) {
+              // clean up dead downloads
+              await tx.videoVariantDownload.deleteMany({
+                where: {
                   videoVariantId: variant.id,
-                  ...download
-                }))
-              )
-              .flat()
-              .filter((download) => download != null)
-            if (downloads.length > 0)
-              await tx.videoVariantDownload.createMany({
-                data: downloads as unknown as Prisma.VideoVariantDownloadCreateManyInput[]
+                  quality: {
+                    notIn: variant.downloads.map(({ quality }) => quality)
+                  }
+                }
               })
 
-            const subtitles = variants
-              .map((variant) =>
-                variant.subtitle?.map((subtitle) => ({
-                  ...subtitle,
-                  videoVariantId: variant.id
-                }))
-              )
-              .flat()
-              .filter((subtitle) => subtitle != null)
-            if (subtitles.length > 0)
-              await tx.videoVariantSubtitle.createMany({
-                data: subtitles as unknown as Prisma.VideoVariantSubtitleCreateManyInput[]
+              for (let i = 0; i < (variant.downloads ?? []).length; i++) {
+                const download = variant.downloads[i]
+                await tx.videoVariantDownload.upsert({
+                  where: {
+                    quality_videoVariantId: {
+                      quality: download.quality,
+                      videoVariantId: variant.id
+                    }
+                  },
+                  create: {
+                    videoVariantId: variant.id,
+                    ...download
+                  },
+                  update: download
+                })
+              }
+            }
+
+            if (variant.subtitle != null) {
+              // clean up dead subtitles
+              await tx.videoVariantSubtitle.deleteMany({
+                where: {
+                  videoVariantId: variant.id,
+                  languageId: {
+                    notIn: variant.subtitle.map(({ languageId }) => languageId)
+                  }
+                }
               })
 
-            i += numberToProcessSimultaneously
-          } while (i < video.variants.length)
+              for (let i = 0; i < (variant.subtitle ?? []).length; i++) {
+                const subtitle = variant.subtitle[i]
+                await tx.videoVariantSubtitle.upsert({
+                  where: {
+                    videoVariantId_languageId: {
+                      languageId: subtitle.languageId,
+                      videoVariantId: variant.id
+                    }
+                  },
+                  create: {
+                    ...subtitle,
+                    videoVariantId: variant.id
+                  },
+                  update: subtitle
+                })
+              }
+            }
+          }
           videoChildIds[video.id] = video.childIds
         },
         {
-          timeout: 60000
+          timeout: 6000000
         }
       )
     }

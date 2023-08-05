@@ -204,7 +204,8 @@ export function transformArclightMediaComponentToVideo(
   mediaComponentLinks: string[],
   languages: Language[],
   usedSlugs: Record<string, string>
-): Omit<Prisma.VideoUncheckedCreateInput, 'variants'> & {
+): Omit<Prisma.VideoUncheckedCreateInput, 'variants' | 'title'> & {
+  title: Prisma.VideoTitleUncheckedCreateInput[]
   variants: Array<
     Omit<Prisma.VideoVariantUncheckedCreateInput, 'downloads' | 'subtitle'> & {
       downloads?: Prisma.VideoVariantDownloadUncheckedCreateInput[]
@@ -249,13 +250,13 @@ export function transformArclightMediaComponentToVideo(
     id: mediaComponent.mediaComponentId,
     label: VideoLabel[mediaComponent.subType],
     primaryLanguageId: mediaComponent.primaryLanguageId.toString(),
-    title: {
-      create: {
+    title: [
+      {
         value: mediaComponent.title,
         languageId: metadataLanguageId,
         primary: true
       }
-    },
+    ],
     seoTitle: [
       {
         value: mediaComponent.title,
@@ -331,7 +332,8 @@ export async function fetchMediaComponentsAndTransformToVideos(
   page: number
 ): Promise<
   Array<
-    Omit<Prisma.VideoUncheckedCreateInput, 'variants'> & {
+    Omit<Prisma.VideoUncheckedCreateInput, 'variants' | 'title'> & {
+      title: Prisma.VideoTitleUncheckedCreateInput[]
       variants: Array<
         Omit<
           Prisma.VideoVariantUncheckedCreateInput,
