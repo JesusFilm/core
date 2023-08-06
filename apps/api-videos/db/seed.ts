@@ -265,27 +265,26 @@ async function importMediaComponents(): Promise<void> {
         }
       )
     }
-    videos = []
     const duration = new Date().getTime() - startTime
     console.log('importMediaComponents duration(s):', duration * 0.001)
     console.log('importMediaComponents page:', page)
     page++
   } while (videos.length > 0)
-  // for (const [key, value] of Object.entries(videoChildIds)) {
-  //   if (value.length === 0) continue
-  //   await prisma.video.update({
-  //     where: { id: key },
-  //     data: {
-  //       children: { connect: value.map((id) => ({ id })) }
-  //     }
-  //   })
-  //   for (let index = 0; index < value.length; index++) {
-  //     await prisma.video.update({
-  //       where: { id: value[index] },
-  //       data: { sortOrder: index }
-  //     })
-  //   }
-  // }
+  for (const [key, value] of Object.entries(videoChildIds)) {
+    if (value.length === 0) continue
+    await prisma.video.update({
+      where: { id: key },
+      data: {
+        children: { connect: value.map((id) => ({ id })) }
+      }
+    })
+    for (let index = 0; index < value.length; index++) {
+      await prisma.video.update({
+        where: { id: value[index] },
+        data: { sortOrder: index }
+      })
+    }
+  }
 }
 
 async function main(): Promise<void> {

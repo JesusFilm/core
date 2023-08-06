@@ -620,7 +620,7 @@ describe('arclight', () => {
       mockFetch.mockImplementation(async (url) => {
         let response
         switch (url) {
-          case 'https://api.arclight.org/v2/media-components?limit=25&isDeprecated=false&contentTypes=video&page=1&apiKey=':
+          case 'https://api.arclight.org/v2/media-components?limit=10&isDeprecated=false&contentTypes=video&page=1&apiKey=':
             response = {
               _embedded: {
                 mediaComponents: [
