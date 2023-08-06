@@ -100,14 +100,14 @@ export async function getArclightMediaComponents(
     message?: string
   } = await (
     await fetchPlus(
-      `https://api.arclight.org/v2/media-components?limit=25&isDeprecated=false&contentTypes=video&page=${page}&apiKey=${
+      `https://api.arclight.org/v2/media-components?limit=10&isDeprecated=false&contentTypes=video&page=${page}&apiKey=${
         process.env.ARCLIGHT_API_KEY ?? ''
       }`
     )
   ).json()
   if (
     response.message?.match(
-      /Page \[\d\d\] does not exist. Given a limit of \[25\] per page, value must not be greater than \[\d\d\]\./
+      /Page \[\d\d\] does not exist. Given a limit of \[10\] per page, value must not be greater than \[\d\d\]\./
     ) != null
   )
     return []

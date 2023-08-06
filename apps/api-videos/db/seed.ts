@@ -265,6 +265,7 @@ async function importMediaComponents(): Promise<void> {
         }
       )
     }
+    videos = []
     const duration = new Date().getTime() - startTime
     console.log('importMediaComponents duration(s):', duration * 0.001)
     console.log('importMediaComponents page:', page)

@@ -67,7 +67,7 @@ describe('arclight', () => {
       await expect(getArclightMediaComponents(1)).resolves.toEqual([])
       expect(request).toHaveBeenCalledWith(
         expect.stringContaining(
-          'https://api.arclight.org/v2/media-components?limit=25&isDeprecated=false&contentTypes=video&page=1&apiKey='
+          'https://api.arclight.org/v2/media-components?limit=10&isDeprecated=false&contentTypes=video&page=1&apiKey='
         ),
         undefined
       )
@@ -79,13 +79,13 @@ describe('arclight', () => {
         json: async () =>
           await Promise.resolve({
             message:
-              'Page [30] does not exist. Given a limit of [25] per page, value must not be greater than [29].'
+              'Page [30] does not exist. Given a limit of [10] per page, value must not be greater than [29].'
           })
       } as unknown as Response)
       await expect(getArclightMediaComponents(1)).resolves.toEqual([])
       expect(request).toHaveBeenCalledWith(
         expect.stringContaining(
-          'https://api.arclight.org/v2/media-components?limit=25&isDeprecated=false&contentTypes=video&page=1&apiKey='
+          'https://api.arclight.org/v2/media-components?limit=10&isDeprecated=false&contentTypes=video&page=1&apiKey='
         ),
         undefined
       )
