@@ -11,12 +11,14 @@ import Chip from '@mui/material/Chip'
 import Skeleton from '@mui/material/Skeleton'
 import { LanguageOption } from '@core/shared/ui/LanguageAutocomplete'
 import { gql, useLazyQuery } from '@apollo/client'
+import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { GetVideo } from '../../../../../../__generated__/GetVideo'
 import { VideoBlockSource } from '../../../../../../__generated__/globalTypes'
 import { VideoLanguage } from '../../VideoLanguage'
 import 'video.js/dist/video-js.css'
 import type { VideoDetailsProps } from '../../VideoDetails/VideoDetails'
 import { VideoDescription } from '../../VideoDescription'
+import { GetJourney_journey_blocks_VideoBlock as VideoBlock } from '../../../../../../__generated__/GetJourney'
 
 export const GET_VIDEO = gql`
   query GetVideo($id: ID!, $languageId: ID!) {
@@ -56,15 +58,24 @@ export function LocalDetails({
   const videoRef = useRef<HTMLVideoElement>(null)
   const playerRef = useRef<Player>()
   const [playing, setPlaying] = useState(false)
+  const {
+    state: { selectedBlock }
+  } = useEditor()
 
-  const [openLanguage, setOpenLanguage] = useState(false)
-  const [selectedLanguage, setSelectedLanguage] = useState<LanguageOption>({
+  const videoBlock = selectedBlock as VideoBlock
+
+  const defaultLanguage = {
     id: '529',
     localName: undefined,
     nativeName: 'English'
-  })
+  }
+
+  const [openLanguage, setOpenLanguage] = useState(false)
+  const [selectedLanguage, setSelectedLanguage] =
+    useState<LanguageOption>(defaultLanguage)
+
   const [loadVideo, { data, loading }] = useLazyQuery<GetVideo>(GET_VIDEO, {
-    variables: { id, languageId: '529' }
+    variables: { id, languageId: videoBlock?.videoVariantLanguageId ?? '529' }
   })
 
   const handleChange = (selectedLanguage: LanguageOption): void => {
@@ -74,7 +85,7 @@ export function LocalDetails({
   const handleSelect = (): void => {
     onSelect({
       videoId: id,
-      videoVariantLanguageId: selectedLanguage.id,
+      videoVariantLanguageId: selectedLanguage?.id,
       duration: time,
       source: VideoBlockSource.internal,
       startAt: 0,
@@ -91,7 +102,45 @@ export function LocalDetails({
   const videoDescription =
     data?.video?.description?.find(({ primary }) => primary)?.value ?? ''
 
+  function getVideoVariantLanguage(
+    id: string,
+    data: GetVideo | undefined
+  ): LanguageOption | undefined {
+    const videoVariant = data?.video?.variantLanguages.find(
+      (variant) => variant.id === id
+    )
+
+    if (videoVariant != null) {
+      const localName = videoVariant.name?.find(
+        ({ primary }) => !primary
+      )?.value
+
+      const nativeName = videoVariant.name?.find(
+        ({ primary }) => primary
+      )?.value
+
+      return { id, localName, nativeName }
+    }
+  }
+
   useEffect(() => {
+    const videoBlockLanguageId = videoBlock?.videoVariantLanguageId
+    let newSelectedLanguage: LanguageOption | undefined = defaultLanguage
+
+    if (
+      data != null &&
+      videoBlockLanguageId != null &&
+      videoBlock?.videoId === id &&
+      videoBlockLanguageId !== selectedLanguage?.id
+    ) {
+      const videoVariantLanguage = getVideoVariantLanguage(
+        videoBlockLanguageId,
+        data
+      )
+      newSelectedLanguage = videoVariantLanguage ?? defaultLanguage
+    }
+    setSelectedLanguage(newSelectedLanguage)
+
     if (videoRef.current != null && data != null) {
       playerRef.current = videojs(videoRef.current, {
         fluid: true,
@@ -102,6 +151,8 @@ export function LocalDetails({
         setPlaying(true)
       })
     }
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data])
 
   useEffect(() => {
@@ -181,7 +232,7 @@ export function LocalDetails({
         sx={{ justifyContent: 'space-between' }}
       >
         <Chip
-          label="Other Languages"
+          label={selectedLanguage?.localName ?? selectedLanguage?.nativeName}
           onClick={() => setOpenLanguage(true)}
           avatar={<ArrowDropDown />}
           disabled={loading}
