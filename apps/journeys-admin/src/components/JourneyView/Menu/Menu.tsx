@@ -123,7 +123,7 @@ export function Menu(): ReactElement {
         })
   }
   const handleTemplate = async (teamId: string | undefined): Promise<void> => {
-    if (journey == null) return
+    if (journey == null || teamId == null) return
 
     const { data } = await journeyDuplicate({
       variables: { id: journey.id, teamId }
