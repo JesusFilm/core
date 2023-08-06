@@ -111,7 +111,7 @@ describe('journeyAcl', () => {
     })
     it('deny template field when user is not publisher', () => {
       expect(
-        ability.can(Action.Manage, journeyUnpublishedTemplate, 'template')
+        ability.can(Action.Manage, journeyUserTeamManager, 'template')
       ).toEqual(false)
     })
     describe('publisher', () => {
@@ -123,10 +123,20 @@ describe('journeyAcl', () => {
           true
         )
       })
-      it('allow template field when user is publisher', () => {
+      it('allow template field when user is publisher and team manager', () => {
         expect(
-          ability.can(Action.Manage, journeyUnpublishedTemplate, 'template')
+          ability.can(Action.Manage, journeyUserTeamManager, 'template')
         ).toEqual(true)
+      })
+      it('allow template field when user is publisher and journey owner', () => {
+        expect(
+          ability.can(Action.Manage, journeyUserJourneyOwner, 'template')
+        ).toEqual(true)
+      })
+      it('deny when user is publisher but has no userTeam or userJourneys', () => {
+        expect(ability.can(Action.Manage, journeyEmpty, 'template')).toEqual(
+          false
+        )
       })
     })
   })
