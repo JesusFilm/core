@@ -34,7 +34,7 @@ const block: TreeBlock<TextResponseBlock> = {
   children: []
 }
 
-const pageData = {
+const pageData: { journey: Journey; variant: 'default' | 'admin' | 'embed' } = {
   journey: { id: 'journey.id' } as unknown as Journey,
   variant: 'admin'
 }
