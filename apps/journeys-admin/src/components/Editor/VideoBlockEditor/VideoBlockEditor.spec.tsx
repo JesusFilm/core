@@ -4,7 +4,6 @@ import { SnackbarProvider } from 'notistack'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 
-
 import { GetJourney_journey_blocks_VideoBlock as VideoBlock } from '../../../../__generated__/GetJourney'
 import { GetVideoVariantLanguages_video } from '../../../../__generated__/GetVideoVariantLanguages'
 import { VideoBlockSource } from '../../../../__generated__/globalTypes'

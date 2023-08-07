@@ -20,7 +20,6 @@ import {
 import { CaslAuthModule } from '@core/nest/common/CaslAuthModule'
 import { getPowerBiEmbed } from '@core/nest/powerBi/getPowerBiEmbed'
 
-
 import {
   IdType,
   JourneyStatus,

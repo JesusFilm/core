@@ -10,7 +10,6 @@ import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { transformer } from '@core/journeys/ui/transformer'
 
-
 import { BlockDuplicate } from '../../../__generated__/BlockDuplicate'
 import {
   BlockFields,

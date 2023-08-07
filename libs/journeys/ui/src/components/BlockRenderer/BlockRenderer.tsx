@@ -17,7 +17,6 @@ import {
 } from '../../libs/block/__generated__/BlockFields'
 import { Video } from '../Video'
 
-
 export interface WrapperProps<T = Block> {
   block: TreeBlock<T>
   children: ReactElement

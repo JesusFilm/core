@@ -16,7 +16,6 @@ import { useTranslation } from 'react-i18next'
 
 import { SubmitListener } from '@core/shared/ui/SubmitListener'
 
-
 import { GetVisitorForForm } from '../../../../__generated__/GetVisitorForForm'
 import {
   MessagePlatform,

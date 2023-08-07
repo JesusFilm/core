@@ -4,7 +4,6 @@ import MuiTextField, {
 import { useField } from 'formik'
 import { ReactElement } from 'react'
 
-
 interface TextFieldProps
   extends Omit<MuiTextFieldProps, 'variant' | 'error' | 'fullWidth'> {}
 

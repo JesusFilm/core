@@ -6,7 +6,6 @@ import type { TreeBlock } from '@core/journeys/ui/block'
 import { ActiveJourneyEditContent } from '@core/journeys/ui/EditorProvider'
 import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 
-
 import { GetJourney_journey as Journey } from '../../../__generated__/GetJourney'
 import {
   JourneyStatus,

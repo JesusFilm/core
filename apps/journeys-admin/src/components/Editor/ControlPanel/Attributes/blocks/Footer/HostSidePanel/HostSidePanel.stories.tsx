@@ -7,7 +7,6 @@ import { ComponentProps } from 'react'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { JourneyFields as Journey } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
 
-
 import { journeysAdminConfig } from '../../../../../../../libs/storybook'
 import { ThemeProvider } from '../../../../../../ThemeProvider'
 

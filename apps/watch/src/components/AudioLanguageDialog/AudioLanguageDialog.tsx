@@ -10,7 +10,6 @@ import { ComponentProps, ReactElement } from 'react'
 import { Dialog } from '@core/shared/ui/Dialog'
 import { LanguageAutocomplete } from '@core/shared/ui/LanguageAutocomplete'
 
-
 import { GetLanguagesSlug } from '../../../__generated__/GetLanguagesSlug'
 import { useVideo } from '../../libs/videoContext'
 

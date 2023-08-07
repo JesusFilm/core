@@ -17,7 +17,6 @@ import Viber from '@core/shared/ui/icons/Viber'
 import Vk from '@core/shared/ui/icons/Vk'
 import WhatsApp from '@core/shared/ui/icons/WhatsApp'
 
-
 import { ChatPlatform } from '../../../../__generated__/globalTypes'
 import { useBlocks } from '../../../libs/block'
 import { useJourney } from '../../../libs/JourneyProvider'

@@ -6,7 +6,6 @@ import { ComponentProps, ReactElement } from 'react'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { JourneyFields as Journey } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
 
-
 import { ThemeMode, ThemeName } from '../../../__generated__/globalTypes'
 import { journeysConfig } from '../../libs/storybook'
 import {

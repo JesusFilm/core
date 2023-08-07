@@ -14,7 +14,6 @@ import { ReactElement, useEffect, useState } from 'react'
 
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 
-
 import { ActionDetails } from '../../ActionDetails'
 import { ActionInformation } from '../../ActionDetails/ActionInformation'
 import type { Actions } from '../ActionsTable'

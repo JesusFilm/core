@@ -9,7 +9,6 @@ import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { RADIO_OPTION_FIELDS } from '@core/journeys/ui/RadioOption/radioOptionFields'
 import { RADIO_QUESTION_FIELDS } from '@core/journeys/ui/RadioQuestion/radioQuestionFields'
 
-
 import { GetJourney_journey_blocks_CardBlock as CardBlock } from '../../../../../../__generated__/GetJourney'
 import { RadioQuestionBlockCreate } from '../../../../../../__generated__/RadioQuestionBlockCreate'
 import { Button } from '../../Button'

@@ -5,7 +5,6 @@ import { fireEvent, render, waitFor } from '@testing-library/react'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { JourneyFields as Journey } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
 
-
 import { useHostUpdate } from '../../../../../../../../../libs/useHostUpdate'
 import { UPDATE_HOST } from '../../../../../../../../../libs/useHostUpdate/useHostUpdate'
 

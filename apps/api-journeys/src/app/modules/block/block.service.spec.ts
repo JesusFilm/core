@@ -5,7 +5,6 @@ import { v4 as uuidv4 } from 'uuid'
 
 import { Action, Block, Prisma } from '.prisma/api-journeys-client'
 
-
 import {
   JourneyStatus,
   ThemeMode,

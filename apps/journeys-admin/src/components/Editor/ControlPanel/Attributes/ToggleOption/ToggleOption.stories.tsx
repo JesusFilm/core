@@ -6,7 +6,6 @@ import noop from 'lodash/noop'
 
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 
-
 import { simpleComponentConfig } from '../../../../../libs/storybook'
 import { Drawer } from '../../../Drawer'
 

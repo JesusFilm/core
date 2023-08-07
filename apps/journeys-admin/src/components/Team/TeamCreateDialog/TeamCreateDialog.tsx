@@ -6,7 +6,6 @@ import { useTranslation } from 'react-i18next'
 
 import { Dialog } from '@core/shared/ui/Dialog'
 
-
 import { TeamCreateForm } from '../TeamCreateForm'
 
 interface TeamCreateDialogProps {

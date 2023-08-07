@@ -4,7 +4,6 @@ import { Meta, Story } from '@storybook/react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 
-
 import {
   GetJourney_journey_blocks_CardBlock as CardBlock,
   GetJourney_journey_blocks_ImageBlock as ImageBlock

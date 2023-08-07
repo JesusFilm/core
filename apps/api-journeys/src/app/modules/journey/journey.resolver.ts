@@ -32,7 +32,6 @@ import {
   getPowerBiEmbed
 } from '@core/nest/powerBi/getPowerBiEmbed'
 
-
 import {
   IdType,
   JourneyCreateInput,

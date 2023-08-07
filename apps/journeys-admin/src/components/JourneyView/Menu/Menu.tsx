@@ -20,7 +20,6 @@ import { ReactElement, useState } from 'react'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 
-
 import { GetRole } from '../../../../__generated__/GetRole'
 import {
   JourneyStatus,

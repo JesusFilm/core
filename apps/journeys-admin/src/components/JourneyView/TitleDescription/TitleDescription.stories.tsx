@@ -4,7 +4,6 @@ import { SnackbarProvider } from 'notistack'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
-
 import { ApolloLoadingProvider } from '../../../../test/ApolloLoadingProvider'
 import { simpleComponentConfig } from '../../../libs/storybook'
 import { defaultJourney } from '../data'

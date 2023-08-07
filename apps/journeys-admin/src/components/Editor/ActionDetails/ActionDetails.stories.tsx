@@ -5,7 +5,6 @@ import { ComponentProps } from 'react'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
-
 import { journeysAdminConfig } from '../../../libs/storybook'
 
 import { journey } from './data'

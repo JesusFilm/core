@@ -26,7 +26,6 @@ import Target from '@core/shared/ui/icons/Target'
 import ThumbsUp from '@core/shared/ui/icons/ThumbsUp'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 
-
 import { BlockFields_StepBlock as StepBlock } from '../../../../__generated__/BlockFields'
 import { GetUserRole } from '../../../../__generated__/GetUserRole'
 import {

@@ -8,7 +8,6 @@ import type { TreeBlock } from '@core/journeys/ui/block'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { useBreakpoints } from '@core/shared/ui/useBreakpoints'
 
-
 import { BlockFields_StepBlock as StepBlock } from '../../../../__generated__/BlockFields'
 import { CardPreview, OnSelectProps } from '../../CardPreview'
 

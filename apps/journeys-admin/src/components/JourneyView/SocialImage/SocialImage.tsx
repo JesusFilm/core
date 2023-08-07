@@ -5,7 +5,6 @@ import { ReactElement } from 'react'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { NextImage } from '@core/shared/ui/NextImage'
 
-
 export function SocialImage(): ReactElement {
   const { journey } = useJourney()
 

@@ -13,7 +13,6 @@ import { useTranslation } from 'react-i18next'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { JOURNEY_FIELDS } from '@core/journeys/ui/JourneyProvider/journeyFields'
 
-
 import { ACCEPT_ALL_INVITES } from '..'
 import { AcceptAllInvites } from '../../__generated__/AcceptAllInvites'
 import { GetJourney } from '../../__generated__/GetJourney'

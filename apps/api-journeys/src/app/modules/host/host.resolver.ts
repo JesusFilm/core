@@ -6,7 +6,6 @@ import { GraphQLError } from 'graphql'
 import { Host, Prisma } from '.prisma/api-journeys-client'
 import { CaslAbility, CaslAccessible } from '@core/nest/common/CaslAuthModule'
 
-
 import { HostCreateInput, HostUpdateInput } from '../../__generated__/graphql'
 import { Action, AppAbility } from '../../lib/casl/caslFactory'
 import { AppCaslGuard } from '../../lib/casl/caslGuard'

@@ -15,7 +15,6 @@ import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { getJourneyRTL } from '@core/journeys/ui/rtl'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 
-
 import {
   ThemeMode,
   ThemeName

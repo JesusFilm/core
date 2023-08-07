@@ -12,7 +12,6 @@ import { DeepMockProxy } from 'jest-mock-extended'
 import { IdAsKey } from '@core/nest/decorators/IdAsKey'
 import { KeyAsId } from '@core/nest/decorators/KeyAsId'
 
-
 @Injectable()
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export abstract class BaseService<T extends Record<string, any> = any> {

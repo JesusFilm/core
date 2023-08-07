@@ -7,7 +7,6 @@ import omit from 'lodash/omit'
 import { Block } from '.prisma/api-journeys-client'
 import { CaslAbility } from '@core/nest/common/CaslAuthModule'
 
-
 import {
   TypographyBlockCreateInput,
   TypographyBlockUpdateInput

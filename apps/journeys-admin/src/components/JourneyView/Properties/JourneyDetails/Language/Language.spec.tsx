@@ -4,7 +4,6 @@ import { SnackbarProvider } from 'notistack'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
-
 import { GetJourney_journey as Journey } from '../../../../../../__generated__/GetJourney'
 import { defaultJourney } from '../../../data'
 

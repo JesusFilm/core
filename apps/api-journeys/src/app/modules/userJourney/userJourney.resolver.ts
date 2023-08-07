@@ -19,7 +19,6 @@ import {
 import { CaslAbility, CaslAccessible } from '@core/nest/common/CaslAuthModule'
 import { CurrentUserId } from '@core/nest/decorators/CurrentUserId'
 
-
 import { Action, AppAbility } from '../../lib/casl/caslFactory'
 import { AppCaslGuard } from '../../lib/casl/caslGuard'
 import { PrismaService } from '../../lib/prisma.service'

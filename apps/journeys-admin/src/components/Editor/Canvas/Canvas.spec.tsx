@@ -13,7 +13,6 @@ import {
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 
-
 import {
   GetJourney_journey as Journey,
   GetJourney_journey_blocks_StepBlock as StepBlock

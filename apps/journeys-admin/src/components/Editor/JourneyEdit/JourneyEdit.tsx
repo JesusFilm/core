@@ -7,7 +7,6 @@ import {
   useEditor
 } from '@core/journeys/ui/EditorProvider'
 
-
 import { ActionsTable } from '../ActionsTable'
 import { Canvas } from '../Canvas'
 import { ControlPanel } from '../ControlPanel'

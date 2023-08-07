@@ -6,7 +6,6 @@ import { ReactElement, useEffect, useMemo } from 'react'
 
 import { Dialog } from '@core/shared/ui/Dialog'
 
-
 import {
   GetJourneyWithUserJourneys,
   GetJourneyWithUserJourneys_journey_userJourneys as UserJourney

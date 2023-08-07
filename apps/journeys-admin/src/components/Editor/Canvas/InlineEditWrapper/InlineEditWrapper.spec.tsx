@@ -10,7 +10,6 @@ import { SignUp } from '@core/journeys/ui/SignUp'
 import { TextResponse } from '@core/journeys/ui/TextResponse'
 import { Typography } from '@core/journeys/ui/Typography'
 
-
 import { ButtonFields } from '../../../../../__generated__/ButtonFields'
 import { TypographyVariant } from '../../../../../__generated__/globalTypes'
 import { RadioOptionFields } from '../../../../../__generated__/RadioOptionFields'

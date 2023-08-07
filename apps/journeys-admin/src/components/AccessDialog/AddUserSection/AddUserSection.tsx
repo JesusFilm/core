@@ -11,7 +11,6 @@ import { useTranslation } from 'react-i18next'
 
 import { CopyTextField } from '@core/shared/ui/CopyTextField'
 
-
 import { MenuItem } from '../../MenuItem'
 
 import { EmailInviteForm } from './EmailInviteForm'

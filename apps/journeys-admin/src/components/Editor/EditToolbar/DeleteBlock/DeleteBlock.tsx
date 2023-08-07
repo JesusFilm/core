@@ -9,7 +9,6 @@ import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { Dialog } from '@core/shared/ui/Dialog'
 
-
 import { BlockDelete } from '../../../../../__generated__/BlockDelete'
 import { blockDeleteUpdate } from '../../../../libs/blockDeleteUpdate/blockDeleteUpdate'
 import { MenuItem } from '../../../MenuItem'

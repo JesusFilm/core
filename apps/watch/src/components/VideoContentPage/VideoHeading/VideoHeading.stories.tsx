@@ -6,7 +6,6 @@ import { ComponentProps, ReactElement } from 'react'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import { ThemeMode, ThemeName } from '@core/shared/ui/themes'
 
-
 import { VideoContentFields } from '../../../../__generated__/VideoContentFields'
 import { watchConfig } from '../../../libs/storybook'
 import { VideoProvider } from '../../../libs/videoContext'

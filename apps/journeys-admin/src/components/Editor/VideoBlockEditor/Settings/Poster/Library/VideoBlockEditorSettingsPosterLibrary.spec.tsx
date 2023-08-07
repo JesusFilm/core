@@ -6,7 +6,6 @@ import { fireEvent, render, waitFor } from '@testing-library/react'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
-
 import {
   GetJourney_journey_blocks_ImageBlock as ImageBlock,
   GetJourney_journey as Journey,

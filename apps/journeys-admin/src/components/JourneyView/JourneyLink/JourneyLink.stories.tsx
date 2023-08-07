@@ -4,7 +4,6 @@ import { Meta, Story } from '@storybook/react'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
-
 import { ApolloLoadingProvider } from '../../../../test/ApolloLoadingProvider'
 import { simpleComponentConfig } from '../../../libs/storybook'
 import { publishedJourney } from '../data'

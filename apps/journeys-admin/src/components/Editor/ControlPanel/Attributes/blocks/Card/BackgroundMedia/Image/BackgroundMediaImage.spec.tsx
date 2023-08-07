@@ -7,7 +7,6 @@ import { SnackbarProvider } from 'notistack'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
-
 import {
   GetJourney_journey_blocks_CardBlock as CardBlock,
   GetJourney_journey_blocks_ImageBlock as ImageBlock,

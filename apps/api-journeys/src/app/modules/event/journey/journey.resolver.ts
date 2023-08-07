@@ -8,7 +8,6 @@ import { CurrentUserAgent } from '@core/nest/decorators/CurrentUserAgent'
 import { CurrentUserId } from '@core/nest/decorators/CurrentUserId'
 import { GqlAuthGuard } from '@core/nest/gqlAuthGuard/GqlAuthGuard'
 
-
 import {
   JourneyViewEvent,
   JourneyViewEventCreateInput

@@ -10,7 +10,6 @@ import type { TreeBlock } from '@core/journeys/ui/block'
 import { blurImage } from '@core/journeys/ui/blurImage'
 import { NextImage } from '@core/shared/ui/NextImage'
 
-
 import {
   GetJourney_journey_blocks_ImageBlock as ImageBlock,
   GetJourney_journey_blocks_VideoBlock as VideoBlock

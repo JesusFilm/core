@@ -13,7 +13,6 @@ import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { STEP_FIELDS } from '@core/journeys/ui/Step/stepFields'
 import { transformer } from '@core/journeys/ui/transformer'
 
-
 import { GetJourney_journey_blocks_StepBlock as StepBlock } from '../../../__generated__/GetJourney'
 import { StepAndCardBlockCreate } from '../../../__generated__/StepAndCardBlockCreate'
 import { StepsOrderUpdate } from '../../../__generated__/StepsOrderUpdate'

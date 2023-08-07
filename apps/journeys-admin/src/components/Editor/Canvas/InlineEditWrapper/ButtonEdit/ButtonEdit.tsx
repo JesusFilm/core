@@ -6,7 +6,6 @@ import type { TreeBlock } from '@core/journeys/ui/block'
 import { Button } from '@core/journeys/ui/Button'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 
-
 import { ButtonBlockUpdateContent } from '../../../../../../__generated__/ButtonBlockUpdateContent'
 import { ButtonFields } from '../../../../../../__generated__/ButtonFields'
 import { InlineEditInput } from '../InlineEditInput'

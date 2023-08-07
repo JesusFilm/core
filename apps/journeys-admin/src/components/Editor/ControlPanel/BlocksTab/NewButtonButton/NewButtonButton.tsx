@@ -13,7 +13,6 @@ import {
 import { ICON_FIELDS } from '@core/journeys/ui/Icon/iconFields'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 
-
 import { ButtonBlockCreate } from '../../../../../../__generated__/ButtonBlockCreate'
 import { GetJourney_journey_blocks_CardBlock as CardBlock } from '../../../../../../__generated__/GetJourney'
 import {

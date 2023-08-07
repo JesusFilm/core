@@ -4,7 +4,6 @@ import { ComponentProps } from 'react'
 
 import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 
-
 import {
   JourneyStatus,
   ThemeMode,

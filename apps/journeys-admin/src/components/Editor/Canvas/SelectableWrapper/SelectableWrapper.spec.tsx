@@ -11,7 +11,6 @@ import { RadioQuestion } from '@core/journeys/ui/RadioQuestion'
 import { SignUp } from '@core/journeys/ui/SignUp'
 import { Typography } from '@core/journeys/ui/Typography'
 
-
 import { ButtonFields } from '../../../../../__generated__/ButtonFields'
 import { TypographyVariant } from '../../../../../__generated__/globalTypes'
 import { ImageFields } from '../../../../../__generated__/ImageFields'

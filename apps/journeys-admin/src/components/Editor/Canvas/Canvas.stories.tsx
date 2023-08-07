@@ -6,7 +6,6 @@ import type { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider, EditorState } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
-
 import {
   GetJourney_journey as Journey,
   GetJourney_journey_blocks_StepBlock as StepBlock

@@ -6,7 +6,6 @@ import { ReactElement } from 'react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 
-
 import { GetJourney_journey_blocks_VideoBlock as VideoBlock } from '../../../../../../__generated__/GetJourney'
 import { ImageBlockThumbnail } from '../../../ImageBlockThumbnail'
 

@@ -12,7 +12,6 @@ import { useTranslation } from 'react-i18next'
 
 import { useFlags } from '@core/shared/ui/FlagsProvider'
 
-
 import { AcceptAllInvites } from '../__generated__/AcceptAllInvites'
 import {
   GetOnboardingJourneys,

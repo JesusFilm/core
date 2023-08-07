@@ -7,7 +7,6 @@ import { NextSeo } from 'next-seo'
 import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
 
-
 import { ACCEPT_ALL_INVITES } from '..'
 import { AcceptAllInvites } from '../../__generated__/AcceptAllInvites'
 import { TermsAndConditions } from '../../src/components/TermsAndConditions'
