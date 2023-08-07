@@ -82,7 +82,7 @@ const Template: Story<ComponentProps<typeof SignUp>> = ({
   ...args
 }): ReactElement => (
   <MockedProvider mocks={[submitEventMock]}>
-    <JourneyProvider value={{ variant: 'admin' }}>
+    <JourneyProvider>
       <SnackbarProvider>
         <StoryCard>
           <Typography {...typographyProps} />
