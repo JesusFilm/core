@@ -29,7 +29,10 @@ export function StepHeader(): ReactElement {
     <Stack
       data-testid="stepHeader"
       sx={{
-        width: { xs: '100%', lg: 'unset' },
+        width: {
+          xs: 'calc(100% - env(safe-area-inset-left) - env(safe-area-inset-right))',
+          lg: 'unset'
+        },
         mt: { xs: 1, lg: 0 },
         position: { xs: 'absolute', lg: 'relative' },
         zIndex: 1,
