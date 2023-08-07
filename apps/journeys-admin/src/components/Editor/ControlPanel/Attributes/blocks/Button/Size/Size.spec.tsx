@@ -3,8 +3,12 @@ import { fireEvent, render, waitFor } from '@testing-library/react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
-import { GetJourney_journey_blocks_ButtonBlock as ButtonBlock } from '../../../../../../../../__generated__/GetJourney'
+import {
+  GetJourney_journey_blocks_ButtonBlock as ButtonBlock,
+  GetJourney_journey as Journey
+} from '../../../../../../../../__generated__/GetJourney'
 import { ButtonSize } from '../../../../../../../../__generated__/globalTypes'
 
 import { BUTTON_BLOCK_UPDATE } from './Size'
@@ -74,7 +78,7 @@ describe('Button size selector', () => {
               query: BUTTON_BLOCK_UPDATE,
               variables: {
                 id: 'id',
-                journeyId: undefined,
+                journeyId: 'journeyId',
                 input: {
                   size: 'small'
                 }
@@ -84,9 +88,16 @@ describe('Button size selector', () => {
           }
         ]}
       >
-        <EditorProvider initialState={{ selectedBlock }}>
-          <Size />
-        </EditorProvider>
+        <JourneyProvider
+          value={{
+            journey: { id: 'journeyId' } as unknown as Journey,
+            admin: true
+          }}
+        >
+          <EditorProvider initialState={{ selectedBlock }}>
+            <Size />
+          </EditorProvider>
+        </JourneyProvider>
       </MockedProvider>
     )
     expect(getByRole('button', { name: 'Medium' })).toHaveClass('Mui-selected')
