@@ -1,6 +1,4 @@
 import { ReactElement } from 'react'
-// TODO: remove when teams is released
-import { useFlags } from '@core/shared/ui/FlagsProvider'
 import EditIcon from '@mui/icons-material/Edit'
 import PeopleIcon from '@mui/icons-material/People'
 import VisibilityIcon from '@mui/icons-material/Visibility'
@@ -40,8 +38,6 @@ export function DefaultMenu({
   template,
   refetch
 }: DefaultMenuProps): ReactElement {
-  // TODO: remove when teams is released
-  const { teams } = useFlags()
   return (
     <>
       <NextLink
@@ -76,12 +72,7 @@ export function DefaultMenu({
         <DuplicateJourneyMenuItem id={id} handleCloseMenu={handleCloseMenu} />
       )}
       <Divider />
-      {
-        // TODO: remove when teams is released
-        teams && (
-          <CopyToTeamMenuItem id={id} handleCloseMenu={handleCloseMenu} />
-        )
-      }
+      <CopyToTeamMenuItem id={id} handleCloseMenu={handleCloseMenu} />
       <ArchiveJourney
         status={status}
         id={journeyId}
