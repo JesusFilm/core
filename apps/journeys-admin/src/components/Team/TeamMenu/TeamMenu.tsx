@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next'
 
 import Edit2 from '@core/shared/ui/icons/Edit2'
 import Plus1 from '@core/shared/ui/icons/Plus1'
-import UsersProfiles2 from '@core/shared/ui/icons/UsersProfiles2'
+import UsersProfiles3 from '@core/shared/ui/icons/UsersProfiles3'
 
 import { MenuItem } from '../../MenuItem'
 import { TeamCreateDialog } from '../TeamCreateDialog'
@@ -76,7 +76,7 @@ export function TeamMenu(): ReactElement {
           disabled={activeTeam == null}
           key="manage-team"
           label={t('Members')}
-          icon={<UsersProfiles2 />}
+          icon={<UsersProfiles3 />}
           onClick={() => {
             setTeamManageOpen(true)
             setAnchorEl(null)

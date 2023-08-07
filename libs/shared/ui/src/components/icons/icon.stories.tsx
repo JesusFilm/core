@@ -142,6 +142,7 @@ const iconNames = [
   'TwitterLogo',
   'UserProfile2',
   'UserProfile3',
+  'UsersProfiles3',
   'UserProfileAdd',
   'UserProfileCircle',
   'UsersProfiles2',
