@@ -3,8 +3,8 @@ import MuiAvatar from '@mui/material/Avatar'
 import { ReactElement } from 'react'
 import UserProfileAdd from '@core/shared/ui/icons/UserProfileAdd'
 import Box from '@mui/material/Box'
-import { GetLastActiveTeamIdAndTeams_teams_userTeams as UserTeam } from '../../../../__generated__/GetLastActiveTeamIdAndTeams'
 import take from 'lodash/take'
+import { GetLastActiveTeamIdAndTeams_teams_userTeams as UserTeam } from '../../../../__generated__/GetLastActiveTeamIdAndTeams'
 import { Avatar } from '../../Avatar'
 
 interface TeamAvatarsProps {
