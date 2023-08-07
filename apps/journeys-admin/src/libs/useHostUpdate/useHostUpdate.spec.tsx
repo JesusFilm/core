@@ -1,8 +1,9 @@
 import { InMemoryCache } from '@apollo/client'
 import { MockedProvider } from '@apollo/client/testing'
 import { waitFor } from '@testing-library/react'
-import { renderHook, act } from '@testing-library/react-hooks'
-import { useHostUpdate, UPDATE_HOST } from './useHostUpdate'
+import { act, renderHook } from '@testing-library/react-hooks'
+
+import { UPDATE_HOST, useHostUpdate } from './useHostUpdate'
 
 describe('useHostUpdate', () => {
   it('returns a function which updates a host by id and teamId', async () => {

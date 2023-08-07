@@ -1,26 +1,28 @@
-import { useEffect, ReactElement } from 'react'
+import { ApolloProvider } from '@apollo/client'
+import { datadogRum } from '@datadog/browser-rum'
+import type { EmotionCache } from '@emotion/cache'
+import { CacheProvider } from '@emotion/react'
+import { SSRConfig, appWithTranslation } from 'next-i18next'
+import { DefaultSeo } from 'next-seo'
 import { AppProps as NextJsAppProps } from 'next/app'
 import Head from 'next/head'
-import { ApolloProvider } from '@apollo/client'
 import { SnackbarProvider } from 'notistack'
-import { DefaultSeo } from 'next-seo'
+import { ReactElement, useEffect } from 'react'
 import TagManager from 'react-gtm-module'
-import { datadogRum } from '@datadog/browser-rum'
-import { CacheProvider } from '@emotion/react'
-import type { EmotionCache } from '@emotion/cache'
+import { useTranslation } from 'react-i18next'
+
 import { createEmotionCache } from '@core/shared/ui/createEmotionCache'
 import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
-import { appWithTranslation, SSRConfig } from 'next-i18next'
-import { useTranslation } from 'react-i18next'
-import { useApollo } from '../src/libs/apolloClient'
-import { ThemeProvider } from '../src/components/ThemeProvider'
-import { initAuth } from '../src/libs/firebaseClient/initAuth'
+
 import i18nConfig from '../next-i18next.config'
 import { HelpScoutBeacon } from '../src/components/HelpScoutBeacon'
-import '../public/swiper-pagination-override.css'
 import { TeamProvider } from '../src/components/Team/TeamProvider'
+import { ThemeProvider } from '../src/components/ThemeProvider'
+import { useApollo } from '../src/libs/apolloClient'
+import { initAuth } from '../src/libs/firebaseClient/initAuth'
 
-// your _app component
+import '../public/swiper-pagination-override.css'
+
 initAuth()
 const clientSideEmotionCache = createEmotionCache({})
 

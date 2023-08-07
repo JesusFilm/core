@@ -1,12 +1,15 @@
-import { fireEvent, render, waitFor } from '@testing-library/react'
-import type { TreeBlock } from '@core/journeys/ui/block'
 import { MockedProvider } from '@apollo/client/testing'
+import { fireEvent, render, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
+
+import type { TreeBlock } from '@core/journeys/ui/block'
+
 import {
-  VideoBlockSource,
-  VideoBlockObjectFit as ObjectFit
+  VideoBlockObjectFit as ObjectFit,
+  VideoBlockSource
 } from '../../../../../__generated__/globalTypes'
 import { ThemeProvider } from '../../../ThemeProvider'
+
 import { VideoBlockEditorSettings } from '.'
 
 const video: TreeBlock = {

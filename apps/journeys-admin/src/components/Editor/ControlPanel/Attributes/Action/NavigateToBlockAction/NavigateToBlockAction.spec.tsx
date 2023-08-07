@@ -1,17 +1,20 @@
-import { MockedProvider } from '@apollo/client/testing'
-import { render, waitFor, fireEvent } from '@testing-library/react'
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
-import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { InMemoryCache } from '@apollo/client'
+import { MockedProvider } from '@apollo/client/testing'
+import { fireEvent, render, waitFor } from '@testing-library/react'
+
+import { EditorProvider } from '@core/journeys/ui/EditorProvider'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+
 import { GetJourney_journey as Journey } from '../../../../../../../__generated__/GetJourney'
 import {
-  ThemeName,
-  ThemeMode
+  ThemeMode,
+  ThemeName
 } from '../../../../../../../__generated__/globalTypes'
 import { steps } from '../data'
+
 import {
-  NavigateToBlockAction,
-  NAVIGATE_TO_BLOCK_ACTION_UPDATE
+  NAVIGATE_TO_BLOCK_ACTION_UPDATE,
+  NavigateToBlockAction
 } from './NavigateToBlockAction'
 
 describe('NavigateToBlockAction', () => {

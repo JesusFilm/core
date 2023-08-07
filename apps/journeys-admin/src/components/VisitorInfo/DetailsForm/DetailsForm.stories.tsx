@@ -1,14 +1,17 @@
-import { Meta, Story } from '@storybook/react'
 import { MockedProvider } from '@apollo/client/testing'
-import { ComponentProps } from 'react'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
+import { Meta, Story } from '@storybook/react'
+import { ComponentProps } from 'react'
+
 import { simpleComponentConfig } from '../../../libs/storybook'
+
 import {
   getVisitorMock,
   getVisitorUnfilledMock,
   visitorUpdateMock
 } from './DetailsFormData'
+
 import { DetailsForm } from '.'
 
 const VisitorDetailFormDemo = {

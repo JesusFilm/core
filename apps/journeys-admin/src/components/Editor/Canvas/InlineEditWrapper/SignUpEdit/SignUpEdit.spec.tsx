@@ -1,12 +1,16 @@
-import { render, fireEvent, waitFor } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
-import { EditorProvider } from '@core/journeys/ui/EditorProvider'
-import type { TreeBlock } from '@core/journeys/ui/block'
+import { fireEvent, render, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
-import { SignUpFields } from '../../../../../../__generated__/SignUpFields'
+
+import type { TreeBlock } from '@core/journeys/ui/block'
+import { EditorProvider } from '@core/journeys/ui/EditorProvider'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+
+
 import { GetJourney_journey as Journey } from '../../../../../../__generated__/GetJourney'
-import { SignUpEdit, SIGN_UP_BLOCK_UPDATE_CONTENT } from '.'
+import { SignUpFields } from '../../../../../../__generated__/SignUpFields'
+
+import { SIGN_UP_BLOCK_UPDATE_CONTENT, SignUpEdit } from '.'
 
 describe('SignUpEdit', () => {
   const props: TreeBlock<SignUpFields> = {

@@ -1,4 +1,5 @@
 import { VisitorStatus } from '../../../../../../__generated__/globalTypes'
+
 import { getStatusIcon } from '.'
 
 describe('getStatusIcon', () => {

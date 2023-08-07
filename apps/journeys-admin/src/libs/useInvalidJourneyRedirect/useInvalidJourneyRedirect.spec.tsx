@@ -1,5 +1,6 @@
 import { renderHook } from '@testing-library/react-hooks'
 import { NextRouter, useRouter } from 'next/router'
+
 import { useInvalidJourneyRedirect } from './useInvalidJourneyRedirect'
 
 jest.mock('next/router', () => ({

@@ -1,10 +1,14 @@
-import { Story, Meta } from '@storybook/react'
 import { MockedProvider } from '@apollo/client/testing'
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import Box from '@mui/material/Box'
+import { Meta, Story } from '@storybook/react'
+
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+
+
 import { ApolloLoadingProvider } from '../../../../test/ApolloLoadingProvider'
 import { simpleComponentConfig } from '../../../libs/storybook'
 import { publishedJourney } from '../data'
+
 import { JourneyLink } from './JourneyLink'
 
 const JourneyLinkStory = {

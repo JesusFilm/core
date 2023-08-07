@@ -1,9 +1,12 @@
-import { render, waitFor } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
-import { SnackbarProvider } from 'notistack'
+import { render, waitFor } from '@testing-library/react'
 import { NextRouter, useRouter } from 'next/router'
+import { SnackbarProvider } from 'notistack'
+
 import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
+
 import { ThemeProvider } from '../ThemeProvider'
+
 import { JourneyList } from '.'
 
 jest.mock('next/router', () => ({

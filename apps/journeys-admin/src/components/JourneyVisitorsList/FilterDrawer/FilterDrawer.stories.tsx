@@ -1,11 +1,14 @@
+import { MockedProvider } from '@apollo/client/testing'
 import { Meta, Story } from '@storybook/react'
 import { ComponentProps } from 'react'
-import { MockedProvider } from '@apollo/client/testing'
+
 import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
-import { PageWrapper } from '../../NewPageWrapper'
+
 import { journeysAdminConfig } from '../../../libs/storybook'
-import { FilterDrawer } from './FilterDrawer'
+import { PageWrapper } from '../../NewPageWrapper'
+
 import { ClearAllButton } from './ClearAllButton'
+import { FilterDrawer } from './FilterDrawer'
 
 const FilterDrawerStory = {
   ...journeysAdminConfig,

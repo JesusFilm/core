@@ -1,8 +1,12 @@
-import { render, fireEvent, waitFor } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import { fireEvent, render, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
+
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+
+
 import { defaultJourney } from '../data'
+
 import { JourneyLink } from './JourneyLink'
 
 jest.mock('@mui/material/useMediaQuery', () => ({

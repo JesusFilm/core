@@ -15,10 +15,10 @@ import { VideoCarousel } from '../VideoCarousel'
 
 import { DownloadButton } from './DownloadButton'
 import { VideoContent } from './VideoContent/VideoContent'
+import { VideoHeading } from './VideoHeading'
 import { VideoHero } from './VideoHero'
 
 import 'video.js/dist/video-js.css'
-import { VideoHeading } from './VideoHeading'
 
 // Usually FeatureFilm, ShortFilm, Episode or Segment Videos
 export function VideoContentPage(): ReactElement {

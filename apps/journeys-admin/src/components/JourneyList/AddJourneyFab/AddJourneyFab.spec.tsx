@@ -1,9 +1,11 @@
-import { fireEvent, render, waitFor } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
 import useMediaQuery from '@mui/material/useMediaQuery'
+import { fireEvent, render, waitFor } from '@testing-library/react'
 
 import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
+
 import { PageWrapper } from '../../NewPageWrapper'
+
 import { AddJourneyFab } from './AddJourneyFab'
 
 jest.mock('@mui/material/useMediaQuery', () => ({

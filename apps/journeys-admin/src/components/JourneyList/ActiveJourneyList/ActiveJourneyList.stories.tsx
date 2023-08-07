@@ -1,15 +1,17 @@
-import { Story, Meta } from '@storybook/react'
+import { Meta, Story } from '@storybook/react'
+
+import { JourneyStatus } from '../../../../__generated__/globalTypes'
+import { cache } from '../../../libs/apolloClient/cache'
 import { journeysAdminConfig } from '../../../libs/storybook'
+import { GET_ADMIN_JOURNEYS } from '../../../libs/useAdminJourneysQuery/useAdminJourneysQuery'
+import { getDiscoveryJourneysMock } from '../../DiscoveryJourneys/data'
 import {
   defaultJourney,
-  oldJourney,
   descriptiveJourney,
+  oldJourney,
   publishedJourney
 } from '../journeyListData'
-import { GET_ADMIN_JOURNEYS } from '../../../libs/useAdminJourneysQuery/useAdminJourneysQuery'
-import { JourneyStatus } from '../../../../__generated__/globalTypes'
-import { getDiscoveryJourneysMock } from '../../DiscoveryJourneys/data'
-import { cache } from '../../../libs/apolloClient/cache'
+
 import { ActiveJourneyList } from '.'
 
 const ActiveJourneyListStory = {

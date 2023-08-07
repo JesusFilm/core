@@ -1,7 +1,10 @@
-import { render, waitFor } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
+import { render, waitFor } from '@testing-library/react'
+
 import { GET_JOURNEYS } from '../../libs/useJourneysQuery/useJourneysQuery'
+
 import { defaultTemplate } from './TemplateListData'
+
 import { TemplateLibrary } from '.'
 
 jest.mock('react-i18next', () => ({

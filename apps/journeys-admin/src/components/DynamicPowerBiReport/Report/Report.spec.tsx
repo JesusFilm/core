@@ -1,10 +1,13 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { render, waitFor } from '@testing-library/react'
-import { useEffect } from 'react'
-import { PowerBIEmbed } from 'powerbi-client-react'
 import { SnackbarProvider } from 'notistack'
+import { PowerBIEmbed } from 'powerbi-client-react'
+import { useEffect } from 'react'
+
 import { JourneysReportType } from '../../../../__generated__/globalTypes'
+
 import { GET_ADMIN_JOURNEYS_REPORT } from './Report'
+
 import { Report } from '.'
 
 const MockPowerBiEmbed = PowerBIEmbed as unknown as jest.MockedClass<

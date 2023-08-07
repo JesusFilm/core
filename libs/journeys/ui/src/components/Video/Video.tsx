@@ -15,7 +15,6 @@ import Player from 'video.js/dist/types/player'
 
 import { NextImage } from '@core/shared/ui/NextImage'
 
-
 import {
   VideoBlockObjectFit,
   VideoBlockSource
@@ -24,14 +23,15 @@ import { TreeBlock, useBlocks } from '../../libs/block'
 import { blurImage } from '../../libs/blurImage'
 import { useEditor } from '../../libs/EditorProvider'
 import { ImageFields } from '../Image/__generated__/ImageFields'
-import { VideoTrigger } from '../VideoTrigger'
-import 'videojs-youtube'
-import 'video.js/dist/video-js.css'
 import { VideoEvents } from '../VideoEvents'
+import { VideoTrigger } from '../VideoTrigger'
 import { VideoTriggerFields } from '../VideoTrigger/__generated__/VideoTriggerFields'
 
 import { VideoFields } from './__generated__/VideoFields'
 import { VideoControls } from './VideoControls'
+
+import 'videojs-youtube'
+import 'video.js/dist/video-js.css'
 
 const VIDEO_BACKGROUND_COLOR = '#000'
 const VIDEO_FOREGROUND_COLOR = '#FFF'

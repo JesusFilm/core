@@ -1,12 +1,16 @@
-import { Story, Meta } from '@storybook/react'
-import { useState } from 'react'
 import { MockedProvider } from '@apollo/client/testing'
-import { userEvent, waitFor, within } from '@storybook/testing-library'
 import { expect } from '@storybook/jest'
+import { Meta, Story } from '@storybook/react'
+import { userEvent, waitFor, within } from '@storybook/testing-library'
+import { useState } from 'react'
+
 import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
+
 import { journeysAdminConfig } from '../../../libs/storybook'
+
 import { videos } from './VideoFromLocal/data'
 import { GET_VIDEOS } from './VideoFromLocal/VideoFromLocal'
+
 import { VideoLibrary } from '.'
 
 const VideoLibraryStory = {

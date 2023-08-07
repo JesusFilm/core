@@ -1,11 +1,13 @@
-import { ReactElement } from 'react'
-import { Dialog } from '@core/shared/ui/Dialog'
+import GroupAddIcon from '@mui/icons-material/GroupAdd'
 import Stack from '@mui/material/Stack'
-import useMediaQuery from '@mui/material/useMediaQuery'
 import { Theme } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
+import useMediaQuery from '@mui/material/useMediaQuery'
+import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
-import GroupAddIcon from '@mui/icons-material/GroupAdd'
+
+import { Dialog } from '@core/shared/ui/Dialog'
+
 import { TeamManageWrapper } from './TeamManageWrapper'
 
 interface TeamManageDialogProps {

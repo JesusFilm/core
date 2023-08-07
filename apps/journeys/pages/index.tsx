@@ -1,6 +1,3 @@
-import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
-import NextLink from 'next/link'
-import { GetStaticProps } from 'next'
 import { gql } from '@apollo/client'
 import Box from '@mui/material/Box'
 import Container from '@mui/material/Container'
@@ -10,11 +7,15 @@ import Link from '@mui/material/Link'
 import Stack from '@mui/material/Stack'
 import { styled } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
+import { GetStaticProps } from 'next'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import { NextSeo } from 'next-seo'
 import Image from 'next/image'
+import NextLink from 'next/link'
 import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
+
+import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 
 import {
   GetJourneys,

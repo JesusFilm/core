@@ -1,10 +1,12 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { act, fireEvent, render, waitFor } from '@testing-library/react'
+
 import {
   CREATE_CLOUDFLARE_VIDEO_UPLOAD_BY_FILE_MUTATION,
   GET_MY_CLOUDFLARE_VIDEO_QUERY
 } from './AddByFile'
 import { TestHttpStack } from './TestHttpStack'
+
 import { AddByFile } from '.'
 
 jest.mock('react-i18next', () => ({

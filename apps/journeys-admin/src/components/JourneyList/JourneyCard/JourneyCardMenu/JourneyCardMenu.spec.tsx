@@ -1,9 +1,11 @@
-import { render, fireEvent, waitFor } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
+import { fireEvent, render, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
+
 import { JourneyStatus } from '../../../../../__generated__/globalTypes'
-import { ThemeProvider } from '../../../ThemeProvider'
 import { TeamProvider } from '../../../Team/TeamProvider'
+import { ThemeProvider } from '../../../ThemeProvider'
+
 import { JourneyCardMenu } from '.'
 
 describe('JourneyCardMenu', () => {

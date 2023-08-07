@@ -1,7 +1,9 @@
-import { Story, Meta } from '@storybook/react'
-import Box from '@mui/material/Box'
 import { MockedProvider } from '@apollo/client/testing'
+import Box from '@mui/material/Box'
+import { Meta, Story } from '@storybook/react'
+
 import { simpleComponentConfig } from '../../../../libs/storybook'
+
 import { VideoFromCloudflare } from '.'
 
 const VideoFromCloudflareStory = {

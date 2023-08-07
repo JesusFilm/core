@@ -1,13 +1,16 @@
-import { Story, Meta } from '@storybook/react'
 import { MockedProvider } from '@apollo/client/testing'
+import { Meta, Story } from '@storybook/react'
+
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+
 import { simpleComponentConfig } from '../../../../libs/storybook'
 import {
+  archivedJourney,
   defaultJourney,
   publishedJourney,
-  archivedJourney,
   trashedJourney
 } from '../../data'
+
 import { JourneyDetails } from './JourneyDetails'
 
 const JourneyDetailsStory = {

@@ -1,9 +1,10 @@
-import { render, fireEvent, waitFor } from '@testing-library/react'
-import { MockedProvider } from '@apollo/client/testing'
 import { InMemoryCache } from '@apollo/client'
+import { MockedProvider } from '@apollo/client/testing'
+import { fireEvent, render, waitFor } from '@testing-library/react'
+
 import {
-  UserTeamDeleteMenuItem,
-  USER_TEAM_DELETE
+  USER_TEAM_DELETE,
+  UserTeamDeleteMenuItem
 } from './UserTeamDeleteMenuItem'
 
 describe('UserTeamDeleteMenuItem', () => {

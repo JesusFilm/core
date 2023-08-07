@@ -1,5 +1,6 @@
 import { GetVisitorEvents_visitor_events_ButtonClickEvent as ButtonEvent } from '../../../../../../__generated__/GetVisitorEvents'
 import { ButtonAction } from '../../../../../../__generated__/globalTypes'
+
 import { getButtonLabel } from '.'
 
 describe('getButtonLabel', () => {

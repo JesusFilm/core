@@ -1,9 +1,12 @@
-import { Story, Meta } from '@storybook/react'
-import type { TreeBlock } from '@core/journeys/ui/block'
 import Box from '@mui/material/Box'
+import { Meta, Story } from '@storybook/react'
 import { ComponentProps } from 'react'
+
+import type { TreeBlock } from '@core/journeys/ui/block'
+
 import { GetJourney_journey_blocks_ImageBlock as ImageBlock } from '../../../../__generated__/GetJourney'
 import { simpleComponentConfig } from '../../../libs/storybook'
+
 import { ImageBlockHeader } from './ImageBlockHeader'
 
 const ImageEditorStory = {

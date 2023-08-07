@@ -1,13 +1,15 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { formatISO, startOfYear } from 'date-fns'
 import { waitFor } from '@testing-library/react'
-import { renderHook, act } from '@testing-library/react-hooks'
+import { act, renderHook } from '@testing-library/react-hooks'
+import { formatISO, startOfYear } from 'date-fns'
+
 import {
   JourneyStatus,
   ThemeMode,
   ThemeName,
   UserJourneyRole
 } from '../../../__generated__/globalTypes'
+
 import {
   GET_ADMIN_JOURNEYS,
   useAdminJourneysQuery

@@ -1,13 +1,16 @@
-import { fireEvent, render } from '@testing-library/react'
-import {
-  useEditor,
-  EditorState,
-  ActiveTab,
-  ActiveFab,
-  ActiveJourneyEditContent
-} from '@core/journeys/ui/EditorProvider'
 import useMediaQuery from '@mui/material/useMediaQuery'
+import { fireEvent, render } from '@testing-library/react'
+
+import {
+  ActiveFab,
+  ActiveJourneyEditContent,
+  ActiveTab,
+  EditorState,
+  useEditor
+} from '@core/journeys/ui/EditorProvider'
+
 import { Actions } from '../ActionsTable'
+
 import { ActionsList } from './ActionsList'
 
 jest.mock('@mui/material/useMediaQuery', () => ({

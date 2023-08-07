@@ -1,29 +1,31 @@
-import { fireEvent, render, waitFor } from '@testing-library/react'
-import { MockedProvider } from '@apollo/client/testing'
 import { InMemoryCache } from '@apollo/client'
+import { MockedProvider } from '@apollo/client/testing'
+import useMediaQuery from '@mui/material/useMediaQuery'
+import { fireEvent, render, waitFor } from '@testing-library/react'
+
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
-import useMediaQuery from '@mui/material/useMediaQuery'
+
+
+import {
+  GetJourney_journey_blocks_ImageBlock as ImageBlock,
+  GetJourney_journey as Journey,
+  GetJourney_journey_blocks_VideoBlock as VideoBlock
+} from '../../../../../../../__generated__/GetJourney'
 import {
   JourneyStatus,
   ThemeMode,
   ThemeName,
   VideoBlockSource
 } from '../../../../../../../__generated__/globalTypes'
-
-import {
-  GetJourney_journey as Journey,
-  GetJourney_journey_blocks_VideoBlock as VideoBlock,
-  GetJourney_journey_blocks_ImageBlock as ImageBlock
-} from '../../../../../../../__generated__/GetJourney'
-
 import { createCloudflareUploadByUrlMock } from '../../../../ImageBlockEditor/CustomImage/CustomUrl/data'
+
 import {
+  BLOCK_DELETE_FOR_POSTER_IMAGE,
   POSTER_IMAGE_BLOCK_CREATE,
   POSTER_IMAGE_BLOCK_UPDATE,
-  BLOCK_DELETE_FOR_POSTER_IMAGE,
-  VideoBlockEditorSettingsPosterLibrary,
-  VIDEO_BLOCK_POSTER_IMAGE_UPDATE
+  VIDEO_BLOCK_POSTER_IMAGE_UPDATE,
+  VideoBlockEditorSettingsPosterLibrary
 } from './VideoBlockEditorSettingsPosterLibrary'
 
 jest.mock('@mui/material/useMediaQuery', () => ({

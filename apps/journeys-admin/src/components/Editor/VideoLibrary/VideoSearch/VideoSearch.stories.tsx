@@ -1,7 +1,9 @@
-import { useState } from 'react'
-import { Story, Meta } from '@storybook/react'
 import Box from '@mui/material/Box'
+import { Meta, Story } from '@storybook/react'
+import { useState } from 'react'
+
 import { simpleComponentConfig } from '../../../../libs/storybook'
+
 import { VideoSearch } from './VideoSearch'
 
 const VideoSearchStory = {
