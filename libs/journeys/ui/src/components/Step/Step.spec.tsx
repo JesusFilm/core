@@ -163,6 +163,7 @@ describe('Step', () => {
       })
     )
   })
+
   it('should not create a stepViewEvent if there are wrappers', async () => {
     mockUuidv4.mockReturnValueOnce('uuid')
     blockHistoryVar([block])

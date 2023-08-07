@@ -16,7 +16,7 @@ describe('checkConditionalRedirect', () => {
         termsAndConditions: true,
         teams: true
       })
-    ).not.toBeUndefined()
+    ).toBeDefined()
     expect(client.query).toHaveBeenCalledWith({
       query: GET_JOURNEY_PROFILE_AND_TEAMS
     })

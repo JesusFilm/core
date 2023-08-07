@@ -9,6 +9,7 @@ import { getJourneyTooltip } from '.'
 
 describe('getJourneyTooltip', () => {
   const t = (str: string): string => str
+
   it('should prioritize returning text for new user requesting access for owners', () => {
     const journeys = [
       {
@@ -47,7 +48,7 @@ describe('getJourneyTooltip', () => {
       } as unknown as Journey
     ]
     const result = getJourneyTooltip(t, journeys, 'user1.id')
-    expect(result).toEqual('New editing request')
+    expect(result).toBe('New editing request')
   })
 
   it('should return text for any new journeys for the current user', () => {
@@ -67,7 +68,7 @@ describe('getJourneyTooltip', () => {
       } as unknown as Journey
     ]
     const result = getJourneyTooltip(t, journeys, 'user1.id')
-    expect(result).toEqual('New journey')
+    expect(result).toBe('New journey')
   })
 
   it('should return undefined', () => {

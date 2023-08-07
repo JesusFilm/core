@@ -17,14 +17,14 @@ jest.mock('../../libs/blurImage', () => ({
   blurImage: jest.fn()
 }))
 
-beforeEach(() => {
-  const blurImageMock = blurImage as jest.Mock
-  blurImageMock.mockReturnValue(
-    'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAJCAYAAAA7KqwyAAAABmJLR0QA/wD/AP+gvaeTAAABA0lEQVQokV2RMY4cQQwDi5S69x7hwP9/ngMfPDstOpiFAwcVECAqIPXz60fUxq9F7UWtRlUgmBzuuXnfF3+ui+/r4tcVcgumQIUFiHyA/7OTB0IRXgwk/2h7kEwBxVNWHpMIEMIQDskNOSjFdwQR3Q0YymCLspCFFAJYIAVxkN/IN9JCMr8R7W1k4/WhC7uQgIhocAq30Qh6gMNkCEPr1ciFeuG18VrUR6A55AhrEAdyCHBKdERJNHuBC9ZGe6NeqJoSaAZuM3pGJcNI1ARjpKKzFlTBWrAX6o26EcJzwEKEZPAcDDiDgNh0usFFqqEb1kJVjyB+XjgL1xvXwjMoNxKMzF9Ukn10nay9yQAAAABJRU5ErkJggg=='
-  )
-})
-
 describe('CardBlock', () => {
+  beforeEach(() => {
+    const blurImageMock = blurImage as jest.Mock
+    blurImageMock.mockReturnValue(
+      'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAJCAYAAAA7KqwyAAAABmJLR0QA/wD/AP+gvaeTAAABA0lEQVQokV2RMY4cQQwDi5S69x7hwP9/ngMfPDstOpiFAwcVECAqIPXz60fUxq9F7UWtRlUgmBzuuXnfF3+ui+/r4tcVcgumQIUFiHyA/7OTB0IRXgwk/2h7kEwBxVNWHpMIEMIQDskNOSjFdwQR3Q0YymCLspCFFAJYIAVxkN/IN9JCMr8R7W1k4/WhC7uQgIhocAq30Qh6gMNkCEPr1ciFeuG18VrUR6A55AhrEAdyCHBKdERJNHuBC9ZGe6NeqJoSaAZuM3pGJcNI1ARjpKKzFlTBWrAX6o26EcJzwEKEZPAcDDiDgNh0usFFqqEb1kJVjyB+XjgL1xvXwjMoNxKMzF9Ukn10nay9yQAAAABJRU5ErkJggg=='
+    )
+  })
+
   const block: TreeBlock = {
     __typename: 'CardBlock',
     id: 'card',
@@ -113,7 +113,7 @@ describe('CardBlock', () => {
   it('should render card with theme background color', async () => {
     const { getByTestId, getByText } = render(<Card {...block} />)
 
-    expect(blurImage).not.toBeCalled()
+    expect(blurImage).not.toHaveBeenCalled()
     expect(getByTestId('card')).toHaveStyle('background-color: #FFF')
     await waitFor(() =>
       expect(getByText('How did we get here?')).toBeInTheDocument()
@@ -130,7 +130,7 @@ describe('CardBlock', () => {
       />
     )
 
-    expect(blurImage).not.toBeCalled()
+    expect(blurImage).not.toHaveBeenCalled()
     expect(getByTestId('card')).toHaveStyle('background-color: #F1A025')
   })
 
@@ -139,7 +139,7 @@ describe('CardBlock', () => {
       <Card {...block} coverBlockId={null} />
     )
 
-    expect(blurImage).not.toBeCalled()
+    expect(blurImage).not.toHaveBeenCalled()
     expect(getByTestId('ExpandedCover')).toBeInTheDocument()
     expect(queryByText('How did we get here?')).toBeInTheDocument()
   })
@@ -149,7 +149,7 @@ describe('CardBlock', () => {
       <Card {...block} coverBlockId="fakeId" />
     )
 
-    expect(blurImage).not.toBeCalled()
+    expect(blurImage).not.toHaveBeenCalled()
     expect(getByTestId('ExpandedCover')).toBeInTheDocument()
     expect(queryByText('How did we get here?')).toBeInTheDocument()
   })
@@ -163,7 +163,7 @@ describe('CardBlock', () => {
       />
     )
 
-    expect(blurImage).toBeCalledWith(imageBlock.blurhash, '#fff')
+    expect(blurImage).toHaveBeenCalledWith(imageBlock.blurhash, '#fff')
     expect(getByTestId('ExpandedCover')).toBeInTheDocument()
     await waitFor(() =>
       expect(getByTestId('ExpandedImageCover')).toBeInTheDocument()
@@ -180,7 +180,7 @@ describe('CardBlock', () => {
     )
     const standaloneImageBlock = queryByTestId(`image-${imageBlock.id}`)
 
-    expect(blurImage).toBeCalledWith(imageBlock.blurhash, '#fff')
+    expect(blurImage).toHaveBeenCalledWith(imageBlock.blurhash, '#fff')
     expect(queryByTestId('ContainedCover')).toBeInTheDocument()
     expect(queryByTestId('background-image')).toHaveAccessibleName(
       'random image from unsplash'

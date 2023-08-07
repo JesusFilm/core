@@ -8,6 +8,7 @@ describe('routeParser', () => {
       subtitleLanguage: 529
     })
   })
+
   it('should handle a string', () => {
     expect(routeParser('badinput')).toEqual({
       routes: [],
@@ -15,6 +16,7 @@ describe('routeParser', () => {
       subtitleLanguage: 529
     })
   })
+
   it('should parse a route request', () => {
     expect(
       routeParser(['seo-playlist', 'seo-video', 'al', '1', 'sl', '2'])
@@ -24,6 +26,7 @@ describe('routeParser', () => {
       subtitleLanguage: 2
     })
   })
+
   it('should parse a reasonably malformed route request', () => {
     expect(
       routeParser([

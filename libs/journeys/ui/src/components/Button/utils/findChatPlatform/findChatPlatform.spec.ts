@@ -10,6 +10,7 @@ describe('findChatPlatform', () => {
     gtmEventName: 'click',
     url: 'https://google.com'
   }
+
   it('should return facebook', () => {
     const action1 = {
       ...defaultAction,
@@ -133,15 +134,6 @@ describe('findChatPlatform', () => {
 
     expect(findChatPlatform(action1)).toEqual(MessagePlatform.line)
     expect(findChatPlatform(action2)).toEqual(MessagePlatform.line)
-  })
-
-  it('should return line', () => {
-    const action = {
-      ...defaultAction,
-      url: 'line://some-user'
-    }
-
-    expect(findChatPlatform(action)).toEqual(MessagePlatform.line)
   })
 
   it('should return tikTok', () => {

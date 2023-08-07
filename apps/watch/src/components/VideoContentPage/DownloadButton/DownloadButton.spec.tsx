@@ -17,6 +17,7 @@ describe('DownloadButton', () => {
     )
     expect(getByTestId('FileDownloadOutlinedIcon')).toBeInTheDocument()
   })
+
   it('should call onClick when button is clicked', () => {
     const setOpenDownload = jest.fn()
 

@@ -41,6 +41,7 @@ const mockedDataLayer = TagManager.dataLayer as jest.MockedFunction<
 
 describe('VideoEvents', () => {
   let props: VideoEventsProps
+
   beforeEach(() => {
     const video = document.createElement('video')
     document.body.appendChild(video)
@@ -66,6 +67,7 @@ describe('VideoEvents', () => {
       videoId: 'video.id'
     }
   })
+
   afterEach(() => {
     cleanup()
   })

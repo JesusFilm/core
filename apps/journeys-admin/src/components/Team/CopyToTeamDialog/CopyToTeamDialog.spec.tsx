@@ -20,6 +20,7 @@ describe('DuplicateJourneys', () => {
     handleCloseMenuMock.mockClear()
     handleSubmitActionMock.mockClear()
   })
+
   it('should call submit action on dialog submit', async () => {
     const result = jest.fn(() => ({
       data: {

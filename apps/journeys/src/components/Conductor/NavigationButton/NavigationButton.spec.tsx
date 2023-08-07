@@ -79,7 +79,7 @@ describe('NavigationButton', () => {
       )
       fireEvent.click(getByTestId('conductorNextButton'))
 
-      expect(blockHistoryVar()[1].id).toEqual('step3.id')
+      expect(blockHistoryVar()[1].id).toBe('step3.id')
     })
 
     it('should call prevActiveBlock on prev button click', () => {
@@ -88,11 +88,11 @@ describe('NavigationButton', () => {
       const { getByTestId } = render(
         <NavigationButton variant="prev" alignment="left" />
       )
-      expect(blockHistoryVar()[1].id).toEqual('step2.id')
+      expect(blockHistoryVar()[1].id).toBe('step2.id')
 
       fireEvent.click(getByTestId('conductorPrevButton'))
 
-      expect(blockHistoryVar()[0].id).toEqual('step1.id')
+      expect(blockHistoryVar()[0].id).toBe('step1.id')
     })
 
     it('should hide left button if on first card', () => {
@@ -149,7 +149,7 @@ describe('NavigationButton', () => {
       )
       fireEvent.click(getByTestId('conductorNextButton'))
 
-      expect(blockHistoryVar()[1].id).toEqual('step3.id')
+      expect(blockHistoryVar()[1].id).toBe('step3.id')
     })
 
     it('should call prevActiveBlock on prev button click', () => {
@@ -158,11 +158,11 @@ describe('NavigationButton', () => {
       const { getByTestId } = render(
         <NavigationButton variant="prev" alignment="right" />
       )
-      expect(blockHistoryVar()[1].id).toEqual('step2.id')
+      expect(blockHistoryVar()[1].id).toBe('step2.id')
 
       fireEvent.click(getByTestId('conductorPrevButton'))
 
-      expect(blockHistoryVar()[0].id).toEqual('step1.id')
+      expect(blockHistoryVar()[0].id).toBe('step1.id')
     })
 
     it('should hide right button if on first card', () => {

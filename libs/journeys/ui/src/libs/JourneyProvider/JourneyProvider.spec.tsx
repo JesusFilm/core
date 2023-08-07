@@ -74,7 +74,7 @@ describe('JourneyContext', () => {
 
     fireEvent.click(getByRole('button'))
 
-    expect(checkJourney).toBeCalledWith({
+    expect(checkJourney).toHaveBeenCalledWith({
       __typename: 'Journey',
       id: 'journeyId',
       themeName: ThemeName.base,

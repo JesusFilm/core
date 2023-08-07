@@ -13,7 +13,7 @@ jest.mock('uuid', () => ({
 
 const mockUuidv4 = uuidv4 as jest.MockedFunction<typeof uuidv4>
 
-export const variables = {
+const variables = {
   journeyId: 'createdJourneyId',
   title: 'Untitled Journey',
   description:
@@ -27,7 +27,7 @@ export const variables = {
   captionTypographyContent: 'Deutoronomy 10:11'
 }
 
-export const data = {
+const data = {
   journeyCreate: {
     createdAt: '2022-02-17T21:47:32.004Z',
     description: variables.description,
@@ -156,12 +156,12 @@ describe('useJourneyCreate', () => {
 
     await act(async () => {
       await waitFor(async () => {
-        expect(await result.current.createJourney()).toBe(undefined)
+        expect(await result.current.createJourney()).toBeUndefined()
       })
     })
   })
 
-  it('returns a loading state ', async () => {
+  it('returns a loading state', async () => {
     const { result } = renderHook(() => useJourneyCreate(), {
       wrapper: ({ children }) => (
         <MockedProvider

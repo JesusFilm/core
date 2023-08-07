@@ -53,6 +53,7 @@ describe('RadioOption Attribute', () => {
       dispatch: jest.fn()
     })
   })
+
   it('shows default attributes', async () => {
     const { getByRole } = render(<RadioOption {...block} />)
     await waitFor(() =>

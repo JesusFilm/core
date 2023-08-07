@@ -87,6 +87,7 @@ describe('UserTeamInviteList', () => {
       lastName: 'Brown'
     }
   }
+
   it('shows the emails of everyone invited to team', () => {
     const { getByText, getAllByText, getAllByRole } = render(
       <UserTeamInviteList data={mockData} currentUserTeam={mockCurrentUser} />
