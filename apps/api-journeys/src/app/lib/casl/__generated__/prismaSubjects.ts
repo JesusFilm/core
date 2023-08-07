@@ -21,19 +21,19 @@ import {
 } from '.prisma/api-journeys-client'
 
 export type PrismaSubjects = Subjects<{
+  Action: Action, 
+  Block: Block, 
   ChatButton: ChatButton, 
   Event: Event, 
-  Visitor: Visitor, 
   Host: Host, 
+  Journey: Journey, 
+  JourneyProfile: JourneyProfile, 
   JourneyVisitor: JourneyVisitor, 
   Team: Team, 
+  UserInvite: UserInvite, 
+  UserJourney: UserJourney, 
+  UserRole: UserRole, 
   UserTeam: UserTeam, 
   UserTeamInvite: UserTeamInvite, 
-  UserJourney: UserJourney, 
-  Journey: Journey, 
-  UserRole: UserRole, 
-  JourneyProfile: JourneyProfile, 
-  UserInvite: UserInvite, 
-  Block: Block, 
-  Action: Action
+  Visitor: Visitor
 }>
