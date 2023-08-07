@@ -28,11 +28,6 @@ describe('hostAcl', () => {
   const hostEmpty = subject('Host', {
     id: 'hostId'
   } as unknown as Host)
-  // TODO: remove when teams is released
-  const hostJfpTeam = subject('Host', {
-    id: 'hostId',
-    teamId: 'jfp-team'
-  } as unknown as Host)
   describe('read', () => {
     it('allow when user is team manager', () => {
       expect(ability.can(Action.Read, hostUserTeamManager)).toEqual(true)
@@ -45,10 +40,6 @@ describe('hostAcl', () => {
     })
   })
   describe('manage', () => {
-    // TODO: remove when teams is released
-    it('allow when host belongs to jfp-team', () => {
-      expect(ability.can(Action.Create, hostJfpTeam)).toEqual(true)
-    })
     it('allow when user is team manager', () => {
       expect(ability.can(Action.Manage, hostUserTeamManager)).toEqual(true)
     })
