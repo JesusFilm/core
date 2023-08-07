@@ -18,7 +18,6 @@ export function TeamAvatars({
   size = 'small',
   userTeams
 }: TeamAvatarsProps): ReactElement {
-  console.log(onClick)
   return (
     <Box
       onClick={onClick}
@@ -53,6 +52,7 @@ export function TeamAvatars({
         </AvatarGroup>
         {onClick != null && (
           <MuiAvatar
+            data-testid="member-dialog-open-avatar"
             sx={{
               backgroundColor: 'secondary.contrastText'
             }}
