@@ -63,21 +63,27 @@ describe('journeyAcl', () => {
     template: true,
     status: JourneyStatus.draft
   } as unknown as Journey)
-  // TODO: remove when teams is released
   const journeyJfpTeam = subject('Journey', {
     id: 'journeyId',
     teamId: 'jfp-team'
   } as unknown as Journey)
   describe('create', () => {
-    // TODO: remove when teams is released
-    it('allow when team is jfp-team', () => {
-      expect(ability.can(Action.Create, journeyJfpTeam)).toEqual(true)
-    })
     it('allow when user is team member', () => {
       expect(ability.can(Action.Create, journeyUserTeamMember)).toEqual(true)
     })
     it('deny when user has no userTeam', () => {
       expect(ability.can(Action.Create, journeyEmpty)).toEqual(false)
+    })
+    it('deny when team is jfp-team', () => {
+      expect(ability.can(Action.Create, journeyJfpTeam)).toEqual(false)
+    })
+    describe('publisher', () => {
+      beforeEach(async () => {
+        ability = await factory.createAbility({ ...user, roles: ['publisher'] })
+      })
+      it('allow when team is jfp-team for publisher', () => {
+        expect(ability.can(Action.Create, journeyJfpTeam)).toEqual(true)
+      })
     })
   })
   describe('manage', () => {
@@ -105,7 +111,7 @@ describe('journeyAcl', () => {
     })
     it('deny template field when user is not publisher', () => {
       expect(
-        ability.can(Action.Manage, journeyUnpublishedTemplate, 'template')
+        ability.can(Action.Manage, journeyUserTeamManager, 'template')
       ).toEqual(false)
     })
     describe('publisher', () => {
@@ -117,10 +123,20 @@ describe('journeyAcl', () => {
           true
         )
       })
-      it('allow template field when user is publisher', () => {
+      it('allow template field when user is publisher and team manager', () => {
         expect(
-          ability.can(Action.Manage, journeyUnpublishedTemplate, 'template')
+          ability.can(Action.Manage, journeyUserTeamManager, 'template')
         ).toEqual(true)
+      })
+      it('allow template field when user is publisher and journey owner', () => {
+        expect(
+          ability.can(Action.Manage, journeyUserJourneyOwner, 'template')
+        ).toEqual(true)
+      })
+      it('deny when user is publisher but has no userTeam or userJourneys', () => {
+        expect(ability.can(Action.Manage, journeyEmpty, 'template')).toEqual(
+          false
+        )
       })
     })
   })
