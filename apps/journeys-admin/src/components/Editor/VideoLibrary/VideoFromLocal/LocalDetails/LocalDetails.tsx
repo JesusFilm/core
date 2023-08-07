@@ -84,10 +84,12 @@ export function LocalDetails({
     setSelectedLanguage(selectedLanguage)
   }
 
+  console.log('selectedLanguage', selectedLanguage)
+
   const handleSelect = (): void => {
     onSelect({
       videoId: id,
-      videoVariantLanguageId: selectedLanguage?.id,
+      videoVariantLanguageId: selectedLanguage.id,
       duration: time,
       source: VideoBlockSource.internal,
       startAt: 0,

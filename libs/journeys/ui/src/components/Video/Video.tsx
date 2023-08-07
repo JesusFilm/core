@@ -87,7 +87,7 @@ export function Video({
 
   const videoImage = source === VideoBlockSource.internal ? video?.image : image
 
-  console.log(blockHistory)
+  console.log(blockHistory[0]?.children[0]?.children)
 
   const blurBackground = useMemo(() => {
     return posterBlock != null
