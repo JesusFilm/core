@@ -87,6 +87,8 @@ export function Video({
 
   const videoImage = source === VideoBlockSource.internal ? video?.image : image
 
+  console.log(blockHistory)
+
   const blurBackground = useMemo(() => {
     return posterBlock != null
       ? blurImage(posterBlock.blurhash, theme.palette.background.paper)
