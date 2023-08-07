@@ -98,6 +98,7 @@ export function TeamSelect({ onboarding }: TeamSelectProps): ReactElement {
                   minWidth: '300px',
                   display: 'flex',
                   flexDirection: 'row',
+                  alignItems: 'flex-start',
                   justifyContent: 'space-between',
                   whiteSpace: 'normal',
                   wordWrap: 'break-word'
