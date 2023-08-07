@@ -1,8 +1,10 @@
-import { ComponentProps } from 'react'
-import { Story, Meta } from '@storybook/react'
-import { SnackbarProvider } from 'notistack'
+import { Meta, Story } from '@storybook/react'
 import noop from 'lodash/noop'
+import { SnackbarProvider } from 'notistack'
+import { ComponentProps } from 'react'
+
 import { journeyUiConfig } from '../../../../../libs/journeyUiConfig'
+
 import { ShareDialog } from './ShareDialog'
 
 const Demo = {

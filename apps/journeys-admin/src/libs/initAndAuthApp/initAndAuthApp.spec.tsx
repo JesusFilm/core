@@ -1,13 +1,16 @@
-import { AuthUser } from 'next-firebase-auth'
-import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
-import { getLaunchDarklyClient } from '@core/shared/ui/getLaunchDarklyClient'
 import { ApolloClient, NormalizedCacheObject } from '@apollo/client'
-import { SSRConfig } from 'next-i18next'
 import { LDClient } from 'launchdarkly-node-server-sdk'
-import { createApolloClient } from '../apolloClient'
-import { checkConditionalRedirect } from '../checkConditionalRedirect'
+import { AuthUser } from 'next-firebase-auth'
+import { SSRConfig } from 'next-i18next'
+import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
+
+import { getLaunchDarklyClient } from '@core/shared/ui/getLaunchDarklyClient'
+
 import i18nConfig from '../../../next-i18next.config'
+import { createApolloClient } from '../apolloClient'
 import { cache } from '../apolloClient/cache'
+import { checkConditionalRedirect } from '../checkConditionalRedirect'
+
 import { initAndAuthApp } from './initAndAuthApp'
 
 jest.mock('next-i18next/serverSideTranslations')

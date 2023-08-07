@@ -1,9 +1,11 @@
-import { render, fireEvent } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
 import useMediaQuery from '@mui/material/useMediaQuery'
+import { fireEvent, render } from '@testing-library/react'
 import { NextRouter, useRouter } from 'next/router'
 import { SnackbarProvider } from 'notistack'
+
 import { ThemeProvider } from '../ThemeProvider'
+
 import { StatusTabPanel } from './StatusTabPanel'
 
 jest.mock('@mui/material/useMediaQuery', () => ({

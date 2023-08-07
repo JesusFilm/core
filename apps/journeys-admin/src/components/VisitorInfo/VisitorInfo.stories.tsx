@@ -1,8 +1,11 @@
-import { Meta, Story } from '@storybook/react'
 import { MockedProvider } from '@apollo/client/testing'
+import { Meta, Story } from '@storybook/react'
 import { ComponentProps } from 'react'
+
 import { journeysAdminConfig } from '../../libs/storybook'
+
 import { getVisitorMock } from './DetailsForm/DetailsFormData'
+
 import { VisitorInfo } from '.'
 
 const VisitorInfoDemo = {

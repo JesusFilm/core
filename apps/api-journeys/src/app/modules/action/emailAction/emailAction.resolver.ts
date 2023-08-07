@@ -1,15 +1,17 @@
-import { Args, Mutation, Resolver } from '@nestjs/graphql'
+import { subject } from '@casl/ability'
 import { UseGuards } from '@nestjs/common'
+import { Args, Mutation, Resolver } from '@nestjs/graphql'
 import { GraphQLError } from 'graphql'
 import includes from 'lodash/includes'
 import { object, string } from 'yup'
+
 import { Action } from '.prisma/api-journeys-client'
 import { CaslAbility } from '@core/nest/common/CaslAuthModule'
-import { subject } from '@casl/ability'
+
 import { EmailActionInput } from '../../../__generated__/graphql'
-import { PrismaService } from '../../../lib/prisma.service'
-import { Action as CaslAction, AppAbility } from '../../../lib/casl/caslFactory'
+import { AppAbility, Action as CaslAction } from '../../../lib/casl/caslFactory'
 import { AppCaslGuard } from '../../../lib/casl/caslGuard'
+import { PrismaService } from '../../../lib/prisma.service'
 import { ACTION_UPDATE_RESET } from '../actionUpdateReset'
 
 const emailActionSchema = object({

@@ -1,13 +1,14 @@
-import { ReactElement } from 'react'
-import { useMutation, gql, useLazyQuery } from '@apollo/client'
+import { gql, useLazyQuery, useMutation } from '@apollo/client'
 import BeenhereRoundedIcon from '@mui/icons-material/BeenhereRounded'
-import { MenuItem } from '../../../../MenuItem'
-import { UserJourneyApprove } from '../../../../../../__generated__/UserJourneyApprove'
-import { UserInviteRemove } from '../../../../../../__generated__/UserInviteRemove'
+import { ReactElement } from 'react'
+
 import { GetUserInvites } from '../../../../../../__generated__/GetUserInvites'
 import { UserJourneyRole } from '../../../../../../__generated__/globalTypes'
-import { USER_INVITE_REMOVE } from '../RemoveUser/RemoveUser'
+import { UserInviteRemove } from '../../../../../../__generated__/UserInviteRemove'
+import { UserJourneyApprove } from '../../../../../../__generated__/UserJourneyApprove'
+import { MenuItem } from '../../../../MenuItem'
 import { GET_USER_INVITES } from '../../../AccessDialog'
+import { USER_INVITE_REMOVE } from '../RemoveUser/RemoveUser'
 
 interface ApproveUserProps {
   id: string

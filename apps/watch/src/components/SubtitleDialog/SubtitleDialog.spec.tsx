@@ -1,9 +1,11 @@
-import { waitFor, fireEvent, render } from '@testing-library/react'
-import Player from 'video.js/dist/types/player'
 import { MockedProvider } from '@apollo/client/testing'
-import { VideoProvider } from '../../libs/videoContext'
+import { fireEvent, render, waitFor } from '@testing-library/react'
+import Player from 'video.js/dist/types/player'
+
 import { VideoContentFields } from '../../../__generated__/VideoContentFields'
+import { VideoProvider } from '../../libs/videoContext'
 import { videos } from '../Videos/__generated__/testData'
+
 import { SubtitleDialog } from './SubtitleDialog'
 import { getSubtitleMock } from './testData'
 

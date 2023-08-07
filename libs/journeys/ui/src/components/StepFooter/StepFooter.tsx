@@ -1,15 +1,18 @@
-import { ReactElement } from 'react'
 import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
-import Typography from '@mui/material/Typography'
 import { SxProps } from '@mui/material/styles'
+import Typography from '@mui/material/Typography'
+import { ReactElement } from 'react'
+
 import { useFlags } from '@core/shared/ui/FlagsProvider'
+
 import { useJourney } from '../../libs/JourneyProvider'
 import { getJourneyRTL } from '../../libs/rtl'
-import { HostTitleLocation } from './HostTitleLocation'
-import { HostAvatars } from './HostAvatars'
+
 import { ChatButtons } from './ChatButtons'
 import { FooterButtonList } from './FooterButtonList'
+import { HostAvatars } from './HostAvatars'
+import { HostTitleLocation } from './HostTitleLocation'
 
 interface StepFooterProps {
   onFooterClick?: () => void

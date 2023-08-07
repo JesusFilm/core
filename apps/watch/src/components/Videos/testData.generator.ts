@@ -1,7 +1,9 @@
+import { exec } from 'child_process'
 import { readFileSync, writeFileSync } from 'fs'
 import { promisify } from 'util'
-import { exec } from 'child_process'
+
 import { gql } from '@apollo/client'
+
 import {
   GetVideosForTestData,
   GetVideosForTestData_videos as Videos

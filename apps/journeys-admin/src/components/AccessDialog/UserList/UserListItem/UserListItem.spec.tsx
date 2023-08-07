@@ -1,12 +1,15 @@
-import { ComponentProps, ReactElement } from 'react'
-import { fireEvent, render, waitFor } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
+import { fireEvent, render, waitFor } from '@testing-library/react'
+import { ComponentProps, ReactElement } from 'react'
+
 import { GetJourneyWithUserJourneys_journey_userJourneys as UserJourney } from '../../../../../__generated__/GetJourneyWithUserJourneys'
 import { GetUserInvites_userInvites as UserInvite } from '../../../../../__generated__/GetUserInvites'
 import { UserJourneyRole } from '../../../../../__generated__/globalTypes'
-import { USER_JOURNEY_PROMOTE } from './PromoteUser/PromoteUser'
+
 import { USER_JOURNEY_APPROVE } from './ApproveUser/ApproveUser'
+import { USER_JOURNEY_PROMOTE } from './PromoteUser/PromoteUser'
 import { USER_INVITE_REMOVE } from './RemoveUser/RemoveUser'
+
 import { UserListItem } from '.'
 
 const owner: UserJourney = {

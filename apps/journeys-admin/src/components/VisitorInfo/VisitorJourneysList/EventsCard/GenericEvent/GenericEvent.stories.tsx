@@ -1,13 +1,15 @@
+import ChatBubbleOutlineRoundedIcon from '@mui/icons-material/ChatBubbleOutlineRounded'
+import CheckCircleOutlineRoundedIcon from '@mui/icons-material/CheckCircleOutlineRounded'
+import EmojiFlagsRoundedIcon from '@mui/icons-material/EmojiFlagsRounded'
+import RadioButtonUncheckedIcon from '@mui/icons-material/RadioButtonUncheckedRounded'
+import Stack from '@mui/material/Stack'
+import Typography from '@mui/material/Typography'
 import { Meta, Story } from '@storybook/react'
 import { ComponentProps } from 'react'
-import Typography from '@mui/material/Typography'
-import Stack from '@mui/material/Stack'
-import RadioButtonUncheckedIcon from '@mui/icons-material/RadioButtonUncheckedRounded'
-import ChatBubbleOutlineRoundedIcon from '@mui/icons-material/ChatBubbleOutlineRounded'
-import EmojiFlagsRoundedIcon from '@mui/icons-material/EmojiFlagsRounded'
-import CheckCircleOutlineRoundedIcon from '@mui/icons-material/CheckCircleOutlineRounded'
+
 import { journeysAdminConfig } from '../../../../../libs/storybook'
 import { EventVariant } from '../../utils'
+
 import { GenericEvent } from '.'
 
 const GenericEventStory = {

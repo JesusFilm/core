@@ -1,22 +1,24 @@
-import { ReactElement } from 'react'
-import { GetStaticPaths, GetStaticProps } from 'next'
 import { gql } from '@apollo/client'
-import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
-import { transformer } from '@core/journeys/ui/transformer'
-import { JOURNEY_FIELDS } from '@core/journeys/ui/JourneyProvider/journeyFields'
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
-import { getJourneyRTL } from '@core/journeys/ui/rtl'
+import { GetStaticPaths, GetStaticProps } from 'next'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import { NextSeo } from 'next-seo'
 import { useRouter } from 'next/router'
-import { Conductor } from '../src/components/Conductor'
-import { createApolloClient } from '../src/libs/apolloClient'
+import { ReactElement } from 'react'
+
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import { JOURNEY_FIELDS } from '@core/journeys/ui/JourneyProvider/journeyFields'
+import { getJourneyRTL } from '@core/journeys/ui/rtl'
+import { transformer } from '@core/journeys/ui/transformer'
+import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
+
 import {
   GetJourney,
   GetJourney_journey as Journey
 } from '../__generated__/GetJourney'
 import { GetJourneySlugs } from '../__generated__/GetJourneySlugs'
 import i18nConfig from '../next-i18next.config'
+import { Conductor } from '../src/components/Conductor'
+import { createApolloClient } from '../src/libs/apolloClient'
 
 interface JourneyPageProps {
   journey: Journey

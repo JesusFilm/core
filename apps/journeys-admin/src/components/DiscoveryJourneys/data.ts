@@ -1,4 +1,5 @@
 import { MockedResponse } from '@apollo/client/testing'
+
 import {
   GetDiscoveryJourneys_discoveryJourneys as DiscoveryJourneys,
   GetDiscoveryJourneys
@@ -13,6 +14,7 @@ import {
   TypographyAlign,
   TypographyVariant
 } from '../../../__generated__/globalTypes'
+
 import { GET_DISCOVERY_JOURNEYS } from './DiscoveryJourneys'
 
 export const discoveryJourneys: DiscoveryJourneys[] = [

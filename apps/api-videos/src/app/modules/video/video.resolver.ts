@@ -1,17 +1,19 @@
-import { TranslationField } from '@core/nest/decorators/TranslationField'
 import {
-  Resolver,
-  Query,
   Args,
   Info,
-  ResolveReference,
+  Parent,
+  Query,
   ResolveField,
-  Parent
+  ResolveReference,
+  Resolver
 } from '@nestjs/graphql'
 import { FieldNode, GraphQLResolveInfo, Kind } from 'graphql'
 import compact from 'lodash/compact'
 
+import { TranslationField } from '@core/nest/decorators/TranslationField'
+
 import { IdType, Video, VideosFilter } from '../../__generated__/graphql'
+
 import { VideoService } from './video.service'
 
 @Resolver('Video')

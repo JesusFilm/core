@@ -1,17 +1,18 @@
-import { ReactElement, useRef, useMemo, useEffect } from 'react'
-import type { TreeBlock } from '@core/journeys/ui/block'
+import VideocamRounded from '@mui/icons-material/VideocamRounded'
 import Box from '@mui/material/Box'
 import Paper from '@mui/material/Paper'
 import { useTheme } from '@mui/material/styles'
-import { blurImage } from '@core/journeys/ui/blurImage'
-import VideocamRounded from '@mui/icons-material/VideocamRounded'
-import { NextImage } from '@core/shared/ui/NextImage'
+import { ReactElement, useEffect, useMemo, useRef } from 'react'
 import videojs from 'video.js'
 import Player from 'video.js/dist/types/player'
 
+import type { TreeBlock } from '@core/journeys/ui/block'
+import { blurImage } from '@core/journeys/ui/blurImage'
+import { NextImage } from '@core/shared/ui/NextImage'
+
 import {
-  GetJourney_journey_blocks_VideoBlock as VideoBlock,
-  GetJourney_journey_blocks_ImageBlock as ImageBlock
+  GetJourney_journey_blocks_ImageBlock as ImageBlock,
+  GetJourney_journey_blocks_VideoBlock as VideoBlock
 } from '../../../../__generated__/GetJourney'
 import { VideoBlockSource } from '../../../../__generated__/globalTypes'
 

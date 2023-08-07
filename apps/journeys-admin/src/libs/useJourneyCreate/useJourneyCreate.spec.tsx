@@ -1,9 +1,10 @@
 import { InMemoryCache } from '@apollo/client'
 import { MockedProvider } from '@apollo/client/testing'
 import { waitFor } from '@testing-library/react'
-import { renderHook, act } from '@testing-library/react-hooks'
+import { act, renderHook } from '@testing-library/react-hooks'
 import { v4 as uuidv4 } from 'uuid'
-import { useJourneyCreate, CREATE_JOURNEY } from './useJourneyCreate'
+
+import { CREATE_JOURNEY, useJourneyCreate } from './useJourneyCreate'
 
 jest.mock('uuid', () => ({
   __esModule: true,

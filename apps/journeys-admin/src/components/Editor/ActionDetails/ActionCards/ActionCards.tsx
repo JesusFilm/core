@@ -1,20 +1,22 @@
-import { ReactElement } from 'react'
 import Box from '@mui/material/Box'
-import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
+import Stack from '@mui/material/Stack'
+import Typography from '@mui/material/Typography'
+import { ReactElement } from 'react'
+
+import type { TreeBlock } from '@core/journeys/ui/block'
 import { BlockRenderer } from '@core/journeys/ui/BlockRenderer'
+import { ActiveFab, useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { getJourneyRTL } from '@core/journeys/ui/rtl'
-import type { TreeBlock } from '@core/journeys/ui/block'
 import { transformer } from '@core/journeys/ui/transformer'
-import Typography from '@mui/material/Typography'
-import Stack from '@mui/material/Stack'
-import { ActiveFab, useEditor } from '@core/journeys/ui/EditorProvider'
-import { FramePortal } from '../../../FramePortal'
-import { ThemeMode, ThemeName } from '../../../../../__generated__/globalTypes'
+import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
+
 import {
   BlockFields_ButtonBlock as ButtonBlock,
   BlockFields_ButtonBlock_action_LinkAction as LinkAction
 } from '../../../../../__generated__/BlockFields'
+import { ThemeMode, ThemeName } from '../../../../../__generated__/globalTypes'
+import { FramePortal } from '../../../FramePortal'
 
 interface ActionCardsProps {
   url: string

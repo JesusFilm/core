@@ -1,17 +1,20 @@
 import { Test, TestingModule } from '@nestjs/testing'
-import { CaslAuthModule } from '@core/nest/common/CaslAuthModule'
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
+
 import { Block, Journey, UserTeamRole } from '.prisma/api-journeys-client'
-import { BlockService } from '../block.service'
+import { CaslAuthModule } from '@core/nest/common/CaslAuthModule'
+
 import {
   ButtonBlockCreateInput,
-  ButtonVariant,
+  ButtonBlockUpdateInput,
   ButtonColor,
   ButtonSize,
-  ButtonBlockUpdateInput
+  ButtonVariant
 } from '../../../__generated__/graphql'
-import { PrismaService } from '../../../lib/prisma.service'
 import { AppAbility, AppCaslFactory } from '../../../lib/casl/caslFactory'
+import { PrismaService } from '../../../lib/prisma.service'
+import { BlockService } from '../block.service'
+
 import { ButtonBlockResolver } from './button.resolver'
 
 describe('ButtonBlock', () => {

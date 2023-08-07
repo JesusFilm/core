@@ -1,20 +1,23 @@
-import { ReactElement, useEffect, useState } from 'react'
 import { gql, useMutation } from '@apollo/client'
 import Box from '@mui/material/Box'
 import Card from '@mui/material/Card'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
-import { Dialog } from '@core/shared/ui/Dialog'
-import { useTranslation } from 'react-i18next'
 import { useSnackbar } from 'notistack'
+import { ReactElement, useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
+
+import { Dialog } from '@core/shared/ui/Dialog'
+
+import { JourneyStatus } from '../../../../__generated__/globalTypes'
+import { useAdminJourneysQuery } from '../../../libs/useAdminJourneysQuery'
+import { DiscoveryJourneys } from '../../DiscoveryJourneys'
+import { useTeam } from '../../Team/TeamProvider'
 import { JourneyCard } from '../JourneyCard'
 import type { JourneyListProps } from '../JourneyList'
-import { DiscoveryJourneys } from '../../DiscoveryJourneys'
-import { useAdminJourneysQuery } from '../../../libs/useAdminJourneysQuery'
-import { JourneyStatus } from '../../../../__generated__/globalTypes'
-import { useTeam } from '../../Team/TeamProvider'
-import { AddJourneyButton } from './AddJourneyButton'
+
 import { ActivePriorityList } from './ActivePriorityList'
+import { AddJourneyButton } from './AddJourneyButton'
 
 export const ARCHIVE_ACTIVE_JOURNEYS = gql`
   mutation ArchiveActiveJourneys($ids: [ID!]!) {

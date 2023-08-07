@@ -1,12 +1,14 @@
-import { ReactElement, useState } from 'react'
 import Box from '@mui/material/Box'
 import Divider from '@mui/material/Divider'
+import { useTheme } from '@mui/material/styles'
 import Tab from '@mui/material/Tab'
 import Tabs from '@mui/material/Tabs'
-import { useTheme } from '@mui/material/styles'
+import { ReactElement, useState } from 'react'
+
 import { TabPanel, tabA11yProps } from '@core/shared/ui/TabPanel'
-import { Conditions } from './Conditions'
+
 import { Cards } from './Cards'
+import { Conditions } from './Conditions'
 import { SelectedCard } from './SelectedCard'
 
 export function NextCard(): ReactElement {

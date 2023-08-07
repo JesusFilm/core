@@ -1,14 +1,16 @@
-import { Args, Mutation, Resolver } from '@nestjs/graphql'
-import { UseGuards } from '@nestjs/common'
-import { GraphQLError } from 'graphql'
-import { Action } from '.prisma/api-journeys-client'
-import includes from 'lodash/includes'
-import { CaslAbility } from '@core/nest/common/CaslAuthModule'
 import { subject } from '@casl/ability'
+import { UseGuards } from '@nestjs/common'
+import { Args, Mutation, Resolver } from '@nestjs/graphql'
+import { GraphQLError } from 'graphql'
+import includes from 'lodash/includes'
+
+import { Action } from '.prisma/api-journeys-client'
+import { CaslAbility } from '@core/nest/common/CaslAuthModule'
+
 import { NavigateActionInput } from '../../../__generated__/graphql'
-import { PrismaService } from '../../../lib/prisma.service'
+import { AppAbility, Action as CaslAction } from '../../../lib/casl/caslFactory'
 import { AppCaslGuard } from '../../../lib/casl/caslGuard'
-import { Action as CaslAction, AppAbility } from '../../../lib/casl/caslFactory'
+import { PrismaService } from '../../../lib/prisma.service'
 import { ACTION_UPDATE_RESET } from '../actionUpdateReset'
 
 @Resolver('NavigateAction')

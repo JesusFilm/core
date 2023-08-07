@@ -1,12 +1,14 @@
-import { Story, Meta } from '@storybook/react'
 import { MockedResponse } from '@apollo/client/testing'
+import { Meta, Story } from '@storybook/react'
 import { SnackbarProvider } from 'notistack'
+
+import { GetLastActiveTeamIdAndTeams } from '../../../../__generated__/GetLastActiveTeamIdAndTeams'
+import { journeysAdminConfig } from '../../../libs/storybook'
 import {
   GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS,
   TeamProvider
 } from '../TeamProvider'
-import { journeysAdminConfig } from '../../../libs/storybook'
-import { GetLastActiveTeamIdAndTeams } from '../../../../__generated__/GetLastActiveTeamIdAndTeams'
+
 import { CopyToTeamDialog } from './CopyToTeamDialog'
 
 const CopyToTeamDialogStory = {

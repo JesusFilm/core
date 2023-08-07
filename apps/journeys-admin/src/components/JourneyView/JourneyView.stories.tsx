@@ -1,14 +1,17 @@
-import { Story, Meta } from '@storybook/react'
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { MockedProvider } from '@apollo/client/testing'
+import { Meta, Story } from '@storybook/react'
+
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
+
+import { Role } from '../../../__generated__/globalTypes'
+import { ApolloLoadingProvider } from '../../../test/ApolloLoadingProvider'
 import { journeysAdminConfig } from '../../libs/storybook'
 import { PageWrapper } from '../PageWrapper'
-import { ApolloLoadingProvider } from '../../../test/ApolloLoadingProvider'
-import { Role } from '../../../__generated__/globalTypes'
 import { TeamProvider } from '../Team/TeamProvider'
-import { JourneyView, GET_USER_ROLE } from './JourneyView'
+
 import { publishedJourney } from './data'
+import { GET_USER_ROLE, JourneyView } from './JourneyView'
 import { Menu } from './Menu'
 
 const JourneyViewStory = {
