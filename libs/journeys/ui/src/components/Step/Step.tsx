@@ -1,14 +1,16 @@
-import { ReactElement, useEffect } from 'react'
-import { useMutation, gql } from '@apollo/client'
-import { v4 as uuidv4 } from 'uuid'
-import TagManager from 'react-gtm-module'
+import { gql, useMutation } from '@apollo/client'
 import { NextSeo } from 'next-seo'
+import { ReactElement, useEffect } from 'react'
+import TagManager from 'react-gtm-module'
 import { useTranslation } from 'react-i18next'
+import { v4 as uuidv4 } from 'uuid'
+
 import type { TreeBlock } from '../../libs/block'
-import { useBlocks, isActiveBlockOrDescendant } from '../../libs/block'
+import { isActiveBlockOrDescendant, useBlocks } from '../../libs/block'
 import { getStepHeading } from '../../libs/getStepHeading'
-import { BlockRenderer, WrappersProps } from '../BlockRenderer'
 import { useJourney } from '../../libs/JourneyProvider/JourneyProvider'
+import { BlockRenderer, WrappersProps } from '../BlockRenderer'
+
 import { StepFields } from './__generated__/StepFields'
 import { StepViewEventCreate } from './__generated__/StepViewEventCreate'
 

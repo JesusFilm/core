@@ -1,7 +1,10 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
+
 import { UserJourneyRole } from '../../../../../../__generated__/globalTypes'
+
 import { USER_JOURNEY_PROMOTE } from './PromoteUser'
+
 import { PromoteUser } from '.'
 
 describe('PromoteUser', () => {

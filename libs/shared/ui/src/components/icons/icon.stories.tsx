@@ -1,9 +1,11 @@
-import { Meta, Story } from '@storybook/react'
 import Stack from '@mui/material/Stack'
-import { ComponentProps } from 'react'
 import Typography from '@mui/material/Typography'
+import { Meta, Story } from '@storybook/react'
+import { ComponentProps } from 'react'
+
 // import CircularProgress from '@mui/material/CircularProgress'
 import { simpleComponentConfig } from '../../libs/simpleComponentConfig'
+
 import { Icon } from './Icon'
 
 const iconNames = [

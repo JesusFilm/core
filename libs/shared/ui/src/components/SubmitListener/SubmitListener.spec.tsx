@@ -1,5 +1,6 @@
 import { fireEvent, render, waitFor } from '@testing-library/react'
-import { Formik, Form } from 'formik'
+import { Form, Formik } from 'formik'
+
 import { SubmitListener } from '.'
 
 describe('SubmitListener', () => {

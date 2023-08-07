@@ -1,34 +1,37 @@
 import { Test, TestingModule } from '@nestjs/testing'
+import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
+import omit from 'lodash/omit'
 import { v4 as uuidv4 } from 'uuid'
-import { getPowerBiEmbed } from '@core/nest/powerBi/getPowerBiEmbed'
+
 import {
+  Action,
+  Block,
+  ChatButton,
+  Host,
   Journey,
   Prisma,
-  UserTeamRole,
-  Host,
   Team,
-  Block,
-  UserJourney,
-  ChatButton,
   ThemeMode,
   ThemeName,
+  UserJourney,
   UserJourneyRole,
-  Action
+  UserTeamRole
 } from '.prisma/api-journeys-client'
-import omit from 'lodash/omit'
 import { CaslAuthModule } from '@core/nest/common/CaslAuthModule'
-import { mockDeep, DeepMockProxy } from 'jest-mock-extended'
+import { getPowerBiEmbed } from '@core/nest/powerBi/getPowerBiEmbed'
+
 import {
   IdType,
-  JourneysReportType,
-  JourneyStatus
+  JourneyStatus,
+  JourneysReportType
 } from '../../__generated__/graphql'
+import { AppAbility, AppCaslFactory } from '../../lib/casl/caslFactory'
+import { PrismaService } from '../../lib/prisma.service'
 import { BlockResolver } from '../block/block.resolver'
 import { BlockService } from '../block/block.service'
-import { UserRoleService } from '../userRole/userRole.service'
 import { UserRoleResolver } from '../userRole/userRole.resolver'
-import { PrismaService } from '../../lib/prisma.service'
-import { AppAbility, AppCaslFactory } from '../../lib/casl/caslFactory'
+import { UserRoleService } from '../userRole/userRole.service'
+
 import {
   ERROR_PSQL_UNIQUE_CONSTRAINT_VIOLATED,
   JourneyResolver

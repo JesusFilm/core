@@ -1,13 +1,15 @@
-import { Dialog } from '@core/shared/ui/Dialog'
+import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
 import FormControl from '@mui/material/FormControl'
 import MenuItem from '@mui/material/MenuItem'
+import TextField from '@mui/material/TextField'
+import { Formik, FormikHelpers, FormikValues } from 'formik'
 import sortBy from 'lodash/sortBy'
 import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
-import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
-import { Formik, FormikHelpers, FormikValues } from 'formik'
 import { object, string } from 'yup'
-import TextField from '@mui/material/TextField'
+
+import { Dialog } from '@core/shared/ui/Dialog'
+
 import { useTeam } from '../TeamProvider'
 
 interface DuplicateToTeamDialogProps {

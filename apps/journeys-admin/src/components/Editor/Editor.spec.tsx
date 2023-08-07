@@ -1,9 +1,11 @@
-import { render } from '@testing-library/react'
-import type { TreeBlock } from '@core/journeys/ui/block'
 import { MockedProvider } from '@apollo/client/testing'
-import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
-import { ActiveJourneyEditContent } from '@core/journeys/ui/EditorProvider'
+import { render } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
+
+import type { TreeBlock } from '@core/journeys/ui/block'
+import { ActiveJourneyEditContent } from '@core/journeys/ui/EditorProvider'
+import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
+
 import { GetJourney_journey as Journey } from '../../../__generated__/GetJourney'
 import {
   JourneyStatus,
@@ -11,7 +13,9 @@ import {
   ThemeName
 } from '../../../__generated__/globalTypes'
 import { ThemeProvider } from '../ThemeProvider'
+
 import { JourneyEdit } from './JourneyEdit'
+
 import { Editor } from '.'
 
 describe('Editor', () => {

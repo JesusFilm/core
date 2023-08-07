@@ -1,8 +1,9 @@
-import { ReactElement } from 'react'
-import RemoveCircleOutlineOutlinedIcon from '@mui/icons-material/RemoveCircleOutlineOutlined'
 import { gql, useMutation } from '@apollo/client'
-import { MenuItem } from '../../../MenuItem'
+import RemoveCircleOutlineOutlinedIcon from '@mui/icons-material/RemoveCircleOutlineOutlined'
+import { ReactElement } from 'react'
+
 import { UserTeamDelete } from '../../../../../__generated__/UserTeamDelete'
+import { MenuItem } from '../../../MenuItem'
 
 export const USER_TEAM_DELETE = gql`
   mutation UserTeamDelete($id: ID!) {

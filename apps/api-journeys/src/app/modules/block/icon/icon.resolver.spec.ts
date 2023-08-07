@@ -1,17 +1,20 @@
 import { Test, TestingModule } from '@nestjs/testing'
-import { Block, Journey, UserTeamRole } from '.prisma/api-journeys-client'
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
+
+import { Block, Journey, UserTeamRole } from '.prisma/api-journeys-client'
 import { CaslAuthModule } from '@core/nest/common/CaslAuthModule'
-import { BlockService } from '../block.service'
+
 import {
-  IconBlockUpdateInput,
   IconBlockCreateInput,
+  IconBlockUpdateInput,
   IconColor,
   IconName,
   IconSize
 } from '../../../__generated__/graphql'
-import { PrismaService } from '../../../lib/prisma.service'
 import { AppAbility, AppCaslFactory } from '../../../lib/casl/caslFactory'
+import { PrismaService } from '../../../lib/prisma.service'
+import { BlockService } from '../block.service'
+
 import { IconBlockResolver } from './icon.resolver'
 
 describe('Icon', () => {

@@ -1,4 +1,5 @@
 import jwt from 'jsonwebtoken'
+
 import { isTokenExpired } from './apolloClient'
 
 jest.mock('jsonwebtoken')

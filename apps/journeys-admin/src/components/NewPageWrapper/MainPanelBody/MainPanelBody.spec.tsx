@@ -1,5 +1,6 @@
-import { render } from '@testing-library/react'
 import Typography from '@mui/material/Typography'
+import { render } from '@testing-library/react'
+
 import { MainPanelBody } from '.'
 
 describe('MainPanelBody', () => {

@@ -1,9 +1,12 @@
-import { fireEvent, render, waitFor } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
-import { SnackbarProvider } from 'notistack'
+import { fireEvent, render, waitFor } from '@testing-library/react'
 import noop from 'lodash/noop'
+import { SnackbarProvider } from 'notistack'
+
 import { JourneyStatus } from '../../../../../../__generated__/globalTypes'
+
 import { JOURNEY_TRASH } from './TrashJourneyDialog'
+
 import { TrashJourneyDialog } from '.'
 
 describe('TrashJourneyDialog', () => {

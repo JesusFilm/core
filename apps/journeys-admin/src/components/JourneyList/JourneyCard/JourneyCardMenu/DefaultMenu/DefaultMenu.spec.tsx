@@ -1,10 +1,11 @@
-import { fireEvent, render } from '@testing-library/react'
-import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
-import noop from 'lodash/noop'
 import { MockedProvider } from '@apollo/client/testing'
+import { fireEvent, render } from '@testing-library/react'
+import noop from 'lodash/noop'
 import { SnackbarProvider } from 'notistack'
+
 import { JourneyStatus } from '../../../../../../__generated__/globalTypes'
 import { TeamProvider } from '../../../../Team/TeamProvider'
+
 import { DefaultMenu } from '.'
 
 describe('DefaultMenu', () => {
@@ -12,20 +13,18 @@ describe('DefaultMenu', () => {
     const { getByRole } = render(
       <MockedProvider>
         <SnackbarProvider>
-          <FlagsProvider flags={{ teams: true }}>
-            <TeamProvider>
-              <DefaultMenu
-                id="journeyId"
-                slug="journey-slug"
-                status={JourneyStatus.draft}
-                journeyId="journey-id"
-                published={false}
-                setOpenAccessDialog={noop}
-                handleCloseMenu={noop}
-                setOpenTrashDialog={noop}
-              />
-            </TeamProvider>
-          </FlagsProvider>
+          <TeamProvider>
+            <DefaultMenu
+              id="journeyId"
+              slug="journey-slug"
+              status={JourneyStatus.draft}
+              journeyId="journey-id"
+              published={false}
+              setOpenAccessDialog={noop}
+              handleCloseMenu={noop}
+              setOpenTrashDialog={noop}
+            />
+          </TeamProvider>
         </SnackbarProvider>
       </MockedProvider>
     )

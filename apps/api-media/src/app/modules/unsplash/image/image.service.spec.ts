@@ -1,5 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import fetch, { Response } from 'node-fetch'
+
 import {
   UnsplashColor,
   UnsplashContentFilter,
@@ -7,8 +8,8 @@ import {
   UnsplashPhotoOrientation
 } from '../../../__generated__/graphql'
 
-import { unsplashImageReponse, unsplashListResponse } from './testData'
 import { UnsplashImageService } from './image.service'
+import { unsplashImageReponse, unsplashListResponse } from './testData'
 
 jest.mock('node-fetch', () => {
   const originalModule = jest.requireActual('node-fetch')

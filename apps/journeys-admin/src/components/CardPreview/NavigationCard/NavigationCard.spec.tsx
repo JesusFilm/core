@@ -1,5 +1,7 @@
-import { ActiveJourneyEditContent } from '@core/journeys/ui/EditorProvider'
 import { render } from '@testing-library/react'
+
+import { ActiveJourneyEditContent } from '@core/journeys/ui/EditorProvider'
+
 import { NavigationCard } from './NavigationCard'
 
 describe('NavigationCard', () => {

@@ -1,6 +1,8 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { render, screen, waitFor, fireEvent } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+
 import { getVisitorMock, visitorUpdateMock } from './DetailsFormData'
+
 import { DetailsForm } from '.'
 
 jest.mock('react-i18next', () => ({

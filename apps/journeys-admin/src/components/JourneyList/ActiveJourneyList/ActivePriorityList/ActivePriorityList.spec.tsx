@@ -1,14 +1,16 @@
+import { MockedProvider } from '@apollo/client/testing'
 import { render } from '@testing-library/react'
 import { AuthUser } from 'next-firebase-auth'
-import { MockedProvider } from '@apollo/client/testing'
 import { SnackbarProvider } from 'notistack'
-import { SortOrder } from '../../JourneySort'
+
 import { ThemeProvider } from '../../../ThemeProvider'
+import { SortOrder } from '../../JourneySort'
+
 import {
   defaultJourney,
+  journey,
   newJourney,
-  pendingActionJourney,
-  journey
+  pendingActionJourney
 } from './ActiveJourneyListData'
 import { ActivePriorityList } from './ActivePriorityList'
 

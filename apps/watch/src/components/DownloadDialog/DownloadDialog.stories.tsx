@@ -1,11 +1,13 @@
-import { ComponentProps } from 'react'
-import { Story, Meta } from '@storybook/react'
-import { userEvent, screen } from '@storybook/testing-library'
+import { Meta, Story } from '@storybook/react'
+import { screen, userEvent } from '@storybook/testing-library'
 import noop from 'lodash/noop'
+import { ComponentProps } from 'react'
+
 import { VideoContentFields } from '../../../__generated__/VideoContentFields'
 import { watchConfig } from '../../libs/storybook'
 import { VideoProvider } from '../../libs/videoContext'
 import { videos } from '../Videos/__generated__/testData'
+
 import { DownloadDialog } from './DownloadDialog'
 
 const DownloadDialogStory = {

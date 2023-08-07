@@ -1,11 +1,12 @@
+import { TypographyVariant } from '../../../../../__generated__/globalTypes'
+import { TreeBlock } from '../../../../libs/block'
 import {
+  ButtonFields_action_LinkAction as LinkAction,
   ButtonFields_action_NavigateAction as NavigateAction,
   ButtonFields_action_NavigateToBlockAction as NavigateToBlockAction,
-  ButtonFields_action_NavigateToJourneyAction as NavigateToJourneyAction,
-  ButtonFields_action_LinkAction as LinkAction
+  ButtonFields_action_NavigateToJourneyAction as NavigateToJourneyAction
 } from '../../__generated__/ButtonFields'
-import { TreeBlock } from '../../../../libs/block'
-import { TypographyVariant } from '../../../../../__generated__/globalTypes'
+
 import { getActionLabel } from './getActionLabel'
 
 describe('getActionLabel', () => {

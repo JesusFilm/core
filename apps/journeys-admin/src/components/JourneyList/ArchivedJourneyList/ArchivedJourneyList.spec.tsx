@@ -1,16 +1,19 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
-import { SnackbarProvider } from 'notistack'
 import { AuthUser } from 'next-firebase-auth'
-import { defaultJourney, oldJourney } from '../journeyListData'
-import { ThemeProvider } from '../../ThemeProvider'
-import { SortOrder } from '../JourneySort'
-import { GET_ADMIN_JOURNEYS } from '../../../libs/useAdminJourneysQuery/useAdminJourneysQuery'
+import { SnackbarProvider } from 'notistack'
+
 import { JourneyStatus } from '../../../../__generated__/globalTypes'
+import { GET_ADMIN_JOURNEYS } from '../../../libs/useAdminJourneysQuery/useAdminJourneysQuery'
+import { ThemeProvider } from '../../ThemeProvider'
+import { defaultJourney, oldJourney } from '../journeyListData'
+import { SortOrder } from '../JourneySort'
+
 import {
   RESTORE_ARCHIVED_JOURNEYS,
   TRASH_ARCHIVED_JOURNEYS
 } from './ArchivedJourneyList'
+
 import { ArchivedJourneyList } from '.'
 
 jest.mock('next/router', () => ({

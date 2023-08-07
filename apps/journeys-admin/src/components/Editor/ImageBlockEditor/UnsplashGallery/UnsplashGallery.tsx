@@ -1,15 +1,16 @@
-import { ReactElement, useState, useEffect } from 'react'
+import { gql, useMutation, useQuery } from '@apollo/client'
+import LoadingButton from '@mui/lab/LoadingButton'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
-import LoadingButton from '@mui/lab/LoadingButton'
-import { gql, useMutation, useQuery } from '@apollo/client'
+import { ReactElement, useEffect, useState } from 'react'
 
 import { ListUnsplashCollectionPhotos } from '../../../../../__generated__/ListUnsplashCollectionPhotos'
 import { SearchUnsplashPhotos } from '../../../../../__generated__/SearchUnsplashPhotos'
 import { TriggerUnsplashDownload } from '../../../../../__generated__/TriggerUnsplashDownload'
-import { UnsplashSearch } from './UnsplashSearch'
-import { UnsplashList } from './UnsplashList'
+
 import { UnsplashCollections } from './UnsplashCollections'
+import { UnsplashList } from './UnsplashList'
+import { UnsplashSearch } from './UnsplashSearch'
 
 export const LIST_UNSPLASH_COLLECTION_PHOTOS = gql`
   query ListUnsplashCollectionPhotos(

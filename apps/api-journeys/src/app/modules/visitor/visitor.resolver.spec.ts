@@ -1,15 +1,18 @@
 import { Test, TestingModule } from '@nestjs/testing'
-import { CaslAuthModule } from '@core/nest/common/CaslAuthModule'
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
-import { Visitor, Event } from '.prisma/api-journeys-client'
+
+import { Event, Visitor } from '.prisma/api-journeys-client'
+import { CaslAuthModule } from '@core/nest/common/CaslAuthModule'
+
 import {
   MessagePlatform,
   VisitorStatus,
   VisitorUpdateInput,
   VisitorsConnection
 } from '../../__generated__/graphql'
-import { PrismaService } from '../../lib/prisma.service'
 import { AppAbility, AppCaslFactory } from '../../lib/casl/caslFactory'
+import { PrismaService } from '../../lib/prisma.service'
+
 import { VisitorResolver } from './visitor.resolver'
 import { VisitorService } from './visitor.service'
 

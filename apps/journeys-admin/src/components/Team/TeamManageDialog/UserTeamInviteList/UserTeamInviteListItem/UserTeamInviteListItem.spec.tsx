@@ -1,6 +1,8 @@
-import { fireEvent, render, waitFor } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
+import { fireEvent, render, waitFor } from '@testing-library/react'
+
 import { GetUserTeamsAndInvites_userTeamInvites as UserTeamInvite } from '../../../../../../__generated__/GetUserTeamsAndInvites'
+
 import { UserTeamInviteListItem } from './UserTeamInviteListItem'
 
 describe('UserTeamInviteListItem', () => {

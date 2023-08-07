@@ -1,17 +1,19 @@
-import { ReactElement, useRef, useEffect } from 'react'
+import { ApolloQueryResult } from '@apollo/client'
 import Card from '@mui/material/Card'
 import CardActionArea from '@mui/material/CardActionArea'
-import CardContent from '@mui/material/CardContent'
 import CardActions from '@mui/material/CardActions'
+import CardContent from '@mui/material/CardContent'
 import Link from 'next/link'
-import { ApolloQueryResult } from '@apollo/client'
+import { ReactElement, useEffect, useRef } from 'react'
+
 import {
   GetAdminJourneys,
   GetAdminJourneys_journeys as Journey
 } from '../../../../__generated__/GetAdminJourneys'
+
+import { JourneyCardInfo } from './JourneyCardInfo'
 import { JourneyCardMenu } from './JourneyCardMenu'
 import { JourneyCardText } from './JourneyCardText'
-import { JourneyCardInfo } from './JourneyCardInfo'
 import { JourneyCardVariant } from './journeyCardVariant'
 
 interface JourneyCardProps {

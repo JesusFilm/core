@@ -1,15 +1,16 @@
 import { Inject, Injectable } from '@nestjs/common'
+import { Database, aql } from 'arangojs'
 import {
   CollectionInsertOptions,
   DocumentCollection,
   EdgeCollection
 } from 'arangojs/collection'
-import { aql, Database } from 'arangojs'
-import { DeepMockProxy } from 'jest-mock-extended'
 import { Document, DocumentData, Patch } from 'arangojs/documents'
-import { KeyAsId } from '@core/nest/decorators/KeyAsId'
-import { IdAsKey } from '@core/nest/decorators/IdAsKey'
 import DataLoader from 'dataloader'
+import { DeepMockProxy } from 'jest-mock-extended'
+
+import { IdAsKey } from '@core/nest/decorators/IdAsKey'
+import { KeyAsId } from '@core/nest/decorators/KeyAsId'
 
 @Injectable()
 // eslint-disable-next-line @typescript-eslint/no-explicit-any

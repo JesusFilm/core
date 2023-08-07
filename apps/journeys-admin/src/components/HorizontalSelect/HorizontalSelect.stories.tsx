@@ -1,7 +1,9 @@
-import { Story, Meta } from '@storybook/react'
-import { useState } from 'react'
 import Box from '@mui/material/Box'
+import { Meta, Story } from '@storybook/react'
+import { useState } from 'react'
+
 import { journeysAdminConfig } from '../../libs/storybook'
+
 import { HorizontalSelect } from '.'
 
 const HorizontalSelectStory = {

@@ -1,13 +1,16 @@
-import { Meta, Story } from '@storybook/react'
 import { MockedProvider } from '@apollo/client/testing'
+import { Meta, Story } from '@storybook/react'
+
 import { journeysAdminConfig } from '../../libs/storybook'
 import { GET_JOURNEYS } from '../../libs/useJourneysQuery/useJourneysQuery'
+
 import {
-  oldTemplate,
-  publishedTemplate,
+  defaultTemplate,
   descriptiveTemplate,
-  defaultTemplate
+  oldTemplate,
+  publishedTemplate
 } from './TemplateListData'
+
 import { TemplateLibrary } from '.'
 
 const TemplateLibraryStory = {

@@ -1,7 +1,9 @@
-import { Meta, Story } from '@storybook/react'
-import Typography from '@mui/material/Typography'
 import Box from '@mui/material/Box'
+import Typography from '@mui/material/Typography'
+import { Meta, Story } from '@storybook/react'
+
 import { watchConfig } from '../../libs/storybook'
+
 import { PageWrapper } from '.'
 
 const PageWrapperStory = {

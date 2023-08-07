@@ -1,6 +1,8 @@
-import { Module, CacheModule } from '@nestjs/common'
+import { CacheModule, Module } from '@nestjs/common'
+
 import { DatabaseModule } from '@core/nest/database/DatabaseModule'
-import { VideoResolver, LanguageWithSlugResolver } from './video.resolver'
+
+import { LanguageWithSlugResolver, VideoResolver } from './video.resolver'
 import { VideoService } from './video.service'
 
 @Module({

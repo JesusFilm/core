@@ -1,8 +1,10 @@
 import { Test, TestingModule } from '@nestjs/testing'
+
 import { VideoTriggerBlock } from '../../../__generated__/graphql'
-import { UserRoleService } from '../../userRole/userRole.service'
 import { PrismaService } from '../../../lib/prisma.service'
+import { UserRoleService } from '../../userRole/userRole.service'
 import { BlockService } from '../block.service'
+
 import { VideoTriggerResolver } from './videoTrigger.resolver'
 
 describe('VideoTriggerBlockResolver', () => {

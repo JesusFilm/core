@@ -1,6 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing'
-import { PrismaService } from '../../lib/prisma.service'
+
 import { JourneyVisitorSort } from '../../__generated__/graphql'
+import { PrismaService } from '../../lib/prisma.service'
+
 import { JourneyVisitorService } from './journeyVisitor.service'
 
 const journeyVisitor = {

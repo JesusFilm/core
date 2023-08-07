@@ -1,7 +1,9 @@
 import { render } from '@testing-library/react'
-import { ThemeProvider } from '../../../ThemeProvider'
+
 import { JourneyFields as Journey } from '../../../../../__generated__/JourneyFields'
+import { ThemeProvider } from '../../../ThemeProvider'
 import { SocialProvider } from '../../SocialProvider'
+
 import { SocialPreviewMessage } from './SocialPreviewMessage'
 
 describe('SocialPreviewMessage', () => {

@@ -1,5 +1,7 @@
 import { render } from '@testing-library/react'
-import { getTheme, ThemeName, ThemeMode } from '../../libs/themes'
+
+import { ThemeMode, ThemeName, getTheme } from '../../libs/themes'
+
 import { ThemeProvider } from '.'
 
 describe('ThemeProvider', () => {

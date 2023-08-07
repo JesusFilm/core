@@ -1,4 +1,5 @@
 import { QueryResult, gql, useQuery } from '@apollo/client'
+
 import {
   GetAdminJourneys,
   GetAdminJourneysVariables

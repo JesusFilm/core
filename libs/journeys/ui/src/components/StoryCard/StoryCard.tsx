@@ -1,6 +1,8 @@
 import Paper from '@mui/material/Paper'
 import { ReactElement, ReactNode } from 'react'
+
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
+
 import { ThemeMode, ThemeName } from '../../../__generated__/globalTypes'
 
 interface StoryCardProps {
