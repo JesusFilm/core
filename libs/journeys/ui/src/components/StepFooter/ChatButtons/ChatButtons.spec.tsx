@@ -147,10 +147,7 @@ describe('ChatButtons', () => {
     const { getAllByRole } = render(
       <MockedProvider mocks={mocks}>
         <JourneyProvider
-          value={{
-            journey: { ...journey, chatButtons },
-            variant: 'admin'
-          }}
+          value={{ journey: { ...journey, chatButtons }, variant: 'admin' }}
         >
           <ChatButtons />
         </JourneyProvider>
