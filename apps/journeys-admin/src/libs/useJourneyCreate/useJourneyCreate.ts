@@ -19,7 +19,7 @@ export const CREATE_JOURNEY = gql`
     $headlineTypographyContent: String!
     $bodyTypographyContent: String!
     $captionTypographyContent: String!
-    $teamId: ID
+    $teamId: ID!
   ) {
     journeyCreate(
       input: {

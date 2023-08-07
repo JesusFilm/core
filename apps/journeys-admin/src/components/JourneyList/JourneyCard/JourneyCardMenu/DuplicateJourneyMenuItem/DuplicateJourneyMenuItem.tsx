@@ -25,10 +25,10 @@ export function DuplicateJourneyMenuItem({
 
   const handleDuplicateJourney = async (): Promise<void> => {
     // TODO: add activeteam.id not null check when teams is released
-    if (id == null) return
+    if (id == null || activeTeam?.id == null) return
 
     const data = await journeyDuplicate({
-      variables: { id, teamId: activeTeam?.id }
+      variables: { id, teamId: activeTeam.id }
     })
     if (data != null) {
       handleCloseMenu()
