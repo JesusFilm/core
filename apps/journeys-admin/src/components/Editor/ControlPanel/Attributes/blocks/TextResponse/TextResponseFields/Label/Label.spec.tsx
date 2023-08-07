@@ -111,7 +111,7 @@ describe('Edit Label field', () => {
     fireEvent.blur(field)
 
     await waitFor(() => {
-      expect(result).toBeCalled()
+      expect(result).toHaveBeenCalled()
     })
   })
 
@@ -148,7 +148,7 @@ describe('Edit Label field', () => {
     fireEvent.blur(field)
 
     await waitFor(() => {
-      expect(result).toBeCalled()
+      expect(result).toHaveBeenCalled()
     })
   })
 })

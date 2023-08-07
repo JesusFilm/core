@@ -12,6 +12,7 @@ describe('Avatar', () => {
     lastName: 'One',
     imageUrl: 'https://bit.ly/3Gth4Yf'
   }
+
   it('should show avatar', () => {
     const { getByRole } = render(<Avatar user={user} />)
     expect(getByRole('img')).toBeInTheDocument()

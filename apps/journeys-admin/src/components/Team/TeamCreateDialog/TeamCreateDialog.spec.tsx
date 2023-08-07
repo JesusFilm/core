@@ -25,6 +25,7 @@ describe('TeamCreateDialog', () => {
   beforeEach(() => {
     ;(useMediaQuery as jest.Mock).mockImplementation(() => true)
   })
+
   const teamCreateMock: MockedResponse<TeamCreate> = {
     request: {
       query: TEAM_CREATE,
@@ -108,7 +109,7 @@ describe('TeamCreateDialog', () => {
       { __ref: 'Team:teamId' }
     ])
     expect(getByText('{{ teamName }} created.')).toBeInTheDocument()
-    await waitFor(() => expect(handleCreate).toBeCalled())
+    await waitFor(() => expect(handleCreate).toHaveBeenCalled())
   })
 
   it('validates form', async () => {

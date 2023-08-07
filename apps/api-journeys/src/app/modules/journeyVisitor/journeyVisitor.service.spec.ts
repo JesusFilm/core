@@ -45,7 +45,7 @@ describe('JourneyVisitorService', () => {
         await service.getJourneyVisitorCount({
           journeyId: 'journey.id'
         })
-      ).toEqual(2)
+      ).toBe(2)
     })
   })
 
@@ -119,6 +119,7 @@ describe('JourneyVisitorService', () => {
         visitor: { status: { not: null }, countryCode: { contains: 'JA' } }
       })
     })
+
     it('should handle null values', () => {
       expect(
         service.generateWhere({

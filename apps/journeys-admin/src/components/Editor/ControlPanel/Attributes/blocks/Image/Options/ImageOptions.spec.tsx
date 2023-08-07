@@ -12,6 +12,7 @@ jest.mock('@mui/material/useMediaQuery', () => ({
 
 describe('ImageOptions', () => {
   beforeEach(() => (useMediaQuery as jest.Mock).mockImplementation(() => true))
+
   it('opens the image library', () => {
     const { getByTestId } = render(
       <MockedProvider>

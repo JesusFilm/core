@@ -16,6 +16,7 @@ describe('PageWrapper', () => {
     beforeEach(() =>
       (useMediaQuery as jest.Mock).mockImplementation(() => true)
     )
+
     it('should show title', () => {
       const { getByText } = render(
         <MockedProvider>

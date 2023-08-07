@@ -9,6 +9,7 @@ describe('PaletteColorPicker', () => {
     { dark: '#C62828', light: '#FFCDD2' },
     { dark: '#30313D', light: '#FEFEFE' }
   ]
+
   it('displays the palette for dark mode', () => {
     const { getByTestId } = render(
       <PaletteColorPicker

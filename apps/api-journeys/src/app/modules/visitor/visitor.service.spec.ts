@@ -69,6 +69,7 @@ describe('VisitorService', () => {
         endCursor: null
       }
     }
+
     it('returns a visitors connection', async () => {
       expect(
         await service.getList({ first: 50, filter: { teamId: 'teamId' } })

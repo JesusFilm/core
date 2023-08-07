@@ -68,7 +68,7 @@ const journey: Journey = {
 }
 
 describe('CardStyling', () => {
-  it('shows default ', () => {
+  it('shows default', () => {
     const { getByText } = render(
       <MockedProvider>
         <JourneyProvider value={{ journey, admin: true }}>

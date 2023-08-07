@@ -125,6 +125,7 @@ describe('VideoBlockEditorSettingsPosterLibrary', () => {
   beforeEach(() => (useMediaQuery as jest.Mock).mockImplementation(() => true))
 
   let originalEnv
+
   beforeEach(() => {
     originalEnv = process.env
     process.env = {
@@ -232,6 +233,7 @@ describe('VideoBlockEditorSettingsPosterLibrary', () => {
       ])
     })
   })
+
   describe('Existing image poster', () => {
     const existingImageBlock: ImageBlock = {
       ...image,
@@ -310,6 +312,7 @@ describe('VideoBlockEditorSettingsPosterLibrary', () => {
         { __ref: `ImageBlock:${image.id}` }
       ])
     })
+
     it('deletes an image block', async () => {
       const cache = new InMemoryCache()
       cache.restore({

@@ -73,6 +73,7 @@ describe('NavigateToBlockActionResolver', () => {
     ) as DeepMockProxy<PrismaService>
     ability = await new AppCaslFactory().createAbility({ id: 'userId' })
   })
+
   describe('blockUpdateNavigateToBlockAction', () => {
     it('updates the navigate to block action', async () => {
       prismaService.block.findUnique.mockResolvedValueOnce(blockWithUserTeam)
@@ -93,6 +94,7 @@ describe('NavigateToBlockActionResolver', () => {
         }
       })
     })
+
     it('throws an error if typename is wrong', async () => {
       const wrongBlock = {
         ...blockWithUserTeam,
@@ -103,12 +105,14 @@ describe('NavigateToBlockActionResolver', () => {
         resolver.blockUpdateNavigateToBlockAction(ability, wrongBlock.id, input)
       ).rejects.toThrow('This block does not support navigate to block actions')
     })
+
     it('throws error if not found', async () => {
       prismaService.block.findUnique.mockResolvedValueOnce(null)
       await expect(
         resolver.blockUpdateNavigateToBlockAction(ability, block.id, input)
       ).rejects.toThrow('block not found')
     })
+
     it('throws error if not authorized', async () => {
       prismaService.block.findUnique.mockResolvedValueOnce(block)
       await expect(

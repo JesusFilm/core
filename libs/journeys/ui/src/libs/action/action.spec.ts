@@ -20,7 +20,7 @@ describe('action', () => {
     } as unknown as NextRouter
 
     it('should handle empty action', () => {
-      expect(() => handleAction(router)).not.toThrowError()
+      expect(() => handleAction(router)).not.toThrow()
     })
 
     it('should handle NavigateToBlockAction', () => {
@@ -73,7 +73,7 @@ describe('action', () => {
           journey: null,
           gtmEventName: null
         })
-      ).not.toThrowError()
+      ).not.toThrow()
     })
 
     it('should handle NavigateAction', () => {
