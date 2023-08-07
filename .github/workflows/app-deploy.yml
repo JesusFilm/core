@@ -35,7 +35,7 @@ jobs:
         run: |
           echo "$(npx nx affected:apps --plain | npx ts-node tools/scripts/affected-frontend-apps.ts)" >> $GITHUB_OUTPUT
   deploy-preview:
-    name: Deploy Preview and Tests
+    name: Deploy Preview and Test
     needs: affected
     # feature branch, stage branch, or pull request
     if: ${{ needs.affected.outputs.matrix != '[]' && (github.ref != 'refs/heads/main' || github.event_name == 'pull_request') }}
