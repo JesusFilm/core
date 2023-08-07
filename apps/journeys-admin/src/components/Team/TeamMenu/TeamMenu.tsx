@@ -1,16 +1,17 @@
-import { useTranslation } from 'react-i18next'
-import { ReactElement, useState } from 'react'
 import AddIcon from '@mui/icons-material/Add'
 import EditIcon from '@mui/icons-material/Edit'
+import GroupIcon from '@mui/icons-material/Group'
+import MoreVert from '@mui/icons-material/MoreVert'
 import IconButton from '@mui/material/IconButton'
 import Menu from '@mui/material/Menu'
-import MoreVert from '@mui/icons-material/MoreVert'
-import GroupIcon from '@mui/icons-material/Group'
+import { ReactElement, useState } from 'react'
+import { useTranslation } from 'react-i18next'
+
 import { MenuItem } from '../../MenuItem'
 import { TeamCreateDialog } from '../TeamCreateDialog'
-import { TeamUpdateDialog } from '../TeamUpdateDialog'
-import { useTeam } from '../TeamProvider'
 import { TeamManageDialog } from '../TeamManageDialog'
+import { useTeam } from '../TeamProvider'
+import { TeamUpdateDialog } from '../TeamUpdateDialog'
 
 export function TeamMenu(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')

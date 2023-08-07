@@ -1,11 +1,13 @@
-import { Test, TestingModule } from '@nestjs/testing'
 import { subject } from '@casl/ability'
+import { Test, TestingModule } from '@nestjs/testing'
+
 import {
   Journey,
-  UserTeamRole,
+  JourneyStatus,
   UserJourneyRole,
-  JourneyStatus
+  UserTeamRole
 } from '.prisma/api-journeys-client'
+
 import { Action, AppAbility, AppCaslFactory } from '../../lib/casl/caslFactory'
 
 describe('journeyAcl', () => {
@@ -63,21 +65,27 @@ describe('journeyAcl', () => {
     template: true,
     status: JourneyStatus.draft
   } as unknown as Journey)
-  // TODO: remove when teams is released
   const journeyJfpTeam = subject('Journey', {
     id: 'journeyId',
     teamId: 'jfp-team'
   } as unknown as Journey)
   describe('create', () => {
-    // TODO: remove when teams is released
-    it('allow when team is jfp-team', () => {
-      expect(ability.can(Action.Create, journeyJfpTeam)).toEqual(true)
-    })
     it('allow when user is team member', () => {
       expect(ability.can(Action.Create, journeyUserTeamMember)).toEqual(true)
     })
     it('deny when user has no userTeam', () => {
       expect(ability.can(Action.Create, journeyEmpty)).toEqual(false)
+    })
+    it('deny when team is jfp-team', () => {
+      expect(ability.can(Action.Create, journeyJfpTeam)).toEqual(false)
+    })
+    describe('publisher', () => {
+      beforeEach(async () => {
+        ability = await factory.createAbility({ ...user, roles: ['publisher'] })
+      })
+      it('allow when team is jfp-team for publisher', () => {
+        expect(ability.can(Action.Create, journeyJfpTeam)).toEqual(true)
+      })
     })
   })
   describe('manage', () => {

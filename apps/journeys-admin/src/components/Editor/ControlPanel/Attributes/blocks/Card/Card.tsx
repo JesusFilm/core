@@ -1,25 +1,28 @@
-import { useJourney } from '@core/journeys/ui/JourneyProvider'
-import { useEditor } from '@core/journeys/ui/EditorProvider'
-import type { TreeBlock } from '@core/journeys/ui/block'
-import { ReactElement } from 'react'
 import ImageIcon from '@mui/icons-material/Image'
 import Palette from '@mui/icons-material/Palette'
 import VerticalSplit from '@mui/icons-material/VerticalSplit'
 import Videocam from '@mui/icons-material/Videocam'
-import Paper from '@mui/material/Paper'
 import Box from '@mui/material/Box'
-import { getTheme, ThemeName, ThemeMode } from '@core/shared/ui/themes'
+import Paper from '@mui/material/Paper'
+import { ReactElement } from 'react'
+
+import type { TreeBlock } from '@core/journeys/ui/block'
+import { useEditor } from '@core/journeys/ui/EditorProvider'
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { getJourneyRTL } from '@core/journeys/ui/rtl'
+import { ThemeMode, ThemeName, getTheme } from '@core/shared/ui/themes'
+
 import { Attribute } from '../..'
 import {
   GetJourney_journey_blocks_CardBlock as CardBlock,
   GetJourney_journey_blocks_ImageBlock as ImageBlock,
   GetJourney_journey_blocks_VideoBlock as VideoBlock
 } from '../../../../../../../__generated__/GetJourney'
+
 import { BackgroundColor } from './BackgroundColor'
-import { CardStyling } from './CardStyling'
-import { CardLayout } from './CardLayout'
 import { BackgroundMedia } from './BackgroundMedia'
+import { CardLayout } from './CardLayout'
+import { CardStyling } from './CardStyling'
 
 export function Card({
   id,

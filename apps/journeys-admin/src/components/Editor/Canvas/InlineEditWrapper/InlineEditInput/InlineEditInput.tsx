@@ -1,5 +1,6 @@
-import { styled, SimplePaletteColorOptions } from '@mui/material/styles'
 import InputBase, { InputBaseProps } from '@mui/material/InputBase'
+import { SimplePaletteColorOptions, styled } from '@mui/material/styles'
+
 import { adminTheme } from '../../../../ThemeProvider/admin/theme'
 
 interface StyledInputProps extends InputBaseProps {}

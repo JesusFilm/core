@@ -1,6 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import FormData from 'form-data'
-
 import fetch, { Response } from 'node-fetch'
 
 import { ImageService } from './image.service'

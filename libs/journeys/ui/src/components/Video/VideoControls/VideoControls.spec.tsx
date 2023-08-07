@@ -1,3 +1,4 @@
+import { MockedProvider } from '@apollo/client/testing'
 import {
   act,
   cleanup,
@@ -5,10 +6,10 @@ import {
   render,
   waitFor
 } from '@testing-library/react'
+import fscreen from 'fscreen'
 import videojs from 'video.js'
 import Player from 'video.js/dist/types/player'
-import fscreen from 'fscreen'
-import { MockedProvider } from '@apollo/client/testing'
+
 import { VideoControls } from './VideoControls'
 
 describe('VideoControls', () => {

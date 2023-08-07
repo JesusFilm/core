@@ -1,10 +1,11 @@
-import { ReactElement } from 'react'
+import PersonOutlineRoundedIcon from '@mui/icons-material/PersonOutlineRounded'
+import Skeleton from '@mui/material/Skeleton'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
-import PersonOutlineRoundedIcon from '@mui/icons-material/PersonOutlineRounded'
 import { intlFormat, parseISO } from 'date-fns'
+import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
-import Skeleton from '@mui/material/Skeleton'
+
 import { VisitorStatus } from '../../../../../__generated__/globalTypes'
 import { getStatusIcon, transformDuration } from '../utils'
 

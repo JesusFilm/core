@@ -1,8 +1,10 @@
-import { render } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
+import { render } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
+
 import { ThemeProvider } from '../../ThemeProvider'
 import { defaultJourney } from '../journeyListData'
+
 import { JourneyCard } from './JourneyCard'
 
 describe('JourneyCard', () => {

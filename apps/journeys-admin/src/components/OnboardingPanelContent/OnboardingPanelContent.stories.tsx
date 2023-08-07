@@ -1,11 +1,13 @@
 import { MockedProvider } from '@apollo/client/testing'
-import useMediaQuery from '@mui/material/useMediaQuery'
-import { Meta, Story } from '@storybook/react'
 import Drawer from '@mui/material/Drawer'
 import { Theme } from '@mui/material/styles'
+import useMediaQuery from '@mui/material/useMediaQuery'
+import { Meta, Story } from '@storybook/react'
+
 import { simpleComponentConfig } from '../../libs/storybook'
-import { OnboardingPanelContent } from './OnboardingPanelContent'
+
 import { onboardingJourneys } from './data'
+import { OnboardingPanelContent } from './OnboardingPanelContent'
 
 const OnboardingPanelContentStory = {
   ...simpleComponentConfig,

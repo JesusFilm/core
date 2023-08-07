@@ -1,7 +1,9 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import fetch, { Response } from 'node-fetch'
+
 import { GetJourney_journey_blocks_ImageBlock as ImageBlock } from '../../../../../../__generated__/GetJourney'
+
 import { CREATE_CLOUDFLARE_UPLOAD_BY_FILE, ImageUpload } from './ImageUpload'
 
 jest.mock('node-fetch', () => {

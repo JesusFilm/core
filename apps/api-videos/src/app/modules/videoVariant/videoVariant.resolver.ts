@@ -1,5 +1,6 @@
-import { Resolver, ResolveField, Parent, Args } from '@nestjs/graphql'
+import { Args, Parent, ResolveField, Resolver } from '@nestjs/graphql'
 import compact from 'lodash/compact'
+
 import { PrismaService } from '../../lib/prisma.service'
 
 @Resolver('VideoVariant')

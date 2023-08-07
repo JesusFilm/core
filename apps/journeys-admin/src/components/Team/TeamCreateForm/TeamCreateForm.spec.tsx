@@ -1,19 +1,21 @@
-import { fireEvent, render, waitFor } from '@testing-library/react'
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
-import { SnackbarProvider } from 'notistack'
-import { ReactElement } from 'react'
 import { InMemoryCache } from '@apollo/client'
-import { Form } from 'formik'
+import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import Button from '@mui/material/Button'
 import TextField from '@mui/material/TextField'
+import { fireEvent, render, waitFor } from '@testing-library/react'
+import { Form } from 'formik'
+import { SnackbarProvider } from 'notistack'
+import { ReactElement } from 'react'
+
+import { GetLastActiveTeamIdAndTeams } from '../../../../__generated__/GetLastActiveTeamIdAndTeams'
+import { TeamCreate } from '../../../../__generated__/TeamCreate'
+import { TEAM_CREATE } from '../../../libs/useTeamCreateMutation/useTeamCreateMutation'
 import {
   GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS,
   TeamProvider,
   useTeam
 } from '../TeamProvider'
-import { TeamCreate } from '../../../../__generated__/TeamCreate'
-import { TEAM_CREATE } from '../../../libs/useTeamCreateMutation/useTeamCreateMutation'
-import { GetLastActiveTeamIdAndTeams } from '../../../../__generated__/GetLastActiveTeamIdAndTeams'
+
 import { TeamCreateForm } from '.'
 
 describe('TeamCreateForm', () => {

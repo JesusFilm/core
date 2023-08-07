@@ -1,5 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing'
+
 import { PrismaService } from '../../lib/prisma.service'
+
 import { VideoVariantResolver } from './videoVariant.resolver'
 
 describe('VideoVariantResolver', () => {

@@ -1,6 +1,7 @@
-import { ComponentProps } from 'react'
 import { render, screen } from '@testing-library/react'
 import { useField } from 'formik'
+import { ComponentProps } from 'react'
+
 import { TextField } from './TextField'
 
 const props: ComponentProps<typeof TextField> = {

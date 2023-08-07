@@ -1,11 +1,11 @@
 // @generated
 // This file was automatically generated and should not be edited.
 // Please run `nx generate-test-data watch` to regenerate it.
-import { VideoContentFields } from '../../../../__generated__/VideoContentFields'
 import {
   VideoLabel,
   VideoVariantDownloadQuality
 } from '../../../../__generated__/globalTypes'
+import { VideoContentFields } from '../../../../__generated__/VideoContentFields'
 
 export const videos: VideoContentFields[] = [
   {

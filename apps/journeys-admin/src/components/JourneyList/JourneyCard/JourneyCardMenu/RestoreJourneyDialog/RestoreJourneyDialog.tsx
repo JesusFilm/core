@@ -1,11 +1,13 @@
-import { ReactElement } from 'react'
-import { useMutation, gql, ApolloQueryResult } from '@apollo/client'
-import { useSnackbar } from 'notistack'
+import { ApolloQueryResult, gql, useMutation } from '@apollo/client'
 import Typography from '@mui/material/Typography'
+import { useSnackbar } from 'notistack'
+import { ReactElement } from 'react'
+
 import { Dialog } from '@core/shared/ui/Dialog'
-import { JourneyRestore } from '../../../../../../__generated__/JourneyRestore'
-import { JourneyStatus } from '../../../../../../__generated__/globalTypes'
+
 import { GetAdminJourneys } from '../../../../../../__generated__/GetAdminJourneys'
+import { JourneyStatus } from '../../../../../../__generated__/globalTypes'
+import { JourneyRestore } from '../../../../../../__generated__/JourneyRestore'
 
 export const JOURNEY_RESTORE = gql`
   mutation JourneyRestore($ids: [ID!]!) {

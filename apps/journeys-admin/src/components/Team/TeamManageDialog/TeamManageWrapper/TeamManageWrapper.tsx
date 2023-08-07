@@ -1,15 +1,16 @@
 import { ReactElement, ReactNode, useEffect, useMemo } from 'react'
-import { UserTeamList } from '../UserTeamList'
-import { UserTeamInviteList } from '../UserTeamInviteList'
-import { useTeam } from '../../TeamProvider'
-import { useCurrentUser } from '../../../../libs/useCurrentUser'
-import { useUserTeamsAndInvitesQuery } from '../../../../libs/useUserTeamsAndInvitesQuery'
-import { UserTeamInviteForm } from '../../UserTeamInviteForm'
+
 import {
   GetUserTeamsAndInvites,
   GetUserTeamsAndInvites_userTeams as UserTeam
 } from '../../../../../__generated__/GetUserTeamsAndInvites'
 import { UserTeamRole } from '../../../../../__generated__/globalTypes'
+import { useCurrentUser } from '../../../../libs/useCurrentUser'
+import { useUserTeamsAndInvitesQuery } from '../../../../libs/useUserTeamsAndInvitesQuery'
+import { useTeam } from '../../TeamProvider'
+import { UserTeamInviteForm } from '../../UserTeamInviteForm'
+import { UserTeamInviteList } from '../UserTeamInviteList'
+import { UserTeamList } from '../UserTeamList'
 
 interface TeamManageWrapperProps {
   children: (props: {

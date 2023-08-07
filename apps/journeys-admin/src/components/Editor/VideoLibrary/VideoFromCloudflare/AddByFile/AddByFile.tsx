@@ -1,22 +1,24 @@
 import type { ReadStream } from 'fs'
-import { ReactElement, useEffect, useState } from 'react'
-import { useDropzone, FileRejection } from 'react-dropzone'
-import Typography from '@mui/material/Typography'
-import BackupOutlinedIcon from '@mui/icons-material/BackupOutlined'
-import Button from '@mui/material/Button'
-import Box from '@mui/material/Box'
-import Stack from '@mui/material/Stack'
+
 import { gql, useLazyQuery, useMutation } from '@apollo/client'
+import BackupOutlinedIcon from '@mui/icons-material/BackupOutlined'
 import CloudOffRoundedIcon from '@mui/icons-material/CloudOffRounded'
 import WarningAmberRounded from '@mui/icons-material/WarningAmberRounded'
+import Box from '@mui/material/Box'
+import Button from '@mui/material/Button'
+import LinearProgress from '@mui/material/LinearProgress'
+import Stack from '@mui/material/Stack'
+import Typography from '@mui/material/Typography'
+import { ReactElement, useEffect, useState } from 'react'
+import { FileRejection, useDropzone } from 'react-dropzone'
+import { useTranslation } from 'react-i18next'
 import {
   DefaultHttpStack,
   DetailedError,
   HttpStack,
   Upload
 } from 'tus-js-client'
-import LinearProgress from '@mui/material/LinearProgress'
-import { useTranslation } from 'react-i18next'
+
 import { CreateCloudflareVideoUploadByFileMutation } from '../../../../../../__generated__/CreateCloudflareVideoUploadByFileMutation'
 import { GetMyCloudflareVideoQuery } from '../../../../../../__generated__/GetMyCloudflareVideoQuery'
 

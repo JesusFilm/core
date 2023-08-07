@@ -1,4 +1,5 @@
 import { fireEvent, render } from '@testing-library/react'
+
 import {
   ActiveFab,
   ActiveJourneyEditContent,
@@ -7,14 +8,16 @@ import {
   useEditor
 } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+
+import { GetJourney_journey as Journey } from '../../../../../../../__generated__/GetJourney'
 import {
   ChatPlatform,
   ThemeMode,
   ThemeName
 } from '../../../../../../../__generated__/globalTypes'
-import { GetJourney_journey as Journey } from '../../../../../../../__generated__/GetJourney'
-import { Footer } from './Footer'
+
 import { Chat } from './Chat'
+import { Footer } from './Footer'
 import { HostSidePanel } from './HostSidePanel'
 
 jest.mock('@core/journeys/ui/EditorProvider', () => {

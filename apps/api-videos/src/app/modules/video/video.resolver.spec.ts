@@ -1,9 +1,12 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { GraphQLResolveInfo, Kind } from 'graphql'
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
-import { Video, VideoVariant, VideoTitle } from '.prisma/api-videos-client'
+
+import { Video, VideoTitle, VideoVariant } from '.prisma/api-videos-client'
+
 import { IdType } from '../../__generated__/graphql'
 import { PrismaService } from '../../lib/prisma.service'
+
 import { LanguageWithSlugResolver, VideoResolver } from './video.resolver'
 import { VideoService } from './video.service'
 

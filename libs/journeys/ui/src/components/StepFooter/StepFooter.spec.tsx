@@ -1,6 +1,7 @@
-import { fireEvent, render } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
+import { fireEvent, render } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
+
 import {
   JourneyStatus,
   ThemeMode,
@@ -8,6 +9,7 @@ import {
 } from '../../../__generated__/globalTypes'
 import { JourneyProvider } from '../../libs/JourneyProvider'
 import { JourneyFields as Journey } from '../../libs/JourneyProvider/__generated__/JourneyFields'
+
 import { StepFooter } from './StepFooter'
 
 jest.mock('@mui/material/useMediaQuery', () => ({

@@ -1,18 +1,20 @@
 // version 2
 // increment to trigger re-seed (ie: files other than seed.ts are changed)
 
+import isEqual from 'lodash/isEqual'
+import omit from 'lodash/omit'
+import sortBy from 'lodash/sortBy'
+
 import {
-  PrismaClient,
   Prisma,
+  PrismaClient,
   Video,
   VideoTitle,
   VideoVariant,
-  VideoVariantSubtitle,
-  VideoVariantDownload
+  VideoVariantDownload,
+  VideoVariantSubtitle
 } from '.prisma/api-videos-client'
-import omit from 'lodash/omit'
-import isEqual from 'lodash/isEqual'
-import sortBy from 'lodash/sortBy'
+
 import { fetchMediaComponentsAndTransformToVideos } from '../src/libs/arclight'
 import { fetchMediaLanguagesAndTransformToLanguages } from '../src/libs/arclight/arclight'
 

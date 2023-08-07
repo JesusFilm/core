@@ -1,7 +1,9 @@
-import { Test, TestingModule } from '@nestjs/testing'
 import { CacheModule } from '@nestjs/common'
+import { Test, TestingModule } from '@nestjs/testing'
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
+
 import { Video } from '.prisma/api-videos-client'
+
 import { VideoLabel } from '../../__generated__/graphql'
 import { PrismaService } from '../../lib/prisma.service'
 

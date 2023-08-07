@@ -1,12 +1,14 @@
-import { ComponentProps } from 'react'
-import { Story, Meta } from '@storybook/react'
 import { MockedProvider } from '@apollo/client/testing'
+import { Meta, Story } from '@storybook/react'
+import { ComponentProps } from 'react'
+
 import { watchConfig } from '../../libs/storybook'
-import { VideoProvider } from '../../libs/videoContext'
-import { videos } from '../Videos/__generated__/testData'
-import { getSubtitleMock } from '../SubtitleDialog/testData'
-import { getLanguagesSlugMock } from '../AudioLanguageDialog/testData'
 import { getVideoChildrenMock } from '../../libs/useVideoChildren/getVideoChildrenMock'
+import { VideoProvider } from '../../libs/videoContext'
+import { getLanguagesSlugMock } from '../AudioLanguageDialog/testData'
+import { getSubtitleMock } from '../SubtitleDialog/testData'
+import { videos } from '../Videos/__generated__/testData'
+
 import { VideoContentPage } from '.'
 
 const VideoContentPageStory = {

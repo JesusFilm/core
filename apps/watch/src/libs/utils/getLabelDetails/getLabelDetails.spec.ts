@@ -1,4 +1,5 @@
 import { VideoLabel } from '../../../../__generated__/globalTypes'
+
 import { getLabelDetails } from './getLabelDetails'
 
 describe('getLabelDetails', () => {

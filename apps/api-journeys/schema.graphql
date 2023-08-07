@@ -235,8 +235,8 @@ extend type Mutation {
   hostCreate(teamId: ID!, input: HostCreateInput!): Host!
   hostUpdate(id: ID!, teamId: ID!, input: HostUpdateInput): Host!
   hostDelete(id: ID!, teamId: ID!): Host!
-  journeyCreate(input: JourneyCreateInput!, teamId: ID): Journey!
-  journeyDuplicate(id: ID!, teamId: ID): Journey!
+  journeyCreate(input: JourneyCreateInput!, teamId: ID!): Journey!
+  journeyDuplicate(id: ID!, teamId: ID!): Journey!
   journeyUpdate(id: ID!, input: JourneyUpdateInput!): Journey!
 
   """Sets journey status to published"""
@@ -1699,21 +1699,15 @@ extend type Query {
   """
   adminJourneys(status: [JourneyStatus!], template: Boolean, teamId: ID): [Journey!]!
   adminJourneysReport(reportType: JourneysReportType!): PowerBiEmbed
-  adminJourney(id: ID!, idType: IdType): Journey
+  adminJourney(id: ID!, idType: IdType): Journey!
   journeys(where: JourneysFilter): [Journey!]!
-  journey(id: ID!, idType: IdType): Journey
+  journey(id: ID!, idType: IdType): Journey!
   getJourneyProfile: JourneyProfile
 
   """Get a list of Visitor Information by Journey"""
   journeyVisitorsConnection(
     """Returns the elements in the list that match the specified filter."""
     filter: JourneyVisitorFilter!
-
-    """
-    Returns the visitor items related to a specific team.
-    TODO: remove when teams is released
-    """
-    teamId: String
 
     """Returns the first n elements from the list."""
     first: Int

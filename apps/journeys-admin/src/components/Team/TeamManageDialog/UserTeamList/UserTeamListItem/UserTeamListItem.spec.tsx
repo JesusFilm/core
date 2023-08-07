@@ -1,8 +1,10 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
-import { UserTeamRole } from '../../../../../../__generated__/globalTypes'
+
 import { GetUserTeamsAndInvites_userTeams as UserTeam } from '../../../../../../__generated__/GetUserTeamsAndInvites'
-import { UserTeamListItem, USER_TEAM_UPDATE } from './UserTeamListItem'
+import { UserTeamRole } from '../../../../../../__generated__/globalTypes'
+
+import { USER_TEAM_UPDATE, UserTeamListItem } from './UserTeamListItem'
 
 jest.mock('react-i18next', () => ({
   __esModule: true,

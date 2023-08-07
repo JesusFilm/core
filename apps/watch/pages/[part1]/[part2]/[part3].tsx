@@ -1,14 +1,15 @@
 import { gql } from '@apollo/client'
 import { GetStaticPaths, GetStaticProps } from 'next'
-import { ReactElement } from 'react'
 import { SnackbarProvider } from 'notistack'
+import { ReactElement } from 'react'
+
+import { GetVideoContainerAndVideoContent } from '../../../__generated__/GetVideoContainerAndVideoContent'
 import { VideoContentFields } from '../../../__generated__/VideoContentFields'
 import { VideoContentPage } from '../../../src/components/VideoContentPage'
 import { createApolloClient } from '../../../src/libs/apolloClient'
-import { GetVideoContainerAndVideoContent } from '../../../__generated__/GetVideoContainerAndVideoContent'
 import { LanguageProvider } from '../../../src/libs/languageContext/LanguageContext'
-import { VideoProvider } from '../../../src/libs/videoContext'
 import { VIDEO_CONTENT_FIELDS } from '../../../src/libs/videoContentFields'
+import { VideoProvider } from '../../../src/libs/videoContext'
 
 export const GET_VIDEO_CONTAINER_AND_VIDEO_CONTENT = gql`
   ${VIDEO_CONTENT_FIELDS}

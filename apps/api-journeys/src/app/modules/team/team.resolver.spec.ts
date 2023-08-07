@@ -1,14 +1,17 @@
 import { Test, TestingModule } from '@nestjs/testing'
-import { CaslAuthModule } from '@core/nest/common/CaslAuthModule'
+import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
+
 import {
+  Prisma,
   Team,
   UserTeam,
-  UserTeamRole,
-  Prisma
+  UserTeamRole
 } from '.prisma/api-journeys-client'
-import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
-import { PrismaService } from '../../lib/prisma.service'
+import { CaslAuthModule } from '@core/nest/common/CaslAuthModule'
+
 import { AppAbility, AppCaslFactory } from '../../lib/casl/caslFactory'
+import { PrismaService } from '../../lib/prisma.service'
+
 import { TeamResolver } from './team.resolver'
 
 describe('TeamResolver', () => {

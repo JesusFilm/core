@@ -1,7 +1,10 @@
 import { fireEvent, render } from '@testing-library/react'
-import type { TreeBlock } from '../../libs/block'
+
 import { handleAction } from '../../libs/action'
+import type { TreeBlock } from '../../libs/block'
+
 import { RadioOptionFields } from './__generated__/RadioOptionFields'
+
 import { RadioOption } from '.'
 
 jest.mock('../../libs/action', () => {

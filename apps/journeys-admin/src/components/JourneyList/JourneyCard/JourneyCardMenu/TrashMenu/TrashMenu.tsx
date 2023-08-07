@@ -1,6 +1,7 @@
-import { ReactElement } from 'react'
 import CheckCircleRoundedIcon from '@mui/icons-material/CheckCircleRounded'
 import DeleteForeverRoundedIcon from '@mui/icons-material/DeleteForeverRounded'
+import { ReactElement } from 'react'
+
 import { MenuItem } from '../../../../MenuItem'
 
 interface TrashMenuProps {

@@ -1,9 +1,11 @@
 import { ReactElement } from 'react'
+
 import {
   GetUserTeamsAndInvites,
   GetUserTeamsAndInvites_userTeams as UserTeam
 } from '../../../../../__generated__/GetUserTeamsAndInvites'
 import { UserTeamRole } from '../../../../../__generated__/globalTypes'
+
 import { UserTeamInviteListItem } from './UserTeamInviteListItem'
 
 interface UserTeamInvitesListProps {

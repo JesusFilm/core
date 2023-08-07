@@ -1,13 +1,15 @@
-import { Args, Mutation, Resolver, Query } from '@nestjs/graphql'
-import { GraphQLError } from 'graphql'
-import { CaslAbility, CaslAccessible } from '@core/nest/common/CaslAuthModule'
-import { UseGuards } from '@nestjs/common'
 import { subject } from '@casl/ability'
+import { UseGuards } from '@nestjs/common'
+import { Args, Mutation, Query, Resolver } from '@nestjs/graphql'
+import { GraphQLError } from 'graphql'
+
 import { Host, Prisma } from '.prisma/api-journeys-client'
+import { CaslAbility, CaslAccessible } from '@core/nest/common/CaslAuthModule'
+
+import { HostCreateInput, HostUpdateInput } from '../../__generated__/graphql'
 import { Action, AppAbility } from '../../lib/casl/caslFactory'
-import { HostUpdateInput, HostCreateInput } from '../../__generated__/graphql'
-import { PrismaService } from '../../lib/prisma.service'
 import { AppCaslGuard } from '../../lib/casl/caslGuard'
+import { PrismaService } from '../../lib/prisma.service'
 
 @Resolver('Host')
 export class HostResolver {

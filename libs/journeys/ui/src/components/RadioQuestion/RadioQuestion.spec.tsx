@@ -1,12 +1,15 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { render, fireEvent, waitFor } from '@testing-library/react'
+import { fireEvent, render, waitFor } from '@testing-library/react'
 import TagManager from 'react-gtm-module'
+
 import type { TreeBlock } from '../../libs/block'
 import { blockHistoryVar, treeBlocksVar } from '../../libs/block'
-import { JourneyProvider } from '../../libs/JourneyProvider'
 import { BlockFields_StepBlock as StepBlock } from '../../libs/block/__generated__/BlockFields'
+import { JourneyProvider } from '../../libs/JourneyProvider'
+
 import { RadioQuestionFields } from './__generated__/RadioQuestionFields'
-import { RadioQuestion, RADIO_QUESTION_SUBMISSION_EVENT_CREATE } from '.'
+
+import { RADIO_QUESTION_SUBMISSION_EVENT_CREATE, RadioQuestion } from '.'
 
 jest.mock('../../libs/action', () => {
   const originalModule = jest.requireActual('../../libs/action')

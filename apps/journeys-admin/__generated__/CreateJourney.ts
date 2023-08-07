@@ -101,5 +101,5 @@ export interface CreateJourneyVariables {
   headlineTypographyContent: string;
   bodyTypographyContent: string;
   captionTypographyContent: string;
-  teamId?: string | null;
+  teamId: string;
 }

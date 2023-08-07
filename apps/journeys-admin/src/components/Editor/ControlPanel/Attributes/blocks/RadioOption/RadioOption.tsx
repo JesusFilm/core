@@ -1,9 +1,11 @@
+import LinkRoundedIcon from '@mui/icons-material/LinkRounded'
 import { ReactElement, useEffect } from 'react'
+
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
-import LinkRoundedIcon from '@mui/icons-material/LinkRounded'
-import { GetJourney_journey_blocks_RadioOptionBlock as RadioOptionBlock } from '../../../../../../../__generated__/GetJourney'
+
 import { Attribute } from '../..'
+import { GetJourney_journey_blocks_RadioOptionBlock as RadioOptionBlock } from '../../../../../../../__generated__/GetJourney'
 import { Action, actions } from '../../Action/Action'
 
 export function RadioOption({

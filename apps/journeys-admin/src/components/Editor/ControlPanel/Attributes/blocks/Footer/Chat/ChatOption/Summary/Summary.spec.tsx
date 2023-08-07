@@ -1,13 +1,16 @@
-import { fireEvent, render, waitFor } from '@testing-library/react'
 import { InMemoryCache } from '@apollo/client'
 import { MockedProvider } from '@apollo/client/testing'
-import { SnackbarProvider } from 'notistack'
+import { fireEvent, render, waitFor } from '@testing-library/react'
 import noop from 'lodash/noop'
+import { SnackbarProvider } from 'notistack'
+
 import { ChatPlatform } from '../../../../../../../../../../__generated__/globalTypes'
+
 import {
   JOURNEY_CHAT_BUTTON_CREATE,
   JOURNEY_CHAT_BUTTON_REMOVE
 } from './Summary'
+
 import { Summary } from '.'
 
 jest.mock('react-i18next', () => ({

@@ -1,5 +1,7 @@
 import { render } from '@testing-library/react'
+
 import { GetJourneyVisitors_visitors_edges_node_events as Event } from '../../../../../__generated__/GetJourneyVisitors'
+
 import { VisitorCardDetails } from '.'
 
 jest.mock('react-i18next', () => ({

@@ -1,5 +1,3 @@
-import { NextSeo } from 'next-seo'
-import { ReactElement, useEffect } from 'react'
 import { useQuery } from '@apollo/client'
 import {
   AuthAction,
@@ -7,13 +5,16 @@ import {
   withAuthUser,
   withAuthUserTokenSSR
 } from 'next-firebase-auth'
-import { useTranslation } from 'react-i18next'
+import { NextSeo } from 'next-seo'
 import { useRouter } from 'next/router'
-import { Role } from '../../__generated__/globalTypes'
+import { ReactElement, useEffect } from 'react'
+import { useTranslation } from 'react-i18next'
+
 import { GetUserRole } from '../../__generated__/GetUserRole'
+import { Role } from '../../__generated__/globalTypes'
+import { GET_USER_ROLE } from '../../src/components/JourneyView/JourneyView'
 import { PageWrapper } from '../../src/components/NewPageWrapper'
 import { TemplateList } from '../../src/components/TemplateList'
-import { GET_USER_ROLE } from '../../src/components/JourneyView/JourneyView'
 import { initAndAuthApp } from '../../src/libs/initAndAuthApp'
 
 function TemplateIndex(): ReactElement {

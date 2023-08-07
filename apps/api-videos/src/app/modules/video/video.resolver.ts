@@ -1,20 +1,21 @@
-import { TranslationField } from '@core/nest/decorators/TranslationField'
 import {
-  Resolver,
-  Query,
   Args,
   Info,
-  ResolveReference,
+  Parent,
+  Query,
   ResolveField,
-  Parent
+  ResolveReference,
+  Resolver
 } from '@nestjs/graphql'
 import { FieldNode, GraphQLError, GraphQLResolveInfo, Kind } from 'graphql'
-import { Video, VideoVariant, VideoTitle } from '.prisma/api-videos-client'
 import compact from 'lodash/compact'
 import isEmpty from 'lodash/isEmpty'
 
+import { Video, VideoTitle, VideoVariant } from '.prisma/api-videos-client'
+
 import { IdType, VideosFilter } from '../../__generated__/graphql'
 import { PrismaService } from '../../lib/prisma.service'
+
 import { VideoService } from './video.service'
 
 @Resolver('Video')

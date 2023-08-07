@@ -1,6 +1,11 @@
 import { NormalizedCacheObject } from '@apollo/client'
 import { GetStaticProps } from 'next'
 import { ReactElement } from 'react'
+
+import {
+  GetHomeVideos,
+  GetHomeVideos_videos as Video
+} from '../__generated__/GetHomeVideos'
 import { Videos } from '../src/components/VideosPage'
 import {
   GET_LANGUAGES,
@@ -8,10 +13,7 @@ import {
   limit
 } from '../src/components/VideosPage/VideosPage'
 import { createApolloClient } from '../src/libs/apolloClient'
-import {
-  GetHomeVideos,
-  GetHomeVideos_videos as Video
-} from '../__generated__/GetHomeVideos'
+
 import { GET_HOME_VIDEOS } from './index'
 
 interface VideosPageProps {

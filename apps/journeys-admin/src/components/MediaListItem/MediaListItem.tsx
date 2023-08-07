@@ -1,11 +1,12 @@
-import { ReactElement } from 'react'
-import Typography from '@mui/material/Typography'
-import Stack from '@mui/material/Stack'
-import ListItemText from '@mui/material/ListItemText'
 import ListItemButton from '@mui/material/ListItemButton'
-import { NextImage } from '@core/shared/ui/NextImage'
+import ListItemText from '@mui/material/ListItemText'
 import Skeleton from '@mui/material/Skeleton'
+import Stack from '@mui/material/Stack'
 import { SxProps, useTheme } from '@mui/material/styles'
+import Typography from '@mui/material/Typography'
+import { ReactElement } from 'react'
+
+import { NextImage } from '@core/shared/ui/NextImage'
 
 interface MediaListItemProps {
   image: string

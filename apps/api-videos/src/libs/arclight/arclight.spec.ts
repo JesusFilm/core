@@ -1,20 +1,21 @@
 import omit from 'lodash/omit'
 import fetch, { Response } from 'node-fetch'
+
 import {
-  getArclightMediaLanguages,
-  getArclightMediaComponents,
-  getArclightMediaComponentLanguages,
-  getArclightMediaComponentLinks,
-  transformArclightMediaComponentToVideo,
-  transformArclightMediaComponentLanguageToVideoVariant,
-  ArclightMediaComponentLanguage,
   ArclightMediaComponent,
+  ArclightMediaComponentLanguage,
   ArclightMediaLanguage,
   Language,
-  transformArclightMediaLanguageToLanguage,
   MediaComponent,
   fetchMediaComponentsAndTransformToVideos,
-  fetchMediaLanguagesAndTransformToLanguages
+  fetchMediaLanguagesAndTransformToLanguages,
+  getArclightMediaComponentLanguages,
+  getArclightMediaComponentLinks,
+  getArclightMediaComponents,
+  getArclightMediaLanguages,
+  transformArclightMediaComponentLanguageToVideoVariant,
+  transformArclightMediaComponentToVideo,
+  transformArclightMediaLanguageToLanguage
 } from './arclight'
 
 jest.mock('node-fetch', () => {

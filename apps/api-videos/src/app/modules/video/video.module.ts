@@ -1,7 +1,9 @@
-import { Module } from '@nestjs/common'
 import { CacheModule } from '@nestjs/cache-manager'
+import { Module } from '@nestjs/common'
+
 import { PrismaService } from '../../lib/prisma.service'
-import { VideoResolver, LanguageWithSlugResolver } from './video.resolver'
+
+import { LanguageWithSlugResolver, VideoResolver } from './video.resolver'
 import { VideoService } from './video.service'
 
 @Module({
