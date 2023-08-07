@@ -1,4 +1,4 @@
-import { init, LDClient, LDUser } from 'launchdarkly-node-server-sdk'
+import { LDClient, LDUser, init } from 'launchdarkly-node-server-sdk'
 
 let launchDarklyClient: LDClient
 

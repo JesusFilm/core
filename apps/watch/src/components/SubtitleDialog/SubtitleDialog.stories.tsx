@@ -1,9 +1,11 @@
-import { ComponentProps } from 'react'
-import { Story, Meta } from '@storybook/react'
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
-import { VideoProvider } from '../../libs/videoContext'
+import { Meta, Story } from '@storybook/react'
+import { ComponentProps } from 'react'
+
 import { watchConfig } from '../../libs/storybook'
+import { VideoProvider } from '../../libs/videoContext'
 import { videos } from '../Videos/__generated__/testData'
+
 import { SubtitleDialog } from './SubtitleDialog'
 import { getSubtitleMock } from './testData'
 

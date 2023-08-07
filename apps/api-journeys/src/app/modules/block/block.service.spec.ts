@@ -1,14 +1,18 @@
 import { Test, TestingModule } from '@nestjs/testing'
-import { v4 as uuidv4 } from 'uuid'
-import omit from 'lodash/omit'
-import { Block, Action, Prisma } from '.prisma/api-journeys-client'
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
-import { PrismaService } from '../../lib/prisma.service'
+import omit from 'lodash/omit'
+import { v4 as uuidv4 } from 'uuid'
+
+import { Action, Block, Prisma } from '.prisma/api-journeys-client'
+
+
 import {
   JourneyStatus,
   ThemeMode,
   ThemeName
 } from '../../__generated__/graphql'
+import { PrismaService } from '../../lib/prisma.service'
+
 import { BlockService } from './block.service'
 
 jest.mock('uuid', () => ({

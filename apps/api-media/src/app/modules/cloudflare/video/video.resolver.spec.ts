@@ -1,6 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing'
 
 import { PrismaService } from '../../../lib/prisma.service'
+
 import { VideoResolver } from './video.resolver'
 import {
   CloudflareVideoUploadUrl,

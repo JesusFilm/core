@@ -1,4 +1,3 @@
-import { ReactElement } from 'react'
 import {
   AuthAction,
   useAuthUser,
@@ -6,6 +5,8 @@ import {
   withAuthUserTokenSSR
 } from 'next-firebase-auth'
 import { NextSeo } from 'next-seo'
+import { ReactElement } from 'react'
+
 import { PageWrapper } from '../src/components/PageWrapper'
 
 function IndexPage(): ReactElement {

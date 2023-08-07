@@ -1,14 +1,16 @@
-import { useEffect, ReactElement } from 'react'
+import { ApolloProvider } from '@apollo/client'
+import type { EmotionCache } from '@emotion/cache'
+import { CacheProvider } from '@emotion/react'
+import { DefaultSeo } from 'next-seo'
 import { AppProps as NextJsAppProps } from 'next/app'
 import Head from 'next/head'
-import { ApolloProvider } from '@apollo/client'
 import { SnackbarProvider } from 'notistack'
-import { DefaultSeo } from 'next-seo'
-import { CacheProvider } from '@emotion/react'
-import type { EmotionCache } from '@emotion/cache'
+import { ReactElement, useEffect } from 'react'
+
 import { createEmotionCache } from '@core/shared/ui/createEmotionCache'
-import { useApollo } from '../src/libs/apolloClient'
+
 import { ThemeProvider } from '../src/components/ThemeProvider'
+import { useApollo } from '../src/libs/apolloClient'
 import { initAuth } from '../src/libs/firebaseClient/initAuth'
 
 initAuth()

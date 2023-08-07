@@ -1,22 +1,23 @@
 // This file is generated automatically.
 // Do not edit it manually.
 import { Subjects } from '@casl/prisma'
+
 import {
+  Action, 
+  Block, 
   ChatButton, 
   Event, 
-  Visitor, 
   Host, 
+  Journey, 
+  JourneyProfile, 
   JourneyVisitor, 
   Team, 
+  UserInvite, 
+  UserJourney, 
+  UserRole, 
   UserTeam, 
   UserTeamInvite, 
-  UserJourney, 
-  Journey, 
-  UserRole, 
-  JourneyProfile, 
-  UserInvite, 
-  Block, 
-  Action
+  Visitor
 } from '.prisma/api-journeys-client'
 
 export type PrismaSubjects = Subjects<{

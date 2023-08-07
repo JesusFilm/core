@@ -1,4 +1,5 @@
 import { ThemeOptions } from '@mui/material/styles'
+
 import { palette } from './colors'
 
 export const adminComponents: Required<Pick<ThemeOptions, 'components'>> = {

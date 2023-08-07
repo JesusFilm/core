@@ -1,10 +1,11 @@
-import { ReactElement } from 'react'
 import {
+  AuthAction,
   withAuthUser,
-  withAuthUserTokenSSR,
-  AuthAction
+  withAuthUserTokenSSR
 } from 'next-firebase-auth'
 import { NextSeo } from 'next-seo'
+import { ReactElement } from 'react'
+
 import { SignIn } from '../../src/components/SignIn'
 
 function SignInPage(): ReactElement {

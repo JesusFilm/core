@@ -1,10 +1,12 @@
-import { ComponentProps } from 'react'
-import { Meta, Story } from '@storybook/react'
 import { MockedProvider } from '@apollo/client/testing'
 import Box from '@mui/material/Box'
+import { Meta, Story } from '@storybook/react'
+import { ComponentProps } from 'react'
+
+import { VideoBlockSource } from '../../../__generated__/globalTypes'
 import { journeyUiConfig } from '../../libs/journeyUiConfig'
 import { VIDEO_START_EVENT_CREATE } from '../VideoEvents/VideoEvents'
-import { VideoBlockSource } from '../../../__generated__/globalTypes'
+
 import { Video } from '.'
 
 const Demo = {

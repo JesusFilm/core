@@ -1,12 +1,14 @@
 import {
   ApolloClient,
-  createHttpLink,
-  NormalizedCacheObject
+  NormalizedCacheObject,
+  createHttpLink
 } from '@apollo/client'
 import { setContext } from '@apollo/client/link/context'
-import { getAuth, signInAnonymously, UserCredential } from 'firebase/auth'
+import { UserCredential, getAuth, signInAnonymously } from 'firebase/auth'
 import { useMemo } from 'react'
+
 import { firebaseClient } from '../firebaseClient'
+
 import { cache } from './cache'
 
 const httpLink = createHttpLink({

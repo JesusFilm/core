@@ -1,21 +1,21 @@
-import { ReactElement } from 'react'
-import { styled } from '@mui/material/styles'
-import Box from '@mui/material/Box'
-import Container from '@mui/material/Container'
-import Grid from '@mui/material/Grid'
-import Image from 'next/image'
-import Stack from '@mui/material/Stack'
-import Fade from '@mui/material/Fade'
-import Link from '@mui/material/Link'
-import Typography from '@mui/material/Typography'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import NextLink from 'next/link'
 import { GetStaticProps } from 'next'
 import { gql } from '@apollo/client'
+import Box from '@mui/material/Box'
+import Container from '@mui/material/Container'
+import Fade from '@mui/material/Fade'
+import Grid from '@mui/material/Grid'
+import Link from '@mui/material/Link'
+import Stack from '@mui/material/Stack'
+import { styled } from '@mui/material/styles'
+import Typography from '@mui/material/Typography'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import { NextSeo } from 'next-seo'
+import Image from 'next/image'
+import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
-import { createApolloClient } from '../src/libs/apolloClient'
+
 import {
   GetJourneys,
   GetJourneys_journeys as Journey
@@ -23,6 +23,7 @@ import {
 import { ThemeMode, ThemeName } from '../__generated__/globalTypes'
 import i18nConfig from '../next-i18next.config'
 import logo from '../public/logo.svg'
+import { createApolloClient } from '../src/libs/apolloClient'
 
 interface JourneysPageProps {
   journeys: Journey[]

@@ -1,10 +1,12 @@
-import { Resolver, Query, Mutation, Args } from '@nestjs/graphql'
-import { CurrentUserId } from '@core/nest/decorators/CurrentUserId'
 import { UseGuards } from '@nestjs/common'
+import { Args, Mutation, Query, Resolver } from '@nestjs/graphql'
+
 import { JourneyProfile } from '.prisma/api-journeys-client'
+import { CurrentUserId } from '@core/nest/decorators/CurrentUserId'
+
+import { JourneyProfileUpdateInput } from '../../__generated__/graphql'
 import { AppCaslGuard } from '../../lib/casl/caslGuard'
 import { PrismaService } from '../../lib/prisma.service'
-import { JourneyProfileUpdateInput } from '../../__generated__/graphql'
 
 @Resolver('JourneyProfile')
 export class JourneyProfileResolver {

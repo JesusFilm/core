@@ -1,10 +1,11 @@
 import {
   ApolloClient,
-  createHttpLink,
-  NormalizedCacheObject
+  NormalizedCacheObject,
+  createHttpLink
 } from '@apollo/client'
 import { setContext } from '@apollo/client/link/context'
 import { useMemo } from 'react'
+
 import { cache } from './cache'
 
 export function createApolloClient(

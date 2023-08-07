@@ -1,10 +1,13 @@
-import { Meta, Story } from '@storybook/react'
-import IconButton from '@mui/material/IconButton'
-import MenuRounded from '@mui/icons-material/MenuRounded'
-import noop from 'lodash/noop'
 import { MockedProvider } from '@apollo/client/testing'
+import MenuRounded from '@mui/icons-material/MenuRounded'
+import IconButton from '@mui/material/IconButton'
+import { Meta, Story } from '@storybook/react'
+import noop from 'lodash/noop'
+
 import { journeysAdminConfig } from '../../libs/storybook'
+
 import { GET_ME, PageWrapperProps } from './PageWrapper'
+
 import { PageWrapper } from '.'
 
 const PageWrapperStory = {

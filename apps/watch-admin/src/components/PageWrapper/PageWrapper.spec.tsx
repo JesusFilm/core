@@ -1,7 +1,9 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { AuthUser } from 'next-firebase-auth'
+
 import { GET_ME } from './PageWrapper'
+
 import { PageWrapper } from '.'
 
 describe('PageWrapper', () => {

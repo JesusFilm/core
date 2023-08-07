@@ -1,6 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing'
-import { PrismaService } from '../../lib/prisma.service'
+
 import { LanguageIdType } from '../../__generated__/graphql'
+import { PrismaService } from '../../lib/prisma.service'
+
 import { LanguageResolver } from './language.resolver'
 
 describe('LangaugeResolver', () => {

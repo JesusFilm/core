@@ -1,18 +1,20 @@
 import { ReactElement } from 'react'
+
 import { transformer } from '@core/journeys/ui/transformer'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
-import { Conductor } from '../src/components/Conductor'
+
 import { GetJourney_journey_blocks as Block } from '../__generated__/GetJourney'
 import {
-  IconName,
-  TypographyAlign,
-  TypographyVariant,
   ButtonColor,
-  ButtonVariant,
   ButtonSize,
+  ButtonVariant,
+  IconName,
+  ThemeMode,
   ThemeName,
-  ThemeMode
+  TypographyAlign,
+  TypographyVariant
 } from '../__generated__/globalTypes'
+import { Conductor } from '../src/components/Conductor'
 
 const blocks: Block[] = [
   {
