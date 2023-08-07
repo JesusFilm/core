@@ -77,6 +77,6 @@ describe('Color', () => {
     )
     expect(getByRole('button', { name: 'Default' })).toHaveClass('Mui-selected')
     fireEvent.click(getByRole('button', { name: 'Secondary' }))
-    await waitFor(() => expect(() => expect(result).toHaveBeenCalled()))
+    await waitFor(() => expect(result).toHaveBeenCalled())
   })
 })

@@ -319,6 +319,7 @@ describe('CardList', () => {
     )
     expect(getByTestId('social-preview-navigation-card')).toBeInTheDocument()
   })
+
   it('navigates on social preview card click', async () => {
     const handleChange = jest.fn()
     const { getByTestId } = render(

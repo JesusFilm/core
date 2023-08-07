@@ -3,6 +3,7 @@ import { fireEvent, render } from '@testing-library/react'
 
 describe('Visitor Toolbar', () => {
   const handleOpen = jest.fn()
+
   it('should open drawer on click', () => {
     const { getByTestId } = render(
       <FilterListRoundedIcon onClick={handleOpen} />

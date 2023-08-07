@@ -56,7 +56,7 @@ describe('TermsAndConditions', () => {
     )
   })
 
-  it('should link to EULA page', () => {
+  it('should link to community guidelines page', () => {
     const { getByRole } = render(
       <MockedProvider>
         <TermsAndConditions />

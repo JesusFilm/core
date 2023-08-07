@@ -39,6 +39,7 @@ describe('Button color selector', () => {
     expect(getByRole('button', { name: 'Secondary' })).toBeInTheDocument()
     expect(getByRole('button', { name: 'Error' })).toBeInTheDocument()
   })
+
   it('should change the color property', async () => {
     const selectedBlock: TreeBlock<ButtonBlock> = {
       __typename: 'ButtonBlock',
@@ -89,6 +90,6 @@ describe('Button color selector', () => {
     )
     expect(getByRole('button', { name: 'Primary' })).toHaveClass('Mui-selected')
     fireEvent.click(getByRole('button', { name: 'Secondary' }))
-    await waitFor(() => expect(() => expect(result).toHaveBeenCalled()))
+    await waitFor(() => expect(result).toHaveBeenCalled())
   })
 })

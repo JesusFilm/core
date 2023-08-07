@@ -40,7 +40,7 @@ describe('Image', () => {
       'random image from unsplash'
     )
 
-    expect(blurImage).toBeCalledWith(block.blurhash, '#fff')
+    expect(blurImage).toHaveBeenCalledWith(block.blurhash, '#fff')
   })
 
   it('should render the default image', () => {

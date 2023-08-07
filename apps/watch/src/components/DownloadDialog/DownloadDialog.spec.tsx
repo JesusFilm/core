@@ -57,7 +57,7 @@ describe('DownloadDialog', () => {
     fireEvent.click(getByRole('button', { name: 'Download' }))
 
     await waitFor(() => {
-      expect(onDownload).toBeCalledWith(
+      expect(onDownload).toHaveBeenCalledWith(
         video.variant?.downloads[0].url,
         `${video.title[0].value}.mp4`
       )
@@ -87,7 +87,7 @@ describe('DownloadDialog', () => {
     fireEvent.click(getByRole('button', { name: 'Download' }))
 
     await waitFor(() => {
-      expect(onDownload).toBeCalledWith(
+      expect(onDownload).toHaveBeenCalledWith(
         video.variant?.downloads[1].url,
         `${video.title[0].value}.mp4`
       )

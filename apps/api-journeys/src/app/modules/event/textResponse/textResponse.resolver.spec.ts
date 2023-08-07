@@ -61,6 +61,7 @@ describe('TextResponseEventResolver', () => {
       label: 'stepName',
       value: 'My response'
     }
+
     it('returns TextResponseSubmissionEvent', async () => {
       expect(
         await resolver.textResponseSubmissionEventCreate('userId', input)

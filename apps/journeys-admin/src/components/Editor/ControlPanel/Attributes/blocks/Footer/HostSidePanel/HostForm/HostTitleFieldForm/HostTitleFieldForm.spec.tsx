@@ -29,11 +29,13 @@ const mockUseHostUpdate = useHostUpdate as jest.MockedFunction<
 >
 
 const updateHost = jest.fn()
+
 beforeEach(() => {
   mockUseHostUpdate.mockReturnValue({
     updateHost
   })
 })
+
 afterEach(() => {
   jest.resetAllMocks()
 })

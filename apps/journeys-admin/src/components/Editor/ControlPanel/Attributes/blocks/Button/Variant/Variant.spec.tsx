@@ -41,6 +41,7 @@ describe('Button variant selector', () => {
       'Mui-selected'
     )
   })
+
   it('should change the Variant property', async () => {
     const selectedBlock: TreeBlock<ButtonBlock> = {
       __typename: 'ButtonBlock',
@@ -93,6 +94,6 @@ describe('Button variant selector', () => {
       'Mui-selected'
     )
     fireEvent.click(getByRole('button', { name: 'Text' }))
-    await waitFor(() => expect(() => expect(result).toHaveBeenCalled()))
+    await waitFor(() => expect(result).toHaveBeenCalled())
   })
 })

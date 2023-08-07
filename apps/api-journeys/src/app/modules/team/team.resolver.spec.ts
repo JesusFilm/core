@@ -44,6 +44,7 @@ describe('TeamResolver', () => {
     ) as DeepMockProxy<PrismaService>
     ability = await new AppCaslFactory().createAbility({ id: 'userId' })
   })
+
   describe('teams', () => {
     it('fetches accessible teams', async () => {
       prismaService.team.findMany.mockResolvedValue([team])
@@ -142,9 +143,11 @@ describe('TeamResolver', () => {
         }
       ]
     } as unknown as Team & { userTeams: UserTeam[] }
+
     it('returns userTeams of parent', async () => {
       expect(await resolver.userTeams(team)).toEqual(team.userTeams)
     })
+
     it('returns userTeams from database', async () => {
       const userTeams = jest.fn().mockResolvedValue(team.userTeams)
       prismaService.team.findUnique.mockReturnValue({
@@ -155,6 +158,7 @@ describe('TeamResolver', () => {
         resolver.userTeams({ ...team, userTeams: undefined })
       ).resolves.toEqual(team.userTeams)
     })
+
     it('returns empty array when null', async () => {
       const userTeams = jest.fn().mockResolvedValue(null)
       prismaService.team.findUnique.mockReturnValue({

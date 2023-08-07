@@ -110,7 +110,8 @@ describe('UserTeamInviteForm', () => {
       }
     }
   }
-  it('it should validate when fields are empty', async () => {
+
+  it('should validate when fields are empty', async () => {
     const { getByRole, getAllByText } = render(
       <MockedProvider>
         <TeamProvider>
@@ -231,7 +232,7 @@ describe('UserTeamInviteForm', () => {
     })
   })
 
-  it('should create a user team invite on click ', async () => {
+  it('should create a user team invite on click', async () => {
     const cache = new InMemoryCache()
     const { getByRole } = render(
       <MockedProvider

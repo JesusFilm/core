@@ -20,7 +20,7 @@ describe('EventResolver', () => {
         __typename: 'TextResponseSubmissionEvent'
       } as unknown as DbEvent
 
-      expect(resolver.__resolveType(event)).toEqual(
+      expect(resolver.__resolveType(event)).toBe(
         'TextResponseSubmissionEvent'
       )
     })

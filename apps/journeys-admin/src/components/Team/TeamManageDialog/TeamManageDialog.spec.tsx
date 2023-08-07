@@ -39,6 +39,7 @@ jest.mock('react-i18next', () => ({
 const user1 = { id: 'userId', email: 'miguelohara@example.com' }
 
 const handleClose = jest.fn()
+
 beforeEach(() => {
   handleClose.mockClear()
   ;(useMediaQuery as jest.Mock).mockImplementation(() => true)
@@ -98,6 +99,7 @@ describe('TeamManageDialog', () => {
   }
 
   const mocks = [getUserTeamMock1, getTeams]
+
   it('renders without error', async () => {
     const { getByText } = render(
       <MockedProvider mocks={mocks}>
@@ -113,6 +115,7 @@ describe('TeamManageDialog', () => {
       expect(getByText('Invite team member')).toBeInTheDocument()
     })
   })
+
   it('should call on close', async () => {
     const { getByTestId } = render(
       <MockedProvider>

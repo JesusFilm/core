@@ -27,7 +27,7 @@ describe('Header', () => {
     useScrollTriggerMock.mockReturnValue(true)
     const { getAllByRole, getByText, queryByText } = render(<Header />)
 
-    expect(getAllByRole('button', { name: 'open header menu' }).length).toEqual(
+    expect(getAllByRole('button', { name: 'open header menu' })).toHaveLength(
       2
     )
 

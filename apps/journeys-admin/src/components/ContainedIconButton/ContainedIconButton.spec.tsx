@@ -5,6 +5,7 @@ import { ContainedIconButton } from './ContainedIconButton'
 
 describe('ContainedIconButton', () => {
   const onClick = jest.fn()
+
   it('should render button', async () => {
     const { getByRole } = render(
       <ContainedIconButton label="Label" onClick={noop} />

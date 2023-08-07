@@ -222,6 +222,7 @@ describe('TeamOnboarding', () => {
 
     fireEvent.change(getByRole('textbox'), { target: { value: 'Team Title' } })
     fireEvent.click(getByRole('button', { name: 'Create' }))
+    expect(result).toHaveBeenCalled()
   })
 
   it('shows team invites form once team has been created', async () => {

@@ -40,6 +40,7 @@ describe('Button size selector', () => {
     expect(getByRole('button', { name: 'Medium' })).toHaveClass('Mui-selected')
     expect(getByRole('button', { name: 'Large' })).toBeInTheDocument()
   })
+
   it('should change the size property', async () => {
     const selectedBlock: TreeBlock<ButtonBlock> = {
       __typename: 'ButtonBlock',
@@ -90,6 +91,6 @@ describe('Button size selector', () => {
     )
     expect(getByRole('button', { name: 'Medium' })).toHaveClass('Mui-selected')
     fireEvent.click(getByRole('button', { name: 'Small' }))
-    await waitFor(() => expect(() => expect(result).toHaveBeenCalled()))
+    await waitFor(() => expect(result).toHaveBeenCalled())
   })
 })

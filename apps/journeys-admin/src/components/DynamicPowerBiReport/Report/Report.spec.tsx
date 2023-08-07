@@ -119,6 +119,7 @@ describe('Report', () => {
     )
     await waitFor(() => expect(getByText('TestReport')).toBeInTheDocument())
   })
+
   it('show error message if powerBiReport fails to load', async () => {
     MockPowerBiEmbed.mockImplementation(({ eventHandlers }) => {
       useEffect(() => {

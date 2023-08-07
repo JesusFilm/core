@@ -17,6 +17,7 @@ describe('Dialog', () => {
     },
     children: <Typography>Children</Typography>
   }
+
   it('should display the content', () => {
     const { getByText, getByTestId, queryByTestId } = render(
       <Dialog {...dialogProps} />

@@ -76,12 +76,14 @@ describe('SignUpBlockResolver', () => {
     ) as DeepMockProxy<PrismaService>
     ability = await new AppCaslFactory().createAbility({ id: 'userId' })
   })
+
   describe('SignUpBlockCreate', () => {
     beforeEach(() => {
       prismaService.$transaction.mockImplementation(
         async (callback) => await callback(prismaService)
       )
     })
+
     it('creates a SignUpBlock', async () => {
       prismaService.block.create.mockResolvedValueOnce(blockWithUserTeam)
       expect(
@@ -111,6 +113,7 @@ describe('SignUpBlockResolver', () => {
         blockCreateInput.parentBlockId
       )
     })
+
     it('throws error if not authorized', async () => {
       prismaService.block.create.mockResolvedValueOnce(block)
       await expect(
@@ -121,17 +124,20 @@ describe('SignUpBlockResolver', () => {
 
   describe('SignUpBlockUpdate', () => {
     let mockValidate: jest.MockedFunction<typeof service.validateBlock>
+
     beforeEach(() => {
       mockValidate = service.validateBlock as jest.MockedFunction<
         typeof service.validateBlock
       >
       mockValidate.mockResolvedValue(true)
     })
+
     it('updates a SignUpBlock', async () => {
       prismaService.block.findUnique.mockResolvedValueOnce(blockWithUserTeam)
       await resolver.signUpBlockUpdate(ability, 'blockId', blockUpdateInput)
       expect(service.update).toHaveBeenCalledWith('blockId', blockUpdateInput)
     })
+
     it('throw error if submitIconId does not exist', async () => {
       mockValidate.mockResolvedValueOnce(false)
 
@@ -142,12 +148,14 @@ describe('SignUpBlockResolver', () => {
         })
       ).rejects.toThrow('Submit icon does not exist')
     })
+
     it('throws error if not found', async () => {
       prismaService.block.findUnique.mockResolvedValueOnce(null)
       await expect(
         resolver.signUpBlockUpdate(ability, 'blockId', blockUpdateInput)
       ).rejects.toThrow('block not found')
     })
+
     it('throws error if not authorized', async () => {
       prismaService.block.findUnique.mockResolvedValueOnce(block)
       await expect(

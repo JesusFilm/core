@@ -74,6 +74,7 @@ describe('RadioQuestionBlockResolver', () => {
         async (callback) => await callback(prismaService)
       )
     })
+
     it('creates a RadioQuestionBlock', async () => {
       prismaService.block.create.mockResolvedValueOnce(blockWithUserTeam)
       expect(
@@ -102,6 +103,7 @@ describe('RadioQuestionBlockResolver', () => {
         blockCreateInput.parentBlockId
       )
     })
+
     it('throws error if not authorized', async () => {
       prismaService.block.create.mockResolvedValueOnce(block)
       await expect(
@@ -109,6 +111,7 @@ describe('RadioQuestionBlockResolver', () => {
       ).rejects.toThrow('user is not allowed to create block')
     })
   })
+
   describe('radioQuestionBlockUpdate', () => {
     it('updates a TypographyBlock', async () => {
       prismaService.block.findUnique.mockResolvedValueOnce(blockWithUserTeam)
@@ -121,12 +124,14 @@ describe('RadioQuestionBlockResolver', () => {
         parentBlockId: 'parentBlockId'
       })
     })
+
     it('throws error if not found', async () => {
       prismaService.block.findUnique.mockResolvedValueOnce(null)
       await expect(
         resolver.radioQuestionBlockUpdate(ability, 'blockId', 'parentBlockId')
       ).rejects.toThrow('block not found')
     })
+
     it('throws error if not authorized', async () => {
       prismaService.block.findUnique.mockResolvedValueOnce(block)
       await expect(
