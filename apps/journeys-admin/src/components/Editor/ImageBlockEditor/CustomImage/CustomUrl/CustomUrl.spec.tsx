@@ -20,7 +20,7 @@ describe('CustomUrl', () => {
     process.env = originalEnv
   })
 
-  it('should check if the mutation gets called', async () => {
+  it('should submit on blur', async () => {
     const result = jest.fn(() => ({
       data: {
         createCloudflareUploadByUrl: {
@@ -49,7 +49,7 @@ describe('CustomUrl', () => {
     )
 
     fireEvent.click(getByRole('button', { name: 'Add image by URL' }))
-    expect(getByText('Paste URL of image...'))
+    expect(getByText('Paste URL of image...')).toBeInTheDocument()
     const textBox = await getByRole('textbox')
     fireEvent.change(textBox, {
       target: { value: 'https://example.com/image.jpg' }
