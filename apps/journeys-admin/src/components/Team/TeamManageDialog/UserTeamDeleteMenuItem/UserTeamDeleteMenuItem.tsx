@@ -1,5 +1,5 @@
 import { ReactElement } from 'react'
-import RemoveCircleRoundedIcon from '@mui/icons-material/RemoveCircleRounded'
+import RemoveCircleOutlineOutlinedIcon from '@mui/icons-material/RemoveCircleOutlineOutlined'
 import { gql, useMutation } from '@apollo/client'
 import { MenuItem } from '../../../MenuItem'
 import { UserTeamDelete } from '../../../../../__generated__/UserTeamDelete'
@@ -48,7 +48,7 @@ export function UserTeamDeleteMenuItem({
   return (
     <MenuItem
       label="Remove"
-      icon={<RemoveCircleRoundedIcon />}
+      icon={<RemoveCircleOutlineOutlinedIcon />}
       onClick={handleClick}
       disabled={disabled === true || loading}
     />

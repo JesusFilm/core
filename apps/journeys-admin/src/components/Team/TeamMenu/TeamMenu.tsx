@@ -1,11 +1,11 @@
 import { useTranslation } from 'react-i18next'
 import { ReactElement, useState } from 'react'
-import AddIcon from '@mui/icons-material/Add'
-import EditIcon from '@mui/icons-material/Edit'
 import IconButton from '@mui/material/IconButton'
 import Menu from '@mui/material/Menu'
 import MoreVert from '@mui/icons-material/MoreVert'
-import GroupIcon from '@mui/icons-material/Group'
+import Edit2 from '@core/shared/ui/icons/Edit2'
+import Plus1 from '@core/shared/ui/icons/Plus1'
+import UsersProfiles2 from '@core/shared/ui/icons/UsersProfiles2'
 import { MenuItem } from '../../MenuItem'
 import { TeamCreateDialog } from '../TeamCreateDialog'
 import { TeamUpdateDialog } from '../TeamUpdateDialog'
@@ -74,7 +74,7 @@ export function TeamMenu(): ReactElement {
           disabled={activeTeam == null}
           key="manage-team"
           label={t('Members')}
-          icon={<GroupIcon />}
+          icon={<UsersProfiles2 />}
           onClick={() => {
             setTeamManageOpen(true)
             setAnchorEl(null)
@@ -84,7 +84,7 @@ export function TeamMenu(): ReactElement {
           disabled={activeTeam == null}
           key="rename-team"
           label={t('Rename')}
-          icon={<EditIcon />}
+          icon={<Edit2 />}
           onClick={() => {
             setTeamUpdateOpen(true)
             setAnchorEl(null)
@@ -93,7 +93,7 @@ export function TeamMenu(): ReactElement {
         <MenuItem
           key="create-new-team"
           label={t('New Team')}
-          icon={<AddIcon />}
+          icon={<Plus1 />}
           onClick={() => {
             setTeamCreateOpen(true)
             setAnchorEl(null)
