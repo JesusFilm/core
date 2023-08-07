@@ -1,11 +1,13 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render } from '@testing-library/react'
 import { AuthUser } from 'next-firebase-auth'
+
 import { UserMenu } from './UserMenu'
 
 describe('UserMenu', () => {
   const handleProfileClose = jest.fn()
   const signOut = jest.fn()
+
   it('should render the menu', () => {
     const { getByText, getByRole } = render(
       <MockedProvider>

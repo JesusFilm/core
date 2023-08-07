@@ -1,13 +1,16 @@
-import { render, fireEvent } from '@testing-library/react'
-import { ReactElement } from 'react'
 import Button from '@mui/material/Button'
-import type { TreeBlock } from '../block'
+import { fireEvent, render } from '@testing-library/react'
+import { ReactElement } from 'react'
+
 import {
   JourneyStatus,
   ThemeMode,
   ThemeName
 } from '../../../__generated__/globalTypes'
+import type { TreeBlock } from '../block'
+
 import { JourneyFields as Journey } from './__generated__/JourneyFields'
+
 import { JourneyProvider, useJourney } from '.'
 
 const checkJourney = jest.fn()
@@ -71,7 +74,7 @@ describe('JourneyContext', () => {
 
     fireEvent.click(getByRole('button'))
 
-    expect(checkJourney).toBeCalledWith({
+    expect(checkJourney).toHaveBeenCalledWith({
       __typename: 'Journey',
       id: 'journeyId',
       themeName: ThemeName.base,

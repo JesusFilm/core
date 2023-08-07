@@ -1,13 +1,15 @@
-import { ComponentProps, ReactElement } from 'react'
 import { gql, useQuery } from '@apollo/client'
+import LanguageIcon from '@mui/icons-material/Language'
+import CircularProgress from '@mui/material/CircularProgress'
+import TextField from '@mui/material/TextField'
+import { Form, Formik, FormikValues } from 'formik'
+import compact from 'lodash/compact'
+import { useRouter } from 'next/router'
+import { ComponentProps, ReactElement } from 'react'
+
 import { Dialog } from '@core/shared/ui/Dialog'
 import { LanguageAutocomplete } from '@core/shared/ui/LanguageAutocomplete'
-import { Formik, Form, FormikValues } from 'formik'
-import TextField from '@mui/material/TextField'
-import CircularProgress from '@mui/material/CircularProgress'
-import LanguageIcon from '@mui/icons-material/Language'
-import { useRouter } from 'next/router'
-import compact from 'lodash/compact'
+
 import { GetLanguagesSlug } from '../../../__generated__/GetLanguagesSlug'
 import { useVideo } from '../../libs/videoContext'
 

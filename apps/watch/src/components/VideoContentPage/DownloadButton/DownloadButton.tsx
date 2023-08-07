@@ -1,7 +1,7 @@
-import { ReactElement } from 'react'
-import Button from '@mui/material/Button'
 import FileDownloadOutlinedIcon from '@mui/icons-material/FileDownloadOutlined'
+import Button from '@mui/material/Button'
 import IconButton from '@mui/material/IconButton'
+import { ReactElement } from 'react'
 
 export interface DownloadButtonProps {
   variant: 'button' | 'icon'

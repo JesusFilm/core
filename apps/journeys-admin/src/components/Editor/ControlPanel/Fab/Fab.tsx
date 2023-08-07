@@ -1,10 +1,11 @@
-import { ReactElement } from 'react'
+import AddRounded from '@mui/icons-material/AddRounded'
+import CheckCircleRounded from '@mui/icons-material/CheckCircleRounded'
+import EditRounded from '@mui/icons-material/EditRounded'
 import MuiFab from '@mui/material/Fab'
 import Zoom from '@mui/material/Zoom'
-import AddRounded from '@mui/icons-material/AddRounded'
-import EditRounded from '@mui/icons-material/EditRounded'
-import CheckCircleRounded from '@mui/icons-material/CheckCircleRounded'
-import { useEditor, ActiveFab } from '@core/journeys/ui/EditorProvider'
+import { ReactElement } from 'react'
+
+import { ActiveFab, useEditor } from '@core/journeys/ui/EditorProvider'
 
 interface FabProp {
   visible?: boolean

@@ -1,4 +1,5 @@
 import { render } from '@testing-library/react'
+
 import { ReactionButton } from '.'
 
 jest.mock('@mui/material/useMediaQuery', () => ({

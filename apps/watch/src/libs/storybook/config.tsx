@@ -1,8 +1,9 @@
 import { Story } from '@storybook/react'
+import { SnackbarProvider } from 'notistack'
+
 import { sharedUiConfig } from '@core/shared/ui/sharedUiConfig'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import { ThemeMode, ThemeName } from '@core/shared/ui/themes'
-import { SnackbarProvider } from 'notistack'
 
 // Must set parameters at component level for shared-storybook stories to work
 export const watchConfig = {

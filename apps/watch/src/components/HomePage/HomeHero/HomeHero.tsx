@@ -1,10 +1,12 @@
-import { ReactElement } from 'react'
 import Box from '@mui/material/Box'
 import Container from '@mui/material/Container'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import Image from 'next/image'
+import { ReactElement } from 'react'
+
 import { HeroOverlay } from '../../HeroOverlay'
+
 import JesusHeader from './assets/jesus.jpg'
 
 export function HomeHero(): ReactElement {

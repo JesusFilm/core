@@ -1,10 +1,12 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { act, fireEvent, render, waitFor } from '@testing-library/react'
+
 import {
   CREATE_CLOUDFLARE_VIDEO_UPLOAD_BY_FILE_MUTATION,
   GET_MY_CLOUDFLARE_VIDEO_QUERY
 } from './AddByFile'
 import { TestHttpStack } from './TestHttpStack'
+
 import { AddByFile } from '.'
 
 jest.mock('react-i18next', () => ({
@@ -116,8 +118,8 @@ describe('AddByFile', () => {
     await waitFor(() => expect(getByText('Uploading...')).toBeInTheDocument())
     expect(getByTestId('BackupOutlinedIcon')).toBeInTheDocument()
     let req = await testStack.nextRequest()
-    expect(req.getURL()).toEqual('https://example.com/upload')
-    expect(req.getMethod()).toEqual('HEAD')
+    expect(req.getURL()).toBe('https://example.com/upload')
+    expect(req.getMethod()).toBe('HEAD')
     req.respondWith({
       status: 200,
       responseHeaders: {
@@ -130,8 +132,8 @@ describe('AddByFile', () => {
       req = await testStack.nextRequest()
     })
 
-    expect(req.getURL()).toEqual('https://example.com/upload')
-    expect(req.getMethod()).toEqual('PATCH')
+    expect(req.getURL()).toBe('https://example.com/upload')
+    expect(req.getMethod()).toBe('PATCH')
     req.respondWith({
       status: 204,
       responseHeaders: {
@@ -142,8 +144,8 @@ describe('AddByFile', () => {
       expect(getByRole('progressbar')).toHaveAttribute('aria-valuenow', '20')
     )
     req = await testStack.nextRequest()
-    expect(req.getURL()).toEqual('https://example.com/upload')
-    expect(req.getMethod()).toEqual('PATCH')
+    expect(req.getURL()).toBe('https://example.com/upload')
+    expect(req.getMethod()).toBe('PATCH')
     req.respondWith({
       status: 204,
       responseHeaders: {
@@ -194,8 +196,8 @@ describe('AddByFile', () => {
     await waitFor(() => expect(getByText('Uploading...')).toBeInTheDocument())
     expect(getByTestId('BackupOutlinedIcon')).toBeInTheDocument()
     const req = await testStack.nextRequest()
-    expect(req.getURL()).toEqual('https://example.com/upload')
-    expect(req.getMethod()).toEqual('HEAD')
+    expect(req.getURL()).toBe('https://example.com/upload')
+    expect(req.getMethod()).toBe('HEAD')
     req.respondWith({
       status: 404
     })

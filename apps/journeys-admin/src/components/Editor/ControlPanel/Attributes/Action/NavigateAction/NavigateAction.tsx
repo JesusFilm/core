@@ -1,9 +1,11 @@
-import { ReactElement } from 'react'
-import { useEditor } from '@core/journeys/ui/EditorProvider'
-import Typography from '@mui/material/Typography'
+import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'
 import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
-import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'
+import Typography from '@mui/material/Typography'
+import { ReactElement } from 'react'
+
+import { useEditor } from '@core/journeys/ui/EditorProvider'
+
 import { CardPreview } from '../../../../../CardPreview'
 import { getNextStep } from '../utils/getNextStep'
 

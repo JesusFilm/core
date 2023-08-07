@@ -1,6 +1,8 @@
 import { Meta, Story } from '@storybook/react'
 import { ComponentProps } from 'react'
+
 import { journeysAdminConfig } from '../../../../libs/storybook'
+
 import { ClearAllButton } from './ClearAllButton'
 
 const ClearAllButtonStory = {

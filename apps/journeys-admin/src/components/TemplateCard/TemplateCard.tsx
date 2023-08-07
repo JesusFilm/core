@@ -1,28 +1,29 @@
-import { ReactElement } from 'react'
-import { parseISO, isThisYear, intlFormat } from 'date-fns'
-import Card from '@mui/material/Card'
-import Stack from '@mui/material/Stack'
-import Box from '@mui/material/Box'
-import Typography from '@mui/material/Typography'
-import CardActionArea from '@mui/material/CardActionArea'
-import CardContent from '@mui/material/CardContent'
-import CardActions from '@mui/material/CardActions'
-import CardMedia from '@mui/material/CardMedia'
-import TranslateRoundedIcon from '@mui/icons-material/TranslateRounded'
-import InsertPhotoRoundedIcon from '@mui/icons-material/InsertPhotoRounded'
-import EditIcon from '@mui/icons-material/Edit'
-import Skeleton from '@mui/material/Skeleton'
-import IconButton from '@mui/material/IconButton'
-import MoreVertIcon from '@mui/icons-material/MoreVert'
 import { ApolloQueryResult } from '@apollo/client'
+import EditIcon from '@mui/icons-material/Edit'
+import InsertPhotoRoundedIcon from '@mui/icons-material/InsertPhotoRounded'
+import MoreVertIcon from '@mui/icons-material/MoreVert'
+import TranslateRoundedIcon from '@mui/icons-material/TranslateRounded'
+import Box from '@mui/material/Box'
+import Card from '@mui/material/Card'
+import CardActionArea from '@mui/material/CardActionArea'
+import CardActions from '@mui/material/CardActions'
+import CardContent from '@mui/material/CardContent'
+import CardMedia from '@mui/material/CardMedia'
+import IconButton from '@mui/material/IconButton'
+import Skeleton from '@mui/material/Skeleton'
+import Stack from '@mui/material/Stack'
+import Typography from '@mui/material/Typography'
+import { intlFormat, isThisYear, parseISO } from 'date-fns'
 import Link from 'next/link'
+import { ReactElement } from 'react'
+
+import {
+  GetAdminJourneys_journeys as AdminJourney,
+  GetAdminJourneys
+} from '../../../__generated__/GetAdminJourneys'
+import { GetJourneys_journeys as Journey } from '../../../__generated__/GetJourneys'
 import { JourneyCardMenu } from '../JourneyList/JourneyCard/JourneyCardMenu'
 import { StatusChip } from '../JourneyList/JourneyCard/StatusChip'
-import { GetJourneys_journeys as Journey } from '../../../__generated__/GetJourneys'
-import {
-  GetAdminJourneys,
-  GetAdminJourneys_journeys as AdminJourney
-} from '../../../__generated__/GetAdminJourneys'
 
 export interface TemplateCardProps {
   journey?: AdminJourney | Journey

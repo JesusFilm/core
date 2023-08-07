@@ -1,14 +1,16 @@
-import { ReactElement, useState } from 'react'
-import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
-import { ThemeMode, ThemeName } from '@core/shared/ui/themes'
-import LanguageOutlined from '@mui/icons-material/LanguageOutlined'
 import AddOutlined from '@mui/icons-material/AddOutlined'
 import KeyboardArrowDownOutlined from '@mui/icons-material/KeyboardArrowDownOutlined'
-import Button from '@mui/material/Button'
-import Typography from '@mui/material/Typography'
+import LanguageOutlined from '@mui/icons-material/LanguageOutlined'
 import Box from '@mui/material/Box'
+import Button from '@mui/material/Button'
 import IconButton from '@mui/material/IconButton'
+import Typography from '@mui/material/Typography'
 import dynamic from 'next/dynamic'
+import { ReactElement, useState } from 'react'
+
+import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
+import { ThemeMode, ThemeName } from '@core/shared/ui/themes'
+
 import { useVideo } from '../../../libs/videoContext'
 
 const DynamicAudioLanguageDialog = dynamic<{

@@ -1,3 +1,4 @@
+import { MockedProvider } from '@apollo/client/testing'
 import {
   act,
   cleanup,
@@ -5,11 +6,12 @@ import {
   render,
   waitFor
 } from '@testing-library/react'
-import videojs from 'video.js'
 import fscreen from 'fscreen'
-import { MockedProvider } from '@apollo/client/testing'
+import videojs from 'video.js'
+
 import { VideoProvider } from '../../../../../libs/videoContext'
 import { videos } from '../../../../Videos/__generated__/testData'
+
 import { VideoControls } from './VideoControls'
 
 jest.mock('fscreen', () => ({
@@ -23,6 +25,7 @@ jest.mock('fscreen', () => ({
 
 describe('VideoControls', () => {
   let player
+
   beforeEach(() => {
     const video = document.createElement('video')
     document.body.appendChild(video)
@@ -50,6 +53,7 @@ describe('VideoControls', () => {
       player.duration(250)
     })
   })
+
   afterEach(() => {
     cleanup()
   })

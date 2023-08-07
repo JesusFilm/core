@@ -1,21 +1,23 @@
 import { Module } from '@nestjs/common'
 
 import { CaslAuthModule } from '@core/nest/common/CaslAuthModule'
-import { PrismaService } from '../../lib/prisma.service'
+
 import { AppCaslFactory } from '../../lib/casl/caslFactory'
-import { BlockService } from './block.service'
+import { PrismaService } from '../../lib/prisma.service'
+
 import { BlockResolver } from './block.resolver'
+import { BlockService } from './block.service'
+import { ButtonBlockResolver } from './button/button.resolver'
 import { CardBlockResolver } from './card/card.resolver'
 import { IconBlockResolver } from './icon/icon.resolver'
 import { ImageBlockResolver } from './image/image.resolver'
+import { RadioOptionBlockResolver } from './radioOption/radioOption.resolver'
+import { RadioQuestionBlockResolver } from './radioQuestion/radioQuestion.resolver'
 import { SignUpBlockResolver } from './signUp/signUp.resolver'
 import { StepBlockResolver } from './step/step.resolver'
+import { TextResponseBlockResolver } from './textResponse/textResponse.resolver'
 import { TypographyBlockResolver } from './typography/typography.resolver'
 import { VideoBlockResolver } from './video/video.resolver'
-import { ButtonBlockResolver } from './button/button.resolver'
-import { RadioQuestionBlockResolver } from './radioQuestion/radioQuestion.resolver'
-import { RadioOptionBlockResolver } from './radioOption/radioOption.resolver'
-import { TextResponseBlockResolver } from './textResponse/textResponse.resolver'
 import { VideoTriggerResolver } from './videoTrigger/videoTrigger.resolver'
 
 @Module({

@@ -1,7 +1,9 @@
 import { fireEvent, render } from '@testing-library/react'
-import { videos } from '../../Videos/__generated__/testData'
+
 import { VideoContentFields } from '../../../../__generated__/VideoContentFields'
 import { VideoProvider } from '../../../libs/videoContext'
+import { videos } from '../../Videos/__generated__/testData'
+
 import { VideoContent } from './VideoContent'
 
 const video: VideoContentFields = videos[0]
@@ -18,6 +20,7 @@ describe('VideoContent', () => {
     )
     expect(getByText(video.studyQuestions[0].value)).toBeInTheDocument()
   })
+
   it('should hide the dicussion questions tab if no questions', () => {
     const { queryByRole } = render(
       <VideoProvider value={{ content: { ...video, studyQuestions: [] } }}>

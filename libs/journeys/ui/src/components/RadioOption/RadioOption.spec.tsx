@@ -1,7 +1,10 @@
 import { fireEvent, render } from '@testing-library/react'
-import type { TreeBlock } from '../../libs/block'
+
 import { handleAction } from '../../libs/action'
+import type { TreeBlock } from '../../libs/block'
+
 import { RadioOptionFields } from './__generated__/RadioOptionFields'
+
 import { RadioOption } from '.'
 
 jest.mock('../../libs/action', () => {
@@ -43,13 +46,13 @@ describe('RadioOption', () => {
       <RadioOption {...block} onClick={handleClick} />
     )
     fireEvent.click(getByRole('button'))
-    expect(handleClick).toBeCalledWith(block.id, block.label)
+    expect(handleClick).toHaveBeenCalledWith(block.id, block.label)
   })
 
   it('should call actionHandler on click', () => {
     const { getByRole } = render(<RadioOption {...block} />)
     fireEvent.click(getByRole('button'))
-    expect(handleAction).toBeCalledWith(
+    expect(handleAction).toHaveBeenCalledWith(
       expect.objectContaining({
         push: expect.any(Function)
       }),

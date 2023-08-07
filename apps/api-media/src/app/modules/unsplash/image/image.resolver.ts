@@ -1,4 +1,5 @@
-import { Resolver, Query, Args, Mutation } from '@nestjs/graphql'
+import { Args, Mutation, Query, Resolver } from '@nestjs/graphql'
+
 import {
   UnsplashColor,
   UnsplashContentFilter,
@@ -7,6 +8,7 @@ import {
   UnsplashPhotoOrientation,
   UnsplashQueryResponse
 } from '../../../__generated__/graphql'
+
 import { UnsplashImageService } from './image.service'
 
 @Resolver('UnsplashImage')

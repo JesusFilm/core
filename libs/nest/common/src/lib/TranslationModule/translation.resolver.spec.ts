@@ -1,4 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing'
+
 import { TranslationResolver } from './translation.resolver'
 
 describe('TranslationResolver', () => {

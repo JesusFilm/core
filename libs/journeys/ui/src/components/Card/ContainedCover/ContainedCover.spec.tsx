@@ -1,8 +1,10 @@
 import { render, waitFor } from '@testing-library/react'
+
+import { VideoBlockSource } from '../../../../__generated__/globalTypes'
 import type { TreeBlock } from '../../../libs/block'
 import { ImageFields } from '../../Image/__generated__/ImageFields'
 import { VideoFields } from '../../Video/__generated__/VideoFields'
-import { VideoBlockSource } from '../../../../__generated__/globalTypes'
+
 import { ContainedCover } from '.'
 
 describe('ContainedCover', () => {

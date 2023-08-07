@@ -1,6 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing'
-import { EventService } from '../event.service'
+
 import { PrismaService } from '../../../lib/prisma.service'
+import { EventService } from '../event.service'
+
 import { SignUpSubmissionEventResolver } from './signUp.resolver'
 
 describe('SignUpEventResolver', () => {

@@ -1,4 +1,5 @@
 import { render } from '@testing-library/react'
+
 import { FooterLinks } from './FooterLinks'
 
 describe('FooterLinks', () => {
@@ -9,12 +10,14 @@ describe('FooterLinks', () => {
       expect(el).toHaveAttribute('href', 'https://www.jesusfilm.org/about/')
       expect(el).not.toHaveAttribute('target')
     })
+
     it('should have Contact link', () => {
       const { getByRole } = render(<FooterLinks />)
       const el = getByRole('link', { name: 'Contact' })
       expect(el).toHaveAttribute('href', 'https://www.jesusfilm.org/contact/')
       expect(el).not.toHaveAttribute('target')
     })
+
     it('should have Ways to Give link', () => {
       const { getByRole } = render(<FooterLinks />)
       const el = getByRole('link', { name: 'Ways to Give' })
@@ -22,6 +25,7 @@ describe('FooterLinks', () => {
       expect(el).not.toHaveAttribute('target')
     })
   })
+
   describe('Sections', () => {
     it('should have Watch link', () => {
       const { getByRole } = render(<FooterLinks />)
@@ -29,6 +33,7 @@ describe('FooterLinks', () => {
       expect(el).toHaveAttribute('href', 'https://www.jesusfilm.org/watch/')
       expect(el).not.toHaveAttribute('target')
     })
+
     it('should have Strategies and Tools link', () => {
       const { getByRole } = render(<FooterLinks />)
       const el = getByRole('link', { name: 'Strategies and Tools' })
@@ -45,6 +50,7 @@ describe('FooterLinks', () => {
       expect(el).toHaveAttribute('href', 'https://www.jesusfilm.org/blog/')
       expect(el).not.toHaveAttribute('target')
     })
+
     it('should have How to Help link', () => {
       const { getByRole } = render(<FooterLinks />)
       const el = getByRole('link', { name: 'How to Help' })
@@ -52,6 +58,7 @@ describe('FooterLinks', () => {
       expect(el).not.toHaveAttribute('target')
     })
   })
+
   describe('Apps', () => {
     it('should have Android link', () => {
       const { getByRole } = render(<FooterLinks />)
@@ -62,6 +69,7 @@ describe('FooterLinks', () => {
       )
       expect(el).toHaveAttribute('target', '_blank')
     })
+
     it('should have iPhone link', () => {
       const { getByRole } = render(<FooterLinks />)
       const el = getByRole('link', { name: 'iPhone' })

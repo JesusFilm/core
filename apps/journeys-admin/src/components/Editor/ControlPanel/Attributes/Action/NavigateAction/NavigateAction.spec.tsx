@@ -1,13 +1,16 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { render } from '@testing-library/react'
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
-import {
-  ThemeName,
-  ThemeMode
-} from '../../../../../../../__generated__/globalTypes'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+
 import { GetJourney_journey as Journey } from '../../../../../../../__generated__/GetJourney'
+import {
+  ThemeMode,
+  ThemeName
+} from '../../../../../../../__generated__/globalTypes'
 import { steps } from '../data'
+
 import { NavigateAction } from './NavigateAction'
 
 describe('NavigateAction', () => {

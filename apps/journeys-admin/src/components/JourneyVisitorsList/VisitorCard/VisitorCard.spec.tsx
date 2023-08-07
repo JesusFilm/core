@@ -1,9 +1,11 @@
 import { render } from '@testing-library/react'
+
 import {
-  GetJourneyVisitors_visitors_edges_node as VisitorNode,
-  GetJourneyVisitors_visitors_edges_node_visitor as Visitor
+  GetJourneyVisitors_visitors_edges_node_visitor as Visitor,
+  GetJourneyVisitors_visitors_edges_node as VisitorNode
 } from '../../../../__generated__/GetJourneyVisitors'
 import { VisitorStatus } from '../../../../__generated__/globalTypes'
+
 import { VisitorCard } from '.'
 
 jest.mock('react-i18next', () => ({
@@ -49,6 +51,7 @@ describe('VisitorCard', () => {
       '/reports/visitors/visitor.id-012345678901'
     )
   })
+
   it('should show name', () => {
     const emptyVisitor = {
       ...visitorNode,

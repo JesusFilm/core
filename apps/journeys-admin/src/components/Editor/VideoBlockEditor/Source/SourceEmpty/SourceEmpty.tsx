@@ -1,8 +1,9 @@
-import { ReactElement } from 'react'
+import AddRoundedIcon from '@mui/icons-material/AddRounded'
+import VideocamRoundedIcon from '@mui/icons-material/VideocamRounded'
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
-import VideocamRoundedIcon from '@mui/icons-material/VideocamRounded'
-import AddRoundedIcon from '@mui/icons-material/AddRounded'
+import { ReactElement } from 'react'
+
 import { ImageBlockThumbnail } from '../../../ImageBlockThumbnail'
 
 export function SourceEmpty(): ReactElement {

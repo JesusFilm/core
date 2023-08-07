@@ -1,18 +1,21 @@
+import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
+
 import type { TreeBlock } from '@core/journeys/ui/block'
 import {
   ActiveFab,
+  ActiveJourneyEditContent,
   ActiveTab,
-  useEditor,
   EditorProvider,
   EditorState,
-  ActiveJourneyEditContent
+  useEditor
 } from '@core/journeys/ui/EditorProvider'
-import { MockedProvider } from '@apollo/client/testing'
-import { ThemeProvider } from '../../../../../ThemeProvider'
+
 import { GetJourney_journey_blocks_RadioOptionBlock as RadioOptionBlock } from '../../../../../../../__generated__/GetJourney'
+import { ThemeProvider } from '../../../../../ThemeProvider'
 import { Drawer } from '../../../../Drawer'
 import { Action } from '../../Action'
+
 import { RadioOption } from '.'
 
 jest.mock('@core/journeys/ui/EditorProvider', () => {
@@ -50,6 +53,7 @@ describe('RadioOption Attribute', () => {
       dispatch: jest.fn()
     })
   })
+
   it('shows default attributes', async () => {
     const { getByRole } = render(<RadioOption {...block} />)
     await waitFor(() =>

@@ -1,23 +1,25 @@
 import { render } from '@testing-library/react'
+
 import {
-  journeyViewEvent,
-  chatOpenedEvent,
-  textResponseSubmissionEvent,
+  buttonClickLinkEvent,
   buttonClickNavigateEvent,
   buttonClickNavigateToBlockEvent,
   buttonClickNavigateToJourneyEvent,
-  buttonClickLinkEvent,
+  chatOpenedEvent,
+  journeyViewEvent,
   radioQuestionSubmissionEvent,
+  signUpSubmissionEvent,
   stepNextEvent,
   stepViewEvent,
-  signUpSubmissionEvent,
-  videoStartEvent,
-  videoPlayEvent,
-  videoPauseEvent,
-  videoProgressEvent,
+  textResponseSubmissionEvent,
+  videoCompleteEvent,
   videoExpandEvent,
-  videoCompleteEvent
+  videoPauseEvent,
+  videoPlayEvent,
+  videoProgressEvent,
+  videoStartEvent
 } from '../../utils/data'
+
 import { TimelineEvent } from '.'
 
 jest.mock('react-i18next', () => ({
@@ -88,6 +90,7 @@ describe('TimelineEvent', () => {
     expect(getByText('Journey')).toBeInTheDocument()
     expect(getByText('Navigate To Journey Action')).toBeInTheDocument()
   })
+
   it('shows buttonClickEvent for LinkAction', () => {
     const { getByText } = render(
       <TimelineEvent timelineItem={buttonClickLinkEvent} />

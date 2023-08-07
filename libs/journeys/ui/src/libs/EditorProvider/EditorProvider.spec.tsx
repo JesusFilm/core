@@ -1,6 +1,8 @@
 import type { TreeBlock } from '../block'
+
 import { ActiveJourneyEditContent, reducer } from './EditorProvider'
-import { ActiveTab, ActiveFab } from '.'
+
+import { ActiveFab, ActiveTab } from '.'
 
 describe('EditorContext', () => {
   describe('reducer', () => {
@@ -414,6 +416,7 @@ describe('EditorContext', () => {
         })
       })
     })
+
     describe('SetJourneyEditContentComponentAction', () => {
       it('should set journey edit content component', () => {
         const state = {

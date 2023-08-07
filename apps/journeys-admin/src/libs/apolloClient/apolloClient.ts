@@ -1,12 +1,13 @@
 import {
   ApolloClient,
-  createHttpLink,
-  NormalizedCacheObject
+  NormalizedCacheObject,
+  createHttpLink
 } from '@apollo/client'
 import { setContext } from '@apollo/client/link/context'
-import { useMemo } from 'react'
-import { AuthUser } from 'next-firebase-auth'
 import jwt from 'jsonwebtoken'
+import { AuthUser } from 'next-firebase-auth'
+import { useMemo } from 'react'
+
 import { cache } from './cache'
 
 export function isTokenExpired(token: string): boolean {

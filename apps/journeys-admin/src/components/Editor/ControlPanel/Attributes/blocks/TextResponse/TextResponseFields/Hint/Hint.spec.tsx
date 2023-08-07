@@ -1,14 +1,18 @@
-import { ReactElement } from 'react'
-import { render, fireEvent, waitFor } from '@testing-library/react'
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { fireEvent, render, waitFor } from '@testing-library/react'
+import { ReactElement } from 'react'
+
+import type { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
-import type { TreeBlock } from '@core/journeys/ui/block'
+
 import {
   GetJourney_journey as Journey,
   GetJourney_journey_blocks_TextResponseBlock as TextResponseBlock
 } from '../../../../../../../../../__generated__/GetJourney'
+
 import { TEXT_RESPONSE_HINT_UPDATE } from './Hint'
+
 import { Hint } from '.'
 
 jest.mock('react-i18next', () => ({
@@ -116,7 +120,7 @@ describe('Edit Hint field', () => {
     fireEvent.blur(field)
 
     await waitFor(() => {
-      expect(result).toBeCalled()
+      expect(result).toHaveBeenCalled()
     })
   })
 })

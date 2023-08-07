@@ -1,29 +1,31 @@
-import { Meta, Story } from '@storybook/react'
+import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
-import Box from '@mui/material/Box'
+import { Meta, Story } from '@storybook/react'
 import { ComponentProps, ReactElement } from 'react'
+
 import { journeysAdminConfig } from '../../../../../libs/storybook'
+import { TimelineItem } from '../../utils'
 import {
-  journeyViewEvent,
-  chatOpenedEvent,
-  textResponseSubmissionEvent,
+  buttonClickLinkEvent,
   buttonClickNavigateEvent,
   buttonClickNavigateToBlockEvent,
   buttonClickNavigateToJourneyEvent,
-  buttonClickLinkEvent,
+  chatOpenedEvent,
+  journeyViewEvent,
   radioQuestionSubmissionEvent,
+  signUpSubmissionEvent,
   stepNextEvent,
   stepViewEvent,
-  signUpSubmissionEvent,
-  videoStartEvent,
-  videoPlayEvent,
-  videoPauseEvent,
-  videoProgressEvent,
+  textResponseSubmissionEvent,
+  videoCompleteEvent,
   videoExpandEvent,
-  videoCompleteEvent
+  videoPauseEvent,
+  videoPlayEvent,
+  videoProgressEvent,
+  videoStartEvent
 } from '../../utils/data'
-import { TimelineItem } from '../../utils'
+
 import { TimelineEvent } from '.'
 
 const TimelineEventStory = {

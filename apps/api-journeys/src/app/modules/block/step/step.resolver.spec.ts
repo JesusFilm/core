@@ -1,14 +1,17 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
+
 import { Block, Journey, UserTeamRole } from '.prisma/api-journeys-client'
 import { CaslAuthModule } from '@core/nest/common/CaslAuthModule'
-import { PrismaService } from '../../../lib/prisma.service'
-import { BlockService } from '../block.service'
+
 import {
   StepBlockCreateInput,
   StepBlockUpdateInput
 } from '../../../__generated__/graphql'
 import { AppAbility, AppCaslFactory } from '../../../lib/casl/caslFactory'
+import { PrismaService } from '../../../lib/prisma.service'
+import { BlockService } from '../block.service'
+
 import { StepBlockResolver } from './step.resolver'
 
 describe('StepBlockResolver', () => {
@@ -70,12 +73,14 @@ describe('StepBlockResolver', () => {
     ) as DeepMockProxy<PrismaService>
     ability = await new AppCaslFactory().createAbility({ id: 'userId' })
   })
+
   describe('stepBlockCreate', () => {
     beforeEach(() => {
       prismaService.$transaction.mockImplementation(
         async (callback) => await callback(prismaService)
       )
     })
+
     it('creates a StepBlock', async () => {
       prismaService.block.create.mockResolvedValueOnce(blockWithUserTeam)
       expect(await resolver.stepBlockCreate(ability, blockCreateInput)).toEqual(
@@ -112,6 +117,7 @@ describe('StepBlockResolver', () => {
         blockCreateInput.journeyId
       )
     })
+
     it('throws error if not authorized', async () => {
       prismaService.block.create.mockResolvedValueOnce(block)
       await expect(
@@ -119,18 +125,21 @@ describe('StepBlockResolver', () => {
       ).rejects.toThrow('user is not allowed to create block')
     })
   })
+
   describe('stepBlockUpdate', () => {
     it('updates a StepBlock', async () => {
       prismaService.block.findUnique.mockResolvedValueOnce(blockWithUserTeam)
       await resolver.stepBlockUpdate(ability, 'blockId', blockUpdateInput)
       expect(service.update).toHaveBeenCalledWith('blockId', blockUpdateInput)
     })
+
     it('throws error if not found', async () => {
       prismaService.block.findUnique.mockResolvedValueOnce(null)
       await expect(
         resolver.stepBlockUpdate(ability, 'blockId', blockUpdateInput)
       ).rejects.toThrow('block not found')
     })
+
     it('throws error if not authorized', async () => {
       prismaService.block.findUnique.mockResolvedValueOnce(block)
       await expect(
@@ -138,15 +147,18 @@ describe('StepBlockResolver', () => {
       ).rejects.toThrow('user is not allowed to update block')
     })
   })
+
   describe('locked', () => {
     it('returns locked when true', () => {
-      expect(resolver.locked({ ...block, locked: true })).toEqual(true)
+      expect(resolver.locked({ ...block, locked: true })).toBe(true)
     })
+
     it('returns locked when false', () => {
-      expect(resolver.locked({ ...block, locked: false })).toEqual(false)
+      expect(resolver.locked({ ...block, locked: false })).toBe(false)
     })
+
     it('returns false when locked is null', () => {
-      expect(resolver.locked({ ...block, locked: null })).toEqual(false)
+      expect(resolver.locked({ ...block, locked: null })).toBe(false)
     })
   })
 })

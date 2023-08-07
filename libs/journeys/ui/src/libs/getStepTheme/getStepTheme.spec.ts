@@ -1,7 +1,8 @@
-import type { TreeBlock } from '../block'
-import { StepFields } from '../../components/Step/__generated__/StepFields'
-import { CardFields } from '../../components/Card/__generated__/CardFields'
 import { ThemeMode, ThemeName } from '../../../__generated__/globalTypes'
+import { CardFields } from '../../components/Card/__generated__/CardFields'
+import { StepFields } from '../../components/Step/__generated__/StepFields'
+import type { TreeBlock } from '../block'
+
 import { getStepTheme } from '.'
 
 describe('getStepTheme', () => {
@@ -77,7 +78,7 @@ describe('getStepTheme', () => {
     })
   })
 
-  it('should return card theme from a Cardblock with custom theme ', () => {
+  it('should return card theme from a Cardblock with custom theme', () => {
     const theme = getStepTheme(
       {
         ...cardBlock,

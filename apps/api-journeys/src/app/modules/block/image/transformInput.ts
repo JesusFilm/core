@@ -1,7 +1,8 @@
 import { encode } from 'blurhash'
+import { GraphQLError } from 'graphql'
 import fetch from 'node-fetch'
 import sharp from 'sharp'
-import { GraphQLError } from 'graphql'
+
 import { ImageBlockUpdateInput } from '../../../__generated__/graphql'
 
 export async function transformInput<T extends ImageBlockUpdateInput>(

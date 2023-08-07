@@ -1,9 +1,11 @@
-import { ComponentMeta, ComponentStory } from '@storybook/react'
 import { MockedProvider } from '@apollo/client/testing'
+import { ComponentMeta, ComponentStory } from '@storybook/react'
+
 import { watchConfig } from '../../libs/storybook'
+import { getVideoChildrenMock } from '../../libs/useVideoChildren/getVideoChildrenMock'
 import { VideoProvider } from '../../libs/videoContext'
 import { videos } from '../Videos/__generated__/testData'
-import { getVideoChildrenMock } from '../../libs/useVideoChildren/getVideoChildrenMock'
+
 import { VideoContainerPage } from '.'
 
 const VideoContainerPageStory: ComponentMeta<typeof VideoContainerPage> = {

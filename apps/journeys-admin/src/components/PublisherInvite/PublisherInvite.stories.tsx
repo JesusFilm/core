@@ -1,6 +1,8 @@
-import { Story, Meta } from '@storybook/react'
 import { MockedProvider } from '@apollo/client/testing'
+import { Meta, Story } from '@storybook/react'
+
 import { journeysAdminConfig } from '../../libs/storybook'
+
 import { PublisherInvite } from './PublisherInvite'
 
 const PublisherInviteStory = {

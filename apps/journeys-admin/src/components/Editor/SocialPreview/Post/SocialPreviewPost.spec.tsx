@@ -1,7 +1,9 @@
 import { render } from '@testing-library/react'
-import { ThemeProvider } from '../../../ThemeProvider'
+
 import { JourneyFields as Journey } from '../../../../../__generated__/JourneyFields'
+import { ThemeProvider } from '../../../ThemeProvider'
 import { SocialProvider } from '../../SocialProvider'
+
 import { SocialPreviewPost } from './SocialPreviewPost'
 
 describe('SocialPreviewPost', () => {
@@ -21,6 +23,7 @@ describe('SocialPreviewPost', () => {
     )
     expect(getByTestId('social-preview-post-empty')).toBeInTheDocument()
   })
+
   it('should display socialpreviewpost', () => {
     const { getByRole, getByText } = render(
       <ThemeProvider>

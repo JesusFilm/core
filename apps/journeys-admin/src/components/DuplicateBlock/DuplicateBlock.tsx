@@ -1,19 +1,21 @@
-import { ReactElement } from 'react'
+import { gql, useMutation } from '@apollo/client'
 import ContentCopyRounded from '@mui/icons-material/ContentCopyRounded'
 import IconButton from '@mui/material/IconButton'
+import last from 'lodash/last'
+import { useSnackbar } from 'notistack'
+import { ReactElement } from 'react'
+
+import type { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { transformer } from '@core/journeys/ui/transformer'
-import type { TreeBlock } from '@core/journeys/ui/block'
-import { useSnackbar } from 'notistack'
-import { gql, useMutation } from '@apollo/client'
-import last from 'lodash/last'
-import { MenuItem } from '../MenuItem'
+
 import { BlockDuplicate } from '../../../__generated__/BlockDuplicate'
 import {
   BlockFields,
   BlockFields_StepBlock as StepBlock
 } from '../../../__generated__/BlockFields'
+import { MenuItem } from '../MenuItem'
 
 interface DuplicateBlockProps {
   variant: 'button' | 'list-item'

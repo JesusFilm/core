@@ -1,6 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing'
-import { PrismaService } from '../../lib/prisma.service'
+
 import { LanguageIdType } from '../../__generated__/graphql'
+import { PrismaService } from '../../lib/prisma.service'
+
 import { LanguageResolver } from './language.resolver'
 
 describe('LangaugeResolver', () => {
@@ -55,7 +57,8 @@ describe('LangaugeResolver', () => {
         where: { id: language.id }
       })
     })
-    it('should return language', async () => {
+
+    it('should return language by bcp47', async () => {
       expect(
         await resolver.language(language.id, LanguageIdType.bcp47)
       ).toEqual(language)

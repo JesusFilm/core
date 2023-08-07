@@ -1,19 +1,21 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { render, fireEvent, waitFor, within } from '@testing-library/react'
-import { SnackbarProvider } from 'notistack'
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import { fireEvent, render, waitFor, within } from '@testing-library/react'
 import { NextRouter, useRouter } from 'next/router'
-// TODO: remove when teams is released
-import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
-import { defaultJourney, publishedJourney } from '../data'
+import { SnackbarProvider } from 'notistack'
+
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+
 import { JourneyStatus, Role } from '../../../../__generated__/globalTypes'
 import { JOURNEY_DUPLICATE } from '../../../libs/useJourneyDuplicateMutation'
 import {
   GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS,
   TeamProvider
 } from '../../Team/TeamProvider'
+import { defaultJourney, publishedJourney } from '../data'
+
 import { GET_ROLE } from './Menu'
-import { Menu, JOURNEY_PUBLISH } from '.'
+
+import { JOURNEY_PUBLISH, Menu } from '.'
 
 Object.assign(navigator, {
   clipboard: {
@@ -301,16 +303,14 @@ describe('JourneyView/Menu', () => {
           ]}
         >
           <TeamProvider>
-            <FlagsProvider flags={{ teams: true }}>
-              <JourneyProvider
-                value={{
-                  journey: { ...defaultJourney, template: true },
-                  admin: true
-                }}
-              >
-                <Menu />
-              </JourneyProvider>
-            </FlagsProvider>
+            <JourneyProvider
+              value={{
+                journey: { ...defaultJourney, template: true },
+                admin: true
+              }}
+            >
+              <Menu />
+            </JourneyProvider>
           </TeamProvider>
         </MockedProvider>
       </SnackbarProvider>
@@ -658,16 +658,14 @@ describe('JourneyView/Menu', () => {
           ]}
         >
           <TeamProvider>
-            <FlagsProvider flags={{ teams: true }}>
-              <JourneyProvider
-                value={{
-                  journey: { ...defaultJourney, template: true },
-                  admin: true
-                }}
-              >
-                <Menu />
-              </JourneyProvider>
-            </FlagsProvider>
+            <JourneyProvider
+              value={{
+                journey: { ...defaultJourney, template: true },
+                admin: true
+              }}
+            >
+              <Menu />
+            </JourneyProvider>
           </TeamProvider>
         </MockedProvider>
       </SnackbarProvider>

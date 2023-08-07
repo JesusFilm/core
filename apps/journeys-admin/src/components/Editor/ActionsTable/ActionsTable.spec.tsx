@@ -1,8 +1,10 @@
 import { render } from '@testing-library/react'
+
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+
 import {
-  GetJourney_journey as Journey,
-  GetJourney_journey_blocks as Blocks
+  GetJourney_journey_blocks as Blocks,
+  GetJourney_journey as Journey
 } from '../../../../__generated__/GetJourney'
 import {
   ButtonColor,
@@ -12,6 +14,7 @@ import {
   ThemeMode,
   ThemeName
 } from '../../../../__generated__/globalTypes'
+
 import { ActionsTable } from './ActionsTable'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
@@ -112,6 +115,7 @@ describe('ActionsTable', () => {
     )
     expect(getByText('Every Journey has a goal')).toBeInTheDocument()
   })
+
   it('should render a list of actions', () => {
     const { getByText, getAllByText, getByTestId } = render(
       <JourneyProvider

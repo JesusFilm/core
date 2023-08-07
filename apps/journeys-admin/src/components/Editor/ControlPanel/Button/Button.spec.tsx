@@ -1,5 +1,7 @@
-import { render, fireEvent } from '@testing-library/react'
+import { fireEvent, render } from '@testing-library/react'
+
 import { ThemeProvider } from '../../../ThemeProvider'
+
 import { Button } from '.'
 
 describe('Button', () => {
@@ -17,6 +19,7 @@ describe('Button', () => {
     expect(getByText('value')).toBeInTheDocument()
     expect(getByText('description')).toBeInTheDocument()
   })
+
   it('should render empty value button', () => {
     const { getByText } = render(
       <Button icon={<>test</>} name="name" value="" description="description" />

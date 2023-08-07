@@ -1,26 +1,30 @@
-import { useBreakpoints } from '@core/shared/ui/useBreakpoints'
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
-import {
-  TreeBlock,
-  treeBlocksVar,
-  blockHistoryVar
-} from '@core/journeys/ui/block'
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
-import { v4 as uuidv4 } from 'uuid'
-import TagManager from 'react-gtm-module'
 import { SnackbarProvider } from 'notistack'
+import TagManager from 'react-gtm-module'
+import { v4 as uuidv4 } from 'uuid'
+
+import {
+  TreeBlock,
+  blockHistoryVar,
+  treeBlocksVar
+} from '@core/journeys/ui/block'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import { useBreakpoints } from '@core/shared/ui/useBreakpoints'
+
 import {
   GetJourney_journey as Journey,
   GetJourney_journey_language as Language
 } from '../../../__generated__/GetJourney'
 import {
-  ThemeName,
+  JourneyStatus,
   ThemeMode,
-  JourneyStatus
+  ThemeName
 } from '../../../__generated__/globalTypes'
 import { basic } from '../../libs/testData/storyData'
+
 import { JOURNEY_VIEW_EVENT_CREATE, JOURNEY_VISITOR_UPDATE } from './Conductor'
+
 import { Conductor } from '.'
 
 jest.mock('react-i18next', () => ({
@@ -72,82 +76,84 @@ jest.mock('@mui/material/useMediaQuery', () => ({
   default: () => true
 }))
 
-beforeEach(() => {
-  const useBreakpointsMock = useBreakpoints as jest.Mock
-  useBreakpointsMock.mockReturnValue({
-    xs: false,
-    sm: false,
-    md: false,
-    lg: false,
-    xl: true
+describe('Conductor', () => {
+  beforeEach(() => {
+    const useBreakpointsMock = useBreakpoints as jest.Mock
+    useBreakpointsMock.mockReturnValue({
+      xs: false,
+      sm: false,
+      md: false,
+      lg: false,
+      xl: true
+    })
   })
-})
 
-const rtlLanguage: Language = {
-  __typename: 'Language',
-  id: '529',
-  bcp47: 'ar',
-  iso3: 'arb',
-  name: [
-    {
-      __typename: 'Translation',
-      value: 'Arabic',
-      primary: false
-    }
-  ]
-}
-
-const visitorUpdateMock = {
-  request: {
-    query: JOURNEY_VISITOR_UPDATE,
-    variables: {
-      input: {
-        countryCode: 'Blenheim, Marlborough, New Zealand',
-        referrer: ''
-      }
-    }
-  },
-  result: {
-    data: { visitorUpdateForCurrentUser: { id: 'uuid', __typename: 'Visitor' } }
-  }
-}
-
-const defaultJourney: Journey = {
-  __typename: 'Journey',
-  id: 'journeyId',
-  themeName: ThemeName.base,
-  themeMode: ThemeMode.light,
-  title: 'my journey',
-  slug: 'my-journey',
-  language: {
+  const rtlLanguage: Language = {
     __typename: 'Language',
     id: '529',
-    bcp47: 'en',
-    iso3: 'eng',
+    bcp47: 'ar',
+    iso3: 'arb',
     name: [
       {
         __typename: 'Translation',
-        value: 'English',
-        primary: true
+        value: 'Arabic',
+        primary: false
       }
     ]
-  },
-  description: 'my cool journey',
-  status: JourneyStatus.draft,
-  createdAt: '2021-11-19T12:34:56.647Z',
-  publishedAt: null,
-  blocks: [],
-  primaryImageBlock: null,
-  userJourneys: [],
-  template: null,
-  seoTitle: null,
-  seoDescription: null,
-  chatButtons: [],
-  host: null,
-  team: null
-}
+  }
 
-describe('Conductor', () => {
+  const visitorUpdateMock = {
+    request: {
+      query: JOURNEY_VISITOR_UPDATE,
+      variables: {
+        input: {
+          countryCode: 'Blenheim, Marlborough, New Zealand',
+          referrer: ''
+        }
+      }
+    },
+    result: {
+      data: {
+        visitorUpdateForCurrentUser: { id: 'uuid', __typename: 'Visitor' }
+      }
+    }
+  }
+
+  const defaultJourney: Journey = {
+    __typename: 'Journey',
+    id: 'journeyId',
+    themeName: ThemeName.base,
+    themeMode: ThemeMode.light,
+    title: 'my journey',
+    slug: 'my-journey',
+    language: {
+      __typename: 'Language',
+      id: '529',
+      bcp47: 'en',
+      iso3: 'eng',
+      name: [
+        {
+          __typename: 'Translation',
+          value: 'English',
+          primary: true
+        }
+      ]
+    },
+    description: 'my cool journey',
+    status: JourneyStatus.draft,
+    createdAt: '2021-11-19T12:34:56.647Z',
+    publishedAt: null,
+    blocks: [],
+    primaryImageBlock: null,
+    userJourneys: [],
+    template: null,
+    seoTitle: null,
+    seoDescription: null,
+    chatButtons: [],
+    host: null,
+    team: null
+  }
+
   it('should create a journeyViewEvent', async () => {
     mockUuidv4.mockReturnValueOnce('uuid')
 

@@ -1,4 +1,5 @@
 import { ResolveField, Resolver } from '@nestjs/graphql'
+
 import { Event } from '../../__generated__/graphql' // change
 
 export interface DbEvent extends Event {
