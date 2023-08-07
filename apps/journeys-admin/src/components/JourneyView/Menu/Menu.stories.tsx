@@ -1,6 +1,4 @@
 import { Story, Meta } from '@storybook/react'
-// TODO: remove when teams is released
-import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 import { screen, userEvent } from '@storybook/testing-library'
 import { MockedProvider } from '@apollo/client/testing'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
@@ -95,18 +93,9 @@ const journeyMocks = [
 const Template: Story = ({ ...args }) => (
   <MockedProvider mocks={args.mocks}>
     <TeamProvider>
-      {/* TODO: remove when teams is released */}
-      <FlagsProvider flags={{ teams: true }}>
-        <JourneyProvider
-          value={{
-            journey: args.journey,
-            variant: 'admin'
-          }}
-        >
-          <Menu {...args} />
-        </JourneyProvider>
-        {/* TODO: remove when teams is released */}
-      </FlagsProvider>
+      <JourneyProvider value={{ journey: args.journey, variant: 'admin' }}>
+        <Menu {...args} />
+      </JourneyProvider>
     </TeamProvider>
   </MockedProvider>
 )

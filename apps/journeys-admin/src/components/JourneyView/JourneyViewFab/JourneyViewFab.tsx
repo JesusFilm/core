@@ -7,8 +7,6 @@ import CheckRoundedIcon from '@mui/icons-material/CheckRounded'
 import Typography from '@mui/material/Typography'
 import NextLink from 'next/link'
 import { useRouter } from 'next/router'
-// TODO: remove when teams is released
-import { useFlags } from '@core/shared/ui/FlagsProvider'
 import { useJourneyDuplicateMutation } from '../../../libs/useJourneyDuplicateMutation'
 import { CopyToTeamDialog } from '../../Team/CopyToTeamDialog'
 
@@ -23,13 +21,11 @@ export function JourneyViewFab({
   const router = useRouter()
   const [duplicateTeamDialogOpen, setDuplicateTeamDialogOpen] = useState(false)
   const [journeyDuplicate] = useJourneyDuplicateMutation()
-  // TODO: remove when teams is released
-  const { teams } = useFlags()
 
   const handleConvertTemplate = async (
     teamId: string | undefined
   ): Promise<void> => {
-    if (journey == null) return
+    if (journey == null || teamId == null) return
 
     const { data } = await journeyDuplicate({
       variables: { id: journey.id, teamId }
@@ -72,13 +68,7 @@ export function JourneyViewFab({
           }}
           color="primary"
           disabled={journey == null}
-          onClick={() =>
-            // TODO: remove when teams is released
-            teams
-              ? setDuplicateTeamDialogOpen(true)
-              : // TODO: remove when teams is released
-                handleConvertTemplate(undefined)
-          }
+          onClick={() => setDuplicateTeamDialogOpen(true)}
         >
           <CheckRoundedIcon sx={{ mr: 3 }} />
           <Typography

@@ -1119,7 +1119,7 @@ export abstract class IQuery {
 
     abstract getJourneyProfile(): Nullable<JourneyProfile> | Promise<Nullable<JourneyProfile>>;
 
-    abstract journeyVisitorsConnection(filter: JourneyVisitorFilter, teamId?: Nullable<string>, first?: Nullable<number>, after?: Nullable<string>, sort?: Nullable<JourneyVisitorSort>): JourneyVisitorsConnection | Promise<JourneyVisitorsConnection>;
+    abstract journeyVisitorsConnection(filter: JourneyVisitorFilter, first?: Nullable<number>, after?: Nullable<string>, sort?: Nullable<JourneyVisitorSort>): JourneyVisitorsConnection | Promise<JourneyVisitorsConnection>;
 
     abstract journeyVisitorCount(filter: JourneyVisitorFilter): number | Promise<number>;
 
@@ -1425,9 +1425,9 @@ export abstract class IMutation {
 
     abstract hostDelete(id: string, teamId: string): Host | Promise<Host>;
 
-    abstract journeyCreate(input: JourneyCreateInput, teamId?: Nullable<string>): Journey | Promise<Journey>;
+    abstract journeyCreate(input: JourneyCreateInput, teamId: string): Journey | Promise<Journey>;
 
-    abstract journeyDuplicate(id: string, teamId?: Nullable<string>): Journey | Promise<Journey>;
+    abstract journeyDuplicate(id: string, teamId: string): Journey | Promise<Journey>;
 
     abstract journeyUpdate(id: string, input: JourneyUpdateInput): Journey | Promise<Journey>;
 
