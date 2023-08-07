@@ -107,7 +107,7 @@ describe('Step', () => {
           }
         ]}
       >
-        <JourneyProvider value={{ variant: 'admin' }}>
+        <JourneyProvider>
           <Step {...block} />
         </JourneyProvider>
       </MockedProvider>
@@ -144,7 +144,7 @@ describe('Step', () => {
           }
         ]}
       >
-        <JourneyProvider value={{ variant: 'admin' }}>
+        <JourneyProvider>
           <Step {...block} />
         </JourneyProvider>
       </MockedProvider>
@@ -191,7 +191,7 @@ describe('Step', () => {
           }
         ]}
       >
-        <JourneyProvider value={{ variant: 'admin' }}>
+        <JourneyProvider>
           <Step
             {...block}
             wrappers={{

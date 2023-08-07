@@ -26,7 +26,7 @@ export function JourneyProvider({
   children
 }: JourneyProviderProps): ReactElement {
   return (
-    <JourneyContext.Provider value={{ ...value, variant: 'default' }}>
+    <JourneyContext.Provider value={{ variant: 'default', ...value }}>
       {children}
     </JourneyContext.Provider>
   )

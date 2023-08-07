@@ -169,7 +169,7 @@ describe('Button', () => {
           }
         ]}
       >
-        <JourneyProvider value={{ variant: 'admin' }}>
+        <JourneyProvider>
           <Button {...buttonWithAction} />
         </JourneyProvider>
       </MockedProvider>
@@ -236,7 +236,7 @@ describe('Button', () => {
           }
         ]}
       >
-        <JourneyProvider value={{ variant: 'admin' }}>
+        <JourneyProvider>
           <Button {...block} />
         </JourneyProvider>
       </MockedProvider>
@@ -300,7 +300,7 @@ describe('Button', () => {
           }
         ]}
       >
-        <JourneyProvider value={{ variant: 'admin' }}>
+        <JourneyProvider>
           <Button {...buttonBlock} />
         </JourneyProvider>
       </MockedProvider>

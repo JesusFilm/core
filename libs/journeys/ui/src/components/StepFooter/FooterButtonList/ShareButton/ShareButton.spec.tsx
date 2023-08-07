@@ -38,8 +38,7 @@ describe('ShareButton', () => {
       <SnackbarProvider>
         <JourneyProvider
           value={{
-            journey: { slug: 'test-slug' } as unknown as Journey,
-            variant: 'admin'
+            journey: { slug: 'test-slug' } as unknown as Journey
           }}
         >
           <ShareButton />
@@ -56,8 +55,7 @@ describe('ShareButton', () => {
       <SnackbarProvider>
         <JourneyProvider
           value={{
-            journey: { slug: 'test-slug' } as unknown as Journey,
-            variant: 'admin'
+            journey: { slug: 'test-slug' } as unknown as Journey
           }}
         >
           <ShareButton />

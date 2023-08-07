@@ -118,11 +118,7 @@ describe('RadioQuestion', () => {
           }
         ]}
       >
-        <JourneyProvider
-          value={{
-            variant: 'admin'
-          }}
-        >
+        <JourneyProvider>
           <RadioQuestion {...block} uuid={() => 'uuid'} />
         </JourneyProvider>
       </MockedProvider>
@@ -238,7 +234,7 @@ describe('RadioQuestion', () => {
           }
         ]}
       >
-        <JourneyProvider value={{ variant: 'admin' }}>
+        <JourneyProvider>
           <RadioQuestion {...block} uuid={() => 'uuid'} />
         </JourneyProvider>
       </MockedProvider>

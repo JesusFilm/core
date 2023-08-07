@@ -163,7 +163,7 @@ describe('SignUp', () => {
     })
   })
 
-  it('should redirect when form submit suceeds', async () => {
+  it('should redirect when form submit succeeds', async () => {
     const mocks = [
       {
         request: {
@@ -221,7 +221,7 @@ describe('SignUp', () => {
   it('should be in a loading state when waiting for response', async () => {
     const { getByRole, getByLabelText } = render(
       <ApolloLoadingProvider>
-        <JourneyProvider value={{ variant: 'admin' }}>
+        <JourneyProvider>
           <SnackbarProvider>
             <SignUp {...block} uuid={() => 'uuid'} />
           </SnackbarProvider>
@@ -274,7 +274,7 @@ describe('SignUp', () => {
 
     const { getByLabelText, getByRole } = render(
       <MockedProvider>
-        <JourneyProvider value={{ variant: 'admin' }}>
+        <JourneyProvider>
           <SnackbarProvider>
             <SignUpMock mocks={mocks} />
           </SnackbarProvider>
@@ -325,7 +325,7 @@ describe('SignUp', () => {
 
     const { getByLabelText, getByRole } = render(
       <MockedProvider>
-        <JourneyProvider value={{ variant: 'admin' }}>
+        <JourneyProvider>
           <SnackbarProvider>
             <SignUpMock mocks={mocks} />
           </SnackbarProvider>
@@ -375,7 +375,7 @@ describe('SignUp', () => {
     ]
 
     const { getByRole, getByLabelText, getByText } = render(
-      <JourneyProvider value={{ variant: 'admin' }}>
+      <JourneyProvider>
         <SnackbarProvider>
           <SignUpMock mocks={mocks} />
         </SnackbarProvider>
