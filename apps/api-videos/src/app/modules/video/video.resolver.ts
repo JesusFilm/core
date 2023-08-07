@@ -12,6 +12,7 @@ import compact from 'lodash/compact'
 import isEmpty from 'lodash/isEmpty'
 
 import { Video, VideoTitle, VideoVariant } from '.prisma/api-videos-client'
+import { TranslationField } from '@core/nest/decorators/TranslationField'
 
 import { IdType, VideosFilter } from '../../__generated__/graphql'
 import { PrismaService } from '../../lib/prisma.service'
