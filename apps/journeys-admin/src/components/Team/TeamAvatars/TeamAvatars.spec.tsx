@@ -124,6 +124,7 @@ describe('TeamAvatars', () => {
   beforeAll(() => {
     jest.clearAllMocks()
   })
+
   it('should show add button when onclick handler passed in', () => {
     const handleOpen = jest.fn()
     const { getByTestId } = render(
@@ -151,9 +152,9 @@ describe('TeamAvatars', () => {
       />
     )
 
-    await waitFor(() => expect(userTeamOverflow.length).toEqual(7))
+    await waitFor(() => expect(userTeamOverflow).toHaveLength(7))
     const renderedAvatars = await getAllByTestId('avatar')
-    expect(renderedAvatars.length).toEqual(4)
+    expect(renderedAvatars).toHaveLength(4)
     expect(getByText('+3')).toBeInTheDocument()
   })
 })
