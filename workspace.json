@@ -30,8 +30,6 @@
     "shared-storybook": "libs/shared/storybook",
     "shared-ui": "libs/shared/ui",
     "watch": "apps/watch",
-    "watch-admin": "apps/watch-admin",
-    "watch-admin-e2e": "apps/watch-admin-e2e",
     "watch-e2e": "apps/watch-e2e",
     "docs-e2e": "apps/docs-e2e"
   }
