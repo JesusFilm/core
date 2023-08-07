@@ -1,10 +1,7 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { render } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
-import {
-  JourneyProvider,
-  RenderLocation
-} from '@core/journeys/ui/JourneyProvider'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 import { defaultJourney } from '../data'
 import { Properties } from '.'
@@ -23,7 +20,7 @@ describe('Properties', () => {
             <JourneyProvider
               value={{
                 journey: defaultJourney,
-                renderLocation: RenderLocation.Admin
+                variant: 'admin'
               }}
             >
               <Properties journeyType="Journey" />

@@ -8,10 +8,7 @@ import type { TreeBlock } from '../../libs/block'
 import { useBlocks, isActiveBlockOrDescendant } from '../../libs/block'
 import { getStepHeading } from '../../libs/getStepHeading'
 import { BlockRenderer, WrappersProps } from '../BlockRenderer'
-import {
-  RenderLocation,
-  useJourney
-} from '../../libs/JourneyProvider/JourneyProvider'
+import { useJourney } from '../../libs/JourneyProvider/JourneyProvider'
 import { StepFields } from './__generated__/StepFields'
 import { StepViewEventCreate } from './__generated__/StepViewEventCreate'
 
@@ -36,7 +33,7 @@ export function Step({
     STEP_VIEW_EVENT_CREATE
   )
 
-  const { renderLocation, journey } = useJourney()
+  const { variant, journey } = useJourney()
   const { treeBlocks } = useBlocks()
   const { t } = useTranslation('libs-journeys-ui')
 
@@ -44,8 +41,7 @@ export function Step({
 
   useEffect(() => {
     if (
-      (renderLocation === RenderLocation.Journey ||
-        renderLocation === RenderLocation.Embed) &&
+      (variant === 'default' || variant === 'embed') &&
       isActiveBlockOrDescendant(blockId)
     ) {
       const id = uuidv4()
@@ -61,12 +57,11 @@ export function Step({
         }
       })
     }
-  }, [blockId, stepViewEventCreate, renderLocation, heading])
+  }, [blockId, stepViewEventCreate, variant, heading])
 
   return (
     <>
-      {(renderLocation === RenderLocation.Journey ||
-        renderLocation === RenderLocation.Embed) && (
+      {(variant === 'default' || variant === 'embed') && (
         <NextSeo title={`${journey?.title ?? ''} (${heading})`} />
       )}
       {children.map((block) => (

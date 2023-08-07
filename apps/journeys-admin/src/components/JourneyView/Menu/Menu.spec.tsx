@@ -1,10 +1,7 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { render, fireEvent, waitFor, within } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
-import {
-  JourneyProvider,
-  RenderLocation
-} from '@core/journeys/ui/JourneyProvider'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { NextRouter, useRouter } from 'next/router'
 // TODO: remove when teams is released
 import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
@@ -42,7 +39,7 @@ describe('JourneyView/Menu', () => {
             <JourneyProvider
               value={{
                 journey: defaultJourney,
-                renderLocation: RenderLocation.Admin
+                variant: 'admin'
               }}
             >
               <Menu />
@@ -65,7 +62,7 @@ describe('JourneyView/Menu', () => {
             <JourneyProvider
               value={{
                 journey: defaultJourney,
-                renderLocation: RenderLocation.Admin
+                variant: 'admin'
               }}
             >
               <Menu />
@@ -90,7 +87,7 @@ describe('JourneyView/Menu', () => {
             <JourneyProvider
               value={{
                 journey: publishedJourney,
-                renderLocation: RenderLocation.Admin
+                variant: 'admin'
               }}
             >
               <Menu />
@@ -139,7 +136,7 @@ describe('JourneyView/Menu', () => {
             <JourneyProvider
               value={{
                 journey: defaultJourney,
-                renderLocation: RenderLocation.Admin
+                variant: 'admin'
               }}
             >
               <Menu />
@@ -199,7 +196,7 @@ describe('JourneyView/Menu', () => {
           <JourneyProvider
             value={{
               journey: { ...defaultJourney, template: true },
-              renderLocation: RenderLocation.Admin
+              variant: 'admin'
             }}
           >
             <TeamProvider>
@@ -229,7 +226,7 @@ describe('JourneyView/Menu', () => {
             <JourneyProvider
               value={{
                 journey: publishedJourney,
-                renderLocation: RenderLocation.Admin
+                variant: 'admin'
               }}
             >
               <Menu />
@@ -271,7 +268,7 @@ describe('JourneyView/Menu', () => {
             <JourneyProvider
               value={{
                 journey: defaultJourney,
-                renderLocation: RenderLocation.Admin
+                variant: 'admin'
               }}
             >
               <Menu />
@@ -338,7 +335,7 @@ describe('JourneyView/Menu', () => {
               <JourneyProvider
                 value={{
                   journey: { ...defaultJourney, template: true },
-                  renderLocation: RenderLocation.Admin
+                  variant: 'admin'
                 }}
               >
                 <Menu />
@@ -394,7 +391,7 @@ describe('JourneyView/Menu', () => {
             <JourneyProvider
               value={{
                 journey: { ...defaultJourney, template: true },
-                renderLocation: RenderLocation.Admin
+                variant: 'admin'
               }}
             >
               <Menu />
@@ -421,7 +418,7 @@ describe('JourneyView/Menu', () => {
             <JourneyProvider
               value={{
                 journey: defaultJourney,
-                renderLocation: RenderLocation.Admin
+                variant: 'admin'
               }}
             >
               <Menu />
@@ -446,7 +443,7 @@ describe('JourneyView/Menu', () => {
             <JourneyProvider
               value={{
                 journey: defaultJourney,
-                renderLocation: RenderLocation.Admin
+                variant: 'admin'
               }}
             >
               <Menu />
@@ -471,7 +468,7 @@ describe('JourneyView/Menu', () => {
             <JourneyProvider
               value={{
                 journey: defaultJourney,
-                renderLocation: RenderLocation.Admin
+                variant: 'admin'
               }}
             >
               <Menu />
@@ -497,7 +494,7 @@ describe('JourneyView/Menu', () => {
             <JourneyProvider
               value={{
                 journey: defaultJourney,
-                renderLocation: RenderLocation.Admin
+                variant: 'admin'
               }}
             >
               <Menu />
@@ -540,7 +537,7 @@ describe('JourneyView/Menu', () => {
             <JourneyProvider
               value={{
                 journey: { ...defaultJourney, template: true },
-                renderLocation: RenderLocation.Admin
+                variant: 'admin'
               }}
             >
               <Menu />
@@ -576,7 +573,7 @@ describe('JourneyView/Menu', () => {
             <JourneyProvider
               value={{
                 journey: defaultJourney,
-                renderLocation: RenderLocation.Admin
+                variant: 'admin'
               }}
             >
               <Menu />
@@ -616,7 +613,7 @@ describe('JourneyView/Menu', () => {
             <JourneyProvider
               value={{
                 journey: defaultJourney,
-                renderLocation: RenderLocation.Admin
+                variant: 'admin'
               }}
             >
               <Menu />
@@ -648,7 +645,7 @@ describe('JourneyView/Menu', () => {
             <JourneyProvider
               value={{
                 journey: defaultJourney,
-                renderLocation: RenderLocation.Admin
+                variant: 'admin'
               }}
             >
               <Menu />
@@ -730,7 +727,7 @@ describe('JourneyView/Menu', () => {
               <JourneyProvider
                 value={{
                   journey: { ...defaultJourney, template: true },
-                  renderLocation: RenderLocation.Admin
+                  variant: 'admin'
                 }}
               >
                 <Menu />

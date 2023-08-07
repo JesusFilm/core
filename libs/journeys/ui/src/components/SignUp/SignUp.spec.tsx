@@ -6,7 +6,7 @@ import TagManager from 'react-gtm-module'
 import { ApolloLoadingProvider } from '../../../test/ApolloLoadingProvider'
 import type { TreeBlock } from '../../libs/block'
 import { blockHistoryVar, treeBlocksVar } from '../../libs/block'
-import { JourneyProvider, RenderLocation } from '../../libs/JourneyProvider'
+import { JourneyProvider } from '../../libs/JourneyProvider'
 import { handleAction } from '../../libs/action'
 import { BlockFields_StepBlock as StepBlock } from '../../libs/block/__generated__/BlockFields'
 import { SignUp, SIGN_UP_SUBMISSION_EVENT_CREATE } from './SignUp'
@@ -221,7 +221,7 @@ describe('SignUp', () => {
   it('should be in a loading state when waiting for response', async () => {
     const { getByRole, getByLabelText } = render(
       <ApolloLoadingProvider>
-        <JourneyProvider value={{ renderLocation: RenderLocation.Journey }}>
+        <JourneyProvider value={{ variant: 'admin' }}>
           <SnackbarProvider>
             <SignUp {...block} uuid={() => 'uuid'} />
           </SnackbarProvider>
@@ -274,7 +274,7 @@ describe('SignUp', () => {
 
     const { getByLabelText, getByRole } = render(
       <MockedProvider>
-        <JourneyProvider value={{ renderLocation: RenderLocation.Journey }}>
+        <JourneyProvider value={{ variant: 'admin' }}>
           <SnackbarProvider>
             <SignUpMock mocks={mocks} />
           </SnackbarProvider>
@@ -325,7 +325,7 @@ describe('SignUp', () => {
 
     const { getByLabelText, getByRole } = render(
       <MockedProvider>
-        <JourneyProvider value={{ renderLocation: RenderLocation.Journey }}>
+        <JourneyProvider value={{ variant: 'admin' }}>
           <SnackbarProvider>
             <SignUpMock mocks={mocks} />
           </SnackbarProvider>
@@ -375,7 +375,7 @@ describe('SignUp', () => {
     ]
 
     const { getByRole, getByLabelText, getByText } = render(
-      <JourneyProvider value={{ renderLocation: RenderLocation.Journey }}>
+      <JourneyProvider value={{ variant: 'admin' }}>
         <SnackbarProvider>
           <SignUpMock mocks={mocks} />
         </SnackbarProvider>

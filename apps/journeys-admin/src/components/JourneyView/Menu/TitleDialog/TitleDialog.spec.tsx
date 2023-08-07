@@ -2,8 +2,7 @@ import { MockedProvider } from '@apollo/client/testing'
 import { render, fireEvent, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 import {
-  JourneyProvider,
-  RenderLocation
+  JourneyProvider
 } from '@core/journeys/ui/JourneyProvider'
 import { defaultJourney } from '../../data'
 import { TitleDialog, JOURNEY_TITLE_UPDATE } from '.'
@@ -18,7 +17,7 @@ describe('JourneyView/Menu/TitleDialog', () => {
           <JourneyProvider
             value={{
               journey: defaultJourney,
-              renderLocation: RenderLocation.Admin
+              variant: 'admin'
             }}
           >
             <TitleDialog open onClose={onClose} />
@@ -69,7 +68,7 @@ describe('JourneyView/Menu/TitleDialog', () => {
           <JourneyProvider
             value={{
               journey: defaultJourney,
-              renderLocation: RenderLocation.Admin
+              variant: 'admin'
             }}
           >
             <TitleDialog open onClose={onClose} />
@@ -107,7 +106,7 @@ describe('JourneyView/Menu/TitleDialog', () => {
           <JourneyProvider
             value={{
               journey: defaultJourney,
-              renderLocation: RenderLocation.Admin
+              variant: 'admin'
             }}
           >
             <TitleDialog open onClose={onClose} />
@@ -156,7 +155,7 @@ describe('JourneyView/Menu/TitleDialog', () => {
           <JourneyProvider
             value={{
               journey: defaultJourney,
-              renderLocation: RenderLocation.Admin
+              variant: 'admin'
             }}
           >
             <TitleDialog open onClose={onClose} />

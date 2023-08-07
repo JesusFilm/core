@@ -10,19 +10,16 @@ import Divider from '@mui/material/Divider'
 import { useTranslation } from 'react-i18next'
 import Link from '@mui/material/Link'
 import Box from '@mui/material/Box'
-import { RenderLocation, useJourney } from '../../libs/JourneyProvider'
+import { useJourney } from '../../libs/JourneyProvider'
 
 export function StepHeader(): ReactElement {
-  const { journey, renderLocation } = useJourney()
+  const { journey, variant } = useJourney()
   const { t } = useTranslation('libs-journeys-ui')
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
   const open = Boolean(anchorEl)
 
   const handleClick = (event: MouseEvent<HTMLButtonElement>): void => {
-    if (
-      renderLocation === RenderLocation.Journey ||
-      renderLocation === RenderLocation.Embed
-    )
+    if (variant === 'default' || variant === 'embed')
       setAnchorEl(event.currentTarget)
   }
   const handleClose = (): void => {

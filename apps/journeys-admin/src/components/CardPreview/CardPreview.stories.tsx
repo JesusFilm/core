@@ -1,10 +1,7 @@
 import { Story, Meta } from '@storybook/react'
 import { useState } from 'react'
 import type { TreeBlock } from '@core/journeys/ui/block'
-import {
-  JourneyProvider,
-  RenderLocation
-} from '@core/journeys/ui/JourneyProvider'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { MockedProvider } from '@apollo/client/testing'
 import { DragDropContext } from 'react-beautiful-dnd'
 import {
@@ -682,7 +679,7 @@ const Template: Story = ({ ...args }) => {
               bcp47: 'en'
             }
           } as unknown as Journey,
-          renderLocation: RenderLocation.Admin
+          variant: 'admin'
         }}
       >
         <DragDropContext>

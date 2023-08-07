@@ -6,7 +6,7 @@ import TagManager from 'react-gtm-module'
 import { ApolloLoadingProvider } from '../../../test/ApolloLoadingProvider'
 import type { TreeBlock } from '../../libs/block'
 import { blockHistoryVar, treeBlocksVar } from '../../libs/block'
-import { JourneyProvider, RenderLocation } from '../../libs/JourneyProvider'
+import { JourneyProvider } from '../../libs/JourneyProvider'
 import { handleAction } from '../../libs/action'
 import { BlockFields_StepBlock as StepBlock } from '../../libs/block/__generated__/BlockFields'
 import {
@@ -111,7 +111,7 @@ const TextResponseMock = ({
   mocks = []
 }: TextResponseMockProps): ReactElement => (
   <MockedProvider mocks={mocks} addTypename={false}>
-    <JourneyProvider value={{ renderLocation: RenderLocation.Journey }}>
+    <JourneyProvider value={{ variant: 'default' }}>
       <SnackbarProvider>
         <TextResponse {...block} uuid={() => 'uuid'} />
       </SnackbarProvider>

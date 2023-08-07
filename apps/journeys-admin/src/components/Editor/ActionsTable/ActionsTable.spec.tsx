@@ -1,8 +1,5 @@
 import { render } from '@testing-library/react'
-import {
-  JourneyProvider,
-  RenderLocation
-} from '@core/journeys/ui/JourneyProvider'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import {
   GetJourney_journey as Journey,
   GetJourney_journey_blocks as Blocks
@@ -109,9 +106,7 @@ describe('ActionsTable', () => {
 
   it('should render placeholder', () => {
     const { getByText } = render(
-      <JourneyProvider
-        value={{ journey, renderLocation: RenderLocation.Admin }}
-      >
+      <JourneyProvider value={{ journey, variant: 'admin' }}>
         <ActionsTable />
       </JourneyProvider>
     )
@@ -125,7 +120,7 @@ describe('ActionsTable', () => {
             ...journey,
             blocks
           },
-          renderLocation: RenderLocation.Admin
+          variant: 'admin'
         }}
       >
         <ActionsTable />

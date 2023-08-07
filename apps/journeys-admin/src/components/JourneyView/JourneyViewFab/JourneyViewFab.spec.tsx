@@ -1,8 +1,5 @@
 import { render, fireEvent, waitFor, within } from '@testing-library/react'
-import {
-  JourneyProvider,
-  RenderLocation
-} from '@core/journeys/ui/JourneyProvider'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { MockedProvider } from '@apollo/client/testing'
 import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 import { NextRouter, useRouter } from 'next/router'
@@ -53,7 +50,7 @@ describe('JourneyViewFab', () => {
               <JourneyProvider
                 value={{
                   journey: defaultJourney,
-                  renderLocation: RenderLocation.Admin
+                  variant: 'admin'
                 }}
               >
                 <JourneyViewFab />
@@ -78,7 +75,7 @@ describe('JourneyViewFab', () => {
               <JourneyProvider
                 value={{
                   journey: { ...defaultJourney, template: true },
-                  renderLocation: RenderLocation.Admin
+                  variant: 'admin'
                 }}
               >
                 <JourneyViewFab isPublisher />
@@ -145,7 +142,7 @@ describe('JourneyViewFab', () => {
               <JourneyProvider
                 value={{
                   journey: { ...defaultJourney, template: true },
-                  renderLocation: RenderLocation.Admin
+                  variant: 'admin'
                 }}
               >
                 <JourneyViewFab />
@@ -223,7 +220,7 @@ describe('JourneyViewFab', () => {
               <JourneyProvider
                 value={{
                   journey: { ...defaultJourney, template: true },
-                  renderLocation: RenderLocation.Admin
+                  variant: 'admin'
                 }}
               >
                 <JourneyViewFab />

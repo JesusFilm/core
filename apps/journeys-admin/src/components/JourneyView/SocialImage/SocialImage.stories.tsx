@@ -1,8 +1,5 @@
 import { Story, Meta } from '@storybook/react'
-import {
-  JourneyProvider,
-  RenderLocation
-} from '@core/journeys/ui/JourneyProvider'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { MockedProvider } from '@apollo/client/testing'
 import Box from '@mui/material/Box'
 import { simpleComponentConfig } from '../../../libs/storybook'
@@ -21,9 +18,7 @@ const SocialImageStory = {
 
 const Template: Story = ({ ...args }) => (
   <MockedProvider>
-    <JourneyProvider
-      value={{ journey: args.journey, renderLocation: RenderLocation.Admin }}
-    >
+    <JourneyProvider value={{ journey: args.journey, variant: 'admin' }}>
       <Box sx={{ p: 5, backgroundColor: 'background.paper' }}>
         <SocialImage />
       </Box>

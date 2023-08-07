@@ -4,10 +4,7 @@ import { gql } from '@apollo/client'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import { transformer } from '@core/journeys/ui/transformer'
 import { JOURNEY_FIELDS } from '@core/journeys/ui/JourneyProvider/journeyFields'
-import {
-  JourneyProvider,
-  RenderLocation
-} from '@core/journeys/ui/JourneyProvider'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { getJourneyRTL } from '@core/journeys/ui/rtl'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import { NextSeo } from 'next-seo'
@@ -72,9 +69,7 @@ function JourneyPage({ journey, locale, rtl }: JourneyPageProps): ReactElement {
           cardType: 'summary_large_image'
         }}
       />
-      <JourneyProvider
-        value={{ journey, renderLocation: RenderLocation.Journey }}
-      >
+      <JourneyProvider value={{ journey, variant: 'default' }}>
         <ThemeProvider
           themeName={journey.themeName}
           themeMode={journey.themeMode}

@@ -2,10 +2,7 @@ import { ComponentProps } from 'react'
 import { Story, Meta } from '@storybook/react'
 import Stack from '@mui/material/Stack'
 
-import {
-  JourneyProvider,
-  RenderLocation
-} from '@core/journeys/ui/JourneyProvider'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { JourneyFields_chatButtons as ChatButton } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
 import { simpleComponentConfig } from '../../../../../../libs/storybook'
 import { GetJourney_journey as Journey } from '../../../../../../../__generated__/GetJourney'
@@ -47,7 +44,7 @@ const Template: Story<
             title: hostTitle
           }
         } as unknown as Journey,
-        renderLocation: RenderLocation.Admin
+        variant: 'admin'
       }}
     >
       <Stack

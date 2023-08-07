@@ -1,10 +1,7 @@
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
 
-import {
-  JourneyProvider,
-  RenderLocation
-} from '@core/journeys/ui/JourneyProvider'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { JourneyFields as Journey } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
 import { InMemoryCache } from '@apollo/client'
 import { useHostUpdate } from '../../../../../../../../../libs/useHostUpdate'
@@ -56,9 +53,7 @@ describe('HostLocationFieldForm', () => {
   it('should populate the field with host location', () => {
     const { getByRole } = render(
       <MockedProvider>
-        <JourneyProvider
-          value={{ journey, renderLocation: RenderLocation.Admin }}
-        >
+        <JourneyProvider value={{ journey, variant: 'admin' }}>
           <HostLocationFieldForm />
         </JourneyProvider>
       </MockedProvider>
@@ -73,9 +68,7 @@ describe('HostLocationFieldForm', () => {
   it('should clear the field', () => {
     const { getByRole } = render(
       <MockedProvider>
-        <JourneyProvider
-          value={{ journey, renderLocation: RenderLocation.Admin }}
-        >
+        <JourneyProvider value={{ journey, variant: 'admin' }}>
           <HostLocationFieldForm empty />
         </JourneyProvider>
       </MockedProvider>
@@ -90,9 +83,7 @@ describe('HostLocationFieldForm', () => {
   it('should disable the field', () => {
     const { getByRole } = render(
       <MockedProvider>
-        <JourneyProvider
-          value={{ journey, renderLocation: RenderLocation.Admin }}
-        >
+        <JourneyProvider value={{ journey, variant: 'admin' }}>
           <HostLocationFieldForm disabled />
         </JourneyProvider>
       </MockedProvider>
@@ -139,9 +130,7 @@ describe('HostLocationFieldForm', () => {
           }
         ]}
       >
-        <JourneyProvider
-          value={{ journey, renderLocation: RenderLocation.Admin }}
-        >
+        <JourneyProvider value={{ journey, variant: 'admin' }}>
           <HostLocationFieldForm />
         </JourneyProvider>
       </MockedProvider>

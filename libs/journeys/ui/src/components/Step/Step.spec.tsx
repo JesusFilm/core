@@ -4,7 +4,7 @@ import { v4 as uuidv4 } from 'uuid'
 import TagManager from 'react-gtm-module'
 import type { TreeBlock } from '../../libs/block'
 import { blockHistoryVar, treeBlocksVar } from '../../libs/block'
-import { JourneyProvider, RenderLocation } from '../../libs/JourneyProvider'
+import { JourneyProvider } from '../../libs/JourneyProvider'
 import { StepFields } from './__generated__/StepFields'
 import { STEP_VIEW_EVENT_CREATE } from './Step'
 import { Step } from '.'
@@ -107,7 +107,7 @@ describe('Step', () => {
           }
         ]}
       >
-        <JourneyProvider value={{ renderLocation: RenderLocation.Journey }}>
+        <JourneyProvider value={{ variant: 'admin' }}>
           <Step {...block} />
         </JourneyProvider>
       </MockedProvider>
@@ -144,7 +144,7 @@ describe('Step', () => {
           }
         ]}
       >
-        <JourneyProvider value={{ renderLocation: RenderLocation.Journey }}>
+        <JourneyProvider value={{ variant: 'admin' }}>
           <Step {...block} />
         </JourneyProvider>
       </MockedProvider>
@@ -191,7 +191,7 @@ describe('Step', () => {
           }
         ]}
       >
-        <JourneyProvider value={{ renderLocation: RenderLocation.Journey }}>
+        <JourneyProvider value={{ variant: 'admin' }}>
           <Step
             {...block}
             wrappers={{

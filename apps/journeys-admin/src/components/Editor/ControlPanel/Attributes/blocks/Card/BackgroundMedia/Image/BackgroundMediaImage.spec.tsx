@@ -3,10 +3,7 @@ import { fireEvent, render, waitFor } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
 import { SnackbarProvider } from 'notistack'
 import useMediaQuery from '@mui/material/useMediaQuery'
-import {
-  JourneyProvider,
-  RenderLocation
-} from '@core/journeys/ui/JourneyProvider'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { InMemoryCache } from '@apollo/client'
 import {
   GetJourney_journey as Journey,
@@ -187,9 +184,7 @@ describe('BackgroundMediaImage', () => {
           }
         ]}
       >
-        <JourneyProvider
-          value={{ journey, renderLocation: RenderLocation.Admin }}
-        >
+        <JourneyProvider value={{ journey, variant: 'admin' }}>
           <SnackbarProvider>
             <BackgroundMediaImage cardBlock={card} />
           </SnackbarProvider>
@@ -286,9 +281,7 @@ describe('BackgroundMediaImage', () => {
           }
         ]}
       >
-        <JourneyProvider
-          value={{ journey, renderLocation: RenderLocation.Admin }}
-        >
+        <JourneyProvider value={{ journey, variant: 'admin' }}>
           <SnackbarProvider>
             <BackgroundMediaImage cardBlock={videoCard} />
           </SnackbarProvider>
@@ -375,9 +368,7 @@ describe('BackgroundMediaImage', () => {
             }
           ]}
         >
-          <JourneyProvider
-            value={{ journey, renderLocation: RenderLocation.Admin }}
-          >
+          <JourneyProvider value={{ journey, variant: 'admin' }}>
             <SnackbarProvider>
               <BackgroundMediaImage cardBlock={existingCoverBlock} />
             </SnackbarProvider>
@@ -406,9 +397,7 @@ describe('BackgroundMediaImage', () => {
     it('shows loading icon', async () => {
       const { getByRole } = render(
         <MockedProvider mocks={[createCloudflareUploadByUrlMock]}>
-          <JourneyProvider
-            value={{ journey, renderLocation: RenderLocation.Admin }}
-          >
+          <JourneyProvider value={{ journey, variant: 'admin' }}>
             <SnackbarProvider>
               <BackgroundMediaImage cardBlock={existingCoverBlock} />
             </SnackbarProvider>
@@ -465,9 +454,7 @@ describe('BackgroundMediaImage', () => {
             }
           ]}
         >
-          <JourneyProvider
-            value={{ journey, renderLocation: RenderLocation.Admin }}
-          >
+          <JourneyProvider value={{ journey, variant: 'admin' }}>
             <SnackbarProvider>
               <BackgroundMediaImage cardBlock={existingCoverBlock} />
             </SnackbarProvider>

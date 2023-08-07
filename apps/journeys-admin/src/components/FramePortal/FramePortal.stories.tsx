@@ -3,10 +3,7 @@ import { BlockRenderer } from '@core/journeys/ui/BlockRenderer'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import { MockedProvider } from '@apollo/client/testing'
-import {
-  JourneyProvider,
-  RenderLocation
-} from '@core/journeys/ui/JourneyProvider'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { journeysAdminConfig } from '../../libs/storybook'
 import { BlockFields as Block } from '../../../__generated__/BlockFields'
 import {
@@ -131,7 +128,7 @@ const Template: Story = () => (
             iso3: 'eng'
           }
         } as unknown as Journey,
-        renderLocation: RenderLocation.Admin
+        variant: 'admin'
       }}
     >
       <FramePortal width={356} height={536} dir="ltr">

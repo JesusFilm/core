@@ -3,7 +3,7 @@ import { render, fireEvent, waitFor } from '@testing-library/react'
 import TagManager from 'react-gtm-module'
 import type { TreeBlock } from '../../libs/block'
 import { blockHistoryVar, treeBlocksVar } from '../../libs/block'
-import { JourneyProvider, RenderLocation } from '../../libs/JourneyProvider'
+import { JourneyProvider } from '../../libs/JourneyProvider'
 import { BlockFields_StepBlock as StepBlock } from '../../libs/block/__generated__/BlockFields'
 import { RadioQuestionFields } from './__generated__/RadioQuestionFields'
 import { RadioQuestion, RADIO_QUESTION_SUBMISSION_EVENT_CREATE } from '.'
@@ -120,7 +120,7 @@ describe('RadioQuestion', () => {
       >
         <JourneyProvider
           value={{
-            renderLocation: RenderLocation.Journey
+            variant: 'admin'
           }}
         >
           <RadioQuestion {...block} uuid={() => 'uuid'} />
@@ -238,7 +238,7 @@ describe('RadioQuestion', () => {
           }
         ]}
       >
-        <JourneyProvider value={{ renderLocation: RenderLocation.Journey }}>
+        <JourneyProvider value={{ variant: 'admin' }}>
           <RadioQuestion {...block} uuid={() => 'uuid'} />
         </JourneyProvider>
       </MockedProvider>

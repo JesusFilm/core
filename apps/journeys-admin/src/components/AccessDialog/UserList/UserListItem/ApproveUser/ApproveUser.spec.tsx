@@ -1,9 +1,6 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
-import {
-  JourneyProvider,
-  RenderLocation
-} from '@core/journeys/ui/JourneyProvider'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { InMemoryCache } from '@apollo/client'
 import { UserJourneyRole } from '../../../../../../__generated__/globalTypes'
 import { GetJourney_journey as Journey } from '../../../../../../__generated__/GetJourney'
@@ -46,7 +43,7 @@ describe('ApproveUser', () => {
       <JourneyProvider
         value={{
           journey: { id: 'journeyId' } as unknown as Journey,
-          renderLocation: RenderLocation.Admin
+          variant: 'admin'
         }}
       >
         <MockedProvider

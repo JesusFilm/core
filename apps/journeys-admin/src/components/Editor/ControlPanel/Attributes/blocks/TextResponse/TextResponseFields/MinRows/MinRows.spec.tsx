@@ -2,10 +2,7 @@ import type { TreeBlock } from '@core/journeys/ui/block'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
-import {
-  JourneyProvider,
-  RenderLocation
-} from '@core/journeys/ui/JourneyProvider'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import {
   GetJourney_journey as Journey,
   GetJourney_journey_blocks_TextResponseBlock as TextResponseBlock
@@ -33,7 +30,7 @@ describe('MinRows', () => {
         <JourneyProvider
           value={{
             journey: { id: 'journey.id' } as unknown as Journey,
-            renderLocation: RenderLocation.Admin
+            variant: 'admin'
           }}
         >
           <EditorProvider initialState={{ selectedBlock }}>
@@ -92,7 +89,7 @@ describe('MinRows', () => {
         <JourneyProvider
           value={{
             journey: { id: 'journey.id' } as unknown as Journey,
-            renderLocation: RenderLocation.Admin
+            variant: 'admin'
           }}
         >
           <EditorProvider initialState={{ selectedBlock }}>

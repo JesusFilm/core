@@ -1,10 +1,7 @@
 import { render, waitFor } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
 import { SnackbarProvider } from 'notistack'
-import {
-  JourneyProvider,
-  RenderLocation
-} from '@core/journeys/ui/JourneyProvider'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { GetJourney_journey as Journey } from '../../../__generated__/GetJourney'
 import {
   JourneyStatus,
@@ -69,9 +66,7 @@ describe('JourneyView', () => {
       <MockedProvider>
         <SnackbarProvider>
           <TeamProvider>
-            <JourneyProvider
-              value={{ journey, renderLocation: RenderLocation.Admin }}
-            >
+            <JourneyProvider value={{ journey, variant: 'admin' }}>
               <JourneyView journeyType="Journey" />
             </JourneyProvider>
           </TeamProvider>
@@ -88,9 +83,7 @@ describe('JourneyView', () => {
       <MockedProvider>
         <SnackbarProvider>
           <TeamProvider>
-            <JourneyProvider
-              value={{ journey, renderLocation: RenderLocation.Admin }}
-            >
+            <JourneyProvider value={{ journey, variant: 'admin' }}>
               <JourneyView journeyType="Journey" />
             </JourneyProvider>
           </TeamProvider>

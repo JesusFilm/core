@@ -7,10 +7,7 @@ import {
   withAuthUserTokenSSR
 } from 'next-firebase-auth'
 import { gql, useQuery } from '@apollo/client'
-import {
-  JourneyProvider,
-  RenderLocation
-} from '@core/journeys/ui/JourneyProvider'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { useTranslation } from 'react-i18next'
 import { useRouter } from 'next/router'
 import { JOURNEY_FIELDS } from '@core/journeys/ui/JourneyProvider/journeyFields'
@@ -48,7 +45,7 @@ function TemplateDetails(): ReactElement {
       <JourneyProvider
         value={{
           journey: data?.template ?? undefined,
-          renderLocation: RenderLocation.Admin
+          variant: 'admin'
         }}
       >
         <PageWrapper

@@ -16,7 +16,7 @@ import {
   ThemeMode
 } from '../../../__generated__/globalTypes'
 import { journeyUiConfig } from '../../libs/journeyUiConfig'
-import { JourneyProvider, RenderLocation } from '../../libs/JourneyProvider'
+import { JourneyProvider } from '../../libs/JourneyProvider'
 import { simpleComponentConfig } from '../../libs/simpleComponentConfig'
 import { Icon } from '.'
 
@@ -38,7 +38,7 @@ const VariantTemplate: Story<
         themeName: ThemeName.base,
         language: args.language
       } as unknown as Journey,
-      renderLocation: RenderLocation.Journey
+      variant: 'admin'
     }}
   >
     <Container>

@@ -10,7 +10,7 @@ import {
   ThemeMode,
   ThemeName
 } from '../../../../__generated__/globalTypes'
-import { JourneyProvider, RenderLocation } from '../../../libs/JourneyProvider'
+import { JourneyProvider } from '../../../libs/JourneyProvider'
 import { TreeBlock, blockHistoryVar } from '../../../libs/block'
 import { BlockFields_StepBlock as StepBlock } from '../../../libs/block/__generated__/BlockFields'
 import { ChatButtons, CHAT_BUTTON_EVENT_CREATE } from './ChatButtons'
@@ -112,7 +112,7 @@ describe('ChatButtons', () => {
         <JourneyProvider
           value={{
             journey: { ...journey, chatButtons },
-            renderLocation: RenderLocation.Journey
+            variant: 'default'
           }}
         >
           <ChatButtons />
@@ -135,7 +135,7 @@ describe('ChatButtons', () => {
         <JourneyProvider
           value={{
             journey: { ...journey, chatButtons },
-            renderLocation: RenderLocation.Journey
+            variant: 'default'
           }}
         >
           <ChatButtons />
@@ -157,7 +157,7 @@ describe('ChatButtons', () => {
         <JourneyProvider
           value={{
             journey: { ...journey, chatButtons },
-            renderLocation: RenderLocation.Admin
+            variant: 'admin'
           }}
         >
           <ChatButtons />
@@ -177,9 +177,7 @@ describe('ChatButtons', () => {
   it('displays a placeholder button when admin is true and there are no chat buttons', () => {
     const { getByTestId } = render(
       <MockedProvider>
-        <JourneyProvider
-          value={{ journey, renderLocation: RenderLocation.Admin }}
-        >
+        <JourneyProvider value={{ journey, variant: 'admin' }}>
           <ChatButtons />
         </JourneyProvider>
       </MockedProvider>
@@ -190,9 +188,7 @@ describe('ChatButtons', () => {
   it('does not display a placeholder button when admin is false and there are no chat buttons', () => {
     const { queryByTestId } = render(
       <MockedProvider>
-        <JourneyProvider
-          value={{ journey, renderLocation: RenderLocation.Journey }}
-        >
+        <JourneyProvider value={{ journey, variant: 'default' }}>
           <ChatButtons />
         </JourneyProvider>
       </MockedProvider>
@@ -209,7 +205,7 @@ describe('ChatButtons', () => {
               ...journey,
               chatButtons: [{ ...chatButtons[0], platform: null }]
             },
-            renderLocation: RenderLocation.Journey
+            variant: 'default'
           }}
         >
           <ChatButtons />

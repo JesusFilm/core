@@ -13,7 +13,7 @@ import {
   ChatPlatform
 } from '../../../__generated__/globalTypes'
 
-import { JourneyProvider, RenderLocation } from '../../libs/JourneyProvider'
+import { JourneyProvider } from '../../libs/JourneyProvider'
 import {
   JourneyFields as Journey,
   JourneyFields_host as Host,
@@ -83,14 +83,14 @@ const rtlLanguage = {
 const Template: Story<
   ComponentProps<typeof StepFooter> & {
     journey: Journey
-    renderLocation: RenderLocation
+    variant: 'default' | 'admin' | 'embed'
   }
-> = ({ journey, renderLocation = RenderLocation.Journey }) => {
+> = ({ journey, variant = 'default' }) => {
   return (
     <MockedProvider>
       <SnackbarProvider>
         <FlagsProvider flags={{ editableStepFooter: true }}>
-          <JourneyProvider value={{ journey, renderLocation }}>
+          <JourneyProvider value={{ journey, variant }}>
             <Stack
               sx={{
                 position: 'relative',
@@ -114,7 +114,7 @@ Default.args = { journey }
 export const Admin = Template.bind({})
 Admin.args = {
   ...Default.args,
-  renderLocation: RenderLocation.Admin
+  variant: 'admin'
 }
 
 export const WithHost = Template.bind({})
@@ -209,18 +209,15 @@ Long.args = {
 const TemplateRTL: Story<
   ComponentProps<typeof StepFooter> & {
     journeys: Journey[]
-    renderLocations: RenderLocation[]
+    variants: Array<'default' | 'admin' | 'embed'>
   }
-> = ({ journeys, renderLocations }) => {
+> = ({ journeys, variants }) => {
   return (
     <MockedProvider>
       <SnackbarProvider>
         <FlagsProvider flags={{ editableStepFooter: true }}>
           {journeys.map((journey, i) => (
-            <JourneyProvider
-              key={i}
-              value={{ journey, renderLocation: renderLocations[i] }}
-            >
+            <JourneyProvider key={i} value={{ journey, variant: variants[i] }}>
               <Stack
                 sx={{
                   position: 'relative',
@@ -249,14 +246,14 @@ RTL.args = {
     { ...(WithAdminAvatar.args.journey as Journey), language: rtlLanguage },
     { ...(Long.args.journey as Journey), language: rtlLanguage }
   ],
-  renderLocations: [
-    RenderLocation.Admin,
-    RenderLocation.Journey,
-    RenderLocation.Journey,
-    RenderLocation.Journey,
-    RenderLocation.Journey,
-    RenderLocation.Admin,
-    RenderLocation.Journey
+  variants: [
+    'admin',
+    'default',
+    'default',
+    'default',
+    'default',
+    'admin',
+    'default'
   ]
 }
 RTL.parameters = { rtl: true }

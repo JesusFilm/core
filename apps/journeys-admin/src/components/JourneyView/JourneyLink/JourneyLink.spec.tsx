@@ -1,9 +1,6 @@
 import { render, fireEvent, waitFor } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
-import {
-  JourneyProvider,
-  RenderLocation
-} from '@core/journeys/ui/JourneyProvider'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { SnackbarProvider } from 'notistack'
 import { defaultJourney } from '../data'
 import { JourneyLink } from './JourneyLink'
@@ -21,7 +18,7 @@ describe('JourneyLink', () => {
           <JourneyProvider
             value={{
               journey: defaultJourney,
-              renderLocation: RenderLocation.Admin
+              variant: 'admin'
             }}
           >
             <JourneyLink />
@@ -42,7 +39,7 @@ describe('JourneyLink', () => {
           <JourneyProvider
             value={{
               journey: defaultJourney,
-              renderLocation: RenderLocation.Admin
+              variant: 'admin'
             }}
           >
             <JourneyLink />

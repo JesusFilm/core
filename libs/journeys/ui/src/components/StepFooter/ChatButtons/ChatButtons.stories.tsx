@@ -5,7 +5,7 @@ import {
   JourneyFields as Journey
 } from '../../../libs/JourneyProvider/__generated__/JourneyFields'
 import { simpleComponentConfig } from '../../../libs/simpleComponentConfig'
-import { JourneyProvider, RenderLocation } from '../../../libs/JourneyProvider'
+import { JourneyProvider } from '../../../libs/JourneyProvider'
 import { ChatPlatform } from '../../../../__generated__/globalTypes'
 import { ChatButtons } from '.'
 
@@ -30,7 +30,7 @@ const Template: Story<{ chatButtons: ChatButton[] }> = ({ chatButtons }) => {
             },
             chatButtons
           } as unknown as Journey,
-          renderLocation: RenderLocation.Admin
+          variant: 'admin'
         }}
       >
         <ChatButtons />

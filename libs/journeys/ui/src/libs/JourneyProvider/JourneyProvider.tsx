@@ -1,19 +1,13 @@
 import { createContext, ReactElement, ReactNode, useContext } from 'react'
 import { JourneyFields as Journey } from './__generated__/JourneyFields'
 
-export enum RenderLocation {
-  Admin,
-  Journey,
-  Embed
-}
-
 interface Context {
   journey?: Journey
-  renderLocation: RenderLocation
+  variant?: 'default' | 'admin' | 'embed'
 }
 
 const JourneyContext = createContext<Context>({
-  renderLocation: RenderLocation.Journey
+  variant: 'default'
 })
 
 export function useJourney(): Context {
@@ -24,7 +18,7 @@ export function useJourney(): Context {
 
 interface JourneyProviderProps {
   children: ReactNode
-  value: Context
+  value?: Partial<Context>
 }
 
 export function JourneyProvider({
@@ -32,7 +26,7 @@ export function JourneyProvider({
   children
 }: JourneyProviderProps): ReactElement {
   return (
-    <JourneyContext.Provider value={{ ...value }}>
+    <JourneyContext.Provider value={{ ...value, variant: 'default' }}>
       {children}
     </JourneyContext.Provider>
   )

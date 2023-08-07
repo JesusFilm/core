@@ -4,7 +4,7 @@ import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { SxProps } from '@mui/material/styles'
 import { useFlags } from '@core/shared/ui/FlagsProvider'
-import { RenderLocation, useJourney } from '../../libs/JourneyProvider'
+import { useJourney } from '../../libs/JourneyProvider'
 import { getJourneyRTL } from '../../libs/rtl'
 import { HostTitleLocation } from './HostTitleLocation'
 import { HostAvatars } from './HostAvatars'
@@ -22,16 +22,16 @@ export function StepFooter({
   sx,
   title
 }: StepFooterProps): ReactElement {
-  const { journey, renderLocation } = useJourney()
+  const { journey, variant } = useJourney()
   const { rtl } = getJourneyRTL(journey)
   const { editableStepFooter } = useFlags()
   const hasAvatar =
-    (renderLocation === RenderLocation.Admin && editableStepFooter) ||
+    (variant === 'admin' && editableStepFooter) ||
     journey?.host?.src1 != null ||
     journey?.host?.src2 != null
 
   const hasChatWidget =
-    renderLocation === RenderLocation.Admin ||
+    variant === 'admin' ||
     (journey?.chatButtons != null && journey?.chatButtons.length > 0)
 
   return (
@@ -86,11 +86,7 @@ export function StepFooter({
             }}
             gap={2}
           >
-            {hasAvatar && (
-              <HostAvatars
-                hasPlaceholder={renderLocation === RenderLocation.Admin}
-              />
-            )}
+            {hasAvatar && <HostAvatars hasPlaceholder={variant === 'admin'} />}
             <Stack
               sx={{ py: 1.5, flex: '1 1 100%', minWidth: 0 }}
               spacing={-1.5}

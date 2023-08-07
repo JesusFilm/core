@@ -9,7 +9,7 @@ import { useTranslation } from 'react-i18next'
 import type { TreeBlock } from '../../libs/block'
 import { useBlocks } from '../../libs/block'
 import { getStepHeading } from '../../libs/getStepHeading'
-import { RenderLocation, useJourney } from '../../libs/JourneyProvider'
+import { useJourney } from '../../libs/JourneyProvider'
 import { BlockRenderer, WrappersProps } from '../BlockRenderer'
 import { RadioOption } from '../RadioOption'
 import { RadioQuestionSubmissionEventCreate } from './__generated__/RadioQuestionSubmissionEventCreate'
@@ -46,7 +46,7 @@ export function RadioQuestion({
     useMutation<RadioQuestionSubmissionEventCreate>(
       RADIO_QUESTION_SUBMISSION_EVENT_CREATE
     )
-  const { renderLocation } = useJourney()
+  const { variant } = useJourney()
   const [selectedId, setSelectedId] = useState<string | null>(null)
   const { blockHistory, treeBlocks } = useBlocks()
   const { t } = useTranslation('libs-journeys-ui')
@@ -61,10 +61,7 @@ export function RadioQuestion({
     radioOptionBlockId: string,
     radioOptionLabel: string
   ): void => {
-    if (
-      renderLocation === RenderLocation.Journey ||
-      renderLocation === RenderLocation.Embed
-    ) {
+    if (variant === 'default' || variant === 'embed') {
       const id = uuid()
       void radioQuestionSubmissionEventCreate({
         variables: {

@@ -1,9 +1,6 @@
 import { render, fireEvent } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
-import {
-  JourneyProvider,
-  RenderLocation
-} from '@core/journeys/ui/JourneyProvider'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { SnackbarProvider } from 'notistack'
 import { defaultJourney } from '../data'
 import { TitleDescription } from './TitleDescription'
@@ -17,7 +14,7 @@ describe('TitleDescription', () => {
             <JourneyProvider
               value={{
                 journey: defaultJourney,
-                renderLocation: RenderLocation.Admin
+                variant: 'admin'
               }}
             >
               <TitleDescription />
@@ -44,7 +41,7 @@ describe('TitleDescription', () => {
             <JourneyProvider
               value={{
                 journey: template,
-                renderLocation: RenderLocation.Admin
+                variant: 'admin'
               }}
             >
               <TitleDescription isPublisher />
@@ -65,7 +62,7 @@ describe('TitleDescription', () => {
             <JourneyProvider
               value={{
                 journey: template,
-                renderLocation: RenderLocation.Admin
+                variant: 'admin'
               }}
             >
               <TitleDescription isPublisher />

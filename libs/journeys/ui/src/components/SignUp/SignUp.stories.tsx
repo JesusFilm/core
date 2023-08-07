@@ -5,7 +5,7 @@ import { screen, userEvent } from '@storybook/testing-library'
 import { SnackbarProvider } from 'notistack'
 import { journeyUiConfig } from '../../libs/journeyUiConfig'
 import { simpleComponentConfig } from '../../libs/simpleComponentConfig'
-import { JourneyProvider, RenderLocation } from '../../libs/JourneyProvider'
+import { JourneyProvider } from '../../libs/JourneyProvider'
 import { StoryCard } from '../StoryCard'
 import { ApolloLoadingProvider } from '../../../test/ApolloLoadingProvider'
 import { IconName, TypographyVariant } from '../../../__generated__/globalTypes'
@@ -80,7 +80,7 @@ const Template: Story<ComponentProps<typeof SignUp>> = ({
   ...args
 }): ReactElement => (
   <MockedProvider mocks={[submitEventMock]}>
-    <JourneyProvider value={{ renderLocation: RenderLocation.Journey }}>
+    <JourneyProvider value={{ variant: 'admin' }}>
       <SnackbarProvider>
         <StoryCard>
           <Typography {...typographyProps} />
@@ -133,7 +133,7 @@ const LoadingTemplate: Story<ComponentProps<typeof SignUp>> = ({
   ...args
 }): ReactElement => (
   <ApolloLoadingProvider>
-    <JourneyProvider value={{ renderLocation: RenderLocation.Journey }}>
+    <JourneyProvider value={{ variant: 'admin' }}>
       <SnackbarProvider>
         <StoryCard>
           <SignUp {...args} uuid={() => 'uuid'} />

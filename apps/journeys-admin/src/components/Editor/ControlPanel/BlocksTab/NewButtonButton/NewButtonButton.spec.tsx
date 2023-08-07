@@ -1,9 +1,6 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { InMemoryCache } from '@apollo/client'
-import {
-  JourneyProvider,
-  RenderLocation
-} from '@core/journeys/ui/JourneyProvider'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { fireEvent, render, waitFor } from '@testing-library/react'
@@ -135,7 +132,7 @@ describe('NewButtonButton', () => {
         <JourneyProvider
           value={{
             journey: { id: 'journeyId' } as unknown as Journey,
-            renderLocation: RenderLocation.Admin
+            variant: 'admin'
           }}
         >
           <EditorProvider initialState={{ selectedStep }}>
@@ -247,7 +244,7 @@ describe('NewButtonButton', () => {
         <JourneyProvider
           value={{
             journey: { id: 'journeyId' } as unknown as Journey,
-            renderLocation: RenderLocation.Admin
+            variant: 'admin'
           }}
         >
           <EditorProvider initialState={{ selectedStep }}>

@@ -1,10 +1,7 @@
 import { Meta, Story } from '@storybook/react'
 import { SnackbarProvider } from 'notistack'
 import { journeyUiConfig } from '../../../../libs/journeyUiConfig'
-import {
-  JourneyProvider,
-  RenderLocation
-} from '../../../../libs/JourneyProvider'
+import { JourneyProvider } from '../../../../libs/JourneyProvider'
 import { JourneyFields as Journey } from '../../../../libs/JourneyProvider/__generated__/JourneyFields'
 import { ShareButton } from './ShareButton'
 
@@ -19,7 +16,7 @@ const Template: Story = () => (
     <JourneyProvider
       value={{
         journey: { slug: 'test-slug' } as unknown as Journey,
-        renderLocation: RenderLocation.Journey
+        variant: 'default'
       }}
     >
       <ShareButton />

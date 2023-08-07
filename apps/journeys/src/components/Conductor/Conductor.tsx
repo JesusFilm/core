@@ -8,7 +8,7 @@ import { useTheme, styled } from '@mui/material/styles'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { getStepTheme } from '@core/journeys/ui/getStepTheme'
-import { RenderLocation, useJourney } from '@core/journeys/ui/JourneyProvider'
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { useBlocks } from '@core/journeys/ui/block'
 import { BlockRenderer } from '@core/journeys/ui/BlockRenderer'
 import { gql, useMutation } from '@apollo/client'
@@ -75,7 +75,7 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
   } = useBlocks()
   const [swiper, setSwiper] = useState<SwiperCore>()
   const theme = useTheme()
-  const { journey, renderLocation } = useJourney()
+  const { journey, variant } = useJourney()
   const { locale, rtl } = getJourneyRTL(journey)
   const activeBlock = blockHistory[
     blockHistory.length - 1
@@ -90,11 +90,7 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
   )
 
   useEffect(() => {
-    if (
-      (renderLocation === RenderLocation.Journey ||
-        renderLocation === RenderLocation.Embed) &&
-      journey != null
-    ) {
+    if ((variant === 'default' || variant === 'embed') && journey != null) {
       const id = uuidv4()
       void journeyViewEventCreate({
         variables: {

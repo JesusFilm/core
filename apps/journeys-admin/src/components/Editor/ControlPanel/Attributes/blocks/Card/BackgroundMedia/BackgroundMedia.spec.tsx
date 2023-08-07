@@ -1,7 +1,4 @@
-import {
-  JourneyProvider,
-  RenderLocation
-} from '@core/journeys/ui/JourneyProvider'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { render } from '@testing-library/react'
@@ -76,9 +73,7 @@ describe('BackgroundMedia', () => {
     const { getByTestId } = render(
       <MockedProvider>
         <ThemeProvider>
-          <JourneyProvider
-            value={{ journey, renderLocation: RenderLocation.Admin }}
-          >
+          <JourneyProvider value={{ journey, variant: 'admin' }}>
             <EditorProvider initialState={{ selectedBlock: card }}>
               <SnackbarProvider>
                 <BackgroundMedia />
@@ -148,9 +143,7 @@ describe('BackgroundMedia', () => {
     const { getByTestId } = render(
       <MockedProvider>
         <ThemeProvider>
-          <JourneyProvider
-            value={{ journey, renderLocation: RenderLocation.Admin }}
-          >
+          <JourneyProvider value={{ journey, variant: 'admin' }}>
             <EditorProvider initialState={{ selectedBlock: card }}>
               <SnackbarProvider>
                 <BackgroundMedia />
@@ -202,9 +195,7 @@ describe('BackgroundMedia', () => {
     const { getByTestId } = render(
       <MockedProvider>
         <ThemeProvider>
-          <JourneyProvider
-            value={{ journey, renderLocation: RenderLocation.Admin }}
-          >
+          <JourneyProvider value={{ journey, variant: 'admin' }}>
             <EditorProvider initialState={{ selectedBlock: step }}>
               <SnackbarProvider>
                 <BackgroundMedia />

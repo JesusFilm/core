@@ -1,8 +1,5 @@
 import { Story, Meta } from '@storybook/react'
-import {
-  JourneyProvider,
-  RenderLocation
-} from '@core/journeys/ui/JourneyProvider'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { MockedProvider } from '@apollo/client/testing'
@@ -94,9 +91,7 @@ const Template: Story = ({ ...args }) => {
         }
       ]}
     >
-      <JourneyProvider
-        value={{ journey, renderLocation: RenderLocation.Admin }}
-      >
+      <JourneyProvider value={{ journey, variant: 'admin' }}>
         <EditorProvider
           initialState={{
             ...args,

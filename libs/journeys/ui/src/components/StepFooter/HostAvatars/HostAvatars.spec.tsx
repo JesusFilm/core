@@ -1,6 +1,6 @@
 import { render } from '@testing-library/react'
 import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
-import { JourneyProvider, RenderLocation } from '../../../libs/JourneyProvider'
+import { JourneyProvider } from '../../../libs/JourneyProvider'
 import {
   JourneyStatus,
   ThemeMode,
@@ -66,7 +66,7 @@ describe('HostAvatars', () => {
       <JourneyProvider
         value={{
           journey: { ...journey, host: twoAvatarHost },
-          renderLocation: RenderLocation.Journey
+          variant: 'default'
         }}
       >
         <HostAvatars />
@@ -87,7 +87,7 @@ describe('HostAvatars', () => {
             ...journey,
             host: { ...hostData }
           },
-          renderLocation: RenderLocation.Journey
+          variant: 'default'
         }}
       >
         <HostAvatars />
@@ -103,7 +103,7 @@ describe('HostAvatars', () => {
       <JourneyProvider
         value={{
           journey: { ...journey, host: { ...hostData, src1: 'avatar1.jpg' } },
-          renderLocation: RenderLocation.Journey
+          variant: 'default'
         }}
       >
         <HostAvatars />
@@ -125,7 +125,7 @@ describe('HostAvatars', () => {
           <JourneyProvider
             value={{
               journey: { ...journey },
-              renderLocation: RenderLocation.Admin
+              variant: 'admin'
             }}
           >
             <HostAvatars hasPlaceholder />
@@ -148,7 +148,7 @@ describe('HostAvatars', () => {
           <JourneyProvider
             value={{
               journey: { ...journey, host: oneAvatarHost },
-              renderLocation: RenderLocation.Journey
+              variant: 'default'
             }}
           >
             <HostAvatars hasPlaceholder />

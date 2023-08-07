@@ -1,10 +1,7 @@
 import { render, fireEvent, waitFor, within } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
 import { SnackbarProvider } from 'notistack'
-import {
-  JourneyProvider,
-  RenderLocation
-} from '@core/journeys/ui/JourneyProvider'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { GetJourney_journey as Journey } from '../../../../__generated__/GetJourney'
 import { JOURNEY_DUPLICATE } from '../../../libs/useJourneyDuplicateMutation'
 import {
@@ -71,7 +68,7 @@ describe('DuplicateJourneys', () => {
           <JourneyProvider
             value={{
               journey: { id: 'journeyId' } as unknown as Journey,
-              renderLocation: RenderLocation.Admin
+              variant: 'admin'
             }}
           >
             <TeamProvider>

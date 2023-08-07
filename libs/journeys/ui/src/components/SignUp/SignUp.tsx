@@ -13,7 +13,7 @@ import { useTranslation } from 'react-i18next'
 import type { TreeBlock } from '../../libs/block'
 import { useBlocks } from '../../libs/block'
 import { useEditor } from '../../libs/EditorProvider'
-import { useJourney, RenderLocation } from '../../libs/JourneyProvider'
+import { useJourney } from '../../libs/JourneyProvider'
 import { handleAction } from '../../libs/action'
 import { getStepHeading } from '../../libs/getStepHeading'
 import { TextField } from '../TextField'
@@ -60,7 +60,7 @@ export const SignUp = ({
     | TreeBlock<IconFields>
     | undefined
 
-  const { renderLocation } = useJourney()
+  const { variant } = useJourney()
   const { enqueueSnackbar } = useSnackbar()
   const { blockHistory, treeBlocks } = useBlocks()
   const activeBlock = blockHistory[blockHistory.length - 1]
@@ -86,10 +86,7 @@ export const SignUp = ({
   })
 
   const onSubmitHandler = async (values: SignUpFormValues): Promise<void> => {
-    if (
-      renderLocation === RenderLocation.Journey ||
-      renderLocation === RenderLocation.Embed
-    ) {
+    if (variant === 'default' || variant === 'embed') {
       const id = uuid()
       try {
         await signUpSubmissionEventCreate({

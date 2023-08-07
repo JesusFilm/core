@@ -1,8 +1,5 @@
 import { useBreakpoints } from '@core/shared/ui/useBreakpoints'
-import {
-  JourneyProvider,
-  RenderLocation
-} from '@core/journeys/ui/JourneyProvider'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import {
   TreeBlock,
   treeBlocksVar,
@@ -187,7 +184,7 @@ describe('Conductor', () => {
           <JourneyProvider
             value={{
               journey: defaultJourney,
-              renderLocation: RenderLocation.Journey
+              variant: 'default'
             }}
           >
             <Conductor blocks={[]} />
@@ -232,7 +229,7 @@ describe('Conductor', () => {
           <JourneyProvider
             value={{
               journey: defaultJourney,
-              renderLocation: RenderLocation.Journey
+              variant: 'default'
             }}
           >
             <Conductor blocks={[]} />
@@ -273,7 +270,7 @@ describe('Conductor', () => {
             <JourneyProvider
               value={{
                 journey: defaultJourney,
-                renderLocation: RenderLocation.Journey
+                variant: 'default'
               }}
             >
               <Conductor blocks={basic} />
@@ -310,7 +307,7 @@ describe('Conductor', () => {
             <JourneyProvider
               value={{
                 journey: { ...defaultJourney, language: rtlLanguage },
-                renderLocation: RenderLocation.Journey
+                variant: 'default'
               }}
             >
               <Conductor blocks={basic} />

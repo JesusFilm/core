@@ -2,10 +2,7 @@ import { render, fireEvent } from '@testing-library/react'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { MockedProvider } from '@apollo/client/testing'
 import { DragDropContext } from 'react-beautiful-dnd'
-import {
-  JourneyProvider,
-  RenderLocation
-} from '@core/journeys/ui/JourneyProvider'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { BlockFields_StepBlock as StepBlock } from '../../../../__generated__/BlockFields'
 import {
   VideoBlockSource,
@@ -284,7 +281,7 @@ describe('CardList', () => {
                 iso3: 'eng'
               }
             } as unknown as Journey,
-            renderLocation: RenderLocation.Admin
+            variant: 'admin'
           }}
         >
           <DragDropContext>
@@ -336,7 +333,7 @@ describe('CardList', () => {
                 iso3: 'eng'
               }
             } as unknown as Journey,
-            renderLocation: RenderLocation.Admin
+            variant: 'admin'
           }}
         >
           <DragDropContext>
@@ -372,7 +369,7 @@ describe('CardList', () => {
                 iso3: 'eng'
               }
             } as unknown as Journey,
-            renderLocation: RenderLocation.Admin
+            variant: 'admin'
           }}
         >
           <SocialProvider
@@ -469,7 +466,7 @@ describe('CardList', () => {
               },
               template: true
             } as unknown as Journey,
-            renderLocation: RenderLocation.Admin
+            variant: 'admin'
           }}
         >
           <DragDropContext>

@@ -1,8 +1,5 @@
 import { render } from '@testing-library/react'
-import {
-  JourneyProvider,
-  RenderLocation
-} from '@core/journeys/ui/JourneyProvider'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { MockedProvider } from '@apollo/client/testing'
 import { SnackbarProvider } from 'notistack'
 import { journey } from '../data'
@@ -13,9 +10,7 @@ describe('ActionCards', () => {
     const { getByText } = render(
       <SnackbarProvider>
         <MockedProvider>
-          <JourneyProvider
-            value={{ journey, renderLocation: RenderLocation.Admin }}
-          >
+          <JourneyProvider value={{ journey, variant: 'admin' }}>
             <ActionCards url="https://www.google.com/" />
           </JourneyProvider>
         </MockedProvider>

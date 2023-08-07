@@ -10,10 +10,7 @@ import { JOURNEY_FIELDS } from '@core/journeys/ui/JourneyProvider/journeyFields'
 import { gql, useQuery } from '@apollo/client'
 import { useTranslation } from 'react-i18next'
 import { useRouter } from 'next/router'
-import {
-  JourneyProvider,
-  RenderLocation
-} from '@core/journeys/ui/JourneyProvider'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { PageWrapper } from '../../src/components/PageWrapper'
 import { GetPublisherTemplate } from '../../__generated__/GetPublisherTemplate'
 import { GetPublisher } from '../../__generated__/GetPublisher'
@@ -66,7 +63,7 @@ function TemplateDetailsAdmin(): ReactElement {
           <JourneyProvider
             value={{
               journey: data?.publisherTemplate ?? undefined,
-              renderLocation: RenderLocation.Admin
+              variant: 'admin'
             }}
           >
             <PageWrapper

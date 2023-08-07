@@ -1,9 +1,6 @@
 import { render } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
-import {
-  JourneyProvider,
-  RenderLocation
-} from '@core/journeys/ui/JourneyProvider'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { JourneyStatus } from '../../../../../__generated__/globalTypes'
 import { GetJourney_journey as Journey } from '../../../../../__generated__/GetJourney'
@@ -23,7 +20,7 @@ describe('SocialShareAppearance', () => {
         <JourneyProvider
           value={{
             journey: { status: JourneyStatus.published } as unknown as Journey,
-            renderLocation: RenderLocation.Admin
+            variant: 'admin'
           }}
         >
           <SocialShareAppearance />

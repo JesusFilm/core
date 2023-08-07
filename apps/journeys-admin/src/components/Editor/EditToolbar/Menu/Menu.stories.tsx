@@ -1,10 +1,7 @@
 import { Story, Meta } from '@storybook/react'
 import { MockedProvider } from '@apollo/client/testing'
 import { screen, userEvent } from '@storybook/testing-library'
-import {
-  JourneyProvider,
-  RenderLocation
-} from '@core/journeys/ui/JourneyProvider'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { JourneyStatus } from '../../../../../__generated__/globalTypes'
 import { journeysAdminConfig } from '../../../../libs/storybook'
@@ -23,7 +20,7 @@ const Template: Story = ({ ...args }) => {
       <JourneyProvider
         value={{
           journey: { status: JourneyStatus.draft } as unknown as Journey,
-          renderLocation: RenderLocation.Admin
+          variant: 'admin'
         }}
       >
         <EditorProvider initialState={{ ...args }}>

@@ -1,8 +1,5 @@
 import { render, fireEvent } from '@testing-library/react'
-import {
-  JourneyProvider,
-  RenderLocation
-} from '@core/journeys/ui/JourneyProvider'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import {
   useEditor,
   EditorState,
@@ -100,7 +97,7 @@ describe('Canvas', () => {
                     iso3: 'eng'
                   }
                 } as unknown as Journey,
-                renderLocation: RenderLocation.Admin
+                variant: 'admin'
               }}
             >
               <Canvas />
@@ -133,7 +130,7 @@ describe('Canvas', () => {
                     iso3: 'eng'
                   }
                 } as unknown as Journey,
-                renderLocation: RenderLocation.Admin
+                variant: 'admin'
               }}
             >
               <Canvas />
@@ -187,7 +184,7 @@ describe('Canvas', () => {
                     iso3: 'eng'
                   }
                 } as unknown as Journey,
-                renderLocation: RenderLocation.Admin
+                variant: 'admin'
               }}
             >
               <Canvas />

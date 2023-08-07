@@ -1,9 +1,6 @@
 import { Story, Meta } from '@storybook/react'
 import { MockedProvider } from '@apollo/client/testing'
-import {
-  JourneyProvider,
-  RenderLocation
-} from '@core/journeys/ui/JourneyProvider'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { ComponentProps } from 'react'
 import Box from '@mui/material/Box'
 import { journeysAdminConfig } from '../../../libs/storybook'
@@ -21,7 +18,7 @@ const ActionDetailsStory = {
 
 const Template: Story<ComponentProps<typeof ActionDetails>> = (args) => (
   <MockedProvider>
-    <JourneyProvider value={{ journey, renderLocation: RenderLocation.Admin }}>
+    <JourneyProvider value={{ journey, variant: 'admin' }}>
       <Box sx={{ backgroundColor: 'background.paper' }}>
         <ActionDetails {...args} />
       </Box>

@@ -1,7 +1,4 @@
-import {
-  JourneyProvider,
-  RenderLocation
-} from '@core/journeys/ui/JourneyProvider'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { render, fireEvent } from '@testing-library/react'
@@ -94,9 +91,7 @@ describe('Card', () => {
     }
     it('shows background color from prop', () => {
       const { getByRole } = render(
-        <JourneyProvider
-          value={{ journey, renderLocation: RenderLocation.Admin }}
-        >
+        <JourneyProvider value={{ journey, variant: 'admin' }}>
           <Card {...card} backgroundColor="#00FFCC" />
         </JourneyProvider>
       )
@@ -106,9 +101,7 @@ describe('Card', () => {
 
     it('shows background color from card theme', () => {
       const { getByRole } = render(
-        <JourneyProvider
-          value={{ journey, renderLocation: RenderLocation.Admin }}
-        >
+        <JourneyProvider value={{ journey, variant: 'admin' }}>
           <Card
             {...card}
             themeName={ThemeName.base}
@@ -122,9 +115,7 @@ describe('Card', () => {
 
     it('shows background color from journey theme', () => {
       const { getByRole } = render(
-        <JourneyProvider
-          value={{ journey, renderLocation: RenderLocation.Admin }}
-        >
+        <JourneyProvider value={{ journey, variant: 'admin' }}>
           <Card {...card} />
         </JourneyProvider>
       )
@@ -136,9 +127,7 @@ describe('Card', () => {
       const { getByText } = render(
         <MockedProvider>
           <ThemeProvider>
-            <JourneyProvider
-              value={{ journey, renderLocation: RenderLocation.Admin }}
-            >
+            <JourneyProvider value={{ journey, variant: 'admin' }}>
               <EditorProvider>
                 <Drawer />
                 <Card {...card} backgroundColor="#00FFCC" />

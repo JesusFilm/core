@@ -3,10 +3,7 @@ import { Story, Meta } from '@storybook/react'
 import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 import { screen, userEvent } from '@storybook/testing-library'
 import { MockedProvider } from '@apollo/client/testing'
-import {
-  JourneyProvider,
-  RenderLocation
-} from '@core/journeys/ui/JourneyProvider'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { simpleComponentConfig } from '../../../libs/storybook'
 import { JourneyStatus, Role } from '../../../../__generated__/globalTypes'
 import { defaultJourney } from '../data'
@@ -103,7 +100,7 @@ const Template: Story = ({ ...args }) => (
         <JourneyProvider
           value={{
             journey: args.journey,
-            renderLocation: RenderLocation.Admin
+            variant: 'admin'
           }}
         >
           <Menu {...args} />

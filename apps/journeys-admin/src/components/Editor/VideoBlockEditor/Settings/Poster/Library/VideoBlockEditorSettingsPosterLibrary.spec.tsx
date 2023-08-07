@@ -2,10 +2,7 @@ import { fireEvent, render, waitFor } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
 import { InMemoryCache } from '@apollo/client'
 import type { TreeBlock } from '@core/journeys/ui/block'
-import {
-  JourneyProvider,
-  RenderLocation
-} from '@core/journeys/ui/JourneyProvider'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import {
   JourneyStatus,
@@ -207,9 +204,7 @@ describe('VideoBlockEditorSettingsPosterLibrary', () => {
             }
           ]}
         >
-          <JourneyProvider
-            value={{ journey, renderLocation: RenderLocation.Admin }}
-          >
+          <JourneyProvider value={{ journey, variant: 'admin' }}>
             <VideoBlockEditorSettingsPosterLibrary
               selectedBlock={null}
               parentBlockId={video.id}
@@ -291,9 +286,7 @@ describe('VideoBlockEditorSettingsPosterLibrary', () => {
             }
           ]}
         >
-          <JourneyProvider
-            value={{ journey, renderLocation: RenderLocation.Admin }}
-          >
+          <JourneyProvider value={{ journey, variant: 'admin' }}>
             <VideoBlockEditorSettingsPosterLibrary
               selectedBlock={existingImageBlock}
               parentBlockId={video.id}
@@ -372,9 +365,7 @@ describe('VideoBlockEditorSettingsPosterLibrary', () => {
             }
           ]}
         >
-          <JourneyProvider
-            value={{ journey, renderLocation: RenderLocation.Admin }}
-          >
+          <JourneyProvider value={{ journey, variant: 'admin' }}>
             <VideoBlockEditorSettingsPosterLibrary
               selectedBlock={image}
               parentBlockId={video.id}

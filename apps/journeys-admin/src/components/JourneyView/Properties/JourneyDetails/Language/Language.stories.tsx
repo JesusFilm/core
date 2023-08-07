@@ -1,9 +1,6 @@
 import { Story, Meta } from '@storybook/react'
 import { MockedProvider } from '@apollo/client/testing'
-import {
-  JourneyProvider,
-  RenderLocation
-} from '@core/journeys/ui/JourneyProvider'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { SnackbarProvider } from 'notistack'
 import { simpleComponentConfig } from '../../../../../libs/storybook'
 import { defaultJourney } from '../../../data'
@@ -18,9 +15,7 @@ const LanguageStory = {
 const Template: Story = ({ ...args }) => (
   <MockedProvider>
     <SnackbarProvider>
-      <JourneyProvider
-        value={{ journey: args.journey, renderLocation: RenderLocation.Admin }}
-      >
+      <JourneyProvider value={{ journey: args.journey, variant: 'admin' }}>
         <Language isPublisher={args.isPublisher} />
       </JourneyProvider>
     </SnackbarProvider>

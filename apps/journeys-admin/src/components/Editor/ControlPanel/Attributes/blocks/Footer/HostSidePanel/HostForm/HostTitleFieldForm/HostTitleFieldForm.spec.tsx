@@ -1,10 +1,7 @@
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
 
-import {
-  JourneyProvider,
-  RenderLocation
-} from '@core/journeys/ui/JourneyProvider'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { JourneyFields as Journey } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
 import { InMemoryCache } from '@apollo/client'
 import { useHostUpdate } from '../../../../../../../../../libs/useHostUpdate'
@@ -117,7 +114,7 @@ describe('HostTitleFieldForm', () => {
         <JourneyProvider
           value={{
             journey: { ...journey, host: null },
-            renderLocation: RenderLocation.Admin
+            variant: 'admin'
           }}
         >
           <HostTitleFieldForm />
@@ -185,9 +182,7 @@ describe('HostTitleFieldForm', () => {
           }
         ]}
       >
-        <JourneyProvider
-          value={{ journey, renderLocation: RenderLocation.Admin }}
-        >
+        <JourneyProvider value={{ journey, variant: 'admin' }}>
           <HostTitleFieldForm />
         </JourneyProvider>
       </MockedProvider>

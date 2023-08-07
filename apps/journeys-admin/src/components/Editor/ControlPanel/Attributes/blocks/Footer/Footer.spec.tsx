@@ -6,10 +6,7 @@ import {
   EditorState,
   useEditor
 } from '@core/journeys/ui/EditorProvider'
-import {
-  JourneyProvider,
-  RenderLocation
-} from '@core/journeys/ui/JourneyProvider'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import {
   ChatPlatform,
   ThemeMode,
@@ -74,7 +71,7 @@ describe('Footer', () => {
               }
             ]
           } as unknown as Journey,
-          renderLocation: RenderLocation.Admin
+          variant: 'admin'
         }}
       >
         <Footer />
@@ -100,7 +97,7 @@ describe('Footer', () => {
               }
             ]
           } as unknown as Journey,
-          renderLocation: RenderLocation.Admin
+          variant: 'admin'
         }}
       >
         <Footer />
@@ -127,7 +124,7 @@ describe('Footer', () => {
               title: `John Geronimo "The Rock" Johnson`
             }
           } as unknown as Journey,
-          renderLocation: RenderLocation.Admin
+          variant: 'admin'
         }}
       >
         <Footer />

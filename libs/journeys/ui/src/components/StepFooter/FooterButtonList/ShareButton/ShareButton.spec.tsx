@@ -1,9 +1,6 @@
 import { fireEvent, render } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
-import {
-  JourneyProvider,
-  RenderLocation
-} from '../../../../libs/JourneyProvider'
+import { JourneyProvider } from '../../../../libs/JourneyProvider'
 import { JourneyFields as Journey } from '../../../../libs/JourneyProvider/__generated__/JourneyFields'
 import { ShareButton } from './ShareButton'
 
@@ -42,7 +39,7 @@ describe('ShareButton', () => {
         <JourneyProvider
           value={{
             journey: { slug: 'test-slug' } as unknown as Journey,
-            renderLocation: RenderLocation.Journey
+            variant: 'admin'
           }}
         >
           <ShareButton />
@@ -60,7 +57,7 @@ describe('ShareButton', () => {
         <JourneyProvider
           value={{
             journey: { slug: 'test-slug' } as unknown as Journey,
-            renderLocation: RenderLocation.Journey
+            variant: 'admin'
           }}
         >
           <ShareButton />
@@ -78,7 +75,7 @@ describe('ShareButton', () => {
         <JourneyProvider
           value={{
             journey: { slug: 'test-slug' } as unknown as Journey,
-            renderLocation: RenderLocation.Admin
+            variant: 'admin'
           }}
         >
           <ShareButton />

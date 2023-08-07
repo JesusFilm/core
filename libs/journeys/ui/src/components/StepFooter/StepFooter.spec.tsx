@@ -6,7 +6,7 @@ import {
   ThemeMode,
   ThemeName
 } from '../../../__generated__/globalTypes'
-import { JourneyProvider, RenderLocation } from '../../libs/JourneyProvider'
+import { JourneyProvider } from '../../libs/JourneyProvider'
 import { JourneyFields as Journey } from '../../libs/JourneyProvider/__generated__/JourneyFields'
 import { StepFooter } from './StepFooter'
 
@@ -63,9 +63,7 @@ describe('StepFooter', () => {
     const { getByTestId } = render(
       <MockedProvider>
         <SnackbarProvider>
-          <JourneyProvider
-            value={{ journey, renderLocation: RenderLocation.Journey }}
-          >
+          <JourneyProvider value={{ journey, variant: 'admin' }}>
             <StepFooter />
           </JourneyProvider>
         </SnackbarProvider>
@@ -80,9 +78,7 @@ describe('StepFooter', () => {
     const { getAllByTestId } = render(
       <MockedProvider>
         <SnackbarProvider>
-          <JourneyProvider
-            value={{ journey, renderLocation: RenderLocation.Journey }}
-          >
+          <JourneyProvider value={{ journey, variant: 'admin' }}>
             <StepFooter />
           </JourneyProvider>
         </SnackbarProvider>
@@ -96,9 +92,7 @@ describe('StepFooter', () => {
     const { getByText } = render(
       <MockedProvider>
         <SnackbarProvider>
-          <JourneyProvider
-            value={{ journey, renderLocation: RenderLocation.Journey }}
-          >
+          <JourneyProvider value={{ journey, variant: 'admin' }}>
             <StepFooter />
           </JourneyProvider>
         </SnackbarProvider>
@@ -115,7 +109,7 @@ describe('StepFooter', () => {
           <JourneyProvider
             value={{
               journey: { ...journey, seoTitle: null },
-              renderLocation: RenderLocation.Journey
+              variant: 'admin'
             }}
           >
             <StepFooter />
@@ -131,9 +125,7 @@ describe('StepFooter', () => {
     const { getByTestId } = render(
       <MockedProvider>
         <SnackbarProvider>
-          <JourneyProvider
-            value={{ journey, renderLocation: RenderLocation.Journey }}
-          >
+          <JourneyProvider value={{ journey, variant: 'admin' }}>
             <StepFooter sx={{ outline: '1px solid red' }} />
           </JourneyProvider>
         </SnackbarProvider>
@@ -151,7 +143,7 @@ describe('StepFooter', () => {
           <JourneyProvider
             value={{
               journey: { ...journey, seoTitle: null },
-              renderLocation: RenderLocation.Admin
+              variant: 'admin'
             }}
           >
             <StepFooter onFooterClick={onFooterClick} />
@@ -172,7 +164,7 @@ describe('StepFooter', () => {
         <SnackbarProvider>
           <JourneyProvider
             value={{
-              renderLocation: RenderLocation.Journey,
+              variant: 'admin',
               journey: undefined
             }}
           >

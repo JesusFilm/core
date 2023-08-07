@@ -2,10 +2,7 @@ import { ReactElement, useMemo } from 'react'
 import { GetStaticPaths, GetStaticProps } from 'next'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import { transformer } from '@core/journeys/ui/transformer'
-import {
-  JourneyProvider,
-  RenderLocation
-} from '@core/journeys/ui/JourneyProvider'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import { NextSeo } from 'next-seo'
 import { getJourneyRTL } from '@core/journeys/ui/rtl'
@@ -82,9 +79,7 @@ function JourneyPage({ journey, locale, rtl }: JourneyPageProps): ReactElement {
           background: transparent;
         }
       `}</style>
-      <JourneyProvider
-        value={{ journey, renderLocation: RenderLocation.Embed }}
-      >
+      <JourneyProvider value={{ journey, variant: 'embed' }}>
         <ThemeProvider {...theme} rtl={rtl} locale={locale}>
           {journey.blocks != null && (
             <EmbeddedPreview blocks={transformer(journey.blocks)} />

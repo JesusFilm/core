@@ -1,8 +1,5 @@
 import { MockedProvider } from '@apollo/client/testing'
-import {
-  JourneyProvider,
-  RenderLocation
-} from '@core/journeys/ui/JourneyProvider'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { render } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 import { defaultJourney } from '../../data'
@@ -21,7 +18,7 @@ describe('AccessControl', () => {
           <JourneyProvider
             value={{
               journey: defaultJourney,
-              renderLocation: RenderLocation.Admin
+              variant: 'admin'
             }}
           >
             <AccessControl />

@@ -1,8 +1,5 @@
 import { Story, Meta } from '@storybook/react'
-import {
-  JourneyProvider,
-  RenderLocation
-} from '@core/journeys/ui/JourneyProvider'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { MockedProvider } from '@apollo/client/testing'
 import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 import { journeysAdminConfig } from '../../libs/storybook'
@@ -31,7 +28,7 @@ const Template: Story = ({ ...args }) => (
         <JourneyProvider
           value={{
             journey: args.journey,
-            renderLocation: RenderLocation.Admin
+            variant: 'admin'
           }}
         >
           <PageWrapper
@@ -66,7 +63,7 @@ const JourneyTemplate: Story = ({ ...args }) => (
           <JourneyProvider
             value={{
               journey: args.journey,
-              renderLocation: RenderLocation.Admin
+              variant: 'admin'
             }}
           >
             <PageWrapper

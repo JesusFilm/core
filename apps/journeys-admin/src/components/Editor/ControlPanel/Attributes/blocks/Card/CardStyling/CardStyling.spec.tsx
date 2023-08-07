@@ -1,7 +1,4 @@
-import {
-  JourneyProvider,
-  RenderLocation
-} from '@core/journeys/ui/JourneyProvider'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { render, fireEvent, waitFor } from '@testing-library/react'
@@ -71,9 +68,7 @@ describe('CardStyling', () => {
   it('shows default ', () => {
     const { getByText } = render(
       <MockedProvider>
-        <JourneyProvider
-          value={{ journey, renderLocation: RenderLocation.Admin }}
-        >
+        <JourneyProvider value={{ journey, variant: 'admin' }}>
           <EditorProvider initialState={{ selectedBlock: initialBlock }}>
             <CardStyling />
           </EditorProvider>
@@ -98,9 +93,7 @@ describe('CardStyling', () => {
     }
     const { getByText } = render(
       <MockedProvider>
-        <JourneyProvider
-          value={{ journey, renderLocation: RenderLocation.Admin }}
-        >
+        <JourneyProvider value={{ journey, variant: 'admin' }}>
           <EditorProvider initialState={{ selectedBlock: card }}>
             <CardStyling />
           </EditorProvider>
@@ -134,9 +127,7 @@ describe('CardStyling', () => {
     }
     const { getByText } = render(
       <MockedProvider>
-        <JourneyProvider
-          value={{ journey, renderLocation: RenderLocation.Admin }}
-        >
+        <JourneyProvider value={{ journey, variant: 'admin' }}>
           <EditorProvider initialState={{ selectedBlock: step }}>
             <CardStyling />
           </EditorProvider>
@@ -161,9 +152,7 @@ describe('CardStyling', () => {
     }
     const { getByText } = render(
       <MockedProvider>
-        <JourneyProvider
-          value={{ journey, renderLocation: RenderLocation.Admin }}
-        >
+        <JourneyProvider value={{ journey, variant: 'admin' }}>
           <EditorProvider initialState={{ selectedBlock: card }}>
             <CardStyling />
           </EditorProvider>
@@ -213,9 +202,7 @@ describe('CardStyling', () => {
           }
         ]}
       >
-        <JourneyProvider
-          value={{ journey, renderLocation: RenderLocation.Admin }}
-        >
+        <JourneyProvider value={{ journey, variant: 'admin' }}>
           <EditorProvider initialState={{ selectedBlock: initialBlock }}>
             <CardStyling />
           </EditorProvider>

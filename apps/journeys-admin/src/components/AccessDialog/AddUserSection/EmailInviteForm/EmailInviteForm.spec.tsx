@@ -1,10 +1,7 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { SnackbarProvider } from 'notistack'
 import { fireEvent, render, waitFor } from '@testing-library/react'
-import {
-  JourneyProvider,
-  RenderLocation
-} from '@core/journeys/ui/JourneyProvider'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { InMemoryCache } from '@apollo/client'
 import { JourneyFields as Journey } from '../../../../../__generated__/JourneyFields'
 import { CREATE_USER_INVITE, EmailInviteForm } from './EmailInviteForm'
@@ -133,7 +130,7 @@ describe('EmailInviteForm', () => {
       <JourneyProvider
         value={{
           journey: { id: 'journeyId' } as unknown as Journey,
-          renderLocation: RenderLocation.Admin
+          variant: 'admin'
         }}
       >
         <SnackbarProvider>
