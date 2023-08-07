@@ -1,5 +1,6 @@
 import has from 'lodash/has'
 import omit from 'lodash/omit'
+
 import { keyAsId } from '../KeyAsId'
 
 interface TransformObject {

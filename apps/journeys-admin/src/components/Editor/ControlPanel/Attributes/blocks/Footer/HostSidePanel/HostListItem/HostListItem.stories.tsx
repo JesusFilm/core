@@ -1,7 +1,9 @@
-import { Story, Meta } from '@storybook/react'
-import { ComponentProps } from 'react'
+import { Meta, Story } from '@storybook/react'
 import noop from 'lodash/noop'
+import { ComponentProps } from 'react'
+
 import { journeysAdminConfig } from '../../../../../../../../libs/storybook'
+
 import { HostListItem } from './HostListItem'
 
 const HostListItemDemo = {

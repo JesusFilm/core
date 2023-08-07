@@ -1,9 +1,10 @@
-import { render, fireEvent, waitFor } from '@testing-library/react'
-import { MockedProvider } from '@apollo/client/testing'
 import { InMemoryCache } from '@apollo/client'
+import { MockedProvider } from '@apollo/client/testing'
+import { fireEvent, render, waitFor } from '@testing-library/react'
+
 import {
-  UserTeamInviteRemoveMenuItem,
-  USER_TEAM_INVITE_REMOVE
+  USER_TEAM_INVITE_REMOVE,
+  UserTeamInviteRemoveMenuItem
 } from './UserTeamInviteRemoveMenuItem'
 
 describe('UserTeamInviteRemoveMenuItem', () => {
@@ -37,7 +38,7 @@ describe('UserTeamInviteRemoveMenuItem', () => {
     })
   })
 
-  it('it should remove a team invite', async () => {
+  it('should remove a team invite', async () => {
     const handleClick = jest.fn()
     const { getByText } = render(
       <MockedProvider mocks={mocks} cache={cache}>

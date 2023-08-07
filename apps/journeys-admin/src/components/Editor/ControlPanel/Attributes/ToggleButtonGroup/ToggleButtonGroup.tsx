@@ -1,8 +1,8 @@
-import { ReactElement } from 'react'
-import MuiToggleButtonGroup from '@mui/material/ToggleButtonGroup'
 import Stack from '@mui/material/Stack'
 import ToggleButton from '@mui/material/ToggleButton'
+import MuiToggleButtonGroup from '@mui/material/ToggleButtonGroup'
 import Typography from '@mui/material/Typography'
+import { ReactElement } from 'react'
 
 interface ToggleButtonGroupProps<T = unknown> {
   label?: string

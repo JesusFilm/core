@@ -1,25 +1,28 @@
-import { CurrentUserId } from '@core/nest/decorators/CurrentUserId'
-import {
-  Args,
-  Resolver,
-  Query,
-  ResolveField,
-  Parent,
-  Mutation
-} from '@nestjs/graphql'
-import { GraphQLError } from 'graphql'
-import { IResult, UAParser } from 'ua-parser-js'
-import { Event, Visitor, Prisma } from '.prisma/api-journeys-client'
-import { FromPostgresql } from '@core/nest/decorators/FromPostgresql'
-import pick from 'lodash/pick'
-import { CaslAbility, CaslAccessible } from '@core/nest/common/CaslAuthModule'
 import { subject } from '@casl/ability'
 import { UseGuards } from '@nestjs/common'
+import {
+  Args,
+  Mutation,
+  Parent,
+  Query,
+  ResolveField,
+  Resolver
+} from '@nestjs/graphql'
+import { GraphQLError } from 'graphql'
 import compact from 'lodash/compact'
-import { PrismaService } from '../../lib/prisma.service'
-import { AppCaslGuard } from '../../lib/casl/caslGuard'
-import { Action, AppAbility } from '../../lib/casl/caslFactory'
+import pick from 'lodash/pick'
+import { IResult, UAParser } from 'ua-parser-js'
+
+import { Event, Prisma, Visitor } from '.prisma/api-journeys-client'
+import { CaslAbility, CaslAccessible } from '@core/nest/common/CaslAuthModule'
+import { CurrentUserId } from '@core/nest/decorators/CurrentUserId'
+import { FromPostgresql } from '@core/nest/decorators/FromPostgresql'
+
 import { VisitorUpdateInput } from '../../__generated__/graphql'
+import { Action, AppAbility } from '../../lib/casl/caslFactory'
+import { AppCaslGuard } from '../../lib/casl/caslGuard'
+import { PrismaService } from '../../lib/prisma.service'
+
 import { VisitorService, VisitorsConnection } from './visitor.service'
 
 @Resolver('Visitor')

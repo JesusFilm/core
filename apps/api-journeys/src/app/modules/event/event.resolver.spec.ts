@@ -1,5 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing'
+
 import { PrismaService } from '../../lib/prisma.service'
+
 import { DbEvent, EventResolver } from './event.resolver'
 
 describe('EventResolver', () => {
@@ -18,9 +20,7 @@ describe('EventResolver', () => {
         __typename: 'TextResponseSubmissionEvent'
       } as unknown as DbEvent
 
-      expect(resolver.__resolveType(event)).toEqual(
-        'TextResponseSubmissionEvent'
-      )
+      expect(resolver.__resolveType(event)).toBe('TextResponseSubmissionEvent')
     })
   })
 })

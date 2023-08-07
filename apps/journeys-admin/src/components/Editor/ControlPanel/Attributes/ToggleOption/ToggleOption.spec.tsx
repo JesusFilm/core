@@ -1,7 +1,9 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import Typography from '@mui/material/Typography'
-import { render, fireEvent } from '@testing-library/react'
+import { fireEvent, render } from '@testing-library/react'
+
+import { EditorProvider } from '@core/journeys/ui/EditorProvider'
+
 import { ToggleOption } from '.'
 
 describe('ToggleOption', () => {
@@ -12,6 +14,7 @@ describe('ToggleOption', () => {
     handleChange: jest.fn(),
     children: <Typography>Children</Typography>
   }
+
   it('displays the correct text', () => {
     const { getByText } = render(
       <MockedProvider>

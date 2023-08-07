@@ -1,15 +1,17 @@
-import { Story, Meta } from '@storybook/react'
-import { useState } from 'react'
-import HorizontalRuleRoundedIcon from '@mui/icons-material/HorizontalRuleRounded'
-import FormatAlignLeftRoundedIcon from '@mui/icons-material/FormatAlignLeftRounded'
 import FormatAlignCenterRoundedIcon from '@mui/icons-material/FormatAlignCenterRounded'
+import FormatAlignLeftRoundedIcon from '@mui/icons-material/FormatAlignLeftRounded'
 import FormatAlignRightRoundedIcon from '@mui/icons-material/FormatAlignRightRounded'
+import HorizontalRuleRoundedIcon from '@mui/icons-material/HorizontalRuleRounded'
 import Typography from '@mui/material/Typography'
+import { Meta, Story } from '@storybook/react'
+import { useState } from 'react'
+
 import {
   TypographyAlign,
   TypographyVariant
 } from '../../../../../../__generated__/globalTypes'
 import { simpleComponentConfig } from '../../../../../libs/storybook'
+
 import { ToggleButtonGroup } from '.'
 
 const ToggleButtonGroupStory = {

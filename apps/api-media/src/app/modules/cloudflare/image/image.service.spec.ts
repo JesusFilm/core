@@ -1,6 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import FormData from 'form-data'
-
 import fetch, { Response } from 'node-fetch'
 
 import { ImageService } from './image.service'
@@ -42,6 +41,7 @@ describe('ImageService', () => {
     service = module.get<ImageService>(ImageService)
     mockFetch.mockClear()
   })
+
   afterAll(() => {
     jest.resetAllMocks()
   })
@@ -66,6 +66,7 @@ describe('ImageService', () => {
       )
     })
   })
+
   describe('uploadToCloudlareByUrl', () => {
     it('returns cloudflare response information', async () => {
       const url = 'https://upload.com'
@@ -94,6 +95,7 @@ describe('ImageService', () => {
       )
     })
   })
+
   describe('deleteImageFromCloudflare', () => {
     it('returns cloudflare response information', async () => {
       const request = mockFetch.mockResolvedValueOnce({

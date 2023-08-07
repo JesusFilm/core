@@ -1,31 +1,12 @@
-import { render, fireEvent, waitFor } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
+import { fireEvent, render, waitFor } from '@testing-library/react'
+
 import { CREATE_CLOUDFLARE_UPLOAD_BY_URL } from './CustomUrl'
+
 import { CustomUrl } from '.'
 
 describe('CustomUrl', () => {
   let originalEnv
-
-  const result = jest.fn(() => ({
-    data: {
-      createCloudflareUploadByUrl: {
-        id: 'uploadId',
-        __typename: 'CloudflareImage'
-      }
-    }
-  }))
-
-  const mocks = [
-    {
-      request: {
-        query: CREATE_CLOUDFLARE_UPLOAD_BY_URL,
-        variables: {
-          url: 'https://example.com/image.jpg'
-        }
-      },
-      result
-    }
-  ]
 
   beforeEach(() => {
     originalEnv = process.env
@@ -39,10 +20,30 @@ describe('CustomUrl', () => {
     process.env = originalEnv
   })
 
-  it('should submit on blur', async () => {
+  it('should check if the mutation gets called', async () => {
+    const result = jest.fn(() => ({
+      data: {
+        createCloudflareUploadByUrl: {
+          id: 'uploadId',
+          __typename: 'CloudflareImage'
+        }
+      }
+    }))
     const onChange = jest.fn()
     const { getByRole, getByText } = render(
-      <MockedProvider mocks={mocks}>
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: CREATE_CLOUDFLARE_UPLOAD_BY_URL,
+              variables: {
+                url: 'https://example.com/image.jpg'
+              }
+            },
+            result
+          }
+        ]}
+      >
         <CustomUrl onChange={onChange} />
       </MockedProvider>
     )

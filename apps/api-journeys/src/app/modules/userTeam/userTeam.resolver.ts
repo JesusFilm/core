@@ -1,23 +1,25 @@
-import {
-  Resolver,
-  Query,
-  Mutation,
-  Args,
-  ResolveField,
-  Parent
-} from '@nestjs/graphql'
-import { UseGuards } from '@nestjs/common'
-import { UserTeam, Prisma } from '.prisma/api-journeys-client'
 import { subject } from '@casl/ability'
+import { UseGuards } from '@nestjs/common'
+import {
+  Args,
+  Mutation,
+  Parent,
+  Query,
+  ResolveField,
+  Resolver
+} from '@nestjs/graphql'
 import { GraphQLError } from 'graphql'
+
+import { Prisma, UserTeam } from '.prisma/api-journeys-client'
 import { CaslAbility, CaslAccessible } from '@core/nest/common/CaslAuthModule'
-import { PrismaService } from '../../lib/prisma.service'
-import { Action, AppAbility } from '../../lib/casl/caslFactory'
+
 import {
   UserTeamFilterInput,
   UserTeamUpdateInput
 } from '../../__generated__/graphql'
+import { Action, AppAbility } from '../../lib/casl/caslFactory'
 import { AppCaslGuard } from '../../lib/casl/caslGuard'
+import { PrismaService } from '../../lib/prisma.service'
 
 @Resolver('UserTeam')
 export class UserTeamResolver {

@@ -1,6 +1,7 @@
 import { render } from '@testing-library/react'
 
 import { GetJourney_journey_blocks_ImageBlock as ImageBlock } from '../../../__generated__/GetJourney'
+
 import { ImageThumbnail } from './ImageThumbnail'
 
 const image: ImageBlock = {
@@ -22,6 +23,7 @@ describe('ImageThumbnail', () => {
       expect(getByTestId('imageThumbnailPlaceholder')).toBeInTheDocument()
     })
   })
+
   describe('Existing Image', () => {
     it('shows image', async () => {
       const { getByRole } = render(
@@ -32,6 +34,7 @@ describe('ImageThumbnail', () => {
       expect(img).toHaveAttribute('alt', image.alt)
     })
   })
+
   it('should show the loading circle', () => {
     const { getByRole } = render(
       <ImageThumbnail imageSrc={image.src} imageAlt={image.alt} loading />

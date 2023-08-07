@@ -1,15 +1,15 @@
-import {
-  ReactElement,
-  Children,
-  ReactNode,
-  isValidElement,
-  useRef,
-  useEffect
-} from 'react'
 import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
-import { SxProps } from '@mui/system/styleFunctionSx'
 import { Theme } from '@mui/material/styles'
+import { SxProps } from '@mui/system/styleFunctionSx'
+import {
+  Children,
+  ReactElement,
+  ReactNode,
+  isValidElement,
+  useEffect,
+  useRef
+} from 'react'
 
 export interface HorizontalSelectProps {
   onChange?: (id: string) => void

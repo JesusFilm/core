@@ -1,6 +1,8 @@
-import { render, fireEvent } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
+import { fireEvent, render } from '@testing-library/react'
+
 import { GetJourney_journey_blocks_ImageBlock as ImageBlock } from '../../../../../__generated__/GetJourney'
+
 import { CustomImage } from '.'
 
 describe('CustomImage', () => {
@@ -15,6 +17,7 @@ describe('CustomImage', () => {
     parentBlockId: 'card',
     parentOrder: 0
   }
+
   it('should render custom url image upload', () => {
     const { getByRole, getByText } = render(
       <MockedProvider>
@@ -22,6 +25,6 @@ describe('CustomImage', () => {
       </MockedProvider>
     )
     fireEvent.click(getByRole('button', { name: 'Add image by URL' }))
-    expect(getByText('Paste URL of image...'))
+    expect(getByText('Paste URL of image...')).toBeInTheDocument()
   })
 })

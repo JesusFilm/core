@@ -1,23 +1,25 @@
 import {
+  GetVisitorEvents_visitor_events_ButtonClickEvent as ButtonClickEvent,
+  GetVisitorEvents_visitor_events_ChatOpenEvent as ChatOpenEvent,
+  GetVisitorEvents_visitor_events_RadioQuestionSubmissionEvent as Event,
+  GetVisitorEvents_visitor_events_JourneyViewEvent as JourneyViewEvent,
+  GetVisitorEvents_visitor_events_SignUpSubmissionEvent as SignUpEvent,
+  GetVisitorEvents_visitor_events_VideoCollapseEvent as VideoCollapseEvent,
+  GetVisitorEvents_visitor_events_VideoCompleteEvent as VideoCompleteEvent,
+  GetVisitorEvents_visitor_events_VideoExpandEvent as VideoExpandEvent,
+  GetVisitorEvents_visitor_events_VideoPauseEvent as VideoPauseEvent,
+  GetVisitorEvents_visitor_events_VideoPlayEvent as VideoPlayEvent,
+  GetVisitorEvents_visitor_events_VideoProgressEvent as VideoProgressEvent,
+  GetVisitorEvents_visitor_events_VideoStartEvent as VideoStartEvent
+} from '../../../../../../__generated__/GetVisitorEvents'
+import {
   ButtonAction,
   MessagePlatform,
   VideoBlockSource
 } from '../../../../../../__generated__/globalTypes'
-import {
-  GetVisitorEvents_visitor_events_RadioQuestionSubmissionEvent as Event,
-  GetVisitorEvents_visitor_events_JourneyViewEvent as JourneyViewEvent,
-  GetVisitorEvents_visitor_events_ChatOpenEvent as ChatOpenEvent,
-  GetVisitorEvents_visitor_events_ButtonClickEvent as ButtonClickEvent,
-  GetVisitorEvents_visitor_events_SignUpSubmissionEvent as SignUpEvent,
-  GetVisitorEvents_visitor_events_VideoStartEvent as VideoStartEvent,
-  GetVisitorEvents_visitor_events_VideoPlayEvent as VideoPlayEvent,
-  GetVisitorEvents_visitor_events_VideoPauseEvent as VideoPauseEvent,
-  GetVisitorEvents_visitor_events_VideoCollapseEvent as VideoCollapseEvent,
-  GetVisitorEvents_visitor_events_VideoExpandEvent as VideoExpandEvent,
-  GetVisitorEvents_visitor_events_VideoProgressEvent as VideoProgressEvent,
-  GetVisitorEvents_visitor_events_VideoCompleteEvent as VideoCompleteEvent
-} from '../../../../../../__generated__/GetVisitorEvents'
+
 import { getDuration } from './transformEvents'
+
 import { TimelineItem, transformEvents } from '.'
 
 const journeyViewEvent: JourneyViewEvent = {
@@ -242,7 +244,7 @@ describe('transformEvents', () => {
 
     it('should calculate total duration', () => {
       const result = transformEvents([journeyViewEvent, videoCompleteEvent])
-      expect(result.totalDuration).toEqual('27:52')
+      expect(result.totalDuration).toBe('27:52')
     })
   })
 
@@ -252,7 +254,7 @@ describe('transformEvents', () => {
         journeyViewEvent.createdAt,
         chatOpenEvent.createdAt
       )
-      expect(result).toEqual('0:10')
+      expect(result).toBe('0:10')
     })
 
     it('should return duration with 2 digit seconds if singular', () => {
@@ -260,7 +262,7 @@ describe('transformEvents', () => {
         radioQuestionResponseEvent.createdAt,
         signUpSubmissionEvent.createdAt
       )
-      expect(result).toEqual('0:01')
+      expect(result).toBe('0:01')
     })
 
     it('should return < 0.01 if if duration is less than a second', () => {
@@ -268,7 +270,7 @@ describe('transformEvents', () => {
         videoCollapseEvent.createdAt,
         videoCompleteEvent.createdAt
       )
-      expect(result).toEqual('< 0:01')
+      expect(result).toBe('< 0:01')
     })
   })
 })

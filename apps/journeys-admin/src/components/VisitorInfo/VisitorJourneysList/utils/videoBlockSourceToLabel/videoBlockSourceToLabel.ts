@@ -1,4 +1,5 @@
 import { TFunction } from 'react-i18next'
+
 import { VideoBlockSource } from '../../../../../../__generated__/globalTypes'
 
 export function videoBlockSourceToLabel(

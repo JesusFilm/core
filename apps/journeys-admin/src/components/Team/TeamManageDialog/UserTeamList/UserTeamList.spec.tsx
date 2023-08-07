@@ -1,12 +1,13 @@
-import { render } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
-import { UserTeamRole } from '../../../../../__generated__/globalTypes'
+import { render } from '@testing-library/react'
 
 import {
   GetUserTeamsAndInvites,
   GetUserTeamsAndInvites_userTeamInvites,
   GetUserTeamsAndInvites_userTeams as UserTeam
 } from '../../../../../__generated__/GetUserTeamsAndInvites'
+import { UserTeamRole } from '../../../../../__generated__/globalTypes'
+
 import { UserTeamList } from './UserTeamList'
 
 jest.mock('react-i18next', () => ({
@@ -17,6 +18,7 @@ jest.mock('react-i18next', () => ({
     }
   }
 }))
+
 describe('UserTeamList', () => {
   const mockData: GetUserTeamsAndInvites = {
     userTeams: [

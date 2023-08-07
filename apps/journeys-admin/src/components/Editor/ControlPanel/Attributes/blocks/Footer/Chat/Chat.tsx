@@ -1,10 +1,13 @@
-import { ReactElement } from 'react'
-import Box from '@mui/material/Box'
-import { useTranslation } from 'react-i18next'
-import Typography from '@mui/material/Typography'
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'
+import Box from '@mui/material/Box'
+import Typography from '@mui/material/Typography'
+import { ReactElement } from 'react'
+import { useTranslation } from 'react-i18next'
+
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
+
 import { ChatPlatform } from '../../../../../../../../__generated__/globalTypes'
+
 import { ChatOption } from './ChatOption'
 
 export function Chat(): ReactElement {

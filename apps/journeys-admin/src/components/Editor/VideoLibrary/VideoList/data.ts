@@ -1,4 +1,5 @@
 import { VideoBlockSource } from '../../../../../__generated__/globalTypes'
+
 import { VideoListProps } from './VideoList'
 
 export const videos: NonNullable<VideoListProps['videos']> = [

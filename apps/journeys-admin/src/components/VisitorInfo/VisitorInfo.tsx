@@ -1,9 +1,10 @@
-import { ReactElement } from 'react'
 import Box from '@mui/material/Box'
 import Container from '@mui/material/Container'
+import { ReactElement } from 'react'
+
 import { DetailsForm } from './DetailsForm'
-import { VisitorJourneysList } from './VisitorJourneysList'
 import { VisitorDetails } from './VisitorDetails'
+import { VisitorJourneysList } from './VisitorJourneysList'
 
 interface Props {
   id: string

@@ -1,8 +1,9 @@
-import { Meta, Story } from '@storybook/react'
-import { useState, ComponentProps } from 'react'
-
 import FilterListRoundedIcon from '@mui/icons-material/FilterListRounded'
+import { Meta, Story } from '@storybook/react'
+import { ComponentProps, useState } from 'react'
+
 import { journeysAdminConfig } from '../../../libs/storybook'
+
 import { VisitorToolbar } from './VisitorToolbar'
 
 const VisitorToolbarStory = {

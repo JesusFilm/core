@@ -1,7 +1,9 @@
-import { Story, Meta } from '@storybook/react'
 import Box from '@mui/material/Box'
-import { simpleComponentConfig } from '../../../../libs/storybook'
+import { Meta, Story } from '@storybook/react'
+
 import { TypographyColor } from '../../../../../__generated__/globalTypes'
+import { simpleComponentConfig } from '../../../../libs/storybook'
+
 import { ColorDisplayIcon } from '.'
 
 const ColorDisplayIconStory = {

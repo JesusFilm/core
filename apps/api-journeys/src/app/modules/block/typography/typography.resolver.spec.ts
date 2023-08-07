@@ -1,7 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing'
-import { Block, Journey, UserTeamRole } from '.prisma/api-journeys-client'
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
+
+import { Block, Journey, UserTeamRole } from '.prisma/api-journeys-client'
 import { CaslAuthModule } from '@core/nest/common/CaslAuthModule'
+
 import {
   TypographyAlign,
   TypographyBlockCreateInput,
@@ -9,9 +11,10 @@ import {
   TypographyColor,
   TypographyVariant
 } from '../../../__generated__/graphql'
+import { AppAbility, AppCaslFactory } from '../../../lib/casl/caslFactory'
 import { PrismaService } from '../../../lib/prisma.service'
 import { BlockService } from '../block.service'
-import { AppAbility, AppCaslFactory } from '../../../lib/casl/caslFactory'
+
 import { TypographyBlockResolver } from './typography.resolver'
 
 describe('TypographyBlockResolver', () => {
@@ -81,12 +84,14 @@ describe('TypographyBlockResolver', () => {
     ) as DeepMockProxy<PrismaService>
     ability = await new AppCaslFactory().createAbility({ id: 'userId' })
   })
+
   describe('typographyBlockCreate', () => {
     beforeEach(() => {
       prismaService.$transaction.mockImplementation(
         async (callback) => await callback(prismaService)
       )
     })
+
     it('creates a TypographyBlock', async () => {
       prismaService.block.create.mockResolvedValueOnce(blockWithUserTeam)
       expect(
@@ -119,6 +124,7 @@ describe('TypographyBlockResolver', () => {
         blockCreateInput.parentBlockId
       )
     })
+
     it('throws error if not authorized', async () => {
       prismaService.block.create.mockResolvedValueOnce(block)
       await expect(
@@ -126,18 +132,21 @@ describe('TypographyBlockResolver', () => {
       ).rejects.toThrow('user is not allowed to create block')
     })
   })
+
   describe('typographyBlockUpdate', () => {
     it('updates a TypographyBlock', async () => {
       prismaService.block.findUnique.mockResolvedValueOnce(blockWithUserTeam)
       await resolver.typographyBlockUpdate(ability, 'blockId', blockUpdateInput)
       expect(service.update).toHaveBeenCalledWith('blockId', blockUpdateInput)
     })
+
     it('throws error if not found', async () => {
       prismaService.block.findUnique.mockResolvedValueOnce(null)
       await expect(
         resolver.typographyBlockUpdate(ability, 'blockId', blockUpdateInput)
       ).rejects.toThrow('block not found')
     })
+
     it('throws error if not authorized', async () => {
       prismaService.block.findUnique.mockResolvedValueOnce(block)
       await expect(

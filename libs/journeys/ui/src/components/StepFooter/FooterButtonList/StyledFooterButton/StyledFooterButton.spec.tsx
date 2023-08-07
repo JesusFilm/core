@@ -1,5 +1,6 @@
 import Typography from '@mui/material/Typography'
 import { fireEvent, render } from '@testing-library/react'
+
 import { StyledFooterButton } from '.'
 
 jest.mock('@mui/material/useMediaQuery', () => ({

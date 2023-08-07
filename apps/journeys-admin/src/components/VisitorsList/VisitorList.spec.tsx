@@ -1,12 +1,15 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
-import { NextRouter, useRouter } from 'next/router'
 import { fireEvent, render, waitFor } from '@testing-library/react'
+import { NextRouter, useRouter } from 'next/router'
+
+import { GetLastActiveTeamIdAndTeams } from '../../../__generated__/GetLastActiveTeamIdAndTeams'
 import {
   GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS,
   TeamProvider
 } from '../Team/TeamProvider'
-import { GetLastActiveTeamIdAndTeams } from '../../../__generated__/GetLastActiveTeamIdAndTeams'
+
 import { GET_VISITORS } from './VisitorsList'
+
 import { VisitorsList } from '.'
 
 jest.mock('react-i18next', () => ({
@@ -83,6 +86,7 @@ describe('VisitorList', () => {
       result
     }
   ]
+
   it('should fetch visitors', async () => {
     render(
       <MockedProvider mocks={[...mocks, getTeams]}>

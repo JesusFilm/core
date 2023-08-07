@@ -1,8 +1,9 @@
-import { ReactElement, useState } from 'react'
-import Drawer from '@mui/material/Drawer'
-import IconButton from '@mui/material/IconButton'
 import FilterListRoundedIcon from '@mui/icons-material/FilterListRounded'
 import Box from '@mui/material/Box'
+import Drawer from '@mui/material/Drawer'
+import IconButton from '@mui/material/IconButton'
+import { ReactElement, useState } from 'react'
+
 import { FilterDrawer } from '../FilterDrawer/FilterDrawer'
 
 interface VisitorProps {

@@ -1,15 +1,18 @@
 import { Test, TestingModule } from '@nestjs/testing'
-import omit from 'lodash/omit'
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
-import { Block, Action, Journey } from '.prisma/api-journeys-client'
+import omit from 'lodash/omit'
+
+import { Action, Block, Journey } from '.prisma/api-journeys-client'
 import { CaslAuthModule } from '@core/nest/common/CaslAuthModule'
+
 import {
   NavigateToJourneyActionInput,
   UserTeamRole
 } from '../../../__generated__/graphql'
-import { PrismaService } from '../../../lib/prisma.service'
 import { AppAbility, AppCaslFactory } from '../../../lib/casl/caslFactory'
+import { PrismaService } from '../../../lib/prisma.service'
 import { ACTION_UPDATE_RESET } from '../actionUpdateReset'
+
 import { NavigateToJourneyActionResolver } from './navigateToJourneyAction.resolver'
 
 describe('NavigateToJourneyActionResolver', () => {
@@ -95,6 +98,7 @@ describe('NavigateToJourneyActionResolver', () => {
         }
       })
     })
+
     it('throws an error if typename is wrong', async () => {
       const wrongBlock = {
         ...blockWithUserTeam,
@@ -111,12 +115,14 @@ describe('NavigateToJourneyActionResolver', () => {
         'This block does not support navigate to journey actions'
       )
     })
+
     it('throws error if not found', async () => {
       prismaService.block.findUnique.mockResolvedValueOnce(null)
       await expect(
         resolver.blockUpdateNavigateToJourneyAction(ability, block.id, input)
       ).rejects.toThrow('block not found')
     })
+
     it('throws error if not authorized', async () => {
       prismaService.block.findUnique.mockResolvedValueOnce(block)
       await expect(
@@ -124,15 +130,17 @@ describe('NavigateToJourneyActionResolver', () => {
       ).rejects.toThrow('user is not allowed to update block')
     })
   })
+
   describe('journey', () => {
     it('returns Journey from action', async () => {
       prismaService.journey.findUnique.mockResolvedValueOnce(journey)
       expect(await resolver.journey(block.action)).toEqual(journey)
     })
+
     it('returns null if action journeyId is null', async () => {
       expect(
         await resolver.journey({ ...block.action, journeyId: null })
-      ).toEqual(null)
+      ).toBeNull()
     })
   })
 })

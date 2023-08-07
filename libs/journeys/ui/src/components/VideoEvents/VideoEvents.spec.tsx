@@ -1,21 +1,24 @@
-import { render, waitFor, act, cleanup } from '@testing-library/react'
-import videojs from 'video.js'
 import { MockedProvider } from '@apollo/client/testing'
-import { v4 as uuidv4 } from 'uuid'
+import { act, cleanup, render, waitFor } from '@testing-library/react'
 import TagManager from 'react-gtm-module'
+import { v4 as uuidv4 } from 'uuid'
+import videojs from 'video.js'
+
 import { VideoBlockSource } from '../../../__generated__/globalTypes'
 import { TreeBlock, blockHistoryVar } from '../../libs/block'
 import { BlockFields_StepBlock as StepBlock } from '../../libs/block/__generated__/BlockFields'
+
 import {
-  VideoEventsProps,
-  VIDEO_START_EVENT_CREATE,
-  VIDEO_PLAY_EVENT_CREATE,
-  VIDEO_PAUSE_EVENT_CREATE,
+  VIDEO_COLLAPSE_EVENT_CREATE,
   VIDEO_COMPLETE_EVENT_CREATE,
   VIDEO_EXPAND_EVENT_CREATE,
-  VIDEO_COLLAPSE_EVENT_CREATE,
-  VIDEO_PROGRESS_EVENT_CREATE
+  VIDEO_PAUSE_EVENT_CREATE,
+  VIDEO_PLAY_EVENT_CREATE,
+  VIDEO_PROGRESS_EVENT_CREATE,
+  VIDEO_START_EVENT_CREATE,
+  VideoEventsProps
 } from './VideoEvents'
+
 import { VideoEvents } from '.'
 
 jest.mock('uuid', () => ({
@@ -38,6 +41,7 @@ const mockedDataLayer = TagManager.dataLayer as jest.MockedFunction<
 
 describe('VideoEvents', () => {
   let props: VideoEventsProps
+
   beforeEach(() => {
     const video = document.createElement('video')
     document.body.appendChild(video)
@@ -63,6 +67,7 @@ describe('VideoEvents', () => {
       videoId: 'video.id'
     }
   })
+
   afterEach(() => {
     cleanup()
   })

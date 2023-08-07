@@ -1,10 +1,13 @@
 import { Test, TestingModule } from '@nestjs/testing'
-import { CaslAuthModule } from '@core/nest/common/CaslAuthModule'
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
-import { UserTeamInvite, Team, UserTeamRole } from '.prisma/api-journeys-client'
-import { PrismaService } from '../../lib/prisma.service'
-import { AppAbility, AppCaslFactory } from '../../lib/casl/caslFactory'
+
+import { Team, UserTeamInvite, UserTeamRole } from '.prisma/api-journeys-client'
+import { CaslAuthModule } from '@core/nest/common/CaslAuthModule'
+
 import { UserTeamInviteCreateInput } from '../../__generated__/graphql'
+import { AppAbility, AppCaslFactory } from '../../lib/casl/caslFactory'
+import { PrismaService } from '../../lib/prisma.service'
+
 import { UserTeamInviteResolver } from './userTeamInvite.resolver'
 
 describe('UserTeamInviteResolver', () => {
@@ -95,6 +98,7 @@ describe('UserTeamInviteResolver', () => {
     const input: UserTeamInviteCreateInput = {
       email: 'brian.smith@example.com'
     }
+
     it('creates a user team invite', async () => {
       prismaService.$transaction.mockImplementationOnce(
         async (cb) => await cb(prismaService)
@@ -103,7 +107,7 @@ describe('UserTeamInviteResolver', () => {
         userTeamInviteWithUserTeam
       )
       await resolver.userTeamInviteCreate(ability, 'userId', 'teamId', input)
-      expect(prismaService.userTeamInvite.upsert).toBeCalledWith({
+      expect(prismaService.userTeamInvite.upsert).toHaveBeenCalledWith({
         where: {
           teamId_email: {
             teamId: 'teamId',
@@ -146,17 +150,19 @@ describe('UserTeamInviteResolver', () => {
         userTeamInviteWithUserTeam
       )
       await resolver.userTeamInviteRemove(ability, 'userTeamInviteId')
-      await expect(prismaService.userTeamInvite.update).toBeCalledWith({
+      await expect(prismaService.userTeamInvite.update).toHaveBeenCalledWith({
         data: { removedAt: expect.any(Date) },
         where: { id: 'userTeamInviteId' }
       })
     })
+
     it('throws error if not found', async () => {
       prismaService.userTeamInvite.findUnique.mockResolvedValueOnce(null)
       await expect(
         resolver.userTeamInviteRemove(ability, 'userTeamInviteId')
       ).rejects.toThrow('userTeamInvite not found')
     })
+
     it('throws error if not authorized', async () => {
       const ability = await new AppCaslFactory().createAbility({
         id: 'userId'

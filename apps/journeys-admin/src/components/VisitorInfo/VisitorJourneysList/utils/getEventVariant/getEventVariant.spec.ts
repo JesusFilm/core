@@ -1,5 +1,6 @@
 import { TypographyVariant } from '../../../../../../__generated__/globalTypes'
-import { getEventVariant, EventVariant } from '.'
+
+import { EventVariant, getEventVariant } from '.'
 
 describe('getEventVariant', () => {
   const defaultResult = {

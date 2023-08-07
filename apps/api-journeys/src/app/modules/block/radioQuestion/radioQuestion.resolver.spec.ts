@@ -1,11 +1,14 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
+
 import { Block, Journey, UserTeamRole } from '.prisma/api-journeys-client'
 import { CaslAuthModule } from '@core/nest/common/CaslAuthModule'
+
 import { RadioQuestionBlockCreateInput } from '../../../__generated__/graphql'
+import { AppAbility, AppCaslFactory } from '../../../lib/casl/caslFactory'
 import { PrismaService } from '../../../lib/prisma.service'
 import { BlockService } from '../block.service'
-import { AppAbility, AppCaslFactory } from '../../../lib/casl/caslFactory'
+
 import { RadioQuestionBlockResolver } from './radioQuestion.resolver'
 
 describe('RadioQuestionBlockResolver', () => {
@@ -71,6 +74,7 @@ describe('RadioQuestionBlockResolver', () => {
         async (callback) => await callback(prismaService)
       )
     })
+
     it('creates a RadioQuestionBlock', async () => {
       prismaService.block.create.mockResolvedValueOnce(blockWithUserTeam)
       expect(
@@ -99,6 +103,7 @@ describe('RadioQuestionBlockResolver', () => {
         blockCreateInput.parentBlockId
       )
     })
+
     it('throws error if not authorized', async () => {
       prismaService.block.create.mockResolvedValueOnce(block)
       await expect(
@@ -106,6 +111,7 @@ describe('RadioQuestionBlockResolver', () => {
       ).rejects.toThrow('user is not allowed to create block')
     })
   })
+
   describe('radioQuestionBlockUpdate', () => {
     it('updates a TypographyBlock', async () => {
       prismaService.block.findUnique.mockResolvedValueOnce(blockWithUserTeam)
@@ -118,12 +124,14 @@ describe('RadioQuestionBlockResolver', () => {
         parentBlockId: 'parentBlockId'
       })
     })
+
     it('throws error if not found', async () => {
       prismaService.block.findUnique.mockResolvedValueOnce(null)
       await expect(
         resolver.radioQuestionBlockUpdate(ability, 'blockId', 'parentBlockId')
       ).rejects.toThrow('block not found')
     })
+
     it('throws error if not authorized', async () => {
       prismaService.block.findUnique.mockResolvedValueOnce(block)
       await expect(

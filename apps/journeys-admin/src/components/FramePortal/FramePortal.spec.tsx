@@ -1,5 +1,6 @@
 import Typography from '@mui/material/Typography'
 import { render, waitFor } from '@testing-library/react'
+
 import { FramePortal } from '.'
 
 describe('FramePortal', () => {
@@ -15,7 +16,7 @@ describe('FramePortal', () => {
     await waitFor(() =>
       expect(
         iframe.contentDocument?.body.getElementsByTagName('p')[0].innerHTML
-      ).toEqual('hello world')
+      ).toBe('hello world')
     )
     expect(
       iframe.contentDocument?.body.getElementsByTagName('p')[0]

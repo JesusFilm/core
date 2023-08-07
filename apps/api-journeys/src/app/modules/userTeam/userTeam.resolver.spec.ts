@@ -1,9 +1,12 @@
 import { Test, TestingModule } from '@nestjs/testing'
+
+import { UserTeam, UserTeamRole } from '.prisma/api-journeys-client'
 import { CaslAuthModule } from '@core/nest/common/CaslAuthModule'
-import { UserTeamRole, UserTeam } from '.prisma/api-journeys-client'
-import { PrismaService } from '../../lib/prisma.service'
-import { AppCaslFactory } from '../../lib/casl/caslFactory'
+
 import { UserTeamRole as GraphQlUserTeamRole } from '../../__generated__/graphql'
+import { AppCaslFactory } from '../../lib/casl/caslFactory'
+import { PrismaService } from '../../lib/prisma.service'
+
 import { UserTeamResolver } from './userTeam.resolver'
 
 describe('UserTeamResolver', () => {
@@ -20,6 +23,7 @@ describe('UserTeamResolver', () => {
       .fn()
       .mockResolvedValue([{ id: 'userTeamId' }])
   })
+
   describe('userTeams', () => {
     it('fetches accessible userTeams with filter', async () => {
       const userTeams = await userTeamResolver.userTeams(
@@ -159,6 +163,7 @@ describe('UserTeamResolver', () => {
       ).rejects.toThrow('userTeam not found')
     })
   })
+
   describe('userTeamUpdate', () => {
     it('updates userTeam', async () => {
       const userTeam = {

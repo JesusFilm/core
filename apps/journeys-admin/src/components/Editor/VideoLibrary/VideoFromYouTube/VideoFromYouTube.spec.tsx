@@ -1,14 +1,17 @@
-import { render, fireEvent, waitFor } from '@testing-library/react'
-import useMediaQuery from '@mui/material/useMediaQuery'
-import { SWRConfig } from 'swr'
 import { MockedProvider } from '@apollo/client/testing'
+import useMediaQuery from '@mui/material/useMediaQuery'
+import { fireEvent, render, waitFor } from '@testing-library/react'
+import { SWRConfig } from 'swr'
+
 import { mswServer } from '../../../../../test/mswServer'
+
 import {
   getPlaylistItems,
   getPlaylistItemsEmpty,
   getPlaylistItemsWithOffsetAndUrl,
   getVideosWithOffsetAndUrl
 } from './VideoFromYouTube.handlers'
+
 import { VideoFromYouTube } from '.'
 
 jest.mock('@mui/material/useMediaQuery', () => ({

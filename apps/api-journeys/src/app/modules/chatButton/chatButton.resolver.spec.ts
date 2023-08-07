@@ -1,6 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing'
-import { PrismaService } from '../../lib/prisma.service'
+
 import { ChatPlatform } from '../../__generated__/graphql'
+import { PrismaService } from '../../lib/prisma.service'
+
 import { ChatButtonResolver } from './chatButton.resolver'
 
 describe('ChatButtonResolver', () => {
@@ -65,11 +67,9 @@ describe('ChatButtonResolver', () => {
       .fn()
       .mockReturnValue([{ journeyId: 'journeyId', id: '3' }])
 
-    await resolver.chatButtonCreate('journeyId', {}).catch((error) => {
-      expect(error.message).toEqual(
-        'There are already 2 chat buttons associated with the given journey'
-      )
-    })
+    await expect(resolver.chatButtonCreate('journeyId', {})).rejects.toThrow(
+      'There are already 2 chat buttons associated with the given journey'
+    )
   })
 
   it('should update an existing ChatButton', async () => {

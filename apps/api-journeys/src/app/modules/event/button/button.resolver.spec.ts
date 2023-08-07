@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing'
-import { EventService } from '../event.service'
+
 import {
   ButtonAction,
   ButtonClickEventCreateInput,
@@ -7,6 +7,8 @@ import {
   MessagePlatform
 } from '../../../__generated__/graphql'
 import { PrismaService } from '../../../lib/prisma.service'
+import { EventService } from '../event.service'
+
 import {
   ButtonClickEventResolver,
   ChatOpenEventResolver

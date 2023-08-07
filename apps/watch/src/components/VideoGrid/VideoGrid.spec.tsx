@@ -1,5 +1,7 @@
 import { fireEvent, render } from '@testing-library/react'
+
 import { videos } from '../Videos/__generated__/testData'
+
 import { VideoGrid } from './VideoGrid'
 
 describe('VideoGrid', () => {
@@ -19,6 +21,6 @@ describe('VideoGrid', () => {
 
   it('should render correct number of videos', () => {
     const { getAllByTestId } = render(<VideoGrid videos={videos} />)
-    expect(getAllByTestId('VideoCard').length).toBe(videos.length)
+    expect(getAllByTestId('VideoCard')).toHaveLength(videos.length)
   })
 })
