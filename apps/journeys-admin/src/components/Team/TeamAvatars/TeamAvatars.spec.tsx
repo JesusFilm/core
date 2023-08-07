@@ -1,5 +1,7 @@
 import { fireEvent, render, waitFor } from '@testing-library/react'
+
 import { GetLastActiveTeamIdAndTeams_teams_userTeams as UserTeams } from '../../../../__generated__/GetLastActiveTeamIdAndTeams'
+
 import { TeamAvatars } from './TeamAvatars'
 
 describe('TeamAvatars', () => {
