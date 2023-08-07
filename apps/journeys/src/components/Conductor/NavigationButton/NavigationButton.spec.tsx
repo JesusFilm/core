@@ -1,6 +1,7 @@
-import { treeBlocksVar, blockHistoryVar } from '@core/journeys/ui/block'
-import { showNavigationVar } from '@core/journeys/ui/block/block'
 import { fireEvent, render, waitFor } from '@testing-library/react'
+
+import { blockHistoryVar, treeBlocksVar } from '@core/journeys/ui/block'
+import { showNavigationVar } from '@core/journeys/ui/block/block'
 
 import { NavigationButton } from './NavigationButton'
 

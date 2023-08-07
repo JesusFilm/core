@@ -1,13 +1,16 @@
-import { ReactElement } from 'react'
+import Box from '@mui/material/Box'
 import Container from '@mui/material/Container'
 import Stack from '@mui/material/Stack'
-import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
+import { ReactElement } from 'react'
+
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
-import { ThemeName, ThemeMode } from '@core/shared/ui/themes'
+import { ThemeMode, ThemeName } from '@core/shared/ui/themes'
+
 import { VideoChildFields } from '../../../__generated__/VideoChildFields'
 import { PageWrapper } from '../PageWrapper'
 import { VideoGrid } from '../VideoGrid'
+
 import { HomeHero } from './HomeHero'
 import { SeeAllVideos } from './SeeAllVideos'
 

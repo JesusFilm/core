@@ -1,7 +1,9 @@
 import { render } from '@testing-library/react'
-import { UserJourneyRole } from '../../../../__generated__/globalTypes'
+
 import { GetJourneyWithUserJourneys_journey_userJourneys as UserJourney } from '../../../../__generated__/GetJourneyWithUserJourneys'
 import { GetUserInvites_userInvites as UserInvite } from '../../../../__generated__/GetUserInvites'
+import { UserJourneyRole } from '../../../../__generated__/globalTypes'
+
 import { UserList } from '.'
 
 describe('UserList', () => {

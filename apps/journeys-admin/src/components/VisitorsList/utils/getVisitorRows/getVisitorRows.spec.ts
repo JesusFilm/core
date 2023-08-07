@@ -1,4 +1,5 @@
 import { GetVisitors_visitors_edges as Visitor } from '../../../../../__generated__/GetVisitors'
+
 import { getVisitorRows } from '.'
 
 describe('getVisitorRows', () => {

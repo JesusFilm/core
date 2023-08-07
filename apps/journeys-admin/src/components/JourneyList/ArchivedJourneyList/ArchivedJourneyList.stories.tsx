@@ -1,14 +1,16 @@
-import { Story, Meta } from '@storybook/react'
 import { MockedProvider } from '@apollo/client/testing'
+import { Meta, Story } from '@storybook/react'
+
+import { JourneyStatus } from '../../../../__generated__/globalTypes'
 import { journeysAdminConfig } from '../../../libs/storybook'
+import { GET_ADMIN_JOURNEYS } from '../../../libs/useAdminJourneysQuery/useAdminJourneysQuery'
 import {
   defaultJourney,
-  oldJourney,
   descriptiveJourney,
+  oldJourney,
   publishedJourney
 } from '../journeyListData'
-import { GET_ADMIN_JOURNEYS } from '../../../libs/useAdminJourneysQuery/useAdminJourneysQuery'
-import { JourneyStatus } from '../../../../__generated__/globalTypes'
+
 import { ArchivedJourneyList } from '.'
 
 const ArchivedJourneyListStory = {

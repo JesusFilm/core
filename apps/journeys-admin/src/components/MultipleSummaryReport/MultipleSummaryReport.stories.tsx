@@ -1,7 +1,9 @@
-import { Story, Meta } from '@storybook/react'
+import { Meta, Story } from '@storybook/react'
 import { SnackbarProvider } from 'notistack'
+
 import { ApolloLoadingProvider } from '../../../test/ApolloLoadingProvider'
 import { journeysAdminConfig } from '../../libs/storybook'
+
 import { MultipleSummaryReport } from '.'
 
 const MultipleSummaryReportDemo = {

@@ -1,4 +1,5 @@
 import { AuthenticationContext } from 'adal-node'
+
 import { getPowerBiAccessToken } from '.'
 
 jest.mock('adal-node', () => {

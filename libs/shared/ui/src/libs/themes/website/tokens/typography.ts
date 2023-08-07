@@ -1,4 +1,5 @@
 import { ThemeOptions } from '@mui/material/styles'
+
 import { baseBreakpoints } from '../../base/tokens/breakpoints'
 
 // https://mui.com/material-ui/customization/typography/#adding-amp-disabling-variants

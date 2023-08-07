@@ -1,14 +1,16 @@
-import { act, fireEvent, render, waitFor } from '@testing-library/react'
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import useMediaQuery from '@mui/material/useMediaQuery'
-import { UserTeamRole } from '../../../../__generated__/globalTypes'
-import {
-  TeamProvider,
-  GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
-} from '../TeamProvider'
+import { act, fireEvent, render, waitFor } from '@testing-library/react'
+
 import { GetLastActiveTeamIdAndTeams } from '../../../../__generated__/GetLastActiveTeamIdAndTeams'
-import { GET_USER_TEAMS_AND_INVITES } from '../../../libs/useUserTeamsAndInvitesQuery/useUserTeamsAndInvitesQuery'
 import { GetUserTeamsAndInvites } from '../../../../__generated__/GetUserTeamsAndInvites'
+import { UserTeamRole } from '../../../../__generated__/globalTypes'
+import { GET_USER_TEAMS_AND_INVITES } from '../../../libs/useUserTeamsAndInvitesQuery/useUserTeamsAndInvitesQuery'
+import {
+  GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS,
+  TeamProvider
+} from '../TeamProvider'
+
 import { TeamManageDialog } from './TeamManageDialog'
 
 jest.mock('@mui/material/useMediaQuery', () => ({

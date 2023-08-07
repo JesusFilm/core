@@ -1,9 +1,10 @@
-import { ReactElement } from 'react'
 import MuiAvatar from '@mui/material/Avatar'
 import Badge from '@mui/material/Badge'
+import { SxProps } from '@mui/material/styles'
 import Tooltip from '@mui/material/Tooltip'
 import compact from 'lodash/compact'
-import { SxProps } from '@mui/material/styles'
+import { ReactElement } from 'react'
+
 import { GetAdminJourneys_journeys_userJourneys_user as User } from '../../../__generated__/GetAdminJourneys'
 
 export interface AvatarProps {

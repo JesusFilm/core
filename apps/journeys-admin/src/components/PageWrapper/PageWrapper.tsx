@@ -1,17 +1,19 @@
-import { ReactElement, ReactNode, useState } from 'react'
+import ChevronLeftRounded from '@mui/icons-material/ChevronLeftRounded'
+import MenuIcon from '@mui/icons-material/Menu'
 import AppBar from '@mui/material/AppBar'
+import Box from '@mui/material/Box'
 import IconButton from '@mui/material/IconButton'
+import { Theme } from '@mui/material/styles'
 import Toolbar from '@mui/material/Toolbar'
 import Typography from '@mui/material/Typography'
-import Box from '@mui/material/Box'
-import Link from 'next/link'
-import ChevronLeftRounded from '@mui/icons-material/ChevronLeftRounded'
-import Image from 'next/image'
-import { AuthUser } from 'next-firebase-auth'
 import useMediaQuery from '@mui/material/useMediaQuery'
-import MenuIcon from '@mui/icons-material/Menu'
-import { Theme } from '@mui/material/styles'
+import { AuthUser } from 'next-firebase-auth'
+import Image from 'next/image'
+import Link from 'next/link'
+import { ReactElement, ReactNode, useState } from 'react'
+
 import taskbarIcon from '../../../public/taskbar-icon.svg'
+
 import { NavigationDrawer } from './NavigationDrawer'
 
 export interface PageWrapperProps {

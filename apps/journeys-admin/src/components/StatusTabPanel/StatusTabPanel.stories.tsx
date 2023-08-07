@@ -1,8 +1,11 @@
-import { Story, Meta } from '@storybook/react'
 import { MockedProvider } from '@apollo/client/testing'
+import { Meta, Story } from '@storybook/react'
 import noop from 'lodash/noop'
+
 import { journeysAdminConfig } from '../../libs/storybook'
+
 import { StatusTabPanelProps } from './StatusTabPanel'
+
 import { StatusTabPanel } from '.'
 
 const StatusTabPanelStory = {

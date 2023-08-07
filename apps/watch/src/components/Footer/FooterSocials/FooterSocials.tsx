@@ -1,11 +1,12 @@
-import { ReactElement } from 'react'
 import Stack from '@mui/material/Stack'
+import { ReactElement } from 'react'
+
 import { FooterLink } from '../FooterLink'
 
 import Facebook from './assets/facebook.svg'
+import Instagram from './assets/instagram.svg'
 import Twitter from './assets/twitter.svg'
 import Youtube from './assets/youtube.svg'
-import Instagram from './assets/instagram.svg'
 
 export function FooterSocials(): ReactElement {
   return (

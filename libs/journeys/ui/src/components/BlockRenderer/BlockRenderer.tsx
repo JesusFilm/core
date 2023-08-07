@@ -1,8 +1,7 @@
-import { ReactElement } from 'react'
 import dynamic from 'next/dynamic'
-import type { TreeBlock } from '../../libs/block'
-import { Video } from '../Video'
+import { ReactElement } from 'react'
 
+import type { TreeBlock } from '../../libs/block'
 import {
   BlockFields as Block,
   BlockFields_ButtonBlock as ButtonBlock,
@@ -16,6 +15,7 @@ import {
   BlockFields_TypographyBlock as TypographyBlock,
   BlockFields_VideoBlock as VideoBlock
 } from '../../libs/block/__generated__/BlockFields'
+import { Video } from '../Video'
 
 export interface WrapperProps<T = Block> {
   block: TreeBlock<T>

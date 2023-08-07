@@ -1,6 +1,7 @@
 import { render } from '@testing-library/react'
 
 import { GetJourney_journey_blocks_ImageBlock as ImageBlock } from '../../../../__generated__/GetJourney'
+
 import { ImageBlockThumbnail } from './ImageBlockThumbnail'
 
 const image: ImageBlock = {

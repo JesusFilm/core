@@ -1,7 +1,9 @@
-import { ReactElement, useRef, useEffect, useState } from 'react'
+import { ReactElement, useEffect, useRef, useState } from 'react'
 import videojs from 'video.js'
 import Player from 'video.js/dist/types/player'
+
 import { useVideo } from '../../../../libs/videoContext'
+
 import { VideoControls } from './VideoControls'
 
 interface VideoPlayerProps {

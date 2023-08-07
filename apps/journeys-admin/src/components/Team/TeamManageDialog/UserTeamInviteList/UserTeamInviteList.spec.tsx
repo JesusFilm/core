@@ -1,9 +1,11 @@
 import { render } from '@testing-library/react'
+
 import {
   GetUserTeamsAndInvites,
   GetUserTeamsAndInvites_userTeams as UserTeam
 } from '../../../../../__generated__/GetUserTeamsAndInvites'
 import { UserTeamRole } from '../../../../../__generated__/globalTypes'
+
 import { UserTeamInviteList } from './UserTeamInviteList'
 
 describe('UserTeamInviteList', () => {

@@ -1,4 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing'
+
 import { VideoVariantResolver } from './videoVariant.resolver'
 
 describe('VideoVariantResolver', () => {

@@ -1,8 +1,9 @@
-import { ThemeName, ThemeMode } from '@core/shared/ui/themes'
+import { ThemeMode, ThemeName } from '@core/shared/ui/themes'
+
 import { CardFields } from '../../components/Card/__generated__/CardFields'
 import { StepFields } from '../../components/Step/__generated__/StepFields'
-import { JourneyFields } from '../JourneyProvider/__generated__/JourneyFields'
 import type { TreeBlock } from '../block'
+import { JourneyFields } from '../JourneyProvider/__generated__/JourneyFields'
 
 export function getStepTheme(
   block: TreeBlock<StepFields> | TreeBlock<CardFields>,

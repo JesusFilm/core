@@ -1,11 +1,13 @@
-import { Test, TestingModule } from '@nestjs/testing'
 import { subject } from '@casl/ability'
+import { Test, TestingModule } from '@nestjs/testing'
+
 import {
   Journey,
-  UserTeamRole,
+  JourneyStatus,
   UserJourneyRole,
-  JourneyStatus
+  UserTeamRole
 } from '.prisma/api-journeys-client'
+
 import { Action, AppAbility, AppCaslFactory } from '../../lib/casl/caslFactory'
 
 describe('journeyAcl', () => {

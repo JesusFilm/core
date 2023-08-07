@@ -1,7 +1,7 @@
-import { Dispatch, ReactElement, SetStateAction, useState } from 'react'
 import Button from '@mui/material/Button'
-import Box from '@mui/system/Box'
 import Typography from '@mui/material/Typography'
+import Box from '@mui/system/Box'
+import { Dispatch, ReactElement, SetStateAction, useState } from 'react'
 
 interface ShowMoreButtonProps {
   displayMore: boolean

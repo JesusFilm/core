@@ -1,14 +1,17 @@
 import { ReactElement, ReactNode } from 'react'
-import { transformer } from '@core/journeys/ui/transformer'
+
 import type { TreeBlock } from '@core/journeys/ui/block'
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import {
   ActiveJourneyEditContent,
   EditorProvider
 } from '@core/journeys/ui/EditorProvider'
-import { GetJourney_journey as Journey } from '../../../__generated__/GetJourney'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import { transformer } from '@core/journeys/ui/transformer'
+
 import { BlockFields_StepBlock as StepBlock } from '../../../__generated__/BlockFields'
+import { GetJourney_journey as Journey } from '../../../__generated__/GetJourney'
 import { Properties } from '../JourneyView/Properties'
+
 import { SocialProvider } from './SocialProvider'
 
 interface EditorProps {

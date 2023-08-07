@@ -1,13 +1,14 @@
 import {
-  MessagePlatform,
-  VideoBlockSource,
-  ButtonAction
-} from '../../../../../__generated__/globalTypes'
-import {
   GetVisitorEvents,
   GetVisitorEvents_visitor_events_JourneyViewEvent as JourneyViewEvent
 } from '../../../../../__generated__/GetVisitorEvents'
+import {
+  ButtonAction,
+  MessagePlatform,
+  VideoBlockSource
+} from '../../../../../__generated__/globalTypes'
 import { GET_VISITOR_EVENTS } from '../VisitorJourneysList'
+
 import { JourneyWithEvents, TimelineItem } from '.'
 
 const journeyView: JourneyViewEvent = {

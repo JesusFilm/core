@@ -1,4 +1,4 @@
-import { encrypt, decrypt } from '.'
+import { decrypt, encrypt } from '.'
 
 describe('decrypt', () => {
   it('returns message from an encrypted string with key and iv', () => {

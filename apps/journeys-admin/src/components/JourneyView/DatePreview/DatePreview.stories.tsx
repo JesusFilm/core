@@ -1,7 +1,10 @@
-import { Story, Meta } from '@storybook/react'
+import { Meta, Story } from '@storybook/react'
+
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+
 import { simpleComponentConfig } from '../../../libs/storybook'
 import { defaultJourney } from '../data'
+
 import { DatePreview } from './DatePreview'
 
 const DatePreviewStory = {

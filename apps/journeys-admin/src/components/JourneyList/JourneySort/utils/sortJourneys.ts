@@ -1,6 +1,7 @@
 import orderBy from 'lodash/orderBy'
-import { SortOrder } from '../JourneySort'
+
 import { GetAdminJourneys_journeys as Journey } from '../../../../../__generated__/GetAdminJourneys'
+import { SortOrder } from '../JourneySort'
 
 export function sortJourneys(
   journeys: Journey[],

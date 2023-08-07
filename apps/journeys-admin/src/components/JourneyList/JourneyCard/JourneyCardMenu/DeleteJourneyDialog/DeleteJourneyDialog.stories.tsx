@@ -1,10 +1,13 @@
-import { Story, Meta } from '@storybook/react'
 import { MockedProvider } from '@apollo/client/testing'
-import { SnackbarProvider } from 'notistack'
+import { Meta, Story } from '@storybook/react'
 import noop from 'lodash/noop'
+import { SnackbarProvider } from 'notistack'
+
 import { simpleComponentConfig } from '../../../../../libs/storybook'
 import { TeamProvider } from '../../../../Team/TeamProvider'
+
 import { DeleteJourneyDialogProps } from './DeleteJourneyDialog'
+
 import { DeleteJourneyDialog } from '.'
 
 const DeleteJourneyDialogDemo = {

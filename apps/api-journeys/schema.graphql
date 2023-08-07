@@ -1699,9 +1699,9 @@ extend type Query {
   """
   adminJourneys(status: [JourneyStatus!], template: Boolean, teamId: ID): [Journey!]!
   adminJourneysReport(reportType: JourneysReportType!): PowerBiEmbed
-  adminJourney(id: ID!, idType: IdType): Journey
+  adminJourney(id: ID!, idType: IdType): Journey!
   journeys(where: JourneysFilter): [Journey!]!
-  journey(id: ID!, idType: IdType): Journey
+  journey(id: ID!, idType: IdType): Journey!
   getJourneyProfile: JourneyProfile
 
   """Get a list of Visitor Information by Journey"""

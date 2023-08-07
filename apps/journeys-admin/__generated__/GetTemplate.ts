@@ -655,7 +655,7 @@ export interface GetTemplate_template {
 }
 
 export interface GetTemplate {
-  template: GetTemplate_template | null;
+  template: GetTemplate_template;
 }
 
 export interface GetTemplateVariables {

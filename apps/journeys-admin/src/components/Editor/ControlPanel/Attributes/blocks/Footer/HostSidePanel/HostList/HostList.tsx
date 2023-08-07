@@ -1,11 +1,13 @@
+import { useMutation } from '@apollo/client'
 import List from '@mui/material/List'
 import { ReactElement } from 'react'
-import { useMutation } from '@apollo/client'
+
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { JourneyFields_host as Host } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
-import { HostListItem } from '../HostListItem'
+
 import { UpdateJourneyHost } from '../../../../../../../../../__generated__/UpdateJourneyHost'
 import { UPDATE_JOURNEY_HOST } from '../HostForm/HostTitleFieldForm/HostTitleFieldForm'
+import { HostListItem } from '../HostListItem'
 
 interface HostListProps {
   hosts: Host[]

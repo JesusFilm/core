@@ -2,6 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing'
 
 import { Role } from '../../__generated__/graphql'
 import { PrismaService } from '../../lib/prisma.service'
+
 import { UserRoleService } from './userRole.service'
 
 describe('userRoleService', () => {

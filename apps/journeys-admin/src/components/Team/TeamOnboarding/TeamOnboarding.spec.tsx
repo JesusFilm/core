@@ -1,22 +1,24 @@
-import { fireEvent, render, waitFor } from '@testing-library/react'
+import { InMemoryCache } from '@apollo/client'
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { fireEvent, render, waitFor } from '@testing-library/react'
+import { NextRouter, useRouter } from 'next/router'
 import { SnackbarProvider } from 'notistack'
 import { ReactElement } from 'react'
-import { InMemoryCache } from '@apollo/client'
-import { NextRouter, useRouter } from 'next/router'
+
+import { GetLastActiveTeamIdAndTeams } from '../../../../__generated__/GetLastActiveTeamIdAndTeams'
+import { GetUserTeamsAndInvites } from '../../../../__generated__/GetUserTeamsAndInvites'
+import { UserTeamRole } from '../../../../__generated__/globalTypes'
+import { TeamCreate } from '../../../../__generated__/TeamCreate'
+import { UpdateLastActiveTeamId } from '../../../../__generated__/UpdateLastActiveTeamId'
+import { TEAM_CREATE } from '../../../libs/useTeamCreateMutation/useTeamCreateMutation'
+import { GET_USER_TEAMS_AND_INVITES } from '../../../libs/useUserTeamsAndInvitesQuery/useUserTeamsAndInvitesQuery'
 import {
   GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS,
   TeamProvider,
   useTeam
 } from '../TeamProvider'
-import { TeamCreate } from '../../../../__generated__/TeamCreate'
-import { TEAM_CREATE } from '../../../libs/useTeamCreateMutation/useTeamCreateMutation'
-import { GetLastActiveTeamIdAndTeams } from '../../../../__generated__/GetLastActiveTeamIdAndTeams'
-import { GET_USER_TEAMS_AND_INVITES } from '../../../libs/useUserTeamsAndInvitesQuery/useUserTeamsAndInvitesQuery'
-import { UserTeamRole } from '../../../../__generated__/globalTypes'
-import { GetUserTeamsAndInvites } from '../../../../__generated__/GetUserTeamsAndInvites'
-import { UpdateLastActiveTeamId } from '../../../../__generated__/UpdateLastActiveTeamId'
 import { UPDATE_LAST_ACTIVE_TEAM_ID } from '../TeamSelect/TeamSelect'
+
 import { TeamOnboarding } from '.'
 
 jest.mock('react-i18next', () => ({

@@ -1,11 +1,12 @@
-import { useQuery, gql, QueryResult, OperationVariables } from '@apollo/client'
+import { OperationVariables, QueryResult, gql, useQuery } from '@apollo/client'
 import {
-  createContext,
   ReactElement,
   ReactNode,
+  createContext,
   useContext,
   useState
 } from 'react'
+
 import {
   GetLastActiveTeamIdAndTeams,
   GetLastActiveTeamIdAndTeams_teams as Team

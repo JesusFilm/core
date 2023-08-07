@@ -1,5 +1,7 @@
+import { fireEvent, render } from '@testing-library/react'
+
 import { ActiveFab, EditorProvider } from '@core/journeys/ui/EditorProvider'
-import { render, fireEvent } from '@testing-library/react'
+
 import { Fab } from '.'
 
 describe('Fab', () => {

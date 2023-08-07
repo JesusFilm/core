@@ -1,4 +1,5 @@
 import { GetVisitorEvents_visitor_events as Event } from '../../../../../../__generated__/GetVisitorEvents'
+
 import { transformToJourney } from '.'
 
 describe('transformVisitorEvents', () => {

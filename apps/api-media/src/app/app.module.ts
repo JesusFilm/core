@@ -1,16 +1,19 @@
 import { join } from 'path'
-import { Module } from '@nestjs/common'
-import { GraphQLModule } from '@nestjs/graphql'
+
 import {
   ApolloFederationDriver,
   ApolloFederationDriverConfig
 } from '@nestjs/apollo'
-import { LoggerModule } from 'nestjs-pino'
+import { Module } from '@nestjs/common'
+import { GraphQLModule } from '@nestjs/graphql'
 import { DatadogTraceModule } from 'nestjs-ddtrace'
+import { LoggerModule } from 'nestjs-pino'
+
 import { NestHealthModule } from '@core/nest/health'
+
 import { CloudflareImageModule } from './modules/cloudflare/image/image.module'
-import { UnsplashImageModule } from './modules/unsplash/image/image.module'
 import { CloudflareVideoModule } from './modules/cloudflare/video/video.module'
+import { UnsplashImageModule } from './modules/unsplash/image/image.module'
 
 @Module({
   imports: [

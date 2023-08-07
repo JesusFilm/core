@@ -1,10 +1,13 @@
-import { Story, Meta } from '@storybook/react'
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { MockedProvider } from '@apollo/client/testing'
+import { Meta, Story } from '@storybook/react'
 import { SnackbarProvider } from 'notistack'
+
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+
 import { simpleComponentConfig } from '../../../libs/storybook'
-import { defaultJourney } from '../data'
 import { TeamProvider } from '../../Team/TeamProvider'
+import { defaultJourney } from '../data'
+
 import { JourneyViewFab } from './JourneyViewFab'
 
 const JourneyViewFabStory = {
