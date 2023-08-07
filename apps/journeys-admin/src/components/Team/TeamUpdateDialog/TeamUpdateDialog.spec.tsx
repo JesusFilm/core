@@ -22,7 +22,20 @@ describe('TeamUpdateDialog', () => {
           {
             id: 'teamId',
             title: 'Jesus Film Project',
-            __typename: 'Team'
+            __typename: 'Team',
+            userTeams: [
+              {
+                __typename: 'UserTeam',
+                id: 'userTeamId1',
+                user: {
+                  __typename: 'User',
+                  id: 'userId',
+                  firstName: 'Joe',
+                  lastName: 'Bloggs',
+                  imageUrl: 'image'
+                }
+              }
+            ]
           }
         ],
         getJourneyProfile: {

@@ -44,6 +44,7 @@ export function useTeamCreateMutation(
       }
     },
     onCompleted(data) {
+      console.log(data.teamCreate)
       if (data?.teamCreate != null) {
         setActiveTeam(data.teamCreate)
       }
