@@ -1,9 +1,9 @@
+import Stack from '@mui/material/Stack'
 import { ComponentProps } from 'react'
 import { Story, Meta } from '@storybook/react'
 import { journeysAdminConfig } from '../../../libs/storybook'
-import { TeamAvatars } from './TeamAvatars'
 import { GetLastActiveTeamIdAndTeams_teams_userTeams as UserTeams } from '../../../../__generated__/GetLastActiveTeamIdAndTeams'
-import Stack from '@mui/material/Stack'
+import { TeamAvatars } from './TeamAvatars'
 
 const TeamAvatarsStory = {
   ...journeysAdminConfig,

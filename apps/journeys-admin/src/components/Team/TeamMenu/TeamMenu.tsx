@@ -1,5 +1,6 @@
 import { useTranslation } from 'react-i18next'
-import { ReactElement, useMemo, useState } from 'react'
+import { ReactElement, useState } from 'react'
+import Box from '@mui/material/Box'
 import AddIcon from '@mui/icons-material/Add'
 import EditIcon from '@mui/icons-material/Edit'
 import IconButton from '@mui/material/IconButton'
@@ -12,8 +13,6 @@ import { TeamUpdateDialog } from '../TeamUpdateDialog'
 import { useTeam } from '../TeamProvider'
 import { TeamManageDialog } from '../TeamManageDialog'
 import { TeamAvatars } from '../TeamAvatars'
-import { GetLastActiveTeamIdAndTeams_teams as ActiveTeamUserTeams } from '../../../../__generated__/GetLastActiveTeamIdAndTeams'
-import Box from '@mui/material/Box'
 
 export function TeamMenu(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')

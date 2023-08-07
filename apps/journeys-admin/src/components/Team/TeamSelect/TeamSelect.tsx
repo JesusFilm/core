@@ -37,8 +37,6 @@ export function TeamSelect({ onboarding }: TeamSelectProps): ReactElement {
     UPDATE_LAST_ACTIVE_TEAM_ID
   )
 
-  console.log(query)
-
   function handleChange(event: SelectChangeEvent): void {
     const team = query?.data?.teams.find(
       (team) => team.id === event.target.value
@@ -106,7 +104,7 @@ export function TeamSelect({ onboarding }: TeamSelectProps): ReactElement {
                 }}
               >
                 <Typography sx={{ maxWidth: '77%' }}>{team.title}</Typography>
-                <TeamAvatars userTeams={team.userTeams}></TeamAvatars>
+                <TeamAvatars userTeams={team.userTeams} />
               </MenuItem>
             ))}
             <Divider />

@@ -1,14 +1,6 @@
-import {
-  fireEvent,
-  getAllByTestId,
-  getByTestId,
-  queryByTestId,
-  render,
-  waitFor
-} from '@testing-library/react'
-import { TeamAvatars } from './TeamAvatars'
-import { TeamProvider } from '../TeamProvider'
+import { fireEvent, render, waitFor } from '@testing-library/react'
 import { GetLastActiveTeamIdAndTeams_teams_userTeams as UserTeams } from '../../../../__generated__/GetLastActiveTeamIdAndTeams'
+import { TeamAvatars } from './TeamAvatars'
 
 describe('TeamAvatars', () => {
   const userTeam: UserTeams[] = [
@@ -140,7 +132,6 @@ describe('TeamAvatars', () => {
   })
 
   it('does not display add button if there is no onclick handler', () => {
-    const handleOpen = jest.fn()
     const { queryByTestId } = render(
       <TeamAvatars userTeams={userTeam} size="large" />
     )
@@ -158,7 +149,7 @@ describe('TeamAvatars', () => {
       />
     )
 
-    waitFor(() => expect(userTeamOverflow.length).toEqual(7))
+    await waitFor(() => expect(userTeamOverflow.length).toEqual(7))
     const renderedAvatars = await getAllByTestId('avatar')
     expect(renderedAvatars.length).toEqual(4)
     expect(getByText('+3')).toBeInTheDocument()
