@@ -1,16 +1,18 @@
 import AddIcon from '@mui/icons-material/Add'
 import EditIcon from '@mui/icons-material/Edit'
+import GroupIcon from '@mui/icons-material/Group'
+import MoreVert from '@mui/icons-material/MoreVert'
 import Box from '@mui/material/Box'
 import IconButton from '@mui/material/IconButton'
 import Menu from '@mui/material/Menu'
-import { ReactElement, ReactElement, useState, useState } from 'react'
-import { useTranslation, useTranslation } from 'react-i18next'
+import { ReactElement, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import { MenuItem } from '../../MenuItem'
-import { TeamAvatars, TeamAvatars } from '../TeamAvatars'
+import { TeamAvatars } from '../TeamAvatars'
 import { TeamCreateDialog } from '../TeamCreateDialog'
-import { TeamManageDialog, TeamManageDialog } from '../TeamManageDialog'
-import { useTeam, useTeam } from '../TeamProvider'
+import { TeamManageDialog } from '../TeamManageDialog'
+import { useTeam } from '../TeamProvider'
 import { TeamUpdateDialog } from '../TeamUpdateDialog'
 
 export function TeamMenu(): ReactElement {

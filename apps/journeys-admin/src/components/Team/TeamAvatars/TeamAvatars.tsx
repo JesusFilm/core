@@ -1,9 +1,11 @@
-import AvatarGroup from '@mui/material/AvatarGroup'
 import MuiAvatar from '@mui/material/Avatar'
-import { ReactElement } from 'react'
-import UserProfileAdd from '@core/shared/ui/icons/UserProfileAdd'
+import AvatarGroup from '@mui/material/AvatarGroup'
 import Box from '@mui/material/Box'
 import take from 'lodash/take'
+import { ReactElement } from 'react'
+
+import UserProfileAdd from '@core/shared/ui/icons/UserProfileAdd'
+
 import { GetLastActiveTeamIdAndTeams_teams_userTeams as UserTeam } from '../../../../__generated__/GetLastActiveTeamIdAndTeams'
 import { Avatar } from '../../Avatar'
 
