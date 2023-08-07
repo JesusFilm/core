@@ -1,7 +1,8 @@
-import { render } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
-import { SnackbarProvider } from 'notistack'
 import useMediaQuery from '@mui/material/useMediaQuery'
+import { render } from '@testing-library/react'
+import { SnackbarProvider } from 'notistack'
+
 import { ImageOptions } from './ImageOptions'
 
 jest.mock('@mui/material/useMediaQuery', () => ({

@@ -1,13 +1,15 @@
-import { ComponentProps } from 'react'
-import { Story, Meta } from '@storybook/react'
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
-import { simpleComponentConfig } from '../../libs/simpleComponentConfig'
-import type { TreeBlock } from '../../libs/block'
-import { StoryCard } from '../StoryCard'
+import { Meta, Story } from '@storybook/react'
+import { ComponentProps } from 'react'
+
 import { TypographyVariant } from '../../../__generated__/globalTypes'
-import { Typography } from '../Typography'
+import type { TreeBlock } from '../../libs/block'
+import { simpleComponentConfig } from '../../libs/simpleComponentConfig'
 import { RadioOptionFields } from '../RadioOption/__generated__/RadioOptionFields'
-import { RadioQuestion, RADIO_QUESTION_SUBMISSION_EVENT_CREATE } from '.'
+import { StoryCard } from '../StoryCard'
+import { Typography } from '../Typography'
+
+import { RADIO_QUESTION_SUBMISSION_EVENT_CREATE, RadioQuestion } from '.'
 
 const Demo = {
   ...simpleComponentConfig,

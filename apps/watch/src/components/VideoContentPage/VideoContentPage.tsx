@@ -1,22 +1,24 @@
 import Box from '@mui/material/Box'
 import Container from '@mui/material/Container'
 import Stack from '@mui/material/Stack'
-import { ReactElement, useState } from 'react'
 import { NextSeo } from 'next-seo'
-import { useVideo } from '../../libs/videoContext'
-import { PageWrapper } from '../PageWrapper'
-import { ShareDialog } from '../ShareDialog'
-import { DownloadDialog } from '../DownloadDialog'
-import { ShareButton } from '../ShareButton'
+import { ReactElement, useState } from 'react'
+
 import { useVideoChildren } from '../../libs/useVideoChildren'
-import { VideoCarousel } from '../VideoCarousel'
+import { useVideo } from '../../libs/videoContext'
+import { DownloadDialog } from '../DownloadDialog'
+import { PageWrapper } from '../PageWrapper'
+import { ShareButton } from '../ShareButton'
+import { ShareDialog } from '../ShareDialog'
 import { getSlug } from '../VideoCard'
-import { VideoContent } from './VideoContent/VideoContent'
+import { VideoCarousel } from '../VideoCarousel'
+
 import { DownloadButton } from './DownloadButton'
+import { VideoContent } from './VideoContent/VideoContent'
+import { VideoHeading } from './VideoHeading'
 import { VideoHero } from './VideoHero'
 
 import 'video.js/dist/video-js.css'
-import { VideoHeading } from './VideoHeading'
 
 // Usually FeatureFilm, ShortFilm, Episode or Segment Videos
 export function VideoContentPage(): ReactElement {

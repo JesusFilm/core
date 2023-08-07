@@ -1,8 +1,10 @@
-import { render, fireEvent, waitFor } from '@testing-library/react'
+import { fireEvent, render, waitFor } from '@testing-library/react'
 import { SWRConfig } from 'swr'
+
 import { VideoBlockSource } from '../../../../../../__generated__/globalTypes'
 import { mswServer } from '../../../../../../test/mswServer'
 import { getVideosWithOffsetAndUrl } from '../VideoFromYouTube.handlers'
+
 import { YouTubeDetails } from '.'
 
 describe('YouTubeDetails', () => {

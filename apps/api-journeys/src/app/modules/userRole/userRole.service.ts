@@ -1,5 +1,7 @@
 import { Injectable } from '@nestjs/common'
+
 import { UserRole } from '.prisma/api-journeys-client'
+
 import { PrismaService } from '../../lib/prisma.service'
 
 @Injectable()

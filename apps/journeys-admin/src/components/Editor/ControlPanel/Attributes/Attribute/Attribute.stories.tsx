@@ -1,7 +1,10 @@
-import { Story, Meta } from '@storybook/react'
 import PaletteIcon from '@mui/icons-material/Palette'
+import { Meta, Story } from '@storybook/react'
+
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
+
 import { simpleComponentConfig } from '../../../../../libs/storybook'
+
 import { Attribute } from '.'
 
 const AttributeStory = {

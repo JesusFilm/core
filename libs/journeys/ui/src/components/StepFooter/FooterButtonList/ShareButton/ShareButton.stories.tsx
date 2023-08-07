@@ -1,8 +1,10 @@
 import { Meta, Story } from '@storybook/react'
 import { SnackbarProvider } from 'notistack'
-import { journeyUiConfig } from '../../../../libs/journeyUiConfig'
+
 import { JourneyProvider } from '../../../../libs/JourneyProvider'
 import { JourneyFields as Journey } from '../../../../libs/JourneyProvider/__generated__/JourneyFields'
+import { journeyUiConfig } from '../../../../libs/journeyUiConfig'
+
 import { ShareButton } from './ShareButton'
 
 const Demo = {

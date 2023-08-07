@@ -1,19 +1,21 @@
 import { ReactElement } from 'react'
+import { useTranslation } from 'react-i18next'
+
 import { transformer } from '@core/journeys/ui/transformer'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
-import { useTranslation } from 'react-i18next'
-import { Conductor } from '../src/components/Conductor'
+
 import { GetJourney_journey_blocks as Block } from '../__generated__/GetJourney'
 import {
-  ThemeName,
-  ThemeMode,
-  TypographyAlign,
-  TypographyVariant,
   ButtonColor,
-  ButtonVariant,
   ButtonSize,
-  IconName
+  ButtonVariant,
+  IconName,
+  ThemeMode,
+  ThemeName,
+  TypographyAlign,
+  TypographyVariant
 } from '../__generated__/globalTypes'
+import { Conductor } from '../src/components/Conductor'
 
 export function Custom500(): ReactElement {
   const { t } = useTranslation('apps-journeys')

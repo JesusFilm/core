@@ -1,4 +1,5 @@
 import { render } from '@testing-library/react'
+
 import { CloudflareDetails } from './CloudflareDetails'
 
 jest.mock('@mui/material/useMediaQuery', () => ({

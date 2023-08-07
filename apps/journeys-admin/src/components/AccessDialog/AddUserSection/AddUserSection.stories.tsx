@@ -1,7 +1,9 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { Story, Meta } from '@storybook/react'
+import { Meta, Story } from '@storybook/react'
 import { screen, userEvent, waitFor } from '@storybook/testing-library'
+
 import { journeysAdminConfig } from '../../../libs/storybook'
+
 import { AddUserSection } from '.'
 
 const AddUsersSectionStory = {

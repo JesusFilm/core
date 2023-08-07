@@ -1,8 +1,10 @@
 import { Meta, Story } from '@storybook/react'
-import { userEvent, screen } from '@storybook/testing-library'
-import { VideoProvider } from '../../../libs/videoContext'
+import { screen, userEvent } from '@storybook/testing-library'
+
 import { watchConfig } from '../../../libs/storybook'
+import { VideoProvider } from '../../../libs/videoContext'
 import { videos } from '../../Videos/__generated__/testData'
+
 import { VideoContent } from './VideoContent'
 
 const VideoContentStory = {

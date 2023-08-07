@@ -1,5 +1,6 @@
-import { ComponentProps, ReactElement } from 'react'
 import Typography from '@mui/material/Typography'
+import { ComponentProps, ReactElement } from 'react'
+
 import { Dialog } from '@core/shared/ui/Dialog'
 
 interface TermsOfUseDialogProps

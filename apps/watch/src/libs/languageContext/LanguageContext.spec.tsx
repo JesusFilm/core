@@ -1,5 +1,6 @@
 import { render } from '@testing-library/react'
 import { ReactElement } from 'react'
+
 import { LanguageProvider, useLanguage } from './LanguageContext'
 
 const TestComponent = (): ReactElement => {

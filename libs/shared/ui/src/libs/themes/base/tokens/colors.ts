@@ -1,4 +1,4 @@
-import { ThemeOptions, SimplePaletteColorOptions } from '@mui/material/styles'
+import { SimplePaletteColorOptions, ThemeOptions } from '@mui/material/styles'
 
 const errorLight = '#FF6B58'
 const errorDark = '#B62D1C'

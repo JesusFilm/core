@@ -1,5 +1,7 @@
 import { render } from '@testing-library/react'
+
 import { GetAdminJourneys_journeys_userJourneys_user as User } from '../../../__generated__/GetAdminJourneys'
+
 import { Avatar } from '.'
 
 describe('Avatar', () => {

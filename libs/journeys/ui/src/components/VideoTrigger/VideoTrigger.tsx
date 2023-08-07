@@ -1,9 +1,11 @@
-import Player from 'video.js/dist/types/player'
+import fscreen from 'fscreen'
 import { useRouter } from 'next/router'
 import { ReactElement, useEffect, useState } from 'react'
-import fscreen from 'fscreen'
-import type { TreeBlock } from '../../libs/block'
+import Player from 'video.js/dist/types/player'
+
 import { handleAction } from '../../libs/action'
+import type { TreeBlock } from '../../libs/block'
+
 import { VideoTriggerFields } from './__generated__/VideoTriggerFields'
 
 type VideoTriggerProps = (

@@ -1,15 +1,18 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { render } from '@testing-library/react'
+
 import type { TreeBlock } from '@core/journeys/ui/block'
+
 import {
   GetJourney_journey_blocks_CardBlock as CardBlock,
   GetJourney_journey_blocks_StepBlock as StepBlock
 } from '../../../../../__generated__/GetJourney'
 import {
-  ThemeName,
   ThemeMode,
+  ThemeName,
   VideoBlockSource
 } from '../../../../../__generated__/globalTypes'
+
 import { Attributes } from '.'
 
 jest.mock('react-i18next', () => ({

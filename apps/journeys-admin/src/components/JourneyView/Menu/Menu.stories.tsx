@@ -1,13 +1,16 @@
-import { Story, Meta } from '@storybook/react'
-import { screen, userEvent } from '@storybook/testing-library'
 import { MockedProvider } from '@apollo/client/testing'
+import { Meta, Story } from '@storybook/react'
+import { screen, userEvent } from '@storybook/testing-library'
+
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
-import { simpleComponentConfig } from '../../../libs/storybook'
+
 import { JourneyStatus, Role } from '../../../../__generated__/globalTypes'
-import { defaultJourney } from '../data'
+import { simpleComponentConfig } from '../../../libs/storybook'
 import { TeamProvider } from '../../Team/TeamProvider'
+import { defaultJourney } from '../data'
+
 import { GET_LANGUAGES } from './LanguageDialog'
-import { Menu, JOURNEY_PUBLISH, GET_ROLE } from './Menu'
+import { GET_ROLE, JOURNEY_PUBLISH, Menu } from './Menu'
 
 const MenuStory = {
   ...simpleComponentConfig,

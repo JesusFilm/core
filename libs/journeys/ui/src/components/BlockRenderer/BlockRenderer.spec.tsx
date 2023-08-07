@@ -4,10 +4,11 @@ import { SnackbarProvider } from 'notistack'
 import { v4 as uuidv4 } from 'uuid'
 
 import { VideoBlockSource } from '../../../__generated__/globalTypes'
-import { blockHistoryVar, TreeBlock } from '../../libs/block'
+import { TreeBlock, blockHistoryVar } from '../../libs/block'
 import { RadioOptionFields } from '../RadioOption/__generated__/RadioOptionFields'
 import { RadioQuestionFields } from '../RadioQuestion/__generated__/RadioQuestionFields'
 import { STEP_VIEW_EVENT_CREATE } from '../Step/Step'
+
 import { BlockRenderer } from '.'
 
 jest.mock('uuid', () => ({

@@ -1,9 +1,11 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
+
 import {
   LIST_UNSPLASH_COLLECTION_PHOTOS,
   SEARCH_UNSPLASH_PHOTOS
 } from './UnsplashGallery'
+
 import { UnsplashGallery } from '.'
 
 describe('UnsplashGallery', () => {

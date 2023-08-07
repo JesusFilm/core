@@ -1,8 +1,11 @@
-import { Story, Meta } from '@storybook/react'
 import Grid from '@mui/material/Grid'
-import { simpleComponentConfig } from '../../../../libs/storybook'
+import { Meta, Story } from '@storybook/react'
+
 import { JourneyStatus } from '../../../../../__generated__/globalTypes'
+import { simpleComponentConfig } from '../../../../libs/storybook'
+
 import { StatusChipProps } from './StatusChip'
+
 import { StatusChip } from '.'
 
 const StatusChipDemo = {

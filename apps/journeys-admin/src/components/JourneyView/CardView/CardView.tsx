@@ -1,11 +1,13 @@
-import { ReactElement } from 'react'
-import Typography from '@mui/material/Typography'
-import Skeleton from '@mui/material/Skeleton'
 import Box from '@mui/material/Box'
-import type { TreeBlock } from '@core/journeys/ui/block'
-import { useBreakpoints } from '@core/shared/ui/useBreakpoints'
+import Skeleton from '@mui/material/Skeleton'
+import Typography from '@mui/material/Typography'
 import { useRouter } from 'next/router'
+import { ReactElement } from 'react'
+
+import type { TreeBlock } from '@core/journeys/ui/block'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import { useBreakpoints } from '@core/shared/ui/useBreakpoints'
+
 import { BlockFields_StepBlock as StepBlock } from '../../../../__generated__/BlockFields'
 import { CardPreview, OnSelectProps } from '../../CardPreview'
 

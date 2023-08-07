@@ -1,7 +1,9 @@
+import { Meta, Story } from '@storybook/react'
 import { ComponentProps } from 'react'
-import { Story, Meta } from '@storybook/react'
+
 import { watchConfig } from '../../../libs/storybook'
 import { languages } from '../testData'
+
 import { FilterList } from './FilterList'
 
 const FilterListStory = {

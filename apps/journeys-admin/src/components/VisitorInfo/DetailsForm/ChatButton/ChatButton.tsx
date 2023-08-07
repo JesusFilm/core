@@ -1,7 +1,8 @@
-import { ReactElement } from 'react'
 import ChatRoundedIcon from '@mui/icons-material/ChatRounded'
 import Button from '@mui/material/Button'
+import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
+
 import { MessagePlatform } from '../../../../../__generated__/globalTypes'
 
 interface Props {

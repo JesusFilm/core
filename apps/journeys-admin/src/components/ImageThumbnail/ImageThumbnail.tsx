@@ -1,9 +1,9 @@
-import { ReactElement, ReactNode } from 'react'
+import BrokenImageOutlined from '@mui/icons-material/BrokenImageOutlined'
+import NoteAddIcon from '@mui/icons-material/NoteAdd'
+import Box from '@mui/material/Box'
 import CircularProgress from '@mui/material/CircularProgress'
 import Icon from '@mui/material/Icon'
-import BrokenImageOutlined from '@mui/icons-material/BrokenImageOutlined'
-import Box from '@mui/material/Box'
-import NoteAddIcon from '@mui/icons-material/NoteAdd'
+import { ReactElement, ReactNode } from 'react'
 
 interface ImageThumbnailProps {
   imageSrc?: string | null

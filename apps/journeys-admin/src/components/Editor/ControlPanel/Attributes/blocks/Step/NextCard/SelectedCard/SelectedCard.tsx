@@ -1,27 +1,29 @@
-import { ReactElement, useState, useEffect } from 'react'
 import { gql, useMutation } from '@apollo/client'
+import LockRoundedIcon from '@mui/icons-material/LockRounded'
+import RemoveCircleOutlineRoundedIcon from '@mui/icons-material/RemoveCircleOutlineRounded'
 import Box from '@mui/material/Box'
 import IconButton from '@mui/material/IconButton'
-import Typography from '@mui/material/Typography'
 import Stack from '@mui/material/Stack'
-import RemoveCircleOutlineRoundedIcon from '@mui/icons-material/RemoveCircleOutlineRounded'
-import LockRoundedIcon from '@mui/icons-material/LockRounded'
-import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
-import { useEditor } from '@core/journeys/ui/EditorProvider'
+import Typography from '@mui/material/Typography'
+import last from 'lodash/last'
+import { ReactElement, useEffect, useState } from 'react'
+
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { BlockRenderer } from '@core/journeys/ui/BlockRenderer'
+import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { getJourneyRTL } from '@core/journeys/ui/rtl'
-import last from 'lodash/last'
-import { StepFields } from '../../../../../../../../../__generated__/StepFields'
-import { StepBlockNextBlockUpdate } from '../../../../../../../../../__generated__/StepBlockNextBlockUpdate'
+import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
+
 import {
   ThemeMode,
   ThemeName
 } from '../../../../../../../../../__generated__/globalTypes'
+import { StepBlockNextBlockUpdate } from '../../../../../../../../../__generated__/StepBlockNextBlockUpdate'
+import { StepFields } from '../../../../../../../../../__generated__/StepFields'
 import { FramePortal } from '../../../../../../../FramePortal'
-import { VideoWrapper } from '../../../../../../Canvas/VideoWrapper'
 import { CardWrapper } from '../../../../../../Canvas/CardWrapper'
+import { VideoWrapper } from '../../../../../../Canvas/VideoWrapper'
 
 export const STEP_BLOCK_DEFAULT_NEXT_BLOCK_UPDATE = gql`
   mutation StepBlockDefaultNextBlockUpdate(

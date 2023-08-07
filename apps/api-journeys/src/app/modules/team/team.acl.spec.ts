@@ -1,6 +1,8 @@
-import { Test, TestingModule } from '@nestjs/testing'
 import { subject } from '@casl/ability'
-import { UserTeamRole, Team } from '.prisma/api-journeys-client'
+import { Test, TestingModule } from '@nestjs/testing'
+
+import { Team, UserTeamRole } from '.prisma/api-journeys-client'
+
 import { Action, AppAbility, AppCaslFactory } from '../../lib/casl/caslFactory'
 
 describe('teamAcl', () => {

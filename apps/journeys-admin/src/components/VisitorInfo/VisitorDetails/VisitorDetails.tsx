@@ -1,12 +1,13 @@
-import { ReactElement } from 'react'
 import { gql, useQuery } from '@apollo/client'
-import Stack from '@mui/material/Stack'
-import Typography from '@mui/material/Typography'
 import ChatBubbleOutlineRoundedIcon from '@mui/icons-material/ChatBubbleOutlineRounded'
 import LocationOnOutlinedIcon from '@mui/icons-material/LocationOnOutlined'
-import PhoneIphoneOutlinedIcon from '@mui/icons-material/PhoneIphoneOutlined'
 import PersonOutlinedIcon from '@mui/icons-material/PersonOutlined'
-import { parseISO, intlFormat } from 'date-fns'
+import PhoneIphoneOutlinedIcon from '@mui/icons-material/PhoneIphoneOutlined'
+import Stack from '@mui/material/Stack'
+import Typography from '@mui/material/Typography'
+import { intlFormat, parseISO } from 'date-fns'
+import { ReactElement } from 'react'
+
 import { GetVisitorForDetails } from '../../../../__generated__/GetVisitorForDetails'
 
 export const GET_VISITOR_FOR_DETAILS = gql`

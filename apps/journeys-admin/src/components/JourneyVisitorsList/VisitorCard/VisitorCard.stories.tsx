@@ -1,7 +1,9 @@
 import { Meta, Story } from '@storybook/react'
 import { ComponentProps } from 'react'
-import { journeysAdminConfig } from '../../../libs/storybook'
+
 import { VisitorStatus } from '../../../../__generated__/globalTypes'
+import { journeysAdminConfig } from '../../../libs/storybook'
+
 import { VisitorCard } from '.'
 
 const VisitorCardStory = {

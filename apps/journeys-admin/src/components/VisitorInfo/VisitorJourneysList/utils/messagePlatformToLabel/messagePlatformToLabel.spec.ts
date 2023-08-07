@@ -1,4 +1,5 @@
 import { MessagePlatform } from '../../../../../../__generated__/globalTypes'
+
 import { messagePlatformToLabel } from './messagePlatformToLabel'
 
 describe('messagePlatformToLabel', () => {

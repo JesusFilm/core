@@ -1,13 +1,15 @@
+import Box from '@mui/material/Box'
 import Container from '@mui/material/Container'
+import Stack from '@mui/material/Stack'
 import { useRouter } from 'next/router'
 import { ReactElement, useState } from 'react'
-import Box from '@mui/material/Box'
-import Stack from '@mui/material/Stack'
+
+import { useVideoChildren } from '../../libs/useVideoChildren'
+import { useVideo } from '../../libs/videoContext'
 import { PageWrapper } from '../PageWrapper'
 import { ShareDialog } from '../ShareDialog'
 import { VideoGrid } from '../VideoGrid/VideoGrid'
-import { useVideo } from '../../libs/videoContext'
-import { useVideoChildren } from '../../libs/useVideoChildren'
+
 import { ContainerDescription } from './ContainerDescription'
 import { ContainerHero } from './ContainerHero'
 

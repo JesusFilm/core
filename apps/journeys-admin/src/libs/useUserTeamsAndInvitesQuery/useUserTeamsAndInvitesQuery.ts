@@ -1,5 +1,6 @@
-import { useQuery, gql, QueryResult } from '@apollo/client'
+import { QueryResult, gql, useQuery } from '@apollo/client'
 import { useMemo } from 'react'
+
 import {
   GetUserTeamsAndInvites,
   GetUserTeamsAndInvitesVariables

@@ -1,7 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing'
-import { EventService } from '../event.service'
+
 import { RadioQuestionSubmissionEventCreateInput } from '../../../__generated__/graphql'
 import { PrismaService } from '../../../lib/prisma.service'
+import { EventService } from '../event.service'
+
 import { RadioQuestionSubmissionEventResolver } from './radioQuestion.resolver'
 
 describe('RadioQuestionSubmissionEventResolver', () => {

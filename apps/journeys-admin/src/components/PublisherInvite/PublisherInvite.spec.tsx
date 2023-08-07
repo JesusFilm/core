@@ -1,4 +1,5 @@
 import { render } from '@testing-library/react'
+
 import { PublisherInvite } from './PublisherInvite'
 
 describe('PublisherInvite ', () => {
