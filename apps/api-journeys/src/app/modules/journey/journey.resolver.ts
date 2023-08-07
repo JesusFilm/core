@@ -338,13 +338,16 @@ export class JourneyResolver {
       journey.title
     )
     const duplicateNumber = this.getFirstMissingNumber(duplicates)
-    const duplicateTitle = `${journey.title}${
-      duplicateNumber === 0
-        ? ''
-        : duplicateNumber === 1
-        ? ' copy'
-        : ` copy ${duplicateNumber}`
-    }`.trimEnd()
+    const duplicateTitle =
+      journey.template === true
+        ? journey.title
+        : `${journey.title}${
+            duplicateNumber === 0
+              ? ''
+              : duplicateNumber === 1
+              ? ' copy'
+              : ` copy ${duplicateNumber}`
+          }`.trimEnd()
 
     let slug = slugify(duplicateTitle, {
       lower: true,
