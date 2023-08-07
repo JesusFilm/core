@@ -12,6 +12,7 @@ import { Action, AppAbility, AppCaslFactory } from '../../lib/casl/caslFactory'
 describe('visitorAcl', () => {
   let factory: AppCaslFactory, ability: AppAbility
   const user = { id: 'userId' }
+
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [AppCaslFactory]
@@ -19,6 +20,7 @@ describe('visitorAcl', () => {
     factory = module.get<AppCaslFactory>(AppCaslFactory)
     ability = await factory.createAbility(user)
   })
+
   const visitorUserTeamManager = subject('Visitor', {
     id: 'visitorId',
     team: {
@@ -76,24 +78,30 @@ describe('visitorAcl', () => {
     id: 'visitorId',
     userId: user.id
   } as unknown as Visitor)
+
   describe('manage', () => {
     it('allow when user is team manager', () => {
-      expect(ability.can(Action.Manage, visitorUserTeamManager)).toEqual(true)
+      expect(ability.can(Action.Manage, visitorUserTeamManager)).toBe(true)
     })
+
     it('allow when user is journey owner', () => {
-      expect(ability.can(Action.Manage, visitorUserJourneyOwner)).toEqual(true)
+      expect(ability.can(Action.Manage, visitorUserJourneyOwner)).toBe(true)
     })
+
     it('allow when user is team member', () => {
-      expect(ability.can(Action.Manage, visitorUserTeamMember)).toEqual(true)
+      expect(ability.can(Action.Manage, visitorUserTeamMember)).toBe(true)
     })
+
     it('allow when user is journey editor', () => {
-      expect(ability.can(Action.Manage, visitorUserJourneyEditor)).toEqual(true)
+      expect(ability.can(Action.Manage, visitorUserJourneyEditor)).toBe(true)
     })
+
     it('allow when user is visitor', () => {
-      expect(ability.can(Action.Manage, visitorUser)).toEqual(true)
+      expect(ability.can(Action.Manage, visitorUser)).toBe(true)
     })
+
     it('deny when user has no userTeam or relevant journey', () => {
-      expect(ability.can(Action.Create, visitorEmpty)).toEqual(false)
+      expect(ability.can(Action.Create, visitorEmpty)).toBe(false)
     })
   })
 })

@@ -235,6 +235,7 @@ describe('CardPreview', () => {
       })
     )
   })
+
   it('should navigate to actions table when clicked', async () => {
     const onSelect = jest.fn()
 

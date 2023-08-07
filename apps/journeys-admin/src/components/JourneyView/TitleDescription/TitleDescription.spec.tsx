@@ -37,6 +37,7 @@ describe('TitleDescription', () => {
       ...defaultJourney,
       template: true
     }
+
     it('should render the title and description of a template', () => {
       const { getByText, getByTestId } = render(
         <MockedProvider>

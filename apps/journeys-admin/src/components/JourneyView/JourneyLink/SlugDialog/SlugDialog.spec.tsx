@@ -32,7 +32,7 @@ describe('JourneyView/Properties/SlugDialog', () => {
     })
     fireEvent.click(getByRole('button', { name: 'Cancel' }))
 
-    await waitFor(() => expect(onClose).toBeCalled())
+    await waitFor(() => expect(onClose).toHaveBeenCalled())
   })
 
   it('should update journey slug on submit', async () => {

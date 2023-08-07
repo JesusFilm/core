@@ -138,6 +138,7 @@ describe('BackgroundMediaImage', () => {
   beforeEach(() => (useMediaQuery as jest.Mock).mockImplementation(() => true))
 
   let originalEnv
+
   beforeEach(() => {
     originalEnv = process.env
     process.env = {
@@ -323,6 +324,7 @@ describe('BackgroundMediaImage', () => {
         }
       ]
     }
+
     it('updates image cover block', async () => {
       const cache = new InMemoryCache()
       cache.restore({

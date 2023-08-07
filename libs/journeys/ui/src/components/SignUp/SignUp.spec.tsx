@@ -206,7 +206,7 @@ describe('SignUp', () => {
     fireEvent.click(submit)
 
     await waitFor(() => {
-      expect(handleAction).toBeCalledWith(
+      expect(handleAction).toHaveBeenCalledWith(
         {
           push: expect.any(Function)
         },
@@ -293,7 +293,7 @@ describe('SignUp', () => {
     fireEvent.click(submit)
 
     await waitFor(() => {
-      expect(result).toBeCalled()
+      expect(result).toHaveBeenCalled()
     })
   })
 

@@ -76,82 +76,84 @@ jest.mock('@mui/material/useMediaQuery', () => ({
   default: () => true
 }))
 
-beforeEach(() => {
-  const useBreakpointsMock = useBreakpoints as jest.Mock
-  useBreakpointsMock.mockReturnValue({
-    xs: false,
-    sm: false,
-    md: false,
-    lg: false,
-    xl: true
+describe('Conductor', () => {
+  beforeEach(() => {
+    const useBreakpointsMock = useBreakpoints as jest.Mock
+    useBreakpointsMock.mockReturnValue({
+      xs: false,
+      sm: false,
+      md: false,
+      lg: false,
+      xl: true
+    })
   })
-})
 
-const rtlLanguage: Language = {
-  __typename: 'Language',
-  id: '529',
-  bcp47: 'ar',
-  iso3: 'arb',
-  name: [
-    {
-      __typename: 'Translation',
-      value: 'Arabic',
-      primary: false
-    }
-  ]
-}
-
-const visitorUpdateMock = {
-  request: {
-    query: JOURNEY_VISITOR_UPDATE,
-    variables: {
-      input: {
-        countryCode: 'Blenheim, Marlborough, New Zealand',
-        referrer: ''
-      }
-    }
-  },
-  result: {
-    data: { visitorUpdateForCurrentUser: { id: 'uuid', __typename: 'Visitor' } }
-  }
-}
-
-const defaultJourney: Journey = {
-  __typename: 'Journey',
-  id: 'journeyId',
-  themeName: ThemeName.base,
-  themeMode: ThemeMode.light,
-  title: 'my journey',
-  slug: 'my-journey',
-  language: {
+  const rtlLanguage: Language = {
     __typename: 'Language',
     id: '529',
-    bcp47: 'en',
-    iso3: 'eng',
+    bcp47: 'ar',
+    iso3: 'arb',
     name: [
       {
         __typename: 'Translation',
-        value: 'English',
-        primary: true
+        value: 'Arabic',
+        primary: false
       }
     ]
-  },
-  description: 'my cool journey',
-  status: JourneyStatus.draft,
-  createdAt: '2021-11-19T12:34:56.647Z',
-  publishedAt: null,
-  blocks: [],
-  primaryImageBlock: null,
-  userJourneys: [],
-  template: null,
-  seoTitle: null,
-  seoDescription: null,
-  chatButtons: [],
-  host: null,
-  team: null
-}
+  }
 
-describe('Conductor', () => {
+  const visitorUpdateMock = {
+    request: {
+      query: JOURNEY_VISITOR_UPDATE,
+      variables: {
+        input: {
+          countryCode: 'Blenheim, Marlborough, New Zealand',
+          referrer: ''
+        }
+      }
+    },
+    result: {
+      data: {
+        visitorUpdateForCurrentUser: { id: 'uuid', __typename: 'Visitor' }
+      }
+    }
+  }
+
+  const defaultJourney: Journey = {
+    __typename: 'Journey',
+    id: 'journeyId',
+    themeName: ThemeName.base,
+    themeMode: ThemeMode.light,
+    title: 'my journey',
+    slug: 'my-journey',
+    language: {
+      __typename: 'Language',
+      id: '529',
+      bcp47: 'en',
+      iso3: 'eng',
+      name: [
+        {
+          __typename: 'Translation',
+          value: 'English',
+          primary: true
+        }
+      ]
+    },
+    description: 'my cool journey',
+    status: JourneyStatus.draft,
+    createdAt: '2021-11-19T12:34:56.647Z',
+    publishedAt: null,
+    blocks: [],
+    primaryImageBlock: null,
+    userJourneys: [],
+    template: null,
+    seoTitle: null,
+    seoDescription: null,
+    chatButtons: [],
+    host: null,
+    team: null
+  }
+
   it('should create a journeyViewEvent', async () => {
     mockUuidv4.mockReturnValueOnce('uuid')
 

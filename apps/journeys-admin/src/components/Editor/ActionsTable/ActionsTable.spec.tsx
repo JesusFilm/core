@@ -115,6 +115,7 @@ describe('ActionsTable', () => {
     )
     expect(getByText('Every Journey has a goal')).toBeInTheDocument()
   })
+
   it('should render a list of actions', () => {
     const { getByText, getAllByText, getByTestId } = render(
       <JourneyProvider

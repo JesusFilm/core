@@ -41,12 +41,11 @@ jest.mock('../../libs/useCurrentUser', () => ({
     loadUser: jest.fn(),
     data: {
       __typename: 'User',
-      ...user1
+      id: 'userId',
+      email: 'siyangguccigang@example.com'
     }
   })
 }))
-
-const user1 = { id: 'userId', email: 'siyangguccigang@example.com' }
 
 const mockUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
 
@@ -194,6 +193,7 @@ describe('TeamOnboarding', () => {
     const { getByRole } = render(
       <MockedProvider
         mocks={[
+          teamCreateMock,
           {
             request: {
               query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
@@ -222,6 +222,7 @@ describe('TeamOnboarding', () => {
 
     fireEvent.change(getByRole('textbox'), { target: { value: 'Team Title' } })
     fireEvent.click(getByRole('button', { name: 'Create' }))
+    await waitFor(() => expect(result).toHaveBeenCalled())
   })
 
   it('shows team invites form once team has been created', async () => {

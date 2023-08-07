@@ -13,6 +13,7 @@ jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
   default: () => true
 }))
+
 describe('Edit Toolbar', () => {
   it('should render Toolbar', () => {
     const { getAllByRole, getByTestId } = render(

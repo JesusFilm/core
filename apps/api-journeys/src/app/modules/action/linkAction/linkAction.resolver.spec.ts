@@ -67,6 +67,7 @@ describe('LinkActionResolver', () => {
     ) as DeepMockProxy<PrismaService>
     ability = await new AppCaslFactory().createAbility({ id: 'userId' })
   })
+
   describe('blockUpdateLinkAction', () => {
     it('updates link action', async () => {
       prismaService.block.findUnique.mockResolvedValueOnce(blockWithUserTeam)
@@ -83,6 +84,7 @@ describe('LinkActionResolver', () => {
         }
       })
     })
+
     it('throws error if typename is wrong', async () => {
       const wrongBlock = {
         ...blockWithUserTeam,
@@ -93,12 +95,14 @@ describe('LinkActionResolver', () => {
         resolver.blockUpdateLinkAction(ability, wrongBlock.id, input)
       ).rejects.toThrow('This block does not support link actions')
     })
+
     it('throws error if not found', async () => {
       prismaService.block.findUnique.mockResolvedValueOnce(null)
       await expect(
         resolver.blockUpdateLinkAction(ability, block.id, input)
       ).rejects.toThrow('block not found')
     })
+
     it('throws error if not authorized', async () => {
       prismaService.block.findUnique.mockResolvedValueOnce(block)
       await expect(

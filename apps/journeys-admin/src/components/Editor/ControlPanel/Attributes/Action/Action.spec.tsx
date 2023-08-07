@@ -55,6 +55,7 @@ describe('Action', () => {
       )
     )
   })
+
   it('disables Next Step option if there is no next step', async () => {
     const selectedStep = steps[4]
     const { getByRole } = render(

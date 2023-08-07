@@ -19,6 +19,7 @@ describe('DescriptionEdit', () => {
     )
     expect(getByText('Recommended length: up to 18 words')).toBeInTheDocument()
   })
+
   it('should display seo description', () => {
     const { getByText } = render(
       <MockedProvider>
@@ -37,6 +38,7 @@ describe('DescriptionEdit', () => {
     )
     expect(getByText('social description')).toBeInTheDocument()
   })
+
   it('should display journey description when seo description not set', () => {
     const { getByText } = render(
       <MockedProvider>
@@ -55,6 +57,7 @@ describe('DescriptionEdit', () => {
     )
     expect(getByText('journey description')).toBeInTheDocument()
   })
+
   it('should display empty form when journey description and seo description not set', () => {
     const { getByRole } = render(
       <MockedProvider>
@@ -73,6 +76,7 @@ describe('DescriptionEdit', () => {
     )
     expect(getByRole('textbox')).toBeEmptyDOMElement()
   })
+
   it('should update seo description', async () => {
     const result = jest.fn(() => ({
       data: {

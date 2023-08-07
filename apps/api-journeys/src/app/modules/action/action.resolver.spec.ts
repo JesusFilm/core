@@ -109,23 +109,28 @@ describe('ActionResolver', () => {
     it('returns EmailAction', () => {
       expect(resolver.__resolveType(emailAction)).toBe('EmailAction')
     })
+
     it('returns LinkAction', () => {
       expect(resolver.__resolveType(linkAction)).toBe('LinkAction')
     })
+
     it('returns NavigateAction', () => {
       expect(resolver.__resolveType(navigateAction)).toBe('NavigateAction')
     })
+
     it('returns NavigateToBlockAction', () => {
       expect(resolver.__resolveType(navigateToBlockAction)).toBe(
         'NavigateToBlockAction'
       )
     })
+
     it('returns NavigateToJourneyAction', () => {
       expect(resolver.__resolveType(navigateToJourneyAction)).toBe(
         'NavigateToJourneyAction'
       )
     })
   })
+
   describe('blockDeleteAction', () => {
     it('deletes the block action', async () => {
       prismaService.block.findUnique.mockResolvedValueOnce(blockWithUserTeam)
@@ -135,6 +140,7 @@ describe('ActionResolver', () => {
         where: { parentBlockId: blockWithUserTeam.id }
       })
     })
+
     it('throws an error if typename is wrong', async () => {
       const wrongBlock = {
         ...blockWithUserTeam,
@@ -145,12 +151,14 @@ describe('ActionResolver', () => {
         resolver.blockDeleteAction(ability, wrongBlock.id)
       ).rejects.toThrow('This block does not support actions')
     })
+
     it('throws error if not found', async () => {
       prismaService.block.findUnique.mockResolvedValueOnce(null)
       await expect(
         resolver.blockDeleteAction(ability, block.id)
       ).rejects.toThrow('block not found')
     })
+
     it('throws error if not authorized', async () => {
       prismaService.block.findUnique.mockResolvedValueOnce(block)
       await expect(

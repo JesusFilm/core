@@ -54,7 +54,7 @@ describe('Icon', () => {
     expect(getByText('Color')).toBeInTheDocument()
   })
 
-  it('hides toggle options if there is no icon ', () => {
+  it('hides toggle options if there is no icon', () => {
     const testIcon = {
       ...icon,
       iconName: null

@@ -122,7 +122,7 @@ describe('ChatButtons', () => {
     )
 
     const buttons = getAllByRole('button')
-    expect(buttons.length).toBe(chatButtons.length)
+    expect(buttons).toHaveLength(chatButtons.length)
     expect(getByTestId('FacebookIcon')).toBeInTheDocument()
     expect(getByTestId('TelegramIcon')).toBeInTheDocument()
   })

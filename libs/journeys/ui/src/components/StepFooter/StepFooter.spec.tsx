@@ -165,7 +165,7 @@ describe('StepFooter', () => {
 
     fireEvent.click(getByTestId('stepFooter'))
 
-    expect(onFooterClick).toBeCalledTimes(1)
+    expect(onFooterClick).toHaveBeenCalledTimes(1)
     expect(getByTestId('Plus2Icon')).toBeInTheDocument()
   })
 

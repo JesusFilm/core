@@ -35,6 +35,7 @@ describe('ButtonEdit', () => {
     action: null,
     children: []
   }
+
   it('selects the input on click', () => {
     const { getByRole } = render(
       <MockedProvider>

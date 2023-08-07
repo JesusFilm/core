@@ -157,7 +157,7 @@ describe('HostAvatars', () => {
 
       const avatars = getByRole('img')
       expect(avatars).toBeInTheDocument()
-      expect(avatars.getAttribute('src')).toEqual('avatar1.jpg')
+      expect(avatars.getAttribute('src')).toBe('avatar1.jpg')
       const adminPlaceholderElement = getByTestId('host-avatar-placeholder')
       expect(adminPlaceholderElement).toBeInTheDocument()
     })

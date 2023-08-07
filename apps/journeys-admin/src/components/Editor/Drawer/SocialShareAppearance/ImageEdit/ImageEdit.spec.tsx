@@ -25,6 +25,7 @@ jest.mock('@mui/material/useMediaQuery', () => ({
 
 describe('ImageEdit', () => {
   let originalEnv
+
   beforeEach(() => {
     originalEnv = process.env
     process.env = {
@@ -48,6 +49,7 @@ describe('ImageEdit', () => {
     height: 1080,
     blurhash: ''
   }
+
   it('should disaply placeholder icon when no image set', () => {
     const { getAllByTestId } = render(
       <MockedProvider>

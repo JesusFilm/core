@@ -19,17 +19,19 @@ const mockUseHostUpdate = useHostUpdate as jest.MockedFunction<
   typeof useHostUpdate
 >
 
-const updateHost = jest.fn()
-beforeEach(() => {
-  mockUseHostUpdate.mockReturnValue({
-    updateHost
-  })
-})
-afterEach(() => {
-  jest.resetAllMocks()
-})
-
 describe('HostAvatarsButton', () => {
+  const updateHost = jest.fn()
+
+  beforeEach(() => {
+    mockUseHostUpdate.mockReturnValue({
+      updateHost
+    })
+  })
+
+  afterEach(() => {
+    jest.resetAllMocks()
+  })
+
   const defaultHost = {
     id: 'hostId',
     __typename: 'Host' as const,
@@ -47,7 +49,7 @@ describe('HostAvatarsButton', () => {
     host: defaultHost
   } as unknown as Journey
 
-  it('should display default icon if no avatars set ', () => {
+  it('should display default icon if no avatars set', () => {
     const { getByTestId } = render(
       <MockedProvider>
         <ThemeProvider>
@@ -73,7 +75,7 @@ describe('HostAvatarsButton', () => {
     )
   })
 
-  it('should display avatar image if set ', () => {
+  it('should display avatar image if set', () => {
     const { getByAltText } = render(
       <MockedProvider>
         <ThemeProvider>
@@ -140,9 +142,6 @@ describe('HostAvatarsButton', () => {
   })
 
   // TODO: Add to E2E when can mock out unsplash
-  xit('should change host image src on image change', () => {
-    render(<HostAvatarsButton />)
-  })
 
   it('should remove host image src on image delete', async () => {
     const result = jest.fn(() => ({

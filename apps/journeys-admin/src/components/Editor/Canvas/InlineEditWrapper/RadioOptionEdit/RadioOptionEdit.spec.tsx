@@ -199,6 +199,6 @@ describe('RadioOptionEdit', () => {
         <RadioOptionEdit {...args} />
       </MockedProvider>
     )
-    expect(getByRole('button', { name: '' }))
+    expect(getByRole('button', { name: '' })).toBeInTheDocument()
   })
 })

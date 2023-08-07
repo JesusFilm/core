@@ -55,6 +55,7 @@ describe('Footer', () => {
       dispatch: jest.fn()
     })
   })
+
   it('should display Footer attributes', () => {
     const { getByText } = render(
       <JourneyProvider

@@ -18,6 +18,7 @@ jest.mock('react-i18next', () => ({
     }
   }
 }))
+
 describe('UserTeamList', () => {
   const mockData: GetUserTeamsAndInvites = {
     userTeams: [

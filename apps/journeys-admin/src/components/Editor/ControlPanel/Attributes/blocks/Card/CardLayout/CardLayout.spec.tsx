@@ -55,7 +55,7 @@ const journey: Journey = {
 }
 
 describe('CardLayout', () => {
-  it('shows Contained ', () => {
+  it('shows Contained', () => {
     const card: TreeBlock<CardBlock> = {
       id: 'card1.id',
       __typename: 'CardBlock',

@@ -32,7 +32,7 @@ describe('JourneyView/Menu/DescriptionDialog', () => {
     })
     fireEvent.click(getByRole('button', { name: 'Cancel' }))
 
-    await waitFor(() => expect(onClose).toBeCalled())
+    await waitFor(() => expect(onClose).toHaveBeenCalled())
   })
 
   it('should update journey description on submit', async () => {

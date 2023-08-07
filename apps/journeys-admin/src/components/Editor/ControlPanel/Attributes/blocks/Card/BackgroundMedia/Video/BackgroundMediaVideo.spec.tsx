@@ -408,6 +408,7 @@ describe('BackgroundMediaVideo', () => {
         coverBlockId: video.id,
         children: [{ ...video, videoId: 'id' }]
       }
+
       it('shows settings', async () => {
         const { getAllByRole } = render(
           <MockedProvider>

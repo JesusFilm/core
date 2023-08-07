@@ -48,6 +48,7 @@ describe('NewButtonButton', () => {
       }
     ]
   }
+
   it('should check if the mutation gets called', async () => {
     mockUuidv4.mockReturnValueOnce('buttonBlockId')
     mockUuidv4.mockReturnValueOnce('startIconId')

@@ -14,6 +14,7 @@ import { VideoControls } from './VideoControls'
 
 describe('VideoControls', () => {
   let player: Player
+
   beforeEach(() => {
     const video = document.createElement('video')
     document.body.appendChild(video)
@@ -35,6 +36,7 @@ describe('VideoControls', () => {
       player.duration(250)
     })
   })
+
   afterEach(() => {
     jest.resetAllMocks()
     cleanup()

@@ -98,6 +98,7 @@ describe('PageWrapper', () => {
     afterEach(() => {
       jest.resetAllMocks()
     })
+
     it('should show the side nav bar', () => {
       ;(useMediaQuery as jest.Mock).mockImplementation(() => true)
 
