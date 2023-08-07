@@ -1,7 +1,9 @@
-import { ComponentStory, ComponentMeta } from '@storybook/react'
 import Grid from '@mui/material/Grid'
+import { ComponentMeta, ComponentStory } from '@storybook/react'
+
 import { watchConfig } from '../../libs/storybook'
 import { videos } from '../Videos/__generated__/testData'
+
 import { VideoCard } from '.'
 
 const VideoCardStory: ComponentMeta<typeof VideoCard> = {

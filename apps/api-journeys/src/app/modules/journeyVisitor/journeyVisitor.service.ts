@@ -1,11 +1,13 @@
 import { Injectable } from '@nestjs/common'
 import isNil from 'lodash/isNil'
 import omitBy from 'lodash/omitBy'
+
 import { JourneyVisitor, Prisma } from '.prisma/api-journeys-client'
+
 import {
-  PageInfo,
   JourneyVisitorFilter,
-  JourneyVisitorSort
+  JourneyVisitorSort,
+  PageInfo
 } from '../../__generated__/graphql'
 import { PrismaService } from '../../lib/prisma.service'
 

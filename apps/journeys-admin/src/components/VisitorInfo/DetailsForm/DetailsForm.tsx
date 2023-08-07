@@ -1,19 +1,21 @@
+import { gql, useMutation, useQuery } from '@apollo/client'
+import Box from '@mui/material/Box'
+import Divider from '@mui/material/Divider'
 import FormControl from '@mui/material/FormControl'
 import InputLabel from '@mui/material/InputLabel'
-import Select from '@mui/material/Select'
 import MenuItem from '@mui/material/MenuItem'
-import TextField from '@mui/material/TextField'
+import Paper from '@mui/material/Paper'
+import Select from '@mui/material/Select'
 import Stack from '@mui/material/Stack'
+import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
-import Box from '@mui/material/Box'
+import { Form, Formik } from 'formik'
 import pick from 'lodash/pick'
 import { ReactElement } from 'react'
-import { Formik, Form } from 'formik'
-import { gql, useMutation, useQuery } from '@apollo/client'
 import { useTranslation } from 'react-i18next'
+
 import { SubmitListener } from '@core/shared/ui/SubmitListener'
-import Divider from '@mui/material/Divider'
-import Paper from '@mui/material/Paper'
+
 import { GetVisitorForForm } from '../../../../__generated__/GetVisitorForForm'
 import {
   MessagePlatform,
@@ -21,6 +23,7 @@ import {
 } from '../../../../__generated__/globalTypes'
 import { VisitorUpdate } from '../../../../__generated__/VisitorUpdate'
 import { messagePlatformToLabel } from '../VisitorJourneysList/utils'
+
 import { ChatButton } from './ChatButton'
 
 export const GET_VISITOR_FOR_FORM = gql`

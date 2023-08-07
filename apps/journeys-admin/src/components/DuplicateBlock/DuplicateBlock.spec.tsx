@@ -1,20 +1,23 @@
-import { render, fireEvent, waitFor } from '@testing-library/react'
+import { MockedProvider } from '@apollo/client/testing'
+import { fireEvent, render, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
+
+import type { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
-import type { TreeBlock } from '@core/journeys/ui/block'
-import { MockedProvider } from '@apollo/client/testing'
+
 import {
-  GetJourney_journey_blocks_TypographyBlock as TypographyBlock,
+  GetJourney_journey as Journey,
   GetJourney_journey_blocks_StepBlock as StepBlock,
-  GetJourney_journey as Journey
+  GetJourney_journey_blocks_TypographyBlock as TypographyBlock
 } from '../../../__generated__/GetJourney'
 import {
-  TypographyVariant,
   TypographyAlign,
-  TypographyColor
+  TypographyColor,
+  TypographyVariant
 } from '../../../__generated__/globalTypes'
-import { DuplicateBlock, BLOCK_DUPLICATE } from './DuplicateBlock'
+
+import { BLOCK_DUPLICATE, DuplicateBlock } from './DuplicateBlock'
 
 describe('DuplicateBlock', () => {
   const block: TreeBlock<TypographyBlock> = {

@@ -1,4 +1,3 @@
-import { ReactElement } from 'react'
 import { useQuery } from '@apollo/client'
 import {
   AuthAction,
@@ -6,24 +5,27 @@ import {
   withAuthUser,
   withAuthUserTokenSSR
 } from 'next-firebase-auth'
-import { useRouter } from 'next/router'
 import { NextSeo } from 'next-seo'
+import { useRouter } from 'next/router'
+import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
+
 import { ActiveJourneyEditContent } from '@core/journeys/ui/EditorProvider'
+
+import { ACCEPT_ALL_INVITES } from '../..'
+import { AcceptAllInvites } from '../../../__generated__/AcceptAllInvites'
 import {
   GetJourney,
   GetJourney_journey as Journey
 } from '../../../__generated__/GetJourney'
-import { Editor } from '../../../src/components/Editor'
-import { PageWrapper } from '../../../src/components/PageWrapper'
-import { GET_JOURNEY, USER_JOURNEY_OPEN } from '../[journeyId]'
-import { JourneyEdit } from '../../../src/components/Editor/JourneyEdit'
-import { EditToolbar } from '../../../src/components/Editor/EditToolbar'
-import { ACCEPT_ALL_INVITES } from '../..'
-import { useInvalidJourneyRedirect } from '../../../src/libs/useInvalidJourneyRedirect/useInvalidJourneyRedirect'
 import { UserJourneyOpen } from '../../../__generated__/UserJourneyOpen'
+import { Editor } from '../../../src/components/Editor'
+import { EditToolbar } from '../../../src/components/Editor/EditToolbar'
+import { JourneyEdit } from '../../../src/components/Editor/JourneyEdit'
+import { PageWrapper } from '../../../src/components/PageWrapper'
 import { initAndAuthApp } from '../../../src/libs/initAndAuthApp'
-import { AcceptAllInvites } from '../../../__generated__/AcceptAllInvites'
+import { useInvalidJourneyRedirect } from '../../../src/libs/useInvalidJourneyRedirect/useInvalidJourneyRedirect'
+import { GET_JOURNEY, USER_JOURNEY_OPEN } from '../[journeyId]'
 
 function JourneyEditPage(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')

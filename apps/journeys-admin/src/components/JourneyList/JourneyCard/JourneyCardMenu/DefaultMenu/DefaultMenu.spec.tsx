@@ -1,9 +1,11 @@
+import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render } from '@testing-library/react'
 import noop from 'lodash/noop'
-import { MockedProvider } from '@apollo/client/testing'
 import { SnackbarProvider } from 'notistack'
+
 import { JourneyStatus } from '../../../../../../__generated__/globalTypes'
 import { TeamProvider } from '../../../../Team/TeamProvider'
+
 import { DefaultMenu } from '.'
 
 describe('DefaultMenu', () => {

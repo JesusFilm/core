@@ -1,5 +1,7 @@
-import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { ReactElement } from 'react'
+
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
+
 import { useHostUpdate } from '../../../../../../../../../libs/useHostUpdate/useHostUpdate'
 import { TextFieldForm } from '../../../../../../../../TextFieldForm'
 

@@ -1,15 +1,16 @@
-import { ReactElement, useState, MouseEvent } from 'react'
+import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'
+import Box from '@mui/material/Box'
+import Divider from '@mui/material/Divider'
+import IconButton from '@mui/material/IconButton'
+import Link from '@mui/material/Link'
 import Menu from '@mui/material/Menu'
 import MuiMenuItem from '@mui/material/MenuItem'
-import NextLink from 'next/link'
-import IconButton from '@mui/material/IconButton'
 import Stack from '@mui/material/Stack'
-import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'
 import Typography from '@mui/material/Typography'
-import Divider from '@mui/material/Divider'
+import NextLink from 'next/link'
+import { MouseEvent, ReactElement, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import Link from '@mui/material/Link'
-import Box from '@mui/material/Box'
+
 import { useJourney } from '../../libs/JourneyProvider'
 
 export function StepHeader(): ReactElement {

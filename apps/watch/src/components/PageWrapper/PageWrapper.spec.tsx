@@ -1,5 +1,6 @@
-import { render } from '@testing-library/react'
 import Box from '@mui/material/Box'
+import { render } from '@testing-library/react'
+
 import { PageWrapper } from '.'
 
 describe('PageWrapper', () => {

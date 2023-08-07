@@ -1,3 +1,4 @@
+import { MockedProvider } from '@apollo/client/testing'
 import {
   act,
   cleanup,
@@ -5,11 +6,12 @@ import {
   render,
   waitFor
 } from '@testing-library/react'
-import videojs from 'video.js'
 import fscreen from 'fscreen'
-import { MockedProvider } from '@apollo/client/testing'
+import videojs from 'video.js'
+
 import { VideoProvider } from '../../../../../libs/videoContext'
 import { videos } from '../../../../Videos/__generated__/testData'
+
 import { VideoControls } from './VideoControls'
 
 jest.mock('fscreen', () => ({

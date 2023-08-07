@@ -1,15 +1,17 @@
-import { Args, Mutation, ResolveField, Resolver } from '@nestjs/graphql'
+import { subject } from '@casl/ability'
 import { UseGuards } from '@nestjs/common'
+import { Args, Mutation, ResolveField, Resolver } from '@nestjs/graphql'
 import { GraphQLError } from 'graphql'
-import { FromPostgresql } from '@core/nest/decorators/FromPostgresql'
 import get from 'lodash/get'
 import includes from 'lodash/includes'
-import { CaslAbility } from '@core/nest/common/CaslAuthModule'
-import { subject } from '@casl/ability'
+
 import { Action, Block } from '.prisma/api-journeys-client'
-import { PrismaService } from '../../lib/prisma.service'
+import { CaslAbility } from '@core/nest/common/CaslAuthModule'
+import { FromPostgresql } from '@core/nest/decorators/FromPostgresql'
+
+import { AppAbility, Action as CaslAction } from '../../lib/casl/caslFactory'
 import { AppCaslGuard } from '../../lib/casl/caslGuard'
-import { Action as CaslAction, AppAbility } from '../../lib/casl/caslFactory'
+import { PrismaService } from '../../lib/prisma.service'
 
 @Resolver('Action')
 export class ActionResolver {

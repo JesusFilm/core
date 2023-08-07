@@ -1,16 +1,19 @@
-import { render, fireEvent, waitFor } from '@testing-library/react'
-import useMediaQuery from '@mui/material/useMediaQuery'
 import { MockedProvider } from '@apollo/client/testing'
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
-import { EditorProvider } from '@core/journeys/ui/EditorProvider'
+import useMediaQuery from '@mui/material/useMediaQuery'
+import { fireEvent, render, waitFor } from '@testing-library/react'
+
 import { TreeBlock } from '@core/journeys/ui/block'
-import { GET_VIDEO } from '../VideoFromLocal/LocalDetails/LocalDetails'
-import { VideoBlockSource } from '../../../../../__generated__/globalTypes'
+import { EditorProvider } from '@core/journeys/ui/EditorProvider'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+
 import {
+  GetJourney_journey_blocks_ImageBlock as ImageBlock,
   GetJourney_journey as Journey,
-  GetJourney_journey_blocks_VideoBlock as VideoBlock,
-  GetJourney_journey_blocks_ImageBlock as ImageBlock
+  GetJourney_journey_blocks_VideoBlock as VideoBlock
 } from '../../../../../__generated__/GetJourney'
+import { VideoBlockSource } from '../../../../../__generated__/globalTypes'
+import { GET_VIDEO } from '../VideoFromLocal/LocalDetails/LocalDetails'
+
 import { BLOCK_DELETE_FOR_COVER_IMAGE, VideoDetails } from './VideoDetails'
 
 jest.mock('@mui/material/useMediaQuery', () => ({

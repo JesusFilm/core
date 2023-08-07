@@ -1,7 +1,9 @@
 import { fireEvent, render } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
+
 import { JourneyProvider } from '../../../../libs/JourneyProvider'
 import { JourneyFields as Journey } from '../../../../libs/JourneyProvider/__generated__/JourneyFields'
+
 import { ShareButton } from './ShareButton'
 
 jest.mock('react-i18next', () => ({

@@ -1,19 +1,21 @@
-import { render, fireEvent, waitFor } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
-import {
-  JourneyFields_chatButtons as ChatButton,
-  JourneyFields as Journey
-} from '../../../libs/JourneyProvider/__generated__/JourneyFields'
+import { fireEvent, render, waitFor } from '@testing-library/react'
+
 import {
   ChatPlatform,
   JourneyStatus,
   ThemeMode,
   ThemeName
 } from '../../../../__generated__/globalTypes'
-import { JourneyProvider } from '../../../libs/JourneyProvider'
 import { TreeBlock, blockHistoryVar } from '../../../libs/block'
 import { BlockFields_StepBlock as StepBlock } from '../../../libs/block/__generated__/BlockFields'
-import { ChatButtons, CHAT_BUTTON_EVENT_CREATE } from './ChatButtons'
+import { JourneyProvider } from '../../../libs/JourneyProvider'
+import {
+  JourneyFields_chatButtons as ChatButton,
+  JourneyFields as Journey
+} from '../../../libs/JourneyProvider/__generated__/JourneyFields'
+
+import { CHAT_BUTTON_EVENT_CREATE, ChatButtons } from './ChatButtons'
 
 describe('ChatButtons', () => {
   const chatButtons: ChatButton[] = [

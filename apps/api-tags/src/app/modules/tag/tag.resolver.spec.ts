@@ -1,6 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing'
+
 import { Tag } from '.prisma/api-tags-client'
+
 import { PrismaService } from '../../lib/prisma.service'
+
 import { TagResolver } from './tag.resolver'
 
 describe('TagResolver', () => {

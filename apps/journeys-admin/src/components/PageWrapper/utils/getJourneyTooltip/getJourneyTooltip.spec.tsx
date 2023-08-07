@@ -1,9 +1,10 @@
 import {
   GetAdminJourneys_journeys as Journey,
-  GetAdminJourneys_journeys_userJourneys as UserJourney,
-  GetAdminJourneys_journeys_userJourneys_user as User
+  GetAdminJourneys_journeys_userJourneys_user as User,
+  GetAdminJourneys_journeys_userJourneys as UserJourney
 } from '../../../../../__generated__/GetAdminJourneys'
 import { UserJourneyRole } from '../../../../../__generated__/globalTypes'
+
 import { getJourneyTooltip } from '.'
 
 describe('getJourneyTooltip', () => {

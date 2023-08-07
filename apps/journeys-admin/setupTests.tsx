@@ -1,7 +1,9 @@
 import '@testing-library/jest-dom'
 import './test/createMatchMedia'
 import crypto from 'crypto'
+
 import { configure } from '@testing-library/react'
+
 import { mswServer } from './test/mswServer'
 
 configure({ asyncUtilTimeout: 2500 })

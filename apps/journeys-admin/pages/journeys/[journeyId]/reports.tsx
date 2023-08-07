@@ -1,4 +1,4 @@
-import { ReactElement } from 'react'
+import Box from '@mui/material/Box'
 import {
   AuthAction,
   useAuthUser,
@@ -6,20 +6,20 @@ import {
   withAuthUserTokenSSR
 } from 'next-firebase-auth'
 import { NextSeo } from 'next-seo'
-import { useTranslation } from 'react-i18next'
-import Box from '@mui/material/Box'
 import { useRouter } from 'next/router'
-import { GetJourney } from '../../../__generated__/GetJourney'
-import { PageWrapper } from '../../../src/components/NewPageWrapper'
-import { GET_JOURNEY, USER_JOURNEY_OPEN } from '../[journeyId]'
+import { ReactElement } from 'react'
+import { useTranslation } from 'react-i18next'
 
-import { MemoizedDynamicReport } from '../../../src/components/DynamicPowerBiReport'
-import { JourneysReportType } from '../../../__generated__/globalTypes'
 import { ACCEPT_ALL_INVITES } from '../..'
+import { AcceptAllInvites } from '../../../__generated__/AcceptAllInvites'
+import { GetJourney } from '../../../__generated__/GetJourney'
+import { JourneysReportType } from '../../../__generated__/globalTypes'
 import { UserJourneyOpen } from '../../../__generated__/UserJourneyOpen'
+import { MemoizedDynamicReport } from '../../../src/components/DynamicPowerBiReport'
+import { PageWrapper } from '../../../src/components/NewPageWrapper'
 import { ReportsNavigation } from '../../../src/components/ReportsNavigation'
 import { initAndAuthApp } from '../../../src/libs/initAndAuthApp'
-import { AcceptAllInvites } from '../../../__generated__/AcceptAllInvites'
+import { GET_JOURNEY, USER_JOURNEY_OPEN } from '../[journeyId]'
 
 function JourneyReportsPage(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')

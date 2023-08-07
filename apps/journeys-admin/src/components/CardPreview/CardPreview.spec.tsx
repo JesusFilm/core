@@ -1,15 +1,19 @@
-import { render, fireEvent, waitFor } from '@testing-library/react'
+import { InMemoryCache } from '@apollo/client'
+import { MockedProvider } from '@apollo/client/testing'
+import { fireEvent, render, waitFor } from '@testing-library/react'
+import { v4 as uuidv4 } from 'uuid'
+
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
-import { MockedProvider } from '@apollo/client/testing'
-import { v4 as uuidv4 } from 'uuid'
-import { InMemoryCache } from '@apollo/client'
+
 import {
   GetJourney_journey as Journey,
   GetJourney_journey_blocks_StepBlock as StepBlock
 } from '../../../__generated__/GetJourney'
-import { ThemeName, ThemeMode } from '../../../__generated__/globalTypes'
+import { ThemeMode, ThemeName } from '../../../__generated__/globalTypes'
+
 import { STEP_AND_CARD_BLOCK_CREATE } from './CardPreview'
+
 import { CardPreview } from '.'
 
 jest.mock('uuid', () => ({

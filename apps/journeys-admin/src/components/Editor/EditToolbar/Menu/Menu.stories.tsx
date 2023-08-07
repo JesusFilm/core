@@ -1,11 +1,14 @@
-import { Story, Meta } from '@storybook/react'
 import { MockedProvider } from '@apollo/client/testing'
+import { Meta, Story } from '@storybook/react'
 import { screen, userEvent } from '@storybook/testing-library'
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+
+import { GetJourney_journey as Journey } from '../../../../../__generated__/GetJourney'
 import { JourneyStatus } from '../../../../../__generated__/globalTypes'
 import { journeysAdminConfig } from '../../../../libs/storybook'
-import { GetJourney_journey as Journey } from '../../../../../__generated__/GetJourney'
+
 import { Menu } from '.'
 
 const MenuStory = {

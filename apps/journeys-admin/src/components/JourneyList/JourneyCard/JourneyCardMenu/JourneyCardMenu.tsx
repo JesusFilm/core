@@ -1,15 +1,17 @@
-import { ReactElement, useState } from 'react'
+import { ApolloQueryResult } from '@apollo/client'
+import MoreVertIcon from '@mui/icons-material/MoreVert'
 import IconButton from '@mui/material/IconButton'
 import Menu from '@mui/material/Menu'
-import MoreVertIcon from '@mui/icons-material/MoreVert'
-import { ApolloQueryResult } from '@apollo/client'
+import { ReactElement, useState } from 'react'
+
+import { GetAdminJourneys } from '../../../../../__generated__/GetAdminJourneys'
 import { JourneyStatus } from '../../../../../__generated__/globalTypes'
 import { AccessDialog } from '../../../AccessDialog'
-import { GetAdminJourneys } from '../../../../../__generated__/GetAdminJourneys'
-import { TrashJourneyDialog } from './TrashJourneyDialog'
-import { RestoreJourneyDialog } from './RestoreJourneyDialog'
-import { DeleteJourneyDialog } from './DeleteJourneyDialog'
+
 import { DefaultMenu } from './DefaultMenu'
+import { DeleteJourneyDialog } from './DeleteJourneyDialog'
+import { RestoreJourneyDialog } from './RestoreJourneyDialog'
+import { TrashJourneyDialog } from './TrashJourneyDialog'
 import { TrashMenu } from './TrashMenu'
 
 export interface JourneyCardMenuProps {

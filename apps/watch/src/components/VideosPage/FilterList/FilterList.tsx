@@ -1,20 +1,23 @@
-import { ReactElement, ReactNode, SyntheticEvent, useState } from 'react'
-import MuiAccordion from '@mui/material/Accordion'
-import AccordionSummary from '@mui/material/AccordionSummary'
-import AccordianDetails from '@mui/material/AccordionDetails'
-import Box from '@mui/material/Box'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
-import VolumeUpIcon from '@mui/icons-material/VolumeUp'
 import SubtitlesIcon from '@mui/icons-material/Subtitles'
 import TitleIcon from '@mui/icons-material/Title'
-import Typography from '@mui/material/Typography'
+import VolumeUpIcon from '@mui/icons-material/VolumeUp'
+import MuiAccordion from '@mui/material/Accordion'
+import AccordianDetails from '@mui/material/AccordionDetails'
+import AccordionSummary from '@mui/material/AccordionSummary'
+import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
-import { LanguageOption } from '@core/shared/ui/LanguageAutocomplete'
 import TextField from '@mui/material/TextField'
+import Typography from '@mui/material/Typography'
 import { Formik } from 'formik'
+import { ReactElement, ReactNode, SyntheticEvent, useState } from 'react'
+
+import { LanguageOption } from '@core/shared/ui/LanguageAutocomplete'
 import { SubmitListener } from '@core/shared/ui/SubmitListener'
+
 import { GetLanguages } from '../../../../__generated__/GetLanguages'
 import type { VideoPageFilter } from '../VideosPage'
+
 import { LanguagesFilter } from './LanguagesFilter'
 
 const subtitleLanguageIds = [

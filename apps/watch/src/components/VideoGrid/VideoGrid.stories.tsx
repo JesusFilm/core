@@ -1,9 +1,11 @@
-import Stack from '@mui/material/Stack'
 import Box from '@mui/material/Box'
-import { ComponentStory, ComponentMeta } from '@storybook/react'
+import Stack from '@mui/material/Stack'
+import { ComponentMeta, ComponentStory } from '@storybook/react'
 import noop from 'lodash/noop'
+
 import { watchConfig } from '../../libs/storybook/config'
 import { videos } from '../Videos/__generated__/testData'
+
 import { VideoGrid } from './VideoGrid'
 
 const VideoGridStory: ComponentMeta<typeof VideoGrid> = {

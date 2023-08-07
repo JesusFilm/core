@@ -1,24 +1,25 @@
-import { ComponentProps } from 'react'
-import { Story, Meta } from '@storybook/react'
-import Stack from '@mui/material/Stack'
 import { MockedProvider } from '@apollo/client/testing'
-import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
+import Stack from '@mui/material/Stack'
+import { Meta, Story } from '@storybook/react'
 import { SnackbarProvider } from 'notistack'
-import { journeyUiConfig } from '../../libs/journeyUiConfig'
+import { ComponentProps } from 'react'
+
+import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 
 import {
-  ThemeMode,
-  ThemeName,
+  ChatPlatform,
   JourneyStatus,
-  ChatPlatform
+  ThemeMode,
+  ThemeName
 } from '../../../__generated__/globalTypes'
-
 import { JourneyProvider } from '../../libs/JourneyProvider'
 import {
-  JourneyFields as Journey,
   JourneyFields_host as Host,
+  JourneyFields as Journey,
   JourneyFields_language as Language
 } from '../../libs/JourneyProvider/__generated__/JourneyFields'
+import { journeyUiConfig } from '../../libs/journeyUiConfig'
+
 import { StepFooter } from './StepFooter'
 
 const Demo = {

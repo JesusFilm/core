@@ -1,12 +1,13 @@
-import { ReactElement } from 'react'
-import { parseISO, intlFormat } from 'date-fns'
-import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import VisibilityIcon from '@mui/icons-material/Visibility'
+import Button from '@mui/material/Button'
+import Skeleton from '@mui/material/Skeleton'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
-import Button from '@mui/material/Button'
-import VisibilityIcon from '@mui/icons-material/Visibility'
-import Skeleton from '@mui/material/Skeleton'
+import { intlFormat, parseISO } from 'date-fns'
 import NextLink from 'next/link'
+import { ReactElement } from 'react'
+
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
 
 export function DatePreview(): ReactElement {
   const { journey } = useJourney()

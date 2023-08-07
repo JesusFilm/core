@@ -1,9 +1,12 @@
-import { MockedProvider } from '@apollo/client/testing'
-import { SnackbarProvider } from 'notistack'
-import { fireEvent, render, waitFor } from '@testing-library/react'
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { InMemoryCache } from '@apollo/client'
+import { MockedProvider } from '@apollo/client/testing'
+import { fireEvent, render, waitFor } from '@testing-library/react'
+import { SnackbarProvider } from 'notistack'
+
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+
 import { JourneyFields as Journey } from '../../../../../__generated__/JourneyFields'
+
 import { CREATE_USER_INVITE, EmailInviteForm } from './EmailInviteForm'
 
 jest.mock('react-i18next', () => ({

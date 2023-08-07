@@ -1,8 +1,9 @@
-import { ReactElement } from 'react'
 import Box from '@mui/material/Box'
 import Container from '@mui/material/Container'
-import { TemplateCard } from '../TemplateCard'
+import { ReactElement } from 'react'
+
 import { useJourneysQuery } from '../../libs/useJourneysQuery'
+import { TemplateCard } from '../TemplateCard'
 
 export function TemplateLibrary(): ReactElement {
   const { data } = useJourneysQuery({ where: { template: true } })

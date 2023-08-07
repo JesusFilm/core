@@ -1,11 +1,14 @@
-import { fireEvent, render, waitFor } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
+import { fireEvent, render, waitFor } from '@testing-library/react'
 import { NextRouter, useRouter } from 'next/router'
+
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
-import { ThemeMode, ThemeName } from '../../../../__generated__/globalTypes'
+
 import { GetJourney_journey as Journey } from '../../../../__generated__/GetJourney'
+import { ThemeMode, ThemeName } from '../../../../__generated__/globalTypes'
+
 import { CardView } from './CardView'
-import { steps, oneStep } from './data'
+import { oneStep, steps } from './data'
 
 jest.mock('next/router', () => ({
   __esModule: true,

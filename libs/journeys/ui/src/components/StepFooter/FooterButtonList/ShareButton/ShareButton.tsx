@@ -1,8 +1,11 @@
 import { ReactElement, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+
 import ShareIcon from '@core/shared/ui/icons/Share'
-import { StyledFooterButton } from '../StyledFooterButton'
+
 import { useJourney } from '../../../../libs/JourneyProvider'
+import { StyledFooterButton } from '../StyledFooterButton'
+
 import { ShareDialog } from './ShareDialog'
 
 export function ShareButton(): ReactElement {

@@ -1,11 +1,14 @@
-import { MockedProvider } from '@apollo/client/testing'
-import { render, waitFor, fireEvent } from '@testing-library/react'
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
-import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { InMemoryCache } from '@apollo/client'
-import { steps } from '../data'
+import { MockedProvider } from '@apollo/client/testing'
+import { fireEvent, render, waitFor } from '@testing-library/react'
+
+import { EditorProvider } from '@core/journeys/ui/EditorProvider'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+
 import { GetJourney_journey as Journey } from '../../../../../../../__generated__/GetJourney'
-import { LinkAction, LINK_ACTION_UPDATE } from './LinkAction'
+import { steps } from '../data'
+
+import { LINK_ACTION_UPDATE, LinkAction } from './LinkAction'
 
 describe('LinkAction', () => {
   const selectedBlock = steps[1].children[0].children[3]

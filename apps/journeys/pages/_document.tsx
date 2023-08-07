@@ -1,10 +1,11 @@
-import { ReactElement, FunctionComponent } from 'react'
-import Document, { Html, Head, Main, NextScript } from 'next/document'
-import createEmotionServer from '@emotion/server/create-instance'
 import type { EmotionCache } from '@emotion/cache'
-import type { Enhancer, AppType } from 'next/dist/shared/lib/utils'
-import { createEmotionCache } from '@core/shared/ui/createEmotionCache'
+import createEmotionServer from '@emotion/server/create-instance'
+import type { AppType, Enhancer } from 'next/dist/shared/lib/utils'
+import Document, { Head, Html, Main, NextScript } from 'next/document'
+import { FunctionComponent, ReactElement } from 'react'
+
 import { getJourneyRTL } from '@core/journeys/ui/rtl'
+import { createEmotionCache } from '@core/shared/ui/createEmotionCache'
 
 export default class MyDocument extends Document<{
   emotionStyleTags: ReactElement[]

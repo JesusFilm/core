@@ -1,27 +1,30 @@
-import { ComponentProps } from 'react'
 import { MockedProvider } from '@apollo/client/testing'
-import { Story, Meta } from '@storybook/react'
-import { screen, userEvent, waitFor } from '@storybook/testing-library'
 import { expect } from '@storybook/jest'
+import { Meta, Story } from '@storybook/react'
+import { screen, userEvent, waitFor } from '@storybook/testing-library'
 import { SnackbarProvider } from 'notistack'
+import { ComponentProps } from 'react'
+
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import {
   JourneyFields as Journey,
   JourneyFields_language as Language
 } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
-import { journeysConfig } from '../../libs/storybook'
+
 import {
-  ThemeName,
-  ThemeMode,
+  ChatPlatform,
   JourneyStatus,
-  ChatPlatform
+  ThemeMode,
+  ThemeName
 } from '../../../__generated__/globalTypes'
+import { journeysConfig } from '../../libs/storybook'
 import {
   basic,
   imageBlocks,
   videoBlocks,
   videoLoop
 } from '../../libs/testData/storyData'
+
 import { Conductor } from '.'
 
 const Demo = {

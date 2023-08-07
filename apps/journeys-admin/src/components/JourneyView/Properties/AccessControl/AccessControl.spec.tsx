@@ -1,8 +1,11 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { render } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
+
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+
 import { defaultJourney } from '../../data'
+
 import { AccessControl } from './AccessControl'
 
 jest.mock('@mui/material/useMediaQuery', () => ({

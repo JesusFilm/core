@@ -1,5 +1,7 @@
-import { render, fireEvent } from '@testing-library/react'
+import { fireEvent, render } from '@testing-library/react'
+
 import { ThemeProvider } from '../../../ThemeProvider'
+
 import { Button } from '.'
 
 describe('Button', () => {

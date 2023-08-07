@@ -1,12 +1,12 @@
+import CheckCircleRoundedIcon from '@mui/icons-material/CheckCircleRounded'
+import SupervisorAccountRoundedIcon from '@mui/icons-material/SupervisorAccountRounded'
+import Box from '@mui/material/Box'
+import Button from '@mui/material/Button'
+import ListItem from '@mui/material/ListItem'
+import Stack from '@mui/material/Stack'
+import Typography from '@mui/material/Typography'
 import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
-import Button from '@mui/material/Button'
-import SupervisorAccountRoundedIcon from '@mui/icons-material/SupervisorAccountRounded'
-import CheckCircleRoundedIcon from '@mui/icons-material/CheckCircleRounded'
-import ListItem from '@mui/material/ListItem'
-import Typography from '@mui/material/Typography'
-import Stack from '@mui/material/Stack'
-import Box from '@mui/material/Box'
 
 interface AccessDeniedListItemProps {
   stepNumber: number

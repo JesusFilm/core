@@ -1,9 +1,12 @@
-import { Story, Meta } from '@storybook/react'
 import { MockedProvider } from '@apollo/client/testing'
 import Stack from '@mui/material/Stack'
-import { EditorProvider } from '@core/journeys/ui/EditorProvider'
+import { Meta, Story } from '@storybook/react'
+
 import type { TreeBlock } from '@core/journeys/ui/block'
+import { EditorProvider } from '@core/journeys/ui/EditorProvider'
+
 import { simpleComponentConfig } from '../../../../../libs/storybook/config'
+
 import { MoveBlockButtons } from '.'
 
 const AttributeStory = {

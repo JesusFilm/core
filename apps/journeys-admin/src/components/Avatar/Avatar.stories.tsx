@@ -1,7 +1,9 @@
-import { Meta, Story } from '@storybook/react'
-import Stack from '@mui/material/Stack'
 import Paper from '@mui/material/Paper'
+import Stack from '@mui/material/Stack'
+import { Meta, Story } from '@storybook/react'
+
 import { simpleComponentConfig } from '../../libs/storybook'
+
 import { Avatar, AvatarProps } from '.'
 
 const AvatarDemo = {

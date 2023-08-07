@@ -1,17 +1,18 @@
-import { ComponentProps } from 'react'
-import { Story, Meta } from '@storybook/react'
 import Stack from '@mui/material/Stack'
+import { Meta, Story } from '@storybook/react'
+import { ComponentProps } from 'react'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { JourneyFields_chatButtons as ChatButton } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
-import { simpleComponentConfig } from '../../../../../../libs/storybook'
-import { GetJourney_journey as Journey } from '../../../../../../../__generated__/GetJourney'
 
+import { GetJourney_journey as Journey } from '../../../../../../../__generated__/GetJourney'
 import {
   ChatPlatform,
   ThemeMode,
   ThemeName
 } from '../../../../../../../__generated__/globalTypes'
+import { simpleComponentConfig } from '../../../../../../libs/storybook'
+
 import { Footer } from './Footer'
 
 const Demo = {

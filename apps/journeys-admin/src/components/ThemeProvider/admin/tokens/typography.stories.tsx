@@ -1,7 +1,7 @@
-import { ComponentProps } from 'react'
-import { Story, Meta } from '@storybook/react'
 import Container from '@mui/material/Container'
 import MuiTypography, { TypographyTypeMap } from '@mui/material/Typography'
+import { Meta, Story } from '@storybook/react'
+import { ComponentProps } from 'react'
 
 import { simpleComponentConfig } from '../../../../libs/storybook'
 

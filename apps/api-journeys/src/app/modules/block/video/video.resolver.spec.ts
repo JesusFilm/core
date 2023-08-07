@@ -1,16 +1,19 @@
 import { Test, TestingModule } from '@nestjs/testing'
-import fetch, { Response } from 'node-fetch'
-import { Block, Journey, UserTeamRole } from '.prisma/api-journeys-client'
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
+import fetch, { Response } from 'node-fetch'
+
+import { Block, Journey, UserTeamRole } from '.prisma/api-journeys-client'
 import { CaslAuthModule } from '@core/nest/common/CaslAuthModule'
+
 import {
+  VideoBlockCreateInput,
   VideoBlockSource,
-  VideoBlockUpdateInput,
-  VideoBlockCreateInput
+  VideoBlockUpdateInput
 } from '../../../__generated__/graphql'
+import { AppAbility, AppCaslFactory } from '../../../lib/casl/caslFactory'
 import { PrismaService } from '../../../lib/prisma.service'
 import { BlockService } from '../block.service'
-import { AppAbility, AppCaslFactory } from '../../../lib/casl/caslFactory'
+
 import {
   CloudflareRetrieveVideoDetailsResponse,
   VideoBlockResolver

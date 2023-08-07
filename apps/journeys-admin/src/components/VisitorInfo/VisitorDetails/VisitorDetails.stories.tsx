@@ -1,7 +1,10 @@
-import { Story, Meta } from '@storybook/react'
 import { MockedProvider } from '@apollo/client/testing'
+import { Meta, Story } from '@storybook/react'
+
 import { journeysAdminConfig } from '../../../libs/storybook'
+
 import { GET_VISITOR_FOR_DETAILS } from './VisitorDetails'
+
 import { VisitorDetails } from '.'
 
 const VisitorDetailsStory = {

@@ -1,9 +1,12 @@
-import { Story, Meta } from '@storybook/react'
 import { MockedProvider } from '@apollo/client/testing'
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import { Meta, Story } from '@storybook/react'
+
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
-import { journeysAdminConfig } from '../../../../../../../libs/storybook'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+
 import { GetJourney_journey as Journey } from '../../../../../../../../__generated__/GetJourney'
+import { journeysAdminConfig } from '../../../../../../../libs/storybook'
+
 import { TextResponseFields } from '.'
 
 const TextResponseStory = {

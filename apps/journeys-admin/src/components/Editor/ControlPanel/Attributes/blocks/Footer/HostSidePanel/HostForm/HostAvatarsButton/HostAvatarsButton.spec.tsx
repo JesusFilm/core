@@ -1,11 +1,13 @@
-import { fireEvent, render, waitFor } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
+import { fireEvent, render, waitFor } from '@testing-library/react'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { JourneyFields as Journey } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
-import { ThemeProvider } from '../../../../../../../../ThemeProvider'
+
 import { useHostUpdate } from '../../../../../../../../../libs/useHostUpdate'
 import { UPDATE_HOST } from '../../../../../../../../../libs/useHostUpdate/useHostUpdate'
+import { ThemeProvider } from '../../../../../../../../ThemeProvider'
+
 import { HostAvatarsButton } from './HostAvatarsButton'
 
 jest.mock('../../../../../../../../../libs/useHostUpdate', () => ({

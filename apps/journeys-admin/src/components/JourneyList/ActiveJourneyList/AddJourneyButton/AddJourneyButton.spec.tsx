@@ -1,14 +1,17 @@
-import { fireEvent, render, waitFor } from '@testing-library/react'
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
-import { v4 as uuidv4 } from 'uuid'
+import { fireEvent, render, waitFor } from '@testing-library/react'
 import { NextRouter, useRouter } from 'next/router'
+import { v4 as uuidv4 } from 'uuid'
+
 import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
-import { CREATE_JOURNEY } from '../../../../libs/useJourneyCreate'
+
 import { GetLastActiveTeamIdAndTeams } from '../../../../../__generated__/GetLastActiveTeamIdAndTeams'
+import { CREATE_JOURNEY } from '../../../../libs/useJourneyCreate'
 import {
   GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS,
   TeamProvider
 } from '../../../Team/TeamProvider'
+
 import { AddJourneyButton } from '.'
 
 jest.mock('uuid', () => ({

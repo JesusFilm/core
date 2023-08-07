@@ -1,19 +1,20 @@
-import {
-  ReactElement,
-  useState,
-  useEffect,
-  useRef,
-  MouseEvent,
-  ChangeEvent
-} from 'react'
 import Box from '@mui/material/Box'
 import Chip from '@mui/material/Chip'
 import Drawer from '@mui/material/Drawer'
 import FormControl from '@mui/material/FormControl'
 import FormControlLabel from '@mui/material/FormControlLabel'
 import Popover from '@mui/material/Popover'
-import RadioGroup from '@mui/material/RadioGroup'
 import Radio from '@mui/material/Radio'
+import RadioGroup from '@mui/material/RadioGroup'
+import {
+  ChangeEvent,
+  MouseEvent,
+  ReactElement,
+  useEffect,
+  useRef,
+  useState
+} from 'react'
+
 import { useBreakpoints } from '@core/shared/ui/useBreakpoints'
 
 export enum SortOrder {

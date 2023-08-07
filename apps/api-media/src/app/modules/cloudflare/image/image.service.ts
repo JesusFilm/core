@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common'
-import fetch from 'node-fetch'
 import FormData from 'form-data'
+import fetch from 'node-fetch'
 
 interface CloudflareDirectCreatorUploadResponse {
   result: {

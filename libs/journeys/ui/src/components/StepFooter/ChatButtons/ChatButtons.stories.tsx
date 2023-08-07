@@ -1,12 +1,14 @@
-import { Story, Meta } from '@storybook/react'
 import { MockedProvider } from '@apollo/client/testing'
+import { Meta, Story } from '@storybook/react'
+
+import { ChatPlatform } from '../../../../__generated__/globalTypes'
+import { JourneyProvider } from '../../../libs/JourneyProvider'
 import {
   JourneyFields_chatButtons as ChatButton,
   JourneyFields as Journey
 } from '../../../libs/JourneyProvider/__generated__/JourneyFields'
 import { simpleComponentConfig } from '../../../libs/simpleComponentConfig'
-import { JourneyProvider } from '../../../libs/JourneyProvider'
-import { ChatPlatform } from '../../../../__generated__/globalTypes'
+
 import { ChatButtons } from '.'
 
 const ChatButtonsDemo = {

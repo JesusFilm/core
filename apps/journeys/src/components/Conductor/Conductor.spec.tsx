@@ -1,26 +1,30 @@
-import { useBreakpoints } from '@core/shared/ui/useBreakpoints'
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
-import {
-  TreeBlock,
-  treeBlocksVar,
-  blockHistoryVar
-} from '@core/journeys/ui/block'
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
-import { v4 as uuidv4 } from 'uuid'
-import TagManager from 'react-gtm-module'
 import { SnackbarProvider } from 'notistack'
+import TagManager from 'react-gtm-module'
+import { v4 as uuidv4 } from 'uuid'
+
+import {
+  TreeBlock,
+  blockHistoryVar,
+  treeBlocksVar
+} from '@core/journeys/ui/block'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import { useBreakpoints } from '@core/shared/ui/useBreakpoints'
+
 import {
   GetJourney_journey as Journey,
   GetJourney_journey_language as Language
 } from '../../../__generated__/GetJourney'
 import {
-  ThemeName,
+  JourneyStatus,
   ThemeMode,
-  JourneyStatus
+  ThemeName
 } from '../../../__generated__/globalTypes'
 import { basic } from '../../libs/testData/storyData'
+
 import { JOURNEY_VIEW_EVENT_CREATE, JOURNEY_VISITOR_UPDATE } from './Conductor'
+
 import { Conductor } from '.'
 
 jest.mock('react-i18next', () => ({

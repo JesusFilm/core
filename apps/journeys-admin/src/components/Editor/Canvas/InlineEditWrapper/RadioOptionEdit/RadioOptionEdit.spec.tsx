@@ -1,11 +1,14 @@
-import { render, fireEvent, waitFor } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
+import { fireEvent, render, waitFor } from '@testing-library/react'
+
 import type { TreeBlock } from '@core/journeys/ui/block'
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
-import { RadioOptionFields } from '../../../../../../__generated__/RadioOptionFields'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+
 import { GetJourney_journey as Journey } from '../../../../../../__generated__/GetJourney'
-import { RadioOptionEdit, RADIO_OPTION_BLOCK_UPDATE_CONTENT } from '.'
+import { RadioOptionFields } from '../../../../../../__generated__/RadioOptionFields'
+
+import { RADIO_OPTION_BLOCK_UPDATE_CONTENT, RadioOptionEdit } from '.'
 
 describe('RadioOptionEdit', () => {
   const props: TreeBlock<RadioOptionFields> = {

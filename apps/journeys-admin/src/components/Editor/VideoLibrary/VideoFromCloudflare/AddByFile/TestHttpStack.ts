@@ -1,5 +1,5 @@
 import noop from 'lodash/noop'
-import { HttpStack, HttpRequest, HttpResponse } from 'tus-js-client'
+import { HttpRequest, HttpResponse, HttpStack } from 'tus-js-client'
 
 // extracted from:
 // https://github.com/tus/tus-js-client/blob/main/test/spec/helpers/utils.js

@@ -1,8 +1,11 @@
-import { render } from '@testing-library/react'
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { MockedProvider } from '@apollo/client/testing'
+import { render } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
+
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+
 import { journey } from '../data'
+
 import { ActionCards } from './ActionCards'
 
 describe('ActionCards', () => {

@@ -1,8 +1,11 @@
 import { render } from '@testing-library/react'
+
 import { TreeBlock } from '@core/journeys/ui/block'
-import { VideoFields as VideoBlock } from '../../../../__generated__/VideoFields'
+
 import { VideoBlockSource } from '../../../../__generated__/globalTypes'
 import { ImageFields as ImageBlock } from '../../../../__generated__/ImageFields'
+import { VideoFields as VideoBlock } from '../../../../__generated__/VideoFields'
+
 import { VideoWrapper } from './VideoWrapper'
 
 describe('VideoWrapper', () => {

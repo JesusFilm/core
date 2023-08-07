@@ -1,9 +1,12 @@
-import { render } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import useMediaQuery from '@mui/material/useMediaQuery'
-import { JourneyStatus } from '../../../../../__generated__/globalTypes'
+import { render } from '@testing-library/react'
+
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+
 import { GetJourney_journey as Journey } from '../../../../../__generated__/GetJourney'
+import { JourneyStatus } from '../../../../../__generated__/globalTypes'
+
 import { SocialShareAppearance } from '.'
 
 jest.mock('@mui/material/useMediaQuery', () => ({

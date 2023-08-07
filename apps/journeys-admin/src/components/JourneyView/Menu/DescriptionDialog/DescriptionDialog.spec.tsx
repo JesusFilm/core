@@ -1,8 +1,11 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { render, fireEvent, waitFor } from '@testing-library/react'
+import { fireEvent, render, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
+
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+
 import { defaultJourney } from '../../data'
+
 import { DescriptionDialog, JOURNEY_DESC_UPDATE } from '.'
 
 const onClose = jest.fn()

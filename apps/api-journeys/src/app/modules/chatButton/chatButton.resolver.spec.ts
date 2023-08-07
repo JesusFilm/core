@@ -1,6 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing'
-import { PrismaService } from '../../lib/prisma.service'
+
 import { ChatPlatform } from '../../__generated__/graphql'
+import { PrismaService } from '../../lib/prisma.service'
+
 import { ChatButtonResolver } from './chatButton.resolver'
 
 describe('ChatButtonResolver', () => {

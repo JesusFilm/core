@@ -1,12 +1,14 @@
-import { ReactElement } from 'react'
+import { gql, useMutation } from '@apollo/client'
 import ShopRounded from '@mui/icons-material/ShopRounded'
-import { useMutation, gql } from '@apollo/client'
 import { useRouter } from 'next/router'
+import { ReactElement } from 'react'
+
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
+
 import { CreateTemplate } from '../../../../../__generated__/CreateTemplate'
 import { RemoveUserJourney } from '../../../../../__generated__/RemoveUserJourney'
-import { MenuItem } from '../../../MenuItem'
 import { useJourneyDuplicateMutation } from '../../../../libs/useJourneyDuplicateMutation'
+import { MenuItem } from '../../../MenuItem'
 
 export const REMOVE_USER_JOURNEY = gql`
   mutation RemoveUserJourney($id: ID!) {

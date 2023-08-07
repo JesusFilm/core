@@ -1,6 +1,6 @@
-import { ReactElement, ReactNode } from 'react'
-import { SxProps } from '@mui/material/styles'
 import Box from '@mui/material/Box'
+import { SxProps } from '@mui/material/styles'
+import { ReactElement, ReactNode } from 'react'
 
 interface OverlayContentProps {
   children: ReactNode

@@ -1,15 +1,18 @@
-import { render, fireEvent, waitFor, within } from '@testing-library/react'
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { MockedProvider } from '@apollo/client/testing'
+import { fireEvent, render, waitFor, within } from '@testing-library/react'
 import { NextRouter, useRouter } from 'next/router'
 import { SnackbarProvider } from 'notistack'
 import TagManager from 'react-gtm-module'
-import { defaultJourney } from '../data'
+
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+
 import { JOURNEY_DUPLICATE } from '../../../libs/useJourneyDuplicateMutation'
 import {
   GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS,
   TeamProvider
 } from '../../Team/TeamProvider'
+import { defaultJourney } from '../data'
+
 import { JourneyViewFab } from './JourneyViewFab'
 
 jest.mock('react-i18next', () => ({

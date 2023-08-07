@@ -1,9 +1,10 @@
-import { fireEvent, render } from '@testing-library/react'
 import { AutocompleteRenderInputParams } from '@mui/material/Autocomplete'
-import { ReactNode, HTMLAttributes } from 'react'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
-import { LanguageAutocomplete, Language } from '.'
+import { fireEvent, render } from '@testing-library/react'
+import { HTMLAttributes, ReactNode } from 'react'
+
+import { Language, LanguageAutocomplete } from '.'
 
 describe('LanguageAutocomplete', () => {
   const languages: Language[] = [

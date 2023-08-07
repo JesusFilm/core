@@ -1,8 +1,9 @@
-import { ReactElement } from 'react'
 import ContentCopyRounded from '@mui/icons-material/ContentCopyRounded'
 import { useSnackbar } from 'notistack'
-import { MenuItem } from '../../../../MenuItem'
+import { ReactElement } from 'react'
+
 import { useJourneyDuplicateMutation } from '../../../../../libs/useJourneyDuplicateMutation'
+import { MenuItem } from '../../../../MenuItem'
 import { useTeam } from '../../../../Team/TeamProvider'
 
 interface DuplicateJourneyMenuItemProps {

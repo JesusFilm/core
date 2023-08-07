@@ -1,5 +1,6 @@
-import { render, fireEvent, waitFor } from '@testing-library/react'
 import useScrollTrigger from '@mui/material/useScrollTrigger'
+import { fireEvent, render, waitFor } from '@testing-library/react'
+
 import { Header } from './Header'
 
 jest.mock('@mui/material/useScrollTrigger', () => ({

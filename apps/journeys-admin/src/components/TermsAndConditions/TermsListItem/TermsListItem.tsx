@@ -1,8 +1,8 @@
-import Typography from '@mui/material/Typography'
 import ListItemButton from '@mui/material/ListItemButton'
 import ListItemIcon from '@mui/material/ListItemIcon'
-import { ReactElement } from 'react'
 import ListItemText from '@mui/material/ListItemText'
+import Typography from '@mui/material/Typography'
+import { ReactElement } from 'react'
 
 export interface TermsListItemProps {
   link: string

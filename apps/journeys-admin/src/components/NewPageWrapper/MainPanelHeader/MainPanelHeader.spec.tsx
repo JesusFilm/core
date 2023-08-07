@@ -1,5 +1,6 @@
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { NextRouter, useRouter } from 'next/router'
+
 import { MainPanelHeader } from '.'
 
 jest.mock('next/router', () => ({

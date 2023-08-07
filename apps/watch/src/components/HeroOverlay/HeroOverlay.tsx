@@ -1,5 +1,6 @@
 import Box from '@mui/material/Box'
 import { ComponentProps, ReactElement } from 'react'
+
 import GrainTexture from './assets/overlay.svg'
 
 interface HeroOverlayProps {
