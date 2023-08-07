@@ -41,7 +41,12 @@ export function StepFooter({
         position: { xs: 'absolute', lg: 'relative' },
         zIndex: 1,
         bottom: 0,
-        width: { xs: '100%', lg: 'auto' },
+        left: 'env(safe-area-inset-left)',
+        right: 'env(safe-area-inset-right)',
+        width: {
+          xs: 'calc(100% - env(safe-area-inset-left) - env(safe-area-inset-right))',
+          lg: 'auto'
+        },
         ...sx
       }}
       onClick={(e) => {
