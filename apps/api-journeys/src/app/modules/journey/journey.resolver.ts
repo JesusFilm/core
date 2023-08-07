@@ -205,8 +205,7 @@ export class JourneyResolver {
     @CaslAbility() ability: AppAbility,
     @Args('input') input: JourneyCreateInput,
     @CurrentUserId() userId: string,
-    // TODO: remove default value when teams is released
-    @Args('teamId') teamId = 'jfp-team'
+    @Args('teamId') teamId: string
   ): Promise<Journey | undefined> {
     let retry = true
     let slug = slugify(input.slug ?? input.title, {
@@ -303,8 +302,7 @@ export class JourneyResolver {
     @CaslAbility() ability: AppAbility,
     @Args('id') id: string,
     @CurrentUserId() userId: string,
-    // TODO: remove default value when teams is released
-    @Args('teamId') teamId = 'jfp-team'
+    @Args('teamId') teamId: string
   ): Promise<Journey | undefined> {
     const journey = await this.prismaService.journey.findUnique({
       where: { id },

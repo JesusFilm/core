@@ -3,8 +3,6 @@ import { render, fireEvent, waitFor, within } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { NextRouter, useRouter } from 'next/router'
-// TODO: remove when teams is released
-import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 import { defaultJourney, publishedJourney } from '../data'
 import { JourneyStatus, Role } from '../../../../__generated__/globalTypes'
 import { JOURNEY_DUPLICATE } from '../../../libs/useJourneyDuplicateMutation'
@@ -301,16 +299,14 @@ describe('JourneyView/Menu', () => {
           ]}
         >
           <TeamProvider>
-            <FlagsProvider flags={{ teams: true }}>
-              <JourneyProvider
-                value={{
-                  journey: { ...defaultJourney, template: true },
-                  admin: true
-                }}
-              >
-                <Menu />
-              </JourneyProvider>
-            </FlagsProvider>
+            <JourneyProvider
+              value={{
+                journey: { ...defaultJourney, template: true },
+                admin: true
+              }}
+            >
+              <Menu />
+            </JourneyProvider>
           </TeamProvider>
         </MockedProvider>
       </SnackbarProvider>
@@ -658,16 +654,14 @@ describe('JourneyView/Menu', () => {
           ]}
         >
           <TeamProvider>
-            <FlagsProvider flags={{ teams: true }}>
-              <JourneyProvider
-                value={{
-                  journey: { ...defaultJourney, template: true },
-                  admin: true
-                }}
-              >
-                <Menu />
-              </JourneyProvider>
-            </FlagsProvider>
+            <JourneyProvider
+              value={{
+                journey: { ...defaultJourney, template: true },
+                admin: true
+              }}
+            >
+              <Menu />
+            </JourneyProvider>
           </TeamProvider>
         </MockedProvider>
       </SnackbarProvider>
