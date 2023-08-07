@@ -75,7 +75,7 @@ const Template: Story<
     size: string
     editableStepFooter: boolean
   }
-> = ({ variant, journey, size, editableStepFooter }) => (
+> = ({ variant = 'default', journey, size, editableStepFooter }) => (
   <FlagsProvider flags={{ editableStepFooter }}>
     <JourneyProvider value={{ variant, journey }}>
       <Stack direction="row">
@@ -87,7 +87,6 @@ const Template: Story<
 
 export const Default = Template.bind({})
 Default.args = {
-  variant: 'default',
   journey,
   editableStepFooter: true
 }

@@ -78,7 +78,7 @@ const Template: Story<ComponentProps<typeof TextResponse>> = ({
   ...args
 }): ReactElement => (
   <MockedProvider mocks={[submitEventMock]}>
-    <JourneyProvider value={{ variant: 'default' }}>
+    <JourneyProvider>
       <SnackbarProvider>
         <StoryCard>
           <Typography {...typographyProps} />
@@ -134,7 +134,7 @@ const LoadingTemplate: Story<ComponentProps<typeof TextResponse>> = ({
   ...args
 }): ReactElement => (
   <ApolloLoadingProvider>
-    <JourneyProvider value={{ variant: 'default' }}>
+    <JourneyProvider>
       <SnackbarProvider>
         <StoryCard>
           <TextResponse {...args} uuid={() => 'uuid'} />

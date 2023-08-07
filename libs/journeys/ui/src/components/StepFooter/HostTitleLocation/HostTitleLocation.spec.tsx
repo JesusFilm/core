@@ -69,7 +69,7 @@ describe('HostTitleLocation', () => {
 
   it('renders the name and location correctly', () => {
     const { getByText } = render(
-      <JourneyProvider value={{ journey, variant: 'default' }}>
+      <JourneyProvider value={{ journey }}>
         <HostTitleLocation />
       </JourneyProvider>
     )
@@ -81,8 +81,7 @@ describe('HostTitleLocation', () => {
     const { getByText } = render(
       <JourneyProvider
         value={{
-          journey: { ...journey, language: rtlLanguage },
-          variant: 'default'
+          journey: { ...journey, language: rtlLanguage }
         }}
       >
         <HostTitleLocation />
@@ -96,8 +95,7 @@ describe('HostTitleLocation', () => {
     const { getByText, queryByText } = render(
       <JourneyProvider
         value={{
-          journey: { ...journey, host: { ...journey.host, location: null } },
-          variant: 'default'
+          journey: { ...journey, host: { ...journey.host, location: null } }
         }}
       >
         <HostTitleLocation />

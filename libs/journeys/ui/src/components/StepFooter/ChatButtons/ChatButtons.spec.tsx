@@ -113,8 +113,7 @@ describe('ChatButtons', () => {
       <MockedProvider>
         <JourneyProvider
           value={{
-            journey: { ...journey, chatButtons },
-            variant: 'default'
+            journey: { ...journey, chatButtons }
           }}
         >
           <ChatButtons />
@@ -136,8 +135,7 @@ describe('ChatButtons', () => {
       <MockedProvider mocks={mocks}>
         <JourneyProvider
           value={{
-            journey: { ...journey, chatButtons },
-            variant: 'default'
+            journey: { ...journey, chatButtons }
           }}
         >
           <ChatButtons />
@@ -190,7 +188,7 @@ describe('ChatButtons', () => {
   it('does not display a placeholder button when admin is false and there are no chat buttons', () => {
     const { queryByTestId } = render(
       <MockedProvider>
-        <JourneyProvider value={{ journey, variant: 'default' }}>
+        <JourneyProvider value={{ journey }}>
           <ChatButtons />
         </JourneyProvider>
       </MockedProvider>
@@ -206,8 +204,7 @@ describe('ChatButtons', () => {
             journey: {
               ...journey,
               chatButtons: [{ ...chatButtons[0], platform: null }]
-            },
-            variant: 'default'
+            }
           }}
         >
           <ChatButtons />

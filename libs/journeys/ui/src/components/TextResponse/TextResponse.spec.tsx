@@ -113,7 +113,7 @@ const TextResponseMock = ({
   mocks = []
 }: TextResponseMockProps): ReactElement => (
   <MockedProvider mocks={mocks} addTypename={false}>
-    <JourneyProvider value={{ variant: 'default' }}>
+    <JourneyProvider>
       <SnackbarProvider>
         <TextResponse {...block} uuid={() => 'uuid'} />
       </SnackbarProvider>

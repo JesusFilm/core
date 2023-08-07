@@ -90,7 +90,7 @@ const Template: Story<
   ComponentProps<typeof Conductor> & { journey?: Journey }
 > = ({ journey = defaultJourney, ...args }) => (
   <MockedProvider mocks={[]}>
-    <JourneyProvider value={{ journey, variant: 'default' }}>
+    <JourneyProvider value={{ journey }}>
       <SnackbarProvider>
         <Conductor {...args} />
       </SnackbarProvider>

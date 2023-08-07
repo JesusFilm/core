@@ -68,8 +68,7 @@ describe('HostAvatars', () => {
     const { getByTestId, getAllByRole } = render(
       <JourneyProvider
         value={{
-          journey: { ...journey, host: twoAvatarHost },
-          variant: 'default'
+          journey: { ...journey, host: twoAvatarHost }
         }}
       >
         <HostAvatars />
@@ -89,8 +88,7 @@ describe('HostAvatars', () => {
           journey: {
             ...journey,
             host: { ...hostData }
-          },
-          variant: 'default'
+          }
         }}
       >
         <HostAvatars />
@@ -105,8 +103,7 @@ describe('HostAvatars', () => {
     const { queryAllByRole } = render(
       <JourneyProvider
         value={{
-          journey: { ...journey, host: { ...hostData, src1: 'avatar1.jpg' } },
-          variant: 'default'
+          journey: { ...journey, host: { ...hostData, src1: 'avatar1.jpg' } }
         }}
       >
         <HostAvatars />
@@ -150,8 +147,7 @@ describe('HostAvatars', () => {
         <FlagsProvider flags={{ editableStepFooter: true }}>
           <JourneyProvider
             value={{
-              journey: { ...journey, host: oneAvatarHost },
-              variant: 'default'
+              journey: { ...journey, host: oneAvatarHost }
             }}
           >
             <HostAvatars hasPlaceholder />

@@ -187,8 +187,7 @@ describe('Conductor', () => {
         <SnackbarProvider>
           <JourneyProvider
             value={{
-              journey: defaultJourney,
-              variant: 'default'
+              journey: defaultJourney
             }}
           >
             <Conductor blocks={[]} />
@@ -232,8 +231,7 @@ describe('Conductor', () => {
         <SnackbarProvider>
           <JourneyProvider
             value={{
-              journey: defaultJourney,
-              variant: 'default'
+              journey: defaultJourney
             }}
           >
             <Conductor blocks={[]} />
@@ -273,8 +271,7 @@ describe('Conductor', () => {
           <SnackbarProvider>
             <JourneyProvider
               value={{
-                journey: defaultJourney,
-                variant: 'default'
+                journey: defaultJourney
               }}
             >
               <Conductor blocks={basic} />
@@ -310,8 +307,7 @@ describe('Conductor', () => {
           <SnackbarProvider>
             <JourneyProvider
               value={{
-                journey: { ...defaultJourney, language: rtlLanguage },
-                variant: 'default'
+                journey: { ...defaultJourney, language: rtlLanguage }
               }}
             >
               <Conductor blocks={basic} />
