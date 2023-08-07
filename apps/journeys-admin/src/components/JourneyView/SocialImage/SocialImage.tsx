@@ -1,8 +1,9 @@
-import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import ImageIcon from '@mui/icons-material/Image'
 import Box from '@mui/material/Box'
 import { ReactElement } from 'react'
+
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { NextImage } from '@core/shared/ui/NextImage'
-import ImageIcon from '@mui/icons-material/Image'
 
 export function SocialImage(): ReactElement {
   const { journey } = useJourney()

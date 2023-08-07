@@ -1,14 +1,17 @@
-import { useState } from 'react'
+import { MockedProvider } from '@apollo/client/testing'
 import { Meta, Story } from '@storybook/react'
 import { screen, userEvent } from '@storybook/testing-library'
+import { useState } from 'react'
+
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
-import { ThemeName, ThemeMode } from '@core/shared/ui/themes'
-import { MockedProvider } from '@apollo/client/testing'
+import { ThemeMode, ThemeName } from '@core/shared/ui/themes'
+
 import { watchConfig } from '../../../libs/storybook'
 import { VideoProvider } from '../../../libs/videoContext'
-import { getSubtitleMock } from '../../SubtitleDialog/testData'
 import { getLanguagesSlugMock } from '../../AudioLanguageDialog/testData'
+import { getSubtitleMock } from '../../SubtitleDialog/testData'
 import { videos } from '../../Videos/__generated__/testData'
+
 import { VideoHero } from './VideoHero'
 
 const VideoHeroStory = {

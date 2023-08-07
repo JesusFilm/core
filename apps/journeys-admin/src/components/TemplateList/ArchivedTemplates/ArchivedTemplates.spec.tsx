@@ -1,18 +1,20 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
+
+import { JourneyStatus } from '../../../../__generated__/globalTypes'
+import { GET_ADMIN_JOURNEYS } from '../../../libs/useAdminJourneysQuery/useAdminJourneysQuery'
+import {
+  RESTORE_ARCHIVED_JOURNEYS,
+  TRASH_ARCHIVED_JOURNEYS
+} from '../../JourneyList/ArchivedJourneyList/ArchivedJourneyList'
+import { SortOrder } from '../../JourneyList/JourneySort'
 import {
   defaultTemplate,
   oldTemplate
 } from '../../TemplateLibrary/TemplateListData'
 import { ThemeProvider } from '../../ThemeProvider'
-import { SortOrder } from '../../JourneyList/JourneySort'
-import {
-  RESTORE_ARCHIVED_JOURNEYS,
-  TRASH_ARCHIVED_JOURNEYS
-} from '../../JourneyList/ArchivedJourneyList/ArchivedJourneyList'
-import { JourneyStatus } from '../../../../__generated__/globalTypes'
-import { GET_ADMIN_JOURNEYS } from '../../../libs/useAdminJourneysQuery/useAdminJourneysQuery'
+
 import { ArchivedTemplates } from '.'
 
 const archivedJourneysMock = {

@@ -1,11 +1,14 @@
+import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { ReactElement } from 'react'
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+
 import {
   GetLastActiveTeamIdAndTeams,
   GetLastActiveTeamIdAndTeams_teams as Team
 } from '../../../../__generated__/GetLastActiveTeamIdAndTeams'
+
 import { GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS } from './TeamProvider'
+
 import { TeamProvider, useTeam } from '.'
 
 const TestComponent = (): ReactElement => {

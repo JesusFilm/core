@@ -1,7 +1,9 @@
 import { fireEvent, render } from '@testing-library/react'
+
+import { VideoContentFields } from '../../../../__generated__/VideoContentFields'
 import { VideoProvider } from '../../../libs/videoContext'
 import { videos } from '../../Videos/__generated__/testData'
-import { VideoContentFields } from '../../../../__generated__/VideoContentFields'
+
 import { VideoHeading } from '.'
 
 describe('VideoHeading', () => {

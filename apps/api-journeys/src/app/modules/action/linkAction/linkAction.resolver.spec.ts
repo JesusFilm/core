@@ -1,11 +1,14 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
-import { Block, Action, Journey } from '.prisma/api-journeys-client'
+
+import { Action, Block, Journey } from '.prisma/api-journeys-client'
 import { CaslAuthModule } from '@core/nest/common/CaslAuthModule'
-import { PrismaService } from '../../../lib/prisma.service'
-import { AppAbility, AppCaslFactory } from '../../../lib/casl/caslFactory'
+
 import { LinkActionInput, UserTeamRole } from '../../../__generated__/graphql'
+import { AppAbility, AppCaslFactory } from '../../../lib/casl/caslFactory'
+import { PrismaService } from '../../../lib/prisma.service'
 import { ACTION_UPDATE_RESET } from '../actionUpdateReset'
+
 import { LinkActionResolver } from './linkAction.resolver'
 
 describe('LinkActionResolver', () => {

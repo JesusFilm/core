@@ -1,6 +1,8 @@
-import { Story, Meta } from '@storybook/react'
+import { Meta, Story } from '@storybook/react'
 import { SnackbarProvider } from 'notistack'
+
 import { journeyUiConfig } from '../../../libs/journeyUiConfig'
+
 import { FooterButtonList } from './FooterButtonList'
 
 const Demo = {

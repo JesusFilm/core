@@ -1,12 +1,15 @@
-import { ComponentProps } from 'react'
-import { render, fireEvent, waitFor, screen } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
 import { MockedProvider } from '@apollo/client/testing'
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
+import { ComponentProps } from 'react'
+
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
-import { TypographyVariant } from '../../../../../../__generated__/globalTypes'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+
 import { GetJourney_journey as Journey } from '../../../../../../__generated__/GetJourney'
-import { TypographyEdit, TYPOGRAPHY_BLOCK_UPDATE_CONTENT } from '.'
+import { TypographyVariant } from '../../../../../../__generated__/globalTypes'
+
+import { TYPOGRAPHY_BLOCK_UPDATE_CONTENT, TypographyEdit } from '.'
 
 jest.mock('react-i18next', () => ({
   __esModule: true,

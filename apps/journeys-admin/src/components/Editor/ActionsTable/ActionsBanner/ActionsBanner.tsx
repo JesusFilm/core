@@ -1,12 +1,14 @@
-import { ReactElement, useEffect } from 'react'
-import Typography from '@mui/material/Typography'
-import { useTheme } from '@mui/material/styles'
-import Box from '@mui/material/Box'
-import Stack from '@mui/material/Stack'
-import Image from 'next/image'
-import Button from '@mui/material/Button'
 import InfoOutlined from '@mui/icons-material/InfoOutlined'
+import Box from '@mui/material/Box'
+import Button from '@mui/material/Button'
+import Stack from '@mui/material/Stack'
+import { useTheme } from '@mui/material/styles'
+import Typography from '@mui/material/Typography'
+import Image from 'next/image'
+import { ReactElement, useEffect } from 'react'
+
 import { useEditor } from '@core/journeys/ui/EditorProvider'
+
 import goal from '../../../../../public/goal.svg'
 import { ActionDetails } from '../../ActionDetails'
 

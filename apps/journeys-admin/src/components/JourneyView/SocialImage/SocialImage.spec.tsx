@@ -1,6 +1,9 @@
 import { render } from '@testing-library/react'
+
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+
 import { publishedJourney } from '../data'
+
 import { SocialImage } from './SocialImage'
 
 describe('SocialImage', () => {

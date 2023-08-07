@@ -1,5 +1,7 @@
 import { render } from '@testing-library/react'
+
 import { videos } from '../Videos/__generated__/testData'
+
 import { VideoCard } from '.'
 
 describe('VideoCard', () => {

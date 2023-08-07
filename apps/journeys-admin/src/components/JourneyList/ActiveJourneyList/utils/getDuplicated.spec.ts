@@ -1,10 +1,12 @@
 import { formatISO, startOfYear } from 'date-fns'
+
 import {
-  ThemeName,
-  ThemeMode,
   JourneyStatus,
+  ThemeMode,
+  ThemeName,
   UserJourneyRole
 } from '../../../../../__generated__/globalTypes'
+
 import { getDuplicatedJourney } from './getDuplicatedJourney'
 
 describe('getDuplicatedJourney', () => {

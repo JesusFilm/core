@@ -1,13 +1,16 @@
 import {
-  UserTeamRole,
+  JourneyStatus,
   UserJourneyRole,
-  JourneyStatus
+  UserTeamRole
 } from '.prisma/api-journeys-client'
+
 import { Action, AppAclFn, AppAclParameters } from '../../lib/casl/caslFactory'
 
-export const journeyAcl: AppAclFn = ({ can, user }: AppAclParameters) => {
-  // TODO: remove when teams is released
-  can(Action.Create, 'Journey', { teamId: 'jfp-team' })
+export const journeyAcl: AppAclFn = ({
+  can,
+  cannot,
+  user
+}: AppAclParameters) => {
   // create journey as a team member
   can(Action.Create, 'Journey', {
     team: {
@@ -70,10 +73,33 @@ export const journeyAcl: AppAclFn = ({ can, user }: AppAclParameters) => {
     template: true,
     status: JourneyStatus.published
   })
+  cannot(Action.Manage, 'Journey', 'template')
   if (user.roles?.includes('publisher') === true) {
+    can(Action.Create, 'Journey', { teamId: 'jfp-team' })
+
     // publisher can manage template
     can(Action.Manage, 'Journey', { template: true })
-    // publisher can convert a journey to a template
-    can(Action.Manage, 'Journey', 'template')
+    // publisher can convert journey to template as a journey owner/editor
+    can(Action.Manage, 'Journey', 'template', {
+      userJourneys: {
+        some: {
+          userId: user.id,
+          role: { in: [UserJourneyRole.owner, UserJourneyRole.editor] }
+        }
+      }
+    })
+    // publisher can convert journey to template as a team manager/member
+    can(Action.Manage, 'Journey', 'template', {
+      team: {
+        is: {
+          userTeams: {
+            some: {
+              userId: user.id,
+              role: { in: [UserTeamRole.manager, UserTeamRole.member] }
+            }
+          }
+        }
+      }
+    })
   }
 }

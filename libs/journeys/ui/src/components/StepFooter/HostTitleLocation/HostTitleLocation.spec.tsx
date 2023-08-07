@@ -1,11 +1,12 @@
 import { render } from '@testing-library/react'
 
-import { JourneyProvider } from '../../../libs/JourneyProvider'
 import {
   JourneyStatus,
   ThemeMode,
   ThemeName
 } from '../../../../__generated__/globalTypes'
+import { JourneyProvider } from '../../../libs/JourneyProvider'
+
 import { HostTitleLocation } from './HostTitleLocation'
 
 describe('HostTitleLocation', () => {

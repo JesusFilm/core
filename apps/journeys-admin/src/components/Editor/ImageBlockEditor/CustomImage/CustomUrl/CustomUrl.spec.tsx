@@ -1,6 +1,8 @@
-import { render, fireEvent, waitFor } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
+import { fireEvent, render, waitFor } from '@testing-library/react'
+
 import { CREATE_CLOUDFLARE_UPLOAD_BY_URL } from './CustomUrl'
+
 import { CustomUrl } from '.'
 
 describe('CustomUrl', () => {

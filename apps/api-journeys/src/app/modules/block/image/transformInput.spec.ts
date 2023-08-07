@@ -1,5 +1,7 @@
 import fetch, { Response } from 'node-fetch'
+
 import { ImageBlockCreateInput } from '../../../__generated__/graphql'
+
 import { transformInput } from './transformInput'
 
 jest.mock('node-fetch', () => {

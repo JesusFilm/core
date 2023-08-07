@@ -1,8 +1,9 @@
-import { ComponentProps } from 'react'
-import Typography from '@mui/material/Typography'
 import Language from '@mui/icons-material/Language'
+import Typography from '@mui/material/Typography'
 import { fireEvent } from '@storybook/testing-library'
 import { render } from '@testing-library/react'
+import { ComponentProps } from 'react'
+
 import { Dialog } from './Dialog'
 
 describe('Dialog', () => {

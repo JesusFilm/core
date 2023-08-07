@@ -1,6 +1,7 @@
-import { fireEvent, render, waitFor, act } from '@testing-library/react'
 import Search from '@mui/icons-material/Search'
+import { act, fireEvent, render, waitFor } from '@testing-library/react'
 import { object, string } from 'yup'
+
 import { TextFieldForm } from './TextFieldForm'
 
 describe('TextFieldForm', () => {

@@ -1,8 +1,10 @@
 import { Meta, Story } from '@storybook/react'
-import { ComponentProps } from 'react'
 import { screen, userEvent, waitFor } from '@storybook/testing-library'
+import { ComponentProps } from 'react'
+
 import { journeysAdminConfig } from '../../../../libs/storybook'
 import { journey } from '../utils/data'
+
 import { EventsCard } from '.'
 
 const EventsCardStory = {

@@ -1,23 +1,25 @@
 import {
+  GetVisitorEvents_visitor_events_ButtonClickEvent as ButtonClickEvent,
+  GetVisitorEvents_visitor_events_ChatOpenEvent as ChatOpenEvent,
+  GetVisitorEvents_visitor_events_RadioQuestionSubmissionEvent as Event,
+  GetVisitorEvents_visitor_events_JourneyViewEvent as JourneyViewEvent,
+  GetVisitorEvents_visitor_events_SignUpSubmissionEvent as SignUpEvent,
+  GetVisitorEvents_visitor_events_VideoCollapseEvent as VideoCollapseEvent,
+  GetVisitorEvents_visitor_events_VideoCompleteEvent as VideoCompleteEvent,
+  GetVisitorEvents_visitor_events_VideoExpandEvent as VideoExpandEvent,
+  GetVisitorEvents_visitor_events_VideoPauseEvent as VideoPauseEvent,
+  GetVisitorEvents_visitor_events_VideoPlayEvent as VideoPlayEvent,
+  GetVisitorEvents_visitor_events_VideoProgressEvent as VideoProgressEvent,
+  GetVisitorEvents_visitor_events_VideoStartEvent as VideoStartEvent
+} from '../../../../../../__generated__/GetVisitorEvents'
+import {
   ButtonAction,
   MessagePlatform,
   VideoBlockSource
 } from '../../../../../../__generated__/globalTypes'
-import {
-  GetVisitorEvents_visitor_events_RadioQuestionSubmissionEvent as Event,
-  GetVisitorEvents_visitor_events_JourneyViewEvent as JourneyViewEvent,
-  GetVisitorEvents_visitor_events_ChatOpenEvent as ChatOpenEvent,
-  GetVisitorEvents_visitor_events_ButtonClickEvent as ButtonClickEvent,
-  GetVisitorEvents_visitor_events_SignUpSubmissionEvent as SignUpEvent,
-  GetVisitorEvents_visitor_events_VideoStartEvent as VideoStartEvent,
-  GetVisitorEvents_visitor_events_VideoPlayEvent as VideoPlayEvent,
-  GetVisitorEvents_visitor_events_VideoPauseEvent as VideoPauseEvent,
-  GetVisitorEvents_visitor_events_VideoCollapseEvent as VideoCollapseEvent,
-  GetVisitorEvents_visitor_events_VideoExpandEvent as VideoExpandEvent,
-  GetVisitorEvents_visitor_events_VideoProgressEvent as VideoProgressEvent,
-  GetVisitorEvents_visitor_events_VideoCompleteEvent as VideoCompleteEvent
-} from '../../../../../../__generated__/GetVisitorEvents'
+
 import { getDuration } from './transformEvents'
+
 import { TimelineItem, transformEvents } from '.'
 
 const journeyViewEvent: JourneyViewEvent = {

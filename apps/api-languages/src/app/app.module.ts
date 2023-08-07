@@ -1,15 +1,18 @@
 import { join } from 'path'
-import { Module } from '@nestjs/common'
-import { GraphQLModule } from '@nestjs/graphql'
+
 import {
   ApolloFederationDriver,
   ApolloFederationDriverConfig
 } from '@nestjs/apollo'
-import { LoggerModule } from 'nestjs-pino'
-import { DatadogTraceModule } from 'nestjs-ddtrace'
-import { NestHealthModule } from '@core/nest/health'
-import TranslationModule from '@core/nest/common/TranslationModule'
+import { Module } from '@nestjs/common'
+import { GraphQLModule } from '@nestjs/graphql'
 import responseCachePlugin from 'apollo-server-plugin-response-cache'
+import { DatadogTraceModule } from 'nestjs-ddtrace'
+import { LoggerModule } from 'nestjs-pino'
+
+import TranslationModule from '@core/nest/common/TranslationModule'
+import { NestHealthModule } from '@core/nest/health'
+
 import { LanguageModule } from './modules/language/language.module'
 
 @Module({

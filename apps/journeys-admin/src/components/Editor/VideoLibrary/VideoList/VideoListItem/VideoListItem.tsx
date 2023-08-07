@@ -1,8 +1,9 @@
-import { ReactElement, useState } from 'react'
-import Typography from '@mui/material/Typography'
 import Box from '@mui/material/Box'
-import ListItemText from '@mui/material/ListItemText'
 import ListItemButton from '@mui/material/ListItemButton'
+import ListItemText from '@mui/material/ListItemText'
+import Typography from '@mui/material/Typography'
+import { ReactElement, useState } from 'react'
+
 import {
   VideoBlockSource,
   VideoBlockUpdateInput

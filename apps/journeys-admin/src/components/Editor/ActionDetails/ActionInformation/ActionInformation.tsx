@@ -1,9 +1,9 @@
-import { ReactElement, ReactNode } from 'react'
-import Stack from '@mui/material/Stack'
-import Typography from '@mui/material/Typography'
+import MenuBookRounded from '@mui/icons-material/MenuBookRounded'
 import QuestionAnswerOutlined from '@mui/icons-material/QuestionAnswerOutlined'
 import WebOutlined from '@mui/icons-material/WebOutlined'
-import MenuBookRounded from '@mui/icons-material/MenuBookRounded'
+import Stack from '@mui/material/Stack'
+import Typography from '@mui/material/Typography'
+import { ReactElement, ReactNode } from 'react'
 
 interface GoalDescriptionProps {
   label: string

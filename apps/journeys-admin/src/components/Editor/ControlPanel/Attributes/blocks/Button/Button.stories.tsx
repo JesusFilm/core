@@ -1,16 +1,19 @@
-import { Story, Meta } from '@storybook/react'
-import type { TreeBlock } from '@core/journeys/ui/block'
 import Stack from '@mui/material/Stack'
-import { simpleComponentConfig } from '../../../../../../libs/storybook'
+import { Meta, Story } from '@storybook/react'
+
+import type { TreeBlock } from '@core/journeys/ui/block'
+
 import { GetJourney_journey_blocks_ButtonBlock as ButtonBlock } from '../../../../../../../__generated__/GetJourney'
 import {
-  ButtonVariant,
   ButtonColor,
   ButtonSize,
-  IconName,
+  ButtonVariant,
   IconColor,
+  IconName,
   IconSize
 } from '../../../../../../../__generated__/globalTypes'
+import { simpleComponentConfig } from '../../../../../../libs/storybook'
+
 import { Button } from '.'
 
 const ButtonStory = {

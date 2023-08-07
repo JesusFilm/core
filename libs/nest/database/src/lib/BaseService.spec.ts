@@ -1,14 +1,14 @@
+import { Injectable } from '@nestjs/common'
 import { Test, TestingModule } from '@nestjs/testing'
 import { Database } from 'arangojs'
-import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
-import { DocumentCollection, EdgeCollection } from 'arangojs/collection'
-import { Injectable } from '@nestjs/common'
-import omit from 'lodash/omit'
 import { AqlQuery } from 'arangojs/aql'
+import { DocumentCollection, EdgeCollection } from 'arangojs/collection'
 import { ArrayCursor } from 'arangojs/cursor'
+import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
+import omit from 'lodash/omit'
 
-import { mockCollectionUpdateAllResult } from './mock'
 import { BaseService } from './BaseService'
+import { mockCollectionUpdateAllResult } from './mock'
 
 @Injectable()
 export class MockService extends BaseService {

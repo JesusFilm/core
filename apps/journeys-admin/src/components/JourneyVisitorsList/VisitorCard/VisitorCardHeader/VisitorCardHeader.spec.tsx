@@ -1,5 +1,7 @@
 import { render } from '@testing-library/react'
+
 import { VisitorStatus } from '../../../../../__generated__/globalTypes'
+
 import { VisitorCardHeader } from '.'
 
 jest.mock('react-i18next', () => ({

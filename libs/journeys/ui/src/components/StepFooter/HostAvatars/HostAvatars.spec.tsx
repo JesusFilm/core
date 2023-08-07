@@ -1,12 +1,15 @@
 import { render } from '@testing-library/react'
+
 import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
-import { JourneyProvider } from '../../../libs/JourneyProvider'
+
 import {
   JourneyStatus,
   ThemeMode,
   ThemeName
 } from '../../../../__generated__/globalTypes'
+import { JourneyProvider } from '../../../libs/JourneyProvider'
 import { JourneyFields as Journey } from '../../../libs/JourneyProvider/__generated__/JourneyFields'
+
 import { HostAvatars } from './HostAvatars'
 
 describe('HostAvatars', () => {

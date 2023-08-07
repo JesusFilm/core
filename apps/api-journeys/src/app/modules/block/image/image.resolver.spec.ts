@@ -1,14 +1,17 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
+
 import { Block, Journey, UserTeamRole } from '.prisma/api-journeys-client'
 import { CaslAuthModule } from '@core/nest/common/CaslAuthModule'
+
 import {
   ImageBlockCreateInput,
   ImageBlockUpdateInput
 } from '../../../__generated__/graphql'
-import { BlockService } from '../block.service'
-import { PrismaService } from '../../../lib/prisma.service'
 import { AppAbility, AppCaslFactory } from '../../../lib/casl/caslFactory'
+import { PrismaService } from '../../../lib/prisma.service'
+import { BlockService } from '../block.service'
+
 import { ImageBlockResolver } from './image.resolver'
 
 jest.mock('./transformInput', () => {

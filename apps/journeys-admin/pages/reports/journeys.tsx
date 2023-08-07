@@ -1,4 +1,4 @@
-import { ReactElement } from 'react'
+import Box from '@mui/material/Box'
 import {
   AuthAction,
   useAuthUser,
@@ -6,13 +6,13 @@ import {
   withAuthUserTokenSSR
 } from 'next-firebase-auth'
 import { NextSeo } from 'next-seo'
+import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
-import Box from '@mui/material/Box'
-import { PageWrapper } from '../../src/components/NewPageWrapper'
-import { MemoizedDynamicReport } from '../../src/components/DynamicPowerBiReport'
-import { JourneysReportType } from '../../__generated__/globalTypes'
-import { ReportsNavigation } from '../../src/components/ReportsNavigation'
 
+import { JourneysReportType } from '../../__generated__/globalTypes'
+import { MemoizedDynamicReport } from '../../src/components/DynamicPowerBiReport'
+import { PageWrapper } from '../../src/components/NewPageWrapper'
+import { ReportsNavigation } from '../../src/components/ReportsNavigation'
 import { initAndAuthApp } from '../../src/libs/initAndAuthApp'
 
 function ReportsJourneysPage(): ReactElement {

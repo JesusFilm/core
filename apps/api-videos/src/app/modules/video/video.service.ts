@@ -1,11 +1,13 @@
-import { BaseService } from '@core/nest/database/BaseService'
 import { CACHE_MANAGER, Inject, Injectable } from '@nestjs/common'
-import { Cache } from 'cache-manager'
 import { Database, aql } from 'arangojs'
-import { KeyAsId } from '@core/nest/decorators/KeyAsId'
 import { AqlQuery, GeneratedAqlQuery } from 'arangojs/aql'
-import compact from 'lodash/compact'
+import { Cache } from 'cache-manager'
 import { DeepMockProxy } from 'jest-mock-extended'
+import compact from 'lodash/compact'
+
+import { BaseService } from '@core/nest/database/BaseService'
+import { KeyAsId } from '@core/nest/decorators/KeyAsId'
+
 import { VideosFilter } from '../../__generated__/graphql'
 
 interface ExtendedVideosFilter extends VideosFilter {

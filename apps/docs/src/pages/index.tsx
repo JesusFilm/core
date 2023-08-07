@@ -1,9 +1,11 @@
-import React, { ReactElement } from 'react'
-import clsx from 'clsx'
-import Layout from '@theme/Layout'
 import Link from '@docusaurus/Link'
 import useDocusaurusContext from '@docusaurus/useDocusaurusContext'
+import Layout from '@theme/Layout'
+import clsx from 'clsx'
+import React, { ReactElement } from 'react'
+
 import { FeatureList } from '../components/FeatureList'
+
 import styles from './index.module.css'
 
 function HomepageHeader(): ReactElement {

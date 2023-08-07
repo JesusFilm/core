@@ -1,10 +1,12 @@
 import { Test, TestingModule } from '@nestjs/testing'
-import { EventService } from '../event.service'
+
 import {
   StepNextEventCreateInput,
   StepViewEventCreateInput
 } from '../../../__generated__/graphql'
 import { PrismaService } from '../../../lib/prisma.service'
+import { EventService } from '../event.service'
+
 import { StepNextEventResolver, StepViewEventResolver } from './step.resolver'
 
 describe('Step', () => {

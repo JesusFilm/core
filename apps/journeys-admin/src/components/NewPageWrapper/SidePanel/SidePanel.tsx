@@ -1,13 +1,14 @@
-import { ReactElement, ReactNode } from 'react'
+import Close from '@mui/icons-material/Close'
 import AppBar from '@mui/material/AppBar'
+import Drawer from '@mui/material/Drawer'
+import IconButton from '@mui/material/IconButton'
 import Stack from '@mui/material/Stack'
 import Toolbar from '@mui/material/Toolbar'
 import Typography from '@mui/material/Typography'
-import Drawer from '@mui/material/Drawer'
-import IconButton from '@mui/material/IconButton'
-import Close from '@mui/icons-material/Close'
-import { usePageWrapperStyles } from '../utils/usePageWrapperStyles'
+import { ReactElement, ReactNode } from 'react'
+
 import { usePage } from '../../../libs/PageWrapperProvider'
+import { usePageWrapperStyles } from '../utils/usePageWrapperStyles'
 
 interface SidePanelProps {
   children: ReactNode

@@ -1,16 +1,18 @@
 import Box from '@mui/material/Box'
-import {
-  ReactElement,
-  useEffect,
-  useState,
-  useCallback,
-  Dispatch,
-  SetStateAction
-} from 'react'
 import fscreen from 'fscreen'
-import Div100vh from 'react-div-100vh'
 import dynamic from 'next/dynamic'
+import {
+  Dispatch,
+  ReactElement,
+  SetStateAction,
+  useCallback,
+  useEffect,
+  useState
+} from 'react'
+import Div100vh from 'react-div-100vh'
+
 import { Header } from '../../Header'
+
 import { VideoHeroOverlay } from './VideoHeroOverlay'
 
 const VIDEO_HERO_BOTTOM_SPACING = 150

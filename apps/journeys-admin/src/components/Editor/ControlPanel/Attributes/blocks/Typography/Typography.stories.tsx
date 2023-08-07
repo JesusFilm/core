@@ -1,13 +1,16 @@
-import { Story, Meta } from '@storybook/react'
-import type { TreeBlock } from '@core/journeys/ui/block'
 import Stack from '@mui/material/Stack'
-import { simpleComponentConfig } from '../../../../../../libs/storybook'
+import { Meta, Story } from '@storybook/react'
+
+import type { TreeBlock } from '@core/journeys/ui/block'
+
 import { GetJourney_journey_blocks_TypographyBlock as TypographyBlock } from '../../../../../../../__generated__/GetJourney'
 import {
   TypographyAlign,
   TypographyColor,
   TypographyVariant
 } from '../../../../../../../__generated__/globalTypes'
+import { simpleComponentConfig } from '../../../../../../libs/storybook'
+
 import { Typography } from '.'
 
 const TypographyStory = {
