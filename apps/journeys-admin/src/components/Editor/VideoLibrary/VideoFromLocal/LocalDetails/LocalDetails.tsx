@@ -74,6 +74,8 @@ export function LocalDetails({
   const [selectedLanguage, setSelectedLanguage] =
     useState<LanguageOption>(defaultLanguage)
 
+  console.log('videoBlock video id', videoBlock?.videoVariantLanguageId)
+
   const [loadVideo, { data, loading }] = useLazyQuery<GetVideo>(GET_VIDEO, {
     variables: { id, languageId: videoBlock?.videoVariantLanguageId ?? '529' }
   })
