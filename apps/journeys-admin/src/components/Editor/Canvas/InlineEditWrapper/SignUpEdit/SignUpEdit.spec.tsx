@@ -22,6 +22,7 @@ describe('SignUpEdit', () => {
     action: null,
     children: []
   }
+
   it('selects the input on click', async () => {
     const { getByRole } = render(
       <MockedProvider>

@@ -38,7 +38,7 @@ describe('UserTeamInviteRemoveMenuItem', () => {
     })
   })
 
-  it('it should remove a team invite', async () => {
+  it('should remove a team invite', async () => {
     const handleClick = jest.fn()
     const { getByText } = render(
       <MockedProvider mocks={mocks} cache={cache}>

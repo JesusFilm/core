@@ -178,7 +178,7 @@ describe('Button', () => {
       </MockedProvider>
     )
     fireEvent.click(getByRole('button'))
-    await waitFor(() => expect(result).toBeCalled())
+    await waitFor(() => expect(result).toHaveBeenCalled())
   })
 
   it('should add buttonClickEvent to dataLayer', async () => {
@@ -309,7 +309,7 @@ describe('Button', () => {
       </MockedProvider>
     )
     fireEvent.click(getByRole('button'))
-    await waitFor(() => expect(result).toBeCalled())
+    await waitFor(() => expect(result).toHaveBeenCalled())
   })
 
   it('should render the button successfully', () => {
@@ -422,7 +422,7 @@ describe('Button', () => {
       </MockedProvider>
     )
     fireEvent.click(getByRole('button'))
-    expect(handleAction).toBeCalledWith(
+    expect(handleAction).toHaveBeenCalledWith(
       expect.objectContaining({
         push: expect.any(Function)
       }),

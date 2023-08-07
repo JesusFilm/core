@@ -162,7 +162,7 @@ describe('ControlPanel', () => {
     expect(getByText('Locked With Interaction')).toBeInTheDocument()
     fireEvent.click(getByRole('tab', { name: 'Blocks' }))
     expect(getByRole('tabpanel', { name: 'Blocks' })).toBeInTheDocument()
-    expect(getByRole('button', { name: 'Text' }))
+    expect(getByRole('button', { name: 'Text' })).toBeInTheDocument()
   })
 
   it('should render component properties if a component is selected', async () => {

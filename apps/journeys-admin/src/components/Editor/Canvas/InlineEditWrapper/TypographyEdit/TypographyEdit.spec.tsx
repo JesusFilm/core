@@ -34,6 +34,7 @@ describe('TypographyEdit', () => {
     children: [],
     deleteSelf: onDelete
   }
+
   it('selects the input on click', () => {
     render(
       <MockedProvider>

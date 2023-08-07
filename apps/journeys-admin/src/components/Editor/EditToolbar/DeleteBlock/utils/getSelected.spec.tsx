@@ -162,6 +162,6 @@ describe('updatedSelected', () => {
       steps: [selectedStep],
       selectedStep
     }
-    expect(getSelected(input)).toEqual(null)
+    expect(getSelected(input)).toBeNull()
   })
 })

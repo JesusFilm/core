@@ -81,6 +81,7 @@ describe('JourneyView', () => {
       '/journeys/journeyId/edit'
     )
   })
+
   it('should show reports', async () => {
     const { getByTestId } = render(
       <MockedProvider>

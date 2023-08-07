@@ -18,15 +18,16 @@ describe('getFirebasePrivateKey', () => {
   })
 
   it('decrypts test encryption message', () => {
-    expect(getFirebasePrivateKey()).toEqual('hello world')
+    expect(getFirebasePrivateKey()).toBe('hello world')
   })
 
   describe('PRIVATE_FIREBASE_PRIVATE_KEY_ENC_IV missing', () => {
     beforeEach(() => {
       process.env.PRIVATE_FIREBASE_PRIVATE_KEY_ENC_IV = undefined
     })
+
     it('returns empty string', () => {
-      expect(getFirebasePrivateKey()).toEqual('')
+      expect(getFirebasePrivateKey()).toBe('')
     })
   })
 
@@ -35,8 +36,9 @@ describe('getFirebasePrivateKey', () => {
       process.env.PRIVATE_FIREBASE_PRIVATE_KEY_ENC_IV =
         'fe42e5d1d6056f7720670d2795089c72'
     })
+
     it('throws error', () => {
-      expect(() => getFirebasePrivateKey()).toThrowError()
+      expect(() => getFirebasePrivateKey()).toThrow()
     })
   })
 
@@ -44,8 +46,9 @@ describe('getFirebasePrivateKey', () => {
     beforeEach(() => {
       process.env.PRIVATE_FIREBASE_PRIVATE_KEY_ENC_KEY = undefined
     })
+
     it('returns empty string', () => {
-      expect(getFirebasePrivateKey()).toEqual('')
+      expect(getFirebasePrivateKey()).toBe('')
     })
   })
 
@@ -54,8 +57,9 @@ describe('getFirebasePrivateKey', () => {
       process.env.PRIVATE_FIREBASE_PRIVATE_KEY_ENC_KEY =
         'b004a27ca5d229548755db2d199d57db'
     })
+
     it('throws error', () => {
-      expect(() => getFirebasePrivateKey()).toThrowError()
+      expect(() => getFirebasePrivateKey()).toThrow()
     })
   })
 
@@ -65,7 +69,7 @@ describe('getFirebasePrivateKey', () => {
     })
 
     it('returns empty string', () => {
-      expect(getFirebasePrivateKey()).toEqual('')
+      expect(getFirebasePrivateKey()).toBe('')
     })
   })
 
@@ -75,7 +79,7 @@ describe('getFirebasePrivateKey', () => {
     })
 
     it('returns empty string', () => {
-      expect(getFirebasePrivateKey()).toEqual('')
+      expect(getFirebasePrivateKey()).toBe('')
     })
   })
 })

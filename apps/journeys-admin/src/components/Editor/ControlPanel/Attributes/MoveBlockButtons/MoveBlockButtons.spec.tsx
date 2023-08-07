@@ -107,6 +107,7 @@ describe('MoveBlockButton', () => {
 
     await waitFor(() => expect(result).toHaveBeenCalled())
   })
+
   it('should move selected block down on click', async () => {
     const { getByRole } = render(
       <MockedProvider

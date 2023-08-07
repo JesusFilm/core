@@ -91,7 +91,7 @@ describe('ThemeProvider', () => {
         Hello from ThemeProvider
       </ThemeProvider>
     )
-    expect(baseElement.parentElement?.innerHTML).toEqual(
+    expect(baseElement.parentElement?.innerHTML).toBe(
       '<head></head><body><div>Hello from ThemeProvider</div></body>'
     )
   })

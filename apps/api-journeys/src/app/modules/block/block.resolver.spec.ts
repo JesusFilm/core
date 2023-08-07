@@ -46,6 +46,7 @@ describe('BlockResolver', () => {
       reorderBlock: jest.fn((block, parentOrder) => [{ ...block, parentOrder }])
     })
   }
+
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [CaslAuthModule.register(AppCaslFactory)],
@@ -65,6 +66,7 @@ describe('BlockResolver', () => {
     ) as DeepMockProxy<PrismaService>
     ability = await new AppCaslFactory().createAbility({ id: 'userId' })
   })
+
   describe('__resolveType', () => {
     it('returns __typename', () => {
       expect(
@@ -72,14 +74,16 @@ describe('BlockResolver', () => {
           __typename: 'VideoBlock',
           typename: 'VideoOtherBlock'
         })
-      ).toEqual('VideoBlock')
+      ).toBe('VideoBlock')
     })
+
     it('returns typename when no __typename', () => {
-      expect(resolver.__resolveType({ typename: 'VideoBlock' })).toEqual(
+      expect(resolver.__resolveType({ typename: 'VideoBlock' })).toBe(
         'VideoBlock'
       )
     })
   })
+
   describe('blockOrderUpdate', () => {
     it('updates the block order', async () => {
       prismaService.block.findUnique.mockResolvedValueOnce(blockWithUserTeam)
@@ -88,12 +92,14 @@ describe('BlockResolver', () => {
       ])
       expect(service.reorderBlock).toHaveBeenCalledWith(blockWithUserTeam, 2)
     })
+
     it('throws error if not found', async () => {
       prismaService.block.findUnique.mockResolvedValueOnce(null)
       await expect(
         resolver.blockOrderUpdate(ability, 'blockId', 2)
       ).rejects.toThrow('block not found')
     })
+
     it('throws error if not authorized', async () => {
       prismaService.block.findUnique.mockResolvedValueOnce(block)
       await expect(
@@ -101,6 +107,7 @@ describe('BlockResolver', () => {
       ).rejects.toThrow('user is not allowed to update block')
     })
   })
+
   describe('blockDuplicate', () => {
     it('duplicates the block and its children', async () => {
       prismaService.block.findUnique.mockResolvedValueOnce(blockWithUserTeam)
@@ -110,12 +117,14 @@ describe('BlockResolver', () => {
       ])
       expect(service.duplicateBlock).toHaveBeenCalledWith(blockWithUserTeam, 2)
     })
+
     it('throws error if not found', async () => {
       prismaService.block.findUnique.mockResolvedValueOnce(null)
       await expect(
         resolver.blockDuplicate(ability, 'blockId', 2)
       ).rejects.toThrow('block not found')
     })
+
     it('throws error if not authorized', async () => {
       prismaService.block.findUnique.mockResolvedValueOnce(block)
       await expect(
@@ -123,6 +132,7 @@ describe('BlockResolver', () => {
       ).rejects.toThrow('user is not allowed to update block')
     })
   })
+
   describe('blockDelete', () => {
     it('removes the block and its children', async () => {
       prismaService.block.findUnique.mockResolvedValueOnce(blockWithUserTeam)
@@ -131,12 +141,14 @@ describe('BlockResolver', () => {
         blockWithUserTeam
       )
     })
+
     it('throws error if not found', async () => {
       prismaService.block.findUnique.mockResolvedValueOnce(null)
       await expect(resolver.blockDelete(ability, 'blockId')).rejects.toThrow(
         'block not found'
       )
     })
+
     it('throws error if not authorized', async () => {
       prismaService.block.findUnique.mockResolvedValueOnce(block)
       await expect(resolver.blockDelete(ability, 'blockId')).rejects.toThrow(

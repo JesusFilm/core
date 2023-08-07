@@ -11,7 +11,7 @@ import { BaseService } from './BaseService'
 import { mockCollectionUpdateAllResult } from './mock'
 
 @Injectable()
-export class MockService extends BaseService {
+class MockService extends BaseService {
   collection = this.db.collection('mocks')
 }
 
@@ -78,6 +78,7 @@ describe('Base Service', () => {
     collectionMock = mockDeep()
     service.collection = collectionMock
   })
+
   afterAll(() => {
     jest.resetAllMocks()
   })
@@ -115,7 +116,7 @@ describe('Base Service', () => {
     it('should return items by id collection', async () => {
       db.query.mockImplementationOnce(async (q) => {
         const { query, bindVars } = q as unknown as AqlQuery
-        expect(query).toEqual(`
+        expect(query).toBe(`
     FOR item IN undefined
       FILTER item._key IN @value0
       RETURN item`)

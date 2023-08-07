@@ -79,10 +79,10 @@ describe('LocalDetails', () => {
       name: 'Video Player'
     })
     const sourceTag = videoPlayer.querySelector('.vjs-tech source')
-    expect(sourceTag?.getAttribute('src')).toEqual('https://arc.gt/opsgn')
-    expect(sourceTag?.getAttribute('type')).toEqual('application/x-mpegURL')
+    expect(sourceTag?.getAttribute('src')).toBe('https://arc.gt/opsgn')
+    expect(sourceTag?.getAttribute('type')).toBe('application/x-mpegURL')
     const imageTag = videoPlayer.querySelector('.vjs-poster > picture > img')
-    expect(imageTag?.getAttribute('src')).toEqual(
+    expect(imageTag?.getAttribute('src')).toBe(
       'https://d1wl257kev7hsz.cloudfront.net/cinematics/2_Acts7302-0-0.mobileCinematicHigh.jpg'
     )
   })

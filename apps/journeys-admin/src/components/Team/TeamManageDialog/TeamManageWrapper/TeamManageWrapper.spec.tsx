@@ -87,6 +87,7 @@ describe('TeamMembersList', () => {
   }
 
   const mocks = [getUserTeamMock1, getTeams]
+
   it('shows both users in the team and the invites to the team', async () => {
     const { getByText } = render(
       <MockedProvider mocks={mocks}>

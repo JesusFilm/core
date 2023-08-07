@@ -78,7 +78,7 @@ describe('getStepTheme', () => {
     })
   })
 
-  it('should return card theme from a Cardblock with custom theme ', () => {
+  it('should return card theme from a Cardblock with custom theme', () => {
     const theme = getStepTheme(
       {
         ...cardBlock,

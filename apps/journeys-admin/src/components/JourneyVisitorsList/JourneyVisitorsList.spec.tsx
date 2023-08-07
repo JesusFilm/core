@@ -62,6 +62,7 @@ describe('JourneyVisitorsList', () => {
       }
     }
   ]
+
   it('should show visitors', () => {
     const { getByLabelText } = render(
       <JourneyVisitorsList
@@ -86,7 +87,7 @@ describe('JourneyVisitorsList', () => {
         hasNextPage
       />
     )
-    expect(getByText('Showing 3 visitors out of 5'))
+    expect(getByText('Showing 3 visitors out of 5')).toBeInTheDocument()
   })
 
   it('should load more', () => {

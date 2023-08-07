@@ -87,12 +87,14 @@ describe('ButtonBlock', () => {
     ) as DeepMockProxy<PrismaService>
     ability = await new AppCaslFactory().createAbility({ id: 'userId' })
   })
+
   describe('buttonBlockCreate', () => {
     beforeEach(() => {
       prismaService.$transaction.mockImplementation(
         async (callback) => await callback(prismaService)
       )
     })
+
     it('creates a ButtonBlock', async () => {
       prismaService.block.create.mockResolvedValueOnce(blockWithUserTeam)
       expect(
@@ -125,6 +127,7 @@ describe('ButtonBlock', () => {
         blockCreateInput.parentBlockId
       )
     })
+
     it('throws error if not authorized', async () => {
       prismaService.block.create.mockResolvedValueOnce(block)
       await expect(
@@ -135,17 +138,20 @@ describe('ButtonBlock', () => {
 
   describe('buttonBlockUpdate', () => {
     let mockValidate: jest.MockedFunction<typeof service.validateBlock>
+
     beforeEach(() => {
       mockValidate = service.validateBlock as jest.MockedFunction<
         typeof service.validateBlock
       >
       mockValidate.mockResolvedValue(true)
     })
+
     it('updates a ButtonBlock', async () => {
       prismaService.block.findUnique.mockResolvedValueOnce(blockWithUserTeam)
       await resolver.buttonBlockUpdate(ability, 'blockId', blockUpdateInput)
       expect(service.update).toHaveBeenCalledWith('blockId', blockUpdateInput)
     })
+
     it('throws error if startIconId does not exist', async () => {
       mockValidate.mockResolvedValueOnce(false)
       await expect(
@@ -155,6 +161,7 @@ describe('ButtonBlock', () => {
         })
       ).rejects.toThrow('Start icon does not exist')
     })
+
     it('throws error if endIconId does not exist', async () => {
       mockValidate.mockResolvedValueOnce(true)
       mockValidate.mockResolvedValueOnce(false)
@@ -165,12 +172,14 @@ describe('ButtonBlock', () => {
         })
       ).rejects.toThrow('End icon does not exist')
     })
+
     it('throws error if not found', async () => {
       prismaService.block.findUnique.mockResolvedValueOnce(null)
       await expect(
         resolver.buttonBlockUpdate(ability, 'blockId', blockUpdateInput)
       ).rejects.toThrow('block not found')
     })
+
     it('throws error if not authorized', async () => {
       prismaService.block.findUnique.mockResolvedValueOnce(block)
       await expect(

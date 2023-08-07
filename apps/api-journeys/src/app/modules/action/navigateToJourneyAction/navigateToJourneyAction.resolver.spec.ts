@@ -98,6 +98,7 @@ describe('NavigateToJourneyActionResolver', () => {
         }
       })
     })
+
     it('throws an error if typename is wrong', async () => {
       const wrongBlock = {
         ...blockWithUserTeam,
@@ -114,12 +115,14 @@ describe('NavigateToJourneyActionResolver', () => {
         'This block does not support navigate to journey actions'
       )
     })
+
     it('throws error if not found', async () => {
       prismaService.block.findUnique.mockResolvedValueOnce(null)
       await expect(
         resolver.blockUpdateNavigateToJourneyAction(ability, block.id, input)
       ).rejects.toThrow('block not found')
     })
+
     it('throws error if not authorized', async () => {
       prismaService.block.findUnique.mockResolvedValueOnce(block)
       await expect(
@@ -127,15 +130,17 @@ describe('NavigateToJourneyActionResolver', () => {
       ).rejects.toThrow('user is not allowed to update block')
     })
   })
+
   describe('journey', () => {
     it('returns Journey from action', async () => {
       prismaService.journey.findUnique.mockResolvedValueOnce(journey)
       expect(await resolver.journey(block.action)).toEqual(journey)
     })
+
     it('returns null if action journeyId is null', async () => {
       expect(
         await resolver.journey({ ...block.action, journeyId: null })
-      ).toEqual(null)
+      ).toBeNull()
     })
   })
 })

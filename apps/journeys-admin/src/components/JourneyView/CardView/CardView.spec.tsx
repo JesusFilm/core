@@ -47,6 +47,7 @@ describe('JourneyView/CardView', () => {
     )
     expect(getByText('5 cards in this journey')).toBeInTheDocument()
   })
+
   it('should render description for 1 card', () => {
     const { getByText } = render(
       <MockedProvider>
@@ -110,6 +111,7 @@ describe('JourneyView/CardView', () => {
       )
     )
   })
+
   it('should navigate to journey social preview page when a view is selected', async () => {
     const push = jest.fn()
     mockUseRouter.mockReturnValue({ push } as unknown as NextRouter)

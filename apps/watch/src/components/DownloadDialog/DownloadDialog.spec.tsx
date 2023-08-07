@@ -12,22 +12,22 @@ jest.mock('react-use-downloader', () => ({
   default: jest.fn()
 }))
 
-const onClose = jest.fn()
-const onDownload = jest.fn()
-const onCancel = jest.fn()
-const video: VideoContentFields = videos[0]
-
-beforeEach(() => {
-  const useDownloaderMock = useDownloader as jest.Mock
-  useDownloaderMock.mockReturnValue({
-    percentage: 75,
-    download: onDownload,
-    cancel: onCancel,
-    isInProgress: false
-  })
-})
-
 describe('DownloadDialog', () => {
+  const onClose = jest.fn()
+  const onDownload = jest.fn()
+  const onCancel = jest.fn()
+  const video: VideoContentFields = videos[0]
+
+  beforeEach(() => {
+    const useDownloaderMock = useDownloader as jest.Mock
+    useDownloaderMock.mockReturnValue({
+      percentage: 75,
+      download: onDownload,
+      cancel: onCancel,
+      isInProgress: false
+    })
+  })
+
   it('closes the modal and cancels download on cancel icon click', () => {
     const { getByTestId } = render(
       <VideoProvider value={{ content: video }}>
@@ -57,7 +57,7 @@ describe('DownloadDialog', () => {
     fireEvent.click(getByRole('button', { name: 'Download' }))
 
     await waitFor(() => {
-      expect(onDownload).toBeCalledWith(
+      expect(onDownload).toHaveBeenCalledWith(
         video.variant?.downloads[0].url,
         `${video.title[0].value}.mp4`
       )
@@ -87,7 +87,7 @@ describe('DownloadDialog', () => {
     fireEvent.click(getByRole('button', { name: 'Download' }))
 
     await waitFor(() => {
-      expect(onDownload).toBeCalledWith(
+      expect(onDownload).toHaveBeenCalledWith(
         video.variant?.downloads[1].url,
         `${video.title[0].value}.mp4`
       )
