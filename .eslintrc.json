@@ -126,7 +126,8 @@
         "plugin:jest-formatting/recommended"
       ],
       "rules": {
-        "jest/no-disabled-tests": "off"
+        "jest/no-disabled-tests": "off",
+        "jest/require-top-level-describe": "error"
       }
     }
   ]

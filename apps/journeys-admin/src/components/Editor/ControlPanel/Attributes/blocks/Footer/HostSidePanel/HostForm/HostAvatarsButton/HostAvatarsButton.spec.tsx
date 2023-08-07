@@ -19,19 +19,19 @@ const mockUseHostUpdate = useHostUpdate as jest.MockedFunction<
   typeof useHostUpdate
 >
 
-const updateHost = jest.fn()
-
-beforeEach(() => {
-  mockUseHostUpdate.mockReturnValue({
-    updateHost
-  })
-})
-
-afterEach(() => {
-  jest.resetAllMocks()
-})
-
 describe('HostAvatarsButton', () => {
+  const updateHost = jest.fn()
+
+  beforeEach(() => {
+    mockUseHostUpdate.mockReturnValue({
+      updateHost
+    })
+  })
+
+  afterEach(() => {
+    jest.resetAllMocks()
+  })
+
   const defaultHost = {
     id: 'hostId',
     __typename: 'Host' as const,

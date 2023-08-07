@@ -8,11 +8,11 @@ jest.mock('next/router', () => ({
   useRouter: jest.fn()
 }))
 
-afterEach(() => {
-  jest.resetAllMocks()
-})
-
 describe('TermsAndConditions', () => {
+  afterEach(() => {
+    jest.resetAllMocks()
+  })
+
   it('should enable next button when box is checked', async () => {
     const { getByRole } = render(
       <MockedProvider>

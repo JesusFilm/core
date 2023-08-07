@@ -24,7 +24,8 @@ jest.mock('../../libs/useCurrentUser', () => ({
     loadUser: jest.fn(),
     data: {
       __typename: 'User',
-      ...user1
+      id: 'userId',
+      email: 'miguelohara@example.com'
     }
   })
 }))
@@ -36,16 +37,15 @@ jest.mock('react-i18next', () => ({
     }
   }
 }))
-const user1 = { id: 'userId', email: 'miguelohara@example.com' }
-
-const handleClose = jest.fn()
-
-beforeEach(() => {
-  handleClose.mockClear()
-  ;(useMediaQuery as jest.Mock).mockImplementation(() => true)
-})
 
 describe('TeamManageDialog', () => {
+  const handleClose = jest.fn()
+
+  beforeEach(() => {
+    handleClose.mockClear()
+    ;(useMediaQuery as jest.Mock).mockImplementation(() => true)
+  })
+
   const getUserTeamMock1: MockedResponse<GetUserTeamsAndInvites> = {
     request: {
       query: GET_USER_TEAMS_AND_INVITES,
