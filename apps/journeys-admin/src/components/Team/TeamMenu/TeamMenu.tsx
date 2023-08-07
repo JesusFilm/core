@@ -13,10 +13,11 @@ import { useTeam } from '../TeamProvider'
 import { TeamManageDialog } from '../TeamManageDialog'
 import { TeamAvatars } from '../TeamAvatars'
 import { GetLastActiveTeamIdAndTeams_teams as ActiveTeamUserTeams } from '../../../../__generated__/GetLastActiveTeamIdAndTeams'
+import Box from '@mui/material/Box'
 
 export function TeamMenu(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-  const { activeTeam, query } = useTeam()
+  const { activeTeam } = useTeam()
   const [teamCreateOpen, setTeamCreateOpen] = useState(false)
   const [teamUpdateOpen, setTeamUpdateOpen] = useState(false)
   const [teamManageOpen, setTeamManageOpen] = useState(false)
@@ -54,11 +55,13 @@ export function TeamMenu(): ReactElement {
       />
 
       {activeTeam != null && (
-        <TeamAvatars
-          onClick={() => setTeamManageOpen(true)}
-          userTeams={activeTeam.userTeams}
-          size="large"
-        />
+        <Box sx={{ display: { xs: 'none', sm: 'block' } }}>
+          <TeamAvatars
+            onClick={() => setTeamManageOpen(true)}
+            userTeams={activeTeam.userTeams}
+            size="large"
+          />
+        </Box>
       )}
       <IconButton edge="end" color="inherit" onClick={handleShowMenu}>
         <MoreVert />

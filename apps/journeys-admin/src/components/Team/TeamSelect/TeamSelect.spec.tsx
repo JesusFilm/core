@@ -32,8 +32,44 @@ describe('TeamSelect', () => {
     result: {
       data: {
         teams: [
-          { id: 'teamId1', title: 'Team Title', __typename: 'Team' },
-          { id: 'teamId2', title: 'Team Title2', __typename: 'Team' }
+          {
+            id: 'teamId1',
+            title: 'Team Title',
+            __typename: 'Team',
+            userTeams: [
+              {
+                __typename: 'UserTeam',
+                id: '34dcc3d4-6c62-4a96-a8a3-32f1d8cc2d7d',
+                user: {
+                  __typename: 'User',
+                  id: '4eGiaNUUMPRwK1H0GnJeXTOKwZm2',
+                  firstName: 'Nisal',
+                  lastName: 'Cottingham',
+                  imageUrl:
+                    'https://lh3.googleusercontent.com/a/AGNmyxbPtShdH3_xxjpnfHLlo0w-KxDBa9Ah1Qn_ZwpUrA=s96-c'
+                }
+              }
+            ]
+          },
+          {
+            id: 'teamId2',
+            title: 'Team Title2',
+            __typename: 'Team',
+            userTeams: [
+              {
+                __typename: 'UserTeam',
+                id: '34dcc3d4-6c62-4a96-a8a3-32f1d8cc2d7d',
+                user: {
+                  __typename: 'User',
+                  id: '4eGiaNUUMPRwK1H0GnJeXTOKwZm2',
+                  firstName: 'Nisal',
+                  lastName: 'Cottingham',
+                  imageUrl:
+                    'https://lh3.googleusercontent.com/a/AGNmyxbPtShdH3_xxjpnfHLlo0w-KxDBa9Ah1Qn_ZwpUrA=s96-c'
+                }
+              }
+            ]
+          }
         ],
         getJourneyProfile: {
           __typename: 'JourneyProfile',
@@ -84,7 +120,9 @@ describe('TeamSelect', () => {
     await userEvent.click(getByRole('button'))
     await waitFor(() => expect(screen.getByRole('listbox')).toBeInTheDocument())
     expect(getByText('Shared With Me')).toBeInTheDocument()
-    fireEvent.click(getByRole('option', { name: 'Team Title2' }))
+    fireEvent.click(
+      getByRole('option', { name: 'Team Title2 notification-badge' })
+    )
     expect(getByTestId('active-team-title')).toHaveTextContent('Team Title2')
   })
 

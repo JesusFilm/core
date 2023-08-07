@@ -18,6 +18,7 @@ export function TeamAvatars({
   size = 'small',
   userTeams
 }: TeamAvatarsProps): ReactElement {
+  console.log(onClick)
   return (
     <Box
       onClick={onClick}
@@ -26,31 +27,33 @@ export function TeamAvatars({
       }}
     >
       <AvatarGroup
-        total={onClick != null ? userTeams.length + 1 : userTeams.length}
-        spacing={8}
         sx={{
           '.MuiAvatar-root': {
             borderWidth: '1px',
-            fontSize: 12
+            fontSize: size === 'small' ? 8 : 12,
+            width: size === 'small' ? '22px' : '30px',
+            height: size === 'small' ? '22px' : '30px'
           }
         }}
       >
-        {take(userTeams, 5).map(({ user }) => (
-          <Avatar
-            key={user.id}
-            user={user}
-            sx={{
-              width: size === 'small' ? '22px' : '30px',
-              height: size === 'small' ? '22px' : '30px'
-            }}
-          />
-        ))}
-
+        <AvatarGroup
+          total={userTeams.length}
+          max={5}
+          spacing={8}
+          sx={{
+            '.MuiAvatar-root': { borderWidth: '1px' },
+            '&>.MuiAvatar-colorDefault': {
+              backgroundColor: 'primary.main'
+            }
+          }}
+        >
+          {take(userTeams, 5).map(({ user }) => (
+            <Avatar key={user.id} user={user} />
+          ))}
+        </AvatarGroup>
         {onClick != null && (
           <MuiAvatar
             sx={{
-              width: size === 'small' ? '22px' : '30px',
-              height: size === 'small' ? '22px' : '30px',
               backgroundColor: 'secondary.contrastText'
             }}
           >
