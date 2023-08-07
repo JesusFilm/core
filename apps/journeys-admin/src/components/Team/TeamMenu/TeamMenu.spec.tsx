@@ -23,8 +23,42 @@ describe('TeamMenu', () => {
     result: {
       data: {
         teams: [
-          { id: 'teamId1', title: 'Team Title', __typename: 'Team' },
-          { id: 'teamId2', title: 'Team Title2', __typename: 'Team' }
+          {
+            id: 'teamId1',
+            title: 'Team Title',
+            __typename: 'Team',
+            userTeams: [
+              {
+                __typename: 'UserTeam',
+                id: 'userTeamId1',
+                user: {
+                  __typename: 'User',
+                  id: 'userId',
+                  firstName: 'Joe',
+                  lastName: 'Bloggs',
+                  imageUrl: 'image'
+                }
+              }
+            ]
+          },
+          {
+            id: 'teamId2',
+            title: 'Team Title2',
+            __typename: 'Team',
+            userTeams: [
+              {
+                __typename: 'UserTeam',
+                id: 'userTeamId1',
+                user: {
+                  __typename: 'User',
+                  id: 'userId',
+                  firstName: 'Joe',
+                  lastName: 'Bloggs',
+                  imageUrl: 'image'
+                }
+              }
+            ]
+          }
         ],
         getJourneyProfile: {
           __typename: 'JourneyProfile',
@@ -40,8 +74,42 @@ describe('TeamMenu', () => {
     result: {
       data: {
         teams: [
-          { id: 'teamId1', title: 'Team Title', __typename: 'Team' },
-          { id: 'teamId2', title: 'Team Title2', __typename: 'Team' }
+          {
+            id: 'teamId1',
+            title: 'Team Title',
+            __typename: 'Team',
+            userTeams: [
+              {
+                __typename: 'UserTeam',
+                id: 'userTeamId1',
+                user: {
+                  __typename: 'User',
+                  id: 'userId',
+                  firstName: 'Joe',
+                  lastName: 'Bloggs',
+                  imageUrl: 'image'
+                }
+              }
+            ]
+          },
+          {
+            id: 'teamId2',
+            title: 'Team Title2',
+            __typename: 'Team',
+            userTeams: [
+              {
+                __typename: 'UserTeam',
+                id: 'userTeamId1',
+                user: {
+                  __typename: 'User',
+                  id: 'userId',
+                  firstName: 'Joe',
+                  lastName: 'Bloggs',
+                  imageUrl: 'image'
+                }
+              }
+            ]
+          }
         ],
         getJourneyProfile: {
           __typename: 'JourneyProfile',

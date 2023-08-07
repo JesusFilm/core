@@ -86,7 +86,26 @@ describe('TeamManageDialog', () => {
     },
     result: {
       data: {
-        teams: [{ id: 'teamId', title: 'Team Title', __typename: 'Team' }],
+        teams: [
+          {
+            id: 'teamId',
+            title: 'Team Title',
+            __typename: 'Team',
+            userTeams: [
+              {
+                __typename: 'UserTeam',
+                id: 'userTeamId1',
+                user: {
+                  __typename: 'User',
+                  id: 'userId',
+                  firstName: 'Joe',
+                  lastName: 'Bloggs',
+                  imageUrl: 'image'
+                }
+              }
+            ]
+          }
+        ],
         getJourneyProfile: {
           __typename: 'JourneyProfile',
           lastActiveTeamId: 'teamId'

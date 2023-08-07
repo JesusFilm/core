@@ -39,14 +39,13 @@ describe('TeamSelect', () => {
             userTeams: [
               {
                 __typename: 'UserTeam',
-                id: '34dcc3d4-6c62-4a96-a8a3-32f1d8cc2d7d',
+                id: 'userTeamId1',
                 user: {
                   __typename: 'User',
-                  id: '4eGiaNUUMPRwK1H0GnJeXTOKwZm2',
-                  firstName: 'Nisal',
-                  lastName: 'Cottingham',
-                  imageUrl:
-                    'https://lh3.googleusercontent.com/a/AGNmyxbPtShdH3_xxjpnfHLlo0w-KxDBa9Ah1Qn_ZwpUrA=s96-c'
+                  id: 'userId',
+                  firstName: 'Joe',
+                  lastName: 'Bloggs',
+                  imageUrl: 'image'
                 }
               }
             ]
@@ -58,14 +57,13 @@ describe('TeamSelect', () => {
             userTeams: [
               {
                 __typename: 'UserTeam',
-                id: '34dcc3d4-6c62-4a96-a8a3-32f1d8cc2d7d',
+                id: 'userTeamId1',
                 user: {
                   __typename: 'User',
-                  id: '4eGiaNUUMPRwK1H0GnJeXTOKwZm2',
-                  firstName: 'Nisal',
-                  lastName: 'Cottingham',
-                  imageUrl:
-                    'https://lh3.googleusercontent.com/a/AGNmyxbPtShdH3_xxjpnfHLlo0w-KxDBa9Ah1Qn_ZwpUrA=s96-c'
+                  id: 'userId',
+                  firstName: 'Joe',
+                  lastName: 'Bloggs',
+                  imageUrl: 'image'
                 }
               }
             ]
