@@ -14,9 +14,7 @@ describe('videoBlockSourceToLabel', () => {
   })
 
   it('returns YouTube', () => {
-    expect(videoBlockSourceToLabel(VideoBlockSource.youTube, t)).toBe(
-      'YouTube'
-    )
+    expect(videoBlockSourceToLabel(VideoBlockSource.youTube, t)).toBe('YouTube')
   })
 
   it('returns Custom', () => {

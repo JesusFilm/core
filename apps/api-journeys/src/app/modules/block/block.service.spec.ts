@@ -578,9 +578,7 @@ describe('BlockService', () => {
     })
 
     it('should validate block against parentBlockId', async () => {
-      expect(await service.validateBlock('1', '3', 'parentBlockId')).toBe(
-        true
-      )
+      expect(await service.validateBlock('1', '3', 'parentBlockId')).toBe(true)
     })
 
     it('should validate block against journeyId', async () => {

@@ -78,9 +78,7 @@ describe('userJourneyAcl', () => {
 
   describe('create', () => {
     it('deny when user is team manager', () => {
-      expect(ability.can(Action.Create, userJourneyUserTeamManager)).toBe(
-        false
-      )
+      expect(ability.can(Action.Create, userJourneyUserTeamManager)).toBe(false)
     })
 
     it('deny when user is journey owner', () => {
@@ -90,9 +88,7 @@ describe('userJourneyAcl', () => {
     })
 
     it('deny when user is team member', () => {
-      expect(ability.can(Action.Create, userJourneyUserTeamMember)).toBe(
-        false
-      )
+      expect(ability.can(Action.Create, userJourneyUserTeamMember)).toBe(false)
     })
 
     it('deny when user is journey editor', () => {
@@ -116,9 +112,7 @@ describe('userJourneyAcl', () => {
     })
 
     it('allow when user is journey owner', () => {
-      expect(ability.can(Action.Read, userJourneyUserJourneyOwner)).toBe(
-        true
-      )
+      expect(ability.can(Action.Read, userJourneyUserJourneyOwner)).toBe(true)
     })
 
     it('allow when user is team member', () => {
@@ -126,9 +120,7 @@ describe('userJourneyAcl', () => {
     })
 
     it('allow when user is journey editor', () => {
-      expect(ability.can(Action.Read, userJourneyUserJourneyEditor)).toBe(
-        true
-      )
+      expect(ability.can(Action.Read, userJourneyUserJourneyEditor)).toBe(true)
     })
 
     it('deny when user has no userTeam or userJourneys', () => {
@@ -163,15 +155,13 @@ describe('userJourneyAcl', () => {
       })
 
       it('deny when user is user', () => {
-        expect(ability.can(Action.Update, userJourneyUser, 'role')).toBe(
-          false
-        )
+        expect(ability.can(Action.Update, userJourneyUser, 'role')).toBe(false)
       })
 
       it('deny when user has no userTeam or userJourneys', () => {
-        expect(
-          ability.can(Action.Update, userJourneyEmpty, 'openedAt')
-        ).toBe(false)
+        expect(ability.can(Action.Update, userJourneyEmpty, 'openedAt')).toBe(
+          false
+        )
       })
     })
 
@@ -207,30 +197,24 @@ describe('userJourneyAcl', () => {
       })
 
       it('deny when user has no userTeam or userJourneys', () => {
-        expect(
-          ability.can(Action.Update, userJourneyEmpty, 'openedAt')
-        ).toBe(false)
+        expect(ability.can(Action.Update, userJourneyEmpty, 'openedAt')).toBe(
+          false
+        )
       })
     })
   })
 
   describe('delete', () => {
     it('allow when user is team manager', () => {
-      expect(ability.can(Action.Delete, userJourneyUserTeamManager)).toBe(
-        true
-      )
+      expect(ability.can(Action.Delete, userJourneyUserTeamManager)).toBe(true)
     })
 
     it('allow when user is journey owner', () => {
-      expect(ability.can(Action.Delete, userJourneyUserJourneyOwner)).toBe(
-        true
-      )
+      expect(ability.can(Action.Delete, userJourneyUserJourneyOwner)).toBe(true)
     })
 
     it('deny when user is team member', () => {
-      expect(ability.can(Action.Delete, userJourneyUserTeamMember)).toBe(
-        false
-      )
+      expect(ability.can(Action.Delete, userJourneyUserTeamMember)).toBe(false)
     })
 
     it('deny when user is journey editor', () => {

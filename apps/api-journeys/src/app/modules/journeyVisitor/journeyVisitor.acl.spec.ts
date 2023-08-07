@@ -83,9 +83,9 @@ describe('journeyVisitorAcl', () => {
     })
 
     it('allow when user is journey owner', () => {
-      expect(
-        ability.can(Action.Manage, journeyVisitorUserJourneyOwner)
-      ).toBe(true)
+      expect(ability.can(Action.Manage, journeyVisitorUserJourneyOwner)).toBe(
+        true
+      )
     })
 
     it('allow when user is team member', () => {
@@ -95,9 +95,9 @@ describe('journeyVisitorAcl', () => {
     })
 
     it('allow when user is journey editor', () => {
-      expect(
-        ability.can(Action.Manage, journeyVisitorUserJourneyEditor)
-      ).toBe(true)
+      expect(ability.can(Action.Manage, journeyVisitorUserJourneyEditor)).toBe(
+        true
+      )
     })
 
     it('allow when user is visitor', () => {

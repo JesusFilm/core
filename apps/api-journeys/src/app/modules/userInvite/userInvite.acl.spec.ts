@@ -79,15 +79,11 @@ describe('userInviteAcl', () => {
 
   describe('manage', () => {
     it('allow when user is team manager', () => {
-      expect(ability.can(Action.Manage, userInviteUserTeamManager)).toBe(
-        true
-      )
+      expect(ability.can(Action.Manage, userInviteUserTeamManager)).toBe(true)
     })
 
     it('allow when user is journey owner', () => {
-      expect(ability.can(Action.Manage, userInviteUserJourneyOwner)).toBe(
-        true
-      )
+      expect(ability.can(Action.Manage, userInviteUserJourneyOwner)).toBe(true)
     })
 
     it('allow when user is team member', () => {
@@ -95,9 +91,7 @@ describe('userInviteAcl', () => {
     })
 
     it('allow when user is journey editor', () => {
-      expect(ability.can(Action.Manage, userInviteUserJourneyEditor)).toBe(
-        true
-      )
+      expect(ability.can(Action.Manage, userInviteUserJourneyEditor)).toBe(true)
     })
 
     it('deny when user has no userTeam or userJourneys', () => {

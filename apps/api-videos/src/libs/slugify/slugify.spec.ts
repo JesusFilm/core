@@ -6,9 +6,7 @@ describe('slugify', () => {
   })
 
   it('when slug already used transforms My Title to my-title-2', () => {
-    expect(slugify('id', 'My Title', { 'my-title': 'id2' })).toBe(
-      'my-title-2'
-    )
+    expect(slugify('id', 'My Title', { 'my-title': 'id2' })).toBe('my-title-2')
   })
 
   it('when slug already used twice transforms My Title to my-title-3', () => {

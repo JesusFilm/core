@@ -110,9 +110,7 @@ describe('journeyAcl', () => {
     })
 
     it('deny when user is journey editor', () => {
-      expect(ability.can(Action.Manage, journeyUserJourneyEditor)).toBe(
-        false
-      )
+      expect(ability.can(Action.Manage, journeyUserJourneyEditor)).toBe(false)
     })
 
     it('deny when user has no userTeam or userJourneys', () => {
@@ -120,9 +118,7 @@ describe('journeyAcl', () => {
     })
 
     it('deny when user is not publisher', () => {
-      expect(ability.can(Action.Manage, journeyUnpublishedTemplate)).toBe(
-        false
-      )
+      expect(ability.can(Action.Manage, journeyUnpublishedTemplate)).toBe(false)
     })
 
     it('deny template field when user is not publisher', () => {
@@ -155,9 +151,7 @@ describe('journeyAcl', () => {
       })
 
       it('deny when user is publisher but has no userTeam or userJourneys', () => {
-        expect(ability.can(Action.Manage, journeyEmpty, 'template')).toBe(
-          false
-        )
+        expect(ability.can(Action.Manage, journeyEmpty, 'template')).toBe(false)
       })
     })
   })
@@ -184,9 +178,7 @@ describe('journeyAcl', () => {
     })
 
     it('deny when template and unpublished', () => {
-      expect(ability.can(Action.Read, journeyUnpublishedTemplate)).toBe(
-        false
-      )
+      expect(ability.can(Action.Read, journeyUnpublishedTemplate)).toBe(false)
     })
 
     it('deny when user has no userTeam or userJourneys', () => {

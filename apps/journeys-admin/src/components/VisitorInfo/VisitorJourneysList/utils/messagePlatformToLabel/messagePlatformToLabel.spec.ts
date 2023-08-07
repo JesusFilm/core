@@ -8,9 +8,7 @@ describe('messagePlatformToLabel', () => {
   }
 
   it('returns Facebook', () => {
-    expect(messagePlatformToLabel(MessagePlatform.facebook, t)).toBe(
-      'Facebook'
-    )
+    expect(messagePlatformToLabel(MessagePlatform.facebook, t)).toBe('Facebook')
   })
 
   it('returns Instagram', () => {
@@ -28,15 +26,11 @@ describe('messagePlatformToLabel', () => {
   })
 
   it('returns Snapchat', () => {
-    expect(messagePlatformToLabel(MessagePlatform.snapchat, t)).toBe(
-      'Snapchat'
-    )
+    expect(messagePlatformToLabel(MessagePlatform.snapchat, t)).toBe('Snapchat')
   })
 
   it('returns Telegram', () => {
-    expect(messagePlatformToLabel(MessagePlatform.telegram, t)).toBe(
-      'Telegram'
-    )
+    expect(messagePlatformToLabel(MessagePlatform.telegram, t)).toBe('Telegram')
   })
 
   it('returns TikTok', () => {
@@ -52,9 +46,7 @@ describe('messagePlatformToLabel', () => {
   })
 
   it('returns WhatsApp', () => {
-    expect(messagePlatformToLabel(MessagePlatform.whatsApp, t)).toBe(
-      'WhatsApp'
-    )
+    expect(messagePlatformToLabel(MessagePlatform.whatsApp, t)).toBe('WhatsApp')
   })
 
   it('returns Custom', () => {

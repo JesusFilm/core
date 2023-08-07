@@ -41,15 +41,11 @@ describe('userTeamAcl', () => {
 
   describe('read', () => {
     it('allow when user is team manager', () => {
-      expect(ability.can(Action.Read, userTeamInviteUserTeamManager)).toBe(
-        true
-      )
+      expect(ability.can(Action.Read, userTeamInviteUserTeamManager)).toBe(true)
     })
 
     it('allow when user is team member', () => {
-      expect(ability.can(Action.Read, userTeamInviteUserTeamMember)).toBe(
-        true
-      )
+      expect(ability.can(Action.Read, userTeamInviteUserTeamMember)).toBe(true)
     })
 
     it('deny when user has no userTeam', () => {

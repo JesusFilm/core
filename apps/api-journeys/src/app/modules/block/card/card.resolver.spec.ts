@@ -160,9 +160,7 @@ describe('CardBlockResolver', () => {
     })
 
     it('returns fullscreen when false', () => {
-      expect(resolver.fullscreen({ ...block, fullscreen: false })).toBe(
-        false
-      )
+      expect(resolver.fullscreen({ ...block, fullscreen: false })).toBe(false)
     })
 
     it('returns false when fullscreen is null', () => {
