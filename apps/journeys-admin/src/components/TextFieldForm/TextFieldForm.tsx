@@ -1,4 +1,4 @@
-import { ComponentProps, ReactElement, ReactNode } from 'react'
+import { ClipboardEvent, ComponentProps, ReactElement, ReactNode } from 'react'
 import { Formik, Form } from 'formik'
 import TextField, { TextFieldProps } from '@mui/material/TextField'
 
@@ -19,6 +19,7 @@ interface TextFieldFormProps extends FieldProps {
   initialValue?: string
   validationSchema?: ComponentProps<typeof Formik>['validationSchema']
   onSubmit: (value?: string) => void
+  onPaste?: (e: ClipboardEvent) => void
   startIcon?: ReactNode
   endIcon?: ReactNode
 }
@@ -33,6 +34,7 @@ export function TextFieldForm({
   initialValue,
   validationSchema,
   onSubmit,
+  onPaste,
   startIcon,
   endIcon,
   helperText,
@@ -75,6 +77,9 @@ export function TextFieldForm({
             InputProps={{
               startAdornment: startIcon,
               endAdornment: endIcon
+            }}
+            onPaste={(e) => {
+              onPaste?.(e)
             }}
             onBlur={(e) => {
               handleBlur(e)

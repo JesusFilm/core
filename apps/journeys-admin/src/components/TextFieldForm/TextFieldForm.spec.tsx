@@ -152,4 +152,21 @@ describe('TextFieldForm', () => {
       expect(onSubmit).not.toHaveBeenCalled()
     })
   })
+
+  it('should call onPaste when a user paste value', async () => {
+    const onPaste = jest.fn()
+    const { getByRole } = render(
+      <TextFieldForm
+        id="link"
+        label="Add image by url"
+        onSubmit={jest.fn()}
+        onPaste={onPaste}
+      />
+    )
+
+    await fireEvent.paste(getByRole('textbox'), {
+      clipboardData: { getData: () => 'https://google.com' }
+    })
+    expect(onPaste).toHaveBeenCalled()
+  })
 })

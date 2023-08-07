@@ -1,4 +1,4 @@
-import { ReactElement, useState } from 'react'
+import { ClipboardEvent, ReactElement, useState } from 'react'
 import LinkIcon from '@mui/icons-material/Link'
 import InputAdornment from '@mui/material/InputAdornment'
 import Stack from '@mui/material/Stack'
@@ -44,6 +44,12 @@ export function CustomUrl({ onChange }: CustomUrlProps): ReactElement {
     }
   }
 
+  const handlePaste = async (
+    e: ClipboardEvent<HTMLDivElement>
+  ): Promise<void> => {
+    await handleChange(e.clipboardData.getData('text'))
+  }
+
   return (
     <>
       <Button
@@ -76,6 +82,7 @@ export function CustomUrl({ onChange }: CustomUrlProps): ReactElement {
               label="Paste URL of image..."
               initialValue=""
               onSubmit={handleChange}
+              onPaste={handlePaste}
               helperText="Make sure image address is permanent"
               startIcon={
                 <InputAdornment position="start">
