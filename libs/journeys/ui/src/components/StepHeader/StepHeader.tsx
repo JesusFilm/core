@@ -38,6 +38,8 @@ export function StepHeader(): ReactElement {
         position: { xs: 'absolute', lg: 'relative' },
         zIndex: 1,
         top: 0,
+        left: 'env(safe-area-inset-left)',
+        right: 'env(safe-area-inset-right)',
         alignItems: 'flex-end'
       }}
     >
