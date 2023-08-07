@@ -130,6 +130,7 @@ async function importMediaComponents(): Promise<void> {
         async (tx) => {
           if (video.id == null) return
           if (
+            existingVideo != null &&
             !isEqual(
               omit(video, ['title', 'variants', 'childIds']),
               omit(existingVideo, ['title', 'variants', 'childIds'])
@@ -144,7 +145,10 @@ async function importMediaComponents(): Promise<void> {
             })
           }
 
-          if (!isEqual(video.title, existingVideo?.title)) {
+          if (
+            existingVideo != null &&
+            !isEqual(video.title, existingVideo.title)
+          ) {
             // clean up any dead languages
             await tx.videoTitle.deleteMany({
               where: {
@@ -176,7 +180,10 @@ async function importMediaComponents(): Promise<void> {
             }
           }
 
-          if (!isEqual(video.variants, existingVideo?.variants)) {
+          if (
+            existingVideo != null &&
+            !isEqual(video.variants, existingVideo.variants)
+          ) {
             // clean up dead variants
             await tx.videoVariant.deleteMany({
               where: {
@@ -188,6 +195,12 @@ async function importMediaComponents(): Promise<void> {
             console.log('processing video variants')
             for (let index = 0; index < video.variants.length; index++) {
               const variant = video.variants[index]
+              const existingVariant = existingVideo?.variants.find(
+                ({ id }) => id === variant.id
+              )
+              if (existingVideo != null && isEqual(variant, existingVariant))
+                continue
+
               await tx.videoVariant.upsert({
                 where: { id: variant.id },
                 update: omit(variant, ['downloads', 'subtitle']),
