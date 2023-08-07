@@ -66,11 +66,7 @@ describe('HostAvatars', () => {
 
   it('renders both avatars if both images are set', () => {
     const { getByTestId, getAllByRole } = render(
-      <JourneyProvider
-        value={{
-          journey: { ...journey, host: twoAvatarHost }
-        }}
-      >
+      <JourneyProvider value={{ journey: { ...journey, host: twoAvatarHost } }}>
         <HostAvatars />
       </JourneyProvider>
     )
@@ -84,12 +80,7 @@ describe('HostAvatars', () => {
   it('renders nothing if no images are set', () => {
     const { queryAllByRole } = render(
       <JourneyProvider
-        value={{
-          journey: {
-            ...journey,
-            host: { ...hostData }
-          }
-        }}
+        value={{ journey: { ...journey, host: { ...hostData } } }}
       >
         <HostAvatars />
       </JourneyProvider>
@@ -123,10 +114,7 @@ describe('HostAvatars', () => {
           }}
         >
           <JourneyProvider
-            value={{
-              journey: { ...journey },
-              variant: 'admin'
-            }}
+            value={{ journey: { ...journey }, variant: 'admin' }}
           >
             <HostAvatars hasPlaceholder />
           </JourneyProvider>

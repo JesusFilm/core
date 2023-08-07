@@ -80,9 +80,7 @@ describe('HostTitleLocation', () => {
   it('renders location then name when RTL', () => {
     const { getByText } = render(
       <JourneyProvider
-        value={{
-          journey: { ...journey, language: rtlLanguage }
-        }}
+        value={{ journey: { ...journey, language: rtlLanguage } }}
       >
         <HostTitleLocation />
       </JourneyProvider>

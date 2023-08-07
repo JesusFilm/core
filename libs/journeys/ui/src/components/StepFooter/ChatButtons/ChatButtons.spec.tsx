@@ -111,11 +111,7 @@ describe('ChatButtons', () => {
   it('renders chat buttons', () => {
     const { getAllByRole, getByTestId } = render(
       <MockedProvider>
-        <JourneyProvider
-          value={{
-            journey: { ...journey, chatButtons }
-          }}
-        >
+        <JourneyProvider value={{ journey: { ...journey, chatButtons } }}>
           <ChatButtons />
         </JourneyProvider>
       </MockedProvider>
@@ -133,11 +129,7 @@ describe('ChatButtons', () => {
 
     const { getAllByRole } = render(
       <MockedProvider mocks={mocks}>
-        <JourneyProvider
-          value={{
-            journey: { ...journey, chatButtons }
-          }}
-        >
+        <JourneyProvider value={{ journey: { ...journey, chatButtons } }}>
           <ChatButtons />
         </JourneyProvider>
       </MockedProvider>

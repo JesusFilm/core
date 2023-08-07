@@ -187,11 +187,7 @@ describe('Conductor', () => {
         ]}
       >
         <SnackbarProvider>
-          <JourneyProvider
-            value={{
-              journey: defaultJourney
-            }}
-          >
+          <JourneyProvider value={{ journey: defaultJourney }}>
             <Conductor blocks={[]} />
           </JourneyProvider>
         </SnackbarProvider>
@@ -231,11 +227,7 @@ describe('Conductor', () => {
         ]}
       >
         <SnackbarProvider>
-          <JourneyProvider
-            value={{
-              journey: defaultJourney
-            }}
-          >
+          <JourneyProvider value={{ journey: defaultJourney }}>
             <Conductor blocks={[]} />
           </JourneyProvider>
         </SnackbarProvider>
@@ -271,11 +263,7 @@ describe('Conductor', () => {
       const { getByTestId } = render(
         <MockedProvider mocks={[]}>
           <SnackbarProvider>
-            <JourneyProvider
-              value={{
-                journey: defaultJourney
-              }}
-            >
+            <JourneyProvider value={{ journey: defaultJourney }}>
               <Conductor blocks={basic} />
             </JourneyProvider>
           </SnackbarProvider>
@@ -308,9 +296,7 @@ describe('Conductor', () => {
         <MockedProvider mocks={[]}>
           <SnackbarProvider>
             <JourneyProvider
-              value={{
-                journey: { ...defaultJourney, language: rtlLanguage }
-              }}
+              value={{ journey: { ...defaultJourney, language: rtlLanguage } }}
             >
               <Conductor blocks={basic} />
             </JourneyProvider>
