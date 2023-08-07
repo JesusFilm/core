@@ -36,7 +36,7 @@ const blocks: Block[] = [
   },
   {
     __typename: 'ImageBlock',
-    alt: 'error-404-image',
+    alt: 'error-500-image',
     blurhash: 'U05OKJ0300sq5O?Y~VM|0M-.%1%K~o9HEKxu',
     height: 2230,
     id: 'imageBlock1.id',
@@ -49,7 +49,7 @@ const blocks: Block[] = [
     __typename: 'TypographyBlock',
     align: TypographyAlign.center,
     color: null,
-    content: '404',
+    content: '500',
     id: 'typog1.id',
     parentBlockId: 'cardBlock1.id',
     parentOrder: 0,
@@ -103,7 +103,7 @@ const blocks: Block[] = [
   }
 ]
 
-export function Custom404(): ReactElement {
+export function Custom500(): ReactElement {
   return (
     <ThemeProvider themeName={ThemeName.base} themeMode={ThemeMode.dark}>
       <Conductor blocks={transformer(blocks)} />
@@ -111,4 +111,4 @@ export function Custom404(): ReactElement {
   )
 }
 
-export default Custom404
+export default Custom500

@@ -108,17 +108,18 @@ export function TeamOnboarding(): ReactElement {
         ) : (
           <TeamCreateForm
             onSubmit={async (_, __, data) => {
+              if (data?.teamCreate.id == null) return
               await Promise.all([
                 journeyDuplicate({
                   variables: {
                     id: ONBOARDING_TEMPLATE_ID,
-                    teamId: data?.teamCreate.id
+                    teamId: data.teamCreate.id
                   }
                 }),
                 updateLastActiveTeamId({
                   variables: {
                     input: {
-                      lastActiveTeamId: data?.teamCreate.id
+                      lastActiveTeamId: data.teamCreate.id
                     }
                   }
                 })

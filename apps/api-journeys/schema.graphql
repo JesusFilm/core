@@ -235,8 +235,8 @@ extend type Mutation {
   hostCreate(teamId: ID!, input: HostCreateInput!): Host!
   hostUpdate(id: ID!, teamId: ID!, input: HostUpdateInput): Host!
   hostDelete(id: ID!, teamId: ID!): Host!
-  journeyCreate(input: JourneyCreateInput!, teamId: ID): Journey!
-  journeyDuplicate(id: ID!, teamId: ID): Journey!
+  journeyCreate(input: JourneyCreateInput!, teamId: ID!): Journey!
+  journeyDuplicate(id: ID!, teamId: ID!): Journey!
   journeyUpdate(id: ID!, input: JourneyUpdateInput!): Journey!
 
   """Sets journey status to published"""
@@ -1708,12 +1708,6 @@ extend type Query {
   journeyVisitorsConnection(
     """Returns the elements in the list that match the specified filter."""
     filter: JourneyVisitorFilter!
-
-    """
-    Returns the visitor items related to a specific team.
-    TODO: remove when teams is released
-    """
-    teamId: String
 
     """Returns the first n elements from the list."""
     first: Int
