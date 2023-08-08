@@ -67,11 +67,9 @@ describe('ChatButtonResolver', () => {
       .fn()
       .mockReturnValue([{ journeyId: 'journeyId', id: '3' }])
 
-    await resolver.chatButtonCreate('journeyId', {}).catch((error) => {
-      expect(error.message).toEqual(
-        'There are already 2 chat buttons associated with the given journey'
-      )
-    })
+    await expect(resolver.chatButtonCreate('journeyId', {})).rejects.toThrow(
+      'There are already 2 chat buttons associated with the given journey'
+    )
   })
 
   it('should update an existing ChatButton', async () => {

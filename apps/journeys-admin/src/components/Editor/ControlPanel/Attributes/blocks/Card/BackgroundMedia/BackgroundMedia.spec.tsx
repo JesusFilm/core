@@ -90,7 +90,7 @@ describe('BackgroundMedia', () => {
     ).toBeTruthy()
   })
 
-  it('shows Video selected ', () => {
+  it('shows Video selected', () => {
     const videoBlock: TreeBlock<VideoBlock> = {
       id: 'video1.id',
       __typename: 'VideoBlock',

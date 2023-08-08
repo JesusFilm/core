@@ -92,6 +92,7 @@ describe('Card', () => {
       host: null,
       team: null
     }
+
     it('shows background color from prop', () => {
       const { getByRole } = render(
         <JourneyProvider value={{ journey, admin: true }}>

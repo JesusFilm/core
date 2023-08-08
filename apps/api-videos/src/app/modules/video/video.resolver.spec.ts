@@ -185,6 +185,7 @@ describe('VideoResolver', () => {
     const info = {
       variableValues: {}
     } as unknown as GraphQLResolveInfo
+
     it('return a video', async () => {
       expect(await resolver.video(info, '20615')).toEqual(video)
       expect(prismaService.video.findUnique).toHaveBeenCalledWith({

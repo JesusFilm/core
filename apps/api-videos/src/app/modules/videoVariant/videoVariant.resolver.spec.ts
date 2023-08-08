@@ -48,7 +48,7 @@ describe('VideoVariantResolver', () => {
           }
         ]
       })
-    ).toEqual(2)
+    ).toBe(2)
   })
 
   describe('subtitle', () => {

@@ -25,6 +25,7 @@ describe('ImageBlockThumbnail', () => {
       expect(getByTestId('imageBlockThumbnailPlaceholder')).toBeInTheDocument()
     })
   })
+
   describe('Existing ImageBlock', () => {
     it('shows image', async () => {
       const { getByRole } = render(
@@ -35,6 +36,7 @@ describe('ImageBlockThumbnail', () => {
       expect(img).toHaveAttribute('alt', image.alt)
     })
   })
+
   it('should show the loading circle', () => {
     const { getByRole } = render(
       <ImageBlockThumbnail selectedBlock={image} loading />

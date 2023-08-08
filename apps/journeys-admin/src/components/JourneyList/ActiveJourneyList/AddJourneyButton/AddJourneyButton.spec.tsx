@@ -186,6 +186,7 @@ describe('AddJourneyButton', () => {
       )
     )
   })
+
   it('should not show add journey button when no active team and flag is true', async () => {
     const result = jest.fn().mockReturnValueOnce({
       data: {

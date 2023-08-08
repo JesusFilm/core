@@ -22,13 +22,16 @@ jest.mock('@mui/material/useMediaQuery', () => ({
 
 describe('ShareButton', () => {
   const originalNavigator = { ...global.navigator }
+
   beforeEach(() => {
     Object.assign(navigator, { ...originalNavigator, share: undefined })
   })
+
   afterEach(() => {
     jest.resetAllMocks()
     Object.assign(navigator, originalNavigator)
   })
+
   it('should open native share dialog on mobile', () => {
     const navigatorMock = jest.fn()
 

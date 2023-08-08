@@ -8,56 +8,48 @@ describe('messagePlatformToLabel', () => {
   }
 
   it('returns Facebook', () => {
-    expect(messagePlatformToLabel(MessagePlatform.facebook, t)).toEqual(
-      'Facebook'
-    )
+    expect(messagePlatformToLabel(MessagePlatform.facebook, t)).toBe('Facebook')
   })
 
   it('returns Instagram', () => {
-    expect(messagePlatformToLabel(MessagePlatform.instagram, t)).toEqual(
+    expect(messagePlatformToLabel(MessagePlatform.instagram, t)).toBe(
       'Instagram'
     )
   })
 
   it('returns LINE', () => {
-    expect(messagePlatformToLabel(MessagePlatform.line, t)).toEqual('LINE')
+    expect(messagePlatformToLabel(MessagePlatform.line, t)).toBe('LINE')
   })
 
   it('returns Skype', () => {
-    expect(messagePlatformToLabel(MessagePlatform.skype, t)).toEqual('Skype')
+    expect(messagePlatformToLabel(MessagePlatform.skype, t)).toBe('Skype')
   })
 
   it('returns Snapchat', () => {
-    expect(messagePlatformToLabel(MessagePlatform.snapchat, t)).toEqual(
-      'Snapchat'
-    )
+    expect(messagePlatformToLabel(MessagePlatform.snapchat, t)).toBe('Snapchat')
   })
 
   it('returns Telegram', () => {
-    expect(messagePlatformToLabel(MessagePlatform.telegram, t)).toEqual(
-      'Telegram'
-    )
+    expect(messagePlatformToLabel(MessagePlatform.telegram, t)).toBe('Telegram')
   })
 
   it('returns TikTok', () => {
-    expect(messagePlatformToLabel(MessagePlatform.tikTok, t)).toEqual('TikTok')
+    expect(messagePlatformToLabel(MessagePlatform.tikTok, t)).toBe('TikTok')
   })
 
   it('returns Viber', () => {
-    expect(messagePlatformToLabel(MessagePlatform.viber, t)).toEqual('Viber')
+    expect(messagePlatformToLabel(MessagePlatform.viber, t)).toBe('Viber')
   })
 
   it('returns VK', () => {
-    expect(messagePlatformToLabel(MessagePlatform.vk, t)).toEqual('VK')
+    expect(messagePlatformToLabel(MessagePlatform.vk, t)).toBe('VK')
   })
 
   it('returns WhatsApp', () => {
-    expect(messagePlatformToLabel(MessagePlatform.whatsApp, t)).toEqual(
-      'WhatsApp'
-    )
+    expect(messagePlatformToLabel(MessagePlatform.whatsApp, t)).toBe('WhatsApp')
   })
 
   it('returns Custom', () => {
-    expect(messagePlatformToLabel(MessagePlatform.custom, t)).toEqual('Custom')
+    expect(messagePlatformToLabel(MessagePlatform.custom, t)).toBe('Custom')
   })
 })

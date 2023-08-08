@@ -51,6 +51,7 @@ describe('Step', () => {
       dispatch
     })
   })
+
   it('shows default messages', () => {
     const step: TreeBlock<StepBlock> = {
       id: 'step1.id',

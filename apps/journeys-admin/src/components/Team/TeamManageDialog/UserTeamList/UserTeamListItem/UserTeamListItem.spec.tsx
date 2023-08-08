@@ -14,6 +14,7 @@ jest.mock('react-i18next', () => ({
     }
   }
 }))
+
 describe('UserTeamListItem', () => {
   const mockUser: UserTeam = {
     __typename: 'UserTeam',
@@ -54,7 +55,7 @@ describe('UserTeamListItem', () => {
     }
   ]
 
-  it('it should change the team member permissions correctly', async () => {
+  it('should change the team member permissions correctly', async () => {
     const { getByText, getByRole } = render(
       <MockedProvider mocks={mocks}>
         <UserTeamListItem user={mockUser} disabled={false} />
