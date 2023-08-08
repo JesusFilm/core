@@ -77,7 +77,6 @@ describe('TeamCreateDialog', () => {
   }
   function TestComponent(): ReactElement {
     const { activeTeam } = useTeam()
-    console.log(activeTeam?.title)
     return <div data-testid="active-team-title">{activeTeam?.title}</div>
   }
 
