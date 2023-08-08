@@ -2,7 +2,7 @@ import { gql, useMutation } from '@apollo/client'
 import Box from '@mui/material/Box'
 import Fade from '@mui/material/Fade'
 import Stack from '@mui/material/Stack'
-import { styled, SxProps, useTheme } from '@mui/material/styles'
+import { SxProps, styled, useTheme } from '@mui/material/styles'
 import { ReactElement, useEffect, useState } from 'react'
 import Div100vh from 'react-div-100vh'
 import TagManager from 'react-gtm-module'
@@ -166,11 +166,14 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
   // Shared position styling for stepHeader and stepFooter with notch calculations when applicable.
   const headerFooterPosition: SxProps = {
     width: {
-      xs: 'calc(100% - env(safe-area-inset-left) - env(safe-area-inset-right))',
+      xs:
+        variant === 'default'
+          ? 'calc(100% - env(safe-area-inset-left) - env(safe-area-inset-right))'
+          : '100%',
       lg: 'auto'
     },
-    left: 'env(safe-area-inset-left)',
-    right: 'env(safe-area-inset-right)',
+    left: variant === 'default' ? 'env(safe-area-inset-left)' : undefined,
+    right: variant === 'default' ? 'env(safe-area-inset-right)' : undefined,
     position: { xs: 'absolute', lg: 'relative' }
   }
 

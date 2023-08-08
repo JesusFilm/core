@@ -2,6 +2,8 @@ import Box from '@mui/material/Box'
 import { SxProps } from '@mui/material/styles'
 import { ReactElement, ReactNode } from 'react'
 
+import { useJourney } from '../../../libs/JourneyProvider'
+
 interface OverlayContentProps {
   children: ReactNode
   sx: SxProps
@@ -13,6 +15,7 @@ export function OverlayContent({
   sx,
   hasFullscreenVideo = false
 }: OverlayContentProps): ReactElement {
+  const { variant } = useJourney()
   const enableVerticalScroll: SxProps = {
     overflowY: 'scroll',
     // Hide on Firefox https://caniuse.com/?search=scrollbar-width
@@ -41,16 +44,22 @@ export function OverlayContent({
     : {}
 
   // Adds padding with notch calculations when applicable
-  const horizontalPadding: SxProps = {
-    pl: {
-      xs: 'calc(24px + env(safe-area-inset-left))',
-      lg: 'calc(40px + env(safe-area-inset-left))'
-    },
-    pr: {
-      xs: 'calc(24px + env(safe-area-inset-right))',
-      lg: 'calc(40px + env(safe-area-inset-right))'
-    }
-  }
+  const horizontalPadding: SxProps =
+    variant === 'default'
+      ? {
+          pl: {
+            xs: 'calc(24px + env(safe-area-inset-left))',
+            lg: 'calc(40px + env(safe-area-inset-left))'
+          },
+          pr: {
+            xs: 'calc(24px + env(safe-area-inset-right))',
+            lg: 'calc(40px + env(safe-area-inset-right))'
+          }
+        }
+      : {
+          pl: { xs: 6, lg: 10 },
+          pr: { xs: 6, lg: 10 }
+        }
 
   return (
     <Box

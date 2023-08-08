@@ -4,6 +4,7 @@ import { ReactElement, ReactNode } from 'react'
 import { NextImage } from '@core/shared/ui/NextImage'
 
 import type { TreeBlock } from '../../../libs/block'
+import { useJourney } from '../../../libs/JourneyProvider'
 import { ImageFields } from '../../Image/__generated__/ImageFields'
 import { OverlayContent } from '../OverlayContent'
 
@@ -22,6 +23,7 @@ export function ExpandedCover({
   backgroundBlur,
   hasFullscreenVideo = false
 }: ExpandedCoverProps): ReactElement {
+  const { variant } = useJourney()
   const enableVerticalScroll = {
     overflowY: 'scroll',
     // Hide on Firefox https://caniuse.com/?search=scrollbar-width
@@ -73,7 +75,10 @@ export function ExpandedCover({
             sx={{
               margin: 'auto',
               width: {
-                xs: 'calc(100% - 48px - env(safe-area-inset-left) - env(safe-area-inset-right))',
+                xs:
+                  variant === 'default'
+                    ? 'calc(100% - 48px - env(safe-area-inset-left) - env(safe-area-inset-right))'
+                    : 'calc(100% - 48px)',
                 lg: 500
               },
               py: { xs: 4 }

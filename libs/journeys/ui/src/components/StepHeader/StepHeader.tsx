@@ -6,13 +6,13 @@ import Link from '@mui/material/Link'
 import Menu from '@mui/material/Menu'
 import MuiMenuItem from '@mui/material/MenuItem'
 import Stack from '@mui/material/Stack'
+import { SxProps } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import NextLink from 'next/link'
 import { MouseEvent, ReactElement, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { useJourney } from '../../libs/JourneyProvider'
-import { SxProps } from '@mui/material/styles'
 
 interface Props {
   sx?: SxProps
