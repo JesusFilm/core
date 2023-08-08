@@ -2,7 +2,7 @@ import { gql, useMutation } from '@apollo/client'
 import Box from '@mui/material/Box'
 import Fade from '@mui/material/Fade'
 import Stack from '@mui/material/Stack'
-import { styled, useTheme } from '@mui/material/styles'
+import { styled, SxProps, useTheme } from '@mui/material/styles'
 import { ReactElement, useEffect, useState } from 'react'
 import Div100vh from 'react-div-100vh'
 import TagManager from 'react-gtm-module'
@@ -163,6 +163,17 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
     }
   }, [swiper, blockHistory])
 
+  // Shared position styling for stepHeader and stepFooter with notch calculations when applicable.
+  const headerFooterPosition: SxProps = {
+    width: {
+      xs: 'calc(100% - env(safe-area-inset-left) - env(safe-area-inset-right))',
+      lg: 'auto'
+    },
+    left: 'env(safe-area-inset-left)',
+    right: 'env(safe-area-inset-right)',
+    position: { xs: 'absolute', lg: 'relative' }
+  }
+
   return (
     <Div100vh style={{ overflow: 'hidden' }}>
       <Stack
@@ -219,11 +230,14 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
                           px: { lg: 6 }
                         }}
                       >
-                        {showHeaderFooter && <StepHeader />}
+                        {showHeaderFooter && (
+                          <StepHeader sx={{ ...headerFooterPosition }} />
+                        )}
                         <BlockRenderer block={block} />
                         <StepFooter
                           sx={{
-                            visibility: showHeaderFooter ? 'visible' : 'hidden'
+                            visibility: showHeaderFooter ? 'visible' : 'hidden',
+                            ...headerFooterPosition
                           }}
                         />
                       </Stack>

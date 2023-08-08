@@ -42,15 +42,8 @@ export function StepFooter({
       data-testid="stepFooter"
       className="swiper-no-swiping"
       sx={{
-        position: { xs: 'absolute', lg: 'relative' },
         zIndex: 1,
         bottom: 0,
-        left: 'env(safe-area-inset-left)',
-        right: 'env(safe-area-inset-right)',
-        width: {
-          xs: 'calc(100% - env(safe-area-inset-left) - env(safe-area-inset-right))',
-          lg: 'auto'
-        },
         ...sx
       }}
       onClick={(e) => {

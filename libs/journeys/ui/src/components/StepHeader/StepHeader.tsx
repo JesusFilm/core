@@ -12,8 +12,13 @@ import { MouseEvent, ReactElement, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { useJourney } from '../../libs/JourneyProvider'
+import { SxProps } from '@mui/material/styles'
 
-export function StepHeader(): ReactElement {
+interface Props {
+  sx?: SxProps
+}
+
+export function StepHeader({ sx }: Props): ReactElement {
   const { journey, variant } = useJourney()
   const { t } = useTranslation('libs-journeys-ui')
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
@@ -31,17 +36,11 @@ export function StepHeader(): ReactElement {
     <Stack
       data-testid="stepHeader"
       sx={{
-        width: {
-          xs: 'calc(100% - env(safe-area-inset-left) - env(safe-area-inset-right))',
-          lg: 'unset'
-        },
         mt: { xs: 1, lg: 0 },
-        position: { xs: 'absolute', lg: 'relative' },
         zIndex: 1,
         top: 0,
-        left: 'env(safe-area-inset-left)',
-        right: 'env(safe-area-inset-right)',
-        alignItems: 'flex-end'
+        alignItems: 'flex-end',
+        ...sx
       }}
     >
       <IconButton
