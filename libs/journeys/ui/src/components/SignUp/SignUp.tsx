@@ -62,7 +62,7 @@ export const SignUp = ({
     | TreeBlock<IconFields>
     | undefined
 
-  const { admin } = useJourney()
+  const { variant } = useJourney()
   const { enqueueSnackbar } = useSnackbar()
   const { blockHistory, treeBlocks } = useBlocks()
   const activeBlock = blockHistory[blockHistory.length - 1]
@@ -88,7 +88,7 @@ export const SignUp = ({
   })
 
   const onSubmitHandler = async (values: SignUpFormValues): Promise<void> => {
-    if (!admin) {
+    if (variant === 'default' || variant === 'embed') {
       const id = uuid()
       try {
         await signUpSubmissionEventCreate({

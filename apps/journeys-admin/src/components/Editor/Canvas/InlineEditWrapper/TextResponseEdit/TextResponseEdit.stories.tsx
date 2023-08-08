@@ -92,7 +92,8 @@ const Template: Story = ({ ...args }) => {
               bcp47: 'en',
               iso3: 'eng'
             }
-          } as unknown as Journey
+          } as unknown as Journey,
+          variant: 'admin'
         }}
       >
         <EditorProvider

@@ -32,7 +32,10 @@ describe('MinRows', () => {
     const { getByRole } = render(
       <MockedProvider>
         <JourneyProvider
-          value={{ journey: { id: 'journey.id' } as unknown as Journey }}
+          value={{
+            journey: { id: 'journey.id' } as unknown as Journey,
+            variant: 'admin'
+          }}
         >
           <EditorProvider initialState={{ selectedBlock }}>
             <MinRows />
@@ -88,7 +91,10 @@ describe('MinRows', () => {
         ]}
       >
         <JourneyProvider
-          value={{ journey: { id: 'journey.id' } as unknown as Journey }}
+          value={{
+            journey: { id: 'journey.id' } as unknown as Journey,
+            variant: 'admin'
+          }}
         >
           <EditorProvider initialState={{ selectedBlock }}>
             <MinRows />

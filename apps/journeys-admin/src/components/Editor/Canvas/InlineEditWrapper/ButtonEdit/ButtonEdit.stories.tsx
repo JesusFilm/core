@@ -157,7 +157,7 @@ const Template: Story = ({ ...args }) => {
               ]
             }
           } as unknown as Journey,
-          admin: true
+          variant: 'admin'
         }}
       >
         <EditorProvider
