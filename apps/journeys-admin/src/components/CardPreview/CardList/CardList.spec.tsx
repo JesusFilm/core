@@ -284,7 +284,7 @@ describe('CardList', () => {
                 iso3: 'eng'
               }
             } as unknown as Journey,
-            admin: true
+            variant: 'admin'
           }}
         >
           <DragDropContext>
@@ -337,7 +337,7 @@ describe('CardList', () => {
                 iso3: 'eng'
               }
             } as unknown as Journey,
-            admin: true
+            variant: 'admin'
           }}
         >
           <DragDropContext>
@@ -373,7 +373,7 @@ describe('CardList', () => {
                 iso3: 'eng'
               }
             } as unknown as Journey,
-            admin: true
+            variant: 'admin'
           }}
         >
           <SocialProvider
@@ -470,7 +470,7 @@ describe('CardList', () => {
               },
               template: true
             } as unknown as Journey,
-            admin: true
+            variant: 'admin'
           }}
         >
           <DragDropContext>

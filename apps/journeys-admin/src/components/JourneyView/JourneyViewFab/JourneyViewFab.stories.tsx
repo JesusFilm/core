@@ -20,7 +20,7 @@ const Template: Story = ({ ...args }) => (
   <MockedProvider mocks={args.mocks}>
     <TeamProvider>
       <SnackbarProvider>
-        <JourneyProvider value={{ journey: args.journey }}>
+        <JourneyProvider value={{ journey: args.journey, variant: 'admin' }}>
           <JourneyViewFab isPublisher={args.isPublisher} />
         </JourneyProvider>
       </SnackbarProvider>

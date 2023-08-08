@@ -96,7 +96,7 @@ const journeyMocks = [
 const Template: Story = ({ ...args }) => (
   <MockedProvider mocks={args.mocks}>
     <TeamProvider>
-      <JourneyProvider value={{ journey: args.journey, admin: true }}>
+      <JourneyProvider value={{ journey: args.journey, variant: 'admin' }}>
         <Menu {...args} />
       </JourneyProvider>
     </TeamProvider>

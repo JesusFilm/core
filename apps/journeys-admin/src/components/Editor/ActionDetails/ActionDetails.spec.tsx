@@ -36,7 +36,7 @@ describe('ActionDetails', () => {
     const { getByText } = render(
       <SnackbarProvider>
         <MockedProvider>
-          <JourneyProvider value={{ journey }}>
+          <JourneyProvider value={{ journey, variant: 'admin' }}>
             <ActionDetails url={url} goalLabel={() => 'Visit a website'} />
           </JourneyProvider>
         </MockedProvider>
