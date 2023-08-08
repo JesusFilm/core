@@ -20,7 +20,10 @@ const Template: Story = ({ ...args }) => {
   return (
     <MockedProvider>
       <JourneyProvider
-        value={{ journey: { id: 'journey.id' } as unknown as Journey }}
+        value={{
+          journey: { id: 'journey.id' } as unknown as Journey,
+          variant: 'admin'
+        }}
       >
         <EditorProvider
           initialState={{

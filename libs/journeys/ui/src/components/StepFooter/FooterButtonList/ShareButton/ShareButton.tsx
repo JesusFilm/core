@@ -9,7 +9,7 @@ import { StyledFooterButton } from '../StyledFooterButton'
 import { ShareDialog } from './ShareDialog'
 
 export function ShareButton(): ReactElement {
-  const { journey, admin } = useJourney()
+  const { journey, variant } = useJourney()
   const { t } = useTranslation('libs-journeys-ui')
   const [shareDialogOpen, setShareDialogOpen] = useState(false)
 
@@ -19,7 +19,7 @@ export function ShareButton(): ReactElement {
       : undefined
 
   async function handleShare(): Promise<void> {
-    if (admin || url == null) return
+    if (variant === 'admin' || url == null) return
     if (navigator.share == null) return setShareDialogOpen(true)
 
     const shareDetails = {

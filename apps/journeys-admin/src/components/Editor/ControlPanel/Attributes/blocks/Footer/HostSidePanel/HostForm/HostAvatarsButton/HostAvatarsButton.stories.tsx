@@ -40,7 +40,10 @@ const Template: Story<ComponentProps<typeof HostAvatarsButton>> = ({
   return (
     <MockedProvider>
       <JourneyProvider
-        value={{ journey: { ...journey, host: { ...defaultHost, ...args } } }}
+        value={{
+          journey: { ...journey, host: { ...defaultHost, ...args } },
+          variant: 'admin'
+        }}
       >
         <HostAvatarsButton />
       </JourneyProvider>

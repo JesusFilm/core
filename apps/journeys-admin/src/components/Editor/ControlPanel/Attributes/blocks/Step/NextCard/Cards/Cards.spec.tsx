@@ -80,7 +80,7 @@ describe('Cards', () => {
                 iso3: 'eng'
               }
             } as unknown as Journey,
-            admin: true
+            variant: 'admin'
           }}
         >
           <EditorProvider initialState={{ steps, selectedBlock }}>

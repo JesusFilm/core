@@ -25,16 +25,17 @@ export function StepFooter({
   sx,
   title
 }: StepFooterProps): ReactElement {
-  const { journey, admin } = useJourney()
+  const { journey, variant } = useJourney()
   const { rtl } = getJourneyRTL(journey)
   const { editableStepFooter } = useFlags()
   const hasAvatar =
-    (admin && editableStepFooter) ||
+    (variant === 'admin' && editableStepFooter) ||
     journey?.host?.src1 != null ||
     journey?.host?.src2 != null
 
   const hasChatWidget =
-    admin || (journey?.chatButtons != null && journey?.chatButtons.length > 0)
+    variant === 'admin' ||
+    (journey?.chatButtons != null && journey?.chatButtons.length > 0)
 
   return (
     <Box
@@ -88,7 +89,7 @@ export function StepFooter({
             }}
             gap={2}
           >
-            {hasAvatar && <HostAvatars hasPlaceholder={admin} />}
+            {hasAvatar && <HostAvatars hasPlaceholder={variant === 'admin'} />}
             <Stack
               sx={{ py: 1.5, flex: '1 1 100%', minWidth: 0 }}
               spacing={-1.5}
