@@ -24,7 +24,8 @@ describe('SocialImage', () => {
               height: 1080,
               blurhash: ''
             }
-          }
+          },
+          variant: 'admin'
         }}
       >
         <SocialImage />
@@ -44,7 +45,8 @@ describe('SocialImage', () => {
     const { getByTestId } = render(
       <JourneyProvider
         value={{
-          journey: publishedJourney
+          journey: publishedJourney,
+          variant: 'admin'
         }}
       >
         <SocialImage />

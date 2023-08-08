@@ -118,6 +118,7 @@ describe('VideoBlockResolver', () => {
         async (callback) => await callback(prismaService)
       )
     })
+
     it('creates a VideoBlock', async () => {
       prismaService.block.create.mockResolvedValueOnce(blockWithUserTeam)
       expect(
@@ -155,6 +156,7 @@ describe('VideoBlockResolver', () => {
         blockCreateInput.parentBlockId
       )
     })
+
     it('creates a VideoBlock without poster block', async () => {
       prismaService.block.create.mockResolvedValueOnce(blockWithUserTeam)
       expect(
@@ -190,6 +192,7 @@ describe('VideoBlockResolver', () => {
         }
       })
     })
+
     it('creates a cover VideoBlock', async () => {
       prismaService.block.create.mockResolvedValueOnce(blockWithUserTeam)
       prismaService.block.findUnique.mockResolvedValueOnce(parentBlock)
@@ -228,12 +231,14 @@ describe('VideoBlockResolver', () => {
       })
       expect(service.removeBlockAndChildren).not.toHaveBeenCalled()
     })
+
     it('throws error if not authorized', async () => {
       prismaService.block.create.mockResolvedValueOnce(block)
       await expect(
         resolver.videoBlockCreate(ability, blockCreateInput)
       ).rejects.toThrow('user is not allowed to create block')
     })
+
     it('throws error if no parent block found for cover block', async () => {
       prismaService.block.findUnique.mockResolvedValueOnce(null)
       await expect(
@@ -243,6 +248,7 @@ describe('VideoBlockResolver', () => {
         })
       ).rejects.toThrow('parent block not found')
     })
+
     it('removes old cover block', async () => {
       prismaService.block.findUnique.mockResolvedValueOnce({
         ...parentBlock,
@@ -258,6 +264,7 @@ describe('VideoBlockResolver', () => {
         prismaService
       )
     })
+
     describe('Internal Source', () => {
       it('creates a VideoBlock', async () => {
         prismaService.block.create.mockResolvedValueOnce(blockWithUserTeam)
@@ -303,6 +310,7 @@ describe('VideoBlockResolver', () => {
         })
       })
     })
+
     describe('YouTube Source', () => {
       it('throws error when invalid videoId', async () => {
         await expect(
@@ -315,6 +323,7 @@ describe('VideoBlockResolver', () => {
             })
         ).rejects.toThrow('videoId must be a valid YouTube videoId')
       })
+
       it('throws error when videoId is not on YouTube', async () => {
         mockFetch.mockResolvedValueOnce({
           ok: true,
@@ -333,6 +342,7 @@ describe('VideoBlockResolver', () => {
             })
         ).rejects.toThrow('videoId cannot be found on YouTube')
       })
+
       it('creates a VideoBlock', async () => {
         prismaService.block.create.mockResolvedValueOnce(blockWithUserTeam)
         mockFetch.mockResolvedValueOnce({
@@ -402,24 +412,28 @@ describe('VideoBlockResolver', () => {
       })
     })
   })
+
   describe('videoBlockUpdate', () => {
     it('updates a VideoBlock', async () => {
       prismaService.block.findUnique.mockResolvedValueOnce(blockWithUserTeam)
       await resolver.videoBlockUpdate(ability, 'blockId', blockUpdateInput)
       expect(service.update).toHaveBeenCalledWith('blockId', blockUpdateInput)
     })
+
     it('throws error if not found', async () => {
       prismaService.block.findUnique.mockResolvedValueOnce(null)
       await expect(
         resolver.videoBlockUpdate(ability, 'blockId', blockUpdateInput)
       ).rejects.toThrow('block not found')
     })
+
     it('throws error if not authorized', async () => {
       prismaService.block.findUnique.mockResolvedValueOnce(block)
       await expect(
         resolver.videoBlockUpdate(ability, 'blockId', blockUpdateInput)
       ).rejects.toThrow('user is not allowed to update block')
     })
+
     describe('Internal Source', () => {
       it('updates a VideoBlock', async () => {
         prismaService.block.findUnique.mockResolvedValueOnce(blockWithUserTeam)
@@ -439,6 +453,7 @@ describe('VideoBlockResolver', () => {
         })
       })
     })
+
     describe('YouTube Source', () => {
       it('throws error when invalid videoId', async () => {
         prismaService.block.findUnique.mockResolvedValueOnce(blockWithUserTeam)
@@ -449,6 +464,7 @@ describe('VideoBlockResolver', () => {
           })
         ).rejects.toThrow('videoId must be a valid YouTube videoId')
       })
+
       it('throws error when videoId is not on YouTube', async () => {
         prismaService.block.findUnique.mockResolvedValueOnce(blockWithUserTeam)
         mockFetch.mockResolvedValueOnce({
@@ -465,6 +481,7 @@ describe('VideoBlockResolver', () => {
           })
         ).rejects.toThrow('videoId cannot be found on YouTube')
       })
+
       it('updates videoId', async () => {
         prismaService.block.findUnique.mockResolvedValueOnce(blockWithUserTeam)
         mockFetch.mockResolvedValueOnce({
@@ -506,6 +523,7 @@ describe('VideoBlockResolver', () => {
         })
       })
     })
+
     describe('Cloudflare Source', () => {
       it('throws error when videoId is not on Cloudflare', async () => {
         prismaService.block.findUnique.mockResolvedValueOnce(blockWithUserTeam)
@@ -526,6 +544,7 @@ describe('VideoBlockResolver', () => {
           })
         ).rejects.toThrow('videoId cannot be found on Cloudflare')
       })
+
       it('updates videoId', async () => {
         prismaService.block.findUnique.mockResolvedValueOnce(blockWithUserTeam)
         mockFetch.mockResolvedValueOnce({
@@ -575,6 +594,7 @@ describe('VideoBlockResolver', () => {
           { headers: { Authorization: 'Bearer ' } }
         )
       })
+
       it('updates videoId title when meta name not present', async () => {
         prismaService.block.findUnique.mockResolvedValueOnce(blockWithUserTeam)
         mockFetch.mockResolvedValueOnce({
@@ -618,6 +638,7 @@ describe('VideoBlockResolver', () => {
           title: 'ea95132c15732412d22c1476fa83f27a'
         })
       })
+
       it('updates a VideoBlock', async () => {
         prismaService.block.findUnique.mockResolvedValueOnce(blockWithUserTeam)
         await resolver.videoBlockUpdate(ability, 'blockId', {
@@ -631,6 +652,7 @@ describe('VideoBlockResolver', () => {
       })
     })
   })
+
   describe('video', () => {
     it('returns video for external resolution', async () => {
       expect(
@@ -644,6 +666,7 @@ describe('VideoBlockResolver', () => {
         primaryLanguageId: 'videoVariantLanguageId'
       })
     })
+
     it('returns null if videoId is not set', async () => {
       expect(
         await resolver.video({
@@ -651,8 +674,9 @@ describe('VideoBlockResolver', () => {
           videoId: null,
           source: VideoBlockSource.internal
         })
-      ).toEqual(null)
+      ).toBeNull()
     })
+
     it('returns null if videoVariantLanguageId is not set', async () => {
       expect(
         await resolver.video({
@@ -660,23 +684,26 @@ describe('VideoBlockResolver', () => {
           videoVariantLanguageId: null,
           source: VideoBlockSource.internal
         })
-      ).toEqual(null)
+      ).toBeNull()
     })
+
     it('returns null if source is not internal', async () => {
       expect(
         await resolver.video({
           ...block,
           source: VideoBlockSource.youTube
         })
-      ).toEqual(null)
+      ).toBeNull()
     })
   })
+
   describe('source', () => {
     it('returns block source', () => {
       expect(
         resolver.source({ ...block, source: VideoBlockSource.youTube })
       ).toEqual(VideoBlockSource.youTube)
     })
+
     it('returns internal by default', () => {
       expect(resolver.source({ ...block, source: null })).toEqual(
         VideoBlockSource.internal

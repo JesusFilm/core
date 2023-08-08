@@ -19,6 +19,7 @@ describe('AudioLanguageButton', () => {
 
     expect(getByText('2039 Languages Available')).toBeInTheDocument()
   })
+
   it('renders audio language as an icon', async () => {
     const { getByTestId, getByText } = render(
       <MockedProvider>

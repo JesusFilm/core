@@ -25,6 +25,7 @@ jest.mock('fscreen', () => ({
 
 describe('VideoControls', () => {
   let player
+
   beforeEach(() => {
     const video = document.createElement('video')
     document.body.appendChild(video)
@@ -52,6 +53,7 @@ describe('VideoControls', () => {
       player.duration(250)
     })
   })
+
   afterEach(() => {
     cleanup()
   })

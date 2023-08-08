@@ -35,6 +35,7 @@ describe('ButtonEdit', () => {
     action: null,
     children: []
   }
+
   it('selects the input on click', () => {
     const { getByRole } = render(
       <MockedProvider>
@@ -81,7 +82,7 @@ describe('ButtonEdit', () => {
         <JourneyProvider
           value={{
             journey: { id: 'journeyId' } as unknown as Journey,
-            admin: true
+            variant: 'admin'
           }}
         >
           <EditorProvider>
@@ -132,7 +133,7 @@ describe('ButtonEdit', () => {
         <JourneyProvider
           value={{
             journey: { id: 'journeyId' } as unknown as Journey,
-            admin: true
+            variant: 'admin'
           }}
         >
           <EditorProvider>
@@ -183,7 +184,7 @@ describe('ButtonEdit', () => {
         <JourneyProvider
           value={{
             journey: { id: 'journeyId' } as unknown as Journey,
-            admin: true
+            variant: 'admin'
           }}
         >
           <EditorProvider>

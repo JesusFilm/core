@@ -48,6 +48,7 @@ describe('UnsplashImageService', () => {
         }`
       )
     })
+
     it('returns full unsplash photo search response', async () => {
       const request = mockFetch.mockResolvedValueOnce({
         ok: true,
@@ -68,6 +69,7 @@ describe('UnsplashImageService', () => {
       )
     })
   })
+
   describe('searchUnsplashImages', () => {
     it('returns  default unsplash photo search response', async () => {
       const request = mockFetch.mockResolvedValueOnce({
@@ -83,6 +85,7 @@ describe('UnsplashImageService', () => {
         }&query=a`
       )
     })
+
     it('returns full unsplash photo search response', async () => {
       const request = mockFetch.mockResolvedValueOnce({
         ok: true,
@@ -107,6 +110,7 @@ describe('UnsplashImageService', () => {
       )
     })
   })
+
   describe('triggerUnsplashDownload', () => {
     it('triggers an unsplash download', async () => {
       const request = mockFetch.mockResolvedValueOnce({

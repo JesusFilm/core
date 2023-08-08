@@ -18,6 +18,7 @@ describe('HostResolver', () => {
   let hostResolver: HostResolver,
     prismaService: DeepMockProxy<PrismaService>,
     ability: AppAbility
+
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [CaslAuthModule.register(AppCaslFactory)],
@@ -35,6 +36,7 @@ describe('HostResolver', () => {
     ) as DeepMockProxy<PrismaService>
     ability = await new AppCaslFactory().createAbility({ id: 'userId' })
   })
+
   describe('hosts', () => {
     it('returns an array of hosts', async () => {
       const hosts: Host[] = [
@@ -66,6 +68,7 @@ describe('HostResolver', () => {
       })
     })
   })
+
   describe('hostCreate', () => {
     const input = {
       title: 'New Host',
@@ -83,11 +86,13 @@ describe('HostResolver', () => {
       ...host,
       team: { userTeams: [{ userId: 'userId', role: UserTeamRole.member }] }
     }
+
     beforeEach(() => {
       prismaService.$transaction.mockImplementation(
         async (callback) => await callback(prismaService)
       )
     })
+
     it('creates a new host', async () => {
       prismaService.host.create.mockResolvedValue(host)
       prismaService.host.findUnique.mockResolvedValue(hostWithUserTeam)
@@ -98,6 +103,7 @@ describe('HostResolver', () => {
         data: { team: { connect: { id: 'teamId' } }, ...input }
       })
     })
+
     it('throws error if not found', async () => {
       prismaService.host.create.mockResolvedValue(host)
       prismaService.host.findUnique.mockResolvedValueOnce(null)
@@ -105,6 +111,7 @@ describe('HostResolver', () => {
         hostResolver.hostCreate(ability, 'hostId', input)
       ).rejects.toThrow('host not found')
     })
+
     it('throws error if not authorized', async () => {
       prismaService.host.create.mockResolvedValue(host)
       prismaService.host.findUnique.mockResolvedValueOnce(host)
@@ -113,6 +120,7 @@ describe('HostResolver', () => {
       ).rejects.toThrow('user is not allowed to create host')
     })
   })
+
   describe('hostUpdate', () => {
     const host: Host = {
       id: 'hostId',
@@ -127,6 +135,7 @@ describe('HostResolver', () => {
       ...host,
       team: { userTeams: [{ userId: 'userId', role: UserTeamRole.member }] }
     }
+
     it('updates an existing host', async () => {
       const input = {
         title: 'Edmond Shen',
@@ -144,6 +153,7 @@ describe('HostResolver', () => {
         data: input
       })
     })
+
     it('updates an existing host if input title is undefined', async () => {
       const input = {
         location: 'National Team Staff',
@@ -166,6 +176,7 @@ describe('HostResolver', () => {
         }
       })
     })
+
     it('throw error when host title is null', async () => {
       const input = {
         title: null,
@@ -178,12 +189,14 @@ describe('HostResolver', () => {
         hostResolver.hostUpdate(ability, 'hostId', input)
       ).rejects.toThrow('host title cannot be set to null')
     })
+
     it('throws error if not found', async () => {
       prismaService.host.findUnique.mockResolvedValueOnce(null)
       await expect(
         hostResolver.hostUpdate(ability, 'hostId', {})
       ).rejects.toThrow('host not found')
     })
+
     it('throws error if not authorized', async () => {
       prismaService.host.findUnique.mockResolvedValueOnce(host)
       await expect(
@@ -229,6 +242,7 @@ describe('HostResolver', () => {
       teamId: 'teamId',
       updatedAt: new Date()
     }
+
     it('deletes an existing host', async () => {
       prismaService.host.findUnique.mockResolvedValueOnce(hostWithUserTeam)
       prismaService.host.delete.mockResolvedValueOnce(host)
@@ -238,6 +252,7 @@ describe('HostResolver', () => {
         where: { id: 'hostId' }
       })
     })
+
     it('throws error if the host exists on other journeys', async () => {
       prismaService.host.findUnique.mockResolvedValueOnce(hostWithUserTeam)
       prismaService.journey.findMany.mockResolvedValueOnce([journey, journey])
@@ -245,12 +260,14 @@ describe('HostResolver', () => {
         'This host is used in other journeys.'
       )
     })
+
     it('throws error if not found', async () => {
       prismaService.host.findUnique.mockResolvedValueOnce(null)
       await expect(hostResolver.hostDelete(ability, 'hostId')).rejects.toThrow(
         'host not found'
       )
     })
+
     it('throws error if not authorized', async () => {
       prismaService.host.findUnique.mockResolvedValueOnce(host)
       await expect(hostResolver.hostDelete(ability, 'hostId')).rejects.toThrow(

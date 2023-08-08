@@ -52,6 +52,7 @@ describe('Image', () => {
       dispatch: jest.fn()
     })
   })
+
   it('should display Image Options', () => {
     const { getByText } = render(<Image {...block} alt={block.alt} />)
 

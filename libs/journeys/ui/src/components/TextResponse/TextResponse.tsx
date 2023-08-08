@@ -62,7 +62,7 @@ export const TextResponse = ({
     | TreeBlock<IconFields>
     | undefined
 
-  const { admin } = useJourney()
+  const { variant } = useJourney()
   const { enqueueSnackbar } = useSnackbar()
   const { blockHistory, treeBlocks } = useBlocks()
   const activeBlock = blockHistory[blockHistory.length - 1]
@@ -83,7 +83,7 @@ export const TextResponse = ({
   const onSubmitHandler = async (
     values: TextResponseFormValues
   ): Promise<void> => {
-    if (!admin) {
+    if (variant === 'default' || variant === 'embed') {
       const id = uuid()
       if (values.response.trim() !== '') {
         try {

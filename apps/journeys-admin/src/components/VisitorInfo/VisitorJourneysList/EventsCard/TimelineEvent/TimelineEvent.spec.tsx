@@ -90,6 +90,7 @@ describe('TimelineEvent', () => {
     expect(getByText('Journey')).toBeInTheDocument()
     expect(getByText('Navigate To Journey Action')).toBeInTheDocument()
   })
+
   it('shows buttonClickEvent for LinkAction', () => {
     const { getByText } = render(
       <TimelineEvent timelineItem={buttonClickLinkEvent} />

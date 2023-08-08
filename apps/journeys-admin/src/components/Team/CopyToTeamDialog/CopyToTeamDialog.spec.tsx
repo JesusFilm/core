@@ -20,6 +20,7 @@ describe('DuplicateJourneys', () => {
     handleCloseMenuMock.mockClear()
     handleSubmitActionMock.mockClear()
   })
+
   it('should call submit action on dialog submit', async () => {
     const result = jest.fn(() => ({
       data: {
@@ -46,7 +47,7 @@ describe('DuplicateJourneys', () => {
           <JourneyProvider
             value={{
               journey: { id: 'journeyId' } as unknown as Journey,
-              admin: true
+              variant: 'admin'
             }}
           >
             <TeamProvider>
@@ -80,7 +81,7 @@ describe('DuplicateJourneys', () => {
           <JourneyProvider
             value={{
               journey: { id: 'journeyId' } as unknown as Journey,
-              admin: true
+              variant: 'admin'
             }}
           >
             <TeamProvider>
@@ -127,7 +128,7 @@ describe('DuplicateJourneys', () => {
           <JourneyProvider
             value={{
               journey: { id: 'journeyId' } as unknown as Journey,
-              admin: true
+              variant: 'admin'
             }}
           >
             <TeamProvider>

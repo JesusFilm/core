@@ -17,6 +17,7 @@ describe('CustomImage', () => {
     parentBlockId: 'card',
     parentOrder: 0
   }
+
   it('should render custom url image upload', () => {
     const { getByRole, getByText } = render(
       <MockedProvider>
@@ -24,6 +25,6 @@ describe('CustomImage', () => {
       </MockedProvider>
     )
     fireEvent.click(getByRole('button', { name: 'Add image by URL' }))
-    expect(getByText('Paste URL of image...'))
+    expect(getByText('Paste URL of image...')).toBeInTheDocument()
   })
 })

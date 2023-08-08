@@ -20,6 +20,7 @@ describe('getLabelDetails', () => {
       childCountLabel: '0 Items'
     })
   })
+
   it('should return episode label details', () => {
     expect(getLabelDetails(VideoLabel.episode)).toEqual({
       label: 'Episode',
@@ -28,6 +29,7 @@ describe('getLabelDetails', () => {
       childCountLabel: '0 Items'
     })
   })
+
   it('should return featureFilm label details', () => {
     expect(getLabelDetails(VideoLabel.featureFilm)).toEqual({
       label: 'Feature Film',
@@ -36,6 +38,7 @@ describe('getLabelDetails', () => {
       childCountLabel: '0 Chapters'
     })
   })
+
   it('should return segment label details', () => {
     expect(getLabelDetails(VideoLabel.segment)).toEqual({
       label: 'Chapter',
@@ -44,6 +47,7 @@ describe('getLabelDetails', () => {
       childCountLabel: '0 Items'
     })
   })
+
   it('should return series label details', () => {
     expect(getLabelDetails(VideoLabel.series)).toEqual({
       label: 'Series',
@@ -52,6 +56,7 @@ describe('getLabelDetails', () => {
       childCountLabel: '0 Episodes'
     })
   })
+
   it('should return shortFilm label details', () => {
     expect(getLabelDetails(VideoLabel.shortFilm)).toEqual({
       label: 'Short Film',

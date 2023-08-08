@@ -77,7 +77,7 @@ describe('VideoResolver', () => {
       .mockResolvedValue(cloudflareVideo)
   })
 
-  describe('createCloudflareUploadByFile ', () => {
+  describe('createCloudflareUploadByFile', () => {
     it('return cloudflare video', async () => {
       expect(
         await resolver.createCloudflareVideoUploadByFile(100, 'name', 'userId')
@@ -92,6 +92,7 @@ describe('VideoResolver', () => {
         'userId'
       )
     })
+
     it('when cloudflare request fails then throw an error', async () => {
       service.uploadToCloudflareByFile.mockResolvedValueOnce(undefined)
       await expect(
@@ -109,7 +110,8 @@ describe('VideoResolver', () => {
       )
     })
   })
-  describe('createCloudflareVideoUploadByUrl ', () => {
+
+  describe('createCloudflareVideoUploadByUrl', () => {
     it('returns cloudflare video', async () => {
       expect(
         await resolver.createCloudflareVideoUploadByUrl(
@@ -125,6 +127,7 @@ describe('VideoResolver', () => {
         user.id
       )
     })
+
     it('when cloudflare request fails then throw an error', async () => {
       service.uploadToCloudflareByUrl.mockResolvedValueOnce({
         result: null,
@@ -145,6 +148,7 @@ describe('VideoResolver', () => {
       )
     })
   })
+
   describe('getMyCloudflareVideos', () => {
     it('returns cloudflare response information', async () => {
       expect(await resolver.getMyCloudflareVideos('userId')).toEqual([
@@ -156,6 +160,7 @@ describe('VideoResolver', () => {
       })
     })
   })
+
   describe('getMyCloudflareVideo', () => {
     it('throws an error if not found', async () => {
       prismaService.cloudflareVideo.findUnique = jest
@@ -165,11 +170,13 @@ describe('VideoResolver', () => {
         async () => await resolver.getMyCloudflareVideo('videoId', user.id)
       ).rejects.toThrow('Video not found')
     })
+
     it('throws an error if wrong user', async () => {
       await expect(
         async () => await resolver.getMyCloudflareVideo('videoId', 'user2Id')
       ).rejects.toThrow('This video does not belong to you')
     })
+
     it('throws an error if could not be retrieved from cloudflare', async () => {
       service.getVideoFromCloudflare.mockResolvedValueOnce({
         result: null,
@@ -181,6 +188,7 @@ describe('VideoResolver', () => {
         async () => await resolver.getMyCloudflareVideo('videoId', user.id)
       ).rejects.toThrow('Video could not be retrieved from cloudflare')
     })
+
     it('updates video and returns updated video', async () => {
       service.getVideoFromCloudflare.mockResolvedValueOnce({
         result: {
@@ -201,6 +209,7 @@ describe('VideoResolver', () => {
       })
     })
   })
+
   describe('deleteCloudflareVideo', () => {
     it('throws an error if not found', async () => {
       prismaService.cloudflareVideo.findUnique = jest
@@ -210,25 +219,29 @@ describe('VideoResolver', () => {
         async () => await resolver.deleteCloudflareVideo('videoId', user.id)
       ).rejects.toThrow('Video not found')
     })
+
     it('throws an error if wrong user', async () => {
       await expect(
         async () => await resolver.deleteCloudflareVideo('videoId', 'user2Id')
       ).rejects.toThrow('This video does not belong to you')
     })
+
     it('throws an error if could not be deleted from cloudflare', async () => {
       service.deleteVideoFromCloudflare.mockResolvedValueOnce(false)
       await expect(
         async () => await resolver.deleteCloudflareVideo('videoId', user.id)
       ).rejects.toThrow('Video could not be deleted from cloudflare')
     })
+
     it('calls service.deleteCloudflareVideo', async () => {
-      expect(await resolver.deleteCloudflareVideo('videoId', user.id)).toEqual(
+      expect(await resolver.deleteCloudflareVideo('videoId', user.id)).toBe(
         true
       )
       expect(service.deleteVideoFromCloudflare).toHaveBeenCalledWith('videoId')
     })
+
     it('calls service.remove', async () => {
-      expect(await resolver.deleteCloudflareVideo('1', user.id)).toEqual(true)
+      expect(await resolver.deleteCloudflareVideo('1', user.id)).toBe(true)
       expect(prismaService.cloudflareVideo.delete).toHaveBeenCalledWith({
         where: { id: '1' }
       })

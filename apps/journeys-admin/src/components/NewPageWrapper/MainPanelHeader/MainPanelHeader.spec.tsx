@@ -9,6 +9,7 @@ jest.mock('next/router', () => ({
 }))
 
 const mockUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
+
 describe('MainPanelHeader', () => {
   it('should show back button with correct link', () => {
     const { getByRole } = render(
@@ -16,6 +17,7 @@ describe('MainPanelHeader', () => {
     )
     expect(getByRole('link')).toHaveAttribute('href', '/')
   })
+
   it('should show back button with backHrefHistory', async () => {
     const back = jest.fn()
     mockUseRouter.mockReturnValue({ back } as unknown as NextRouter)

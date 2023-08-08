@@ -55,6 +55,7 @@ describe('Action', () => {
       )
     )
   })
+
   it('disables Next Step option if there is no next step', async () => {
     const selectedStep = steps[4]
     const { getByRole } = render(
@@ -126,7 +127,7 @@ describe('Action', () => {
                 iso3: 'eng'
               }
             } as unknown as Journey,
-            admin: true
+            variant: 'admin'
           }}
         >
           <EditorProvider initialState={{ steps, selectedBlock, selectedStep }}>
@@ -237,7 +238,7 @@ describe('Action', () => {
                 iso3: 'eng'
               }
             } as unknown as Journey,
-            admin: true
+            variant: 'admin'
           }}
         >
           <EditorProvider initialState={{ selectedBlock }}>

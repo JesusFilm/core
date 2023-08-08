@@ -7,6 +7,7 @@ import { CustomUrl } from '.'
 
 describe('CustomUrl', () => {
   let originalEnv
+
   beforeEach(() => {
     originalEnv = process.env
     process.env = {
@@ -48,7 +49,7 @@ describe('CustomUrl', () => {
     )
 
     fireEvent.click(getByRole('button', { name: 'Add image by URL' }))
-    expect(getByText('Paste URL of image...'))
+    expect(getByText('Paste URL of image...')).toBeInTheDocument()
     const textBox = await getByRole('textbox')
     fireEvent.change(textBox, {
       target: { value: 'https://example.com/image.jpg' }

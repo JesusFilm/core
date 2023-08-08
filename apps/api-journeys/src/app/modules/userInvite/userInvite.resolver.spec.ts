@@ -105,6 +105,7 @@ describe('UserInviteResolver', () => {
     const input: UserInviteCreateInput = {
       email: 'brian.smith@example.com'
     }
+
     it('creates a user team invite', async () => {
       prismaService.$transaction.mockImplementationOnce(
         async (cb) => await cb(prismaService)
@@ -113,7 +114,7 @@ describe('UserInviteResolver', () => {
         userInviteWithUserTeam
       )
       await resolver.userInviteCreate(ability, 'userId', 'journeyId', input)
-      expect(prismaService.userInvite.upsert).toBeCalledWith({
+      expect(prismaService.userInvite.upsert).toHaveBeenCalledWith({
         where: {
           journeyId_email: {
             journeyId: 'journeyId',
@@ -160,17 +161,19 @@ describe('UserInviteResolver', () => {
         userInviteWithUserTeam
       )
       await resolver.userInviteRemove(ability, 'userInviteId')
-      await expect(prismaService.userInvite.update).toBeCalledWith({
+      await expect(prismaService.userInvite.update).toHaveBeenCalledWith({
         data: { acceptedAt: null, removedAt: expect.any(Date) },
         where: { id: 'userInviteId' }
       })
     })
+
     it('throws error if not found', async () => {
       prismaService.userInvite.findUnique.mockResolvedValueOnce(null)
       await expect(
         resolver.userInviteRemove(ability, 'userInviteId')
       ).rejects.toThrow('userInvite not found')
     })
+
     it('throws error if not authorized', async () => {
       const ability = await new AppCaslFactory().createAbility({
         id: 'userId'

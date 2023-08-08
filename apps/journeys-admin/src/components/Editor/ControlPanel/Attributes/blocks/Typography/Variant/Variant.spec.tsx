@@ -93,7 +93,7 @@ describe('Typography variant selector', () => {
               id: 'journeyId',
               language: { bcp47: 'en' }
             } as unknown as Journey,
-            admin: true
+            variant: 'admin'
           }}
         >
           <EditorProvider initialState={{ selectedBlock }}>

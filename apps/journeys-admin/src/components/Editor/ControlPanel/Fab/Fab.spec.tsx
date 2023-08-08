@@ -6,6 +6,7 @@ import { Fab } from '.'
 
 describe('Fab', () => {
   const onClick = jest.fn()
+
   describe('Add Fab', () => {
     it('should render the add fab', () => {
       const { getByRole } = render(

@@ -153,7 +153,7 @@ export function TrashedJourneyList({
                 key={journey.id}
                 value={{
                   journey: journey as unknown as JourneyFields,
-                  admin: true
+                  variant: 'admin'
                 }}
               >
                 <JourneyCard

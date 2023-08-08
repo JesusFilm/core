@@ -27,6 +27,7 @@ describe('VideosPage', () => {
       )
       expect(getByTestId('videos-grid')).toBeInTheDocument()
     })
+
     it('should display videos', async () => {
       const { getByText } = render(
         <MockedProvider

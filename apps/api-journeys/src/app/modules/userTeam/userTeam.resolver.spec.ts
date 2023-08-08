@@ -23,6 +23,7 @@ describe('UserTeamResolver', () => {
       .fn()
       .mockResolvedValue([{ id: 'userTeamId' }])
   })
+
   describe('userTeams', () => {
     it('fetches accessible userTeams with filter', async () => {
       const userTeams = await userTeamResolver.userTeams(
@@ -162,6 +163,7 @@ describe('UserTeamResolver', () => {
       ).rejects.toThrow('userTeam not found')
     })
   })
+
   describe('userTeamUpdate', () => {
     it('updates userTeam', async () => {
       const userTeam = {

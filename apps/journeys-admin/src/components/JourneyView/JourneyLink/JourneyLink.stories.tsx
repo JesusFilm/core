@@ -19,7 +19,7 @@ const JourneyLinkStory = {
 const Template: Story = ({ ...args }) => (
   <ApolloLoadingProvider>
     <MockedProvider>
-      <JourneyProvider value={{ journey: args.journey }}>
+      <JourneyProvider value={{ journey: args.journey, variant: 'admin' }}>
         <Box
           sx={{
             p: 6,

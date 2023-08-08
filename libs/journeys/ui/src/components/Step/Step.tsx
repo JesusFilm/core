@@ -35,14 +35,17 @@ export function Step({
     STEP_VIEW_EVENT_CREATE
   )
 
-  const { admin, journey } = useJourney()
+  const { variant, journey } = useJourney()
   const { treeBlocks } = useBlocks()
   const { t } = useTranslation('libs-journeys-ui')
 
   const heading = getStepHeading(blockId, children, treeBlocks, t)
 
   useEffect(() => {
-    if (!admin && isActiveBlockOrDescendant(blockId)) {
+    if (
+      (variant === 'default' || variant === 'embed') &&
+      isActiveBlockOrDescendant(blockId)
+    ) {
       const id = uuidv4()
       void stepViewEventCreate({
         variables: { input: { id, blockId, value: heading } }
@@ -56,11 +59,13 @@ export function Step({
         }
       })
     }
-  }, [blockId, stepViewEventCreate, admin, heading])
+  }, [blockId, stepViewEventCreate, variant, heading])
 
   return (
     <>
-      {!admin && <NextSeo title={`${journey?.title ?? ''} (${heading})`} />}
+      {(variant === 'default' || variant === 'embed') && (
+        <NextSeo title={`${journey?.title ?? ''} (${heading})`} />
+      )}
       {children.map((block) => (
         <BlockRenderer block={block} wrappers={wrappers} key={block.id} />
       ))}

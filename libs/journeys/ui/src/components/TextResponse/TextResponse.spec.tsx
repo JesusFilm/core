@@ -146,7 +146,7 @@ describe('TextResponse', () => {
     fireEvent.click(submit)
 
     await waitFor(() => {
-      expect(handleAction).toBeCalledWith(
+      expect(handleAction).toHaveBeenCalledWith(
         {
           push: expect.any(Function)
         },
@@ -197,8 +197,8 @@ describe('TextResponse', () => {
     fireEvent.click(submit)
 
     await waitFor(() => {
-      expect(result).not.toBeCalled()
-      expect(handleAction).toBeCalled()
+      expect(result).not.toHaveBeenCalled()
+      expect(handleAction).toHaveBeenCalled()
     })
   })
 
@@ -225,7 +225,7 @@ describe('TextResponse', () => {
     fireEvent.click(submit)
 
     await waitFor(() => {
-      expect(result).toBeCalled()
+      expect(result).toHaveBeenCalled()
     })
   })
 

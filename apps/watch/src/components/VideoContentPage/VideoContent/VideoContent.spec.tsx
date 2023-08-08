@@ -20,6 +20,7 @@ describe('VideoContent', () => {
     )
     expect(getByText(video.studyQuestions[0].value)).toBeInTheDocument()
   })
+
   it('should hide the dicussion questions tab if no questions', () => {
     const { queryByRole } = render(
       <VideoProvider value={{ content: { ...video, studyQuestions: [] } }}>

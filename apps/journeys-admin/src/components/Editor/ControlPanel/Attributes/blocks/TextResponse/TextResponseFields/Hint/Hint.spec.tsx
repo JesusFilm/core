@@ -43,7 +43,10 @@ const block: TreeBlock<TextResponseBlock> = {
   children: []
 }
 
-const pageData = { journey: { id: 'journey.id' } as unknown as Journey }
+const pageData: { journey: Journey; variant: 'default' | 'admin' | 'embed' } = {
+  journey: { id: 'journey.id' } as unknown as Journey,
+  variant: 'admin'
+}
 
 interface HintMockProps {
   mocks?: Array<MockedResponse<Record<string, unknown>>>
@@ -120,7 +123,7 @@ describe('Edit Hint field', () => {
     fireEvent.blur(field)
 
     await waitFor(() => {
-      expect(result).toBeCalled()
+      expect(result).toHaveBeenCalled()
     })
   })
 })

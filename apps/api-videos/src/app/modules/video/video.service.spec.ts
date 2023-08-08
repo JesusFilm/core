@@ -276,6 +276,7 @@ describe('VideoService', () => {
       db.query.mockReturnValueOnce(mockDbQueryResult(service.db, [video]))
       db.query.mockReturnValueOnce(mockDbQueryResult(service.db, [video]))
     })
+
     it('should query', async () => {
       expect(await service.getVideosByIds(['20615', '20616'])).toEqual([
         video,

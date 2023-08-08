@@ -49,7 +49,7 @@ describe('EditToolbar Menu', () => {
                 journey: {
                   status: JourneyStatus.draft
                 } as unknown as Journey,
-                admin: true
+                variant: 'admin'
               }}
             >
               <EditorProvider initialState={{ selectedBlock }}>
@@ -90,7 +90,7 @@ describe('EditToolbar Menu', () => {
                 journey: {
                   status: JourneyStatus.draft
                 } as unknown as Journey,
-                admin: true
+                variant: 'admin'
               }}
             >
               <EditorProvider initialState={{ selectedBlock }}>
@@ -109,6 +109,7 @@ describe('EditToolbar Menu', () => {
         queryByRole('menuitem', { name: 'Social Settings' })
       ).not.toBeInTheDocument()
     })
+
     it('should link back to journey on click', () => {
       const selectedBlock: TreeBlock<StepBlock> = {
         __typename: 'StepBlock',
@@ -129,7 +130,7 @@ describe('EditToolbar Menu', () => {
                   id: 'journeyId',
                   slug: 'my-journey'
                 } as unknown as Journey,
-                admin: true
+                variant: 'admin'
               }}
             >
               <EditorProvider initialState={{ selectedBlock }}>
@@ -167,7 +168,7 @@ describe('EditToolbar Menu', () => {
                   slug: 'my-journey',
                   template: true
                 } as unknown as Journey,
-                admin: true
+                variant: 'admin'
               }}
             >
               <EditorProvider initialState={{ selectedBlock }}>
@@ -189,6 +190,7 @@ describe('EditToolbar Menu', () => {
     beforeEach(() =>
       (useMediaQuery as jest.Mock).mockImplementation(() => false)
     )
+
     it('should display opens social share drawer when card is selected', () => {
       const selectedBlock: TreeBlock<StepBlock> = {
         __typename: 'StepBlock',
@@ -208,7 +210,7 @@ describe('EditToolbar Menu', () => {
                 journey: {
                   status: JourneyStatus.draft
                 } as unknown as Journey,
-                admin: true
+                variant: 'admin'
               }}
             >
               <EditorProvider initialState={{ selectedBlock }}>
@@ -250,7 +252,7 @@ describe('EditToolbar Menu', () => {
                 journey: {
                   status: JourneyStatus.draft
                 } as unknown as Journey,
-                admin: true
+                variant: 'admin'
               }}
             >
               <EditorProvider initialState={{ selectedBlock }}>

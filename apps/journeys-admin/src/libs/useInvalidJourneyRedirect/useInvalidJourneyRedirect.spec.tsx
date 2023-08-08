@@ -17,6 +17,7 @@ describe('InvalidJourneyRedirect', () => {
   afterEach(() => {
     jest.clearAllMocks()
   })
+
   it('should redirect to homepage if journey is invalid in the journeys URL', async () => {
     renderHook(() => useInvalidJourneyRedirect({ journey: null }))
 
@@ -26,7 +27,7 @@ describe('InvalidJourneyRedirect', () => {
   it('should not be redirected to homepage if journey is vaild in the journeys URL', async () => {
     renderHook(() => useInvalidJourneyRedirect({ journey: 'journeyID' }))
 
-    expect(push).not.toBeCalled()
+    expect(push).not.toHaveBeenCalled()
   })
 
   it('should redirect if the the journeyId is invalid in the templates URL', async () => {
@@ -38,8 +39,9 @@ describe('InvalidJourneyRedirect', () => {
   it('should not be redirected to homepage if journey is vaild in the templates URL', async () => {
     renderHook(() => useInvalidJourneyRedirect({ template: 'templateID' }))
 
-    expect(push).not.toBeCalled()
+    expect(push).not.toHaveBeenCalled()
   })
+
   it('should redirect if the the journeyId is invalid in the publisher URL', async () => {
     renderHook(() => useInvalidJourneyRedirect({ publisherTemplate: null }))
 
@@ -51,6 +53,6 @@ describe('InvalidJourneyRedirect', () => {
       useInvalidJourneyRedirect({ publisherTemplate: 'publisherTemplateID' })
     )
 
-    expect(push).not.toBeCalled()
+    expect(push).not.toHaveBeenCalled()
   })
 })

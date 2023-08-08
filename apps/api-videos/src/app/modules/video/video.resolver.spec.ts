@@ -155,6 +155,7 @@ describe('VideoResolver', () => {
     const info = {
       fieldNodes: [{ selectionSet: { selections: [] } }]
     } as unknown as GraphQLResolveInfo
+
     it('return a video', async () => {
       expect(await resolver.video(info, '20615')).toEqual(video)
       expect(service.getVideo).toHaveBeenCalledWith('20615', undefined)
@@ -263,13 +264,13 @@ describe('VideoResolver', () => {
         resolver.childrenCount({
           childIds: [{ id: '1' }, { id: '2' }, 0, '', undefined, null, NaN]
         })
-      ).toEqual(2)
+      ).toBe(2)
     })
   })
 
   describe('children', () => {
     it('returns null when no childIds', async () => {
-      expect(await resolver.children({ childIds: undefined })).toEqual(null)
+      expect(await resolver.children({ childIds: undefined })).toBeNull()
     })
 
     it('returns videos by childIds without languageId', async () => {
@@ -307,7 +308,7 @@ describe('VideoResolver', () => {
             }
           ]
         })
-      ).toEqual(2)
+      ).toBe(2)
     })
 
     it('does not include falsey values into the count', async () => {
@@ -324,7 +325,7 @@ describe('VideoResolver', () => {
             }
           ]
         })
-      ).toEqual(1)
+      ).toBe(1)
     })
   })
 })

@@ -416,6 +416,7 @@ describe('EditorContext', () => {
         })
       })
     })
+
     describe('SetJourneyEditContentComponentAction', () => {
       it('should set journey edit content component', () => {
         const state = {

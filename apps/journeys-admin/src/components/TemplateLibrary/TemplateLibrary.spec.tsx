@@ -31,6 +31,7 @@ const activeTemplatesMock = {
     }
   }
 }
+
 describe('TemplateLibrary', () => {
   it('should render templates', async () => {
     const { getByText } = render(

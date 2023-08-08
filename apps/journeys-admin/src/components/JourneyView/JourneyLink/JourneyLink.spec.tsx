@@ -18,7 +18,12 @@ describe('JourneyLink', () => {
     const { getAllByRole, getByRole, queryByRole } = render(
       <SnackbarProvider>
         <MockedProvider>
-          <JourneyProvider value={{ journey: defaultJourney, admin: true }}>
+          <JourneyProvider
+            value={{
+              journey: defaultJourney,
+              variant: 'admin'
+            }}
+          >
             <JourneyLink />
           </JourneyProvider>
         </MockedProvider>
@@ -34,7 +39,12 @@ describe('JourneyLink', () => {
     const { getAllByRole, getByRole, queryByRole } = render(
       <SnackbarProvider>
         <MockedProvider>
-          <JourneyProvider value={{ journey: defaultJourney, admin: true }}>
+          <JourneyProvider
+            value={{
+              journey: defaultJourney,
+              variant: 'admin'
+            }}
+          >
             <JourneyLink />
           </JourneyProvider>
         </MockedProvider>

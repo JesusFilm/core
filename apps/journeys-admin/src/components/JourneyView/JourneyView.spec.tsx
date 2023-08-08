@@ -69,7 +69,7 @@ describe('JourneyView', () => {
       <MockedProvider>
         <SnackbarProvider>
           <TeamProvider>
-            <JourneyProvider value={{ journey, admin: true }}>
+            <JourneyProvider value={{ journey, variant: 'admin' }}>
               <JourneyView journeyType="Journey" />
             </JourneyProvider>
           </TeamProvider>
@@ -81,12 +81,13 @@ describe('JourneyView', () => {
       '/journeys/journeyId/edit'
     )
   })
+
   it('should show reports', async () => {
     const { getByTestId } = render(
       <MockedProvider>
         <SnackbarProvider>
           <TeamProvider>
-            <JourneyProvider value={{ journey, admin: true }}>
+            <JourneyProvider value={{ journey, variant: 'admin' }}>
               <JourneyView journeyType="Journey" />
             </JourneyProvider>
           </TeamProvider>

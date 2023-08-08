@@ -75,6 +75,7 @@ describe('SignUp Attributes', () => {
       dispatch: jest.fn()
     })
   })
+
   it('shows default attributes', () => {
     const emptyBlock: TreeBlock<SignUpBlock> = {
       id: 'signup.id',

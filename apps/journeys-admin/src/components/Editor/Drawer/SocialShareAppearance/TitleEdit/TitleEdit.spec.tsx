@@ -19,6 +19,7 @@ describe('TitleEdit', () => {
     )
     expect(getByText('Recommended length: 5 words')).toBeInTheDocument()
   })
+
   it('should display seo title', () => {
     const { getByText } = render(
       <MockedProvider>
@@ -29,7 +30,7 @@ describe('TitleEdit', () => {
                 title: 'journey title',
                 seoTitle: 'Social share title'
               } as unknown as Journey,
-              admin: true
+              variant: 'admin'
             }}
           >
             <TitleEdit />
@@ -50,7 +51,7 @@ describe('TitleEdit', () => {
                 title: 'journey title',
                 seoTitle: null
               } as unknown as Journey,
-              admin: true
+              variant: 'admin'
             }}
           >
             <TitleEdit />
@@ -93,7 +94,7 @@ describe('TitleEdit', () => {
           <JourneyProvider
             value={{
               journey: { id: 'journey.id' } as unknown as Journey,
-              admin: true
+              variant: 'admin'
             }}
           >
             <TitleEdit />
@@ -116,7 +117,7 @@ describe('TitleEdit', () => {
         <JourneyProvider
           value={{
             journey: { id: 'journey.id' } as unknown as Journey,
-            admin: true
+            variant: 'admin'
           }}
         >
           <TitleEdit />

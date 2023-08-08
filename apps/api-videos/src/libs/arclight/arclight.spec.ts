@@ -138,6 +138,7 @@ describe('arclight', () => {
         undefined
       )
     })
+
     it('handles null media component links from arclight', async () => {
       const request = mockFetch.mockResolvedValueOnce({
         ok: true,
@@ -269,6 +270,7 @@ describe('arclight', () => {
         hls: undefined
       })
     })
+
     it('handles null duration when media component is series', () => {
       expect(
         transformArclightMediaComponentLanguageToVideoVariant(
@@ -306,6 +308,7 @@ describe('arclight', () => {
         )
       ).toEqual({ ...videoVariant, hls: undefined })
     })
+
     it('handles null duration', () => {
       expect(
         transformArclightMediaComponentLanguageToVideoVariant(
@@ -571,7 +574,7 @@ describe('arclight', () => {
     it('adds slug', () => {
       expect(
         transformArclightMediaLanguageToLanguage(mediaLanguage, {}).slug
-      ).toEqual('english-new-zealand')
+      ).toBe('english-new-zealand')
     })
 
     it('when slug already used then slug value will have number following', () => {
@@ -579,7 +582,7 @@ describe('arclight', () => {
         transformArclightMediaLanguageToLanguage(mediaLanguage, {
           'english-new-zealand': 'id'
         }).slug
-      ).toEqual('english-new-zealand-2')
+      ).toBe('english-new-zealand-2')
     })
   })
 

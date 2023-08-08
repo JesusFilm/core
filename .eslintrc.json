@@ -116,6 +116,19 @@
         ],
         "react/jsx-boolean-value": "error"
       }
+    },
+    {
+      "files": ["*.spec.ts", "*.spec.tsx", "*.spec.js", "*.spec.jsx"],
+      "plugins": ["jest", "jest-formatting"],
+      "extends": [
+        "plugin:jest/recommended",
+        "plugin:jest/style",
+        "plugin:jest-formatting/recommended"
+      ],
+      "rules": {
+        "jest/no-disabled-tests": "off",
+        "jest/require-top-level-describe": "error"
+      }
     }
   ]
 }

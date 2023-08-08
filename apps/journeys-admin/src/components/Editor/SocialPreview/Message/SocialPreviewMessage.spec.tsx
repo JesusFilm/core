@@ -21,6 +21,7 @@ describe('SocialPreviewMessage', () => {
     )
     expect(getByTestId('social-preview-message-empty')).toBeInTheDocument()
   })
+
   it('should display socialpreviewmessage', () => {
     const { getByRole, getByText } = render(
       <ThemeProvider>

@@ -86,6 +86,7 @@ describe('VisitorList', () => {
       result
     }
   ]
+
   it('should fetch visitors', async () => {
     render(
       <MockedProvider mocks={[...mocks, getTeams]}>

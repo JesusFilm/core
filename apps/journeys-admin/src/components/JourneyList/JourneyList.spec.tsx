@@ -80,7 +80,7 @@ describe('JourneyList', () => {
     expect(getByRole('button', { name: 'Add' })).toBeInTheDocument()
   })
 
-  it('should show add journey button', () => {
+  it('should show add journey button on active tab', () => {
     mockedUseRouter.mockReturnValue({
       query: { tab: 'active' }
     } as unknown as NextRouter)
@@ -98,7 +98,7 @@ describe('JourneyList', () => {
     expect(getByRole('button', { name: 'Add' })).toBeInTheDocument()
   })
 
-  it('should hide add journey button', () => {
+  it('should hide add journey button on trashed tab', () => {
     mockedUseRouter.mockReturnValue({
       query: { tab: 'trashed' }
     } as unknown as NextRouter)
@@ -116,7 +116,7 @@ describe('JourneyList', () => {
     expect(queryByRole('button', { name: 'Add' })).toBeNull()
   })
 
-  it('should hide add journey button', () => {
+  it('should hide add journey button on archived tab', () => {
     mockedUseRouter.mockReturnValue({
       query: { tab: 'archived' }
     } as unknown as NextRouter)

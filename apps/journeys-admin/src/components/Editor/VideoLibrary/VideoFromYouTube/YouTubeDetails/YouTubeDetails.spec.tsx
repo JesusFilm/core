@@ -29,12 +29,12 @@ describe('YouTubeDetails', () => {
       name: 'Video Player'
     })
     const sourceTag = videoPlayer.querySelector('.vjs-tech source')
-    expect(sourceTag?.getAttribute('src')).toEqual(
+    expect(sourceTag?.getAttribute('src')).toBe(
       'https://www.youtube.com/watch?v=jQaeIJOA6J0'
     )
-    expect(sourceTag?.getAttribute('type')).toEqual('video/youtube')
+    expect(sourceTag?.getAttribute('type')).toBe('video/youtube')
     const imageTag = videoPlayer.querySelector('.vjs-poster > picture > img')
-    expect(imageTag?.getAttribute('src')).toEqual(
+    expect(imageTag?.getAttribute('src')).toBe(
       'https://i.ytimg.com/vi/jQaeIJOA6J0/default.jpg'
     )
   })

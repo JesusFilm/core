@@ -16,7 +16,7 @@ import {
 import { ColorDisplayIcon } from '.'
 
 describe('ColorDisplayIcon', () => {
-  it('should show the selected color primary as default ', () => {
+  it('should show the selected color primary as default', () => {
     const step: TreeBlock<StepBlock> = {
       id: 'step.id',
       __typename: 'StepBlock',

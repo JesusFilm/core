@@ -26,6 +26,7 @@ describe('UserTeamDeleteMenuItem', () => {
     }
   ]
   let cache: InMemoryCache
+
   beforeEach(() => {
     cache = new InMemoryCache()
     cache.restore({
@@ -35,7 +36,8 @@ describe('UserTeamDeleteMenuItem', () => {
       }
     })
   })
-  it('it should remove a team member', async () => {
+
+  it('should remove a team member', async () => {
     const handleClick = jest.fn()
     const { getByText } = render(
       <MockedProvider mocks={mocks} cache={cache}>

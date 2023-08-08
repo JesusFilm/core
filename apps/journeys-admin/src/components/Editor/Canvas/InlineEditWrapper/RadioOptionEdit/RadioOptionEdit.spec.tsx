@@ -67,7 +67,7 @@ describe('RadioOptionEdit', () => {
         <JourneyProvider
           value={{
             journey: { id: 'journeyId' } as unknown as Journey,
-            admin: true
+            variant: 'admin'
           }}
         >
           <EditorProvider>
@@ -118,7 +118,7 @@ describe('RadioOptionEdit', () => {
         <JourneyProvider
           value={{
             journey: { id: 'journeyId' } as unknown as Journey,
-            admin: true
+            variant: 'admin'
           }}
         >
           <EditorProvider>
@@ -169,7 +169,7 @@ describe('RadioOptionEdit', () => {
         <JourneyProvider
           value={{
             journey: { id: 'journeyId' } as unknown as Journey,
-            admin: true
+            variant: 'admin'
           }}
         >
           <EditorProvider>
@@ -199,6 +199,6 @@ describe('RadioOptionEdit', () => {
         <RadioOptionEdit {...args} />
       </MockedProvider>
     )
-    expect(getByRole('button', { name: '' }))
+    expect(getByRole('button', { name: '' })).toBeInTheDocument()
   })
 })

@@ -13,7 +13,7 @@ describe('ActionCards', () => {
     const { getByText } = render(
       <SnackbarProvider>
         <MockedProvider>
-          <JourneyProvider value={{ journey }}>
+          <JourneyProvider value={{ journey, variant: 'admin' }}>
             <ActionCards url="https://www.google.com/" />
           </JourneyProvider>
         </MockedProvider>

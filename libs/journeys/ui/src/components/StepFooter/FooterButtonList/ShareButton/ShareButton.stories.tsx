@@ -16,10 +16,7 @@ const Demo = {
 const Template: Story = () => (
   <SnackbarProvider>
     <JourneyProvider
-      value={{
-        journey: { slug: 'test-slug' } as unknown as Journey,
-        admin: false
-      }}
+      value={{ journey: { slug: 'test-slug' } as unknown as Journey }}
     >
       <ShareButton />
     </JourneyProvider>

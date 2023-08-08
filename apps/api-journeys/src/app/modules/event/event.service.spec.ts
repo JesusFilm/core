@@ -71,6 +71,7 @@ describe('EventService', () => {
       }
     })
   })
+
   afterAll(() => {
     jest.resetAllMocks()
   })

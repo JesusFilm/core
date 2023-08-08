@@ -109,12 +109,13 @@ describe('ActionsTable', () => {
 
   it('should render placeholder', () => {
     const { getByText } = render(
-      <JourneyProvider value={{ journey }}>
+      <JourneyProvider value={{ journey, variant: 'admin' }}>
         <ActionsTable />
       </JourneyProvider>
     )
     expect(getByText('Every Journey has a goal')).toBeInTheDocument()
   })
+
   it('should render a list of actions', () => {
     const { getByText, getAllByText, getByTestId } = render(
       <JourneyProvider
@@ -122,7 +123,8 @@ describe('ActionsTable', () => {
           journey: {
             ...journey,
             blocks
-          }
+          },
+          variant: 'admin'
         }}
       >
         <ActionsTable />

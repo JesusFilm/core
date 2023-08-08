@@ -30,7 +30,6 @@ const Template: Story<
   return (
     <JourneyProvider
       value={{
-        admin: true,
         journey: {
           id: 'journeyId',
           themeMode: ThemeMode.dark,
@@ -45,7 +44,8 @@ const Template: Story<
           host: {
             title: hostTitle
           }
-        } as unknown as Journey
+        } as unknown as Journey,
+        variant: 'admin'
       }}
     >
       <Stack

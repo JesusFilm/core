@@ -25,6 +25,7 @@ describe('TextResponseEdit', () => {
     action: null,
     children: []
   }
+
   it('selects the input on click', async () => {
     const { getByRole } = render(
       <MockedProvider>
@@ -73,7 +74,7 @@ describe('TextResponseEdit', () => {
           <JourneyProvider
             value={{
               journey: { id: 'journeyId' } as unknown as Journey,
-              admin: true
+              variant: 'admin'
             }}
           >
             <EditorProvider>
@@ -126,7 +127,7 @@ describe('TextResponseEdit', () => {
           <JourneyProvider
             value={{
               journey: { id: 'journeyId' } as unknown as Journey,
-              admin: true
+              variant: 'admin'
             }}
           >
             <EditorProvider>
@@ -179,7 +180,7 @@ describe('TextResponseEdit', () => {
           <JourneyProvider
             value={{
               journey: { id: 'journeyId' } as unknown as Journey,
-              admin: true
+              variant: 'admin'
             }}
           >
             <EditorProvider>
