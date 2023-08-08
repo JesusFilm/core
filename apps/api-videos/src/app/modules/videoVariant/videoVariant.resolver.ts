@@ -1,5 +1,6 @@
 import { Args, Parent, ResolveField, Resolver } from '@nestjs/graphql'
-import compact from 'lodash/compact'
+
+import { Prisma } from '.prisma/api-videos-client'
 
 import { PrismaService } from '../../lib/prisma.service'
 
@@ -15,8 +16,12 @@ export class VideoVariantResolver {
   }
 
   @ResolveField('subtitleCount')
-  subtitleCount(@Parent() videoVariant): number {
-    return compact(videoVariant.subtitle).length
+  async subtitleCount(@Parent() videoVariant): Promise<number> {
+    return (
+      (await this.prismaService.videoVariantSubtitle.count({
+        where: { videoVariantId: videoVariant.id }
+      })) ?? 0
+    )
   }
 
   @ResolveField('downloads')
@@ -32,12 +37,21 @@ export class VideoVariantResolver {
     @Args('languageId') languageId?: string,
     @Args('primary') primary?: boolean
   ): Promise<unknown[]> {
+    const where: Prisma.VideoVariantSubtitleWhereInput = {
+      videoVariantId: videoVariant.id
+    }
+    if (languageId != null || primary != null) {
+      where.OR = [
+        {
+          languageId: languageId ?? undefined
+        },
+        {
+          primary: primary ?? undefined
+        }
+      ]
+    }
     return await this.prismaService.videoVariantSubtitle.findMany({
-      where: {
-        videoVariantId: videoVariant.id,
-        languageId: languageId ?? undefined,
-        primary: primary ?? undefined
-      }
+      where
     })
   }
 }
