@@ -1,6 +1,6 @@
 import { gql, useMutation } from '@apollo/client'
-import RemoveCircleOutlineOutlinedIcon from '@mui/icons-material/RemoveCircleOutlineOutlined'
 import { ReactElement } from 'react'
+import MinusCircleContained from '@core/shared/ui/icons/MinusCircleContained'
 
 import { UserTeamDelete } from '../../../../../__generated__/UserTeamDelete'
 import { MenuItem } from '../../../MenuItem'
@@ -49,7 +49,7 @@ export function UserTeamDeleteMenuItem({
   return (
     <MenuItem
       label="Remove"
-      icon={<RemoveCircleOutlineOutlinedIcon />}
+      icon={<MinusCircleContained />}
       onClick={handleClick}
       disabled={disabled === true || loading}
     />

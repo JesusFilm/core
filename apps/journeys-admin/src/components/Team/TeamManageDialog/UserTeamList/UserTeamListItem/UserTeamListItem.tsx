@@ -1,6 +1,7 @@
 import { gql, useMutation } from '@apollo/client'
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown'
-import ErrorOutlineOutlinedIcon from '@mui/icons-material/ErrorOutlineOutlined'
+import AlertCircle from '@core/shared/ui/icons/AlertCircle'
+
 import Avatar from '@mui/material/Avatar'
 import Button from '@mui/material/Button'
 import Divider from '@mui/material/Divider'
@@ -138,7 +139,7 @@ export function UserTeamListItem({
           {role === UserTeamRole.member && (
             <MenuItem
               label={t('Manager')}
-              icon={<ErrorOutlineOutlinedIcon />}
+              icon={<AlertCircle />}
               onClick={async () => {
                 handleClose()
                 await userTeamUpdate({
@@ -153,7 +154,7 @@ export function UserTeamListItem({
           {role === UserTeamRole.manager && (
             <MenuItem
               label={t('Member')}
-              icon={<ErrorOutlineOutlinedIcon />}
+              icon={<AlertCircle />}
               onClick={async () => {
                 handleClose()
                 await userTeamUpdate({
