@@ -110,8 +110,7 @@ export function TeamSelect({ onboarding }: TeamSelectProps): ReactElement {
                   alignItems: 'flex-start',
                   justifyContent: 'space-between',
                   whiteSpace: 'normal',
-                  wordWrap: 'break-word',
-                  wordBreak: 'break-all',
+                  wordBreak: 'break-word',
                   gap: 4
                 }}
               >
