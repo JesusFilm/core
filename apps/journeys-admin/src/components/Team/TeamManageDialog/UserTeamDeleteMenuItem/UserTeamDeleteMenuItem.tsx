@@ -1,5 +1,6 @@
 import { gql, useMutation } from '@apollo/client'
 import { ReactElement } from 'react'
+
 import MinusCircleContained from '@core/shared/ui/icons/MinusCircleContained'
 
 import { UserTeamDelete } from '../../../../../__generated__/UserTeamDelete'

@@ -1,7 +1,5 @@
 import { gql, useMutation } from '@apollo/client'
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown'
-import AlertCircle from '@core/shared/ui/icons/AlertCircle'
-
 import Avatar from '@mui/material/Avatar'
 import Button from '@mui/material/Button'
 import Divider from '@mui/material/Divider'
@@ -13,6 +11,8 @@ import Stack from '@mui/material/Stack'
 import compact from 'lodash/compact'
 import { MouseEvent, ReactElement, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+
+import AlertCircle from '@core/shared/ui/icons/AlertCircle'
 
 import { GetUserTeamsAndInvites_userTeams as UserTeam } from '../../../../../../__generated__/GetUserTeamsAndInvites'
 import { UserTeamRole } from '../../../../../../__generated__/globalTypes'
