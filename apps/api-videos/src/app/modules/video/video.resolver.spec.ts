@@ -206,7 +206,7 @@ describe('VideoResolver', () => {
 
     it('should error on not found', async () => {
       prismaService.video.findUnique.mockResolvedValue(null)
-      await expect(resolver.video(info, '20615')).rejects.toThrowError(
+      await expect(resolver.video(info, '20615')).rejects.toThrow(
         'Video not found'
       )
     })
@@ -227,7 +227,7 @@ describe('VideoResolver', () => {
 
     it('returns children count', async () => {
       prismaService.video.count.mockResolvedValue(2)
-      expect(await resolver.childrenCount(video)).toEqual(2)
+      expect(await resolver.childrenCount(video)).toBe(2)
       expect(prismaService.video.count).toHaveBeenCalledWith({
         where: { parent: { some: { id: video.id } } }
       })
@@ -250,7 +250,7 @@ describe('VideoResolver', () => {
 
   describe('variantLanguagesCount', () => {
     it('returns variant languages count', async () => {
-      expect(await resolver.variantLanguagesCount(video)).toEqual(1)
+      expect(await resolver.variantLanguagesCount(video)).toBe(1)
       expect(prismaService.videoVariant.count).toHaveBeenCalledWith({
         where: { videoId: video.id }
       })
