@@ -7,6 +7,7 @@ import Div100vh from 'react-div-100vh'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { BlockRenderer } from '@core/journeys/ui/BlockRenderer'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { StepFooter } from '@core/journeys/ui/StepFooter'
 
 import { Conductor } from '../Conductor'
@@ -152,7 +153,9 @@ export function EmbeddedPreview({
               >
                 <Close />
               </IconButton>
-              <Conductor blocks={blocks} />
+              <JourneyProvider value={{ variant: 'default' }}>
+                <Conductor blocks={blocks} />
+              </JourneyProvider>
             </>
           )}
         </Box>
