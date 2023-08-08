@@ -67,7 +67,8 @@ export function ContainedCover({
   const contentRef = useRef()
 
   const posterImage =
-    videoBlock?.source !== VideoBlockSource.youTube && videoBlock?.source !== VideoBlockSource.cloudflare
+    videoBlock?.source !== VideoBlockSource.youTube &&
+    videoBlock?.source !== VideoBlockSource.cloudflare
       ? // Use posterBlockId image or default poster image on video
         videoBlock?.posterBlockId != null
         ? (
