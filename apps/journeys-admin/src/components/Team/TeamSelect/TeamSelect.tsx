@@ -69,7 +69,7 @@ export function TeamSelect({ onboarding }: TeamSelectProps): ReactElement {
             displayEmpty
             value={activeTeam?.id ?? ''}
             onChange={handleChange}
-            renderValue={() => activeTeam?.title ?? 'Shared With Me'}
+            renderValue={() => activeTeam?.title ?? t('Shared With Me')}
             autoWidth
             sx={{
               '> .MuiSelect-select': {
