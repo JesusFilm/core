@@ -145,7 +145,7 @@ const iconNames = [
   'UserProfileAdd',
   'UserProfileCircle',
   'UsersProfiles2',
-  'UsersProfiles3Icon',
+  'UsersProfiles3',
   'Viber',
   'Vk',
   'Web',

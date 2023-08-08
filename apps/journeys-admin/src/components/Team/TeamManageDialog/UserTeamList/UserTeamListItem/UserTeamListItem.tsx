@@ -12,7 +12,7 @@ import compact from 'lodash/compact'
 import { MouseEvent, ReactElement, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import AlertCircle from '@core/shared/ui/icons/AlertCircle'
+import AlertCircleIcon from '@core/shared/ui/icons/AlertCircle'
 
 import { GetUserTeamsAndInvites_userTeams as UserTeam } from '../../../../../../__generated__/GetUserTeamsAndInvites'
 import { UserTeamRole } from '../../../../../../__generated__/globalTypes'
@@ -139,7 +139,7 @@ export function UserTeamListItem({
           {role === UserTeamRole.member && (
             <MenuItem
               label={t('Manager')}
-              icon={<AlertCircle />}
+              icon={<AlertCircleIcon />}
               onClick={async () => {
                 handleClose()
                 await userTeamUpdate({
@@ -154,7 +154,7 @@ export function UserTeamListItem({
           {role === UserTeamRole.manager && (
             <MenuItem
               label={t('Member')}
-              icon={<AlertCircle />}
+              icon={<AlertCircleIcon />}
               onClick={async () => {
                 handleClose()
                 await userTeamUpdate({

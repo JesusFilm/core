@@ -137,7 +137,7 @@ import UserProfile3 from './UserProfile3'
 import UserProfileAdd from './UserProfileAdd'
 import UserProfileCircle from './UserProfileCircle'
 import UsersProfiles2 from './UsersProfiles2'
-import UsersProfiles3Icon from './UsersProfiles3'
+import UsersProfiles3 from './UsersProfiles3'
 import Viber from './Viber'
 import Vk from './Vk'
 import Web from './Web'
@@ -282,10 +282,10 @@ type IconNames =
   | 'TwitterLogo'
   | 'UserProfile2'
   | 'UserProfile3'
-  | 'UsersProfiles3Icon'
   | 'UserProfileAdd'
   | 'UserProfileCircle'
   | 'UsersProfiles2'
+  | 'UsersProfiles3'
   | 'Viber'
   | 'Vk'
   | 'Web'
@@ -434,10 +434,10 @@ const iconComponents: IconComponents = {
   TwitterLogo,
   UserProfile2,
   UserProfile3,
-  UsersProfiles3Icon,
   UserProfileAdd,
   UserProfileCircle,
   UsersProfiles2,
+  UsersProfiles3,
   Viber,
   Vk,
   Web,

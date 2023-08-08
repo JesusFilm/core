@@ -4,8 +4,8 @@ import Menu from '@mui/material/Menu'
 import { ReactElement, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import Edit2 from '@core/shared/ui/icons/Edit2'
-import Plus1 from '@core/shared/ui/icons/Plus1'
+import Edit2Eikon from '@core/shared/ui/icons/Edit2'
+import Plus1Icon from '@core/shared/ui/icons/Plus1'
 import UsersProfiles3Icon from '@core/shared/ui/icons/UsersProfiles3'
 
 import { MenuItem } from '../../MenuItem'
@@ -86,7 +86,7 @@ export function TeamMenu(): ReactElement {
           disabled={activeTeam == null}
           key="rename-team"
           label={t('Rename')}
-          icon={<Edit2 />}
+          icon={<Edit2Eikon />}
           onClick={() => {
             setTeamUpdateOpen(true)
             setAnchorEl(null)
@@ -95,7 +95,7 @@ export function TeamMenu(): ReactElement {
         <MenuItem
           key="create-new-team"
           label={t('New Team')}
-          icon={<Plus1 />}
+          icon={<Plus1Icon />}
           onClick={() => {
             setTeamCreateOpen(true)
             setAnchorEl(null)
