@@ -33,7 +33,8 @@ describe('TeamCreateForm', () => {
         teamCreate: {
           id: 'teamId',
           title: 'Team Title',
-          __typename: 'Team'
+          __typename: 'Team',
+          userTeams: []
         }
       }
     }
@@ -117,7 +118,12 @@ describe('TeamCreateForm', () => {
         { title: 'Team Title' },
         expect.any(Object),
         {
-          teamCreate: { __typename: 'Team', id: 'teamId', title: 'Team Title' }
+          teamCreate: {
+            __typename: 'Team',
+            id: 'teamId',
+            title: 'Team Title',
+            userTeams: []
+          }
         }
       )
     )

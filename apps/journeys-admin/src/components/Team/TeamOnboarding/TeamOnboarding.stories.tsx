@@ -37,7 +37,8 @@ const teamCreateMock: MockedResponse<TeamCreate> = {
       teamCreate: {
         id: 'teamId',
         title: 'Jesus Film Project',
-        __typename: 'Team'
+        __typename: 'Team',
+        userTeams: []
       }
     }
   }

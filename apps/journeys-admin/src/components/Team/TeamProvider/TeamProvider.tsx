@@ -11,12 +11,11 @@ import {
   GetLastActiveTeamIdAndTeams,
   GetLastActiveTeamIdAndTeams_teams as Team
 } from '../../../../__generated__/GetLastActiveTeamIdAndTeams'
-import { TeamCreate_teamCreate as TeamCreate } from '../../../../__generated__/TeamCreate'
 
 interface Context {
   query: QueryResult<GetLastActiveTeamIdAndTeams, OperationVariables>
   activeTeam: Team | null
-  setActiveTeam: (team: Team | null | TeamCreate) => void
+  setActiveTeam: (team: Team | null) => void
 }
 
 const TeamContext = createContext<Context>({} as unknown as Context)
@@ -67,7 +66,7 @@ export function TeamProvider({ children }: TeamProviderProps): ReactElement {
     }
   )
 
-  function setActiveTeam(team: Team | null | TeamCreate): void {
+  function setActiveTeam(team: Team | null): void {
     if (team == null) {
       setActiveTeamId(null)
     } else {
@@ -76,7 +75,6 @@ export function TeamProvider({ children }: TeamProviderProps): ReactElement {
   }
   const activeTeam =
     query.data?.teams.find((team) => team.id === activeTeamId) ?? null
-
   return (
     <TeamContext.Provider value={{ query, activeTeam, setActiveTeam }}>
       {children}

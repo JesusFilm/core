@@ -96,7 +96,8 @@ describe('TeamOnboarding', () => {
         teamCreate: {
           id: 'teamId1',
           title: 'Team Title',
-          __typename: 'Team'
+          __typename: 'Team',
+          userTeams: []
         }
       }
     }

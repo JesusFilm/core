@@ -40,7 +40,8 @@ describe('TeamCreateDialog', () => {
         teamCreate: {
           id: 'teamId',
           title: 'Team Title',
-          __typename: 'Team'
+          __typename: 'Team',
+          userTeams: []
         }
       }
     }
@@ -62,7 +63,7 @@ describe('TeamCreateDialog', () => {
       data: {
         teams: [
           {
-            id: 'teamId',
+            id: 'teamId1',
             title: 'Team 1 Title',
             __typename: 'Team',
             userTeams: []
@@ -70,13 +71,14 @@ describe('TeamCreateDialog', () => {
         ],
         getJourneyProfile: {
           __typename: 'JourneyProfile',
-          lastActiveTeamId: 'teamId'
+          lastActiveTeamId: null
         }
       }
     }
   }
   function TestComponent(): ReactElement {
     const { activeTeam } = useTeam()
+
     return <div data-testid="active-team-title">{activeTeam?.title}</div>
   }
 
@@ -111,7 +113,7 @@ describe('TeamCreateDialog', () => {
     )
     await waitFor(() => expect(handleClose).toHaveBeenCalled())
     expect(cache.extract()?.ROOT_QUERY?.teams).toEqual([
-      { __ref: 'Team:teamId' },
+      { __ref: 'Team:teamId1' },
       { __ref: 'Team:teamId' }
     ])
     expect(getByText('{{ teamName }} created.')).toBeInTheDocument()
