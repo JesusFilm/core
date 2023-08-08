@@ -96,18 +96,14 @@ export function TeamSelect({ onboarding }: TeamSelectProps): ReactElement {
                 key={team.id}
                 value={team.id}
                 sx={{
-                  minWidth: '300px',
-                  display: 'flex',
-                  flexDirection: 'row',
                   alignItems: 'flex-start',
                   justifyContent: 'space-between',
                   whiteSpace: 'normal',
-                  wordWrap: 'break-word'
+                  wordWrap: 'break-word',
+                  gap: 4
                 }}
               >
-                <Typography sx={{ maxWidth: '77%', mr: 3 }}>
-                  {team.title}
-                </Typography>
+                {team.title}
                 <TeamAvatars userTeams={team.userTeams} />
               </MenuItem>
             ))}
