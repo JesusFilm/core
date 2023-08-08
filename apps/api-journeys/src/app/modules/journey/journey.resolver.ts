@@ -324,42 +324,7 @@ export class JourneyResolver {
       })
 
     const duplicateJourneyId = uuidv4()
-    const existingActiveDuplicateJourneys =
-      await this.prismaService.journey.findMany({
-        where: {
-          title: {
-            contains: journey.title
-          },
-          archivedAt: null,
-          trashedAt: null,
-          deletedAt: null,
-          template: false
-        },
-        include: {
-          userJourneys: true,
-          team: {
-            include: { userTeams: true }
-          }
-        }
-      })
-    Logger.log('existing', existingActiveDuplicateJourneys)
-    const duplicates = this.getJourneyDuplicateNumbers(
-      existingActiveDuplicateJourneys,
-      journey.title
-    )
-    const duplicateNumber = this.getFirstMissingNumber(duplicates)
-    const duplicateTitle = `${journey.title}${
-      duplicateNumber === 0
-        ? ''
-        : duplicateNumber === 1
-        ? ' copy'
-        : ` copy ${duplicateNumber}`
-    }`.trimEnd()
 
-    let slug = slugify(duplicateTitle, {
-      lower: true,
-      strict: true
-    })
     const originalBlocks = await this.prismaService.block.findMany({
       where: { journeyId: journey.id, typename: 'StepBlock' },
       orderBy: { parentOrder: 'asc' },
@@ -394,6 +359,44 @@ export class JourneyResolver {
         duplicateBlocks.push(duplicatePrimaryImageBlock)
       }
     }
+
+    const existingActiveDuplicateJourneys =
+      await this.prismaService.journey.findMany({
+        where: {
+          title: {
+            contains: journey.title
+          },
+          archivedAt: null,
+          trashedAt: null,
+          deletedAt: null,
+          template: false,
+          team: { id: teamId }
+        },
+        include: {
+          userJourneys: true,
+          team: {
+            include: { userTeams: true }
+          }
+        }
+      })
+    Logger.log('existing', existingActiveDuplicateJourneys)
+    const duplicates = this.getJourneyDuplicateNumbers(
+      existingActiveDuplicateJourneys,
+      journey.title
+    )
+    const duplicateNumber = this.getFirstMissingNumber(duplicates)
+    const duplicateTitle = `${journey.title}${
+      duplicateNumber === 0
+        ? ''
+        : duplicateNumber === 1
+        ? ' copy'
+        : ` copy ${duplicateNumber}`
+    }`.trimEnd()
+
+    let slug = slugify(duplicateTitle, {
+      lower: true,
+      strict: true
+    })
 
     let retry = true
     while (retry) {
