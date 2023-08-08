@@ -7,7 +7,7 @@ import Div100vh from 'react-div-100vh'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { BlockRenderer } from '@core/journeys/ui/BlockRenderer'
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import { JourneyProvider, useJourney } from '@core/journeys/ui/JourneyProvider'
 import { StepFooter } from '@core/journeys/ui/StepFooter'
 
 import { Conductor } from '../Conductor'
@@ -23,6 +23,7 @@ interface EmbeddedPreviewProps {
 export function EmbeddedPreview({
   blocks
 }: EmbeddedPreviewProps): ReactElement {
+  const { variant } = useJourney()
   const maximizableElement = useRef(null)
   const [allowFullWindow, setAllowFullWindow] = useState(true)
   // Use full container / fullWindow mode over fullScreen to avoid video playback issues
@@ -143,7 +144,7 @@ export function EmbeddedPreview({
                 sx={{
                   position: 'absolute',
                   top: 0,
-                  left: 0,
+                  left: variant === 'default' ? 'env(safe-area-inset-left)' : 0,
                   zIndex: 1000,
                   color: 'text.primary'
                 }}
