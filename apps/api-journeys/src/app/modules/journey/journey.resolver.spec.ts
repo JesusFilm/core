@@ -871,7 +871,7 @@ describe('JourneyResolver', () => {
         .mockResolvedValueOnce(journeyWithUserTeam)
       prismaService.journey.findMany
         .mockReset()
-        // lookup existing active journeys with same title
+        // lookup existing duplicate active journeys
         .mockResolvedValueOnce([])
 
       // Initial duplicate creates slug with journey title only
@@ -972,7 +972,6 @@ describe('JourneyResolver', () => {
     it('increments copy number on journey if multiple duplicates exist', async () => {
       prismaService.journey.findMany
         .mockReset()
-        // Increments copy number only if duplicating from another journey
         .mockResolvedValueOnce([
           journey,
           { ...journey, title: `${journey.title} copy` },
