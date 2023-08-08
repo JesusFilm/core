@@ -40,8 +40,15 @@ export class UserResolver {
       imageUrl
     }
 
-    return await this.prismaService.user.create({
-      data
+    // this function can run in parallel as such it is possible for multiple
+    // calls to reach this point and try to create the same user
+    // due to the earlier firebase async call.
+    return await this.prismaService.user.upsert({
+      where: {
+        userId
+      },
+      create: data,
+      update: data
     })
   }
 
