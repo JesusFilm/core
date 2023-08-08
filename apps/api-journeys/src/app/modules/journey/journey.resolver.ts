@@ -342,6 +342,7 @@ export class JourneyResolver {
           }
         }
       })
+    console.log('existing', existingActiveDuplicateJourneys)
     const duplicates = this.getJourneyDuplicateNumbers(
       existingActiveDuplicateJourneys,
       journey.title
