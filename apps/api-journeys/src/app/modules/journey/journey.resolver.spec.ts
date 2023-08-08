@@ -865,10 +865,14 @@ describe('JourneyResolver', () => {
     it('duplicates a template journey', async () => {
       prismaService.journey.findUnique
         .mockReset()
-        // lookup existing journey to duplicate and authorize
+        // lookup journey to duplicate and authorize
         .mockResolvedValueOnce({ ...journeyWithUserTeam, template: true })
         // lookup duplicate journey once created and authorize
         .mockResolvedValueOnce(journeyWithUserTeam)
+      prismaService.journey.findMany
+        .mockReset()
+        // lookup existing active journeys with same title
+        .mockResolvedValueOnce([])
 
       // Initial duplicate creates slug with journey title only
       prismaService.journey.create.mockRejectedValueOnce({
