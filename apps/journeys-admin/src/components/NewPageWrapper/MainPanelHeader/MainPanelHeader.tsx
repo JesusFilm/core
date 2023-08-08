@@ -1,12 +1,13 @@
-import { ReactElement, ReactNode } from 'react'
-import Link from 'next/link'
-import AppBar from '@mui/material/AppBar'
 import ChevronLeftRounded from '@mui/icons-material/ChevronLeftRounded'
+import AppBar from '@mui/material/AppBar'
 import IconButton from '@mui/material/IconButton'
 import Toolbar from '@mui/material/Toolbar'
 import Typography from '@mui/material/Typography'
 import Box from '@mui/system/Box'
+import Link from 'next/link'
 import { useRouter } from 'next/router'
+import { ReactElement, ReactNode } from 'react'
+
 import { usePageWrapperStyles } from '../utils/usePageWrapperStyles'
 
 export interface MainPanelHeaderProps {

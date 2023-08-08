@@ -1,9 +1,12 @@
-import { render, fireEvent } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
+import { fireEvent, render } from '@testing-library/react'
+
 import { VideoBlockSource } from '../../../__generated__/globalTypes'
 import type { TreeBlock } from '../../libs/block'
 import { EditorProvider } from '../../libs/EditorProvider'
+
 import { VideoFields } from './__generated__/VideoFields'
+
 import { Video } from '.'
 
 const block: TreeBlock<VideoFields> = {
@@ -68,10 +71,10 @@ describe('Video', () => {
     )
     const sourceTag =
       getByTestId('video-video0.id').querySelector('.vjs-tech source')
-    expect(sourceTag?.getAttribute('src')).toEqual(
+    expect(sourceTag?.getAttribute('src')).toBe(
       'https://arc.gt/hls/2_0-FallingPlates/529'
     )
-    expect(sourceTag?.getAttribute('type')).toEqual('application/x-mpegURL')
+    expect(sourceTag?.getAttribute('type')).toBe('application/x-mpegURL')
   })
 
   it('should render cloudflare video', () => {
@@ -88,10 +91,10 @@ describe('Video', () => {
     )
     const sourceTag =
       getByTestId('video-video0.id').querySelector('.vjs-tech source')
-    expect(sourceTag?.getAttribute('src')).toEqual(
+    expect(sourceTag?.getAttribute('src')).toBe(
       'https://customer-.cloudflarestream.com/videoId/manifest/video.m3u8'
     )
-    expect(sourceTag?.getAttribute('type')).toEqual('application/x-mpegURL')
+    expect(sourceTag?.getAttribute('type')).toBe('application/x-mpegURL')
   })
 
   it('should render an image if videoId is null', () => {

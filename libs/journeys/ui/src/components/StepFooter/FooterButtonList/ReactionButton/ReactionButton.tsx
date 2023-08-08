@@ -1,6 +1,8 @@
 import { ReactElement, useState } from 'react'
-import ThumbsUp from '@core/shared/ui/icons/ThumbsUp'
+
 import ThumbsDown from '@core/shared/ui/icons/ThumbsDown'
+import ThumbsUp from '@core/shared/ui/icons/ThumbsUp'
+
 import { StyledFooterButton } from '../StyledFooterButton'
 
 interface ReactionButtonProps {

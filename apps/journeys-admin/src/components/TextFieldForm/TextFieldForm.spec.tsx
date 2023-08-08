@@ -1,6 +1,7 @@
-import { fireEvent, render, waitFor, act } from '@testing-library/react'
 import Search from '@mui/icons-material/Search'
+import { act, fireEvent, render, waitFor } from '@testing-library/react'
 import { object, string } from 'yup'
+
 import { TextFieldForm } from './TextFieldForm'
 
 describe('TextFieldForm', () => {
@@ -26,7 +27,7 @@ describe('TextFieldForm', () => {
     expect(textField).toHaveAttribute('placeholder', 'Placeholder Value')
     expect(textField).toHaveAttribute('aria-label', 'Search')
     expect(getByTestId('TextField form')).toBeInTheDocument()
-    expect(getByTestId('SearchIcon'))
+    expect(getByTestId('SearchIcon')).toBeInTheDocument()
   })
 
   it('should show helper text', () => {

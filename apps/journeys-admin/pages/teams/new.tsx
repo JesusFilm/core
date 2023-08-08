@@ -1,17 +1,19 @@
-import { NextSeo } from 'next-seo'
-import { ReactElement } from 'react'
-import { useTranslation } from 'react-i18next'
 import {
   AuthAction,
   withAuthUser,
   withAuthUserTokenSSR
 } from 'next-firebase-auth'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
+import { NextSeo } from 'next-seo'
+import { ReactElement } from 'react'
+import { useTranslation } from 'react-i18next'
+
 import { getLaunchDarklyClient } from '@core/shared/ui/getLaunchDarklyClient'
+
 import i18nConfig from '../../next-i18next.config'
+import { TeamOnboarding } from '../../src/components/Team/TeamOnboarding'
 import { createApolloClient } from '../../src/libs/apolloClient'
 import { checkConditionalRedirect } from '../../src/libs/checkConditionalRedirect'
-import { TeamOnboarding } from '../../src/components/Team/TeamOnboarding'
 import { GET_CURRENT_USER } from '../../src/libs/useCurrentUser'
 
 function TeamsNewPage(): ReactElement {

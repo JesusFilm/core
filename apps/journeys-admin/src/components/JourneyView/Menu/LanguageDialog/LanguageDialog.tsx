@@ -1,12 +1,14 @@
-import { ReactElement } from 'react'
-import { useMutation, useQuery, gql } from '@apollo/client'
+import { gql, useMutation, useQuery } from '@apollo/client'
+import { Form, Formik, FormikValues } from 'formik'
 import { useSnackbar } from 'notistack'
-import { Formik, Form, FormikValues } from 'formik'
-import { Dialog } from '@core/shared/ui/Dialog'
+import { ReactElement } from 'react'
+
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import { Dialog } from '@core/shared/ui/Dialog'
 import { LanguageAutocomplete } from '@core/shared/ui/LanguageAutocomplete'
-import { JourneyLanguageUpdate } from '../../../../../__generated__/JourneyLanguageUpdate'
+
 import { GetLanguages } from '../../../../../__generated__/GetLanguages'
+import { JourneyLanguageUpdate } from '../../../../../__generated__/JourneyLanguageUpdate'
 
 export const JOURNEY_LANGUAGE_UPDATE = gql`
   mutation JourneyLanguageUpdate($id: ID!, $input: JourneyUpdateInput!) {

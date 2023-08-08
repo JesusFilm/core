@@ -1,10 +1,11 @@
-import { ReactElement } from 'react'
-import CheckCircleRoundedIcon from '@mui/icons-material/CheckCircleRounded'
 import ArchiveRoundedIcon from '@mui/icons-material/ArchiveRounded'
-import EditIcon from '@mui/icons-material/Edit'
 import CancelRoundedIcon from '@mui/icons-material/CancelRounded'
-import Typography from '@mui/material/Typography'
+import CheckCircleRoundedIcon from '@mui/icons-material/CheckCircleRounded'
+import EditIcon from '@mui/icons-material/Edit'
 import Stack from '@mui/material/Stack'
+import Typography from '@mui/material/Typography'
+import { ReactElement } from 'react'
+
 import { JourneyStatus } from '../../../../../__generated__/globalTypes'
 
 export interface StatusChipProps {

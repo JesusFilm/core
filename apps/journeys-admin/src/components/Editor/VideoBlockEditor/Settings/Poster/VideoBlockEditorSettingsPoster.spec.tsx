@@ -1,13 +1,14 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { fireEvent, render } from '@testing-library/react'
 import useMediaQuery from '@mui/material/useMediaQuery'
+import { fireEvent, render } from '@testing-library/react'
 
 import {
-  GetJourney_journey_blocks_VideoBlock as VideoBlock,
-  GetJourney_journey_blocks_ImageBlock as ImageBlock
+  GetJourney_journey_blocks_ImageBlock as ImageBlock,
+  GetJourney_journey_blocks_VideoBlock as VideoBlock
 } from '../../../../../../__generated__/GetJourney'
 import { VideoBlockSource } from '../../../../../../__generated__/globalTypes'
 import { ThemeProvider } from '../../../../ThemeProvider'
+
 import { VideoBlockEditorSettingsPoster } from './VideoBlockEditorSettingsPoster'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
@@ -83,6 +84,7 @@ describe('VideoBlockEditorSettingsPoster', () => {
     fireEvent.click(getByTestId('posterCreateButton'))
     expect(getByTestId('ImageBlockEditor')).toBeInTheDocument()
   })
+
   it('disables edit poster image button', () => {
     const { getByRole } = render(
       <MockedProvider>

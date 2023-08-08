@@ -1,23 +1,25 @@
 import { UseGuards } from '@nestjs/common'
 import { Args, Mutation, Parent, ResolveField, Resolver } from '@nestjs/graphql'
-import { GqlAuthGuard } from '@core/nest/gqlAuthGuard/GqlAuthGuard'
+
 import { CurrentUserId } from '@core/nest/decorators/CurrentUserId'
+import { GqlAuthGuard } from '@core/nest/gqlAuthGuard/GqlAuthGuard'
+
 import {
-  VideoStartEvent,
-  VideoStartEventCreateInput,
-  VideoPlayEvent,
-  VideoPlayEventCreateInput,
-  VideoPauseEvent,
-  VideoPauseEventCreateInput,
+  VideoBlockSource,
+  VideoCollapseEvent,
+  VideoCollapseEventCreateInput,
   VideoCompleteEvent,
   VideoCompleteEventCreateInput,
   VideoExpandEvent,
   VideoExpandEventCreateInput,
-  VideoCollapseEvent,
-  VideoCollapseEventCreateInput,
+  VideoPauseEvent,
+  VideoPauseEventCreateInput,
+  VideoPlayEvent,
+  VideoPlayEventCreateInput,
   VideoProgressEvent,
   VideoProgressEventCreateInput,
-  VideoBlockSource
+  VideoStartEvent,
+  VideoStartEventCreateInput
 } from '../../../__generated__/graphql'
 import { EventService } from '../event.service'
 

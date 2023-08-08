@@ -1,12 +1,15 @@
+import { CacheModule } from '@nestjs/common'
 import { Test, TestingModule } from '@nestjs/testing'
-import { mockDbQueryResult } from '@core/nest/database/mock'
 import { Database, aql } from 'arangojs'
-import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
+import { AqlQuery, GeneratedAqlQuery } from 'arangojs/aql'
 import { DocumentCollection, EdgeCollection } from 'arangojs/collection'
 import { ArrayCursor } from 'arangojs/cursor'
-import { AqlQuery, GeneratedAqlQuery } from 'arangojs/aql'
-import { CacheModule } from '@nestjs/common'
+import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
+
+import { mockDbQueryResult } from '@core/nest/database/mock'
+
 import { VideoLabel } from '../../__generated__/graphql'
+
 import { VideoService } from './video.service'
 
 const baseVideo: GeneratedAqlQuery[] = [
@@ -273,6 +276,7 @@ describe('VideoService', () => {
       db.query.mockReturnValueOnce(mockDbQueryResult(service.db, [video]))
       db.query.mockReturnValueOnce(mockDbQueryResult(service.db, [video]))
     })
+
     it('should query', async () => {
       expect(await service.getVideosByIds(['20615', '20616'])).toEqual([
         video,

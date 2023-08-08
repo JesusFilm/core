@@ -1,4 +1,5 @@
 import type { TreeBlock } from '../block'
+
 import { searchBlocks } from '.'
 
 describe('searchBlocks', () => {

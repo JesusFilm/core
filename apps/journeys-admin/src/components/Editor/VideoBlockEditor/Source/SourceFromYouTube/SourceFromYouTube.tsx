@@ -1,9 +1,11 @@
-import { ReactElement } from 'react'
+import EditRoundedIcon from '@mui/icons-material/EditRounded'
+import VideocamRoundedIcon from '@mui/icons-material/VideocamRounded'
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
+import { ReactElement } from 'react'
+
 import type { TreeBlock } from '@core/journeys/ui/block'
-import VideocamRoundedIcon from '@mui/icons-material/VideocamRounded'
-import EditRoundedIcon from '@mui/icons-material/EditRounded'
+
 import { GetJourney_journey_blocks_VideoBlock as VideoBlock } from '../../../../../../__generated__/GetJourney'
 import { ImageBlockThumbnail } from '../../../ImageBlockThumbnail'
 

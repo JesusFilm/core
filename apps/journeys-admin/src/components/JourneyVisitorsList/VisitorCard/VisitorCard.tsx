@@ -1,12 +1,14 @@
-import { ReactElement } from 'react'
 import Card from '@mui/material/Card'
 import CardActionArea from '@mui/material/CardActionArea'
 import CardContent from '@mui/material/CardContent'
-import NextLink from 'next/link'
 import Stack from '@mui/material/Stack'
+import NextLink from 'next/link'
+import { ReactElement } from 'react'
+
 import { GetJourneyVisitors_visitors_edges_node as VisitorNode } from '../../../../__generated__/GetJourneyVisitors'
-import { VisitorCardHeader } from './VisitorCardHeader'
+
 import { VisitorCardDetails } from './VisitorCardDetails'
+import { VisitorCardHeader } from './VisitorCardHeader'
 
 interface Props {
   visitorNode?: VisitorNode

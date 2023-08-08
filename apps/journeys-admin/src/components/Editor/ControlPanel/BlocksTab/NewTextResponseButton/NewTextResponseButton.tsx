@@ -1,15 +1,17 @@
-import { ReactElement } from 'react'
-import Crop169RoundedIcon from '@mui/icons-material/Crop169Rounded'
-import { ICON_FIELDS } from '@core/journeys/ui/Icon/iconFields'
-import { v4 as uuidv4 } from 'uuid'
-import { TEXT_RESPONSE_FIELDS } from '@core/journeys/ui/TextResponse/textResponseFields'
 import { gql, useMutation } from '@apollo/client'
-import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import Crop169RoundedIcon from '@mui/icons-material/Crop169Rounded'
+import { ReactElement } from 'react'
+import { v4 as uuidv4 } from 'uuid'
+
 import type { TreeBlock } from '@core/journeys/ui/block'
-import { useEditor, ActiveTab } from '@core/journeys/ui/EditorProvider'
+import { ActiveTab, useEditor } from '@core/journeys/ui/EditorProvider'
+import { ICON_FIELDS } from '@core/journeys/ui/Icon/iconFields'
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import { TEXT_RESPONSE_FIELDS } from '@core/journeys/ui/TextResponse/textResponseFields'
+
 import { GetJourney_journey_blocks_CardBlock as CardBlock } from '../../../../../../__generated__/GetJourney'
-import { Button } from '../../Button'
 import { TextResponseBlockCreate } from '../../../../../../__generated__/TextResponseBlockCreate'
+import { Button } from '../../Button'
 
 export const TEXT_RESPONSE_BLOCK_CREATE = gql`
   ${TEXT_RESPONSE_FIELDS}

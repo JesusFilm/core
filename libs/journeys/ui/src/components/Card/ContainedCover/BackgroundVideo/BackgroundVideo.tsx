@@ -1,7 +1,8 @@
-import { ReactElement, useRef, useEffect, CSSProperties } from 'react'
 import { styled } from '@mui/material/styles'
+import { CSSProperties, ReactElement, useEffect, useRef } from 'react'
 import videojs from 'video.js'
 import Player from 'video.js/dist/types/player'
+
 import {
   VideoBlockObjectFit,
   VideoBlockSource

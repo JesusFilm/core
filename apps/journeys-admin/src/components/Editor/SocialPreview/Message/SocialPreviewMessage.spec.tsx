@@ -1,7 +1,9 @@
 import { render } from '@testing-library/react'
-import { ThemeProvider } from '../../../ThemeProvider'
+
 import { JourneyFields as Journey } from '../../../../../__generated__/JourneyFields'
+import { ThemeProvider } from '../../../ThemeProvider'
 import { SocialProvider } from '../../SocialProvider'
+
 import { SocialPreviewMessage } from './SocialPreviewMessage'
 
 describe('SocialPreviewMessage', () => {
@@ -19,6 +21,7 @@ describe('SocialPreviewMessage', () => {
     )
     expect(getByTestId('social-preview-message-empty')).toBeInTheDocument()
   })
+
   it('should display socialpreviewmessage', () => {
     const { getByRole, getByText } = render(
       <ThemeProvider>

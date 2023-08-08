@@ -1,23 +1,26 @@
-import { fireEvent, render } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
+import { fireEvent, render } from '@testing-library/react'
+
 import type { TreeBlock } from '@core/journeys/ui/block'
 import {
   ActiveFab,
+  ActiveJourneyEditContent,
   ActiveTab,
-  useEditor,
   EditorProvider,
   EditorState,
-  ActiveJourneyEditContent
+  useEditor
 } from '@core/journeys/ui/EditorProvider'
-import { ThemeProvider } from '../../../../../ThemeProvider'
-import { Drawer } from '../../../../Drawer'
+
 import { GetJourney_journey_blocks_SignUpBlock as SignUpBlock } from '../../../../../../../__generated__/GetJourney'
 import {
-  IconName,
   IconColor,
+  IconName,
   IconSize
 } from '../../../../../../../__generated__/globalTypes'
+import { ThemeProvider } from '../../../../../ThemeProvider'
+import { Drawer } from '../../../../Drawer'
 import { Action } from '../../Action'
+
 import { SignUp } from '.'
 
 jest.mock('@core/journeys/ui/EditorProvider', () => {
@@ -72,6 +75,7 @@ describe('SignUp Attributes', () => {
       dispatch: jest.fn()
     })
   })
+
   it('shows default attributes', () => {
     const emptyBlock: TreeBlock<SignUpBlock> = {
       id: 'signup.id',

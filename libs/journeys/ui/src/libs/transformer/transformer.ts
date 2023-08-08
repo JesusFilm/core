@@ -1,4 +1,5 @@
 import sortBy from 'lodash/sortBy'
+
 import type { TreeBlock } from '../block'
 import type { BlockFields } from '../block/__generated__/BlockFields'
 

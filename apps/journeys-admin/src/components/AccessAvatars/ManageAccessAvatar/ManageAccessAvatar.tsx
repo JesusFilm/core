@@ -1,7 +1,7 @@
-import { ReactElement } from 'react'
+import GroupAddRoundedIcon from '@mui/icons-material/GroupAddRounded'
 import Avatar from '@mui/material/Avatar'
 import Tooltip from '@mui/material/Tooltip'
-import GroupAddRoundedIcon from '@mui/icons-material/GroupAddRounded'
+import { ReactElement } from 'react'
 
 export interface ManageAccessAvatarProps {
   diameter: number

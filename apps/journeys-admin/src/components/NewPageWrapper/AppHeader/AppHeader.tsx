@@ -1,11 +1,12 @@
-import { ReactElement } from 'react'
-import Image from 'next/image'
+import MenuIcon from '@mui/icons-material/Menu'
 import AppBar from '@mui/material/AppBar'
 import Box from '@mui/material/Box'
 import IconButton from '@mui/material/IconButton'
 import Stack from '@mui/material/Stack'
 import Toolbar from '@mui/material/Toolbar'
-import MenuIcon from '@mui/icons-material/Menu'
+import Image from 'next/image'
+import { ReactElement } from 'react'
+
 import taskbarIcon from '../../../../public/taskbar-icon.svg'
 import { usePageWrapperStyles } from '../utils/usePageWrapperStyles'
 

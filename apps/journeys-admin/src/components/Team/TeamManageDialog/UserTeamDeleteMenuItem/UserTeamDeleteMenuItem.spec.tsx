@@ -1,9 +1,10 @@
-import { render, fireEvent, waitFor } from '@testing-library/react'
-import { MockedProvider } from '@apollo/client/testing'
 import { InMemoryCache } from '@apollo/client'
+import { MockedProvider } from '@apollo/client/testing'
+import { fireEvent, render, waitFor } from '@testing-library/react'
+
 import {
-  UserTeamDeleteMenuItem,
-  USER_TEAM_DELETE
+  USER_TEAM_DELETE,
+  UserTeamDeleteMenuItem
 } from './UserTeamDeleteMenuItem'
 
 describe('UserTeamDeleteMenuItem', () => {
@@ -25,6 +26,7 @@ describe('UserTeamDeleteMenuItem', () => {
     }
   ]
   let cache: InMemoryCache
+
   beforeEach(() => {
     cache = new InMemoryCache()
     cache.restore({
@@ -34,7 +36,8 @@ describe('UserTeamDeleteMenuItem', () => {
       }
     })
   })
-  it('it should remove a team member', async () => {
+
+  it('should remove a team member', async () => {
     const handleClick = jest.fn()
     const { getByText } = render(
       <MockedProvider mocks={mocks} cache={cache}>

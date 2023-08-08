@@ -1,17 +1,19 @@
 import type { TreeBlock } from '@core/journeys/ui/block'
 import {
-  SetSelectedStepAction,
-  SetSelectedBlockByIdAction
+  SetSelectedBlockByIdAction,
+  SetSelectedStepAction
 } from '@core/journeys/ui/EditorProvider'
+
 import {
-  TypographyVariant,
-  TypographyAlign,
-  TypographyColor
-} from '../../../../../../__generated__/globalTypes'
-import {
-  GetJourney_journey_blocks_TypographyBlock as TypographyBlock,
-  GetJourney_journey_blocks_StepBlock as StepBlock
+  GetJourney_journey_blocks_StepBlock as StepBlock,
+  GetJourney_journey_blocks_TypographyBlock as TypographyBlock
 } from '../../../../../../__generated__/GetJourney'
+import {
+  TypographyAlign,
+  TypographyColor,
+  TypographyVariant
+} from '../../../../../../__generated__/globalTypes'
+
 import getSelected, { GetSelectedProps } from './getSelected'
 
 describe('updatedSelected', () => {
@@ -160,6 +162,6 @@ describe('updatedSelected', () => {
       steps: [selectedStep],
       selectedStep
     }
-    expect(getSelected(input)).toEqual(null)
+    expect(getSelected(input)).toBeNull()
   })
 })

@@ -1,10 +1,12 @@
-import { HostAvatars } from '@core/journeys/ui/StepFooter/HostAvatars'
 import Box from '@mui/material/Box'
+import ListItemButton from '@mui/material/ListItemButton'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { ReactElement } from 'react'
-import ListItemButton from '@mui/material/ListItemButton'
+
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import { HostAvatars } from '@core/journeys/ui/StepFooter/HostAvatars'
+
 import { UpdateHost_hostUpdate as Host } from '../../../../../../../../../__generated__/UpdateHost'
 
 interface HostListItemProps extends Omit<Host, 'teamId' | '__typename'> {

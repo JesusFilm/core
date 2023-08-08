@@ -1,5 +1,5 @@
-import { ReactElement } from 'react'
 import Box from '@mui/material/Box'
+import { ReactElement } from 'react'
 
 interface SwatchProps {
   id: string

@@ -1,5 +1,5 @@
-import { Injectable } from '@nestjs/common'
 import { PureAbility } from '@casl/ability'
+import { Injectable } from '@nestjs/common'
 
 /**
  * Abstract class for creating an ability for a user.  It is used by the `CaslGuard` decorator to create an ability.

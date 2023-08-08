@@ -1,11 +1,14 @@
+import LinkRoundedIcon from '@mui/icons-material/LinkRounded'
+import VideoLibrary from '@mui/icons-material/VideoLibrary'
 import { ReactElement, useEffect } from 'react'
+
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
-import VideoLibrary from '@mui/icons-material/VideoLibrary'
-import LinkRoundedIcon from '@mui/icons-material/LinkRounded'
+
+import { Attribute } from '../..'
 import { GetJourney_journey_blocks_VideoBlock as VideoBlock } from '../../../../../../../__generated__/GetJourney'
 import { Action, actions } from '../../Action/Action'
-import { Attribute } from '../..'
+
 import { VideoOptions } from './Options/VideoOptions'
 
 export function Video(block: TreeBlock<VideoBlock>): ReactElement {

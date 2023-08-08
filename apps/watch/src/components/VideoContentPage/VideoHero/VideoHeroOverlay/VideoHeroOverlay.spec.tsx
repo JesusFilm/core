@@ -1,12 +1,14 @@
-import { render, fireEvent } from '@testing-library/react'
-import { SnackbarProvider } from 'notistack'
 import { MockedProvider } from '@apollo/client/testing'
-import { VideoContentFields } from '../../../../../__generated__/VideoContentFields'
+import { fireEvent, render } from '@testing-library/react'
+import { SnackbarProvider } from 'notistack'
+
 import {
   VideoLabel,
   VideoVariantDownloadQuality
 } from '../../../../../__generated__/globalTypes'
+import { VideoContentFields } from '../../../../../__generated__/VideoContentFields'
 import { VideoProvider } from '../../../../libs/videoContext'
+
 import { VideoHeroOverlay } from './VideoHeroOverlay'
 
 describe('VideoHeroOverlay', () => {

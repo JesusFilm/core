@@ -1,6 +1,7 @@
-import { ReactElement } from 'react'
-import Stack from '@mui/material/Stack'
 import Box from '@mui/material/Box'
+import Stack from '@mui/material/Stack'
+import { ReactElement } from 'react'
+
 import { ActionCards } from './ActionCards'
 import { ActionEditor } from './ActionEditor'
 import { ActionInformation } from './ActionInformation'

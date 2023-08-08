@@ -1,3 +1,8 @@
+import Box from '@mui/material/Box'
+import Paper from '@mui/material/Paper'
+import Tab from '@mui/material/Tab'
+import Tabs from '@mui/material/Tabs'
+import { useRouter } from 'next/router'
 import {
   Dispatch,
   ReactElement,
@@ -5,15 +10,12 @@ import {
   SyntheticEvent,
   useState
 } from 'react'
-import Paper from '@mui/material/Paper'
+
 import { TabPanel, tabA11yProps } from '@core/shared/ui/TabPanel'
-import Tab from '@mui/material/Tab'
-import Tabs from '@mui/material/Tabs'
-import Box from '@mui/material/Box'
-import { useRouter } from 'next/router'
-import { JourneySort, SortOrder } from '../JourneyList/JourneySort'
-import { JourneyListMenu } from '../JourneyList/JourneyListMenu'
+
 import type { JourneyListEvent } from '../JourneyList/JourneyList'
+import { JourneyListMenu } from '../JourneyList/JourneyListMenu'
+import { JourneySort, SortOrder } from '../JourneyList/JourneySort'
 
 export interface StatusTabPanelProps {
   activeList: ReactElement

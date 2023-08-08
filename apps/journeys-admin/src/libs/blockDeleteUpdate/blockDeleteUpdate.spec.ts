@@ -1,9 +1,10 @@
 import { InMemoryCache } from '@apollo/client'
+
 import type { TreeBlock } from '@core/journeys/ui/block'
 
 import {
-  GetJourney_journey as Journey,
   GetJourney_journey_blocks_ImageBlock as ImageBlock,
+  GetJourney_journey as Journey,
   GetJourney_journey_blocks_VideoBlock as VideoBlock
 } from '../../../__generated__/GetJourney'
 import {
@@ -12,6 +13,7 @@ import {
   ThemeName,
   VideoBlockSource
 } from '../../../__generated__/globalTypes'
+
 import { blockDeleteUpdate } from './blockDeleteUpdate'
 
 const video: TreeBlock<VideoBlock> = {
@@ -127,6 +129,6 @@ describe('blockDeleteUpdate', () => {
       { __ref: 'ImageBlock:imageId' }
     ])
     expect(extractedCache['VideoBlock:videoId']).toBeUndefined()
-    expect(extractedCache['ImageBlock:imageId']?.parentOrder).toEqual(0)
+    expect(extractedCache['ImageBlock:imageId']?.parentOrder).toBe(0)
   })
 })
