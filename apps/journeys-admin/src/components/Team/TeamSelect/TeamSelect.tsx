@@ -105,7 +105,9 @@ export function TeamSelect({ onboarding }: TeamSelectProps): ReactElement {
                   wordWrap: 'break-word'
                 }}
               >
-                <Typography>{team.title}</Typography>
+                <Typography sx={{ maxWidth: '77%', mr: 3 }}>
+                  {team.title}
+                </Typography>
                 <TeamAvatars userTeams={team.userTeams} />
               </MenuItem>
             ))}
