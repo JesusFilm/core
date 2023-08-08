@@ -40,37 +40,13 @@ describe('TeamSelect', () => {
             id: 'teamId1',
             title: 'Team Title',
             __typename: 'Team',
-            userTeams: [
-              {
-                __typename: 'UserTeam',
-                id: 'userTeamId1',
-                user: {
-                  __typename: 'User',
-                  id: 'userId',
-                  firstName: 'Joe',
-                  lastName: 'Bloggs',
-                  imageUrl: 'image'
-                }
-              }
-            ]
+            userTeams: []
           },
           {
             id: 'teamId2',
             title: 'Team Title2',
             __typename: 'Team',
-            userTeams: [
-              {
-                __typename: 'UserTeam',
-                id: 'userTeamId1',
-                user: {
-                  __typename: 'User',
-                  id: 'userId',
-                  firstName: 'Joe',
-                  lastName: 'Bloggs',
-                  imageUrl: 'image'
-                }
-              }
-            ]
+            userTeams: []
           }
         ],
         getJourneyProfile: {
@@ -122,9 +98,7 @@ describe('TeamSelect', () => {
     await userEvent.click(getByRole('button'))
     await waitFor(() => expect(screen.getByRole('listbox')).toBeInTheDocument())
     expect(getByText('Shared With Me')).toBeInTheDocument()
-    fireEvent.click(
-      getByRole('option', { name: 'Team Title2 notification-badge' })
-    )
+    fireEvent.click(getByRole('option', { name: 'Team Title2' }))
     expect(getByTestId('active-team-title')).toHaveTextContent('Team Title2')
   })
 

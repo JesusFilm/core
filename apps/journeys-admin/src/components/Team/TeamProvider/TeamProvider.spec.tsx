@@ -36,37 +36,13 @@ const teams: Team[] = [
     __typename: 'Team',
     id: 'teamId1',
     title: 'my first team',
-    userTeams: [
-      {
-        __typename: 'UserTeam',
-        id: 'userTeamId1',
-        user: {
-          __typename: 'User',
-          id: 'userId',
-          firstName: 'Joe',
-          lastName: 'Bloggs',
-          imageUrl: 'image'
-        }
-      }
-    ]
+    userTeams: []
   },
   {
     __typename: 'Team',
     id: 'teamId2',
     title: 'my second team',
-    userTeams: [
-      {
-        __typename: 'UserTeam',
-        id: 'userTeamId1',
-        user: {
-          __typename: 'User',
-          id: 'userId',
-          firstName: 'Joe',
-          lastName: 'Bloggs',
-          imageUrl: 'image'
-        }
-      }
-    ]
+    userTeams: []
   }
 ]
 

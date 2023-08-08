@@ -75,19 +75,7 @@ const getTeamsMock: MockedResponse<GetLastActiveTeamIdAndTeams> = {
           id: 'teamId',
           title: 'Team Title',
           __typename: 'Team',
-          userTeams: [
-            {
-              __typename: 'UserTeam',
-              id: 'userTeamId1',
-              user: {
-                __typename: 'User',
-                id: 'userId',
-                firstName: 'Joe',
-                lastName: 'Bloggs',
-                imageUrl: 'image'
-              }
-            }
-          ]
+          userTeams: []
         }
       ],
       getJourneyProfile: {

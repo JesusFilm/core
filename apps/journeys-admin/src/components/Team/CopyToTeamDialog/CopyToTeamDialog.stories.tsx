@@ -14,7 +14,7 @@ import { CopyToTeamDialog } from './CopyToTeamDialog'
 const CopyToTeamDialogStory = {
   ...journeysAdminConfig,
   component: CopyToTeamDialog,
-  title: 'Journeys-Admin/Team/DuplicateToTeamDialog',
+  title: 'Journeys-Admin/Team/CopyToTeamDialog',
   parameters: {
     ...journeysAdminConfig.parameters,
     layout: 'fullscreen'
@@ -32,19 +32,7 @@ const getTeamsMock: MockedResponse<GetLastActiveTeamIdAndTeams> = {
           id: 'teamId',
           title: 'Spider Society',
           __typename: 'Team',
-          userTeams: [
-            {
-              __typename: 'UserTeam',
-              id: 'userTeamId1',
-              user: {
-                __typename: 'User',
-                id: 'userId',
-                firstName: 'Joe',
-                lastName: 'Bloggs',
-                imageUrl: 'image'
-              }
-            }
-          ]
+          userTeams: []
         }
       ],
       getJourneyProfile: {

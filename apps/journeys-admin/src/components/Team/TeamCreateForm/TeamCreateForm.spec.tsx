@@ -58,19 +58,7 @@ describe('TeamCreateForm', () => {
             id: 'teamId',
             title: 'Team 1 Title',
             __typename: 'Team',
-            userTeams: [
-              {
-                __typename: 'UserTeam',
-                id: 'userTeamId1',
-                user: {
-                  __typename: 'User',
-                  id: 'userId',
-                  firstName: 'Joe',
-                  lastName: 'Bloggs',
-                  imageUrl: 'image'
-                }
-              }
-            ]
+            userTeams: []
           }
         ],
         getJourneyProfile: {
