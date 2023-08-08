@@ -14,8 +14,10 @@ import { useTranslation } from 'react-i18next'
 
 import { getJourneyRTL } from '@core/journeys/ui/rtl'
 import { createEmotionCache } from '@core/shared/ui/createEmotionCache'
+import { getTheme } from '@core/shared/ui/themes'
 
 import { GetJourney_journey as Journey } from '../__generated__/GetJourney'
+import { ThemeMode, ThemeName } from '../__generated__/globalTypes'
 import i18nConfig from '../next-i18next.config'
 import { useApollo } from '../src/libs/apolloClient'
 import { firebaseClient } from '../src/libs/firebaseClient'
@@ -74,6 +76,10 @@ function JourneysApp({
     })
   }, [])
   const apolloClient = useApollo()
+  const theme = getTheme({
+    themeName: ThemeName.base,
+    themeMode: ThemeMode.light
+  })
 
   return (
     <CacheProvider value={emotionCache}>
@@ -86,9 +92,14 @@ function JourneysApp({
           name="viewport"
           content="minimum-scale=1, initial-scale=1, width=device-width viewport-fit=cover"
         />
+        {/* Always sets background color to dark theme when on a single journey */}
         <meta
           name="theme-color"
-          content={pageProps.journey == null ? '#FEFEFE' : '#26262E'}
+          content={
+            pageProps.journey == null
+              ? theme.palette.background.default
+              : theme.palette.grey[900]
+          }
         />
       </Head>
       <ApolloProvider client={apolloClient}>
