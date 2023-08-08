@@ -41,6 +41,7 @@ export function StepHeader({ sx }: Props): ReactElement {
         zIndex: 1,
         top: 0,
         alignItems: 'flex-end',
+        width: { xs: '100%', lg: 'auto' },
         ...sx
       }}
     >
