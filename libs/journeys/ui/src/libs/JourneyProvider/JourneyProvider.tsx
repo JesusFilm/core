@@ -4,10 +4,12 @@ import { JourneyFields as Journey } from './__generated__/JourneyFields'
 
 interface Context {
   journey?: Journey
-  admin: boolean
+  variant?: 'default' | 'admin' | 'embed'
 }
 
-const JourneyContext = createContext<Context>({ admin: false })
+const JourneyContext = createContext<Context>({
+  variant: 'default'
+})
 
 export function useJourney(): Context {
   const context = useContext(JourneyContext)
@@ -25,7 +27,7 @@ export function JourneyProvider({
   children
 }: JourneyProviderProps): ReactElement {
   return (
-    <JourneyContext.Provider value={{ admin: false, ...value }}>
+    <JourneyContext.Provider value={{ variant: 'default', ...value }}>
       {children}
     </JourneyContext.Provider>
   )

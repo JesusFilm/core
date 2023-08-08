@@ -15,7 +15,12 @@ describe('JourneyView/Properties/SlugDialog', () => {
     const { getByRole } = render(
       <MockedProvider mocks={[]}>
         <SnackbarProvider>
-          <JourneyProvider value={{ journey: defaultJourney, admin: true }}>
+          <JourneyProvider
+            value={{
+              journey: defaultJourney,
+              variant: 'admin'
+            }}
+          >
             <SlugDialog open onClose={onClose} />
           </JourneyProvider>
         </SnackbarProvider>
@@ -59,7 +64,12 @@ describe('JourneyView/Properties/SlugDialog', () => {
         ]}
       >
         <SnackbarProvider>
-          <JourneyProvider value={{ journey: defaultJourney, admin: true }}>
+          <JourneyProvider
+            value={{
+              journey: defaultJourney,
+              variant: 'admin'
+            }}
+          >
             <SlugDialog open onClose={onClose} />
           </JourneyProvider>
         </SnackbarProvider>
@@ -90,7 +100,12 @@ describe('JourneyView/Properties/SlugDialog', () => {
         ]}
       >
         <SnackbarProvider>
-          <JourneyProvider value={{ journey: defaultJourney, admin: true }}>
+          <JourneyProvider
+            value={{
+              journey: defaultJourney,
+              variant: 'admin'
+            }}
+          >
             <SlugDialog open onClose={onClose} />
           </JourneyProvider>
         </SnackbarProvider>
@@ -135,7 +150,12 @@ describe('JourneyView/Properties/SlugDialog', () => {
         ]}
       >
         <SnackbarProvider>
-          <JourneyProvider value={{ journey: defaultJourney, admin: true }}>
+          <JourneyProvider
+            value={{
+              journey: defaultJourney,
+              variant: 'admin'
+            }}
+          >
             <SlugDialog open onClose={onClose} />
           </JourneyProvider>
         </SnackbarProvider>

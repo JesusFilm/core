@@ -75,7 +75,12 @@ describe('JourneyView/Menu/LanguageDialog', () => {
     const { getByRole } = render(
       <MockedProvider mocks={[getLanguagesMock]}>
         <SnackbarProvider>
-          <JourneyProvider value={{ journey: defaultJourney, admin: true }}>
+          <JourneyProvider
+            value={{
+              journey: defaultJourney,
+              variant: 'admin'
+            }}
+          >
             <LanguageDialog open onClose={onClose} />
           </JourneyProvider>
         </SnackbarProvider>
@@ -138,7 +143,12 @@ describe('JourneyView/Menu/LanguageDialog', () => {
         ]}
       >
         <SnackbarProvider>
-          <JourneyProvider value={{ journey: defaultJourney, admin: true }}>
+          <JourneyProvider
+            value={{
+              journey: defaultJourney,
+              variant: 'admin'
+            }}
+          >
             <LanguageDialog open onClose={onClose} />
           </JourneyProvider>
         </SnackbarProvider>
@@ -158,7 +168,12 @@ describe('JourneyView/Menu/LanguageDialog', () => {
     const { getByRole, getByText } = render(
       <MockedProvider mocks={[getLanguagesMock]}>
         <SnackbarProvider>
-          <JourneyProvider value={{ journey: defaultJourney, admin: true }}>
+          <JourneyProvider
+            value={{
+              journey: defaultJourney,
+              variant: 'admin'
+            }}
+          >
             <LanguageDialog open onClose={onClose} />
           </JourneyProvider>
         </SnackbarProvider>
