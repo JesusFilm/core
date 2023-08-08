@@ -118,7 +118,7 @@ describe('useHostUpdate', () => {
             teamId: 'teamId',
             input: {}
           })
-        ).toBe(undefined)
+        ).toBeUndefined()
       })
     })
   })

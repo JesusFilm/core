@@ -129,6 +129,6 @@ describe('blockDeleteUpdate', () => {
       { __ref: 'ImageBlock:imageId' }
     ])
     expect(extractedCache['VideoBlock:videoId']).toBeUndefined()
-    expect(extractedCache['ImageBlock:imageId']?.parentOrder).toEqual(0)
+    expect(extractedCache['ImageBlock:imageId']?.parentOrder).toBe(0)
   })
 })

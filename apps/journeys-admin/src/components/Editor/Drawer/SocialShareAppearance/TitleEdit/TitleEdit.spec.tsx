@@ -19,6 +19,7 @@ describe('TitleEdit', () => {
     )
     expect(getByText('Recommended length: 5 words')).toBeInTheDocument()
   })
+
   it('should display seo title', () => {
     const { getByText } = render(
       <MockedProvider>

@@ -19,6 +19,7 @@ describe('Button', () => {
     expect(getByText('value')).toBeInTheDocument()
     expect(getByText('description')).toBeInTheDocument()
   })
+
   it('should render empty value button', () => {
     const { getByText } = render(
       <Button icon={<>test</>} name="name" value="" description="description" />

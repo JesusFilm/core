@@ -156,7 +156,7 @@ describe('ImageUpload', () => {
       </MockedProvider>
     )
     expect(getByTestId('CloudOffRoundedIcon')).toBeInTheDocument()
-    expect(getByText('Upload Failed!'))
+    expect(getByText('Upload Failed!')).toBeInTheDocument()
   })
 
   it('should call setUploading on file drop', async () => {
@@ -200,6 +200,6 @@ describe('ImageUpload', () => {
     })
     fireEvent.drop(inputEl)
     await waitFor(() => expect(setUploading).toHaveBeenCalled())
-    expect(getByText('Uploading...'))
+    expect(getByText('Uploading...')).toBeInTheDocument()
   })
 })

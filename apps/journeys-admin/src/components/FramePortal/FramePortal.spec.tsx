@@ -16,7 +16,7 @@ describe('FramePortal', () => {
     await waitFor(() =>
       expect(
         iframe.contentDocument?.body.getElementsByTagName('p')[0].innerHTML
-      ).toEqual('hello world')
+      ).toBe('hello world')
     )
     expect(
       iframe.contentDocument?.body.getElementsByTagName('p')[0]

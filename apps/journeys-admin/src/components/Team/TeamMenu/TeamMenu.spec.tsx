@@ -18,6 +18,7 @@ jest.mock('@mui/material/useMediaQuery', () => ({
 
 describe('TeamMenu', () => {
   beforeEach(() => (useMediaQuery as jest.Mock).mockImplementation(() => true))
+
   const getTeamsMock: MockedResponse<GetLastActiveTeamIdAndTeams> = {
     request: {
       query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
@@ -103,6 +104,7 @@ describe('TeamMenu', () => {
       'true'
     )
   })
+
   it('disables manage team button', async () => {
     const { getByRole } = render(
       <MockedProvider mocks={[getEmptyTeamsMock]}>

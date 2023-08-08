@@ -35,6 +35,7 @@ describe('NewVideoButton', () => {
       }
     ]
   }
+
   it('should check if the mutation gets called', async () => {
     const result = jest.fn(() => ({
       data: {

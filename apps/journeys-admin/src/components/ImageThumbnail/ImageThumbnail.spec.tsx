@@ -23,6 +23,7 @@ describe('ImageThumbnail', () => {
       expect(getByTestId('imageThumbnailPlaceholder')).toBeInTheDocument()
     })
   })
+
   describe('Existing Image', () => {
     it('shows image', async () => {
       const { getByRole } = render(
@@ -33,6 +34,7 @@ describe('ImageThumbnail', () => {
       expect(img).toHaveAttribute('alt', image.alt)
     })
   })
+
   it('should show the loading circle', () => {
     const { getByRole } = render(
       <ImageThumbnail imageSrc={image.src} imageAlt={image.alt} loading />
