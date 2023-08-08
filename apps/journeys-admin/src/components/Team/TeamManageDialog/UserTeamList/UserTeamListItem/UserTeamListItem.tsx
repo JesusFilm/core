@@ -1,7 +1,5 @@
 import { gql, useMutation } from '@apollo/client'
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown'
-import GroupIcon from '@mui/icons-material/Group'
-import PersonIcon from '@mui/icons-material/Person'
 import Avatar from '@mui/material/Avatar'
 import Button from '@mui/material/Button'
 import Divider from '@mui/material/Divider'
@@ -13,6 +11,8 @@ import Stack from '@mui/material/Stack'
 import compact from 'lodash/compact'
 import { MouseEvent, ReactElement, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+
+import AlertCircleIcon from '@core/shared/ui/icons/AlertCircle'
 
 import { GetUserTeamsAndInvites_userTeams as UserTeam } from '../../../../../../__generated__/GetUserTeamsAndInvites'
 import { UserTeamRole } from '../../../../../../__generated__/globalTypes'
@@ -139,7 +139,7 @@ export function UserTeamListItem({
           {role === UserTeamRole.member && (
             <MenuItem
               label={t('Manager')}
-              icon={<GroupIcon />}
+              icon={<AlertCircleIcon />}
               onClick={async () => {
                 handleClose()
                 await userTeamUpdate({
@@ -154,7 +154,7 @@ export function UserTeamListItem({
           {role === UserTeamRole.manager && (
             <MenuItem
               label={t('Member')}
-              icon={<PersonIcon />}
+              icon={<AlertCircleIcon />}
               onClick={async () => {
                 handleClose()
                 await userTeamUpdate({
