@@ -12,7 +12,7 @@ import sortBy from 'lodash/sortBy'
 import { ReactElement, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import UsersProfiles3 from '@core/shared/ui/icons/UsersProfiles3'
+import UsersProfiles3Icon from '@core/shared/ui/icons/UsersProfiles3'
 
 import { UpdateLastActiveTeamId } from '../../../../__generated__/UpdateLastActiveTeamId'
 import { useTeam } from '../TeamProvider'
@@ -61,7 +61,7 @@ export function TeamSelect({ onboarding }: TeamSelectProps): ReactElement {
         sx={{ overflow: 'hidden', flexGrow: 1 }}
         ref={anchorRef}
       >
-        <UsersProfiles3 sx={{ mr: 3, ml: '3px' }} />
+        <UsersProfiles3Icon sx={{ mr: 3, ml: '3px' }} />
         <FormControl variant="standard" sx={{ minWidth: 100 }}>
           <Select
             defaultValue={activeTeam?.id}
