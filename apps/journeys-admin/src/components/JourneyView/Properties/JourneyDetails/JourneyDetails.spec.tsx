@@ -33,7 +33,8 @@ describe('journeyDetails', () => {
                     }
                   ]
                 }
-              } as unknown as Journey
+              } as unknown as Journey,
+              variant: 'admin'
             }}
           >
             <JourneyDetails journeyType="Journey" />

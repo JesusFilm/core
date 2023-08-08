@@ -111,7 +111,7 @@ describe('UnsplashGallery', () => {
     ).toBeInTheDocument()
   })
 
-  it('should update search field once chip is selected ', async () => {
+  it('should update search field once chip is selected', async () => {
     const { getByRole, getAllByAltText } = render(
       <MockedProvider
         mocks={[

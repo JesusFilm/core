@@ -12,6 +12,15 @@ import { JourneyFields as Journey } from '../../libs/JourneyProvider/__generated
 
 import { StepFooter } from './StepFooter'
 
+jest.mock('react-i18next', () => ({
+  __esModule: true,
+  useTranslation: () => {
+    return {
+      t: (str: string) => str
+    }
+  }
+}))
+
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
   default: () => true
@@ -65,7 +74,7 @@ describe('StepFooter', () => {
     const { getByTestId } = render(
       <MockedProvider>
         <SnackbarProvider>
-          <JourneyProvider value={{ journey }}>
+          <JourneyProvider value={{ journey, variant: 'admin' }}>
             <StepFooter />
           </JourneyProvider>
         </SnackbarProvider>
@@ -80,7 +89,7 @@ describe('StepFooter', () => {
     const { getAllByTestId } = render(
       <MockedProvider>
         <SnackbarProvider>
-          <JourneyProvider value={{ journey }}>
+          <JourneyProvider value={{ journey, variant: 'admin' }}>
             <StepFooter />
           </JourneyProvider>
         </SnackbarProvider>
@@ -94,7 +103,7 @@ describe('StepFooter', () => {
     const { getByText } = render(
       <MockedProvider>
         <SnackbarProvider>
-          <JourneyProvider value={{ journey }}>
+          <JourneyProvider value={{ journey, variant: 'admin' }}>
             <StepFooter />
           </JourneyProvider>
         </SnackbarProvider>
@@ -108,7 +117,12 @@ describe('StepFooter', () => {
     const { getByText } = render(
       <MockedProvider>
         <SnackbarProvider>
-          <JourneyProvider value={{ journey: { ...journey, seoTitle: null } }}>
+          <JourneyProvider
+            value={{
+              journey: { ...journey, seoTitle: null },
+              variant: 'admin'
+            }}
+          >
             <StepFooter />
           </JourneyProvider>
         </SnackbarProvider>
@@ -122,7 +136,7 @@ describe('StepFooter', () => {
     const { getByTestId } = render(
       <MockedProvider>
         <SnackbarProvider>
-          <JourneyProvider value={{ journey }}>
+          <JourneyProvider value={{ journey, variant: 'admin' }}>
             <StepFooter sx={{ outline: '1px solid red' }} />
           </JourneyProvider>
         </SnackbarProvider>
@@ -138,7 +152,10 @@ describe('StepFooter', () => {
       <MockedProvider>
         <SnackbarProvider>
           <JourneyProvider
-            value={{ admin: true, journey: { ...journey, seoTitle: null } }}
+            value={{
+              journey: { ...journey, seoTitle: null },
+              variant: 'admin'
+            }}
           >
             <StepFooter onFooterClick={onFooterClick} />
           </JourneyProvider>
@@ -148,7 +165,7 @@ describe('StepFooter', () => {
 
     fireEvent.click(getByTestId('stepFooter'))
 
-    expect(onFooterClick).toBeCalledTimes(1)
+    expect(onFooterClick).toHaveBeenCalledTimes(1)
     expect(getByTestId('Plus2Icon')).toBeInTheDocument()
   })
 
@@ -156,7 +173,12 @@ describe('StepFooter', () => {
     const { getByText } = render(
       <MockedProvider>
         <SnackbarProvider>
-          <JourneyProvider value={{ admin: true, journey: undefined }}>
+          <JourneyProvider
+            value={{
+              variant: 'admin',
+              journey: undefined
+            }}
+          >
             <StepFooter
               onFooterClick={jest.fn()}
               title="discovery journey title"

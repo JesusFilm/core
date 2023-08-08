@@ -106,8 +106,7 @@ describe('UserListItem', () => {
     expect(getByRole('img').getAttribute('src')).toBe('imageSrc')
   })
 
-  // TODO: Update avatar display tests once StatusIndicators PR merged
-  // it('should display invited user avatar', () => {})
+  // TODO: Add display invited user avatar once StatusIndicators PR merged
 
   describe('owner permissions', () => {
     it('should not allow owners to edit their own access', () => {
@@ -188,6 +187,7 @@ describe('UserListItem', () => {
 
       expect(getByRole('button', { name: 'Owner' })).toBeDisabled()
     })
+
     it('should block editors from editing other editors access', () => {
       const { getByRole } = render(
         <UserListItemComponent

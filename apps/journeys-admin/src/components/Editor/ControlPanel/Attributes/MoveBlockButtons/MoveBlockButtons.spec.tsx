@@ -94,7 +94,7 @@ describe('MoveBlockButton', () => {
         <JourneyProvider
           value={{
             journey: { id: 'journeyId' } as unknown as Journey,
-            admin: true
+            variant: 'admin'
           }}
         >
           <EditorProvider>
@@ -107,6 +107,7 @@ describe('MoveBlockButton', () => {
 
     await waitFor(() => expect(result).toHaveBeenCalled())
   })
+
   it('should move selected block down on click', async () => {
     const { getByRole } = render(
       <MockedProvider
@@ -127,7 +128,7 @@ describe('MoveBlockButton', () => {
         <JourneyProvider
           value={{
             journey: { id: 'journeyId' } as unknown as Journey,
-            admin: true
+            variant: 'admin'
           }}
         >
           <EditorProvider>

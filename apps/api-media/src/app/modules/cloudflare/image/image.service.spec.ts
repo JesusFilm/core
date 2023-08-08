@@ -41,6 +41,7 @@ describe('ImageService', () => {
     service = module.get<ImageService>(ImageService)
     mockFetch.mockClear()
   })
+
   afterAll(() => {
     jest.resetAllMocks()
   })
@@ -65,6 +66,7 @@ describe('ImageService', () => {
       )
     })
   })
+
   describe('uploadToCloudlareByUrl', () => {
     it('returns cloudflare response information', async () => {
       const url = 'https://upload.com'
@@ -93,6 +95,7 @@ describe('ImageService', () => {
       )
     })
   })
+
   describe('deleteImageFromCloudflare', () => {
     it('returns cloudflare response information', async () => {
       const request = mockFetch.mockResolvedValueOnce({

@@ -16,6 +16,7 @@ const onDelete = jest.fn()
 
 describe('ImageSource', () => {
   let originalEnv
+
   beforeEach(() => {
     originalEnv = process.env
     process.env = {
@@ -48,6 +49,7 @@ describe('ImageSource', () => {
       expect(textBox).toHaveValue('')
     })
   })
+
   describe('Existing ImageBlock', () => {
     it('shows placeholders', async () => {
       const { getByRole } = render(
@@ -66,6 +68,7 @@ describe('ImageSource', () => {
       expect(textBox).toHaveValue('')
     })
   })
+
   it('triggers onChange', async () => {
     const { getByRole } = render(
       <MockedProvider mocks={[createCloudflareUploadByUrlMock]}>
@@ -86,6 +89,7 @@ describe('ImageSource', () => {
     fireEvent.blur(textBox)
     await waitFor(() => expect(onChange).toHaveBeenCalled())
   })
+
   it('triggers onChange onPaste', async () => {
     const { getByRole } = render(
       <MockedProvider mocks={[createCloudflareUploadByUrlMock]}>

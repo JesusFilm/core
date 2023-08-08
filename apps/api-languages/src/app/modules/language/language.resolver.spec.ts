@@ -57,7 +57,8 @@ describe('LangaugeResolver', () => {
         where: { id: language.id }
       })
     })
-    it('should return language', async () => {
+
+    it('should return language by bcp47', async () => {
       expect(
         await resolver.language(language.id, LanguageIdType.bcp47)
       ).toEqual(language)

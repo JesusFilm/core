@@ -11,6 +11,7 @@ import { StepNextEventResolver, StepViewEventResolver } from './step.resolver'
 
 describe('Step', () => {
   let prismaService: PrismaService, eService: EventService
+
   beforeAll(() => {
     jest.useFakeTimers('modern')
     jest.setSystemTime(new Date('2021-02-18'))
@@ -19,6 +20,7 @@ describe('Step', () => {
   afterAll(() => {
     jest.useRealTimers()
   })
+
   const eventService = {
     provide: EventService,
     useFactory: () => ({

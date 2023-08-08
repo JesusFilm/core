@@ -94,7 +94,7 @@ const Template: Story<ComponentProps<typeof HostSidePanel>> = ({ ...args }) => {
       ]}
     >
       <ThemeProvider>
-        <JourneyProvider value={{ ...args }}>
+        <JourneyProvider value={{ ...args, variant: 'admin' }}>
           <HostSidePanel />
         </JourneyProvider>
       </ThemeProvider>

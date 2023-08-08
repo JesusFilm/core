@@ -35,10 +35,10 @@ describe('blurImage', () => {
       return createElement(tagName)
     }
 
-    expect(blurImage(image.blurhash, '#000000')).toBe(undefined)
+    expect(blurImage(image.blurhash, '#000000')).toBeUndefined()
   })
 
   it('returns undefined if blurhash is empty string', () => {
-    expect(blurImage('', '#00000088')).toBe(undefined)
+    expect(blurImage('', '#00000088')).toBeUndefined()
   })
 })

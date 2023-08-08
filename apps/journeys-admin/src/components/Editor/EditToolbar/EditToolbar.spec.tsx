@@ -13,6 +13,7 @@ jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
   default: () => true
 }))
+
 describe('Edit Toolbar', () => {
   it('should render Toolbar', () => {
     const { getAllByRole, getByTestId } = render(
@@ -37,7 +38,7 @@ describe('Edit Toolbar', () => {
           <JourneyProvider
             value={{
               journey: { slug: 'untitled-journey' } as unknown as Journey,
-              admin: true
+              variant: 'admin'
             }}
           >
             <EditToolbar />
@@ -62,7 +63,7 @@ describe('Edit Toolbar', () => {
                 slug: 'untitled-journey',
                 status: JourneyStatus.draft
               } as unknown as Journey,
-              admin: true
+              variant: 'admin'
             }}
           >
             <EditToolbar />

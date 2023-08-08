@@ -33,7 +33,7 @@ describe('VideoVariantResolver', () => {
           }
         ]
       })
-    ).toEqual(2)
+    ).toBe(2)
   })
 
   it('does not include falsey values into the count', async () => {
@@ -50,6 +50,6 @@ describe('VideoVariantResolver', () => {
           }
         ]
       })
-    ).toEqual(1)
+    ).toBe(1)
   })
 })

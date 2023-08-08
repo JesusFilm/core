@@ -186,7 +186,7 @@ const Template: Story = ({ ...args }) => (
     ]}
   >
     <ThemeProvider>
-      <JourneyProvider value={{ journey, admin: true }}>
+      <JourneyProvider value={{ journey, variant: 'admin' }}>
         <EditorProvider
           initialState={{
             ...args,

@@ -7,6 +7,7 @@ import { UserMenu } from './UserMenu'
 describe('UserMenu', () => {
   const handleProfileClose = jest.fn()
   const signOut = jest.fn()
+
   it('should render the menu', () => {
     const { getByText, getByRole } = render(
       <MockedProvider>

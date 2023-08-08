@@ -15,6 +15,7 @@ jest.mock('react-i18next', () => ({
 
 describe('ChatButton', () => {
   window.open = jest.fn()
+
   it('should handle click for facebook', () => {
     const { getByRole } = render(
       <ChatButton

@@ -284,7 +284,7 @@ describe('CardList', () => {
                 iso3: 'eng'
               }
             } as unknown as Journey,
-            admin: true
+            variant: 'admin'
           }}
         >
           <DragDropContext>
@@ -319,6 +319,7 @@ describe('CardList', () => {
     )
     expect(getByTestId('social-preview-navigation-card')).toBeInTheDocument()
   })
+
   it('navigates on social preview card click', async () => {
     const handleChange = jest.fn()
     const { getByTestId } = render(
@@ -336,7 +337,7 @@ describe('CardList', () => {
                 iso3: 'eng'
               }
             } as unknown as Journey,
-            admin: true
+            variant: 'admin'
           }}
         >
           <DragDropContext>
@@ -372,7 +373,7 @@ describe('CardList', () => {
                 iso3: 'eng'
               }
             } as unknown as Journey,
-            admin: true
+            variant: 'admin'
           }}
         >
           <SocialProvider
@@ -469,7 +470,7 @@ describe('CardList', () => {
               },
               template: true
             } as unknown as Journey,
-            admin: true
+            variant: 'admin'
           }}
         >
           <DragDropContext>

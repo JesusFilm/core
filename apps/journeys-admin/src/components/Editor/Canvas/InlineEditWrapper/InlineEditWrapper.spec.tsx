@@ -185,7 +185,7 @@ describe('InlineEditWrapper', () => {
     await waitFor(() => expect(input).toBeInTheDocument())
   })
 
-  it('should edit sign up button label on double click', async () => {
+  it('should edit text response button label on double click', async () => {
     const block: TreeBlock<TextResponseFields> = {
       __typename: 'TextResponseBlock',
       id: 'textResponse.id',

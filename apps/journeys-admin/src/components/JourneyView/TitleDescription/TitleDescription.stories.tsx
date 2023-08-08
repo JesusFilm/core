@@ -24,7 +24,12 @@ const Template: Story = ({ ...args }) => (
   <ApolloLoadingProvider>
     <MockedProvider>
       <SnackbarProvider>
-        <JourneyProvider value={{ journey: args.journey, admin: true }}>
+        <JourneyProvider
+          value={{
+            journey: args.journey,
+            variant: 'admin'
+          }}
+        >
           <TitleDescription isPublisher={args.isPublisher} />
         </JourneyProvider>
       </SnackbarProvider>

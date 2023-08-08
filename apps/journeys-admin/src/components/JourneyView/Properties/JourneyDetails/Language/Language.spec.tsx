@@ -34,7 +34,8 @@ describe('Language', () => {
                     }
                   ]
                 }
-              } as unknown as Journey
+              } as unknown as Journey,
+              variant: 'admin'
             }}
           >
             <Language />
@@ -64,7 +65,8 @@ describe('Language', () => {
                     }
                   ]
                 }
-              } as unknown as Journey
+              } as unknown as Journey,
+              variant: 'admin'
             }}
           >
             <Language />
@@ -94,7 +96,8 @@ describe('Language', () => {
                     }
                   ]
                 }
-              } as unknown as Journey
+              } as unknown as Journey,
+              variant: 'admin'
             }}
           >
             <Language />
@@ -129,7 +132,8 @@ describe('Language', () => {
                     }
                   ]
                 }
-              } as unknown as Journey
+              } as unknown as Journey,
+              variant: 'admin'
             }}
           >
             <Language />
@@ -164,7 +168,8 @@ describe('Language', () => {
                     }
                   ]
                 }
-              } as unknown as Journey
+              } as unknown as Journey,
+              variant: 'admin'
             }}
           >
             <Language />
@@ -202,7 +207,7 @@ describe('Language', () => {
                   ]
                 }
               },
-              admin: true
+              variant: 'admin'
             }}
           >
             <Language isPublisher />

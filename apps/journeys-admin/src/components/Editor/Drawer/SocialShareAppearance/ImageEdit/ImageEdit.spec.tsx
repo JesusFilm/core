@@ -25,6 +25,7 @@ jest.mock('@mui/material/useMediaQuery', () => ({
 
 describe('ImageEdit', () => {
   let originalEnv
+
   beforeEach(() => {
     originalEnv = process.env
     process.env = {
@@ -48,6 +49,7 @@ describe('ImageEdit', () => {
     height: 1080,
     blurhash: ''
   }
+
   it('should disaply placeholder icon when no image set', () => {
     const { getAllByTestId } = render(
       <MockedProvider>
@@ -55,7 +57,7 @@ describe('ImageEdit', () => {
           <JourneyProvider
             value={{
               journey: { primaryImageBlockId: null } as unknown as Journey,
-              admin: true
+              variant: 'admin'
             }}
           >
             <ImageEdit />
@@ -78,7 +80,7 @@ describe('ImageEdit', () => {
                   alt: 'image.alt'
                 }
               } as unknown as Journey,
-              admin: true
+              variant: 'admin'
             }}
           >
             <ImageEdit />
@@ -162,7 +164,7 @@ describe('ImageEdit', () => {
           <JourneyProvider
             value={{
               journey: { id: 'journey.id' } as unknown as Journey,
-              admin: true
+              variant: 'admin'
             }}
           >
             <ImageEdit />
@@ -256,7 +258,7 @@ describe('ImageEdit', () => {
                 id: 'journey.id',
                 primaryImageBlock: { ...image }
               } as unknown as Journey,
-              admin: true
+              variant: 'admin'
             }}
           >
             <ImageEdit />

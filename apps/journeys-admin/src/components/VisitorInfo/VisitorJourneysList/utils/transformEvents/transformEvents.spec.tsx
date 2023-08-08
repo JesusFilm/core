@@ -244,7 +244,7 @@ describe('transformEvents', () => {
 
     it('should calculate total duration', () => {
       const result = transformEvents([journeyViewEvent, videoCompleteEvent])
-      expect(result.totalDuration).toEqual('27:52')
+      expect(result.totalDuration).toBe('27:52')
     })
   })
 
@@ -254,7 +254,7 @@ describe('transformEvents', () => {
         journeyViewEvent.createdAt,
         chatOpenEvent.createdAt
       )
-      expect(result).toEqual('0:10')
+      expect(result).toBe('0:10')
     })
 
     it('should return duration with 2 digit seconds if singular', () => {
@@ -262,7 +262,7 @@ describe('transformEvents', () => {
         radioQuestionResponseEvent.createdAt,
         signUpSubmissionEvent.createdAt
       )
-      expect(result).toEqual('0:01')
+      expect(result).toBe('0:01')
     })
 
     it('should return < 0.01 if if duration is less than a second', () => {
@@ -270,7 +270,7 @@ describe('transformEvents', () => {
         videoCollapseEvent.createdAt,
         videoCompleteEvent.createdAt
       )
-      expect(result).toEqual('< 0:01')
+      expect(result).toBe('< 0:01')
     })
   })
 })

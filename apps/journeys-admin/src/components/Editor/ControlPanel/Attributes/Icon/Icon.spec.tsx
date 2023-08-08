@@ -54,7 +54,7 @@ describe('Icon', () => {
     expect(getByText('Color')).toBeInTheDocument()
   })
 
-  it('hides toggle options if there is no icon ', () => {
+  it('hides toggle options if there is no icon', () => {
     const testIcon = {
       ...icon,
       iconName: null
@@ -120,7 +120,7 @@ describe('Icon', () => {
         <JourneyProvider
           value={{
             journey: { id: 'journeyId' } as unknown as Journey,
-            admin: true
+            variant: 'admin'
           }}
         >
           <EditorProvider initialState={{ selectedBlock: testSelectedBlock }}>
@@ -170,7 +170,7 @@ describe('Icon', () => {
         <JourneyProvider
           value={{
             journey: { id: 'journeyId' } as unknown as Journey,
-            admin: true
+            variant: 'admin'
           }}
         >
           <EditorProvider initialState={{ selectedBlock }}>
@@ -219,7 +219,7 @@ describe('Icon', () => {
         <JourneyProvider
           value={{
             journey: { id: 'journeyId' } as unknown as Journey,
-            admin: true
+            variant: 'admin'
           }}
         >
           <EditorProvider initialState={{ selectedBlock }}>

@@ -13,6 +13,7 @@ describe('SocialPreview', () => {
     )
     expect(getAllByText('Social App View')[0]).toBeInTheDocument()
   })
+
   it('should display socialpreviewmessage', () => {
     const { getAllByText } = render(
       <ThemeProvider>

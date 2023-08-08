@@ -53,7 +53,7 @@ describe('getActionLabel', () => {
     const t = (str: string): string => str
 
     const result = getActionLabel(action, treeBlocks, t)
-    expect(result).toEqual('Step Heading')
+    expect(result).toBe('Step Heading')
   })
 
   it('should return Unknown Step for NavigateToBlockAction if stepId is invalid', () => {
@@ -77,7 +77,7 @@ describe('getActionLabel', () => {
     const t = (str: string): string => str
 
     const result = getActionLabel(action, treeBlocks, t)
-    expect(result).toEqual('Unknown Step')
+    expect(result).toBe('Unknown Step')
   })
 
   it('should return journey slug for NavigateToJourneyAction', () => {
@@ -109,7 +109,7 @@ describe('getActionLabel', () => {
     }
 
     const result = getActionLabel(action)
-    expect(result).toEqual('Unknown Journey')
+    expect(result).toBe('Unknown Journey')
   })
 
   it('should return url for LinkAction', () => {

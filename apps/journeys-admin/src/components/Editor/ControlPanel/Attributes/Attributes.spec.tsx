@@ -130,7 +130,7 @@ describe('Attributes', () => {
     expect(getByText('Video Source')).toBeInTheDocument()
   })
 
-  it('should render video properties with move buttons ', () => {
+  it('should render video properties with move buttons', () => {
     const stepWithVideo: TreeBlock = {
       ...step,
       children: [{ ...card, children: [video] }]
@@ -146,7 +146,7 @@ describe('Attributes', () => {
     expect(getByText('Video Source')).toBeInTheDocument()
   })
 
-  it('should render typography properties with move buttons ', () => {
+  it('should render typography properties with move buttons', () => {
     const block: TreeBlock = {
       id: 'typographyBlockId1',
       __typename: 'TypographyBlock',
@@ -170,7 +170,7 @@ describe('Attributes', () => {
     ).toBeInTheDocument()
   })
 
-  it('should render button properties with move buttons ', () => {
+  it('should render button properties with move buttons', () => {
     const block: TreeBlock = {
       id: 'button.id',
       __typename: 'ButtonBlock',
@@ -217,7 +217,7 @@ describe('Attributes', () => {
     expect(getAllByRole('button')).toHaveLength(2)
   })
 
-  it('should render Radio Option properties with move buttons ', () => {
+  it('should render Radio Option properties with move buttons', () => {
     const block: TreeBlock = {
       id: 'radio-option.id',
       __typename: 'RadioOptionBlock',
@@ -237,7 +237,7 @@ describe('Attributes', () => {
     expect(getByRole('button', { name: 'Action None' })).toBeInTheDocument()
   })
 
-  it('should render Sign Up properties with move buttons ', () => {
+  it('should render Sign Up properties with move buttons', () => {
     const block: TreeBlock = {
       id: 'signup.id',
       __typename: 'SignUpBlock',

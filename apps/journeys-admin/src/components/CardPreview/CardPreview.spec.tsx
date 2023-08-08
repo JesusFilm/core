@@ -86,7 +86,7 @@ describe('CardPreview', () => {
                 iso3: 'eng'
               }
             } as unknown as Journey,
-            admin: true
+            variant: 'admin'
           }}
         >
           <CardPreview onSelect={onSelect} steps={[step]} />
@@ -111,7 +111,7 @@ describe('CardPreview', () => {
               themeMode: ThemeMode.light,
               themeName: ThemeName.base
             } as unknown as Journey,
-            admin: true
+            variant: 'admin'
           }}
         >
           <CardPreview steps={[]} onSelect={onSelect} showAddButton />
@@ -170,7 +170,7 @@ describe('CardPreview', () => {
               themeMode: ThemeMode.light,
               themeName: ThemeName.base
             } as unknown as Journey,
-            admin: true
+            variant: 'admin'
           }}
         >
           <CardPreview steps={[]} onSelect={onSelect} showAddButton />
@@ -186,55 +186,6 @@ describe('CardPreview', () => {
     })
   })
 
-  it('should create step and card when add button is clicked', async () => {
-    mockUuidv4.mockReturnValueOnce('stepId')
-    mockUuidv4.mockReturnValueOnce('cardId')
-    const onSelect = jest.fn()
-
-    const { getAllByRole } = render(
-      <MockedProvider mocks={mocks}>
-        <JourneyProvider
-          value={{
-            journey: {
-              id: 'journeyId',
-              themeMode: ThemeMode.light,
-              themeName: ThemeName.base
-            } as unknown as Journey,
-            admin: true
-          }}
-        >
-          <CardPreview steps={[]} onSelect={onSelect} showAddButton />
-        </JourneyProvider>
-      </MockedProvider>
-    )
-    fireEvent.click(getAllByRole('button')[0])
-    await waitFor(() =>
-      expect(onSelect).toHaveBeenCalledWith({
-        step: {
-          __typename: 'StepBlock',
-          children: [
-            {
-              __typename: 'CardBlock',
-              backgroundColor: null,
-              children: [],
-              coverBlockId: null,
-              fullscreen: false,
-              id: 'cardId',
-              parentBlockId: 'stepId',
-              parentOrder: 0,
-              themeMode: null,
-              themeName: null
-            }
-          ],
-          id: 'stepId',
-          locked: false,
-          nextBlockId: null,
-          parentBlockId: null,
-          parentOrder: 0
-        }
-      })
-    )
-  })
   it('should navigate to actions table when clicked', async () => {
     const onSelect = jest.fn()
 
@@ -247,7 +198,7 @@ describe('CardPreview', () => {
               themeMode: ThemeMode.light,
               themeName: ThemeName.base
             } as unknown as Journey,
-            admin: true
+            variant: 'admin'
           }}
         >
           <CardPreview
@@ -277,7 +228,7 @@ describe('CardPreview', () => {
               themeMode: ThemeMode.light,
               themeName: ThemeName.base
             } as unknown as Journey,
-            admin: true
+            variant: 'admin'
           }}
         >
           <CardPreview

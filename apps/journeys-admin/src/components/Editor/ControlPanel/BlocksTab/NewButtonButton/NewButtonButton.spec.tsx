@@ -48,6 +48,7 @@ describe('NewButtonButton', () => {
       }
     ]
   }
+
   it('should check if the mutation gets called', async () => {
     mockUuidv4.mockReturnValueOnce('buttonBlockId')
     mockUuidv4.mockReturnValueOnce('startIconId')
@@ -136,7 +137,7 @@ describe('NewButtonButton', () => {
         <JourneyProvider
           value={{
             journey: { id: 'journeyId' } as unknown as Journey,
-            admin: true
+            variant: 'admin'
           }}
         >
           <EditorProvider initialState={{ selectedStep }}>
@@ -248,7 +249,7 @@ describe('NewButtonButton', () => {
         <JourneyProvider
           value={{
             journey: { id: 'journeyId' } as unknown as Journey,
-            admin: true
+            variant: 'admin'
           }}
         >
           <EditorProvider initialState={{ selectedStep }}>

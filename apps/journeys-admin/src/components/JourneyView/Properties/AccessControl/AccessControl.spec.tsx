@@ -18,7 +18,12 @@ describe('AccessControl', () => {
     const { getByText, getAllByRole } = render(
       <SnackbarProvider>
         <MockedProvider>
-          <JourneyProvider value={{ journey: defaultJourney, admin: true }}>
+          <JourneyProvider
+            value={{
+              journey: defaultJourney,
+              variant: 'admin'
+            }}
+          >
             <AccessControl />
           </JourneyProvider>
         </MockedProvider>

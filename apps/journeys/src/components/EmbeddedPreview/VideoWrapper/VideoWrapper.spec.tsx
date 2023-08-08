@@ -73,10 +73,10 @@ describe('VideoWrapper', () => {
     const { getByTestId } = render(<VideoWrapper block={videoBlock} />)
     const sourceTag =
       getByTestId('video-video0.id').querySelector('.vjs-tech source')
-    expect(sourceTag?.getAttribute('src')).toEqual(
+    expect(sourceTag?.getAttribute('src')).toBe(
       'https://arc.gt/hls/2_0-FallingPlates/529'
     )
-    expect(sourceTag?.getAttribute('type')).toEqual('application/x-mpegURL')
+    expect(sourceTag?.getAttribute('type')).toBe('application/x-mpegURL')
   })
 
   it('should render cloudflare video', () => {
@@ -91,10 +91,10 @@ describe('VideoWrapper', () => {
     )
     const sourceTag =
       getByTestId('video-video0.id').querySelector('.vjs-tech source')
-    expect(sourceTag?.getAttribute('src')).toEqual(
+    expect(sourceTag?.getAttribute('src')).toBe(
       'https://customer-.cloudflarestream.com/videoId/manifest/video.m3u8'
     )
-    expect(sourceTag?.getAttribute('type')).toEqual('application/x-mpegURL')
+    expect(sourceTag?.getAttribute('type')).toBe('application/x-mpegURL')
   })
 
   it('should render youtube video', () => {
@@ -109,10 +109,10 @@ describe('VideoWrapper', () => {
     )
     const sourceTag =
       getByTestId('video-video0.id').querySelector('.vjs-tech source')
-    expect(sourceTag?.getAttribute('src')).toEqual(
+    expect(sourceTag?.getAttribute('src')).toBe(
       'https://www.youtube.com/embed/F7k5pqBVinA?start=10&end=0'
     )
-    expect(sourceTag?.getAttribute('type')).toEqual('video/youtube')
+    expect(sourceTag?.getAttribute('type')).toBe('video/youtube')
   })
 
   it('should render placeholder icon if VideoId is null and there is no posterBlock', () => {

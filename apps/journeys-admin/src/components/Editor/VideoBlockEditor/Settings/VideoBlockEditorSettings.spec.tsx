@@ -119,6 +119,7 @@ describe('VideoBlockEditorSettings', () => {
       })
     )
   })
+
   it('should update muted', async () => {
     const onChange = jest.fn()
     const { getByRole } = render(
@@ -145,6 +146,7 @@ describe('VideoBlockEditorSettings', () => {
       })
     })
   })
+
   it('should update startAt', async () => {
     const onChange = jest.fn()
     const { getByRole } = render(
@@ -173,6 +175,7 @@ describe('VideoBlockEditorSettings', () => {
       })
     )
   })
+
   it('should update endAt', async () => {
     const onChange = jest.fn()
     const { getByRole } = render(
@@ -201,6 +204,7 @@ describe('VideoBlockEditorSettings', () => {
       })
     )
   })
+
   it('should update objectFit to fit', async () => {
     const onChange = jest.fn()
     const { getByRole } = render(

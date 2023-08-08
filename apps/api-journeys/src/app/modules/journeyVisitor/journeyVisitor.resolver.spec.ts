@@ -158,6 +158,7 @@ describe('JourneyVisitorResolver', () => {
       createdAt: new Date(),
       updatedAt: new Date()
     }
+
     it('returns visitor events', async () => {
       prismaService.event.findMany.mockResolvedValueOnce([event])
       expect(

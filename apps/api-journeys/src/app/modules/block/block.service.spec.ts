@@ -41,6 +41,7 @@ describe('BlockService', () => {
       PrismaService
     ) as DeepMockProxy<PrismaService>
   })
+
   afterAll(() => {
     jest.resetAllMocks()
   })
@@ -256,7 +257,7 @@ describe('BlockService', () => {
           2
         )
       ).toEqual([])
-      expect(service.reorderSiblings).toBeCalledTimes(0)
+      expect(service.reorderSiblings).toHaveBeenCalledTimes(0)
     })
   })
 
@@ -373,7 +374,7 @@ describe('BlockService', () => {
           parentBlockId: cardBlock.id
         }
       ])
-      expect(prismaService.block.findMany).toBeCalledTimes(1)
+      expect(prismaService.block.findMany).toHaveBeenCalledTimes(1)
     })
 
     it('should return block with specific id', async () => {
@@ -444,7 +445,7 @@ describe('BlockService', () => {
         }
       ])
 
-      expect(prismaService.block.findMany).toBeCalledTimes(6)
+      expect(prismaService.block.findMany).toHaveBeenCalledTimes(6)
     })
 
     it('should return block with updated journeyId & nextBlockId', async () => {
@@ -472,7 +473,7 @@ describe('BlockService', () => {
         }
       ])
 
-      expect(prismaService.block.findMany).toBeCalledTimes(1)
+      expect(prismaService.block.findMany).toHaveBeenCalledTimes(1)
     })
   })
 
@@ -567,20 +568,21 @@ describe('BlockService', () => {
     beforeEach(() => {
       prismaService.block.findUnique.mockResolvedValue(block)
     })
+
     it('should return false with non-existent id', async () => {
-      expect(await service.validateBlock(null, '1')).toEqual(false)
+      expect(await service.validateBlock(null, '1')).toBe(false)
     })
+
     it('should return false with incorrect parent id', async () => {
-      expect(await service.validateBlock('1', 'wrongParent')).toEqual(false)
+      expect(await service.validateBlock('1', 'wrongParent')).toBe(false)
     })
+
     it('should validate block against parentBlockId', async () => {
-      expect(await service.validateBlock('1', '3', 'parentBlockId')).toEqual(
-        true
-      )
+      expect(await service.validateBlock('1', '3', 'parentBlockId')).toBe(true)
     })
 
     it('should validate block against journeyId', async () => {
-      expect(await service.validateBlock('1', journey.id, 'journeyId')).toEqual(
+      expect(await service.validateBlock('1', journey.id, 'journeyId')).toBe(
         true
       )
     })
@@ -588,7 +590,7 @@ describe('BlockService', () => {
     it('should return false with incorrect journey id', async () => {
       expect(
         await service.validateBlock('1', 'wrongJourney', 'journeyId')
-      ).toEqual(false)
+      ).toBe(false)
     })
   })
 })

@@ -125,6 +125,7 @@ describe('VideoBlockEditorSettingsPosterLibrary', () => {
   beforeEach(() => (useMediaQuery as jest.Mock).mockImplementation(() => true))
 
   let originalEnv
+
   beforeEach(() => {
     originalEnv = process.env
     process.env = {
@@ -205,7 +206,7 @@ describe('VideoBlockEditorSettingsPosterLibrary', () => {
             }
           ]}
         >
-          <JourneyProvider value={{ journey, admin: true }}>
+          <JourneyProvider value={{ journey, variant: 'admin' }}>
             <VideoBlockEditorSettingsPosterLibrary
               selectedBlock={null}
               parentBlockId={video.id}
@@ -232,6 +233,7 @@ describe('VideoBlockEditorSettingsPosterLibrary', () => {
       ])
     })
   })
+
   describe('Existing image poster', () => {
     const existingImageBlock: ImageBlock = {
       ...image,
@@ -287,7 +289,7 @@ describe('VideoBlockEditorSettingsPosterLibrary', () => {
             }
           ]}
         >
-          <JourneyProvider value={{ journey, admin: true }}>
+          <JourneyProvider value={{ journey, variant: 'admin' }}>
             <VideoBlockEditorSettingsPosterLibrary
               selectedBlock={existingImageBlock}
               parentBlockId={video.id}
@@ -310,6 +312,7 @@ describe('VideoBlockEditorSettingsPosterLibrary', () => {
         { __ref: `ImageBlock:${image.id}` }
       ])
     })
+
     it('deletes an image block', async () => {
       const cache = new InMemoryCache()
       cache.restore({
@@ -366,7 +369,7 @@ describe('VideoBlockEditorSettingsPosterLibrary', () => {
             }
           ]}
         >
-          <JourneyProvider value={{ journey, admin: true }}>
+          <JourneyProvider value={{ journey, variant: 'admin' }}>
             <VideoBlockEditorSettingsPosterLibrary
               selectedBlock={image}
               parentBlockId={video.id}

@@ -113,7 +113,9 @@ describe('HostAvatars', () => {
             editableStepFooter: true
           }}
         >
-          <JourneyProvider value={{ admin: true, journey: { ...journey } }}>
+          <JourneyProvider
+            value={{ journey: { ...journey }, variant: 'admin' }}
+          >
             <HostAvatars hasPlaceholder />
           </JourneyProvider>
         </FlagsProvider>
@@ -133,8 +135,8 @@ describe('HostAvatars', () => {
         <FlagsProvider flags={{ editableStepFooter: true }}>
           <JourneyProvider
             value={{
-              admin: true,
-              journey: { ...journey, host: oneAvatarHost }
+              journey: { ...journey, host: oneAvatarHost },
+              variant: 'admin'
             }}
           >
             <HostAvatars hasPlaceholder />
@@ -144,7 +146,7 @@ describe('HostAvatars', () => {
 
       const avatars = getByRole('img')
       expect(avatars).toBeInTheDocument()
-      expect(avatars.getAttribute('src')).toEqual('avatar1.jpg')
+      expect(avatars.getAttribute('src')).toBe('avatar1.jpg')
       const adminPlaceholderElement = getByTestId('host-avatar-placeholder')
       expect(adminPlaceholderElement).toBeInTheDocument()
     })

@@ -16,6 +16,7 @@ describe('NavigationCard', () => {
     )
     expect(getByText('Test')).toBeInTheDocument()
   })
+
   it('should display header', () => {
     const { getByTestId } = render(
       <NavigationCard

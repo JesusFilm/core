@@ -71,10 +71,10 @@ describe('Video', () => {
     )
     const sourceTag =
       getByTestId('video-video0.id').querySelector('.vjs-tech source')
-    expect(sourceTag?.getAttribute('src')).toEqual(
+    expect(sourceTag?.getAttribute('src')).toBe(
       'https://arc.gt/hls/2_0-FallingPlates/529'
     )
-    expect(sourceTag?.getAttribute('type')).toEqual('application/x-mpegURL')
+    expect(sourceTag?.getAttribute('type')).toBe('application/x-mpegURL')
   })
 
   it('should render cloudflare video', () => {
@@ -91,10 +91,10 @@ describe('Video', () => {
     )
     const sourceTag =
       getByTestId('video-video0.id').querySelector('.vjs-tech source')
-    expect(sourceTag?.getAttribute('src')).toEqual(
+    expect(sourceTag?.getAttribute('src')).toBe(
       'https://customer-.cloudflarestream.com/videoId/manifest/video.m3u8'
     )
-    expect(sourceTag?.getAttribute('type')).toEqual('application/x-mpegURL')
+    expect(sourceTag?.getAttribute('type')).toBe('application/x-mpegURL')
   })
 
   it('should render an image if videoId is null', () => {

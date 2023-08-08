@@ -14,6 +14,7 @@ describe('ToggleOption', () => {
     handleChange: jest.fn(),
     children: <Typography>Children</Typography>
   }
+
   it('displays the correct text', () => {
     const { getByText } = render(
       <MockedProvider>

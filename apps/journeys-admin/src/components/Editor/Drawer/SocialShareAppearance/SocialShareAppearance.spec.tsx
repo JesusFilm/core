@@ -23,7 +23,7 @@ describe('SocialShareAppearance', () => {
         <JourneyProvider
           value={{
             journey: { status: JourneyStatus.published } as unknown as Journey,
-            admin: true
+            variant: 'admin'
           }}
         >
           <SocialShareAppearance />

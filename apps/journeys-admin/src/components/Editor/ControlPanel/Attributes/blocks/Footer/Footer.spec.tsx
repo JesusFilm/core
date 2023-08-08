@@ -55,6 +55,7 @@ describe('Footer', () => {
       dispatch: jest.fn()
     })
   })
+
   it('should display Footer attributes', () => {
     const { getByText } = render(
       <JourneyProvider
@@ -73,7 +74,8 @@ describe('Footer', () => {
                 platform: ChatPlatform.viber
               }
             ]
-          } as unknown as Journey
+          } as unknown as Journey,
+          variant: 'admin'
         }}
       >
         <Footer />
@@ -98,7 +100,8 @@ describe('Footer', () => {
                 platform: ChatPlatform.facebook
               }
             ]
-          } as unknown as Journey
+          } as unknown as Journey,
+          variant: 'admin'
         }}
       >
         <Footer />
@@ -124,7 +127,8 @@ describe('Footer', () => {
             host: {
               title: `John Geronimo "The Rock" Johnson`
             }
-          } as unknown as Journey
+          } as unknown as Journey,
+          variant: 'admin'
         }}
       >
         <Footer />

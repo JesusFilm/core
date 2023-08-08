@@ -65,7 +65,7 @@ function TemplateDetailsAdmin(): ReactElement {
           <JourneyProvider
             value={{
               journey: data?.publisherTemplate ?? undefined,
-              admin: true
+              variant: 'admin'
             }}
           >
             <PageWrapper

@@ -45,7 +45,10 @@ function TemplateDetails(): ReactElement {
         description={data?.template?.description ?? undefined}
       />
       <JourneyProvider
-        value={{ journey: data?.template ?? undefined, admin: true }}
+        value={{
+          journey: data?.template ?? undefined,
+          variant: 'admin'
+        }}
       >
         <PageWrapper
           title={t('Journey Template')}

@@ -18,6 +18,7 @@ describe('BlocksTab', () => {
     expect(getByText('Button')).toBeInTheDocument()
     expect(getByText('Feedback')).toBeInTheDocument()
   })
+
   it('contains correct bottom text', () => {
     const { getByText } = render(
       <MockedProvider>

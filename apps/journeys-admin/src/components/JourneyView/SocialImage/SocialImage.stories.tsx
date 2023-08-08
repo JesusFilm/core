@@ -21,7 +21,7 @@ const SocialImageStory = {
 
 const Template: Story = ({ ...args }) => (
   <MockedProvider>
-    <JourneyProvider value={{ journey: args.journey }}>
+    <JourneyProvider value={{ journey: args.journey, variant: 'admin' }}>
       <Box sx={{ p: 5, backgroundColor: 'background.paper' }}>
         <SocialImage />
       </Box>

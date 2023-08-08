@@ -88,7 +88,7 @@ describe('NavigateToJourneyAction', () => {
           }
         ]}
       >
-        <JourneyProvider value={{ journey, admin: true }}>
+        <JourneyProvider value={{ journey, variant: 'admin' }}>
           <EditorProvider initialState={{ selectedBlock }}>
             <NavigateToJourneyAction />
           </EditorProvider>
@@ -162,7 +162,7 @@ describe('NavigateToJourneyAction', () => {
         ]}
         cache={cache}
       >
-        <JourneyProvider value={{ journey, admin: true }}>
+        <JourneyProvider value={{ journey, variant: 'admin' }}>
           <EditorProvider initialState={{ selectedBlock }}>
             <NavigateToJourneyAction />
           </EditorProvider>

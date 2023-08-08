@@ -51,6 +51,7 @@ describe('VisitorCard', () => {
       '/reports/visitors/visitor.id-012345678901'
     )
   })
+
   it('should show name', () => {
     const emptyVisitor = {
       ...visitorNode,

@@ -3,7 +3,7 @@ import { ReactElement, useState } from 'react'
 
 import { JourneySort, SortOrder } from '.'
 
-export const JourneySortMock = ({ ...args }): ReactElement => {
+const JourneySortMock = ({ ...args }): ReactElement => {
   const [sortOrder, setSortOrder] = useState<SortOrder>()
   return <JourneySort sortOrder={sortOrder} onChange={setSortOrder} {...args} />
 }

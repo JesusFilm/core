@@ -101,7 +101,7 @@ describe('BlockRenderer', () => {
     )
     expect(
       getByTestId('general-wrapper').children[0].getAttribute('data-testid')
-    ).toEqual('button-wrapper')
+    ).toBe('button-wrapper')
     expect(getByTestId('button-wrapper')).toContainElement(
       getByText('Click to continue')
     )
@@ -188,7 +188,7 @@ describe('BlockRenderer', () => {
       getByTestId('general-wrapper-CardBlock').children[0].getAttribute(
         'data-testid'
       )
-    ).toEqual('card-wrapper')
+    ).toBe('card-wrapper')
     expect(getByTestId('card-wrapper')).toContainElement(
       getByText('How did we get here?')
     )
@@ -244,7 +244,7 @@ describe('BlockRenderer', () => {
     )
     expect(
       getByTestId('general-wrapper').children[0].getAttribute('data-testid')
-    ).toEqual('image-wrapper')
+    ).toBe('image-wrapper')
     expect(getByTestId('image-wrapper')).toContainElement(
       getByRole('img', { name: 'random image from unsplash' })
     )
@@ -295,7 +295,7 @@ describe('BlockRenderer', () => {
     )
     expect(
       getByTestId('general-wrapper').children[0].getAttribute('data-testid')
-    ).toEqual('radio-option-wrapper')
+    ).toBe('radio-option-wrapper')
     expect(getByTestId('radio-option-wrapper')).toContainElement(
       getByText('radio option')
     )
@@ -353,7 +353,7 @@ describe('BlockRenderer', () => {
     )
     expect(
       getByTestId('general-wrapper').children[0].getAttribute('data-testid')
-    ).toEqual('radio-question-wrapper')
+    ).toBe('radio-question-wrapper')
 
     const buttonGroup = getByRole('group')
     expect(buttonGroup).toHaveClass(
@@ -422,7 +422,7 @@ describe('BlockRenderer', () => {
     )
     expect(
       getByTestId('general-wrapper').children[0].getAttribute('data-testid')
-    ).toEqual('sign-up-wrapper')
+    ).toBe('sign-up-wrapper')
     expect(getByTestId('sign-up-wrapper')).toContainElement(
       getByLabelText('Name')
     )
@@ -515,7 +515,7 @@ describe('BlockRenderer', () => {
       getByTestId('general-wrapper-StepBlock').children[0].getAttribute(
         'data-testid'
       )
-    ).toEqual('step-wrapper')
+    ).toBe('step-wrapper')
     await waitFor(() => expect(stepViewEventResult).toHaveBeenCalled())
     expect(getByTestId('step-wrapper')).toContainElement(
       getByText('Click to continue')
@@ -565,7 +565,7 @@ describe('BlockRenderer', () => {
     )
     expect(
       getByTestId('general-wrapper').children[0].getAttribute('data-testid')
-    ).toEqual('typography-wrapper')
+    ).toBe('typography-wrapper')
     expect(getByTestId('typography-wrapper')).toHaveTextContent(
       'How did we get here?'
     )
@@ -676,7 +676,7 @@ describe('BlockRenderer', () => {
     )
     expect(
       getByTestId('general-wrapper').children[0].getAttribute('data-testid')
-    ).toEqual('video-wrapper')
+    ).toBe('video-wrapper')
     expect(getByTestId('video-wrapper')).toContainElement(
       getByTestId('video-main')
     )

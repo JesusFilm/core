@@ -75,7 +75,7 @@ describe('BackgroundMedia', () => {
     const { getByTestId } = render(
       <MockedProvider>
         <ThemeProvider>
-          <JourneyProvider value={{ journey, admin: true }}>
+          <JourneyProvider value={{ journey, variant: 'admin' }}>
             <EditorProvider initialState={{ selectedBlock: card }}>
               <SnackbarProvider>
                 <BackgroundMedia />
@@ -90,7 +90,7 @@ describe('BackgroundMedia', () => {
     ).toBeTruthy()
   })
 
-  it('shows Video selected ', () => {
+  it('shows Video selected', () => {
     const videoBlock: TreeBlock<VideoBlock> = {
       id: 'video1.id',
       __typename: 'VideoBlock',
@@ -145,7 +145,7 @@ describe('BackgroundMedia', () => {
     const { getByTestId } = render(
       <MockedProvider>
         <ThemeProvider>
-          <JourneyProvider value={{ journey, admin: true }}>
+          <JourneyProvider value={{ journey, variant: 'admin' }}>
             <EditorProvider initialState={{ selectedBlock: card }}>
               <SnackbarProvider>
                 <BackgroundMedia />
@@ -197,7 +197,7 @@ describe('BackgroundMedia', () => {
     const { getByTestId } = render(
       <MockedProvider>
         <ThemeProvider>
-          <JourneyProvider value={{ journey, admin: true }}>
+          <JourneyProvider value={{ journey, variant: 'admin' }}>
             <EditorProvider initialState={{ selectedBlock: step }}>
               <SnackbarProvider>
                 <BackgroundMedia />
