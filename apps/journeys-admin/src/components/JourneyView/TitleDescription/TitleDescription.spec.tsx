@@ -14,7 +14,12 @@ describe('TitleDescription', () => {
       const { getByText, queryByTestId } = render(
         <MockedProvider>
           <SnackbarProvider>
-            <JourneyProvider value={{ journey: defaultJourney, admin: true }}>
+            <JourneyProvider
+              value={{
+                journey: defaultJourney,
+                variant: 'admin'
+              }}
+            >
               <TitleDescription />
             </JourneyProvider>
           </SnackbarProvider>
@@ -37,7 +42,12 @@ describe('TitleDescription', () => {
       const { getByText, getByTestId } = render(
         <MockedProvider>
           <SnackbarProvider>
-            <JourneyProvider value={{ journey: template, admin: true }}>
+            <JourneyProvider
+              value={{
+                journey: template,
+                variant: 'admin'
+              }}
+            >
               <TitleDescription isPublisher />
             </JourneyProvider>
           </SnackbarProvider>
@@ -53,7 +63,12 @@ describe('TitleDescription', () => {
       const { getByRole, getByText } = render(
         <MockedProvider>
           <SnackbarProvider>
-            <JourneyProvider value={{ journey: template, admin: true }}>
+            <JourneyProvider
+              value={{
+                journey: template,
+                variant: 'admin'
+              }}
+            >
               <TitleDescription isPublisher />
             </JourneyProvider>
           </SnackbarProvider>

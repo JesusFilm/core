@@ -78,7 +78,7 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
   } = useBlocks()
   const [swiper, setSwiper] = useState<SwiperCore>()
   const theme = useTheme()
-  const { journey, admin } = useJourney()
+  const { journey, variant } = useJourney()
   const { locale, rtl } = getJourneyRTL(journey)
   const activeBlock = blockHistory[
     blockHistory.length - 1
@@ -93,7 +93,7 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
   )
 
   useEffect(() => {
-    if (!admin && journey != null) {
+    if ((variant === 'default' || variant === 'embed') && journey != null) {
       const id = uuidv4()
       void journeyViewEventCreate({
         variables: {

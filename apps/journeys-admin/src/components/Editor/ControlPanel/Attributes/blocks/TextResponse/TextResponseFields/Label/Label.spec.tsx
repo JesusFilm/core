@@ -34,7 +34,10 @@ const block: TreeBlock<TextResponseBlock> = {
   children: []
 }
 
-const pageData = { journey: { id: 'journey.id' } as unknown as Journey }
+const pageData: { journey: Journey; variant: 'default' | 'admin' | 'embed' } = {
+  journey: { id: 'journey.id' } as unknown as Journey,
+  variant: 'admin'
+}
 
 interface LabelMockProps {
   mocks?: Array<MockedResponse<Record<string, unknown>>>

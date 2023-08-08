@@ -39,7 +39,8 @@ const VariantTemplate: Story<
         themeMode: ThemeMode.dark,
         themeName: ThemeName.base,
         language: args.language
-      } as unknown as Journey
+      } as unknown as Journey,
+      variant: 'admin'
     }}
   >
     <Container>

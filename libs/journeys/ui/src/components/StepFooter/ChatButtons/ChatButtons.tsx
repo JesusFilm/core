@@ -39,7 +39,7 @@ interface ChatIconProps {
 }
 
 export function ChatButtons(): ReactElement {
-  const { admin, journey } = useJourney()
+  const { variant, journey } = useJourney()
   const { blockHistory } = useBlocks()
   const activeBlock = blockHistory[blockHistory.length - 1]
   const theme = useTheme()
@@ -63,7 +63,10 @@ export function ChatButtons(): ReactElement {
   }
 
   const handleClick = (chatButton: ChatButton): void => {
-    if (!admin && chatButton.link != null) {
+    if (
+      (variant === 'default' || variant === 'embed') &&
+      chatButton.link != null
+    ) {
       window.open(chatButton.link, '_blank')
       void chatButtonEventCreate({
         variables: {
@@ -122,7 +125,7 @@ export function ChatButtons(): ReactElement {
           />
         </IconButton>
       ))}
-      {admin && chatButtons?.length === 0 && (
+      {variant === 'admin' && chatButtons?.length === 0 && (
         <IconButton
           key="default"
           disabled

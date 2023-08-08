@@ -115,7 +115,12 @@ describe('HostTitleFieldForm', () => {
           }
         ]}
       >
-        <JourneyProvider value={{ journey: { ...journey, host: null } }}>
+        <JourneyProvider
+          value={{
+            journey: { ...journey, host: null },
+            variant: 'admin'
+          }}
+        >
           <HostTitleFieldForm />
         </JourneyProvider>
       </MockedProvider>
@@ -181,7 +186,7 @@ describe('HostTitleFieldForm', () => {
           }
         ]}
       >
-        <JourneyProvider value={{ journey }}>
+        <JourneyProvider value={{ journey, variant: 'admin' }}>
           <HostTitleFieldForm />
         </JourneyProvider>
       </MockedProvider>

@@ -180,7 +180,7 @@ describe('VideoOptions', () => {
         <JourneyProvider
           value={{
             journey: { id: 'journeyId' } as unknown as Journey,
-            admin: true
+            variant: 'admin'
           }}
         >
           <ThemeProvider>
@@ -303,7 +303,7 @@ describe('VideoOptions', () => {
               themeMode: ThemeMode.light,
               themeName: ThemeName.base
             } as unknown as Journey,
-            admin: true
+            variant: 'admin'
           }}
         >
           <ThemeProvider>

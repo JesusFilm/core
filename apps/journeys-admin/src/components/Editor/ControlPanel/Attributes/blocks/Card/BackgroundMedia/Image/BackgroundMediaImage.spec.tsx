@@ -188,7 +188,7 @@ describe('BackgroundMediaImage', () => {
           }
         ]}
       >
-        <JourneyProvider value={{ journey, admin: true }}>
+        <JourneyProvider value={{ journey, variant: 'admin' }}>
           <SnackbarProvider>
             <BackgroundMediaImage cardBlock={card} />
           </SnackbarProvider>
@@ -285,7 +285,7 @@ describe('BackgroundMediaImage', () => {
           }
         ]}
       >
-        <JourneyProvider value={{ journey, admin: true }}>
+        <JourneyProvider value={{ journey, variant: 'admin' }}>
           <SnackbarProvider>
             <BackgroundMediaImage cardBlock={videoCard} />
           </SnackbarProvider>
@@ -373,7 +373,7 @@ describe('BackgroundMediaImage', () => {
             }
           ]}
         >
-          <JourneyProvider value={{ journey, admin: true }}>
+          <JourneyProvider value={{ journey, variant: 'admin' }}>
             <SnackbarProvider>
               <BackgroundMediaImage cardBlock={existingCoverBlock} />
             </SnackbarProvider>
@@ -402,7 +402,7 @@ describe('BackgroundMediaImage', () => {
     it('shows loading icon', async () => {
       const { getByRole } = render(
         <MockedProvider mocks={[createCloudflareUploadByUrlMock]}>
-          <JourneyProvider value={{ journey, admin: true }}>
+          <JourneyProvider value={{ journey, variant: 'admin' }}>
             <SnackbarProvider>
               <BackgroundMediaImage cardBlock={existingCoverBlock} />
             </SnackbarProvider>
@@ -459,7 +459,7 @@ describe('BackgroundMediaImage', () => {
             }
           ]}
         >
-          <JourneyProvider value={{ journey, admin: true }}>
+          <JourneyProvider value={{ journey, variant: 'admin' }}>
             <SnackbarProvider>
               <BackgroundMediaImage cardBlock={existingCoverBlock} />
             </SnackbarProvider>

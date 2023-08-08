@@ -57,7 +57,7 @@ describe('ImageEdit', () => {
           <JourneyProvider
             value={{
               journey: { primaryImageBlockId: null } as unknown as Journey,
-              admin: true
+              variant: 'admin'
             }}
           >
             <ImageEdit />
@@ -80,7 +80,7 @@ describe('ImageEdit', () => {
                   alt: 'image.alt'
                 }
               } as unknown as Journey,
-              admin: true
+              variant: 'admin'
             }}
           >
             <ImageEdit />
@@ -164,7 +164,7 @@ describe('ImageEdit', () => {
           <JourneyProvider
             value={{
               journey: { id: 'journey.id' } as unknown as Journey,
-              admin: true
+              variant: 'admin'
             }}
           >
             <ImageEdit />
@@ -258,7 +258,7 @@ describe('ImageEdit', () => {
                 id: 'journey.id',
                 primaryImageBlock: { ...image }
               } as unknown as Journey,
-              admin: true
+              variant: 'admin'
             }}
           >
             <ImageEdit />

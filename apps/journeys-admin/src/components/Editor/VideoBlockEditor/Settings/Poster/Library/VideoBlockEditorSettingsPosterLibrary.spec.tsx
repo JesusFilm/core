@@ -206,7 +206,7 @@ describe('VideoBlockEditorSettingsPosterLibrary', () => {
             }
           ]}
         >
-          <JourneyProvider value={{ journey, admin: true }}>
+          <JourneyProvider value={{ journey, variant: 'admin' }}>
             <VideoBlockEditorSettingsPosterLibrary
               selectedBlock={null}
               parentBlockId={video.id}
@@ -289,7 +289,7 @@ describe('VideoBlockEditorSettingsPosterLibrary', () => {
             }
           ]}
         >
-          <JourneyProvider value={{ journey, admin: true }}>
+          <JourneyProvider value={{ journey, variant: 'admin' }}>
             <VideoBlockEditorSettingsPosterLibrary
               selectedBlock={existingImageBlock}
               parentBlockId={video.id}
@@ -369,7 +369,7 @@ describe('VideoBlockEditorSettingsPosterLibrary', () => {
             }
           ]}
         >
-          <JourneyProvider value={{ journey, admin: true }}>
+          <JourneyProvider value={{ journey, variant: 'admin' }}>
             <VideoBlockEditorSettingsPosterLibrary
               selectedBlock={image}
               parentBlockId={video.id}

@@ -60,7 +60,10 @@ function JourneyIdPage(): ReactElement {
             description={data?.journey?.description ?? undefined}
           />
           <JourneyProvider
-            value={{ journey: data?.journey ?? undefined, admin: true }}
+            value={{
+              journey: data?.journey ?? undefined,
+              variant: 'admin'
+            }}
           >
             <PageWrapper
               title={t('Journey Details')}

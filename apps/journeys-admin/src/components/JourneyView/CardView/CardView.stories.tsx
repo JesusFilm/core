@@ -29,7 +29,7 @@ const Template: Story<Omit<CardViewProps, 'id'>> = ({ ...args }) => (
             bcp47: 'en'
           }
         } as unknown as Journey,
-        admin: true
+        variant: 'admin'
       }}
     >
       <CardView id="journeyId" {...args} />

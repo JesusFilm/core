@@ -23,7 +23,7 @@ const Template: Story = ({ ...args }) => {
       <JourneyProvider
         value={{
           journey: { status: JourneyStatus.draft } as unknown as Journey,
-          admin: true
+          variant: 'admin'
         }}
       >
         <EditorProvider initialState={{ ...args }}>

@@ -100,7 +100,7 @@ describe('Canvas', () => {
                     iso3: 'eng'
                   }
                 } as unknown as Journey,
-                admin: true
+                variant: 'admin'
               }}
             >
               <Canvas />
@@ -133,7 +133,7 @@ describe('Canvas', () => {
                     iso3: 'eng'
                   }
                 } as unknown as Journey,
-                admin: true
+                variant: 'admin'
               }}
             >
               <Canvas />
@@ -187,7 +187,7 @@ describe('Canvas', () => {
                     iso3: 'eng'
                   }
                 } as unknown as Journey,
-                admin: true
+                variant: 'admin'
               }}
             >
               <Canvas />

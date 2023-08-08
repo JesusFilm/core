@@ -71,7 +71,7 @@ describe('SignUpEdit', () => {
           <JourneyProvider
             value={{
               journey: { id: 'journeyId' } as unknown as Journey,
-              admin: true
+              variant: 'admin'
             }}
           >
             <EditorProvider>
@@ -124,7 +124,7 @@ describe('SignUpEdit', () => {
           <JourneyProvider
             value={{
               journey: { id: 'journeyId' } as unknown as Journey,
-              admin: true
+              variant: 'admin'
             }}
           >
             <EditorProvider>
@@ -177,7 +177,7 @@ describe('SignUpEdit', () => {
           <JourneyProvider
             value={{
               journey: { id: 'journeyId' } as unknown as Journey,
-              admin: true
+              variant: 'admin'
             }}
           >
             <EditorProvider>

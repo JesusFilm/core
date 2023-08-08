@@ -57,7 +57,7 @@ describe('HostLocationFieldForm', () => {
   it('should populate the field with host location', () => {
     const { getByRole } = render(
       <MockedProvider>
-        <JourneyProvider value={{ journey }}>
+        <JourneyProvider value={{ journey, variant: 'admin' }}>
           <HostLocationFieldForm />
         </JourneyProvider>
       </MockedProvider>
@@ -72,7 +72,7 @@ describe('HostLocationFieldForm', () => {
   it('should clear the field', () => {
     const { getByRole } = render(
       <MockedProvider>
-        <JourneyProvider value={{ journey }}>
+        <JourneyProvider value={{ journey, variant: 'admin' }}>
           <HostLocationFieldForm empty />
         </JourneyProvider>
       </MockedProvider>
@@ -87,7 +87,7 @@ describe('HostLocationFieldForm', () => {
   it('should disable the field', () => {
     const { getByRole } = render(
       <MockedProvider>
-        <JourneyProvider value={{ journey }}>
+        <JourneyProvider value={{ journey, variant: 'admin' }}>
           <HostLocationFieldForm disabled />
         </JourneyProvider>
       </MockedProvider>
@@ -134,7 +134,7 @@ describe('HostLocationFieldForm', () => {
           }
         ]}
       >
-        <JourneyProvider value={{ journey }}>
+        <JourneyProvider value={{ journey, variant: 'admin' }}>
           <HostLocationFieldForm />
         </JourneyProvider>
       </MockedProvider>

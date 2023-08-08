@@ -57,7 +57,7 @@ describe('HostList', () => {
     const { getByRole } = render(
       <MockedProvider>
         <ThemeProvider>
-          <JourneyProvider value={{ journey }}>
+          <JourneyProvider value={{ journey, variant: 'admin' }}>
             <HostList hosts={[defaultHost, host2]} onItemClick={jest.fn()} />
           </JourneyProvider>
         </ThemeProvider>
@@ -109,7 +109,7 @@ describe('HostList', () => {
         ]}
       >
         <ThemeProvider>
-          <JourneyProvider value={{ journey }}>
+          <JourneyProvider value={{ journey, variant: 'admin' }}>
             <HostList hosts={[defaultHost, host2]} onItemClick={onItemClick} />
           </JourneyProvider>
         </ThemeProvider>

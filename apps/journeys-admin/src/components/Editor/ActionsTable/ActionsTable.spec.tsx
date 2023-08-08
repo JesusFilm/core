@@ -109,7 +109,7 @@ describe('ActionsTable', () => {
 
   it('should render placeholder', () => {
     const { getByText } = render(
-      <JourneyProvider value={{ journey }}>
+      <JourneyProvider value={{ journey, variant: 'admin' }}>
         <ActionsTable />
       </JourneyProvider>
     )
@@ -123,7 +123,8 @@ describe('ActionsTable', () => {
           journey: {
             ...journey,
             blocks
-          }
+          },
+          variant: 'admin'
         }}
       >
         <ActionsTable />

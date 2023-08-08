@@ -38,7 +38,12 @@ describe('JourneyView/Menu', () => {
       <SnackbarProvider>
         <MockedProvider mocks={[]}>
           <TeamProvider>
-            <JourneyProvider value={{ journey: defaultJourney, admin: true }}>
+            <JourneyProvider
+              value={{
+                journey: defaultJourney,
+                variant: 'admin'
+              }}
+            >
               <Menu />
             </JourneyProvider>
           </TeamProvider>
@@ -56,7 +61,12 @@ describe('JourneyView/Menu', () => {
       <SnackbarProvider>
         <MockedProvider mocks={[]}>
           <TeamProvider>
-            <JourneyProvider value={{ journey: defaultJourney, admin: true }}>
+            <JourneyProvider
+              value={{
+                journey: defaultJourney,
+                variant: 'admin'
+              }}
+            >
               <Menu />
             </JourneyProvider>
           </TeamProvider>
@@ -76,7 +86,12 @@ describe('JourneyView/Menu', () => {
       <SnackbarProvider>
         <MockedProvider mocks={[]}>
           <TeamProvider>
-            <JourneyProvider value={{ journey: publishedJourney, admin: true }}>
+            <JourneyProvider
+              value={{
+                journey: publishedJourney,
+                variant: 'admin'
+              }}
+            >
               <Menu />
             </JourneyProvider>
           </TeamProvider>
@@ -120,7 +135,12 @@ describe('JourneyView/Menu', () => {
           ]}
         >
           <TeamProvider>
-            <JourneyProvider value={{ journey: defaultJourney, admin: true }}>
+            <JourneyProvider
+              value={{
+                journey: defaultJourney,
+                variant: 'admin'
+              }}
+            >
               <Menu />
             </JourneyProvider>
           </TeamProvider>
@@ -178,7 +198,7 @@ describe('JourneyView/Menu', () => {
           <JourneyProvider
             value={{
               journey: { ...defaultJourney, template: true },
-              admin: true
+              variant: 'admin'
             }}
           >
             <TeamProvider>
@@ -205,7 +225,12 @@ describe('JourneyView/Menu', () => {
       <SnackbarProvider>
         <MockedProvider mocks={[]}>
           <TeamProvider>
-            <JourneyProvider value={{ journey: publishedJourney, admin: true }}>
+            <JourneyProvider
+              value={{
+                journey: publishedJourney,
+                variant: 'admin'
+              }}
+            >
               <Menu />
             </JourneyProvider>
           </TeamProvider>
@@ -242,7 +267,12 @@ describe('JourneyView/Menu', () => {
           ]}
         >
           <TeamProvider>
-            <JourneyProvider value={{ journey: defaultJourney, admin: true }}>
+            <JourneyProvider
+              value={{
+                journey: defaultJourney,
+                variant: 'admin'
+              }}
+            >
               <Menu />
             </JourneyProvider>
           </TeamProvider>
@@ -306,7 +336,7 @@ describe('JourneyView/Menu', () => {
             <JourneyProvider
               value={{
                 journey: { ...defaultJourney, template: true },
-                admin: true
+                variant: 'admin'
               }}
             >
               <Menu />
@@ -361,7 +391,7 @@ describe('JourneyView/Menu', () => {
             <JourneyProvider
               value={{
                 journey: { ...defaultJourney, template: true },
-                admin: true
+                variant: 'admin'
               }}
             >
               <Menu />
@@ -385,7 +415,12 @@ describe('JourneyView/Menu', () => {
       <SnackbarProvider>
         <MockedProvider mocks={[]}>
           <TeamProvider>
-            <JourneyProvider value={{ journey: defaultJourney, admin: true }}>
+            <JourneyProvider
+              value={{
+                journey: defaultJourney,
+                variant: 'admin'
+              }}
+            >
               <Menu />
             </JourneyProvider>
           </TeamProvider>
@@ -405,7 +440,12 @@ describe('JourneyView/Menu', () => {
       <SnackbarProvider>
         <MockedProvider mocks={[]}>
           <TeamProvider>
-            <JourneyProvider value={{ journey: defaultJourney, admin: true }}>
+            <JourneyProvider
+              value={{
+                journey: defaultJourney,
+                variant: 'admin'
+              }}
+            >
               <Menu />
             </JourneyProvider>
           </TeamProvider>
@@ -425,7 +465,12 @@ describe('JourneyView/Menu', () => {
       <SnackbarProvider>
         <MockedProvider mocks={[]}>
           <TeamProvider>
-            <JourneyProvider value={{ journey: defaultJourney, admin: true }}>
+            <JourneyProvider
+              value={{
+                journey: defaultJourney,
+                variant: 'admin'
+              }}
+            >
               <Menu />
             </JourneyProvider>
           </TeamProvider>
@@ -446,7 +491,12 @@ describe('JourneyView/Menu', () => {
       <SnackbarProvider>
         <MockedProvider mocks={[]}>
           <TeamProvider>
-            <JourneyProvider value={{ journey: defaultJourney, admin: true }}>
+            <JourneyProvider
+              value={{
+                journey: defaultJourney,
+                variant: 'admin'
+              }}
+            >
               <Menu />
             </JourneyProvider>
           </TeamProvider>
@@ -487,7 +537,7 @@ describe('JourneyView/Menu', () => {
             <JourneyProvider
               value={{
                 journey: { ...defaultJourney, template: true },
-                admin: true
+                variant: 'admin'
               }}
             >
               <Menu />
@@ -520,7 +570,12 @@ describe('JourneyView/Menu', () => {
       <SnackbarProvider>
         <MockedProvider mocks={[]}>
           <TeamProvider>
-            <JourneyProvider value={{ journey: defaultJourney, admin: true }}>
+            <JourneyProvider
+              value={{
+                journey: defaultJourney,
+                variant: 'admin'
+              }}
+            >
               <Menu />
             </JourneyProvider>
           </TeamProvider>
@@ -555,7 +610,12 @@ describe('JourneyView/Menu', () => {
       <SnackbarProvider>
         <MockedProvider mocks={[]}>
           <TeamProvider>
-            <JourneyProvider value={{ journey: defaultJourney, admin: true }}>
+            <JourneyProvider
+              value={{
+                journey: defaultJourney,
+                variant: 'admin'
+              }}
+            >
               <Menu />
             </JourneyProvider>
           </TeamProvider>
@@ -582,7 +642,12 @@ describe('JourneyView/Menu', () => {
       <SnackbarProvider>
         <MockedProvider mocks={[]}>
           <TeamProvider>
-            <JourneyProvider value={{ journey: defaultJourney, admin: true }}>
+            <JourneyProvider
+              value={{
+                journey: defaultJourney,
+                variant: 'admin'
+              }}
+            >
               <Menu />
             </JourneyProvider>
           </TeamProvider>
@@ -661,7 +726,7 @@ describe('JourneyView/Menu', () => {
             <JourneyProvider
               value={{
                 journey: { ...defaultJourney, template: true },
-                admin: true
+                variant: 'admin'
               }}
             >
               <Menu />
