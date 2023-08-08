@@ -22,12 +22,14 @@ export function OverlayContent({
       display: 'none'
     }
   }
+
   const topBottomEdgeFadeEffect: SxProps = !hasFullscreenVideo
     ? {
         WebkitMask: `linear-gradient(transparent 0%, #0000001a 4%, #000000 8%, #000000 90%, #0000001a 98%, transparent 100%)`,
         mask: `linear-gradient(transparent 0%, #0000001a 4%, #000000 8%, #000000 90%, #0000001a 98%, transparent 100%)`
       }
     : {}
+
   // Add spacing to children so centered when scrolling to edge
   const topBottomMarginsOnContent: SxProps = !hasFullscreenVideo
     ? {
@@ -38,6 +40,18 @@ export function OverlayContent({
       }
     : {}
 
+  // Adds padding with notch calculations when applicable
+  const horizontalPadding: SxProps = {
+    pl: {
+      xs: 'calc(24px + env(safe-area-inset-left))',
+      lg: 'calc(40px + env(safe-area-inset-left))'
+    },
+    pr: {
+      xs: 'calc(24px + env(safe-area-inset-right))',
+      lg: 'calc(40px + env(safe-area-inset-right))'
+    }
+  }
+
   return (
     <Box
       data-testid="overlay-content"
@@ -45,6 +59,7 @@ export function OverlayContent({
         ...enableVerticalScroll,
         ...topBottomEdgeFadeEffect,
         ...topBottomMarginsOnContent,
+        ...horizontalPadding,
         ...sx
       }}
     >

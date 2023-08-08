@@ -72,14 +72,11 @@ export function ExpandedCover({
             hasFullscreenVideo={hasFullscreenVideo}
             sx={{
               margin: 'auto',
-              width: '100%',
-              maxWidth: {
+              width: {
                 xs: 'calc(100% - 48px - env(safe-area-inset-left) - env(safe-area-inset-right))',
                 lg: 500
               },
-              py: { xs: 4 },
-              pl: { xs: 'calc(16px + env(safe-area-inset-left))' },
-              pr: { xs: 'calc(16px + env(safe-area-inset-right))' }
+              py: { xs: 4 }
             }}
           >
             {children}
