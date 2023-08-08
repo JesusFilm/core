@@ -324,30 +324,36 @@ export class JourneyResolver {
       })
 
     const duplicateJourneyId = uuidv4()
-    const existingDuplicateJourneys = await this.prismaService.journey.findMany(
-      {
+    const existingActiveDuplicateJourneys =
+      await this.prismaService.journey.findMany({
         where: {
           title: {
             contains: journey.title
+          },
+          archivedAt: null,
+          trashedAt: null,
+          deletedAt: null,
+          template: false
+        },
+        include: {
+          userJourneys: true,
+          team: {
+            include: { userTeams: true }
           }
         }
-      }
-    )
+      })
     const duplicates = this.getJourneyDuplicateNumbers(
-      existingDuplicateJourneys,
+      existingActiveDuplicateJourneys,
       journey.title
     )
     const duplicateNumber = this.getFirstMissingNumber(duplicates)
-    const duplicateTitle =
-      journey.template === true
-        ? journey.title
-        : `${journey.title}${
-            duplicateNumber === 0
-              ? ''
-              : duplicateNumber === 1
-              ? ' copy'
-              : ` copy ${duplicateNumber}`
-          }`.trimEnd()
+    const duplicateTitle = `${journey.title}${
+      duplicateNumber === 0
+        ? ''
+        : duplicateNumber === 1
+        ? ' copy'
+        : ` copy ${duplicateNumber}`
+    }`.trimEnd()
 
     let slug = slugify(duplicateTitle, {
       lower: true,
