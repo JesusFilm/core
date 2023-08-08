@@ -1,4 +1,5 @@
 import { gql, useMutation } from '@apollo/client'
+import ExpandMoreRoundedIcon from '@mui/icons-material/ExpandMoreRounded'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Divider from '@mui/material/Divider'
@@ -62,7 +63,7 @@ export function TeamSelect({ onboarding }: TeamSelectProps): ReactElement {
         sx={{ overflow: 'hidden', flexGrow: 1 }}
         ref={anchorRef}
       >
-        <UsersProfiles3Icon sx={{ mr: 3, ml: '3px' }} />
+        <UsersProfiles3Icon sx={{ mr: 1, ml: '3px' }} />
         <FormControl variant="standard" sx={{ minWidth: 100 }}>
           <Select
             defaultValue={activeTeam?.id}
@@ -75,8 +76,18 @@ export function TeamSelect({ onboarding }: TeamSelectProps): ReactElement {
             autoWidth
             sx={{
               '> .MuiSelect-select': {
-                whiteSpace: 'normal',
-                wordWrap: 'break-word'
+                backgroundColor: 'transparent',
+                wordWrap: 'break-word',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                mr: 1
+              },
+              fontWeight: 600,
+              '&:before, &:after': {
+                display: 'none'
+              },
+              '> .MuiSvgIcon-root': {
+                transition: 'transform 0.2s ease-in-out'
               }
             }}
             MenuProps={{
@@ -89,6 +100,7 @@ export function TeamSelect({ onboarding }: TeamSelectProps): ReactElement {
                 horizontal: 'left'
               }
             }}
+            IconComponent={ExpandMoreRoundedIcon}
           >
             {(query?.data?.teams != null
               ? sortBy(query.data?.teams, 'title')
