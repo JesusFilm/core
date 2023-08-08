@@ -83,9 +83,6 @@ export function TeamSelect({ onboarding }: TeamSelectProps): ReactElement {
                 mr: 1
               },
               fontWeight: 600,
-              '&:before, &:after': {
-                display: 'none'
-              },
               '> .MuiSvgIcon-root': {
                 transition: 'transform 0.2s ease-in-out'
               }
