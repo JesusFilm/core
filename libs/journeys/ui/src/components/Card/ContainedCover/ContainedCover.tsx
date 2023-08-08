@@ -79,7 +79,7 @@ export function ContainedCover({
             ) as TreeBlock<ImageFields>
           ).src
         : videoBlock?.video?.image
-      : // Use Youtube set poster image
+      : // Use Youtube or Cloudflare set poster image
         videoBlock?.image
 
   useEffect(() => {
