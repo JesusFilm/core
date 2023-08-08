@@ -64,7 +64,6 @@ export const cache = (): InMemoryCache =>
       const videoVariant = responseObject.variant as unknown as StoreObject & {
         id: string
       }
-      console.log('', videoVariant)
       switch (responseObject.__typename) {
         case 'Video':
           return `Video:${videoVariant.id ?? responseObject.id}`
