@@ -70,6 +70,7 @@ export function TeamSelect({ onboarding }: TeamSelectProps): ReactElement {
             disabled={query.loading}
             displayEmpty
             value={activeTeam?.id ?? ''}
+            disableUnderline
             onChange={handleChange}
             renderValue={() => activeTeam?.title ?? t('Shared With Me')}
             autoWidth
