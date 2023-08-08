@@ -80,7 +80,10 @@ export function TeamSelect({ onboarding }: TeamSelectProps): ReactElement {
                 wordWrap: 'break-word',
                 overflow: 'hidden',
                 textOverflow: 'ellipsis',
-                mr: 1
+                mr: 1,
+                '&:focus': {
+                  backgroundColor: 'transparent'
+                }
               },
               fontWeight: 600,
               '> .MuiSvgIcon-root': {
