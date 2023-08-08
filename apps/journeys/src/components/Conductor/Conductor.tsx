@@ -164,7 +164,7 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
   }, [swiper, blockHistory])
 
   // Shared position styling for stepHeader and stepFooter with notch calculations when applicable.
-  const headerFooterPosition: SxProps = {
+  const mobileNotchStyling: SxProps = {
     width: {
       xs:
         variant === 'default'
@@ -230,13 +230,13 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
                         }}
                       >
                         {showHeaderFooter && (
-                          <StepHeader sx={{ ...headerFooterPosition }} />
+                          <StepHeader sx={{ ...mobileNotchStyling }} />
                         )}
                         <BlockRenderer block={block} />
                         <StepFooter
                           sx={{
                             visibility: showHeaderFooter ? 'visible' : 'hidden',
-                            ...headerFooterPosition
+                            ...mobileNotchStyling
                           }}
                         />
                       </Stack>

@@ -44,7 +44,7 @@ export function OverlayContent({
     : {}
 
   // Adds padding with notch calculations when applicable
-  const horizontalPadding: SxProps =
+  const mobileNotchPadding: SxProps =
     variant === 'default'
       ? {
           pl: {
@@ -68,7 +68,7 @@ export function OverlayContent({
         ...enableVerticalScroll,
         ...topBottomEdgeFadeEffect,
         ...topBottomMarginsOnContent,
-        ...horizontalPadding,
+        ...mobileNotchPadding,
         ...sx
       }}
     >
