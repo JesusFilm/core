@@ -40,7 +40,7 @@ describe('Chat', () => {
     const { getByTestId } = render(
       <MockedProvider>
         <SnackbarProvider>
-          <JourneyProvider value={{ journey }}>
+          <JourneyProvider value={{ journey, variant: 'admin' }}>
             <Chat />
           </JourneyProvider>
         </SnackbarProvider>

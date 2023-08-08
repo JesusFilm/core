@@ -132,7 +132,7 @@ const Template: Story = ({ ...args }) => {
               iso3: 'eng'
             }
           } as unknown as Journey,
-          admin: true
+          variant: 'admin'
         }}
       >
         <EditorProvider

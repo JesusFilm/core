@@ -61,7 +61,7 @@ export function Button({
     CHAT_OPEN_EVENT_CREATE
   )
 
-  const { admin } = useJourney()
+  const { variant } = useJourney()
   const { treeBlocks, blockHistory } = useBlocks()
   const { t } = useTranslation('libs-journeys-ui')
   const activeBlock = blockHistory[blockHistory.length - 1]
@@ -86,7 +86,7 @@ export function Button({
   )
 
   function createClickEvent(): void {
-    if (!admin) {
+    if (variant === 'default' || variant === 'embed') {
       const id = uuidv4()
       void buttonClickEventCreate({
         variables: {
@@ -113,7 +113,7 @@ export function Button({
   }
 
   function createChatEvent(): void {
-    if (!admin) {
+    if (variant === 'default' || variant === 'embed') {
       const id = uuidv4()
       void chatOpenEventCreate({
         variables: {

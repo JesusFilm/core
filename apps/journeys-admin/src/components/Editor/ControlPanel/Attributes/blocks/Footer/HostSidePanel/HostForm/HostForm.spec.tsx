@@ -46,7 +46,12 @@ describe('HostForm', () => {
     const { getByRole, getByTestId } = render(
       <MockedProvider>
         <ThemeProvider>
-          <JourneyProvider value={{ journey: { ...journey, host: null } }}>
+          <JourneyProvider
+            value={{
+              journey: { ...journey, host: null },
+              variant: 'admin'
+            }}
+          >
             <HostForm onClear={jest.fn()} />
           </JourneyProvider>
         </ThemeProvider>
@@ -75,7 +80,7 @@ describe('HostForm', () => {
     const { getByRole, getByAltText } = render(
       <MockedProvider>
         <ThemeProvider>
-          <JourneyProvider value={{ journey }}>
+          <JourneyProvider value={{ journey, variant: 'admin' }}>
             <HostForm onClear={jest.fn()} />
           </JourneyProvider>
         </ThemeProvider>
@@ -144,7 +149,7 @@ describe('HostForm', () => {
         ]}
       >
         <ThemeProvider>
-          <JourneyProvider value={{ journey }}>
+          <JourneyProvider value={{ journey, variant: 'admin' }}>
             <HostForm onClear={onClear} />
           </JourneyProvider>
         </ThemeProvider>

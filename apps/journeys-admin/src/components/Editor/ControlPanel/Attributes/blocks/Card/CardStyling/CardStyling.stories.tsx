@@ -80,7 +80,7 @@ export const Default: Story = () => {
 
   return (
     <MockedProvider>
-      <JourneyProvider value={{ journey, admin: true }}>
+      <JourneyProvider value={{ journey, variant: 'admin' }}>
         <EditorProvider
           initialState={{
             selectedBlock: block,
@@ -112,7 +112,7 @@ export const Light: Story = () => {
 
   return (
     <MockedProvider>
-      <JourneyProvider value={{ journey, admin: true }}>
+      <JourneyProvider value={{ journey, variant: 'admin' }}>
         <EditorProvider
           initialState={{
             selectedBlock: block,
@@ -144,7 +144,7 @@ export const Dark: Story = () => {
 
   return (
     <MockedProvider>
-      <JourneyProvider value={{ journey, admin: true }}>
+      <JourneyProvider value={{ journey, variant: 'admin' }}>
         <EditorProvider
           initialState={{
             selectedBlock: block,

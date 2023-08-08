@@ -21,7 +21,7 @@ const JourneyDetailsStory = {
 
 const Template: Story = ({ ...args }) => (
   <MockedProvider>
-    <JourneyProvider value={{ journey: args.journey, admin: true }}>
+    <JourneyProvider value={{ journey: args.journey, variant: 'admin' }}>
       <JourneyDetails {...args} journeyType="Journey" />
     </JourneyProvider>
   </MockedProvider>

@@ -14,7 +14,7 @@ const DatePreviewStory = {
 }
 
 const Template: Story = ({ ...args }) => (
-  <JourneyProvider value={{ journey: args.journey }}>
+  <JourneyProvider value={{ journey: args.journey, variant: 'admin' }}>
     <DatePreview />
   </JourneyProvider>
 )

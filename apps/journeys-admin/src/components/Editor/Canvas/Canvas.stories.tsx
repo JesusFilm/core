@@ -621,7 +621,7 @@ const Template: Story<
             },
             ...journey
           } as unknown as Journey,
-          admin: true
+          variant: 'admin'
         }}
       >
         <EditorProvider initialState={{ steps, ...state }}>

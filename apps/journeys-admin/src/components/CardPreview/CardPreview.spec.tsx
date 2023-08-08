@@ -86,7 +86,7 @@ describe('CardPreview', () => {
                 iso3: 'eng'
               }
             } as unknown as Journey,
-            admin: true
+            variant: 'admin'
           }}
         >
           <CardPreview onSelect={onSelect} steps={[step]} />
@@ -111,7 +111,7 @@ describe('CardPreview', () => {
               themeMode: ThemeMode.light,
               themeName: ThemeName.base
             } as unknown as Journey,
-            admin: true
+            variant: 'admin'
           }}
         >
           <CardPreview steps={[]} onSelect={onSelect} showAddButton />
@@ -170,7 +170,7 @@ describe('CardPreview', () => {
               themeMode: ThemeMode.light,
               themeName: ThemeName.base
             } as unknown as Journey,
-            admin: true
+            variant: 'admin'
           }}
         >
           <CardPreview steps={[]} onSelect={onSelect} showAddButton />
@@ -198,7 +198,7 @@ describe('CardPreview', () => {
               themeMode: ThemeMode.light,
               themeName: ThemeName.base
             } as unknown as Journey,
-            admin: true
+            variant: 'admin'
           }}
         >
           <CardPreview
@@ -228,7 +228,7 @@ describe('CardPreview', () => {
               themeMode: ThemeMode.light,
               themeName: ThemeName.base
             } as unknown as Journey,
-            admin: true
+            variant: 'admin'
           }}
         >
           <CardPreview

@@ -53,7 +53,12 @@ describe('HostAvatarsButton', () => {
     const { getByTestId } = render(
       <MockedProvider>
         <ThemeProvider>
-          <JourneyProvider value={{ journey: { ...journey, host: null } }}>
+          <JourneyProvider
+            value={{
+              journey: { ...journey, host: null },
+              variant: 'admin'
+            }}
+          >
             <HostAvatarsButton />
           </JourneyProvider>
         </ThemeProvider>
@@ -79,7 +84,8 @@ describe('HostAvatarsButton', () => {
               journey: {
                 ...journey,
                 host: { ...defaultHost, src1: 'avatar1Src', src2: 'avatar2Src' }
-              }
+              },
+              variant: 'admin'
             }}
           >
             <HostAvatarsButton />
@@ -96,7 +102,7 @@ describe('HostAvatarsButton', () => {
     const { getByTestId, queryByTestId } = render(
       <MockedProvider>
         <ThemeProvider>
-          <JourneyProvider value={{ journey }}>
+          <JourneyProvider value={{ journey, variant: 'admin' }}>
             <HostAvatarsButton disabled />
           </JourneyProvider>
         </ThemeProvider>
@@ -116,7 +122,8 @@ describe('HostAvatarsButton', () => {
               journey: {
                 ...journey,
                 host: { ...defaultHost, src1: 'avatar1Src' }
-              }
+              },
+              variant: 'admin'
             }}
           >
             <HostAvatarsButton />
@@ -178,7 +185,8 @@ describe('HostAvatarsButton', () => {
 
                   src1: 'avatar1Src'
                 }
-              }
+              },
+              variant: 'admin'
             }}
           >
             <HostAvatarsButton />
@@ -271,7 +279,8 @@ describe('HostAvatarsButton', () => {
                   src1: 'avatar1Src',
                   src2: 'avatar2Src'
                 }
-              }
+              },
+              variant: 'admin'
             }}
           >
             <HostAvatarsButton />
