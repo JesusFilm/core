@@ -1,17 +1,19 @@
-import { Story, Meta } from '@storybook/react'
 import { MockedProvider } from '@apollo/client/testing'
+import { Meta, Story } from '@storybook/react'
 import { formatISO } from 'date-fns'
 import { SnackbarProvider } from 'notistack'
+
 import { JourneyStatus } from '../../../../__generated__/globalTypes'
 import { journeysAdminConfig } from '../../../libs/storybook'
+import { GET_ADMIN_JOURNEYS } from '../../../libs/useAdminJourneysQuery/useAdminJourneysQuery'
 import {
   defaultTemplate,
-  oldTemplate,
   descriptiveTemplate,
+  oldTemplate,
   publishedTemplate
 } from '../../TemplateLibrary/TemplateListData'
 import { ThemeProvider } from '../../ThemeProvider'
-import { GET_ADMIN_JOURNEYS } from '../../../libs/useAdminJourneysQuery/useAdminJourneysQuery'
+
 import { TrashedTemplates } from '.'
 
 const TrashedTemplatesStory = {

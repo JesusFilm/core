@@ -1,8 +1,10 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 import noop from 'lodash/noop'
-import { VideoProvider } from '../../../libs/videoContext'
+
 import { watchConfig } from '../../../libs/storybook'
+import { VideoProvider } from '../../../libs/videoContext'
 import { videos } from '../../Videos/__generated__/testData'
+
 import { ContainerHero } from '.'
 
 const ContainerHeroStory: ComponentMeta<typeof ContainerHero> = {

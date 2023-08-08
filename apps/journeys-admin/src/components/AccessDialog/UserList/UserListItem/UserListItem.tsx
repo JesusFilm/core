@@ -1,20 +1,22 @@
-import { ReactElement, MouseEvent, useState, useEffect, useMemo } from 'react'
-import compact from 'lodash/compact'
-import Button from '@mui/material/Button'
+import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown'
 import Avatar from '@mui/material/Avatar'
+import Button from '@mui/material/Button'
 import Divider from '@mui/material/Divider'
-import Menu from '@mui/material/Menu'
-import Stack from '@mui/material/Stack'
 import ListItem from '@mui/material/ListItem'
 import ListItemAvatar from '@mui/material/ListItemAvatar'
 import ListItemText from '@mui/material/ListItemText'
-import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown'
-import { UserJourneyRole } from '../../../../../__generated__/globalTypes'
+import Menu from '@mui/material/Menu'
+import Stack from '@mui/material/Stack'
+import compact from 'lodash/compact'
+import { MouseEvent, ReactElement, useEffect, useMemo, useState } from 'react'
+
 import { GetJourneyWithUserJourneys_journey_userJourneys as UserJourney } from '../../../../../__generated__/GetJourneyWithUserJourneys'
 import { GetUserInvites_userInvites as UserInvite } from '../../../../../__generated__/GetUserInvites'
-import { RemoveUser } from './RemoveUser'
+import { UserJourneyRole } from '../../../../../__generated__/globalTypes'
+
 import { ApproveUser } from './ApproveUser'
 import { PromoteUser } from './PromoteUser'
+import { RemoveUser } from './RemoveUser'
 
 interface UserItem {
   id: string

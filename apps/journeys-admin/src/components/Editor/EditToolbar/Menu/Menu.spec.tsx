@@ -1,17 +1,20 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { render, fireEvent } from '@testing-library/react'
-import { SnackbarProvider } from 'notistack'
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
-import { EditorProvider } from '@core/journeys/ui/EditorProvider'
-import type { TreeBlock } from '@core/journeys/ui/block'
 import useMediaQuery from '@mui/material/useMediaQuery'
-import { ThemeProvider } from '../../../ThemeProvider'
+import { fireEvent, render } from '@testing-library/react'
+import { SnackbarProvider } from 'notistack'
+
+import type { TreeBlock } from '@core/journeys/ui/block'
+import { EditorProvider } from '@core/journeys/ui/EditorProvider'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+
 import {
-  GetJourney_journey_blocks_TypographyBlock as TypographyBlock,
+  GetJourney_journey as Journey,
   GetJourney_journey_blocks_StepBlock as StepBlock,
-  GetJourney_journey as Journey
+  GetJourney_journey_blocks_TypographyBlock as TypographyBlock
 } from '../../../../../__generated__/GetJourney'
 import { JourneyStatus } from '../../../../../__generated__/globalTypes'
+import { ThemeProvider } from '../../../ThemeProvider'
+
 import { Menu } from '.'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
@@ -46,7 +49,7 @@ describe('EditToolbar Menu', () => {
                 journey: {
                   status: JourneyStatus.draft
                 } as unknown as Journey,
-                admin: true
+                variant: 'admin'
               }}
             >
               <EditorProvider initialState={{ selectedBlock }}>
@@ -87,7 +90,7 @@ describe('EditToolbar Menu', () => {
                 journey: {
                   status: JourneyStatus.draft
                 } as unknown as Journey,
-                admin: true
+                variant: 'admin'
               }}
             >
               <EditorProvider initialState={{ selectedBlock }}>
@@ -106,6 +109,7 @@ describe('EditToolbar Menu', () => {
         queryByRole('menuitem', { name: 'Social Settings' })
       ).not.toBeInTheDocument()
     })
+
     it('should link back to journey on click', () => {
       const selectedBlock: TreeBlock<StepBlock> = {
         __typename: 'StepBlock',
@@ -126,7 +130,7 @@ describe('EditToolbar Menu', () => {
                   id: 'journeyId',
                   slug: 'my-journey'
                 } as unknown as Journey,
-                admin: true
+                variant: 'admin'
               }}
             >
               <EditorProvider initialState={{ selectedBlock }}>
@@ -164,7 +168,7 @@ describe('EditToolbar Menu', () => {
                   slug: 'my-journey',
                   template: true
                 } as unknown as Journey,
-                admin: true
+                variant: 'admin'
               }}
             >
               <EditorProvider initialState={{ selectedBlock }}>
@@ -186,6 +190,7 @@ describe('EditToolbar Menu', () => {
     beforeEach(() =>
       (useMediaQuery as jest.Mock).mockImplementation(() => false)
     )
+
     it('should display opens social share drawer when card is selected', () => {
       const selectedBlock: TreeBlock<StepBlock> = {
         __typename: 'StepBlock',
@@ -205,7 +210,7 @@ describe('EditToolbar Menu', () => {
                 journey: {
                   status: JourneyStatus.draft
                 } as unknown as Journey,
-                admin: true
+                variant: 'admin'
               }}
             >
               <EditorProvider initialState={{ selectedBlock }}>
@@ -247,7 +252,7 @@ describe('EditToolbar Menu', () => {
                 journey: {
                   status: JourneyStatus.draft
                 } as unknown as Journey,
-                admin: true
+                variant: 'admin'
               }}
             >
               <EditorProvider initialState={{ selectedBlock }}>

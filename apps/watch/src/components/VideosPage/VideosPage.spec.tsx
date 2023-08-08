@@ -3,8 +3,10 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { NextRouter, useRouter } from 'next/router'
+
 import { videos } from '../Videos/__generated__/testData'
-import { VideosPage, GET_VIDEOS, limit, GET_LANGUAGES } from './VideosPage'
+
+import { GET_LANGUAGES, GET_VIDEOS, VideosPage, limit } from './VideosPage'
 
 jest.mock('next/router', () => ({
   __esModule: true,
@@ -25,6 +27,7 @@ describe('VideosPage', () => {
       )
       expect(getByTestId('videos-grid')).toBeInTheDocument()
     })
+
     it('should display videos', async () => {
       const { getByText } = render(
         <MockedProvider

@@ -1,15 +1,14 @@
-import { ReactElement, useCallback, useEffect, useRef, useState } from 'react'
-
+import Close from '@mui/icons-material/Close'
 import Box from '@mui/material/Box'
+import IconButton from '@mui/material/IconButton'
+import { useRouter } from 'next/router'
+import { ReactElement, useCallback, useEffect, useRef, useState } from 'react'
+import Div100vh from 'react-div-100vh'
+
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { BlockRenderer } from '@core/journeys/ui/BlockRenderer'
-import { useRouter } from 'next/router'
-import IconButton from '@mui/material/IconButton'
-import Close from '@mui/icons-material/Close'
-
-// Used to resolve dynamic viewport height on Safari
-import Div100vh from 'react-div-100vh'
 import { StepFooter } from '@core/journeys/ui/StepFooter'
+
 import { Conductor } from '../Conductor'
 
 import { ButtonWrapper } from './ButtonWrapper/ButtonWrapper'

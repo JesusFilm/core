@@ -1,20 +1,21 @@
-import { ComponentProps, ReactElement } from 'react'
-import { intlFormat, parseISO } from 'date-fns'
-import RadioButtonUncheckedIcon from '@mui/icons-material/RadioButtonUncheckedRounded'
-import CheckCircleOutlineRoundedIcon from '@mui/icons-material/CheckCircleOutlineRounded'
 import ArrowCircleRightOutlinedIcon from '@mui/icons-material/ArrowCircleRightOutlined'
-import EmojiFlagsRoundedIcon from '@mui/icons-material/EmojiFlagsRounded'
 import ChatBubbleOutlineRoundedIcon from '@mui/icons-material/ChatBubbleOutlineRounded'
+import CheckCircleOutlineRoundedIcon from '@mui/icons-material/CheckCircleOutlineRounded'
+import EmojiFlagsRoundedIcon from '@mui/icons-material/EmojiFlagsRounded'
 import MailOutlineRoundedIcon from '@mui/icons-material/MailOutlineRounded'
 import PauseCircleOutlineRoundedIcon from '@mui/icons-material/PauseCircleOutlineRounded'
 import PlayCircleOutlineRoundedIcon from '@mui/icons-material/PlayCircleOutlineRounded'
+import RadioButtonUncheckedIcon from '@mui/icons-material/RadioButtonUncheckedRounded'
+import { intlFormat, parseISO } from 'date-fns'
+import { ComponentProps, ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
+
 import {
-  messagePlatformToLabel,
-  TimelineItem,
   EventVariant,
-  videoPositionToLabel,
-  getButtonLabel
+  TimelineItem,
+  getButtonLabel,
+  messagePlatformToLabel,
+  videoPositionToLabel
 } from '../../utils'
 import { GenericEvent } from '../GenericEvent'
 

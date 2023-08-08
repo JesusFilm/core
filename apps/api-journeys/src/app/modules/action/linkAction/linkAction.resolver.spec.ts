@@ -1,11 +1,14 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
-import { Block, Action, Journey } from '.prisma/api-journeys-client'
+
+import { Action, Block, Journey } from '.prisma/api-journeys-client'
 import { CaslAuthModule } from '@core/nest/common/CaslAuthModule'
-import { PrismaService } from '../../../lib/prisma.service'
-import { AppAbility, AppCaslFactory } from '../../../lib/casl/caslFactory'
+
 import { LinkActionInput, UserTeamRole } from '../../../__generated__/graphql'
+import { AppAbility, AppCaslFactory } from '../../../lib/casl/caslFactory'
+import { PrismaService } from '../../../lib/prisma.service'
 import { ACTION_UPDATE_RESET } from '../actionUpdateReset'
+
 import { LinkActionResolver } from './linkAction.resolver'
 
 describe('LinkActionResolver', () => {
@@ -64,6 +67,7 @@ describe('LinkActionResolver', () => {
     ) as DeepMockProxy<PrismaService>
     ability = await new AppCaslFactory().createAbility({ id: 'userId' })
   })
+
   describe('blockUpdateLinkAction', () => {
     it('updates link action', async () => {
       prismaService.block.findUnique.mockResolvedValueOnce(blockWithUserTeam)
@@ -80,6 +84,7 @@ describe('LinkActionResolver', () => {
         }
       })
     })
+
     it('throws error if typename is wrong', async () => {
       const wrongBlock = {
         ...blockWithUserTeam,
@@ -90,12 +95,14 @@ describe('LinkActionResolver', () => {
         resolver.blockUpdateLinkAction(ability, wrongBlock.id, input)
       ).rejects.toThrow('This block does not support link actions')
     })
+
     it('throws error if not found', async () => {
       prismaService.block.findUnique.mockResolvedValueOnce(null)
       await expect(
         resolver.blockUpdateLinkAction(ability, block.id, input)
       ).rejects.toThrow('block not found')
     })
+
     it('throws error if not authorized', async () => {
       prismaService.block.findUnique.mockResolvedValueOnce(block)
       await expect(

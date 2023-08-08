@@ -1,22 +1,25 @@
+import FormatShapesRoundedIcon from '@mui/icons-material/FormatShapesRounded'
+import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'
+import LinkRoundedIcon from '@mui/icons-material/LinkRounded'
+import ViewDayOutlinedIcon from '@mui/icons-material/ViewDayOutlined'
+import capitalize from 'lodash/capitalize'
 import { ReactElement, useEffect } from 'react'
+
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
-import ViewDayOutlinedIcon from '@mui/icons-material/ViewDayOutlined'
-import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'
-import FormatShapesRoundedIcon from '@mui/icons-material/FormatShapesRounded'
-import LinkRoundedIcon from '@mui/icons-material/LinkRounded'
-import capitalize from 'lodash/capitalize'
+
+import { Attribute } from '../..'
+import { GetJourney_journey_blocks_ButtonBlock as ButtonBlock } from '../../../../../../../__generated__/GetJourney'
 import {
-  ButtonSize,
   ButtonColor,
+  ButtonSize,
   ButtonVariant
 } from '../../../../../../../__generated__/globalTypes'
-import { GetJourney_journey_blocks_ButtonBlock as ButtonBlock } from '../../../../../../../__generated__/GetJourney'
 import { IconFields } from '../../../../../../../__generated__/IconFields'
-import { Attribute } from '../..'
 import { ColorDisplayIcon } from '../../../ColorDisplayIcon'
 import { Action, actions } from '../../Action/Action'
 import { Icon, icons } from '../../Icon'
+
 import { Color } from './Color'
 import { Size } from './Size'
 import { Variant } from './Variant'

@@ -1,7 +1,10 @@
-import { Story, Meta } from '@storybook/react'
 import { MockedProvider } from '@apollo/client/testing'
+import { Meta, Story } from '@storybook/react'
+
 import { journeysAdminConfig } from '../../libs/storybook'
-import { USER_JOURNEY_REQUEST, JourneyInviteProps } from './JourneyInvite'
+
+import { JourneyInviteProps, USER_JOURNEY_REQUEST } from './JourneyInvite'
+
 import { JourneyInvite } from '.'
 
 const Demo = {

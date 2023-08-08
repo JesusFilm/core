@@ -18,5 +18,5 @@ export interface JourneyDuplicate {
 
 export interface JourneyDuplicateVariables {
   id: string;
-  teamId?: string | null;
+  teamId: string;
 }

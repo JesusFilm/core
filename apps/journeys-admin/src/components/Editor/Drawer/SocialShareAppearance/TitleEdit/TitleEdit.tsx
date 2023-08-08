@@ -1,10 +1,12 @@
-import { ReactElement, useEffect, useRef } from 'react'
-import { useMutation, gql } from '@apollo/client'
+import { gql, useMutation } from '@apollo/client'
 import TextField, { TextFieldProps } from '@mui/material/TextField'
-import { Formik, Form } from 'formik'
-import { object, string } from 'yup'
+import { Form, Formik } from 'formik'
 import noop from 'lodash/noop'
+import { ReactElement, useEffect, useRef } from 'react'
+import { object, string } from 'yup'
+
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
+
 import { JourneySeoTitleUpdate } from '../../../../../../__generated__/JourneySeoTitleUpdate'
 import { useSocialPreview } from '../../../SocialProvider'
 

@@ -1,5 +1,6 @@
-import { render } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
+import { render } from '@testing-library/react'
+
 import { DiscoveryJourneys } from '.'
 
 describe('DiscoveryJourneys', () => {

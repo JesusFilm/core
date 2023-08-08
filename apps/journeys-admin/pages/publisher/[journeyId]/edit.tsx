@@ -1,4 +1,4 @@
-import { ReactElement } from 'react'
+import { useQuery } from '@apollo/client'
 import {
   AuthAction,
   useAuthUser,
@@ -6,20 +6,21 @@ import {
   withAuthUserTokenSSR
 } from 'next-firebase-auth'
 import { NextSeo } from 'next-seo'
-import { useTranslation } from 'react-i18next'
 import { useRouter } from 'next/router'
-import { useQuery } from '@apollo/client'
-import { PageWrapper } from '../../../src/components/PageWrapper'
-import { GetPublisherTemplate } from '../../../__generated__/GetPublisherTemplate'
-import { Editor } from '../../../src/components/Editor'
-import { JourneyEdit } from '../../../src/components/Editor/JourneyEdit'
-import { EditToolbar } from '../../../src/components/Editor/EditToolbar'
+import { ReactElement } from 'react'
+import { useTranslation } from 'react-i18next'
+
 import { GetPublisher } from '../../../__generated__/GetPublisher'
-import { PublisherInvite } from '../../../src/components/PublisherInvite'
+import { GetPublisherTemplate } from '../../../__generated__/GetPublisherTemplate'
 import { Role } from '../../../__generated__/globalTypes'
-import { GET_PUBLISHER, GET_PUBLISHER_TEMPLATE } from '../[journeyId]'
-import { useInvalidJourneyRedirect } from '../../../src/libs/useInvalidJourneyRedirect'
+import { Editor } from '../../../src/components/Editor'
+import { EditToolbar } from '../../../src/components/Editor/EditToolbar'
+import { JourneyEdit } from '../../../src/components/Editor/JourneyEdit'
+import { PageWrapper } from '../../../src/components/PageWrapper'
+import { PublisherInvite } from '../../../src/components/PublisherInvite'
 import { initAndAuthApp } from '../../../src/libs/initAndAuthApp'
+import { useInvalidJourneyRedirect } from '../../../src/libs/useInvalidJourneyRedirect'
+import { GET_PUBLISHER, GET_PUBLISHER_TEMPLATE } from '../[journeyId]'
 
 function TemplateEditPage(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')

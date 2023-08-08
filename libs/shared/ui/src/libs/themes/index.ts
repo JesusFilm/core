@@ -1,6 +1,7 @@
 import { Theme } from '@mui/material/styles'
-import { getBaseLight, getBaseDark } from './base/theme'
-import { websiteLight, websiteDark } from './website/theme'
+
+import { getBaseDark, getBaseLight } from './base/theme'
+import { websiteDark, websiteLight } from './website/theme'
 
 export enum ThemeMode {
   dark = 'dark',

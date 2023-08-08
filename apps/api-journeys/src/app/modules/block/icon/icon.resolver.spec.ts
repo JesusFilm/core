@@ -1,17 +1,20 @@
 import { Test, TestingModule } from '@nestjs/testing'
-import { Block, Journey, UserTeamRole } from '.prisma/api-journeys-client'
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
+
+import { Block, Journey, UserTeamRole } from '.prisma/api-journeys-client'
 import { CaslAuthModule } from '@core/nest/common/CaslAuthModule'
-import { BlockService } from '../block.service'
+
 import {
-  IconBlockUpdateInput,
   IconBlockCreateInput,
+  IconBlockUpdateInput,
   IconColor,
   IconName,
   IconSize
 } from '../../../__generated__/graphql'
-import { PrismaService } from '../../../lib/prisma.service'
 import { AppAbility, AppCaslFactory } from '../../../lib/casl/caslFactory'
+import { PrismaService } from '../../../lib/prisma.service'
+import { BlockService } from '../block.service'
+
 import { IconBlockResolver } from './icon.resolver'
 
 describe('Icon', () => {
@@ -84,6 +87,7 @@ describe('Icon', () => {
         async (callback) => await callback(prismaService)
       )
     })
+
     it('creates an IconBlock', async () => {
       prismaService.block.create.mockResolvedValueOnce(blockWithUserTeam)
       expect(await resolver.iconBlockCreate(ability, blockCreateInput)).toEqual(
@@ -111,6 +115,7 @@ describe('Icon', () => {
         }
       })
     })
+
     it('throws error if not authorized', async () => {
       prismaService.block.create.mockResolvedValueOnce(block)
       await expect(
@@ -125,12 +130,14 @@ describe('Icon', () => {
       await resolver.iconBlockUpdate(ability, 'blockId', blockUpdateInput)
       expect(service.update).toHaveBeenCalledWith('blockId', blockUpdateInput)
     })
+
     it('throws error if not found', async () => {
       prismaService.block.findUnique.mockResolvedValueOnce(null)
       await expect(
         resolver.iconBlockUpdate(ability, 'blockId', blockUpdateInput)
       ).rejects.toThrow('block not found')
     })
+
     it('throws error if not authorized', async () => {
       prismaService.block.findUnique.mockResolvedValueOnce(block)
       await expect(

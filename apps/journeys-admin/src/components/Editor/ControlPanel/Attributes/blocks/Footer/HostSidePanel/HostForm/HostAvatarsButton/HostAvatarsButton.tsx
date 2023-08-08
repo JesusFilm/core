@@ -1,12 +1,14 @@
-import { ReactElement, useState, useEffect } from 'react'
 import Avatar from '@mui/material/Avatar'
 import AvatarGroup from '@mui/material/AvatarGroup'
 import Stack from '@mui/material/Stack'
-import UserProfiledAddIcon from '@core/shared/ui/icons/UserProfileAdd'
+import { ReactElement, useEffect, useState } from 'react'
+
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
-import { ImageLibrary } from '../../../../../../../ImageLibrary'
+import UserProfiledAddIcon from '@core/shared/ui/icons/UserProfileAdd'
+
 import { GetJourney_journey_blocks_ImageBlock as ImageBlock } from '../../../../../../../../../../__generated__/GetJourney'
 import { useHostUpdate } from '../../../../../../../../../libs/useHostUpdate'
+import { ImageLibrary } from '../../../../../../../ImageLibrary'
 
 interface HostAvatarsButtonProps {
   disabled?: boolean

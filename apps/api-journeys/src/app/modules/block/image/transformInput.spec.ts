@@ -1,5 +1,7 @@
 import fetch, { Response } from 'node-fetch'
+
 import { ImageBlockCreateInput } from '../../../__generated__/graphql'
+
 import { transformInput } from './transformInput'
 
 jest.mock('node-fetch', () => {
@@ -42,6 +44,7 @@ describe('transformInput', () => {
         })
     } as unknown as Response)
   })
+
   const blockCreateInput: ImageBlockCreateInput = {
     id: 'blockId',
     journeyId: 'journeyId',
@@ -51,6 +54,7 @@ describe('transformInput', () => {
     src: 'https://unsplash.it/640/425?image=42',
     alt: 'alt'
   }
+
   it('skips transform if src is null', async () => {
     const input = {
       ...blockCreateInput,
@@ -63,6 +67,7 @@ describe('transformInput', () => {
       blurhash: ''
     })
   })
+
   it('transforms input', async () => {
     expect(await transformInput(blockCreateInput)).toEqual({
       ...blockCreateInput,
@@ -71,6 +76,7 @@ describe('transformInput', () => {
       blurhash: 'UHFO~6Yk^6#M@-5b,1J5@[or[k6o};Fxi^OZ'
     })
   })
+
   it('skips transform if width, height and blurhash defined', async () => {
     const input = {
       ...blockCreateInput,
@@ -80,6 +86,7 @@ describe('transformInput', () => {
     }
     expect(await transformInput(input)).toEqual(input)
   })
+
   it('transforms input if width defined', async () => {
     const input = {
       ...blockCreateInput,
@@ -92,6 +99,7 @@ describe('transformInput', () => {
       blurhash: 'UHFO~6Yk^6#M@-5b,1J5@[or[k6o};Fxi^OZ'
     })
   })
+
   it('transforms input if width, height defined', async () => {
     const input = {
       ...blockCreateInput,
@@ -105,6 +113,7 @@ describe('transformInput', () => {
       blurhash: 'UHFO~6Yk^6#M@-5b,1J5@[or[k6o};Fxi^OZ'
     })
   })
+
   it('throws error when fetch fails', async () => {
     mockFetch.mockRejectedValue(new Error('fetch error'))
     await expect(transformInput(blockCreateInput)).rejects.toThrow(

@@ -3,11 +3,13 @@
 
 import { aql } from 'arangojs'
 import { ArangoSearchViewPropertiesOptions } from 'arangojs/view'
+
 import { fetchMediaComponentsAndTransformToVideos } from '../src/libs/arclight'
 import {
-  fetchMediaLanguagesAndTransformToLanguages,
-  Video
+  Video,
+  fetchMediaLanguagesAndTransformToLanguages
 } from '../src/libs/arclight/arclight'
+
 import { ArangoDB } from './db'
 
 const db = ArangoDB()

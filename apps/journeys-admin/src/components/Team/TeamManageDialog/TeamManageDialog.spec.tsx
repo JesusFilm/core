@@ -1,14 +1,16 @@
-import { act, fireEvent, render, waitFor } from '@testing-library/react'
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import useMediaQuery from '@mui/material/useMediaQuery'
-import { UserTeamRole } from '../../../../__generated__/globalTypes'
-import {
-  TeamProvider,
-  GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
-} from '../TeamProvider'
+import { act, fireEvent, render, waitFor } from '@testing-library/react'
+
 import { GetLastActiveTeamIdAndTeams } from '../../../../__generated__/GetLastActiveTeamIdAndTeams'
-import { GET_USER_TEAMS_AND_INVITES } from '../../../libs/useUserTeamsAndInvitesQuery/useUserTeamsAndInvitesQuery'
 import { GetUserTeamsAndInvites } from '../../../../__generated__/GetUserTeamsAndInvites'
+import { UserTeamRole } from '../../../../__generated__/globalTypes'
+import { GET_USER_TEAMS_AND_INVITES } from '../../../libs/useUserTeamsAndInvitesQuery/useUserTeamsAndInvitesQuery'
+import {
+  GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS,
+  TeamProvider
+} from '../TeamProvider'
+
 import { TeamManageDialog } from './TeamManageDialog'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
@@ -22,7 +24,8 @@ jest.mock('../../libs/useCurrentUser', () => ({
     loadUser: jest.fn(),
     data: {
       __typename: 'User',
-      ...user1
+      id: 'userId',
+      email: 'miguelohara@example.com'
     }
   })
 }))
@@ -34,15 +37,15 @@ jest.mock('react-i18next', () => ({
     }
   }
 }))
-const user1 = { id: 'userId', email: 'miguelohara@example.com' }
-
-const handleClose = jest.fn()
-beforeEach(() => {
-  handleClose.mockClear()
-  ;(useMediaQuery as jest.Mock).mockImplementation(() => true)
-})
 
 describe('TeamManageDialog', () => {
+  const handleClose = jest.fn()
+
+  beforeEach(() => {
+    handleClose.mockClear()
+    ;(useMediaQuery as jest.Mock).mockImplementation(() => true)
+  })
+
   const getUserTeamMock1: MockedResponse<GetUserTeamsAndInvites> = {
     request: {
       query: GET_USER_TEAMS_AND_INVITES,
@@ -96,6 +99,7 @@ describe('TeamManageDialog', () => {
   }
 
   const mocks = [getUserTeamMock1, getTeams]
+
   it('renders without error', async () => {
     const { getByText } = render(
       <MockedProvider mocks={mocks}>
@@ -111,6 +115,7 @@ describe('TeamManageDialog', () => {
       expect(getByText('Invite team member')).toBeInTheDocument()
     })
   })
+
   it('should call on close', async () => {
     const { getByTestId } = render(
       <MockedProvider>

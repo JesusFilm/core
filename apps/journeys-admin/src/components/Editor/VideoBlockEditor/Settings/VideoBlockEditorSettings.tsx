@@ -1,34 +1,36 @@
-import { ReactElement } from 'react'
+import PlayCircle from '@mui/icons-material/PlayCircle'
+import StopCircle from '@mui/icons-material/StopCircle'
+import Box from '@mui/material/Box'
 import Divider from '@mui/material/Divider'
 import InputAdornment from '@mui/material/InputAdornment'
 import Stack from '@mui/material/Stack'
 import Switch from '@mui/material/Switch'
 import TextField from '@mui/material/TextField'
-import Typography from '@mui/material/Typography'
 import ToggleButton from '@mui/material/ToggleButton'
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup'
-import Box from '@mui/material/Box'
-import type { TreeBlock } from '@core/journeys/ui/block'
-import noop from 'lodash/noop'
+import Typography from '@mui/material/Typography'
 import { useFormik } from 'formik'
-import TimeField from 'react-simple-timefield'
-import PlayCircle from '@mui/icons-material/PlayCircle'
-import StopCircle from '@mui/icons-material/StopCircle'
+import noop from 'lodash/noop'
 import { useSnackbar } from 'notistack'
+import { ReactElement } from 'react'
+import TimeField from 'react-simple-timefield'
+
+import type { TreeBlock } from '@core/journeys/ui/block'
 import {
   secondsToTimeFormat,
   timeFormatToSeconds
 } from '@core/shared/ui/timeFormat'
 
 import {
-  GetJourney_journey_blocks_VideoBlock as VideoBlock,
-  GetJourney_journey_blocks_ImageBlock as ImageBlock
+  GetJourney_journey_blocks_ImageBlock as ImageBlock,
+  GetJourney_journey_blocks_VideoBlock as VideoBlock
 } from '../../../../../__generated__/GetJourney'
 import {
   VideoBlockObjectFit as ObjectFit,
   VideoBlockSource,
   VideoBlockUpdateInput
 } from '../../../../../__generated__/globalTypes'
+
 import { VideoBlockEditorSettingsPoster } from './Poster/VideoBlockEditorSettingsPoster'
 
 interface VideoBlockEditorSettingsProps {

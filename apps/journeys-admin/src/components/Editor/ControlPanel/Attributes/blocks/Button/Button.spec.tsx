@@ -1,4 +1,5 @@
 import { render } from '@testing-library/react'
+
 import type { TreeBlock } from '@core/journeys/ui/block'
 import {
   ActiveFab,
@@ -7,16 +8,18 @@ import {
   EditorState,
   useEditor
 } from '@core/journeys/ui/EditorProvider'
+
 import { GetJourney_journey_blocks_ButtonBlock as ButtonBlock } from '../../../../../../../__generated__/GetJourney'
 import {
-  ButtonVariant,
   ButtonColor,
   ButtonSize,
-  IconName,
+  ButtonVariant,
   IconColor,
+  IconName,
   IconSize
 } from '../../../../../../../__generated__/globalTypes'
 import { Action } from '../../Action'
+
 import { Button } from '.'
 
 jest.mock('@core/journeys/ui/EditorProvider', () => {

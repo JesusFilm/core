@@ -1,13 +1,16 @@
-import { ReactElement } from 'react'
-import type { TreeBlock } from '@core/journeys/ui/block'
 import Box from '@mui/material/Box'
-import { VideoBlockUpdateInput } from '../../../../__generated__/globalTypes'
+import { ReactElement } from 'react'
+
+import type { TreeBlock } from '@core/journeys/ui/block'
+
 import {
   GetJourney_journey_blocks_ImageBlock as ImageBlock,
   GetJourney_journey_blocks_VideoBlock as VideoBlock
 } from '../../../../__generated__/GetJourney'
-import { Source } from './Source'
+import { VideoBlockUpdateInput } from '../../../../__generated__/globalTypes'
+
 import { VideoBlockEditorSettings } from './Settings'
+import { Source } from './Source'
 
 interface VideoBlockEditorProps {
   selectedBlock: TreeBlock<VideoBlock> | null

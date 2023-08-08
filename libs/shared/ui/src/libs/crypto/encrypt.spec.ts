@@ -1,4 +1,4 @@
-import { encrypt, decrypt } from '.'
+import { decrypt, encrypt } from '.'
 
 describe('encrypt', () => {
   it('encrypts a message that can then be decrypted', () => {

@@ -1,22 +1,22 @@
-import { useState, useEffect, ReactElement } from 'react'
-import { Story, Meta } from '@storybook/react'
-import Box from '@mui/material/Box'
-import Typography, { TypographyProps } from '@mui/material/Typography'
-import TextField from '@mui/material/TextField'
-import Button from '@mui/material/Button'
 import CheckCircleIcon from '@mui/icons-material/CheckCircle'
+import Box from '@mui/material/Box'
+import Button from '@mui/material/Button'
 import {
-  useTheme,
+  Breakpoint,
   PaletteColor,
   PaletteOptions,
   SimplePaletteColorOptions,
-  Breakpoint,
-  styled
+  styled,
+  useTheme
 } from '@mui/material/styles'
+import TextField from '@mui/material/TextField'
+import Typography, { TypographyProps } from '@mui/material/Typography'
+import { Meta, Story } from '@storybook/react'
+import { ReactElement, useEffect, useState } from 'react'
 
+import { ThemeMode, ThemeName, getTheme } from '..'
 import { simpleComponentConfig } from '../../simpleComponentConfig'
 import { useBreakpoints } from '../../useBreakpoints'
-import { getTheme, ThemeMode, ThemeName } from '..'
 
 const ThemeDemo = {
   ...simpleComponentConfig,

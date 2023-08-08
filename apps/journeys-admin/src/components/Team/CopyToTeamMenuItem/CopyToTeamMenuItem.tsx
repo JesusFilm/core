@@ -1,7 +1,8 @@
-import { ReactElement, useState } from 'react'
 import ContentCopyRounded from '@mui/icons-material/ContentCopyRounded'
 import { useSnackbar } from 'notistack'
+import { ReactElement, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+
 import { useJourneyDuplicateMutation } from '../../../libs/useJourneyDuplicateMutation'
 import { MenuItem } from '../../MenuItem'
 import { CopyToTeamDialog } from '../CopyToTeamDialog'

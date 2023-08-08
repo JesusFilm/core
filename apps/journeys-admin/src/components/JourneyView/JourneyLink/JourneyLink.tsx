@@ -1,14 +1,16 @@
-import { ReactElement, useState } from 'react'
-import Button from '@mui/material/Button'
-import { CopyTextField } from '@core/shared/ui/CopyTextField'
-import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import DeveloperModeRoundedIcon from '@mui/icons-material/DeveloperModeRounded'
 import EditIcon from '@mui/icons-material/Edit'
-import Typography from '@mui/material/Typography'
+import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
-import { useTranslation } from 'react-i18next'
-import useMediaQuery from '@mui/material/useMediaQuery'
 import { Theme } from '@mui/material/styles'
+import Typography from '@mui/material/Typography'
+import useMediaQuery from '@mui/material/useMediaQuery'
+import { ReactElement, useState } from 'react'
+import { useTranslation } from 'react-i18next'
+
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import { CopyTextField } from '@core/shared/ui/CopyTextField'
+
 import { EmbedJourneyDialog } from './EmbedJourneyDialog'
 import { SlugDialog } from './SlugDialog'
 

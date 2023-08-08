@@ -1,23 +1,25 @@
-import { ReactElement, useMemo } from 'react'
 import { GetStaticPaths, GetStaticProps } from 'next'
-import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
-import { transformer } from '@core/journeys/ui/transformer'
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import { NextSeo } from 'next-seo'
-import { getJourneyRTL } from '@core/journeys/ui/rtl'
-import { getStepTheme } from '@core/journeys/ui/getStepTheme'
+import { ReactElement, useMemo } from 'react'
+
 import { TreeBlock } from '@core/journeys/ui/block'
-import { EmbeddedPreview } from '../../src/components/EmbeddedPreview'
-import { createApolloClient } from '../../src/libs/apolloClient'
+import { getStepTheme } from '@core/journeys/ui/getStepTheme'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import { getJourneyRTL } from '@core/journeys/ui/rtl'
+import { transformer } from '@core/journeys/ui/transformer'
+import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
+
 import {
   GetJourney,
   GetJourney_journey as Journey
 } from '../../__generated__/GetJourney'
 import { GetJourneySlugs } from '../../__generated__/GetJourneySlugs'
-import i18nConfig from '../../next-i18next.config'
-import { GET_JOURNEY, GET_JOURNEY_SLUGS } from '../[journeySlug]'
 import { StepFields } from '../../__generated__/StepFields'
+import i18nConfig from '../../next-i18next.config'
+import { EmbeddedPreview } from '../../src/components/EmbeddedPreview'
+import { createApolloClient } from '../../src/libs/apolloClient'
+import { GET_JOURNEY, GET_JOURNEY_SLUGS } from '../[journeySlug]'
 
 interface JourneyPageProps {
   journey: Journey
@@ -79,7 +81,7 @@ function JourneyPage({ journey, locale, rtl }: JourneyPageProps): ReactElement {
           background: transparent;
         }
       `}</style>
-      <JourneyProvider value={{ journey }}>
+      <JourneyProvider value={{ journey, variant: 'embed' }}>
         <ThemeProvider {...theme} rtl={rtl} locale={locale}>
           {journey.blocks != null && (
             <EmbeddedPreview blocks={transformer(journey.blocks)} />
@@ -94,26 +96,13 @@ export const getStaticProps: GetStaticProps<JourneyPageProps> = async (
   context
 ) => {
   const apolloClient = createApolloClient()
-  const { data } = await apolloClient.query<GetJourney>({
-    query: GET_JOURNEY,
-    variables: {
-      id: context.params?.journeySlug
-    }
-  })
-
-  if (data.journey === null) {
-    return {
-      props: {
-        ...(await serverSideTranslations(
-          context.locale ?? 'en',
-          ['apps-journeys', 'libs-journeys-ui'],
-          i18nConfig
-        ))
-      },
-      notFound: true,
-      revalidate: 60
-    }
-  } else {
+  try {
+    const { data } = await apolloClient.query<GetJourney>({
+      query: GET_JOURNEY,
+      variables: {
+        id: context.params?.journeySlug
+      }
+    })
     const { rtl, locale } = getJourneyRTL(data.journey)
 
     return {
@@ -129,6 +118,20 @@ export const getStaticProps: GetStaticProps<JourneyPageProps> = async (
       },
       revalidate: 60
     }
+  } catch (e) {
+    if (e.message === 'journey not found') {
+      return {
+        props: {
+          ...(await serverSideTranslations(
+            context.locale ?? 'en',
+            ['apps-journeys', 'libs-journeys-ui'],
+            i18nConfig
+          ))
+        },
+        notFound: true
+      }
+    }
+    throw e
   }
 }
 

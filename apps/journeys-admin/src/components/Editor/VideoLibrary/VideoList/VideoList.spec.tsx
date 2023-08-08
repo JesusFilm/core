@@ -1,7 +1,9 @@
-import { render, fireEvent } from '@testing-library/react'
-import useMediaQuery from '@mui/material/useMediaQuery'
 import { MockedProvider } from '@apollo/client/testing'
+import useMediaQuery from '@mui/material/useMediaQuery'
+import { fireEvent, render } from '@testing-library/react'
+
 import { videos } from './data'
+
 import { VideoList } from '.'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
@@ -79,22 +81,6 @@ describe('VideoList', () => {
         />
       </MockedProvider>
     )
-    expect(getByRole('button', { name: 'No More Videos' })).toBeDisabled()
-  })
-
-  it('should render No More Videos and No Results if videos is empty', () => {
-    const { getByText, getByRole } = render(
-      <MockedProvider>
-        <VideoList
-          videos={[]}
-          loading={false}
-          fetchMore={jest.fn()}
-          hasMore
-          onSelect={jest.fn()}
-        />
-      </MockedProvider>
-    )
-    expect(getByText('No Results Found')).toBeInTheDocument()
     expect(getByRole('button', { name: 'No More Videos' })).toBeDisabled()
   })
 

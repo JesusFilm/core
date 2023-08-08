@@ -1,6 +1,8 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
+
 import { USER_JOURNEY_REQUEST } from './JourneyInvite'
+
 import { JourneyInvite } from '.'
 
 describe('JourneyInvite', () => {

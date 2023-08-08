@@ -1,7 +1,9 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { fireEvent, render } from '@testing-library/react'
 import useMediaQuery from '@mui/material/useMediaQuery'
+import { fireEvent, render } from '@testing-library/react'
+
 import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
+
 import { PageWrapper } from '.'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
@@ -96,6 +98,7 @@ describe('PageWrapper', () => {
     afterEach(() => {
       jest.resetAllMocks()
     })
+
     it('should show the side nav bar', () => {
       ;(useMediaQuery as jest.Mock).mockImplementation(() => true)
 

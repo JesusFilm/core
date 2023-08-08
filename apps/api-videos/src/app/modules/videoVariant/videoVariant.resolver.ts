@@ -1,4 +1,4 @@
-import { Resolver, ResolveField, Parent } from '@nestjs/graphql'
+import { Parent, ResolveField, Resolver } from '@nestjs/graphql'
 import compact from 'lodash/compact'
 
 @Resolver('VideoVariant')

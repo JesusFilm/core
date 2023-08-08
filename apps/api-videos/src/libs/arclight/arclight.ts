@@ -1,5 +1,7 @@
+import fetch, { RequestInfo, RequestInit, Response } from 'node-fetch'
+
 import { Translation } from '@core/nest/common/TranslationModule'
-import fetch, { Response, RequestInfo, RequestInit } from 'node-fetch'
+
 import { slugify } from '../slugify'
 
 export interface ArclightMediaLanguage {

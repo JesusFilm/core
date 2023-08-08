@@ -1,4 +1,5 @@
 import reduce from 'lodash/reduce'
+
 import { GetVisitorEvents_visitor_events as Event } from '../../../../../../__generated__/GetVisitorEvents'
 
 export interface JourneyWithEvents {

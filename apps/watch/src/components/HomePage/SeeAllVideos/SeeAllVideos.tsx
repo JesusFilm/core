@@ -1,7 +1,7 @@
-import { ReactElement } from 'react'
 import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
 import Link from 'next/link'
+import { ReactElement } from 'react'
 
 export function SeeAllVideos(): ReactElement {
   return (

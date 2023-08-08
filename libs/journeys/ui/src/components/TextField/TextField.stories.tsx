@@ -1,11 +1,13 @@
-import { ComponentProps } from 'react'
 import Stack from '@mui/material/Stack'
-import { Story, Meta } from '@storybook/react'
+import { Meta, Story } from '@storybook/react'
 import { Form, Formik } from 'formik'
+import { ComponentProps } from 'react'
 import { object, string } from 'yup'
+
 import { journeyUiConfig } from '../../libs/journeyUiConfig'
 import { simpleComponentConfig } from '../../libs/simpleComponentConfig'
 import { StoryCard } from '../StoryCard'
+
 import { TextField } from './TextField'
 
 const Demo = {

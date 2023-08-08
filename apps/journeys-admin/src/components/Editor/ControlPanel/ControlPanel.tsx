@@ -1,21 +1,24 @@
+import EditIcon from '@mui/icons-material/Edit'
 import Box from '@mui/material/Box'
+import MuiFab from '@mui/material/Fab'
 import Tab from '@mui/material/Tab'
 import Tabs from '@mui/material/Tabs'
 import Tooltip from '@mui/material/Tooltip'
 import { ReactElement, SyntheticEvent, useEffect } from 'react'
+
+import { TreeBlock } from '@core/journeys/ui/block'
 import {
-  useEditor,
-  ActiveTab,
   ActiveFab,
-  ActiveJourneyEditContent
+  ActiveJourneyEditContent,
+  ActiveTab,
+  useEditor
 } from '@core/journeys/ui/EditorProvider'
 import { TabPanel, tabA11yProps } from '@core/shared/ui/TabPanel'
-import { TreeBlock } from '@core/journeys/ui/block'
-import MuiFab from '@mui/material/Fab'
-import EditIcon from '@mui/icons-material/Edit'
-import { CardPreview, OnSelectProps } from '../../CardPreview'
+
 import { GetJourney_journey_blocks_CardBlock as CardBlock } from '../../../../__generated__/GetJourney'
+import { CardPreview, OnSelectProps } from '../../CardPreview'
 import { SocialShareAppearance } from '../Drawer/SocialShareAppearance'
+
 import { Attributes } from './Attributes'
 import { BlocksTab } from './BlocksTab'
 import { Fab } from './Fab'

@@ -1,9 +1,11 @@
-import { render, fireEvent } from '@testing-library/react'
+import { fireEvent, render } from '@testing-library/react'
 import noop from 'lodash/noop'
+
 import { ContainedIconButton } from './ContainedIconButton'
 
 describe('ContainedIconButton', () => {
   const onClick = jest.fn()
+
   it('should render button', async () => {
     const { getByRole } = render(
       <ContainedIconButton label="Label" onClick={noop} />
@@ -20,24 +22,24 @@ describe('ContainedIconButton', () => {
 
     expect(onClick).toHaveBeenCalled()
   })
-})
 
-it('should render description', () => {
-  const { getByRole } = render(
-    <ContainedIconButton
-      label="Label"
-      description="testDescription"
-      onClick={noop}
-    />
-  )
+  it('should render description', () => {
+    const { getByRole } = render(
+      <ContainedIconButton
+        label="Label"
+        description="testDescription"
+        onClick={noop}
+      />
+    )
 
-  expect(getByRole('button')).toHaveTextContent('testDescription')
-})
+    expect(getByRole('button')).toHaveTextContent('testDescription')
+  })
 
-it('should be disabled when loading', () => {
-  const { getByRole } = render(
-    <ContainedIconButton label="Label" onClick={noop} loading />
-  )
+  it('should be disabled when loading', () => {
+    const { getByRole } = render(
+      <ContainedIconButton label="Label" onClick={noop} loading />
+    )
 
-  expect(getByRole('button')).toBeDisabled()
+    expect(getByRole('button')).toBeDisabled()
+  })
 })

@@ -1,17 +1,20 @@
-import { isThisYear, parseISO, intlFormat } from 'date-fns'
-import { ReactElement } from 'react'
+import ArchiveRoundedIcon from '@mui/icons-material/ArchiveRounded'
+import CancelRoundedIcon from '@mui/icons-material/CancelRounded'
+import CheckCircleRoundedIcon from '@mui/icons-material/CheckCircleRounded'
+import EditIcon from '@mui/icons-material/Edit'
+import EventRounded from '@mui/icons-material/EventRounded'
+import TranslateRounded from '@mui/icons-material/TranslateRounded'
 import Box from '@mui/material/Box'
 import Skeleton from '@mui/material/Skeleton'
 import Typography from '@mui/material/Typography'
-import CheckCircleRoundedIcon from '@mui/icons-material/CheckCircleRounded'
-import ArchiveRoundedIcon from '@mui/icons-material/ArchiveRounded'
-import EditIcon from '@mui/icons-material/Edit'
-import CancelRoundedIcon from '@mui/icons-material/CancelRounded'
-import EventRounded from '@mui/icons-material/EventRounded'
-import TranslateRounded from '@mui/icons-material/TranslateRounded'
+import { intlFormat, isThisYear, parseISO } from 'date-fns'
+import { ReactElement } from 'react'
+
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
+
 import { JourneyStatus } from '../../../../../__generated__/globalTypes'
 import { JourneyType } from '../../JourneyView'
+
 import { Language } from './Language'
 
 interface JourneyDetailsProps {

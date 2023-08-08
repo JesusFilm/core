@@ -1,15 +1,18 @@
-import { ReactElement, useState, MouseEvent } from 'react'
-import Box from '@mui/material/Box'
-import ToggleButton from '@mui/material/ToggleButton'
-import ToggleButtonGroup from '@mui/material/ToggleButtonGroup'
-import Stack from '@mui/material/Stack'
-import { styled } from '@mui/material/styles'
 import ImageIcon from '@mui/icons-material/Image'
 import Videocam from '@mui/icons-material/Videocam'
-import { useEditor } from '@core/journeys/ui/EditorProvider'
+import Box from '@mui/material/Box'
+import Stack from '@mui/material/Stack'
+import { styled } from '@mui/material/styles'
+import ToggleButton from '@mui/material/ToggleButton'
+import ToggleButtonGroup from '@mui/material/ToggleButtonGroup'
+import { MouseEvent, ReactElement, useState } from 'react'
+
 import type { TreeBlock } from '@core/journeys/ui/block'
+import { useEditor } from '@core/journeys/ui/EditorProvider'
+
 import { GetJourney_journey_blocks_CardBlock as CardBlock } from '../../../../../../../../__generated__/GetJourney'
 import { palette } from '../../../../../../ThemeProvider/admin/tokens/colors'
+
 import { BackgroundMediaImage } from './Image/BackgroundMediaImage'
 import { BackgroundMediaVideo } from './Video/BackgroundMediaVideo'
 

@@ -1,14 +1,15 @@
+import Archive from '@mui/icons-material/Archive'
+import CheckCircle from '@mui/icons-material/CheckCircle'
+import DeleteForever from '@mui/icons-material/DeleteForever'
+import DeleteOutline from '@mui/icons-material/DeleteOutline'
+import MoreVert from '@mui/icons-material/MoreVert'
+import Unarchive from '@mui/icons-material/Unarchive'
+import IconButton from '@mui/material/IconButton'
+import Menu from '@mui/material/Menu'
 import { useRouter } from 'next/router'
 import { ReactElement, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import MoreVert from '@mui/icons-material/MoreVert'
-import Archive from '@mui/icons-material/Archive'
-import DeleteForever from '@mui/icons-material/DeleteForever'
-import CheckCircle from '@mui/icons-material/CheckCircle'
-import Unarchive from '@mui/icons-material/Unarchive'
-import DeleteOutline from '@mui/icons-material/DeleteOutline'
-import Menu from '@mui/material/Menu'
-import IconButton from '@mui/material/IconButton'
+
 import { MenuItem } from '../../MenuItem'
 
 interface JourneyListMenuProps {

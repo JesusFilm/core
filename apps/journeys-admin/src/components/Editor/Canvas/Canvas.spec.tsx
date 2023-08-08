@@ -1,24 +1,27 @@
-import { render, fireEvent } from '@testing-library/react'
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
-import {
-  useEditor,
-  EditorState,
-  ActiveTab,
-  ActiveFab,
-  ActiveJourneyEditContent
-} from '@core/journeys/ui/EditorProvider'
-import type { TreeBlock } from '@core/journeys/ui/block'
 import { MockedProvider } from '@apollo/client/testing'
-import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
+import { fireEvent, render } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
+
+import type { TreeBlock } from '@core/journeys/ui/block'
 import {
-  GetJourney_journey_blocks_StepBlock as StepBlock,
-  GetJourney_journey as Journey
+  ActiveFab,
+  ActiveJourneyEditContent,
+  ActiveTab,
+  EditorState,
+  useEditor
+} from '@core/journeys/ui/EditorProvider'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
+
+import {
+  GetJourney_journey as Journey,
+  GetJourney_journey_blocks_StepBlock as StepBlock
 } from '../../../../__generated__/GetJourney'
-import { ThemeProvider } from '../../ThemeProvider'
 import { ThemeMode, ThemeName } from '../../../../__generated__/globalTypes'
-import { NextCard } from '../ControlPanel/Attributes/blocks/Step/NextCard'
+import { ThemeProvider } from '../../ThemeProvider'
 import { HostSidePanel } from '../ControlPanel/Attributes/blocks/Footer/HostSidePanel'
+import { NextCard } from '../ControlPanel/Attributes/blocks/Step/NextCard'
+
 import { Canvas } from '.'
 
 jest.mock('@core/journeys/ui/EditorProvider', () => {
@@ -97,7 +100,7 @@ describe('Canvas', () => {
                     iso3: 'eng'
                   }
                 } as unknown as Journey,
-                admin: true
+                variant: 'admin'
               }}
             >
               <Canvas />
@@ -130,7 +133,7 @@ describe('Canvas', () => {
                     iso3: 'eng'
                   }
                 } as unknown as Journey,
-                admin: true
+                variant: 'admin'
               }}
             >
               <Canvas />
@@ -184,7 +187,7 @@ describe('Canvas', () => {
                     iso3: 'eng'
                   }
                 } as unknown as Journey,
-                admin: true
+                variant: 'admin'
               }}
             >
               <Canvas />

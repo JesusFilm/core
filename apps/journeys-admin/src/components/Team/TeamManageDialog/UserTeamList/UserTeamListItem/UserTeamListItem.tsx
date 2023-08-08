@@ -1,22 +1,23 @@
-import { ReactElement, useState, useMemo, MouseEvent } from 'react'
-import ListItem from '@mui/material/ListItem'
-import compact from 'lodash/compact'
-import Button from '@mui/material/Button'
-import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown'
-import ListItemAvatar from '@mui/material/ListItemAvatar'
-import Avatar from '@mui/material/Avatar'
-import ListItemText from '@mui/material/ListItemText'
-import Divider from '@mui/material/Divider'
-import Stack from '@mui/material/Stack'
-import Menu from '@mui/material/Menu'
-import GroupIcon from '@mui/icons-material/Group'
-import PersonIcon from '@mui/icons-material/Person'
 import { gql, useMutation } from '@apollo/client'
+import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown'
+import Avatar from '@mui/material/Avatar'
+import Button from '@mui/material/Button'
+import Divider from '@mui/material/Divider'
+import ListItem from '@mui/material/ListItem'
+import ListItemAvatar from '@mui/material/ListItemAvatar'
+import ListItemText from '@mui/material/ListItemText'
+import Menu from '@mui/material/Menu'
+import Stack from '@mui/material/Stack'
+import compact from 'lodash/compact'
+import { MouseEvent, ReactElement, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { UserTeamRole } from '../../../../../../__generated__/globalTypes'
+
+import AlertCircleIcon from '@core/shared/ui/icons/AlertCircle'
+
 import { GetUserTeamsAndInvites_userTeams as UserTeam } from '../../../../../../__generated__/GetUserTeamsAndInvites'
-import { MenuItem } from '../../../../MenuItem'
+import { UserTeamRole } from '../../../../../../__generated__/globalTypes'
 import { UserTeamUpdate } from '../../../../../../__generated__/UserTeamUpdate'
+import { MenuItem } from '../../../../MenuItem'
 import { UserTeamDeleteMenuItem } from '../../UserTeamDeleteMenuItem'
 
 interface UserTeamListItemProps {
@@ -138,7 +139,7 @@ export function UserTeamListItem({
           {role === UserTeamRole.member && (
             <MenuItem
               label={t('Manager')}
-              icon={<GroupIcon />}
+              icon={<AlertCircleIcon />}
               onClick={async () => {
                 handleClose()
                 await userTeamUpdate({
@@ -153,7 +154,7 @@ export function UserTeamListItem({
           {role === UserTeamRole.manager && (
             <MenuItem
               label={t('Member')}
-              icon={<PersonIcon />}
+              icon={<AlertCircleIcon />}
               onClick={async () => {
                 handleClose()
                 await userTeamUpdate({

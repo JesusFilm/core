@@ -1,13 +1,16 @@
-import { render, fireEvent, waitFor } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
+import { fireEvent, render, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
+
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+
 import { GetJourney_journey as Journey } from '../../../../../../__generated__/GetJourney'
 import { JOURNEY_DUPLICATE } from '../../../../../libs/useJourneyDuplicateMutation'
 import {
   GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS,
   TeamProvider
 } from '../../../../Team/TeamProvider'
+
 import { DuplicateJourneyMenuItem } from './DuplicateJourneyMenuItem'
 
 describe('DuplicateJourneys', () => {
@@ -59,7 +62,7 @@ describe('DuplicateJourneys', () => {
           <JourneyProvider
             value={{
               journey: { id: 'journeyId' } as unknown as Journey,
-              admin: true
+              variant: 'admin'
             }}
           >
             <TeamProvider>

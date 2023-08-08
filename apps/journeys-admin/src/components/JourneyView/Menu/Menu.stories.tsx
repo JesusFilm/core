@@ -1,15 +1,16 @@
-import { Story, Meta } from '@storybook/react'
-// TODO: remove when teams is released
-import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
-import { screen, userEvent } from '@storybook/testing-library'
 import { MockedProvider } from '@apollo/client/testing'
+import { Meta, Story } from '@storybook/react'
+import { screen, userEvent } from '@storybook/testing-library'
+
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
-import { simpleComponentConfig } from '../../../libs/storybook'
+
 import { JourneyStatus, Role } from '../../../../__generated__/globalTypes'
-import { defaultJourney } from '../data'
+import { simpleComponentConfig } from '../../../libs/storybook'
 import { TeamProvider } from '../../Team/TeamProvider'
+import { defaultJourney } from '../data'
+
 import { GET_LANGUAGES } from './LanguageDialog'
-import { Menu, JOURNEY_PUBLISH, GET_ROLE } from './Menu'
+import { GET_ROLE, JOURNEY_PUBLISH, Menu } from './Menu'
 
 const MenuStory = {
   ...simpleComponentConfig,
@@ -95,13 +96,9 @@ const journeyMocks = [
 const Template: Story = ({ ...args }) => (
   <MockedProvider mocks={args.mocks}>
     <TeamProvider>
-      {/* TODO: remove when teams is released */}
-      <FlagsProvider flags={{ teams: true }}>
-        <JourneyProvider value={{ journey: args.journey, admin: true }}>
-          <Menu {...args} />
-        </JourneyProvider>
-        {/* TODO: remove when teams is released */}
-      </FlagsProvider>
+      <JourneyProvider value={{ journey: args.journey, variant: 'admin' }}>
+        <Menu {...args} />
+      </JourneyProvider>
     </TeamProvider>
   </MockedProvider>
 )

@@ -116,11 +116,6 @@ extend type Query {
     """
     filter: JourneyVisitorFilter!
     """
-    Returns the visitor items related to a specific team.
-    TODO: remove when teams is released
-    """
-    teamId: String
-    """
     Returns the first n elements from the list.
     """
     first: Int

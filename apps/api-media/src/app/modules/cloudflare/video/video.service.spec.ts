@@ -28,6 +28,7 @@ describe('VideoService', () => {
     service = module.get<VideoService>(VideoService)
     mockFetch.mockClear()
   })
+
   afterAll(() => {
     jest.resetAllMocks()
   })
@@ -84,15 +85,16 @@ describe('VideoService', () => {
       } as unknown as Response)
       expect(
         await service.uploadToCloudflareByFile(100, 'name', 'userId')
-      ).toEqual(undefined)
+      ).toBeUndefined()
     })
   })
+
   describe('deleteVideoFromCloudflare', () => {
     it('returns true when successful', async () => {
       const request = mockFetch.mockResolvedValueOnce({
         ok: true
       } as unknown as Response)
-      expect(await service.deleteVideoFromCloudflare('videoId')).toEqual(true)
+      expect(await service.deleteVideoFromCloudflare('videoId')).toBe(true)
       expect(request).toHaveBeenCalledWith(
         `https://api.cloudflare.com/client/v4/accounts/${
           process.env.CLOUDFLARE_ACCOUNT_ID ?? ''
@@ -105,11 +107,12 @@ describe('VideoService', () => {
         }
       )
     })
+
     it('returns false when unsuccessful', async () => {
       const request = mockFetch.mockResolvedValueOnce({
         ok: false
       } as unknown as Response)
-      expect(await service.deleteVideoFromCloudflare('videoId')).toEqual(false)
+      expect(await service.deleteVideoFromCloudflare('videoId')).toBe(false)
       expect(request).toHaveBeenCalledWith(
         `https://api.cloudflare.com/client/v4/accounts/${
           process.env.CLOUDFLARE_ACCOUNT_ID ?? ''
@@ -123,6 +126,7 @@ describe('VideoService', () => {
       )
     })
   })
+
   describe('getVideoFromCloudflare', () => {
     it('returns true when successful', async () => {
       const result: CloudflareVideoGetResponse['result'] = {
@@ -167,7 +171,7 @@ describe('VideoService', () => {
           return await Promise.resolve(response)
         }
       } as unknown as Response)
-      expect((await service.getVideoFromCloudflare('videoId')).success).toEqual(
+      expect((await service.getVideoFromCloudflare('videoId')).success).toBe(
         false
       )
       expect(request).toHaveBeenCalledWith(
@@ -183,6 +187,7 @@ describe('VideoService', () => {
       )
     })
   })
+
   describe('uploadToCloudflareByUrl', () => {
     it('returns cloudflare response information', async () => {
       const response: CloudflareVideoUrlUploadResponse = {

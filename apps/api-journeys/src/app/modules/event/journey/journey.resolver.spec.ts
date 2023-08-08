@@ -1,9 +1,12 @@
 import { Test, TestingModule } from '@nestjs/testing'
+
 import { keyAsId } from '@core/nest/decorators/KeyAsId'
-import { EventService } from '../event.service'
+
 import { JourneyViewEventCreateInput } from '../../../__generated__/graphql'
-import { VisitorService } from '../../visitor/visitor.service'
 import { PrismaService } from '../../../lib/prisma.service'
+import { VisitorService } from '../../visitor/visitor.service'
+import { EventService } from '../event.service'
+
 import { JourneyViewEventResolver } from './journey.resolver'
 
 describe('JourneyViewEventResolver', () => {

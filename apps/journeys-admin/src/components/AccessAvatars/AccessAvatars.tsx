@@ -1,15 +1,17 @@
-import { ReactElement, useState } from 'react'
 import MuiAvatar from '@mui/material/Avatar'
 import AvatarGroup from '@mui/material/AvatarGroup'
-import Box from '@mui/material/Box'
 import Badge from '@mui/material/Badge'
-import noop from 'lodash/noop'
+import Box from '@mui/material/Box'
 import Skeleton from '@mui/material/Skeleton'
 import { styled } from '@mui/material/styles'
-import { AccessDialog } from '../AccessDialog'
+import noop from 'lodash/noop'
+import { ReactElement, useState } from 'react'
+
 import { GetAdminJourneys_journeys_userJourneys as UserJourney } from '../../../__generated__/GetAdminJourneys'
-import { Avatar } from '../Avatar'
 import { UserJourneyRole } from '../../../__generated__/globalTypes'
+import { AccessDialog } from '../AccessDialog'
+import { Avatar } from '../Avatar'
+
 import { ManageAccessAvatar } from './ManageAccessAvatar/ManageAccessAvatar'
 
 export interface AccessAvatarsProps {

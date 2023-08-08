@@ -1,25 +1,28 @@
-import { Story, Meta } from '@storybook/react'
+import { MockedProvider } from '@apollo/client/testing'
+import { Meta, Story } from '@storybook/react'
 import { useState } from 'react'
+import { DragDropContext } from 'react-beautiful-dnd'
+
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
-import { MockedProvider } from '@apollo/client/testing'
-import { DragDropContext } from 'react-beautiful-dnd'
+
 import {
-  GetJourney_journey_blocks_StepBlock as StepBlock,
-  GetJourney_journey as Journey
+  GetJourney_journey as Journey,
+  GetJourney_journey_blocks_StepBlock as StepBlock
 } from '../../../__generated__/GetJourney'
-import { journeysAdminConfig } from '../../libs/storybook'
 import {
   ButtonColor,
   ButtonSize,
   ButtonVariant,
   IconName,
   IconSize,
-  TypographyVariant,
   ThemeMode,
   ThemeName,
+  TypographyVariant,
   VideoBlockSource
 } from '../../../__generated__/globalTypes'
+import { journeysAdminConfig } from '../../libs/storybook'
+
 import { CardPreview } from '.'
 
 const CardPreviewStory = {
@@ -679,7 +682,7 @@ const Template: Story = ({ ...args }) => {
               bcp47: 'en'
             }
           } as unknown as Journey,
-          admin: true
+          variant: 'admin'
         }}
       >
         <DragDropContext>

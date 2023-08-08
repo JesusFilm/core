@@ -1,11 +1,14 @@
 import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
-import { ComponentStory, ComponentMeta } from '@storybook/react'
+import { ComponentMeta, ComponentStory } from '@storybook/react'
+
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import { ThemeMode, ThemeName } from '@core/shared/ui/themes'
+
 import { watchConfig } from '../../libs/storybook/config'
 import { videos } from '../Videos/__generated__/testData'
+
 import { VideoCarousel } from './VideoCarousel'
 
 const VideoCarouselStory: ComponentMeta<typeof VideoCarousel> = {

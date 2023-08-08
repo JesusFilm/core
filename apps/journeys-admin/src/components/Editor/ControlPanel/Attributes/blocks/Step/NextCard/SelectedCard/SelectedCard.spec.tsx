@@ -1,17 +1,20 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
-import { EditorProvider } from '@core/journeys/ui/EditorProvider'
-import type { TreeBlock } from '@core/journeys/ui/block'
 import { fireEvent, render, waitFor } from '@testing-library/react'
+
+import type { TreeBlock } from '@core/journeys/ui/block'
+import { EditorProvider } from '@core/journeys/ui/EditorProvider'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+
 import {
-  GetJourney_journey_blocks_StepBlock as StepBlock,
-  GetJourney_journey as Journey
+  GetJourney_journey as Journey,
+  GetJourney_journey_blocks_StepBlock as StepBlock
 } from '../../../../../../../../../__generated__/GetJourney'
 import {
-  ThemeName,
-  ThemeMode
+  ThemeMode,
+  ThemeName
 } from '../../../../../../../../../__generated__/globalTypes'
-import { SelectedCard, STEP_BLOCK_DEFAULT_NEXT_BLOCK_UPDATE } from '.'
+
+import { STEP_BLOCK_DEFAULT_NEXT_BLOCK_UPDATE, SelectedCard } from '.'
 
 describe('Selected Card', () => {
   const selectedBlock: TreeBlock<StepBlock> = {
@@ -88,7 +91,7 @@ describe('Selected Card', () => {
                 iso3: 'eng'
               }
             } as unknown as Journey,
-            admin: true
+            variant: 'admin'
           }}
         >
           <EditorProvider initialState={{ steps, selectedBlock }}>
@@ -105,7 +108,7 @@ describe('Selected Card', () => {
   it('selects the card after through parentOrder if no nextBlockId', () => {
     const { getByText } = render(
       <MockedProvider>
-        <JourneyProvider>
+        <JourneyProvider value={{ variant: 'admin' }}>
           <EditorProvider
             initialState={{
               steps,
@@ -123,7 +126,7 @@ describe('Selected Card', () => {
   it('does not select a next step if last', () => {
     const { getByText } = render(
       <MockedProvider>
-        <JourneyProvider>
+        <JourneyProvider value={{ variant: 'admin' }}>
           <EditorProvider
             initialState={{
               steps,

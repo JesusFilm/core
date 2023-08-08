@@ -1,11 +1,12 @@
-import { ReactElement, ReactNode } from 'react'
+import AddIcon from '@mui/icons-material/Add'
 import Box from '@mui/material/Box'
-import Typography from '@mui/material/Typography'
 import Card from '@mui/material/Card'
 import CardActionArea from '@mui/material/CardActionArea'
-import Stack from '@mui/material/Stack'
 import Icon from '@mui/material/Icon'
-import AddIcon from '@mui/icons-material/Add'
+import Stack from '@mui/material/Stack'
+import Typography from '@mui/material/Typography'
+import { ReactElement, ReactNode } from 'react'
+
 import { ImageThumbnail } from '../ImageThumbnail'
 
 interface ContainedIconProps {

@@ -1,4 +1,5 @@
 import { render } from '@testing-library/react'
+
 import { FooterLogos } from './FooterLogos'
 
 describe('FooterLogos', () => {
@@ -8,6 +9,7 @@ describe('FooterLogos', () => {
     expect(el).toHaveAttribute('href', 'https://www.jesusfilm.org')
     expect(el).not.toHaveAttribute('target')
   })
+
   it('should have the cru logo link', () => {
     const { getByAltText } = render(<FooterLogos />)
     const el = getByAltText('Cru logo').closest('a')

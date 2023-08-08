@@ -1,25 +1,28 @@
-import { Story, Meta } from '@storybook/react'
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
-import { EditorProvider } from '@core/journeys/ui/EditorProvider'
-import type { TreeBlock } from '@core/journeys/ui/block'
 import { MockedProvider } from '@apollo/client/testing'
 import Box from '@mui/material/Box'
+import { Meta, Story } from '@storybook/react'
+
+import type { TreeBlock } from '@core/journeys/ui/block'
+import { EditorProvider } from '@core/journeys/ui/EditorProvider'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+
 import {
-  GetJourney_journey_blocks_StepBlock as StepBlock,
-  GetJourney_journey as Journey
+  GetJourney_journey as Journey,
+  GetJourney_journey_blocks_StepBlock as StepBlock
 } from '../../../../__generated__/GetJourney'
-import { journeysAdminConfig } from '../../../libs/storybook'
 import {
   ButtonColor,
   ButtonSize,
   ButtonVariant,
   IconName,
   IconSize,
-  TypographyVariant,
   ThemeMode,
   ThemeName,
+  TypographyVariant,
   VideoBlockSource
 } from '../../../../__generated__/globalTypes'
+import { journeysAdminConfig } from '../../../libs/storybook'
+
 import { ControlPanel } from '.'
 
 const ControlPanelStory = {
@@ -636,7 +639,7 @@ const Template: Story = (args) => {
               ]
             }
           } as unknown as Journey,
-          admin: true
+          variant: 'admin'
         }}
       >
         <EditorProvider

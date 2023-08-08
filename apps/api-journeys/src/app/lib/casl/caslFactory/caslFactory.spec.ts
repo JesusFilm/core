@@ -1,20 +1,23 @@
-import { Test, TestingModule } from '@nestjs/testing'
 import { subject } from '@casl/ability'
+import { Test, TestingModule } from '@nestjs/testing'
+
 import {
-  UserInvite,
-  UserTeamRole,
-  UserTeam,
-  UserTeamInvite,
   Host,
   Journey,
   JourneyVisitor,
+  UserInvite,
+  UserTeam,
+  UserTeamInvite,
+  UserTeamRole,
   Visitor
 } from '.prisma/api-journeys-client'
+
 import { Action, AppAbility, AppCaslFactory } from '.'
 
 describe('AppCaslFactory', () => {
   let factory: AppCaslFactory, ability: AppAbility
   const user = { id: 'userId' }
+
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [AppCaslFactory]
@@ -22,6 +25,7 @@ describe('AppCaslFactory', () => {
     factory = module.get<AppCaslFactory>(AppCaslFactory)
     ability = await factory.createAbility(user)
   })
+
   describe('Host', () => {
     it('allow manage when user is team manager', () => {
       expect(
@@ -34,9 +38,10 @@ describe('AppCaslFactory', () => {
             }
           } as unknown as Host)
         )
-      ).toEqual(true)
+      ).toBe(true)
     })
   })
+
   describe('Journey', () => {
     it('allow create when user is team manager', () => {
       expect(
@@ -49,9 +54,10 @@ describe('AppCaslFactory', () => {
             }
           } as unknown as Journey)
         )
-      ).toEqual(true)
+      ).toBe(true)
     })
   })
+
   describe('JourneyVisitor', () => {
     it('allow manage when visitor is user', () => {
       expect(
@@ -63,14 +69,16 @@ describe('AppCaslFactory', () => {
             }
           } as unknown as JourneyVisitor)
         )
-      ).toEqual(true)
+      ).toBe(true)
     })
   })
+
   describe('Team', () => {
     it('allow create', () => {
-      expect(ability.can(Action.Create, 'Team')).toEqual(true)
+      expect(ability.can(Action.Create, 'Team')).toBe(true)
     })
   })
+
   describe('UserInvite', () => {
     it('allow manage when user is team manager', () => {
       expect(
@@ -87,9 +95,10 @@ describe('AppCaslFactory', () => {
             }
           } as unknown as UserInvite)
         )
-      ).toEqual(true)
+      ).toBe(true)
     })
   })
+
   describe('UserTeam', () => {
     it('allow manage when user is team manager', () => {
       expect(
@@ -102,9 +111,10 @@ describe('AppCaslFactory', () => {
             }
           } as unknown as UserTeam)
         )
-      ).toEqual(true)
+      ).toBe(true)
     })
   })
+
   describe('UserTeamInvite', () => {
     it('allow manage when user is team manager', () => {
       expect(
@@ -119,9 +129,10 @@ describe('AppCaslFactory', () => {
             }
           } as unknown as UserTeamInvite)
         )
-      ).toEqual(true)
+      ).toBe(true)
     })
   })
+
   describe('Visitor', () => {
     it('allow manage when visitor is user', () => {
       expect(
@@ -131,7 +142,7 @@ describe('AppCaslFactory', () => {
             userId: 'userId'
           } as unknown as Visitor)
         )
-      ).toEqual(true)
+      ).toBe(true)
     })
   })
 })

@@ -1,11 +1,13 @@
-import { Story, Meta } from '@storybook/react'
 import Stack from '@mui/material/Stack'
-import { journeysAdminConfig } from '../../../../../../libs/storybook'
+import { Meta, Story } from '@storybook/react'
+
 import {
-  IconName,
   IconColor,
+  IconName,
   IconSize
 } from '../../../../../../../__generated__/globalTypes'
+import { journeysAdminConfig } from '../../../../../../libs/storybook'
+
 import { TextResponse } from './TextResponse'
 
 const TextResponseStory = {

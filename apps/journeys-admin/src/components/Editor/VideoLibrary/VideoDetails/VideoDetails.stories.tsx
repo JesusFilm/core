@@ -1,11 +1,13 @@
-import { Story, Meta } from '@storybook/react'
-import { useState, ComponentProps } from 'react'
 import { MockedProvider } from '@apollo/client/testing'
-import { journeysAdminConfig } from '../../../../libs/storybook'
+import { Meta, Story } from '@storybook/react'
+import { ComponentProps, useState } from 'react'
+
 import { GetVideo_video_variantLanguages as Language } from '../../../../../__generated__/GetVideo'
-import { ApolloLoadingProvider } from '../../../../../test/ApolloLoadingProvider'
-import { GET_VIDEO } from '../VideoFromLocal/LocalDetails/LocalDetails'
 import { VideoBlockSource } from '../../../../../__generated__/globalTypes'
+import { ApolloLoadingProvider } from '../../../../../test/ApolloLoadingProvider'
+import { journeysAdminConfig } from '../../../../libs/storybook'
+import { GET_VIDEO } from '../VideoFromLocal/LocalDetails/LocalDetails'
+
 import { VideoDetails } from '.'
 
 const VideoDetailsStory = {

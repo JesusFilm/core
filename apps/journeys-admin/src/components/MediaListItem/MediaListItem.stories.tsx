@@ -1,8 +1,10 @@
-import { Meta, Story } from '@storybook/react'
 import Paper from '@mui/material/Paper'
-import { ComponentProps } from 'react'
 import Stack from '@mui/material/Stack'
+import { Meta, Story } from '@storybook/react'
+import { ComponentProps } from 'react'
+
 import { simpleComponentConfig } from '../../libs/storybook'
+
 import { MediaListItem } from '.'
 
 const MediaListItemDemo = {

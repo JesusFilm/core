@@ -1,9 +1,11 @@
-import { ReactElement, useState } from 'react'
 import Accordion from '@mui/material/Accordion'
-import { JourneyFields_chatButtons as ChatButton } from '../../../../../../../../../__generated__/JourneyFields'
+import { ReactElement, useState } from 'react'
+
 import { ChatPlatform } from '../../../../../../../../../__generated__/globalTypes'
-import { Summary } from './Summary'
+import { JourneyFields_chatButtons as ChatButton } from '../../../../../../../../../__generated__/JourneyFields'
+
 import { Details } from './Details'
+import { Summary } from './Summary'
 
 interface Props {
   title: string

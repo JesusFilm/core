@@ -1,7 +1,9 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { render } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
+
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+
 import { ActionDetails } from './ActionDetails'
 import { journey } from './data'
 
@@ -34,7 +36,7 @@ describe('ActionDetails', () => {
     const { getByText } = render(
       <SnackbarProvider>
         <MockedProvider>
-          <JourneyProvider value={{ journey }}>
+          <JourneyProvider value={{ journey, variant: 'admin' }}>
             <ActionDetails url={url} goalLabel={() => 'Visit a website'} />
           </JourneyProvider>
         </MockedProvider>

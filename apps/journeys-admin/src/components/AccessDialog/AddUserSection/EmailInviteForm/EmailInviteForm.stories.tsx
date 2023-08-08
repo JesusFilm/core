@@ -1,9 +1,11 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { Story, Meta } from '@storybook/react'
-import { screen, userEvent, waitFor } from '@storybook/testing-library'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
+import { Meta, Story } from '@storybook/react'
+import { screen, userEvent, waitFor } from '@storybook/testing-library'
+
 import { journeysAdminConfig } from '../../../../libs/storybook'
+
 import { EmailInviteForm } from '.'
 
 const EmailInviteFormStory = {

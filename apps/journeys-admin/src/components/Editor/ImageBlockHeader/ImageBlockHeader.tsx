@@ -1,15 +1,16 @@
-import { ReactElement } from 'react'
-import Box from '@mui/material/Box'
-import IconButton from '@mui/material/IconButton'
-import Stack from '@mui/material/Stack'
-import Typography from '@mui/material/Typography'
-import Link from '@mui/material/Link'
 import AddIcon from '@mui/icons-material/Add'
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline'
 import EditRounded from '@mui/icons-material/EditRounded'
-import { ImageBlockThumbnail } from '../ImageBlockThumbnail'
+import Box from '@mui/material/Box'
+import IconButton from '@mui/material/IconButton'
+import Link from '@mui/material/Link'
+import Stack from '@mui/material/Stack'
+import Typography from '@mui/material/Typography'
+import { ReactElement } from 'react'
+
 import { GetJourney_journey_blocks_ImageBlock as ImageBlock } from '../../../../__generated__/GetJourney'
 import type { UnsplashAuthor } from '../ImageBlockEditor/UnsplashGallery'
+import { ImageBlockThumbnail } from '../ImageBlockThumbnail'
 
 interface ImageBlockHeaderProps {
   selectedBlock: ImageBlock | null

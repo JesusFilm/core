@@ -1,5 +1,6 @@
-import { render, fireEvent, waitFor } from '@testing-library/react'
+import { fireEvent, render, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
+
 import { EmbedJourneyDialog } from './EmbedJourneyDialog'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
@@ -9,6 +10,7 @@ jest.mock('@mui/material/useMediaQuery', () => ({
 
 describe('embedJourneyDialog', () => {
   const onClose = jest.fn()
+
   it('closes the modal on cancel click', () => {
     const { getByRole } = render(
       <SnackbarProvider>
@@ -33,6 +35,7 @@ describe('embedJourneyDialog', () => {
 
   describe('copies embed code', () => {
     const originalEnv = process.env
+
     beforeEach(() => {
       Object.assign(navigator, {
         clipboard: {

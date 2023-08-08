@@ -1,21 +1,23 @@
-import { ReactElement, useMemo, MouseEvent } from 'react'
-import { useRouter } from 'next/router'
-import MuiButton from '@mui/material/Button'
+import { gql, useMutation } from '@apollo/client'
 import Box from '@mui/material/Box'
-import { useMutation, gql } from '@apollo/client'
-import { v4 as uuidv4 } from 'uuid'
+import MuiButton from '@mui/material/Button'
+import { useRouter } from 'next/router'
+import { MouseEvent, ReactElement, useMemo } from 'react'
 import TagManager from 'react-gtm-module'
 import { useTranslation } from 'react-i18next'
+import { v4 as uuidv4 } from 'uuid'
+
+import { ButtonVariant } from '../../../__generated__/globalTypes'
 import { handleAction } from '../../libs/action'
 import type { TreeBlock } from '../../libs/block'
-import { useJourney } from '../../libs/JourneyProvider'
 import { useBlocks } from '../../libs/block'
 import { getStepHeading } from '../../libs/getStepHeading'
-import { ButtonVariant } from '../../../__generated__/globalTypes'
-import { IconFields } from '../Icon/__generated__/IconFields'
+import { useJourney } from '../../libs/JourneyProvider'
 import { Icon } from '../Icon'
-import { ButtonFields } from './__generated__/ButtonFields'
+import { IconFields } from '../Icon/__generated__/IconFields'
+
 import { ButtonClickEventCreate } from './__generated__/ButtonClickEventCreate'
+import { ButtonFields } from './__generated__/ButtonFields'
 import { ChatOpenEventCreate } from './__generated__/ChatOpenEventCreate'
 import { findChatPlatform } from './utils/findChatPlatform'
 import { getActionLabel } from './utils/getActionLabel'
@@ -59,7 +61,7 @@ export function Button({
     CHAT_OPEN_EVENT_CREATE
   )
 
-  const { admin } = useJourney()
+  const { variant } = useJourney()
   const { treeBlocks, blockHistory } = useBlocks()
   const { t } = useTranslation('libs-journeys-ui')
   const activeBlock = blockHistory[blockHistory.length - 1]
@@ -84,7 +86,7 @@ export function Button({
   )
 
   function createClickEvent(): void {
-    if (!admin) {
+    if (variant === 'default' || variant === 'embed') {
       const id = uuidv4()
       void buttonClickEventCreate({
         variables: {
@@ -111,7 +113,7 @@ export function Button({
   }
 
   function createChatEvent(): void {
-    if (!admin) {
+    if (variant === 'default' || variant === 'embed') {
       const id = uuidv4()
       void chatOpenEventCreate({
         variables: {

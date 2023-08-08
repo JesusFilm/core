@@ -1,19 +1,21 @@
-import { ReactElement } from 'react'
-import Typography from '@mui/material/Typography'
 import { gql, useMutation } from '@apollo/client'
 import HorizontalRuleRoundedIcon from '@mui/icons-material/HorizontalRuleRounded'
-import { useJourney } from '@core/journeys/ui/JourneyProvider'
-import { useEditor } from '@core/journeys/ui/EditorProvider'
+import Typography from '@mui/material/Typography'
+import { ReactElement } from 'react'
+
 import type { TreeBlock } from '@core/journeys/ui/block'
-import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
+import { useEditor } from '@core/journeys/ui/EditorProvider'
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { getJourneyRTL } from '@core/journeys/ui/rtl'
-import { TypographyBlockUpdateVariant } from '../../../../../../../../__generated__/TypographyBlockUpdateVariant'
-import {
-  TypographyVariant,
-  ThemeName,
-  ThemeMode
-} from '../../../../../../../../__generated__/globalTypes'
+import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
+
 import { GetJourney_journey_blocks_TypographyBlock as TypographyBlock } from '../../../../../../../../__generated__/GetJourney'
+import {
+  ThemeMode,
+  ThemeName,
+  TypographyVariant
+} from '../../../../../../../../__generated__/globalTypes'
+import { TypographyBlockUpdateVariant } from '../../../../../../../../__generated__/TypographyBlockUpdateVariant'
 import { ToggleButtonGroup } from '../../../ToggleButtonGroup'
 
 export const TYPOGRAPHY_BLOCK_UPDATE_VARIANT = gql`

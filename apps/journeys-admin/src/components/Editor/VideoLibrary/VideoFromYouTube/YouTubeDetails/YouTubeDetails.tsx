@@ -1,23 +1,25 @@
-import videojs from 'video.js'
-import { ReactElement, useEffect, useRef, useState } from 'react'
+import Check from '@mui/icons-material/Check'
+import Button from '@mui/material/Button'
+import Skeleton from '@mui/material/Skeleton'
+import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import Box from '@mui/system/Box'
-import Button from '@mui/material/Button'
-import Stack from '@mui/material/Stack'
-import Check from '@mui/icons-material/Check'
-import Skeleton from '@mui/material/Skeleton'
-import 'video.js/dist/video-js.css'
-import useSWR from 'swr'
 import fetch from 'node-fetch'
+import { ReactElement, useEffect, useRef, useState } from 'react'
+import useSWR from 'swr'
+import videojs from 'video.js'
 import Player from 'video.js/dist/types/player'
-import {
-  parseISO8601Duration,
-  YoutubeVideo,
-  YoutubeVideosData
-} from '../VideoFromYouTube'
+
 import { VideoBlockSource } from '../../../../../../__generated__/globalTypes'
-import type { VideoDetailsProps } from '../../VideoDetails/VideoDetails'
 import { VideoDescription } from '../../VideoDescription'
+import type { VideoDetailsProps } from '../../VideoDetails/VideoDetails'
+import {
+  YoutubeVideo,
+  YoutubeVideosData,
+  parseISO8601Duration
+} from '../VideoFromYouTube'
+
+import 'video.js/dist/video-js.css'
 
 const fetcher = async (id: string): Promise<YoutubeVideo> => {
   const videosQuery = new URLSearchParams({

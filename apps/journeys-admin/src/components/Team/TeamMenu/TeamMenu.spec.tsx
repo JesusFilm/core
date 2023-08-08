@@ -1,12 +1,14 @@
-import { fireEvent, render, waitFor } from '@testing-library/react'
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
-import { SnackbarProvider } from 'notistack'
 import useMediaQuery from '@mui/material/useMediaQuery'
+import { fireEvent, render, waitFor } from '@testing-library/react'
+import { SnackbarProvider } from 'notistack'
+
+import { GetLastActiveTeamIdAndTeams } from '../../../../__generated__/GetLastActiveTeamIdAndTeams'
 import {
   GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS,
   TeamProvider
 } from '../TeamProvider'
-import { GetLastActiveTeamIdAndTeams } from '../../../../__generated__/GetLastActiveTeamIdAndTeams'
+
 import { TeamMenu } from '.'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
@@ -16,6 +18,7 @@ jest.mock('@mui/material/useMediaQuery', () => ({
 
 describe('TeamMenu', () => {
   beforeEach(() => (useMediaQuery as jest.Mock).mockImplementation(() => true))
+
   const getTeamsMock: MockedResponse<GetLastActiveTeamIdAndTeams> = {
     request: {
       query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
@@ -101,6 +104,7 @@ describe('TeamMenu', () => {
       'true'
     )
   })
+
   it('disables manage team button', async () => {
     const { getByRole } = render(
       <MockedProvider mocks={[getEmptyTeamsMock]}>

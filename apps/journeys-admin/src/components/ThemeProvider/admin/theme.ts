@@ -1,4 +1,5 @@
 import { createTheme } from '@mui/material/styles'
+
 import { adminColorsLight } from './tokens/colors'
 import { adminComponents } from './tokens/components'
 import { adminSpacing } from './tokens/spacing'

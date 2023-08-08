@@ -1,6 +1,7 @@
-import { ReactElement } from 'react'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
+import { ReactElement } from 'react'
+
 import { FooterLink } from '../FooterLink'
 
 export function FooterLinks(): ReactElement {

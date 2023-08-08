@@ -1,8 +1,11 @@
-import { Meta, Story } from '@storybook/react'
 import ExploreRoundedIcon from '@mui/icons-material/ExploreRounded'
+import { Meta, Story } from '@storybook/react'
+
 import { journeysAdminConfig } from '../../../../libs/storybook'
 import { StyledList } from '../NavigationDrawer'
+
 import { NavigationListItemProps } from './NavigationListItem'
+
 import { NavigationListItem } from '.'
 
 const NavigationListItemStory = {

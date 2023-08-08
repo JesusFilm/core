@@ -1,6 +1,9 @@
-import { render, fireEvent } from '@testing-library/react'
+import { fireEvent, render } from '@testing-library/react'
+
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
+
 import { ThemeProvider } from '../../../../ThemeProvider'
+
 import { Attribute } from '.'
 
 describe('Attribute', () => {
