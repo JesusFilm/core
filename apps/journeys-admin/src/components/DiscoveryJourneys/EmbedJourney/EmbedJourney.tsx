@@ -3,6 +3,7 @@ import { ReactElement } from 'react'
 
 import { TreeBlock } from '@core/journeys/ui/block'
 import { BlockRenderer } from '@core/journeys/ui/BlockRenderer'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { StepFooter } from '@core/journeys/ui/StepFooter'
 import { transformer } from '@core/journeys/ui/transformer'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
@@ -75,24 +76,26 @@ export function EmbedJourney({ slug, discoveryJourney }: Props): ReactElement {
             }}
           />
           <FramePortal height="100%" width="100%">
-            <ThemeProvider
-              themeName={ThemeName.base}
-              themeMode={ThemeMode.light}
-            >
-              <Box
-                sx={{
-                  height: '100%',
-                  width: '100%',
-                  borderRadius: 4,
-                  overflow: 'hidden',
-                  position: 'relative',
-                  cursor: 'pointer'
-                }}
+            <JourneyProvider value={{ variant: 'embed' }}>
+              <ThemeProvider
+                themeName={ThemeName.base}
+                themeMode={ThemeMode.light}
               >
-                <BlockRenderer block={block} />
-                <StepFooter title={discoveryJourney?.seoTitle ?? ''} />
-              </Box>
-            </ThemeProvider>
+                <Box
+                  sx={{
+                    height: '100%',
+                    width: '100%',
+                    borderRadius: 4,
+                    overflow: 'hidden',
+                    position: 'relative',
+                    cursor: 'pointer'
+                  }}
+                >
+                  <BlockRenderer block={block} />
+                  <StepFooter title={discoveryJourney?.seoTitle ?? ''} />
+                </Box>
+              </ThemeProvider>
+            </JourneyProvider>
           </FramePortal>
         </>
       )}

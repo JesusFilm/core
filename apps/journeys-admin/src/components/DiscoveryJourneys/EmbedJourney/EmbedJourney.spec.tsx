@@ -6,6 +6,15 @@ import { discoveryJourneys } from '../data'
 
 import { EmbedJourney } from '.'
 
+jest.mock('react-i18next', () => ({
+  __esModule: true,
+  useTranslation: () => {
+    return {
+      t: (str: string) => str
+    }
+  }
+}))
+
 describe('EmbedJourney', () => {
   it('should handle click for embed journey', () => {
     window.open = jest.fn()

@@ -42,6 +42,7 @@ export function StepFooter({
       data-testid="stepFooter"
       className="swiper-no-swiping"
       sx={{
+        position: { xs: 'absolute', lg: 'relative' },
         zIndex: 1,
         bottom: 0,
         ...sx

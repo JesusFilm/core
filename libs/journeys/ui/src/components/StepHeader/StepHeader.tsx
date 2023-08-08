@@ -36,6 +36,7 @@ export function StepHeader({ sx }: Props): ReactElement {
     <Stack
       data-testid="stepHeader"
       sx={{
+        position: { xs: 'absolute', lg: 'relative' },
         mt: { xs: 1, lg: 0 },
         zIndex: 1,
         top: 0,

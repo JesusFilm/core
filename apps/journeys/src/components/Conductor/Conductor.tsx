@@ -173,8 +173,7 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
       lg: 'auto'
     },
     left: variant === 'default' ? 'env(safe-area-inset-left)' : undefined,
-    right: variant === 'default' ? 'env(safe-area-inset-right)' : undefined,
-    position: { xs: 'absolute', lg: 'relative' }
+    right: variant === 'default' ? 'env(safe-area-inset-right)' : undefined
   }
 
   return (
@@ -210,8 +209,8 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
               )
               return (
                 <SwiperSlide
-                  onClick={() => setShowNavigation(true)}
                   key={block.id}
+                  onClick={() => setShowNavigation(true)}
                 >
                   <ThemeProvider {...theme} locale={locale} rtl={rtl} nested>
                     <Fade
@@ -222,10 +221,7 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
                       <Stack
                         justifyContent="center"
                         sx={{
-                          maxHeight: {
-                            xs: '100vh',
-                            lg: 'calc(100vh - 80px)'
-                          },
+                          maxHeight: { xs: '100vh', lg: 'calc(100vh - 80px)' },
                           height: {
                             xs: 'inherit',
                             lg: 'calc(54.25vw + 102px)'
