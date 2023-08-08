@@ -135,7 +135,7 @@ const LoadingTemplate: Story<ComponentProps<typeof SignUp>> = ({
   ...args
 }): ReactElement => (
   <ApolloLoadingProvider>
-    <JourneyProvider value={{ variant: 'admin' }}>
+    <JourneyProvider>
       <SnackbarProvider>
         <StoryCard>
           <SignUp {...args} uuid={() => 'uuid'} />
