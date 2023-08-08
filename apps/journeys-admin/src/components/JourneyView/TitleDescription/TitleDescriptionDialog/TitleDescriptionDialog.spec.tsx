@@ -46,7 +46,12 @@ describe('TitleDescriptionDialog', () => {
         ]}
       >
         <SnackbarProvider>
-          <JourneyProvider value={{ journey: defaultJourney, admin: true }}>
+          <JourneyProvider
+            value={{
+              journey: defaultJourney,
+              variant: 'admin'
+            }}
+          >
             <TitleDescriptionDialog open onClose={onClose} />
           </JourneyProvider>
         </SnackbarProvider>
@@ -95,7 +100,12 @@ describe('TitleDescriptionDialog', () => {
         ]}
       >
         <SnackbarProvider>
-          <JourneyProvider value={{ journey: defaultJourney, admin: true }}>
+          <JourneyProvider
+            value={{
+              journey: defaultJourney,
+              variant: 'admin'
+            }}
+          >
             <TitleDescriptionDialog open onClose={onClose} />
           </JourneyProvider>
         </SnackbarProvider>

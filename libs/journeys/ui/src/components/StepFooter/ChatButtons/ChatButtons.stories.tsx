@@ -22,7 +22,6 @@ const Template: Story<{ chatButtons: ChatButton[] }> = ({ chatButtons }) => {
     <MockedProvider>
       <JourneyProvider
         value={{
-          admin: true,
           journey: {
             id: 'journeyId',
             language: {
@@ -32,7 +31,8 @@ const Template: Story<{ chatButtons: ChatButton[] }> = ({ chatButtons }) => {
               iso3: 'eng'
             },
             chatButtons
-          } as unknown as Journey
+          } as unknown as Journey,
+          variant: 'admin'
         }}
       >
         <ChatButtons />

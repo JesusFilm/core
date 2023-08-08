@@ -27,7 +27,7 @@ const Template: Story = ({ ...args }) => {
       <JourneyProvider
         value={{
           journey: args.journey,
-          admin: true
+          variant: 'admin'
         }}
       >
         <EmbedJourneyDialog

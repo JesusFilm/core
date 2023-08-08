@@ -22,7 +22,7 @@ const PropertiesStory = {
 const Template: Story = ({ ...args }) => (
   <MockedProvider mocks={[]}>
     <FlagsProvider>
-      <JourneyProvider value={{ journey: args.journey, admin: true }}>
+      <JourneyProvider value={{ journey: args.journey, variant: 'admin' }}>
         <Properties {...args} journeyType="Template" />
       </JourneyProvider>
     </FlagsProvider>

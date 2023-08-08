@@ -131,7 +131,7 @@ const Template: Story = () => (
             iso3: 'eng'
           }
         } as unknown as Journey,
-        admin: true
+        variant: 'admin'
       }}
     >
       <FramePortal width={356} height={536} dir="ltr">
