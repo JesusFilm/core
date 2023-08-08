@@ -9,6 +9,7 @@ import Button from '@mui/material/ListItemButton'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { ClipboardEvent, ReactElement, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import { CreateCloudflareUploadByUrl } from '../../../../../../__generated__/CreateCloudflareUploadByUrl'
 import { TextFieldForm } from '../../../../TextFieldForm'
@@ -26,6 +27,7 @@ interface CustomUrlProps {
 }
 
 export function CustomUrl({ onChange }: CustomUrlProps): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
   const [open, setOpen] = useState(false)
   const [createCloudflareUploadByUrl] =
     useMutation<CreateCloudflareUploadByUrl>(CREATE_CLOUDFLARE_UPLOAD_BY_URL)
@@ -80,11 +82,11 @@ export function CustomUrl({ onChange }: CustomUrlProps): ReactElement {
           <Stack sx={{ pt: 3, px: 6 }}>
             <TextFieldForm
               id="src"
-              label="Paste URL of image..."
+              label={t('Paste URL of image...')}
               initialValue=""
               onSubmit={handleChange}
               onPaste={handlePaste}
-              helperText="Make sure image address is permanent"
+              helperText={t('Make sure image address is permanent')}
               startIcon={
                 <InputAdornment position="start">
                   <LinkIcon />

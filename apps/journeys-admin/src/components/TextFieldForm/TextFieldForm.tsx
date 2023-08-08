@@ -78,9 +78,7 @@ export function TextFieldForm({
               startAdornment: startIcon,
               endAdornment: endIcon
             }}
-            onPaste={(e) => {
-              onPaste?.(e)
-            }}
+            onPaste={onPaste}
             onBlur={(e) => {
               handleBlur(e)
               if (errors[id] == null) {

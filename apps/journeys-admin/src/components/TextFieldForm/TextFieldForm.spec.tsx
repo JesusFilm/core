@@ -154,7 +154,7 @@ describe('TextFieldForm', () => {
     })
   })
 
-  it('should call onPaste when a user paste value', async () => {
+  it('should call onPaste when a user pastes value', async () => {
     const onPaste = jest.fn()
     const { getByRole } = render(
       <TextFieldForm
