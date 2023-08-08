@@ -1,5 +1,5 @@
 import { subject } from '@casl/ability'
-import { UseGuards } from '@nestjs/common'
+import { Logger, UseGuards } from '@nestjs/common'
 import {
   Args,
   Mutation,
@@ -342,7 +342,7 @@ export class JourneyResolver {
           }
         }
       })
-    console.log('existing', existingActiveDuplicateJourneys)
+    Logger.log('existing', existingActiveDuplicateJourneys)
     const duplicates = this.getJourneyDuplicateNumbers(
       existingActiveDuplicateJourneys,
       journey.title
