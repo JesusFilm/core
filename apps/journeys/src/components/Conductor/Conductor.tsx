@@ -163,7 +163,6 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
     }
   }, [swiper, blockHistory])
 
-  // Shared position styling for stepHeader and stepFooter with notch calculations when applicable.
   const mobileNotchStyling: SxProps = {
     width: {
       xs:
