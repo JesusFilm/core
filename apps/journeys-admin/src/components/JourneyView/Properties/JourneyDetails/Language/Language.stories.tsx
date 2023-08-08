@@ -18,7 +18,7 @@ const LanguageStory = {
 const Template: Story = ({ ...args }) => (
   <MockedProvider>
     <SnackbarProvider>
-      <JourneyProvider value={{ journey: args.journey }}>
+      <JourneyProvider value={{ journey: args.journey, variant: 'admin' }}>
         <Language isPublisher={args.isPublisher} />
       </JourneyProvider>
     </SnackbarProvider>

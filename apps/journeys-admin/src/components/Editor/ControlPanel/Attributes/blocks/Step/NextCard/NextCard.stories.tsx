@@ -110,7 +110,7 @@ const journeyTheme = {
 const Template: Story = ({ ...args }) => {
   return (
     <MockedProvider>
-      <JourneyProvider value={{ journey: journeyTheme, admin: true }}>
+      <JourneyProvider value={{ journey: journeyTheme, variant: 'admin' }}>
         <EditorProvider
           initialState={{
             ...args,

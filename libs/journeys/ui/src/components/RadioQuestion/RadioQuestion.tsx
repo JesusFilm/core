@@ -48,7 +48,7 @@ export function RadioQuestion({
     useMutation<RadioQuestionSubmissionEventCreate>(
       RADIO_QUESTION_SUBMISSION_EVENT_CREATE
     )
-  const { admin } = useJourney()
+  const { variant } = useJourney()
   const [selectedId, setSelectedId] = useState<string | null>(null)
   const { blockHistory, treeBlocks } = useBlocks()
   const { t } = useTranslation('libs-journeys-ui')
@@ -63,7 +63,7 @@ export function RadioQuestion({
     radioOptionBlockId: string,
     radioOptionLabel: string
   ): void => {
-    if (!admin) {
+    if (variant === 'default' || variant === 'embed') {
       const id = uuid()
       void radioQuestionSubmissionEventCreate({
         variables: {

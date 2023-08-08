@@ -14,13 +14,14 @@ import { useTranslation } from 'react-i18next'
 import { useJourney } from '../../libs/JourneyProvider'
 
 export function StepHeader(): ReactElement {
-  const { journey, admin } = useJourney()
+  const { journey, variant } = useJourney()
   const { t } = useTranslation('libs-journeys-ui')
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
   const open = Boolean(anchorEl)
 
   const handleClick = (event: MouseEvent<HTMLButtonElement>): void => {
-    if (!admin) setAnchorEl(event.currentTarget)
+    if (variant === 'default' || variant === 'embed')
+      setAnchorEl(event.currentTarget)
   }
   const handleClose = (): void => {
     setAnchorEl(null)

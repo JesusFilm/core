@@ -22,7 +22,8 @@ describe('DatePreview', () => {
               ...publishedJourney,
               slug: 'template-slug',
               template: true
-            }
+            },
+            variant: 'admin'
           }}
         >
           <DatePreview />
@@ -42,7 +43,8 @@ describe('DatePreview', () => {
               ...publishedJourney,
               slug: 'template-slug',
               template: true
-            }
+            },
+            variant: 'admin'
           }}
         >
           <DatePreview />

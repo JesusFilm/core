@@ -80,7 +80,7 @@ export const Default: Story = () => {
 
   return (
     <MockedProvider>
-      <JourneyProvider value={{ journey, admin: true }}>
+      <JourneyProvider value={{ journey, variant: 'admin' }}>
         <EditorProvider
           initialState={{
             selectedBlock: block,
@@ -112,7 +112,7 @@ export const FullScreen: Story = () => {
 
   return (
     <MockedProvider>
-      <JourneyProvider value={{ journey, admin: true }}>
+      <JourneyProvider value={{ journey, variant: 'admin' }}>
         <EditorProvider
           initialState={{
             selectedBlock: block,
