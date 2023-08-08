@@ -31,7 +31,7 @@ export function TeamAvatars({
         sx={{
           '.MuiAvatar-root': {
             borderWidth: '1px',
-            fontSize: size === 'small' ? 8 : 12,
+            fontSize: 12,
             width: size === 'small' ? '22px' : '30px',
             height: size === 'small' ? '22px' : '30px'
           }
