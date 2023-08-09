@@ -108,6 +108,11 @@ Default.args = {
   journey: { ...journey, host: null }
 }
 
+export const Disabled = Template.bind({})
+Disabled.args = {
+  journey: { ...journey, host: null }
+}
+
 export const EditHost = Template.bind({})
 EditHost.args = {
   journey

@@ -18,6 +18,10 @@ import { SidePanelContainer } from '../../../../../../NewPageWrapper/SidePanelCo
 
 import { HostForm } from './HostForm'
 import { HostList } from './HostList'
+import AlertCircleIcon from '@core/shared/ui/icons/AlertCircle'
+import { useUserTeamsAndInvitesQuery } from '../../../../../../../libs/useUserTeamsAndInvitesQuery'
+import { UserTeamRole } from '../../../../../../../../__generated__/globalTypes'
+import { useAuthUser } from 'next-firebase-auth'
 
 export const GET_ALL_TEAM_HOSTS = gql`
   query Hosts($teamId: ID!) {
@@ -34,11 +38,30 @@ export const GET_ALL_TEAM_HOSTS = gql`
 export function HostSidePanel(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { journey } = useJourney()
-  const { data, refetch } = useQuery(GET_ALL_TEAM_HOSTS, {
-    variables: { teamId: journey?.team?.id },
-    skip: journey?.team == null
-  })
+
+  // Get all team members of journey team, check if user in team
+  const authUser = useAuthUser()
   const team = journey?.team ?? undefined
+  const { data } = useUserTeamsAndInvitesQuery(
+    team != null
+      ? {
+          teamId: team.id,
+          where: { role: [UserTeamRole.manager, UserTeamRole.member] }
+        }
+      : undefined
+  )
+  const userInTeam =
+    data == null || data.userTeams.length === 0 || team == null
+      ? false
+      : data.userTeams.filter((userTeam) => userTeam.user.id === authUser.id)
+          .length > 0
+
+  // Fetch all hosts made for a team
+  const { data: teamHosts, refetch } = useQuery(GET_ALL_TEAM_HOSTS, {
+    variables: { teamId: journey?.team?.id },
+    skip: team == null
+  })
+
   const [selectedHost, setSelectedHost] = useState<Host | undefined>(
     journey?.host ?? undefined
   )
@@ -60,7 +83,7 @@ export function HostSidePanel(): ReactElement {
   }
 
   const handleSelectHost = async (hostId: string): Promise<void> => {
-    setSelectedHost(data.hosts.find((host) => host.id === hostId))
+    setSelectedHost(teamHosts.hosts.find((host) => host.id === hostId))
     setOpenSelect(false)
   }
 
@@ -68,14 +91,27 @@ export function HostSidePanel(): ReactElement {
     <>
       {/* DefaultHostPanel - no host */}
       <SidePanel title={t('Hosted By')} open edit>
-        {!openSelect && selectedHost == null && (
-          <SidePanelContainer border={false}>
-            <ContainedIconButton
-              label={t('Select a Host')}
-              thumbnailIcon={<UserProfiles2Icon />}
-              onClick={() => setOpenSelect(true)}
-            />
-          </SidePanelContainer>
+        {!openSelect && (selectedHost == null || !userInTeam) && (
+          <>
+            <SidePanelContainer border={!userInTeam}>
+              <ContainedIconButton
+                label={t('Select a Host')}
+                disabled={!userInTeam}
+                thumbnailIcon={<UserProfiles2Icon />}
+                onClick={() => setOpenSelect(true)}
+              />
+            </SidePanelContainer>
+            {!userInTeam && team != null && (
+              <SidePanelContainer>
+                <Stack direction="row" alignItems="center" gap={3}>
+                  <AlertCircleIcon />
+                  <Typography variant="subtitle2">
+                    {`${t('Only')} ${team.title} ${t('members can edit this')}`}
+                  </Typography>
+                </Stack>
+              </SidePanelContainer>
+            )}
+          </>
         )}
       </SidePanel>
 
@@ -113,7 +149,7 @@ export function HostSidePanel(): ReactElement {
               </Stack>
             </SidePanelContainer>
             <HostList
-              hosts={data?.hosts ?? []}
+              hosts={teamHosts?.hosts ?? []}
               onItemClick={handleSelectHost}
             />
           </>
@@ -150,7 +186,7 @@ export function HostSidePanel(): ReactElement {
       </SidePanel>
 
       {/* Create / EditHostPanel */}
-      {(openCreateHost || selectedHost != null) && (
+      {userInTeam && (openCreateHost || selectedHost != null) && (
         <SidePanel title={t('Hosted By')} edit>
           <HostForm onClear={handleClear} />
         </SidePanel>
