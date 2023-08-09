@@ -90,7 +90,7 @@ function JourneysApp({
       <Head>
         <meta
           name="viewport"
-          content="minimum-scale=1, initial-scale=1, width=device-width viewport-fit=cover"
+          content="minimum-scale=1, initial-scale=1, width=device-width height=device-height viewport-fit=cover"
         />
         {/* Always sets background color to dark theme when on a single journey */}
         <meta
