@@ -147,6 +147,32 @@ describe('ContainedCover', () => {
     expect(posterImage).toHaveAttribute('aria-details', imageBlock.src)
   })
 
+  it('should render background video with videoBlock.video.image', () => {
+    const { getByTestId, getByRole } = render(
+      <ContainedCover
+        backgroundColor="#DDD"
+        backgroundBlur={blurUrl}
+        videoBlock={{ ...videoBlock }}
+      >
+        {children}
+      </ContainedCover>
+    )
+
+    const source = getByRole('region', { name: 'Video Player' }).querySelector(
+      '.vjs-tech source'
+    )
+    expect(source).toHaveAttribute(
+      'src',
+      'https://arc.gt/hls/2_0-FallingPlates/529'
+    )
+    expect(source).toHaveAttribute('type', 'application/x-mpegURL')
+
+    const posterImage = getByTestId('video-poster-image')
+
+    expect(posterImage).toHaveAccessibleName('card video image')
+    expect(posterImage).toHaveAttribute('aria-details', videoBlock.video?.image)
+  })
+
   it('should render background video with default cloudflare thumbnail image', () => {
     const { getByTestId, getByRole } = render(
       <ContainedCover
