@@ -117,4 +117,3 @@ export function TeamMenu(): ReactElement {
     </>
   )
 }
-

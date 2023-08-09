@@ -20,14 +20,14 @@ export const adminComponents: Required<Pick<ThemeOptions, 'components'>> = {
     MuiPaper: {
       styleOverrides: {
         rounded: {
-          borderRadius: '12px',
+          borderRadius: '12px'
         }
       }
     },
     MuiChip: {
       styleOverrides: {
         icon: {
-          marginLeft: '8px',
+          marginLeft: '8px'
         }
       }
     },

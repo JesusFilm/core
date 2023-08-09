@@ -90,4 +90,3 @@ EmptyTeams.play = async () => {
 }
 
 export default TeamMenuStory as Meta
-
