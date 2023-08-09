@@ -42,8 +42,10 @@ export async function initAndAuthApp({
       i18nConfig
     ),
     getLaunchDarklyClient(ldUser),
-    AuthUser.getIdToken()
+    AuthUser.getIdToken(true)
   ])
+
+  console.log('token', token)
 
   const flags = (await launchDarklyClient.allFlagsState(ldUser)).toJSON() as {
     [key: string]: boolean | undefined
