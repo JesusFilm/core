@@ -44,7 +44,7 @@ export function Card({
   useEffect(() => {
     document
       .querySelector('meta[name="theme-color"]')
-      ?.setAttribute('content', `${cardColor}4d`) // the transparency is not actually working
+      ?.setAttribute('content', cardColor)
   }, [cardColor])
 
   const coverBlock = children.find(

@@ -34,6 +34,13 @@ export function ExpandedCover({
     }
   }
 
+  const background =
+    backgroundColor != null
+      ? imageBlock?.src != null
+        ? `${backgroundColor}4d`
+        : backgroundColor
+      : 'unset'
+
   return (
     <>
       {/* Background Image */}
@@ -54,8 +61,7 @@ export function ExpandedCover({
           height: '100%',
           WebkitBackdropFilter: 'blur(20px)',
           backdropFilter: 'blur(20px)',
-          background:
-            backgroundColor != null ? `${backgroundColor}4d` : 'unset',
+          background,
           borderRadius: 'inherit',
           overflow: 'hidden'
         }}
