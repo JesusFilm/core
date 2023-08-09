@@ -865,37 +865,51 @@ describe('JourneyResolver', () => {
     it('duplicates a template journey', async () => {
       prismaService.journey.findUnique
         .mockReset()
-        // lookup existing journey to duplicate and authorize
+        // lookup journey to duplicate and authorize
         .mockResolvedValueOnce({ ...journeyWithUserTeam, template: true })
         // lookup duplicate journey once created and authorize
         .mockResolvedValueOnce(journeyWithUserTeam)
+      prismaService.journey.findMany
+        .mockReset()
+        // lookup existing duplicate active journeys
+        .mockResolvedValueOnce([])
+
+      // Initial duplicate creates slug with journey title only
+      prismaService.journey.create.mockRejectedValueOnce({
+        code: ERROR_PSQL_UNIQUE_CONSTRAINT_VIOLATED
+      })
+
       await resolver.journeyDuplicate(ability, 'journeyId', 'userId', 'teamId')
-      expect(prismaService.journey.create).toHaveBeenCalledWith({
-        data: {
-          ...omit(journey, [
-            'parentBlockId',
-            'nextBlockId',
-            'hostId',
-            'primaryImageBlockId',
-            'publishedAt',
-            'teamId',
-            'createdAt'
-          ]),
-          id: 'duplicateJourneyId',
-          status: JourneyStatus.draft,
-          slug: `${journey.title}-copy`,
-          title: `${journey.title} copy`,
-          template: false,
-          team: {
-            connect: { id: 'teamId' }
-          },
-          userJourneys: {
-            create: {
-              userId: 'userId',
-              role: UserJourneyRole.owner
-            }
+
+      const data = {
+        ...omit(journey, [
+          'parentBlockId',
+          'nextBlockId',
+          'hostId',
+          'primaryImageBlockId',
+          'publishedAt',
+          'teamId',
+          'createdAt'
+        ]),
+        id: 'duplicateJourneyId',
+        status: JourneyStatus.draft,
+        slug: journey.title,
+        title: journey.title,
+        template: false,
+        team: {
+          connect: { id: 'teamId' }
+        },
+        userJourneys: {
+          create: {
+            userId: 'userId',
+            role: UserJourneyRole.owner
           }
         }
+      }
+
+      expect(prismaService.journey.create).toHaveBeenNthCalledWith(1, { data })
+      expect(prismaService.journey.create).toHaveBeenLastCalledWith({
+        data: { ...data, slug: `${journey.title}-duplicateJourneyId` }
       })
     })
 
