@@ -25,7 +25,8 @@ describe('TeamUpdateDialog', () => {
           {
             id: 'teamId',
             title: 'Jesus Film Project',
-            __typename: 'Team'
+            __typename: 'Team',
+            userTeams: []
           }
         ],
         getJourneyProfile: {
