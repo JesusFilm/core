@@ -37,7 +37,7 @@ export const GET_VIDEO = gql`
         primary
         value
       }
-      variant {
+      variant(languageId: $languageId) {
         id
         duration
         hls
@@ -53,6 +53,14 @@ export const GET_VIDEO = gql`
   }
 `
 
+const DEFAULT_LANGUAGE_ID = '529'
+
+const DEFAULT_LANGUAGE = {
+  id: DEFAULT_LANGUAGE_ID,
+  localName: undefined,
+  nativeName: 'English'
+}
+
 export function LocalDetails({
   open,
   id,
@@ -61,33 +69,31 @@ export function LocalDetails({
   const videoRef = useRef<HTMLVideoElement>(null)
   const playerRef = useRef<Player>()
   const [playing, setPlaying] = useState(false)
+  const [openLanguage, setOpenLanguage] = useState(false)
+  const [selectedLanguage, setSelectedLanguage] =
+    useState<LanguageOption>(DEFAULT_LANGUAGE)
+
   const {
     state: { selectedBlock }
   } = useEditor()
 
   const videoBlock = selectedBlock as VideoBlock
-
-  const defaultLanguage = {
-    id: '529',
-    localName: undefined,
-    nativeName: 'English'
-  }
-
-  const [openLanguage, setOpenLanguage] = useState(false)
-  const [selectedLanguage, setSelectedLanguage] =
-    useState<LanguageOption>(defaultLanguage)
-
-  console.log('videoBlock video id', videoBlock?.videoVariantLanguageId)
+  const languageId =
+    videoBlock?.videoId === id
+      ? videoBlock?.videoVariantLanguageId ?? DEFAULT_LANGUAGE_ID
+      : DEFAULT_LANGUAGE_ID
 
   const [loadVideo, { data, loading }] = useLazyQuery<GetVideo>(GET_VIDEO, {
-    variables: { id, languageId: videoBlock?.videoVariantLanguageId ?? '529' }
+    variables: { id, languageId }
   })
 
-  const handleChange = (selectedLanguage: LanguageOption): void => {
+  const handleChange = async (
+    selectedLanguage: LanguageOption
+  ): Promise<void> => {
     setSelectedLanguage(selectedLanguage)
+    await loadVideo()
+    console.log('I have been called')
   }
-
-  console.log('selectedLanguage', selectedLanguage)
 
   const handleSelect = (): void => {
     onSelect({
@@ -109,45 +115,31 @@ export function LocalDetails({
   const videoDescription =
     data?.video?.description?.find(({ primary }) => primary)?.value ?? ''
 
-  function getVideoVariantLanguage(
-    id: string,
-    data: GetVideo | undefined
-  ): LanguageOption | undefined {
+  function getVideoVariantLanguage(): LanguageOption | undefined {
     const videoVariant = data?.video?.variantLanguages.find(
-      (variant) => variant.id === id
+      (variant) => variant.id === videoBlock?.videoVariantLanguageId
     )
 
     if (videoVariant != null) {
-      const localName = videoVariant.name?.find(
-        ({ primary }) => !primary
-      )?.value
-
-      const nativeName = videoVariant.name?.find(
-        ({ primary }) => primary
-      )?.value
-
+      const { name } = videoVariant
+      const localName = name?.find(({ primary }) => !primary)?.value
+      const nativeName = name?.find(({ primary }) => primary)?.value
       return { id, localName, nativeName }
     }
   }
 
   useEffect(() => {
-    const videoBlockLanguageId = videoBlock?.videoVariantLanguageId
-    let newSelectedLanguage: LanguageOption | undefined = defaultLanguage
-
-    if (
-      data != null &&
-      videoBlockLanguageId != null &&
+    const newSelectedLanguage =
       videoBlock?.videoId === id &&
-      videoBlockLanguageId !== selectedLanguage?.id
-    ) {
-      const videoVariantLanguage = getVideoVariantLanguage(
-        videoBlockLanguageId,
-        data
-      )
-      newSelectedLanguage = videoVariantLanguage ?? defaultLanguage
-    }
-    setSelectedLanguage(newSelectedLanguage)
+      videoBlock?.videoVariantLanguageId !== selectedLanguage?.id
+        ? getVideoVariantLanguage() ?? DEFAULT_LANGUAGE
+        : DEFAULT_LANGUAGE
 
+    setSelectedLanguage(newSelectedLanguage)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [data])
+
+  useEffect(() => {
     if (videoRef.current != null && data != null) {
       playerRef.current = videojs(videoRef.current, {
         fluid: true,
@@ -158,8 +150,6 @@ export function LocalDetails({
         setPlaying(true)
       })
     }
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data])
 
   useEffect(() => {
