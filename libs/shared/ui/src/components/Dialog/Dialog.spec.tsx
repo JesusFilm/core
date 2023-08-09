@@ -3,7 +3,6 @@ import Typography from '@mui/material/Typography'
 import { fireEvent } from '@storybook/testing-library'
 import { render } from '@testing-library/react'
 import { ComponentProps } from 'react'
-import { ApolloLoadingProvider } from '../../../../../journeys/ui/test/ApolloLoadingProvider'
 
 import { Dialog } from './Dialog'
 
