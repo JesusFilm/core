@@ -117,7 +117,7 @@ export function Dialog({
               {dialogAction.submitLabel ?? 'Save'}
             </Button>
           ) : (
-            <Button>
+            <Button disabled>
               <CircularProgress size={24} data-testid="dialog-loading-icon" />
             </Button>
           )}
