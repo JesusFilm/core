@@ -1,4 +1,5 @@
 import MoreVert from '@mui/icons-material/MoreVert'
+import Box from '@mui/material/Box'
 import IconButton from '@mui/material/IconButton'
 import Menu from '@mui/material/Menu'
 import { ReactElement, useState } from 'react'
@@ -9,6 +10,7 @@ import Plus1Icon from '@core/shared/ui/icons/Plus1'
 import UsersProfiles3Icon from '@core/shared/ui/icons/UsersProfiles3'
 
 import { MenuItem } from '../../MenuItem'
+import { TeamAvatars } from '../TeamAvatars'
 import { TeamCreateDialog } from '../TeamCreateDialog'
 import { TeamManageDialog } from '../TeamManageDialog'
 import { useTeam } from '../TeamProvider'
@@ -52,6 +54,16 @@ export function TeamMenu(): ReactElement {
           setTeamManageOpen(false)
         }}
       />
+
+      {activeTeam != null && (
+        <Box sx={{ display: { xs: 'none', sm: 'block' } }}>
+          <TeamAvatars
+            onClick={() => setTeamManageOpen(true)}
+            userTeams={activeTeam.userTeams}
+            size="large"
+          />
+        </Box>
+      )}
       <IconButton edge="end" color="inherit" onClick={handleShowMenu}>
         <MoreVert />
       </IconButton>
