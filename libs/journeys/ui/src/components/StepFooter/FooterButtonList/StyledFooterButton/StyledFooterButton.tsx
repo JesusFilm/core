@@ -1,7 +1,7 @@
-import { ReactElement, ReactNode } from 'react'
-import { styled, Theme } from '@mui/material/styles'
 import Button, { ButtonProps } from '@mui/material/Button'
+import { Theme, styled } from '@mui/material/styles'
 import useMediaQuery from '@mui/material/useMediaQuery'
+import { ReactElement, ReactNode } from 'react'
 
 const StyledButton = styled(Button)<ButtonProps & { clicked: boolean }>(
   ({ theme, clicked }) => ({

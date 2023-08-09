@@ -1,5 +1,6 @@
-import { ReactElement, ReactNode } from 'react'
 import Stack from '@mui/material/Stack'
+import { ReactElement, ReactNode } from 'react'
+
 import { usePageWrapperStyles } from '../utils/usePageWrapperStyles'
 
 export interface MainPanelBodyProps {

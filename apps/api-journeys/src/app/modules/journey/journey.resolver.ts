@@ -1,49 +1,50 @@
+import { subject } from '@casl/ability'
+import { UseGuards } from '@nestjs/common'
 import {
   Args,
   Mutation,
+  Parent,
   Query,
-  Resolver,
   ResolveField,
-  Parent
+  Resolver
 } from '@nestjs/graphql'
-import { CurrentUserId } from '@core/nest/decorators/CurrentUserId'
-import slugify from 'slugify'
-import { UseGuards } from '@nestjs/common'
-import {
-  getPowerBiEmbed,
-  PowerBiEmbed
-} from '@core/nest/powerBi/getPowerBiEmbed'
 import { GraphQLError } from 'graphql'
+import isEmpty from 'lodash/isEmpty'
+import omit from 'lodash/omit'
+import slugify from 'slugify'
 import { v4 as uuidv4 } from 'uuid'
+
 import {
   Block,
   ChatButton,
   Host,
   Journey,
-  UserJourney,
-  UserJourneyRole,
   Prisma,
-  Team
+  Team,
+  UserJourney,
+  UserJourneyRole
 } from '.prisma/api-journeys-client'
-import { FromPostgresql } from '@core/nest/decorators/FromPostgresql'
-import isEmpty from 'lodash/isEmpty'
-import omit from 'lodash/omit'
 import { CaslAbility, CaslAccessible } from '@core/nest/common/CaslAuthModule'
-import { subject } from '@casl/ability'
+import { CurrentUserId } from '@core/nest/decorators/CurrentUserId'
+import { FromPostgresql } from '@core/nest/decorators/FromPostgresql'
+import {
+  PowerBiEmbed,
+  getPowerBiEmbed
+} from '@core/nest/powerBi/getPowerBiEmbed'
 
-import { BlockService } from '../block/block.service'
 import {
   IdType,
-  JourneyStatus,
-  JourneysFilter,
-  JourneyTemplateInput,
-  JourneysReportType,
   JourneyCreateInput,
-  JourneyUpdateInput
+  JourneyStatus,
+  JourneyTemplateInput,
+  JourneyUpdateInput,
+  JourneysFilter,
+  JourneysReportType
 } from '../../__generated__/graphql'
-import { PrismaService } from '../../lib/prisma.service'
-import { AppCaslGuard } from '../../lib/casl/caslGuard'
 import { Action, AppAbility } from '../../lib/casl/caslFactory'
+import { AppCaslGuard } from '../../lib/casl/caslGuard'
+import { PrismaService } from '../../lib/prisma.service'
+import { BlockService } from '../block/block.service'
 
 export const ERROR_PSQL_UNIQUE_CONSTRAINT_VIOLATED = 'P2002'
 
@@ -205,8 +206,7 @@ export class JourneyResolver {
     @CaslAbility() ability: AppAbility,
     @Args('input') input: JourneyCreateInput,
     @CurrentUserId() userId: string,
-    // TODO: remove default value when teams is released
-    @Args('teamId') teamId = 'jfp-team'
+    @Args('teamId') teamId: string
   ): Promise<Journey | undefined> {
     let retry = true
     let slug = slugify(input.slug ?? input.title, {
@@ -303,8 +303,7 @@ export class JourneyResolver {
     @CaslAbility() ability: AppAbility,
     @Args('id') id: string,
     @CurrentUserId() userId: string,
-    // TODO: remove default value when teams is released
-    @Args('teamId') teamId = 'jfp-team'
+    @Args('teamId') teamId: string
   ): Promise<Journey | undefined> {
     const journey = await this.prismaService.journey.findUnique({
       where: { id },
@@ -325,32 +324,7 @@ export class JourneyResolver {
       })
 
     const duplicateJourneyId = uuidv4()
-    const existingDuplicateJourneys = await this.prismaService.journey.findMany(
-      {
-        where: {
-          title: {
-            contains: journey.title
-          }
-        }
-      }
-    )
-    const duplicates = this.getJourneyDuplicateNumbers(
-      existingDuplicateJourneys,
-      journey.title
-    )
-    const duplicateNumber = this.getFirstMissingNumber(duplicates)
-    const duplicateTitle = `${journey.title}${
-      duplicateNumber === 0
-        ? ''
-        : duplicateNumber === 1
-        ? ' copy'
-        : ` copy ${duplicateNumber}`
-    }`.trimEnd()
 
-    let slug = slugify(duplicateTitle, {
-      lower: true,
-      strict: true
-    })
     const originalBlocks = await this.prismaService.block.findMany({
       where: { journeyId: journey.id, typename: 'StepBlock' },
       orderBy: { parentOrder: 'asc' },
@@ -385,6 +359,37 @@ export class JourneyResolver {
         duplicateBlocks.push(duplicatePrimaryImageBlock)
       }
     }
+
+    const existingActiveDuplicateJourneys =
+      await this.prismaService.journey.findMany({
+        where: {
+          title: {
+            contains: journey.title
+          },
+          archivedAt: null,
+          trashedAt: null,
+          deletedAt: null,
+          template: false,
+          team: { id: teamId }
+        }
+      })
+    const duplicates = this.getJourneyDuplicateNumbers(
+      existingActiveDuplicateJourneys,
+      journey.title
+    )
+    const duplicateNumber = this.getFirstMissingNumber(duplicates)
+    const duplicateTitle = `${journey.title}${
+      duplicateNumber === 0
+        ? ''
+        : duplicateNumber === 1
+        ? ' copy'
+        : ` copy ${duplicateNumber}`
+    }`.trimEnd()
+
+    let slug = slugify(duplicateTitle, {
+      lower: true,
+      strict: true
+    })
 
     let retry = true
     while (retry) {

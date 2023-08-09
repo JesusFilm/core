@@ -1,17 +1,21 @@
-import { Story, Meta } from '@storybook/react'
+import { Meta, Story } from '@storybook/react'
+
 import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
-import { journeysAdminConfig } from '../../libs/storybook'
-import { PageWrapper } from '../NewPageWrapper'
-import { GET_ADMIN_JOURNEYS } from '../../libs/useAdminJourneysQuery/useAdminJourneysQuery'
+
 import { JourneyStatus } from '../../../__generated__/globalTypes'
-import { getDiscoveryJourneysMock } from '../DiscoveryJourneys/data'
 import { cache } from '../../libs/apolloClient/cache'
+import { journeysAdminConfig } from '../../libs/storybook'
+import { GET_ADMIN_JOURNEYS } from '../../libs/useAdminJourneysQuery/useAdminJourneysQuery'
+import { getDiscoveryJourneysMock } from '../DiscoveryJourneys/data'
+import { PageWrapper } from '../NewPageWrapper'
+
 import {
   defaultJourney,
-  oldJourney,
   descriptiveJourney,
+  oldJourney,
   publishedJourney
 } from './journeyListData'
+
 import { JourneyList } from '.'
 
 const JourneyListStory = {

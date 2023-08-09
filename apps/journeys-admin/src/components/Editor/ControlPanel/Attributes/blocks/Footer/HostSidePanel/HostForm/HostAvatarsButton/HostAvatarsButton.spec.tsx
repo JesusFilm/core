@@ -1,11 +1,13 @@
-import { fireEvent, render, waitFor } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
+import { fireEvent, render, waitFor } from '@testing-library/react'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { JourneyFields as Journey } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
-import { ThemeProvider } from '../../../../../../../../ThemeProvider'
+
 import { useHostUpdate } from '../../../../../../../../../libs/useHostUpdate'
 import { UPDATE_HOST } from '../../../../../../../../../libs/useHostUpdate/useHostUpdate'
+import { ThemeProvider } from '../../../../../../../../ThemeProvider'
+
 import { HostAvatarsButton } from './HostAvatarsButton'
 
 jest.mock('../../../../../../../../../libs/useHostUpdate', () => ({
@@ -17,17 +19,19 @@ const mockUseHostUpdate = useHostUpdate as jest.MockedFunction<
   typeof useHostUpdate
 >
 
-const updateHost = jest.fn()
-beforeEach(() => {
-  mockUseHostUpdate.mockReturnValue({
-    updateHost
-  })
-})
-afterEach(() => {
-  jest.resetAllMocks()
-})
-
 describe('HostAvatarsButton', () => {
+  const updateHost = jest.fn()
+
+  beforeEach(() => {
+    mockUseHostUpdate.mockReturnValue({
+      updateHost
+    })
+  })
+
+  afterEach(() => {
+    jest.resetAllMocks()
+  })
+
   const defaultHost = {
     id: 'hostId',
     __typename: 'Host' as const,
@@ -45,11 +49,16 @@ describe('HostAvatarsButton', () => {
     host: defaultHost
   } as unknown as Journey
 
-  it('should display default icon if no avatars set ', () => {
+  it('should display default icon if no avatars set', () => {
     const { getByTestId } = render(
       <MockedProvider>
         <ThemeProvider>
-          <JourneyProvider value={{ journey: { ...journey, host: null } }}>
+          <JourneyProvider
+            value={{
+              journey: { ...journey, host: null },
+              variant: 'admin'
+            }}
+          >
             <HostAvatarsButton />
           </JourneyProvider>
         </ThemeProvider>
@@ -66,7 +75,7 @@ describe('HostAvatarsButton', () => {
     )
   })
 
-  it('should display avatar image if set ', () => {
+  it('should display avatar image if set', () => {
     const { getByAltText } = render(
       <MockedProvider>
         <ThemeProvider>
@@ -75,7 +84,8 @@ describe('HostAvatarsButton', () => {
               journey: {
                 ...journey,
                 host: { ...defaultHost, src1: 'avatar1Src', src2: 'avatar2Src' }
-              }
+              },
+              variant: 'admin'
             }}
           >
             <HostAvatarsButton />
@@ -92,7 +102,7 @@ describe('HostAvatarsButton', () => {
     const { getByTestId, queryByTestId } = render(
       <MockedProvider>
         <ThemeProvider>
-          <JourneyProvider value={{ journey }}>
+          <JourneyProvider value={{ journey, variant: 'admin' }}>
             <HostAvatarsButton disabled />
           </JourneyProvider>
         </ThemeProvider>
@@ -112,7 +122,8 @@ describe('HostAvatarsButton', () => {
               journey: {
                 ...journey,
                 host: { ...defaultHost, src1: 'avatar1Src' }
-              }
+              },
+              variant: 'admin'
             }}
           >
             <HostAvatarsButton />
@@ -131,9 +142,6 @@ describe('HostAvatarsButton', () => {
   })
 
   // TODO: Add to E2E when can mock out unsplash
-  xit('should change host image src on image change', () => {
-    render(<HostAvatarsButton />)
-  })
 
   it('should remove host image src on image delete', async () => {
     const result = jest.fn(() => ({
@@ -177,7 +185,8 @@ describe('HostAvatarsButton', () => {
 
                   src1: 'avatar1Src'
                 }
-              }
+              },
+              variant: 'admin'
             }}
           >
             <HostAvatarsButton />
@@ -270,7 +279,8 @@ describe('HostAvatarsButton', () => {
                   src1: 'avatar1Src',
                   src2: 'avatar2Src'
                 }
-              }
+              },
+              variant: 'admin'
             }}
           >
             <HostAvatarsButton />

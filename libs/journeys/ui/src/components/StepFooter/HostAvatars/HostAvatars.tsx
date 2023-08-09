@@ -1,8 +1,10 @@
-import { ReactElement } from 'react'
 import Avatar from '@mui/material/Avatar'
 import AvatarGroup from '@mui/material/AvatarGroup'
-import UserProfile3 from '@core/shared/ui/icons/UserProfile3'
+import { ReactElement } from 'react'
+
 import { useFlags } from '@core/shared/ui/FlagsProvider'
+import UserProfile3 from '@core/shared/ui/icons/UserProfile3'
+
 import { useJourney } from '../../../libs/JourneyProvider'
 import { getJourneyRTL } from '../../../libs/rtl'
 

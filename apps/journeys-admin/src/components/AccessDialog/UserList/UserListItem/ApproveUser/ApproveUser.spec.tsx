@@ -1,12 +1,16 @@
+import { InMemoryCache } from '@apollo/client'
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
+
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
-import { InMemoryCache } from '@apollo/client'
-import { UserJourneyRole } from '../../../../../../__generated__/globalTypes'
+
 import { GetJourney_journey as Journey } from '../../../../../../__generated__/GetJourney'
+import { UserJourneyRole } from '../../../../../../__generated__/globalTypes'
 import { GET_USER_INVITES } from '../../../AccessDialog'
 import { USER_INVITE_REMOVE } from '../RemoveUser/RemoveUser'
+
 import { USER_JOURNEY_APPROVE } from './ApproveUser'
+
 import { ApproveUser } from '.'
 
 describe('ApproveUser', () => {
@@ -43,7 +47,7 @@ describe('ApproveUser', () => {
       <JourneyProvider
         value={{
           journey: { id: 'journeyId' } as unknown as Journey,
-          admin: true
+          variant: 'admin'
         }}
       >
         <MockedProvider

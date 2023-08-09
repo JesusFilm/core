@@ -1,22 +1,24 @@
-import { Story, Meta } from '@storybook/react'
 import { MockedProvider } from '@apollo/client/testing'
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
-import { EditorProvider } from '@core/journeys/ui/EditorProvider'
-import Stack from '@mui/material/Stack'
 import Box from '@mui/material/Box'
+import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
-import type { TreeBlock } from '@core/journeys/ui/block'
-import { simpleComponentConfig } from '../../../../../../libs/storybook'
+import { Meta, Story } from '@storybook/react'
 
-import {
-  ThemeName,
-  ThemeMode
-} from '../../../../../../../__generated__/globalTypes'
+import type { TreeBlock } from '@core/journeys/ui/block'
+import { EditorProvider } from '@core/journeys/ui/EditorProvider'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+
 import {
   GetJourney_journey as Journey,
   GetJourney_journey_blocks_StepBlock as StepBlock
 } from '../../../../../../../__generated__/GetJourney'
+import {
+  ThemeMode,
+  ThemeName
+} from '../../../../../../../__generated__/globalTypes'
+import { simpleComponentConfig } from '../../../../../../libs/storybook'
 import { steps } from '../data'
+
 import { NavigateAction } from '.'
 
 const NavigateNextStory = {
@@ -44,7 +46,12 @@ const Template: Story = (selectedStep: TreeBlock<StepBlock>) => {
       <Box>
         <Typography>Default</Typography>
         <MockedProvider>
-          <JourneyProvider value={{ journey: journeyTheme, admin: true }}>
+          <JourneyProvider
+            value={{
+              journey: journeyTheme,
+              variant: 'admin'
+            }}
+          >
             <EditorProvider
               initialState={{
                 steps,

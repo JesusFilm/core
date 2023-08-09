@@ -1,25 +1,27 @@
-import { Story, Meta } from '@storybook/react'
-import { screen, userEvent } from '@storybook/testing-library'
-import type { TreeBlock } from '@core/journeys/ui/block'
-import MuiDrawer from '@mui/material/Drawer'
 import { MockedProvider } from '@apollo/client/testing'
+import MuiDrawer from '@mui/material/Drawer'
+import { Meta, Story } from '@storybook/react'
+import { screen, userEvent } from '@storybook/testing-library'
+
+import type { TreeBlock } from '@core/journeys/ui/block'
 
 import {
   GetJourney_journey_blocks_CardBlock as CardBlock,
-  GetJourney_journey_blocks_VideoBlock as VideoBlock,
-  GetJourney_journey_blocks_ImageBlock as ImageBlock
+  GetJourney_journey_blocks_ImageBlock as ImageBlock,
+  GetJourney_journey_blocks_VideoBlock as VideoBlock
 } from '../../../../__generated__/GetJourney'
 import { GetVideoVariantLanguages_video } from '../../../../__generated__/GetVideoVariantLanguages'
-import { journeysAdminConfig } from '../../../libs/storybook'
 import {
   ThemeMode,
   VideoBlockSource
 } from '../../../../__generated__/globalTypes'
+import { journeysAdminConfig } from '../../../libs/storybook'
 import { ThemeProvider } from '../../ThemeProvider'
 import { videos } from '../VideoLibrary/VideoFromLocal/data'
 import { GET_VIDEOS } from '../VideoLibrary/VideoFromLocal/VideoFromLocal'
-import { VideoBlockEditor } from './VideoBlockEditor'
+
 import { GET_VIDEO_VARIANT_LANGUAGES } from './Source/SourceFromLocal/SourceFromLocal'
+import { VideoBlockEditor } from './VideoBlockEditor'
 
 const BackgroundMediaStory = {
   ...journeysAdminConfig,

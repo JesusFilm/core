@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common'
+
 import { TranslationResolver } from './translation.resolver'
 
 /* To use TranslationModule in an api project update the following:

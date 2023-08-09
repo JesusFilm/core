@@ -1,10 +1,12 @@
 import { Injectable } from '@nestjs/common'
 import { GraphQLError } from 'graphql'
+
+import { JourneyVisitor, Prisma, Visitor } from '.prisma/api-journeys-client'
 import { FromPostgresql } from '@core/nest/decorators/FromPostgresql'
-import { Prisma, Visitor, JourneyVisitor } from '.prisma/api-journeys-client'
+
+import { PrismaService } from '../../lib/prisma.service'
 import { BlockService } from '../block/block.service'
 import { VisitorService } from '../visitor/visitor.service'
-import { PrismaService } from '../../lib/prisma.service'
 
 @Injectable()
 export class EventService {

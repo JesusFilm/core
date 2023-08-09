@@ -1,7 +1,9 @@
 import { gql, useMutation } from '@apollo/client'
-import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { ReactElement } from 'react'
 import { object, string } from 'yup'
+
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
+
 import { CreateHost } from '../../../../../../../../../../__generated__/CreateHost'
 import { UpdateJourneyHost } from '../../../../../../../../../../__generated__/UpdateJourneyHost'
 import { useHostUpdate } from '../../../../../../../../../libs/useHostUpdate/useHostUpdate'

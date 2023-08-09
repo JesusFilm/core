@@ -1,16 +1,18 @@
-import { render, fireEvent, waitFor, within } from '@testing-library/react'
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { MockedProvider } from '@apollo/client/testing'
-import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
+import { fireEvent, render, waitFor, within } from '@testing-library/react'
 import { NextRouter, useRouter } from 'next/router'
 import { SnackbarProvider } from 'notistack'
 import TagManager from 'react-gtm-module'
-import { defaultJourney } from '../data'
+
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+
 import { JOURNEY_DUPLICATE } from '../../../libs/useJourneyDuplicateMutation'
 import {
   GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS,
   TeamProvider
 } from '../../Team/TeamProvider'
+import { defaultJourney } from '../data'
+
 import { JourneyViewFab } from './JourneyViewFab'
 
 jest.mock('react-i18next', () => ({
@@ -44,15 +46,15 @@ describe('JourneyViewFab', () => {
   it('should redirect to journey editor on edit button click', () => {
     const { getByRole } = render(
       <MockedProvider>
-        <FlagsProvider>
-          <SnackbarProvider>
-            <TeamProvider>
-              <JourneyProvider value={{ journey: defaultJourney, admin: true }}>
-                <JourneyViewFab />
-              </JourneyProvider>
-            </TeamProvider>
-          </SnackbarProvider>
-        </FlagsProvider>
+        <SnackbarProvider>
+          <TeamProvider>
+            <JourneyProvider
+              value={{ journey: defaultJourney, variant: 'admin' }}
+            >
+              <JourneyViewFab />
+            </JourneyProvider>
+          </TeamProvider>
+        </SnackbarProvider>
       </MockedProvider>
     )
     expect(getByRole('link', { name: 'Edit' })).toHaveAttribute(
@@ -64,20 +66,18 @@ describe('JourneyViewFab', () => {
   it('should redirect to template editor on edit button click', () => {
     const { getByRole } = render(
       <MockedProvider>
-        <FlagsProvider>
-          <SnackbarProvider>
-            <TeamProvider>
-              <JourneyProvider
-                value={{
-                  journey: { ...defaultJourney, template: true },
-                  admin: true
-                }}
-              >
-                <JourneyViewFab isPublisher />
-              </JourneyProvider>
-            </TeamProvider>
-          </SnackbarProvider>
-        </FlagsProvider>
+        <SnackbarProvider>
+          <TeamProvider>
+            <JourneyProvider
+              value={{
+                journey: { ...defaultJourney, template: true },
+                variant: 'admin'
+              }}
+            >
+              <JourneyViewFab isPublisher />
+            </JourneyProvider>
+          </TeamProvider>
+        </SnackbarProvider>
       </MockedProvider>
     )
     expect(getByRole('link', { name: 'Edit' })).toHaveAttribute(
@@ -133,13 +133,11 @@ describe('JourneyViewFab', () => {
       >
         <SnackbarProvider>
           <TeamProvider>
-            <FlagsProvider flags={{ teams: true }}>
-              <JourneyProvider
-                value={{ journey: { ...defaultJourney, template: true } }}
-              >
-                <JourneyViewFab />
-              </JourneyProvider>
-            </FlagsProvider>
+            <JourneyProvider
+              value={{ journey: { ...defaultJourney, template: true } }}
+            >
+              <JourneyViewFab />
+            </JourneyProvider>
           </TeamProvider>
         </SnackbarProvider>
       </MockedProvider>
@@ -208,13 +206,11 @@ describe('JourneyViewFab', () => {
       >
         <SnackbarProvider>
           <TeamProvider>
-            <FlagsProvider flags={{ teams: true }}>
-              <JourneyProvider
-                value={{ journey: { ...defaultJourney, template: true } }}
-              >
-                <JourneyViewFab />
-              </JourneyProvider>
-            </FlagsProvider>
+            <JourneyProvider
+              value={{ journey: { ...defaultJourney, template: true } }}
+            >
+              <JourneyViewFab />
+            </JourneyProvider>
           </TeamProvider>
         </SnackbarProvider>
       </MockedProvider>

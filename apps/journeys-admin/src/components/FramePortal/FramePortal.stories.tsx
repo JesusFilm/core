@@ -1,22 +1,25 @@
-import { Story, Meta } from '@storybook/react'
-import { BlockRenderer } from '@core/journeys/ui/BlockRenderer'
-import type { TreeBlock } from '@core/journeys/ui/block'
-import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import { MockedProvider } from '@apollo/client/testing'
+import { Meta, Story } from '@storybook/react'
+
+import type { TreeBlock } from '@core/journeys/ui/block'
+import { BlockRenderer } from '@core/journeys/ui/BlockRenderer'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
-import { journeysAdminConfig } from '../../libs/storybook'
+import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
+
 import { BlockFields as Block } from '../../../__generated__/BlockFields'
+import { GetJourney_journey as Journey } from '../../../__generated__/GetJourney'
 import {
-  ButtonVariant,
   ButtonColor,
   ButtonSize,
+  ButtonVariant,
   IconName,
   IconSize,
-  TypographyVariant,
   ThemeMode,
-  ThemeName
+  ThemeName,
+  TypographyVariant
 } from '../../../__generated__/globalTypes'
-import { GetJourney_journey as Journey } from '../../../__generated__/GetJourney'
+import { journeysAdminConfig } from '../../libs/storybook'
+
 import { FramePortal } from '.'
 
 const FramePortalStory = {
@@ -128,7 +131,7 @@ const Template: Story = () => (
             iso3: 'eng'
           }
         } as unknown as Journey,
-        admin: true
+        variant: 'admin'
       }}
     >
       <FramePortal width={356} height={536} dir="ltr">

@@ -1,5 +1,6 @@
-import { fireEvent, render } from '@testing-library/react'
 import AccessTimeFilledIcon from '@mui/icons-material/AccessTimeFilled'
+import { fireEvent, render } from '@testing-library/react'
+
 import { ToggleButtonGroup } from '.'
 
 describe('ToggleButtonGroup', () => {

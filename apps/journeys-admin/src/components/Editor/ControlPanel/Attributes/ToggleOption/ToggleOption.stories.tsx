@@ -1,12 +1,16 @@
-import { Story, Meta } from '@storybook/react'
 import { MockedProvider } from '@apollo/client/testing'
-import { EditorProvider } from '@core/journeys/ui/EditorProvider'
-import Typography from '@mui/material/Typography'
-import noop from 'lodash/noop'
 import Box from '@mui/material/Box'
+import Typography from '@mui/material/Typography'
+import { Meta, Story } from '@storybook/react'
+import noop from 'lodash/noop'
+
+import { EditorProvider } from '@core/journeys/ui/EditorProvider'
+
 import { simpleComponentConfig } from '../../../../../libs/storybook'
 import { Drawer } from '../../../Drawer'
+
 import { ToggleOptionProps } from './ToggleOption'
+
 import { ToggleOption } from '.'
 
 const ToggleOptionStory = {

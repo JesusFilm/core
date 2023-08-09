@@ -1,11 +1,15 @@
-import { MockedProvider } from '@apollo/client/testing'
 import { InMemoryCache } from '@apollo/client'
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
-import { EditorProvider } from '@core/journeys/ui/EditorProvider'
-import type { TreeBlock } from '@core/journeys/ui/block'
+import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
+
+import type { TreeBlock } from '@core/journeys/ui/block'
+import { EditorProvider } from '@core/journeys/ui/EditorProvider'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+
 import { GetJourney_journey as Journey } from '../../../../../../__generated__/GetJourney'
+
 import { VIDEO_BLOCK_CREATE } from './NewVideoButton'
+
 import { NewVideoButton } from '.'
 
 describe('NewVideoButton', () => {
@@ -31,6 +35,7 @@ describe('NewVideoButton', () => {
       }
     ]
   }
+
   it('should check if the mutation gets called', async () => {
     const result = jest.fn(() => ({
       data: {
@@ -74,7 +79,7 @@ describe('NewVideoButton', () => {
         <JourneyProvider
           value={{
             journey: { id: 'journeyId' } as unknown as Journey,
-            admin: true
+            variant: 'admin'
           }}
         >
           <EditorProvider initialState={{ selectedStep }}>
@@ -142,7 +147,7 @@ describe('NewVideoButton', () => {
         <JourneyProvider
           value={{
             journey: { id: 'journeyId' } as unknown as Journey,
-            admin: true
+            variant: 'admin'
           }}
         >
           <EditorProvider initialState={{ selectedStep }}>

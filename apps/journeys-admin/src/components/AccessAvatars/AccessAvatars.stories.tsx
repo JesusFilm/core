@@ -1,15 +1,17 @@
-import { Meta, Story } from '@storybook/react'
 import { MockedProvider } from '@apollo/client/testing'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
-import { simpleComponentConfig } from '../../libs/storybook'
-import { GET_JOURNEY_WITH_USER_JOURNEYS } from '../AccessDialog/AccessDialog'
+import { Meta, Story } from '@storybook/react'
+
 import {
-  GetAdminJourneys_journeys_userJourneys as UserJourney,
-  GetAdminJourneys_journeys_userJourneys_user as User
+  GetAdminJourneys_journeys_userJourneys_user as User,
+  GetAdminJourneys_journeys_userJourneys as UserJourney
 } from '../../../__generated__/GetAdminJourneys'
-import { GET_CURRENT_USER } from '../../libs/useCurrentUser'
 import { UserJourneyRole } from '../../../__generated__/globalTypes'
+import { simpleComponentConfig } from '../../libs/storybook'
+import { GET_CURRENT_USER } from '../../libs/useCurrentUser'
+import { GET_JOURNEY_WITH_USER_JOURNEYS } from '../AccessDialog/AccessDialog'
+
 import { AccessAvatarsProps } from './AccessAvatars'
 import {
   userJourney1,
@@ -20,6 +22,7 @@ import {
   userJourney6,
   userJourney7
 } from './data'
+
 import { AccessAvatars } from '.'
 
 const AccessAvatarsDemo = {

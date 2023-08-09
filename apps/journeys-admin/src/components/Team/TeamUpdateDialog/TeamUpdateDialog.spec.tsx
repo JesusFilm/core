@@ -1,14 +1,17 @@
-import { fireEvent, render, waitFor } from '@testing-library/react'
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
-import { SnackbarProvider } from 'notistack'
 import { InMemoryCache } from '@apollo/client'
+import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { fireEvent, render, waitFor } from '@testing-library/react'
+import { SnackbarProvider } from 'notistack'
+
+import { GetLastActiveTeamIdAndTeams } from '../../../../__generated__/GetLastActiveTeamIdAndTeams'
+import { TeamUpdate } from '../../../../__generated__/TeamUpdate'
 import {
   GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS,
   TeamProvider
 } from '../TeamProvider'
-import { TeamUpdate } from '../../../../__generated__/TeamUpdate'
-import { GetLastActiveTeamIdAndTeams } from '../../../../__generated__/GetLastActiveTeamIdAndTeams'
+
 import { TEAM_UPDATE } from './TeamUpdateDialog'
+
 import { TeamUpdateDialog } from '.'
 
 describe('TeamUpdateDialog', () => {
@@ -22,7 +25,8 @@ describe('TeamUpdateDialog', () => {
           {
             id: 'teamId',
             title: 'Jesus Film Project',
-            __typename: 'Team'
+            __typename: 'Team',
+            userTeams: []
           }
         ],
         getJourneyProfile: {

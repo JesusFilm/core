@@ -1,15 +1,18 @@
 import { MockedProvider } from '@apollo/client/testing'
+import { fireEvent, render } from '@testing-library/react'
+
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
-import { render, fireEvent } from '@testing-library/react'
-import { ThemeProvider } from '../../../../../ThemeProvider'
-import { Drawer } from '../../../../Drawer'
+
 import { GetJourney_journey_blocks_TextResponseBlock as TextResponseBlock } from '../../../../../../../__generated__/GetJourney'
 import {
-  IconName,
   IconColor,
+  IconName,
   IconSize
 } from '../../../../../../../__generated__/globalTypes'
+import { ThemeProvider } from '../../../../../ThemeProvider'
+import { Drawer } from '../../../../Drawer'
+
 import { TextResponse } from './TextResponse'
 
 describe('TextResponse', () => {

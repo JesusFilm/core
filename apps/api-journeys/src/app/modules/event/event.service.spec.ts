@@ -1,7 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing'
+
 import { PrismaService } from '../../lib/prisma.service'
 import { BlockService } from '../block/block.service'
 import { VisitorService } from '../visitor/visitor.service'
+
 import { EventService } from './event.service'
 
 describe('EventService', () => {
@@ -69,6 +71,7 @@ describe('EventService', () => {
       }
     })
   })
+
   afterAll(() => {
     jest.resetAllMocks()
   })

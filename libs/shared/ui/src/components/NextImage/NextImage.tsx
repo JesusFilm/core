@@ -1,6 +1,6 @@
-import { ReactElement } from 'react'
+import { SxProps, styled } from '@mui/material/styles'
 import Image, { ImageProps } from 'next/image'
-import { styled, SxProps } from '@mui/material/styles'
+import { ReactElement } from 'react'
 
 interface NextImageProps extends ImageProps {
   sx?: SxProps

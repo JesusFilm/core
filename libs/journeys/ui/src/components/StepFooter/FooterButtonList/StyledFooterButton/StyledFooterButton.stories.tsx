@@ -1,8 +1,10 @@
-import { ComponentProps } from 'react'
-import { Meta, Story } from '@storybook/react'
 import Typography from '@mui/material/Typography'
+import { Meta, Story } from '@storybook/react'
 import noop from 'lodash/noop'
+import { ComponentProps } from 'react'
+
 import { journeyUiConfig } from '../../../../libs/journeyUiConfig'
+
 import { StyledFooterButton } from './StyledFooterButton'
 
 const Demo = {

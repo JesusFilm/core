@@ -1,6 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing'
 
 import { PrismaService } from '../../../lib/prisma.service'
+
 import { ImageResolver } from './image.resolver'
 import { ImageService } from './image.service'
 
@@ -63,7 +64,7 @@ describe('ImageResolver', () => {
     prismaService.cloudflareImage.delete = jest.fn().mockResolvedValue(cfImage)
   })
 
-  describe('createCloudflareUploadByFile ', () => {
+  describe('createCloudflareUploadByFile', () => {
     it('returns cloudflare response information', async () => {
       expect(await resolver.createCloudflareUploadByFile(user.id)).toEqual({
         id: '1',
@@ -79,7 +80,8 @@ describe('ImageResolver', () => {
       })
     })
   })
-  describe('createCloudflareUploadByFile ', () => {
+
+  describe('createCloudflareUploadByUrl', () => {
     it('returns cloudflare response information', async () => {
       expect(
         await resolver.createCloudflareUploadByUrl(
@@ -100,23 +102,27 @@ describe('ImageResolver', () => {
       })
     })
   })
+
   describe('deleteCloudflareImage', () => {
     it('throws an error if wrong user', async () => {
-      await resolver.deleteCloudflareImage('1', 'user_2').catch((e) => {
-        expect(e.message).toEqual('This image does not belong to you')
-      })
+      await expect(
+        resolver.deleteCloudflareImage('1', 'user_2')
+      ).rejects.toThrow('This image does not belong to you')
     })
+
     it('calls service.deleteCloudflareImage', async () => {
-      expect(await resolver.deleteCloudflareImage('1', user.id)).toEqual(true)
+      expect(await resolver.deleteCloudflareImage('1', user.id)).toBe(true)
       expect(service.deleteImageFromCloudflare).toHaveBeenCalledWith('1')
     })
+
     it('calls service.remove', async () => {
-      expect(await resolver.deleteCloudflareImage('1', user.id)).toEqual(true)
+      expect(await resolver.deleteCloudflareImage('1', user.id)).toBe(true)
       expect(prismaService.cloudflareImage.delete).toHaveBeenCalledWith({
         where: { id: '1' }
       })
     })
   })
+
   describe('getMyCloudflareImages', () => {
     it('returns cloudflare response information', async () => {
       expect(await resolver.getMyCloudflareImages('1')).toEqual([
@@ -125,16 +131,18 @@ describe('ImageResolver', () => {
       ])
     })
   })
+
   describe('cloudflareUploadComplete', () => {
     it('throws an error if wrong user', async () => {
-      await resolver.cloudflareUploadComplete('1', 'user_2').catch((e) => {
-        expect(e.message).toEqual('This image does not belong to you')
-      })
+      await expect(
+        resolver.cloudflareUploadComplete('1', 'user_2')
+      ).rejects.toThrow('This image does not belong to you')
     })
+
     it('calls service.save', async () => {
-      expect(
-        await resolver.cloudflareUploadComplete(cfImage.id, user.id)
-      ).toEqual(true)
+      expect(await resolver.cloudflareUploadComplete(cfImage.id, user.id)).toBe(
+        true
+      )
       expect(prismaService.cloudflareImage.update).toHaveBeenCalledWith({
         where: { id: cfImage.id },
         data: {

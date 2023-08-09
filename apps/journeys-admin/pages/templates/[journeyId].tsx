@@ -1,22 +1,24 @@
-import { NextSeo } from 'next-seo'
-import { ReactElement } from 'react'
+import { gql, useQuery } from '@apollo/client'
 import {
   AuthAction,
   useAuthUser,
   withAuthUser,
   withAuthUserTokenSSR
 } from 'next-firebase-auth'
-import { gql, useQuery } from '@apollo/client'
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
-import { useTranslation } from 'react-i18next'
+import { NextSeo } from 'next-seo'
 import { useRouter } from 'next/router'
+import { ReactElement } from 'react'
+import { useTranslation } from 'react-i18next'
+
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { JOURNEY_FIELDS } from '@core/journeys/ui/JourneyProvider/journeyFields'
-import { JourneyView } from '../../src/components/JourneyView'
+
 import { GetTemplate } from '../../__generated__/GetTemplate'
-import { PageWrapper } from '../../src/components/PageWrapper'
+import { JourneyView } from '../../src/components/JourneyView'
 import { Menu } from '../../src/components/JourneyView/Menu'
-import { useInvalidJourneyRedirect } from '../../src/libs/useInvalidJourneyRedirect'
+import { PageWrapper } from '../../src/components/PageWrapper'
 import { initAndAuthApp } from '../../src/libs/initAndAuthApp'
+import { useInvalidJourneyRedirect } from '../../src/libs/useInvalidJourneyRedirect'
 
 export const GET_TEMPLATE = gql`
   ${JOURNEY_FIELDS}
@@ -43,7 +45,10 @@ function TemplateDetails(): ReactElement {
         description={data?.template?.description ?? undefined}
       />
       <JourneyProvider
-        value={{ journey: data?.template ?? undefined, admin: true }}
+        value={{
+          journey: data?.template ?? undefined,
+          variant: 'admin'
+        }}
       >
         <PageWrapper
           title={t('Journey Template')}

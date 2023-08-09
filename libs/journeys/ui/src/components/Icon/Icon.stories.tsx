@@ -1,23 +1,25 @@
-import { ComponentProps } from 'react'
-import { Story, Meta } from '@storybook/react'
 import Box from '@mui/material/Box'
-import Typography from '@mui/material/Typography'
-import Grid from '@mui/material/Grid'
 import Container from '@mui/material/Container'
+import Grid from '@mui/material/Grid'
+import Typography from '@mui/material/Typography'
+import { Meta, Story } from '@storybook/react'
+import { ComponentProps } from 'react'
+
+import {
+  IconColor,
+  IconName,
+  IconSize,
+  ThemeMode,
+  ThemeName
+} from '../../../__generated__/globalTypes'
+import { JourneyProvider } from '../../libs/JourneyProvider'
 import {
   JourneyFields as Journey,
   JourneyFields_language as Language
 } from '../../libs/JourneyProvider/__generated__/JourneyFields'
-import {
-  IconName,
-  IconSize,
-  IconColor,
-  ThemeName,
-  ThemeMode
-} from '../../../__generated__/globalTypes'
 import { journeyUiConfig } from '../../libs/journeyUiConfig'
-import { JourneyProvider } from '../../libs/JourneyProvider'
 import { simpleComponentConfig } from '../../libs/simpleComponentConfig'
+
 import { Icon } from '.'
 
 const IconDemo = {
@@ -37,7 +39,8 @@ const VariantTemplate: Story<
         themeMode: ThemeMode.dark,
         themeName: ThemeName.base,
         language: args.language
-      } as unknown as Journey
+      } as unknown as Journey,
+      variant: 'admin'
     }}
   >
     <Container>

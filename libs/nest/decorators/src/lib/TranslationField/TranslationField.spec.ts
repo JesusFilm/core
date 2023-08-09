@@ -1,4 +1,5 @@
 import { Translation } from '@core/nest/common/TranslationModule'
+
 import { TranslationField } from '.'
 
 describe('TranslationField', () => {

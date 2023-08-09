@@ -1,6 +1,8 @@
-import { ReactElement, ReactNode } from 'react'
 import Stack from '@mui/material/Stack'
+import { ReactElement, ReactNode } from 'react'
+
 import { NextImage } from '@core/shared/ui/NextImage'
+
 import type { TreeBlock } from '../../../libs/block'
 import { ImageFields } from '../../Image/__generated__/ImageFields'
 import { OverlayContent } from '../OverlayContent'

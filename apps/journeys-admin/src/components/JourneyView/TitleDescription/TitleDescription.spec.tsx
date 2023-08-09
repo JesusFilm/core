@@ -1,8 +1,11 @@
-import { render, fireEvent } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import { fireEvent, render } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
+
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+
 import { defaultJourney } from '../data'
+
 import { TitleDescription } from './TitleDescription'
 
 describe('TitleDescription', () => {
@@ -11,7 +14,12 @@ describe('TitleDescription', () => {
       const { getByText, queryByTestId } = render(
         <MockedProvider>
           <SnackbarProvider>
-            <JourneyProvider value={{ journey: defaultJourney, admin: true }}>
+            <JourneyProvider
+              value={{
+                journey: defaultJourney,
+                variant: 'admin'
+              }}
+            >
               <TitleDescription />
             </JourneyProvider>
           </SnackbarProvider>
@@ -29,11 +37,17 @@ describe('TitleDescription', () => {
       ...defaultJourney,
       template: true
     }
+
     it('should render the title and description of a template', () => {
       const { getByText, getByTestId } = render(
         <MockedProvider>
           <SnackbarProvider>
-            <JourneyProvider value={{ journey: template, admin: true }}>
+            <JourneyProvider
+              value={{
+                journey: template,
+                variant: 'admin'
+              }}
+            >
               <TitleDescription isPublisher />
             </JourneyProvider>
           </SnackbarProvider>
@@ -49,7 +63,12 @@ describe('TitleDescription', () => {
       const { getByRole, getByText } = render(
         <MockedProvider>
           <SnackbarProvider>
-            <JourneyProvider value={{ journey: template, admin: true }}>
+            <JourneyProvider
+              value={{
+                journey: template,
+                variant: 'admin'
+              }}
+            >
               <TitleDescription isPublisher />
             </JourneyProvider>
           </SnackbarProvider>

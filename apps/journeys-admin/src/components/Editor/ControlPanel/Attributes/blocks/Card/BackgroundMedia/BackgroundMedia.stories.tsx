@@ -1,26 +1,28 @@
-import { Story, Meta } from '@storybook/react'
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
-import { EditorProvider } from '@core/journeys/ui/EditorProvider'
-import type { TreeBlock } from '@core/journeys/ui/block'
 import { MockedProvider } from '@apollo/client/testing'
+import { Meta, Story } from '@storybook/react'
 
-import { GET_VIDEO_VARIANT_LANGUAGES } from '../../../../../VideoBlockEditor/Source/SourceFromLocal/SourceFromLocal'
+import type { TreeBlock } from '@core/journeys/ui/block'
+import { EditorProvider } from '@core/journeys/ui/EditorProvider'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+
 import {
-  GetJourney_journey as Journey,
   GetJourney_journey_blocks_CardBlock as CardBlock,
-  GetJourney_journey_blocks_VideoBlock as VideoBlock,
-  GetJourney_journey_blocks_ImageBlock as ImageBlock
+  GetJourney_journey_blocks_ImageBlock as ImageBlock,
+  GetJourney_journey as Journey,
+  GetJourney_journey_blocks_VideoBlock as VideoBlock
 } from '../../../../../../../../__generated__/GetJourney'
-import { journeysAdminConfig } from '../../../../../../../libs/storybook'
+import { GetVideoVariantLanguages_video } from '../../../../../../../../__generated__/GetVideoVariantLanguages'
 import {
+  JourneyStatus,
   ThemeMode,
   ThemeName,
-  JourneyStatus,
   VideoBlockSource
 } from '../../../../../../../../__generated__/globalTypes'
+import { journeysAdminConfig } from '../../../../../../../libs/storybook'
 import { ThemeProvider } from '../../../../../../ThemeProvider'
 import { Drawer } from '../../../../../Drawer'
-import { GetVideoVariantLanguages_video } from '../../../../../../../../__generated__/GetVideoVariantLanguages'
+import { GET_VIDEO_VARIANT_LANGUAGES } from '../../../../../VideoBlockEditor/Source/SourceFromLocal/SourceFromLocal'
+
 import { BackgroundMedia } from '.'
 
 const BackgroundMediaStory = {
@@ -184,7 +186,7 @@ const Template: Story = ({ ...args }) => (
     ]}
   >
     <ThemeProvider>
-      <JourneyProvider value={{ journey, admin: true }}>
+      <JourneyProvider value={{ journey, variant: 'admin' }}>
         <EditorProvider
           initialState={{
             ...args,

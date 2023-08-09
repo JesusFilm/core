@@ -1,14 +1,15 @@
-import { ReactElement, ChangeEvent } from 'react'
 import { gql, useMutation } from '@apollo/client'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import AccordionSummary from '@mui/material/AccordionSummary'
-import Typography from '@mui/material/Typography'
 import Checkbox from '@mui/material/Checkbox'
+import Typography from '@mui/material/Typography'
 import { useSnackbar } from 'notistack'
+import { ChangeEvent, ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
+
+import { ChatPlatform } from '../../../../../../../../../../__generated__/globalTypes'
 import { JourneyChatButtonCreate } from '../../../../../../../../../../__generated__/JourneyChatButtonCreate'
 import { JourneyChatButtonRemove } from '../../../../../../../../../../__generated__/JourneyChatButtonRemove'
-import { ChatPlatform } from '../../../../../../../../../../__generated__/globalTypes'
 
 export const JOURNEY_CHAT_BUTTON_CREATE = gql`
   mutation JourneyChatButtonCreate(

@@ -1,7 +1,7 @@
-import { ReactElement } from 'react'
-import IconButton from '@mui/material/IconButton'
 import VisibilityIcon from '@mui/icons-material/Visibility'
-import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import IconButton from '@mui/material/IconButton'
+import { ReactElement } from 'react'
+
 import {
   ActiveJourneyEditContent,
   useEditor
@@ -9,8 +9,11 @@ import {
 import Typography from '@mui/material/Typography'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import Theme from '@mui/material/styles'
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
+
 import { JourneyStatus } from '../../../../__generated__/globalTypes'
 import { DuplicateBlock } from '../../DuplicateBlock'
+
 import { DeleteBlock } from './DeleteBlock'
 import { Menu } from './Menu'
 

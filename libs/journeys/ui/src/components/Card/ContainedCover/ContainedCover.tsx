@@ -1,15 +1,18 @@
-import { ReactElement, ReactNode, useEffect, useRef, useState } from 'react'
-import { NextImage } from '@core/shared/ui/NextImage'
-import { styled } from '@mui/material/styles'
 import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
-import { TreeBlock } from '../../../libs/block'
+import { styled } from '@mui/material/styles'
+import { ReactElement, ReactNode, useEffect, useRef, useState } from 'react'
+
+import { NextImage } from '@core/shared/ui/NextImage'
+
 import { VideoBlockSource } from '../../../../__generated__/globalTypes'
-import { ImageFields } from '../../Image/__generated__/ImageFields'
-import { VideoFields } from '../../Video/__generated__/VideoFields'
+import { TreeBlock } from '../../../libs/block'
 import { useJourney } from '../../../libs/JourneyProvider'
 import { getJourneyRTL } from '../../../libs/rtl'
+import { ImageFields } from '../../Image/__generated__/ImageFields'
+import { VideoFields } from '../../Video/__generated__/VideoFields'
 import { OverlayContent } from '../OverlayContent'
+
 import { BackgroundVideo } from './BackgroundVideo'
 
 interface ContainedCoverProps {

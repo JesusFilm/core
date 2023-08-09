@@ -1,12 +1,14 @@
-import { fireEvent, render, waitFor } from '@testing-library/react'
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
-import { SnackbarProvider } from 'notistack'
 import useMediaQuery from '@mui/material/useMediaQuery'
+import { fireEvent, render, waitFor } from '@testing-library/react'
+import { SnackbarProvider } from 'notistack'
+
+import { GetLastActiveTeamIdAndTeams } from '../../../../__generated__/GetLastActiveTeamIdAndTeams'
 import {
   GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS,
   TeamProvider
 } from '../TeamProvider'
-import { GetLastActiveTeamIdAndTeams } from '../../../../__generated__/GetLastActiveTeamIdAndTeams'
+
 import { TeamMenu } from '.'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
@@ -16,6 +18,7 @@ jest.mock('@mui/material/useMediaQuery', () => ({
 
 describe('TeamMenu', () => {
   beforeEach(() => (useMediaQuery as jest.Mock).mockImplementation(() => true))
+
   const getTeamsMock: MockedResponse<GetLastActiveTeamIdAndTeams> = {
     request: {
       query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
@@ -23,8 +26,18 @@ describe('TeamMenu', () => {
     result: {
       data: {
         teams: [
-          { id: 'teamId1', title: 'Team Title', __typename: 'Team' },
-          { id: 'teamId2', title: 'Team Title2', __typename: 'Team' }
+          {
+            id: 'teamId1',
+            title: 'Team Title',
+            __typename: 'Team',
+            userTeams: []
+          },
+          {
+            id: 'teamId2',
+            title: 'Team Title2',
+            __typename: 'Team',
+            userTeams: []
+          }
         ],
         getJourneyProfile: {
           __typename: 'JourneyProfile',
@@ -40,8 +53,18 @@ describe('TeamMenu', () => {
     result: {
       data: {
         teams: [
-          { id: 'teamId1', title: 'Team Title', __typename: 'Team' },
-          { id: 'teamId2', title: 'Team Title2', __typename: 'Team' }
+          {
+            id: 'teamId1',
+            title: 'Team Title',
+            __typename: 'Team',
+            userTeams: []
+          },
+          {
+            id: 'teamId2',
+            title: 'Team Title2',
+            __typename: 'Team',
+            userTeams: []
+          }
         ],
         getJourneyProfile: {
           __typename: 'JourneyProfile',
@@ -101,6 +124,7 @@ describe('TeamMenu', () => {
       'true'
     )
   })
+
   it('disables manage team button', async () => {
     const { getByRole } = render(
       <MockedProvider mocks={[getEmptyTeamsMock]}>

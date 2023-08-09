@@ -1,6 +1,8 @@
 import { render } from '@testing-library/react'
+
 import type { TreeBlock } from '../../../libs/block'
 import { ImageFields } from '../../Image/__generated__/ImageFields'
+
 import { ExpandedCover } from '.'
 
 describe('ExpandedCover', () => {

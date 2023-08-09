@@ -1,29 +1,32 @@
+import Box from '@mui/material/Box'
+import Divider from '@mui/material/Divider'
+import Stack from '@mui/material/Stack'
+import MuiTypography from '@mui/material/Typography'
+import { ReactElement, useEffect } from 'react'
+import { useTranslation } from 'react-i18next'
+
+import type { TreeBlock } from '@core/journeys/ui/block'
 import {
   ActiveJourneyEditContent,
   ActiveTab,
   useEditor
 } from '@core/journeys/ui/EditorProvider'
-import type { TreeBlock } from '@core/journeys/ui/block'
-import Stack from '@mui/material/Stack'
-import Box from '@mui/material/Box'
-import Divider from '@mui/material/Divider'
-import MuiTypography from '@mui/material/Typography'
-import { ReactElement, useEffect } from 'react'
-import { useTranslation } from 'react-i18next'
+
 import { Properties } from '../../../JourneyView/Properties'
+
 import {
-  Card,
-  Step,
-  Typography,
   Button,
-  SignUp,
-  RadioOption,
-  Video,
+  Card,
   Image,
-  TextResponse
+  RadioOption,
+  SignUp,
+  Step,
+  TextResponse,
+  Typography,
+  Video
 } from './blocks'
-import { MoveBlockButtons } from './MoveBlockButtons'
 import { Footer } from './blocks/Footer'
+import { MoveBlockButtons } from './MoveBlockButtons'
 
 function AttributesContent({ selected, step }: AttributesProps): ReactElement {
   if (typeof selected === 'string') {

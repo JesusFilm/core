@@ -1,11 +1,14 @@
-import { Story, Meta } from '@storybook/react'
+import { Meta, Story } from '@storybook/react'
 import { SWRConfig } from 'swr'
-import { journeysAdminConfig } from '../../../../libs/storybook'
+
 import { ApolloLoadingProvider } from '../../../../../test/ApolloLoadingProvider'
+import { journeysAdminConfig } from '../../../../libs/storybook'
+
 import {
   getPlaylistItemsLoading,
   getPlaylistItemsWithOffsetAndUrl
 } from './VideoFromYouTube.handlers'
+
 import { VideoFromYouTube } from '.'
 
 const VideoFromYouTubeStory = {

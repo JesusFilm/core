@@ -86,9 +86,9 @@ extend type Query {
     teamId: ID
   ): [Journey!]!
   adminJourneysReport(reportType: JourneysReportType!): PowerBiEmbed
-  adminJourney(id: ID!, idType: IdType): Journey
+  adminJourney(id: ID!, idType: IdType): Journey!
   journeys(where: JourneysFilter): [Journey!]!
-  journey(id: ID!, idType: IdType): Journey
+  journey(id: ID!, idType: IdType): Journey!
 }
 
 input JourneyCreateInput {
@@ -134,10 +134,8 @@ input JourneyTemplateInput {
 }
 
 extend type Mutation {
-  # TODO: make teamId required when teams is released
-  journeyCreate(input: JourneyCreateInput!, teamId: ID): Journey!
-  # TODO: make teamId required when teams is released
-  journeyDuplicate(id: ID!, teamId: ID): Journey!
+  journeyCreate(input: JourneyCreateInput!, teamId: ID!): Journey!
+  journeyDuplicate(id: ID!, teamId: ID!): Journey!
   journeyUpdate(id: ID!, input: JourneyUpdateInput!): Journey!
   """
   Sets journey status to published

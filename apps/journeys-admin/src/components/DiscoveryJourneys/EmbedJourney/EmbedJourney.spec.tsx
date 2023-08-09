@@ -1,7 +1,9 @@
-import { fireEvent, render } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
+import { fireEvent, render } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
+
 import { discoveryJourneys } from '../data'
+
 import { EmbedJourney } from '.'
 
 describe('EmbedJourney', () => {

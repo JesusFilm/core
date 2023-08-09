@@ -1,14 +1,16 @@
+import { gql, useMutation } from '@apollo/client'
 import Box from '@mui/material/Box'
 import TextField from '@mui/material/TextField'
-import { ReactElement, FocusEvent } from 'react'
-import { useMutation, gql } from '@apollo/client'
-import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import { Form, Formik } from 'formik'
+import noop from 'lodash/noop'
+import { FocusEvent, ReactElement } from 'react'
+
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
-import { Formik, Form } from 'formik'
-import noop from 'lodash/noop'
-import { TextResponseHintUpdate } from '../../../../../../../../../__generated__/TextResponseHintUpdate'
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
+
 import { GetJourney_journey_blocks_TextResponseBlock as TextResponseBlock } from '../../../../../../../../../__generated__/GetJourney'
+import { TextResponseHintUpdate } from '../../../../../../../../../__generated__/TextResponseHintUpdate'
 
 export const TEXT_RESPONSE_HINT_UPDATE = gql`
   mutation TextResponseHintUpdate(

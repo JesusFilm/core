@@ -1,5 +1,6 @@
+import { fireEvent, render } from '@testing-library/react'
 import { ReactElement } from 'react'
-import { render, fireEvent } from '@testing-library/react'
+
 import { useOnClickOutside } from '.'
 
 describe('useClickOutside', () => {

@@ -1,6 +1,8 @@
-import { ComponentStory, Meta } from '@storybook/react'
 import Box from '@mui/material/Box'
+import { ComponentStory, Meta } from '@storybook/react'
+
 import { watchConfig } from '../../libs/storybook'
+
 import { HeroOverlay } from '.'
 
 const HeroOverlayStory = {

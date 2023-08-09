@@ -1,39 +1,40 @@
-import { ReactElement, useState } from 'react'
-import { useMutation, gql, useQuery } from '@apollo/client'
+import { gql, useMutation, useQuery } from '@apollo/client'
+import AssessmentRoundedIcon from '@mui/icons-material/AssessmentRounded'
+import BeenHereRoundedIcon from '@mui/icons-material/BeenhereRounded'
+import CheckRounded from '@mui/icons-material/CheckRounded'
+import ContentCopyIcon from '@mui/icons-material/ContentCopy'
+import DescriptionIcon from '@mui/icons-material/Description'
+import EditIcon from '@mui/icons-material/Edit'
+import MoreVert from '@mui/icons-material/MoreVert'
+import TranslateIcon from '@mui/icons-material/Translate'
+import ViewCarouselIcon from '@mui/icons-material/ViewCarousel'
+import VisibilityIcon from '@mui/icons-material/Visibility'
 import Divider from '@mui/material/Divider'
 import IconButton from '@mui/material/IconButton'
 import MuiMenu from '@mui/material/Menu'
-import MoreVert from '@mui/icons-material/MoreVert'
-import BeenHereRoundedIcon from '@mui/icons-material/BeenhereRounded'
-import VisibilityIcon from '@mui/icons-material/Visibility'
-import EditIcon from '@mui/icons-material/Edit'
-// TODO: remove when teams is released
-import { useFlags } from '@core/shared/ui/FlagsProvider'
-import DescriptionIcon from '@mui/icons-material/Description'
-import AssessmentRoundedIcon from '@mui/icons-material/AssessmentRounded'
-import TranslateIcon from '@mui/icons-material/Translate'
-import ContentCopyIcon from '@mui/icons-material/ContentCopy'
-import ViewCarouselIcon from '@mui/icons-material/ViewCarousel'
-import CheckRounded from '@mui/icons-material/CheckRounded'
-import NextLink from 'next/link'
-import { useSnackbar } from 'notistack'
-import { useJourney } from '@core/journeys/ui/JourneyProvider'
-import { useRouter } from 'next/router'
 import dynamic from 'next/dynamic'
+import NextLink from 'next/link'
+import { useRouter } from 'next/router'
+import { useSnackbar } from 'notistack'
+import { ReactElement, useState } from 'react'
+
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
+
+import { GetRole } from '../../../../__generated__/GetRole'
 import {
   JourneyStatus,
   Role,
   UserJourneyRole
 } from '../../../../__generated__/globalTypes'
 import { JourneyPublish } from '../../../../__generated__/JourneyPublish'
-import { GetRole } from '../../../../__generated__/GetRole'
-import { MenuItem } from '../../MenuItem'
-import { TitleDescriptionDialog } from '../TitleDescription/TitleDescriptionDialog'
 import { useJourneyDuplicateMutation } from '../../../libs/useJourneyDuplicateMutation'
+import { MenuItem } from '../../MenuItem'
 import { CopyToTeamDialog } from '../../Team/CopyToTeamDialog'
+import { TitleDescriptionDialog } from '../TitleDescription/TitleDescriptionDialog'
+
+import { CreateTemplateMenuItem } from './CreateTemplateMenuItem'
 import { DescriptionDialog } from './DescriptionDialog'
 import { TitleDialog } from './TitleDialog'
-import { CreateTemplateMenuItem } from './CreateTemplateMenuItem'
 
 const DynamicLanguageDialog = dynamic<{
   open: boolean
@@ -85,9 +86,6 @@ export function Menu(): ReactElement {
   const [showLanguageDialog, setShowLanguageDialog] = useState(false)
   const [duplicateTeamDialogOpen, setDuplicateTeamDialogOpen] = useState(false)
 
-  // TODO: remove when teams is released
-  const { teams } = useFlags()
-
   const { enqueueSnackbar } = useSnackbar()
 
   const openMenu = Boolean(anchorEl)
@@ -123,7 +121,7 @@ export function Menu(): ReactElement {
         })
   }
   const handleTemplate = async (teamId: string | undefined): Promise<void> => {
-    if (journey == null) return
+    if (journey == null || teamId == null) return
 
     const { data } = await journeyDuplicate({
       variables: { id: journey.id, teamId }
@@ -222,13 +220,7 @@ export function Menu(): ReactElement {
               <MenuItem
                 label="Use Template"
                 icon={<CheckRounded />}
-                onClick={() =>
-                  // TODO: remove when teams is released
-                  teams
-                    ? setDuplicateTeamDialogOpen(true)
-                    : // TODO: remove when teams is released
-                      handleTemplate(undefined)
-                }
+                onClick={() => setDuplicateTeamDialogOpen(true)}
               />
             )}
             {journey.template === true && isPublisher && (

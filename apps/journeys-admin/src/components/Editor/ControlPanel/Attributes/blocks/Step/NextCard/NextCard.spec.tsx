@@ -1,16 +1,19 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
-import { EditorProvider } from '@core/journeys/ui/EditorProvider'
-import type { TreeBlock } from '@core/journeys/ui/block'
 import { fireEvent, render } from '@testing-library/react'
+
+import type { TreeBlock } from '@core/journeys/ui/block'
+import { EditorProvider } from '@core/journeys/ui/EditorProvider'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+
 import {
-  GetJourney_journey_blocks_StepBlock as StepBlock,
-  GetJourney_journey as Journey
+  GetJourney_journey as Journey,
+  GetJourney_journey_blocks_StepBlock as StepBlock
 } from '../../../../../../../../__generated__/GetJourney'
 import {
-  ThemeName,
-  ThemeMode
+  ThemeMode,
+  ThemeName
 } from '../../../../../../../../__generated__/globalTypes'
+
 import { NextCard } from './NextCard'
 
 describe('NextCard', () => {
@@ -40,7 +43,7 @@ describe('NextCard', () => {
                 iso3: 'eng'
               }
             } as unknown as Journey,
-            admin: true
+            variant: 'admin'
           }}
         >
           <EditorProvider initialState={{ selectedBlock }}>

@@ -1,12 +1,14 @@
-import { ReactElement } from 'react'
 import { gql, useMutation } from '@apollo/client'
-import { useJourney } from '@core/journeys/ui/JourneyProvider'
-import { useEditor } from '@core/journeys/ui/EditorProvider'
+import { ReactElement } from 'react'
+
 import type { TreeBlock } from '@core/journeys/ui/block'
-import { ButtonSize } from '../../../../../../../../__generated__/globalTypes'
+import { useEditor } from '@core/journeys/ui/EditorProvider'
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
+
 import { ButtonBlockUpdateSize } from '../../../../../../../../__generated__/ButtonBlockUpdateSize'
-import { ToggleButtonGroup } from '../../../ToggleButtonGroup'
 import { GetJourney_journey_blocks_ButtonBlock as ButtonBlock } from '../../../../../../../../__generated__/GetJourney'
+import { ButtonSize } from '../../../../../../../../__generated__/globalTypes'
+import { ToggleButtonGroup } from '../../../ToggleButtonGroup'
 
 export const BUTTON_BLOCK_UPDATE = gql`
   mutation ButtonBlockUpdateSize(

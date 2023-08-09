@@ -1,13 +1,16 @@
-import { render, fireEvent, waitFor, within } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
+import { fireEvent, render, waitFor, within } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
+
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+
 import { GetJourney_journey as Journey } from '../../../../__generated__/GetJourney'
 import { JOURNEY_DUPLICATE } from '../../../libs/useJourneyDuplicateMutation'
 import {
-  TeamProvider,
-  GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
+  GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS,
+  TeamProvider
 } from '../TeamProvider'
+
 import { CopyToTeamMenuItem } from './CopyToTeamMenuItem'
 
 jest.mock('react-i18next', () => ({
@@ -68,7 +71,7 @@ describe('DuplicateJourneys', () => {
           <JourneyProvider
             value={{
               journey: { id: 'journeyId' } as unknown as Journey,
-              admin: true
+              variant: 'admin'
             }}
           >
             <TeamProvider>

@@ -1,8 +1,10 @@
-import { Story, Meta } from '@storybook/react'
 import { MockedProvider } from '@apollo/client/testing'
-import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
+import { Meta, Story } from '@storybook/react'
+
 import { ActiveJourneyEditContent } from '@core/journeys/ui/EditorProvider'
-import { journeysAdminConfig } from '../../libs/storybook'
+import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
+
+import { GetJourney_journey_blocks } from '../../../__generated__/GetJourney'
 import {
   ButtonColor,
   ButtonSize,
@@ -15,10 +17,12 @@ import {
   TypographyVariant,
   VideoBlockSource
 } from '../../../__generated__/globalTypes'
-import { GetJourney_journey_blocks } from '../../../__generated__/GetJourney'
+import { journeysAdminConfig } from '../../libs/storybook'
 import { PageWrapper } from '../PageWrapper'
-import { JourneyEdit } from './JourneyEdit'
+
 import { EditToolbar } from './EditToolbar'
+import { JourneyEdit } from './JourneyEdit'
+
 import { Editor } from '.'
 
 const EditorStory = {

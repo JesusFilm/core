@@ -1,12 +1,13 @@
 import Stack from '@mui/material/Stack'
 import { Meta, Story } from '@storybook/react'
 import noop from 'lodash/noop'
-import { simpleComponentConfig } from '../../../simpleComponentConfig'
+
 import { ThemeName } from '../..'
 import {
-  LanguageAutocomplete,
-  Language
+  Language,
+  LanguageAutocomplete
 } from '../../../../components/LanguageAutocomplete'
+import { simpleComponentConfig } from '../../../simpleComponentConfig'
 
 const ComponentsDemo = {
   ...simpleComponentConfig,

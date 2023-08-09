@@ -1,15 +1,17 @@
-import { ReactElement, useEffect, useState } from 'react'
-import { getApp } from 'firebase/app'
-import {
-  getAuth,
-  EmailAuthProvider,
-  GoogleAuthProvider,
-  FacebookAuthProvider
-} from 'firebase/auth'
-import Image from 'next/image'
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
+import { getApp } from 'firebase/app'
+import {
+  EmailAuthProvider,
+  FacebookAuthProvider,
+  GoogleAuthProvider,
+  getAuth
+} from 'firebase/auth'
+import Image from 'next/image'
+import { ReactElement, useEffect, useState } from 'react'
+
 import { StyledFirebaseAuth } from '@core/shared/ui/StyledFirebaseAuth'
+
 import logo from '../../../public/logo.svg'
 
 export function SignIn(): ReactElement {

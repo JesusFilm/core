@@ -1,26 +1,28 @@
-import { ReactElement } from 'react'
-import { Formik, Form } from 'formik'
-import { useRouter } from 'next/router'
-import { object, string } from 'yup'
-import { useMutation, gql, ApolloError } from '@apollo/client'
-import { SxProps } from '@mui/system/styleFunctionSx'
-import Box from '@mui/material/Box'
+import { ApolloError, gql, useMutation } from '@apollo/client'
 import LoadingButton from '@mui/lab/LoadingButton'
-import { v4 as uuidv4 } from 'uuid'
+import Box from '@mui/material/Box'
+import { SxProps } from '@mui/system/styleFunctionSx'
+import { Form, Formik } from 'formik'
+import { useRouter } from 'next/router'
 import { useSnackbar } from 'notistack'
+import { ReactElement } from 'react'
 import TagManager from 'react-gtm-module'
 import { useTranslation } from 'react-i18next'
-import type { TreeBlock } from '../../libs/block'
-import { useBlocks } from '../../libs/block'
-import { useEditor } from '../../libs/EditorProvider'
-import { useJourney } from '../../libs/JourneyProvider'
+import { v4 as uuidv4 } from 'uuid'
+import { object, string } from 'yup'
+
 import { handleAction } from '../../libs/action'
+import { useBlocks } from '../../libs/block'
+import type { TreeBlock } from '../../libs/block'
+import { useEditor } from '../../libs/EditorProvider'
 import { getStepHeading } from '../../libs/getStepHeading'
-import { TextField } from '../TextField'
+import { useJourney } from '../../libs/JourneyProvider'
 import { Icon } from '../Icon'
 import { IconFields } from '../Icon/__generated__/IconFields'
-import { SignUpSubmissionEventCreate } from './__generated__/SignUpSubmissionEventCreate'
+import { TextField } from '../TextField'
+
 import { SignUpFields } from './__generated__/SignUpFields'
+import { SignUpSubmissionEventCreate } from './__generated__/SignUpSubmissionEventCreate'
 
 export const SIGN_UP_SUBMISSION_EVENT_CREATE = gql`
   mutation SignUpSubmissionEventCreate(
@@ -60,7 +62,7 @@ export const SignUp = ({
     | TreeBlock<IconFields>
     | undefined
 
-  const { admin } = useJourney()
+  const { variant } = useJourney()
   const { enqueueSnackbar } = useSnackbar()
   const { blockHistory, treeBlocks } = useBlocks()
   const activeBlock = blockHistory[blockHistory.length - 1]
@@ -86,7 +88,7 @@ export const SignUp = ({
   })
 
   const onSubmitHandler = async (values: SignUpFormValues): Promise<void> => {
-    if (!admin) {
+    if (variant === 'default' || variant === 'embed') {
       const id = uuid()
       try {
         await signUpSubmissionEventCreate({

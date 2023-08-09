@@ -1,16 +1,17 @@
 import { ApolloQueryResult, OperationVariables } from '@apollo/client'
-import { ReactElement, useMemo } from 'react'
-import { AuthUser } from 'next-firebase-auth'
 import Box from '@mui/material/Box'
-import { UserJourneyRole } from '../../../../../__generated__/globalTypes'
-import { JourneyCard } from '../../JourneyCard'
-import { SortOrder } from '../../JourneySort'
-import { sortJourneys } from '../../JourneySort/utils/sortJourneys'
-import { JourneyCardVariant } from '../../JourneyCard/journeyCardVariant'
+import { AuthUser } from 'next-firebase-auth'
+import { ReactElement, useMemo } from 'react'
+
 import {
   GetAdminJourneys,
   GetAdminJourneys_journeys as Journey
 } from '../../../../../__generated__/GetAdminJourneys'
+import { UserJourneyRole } from '../../../../../__generated__/globalTypes'
+import { JourneyCard } from '../../JourneyCard'
+import { JourneyCardVariant } from '../../JourneyCard/journeyCardVariant'
+import { SortOrder } from '../../JourneySort'
+import { sortJourneys } from '../../JourneySort/utils/sortJourneys'
 
 interface Props {
   journeys: Journey[]

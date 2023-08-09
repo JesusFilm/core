@@ -1,21 +1,24 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
-import { SnackbarProvider } from 'notistack'
 import { AuthUser } from 'next-firebase-auth'
-import { defaultJourney, oldJourney } from '../journeyListData'
-import { ThemeProvider } from '../../ThemeProvider'
-import { SortOrder } from '../JourneySort'
-import { GET_ADMIN_JOURNEYS } from '../../../libs/useAdminJourneysQuery/useAdminJourneysQuery'
-import { JourneyStatus } from '../../../../__generated__/globalTypes'
+import { SnackbarProvider } from 'notistack'
+
 import { GetLastActiveTeamIdAndTeams } from '../../../../__generated__/GetLastActiveTeamIdAndTeams'
+import { JourneyStatus } from '../../../../__generated__/globalTypes'
+import { GET_ADMIN_JOURNEYS } from '../../../libs/useAdminJourneysQuery/useAdminJourneysQuery'
 import {
   GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS,
   TeamProvider
 } from '../../Team/TeamProvider'
+import { ThemeProvider } from '../../ThemeProvider'
+import { defaultJourney, oldJourney } from '../journeyListData'
+import { SortOrder } from '../JourneySort'
+
 import {
-  RESTORE_TRASHED_JOURNEYS,
-  DELETE_TRASHED_JOURNEYS
+  DELETE_TRASHED_JOURNEYS,
+  RESTORE_TRASHED_JOURNEYS
 } from './TrashedJourneyList'
+
 import { TrashedJourneyList } from '.'
 
 jest.mock('next/router', () => ({

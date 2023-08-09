@@ -1,14 +1,17 @@
 import { Test, TestingModule } from '@nestjs/testing'
-import { CaslAuthModule } from '@core/nest/common/CaslAuthModule'
+import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
+
 import {
+  Prisma,
   Team,
   UserTeam,
-  UserTeamRole,
-  Prisma
+  UserTeamRole
 } from '.prisma/api-journeys-client'
-import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
-import { PrismaService } from '../../lib/prisma.service'
+import { CaslAuthModule } from '@core/nest/common/CaslAuthModule'
+
 import { AppAbility, AppCaslFactory } from '../../lib/casl/caslFactory'
+import { PrismaService } from '../../lib/prisma.service'
+
 import { TeamResolver } from './team.resolver'
 
 describe('TeamResolver', () => {
@@ -41,6 +44,7 @@ describe('TeamResolver', () => {
     ) as DeepMockProxy<PrismaService>
     ability = await new AppCaslFactory().createAbility({ id: 'userId' })
   })
+
   describe('teams', () => {
     it('fetches accessible teams', async () => {
       prismaService.team.findMany.mockResolvedValue([team])
@@ -139,9 +143,11 @@ describe('TeamResolver', () => {
         }
       ]
     } as unknown as Team & { userTeams: UserTeam[] }
+
     it('returns userTeams of parent', async () => {
       expect(await resolver.userTeams(team)).toEqual(team.userTeams)
     })
+
     it('returns userTeams from database', async () => {
       const userTeams = jest.fn().mockResolvedValue(team.userTeams)
       prismaService.team.findUnique.mockReturnValue({
@@ -152,6 +158,7 @@ describe('TeamResolver', () => {
         resolver.userTeams({ ...team, userTeams: undefined })
       ).resolves.toEqual(team.userTeams)
     })
+
     it('returns empty array when null', async () => {
       const userTeams = jest.fn().mockResolvedValue(null)
       prismaService.team.findUnique.mockReturnValue({

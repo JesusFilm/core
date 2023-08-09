@@ -1,15 +1,19 @@
-import { render, fireEvent, waitFor } from '@testing-library/react'
+import { InMemoryCache } from '@apollo/client'
+import { MockedProvider } from '@apollo/client/testing'
+import { fireEvent, render, waitFor } from '@testing-library/react'
+import { v4 as uuidv4 } from 'uuid'
+
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
-import { MockedProvider } from '@apollo/client/testing'
-import { v4 as uuidv4 } from 'uuid'
-import { InMemoryCache } from '@apollo/client'
+
 import {
   GetJourney_journey as Journey,
   GetJourney_journey_blocks_StepBlock as StepBlock
 } from '../../../__generated__/GetJourney'
-import { ThemeName, ThemeMode } from '../../../__generated__/globalTypes'
+import { ThemeMode, ThemeName } from '../../../__generated__/globalTypes'
+
 import { STEP_AND_CARD_BLOCK_CREATE } from './CardPreview'
+
 import { CardPreview } from '.'
 
 jest.mock('uuid', () => ({
@@ -82,7 +86,7 @@ describe('CardPreview', () => {
                 iso3: 'eng'
               }
             } as unknown as Journey,
-            admin: true
+            variant: 'admin'
           }}
         >
           <CardPreview onSelect={onSelect} steps={[step]} />
@@ -107,7 +111,7 @@ describe('CardPreview', () => {
               themeMode: ThemeMode.light,
               themeName: ThemeName.base
             } as unknown as Journey,
-            admin: true
+            variant: 'admin'
           }}
         >
           <CardPreview steps={[]} onSelect={onSelect} showAddButton />
@@ -166,7 +170,7 @@ describe('CardPreview', () => {
               themeMode: ThemeMode.light,
               themeName: ThemeName.base
             } as unknown as Journey,
-            admin: true
+            variant: 'admin'
           }}
         >
           <CardPreview steps={[]} onSelect={onSelect} showAddButton />
@@ -182,55 +186,6 @@ describe('CardPreview', () => {
     })
   })
 
-  it('should create step and card when add button is clicked', async () => {
-    mockUuidv4.mockReturnValueOnce('stepId')
-    mockUuidv4.mockReturnValueOnce('cardId')
-    const onSelect = jest.fn()
-
-    const { getAllByRole } = render(
-      <MockedProvider mocks={mocks}>
-        <JourneyProvider
-          value={{
-            journey: {
-              id: 'journeyId',
-              themeMode: ThemeMode.light,
-              themeName: ThemeName.base
-            } as unknown as Journey,
-            admin: true
-          }}
-        >
-          <CardPreview steps={[]} onSelect={onSelect} showAddButton />
-        </JourneyProvider>
-      </MockedProvider>
-    )
-    fireEvent.click(getAllByRole('button')[0])
-    await waitFor(() =>
-      expect(onSelect).toHaveBeenCalledWith({
-        step: {
-          __typename: 'StepBlock',
-          children: [
-            {
-              __typename: 'CardBlock',
-              backgroundColor: null,
-              children: [],
-              coverBlockId: null,
-              fullscreen: false,
-              id: 'cardId',
-              parentBlockId: 'stepId',
-              parentOrder: 0,
-              themeMode: null,
-              themeName: null
-            }
-          ],
-          id: 'stepId',
-          locked: false,
-          nextBlockId: null,
-          parentBlockId: null,
-          parentOrder: 0
-        }
-      })
-    )
-  })
   it('should navigate to actions table when clicked', async () => {
     const onSelect = jest.fn()
 
@@ -243,7 +198,7 @@ describe('CardPreview', () => {
               themeMode: ThemeMode.light,
               themeName: ThemeName.base
             } as unknown as Journey,
-            admin: true
+            variant: 'admin'
           }}
         >
           <CardPreview
@@ -273,7 +228,7 @@ describe('CardPreview', () => {
               themeMode: ThemeMode.light,
               themeName: ThemeName.base
             } as unknown as Journey,
-            admin: true
+            variant: 'admin'
           }}
         >
           <CardPreview

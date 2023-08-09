@@ -1,8 +1,8 @@
-import { forwardRef, ReactElement } from 'react'
-import Stack from '@mui/material/Stack'
-import NavigateNextIcon from '@mui/icons-material/NavigateNext'
 import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore'
+import NavigateNextIcon from '@mui/icons-material/NavigateNext'
+import Stack from '@mui/material/Stack'
 import { alpha } from '@mui/material/styles'
+import { ReactElement, forwardRef } from 'react'
 
 interface NavButtonProps {
   variant: 'prev' | 'next'

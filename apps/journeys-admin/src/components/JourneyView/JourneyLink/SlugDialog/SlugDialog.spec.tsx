@@ -1,9 +1,12 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { render, fireEvent, waitFor } from '@testing-library/react'
+import { fireEvent, render, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
+
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+
 import { defaultJourney } from '../../data'
-import { SlugDialog, JOURNEY_SLUG_UPDATE } from '.'
+
+import { JOURNEY_SLUG_UPDATE, SlugDialog } from '.'
 
 const onClose = jest.fn()
 
@@ -12,7 +15,12 @@ describe('JourneyView/Properties/SlugDialog', () => {
     const { getByRole } = render(
       <MockedProvider mocks={[]}>
         <SnackbarProvider>
-          <JourneyProvider value={{ journey: defaultJourney, admin: true }}>
+          <JourneyProvider
+            value={{
+              journey: defaultJourney,
+              variant: 'admin'
+            }}
+          >
             <SlugDialog open onClose={onClose} />
           </JourneyProvider>
         </SnackbarProvider>
@@ -24,7 +32,7 @@ describe('JourneyView/Properties/SlugDialog', () => {
     })
     fireEvent.click(getByRole('button', { name: 'Cancel' }))
 
-    await waitFor(() => expect(onClose).toBeCalled())
+    await waitFor(() => expect(onClose).toHaveBeenCalled())
   })
 
   it('should update journey slug on submit', async () => {
@@ -56,7 +64,12 @@ describe('JourneyView/Properties/SlugDialog', () => {
         ]}
       >
         <SnackbarProvider>
-          <JourneyProvider value={{ journey: defaultJourney, admin: true }}>
+          <JourneyProvider
+            value={{
+              journey: defaultJourney,
+              variant: 'admin'
+            }}
+          >
             <SlugDialog open onClose={onClose} />
           </JourneyProvider>
         </SnackbarProvider>
@@ -87,7 +100,12 @@ describe('JourneyView/Properties/SlugDialog', () => {
         ]}
       >
         <SnackbarProvider>
-          <JourneyProvider value={{ journey: defaultJourney, admin: true }}>
+          <JourneyProvider
+            value={{
+              journey: defaultJourney,
+              variant: 'admin'
+            }}
+          >
             <SlugDialog open onClose={onClose} />
           </JourneyProvider>
         </SnackbarProvider>
@@ -132,7 +150,12 @@ describe('JourneyView/Properties/SlugDialog', () => {
         ]}
       >
         <SnackbarProvider>
-          <JourneyProvider value={{ journey: defaultJourney, admin: true }}>
+          <JourneyProvider
+            value={{
+              journey: defaultJourney,
+              variant: 'admin'
+            }}
+          >
             <SlugDialog open onClose={onClose} />
           </JourneyProvider>
         </SnackbarProvider>

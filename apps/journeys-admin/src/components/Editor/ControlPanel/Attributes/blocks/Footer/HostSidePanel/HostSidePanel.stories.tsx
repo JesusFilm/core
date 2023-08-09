@@ -1,13 +1,15 @@
-import { ComponentProps } from 'react'
-import { Story, Meta } from '@storybook/react'
-import { userEvent, waitFor, within } from '@storybook/testing-library'
-
 import { MockedProvider } from '@apollo/client/testing'
-import { JourneyFields as Journey } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { expect } from '@storybook/jest'
+import { Meta, Story } from '@storybook/react'
+import { userEvent, waitFor, within } from '@storybook/testing-library'
+import { ComponentProps } from 'react'
+
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import { JourneyFields as Journey } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
+
 import { journeysAdminConfig } from '../../../../../../../libs/storybook'
 import { ThemeProvider } from '../../../../../../ThemeProvider'
+
 import { GET_ALL_TEAM_HOSTS, HostSidePanel } from './HostSidePanel'
 
 const Demo = {
@@ -92,7 +94,7 @@ const Template: Story<ComponentProps<typeof HostSidePanel>> = ({ ...args }) => {
       ]}
     >
       <ThemeProvider>
-        <JourneyProvider value={{ ...args }}>
+        <JourneyProvider value={{ ...args, variant: 'admin' }}>
           <HostSidePanel />
         </JourneyProvider>
       </ThemeProvider>

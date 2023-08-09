@@ -1,11 +1,13 @@
-import { fireEvent, render, waitFor } from '@testing-library/react'
+import { InMemoryCache } from '@apollo/client'
 import { MockedProvider } from '@apollo/client/testing'
+import { fireEvent, render, waitFor } from '@testing-library/react'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { JourneyFields as Journey } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
-import { InMemoryCache } from '@apollo/client'
+
 import { useHostUpdate } from '../../../../../../../../../libs/useHostUpdate'
 import { UPDATE_HOST } from '../../../../../../../../../libs/useHostUpdate/useHostUpdate'
+
 import {
   CREATE_HOST,
   HostTitleFieldForm,
@@ -26,17 +28,19 @@ const mockUseHostUpdate = useHostUpdate as jest.MockedFunction<
   typeof useHostUpdate
 >
 
-const updateHost = jest.fn()
-beforeEach(() => {
-  mockUseHostUpdate.mockReturnValue({
-    updateHost
-  })
-})
-afterEach(() => {
-  jest.resetAllMocks()
-})
-
 describe('HostTitleFieldForm', () => {
+  const updateHost = jest.fn()
+
+  beforeEach(() => {
+    mockUseHostUpdate.mockReturnValue({
+      updateHost
+    })
+  })
+
+  afterEach(() => {
+    jest.resetAllMocks()
+  })
+
   const defaultHost = {
     id: 'hostId',
     __typename: 'Host',
@@ -111,7 +115,12 @@ describe('HostTitleFieldForm', () => {
           }
         ]}
       >
-        <JourneyProvider value={{ journey: { ...journey, host: null } }}>
+        <JourneyProvider
+          value={{
+            journey: { ...journey, host: null },
+            variant: 'admin'
+          }}
+        >
           <HostTitleFieldForm />
         </JourneyProvider>
       </MockedProvider>
@@ -177,7 +186,7 @@ describe('HostTitleFieldForm', () => {
           }
         ]}
       >
-        <JourneyProvider value={{ journey }}>
+        <JourneyProvider value={{ journey, variant: 'admin' }}>
           <HostTitleFieldForm />
         </JourneyProvider>
       </MockedProvider>

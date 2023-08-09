@@ -1,21 +1,23 @@
-import { ComponentProps } from 'react'
-import { Story, Meta } from '@storybook/react'
-import { useTheme } from '@mui/material/styles'
-import Box from '@mui/material/Box'
 import { MockedProvider } from '@apollo/client/testing'
-import { journeyUiConfig } from '../../libs/journeyUiConfig'
-import type { TreeBlock } from '../../libs/block'
+import Box from '@mui/material/Box'
+import { useTheme } from '@mui/material/styles'
+import { Meta, Story } from '@storybook/react'
+import { ComponentProps } from 'react'
+
 import {
-  TypographyVariant,
-  ButtonVariant,
   ButtonColor,
   ButtonSize,
+  ButtonVariant,
   IconName,
   IconSize,
+  TypographyVariant,
   VideoBlockSource
 } from '../../../__generated__/globalTypes'
+import type { TreeBlock } from '../../libs/block'
+import { journeyUiConfig } from '../../libs/journeyUiConfig'
 import { ImageFields } from '../Image/__generated__/ImageFields'
 import { VideoFields } from '../Video/__generated__/VideoFields'
+
 import { Card } from './Card'
 
 const Demo = {

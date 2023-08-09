@@ -4,6 +4,7 @@ import {
   gql,
   useMutation
 } from '@apollo/client'
+
 import {
   TeamCreate,
   TeamCreateVariables
@@ -15,6 +16,15 @@ export const TEAM_CREATE = gql`
     teamCreate(input: $input) {
       id
       title
+      userTeams {
+        id
+        user {
+          id
+          firstName
+          lastName
+          imageUrl
+        }
+      }
     }
   }
 `

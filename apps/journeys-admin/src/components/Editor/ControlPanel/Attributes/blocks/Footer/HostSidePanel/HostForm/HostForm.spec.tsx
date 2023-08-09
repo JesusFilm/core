@@ -1,8 +1,11 @@
-import { fireEvent, render, waitFor } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
+import { fireEvent, render, waitFor } from '@testing-library/react'
+
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { JourneyFields as Journey } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
+
 import { ThemeProvider } from '../../../../../../../ThemeProvider'
+
 import { DELETE_HOST, HostForm } from './HostForm'
 import { UPDATE_JOURNEY_HOST } from './HostTitleFieldForm/HostTitleFieldForm'
 
@@ -43,7 +46,12 @@ describe('HostForm', () => {
     const { getByRole, getByTestId } = render(
       <MockedProvider>
         <ThemeProvider>
-          <JourneyProvider value={{ journey: { ...journey, host: null } }}>
+          <JourneyProvider
+            value={{
+              journey: { ...journey, host: null },
+              variant: 'admin'
+            }}
+          >
             <HostForm onClear={jest.fn()} />
           </JourneyProvider>
         </ThemeProvider>
@@ -72,7 +80,7 @@ describe('HostForm', () => {
     const { getByRole, getByAltText } = render(
       <MockedProvider>
         <ThemeProvider>
-          <JourneyProvider value={{ journey }}>
+          <JourneyProvider value={{ journey, variant: 'admin' }}>
             <HostForm onClear={jest.fn()} />
           </JourneyProvider>
         </ThemeProvider>
@@ -141,7 +149,7 @@ describe('HostForm', () => {
         ]}
       >
         <ThemeProvider>
-          <JourneyProvider value={{ journey }}>
+          <JourneyProvider value={{ journey, variant: 'admin' }}>
             <HostForm onClear={onClear} />
           </JourneyProvider>
         </ThemeProvider>

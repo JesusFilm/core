@@ -1,4 +1,5 @@
 import { fireEvent, render } from '@testing-library/react'
+
 import { StepHeader } from './StepHeader'
 
 describe('StepHeader', () => {

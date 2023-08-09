@@ -1,7 +1,9 @@
-import { fireEvent, render } from '@testing-library/react'
-import useMediaQuery from '@mui/material/useMediaQuery'
 import { MockedProvider } from '@apollo/client/testing'
+import useMediaQuery from '@mui/material/useMediaQuery'
+import { fireEvent, render } from '@testing-library/react'
+
 import { GetJourney_journey_blocks_ImageBlock as ImageBlock } from '../../../../__generated__/GetJourney'
+
 import { ImageLibrary } from '.'
 
 jest.mock('@mui/material/useMediaQuery', () => ({

@@ -1,9 +1,12 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { render, fireEvent, waitFor } from '@testing-library/react'
+import { fireEvent, render, waitFor } from '@testing-library/react'
+
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+
 import { GetJourney_journey as Journey } from '../../../../../../__generated__/GetJourney'
 import { SocialProvider } from '../../../SocialProvider'
-import { TitleEdit, JOURNEY_SEO_TITLE_UPDATE } from './TitleEdit'
+
+import { JOURNEY_SEO_TITLE_UPDATE, TitleEdit } from './TitleEdit'
 
 describe('TitleEdit', () => {
   it('should display suggested title length', () => {
@@ -16,6 +19,7 @@ describe('TitleEdit', () => {
     )
     expect(getByText('Recommended length: 5 words')).toBeInTheDocument()
   })
+
   it('should display seo title', () => {
     const { getByText } = render(
       <MockedProvider>
@@ -26,7 +30,7 @@ describe('TitleEdit', () => {
                 title: 'journey title',
                 seoTitle: 'Social share title'
               } as unknown as Journey,
-              admin: true
+              variant: 'admin'
             }}
           >
             <TitleEdit />
@@ -47,7 +51,7 @@ describe('TitleEdit', () => {
                 title: 'journey title',
                 seoTitle: null
               } as unknown as Journey,
-              admin: true
+              variant: 'admin'
             }}
           >
             <TitleEdit />
@@ -90,7 +94,7 @@ describe('TitleEdit', () => {
           <JourneyProvider
             value={{
               journey: { id: 'journey.id' } as unknown as Journey,
-              admin: true
+              variant: 'admin'
             }}
           >
             <TitleEdit />
@@ -113,7 +117,7 @@ describe('TitleEdit', () => {
         <JourneyProvider
           value={{
             journey: { id: 'journey.id' } as unknown as Journey,
-            admin: true
+            variant: 'admin'
           }}
         >
           <TitleEdit />

@@ -1,6 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing'
-import { PrismaService } from '../../lib/prisma.service'
+
 import { JourneyVisitorSort } from '../../__generated__/graphql'
+import { PrismaService } from '../../lib/prisma.service'
+
 import { JourneyVisitorService } from './journeyVisitor.service'
 
 const journeyVisitor = {
@@ -43,7 +45,7 @@ describe('JourneyVisitorService', () => {
         await service.getJourneyVisitorCount({
           journeyId: 'journey.id'
         })
-      ).toEqual(2)
+      ).toBe(2)
     })
   })
 
@@ -117,6 +119,7 @@ describe('JourneyVisitorService', () => {
         visitor: { status: { not: null }, countryCode: { contains: 'JA' } }
       })
     })
+
     it('should handle null values', () => {
       expect(
         service.generateWhere({

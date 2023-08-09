@@ -1,10 +1,12 @@
-import { Story, Meta } from '@storybook/react'
+import { Meta, Story } from '@storybook/react'
 import { SWRConfig } from 'swr'
+
 import { journeysAdminConfig } from '../../../../../libs/storybook'
 import {
   getVideosLoading,
   getVideosWithOffsetAndUrl
 } from '../VideoFromYouTube.handlers'
+
 import { YouTubeDetails } from '.'
 
 const YouTubeDetailsStory = {

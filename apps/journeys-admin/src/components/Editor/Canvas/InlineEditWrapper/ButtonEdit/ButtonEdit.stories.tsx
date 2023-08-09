@@ -1,19 +1,21 @@
-import { Story, Meta } from '@storybook/react'
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
-import { EditorProvider, ActiveFab } from '@core/journeys/ui/EditorProvider'
-import type { TreeBlock } from '@core/journeys/ui/block'
 import { MockedProvider } from '@apollo/client/testing'
-import {
-  GetJourney_journey_blocks_StepBlock as StepBlock,
-  GetJourney_journey as Journey
-} from '../../../../../../__generated__/GetJourney'
+import { Meta, Story } from '@storybook/react'
+
+import type { TreeBlock } from '@core/journeys/ui/block'
+import { ActiveFab, EditorProvider } from '@core/journeys/ui/EditorProvider'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+
 import { ButtonFields } from '../../../../../../__generated__/ButtonFields'
 import {
-  ThemeMode,
-  ThemeName,
-  ButtonVariant,
+  GetJourney_journey as Journey,
+  GetJourney_journey_blocks_StepBlock as StepBlock
+} from '../../../../../../__generated__/GetJourney'
+import {
   ButtonColor,
-  IconName
+  ButtonVariant,
+  IconName,
+  ThemeMode,
+  ThemeName
 } from '../../../../../../__generated__/globalTypes'
 import { simpleComponentConfig } from '../../../../../libs/storybook'
 import { Canvas } from '../../Canvas'
@@ -155,7 +157,7 @@ const Template: Story = ({ ...args }) => {
               ]
             }
           } as unknown as Journey,
-          admin: true
+          variant: 'admin'
         }}
       >
         <EditorProvider
