@@ -1,1 +1,0 @@
-export { TeamMenu } from './TeamMenu'

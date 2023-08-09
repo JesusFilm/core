@@ -14,7 +14,6 @@ import { JourneyList } from '../src/components/JourneyList'
 import { PageWrapper } from '../src/components/NewPageWrapper'
 import { OnboardingPanelContent } from '../src/components/OnboardingPanelContent'
 import { TeamSelect } from '../src/components/Team/TeamSelect'
-import { TeamMenu } from '../src/components/Team/TeamMenu'
 import { initAndAuthApp } from '../src/libs/initAndAuthApp'
 import { AcceptAllInvites } from '../__generated__/AcceptAllInvites'
 import {
@@ -69,7 +68,6 @@ function IndexPage({ onboardingJourneys }: IndexPageProps): ReactElement {
           )
         }
         authUser={AuthUser}
-        menu={teams && <TeamMenu />}
         sidePanelChildren={
           <OnboardingPanelContent onboardingJourneys={onboardingJourneys} />
         }

@@ -16,6 +16,20 @@ export const adminComponents: Required<Pick<ThemeOptions, 'components'>> = {
         }
       }
     },
+    MuiPaper: {
+      styleOverrides: {
+        rounded: {
+          borderRadius: '12px',
+        }
+      }
+    },
+    MuiChip: {
+      styleOverrides: {
+        icon: {
+          marginLeft: '8px',
+        }
+      }
+    },
     MuiTab: {
       styleOverrides: {
         root: {
@@ -40,7 +54,6 @@ export const adminComponents: Required<Pick<ThemeOptions, 'components'>> = {
       },
       styleOverrides: {
         dense: {
-          maxHeight: 48,
           paddingLeft: 24,
           paddingRight: 24,
           borderBottom: '1px solid',

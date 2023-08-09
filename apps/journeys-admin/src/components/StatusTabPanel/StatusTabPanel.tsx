@@ -101,6 +101,7 @@ export function StatusTabPanel({
 
       <Paper
         variant="outlined"
+        square
         sx={{
           borderColor: 'divider',
           borderBottom: 0,
