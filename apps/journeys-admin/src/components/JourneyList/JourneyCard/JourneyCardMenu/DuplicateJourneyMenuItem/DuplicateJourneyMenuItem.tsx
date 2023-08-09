@@ -1,4 +1,5 @@
 import ContentCopyRounded from '@mui/icons-material/ContentCopyRounded'
+import CircularProgress from '@mui/material/CircularProgress'
 import { useSnackbar } from 'notistack'
 import { ReactElement } from 'react'
 
@@ -15,7 +16,7 @@ export function DuplicateJourneyMenuItem({
   id,
   handleCloseMenu
 }: DuplicateJourneyMenuItemProps): ReactElement {
-  const [journeyDuplicate] = useJourneyDuplicateMutation()
+  const [journeyDuplicate, { loading }] = useJourneyDuplicateMutation()
   const { enqueueSnackbar } = useSnackbar()
   const { activeTeam } = useTeam()
 
@@ -38,7 +39,13 @@ export function DuplicateJourneyMenuItem({
     <MenuItem
       disabled={activeTeam?.id == null}
       label="Duplicate"
-      icon={<ContentCopyRounded color="secondary" />}
+      icon={
+        loading ? (
+          <CircularProgress size={24} color="inherit" />
+        ) : (
+          <ContentCopyRounded color="secondary" />
+        )
+      }
       onClick={handleDuplicateJourney}
     />
   )

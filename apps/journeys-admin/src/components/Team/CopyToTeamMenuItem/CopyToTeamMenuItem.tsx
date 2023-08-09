@@ -1,4 +1,5 @@
 import ContentCopyRounded from '@mui/icons-material/ContentCopyRounded'
+import CircularProgress from '@mui/material/CircularProgress'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -18,7 +19,7 @@ export function CopyToTeamMenuItem({
 }: DuplicateJourneyMenuItemProps): ReactElement {
   const [duplicateTeamDialogOpen, setDuplicateTeamDialogOpen] =
     useState<boolean>(false)
-  const [journeyDuplicate] = useJourneyDuplicateMutation()
+  const [journeyDuplicate, { loading }] = useJourneyDuplicateMutation()
   const { enqueueSnackbar } = useSnackbar()
   const { t } = useTranslation('apps-journeys-admin')
 
@@ -45,7 +46,13 @@ export function CopyToTeamMenuItem({
     <>
       <MenuItem
         label={t('Copy to ...')}
-        icon={<ContentCopyRounded color="secondary" />}
+        icon={
+          loading ? (
+            <CircularProgress size={24} color="inherit" />
+          ) : (
+            <ContentCopyRounded color="secondary" />
+          )
+        }
         onClick={() => {
           setDuplicateTeamDialogOpen(true)
         }}
@@ -54,7 +61,6 @@ export function CopyToTeamMenuItem({
         title={t('Copy to Another Team')}
         open={duplicateTeamDialogOpen}
         onClose={() => {
-          handleCloseMenu()
           setDuplicateTeamDialogOpen(false)
         }}
         submitAction={handleDuplicateJourney}
