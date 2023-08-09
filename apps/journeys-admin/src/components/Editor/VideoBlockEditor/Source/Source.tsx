@@ -1,18 +1,21 @@
-import { ReactElement, useState } from 'react'
-import type { TreeBlock } from '@core/journeys/ui/block'
 import Card from '@mui/material/Card'
 import CardActionArea from '@mui/material/CardActionArea'
 import Stack from '@mui/material/Stack'
+import { ReactElement, useState } from 'react'
+
+import type { TreeBlock } from '@core/journeys/ui/block'
+
+import { GetJourney_journey_blocks_VideoBlock as VideoBlock } from '../../../../../__generated__/GetJourney'
 import {
   VideoBlockSource,
   VideoBlockUpdateInput
 } from '../../../../../__generated__/globalTypes'
 import { VideoLibrary } from '../../VideoLibrary'
-import { GetJourney_journey_blocks_VideoBlock as VideoBlock } from '../../../../../__generated__/GetJourney'
-import { SourceFromYouTube } from './SourceFromYouTube'
-import { SourceFromCloudflare } from './SourceFromCloudflare'
+
 import { SourceEmpty } from './SourceEmpty'
+import { SourceFromCloudflare } from './SourceFromCloudflare'
 import { SourceFromLocal } from './SourceFromLocal'
+import { SourceFromYouTube } from './SourceFromYouTube'
 
 interface SourceProps {
   selectedBlock: TreeBlock<VideoBlock> | null

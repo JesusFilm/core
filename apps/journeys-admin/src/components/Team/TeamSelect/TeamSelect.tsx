@@ -20,6 +20,8 @@ import Typography from '@mui/material/Typography'
 import IconButton from '@mui/material/IconButton'
 import ListItem from '@mui/material/ListItem'
 import Divider from '@mui/material/Divider'
+import FormControl from '@mui/material/FormControl'
+import MenuItem from '@mui/material/MenuItem'
 import Popover from '@mui/material/Popover'
 import Tooltip from '@mui/material/Tooltip'
 import Button from '@mui/material/Button'
@@ -33,6 +35,7 @@ import ClickAwayListener from '@mui/base/ClickAwayListener'
 import { useTeam } from '../TeamProvider'
 
 import { UpdateLastActiveTeamId } from '../../../../__generated__/UpdateLastActiveTeamId'
+import { TeamAvatars } from '../TeamAvatars'
 import { TeamUpdateDialog } from '../TeamUpdateDialog'
 import { TeamCreateDialog } from '../TeamCreateDialog'
 import { TeamManageDialog } from '../TeamManageDialog'
@@ -173,12 +176,8 @@ export function TeamSelect({ onboarding }: TeamSelectProps): ReactElement {
         color="secondary"
         size="large"
         sx={{
-          textAlign: 'left',
           pl: theme.spacing(6),
           pr: theme.spacing(6),
-          fontFamily: theme.typography.subtitle1.fontFamily,
-          fontSize: theme.typography.subtitle1.fontSize,
-          fontWeight: theme.typography.subtitle1.fontWeight,
           borderRadius: 0
         }}
         startIcon={
@@ -190,30 +189,59 @@ export function TeamSelect({ onboarding }: TeamSelectProps): ReactElement {
         }
         endIcon={<KeyboardArrowDownRoundedIcon />}
       >
-        {activeTeam?.title ?? t('Shared With Me')}
+        <Typography
+          component="span"
+          variant="subtitle1"
+          align="left"
+          noWrap
+          sx={{
+            textOverflow: 'ellipsis',
+            overflow: 'hidden'
+          }}
+        >
+          {activeTeam?.title ?? t('Shared With Me')}
+        </Typography>
       </Button>
-      <Chip
-        variant="outlined"
-        icon={
-          activeTeam != null ? <GroupAddOutlinedIcon fontSize='small' /> : <InfoOutlinedIcon fontSize='small' />
-        }
-        onClick={(e) => {
-          e.preventDefault()
-          e.stopPropagation()
-          setTeamManageOpen(true)
-        }}
-        disabled={activeTeam == null}
-        label={
-          <Typography variant="body2">
-            {activeTeam != null
-              ? t('Manage Members')
-              : t('Single journeys shared with you')}
-          </Typography>
-        }
+
+      <Box
         sx={{
-          ml: theme.spacing(4)
+          display: 'flex',
+          justifyContent: 'flex-end',
+          flexGrow: 1
         }}
-      />
+      >
+        {activeTeam != null && (
+          <Chip
+            variant="outlined"
+            avatar={
+              <Box sx={{ ml: '12px' }}>
+                <TeamAvatars userTeams={activeTeam.userTeams} />
+              </Box>
+            }
+            onClick={(e) => {
+              e.preventDefault()
+              e.stopPropagation()
+              setTeamManageOpen(true)
+            }}
+            label={
+              <Typography
+                variant="body2"
+                component="span"
+                sx={{ display: { xs: 'none', sm: 'inline' } }}
+              >
+                {t('Members')}
+              </Typography>
+            }
+            sx={{
+              ml: { xs: 0, sm: theme.spacing(4) },
+              px: { xs: 0 },
+              '&> .MuiChip-label': {
+                px: { xs: '5px', sm: '12px' }
+              }
+            }}
+          />
+        )}
+      </Box>
 
       {/* Team Selection Dropdown */}
       <Popover
@@ -345,7 +373,7 @@ export function TeamSelect({ onboarding }: TeamSelectProps): ReactElement {
                   >
                     <ListItem
                       secondaryAction={
-                        team.id === activeTeam?.id && (
+                        team.id === activeTeam?.id ? (
                           <Tooltip title={t('Rename')}>
                             <IconButton
                               edge="end"
@@ -358,6 +386,10 @@ export function TeamSelect({ onboarding }: TeamSelectProps): ReactElement {
                               <CreateOutlinedIcon />
                             </IconButton>
                           </Tooltip>
+                        ) : (
+                          <Box sx={{ mr: '-2px' }}>
+                            <TeamAvatars userTeams={team.userTeams} />
+                          </Box>
                         )
                       }
                     >

@@ -1,9 +1,12 @@
-import { Story, Meta } from '@storybook/react'
 import { MockedProvider } from '@apollo/client/testing'
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import { Meta, Story } from '@storybook/react'
+
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+
 import { GetJourney_journey as Journey } from '../../../../../__generated__/GetJourney'
 import { journeysAdminConfig } from '../../../../libs/storybook'
+
 import { BlocksTab } from '.'
 
 const BlocksTabStory = {
@@ -22,7 +25,7 @@ export const Default: Story = () => {
       <JourneyProvider
         value={{
           journey: { id: 'journeyId' } as unknown as Journey,
-          admin: true
+          variant: 'admin'
         }}
       >
         <EditorProvider

@@ -1,11 +1,13 @@
-import { ReactElement } from 'react'
-import { useMutation, gql, ApolloError } from '@apollo/client'
+import { ApolloError, gql, useMutation } from '@apollo/client'
 import TextField from '@mui/material/TextField'
-import { Dialog } from '@core/shared/ui/Dialog'
+import { Form, Formik, FormikValues } from 'formik'
 import { useSnackbar } from 'notistack'
-import { Formik, Form, FormikValues } from 'formik'
-import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import { ReactElement } from 'react'
 import { object, string } from 'yup'
+
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import { Dialog } from '@core/shared/ui/Dialog'
+
 import { JourneyTitleUpdate } from '../../../../../__generated__/JourneyTitleUpdate'
 
 export const JOURNEY_TITLE_UPDATE = gql`

@@ -655,7 +655,7 @@ export interface GetPublisherTemplate_publisherTemplate {
 }
 
 export interface GetPublisherTemplate {
-  publisherTemplate: GetPublisherTemplate_publisherTemplate | null;
+  publisherTemplate: GetPublisherTemplate_publisherTemplate;
 }
 
 export interface GetPublisherTemplateVariables {

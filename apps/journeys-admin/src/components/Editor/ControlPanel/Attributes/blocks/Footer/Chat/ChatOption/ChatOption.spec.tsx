@@ -1,8 +1,10 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
+
 import { ChatPlatform } from '../../../../../../../../../__generated__/globalTypes'
 import { JourneyFields_chatButtons as ChatButton } from '../../../../../../../../../__generated__/JourneyFields'
+
 import { ChatOption } from '.'
 
 describe('ChatOption', () => {

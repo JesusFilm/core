@@ -1,13 +1,15 @@
 import Box from '@mui/material/Box'
 import { ReactElement } from 'react'
-import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
-import { BlockRenderer } from '@core/journeys/ui/BlockRenderer'
+
 import { TreeBlock } from '@core/journeys/ui/block'
-import { transformer } from '@core/journeys/ui/transformer'
+import { BlockRenderer } from '@core/journeys/ui/BlockRenderer'
 import { StepFooter } from '@core/journeys/ui/StepFooter'
+import { transformer } from '@core/journeys/ui/transformer'
+import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
+
+import { GetDiscoveryJourneys_discoveryJourneys as DiscoveryJourney } from '../../../../__generated__/GetDiscoveryJourneys'
 import { ThemeMode, ThemeName } from '../../../../__generated__/globalTypes'
 import { FramePortal } from '../../FramePortal'
-import { GetDiscoveryJourneys_discoveryJourneys as DiscoveryJourney } from '../../../../__generated__/GetDiscoveryJourneys'
 
 interface Props {
   slug: 'admin-left' | 'admin-right' | 'admin-center'

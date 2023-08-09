@@ -1,17 +1,16 @@
+import { InMemoryCache } from '@apollo/client'
 import { MockedProvider } from '@apollo/client/testing'
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
-import { EditorProvider } from '@core/journeys/ui/EditorProvider'
-import type { TreeBlock } from '@core/journeys/ui/block'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
-import { InMemoryCache } from '@apollo/client'
-import { GET_VIDEOS } from '../../../../../VideoLibrary/VideoFromLocal/VideoFromLocal'
-import { GET_VIDEO } from '../../../../../VideoLibrary/VideoFromLocal/LocalDetails/LocalDetails'
-import { videos } from '../../../../../VideoLibrary/VideoFromLocal/data'
+
+import type { TreeBlock } from '@core/journeys/ui/block'
+import { EditorProvider } from '@core/journeys/ui/EditorProvider'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+
 import {
   GetJourney_journey as Journey,
-  GetJourney_journey_blocks_VideoBlock as VideoBlock,
-  GetJourney_journey_blocks_StepBlock as StepBlock
+  GetJourney_journey_blocks_StepBlock as StepBlock,
+  GetJourney_journey_blocks_VideoBlock as VideoBlock
 } from '../../../../../../../../__generated__/GetJourney'
 import {
   ThemeMode,
@@ -20,10 +19,14 @@ import {
   VideoLabel
 } from '../../../../../../../../__generated__/globalTypes'
 import { ThemeProvider } from '../../../../../../ThemeProvider'
+import { videos } from '../../../../../VideoLibrary/VideoFromLocal/data'
+import { GET_VIDEO } from '../../../../../VideoLibrary/VideoFromLocal/LocalDetails/LocalDetails'
+import { GET_VIDEOS } from '../../../../../VideoLibrary/VideoFromLocal/VideoFromLocal'
+
 import {
-  VideoOptions,
+  UPDATE_VIDEO_BLOCK_NEXT_STEP,
   VIDEO_BLOCK_UPDATE,
-  UPDATE_VIDEO_BLOCK_NEXT_STEP
+  VideoOptions
 } from './VideoOptions'
 
 const video: TreeBlock<VideoBlock> = {
@@ -177,7 +180,7 @@ describe('VideoOptions', () => {
         <JourneyProvider
           value={{
             journey: { id: 'journeyId' } as unknown as Journey,
-            admin: true
+            variant: 'admin'
           }}
         >
           <ThemeProvider>
@@ -300,7 +303,7 @@ describe('VideoOptions', () => {
               themeMode: ThemeMode.light,
               themeName: ThemeName.base
             } as unknown as Journey,
-            admin: true
+            variant: 'admin'
           }}
         >
           <ThemeProvider>

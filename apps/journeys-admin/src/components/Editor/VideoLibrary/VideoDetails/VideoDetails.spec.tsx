@@ -1,16 +1,19 @@
-import { render, fireEvent, waitFor } from '@testing-library/react'
-import useMediaQuery from '@mui/material/useMediaQuery'
 import { MockedProvider } from '@apollo/client/testing'
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
-import { EditorProvider } from '@core/journeys/ui/EditorProvider'
+import useMediaQuery from '@mui/material/useMediaQuery'
+import { fireEvent, render, waitFor } from '@testing-library/react'
+
 import { TreeBlock } from '@core/journeys/ui/block'
-import { GET_VIDEO } from '../VideoFromLocal/LocalDetails/LocalDetails'
-import { VideoBlockSource } from '../../../../../__generated__/globalTypes'
+import { EditorProvider } from '@core/journeys/ui/EditorProvider'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+
 import {
+  GetJourney_journey_blocks_ImageBlock as ImageBlock,
   GetJourney_journey as Journey,
-  GetJourney_journey_blocks_VideoBlock as VideoBlock,
-  GetJourney_journey_blocks_ImageBlock as ImageBlock
+  GetJourney_journey_blocks_VideoBlock as VideoBlock
 } from '../../../../../__generated__/GetJourney'
+import { VideoBlockSource } from '../../../../../__generated__/globalTypes'
+import { GET_VIDEO } from '../VideoFromLocal/LocalDetails/LocalDetails'
+
 import { BLOCK_DELETE_FOR_COVER_IMAGE, VideoDetails } from './VideoDetails'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
@@ -131,10 +134,10 @@ describe('VideoDetails', () => {
       name: 'Video Player'
     })
     const sourceTag = videoPlayer.querySelector('.vjs-tech source')
-    expect(sourceTag?.getAttribute('src')).toEqual('https://arc.gt/opsgn')
-    expect(sourceTag?.getAttribute('type')).toEqual('application/x-mpegURL')
+    expect(sourceTag?.getAttribute('src')).toBe('https://arc.gt/opsgn')
+    expect(sourceTag?.getAttribute('type')).toBe('application/x-mpegURL')
     const imageTag = videoPlayer.querySelector('.vjs-poster > picture > img')
-    expect(imageTag?.getAttribute('src')).toEqual(
+    expect(imageTag?.getAttribute('src')).toBe(
       'https://d1wl257kev7hsz.cloudfront.net/cinematics/2_Acts7302-0-0.mobileCinematicHigh.jpg'
     )
   })
@@ -248,7 +251,7 @@ describe('VideoDetails', () => {
         <JourneyProvider
           value={{
             journey: { id: 'journeyId' } as unknown as Journey,
-            admin: true
+            variant: 'admin'
           }}
         >
           <EditorProvider

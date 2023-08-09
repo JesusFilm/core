@@ -1,9 +1,12 @@
-import { Story, Meta } from '@storybook/react'
 import { MockedProvider } from '@apollo/client/testing'
+import { Meta, Story } from '@storybook/react'
+
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
-import { journeysAdminConfig } from '../../../libs/storybook'
-import { ThemeMode, ThemeName } from '../../../../__generated__/globalTypes'
+
 import { GetJourney_journey as Journey } from '../../../../__generated__/GetJourney'
+import { ThemeMode, ThemeName } from '../../../../__generated__/globalTypes'
+import { journeysAdminConfig } from '../../../libs/storybook'
+
 import { CardView, CardViewProps } from './CardView'
 import { steps } from './data'
 
@@ -26,7 +29,7 @@ const Template: Story<Omit<CardViewProps, 'id'>> = ({ ...args }) => (
             bcp47: 'en'
           }
         } as unknown as Journey,
-        admin: true
+        variant: 'admin'
       }}
     >
       <CardView id="journeyId" {...args} />

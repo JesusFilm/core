@@ -1,17 +1,20 @@
-import { ReactElement, useEffect, useState } from 'react'
-import { useTranslation } from 'react-i18next'
+import { gql, useMutation } from '@apollo/client'
+import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
-import Button from '@mui/material/Button'
-import { gql, useMutation } from '@apollo/client'
-import AlertCircleIcon from '@core/shared/ui/icons/AlertCircle'
+import { ReactElement, useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
+
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
-import { SidePanelContainer } from '../../../../../../../NewPageWrapper/SidePanelContainer'
+import AlertCircleIcon from '@core/shared/ui/icons/AlertCircle'
+
 import { DeleteHost } from '../../../../../../../../../__generated__/DeleteHost'
 import { UpdateJourneyHost } from '../../../../../../../../../__generated__/UpdateJourneyHost'
-import { HostTitleFieldForm } from './HostTitleFieldForm'
-import { HostLocationFieldForm } from './HostLocationFieldForm'
+import { SidePanelContainer } from '../../../../../../../NewPageWrapper/SidePanelContainer'
+
 import { HostAvatarsButton } from './HostAvatarsButton'
+import { HostLocationFieldForm } from './HostLocationFieldForm'
+import { HostTitleFieldForm } from './HostTitleFieldForm'
 import { UPDATE_JOURNEY_HOST } from './HostTitleFieldForm/HostTitleFieldForm'
 
 export const DELETE_HOST = gql`

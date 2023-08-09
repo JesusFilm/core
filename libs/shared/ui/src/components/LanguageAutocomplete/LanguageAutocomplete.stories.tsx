@@ -1,9 +1,11 @@
-import { useState } from 'react'
-import { Story, Meta } from '@storybook/react'
-import { screen, userEvent } from '@storybook/testing-library'
 import Box from '@mui/material/Box'
+import { Meta, Story } from '@storybook/react'
+import { screen, userEvent } from '@storybook/testing-library'
+import { useState } from 'react'
+
 import { simpleComponentConfig } from '../../libs/simpleComponentConfig'
-import { LanguageAutocomplete, LanguageOption, Language } from '.'
+
+import { Language, LanguageAutocomplete, LanguageOption } from '.'
 
 const LanguageAutocompleteStory = {
   ...simpleComponentConfig,

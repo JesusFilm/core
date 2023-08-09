@@ -1,12 +1,13 @@
-import { ReactElement, useEffect, useState } from 'react'
-import { useJourney } from '@core/journeys/ui/JourneyProvider'
-import Typography from '@mui/material/Typography'
-import Skeleton from '@mui/material/Skeleton'
-import IconButton from '@mui/material/IconButton'
 import CreateRoundedIcon from '@mui/icons-material/CreateRounded'
 import Box from '@mui/material/Box'
+import IconButton from '@mui/material/IconButton'
+import Skeleton from '@mui/material/Skeleton'
 import { useTheme } from '@mui/material/styles'
+import Typography from '@mui/material/Typography'
 import dynamic from 'next/dynamic'
+import { ReactElement, useEffect, useState } from 'react'
+
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
 
 const DynamicLanguageDialog = dynamic<{
   open: boolean

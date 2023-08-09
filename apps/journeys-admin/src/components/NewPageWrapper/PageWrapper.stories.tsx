@@ -1,19 +1,22 @@
-import { ComponentProps, ReactElement } from 'react'
-import { Meta, Story } from '@storybook/react'
-import IconButton from '@mui/material/IconButton'
-import MenuRounded from '@mui/icons-material/MenuRounded'
-import Typography from '@mui/material/Typography'
-import Stack from '@mui/material/Stack'
-import Button from '@mui/material/Button'
-import noop from 'lodash/noop'
 import { MockedProvider } from '@apollo/client/testing'
+import MenuRounded from '@mui/icons-material/MenuRounded'
+import Button from '@mui/material/Button'
+import IconButton from '@mui/material/IconButton'
 import ListItemButton from '@mui/material/ListItemButton'
 import Paper from '@mui/material/Paper'
-import { journeysAdminConfig } from '../../libs/storybook'
+import Stack from '@mui/material/Stack'
+import Typography from '@mui/material/Typography'
+import { Meta, Story } from '@storybook/react'
+import noop from 'lodash/noop'
+import { ComponentProps, ReactElement } from 'react'
+
 import { Role } from '../../../__generated__/globalTypes'
+import { journeysAdminConfig } from '../../libs/storybook'
 import { GET_USER_ROLE } from '../JourneyView/JourneyView'
-import { SidePanelContainer } from './SidePanelContainer'
+
 import { GET_ME } from './NavigationDrawer'
+import { SidePanelContainer } from './SidePanelContainer'
+
 import { PageWrapper } from '.'
 
 const PageWrapperStory = {

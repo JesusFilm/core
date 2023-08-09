@@ -1,10 +1,13 @@
-import { Story, Meta } from '@storybook/react'
-import { useState } from 'react'
 import { MockedProvider } from '@apollo/client/testing'
+import { Meta, Story } from '@storybook/react'
 import { screen, userEvent } from '@storybook/testing-library'
+import { useState } from 'react'
+
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+
 import { journeysAdminConfig } from '../../../../libs/storybook'
 import { defaultJourney } from '../../data'
+
 import { DescriptionDialog, JOURNEY_DESC_UPDATE } from './DescriptionDialog'
 
 const DescriptionDialogStory = {
@@ -22,7 +25,12 @@ const Template: Story = (args) => {
 
   return (
     <MockedProvider mocks={args.mocks}>
-      <JourneyProvider value={{ journey: defaultJourney, admin: true }}>
+      <JourneyProvider
+        value={{
+          journey: defaultJourney,
+          variant: 'admin'
+        }}
+      >
         <DescriptionDialog open={open} onClose={() => setOpen(false)} />
       </JourneyProvider>
     </MockedProvider>

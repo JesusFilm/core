@@ -1,5 +1,7 @@
-import { Story, Meta } from '@storybook/react'
+import { Meta, Story } from '@storybook/react'
+
 import { journeysAdminConfig } from '../../../../../libs/storybook'
+
 import { CloudflareDetails } from '.'
 
 const CloudflareDetailsStory = {

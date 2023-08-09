@@ -1,6 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { verifyIdToken } from 'next-firebase-auth'
 import fetch from 'node-fetch'
+
 import { initAuth } from '../../src/libs/firebaseClient/initAuth'
 
 initAuth()

@@ -1,13 +1,15 @@
-import { ReactElement, useEffect } from 'react'
 import Box from '@mui/material/Box'
 import Fade from '@mui/material/Fade'
 import IconButton from '@mui/material/IconButton'
 import { styled } from '@mui/material/styles'
 import last from 'lodash/last'
+import { ReactElement, useEffect } from 'react'
+
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { useBlocks } from '@core/journeys/ui/block'
 import ChevronLeftIcon from '@core/shared/ui/icons/ChevronLeft'
 import ChevronRightIcon from '@core/shared/ui/icons/ChevronRight'
+
 import { StepFields } from '../../../../__generated__/StepFields'
 
 const LeftNavigationContainer = styled(Box)`

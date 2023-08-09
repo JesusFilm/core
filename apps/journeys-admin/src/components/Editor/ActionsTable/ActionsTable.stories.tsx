@@ -1,12 +1,15 @@
-import { Story, Meta } from '@storybook/react'
+import { Meta, Story } from '@storybook/react'
+
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
-import { journeysAdminConfig } from '../../../libs/storybook'
-import { journey } from '../ActionDetails/data'
+
 import {
   ButtonColor,
   ButtonSize,
   ButtonVariant
 } from '../../../../__generated__/globalTypes'
+import { journeysAdminConfig } from '../../../libs/storybook'
+import { journey } from '../ActionDetails/data'
+
 import { ActionsTable } from '.'
 
 const ActionsTableStory = {
@@ -16,7 +19,7 @@ const ActionsTableStory = {
 }
 
 const Template: Story = (args) => (
-  <JourneyProvider value={{ journey: args.journey }}>
+  <JourneyProvider value={{ journey: args.journey, variant: 'admin' }}>
     <ActionsTable />
   </JourneyProvider>
 )

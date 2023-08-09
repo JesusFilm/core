@@ -1,12 +1,15 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
+
+import { Action, Block, Journey } from '.prisma/api-journeys-client'
 import { CaslAuthModule } from '@core/nest/common/CaslAuthModule'
-import { Block, Action, Journey } from '.prisma/api-journeys-client'
+
 import { UserTeamRole } from '../../__generated__/graphql'
+import { AppAbility, AppCaslFactory } from '../../lib/casl/caslFactory'
+import { PrismaService } from '../../lib/prisma.service'
 import { BlockService } from '../block/block.service'
 import { UserRoleService } from '../userRole/userRole.service'
-import { PrismaService } from '../../lib/prisma.service'
-import { AppAbility, AppCaslFactory } from '../../lib/casl/caslFactory'
+
 import { ActionResolver } from './action.resolver'
 
 describe('ActionResolver', () => {
@@ -106,23 +109,28 @@ describe('ActionResolver', () => {
     it('returns EmailAction', () => {
       expect(resolver.__resolveType(emailAction)).toBe('EmailAction')
     })
+
     it('returns LinkAction', () => {
       expect(resolver.__resolveType(linkAction)).toBe('LinkAction')
     })
+
     it('returns NavigateAction', () => {
       expect(resolver.__resolveType(navigateAction)).toBe('NavigateAction')
     })
+
     it('returns NavigateToBlockAction', () => {
       expect(resolver.__resolveType(navigateToBlockAction)).toBe(
         'NavigateToBlockAction'
       )
     })
+
     it('returns NavigateToJourneyAction', () => {
       expect(resolver.__resolveType(navigateToJourneyAction)).toBe(
         'NavigateToJourneyAction'
       )
     })
   })
+
   describe('blockDeleteAction', () => {
     it('deletes the block action', async () => {
       prismaService.block.findUnique.mockResolvedValueOnce(blockWithUserTeam)
@@ -132,6 +140,7 @@ describe('ActionResolver', () => {
         where: { parentBlockId: blockWithUserTeam.id }
       })
     })
+
     it('throws an error if typename is wrong', async () => {
       const wrongBlock = {
         ...blockWithUserTeam,
@@ -142,12 +151,14 @@ describe('ActionResolver', () => {
         resolver.blockDeleteAction(ability, wrongBlock.id)
       ).rejects.toThrow('This block does not support actions')
     })
+
     it('throws error if not found', async () => {
       prismaService.block.findUnique.mockResolvedValueOnce(null)
       await expect(
         resolver.blockDeleteAction(ability, block.id)
       ).rejects.toThrow('block not found')
     })
+
     it('throws error if not authorized', async () => {
       prismaService.block.findUnique.mockResolvedValueOnce(block)
       await expect(

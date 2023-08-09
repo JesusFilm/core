@@ -22,13 +22,14 @@ describe('ImageResolver', () => {
     resolver = module.get<UnsplashImageResolver>(UnsplashImageResolver)
   })
 
-  describe('searchUnsplashPhotos', () => {
+  describe('listUnsplashCollectionPhotos', () => {
     it('returns unsplash response information', async () => {
       expect(await resolver.listUnsplashCollectionPhotos('a')).toEqual([
         unsplashImageReponse
       ])
     })
   })
+
   describe('searchUnsplashPhotos', () => {
     it('returns unsplash response information', async () => {
       expect(await resolver.searchUnsplashPhotos('a')).toEqual(
@@ -36,6 +37,7 @@ describe('ImageResolver', () => {
       )
     })
   })
+
   describe('triggerUnsplashDownload', () => {
     it('triggers an unsplash download', async () => {
       expect(

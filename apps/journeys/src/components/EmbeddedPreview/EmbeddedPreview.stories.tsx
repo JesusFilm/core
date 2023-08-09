@@ -1,9 +1,12 @@
-import { ComponentProps, ReactElement } from 'react'
 import { MockedProvider } from '@apollo/client/testing'
-import { Story, Meta } from '@storybook/react'
+import { Meta, Story } from '@storybook/react'
+import { SnackbarProvider } from 'notistack'
+import { ComponentProps, ReactElement } from 'react'
+
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { JourneyFields as Journey } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
-import { SnackbarProvider } from 'notistack'
+
+import { ThemeMode, ThemeName } from '../../../__generated__/globalTypes'
 import { journeysConfig } from '../../libs/storybook'
 import {
   basic,
@@ -14,7 +17,6 @@ import {
   videoLoop
 } from '../../libs/testData/storyData'
 
-import { ThemeMode, ThemeName } from '../../../__generated__/globalTypes'
 import { EmbeddedPreview } from './EmbeddedPreview'
 
 const Demo = {
@@ -52,7 +54,8 @@ const Template: Story<ComponentProps<typeof EmbeddedPreview>> = ({
                 }
               ]
             }
-          } as unknown as Journey
+          } as unknown as Journey,
+          variant: 'embed'
         }}
       >
         <EmbeddedPreview {...args} />

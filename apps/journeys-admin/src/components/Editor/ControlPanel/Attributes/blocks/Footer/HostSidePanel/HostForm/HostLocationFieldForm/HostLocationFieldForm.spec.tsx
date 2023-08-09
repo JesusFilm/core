@@ -1,11 +1,13 @@
-import { fireEvent, render, waitFor } from '@testing-library/react'
+import { InMemoryCache } from '@apollo/client'
 import { MockedProvider } from '@apollo/client/testing'
+import { fireEvent, render, waitFor } from '@testing-library/react'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { JourneyFields as Journey } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
-import { InMemoryCache } from '@apollo/client'
+
 import { useHostUpdate } from '../../../../../../../../../libs/useHostUpdate'
 import { UPDATE_HOST } from '../../../../../../../../../libs/useHostUpdate/useHostUpdate'
+
 import { HostLocationFieldForm } from './HostLocationFieldForm'
 
 jest.mock('uuid', () => ({
@@ -22,17 +24,19 @@ const mockUseHostUpdate = useHostUpdate as jest.MockedFunction<
   typeof useHostUpdate
 >
 
-const updateHost = jest.fn()
-beforeEach(() => {
-  mockUseHostUpdate.mockReturnValue({
-    updateHost
-  })
-})
-afterEach(() => {
-  jest.resetAllMocks()
-})
-
 describe('HostLocationFieldForm', () => {
+  const updateHost = jest.fn()
+
+  beforeEach(() => {
+    mockUseHostUpdate.mockReturnValue({
+      updateHost
+    })
+  })
+
+  afterEach(() => {
+    jest.resetAllMocks()
+  })
+
   const defaultHost = {
     id: 'hostId',
     __typename: 'Host',
@@ -53,7 +57,7 @@ describe('HostLocationFieldForm', () => {
   it('should populate the field with host location', () => {
     const { getByRole } = render(
       <MockedProvider>
-        <JourneyProvider value={{ journey }}>
+        <JourneyProvider value={{ journey, variant: 'admin' }}>
           <HostLocationFieldForm />
         </JourneyProvider>
       </MockedProvider>
@@ -68,7 +72,7 @@ describe('HostLocationFieldForm', () => {
   it('should clear the field', () => {
     const { getByRole } = render(
       <MockedProvider>
-        <JourneyProvider value={{ journey }}>
+        <JourneyProvider value={{ journey, variant: 'admin' }}>
           <HostLocationFieldForm empty />
         </JourneyProvider>
       </MockedProvider>
@@ -83,7 +87,7 @@ describe('HostLocationFieldForm', () => {
   it('should disable the field', () => {
     const { getByRole } = render(
       <MockedProvider>
-        <JourneyProvider value={{ journey }}>
+        <JourneyProvider value={{ journey, variant: 'admin' }}>
           <HostLocationFieldForm disabled />
         </JourneyProvider>
       </MockedProvider>
@@ -130,7 +134,7 @@ describe('HostLocationFieldForm', () => {
           }
         ]}
       >
-        <JourneyProvider value={{ journey }}>
+        <JourneyProvider value={{ journey, variant: 'admin' }}>
           <HostLocationFieldForm />
         </JourneyProvider>
       </MockedProvider>

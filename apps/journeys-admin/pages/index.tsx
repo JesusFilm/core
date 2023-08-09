@@ -1,4 +1,4 @@
-import { ReactElement } from 'react'
+import { gql } from '@apollo/client'
 import {
   AuthAction,
   useAuthUser,
@@ -6,20 +6,22 @@ import {
   withAuthUserTokenSSR
 } from 'next-firebase-auth'
 import { NextSeo } from 'next-seo'
-import { useTranslation } from 'react-i18next'
-import { gql } from '@apollo/client'
-import { useFlags } from '@core/shared/ui/FlagsProvider'
 import { useRouter } from 'next/router'
-import { JourneyList } from '../src/components/JourneyList'
-import { PageWrapper } from '../src/components/NewPageWrapper'
-import { OnboardingPanelContent } from '../src/components/OnboardingPanelContent'
-import { TeamSelect } from '../src/components/Team/TeamSelect'
-import { initAndAuthApp } from '../src/libs/initAndAuthApp'
+import { ReactElement } from 'react'
+import { useTranslation } from 'react-i18next'
+
+import { useFlags } from '@core/shared/ui/FlagsProvider'
+
 import { AcceptAllInvites } from '../__generated__/AcceptAllInvites'
 import {
   GetOnboardingJourneys,
   GetOnboardingJourneys_onboardingJourneys as OnboardingJourneys
 } from '../__generated__/GetOnboardingJourneys'
+import { JourneyList } from '../src/components/JourneyList'
+import { PageWrapper } from '../src/components/NewPageWrapper'
+import { OnboardingPanelContent } from '../src/components/OnboardingPanelContent'
+import { TeamSelect } from '../src/components/Team/TeamSelect'
+import { initAndAuthApp } from '../src/libs/initAndAuthApp'
 
 export const ACCEPT_ALL_INVITES = gql`
   mutation AcceptAllInvites {

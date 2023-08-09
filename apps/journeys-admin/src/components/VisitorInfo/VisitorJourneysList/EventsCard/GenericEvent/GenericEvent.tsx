@@ -1,15 +1,16 @@
-import { ReactElement, ReactNode } from 'react'
-import TimelineItem from '@mui/lab/TimelineItem'
-import TimelineSeparator from '@mui/lab/TimelineSeparator'
 import TimelineConnector from '@mui/lab/TimelineConnector'
 import TimelineContent from '@mui/lab/TimelineContent'
-import TimelineOppositeContent from '@mui/lab/TimelineOppositeContent'
 import TimelineDot from '@mui/lab/TimelineDot'
-import Typography from '@mui/material/Typography'
+import TimelineItem from '@mui/lab/TimelineItem'
+import TimelineOppositeContent from '@mui/lab/TimelineOppositeContent'
+import TimelineSeparator from '@mui/lab/TimelineSeparator'
 import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
+import Typography from '@mui/material/Typography'
 import { format, parseISO } from 'date-fns'
-import { getEventVariant, EventVariant } from '../../utils'
+import { ReactElement, ReactNode } from 'react'
+
+import { EventVariant, getEventVariant } from '../../utils'
 
 interface Props {
   createdAt?: string

@@ -1,10 +1,12 @@
 import { render } from '@testing-library/react'
+
 import {
   TypographyAlign,
   TypographyColor,
   TypographyVariant
 } from '../../../__generated__/globalTypes'
 import type { TreeBlock } from '../../libs/block'
+
 import { TypographyFields } from './__generated__/TypographyFields'
 import { Typography } from './Typography'
 
@@ -32,13 +34,13 @@ describe('Typography', () => {
     const { getByText } = render(
       <Typography {...block} variant={TypographyVariant.overline} />
     )
-    expect(getByText('Hello World!').tagName).toEqual('P')
+    expect(getByText('Hello World!').tagName).toBe('P')
   })
 
   it('should render caption as paragraph', () => {
     const { getByText } = render(
       <Typography {...block} variant={TypographyVariant.caption} />
     )
-    expect(getByText('Hello World!').tagName).toEqual('P')
+    expect(getByText('Hello World!').tagName).toBe('P')
   })
 })

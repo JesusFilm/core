@@ -1,12 +1,15 @@
-import { ComponentProps } from 'react'
-import { render, fireEvent, waitFor, screen } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
 import { MockedProvider } from '@apollo/client/testing'
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
+import { ComponentProps } from 'react'
+
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
-import { TypographyVariant } from '../../../../../../__generated__/globalTypes'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+
 import { GetJourney_journey as Journey } from '../../../../../../__generated__/GetJourney'
-import { TypographyEdit, TYPOGRAPHY_BLOCK_UPDATE_CONTENT } from '.'
+import { TypographyVariant } from '../../../../../../__generated__/globalTypes'
+
+import { TYPOGRAPHY_BLOCK_UPDATE_CONTENT, TypographyEdit } from '.'
 
 jest.mock('react-i18next', () => ({
   __esModule: true,
@@ -31,6 +34,7 @@ describe('TypographyEdit', () => {
     children: [],
     deleteSelf: onDelete
   }
+
   it('selects the input on click', () => {
     render(
       <MockedProvider>
@@ -77,7 +81,7 @@ describe('TypographyEdit', () => {
         <JourneyProvider
           value={{
             journey: { id: 'journeyId' } as unknown as Journey,
-            admin: true
+            variant: 'admin'
           }}
         >
           <EditorProvider>
@@ -131,7 +135,7 @@ describe('TypographyEdit', () => {
         <JourneyProvider
           value={{
             journey: { id: 'journeyId' } as unknown as Journey,
-            admin: true
+            variant: 'admin'
           }}
         >
           <EditorProvider>
@@ -183,7 +187,7 @@ describe('TypographyEdit', () => {
         <JourneyProvider
           value={{
             journey: { id: 'journeyId' } as unknown as Journey,
-            admin: true
+            variant: 'admin'
           }}
         >
           <EditorProvider>
@@ -207,7 +211,7 @@ describe('TypographyEdit', () => {
         <JourneyProvider
           value={{
             journey: { id: 'journeyId' } as unknown as Journey,
-            admin: true
+            variant: 'admin'
           }}
         >
           <h1 className="swiper-container">Other content</h1>
@@ -257,7 +261,7 @@ describe('TypographyEdit', () => {
         <JourneyProvider
           value={{
             journey: { id: 'journeyId' } as unknown as Journey,
-            admin: true
+            variant: 'admin'
           }}
         >
           <h1>Other content</h1>

@@ -1,6 +1,6 @@
 import Typography from '@mui/material/Typography'
-
 import { ReactElement } from 'react'
+
 import { useJourney } from '../../../libs/JourneyProvider'
 import { getJourneyRTL } from '../../../libs/rtl'
 

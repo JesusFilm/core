@@ -32,7 +32,7 @@ export interface GetJourneyWithUserJourneys_journey {
 }
 
 export interface GetJourneyWithUserJourneys {
-  journey: GetJourneyWithUserJourneys_journey | null;
+  journey: GetJourneyWithUserJourneys_journey;
 }
 
 export interface GetJourneyWithUserJourneysVariables {

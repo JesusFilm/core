@@ -1,5 +1,6 @@
-import { init } from 'next-firebase-auth'
 import absoluteUrl from 'next-absolute-url'
+import { init } from 'next-firebase-auth'
+
 import { getFirebasePrivateKey } from '@core/shared/ui/getFirebasePrivateKey'
 
 export function initAuth(): void {

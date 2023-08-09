@@ -1,16 +1,17 @@
 import {
-  Resolver,
-  Query,
   Args,
+  Parent,
+  Query,
   ResolveField,
   ResolveReference,
-  Parent
+  Resolver
 } from '@nestjs/graphql'
-import { TranslationField } from '@core/nest/decorators/TranslationField'
-import { Language } from '.prisma/api-languages-client'
 
-import { PrismaService } from '../../lib/prisma.service'
+import { Language } from '.prisma/api-languages-client'
+import { TranslationField } from '@core/nest/decorators/TranslationField'
+
 import { LanguageIdType } from '../../__generated__/graphql'
+import { PrismaService } from '../../lib/prisma.service'
 
 @Resolver('Language')
 export class LanguageResolver {

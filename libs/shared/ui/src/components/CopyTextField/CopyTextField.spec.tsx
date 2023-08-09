@@ -1,5 +1,6 @@
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
+
 import { CopyTextField } from '.'
 
 describe('CopyTextField', () => {
@@ -40,8 +41,8 @@ describe('CopyTextField', () => {
     )
     fireEvent.focus(getByRole('textbox'))
     const input = getByRole('textbox') as HTMLInputElement
-    expect(input.selectionStart).toEqual(0)
-    expect(input.selectionEnd).toEqual(37)
+    expect(input.selectionStart).toBe(0)
+    expect(input.selectionEnd).toBe(37)
   })
 
   it('allows customization', async () => {

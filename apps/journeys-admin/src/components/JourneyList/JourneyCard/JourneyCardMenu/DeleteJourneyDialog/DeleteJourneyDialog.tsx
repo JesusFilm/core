@@ -1,11 +1,13 @@
-import { ReactElement } from 'react'
-import { useMutation, gql, ApolloQueryResult } from '@apollo/client'
+import { ApolloQueryResult, gql, useMutation } from '@apollo/client'
 import Typography from '@mui/material/Typography'
-import { Dialog } from '@core/shared/ui/Dialog'
 import { useSnackbar } from 'notistack'
-import { JourneyDelete } from '../../../../../../__generated__/JourneyDelete'
-import { JourneyStatus } from '../../../../../../__generated__/globalTypes'
+import { ReactElement } from 'react'
+
+import { Dialog } from '@core/shared/ui/Dialog'
+
 import { GetAdminJourneys } from '../../../../../../__generated__/GetAdminJourneys'
+import { JourneyStatus } from '../../../../../../__generated__/globalTypes'
+import { JourneyDelete } from '../../../../../../__generated__/JourneyDelete'
 
 export const JOURNEY_DELETE = gql`
   mutation JourneyDelete($ids: [ID!]!) {

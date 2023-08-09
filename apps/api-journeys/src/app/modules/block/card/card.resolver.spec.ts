@@ -1,16 +1,19 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
+
 import { Block, Journey, UserTeamRole } from '.prisma/api-journeys-client'
 import { CaslAuthModule } from '@core/nest/common/CaslAuthModule'
+
 import {
   CardBlockCreateInput,
   CardBlockUpdateInput,
   ThemeMode,
   ThemeName
 } from '../../../__generated__/graphql'
+import { AppAbility, AppCaslFactory } from '../../../lib/casl/caslFactory'
 import { PrismaService } from '../../../lib/prisma.service'
 import { BlockService } from '../block.service'
-import { AppAbility, AppCaslFactory } from '../../../lib/casl/caslFactory'
+
 import { CardBlockResolver } from './card.resolver'
 
 describe('CardBlockResolver', () => {
@@ -87,6 +90,7 @@ describe('CardBlockResolver', () => {
         async (callback) => await callback(prismaService)
       )
     })
+
     it('creates a CardBlock', async () => {
       prismaService.block.create.mockResolvedValueOnce(blockWithUserTeam)
       expect(await resolver.cardBlockCreate(ability, blockCreateInput)).toEqual(
@@ -119,6 +123,7 @@ describe('CardBlockResolver', () => {
         blockCreateInput.parentBlockId
       )
     })
+
     it('throws error if not authorized', async () => {
       prismaService.block.create.mockResolvedValueOnce(block)
       await expect(
@@ -133,12 +138,14 @@ describe('CardBlockResolver', () => {
       await resolver.cardBlockUpdate(ability, 'blockId', blockUpdateInput)
       expect(service.update).toHaveBeenCalledWith('blockId', blockUpdateInput)
     })
+
     it('throws error if not found', async () => {
       prismaService.block.findUnique.mockResolvedValueOnce(null)
       await expect(
         resolver.cardBlockUpdate(ability, 'blockId', blockUpdateInput)
       ).rejects.toThrow('block not found')
     })
+
     it('throws error if not authorized', async () => {
       prismaService.block.findUnique.mockResolvedValueOnce(block)
       await expect(
@@ -149,17 +156,15 @@ describe('CardBlockResolver', () => {
 
   describe('fullscreen', () => {
     it('returns fullscreen when true', () => {
-      expect(resolver.fullscreen({ ...block, fullscreen: true })).toEqual(true)
+      expect(resolver.fullscreen({ ...block, fullscreen: true })).toBe(true)
     })
 
     it('returns fullscreen when false', () => {
-      expect(resolver.fullscreen({ ...block, fullscreen: false })).toEqual(
-        false
-      )
+      expect(resolver.fullscreen({ ...block, fullscreen: false })).toBe(false)
     })
 
     it('returns false when fullscreen is null', () => {
-      expect(resolver.fullscreen({ ...block, fullscreen: null })).toEqual(false)
+      expect(resolver.fullscreen({ ...block, fullscreen: null })).toBe(false)
     })
   })
 })

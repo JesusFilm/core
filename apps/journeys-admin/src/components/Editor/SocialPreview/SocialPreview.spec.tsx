@@ -1,5 +1,7 @@
 import { render } from '@testing-library/react'
+
 import { ThemeProvider } from '../../ThemeProvider'
+
 import { SocialPreview } from './SocialPreview'
 
 describe('SocialPreview', () => {
@@ -11,6 +13,7 @@ describe('SocialPreview', () => {
     )
     expect(getAllByText('Social App View')[0]).toBeInTheDocument()
   })
+
   it('should display socialpreviewmessage', () => {
     const { getAllByText } = render(
       <ThemeProvider>

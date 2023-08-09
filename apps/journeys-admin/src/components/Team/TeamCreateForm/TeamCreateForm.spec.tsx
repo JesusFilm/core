@@ -1,19 +1,21 @@
-import { fireEvent, render, waitFor } from '@testing-library/react'
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
-import { SnackbarProvider } from 'notistack'
-import { ReactElement } from 'react'
 import { InMemoryCache } from '@apollo/client'
-import { Form } from 'formik'
+import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import Button from '@mui/material/Button'
 import TextField from '@mui/material/TextField'
+import { fireEvent, render, waitFor } from '@testing-library/react'
+import { Form } from 'formik'
+import { SnackbarProvider } from 'notistack'
+import { ReactElement } from 'react'
+
+import { GetLastActiveTeamIdAndTeams } from '../../../../__generated__/GetLastActiveTeamIdAndTeams'
+import { TeamCreate } from '../../../../__generated__/TeamCreate'
+import { TEAM_CREATE } from '../../../libs/useTeamCreateMutation/useTeamCreateMutation'
 import {
   GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS,
   TeamProvider,
   useTeam
 } from '../TeamProvider'
-import { TeamCreate } from '../../../../__generated__/TeamCreate'
-import { TEAM_CREATE } from '../../../libs/useTeamCreateMutation/useTeamCreateMutation'
-import { GetLastActiveTeamIdAndTeams } from '../../../../__generated__/GetLastActiveTeamIdAndTeams'
+
 import { TeamCreateForm } from '.'
 
 describe('TeamCreateForm', () => {
@@ -31,7 +33,8 @@ describe('TeamCreateForm', () => {
         teamCreate: {
           id: 'teamId',
           title: 'Team Title',
-          __typename: 'Team'
+          __typename: 'Team',
+          userTeams: []
         }
       }
     }
@@ -51,7 +54,14 @@ describe('TeamCreateForm', () => {
     request: { query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS },
     result: {
       data: {
-        teams: [{ id: 'teamId1', title: 'Team 1 Title', __typename: 'Team' }],
+        teams: [
+          {
+            id: 'teamId',
+            title: 'Team 1 Title',
+            __typename: 'Team',
+            userTeams: []
+          }
+        ],
         getJourneyProfile: {
           __typename: 'JourneyProfile',
           lastActiveTeamId: null
@@ -108,12 +118,17 @@ describe('TeamCreateForm', () => {
         { title: 'Team Title' },
         expect.any(Object),
         {
-          teamCreate: { __typename: 'Team', id: 'teamId', title: 'Team Title' }
+          teamCreate: {
+            __typename: 'Team',
+            id: 'teamId',
+            title: 'Team Title',
+            userTeams: []
+          }
         }
       )
     )
     expect(cache.extract()?.ROOT_QUERY?.teams).toEqual([
-      { __ref: 'Team:teamId1' },
+      { __ref: 'Team:teamId' },
       { __ref: 'Team:teamId' }
     ])
     expect(getByText('{{ teamName }} created.')).toBeInTheDocument()

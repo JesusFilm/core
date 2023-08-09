@@ -2,14 +2,16 @@
 
 import { UseGuards } from '@nestjs/common'
 import { Args, Mutation, Resolver } from '@nestjs/graphql'
-import { GqlAuthGuard } from '@core/nest/gqlAuthGuard/GqlAuthGuard'
+
 import { CurrentUserId } from '@core/nest/decorators/CurrentUserId'
+import { GqlAuthGuard } from '@core/nest/gqlAuthGuard/GqlAuthGuard'
+
 import {
   RadioQuestionSubmissionEvent,
   RadioQuestionSubmissionEventCreateInput
 } from '../../../__generated__/graphql'
-import { EventService } from '../event.service'
 import { PrismaService } from '../../../lib/prisma.service'
+import { EventService } from '../event.service'
 
 @Resolver('RadioQuestionSubmissionEvent')
 export class RadioQuestionSubmissionEventResolver {

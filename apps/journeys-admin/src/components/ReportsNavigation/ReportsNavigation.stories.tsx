@@ -1,6 +1,8 @@
 import { Meta, Story } from '@storybook/react'
 import { ComponentProps } from 'react'
+
 import { simpleComponentConfig } from '../../libs/storybook'
+
 import { ReportsNavigation } from '.'
 
 const ReportsNavigationStory = {

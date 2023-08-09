@@ -1,16 +1,19 @@
-import { ReactElement, useState } from 'react'
-import { useRouter } from 'next/router'
-import { useFlags } from '@core/shared/ui/FlagsProvider'
 import Box from '@mui/material/Box'
 import Container from '@mui/material/Container'
 import { AuthUser } from 'next-firebase-auth'
+import { useRouter } from 'next/router'
+import { ReactElement, useState } from 'react'
+
+import { useFlags } from '@core/shared/ui/FlagsProvider'
+
 import { MultipleSummaryReport } from '../MultipleSummaryReport'
 import { StatusTabPanel } from '../StatusTabPanel'
-import { AddJourneyFab } from './AddJourneyFab'
+
 import { ActiveJourneyList } from './ActiveJourneyList'
+import { AddJourneyFab } from './AddJourneyFab'
 import { ArchivedJourneyList } from './ArchivedJourneyList'
-import { TrashedJourneyList } from './TrashedJourneyList'
 import { SortOrder } from './JourneySort'
+import { TrashedJourneyList } from './TrashedJourneyList'
 
 export interface JourneyListProps {
   sortOrder?: SortOrder

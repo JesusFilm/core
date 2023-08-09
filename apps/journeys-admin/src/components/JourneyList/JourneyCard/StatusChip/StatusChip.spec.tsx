@@ -1,5 +1,7 @@
 import { render } from '@testing-library/react'
+
 import { JourneyStatus } from '../../../../../__generated__/globalTypes'
+
 import { StatusChip } from '.'
 
 describe('StatusChip', () => {

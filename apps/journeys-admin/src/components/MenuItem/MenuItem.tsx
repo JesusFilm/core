@@ -1,7 +1,7 @@
-import { ReactElement, ReactNode } from 'react'
-import MuiMenuItem from '@mui/material/MenuItem'
-import ListItemText from '@mui/material/ListItemText'
 import ListItemIcon from '@mui/material/ListItemIcon'
+import ListItemText from '@mui/material/ListItemText'
+import MuiMenuItem from '@mui/material/MenuItem'
+import { ReactElement, ReactNode } from 'react'
 
 interface MenuItemProps {
   label: string

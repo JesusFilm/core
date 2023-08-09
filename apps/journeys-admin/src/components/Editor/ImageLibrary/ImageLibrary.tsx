@@ -1,12 +1,13 @@
-import { ReactElement } from 'react'
-import AppBar from '@mui/material/AppBar'
 import Close from '@mui/icons-material/Close'
-import Toolbar from '@mui/material/Toolbar'
-import IconButton from '@mui/material/IconButton'
+import AppBar from '@mui/material/AppBar'
 import Drawer from '@mui/material/Drawer'
+import IconButton from '@mui/material/IconButton'
 import { Theme } from '@mui/material/styles'
+import Toolbar from '@mui/material/Toolbar'
 import Typography from '@mui/material/Typography'
 import useMediaQuery from '@mui/material/useMediaQuery'
+import { ReactElement } from 'react'
+
 import { GetJourney_journey_blocks_ImageBlock as ImageBlock } from '../../../../__generated__/GetJourney'
 import { ImageBlockEditor } from '../ImageBlockEditor'
 

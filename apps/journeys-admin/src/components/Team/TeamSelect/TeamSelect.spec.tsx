@@ -1,18 +1,22 @@
-import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
-import { ReactElement } from 'react'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import { ReactElement } from 'react'
+
 import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
+
+import { GetLastActiveTeamIdAndTeams } from '../../../../__generated__/GetLastActiveTeamIdAndTeams'
+import { AddJourneyButton } from '../../JourneyList/ActiveJourneyList/AddJourneyButton'
+import { OnboardingPanelContent } from '../../OnboardingPanelContent'
+import { onboardingJourneys } from '../../OnboardingPanelContent/data'
 import {
   GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS,
   TeamProvider,
   useTeam
 } from '../TeamProvider'
-import { GetLastActiveTeamIdAndTeams } from '../../../../__generated__/GetLastActiveTeamIdAndTeams'
-import { OnboardingPanelContent } from '../../OnboardingPanelContent'
-import { AddJourneyButton } from '../../JourneyList/ActiveJourneyList/AddJourneyButton'
-import { onboardingJourneys } from '../../OnboardingPanelContent/data'
+
 import { UPDATE_LAST_ACTIVE_TEAM_ID } from './TeamSelect'
+
 import { TeamSelect } from '.'
 
 jest.mock('react-i18next', () => ({
@@ -32,8 +36,18 @@ describe('TeamSelect', () => {
     result: {
       data: {
         teams: [
-          { id: 'teamId1', title: 'Team Title', __typename: 'Team' },
-          { id: 'teamId2', title: 'Team Title2', __typename: 'Team' }
+          {
+            id: 'teamId1',
+            title: 'Team Title',
+            __typename: 'Team',
+            userTeams: []
+          },
+          {
+            id: 'teamId2',
+            title: 'Team Title2',
+            __typename: 'Team',
+            userTeams: []
+          }
         ],
         getJourneyProfile: {
           __typename: 'JourneyProfile',

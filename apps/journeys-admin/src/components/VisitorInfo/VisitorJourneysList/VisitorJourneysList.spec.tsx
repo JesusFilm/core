@@ -1,7 +1,9 @@
-import { render, waitFor } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
-import { GET_VISITOR_EVENTS } from './VisitorJourneysList'
+import { render, waitFor } from '@testing-library/react'
+
 import { getVisitorEvents } from './utils/data'
+import { GET_VISITOR_EVENTS } from './VisitorJourneysList'
+
 import { VisitorJourneysList } from '.'
 
 describe('JourneyList', () => {

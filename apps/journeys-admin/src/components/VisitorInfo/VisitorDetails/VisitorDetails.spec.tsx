@@ -1,6 +1,8 @@
-import { render, waitFor } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
+import { render, waitFor } from '@testing-library/react'
+
 import { GET_VISITOR_FOR_DETAILS } from './VisitorDetails'
+
 import { VisitorDetails } from '.'
 
 describe('VisitorDetails', () => {

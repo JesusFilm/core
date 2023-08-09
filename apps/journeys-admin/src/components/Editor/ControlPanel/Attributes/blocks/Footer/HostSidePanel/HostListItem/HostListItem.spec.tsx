@@ -1,4 +1,5 @@
 import { fireEvent, render } from '@testing-library/react'
+
 import { HostListItem } from './HostListItem'
 
 describe('HostListItem', () => {
@@ -51,7 +52,7 @@ describe('HostListItem', () => {
     expect(adminPlaceholderElement).toBeInTheDocument()
   })
 
-  it('it passes the correct host data when clicked', () => {
+  it('passes the correct host data when clicked', () => {
     const handleClick = jest.fn()
     const hostTitle = 'Edmond Shen'
     const hostTitleTwo = 'Siyang Diesel'

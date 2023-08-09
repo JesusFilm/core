@@ -1,6 +1,9 @@
 import { ApolloClient, NormalizedCacheObject } from '@apollo/client'
+
 import { GetJourneyProfileAndTeams } from '../../../__generated__/GetJourneyProfileAndTeams'
+
 import { GET_JOURNEY_PROFILE_AND_TEAMS } from './checkConditionalRedirect'
+
 import { checkConditionalRedirect } from '.'
 
 describe('checkConditionalRedirect', () => {
@@ -13,7 +16,7 @@ describe('checkConditionalRedirect', () => {
         termsAndConditions: true,
         teams: true
       })
-    ).not.toBeUndefined()
+    ).toBeDefined()
     expect(client.query).toHaveBeenCalledWith({
       query: GET_JOURNEY_PROFILE_AND_TEAMS
     })

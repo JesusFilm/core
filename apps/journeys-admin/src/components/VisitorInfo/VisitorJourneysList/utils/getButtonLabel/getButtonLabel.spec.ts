@@ -1,5 +1,6 @@
 import { GetVisitorEvents_visitor_events_ButtonClickEvent as ButtonEvent } from '../../../../../../__generated__/GetVisitorEvents'
 import { ButtonAction } from '../../../../../../__generated__/globalTypes'
+
 import { getButtonLabel } from '.'
 
 describe('getButtonLabel', () => {
@@ -24,7 +25,7 @@ describe('getButtonLabel', () => {
       },
       t
     )
-    expect(result).toEqual('Next Card')
+    expect(result).toBe('Next Card')
   })
 
   it('should return label for NavigateToBlockAction', () => {
@@ -36,7 +37,7 @@ describe('getButtonLabel', () => {
       },
       t
     )
-    expect(result).toEqual('Selected Card')
+    expect(result).toBe('Selected Card')
   })
 
   it('should return label for NavigateToJourneyAction', () => {
@@ -48,7 +49,7 @@ describe('getButtonLabel', () => {
       },
       t
     )
-    expect(result).toEqual('Journey')
+    expect(result).toBe('Journey')
   })
 
   it('should return label for LinkAction', () => {
@@ -60,6 +61,6 @@ describe('getButtonLabel', () => {
       },
       t
     )
-    expect(result).toEqual('https://google.com')
+    expect(result).toBe('https://google.com')
   })
 })

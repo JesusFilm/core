@@ -1,14 +1,17 @@
-import { MockedProvider } from '@apollo/client/testing'
-import { render, fireEvent, waitFor } from '@testing-library/react'
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
-import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { InMemoryCache } from '@apollo/client'
+import { MockedProvider } from '@apollo/client/testing'
+import { fireEvent, render, waitFor } from '@testing-library/react'
+
+import { EditorProvider } from '@core/journeys/ui/EditorProvider'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+
 import { GetJourney_journey as Journey } from '../../../../../../__generated__/GetJourney'
 import {
-  ThemeName,
-  ThemeMode
+  ThemeMode,
+  ThemeName
 } from '../../../../../../__generated__/globalTypes'
-import { Action, NAVIGATE_ACTION_UPDATE, ACTION_DELETE } from './Action'
+
+import { ACTION_DELETE, Action, NAVIGATE_ACTION_UPDATE } from './Action'
 import { steps } from './data'
 
 jest.mock('react-i18next', () => ({
@@ -52,6 +55,7 @@ describe('Action', () => {
       )
     )
   })
+
   it('disables Next Step option if there is no next step', async () => {
     const selectedStep = steps[4]
     const { getByRole } = render(
@@ -123,7 +127,7 @@ describe('Action', () => {
                 iso3: 'eng'
               }
             } as unknown as Journey,
-            admin: true
+            variant: 'admin'
           }}
         >
           <EditorProvider initialState={{ steps, selectedBlock, selectedStep }}>
@@ -234,7 +238,7 @@ describe('Action', () => {
                 iso3: 'eng'
               }
             } as unknown as Journey,
-            admin: true
+            variant: 'admin'
           }}
         >
           <EditorProvider initialState={{ selectedBlock }}>

@@ -1,7 +1,9 @@
+import Typography from '@mui/material/Typography'
 import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
+
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
-import Typography from '@mui/material/Typography'
+
 import { AccessAvatars } from '../../../AccessAvatars'
 
 export function AccessControl(): ReactElement {

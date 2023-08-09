@@ -1,15 +1,18 @@
+import Crop169RoundedIcon from '@mui/icons-material/Crop169Rounded'
+import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'
+import LinkRoundedIcon from '@mui/icons-material/LinkRounded'
+import Divider from '@mui/material/Divider'
 import { ReactElement } from 'react'
+
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
-import Crop169RoundedIcon from '@mui/icons-material/Crop169Rounded'
-import LinkRoundedIcon from '@mui/icons-material/LinkRounded'
-import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'
-import Divider from '@mui/material/Divider'
+
+import { Attribute } from '../..'
 import { GetJourney_journey_blocks_TextResponseBlock as TextResponseBlock } from '../../../../../../../__generated__/GetJourney'
 import { IconFields } from '../../../../../../../__generated__/IconFields'
-import { Attribute } from '../..'
 import { Action, actions } from '../../Action/Action'
 import { Icon, icons } from '../../Icon'
+
 import { TextResponseFields } from './TextResponseFields'
 
 export function TextResponse({

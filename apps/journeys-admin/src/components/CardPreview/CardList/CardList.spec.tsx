@@ -1,18 +1,21 @@
-import { render, fireEvent } from '@testing-library/react'
-import type { TreeBlock } from '@core/journeys/ui/block'
 import { MockedProvider } from '@apollo/client/testing'
+import { fireEvent, render } from '@testing-library/react'
 import { DragDropContext } from 'react-beautiful-dnd'
+
+import type { TreeBlock } from '@core/journeys/ui/block'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+
 import { BlockFields_StepBlock as StepBlock } from '../../../../__generated__/BlockFields'
 import {
-  VideoBlockSource,
-  ThemeName,
+  Role,
   ThemeMode,
-  Role
+  ThemeName,
+  VideoBlockSource
 } from '../../../../__generated__/globalTypes'
 import { JourneyFields as Journey } from '../../../../__generated__/JourneyFields'
 import { SocialProvider } from '../../Editor/SocialProvider'
 import { GET_USER_ROLE } from '../../JourneyView/JourneyView'
+
 import { CardList } from '.'
 
 jest.mock('react-beautiful-dnd', () => ({
@@ -281,7 +284,7 @@ describe('CardList', () => {
                 iso3: 'eng'
               }
             } as unknown as Journey,
-            admin: true
+            variant: 'admin'
           }}
         >
           <DragDropContext>
@@ -316,6 +319,7 @@ describe('CardList', () => {
     )
     expect(getByTestId('social-preview-navigation-card')).toBeInTheDocument()
   })
+
   it('navigates on social preview card click', async () => {
     const handleChange = jest.fn()
     const { getByTestId } = render(
@@ -333,7 +337,7 @@ describe('CardList', () => {
                 iso3: 'eng'
               }
             } as unknown as Journey,
-            admin: true
+            variant: 'admin'
           }}
         >
           <DragDropContext>
@@ -369,7 +373,7 @@ describe('CardList', () => {
                 iso3: 'eng'
               }
             } as unknown as Journey,
-            admin: true
+            variant: 'admin'
           }}
         >
           <SocialProvider
@@ -466,7 +470,7 @@ describe('CardList', () => {
               },
               template: true
             } as unknown as Journey,
-            admin: true
+            variant: 'admin'
           }}
         >
           <DragDropContext>

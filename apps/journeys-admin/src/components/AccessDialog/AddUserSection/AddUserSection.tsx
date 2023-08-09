@@ -1,15 +1,18 @@
-import { ReactElement, MouseEvent, useState } from 'react'
-import { useTranslation } from 'react-i18next'
-import Stack from '@mui/material/Stack'
+import DraftsIcon from '@mui/icons-material/Drafts'
+import GroupAddIcon from '@mui/icons-material/GroupAdd'
+import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
+import LinkIcon from '@mui/icons-material/Link'
 import Button from '@mui/material/Button'
 import Menu from '@mui/material/Menu'
-import DraftsIcon from '@mui/icons-material/Drafts'
-import LinkIcon from '@mui/icons-material/Link'
-import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
-import GroupAddIcon from '@mui/icons-material/GroupAdd'
-import { CopyTextField } from '@core/shared/ui/CopyTextField'
+import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
+import { MouseEvent, ReactElement, useState } from 'react'
+import { useTranslation } from 'react-i18next'
+
+import { CopyTextField } from '@core/shared/ui/CopyTextField'
+
 import { MenuItem } from '../../MenuItem'
+
 import { EmailInviteForm } from './EmailInviteForm'
 
 interface AddUserSectionProps {

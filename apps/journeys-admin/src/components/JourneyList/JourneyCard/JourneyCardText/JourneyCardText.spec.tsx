@@ -1,10 +1,12 @@
 import { fireEvent, render, waitFor } from '@testing-library/react'
+
 import {
   defaultJourney,
-  publishedJourney,
-  oldJourney
+  oldJourney,
+  publishedJourney
 } from '../../journeyListData'
 import { JourneyCardVariant } from '../journeyCardVariant'
+
 import { JourneyCardText } from '.'
 
 describe('JourneyCardText', () => {

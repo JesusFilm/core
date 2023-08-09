@@ -12,10 +12,25 @@ export interface GetLastActiveTeamIdAndTeams_getJourneyProfile {
   lastActiveTeamId: string | null;
 }
 
+export interface GetLastActiveTeamIdAndTeams_teams_userTeams_user {
+  __typename: "User";
+  id: string;
+  firstName: string;
+  lastName: string | null;
+  imageUrl: string | null;
+}
+
+export interface GetLastActiveTeamIdAndTeams_teams_userTeams {
+  __typename: "UserTeam";
+  id: string;
+  user: GetLastActiveTeamIdAndTeams_teams_userTeams_user;
+}
+
 export interface GetLastActiveTeamIdAndTeams_teams {
   __typename: "Team";
   id: string;
   title: string;
+  userTeams: GetLastActiveTeamIdAndTeams_teams_userTeams[];
 }
 
 export interface GetLastActiveTeamIdAndTeams {

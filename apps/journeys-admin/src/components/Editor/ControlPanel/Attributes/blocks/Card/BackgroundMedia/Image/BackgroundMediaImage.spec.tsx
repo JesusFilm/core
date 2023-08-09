@@ -1,14 +1,16 @@
-import type { TreeBlock } from '@core/journeys/ui/block'
-import { fireEvent, render, waitFor } from '@testing-library/react'
-import { MockedProvider } from '@apollo/client/testing'
-import { SnackbarProvider } from 'notistack'
-import useMediaQuery from '@mui/material/useMediaQuery'
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { InMemoryCache } from '@apollo/client'
+import { MockedProvider } from '@apollo/client/testing'
+import useMediaQuery from '@mui/material/useMediaQuery'
+import { fireEvent, render, waitFor } from '@testing-library/react'
+import { SnackbarProvider } from 'notistack'
+
+import type { TreeBlock } from '@core/journeys/ui/block'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+
 import {
-  GetJourney_journey as Journey,
   GetJourney_journey_blocks_CardBlock as CardBlock,
   GetJourney_journey_blocks_ImageBlock as ImageBlock,
+  GetJourney_journey as Journey,
   GetJourney_journey_blocks_VideoBlock as VideoBlock
 } from '../../../../../../../../../__generated__/GetJourney'
 import {
@@ -18,11 +20,12 @@ import {
   VideoBlockSource
 } from '../../../../../../../../../__generated__/globalTypes'
 import { createCloudflareUploadByUrlMock } from '../../../../../../ImageBlockEditor/CustomImage/CustomUrl/data'
+
 import {
+  BLOCK_DELETE_FOR_BACKGROUND_IMAGE,
   BackgroundMediaImage,
   CARD_BLOCK_COVER_IMAGE_BLOCK_CREATE,
-  CARD_BLOCK_COVER_IMAGE_BLOCK_UPDATE,
-  BLOCK_DELETE_FOR_BACKGROUND_IMAGE
+  CARD_BLOCK_COVER_IMAGE_BLOCK_UPDATE
 } from './BackgroundMediaImage'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
@@ -135,6 +138,7 @@ describe('BackgroundMediaImage', () => {
   beforeEach(() => (useMediaQuery as jest.Mock).mockImplementation(() => true))
 
   let originalEnv
+
   beforeEach(() => {
     originalEnv = process.env
     process.env = {
@@ -184,7 +188,7 @@ describe('BackgroundMediaImage', () => {
           }
         ]}
       >
-        <JourneyProvider value={{ journey, admin: true }}>
+        <JourneyProvider value={{ journey, variant: 'admin' }}>
           <SnackbarProvider>
             <BackgroundMediaImage cardBlock={card} />
           </SnackbarProvider>
@@ -281,7 +285,7 @@ describe('BackgroundMediaImage', () => {
           }
         ]}
       >
-        <JourneyProvider value={{ journey, admin: true }}>
+        <JourneyProvider value={{ journey, variant: 'admin' }}>
           <SnackbarProvider>
             <BackgroundMediaImage cardBlock={videoCard} />
           </SnackbarProvider>
@@ -320,6 +324,7 @@ describe('BackgroundMediaImage', () => {
         }
       ]
     }
+
     it('updates image cover block', async () => {
       const cache = new InMemoryCache()
       cache.restore({
@@ -368,7 +373,7 @@ describe('BackgroundMediaImage', () => {
             }
           ]}
         >
-          <JourneyProvider value={{ journey, admin: true }}>
+          <JourneyProvider value={{ journey, variant: 'admin' }}>
             <SnackbarProvider>
               <BackgroundMediaImage cardBlock={existingCoverBlock} />
             </SnackbarProvider>
@@ -397,7 +402,7 @@ describe('BackgroundMediaImage', () => {
     it('shows loading icon', async () => {
       const { getByRole } = render(
         <MockedProvider mocks={[createCloudflareUploadByUrlMock]}>
-          <JourneyProvider value={{ journey, admin: true }}>
+          <JourneyProvider value={{ journey, variant: 'admin' }}>
             <SnackbarProvider>
               <BackgroundMediaImage cardBlock={existingCoverBlock} />
             </SnackbarProvider>
@@ -454,7 +459,7 @@ describe('BackgroundMediaImage', () => {
             }
           ]}
         >
-          <JourneyProvider value={{ journey, admin: true }}>
+          <JourneyProvider value={{ journey, variant: 'admin' }}>
             <SnackbarProvider>
               <BackgroundMediaImage cardBlock={existingCoverBlock} />
             </SnackbarProvider>
