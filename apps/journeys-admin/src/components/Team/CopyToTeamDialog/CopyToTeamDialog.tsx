@@ -41,10 +41,11 @@ export function CopyToTeamDialog({
     values: FormikValues,
     { resetForm }: FormikHelpers<FormikValues>
   ): Promise<void> {
+    await submitAction(values.teamSelect)
     await setActiveTeam(
       query?.data?.teams.find((team) => team.id === values.teamSelect) ?? null
     )
-    await submitAction(values.teamSelect)
+
     resetForm()
   }
 
@@ -59,6 +60,7 @@ export function CopyToTeamDialog({
           open={open}
           onClose={handleClose}
           dialogTitle={{ title: t(title) }}
+          isSubmitting={isSubmitting}
           dialogAction={{
             onSubmit: () => {
               if (!isSubmitting) handleSubmit()

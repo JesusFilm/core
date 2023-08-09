@@ -3,6 +3,7 @@ import Typography from '@mui/material/Typography'
 import { fireEvent } from '@storybook/testing-library'
 import { render } from '@testing-library/react'
 import { ComponentProps } from 'react'
+import { ApolloLoadingProvider } from '../../../../../journeys/ui/test/ApolloLoadingProvider'
 
 import { Dialog } from './Dialog'
 
@@ -76,6 +77,11 @@ describe('Dialog', () => {
       const { getByRole } = render(<Dialog {...input} />)
       fireEvent.click(getByRole('button', { name: 'Accept' }))
       expect(input.dialogAction?.onSubmit).toHaveBeenCalled()
+    })
+
+    it('should show loading spinner if dialog is in submitting state', () => {
+      const { getByTestId } = render(<Dialog {...input} isSubmitting />)
+      expect(getByTestId('dialog-loading-icon')).toBeInTheDocument()
     })
   })
 
