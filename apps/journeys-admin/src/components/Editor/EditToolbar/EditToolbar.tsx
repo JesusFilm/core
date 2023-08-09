@@ -6,6 +6,9 @@ import {
   ActiveJourneyEditContent,
   useEditor
 } from '@core/journeys/ui/EditorProvider'
+import Typography from '@mui/material/Typography'
+import useMediaQuery from '@mui/material/useMediaQuery'
+import Theme from '@mui/material/styles'
 import { JourneyStatus } from '../../../../__generated__/globalTypes'
 import { DuplicateBlock } from '../../DuplicateBlock'
 import { DeleteBlock } from './DeleteBlock'
@@ -14,6 +17,7 @@ import { Menu } from './Menu'
 export function EditToolbar(): ReactElement {
   const { journey } = useJourney()
   const { state } = useEditor()
+  const mdUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
 
   return (
     <>
@@ -21,9 +25,12 @@ export function EditToolbar(): ReactElement {
         aria-label="Preview"
         href={`/api/preview?slug=${journey?.slug ?? ''}`}
         target="_blank"
-        disabled={journey == null || journey?.status === JourneyStatus.draft}
+        disabled={journey == null}
       >
         <VisibilityIcon />
+        <Typography sx={{ display: mdUp ? 'block' : 'none' }}>
+          Preview
+        </Typography>
       </IconButton>
       <DeleteBlock
         variant="button"

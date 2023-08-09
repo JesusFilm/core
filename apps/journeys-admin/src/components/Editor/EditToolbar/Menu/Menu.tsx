@@ -13,7 +13,6 @@ import useMediaQuery from '@mui/material/useMediaQuery'
 import ShareRoundedIcon from '@mui/icons-material/ShareRounded'
 import { DeleteBlock } from '../DeleteBlock'
 import { MenuItem } from '../../../MenuItem'
-import { JourneyStatus } from '../../../../../__generated__/globalTypes'
 import { DuplicateBlock } from '../../../DuplicateBlock'
 
 export function Menu(): ReactElement {
@@ -40,7 +39,6 @@ export function Menu(): ReactElement {
           <MenuItem
             label="Preview"
             icon={<VisibilityIcon />}
-            disabled={journey?.status === JourneyStatus.draft}
             openInNew
             onClick={handleCloseMenu}
           />
@@ -75,7 +73,6 @@ export function Menu(): ReactElement {
           <MenuItem
             label="Preview"
             icon={<VisibilityIcon />}
-            disabled={journey?.status === JourneyStatus.draft}
             openInNew
             onClick={handleCloseMenu}
           />
