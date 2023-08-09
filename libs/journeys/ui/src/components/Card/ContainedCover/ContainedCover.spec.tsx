@@ -147,12 +147,17 @@ describe('ContainedCover', () => {
     expect(posterImage).toHaveAttribute('aria-details', imageBlock.src)
   })
 
-  it('should render background video with video.image', () => {
+  it('should render background video with default cloudflare thumbnail image', () => {
     const { getByTestId, getByRole } = render(
       <ContainedCover
         backgroundColor="#DDD"
         backgroundBlur={blurUrl}
-        videoBlock={{ ...videoBlock, source: VideoBlockSource.cloudflare }}
+        videoBlock={{
+          ...videoBlock,
+          source: VideoBlockSource.cloudflare,
+          image:
+            'https://customer-.cloudflarestream.com/2_0-FallingPlates/manifest/video.m3u8'
+        }}
       >
         {children}
       </ContainedCover>
@@ -170,7 +175,10 @@ describe('ContainedCover', () => {
     const posterImage = getByTestId('video-poster-image')
 
     expect(posterImage).toHaveAccessibleName('card video image')
-    expect(posterImage).toHaveAttribute('aria-details', videoBlock.video?.image)
+    expect(posterImage).toHaveAttribute(
+      'aria-details',
+      'https://customer-.cloudflarestream.com/2_0-FallingPlates/manifest/video.m3u8'
+    )
   })
 
   it('should render background video with default youtube thumbnail image', () => {
