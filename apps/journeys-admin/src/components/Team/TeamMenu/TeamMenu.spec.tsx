@@ -26,8 +26,18 @@ describe('TeamMenu', () => {
     result: {
       data: {
         teams: [
-          { id: 'teamId1', title: 'Team Title', __typename: 'Team' },
-          { id: 'teamId2', title: 'Team Title2', __typename: 'Team' }
+          {
+            id: 'teamId1',
+            title: 'Team Title',
+            __typename: 'Team',
+            userTeams: []
+          },
+          {
+            id: 'teamId2',
+            title: 'Team Title2',
+            __typename: 'Team',
+            userTeams: []
+          }
         ],
         getJourneyProfile: {
           __typename: 'JourneyProfile',
@@ -43,8 +53,18 @@ describe('TeamMenu', () => {
     result: {
       data: {
         teams: [
-          { id: 'teamId1', title: 'Team Title', __typename: 'Team' },
-          { id: 'teamId2', title: 'Team Title2', __typename: 'Team' }
+          {
+            id: 'teamId1',
+            title: 'Team Title',
+            __typename: 'Team',
+            userTeams: []
+          },
+          {
+            id: 'teamId2',
+            title: 'Team Title2',
+            __typename: 'Team',
+            userTeams: []
+          }
         ],
         getJourneyProfile: {
           __typename: 'JourneyProfile',

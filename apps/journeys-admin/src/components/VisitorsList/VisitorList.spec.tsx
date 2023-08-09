@@ -71,7 +71,14 @@ describe('VisitorList', () => {
     },
     result: {
       data: {
-        teams: [{ id: 'teamId', title: 'Team Title', __typename: 'Team' }],
+        teams: [
+          {
+            id: 'teamId',
+            title: 'Team Title',
+            __typename: 'Team',
+            userTeams: []
+          }
+        ],
         getJourneyProfile: {
           __typename: 'JourneyProfile',
           lastActiveTeamId: 'teamId'
