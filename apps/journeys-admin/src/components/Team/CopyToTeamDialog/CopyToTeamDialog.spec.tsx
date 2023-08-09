@@ -24,7 +24,14 @@ describe('DuplicateJourneys', () => {
   it('should call submit action on dialog submit', async () => {
     const result = jest.fn(() => ({
       data: {
-        teams: [{ id: 'teamId', title: 'Team Name', __typename: 'Team' }],
+        teams: [
+          {
+            id: 'teamId',
+            title: 'Team Name',
+            __typename: 'Team',
+            userTeams: []
+          }
+        ],
         getJourneyProfile: {
           __typename: 'JourneyProfile',
           lastActiveTeamId: 'teamId'
