@@ -91,8 +91,6 @@ export function LocalDetails({
     selectedLanguage: LanguageOption
   ): Promise<void> => {
     setSelectedLanguage(selectedLanguage)
-    await loadVideo()
-    console.log('I have been called')
   }
 
   const handleSelect = (): void => {
