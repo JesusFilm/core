@@ -205,17 +205,6 @@ export function Menu(): ReactElement {
                 onClick={handleCloseMenu}
               />
             </NextLink>
-            {(journey.template !== true || isPublisher) && (
-              <MenuItem
-                label="Publish"
-                icon={<BeenHereRoundedIcon />}
-                disabled={
-                  journey.status === JourneyStatus.published ||
-                  (journey.template !== true && !isOwner)
-                }
-                onClick={handlePublish}
-              />
-            )}
             {journey.template === true && (
               <MenuItem
                 label="Use Template"

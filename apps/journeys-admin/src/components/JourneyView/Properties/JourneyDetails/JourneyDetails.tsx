@@ -61,21 +61,6 @@ export function JourneyDetails({
         <Language isPublisher={isPublisher} />
       ) : (
         <>
-          <Box sx={{ display: 'flex', flexDirection: 'row' }}>
-            {journey != null && currentStatus != null ? (
-              <>{currentStatus.icon}</>
-            ) : (
-              <EditIcon fontSize="small" />
-            )}
-
-            <Typography variant="body2" data-testid="status" sx={{ ml: 2 }}>
-              {journey != null && currentStatus != null ? (
-                currentStatus.text
-              ) : (
-                <Skeleton variant="text" width={30} />
-              )}
-            </Typography>
-          </Box>
           <Box sx={{ display: 'flex', flexDirection: 'row', mt: 2 }}>
             <EventRounded fontSize="small" />
             <Typography
