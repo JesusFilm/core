@@ -39,8 +39,8 @@ Basic.args = {
   children: <Typography>This is the content</Typography>
 }
 
-export const Submitting = Template.bind({})
-Submitting.args = {
+export const Loading = Template.bind({})
+Loading.args = {
   loading: true,
   open: true,
   onClose: noop,
