@@ -95,22 +95,11 @@ export function StepHeader({ sx }: Props): ReactElement {
             <MuiMenuItem>{t('Terms & Conditions')}</MuiMenuItem>
           </Link>
         </NextLink>
-        <NextLink href="https://www.cru.org/us/en/about/privacy.html" passHref>
-          <Link
-            variant="body2"
-            underline="none"
-            target="_blank"
-            rel="noopener"
-            sx={{ px: 0 }}
-            onClick={handleClose}
-          >
-            <MuiMenuItem>{t('Privacy Policy')}</MuiMenuItem>
-          </Link>
-        </NextLink>
         <Box sx={{ px: 4, py: 1, maxWidth: '204px' }}>
           <Typography
             color={(theme) => theme.palette.action.disabled}
             variant="caption"
+            sx={{ display: 'block', lineHeight: 1.2 }}
           >
             {t(
               'All personal identifiable data registered on this website will be processed by journey creator: "{{ teamTitle }}".',

@@ -48,7 +48,10 @@ export function Menu(): ReactElement {
           />
         </NextLink>
 
-        <DuplicateBlock variant="list-item" />
+        <DuplicateBlock
+          variant="list-item"
+          disabled={selectedBlock?.__typename === 'VideoBlock'}
+        />
         <DeleteBlock variant="list-item" />
         {!smUp && (
           <MenuItem
