@@ -32,7 +32,12 @@ const getTeamsMock: MockedResponse<GetLastActiveTeamIdAndTeams> = {
   result: {
     data: {
       teams: [
-        { id: 'teamId', title: 'Jesus Film Project', __typename: 'Team' }
+        {
+          id: 'teamId',
+          title: 'Jesus Film Project',
+          __typename: 'Team',
+          userTeams: []
+        }
       ],
       getJourneyProfile: {
         __typename: 'JourneyProfile',

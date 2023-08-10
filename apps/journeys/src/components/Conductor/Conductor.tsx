@@ -2,7 +2,7 @@ import { gql, useMutation } from '@apollo/client'
 import Box from '@mui/material/Box'
 import Fade from '@mui/material/Fade'
 import Stack from '@mui/material/Stack'
-import { styled, useTheme } from '@mui/material/styles'
+import { SxProps, styled, useTheme } from '@mui/material/styles'
 import { ReactElement, useEffect, useState } from 'react'
 import Div100vh from 'react-div-100vh'
 import TagManager from 'react-gtm-module'
@@ -163,6 +163,18 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
     }
   }, [swiper, blockHistory])
 
+  const mobileNotchStyling: SxProps = {
+    width: {
+      xs:
+        variant === 'default'
+          ? 'calc(100% - env(safe-area-inset-left) - env(safe-area-inset-right))'
+          : '100%',
+      lg: 'auto'
+    },
+    left: variant === 'default' ? 'env(safe-area-inset-left)' : undefined,
+    right: variant === 'default' ? 'env(safe-area-inset-right)' : undefined
+  }
+
   return (
     <Div100vh style={{ overflow: 'hidden' }}>
       <Stack
@@ -216,11 +228,14 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
                           px: { lg: 6 }
                         }}
                       >
-                        {showHeaderFooter && <StepHeader />}
+                        {showHeaderFooter && (
+                          <StepHeader sx={{ ...mobileNotchStyling }} />
+                        )}
                         <BlockRenderer block={block} />
                         <StepFooter
                           sx={{
-                            visibility: showHeaderFooter ? 'visible' : 'hidden'
+                            visibility: showHeaderFooter ? 'visible' : 'hidden',
+                            ...mobileNotchStyling
                           }}
                         />
                       </Stack>

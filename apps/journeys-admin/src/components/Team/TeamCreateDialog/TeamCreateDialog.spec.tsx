@@ -40,7 +40,8 @@ describe('TeamCreateDialog', () => {
         teamCreate: {
           id: 'teamId',
           title: 'Team Title',
-          __typename: 'Team'
+          __typename: 'Team',
+          userTeams: []
         }
       }
     }
@@ -60,7 +61,14 @@ describe('TeamCreateDialog', () => {
     request: { query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS },
     result: {
       data: {
-        teams: [{ id: 'teamId1', title: 'Team 1 Title', __typename: 'Team' }],
+        teams: [
+          {
+            id: 'teamId1',
+            title: 'Team 1 Title',
+            __typename: 'Team',
+            userTeams: []
+          }
+        ],
         getJourneyProfile: {
           __typename: 'JourneyProfile',
           lastActiveTeamId: null
