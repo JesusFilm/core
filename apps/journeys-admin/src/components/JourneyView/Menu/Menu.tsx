@@ -45,11 +45,7 @@ export function Menu(): ReactElement {
             }}
           >
             {/* pass onclick that should close the parent */}
-            <MenuItems
-              journey={journey}
-              setAnchorEl={setAnchorEl}
-              onClose={handleCloseMenu}
-            />
+            <MenuItems journey={journey} onClose={handleCloseMenu} />
           </MuiMenu>
         </>
       ) : (

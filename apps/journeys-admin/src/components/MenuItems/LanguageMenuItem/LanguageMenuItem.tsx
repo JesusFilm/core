@@ -2,7 +2,7 @@ import TranslateIcon from '@mui/icons-material/Translate'
 import dynamic from 'next/dynamic'
 import { ReactElement, useState } from 'react'
 
-import { MenuItem } from '../../MenuItem/MenuItem'
+import { MenuItem } from '../../MenuItem'
 
 const DynamicLanguageDialog = dynamic<{
   open: boolean
@@ -15,7 +15,11 @@ const DynamicLanguageDialog = dynamic<{
     ).then((mod) => mod.LanguageDialog)
 )
 
-export default function LanguageMenuItem(): ReactElement {
+interface Props {
+  isVisible?: boolean
+}
+
+export function LanguageMenuItem({ isVisible }: Props): ReactElement {
   const [showLanguageDialog, setShowLanguageDialog] = useState(false)
 
   const handleUpdateLanguage = (): void => {
@@ -24,12 +28,13 @@ export default function LanguageMenuItem(): ReactElement {
 
   return (
     <>
-      <MenuItem
-        label="Language"
-        icon={<TranslateIcon />}
-        onClick={handleUpdateLanguage}
-      />
-
+      {isVisible === true && (
+        <MenuItem
+          label="Language"
+          icon={<TranslateIcon />}
+          onClick={handleUpdateLanguage}
+        />
+      )}
       {showLanguageDialog && (
         <DynamicLanguageDialog
           open={showLanguageDialog}

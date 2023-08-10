@@ -27,7 +27,11 @@ export const CREATE_TEMPLATE = gql`
   }
 `
 
-export function CreateTemplateMenuItem(): ReactElement {
+interface Props {
+  isVisible?: boolean
+}
+
+export function CreateTemplateMenuItem({ isVisible }: Props): ReactElement {
   const { journey } = useJourney()
   const router = useRouter()
 
@@ -91,10 +95,14 @@ export function CreateTemplateMenuItem(): ReactElement {
   }
 
   return (
-    <MenuItem
-      label="Create Template"
-      icon={<ShopRounded />}
-      onClick={handleCreateTemplate}
-    />
+    <>
+      {isVisible === true && (
+        <MenuItem
+          label="Create Template"
+          icon={<ShopRounded />}
+          onClick={handleCreateTemplate}
+        />
+      )}
+    </>
   )
 }
