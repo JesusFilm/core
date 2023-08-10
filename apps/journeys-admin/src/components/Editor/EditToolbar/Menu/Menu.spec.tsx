@@ -10,7 +10,8 @@ import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import {
   GetJourney_journey as Journey,
   GetJourney_journey_blocks_StepBlock as StepBlock,
-  GetJourney_journey_blocks_TypographyBlock as TypographyBlock
+  GetJourney_journey_blocks_TypographyBlock as TypographyBlock,
+  GetJourney_journey_blocks_VideoBlock as VideoBlock
 } from '../../../../../__generated__/GetJourney'
 import { JourneyStatus } from '../../../../../__generated__/globalTypes'
 import { ThemeProvider } from '../../../ThemeProvider'
@@ -23,6 +24,38 @@ jest.mock('@mui/material/useMediaQuery', () => ({
 }))
 
 describe('EditToolbar Menu', () => {
+  it('should disable duplicate button when video block is selected', async () => {
+    const { getByRole } = render(
+      <SnackbarProvider>
+        <MockedProvider>
+          <JourneyProvider
+            value={{
+              journey: {
+                status: JourneyStatus.draft
+              } as unknown as Journey,
+              variant: 'admin'
+            }}
+          >
+            <EditorProvider
+              initialState={{
+                selectedBlock: {
+                  __typename: 'VideoBlock'
+                } as unknown as TreeBlock<VideoBlock>
+              }}
+            >
+              <Menu />
+            </EditorProvider>
+          </JourneyProvider>
+        </MockedProvider>
+      </SnackbarProvider>
+    )
+    fireEvent.click(getByRole('button', { name: 'Edit Journey Actions' }))
+    expect(getByRole('menuitem', { name: 'Duplicate Block' })).toHaveAttribute(
+      'aria-disabled',
+      'true'
+    )
+  })
+
   describe('desktop', () => {
     beforeEach(() =>
       (useMediaQuery as jest.Mock).mockImplementation(() => true)

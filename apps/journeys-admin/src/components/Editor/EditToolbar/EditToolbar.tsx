@@ -58,7 +58,9 @@ export function EditToolbar(): ReactElement {
       <DuplicateBlock
         variant="button"
         disabled={
-          state.journeyEditContentComponent !== ActiveJourneyEditContent.Canvas
+          state.journeyEditContentComponent !==
+            ActiveJourneyEditContent.Canvas ||
+          state.selectedBlock?.__typename === 'VideoBlock'
         }
       />
       <Menu />
