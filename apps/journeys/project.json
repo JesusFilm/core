@@ -39,7 +39,8 @@
         "commands": [
           "VERCEL_PROJECT_ID=$JOURNEYS_VERCEL_PROJECT_ID npx vercel pull --environment=preview --token=$VERCEL_TOKEN",
           "npx vercel build",
-          "VERCEL_PROJECT_ID=$JOURNEYS_VERCEL_PROJECT_ID npx vercel deploy --prebuilt --token=$VERCEL_TOKEN --archive=tgz > apps/journeys/.vercel-url"
+          "VERCEL_PROJECT_ID=$JOURNEYS_VERCEL_PROJECT_ID npx vercel deploy --prebuilt --token=$VERCEL_TOKEN --archive=tgz > apps/journeys/.vercel-url",
+          "npx @datadog/datadog-ci sourcemaps upload dist/apps/journeys/.next/static --service=journeys --release-version=$NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA --minified-path-prefix=$(cat apps/journeys/.vercel-url)/_next/static/"
         ],
         "parallel": false
       },
@@ -48,7 +49,8 @@
           "commands": [
             "VERCEL_PROJECT_ID=$JOURNEYS_VERCEL_PROJECT_ID npx vercel pull --environment=production --token=$VERCEL_TOKEN",
             "npx vercel build --prod",
-            "VERCEL_PROJECT_ID=$JOURNEYS_VERCEL_PROJECT_ID npx vercel deploy --prebuilt --prod --token=$VERCEL_TOKEN --archive=tgz > apps/journeys/.vercel-url"
+            "VERCEL_PROJECT_ID=$JOURNEYS_VERCEL_PROJECT_ID npx vercel deploy --prebuilt --prod --token=$VERCEL_TOKEN --archive=tgz > apps/journeys/.vercel-url",
+            "npx @datadog/datadog-ci sourcemaps upload dist/apps/journeys/.next/static --service=journeys --release-version=$NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA --minified-path-prefix=$(cat apps/journeys/.vercel-url)/_next/static/"
           ]
         }
       }

@@ -2,9 +2,17 @@ import { MockedProvider } from '@apollo/client/testing'
 import { render } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 
+import { TreeBlock } from '@core/journeys/ui/block'
+import {
+  ActiveJourneyEditContent,
+  EditorProvider
+} from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
-import { GetJourney_journey as Journey } from '../../../../__generated__/GetJourney'
+import {
+  GetJourney_journey as Journey,
+  GetJourney_journey_blocks_VideoBlock as VideoBlock
+} from '../../../../__generated__/GetJourney'
 import { JourneyStatus } from '../../../../__generated__/globalTypes'
 
 import { EditToolbar } from '.'
@@ -73,5 +81,59 @@ describe('Edit Toolbar', () => {
     )
     const button = getAllByRole('link', { name: 'Preview' })[0]
     expect(button).toHaveAttribute('aria-disabled', 'true')
+  })
+
+  it('should disable duplicate button when active journey content is not canvas', () => {
+    const { getByRole } = render(
+      <SnackbarProvider>
+        <MockedProvider>
+          <JourneyProvider
+            value={{
+              journey: { slug: 'untitled-journey' } as unknown as Journey,
+              variant: 'admin'
+            }}
+          >
+            <EditorProvider
+              initialState={{
+                journeyEditContentComponent: ActiveJourneyEditContent.Action
+              }}
+            >
+              <EditToolbar />
+            </EditorProvider>
+          </JourneyProvider>
+        </MockedProvider>
+      </SnackbarProvider>
+    )
+    expect(
+      getByRole('button', { name: 'Duplicate Block Actions' })
+    ).toBeDisabled()
+  })
+
+  it('should disable duplicate button when selectedBlock is a video block', () => {
+    const { getByRole } = render(
+      <SnackbarProvider>
+        <MockedProvider>
+          <JourneyProvider
+            value={{
+              journey: { slug: 'untitled-journey' } as unknown as Journey,
+              variant: 'admin'
+            }}
+          >
+            <EditorProvider
+              initialState={{
+                selectedBlock: {
+                  __typename: 'VideoBlock'
+                } as unknown as TreeBlock<VideoBlock>
+              }}
+            >
+              <EditToolbar />
+            </EditorProvider>
+          </JourneyProvider>
+        </MockedProvider>
+      </SnackbarProvider>
+    )
+    expect(
+      getByRole('button', { name: 'Duplicate Block Actions' })
+    ).toBeDisabled()
   })
 })
