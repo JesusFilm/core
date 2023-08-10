@@ -1,6 +1,6 @@
 import Paper from '@mui/material/Paper'
 import { useTheme } from '@mui/material/styles'
-import { MouseEvent, ReactElement, useMemo } from 'react'
+import { MouseEvent, ReactElement, useEffect, useMemo } from 'react'
 
 import { TreeBlock, useBlocks } from '../../libs/block'
 import { blurImage } from '../../libs/blurImage'
@@ -40,6 +40,12 @@ export function Card({
       ? backgroundColor
       : // Card theme is determined in Conductor
         theme.palette.background.paper
+
+  useEffect(() => {
+    document
+      .querySelector('meta[name="theme-color"]')
+      ?.setAttribute('content', cardColor)
+  }, [cardColor])
 
   const coverBlock = children.find(
     (block) =>
