@@ -7,21 +7,21 @@ import { ReactElement, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import AlertCircleIcon from '@core/shared/ui/icons/AlertCircle'
 import InformationCircleContainedIcon from '@core/shared/ui/icons/InformationCircleContained'
 import UserProfileCircleIcon from '@core/shared/ui/icons/UserProfileCircle'
 import UserProfiles2Icon from '@core/shared/ui/icons/UsersProfiles2'
 
+import { UserTeamRole } from '../../../../../../../../__generated__/globalTypes'
 import { Hosts_hosts as Host } from '../../../../../../../../__generated__/Hosts'
+import { useCurrentUser } from '../../../../../../../libs/useCurrentUser'
+import { useUserTeamsAndInvitesQuery } from '../../../../../../../libs/useUserTeamsAndInvitesQuery'
 import { ContainedIconButton } from '../../../../../../ContainedIconButton'
 import { SidePanel } from '../../../../../../NewPageWrapper/SidePanel'
 import { SidePanelContainer } from '../../../../../../NewPageWrapper/SidePanelContainer'
 
 import { HostForm } from './HostForm'
 import { HostList } from './HostList'
-import AlertCircleIcon from '@core/shared/ui/icons/AlertCircle'
-import { useUserTeamsAndInvitesQuery } from '../../../../../../../libs/useUserTeamsAndInvitesQuery'
-import { UserTeamRole } from '../../../../../../../../__generated__/globalTypes'
-import { useCurrentUser } from '../../../../../../../libs/useCurrentUser'
 
 export const GET_ALL_TEAM_HOSTS = gql`
   query Hosts($teamId: ID!) {
@@ -44,6 +44,7 @@ export function HostSidePanel(): ReactElement {
   const { loadUser, data: authUser } = useCurrentUser()
   useEffect(() => {
     void loadUser()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
   const team = journey?.team ?? undefined
   const { data } = useUserTeamsAndInvitesQuery(

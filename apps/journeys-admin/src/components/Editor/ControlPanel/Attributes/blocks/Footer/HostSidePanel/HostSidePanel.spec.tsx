@@ -4,16 +4,16 @@ import { fireEvent, render, waitFor } from '@testing-library/react'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { JourneyFields as Journey } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
 
-import { ThemeProvider } from '../../../../../../ThemeProvider'
-
-import { HostSidePanel } from './HostSidePanel'
-import { GET_USER_TEAMS_AND_INVITES } from '../../../../../../../libs/useUserTeamsAndInvitesQuery/useUserTeamsAndInvitesQuery'
-import { UserTeamRole } from '../../../../../../../../__generated__/globalTypes'
 import {
   GetUserTeamsAndInvites,
   GetUserTeamsAndInvites_userTeams as UserTeam
 } from '../../../../../../../../__generated__/GetUserTeamsAndInvites'
+import { UserTeamRole } from '../../../../../../../../__generated__/globalTypes'
 import { useCurrentUser } from '../../../../../../../libs/useCurrentUser'
+import { GET_USER_TEAMS_AND_INVITES } from '../../../../../../../libs/useUserTeamsAndInvitesQuery/useUserTeamsAndInvitesQuery'
+import { ThemeProvider } from '../../../../../../ThemeProvider'
+
+import { HostSidePanel } from './HostSidePanel'
 
 const user1 = { id: 'userId', email: 'admin@email.com' }
 
@@ -37,6 +37,7 @@ describe('HostSidePanel', () => {
   beforeEach(() => {
     useCurrentUserMock.mockReturnValue({ loadUser: jest.fn(), data: user1 })
   })
+
   afterAll(() => {
     jest.resetAllMocks()
   })
@@ -161,7 +162,7 @@ describe('HostSidePanel', () => {
         getAllByRole('button', { name: 'Select a Host' })[0]
       ).toBeDisabled()
       expect(
-        getAllByText(`Only ${journey.team?.title} members can edit this`)[0]
+        getAllByText(`Only My team members can edit this`)[0]
       ).toBeInTheDocument()
     })
   })

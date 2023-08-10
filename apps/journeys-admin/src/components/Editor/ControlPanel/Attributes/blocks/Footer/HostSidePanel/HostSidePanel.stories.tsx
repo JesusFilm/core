@@ -7,13 +7,13 @@ import { ComponentProps } from 'react'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { JourneyFields as Journey } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
 
+import { UserTeamRole } from '../../../../../../../../__generated__/globalTypes'
 import { journeysAdminConfig } from '../../../../../../../libs/storybook'
+import { GET_CURRENT_USER } from '../../../../../../../libs/useCurrentUser'
+import { GET_USER_TEAMS_AND_INVITES } from '../../../../../../../libs/useUserTeamsAndInvitesQuery/useUserTeamsAndInvitesQuery'
 import { ThemeProvider } from '../../../../../../ThemeProvider'
 
 import { GET_ALL_TEAM_HOSTS, HostSidePanel } from './HostSidePanel'
-import { GET_CURRENT_USER } from '../../../../../../../libs/useCurrentUser'
-import { GET_USER_TEAMS_AND_INVITES } from '../../../../../../../libs/useUserTeamsAndInvitesQuery/useUserTeamsAndInvitesQuery'
-import { UserTeamRole } from '../../../../../../../../__generated__/globalTypes'
 
 const Demo = {
   ...journeysAdminConfig,

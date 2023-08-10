@@ -28,13 +28,13 @@ export function ContainedIconButton({
   description,
   imageSrc,
   imageAlt,
-  disabled,
-  loading,
+  disabled = false,
+  loading = false,
   onClick
 }: ContainedIconProps): ReactElement {
   return (
     <Card variant="outlined" sx={{ borderRadius: 2 }}>
-      <CardActionArea onClick={onClick} disabled={disabled || loading}>
+      <CardActionArea onClick={onClick} disabled={disabled ?? loading}>
         <Stack direction="row" alignItems="center" spacing={3} sx={{ p: 2 }}>
           <Box>
             <ImageThumbnail
@@ -51,7 +51,7 @@ export function ContainedIconButton({
             )}
           </Box>
           <Icon
-            color={disabled || loading ? 'disabled' : 'primary'}
+            color={disabled ?? loading ? 'disabled' : 'primary'}
             sx={{ pr: 8 }}
           >
             {actionIcon}
