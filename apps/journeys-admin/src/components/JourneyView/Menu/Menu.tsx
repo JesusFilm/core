@@ -9,12 +9,10 @@ import MoreVert from '@mui/icons-material/MoreVert'
 import TranslateIcon from '@mui/icons-material/Translate'
 import ViewCarouselIcon from '@mui/icons-material/ViewCarousel'
 import VisibilityIcon from '@mui/icons-material/Visibility'
+import Chip from '@mui/material/Chip'
 import Divider from '@mui/material/Divider'
 import IconButton from '@mui/material/IconButton'
 import MuiMenu from '@mui/material/Menu'
-import { Theme } from '@mui/material/styles'
-import Typography from '@mui/material/Typography'
-import useMediaQuery from '@mui/material/useMediaQuery'
 import dynamic from 'next/dynamic'
 import NextLink from 'next/link'
 import { useRouter } from 'next/router'
@@ -88,8 +86,6 @@ export function Menu(): ReactElement {
   const [showDescriptionDialog, setShowDescriptionDialog] = useState(false)
   const [showLanguageDialog, setShowLanguageDialog] = useState(false)
   const [duplicateTeamDialogOpen, setDuplicateTeamDialogOpen] = useState(false)
-
-  const mdUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
 
   const { enqueueSnackbar } = useSnackbar()
 
@@ -182,15 +178,34 @@ export function Menu(): ReactElement {
     <>
       {journey != null ? (
         <>
+          <Chip
+            icon={<VisibilityIcon />}
+            label="Preview"
+            component="a"
+            href={`/api/preview?slug=${journey?.slug ?? ''}`}
+            target="_blank"
+            variant="outlined"
+            clickable
+            sx={{
+              display: {
+                xs: 'none',
+                md: 'flex'
+              }
+            }}
+          />
           <IconButton
             aria-label="Preview"
             href={`/api/preview?slug=${journey?.slug ?? ''}`}
             target="_blank"
+            disabled={journey == null}
+            sx={{
+              display: {
+                xs: 'flex',
+                md: 'none'
+              }
+            }}
           >
             <VisibilityIcon />
-            <Typography sx={{ display: mdUp ? 'block' : 'none' }}>
-              Preview
-            </Typography>
           </IconButton>
           <IconButton
             id="single-journey-actions"
@@ -215,7 +230,6 @@ export function Menu(): ReactElement {
               <MenuItem
                 label="Preview"
                 icon={<VisibilityIcon />}
-                disabled={journey.status === JourneyStatus.draft}
                 openInNew
                 onClick={handleCloseMenu}
               />

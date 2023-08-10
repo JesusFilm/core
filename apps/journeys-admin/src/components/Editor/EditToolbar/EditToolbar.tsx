@@ -1,8 +1,6 @@
 import VisibilityIcon from '@mui/icons-material/Visibility'
+import Chip from '@mui/material/Chip'
 import IconButton from '@mui/material/IconButton'
-import { Theme } from '@mui/material/styles'
-import Typography from '@mui/material/Typography'
-import useMediaQuery from '@mui/material/useMediaQuery'
 import { ReactElement } from 'react'
 
 import {
@@ -11,7 +9,6 @@ import {
 } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 
-// import { JourneyStatus } from '../../../../__generated__/globalTypes'
 import { DuplicateBlock } from '../../DuplicateBlock'
 
 import { DeleteBlock } from './DeleteBlock'
@@ -20,20 +17,37 @@ import { Menu } from './Menu'
 export function EditToolbar(): ReactElement {
   const { journey } = useJourney()
   const { state } = useEditor()
-  const mdUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
 
   return (
     <>
+      <Chip
+        icon={<VisibilityIcon />}
+        label="Preview"
+        component="a"
+        href={`/api/preview?slug=${journey?.slug ?? ''}`}
+        target="_blank"
+        variant="outlined"
+        clickable
+        sx={{
+          display: {
+            xs: 'none',
+            md: 'flex'
+          }
+        }}
+      />
       <IconButton
         aria-label="Preview"
         href={`/api/preview?slug=${journey?.slug ?? ''}`}
         target="_blank"
         disabled={journey == null}
+        sx={{
+          display: {
+            xs: 'flex',
+            md: 'none'
+          }
+        }}
       >
         <VisibilityIcon />
-        <Typography sx={{ display: mdUp ? 'block' : 'none' }}>
-          Preview
-        </Typography>
       </IconButton>
       <DeleteBlock
         variant="button"
