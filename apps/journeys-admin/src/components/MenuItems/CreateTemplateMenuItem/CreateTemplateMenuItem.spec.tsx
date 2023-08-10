@@ -4,8 +4,8 @@ import { NextRouter, useRouter } from 'next/router'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
-import { GetJourney_journey as Journey } from '../../../../../__generated__/GetJourney'
-import { JOURNEY_DUPLICATE } from '../../../../libs/useJourneyDuplicateMutation'
+import { GetJourney_journey as Journey } from '../../../../__generated__/GetJourney'
+import { JOURNEY_DUPLICATE } from '../../../libs/useJourneyDuplicateMutation'
 
 import {
   CREATE_TEMPLATE,

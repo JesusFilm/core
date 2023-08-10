@@ -32,6 +32,8 @@ export function TitleDialog({ open, onClose }: TitleDialogProps): ReactElement {
     title: string().required('Required')
   })
 
+  console.log('titleDialog is open: ', open)
+
   const handleUpdateTitle = async (values: FormikValues): Promise<void> => {
     if (journey == null) return
 
@@ -69,7 +71,7 @@ export function TitleDialog({ open, onClose }: TitleDialogProps): ReactElement {
 
   function handleClose(resetForm: (values: FormikValues) => void): () => void {
     return () => {
-      onClose()
+      // onClose()
       // wait for dialog animation to complete
       setTimeout(() => resetForm({ values: { title: journey?.title } }))
     }

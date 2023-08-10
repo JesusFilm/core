@@ -6,14 +6,14 @@ import { useState } from 'react'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
 import { journeysAdminConfig } from '../../../../libs/storybook'
-import { defaultJourney } from '../../data'
+import { defaultJourney } from '../../../JourneyView/data'
 
-import { DescriptionDialog, JOURNEY_DESC_UPDATE } from './DescriptionDialog'
+import { JOURNEY_TITLE_UPDATE, TitleDialog } from './TitleDialog'
 
-const DescriptionDialogStory = {
+const TitleDialogStory = {
   ...journeysAdminConfig,
-  component: DescriptionDialog,
-  title: 'Journeys-Admin/JourneyView/Menu/DescriptionDialog',
+  component: TitleDialog,
+  title: 'Journeys-Admin/JourneyView/Menu/TitleDialog',
   parameters: {
     ...journeysAdminConfig.parameters,
     layout: 'fullscreen'
@@ -31,7 +31,7 @@ const Template: Story = (args) => {
           variant: 'admin'
         }}
       >
-        <DescriptionDialog open={open} onClose={() => setOpen(false)} />
+        <TitleDialog open={open} onClose={() => setOpen(false)} />
       </JourneyProvider>
     </MockedProvider>
   )
@@ -42,11 +42,11 @@ Default.args = {
   mocks: [
     {
       request: {
-        query: JOURNEY_DESC_UPDATE,
+        query: JOURNEY_TITLE_UPDATE,
         variables: {
           id: defaultJourney.id,
           input: {
-            description: 'Description'
+            title: 'Journey Heading'
           }
         }
       },
@@ -55,7 +55,7 @@ Default.args = {
           journeyUpdate: {
             id: defaultJourney.id,
             __typename: 'Journey',
-            description: 'Description'
+            title: 'Journey Heading'
           }
         }
       }
@@ -68,11 +68,11 @@ Error.args = {
   mocks: [
     {
       request: {
-        query: JOURNEY_DESC_UPDATE,
+        query: JOURNEY_TITLE_UPDATE,
         variables: {
           id: defaultJourney.id,
           input: {
-            description: 'Description error'
+            title: 'Journey Heading error'
           }
         }
       },
@@ -89,4 +89,4 @@ Error.play = () => {
   userEvent.click(button)
 }
 
-export default DescriptionDialogStory as Meta
+export default TitleDialogStory as Meta

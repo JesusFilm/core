@@ -6,11 +6,14 @@ import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
 import { JourneyStatus, Role } from '../../../../__generated__/globalTypes'
 import { simpleComponentConfig } from '../../../libs/storybook'
+import { GET_LANGUAGES } from '../../MenuItems/LanguageMenuItem/LanguageDialog'
+import { GET_ROLE } from '../../MenuItems/MenuItems'
 import { TeamProvider } from '../../Team/TeamProvider'
 import { defaultJourney } from '../data'
 
-import { GET_LANGUAGES } from './LanguageDialog'
-import { GET_ROLE, JOURNEY_PUBLISH, Menu } from './Menu'
+import { Menu } from './Menu'
+
+import { JOURNEY_PUBLISH } from '.'
 
 const MenuStory = {
   ...simpleComponentConfig,

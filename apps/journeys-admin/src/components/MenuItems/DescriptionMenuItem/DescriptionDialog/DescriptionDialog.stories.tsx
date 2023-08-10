@@ -5,15 +5,15 @@ import { useState } from 'react'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
-import { journeysAdminConfig } from '../../../../libs/storybook'
-import { defaultJourney } from '../../data'
+import { journeysAdminConfig } from '../../../libs/storybook'
+import { defaultJourney } from '../../JourneyView/data'
 
-import { JOURNEY_TITLE_UPDATE, TitleDialog } from './TitleDialog'
+import { DescriptionDialog, JOURNEY_DESC_UPDATE } from './DescriptionDialog'
 
-const TitleDialogStory = {
+const DescriptionDialogStory = {
   ...journeysAdminConfig,
-  component: TitleDialog,
-  title: 'Journeys-Admin/JourneyView/Menu/TitleDialog',
+  component: DescriptionDialog,
+  title: 'Journeys-Admin/JourneyView/Menu/DescriptionDialog',
   parameters: {
     ...journeysAdminConfig.parameters,
     layout: 'fullscreen'
@@ -31,7 +31,7 @@ const Template: Story = (args) => {
           variant: 'admin'
         }}
       >
-        <TitleDialog open={open} onClose={() => setOpen(false)} />
+        <DescriptionDialog open={open} onClose={() => setOpen(false)} />
       </JourneyProvider>
     </MockedProvider>
   )
@@ -42,11 +42,11 @@ Default.args = {
   mocks: [
     {
       request: {
-        query: JOURNEY_TITLE_UPDATE,
+        query: JOURNEY_DESC_UPDATE,
         variables: {
           id: defaultJourney.id,
           input: {
-            title: 'Journey Heading'
+            description: 'Description'
           }
         }
       },
@@ -55,7 +55,7 @@ Default.args = {
           journeyUpdate: {
             id: defaultJourney.id,
             __typename: 'Journey',
-            title: 'Journey Heading'
+            description: 'Description'
           }
         }
       }
@@ -68,11 +68,11 @@ Error.args = {
   mocks: [
     {
       request: {
-        query: JOURNEY_TITLE_UPDATE,
+        query: JOURNEY_DESC_UPDATE,
         variables: {
           id: defaultJourney.id,
           input: {
-            title: 'Journey Heading error'
+            description: 'Description error'
           }
         }
       },
@@ -89,4 +89,4 @@ Error.play = () => {
   userEvent.click(button)
 }
 
-export default TitleDialogStory as Meta
+export default DescriptionDialogStory as Meta
