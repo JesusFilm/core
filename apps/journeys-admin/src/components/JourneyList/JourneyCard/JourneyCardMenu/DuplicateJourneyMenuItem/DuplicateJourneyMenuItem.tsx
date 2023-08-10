@@ -41,7 +41,11 @@ export function DuplicateJourneyMenuItem({
       label="Duplicate"
       icon={
         loading ? (
-          <CircularProgress size={24} color="inherit" />
+          <CircularProgress
+            size={24}
+            color="inherit"
+            data-testid="journey-duplicate-loader"
+          />
         ) : (
           <ContentCopyRounded color="secondary" />
         )

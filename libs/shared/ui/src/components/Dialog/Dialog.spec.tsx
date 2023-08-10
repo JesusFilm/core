@@ -79,7 +79,7 @@ describe('Dialog', () => {
     })
 
     it('should show loading spinner if dialog is in submitting state', () => {
-      const { getByTestId } = render(<Dialog {...input} isSubmitting />)
+      const { getByTestId } = render(<Dialog {...input} loading />)
       expect(getByTestId('dialog-loading-icon')).toBeInTheDocument()
     })
   })

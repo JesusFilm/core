@@ -41,7 +41,7 @@ Basic.args = {
 
 export const Submitting = Template.bind({})
 Submitting.args = {
-  isSubmitting: true,
+  loading: true,
   open: true,
   onClose: noop,
   dialogTitle: { title: 'Simple Dialog' },

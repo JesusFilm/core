@@ -20,7 +20,7 @@ interface DialogProps {
   fullscreen?: boolean
   children?: ReactChild
   container?: HTMLElement
-  isSubmitting?: boolean
+  loading?: boolean
 }
 
 interface DialogAction {
@@ -78,7 +78,7 @@ export function Dialog({
   fullscreen,
   children,
   container,
-  isSubmitting = false
+  loading = false
 }: DialogProps): ReactElement {
   return (
     <StyledDialog
@@ -109,10 +109,10 @@ export function Dialog({
       </DialogContent>
       {dialogAction != null ? (
         <DialogActions data-testid="dialog-action">
-          {dialogAction.closeLabel != null && !isSubmitting && (
+          {dialogAction.closeLabel != null && !loading && (
             <Button onClick={onClose}>{dialogAction.closeLabel}</Button>
           )}
-          {!isSubmitting ? (
+          {!loading ? (
             <Button onClick={dialogAction?.onSubmit}>
               {dialogAction.submitLabel ?? 'Save'}
             </Button>
