@@ -21,7 +21,7 @@ import { HostList } from './HostList'
 import AlertCircleIcon from '@core/shared/ui/icons/AlertCircle'
 import { useUserTeamsAndInvitesQuery } from '../../../../../../../libs/useUserTeamsAndInvitesQuery'
 import { UserTeamRole } from '../../../../../../../../__generated__/globalTypes'
-import { useAuthUser } from 'next-firebase-auth'
+import { useCurrentUser } from '../../../../../../../libs/useCurrentUser'
 
 export const GET_ALL_TEAM_HOSTS = gql`
   query Hosts($teamId: ID!) {
@@ -40,7 +40,11 @@ export function HostSidePanel(): ReactElement {
   const { journey } = useJourney()
 
   // Get all team members of journey team, check if user in team
-  const authUser = useAuthUser()
+  // TODO: Replace with CASL authorisation check
+  const { loadUser, data: authUser } = useCurrentUser()
+  useEffect(() => {
+    void loadUser()
+  }, [])
   const team = journey?.team ?? undefined
   const { data } = useUserTeamsAndInvitesQuery(
     team != null
@@ -53,8 +57,9 @@ export function HostSidePanel(): ReactElement {
   const userInTeam =
     data == null || data.userTeams.length === 0 || team == null
       ? false
-      : data.userTeams.filter((userTeam) => userTeam.user.id === authUser.id)
-          .length > 0
+      : data.userTeams.filter(
+          (userTeam) => userTeam.user.email === authUser.email
+        ).length > 0
 
   // Fetch all hosts made for a team
   const { data: teamHosts, refetch } = useQuery(GET_ALL_TEAM_HOSTS, {
@@ -106,7 +111,11 @@ export function HostSidePanel(): ReactElement {
                 <Stack direction="row" alignItems="center" gap={3}>
                   <AlertCircleIcon />
                   <Typography variant="subtitle2">
-                    {`${t('Only')} ${team.title} ${t('members can edit this')}`}
+                    {data?.userTeams.length === 0
+                      ? t('This old journey cannot edit hosts')
+                      : `${t('Only')} ${team.title} ${t(
+                          'members can edit this'
+                        )}`}
                   </Typography>
                 </Stack>
               </SidePanelContainer>
