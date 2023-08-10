@@ -12,6 +12,9 @@ import VisibilityIcon from '@mui/icons-material/Visibility'
 import Divider from '@mui/material/Divider'
 import IconButton from '@mui/material/IconButton'
 import MuiMenu from '@mui/material/Menu'
+import { Theme } from '@mui/material/styles'
+import Typography from '@mui/material/Typography'
+import useMediaQuery from '@mui/material/useMediaQuery'
 import dynamic from 'next/dynamic'
 import NextLink from 'next/link'
 import { useRouter } from 'next/router'
@@ -85,6 +88,8 @@ export function Menu(): ReactElement {
   const [showDescriptionDialog, setShowDescriptionDialog] = useState(false)
   const [showLanguageDialog, setShowLanguageDialog] = useState(false)
   const [duplicateTeamDialogOpen, setDuplicateTeamDialogOpen] = useState(false)
+
+  const mdUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
 
   const { enqueueSnackbar } = useSnackbar()
 
@@ -177,6 +182,16 @@ export function Menu(): ReactElement {
     <>
       {journey != null ? (
         <>
+          <IconButton
+            aria-label="Preview"
+            href={`/api/preview?slug=${journey?.slug ?? ''}`}
+            target="_blank"
+          >
+            <VisibilityIcon />
+            <Typography sx={{ display: mdUp ? 'block' : 'none' }}>
+              Preview
+            </Typography>
+          </IconButton>
           <IconButton
             id="single-journey-actions"
             edge="end"
@@ -296,7 +311,6 @@ export function Menu(): ReactElement {
               onClose={() => setShowLanguageDialog(false)}
             />
           )}
-
           <CopyToTeamDialog
             submitLabel="Add"
             title="Add Journey to Team"
