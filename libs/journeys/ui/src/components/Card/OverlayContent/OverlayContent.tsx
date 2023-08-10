@@ -32,8 +32,8 @@ export function OverlayContent({
   const topBottomMarginsOnContent: SxProps = !hasFullscreenVideo
     ? {
         '& > *': {
-          '&:first-child': { mt: { xs: 8, sm: 12 } },
-          '&:last-child': { mb: { xs: 6, sm: 12 } }
+          '&:first-child': { mt: { xs: 8, lg: 12 } },
+          '&:last-child': { mb: { xs: 6, lg: 12 } }
         }
       }
     : {}

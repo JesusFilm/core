@@ -256,7 +256,7 @@ export function ContainedCover({
                 width: { sm: '312px' },
                 maxHeight: { xs: '55vh', sm: '100%' },
                 px: { xs: 6, sm: 10 },
-                mb: { xs: 28, sm: 16 }
+                mb: { xs: 28, sm: 10 }
               }}
             >
               {children}
