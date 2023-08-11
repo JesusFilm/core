@@ -133,6 +133,7 @@ export function AccessDialog({
       void loadUser()
     }
   }, [open, refetch, refetchInvites, loadUser])
+  console.log(data)
 
   return (
     <Dialog
@@ -148,9 +149,11 @@ export function AccessDialog({
       fullscreen={!smUp}
     >
       <Stack spacing={4}>
-        <Stack direction="row" alignItems="center" sx={{ mb: -4 }}>
-          <Typography variant="subtitle1">{t('Team Members')}</Typography>
-        </Stack>
+        {data?.journey?.team?.id !== 'jfp-team' && (
+          <Stack direction="row" alignItems="center" sx={{ mb: -4 }}>
+            <Typography variant="subtitle1">{t('Team Members')}</Typography>
+          </Stack>
+        )}
         <UserTeamList
           data={data?.journey?.team ?? undefined}
           currentUserTeam={data?.journey?.team as unknown as UserTeam}
