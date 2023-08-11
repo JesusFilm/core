@@ -42,4 +42,12 @@ describe('ContainedIconButton', () => {
 
     expect(getByRole('button')).toBeDisabled()
   })
+
+  it('should be disabled when disabled', () => {
+    const { getByRole } = render(
+      <ContainedIconButton label="Label" onClick={noop} disabled />
+    )
+
+    expect(getByRole('button')).toBeDisabled()
+  })
 })

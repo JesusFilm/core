@@ -16,6 +16,7 @@ interface ContainedIconProps {
   description?: string
   imageSrc?: string
   imageAlt?: string
+  disabled?: boolean
   loading?: boolean
   onClick: () => void
 }
@@ -27,12 +28,13 @@ export function ContainedIconButton({
   description,
   imageSrc,
   imageAlt,
-  loading,
+  disabled = false,
+  loading = false,
   onClick
 }: ContainedIconProps): ReactElement {
   return (
     <Card variant="outlined" sx={{ borderRadius: 2 }}>
-      <CardActionArea onClick={onClick} disabled={loading}>
+      <CardActionArea onClick={onClick} disabled={disabled || loading}>
         <Stack direction="row" alignItems="center" spacing={3} sx={{ p: 2 }}>
           <Box>
             <ImageThumbnail
@@ -48,7 +50,10 @@ export function ContainedIconButton({
               <Typography variant="caption">{description}</Typography>
             )}
           </Box>
-          <Icon color="primary" sx={{ pr: 8 }}>
+          <Icon
+            color={disabled || loading ? 'disabled' : 'primary'}
+            sx={{ pr: 8 }}
+          >
             {actionIcon}
           </Icon>
         </Stack>
