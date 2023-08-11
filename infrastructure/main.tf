@@ -19,17 +19,6 @@ module "acm_central_jesusfilm_org" {
   zone_id     = module.route53_central_jesusfilm_org.zone_id
 }
 
-locals {
-  services = [
-    "arangodb-bigquery-etl",
-  ]
-}
-
-resource "aws_ecr_repository" "ecr_repository" {
-  for_each = toset(local.services)
-  name     = "jfp-${each.key}"
-}
-
 module "prod" {
   source = "./environments/prod"
 }
