@@ -41,7 +41,7 @@ export function CopyToTeamDialog({
     values: FormikValues,
     { resetForm }: FormikHelpers<FormikValues>
   ): Promise<void> {
-    //submitAction runs first so loading state can be shown
+    // submitAction runs first so loading state can be shown
     await submitAction(values.teamSelect)
     await setActiveTeam(
       query?.data?.teams.find((team) => team.id === values.teamSelect) ?? null
