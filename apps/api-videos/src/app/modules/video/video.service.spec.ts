@@ -21,7 +21,7 @@ const video: Video = {
   image: '',
   imageAlt: [],
   noIndex: false,
-  sortOrder: null
+  childIds: []
 }
 
 describe('VideoService', () => {
