@@ -20,7 +20,7 @@ CREATE TABLE "Video" (
     "imageAlt" JSONB[],
     "slug" TEXT,
     "noIndex" BOOLEAN,
-    "sortOrder" INTEGER,
+    "childIds" TEXT[],
 
     CONSTRAINT "Video_pkey" PRIMARY KEY ("id")
 );
@@ -75,9 +75,6 @@ CREATE TABLE "_ParentChild" (
     "A" TEXT NOT NULL,
     "B" TEXT NOT NULL
 );
-
--- CreateIndex
-CREATE INDEX "Video_sortOrder_idx" ON "Video"("sortOrder");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Video_slug_key" ON "Video"("slug");

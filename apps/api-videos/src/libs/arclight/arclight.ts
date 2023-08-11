@@ -93,6 +93,18 @@ export async function getArclightMediaLanguages(): Promise<
   return response._embedded.mediaLanguages
 }
 
+export async function getArclightMediaComponent(
+  id: string
+): Promise<ArclightMediaComponent | null> {
+  return await (
+    await fetchPlus(
+      `https://api.arclight.org/v2/media-components/${id}?apiKey=${
+        process.env.ARCLIGHT_API_KEY ?? ''
+      }`
+    )
+  ).json()
+}
+
 export async function getArclightMediaComponents(
   page: number
 ): Promise<ArclightMediaComponent[]> {
@@ -174,6 +186,7 @@ export function transformArclightMediaComponentLanguageToVideoVariant(
     mediaComponentLanguage.downloadUrls
   )) {
     downloads.push({
+      videoVariantId: mediaComponentLanguage.refId,
       quality: VideoVariantDownloadQuality[key],
       size: value.sizeInBytes,
       url: value.url
@@ -195,7 +208,8 @@ export function transformArclightMediaComponentLanguageToVideoVariant(
       (mediaComponentLanguage.lengthInMilliseconds ?? 0) * 0.001
     ),
     downloads,
-    slug
+    slug,
+    videoId: mediaComponent.mediaComponentId
   }
 }
 
@@ -253,6 +267,7 @@ export function transformArclightMediaComponentToVideo(
     primaryLanguageId: mediaComponent.primaryLanguageId.toString(),
     title: [
       {
+        videoId: mediaComponent.mediaComponentId,
         value: mediaComponent.title,
         languageId: metadataLanguageId,
         primary: true
@@ -330,7 +345,8 @@ export async function fetchMediaLanguagesAndTransformToLanguages(): Promise<
 export async function fetchMediaComponentsAndTransformToVideos(
   languages: Language[],
   usedVideoSlugs: Record<string, string>,
-  page: number
+  page: number,
+  importedVideos: string[]
 ): Promise<
   Array<
     Omit<Prisma.VideoUncheckedCreateInput, 'variants' | 'title'> & {
@@ -348,7 +364,9 @@ export async function fetchMediaComponentsAndTransformToVideos(
     }
   >
 > {
-  const mediaComponents = await getArclightMediaComponents(page)
+  const mediaComponents = (await getArclightMediaComponents(page)).filter(
+    ({ mediaComponentId }) => !importedVideos.includes(mediaComponentId)
+  )
 
   const mediaComponentsAndMetadata = await Promise.all(
     mediaComponents.map(async (mediaComponent) => {

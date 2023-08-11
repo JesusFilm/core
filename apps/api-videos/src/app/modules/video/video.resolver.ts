@@ -84,10 +84,10 @@ export class VideoResolver {
 
   @ResolveField()
   async children(@Parent() video): Promise<Video[] | null> {
-    return await this.prismaService.video.findMany({
-      where: { parent: { some: { id: video.id } } },
-      orderBy: { sortOrder: 'asc' }
+    const result = await this.prismaService.video.findMany({
+      where: { id: { in: video.childIds } }
     })
+    return video.childIds.map((id) => result.find((video) => video.id === id))
   }
 
   @ResolveField()

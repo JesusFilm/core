@@ -1,6 +1,6 @@
 generator client {
   provider        = "prisma-client-js"
-  previewFeatures = ["fullTextSearch"]
+  previewFeatures = ["fullTextSearch", "orderByNulls"]
   output          = env("PRISMA_LOCATION")
 }
 
@@ -36,13 +36,12 @@ model Video {
   imageAlt          Json[]
   slug              String?
   noIndex           Boolean?
-  sortOrder         Int?
+  childIds          String[] // needed for child sort order
   children          Video[]        @relation("ParentChild")
   parent            Video[]        @relation("ParentChild")
   variants          VideoVariant[]
 
   @@unique([slug])
-  @@index([sortOrder])
 }
 
 model VideoTitle {

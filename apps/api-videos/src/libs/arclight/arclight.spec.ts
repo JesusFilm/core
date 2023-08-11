@@ -215,6 +215,7 @@ describe('arclight', () => {
     }
     const videoVariant = {
       id: 'refId',
+      videoId: 'mediaComponentId',
       languageId: '529',
       duration: 1,
       hls: 'hlsUrl',
@@ -234,11 +235,13 @@ describe('arclight', () => {
       ],
       downloads: [
         {
+          videoVariantId: 'refId',
           quality: 'low',
           size: 1024,
           url: 'lowUrl'
         },
         {
+          videoVariantId: 'refId',
           quality: 'high',
           size: 1024,
           url: 'highUrl'
@@ -400,10 +403,18 @@ describe('arclight', () => {
         { languageId: '529', primary: true, value: 'shortDescription' }
       ],
       studyQuestions: [],
-      title: [{ languageId: '529', primary: true, value: 'title' }],
+      title: [
+        {
+          videoId: 'mediaComponentId',
+          languageId: '529',
+          primary: true,
+          value: 'title'
+        }
+      ],
       variants: [
         {
           id: 'refId',
+          videoId: 'mediaComponentId',
           languageId: '529',
           duration: 1,
           hls: 'hlsUrl',
@@ -423,11 +434,13 @@ describe('arclight', () => {
           ],
           downloads: [
             {
+              videoVariantId: 'refId',
               quality: 'low',
               size: 1024,
               url: 'lowUrl'
             },
             {
+              videoVariantId: 'refId',
               quality: 'high',
               size: 1024,
               url: 'highUrl'
@@ -530,6 +543,7 @@ describe('arclight', () => {
         ...video,
         title: [
           {
+            videoId: 'mediaComponentId',
             languageId: '529',
             primary: true,
             value:
@@ -709,7 +723,7 @@ describe('arclight', () => {
         }
       ]
       await expect(
-        fetchMediaComponentsAndTransformToVideos(languages, {}, 1)
+        fetchMediaComponentsAndTransformToVideos(languages, {}, 1, [])
       ).resolves.toEqual([
         {
           id: 'mediaComponentId',
@@ -730,6 +744,7 @@ describe('arclight', () => {
           studyQuestions: [],
           title: [
             {
+              videoId: 'mediaComponentId',
               languageId: '529',
               primary: true,
               value: 'title'
@@ -738,9 +753,20 @@ describe('arclight', () => {
           variants: [
             {
               downloads: [
-                { quality: 'low', size: 1024, url: 'lowUrl' },
-                { quality: 'high', size: 1024, url: 'highUrl' }
+                {
+                  videoVariantId: 'refId',
+                  quality: 'low',
+                  size: 1024,
+                  url: 'lowUrl'
+                },
+                {
+                  videoVariantId: 'refId',
+                  quality: 'high',
+                  size: 1024,
+                  url: 'highUrl'
+                }
               ],
+              videoId: 'mediaComponentId',
               duration: 1,
               hls: 'hlsUrl',
               id: 'refId',
