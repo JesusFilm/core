@@ -54,7 +54,6 @@ export function CopyToTeamMenuItem({
         title={t('Copy to Another Team')}
         open={duplicateTeamDialogOpen}
         onClose={() => {
-          handleCloseMenu()
           setDuplicateTeamDialogOpen(false)
         }}
         submitAction={handleDuplicateJourney}

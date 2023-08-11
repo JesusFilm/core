@@ -6,6 +6,7 @@ import Link from '@mui/material/Link'
 import Menu from '@mui/material/Menu'
 import MuiMenuItem from '@mui/material/MenuItem'
 import Stack from '@mui/material/Stack'
+import { SxProps } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import NextLink from 'next/link'
 import { MouseEvent, ReactElement, useState } from 'react'
@@ -13,7 +14,11 @@ import { useTranslation } from 'react-i18next'
 
 import { useJourney } from '../../libs/JourneyProvider'
 
-export function StepHeader(): ReactElement {
+interface Props {
+  sx?: SxProps
+}
+
+export function StepHeader({ sx }: Props): ReactElement {
   const { journey, variant } = useJourney()
   const { t } = useTranslation('libs-journeys-ui')
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
@@ -31,12 +36,13 @@ export function StepHeader(): ReactElement {
     <Stack
       data-testid="stepHeader"
       sx={{
-        width: { xs: '100%', lg: 'unset' },
-        mt: { xs: 1, lg: 0 },
         position: { xs: 'absolute', lg: 'relative' },
+        mt: { xs: 1, lg: 0 },
         zIndex: 1,
         top: 0,
-        alignItems: 'flex-end'
+        alignItems: 'flex-end',
+        width: { xs: '100%', lg: 'auto' },
+        ...sx
       }}
     >
       <IconButton
