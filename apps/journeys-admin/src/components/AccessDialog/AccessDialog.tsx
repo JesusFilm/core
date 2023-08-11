@@ -1,26 +1,44 @@
 import { gql, useLazyQuery } from '@apollo/client'
 import Stack from '@mui/material/Stack'
 import { Theme } from '@mui/material/styles'
+import Typography from '@mui/material/Typography'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { ReactElement, useEffect, useMemo } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import { Dialog } from '@core/shared/ui/Dialog'
 
 import {
-  GetJourneyWithUserJourneys,
-  GetJourneyWithUserJourneys_journey_userJourneys as UserJourney
-} from '../../../__generated__/GetJourneyWithUserJourneys'
+  GetJourneyWithUserJourneysAndUserTeams,
+  GetJourneyWithUserJourneysAndUserTeams_journey_userJourneys as UserJourney
+} from '../../../__generated__/GetJourneyWithUserJourneysAndUserTeams'
 import { GetUserInvites } from '../../../__generated__/GetUserInvites'
+import { GetUserTeamsAndInvites_userTeams as UserTeam } from '../../../__generated__/GetUserTeamsAndInvites'
 import { UserJourneyRole } from '../../../__generated__/globalTypes'
 import { useCurrentUser } from '../../libs/useCurrentUser'
+import { UserTeamList } from '../Team/TeamManageDialog/UserTeamList'
 
 import { AddUserSection } from './AddUserSection'
 import { UserList } from './UserList'
 
-export const GET_JOURNEY_WITH_USER_JOURNEYS = gql`
-  query GetJourneyWithUserJourneys($id: ID!) {
+export const GET_JOURNEY_WITH_USER_JOURNEYS_AND_USER_TEAMS = gql`
+  query GetJourneyWithUserJourneysAndUserTeams($id: ID!) {
     journey: adminJourney(id: $id, idType: databaseId) {
       id
+      team {
+        id
+        userTeams {
+          id
+          role
+          user {
+            email
+            firstName
+            id
+            imageUrl
+            lastName
+          }
+        }
+      }
       userJourneys {
         id
         role
@@ -59,10 +77,14 @@ export function AccessDialog({
   open,
   onClose
 }: AccessDialogProps): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
   const [, { loading, data, refetch }] =
-    useLazyQuery<GetJourneyWithUserJourneys>(GET_JOURNEY_WITH_USER_JOURNEYS, {
-      variables: { id: journeyId }
-    })
+    useLazyQuery<GetJourneyWithUserJourneysAndUserTeams>(
+      GET_JOURNEY_WITH_USER_JOURNEYS_AND_USER_TEAMS,
+      {
+        variables: { id: journeyId }
+      }
+    )
 
   const [, { data: userInviteData, refetch: refetchInvites }] =
     useLazyQuery<GetUserInvites>(GET_USER_INVITES, {
@@ -112,6 +134,7 @@ export function AccessDialog({
     }
   }, [open, refetch, refetchInvites, loadUser])
 
+  console.log(data?.journey.team)
   return (
     <Dialog
       open={open ?? false}
@@ -126,6 +149,15 @@ export function AccessDialog({
       fullscreen={!smUp}
     >
       <Stack spacing={4}>
+        <Stack direction="row" alignItems="center" sx={{ mb: -4 }}>
+          <Typography variant="subtitle1">{t('Team Members')}</Typography>
+        </Stack>
+        <UserTeamList
+          data={data?.journey?.team ?? undefined}
+          currentUserTeam={data?.journey?.team as unknown as UserTeam}
+          loading={loading}
+          variant="readonly"
+        />
         <UserList
           title="Requested Access"
           users={requests}

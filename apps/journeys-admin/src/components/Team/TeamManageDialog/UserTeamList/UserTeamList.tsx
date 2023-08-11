@@ -7,6 +7,7 @@ import Skeleton from '@mui/material/Skeleton'
 import sortBy from 'lodash/sortBy'
 import { ReactElement, useMemo } from 'react'
 
+import { GetJourneyWithUserJourneysAndUserTeams_journey_team } from '../../../../../__generated__/GetJourneyWithUserJourneysAndUserTeams'
 import {
   GetUserTeamsAndInvites,
   GetUserTeamsAndInvites_userTeams as UserTeam
@@ -16,27 +17,34 @@ import { UserTeamRole } from '../../../../../__generated__/globalTypes'
 import { UserTeamListItem } from './UserTeamListItem'
 
 interface UserTeamListProps {
-  data: GetUserTeamsAndInvites | undefined
+  data:
+    | GetUserTeamsAndInvites
+    | undefined
+    | GetJourneyWithUserJourneysAndUserTeams_journey_team
   currentUserTeam: UserTeam | undefined
   loading: boolean
+  variant?: 'readonly' | 'default'
 }
 
 export function UserTeamList({
   data,
   currentUserTeam,
-  loading
+  loading,
+  variant = 'default'
 }: UserTeamListProps): ReactElement {
+  console.log(data)
   const sortedUserTeams: UserTeam[] = useMemo(() => {
+    if (variant === 'readonly') return data?.userTeams ?? []
     return (
       sortBy(data?.userTeams ?? [], ({ user: { id } }) =>
         id === currentUserTeam?.id ? 0 : 1
       ) ?? []
     )
-  }, [data, currentUserTeam])
+  }, [data, currentUserTeam, variant])
 
   return (
     <>
-      {loading || (data?.userTeams == null && data?.userTeamInvites == null) ? (
+      {loading || data?.userTeams == null ? (
         <Box>
           <List>
             {[0, 1, 2].map((i) => (
@@ -69,9 +77,11 @@ export function UserTeamList({
                     key={userTeam.id}
                     user={userTeam}
                     disabled={
-                      currentUserTeam?.role !== UserTeamRole.manager ||
-                      currentUserTeam.user.email === userTeam.user.email
+                      currentUserTeam.role !== UserTeamRole.manager ||
+                      currentUserTeam.user.email === userTeam.user.email ||
+                      variant === 'readonly'
                     }
+                    variant={variant}
                   />
                 )
               })}
