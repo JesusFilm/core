@@ -1,12 +1,15 @@
-import { render, fireEvent, waitFor } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
-import { EditorProvider } from '@core/journeys/ui/EditorProvider'
+import { fireEvent, render, waitFor } from '@testing-library/react'
+
 import type { TreeBlock } from '@core/journeys/ui/block'
-import { ButtonVariant } from '../../../../../../__generated__/globalTypes'
+import { EditorProvider } from '@core/journeys/ui/EditorProvider'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+
 import { ButtonFields } from '../../../../../../__generated__/ButtonFields'
 import { GetJourney_journey as Journey } from '../../../../../../__generated__/GetJourney'
-import { ButtonEdit, BUTTON_BLOCK_UPDATE_CONTENT } from '.'
+import { ButtonVariant } from '../../../../../../__generated__/globalTypes'
+
+import { BUTTON_BLOCK_UPDATE_CONTENT, ButtonEdit } from '.'
 
 jest.mock('react-i18next', () => ({
   __esModule: true,
@@ -32,6 +35,7 @@ describe('ButtonEdit', () => {
     action: null,
     children: []
   }
+
   it('selects the input on click', () => {
     const { getByRole } = render(
       <MockedProvider>
@@ -78,7 +82,7 @@ describe('ButtonEdit', () => {
         <JourneyProvider
           value={{
             journey: { id: 'journeyId' } as unknown as Journey,
-            admin: true
+            variant: 'admin'
           }}
         >
           <EditorProvider>
@@ -129,7 +133,7 @@ describe('ButtonEdit', () => {
         <JourneyProvider
           value={{
             journey: { id: 'journeyId' } as unknown as Journey,
-            admin: true
+            variant: 'admin'
           }}
         >
           <EditorProvider>
@@ -180,7 +184,7 @@ describe('ButtonEdit', () => {
         <JourneyProvider
           value={{
             journey: { id: 'journeyId' } as unknown as Journey,
-            admin: true
+            variant: 'admin'
           }}
         >
           <EditorProvider>

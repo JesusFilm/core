@@ -112,7 +112,7 @@
       "executor": "@nrwl/workspace:run-commands",
       "options": {
         "commands": [
-          "npx prisma reset --schema apps/api-users/db/schema.prisma"
+          "npx prisma migrate reset --schema apps/api-users/db/schema.prisma --force"
         ]
       }
     },

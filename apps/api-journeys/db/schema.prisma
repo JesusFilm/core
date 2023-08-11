@@ -306,9 +306,10 @@ model UserRole {
 }
 
 model JourneyProfile {
-  id              String   @id @default(uuid())
-  userId          String   @unique
-  acceptedTermsAt DateTime @default(now())
+  id               String   @id @default(uuid())
+  userId           String   @unique
+  acceptedTermsAt  DateTime @default(now())
+  lastActiveTeamId String?
 }
 
 model UserInvite {

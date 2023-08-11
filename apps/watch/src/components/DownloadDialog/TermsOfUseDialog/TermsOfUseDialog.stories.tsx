@@ -1,6 +1,8 @@
+import { Meta, Story } from '@storybook/react'
 import { ComponentProps } from 'react'
-import { Story, Meta } from '@storybook/react'
+
 import { watchConfig } from '../../../libs/storybook'
+
 import { TermsOfUseDialog } from './TermsOfUseDialog'
 
 const TermsOfUseDialogStory = {

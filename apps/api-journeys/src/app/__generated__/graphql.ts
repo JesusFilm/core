@@ -336,15 +336,15 @@ export class RadioOptionBlockCreateInput {
     label: string;
 }
 
+export class RadioOptionBlockUpdateInput {
+    parentBlockId?: Nullable<string>;
+    label?: Nullable<string>;
+}
+
 export class RadioQuestionBlockCreateInput {
     id?: Nullable<string>;
     journeyId: string;
     parentBlockId: string;
-}
-
-export class RadioOptionBlockUpdateInput {
-    parentBlockId?: Nullable<string>;
-    label?: Nullable<string>;
 }
 
 export class SignUpBlockCreateInput {
@@ -622,6 +622,10 @@ export class JourneyUpdateInput {
 
 export class JourneyTemplateInput {
     template?: Nullable<boolean>;
+}
+
+export class JourneyProfileUpdateInput {
+    lastActiveTeamId?: Nullable<string>;
 }
 
 export class JourneyVisitorFilter {
@@ -1107,15 +1111,15 @@ export abstract class IQuery {
 
     abstract adminJourneysReport(reportType: JourneysReportType): Nullable<PowerBiEmbed> | Promise<Nullable<PowerBiEmbed>>;
 
-    abstract adminJourney(id: string, idType?: Nullable<IdType>): Nullable<Journey> | Promise<Nullable<Journey>>;
+    abstract adminJourney(id: string, idType?: Nullable<IdType>): Journey | Promise<Journey>;
 
     abstract journeys(where?: Nullable<JourneysFilter>): Journey[] | Promise<Journey[]>;
 
-    abstract journey(id: string, idType?: Nullable<IdType>): Nullable<Journey> | Promise<Nullable<Journey>>;
+    abstract journey(id: string, idType?: Nullable<IdType>): Journey | Promise<Journey>;
 
     abstract getJourneyProfile(): Nullable<JourneyProfile> | Promise<Nullable<JourneyProfile>>;
 
-    abstract journeyVisitorsConnection(teamId: string, filter: JourneyVisitorFilter, first?: Nullable<number>, after?: Nullable<string>, sort?: Nullable<JourneyVisitorSort>): JourneyVisitorsConnection | Promise<JourneyVisitorsConnection>;
+    abstract journeyVisitorsConnection(filter: JourneyVisitorFilter, first?: Nullable<number>, after?: Nullable<string>, sort?: Nullable<JourneyVisitorSort>): JourneyVisitorsConnection | Promise<JourneyVisitorsConnection>;
 
     abstract journeyVisitorCount(filter: JourneyVisitorFilter): number | Promise<number>;
 
@@ -1133,7 +1137,7 @@ export abstract class IQuery {
 
     abstract userTeamInvites(teamId: string): UserTeamInvite[] | Promise<UserTeamInvite[]>;
 
-    abstract visitorsConnection(teamId: string, first?: Nullable<number>, after?: Nullable<string>): VisitorsConnection | Promise<VisitorsConnection>;
+    abstract visitorsConnection(teamId?: Nullable<string>, first?: Nullable<number>, after?: Nullable<string>): VisitorsConnection | Promise<VisitorsConnection>;
 
     abstract visitor(id: string): Visitor | Promise<Visitor>;
 }
@@ -1163,6 +1167,7 @@ export class JourneyProfile {
     id: string;
     userId: string;
     acceptedTermsAt?: Nullable<DateTime>;
+    lastActiveTeamId?: Nullable<string>;
 }
 
 export class JourneyVisitor {
@@ -1203,6 +1208,7 @@ export class Team {
     title: string;
     createdAt: DateTime;
     updatedAt: DateTime;
+    userTeams: UserTeam[];
 }
 
 export class UserInvite {
@@ -1327,55 +1333,55 @@ export abstract class IMutation {
 
     abstract blockUpdateEmailAction(id: string, journeyId: string, input: EmailActionInput): EmailAction | Promise<EmailAction>;
 
-    abstract blockDelete(id: string, journeyId: string, parentBlockId?: Nullable<string>): Block[] | Promise<Block[]>;
+    abstract blockDelete(id: string, journeyId?: Nullable<string>, parentBlockId?: Nullable<string>): Block[] | Promise<Block[]>;
 
-    abstract blockDuplicate(id: string, journeyId: string, parentOrder?: Nullable<number>): Block[] | Promise<Block[]>;
+    abstract blockDuplicate(id: string, parentOrder?: Nullable<number>, journeyId?: Nullable<string>): Block[] | Promise<Block[]>;
 
-    abstract blockOrderUpdate(id: string, journeyId: string, parentOrder: number): Block[] | Promise<Block[]>;
+    abstract blockOrderUpdate(id: string, parentOrder: number, journeyId?: Nullable<string>): Block[] | Promise<Block[]>;
 
     abstract buttonBlockCreate(input: ButtonBlockCreateInput): ButtonBlock | Promise<ButtonBlock>;
 
-    abstract buttonBlockUpdate(id: string, journeyId: string, input: ButtonBlockUpdateInput): Nullable<ButtonBlock> | Promise<Nullable<ButtonBlock>>;
+    abstract buttonBlockUpdate(id: string, input: ButtonBlockUpdateInput, journeyId?: Nullable<string>): Nullable<ButtonBlock> | Promise<Nullable<ButtonBlock>>;
 
     abstract cardBlockCreate(input: CardBlockCreateInput): CardBlock | Promise<CardBlock>;
 
-    abstract cardBlockUpdate(id: string, journeyId: string, input: CardBlockUpdateInput): CardBlock | Promise<CardBlock>;
+    abstract cardBlockUpdate(id: string, input: CardBlockUpdateInput, journeyId?: Nullable<string>): CardBlock | Promise<CardBlock>;
 
     abstract iconBlockCreate(input: IconBlockCreateInput): IconBlock | Promise<IconBlock>;
 
-    abstract iconBlockUpdate(id: string, journeyId: string, input: IconBlockUpdateInput): IconBlock | Promise<IconBlock>;
+    abstract iconBlockUpdate(id: string, input: IconBlockUpdateInput, journeyId?: Nullable<string>): IconBlock | Promise<IconBlock>;
 
     abstract imageBlockCreate(input: ImageBlockCreateInput): ImageBlock | Promise<ImageBlock>;
 
-    abstract imageBlockUpdate(id: string, journeyId: string, input: ImageBlockUpdateInput): ImageBlock | Promise<ImageBlock>;
+    abstract imageBlockUpdate(id: string, input: ImageBlockUpdateInput, journeyId?: Nullable<string>): ImageBlock | Promise<ImageBlock>;
 
     abstract radioOptionBlockCreate(input: RadioOptionBlockCreateInput): RadioOptionBlock | Promise<RadioOptionBlock>;
 
+    abstract radioOptionBlockUpdate(id: string, input: RadioOptionBlockUpdateInput, journeyId?: Nullable<string>): RadioOptionBlock | Promise<RadioOptionBlock>;
+
     abstract radioQuestionBlockCreate(input: RadioQuestionBlockCreateInput): RadioQuestionBlock | Promise<RadioQuestionBlock>;
 
-    abstract radioOptionBlockUpdate(id: string, journeyId: string, input: RadioOptionBlockUpdateInput): RadioOptionBlock | Promise<RadioOptionBlock>;
-
-    abstract radioQuestionBlockUpdate(id: string, journeyId: string, parentBlockId: string): RadioQuestionBlock | Promise<RadioQuestionBlock>;
+    abstract radioQuestionBlockUpdate(id: string, parentBlockId: string, journeyId?: Nullable<string>): RadioQuestionBlock | Promise<RadioQuestionBlock>;
 
     abstract signUpBlockCreate(input: SignUpBlockCreateInput): SignUpBlock | Promise<SignUpBlock>;
 
-    abstract signUpBlockUpdate(id: string, journeyId: string, input: SignUpBlockUpdateInput): Nullable<SignUpBlock> | Promise<Nullable<SignUpBlock>>;
+    abstract signUpBlockUpdate(id: string, input: SignUpBlockUpdateInput, journeyId?: Nullable<string>): Nullable<SignUpBlock> | Promise<Nullable<SignUpBlock>>;
 
     abstract stepBlockCreate(input: StepBlockCreateInput): StepBlock | Promise<StepBlock>;
 
-    abstract stepBlockUpdate(id: string, journeyId: string, input: StepBlockUpdateInput): StepBlock | Promise<StepBlock>;
+    abstract stepBlockUpdate(id: string, input: StepBlockUpdateInput, journeyId?: Nullable<string>): StepBlock | Promise<StepBlock>;
 
     abstract textResponseBlockCreate(input: TextResponseBlockCreateInput): TextResponseBlock | Promise<TextResponseBlock>;
 
-    abstract textResponseBlockUpdate(id: string, journeyId: string, input: TextResponseBlockUpdateInput): Nullable<TextResponseBlock> | Promise<Nullable<TextResponseBlock>>;
+    abstract textResponseBlockUpdate(id: string, input: TextResponseBlockUpdateInput, journeyId?: Nullable<string>): Nullable<TextResponseBlock> | Promise<Nullable<TextResponseBlock>>;
 
     abstract typographyBlockCreate(input: TypographyBlockCreateInput): TypographyBlock | Promise<TypographyBlock>;
 
-    abstract typographyBlockUpdate(id: string, journeyId: string, input: TypographyBlockUpdateInput): TypographyBlock | Promise<TypographyBlock>;
+    abstract typographyBlockUpdate(id: string, input: TypographyBlockUpdateInput, journeyId?: Nullable<string>): TypographyBlock | Promise<TypographyBlock>;
 
     abstract videoBlockCreate(input: VideoBlockCreateInput): VideoBlock | Promise<VideoBlock>;
 
-    abstract videoBlockUpdate(id: string, journeyId: string, input: VideoBlockUpdateInput): VideoBlock | Promise<VideoBlock>;
+    abstract videoBlockUpdate(id: string, input: VideoBlockUpdateInput, journeyId?: Nullable<string>): VideoBlock | Promise<VideoBlock>;
 
     abstract chatButtonCreate(journeyId: string, input?: Nullable<ChatButtonCreateInput>): ChatButton | Promise<ChatButton>;
 
@@ -1419,9 +1425,9 @@ export abstract class IMutation {
 
     abstract hostDelete(id: string, teamId: string): Host | Promise<Host>;
 
-    abstract journeyCreate(input: JourneyCreateInput, teamId?: Nullable<string>): Journey | Promise<Journey>;
+    abstract journeyCreate(input: JourneyCreateInput, teamId: string): Journey | Promise<Journey>;
 
-    abstract journeyDuplicate(id: string, teamId?: Nullable<string>): Journey | Promise<Journey>;
+    abstract journeyDuplicate(id: string, teamId: string): Journey | Promise<Journey>;
 
     abstract journeyUpdate(id: string, input: JourneyUpdateInput): Journey | Promise<Journey>;
 
@@ -1438,6 +1444,8 @@ export abstract class IMutation {
     abstract journeyTemplate(id: string, input: JourneyTemplateInput): Journey | Promise<Journey>;
 
     abstract journeyProfileCreate(): JourneyProfile | Promise<JourneyProfile>;
+
+    abstract journeyProfileUpdate(input: JourneyProfileUpdateInput): JourneyProfile | Promise<JourneyProfile>;
 
     abstract teamCreate(input?: Nullable<TeamCreateInput>): Team | Promise<Team>;
 

@@ -1,13 +1,17 @@
-import { render, waitFor } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
+import { render, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
+
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+
 import { GetJourney_journey as Journey } from '../../../__generated__/GetJourney'
 import {
   JourneyStatus,
-  ThemeName,
-  ThemeMode
+  ThemeMode,
+  ThemeName
 } from '../../../__generated__/globalTypes'
+import { TeamProvider } from '../Team/TeamProvider'
+
 import { JourneyView } from '.'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
@@ -64,9 +68,11 @@ describe('JourneyView', () => {
     const { getByRole } = render(
       <MockedProvider>
         <SnackbarProvider>
-          <JourneyProvider value={{ journey, admin: true }}>
-            <JourneyView journeyType="Journey" />
-          </JourneyProvider>
+          <TeamProvider>
+            <JourneyProvider value={{ journey, variant: 'admin' }}>
+              <JourneyView journeyType="Journey" />
+            </JourneyProvider>
+          </TeamProvider>
         </SnackbarProvider>
       </MockedProvider>
     )
@@ -75,13 +81,16 @@ describe('JourneyView', () => {
       '/journeys/journeyId/edit'
     )
   })
+
   it('should show reports', async () => {
     const { getByTestId } = render(
       <MockedProvider>
         <SnackbarProvider>
-          <JourneyProvider value={{ journey, admin: true }}>
-            <JourneyView journeyType="Journey" />
-          </JourneyProvider>
+          <TeamProvider>
+            <JourneyProvider value={{ journey, variant: 'admin' }}>
+              <JourneyView journeyType="Journey" />
+            </JourneyProvider>
+          </TeamProvider>
         </SnackbarProvider>
       </MockedProvider>
     )

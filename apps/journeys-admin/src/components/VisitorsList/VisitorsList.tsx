@@ -1,26 +1,24 @@
-import { ReactElement, useState } from 'react'
 import { gql, useQuery } from '@apollo/client'
-import { DataGrid } from '@mui/x-data-grid'
-import { styled } from '@mui/material/styles'
-import Box from '@mui/material/Box'
-import { useRouter } from 'next/router'
 import LoadingButton from '@mui/lab/LoadingButton'
+import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
+import { styled } from '@mui/material/styles'
+import { DataGrid } from '@mui/x-data-grid'
+import { useRouter } from 'next/router'
+import { ReactElement, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+
 import {
   GetVisitors,
   GetVisitors_visitors_edges as Visitor
 } from '../../../__generated__/GetVisitors'
+
 import { getColDefs } from './utils/getColDefs'
 import { getVisitorRows } from './utils/getVisitorRows'
 
 export const GET_VISITORS = gql`
   query GetVisitors($first: Int, $after: String) {
-    visitors: visitorsConnection(
-      teamId: "jfp-team"
-      first: $first
-      after: $after
-    ) {
+    visitors: visitorsConnection(first: $first, after: $after) {
       edges {
         node {
           id

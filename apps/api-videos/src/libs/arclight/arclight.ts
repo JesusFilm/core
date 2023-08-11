@@ -1,10 +1,11 @@
-// import { Translation } from '@core/nest/common/TranslationModule'
-import fetch, { Response, RequestInfo, RequestInit } from 'node-fetch'
+import fetch, { RequestInfo, RequestInit, Response } from 'node-fetch'
+
 import {
-  VideoLabel,
   Prisma,
+  VideoLabel,
   VideoVariantDownloadQuality
 } from '.prisma/api-videos-client'
+
 import { slugify } from '../slugify'
 
 export interface ArclightMediaLanguage {
@@ -92,6 +93,18 @@ export async function getArclightMediaLanguages(): Promise<
   return response._embedded.mediaLanguages
 }
 
+export async function getArclightMediaComponent(
+  id: string
+): Promise<ArclightMediaComponent | null> {
+  return await (
+    await fetchPlus(
+      `https://api.arclight.org/v2/media-components/${id}?apiKey=${
+        process.env.ARCLIGHT_API_KEY ?? ''
+      }`
+    )
+  ).json()
+}
+
 export async function getArclightMediaComponents(
   page: number
 ): Promise<ArclightMediaComponent[]> {
@@ -100,14 +113,14 @@ export async function getArclightMediaComponents(
     message?: string
   } = await (
     await fetchPlus(
-      `https://api.arclight.org/v2/media-components?limit=25&isDeprecated=false&contentTypes=video&page=${page}&apiKey=${
+      `https://api.arclight.org/v2/media-components?limit=10&isDeprecated=false&contentTypes=video&page=${page}&apiKey=${
         process.env.ARCLIGHT_API_KEY ?? ''
       }`
     )
   ).json()
   if (
     response.message?.match(
-      /Page \[\d\d\] does not exist. Given a limit of \[25\] per page, value must not be greater than \[\d\d\]\./
+      /Page \[\d\d\] does not exist. Given a limit of \[10\] per page, value must not be greater than \[\d\d\]\./
     ) != null
   )
     return []
@@ -118,7 +131,9 @@ export async function getArclightMediaComponentLanguages(
   mediaComponentId: string
 ): Promise<ArclightMediaComponentLanguage[]> {
   const response: {
-    _embedded: { mediaComponentLanguage: ArclightMediaComponentLanguage[] }
+    _embedded: {
+      mediaComponentLanguage: ArclightMediaComponentLanguage[]
+    } | null
   } = await (
     await fetchPlus(
       `https://api.arclight.org/v2/media-components/${mediaComponentId}/languages?platform=android&apiKey=${
@@ -126,7 +141,7 @@ export async function getArclightMediaComponentLanguages(
       }`
     )
   ).json()
-  return response._embedded.mediaComponentLanguage
+  return response._embedded?.mediaComponentLanguage ?? []
 }
 
 export async function getArclightMediaComponentLinks(
@@ -141,15 +156,16 @@ export async function getArclightMediaComponentLinks(
       }`
     )
   ).json()
-  return response.linkedMediaComponentIds.contains ?? []
+  return response.linkedMediaComponentIds?.contains ?? []
 }
 
 export function transformArclightMediaComponentLanguageToVideoVariant(
   mediaComponentLanguage: ArclightMediaComponentLanguage,
   mediaComponent: MediaComponent,
   language: Language
-): Omit<Prisma.VideoVariantUncheckedCreateInput, 'downloads'> & {
+): Omit<Prisma.VideoVariantUncheckedCreateInput, 'downloads' | 'subtitle'> & {
   downloads?: Prisma.VideoVariantDownloadUncheckedCreateInput[]
+  subtitle?: Prisma.VideoVariantSubtitleUncheckedCreateInput[]
 } {
   const slug = `${mediaComponent.slug}/${language.slug}`
   if (mediaComponent.subType === 'series') {
@@ -170,15 +186,18 @@ export function transformArclightMediaComponentLanguageToVideoVariant(
     mediaComponentLanguage.downloadUrls
   )) {
     downloads.push({
+      videoVariantId: mediaComponentLanguage.refId,
       quality: VideoVariantDownloadQuality[key],
       size: value.sizeInBytes,
       url: value.url
     })
   }
+
   return {
     id: mediaComponentLanguage.refId,
     subtitle:
       mediaComponentLanguage.subtitleUrls.vtt?.map(({ languageId, url }) => ({
+        videoVariantId: mediaComponentLanguage.refId,
         languageId: languageId.toString(),
         value: url,
         primary: languageId === mediaComponentLanguage.languageId
@@ -189,7 +208,8 @@ export function transformArclightMediaComponentLanguageToVideoVariant(
       (mediaComponentLanguage.lengthInMilliseconds ?? 0) * 0.001
     ),
     downloads,
-    slug
+    slug,
+    videoId: mediaComponent.mediaComponentId
   }
 }
 
@@ -199,10 +219,12 @@ export function transformArclightMediaComponentToVideo(
   mediaComponentLinks: string[],
   languages: Language[],
   usedSlugs: Record<string, string>
-): Omit<Prisma.VideoUncheckedCreateInput, 'variants'> & {
+): Omit<Prisma.VideoUncheckedCreateInput, 'variants' | 'title'> & {
+  title: Prisma.VideoTitleUncheckedCreateInput[]
   variants: Array<
-    Omit<Prisma.VideoVariantUncheckedCreateInput, 'downloads'> & {
+    Omit<Prisma.VideoVariantUncheckedCreateInput, 'downloads' | 'subtitle'> & {
       downloads?: Prisma.VideoVariantDownloadUncheckedCreateInput[]
+      subtitle?: Prisma.VideoVariantSubtitleUncheckedCreateInput[]
     }
   >
   childIds: string[]
@@ -219,15 +241,16 @@ export function transformArclightMediaComponentToVideo(
   )
 
   const variants: Array<
-    Omit<Prisma.VideoVariantUncheckedCreateInput, 'downloads'> & {
+    Omit<Prisma.VideoVariantUncheckedCreateInput, 'downloads' | 'subtitle'> & {
       downloads?: Prisma.VideoVariantDownloadUncheckedCreateInput[]
+      subtitle?: Prisma.VideoVariantSubtitleUncheckedCreateInput[]
     }
   > = []
   for (const mediaComponentLanguage of mediaComponentLanguages) {
     const language = languages.find(
       ({ languageId }) => languageId === mediaComponentLanguage.languageId
     )
-    if (language == null) continue
+    if (language == null || mediaComponentLanguage == null) continue
 
     variants.push(
       transformArclightMediaComponentLanguageToVideoVariant(
@@ -242,8 +265,9 @@ export function transformArclightMediaComponentToVideo(
     id: mediaComponent.mediaComponentId,
     label: VideoLabel[mediaComponent.subType],
     primaryLanguageId: mediaComponent.primaryLanguageId.toString(),
-    title: {
-      create: {
+    title: [
+      {
+        videoId: mediaComponent.mediaComponentId,
         value: mediaComponent.title,
         languageId: metadataLanguageId,
         primary: true
@@ -321,20 +345,33 @@ export async function fetchMediaLanguagesAndTransformToLanguages(): Promise<
 export async function fetchMediaComponentsAndTransformToVideos(
   languages: Language[],
   usedVideoSlugs: Record<string, string>,
-  page: number
-): Promise<
-  Array<
-    Omit<Prisma.VideoUncheckedCreateInput, 'variants'> & {
+  page: number,
+  importedVideos: string[]
+): Promise<{
+  count: number
+  videos: Array<
+    Omit<Prisma.VideoUncheckedCreateInput, 'variants' | 'title'> & {
+      title: Prisma.VideoTitleUncheckedCreateInput[]
       variants: Array<
-        Omit<Prisma.VideoVariantUncheckedCreateInput, 'downloads'> & {
+        Omit<
+          Prisma.VideoVariantUncheckedCreateInput,
+          'downloads' | 'subtitle'
+        > & {
           downloads?: Prisma.VideoVariantDownloadUncheckedCreateInput[]
+          subtitle?: Prisma.VideoVariantSubtitleUncheckedCreateInput[]
         }
       >
       childIds: string[]
     }
   >
-> {
-  const mediaComponents = await getArclightMediaComponents(page)
+}> {
+  let mediaComponents = await getArclightMediaComponents(page)
+
+  const mediaComponentsLength = mediaComponents.length
+
+  mediaComponents = mediaComponents.filter(
+    ({ mediaComponentId }) => !importedVideos.includes(mediaComponentId)
+  )
 
   const mediaComponentsAndMetadata = await Promise.all(
     mediaComponents.map(async (mediaComponent) => {
@@ -349,15 +386,18 @@ export async function fetchMediaComponentsAndTransformToVideos(
     })
   )
 
-  return mediaComponentsAndMetadata.map(
-    ({ mediaComponent, mediaComponentLanguages, mediaComponentLinks }) => {
-      return transformArclightMediaComponentToVideo(
-        mediaComponent,
-        mediaComponentLanguages,
-        mediaComponentLinks,
-        languages,
-        usedVideoSlugs
-      )
-    }
-  )
+  return {
+    count: mediaComponentsLength,
+    videos: mediaComponentsAndMetadata.map(
+      ({ mediaComponent, mediaComponentLanguages, mediaComponentLinks }) => {
+        return transformArclightMediaComponentToVideo(
+          mediaComponent,
+          mediaComponentLanguages,
+          mediaComponentLinks,
+          languages,
+          usedVideoSlugs
+        )
+      }
+    )
+  }
 }

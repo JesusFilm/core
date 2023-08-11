@@ -52,8 +52,11 @@ extend type Mutation {
   imageBlockCreate(input: ImageBlockCreateInput!): ImageBlock!
   imageBlockUpdate(
     id: ID!
-    journeyId: ID!
     input: ImageBlockUpdateInput!
+    """
+    drop this parameter after merging teams
+    """
+    journeyId: ID
   ): ImageBlock!
 }
 

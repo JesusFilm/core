@@ -1,37 +1,40 @@
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
-import type { TreeBlock } from '@core/journeys/ui/block'
-import { render, fireEvent, waitFor } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
+import { fireEvent, render, waitFor } from '@testing-library/react'
+
+import type { TreeBlock } from '@core/journeys/ui/block'
 import {
   ActiveFab,
   ActiveJourneyEditContent,
   ActiveTab,
+  EditorProvider,
   EditorState,
-  useEditor,
-  EditorProvider
+  useEditor
 } from '@core/journeys/ui/EditorProvider'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+
 import {
+  GetJourney_journey as Journey,
   GetJourney_journey_blocks_StepBlock as StepBlock,
-  GetJourney_journey_blocks_VideoBlock as VideoBlock,
-  GetJourney_journey as Journey
+  GetJourney_journey_blocks_VideoBlock as VideoBlock
 } from '../../../../__generated__/GetJourney'
 import {
-  ButtonVariant,
   ButtonColor,
   ButtonSize,
+  ButtonVariant,
   ThemeMode,
   ThemeName,
   VideoBlockSource
 } from '../../../../__generated__/globalTypes'
-
 import { STEP_AND_CARD_BLOCK_CREATE } from '../../CardPreview/CardPreview'
 import { SocialShareAppearance } from '../Drawer/SocialShareAppearance'
-import { VIDEO_BLOCK_CREATE } from './BlocksTab/NewVideoButton/NewVideoButton'
-import { TYPOGRAPHY_BLOCK_CREATE } from './BlocksTab/NewTypographyButton/NewTypographyButton'
-import { IMAGE_BLOCK_CREATE } from './BlocksTab/NewImageButton/NewImageButton'
-import { SIGN_UP_BLOCK_CREATE } from './BlocksTab/NewSignUpButton/NewSignUpButton'
-import { RADIO_QUESTION_BLOCK_CREATE } from './BlocksTab/NewRadioQuestionButton/NewRadioQuestionButton'
+
 import { BUTTON_BLOCK_CREATE } from './BlocksTab/NewButtonButton/NewButtonButton'
+import { IMAGE_BLOCK_CREATE } from './BlocksTab/NewImageButton/NewImageButton'
+import { RADIO_QUESTION_BLOCK_CREATE } from './BlocksTab/NewRadioQuestionButton/NewRadioQuestionButton'
+import { SIGN_UP_BLOCK_CREATE } from './BlocksTab/NewSignUpButton/NewSignUpButton'
+import { TYPOGRAPHY_BLOCK_CREATE } from './BlocksTab/NewTypographyButton/NewTypographyButton'
+import { VIDEO_BLOCK_CREATE } from './BlocksTab/NewVideoButton/NewVideoButton'
+
 import { ControlPanel } from '.'
 
 jest.mock('uuid', () => ({
@@ -141,7 +144,7 @@ describe('ControlPanel', () => {
                 iso3: 'eng'
               }
             } as unknown as Journey,
-            admin: true
+            variant: 'admin'
           }}
         >
           <EditorProvider initialState={{ steps: [step1, step2] }}>
@@ -159,7 +162,7 @@ describe('ControlPanel', () => {
     expect(getByText('Locked With Interaction')).toBeInTheDocument()
     fireEvent.click(getByRole('tab', { name: 'Blocks' }))
     expect(getByRole('tabpanel', { name: 'Blocks' })).toBeInTheDocument()
-    expect(getByRole('button', { name: 'Text' }))
+    expect(getByRole('button', { name: 'Text' })).toBeInTheDocument()
   })
 
   it('should render component properties if a component is selected', async () => {
@@ -178,7 +181,7 @@ describe('ControlPanel', () => {
                 iso3: 'eng'
               }
             } as unknown as Journey,
-            admin: true
+            variant: 'admin'
           }}
         >
           <EditorProvider
@@ -219,7 +222,7 @@ describe('ControlPanel', () => {
                 iso3: 'eng'
               }
             } as unknown as Journey,
-            admin: true
+            variant: 'admin'
           }}
         >
           <EditorProvider initialState={{ steps: [step1, step2] }}>
@@ -250,7 +253,7 @@ describe('ControlPanel', () => {
                 iso3: 'eng'
               }
             } as unknown as Journey,
-            admin: true
+            variant: 'admin'
           }}
         >
           <EditorProvider initialState={{ steps: [step1, step2] }}>
@@ -313,7 +316,7 @@ describe('ControlPanel', () => {
                 iso3: 'eng'
               }
             } as unknown as Journey,
-            admin: true
+            variant: 'admin'
           }}
         >
           <EditorProvider initialState={{ steps: [step1, step2, step3] }}>
@@ -410,7 +413,7 @@ describe('ControlPanel', () => {
                 iso3: 'eng'
               }
             } as unknown as Journey,
-            admin: true
+            variant: 'admin'
           }}
         >
           <EditorProvider initialState={{ steps: [step1, step2, step3] }}>
@@ -569,7 +572,7 @@ describe('ControlPanel', () => {
                 iso3: 'eng'
               }
             } as unknown as Journey,
-            admin: true
+            variant: 'admin'
           }}
         >
           <EditorProvider initialState={{ steps: [step1, step2, step3] }}>
@@ -638,7 +641,7 @@ describe('ControlPanel', () => {
                 iso3: 'eng'
               }
             } as unknown as Journey,
-            admin: true
+            variant: 'admin'
           }}
         >
           <EditorProvider initialState={{ steps: [step1, step2, step3] }}>
@@ -710,7 +713,7 @@ describe('ControlPanel', () => {
                 iso3: 'eng'
               }
             } as unknown as Journey,
-            admin: true
+            variant: 'admin'
           }}
         >
           <EditorProvider initialState={{ steps: [step1, step2, step3] }}>
@@ -824,7 +827,7 @@ describe('ControlPanel', () => {
                 iso3: 'eng'
               }
             } as unknown as Journey,
-            admin: true
+            variant: 'admin'
           }}
         >
           <EditorProvider initialState={{ steps: [step1, step2, step3] }}>
@@ -862,7 +865,7 @@ describe('ControlPanel', () => {
                 iso3: 'eng'
               }
             } as unknown as Journey,
-            admin: true
+            variant: 'admin'
           }}
         >
           <EditorProvider initialState={{ steps: [step1, step2, step3] }}>
@@ -934,7 +937,7 @@ describe('ControlPanel', () => {
                 iso3: 'eng'
               }
             } as unknown as Journey,
-            admin: true
+            variant: 'admin'
           }}
         >
           <EditorProvider initialState={{ steps: [step1] }}>
@@ -974,7 +977,7 @@ describe('ControlPanel', () => {
                 iso3: 'eng'
               }
             } as unknown as Journey,
-            admin: true
+            variant: 'admin'
           }}
         >
           <EditorProvider initialState={{ steps: [step4] }}>
@@ -1006,7 +1009,7 @@ describe('ControlPanel', () => {
                 iso3: 'eng'
               }
             } as unknown as Journey,
-            admin: true
+            variant: 'admin'
           }}
         >
           <EditorProvider initialState={{ steps: [step4] }}>
@@ -1061,7 +1064,7 @@ describe('ControlPanel', () => {
                 iso3: 'eng'
               }
             } as unknown as Journey,
-            admin: true
+            variant: 'admin'
           }}
         >
           <EditorProvider initialState={state}>
@@ -1111,7 +1114,7 @@ describe('ControlPanel', () => {
                 iso3: 'eng'
               }
             } as unknown as Journey,
-            admin: true
+            variant: 'admin'
           }}
         >
           <EditorProvider initialState={state}>

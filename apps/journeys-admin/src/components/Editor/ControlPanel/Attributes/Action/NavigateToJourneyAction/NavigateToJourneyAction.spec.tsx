@@ -1,20 +1,23 @@
-import { render, waitFor, fireEvent } from '@testing-library/react'
-import { MockedProvider } from '@apollo/client/testing'
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
-import { EditorProvider } from '@core/journeys/ui/EditorProvider'
-import type { TreeBlock } from '@core/journeys/ui/block'
 import { InMemoryCache } from '@apollo/client'
-import {
-  ThemeMode,
-  ThemeName,
-  JourneyStatus
-} from '../../../../../../../__generated__/globalTypes'
+import { MockedProvider } from '@apollo/client/testing'
+import { fireEvent, render, waitFor } from '@testing-library/react'
+
+import type { TreeBlock } from '@core/journeys/ui/block'
+import { EditorProvider } from '@core/journeys/ui/EditorProvider'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+
 import { GetJourney_journey as Journey } from '../../../../../../../__generated__/GetJourney'
-import { steps } from '../data'
 import {
-  NavigateToJourneyAction,
+  JourneyStatus,
+  ThemeMode,
+  ThemeName
+} from '../../../../../../../__generated__/globalTypes'
+import { steps } from '../data'
+
+import {
   GET_JOURNEY_NAMES,
-  NAVIGATE_TO_JOURNEY_ACTION_UPDATE
+  NAVIGATE_TO_JOURNEY_ACTION_UPDATE,
+  NavigateToJourneyAction
 } from './NavigateToJourneyAction'
 
 describe('NavigateToJourneyAction', () => {
@@ -85,7 +88,7 @@ describe('NavigateToJourneyAction', () => {
           }
         ]}
       >
-        <JourneyProvider value={{ journey, admin: true }}>
+        <JourneyProvider value={{ journey, variant: 'admin' }}>
           <EditorProvider initialState={{ selectedBlock }}>
             <NavigateToJourneyAction />
           </EditorProvider>
@@ -159,7 +162,7 @@ describe('NavigateToJourneyAction', () => {
         ]}
         cache={cache}
       >
-        <JourneyProvider value={{ journey, admin: true }}>
+        <JourneyProvider value={{ journey, variant: 'admin' }}>
           <EditorProvider initialState={{ selectedBlock }}>
             <NavigateToJourneyAction />
           </EditorProvider>

@@ -1,20 +1,23 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { Story, Meta } from '@storybook/react'
+import { Meta, Story } from '@storybook/react'
 import { userEvent, waitFor, within } from '@storybook/testing-library'
-import { UserJourneyRole } from '../../../../__generated__/globalTypes'
-import { journeysAdminConfig } from '../../../libs/storybook'
+
 import {
   GetAdminJourneys_journeys as Journey,
   GetAdminJourneys_journeys_userJourneys as UserJourney
 } from '../../../../__generated__/GetAdminJourneys'
+import { UserJourneyRole } from '../../../../__generated__/globalTypes'
+import { journeysAdminConfig } from '../../../libs/storybook'
+import { TeamProvider } from '../../Team/TeamProvider'
 import {
+  archiveddJourney,
   defaultJourney,
   descriptiveJourney,
   oldJourney,
   publishedJourney,
-  archiveddJourney,
   trashedJourney
 } from '../journeyListData'
+
 import { JourneyCard } from './JourneyCard'
 import { JourneyCardVariant } from './journeyCardVariant'
 
@@ -26,7 +29,9 @@ const TestStory = {
 
 const Template: Story = ({ ...args }) => (
   <MockedProvider>
-    <JourneyCard {...args} />
+    <TeamProvider>
+      <JourneyCard {...args} />
+    </TeamProvider>
   </MockedProvider>
 )
 

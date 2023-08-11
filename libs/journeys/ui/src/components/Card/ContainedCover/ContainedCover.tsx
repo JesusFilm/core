@@ -1,27 +1,19 @@
-import { ReactElement, ReactNode, useEffect, useRef, useState } from 'react'
-import { NextImage } from '@core/shared/ui/NextImage'
-import { styled } from '@mui/material/styles'
 import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
-import dynamic from 'next/dynamic'
-import { TreeBlock } from '../../../libs/block'
+import { styled } from '@mui/material/styles'
+import { ReactElement, ReactNode, useEffect, useRef, useState } from 'react'
+
+import { NextImage } from '@core/shared/ui/NextImage'
+
 import { VideoBlockSource } from '../../../../__generated__/globalTypes'
+import { TreeBlock } from '../../../libs/block'
+import { useJourney } from '../../../libs/JourneyProvider'
+import { getJourneyRTL } from '../../../libs/rtl'
 import { ImageFields } from '../../Image/__generated__/ImageFields'
 import { VideoFields } from '../../Video/__generated__/VideoFields'
-import { useJourney } from '../../../libs/JourneyProvider'
-import { BlockFields_VideoBlock as VideoBlock } from '../../../libs/block/__generated__/BlockFields'
-import { getJourneyRTL } from '../../../libs/rtl'
 import { OverlayContent } from '../OverlayContent'
 
-const DynamicBackgroundVideo = dynamic<
-  TreeBlock<VideoBlock & { setLoading: (loading: boolean) => void }>
->(
-  async () =>
-    await import(
-      /* webpackChunkName: "BackgroundVideo" */
-      './BackgroundVideo'
-    ).then((mod) => mod.BackgroundVideo)
-)
+import { BackgroundVideo } from './BackgroundVideo'
 
 interface ContainedCoverProps {
   children: ReactNode[]
@@ -114,7 +106,7 @@ export function ContainedCover({
         }}
       >
         {videoBlock?.videoId != null && (
-          <DynamicBackgroundVideo {...videoBlock} setLoading={setLoading} />
+          <BackgroundVideo {...videoBlock} setLoading={setLoading} />
         )}
         {/* NextImage poster image causes longer LCP loading times, but still faster since using optimized image */}
         {posterImage != null && videoBlock != null && loading && (
@@ -263,8 +255,7 @@ export function ContainedCover({
                 // This should match width of journey card content in admin
                 width: { lg: '312px' },
                 maxHeight: { xs: '55vh', lg: '100%' },
-                px: { xs: 6, lg: 10 },
-                mb: { xs: 21, lg: 0 }
+                mb: { xs: 28, sm: 16, lg: 0 }
               }}
             >
               {children}

@@ -1,12 +1,14 @@
-import { ReactElement } from 'react'
-import { useJourney } from '@core/journeys/ui/JourneyProvider'
-import { useEditor } from '@core/journeys/ui/EditorProvider'
-import type { TreeBlock } from '@core/journeys/ui/block'
 import { gql, useMutation } from '@apollo/client'
-import { object, string } from 'yup'
-import InputAdornment from '@mui/material/InputAdornment'
 import DraftsIcon from '@mui/icons-material/Drafts'
 import Box from '@mui/material/Box'
+import InputAdornment from '@mui/material/InputAdornment'
+import { ReactElement } from 'react'
+import { object, string } from 'yup'
+
+import type { TreeBlock } from '@core/journeys/ui/block'
+import { useEditor } from '@core/journeys/ui/EditorProvider'
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
+
 import { GetJourney_journey_blocks_ButtonBlock as ButtonBlock } from '../../../../../../../__generated__/GetJourney'
 import { TextFieldForm } from '../../../../../TextFieldForm'
 

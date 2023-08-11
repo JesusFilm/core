@@ -1,5 +1,6 @@
 import { gql, useMutation } from '@apollo/client'
 import { ReactElement, useState } from 'react'
+
 import { UserJourneyRequest } from '../../../__generated__/UserJourneyRequest'
 import { AccessDenied } from '../AccessDenied'
 

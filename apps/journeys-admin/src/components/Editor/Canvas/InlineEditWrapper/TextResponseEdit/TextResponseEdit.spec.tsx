@@ -1,12 +1,15 @@
-import { render, fireEvent, waitFor } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
-import { EditorProvider } from '@core/journeys/ui/EditorProvider'
-import type { TreeBlock } from '@core/journeys/ui/block'
+import { fireEvent, render, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
-import { TextResponseFields } from '../../../../../../__generated__/TextResponseFields'
+
+import type { TreeBlock } from '@core/journeys/ui/block'
+import { EditorProvider } from '@core/journeys/ui/EditorProvider'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+
 import { GetJourney_journey as Journey } from '../../../../../../__generated__/GetJourney'
-import { TextResponseEdit, TEXT_RESPONSE_BLOCK_UPDATE_CONTENT } from '.'
+import { TextResponseFields } from '../../../../../../__generated__/TextResponseFields'
+
+import { TEXT_RESPONSE_BLOCK_UPDATE_CONTENT, TextResponseEdit } from '.'
 
 describe('TextResponseEdit', () => {
   const props: TreeBlock<TextResponseFields> = {
@@ -22,6 +25,7 @@ describe('TextResponseEdit', () => {
     action: null,
     children: []
   }
+
   it('selects the input on click', async () => {
     const { getByRole } = render(
       <MockedProvider>
@@ -70,7 +74,7 @@ describe('TextResponseEdit', () => {
           <JourneyProvider
             value={{
               journey: { id: 'journeyId' } as unknown as Journey,
-              admin: true
+              variant: 'admin'
             }}
           >
             <EditorProvider>
@@ -123,7 +127,7 @@ describe('TextResponseEdit', () => {
           <JourneyProvider
             value={{
               journey: { id: 'journeyId' } as unknown as Journey,
-              admin: true
+              variant: 'admin'
             }}
           >
             <EditorProvider>
@@ -176,7 +180,7 @@ describe('TextResponseEdit', () => {
           <JourneyProvider
             value={{
               journey: { id: 'journeyId' } as unknown as Journey,
-              admin: true
+              variant: 'admin'
             }}
           >
             <EditorProvider>

@@ -1,12 +1,15 @@
-import { Story, Meta } from '@storybook/react'
-import type { TreeBlock } from '@core/journeys/ui/block'
 import Stack from '@mui/material/Stack'
+import { Meta, Story } from '@storybook/react'
+
+import type { TreeBlock } from '@core/journeys/ui/block'
+
 import { GetJourney_journey_blocks_CardBlock as CardBlock } from '../../../../../../../__generated__/GetJourney'
-import { journeysAdminConfig } from '../../../../../../libs/storybook'
 import {
-  ThemeName,
-  ThemeMode
+  ThemeMode,
+  ThemeName
 } from '../../../../../../../__generated__/globalTypes'
+import { journeysAdminConfig } from '../../../../../../libs/storybook'
+
 import { Card } from '.'
 
 const CardStory = {

@@ -1,16 +1,20 @@
-import { useTranslation } from 'react-i18next'
-import { ReactElement, useState } from 'react'
-import AddIcon from '@mui/icons-material/Add'
-import EditIcon from '@mui/icons-material/Edit'
+import MoreVert from '@mui/icons-material/MoreVert'
+import Box from '@mui/material/Box'
 import IconButton from '@mui/material/IconButton'
 import Menu from '@mui/material/Menu'
-import MoreVert from '@mui/icons-material/MoreVert'
-import GroupIcon from '@mui/icons-material/Group'
+import { ReactElement, useState } from 'react'
+import { useTranslation } from 'react-i18next'
+
+import Edit2Icon from '@core/shared/ui/icons/Edit2'
+import Plus1Icon from '@core/shared/ui/icons/Plus1'
+import UsersProfiles3Icon from '@core/shared/ui/icons/UsersProfiles3'
+
 import { MenuItem } from '../../MenuItem'
+import { TeamAvatars } from '../TeamAvatars'
 import { TeamCreateDialog } from '../TeamCreateDialog'
-import { TeamUpdateDialog } from '../TeamUpdateDialog'
-import { useTeam } from '../TeamProvider'
 import { TeamManageDialog } from '../TeamManageDialog'
+import { useTeam } from '../TeamProvider'
+import { TeamUpdateDialog } from '../TeamUpdateDialog'
 
 export function TeamMenu(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
@@ -31,6 +35,9 @@ export function TeamMenu(): ReactElement {
     <>
       <TeamCreateDialog
         open={teamCreateOpen}
+        onCreate={() => {
+          setTeamManageOpen(true)
+        }}
         onClose={() => {
           setTeamCreateOpen(false)
         }}
@@ -47,6 +54,16 @@ export function TeamMenu(): ReactElement {
           setTeamManageOpen(false)
         }}
       />
+
+      {activeTeam != null && (
+        <Box sx={{ display: { xs: 'none', sm: 'block' } }}>
+          <TeamAvatars
+            onClick={() => setTeamManageOpen(true)}
+            userTeams={activeTeam.userTeams}
+            size="large"
+          />
+        </Box>
+      )}
       <IconButton edge="end" color="inherit" onClick={handleShowMenu}>
         <MoreVert />
       </IconButton>
@@ -68,31 +85,31 @@ export function TeamMenu(): ReactElement {
         }}
       >
         <MenuItem
-          key="create-new-team"
-          label={t('Create New Team')}
-          icon={<AddIcon />}
+          disabled={activeTeam == null}
+          key="manage-team"
+          label={t('Members')}
+          icon={<UsersProfiles3Icon />}
           onClick={() => {
-            setTeamCreateOpen(true)
+            setTeamManageOpen(true)
             setAnchorEl(null)
           }}
         />
         <MenuItem
           disabled={activeTeam == null}
           key="rename-team"
-          label={t('Rename Team')}
-          icon={<EditIcon />}
+          label={t('Rename')}
+          icon={<Edit2Icon />}
           onClick={() => {
             setTeamUpdateOpen(true)
             setAnchorEl(null)
           }}
         />
         <MenuItem
-          disabled={activeTeam == null}
-          key="manage-team"
-          label={t('Manage Team')}
-          icon={<GroupIcon />}
+          key="create-new-team"
+          label={t('New Team')}
+          icon={<Plus1Icon />}
           onClick={() => {
-            setTeamManageOpen(true)
+            setTeamCreateOpen(true)
             setAnchorEl(null)
           }}
         />

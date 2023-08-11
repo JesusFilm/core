@@ -1,10 +1,13 @@
+import { MockedProvider } from '@apollo/client/testing'
+import GroupAddIcon from '@mui/icons-material/GroupAdd'
+import Stack from '@mui/material/Stack'
+import Typography from '@mui/material/Typography'
 import { Meta, Story } from '@storybook/react'
 import { ComponentProps } from 'react'
-import { MockedProvider } from '@apollo/client/testing'
-import Stack from '@mui/material/Stack'
-import GroupAddIcon from '@mui/icons-material/GroupAdd'
-import Typography from '@mui/material/Typography'
+
+import { UserTeamRole } from '../../../../__generated__/globalTypes'
 import { journeysAdminConfig } from '../../../libs/storybook'
+
 import { UserTeamInviteForm } from './UserTeamInviteForm'
 
 const Demo = {
@@ -22,7 +25,7 @@ const Template: Story<ComponentProps<typeof UserTeamInviteForm>> = () => (
           Add team member by Email
         </Typography>
       </Stack>
-      <UserTeamInviteForm emails={[]} />
+      <UserTeamInviteForm emails={[]} role={UserTeamRole.manager} />
     </Stack>
   </MockedProvider>
 )

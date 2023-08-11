@@ -1,15 +1,18 @@
-import { ReactElement } from 'react'
+import { ApolloQueryResult } from '@apollo/client'
+import DeleteOutlineRoundedIcon from '@mui/icons-material/DeleteOutlineRounded'
 import EditIcon from '@mui/icons-material/Edit'
 import PeopleIcon from '@mui/icons-material/People'
 import VisibilityIcon from '@mui/icons-material/Visibility'
-import DeleteOutlineRoundedIcon from '@mui/icons-material/DeleteOutlineRounded'
 import Divider from '@mui/material/Divider'
 import NextLink from 'next/link'
-import { ApolloQueryResult } from '@apollo/client'
-import { MenuItem } from '../../../../MenuItem'
-import { DuplicateJourneyMenuItem } from '../DuplicateJourneyMenuItem'
-import { JourneyStatus } from '../../../../../../__generated__/globalTypes'
+import { ReactElement } from 'react'
+
 import { GetAdminJourneys } from '../../../../../../__generated__/GetAdminJourneys'
+import { JourneyStatus } from '../../../../../../__generated__/globalTypes'
+import { MenuItem } from '../../../../MenuItem'
+import { CopyToTeamMenuItem } from '../../../../Team/CopyToTeamMenuItem/CopyToTeamMenuItem'
+import { DuplicateJourneyMenuItem } from '../DuplicateJourneyMenuItem'
+
 import { ArchiveJourney } from './ArchiveJourney'
 
 interface DefaultMenuProps {
@@ -49,7 +52,6 @@ export function DefaultMenu({
       >
         <MenuItem label="Edit" icon={<EditIcon color="secondary" />} />
       </NextLink>
-
       {template !== true && (
         <MenuItem
           label="Access"
@@ -68,13 +70,11 @@ export function DefaultMenu({
           openInNew
         />
       </NextLink>
-
       {template !== true && (
         <DuplicateJourneyMenuItem id={id} handleCloseMenu={handleCloseMenu} />
       )}
-
       <Divider />
-
+      <CopyToTeamMenuItem id={id} handleCloseMenu={handleCloseMenu} />
       <ArchiveJourney
         status={status}
         id={journeyId}
@@ -82,7 +82,6 @@ export function DefaultMenu({
         handleClose={handleCloseMenu}
         refetch={refetch}
       />
-
       <MenuItem
         label="Trash"
         icon={<DeleteOutlineRoundedIcon color="secondary" />}

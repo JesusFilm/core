@@ -1,4 +1,5 @@
-import { render, fireEvent, waitFor } from '@testing-library/react'
+import { fireEvent, render, waitFor } from '@testing-library/react'
+
 import { UnsplashSearch } from './UnsplashSearch'
 
 describe('UnsplashSearch', () => {

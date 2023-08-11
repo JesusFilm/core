@@ -1,10 +1,18 @@
-import { render, fireEvent, waitFor } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
-import { EditorProvider } from '@core/journeys/ui/EditorProvider'
+import { fireEvent, render, waitFor } from '@testing-library/react'
+
 import type { TreeBlock } from '@core/journeys/ui/block'
-import { GetJourney_journey_blocks_ButtonBlock as ButtonBlock } from '../../../../../../../../__generated__/GetJourney'
+import { EditorProvider } from '@core/journeys/ui/EditorProvider'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+
+import {
+  GetJourney_journey_blocks_ButtonBlock as ButtonBlock,
+  GetJourney_journey as Journey
+} from '../../../../../../../../__generated__/GetJourney'
 import { ButtonVariant } from '../../../../../../../../__generated__/globalTypes'
+
 import { BUTTON_BLOCK_UPDATE } from './Variant'
+
 import { Variant } from '.'
 
 describe('Button variant selector', () => {
@@ -37,6 +45,7 @@ describe('Button variant selector', () => {
       'Mui-selected'
     )
   })
+
   it('should change the Variant property', async () => {
     const selectedBlock: TreeBlock<ButtonBlock> = {
       __typename: 'ButtonBlock',
@@ -70,7 +79,7 @@ describe('Button variant selector', () => {
               query: BUTTON_BLOCK_UPDATE,
               variables: {
                 id: 'id',
-                journeyId: undefined,
+                journeyId: 'journeyId',
                 input: {
                   variant: 'text'
                 }
@@ -80,15 +89,22 @@ describe('Button variant selector', () => {
           }
         ]}
       >
-        <EditorProvider initialState={{ selectedBlock }}>
-          <Variant />
-        </EditorProvider>
+        <JourneyProvider
+          value={{
+            journey: { id: 'journeyId' } as unknown as Journey,
+            variant: 'admin'
+          }}
+        >
+          <EditorProvider initialState={{ selectedBlock }}>
+            <Variant />
+          </EditorProvider>
+        </JourneyProvider>
       </MockedProvider>
     )
     expect(getByRole('button', { name: 'Contained' })).toHaveClass(
       'Mui-selected'
     )
     fireEvent.click(getByRole('button', { name: 'Text' }))
-    await waitFor(() => expect(() => expect(result).toHaveBeenCalled()))
+    await waitFor(() => expect(result).toHaveBeenCalled())
   })
 })

@@ -63,7 +63,7 @@ jobs:
       - name: Prettier
         run: npx prettier --check .
       - name: lint commit messages
-        run: npx commitlint --from f654382 # earliest good commit to main
+        run: npx commitlint --from 9a45682 # earliest good commit to main
       - name: lint branch name
         if: ${{ github.event_name == 'pull_request' }}
         run: npx validate-branch-name -t $GITHUB_HEAD_REF
@@ -173,7 +173,7 @@ jobs:
         uses: mansagroup/nrwl-nx-action@v3
         with:
           targets: test
-          args: --ci
+          args: --ci --silent
       - name: download codecov
         run: |
           curl -o /usr/local/bin/codecov https://uploader.codecov.io/latest/linux/codecov

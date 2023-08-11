@@ -2,17 +2,19 @@
 
 import { UseGuards } from '@nestjs/common'
 import { Args, Mutation, Parent, ResolveField, Resolver } from '@nestjs/graphql'
-import { GqlAuthGuard } from '@core/nest/gqlAuthGuard/GqlAuthGuard'
-import { CurrentUserId } from '@core/nest/decorators/CurrentUserId'
-import { CurrentUserAgent } from '@core/nest/decorators/CurrentUserAgent'
 import { GraphQLError } from 'graphql'
+
+import { CurrentUserAgent } from '@core/nest/decorators/CurrentUserAgent'
+import { CurrentUserId } from '@core/nest/decorators/CurrentUserId'
+import { GqlAuthGuard } from '@core/nest/gqlAuthGuard/GqlAuthGuard'
+
 import {
   JourneyViewEvent,
   JourneyViewEventCreateInput
 } from '../../../__generated__/graphql'
-import { EventService } from '../event.service'
-import { VisitorService } from '../../visitor/visitor.service'
 import { PrismaService } from '../../../lib/prisma.service'
+import { VisitorService } from '../../visitor/visitor.service'
+import { EventService } from '../event.service'
 
 @Resolver('JourneyViewEvent')
 export class JourneyViewEventResolver {

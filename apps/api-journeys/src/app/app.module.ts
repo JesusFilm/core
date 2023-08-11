@@ -1,27 +1,29 @@
 import { join } from 'path'
-import { Module } from '@nestjs/common'
-import { GraphQLModule } from '@nestjs/graphql'
+
 import {
   ApolloFederationDriver,
   ApolloFederationDriverConfig
 } from '@nestjs/apollo'
-import { LoggerModule } from 'nestjs-pino'
+import { Module } from '@nestjs/common'
+import { GraphQLModule } from '@nestjs/graphql'
 import { DatadogTraceModule } from 'nestjs-ddtrace'
-import { NestHealthModule } from './modules/health/health.module'
+import { LoggerModule } from 'nestjs-pino'
+
 import { ActionModule } from './modules/action/action.module'
 import { BlockModule } from './modules/block/block.module'
-import { JourneyModule } from './modules/journey/journey.module'
 import { EventModule } from './modules/event/event.module'
-import { UserJourneyModule } from './modules/userJourney/userJourney.module'
-import { JourneyProfileModule } from './modules/journeyProfile/journeyProfile.module'
-import { UserRoleModule } from './modules/userRole/userRole.module'
-import { UserInviteModule } from './modules/userInvite/userInvite.module'
-import { VisitorModule } from './modules/visitor/visitor.module'
-import { JourneyVisitorModule } from './modules/journeyVisitor/journeyVisitor.module'
+import { NestHealthModule } from './modules/health/health.module'
 import { HostModule } from './modules/host/host.module'
+import { JourneyModule } from './modules/journey/journey.module'
+import { JourneyProfileModule } from './modules/journeyProfile/journeyProfile.module'
+import { JourneyVisitorModule } from './modules/journeyVisitor/journeyVisitor.module'
 import { TeamModule } from './modules/team/team.module'
+import { UserInviteModule } from './modules/userInvite/userInvite.module'
+import { UserJourneyModule } from './modules/userJourney/userJourney.module'
+import { UserRoleModule } from './modules/userRole/userRole.module'
 import { UserTeamModule } from './modules/userTeam/userTeam.module'
 import { UserTeamInviteModule } from './modules/userTeamInvite/userTeamInvite.module'
+import { VisitorModule } from './modules/visitor/visitor.module'
 
 @Module({
   imports: [

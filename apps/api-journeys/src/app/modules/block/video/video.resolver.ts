@@ -1,22 +1,23 @@
-import { Args, Mutation, Parent, ResolveField, Resolver } from '@nestjs/graphql'
+import { subject } from '@casl/ability'
 import { UseGuards } from '@nestjs/common'
-import { object, string } from 'yup'
-import fetch from 'node-fetch'
+import { Args, Mutation, Parent, ResolveField, Resolver } from '@nestjs/graphql'
 import { GraphQLError } from 'graphql'
-import { Block, VideoBlockSource } from '.prisma/api-journeys-client'
 import omit from 'lodash/omit'
+import fetch from 'node-fetch'
+import { object, string } from 'yup'
 
-import { BlockService } from '../block.service'
+import { Block, VideoBlockSource } from '.prisma/api-journeys-client'
+import { CaslAbility } from '@core/nest/common/CaslAuthModule'
+
 import {
-  Action,
-  Role,
-  UserJourneyRole,
   VideoBlock,
   VideoBlockCreateInput,
   VideoBlockUpdateInput
 } from '../../../__generated__/graphql'
-import { RoleGuard } from '../../../lib/roleGuard/roleGuard'
+import { Action, AppAbility } from '../../../lib/casl/caslFactory'
+import { AppCaslGuard } from '../../../lib/casl/caslGuard'
 import { PrismaService } from '../../../lib/prisma.service'
+import { BlockService } from '../block.service'
 
 const videoBlockYouTubeSchema = object().shape({
   videoId: string().matches(
@@ -96,27 +97,12 @@ export class VideoBlockResolver {
     private readonly prismaService: PrismaService
   ) {}
 
-  @ResolveField()
-  action(@Parent() block: VideoBlock): Action | null {
-    if (block.action == null) return null
-
-    return {
-      ...block.action,
-      parentBlockId: block.id
-    }
-  }
-
   @Mutation()
-  @UseGuards(
-    RoleGuard('input.journeyId', [
-      UserJourneyRole.owner,
-      UserJourneyRole.editor,
-      { role: Role.publisher, attributes: { template: true } }
-    ])
-  )
+  @UseGuards(AppCaslGuard)
   async videoBlockCreate(
+    @CaslAbility() ability: AppAbility,
     @Args('input') input: VideoBlockCreateInput
-  ): Promise<Block & { action?: Action }> {
+  ): Promise<Block> {
     switch (input.source) {
       case VideoBlockSource.youTube:
         await videoBlockYouTubeSchema.validate(input)
@@ -138,86 +124,104 @@ export class VideoBlockResolver {
         await videoBlockInternalSchema.validate(input)
         break
     }
-
-    if (input.isCover === true) {
-      const parentBlock = await this.prismaService.block.findUnique({
-        where: { id: input.parentBlockId },
-        include: { action: true }
-      })
-
-      const coverBlock = await this.blockService.save<Block>({
-        ...omit(input, 'parentBlockId'),
-        id: input.id ?? undefined,
-        typename: 'VideoBlock',
-        journey: {
-          connect: { id: input.journeyId }
-        },
-        parentBlock: { connect: { id: input.parentBlockId } },
-        coverBlockParent: { connect: { id: input.parentBlockId } },
-        parentOrder: null
-      })
-
-      if (parentBlock?.coverBlockId != null) {
-        await this.blockService.removeBlockAndChildren(
-          parentBlock.coverBlockId,
-          input.journeyId
-        )
+    return await this.prismaService.$transaction(async (tx) => {
+      if (input.isCover === true) {
+        const parentBlock = await tx.block.findUnique({
+          where: { id: input.parentBlockId },
+          include: { coverBlock: true }
+        })
+        if (parentBlock == null)
+          throw new GraphQLError('parent block not found', {
+            extensions: { code: 'NOT_FOUND' }
+          })
+        if (parentBlock.coverBlock != null)
+          await this.blockService.removeBlockAndChildren(
+            parentBlock.coverBlock,
+            tx
+          )
       }
-
-      return coverBlock
-    }
-
-    const siblings = await this.blockService.getSiblings(
-      input.journeyId,
-      input.parentBlockId
-    )
-
-    const block = await this.blockService.save<Block>({
-      ...omit(input, 'parentBlockId'),
-      id: input.id ?? undefined,
-      typename: 'VideoBlock',
-      journey: { connect: { id: input.journeyId } },
-      parentBlock: { connect: { id: input.parentBlockId } },
-      parentOrder: siblings.length
+      const block = await tx.block.create({
+        data: {
+          ...omit(
+            input,
+            'parentBlockId',
+            'journeyId',
+            'posterBlockId',
+            'isCover'
+          ),
+          id: input.id ?? undefined,
+          typename: 'VideoBlock',
+          journey: { connect: { id: input.journeyId } },
+          parentBlock: { connect: { id: input.parentBlockId } },
+          posterBlock:
+            input.posterBlockId != null
+              ? { connect: { id: input.posterBlockId } }
+              : undefined,
+          parentOrder:
+            input.isCover === true
+              ? null
+              : (
+                  await this.blockService.getSiblings(
+                    input.journeyId,
+                    input.parentBlockId
+                  )
+                ).length,
+          coverBlockParent:
+            input.isCover === true && input.parentBlockId != null
+              ? { connect: { id: input.parentBlockId } }
+              : undefined,
+          action: {
+            create: {
+              gtmEventName: 'NavigateAction'
+            }
+          }
+        },
+        include: {
+          action: true,
+          journey: {
+            include: {
+              team: { include: { userTeams: true } },
+              userJourneys: true
+            }
+          }
+        }
+      })
+      if (!ability.can(Action.Update, subject('Journey', block.journey)))
+        throw new GraphQLError('user is not allowed to create block', {
+          extensions: { code: 'FORBIDDEN' }
+        })
+      return block
     })
-
-    const action = {
-      parentBlockId: block.id,
-      gtmEventName: 'NavigateAction',
-      blockId: null,
-      journeyId: null,
-      url: null,
-      target: null
-    }
-
-    await this.prismaService.action.create({
-      data: action
-    })
-    return {
-      ...block,
-      action
-    }
   }
 
   @Mutation()
-  @UseGuards(
-    RoleGuard('journeyId', [
-      UserJourneyRole.owner,
-      UserJourneyRole.editor,
-      { role: Role.publisher, attributes: { template: true } }
-    ])
-  )
+  @UseGuards(AppCaslGuard)
   async videoBlockUpdate(
+    @CaslAbility() ability: AppAbility,
     @Args('id') id: string,
-    @Args('journeyId') journeyId: string,
     @Args('input') input: VideoBlockUpdateInput
-  ): Promise<VideoBlock> {
-    console.log('input', input)
+  ): Promise<Block> {
     const block = await this.prismaService.block.findUnique({
       where: { id },
-      include: { action: true }
+      include: {
+        action: true,
+        journey: {
+          include: {
+            team: { include: { userTeams: true } },
+            userJourneys: true
+          }
+        }
+      }
     })
-    switch (input.source ?? block?.source) {
+    if (block == null)
+      throw new GraphQLError('block not found', {
+        extensions: { code: 'NOT_FOUND' }
+      })
+    if (!ability.can(Action.Update, subject('Journey', block.journey)))
+      throw new GraphQLError('user is not allowed to update block', {
+        extensions: { code: 'FORBIDDEN' }
+      })
+    switch (input.source ?? block.source) {
       case VideoBlockSource.youTube:
         await videoBlockYouTubeSchema.validate({ ...block, ...input })
         if (input.videoId != null) {
@@ -258,7 +262,7 @@ export class VideoBlockResolver {
   @ResolveField('video')
   video(
     @Parent()
-    block: VideoBlock
+    block: Block
   ): {
     __typename: 'Video'
     id: string
@@ -281,7 +285,7 @@ export class VideoBlockResolver {
   @ResolveField('source')
   source(
     @Parent()
-    block: VideoBlock
+    block: Block
   ): VideoBlockSource {
     return block.source ?? VideoBlockSource.internal
   }

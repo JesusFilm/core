@@ -1,8 +1,9 @@
+import Stack from '@mui/material/Stack'
+import Box from '@mui/system/Box'
+import { ReactElement, useEffect, useRef } from 'react'
 import videojs from 'video.js'
 import Player from 'video.js/dist/types/player'
-import { ReactElement, useEffect, useRef } from 'react'
-import Box from '@mui/system/Box'
-import Stack from '@mui/material/Stack'
+
 import type { VideoDetailsProps } from '../../VideoDetails/VideoDetails'
 import 'video.js/dist/video-js.css'
 

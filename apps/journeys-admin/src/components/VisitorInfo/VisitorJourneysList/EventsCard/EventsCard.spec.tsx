@@ -1,5 +1,7 @@
 import { fireEvent, render } from '@testing-library/react'
+
 import { journey } from '../utils/data'
+
 import { EventsCard } from '.'
 
 jest.mock('react-i18next', () => ({

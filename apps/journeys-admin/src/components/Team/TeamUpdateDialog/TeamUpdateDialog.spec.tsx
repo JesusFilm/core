@@ -1,17 +1,23 @@
-import { fireEvent, render, waitFor } from '@testing-library/react'
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
-import { SnackbarProvider } from 'notistack'
 import { InMemoryCache } from '@apollo/client'
-import { GET_TEAMS, TeamProvider } from '../TeamProvider'
+import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { fireEvent, render, waitFor } from '@testing-library/react'
+import { SnackbarProvider } from 'notistack'
+
+import { GetLastActiveTeamIdAndTeams } from '../../../../__generated__/GetLastActiveTeamIdAndTeams'
 import { TeamUpdate } from '../../../../__generated__/TeamUpdate'
-import { GetTeams } from '../../../../__generated__/GetTeams'
+import {
+  GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS,
+  TeamProvider
+} from '../TeamProvider'
+
 import { TEAM_UPDATE } from './TeamUpdateDialog'
+
 import { TeamUpdateDialog } from '.'
 
 describe('TeamUpdateDialog', () => {
-  const getTeamsMock: MockedResponse<GetTeams> = {
+  const getTeamsMock: MockedResponse<GetLastActiveTeamIdAndTeams> = {
     request: {
-      query: GET_TEAMS
+      query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
     },
     result: {
       data: {
@@ -19,9 +25,14 @@ describe('TeamUpdateDialog', () => {
           {
             id: 'teamId',
             title: 'Jesus Film Project',
-            __typename: 'Team'
+            __typename: 'Team',
+            userTeams: []
           }
-        ]
+        ],
+        getJourneyProfile: {
+          __typename: 'JourneyProfile',
+          lastActiveTeamId: 'teamId'
+        }
       }
     }
   }

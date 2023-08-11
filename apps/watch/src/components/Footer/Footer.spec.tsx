@@ -1,4 +1,5 @@
 import { render } from '@testing-library/react'
+
 import { Footer } from './Footer'
 
 describe('Footer', () => {
@@ -10,6 +11,7 @@ describe('Footer', () => {
       'https://www.jesusfilm.org/terms/'
     )
   })
+
   it('should have Legal Statement link', () => {
     const { getAllByText, getAllByRole } = render(<Footer />)
     expect(getAllByText('Legal Statement')).toHaveLength(2)

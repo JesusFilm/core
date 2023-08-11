@@ -1,9 +1,12 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { GraphQLResolveInfo, Kind } from 'graphql'
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
-import { Video, VideoVariant, VideoTitle } from '.prisma/api-videos-client'
+
+import { Video, VideoTitle, VideoVariant } from '.prisma/api-videos-client'
+
 import { IdType } from '../../__generated__/graphql'
 import { PrismaService } from '../../lib/prisma.service'
+
 import { LanguageWithSlugResolver, VideoResolver } from './video.resolver'
 import { VideoService } from './video.service'
 
@@ -23,7 +26,8 @@ describe('VideoResolver', () => {
     studyQuestions: [],
     image: '',
     imageAlt: [],
-    noIndex: false
+    noIndex: false,
+    childIds: ['20615', '20615']
   }
 
   const videoVariant: VideoVariant[] = [
@@ -33,8 +37,7 @@ describe('VideoResolver', () => {
       hls: '',
       slug: 'jesus/english',
       languageId: '529',
-      duration: 0,
-      subtitle: []
+      duration: 0
     }
   ]
 
@@ -180,8 +183,9 @@ describe('VideoResolver', () => {
 
   describe('video', () => {
     const info = {
-      fieldNodes: [{ selectionSet: { selections: [] } }]
+      variableValues: {}
     } as unknown as GraphQLResolveInfo
+
     it('return a video', async () => {
       expect(await resolver.video(info, '20615')).toEqual(video)
       expect(prismaService.video.findUnique).toHaveBeenCalledWith({
@@ -202,7 +206,7 @@ describe('VideoResolver', () => {
 
     it('should error on not found', async () => {
       prismaService.video.findUnique.mockResolvedValue(null)
-      await expect(resolver.video(info, '20615')).rejects.toThrowError(
+      await expect(resolver.video(info, '20615')).rejects.toThrow(
         'Video not found'
       )
     })
@@ -223,7 +227,7 @@ describe('VideoResolver', () => {
 
     it('returns children count', async () => {
       prismaService.video.count.mockResolvedValue(2)
-      expect(await resolver.childrenCount(video)).toEqual(2)
+      expect(await resolver.childrenCount(video)).toBe(2)
       expect(prismaService.video.count).toHaveBeenCalledWith({
         where: { parent: { some: { id: video.id } } }
       })
@@ -238,14 +242,14 @@ describe('VideoResolver', () => {
     it('returns videos by childIds without languageId', async () => {
       expect(await resolver.children(video)).toEqual([video, video])
       expect(prismaService.video.findMany).toHaveBeenCalledWith({
-        where: { parent: { some: { id: video.id } } }
+        where: { id: { in: ['20615', '20615'] } }
       })
     })
   })
 
   describe('variantLanguagesCount', () => {
     it('returns variant languages count', async () => {
-      expect(await resolver.variantLanguagesCount(video)).toEqual(1)
+      expect(await resolver.variantLanguagesCount(video)).toBe(1)
       expect(prismaService.videoVariant.count).toHaveBeenCalledWith({
         where: { videoId: video.id }
       })
@@ -275,8 +279,16 @@ describe('VideoResolver', () => {
   })
 
   describe('variant', () => {
+    const info = {
+      variableValues: {
+        idType: IdType.databaseId
+      }
+    } as unknown as GraphQLResolveInfo
+
     it('returns variant with languageId', async () => {
-      expect(await resolver.variant(video, '529')).toEqual(videoVariant[0])
+      expect(await resolver.variant(info, video, '529')).toEqual(
+        videoVariant[0]
+      )
       expect(prismaService.videoVariant.findUnique).toHaveBeenCalledWith({
         where: {
           languageId_videoId: {
@@ -288,13 +300,29 @@ describe('VideoResolver', () => {
     })
 
     it('returns variant without languageId', async () => {
-      expect(await resolver.variant(video)).toEqual(videoVariant[0])
+      expect(await resolver.variant(info, video)).toEqual(videoVariant[0])
       expect(prismaService.videoVariant.findUnique).toHaveBeenCalledWith({
         where: {
           languageId_videoId: {
             languageId: '529',
             videoId: video.id
           }
+        }
+      })
+    })
+
+    it('returns variant with slug', async () => {
+      const info = {
+        variableValues: {
+          id: `${video.slug as string}/english`
+        }
+      } as unknown as GraphQLResolveInfo
+      expect(await resolver.variant(info, video, '529')).toEqual(
+        videoVariant[0]
+      )
+      expect(prismaService.videoVariant.findUnique).toHaveBeenCalledWith({
+        where: {
+          slug: `${video.slug as string}/english`
         }
       })
     })

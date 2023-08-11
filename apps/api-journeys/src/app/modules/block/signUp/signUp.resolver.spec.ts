@@ -1,63 +1,49 @@
 import { Test, TestingModule } from '@nestjs/testing'
+import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
+
+import { Block, Journey, UserTeamRole } from '.prisma/api-journeys-client'
+import { CaslAuthModule } from '@core/nest/common/CaslAuthModule'
 
 import {
-  SignUpBlock,
-  SignUpBlockCreateInput
+  SignUpBlockCreateInput,
+  SignUpBlockUpdateInput
 } from '../../../__generated__/graphql'
-import { UserJourneyService } from '../../userJourney/userJourney.service'
-import { UserRoleService } from '../../userRole/userRole.service'
+import { AppAbility, AppCaslFactory } from '../../../lib/casl/caslFactory'
 import { PrismaService } from '../../../lib/prisma.service'
-import { BlockResolver } from '../block.resolver'
 import { BlockService } from '../block.service'
+
 import { SignUpBlockResolver } from './signUp.resolver'
 
 describe('SignUpBlockResolver', () => {
   let resolver: SignUpBlockResolver,
-    blockResolver: BlockResolver,
     service: BlockService,
-    prismaService: PrismaService
+    prismaService: DeepMockProxy<PrismaService>,
+    ability: AppAbility
 
+  const journey = {
+    team: { userTeams: [{ userId: 'userId', role: UserTeamRole.manager }] }
+  } as unknown as Journey
   const block = {
-    id: '1',
-    journeyId: '2',
-    parentBlockId: '0',
+    id: 'blockId',
+    journeyId: 'journeyId',
+    parentBlockId: 'parentBlockId',
     __typename: 'SignUpBlock',
     parentOrder: 1,
-    action: {
-      gtmEventName: 'gtmEventName',
-      journeyId: '2'
-    },
-    submitIconId: 'icon1',
+    submitIconId: 'submitIconId',
     submitLabel: 'Unlock Now!'
+  } as unknown as Block
+  const blockWithUserTeam = {
+    ...block,
+    journey
   }
-
-  const actionResponse = {
-    ...block.action,
-    parentBlockId: block.id
-  }
-
-  const input: SignUpBlockCreateInput = {
-    id: '1',
-    parentBlockId: '',
-    journeyId: '2',
+  const blockCreateInput: SignUpBlockCreateInput = {
+    id: 'blockId',
+    parentBlockId: 'parentBlockId',
+    journeyId: 'journeyId',
     submitLabel: 'Submit'
   }
-
-  const signUpBlockResponse = {
-    id: input.id,
-    parentBlock: { connect: { id: input.parentBlockId } },
-    journey: {
-      connect: { id: input.journeyId }
-    },
-    journeyId: input.journeyId,
-    typename: 'SignUpBlock',
-    parentOrder: 2,
-    submitLabel: input.submitLabel
-  }
-
-  const blockUpdate = {
-    __typename: 'SignUpBlock',
-    parentBlockId: '0',
+  const blockUpdateInput: SignUpBlockUpdateInput = {
+    parentBlockId: 'parentBlockId',
     submitIconId: 'icon1',
     submitLabel: 'Unlock Later!'
   }
@@ -66,7 +52,6 @@ describe('SignUpBlockResolver', () => {
     provide: BlockService,
     useFactory: () => ({
       getSiblings: jest.fn(() => [block, block]),
-      save: jest.fn((input) => input),
       update: jest.fn((input) => input),
       validateBlock: jest.fn()
     })
@@ -74,73 +59,108 @@ describe('SignUpBlockResolver', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
+      imports: [CaslAuthModule.register(AppCaslFactory)],
       providers: [
-        BlockResolver,
         blockService,
         SignUpBlockResolver,
-        UserJourneyService,
-        UserRoleService,
-        PrismaService
+        {
+          provide: PrismaService,
+          useValue: mockDeep<PrismaService>()
+        }
       ]
     }).compile()
-    blockResolver = module.get<BlockResolver>(BlockResolver)
     resolver = module.get<SignUpBlockResolver>(SignUpBlockResolver)
     service = await module.resolve(BlockService)
-    prismaService = await module.resolve(PrismaService)
-    prismaService.block.findUnique = jest.fn().mockResolvedValueOnce(block)
-    prismaService.block.findMany = jest
-      .fn()
-      .mockResolvedValueOnce([block, block])
-  })
-
-  describe('SignUpBlock', () => {
-    it('returns SignUpBlock', async () => {
-      expect(await blockResolver.block('1')).toEqual(block)
-      expect(await blockResolver.blocks()).toEqual([block, block])
-    })
-  })
-
-  describe('action', () => {
-    it('returns SignUpBlock action with parentBlockId', async () => {
-      expect(await resolver.action(block as unknown as SignUpBlock)).toEqual(
-        actionResponse
-      )
-    })
+    prismaService = module.get<PrismaService>(
+      PrismaService
+    ) as DeepMockProxy<PrismaService>
+    ability = await new AppCaslFactory().createAbility({ id: 'userId' })
   })
 
   describe('SignUpBlockCreate', () => {
+    beforeEach(() => {
+      prismaService.$transaction.mockImplementation(
+        async (callback) => await callback(prismaService)
+      )
+    })
+
     it('creates a SignUpBlock', async () => {
-      await resolver.signUpBlockCreate(input)
-      expect(service.save).toHaveBeenCalledWith(signUpBlockResponse)
+      prismaService.block.create.mockResolvedValueOnce(blockWithUserTeam)
+      expect(
+        await resolver.signUpBlockCreate(ability, blockCreateInput)
+      ).toEqual(blockWithUserTeam)
+      expect(prismaService.block.create).toHaveBeenCalledWith({
+        data: {
+          id: 'blockId',
+          journey: { connect: { id: 'journeyId' } },
+          parentBlock: { connect: { id: 'parentBlockId' } },
+          parentOrder: 2,
+          typename: 'SignUpBlock',
+          submitLabel: 'Submit'
+        },
+        include: {
+          action: true,
+          journey: {
+            include: {
+              team: { include: { userTeams: true } },
+              userJourneys: true
+            }
+          }
+        }
+      })
+      expect(service.getSiblings).toHaveBeenCalledWith(
+        blockCreateInput.journeyId,
+        blockCreateInput.parentBlockId
+      )
+    })
+
+    it('throws error if not authorized', async () => {
+      prismaService.block.create.mockResolvedValueOnce(block)
+      await expect(
+        resolver.signUpBlockCreate(ability, blockCreateInput)
+      ).rejects.toThrow('user is not allowed to create block')
     })
   })
 
   describe('SignUpBlockUpdate', () => {
-    it('updates a SignUpBlock', async () => {
-      const mockValidate = service.validateBlock as jest.MockedFunction<
+    let mockValidate: jest.MockedFunction<typeof service.validateBlock>
+
+    beforeEach(() => {
+      mockValidate = service.validateBlock as jest.MockedFunction<
         typeof service.validateBlock
       >
-      mockValidate.mockResolvedValueOnce(true)
-
-      await resolver.signUpBlockUpdate(block.id, block.journeyId, blockUpdate)
-      expect(service.update).toHaveBeenCalledWith(block.id, blockUpdate)
+      mockValidate.mockResolvedValue(true)
     })
 
-    it('should throw error with an invalid submitIconId', async () => {
-      const mockValidate = service.validateBlock as jest.MockedFunction<
-        typeof service.validateBlock
-      >
+    it('updates a SignUpBlock', async () => {
+      prismaService.block.findUnique.mockResolvedValueOnce(blockWithUserTeam)
+      await resolver.signUpBlockUpdate(ability, 'blockId', blockUpdateInput)
+      expect(service.update).toHaveBeenCalledWith('blockId', blockUpdateInput)
+    })
+
+    it('throw error if submitIconId does not exist', async () => {
       mockValidate.mockResolvedValueOnce(false)
 
-      await resolver
-        .signUpBlockUpdate(block.id, block.journeyId, {
-          ...blockUpdate,
+      await expect(
+        resolver.signUpBlockUpdate(ability, 'blockId', {
+          ...blockUpdateInput,
           submitIconId: 'wrong!'
         })
-        .catch((error) => {
-          expect(error.message).toEqual('Submit icon does not exist')
-        })
-      expect(service.update).not.toHaveBeenCalled()
+      ).rejects.toThrow('Submit icon does not exist')
+    })
+
+    it('throws error if not found', async () => {
+      prismaService.block.findUnique.mockResolvedValueOnce(null)
+      await expect(
+        resolver.signUpBlockUpdate(ability, 'blockId', blockUpdateInput)
+      ).rejects.toThrow('block not found')
+    })
+
+    it('throws error if not authorized', async () => {
+      prismaService.block.findUnique.mockResolvedValueOnce(block)
+      await expect(
+        resolver.signUpBlockUpdate(ability, 'blockId', blockUpdateInput)
+      ).rejects.toThrow('user is not allowed to update block')
     })
   })
 })

@@ -1,11 +1,6 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
-import { NextRouter, useRouter } from 'next/router'
-import { useJourneyDuplicate } from '../../libs/useJourneyDuplicate'
-import {
-  JOURNEY_PROFILE_CREATE,
-  ONBOARDING_TEMPLATE_ID
-} from './TermsAndConditions'
+
 import { TermsAndConditions } from '.'
 
 jest.mock('next/router', () => ({
@@ -13,27 +8,11 @@ jest.mock('next/router', () => ({
   useRouter: jest.fn()
 }))
 
-jest.mock('../../libs/useJourneyDuplicate', () => ({
-  __esModule: true,
-  useJourneyDuplicate: jest.fn()
-}))
-
-const mockUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
-const mockUseJourneyDuplicate = useJourneyDuplicate as jest.MockedFunction<
-  typeof useJourneyDuplicate
->
-
-const duplicateJourney = jest.fn()
-beforeEach(() => {
-  mockUseJourneyDuplicate.mockReturnValue({
-    duplicateJourney
-  })
-})
-afterEach(() => {
-  jest.resetAllMocks()
-})
-
 describe('TermsAndConditions', () => {
+  afterEach(() => {
+    jest.resetAllMocks()
+  })
+
   it('should enable next button when box is checked', async () => {
     const { getByRole } = render(
       <MockedProvider>
@@ -77,7 +56,7 @@ describe('TermsAndConditions', () => {
     )
   })
 
-  it('should link to EULA page', () => {
+  it('should link to community guidelines page', () => {
     const { getByRole } = render(
       <MockedProvider>
         <TermsAndConditions />
@@ -86,44 +65,6 @@ describe('TermsAndConditions', () => {
     expect(getByRole('link', { name: 'Community Guidelines' })).toHaveAttribute(
       'href',
       'https://your.nextstep.is/community-guidelines'
-    )
-  })
-
-  it('should create onboarding journey on button click', async () => {
-    const push = jest.fn()
-    mockUseRouter.mockReturnValue({ push } as unknown as NextRouter)
-
-    const { getByRole } = render(
-      <MockedProvider
-        mocks={[
-          {
-            request: {
-              query: JOURNEY_PROFILE_CREATE
-            },
-            result: {
-              data: {
-                journeyProfileCreate: {
-                  id: 'journeyProfile.id',
-                  userId: 'user.id',
-                  acceptedTermsAt: '1970-01-01T00:00:00.000Z'
-                }
-              }
-            }
-          }
-        ]}
-      >
-        <TermsAndConditions />
-      </MockedProvider>
-    )
-
-    fireEvent.click(getByRole('checkbox'))
-    const nextButton = getByRole('button', { name: 'Next' })
-    fireEvent.click(nextButton)
-
-    await waitFor(() =>
-      expect(duplicateJourney).toHaveBeenCalledWith({
-        id: ONBOARDING_TEMPLATE_ID
-      })
     )
   })
 })

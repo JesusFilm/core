@@ -1,7 +1,10 @@
-import { ReactElement, ReactNode } from 'react'
 import Stack from '@mui/material/Stack'
+import { ReactElement, ReactNode } from 'react'
+
 import { NextImage } from '@core/shared/ui/NextImage'
+
 import type { TreeBlock } from '../../../libs/block'
+import { useJourney } from '../../../libs/JourneyProvider'
 import { ImageFields } from '../../Image/__generated__/ImageFields'
 import { OverlayContent } from '../OverlayContent'
 
@@ -20,6 +23,7 @@ export function ExpandedCover({
   backgroundBlur,
   hasFullscreenVideo = false
 }: ExpandedCoverProps): ReactElement {
+  const { variant } = useJourney()
   const enableVerticalScroll = {
     overflowY: 'scroll',
     // Hide on Firefox https://caniuse.com/?search=scrollbar-width
@@ -29,6 +33,13 @@ export function ExpandedCover({
       display: 'none'
     }
   }
+
+  const background =
+    backgroundColor != null
+      ? imageBlock?.src != null
+        ? `${backgroundColor}4d`
+        : backgroundColor
+      : 'unset'
 
   return (
     <>
@@ -50,8 +61,7 @@ export function ExpandedCover({
           height: '100%',
           WebkitBackdropFilter: 'blur(20px)',
           backdropFilter: 'blur(20px)',
-          background:
-            backgroundColor != null ? `${backgroundColor}4d` : 'unset',
+          background,
           borderRadius: 'inherit',
           overflow: 'hidden'
         }}
@@ -61,7 +71,8 @@ export function ExpandedCover({
           justifyContent="center"
           sx={{
             flexGrow: 1,
-            py: { xs: 26, lg: 8 },
+            pt: { xs: 10, lg: 8 },
+            pb: { xs: 28, sm: 16, lg: 8 },
             ...enableVerticalScroll
           }}
         >
@@ -69,9 +80,14 @@ export function ExpandedCover({
             hasFullscreenVideo={hasFullscreenVideo}
             sx={{
               margin: 'auto',
-              width: '100%',
-              maxWidth: { xs: 'calc(100% - 48px)', lg: 500 },
-              p: { xs: 2, lg: 'auto' }
+              width: {
+                xs:
+                  variant === 'default'
+                    ? 'calc(100% - 48px - env(safe-area-inset-left) - env(safe-area-inset-right))'
+                    : 'calc(100% - 48px)',
+                lg: 500
+              },
+              py: { xs: 4 }
             }}
           >
             {children}

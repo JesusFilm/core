@@ -1,20 +1,22 @@
-import { ReactElement, useState } from 'react'
-import { secondsToMinutes } from '@core/shared/ui/timeFormat'
+import AccessTime from '@mui/icons-material/AccessTime'
+import PlayArrowRounded from '@mui/icons-material/PlayArrowRounded'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Container from '@mui/material/Container'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
-import AccessTime from '@mui/icons-material/AccessTime'
-import PlayArrowRounded from '@mui/icons-material/PlayArrowRounded'
 import Image from 'next/image'
+import { ReactElement, useState } from 'react'
+
+import { secondsToMinutes } from '@core/shared/ui/timeFormat'
+
 import { useVideo } from '../../../../libs/videoContext'
-import { HeroOverlay } from '../../../HeroOverlay'
-import { AudioLanguageButton } from '../../AudioLanguageButton'
-import { ShareButton } from '../../../ShareButton'
-import { DownloadButton } from '../../DownloadButton'
 import { DownloadDialog } from '../../../DownloadDialog'
+import { HeroOverlay } from '../../../HeroOverlay'
+import { ShareButton } from '../../../ShareButton'
 import { ShareDialog } from '../../../ShareDialog'
+import { AudioLanguageButton } from '../../AudioLanguageButton'
+import { DownloadButton } from '../../DownloadButton'
 
 interface VideoHeroOverlayProps {
   handlePlay?: () => void

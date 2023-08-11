@@ -1,79 +1,83 @@
 import { Test, TestingModule } from '@nestjs/testing'
+import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
+
+import {
+  Prisma,
+  Team,
+  UserTeam,
+  UserTeamRole
+} from '.prisma/api-journeys-client'
 import { CaslAuthModule } from '@core/nest/common/CaslAuthModule'
-import { UserTeamRole } from '.prisma/api-journeys-client'
+
+import { AppAbility, AppCaslFactory } from '../../lib/casl/caslFactory'
 import { PrismaService } from '../../lib/prisma.service'
-import { AppCaslFactory } from '../../lib/casl/caslFactory'
+
 import { TeamResolver } from './team.resolver'
 
 describe('TeamResolver', () => {
-  let teamResolver: TeamResolver, prismaService: PrismaService
+  let resolver: TeamResolver,
+    prismaService: DeepMockProxy<PrismaService>,
+    ability: AppAbility
+
+  const team = {
+    id: 'teamId'
+  } as unknown as Team
+  const teamWithUserTeam = {
+    ...team,
+    userTeams: [{ userId: 'userId', role: UserTeamRole.manager }]
+  }
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [CaslAuthModule.register(AppCaslFactory)],
-      providers: [TeamResolver, PrismaService]
+      providers: [
+        TeamResolver,
+        {
+          provide: PrismaService,
+          useValue: mockDeep<PrismaService>()
+        }
+      ]
     }).compile()
-    teamResolver = module.get<TeamResolver>(TeamResolver)
-    prismaService = module.get<PrismaService>(PrismaService)
-    prismaService.team.findMany = jest
-      .fn()
-      .mockResolvedValue([{ id: 'teamId' }])
+    resolver = module.get<TeamResolver>(TeamResolver)
+    prismaService = module.get<PrismaService>(
+      PrismaService
+    ) as DeepMockProxy<PrismaService>
+    ability = await new AppCaslFactory().createAbility({ id: 'userId' })
   })
+
   describe('teams', () => {
     it('fetches accessible teams', async () => {
-      const teams = await teamResolver.teams({
-        userTeams: { some: { userId: 'userId' } }
+      prismaService.team.findMany.mockResolvedValue([team])
+      const teams = await resolver.teams({
+        OR: [{}]
       })
       expect(prismaService.team.findMany).toHaveBeenCalledWith({
         where: {
-          userTeams: { some: { userId: 'userId' } }
+          AND: [{ OR: [{}] }]
         }
       })
-      expect(teams).toEqual([{ id: 'teamId' }])
+      expect(teams).toEqual([team])
     })
   })
 
   describe('team', () => {
     it('fetches team', async () => {
-      const team = {
-        id: 'teamId',
-        userTeams: [
-          {
-            userId: 'userId',
-            role: UserTeamRole.member
-          }
-        ]
-      }
-      prismaService.team.findUnique = jest.fn().mockResolvedValue(team)
-      const ability = await new AppCaslFactory().createAbility({ id: 'userId' })
-      await expect(teamResolver.team(ability, 'teamId')).resolves.toEqual(team)
+      prismaService.team.findUnique.mockResolvedValue(teamWithUserTeam)
+      await expect(resolver.team(ability, 'teamId')).resolves.toEqual(
+        teamWithUserTeam
+      )
     })
 
     it('throws forbidden error if user is not allowed to view team', async () => {
-      const team = {
-        id: 'teamId',
-        userTeams: [
-          {
-            userId: 'userId',
-            role: UserTeamRole.member
-          }
-        ]
-      }
-      prismaService.team.findUnique = jest.fn().mockResolvedValue(team)
-      const ability = await new AppCaslFactory().createAbility({
-        id: 'userId2'
-      })
-      await expect(teamResolver.team(ability, 'teamId')).rejects.toThrow(
+      prismaService.team.findUnique.mockResolvedValue(team)
+      await expect(resolver.team(ability, 'teamId')).rejects.toThrow(
         'user is not allowed to view team'
       )
     })
 
     it('throws not found error if team is not found', async () => {
-      prismaService.team.findUnique = jest.fn().mockResolvedValue(null)
-      const ability = await new AppCaslFactory().createAbility({
-        id: 'userId'
-      })
-      await expect(teamResolver.team(ability, 'teamId')).rejects.toThrow(
+      prismaService.team.findUnique.mockResolvedValue(null)
+      await expect(resolver.team(ability, 'teamId')).rejects.toThrow(
         'team not found'
       )
     })
@@ -81,18 +85,9 @@ describe('TeamResolver', () => {
 
   describe('teamCreate', () => {
     it('creates team with userTeam', async () => {
-      const team = {
-        id: 'teamId',
-        userTeams: [
-          {
-            userId: 'userId',
-            role: UserTeamRole.manager
-          }
-        ]
-      }
-      prismaService.team.create = jest.fn().mockResolvedValue(team)
+      prismaService.team.create.mockResolvedValue(team)
       await expect(
-        teamResolver.teamCreate('userId', { name: 'team' })
+        resolver.teamCreate('userId', { name: 'team' })
       ).resolves.toEqual(team)
       expect(prismaService.team.create).toHaveBeenCalledWith({
         data: {
@@ -110,23 +105,11 @@ describe('TeamResolver', () => {
 
   describe('teamUpdate', () => {
     it('updates team', async () => {
-      const team = {
-        id: 'teamId',
-        userTeams: [
-          {
-            userId: 'userId',
-            role: UserTeamRole.manager
-          }
-        ]
-      }
-      prismaService.team.findUnique = jest.fn().mockResolvedValue(team)
-      prismaService.team.update = jest.fn().mockResolvedValue(team)
-      const ability = await new AppCaslFactory().createAbility({
-        id: 'userId'
-      })
+      prismaService.team.findUnique.mockResolvedValue(teamWithUserTeam)
+      prismaService.team.update.mockResolvedValue(teamWithUserTeam)
       await expect(
-        teamResolver.teamUpdate(ability, 'teamId', { name: 'team' })
-      ).resolves.toEqual(team)
+        resolver.teamUpdate(ability, 'teamId', { name: 'team' })
+      ).resolves.toEqual(teamWithUserTeam)
       expect(prismaService.team.update).toHaveBeenCalledWith({
         where: { id: 'teamId' },
         data: {
@@ -136,32 +119,55 @@ describe('TeamResolver', () => {
     })
 
     it('throws forbidden error if user is not allowed to update team', async () => {
-      const team = {
-        id: 'teamId',
-        userTeams: [
-          {
-            userId: 'userId',
-            role: UserTeamRole.member
-          }
-        ]
-      }
-      prismaService.team.findUnique = jest.fn().mockResolvedValue(team)
-      const ability = await new AppCaslFactory().createAbility({
-        id: 'userId2'
-      })
+      prismaService.team.findUnique.mockResolvedValue(team)
       await expect(
-        teamResolver.teamUpdate(ability, 'teamId', { name: 'team' })
+        resolver.teamUpdate(ability, 'teamId', { name: 'team' })
       ).rejects.toThrow('user is not allowed to update team')
     })
 
     it('throws not found error if team is not found', async () => {
-      prismaService.team.findUnique = jest.fn().mockResolvedValue(null)
-      const ability = await new AppCaslFactory().createAbility({
-        id: 'userId'
-      })
+      prismaService.team.findUnique.mockResolvedValue(null)
       await expect(
-        teamResolver.teamUpdate(ability, 'teamId', { name: 'team' })
+        resolver.teamUpdate(ability, 'teamId', { name: 'team' })
       ).rejects.toThrow('team not found')
+    })
+  })
+
+  describe('userTeams', () => {
+    const team = {
+      id: 'teamId',
+      userTeams: [
+        {
+          userId: 'userId',
+          role: UserTeamRole.manager
+        }
+      ]
+    } as unknown as Team & { userTeams: UserTeam[] }
+
+    it('returns userTeams of parent', async () => {
+      expect(await resolver.userTeams(team)).toEqual(team.userTeams)
+    })
+
+    it('returns userTeams from database', async () => {
+      const userTeams = jest.fn().mockResolvedValue(team.userTeams)
+      prismaService.team.findUnique.mockReturnValue({
+        ...team,
+        userTeams
+      } as unknown as Prisma.Prisma__TeamClient<Team>)
+      await expect(
+        resolver.userTeams({ ...team, userTeams: undefined })
+      ).resolves.toEqual(team.userTeams)
+    })
+
+    it('returns empty array when null', async () => {
+      const userTeams = jest.fn().mockResolvedValue(null)
+      prismaService.team.findUnique.mockReturnValue({
+        ...team,
+        userTeams
+      } as unknown as Prisma.Prisma__TeamClient<Team>)
+      await expect(
+        resolver.userTeams({ ...team, userTeams: undefined })
+      ).resolves.toEqual([])
     })
   })
 })

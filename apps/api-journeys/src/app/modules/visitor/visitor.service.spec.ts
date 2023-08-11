@@ -1,6 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { v4 as uuidv4 } from 'uuid'
+
 import { PrismaService } from '../../lib/prisma.service'
+
 import { VisitorService } from './visitor.service'
 
 jest.mock('uuid', () => ({
@@ -67,6 +69,7 @@ describe('VisitorService', () => {
         endCursor: null
       }
     }
+
     it('returns a visitors connection', async () => {
       expect(
         await service.getList({ first: 50, filter: { teamId: 'teamId' } })

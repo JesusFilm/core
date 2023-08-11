@@ -1,10 +1,11 @@
-import { ComponentProps } from 'react'
-import { Story, Meta } from '@storybook/react'
-import { screen, userEvent } from '@storybook/testing-library'
-
 import { MockedProvider } from '@apollo/client/testing'
-import { JourneyFields as Journey } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
+import { Meta, Story } from '@storybook/react'
+import { screen, userEvent } from '@storybook/testing-library'
+import { ComponentProps } from 'react'
+
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import { JourneyFields as Journey } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
+
 import { simpleComponentConfig } from '../../../../../../../../../libs/storybook'
 
 import { HostAvatarsButton } from './HostAvatarsButton'
@@ -13,7 +14,7 @@ const Demo = {
   ...simpleComponentConfig,
   component: HostAvatarsButton,
   title:
-    'Journeys-Admin/Editor/ControlPanel/Attributes/Footer/HostForm/HostAvatarsButton'
+    'Journeys-Admin/Editor/ControlPanel/Attributes/Footer/HostSidePanel/HostAvatarsButton'
 }
 
 const defaultHost = {
@@ -39,7 +40,10 @@ const Template: Story<ComponentProps<typeof HostAvatarsButton>> = ({
   return (
     <MockedProvider>
       <JourneyProvider
-        value={{ journey: { ...journey, host: { ...defaultHost, ...args } } }}
+        value={{
+          journey: { ...journey, host: { ...defaultHost, ...args } },
+          variant: 'admin'
+        }}
       >
         <HostAvatarsButton />
       </JourneyProvider>

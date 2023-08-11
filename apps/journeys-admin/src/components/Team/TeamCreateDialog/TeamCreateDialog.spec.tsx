@@ -1,14 +1,31 @@
-import { fireEvent, render, waitFor } from '@testing-library/react'
+import { InMemoryCache } from '@apollo/client'
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import useMediaQuery from '@mui/material/useMediaQuery'
+import { fireEvent, render, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 import { ReactElement } from 'react'
-import { InMemoryCache } from '@apollo/client'
-import { TeamProvider, useTeam } from '../TeamProvider'
+
+import { GetLastActiveTeamIdAndTeams } from '../../../../__generated__/GetLastActiveTeamIdAndTeams'
 import { TeamCreate } from '../../../../__generated__/TeamCreate'
 import { TEAM_CREATE } from '../../../libs/useTeamCreateMutation/useTeamCreateMutation'
+import {
+  GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS,
+  TeamProvider,
+  useTeam
+} from '../TeamProvider'
+
 import { TeamCreateDialog } from '.'
 
+jest.mock('@mui/material/useMediaQuery', () => ({
+  __esModule: true,
+  default: jest.fn()
+}))
+
 describe('TeamCreateDialog', () => {
+  beforeEach(() => {
+    ;(useMediaQuery as jest.Mock).mockImplementation(() => true)
+  })
+
   const teamCreateMock: MockedResponse<TeamCreate> = {
     request: {
       query: TEAM_CREATE,
@@ -23,7 +40,8 @@ describe('TeamCreateDialog', () => {
         teamCreate: {
           id: 'teamId',
           title: 'Team Title',
-          __typename: 'Team'
+          __typename: 'Team',
+          userTeams: []
         }
       }
     }
@@ -39,6 +57,25 @@ describe('TeamCreateDialog', () => {
     },
     error: new Error('Team Title already exists.')
   }
+  const getTeamsMock: MockedResponse<GetLastActiveTeamIdAndTeams> = {
+    request: { query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS },
+    result: {
+      data: {
+        teams: [
+          {
+            id: 'teamId1',
+            title: 'Team 1 Title',
+            __typename: 'Team',
+            userTeams: []
+          }
+        ],
+        getJourneyProfile: {
+          __typename: 'JourneyProfile',
+          lastActiveTeamId: null
+        }
+      }
+    }
+  }
   function TestComponent(): ReactElement {
     const { activeTeam } = useTeam()
 
@@ -47,6 +84,7 @@ describe('TeamCreateDialog', () => {
 
   it('creates new team and sets it as active', async () => {
     const handleClose = jest.fn()
+    const handleCreate = jest.fn()
     const cache = new InMemoryCache()
     cache.restore({
       ROOT_QUERY: {
@@ -55,10 +93,14 @@ describe('TeamCreateDialog', () => {
       }
     })
     const { getByRole, getByTestId, getByText } = render(
-      <MockedProvider mocks={[teamCreateMock]} cache={cache}>
+      <MockedProvider mocks={[teamCreateMock, getTeamsMock]} cache={cache}>
         <SnackbarProvider>
           <TeamProvider>
-            <TeamCreateDialog open onClose={handleClose} />
+            <TeamCreateDialog
+              open
+              onClose={handleClose}
+              onCreate={handleCreate}
+            />
             <TestComponent />
           </TeamProvider>
         </SnackbarProvider>
@@ -75,14 +117,20 @@ describe('TeamCreateDialog', () => {
       { __ref: 'Team:teamId' }
     ])
     expect(getByText('{{ teamName }} created.')).toBeInTheDocument()
+    await waitFor(() => expect(handleCreate).toHaveBeenCalled())
   })
 
   it('validates form', async () => {
+    const handleCreate = jest.fn()
     const { getByText, getByRole } = render(
       <MockedProvider mocks={[teamCreateErrorMock]}>
         <SnackbarProvider>
           <TeamProvider>
-            <TeamCreateDialog open onClose={jest.fn()} />
+            <TeamCreateDialog
+              open
+              onClose={jest.fn()}
+              onCreate={handleCreate}
+            />
           </TeamProvider>
         </SnackbarProvider>
       </MockedProvider>

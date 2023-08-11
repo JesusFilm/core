@@ -1,4 +1,4 @@
-import { ReactElement } from 'react'
+import { gql } from '@apollo/client'
 import {
   AuthAction,
   useAuthUser,
@@ -6,20 +6,23 @@ import {
   withAuthUserTokenSSR
 } from 'next-firebase-auth'
 import { NextSeo } from 'next-seo'
+import { useRouter } from 'next/router'
+import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
-import { gql } from '@apollo/client'
+
 import { useFlags } from '@core/shared/ui/FlagsProvider'
-import { JourneyList } from '../src/components/JourneyList'
-import { PageWrapper } from '../src/components/NewPageWrapper'
-import { OnboardingPanelContent } from '../src/components/OnboardingPanelContent'
-import { TeamSelect } from '../src/components/Team/TeamSelect'
-import { TeamMenu } from '../src/components/Team/TeamMenu'
-import { initAndAuthApp } from '../src/libs/initAndAuthApp'
+
 import { AcceptAllInvites } from '../__generated__/AcceptAllInvites'
 import {
   GetOnboardingJourneys,
   GetOnboardingJourneys_onboardingJourneys as OnboardingJourneys
 } from '../__generated__/GetOnboardingJourneys'
+import { JourneyList } from '../src/components/JourneyList'
+import { PageWrapper } from '../src/components/NewPageWrapper'
+import { OnboardingPanelContent } from '../src/components/OnboardingPanelContent'
+import { TeamMenu } from '../src/components/Team/TeamMenu'
+import { TeamSelect } from '../src/components/Team/TeamSelect'
+import { initAndAuthApp } from '../src/libs/initAndAuthApp'
 
 export const ACCEPT_ALL_INVITES = gql`
   mutation AcceptAllInvites {
@@ -54,12 +57,19 @@ function IndexPage({ onboardingJourneys }: IndexPageProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const AuthUser = useAuthUser()
   const { teams } = useFlags()
+  const router = useRouter()
 
   return (
     <>
       <NextSeo title={t('Journeys')} />
       <PageWrapper
-        title={teams ? <TeamSelect /> : t('Journeys')}
+        title={
+          teams ? (
+            <TeamSelect onboarding={router.query.onboarding === 'true'} />
+          ) : (
+            t('Journeys')
+          )
+        }
         authUser={AuthUser}
         menu={teams && <TeamMenu />}
         sidePanelChildren={

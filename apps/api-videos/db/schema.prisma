@@ -1,6 +1,6 @@
 generator client {
   provider        = "prisma-client-js"
-  previewFeatures = ["fullTextSearch"]
+  previewFeatures = ["fullTextSearch", "orderByNulls"]
   output          = env("PRISMA_LOCATION")
 }
 
@@ -36,6 +36,7 @@ model Video {
   imageAlt          Json[]
   slug              String?
   noIndex           Boolean?
+  childIds          String[] // needed for child sort order
   children          Video[]        @relation("ParentChild")
   parent            Video[]        @relation("ParentChild")
   variants          VideoVariant[]
@@ -50,6 +51,8 @@ model VideoTitle {
   primary    Boolean
   videoId    String?
   video      Video?  @relation(fields: [videoId], references: [id], onDelete: Cascade)
+
+  @@unique([videoId, languageId])
 }
 
 enum VideoVariantDownloadQuality {
@@ -74,11 +77,23 @@ model VideoVariant {
   downloads  VideoVariantDownload[]
   duration   Int?
   languageId String
-  subtitle   Json[]
+  subtitle   VideoVariantSubtitle[]
   slug       String
   video      Video?                 @relation(fields: [videoId], references: [id], onDelete: Cascade)
   videoId    String?
 
   @@unique([languageId, videoId])
   @@unique([slug])
+}
+
+model VideoVariantSubtitle {
+  id             String  @id @default(uuid())
+  value          String
+  primary        Boolean
+  languageId     String
+  videoVariantId String
+
+  variant VideoVariant @relation(fields: [videoVariantId], references: [id], onDelete: Cascade)
+
+  @@unique([videoVariantId, languageId])
 }

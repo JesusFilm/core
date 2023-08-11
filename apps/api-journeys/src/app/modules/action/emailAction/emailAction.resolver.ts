@@ -1,16 +1,18 @@
-import { Args, Mutation, Resolver } from '@nestjs/graphql'
+import { subject } from '@casl/ability'
 import { UseGuards } from '@nestjs/common'
+import { Args, Mutation, Resolver } from '@nestjs/graphql'
 import { GraphQLError } from 'graphql'
 import includes from 'lodash/includes'
 import { object, string } from 'yup'
+
 import { Action } from '.prisma/api-journeys-client'
-import { RoleGuard } from '../../../lib/roleGuard/roleGuard'
-import {
-  EmailActionInput,
-  Role,
-  UserJourneyRole
-} from '../../../__generated__/graphql'
+import { CaslAbility } from '@core/nest/common/CaslAuthModule'
+
+import { EmailActionInput } from '../../../__generated__/graphql'
+import { AppAbility, Action as CaslAction } from '../../../lib/casl/caslFactory'
+import { AppCaslGuard } from '../../../lib/casl/caslGuard'
 import { PrismaService } from '../../../lib/prisma.service'
+import { ACTION_UPDATE_RESET } from '../actionUpdateReset'
 
 const emailActionSchema = object({
   email: string().required('Required').email()
@@ -21,23 +23,34 @@ export class EmailActionResolver {
   constructor(private readonly prismaService: PrismaService) {}
 
   @Mutation()
-  @UseGuards(
-    RoleGuard('journeyId', [
-      UserJourneyRole.owner,
-      UserJourneyRole.editor,
-      { role: Role.publisher, attributes: { template: true } }
-    ])
-  )
+  @UseGuards(AppCaslGuard)
   async blockUpdateEmailAction(
+    @CaslAbility() ability: AppAbility,
     @Args('id') id: string,
-    @Args('journeyId') journeyId: string,
     @Args('input') input: EmailActionInput
   ): Promise<Action> {
     const block = await this.prismaService.block.findUnique({
       where: { id },
-      include: { action: true }
+      include: {
+        action: true,
+        journey: {
+          include: {
+            userJourneys: true,
+            team: {
+              include: { userTeams: true }
+            }
+          }
+        }
+      }
     })
-
+    if (block == null)
+      throw new GraphQLError('block not found', {
+        extensions: { code: 'NOT_FOUND' }
+      })
+    if (!ability.can(CaslAction.Update, subject('Journey', block.journey)))
+      throw new GraphQLError('user is not allowed to update block', {
+        extensions: { code: 'FORBIDDEN' }
+      })
     if (
       block == null ||
       !includes(
@@ -65,18 +78,15 @@ export class EmailActionResolver {
       })
     }
 
-    const actionData = {
-      ...input,
-      url: null,
-      target: null
-    }
     return await this.prismaService.action.upsert({
       where: { parentBlockId: id },
-      create: { ...actionData, parentBlock: { connect: { id: block.id } } },
+      create: {
+        ...input,
+        parentBlock: { connect: { id: block.id } }
+      },
       update: {
-        ...actionData,
-        journey: { disconnect: true },
-        block: { disconnect: true }
+        ...ACTION_UPDATE_RESET,
+        ...input
       }
     })
   }

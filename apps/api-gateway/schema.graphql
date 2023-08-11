@@ -695,6 +695,13 @@ type JourneyProfile
   id: ID!
   userId: ID!
   acceptedTermsAt: DateTime
+  lastActiveTeamId: String
+}
+
+input JourneyProfileUpdateInput
+  @join__type(graph: JOURNEYS)
+{
+  lastActiveTeamId: String
 }
 
 input JourneysFilter
@@ -995,43 +1002,125 @@ type Mutation
   blockUpdateEmailAction(id: ID!, journeyId: ID!, input: EmailActionInput!): EmailAction! @join__field(graph: JOURNEYS)
 
   """blockDelete returns the updated sibling blocks on successful delete"""
-  blockDelete(id: ID!, journeyId: ID!, parentBlockId: ID): [Block!]! @join__field(graph: JOURNEYS)
+  blockDelete(
+    id: ID!
+
+    """drop this parameter after merging teams"""
+    journeyId: ID
+
+    """drop this parameter after merging teams"""
+    parentBlockId: ID
+  ): [Block!]! @join__field(graph: JOURNEYS)
 
   """
   blockDuplicate returns the updated block, it's children and sibling blocks on successful duplicate
   """
   blockDuplicate(
     id: ID!
-    journeyId: ID!
 
     """
     parentOrder defines the position to add the duplicated block. Negative values defines the position from the end of the array. Positions greater than the length of the array or null parentOrder will add duplicate at end of the array.
     """
     parentOrder: Int
+
+    """drop this parameter after merging teams"""
+    journeyId: ID
   ): [Block!]! @join__field(graph: JOURNEYS)
-  blockOrderUpdate(id: ID!, journeyId: ID!, parentOrder: Int!): [Block!]! @join__field(graph: JOURNEYS)
+  blockOrderUpdate(
+    id: ID!
+    parentOrder: Int!
+
+    """drop this parameter after merging teams"""
+    journeyId: ID
+  ): [Block!]! @join__field(graph: JOURNEYS)
   buttonBlockCreate(input: ButtonBlockCreateInput!): ButtonBlock! @join__field(graph: JOURNEYS)
-  buttonBlockUpdate(id: ID!, journeyId: ID!, input: ButtonBlockUpdateInput!): ButtonBlock @join__field(graph: JOURNEYS)
+  buttonBlockUpdate(
+    id: ID!
+    input: ButtonBlockUpdateInput!
+
+    """drop this parameter after merging teams"""
+    journeyId: ID
+  ): ButtonBlock @join__field(graph: JOURNEYS)
   cardBlockCreate(input: CardBlockCreateInput!): CardBlock! @join__field(graph: JOURNEYS)
-  cardBlockUpdate(id: ID!, journeyId: ID!, input: CardBlockUpdateInput!): CardBlock! @join__field(graph: JOURNEYS)
+  cardBlockUpdate(
+    id: ID!
+    input: CardBlockUpdateInput!
+
+    """drop this parameter after merging teams"""
+    journeyId: ID
+  ): CardBlock! @join__field(graph: JOURNEYS)
   iconBlockCreate(input: IconBlockCreateInput!): IconBlock! @join__field(graph: JOURNEYS)
-  iconBlockUpdate(id: ID!, journeyId: ID!, input: IconBlockUpdateInput!): IconBlock! @join__field(graph: JOURNEYS)
+  iconBlockUpdate(
+    id: ID!
+    input: IconBlockUpdateInput!
+
+    """drop this parameter after merging teams"""
+    journeyId: ID
+  ): IconBlock! @join__field(graph: JOURNEYS)
   imageBlockCreate(input: ImageBlockCreateInput!): ImageBlock! @join__field(graph: JOURNEYS)
-  imageBlockUpdate(id: ID!, journeyId: ID!, input: ImageBlockUpdateInput!): ImageBlock! @join__field(graph: JOURNEYS)
+  imageBlockUpdate(
+    id: ID!
+    input: ImageBlockUpdateInput!
+
+    """drop this parameter after merging teams"""
+    journeyId: ID
+  ): ImageBlock! @join__field(graph: JOURNEYS)
   radioOptionBlockCreate(input: RadioOptionBlockCreateInput!): RadioOptionBlock! @join__field(graph: JOURNEYS)
+  radioOptionBlockUpdate(
+    id: ID!
+    input: RadioOptionBlockUpdateInput!
+
+    """drop this parameter after merging teams"""
+    journeyId: ID
+  ): RadioOptionBlock! @join__field(graph: JOURNEYS)
   radioQuestionBlockCreate(input: RadioQuestionBlockCreateInput!): RadioQuestionBlock! @join__field(graph: JOURNEYS)
-  radioOptionBlockUpdate(id: ID!, journeyId: ID!, input: RadioOptionBlockUpdateInput!): RadioOptionBlock! @join__field(graph: JOURNEYS)
-  radioQuestionBlockUpdate(id: ID!, journeyId: ID!, parentBlockId: ID!): RadioQuestionBlock! @join__field(graph: JOURNEYS)
+  radioQuestionBlockUpdate(
+    id: ID!
+    parentBlockId: ID!
+
+    """drop this parameter after merging teams"""
+    journeyId: ID
+  ): RadioQuestionBlock! @join__field(graph: JOURNEYS)
   signUpBlockCreate(input: SignUpBlockCreateInput!): SignUpBlock! @join__field(graph: JOURNEYS)
-  signUpBlockUpdate(id: ID!, journeyId: ID!, input: SignUpBlockUpdateInput!): SignUpBlock @join__field(graph: JOURNEYS)
+  signUpBlockUpdate(
+    id: ID!
+    input: SignUpBlockUpdateInput!
+
+    """drop this parameter after merging teams"""
+    journeyId: ID
+  ): SignUpBlock @join__field(graph: JOURNEYS)
   stepBlockCreate(input: StepBlockCreateInput!): StepBlock! @join__field(graph: JOURNEYS)
-  stepBlockUpdate(id: ID!, journeyId: ID!, input: StepBlockUpdateInput!): StepBlock! @join__field(graph: JOURNEYS)
+  stepBlockUpdate(
+    id: ID!
+    input: StepBlockUpdateInput!
+
+    """drop this parameter after merging teams"""
+    journeyId: ID
+  ): StepBlock! @join__field(graph: JOURNEYS)
   textResponseBlockCreate(input: TextResponseBlockCreateInput!): TextResponseBlock! @join__field(graph: JOURNEYS)
-  textResponseBlockUpdate(id: ID!, journeyId: ID!, input: TextResponseBlockUpdateInput!): TextResponseBlock @join__field(graph: JOURNEYS)
+  textResponseBlockUpdate(
+    id: ID!
+    input: TextResponseBlockUpdateInput!
+
+    """drop this parameter after merging teams"""
+    journeyId: ID
+  ): TextResponseBlock @join__field(graph: JOURNEYS)
   typographyBlockCreate(input: TypographyBlockCreateInput!): TypographyBlock! @join__field(graph: JOURNEYS)
-  typographyBlockUpdate(id: ID!, journeyId: ID!, input: TypographyBlockUpdateInput!): TypographyBlock! @join__field(graph: JOURNEYS)
+  typographyBlockUpdate(
+    id: ID!
+    input: TypographyBlockUpdateInput!
+
+    """drop this parameter after merging teams"""
+    journeyId: ID
+  ): TypographyBlock! @join__field(graph: JOURNEYS)
   videoBlockCreate(input: VideoBlockCreateInput!): VideoBlock! @join__field(graph: JOURNEYS)
-  videoBlockUpdate(id: ID!, journeyId: ID!, input: VideoBlockUpdateInput!): VideoBlock! @join__field(graph: JOURNEYS)
+  videoBlockUpdate(
+    id: ID!
+    input: VideoBlockUpdateInput!
+
+    """drop this parameter after merging teams"""
+    journeyId: ID
+  ): VideoBlock! @join__field(graph: JOURNEYS)
   chatButtonCreate(journeyId: ID!, input: ChatButtonCreateInput): ChatButton! @join__field(graph: JOURNEYS)
   chatButtonUpdate(id: ID!, journeyId: ID!, input: ChatButtonUpdateInput!): ChatButton! @join__field(graph: JOURNEYS)
   chatButtonRemove(id: ID!): ChatButton! @join__field(graph: JOURNEYS)
@@ -1053,8 +1142,8 @@ type Mutation
   hostCreate(teamId: ID!, input: HostCreateInput!): Host! @join__field(graph: JOURNEYS)
   hostUpdate(id: ID!, teamId: ID!, input: HostUpdateInput): Host! @join__field(graph: JOURNEYS)
   hostDelete(id: ID!, teamId: ID!): Host! @join__field(graph: JOURNEYS)
-  journeyCreate(input: JourneyCreateInput!, teamId: ID): Journey! @join__field(graph: JOURNEYS)
-  journeyDuplicate(id: ID!, teamId: ID): Journey! @join__field(graph: JOURNEYS)
+  journeyCreate(input: JourneyCreateInput!, teamId: ID!): Journey! @join__field(graph: JOURNEYS)
+  journeyDuplicate(id: ID!, teamId: ID!): Journey! @join__field(graph: JOURNEYS)
   journeyUpdate(id: ID!, input: JourneyUpdateInput!): Journey! @join__field(graph: JOURNEYS)
 
   """Sets journey status to published"""
@@ -1075,6 +1164,7 @@ type Mutation
   """Updates template"""
   journeyTemplate(id: ID!, input: JourneyTemplateInput!): Journey! @join__field(graph: JOURNEYS)
   journeyProfileCreate: JourneyProfile! @join__field(graph: JOURNEYS)
+  journeyProfileUpdate(input: JourneyProfileUpdateInput!): JourneyProfile! @join__field(graph: JOURNEYS)
   teamCreate(input: TeamCreateInput): Team! @join__field(graph: JOURNEYS)
   teamUpdate(id: ID!, input: TeamUpdateInput): Team! @join__field(graph: JOURNEYS)
   userInviteCreate(journeyId: ID!, input: UserInviteCreateInput): UserInvite @join__field(graph: JOURNEYS)
@@ -1086,7 +1176,12 @@ type Mutation
 
   """Removes all userJourneys associated with a journeyId"""
   userJourneyRemoveAll(id: ID!): [UserJourney!]! @join__field(graph: JOURNEYS)
-  userJourneyRequest(journeyId: ID!, idType: IdType): UserJourney! @join__field(graph: JOURNEYS)
+  userJourneyRequest(
+    journeyId: ID!
+
+    """drop this parameter after merging teams"""
+    idType: IdType
+  ): UserJourney! @join__field(graph: JOURNEYS)
   userJourneyOpen(id: ID!): UserJourney @join__field(graph: JOURNEYS)
   userTeamUpdate(id: ID!, input: UserTeamUpdateInput): UserTeam! @join__field(graph: JOURNEYS)
   userTeamDelete(id: ID!): UserTeam! @join__field(graph: JOURNEYS)
@@ -1220,16 +1315,13 @@ type Query
   """
   adminJourneys(status: [JourneyStatus!], template: Boolean, teamId: ID): [Journey!]! @join__field(graph: JOURNEYS)
   adminJourneysReport(reportType: JourneysReportType!): PowerBiEmbed @join__field(graph: JOURNEYS)
-  adminJourney(id: ID!, idType: IdType): Journey @join__field(graph: JOURNEYS)
+  adminJourney(id: ID!, idType: IdType): Journey! @join__field(graph: JOURNEYS)
   journeys(where: JourneysFilter): [Journey!]! @join__field(graph: JOURNEYS)
-  journey(id: ID!, idType: IdType): Journey @join__field(graph: JOURNEYS)
+  journey(id: ID!, idType: IdType): Journey! @join__field(graph: JOURNEYS)
   getJourneyProfile: JourneyProfile @join__field(graph: JOURNEYS)
 
   """Get a list of Visitor Information by Journey"""
   journeyVisitorsConnection(
-    """Returns the visitor items related to a specific team."""
-    teamId: String!
-
     """Returns the elements in the list that match the specified filter."""
     filter: JourneyVisitorFilter!
 
@@ -1256,7 +1348,7 @@ type Query
   """A list of visitors that are connected with a specific team."""
   visitorsConnection(
     """Returns the visitor items related to a specific team."""
-    teamId: String!
+    teamId: String
 
     """Returns the first n elements from the list."""
     first: Int
@@ -1571,6 +1663,7 @@ type Team
   title: String!
   createdAt: DateTime!
   updatedAt: DateTime!
+  userTeams: [UserTeam!]!
 }
 
 input TeamCreateInput

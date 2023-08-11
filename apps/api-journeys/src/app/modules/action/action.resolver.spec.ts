@@ -1,270 +1,169 @@
 import { Test, TestingModule } from '@nestjs/testing'
+import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 
-import { Action, RadioOptionBlock } from '../../__generated__/graphql'
-import { BlockResolver } from '../block/block.resolver'
-import { BlockService } from '../block/block.service'
-import { UserJourneyService } from '../userJourney/userJourney.service'
-import { UserRoleService } from '../userRole/userRole.service'
+import { Action, Block, Journey } from '.prisma/api-journeys-client'
+import { CaslAuthModule } from '@core/nest/common/CaslAuthModule'
+
+import { UserTeamRole } from '../../__generated__/graphql'
+import { AppAbility, AppCaslFactory } from '../../lib/casl/caslFactory'
 import { PrismaService } from '../../lib/prisma.service'
+import { BlockService } from '../block/block.service'
+import { UserRoleService } from '../userRole/userRole.service'
+
 import { ActionResolver } from './action.resolver'
 
 describe('ActionResolver', () => {
   let resolver: ActionResolver,
-    blockResolver: BlockResolver,
-    prismaService: PrismaService
+    prismaService: DeepMockProxy<PrismaService>,
+    ability: AppAbility
 
-  const block1 = {
+  const journey = {
+    team: { userTeams: [{ userId: 'userId', role: UserTeamRole.manager }] }
+  } as unknown as Journey
+
+  const block = {
     id: '1',
     journeyId: '2',
     typename: 'RadioOptionBlock',
     parentBlockId: '3',
     parentOrder: 3,
     label: 'label',
-    description: 'description',
-    action: {
-      parentBlockId: '1',
-      gtmEventName: 'gtmEventName',
-      blockId: '4'
-    }
+    description: 'description'
+  } as unknown as Block
+  const blockWithUserTeam = {
+    ...block,
+    journey
+  }
+  const emailAction: Action = {
+    parentBlockId: 'parentBlockId',
+    gtmEventName: 'gtmEventName',
+    updatedAt: new Date(),
+    blockId: null,
+    journeyId: null,
+    target: null,
+    url: null,
+    email: 'john.smith@example.com'
+  }
+  const linkAction: Action = {
+    parentBlockId: 'parentBlockId',
+    gtmEventName: 'gtmEventName',
+    updatedAt: new Date(),
+    blockId: null,
+    journeyId: null,
+    target: 'target',
+    url: 'https://google.com',
+    email: null
+  }
+  const navigateAction: Action = {
+    parentBlockId: 'parentBlockId',
+    gtmEventName: 'gtmEventName',
+    updatedAt: new Date(),
+    blockId: null,
+    journeyId: null,
+    target: null,
+    url: null,
+    email: null
+  }
+  const navigateToBlockAction: Action = {
+    parentBlockId: 'parentBlockId',
+    gtmEventName: 'gtmEventName',
+    updatedAt: new Date(),
+    blockId: '4',
+    journeyId: null,
+    target: null,
+    url: null,
+    email: null
+  }
+  const navigateToJourneyAction: Action = {
+    parentBlockId: 'parentBlockId',
+    gtmEventName: 'gtmEventName',
+    updatedAt: new Date(),
+    blockId: null,
+    journeyId: '4',
+    target: null,
+    url: null,
+    email: null
   }
 
-  const block2 = {
-    ...block1,
-    action: {
-      parentBlockId: '1',
-      gtmEventName: 'gtmEventName',
-      journeyId: '4'
-    }
-  }
-
-  const block3 = {
-    ...block1,
-    action: {
-      parentBlockId: '1',
-      gtmEventName: 'gtmEventName',
-      url: 'https://google.com'
-    }
-  }
-
-  const block4 = {
-    ...block1,
-    action: {
-      parentBlockId: '1',
-      gtmEventName: 'gtmEventName',
-      url: 'https://google.com'
-    }
-  }
-
-  const block5 = {
-    ...block1,
-    action: {
-      parentBlockId: '1',
-      gtmEventName: 'gtmEventName',
-      email: 'imissedmondshen@gmail.com'
-    }
-  }
+  beforeEach(async () => {
+    const module: TestingModule = await Test.createTestingModule({
+      imports: [CaslAuthModule.register(AppCaslFactory)],
+      providers: [
+        ActionResolver,
+        BlockService,
+        UserRoleService,
+        {
+          provide: PrismaService,
+          useValue: mockDeep<PrismaService>()
+        }
+      ]
+    }).compile()
+    resolver = module.get<ActionResolver>(ActionResolver)
+    prismaService = module.get<PrismaService>(
+      PrismaService
+    ) as DeepMockProxy<PrismaService>
+    ability = await new AppCaslFactory().createAbility({ id: 'userId' })
+  })
 
   describe('__resolveType', () => {
-    beforeEach(async () => {
-      const module: TestingModule = await Test.createTestingModule({
-        providers: [
-          BlockService,
-          ActionResolver,
-          UserJourneyService,
-          UserRoleService,
-          PrismaService
-        ]
-      }).compile()
-      resolver = module.get<ActionResolver>(ActionResolver)
-    })
-
-    it('returns NavigateAction', () => {
-      const action = {
-        blockId: null,
-        journeyId: null,
-        url: null,
-        target: null
-      } as unknown as Action
-      expect(resolver.__resolveType(action)).toBe('NavigateAction')
-    })
-
-    it('returns NavigateToBlockAction', () => {
-      const action = {
-        blockId: '4',
-        journeyId: null,
-        url: null,
-        target: null
-      } as unknown as Action
-      expect(resolver.__resolveType(action)).toBe('NavigateToBlockAction')
-    })
-
-    it('returns NavigateToJourneyAction', () => {
-      const action = {
-        blockId: null,
-        journeyId: '4',
-        url: null,
-        target: null
-      } as unknown as Action
-      expect(resolver.__resolveType(action)).toBe('NavigateToJourneyAction')
+    it('returns EmailAction', () => {
+      expect(resolver.__resolveType(emailAction)).toBe('EmailAction')
     })
 
     it('returns LinkAction', () => {
-      const action = {
-        blockId: null,
-        journeyId: null,
-        url: 'https://google.com',
-        target: 'target'
-      } as unknown as Action
-      expect(resolver.__resolveType(action)).toBe('LinkAction')
+      expect(resolver.__resolveType(linkAction)).toBe('LinkAction')
     })
 
-    it('returns EmailAction', () => {
-      const action = {
-        blockId: null,
-        journeyId: null,
-        target: null,
-        url: null,
-        email: 'imissedmondshen@gmail.com'
-      } as unknown as Action
-      expect(resolver.__resolveType(action)).toBe('EmailAction')
+    it('returns NavigateAction', () => {
+      expect(resolver.__resolveType(navigateAction)).toBe('NavigateAction')
     })
-  })
 
-  describe('NavigateToBlockAction', () => {
-    beforeEach(async () => {
-      const module: TestingModule = await Test.createTestingModule({
-        providers: [
-          BlockResolver,
-          BlockService,
-          UserJourneyService,
-          UserRoleService,
-          PrismaService
-        ]
-      }).compile()
-      blockResolver = module.get<BlockResolver>(BlockResolver)
-      prismaService = module.get<PrismaService>(PrismaService)
-      prismaService.block.findUnique = jest.fn().mockReturnValue(block1)
+    it('returns NavigateToBlockAction', () => {
+      expect(resolver.__resolveType(navigateToBlockAction)).toBe(
+        'NavigateToBlockAction'
+      )
     })
-    it('returns NavigateToBlockAction', async () => {
-      expect(await blockResolver.block('1')).toEqual(block1)
-      expect(
-        ((await blockResolver.block('1')) as RadioOptionBlock).action
-      ).toHaveProperty('blockId')
-    })
-  })
 
-  describe('NavigateToJourneyAction', () => {
-    beforeEach(async () => {
-      const module: TestingModule = await Test.createTestingModule({
-        providers: [
-          BlockResolver,
-          BlockService,
-          UserJourneyService,
-          UserRoleService,
-          PrismaService
-        ]
-      }).compile()
-      blockResolver = module.get<BlockResolver>(BlockResolver)
-      prismaService = module.get<PrismaService>(PrismaService)
-      prismaService.block.findUnique = jest.fn().mockReturnValue(block2)
-    })
-    it('returns NavigateToBlockAction', async () => {
-      expect(await blockResolver.block('1')).toEqual(block2)
-      expect(
-        ((await blockResolver.block('1')) as RadioOptionBlock).action
-      ).toHaveProperty('journeyId')
-    })
-  })
-
-  describe('LinkAction', () => {
-    beforeEach(async () => {
-      const module: TestingModule = await Test.createTestingModule({
-        providers: [
-          BlockResolver,
-          BlockService,
-          UserJourneyService,
-          UserRoleService,
-          PrismaService
-        ]
-      }).compile()
-      blockResolver = module.get<BlockResolver>(BlockResolver)
-      prismaService = module.get<PrismaService>(PrismaService)
-      prismaService.block.findUnique = jest.fn().mockReturnValue(block3)
-    })
-    it('returns LinkAction', async () => {
-      expect(await blockResolver.block('1')).toEqual(block3)
-      expect(
-        ((await blockResolver.block('1')) as RadioOptionBlock).action
-      ).toHaveProperty('url')
-    })
-  })
-
-  describe('EmailAction', () => {
-    beforeEach(async () => {
-      const module: TestingModule = await Test.createTestingModule({
-        providers: [
-          BlockResolver,
-          BlockService,
-          UserJourneyService,
-          UserRoleService,
-          PrismaService
-        ]
-      }).compile()
-      blockResolver = module.get<BlockResolver>(BlockResolver)
-      prismaService = module.get<PrismaService>(PrismaService)
-      prismaService.block.findUnique = jest.fn().mockReturnValue(block5)
-    })
-    it('returns EmailAction', async () => {
-      expect(await blockResolver.block('1')).toEqual(block5)
-      expect(
-        ((await blockResolver.block('1')) as RadioOptionBlock).action
-      ).toHaveProperty('email')
-    })
-  })
-
-  describe('NavigateAction', () => {
-    beforeEach(async () => {
-      const module: TestingModule = await Test.createTestingModule({
-        providers: [
-          BlockResolver,
-          BlockService,
-          UserJourneyService,
-          UserRoleService,
-          PrismaService
-        ]
-      }).compile()
-      blockResolver = module.get<BlockResolver>(BlockResolver)
-      prismaService = module.get<PrismaService>(PrismaService)
-      prismaService.block.findUnique = jest.fn().mockReturnValueOnce(block4)
-    })
-    it('returns NavigateAction', async () => {
-      expect(await blockResolver.block('1')).toEqual(block4)
+    it('returns NavigateToJourneyAction', () => {
+      expect(resolver.__resolveType(navigateToJourneyAction)).toBe(
+        'NavigateToJourneyAction'
+      )
     })
   })
 
   describe('blockDeleteAction', () => {
-    const emptyAction = { action: null }
-    beforeEach(async () => {
-      const module: TestingModule = await Test.createTestingModule({
-        providers: [
-          BlockService,
-          ActionResolver,
-          UserJourneyService,
-          UserRoleService,
-          PrismaService
-        ]
-      }).compile()
-      resolver = module.get<ActionResolver>(ActionResolver)
-      prismaService = module.get<PrismaService>(PrismaService)
-      prismaService.block.findUnique = jest.fn().mockReturnValueOnce(block1)
-      prismaService.action.delete = jest.fn().mockReturnValueOnce(emptyAction)
-    })
-    it('removes the block action', async () => {
-      await resolver.blockDeleteAction(block1.id, block1.journeyId)
+    it('deletes the block action', async () => {
+      prismaService.block.findUnique.mockResolvedValueOnce(blockWithUserTeam)
+      await resolver.blockDeleteAction(ability, blockWithUserTeam.id)
 
       expect(prismaService.action.delete).toHaveBeenCalledWith({
-        where: { parentBlockId: block1.id }
+        where: { parentBlockId: blockWithUserTeam.id }
       })
+    })
+
+    it('throws an error if typename is wrong', async () => {
+      const wrongBlock = {
+        ...blockWithUserTeam,
+        typename: 'WrongBlock'
+      }
+      prismaService.block.findUnique.mockResolvedValueOnce(wrongBlock)
+      await expect(
+        resolver.blockDeleteAction(ability, wrongBlock.id)
+      ).rejects.toThrow('This block does not support actions')
+    })
+
+    it('throws error if not found', async () => {
+      prismaService.block.findUnique.mockResolvedValueOnce(null)
+      await expect(
+        resolver.blockDeleteAction(ability, block.id)
+      ).rejects.toThrow('block not found')
+    })
+
+    it('throws error if not authorized', async () => {
+      prismaService.block.findUnique.mockResolvedValueOnce(block)
+      await expect(
+        resolver.blockDeleteAction(ability, block.id)
+      ).rejects.toThrow('user is not allowed to update block')
     })
   })
 })

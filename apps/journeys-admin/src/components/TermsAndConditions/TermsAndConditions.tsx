@@ -1,28 +1,27 @@
-import { ReactElement, useState } from 'react'
-import Typography from '@mui/material/Typography'
-import Checkbox from '@mui/material/Checkbox'
-import Stack from '@mui/material/Stack'
-import List from '@mui/material/List'
+import { gql, useMutation } from '@apollo/client'
+import ArrowForwardIcon from '@mui/icons-material/ArrowForward'
+import BeenhereRoundedIcon from '@mui/icons-material/BeenhereRounded'
 import NewReleasesRoundedIcon from '@mui/icons-material/NewReleasesRounded'
 import SupervisorAccountRoundedIcon from '@mui/icons-material/SupervisorAccountRounded'
-import BeenhereRoundedIcon from '@mui/icons-material/BeenhereRounded'
-import ArrowForwardIcon from '@mui/icons-material/ArrowForward'
-import Image from 'next/image'
+import Button from '@mui/material/Button'
+import Checkbox from '@mui/material/Checkbox'
 import Divider from '@mui/material/Divider'
-import { gql, useMutation } from '@apollo/client'
 import Link from '@mui/material/Link'
-import { useRouter } from 'next/router'
+import List from '@mui/material/List'
 import ListItemButton from '@mui/material/ListItemButton'
 import ListItemIcon from '@mui/material/ListItemIcon'
 import ListItemText from '@mui/material/ListItemText'
-import Button from '@mui/material/Button'
+import Stack from '@mui/material/Stack'
+import Typography from '@mui/material/Typography'
 import Box from '@mui/system/Box'
-import taskbarIcon from '../../../public/taskbar-icon.svg'
-import { JourneyProfileCreate } from '../../../__generated__/JourneyProfileCreate'
-import { useJourneyDuplicate } from '../../libs/useJourneyDuplicate'
-import { TermsListItem } from './TermsListItem'
+import Image from 'next/image'
+import { useRouter } from 'next/router'
+import { ReactElement, useState } from 'react'
 
-export const ONBOARDING_TEMPLATE_ID = '9d9ca229-9fb5-4d06-a18c-2d1a4ceba457'
+import { JourneyProfileCreate } from '../../../__generated__/JourneyProfileCreate'
+import taskbarIcon from '../../../public/taskbar-icon.svg'
+
+import { TermsListItem } from './TermsListItem'
 
 export const JOURNEY_PROFILE_CREATE = gql`
   mutation JourneyProfileCreate {
@@ -39,13 +38,11 @@ export function TermsAndConditions(): ReactElement {
   const [journeyProfileCreate] = useMutation<JourneyProfileCreate>(
     JOURNEY_PROFILE_CREATE
   )
-  const { duplicateJourney } = useJourneyDuplicate()
   const router = useRouter()
 
   const handleJourneyProfileCreate = async (): Promise<void> => {
     await journeyProfileCreate()
-    await duplicateJourney({ id: ONBOARDING_TEMPLATE_ID })
-    await router.push('/')
+    await router.push('/?onboarding=true')
   }
 
   return (

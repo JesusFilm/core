@@ -1,19 +1,23 @@
-import { ReactElement } from 'react'
 import TextField from '@mui/material/TextField'
-import { Dialog } from '@core/shared/ui/Dialog'
-import { Form, FormikValues, FormikHelpers } from 'formik'
-import { useTranslation } from 'react-i18next'
 import Typography from '@mui/material/Typography'
+import { Form, FormikHelpers, FormikValues } from 'formik'
+import { ReactElement } from 'react'
+import { useTranslation } from 'react-i18next'
+
+import { Dialog } from '@core/shared/ui/Dialog'
+
 import { TeamCreateForm } from '../TeamCreateForm'
 
 interface TeamCreateDialogProps {
   open: boolean
   onClose: () => void
+  onCreate: () => void
 }
 
 export function TeamCreateDialog({
   open,
-  onClose
+  onClose,
+  onCreate
 }: TeamCreateDialogProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
 
@@ -22,6 +26,7 @@ export function TeamCreateDialog({
     { resetForm }: FormikHelpers<FormikValues>
   ): Promise<void> {
     handleClose(resetForm)()
+    onCreate()
   }
 
   function handleClose(
@@ -36,13 +41,22 @@ export function TeamCreateDialog({
 
   return (
     <TeamCreateForm onSubmit={handleSubmit}>
-      {({ values, errors, handleChange, handleSubmit, resetForm }) => (
+      {({
+        values,
+        errors,
+        handleChange,
+        handleSubmit,
+        resetForm,
+        isSubmitting
+      }) => (
         <Dialog
           open={open}
           onClose={handleClose(resetForm)}
           dialogTitle={{ title: t('Create Team') }}
           dialogAction={{
-            onSubmit: handleSubmit,
+            onSubmit: () => {
+              if (!isSubmitting) handleSubmit()
+            },
             closeLabel: t('Cancel'),
             submitLabel: t('Create')
           }}

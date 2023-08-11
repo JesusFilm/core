@@ -1,44 +1,45 @@
-import { ReactElement } from 'react'
-import Box from '@mui/material/Box'
-import { BlockRenderer } from '@core/journeys/ui/BlockRenderer'
-import type { TreeBlock } from '@core/journeys/ui/block'
-import { useJourney } from '@core/journeys/ui/JourneyProvider'
-import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
+import { useQuery } from '@apollo/client'
 import AddIcon from '@mui/icons-material/Add'
+import DragHandleRounded from '@mui/icons-material/DragHandleRounded'
+import Box from '@mui/material/Box'
 import Card from '@mui/material/Card'
 import CardActionArea from '@mui/material/CardActionArea'
-import DragHandleRounded from '@mui/icons-material/DragHandleRounded'
+import Divider from '@mui/material/Divider'
+import Image from 'next/image'
+import { ReactElement } from 'react'
 import {
   Draggable,
-  DroppableProvided,
   DraggableProvided,
-  DraggableStateSnapshot
+  DraggableStateSnapshot,
+  DroppableProvided
 } from 'react-beautiful-dnd'
-import { getJourneyRTL } from '@core/journeys/ui/rtl'
+
+import type { TreeBlock } from '@core/journeys/ui/block'
+import { BlockRenderer } from '@core/journeys/ui/BlockRenderer'
 import {
   ActiveJourneyEditContent,
   useEditor
 } from '@core/journeys/ui/EditorProvider'
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import { getJourneyRTL } from '@core/journeys/ui/rtl'
 import Target from '@core/shared/ui/icons/Target'
 import ThumbsUp from '@core/shared/ui/icons/ThumbsUp'
-import Divider from '@mui/material/Divider'
-import Image from 'next/image'
+import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 
-import { useQuery } from '@apollo/client'
-import { FramePortal } from '../../FramePortal'
-import {
-  ThemeName,
-  ThemeMode,
-  Role
-} from '../../../../__generated__/globalTypes'
-import { HorizontalSelect } from '../../HorizontalSelect'
-import { VideoWrapper } from '../../Editor/Canvas/VideoWrapper'
-import { CardWrapper } from '../../Editor/Canvas/CardWrapper'
 import { BlockFields_StepBlock as StepBlock } from '../../../../__generated__/BlockFields'
-import { NavigationCard } from '../NavigationCard'
-import { useSocialPreview } from '../../Editor/SocialProvider'
 import { GetUserRole } from '../../../../__generated__/GetUserRole'
+import {
+  Role,
+  ThemeMode,
+  ThemeName
+} from '../../../../__generated__/globalTypes'
+import { CardWrapper } from '../../Editor/Canvas/CardWrapper'
+import { VideoWrapper } from '../../Editor/Canvas/VideoWrapper'
+import { useSocialPreview } from '../../Editor/SocialProvider'
+import { FramePortal } from '../../FramePortal'
+import { HorizontalSelect } from '../../HorizontalSelect'
 import { GET_USER_ROLE } from '../../JourneyView/JourneyView'
+import { NavigationCard } from '../NavigationCard'
 
 interface CardListProps {
   steps: Array<TreeBlock<StepBlock>>
@@ -114,7 +115,6 @@ export function CardList({
       id={selectedId}
       isDragging={isDragging}
       footer={showAddButton === true && <AddCardSlide />}
-      view={journeyEditContentComponent}
     >
       {showNavigation === true && (
         <NavigationCard
@@ -123,9 +123,6 @@ export function CardList({
           testId="goals-navigation-card"
           title="Goals"
           destination={ActiveJourneyEditContent.Action}
-          outlined={
-            journeyEditContentComponent === ActiveJourneyEditContent.Action
-          }
           header={
             <Box
               bgcolor={(theme) => theme.palette.background.paper}
@@ -159,10 +156,6 @@ export function CardList({
           testId="social-preview-navigation-card"
           title="Social Media"
           destination={ActiveJourneyEditContent.SocialPreview}
-          outlined={
-            journeyEditContentComponent ===
-            ActiveJourneyEditContent.SocialPreview
-          }
           header={
             primaryImageBlock?.src == null ? (
               <Box
@@ -246,10 +239,9 @@ const CardItem = ({
       sx={{
         display: 'flex',
         flexDirection: 'column',
-        gap: 0.75,
         width: 95,
         position: 'relative',
-        height: isDraggable === true ? 166 : 140,
+        height: isDraggable === true ? 164 : 140,
         top: isDraggable === true ? '-24px' : undefined,
         mb: isDraggable === true ? '-24px' : undefined,
         overflow: isDraggable === true ? 'hidden' : undefined

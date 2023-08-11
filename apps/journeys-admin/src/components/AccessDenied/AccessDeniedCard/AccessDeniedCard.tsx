@@ -1,13 +1,13 @@
+import CheckCircleRoundedIcon from '@mui/icons-material/CheckCircleRounded'
+import SupervisorAccountRoundedIcon from '@mui/icons-material/SupervisorAccountRounded'
+import Button from '@mui/material/Button'
+import Card from '@mui/material/Card'
+import CardActions from '@mui/material/CardActions'
+import CardContent from '@mui/material/CardContent'
+import Stack from '@mui/material/Stack'
+import Typography from '@mui/material/Typography'
 import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
-import Card from '@mui/material/Card'
-import CardContent from '@mui/material/CardContent'
-import Typography from '@mui/material/Typography'
-import Stack from '@mui/material/Stack'
-import CardActions from '@mui/material/CardActions'
-import Button from '@mui/material/Button'
-import SupervisorAccountRoundedIcon from '@mui/icons-material/SupervisorAccountRounded'
-import CheckCircleRoundedIcon from '@mui/icons-material/CheckCircleRounded'
 
 interface AccessDeniedCardProps {
   stepNumber: number

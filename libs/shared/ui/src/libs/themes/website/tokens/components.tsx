@@ -1,6 +1,8 @@
-import { ThemeOptions } from '@mui/material/styles'
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
+import { ThemeOptions } from '@mui/material/styles'
+
 import { baseBreakpoints } from '../../base/tokens/breakpoints'
+
 import { typography } from './typography'
 
 export const websiteComponents: Required<Pick<ThemeOptions, 'components'>> = {

@@ -1,30 +1,72 @@
 import { Test, TestingModule } from '@nestjs/testing'
+import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
+
+import { Team, UserTeamInvite, UserTeamRole } from '.prisma/api-journeys-client'
 import { CaslAuthModule } from '@core/nest/common/CaslAuthModule'
-import { GraphQLError } from 'graphql'
+
+import { UserTeamInviteCreateInput } from '../../__generated__/graphql'
+import { AppAbility, AppCaslFactory } from '../../lib/casl/caslFactory'
 import { PrismaService } from '../../lib/prisma.service'
-import { AppCaslFactory } from '../../lib/casl/caslFactory'
-import { UserTeamRole } from '../../__generated__/graphql'
-import { TeamResolver } from './userTeamInvite.resolver'
+
+import { UserTeamInviteResolver } from './userTeamInvite.resolver'
 
 describe('UserTeamInviteResolver', () => {
-  let userTeamInviteResolver: TeamResolver, prismaService: PrismaService
+  let resolver: UserTeamInviteResolver,
+    prismaService: DeepMockProxy<PrismaService>,
+    ability: AppAbility
+
+  const userTeamInvite: UserTeamInvite = {
+    id: 'userTeamInviteId',
+    removedAt: null,
+    acceptedAt: null,
+    email: 'bob.jones@example.com',
+    senderId: 'senderId',
+    receipientId: 'receipientId',
+    teamId: 'teamId',
+    createdAt: new Date(),
+    updatedAt: new Date()
+  }
+
+  const team = {
+    id: 'teamId',
+    userTeams: [
+      {
+        userId: 'userId',
+        role: UserTeamRole.manager
+      }
+    ]
+  } as unknown as Team
+
+  const userTeamInviteWithUserTeam = {
+    ...userTeamInvite,
+    team
+  }
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [CaslAuthModule.register(AppCaslFactory)],
-      providers: [TeamResolver, PrismaService]
+      providers: [
+        UserTeamInviteResolver,
+        {
+          provide: PrismaService,
+          useValue: mockDeep<PrismaService>()
+        }
+      ]
     }).compile()
 
-    userTeamInviteResolver = module.get<TeamResolver>(TeamResolver)
-    prismaService = module.get<PrismaService>(PrismaService)
-    prismaService.userTeamInvite.findMany = jest
-      .fn()
-      .mockResolvedValueOnce([{ id: 'userTeamId' }])
+    resolver = module.get<UserTeamInviteResolver>(UserTeamInviteResolver)
+    prismaService = module.get<PrismaService>(
+      PrismaService
+    ) as DeepMockProxy<PrismaService>
+    ability = await new AppCaslFactory().createAbility({ id: 'userId' })
   })
 
   describe('userTeamInvites', () => {
     it('fetches accessible userTeamInvites', async () => {
-      const userTeams = await userTeamInviteResolver.userTeamInvites(
+      prismaService.userTeamInvite.findMany.mockResolvedValueOnce([
+        { id: 'userTeamId' } as unknown as UserTeamInvite
+      ])
+      const userTeams = await resolver.userTeamInvites(
         {
           team: {
             is: {
@@ -53,37 +95,29 @@ describe('UserTeamInviteResolver', () => {
   })
 
   describe('userTeamInviteCreate', () => {
+    const input: UserTeamInviteCreateInput = {
+      email: 'brian.smith@example.com'
+    }
+
     it('creates a user team invite', async () => {
-      const team = {
-        id: 'teamId',
-        userTeams: [
-          {
-            userId: 'userId',
-            role: UserTeamRole.manager
-          }
-        ]
-      }
-      const input = {
-        email: 'siyangthemanthestan@gmail.com'
-      }
-      const ability = await new AppCaslFactory().createAbility({
-        id: 'userId'
-      })
-
-      prismaService.team.findUnique = jest.fn().mockResolvedValueOnce(team)
-      prismaService.userTeamInvite.upsert = jest.fn()
-      await userTeamInviteResolver.userTeamInviteCreate(
-        ability,
-        'userId',
-        'teamId',
-        input
+      prismaService.$transaction.mockImplementationOnce(
+        async (cb) => await cb(prismaService)
       )
-
-      expect(prismaService.userTeamInvite.upsert).toBeCalledWith({
+      prismaService.userTeamInvite.upsert.mockResolvedValueOnce(
+        userTeamInviteWithUserTeam
+      )
+      await resolver.userTeamInviteCreate(ability, 'userId', 'teamId', input)
+      expect(prismaService.userTeamInvite.upsert).toHaveBeenCalledWith({
+        where: {
+          teamId_email: {
+            teamId: 'teamId',
+            email: input.email
+          }
+        },
         create: {
-          email: 'siyangthemanthestan@gmail.com',
+          email: 'brian.smith@example.com',
           senderId: 'userId',
-          teamId: 'teamId'
+          team: { connect: { id: 'teamId' } }
         },
         update: {
           acceptedAt: null,
@@ -91,135 +125,90 @@ describe('UserTeamInviteResolver', () => {
           removedAt: null,
           senderId: 'userId'
         },
-        where: {
-          teamId_email: {
-            email: 'siyangthemanthestan@gmail.com',
-            teamId: 'teamId'
+        include: {
+          team: {
+            include: { userTeams: true }
           }
         }
       })
     })
 
-    it('should throw a ForbiddenError when the user does not have the required permissions', async () => {
-      const ability = await new AppCaslFactory().createAbility({
-        id: 'userId'
-      })
-
-      const team = {
-        id: 'teamId',
-        userTeams: [
-          {
-            userId: 'userId',
-            role: UserTeamRole.member
-          }
-        ]
-      }
-
-      const input = {
-        email: 'siyangthemanthestan@gmail.com'
-      }
-
-      prismaService.team.findUnique = jest.fn().mockResolvedValueOnce(team)
-
+    it('throws error if not authorized', async () => {
+      prismaService.$transaction.mockImplementationOnce(
+        async (cb) => await cb(prismaService)
+      )
+      prismaService.userTeamInvite.upsert.mockResolvedValueOnce(userTeamInvite)
       await expect(
-        userTeamInviteResolver.userTeamInviteCreate(
-          ability,
-          'userId',
-          'teamId',
-          input
-        )
-      ).rejects.toThrow(GraphQLError)
+        resolver.userTeamInviteCreate(ability, 'userId', 'teamId', input)
+      ).rejects.toThrow('user is not allowed to create userTeamInvite')
     })
   })
 
-  describe('userTeamnInviteRemove', () => {
+  describe('userTeamInviteRemove', () => {
     it('should delete a userInvite', async () => {
-      const ability = await new AppCaslFactory().createAbility({
-        id: 'userId'
-      })
-      const id = 'userTeamInvite-id'
-      prismaService.userTeamInvite.findUnique = jest.fn().mockReturnValue({
-        id: 'userTeamInvite-id',
-        removedAt: null,
-        acceptedAt: null,
-        team: {
-          userTeams: [
-            {
-              userId: 'userId',
-              role: UserTeamRole.manager
-            }
-          ]
-        }
-      })
-      prismaService.userTeamInvite.update = jest.fn()
-      await userTeamInviteResolver.userTeamInviteRemove(ability, id)
-      await expect(prismaService.userTeamInvite.update).toBeCalledWith({
+      prismaService.userTeamInvite.findUnique.mockResolvedValue(
+        userTeamInviteWithUserTeam
+      )
+      await resolver.userTeamInviteRemove(ability, 'userTeamInviteId')
+      await expect(prismaService.userTeamInvite.update).toHaveBeenCalledWith({
         data: { removedAt: expect.any(Date) },
-        where: { id: 'userTeamInvite-id' }
+        where: { id: 'userTeamInviteId' }
       })
     })
-    it('should throw a ForbiddenError when the user does not have the required permissions', async () => {
+
+    it('throws error if not found', async () => {
+      prismaService.userTeamInvite.findUnique.mockResolvedValueOnce(null)
+      await expect(
+        resolver.userTeamInviteRemove(ability, 'userTeamInviteId')
+      ).rejects.toThrow('userTeamInvite not found')
+    })
+
+    it('throws error if not authorized', async () => {
       const ability = await new AppCaslFactory().createAbility({
         id: 'userId'
       })
-      const userTeamInviteId = 'userTeamInviteId'
-      prismaService.userTeamInvite.findUnique = jest.fn().mockReturnValue({
-        id: 'userTeamInvite-id',
-        removedAt: null,
-        acceptedAt: null,
-        team: {
-          userTeams: [
-            {
-              userId: 'userId',
-              role: UserTeamRole.member
-            }
-          ]
-        }
-      })
+      prismaService.userTeamInvite.findUnique.mockResolvedValue(userTeamInvite)
       await expect(
-        userTeamInviteResolver.userTeamInviteRemove(ability, userTeamInviteId)
-      ).rejects.toThrow(GraphQLError)
+        resolver.userTeamInviteRemove(ability, 'userTeamInviteId')
+      ).rejects.toThrow('user is not allowed to remove userTeamInvite')
     })
   })
 
   describe('userTeamInviteAcceptAll', () => {
     it('should accept pending team invites for current user', async () => {
-      const userMock = {
+      const user = {
         id: 'userId',
-        firstName: 'Siyang',
-        email: 'SiyangDiesel@example.com'
+        firstName: 'Robert',
+        email: 'robert.smith@example.com'
       }
-      const userTeamInviteMock1 = {
+      const userTeamInvite: UserTeamInvite = {
         id: 'inviteId1',
         teamId: 'teamId1',
-        email: 'SiyangDiesel@example.com',
+        email: 'robert.smith@example.com',
         senderId: 'senderId1',
         receipientId: null,
         acceptedAt: null,
         removedAt: null,
-        createdAt: '2021-02-18T00:00:00.000Z',
-        updatedAt: '2021-02-18T00:00:00.000Z'
+        createdAt: new Date(),
+        updatedAt: new Date()
       }
 
-      const redeemedUserTeamInviteMock1 = {
-        ...userTeamInviteMock1,
+      const redeemedUserTeamInvite = {
+        ...userTeamInvite,
         acceptedAt: expect.any(Date),
-        receipientId: userMock.id
+        receipientId: user.id
       }
 
-      prismaService.userTeamInvite.findMany = jest
-        .fn()
-        .mockResolvedValue([userTeamInviteMock1])
-      prismaService.$transaction = jest
-        .fn()
-        .mockImplementation(async (promises) => await Promise.all(promises))
-      prismaService.userTeam.upsert = jest.fn()
-      prismaService.userTeamInvite.update = jest
-        .fn()
-        .mockImplementation(({ data }) => ({ ...userTeamInviteMock1, ...data }))
-      expect(
-        (await userTeamInviteResolver.userTeamInviteAcceptAll(userMock))[0]
-      ).toEqual(redeemedUserTeamInviteMock1)
+      prismaService.userTeamInvite.findMany.mockResolvedValue([userTeamInvite])
+      prismaService.$transaction.mockImplementation(
+        async (promises) => promises
+      )
+      prismaService.userTeamInvite.update.mockResolvedValueOnce(
+        redeemedUserTeamInvite
+      )
+      expect(await resolver.userTeamInviteAcceptAll(user)).toEqual([
+        redeemedUserTeamInvite
+      ])
     })
   })
 })

@@ -1,124 +1,148 @@
 import { Test, TestingModule } from '@nestjs/testing'
+import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 
-import { BlockResolver } from '../block.resolver'
-import { BlockService } from '../block.service'
+import { Block, Journey, UserTeamRole } from '.prisma/api-journeys-client'
+import { CaslAuthModule } from '@core/nest/common/CaslAuthModule'
+
 import {
   IconBlockCreateInput,
+  IconBlockUpdateInput,
   IconColor,
   IconName,
   IconSize
 } from '../../../__generated__/graphql'
-import { UserJourneyService } from '../../userJourney/userJourney.service'
-import { UserRoleService } from '../../userRole/userRole.service'
+import { AppAbility, AppCaslFactory } from '../../../lib/casl/caslFactory'
 import { PrismaService } from '../../../lib/prisma.service'
+import { BlockService } from '../block.service'
+
 import { IconBlockResolver } from './icon.resolver'
 
 describe('Icon', () => {
-  let resolver: BlockResolver,
-    iconBlockResolver: IconBlockResolver,
+  let resolver: IconBlockResolver,
     service: BlockService,
-    prisma: PrismaService
+    prismaService: DeepMockProxy<PrismaService>,
+    ability: AppAbility
 
+  const journey = {
+    team: { userTeams: [{ userId: 'userId', role: UserTeamRole.manager }] }
+  } as unknown as Journey
   const block = {
-    id: '1',
-    journeyId: '2',
+    id: 'blockId',
+    journeyId: 'journeyId',
     typename: 'IconBlock',
-    parentBlockId: '0',
+    parentBlockId: 'parentBlockId',
     parentOrder: 0,
-    name: 'ArrowForwardRounded',
-    color: 'secondary',
-    size: 'lg'
+    name: IconName.ArrowForwardRounded,
+    color: IconColor.secondary,
+    size: IconSize.lg
+  } as unknown as Block
+  const blockWithUserTeam = {
+    ...block,
+    journey
   }
-
-  const input: IconBlockCreateInput = {
-    id: '1',
-    parentBlockId: '0',
-    journeyId: '2',
+  const blockCreateInput: IconBlockCreateInput = {
+    id: 'blockId',
+    parentBlockId: 'parentBlockId',
+    journeyId: 'journeyId',
     name: IconName.ArrowForwardRounded,
     color: IconColor.secondary,
     size: IconSize.lg
   }
-
-  const create = {
-    id: '1',
-    journey: {
-      connect: { id: '2' }
-    },
-    journeyId: '2',
-    typename: 'IconBlock',
-    parentBlock: { connect: { id: '0' } },
-    parentOrder: null,
-    name: 'ArrowForwardRounded',
-    color: 'secondary',
-    size: 'lg'
-  }
-
-  const inputUpdate = {
-    journeyId: '2',
-    parentBlockId: '0',
+  const blockUpdateInput: IconBlockUpdateInput = {
     name: IconName.PlayArrowRounded,
     color: IconColor.primary,
     size: IconSize.sm
   }
 
-  const updateResponse = {
-    journeyId: '2',
-    parentBlockId: '0',
-    name: 'PlayArrowRounded',
-    color: 'primary',
-    size: 'sm'
-  }
-
   const blockService = {
     provide: BlockService,
     useFactory: () => ({
-      save: jest.fn((input) => input),
       update: jest.fn((input) => input)
     })
   }
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
+      imports: [CaslAuthModule.register(AppCaslFactory)],
       providers: [
-        BlockResolver,
         blockService,
         IconBlockResolver,
-        UserJourneyService,
-        UserRoleService,
-        PrismaService
+        {
+          provide: PrismaService,
+          useValue: mockDeep<PrismaService>()
+        }
       ]
     }).compile()
-    resolver = module.get<BlockResolver>(BlockResolver)
-    iconBlockResolver = module.get<IconBlockResolver>(IconBlockResolver)
-    resolver = module.get<BlockResolver>(BlockResolver)
+    resolver = module.get<IconBlockResolver>(IconBlockResolver)
     service = await module.resolve(BlockService)
-    prisma = await module.resolve(PrismaService)
-    prisma.block.findUnique = jest.fn().mockResolvedValue(block)
-    prisma.block.findMany = jest.fn().mockResolvedValue([block, block])
+    prismaService = module.get<PrismaService>(
+      PrismaService
+    ) as DeepMockProxy<PrismaService>
+    ability = await new AppCaslFactory().createAbility({ id: 'userId' })
   })
 
-  describe('IconBlock', () => {
-    it('returns IconBlock', async () => {
-      expect(await resolver.block('1')).toEqual(block)
-      expect(await resolver.blocks()).toEqual([block, block])
-    })
-  })
-
-  describe('IconBlockCreate', () => {
-    it('creates an IconBlock', async () => {
-      await iconBlockResolver.iconBlockCreate(input)
-      expect(service.save).toHaveBeenCalledWith(create)
-    })
-  })
-
-  describe('IconBlockUpdate', () => {
-    it('updates a IconBlock', async () => {
-      void iconBlockResolver.iconBlockUpdate(
-        block.id,
-        block.journeyId,
-        inputUpdate
+  describe('iconBlockCreate', () => {
+    beforeEach(() => {
+      prismaService.$transaction.mockImplementation(
+        async (callback) => await callback(prismaService)
       )
-      expect(service.update).toHaveBeenCalledWith(block.id, updateResponse)
+    })
+
+    it('creates an IconBlock', async () => {
+      prismaService.block.create.mockResolvedValueOnce(blockWithUserTeam)
+      expect(await resolver.iconBlockCreate(ability, blockCreateInput)).toEqual(
+        blockWithUserTeam
+      )
+      expect(prismaService.block.create).toHaveBeenCalledWith({
+        data: {
+          color: 'secondary',
+          id: 'blockId',
+          journey: { connect: { id: 'journeyId' } },
+          name: 'ArrowForwardRounded',
+          parentBlock: { connect: { id: 'parentBlockId' } },
+          parentOrder: null,
+          size: 'lg',
+          typename: 'IconBlock'
+        },
+        include: {
+          action: true,
+          journey: {
+            include: {
+              team: { include: { userTeams: true } },
+              userJourneys: true
+            }
+          }
+        }
+      })
+    })
+
+    it('throws error if not authorized', async () => {
+      prismaService.block.create.mockResolvedValueOnce(block)
+      await expect(
+        resolver.iconBlockCreate(ability, blockCreateInput)
+      ).rejects.toThrow('user is not allowed to create block')
+    })
+  })
+
+  describe('iconBlockUpdate', () => {
+    it('updates a IconBlock', async () => {
+      prismaService.block.findUnique.mockResolvedValueOnce(blockWithUserTeam)
+      await resolver.iconBlockUpdate(ability, 'blockId', blockUpdateInput)
+      expect(service.update).toHaveBeenCalledWith('blockId', blockUpdateInput)
+    })
+
+    it('throws error if not found', async () => {
+      prismaService.block.findUnique.mockResolvedValueOnce(null)
+      await expect(
+        resolver.iconBlockUpdate(ability, 'blockId', blockUpdateInput)
+      ).rejects.toThrow('block not found')
+    })
+
+    it('throws error if not authorized', async () => {
+      prismaService.block.findUnique.mockResolvedValueOnce(block)
+      await expect(
+        resolver.iconBlockUpdate(ability, 'blockId', blockUpdateInput)
+      ).rejects.toThrow('user is not allowed to update block')
     })
   })
 })

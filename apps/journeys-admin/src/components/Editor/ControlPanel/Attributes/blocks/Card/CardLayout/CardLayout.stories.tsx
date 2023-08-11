@@ -1,20 +1,22 @@
-import { Story, Meta } from '@storybook/react'
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
-import { EditorProvider } from '@core/journeys/ui/EditorProvider'
-import type { TreeBlock } from '@core/journeys/ui/block'
 import { MockedProvider } from '@apollo/client/testing'
+import { Meta, Story } from '@storybook/react'
+
+import type { TreeBlock } from '@core/journeys/ui/block'
+import { EditorProvider } from '@core/journeys/ui/EditorProvider'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
 import {
-  GetJourney_journey as Journey,
-  GetJourney_journey_blocks_CardBlock as CardBlock
+  GetJourney_journey_blocks_CardBlock as CardBlock,
+  GetJourney_journey as Journey
 } from '../../../../../../../../__generated__/GetJourney'
-import { journeysAdminConfig } from '../../../../../../../libs/storybook'
 import {
+  JourneyStatus,
   ThemeMode,
-  ThemeName,
-  JourneyStatus
+  ThemeName
 } from '../../../../../../../../__generated__/globalTypes'
+import { journeysAdminConfig } from '../../../../../../../libs/storybook'
 import { Drawer } from '../../../../../Drawer'
+
 import { CardLayout } from '.'
 
 const CardLayoutStory = {
@@ -78,7 +80,7 @@ export const Default: Story = () => {
 
   return (
     <MockedProvider>
-      <JourneyProvider value={{ journey, admin: true }}>
+      <JourneyProvider value={{ journey, variant: 'admin' }}>
         <EditorProvider
           initialState={{
             selectedBlock: block,
@@ -110,7 +112,7 @@ export const FullScreen: Story = () => {
 
   return (
     <MockedProvider>
-      <JourneyProvider value={{ journey, admin: true }}>
+      <JourneyProvider value={{ journey, variant: 'admin' }}>
         <EditorProvider
           initialState={{
             selectedBlock: block,

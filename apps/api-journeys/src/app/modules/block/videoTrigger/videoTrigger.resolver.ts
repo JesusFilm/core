@@ -1,4 +1,5 @@
-import { ResolveField, Resolver, Parent } from '@nestjs/graphql'
+import { Parent, ResolveField, Resolver } from '@nestjs/graphql'
+
 import { Action, VideoTriggerBlock } from '../../../__generated__/graphql'
 
 @Resolver('VideoTriggerBlock')

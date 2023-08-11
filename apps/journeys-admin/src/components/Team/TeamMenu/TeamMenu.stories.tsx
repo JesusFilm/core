@@ -1,10 +1,15 @@
-import { Story, Meta } from '@storybook/react'
-import { SnackbarProvider } from 'notistack'
-import { screen, userEvent } from '@storybook/testing-library'
 import { MockedResponse } from '@apollo/client/testing'
-import { GET_TEAMS, TeamProvider } from '../TeamProvider'
+import { Meta, Story } from '@storybook/react'
+import { screen, userEvent } from '@storybook/testing-library'
+import { SnackbarProvider } from 'notistack'
+
+import { GetLastActiveTeamIdAndTeams } from '../../../../__generated__/GetLastActiveTeamIdAndTeams'
 import { journeysAdminConfig } from '../../../libs/storybook'
-import { GetTeams } from '../../../../__generated__/GetTeams'
+import {
+  GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS,
+  TeamProvider
+} from '../TeamProvider'
+
 import { TeamMenu } from '.'
 
 const TeamMenuStory = {
@@ -20,23 +25,38 @@ const TeamMenuStory = {
   }
 }
 
-const getTeamsMock: MockedResponse<GetTeams> = {
+const getTeamsMock: MockedResponse<GetLastActiveTeamIdAndTeams> = {
   request: {
-    query: GET_TEAMS
+    query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
   },
   result: {
     data: {
-      teams: [{ id: 'teamId', title: 'Jesus Film Project', __typename: 'Team' }]
+      teams: [
+        {
+          id: 'teamId',
+          title: 'Jesus Film Project',
+          __typename: 'Team',
+          userTeams: []
+        }
+      ],
+      getJourneyProfile: {
+        __typename: 'JourneyProfile',
+        lastActiveTeamId: 'teamId'
+      }
     }
   }
 }
-const getEmptyTeamsMock: MockedResponse<GetTeams> = {
+const getEmptyTeamsMock: MockedResponse<GetLastActiveTeamIdAndTeams> = {
   request: {
-    query: GET_TEAMS
+    query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
   },
   result: {
     data: {
-      teams: []
+      teams: [],
+      getJourneyProfile: {
+        __typename: 'JourneyProfile',
+        lastActiveTeamId: null
+      }
     }
   }
 }

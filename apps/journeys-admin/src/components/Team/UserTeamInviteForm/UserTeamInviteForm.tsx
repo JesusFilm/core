@@ -1,19 +1,24 @@
-import { ReactElement } from 'react'
-import TextField from '@mui/material/TextField'
 import { gql, useMutation } from '@apollo/client'
-import { Form, Formik, FormikHelpers } from 'formik'
-import { ObjectSchema, object, string } from 'yup'
-import { useTranslation } from 'react-i18next'
+import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline'
+import Box from '@mui/material/Box'
 import IconButton from '@mui/material/IconButton'
 import InputAdornment from '@mui/material/InputAdornment'
-import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline'
-import Typography from '@mui/material/Typography'
 import Stack from '@mui/material/Stack'
-import Box from '@mui/material/Box'
+import TextField from '@mui/material/TextField'
+import Typography from '@mui/material/Typography'
+import { Form, Formik, FormikHelpers } from 'formik'
+import { ReactElement } from 'react'
+import { useTranslation } from 'react-i18next'
+import { ObjectSchema, object, string } from 'yup'
+
 import AlertCircle from '@core/shared/ui/icons/AlertCircle'
-import { useTeam } from '../TeamProvider'
+
+import {
+  UserTeamInviteCreateInput,
+  UserTeamRole
+} from '../../../../__generated__/globalTypes'
 import { UserTeamInviteCreate } from '../../../../__generated__/UserTeamInviteCreate'
-import { UserTeamInviteCreateInput } from '../../../../__generated__/globalTypes'
+import { useTeam } from '../TeamProvider'
 
 export const USER_TEAM_INVITE_CREATE = gql`
   mutation UserTeamInviteCreate(
@@ -30,10 +35,12 @@ export const USER_TEAM_INVITE_CREATE = gql`
 
 interface UserTeamInviteFormProps {
   emails: string[]
+  role: UserTeamRole | undefined
 }
 
 export function UserTeamInviteForm({
-  emails
+  emails,
+  role
 }: UserTeamInviteFormProps): ReactElement {
   const [userTeamInviteCreate] = useMutation<UserTeamInviteCreate>(
     USER_TEAM_INVITE_CREATE
@@ -99,21 +106,25 @@ export function UserTeamInviteForm({
     >
       {({ values, handleChange, handleBlur, errors, touched }) => (
         <>
-          <Form noValidate>
+          <Form noValidate autoComplete="off">
             <TextField
-              id="email"
               label={t('Email')}
               name="email"
-              type="email"
               fullWidth
+              disabled={role !== 'manager'}
               variant="filled"
               value={values.email}
               onChange={handleChange}
               onBlur={handleBlur}
               error={errors.email != null && touched.email != null}
               helperText={
-                touched?.email != null && errors.email != null && errors.email
+                role !== UserTeamRole.manager
+                  ? t('Only a manager can invite new members to the team')
+                  : touched?.email != null && errors.email != null
+                  ? errors.email
+                  : null
               }
+              autoComplete="off"
               InputProps={{
                 endAdornment: (
                   <InputAdornment position="end">
@@ -149,7 +160,7 @@ export function UserTeamInviteForm({
             </Box>
             <Typography sx={{ color: 'secondary.light' }} variant="body2">
               {t(
-                'No email notifications. New users get access instantly. Team members can see all analytics, edit journeys and copy journeys.'
+                'No email notifications. New members get access instantly. Team members can see all analytics, edit any journey, and delete and copy journey.'
               )}
             </Typography>
           </Stack>

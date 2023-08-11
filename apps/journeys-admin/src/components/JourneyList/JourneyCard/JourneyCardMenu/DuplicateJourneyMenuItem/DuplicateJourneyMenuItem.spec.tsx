@@ -1,13 +1,21 @@
-import { render, fireEvent, waitFor } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
+import { fireEvent, render, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
+
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+
 import { GetJourney_journey as Journey } from '../../../../../../__generated__/GetJourney'
-import { DUPLICATE_JOURNEY } from '../../../../../libs/useJourneyDuplicate'
+import { JOURNEY_DUPLICATE } from '../../../../../libs/useJourneyDuplicateMutation'
+import {
+  GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS,
+  TeamProvider
+} from '../../../../Team/TeamProvider'
+
 import { DuplicateJourneyMenuItem } from './DuplicateJourneyMenuItem'
 
 describe('DuplicateJourneys', () => {
   const handleCloseMenu = jest.fn()
+
   it('should duplicate a journey on menu card click', async () => {
     const result = jest.fn(() => {
       return {
@@ -18,17 +26,35 @@ describe('DuplicateJourneys', () => {
         }
       }
     })
-    const { getByRole, getByText } = render(
+
+    const result2 = jest.fn(() => ({
+      data: {
+        teams: [{ id: 'teamId', title: 'Team Name', __typename: 'Team' }],
+        getJourneyProfile: {
+          __typename: 'JourneyProfile',
+          lastActiveTeamId: 'teamId'
+        }
+      }
+    }))
+
+    const { getByRole, getByText, getByTestId } = render(
       <MockedProvider
         mocks={[
           {
             request: {
-              query: DUPLICATE_JOURNEY,
+              query: JOURNEY_DUPLICATE,
               variables: {
-                id: 'journeyId'
+                id: 'journeyId',
+                teamId: 'teamId'
               }
             },
             result
+          },
+          {
+            request: {
+              query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
+            },
+            result: result2
           }
         ]}
       >
@@ -36,20 +62,23 @@ describe('DuplicateJourneys', () => {
           <JourneyProvider
             value={{
               journey: { id: 'journeyId' } as unknown as Journey,
-              admin: true
+              variant: 'admin'
             }}
           >
-            <DuplicateJourneyMenuItem
-              id="journeyId"
-              handleCloseMenu={handleCloseMenu}
-            />
+            <TeamProvider>
+              <DuplicateJourneyMenuItem
+                id="journeyId"
+                handleCloseMenu={handleCloseMenu}
+              />
+            </TeamProvider>
           </JourneyProvider>
         </SnackbarProvider>
       </MockedProvider>
     )
-    fireEvent.click(getByRole('menuitem', { name: 'Duplicate' }))
+    await waitFor(() => expect(result2).toHaveBeenCalled())
+    await fireEvent.click(getByRole('menuitem', { name: 'Duplicate' }))
+    expect(getByTestId('journey-duplicate-loader')).toBeInTheDocument()
     await waitFor(() => expect(result).toHaveBeenCalled())
-
     expect(handleCloseMenu).toHaveBeenCalled()
     expect(getByText('Journey Duplicated')).toBeInTheDocument()
   })

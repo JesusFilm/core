@@ -1,5 +1,6 @@
-import { render, fireEvent } from '@testing-library/react'
 import VisibilityIcon from '@mui/icons-material/Visibility'
+import { fireEvent, render } from '@testing-library/react'
+
 import { MenuItem } from './MenuItem'
 
 describe('MenuItem', () => {

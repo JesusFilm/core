@@ -1,19 +1,22 @@
-import { TranslationField } from '@core/nest/decorators/TranslationField'
 import {
-  Resolver,
-  Query,
   Args,
   Info,
-  ResolveReference,
+  Parent,
+  Query,
   ResolveField,
-  Parent
+  ResolveReference,
+  Resolver
 } from '@nestjs/graphql'
 import { FieldNode, GraphQLError, GraphQLResolveInfo, Kind } from 'graphql'
-import { Video, VideoVariant, VideoTitle } from '.prisma/api-videos-client'
 import compact from 'lodash/compact'
+import isEmpty from 'lodash/isEmpty'
+
+import { Video, VideoTitle, VideoVariant } from '.prisma/api-videos-client'
+import { TranslationField } from '@core/nest/decorators/TranslationField'
 
 import { IdType, VideosFilter } from '../../__generated__/graphql'
 import { PrismaService } from '../../lib/prisma.service'
+
 import { VideoService } from './video.service'
 
 @Resolver('Video')
@@ -81,9 +84,10 @@ export class VideoResolver {
 
   @ResolveField()
   async children(@Parent() video): Promise<Video[] | null> {
-    return await this.prismaService.video.findMany({
-      where: { parent: { some: { id: video.id } } }
+    const result = await this.prismaService.video.findMany({
+      where: { id: { in: video.childIds } }
     })
+    return video.childIds.map((id) => result.find((video) => video.id === id))
   }
 
   @ResolveField()
@@ -165,17 +169,34 @@ export class VideoResolver {
 
   @ResolveField('variant')
   async variant(
+    @Info() info: GraphQLResolveInfo,
     @Parent() video,
     @Args('languageId') languageId?: string
   ): Promise<VideoVariant | null> {
-    return await this.prismaService.videoVariant.findUnique({
-      where: {
-        languageId_videoId: {
-          videoId: video.id,
-          languageId: languageId ?? '529'
-        }
-      }
-    })
+    const variableValueId =
+      (info.variableValues.id as string) ??
+      (info.variableValues.contentId as string) ??
+      ''
+    const requestedLanguage = variableValueId.includes('/')
+      ? variableValueId.substring(variableValueId.lastIndexOf('/') + 1)
+      : ''
+
+    return info.variableValues.idType !== IdType.databaseId &&
+      !isEmpty(variableValueId) &&
+      !isEmpty(requestedLanguage)
+      ? await this.prismaService.videoVariant.findUnique({
+          where: {
+            slug: `${video.slug as string}/${requestedLanguage}`
+          }
+        })
+      : await this.prismaService.videoVariant.findUnique({
+          where: {
+            languageId_videoId: {
+              videoId: video.id,
+              languageId: languageId ?? '529'
+            }
+          }
+        })
   }
 
   @ResolveField('variantLanguages')

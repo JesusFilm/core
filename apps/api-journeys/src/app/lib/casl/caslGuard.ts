@@ -1,6 +1,8 @@
 import { Injectable } from '@nestjs/common'
-import { CaslFactory, CaslGuard } from '@core/nest/common/CaslAuthModule'
 import { Reflector } from '@nestjs/core'
+
+import { CaslFactory, CaslGuard } from '@core/nest/common/CaslAuthModule'
+
 import { PrismaService } from '../prisma.service'
 
 @Injectable()

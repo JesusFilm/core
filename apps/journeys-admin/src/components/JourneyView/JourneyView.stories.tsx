@@ -1,13 +1,17 @@
-import { Story, Meta } from '@storybook/react'
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { MockedProvider } from '@apollo/client/testing'
+import { Meta, Story } from '@storybook/react'
+
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
+
+import { Role } from '../../../__generated__/globalTypes'
+import { ApolloLoadingProvider } from '../../../test/ApolloLoadingProvider'
 import { journeysAdminConfig } from '../../libs/storybook'
 import { PageWrapper } from '../PageWrapper'
-import { ApolloLoadingProvider } from '../../../test/ApolloLoadingProvider'
-import { Role } from '../../../__generated__/globalTypes'
-import { JourneyView, GET_USER_ROLE } from './JourneyView'
+import { TeamProvider } from '../Team/TeamProvider'
+
 import { publishedJourney } from './data'
+import { GET_USER_ROLE, JourneyView } from './JourneyView'
 import { Menu } from './Menu'
 
 const JourneyViewStory = {
@@ -23,16 +27,23 @@ const JourneyViewStory = {
 const Template: Story = ({ ...args }) => (
   <ApolloLoadingProvider>
     <FlagsProvider>
-      <JourneyProvider value={{ journey: args.journey }}>
-        <PageWrapper
-          title="Journey Details"
-          showDrawer
-          backHref="/"
-          menu={<Menu />}
+      <TeamProvider>
+        <JourneyProvider
+          value={{
+            journey: args.journey,
+            variant: 'admin'
+          }}
         >
-          <JourneyView journeyType="Journey" />
-        </PageWrapper>
-      </JourneyProvider>
+          <PageWrapper
+            title="Journey Details"
+            showDrawer
+            backHref="/"
+            menu={<Menu />}
+          >
+            <JourneyView journeyType="Journey" />
+          </PageWrapper>
+        </JourneyProvider>
+      </TeamProvider>
     </FlagsProvider>
   </ApolloLoadingProvider>
 )
@@ -51,16 +62,23 @@ const JourneyTemplate: Story = ({ ...args }) => (
   <ApolloLoadingProvider>
     <FlagsProvider>
       <MockedProvider mocks={args.mocks}>
-        <JourneyProvider value={{ journey: args.journey }}>
-          <PageWrapper
-            title="Journey Template"
-            showDrawer
-            backHref="/"
-            menu={<Menu />}
+        <TeamProvider>
+          <JourneyProvider
+            value={{
+              journey: args.journey,
+              variant: 'admin'
+            }}
           >
-            <JourneyView journeyType="Template" />
-          </PageWrapper>
-        </JourneyProvider>
+            <PageWrapper
+              title="Journey Template"
+              showDrawer
+              backHref="/"
+              menu={<Menu />}
+            >
+              <JourneyView journeyType="Template" />
+            </PageWrapper>
+          </JourneyProvider>
+        </TeamProvider>
       </MockedProvider>
     </FlagsProvider>
   </ApolloLoadingProvider>

@@ -1,6 +1,6 @@
 import Typography from '@mui/material/Typography'
-
 import { ReactElement } from 'react'
+
 import { useJourney } from '../../../libs/JourneyProvider'
 import { getJourneyRTL } from '../../../libs/rtl'
 
@@ -16,7 +16,7 @@ export function HostTitleLocation(): ReactElement {
   return host != null ? (
     <Typography
       data-testid="host-name-location"
-      variant="body2"
+      variant="caption"
       sx={{
         whiteSpace: 'nowrap',
         overflow: 'clip',

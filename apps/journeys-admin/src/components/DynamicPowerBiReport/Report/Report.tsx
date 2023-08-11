@@ -1,13 +1,14 @@
-import { ReactElement, useState } from 'react'
-import { EmbedProps, PowerBIEmbed } from 'powerbi-client-react'
-import { models } from 'powerbi-client'
 import { gql, useQuery } from '@apollo/client'
-import { useSnackbar } from 'notistack'
 import Box from '@mui/material/Box'
-import Typography from '@mui/material/Typography'
 import Fade from '@mui/material/Fade'
-import { JourneysReportType } from '../../../../__generated__/globalTypes'
+import Typography from '@mui/material/Typography'
+import { useSnackbar } from 'notistack'
+import { models } from 'powerbi-client'
+import { EmbedProps, PowerBIEmbed } from 'powerbi-client-react'
+import { ReactElement, useState } from 'react'
+
 import { GetAdminJourneysReport } from '../../../../__generated__/GetAdminJourneysReport'
+import { JourneysReportType } from '../../../../__generated__/globalTypes'
 
 export const GET_ADMIN_JOURNEYS_REPORT = gql`
   query GetAdminJourneysReport($reportType: JourneysReportType!) {

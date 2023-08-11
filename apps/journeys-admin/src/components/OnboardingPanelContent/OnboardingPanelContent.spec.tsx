@@ -1,12 +1,19 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
-import { NextRouter, useRouter } from 'next/router'
 import { fireEvent, render, waitFor } from '@testing-library/react'
+import { NextRouter, useRouter } from 'next/router'
 import { v4 as uuidv4 } from 'uuid'
+
 import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
+
+import { GetLastActiveTeamIdAndTeams } from '../../../__generated__/GetLastActiveTeamIdAndTeams'
 import { CREATE_JOURNEY } from '../../libs/useJourneyCreate'
-import { GET_TEAMS, TeamProvider } from '../Team/TeamProvider'
-import { GetTeams } from '../../../__generated__/GetTeams'
+import {
+  GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS,
+  TeamProvider
+} from '../Team/TeamProvider'
+
 import { onboardingJourneys } from './data'
+
 import { OnboardingPanelContent } from '.'
 
 jest.mock('react-i18next', () => ({
@@ -114,13 +121,17 @@ const mocks = [
   }
 ]
 
-const getTeams: MockedResponse<GetTeams> = {
+const getTeams: MockedResponse<GetLastActiveTeamIdAndTeams> = {
   request: {
-    query: GET_TEAMS
+    query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
   },
   result: {
     data: {
-      teams: []
+      teams: [],
+      getJourneyProfile: {
+        __typename: 'JourneyProfile',
+        lastActiveTeamId: null
+      }
     }
   }
 }
@@ -143,7 +154,11 @@ describe('OnboardingPanelContent', () => {
               data: {
                 teams: [
                   { id: 'teamId', title: 'Team Title', __typename: 'Team' }
-                ]
+                ],
+                getJourneyProfile: {
+                  __typename: 'JourneyProfile',
+                  lastActiveTeamId: 'teamId'
+                }
               }
             }
           }

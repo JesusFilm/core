@@ -1,9 +1,12 @@
-import { MockedProvider } from '@apollo/client/testing'
-import { SnackbarProvider } from 'notistack'
-import { fireEvent, render, waitFor } from '@testing-library/react'
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { InMemoryCache } from '@apollo/client'
+import { MockedProvider } from '@apollo/client/testing'
+import { fireEvent, render, waitFor } from '@testing-library/react'
+import { SnackbarProvider } from 'notistack'
+
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+
 import { JourneyFields as Journey } from '../../../../../__generated__/JourneyFields'
+
 import { CREATE_USER_INVITE, EmailInviteForm } from './EmailInviteForm'
 
 jest.mock('react-i18next', () => ({
@@ -38,7 +41,7 @@ describe('EmailInviteForm', () => {
     })
     await waitFor(() => {
       const inlineErrors = getAllByText('Required')
-      expect(inlineErrors[0]).toHaveProperty('id', 'email-helper-text')
+      expect(inlineErrors[0]).toBeInTheDocument()
     })
   })
 
@@ -59,7 +62,7 @@ describe('EmailInviteForm', () => {
 
     await waitFor(() => {
       const inlineError = getByText('Please enter a valid email address')
-      expect(inlineError).toHaveProperty('id', 'email-helper-text')
+      expect(inlineError).toBeInTheDocument()
     })
   })
 
@@ -81,7 +84,7 @@ describe('EmailInviteForm', () => {
     fireEvent.click(getByRole('button', { name: 'add user' }))
     await waitFor(() => {
       const inlineError = getByText('This email is already on the list')
-      expect(inlineError).toHaveProperty('id', 'email-helper-text')
+      expect(inlineError).toBeInTheDocument()
     })
   })
 
@@ -102,7 +105,7 @@ describe('EmailInviteForm', () => {
 
     await waitFor(() => {
       const inlineError = getByText('This email is already on the list')
-      expect(inlineError).toHaveProperty('id', 'email-helper-text')
+      expect(inlineError).toBeInTheDocument()
     })
   })
 
@@ -128,7 +131,10 @@ describe('EmailInviteForm', () => {
 
     const { getByRole } = render(
       <JourneyProvider
-        value={{ journey: { id: 'journeyId' } as unknown as Journey }}
+        value={{
+          journey: { id: 'journeyId' } as unknown as Journey,
+          variant: 'admin'
+        }}
       >
         <SnackbarProvider>
           <MockedProvider

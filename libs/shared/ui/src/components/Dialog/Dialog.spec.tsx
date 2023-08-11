@@ -1,8 +1,9 @@
-import { ComponentProps } from 'react'
-import Typography from '@mui/material/Typography'
 import Language from '@mui/icons-material/Language'
+import Typography from '@mui/material/Typography'
 import { fireEvent } from '@storybook/testing-library'
 import { render } from '@testing-library/react'
+import { ComponentProps } from 'react'
+
 import { Dialog } from './Dialog'
 
 describe('Dialog', () => {
@@ -16,6 +17,7 @@ describe('Dialog', () => {
     },
     children: <Typography>Children</Typography>
   }
+
   it('should display the content', () => {
     const { getByText, getByTestId, queryByTestId } = render(
       <Dialog {...dialogProps} />
@@ -74,6 +76,11 @@ describe('Dialog', () => {
       const { getByRole } = render(<Dialog {...input} />)
       fireEvent.click(getByRole('button', { name: 'Accept' }))
       expect(input.dialogAction?.onSubmit).toHaveBeenCalled()
+    })
+
+    it('should show loading spinner if dialog is in submitting state', () => {
+      const { getByTestId } = render(<Dialog {...input} loading />)
+      expect(getByTestId('dialog-loading-icon')).toBeInTheDocument()
     })
   })
 

@@ -1,18 +1,21 @@
-import { render, fireEvent, waitFor } from '@testing-library/react'
 import { InMemoryCache } from '@apollo/client'
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { MockedProvider } from '@apollo/client/testing'
+import { fireEvent, render, waitFor } from '@testing-library/react'
+
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+
 import {
-  GetJourney_journey as Journey,
-  GetJourney_journey_blocks_ImageBlock as ImageBlock
+  GetJourney_journey_blocks_ImageBlock as ImageBlock,
+  GetJourney_journey as Journey
 } from '../../../../../../__generated__/GetJourney'
 import { createCloudflareUploadByUrlMock } from '../../../ImageBlockEditor/CustomImage/CustomUrl/data'
 import { SocialProvider } from '../../../SocialProvider'
+
 import {
-  ImageEdit,
   BLOCK_DELETE_PRIMARY_IMAGE,
-  PRIMARY_IMAGE_BLOCK_CREATE,
-  JOURNEY_PRIMARY_IMAGE_UPDATE
+  ImageEdit,
+  JOURNEY_PRIMARY_IMAGE_UPDATE,
+  PRIMARY_IMAGE_BLOCK_CREATE
 } from './ImageEdit'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
@@ -22,6 +25,7 @@ jest.mock('@mui/material/useMediaQuery', () => ({
 
 describe('ImageEdit', () => {
   let originalEnv
+
   beforeEach(() => {
     originalEnv = process.env
     process.env = {
@@ -45,6 +49,7 @@ describe('ImageEdit', () => {
     height: 1080,
     blurhash: ''
   }
+
   it('should disaply placeholder icon when no image set', () => {
     const { getAllByTestId } = render(
       <MockedProvider>
@@ -52,7 +57,7 @@ describe('ImageEdit', () => {
           <JourneyProvider
             value={{
               journey: { primaryImageBlockId: null } as unknown as Journey,
-              admin: true
+              variant: 'admin'
             }}
           >
             <ImageEdit />
@@ -75,7 +80,7 @@ describe('ImageEdit', () => {
                   alt: 'image.alt'
                 }
               } as unknown as Journey,
-              admin: true
+              variant: 'admin'
             }}
           >
             <ImageEdit />
@@ -159,7 +164,7 @@ describe('ImageEdit', () => {
           <JourneyProvider
             value={{
               journey: { id: 'journey.id' } as unknown as Journey,
-              admin: true
+              variant: 'admin'
             }}
           >
             <ImageEdit />
@@ -253,7 +258,7 @@ describe('ImageEdit', () => {
                 id: 'journey.id',
                 primaryImageBlock: { ...image }
               } as unknown as Journey,
-              admin: true
+              variant: 'admin'
             }}
           >
             <ImageEdit />

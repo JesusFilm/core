@@ -1,9 +1,14 @@
-import { fireEvent, render, waitFor } from '@testing-library/react'
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
-import { SnackbarProvider } from 'notistack'
 import useMediaQuery from '@mui/material/useMediaQuery'
-import { GET_TEAMS, TeamProvider } from '../TeamProvider'
-import { GetTeams } from '../../../../__generated__/GetTeams'
+import { fireEvent, render, waitFor } from '@testing-library/react'
+import { SnackbarProvider } from 'notistack'
+
+import { GetLastActiveTeamIdAndTeams } from '../../../../__generated__/GetLastActiveTeamIdAndTeams'
+import {
+  GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS,
+  TeamProvider
+} from '../TeamProvider'
+
 import { TeamMenu } from '.'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
@@ -13,29 +18,58 @@ jest.mock('@mui/material/useMediaQuery', () => ({
 
 describe('TeamMenu', () => {
   beforeEach(() => (useMediaQuery as jest.Mock).mockImplementation(() => true))
-  const getTeamsMock: MockedResponse<GetTeams> = {
+
+  const getTeamsMock: MockedResponse<GetLastActiveTeamIdAndTeams> = {
     request: {
-      query: GET_TEAMS
+      query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
     },
     result: {
       data: {
         teams: [
-          { id: 'teamId1', title: 'Team Title', __typename: 'Team' },
-          { id: 'teamId2', title: 'Team Title2', __typename: 'Team' }
-        ]
+          {
+            id: 'teamId1',
+            title: 'Team Title',
+            __typename: 'Team',
+            userTeams: []
+          },
+          {
+            id: 'teamId2',
+            title: 'Team Title2',
+            __typename: 'Team',
+            userTeams: []
+          }
+        ],
+        getJourneyProfile: {
+          __typename: 'JourneyProfile',
+          lastActiveTeamId: null
+        }
       }
     }
   }
-  const getEmptyTeamsMock: MockedResponse<GetTeams> = {
+  const getEmptyTeamsMock: MockedResponse<GetLastActiveTeamIdAndTeams> = {
     request: {
-      query: GET_TEAMS
+      query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
     },
     result: {
       data: {
         teams: [
-          { id: 'teamId1', title: 'Team Title', __typename: 'Team' },
-          { id: 'teamId2', title: 'Team Title2', __typename: 'Team' }
-        ]
+          {
+            id: 'teamId1',
+            title: 'Team Title',
+            __typename: 'Team',
+            userTeams: []
+          },
+          {
+            id: 'teamId2',
+            title: 'Team Title2',
+            __typename: 'Team',
+            userTeams: []
+          }
+        ],
+        getJourneyProfile: {
+          __typename: 'JourneyProfile',
+          lastActiveTeamId: null
+        }
       }
     }
   }
@@ -52,22 +86,22 @@ describe('TeamMenu', () => {
         </MockedProvider>
       )
     fireEvent.click(getByRole('button'))
-    fireEvent.click(getByRole('menuitem', { name: 'Create New Team' }))
+    fireEvent.click(getByRole('menuitem', { name: 'New Team' }))
     expect(getByText('Create Team')).toBeInTheDocument()
     fireEvent.click(getByRole('button', { name: 'Cancel' }))
     await waitFor(() =>
       expect(queryByRole('button', { name: 'Cancel' })).not.toBeInTheDocument()
     )
     fireEvent.click(getByRole('button'))
-    fireEvent.click(getByRole('menuitem', { name: 'Rename Team' }))
+    fireEvent.click(getByRole('menuitem', { name: 'Rename' }))
     expect(getByText('Change Team Name')).toBeInTheDocument()
     fireEvent.click(getByRole('button', { name: 'Cancel' }))
     await waitFor(() =>
       expect(queryByRole('button', { name: 'Cancel' })).not.toBeInTheDocument()
     )
     fireEvent.click(getByRole('button'))
-    fireEvent.click(getByRole('menuitem', { name: 'Manage Team' }))
-    expect(getByText('Invite others to your team')).toBeInTheDocument()
+    fireEvent.click(getByRole('menuitem', { name: 'Members' }))
+    expect(getByText('Invite team member')).toBeInTheDocument()
     fireEvent.click(getByTestId('dialog-close-button'))
     await waitFor(() =>
       expect(queryByTestId('dialog-close-button')).not.toBeInTheDocument()
@@ -85,11 +119,12 @@ describe('TeamMenu', () => {
       </MockedProvider>
     )
     fireEvent.click(getByRole('button'))
-    expect(getByRole('menuitem', { name: 'Rename Team' })).toHaveAttribute(
+    expect(getByRole('menuitem', { name: 'Rename' })).toHaveAttribute(
       'aria-disabled',
       'true'
     )
   })
+
   it('disables manage team button', async () => {
     const { getByRole } = render(
       <MockedProvider mocks={[getEmptyTeamsMock]}>
@@ -101,7 +136,7 @@ describe('TeamMenu', () => {
       </MockedProvider>
     )
     fireEvent.click(getByRole('button'))
-    expect(getByRole('menuitem', { name: 'Manage Team' })).toHaveAttribute(
+    expect(getByRole('menuitem', { name: 'Members' })).toHaveAttribute(
       'aria-disabled',
       'true'
     )

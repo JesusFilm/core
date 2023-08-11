@@ -1,34 +1,41 @@
-import { ReactElement } from 'react'
 import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
-import Typography from '@mui/material/Typography'
 import { SxProps } from '@mui/material/styles'
+import Typography from '@mui/material/Typography'
+import { ReactElement } from 'react'
+
 import { useFlags } from '@core/shared/ui/FlagsProvider'
+
 import { useJourney } from '../../libs/JourneyProvider'
 import { getJourneyRTL } from '../../libs/rtl'
-import { HostTitleLocation } from './HostTitleLocation'
-import { HostAvatars } from './HostAvatars'
+
 import { ChatButtons } from './ChatButtons'
 import { FooterButtonList } from './FooterButtonList'
+import { HostAvatars } from './HostAvatars'
+import { HostTitleLocation } from './HostTitleLocation'
 
 interface StepFooterProps {
   onFooterClick?: () => void
   sx?: SxProps
+  title?: string
 }
 
 export function StepFooter({
   onFooterClick,
-  sx
+  sx,
+  title
 }: StepFooterProps): ReactElement {
-  const { journey, admin } = useJourney()
+  const { journey, variant } = useJourney()
   const { rtl } = getJourneyRTL(journey)
   const { editableStepFooter } = useFlags()
   const hasAvatar =
-    (admin && editableStepFooter) ||
+    (variant === 'admin' && editableStepFooter) ||
     journey?.host?.src1 != null ||
     journey?.host?.src2 != null
+
   const hasChatWidget =
-    admin || (journey?.chatButtons != null && journey?.chatButtons.length > 0)
+    variant === 'admin' ||
+    (journey?.chatButtons != null && journey?.chatButtons.length > 0)
 
   return (
     <Box
@@ -52,8 +59,9 @@ export function StepFooter({
         justifyContent="space-between"
         spacing={2}
         sx={{
-          px: { xs: 6, lg: 6 },
-          py: { xs: 2, lg: 2 },
+          px: { xs: 6, lg: 0 },
+          py: { xs: 2, lg: 0 },
+          pt: { xs: 3, sm: 0 },
           flexDirection: { lg: rtl ? 'row-reverse' : 'row' },
           justifyContent: 'space-between',
           alignItems: { xs: 'flex-start', lg: 'center' }
@@ -65,8 +73,8 @@ export function StepFooter({
 
         <Stack
           sx={{
-            flexGrow: 1,
             width: '100%',
+            height: 52,
             flexDirection: rtl ? 'row-reverse' : 'row',
             alignItems: 'center'
           }}
@@ -81,8 +89,11 @@ export function StepFooter({
             }}
             gap={2}
           >
-            {hasAvatar && <HostAvatars />}
-            <Stack sx={{ py: 1.5, flex: '1 1 100%', minWidth: 0 }}>
+            {hasAvatar && <HostAvatars hasPlaceholder={variant === 'admin'} />}
+            <Stack
+              sx={{ py: 1.5, flex: '1 1 100%', minWidth: 0 }}
+              spacing={-1.5}
+            >
               <Typography
                 sx={{
                   zIndex: 1,
@@ -93,7 +104,7 @@ export function StepFooter({
                   textOverflow: 'ellipsis'
                 }}
               >
-                {journey?.seoTitle ?? journey?.title}
+                {title != null ? title : journey?.seoTitle ?? journey?.title}
               </Typography>
               <HostTitleLocation />
             </Stack>

@@ -1,17 +1,20 @@
-import { ReactElement } from 'react'
 import Box from '@mui/material/Box'
-import Stack from '@mui/material/Stack'
 import Divider from '@mui/material/Divider'
+import Paper from '@mui/material/Paper'
+import Stack from '@mui/material/Stack'
 import Toolbar from '@mui/material/Toolbar'
 import Typography from '@mui/material/Typography'
-import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
-import Paper from '@mui/material/Paper'
+
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
+
 import { AccessAvatars } from '../../AccessAvatars'
 import { JourneyLink } from '../JourneyLink'
 import type { JourneyType } from '../JourneyView'
-import { JourneyDetails } from './JourneyDetails'
+
 import { AccessControl } from './AccessControl'
+import { JourneyDetails } from './JourneyDetails'
 
 interface PropertiesProps {
   journeyType: JourneyType

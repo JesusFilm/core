@@ -1,12 +1,14 @@
-import { ReactElement } from 'react'
+import { gql, useMutation } from '@apollo/client'
 import ShopRounded from '@mui/icons-material/ShopRounded'
-import { useMutation, gql } from '@apollo/client'
 import { useRouter } from 'next/router'
+import { ReactElement } from 'react'
+
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
+
 import { CreateTemplate } from '../../../../../__generated__/CreateTemplate'
 import { RemoveUserJourney } from '../../../../../__generated__/RemoveUserJourney'
+import { useJourneyDuplicateMutation } from '../../../../libs/useJourneyDuplicateMutation'
 import { MenuItem } from '../../../MenuItem'
-import { useJourneyDuplicate } from '../../../../libs/useJourneyDuplicate'
 
 export const REMOVE_USER_JOURNEY = gql`
   mutation RemoveUserJourney($id: ID!) {
@@ -29,7 +31,7 @@ export function CreateTemplateMenuItem(): ReactElement {
   const { journey } = useJourney()
   const router = useRouter()
 
-  const { duplicateJourney } = useJourneyDuplicate()
+  const [journeyDuplicate] = useJourneyDuplicateMutation()
 
   const [removeUserJourney] =
     useMutation<RemoveUserJourney>(REMOVE_USER_JOURNEY)
@@ -38,13 +40,15 @@ export function CreateTemplateMenuItem(): ReactElement {
   const handleCreateTemplate = async (): Promise<void> => {
     if (journey == null) return
 
-    const duplicatedJourney = await duplicateJourney({ id: journey?.id })
+    const { data } = await journeyDuplicate({
+      variables: { id: journey?.id, teamId: 'jfp-team' }
+    })
 
     // Convert duplicated journey to a template
-    if (duplicatedJourney != null) {
+    if (data != null) {
       const { data: templateData } = await createTemplate({
         variables: {
-          id: duplicatedJourney.id,
+          id: data.journeyDuplicate.id,
           input: {
             template: true
           }

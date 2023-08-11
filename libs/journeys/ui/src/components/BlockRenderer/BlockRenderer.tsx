@@ -1,7 +1,7 @@
-import { ReactElement } from 'react'
 import dynamic from 'next/dynamic'
-import type { TreeBlock } from '../../libs/block'
+import { ReactElement } from 'react'
 
+import type { TreeBlock } from '../../libs/block'
 import {
   BlockFields as Block,
   BlockFields_ButtonBlock as ButtonBlock,
@@ -15,6 +15,7 @@ import {
   BlockFields_TypographyBlock as TypographyBlock,
   BlockFields_VideoBlock as VideoBlock
 } from '../../libs/block/__generated__/BlockFields'
+import { Video } from '../Video'
 
 export interface WrapperProps<T = Block> {
   block: TreeBlock<T>
@@ -112,14 +113,6 @@ const DynamicTypography = dynamic<TreeBlock<TypographyBlock>>(
       /* webpackChunkName: "Typography" */
       '../Typography'
     ).then((mod) => mod.Typography)
-)
-
-const DynamicVideo = dynamic<TreeBlock<VideoBlock>>(
-  async () =>
-    await import(
-      /* webpackChunkName: "Video" */
-      '../Video'
-    ).then((mod) => mod.Video)
 )
 
 interface BlockRenderProps {
@@ -226,7 +219,7 @@ export function BlockRenderer({
       return (
         <Wrapper block={block}>
           <VideoWrapper block={block}>
-            <DynamicVideo {...block} />
+            <Video {...block} />
           </VideoWrapper>
         </Wrapper>
       )

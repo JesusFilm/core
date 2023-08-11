@@ -1,4 +1,5 @@
 import { fireEvent, render } from '@testing-library/react'
+
 import {
   ActiveFab,
   ActiveJourneyEditContent,
@@ -6,16 +7,18 @@ import {
   EditorState,
   useEditor
 } from '@core/journeys/ui/EditorProvider'
-
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+
+import { GetJourney_journey as Journey } from '../../../../../../../__generated__/GetJourney'
 import {
   ChatPlatform,
   ThemeMode,
   ThemeName
 } from '../../../../../../../__generated__/globalTypes'
-import { GetJourney_journey as Journey } from '../../../../../../../__generated__/GetJourney'
-import { Footer } from './Footer'
+
 import { Chat } from './Chat'
+import { Footer } from './Footer'
+import { HostSidePanel } from './HostSidePanel'
 
 jest.mock('@core/journeys/ui/EditorProvider', () => {
   const originalModule = jest.requireActual('@core/journeys/ui/EditorProvider')
@@ -52,6 +55,7 @@ describe('Footer', () => {
       dispatch: jest.fn()
     })
   })
+
   it('should display Footer attributes', () => {
     const { getByText } = render(
       <JourneyProvider
@@ -70,7 +74,8 @@ describe('Footer', () => {
                 platform: ChatPlatform.viber
               }
             ]
-          } as unknown as Journey
+          } as unknown as Journey,
+          variant: 'admin'
         }}
       >
         <Footer />
@@ -95,7 +100,8 @@ describe('Footer', () => {
                 platform: ChatPlatform.facebook
               }
             ]
-          } as unknown as Journey
+          } as unknown as Journey,
+          variant: 'admin'
         }}
       >
         <Footer />
@@ -121,7 +127,8 @@ describe('Footer', () => {
             host: {
               title: `John Geronimo "The Rock" Johnson`
             }
-          } as unknown as Journey
+          } as unknown as Journey,
+          variant: 'admin'
         }}
       >
         <Footer />
@@ -147,9 +154,8 @@ describe('Footer', () => {
     })
     expect(dispatch).toHaveBeenCalledWith({
       type: 'SetDrawerPropsAction',
-      title: 'Hosted By',
       mobileOpen: true,
-      children: <div>Hosted by content component</div>
+      children: <HostSidePanel />
     })
   })
 

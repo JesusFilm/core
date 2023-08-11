@@ -1,11 +1,13 @@
-import { ReactElement } from 'react'
-import { Dialog } from '@core/shared/ui/Dialog'
+import GroupAddIcon from '@mui/icons-material/GroupAdd'
 import Stack from '@mui/material/Stack'
-import useMediaQuery from '@mui/material/useMediaQuery'
 import { Theme } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
+import useMediaQuery from '@mui/material/useMediaQuery'
+import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
-import GroupAddIcon from '@mui/icons-material/GroupAdd'
+
+import { Dialog } from '@core/shared/ui/Dialog'
+
 import { TeamManageWrapper } from './TeamManageWrapper'
 
 interface TeamManageDialogProps {
@@ -28,7 +30,7 @@ export function TeamManageDialog({
           onClose={onClose}
           divider
           dialogTitle={{
-            title: 'Invite others to your team',
+            title: t('Manage Members'),
             closeButton: true
           }}
           dialogActionChildren={
@@ -36,7 +38,7 @@ export function TeamManageDialog({
               <Stack direction="row" alignItems="center" sx={{ mb: 4 }}>
                 <GroupAddIcon />
                 <Typography variant="subtitle1" sx={{ ml: 3 }}>
-                  {t('Add team member by Email')}
+                  {t('Invite team member')}
                 </Typography>
               </Stack>
               {userTeamInviteForm}
@@ -45,7 +47,6 @@ export function TeamManageDialog({
           fullscreen={!smUp}
         >
           <Stack spacing={4}>
-            <Typography variant="subtitle1">{t('Members')}</Typography>
             {userTeamList}
             {userTeamInviteList}
           </Stack>

@@ -1,35 +1,39 @@
+import Box from '@mui/material/Box'
+import Fade from '@mui/material/Fade'
+import Skeleton from '@mui/material/Skeleton'
+import Stack from '@mui/material/Stack'
+import { Theme } from '@mui/material/styles'
+import useMediaQuery from '@mui/material/useMediaQuery'
 import { ReactElement, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import Box from '@mui/material/Box'
-import Stack from '@mui/material/Stack'
-import Skeleton from '@mui/material/Skeleton'
-import useMediaQuery from '@mui/material/useMediaQuery'
-import { Theme } from '@mui/material/styles'
-import Fade from '@mui/material/Fade'
-import { useFlags } from '@core/shared/ui/FlagsProvider'
-import { useJourney } from '@core/journeys/ui/JourneyProvider'
-import { StepHeader } from '@core/journeys/ui/StepHeader'
-import { StepFooter } from '@core/journeys/ui/StepFooter'
-import { BlockRenderer } from '@core/journeys/ui/BlockRenderer'
-import {
-  useEditor,
-  ActiveFab,
-  ActiveTab
-} from '@core/journeys/ui/EditorProvider'
-import { getJourneyRTL } from '@core/journeys/ui/rtl'
-import { getStepTheme } from '@core/journeys/ui/getStepTheme'
-import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import SwiperCore from 'swiper'
 import { Swiper, SwiperSlide } from 'swiper/react'
+
+import { BlockRenderer } from '@core/journeys/ui/BlockRenderer'
+import {
+  ActiveFab,
+  ActiveTab,
+  useEditor
+} from '@core/journeys/ui/EditorProvider'
+import { getStepTheme } from '@core/journeys/ui/getStepTheme'
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import { getJourneyRTL } from '@core/journeys/ui/rtl'
+import { StepFooter } from '@core/journeys/ui/StepFooter'
+import { StepHeader } from '@core/journeys/ui/StepHeader'
+import { useFlags } from '@core/shared/ui/FlagsProvider'
+import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
+
 import { FramePortal } from '../../FramePortal'
-import { DRAWER_WIDTH } from '../Drawer'
-import 'swiper/swiper.min.css'
+import { HostSidePanel } from '../ControlPanel/Attributes/blocks/Footer/HostSidePanel'
 import { NextCard } from '../ControlPanel/Attributes/blocks/Step/NextCard'
-import { Chat } from '../ControlPanel/Attributes/blocks/Footer/Chat'
+import { DRAWER_WIDTH } from '../Drawer'
+
+import { CardWrapper } from './CardWrapper'
 import { InlineEditWrapper } from './InlineEditWrapper'
 import { SelectableWrapper } from './SelectableWrapper'
 import { VideoWrapper } from './VideoWrapper'
-import { CardWrapper } from './CardWrapper'
+
+import 'swiper/swiper.min.css'
 
 const EDGE_SLIDE_WIDTH = 24
 const MIN_SPACE_BETWEEN = 16
@@ -213,7 +217,7 @@ export function Canvas(): ReactElement {
                                 selectedComponent === 'Footer'
                                   ? '3px solid #C52D3A'
                                   : 'none',
-                              outlineOffset: -6,
+                              outlineOffset: -4,
                               borderRadius: 5,
                               cursor: 'pointer'
                             }}
@@ -233,13 +237,13 @@ export function Canvas(): ReactElement {
                                 })
                                 dispatch({
                                   type: 'SetDrawerPropsAction',
-                                  title: t('Chat Widget'),
+                                  title: t('Hosted By'),
                                   mobileOpen: true,
-                                  children: <Chat />
+                                  children: <HostSidePanel />
                                 })
                                 dispatch({
                                   type: 'SetSelectedAttributeIdAction',
-                                  id: 'chat-widget'
+                                  id: 'hosted-by'
                                 })
                               }
                             }}

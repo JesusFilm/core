@@ -1,12 +1,14 @@
-import { Story, Meta } from '@storybook/react'
-import { useState } from 'react'
-import { SnackbarProvider } from 'notistack'
-import { screen, userEvent } from '@storybook/testing-library'
 import { MockedResponse } from '@apollo/client/testing'
-import { TeamProvider } from '../TeamProvider'
-import { journeysAdminConfig } from '../../../libs/storybook'
+import { Meta, Story } from '@storybook/react'
+import { screen, userEvent } from '@storybook/testing-library'
+import { SnackbarProvider } from 'notistack'
+import { useState } from 'react'
+
 import { TeamCreate } from '../../../../__generated__/TeamCreate'
+import { journeysAdminConfig } from '../../../libs/storybook'
 import { TEAM_CREATE } from '../../../libs/useTeamCreateMutation/useTeamCreateMutation'
+import { TeamProvider } from '../TeamProvider'
+
 import { TeamCreateDialog } from '.'
 
 const TeamCreateDialogStory = {
@@ -29,7 +31,8 @@ const teamCreateMock: MockedResponse<TeamCreate> = {
       teamCreate: {
         id: 'teamId',
         title: 'Jesus Film Project',
-        __typename: 'Team'
+        __typename: 'Team',
+        userTeams: []
       }
     }
   }
@@ -40,7 +43,11 @@ const Template: Story = () => {
   return (
     <TeamProvider>
       <SnackbarProvider>
-        <TeamCreateDialog open={open} onClose={() => setOpen(false)} />
+        <TeamCreateDialog
+          open={open}
+          onClose={() => setOpen(false)}
+          onCreate={() => setOpen(false)}
+        />
       </SnackbarProvider>
     </TeamProvider>
   )

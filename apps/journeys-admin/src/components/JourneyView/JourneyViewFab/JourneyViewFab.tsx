@@ -1,13 +1,16 @@
-import { ReactElement } from 'react'
-import { useJourney } from '@core/journeys/ui/JourneyProvider'
-import Fab from '@mui/material/Fab'
-import TagManager from 'react-gtm-module'
-import EditIcon from '@mui/icons-material/Edit'
 import CheckRoundedIcon from '@mui/icons-material/CheckRounded'
+import EditIcon from '@mui/icons-material/Edit'
+import Fab from '@mui/material/Fab'
 import Typography from '@mui/material/Typography'
 import NextLink from 'next/link'
 import { useRouter } from 'next/router'
-import { useJourneyDuplicate } from '../../../libs/useJourneyDuplicate'
+import { ReactElement, useState } from 'react'
+import TagManager from 'react-gtm-module'
+
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
+
+import { useJourneyDuplicateMutation } from '../../../libs/useJourneyDuplicateMutation'
+import { CopyToTeamDialog } from '../../Team/CopyToTeamDialog'
 
 interface JourneyViewFabProps {
   isPublisher?: boolean
@@ -18,13 +21,17 @@ export function JourneyViewFab({
 }: JourneyViewFabProps): ReactElement {
   const { journey } = useJourney()
   const router = useRouter()
+  const [duplicateTeamDialogOpen, setDuplicateTeamDialogOpen] = useState(false)
+  const [journeyDuplicate] = useJourneyDuplicateMutation()
 
-  const { duplicateJourney } = useJourneyDuplicate()
+  const handleConvertTemplate = async (
+    teamId: string | undefined
+  ): Promise<void> => {
+    if (journey == null || teamId == null) return
 
-  const handleConvertTemplate = async (): Promise<void> => {
-    if (journey == null) return
-
-    const data = await duplicateJourney({ id: journey.id })
+    const { data } = await journeyDuplicate({
+      variables: { id: journey.id, teamId }
+    })
 
     if (data != null) {
       TagManager.dataLayer({
@@ -35,7 +42,7 @@ export function JourneyViewFab({
         }
       })
 
-      void router.push(`/journeys/${data.id}`, undefined, {
+      void router.push(`/journeys/${data.journeyDuplicate.id}`, undefined, {
         shallow: true
       })
     }
@@ -63,7 +70,7 @@ export function JourneyViewFab({
           }}
           color="primary"
           disabled={journey == null}
-          onClick={handleConvertTemplate}
+          onClick={() => setDuplicateTeamDialogOpen(true)}
         >
           <CheckRoundedIcon sx={{ mr: 3 }} />
           <Typography
@@ -97,6 +104,14 @@ export function JourneyViewFab({
           </Fab>
         </NextLink>
       )}
+
+      <CopyToTeamDialog
+        submitLabel="Add"
+        title="Add Journey to Team"
+        open={duplicateTeamDialogOpen}
+        onClose={() => setDuplicateTeamDialogOpen(false)}
+        submitAction={handleConvertTemplate}
+      />
     </>
   )
 }

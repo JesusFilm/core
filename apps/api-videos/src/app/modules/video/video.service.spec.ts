@@ -1,7 +1,9 @@
-import { Test, TestingModule } from '@nestjs/testing'
 import { CacheModule } from '@nestjs/common'
+import { Test, TestingModule } from '@nestjs/testing'
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
+
 import { Video } from '.prisma/api-videos-client'
+
 import { VideoLabel } from '../../__generated__/graphql'
 import { PrismaService } from '../../lib/prisma.service'
 
@@ -18,7 +20,8 @@ const video: Video = {
   studyQuestions: [],
   image: '',
   imageAlt: [],
-  noIndex: false
+  noIndex: false,
+  childIds: []
 }
 
 describe('VideoService', () => {
@@ -135,7 +138,7 @@ describe('VideoService', () => {
       variants: {
         some: {
           languageId: undefined,
-          subtitle: { has: { in: ['529'], path: ['languageId'] } }
+          subtitle: { some: { languageId: { in: ['529'] } } }
         }
       }
     })

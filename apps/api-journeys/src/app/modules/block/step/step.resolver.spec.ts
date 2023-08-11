@@ -1,112 +1,164 @@
 import { Test, TestingModule } from '@nestjs/testing'
-import omit from 'lodash/omit'
+import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 
-import { UserJourneyService } from '../../userJourney/userJourney.service'
+import { Block, Journey, UserTeamRole } from '.prisma/api-journeys-client'
+import { CaslAuthModule } from '@core/nest/common/CaslAuthModule'
+
+import {
+  StepBlockCreateInput,
+  StepBlockUpdateInput
+} from '../../../__generated__/graphql'
+import { AppAbility, AppCaslFactory } from '../../../lib/casl/caslFactory'
 import { PrismaService } from '../../../lib/prisma.service'
-import { BlockResolver } from '../block.resolver'
 import { BlockService } from '../block.service'
-import { StepBlock } from '../../../__generated__/graphql'
-import { UserRoleService } from '../../userRole/userRole.service'
+
 import { StepBlockResolver } from './step.resolver'
 
 describe('StepBlockResolver', () => {
   let resolver: StepBlockResolver,
-    blockResolver: BlockResolver,
     service: BlockService,
-    prismaService: PrismaService
+    prismaService: DeepMockProxy<PrismaService>,
+    ability: AppAbility
 
+  const journey = {
+    team: { userTeams: [{ userId: 'userId', role: UserTeamRole.manager }] }
+  } as unknown as Journey
   const block = {
-    id: '1',
-    journeyId: '2',
+    id: 'blockId',
+    journeyId: 'journeyId',
     typename: 'StepBlock',
-    parentBlockId: '3',
+    parentBlockId: 'parentBlockId',
     parentOrder: 0,
     locked: true,
-    nextBlockId: '4'
+    nextBlockId: 'nextBlockId'
+  } as unknown as Block
+  const blockWithUserTeam = {
+    ...block,
+    journey
   }
-
-  const blockUpdate = omit(block, ['id', 'journeyId'])
-
-  const blockCreateResponse = {
-    ...omit(block, ['typename']),
-    id: undefined,
-    __typename: 'StepBlock',
-    parentOrder: 2
+  const blockCreateInput: StepBlockCreateInput = {
+    id: 'blockId',
+    journeyId: 'journeyId',
+    nextBlockId: 'nextBlockId',
+    locked: true
   }
-
+  const blockUpdateInput: StepBlockUpdateInput = {
+    nextBlockId: 'nextBlockId',
+    locked: false
+  }
   const blockService = {
     provide: BlockService,
     useFactory: () => ({
       getSiblings: jest.fn(() => [block, block]),
-      save: jest.fn(() => blockCreateResponse),
       update: jest.fn((input) => input)
     })
   }
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
+      imports: [CaslAuthModule.register(AppCaslFactory)],
       providers: [
-        BlockResolver,
         blockService,
         StepBlockResolver,
-        UserJourneyService,
-        UserRoleService,
-        PrismaService
+        {
+          provide: PrismaService,
+          useValue: mockDeep<PrismaService>()
+        }
       ]
     }).compile()
-    blockResolver = module.get<BlockResolver>(BlockResolver)
     resolver = module.get<StepBlockResolver>(StepBlockResolver)
     service = await module.resolve(BlockService)
-    prismaService = await module.resolve(PrismaService)
-    prismaService.block.findUnique = jest.fn().mockResolvedValue(block)
-    prismaService.block.findMany = jest.fn().mockResolvedValue([block, block])
-  })
-
-  describe('StepBlock', () => {
-    it('returns StepBlock', async () => {
-      expect(await blockResolver.block('1')).toEqual(block)
-      expect(await blockResolver.blocks()).toEqual([block, block])
-    })
+    prismaService = module.get<PrismaService>(
+      PrismaService
+    ) as DeepMockProxy<PrismaService>
+    ability = await new AppCaslFactory().createAbility({ id: 'userId' })
   })
 
   describe('stepBlockCreate', () => {
+    beforeEach(() => {
+      prismaService.$transaction.mockImplementation(
+        async (callback) => await callback(prismaService)
+      )
+    })
+
     it('creates a StepBlock', async () => {
-      expect(
-        await resolver.stepBlockCreate(omit(block, ['id', 'parentOrder']))
-      ).toEqual(blockCreateResponse)
-      expect(service.getSiblings).toHaveBeenCalledWith(block.journeyId)
-      expect(service.save).toHaveBeenCalledWith({
-        ...blockUpdate,
-        id: undefined,
-        journey: { connect: { id: block.journeyId } },
-        journeyId: block.journeyId,
-        parentOrder: 2
+      prismaService.block.create.mockResolvedValueOnce(blockWithUserTeam)
+      expect(await resolver.stepBlockCreate(ability, blockCreateInput)).toEqual(
+        blockWithUserTeam
+      )
+      expect(prismaService.block.create).toHaveBeenCalledWith({
+        data: {
+          id: 'blockId',
+          journey: {
+            connect: {
+              id: 'journeyId'
+            }
+          },
+          locked: true,
+          nextBlock: {
+            connect: {
+              id: 'nextBlockId'
+            }
+          },
+          parentOrder: 2,
+          typename: 'StepBlock'
+        },
+        include: {
+          action: true,
+          journey: {
+            include: {
+              team: { include: { userTeams: true } },
+              userJourneys: true
+            }
+          }
+        }
       })
+      expect(service.getSiblings).toHaveBeenCalledWith(
+        blockCreateInput.journeyId
+      )
+    })
+
+    it('throws error if not authorized', async () => {
+      prismaService.block.create.mockResolvedValueOnce(block)
+      await expect(
+        resolver.stepBlockCreate(ability, blockCreateInput)
+      ).rejects.toThrow('user is not allowed to create block')
     })
   })
 
   describe('stepBlockUpdate', () => {
     it('updates a StepBlock', async () => {
-      await resolver.stepBlockUpdate(block.id, block.journeyId, blockUpdate)
-      expect(service.update).toHaveBeenCalledWith(block.id, blockUpdate)
+      prismaService.block.findUnique.mockResolvedValueOnce(blockWithUserTeam)
+      await resolver.stepBlockUpdate(ability, 'blockId', blockUpdateInput)
+      expect(service.update).toHaveBeenCalledWith('blockId', blockUpdateInput)
+    })
+
+    it('throws error if not found', async () => {
+      prismaService.block.findUnique.mockResolvedValueOnce(null)
+      await expect(
+        resolver.stepBlockUpdate(ability, 'blockId', blockUpdateInput)
+      ).rejects.toThrow('block not found')
+    })
+
+    it('throws error if not authorized', async () => {
+      prismaService.block.findUnique.mockResolvedValueOnce(block)
+      await expect(
+        resolver.stepBlockUpdate(ability, 'blockId', blockUpdateInput)
+      ).rejects.toThrow('user is not allowed to update block')
     })
   })
 
   describe('locked', () => {
     it('returns locked when true', () => {
-      expect(resolver.locked({ locked: true } as unknown as StepBlock)).toEqual(
-        true
-      )
+      expect(resolver.locked({ ...block, locked: true })).toBe(true)
     })
 
     it('returns locked when false', () => {
-      expect(
-        resolver.locked({ locked: false } as unknown as StepBlock)
-      ).toEqual(false)
+      expect(resolver.locked({ ...block, locked: false })).toBe(false)
     })
 
-    it('returns false when locked is not set', () => {
-      expect(resolver.locked({} as unknown as StepBlock)).toEqual(false)
+    it('returns false when locked is null', () => {
+      expect(resolver.locked({ ...block, locked: null })).toBe(false)
     })
   })
 })

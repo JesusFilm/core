@@ -1,17 +1,23 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
-import { SnackbarProvider } from 'notistack'
 import { AuthUser } from 'next-firebase-auth'
-import { defaultJourney, oldJourney } from '../journeyListData'
-import { ThemeProvider } from '../../ThemeProvider'
-import { GET_ADMIN_JOURNEYS } from '../../../libs/useAdminJourneysQuery/useAdminJourneysQuery'
+import { SnackbarProvider } from 'notistack'
+
+import { GetLastActiveTeamIdAndTeams } from '../../../../__generated__/GetLastActiveTeamIdAndTeams'
 import { JourneyStatus } from '../../../../__generated__/globalTypes'
-import { GET_TEAMS, TeamProvider } from '../../Team/TeamProvider'
-import { GetTeams } from '../../../../__generated__/GetTeams'
+import { GET_ADMIN_JOURNEYS } from '../../../libs/useAdminJourneysQuery/useAdminJourneysQuery'
+import {
+  GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS,
+  TeamProvider
+} from '../../Team/TeamProvider'
+import { ThemeProvider } from '../../ThemeProvider'
+import { defaultJourney, oldJourney } from '../journeyListData'
+
 import {
   ARCHIVE_ACTIVE_JOURNEYS,
   TRASH_ACTIVE_JOURNEYS
 } from './ActiveJourneyList'
+
 import { ActiveJourneyList } from '.'
 
 jest.mock('react-i18next', () => ({
@@ -58,13 +64,24 @@ const noJourneysMock = {
   }
 }
 
-const getTeamsMock: MockedResponse<GetTeams> = {
+const getTeamsMock: MockedResponse<GetLastActiveTeamIdAndTeams> = {
   request: {
-    query: GET_TEAMS
+    query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
   },
   result: {
     data: {
-      teams: [{ id: 'teamId', title: 'Team Title', __typename: 'Team' }]
+      teams: [
+        {
+          id: 'teamId',
+          title: 'Team Title',
+          __typename: 'Team',
+          userTeams: []
+        }
+      ],
+      getJourneyProfile: {
+        __typename: 'JourneyProfile',
+        lastActiveTeamId: 'teamId'
+      }
     }
   }
 }

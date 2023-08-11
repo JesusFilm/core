@@ -1,18 +1,21 @@
-import { ReactElement, useEffect, useMemo } from 'react'
 import { gql, useLazyQuery } from '@apollo/client'
-import useMediaQuery from '@mui/material/useMediaQuery'
-import { Theme } from '@mui/material/styles'
-import { Dialog } from '@core/shared/ui/Dialog'
 import Stack from '@mui/material/Stack'
+import { Theme } from '@mui/material/styles'
+import useMediaQuery from '@mui/material/useMediaQuery'
+import { ReactElement, useEffect, useMemo } from 'react'
+
+import { Dialog } from '@core/shared/ui/Dialog'
+
 import {
   GetJourneyWithUserJourneys,
   GetJourneyWithUserJourneys_journey_userJourneys as UserJourney
 } from '../../../__generated__/GetJourneyWithUserJourneys'
-import { UserJourneyRole } from '../../../__generated__/globalTypes'
 import { GetUserInvites } from '../../../__generated__/GetUserInvites'
+import { UserJourneyRole } from '../../../__generated__/globalTypes'
 import { useCurrentUser } from '../../libs/useCurrentUser'
-import { UserList } from './UserList'
+
 import { AddUserSection } from './AddUserSection'
+import { UserList } from './UserList'
 
 export const GET_JOURNEY_WITH_USER_JOURNEYS = gql`
   query GetJourneyWithUserJourneys($id: ID!) {
@@ -92,7 +95,6 @@ export function AccessDialog({
 
     const invites =
       userInviteData?.userInvites != null ? userInviteData.userInvites : []
-
     invites.forEach((invite) => {
       if (invite.removedAt == null && invite.acceptedAt == null) {
         emails.push(invite.email)

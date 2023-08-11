@@ -1,99 +1,68 @@
 import { Test, TestingModule } from '@nestjs/testing'
+import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 
-import { BlockResolver } from '../block.resolver'
-import { BlockService } from '../block.service'
+import { Block, Journey, UserTeamRole } from '.prisma/api-journeys-client'
+import { CaslAuthModule } from '@core/nest/common/CaslAuthModule'
+
 import {
   ButtonBlockCreateInput,
-  ButtonVariant,
+  ButtonBlockUpdateInput,
   ButtonColor,
   ButtonSize,
-  ButtonBlock
+  ButtonVariant
 } from '../../../__generated__/graphql'
-import { UserJourneyService } from '../../userJourney/userJourney.service'
-import { UserRoleService } from '../../userRole/userRole.service'
+import { AppAbility, AppCaslFactory } from '../../../lib/casl/caslFactory'
 import { PrismaService } from '../../../lib/prisma.service'
+import { BlockService } from '../block.service'
+
 import { ButtonBlockResolver } from './button.resolver'
 
-describe('Button', () => {
+describe('ButtonBlock', () => {
   let resolver: ButtonBlockResolver,
-    blockResolver: BlockResolver,
     service: BlockService,
-    prismaService: PrismaService
+    prismaService: DeepMockProxy<PrismaService>,
+    ability: AppAbility
 
+  const journey = {
+    team: { userTeams: [{ userId: 'userId', role: UserTeamRole.manager }] }
+  } as unknown as Journey
   const block = {
-    id: '1',
-    journeyId: '2',
-    __typename: 'ButtonBlock',
-    parentBlockId: '0',
-    parentOrder: 1,
-    label: 'label',
-    variant: ButtonVariant.contained,
-    color: ButtonColor.primary,
-    size: ButtonSize.large,
-    startIconId: 'start1',
-    endIconId: 'end1',
-    action: {
-      gtmEventName: 'gtmEventName',
-      url: 'https://jesusfilm.org',
-      target: 'target'
-    }
-  }
-
-  const actionResponse = {
-    ...block.action,
-    parentBlockId: block.id
-  }
-
-  const blockInput: ButtonBlockCreateInput = {
-    id: '1',
-    journeyId: '2',
-    parentBlockId: '0',
-    label: 'label',
-    variant: ButtonVariant.contained,
-    color: ButtonColor.primary,
-    size: ButtonSize.medium
-  }
-
-  const blockCreateResponse = {
-    id: '1',
-    journey: {
-      connect: { id: '2' }
-    },
-    journeyId: '2',
+    id: 'blockId',
+    journeyId: 'journeyId',
     typename: 'ButtonBlock',
-    parentBlock: {
-      connect: { id: '0' }
-    },
-    parentOrder: 2,
+    parentBlockId: 'parentBlockId',
+    parentOrder: 1,
+    label: 'label',
+    variant: ButtonVariant.contained,
+    color: ButtonColor.primary,
+    size: ButtonSize.large
+  } as unknown as Block
+  const blockWithUserTeam = {
+    ...block,
+    journey
+  }
+  const blockCreateInput: ButtonBlockCreateInput = {
+    id: 'blockId',
+    journeyId: 'journeyId',
+    parentBlockId: 'parentBlockId',
     label: 'label',
     variant: ButtonVariant.contained,
     color: ButtonColor.primary,
     size: ButtonSize.medium
   }
-
-  const blockUpdate = {
-    __typename: '',
-    journeyId: '2',
-    parentBlockId: '0',
-    parentOrder: 1,
+  const blockUpdateInput: ButtonBlockUpdateInput = {
+    parentBlockId: 'parentBlockId',
     label: 'label',
     variant: ButtonVariant.contained,
     color: ButtonColor.primary,
     size: ButtonSize.small,
     startIconId: 'start1',
-    endIconId: 'end1',
-    action: {
-      gtmEventName: 'gtmEventName',
-      url: 'https://jesusfilm.org',
-      target: 'target'
-    }
+    endIconId: 'end1'
   }
-
   const blockService = {
     provide: BlockService,
     useFactory: () => ({
       getSiblings: jest.fn(() => [block, block]),
-      save: jest.fn((input) => input),
       update: jest.fn((input) => input),
       validateBlock: jest.fn()
     })
@@ -101,97 +70,121 @@ describe('Button', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
+      imports: [CaslAuthModule.register(AppCaslFactory)],
       providers: [
-        BlockResolver,
         blockService,
         ButtonBlockResolver,
-        UserJourneyService,
-        UserRoleService,
-        PrismaService
+        {
+          provide: PrismaService,
+          useValue: mockDeep<PrismaService>()
+        }
       ]
     }).compile()
     resolver = module.get<ButtonBlockResolver>(ButtonBlockResolver)
-    blockResolver = module.get<BlockResolver>(BlockResolver)
     service = await module.resolve(BlockService)
-    prismaService = await module.resolve(PrismaService)
-    prismaService.block.findUnique = jest.fn().mockResolvedValueOnce(block)
-    prismaService.block.findMany = jest
-      .fn()
-      .mockResolvedValueOnce([block, block])
+    prismaService = module.get<PrismaService>(
+      PrismaService
+    ) as DeepMockProxy<PrismaService>
+    ability = await new AppCaslFactory().createAbility({ id: 'userId' })
   })
 
-  describe('ButtonBlock', () => {
-    it('returns ButtonBlock', async () => {
-      expect(await blockResolver.block('1')).toEqual(block)
-      expect(await blockResolver.blocks()).toEqual([block, block])
-    })
-  })
-
-  describe('action', () => {
-    it('returns ButtonBlock action with parentBlockId', async () => {
-      expect(await resolver.action(block as unknown as ButtonBlock)).toEqual(
-        actionResponse
+  describe('buttonBlockCreate', () => {
+    beforeEach(() => {
+      prismaService.$transaction.mockImplementation(
+        async (callback) => await callback(prismaService)
       )
     })
-  })
 
-  describe('ButtonBlockCreate', () => {
     it('creates a ButtonBlock', async () => {
-      await resolver.buttonBlockCreate(blockInput)
+      prismaService.block.create.mockResolvedValueOnce(blockWithUserTeam)
+      expect(
+        await resolver.buttonBlockCreate(ability, blockCreateInput)
+      ).toEqual(blockWithUserTeam)
+      expect(prismaService.block.create).toHaveBeenCalledWith({
+        data: {
+          color: 'primary',
+          id: 'blockId',
+          journey: { connect: { id: 'journeyId' } },
+          label: 'label',
+          parentBlock: { connect: { id: 'parentBlockId' } },
+          parentOrder: 2,
+          size: 'medium',
+          typename: 'ButtonBlock',
+          variant: 'contained'
+        },
+        include: {
+          action: true,
+          journey: {
+            include: {
+              team: { include: { userTeams: true } },
+              userJourneys: true
+            }
+          }
+        }
+      })
       expect(service.getSiblings).toHaveBeenCalledWith(
-        blockInput.journeyId,
-        blockInput.parentBlockId
+        blockCreateInput.journeyId,
+        blockCreateInput.parentBlockId
       )
-      expect(service.save).toHaveBeenCalledWith(blockCreateResponse)
+    })
+
+    it('throws error if not authorized', async () => {
+      prismaService.block.create.mockResolvedValueOnce(block)
+      await expect(
+        resolver.buttonBlockCreate(ability, blockCreateInput)
+      ).rejects.toThrow('user is not allowed to create block')
     })
   })
 
-  describe('ButtonBlockUpdate', () => {
-    it('updates a ButtonBlock', async () => {
-      const mockValidate = service.validateBlock as jest.MockedFunction<
+  describe('buttonBlockUpdate', () => {
+    let mockValidate: jest.MockedFunction<typeof service.validateBlock>
+
+    beforeEach(() => {
+      mockValidate = service.validateBlock as jest.MockedFunction<
         typeof service.validateBlock
       >
-      mockValidate.mockResolvedValueOnce(true)
-      mockValidate.mockResolvedValueOnce(true)
-
-      await resolver.buttonBlockUpdate(block.id, block.journeyId, blockUpdate)
-      expect(service.update).toHaveBeenCalledWith(block.id, blockUpdate)
+      mockValidate.mockResolvedValue(true)
     })
 
-    it('should throw error with an invalid startIconId', async () => {
-      const mockValidate = service.validateBlock as jest.MockedFunction<
-        typeof service.validateBlock
-      >
-      mockValidate.mockResolvedValueOnce(false)
-      mockValidate.mockResolvedValueOnce(true)
+    it('updates a ButtonBlock', async () => {
+      prismaService.block.findUnique.mockResolvedValueOnce(blockWithUserTeam)
+      await resolver.buttonBlockUpdate(ability, 'blockId', blockUpdateInput)
+      expect(service.update).toHaveBeenCalledWith('blockId', blockUpdateInput)
+    })
 
-      await resolver
-        .buttonBlockUpdate(block.id, block.journeyId, {
-          ...blockUpdate,
+    it('throws error if startIconId does not exist', async () => {
+      mockValidate.mockResolvedValueOnce(false)
+      await expect(
+        resolver.buttonBlockUpdate(ability, 'blockId', {
+          ...blockUpdateInput,
           startIconId: 'wrong!'
         })
-        .catch((error) => {
-          expect(error.message).toEqual('Start icon does not exist')
-        })
-      expect(service.update).not.toHaveBeenCalled()
+      ).rejects.toThrow('Start icon does not exist')
     })
 
-    it('should throw error with an invalid endIconId', async () => {
-      const mockValidate = service.validateBlock as jest.MockedFunction<
-        typeof service.validateBlock
-      >
+    it('throws error if endIconId does not exist', async () => {
       mockValidate.mockResolvedValueOnce(true)
       mockValidate.mockResolvedValueOnce(false)
-
-      await resolver
-        .buttonBlockUpdate(block.id, block.journeyId, {
-          ...blockUpdate,
+      await expect(
+        resolver.buttonBlockUpdate(ability, 'blockId', {
+          ...blockUpdateInput,
           endIconId: 'wrong!'
         })
-        .catch((error) => {
-          expect(error.message).toEqual('End icon does not exist')
-        })
-      expect(service.update).not.toHaveBeenCalled()
+      ).rejects.toThrow('End icon does not exist')
+    })
+
+    it('throws error if not found', async () => {
+      prismaService.block.findUnique.mockResolvedValueOnce(null)
+      await expect(
+        resolver.buttonBlockUpdate(ability, 'blockId', blockUpdateInput)
+      ).rejects.toThrow('block not found')
+    })
+
+    it('throws error if not authorized', async () => {
+      prismaService.block.findUnique.mockResolvedValueOnce(block)
+      await expect(
+        resolver.buttonBlockUpdate(ability, 'blockId', blockUpdateInput)
+      ).rejects.toThrow('user is not allowed to update block')
     })
   })
 })

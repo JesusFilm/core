@@ -1,6 +1,7 @@
-import { treeBlocksVar, blockHistoryVar } from '@core/journeys/ui/block'
-import { showNavigationVar } from '@core/journeys/ui/block/block'
 import { fireEvent, render, waitFor } from '@testing-library/react'
+
+import { blockHistoryVar, treeBlocksVar } from '@core/journeys/ui/block'
+import { showNavigationVar } from '@core/journeys/ui/block/block'
 
 import { NavigationButton } from './NavigationButton'
 
@@ -78,7 +79,7 @@ describe('NavigationButton', () => {
       )
       fireEvent.click(getByTestId('conductorNextButton'))
 
-      expect(blockHistoryVar()[1].id).toEqual('step3.id')
+      expect(blockHistoryVar()[1].id).toBe('step3.id')
     })
 
     it('should call prevActiveBlock on prev button click', () => {
@@ -87,11 +88,11 @@ describe('NavigationButton', () => {
       const { getByTestId } = render(
         <NavigationButton variant="prev" alignment="left" />
       )
-      expect(blockHistoryVar()[1].id).toEqual('step2.id')
+      expect(blockHistoryVar()[1].id).toBe('step2.id')
 
       fireEvent.click(getByTestId('conductorPrevButton'))
 
-      expect(blockHistoryVar()[0].id).toEqual('step1.id')
+      expect(blockHistoryVar()[0].id).toBe('step1.id')
     })
 
     it('should hide left button if on first card', () => {
@@ -122,6 +123,20 @@ describe('NavigationButton', () => {
 
       expect(getByTestId('conductorNextButton')).not.toBeVisible()
     })
+
+    it('should show right button if on last card but set to navigate to another card', async () => {
+      treeBlocksVar([step1, step2, { ...step3, nextBlockId: step1.id }])
+      blockHistoryVar([step1, step2, { ...step3, nextBlockId: step1.id }])
+      const { getByTestId } = render(
+        <NavigationButton variant="next" alignment="right" />
+      )
+
+      fireEvent.mouseOver(getByTestId('conductorNextButton'))
+
+      await waitFor(() => {
+        expect(getByTestId('conductorNextButton')).toBeVisible()
+      })
+    })
   })
 
   describe('rtl', () => {
@@ -134,7 +149,7 @@ describe('NavigationButton', () => {
       )
       fireEvent.click(getByTestId('conductorNextButton'))
 
-      expect(blockHistoryVar()[1].id).toEqual('step3.id')
+      expect(blockHistoryVar()[1].id).toBe('step3.id')
     })
 
     it('should call prevActiveBlock on prev button click', () => {
@@ -143,11 +158,11 @@ describe('NavigationButton', () => {
       const { getByTestId } = render(
         <NavigationButton variant="prev" alignment="right" />
       )
-      expect(blockHistoryVar()[1].id).toEqual('step2.id')
+      expect(blockHistoryVar()[1].id).toBe('step2.id')
 
       fireEvent.click(getByTestId('conductorPrevButton'))
 
-      expect(blockHistoryVar()[0].id).toEqual('step1.id')
+      expect(blockHistoryVar()[0].id).toBe('step1.id')
     })
 
     it('should hide right button if on first card', () => {
@@ -177,6 +192,20 @@ describe('NavigationButton', () => {
       )
 
       expect(getByTestId('conductorNextButton')).not.toBeVisible()
+    })
+
+    it('should show left button if on last card but set to navigate to another card', async () => {
+      treeBlocksVar([step1, step2, { ...step3, nextBlockId: step1.id }])
+      blockHistoryVar([step1, step2, { ...step3, nextBlockId: step1.id }])
+      const { getByTestId } = render(
+        <NavigationButton variant="next" alignment="left" />
+      )
+
+      fireEvent.mouseOver(getByTestId('conductorNextButton'))
+
+      await waitFor(() => {
+        expect(getByTestId('conductorNextButton')).toBeVisible()
+      })
     })
   })
 })

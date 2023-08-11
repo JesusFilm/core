@@ -1,6 +1,10 @@
 import { Test, TestingModule } from '@nestjs/testing'
 
+import { CaslAuthModule } from '@core/nest/common/CaslAuthModule'
+
+import { AppCaslFactory } from '../../lib/casl/caslFactory'
 import { PrismaService } from '../../lib/prisma.service'
+
 import { JourneyProfileResolver } from './journeyProfile.resolver'
 
 describe('JourneyProfileResolver', () => {
@@ -19,6 +23,7 @@ describe('JourneyProfileResolver', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
+      imports: [CaslAuthModule.register(AppCaslFactory)],
       providers: [JourneyProfileResolver, PrismaService]
     }).compile()
     resolver = module.get<JourneyProfileResolver>(JourneyProfileResolver)
@@ -29,6 +34,9 @@ describe('JourneyProfileResolver', () => {
     prismaService.journeyProfile.create = jest
       .fn()
       .mockImplementationOnce((result) => result.data)
+    prismaService.journeyProfile.update = jest
+      .fn()
+      .mockImplementation((result) => result.data)
   })
 
   describe('getJourneyProfile', () => {
@@ -53,6 +61,24 @@ describe('JourneyProfileResolver', () => {
 
     it('should return existing profile', async () => {
       expect(await resolver.journeyProfileCreate('userId')).toEqual(profile)
+    })
+  })
+
+  describe('journeyProfileUpdate', () => {
+    it('should update journeyProfile', async () => {
+      await resolver.journeyProfileUpdate('userId', {
+        lastActiveTeamId: 'lastTeamId'
+      })
+      prismaService.journeyProfile.findUnique = jest
+        .fn()
+        .mockResolvedValueOnce(profile)
+
+      expect(prismaService.journeyProfile.update).toHaveBeenCalledWith({
+        where: { id: profile.id },
+        data: {
+          lastActiveTeamId: 'lastTeamId'
+        }
+      })
     })
   })
 })

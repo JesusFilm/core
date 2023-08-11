@@ -1,14 +1,20 @@
+import { InMemoryCache } from '@apollo/client'
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
-import { InMemoryCache } from '@apollo/client'
-import { GET_TEAMS, TeamProvider } from '../TeamProvider'
-import { GetTeams } from '../../../../__generated__/GetTeams'
+
+import { GetLastActiveTeamIdAndTeams } from '../../../../__generated__/GetLastActiveTeamIdAndTeams'
 import { GetUserTeamsAndInvites } from '../../../../__generated__/GetUserTeamsAndInvites'
-import { GET_USER_TEAMS_AND_INVITES } from '../../../libs/useUserTeamsAndInvitesQuery/useUserTeamsAndInvitesQuery'
 import { UserTeamRole } from '../../../../__generated__/globalTypes'
 import { UserTeamInviteCreate } from '../../../../__generated__/UserTeamInviteCreate'
+import { GET_USER_TEAMS_AND_INVITES } from '../../../libs/useUserTeamsAndInvitesQuery/useUserTeamsAndInvitesQuery'
 import { TeamManageWrapper } from '../TeamManageDialog/TeamManageWrapper'
+import {
+  GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS,
+  TeamProvider
+} from '../TeamProvider'
+
 import { USER_TEAM_INVITE_CREATE } from './UserTeamInviteForm'
+
 import { UserTeamInviteForm } from '.'
 
 jest.mock('react-i18next', () => ({
@@ -34,13 +40,24 @@ jest.mock('../../../libs/useCurrentUser', () => ({
 const user1 = { id: 'userId', email: 'siyangguccigang@example.com' }
 
 describe('UserTeamInviteForm', () => {
-  const getTeams: MockedResponse<GetTeams> = {
+  const getTeams: MockedResponse<GetLastActiveTeamIdAndTeams> = {
     request: {
-      query: GET_TEAMS
+      query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
     },
     result: {
       data: {
-        teams: [{ id: 'teamId', title: 'Team Title', __typename: 'Team' }]
+        teams: [
+          {
+            id: 'teamId',
+            title: 'Team Title',
+            __typename: 'Team',
+            userTeams: []
+          }
+        ],
+        getJourneyProfile: {
+          __typename: 'JourneyProfile',
+          lastActiveTeamId: 'teamId'
+        }
       }
     }
   }
@@ -100,11 +117,12 @@ describe('UserTeamInviteForm', () => {
       }
     }
   }
-  it('it should validate when fields are empty', async () => {
+
+  it('should validate when fields are empty', async () => {
     const { getByRole, getAllByText } = render(
       <MockedProvider>
         <TeamProvider>
-          <UserTeamInviteForm emails={[]} />
+          <UserTeamInviteForm emails={[]} role={UserTeamRole.manager} />
         </TeamProvider>
       </MockedProvider>
     )
@@ -116,12 +134,12 @@ describe('UserTeamInviteForm', () => {
       fireEvent.click(getByRole('button', { name: 'add user' }))
     })
     await waitFor(() => {
-      fireEvent.change(email, { target: { value: ' ' } })
+      fireEvent.change(email, { target: { value: '' } })
     })
 
     await waitFor(() => {
       const inlineErrors = getAllByText('Required')
-      expect(inlineErrors[0]).toHaveProperty('id', 'email-helper-text')
+      expect(inlineErrors[0]).toBeInTheDocument()
     })
   })
 
@@ -129,7 +147,7 @@ describe('UserTeamInviteForm', () => {
     const { getByRole, getByText } = render(
       <MockedProvider>
         <TeamProvider>
-          <UserTeamInviteForm emails={[]} />
+          <UserTeamInviteForm emails={[]} role={UserTeamRole.manager} />
         </TeamProvider>
       </MockedProvider>
     )
@@ -142,8 +160,27 @@ describe('UserTeamInviteForm', () => {
 
     await waitFor(() => {
       const inlineError = getByText('Please enter a valid email address')
-      expect(inlineError).toHaveProperty('id', 'email-helper-text')
+      expect(inlineError).toBeInTheDocument()
     })
+  })
+
+  it('should not allow a team member to invite others', async () => {
+    const { getByRole, getByText } = render(
+      <MockedProvider>
+        <TeamProvider>
+          <UserTeamInviteForm emails={[]} role={UserTeamRole.member} />
+        </TeamProvider>
+      </MockedProvider>
+    )
+    const email = getByRole('textbox', { name: 'Email' })
+
+    await waitFor(() => {
+      const inlineError = getByText(
+        'Only a manager can invite new members to the team'
+      )
+      expect(inlineError).toBeInTheDocument()
+    })
+    expect(email).toBeDisabled()
   })
 
   it('should validate if email already exists', async () => {
@@ -152,6 +189,7 @@ describe('UserTeamInviteForm', () => {
         <TeamProvider>
           <UserTeamInviteForm
             emails={['siyangguccigang@example.com', 'edmondshen@example.com']}
+            role={UserTeamRole.manager}
           />
         </TeamProvider>
       </MockedProvider>
@@ -169,7 +207,7 @@ describe('UserTeamInviteForm', () => {
 
     await waitFor(() => {
       const inlineError = getByText('This email is already on the list')
-      expect(inlineError).toHaveProperty('id', 'email-helper-text')
+      expect(inlineError).toBeInTheDocument()
     })
   })
 
@@ -179,6 +217,7 @@ describe('UserTeamInviteForm', () => {
         <TeamProvider>
           <UserTeamInviteForm
             emails={['siyangguccigang@example.com', 'edmondshen@example.com']}
+            role={UserTeamRole.manager}
           />
         </TeamProvider>
       </MockedProvider>
@@ -196,11 +235,11 @@ describe('UserTeamInviteForm', () => {
 
     await waitFor(() => {
       const inlineError = getByText('This email is already on the list')
-      expect(inlineError).toHaveProperty('id', 'email-helper-text')
+      expect(inlineError).toBeInTheDocument()
     })
   })
 
-  it('should create a user team invite on click ', async () => {
+  it('should create a user team invite on click', async () => {
     const cache = new InMemoryCache()
     const { getByRole } = render(
       <MockedProvider

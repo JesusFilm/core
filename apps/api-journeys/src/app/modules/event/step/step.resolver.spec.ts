@@ -1,14 +1,17 @@
 import { Test, TestingModule } from '@nestjs/testing'
-import { EventService } from '../event.service'
+
 import {
   StepNextEventCreateInput,
   StepViewEventCreateInput
 } from '../../../__generated__/graphql'
 import { PrismaService } from '../../../lib/prisma.service'
+import { EventService } from '../event.service'
+
 import { StepNextEventResolver, StepViewEventResolver } from './step.resolver'
 
 describe('Step', () => {
   let prismaService: PrismaService, eService: EventService
+
   beforeAll(() => {
     jest.useFakeTimers('modern')
     jest.setSystemTime(new Date('2021-02-18'))
@@ -17,6 +20,7 @@ describe('Step', () => {
   afterAll(() => {
     jest.useRealTimers()
   })
+
   const eventService = {
     provide: EventService,
     useFactory: () => ({

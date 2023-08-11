@@ -95,43 +95,125 @@ extend type Mutation {
   blockUpdateEmailAction(id: ID!, journeyId: ID!, input: EmailActionInput!): EmailAction!
 
   """blockDelete returns the updated sibling blocks on successful delete"""
-  blockDelete(id: ID!, journeyId: ID!, parentBlockId: ID): [Block!]!
+  blockDelete(
+    id: ID!
+
+    """drop this parameter after merging teams"""
+    journeyId: ID
+
+    """drop this parameter after merging teams"""
+    parentBlockId: ID
+  ): [Block!]!
 
   """
   blockDuplicate returns the updated block, it's children and sibling blocks on successful duplicate
   """
   blockDuplicate(
     id: ID!
-    journeyId: ID!
 
     """
     parentOrder defines the position to add the duplicated block. Negative values defines the position from the end of the array. Positions greater than the length of the array or null parentOrder will add duplicate at end of the array.
     """
     parentOrder: Int
+
+    """drop this parameter after merging teams"""
+    journeyId: ID
   ): [Block!]!
-  blockOrderUpdate(id: ID!, journeyId: ID!, parentOrder: Int!): [Block!]!
+  blockOrderUpdate(
+    id: ID!
+    parentOrder: Int!
+
+    """drop this parameter after merging teams"""
+    journeyId: ID
+  ): [Block!]!
   buttonBlockCreate(input: ButtonBlockCreateInput!): ButtonBlock!
-  buttonBlockUpdate(id: ID!, journeyId: ID!, input: ButtonBlockUpdateInput!): ButtonBlock
+  buttonBlockUpdate(
+    id: ID!
+    input: ButtonBlockUpdateInput!
+
+    """drop this parameter after merging teams"""
+    journeyId: ID
+  ): ButtonBlock
   cardBlockCreate(input: CardBlockCreateInput!): CardBlock!
-  cardBlockUpdate(id: ID!, journeyId: ID!, input: CardBlockUpdateInput!): CardBlock!
+  cardBlockUpdate(
+    id: ID!
+    input: CardBlockUpdateInput!
+
+    """drop this parameter after merging teams"""
+    journeyId: ID
+  ): CardBlock!
   iconBlockCreate(input: IconBlockCreateInput!): IconBlock!
-  iconBlockUpdate(id: ID!, journeyId: ID!, input: IconBlockUpdateInput!): IconBlock!
+  iconBlockUpdate(
+    id: ID!
+    input: IconBlockUpdateInput!
+
+    """drop this parameter after merging teams"""
+    journeyId: ID
+  ): IconBlock!
   imageBlockCreate(input: ImageBlockCreateInput!): ImageBlock!
-  imageBlockUpdate(id: ID!, journeyId: ID!, input: ImageBlockUpdateInput!): ImageBlock!
+  imageBlockUpdate(
+    id: ID!
+    input: ImageBlockUpdateInput!
+
+    """drop this parameter after merging teams"""
+    journeyId: ID
+  ): ImageBlock!
   radioOptionBlockCreate(input: RadioOptionBlockCreateInput!): RadioOptionBlock!
+  radioOptionBlockUpdate(
+    id: ID!
+    input: RadioOptionBlockUpdateInput!
+
+    """drop this parameter after merging teams"""
+    journeyId: ID
+  ): RadioOptionBlock!
   radioQuestionBlockCreate(input: RadioQuestionBlockCreateInput!): RadioQuestionBlock!
-  radioOptionBlockUpdate(id: ID!, journeyId: ID!, input: RadioOptionBlockUpdateInput!): RadioOptionBlock!
-  radioQuestionBlockUpdate(id: ID!, journeyId: ID!, parentBlockId: ID!): RadioQuestionBlock!
+  radioQuestionBlockUpdate(
+    id: ID!
+    parentBlockId: ID!
+
+    """drop this parameter after merging teams"""
+    journeyId: ID
+  ): RadioQuestionBlock!
   signUpBlockCreate(input: SignUpBlockCreateInput!): SignUpBlock!
-  signUpBlockUpdate(id: ID!, journeyId: ID!, input: SignUpBlockUpdateInput!): SignUpBlock
+  signUpBlockUpdate(
+    id: ID!
+    input: SignUpBlockUpdateInput!
+
+    """drop this parameter after merging teams"""
+    journeyId: ID
+  ): SignUpBlock
   stepBlockCreate(input: StepBlockCreateInput!): StepBlock!
-  stepBlockUpdate(id: ID!, journeyId: ID!, input: StepBlockUpdateInput!): StepBlock!
+  stepBlockUpdate(
+    id: ID!
+    input: StepBlockUpdateInput!
+
+    """drop this parameter after merging teams"""
+    journeyId: ID
+  ): StepBlock!
   textResponseBlockCreate(input: TextResponseBlockCreateInput!): TextResponseBlock!
-  textResponseBlockUpdate(id: ID!, journeyId: ID!, input: TextResponseBlockUpdateInput!): TextResponseBlock
+  textResponseBlockUpdate(
+    id: ID!
+    input: TextResponseBlockUpdateInput!
+
+    """drop this parameter after merging teams"""
+    journeyId: ID
+  ): TextResponseBlock
   typographyBlockCreate(input: TypographyBlockCreateInput!): TypographyBlock!
-  typographyBlockUpdate(id: ID!, journeyId: ID!, input: TypographyBlockUpdateInput!): TypographyBlock!
+  typographyBlockUpdate(
+    id: ID!
+    input: TypographyBlockUpdateInput!
+
+    """drop this parameter after merging teams"""
+    journeyId: ID
+  ): TypographyBlock!
   videoBlockCreate(input: VideoBlockCreateInput!): VideoBlock!
-  videoBlockUpdate(id: ID!, journeyId: ID!, input: VideoBlockUpdateInput!): VideoBlock!
+  videoBlockUpdate(
+    id: ID!
+    input: VideoBlockUpdateInput!
+
+    """drop this parameter after merging teams"""
+    journeyId: ID
+  ): VideoBlock!
   chatButtonCreate(journeyId: ID!, input: ChatButtonCreateInput): ChatButton!
   chatButtonUpdate(id: ID!, journeyId: ID!, input: ChatButtonUpdateInput!): ChatButton!
   chatButtonRemove(id: ID!): ChatButton!
@@ -153,8 +235,8 @@ extend type Mutation {
   hostCreate(teamId: ID!, input: HostCreateInput!): Host!
   hostUpdate(id: ID!, teamId: ID!, input: HostUpdateInput): Host!
   hostDelete(id: ID!, teamId: ID!): Host!
-  journeyCreate(input: JourneyCreateInput!, teamId: ID): Journey!
-  journeyDuplicate(id: ID!, teamId: ID): Journey!
+  journeyCreate(input: JourneyCreateInput!, teamId: ID!): Journey!
+  journeyDuplicate(id: ID!, teamId: ID!): Journey!
   journeyUpdate(id: ID!, input: JourneyUpdateInput!): Journey!
 
   """Sets journey status to published"""
@@ -175,6 +257,7 @@ extend type Mutation {
   """Updates template"""
   journeyTemplate(id: ID!, input: JourneyTemplateInput!): Journey!
   journeyProfileCreate: JourneyProfile!
+  journeyProfileUpdate(input: JourneyProfileUpdateInput!): JourneyProfile!
   teamCreate(input: TeamCreateInput): Team!
   teamUpdate(id: ID!, input: TeamUpdateInput): Team!
   userInviteCreate(journeyId: ID!, input: UserInviteCreateInput): UserInvite
@@ -186,7 +269,12 @@ extend type Mutation {
 
   """Removes all userJourneys associated with a journeyId"""
   userJourneyRemoveAll(id: ID!): [UserJourney!]!
-  userJourneyRequest(journeyId: ID!, idType: IdType): UserJourney!
+  userJourneyRequest(
+    journeyId: ID!
+
+    """drop this parameter after merging teams"""
+    idType: IdType
+  ): UserJourney!
   userJourneyOpen(id: ID!): UserJourney
   userTeamUpdate(id: ID!, input: UserTeamUpdateInput): UserTeam!
   userTeamDelete(id: ID!): UserTeam!
@@ -513,13 +601,6 @@ type RadioOptionBlock implements Block {
   action: Action
 }
 
-type RadioQuestionBlock implements Block {
-  id: ID!
-  journeyId: ID!
-  parentBlockId: ID
-  parentOrder: Int
-}
-
 input RadioOptionBlockCreateInput {
   id: ID
   journeyId: ID!
@@ -527,15 +608,22 @@ input RadioOptionBlockCreateInput {
   label: String!
 }
 
+input RadioOptionBlockUpdateInput {
+  parentBlockId: ID
+  label: String
+}
+
+type RadioQuestionBlock implements Block {
+  id: ID!
+  journeyId: ID!
+  parentBlockId: ID
+  parentOrder: Int
+}
+
 input RadioQuestionBlockCreateInput {
   id: ID
   journeyId: ID!
   parentBlockId: ID!
-}
-
-input RadioOptionBlockUpdateInput {
-  parentBlockId: ID
-  label: String
 }
 
 type SignUpBlock implements Block {
@@ -1611,16 +1699,13 @@ extend type Query {
   """
   adminJourneys(status: [JourneyStatus!], template: Boolean, teamId: ID): [Journey!]!
   adminJourneysReport(reportType: JourneysReportType!): PowerBiEmbed
-  adminJourney(id: ID!, idType: IdType): Journey
+  adminJourney(id: ID!, idType: IdType): Journey!
   journeys(where: JourneysFilter): [Journey!]!
-  journey(id: ID!, idType: IdType): Journey
+  journey(id: ID!, idType: IdType): Journey!
   getJourneyProfile: JourneyProfile
 
   """Get a list of Visitor Information by Journey"""
   journeyVisitorsConnection(
-    """Returns the visitor items related to a specific team."""
-    teamId: String!
-
     """Returns the elements in the list that match the specified filter."""
     filter: JourneyVisitorFilter!
 
@@ -1647,7 +1732,7 @@ extend type Query {
   """A list of visitors that are connected with a specific team."""
   visitorsConnection(
     """Returns the visitor items related to a specific team."""
-    teamId: String!
+    teamId: String
 
     """Returns the first n elements from the list."""
     first: Int
@@ -1769,6 +1854,11 @@ type JourneyProfile
   id: ID!
   userId: ID!
   acceptedTermsAt: DateTime
+  lastActiveTeamId: String
+}
+
+input JourneyProfileUpdateInput {
+  lastActiveTeamId: String
 }
 
 type JourneyVisitor
@@ -1892,6 +1982,7 @@ type Team
   title: String!
   createdAt: DateTime!
   updatedAt: DateTime!
+  userTeams: [UserTeam!]!
 }
 
 input TeamCreateInput {

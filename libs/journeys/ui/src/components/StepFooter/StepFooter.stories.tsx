@@ -1,24 +1,25 @@
-import { ComponentProps } from 'react'
-import { Story, Meta } from '@storybook/react'
-import Stack from '@mui/material/Stack'
 import { MockedProvider } from '@apollo/client/testing'
-import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
+import Stack from '@mui/material/Stack'
+import { Meta, Story } from '@storybook/react'
 import { SnackbarProvider } from 'notistack'
-import { journeyUiConfig } from '../../libs/journeyUiConfig'
+import { ComponentProps } from 'react'
+
+import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 
 import {
-  ThemeMode,
-  ThemeName,
+  ChatPlatform,
   JourneyStatus,
-  ChatPlatform
+  ThemeMode,
+  ThemeName
 } from '../../../__generated__/globalTypes'
-
 import { JourneyProvider } from '../../libs/JourneyProvider'
 import {
-  JourneyFields as Journey,
   JourneyFields_host as Host,
+  JourneyFields as Journey,
   JourneyFields_language as Language
 } from '../../libs/JourneyProvider/__generated__/JourneyFields'
+import { journeyUiConfig } from '../../libs/journeyUiConfig'
+
 import { StepFooter } from './StepFooter'
 
 const Demo = {
@@ -63,7 +64,7 @@ const journey: Journey = {
   seoDescription: null,
   chatButtons: [],
   host: null,
-  team: null
+  team: { __typename: 'Team', id: 'teamId', title: 'My Team' }
 }
 
 const rtlLanguage = {
@@ -81,17 +82,20 @@ const rtlLanguage = {
 } as unknown as Language
 
 const Template: Story<
-  ComponentProps<typeof StepFooter> & { journey: Journey; admin: boolean }
-> = ({ journey, admin = false }) => {
+  ComponentProps<typeof StepFooter> & {
+    journey: Journey
+    variant: 'default' | 'admin' | 'embed'
+  }
+> = ({ journey, variant = 'default' }) => {
   return (
     <MockedProvider>
       <SnackbarProvider>
         <FlagsProvider flags={{ editableStepFooter: true }}>
-          <JourneyProvider value={{ journey, admin }}>
+          <JourneyProvider value={{ journey, variant }}>
             <Stack
               sx={{
                 position: 'relative',
-                height: 80,
+                height: { xs: 119, sm: 70, lg: 78 },
                 justifyContent: 'center'
               }}
             >
@@ -111,7 +115,7 @@ Default.args = { journey }
 export const Admin = Template.bind({})
 Admin.args = {
   ...Default.args,
-  admin: true
+  variant: 'admin'
 }
 
 export const WithHost = Template.bind({})
@@ -145,6 +149,12 @@ WithAvatar.args = {
       src2: null
     } as unknown as Host
   }
+}
+
+export const WithAdminAvatar = Template.bind({})
+WithAdminAvatar.args = {
+  ...Admin.args,
+  ...WithAvatar.args
 }
 
 export const WithChat = Template.bind({})
@@ -198,18 +208,21 @@ Long.args = {
 }
 
 const TemplateRTL: Story<
-  ComponentProps<typeof StepFooter> & { journeys: Journey[]; admin: boolean[] }
-> = ({ journeys, admin }) => {
+  ComponentProps<typeof StepFooter> & {
+    journeys: Journey[]
+    variants: Array<'default' | 'admin' | 'embed'>
+  }
+> = ({ journeys, variants }) => {
   return (
     <MockedProvider>
       <SnackbarProvider>
         <FlagsProvider flags={{ editableStepFooter: true }}>
           {journeys.map((journey, i) => (
-            <JourneyProvider key={i} value={{ journey, admin: admin[i] }}>
+            <JourneyProvider key={i} value={{ journey, variant: variants[i] }}>
               <Stack
                 sx={{
                   position: 'relative',
-                  height: 80,
+                  height: { xs: 118, sm: 69, lg: 77 },
                   justifyContent: 'center'
                 }}
               >
@@ -231,9 +244,18 @@ RTL.args = {
     { ...(WithChat.args.journey as Journey), language: rtlLanguage },
     { ...(WithHost.args.journey as Journey), language: rtlLanguage },
     { ...(WithAvatar.args.journey as Journey), language: rtlLanguage },
+    { ...(WithAdminAvatar.args.journey as Journey), language: rtlLanguage },
     { ...(Long.args.journey as Journey), language: rtlLanguage }
   ],
-  admin: [true, false, false, false, false, false]
+  variants: [
+    'admin',
+    'default',
+    'default',
+    'default',
+    'default',
+    'admin',
+    'default'
+  ]
 }
 RTL.parameters = { rtl: true }
 

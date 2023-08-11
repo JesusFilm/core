@@ -1,32 +1,33 @@
+import { gql, useQuery } from '@apollo/client'
+import Stack from '@mui/material/Stack'
+import Typography from '@mui/material/Typography'
 import {
-  useAuthUser,
   AuthAction,
+  useAuthUser,
   withAuthUser,
   withAuthUserTokenSSR
 } from 'next-firebase-auth'
+import { NextSeo } from 'next-seo'
 import { useRouter } from 'next/router'
 import { ReactElement, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { NextSeo } from 'next-seo'
-import { gql, useQuery } from '@apollo/client'
-import Typography from '@mui/material/Typography'
-import Stack from '@mui/material/Stack'
-import { PageWrapper } from '../../../../src/components/NewPageWrapper'
-import { GetJourney } from '../../../../__generated__/GetJourney'
-import { GET_JOURNEY, USER_JOURNEY_OPEN } from '../../[journeyId]'
+
 import { ACCEPT_ALL_INVITES } from '../../..'
-import { UserJourneyOpen } from '../../../../__generated__/UserJourneyOpen'
-import { JourneyVisitorsList } from '../../../../src/components/JourneyVisitorsList'
+import { AcceptAllInvites } from '../../../../__generated__/AcceptAllInvites'
+import { GetJourney } from '../../../../__generated__/GetJourney'
 import {
   GetJourneyVisitors,
   GetJourneyVisitors_visitors_edges as VisitorEdge
 } from '../../../../__generated__/GetJourneyVisitors'
 import { GetJourneyVisitorsCount } from '../../../../__generated__/GetJourneyVisitorsCount'
+import { UserJourneyOpen } from '../../../../__generated__/UserJourneyOpen'
+import { JourneyVisitorsList } from '../../../../src/components/JourneyVisitorsList'
+import { ClearAllButton } from '../../../../src/components/JourneyVisitorsList/FilterDrawer/ClearAllButton'
 import { FilterDrawer } from '../../../../src/components/JourneyVisitorsList/FilterDrawer/FilterDrawer'
 import { VisitorToolbar } from '../../../../src/components/JourneyVisitorsList/VisitorToolbar/VisitorToolbar'
-import { ClearAllButton } from '../../../../src/components/JourneyVisitorsList/FilterDrawer/ClearAllButton'
+import { PageWrapper } from '../../../../src/components/NewPageWrapper'
 import { initAndAuthApp } from '../../../../src/libs/initAndAuthApp'
-import { AcceptAllInvites } from '../../../../__generated__/AcceptAllInvites'
+import { GET_JOURNEY, USER_JOURNEY_OPEN } from '../../[journeyId]'
 
 export const GET_JOURNEY_VISITORS = gql`
   query GetJourneyVisitors(
@@ -36,7 +37,6 @@ export const GET_JOURNEY_VISITORS = gql`
     $after: String
   ) {
     visitors: journeyVisitorsConnection(
-      teamId: "jfp-team"
       filter: $filter
       sort: $sort
       first: $first

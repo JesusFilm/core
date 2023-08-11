@@ -1,15 +1,17 @@
-import { ReactElement, useMemo } from 'react'
 import Box from '@mui/material/Box'
-import Skeleton from '@mui/material/Skeleton'
 import List from '@mui/material/List'
 import ListItem from '@mui/material/ListItem'
 import ListItemAvatar from '@mui/material/ListItemAvatar'
 import ListItemText from '@mui/material/ListItemText'
+import Skeleton from '@mui/material/Skeleton'
 import Typography from '@mui/material/Typography'
+import sortBy from 'lodash/sortBy'
+import { ReactElement, useMemo } from 'react'
 
 import { GetJourneyWithUserJourneys_journey_userJourneys as UserJourney } from '../../../../__generated__/GetJourneyWithUserJourneys'
 import { GetUserInvites_userInvites as UserInvite } from '../../../../__generated__/GetUserInvites'
 import { UserJourneyRole } from '../../../../__generated__/globalTypes'
+
 import { UserListItem } from './UserListItem'
 
 interface UserListProps {
@@ -30,16 +32,16 @@ export function UserList({
   journeyId
 }: UserListProps): ReactElement {
   const sortedUsers: UserJourney[] = useMemo(() => {
-    const ownerIndex = users.findIndex(
-      (user) => user.role === UserJourneyRole.owner
-    )
-
-    if (ownerIndex > 0) {
-      const owner = users.splice(ownerIndex, 1)
-      return [...owner, ...users]
-    }
-
-    return users
+    return sortBy(users, ({ role }) => {
+      switch (role) {
+        case UserJourneyRole.owner:
+          return 0
+        case UserJourneyRole.editor:
+          return 1
+        case UserJourneyRole.inviteRequested:
+          return 2
+      }
+    })
   }, [users])
 
   return (
@@ -69,7 +71,7 @@ export function UserList({
         </Box>
       ) : (
         <>
-          {users.length > 0 && currentUser != null && (
+          {users.length > 0 && (
             <Box>
               <Typography variant="subtitle1">{title}</Typography>
 

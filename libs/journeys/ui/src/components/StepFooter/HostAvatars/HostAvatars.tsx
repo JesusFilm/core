@@ -1,8 +1,10 @@
-import { ReactElement } from 'react'
 import Avatar from '@mui/material/Avatar'
 import AvatarGroup from '@mui/material/AvatarGroup'
-import UserProfile3 from '@core/shared/ui/icons/UserProfile3'
+import { ReactElement } from 'react'
+
 import { useFlags } from '@core/shared/ui/FlagsProvider'
+import UserProfile3 from '@core/shared/ui/icons/UserProfile3'
+
 import { useJourney } from '../../../libs/JourneyProvider'
 import { getJourneyRTL } from '../../../libs/rtl'
 
@@ -27,20 +29,24 @@ export function HostAvatars({
 
   return (
     <AvatarGroup
-      spacing={size === 'small' ? 16 : 24}
+      spacing={size === 'small' ? (rtl ? 0 : 12) : 24}
       data-testid="host-avatars"
-      sx={{ pr: rtl && src1 != null && src2 != null ? 4 : 0 }}
+      sx={{
+        '.MuiAvatar-root': {
+          borderWidth: '1px',
+          mr: rtl ? -1 : 0,
+          '.MuiAvatar-colorDefault': {
+            borderWidth: '2px'
+          }
+        }
+      }}
     >
       {src1 != null && (
         <Avatar
           src={src1}
           sx={{
             height: size === 'small' ? '30px' : '48px',
-            width: size === 'small' ? '30px' : '48px',
-            '&.MuiAvatar-root': {
-              borderWidth: '1px',
-              marginRight: rtl ? '-8px' : 0
-            }
+            width: size === 'small' ? '30px' : '48px'
           }}
         />
       )}
@@ -49,11 +55,7 @@ export function HostAvatars({
           src={src2}
           sx={{
             height: size === 'small' ? '30px' : '48px',
-            width: size === 'small' ? '30px' : '48px',
-            '&.MuiAvatar-root': {
-              borderWidth: '1px',
-              marginRight: rtl ? '-8px' : 0
-            }
+            width: size === 'small' ? '30px' : '48px'
           }}
         />
       )}
@@ -67,8 +69,7 @@ export function HostAvatars({
               opacity: 0.5,
               backgroundColor: 'transparent',
               '&.MuiAvatar-root': {
-                border: '2px dashed',
-                borderColor: (theme) => theme.palette.grey[700],
+                border: (theme) => `2px dashed ${theme.palette.grey[700]}`,
                 height: '27px',
                 width: '27px'
               }
@@ -80,7 +81,6 @@ export function HostAvatars({
                 pr: rtl ? '4px' : '0px',
                 pl: rtl ? '0px' : '4px',
                 pt: '4px',
-
                 color: (theme) => theme.palette.grey[700]
               }}
             />
@@ -93,8 +93,7 @@ export function HostAvatars({
             opacity: 0.5,
             backgroundColor: 'transparent',
             '&.MuiAvatar-root': {
-              border: '2px solid',
-              borderColor: (theme) => theme.palette.grey[700],
+              border: (theme) => `2px solid ${theme.palette.grey[700]}`,
               height: '46px',
               width: '46px'
             }

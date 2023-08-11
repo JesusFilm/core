@@ -20,7 +20,7 @@ module "seed" {
     "PG_DATABASE_URL"
   ]
   cpu                     = 1024
-  memory                  = 2048
+  memory                  = 4096
   task_execution_role_arn = var.ecs_config.task_execution_role_arn
   env                     = var.env
 }

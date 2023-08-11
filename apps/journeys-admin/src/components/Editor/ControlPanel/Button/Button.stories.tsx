@@ -1,6 +1,8 @@
-import { Story, Meta } from '@storybook/react'
 import PaletteIcon from '@mui/icons-material/Palette'
+import { Meta, Story } from '@storybook/react'
+
 import { journeysAdminConfig } from '../../../../libs/storybook'
+
 import { Button } from '.'
 
 const ButtonStory = {

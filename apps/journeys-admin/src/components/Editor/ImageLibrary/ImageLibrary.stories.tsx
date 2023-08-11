@@ -1,8 +1,10 @@
-import { ComponentProps, useState } from 'react'
-import { Story, Meta } from '@storybook/react'
 import { MockedProvider } from '@apollo/client/testing'
+import { Meta, Story } from '@storybook/react'
+import { ComponentProps, useState } from 'react'
+
 import { simpleComponentConfig } from '../../../libs/storybook'
 import { listUnsplashCollectionMock } from '../ImageBlockEditor/UnsplashGallery/data'
+
 import { ImageLibrary } from '.'
 
 const ImageLibraryStory = {

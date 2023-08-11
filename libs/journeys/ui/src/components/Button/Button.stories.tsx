@@ -1,16 +1,18 @@
-import { ComponentProps } from 'react'
-import { Story, Meta } from '@storybook/react'
-import Typography from '@mui/material/Typography'
 import { MockedProvider } from '@apollo/client/testing'
-import { StoryCard } from '../StoryCard'
-import { journeyUiConfig } from '../../libs/journeyUiConfig'
+import Typography from '@mui/material/Typography'
+import { Meta, Story } from '@storybook/react'
+import { ComponentProps } from 'react'
+
 import {
-  ButtonVariant,
   ButtonColor,
   ButtonSize,
+  ButtonVariant,
   IconName,
   IconSize
 } from '../../../__generated__/globalTypes'
+import { journeyUiConfig } from '../../libs/journeyUiConfig'
+import { StoryCard } from '../StoryCard'
+
 import { Button } from '.'
 
 const ButtonDemo = {

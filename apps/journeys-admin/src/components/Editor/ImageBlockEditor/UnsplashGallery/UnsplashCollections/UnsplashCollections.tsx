@@ -1,10 +1,10 @@
-import { ReactElement, useRef, useState, useEffect } from 'react'
 import ChevronLeftRounded from '@mui/icons-material/ChevronLeftRounded'
 import ChevronRightRounded from '@mui/icons-material/ChevronRightRounded'
 import Box from '@mui/material/Box'
 import Chip from '@mui/material/Chip'
 import IconButton from '@mui/material/IconButton'
 import Typography from '@mui/material/Typography'
+import { ReactElement, useEffect, useRef, useState } from 'react'
 
 interface UnsplashCollectionsProps {
   onClick: (collectionId: string, query: string) => void

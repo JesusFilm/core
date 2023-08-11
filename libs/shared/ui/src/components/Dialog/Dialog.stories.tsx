@@ -1,15 +1,17 @@
-import { ComponentProps } from 'react'
-import { Story, Meta } from '@storybook/react'
-import noop from 'lodash/noop'
+import Language from '@mui/icons-material/Language'
 import Button from '@mui/material/Button'
-import Typography from '@mui/material/Typography'
-import TextField from '@mui/material/TextField'
 import MuiListItem from '@mui/material/ListItem'
 import ListItemAvatar from '@mui/material/ListItemAvatar'
-import Skeleton from '@mui/material/Skeleton'
 import ListItemText from '@mui/material/ListItemText'
-import Language from '@mui/icons-material/Language'
+import Skeleton from '@mui/material/Skeleton'
+import TextField from '@mui/material/TextField'
+import Typography from '@mui/material/Typography'
+import { Meta, Story } from '@storybook/react'
+import noop from 'lodash/noop'
+import { ComponentProps } from 'react'
+
 import { sharedUiConfig } from '../../libs/sharedUiConfig'
+
 import { Dialog } from './Dialog'
 
 const DialogStory = {
@@ -27,6 +29,19 @@ const Template: Story<ComponentProps<typeof Dialog>> = ({ ...args }) => {
 
 export const Basic = Template.bind({})
 Basic.args = {
+  open: true,
+  onClose: noop,
+  dialogTitle: { title: 'Simple Dialog' },
+  dialogAction: {
+    onSubmit: noop,
+    submitLabel: 'Ok'
+  },
+  children: <Typography>This is the content</Typography>
+}
+
+export const Loading = Template.bind({})
+Loading.args = {
+  loading: true,
   open: true,
   onClose: noop,
   dialogTitle: { title: 'Simple Dialog' },

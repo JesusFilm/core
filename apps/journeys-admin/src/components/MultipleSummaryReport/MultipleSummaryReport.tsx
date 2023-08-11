@@ -1,11 +1,12 @@
-import { ReactElement } from 'react'
+import ArrowForwardIosRoundedIcon from '@mui/icons-material/ArrowForwardIosRounded'
 import Box from '@mui/material/Box'
+import Button from '@mui/material/Button'
 import Container from '@mui/material/Container'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
-import Button from '@mui/material/Button'
-import ArrowForwardIosRoundedIcon from '@mui/icons-material/ArrowForwardIosRounded'
 import Link from 'next/link'
+import { ReactElement } from 'react'
+
 import { JourneysReportType } from '../../../__generated__/globalTypes'
 import { MemoizedDynamicReport } from '../DynamicPowerBiReport'
 

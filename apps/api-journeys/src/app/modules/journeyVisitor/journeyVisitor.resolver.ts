@@ -1,20 +1,23 @@
-import { Args, Parent, Query, ResolveField, Resolver } from '@nestjs/graphql'
-import { FromPostgresql } from '@core/nest/decorators/FromPostgresql'
-import {
-  Prisma,
-  Event,
-  Visitor,
-  JourneyVisitor
-} from '.prisma/api-journeys-client'
 import { UseGuards } from '@nestjs/common'
-import { CaslAccessible } from '@core/nest/common/CaslAuthModule'
+import { Args, Parent, Query, ResolveField, Resolver } from '@nestjs/graphql'
 import { GraphQLError } from 'graphql'
-import { PrismaService } from '../../lib/prisma.service'
+
+import {
+  Event,
+  JourneyVisitor,
+  Prisma,
+  Visitor
+} from '.prisma/api-journeys-client'
+import { CaslAccessible } from '@core/nest/common/CaslAuthModule'
+import { FromPostgresql } from '@core/nest/decorators/FromPostgresql'
+
 import {
   JourneyVisitorFilter,
   JourneyVisitorSort
 } from '../../__generated__/graphql'
 import { AppCaslGuard } from '../../lib/casl/caslGuard'
+import { PrismaService } from '../../lib/prisma.service'
+
 import {
   JourneyVisitorService,
   JourneyVisitorsConnection

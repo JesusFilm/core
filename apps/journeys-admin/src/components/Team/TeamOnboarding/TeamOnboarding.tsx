@@ -1,30 +1,40 @@
-import { ReactElement } from 'react'
-import Image from 'next/image'
-import Box from '@mui/system/Box'
+import { useMutation } from '@apollo/client'
+import GroupAddIcon from '@mui/icons-material/GroupAdd'
 import Button from '@mui/material/Button'
 import Card from '@mui/material/Card'
 import CardActions from '@mui/material/CardActions'
 import CardContent from '@mui/material/CardContent'
 import CardHeader from '@mui/material/CardHeader'
+import Divider from '@mui/material/Divider'
 import Link from '@mui/material/Link'
 import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
-import { useTranslation } from 'react-i18next'
+import Box from '@mui/system/Box'
 import { Form } from 'formik'
+import Image from 'next/image'
 import { useRouter } from 'next/router'
-import Divider from '@mui/material/Divider'
-import taskbarIcon from '../../../../public/taskbar-icon.svg'
-import { TeamCreateForm } from '../TeamCreateForm'
+import { ReactElement } from 'react'
+import { useTranslation } from 'react-i18next'
 
-import { useTeam } from '../TeamProvider'
+import { UpdateLastActiveTeamId } from '../../../../__generated__/UpdateLastActiveTeamId'
+import taskbarIcon from '../../../../public/taskbar-icon.svg'
+import { useJourneyDuplicateMutation } from '../../../libs/useJourneyDuplicateMutation'
+import { TeamCreateForm } from '../TeamCreateForm'
 import { TeamManageWrapper } from '../TeamManageDialog/TeamManageWrapper'
+import { useTeam } from '../TeamProvider'
+import { UPDATE_LAST_ACTIVE_TEAM_ID } from '../TeamSelect/TeamSelect'
+
+export const ONBOARDING_TEMPLATE_ID = '9d9ca229-9fb5-4d06-a18c-2d1a4ceba457'
 
 export function TeamOnboarding(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-
+  const [journeyDuplicate, { loading }] = useJourneyDuplicateMutation()
   const router = useRouter()
   const { activeTeam } = useTeam()
+  const [updateLastActiveTeamId] = useMutation<UpdateLastActiveTeamId>(
+    UPDATE_LAST_ACTIVE_TEAM_ID
+  )
 
   return (
     <Stack
@@ -46,7 +56,7 @@ export function TeamOnboarding(): ReactElement {
             }) => (
               <Card sx={{ width: { sm: '444px' } }}>
                 <CardHeader
-                  title={t('Invite teammates to {{ title }}', {
+                  title={t('Invite Teammates', {
                     title: activeTeam.title
                   })}
                   titleTypographyProps={{ variant: 'h6' }}
@@ -62,6 +72,16 @@ export function TeamOnboarding(): ReactElement {
                 </CardContent>
 
                 <Divider />
+                <Stack
+                  direction="row"
+                  alignItems="center"
+                  sx={{ mt: 4, mx: 6 }}
+                >
+                  <GroupAddIcon />
+                  <Typography variant="subtitle1" sx={{ ml: 3 }}>
+                    {t('Invite team members')}
+                  </Typography>
+                </Stack>
                 <CardContent sx={{ px: 6, py: 4 }}>
                   {userTeamInviteForm}
                 </CardContent>
@@ -72,7 +92,12 @@ export function TeamOnboarding(): ReactElement {
                     justifyContent: 'flex-end'
                   }}
                 >
-                  <Button onClick={async () => await router?.push('/')}>
+                  <Button
+                    onClick={async () =>
+                      await router?.push('/?onboarding=true')
+                    }
+                    disabled={loading}
+                  >
                     {(data?.userTeamInvites ?? []).length > 0
                       ? t('Continue')
                       : t('Skip')}
@@ -82,7 +107,26 @@ export function TeamOnboarding(): ReactElement {
             )}
           </TeamManageWrapper>
         ) : (
-          <TeamCreateForm>
+          <TeamCreateForm
+            onSubmit={async (_, __, data) => {
+              if (data?.teamCreate.id == null) return
+              await Promise.all([
+                journeyDuplicate({
+                  variables: {
+                    id: ONBOARDING_TEMPLATE_ID,
+                    teamId: data.teamCreate.id
+                  }
+                }),
+                updateLastActiveTeamId({
+                  variables: {
+                    input: {
+                      lastActiveTeamId: data.teamCreate.id
+                    }
+                  }
+                })
+              ])
+            }}
+          >
             {({
               values,
               errors,

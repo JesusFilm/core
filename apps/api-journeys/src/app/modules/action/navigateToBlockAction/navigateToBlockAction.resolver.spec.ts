@@ -1,97 +1,123 @@
 import { Test, TestingModule } from '@nestjs/testing'
+import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 import omit from 'lodash/omit'
 
-import { BlockService } from '../../block/block.service'
-import { UserJourneyService } from '../../userJourney/userJourney.service'
-import { UserRoleService } from '../../userRole/userRole.service'
+import { Action, Block, Journey } from '.prisma/api-journeys-client'
+import { CaslAuthModule } from '@core/nest/common/CaslAuthModule'
+
+import {
+  NavigateToBlockActionInput,
+  UserTeamRole
+} from '../../../__generated__/graphql'
+import { AppAbility, AppCaslFactory } from '../../../lib/casl/caslFactory'
 import { PrismaService } from '../../../lib/prisma.service'
-import { ActionResolver } from '../action.resolver'
+import { ACTION_UPDATE_RESET } from '../actionUpdateReset'
+
 import { NavigateToBlockActionResolver } from './navigateToBlockAction.resolver'
 
 describe('NavigateToBlockActionResolver', () => {
-  let resolver: NavigateToBlockActionResolver, prismaService: PrismaService
+  let resolver: NavigateToBlockActionResolver,
+    prismaService: DeepMockProxy<PrismaService>,
+    ability: AppAbility
 
-  const block = {
-    id: '1',
-    journeyId: '2',
-    typename: 'RadioOptionBlock',
-    parentBlockId: '3',
-    parentOrder: 3,
-    label: 'label',
-    description: 'description',
+  const journey = {
+    team: { userTeams: [{ userId: 'userId', role: UserTeamRole.manager }] }
+  } as unknown as Journey
+  const block: Block & { action: Action; journey?: Journey } = {
+    ...({
+      id: '1',
+      journeyId: '2',
+      typename: 'RadioOptionBlock',
+      parentBlockId: '3',
+      parentOrder: 3,
+      label: 'label',
+      description: 'description',
+      updatedAt: new Date()
+    } as unknown as Block),
     action: {
       parentBlockId: '1',
       gtmEventName: 'gtmEventName',
-      blockId: '4'
+      url: 'https://google.com',
+      blockId: '4',
+      journeyId: null,
+      target: null,
+      email: null,
+      updatedAt: new Date()
     }
   }
-
-  const navigateToBlockInput = {
+  const blockWithUserTeam = {
+    ...block,
+    journey
+  }
+  const input: NavigateToBlockActionInput = {
     gtmEventName: 'gtmEventName',
-    blockId: '4',
-    email: null,
-    journeyId: null,
-    url: null,
-    target: null
+    blockId: '4'
   }
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
+      imports: [CaslAuthModule.register(AppCaslFactory)],
       providers: [
-        BlockService,
         NavigateToBlockActionResolver,
-        ActionResolver,
-        UserJourneyService,
-        UserRoleService,
-        PrismaService
+        {
+          provide: PrismaService,
+          useValue: mockDeep<PrismaService>()
+        }
       ]
     }).compile()
     resolver = module.get<NavigateToBlockActionResolver>(
       NavigateToBlockActionResolver
     )
-    prismaService = module.get<PrismaService>(PrismaService)
-    prismaService.block.findUnique = jest.fn().mockResolvedValue(block)
-    prismaService.action.upsert = jest
-      .fn()
-      .mockResolvedValue((result) => result.data)
+    prismaService = module.get<PrismaService>(
+      PrismaService
+    ) as DeepMockProxy<PrismaService>
+    ability = await new AppCaslFactory().createAbility({ id: 'userId' })
   })
 
-  it('updates the navigate to block action', async () => {
-    await resolver.blockUpdateNavigateToBlockAction(
-      block.id,
-      block.journeyId,
-      navigateToBlockInput
-    )
-    const actionData = {
-      ...omit(navigateToBlockInput, ['journeyId', 'blockId']),
-      block: { connect: { id: navigateToBlockInput.blockId } }
-    }
-    expect(prismaService.action.upsert).toHaveBeenCalledWith({
-      where: { parentBlockId: block.id },
-      create: {
-        ...omit(actionData, 'journeyId'),
-        parentBlock: { connect: { id: block.id } }
-      },
-      update: { ...actionData, journey: { disconnect: true } }
-    })
-  })
-
-  it('throws an error if typename is wrong', async () => {
-    const wrongBlock = {
-      ...block,
-      __typename: 'WrongBlock'
-    }
-    prismaService.block.findUnique = jest.fn().mockResolvedValue(wrongBlock)
-    await resolver
-      .blockUpdateNavigateToBlockAction(
-        wrongBlock.id,
-        wrongBlock.journeyId,
-        navigateToBlockInput
-      )
-      .catch((error) => {
-        expect(error.message).toEqual(
-          'This block does not support navigate to block actions'
-        )
+  describe('blockUpdateNavigateToBlockAction', () => {
+    it('updates the navigate to block action', async () => {
+      prismaService.block.findUnique.mockResolvedValueOnce(blockWithUserTeam)
+      await resolver.blockUpdateNavigateToBlockAction(ability, block.id, input)
+      const actionData = {
+        ...omit(input, 'blockId'),
+        block: { connect: { id: input.blockId } }
+      }
+      expect(prismaService.action.upsert).toHaveBeenCalledWith({
+        where: { parentBlockId: block.id },
+        create: {
+          ...actionData,
+          parentBlock: { connect: { id: block.id } }
+        },
+        update: {
+          ...ACTION_UPDATE_RESET,
+          ...actionData
+        }
       })
+    })
+
+    it('throws an error if typename is wrong', async () => {
+      const wrongBlock = {
+        ...blockWithUserTeam,
+        typename: 'WrongBlock'
+      }
+      prismaService.block.findUnique.mockResolvedValueOnce(wrongBlock)
+      await expect(
+        resolver.blockUpdateNavigateToBlockAction(ability, wrongBlock.id, input)
+      ).rejects.toThrow('This block does not support navigate to block actions')
+    })
+
+    it('throws error if not found', async () => {
+      prismaService.block.findUnique.mockResolvedValueOnce(null)
+      await expect(
+        resolver.blockUpdateNavigateToBlockAction(ability, block.id, input)
+      ).rejects.toThrow('block not found')
+    })
+
+    it('throws error if not authorized', async () => {
+      prismaService.block.findUnique.mockResolvedValueOnce(block)
+      await expect(
+        resolver.blockUpdateNavigateToBlockAction(ability, block.id, input)
+      ).rejects.toThrow('user is not allowed to update block')
+    })
   })
 })

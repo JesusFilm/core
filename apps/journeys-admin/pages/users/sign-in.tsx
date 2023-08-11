@@ -1,14 +1,15 @@
-import { ReactElement } from 'react'
 import {
+  AuthAction,
   withAuthUser,
-  withAuthUserTokenSSR,
-  AuthAction
+  withAuthUserTokenSSR
 } from 'next-firebase-auth'
-import { NextSeo } from 'next-seo'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
+import { NextSeo } from 'next-seo'
+import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
-import { SignIn } from '../../src/components/SignIn'
+
 import i18nConfig from '../../next-i18next.config'
+import { SignIn } from '../../src/components/SignIn'
 
 function SignInPage(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')

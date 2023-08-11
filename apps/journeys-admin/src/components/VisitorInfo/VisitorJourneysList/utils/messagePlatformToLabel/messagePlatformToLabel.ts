@@ -1,4 +1,5 @@
 import { TFunction } from 'react-i18next'
+
 import { MessagePlatform } from '../../../../../../__generated__/globalTypes'
 
 export function messagePlatformToLabel(

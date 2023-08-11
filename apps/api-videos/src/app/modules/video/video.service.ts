@@ -1,7 +1,9 @@
+import { CACHE_MANAGER } from '@nestjs/cache-manager'
 import { Inject, Injectable } from '@nestjs/common'
 import { Cache } from 'cache-manager'
-import { CACHE_MANAGER } from '@nestjs/cache-manager'
+
 import { Prisma, Video } from '.prisma/api-videos-client'
+
 import { VideosFilter } from '../../__generated__/graphql'
 import { PrismaService } from '../../lib/prisma.service'
 
@@ -43,7 +45,7 @@ export class VideoService {
               some: {
                 subtitle:
                   subtitleLanguageIds != null
-                    ? { has: { path: ['languageId'], in: subtitleLanguageIds } }
+                    ? { some: { languageId: { in: subtitleLanguageIds } } }
                     : undefined,
                 languageId:
                   availableVariantLanguageIds != null

@@ -1,22 +1,24 @@
-import { Resolver, Query, Mutation, Args } from '@nestjs/graphql'
-import { UseGuards } from '@nestjs/common'
 import { subject } from '@casl/ability'
-import { CaslAccessible, CaslAbility } from '@core/nest/common/CaslAuthModule'
-import { UserTeamInvite, Prisma } from '.prisma/api-journeys-client'
+import { UseGuards } from '@nestjs/common'
+import { Args, Mutation, Query, Resolver } from '@nestjs/graphql'
 import { GraphQLError } from 'graphql'
-import { CurrentUserId } from '@core/nest/decorators/CurrentUserId'
-import { CurrentUser } from '@core/nest/decorators/CurrentUser'
+
+import { Prisma, UserTeamInvite } from '.prisma/api-journeys-client'
+import { CaslAbility, CaslAccessible } from '@core/nest/common/CaslAuthModule'
 import { User } from '@core/nest/common/firebaseClient'
-import { Action, AppAbility } from '../../lib/casl/caslFactory'
+import { CurrentUser } from '@core/nest/decorators/CurrentUser'
+import { CurrentUserId } from '@core/nest/decorators/CurrentUserId'
+
 import {
   UserTeamInviteCreateInput,
   UserTeamRole
 } from '../../__generated__/graphql'
-import { PrismaService } from '../../lib/prisma.service'
+import { Action, AppAbility } from '../../lib/casl/caslFactory'
 import { AppCaslGuard } from '../../lib/casl/caslGuard'
+import { PrismaService } from '../../lib/prisma.service'
 
 @Resolver('userTeamInvite')
-export class TeamResolver {
+export class UserTeamInviteResolver {
   constructor(private readonly prismaService: PrismaService) {}
 
   @Query()
@@ -41,16 +43,8 @@ export class TeamResolver {
     @Args('teamId') teamId: string,
     @Args('input') input: UserTeamInviteCreateInput
   ): Promise<UserTeamInvite> {
-    const team = await this.prismaService.team.findUnique({
-      where: { id: teamId },
-      include: { userTeams: true }
-    })
-    if (team == null)
-      throw new GraphQLError('Team not found.', {
-        extensions: { code: 'NOT_FOUND' }
-      })
-    if (ability.can(Action.Manage, subject('Team', team))) {
-      return await this.prismaService.userTeamInvite.upsert({
+    return await this.prismaService.$transaction(async (tx) => {
+      const userTeamInvite = await tx.userTeamInvite.upsert({
         where: {
           teamId_email: {
             teamId,
@@ -58,20 +52,29 @@ export class TeamResolver {
           }
         },
         create: {
-          teamId,
           email: input.email,
-          senderId
+          senderId,
+          team: { connect: { id: teamId } }
         },
         update: {
           senderId,
           acceptedAt: null,
           receipientId: null,
           removedAt: null
+        },
+        include: {
+          team: {
+            include: { userTeams: true }
+          }
         }
       })
-    }
-    throw new GraphQLError('user is not allowed to create userTeamInvite', {
-      extensions: { code: 'FORBIDDEN' }
+      if (
+        !ability.can(Action.Create, subject('UserTeamInvite', userTeamInvite))
+      )
+        throw new GraphQLError('user is not allowed to create userTeamInvite', {
+          extensions: { code: 'FORBIDDEN' }
+        })
+      return userTeamInvite
     })
   }
 
@@ -86,21 +89,20 @@ export class TeamResolver {
       include: { team: { include: { userTeams: true } } }
     })
     if (userTeamInvite == null)
-      throw new GraphQLError('UserTeamInvite not found.', {
+      throw new GraphQLError('userTeamInvite not found.', {
         extensions: { code: 'NOT_FOUND' }
       })
-    if (ability.can(Action.Manage, subject('UserTeamInvite', userTeamInvite))) {
-      return await this.prismaService.userTeamInvite.update({
-        where: {
-          id
-        },
-        data: {
-          removedAt: new Date()
-        }
+    if (!ability.can(Action.Manage, subject('UserTeamInvite', userTeamInvite)))
+      throw new GraphQLError('user is not allowed to remove userTeamInvite', {
+        extensions: { code: 'FORBIDDEN' }
       })
-    }
-    throw new GraphQLError('user is not allowed to remove userTeamInvite', {
-      extensions: { code: 'FORBIDDEN' }
+    return await this.prismaService.userTeamInvite.update({
+      where: {
+        id
+      },
+      data: {
+        removedAt: new Date()
+      }
     })
   }
 
@@ -140,7 +142,7 @@ export class TeamResolver {
           }
         },
         create: {
-          teamId: userTeamInvite.teamId,
+          team: { connect: { id: userTeamInvite.teamId } },
           userId,
           role: UserTeamRole.member
         },

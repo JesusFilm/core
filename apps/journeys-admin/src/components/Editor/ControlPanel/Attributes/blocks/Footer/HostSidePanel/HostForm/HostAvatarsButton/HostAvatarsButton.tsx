@@ -1,12 +1,14 @@
-import { ReactElement, useState } from 'react'
 import Avatar from '@mui/material/Avatar'
 import AvatarGroup from '@mui/material/AvatarGroup'
 import Stack from '@mui/material/Stack'
-import UserProfiledAddIcon from '@core/shared/ui/icons/UserProfileAdd'
+import { ReactElement, useEffect, useState } from 'react'
+
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
-import { ImageLibrary } from '../../../../../../../ImageLibrary'
+import UserProfiledAddIcon from '@core/shared/ui/icons/UserProfileAdd'
+
 import { GetJourney_journey_blocks_ImageBlock as ImageBlock } from '../../../../../../../../../../__generated__/GetJourney'
 import { useHostUpdate } from '../../../../../../../../../libs/useHostUpdate'
+import { ImageLibrary } from '../../../../../../../ImageLibrary'
 
 interface HostAvatarsButtonProps {
   disabled?: boolean
@@ -17,9 +19,13 @@ export function HostAvatarsButton({
 }: HostAvatarsButtonProps): ReactElement {
   const [open, setOpen] = useState(false)
   const { journey } = useJourney()
-  const host = journey?.host
+  const [host, setHost] = useState(journey?.host ?? undefined)
   const { updateHost } = useHostUpdate()
   const [avatarNumber, setAvatarNumber] = useState<number>(1)
+
+  useEffect(() => {
+    setHost(journey?.host ?? undefined)
+  }, [journey])
 
   function handleOpen(avatar: 1 | 2): void {
     if (!disabled) {
@@ -30,14 +36,6 @@ export function HostAvatarsButton({
 
   async function handleClose(): Promise<void> {
     setOpen(false)
-    if (host != null && host.src1 == null && host.src2 != null) {
-      const { id, teamId, src2 } = host
-      await updateHost({
-        id,
-        teamId,
-        input: { src1: src2, src2: null }
-      })
-    }
   }
 
   async function handleChange(avatarImage: ImageBlock): Promise<void> {
@@ -53,26 +51,39 @@ export function HostAvatarsButton({
 
   async function handleDelete(): Promise<void> {
     if (host != null) {
-      const { id, teamId } = host
-      await updateHost({
-        id,
-        teamId,
-        input: { [`src${avatarNumber}`]: null }
-      })
+      const { id, teamId, src2 } = host
+      const input =
+        avatarNumber === 1 ? { src1: src2, src2: null } : { src2: null }
+
+      await updateHost({ id, teamId, input })
     }
+  }
+
+  const hasAvatar1 = host?.src1 != null || host?.src2 != null
+  const hasAvatar2 = host?.src1 != null && host?.src2 != null
+  const noAvatarStyles = {
+    width: '52px',
+    height: '52px'
+  }
+  const avatarStyles = {
+    width: '56px',
+    height: '56px'
   }
 
   return (
     <Stack direction="row">
       <AvatarGroup
         sx={{
+          alignItems: 'center',
           '.MuiAvatar-root': {
-            borderColor: (theme) => theme.palette.grey[400],
+            cursor: 'pointer',
+            borderColor: 'background.paper',
             ml: -4,
-            color: (theme) => theme.palette.grey[400],
+            color: (theme) => theme.palette.divider,
             bgcolor: 'background.paper',
-            width: '52px',
-            height: '52px'
+            '&:last-child': {
+              ml: 0
+            }
           }
         }}
       >
@@ -81,6 +92,14 @@ export function HostAvatarsButton({
           alt="avatar1"
           onClick={() => handleOpen(1)}
           src={host?.src1 ?? host?.src2 ?? undefined}
+          sx={
+            !hasAvatar1
+              ? {
+                  ...noAvatarStyles,
+                  outline: (theme) => `2px solid ${theme.palette.divider}`
+                }
+              : avatarStyles
+          }
         >
           {host?.src1 == null && host?.src2 == null && <UserProfiledAddIcon />}
         </Avatar>
@@ -88,9 +107,19 @@ export function HostAvatarsButton({
           data-testid="avatar2"
           alt="avatar2"
           onClick={() => handleOpen(2)}
-          src={host?.src2 ?? undefined}
+          src={hasAvatar2 ? host?.src2 ?? undefined : undefined}
+          sx={
+            !hasAvatar2
+              ? {
+                  ...noAvatarStyles,
+                  outline: (theme) => `2px solid ${theme.palette.divider}`
+                }
+              : avatarStyles
+          }
         >
-          {host?.src2 == null && <UserProfiledAddIcon />}
+          {(host?.src1 == null || host?.src2 == null) && (
+            <UserProfiledAddIcon />
+          )}
         </Avatar>
       </AvatarGroup>
       <ImageLibrary

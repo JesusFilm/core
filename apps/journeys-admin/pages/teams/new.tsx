@@ -1,17 +1,20 @@
-import { NextSeo } from 'next-seo'
-import { ReactElement } from 'react'
-import { useTranslation } from 'react-i18next'
 import {
   AuthAction,
   withAuthUser,
   withAuthUserTokenSSR
 } from 'next-firebase-auth'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
+import { NextSeo } from 'next-seo'
+import { ReactElement } from 'react'
+import { useTranslation } from 'react-i18next'
+
 import { getLaunchDarklyClient } from '@core/shared/ui/getLaunchDarklyClient'
+
 import i18nConfig from '../../next-i18next.config'
+import { TeamOnboarding } from '../../src/components/Team/TeamOnboarding'
 import { createApolloClient } from '../../src/libs/apolloClient'
 import { checkConditionalRedirect } from '../../src/libs/checkConditionalRedirect'
-import { TeamOnboarding } from '../../src/components/Team/TeamOnboarding'
+import { GET_CURRENT_USER } from '../../src/libs/useCurrentUser'
 
 function TeamsNewPage(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
@@ -39,6 +42,9 @@ export const getServerSideProps = withAuthUserTokenSSR({
 
   const token = await AuthUser.getIdToken()
   const apolloClient = createApolloClient(token != null ? token : '')
+
+  // Needed to populate user team list, do not remove:
+  await apolloClient.query({ query: GET_CURRENT_USER })
 
   const redirect = await checkConditionalRedirect(apolloClient, {
     ...flags,

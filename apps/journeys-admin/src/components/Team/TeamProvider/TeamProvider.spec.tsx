@@ -1,8 +1,14 @@
+import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { ReactElement } from 'react'
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
-import { GetTeams } from '../../../../__generated__/GetTeams'
-import { GET_TEAMS } from './TeamProvider'
+
+import {
+  GetLastActiveTeamIdAndTeams,
+  GetLastActiveTeamIdAndTeams_teams as Team
+} from '../../../../__generated__/GetLastActiveTeamIdAndTeams'
+
+import { GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS } from './TeamProvider'
+
 import { TeamProvider, useTeam } from '.'
 
 const TestComponent = (): ReactElement => {
@@ -25,24 +31,32 @@ const TestComponent = (): ReactElement => {
   )
 }
 
-const getTeamsMock: MockedResponse<GetTeams> = {
+const teams: Team[] = [
+  {
+    __typename: 'Team',
+    id: 'teamId1',
+    title: 'my first team',
+    userTeams: []
+  },
+  {
+    __typename: 'Team',
+    id: 'teamId2',
+    title: 'my second team',
+    userTeams: []
+  }
+]
+
+const getTeamsMock: MockedResponse<GetLastActiveTeamIdAndTeams> = {
   request: {
-    query: GET_TEAMS
+    query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
   },
   result: {
     data: {
-      teams: [
-        {
-          __typename: 'Team',
-          id: 'teamId1',
-          title: 'my first team'
-        },
-        {
-          __typename: 'Team',
-          id: 'teamId2',
-          title: 'my second team'
-        }
-      ]
+      teams,
+      getJourneyProfile: {
+        __typename: 'JourneyProfile',
+        lastActiveTeamId: 'teamId1'
+      }
     }
   }
 }
@@ -60,17 +74,28 @@ describe('TeamProvider', () => {
     await waitFor(() => expect(getByText('my second team')).toBeInTheDocument())
   })
 
-  it('should show active team as first team in array', async () => {
+  it('should show last viewed team as the active team', async () => {
+    const getLastViewedTeamMock: MockedResponse<GetLastActiveTeamIdAndTeams> = {
+      ...getTeamsMock,
+      result: {
+        data: {
+          teams,
+          getJourneyProfile: {
+            __typename: 'JourneyProfile',
+            lastActiveTeamId: 'teamId2'
+          }
+        }
+      }
+    }
     const { getByText } = render(
-      <MockedProvider mocks={[getTeamsMock]}>
+      <MockedProvider mocks={[getLastViewedTeamMock]}>
         <TeamProvider>
           <TestComponent />
         </TeamProvider>
       </MockedProvider>
     )
-
     await waitFor(() =>
-      expect(getByText('activeTeam: my first team')).toBeInTheDocument()
+      expect(getByText('activeTeam: my second team')).toBeInTheDocument()
     )
   })
 

@@ -1,5 +1,5 @@
-import { ReactElement } from 'react'
 import Button from '@mui/material/Button'
+import { ReactElement } from 'react'
 
 interface ClearAllProps {
   handleClearAll?: () => void

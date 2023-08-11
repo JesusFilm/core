@@ -1,11 +1,13 @@
-import { fireEvent, render, waitFor } from '@testing-library/react'
+import { InMemoryCache } from '@apollo/client'
 import { MockedProvider } from '@apollo/client/testing'
+import { fireEvent, render, waitFor } from '@testing-library/react'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { JourneyFields as Journey } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
-import { InMemoryCache } from '@apollo/client'
+
 import { useHostUpdate } from '../../../../../../../../../libs/useHostUpdate'
 import { UPDATE_HOST } from '../../../../../../../../../libs/useHostUpdate/useHostUpdate'
+
 import {
   CREATE_HOST,
   HostTitleFieldForm,
@@ -26,17 +28,19 @@ const mockUseHostUpdate = useHostUpdate as jest.MockedFunction<
   typeof useHostUpdate
 >
 
-const updateHost = jest.fn()
-beforeEach(() => {
-  mockUseHostUpdate.mockReturnValue({
-    updateHost
-  })
-})
-afterEach(() => {
-  jest.resetAllMocks()
-})
-
 describe('HostTitleFieldForm', () => {
+  const updateHost = jest.fn()
+
+  beforeEach(() => {
+    mockUseHostUpdate.mockReturnValue({
+      updateHost
+    })
+  })
+
+  afterEach(() => {
+    jest.resetAllMocks()
+  })
+
   const defaultHost = {
     id: 'hostId',
     __typename: 'Host',
@@ -51,7 +55,8 @@ describe('HostTitleFieldForm', () => {
     __typename: 'Journey',
     id: 'journeyId',
     seoTitle: 'My awesome journey',
-    host: defaultHost
+    host: defaultHost,
+    team: { id: 'teamId' }
   } as unknown as Journey
 
   it('should create a host on submit if no host exists', async () => {
@@ -69,7 +74,7 @@ describe('HostTitleFieldForm', () => {
       }
     }))
 
-    const result2 = jest.fn(() => ({
+    const journeyUpdate = jest.fn(() => ({
       data: {
         journeyUpdate: {
           id: journey.id,
@@ -88,7 +93,7 @@ describe('HostTitleFieldForm', () => {
             request: {
               query: CREATE_HOST,
               variables: {
-                teamId: 'jfp-team',
+                teamId: journey?.team?.id,
                 input: {
                   title: 'Host title'
                 }
@@ -106,11 +111,16 @@ describe('HostTitleFieldForm', () => {
                 }
               }
             },
-            result: result2
+            result: journeyUpdate
           }
         ]}
       >
-        <JourneyProvider value={{ journey: { ...journey, host: null } }}>
+        <JourneyProvider
+          value={{
+            journey: { ...journey, host: null },
+            variant: 'admin'
+          }}
+        >
           <HostTitleFieldForm />
         </JourneyProvider>
       </MockedProvider>
@@ -122,7 +132,7 @@ describe('HostTitleFieldForm', () => {
     fireEvent.blur(field)
 
     await waitFor(() => expect(result).toHaveBeenCalled())
-    await waitFor(() => expect(result2).toHaveBeenCalled())
+    await waitFor(() => expect(journeyUpdate).toHaveBeenCalled())
 
     void waitFor(() => {
       expect(cache.extract()['Host:hostId']).toEqual({
@@ -176,7 +186,7 @@ describe('HostTitleFieldForm', () => {
           }
         ]}
       >
-        <JourneyProvider value={{ journey }}>
+        <JourneyProvider value={{ journey, variant: 'admin' }}>
           <HostTitleFieldForm />
         </JourneyProvider>
       </MockedProvider>

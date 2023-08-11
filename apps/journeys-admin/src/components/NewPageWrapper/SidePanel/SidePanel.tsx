@@ -1,18 +1,24 @@
-import { ReactElement, ReactNode } from 'react'
+import Close from '@mui/icons-material/Close'
 import AppBar from '@mui/material/AppBar'
+import Drawer from '@mui/material/Drawer'
+import IconButton from '@mui/material/IconButton'
 import Stack from '@mui/material/Stack'
 import Toolbar from '@mui/material/Toolbar'
 import Typography from '@mui/material/Typography'
-import Drawer from '@mui/material/Drawer'
-import IconButton from '@mui/material/IconButton'
-import Close from '@mui/icons-material/Close'
-import { usePageWrapperStyles } from '../utils/usePageWrapperStyles'
+import { ReactElement, ReactNode } from 'react'
+
 import { usePage } from '../../../libs/PageWrapperProvider'
+import { usePageWrapperStyles } from '../utils/usePageWrapperStyles'
 
 interface SidePanelProps {
   children: ReactNode
   title?: string | ReactNode
   sidePanelTitleAction?: ReactNode
+  // TODO: Refactor to open via usePage state, combine with mobileDrawerOpen
+  open?: boolean
+  // TODO: Remove once admin edit page is refactored to use new PageWrapper
+  edit?: boolean
+  onClose?: () => void
 }
 
 interface DrawerContentProps {
@@ -61,7 +67,13 @@ function DrawerContent({
   )
 }
 
-export function SidePanel({ children, title }: SidePanelProps): ReactElement {
+export function SidePanel({
+  children,
+  title,
+  open = true,
+  edit = false,
+  onClose
+}: SidePanelProps): ReactElement {
   const { toolbar, sidePanel } = usePageWrapperStyles()
   const {
     state: { mobileDrawerOpen },
@@ -80,11 +92,13 @@ export function SidePanel({ children, title }: SidePanelProps): ReactElement {
       <Drawer
         anchor="right"
         variant="persistent"
-        open
+        open={onClose != null ? open : true}
         hideBackdrop
         data-testid="side-drawer"
         sx={{
-          display: { xs: 'none', md: 'flex' },
+          display: edit
+            ? { xs: 'none', sm: 'flex' }
+            : { xs: 'none', md: 'flex' },
           width: sidePanel.width,
           flexShrink: 1,
           '& .MuiDrawer-paper': {
@@ -95,41 +109,60 @@ export function SidePanel({ children, title }: SidePanelProps): ReactElement {
           }
         }}
       >
-        <DrawerContent title={title}>{children}</DrawerContent>
-      </Drawer>
-      <Drawer
-        anchor="bottom"
-        variant="temporary"
-        open={mobileDrawerOpen}
-        hideBackdrop
-        transitionDuration={300}
-        data-testid="mobile-side-drawer"
-        sx={{
-          display: { xs: 'flex', md: 'none' },
-          width: '100%',
-          flexShrink: 1,
-          '& .MuiDrawer-paper': {
-            boxSizing: 'border-box',
-            width: '100%',
-            height: `calc(100% - ${toolbar.height}px)`
-          }
-        }}
-      >
         <DrawerContent
           title={title}
           action={
-            <IconButton
-              onClick={handleClose}
-              sx={{ display: 'inline-flex' }}
-              edge="end"
-            >
-              <Close />
-            </IconButton>
+            onClose != null && (
+              <IconButton
+                onClick={onClose}
+                sx={{ display: 'inline-flex' }}
+                edge="end"
+              >
+                <Close />
+              </IconButton>
+            )
           }
         >
           {children}
         </DrawerContent>
       </Drawer>
+      {edit ? (
+        <Stack sx={{ display: { xs: 'flex', sm: 'none' } }}>{children}</Stack>
+      ) : (
+        <Drawer
+          anchor="bottom"
+          variant="temporary"
+          open={mobileDrawerOpen}
+          hideBackdrop
+          transitionDuration={300}
+          data-testid="mobile-side-drawer"
+          sx={{
+            display: { xs: 'flex', md: 'none' },
+            width: '100%',
+            flexShrink: 1,
+            '& .MuiDrawer-paper': {
+              boxSizing: 'border-box',
+              width: '100%',
+              height: `calc(100% - ${toolbar.height}px)`
+            }
+          }}
+        >
+          <DrawerContent
+            title={title}
+            action={
+              <IconButton
+                onClick={handleClose}
+                sx={{ display: 'inline-flex' }}
+                edge="end"
+              >
+                <Close />
+              </IconButton>
+            }
+          >
+            {children}
+          </DrawerContent>
+        </Drawer>
+      )}
     </>
   )
 }

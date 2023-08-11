@@ -1,73 +1,22 @@
+import { subject } from '@casl/ability'
 import { UseGuards } from '@nestjs/common'
 import { Args, Mutation, Resolver } from '@nestjs/graphql'
 import { GraphQLError } from 'graphql'
-import { encode } from 'blurhash'
-import fetch from 'node-fetch'
-import sharp from 'sharp'
 import omit from 'lodash/omit'
 
-import { BlockService } from '../block.service'
+import { Block } from '.prisma/api-journeys-client'
+import { CaslAbility } from '@core/nest/common/CaslAuthModule'
+
 import {
-  ImageBlock,
   ImageBlockCreateInput,
-  ImageBlockUpdateInput,
-  Role,
-  UserJourneyRole
+  ImageBlockUpdateInput
 } from '../../../__generated__/graphql'
-import { RoleGuard } from '../../../lib/roleGuard/roleGuard'
+import { Action, AppAbility } from '../../../lib/casl/caslFactory'
+import { AppCaslGuard } from '../../../lib/casl/caslGuard'
 import { PrismaService } from '../../../lib/prisma.service'
+import { BlockService } from '../block.service'
 
-export async function handleImage(
-  input
-): Promise<ImageBlockCreateInput | ImageBlockUpdateInput> {
-  if (
-    (input.width ?? 0) > 0 &&
-    (input.height ?? 0) > 0 &&
-    (input.blurhash ?? '').length > 0
-  ) {
-    return input
-  }
-
-  const defaultBlock = {
-    ...input,
-    width: 0,
-    height: 0,
-    blurhash: ''
-  }
-  if (input.src == null) return defaultBlock
-
-  try {
-    const response = await fetch(input.src)
-    const buffer = await response.buffer()
-    const { data: pixels, info: metadata } = await sharp(buffer)
-      .raw()
-      .ensureAlpha()
-      .toBuffer({ resolveWithObject: true })
-    defaultBlock.width = metadata.width
-    defaultBlock.height = metadata.height
-    const data = new Uint8ClampedArray(pixels)
-    defaultBlock.blurhash = encode(
-      data,
-      defaultBlock.width,
-      defaultBlock.height,
-      4,
-      4
-    )
-  } catch (ex) {
-    throw new GraphQLError(ex.message, {
-      extensions: { code: 'BAD_USER_INPUT' }
-    })
-  }
-
-  const block = {
-    ...input,
-    width: defaultBlock.width,
-    height: defaultBlock.height,
-    blurhash: defaultBlock.blurhash
-  }
-
-  return block
-}
+import { transformInput } from './transformInput'
 
 @Resolver('ImageBlock')
 export class ImageBlockResolver {
@@ -77,97 +26,112 @@ export class ImageBlockResolver {
   ) {}
 
   @Mutation()
-  @UseGuards(
-    RoleGuard('input.journeyId', [
-      UserJourneyRole.owner,
-      UserJourneyRole.editor,
-      { role: Role.publisher, attributes: { template: true } }
-    ])
-  )
+  @UseGuards(AppCaslGuard)
   async imageBlockCreate(
+    @CaslAbility() ability: AppAbility,
     @Args('input') input: ImageBlockCreateInput
-  ): Promise<ImageBlock> {
-    const block = (await handleImage(input)) as ImageBlockCreateInput
+  ): Promise<Block> {
+    const transformedInput = await transformInput(input)
 
-    if (block.isCover === true) {
-      if (block.parentBlockId == null) {
-        throw new GraphQLError('Parent block id is required for cover blocks', {
-          extensions: { code: 'BAD_USER_INPUT' }
-        })
-      }
-      const parentBlock = await this.prismaService.block.findUnique({
-        where: {
-          id: block.parentBlockId
-        },
-        include: { action: true }
-      })
-
-      if (parentBlock == null) {
-        throw new Error('Parent block not found')
-      }
-
-      const coverBlock: ImageBlock = await this.blockService.save({
-        ...omit(block, 'parentBlockId'),
-        id: block.id ?? undefined,
-        typename: 'ImageBlock',
-        journey: { connect: { id: block.journeyId } },
-        parentBlock:
-          input.parentBlockId != null
-            ? { connect: { id: block.parentBlockId } }
-            : undefined,
-        parentOrder: null,
-        coverBlockParent: { connect: { id: block.parentBlockId } }
-      })
-      // Delete old coverBlock
-      if (parentBlock.coverBlockId != null) {
-        const coverBlockToDelete = await this.prismaService.block.findUnique({
-          where: {
-            id: parentBlock.coverBlockId
-          },
-          include: { action: true }
-        })
-        if (coverBlockToDelete != null) {
-          await this.blockService.removeBlockAndChildren(
-            parentBlock.coverBlockId,
-            parentBlock.journeyId
+    return await this.prismaService.$transaction(async (tx) => {
+      if (transformedInput.isCover === true) {
+        if (transformedInput.parentBlockId == null)
+          throw new GraphQLError(
+            'parent block id is required for cover blocks',
+            {
+              extensions: { code: 'BAD_USER_INPUT' }
+            }
           )
-        }
+        const parentBlock = await tx.block.findUnique({
+          where: {
+            id: transformedInput.parentBlockId
+          },
+          include: { coverBlock: true }
+        })
+        if (parentBlock == null)
+          throw new GraphQLError('parent block not found', {
+            extensions: { code: 'NOT_FOUND' }
+          })
+        // Delete old coverBlock
+        if (parentBlock.coverBlock != null)
+          await this.blockService.removeBlockAndChildren(
+            parentBlock.coverBlock,
+            tx
+          )
       }
 
-      return coverBlock
-    }
-
-    const siblings = await this.blockService.getSiblings(
-      block.journeyId,
-      block.parentBlockId
-    )
-    return await this.blockService.save({
-      ...omit(block, 'parentBlockId'),
-      id: block.id ?? undefined,
-      typename: 'ImageBlock',
-      journey: { connect: { id: block.journeyId } },
-      parentBlock:
-        block.parentBlockId != null
-          ? { connect: { id: block.parentBlockId } }
-          : undefined,
-      parentOrder: siblings.length
+      const block = await tx.block.create({
+        data: {
+          ...omit(transformedInput, 'parentBlockId', 'journeyId', 'isCover'),
+          id: transformedInput.id ?? undefined,
+          typename: 'ImageBlock',
+          journey: { connect: { id: transformedInput.journeyId } },
+          // parentBlockId can be null for image blocks being used as journey
+          // social media image
+          parentBlock:
+            transformedInput.parentBlockId != null
+              ? { connect: { id: transformedInput.parentBlockId } }
+              : undefined,
+          parentOrder:
+            transformedInput.isCover === true
+              ? null
+              : (
+                  await this.blockService.getSiblings(
+                    transformedInput.journeyId,
+                    transformedInput.parentBlockId
+                  )
+                ).length,
+          coverBlockParent:
+            transformedInput.isCover === true &&
+            transformedInput.parentBlockId != null
+              ? { connect: { id: transformedInput.parentBlockId } }
+              : undefined
+        },
+        include: {
+          action: true,
+          journey: {
+            include: {
+              team: { include: { userTeams: true } },
+              userJourneys: true
+            }
+          }
+        }
+      })
+      if (!ability.can(Action.Update, subject('Journey', block.journey)))
+        throw new GraphQLError('user is not allowed to create block', {
+          extensions: { code: 'FORBIDDEN' }
+        })
+      return block
     })
   }
 
   @Mutation()
-  @UseGuards(
-    RoleGuard('journeyId', [
-      UserJourneyRole.owner,
-      UserJourneyRole.editor,
-      { role: Role.publisher, attributes: { template: true } }
-    ])
-  )
+  @UseGuards(AppCaslGuard)
   async imageBlockUpdate(
+    @CaslAbility() ability: AppAbility,
     @Args('id') id: string,
-    @Args('journeyId') journeyId: string,
     @Args('input') input: ImageBlockUpdateInput
-  ): Promise<ImageBlock> {
-    const block = await handleImage(input)
-    return await this.blockService.update(id, { ...block, id })
+  ): Promise<Block> {
+    const block = await this.prismaService.block.findUnique({
+      where: { id },
+      include: {
+        action: true,
+        journey: {
+          include: {
+            team: { include: { userTeams: true } },
+            userJourneys: true
+          }
+        }
+      }
+    })
+    if (block == null)
+      throw new GraphQLError('block not found', {
+        extensions: { code: 'NOT_FOUND' }
+      })
+    if (!ability.can(Action.Update, subject('Journey', block.journey)))
+      throw new GraphQLError('user is not allowed to update block', {
+        extensions: { code: 'FORBIDDEN' }
+      })
+    return await this.blockService.update(id, await transformInput(input))
   }
 }

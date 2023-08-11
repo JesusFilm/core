@@ -1,6 +1,7 @@
-import { ReactElement } from 'react'
-import Fab from '@mui/material/Fab'
 import AddRounded from '@mui/icons-material/AddRounded'
+import Fab from '@mui/material/Fab'
+import { ReactElement } from 'react'
+
 import { usePage } from '../../../libs/PageWrapperProvider'
 
 export function AddJourneyFab(): ReactElement {

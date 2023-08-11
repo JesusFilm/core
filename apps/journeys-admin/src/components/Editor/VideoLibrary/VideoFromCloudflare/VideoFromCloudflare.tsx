@@ -1,9 +1,11 @@
-import { ReactElement } from 'react'
 import Stack from '@mui/material/Box'
+import { ReactElement } from 'react'
+
 import {
-  VideoBlockUpdateInput,
-  VideoBlockSource
+  VideoBlockSource,
+  VideoBlockUpdateInput
 } from '../../../../../__generated__/globalTypes'
+
 import { AddByFile } from './AddByFile'
 
 interface VideoFromCloudflareProps {

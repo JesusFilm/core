@@ -1,18 +1,19 @@
-import { useQuery, gql, QueryResult, OperationVariables } from '@apollo/client'
+import { OperationVariables, QueryResult, gql, useQuery } from '@apollo/client'
 import {
-  createContext,
   ReactElement,
   ReactNode,
+  createContext,
   useContext,
   useState
 } from 'react'
+
 import {
-  GetTeams,
-  GetTeams_teams as Team
-} from '../../../../__generated__/GetTeams'
+  GetLastActiveTeamIdAndTeams,
+  GetLastActiveTeamIdAndTeams_teams as Team
+} from '../../../../__generated__/GetLastActiveTeamIdAndTeams'
 
 interface Context {
-  query: QueryResult<GetTeams, OperationVariables>
+  query: QueryResult<GetLastActiveTeamIdAndTeams, OperationVariables>
   activeTeam: Team | null
   setActiveTeam: (team: Team | null) => void
 }
@@ -29,22 +30,41 @@ interface TeamProviderProps {
   children: ReactNode
 }
 
-export const GET_TEAMS = gql`
-  query GetTeams {
+export const GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS = gql`
+  query GetLastActiveTeamIdAndTeams {
+    getJourneyProfile {
+      lastActiveTeamId
+    }
     teams {
       id
       title
+      userTeams {
+        id
+        user {
+          id
+          firstName
+          lastName
+          imageUrl
+        }
+      }
     }
   }
 `
 
 export function TeamProvider({ children }: TeamProviderProps): ReactElement {
   const [activeTeamId, setActiveTeamId] = useState<string | null>(null)
-  const query = useQuery<GetTeams>(GET_TEAMS, {
-    onCompleted: (data) => {
-      if (data.teams != null && activeTeam == null) setActiveTeam(data.teams[0])
+  const query = useQuery<GetLastActiveTeamIdAndTeams>(
+    GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS,
+    {
+      onCompleted: (data) => {
+        if (activeTeam != null || data.teams == null) return
+        const lastActiveTeam = data.teams.find(
+          (team) => team.id === data.getJourneyProfile?.lastActiveTeamId
+        )
+        setActiveTeam(lastActiveTeam ?? null)
+      }
     }
-  })
+  )
 
   function setActiveTeam(team: Team | null): void {
     if (team == null) {
@@ -53,10 +73,8 @@ export function TeamProvider({ children }: TeamProviderProps): ReactElement {
       setActiveTeamId(team.id)
     }
   }
-
   const activeTeam =
     query.data?.teams.find((team) => team.id === activeTeamId) ?? null
-
   return (
     <TeamContext.Provider value={{ query, activeTeam, setActiveTeam }}>
       {children}

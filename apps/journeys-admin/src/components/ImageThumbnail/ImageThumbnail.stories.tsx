@@ -1,14 +1,16 @@
-import { Story, Meta } from '@storybook/react'
-import type { TreeBlock } from '@core/journeys/ui/block'
-import Box from '@mui/material/Box'
-
 import NoteAddIcon from '@mui/icons-material/NoteAdd'
+import Box from '@mui/material/Box'
+import { Meta, Story } from '@storybook/react'
+
+import type { TreeBlock } from '@core/journeys/ui/block'
+
 import {
   GetJourney_journey_blocks_CardBlock as CardBlock,
   GetJourney_journey_blocks_ImageBlock as ImageBlock
 } from '../../../__generated__/GetJourney'
-import { simpleComponentConfig } from '../../libs/storybook'
 import { ThemeMode } from '../../../__generated__/globalTypes'
+import { simpleComponentConfig } from '../../libs/storybook'
+
 import { ImageThumbnail } from './ImageThumbnail'
 
 const ImageEditorStory = {

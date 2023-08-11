@@ -1,5 +1,6 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { render } from '@testing-library/react'
+
 import { BlocksTab } from '.'
 
 describe('BlocksTab', () => {
@@ -17,6 +18,7 @@ describe('BlocksTab', () => {
     expect(getByText('Button')).toBeInTheDocument()
     expect(getByText('Feedback')).toBeInTheDocument()
   })
+
   it('contains correct bottom text', () => {
     const { getByText } = render(
       <MockedProvider>
