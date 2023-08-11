@@ -39,6 +39,19 @@ Basic.args = {
   children: <Typography>This is the content</Typography>
 }
 
+export const Loading = Template.bind({})
+Loading.args = {
+  loading: true,
+  open: true,
+  onClose: noop,
+  dialogTitle: { title: 'Simple Dialog' },
+  dialogAction: {
+    onSubmit: noop,
+    submitLabel: 'Ok'
+  },
+  children: <Typography>This is the content</Typography>
+}
+
 export const IconTitle = Template.bind({})
 IconTitle.args = {
   open: true,
