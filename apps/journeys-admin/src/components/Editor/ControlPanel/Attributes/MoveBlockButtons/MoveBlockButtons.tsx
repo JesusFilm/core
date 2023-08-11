@@ -4,6 +4,8 @@ import KeyboardArrowUpRoundedIcon from '@mui/icons-material/KeyboardArrowUpRound
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import ButtonGroup from '@mui/material/ButtonGroup'
+import IconButton from '@mui/material/IconButton'
+import Stack from '@mui/material/Stack'
 import { styled } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import { ReactElement } from 'react'
@@ -67,7 +69,7 @@ export function MoveBlockButtons({
   const { journey } = useJourney()
 
   const parentBlock =
-    selectedBlock.parentBlockId != null
+    selectedBlock?.parentBlockId != null
       ? searchBlocks(selectedStep.children, selectedBlock.parentBlockId)
       : selectedStep
 
@@ -91,30 +93,31 @@ export function MoveBlockButtons({
     parentBlock != null ? parentBlock.children.length - 1 : 0
 
   return (
-    <Box>
-      <ButtonGroup
+    <Stack>
+      {/* <ButtonGroup
         data-testid="move-block-buttons"
         disableElevation
         variant="contained"
-      >
-        <StyledMoveButton
+      > */}
+      
+      <IconButton
           aria-label="move-block-up"
           disabled={selectedBlock.parentOrder === 0}
           onClick={handleMove('up')}
           onMouseDown={(e) => e.preventDefault()}
         >
-          <KeyboardArrowUpRoundedIcon />
-        </StyledMoveButton>
-        <StyledMoveButton
+        <KeyboardArrowUpRoundedIcon />
+      </IconButton>
+      <IconButton
           aria-label="move-block-down"
           disabled={selectedBlock.parentOrder === lastBlockIndex}
           onClick={handleMove('down')}
           onMouseDown={(e) => e.preventDefault()}
         >
-          <KeyboardArrowDownRoundedIcon />
-        </StyledMoveButton>
-      </ButtonGroup>
-      <Box sx={{ height: 24 }}>
+        <KeyboardArrowDownRoundedIcon />
+      </IconButton>
+      {/* </ButtonGroup> */}
+      {/* <Box sx={{ height: 24 }}>
         <Typography
           variant="caption"
           color="text.secondary"
@@ -125,7 +128,7 @@ export function MoveBlockButtons({
         >
           Move Up or Down
         </Typography>
-      </Box>
-    </Box>
+      </Box> */}
+    </Stack>
   )
 }

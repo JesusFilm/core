@@ -1,4 +1,7 @@
 import { useQuery } from '@apollo/client'
+import Stack from '@mui/material/Stack'
+import Typography from '@mui/material/Typography'
+import { intlFormat, isThisYear, parseISO } from 'date-fns'
 import {
   AuthAction,
   useAuthUser,
@@ -27,6 +30,7 @@ import { initAndAuthApp } from '../../../src/libs/initAndAuthApp'
 import { useInvalidJourneyRedirect } from '../../../src/libs/useInvalidJourneyRedirect/useInvalidJourneyRedirect'
 import { GET_JOURNEY, USER_JOURNEY_OPEN } from '../[journeyId]'
 
+
 function JourneyEditPage(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const router = useRouter()
@@ -52,8 +56,23 @@ function JourneyEditPage(): ReactElement {
         view={router.query.view as ActiveJourneyEditContent | undefined}
       >
         <PageWrapper
-          title={data?.journey?.title ?? t('Edit Journey')}
-          showDrawer
+          title={
+            <Stack py="20px">
+              <Typography variant='h6'>{data?.journey?.title ?? t('Edit Journey')}</Typography>
+              <Typography variant='body2' sx={{overflowX:'hidden', textOverflow:'ellipsis'}}>
+                { data?.journey != null ?? intlFormat(parseISO(data?.journey.createdAt), {
+                  day: 'numeric',
+                  month: 'long',
+                  year: isThisYear(parseISO(data?.journey.createdAt))
+                    ? undefined
+                    : 'numeric'
+                })} – 
+                {data?.journey?.description ?? undefined}
+            
+              </Typography>
+            </Stack>
+          }
+          // showDrawer
           backHref={`/journeys/${router.query.journeyId as string}`}
           menu={<EditToolbar />}
           authUser={AuthUser}

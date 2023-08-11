@@ -15,7 +15,7 @@ import { CardBlockLayoutUpdate } from '../../../../../../../../__generated__/Car
 import { GetJourney_journey_blocks_CardBlock as CardBlock } from '../../../../../../../../__generated__/GetJourney'
 import cardLayoutContained from '../../../../../../../../public/card-layout-contained.svg'
 import cardLayoutExpanded from '../../../../../../../../public/card-layout-expanded.svg'
-import { HorizontalSelect } from '../../../../../../HorizontalSelect'
+import { ScrollableSelect } from '../../../../../../ScrollableSelect'
 
 export const CARD_BLOCK_LAYOUT_UPDATE = gql`
   mutation CardBlockLayoutUpdate(
@@ -93,7 +93,7 @@ export function CardLayout(): ReactElement {
       </Box>
       <Divider />
       <Box>
-        <HorizontalSelect
+        <ScrollableSelect
           onChange={async (val) => await handleLayoutChange(val === 'true')}
           id={cardBlock?.fullscreen.toString()}
         >
@@ -118,7 +118,7 @@ export function CardLayout(): ReactElement {
               height={137}
             />
           </Box>
-        </HorizontalSelect>
+        </ScrollableSelect>
       </Box>
     </>
   )

@@ -6,6 +6,7 @@ import TranslateIcon from '@mui/icons-material/Translate'
 import VisibilityIcon from '@mui/icons-material/Visibility'
 import Button from '@mui/material/Button'
 import Chip from '@mui/material/Chip'
+import Divider from '@mui/material/Divider'
 import IconButton from '@mui/material/IconButton'
 import MenuItem from '@mui/material/MenuItem'
 import Stack from '@mui/material/Stack'
@@ -28,6 +29,7 @@ import {
 } from '../../../../__generated__/globalTypes'
 import { AccessAvatars } from '../../AccessAvatars'
 import { DuplicateBlock } from '../../DuplicateBlock'
+import { MoveBlockButtons } from '../ControlPanel/Attributes/MoveBlockButtons'
 
 import { DeleteBlock } from './DeleteBlock'
 import { Menu } from './Menu'
@@ -53,7 +55,7 @@ const DynamicLanguageDialog = dynamic<{
     ).then((mod) => mod.LanguageDialog)
 )
 
-export function EditToolbar(): ReactElement {
+export function ContextEditActions(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { journey } = useJourney()
   const { state } = useEditor()
@@ -67,69 +69,43 @@ export function EditToolbar(): ReactElement {
     setAnchorEl(null)
   }
 
-  return (
-    <Stack spacing={2} direction="row" alignItems="center">
-      <AccessAvatars
-        journeyId={journey?.id}
-        userJourneys={journey?.userJourneys ?? undefined}
-        size="small"
-        xsMax={5}
-        showManageButton
-      />
-      {(journey?.template !== true || isPublisher) && (
-        <Button
-          // variant="outlined"
-          startIcon={<TranslateIcon fontSize="small" />}
-          color='secondary'
-          onClick={handleUpdateLanguage}
-          size='small'
-          sx={{
-            fontWeight:600
-          }}
-        >{journey?.language.iso3}</Button>
-      )}
+  const {
+    state: {
+      steps,
+      selectedBlock,
+      selectedComponent,
+      selectedStep,
+      activeTab,
+      journeyEditContentComponent
+    },
+    dispatch
+  } = useEditor()
 
-      {/* bcp47: string | null; */}
-      {/* iso3: string | null; */}
-      {/* name: JourneyFields_language_name[]; */}
-      {journey?.template !== true && (
-        <NextLink href={`/journeys/${journey?.id}/reports`} passHref>
-          <Button
-            startIcon={<AssessmentOutlinedIcon fontSize="small" />}
-            color='secondary'
-            size='small'
-            sx={{
-              fontWeight:600
-            }}
-          >{t('Visitors')}</Button>
-        </NextLink>
-      )}
-      {(journey?.template !== true || isPublisher) && (
-        <Button
-        variant="contained"
-          // variant="outlined"
-          startIcon={<LinkOutlinedIcon fontSize="small" />}
-          onClick={handleUpdateLanguage}
-          color='secondary'
-          sx={{
-            fontWeight:600
-          }}
-        >{t('Share')}</Button>
-      )}
-      <IconButton
-        aria-label="Preview"
-        href={`/api/preview?slug=${journey?.slug ?? ''}`}
-        target="_blank"
-      >
-        <PlayArrowOutlinedIcon />
-      </IconButton>
-      <Menu />
-      {showLanguageDialog && (
-        <DynamicLanguageDialog
-          open={showLanguageDialog}
-          onClose={() => setShowLanguageDialog(false)}
-        />
-      )}
+  return (
+    <Stack spacing={4} direction="column" alignItems="center" sx={{
+      position:'absolute',
+      left: '400px',
+      top: '200px',
+      zIndex: 99
+    }}>
+      <DuplicateBlock
+        variant="button"
+        disabled={
+          state.journeyEditContentComponent !== ActiveJourneyEditContent.Canvas
+        }
+      />
+
+      <DeleteBlock
+        variant="button"
+        disabled={
+          state.journeyEditContentComponent !== ActiveJourneyEditContent.Canvas
+        }
+      />
+
+      <Divider flexItem  orientation='horizontal' variant="middle"/>
+
+      { (selectedBlock != null) && <MoveBlockButtons selectedBlock={selectedBlock} selectedStep={selectedStep} />}
+      {/* <Menu /> */}
     </Stack>
   )
 }

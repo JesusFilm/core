@@ -41,8 +41,8 @@ function AttributesContent({ selected, step }: AttributesProps): ReactElement {
     const withMoveButtons = (block: ReactElement): ReactElement => {
       return (
         <>
-          <MoveBlockButtons selectedBlock={selected} selectedStep={step} />
-          <Divider orientation="vertical" variant="middle" flexItem />
+          {/* <MoveBlockButtons selectedBlock={selected} selectedStep={step} />
+          <Divider orientation="vertical" variant="middle" flexItem /> */}
           {block}
         </>
       )

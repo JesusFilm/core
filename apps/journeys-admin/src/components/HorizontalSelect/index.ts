@@ -1,1 +1,0 @@
-export { HorizontalSelect } from './HorizontalSelect'

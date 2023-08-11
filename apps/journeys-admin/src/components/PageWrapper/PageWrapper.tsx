@@ -52,14 +52,15 @@ export function PageWrapper({
         position="sticky"
         color="default"
         sx={{
-          ml: { sm: '72px' },
-          mr: { sm: showDrawer === true ? '328px' : 0 },
-          width: {
-            sm:
-              showDrawer === true
-                ? 'calc(100% - 72px - 328px)'
-                : 'calc(100% - 72px)'
-          }
+          maxHeight:'87px'
+          // ml: { sm: '72px' },
+          // mr: { sm: showDrawer === true ? '328px' : 0 },
+          // width: {
+          //   sm:
+          //     showDrawer === true
+          //       ? 'calc(100% - 72px - 328px)'
+          //       : 'calc(100% - 72px)'
+          // }
         }}
       >
         {showAppBarMobile ? (
@@ -94,7 +95,9 @@ export function PageWrapper({
         ) : (
           <></>
         )}
-        <Toolbar>
+        <Toolbar sx={{
+          maxHeight:'87px'
+        }}>
           {backHref != null && (
             <Link href={backHref} passHref>
               <IconButton
@@ -118,10 +121,10 @@ export function PageWrapper({
           {customMenu != null && customMenu}
         </Toolbar>
       </AppBar>
-      <NavigationDrawer open={open} onClose={setOpen} authUser={authUser} />
+      {/* <NavigationDrawer open={open} onClose={setOpen} authUser={authUser} /> */}
       <Box
         sx={{
-          ml: { sm: '72px' }
+          // ml: { sm: '72px' }
         }}
       >
         {children}

@@ -4,12 +4,12 @@ import { useState } from 'react'
 
 import { journeysAdminConfig } from '../../libs/storybook'
 
-import { HorizontalSelect } from '.'
+import { ScrollableSelect } from '.'
 
-const HorizontalSelectStory = {
+const ScrollableSelectStory = {
   ...journeysAdminConfig,
-  component: HorizontalSelect,
-  title: 'Journeys-Admin/HorizontalSelect',
+  component: ScrollableSelect,
+  title: 'Journeys-Admin/ScrollableSelect',
   parameters: {
     ...journeysAdminConfig.parameters,
     layout: 'fullscreen'
@@ -19,7 +19,7 @@ const HorizontalSelectStory = {
 const Template: Story = () => {
   const [id, setId] = useState<string>('1')
   return (
-    <HorizontalSelect onChange={setId} id={id}>
+    <ScrollableSelect onChange={setId} id={id}>
       <Box
         id="0"
         sx={{
@@ -80,10 +80,10 @@ const Template: Story = () => {
           outlineOffset: '-1px'
         }}
       />
-    </HorizontalSelect>
+    </ScrollableSelect>
   )
 }
 
 export const Default = Template.bind({})
 
-export default HorizontalSelectStory as Meta
+export default ScrollableSelectStory as Meta

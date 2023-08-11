@@ -11,7 +11,7 @@ import {
   useRef
 } from 'react'
 
-export interface HorizontalSelectProps {
+export interface ScrollableSelectProps {
   onChange?: (id: string) => void
   id?: string
   children: ReactNode
@@ -20,14 +20,14 @@ export interface HorizontalSelectProps {
   isDragging?: boolean
 }
 
-export function HorizontalSelect({
+export function ScrollableSelect({
   children,
   id,
   onChange,
   sx,
   footer,
   isDragging
-}: HorizontalSelectProps): ReactElement {
+}: ScrollableSelectProps): ReactElement {
   const selectedRef = useRef<HTMLElement>(null)
 
   useEffect(() => {
@@ -41,12 +41,12 @@ export function HorizontalSelect({
 
   return (
     <Stack
-      direction="row"
+      direction="column"
       data-testid="horizontal-select"
       spacing={1}
       sx={{
-        overflowX: 'auto',
-        overflowY: 'hidden',
+        overflowY: 'auto',
+        overflowX: 'hidden',
         py: 5,
         px: 6,
         ...sx
