@@ -26,7 +26,10 @@ export function VideoTrigger({
   useEffect(() => {
     if (player != null && !triggered) {
       const handleTimeUpdate = (): void => {
-        if (player.currentTime() >= triggerStart - 1 && !player.scrubbing()) {
+        if (
+          player.currentTime() >= triggerStart - 0.25 &&
+          !player.scrubbing()
+        ) {
           setTriggered(true)
           player.pause()
 

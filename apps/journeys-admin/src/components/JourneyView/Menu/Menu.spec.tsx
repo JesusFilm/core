@@ -56,31 +56,6 @@ describe('JourneyView/Menu', () => {
     expect(menu).toHaveAttribute('aria-expanded', 'true')
   })
 
-  it('should not preview if journey is draft', () => {
-    const { getByRole } = render(
-      <SnackbarProvider>
-        <MockedProvider mocks={[]}>
-          <TeamProvider>
-            <JourneyProvider
-              value={{
-                journey: defaultJourney,
-                variant: 'admin'
-              }}
-            >
-              <Menu />
-            </JourneyProvider>
-          </TeamProvider>
-        </MockedProvider>
-      </SnackbarProvider>
-    )
-
-    fireEvent.click(getByRole('button'))
-    expect(getByRole('menuitem', { name: 'Preview' })).toHaveAttribute(
-      'aria-disabled',
-      'true'
-    )
-  })
-
   it('should preview if journey is published', () => {
     const { getByRole } = render(
       <SnackbarProvider>

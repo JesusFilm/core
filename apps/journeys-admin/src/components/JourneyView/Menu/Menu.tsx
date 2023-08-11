@@ -9,6 +9,7 @@ import MoreVert from '@mui/icons-material/MoreVert'
 import TranslateIcon from '@mui/icons-material/Translate'
 import ViewCarouselIcon from '@mui/icons-material/ViewCarousel'
 import VisibilityIcon from '@mui/icons-material/Visibility'
+import Chip from '@mui/material/Chip'
 import Divider from '@mui/material/Divider'
 import IconButton from '@mui/material/IconButton'
 import MuiMenu from '@mui/material/Menu'
@@ -177,6 +178,34 @@ export function Menu(): ReactElement {
     <>
       {journey != null ? (
         <>
+          <Chip
+            icon={<VisibilityIcon />}
+            label="Preview"
+            component="a"
+            href={`/api/preview?slug=${journey.slug}`}
+            target="_blank"
+            variant="outlined"
+            clickable
+            sx={{
+              display: {
+                xs: 'none',
+                md: 'flex'
+              }
+            }}
+          />
+          <IconButton
+            aria-label="Preview"
+            href={`/api/preview?slug=${journey.slug}`}
+            target="_blank"
+            sx={{
+              display: {
+                xs: 'flex',
+                md: 'none'
+              }
+            }}
+          >
+            <VisibilityIcon />
+          </IconButton>
           <IconButton
             id="single-journey-actions"
             edge="end"
@@ -200,7 +229,6 @@ export function Menu(): ReactElement {
               <MenuItem
                 label="Preview"
                 icon={<VisibilityIcon />}
-                disabled={journey.status === JourneyStatus.draft}
                 openInNew
                 onClick={handleCloseMenu}
               />
@@ -285,7 +313,6 @@ export function Menu(): ReactElement {
               onClose={() => setShowLanguageDialog(false)}
             />
           )}
-
           <CopyToTeamDialog
             submitLabel="Add"
             title="Add Journey to Team"
