@@ -133,7 +133,6 @@ export function AccessDialog({
       void loadUser()
     }
   }, [open, refetch, refetchInvites, loadUser])
-  console.log(data)
 
   return (
     <Dialog
