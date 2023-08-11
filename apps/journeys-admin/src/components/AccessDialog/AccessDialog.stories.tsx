@@ -1,13 +1,16 @@
-import { Story, Meta } from '@storybook/react'
 import { MockedProvider } from '@apollo/client/testing'
+import { Meta, Story } from '@storybook/react'
 import { useState } from 'react'
+
 import { ApolloLoadingProvider } from '../../../test/ApolloLoadingProvider'
 import { journeysAdminConfig } from '../../libs/storybook'
 import { GET_CURRENT_USER } from '../../libs/useCurrentUser'
+
 import {
   GET_JOURNEY_WITH_USER_JOURNEYS,
   GET_USER_INVITES
 } from './AccessDialog'
+
 import { AccessDialog } from '.'
 
 const Demo = {

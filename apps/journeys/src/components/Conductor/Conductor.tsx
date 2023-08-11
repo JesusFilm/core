@@ -1,27 +1,30 @@
-import { ReactElement, useEffect, useState } from 'react'
-import SwiperCore, { Pagination } from 'swiper'
-import { Swiper, SwiperSlide } from 'swiper/react'
+import { gql, useMutation } from '@apollo/client'
 import Box from '@mui/material/Box'
 import Fade from '@mui/material/Fade'
 import Stack from '@mui/material/Stack'
-import { useTheme, styled } from '@mui/material/styles'
-import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
+import { SxProps, styled, useTheme } from '@mui/material/styles'
+import { ReactElement, useEffect, useState } from 'react'
+import Div100vh from 'react-div-100vh'
+import TagManager from 'react-gtm-module'
+import SwiperCore, { Pagination } from 'swiper'
+import { Swiper, SwiperSlide } from 'swiper/react'
+import { v4 as uuidv4 } from 'uuid'
+
 import type { TreeBlock } from '@core/journeys/ui/block'
-import { getStepTheme } from '@core/journeys/ui/getStepTheme'
-import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { useBlocks } from '@core/journeys/ui/block'
 import { BlockRenderer } from '@core/journeys/ui/BlockRenderer'
-import { gql, useMutation } from '@apollo/client'
+import { getStepTheme } from '@core/journeys/ui/getStepTheme'
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { getJourneyRTL } from '@core/journeys/ui/rtl'
-import { StepHeader } from '@core/journeys/ui/StepHeader'
 import { StepFooter } from '@core/journeys/ui/StepFooter'
+import { StepHeader } from '@core/journeys/ui/StepHeader'
+import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
+
 // Used to resolve dynamic viewport height on Safari
-import Div100vh from 'react-div-100vh'
-import { v4 as uuidv4 } from 'uuid'
-import TagManager from 'react-gtm-module'
+
+import { VisitorUpdateInput } from '../../../__generated__/globalTypes'
 import { JourneyViewEventCreate } from '../../../__generated__/JourneyViewEventCreate'
 import { StepFields } from '../../../__generated__/StepFields'
-import { VisitorUpdateInput } from '../../../__generated__/globalTypes'
 
 import 'swiper/swiper.min.css'
 import 'swiper/components/pagination/pagination.min.css'
@@ -75,7 +78,7 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
   } = useBlocks()
   const [swiper, setSwiper] = useState<SwiperCore>()
   const theme = useTheme()
-  const { journey, admin } = useJourney()
+  const { journey, variant } = useJourney()
   const { locale, rtl } = getJourneyRTL(journey)
   const activeBlock = blockHistory[
     blockHistory.length - 1
@@ -90,7 +93,7 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
   )
 
   useEffect(() => {
-    if (!admin && journey != null) {
+    if ((variant === 'default' || variant === 'embed') && journey != null) {
       const id = uuidv4()
       void journeyViewEventCreate({
         variables: {
@@ -160,6 +163,18 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
     }
   }, [swiper, blockHistory])
 
+  const mobileNotchStyling: SxProps = {
+    width: {
+      xs:
+        variant === 'default'
+          ? 'calc(100% - env(safe-area-inset-left) - env(safe-area-inset-right))'
+          : '100%',
+      lg: 'auto'
+    },
+    left: variant === 'default' ? 'env(safe-area-inset-left)' : undefined,
+    right: variant === 'default' ? 'env(safe-area-inset-right)' : undefined
+  }
+
   return (
     <Div100vh style={{ overflow: 'hidden' }}>
       <Stack
@@ -213,11 +228,14 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
                           px: { lg: 6 }
                         }}
                       >
-                        {showHeaderFooter && <StepHeader />}
+                        {showHeaderFooter && (
+                          <StepHeader sx={{ ...mobileNotchStyling }} />
+                        )}
                         <BlockRenderer block={block} />
                         <StepFooter
                           sx={{
-                            visibility: showHeaderFooter ? 'visible' : 'hidden'
+                            visibility: showHeaderFooter ? 'visible' : 'hidden',
+                            ...mobileNotchStyling
                           }}
                         />
                       </Stack>

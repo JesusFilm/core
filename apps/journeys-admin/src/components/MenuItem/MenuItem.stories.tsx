@@ -1,6 +1,8 @@
-import { Story, Meta } from '@storybook/react'
 import VisibilityIcon from '@mui/icons-material/Visibility'
+import { Meta, Story } from '@storybook/react'
+
 import { simpleComponentConfig } from '../../libs/storybook'
+
 import { MenuItem } from './MenuItem'
 
 const MenuItemStory = {

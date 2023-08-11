@@ -1,22 +1,25 @@
-import { Story, Meta } from '@storybook/react'
-import { screen, userEvent } from '@storybook/testing-library'
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
-import { EditorProvider } from '@core/journeys/ui/EditorProvider'
-import type { TreeBlock } from '@core/journeys/ui/block'
 import { MockedProvider } from '@apollo/client/testing'
-import { Drawer } from '../../../../../Drawer'
-import { journeysAdminConfig } from '../../../../../../../libs/storybook'
-import {
-  ThemeName,
-  ThemeMode,
-  TypographyVariant,
-  TypographyAlign
-} from '../../../../../../../../__generated__/globalTypes'
+import { Meta, Story } from '@storybook/react'
+import { screen, userEvent } from '@storybook/testing-library'
+
+import type { TreeBlock } from '@core/journeys/ui/block'
+import { EditorProvider } from '@core/journeys/ui/EditorProvider'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+
 import {
   GetJourney_journey_blocks_CardBlock as CardBlock,
-  GetJourney_journey_blocks_StepBlock as StepBlock,
-  GetJourney_journey as Journey
+  GetJourney_journey as Journey,
+  GetJourney_journey_blocks_StepBlock as StepBlock
 } from '../../../../../../../../__generated__/GetJourney'
+import {
+  ThemeMode,
+  ThemeName,
+  TypographyAlign,
+  TypographyVariant
+} from '../../../../../../../../__generated__/globalTypes'
+import { journeysAdminConfig } from '../../../../../../../libs/storybook'
+import { Drawer } from '../../../../../Drawer'
+
 import { NextCard } from '.'
 
 const NextCardStory = {
@@ -107,7 +110,7 @@ const journeyTheme = {
 const Template: Story = ({ ...args }) => {
   return (
     <MockedProvider>
-      <JourneyProvider value={{ journey: journeyTheme, admin: true }}>
+      <JourneyProvider value={{ journey: journeyTheme, variant: 'admin' }}>
         <EditorProvider
           initialState={{
             ...args,

@@ -1,20 +1,23 @@
-import { Story, Meta } from '@storybook/react'
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
-import { EditorProvider } from '@core/journeys/ui/EditorProvider'
-import type { TreeBlock } from '@core/journeys/ui/block'
-import { screen, userEvent } from '@storybook/testing-library'
 import { MockedProvider } from '@apollo/client/testing'
-import { journeysAdminConfig } from '../../../../libs/storybook'
-import { Drawer } from '../Drawer'
+import { Meta, Story } from '@storybook/react'
+import { screen, userEvent } from '@storybook/testing-library'
+
+import type { TreeBlock } from '@core/journeys/ui/block'
+import { EditorProvider } from '@core/journeys/ui/EditorProvider'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+
 import {
-  GetJourney_journey as Journey,
-  GetJourney_journey_blocks_ImageBlock as ImageBlock
+  GetJourney_journey_blocks_ImageBlock as ImageBlock,
+  GetJourney_journey as Journey
 } from '../../../../../__generated__/GetJourney'
 import {
+  JourneyStatus,
   ThemeMode,
-  ThemeName,
-  JourneyStatus
+  ThemeName
 } from '../../../../../__generated__/globalTypes'
+import { journeysAdminConfig } from '../../../../libs/storybook'
+import { Drawer } from '../Drawer'
+
 import { SocialShareAppearance } from './SocialShareAppearance'
 
 const SocialShareAppearanceStory = {
@@ -73,7 +76,7 @@ const image: ImageBlock = {
 const Template: Story = ({ ...args }) => {
   return (
     <MockedProvider>
-      <JourneyProvider value={{ journey: args.journey, admin: true }}>
+      <JourneyProvider value={{ journey: args.journey, variant: 'admin' }}>
         <EditorProvider
           initialState={{
             drawerTitle: 'Social Share Preview',

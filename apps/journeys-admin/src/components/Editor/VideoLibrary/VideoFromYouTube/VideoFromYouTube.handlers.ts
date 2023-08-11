@@ -1,8 +1,9 @@
 import { rest } from 'msw'
+
 import {
-  YoutubeVideosData,
   YoutubePlaylist,
-  YoutubeVideo
+  YoutubeVideo,
+  YoutubeVideosData
 } from './VideoFromYouTube'
 
 const playlistItem1: YoutubePlaylist = {

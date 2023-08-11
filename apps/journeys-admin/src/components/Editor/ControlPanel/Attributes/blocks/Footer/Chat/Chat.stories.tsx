@@ -1,9 +1,11 @@
-import { Story, Meta } from '@storybook/react'
-import { ComponentProps } from 'react'
 import { MockedProvider } from '@apollo/client/testing'
+import { Meta, Story } from '@storybook/react'
 import { screen, userEvent } from '@storybook/testing-library'
 import { waitFor } from '@testing-library/react'
+import { ComponentProps } from 'react'
+
 import { simpleComponentConfig } from '../../../../../../../libs/storybook'
+
 import { Chat } from '.'
 
 const ChatStory = {

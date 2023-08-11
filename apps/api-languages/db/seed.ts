@@ -4,7 +4,8 @@
 import isEmpty from 'lodash/isEmpty'
 import fetch from 'node-fetch'
 import slugify from 'slugify'
-import { PrismaClient, Prisma } from '.prisma/api-languages-client'
+
+import { Prisma, PrismaClient } from '.prisma/api-languages-client'
 
 const prismaService = new PrismaClient()
 

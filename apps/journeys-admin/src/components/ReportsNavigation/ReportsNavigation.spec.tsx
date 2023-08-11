@@ -1,5 +1,7 @@
 import { render } from '@testing-library/react'
+
 import { JourneysReportType } from '../../../__generated__/globalTypes'
+
 import { ReportsNavigation } from './ReportsNavigation'
 
 jest.mock('react-i18next', () => ({

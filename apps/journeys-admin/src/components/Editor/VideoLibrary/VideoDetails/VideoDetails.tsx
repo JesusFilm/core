@@ -1,33 +1,35 @@
-import { ReactElement } from 'react'
-import Typography from '@mui/material/Typography'
-import Drawer from '@mui/material/Drawer'
-import useMediaQuery from '@mui/material/useMediaQuery'
-import { Theme } from '@mui/material/styles'
-import AppBar from '@mui/material/AppBar'
-import Box from '@mui/material/Box'
-import Toolbar from '@mui/material/Toolbar'
-import IconButton from '@mui/material/IconButton'
+import { gql, useMutation } from '@apollo/client'
 import Close from '@mui/icons-material/Close'
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline'
 import SubscriptionsRoundedIcon from '@mui/icons-material/SubscriptionsRounded'
+import AppBar from '@mui/material/AppBar'
+import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
+import Drawer from '@mui/material/Drawer'
+import IconButton from '@mui/material/IconButton'
 import Stack from '@mui/material/Stack'
-import { useEditor } from '@core/journeys/ui/EditorProvider'
-import { gql, useMutation } from '@apollo/client'
-import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import { Theme } from '@mui/material/styles'
+import Toolbar from '@mui/material/Toolbar'
+import Typography from '@mui/material/Typography'
+import useMediaQuery from '@mui/material/useMediaQuery'
+import { ReactElement } from 'react'
+
 import { TreeBlock } from '@core/journeys/ui/block'
+import { useEditor } from '@core/journeys/ui/EditorProvider'
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
+
+import { BlockDeleteForCoverImage } from '../../../../../__generated__/BlockDeleteForCoverImage'
+import {
+  GetJourney_journey_blocks_ImageBlock as ImageBlock,
+  GetJourney_journey_blocks_VideoBlock as VideoBlock
+} from '../../../../../__generated__/GetJourney'
 import {
   VideoBlockSource,
   VideoBlockUpdateInput
 } from '../../../../../__generated__/globalTypes'
+import { CloudflareDetails } from '../VideoFromCloudflare/CloudflareDetails'
 import { LocalDetails } from '../VideoFromLocal/LocalDetails'
 import { YouTubeDetails } from '../VideoFromYouTube/YouTubeDetails'
-import { CloudflareDetails } from '../VideoFromCloudflare/CloudflareDetails'
-import {
-  GetJourney_journey_blocks_VideoBlock as VideoBlock,
-  GetJourney_journey_blocks_ImageBlock as ImageBlock
-} from '../../../../../__generated__/GetJourney'
-import { BlockDeleteForCoverImage } from '../../../../../__generated__/BlockDeleteForCoverImage'
 
 export const DRAWER_WIDTH = 328
 

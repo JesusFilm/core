@@ -1,6 +1,7 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { waitFor } from '@testing-library/react'
-import { renderHook, act } from '@testing-library/react-hooks'
+import { act, renderHook } from '@testing-library/react-hooks'
+
 import { GET_CURRENT_USER, useCurrentUser } from './useCurrentUser'
 
 describe('useCurrentUser', () => {

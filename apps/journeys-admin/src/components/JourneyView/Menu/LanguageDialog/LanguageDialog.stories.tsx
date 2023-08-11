@@ -1,11 +1,15 @@
-import { Story, Meta } from '@storybook/react'
-import { useState } from 'react'
 import { MockedProvider } from '@apollo/client/testing'
+import { Meta, Story } from '@storybook/react'
 import { screen, userEvent } from '@storybook/testing-library'
+import { useState } from 'react'
+
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+
 import { journeysAdminConfig } from '../../../../libs/storybook'
 import { defaultJourney } from '../../data'
-import { JOURNEY_LANGUAGE_UPDATE, GET_LANGUAGES } from './LanguageDialog'
+
+import { GET_LANGUAGES, JOURNEY_LANGUAGE_UPDATE } from './LanguageDialog'
+
 import { LanguageDialog } from '.'
 
 const LanguageDialogStory = {
@@ -114,7 +118,12 @@ const Template: Story = () => {
         }
       ]}
     >
-      <JourneyProvider value={{ journey: defaultJourney, admin: true }}>
+      <JourneyProvider
+        value={{
+          journey: defaultJourney,
+          variant: 'admin'
+        }}
+      >
         <LanguageDialog open={open} onClose={() => setOpen(false)} />
       </JourneyProvider>
     </MockedProvider>

@@ -1,8 +1,8 @@
+import Box from '@mui/material/Box'
+import Stack from '@mui/material/Stack'
+import Switch from '@mui/material/Switch'
 import Typography from '@mui/material/Typography'
 import { ReactElement } from 'react'
-import Switch from '@mui/material/Switch'
-import Stack from '@mui/material/Stack'
-import Box from '@mui/material/Box'
 
 export interface ToggleOptionProps {
   heading: string

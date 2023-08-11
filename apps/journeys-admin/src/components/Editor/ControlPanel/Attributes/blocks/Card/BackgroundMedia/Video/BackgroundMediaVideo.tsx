@@ -1,17 +1,19 @@
-import { ReactElement } from 'react'
-import { VIDEO_FIELDS } from '@core/journeys/ui/Video/videoFields'
-import { useJourney } from '@core/journeys/ui/JourneyProvider'
-import type { TreeBlock } from '@core/journeys/ui/block'
 import { gql, useMutation } from '@apollo/client'
 import { useSnackbar } from 'notistack'
+import { ReactElement } from 'react'
+
+import type { TreeBlock } from '@core/journeys/ui/block'
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import { VIDEO_FIELDS } from '@core/journeys/ui/Video/videoFields'
+
+import { CardBlockVideoBlockCreate } from '../../../../../../../../../__generated__/CardBlockVideoBlockCreate'
+import { CardBlockVideoBlockUpdate } from '../../../../../../../../../__generated__/CardBlockVideoBlockUpdate'
 import {
   GetJourney_journey_blocks_CardBlock as CardBlock,
   GetJourney_journey_blocks_ImageBlock as ImageBlock,
   GetJourney_journey_blocks_VideoBlock as VideoBlock
 } from '../../../../../../../../../__generated__/GetJourney'
 import { VideoBlockUpdateInput } from '../../../../../../../../../__generated__/globalTypes'
-import { CardBlockVideoBlockCreate } from '../../../../../../../../../__generated__/CardBlockVideoBlockCreate'
-import { CardBlockVideoBlockUpdate } from '../../../../../../../../../__generated__/CardBlockVideoBlockUpdate'
 import { VideoBlockEditor } from '../../../../../../VideoBlockEditor'
 
 export const CARD_BLOCK_COVER_VIDEO_BLOCK_CREATE = gql`

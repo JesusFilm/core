@@ -1,9 +1,11 @@
-import { ReactElement } from 'react'
 import TextField from '@mui/material/TextField'
-import { Dialog } from '@core/shared/ui/Dialog'
-import { Form, FormikValues, FormikHelpers } from 'formik'
-import { useTranslation } from 'react-i18next'
 import Typography from '@mui/material/Typography'
+import { Form, FormikHelpers, FormikValues } from 'formik'
+import { ReactElement } from 'react'
+import { useTranslation } from 'react-i18next'
+
+import { Dialog } from '@core/shared/ui/Dialog'
+
 import { TeamCreateForm } from '../TeamCreateForm'
 
 interface TeamCreateDialogProps {

@@ -1,17 +1,19 @@
 import { gql, useMutation } from '@apollo/client'
 import { ReactElement, useEffect } from 'react'
-import Player from 'video.js/dist/types/player'
 import TagManager from 'react-gtm-module'
 import { v4 as uuidv4 } from 'uuid'
-import { useBlocks } from '../../libs/block'
+import Player from 'video.js/dist/types/player'
+
 import { VideoBlockSource } from '../../../__generated__/globalTypes'
-import { VideoStartEventCreate } from './__generated__/VideoStartEventCreate'
-import { VideoPlayEventCreate } from './__generated__/VideoPlayEventCreate'
-import { VideoPauseEventCreate } from './__generated__/VideoPauseEventCreate'
+import { useBlocks } from '../../libs/block'
+
+import { VideoCollapseEventCreate } from './__generated__/VideoCollapseEventCreate'
 import { VideoCompleteEventCreate } from './__generated__/VideoCompleteEventCreate'
 import { VideoExpandEventCreate } from './__generated__/VideoExpandEventCreate'
-import { VideoCollapseEventCreate } from './__generated__/VideoCollapseEventCreate'
+import { VideoPauseEventCreate } from './__generated__/VideoPauseEventCreate'
+import { VideoPlayEventCreate } from './__generated__/VideoPlayEventCreate'
 import { VideoProgressEventCreate } from './__generated__/VideoProgressEventCreate'
+import { VideoStartEventCreate } from './__generated__/VideoStartEventCreate'
 
 export const VIDEO_START_EVENT_CREATE = gql`
   mutation VideoStartEventCreate($input: VideoStartEventCreateInput!) {

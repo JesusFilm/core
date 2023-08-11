@@ -1,44 +1,92 @@
 import { Test, TestingModule } from '@nestjs/testing'
+import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
+
+import { User } from '.prisma/api-users-client'
+
 import { PrismaService } from '../../lib/prisma.service'
+
 import { UserResolver } from './user.resolver'
 
+jest.mock('@core/nest/common/firebaseClient', () => ({
+  firebaseClient: {
+    auth: jest.fn().mockReturnValue({
+      getUser: jest.fn().mockResolvedValue({
+        displayName: 'fo sho',
+        email: 'tho@no.co',
+        photoURL: 'p'
+      })
+    })
+  }
+}))
+
 describe('UserResolver', () => {
-  let resolver: UserResolver, prisma: PrismaService
+  let resolver: UserResolver, prismaService: DeepMockProxy<PrismaService>
 
   const user = {
-    id: '1',
+    id: 'userId',
     firstName: 'fo',
     lastName: 'sho',
     email: 'tho@no.co',
     imageUrl: 'po'
-  }
+  } as unknown as User
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [UserResolver, PrismaService]
+      providers: [
+        UserResolver,
+        {
+          provide: PrismaService,
+          useValue: mockDeep<PrismaService>()
+        }
+      ]
     }).compile()
     resolver = module.get<UserResolver>(UserResolver)
-    prisma = module.get<PrismaService>(PrismaService)
+    prismaService = module.get<PrismaService>(
+      PrismaService
+    ) as DeepMockProxy<PrismaService>
   })
 
   describe('me', () => {
     it('returns User', async () => {
-      prisma.user.findUnique = jest.fn().mockReturnValueOnce(user)
-      expect(await resolver.me(user.id)).toEqual(user)
-      expect(prisma.user.findUnique).toHaveBeenCalledWith({
+      prismaService.user.findUnique.mockResolvedValueOnce(user)
+      expect(await resolver.me('userId')).toEqual(user)
+      expect(prismaService.user.findUnique).toHaveBeenCalledWith({
         where: { userId: user.id }
+      })
+    })
+
+    it('fetches user from firebase', async () => {
+      prismaService.user.findUnique.mockResolvedValueOnce(null)
+      prismaService.user.upsert.mockResolvedValueOnce(user)
+      expect(await resolver.me('userId')).toEqual(user)
+      expect(prismaService.user.upsert).toHaveBeenCalledWith({
+        create: {
+          email: 'tho@no.co',
+          firstName: 'fo',
+          imageUrl: 'p',
+          lastName: 'sho',
+          userId: 'userId'
+        },
+        update: {
+          email: 'tho@no.co',
+          firstName: 'fo',
+          imageUrl: 'p',
+          lastName: 'sho',
+          userId: 'userId'
+        },
+        where: { userId: 'userId' }
       })
     })
   })
 
   describe('resolveReference', () => {
     it('returns User', async () => {
-      prisma.user.findUnique = jest.fn().mockReturnValueOnce(user)
+      prismaService.user.findUnique.mockResolvedValueOnce(user)
       expect(
-        await resolver.resolveReference({ __typename: 'User', id: user.id })
+        await resolver.resolveReference({ __typename: 'User', id: 'userId' })
       ).toEqual(user)
-      expect(prisma.user.findUnique).toHaveBeenCalledWith({
-        where: { userId: user.id }
+      expect(prismaService.user.findUnique).toHaveBeenCalledWith({
+        where: { userId: 'userId' }
       })
     })
   })

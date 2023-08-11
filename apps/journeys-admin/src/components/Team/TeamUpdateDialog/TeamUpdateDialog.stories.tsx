@@ -1,17 +1,20 @@
-import { Story, Meta } from '@storybook/react'
-import { useState } from 'react'
-import { SnackbarProvider } from 'notistack'
-import { screen, userEvent, waitFor } from '@storybook/testing-library'
 import { MockedResponse } from '@apollo/client/testing'
 import { expect } from '@storybook/jest'
+import { Meta, Story } from '@storybook/react'
+import { screen, userEvent, waitFor } from '@storybook/testing-library'
+import { SnackbarProvider } from 'notistack'
+import { useState } from 'react'
+
+import { GetLastActiveTeamIdAndTeams } from '../../../../__generated__/GetLastActiveTeamIdAndTeams'
+import { TeamUpdate } from '../../../../__generated__/TeamUpdate'
+import { journeysAdminConfig } from '../../../libs/storybook'
 import {
   GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS,
   TeamProvider
 } from '../TeamProvider'
-import { journeysAdminConfig } from '../../../libs/storybook'
-import { TeamUpdate } from '../../../../__generated__/TeamUpdate'
-import { GetLastActiveTeamIdAndTeams } from '../../../../__generated__/GetLastActiveTeamIdAndTeams'
+
 import { TEAM_UPDATE } from './TeamUpdateDialog'
+
 import { TeamUpdateDialog } from '.'
 
 const TeamUpdateDialogStory = {
@@ -30,7 +33,8 @@ const getTeamsMock: MockedResponse<GetLastActiveTeamIdAndTeams> = {
         {
           id: 'teamId',
           title: 'My Team',
-          __typename: 'Team'
+          __typename: 'Team',
+          userTeams: []
         }
       ],
       getJourneyProfile: {

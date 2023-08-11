@@ -2,6 +2,9 @@
   "root": true,
   "ignorePatterns": ["**/*"],
   "plugins": ["@nrwl/nx", "import"],
+  "settings": {
+    "import/internal-regex": "^(@core|.prisma)"
+  },
   "rules": {
     "import/no-absolute-path": "error",
     "import/default": "error",
@@ -22,7 +25,24 @@
     "import/first": "error",
     "import/no-duplicates": "error",
     "import/no-namespace": "error",
-    "import/order": "error",
+    "import/order": [
+      "error",
+      {
+        "alphabetize": {
+          "order": "asc",
+          "caseInsensitive": true
+        },
+        "groups": [
+          "builtin",
+          "external",
+          "internal",
+          "parent",
+          "sibling",
+          "index"
+        ],
+        "newlines-between": "always"
+      }
+    ],
     "import/newline-after-import": "error",
     "import/no-named-default": "error",
     "import/no-anonymous-default-export": "error",
@@ -31,6 +51,7 @@
       "error",
       { "allow": ["decoratedFunctions"] }
     ],
+    "no-multiple-empty-lines": ["error", { "max": 1 }],
     "no-restricted-imports": [
       "error",
       {
@@ -42,7 +63,8 @@
         ],
         "patterns": ["@mui/*/*/*", "!@mui/material/test-utils/*"]
       }
-    ]
+    ],
+    "sort-imports": ["error", { "ignoreDeclarationSort": true }]
   },
   "overrides": [
     {
@@ -93,6 +115,19 @@
           { "props": "never", "children": "never" }
         ],
         "react/jsx-boolean-value": "error"
+      }
+    },
+    {
+      "files": ["*.spec.ts", "*.spec.tsx", "*.spec.js", "*.spec.jsx"],
+      "plugins": ["jest", "jest-formatting"],
+      "extends": [
+        "plugin:jest/recommended",
+        "plugin:jest/style",
+        "plugin:jest-formatting/recommended"
+      ],
+      "rules": {
+        "jest/no-disabled-tests": "off",
+        "jest/require-top-level-describe": "error"
       }
     }
   ]

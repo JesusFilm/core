@@ -1,10 +1,12 @@
 import { gql, useMutation } from '@apollo/client'
-import { IMAGE_FIELDS } from '@core/journeys/ui/Image/imageFields'
-import { useEditor, ActiveTab } from '@core/journeys/ui/EditorProvider'
-import { useJourney } from '@core/journeys/ui/JourneyProvider'
-import type { TreeBlock } from '@core/journeys/ui/block'
 import InsertPhotoRounded from '@mui/icons-material/InsertPhotoRounded'
 import { ReactElement } from 'react'
+
+import type { TreeBlock } from '@core/journeys/ui/block'
+import { ActiveTab, useEditor } from '@core/journeys/ui/EditorProvider'
+import { IMAGE_FIELDS } from '@core/journeys/ui/Image/imageFields'
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
+
 import { GetJourney_journey_blocks_CardBlock as CardBlock } from '../../../../../../__generated__/GetJourney'
 import { ImageBlockCreate } from '../../../../../../__generated__/ImageBlockCreate'
 import { Button } from '../../Button'

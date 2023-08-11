@@ -1,16 +1,19 @@
-import { ReactElement, SyntheticEvent, useState } from 'react'
-import { tabA11yProps, TabPanel } from '@core/shared/ui/TabPanel'
+import BrushRounded from '@mui/icons-material/BrushRounded'
+import DashboardRounded from '@mui/icons-material/DashboardRounded'
 import Box from '@mui/material/Box'
 import Tab from '@mui/material/Tab'
 import Tabs from '@mui/material/Tabs'
 import Typography from '@mui/material/Typography'
-import BrushRounded from '@mui/icons-material/BrushRounded'
-import DashboardRounded from '@mui/icons-material/DashboardRounded'
+import { ReactElement, SyntheticEvent, useState } from 'react'
 import { object, string } from 'yup'
+
+import { TabPanel, tabA11yProps } from '@core/shared/ui/TabPanel'
+
 import { GetJourney_journey_blocks_ImageBlock as ImageBlock } from '../../../../__generated__/GetJourney'
 import { ImageBlockHeader } from '../ImageBlockHeader'
-import { UnsplashAuthor, UnsplashGallery } from './UnsplashGallery'
+
 import { CustomImage } from './CustomImage'
+import { UnsplashAuthor, UnsplashGallery } from './UnsplashGallery'
 
 interface ImageBlockEditorProps {
   onChange: (imageBlock: ImageBlock) => Promise<void>

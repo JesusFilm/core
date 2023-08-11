@@ -1,15 +1,18 @@
 import { Test, TestingModule } from '@nestjs/testing'
-import { CaslAuthModule } from '@core/nest/common/CaslAuthModule'
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
-import { Visitor, Event } from '.prisma/api-journeys-client'
+
+import { Event, Visitor } from '.prisma/api-journeys-client'
+import { CaslAuthModule } from '@core/nest/common/CaslAuthModule'
+
 import {
   MessagePlatform,
   VisitorStatus,
   VisitorUpdateInput,
   VisitorsConnection
 } from '../../__generated__/graphql'
-import { PrismaService } from '../../lib/prisma.service'
 import { AppAbility, AppCaslFactory } from '../../lib/casl/caslFactory'
+import { PrismaService } from '../../lib/prisma.service'
+
 import { VisitorResolver } from './visitor.resolver'
 import { VisitorService } from './visitor.service'
 
@@ -118,12 +121,14 @@ describe('VisitorResolver', () => {
         visitorWithUser
       )
     })
+
     it('throws error if not found', async () => {
       prismaService.visitor.findUnique.mockResolvedValueOnce(null)
       await expect(resolver.visitor(ability, 'visitorId')).rejects.toThrow(
         'visitor with id "visitorId" not found'
       )
     })
+
     it('throws error if not authorized', async () => {
       prismaService.visitor.findUnique.mockResolvedValueOnce(visitor)
       await expect(resolver.visitor(ability, 'visitorId')).rejects.toThrow(
@@ -141,6 +146,7 @@ describe('VisitorResolver', () => {
       notes: 'this is a test',
       status: VisitorStatus.star
     }
+
     it('updates visitor', async () => {
       prismaService.visitor.findUnique.mockResolvedValueOnce(visitorWithUser)
       prismaService.visitor.update.mockResolvedValueOnce({
@@ -151,12 +157,14 @@ describe('VisitorResolver', () => {
         { ...visitorWithUser, ...input }
       )
     })
+
     it('throws error if not found', async () => {
       prismaService.visitor.findUnique.mockResolvedValueOnce(null)
       await expect(
         resolver.visitorUpdate(ability, 'visitorId', input)
       ).rejects.toThrow('visitor with id "visitorId" not found')
     })
+
     it('throws error if not authorized', async () => {
       prismaService.visitor.findUnique.mockResolvedValueOnce(visitor)
       await expect(
@@ -176,6 +184,7 @@ describe('VisitorResolver', () => {
       countryCode: 'South Lake Tahoe, CA, USA',
       referrer: 'https://example.com'
     }
+
     it('updates visitor', async () => {
       prismaService.visitor.findFirst.mockResolvedValueOnce(visitorWithUser)
       prismaService.visitor.update.mockResolvedValueOnce({
@@ -198,12 +207,14 @@ describe('VisitorResolver', () => {
         }
       })
     })
+
     it('throws error if not found', async () => {
       prismaService.visitor.findFirst.mockResolvedValueOnce(null)
       await expect(
         resolver.visitorUpdateForCurrentUser(ability, 'userId', input)
       ).rejects.toThrow('visitor with userId "userId" not found')
     })
+
     it('throws error if not authorized', async () => {
       prismaService.visitor.findFirst.mockResolvedValueOnce(visitor)
       await expect(
@@ -238,6 +249,7 @@ describe('VisitorResolver', () => {
       createdAt: new Date(),
       updatedAt: new Date()
     }
+
     it('returns visitor events', async () => {
       prismaService.event.findMany.mockResolvedValueOnce([event])
       expect(await resolver.events({ id: 'visitorId' })).toEqual([

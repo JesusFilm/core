@@ -1,15 +1,17 @@
-import { ReactElement, useMemo } from 'react'
 import Box from '@mui/material/Box'
-import Skeleton from '@mui/material/Skeleton'
 import List from '@mui/material/List'
 import ListItem from '@mui/material/ListItem'
 import ListItemAvatar from '@mui/material/ListItemAvatar'
 import ListItemText from '@mui/material/ListItemText'
+import Skeleton from '@mui/material/Skeleton'
 import Typography from '@mui/material/Typography'
 import sortBy from 'lodash/sortBy'
+import { ReactElement, useMemo } from 'react'
+
 import { GetJourneyWithUserJourneys_journey_userJourneys as UserJourney } from '../../../../__generated__/GetJourneyWithUserJourneys'
 import { GetUserInvites_userInvites as UserInvite } from '../../../../__generated__/GetUserInvites'
 import { UserJourneyRole } from '../../../../__generated__/globalTypes'
+
 import { UserListItem } from './UserListItem'
 
 interface UserListProps {

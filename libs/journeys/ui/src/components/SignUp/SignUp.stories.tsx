@@ -1,16 +1,18 @@
-import { ComponentProps, ReactElement } from 'react'
-import { Meta, Story } from '@storybook/react'
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { Meta, Story } from '@storybook/react'
 import { screen, userEvent } from '@storybook/testing-library'
 import { SnackbarProvider } from 'notistack'
+import { ComponentProps, ReactElement } from 'react'
+
+import { IconName, TypographyVariant } from '../../../__generated__/globalTypes'
+import { ApolloLoadingProvider } from '../../../test/ApolloLoadingProvider'
+import { JourneyProvider } from '../../libs/JourneyProvider'
 import { journeyUiConfig } from '../../libs/journeyUiConfig'
 import { simpleComponentConfig } from '../../libs/simpleComponentConfig'
-import { JourneyProvider } from '../../libs/JourneyProvider'
 import { StoryCard } from '../StoryCard'
-import { ApolloLoadingProvider } from '../../../test/ApolloLoadingProvider'
-import { IconName, TypographyVariant } from '../../../__generated__/globalTypes'
 import { Typography } from '../Typography'
-import { SignUp, SIGN_UP_SUBMISSION_EVENT_CREATE } from './SignUp'
+
+import { SIGN_UP_SUBMISSION_EVENT_CREATE, SignUp } from './SignUp'
 
 const Demo = {
   ...journeyUiConfig,

@@ -1,15 +1,17 @@
-import { Args, Mutation, Parent, ResolveField, Resolver } from '@nestjs/graphql'
+import { subject } from '@casl/ability'
 import { UseGuards } from '@nestjs/common'
+import { Args, Mutation, Parent, ResolveField, Resolver } from '@nestjs/graphql'
 import { GraphQLError } from 'graphql'
-import { Journey, Action } from '.prisma/api-journeys-client'
 import includes from 'lodash/includes'
 import omit from 'lodash/omit'
+
+import { Action, Journey } from '.prisma/api-journeys-client'
 import { CaslAbility } from '@core/nest/common/CaslAuthModule'
-import { subject } from '@casl/ability'
+
 import { NavigateToJourneyActionInput } from '../../../__generated__/graphql'
-import { PrismaService } from '../../../lib/prisma.service'
+import { AppAbility, Action as CaslAction } from '../../../lib/casl/caslFactory'
 import { AppCaslGuard } from '../../../lib/casl/caslGuard'
-import { Action as CaslAction, AppAbility } from '../../../lib/casl/caslFactory'
+import { PrismaService } from '../../../lib/prisma.service'
 import { ACTION_UPDATE_RESET } from '../actionUpdateReset'
 
 @Resolver('NavigateToJourneyAction')

@@ -1,9 +1,12 @@
-import { useState } from 'react'
+import { MockedProvider } from '@apollo/client/testing'
 import { Meta, Story } from '@storybook/react'
 import noop from 'lodash/noop'
-import { MockedProvider } from '@apollo/client/testing'
+import { useState } from 'react'
+
 import { simpleComponentConfig } from '../../../../libs/storybook'
+
 import { UserMenuProps } from './UserMenu'
+
 import { UserMenu } from '.'
 
 const UserMenuStory = {

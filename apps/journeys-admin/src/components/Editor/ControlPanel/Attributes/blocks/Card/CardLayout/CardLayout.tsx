@@ -1,19 +1,21 @@
-import { ReactElement } from 'react'
+import { gql, useMutation } from '@apollo/client'
+import VerticalSplit from '@mui/icons-material/VerticalSplit'
 import Box from '@mui/material/Box'
 import Divider from '@mui/material/Divider'
 import Stack from '@mui/material/Stack'
-import VerticalSplit from '@mui/icons-material/VerticalSplit'
-import Image from 'next/image'
 import Typography from '@mui/material/Typography'
-import { gql, useMutation } from '@apollo/client'
-import { useJourney } from '@core/journeys/ui/JourneyProvider'
-import { useEditor } from '@core/journeys/ui/EditorProvider'
+import Image from 'next/image'
+import { ReactElement } from 'react'
+
 import type { TreeBlock } from '@core/journeys/ui/block'
-import { HorizontalSelect } from '../../../../../../HorizontalSelect'
+import { useEditor } from '@core/journeys/ui/EditorProvider'
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
+
+import { CardBlockLayoutUpdate } from '../../../../../../../../__generated__/CardBlockLayoutUpdate'
+import { GetJourney_journey_blocks_CardBlock as CardBlock } from '../../../../../../../../__generated__/GetJourney'
 import cardLayoutContained from '../../../../../../../../public/card-layout-contained.svg'
 import cardLayoutExpanded from '../../../../../../../../public/card-layout-expanded.svg'
-import { GetJourney_journey_blocks_CardBlock as CardBlock } from '../../../../../../../../__generated__/GetJourney'
-import { CardBlockLayoutUpdate } from '../../../../../../../../__generated__/CardBlockLayoutUpdate'
+import { HorizontalSelect } from '../../../../../../HorizontalSelect'
 
 export const CARD_BLOCK_LAYOUT_UPDATE = gql`
   mutation CardBlockLayoutUpdate(

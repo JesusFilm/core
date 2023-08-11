@@ -1,12 +1,16 @@
-import { ComponentProps } from 'react'
-import { render, fireEvent, waitFor } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
-import { EditorProvider } from '@core/journeys/ui/EditorProvider'
+import { fireEvent, render, waitFor } from '@testing-library/react'
+import { ComponentProps } from 'react'
+
 import type { TreeBlock } from '@core/journeys/ui/block'
-import { RadioOptionFields } from '../../../../../../__generated__/RadioOptionFields'
+import { EditorProvider } from '@core/journeys/ui/EditorProvider'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+
 import { GetJourney_journey as Journey } from '../../../../../../__generated__/GetJourney'
+import { RadioOptionFields } from '../../../../../../__generated__/RadioOptionFields'
+
 import { RADIO_OPTION_BLOCK_CREATE } from './RadioQuestionEdit'
+
 import { RadioQuestionEdit } from '.'
 
 jest.mock('react-i18next', () => ({
@@ -75,7 +79,7 @@ describe('RadioQuestionEdit', () => {
         <JourneyProvider
           value={{
             journey: { id: 'journeyId' } as unknown as Journey,
-            admin: true
+            variant: 'admin'
           }}
         >
           <EditorProvider>
@@ -113,7 +117,7 @@ describe('RadioQuestionEdit', () => {
         <JourneyProvider
           value={{
             journey: { id: 'journeyId' } as unknown as Journey,
-            admin: true
+            variant: 'admin'
           }}
         >
           <EditorProvider>

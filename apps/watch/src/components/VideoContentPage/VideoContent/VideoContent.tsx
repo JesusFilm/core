@@ -1,10 +1,12 @@
 import Box from '@mui/material/Box'
-import Tabs from '@mui/material/Tabs'
-import { ReactElement, SyntheticEvent, useEffect, useState } from 'react'
-import { TabPanel, tabA11yProps } from '@core/shared/ui/TabPanel'
-import Typography from '@mui/material/Typography'
-import Tab from '@mui/material/Tab'
 import Stack from '@mui/material/Stack'
+import Tab from '@mui/material/Tab'
+import Tabs from '@mui/material/Tabs'
+import Typography from '@mui/material/Typography'
+import { ReactElement, SyntheticEvent, useEffect, useState } from 'react'
+
+import { TabPanel, tabA11yProps } from '@core/shared/ui/TabPanel'
+
 import { useVideo } from '../../../libs/videoContext'
 
 export function VideoContent(): ReactElement {

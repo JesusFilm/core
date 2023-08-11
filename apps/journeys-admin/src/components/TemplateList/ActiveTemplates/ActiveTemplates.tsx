@@ -1,21 +1,23 @@
-import { ReactElement, useState, useEffect } from 'react'
 import { useMutation } from '@apollo/client'
-import { Dialog } from '@core/shared/ui/Dialog'
-import { useSnackbar } from 'notistack'
 import Box from '@mui/material/Box'
 import Card from '@mui/material/Card'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
+import { useSnackbar } from 'notistack'
+import { ReactElement, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { sortJourneys } from '../../JourneyList/JourneySort/utils/sortJourneys'
+
+import { Dialog } from '@core/shared/ui/Dialog'
+
+import { JourneyStatus } from '../../../../__generated__/globalTypes'
+import { useAdminJourneysQuery } from '../../../libs/useAdminJourneysQuery'
 import {
   ARCHIVE_ACTIVE_JOURNEYS,
   TRASH_ACTIVE_JOURNEYS
 } from '../../JourneyList/ActiveJourneyList/ActiveJourneyList'
-import { TemplateCard } from '../../TemplateCard'
-import { useAdminJourneysQuery } from '../../../libs/useAdminJourneysQuery'
-import { JourneyStatus } from '../../../../__generated__/globalTypes'
 import { JourneyListProps } from '../../JourneyList/JourneyList'
+import { sortJourneys } from '../../JourneyList/JourneySort/utils/sortJourneys'
+import { TemplateCard } from '../../TemplateCard'
 
 export function ActiveTemplates({
   sortOrder,

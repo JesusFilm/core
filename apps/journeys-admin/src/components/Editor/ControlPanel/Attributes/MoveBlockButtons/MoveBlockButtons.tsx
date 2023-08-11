@@ -1,15 +1,17 @@
-import { ReactElement } from 'react'
-import { styled } from '@mui/material/styles'
+import { gql, useMutation } from '@apollo/client'
+import KeyboardArrowDownRoundedIcon from '@mui/icons-material/KeyboardArrowDownRounded'
+import KeyboardArrowUpRoundedIcon from '@mui/icons-material/KeyboardArrowUpRounded'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import ButtonGroup from '@mui/material/ButtonGroup'
+import { styled } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
-import KeyboardArrowUpRoundedIcon from '@mui/icons-material/KeyboardArrowUpRounded'
-import KeyboardArrowDownRoundedIcon from '@mui/icons-material/KeyboardArrowDownRounded'
-import { gql, useMutation } from '@apollo/client'
+import { ReactElement } from 'react'
+
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { searchBlocks } from '@core/journeys/ui/searchBlocks'
+
 import { BlockOrderUpdate } from '../../../../../../__generated__/BlockOrderUpdate'
 
 const StyledMoveButton = styled(Button)(({ theme }) => ({

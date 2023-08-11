@@ -6,4 +6,8 @@ tracer.init({
   logInjection: true
 })
 
+tracer.use('http', {
+  blocklist: ['/.well-known/apollo/server-health']
+})
+
 export default tracer

@@ -22,7 +22,6 @@
       "tags": []
     },
     "nest-common": "libs/nest/common",
-    "nest-database": "libs/nest/database",
     "nest-decorators": "libs/nest/decorators",
     "nest-health": "libs/nest/health",
     "nest/gqlAuthGuard": "libs/nest/gqlAuthGuard",
@@ -30,8 +29,6 @@
     "shared-storybook": "libs/shared/storybook",
     "shared-ui": "libs/shared/ui",
     "watch": "apps/watch",
-    "watch-admin": "apps/watch-admin",
-    "watch-admin-e2e": "apps/watch-admin-e2e",
     "watch-e2e": "apps/watch-e2e",
     "docs-e2e": "apps/docs-e2e"
   }

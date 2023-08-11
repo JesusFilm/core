@@ -1,14 +1,17 @@
-import { ReactElement, memo } from 'react'
+import { gql, useQuery } from '@apollo/client'
 import Box from '@mui/material/Box'
 import Container from '@mui/material/Container'
-import Stack from '@mui/material/Stack'
 import Fade from '@mui/material/Fade'
-import { gql, useQuery } from '@apollo/client'
+import Stack from '@mui/material/Stack'
+import { ReactElement, memo } from 'react'
+
 import { BLOCK_FIELDS } from '@core/journeys/ui/block/blockFields'
+
 import {
-  GetDiscoveryJourneys,
-  GetDiscoveryJourneys_discoveryJourneys as DiscoveryJourney
+  GetDiscoveryJourneys_discoveryJourneys as DiscoveryJourney,
+  GetDiscoveryJourneys
 } from '../../../__generated__/GetDiscoveryJourneys'
+
 import { EmbedJourney } from './EmbedJourney'
 
 export const GET_DISCOVERY_JOURNEYS = gql`

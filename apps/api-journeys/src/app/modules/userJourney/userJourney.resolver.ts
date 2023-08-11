@@ -1,25 +1,27 @@
+import { subject } from '@casl/ability'
+import { UseGuards } from '@nestjs/common'
 import {
   Args,
-  Resolver,
   Mutation,
   Parent,
   Query,
-  ResolveField
+  ResolveField,
+  Resolver
 } from '@nestjs/graphql'
-import { CurrentUserId } from '@core/nest/decorators/CurrentUserId'
-import { UseGuards } from '@nestjs/common'
-import {
-  UserJourney,
-  Journey,
-  UserJourneyRole,
-  Prisma
-} from '.prisma/api-journeys-client'
 import { GraphQLError } from 'graphql'
+
+import {
+  Journey,
+  Prisma,
+  UserJourney,
+  UserJourneyRole
+} from '.prisma/api-journeys-client'
 import { CaslAbility, CaslAccessible } from '@core/nest/common/CaslAuthModule'
-import { subject } from '@casl/ability'
-import { PrismaService } from '../../lib/prisma.service'
-import { AppCaslGuard } from '../../lib/casl/caslGuard'
+import { CurrentUserId } from '@core/nest/decorators/CurrentUserId'
+
 import { Action, AppAbility } from '../../lib/casl/caslFactory'
+import { AppCaslGuard } from '../../lib/casl/caslGuard'
+import { PrismaService } from '../../lib/prisma.service'
 
 @Resolver('UserJourney')
 export class UserJourneyResolver {

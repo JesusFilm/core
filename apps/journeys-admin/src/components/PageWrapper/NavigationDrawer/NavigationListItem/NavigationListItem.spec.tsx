@@ -1,5 +1,6 @@
-import { fireEvent, render } from '@testing-library/react'
 import AbcRoundedIcon from '@mui/icons-material/AbcRounded'
+import { fireEvent, render } from '@testing-library/react'
+
 import { NavigationListItem } from './NavigationListItem'
 
 jest.mock('react-i18next', () => ({

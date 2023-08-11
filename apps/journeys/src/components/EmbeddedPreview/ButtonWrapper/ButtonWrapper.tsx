@@ -1,12 +1,13 @@
-import { ReactElement } from 'react'
-import { Icon } from '@core/journeys/ui/Icon'
-import type { TreeBlock } from '@core/journeys/ui/block'
-import MuiButton from '@mui/material/Button'
 import Box from '@mui/material/Box'
+import MuiButton from '@mui/material/Button'
+import { ReactElement } from 'react'
 
-import { IconFields } from '../../../../__generated__/IconFields'
-import { ButtonVariant } from '../../../../__generated__/globalTypes'
+import type { TreeBlock } from '@core/journeys/ui/block'
+import { Icon } from '@core/journeys/ui/Icon'
+
 import { GetJourney_journey_blocks_ButtonBlock as ButtonBlock } from '../../../../__generated__/GetJourney'
+import { ButtonVariant } from '../../../../__generated__/globalTypes'
+import { IconFields } from '../../../../__generated__/IconFields'
 
 export function ButtonWrapper({
   block

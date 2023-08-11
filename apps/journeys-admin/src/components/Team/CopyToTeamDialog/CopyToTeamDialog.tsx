@@ -1,13 +1,15 @@
-import { Dialog } from '@core/shared/ui/Dialog'
+import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
 import FormControl from '@mui/material/FormControl'
 import MenuItem from '@mui/material/MenuItem'
+import TextField from '@mui/material/TextField'
+import { Formik, FormikHelpers, FormikValues } from 'formik'
 import sortBy from 'lodash/sortBy'
 import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
-import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
-import { Formik, FormikHelpers, FormikValues } from 'formik'
 import { object, string } from 'yup'
-import TextField from '@mui/material/TextField'
+
+import { Dialog } from '@core/shared/ui/Dialog'
+
 import { useTeam } from '../TeamProvider'
 
 interface DuplicateToTeamDialogProps {
@@ -39,10 +41,12 @@ export function CopyToTeamDialog({
     values: FormikValues,
     { resetForm }: FormikHelpers<FormikValues>
   ): Promise<void> {
+    // submitAction runs first so loading state can be shown
+    await submitAction(values.teamSelect)
     await setActiveTeam(
       query?.data?.teams.find((team) => team.id === values.teamSelect) ?? null
     )
-    await submitAction(values.teamSelect)
+
     resetForm()
   }
 
@@ -57,6 +61,7 @@ export function CopyToTeamDialog({
           open={open}
           onClose={handleClose}
           dialogTitle={{ title: t(title) }}
+          loading={isSubmitting}
           dialogAction={{
             onSubmit: () => {
               if (!isSubmitting) handleSubmit()

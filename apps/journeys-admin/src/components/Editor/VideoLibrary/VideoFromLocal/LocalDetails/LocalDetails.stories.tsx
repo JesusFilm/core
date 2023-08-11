@@ -1,9 +1,12 @@
-import { Story, Meta } from '@storybook/react'
 import { MockedProvider } from '@apollo/client/testing'
-import { journeysAdminConfig } from '../../../../../libs/storybook'
+import { Meta, Story } from '@storybook/react'
+
 import { GetVideo_video_variantLanguages as Language } from '../../../../../../__generated__/GetVideo'
 import { ApolloLoadingProvider } from '../../../../../../test/ApolloLoadingProvider'
+import { journeysAdminConfig } from '../../../../../libs/storybook'
+
 import { GET_VIDEO } from './LocalDetails'
+
 import { LocalDetails } from '.'
 
 const LocalDetailsStory = {

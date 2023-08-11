@@ -1,12 +1,14 @@
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
-import { EditorProvider } from '@core/journeys/ui/EditorProvider'
-import type { TreeBlock } from '@core/journeys/ui/block'
-import { render, fireEvent, waitFor } from '@testing-library/react'
 import { InMemoryCache } from '@apollo/client'
 import { MockedProvider } from '@apollo/client/testing'
+import { fireEvent, render, waitFor } from '@testing-library/react'
+
+import type { TreeBlock } from '@core/journeys/ui/block'
+import { EditorProvider } from '@core/journeys/ui/EditorProvider'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+
 import {
-  GetJourney_journey as Journey,
   GetJourney_journey_blocks_CardBlock as CardBlock,
+  GetJourney_journey as Journey,
   GetJourney_journey_blocks_StepBlock as StepBlock
 } from '../../../../../../../../__generated__/GetJourney'
 import {
@@ -14,7 +16,8 @@ import {
   ThemeMode,
   ThemeName
 } from '../../../../../../../../__generated__/globalTypes'
-import { CardStyling, CARD_BLOCK_THEME_MODE_UPDATE } from './CardStyling'
+
+import { CARD_BLOCK_THEME_MODE_UPDATE, CardStyling } from './CardStyling'
 
 const initialBlock: TreeBlock<CardBlock> = {
   id: 'card1.id',
@@ -65,10 +68,10 @@ const journey: Journey = {
 }
 
 describe('CardStyling', () => {
-  it('shows default ', () => {
+  it('shows default', () => {
     const { getByText } = render(
       <MockedProvider>
-        <JourneyProvider value={{ journey, admin: true }}>
+        <JourneyProvider value={{ journey, variant: 'admin' }}>
           <EditorProvider initialState={{ selectedBlock: initialBlock }}>
             <CardStyling />
           </EditorProvider>
@@ -93,7 +96,7 @@ describe('CardStyling', () => {
     }
     const { getByText } = render(
       <MockedProvider>
-        <JourneyProvider value={{ journey, admin: true }}>
+        <JourneyProvider value={{ journey, variant: 'admin' }}>
           <EditorProvider initialState={{ selectedBlock: card }}>
             <CardStyling />
           </EditorProvider>
@@ -127,7 +130,7 @@ describe('CardStyling', () => {
     }
     const { getByText } = render(
       <MockedProvider>
-        <JourneyProvider value={{ journey, admin: true }}>
+        <JourneyProvider value={{ journey, variant: 'admin' }}>
           <EditorProvider initialState={{ selectedBlock: step }}>
             <CardStyling />
           </EditorProvider>
@@ -152,7 +155,7 @@ describe('CardStyling', () => {
     }
     const { getByText } = render(
       <MockedProvider>
-        <JourneyProvider value={{ journey, admin: true }}>
+        <JourneyProvider value={{ journey, variant: 'admin' }}>
           <EditorProvider initialState={{ selectedBlock: card }}>
             <CardStyling />
           </EditorProvider>
@@ -202,7 +205,7 @@ describe('CardStyling', () => {
           }
         ]}
       >
-        <JourneyProvider value={{ journey, admin: true }}>
+        <JourneyProvider value={{ journey, variant: 'admin' }}>
           <EditorProvider initialState={{ selectedBlock: initialBlock }}>
             <CardStyling />
           </EditorProvider>

@@ -1,12 +1,14 @@
-import { fireEvent, render, waitFor } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
+import { fireEvent, render, waitFor } from '@testing-library/react'
+
 import {
   VideoBlockSource,
   VideoLabel
 } from '../../../../../__generated__/globalTypes'
-import { GET_VIDEOS } from '../../VideoLibrary/VideoFromLocal/VideoFromLocal'
-import { GET_VIDEO } from '../../VideoLibrary/VideoFromLocal/LocalDetails/LocalDetails'
 import { videos } from '../../VideoLibrary/VideoFromLocal/data'
+import { GET_VIDEO } from '../../VideoLibrary/VideoFromLocal/LocalDetails/LocalDetails'
+import { GET_VIDEOS } from '../../VideoLibrary/VideoFromLocal/VideoFromLocal'
+
 import { Source } from '.'
 
 jest.mock('@mui/material/useMediaQuery', () => ({

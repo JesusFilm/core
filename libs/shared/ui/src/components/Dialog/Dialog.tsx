@@ -1,12 +1,13 @@
-import { ReactElement, ReactChild } from 'react'
-import { styled } from '@mui/material/styles'
+import CloseRoundedIcon from '@mui/icons-material/CloseRounded'
+import Button from '@mui/material/Button'
+import CircularProgress from '@mui/material/CircularProgress'
 import MuiDialog from '@mui/material/Dialog'
 import DialogActions from '@mui/material/DialogActions'
 import DialogContent from '@mui/material/DialogContent'
 import MuiDialogTitle from '@mui/material/DialogTitle'
-import Button from '@mui/material/Button'
 import IconButton from '@mui/material/IconButton'
-import CloseRoundedIcon from '@mui/icons-material/CloseRounded'
+import { styled } from '@mui/material/styles'
+import { ReactChild, ReactElement } from 'react'
 
 interface DialogProps {
   open: boolean
@@ -19,6 +20,7 @@ interface DialogProps {
   fullscreen?: boolean
   children?: ReactChild
   container?: HTMLElement
+  loading?: boolean
 }
 
 interface DialogAction {
@@ -75,7 +77,8 @@ export function Dialog({
   divider,
   fullscreen,
   children,
-  container
+  container,
+  loading = false
 }: DialogProps): ReactElement {
   return (
     <StyledDialog
@@ -106,12 +109,18 @@ export function Dialog({
       </DialogContent>
       {dialogAction != null ? (
         <DialogActions data-testid="dialog-action">
-          {dialogAction.closeLabel != null && (
+          {dialogAction.closeLabel != null && !loading && (
             <Button onClick={onClose}>{dialogAction.closeLabel}</Button>
           )}
-          <Button onClick={dialogAction?.onSubmit}>
-            {dialogAction.submitLabel ?? 'Save'}
-          </Button>
+          {!loading ? (
+            <Button onClick={dialogAction?.onSubmit}>
+              {dialogAction.submitLabel ?? 'Save'}
+            </Button>
+          ) : (
+            <Button disabled>
+              <CircularProgress size={24} data-testid="dialog-loading-icon" />
+            </Button>
+          )}
         </DialogActions>
       ) : dialogActionChildren != null ? (
         <DialogActions data-testid="dialog-action">

@@ -1,10 +1,13 @@
-import { Story, Meta } from '@storybook/react'
 import { MockedProvider } from '@apollo/client/testing'
+import { Meta, Story } from '@storybook/react'
 import fetch from 'node-fetch'
+
 import { JourneysReportType } from '../../../../__generated__/globalTypes'
-import { journeysAdminConfig } from '../../../libs/storybook'
 import { ApolloLoadingProvider } from '../../../../test/ApolloLoadingProvider'
+import { journeysAdminConfig } from '../../../libs/storybook'
+
 import { GET_ADMIN_JOURNEYS_REPORT } from './Report'
+
 import { Report } from '.'
 
 const ReportStory = {

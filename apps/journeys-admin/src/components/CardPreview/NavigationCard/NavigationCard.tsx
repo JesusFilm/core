@@ -1,10 +1,11 @@
-import { ReactElement } from 'react'
-import Card from '@mui/material/Card'
-import { ActiveJourneyEditContent } from '@core/journeys/ui/EditorProvider'
-import Typography from '@mui/material/Typography'
 import Box from '@mui/material/Box'
+import Card from '@mui/material/Card'
 import Skeleton from '@mui/material/Skeleton'
 import Stack from '@mui/material/Stack'
+import Typography from '@mui/material/Typography'
+import { ReactElement } from 'react'
+
+import { ActiveJourneyEditContent } from '@core/journeys/ui/EditorProvider'
 
 interface NavigationCardProps {
   id: string

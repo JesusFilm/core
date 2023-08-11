@@ -1142,8 +1142,8 @@ type Mutation
   hostCreate(teamId: ID!, input: HostCreateInput!): Host! @join__field(graph: JOURNEYS)
   hostUpdate(id: ID!, teamId: ID!, input: HostUpdateInput): Host! @join__field(graph: JOURNEYS)
   hostDelete(id: ID!, teamId: ID!): Host! @join__field(graph: JOURNEYS)
-  journeyCreate(input: JourneyCreateInput!, teamId: ID): Journey! @join__field(graph: JOURNEYS)
-  journeyDuplicate(id: ID!, teamId: ID): Journey! @join__field(graph: JOURNEYS)
+  journeyCreate(input: JourneyCreateInput!, teamId: ID!): Journey! @join__field(graph: JOURNEYS)
+  journeyDuplicate(id: ID!, teamId: ID!): Journey! @join__field(graph: JOURNEYS)
   journeyUpdate(id: ID!, input: JourneyUpdateInput!): Journey! @join__field(graph: JOURNEYS)
 
   """Sets journey status to published"""
@@ -1315,21 +1315,15 @@ type Query
   """
   adminJourneys(status: [JourneyStatus!], template: Boolean, teamId: ID): [Journey!]! @join__field(graph: JOURNEYS)
   adminJourneysReport(reportType: JourneysReportType!): PowerBiEmbed @join__field(graph: JOURNEYS)
-  adminJourney(id: ID!, idType: IdType): Journey @join__field(graph: JOURNEYS)
+  adminJourney(id: ID!, idType: IdType): Journey! @join__field(graph: JOURNEYS)
   journeys(where: JourneysFilter): [Journey!]! @join__field(graph: JOURNEYS)
-  journey(id: ID!, idType: IdType): Journey @join__field(graph: JOURNEYS)
+  journey(id: ID!, idType: IdType): Journey! @join__field(graph: JOURNEYS)
   getJourneyProfile: JourneyProfile @join__field(graph: JOURNEYS)
 
   """Get a list of Visitor Information by Journey"""
   journeyVisitorsConnection(
     """Returns the elements in the list that match the specified filter."""
     filter: JourneyVisitorFilter!
-
-    """
-    Returns the visitor items related to a specific team.
-    TODO: remove when teams is released
-    """
-    teamId: String
 
     """Returns the first n elements from the list."""
     first: Int
@@ -1669,6 +1663,7 @@ type Team
   title: String!
   createdAt: DateTime!
   updatedAt: DateTime!
+  userTeams: [UserTeam!]!
 }
 
 input TeamCreateInput

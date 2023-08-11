@@ -1,11 +1,14 @@
-import { Story, Meta } from '@storybook/react'
 import { MockedProvider } from '@apollo/client/testing'
-import { EditorProvider } from '@core/journeys/ui/EditorProvider'
-import Stack from '@mui/material/Stack'
 import Box from '@mui/material/Box'
+import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
+import { Meta, Story } from '@storybook/react'
+
+import { EditorProvider } from '@core/journeys/ui/EditorProvider'
+
 import { simpleComponentConfig } from '../../../../../../libs/storybook'
 import { steps } from '../data'
+
 import { LinkAction } from '.'
 
 const LinkActionStory = {

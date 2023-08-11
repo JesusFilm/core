@@ -1,13 +1,15 @@
-import { useState } from 'react'
+import { MockedProvider } from '@apollo/client/testing'
 import { Meta, Story } from '@storybook/react'
 import noop from 'lodash/noop'
-import { MockedProvider } from '@apollo/client/testing'
 import { AuthUser } from 'next-firebase-auth'
-import { journeysAdminConfig } from '../../../libs/storybook'
+import { useState } from 'react'
+
 import { Role, UserJourneyRole } from '../../../../__generated__/globalTypes'
-import { GET_USER_ROLE } from '../../JourneyView/JourneyView'
+import { journeysAdminConfig } from '../../../libs/storybook'
 import { GET_ADMIN_JOURNEYS } from '../../../libs/useAdminJourneysQuery/useAdminJourneysQuery'
+import { GET_USER_ROLE } from '../../JourneyView/JourneyView'
 import { GET_ME } from '../../NewPageWrapper/NavigationDrawer'
+
 import { NavigationDrawer } from '.'
 
 const NavigationDrawerStory = {

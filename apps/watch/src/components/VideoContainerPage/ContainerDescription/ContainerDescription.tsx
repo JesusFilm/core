@@ -1,7 +1,8 @@
-import { ReactElement } from 'react'
-import Typography from '@mui/material/Typography'
-import Stack from '@mui/material/Stack'
 import Box from '@mui/material/Box'
+import Stack from '@mui/material/Stack'
+import Typography from '@mui/material/Typography'
+import { ReactElement } from 'react'
+
 import { ShareButton } from '../../ShareButton'
 
 export interface Props {

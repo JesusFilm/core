@@ -1,17 +1,26 @@
-import { Resolver, Query, Mutation, Args } from '@nestjs/graphql'
-import { UseGuards } from '@nestjs/common'
-import { Team, Prisma } from '.prisma/api-journeys-client'
 import { subject } from '@casl/ability'
+import { UseGuards } from '@nestjs/common'
+import {
+  Args,
+  Mutation,
+  Parent,
+  Query,
+  ResolveField,
+  Resolver
+} from '@nestjs/graphql'
 import { GraphQLError } from 'graphql'
-import { CurrentUserId } from '@core/nest/decorators/CurrentUserId'
+
+import { Prisma, Team, UserTeam } from '.prisma/api-journeys-client'
 import {
   CaslAbility,
   CaslAccessible,
   CaslPolicy
 } from '@core/nest/common/CaslAuthModule'
-import { PrismaService } from '../../lib/prisma.service'
+import { CurrentUserId } from '@core/nest/decorators/CurrentUserId'
+
 import { Action, AppAbility } from '../../lib/casl/caslFactory'
 import { AppCaslGuard } from '../../lib/casl/caslGuard'
+import { PrismaService } from '../../lib/prisma.service'
 
 @Resolver('Team')
 export class TeamResolver {
@@ -23,7 +32,7 @@ export class TeamResolver {
     @CaslAccessible('Team') accessibleTeams: Prisma.TeamWhereInput
   ): Promise<Team[]> {
     return await this.prismaService.team.findMany({
-      where: accessibleTeams
+      where: { AND: [accessibleTeams] }
     })
   }
 
@@ -82,5 +91,20 @@ export class TeamResolver {
     throw new GraphQLError('user is not allowed to update team', {
       extensions: { code: 'FORBIDDEN' }
     })
+  }
+
+  @ResolveField()
+  async userTeams(
+    @Parent() team: Team & { userTeams?: UserTeam[] }
+  ): Promise<UserTeam[]> {
+    if (team.userTeams != null) return team.userTeams
+
+    return (
+      (await this.prismaService.team
+        .findUnique({
+          where: { id: team.id }
+        })
+        .userTeams()) ?? []
+    )
   }
 }

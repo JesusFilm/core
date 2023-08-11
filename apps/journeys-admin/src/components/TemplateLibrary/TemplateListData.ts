@@ -1,11 +1,12 @@
 import { formatISO, startOfYear } from 'date-fns'
+
+import { GetAdminJourneys_journeys as Journey } from '../../../__generated__/GetAdminJourneys'
 import {
-  ThemeName,
+  JourneyStatus,
   ThemeMode,
-  JourneyStatus
+  ThemeName
 } from '../../../__generated__/globalTypes'
 import { ImageFields } from '../../../__generated__/ImageFields'
-import { GetAdminJourneys_journeys as Journey } from '../../../__generated__/GetAdminJourneys'
 
 const imageBlock: ImageFields = {
   __typename: 'ImageBlock',

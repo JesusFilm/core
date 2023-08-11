@@ -173,7 +173,7 @@ jobs:
         uses: mansagroup/nrwl-nx-action@v3
         with:
           targets: test
-          args: --ci
+          args: --ci --silent
       - name: download codecov
         run: |
           curl -o /usr/local/bin/codecov https://uploader.codecov.io/latest/linux/codecov

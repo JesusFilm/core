@@ -1,9 +1,11 @@
-import { Resolver, Query, ResolveReference } from '@nestjs/graphql'
-import { CurrentUserId } from '@core/nest/decorators/CurrentUserId'
 import { UseGuards } from '@nestjs/common'
-import { GqlAuthGuard } from '@core/nest/gqlAuthGuard/GqlAuthGuard'
-import { firebaseClient } from '@core/nest/common/firebaseClient'
+import { Query, ResolveReference, Resolver } from '@nestjs/graphql'
+
 import { User } from '.prisma/api-users-client'
+import { firebaseClient } from '@core/nest/common/firebaseClient'
+import { CurrentUserId } from '@core/nest/decorators/CurrentUserId'
+import { GqlAuthGuard } from '@core/nest/gqlAuthGuard/GqlAuthGuard'
+
 import { PrismaService } from '../../lib/prisma.service'
 
 @Resolver('User')
@@ -38,8 +40,15 @@ export class UserResolver {
       imageUrl
     }
 
-    return await this.prismaService.user.create({
-      data
+    // this function can run in parallel as such it is possible for multiple
+    // calls to reach this point and try to create the same user
+    // due to the earlier firebase async call.
+    return await this.prismaService.user.upsert({
+      where: {
+        userId
+      },
+      create: data,
+      update: data
     })
   }
 

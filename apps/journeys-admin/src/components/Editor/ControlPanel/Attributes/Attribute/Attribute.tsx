@@ -1,5 +1,7 @@
 import { ReactElement } from 'react'
+
 import { useEditor } from '@core/journeys/ui/EditorProvider'
+
 import { Button } from '../../Button'
 
 interface AttributeProps {

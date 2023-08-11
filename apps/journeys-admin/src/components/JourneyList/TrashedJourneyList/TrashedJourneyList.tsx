@@ -1,20 +1,22 @@
-import { ReactElement, useEffect, useState } from 'react'
 import { gql, useMutation } from '@apollo/client'
 import Box from '@mui/material/Box'
 import Card from '@mui/material/Card'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
-import { Dialog } from '@core/shared/ui/Dialog'
-import { useTranslation } from 'react-i18next'
 import { useSnackbar } from 'notistack'
+import { ReactElement, useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
+
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
-import { JourneyFields } from '../../../../__generated__/JourneyFields'
-import { JourneyCard } from '../JourneyCard'
-import { sortJourneys } from '../JourneySort/utils/sortJourneys'
-import type { JourneyListProps } from '../JourneyList'
-import { useAdminJourneysQuery } from '../../../libs/useAdminJourneysQuery'
+import { Dialog } from '@core/shared/ui/Dialog'
+
 import { JourneyStatus } from '../../../../__generated__/globalTypes'
+import { JourneyFields } from '../../../../__generated__/JourneyFields'
+import { useAdminJourneysQuery } from '../../../libs/useAdminJourneysQuery'
 import { useTeam } from '../../Team/TeamProvider'
+import { JourneyCard } from '../JourneyCard'
+import type { JourneyListProps } from '../JourneyList'
+import { sortJourneys } from '../JourneySort/utils/sortJourneys'
 
 export const RESTORE_TRASHED_JOURNEYS = gql`
   mutation RestoreTrashedJourneys($ids: [ID!]!) {
@@ -151,7 +153,7 @@ export function TrashedJourneyList({
                 key={journey.id}
                 value={{
                   journey: journey as unknown as JourneyFields,
-                  admin: true
+                  variant: 'admin'
                 }}
               >
                 <JourneyCard

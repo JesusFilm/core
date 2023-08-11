@@ -9,10 +9,25 @@ import { TeamCreateInput } from "./globalTypes";
 // GraphQL mutation operation: TeamCreate
 // ====================================================
 
+export interface TeamCreate_teamCreate_userTeams_user {
+  __typename: "User";
+  id: string;
+  firstName: string;
+  lastName: string | null;
+  imageUrl: string | null;
+}
+
+export interface TeamCreate_teamCreate_userTeams {
+  __typename: "UserTeam";
+  id: string;
+  user: TeamCreate_teamCreate_userTeams_user;
+}
+
 export interface TeamCreate_teamCreate {
   __typename: "Team";
   id: string;
   title: string;
+  userTeams: TeamCreate_teamCreate_userTeams[];
 }
 
 export interface TeamCreate {
