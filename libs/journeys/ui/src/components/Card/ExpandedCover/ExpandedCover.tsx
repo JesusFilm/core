@@ -87,7 +87,7 @@ export function ExpandedCover({
                     : 'calc(100% - 48px)',
                 sm: 500
               },
-              py: { xs: 4 }
+              pb: 4
             }}
           >
             {children}
