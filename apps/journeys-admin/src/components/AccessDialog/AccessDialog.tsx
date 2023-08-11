@@ -139,7 +139,7 @@ export function AccessDialog({
       open={open ?? false}
       onClose={onClose}
       dialogTitle={{
-        title: 'Manage Editors',
+        title: t('Manage Editors'),
         closeButton: true
       }}
       dialogActionChildren={
@@ -160,13 +160,13 @@ export function AccessDialog({
           variant="readonly"
         />
         <UserList
-          title="Requested Access"
+          title={t('Requested Access')}
           users={requests}
           currentUser={currentUser}
           journeyId={journeyId}
         />
         <UserList
-          title="Editors"
+          title={t('Editors')}
           loading={loading}
           users={users}
           invites={invites}
