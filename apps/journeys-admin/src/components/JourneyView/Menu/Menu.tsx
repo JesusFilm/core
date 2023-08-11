@@ -1,5 +1,7 @@
 import { useQuery } from '@apollo/client'
 import MoreVert from '@mui/icons-material/MoreVert'
+import VisibilityIcon from '@mui/icons-material/Visibility'
+import Chip from '@mui/material/Chip'
 import IconButton from '@mui/material/IconButton'
 import MuiMenu from '@mui/material/Menu'
 import { ReactElement, useState } from 'react'
@@ -39,6 +41,34 @@ export function Menu(): ReactElement {
     <>
       {journey != null ? (
         <>
+          <Chip
+            icon={<VisibilityIcon />}
+            label="Preview"
+            component="a"
+            href={`/api/preview?slug=${journey.slug}`}
+            target="_blank"
+            variant="outlined"
+            clickable
+            sx={{
+              display: {
+                xs: 'none',
+                md: 'flex'
+              }
+            }}
+          />
+          <IconButton
+            aria-label="Preview"
+            href={`/api/preview?slug=${journey.slug}`}
+            target="_blank"
+            sx={{
+              display: {
+                xs: 'flex',
+                md: 'none'
+              }
+            }}
+          >
+            <VisibilityIcon />
+          </IconButton>
           <IconButton
             id="single-journey-actions"
             edge="end"

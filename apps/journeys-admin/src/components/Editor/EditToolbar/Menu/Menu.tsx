@@ -15,7 +15,7 @@ import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 
 import { GetRole } from '../../../../../__generated__/GetRole'
-import { JourneyStatus, Role } from '../../../../../__generated__/globalTypes'
+import { Role } from '../../../../../__generated__/globalTypes'
 import { DuplicateBlock } from '../../../DuplicateBlock'
 import { MenuItem } from '../../../MenuItem'
 import { DeleteBlock } from '../DeleteBlock'
@@ -67,7 +67,6 @@ export function Menu(): ReactElement {
           <MenuItem
             label="Preview"
             icon={<VisibilityIcon />}
-            disabled={journey?.status === JourneyStatus.draft}
             openInNew
             onClick={handleCloseMenu}
           />
@@ -105,7 +104,6 @@ export function Menu(): ReactElement {
           <MenuItem
             label="Preview"
             icon={<VisibilityIcon />}
-            disabled={journey?.status === JourneyStatus.draft}
             openInNew
             onClick={handleCloseMenu}
           />
