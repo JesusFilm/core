@@ -26,17 +26,18 @@ async function importMediaComponents(): Promise<void> {
   const usedVideoSlugs: Record<string, string> = await getVideoSlugs()
   const languages = await fetchMediaLanguagesAndTransformToLanguages()
   let videos: ExportedVideo[]
+  let count = 0
   const importedVideos: string[] = []
 
   let page = 1
   const startTime = new Date().getTime()
   do {
-    videos = await fetchMediaComponentsAndTransformToVideos(
+    ;({ videos, count } = await fetchMediaComponentsAndTransformToVideos(
       languages,
       usedVideoSlugs,
       page,
       importedVideos
-    )
+    ))
     for (const video of videos) {
       await handleVideo(video, languages, usedVideoSlugs, importedVideos)
     }
@@ -44,7 +45,7 @@ async function importMediaComponents(): Promise<void> {
     console.log('importMediaComponents duration(s):', duration * 0.001)
     console.log('importMediaComponents page:', page)
     page++
-  } while (videos.length > 0)
+  } while (count > 0)
 }
 
 async function main(): Promise<void> {

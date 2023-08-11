@@ -724,72 +724,75 @@ describe('arclight', () => {
       ]
       await expect(
         fetchMediaComponentsAndTransformToVideos(languages, {}, 1, [])
-      ).resolves.toEqual([
-        {
-          id: 'mediaComponentId',
-          childIds: ['otherMediaComponentId'],
-          description: [
-            { languageId: '529', primary: true, value: 'longDescription' }
-          ],
-          image: 'mobileCinematicHigh',
-          imageAlt: [{ languageId: '529', primary: true, value: 'title' }],
-          label: 'episode',
-          noIndex: false,
-          primaryLanguageId: '529',
-          seoTitle: [{ languageId: '529', primary: true, value: 'title' }],
-          slug: 'title',
-          snippet: [
-            { languageId: '529', primary: true, value: 'shortDescription' }
-          ],
-          studyQuestions: [],
-          title: [
-            {
-              videoId: 'mediaComponentId',
-              languageId: '529',
-              primary: true,
-              value: 'title'
-            }
-          ],
-          variants: [
-            {
-              downloads: [
-                {
-                  videoVariantId: 'refId',
-                  quality: 'low',
-                  size: 1024,
-                  url: 'lowUrl'
-                },
-                {
-                  videoVariantId: 'refId',
-                  quality: 'high',
-                  size: 1024,
-                  url: 'highUrl'
-                }
-              ],
-              videoId: 'mediaComponentId',
-              duration: 1,
-              hls: 'hlsUrl',
-              id: 'refId',
-              languageId: '529',
-              slug: 'title/english',
-              subtitle: [
-                {
-                  videoVariantId: 'refId',
-                  languageId: '529',
-                  primary: true,
-                  value: 'subtitleUrl529'
-                },
-                {
-                  videoVariantId: 'refId',
-                  languageId: '2048',
-                  primary: false,
-                  value: 'subtitleUrl2048'
-                }
-              ]
-            }
-          ]
-        }
-      ])
+      ).resolves.toEqual({
+        count: 1,
+        videos: [
+          {
+            id: 'mediaComponentId',
+            childIds: ['otherMediaComponentId'],
+            description: [
+              { languageId: '529', primary: true, value: 'longDescription' }
+            ],
+            image: 'mobileCinematicHigh',
+            imageAlt: [{ languageId: '529', primary: true, value: 'title' }],
+            label: 'episode',
+            noIndex: false,
+            primaryLanguageId: '529',
+            seoTitle: [{ languageId: '529', primary: true, value: 'title' }],
+            slug: 'title',
+            snippet: [
+              { languageId: '529', primary: true, value: 'shortDescription' }
+            ],
+            studyQuestions: [],
+            title: [
+              {
+                videoId: 'mediaComponentId',
+                languageId: '529',
+                primary: true,
+                value: 'title'
+              }
+            ],
+            variants: [
+              {
+                downloads: [
+                  {
+                    videoVariantId: 'refId',
+                    quality: 'low',
+                    size: 1024,
+                    url: 'lowUrl'
+                  },
+                  {
+                    videoVariantId: 'refId',
+                    quality: 'high',
+                    size: 1024,
+                    url: 'highUrl'
+                  }
+                ],
+                videoId: 'mediaComponentId',
+                duration: 1,
+                hls: 'hlsUrl',
+                id: 'refId',
+                languageId: '529',
+                slug: 'title/english',
+                subtitle: [
+                  {
+                    videoVariantId: 'refId',
+                    languageId: '529',
+                    primary: true,
+                    value: 'subtitleUrl529'
+                  },
+                  {
+                    videoVariantId: 'refId',
+                    languageId: '2048',
+                    primary: false,
+                    value: 'subtitleUrl2048'
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      })
     })
   })
 })

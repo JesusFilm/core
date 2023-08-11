@@ -347,8 +347,9 @@ export async function fetchMediaComponentsAndTransformToVideos(
   usedVideoSlugs: Record<string, string>,
   page: number,
   importedVideos: string[]
-): Promise<
-  Array<
+): Promise<{
+  count: number
+  videos: Array<
     Omit<Prisma.VideoUncheckedCreateInput, 'variants' | 'title'> & {
       title: Prisma.VideoTitleUncheckedCreateInput[]
       variants: Array<
@@ -363,8 +364,12 @@ export async function fetchMediaComponentsAndTransformToVideos(
       childIds: string[]
     }
   >
-> {
-  const mediaComponents = (await getArclightMediaComponents(page)).filter(
+}> {
+  let mediaComponents = await getArclightMediaComponents(page)
+
+  const mediaComponentsLength = mediaComponents.length
+
+  mediaComponents = mediaComponents.filter(
     ({ mediaComponentId }) => !importedVideos.includes(mediaComponentId)
   )
 
@@ -381,15 +386,18 @@ export async function fetchMediaComponentsAndTransformToVideos(
     })
   )
 
-  return mediaComponentsAndMetadata.map(
-    ({ mediaComponent, mediaComponentLanguages, mediaComponentLinks }) => {
-      return transformArclightMediaComponentToVideo(
-        mediaComponent,
-        mediaComponentLanguages,
-        mediaComponentLinks,
-        languages,
-        usedVideoSlugs
-      )
-    }
-  )
+  return {
+    count: mediaComponentsLength,
+    videos: mediaComponentsAndMetadata.map(
+      ({ mediaComponent, mediaComponentLanguages, mediaComponentLinks }) => {
+        return transformArclightMediaComponentToVideo(
+          mediaComponent,
+          mediaComponentLanguages,
+          mediaComponentLinks,
+          languages,
+          usedVideoSlugs
+        )
+      }
+    )
+  }
 }
