@@ -13,8 +13,8 @@ import { useCurrentUser } from '../../../../../../../libs/useCurrentUser'
 import { GET_USER_TEAMS_AND_INVITES } from '../../../../../../../libs/useUserTeamsAndInvitesQuery/useUserTeamsAndInvitesQuery'
 import { ThemeProvider } from '../../../../../../ThemeProvider'
 
-import { GET_ALL_TEAM_HOSTS, HostSidePanel } from './HostSidePanel'
 import { UPDATE_JOURNEY_HOST } from './HostForm/HostTitleFieldForm/HostTitleFieldForm'
+import { GET_ALL_TEAM_HOSTS, HostSidePanel } from './HostSidePanel'
 
 const user1 = { id: 'userId', email: 'admin@email.com' }
 
