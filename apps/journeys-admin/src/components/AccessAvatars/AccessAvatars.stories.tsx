@@ -10,7 +10,7 @@ import {
 import { UserJourneyRole } from '../../../__generated__/globalTypes'
 import { simpleComponentConfig } from '../../libs/storybook'
 import { GET_CURRENT_USER } from '../../libs/useCurrentUser'
-import { GET_JOURNEY_WITH_USER_JOURNEYS } from '../AccessDialog/AccessDialog'
+import { GET_JOURNEY_WITH_USER_JOURNEYS_AND_USER_TEAMS } from '../AccessDialog/AccessDialog'
 
 import { AccessAvatarsProps } from './AccessAvatars'
 import {
@@ -89,7 +89,7 @@ const loadingUserJourneys = undefined
 const mocks = [
   {
     request: {
-      query: GET_JOURNEY_WITH_USER_JOURNEYS,
+      query: GET_JOURNEY_WITH_USER_JOURNEYS_AND_USER_TEAMS,
       variables: {
         id: 'journeyId'
       }

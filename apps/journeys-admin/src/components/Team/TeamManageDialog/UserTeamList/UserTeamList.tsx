@@ -32,7 +32,6 @@ export function UserTeamList({
   loading,
   variant = 'default'
 }: UserTeamListProps): ReactElement {
-  console.log(data)
   const sortedUserTeams: UserTeam[] = useMemo(() => {
     if (variant === 'readonly') return data?.userTeams ?? []
     return (

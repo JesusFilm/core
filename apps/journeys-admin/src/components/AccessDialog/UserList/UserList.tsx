@@ -8,7 +8,7 @@ import Typography from '@mui/material/Typography'
 import sortBy from 'lodash/sortBy'
 import { ReactElement, useMemo } from 'react'
 
-import { GetJourneyWithUserJourneys_journey_userJourneys as UserJourney } from '../../../../__generated__/GetJourneyWithUserJourneys'
+import { GetJourneyWithUserJourneysAndUserTeams_journey_userJourneys as UserJourney } from '../../../../__generated__/GetJourneyWithUserJourneysAndUserTeams'
 import { GetUserInvites_userInvites as UserInvite } from '../../../../__generated__/GetUserInvites'
 import { UserJourneyRole } from '../../../../__generated__/globalTypes'
 
