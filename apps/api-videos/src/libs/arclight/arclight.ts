@@ -272,7 +272,7 @@ export function transformArclightMediaComponentToVideo(
         languageId: metadataLanguageId,
         primary: true
       }
-    },
+    ],
     seoTitle: [
       {
         value: mediaComponent.title,

@@ -54,11 +54,4 @@ export class VideoVariantResolver {
       where
     })
   }
-
-  @ResolveField('downloads')
-  async downloads(@Parent() videoVariant): Promise<unknown[]> {
-    return await this.prismaService.videoVariantDownload.findMany({
-      where: { videoVariantId: videoVariant.id }
-    })
-  }
 }

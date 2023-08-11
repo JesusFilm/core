@@ -31,7 +31,6 @@ async function importMediaComponents(): Promise<void> {
 
   let page = 1
   const startTime = new Date().getTime()
-  const videoChildIds: Record<string, string[]> = {}
   do {
     ;({ videos, count } = await fetchMediaComponentsAndTransformToVideos(
       languages,

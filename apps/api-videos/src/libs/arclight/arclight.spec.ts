@@ -549,7 +549,7 @@ describe('arclight', () => {
             value:
               'The Quick Brown Fox Jumps Over The Lazy Dog Many Times Over And Over Until It Gets Cut Off When Over 100 Characters'
           }
-        },
+        ],
         seoTitle: [
           {
             languageId: '529',
