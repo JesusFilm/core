@@ -111,10 +111,9 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
             .then(
               (data: { city?: string; country?: string; region?: string }) => {
                 const countryCodes: string[] = []
-                if (data.city != null) countryCodes.push(data.city)
-                if (data.region != null) countryCodes.push(data.region)
-                if (data.country != null) countryCodes.push(data.country)
-
+                if (data.city != null) countryCodes.push("This city")
+                if (data.region != null) countryCodes.push("This region")
+                if (data.country != null) countryCodes.push("This country")
                 if (countryCodes.length > 0 || document.referrer !== '') {
                   void journeyVisitorUpdate({
                     variables: {
