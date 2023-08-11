@@ -13,7 +13,8 @@ import { useCurrentUser } from '../../../../../../../libs/useCurrentUser'
 import { GET_USER_TEAMS_AND_INVITES } from '../../../../../../../libs/useUserTeamsAndInvitesQuery/useUserTeamsAndInvitesQuery'
 import { ThemeProvider } from '../../../../../../ThemeProvider'
 
-import { HostSidePanel } from './HostSidePanel'
+import { GET_ALL_TEAM_HOSTS, HostSidePanel } from './HostSidePanel'
+import { UPDATE_JOURNEY_HOST } from './HostForm/HostTitleFieldForm/HostTitleFieldForm'
 
 const user1 = { id: 'userId', email: 'admin@email.com' }
 
@@ -71,7 +72,18 @@ describe('HostSidePanel', () => {
     id: 'journeyId',
     seoTitle: 'My awesome journey',
     host: defaultHost,
-    team: { id: userTeam.id, title: 'My team' }
+    team: { id: userTeam.id, title: 'My team' },
+    language: {
+      __typename: 'Language',
+      id: '529',
+      name: [
+        {
+          value: 'English',
+          primary: true,
+          __typename: 'Translation'
+        }
+      ]
+    }
   } as unknown as Journey
 
   const getUserTeamMock: MockedResponse<GetUserTeamsAndInvites> = {
@@ -86,6 +98,26 @@ describe('HostSidePanel', () => {
       data: {
         userTeams: [userTeam],
         userTeamInvites: []
+      }
+    }
+  }
+
+  const getTeamHostsMock = {
+    request: {
+      query: GET_ALL_TEAM_HOSTS,
+      variables: { teamId: journey?.team?.id }
+    },
+    result: {
+      data: {
+        hosts: [
+          {
+            id: 'host1.id',
+            location: '',
+            src1: null,
+            src2: null,
+            title: 'Host1'
+          }
+        ]
       }
     }
   }
@@ -162,7 +194,7 @@ describe('HostSidePanel', () => {
         getAllByRole('button', { name: 'Select a Host' })[0]
       ).toBeDisabled()
       expect(
-        getAllByText(`Only My team members can edit this`)[0]
+        getAllByText('Only My team members can edit this')[0]
       ).toBeInTheDocument()
     })
   })
@@ -195,7 +227,7 @@ describe('HostSidePanel', () => {
         getAllByRole('button', { name: 'Select a Host' })[0]
       ).toBeDisabled()
       expect(
-        getAllByText('This old journey cannot edit hosts')[0]
+        getAllByText('Cannot edit hosts for this old journey')[0]
       ).toBeInTheDocument()
     })
   })
@@ -280,6 +312,64 @@ describe('HostSidePanel', () => {
     })
   })
 
+  it('should navigate the edit host panel on host selection', async () => {
+    const result = jest.fn(() => ({
+      data: {
+        journeyUpdate: {
+          id: journey.id,
+          host: {
+            id: 'host1.id'
+          }
+        }
+      }
+    }))
+
+    const { getAllByRole } = render(
+      <MockedProvider
+        mocks={[
+          getUserTeamMock,
+          getTeamHostsMock,
+          {
+            request: {
+              query: UPDATE_JOURNEY_HOST,
+              variables: {
+                id: journey.id,
+                input: {
+                  hostId: 'host1.id'
+                }
+              }
+            },
+            result
+          }
+        ]}
+      >
+        <ThemeProvider>
+          <JourneyProvider
+            value={{ journey: { ...journey, host: null }, variant: 'admin' }}
+          >
+            <HostSidePanel />
+          </JourneyProvider>
+        </ThemeProvider>
+      </MockedProvider>
+    )
+
+    await waitFor(() => {
+      expect(
+        getAllByRole('button', { name: 'Select a Host' })[0]
+      ).not.toBeDisabled()
+    })
+    fireEvent.click(getAllByRole('button', { name: 'Select a Host' })[0])
+
+    await waitFor(() => {
+      expect(getAllByRole('button', { name: 'Host1' })[0]).toBeInTheDocument()
+    })
+    fireEvent.click(getAllByRole('button', { name: 'Host1' })[0])
+
+    await waitFor(() => expect(result).toHaveBeenCalled())
+
+    // Check navigated to edit host panel in E2E
+  })
+
   it('should navigate to the create host panel', async () => {
     const { getAllByRole, getAllByText } = render(
       <MockedProvider mocks={[getUserTeamMock]}>
@@ -313,5 +403,66 @@ describe('HostSidePanel', () => {
     await waitFor(() => {
       expect(getAllByText('Create Author')[0]).toBeInTheDocument()
     })
+  })
+
+  it('should navigate the select host panel on host clearance', async () => {
+    const result = jest.fn(() => ({
+      data: {
+        journeyUpdate: {
+          id: journey.id,
+          host: {
+            id: null
+          }
+        }
+      }
+    }))
+
+    const { getAllByRole, getAllByText } = render(
+      <MockedProvider
+        mocks={[
+          getUserTeamMock,
+          getTeamHostsMock,
+          {
+            request: {
+              query: UPDATE_JOURNEY_HOST,
+              variables: {
+                id: journey.id,
+                input: {
+                  hostId: null
+                }
+              }
+            },
+            result
+          },
+          {
+            request: {
+              query: GET_ALL_TEAM_HOSTS,
+              variables: { teamId: journey?.team?.id }
+            },
+            result: {
+              data: {
+                hosts: []
+              }
+            }
+          }
+        ]}
+      >
+        <ThemeProvider>
+          <JourneyProvider value={{ journey, variant: 'admin' }}>
+            <HostSidePanel />
+          </JourneyProvider>
+        </ThemeProvider>
+      </MockedProvider>
+    )
+
+    await waitFor(() => {
+      expect(getAllByText('Edit Author')[0]).toBeInTheDocument()
+    })
+
+    fireEvent.click(getAllByRole('button', { name: 'Clear' })[0])
+
+    await waitFor(() => expect(result).toHaveBeenCalled())
+
+    // Can check for select panel in E2E
   })
 })

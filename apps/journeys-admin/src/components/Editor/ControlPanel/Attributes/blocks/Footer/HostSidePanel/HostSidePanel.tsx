@@ -58,13 +58,13 @@ export function HostSidePanel(): ReactElement {
   const userInTeam =
     data == null || data.userTeams.length === 0 || team == null
       ? false
-      : data.userTeams.filter(
+      : data.userTeams.find(
           (userTeam) => userTeam.user.email === authUser.email
-        ).length > 0
+        ) != null
 
   // Fetch all hosts made for a team
   const { data: teamHosts, refetch } = useQuery(GET_ALL_TEAM_HOSTS, {
-    variables: { teamId: journey?.team?.id },
+    variables: { teamId: team?.id },
     skip: team == null
   })
 
@@ -113,7 +113,7 @@ export function HostSidePanel(): ReactElement {
                   <AlertCircleIcon />
                   <Typography variant="subtitle2">
                     {data?.userTeams.length === 0
-                      ? t('This old journey cannot edit hosts')
+                      ? t('Cannot edit hosts for this old journey')
                       : `${t('Only')} ${team.title} ${t(
                           'members can edit this'
                         )}`}

@@ -24,6 +24,7 @@ export function HostList({ hosts, onItemClick }: HostListProps): ReactElement {
     await onItemClick(hostId)
 
     if (journey != null) {
+      console.log('journeyHostUpdate on item click', hostId)
       await journeyHostUpdate({
         variables: { id: journey?.id, input: { hostId } }
       })
