@@ -231,84 +231,84 @@ export function VideoBlockEditorSettings({
           <Stack direction="row" justifyContent="space-between">
             <Stack direction="column">
               <Typography
-              variant="subtitle2"
-              sx={{
-                color:
-                  selectedBlock == null || selectedBlock.parentOrder == null
-                    ? 'action.disabled'
-                    : undefined
-              }}
-            >
+                variant="subtitle2"
+                sx={{
+                  color:
+                    selectedBlock == null || selectedBlock.parentOrder == null
+                      ? 'action.disabled'
+                      : undefined
+                }}
+              >
                 Autoplay
               </Typography>
               <Typography
-              variant="caption"
-              sx={{
-                color:
-                  selectedBlock == null || selectedBlock.parentOrder == null
-                    ? 'action.disabled'
-                    : undefined
-              }}
-            >
+                variant="caption"
+                sx={{
+                  color:
+                    selectedBlock == null || selectedBlock.parentOrder == null
+                      ? 'action.disabled'
+                      : undefined
+                }}
+              >
                 Start video automatically when card appears
               </Typography>
             </Stack>
             <Switch
-            checked={values.autoplay}
-            name="autoplay"
-            onChange={handleChange}
-            disabled={
-              selectedBlock == null || selectedBlock.parentOrder == null
-            }
-            inputProps={{
-              'aria-label': 'Autoplay'
-            }}
-          />
+              checked={values.autoplay}
+              name="autoplay"
+              onChange={handleChange}
+              disabled={
+                selectedBlock == null || selectedBlock.parentOrder == null
+              }
+              inputProps={{
+                'aria-label': 'Autoplay'
+              }}
+            />
           </Stack>
           <Divider />
           <Stack direction="row" justifyContent="space-between">
             <Stack direction="column">
               <Typography
-              variant="subtitle2"
-              sx={{
-                color:
-                  selectedBlock == null || selectedBlock.parentOrder == null
-                    ? 'action.disabled'
-                    : undefined
-              }}
-            >
+                variant="subtitle2"
+                sx={{
+                  color:
+                    selectedBlock == null || selectedBlock.parentOrder == null
+                      ? 'action.disabled'
+                      : undefined
+                }}
+              >
                 Muted
               </Typography>
               <Typography
-              variant="caption"
-              sx={{
-                color:
-                  selectedBlock == null || selectedBlock.parentOrder == null
-                    ? 'action.disabled'
-                    : undefined
-              }}
-            >
+                variant="caption"
+                sx={{
+                  color:
+                    selectedBlock == null || selectedBlock.parentOrder == null
+                      ? 'action.disabled'
+                      : undefined
+                }}
+              >
                 Video always muted on the first card
               </Typography>
             </Stack>
             <Switch
-            checked={values.muted}
-            name="muted"
-            onChange={handleChange}
-            disabled={
-              selectedBlock == null || selectedBlock.parentOrder == null
-            }
-            inputProps={{
-              'aria-label': 'Muted'
-            }}
-          />
+              checked={values.muted}
+              name="muted"
+              onChange={handleChange}
+              disabled={
+                selectedBlock == null || selectedBlock.parentOrder == null
+              }
+              inputProps={{
+                'aria-label': 'Muted'
+              }}
+            />
           </Stack>
           <Divider />
           <VideoBlockEditorSettingsPoster
-          selectedBlock={posterBlock}
-          parentBlockId={selectedBlock?.id}
-          disabled={selectedBlock == null}
-        />
+            selectedBlock={posterBlock}
+            parentBlockId={selectedBlock?.id}
+            disabled={selectedBlock == null}
+          />
         </Stack>
       </Stack>
     </Box>
