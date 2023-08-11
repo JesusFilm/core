@@ -1,4 +1,5 @@
 import { MockedProvider } from '@apollo/client/testing'
+import Stack from '@mui/material/Stack'
 import { Meta, Story } from '@storybook/react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
@@ -42,7 +43,9 @@ export const Default: Story = () => {
         }}
       >
         <EditorProvider initialState={{ selectedBlock }}>
-          <EditToolbar />
+          <Stack direction="row">
+            <EditToolbar />
+          </Stack>
         </EditorProvider>
       </JourneyProvider>
     </MockedProvider>
