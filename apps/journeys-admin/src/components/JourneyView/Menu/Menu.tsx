@@ -178,7 +178,7 @@ export function Menu(): ReactElement {
     <>
       {journey != null ? (
         <>
-          {journey != null && journey.template !== true && (
+          {journey.template !== true && (
             <>
               <Chip
                 icon={<VisibilityIcon />}
