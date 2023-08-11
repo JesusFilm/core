@@ -57,8 +57,8 @@ export function OverlayContent({
           }
         }
       : {
-          pl: { xs: 6, lg: 10 },
-          pr: { xs: 6, lg: 10 }
+          pl: { xs: 6, sm: 10 },
+          pr: { xs: 6, sm: 10 }
         }
 
   return (
