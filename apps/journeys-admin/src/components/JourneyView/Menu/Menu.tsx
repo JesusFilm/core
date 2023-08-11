@@ -182,7 +182,7 @@ export function Menu(): ReactElement {
             icon={<VisibilityIcon />}
             label="Preview"
             component="a"
-            href={`/api/preview?slug=${journey?.slug ?? ''}`}
+            href={`/api/preview?slug=${journey.slug}`}
             target="_blank"
             variant="outlined"
             clickable
@@ -195,9 +195,8 @@ export function Menu(): ReactElement {
           />
           <IconButton
             aria-label="Preview"
-            href={`/api/preview?slug=${journey?.slug ?? ''}`}
+            href={`/api/preview?slug=${journey.slug}`}
             target="_blank"
-            disabled={journey == null}
             sx={{
               display: {
                 xs: 'flex',
