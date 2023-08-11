@@ -2,7 +2,7 @@ import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { ComponentProps, ReactElement } from 'react'
 
-import { GetJourneyWithUserJourneys_journey_userJourneys as UserJourney } from '../../../../../__generated__/GetJourneyWithUserJourneys'
+import { GetJourneyWithUserJourneysAndUserTeams_journey_userJourneys as UserJourney } from '../../../../../__generated__/GetJourneyWithUserJourneysAndUserTeams'
 import { GetUserInvites_userInvites as UserInvite } from '../../../../../__generated__/GetUserInvites'
 import { UserJourneyRole } from '../../../../../__generated__/globalTypes'
 

@@ -10,7 +10,7 @@ import Stack from '@mui/material/Stack'
 import compact from 'lodash/compact'
 import { MouseEvent, ReactElement, useEffect, useMemo, useState } from 'react'
 
-import { GetJourneyWithUserJourneys_journey_userJourneys as UserJourney } from '../../../../../__generated__/GetJourneyWithUserJourneys'
+import { GetJourneyWithUserJourneysAndUserTeams_journey_userJourneys as UserJourney } from '../../../../../__generated__/GetJourneyWithUserJourneysAndUserTeams'
 import { GetUserInvites_userInvites as UserInvite } from '../../../../../__generated__/GetUserInvites'
 import { UserJourneyRole } from '../../../../../__generated__/globalTypes'
 

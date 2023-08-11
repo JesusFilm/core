@@ -134,7 +134,6 @@ export function AccessDialog({
     }
   }, [open, refetch, refetchInvites, loadUser])
 
-  console.log(data?.journey.team)
   return (
     <Dialog
       open={open ?? false}
