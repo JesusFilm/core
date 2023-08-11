@@ -1,5 +1,5 @@
 import { gql, useMutation } from '@apollo/client'
-import PeopleOutlineRoundedIcon from '@mui/icons-material/PeopleOutlineRounded'
+import ExpandMoreRoundedIcon from '@mui/icons-material/ExpandMoreRounded'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Divider from '@mui/material/Divider'
@@ -13,7 +13,10 @@ import sortBy from 'lodash/sortBy'
 import { ReactElement, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
+import UsersProfiles3Icon from '@core/shared/ui/icons/UsersProfiles3'
+
 import { UpdateLastActiveTeamId } from '../../../../__generated__/UpdateLastActiveTeamId'
+import { TeamAvatars } from '../TeamAvatars'
 import { useTeam } from '../TeamProvider'
 
 export const UPDATE_LAST_ACTIVE_TEAM_ID = gql`
@@ -60,19 +63,31 @@ export function TeamSelect({ onboarding }: TeamSelectProps): ReactElement {
         sx={{ overflow: 'hidden', flexGrow: 1 }}
         ref={anchorRef}
       >
-        <PeopleOutlineRoundedIcon sx={{ mr: 3, ml: '3px' }} />
+        <UsersProfiles3Icon sx={{ mr: 1, ml: '3px' }} />
         <FormControl variant="standard" sx={{ minWidth: 100 }}>
           <Select
             defaultValue={activeTeam?.id}
             disabled={query.loading}
             displayEmpty
             value={activeTeam?.id ?? ''}
+            disableUnderline
             onChange={handleChange}
+            renderValue={() => activeTeam?.title ?? t('Shared With Me')}
             autoWidth
             sx={{
               '> .MuiSelect-select': {
-                whiteSpace: 'normal',
-                wordWrap: 'break-word'
+                backgroundColor: 'transparent',
+                wordWrap: 'break-word',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                mr: 1,
+                '&:focus': {
+                  backgroundColor: 'transparent'
+                }
+              },
+              fontWeight: 600,
+              '> .MuiSvgIcon-root': {
+                transition: 'transform 0.2s ease-in-out'
               }
             }}
             MenuProps={{
@@ -85,6 +100,7 @@ export function TeamSelect({ onboarding }: TeamSelectProps): ReactElement {
                 horizontal: 'left'
               }
             }}
+            IconComponent={ExpandMoreRoundedIcon}
           >
             {(query?.data?.teams != null
               ? sortBy(query.data?.teams, 'title')
@@ -94,12 +110,16 @@ export function TeamSelect({ onboarding }: TeamSelectProps): ReactElement {
                 key={team.id}
                 value={team.id}
                 sx={{
-                  display: 'block',
+                  alignItems: 'flex-start',
+                  justifyContent: 'space-between',
                   whiteSpace: 'normal',
-                  wordWrap: 'break-word'
+                  wordBreak: 'normal',
+                  overflowWrap: 'anywhere',
+                  gap: 4
                 }}
               >
                 {team.title}
+                <TeamAvatars userTeams={team.userTeams} />
               </MenuItem>
             ))}
             <Divider />

@@ -33,7 +33,8 @@ const getTeamsMock: MockedResponse<GetLastActiveTeamIdAndTeams> = {
         {
           id: 'teamId',
           title: 'My Team',
-          __typename: 'Team'
+          __typename: 'Team',
+          userTeams: []
         }
       ],
       getJourneyProfile: {

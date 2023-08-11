@@ -35,12 +35,14 @@ const teams: Team[] = [
   {
     __typename: 'Team',
     id: 'teamId1',
-    title: 'my first team'
+    title: 'my first team',
+    userTeams: []
   },
   {
     __typename: 'Team',
     id: 'teamId2',
-    title: 'my second team'
+    title: 'my second team',
+    userTeams: []
   }
 ]
 
