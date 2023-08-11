@@ -286,8 +286,6 @@ export async function handleVideo(
                     Object.keys(omit(changedValues, ['subtitle', 'downloads']))
                       .length > 0
                   ) {
-                    console.log('variant', variant)
-                    console.log('changed Values', changedValues)
                     await tx.videoVariant.update({
                       where: {
                         id
