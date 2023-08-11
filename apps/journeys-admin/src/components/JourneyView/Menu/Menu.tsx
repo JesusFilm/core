@@ -178,34 +178,38 @@ export function Menu(): ReactElement {
     <>
       {journey != null ? (
         <>
-          <Chip
-            icon={<VisibilityIcon />}
-            label="Preview"
-            component="a"
-            href={`/api/preview?slug=${journey.slug}`}
-            target="_blank"
-            variant="outlined"
-            clickable
-            sx={{
-              display: {
-                xs: 'none',
-                md: 'flex'
-              }
-            }}
-          />
-          <IconButton
-            aria-label="Preview"
-            href={`/api/preview?slug=${journey.slug}`}
-            target="_blank"
-            sx={{
-              display: {
-                xs: 'flex',
-                md: 'none'
-              }
-            }}
-          >
-            <VisibilityIcon />
-          </IconButton>
+          {journey.template !== true && (
+            <>
+              <Chip
+                icon={<VisibilityIcon />}
+                label="Preview"
+                component="a"
+                href={`/api/preview?slug=${journey.slug}`}
+                target="_blank"
+                variant="outlined"
+                clickable
+                sx={{
+                  display: {
+                    xs: 'none',
+                    md: 'flex'
+                  }
+                }}
+              />
+              <IconButton
+                aria-label="Preview"
+                href={`/api/preview?slug=${journey.slug}`}
+                target="_blank"
+                sx={{
+                  display: {
+                    xs: 'flex',
+                    md: 'none'
+                  }
+                }}
+              >
+                <VisibilityIcon />
+              </IconButton>
+            </>
+          )}
           <IconButton
             id="single-journey-actions"
             edge="end"
