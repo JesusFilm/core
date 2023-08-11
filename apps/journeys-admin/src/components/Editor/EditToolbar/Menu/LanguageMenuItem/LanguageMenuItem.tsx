@@ -2,7 +2,7 @@ import TranslateIcon from '@mui/icons-material/Translate'
 import dynamic from 'next/dynamic'
 import { ReactElement, useState } from 'react'
 
-import { MenuItem } from '../../MenuItem'
+import { MenuItem } from '../../../../MenuItem'
 
 const DynamicLanguageDialog = dynamic<{
   open: boolean

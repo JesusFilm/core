@@ -4,9 +4,9 @@ import { ReactElement, useState } from 'react'
 
 import { JourneyFields as Journey } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
 
-import { useJourneyDuplicateMutation } from '../../../libs/useJourneyDuplicateMutation'
-import { MenuItem } from '../../MenuItem'
-import { CopyToTeamDialog } from '../../Team/CopyToTeamDialog'
+import { useJourneyDuplicateMutation } from '../../../../../libs/useJourneyDuplicateMutation'
+import { MenuItem } from '../../../../MenuItem'
+import { CopyToTeamDialog } from '../../../../Team/CopyToTeamDialog'
 
 interface Props {
   journey: Journey

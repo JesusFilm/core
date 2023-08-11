@@ -1,3 +1,4 @@
+import { useQuery } from '@apollo/client'
 import MoreVert from '@mui/icons-material/MoreVert'
 import IconButton from '@mui/material/IconButton'
 import MuiMenu from '@mui/material/Menu'
@@ -5,10 +6,23 @@ import { ReactElement, useState } from 'react'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 
-import { MenuItems } from '../../MenuItems'
+import { GetRole } from '../../../../__generated__/GetRole'
+import { Role, UserJourneyRole } from '../../../../__generated__/globalTypes'
+import { GET_ROLE } from '../../Editor/EditToolbar/Menu/Menu'
+
+import { EditMenuItem } from './EditMenuItem'
+import { PreviewMenuItem } from './PreviewMenuItem'
+import { PublishMenuItem } from './PublishMenuItem'
 
 export function Menu(): ReactElement {
   const { journey } = useJourney()
+  const { data } = useQuery<GetRole>(GET_ROLE)
+
+  const isPublisher = data?.getUserRole?.roles?.includes(Role.publisher)
+  const isOwner =
+    journey?.userJourneys?.find(
+      (userJourney) => userJourney.user?.id === data?.getUserRole?.userId
+    )?.role === UserJourneyRole.owner
 
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
 
@@ -44,8 +58,17 @@ export function Menu(): ReactElement {
               'aria-labelledby': 'journey-actions'
             }}
           >
-            {/* pass onclick that should close the parent */}
-            <MenuItems journey={journey} onClose={handleCloseMenu} />
+            <PreviewMenuItem journey={journey} onClose={handleCloseMenu} />
+            <PublishMenuItem
+              journey={journey}
+              isOwner={isOwner}
+              isVisible={journey.template !== true || isPublisher}
+            />
+            <EditMenuItem
+              journey={journey}
+              isPublisher={isPublisher}
+              isVisible={journey.template !== true || isPublisher}
+            />
           </MuiMenu>
         </>
       ) : (

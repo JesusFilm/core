@@ -1,7 +1,7 @@
 import DescriptionIcon from '@mui/icons-material/Description'
 import { ReactElement, useState } from 'react'
 
-import { MenuItem } from '../../MenuItem'
+import { MenuItem } from '../../../../MenuItem'
 
 import { DescriptionDialog } from './DescriptionDialog'
 

@@ -1,3 +1,4 @@
+import { gql, useQuery } from '@apollo/client'
 import MoreVert from '@mui/icons-material/MoreVert'
 import SettingsIcon from '@mui/icons-material/Settings'
 import ShareRoundedIcon from '@mui/icons-material/ShareRounded'
@@ -13,10 +14,30 @@ import { ReactElement, useState } from 'react'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 
-import { JourneyStatus } from '../../../../../__generated__/globalTypes'
+import { GetRole } from '../../../../../__generated__/GetRole'
+import { JourneyStatus, Role } from '../../../../../__generated__/globalTypes'
 import { DuplicateBlock } from '../../../DuplicateBlock'
 import { MenuItem } from '../../../MenuItem'
 import { DeleteBlock } from '../DeleteBlock'
+
+import { CopyMenuItem } from './CopyMenuItem'
+import { CreateTemplateMenuItem } from './CreateTemplateMenuItem'
+import { DescriptionMenuItem } from './DescriptionMenuItem'
+import { LanguageMenuItem } from './LanguageMenuItem'
+import { ReportMenuItem } from './ReportMenuItem'
+import { TemplateMenuItem } from './TemplateMenuItem'
+import { TitleDescriptionMenuItem } from './TitleDescriptionMenuItem'
+import { TitleMenuItem } from './TitleMenuItem'
+
+export const GET_ROLE = gql`
+  query GetRole {
+    getUserRole {
+      id
+      userId
+      roles
+    }
+  }
+`
 
 export function Menu(): ReactElement {
   const {
@@ -26,6 +47,10 @@ export function Menu(): ReactElement {
 
   const { journey } = useJourney()
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
+
+  const { data } = useQuery<GetRole>(GET_ROLE)
+
+  const isPublisher = data?.getUserRole?.roles?.includes(Role.publisher)
 
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
   const handleShowMenu = (event: React.MouseEvent<HTMLButtonElement>): void => {
@@ -144,6 +169,31 @@ export function Menu(): ReactElement {
           <CardMenu />
         ) : (
           <BlockMenu />
+        )}
+
+        {journey != null && (
+          <>
+            <TemplateMenuItem
+              journey={journey}
+              isVisible={journey.template === true}
+            />
+            <TitleDescriptionMenuItem
+              isVisible={journey.template === true && isPublisher}
+            />
+            <TitleMenuItem isVisible={journey.template !== true} />
+            <DescriptionMenuItem isVisible={journey.template !== true} />
+            <LanguageMenuItem
+              isVisible={journey.template !== true || isPublisher}
+            />
+            <ReportMenuItem journey={journey} />
+            <CreateTemplateMenuItem
+              isVisible={journey.template !== true && isPublisher === true}
+            />
+            <CopyMenuItem
+              journey={journey}
+              isVisible={journey.template !== true}
+            />
+          </>
         )}
       </MuiMenu>
     </>

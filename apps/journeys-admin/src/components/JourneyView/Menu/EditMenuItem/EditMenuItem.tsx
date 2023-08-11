@@ -3,8 +3,8 @@ import Divider from '@mui/material/Divider'
 import NextLink from 'next/link'
 import { ReactElement } from 'react'
 
-import { JourneyFields as Journey } from '../../../../__generated__/JourneyFields'
-import { MenuItem } from '../../MenuItem'
+import { JourneyFields as Journey } from '../../../../../__generated__/JourneyFields'
+import { MenuItem } from '../../../MenuItem'
 
 interface Props {
   journey: Journey

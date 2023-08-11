@@ -2,9 +2,9 @@ import VisibilityIcon from '@mui/icons-material/Visibility'
 import NextLink from 'next/link'
 import { ReactElement } from 'react'
 
-import { JourneyStatus } from '../../../../__generated__/globalTypes'
-import { JourneyFields as Journey } from '../../../../__generated__/JourneyFields'
-import { MenuItem } from '../../MenuItem'
+import { JourneyStatus } from '../../../../../__generated__/globalTypes'
+import { JourneyFields as Journey } from '../../../../../__generated__/JourneyFields'
+import { MenuItem } from '../../../MenuItem'
 
 interface Props {
   journey: Journey

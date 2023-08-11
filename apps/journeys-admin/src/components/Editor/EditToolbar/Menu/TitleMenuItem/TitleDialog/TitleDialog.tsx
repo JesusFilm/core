@@ -8,7 +8,7 @@ import { object, string } from 'yup'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { Dialog } from '@core/shared/ui/Dialog'
 
-import { JourneyTitleUpdate } from '../../../../../__generated__/JourneyTitleUpdate'
+import { JourneyTitleUpdate } from '../../../../../../../__generated__/JourneyTitleUpdate'
 
 export const JOURNEY_TITLE_UPDATE = gql`
   mutation JourneyTitleUpdate($id: ID!, $input: JourneyUpdateInput!) {
@@ -31,8 +31,6 @@ export function TitleDialog({ open, onClose }: TitleDialogProps): ReactElement {
   const titleSchema = object().shape({
     title: string().required('Required')
   })
-
-  console.log('titleDialog is open: ', open)
 
   const handleUpdateTitle = async (values: FormikValues): Promise<void> => {
     if (journey == null) return

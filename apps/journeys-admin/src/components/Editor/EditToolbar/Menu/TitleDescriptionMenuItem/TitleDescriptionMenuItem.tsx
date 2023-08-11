@@ -1,8 +1,8 @@
 import EditIcon from '@mui/icons-material/Edit'
 import { ReactElement, useState } from 'react'
 
-import { TitleDescriptionDialog } from '../../JourneyView/TitleDescription/TitleDescriptionDialog'
-import { MenuItem } from '../../MenuItem'
+import { TitleDescriptionDialog } from '../../../../JourneyView/TitleDescription/TitleDescriptionDialog'
+import { MenuItem } from '../../../../MenuItem'
 
 interface Props {
   isVisible?: boolean

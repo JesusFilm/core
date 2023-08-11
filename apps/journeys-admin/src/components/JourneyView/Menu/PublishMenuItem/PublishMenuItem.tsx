@@ -3,10 +3,10 @@ import BeenHereRoundedIcon from '@mui/icons-material/BeenhereRounded'
 import { useSnackbar } from 'notistack'
 import { ReactElement } from 'react'
 
-import { JourneyStatus } from '../../../../__generated__/globalTypes'
-import { JourneyFields as Journey } from '../../../../__generated__/JourneyFields'
-import { JourneyPublish } from '../../../../__generated__/JourneyPublish'
-import { MenuItem } from '../../MenuItem'
+import { JourneyStatus } from '../../../../../__generated__/globalTypes'
+import { JourneyFields as Journey } from '../../../../../__generated__/JourneyFields'
+import { JourneyPublish } from '../../../../../__generated__/JourneyPublish'
+import { MenuItem } from '../../../MenuItem'
 
 export const JOURNEY_PUBLISH = gql`
   mutation JourneyPublish($id: ID!) {

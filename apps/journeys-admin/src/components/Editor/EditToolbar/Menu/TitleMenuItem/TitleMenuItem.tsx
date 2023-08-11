@@ -1,7 +1,7 @@
 import EditIcon from '@mui/icons-material/Edit'
 import { ReactElement, useState } from 'react'
 
-import { MenuItem } from '../../MenuItem'
+import { MenuItem } from '../../../../MenuItem'
 
 import { TitleDialog } from './TitleDialog'
 
