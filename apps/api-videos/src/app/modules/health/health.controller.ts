@@ -1,4 +1,5 @@
 import { Controller, Get, HttpException } from '@nestjs/common'
+
 import { PrismaService } from '../../lib/prisma.service'
 
 type SelectResponse = Array<{ '?column?': number }> | null
