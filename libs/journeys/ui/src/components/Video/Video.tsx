@@ -388,6 +388,7 @@ export function Video({
           alt="video image"
           layout="fill"
           objectFit={videoFit}
+          unoptimized
           style={{
             transform:
               objectFit === VideoBlockObjectFit.zoomed

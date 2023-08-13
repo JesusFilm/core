@@ -1,4 +1,5 @@
 import { MockedProvider } from '@apollo/client/testing'
+import Stack from '@mui/material/Stack'
 import { Meta, Story } from '@storybook/react'
 import { screen, userEvent } from '@storybook/testing-library'
 
@@ -97,7 +98,9 @@ const Template: Story = ({ ...args }) => (
   <MockedProvider mocks={args.mocks}>
     <TeamProvider>
       <JourneyProvider value={{ journey: args.journey, variant: 'admin' }}>
-        <Menu {...args} />
+        <Stack direction="row">
+          <Menu {...args} />
+        </Stack>
       </JourneyProvider>
     </TeamProvider>
   </MockedProvider>
