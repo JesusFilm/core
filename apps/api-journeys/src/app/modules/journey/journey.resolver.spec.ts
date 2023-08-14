@@ -1397,7 +1397,7 @@ describe('JourneyResolver', () => {
       })
       expect(prismaService.journey.update).toHaveBeenCalledWith({
         where: { id: 'journeyId' },
-        data: { status: JourneyStatus.published }
+        data: { status: JourneyStatus.published, publishedAt: new Date() }
       })
     })
   })

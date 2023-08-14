@@ -669,7 +669,8 @@ export class JourneyResolver {
         this.prismaService.journey.update({
           where: { id: journey.id },
           data: {
-            status: JourneyStatus.published
+            status: JourneyStatus.published,
+            publishedAt: new Date()
           }
         })
       )
