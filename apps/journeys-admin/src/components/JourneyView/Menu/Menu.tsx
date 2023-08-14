@@ -42,15 +42,6 @@ const DynamicLanguageDialog = dynamic<{
     ).then((mod) => mod.LanguageDialog)
 )
 
-export const JOURNEY_PUBLISH = gql`
-  mutation JourneyPublish($id: ID!) {
-    journeyPublish(id: $id) {
-      id
-      status
-    }
-  }
-`
-
 export const GET_ROLE = gql`
   query GetRole {
     getUserRole {
