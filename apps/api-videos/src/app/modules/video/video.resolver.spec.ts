@@ -299,6 +299,27 @@ describe('VideoResolver', () => {
       })
     })
 
+    it('returns variant for journeys', async () => {
+      const info = {
+        variableValues: {
+          representations: [
+            {
+              primaryLanguageId: '1234'
+            }
+          ]
+        }
+      } as unknown as GraphQLResolveInfo
+      expect(await resolver.variant(info, video)).toEqual(videoVariant[0])
+      expect(prismaService.videoVariant.findUnique).toHaveBeenCalledWith({
+        where: {
+          languageId_videoId: {
+            languageId: '1234',
+            videoId: video.id
+          }
+        }
+      })
+    })
+
     it('returns variant without languageId', async () => {
       expect(await resolver.variant(info, video)).toEqual(videoVariant[0])
       expect(prismaService.videoVariant.findUnique).toHaveBeenCalledWith({
