@@ -1,0 +1,99 @@
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["fullTextSearch", "orderByNulls"]
+  output          = env("PRISMA_LOCATION")
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("PG_DATABASE_URL")
+}
+
+enum IdType {
+  databaseId
+  slug
+}
+
+enum VideoLabel {
+  collection
+  episode
+  featureFilm
+  segment
+  series
+  shortFilm
+}
+
+model Video {
+  id                String         @id @default(uuid())
+  label             VideoLabel
+  primaryLanguageId String
+  title             VideoTitle[]
+  seoTitle          Json[]
+  snippet           Json[]
+  description       Json[]
+  studyQuestions    Json[]
+  image             String?
+  imageAlt          Json[]
+  slug              String?
+  noIndex           Boolean?
+  childIds          String[] // needed for child sort order
+  children          Video[]        @relation("ParentChild")
+  parent            Video[]        @relation("ParentChild")
+  variants          VideoVariant[]
+
+  @@unique([slug])
+}
+
+model VideoTitle {
+  id         String  @id @default(uuid())
+  value      String
+  languageId String
+  primary    Boolean
+  videoId    String?
+  video      Video?  @relation(fields: [videoId], references: [id], onDelete: Cascade)
+
+  @@unique([videoId, languageId])
+}
+
+enum VideoVariantDownloadQuality {
+  low
+  high
+}
+
+model VideoVariantDownload {
+  id             String                      @id @default(uuid())
+  quality        VideoVariantDownloadQuality
+  size           Float?
+  url            String
+  videoVariantId String?
+  videoVariant   VideoVariant?               @relation(fields: [videoVariantId], references: [id], onDelete: Cascade)
+
+  @@unique([quality, videoVariantId])
+}
+
+model VideoVariant {
+  id         String                 @id
+  hls        String?
+  downloads  VideoVariantDownload[]
+  duration   Int?
+  languageId String
+  subtitle   VideoVariantSubtitle[]
+  slug       String
+  video      Video?                 @relation(fields: [videoId], references: [id], onDelete: Cascade)
+  videoId    String?
+
+  @@unique([languageId, videoId])
+  @@unique([slug])
+}
+
+model VideoVariantSubtitle {
+  id             String  @id @default(uuid())
+  value          String
+  primary        Boolean
+  languageId     String
+  videoVariantId String
+
+  variant VideoVariant @relation(fields: [videoVariantId], references: [id], onDelete: Cascade)
+
+  @@unique([videoVariantId, languageId])
+}
