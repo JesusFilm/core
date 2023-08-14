@@ -564,7 +564,8 @@ describe('JourneyResolver', () => {
           id: 'journeyId',
           languageId: '529',
           slug: 'untitled-journey',
-          status: 'draft',
+          status: 'published',
+          publishedAt: new Date(),
           team: {
             connect: {
               id: 'teamId'
@@ -606,7 +607,8 @@ describe('JourneyResolver', () => {
           id: 'myJourneyId',
           languageId: '529',
           slug: 'special-journey-myJourneyId',
-          status: 'draft',
+          status: 'published',
+          publishedAt: new Date(),
           team: {
             connect: {
               id: 'teamId'
@@ -845,7 +847,8 @@ describe('JourneyResolver', () => {
             'createdAt'
           ]),
           id: 'duplicateJourneyId',
-          status: JourneyStatus.draft,
+          status: JourneyStatus.published,
+          publishedAt: new Date(),
           slug: `${journey.title}-copy`,
           title: `${journey.title} copy`,
           template: false,
@@ -892,7 +895,8 @@ describe('JourneyResolver', () => {
           'createdAt'
         ]),
         id: 'duplicateJourneyId',
-        status: JourneyStatus.draft,
+        status: JourneyStatus.published,
+        publishedAt: new Date(),
         slug: journey.title,
         title: journey.title,
         template: false,
@@ -990,7 +994,8 @@ describe('JourneyResolver', () => {
             'createdAt'
           ]),
           id: 'duplicateJourneyId',
-          status: JourneyStatus.draft,
+          status: JourneyStatus.published,
+          publishedAt: new Date(),
           slug: `${journey.title}-copy-2`,
           title: `${journey.title} copy 2`,
           template: false,
@@ -1392,23 +1397,7 @@ describe('JourneyResolver', () => {
       })
       expect(prismaService.journey.update).toHaveBeenCalledWith({
         where: { id: 'journeyId' },
-        data: { status: JourneyStatus.published }
-      })
-    })
-
-    it('restores an draft Journey', async () => {
-      prismaService.journey.findMany.mockResolvedValueOnce([
-        { ...journey, publishedAt: null }
-      ])
-      await resolver.journeysRestore(accessibleJourneys, ['journeyId'])
-      expect(prismaService.journey.findMany).toHaveBeenCalledWith({
-        where: {
-          AND: [accessibleJourneys, { id: { in: ['journeyId'] } }]
-        }
-      })
-      expect(prismaService.journey.update).toHaveBeenCalledWith({
-        where: { id: 'journeyId' },
-        data: { status: JourneyStatus.draft }
+        data: { status: JourneyStatus.published, publishedAt: new Date() }
       })
     })
   })
