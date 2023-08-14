@@ -15,7 +15,7 @@ export class NestHealthController {
     } catch (e) {
       throw new HttpException('Not ready', 503)
     }
-    if (result?.[0]['?column?'] != 1) {
+    if (result?.[0]['?column?'] !== 1) {
       throw new HttpException('Not ready', 503)
     }
     return 'OK'
