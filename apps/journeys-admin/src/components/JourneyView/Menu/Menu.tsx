@@ -1,5 +1,6 @@
 import { gql, useMutation, useQuery } from '@apollo/client'
 import BeenHereRoundedIcon from '@mui/icons-material/BeenhereRounded'
+import CheckRounded from '@mui/icons-material/CheckRounded'
 import MoreVert from '@mui/icons-material/MoreVert'
 import ViewCarouselIcon from '@mui/icons-material/ViewCarousel'
 import VisibilityIcon from '@mui/icons-material/Visibility'
@@ -8,6 +9,7 @@ import Divider from '@mui/material/Divider'
 import IconButton from '@mui/material/IconButton'
 import MuiMenu from '@mui/material/Menu'
 import NextLink from 'next/link'
+import { useRouter } from 'next/router'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useState } from 'react'
 
@@ -20,8 +22,10 @@ import {
   UserJourneyRole
 } from '../../../../__generated__/globalTypes'
 import { JourneyPublish } from '../../../../__generated__/JourneyPublish'
+import { useJourneyDuplicateMutation } from '../../../libs/useJourneyDuplicateMutation'
 import { GET_ROLE } from '../../Editor/EditToolbar/Menu/Menu'
 import { MenuItem } from '../../MenuItem'
+import { CopyToTeamDialog } from '../../Team/CopyToTeamDialog'
 
 export const JOURNEY_PUBLISH = gql`
   mutation JourneyPublish($id: ID!) {
@@ -34,6 +38,10 @@ export const JOURNEY_PUBLISH = gql`
 
 export function Menu(): ReactElement {
   const { journey } = useJourney()
+  const router = useRouter()
+
+  const [journeyDuplicate] = useJourneyDuplicateMutation()
+
   const { data } = useQuery<GetRole>(GET_ROLE)
 
   const [journeyPublish] = useMutation<JourneyPublish>(JOURNEY_PUBLISH)
@@ -43,6 +51,8 @@ export function Menu(): ReactElement {
     journey?.userJourneys?.find(
       (userJourney) => userJourney.user?.id === data?.getUserRole?.userId
     )?.role === UserJourneyRole.owner
+
+  const [duplicateTeamDialogOpen, setDuplicateTeamDialogOpen] = useState(false)
 
   const { enqueueSnackbar } = useSnackbar()
 
@@ -79,6 +89,19 @@ export function Menu(): ReactElement {
           variant: 'success',
           preventDuplicate: true
         })
+  }
+  const handleTemplate = async (teamId: string | undefined): Promise<void> => {
+    if (journey == null || teamId == null) return
+
+    const { data } = await journeyDuplicate({
+      variables: { id: journey.id, teamId }
+    })
+
+    if (data != null) {
+      void router.push(`/journeys/${data.journeyDuplicate.id}`, undefined, {
+        shallow: true
+      })
+    }
   }
 
   let editLink
@@ -160,6 +183,13 @@ export function Menu(): ReactElement {
                 onClick={handlePublish}
               />
             )}
+            {journey.template === true && (
+              <MenuItem
+                label="Use Template"
+                icon={<CheckRounded />}
+                onClick={() => setDuplicateTeamDialogOpen(true)}
+              />
+            )}
             {(journey.template !== true || isPublisher) && (
               <>
                 <Divider />
@@ -169,6 +199,13 @@ export function Menu(): ReactElement {
               </>
             )}
           </MuiMenu>
+          <CopyToTeamDialog
+            submitLabel="Add"
+            title="Add Journey to Team"
+            open={duplicateTeamDialogOpen}
+            onClose={() => setDuplicateTeamDialogOpen(false)}
+            submitAction={handleTemplate}
+          />
         </>
       ) : (
         <IconButton edge="end" disabled>

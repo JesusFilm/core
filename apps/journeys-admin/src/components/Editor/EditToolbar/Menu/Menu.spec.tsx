@@ -1,7 +1,6 @@
 import { MockedProvider } from '@apollo/client/testing'
 import useMediaQuery from '@mui/material/useMediaQuery'
-import { fireEvent, render, waitFor, within } from '@testing-library/react'
-import { NextRouter, useRouter } from 'next/router'
+import { fireEvent, render, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
@@ -15,12 +14,8 @@ import {
   GetJourney_journey_blocks_VideoBlock as VideoBlock
 } from '../../../../../__generated__/GetJourney'
 import { JourneyStatus, Role } from '../../../../../__generated__/globalTypes'
-import { JOURNEY_DUPLICATE } from '../../../../libs/useJourneyDuplicateMutation'
 import { defaultJourney } from '../../../JourneyView/data'
-import {
-  GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS,
-  TeamProvider
-} from '../../../Team/TeamProvider'
+import { TeamProvider } from '../../../Team/TeamProvider'
 import { ThemeProvider } from '../../../ThemeProvider'
 
 import { GET_ROLE } from './Menu'
@@ -37,13 +32,6 @@ jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
   default: jest.fn()
 }))
-
-jest.mock('next/router', () => ({
-  __esModule: true,
-  useRouter: jest.fn()
-}))
-
-const mockUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
 
 describe('EditToolbar Menu', () => {
   const originalEnv = process.env
@@ -331,89 +319,6 @@ describe('EditToolbar Menu', () => {
     })
   })
 
-  describe('CreateTemplateMenuItem', () => {
-    it('should convert template to journey on Use Template click', async () => {
-      const push = jest.fn()
-      mockUseRouter.mockReturnValue({ push } as unknown as NextRouter)
-      const result = jest.fn(() => {
-        return {
-          data: {
-            journeyDuplicate: {
-              id: 'duplicatedJourneyId'
-            }
-          }
-        }
-      })
-
-      const result2 = jest.fn(() => ({
-        data: {
-          teams: [{ id: 'teamId', title: 'Team Name', __typename: 'Team' }],
-          getJourneyProfile: {
-            __typename: 'JourneyProfile',
-            lastActiveTeamId: 'teamId'
-          }
-        }
-      }))
-
-      const { getByRole, getByTestId, getByText } = render(
-        <SnackbarProvider>
-          <MockedProvider
-            mocks={[
-              {
-                request: {
-                  query: JOURNEY_DUPLICATE,
-                  variables: {
-                    id: defaultJourney.id,
-                    teamId: 'teamId'
-                  }
-                },
-                result
-              },
-              {
-                request: {
-                  query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
-                },
-                result: result2
-              }
-            ]}
-          >
-            <TeamProvider>
-              <JourneyProvider
-                value={{
-                  journey: { ...defaultJourney, template: true },
-                  variant: 'admin'
-                }}
-              >
-                <Menu />
-              </JourneyProvider>
-            </TeamProvider>
-          </MockedProvider>
-        </SnackbarProvider>
-      )
-      await waitFor(() => expect(result2).toHaveBeenCalled())
-      fireEvent.click(getByRole('button'))
-      fireEvent.click(getByRole('menuitem', { name: 'Use Template' }))
-      const muiSelect = getByTestId('team-duplicate-select')
-      const muiSelectDropDownButton = await within(muiSelect).getByRole(
-        'button'
-      )
-      await fireEvent.mouseDown(muiSelectDropDownButton)
-      const muiSelectOptions = await getByRole('option', {
-        name: 'Team Name'
-      })
-      fireEvent.click(muiSelectOptions)
-      await waitFor(() => fireEvent.click(getByText('Add')))
-      await waitFor(() => expect(result).toHaveBeenCalled())
-      await waitFor(() => {
-        expect(push).toHaveBeenCalledWith(
-          '/journeys/duplicatedJourneyId',
-          undefined,
-          { shallow: true }
-        )
-      })
-    })
-  })
-
   describe('TitleDescriptionMenuItem', () => {
     it('should handle edit journey title and description if user is publisher', async () => {
       const { getByRole } = render(
@@ -449,13 +354,12 @@ describe('EditToolbar Menu', () => {
           </MockedProvider>
         </SnackbarProvider>
       )
-
       const menu = getByRole('button')
       fireEvent.click(menu)
       await waitFor(() => {
         fireEvent.click(getByRole('menuitem', { name: 'Description' }))
+        expect(getByRole('dialog')).toBeInTheDocument()
       })
-      expect(getByRole('dialog')).toBeInTheDocument()
       expect(menu).not.toHaveAttribute('aria-expanded')
     })
   })
@@ -537,8 +441,10 @@ describe('EditToolbar Menu', () => {
       const menu = getByRole('button')
       fireEvent.click(menu)
       fireEvent.click(getByRole('menuitem', { name: 'Language' }))
-      await waitFor(() => expect(getByRole('dialog')).toBeInTheDocument())
-      expect(getByText('Edit Language')).toBeInTheDocument()
+      await waitFor(() => {
+        expect(getByRole('dialog')).toBeInTheDocument()
+        expect(getByText('Edit Language')).toBeInTheDocument()
+      })
       expect(menu).not.toHaveAttribute('aria-expanded')
     })
   })
@@ -652,103 +558,6 @@ describe('EditToolbar Menu', () => {
         'href',
         '/journeys/journey-id/reports'
       )
-    })
-  })
-
-  describe('TemplateMenuItem', () => {
-    it('should enable publishers to use template', async () => {
-      const push = jest.fn()
-      mockUseRouter.mockReturnValue({ push } as unknown as NextRouter)
-      const result = jest.fn(() => {
-        return {
-          data: {
-            journeyDuplicate: {
-              id: 'duplicatedJourneyId'
-            }
-          }
-        }
-      })
-
-      const result2 = jest.fn(() => ({
-        data: {
-          teams: [{ id: 'teamId', title: 'Team Name', __typename: 'Team' }],
-          getJourneyProfile: {
-            __typename: 'JourneyProfile',
-            lastActiveTeamId: 'teamId'
-          }
-        }
-      }))
-
-      const { getByRole, getByTestId, getByText } = render(
-        <SnackbarProvider>
-          <MockedProvider
-            mocks={[
-              {
-                request: {
-                  query: JOURNEY_DUPLICATE,
-                  variables: {
-                    id: defaultJourney.id,
-                    teamId: 'teamId'
-                  }
-                },
-                result
-              },
-              {
-                request: {
-                  query: GET_ROLE
-                },
-                result: {
-                  data: {
-                    getUserRole: {
-                      id: 'userRoleId',
-                      userId: '1',
-                      roles: [Role.publisher]
-                    }
-                  }
-                }
-              },
-              {
-                request: {
-                  query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
-                },
-                result: result2
-              }
-            ]}
-          >
-            <TeamProvider>
-              <JourneyProvider
-                value={{
-                  journey: { ...defaultJourney, template: true },
-                  variant: 'admin'
-                }}
-              >
-                <Menu />
-              </JourneyProvider>
-            </TeamProvider>
-          </MockedProvider>
-        </SnackbarProvider>
-      )
-      await waitFor(() => expect(result2).toHaveBeenCalled())
-      fireEvent.click(getByRole('button'))
-      fireEvent.click(getByRole('menuitem', { name: 'Use Template' }))
-      const muiSelect = getByTestId('team-duplicate-select')
-      const muiSelectDropDownButton = await within(muiSelect).getByRole(
-        'button'
-      )
-      await fireEvent.mouseDown(muiSelectDropDownButton)
-      const muiSelectOptions = await getByRole('option', {
-        name: 'Team Name'
-      })
-      fireEvent.click(muiSelectOptions)
-      await waitFor(() => fireEvent.click(getByText('Add')))
-      await waitFor(() => expect(result).toHaveBeenCalled())
-      await waitFor(() => {
-        expect(push).toHaveBeenCalledWith(
-          '/journeys/duplicatedJourneyId',
-          undefined,
-          { shallow: true }
-        )
-      })
     })
   })
 })

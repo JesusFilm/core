@@ -6,8 +6,8 @@ import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
 import { JourneyStatus, Role } from '../../../../__generated__/globalTypes'
 import { simpleComponentConfig } from '../../../libs/storybook'
-import { GET_LANGUAGES } from '../../MenuItems/LanguageMenuItem/LanguageDialog'
-import { GET_ROLE } from '../../MenuItems/MenuItems'
+import { GET_LANGUAGES } from '../../Editor/EditToolbar/Menu/LanguageMenuItem/LanguageDialog'
+import { GET_ROLE } from '../../Editor/EditToolbar/Menu/Menu'
 import { TeamProvider } from '../../Team/TeamProvider'
 import { defaultJourney } from '../data'
 

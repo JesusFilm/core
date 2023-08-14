@@ -25,7 +25,6 @@ import { CreateTemplateMenuItem } from './CreateTemplateMenuItem'
 import { DescriptionMenuItem } from './DescriptionMenuItem'
 import { LanguageMenuItem } from './LanguageMenuItem'
 import { ReportMenuItem } from './ReportMenuItem'
-import { TemplateMenuItem } from './TemplateMenuItem'
 import { TitleDescriptionMenuItem } from './TitleDescriptionMenuItem'
 import { TitleMenuItem } from './TitleMenuItem'
 
@@ -171,10 +170,6 @@ export function Menu(): ReactElement {
 
         {journey != null && (
           <>
-            <TemplateMenuItem
-              journey={journey}
-              isVisible={journey.template === true}
-            />
             <TitleDescriptionMenuItem
               isVisible={journey.template === true && isPublisher}
               onClick={handleCloseMenu}

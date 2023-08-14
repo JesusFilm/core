@@ -14,8 +14,8 @@ export function TitleMenuItem({ isVisible, onClick }: Props): ReactElement {
   const [showTitleDialog, setShowTitleDialog] = useState(false)
 
   const handleUpdateTitle = (): void => {
-    setShowTitleDialog(true)
     onClick?.()
+    setShowTitleDialog(true)
   }
 
   return (

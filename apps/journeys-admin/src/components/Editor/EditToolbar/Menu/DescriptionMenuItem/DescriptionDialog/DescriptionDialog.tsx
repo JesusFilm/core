@@ -7,7 +7,7 @@ import { ReactElement } from 'react'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { Dialog } from '@core/shared/ui/Dialog'
 
-import { JourneyDescUpdate } from '../../../../../__generated__/JourneyDescUpdate'
+import { JourneyDescUpdate } from '../../../../../../../__generated__/JourneyDescUpdate'
 
 export const JOURNEY_DESC_UPDATE = gql`
   mutation JourneyDescUpdate($id: ID!, $input: JourneyUpdateInput!) {
