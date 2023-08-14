@@ -5,13 +5,12 @@ import { screen, userEvent } from '@storybook/testing-library'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
-import { JourneyStatus, Role } from '../../../../__generated__/globalTypes'
 import { simpleComponentConfig } from '../../../libs/storybook'
 import { TeamProvider } from '../../Team/TeamProvider'
 import { defaultJourney } from '../data'
 
 import { GET_LANGUAGES } from './LanguageDialog'
-import { GET_ROLE, Menu } from './Menu'
+import { Menu } from './Menu'
 
 const MenuStory = {
   ...simpleComponentConfig,
