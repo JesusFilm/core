@@ -360,7 +360,6 @@ describe('EditToolbar Menu', () => {
         fireEvent.click(getByRole('menuitem', { name: 'Description' }))
         expect(getByRole('dialog')).toBeInTheDocument()
       })
-      expect(menu).not.toHaveAttribute('aria-expanded')
     })
   })
 
@@ -388,7 +387,6 @@ describe('EditToolbar Menu', () => {
       fireEvent.click(menu)
       fireEvent.click(getByRole('menuitem', { name: 'Title' }))
       expect(getByRole('dialog')).toBeInTheDocument()
-      expect(menu).not.toHaveAttribute('aria-expanded')
     })
   })
 
@@ -415,7 +413,6 @@ describe('EditToolbar Menu', () => {
       fireEvent.click(menu)
       fireEvent.click(getByRole('menuitem', { name: 'Description' }))
       expect(getByRole('dialog')).toBeInTheDocument()
-      expect(menu).not.toHaveAttribute('aria-expanded')
     })
   })
 
@@ -445,7 +442,6 @@ describe('EditToolbar Menu', () => {
         expect(getByRole('dialog')).toBeInTheDocument()
         expect(getByText('Edit Language')).toBeInTheDocument()
       })
-      expect(menu).not.toHaveAttribute('aria-expanded')
     })
   })
 

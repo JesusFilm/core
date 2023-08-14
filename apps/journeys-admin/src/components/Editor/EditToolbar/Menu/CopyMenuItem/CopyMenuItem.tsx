@@ -9,13 +9,13 @@ import { MenuItem } from '../../../../MenuItem'
 interface Props {
   journey: Journey
   isVisible?: boolean
-  onClick?: () => void
+  onClose?: () => void
 }
 
 export function CopyMenuItem({
   isVisible,
   journey,
-  onClick
+  onClose
 }: Props): ReactElement {
   const { enqueueSnackbar } = useSnackbar()
 
@@ -27,7 +27,7 @@ export function CopyMenuItem({
         journey.slug
       }`
     )
-    onClick?.()
+    onClose?.()
     enqueueSnackbar('Link Copied', {
       variant: 'success',
       preventDuplicate: true

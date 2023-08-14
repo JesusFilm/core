@@ -7,15 +7,19 @@ import { TitleDialog } from './TitleDialog'
 
 interface Props {
   isVisible?: boolean
-  onClick?: () => void
+  onClose?: () => void
 }
 
-export function TitleMenuItem({ isVisible, onClick }: Props): ReactElement {
+export function TitleMenuItem({ isVisible, onClose }: Props): ReactElement {
   const [showTitleDialog, setShowTitleDialog] = useState(false)
 
   const handleUpdateTitle = (): void => {
-    onClick?.()
     setShowTitleDialog(true)
+  }
+
+  const handleClose = (): void => {
+    setShowTitleDialog(false)
+    onClose?.()
   }
 
   return (
@@ -27,10 +31,7 @@ export function TitleMenuItem({ isVisible, onClick }: Props): ReactElement {
           onClick={handleUpdateTitle}
         />
       )}
-      <TitleDialog
-        open={showTitleDialog}
-        onClose={() => setShowTitleDialog(false)}
-      />
+      <TitleDialog open={showTitleDialog} onClose={handleClose} />
     </>
   )
 }

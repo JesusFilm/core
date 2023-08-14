@@ -17,15 +17,19 @@ const DynamicLanguageDialog = dynamic<{
 
 interface Props {
   isVisible?: boolean
-  onClick?: () => void
+  onClose?: () => void
 }
 
-export function LanguageMenuItem({ isVisible, onClick }: Props): ReactElement {
+export function LanguageMenuItem({ isVisible, onClose }: Props): ReactElement {
   const [showLanguageDialog, setShowLanguageDialog] = useState(false)
 
   const handleUpdateLanguage = (): void => {
     setShowLanguageDialog(true)
-    onClick?.()
+  }
+
+  const handleClose = (): void => {
+    setShowLanguageDialog(false)
+    onClose?.()
   }
 
   return (
@@ -40,7 +44,7 @@ export function LanguageMenuItem({ isVisible, onClick }: Props): ReactElement {
       {showLanguageDialog && (
         <DynamicLanguageDialog
           open={showLanguageDialog}
-          onClose={() => setShowLanguageDialog(false)}
+          onClose={handleClose}
         />
       )}
     </>

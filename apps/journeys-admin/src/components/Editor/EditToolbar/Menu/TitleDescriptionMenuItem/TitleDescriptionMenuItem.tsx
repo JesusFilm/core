@@ -6,19 +6,23 @@ import { MenuItem } from '../../../../MenuItem'
 
 interface Props {
   isVisible?: boolean
-  onClick?: () => void
+  onClose?: () => void
 }
 
 export function TitleDescriptionMenuItem({
   isVisible,
-  onClick
+  onClose
 }: Props): ReactElement {
   const [showTitleDescriptionDialog, setShowTitleDescriptionDialog] =
     useState(false)
 
   const handleUpdateTitleDescription = (): void => {
     setShowTitleDescriptionDialog(true)
-    onClick?.()
+  }
+
+  const handleClose = (): void => {
+    setShowTitleDescriptionDialog(false)
+    onClose?.()
   }
 
   return (
@@ -32,7 +36,7 @@ export function TitleDescriptionMenuItem({
       )}
       <TitleDescriptionDialog
         open={showTitleDescriptionDialog}
-        onClose={() => setShowTitleDescriptionDialog(false)}
+        onClose={handleClose}
       />
     </>
   )

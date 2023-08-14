@@ -7,19 +7,24 @@ import { DescriptionDialog } from './DescriptionDialog'
 
 interface Props {
   isVisible?: boolean
-  onClick?: () => void
+  onClose?: () => void
 }
 
 export function DescriptionMenuItem({
   isVisible,
-  onClick
+  onClose
 }: Props): ReactElement {
   const [showDescriptionDialog, setShowDescriptionDialog] = useState(false)
 
   const handleUpdateDescription = (): void => {
     setShowDescriptionDialog(true)
-    onClick?.()
   }
+
+  const handleClose = (): void => {
+    setShowDescriptionDialog(false)
+    onClose?.()
+  }
+
   return (
     <>
       {isVisible === true && (
@@ -29,10 +34,7 @@ export function DescriptionMenuItem({
           onClick={handleUpdateDescription}
         />
       )}
-      <DescriptionDialog
-        open={showDescriptionDialog}
-        onClose={() => setShowDescriptionDialog(false)}
-      />
+      <DescriptionDialog open={showDescriptionDialog} onClose={handleClose} />
     </>
   )
 }
