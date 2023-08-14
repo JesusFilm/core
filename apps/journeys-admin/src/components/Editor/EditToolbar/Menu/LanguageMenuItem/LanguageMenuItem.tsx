@@ -17,13 +17,15 @@ const DynamicLanguageDialog = dynamic<{
 
 interface Props {
   isVisible?: boolean
+  onClick?: () => void
 }
 
-export function LanguageMenuItem({ isVisible }: Props): ReactElement {
+export function LanguageMenuItem({ isVisible, onClick }: Props): ReactElement {
   const [showLanguageDialog, setShowLanguageDialog] = useState(false)
 
   const handleUpdateLanguage = (): void => {
     setShowLanguageDialog(true)
+    onClick?.()
   }
 
   return (

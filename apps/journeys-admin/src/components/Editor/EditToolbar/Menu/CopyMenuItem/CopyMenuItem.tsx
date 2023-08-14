@@ -9,9 +9,14 @@ import { MenuItem } from '../../../../MenuItem'
 interface Props {
   journey: Journey
   isVisible?: boolean
+  onClick?: () => void
 }
 
-export function CopyMenuItem({ isVisible, journey }: Props): ReactElement {
+export function CopyMenuItem({
+  isVisible,
+  journey,
+  onClick
+}: Props): ReactElement {
   const { enqueueSnackbar } = useSnackbar()
 
   const handleCopyLink = async (): Promise<void> => {
@@ -22,6 +27,7 @@ export function CopyMenuItem({ isVisible, journey }: Props): ReactElement {
         journey.slug
       }`
     )
+    onClick?.()
     enqueueSnackbar('Link Copied', {
       variant: 'success',
       preventDuplicate: true

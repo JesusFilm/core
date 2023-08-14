@@ -7,13 +7,18 @@ import { DescriptionDialog } from './DescriptionDialog'
 
 interface Props {
   isVisible?: boolean
+  onClick?: () => void
 }
 
-export function DescriptionMenuItem({ isVisible }: Props): ReactElement {
+export function DescriptionMenuItem({
+  isVisible,
+  onClick
+}: Props): ReactElement {
   const [showDescriptionDialog, setShowDescriptionDialog] = useState(false)
 
   const handleUpdateDescription = (): void => {
     setShowDescriptionDialog(true)
+    onClick?.()
   }
   return (
     <>

@@ -6,14 +6,19 @@ import { MenuItem } from '../../../../MenuItem'
 
 interface Props {
   isVisible?: boolean
+  onClick?: () => void
 }
 
-export function TitleDescriptionMenuItem({ isVisible }: Props): ReactElement {
+export function TitleDescriptionMenuItem({
+  isVisible,
+  onClick
+}: Props): ReactElement {
   const [showTitleDescriptionDialog, setShowTitleDescriptionDialog] =
     useState(false)
 
   const handleUpdateTitleDescription = (): void => {
     setShowTitleDescriptionDialog(true)
+    onClick?.()
   }
 
   return (

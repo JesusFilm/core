@@ -177,11 +177,19 @@ export function Menu(): ReactElement {
             />
             <TitleDescriptionMenuItem
               isVisible={journey.template === true && isPublisher}
+              onClick={handleCloseMenu}
             />
-            <TitleMenuItem isVisible={journey.template !== true} />
-            <DescriptionMenuItem isVisible={journey.template !== true} />
+            <TitleMenuItem
+              isVisible={journey.template !== true}
+              onClick={handleCloseMenu}
+            />
+            <DescriptionMenuItem
+              isVisible={journey.template !== true}
+              onClick={handleCloseMenu}
+            />
             <LanguageMenuItem
               isVisible={journey.template !== true || isPublisher}
+              onClick={handleCloseMenu}
             />
             <ReportMenuItem journey={journey} />
             <CreateTemplateMenuItem
@@ -190,6 +198,7 @@ export function Menu(): ReactElement {
             <CopyMenuItem
               journey={journey}
               isVisible={journey.template !== true}
+              onClick={handleCloseMenu}
             />
           </>
         )}

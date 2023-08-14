@@ -69,6 +69,7 @@ export function Menu(): ReactElement {
         }
       }
     })
+    setAnchorEl(null)
     journey.template === true
       ? enqueueSnackbar('Template Published', {
           variant: 'success',

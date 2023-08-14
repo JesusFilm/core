@@ -5,8 +5,8 @@ import { useState } from 'react'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
-import { journeysAdminConfig } from '../../../../libs/storybook'
-import { defaultJourney } from '../../../JourneyView/data'
+import { journeysAdminConfig } from '../../../../../../libs/storybook'
+import { defaultJourney } from '../../../../../JourneyView/data'
 
 import { GET_LANGUAGES, JOURNEY_LANGUAGE_UPDATE } from './LanguageDialog'
 
