@@ -9,7 +9,8 @@
     {
       "files": ["*.ts", "*.tsx"],
       "parserOptions": {
-        "project": ["libs/shared/ui/tsconfig.*?.json"]
+        "project": ["libs/shared/ui/tsconfig.*?.json"],
+        "@typescript-eslint/no-misused-promises": "off"
       },
       "rules": {}
     },
