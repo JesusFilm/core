@@ -339,7 +339,7 @@ export class VideoBlockResolver {
     }
     return {
       title: response.result.meta.name ?? response.result.uid,
-      image: `${response.result.thumbnail}?time=2s`,
+      image: `${response.result.thumbnail}?time=2s&height=768`,
       duration: Math.round(response.result.duration),
       endAt: Math.round(response.result.duration)
     }

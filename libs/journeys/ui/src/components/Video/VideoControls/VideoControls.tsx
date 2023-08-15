@@ -133,7 +133,7 @@ export function VideoControls({
           })
         )
       }
-      setProgress(Math.round(player.currentTime()))
+      setProgress(player.currentTime())
     }
     player.on('timeupdate', handleVideoTimeChange)
     return () => {
@@ -391,7 +391,7 @@ export function VideoControls({
               <Slider
                 aria-label="desktop-progress-control"
                 min={startAt}
-                max={endAt}
+                max={endAt - 0.25}
                 value={progress}
                 valueLabelFormat={displayTime}
                 valueLabelDisplay="auto"
@@ -498,7 +498,7 @@ export function VideoControls({
             <Slider
               aria-label="mobile-progress-control"
               min={startAt}
-              max={endAt}
+              max={endAt - 0.25}
               value={progress}
               valueLabelFormat={displayTime}
               valueLabelDisplay="auto"
