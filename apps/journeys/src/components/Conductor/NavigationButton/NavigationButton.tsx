@@ -7,6 +7,7 @@ import { ReactElement, useEffect } from 'react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { useBlocks } from '@core/journeys/ui/block'
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import ChevronLeftIcon from '@core/shared/ui/icons/ChevronLeft'
 import ChevronRightIcon from '@core/shared/ui/icons/ChevronRight'
 
@@ -30,6 +31,7 @@ export function NavigationButton({
   variant,
   alignment
 }: NavigationButtonProps): ReactElement {
+  const { variant: journeyVariant } = useJourney()
   const {
     setShowNavigation,
     treeBlocks,
@@ -78,8 +80,20 @@ export function NavigationButton({
   // Issue using https://mui.com/material-ui/guides/right-to-left/#emotion-amp-styled-components for justifyContent
   const alignSx =
     variant === 'prev'
-      ? { justifyContent: 'flex-start' }
-      : { justifyContent: 'flex-end' }
+      ? {
+          justifyContent: 'flex-start',
+          ml:
+            journeyVariant === 'default'
+              ? 'env(safe-area-inset-left)'
+              : 'inherit'
+        }
+      : {
+          justifyContent: 'flex-end',
+          mr:
+            journeyVariant === 'default'
+              ? 'env(safe-area-inset-right)'
+              : 'inherit'
+        }
 
   const NavigationContainer =
     alignment === 'left' ? LeftNavigationContainer : RightNavigationContainer

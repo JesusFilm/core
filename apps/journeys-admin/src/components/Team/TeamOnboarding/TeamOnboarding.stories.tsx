@@ -37,7 +37,8 @@ const teamCreateMock: MockedResponse<TeamCreate> = {
       teamCreate: {
         id: 'teamId',
         title: 'Jesus Film Project',
-        __typename: 'Team'
+        __typename: 'Team',
+        userTeams: []
       }
     }
   }
@@ -49,7 +50,14 @@ const getTeams: MockedResponse<GetLastActiveTeamIdAndTeams> = {
   },
   result: {
     data: {
-      teams: [{ id: 'teamId', title: 'Team Title', __typename: 'Team' }],
+      teams: [
+        {
+          id: 'teamId',
+          title: 'Team Title',
+          __typename: 'Team',
+          userTeams: []
+        }
+      ],
       getJourneyProfile: {
         __typename: 'JourneyProfile',
         lastActiveTeamId: 'teamId'
