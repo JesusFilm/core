@@ -38,6 +38,8 @@
     "@casl/ability": "^6.5.0",
     "@casl/prisma": "^1.4.0",
     "@datadog/browser-rum": "^4.7.1",
+    "@docusaurus/core": "^3.0.0-alpha.0",
+    "@docusaurus/preset-classic": "^3.0.0-alpha.0",
     "@emotion/cache": "^11.6.0",
     "@emotion/react": "11.9.0",
     "@emotion/server": "11.4.0",
@@ -139,6 +141,7 @@
     "@babel/preset-typescript": "7.12.13",
     "@commitlint/cli": "^16.1.0",
     "@commitlint/lint": "^17.4.2",
+    "@docusaurus/module-type-aliases": "^3.0.0-alpha.0",
     "@emotion/babel-plugin": "11.9.2",
     "@nestjs/schematics": "^8.0.6",
     "@nestjs/testing": "^9.2.1",
@@ -251,4 +254,3 @@
     "workerDirectory": "./.storybook/static"
   }
 }
-
