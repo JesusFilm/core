@@ -564,7 +564,7 @@ describe('JourneyResolver', () => {
           id: 'journeyId',
           languageId: '529',
           slug: 'untitled-journey',
-          status: 'published',
+          status: JourneyStatus.published,
           publishedAt: new Date(),
           team: {
             connect: {
@@ -607,7 +607,7 @@ describe('JourneyResolver', () => {
           id: 'myJourneyId',
           languageId: '529',
           slug: 'special-journey-myJourneyId',
-          status: 'published',
+          status: JourneyStatus.published,
           publishedAt: new Date(),
           team: {
             connect: {
