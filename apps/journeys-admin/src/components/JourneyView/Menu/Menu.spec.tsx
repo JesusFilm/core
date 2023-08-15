@@ -11,7 +11,7 @@ import {
   GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS,
   TeamProvider
 } from '../../Team/TeamProvider'
-import { defaultJourney, publishedJourney } from '../data'
+import { defaultJourney } from '../data'
 
 import { GET_ROLE } from './Menu'
 
@@ -56,14 +56,14 @@ describe('JourneyView/Menu', () => {
     expect(menu).toHaveAttribute('aria-expanded', 'true')
   })
 
-  it('should preview if journey is published', () => {
+  it('should preview if journey', () => {
     const { getByRole } = render(
       <SnackbarProvider>
         <MockedProvider mocks={[]}>
           <TeamProvider>
             <JourneyProvider
               value={{
-                journey: publishedJourney,
+                journey: defaultJourney,
                 variant: 'admin'
               }}
             >
@@ -77,7 +77,7 @@ describe('JourneyView/Menu', () => {
     fireEvent.click(getByRole('button'))
     expect(getByRole('menuitem', { name: 'Preview' })).toHaveAttribute(
       'href',
-      `/api/preview?slug=${publishedJourney.slug}`
+      `/api/preview?slug=${defaultJourney.slug}`
     )
     expect(getByRole('menuitem', { name: 'Preview' })).toHaveAttribute(
       'target',

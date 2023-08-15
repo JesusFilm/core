@@ -29,7 +29,7 @@ export function JourneyDetails({
         <Language isPublisher={isPublisher} />
       ) : (
         <>
-          <Box sx={{ display: 'flex', flexDirection: 'row', mt: 2 }}>
+          <Box sx={{ display: 'flex', flexDirection: 'row' }}>
             <EventRounded fontSize="small" />
             <Typography
               variant="body2"
