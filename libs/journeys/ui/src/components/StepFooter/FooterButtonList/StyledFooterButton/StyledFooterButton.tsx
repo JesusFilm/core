@@ -3,7 +3,7 @@ import { Theme, styled } from '@mui/material/styles'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { ReactElement, ReactNode } from 'react'
 
-const StyledButton = styled(Button)<ButtonProps & { clicked: boolean }>(
+const StyledButton = styled(Button)<ButtonProps & { clicked: string }>(
   ({ theme, clicked }) => ({
     minWidth: 56,
     borderRadius: 20,
@@ -53,7 +53,7 @@ export function StyledFooterButton({
   const lgUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('lg'))
 
   return (
-    <StyledButton onClick={onClick} disableRipple={lgUp} clicked={clicked}>
+    <StyledButton onClick={onClick} disableRipple={lgUp} clicked={clicked.toString()}>
       {children}
     </StyledButton>
   )
