@@ -1,5 +1,4 @@
 {
-  "root": "libs/nest/powerBi",
   "sourceRoot": "libs/nest/powerBi/src",
   "projectType": "library",
   "targets": {

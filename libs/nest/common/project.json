@@ -1,5 +1,4 @@
 {
-  "root": "libs/nest/common",
   "sourceRoot": "libs/nest/common/src",
   "projectType": "library",
   "targets": {

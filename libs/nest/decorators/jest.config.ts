@@ -1,4 +1,4 @@
-module.exports = {
+export default {
   displayName: 'nest-decorators',
 
   globals: {
@@ -13,5 +13,5 @@ module.exports = {
   coverageDirectory: '../../../coverage/libs/nest/decorators',
   collectCoverage: true,
   coverageReporters: ['cobertura'],
-  preset: '../../../jest.preset.ts'
+  preset: '../../../jest.preset.js'
 }

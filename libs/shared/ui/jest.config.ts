@@ -1,4 +1,4 @@
-module.exports = {
+export default {
   displayName: 'shared-ui',
 
   transform: {
@@ -9,5 +9,5 @@ module.exports = {
   setupFilesAfterEnv: ['<rootDir>setupTests.ts'],
   collectCoverage: true,
   coverageReporters: ['cobertura'],
-  preset: '../../../jest.preset.ts'
+  preset: '../../../jest.preset.js'
 }

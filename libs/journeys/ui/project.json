@@ -1,5 +1,4 @@
 {
-  "root": "libs/journeys/ui",
   "sourceRoot": "libs/journeys/ui/src",
   "projectType": "library",
   "tags": [],

@@ -1,5 +1,4 @@
 {
-  "root": "apps/api-journeys",
   "sourceRoot": "apps/api-journeys/src",
   "projectType": "application",
   "targets": {
@@ -49,7 +48,7 @@
     "watcher": {
       "executor": "@nrwl/workspace:run-commands",
       "options": {
-        "command": "npx ts-node tools/scripts/generate-typings.ts api-journeys"
+        "command": "npm run ts-node tools/scripts/generate-typings.ts api-journeys"
       }
     },
     "lint": {
@@ -97,7 +96,7 @@
         "parallel": false,
         "commands": [
           "npx prisma generate --schema apps/api-journeys/db/schema.prisma",
-          "npx ts-node apps/api-journeys/src/app/lib/casl/caslPrismaGenerator.ts"
+          "npm run ts-node apps/api-journeys/src/app/lib/casl/caslPrismaGenerator.ts"
         ]
       }
     },
@@ -127,7 +126,7 @@
     "prisma-seed": {
       "executor": "@nrwl/workspace:run-commands",
       "options": {
-        "commands": ["npx ts-node apps/api-journeys/db/seed.ts"]
+        "commands": ["npm run ts-node apps/api-journeys/db/seed.ts"]
       }
     },
     "prisma-studio": {

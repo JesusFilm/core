@@ -1,5 +1,4 @@
 {
-  "root": "libs/nest/health",
   "sourceRoot": "libs/nest/health/src",
   "targets": {
     "lint": {

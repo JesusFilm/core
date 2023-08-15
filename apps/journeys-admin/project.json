@@ -1,5 +1,4 @@
 {
-  "root": "apps/journeys-admin",
   "sourceRoot": "apps/journeys-admin",
   "projectType": "application",
   "implicitDependencies": ["locales"],
@@ -79,7 +78,7 @@
           "dev": false
         },
         "development": {
-          "buildTarget": "journeys-admin:build:development",
+          "buildTarget": "journeys-admin:_build:development",
           "dev": true
         }
       },

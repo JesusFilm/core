@@ -1,5 +1,4 @@
 {
-  "root": "apps/api-languages",
   "sourceRoot": "apps/api-languages/src",
   "projectType": "application",
   "targets": {
@@ -44,7 +43,7 @@
     "watcher": {
       "executor": "@nrwl/workspace:run-commands",
       "options": {
-        "command": "npx ts-node tools/scripts/generate-typings.ts api-languages"
+        "command": "npm run ts-node tools/scripts/generate-typings.ts api-languages"
       }
     },
     "lint": {
@@ -114,7 +113,7 @@
     "prisma-seed": {
       "executor": "@nrwl/workspace:run-commands",
       "options": {
-        "commands": ["npx ts-node apps/api-languages/db/seed.ts"]
+        "commands": ["npm run ts-node apps/api-languages/db/seed.ts"]
       }
     },
     "prisma-studio": {

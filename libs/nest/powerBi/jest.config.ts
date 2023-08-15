@@ -1,4 +1,4 @@
-module.exports = {
+export default {
   displayName: 'nest/powerBi',
 
   globals: {
@@ -14,5 +14,5 @@ module.exports = {
   coverageDirectory: '../../../coverage/libs/nest/powerBi',
   collectCoverage: true,
   coverageReporters: ['cobertura'],
-  preset: '../../../jest.preset.ts'
+  preset: '../../../jest.preset.js'
 }

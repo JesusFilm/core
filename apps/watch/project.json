@@ -1,5 +1,4 @@
 {
-  "root": "apps/watch",
   "sourceRoot": "apps/watch",
   "projectType": "application",
   "implicitDependencies": ["locales"],
@@ -76,7 +75,7 @@
           "dev": false
         },
         "development": {
-          "buildTarget": "watch:build:development",
+          "buildTarget": "watch:_build:development",
           "dev": true
         }
       },

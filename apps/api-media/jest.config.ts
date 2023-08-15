@@ -1,4 +1,4 @@
-module.exports = {
+export default {
   displayName: 'api-media',
 
   globals: {
@@ -14,5 +14,5 @@ module.exports = {
   coverageDirectory: '../../coverage/apps/api-media',
   collectCoverage: true,
   coverageReporters: ['cobertura'],
-  preset: '../../jest.preset.ts'
+  preset: '../../jest.preset.js'
 }

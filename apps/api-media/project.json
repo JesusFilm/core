@@ -1,5 +1,4 @@
 {
-  "root": "apps/api-media",
   "sourceRoot": "apps/api-media/src",
   "projectType": "application",
   "targets": {
@@ -49,7 +48,7 @@
     "watcher": {
       "executor": "@nrwl/workspace:run-commands",
       "options": {
-        "command": "npx ts-node tools/scripts/generate-typings.ts api-media"
+        "command": "npm run ts-node tools/scripts/generate-typings.ts api-media"
       }
     },
     "lint": {

@@ -1,4 +1,4 @@
-module.exports = {
+export default {
   displayName: 'watch',
 
   transform: {
@@ -10,5 +10,5 @@ module.exports = {
   setupFilesAfterEnv: ['<rootDir>setupTests.tsx'],
   collectCoverage: true,
   coverageReporters: ['cobertura'],
-  preset: '../../jest.preset.ts'
+  preset: '../../jest.preset.js'
 }

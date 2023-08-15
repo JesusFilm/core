@@ -1,5 +1,4 @@
 {
-  "root": "libs/nest/gqlAuthGuard",
   "sourceRoot": "libs/nest/gqlAuthGuard/src",
   "projectType": "library",
   "targets": {

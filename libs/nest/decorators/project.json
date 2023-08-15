@@ -1,5 +1,4 @@
 {
-  "root": "libs/nest/decorators",
   "sourceRoot": "libs/nest/decorators/src",
   "projectType": "library",
   "targets": {
